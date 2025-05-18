@@ -1,0 +1,3 @@
+let x: int = 42
+let y: float = 3.14
+let name: string = "Mochi"

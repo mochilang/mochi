@@ -1,0 +1,2 @@
+let s = "text"
+print(-s) // invalid unary minus on string

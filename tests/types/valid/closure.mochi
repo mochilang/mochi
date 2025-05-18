@@ -1,0 +1,5 @@
+fun makeAdder(x: int): fun(int): int {
+  return fun(y: int): int => x + y
+}
+let add10 = makeAdder(10)
+let result = add10(5)

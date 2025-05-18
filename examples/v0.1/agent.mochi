@@ -1,0 +1,14 @@
+/*
+agent Logger {
+  let count: int = 0
+
+  on sensor_data as e {
+    count = count + 1
+    print("Received event:", e, "Total:", count)
+  }
+
+  intent greet(name: string): string {
+    return "Hello, " + name
+  }
+}
+*/

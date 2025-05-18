@@ -1,0 +1,5 @@
+fun greet(name: string) {
+  print("Hi " + name)
+}
+
+greet("Alice", "Bob") // too many args

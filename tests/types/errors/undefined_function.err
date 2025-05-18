@@ -1,0 +1,8 @@
+1. error[T003]: unknown function: hello
+  --> tests/types/errors/undefined_function.mochi:1:1
+
+  1 | hello() // function not defined
+    | ^
+
+help:
+  Ensure the function is defined before it's called.

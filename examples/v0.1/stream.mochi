@@ -1,0 +1,14 @@
+/*
+stream sensor_data {
+  device: string
+  payload: {
+    temperature: float
+    humidity: float
+  }
+  timestamp: time
+}
+
+on sensor_data as e {
+  print("Temp:", e.payload.temperature, "Humidity:", e.payload.humidity)
+}
+*/

@@ -1,0 +1,8 @@
+error[I010]: range bounds must be integers, got string and string
+  --> tests/interpreter/errors/invalid_range_bounds.mochi:1:1
+
+  1 | for i in "a".."z" {
+    | ^
+
+help:
+  Ensure both `for x in a..b` bounds are integers.

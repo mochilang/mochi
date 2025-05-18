@@ -1,0 +1,7 @@
+// --- Higher-order function: accepts function and value ---
+fun apply_twice(f: fun(int): int, x: int): int {
+  return f(f(x))
+}
+
+let square = fun(x: int): int => x * x
+print(apply_twice(square, 6)) // 36 * 36 = 1296

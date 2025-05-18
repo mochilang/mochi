@@ -1,0 +1,38 @@
+Program = Statement* .
+Statement = TestBlock | ExpectStmt | AgentDecl | StreamDecl | OnHandler | LetStmt | AssignStmt | FunStmt | ReturnStmt | IfStmt | ForStmt | ExprStmt .
+TestBlock = "test" <string> "{" Statement* "}" .
+ExpectStmt = "expect" Expr .
+Expr = Equality .
+Equality = Comparison EqualOp* .
+Comparison = Term CompOp* .
+Term = Factor TermOp* .
+Factor = Unary FactorOp* .
+Unary = ("-" | "!")* Primary .
+Primary = FunExpr | CallExpr | SelectorExpr | Literal | ("(" Expr ")") .
+FunExpr = ("fun" "(" (Param ("," Param)*)? ")" (":" TypeRef)? "=>" Expr) | ("{" Statement* "}") .
+Param = <ident> (":" TypeRef)? .
+TypeRef = FunType | <ident> .
+FunType = "fun" "(" (TypeRef ("," TypeRef)*)? ")" (":" TypeRef)? .
+CallExpr = <ident> "(" (Expr ("," Expr)*)? ")" .
+SelectorExpr = <ident> ("." <ident>)* .
+Literal = <float> | <int> | ("true" | "false") | <string> .
+FactorOp = ("*" | "/") Unary .
+TermOp = ("+" | "-") Factor .
+CompOp = ("<" | "<=" | ">" | ">=") Term .
+EqualOp = ("==" | "!=") Comparison .
+AgentDecl = "agent" <ident> "{" AgentBlock* "}" .
+AgentBlock = LetStmt | AssignStmt | OnHandler | IntentDecl .
+LetStmt = "let" <ident> (":" TypeRef)? ("=" Expr)? .
+AssignStmt = <ident> "=" Expr .
+OnHandler = "on" <ident> "as" <ident> "{" Statement* "}" .
+IntentDecl = "intent" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}" .
+StreamDecl = "stream" <ident> "{" StreamField* "}" .
+StreamField = StreamNestedField | StreamSimpleField .
+StreamNestedField = <ident> ":" StructDef .
+StructDef = "{" StreamField* "}" .
+StreamSimpleField = <ident> ":" <ident> .
+FunStmt = "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}" .
+ReturnStmt = "return" Expr .
+IfStmt = "if" Expr "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))? .
+ForStmt = "for" <ident> "in" Expr ".." Expr "{" Statement* "}" .
+ExprStmt = Expr .

@@ -1,0 +1,8 @@
+error[P020]: tests/parser/errors/unexpected_token.mochi:1:13: unexpected token "*" (expected Primary)
+  --> tests/parser/errors/unexpected_token.mochi:1:13
+
+  1 | let x = 1 + * 2
+    |             ^
+
+help:
+  An expression was expected here. Check syntax.

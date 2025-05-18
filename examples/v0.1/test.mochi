@@ -1,0 +1,69 @@
+// examples/test.mochi
+
+test "basic arithmetic" {
+  expect 1 + 2 == 3
+  expect 10 - 4 == 6
+  expect 2 * 3 == 6
+  expect 8 / 2 == 4
+}
+
+test "equality and comparison" {
+  expect 5 == 5
+  expect 3 != 4
+  expect 2 < 5
+  expect 6 >= 6
+  expect 9 > 3
+}
+
+test "let bindings" {
+  let x = 42
+  expect x == 42
+
+  let y = x + 1
+  expect y == 43
+}
+
+fun square(n: int): int {
+  return n * n
+}
+
+test "function definitions and calls" {
+  expect square(3) == 9
+  expect square(5) == 25
+}
+
+fun make_adder(n: int): fun(int): int {
+  return fun(x: int): int => x + n
+}
+
+test "closures and partial application" {
+  let add10 = make_adder(10)
+  expect add10(5) == 15
+  expect add10(0) == 10
+}
+
+fun classify(n: int): string {
+  if n < 0 {
+    return "negative"
+  } else if n == 0 {
+    return "zero"
+  } else {
+    return "positive"
+  }
+}
+
+test "if/else logic" {
+  expect classify(-1) == "negative"
+  expect classify(0) == "zero"
+  expect classify(1) == "positive"
+}
+
+test "for loop and accumulation" {
+  let sum = 0
+  for i in 1..5 {
+    sum = sum + i
+  }
+
+  // 1 + 2 + 3 + 4 = 10
+  expect sum == 10
+}

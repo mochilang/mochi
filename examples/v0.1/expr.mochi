@@ -1,0 +1,20 @@
+// Basic precedence: * before +
+let a = 3 + 4 * 2        // 3 + (4 * 2) = 11
+let b = (3 + 4) * 2      // (3 + 4) * 2 = 14
+
+// Mix of +, -, *, /
+let c = 10 - 2 * 3 + 4   // 10 - (2 * 3) + 4 = 10 - 6 + 4 = 8
+let d = (10 - 2) * (3 + 4) // 8 * 7 = 56
+
+// Pure float expression (int + float is not supported)
+let e = 5.0 + 2.5 * 2.0      // 5.0 + 5.0 = 10.0
+
+// Nested parentheses
+let f = ((1 + 2) * (3 + 4)) / 7 // (3 * 7) / 7 = 3
+
+print("a =", a)
+print("b =", b)
+print("c =", c)
+print("d =", d)
+print("e =", e)
+print("f =", f)

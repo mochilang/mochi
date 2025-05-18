@@ -1,0 +1,4 @@
+fun square(n: int): int {
+  return n * n
+}
+let result = square(5)

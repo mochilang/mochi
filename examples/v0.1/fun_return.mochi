@@ -1,0 +1,7 @@
+// --- Function expression as return value ---
+fun always42(): fun(): int {
+  return fun(): int => 42
+}
+
+let f = always42()
+print(f())  // 42

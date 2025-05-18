@@ -1,0 +1,44 @@
+// --- Basic Setup ---
+let name = "Mochi"
+
+// Simple function
+fun greet(name: string): string {
+  return "Hello, " + name
+}
+
+print(greet(name))  // Hello, Mochi
+
+// --- Closure that captures a variable ---
+fun makeAdder(n: int): fun(int): int {
+  return fun(x: int): int => x + n
+}
+
+let add10 = makeAdder(10)
+print(add10(5))   // 15
+
+// --- Currying a multi-arg function ---
+fun add(a: int, b: int, c: int): int {
+  return a + b + c
+}
+
+let step1 = add(1)
+let step2 = step1(2)
+let result = step2(3)
+
+print(result)  // 1 + 2 + 3 = 6
+
+// --- Higher-order function ---
+fun apply(f: fun(int): int, x: int): int {
+  return f(x)
+}
+
+let square = fun(x:int):int => x * x
+print(apply(square, 6))  // 36
+
+// --- Function returning a constant function ---
+fun always42(): fun(): int {
+  return fun() => 42
+}
+
+let f = always42()
+print(f())  // 42

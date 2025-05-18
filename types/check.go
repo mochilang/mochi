@@ -1,0 +1,453 @@
+package types
+
+import (
+	"fmt"
+
+	"github.com/alecthomas/participle/v2/lexer"
+	"mochi/parser"
+)
+
+// --- Type System ---
+
+type Type interface {
+	String() string
+	Equal(Type) bool
+}
+
+type IntType struct{}
+
+func (IntType) String() string    { return "int" }
+func (IntType) Equal(t Type) bool { _, ok := t.(IntType); return ok }
+
+type FloatType struct{}
+
+func (FloatType) String() string    { return "float" }
+func (FloatType) Equal(t Type) bool { _, ok := t.(FloatType); return ok }
+
+type StringType struct{}
+
+func (StringType) String() string    { return "string" }
+func (StringType) Equal(t Type) bool { _, ok := t.(StringType); return ok }
+
+type BoolType struct{}
+
+func (BoolType) String() string    { return "bool" }
+func (BoolType) Equal(t Type) bool { _, ok := t.(BoolType); return ok }
+
+type VoidType struct{}
+
+func (VoidType) String() string    { return "void" }
+func (VoidType) Equal(t Type) bool { _, ok := t.(VoidType); return ok }
+
+type AnyType struct{}
+
+func (AnyType) String() string    { return "any" }
+func (AnyType) Equal(t Type) bool { return true }
+
+type TypeVar struct {
+	Name string
+}
+
+func (t *TypeVar) String() string { return t.Name }
+func (t *TypeVar) Equal(other Type) bool {
+	if o, ok := other.(*TypeVar); ok {
+		return t.Name == o.Name
+	}
+	return false
+}
+
+type FuncType struct {
+	Params []Type
+	Return Type
+}
+
+func (f FuncType) String() string {
+	s := "fun("
+	for i, p := range f.Params {
+		if i > 0 {
+			s += ", "
+		}
+		s += p.String()
+	}
+	s += ")"
+	if f.Return != nil && f.Return.String() != "void" {
+		s += ": " + f.Return.String()
+	}
+	return s
+}
+func (f FuncType) Equal(t Type) bool {
+	other, ok := t.(FuncType)
+	if !ok || len(f.Params) != len(other.Params) {
+		return false
+	}
+	for i := range f.Params {
+		if !f.Params[i].Equal(other.Params[i]) {
+			return false
+		}
+	}
+	return f.Return.Equal(other.Return)
+}
+
+type BuiltinFuncType struct{}
+
+func (BuiltinFuncType) String() string    { return "fun(...): void" }
+func (BuiltinFuncType) Equal(t Type) bool { _, ok := t.(BuiltinFuncType); return ok }
+
+// --- Entry Point ---
+
+func Check(prog *parser.Program, env *Env) []error {
+	env.SetVar("print", BuiltinFuncType{})
+	var errs []error
+	for _, stmt := range prog.Statements {
+		if err := checkStmt(stmt, env, VoidType{}); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errs
+}
+
+// --- Helpers ---
+
+func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
+	switch {
+	case s.Let != nil:
+		name := s.Let.Name
+		var typ Type
+		if s.Let.Type != nil {
+			typ = resolveTypeRef(s.Let.Type)
+			if s.Let.Value != nil {
+				exprType, err := checkExprWithExpected(s.Let.Value, env, typ)
+				if err != nil {
+					return err
+				}
+				if !typ.Equal(exprType) {
+					return errTypeMismatch(s.Let.Pos, typ, exprType)
+				}
+			}
+		} else if s.Let.Value != nil {
+			var err error
+			typ, err = checkExprWithExpected(s.Let.Value, env, nil)
+			if err != nil {
+				return err
+			}
+		} else {
+			return errLetMissingTypeOrValue(s.Let.Pos)
+		}
+		env.SetVar(name, typ)
+		return nil
+
+	case s.Assign != nil:
+		rhsType, err := checkExprWithExpected(s.Assign.Value, env, nil)
+		if err != nil {
+			return err
+		}
+		lhsType, err := env.GetVar(s.Assign.Name)
+		if err != nil {
+			return errAssignUndeclared(s.Assign.Pos, s.Assign.Name)
+		}
+		if !lhsType.Equal(rhsType) {
+			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
+		}
+		return nil
+
+	case s.Fun != nil:
+		name := s.Fun.Name
+		params := []Type{}
+		for _, p := range s.Fun.Params {
+			if p.Type == nil {
+				return errParamMissingType(s.Fun.Pos, p.Name)
+			}
+			params = append(params, resolveTypeRef(p.Type))
+		}
+		var ret Type = VoidType{}
+		if s.Fun.Return != nil {
+			ret = resolveTypeRef(s.Fun.Return)
+		}
+		env.SetVar(name, FuncType{Params: params, Return: ret})
+
+		child := NewEnv(env)
+		for i, p := range s.Fun.Params {
+			child.SetVar(p.Name, params[i])
+		}
+		for _, stmt := range s.Fun.Body {
+			if err := checkStmt(stmt, child, ret); err != nil {
+				return err
+			}
+		}
+		return nil
+
+	case s.Expr != nil:
+		_, err := checkExprWithExpected(s.Expr.Expr, env, nil)
+		return err
+
+	case s.Return != nil:
+		actual, err := checkExprWithExpected(s.Return.Value, env, expectedReturn)
+		if err != nil {
+			return err
+		}
+		if !actual.Equal(expectedReturn) {
+			return errReturnMismatch(s.Return.Pos, expectedReturn, actual)
+		}
+		return nil
+
+	case s.Test != nil:
+		child := NewEnv(env)
+		for _, stmt := range s.Test.Body {
+			if err := checkStmt(stmt, child, expectedReturn); err != nil {
+				return err
+			}
+		}
+		return nil
+
+	case s.Expect != nil:
+		t, err := checkExprWithExpected(s.Expect.Value, env, BoolType{})
+		if err != nil {
+			return err
+		}
+		if !t.Equal(BoolType{}) {
+			return errExpectBoolean(s.Expect.Pos)
+		}
+		return nil
+	}
+	return nil
+}
+
+func resolveTypeRef(t *parser.TypeRef) Type {
+	if t.Fun != nil {
+		params := make([]Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = resolveTypeRef(p)
+		}
+		var ret Type = VoidType{}
+		if t.Fun.Return != nil {
+			ret = resolveTypeRef(t.Fun.Return)
+		}
+		return FuncType{Params: params, Return: ret}
+	}
+	switch *t.Simple {
+	case "int":
+		return IntType{}
+	case "float":
+		return FloatType{}
+	case "string":
+		return StringType{}
+	case "bool":
+		return BoolType{}
+	default:
+		return AnyType{}
+	}
+}
+
+func checkExpr(e *parser.Expr, env *Env) (Type, error) {
+	return checkExprWithExpected(e, env, nil)
+}
+
+func checkExprWithExpected(e *parser.Expr, env *Env, expected Type) (Type, error) {
+	return checkEquality(e.Equality, env, expected)
+}
+
+func checkEquality(e *parser.Equality, env *Env, expected Type) (Type, error) {
+	left, err := checkComparison(e.Left, env, nil)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range e.Right {
+		right, err := checkComparison(op.Right, env, nil)
+		if err != nil {
+			return nil, err
+		}
+		if !left.Equal(right) {
+			return nil, errIncompatibleEquality(op.Pos)
+		}
+		left = BoolType{}
+	}
+	return left, nil
+}
+
+func checkComparison(c *parser.Comparison, env *Env, expected Type) (Type, error) {
+	left, err := checkTerm(c.Left, env, nil)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range c.Right {
+		right, err := checkTerm(op.Right, env, nil)
+		if err != nil {
+			return nil, err
+		}
+		if !left.Equal(right) {
+			return nil, errIncompatibleComparison(op.Pos)
+		}
+		left = BoolType{}
+	}
+	return left, nil
+}
+
+func checkTerm(t *parser.Term, env *Env, expected Type) (Type, error) {
+	left, err := checkFactor(t.Left, env, nil)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range t.Right {
+		right, err := checkFactor(op.Right, env, nil)
+		if err != nil {
+			return nil, err
+		}
+		if !left.Equal(right) {
+			return nil, errTypeMismatch(op.Pos, left, right)
+		}
+	}
+	return left, nil
+}
+
+func checkFactor(f *parser.Factor, env *Env, expected Type) (Type, error) {
+	left, err := checkUnary(f.Left, env, nil)
+	if err != nil {
+		return nil, err
+	}
+	for _, op := range f.Right {
+		right, err := checkUnary(op.Right, env, nil)
+		if err != nil {
+			return nil, err
+		}
+		if !left.Equal(right) {
+			return nil, errTypeMismatch(op.Pos, left, right)
+		}
+	}
+	return left, nil
+}
+
+func checkUnary(u *parser.Unary, env *Env, expected Type) (Type, error) {
+	return checkPrimary(u.Value, env, expected)
+}
+
+func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
+	switch {
+	case p.Lit != nil:
+		switch {
+		case p.Lit.Int != nil:
+			return IntType{}, nil
+		case p.Lit.Float != nil:
+			return FloatType{}, nil
+		case p.Lit.Str != nil:
+			return StringType{}, nil
+		case p.Lit.Bool != nil:
+			return BoolType{}, nil
+		}
+
+	case p.Selector != nil:
+		typ, err := env.GetVar(p.Selector.Root)
+		if err != nil {
+			return nil, errUnknownVariable(p.Pos, p.Selector.Root)
+		}
+		// TODO: implement proper struct/stream field access checking
+		return typ, nil
+
+	case p.Call != nil:
+		fnType, err := env.GetVar(p.Call.Func)
+		if err != nil {
+			return nil, errUnknownFunction(p.Pos, p.Call.Func)
+		}
+
+		switch ft := fnType.(type) {
+		case FuncType:
+			argCount := len(p.Call.Args)
+			paramCount := len(ft.Params)
+
+			if argCount > paramCount {
+				return nil, errTooManyArgs(p.Pos, paramCount, argCount)
+			}
+
+			for i := 0; i < argCount; i++ {
+				argType, err := checkExprWithExpected(p.Call.Args[i], env, ft.Params[i])
+				if err != nil {
+					return nil, err
+				}
+				if !argType.Equal(ft.Params[i]) {
+					return nil, errArgTypeMismatch(p.Pos, i, ft.Params[i], argType)
+				}
+			}
+
+			if argCount == paramCount {
+				return ft.Return, nil
+			}
+			return curryFuncType(ft.Params[argCount:], ft.Return), nil
+
+		case BuiltinFuncType:
+			for _, arg := range p.Call.Args {
+				if _, err := checkExpr(arg, env); err != nil {
+					return nil, err
+				}
+			}
+			return VoidType{}, nil
+
+		default:
+			return nil, errNotFunction(p.Pos, p.Call.Func)
+		}
+
+	case p.FunExpr != nil:
+		return checkFunExpr(p.FunExpr, env, expected, p.Pos)
+
+	case p.Group != nil:
+		return checkExprWithExpected(p.Group, env, expected)
+	}
+
+	return nil, errInvalidPrimary(p.Pos)
+}
+
+func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position) (Type, error) {
+	var expectedFunc *FuncType
+	if ft, ok := expected.(FuncType); ok {
+		expectedFunc = &ft
+	}
+
+	paramTypes := make([]Type, len(f.Params))
+	for i, p := range f.Params {
+		if p.Type != nil {
+			paramTypes[i] = resolveTypeRef(p.Type)
+		} else if expectedFunc != nil && i < len(expectedFunc.Params) {
+			paramTypes[i] = expectedFunc.Params[i]
+		} else {
+			paramTypes[i] = &TypeVar{Name: fmt.Sprintf("T_%s", p.Name)}
+		}
+	}
+
+	var declaredRet Type
+	if f.Return != nil {
+		declaredRet = resolveTypeRef(f.Return)
+	} else if expectedFunc != nil {
+		declaredRet = expectedFunc.Return
+	} else {
+		declaredRet = &TypeVar{Name: "R"}
+	}
+
+	child := NewEnv(env)
+	for i, p := range f.Params {
+		child.SetVar(p.Name, paramTypes[i])
+	}
+
+	if f.ExprBody != nil {
+		actualRet, err := checkExprWithExpected(f.ExprBody, child, declaredRet)
+		if err != nil {
+			return nil, err
+		}
+		declaredRet = actualRet
+	} else {
+		for _, stmt := range f.BlockBody {
+			if err := checkStmt(stmt, child, declaredRet); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return FuncType{Params: paramTypes, Return: declaredRet}, nil
+}
+
+func curryFuncType(params []Type, ret Type) Type {
+	if len(params) == 0 {
+		return ret
+	}
+	return FuncType{
+		Params: []Type{params[0]},
+		Return: curryFuncType(params[1:], ret),
+	}
+}

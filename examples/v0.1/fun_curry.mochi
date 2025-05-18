@@ -1,0 +1,9 @@
+fun add(a: int, b: int, c: int): int {
+    return a + b + c
+}
+
+let step1 = add(1)
+let step2 = step1(2)
+let result = step2(3)
+
+print(result)  // 1 + 2 + 3 = 6

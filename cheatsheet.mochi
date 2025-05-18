@@ -1,0 +1,131 @@
+// 0. Mochi
+// Mochi is a lightweight programming language for building AI agents, working with real-time data,
+// and querying datasets. It combines declarative and functional programming, with built-in support
+// for streams, datasets, tools, and prompt-based AI generation.
+
+
+// 1. Variable Bindings
+let name = "Mochi"
+let age = 3
+let active = true
+
+let picture: image = load "cat.png"
+print(picture.size)
+
+
+// 2. Control Flow
+if age > 2 {
+  print("Old enough")
+} else {
+  print("Still young")
+}
+
+for i in 0..3 {
+  print(i) // prints 0, 1, 2
+}
+
+
+// 3. Functions
+
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+let square = func(x: int): int => x * x
+let double = func(x: int): int => x * 2
+
+fun greet(name: string = "friend"): string {
+  return "Hello, " + name
+}
+
+fun apply_twice(f: func(int): int, x: int): int {
+  return f(f(x))
+}
+
+fun make_adder(n: int): func(int): int {
+  return func(x: int): int => x + n
+}
+
+print(add(2, 3))
+print(square(4))
+print(greet())
+print(apply_twice(square, 2))
+print(make_adder(10)(5))
+
+
+// 4. Composite Types
+let items = [1, 2, 3]
+let user = {"name": "ana", "age": 22}
+let tags = {"a", "b", "c"}
+
+let scores = {"a": 10, "b": 20}
+print(scores["a"])
+
+
+// 5. Generative AI
+
+generate text {
+  prompt: "Write a haiku about $topic"
+  args: {
+    topic: "spring rain"
+  }
+  temperature: 0.7
+  max_tokens: 64
+}
+
+
+// 6. Datasets and Queries
+
+let people = from "people.csv"
+
+let adults = select name, age
+from people
+where age > 18
+
+let asian_sales = select product, sum(revenue)
+from "sales.csv"
+where region == "Asia"
+group by product
+
+let orders = from "orders.csv"
+let customers = from "customers.csv"
+
+let joined = select o.id, c.name
+from orders as o
+join customers as c on o.customer_id == c.id
+where o.amount > 100
+
+
+// 7. Stream Declaration
+
+stream sensor_readings {
+  device: string
+  payload: {
+    temperature: float
+    humidity: float
+    status: string
+  }
+  timestamp: time
+}
+
+on sensor_readings as e {
+  print("Temperature:", e.payload.temperature)
+}
+
+
+// 8. Agents
+
+agent Assistant {
+  state {
+    count: int = 0
+  }
+
+  on sensor_readings as e {
+    count = count + 1
+    print("Event received:", e, "Total:", count)
+  }
+
+  intent greet(name: string): string {
+    return "Hello, " + name
+  }
+}

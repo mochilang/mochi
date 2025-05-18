@@ -1,0 +1,41 @@
+// Arithmetic operations
+let add = 2 + 3
+let sub = 7 - 4
+let mul = 5 * 2
+let div = 8 / 2
+
+print("add:", add)
+print("sub:", sub)
+print("mul:", mul)
+print("div:", div)
+
+// Comparison operations (numbers)
+let eq = 10 == 10
+let neq = 10 != 5
+let lt = 3 < 5
+let lte = 5 <= 5
+let gt = 7 > 3
+let gte = 6 >= 6
+
+print("eq:", eq)
+print("neq:", neq)
+print("lt:", lt)
+print("lte:", lte)
+print("gt:", gt)
+print("gte:", gte)
+
+// String comparisons
+let sa = "hello"
+let sb = "hello"
+let sc = "world"
+
+print("str_eq:", sa == sb)
+print("str_neq:", sa != sc)
+print("str_concat:", sa + " " + sc)
+
+// Boolean comparisons
+let ba = true
+let bb = false
+
+print("bool_eq:", ba == ba)
+print("bool_neq:", ba != bb)

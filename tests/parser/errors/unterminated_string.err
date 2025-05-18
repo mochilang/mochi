@@ -1,0 +1,8 @@
+error[P040]: tests/parser/errors/unterminated_string.mochi:1:9: lexer: invalid input text "\"Hello\n"
+  --> tests/parser/errors/unterminated_string.mochi:1:9
+
+  1 | let s = "Hello
+    |         ^
+
+help:
+  String literals must be properly closed with a `"`.

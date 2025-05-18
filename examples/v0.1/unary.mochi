@@ -1,0 +1,20 @@
+// Basic unary negation and boolean not
+let x = -5
+let y = !true
+
+// Double negation and double not
+let a = -(-10)          // 10
+let b = !false          // true
+let c = !!true          // true
+
+// Nested expressions with unary
+let d = -(3 + 2)        // -5
+let e = !((2 < 3) == true)  // !(true == true) => !true => false
+
+print("x =", x)
+print("y =", y)
+print("a =", a)
+print("b =", b)
+print("c =", c)
+print("d =", d)
+print("e =", e)

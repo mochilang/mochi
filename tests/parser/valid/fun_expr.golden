@@ -1,0 +1,14 @@
+(program
+  (let square
+    (funexpr
+      (param x (type int))
+      (type int)
+      (binary * (selector x) (selector x))
+    )
+  )
+  (exprstmt
+    (call print
+      (call square (int 5))
+    )
+  )
+)

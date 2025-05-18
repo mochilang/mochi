@@ -1,0 +1,4 @@
+test "addition works" {
+  let x = 1 + 2
+  expect x == 3
+}

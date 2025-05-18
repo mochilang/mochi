@@ -1,0 +1,8 @@
+1. error[T004]: type mismatch: expected string but got float
+  --> tests/types/errors/binary_operator_type_error.mochi:1:13
+
+  1 | let x = "a" * 3.14 // string * float = invalid
+    |             ^
+
+help:
+  Change the value to match the expected type.

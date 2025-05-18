@@ -1,0 +1,48 @@
+{
+  "name": "mochi-tm",
+  "displayName": "Mochi",
+  "description": "TextMate grammar and language configuration for the Mochi programming language.",
+  "version": "0.1.12",
+  "publisher": "mochi-lang.org",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": ["Programming Languages"],
+  "keywords": [
+    "mochi",
+    "language",
+    "grammar",
+    "syntax",
+    "highlighting",
+    "programming",
+    "interpreter",
+    "compiler"
+  ],
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mochi-lang/mochi"
+  },
+  "bugs": {
+    "url": "https://github.com/mochi-lang/mochi/issues"
+  },
+  "homepage": "https://github.com/mochi-lang/mochi",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mochi",
+        "aliases": ["Mochi", "mochi"],
+        "extensions": [".mochi"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mochi",
+        "scopeName": "source.mochi",
+        "path": "./mochi.tmLanguage.json"
+      }
+    ]
+  }
+}

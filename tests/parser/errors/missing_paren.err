@@ -1,0 +1,8 @@
+error[P052]: tests/parser/errors/missing_paren.mochi:1:23: unexpected token ":" (expected ")" (":" TypeRef)? "{" Statement* "}")
+  --> tests/parser/errors/missing_paren.mochi:1:23
+
+  1 | fun add(a: int, b: int: int {
+    |                       ^
+
+help:
+  Unbalanced parentheses. Check for missing `(` or `)`.

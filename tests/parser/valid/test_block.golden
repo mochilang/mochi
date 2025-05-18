@@ -1,0 +1,10 @@
+(program
+  (test "addition works"
+    (let x
+      (binary + (int 1) (int 2))
+    )
+    (expect
+      (binary == (selector x) (int 3))
+    )
+  )
+)

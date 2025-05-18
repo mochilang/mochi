@@ -1,0 +1,5 @@
+error[P001]: tests/parser/errors/missing_block.mochi:2:1: unexpected token "<EOF>" (expected "{" Statement* "}")
+  --> tests/parser/errors/missing_block.mochi:2:1
+
+help:
+  Check for a missing `{` or `}` to close the block.

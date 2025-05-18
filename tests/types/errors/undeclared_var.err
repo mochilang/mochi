@@ -1,0 +1,8 @@
+1. error[T002]: undefined variable: y
+  --> tests/types/errors/undeclared_var.mochi:1:9
+
+  1 | let x = y + 1
+    |         ^
+
+help:
+  Check if the variable was declared in this scope.

@@ -1,0 +1,8 @@
+1. error[T004]: type mismatch: expected int but got string
+  --> tests/types/errors/wrong_type_assign.mochi:1:1
+
+  1 | let x: int = "hello"
+    | ^
+
+help:
+  Change the value to match the expected type.

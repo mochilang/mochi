@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<style>
+body {
+	background-color: hsl(30,20%, 95%);
+}
+h1 {
+	font-family: sans-serif;
+	font-size: 1em;
+}
+</style>
+<!-- From https://github.com/tabatkins/railroad-diagrams -->
+<link rel='stylesheet' href='railroad-diagrams.css'>
+<script src='railroad-diagrams.js'></script>
+<body>
+<h1 id="Program">Program</h1>
+<script>
+Diagram(Choice(0, Sequence(ZeroOrMore(NonTerminal("Statement", {href:"#Statement"}))))).addTo();
+</script>
+
+<h1 id="Statement">Statement</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("TestBlock", {href:"#TestBlock"})), Sequence(NonTerminal("ExpectStmt", {href:"#ExpectStmt"})), Sequence(NonTerminal("AgentDecl", {href:"#AgentDecl"})), Sequence(NonTerminal("StreamDecl", {href:"#StreamDecl"})), Sequence(NonTerminal("OnHandler", {href:"#OnHandler"})), Sequence(NonTerminal("LetStmt", {href:"#LetStmt"})), Sequence(NonTerminal("AssignStmt", {href:"#AssignStmt"})), Sequence(NonTerminal("FunStmt", {href:"#FunStmt"})), Sequence(NonTerminal("ReturnStmt", {href:"#ReturnStmt"})), Sequence(NonTerminal("IfStmt", {href:"#IfStmt"})), Sequence(NonTerminal("ForStmt", {href:"#ForStmt"})), Sequence(NonTerminal("ExprStmt", {href:"#ExprStmt"})))).addTo();
+</script>
+
+<h1 id="TestBlock">TestBlock</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("test"), NonTerminal("string"), Terminal("{"), ZeroOrMore(NonTerminal("Statement", {href:"#Statement"})), Terminal("}")))).addTo();
+</script>
+
+<h1 id="ExpectStmt">ExpectStmt</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("expect"), NonTerminal("Expr", {href:"#Expr"})))).addTo();
+</script>
+
+<h1 id="Expr">Expr</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("Equality", {href:"#Equality"})))).addTo();
+</script>
+
+<h1 id="Equality">Equality</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("Comparison", {href:"#Comparison"}), ZeroOrMore(NonTerminal("EqualOp", {href:"#EqualOp"}))))).addTo();
+</script>
+
+<h1 id="Comparison">Comparison</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("Term", {href:"#Term"}), ZeroOrMore(NonTerminal("CompOp", {href:"#CompOp"}))))).addTo();
+</script>
+
+<h1 id="Term">Term</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("Factor", {href:"#Factor"}), ZeroOrMore(NonTerminal("TermOp", {href:"#TermOp"}))))).addTo();
+</script>
+
+<h1 id="Factor">Factor</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("Unary", {href:"#Unary"}), ZeroOrMore(NonTerminal("FactorOp", {href:"#FactorOp"}))))).addTo();
+</script>
+
+<h1 id="Unary">Unary</h1>
+<script>
+Diagram(Choice(0, Sequence(ZeroOrMore(Choice(0, Sequence(Terminal("-")), Sequence(Terminal("!")))), NonTerminal("Primary", {href:"#Primary"})))).addTo();
+</script>
+
+<h1 id="Primary">Primary</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("FunExpr", {href:"#FunExpr"})), Sequence(NonTerminal("CallExpr", {href:"#CallExpr"})), Sequence(NonTerminal("SelectorExpr", {href:"#SelectorExpr"})), Sequence(NonTerminal("Literal", {href:"#Literal"})), Sequence(Choice(0, Sequence(Terminal("("), NonTerminal("Expr", {href:"#Expr"}), Terminal(")")))))).addTo();
+</script>
+
+<h1 id="FunExpr">FunExpr</h1>
+<script>
+Diagram(Choice(0, Sequence(Choice(0, Sequence(Terminal("fun"), Terminal("("), Optional(Choice(0, Sequence(NonTerminal("Param", {href:"#Param"}), ZeroOrMore(Choice(0, Sequence(Terminal(","), NonTerminal("Param", {href:"#Param"}))))))), Terminal(")"), Optional(Choice(0, Sequence(Terminal(":"), NonTerminal("TypeRef", {href:"#TypeRef"})))), Terminal("=>"), NonTerminal("Expr", {href:"#Expr"})))), Sequence(Choice(0, Sequence(Terminal("{"), ZeroOrMore(NonTerminal("Statement", {href:"#Statement"})), Terminal("}")))))).addTo();
+</script>
+
+<h1 id="Param">Param</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("ident"), Optional(Choice(0, Sequence(Terminal(":"), NonTerminal("TypeRef", {href:"#TypeRef"}))))))).addTo();
+</script>
+
+<h1 id="TypeRef">TypeRef</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("FunType", {href:"#FunType"})), Sequence(NonTerminal("ident")))).addTo();
+</script>
+
+<h1 id="FunType">FunType</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("fun"), Terminal("("), Optional(Choice(0, Sequence(NonTerminal("TypeRef", {href:"#TypeRef"}), ZeroOrMore(Choice(0, Sequence(Terminal(","), NonTerminal("TypeRef", {href:"#TypeRef"}))))))), Terminal(")"), Optional(Choice(0, Sequence(Terminal(":"), NonTerminal("TypeRef", {href:"#TypeRef"}))))))).addTo();
+</script>
+
+<h1 id="CallExpr">CallExpr</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("ident"), Terminal("("), Optional(Choice(0, Sequence(NonTerminal("Expr", {href:"#Expr"}), ZeroOrMore(Choice(0, Sequence(Terminal(","), NonTerminal("Expr", {href:"#Expr"}))))))), Terminal(")")))).addTo();
+</script>
+
+<h1 id="SelectorExpr">SelectorExpr</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("ident"), ZeroOrMore(Choice(0, Sequence(Terminal("."), NonTerminal("ident"))))))).addTo();
+</script>
+
+<h1 id="Literal">Literal</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("float")), Sequence(NonTerminal("int")), Sequence(NonTerminal("string")), Sequence(NonTerminal("bool")))).addTo();
+</script>
+
+<h1 id="FactorOp">FactorOp</h1>
+<script>
+Diagram(Choice(0, Sequence(Choice(0, Sequence(Terminal("*")), Sequence(Terminal("/"))), NonTerminal("Unary", {href:"#Unary"})))).addTo();
+</script>
+
+<h1 id="TermOp">TermOp</h1>
+<script>
+Diagram(Choice(0, Sequence(Choice(0, Sequence(Terminal("+")), Sequence(Terminal("-"))), NonTerminal("Factor", {href:"#Factor"})))).addTo();
+</script>
+
+<h1 id="CompOp">CompOp</h1>
+<script>
+Diagram(Choice(0, Sequence(Choice(0, Sequence(Terminal("<")), Sequence(Terminal("<=")), Sequence(Terminal(">")), Sequence(Terminal(">="))), NonTerminal("Term", {href:"#Term"})))).addTo();
+</script>
+
+<h1 id="EqualOp">EqualOp</h1>
+<script>
+Diagram(Choice(0, Sequence(Choice(0, Sequence(Terminal("==")), Sequence(Terminal("!="))), NonTerminal("Comparison", {href:"#Comparison"})))).addTo();
+</script>
+
+<h1 id="AgentDecl">AgentDecl</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("agent"), NonTerminal("ident"), Terminal("{"), ZeroOrMore(NonTerminal("AgentBlock", {href:"#AgentBlock"})), Terminal("}")))).addTo();
+</script>
+
+<h1 id="AgentBlock">AgentBlock</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("LetStmt", {href:"#LetStmt"})), Sequence(NonTerminal("AssignStmt", {href:"#AssignStmt"})), Sequence(NonTerminal("OnHandler", {href:"#OnHandler"})), Sequence(NonTerminal("IntentDecl", {href:"#IntentDecl"})))).addTo();
+</script>
+
+<h1 id="LetStmt">LetStmt</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("let"), NonTerminal("ident"), Optional(Choice(0, Sequence(Terminal(":"), NonTerminal("TypeRef", {href:"#TypeRef"})))), Optional(Choice(0, Sequence(Terminal("="), NonTerminal("Expr", {href:"#Expr"}))))))).addTo();
+</script>
+
+<h1 id="AssignStmt">AssignStmt</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("ident"), Terminal("="), NonTerminal("Expr", {href:"#Expr"})))).addTo();
+</script>
+
+<h1 id="OnHandler">OnHandler</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("on"), NonTerminal("ident"), Terminal("as"), NonTerminal("ident"), Terminal("{"), ZeroOrMore(NonTerminal("Statement", {href:"#Statement"})), Terminal("}")))).addTo();
+</script>
+
+<h1 id="IntentDecl">IntentDecl</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("intent"), NonTerminal("ident"), Terminal("("), Optional(Choice(0, Sequence(NonTerminal("Param", {href:"#Param"}), ZeroOrMore(Choice(0, Sequence(Terminal(","), NonTerminal("Param", {href:"#Param"}))))))), Terminal(")"), Optional(Choice(0, Sequence(Terminal(":"), NonTerminal("TypeRef", {href:"#TypeRef"})))), Terminal("{"), ZeroOrMore(NonTerminal("Statement", {href:"#Statement"})), Terminal("}")))).addTo();
+</script>
+
+<h1 id="StreamDecl">StreamDecl</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("stream"), NonTerminal("ident"), Terminal("{"), ZeroOrMore(NonTerminal("StreamField", {href:"#StreamField"})), Terminal("}")))).addTo();
+</script>
+
+<h1 id="StreamField">StreamField</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("StreamNestedField", {href:"#StreamNestedField"})), Sequence(NonTerminal("StreamSimpleField", {href:"#StreamSimpleField"})))).addTo();
+</script>
+
+<h1 id="StreamNestedField">StreamNestedField</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("ident"), Terminal(":"), NonTerminal("StructDef", {href:"#StructDef"})))).addTo();
+</script>
+
+<h1 id="StructDef">StructDef</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("{"), ZeroOrMore(NonTerminal("StreamField", {href:"#StreamField"})), Terminal("}")))).addTo();
+</script>
+
+<h1 id="StreamSimpleField">StreamSimpleField</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("ident"), Terminal(":"), NonTerminal("ident")))).addTo();
+</script>
+
+<h1 id="FunStmt">FunStmt</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("fun"), NonTerminal("ident"), Terminal("("), Optional(Choice(0, Sequence(NonTerminal("Param", {href:"#Param"}), ZeroOrMore(Choice(0, Sequence(Terminal(","), NonTerminal("Param", {href:"#Param"}))))))), Terminal(")"), Optional(Choice(0, Sequence(Terminal(":"), NonTerminal("TypeRef", {href:"#TypeRef"})))), Terminal("{"), ZeroOrMore(NonTerminal("Statement", {href:"#Statement"})), Terminal("}")))).addTo();
+</script>
+
+<h1 id="ReturnStmt">ReturnStmt</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("return"), NonTerminal("Expr", {href:"#Expr"})))).addTo();
+</script>
+
+<h1 id="IfStmt">IfStmt</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("if"), NonTerminal("Expr", {href:"#Expr"}), Terminal("{"), ZeroOrMore(NonTerminal("Statement", {href:"#Statement"})), Terminal("}"), Optional(Choice(0, Sequence(Choice(0, Sequence(Terminal("else"), NonTerminal("IfStmt", {href:"#IfStmt"})))), Sequence(Choice(0, Sequence(Terminal("else"), Terminal("{"), ZeroOrMore(NonTerminal("Statement", {href:"#Statement"})), Terminal("}"))))))))).addTo();
+</script>
+
+<h1 id="ForStmt">ForStmt</h1>
+<script>
+Diagram(Choice(0, Sequence(Terminal("for"), NonTerminal("ident"), Terminal("in"), NonTerminal("Expr", {href:"#Expr"}), Terminal(".."), NonTerminal("Expr", {href:"#Expr"}), Terminal("{"), ZeroOrMore(NonTerminal("Statement", {href:"#Statement"})), Terminal("}")))).addTo();
+</script>
+
+<h1 id="ExprStmt">ExprStmt</h1>
+<script>
+Diagram(Choice(0, Sequence(NonTerminal("Expr", {href:"#Expr"})))).addTo();
+</script>
+
+</body>
+

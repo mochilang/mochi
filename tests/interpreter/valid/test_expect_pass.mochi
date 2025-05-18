@@ -1,0 +1,4 @@
+test "basic math" {
+  let result = 2 + 3
+  expect result == 5
+}
