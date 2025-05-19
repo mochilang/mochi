@@ -19,10 +19,15 @@ type Interpreter struct {
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 	return &Interpreter{
-		prog:  prog,
-		env:   types.NewEnv(nil),
+		prog: prog,
+		// env:   types.NewEnv(nil),
+		env:   typesEnv,
 		types: typesEnv,
 	}
+}
+
+func (i *Interpreter) SetProgram(prog *parser.Program) {
+	i.prog = prog
 }
 
 func (i *Interpreter) Env() *types.Env { return i.env }

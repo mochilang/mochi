@@ -7,7 +7,7 @@ RUN_NAME := mochi-run
 BIN_DIR  := $(HOME)/bin
 VERSION  := $(shell cat VERSION)
 GIT_COMMIT := $(shell git rev-parse --short HEAD)
-BUILD_TIME := $(shell date +"%a %b %d %T %Y")
+BUILD_TIME := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Source paths
 MAIN_SRC := cmd/mochi/main.go
@@ -85,6 +85,35 @@ clean: ## Clean built binaries
 	@echo "🧽 Cleaning binaries..."
 	@rm -f $(BIN_DIR)/$(APP_NAME) $(BIN_DIR)/$(RUN_NAME)
 	@echo "🗑️  Removed binaries"
+
+release-src: ## Sync source code to GitHub repo
+	@rsync -avh --delete \
+		--exclude=".git" \
+		--exclude=".DS_Store" \
+		--exclude="*/.DS_Store" \
+		./ $(HOME)/github/mochilang/mochi/
+
+release: ## Release new version (dry run by default). Usage: make release VERSION=X.Y.Z [RELEASE=true]
+ifndef VERSION
+	$(error ❌ VERSION not set. Usage: make release VERSION=X.Y.Z [RELEASE=true])
+endif
+	@echo "✏️  Preparing Mochi v$(VERSION)..."
+	@echo "$(VERSION)" > VERSION
+	@git add VERSION
+	@git commit -m "release: prepare v$(VERSION)" || echo "⚠️  Nothing to commit"
+	@git tag -f v$(VERSION)
+	@git push origin v$(VERSION)
+
+	@echo "🚀 Running GoReleaser..."
+ifeq ($(RELEASE),true)
+	@echo "🔓 Publishing full release..."
+	@GITHUB_TOKEN=$${GITHUB_TOKEN} goreleaser release --clean
+else
+	@echo "🧪 Dry run (snapshot only)..."
+	@goreleaser release --snapshot --clean
+endif
+	@echo "✅ Done: v$(VERSION) [RELEASE=$(RELEASE)]"
+
 
 help: ## Show help message
 	@echo ""

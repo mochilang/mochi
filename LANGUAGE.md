@@ -28,10 +28,6 @@ This specification describes version 0.1.12 of the language. Future versions may
 types, pattern matching, and asynchronous operations. Additions will be made conservatively and without breaking
 existing programs.
 
-Certainly. Here is **Section 1. Program Structure**, written in Go spec style.
-
----
-
 # 1. Program Structure
 
 A Mochi program is a single source file encoded in UTF-8. The file contains a sequence of **statements**, which are
