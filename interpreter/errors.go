@@ -80,3 +80,33 @@ func errDivisionByZero(pos lexer.Position) error {
 		"division by zero",
 		"Make sure the denominator is not zero.")
 }
+
+func errInvalidIndex(pos lexer.Position, val any) error {
+	return diagnostic.New("I012", pos,
+		fmt.Sprintf("index must be an integer, got %T", val),
+		"Use an integer value inside the brackets.")
+}
+
+func errIndexOutOfBounds(pos lexer.Position, index, length int) error {
+	return diagnostic.New("I013", pos,
+		fmt.Sprintf("index %d out of bounds for length %d", index, length),
+		"Ensure the index is within the list or string length.")
+}
+
+func errSliceOutOfBounds(pos lexer.Position, start, end, length int) error {
+	return diagnostic.New("I014", pos,
+		fmt.Sprintf("invalid slice range [%d:%d] for length %d", start, end, length),
+		"Start must be ≤ end and within the sequence bounds.")
+}
+
+func errInvalidIndexTarget(pos lexer.Position, typ string) error {
+	return diagnostic.New("I015", pos,
+		fmt.Sprintf("cannot index value of type %s", typ),
+		"Only lists and strings support indexing/slicing.")
+}
+
+func errInvalidLenOperand(pos lexer.Position, typ string) error {
+	return diagnostic.New("I016", pos,
+		fmt.Sprintf("cannot take length of type %s", typ),
+		"Use `len(...)` only with lists or strings.")
+}

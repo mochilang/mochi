@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/chzyer/readline"
+	"github.com/fatih/color"
 
 	"mochi/interpreter"
 	"mochi/parser"
@@ -32,19 +33,29 @@ func New(out io.Writer, version string) *REPL {
 	}
 }
 
+// Color helpers for DX consistency
+var (
+	cPrompt  = color.New(color.FgCyan, color.Bold).SprintFunc()
+	cError   = color.New(color.FgRed, color.Bold).SprintFunc()
+	cNote    = color.New(color.FgBlue).SprintFunc()
+	cHint    = color.New(color.FgHiBlack).SprintFunc()
+	cSuccess = color.New(color.FgGreen, color.Bold).SprintFunc()
+	cCommand = color.New(color.FgCyan).SprintFunc()
+)
+
 func (r *REPL) Run() {
 	rl, err := readline.NewEx(&readline.Config{
-		Prompt:          "\033[1;36m>>> \033[0m",
+		Prompt:          cPrompt(">>> "),
 		HistoryLimit:    -1,
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",
 		Stdout:          r.out,
 	})
 	if err != nil {
-		printf(r.out, "❌ Failed to start REPL: %v\n", err)
+		printf(r.out, "%s failed to start REPL: %v\n", cError("error:"), err)
 		return
 	}
-	defer func() { _ = rl.Close() }()
+	defer rl.Close()
 	r.rl = rl
 
 	printWelcome(r.out, r.version)
@@ -61,14 +72,14 @@ func (r *REPL) Run() {
 		case readline.ErrInterrupt:
 			if len(lines) > 0 {
 				lines = nil
-				printf(r.out, "\033[33m⏎ cancelled\033[0m\n")
+				printf(r.out, "%s input cancelled\n", cNote("⏎"))
 				ctrlCCount = 0
 			} else {
 				ctrlCCount++
 				if ctrlCCount == 1 {
-					printf(r.out, "\033[33m⏎ cancelled (press Ctrl+C again to exit)\033[0m\n")
+					printf(r.out, "%s press Ctrl+C again to exit\n", cNote("⏎"))
 				} else {
-					printf(r.out, "\033[33m👋 Exiting.\033[0m\n")
+					printf(r.out, "%s Exiting.\n", cNote("👋"))
 					return
 				}
 			}
@@ -76,7 +87,7 @@ func (r *REPL) Run() {
 			continue
 
 		case io.EOF:
-			printf(r.out, "\033[33m👋 Goodbye.\033[0m\n")
+			printf(r.out, "%s Goodbye.\n", cNote("👋"))
 			return
 
 		default:
@@ -89,7 +100,7 @@ func (r *REPL) Run() {
 		case "":
 			continue
 		case ":exit":
-			printf(r.out, "\033[33m👋 Exiting.\033[0m\n")
+			printf(r.out, "%s Exiting.\n", cNote("👋"))
 			return
 		case ":help":
 			printHelp(r.out)
@@ -101,7 +112,7 @@ func (r *REPL) Run() {
 
 		prog, incomplete, err := tryParse(src)
 		if err != nil {
-			printf(r.out, "\033[31mSyntax Error:\033[0m %v\n", err)
+			printf(r.out, "%s %v\n  %s\n", cError("syntax error:"), err, cHint("hint: press :help for commands"))
 			lines = nil
 			r.setPrompt(">>> ")
 			continue
@@ -115,13 +126,13 @@ func (r *REPL) Run() {
 		r.setPrompt(">>> ")
 
 		if err := types.Check(prog, r.env); err != nil {
-			printf(r.out, "\033[31mType Error:\033[0m %v\n", err)
+			printf(r.out, "%s %v\n  %s\n", cError("type error:"), err, cHint("hint: check types and annotations"))
 			continue
 		}
 
 		r.interp.SetProgram(prog)
 		if err := r.interp.Run(); err != nil {
-			printf(r.out, "\033[31mRuntime Error:\033[0m %v\n", err)
+			printf(r.out, "%s %v\n", cError("runtime error:"), err)
 		}
 	}
 }
@@ -138,21 +149,24 @@ func tryParse(src string) (*parser.Program, bool, error) {
 }
 
 func printWelcome(out io.Writer, version string) {
-	printf(out, "\033[1;32m🌿 Mochi Programming Language\033[0m\n")
-	printf(out, "Version %s  •  Type \033[1;36m:help\033[0m for REPL commands\n", version)
-	printf(out, "Press \033[33mCtrl+C\033[0m to cancel, \033[33mCtrl+D\033[0m or \033[1;36m:exit\033[0m to quit.\n\n")
+	printf(out, "%s %s\n", cSuccess("🌿 Mochi Programming Language"), version)
+	printf(out, "%s for help • %s to quit • %s to cancel input\n",
+		cCommand(":help"),
+		cCommand(":exit"),
+		color.YellowString("Ctrl+C"))
+	printf(out, "─────────────────────────────────────────────\n\n")
 }
 
 func printHelp(out io.Writer) {
-	printf(out, "\n  🌿 REPL Commands\n")
-	printf(out, "  ---------------------------------------\n")
-	printf(out, "  :help        Show this help message\n")
-	printf(out, "  :exit        Exit the REPL\n")
-	printf(out, "  Multiline    Use \\ or incomplete syntax to continue input\n\n")
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, cSuccess("🌿 REPL Commands"))
+	fmt.Fprintln(out, "  ----------------------------------------")
+	fmt.Fprintf(out, "  %s   Show this help message\n", cCommand(":help"))
+	fmt.Fprintf(out, "  %s   Exit the REPL\n", cCommand(":exit"))
 }
 
 func (r *REPL) setPrompt(base string) {
-	r.rl.SetPrompt("\033[1;36m" + base + "\033[0m")
+	r.rl.SetPrompt(cPrompt(base))
 }
 
 func printf(w io.Writer, format string, args ...any) {

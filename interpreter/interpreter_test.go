@@ -2,7 +2,6 @@ package interpreter_test
 
 import (
 	"fmt"
-	"mochi/diagnostic"
 	"mochi/golden"
 	"mochi/interpreter"
 	"mochi/parser"
@@ -12,7 +11,6 @@ import (
 )
 
 func TestInterpreter_ValidPrograms(t *testing.T) {
-	diagnostic.NoColor = true
 	golden.Run(t, "tests/interpreter/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -36,7 +34,6 @@ func TestInterpreter_ValidPrograms(t *testing.T) {
 }
 
 func TestInterpreter_RuntimeErrors(t *testing.T) {
-	diagnostic.NoColor = true
 	golden.Run(t, "tests/interpreter/errors", ".mochi", ".err", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {

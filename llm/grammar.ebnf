@@ -7,15 +7,18 @@ Equality = Comparison EqualOp* .
 Comparison = Term CompOp* .
 Term = Factor TermOp* .
 Factor = Unary FactorOp* .
-Unary = ("-" | "!")* Primary .
-Primary = FunExpr | CallExpr | SelectorExpr | Literal | ("(" Expr ")") .
+Unary = ("-" | "!")* PostfixExpr .
+PostfixExpr = Primary IndexOp* .
+Primary = FunExpr | CallExpr | SelectorExpr | ListLiteral | Literal | ("(" Expr ")") .
 FunExpr = ("fun" "(" (Param ("," Param)*)? ")" (":" TypeRef)? "=>" Expr) | ("{" Statement* "}") .
 Param = <ident> (":" TypeRef)? .
 TypeRef = FunType | <ident> .
 FunType = "fun" "(" (TypeRef ("," TypeRef)*)? ")" (":" TypeRef)? .
 CallExpr = <ident> "(" (Expr ("," Expr)*)? ")" .
 SelectorExpr = <ident> ("." <ident>)* .
+ListLiteral = "[" (Expr ("," Expr)*)? ","?? "]" .
 Literal = <float> | <int> | ("true" | "false") | <string> .
+IndexOp = "[" Expr? (":" Expr)? "]" .
 FactorOp = ("*" | "/") Unary .
 TermOp = ("+" | "-") Factor .
 CompOp = ("<" | "<=" | ">" | ">=") Term .

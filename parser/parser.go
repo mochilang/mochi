@@ -10,11 +10,12 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	// Combined line and block comment support
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
-	{Name: "Ident", Pattern: `[a-zA-Z_][a-zA-Z0-9_]*`},
+	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|fun|return|let|if|else|for|in)\b`},
+	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`}, // Support Unicode identifiers
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
-	{Name: "Punct", Pattern: `==|!=|<=|>=|=>|\.\.|[-+*/=<>!{}(),.:]`},
+	{Name: "Punct", Pattern: `==|!=|<=|>=|=>|\.\.|[-+*/=<>!{}\[\](),.:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r]+`},
 })
 
@@ -186,9 +187,30 @@ type FactorOp struct {
 }
 
 type Unary struct {
-	Pos   lexer.Position
-	Ops   []string `parser:"{@('-' | '!')}"`
-	Value *Primary `parser:"@@"`
+	Pos lexer.Position
+	Ops []string `parser:"{@('-' | '!')}"`
+	// Value *Primary `parser:"@@"`
+	Value *PostfixExpr `parser:"@@"`
+}
+
+type PostfixExpr struct {
+	Target *Primary   `parser:"@@"`
+	Index  []*IndexOp `parser:"@@*"` // zero or more indexing/slicing
+}
+
+type IndexOp struct {
+	Pos    lexer.Position
+	LBrack string  `parser:"'['"`
+	Start  *Expr   `parser:"[ @@ ]"` // optional
+	Colon  *string `parser:"[ @':'"` // optional
+	End    *Expr   `parser:"  @@ ]"` // optional if colon exists
+	RBrack string  `parser:"']'"`
+}
+
+type ListLiteral struct {
+	LBracket string  `parser:"'['"`
+	Elems    []*Expr `parser:"[ @@ { ',' @@ } ] [ ',' ]?"` // <- allow trailing comma
+	RBracket string  `parser:"']'"`
 }
 
 type Primary struct {
@@ -196,6 +218,7 @@ type Primary struct {
 	FunExpr  *FunExpr      `parser:"@@"`
 	Call     *CallExpr     `parser:"| @@"`
 	Selector *SelectorExpr `parser:"| @@"`
+	List     *ListLiteral  `parser:"| @@"`
 	Lit      *Literal      `parser:"| @@"`
 	Group    *Expr         `parser:"| '(' @@ ')'"`
 }

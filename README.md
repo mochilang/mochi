@@ -26,13 +26,13 @@ This installs:
 * `mochi`: main compiler & interpreter
 * `mochi-run`: example runner and documentation generator
 
-### ▶️ Run a Mochi program
+## ▶️ Run a Mochi program
 
 ```bash
-mochi path/to/program.mochi
+mochi run path/to/program.mochi
 ```
 
-By default, this will:
+This will:
 
 1. Parse the file
 2. Type check it
@@ -41,10 +41,18 @@ By default, this will:
 ### 🔍 Print the AST
 
 ```bash
-mochi --ast path/to/program.mochi
+mochi run --ast path/to/program.mochi
 ```
 
-This prints the parsed syntax tree in Lisp format (after successful type checking).
+This prints the parsed syntax tree in Lisp format after type checking.
+
+### 💻 Start the REPL
+
+```bash
+mochi repl
+```
+
+Launches an interactive shell for experimenting with Mochi code.
 
 ### 📌 Show version info
 
@@ -52,19 +60,22 @@ This prints the parsed syntax tree in Lisp format (after successful type checkin
 mochi --version
 ```
 
+Prints version, Git commit, build time, and platform (OS/Arch).
+
 ### 🆘 Command Help
 
 ```bash
-mochi
-Usage: mochi [--ast] [--version] FILE
+mochi --help
 
-Positional arguments:
-  FILE                   Path to .mochi source file
+Usage: mochi [--version] <command> [<args>]
+
+Available commands:
+  run      Run a Mochi source file
+  repl     Start an interactive REPL session
 
 Options:
-  --ast                  Print the parsed AST in Lisp format
-  --version              Show version and exit
-  --help, -h             Display help and exit
+  --version     Show version and exit
+  --help, -h    Display help and exit
 ```
 
 ## 💡 Language Overview
@@ -95,11 +106,11 @@ The language supports:
 
 ## 🧪 Golden Testing
 
-Mochi uses golden testing to verify that examples produce consistent output.
+Mochi uses golden testing to ensure that example programs produce stable, predictable output.
 
 ```bash
-make test            # Run all examples and compare against golden output
-make update-golden   # Regenerate golden output from latest interpreter
+make test            # Run all tests and compare against golden files
+make update-golden   # Regenerate golden output after interpreter changes
 ```
 
 Each `.mochi` file in `examples/` is:
@@ -108,45 +119,67 @@ Each `.mochi` file in `examples/` is:
 * Interpreted and evaluated
 * Rendered to markdown with:
 
-    * Source code
-    * Lisp-style AST
-    * Runtime output
+    * ✅ Source code
+    * 🌲 Lisp-style AST
+    * ▶️ Runtime output
 
-Output is saved to `llm/`.
+Output is saved to the `llm/` folder.
+
+## 🚀 Releasing
+
+To run a **dry-run (snapshot) release** for testing:
+
+```bash
+make snapshot
+```
+
+To **publish a real release**:
+
+```bash
+make release VERSION=0.2.3
+```
+
+This will:
+
+* Update the `VERSION` file
+* Commit and tag as `v0.2.3`
+* Push to GitHub
+* Build and publish cross-platform binaries via GoReleaser
+
+Requires a valid `GITHUB_TOKEN` in your environment.
 
 ## 🔧 Developer Experience
 
 ```bash
-make build           # Compile mochi and mochi-run to $HOME/bin
+make build           # Build mochi and mochi-run to $HOME/bin
 make fmt             # Format Go source files
-make lint            # Run linters (golangci-lint or go vet fallback)
+make lint            # Run linters (golangci-lint or fallback to go vet)
+make clean           # Remove binaries and dist/
 ```
 
 ## 👥 Contributing
 
 Thanks for your interest in contributing to Mochi!
 
-We welcome feedback, feature requests, bug reports, and pull requests.
+We welcome feedback, bug reports, and pull requests.
 
-Start by exploring the source:
+Start by exploring the codebase:
 
-* `parser/`: grammar and syntax
-* `types/`: type checking and environments
-* `interpreter/`: evaluation and runtime logic
-* `examples/`: language test cases and learning material
+* `parser/` — grammar and syntax
+* `types/` — type checking and inference
+* `interpreter/` — evaluation logic
+* `examples/` — language test cases
 
-To test your changes:
+Before submitting:
 
 ```bash
 make fmt
 make test
 ```
 
-We value simplicity, clarity, and great developer ergonomics.
+We value simplicity, clarity, and great DX.
 
 ## 📄 License
 
 Released under the [MIT License](LICENSE)
-Copyright © 2025
-[mochi-lang.org](https://github.com/mochilang/mochi)
-
+© 2025 [mochi-lang.org](https://github.com/mochilang/mochi)

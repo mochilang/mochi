@@ -1,0 +1,43 @@
+// examples/v0.2/list.mochi
+
+// Define a list with mixed values
+let values = [1, 2, 3, 4, 5]
+print(values)
+
+// Access elements by index
+print("first: ", values[0])       //> first: 1
+print("last: ", values[-1])       //> last: 5
+print("second to last: ", values[-2]) //> second to last: 4
+
+// Length of list
+print("len: ", len(values))       //> len: 5
+
+// Create a list of strings
+let fruits = ["🍎", "🍌", "🍇", "🍓"]
+print("fruits: ", fruits)
+
+// Indexing
+print("favorite: ", fruits[2])    //> favorite: 🍇
+
+// Slicing: from index 1 to 3 (exclusive)
+let some = fruits[1:3]
+print("some fruits: ", some)      //> some fruits: ["🍌", "🍇"]
+
+// Slice with open start or end
+// print(fruits[:2]) //> ["🍎", "🍌"] - not supported for now
+// print(fruits[2:]) //> ["🍇", "🍓"] - not supported for now
+
+// Slice full copy
+// let clone = fruits[:]
+// print("clone: " + clone)
+
+// Test: indexing and slicing
+test "indexing and slicing" {
+  expect values[0] == 1
+  expect values[-1] == 5
+  expect fruits[1] == "🍌"
+  // expect fruits[:2] == ["🍎", "🍌"]
+  // expect fruits[2:] == ["🍇", "🍓"]
+  expect fruits[1:3] == ["🍌", "🍇"]
+  // expect fruits[:] == fruits - not supported for now
+}

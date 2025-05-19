@@ -1,0 +1,33 @@
+// examples/v0.2/matrix.mochi
+
+// Define a 2D matrix (list of lists)
+let matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],  // <- allow trailing comma
+]
+
+// Print the whole matrix
+print("matrix: ", matrix)
+
+// Access rows
+print("first row: ", matrix[0])    //> [1, 2, 3]
+print("last row: ", matrix[-1])    //> [7, 8, 9]
+
+// Access individual elements
+print("top-left: ", matrix[0][0])  //> 1
+print("center: ", matrix[1][1])    //> 5
+print("bottom-right: ", matrix[2][2]) //> 9
+
+// Test row length
+let row = matrix[1]
+print("row 1 length: ", len(row))  //> 3
+
+// Test nested indexing
+test "matrix indexing" {
+  expect matrix[0][0] == 1
+  expect matrix[1][1] == 5
+  expect matrix[2][2] == 9
+  expect matrix[-1][0] == 7
+  expect matrix[1][-1] == 6
+}

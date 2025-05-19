@@ -2,7 +2,6 @@ package types_test
 
 import (
 	"fmt"
-	"mochi/diagnostic"
 	"mochi/golden"
 	"mochi/parser"
 	"mochi/types"
@@ -10,7 +9,6 @@ import (
 )
 
 func TestTypeChecker_Valid(t *testing.T) {
-	diagnostic.NoColor = true
 	golden.Run(t, "tests/types/valid", ".mochi", ".golden", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -32,7 +30,6 @@ func TestTypeChecker_Valid(t *testing.T) {
 }
 
 func TestTypeChecker_Errors(t *testing.T) {
-	diagnostic.NoColor = true
 	golden.Run(t, "tests/types/errors", ".mochi", ".err", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
