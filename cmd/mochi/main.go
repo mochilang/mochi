@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"runtime"
 	"time"
 
 	"github.com/alexflint/go-arg"
+	"github.com/fatih/color"
 
 	"mochi/ast"
 	"mochi/interpreter"
@@ -16,9 +18,9 @@ import (
 )
 
 var (
-	version   = "dev"     // set via -ldflags "-X main.version=..."
-	gitCommit = "unknown" // set via -ldflags "-X main.gitCommit=..."
-	buildTime = "unknown" // set via -ldflags "-X main.buildTime=..."
+	version   = "dev"
+	gitCommit = "unknown"
+	buildTime = "unknown"
 )
 
 type CLI struct {
@@ -34,9 +36,17 @@ type RunCmd struct {
 
 type ReplCmd struct{}
 
+// Minimal, purposeful color
+var (
+	cError = color.New(color.FgRed, color.Bold).SprintFunc()
+	cTitle = color.New(color.FgCyan).SprintFunc()
+)
+
 func main() {
 	var cli CLI
 	arg.MustParse(&cli)
+
+	color.NoColor = false
 
 	switch {
 	case cli.Version:
@@ -46,55 +56,70 @@ func main() {
 	case cli.Repl != nil:
 		repl := repl.New(os.Stdout, version)
 		repl.Run()
+		return
 
 	case cli.Run != nil:
-		runFile(cli.Run)
+		if err := runFile(cli.Run); err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			os.Exit(1)
+		}
+		return
 
 	default:
-		printVersion()
 		arg.MustParse(&cli).WriteHelp(os.Stderr)
+		os.Exit(2)
 	}
 }
 
 func printVersion() {
-	fmt.Printf("Mochi v%s (%s, built %s, %s/%s)\n", version, gitCommit, humanBuildTime(), runtime.GOOS, runtime.GOARCH)
+	fmt.Printf("%s v%s (%s, built %s on %s/%s)\n",
+		cTitle("Mochi"),
+		version,
+		gitCommit,
+		humanBuildTime(),
+		runtime.GOOS,
+		runtime.GOARCH,
+	)
 }
 
 func humanBuildTime() string {
-	// Try parsing RFC 3339/ISO 8601 and format it to readable string
 	t, err := time.Parse(time.RFC3339, buildTime)
 	if err != nil {
-		return buildTime // fallback: print raw string if invalid
+		return buildTime
 	}
 	return t.Format("Mon Jan 02 15:04:05 2006")
 }
 
-func runFile(cmd *RunCmd) {
+func runFile(cmd *RunCmd) error {
 	prog, err := parser.Parse(cmd.File)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		var pathErr *os.PathError
+		if errors.As(err, &pathErr) && os.IsNotExist(pathErr.Err) {
+			return fmt.Errorf("file not found: %s", cmd.File)
+		}
+		return fmt.Errorf("parse error:\n  %v", err)
+	}
+
+	if cmd.PrintAST {
+		tree := ast.FromProgram(prog)
+		fmt.Println(tree.String())
+		return nil
 	}
 
 	env := types.NewEnv(nil)
 	typeErrors := types.Check(prog, env)
 	if len(typeErrors) > 0 {
-		fmt.Fprintln(os.Stderr, "\n== TYPECHECK FAILED ==")
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintln(os.Stderr, cError("type error:"))
 		for i, err := range typeErrors {
 			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
 		}
-		os.Exit(1)
-	}
-
-	if cmd.PrintAST {
-		fmt.Println("\n== AST ==")
-		tree := ast.FromProgram(prog)
-		fmt.Println(tree.String())
 	}
 
 	interp := interpreter.New(prog, env)
 	if err := interp.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "runtime error: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("runtime error: %w", err)
 	}
+
+	return nil
 }

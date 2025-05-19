@@ -39,6 +39,27 @@ type VoidType struct{}
 func (VoidType) String() string    { return "void" }
 func (VoidType) Equal(t Type) bool { _, ok := t.(VoidType); return ok }
 
+type ListType struct {
+	Elem Type
+}
+
+func (t ListType) String() string { return "[" + t.Elem.String() + "]" }
+func (t ListType) Equal(other Type) bool {
+	switch o := other.(type) {
+	case ListType:
+		return t.Elem.Equal(o.Elem) || isAny(t.Elem) || isAny(o.Elem)
+	case AnyListType:
+		return true
+	default:
+		return false
+	}
+}
+
+func isAny(t Type) bool {
+	_, ok := t.(AnyType)
+	return ok
+}
+
 type AnyType struct{}
 
 func (AnyType) String() string    { return "any" }
@@ -88,6 +109,14 @@ func (f FuncType) Equal(t Type) bool {
 	return f.Return.Equal(other.Return)
 }
 
+type AnyListType struct{}
+
+func (AnyListType) String() string { return "[_]" }
+func (AnyListType) Equal(t Type) bool {
+	_, ok := t.(ListType)
+	return ok
+}
+
 type BuiltinFuncType struct{}
 
 func (BuiltinFuncType) String() string    { return "fun(...): void" }
@@ -97,6 +126,11 @@ func (BuiltinFuncType) Equal(t Type) bool { _, ok := t.(BuiltinFuncType); return
 
 func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("print", BuiltinFuncType{})
+	env.SetVar("len", FuncType{
+		Params: []Type{AnyListType{}},
+		Return: IntType{},
+	})
+
 	var errs []error
 	for _, stmt := range prog.Statements {
 		if err := checkStmt(stmt, env, VoidType{}); err != nil {
@@ -317,7 +351,60 @@ func checkFactor(f *parser.Factor, env *Env, expected Type) (Type, error) {
 }
 
 func checkUnary(u *parser.Unary, env *Env, expected Type) (Type, error) {
-	return checkPrimary(u.Value, env, expected)
+	return checkPostfix(u.Value, env, expected)
+}
+
+func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) {
+	typ, err := checkPrimary(p.Target, env, expected)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, idx := range p.Index {
+		listType, ok := typ.(ListType)
+		if !ok {
+			return nil, errNotListType(idx.Pos, typ)
+		}
+
+		// Validate index and slice bounds
+		if idx.Colon == nil {
+			// list[i]
+			if idx.Start == nil {
+				return nil, errMissingIndex(idx.Pos)
+			}
+			startType, err := checkExpr(idx.Start, env)
+			if err != nil {
+				return nil, err
+			}
+			if !startType.Equal(IntType{}) {
+				return nil, errIndexNotInteger(idx.Pos)
+			}
+			typ = listType.Elem // return T
+		} else {
+			// list[i:j], list[:j], list[i:], list[:]
+			if idx.Start != nil {
+				startType, err := checkExpr(idx.Start, env)
+				if err != nil {
+					return nil, err
+				}
+				if !startType.Equal(IntType{}) {
+					return nil, errIndexNotInteger(idx.Pos)
+				}
+			}
+			if idx.End != nil {
+				endType, err := checkExpr(idx.End, env)
+				if err != nil {
+					return nil, err
+				}
+				if !endType.Equal(IntType{}) {
+					return nil, errIndexNotInteger(idx.Pos)
+				}
+			}
+			typ = listType // slicing returns same list type
+		}
+	}
+
+	return typ, nil
 }
 
 func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
@@ -383,6 +470,24 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		default:
 			return nil, errNotFunction(p.Pos, p.Call.Func)
 		}
+
+	case p.List != nil:
+		var elemType Type = nil
+		for _, elem := range p.List.Elems {
+			t, err := checkExpr(elem, env)
+			if err != nil {
+				return nil, err
+			}
+			if elemType == nil {
+				elemType = t
+			} else if !elemType.Equal(t) {
+				elemType = AnyType{} // fallback if mixed types
+			}
+		}
+		if elemType == nil {
+			elemType = AnyType{}
+		}
+		return ListType{Elem: elemType}, nil
 
 	case p.FunExpr != nil:
 		return checkFunExpr(p.FunExpr, env, expected, p.Pos)

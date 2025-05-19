@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"mochi/ast"
-	"mochi/diagnostic"
 	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/types"
@@ -127,8 +126,6 @@ func appendExampleSection(sb *strings.Builder, path string) error {
 	sb.WriteString("#### 📄 Source\n```mochi\n")
 	sb.WriteString(strings.TrimSpace(string(source)))
 	sb.WriteString("\n```\n\n")
-
-	diagnostic.NoColor = true
 
 	prog, err := parser.Parse(path)
 	if err != nil {

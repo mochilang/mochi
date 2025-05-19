@@ -91,11 +91,12 @@ release-src: ## Sync source code to GitHub repo
 		--exclude=".git" \
 		--exclude=".DS_Store" \
 		--exclude="*/.DS_Store" \
+		--exclude="dist/" \
 		./ $(HOME)/github/mochilang/mochi/
 
-release: ## Release new version (dry run by default). Usage: make release VERSION=X.Y.Z [RELEASE=true]
+release: ## Release new version. Usage: make release VERSION=X.Y.Z
 ifndef VERSION
-	$(error ❌ VERSION not set. Usage: make release VERSION=X.Y.Z [RELEASE=true])
+	$(error ❌ VERSION not set. Usage: make release VERSION=X.Y.Z)
 endif
 	@echo "✏️  Preparing Mochi v$(VERSION)..."
 	@echo "$(VERSION)" > VERSION
@@ -104,16 +105,14 @@ endif
 	@git tag -f v$(VERSION)
 	@git push origin v$(VERSION)
 
-	@echo "🚀 Running GoReleaser..."
-ifeq ($(RELEASE),true)
-	@echo "🔓 Publishing full release..."
+	@echo "🚀 Running GoReleaser (full release)..."
 	@GITHUB_TOKEN=$${GITHUB_TOKEN} goreleaser release --clean
-else
-	@echo "🧪 Dry run (snapshot only)..."
-	@goreleaser release --snapshot --clean
-endif
-	@echo "✅ Done: v$(VERSION) [RELEASE=$(RELEASE)]"
+	@echo "✅ Release complete: v$(VERSION)"
 
+snapshot: ## Dry-run snapshot build (no publish)
+	@echo "🧪 Running GoReleaser snapshot..."
+	@goreleaser release --snapshot --clean
+	@echo "✅ Snapshot build complete"
 
 help: ## Show help message
 	@echo ""

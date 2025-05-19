@@ -7,6 +7,7 @@ import (
 	"mochi/ast"
 	"mochi/parser"
 	"mochi/types"
+	"reflect"
 	"strings"
 )
 
@@ -290,7 +291,7 @@ func (i *Interpreter) evalFactor(f *parser.Factor) (any, error) {
 }
 
 func (i *Interpreter) evalUnary(u *parser.Unary) (any, error) {
-	val, err := i.evalPrimary(u.Value)
+	val, err := i.evalPostfixExpr(u.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -298,6 +299,131 @@ func (i *Interpreter) evalUnary(u *parser.Unary) (any, error) {
 		val, err = applyUnary(u.Pos, u.Ops[j], val)
 		if err != nil {
 			return nil, err
+		}
+	}
+	return val, nil
+}
+
+func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
+	val, err := i.evalPrimary(p.Target)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, op := range p.Index {
+		switch src := val.(type) {
+		case []any:
+			// Index
+			if op.Colon == nil {
+				index, err := i.evalExpr(op.Start)
+				if err != nil {
+					return nil, err
+				}
+				n, ok := index.(int)
+				if !ok {
+					return nil, errInvalidIndex(op.Pos, index)
+				}
+				if n < 0 {
+					n += len(src)
+				}
+				if n < 0 || n >= len(src) {
+					return nil, errIndexOutOfBounds(op.Pos, n, len(src))
+				}
+				val = src[n]
+
+			} else {
+				// Slice
+				start, end := 0, len(src)
+				if op.Start != nil {
+					s, err := i.evalExpr(op.Start)
+					if err != nil {
+						return nil, err
+					}
+					if n, ok := s.(int); ok {
+						if n < 0 {
+							n += len(src)
+						}
+						start = n
+					} else {
+						return nil, errInvalidIndex(op.Pos, s)
+					}
+				}
+				if op.End != nil {
+					e, err := i.evalExpr(op.End)
+					if err != nil {
+						return nil, err
+					}
+					if n, ok := e.(int); ok {
+						if n < 0 {
+							n += len(src)
+						}
+						end = n
+					} else {
+						return nil, errInvalidIndex(op.Pos, e)
+					}
+				}
+				if start < 0 || end > len(src) || start > end {
+					return nil, errSliceOutOfBounds(op.Pos, start, end, len(src))
+				}
+				val = src[start:end]
+			}
+
+		case string:
+			runes := []rune(src)
+			if op.Colon == nil {
+				index, err := i.evalExpr(op.Start)
+				if err != nil {
+					return nil, err
+				}
+				n, ok := index.(int)
+				if !ok {
+					return nil, errInvalidIndex(op.Pos, index)
+				}
+				if n < 0 {
+					n += len(runes)
+				}
+				if n < 0 || n >= len(runes) {
+					return nil, errIndexOutOfBounds(op.Pos, n, len(runes))
+				}
+				val = string(runes[n])
+			} else {
+				start, end := 0, len(runes)
+				if op.Start != nil {
+					s, err := i.evalExpr(op.Start)
+					if err != nil {
+						return nil, err
+					}
+					if n, ok := s.(int); ok {
+						if n < 0 {
+							n += len(runes)
+						}
+						start = n
+					} else {
+						return nil, errInvalidIndex(op.Pos, s)
+					}
+				}
+				if op.End != nil {
+					e, err := i.evalExpr(op.End)
+					if err != nil {
+						return nil, err
+					}
+					if n, ok := e.(int); ok {
+						if n < 0 {
+							n += len(runes)
+						}
+						end = n
+					} else {
+						return nil, errInvalidIndex(op.Pos, e)
+					}
+				}
+				if start < 0 || end > len(runes) || start > end {
+					return nil, errSliceOutOfBounds(op.Pos, start, end, len(runes))
+				}
+				val = string(runes[start:end])
+			}
+
+		default:
+			return nil, errInvalidIndexTarget(op.Pos, fmt.Sprintf("%T", src))
 		}
 	}
 	return val, nil
@@ -330,6 +456,17 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			val = obj[field]
 		}
 		return val, nil
+
+	case p.List != nil:
+		var elems []any
+		for _, expr := range p.List.Elems {
+			val, err := i.evalExpr(expr)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, val)
+		}
+		return elems, nil
 
 	default:
 		return nil, errInvalidPrimaryExpression(p.Pos)
@@ -387,18 +524,49 @@ func (i *Interpreter) evalLiteral(l *parser.Literal) (any, error) {
 	}
 }
 
-func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
-	if c.Func == "print" {
-		var sb strings.Builder
-		for _, arg := range c.Args {
-			val, err := i.evalExpr(arg)
-			if err != nil {
-				return nil, err
-			}
-			fmt.Fprintf(&sb, "%v ", val)
+func builtinPrint(i *Interpreter, c *parser.CallExpr) (any, error) {
+	var sb strings.Builder
+	for _, arg := range c.Args {
+		val, err := i.evalExpr(arg)
+		if err != nil {
+			return nil, err
 		}
-		_, err := fmt.Fprintln(i.env.Writer(), strings.TrimSpace(sb.String()))
+		fmt.Fprintf(&sb, "%v ", val)
+	}
+	_, err := fmt.Fprintln(i.env.Writer(), strings.TrimSpace(sb.String()))
+	return nil, err
+}
+
+func builtinLen(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, errTooManyFunctionArgs(c.Pos, "len", 1, len(c.Args))
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
 		return nil, err
+	}
+
+	switch v := val.(type) {
+	case []any:
+		return len(v), nil
+	case string:
+		return len([]rune(v)), nil
+	default:
+		return nil, errInvalidLenOperand(c.Pos, fmt.Sprintf("%T", val))
+	}
+}
+
+func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
+	return map[string]func(*Interpreter, *parser.CallExpr) (any, error){
+		"print": builtinPrint,
+		"len":   builtinLen,
+	}
+}
+
+func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
+	// Built-in function dispatch
+	if fn, ok := i.builtinFuncs()[c.Func]; ok {
+		return fn(i, c)
 	}
 
 	if fn, ok := i.env.GetFunc(c.Func); ok {
@@ -521,6 +689,20 @@ type returnSignal struct{ value any }
 func (r returnSignal) Error() string { return "return" }
 
 func applyBinary(pos lexer.Position, left any, op string, right any) (any, error) {
+	// Deep compare slices
+	if lSlice, ok := left.([]any); ok {
+		if rSlice, ok := right.([]any); ok {
+			switch op {
+			case "==":
+				return reflect.DeepEqual(lSlice, rSlice), nil
+			case "!=":
+				return !reflect.DeepEqual(lSlice, rSlice), nil
+			default:
+				return nil, errInvalidOperator(pos, op, "[]any", "[]any")
+			}
+		}
+	}
+
 	switch l := left.(type) {
 	case bool:
 		if r, ok := right.(bool); ok {

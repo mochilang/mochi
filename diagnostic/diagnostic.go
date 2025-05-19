@@ -6,93 +6,64 @@ import (
 	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
+	"github.com/fatih/color"
 )
 
-// --------------------
-// 🔧 Global Color Flag
-// --------------------
-
-// NoColor controls whether color output is disabled (can be set manually or from env)
-var NoColor = os.Getenv("NO_COLOR") != ""
-
-// --------------------
-// 🎨 Color Functions
-// --------------------
-
-func Red(s string) string {
-	if NoColor {
-		return s
-	}
-	return "\033[31m" + s + "\033[0m"
+func init() {
+	color.NoColor = true // Disable color by default
 }
 
-func Yellow(s string) string {
-	if NoColor {
-		return s
-	}
-	return "\033[33m" + s + "\033[0m"
-}
+var (
+	red    = color.New(color.FgRed, color.Bold).SprintFunc()
+	yellow = color.New(color.FgYellow).SprintFunc()
+	gray   = color.New(color.FgHiBlack).SprintFunc()
+)
 
-func Gray(s string) string {
-	if NoColor {
-		return s
-	}
-	return "\033[90m" + s + "\033[0m"
-}
-
-// --------------------
-// 🧾 Diagnostic Struct
-// --------------------
-
-// Diagnostic represents a structured, position-aware error with helpful context.
+// Diagnostic represents a structured, position-aware compiler message.
 type Diagnostic struct {
-	Code string         // Error code like "E1001"
-	Pos  lexer.Position // File/line/col of error
-	Msg  string         // Primary error message
-	Help string         // Optional help message (guidance)
+	Code string         // e.g. "E1001"
+	Pos  lexer.Position // Source file, line, and column
+	Msg  string         // Main error message
+	Help string         // Optional help or suggestion
 }
 
-// Error implements error interface for Diagnostic.
 func (d Diagnostic) Error() string {
 	return d.Format()
 }
 
-// Format renders a multi-line Rust-style diagnostic.
 func (d Diagnostic) Format() string {
 	src, _ := os.ReadFile(d.Pos.Filename)
 	lines := strings.Split(string(src), "\n")
 
-	var line string
-	if int(d.Pos.Line) <= len(lines) && d.Pos.Line > 0 {
-		line = lines[d.Pos.Line-1]
+	var lineText, marker string
+	if d.Pos.Line > 0 && int(d.Pos.Line) <= len(lines) {
+		lineText = lines[d.Pos.Line-1]
+		if d.Pos.Column > 0 && int(d.Pos.Column) <= len(lineText)+1 {
+			marker = strings.Repeat(" ", int(d.Pos.Column)-1) + "^"
+		}
 	}
 
-	marker := strings.Repeat(" ", int(d.Pos.Column)-1) + "^"
-
 	out := []string{
-		fmt.Sprintf("%s: %s", Red("error["+d.Code+"]"), d.Msg),
+		fmt.Sprintf("%s: %s", red("error["+d.Code+"]"), d.Msg),
 		fmt.Sprintf("  --> %s:%d:%d", d.Pos.Filename, d.Pos.Line, d.Pos.Column),
 	}
 
-	if line != "" {
+	if lineText != "" {
+		lineno := fmt.Sprintf("%3d", d.Pos.Line)
 		out = append(out, "",
-			fmt.Sprintf("%s | %s", Gray(fmt.Sprintf("%3d", d.Pos.Line)), line),
-			fmt.Sprintf("    | %s", Red(marker)),
+			fmt.Sprintf("%s | %s", gray(lineno), lineText),
+			fmt.Sprintf("    | %s", red(marker)),
 		)
 	}
 
 	if d.Help != "" {
-		out = append(out, "", Yellow("help:"), "  "+d.Help)
+		out = append(out, "", yellow("help:"), "  "+d.Help)
 	}
 
 	return strings.Join(out, "\n")
 }
 
-// --------------------
-// ✨ Constructor Helpers
-// --------------------
-
-// New returns a new Diagnostic instance.
+// New creates a new Diagnostic.
 func New(code string, pos lexer.Position, msg, help string) Diagnostic {
 	return Diagnostic{
 		Code: code,
@@ -102,7 +73,9 @@ func New(code string, pos lexer.Position, msg, help string) Diagnostic {
 	}
 }
 
-// Wrap creates an error interface from New (shorthand).
+/*
+// Wrap returns a Diagnostic as an error.
 func Wrap(code string, pos lexer.Position, msg, help string) error {
 	return New(code, pos, msg, help)
 }
+*/

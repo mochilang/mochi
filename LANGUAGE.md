@@ -67,39 +67,64 @@ Top-level statements are evaluated in order. There is no separate declaration or
 ## Grammar
 
 The grammar for statements and program structure is as follows:
-
-```
+```ebnf
 Program         = { Statement } .
 
-Statement       = LetStmt
+Statement       = TestBlock
+                | ExpectStmt
+                | AgentDecl
+                | StreamDecl
+                | OnHandler
+                | LetStmt
                 | AssignStmt
-                | FunDecl
+                | FunStmt
                 | ReturnStmt
                 | IfStmt
                 | ForStmt
-                | ExprStmt
-                | TestBlock
-                | ExpectStmt
-                | StreamDecl
-                | OnHandler
-                | AgentDecl .
+                | ExprStmt .
 
-LetStmt         = "let" Identifier [ ":" Type ] [ "=" Expression ] .
-AssignStmt      = Identifier "=" Expression .
-FunDecl         = "fun" Identifier "(" [ ParamList ] ")" [ ":" Type ] Block .
-ReturnStmt      = "return" Expression .
-IfStmt          = "if" Expression Block [ "else" (IfStmt | Block) ] .
-ForStmt         = "for" Identifier "in" Expression ".." Expression Block .
-ExprStmt        = Expression .
-TestBlock       = "test" StringLiteral Block .
-ExpectStmt      = "expect" Expression .
-StreamDecl      = "stream" Identifier Block .
-OnHandler       = "on" Identifier "as" Identifier Block .
-AgentDecl       = "agent" Identifier Block .
+TestBlock       = "test" StringLiteral "{" { Statement } "}" .
+ExpectStmt      = "expect" Expr .
+ExprStmt        = Expr .
 
-Block           = "{" { Statement } "}" .
+Expr            = Equality .
+Equality        = Comparison { EqualOp } .
+Comparison      = Term { CompOp } .
+Term            = Factor { TermOp } .
+Factor          = Unary { FactorOp } .
+Unary           = { "-" | "!" } PostfixExpr .
+
+PostfixExpr     = Primary { IndexOp } .
+
+Primary         = FunExpr
+                | CallExpr
+                | SelectorExpr
+                | ListLiteral
+                | Literal
+                | "(" Expr ")" .
+
+FunExpr         = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] "=>" Expr
+                | "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] "{" { Statement } "}" .
+
 ParamList       = Param { "," Param } .
-Param           = Identifier [ ":" Type ] .
+Param           = Identifier [ ":" TypeRef ] .
+
+TypeRef         = FunType | Identifier .
+FunType         = "fun" "(" [ TypeRef { "," TypeRef } ] ")" [ ":" TypeRef ] .
+
+CallExpr        = Identifier "(" [ Expr { "," Expr } ] ")" .
+SelectorExpr    = Identifier { "." Identifier } .
+
+ListLiteral     = "[" [ Expr { "," Expr } [ "," ] ] "]" .
+
+Literal         = FloatLiteral | IntLiteral | BooleanLiteral | StringLiteral .
+
+IndexOp         = "[" [ Expr ] [ ":" Expr ] "]" .
+
+EqualOp         = ("==" | "!=") Comparison .
+CompOp          = ("<" | "<=" | ">" | ">=") Term .
+TermOp          = ("+" | "-") Factor .
+FactorOp        = ("*" | "/") Unary .
 ```
 
 Each form of statement is defined in more detail in subsequent sections.
@@ -114,8 +139,7 @@ and line breaks are used to separate tokens but are otherwise ignored by the par
 
 ## 2.1 Characters
 
-The source character set is Unicode. Mochi currently restricts identifiers and literals to **ASCII** characters. Future
-versions may permit Unicode identifiers.
+The source character set is Unicode. Mochi supports full Unicode in string literals and identifiers (including emojis). 
 
 A **letter** is any of the ASCII letters `A–Z`, `a–z`, or the underscore `_`.
 
@@ -134,17 +158,19 @@ categories:
 
 Whitespace (spaces, tabs, carriage returns, and newlines) is ignored except as a separator between tokens.
 
-## 2.3 Identifiers
+### Identifiers
 
-Identifiers name program entities such as variables, parameters, and functions.
+Identifiers are names used to refer to variables, parameters, functions, streams, agents, and other user-defined values.
 
 ```
-Identifier = letter { letter | digit } .
+Identifier = letter { letter | digit | "_" | UnicodeSymbol } .
 ```
 
-The first character must be a letter or underscore; subsequent characters may be letters, digits, or underscores.
+An identifier must begin with a letter, underscore (`_`), or a Unicode character (e.g., emoji). Subsequent characters may include letters, digits, underscores, or additional Unicode symbols.
 
-Identifiers are case-sensitive. The following are all distinct:
+Identifiers are **case-sensitive** and must not conflict with reserved keywords.
+
+These are all valid and distinct:
 
 ```
 foo
@@ -152,24 +178,26 @@ Foo
 FOO
 ```
 
-### Examples
-
-Valid identifiers:
+#### ✅ Valid identifiers
 
 ```
 x
 result
 _myVar
 count42
-CamelCase
+π
+🍣
+名前
+data_💡
 ```
 
-Invalid identifiers:
+#### ❌ Invalid identifiers
 
 ```
-2fast    // starts with a digit
-x-y      // contains illegal character '-'
-let      // reserved keyword
+2fast      // starts with a digit
+x-y        // contains invalid character '-'
+fun        // reserved keyword
+"hello"    // string literal, not an identifier
 ```
 
 ## 2.4 Keywords
@@ -1467,107 +1495,273 @@ The interpreter dispatches operations dynamically based on type.
 
 # Appendix A. Grammar Summary
 
-This appendix defines the complete grammar for the Mochi language, version 0.1.12, using **Extended Backus–Naur Form (
-EBNF)**. It is the canonical reference for all syntax in the language.
+This appendix defines the complete grammar of Mochi in **EBNF** (Extended Backus–Naur Form), accompanied by **clear examples and explanations** to help users understand how to write valid Mochi code.
+
 
 ## A.1 Program
 
-```
-Program         = { Statement } .
+A Mochi program consists of a sequence of statements. There is no `main` function — code runs from top to bottom.
+
+```ebnf
+Program = { Statement } .
 ```
 
-A program is a sequence of zero or more statements.
+```mochi
+// A simple Mochi program
+let name = "Mochi"
+print("Hello", name)
+```
+
 
 ## A.2 Statements
 
-```
-Statement       = LetStmt
-                | AssignStmt
-                | FunDecl
-                | ReturnStmt
-                | IfStmt
-                | ForStmt
-                | ExprStmt
-                | TestBlock
-                | ExpectStmt
-                | StreamDecl
-                | OnHandler
-                | AgentDecl .
+Mochi supports variable declarations, assignments, functions, conditionals, loops, tests, and event-based constructs.
 
-LetStmt         = "let" Identifier [ ":" Type ] [ "=" Expression ] .
-AssignStmt      = Identifier "=" Expression .
-FunDecl         = "fun" Identifier "(" [ ParamList ] ")" [ ":" Type ] Block .
-ReturnStmt      = "return" Expression .
-IfStmt          = "if" Expression Block [ "else" (IfStmt | Block) ] .
-ForStmt         = "for" Identifier "in" Expression ".." Expression Block .
-ExprStmt        = Expression .
-TestBlock       = "test" StringLiteral Block .
-ExpectStmt      = "expect" Expression .
-StreamDecl      = "stream" Identifier Block .
-OnHandler       = "on" Identifier "as" Identifier Block .
-AgentDecl       = "agent" Identifier Block .
-
-Block           = "{" { Statement } "}" .
+```ebnf
+Statement =
+    LetStmt
+  | AssignStmt
+  | FunDecl
+  | ReturnStmt
+  | IfStmt
+  | ForStmt
+  | ExprStmt
+  | TestBlock
+  | ExpectStmt
+  | StreamDecl
+  | OnHandler
+  | AgentDecl .
 ```
+
+```mochi
+let x = 1                // Declare a variable
+x = x + 1                // Assign a new value
+fun square(n: int): int { return n * n }  // Define a function
+
+if x > 0 {
+  print("positive")
+} else {
+  print("not positive")
+}
+
+for i in 0..3 {
+  print(i)
+}
+
+test "math" {
+  expect square(2) == 4
+}
+```
+
 
 ## A.3 Expressions
 
-```
-Expression      = Equality .
-Equality        = Comparison { ("==" | "!=") Comparison } .
-Comparison      = Term { ("<" | "<=" | ">" | ">=") Term } .
-Term            = Factor { ("+" | "-") Factor } .
-Factor          = Unary { ("*" | "/") Unary } .
-Unary           = { "-" | "!" } Primary .
+Expressions are combinations of values and operators that evaluate to a result.
 
-Primary         = Literal
-                | Identifier
-                | FunctionExpr
-                | CallExpr
-                | SelectorExpr
-                | "(" Expression ")" .
-
-FunctionExpr    = "fun" "(" [ ParamList ] ")" [ ":" Type ] ( "=>" Expression | Block ) .
-CallExpr        = Identifier "(" [ ArgList ] ")" .
-SelectorExpr    = Identifier "." Identifier { "." Identifier } .
-ArgList         = Expression { "," Expression } .
+```ebnf
+Expression  = Equality .
+Equality    = Comparison { ("==" | "!=") Comparison } .
+Comparison  = Term { ("<" | "<=" | ">" | ">=") Term } .
+Term        = Factor { ("+" | "-") Factor } .
+Factor      = Unary { ("*" | "/") Unary } .
+Unary       = { "-" | "!" } Postfix .
+Postfix     = Primary { IndexOp } .
 ```
 
-## A.4 Types
-
-```
-Type            = SimpleType | FuncType .
-SimpleType      = Identifier .
-FuncType        = "fun" "(" [ TypeList ] ")" [ ":" Type ] .
-TypeList        = Type { "," Type } .
-
-ParamList       = Param { "," Param } .
-Param           = Identifier [ ":" Type ] .
+```mochi
+let result = (1 + 2) * 3 - 1   // Arithmetic with grouping
+let ok = !(result == 8)        // Logical NOT and equality
 ```
 
-## A.5 Literals
 
-```
-Literal         = Integer | Float | String | Boolean .
-Integer         = Digit { Digit } .
-Float           = Digit { Digit } "." Digit { Digit } .
-String          = '"' { Character | Escape } '"' .
-Escape          = "\\" Character .
-Boolean         = "true" | "false" .
-```
+## A.4 Primary Expressions
 
-## A.6 Identifiers and Characters
+The most basic forms of expressions: literals, variables, functions, calls, etc.
 
-```
-Identifier      = Letter { Letter | Digit | "_" } .
-Digit           = "0" | "1" | ... | "9" .
-Letter          = "a" | "b" | ... | "z" | "A" | ... | "Z" .
-Character       = any Unicode code point except '"' and '\\' or valid escape.
+```ebnf
+Primary =
+    Literal
+  | Identifier
+  | ListLiteral
+  | FunctionExpr
+  | CallExpr
+  | SelectorExpr
+  | "(" Expression ")" .
 ```
 
-## A.7 Comments
+```mochi
+let nums = [1, 2, 3]             // List literal
+let square = fun(x: int): int => x * x
+let value = (1 + 2) * 3          // Parentheses
+```
 
-* Line comments begin with `//` and extend to the end of the line.
-* Block comments are not supported in version 0.1.12.
-* Comments are ignored by the parser.
+
+## A.5 Function Expressions
+
+Anonymous functions (closures) can be written with either arrow or block bodies.
+
+```ebnf
+FunctionExpr =
+  "fun" "(" [ ParamList ] ")" [ ":" Type ] ( "=>" Expression | Block ) .
+```
+
+```mochi
+let add = fun(a: int, b: int): int => a + b      // Arrow body
+let inc = fun(x: int): int { return x + 1 }      // Block body
+```
+
+
+## A.6 Function Calls
+
+Apply a function to arguments.
+
+```ebnf
+CallExpr = Identifier "(" [ ArgList ] ")" .
+ArgList  = Expression { "," Expression } .
+```
+
+```mochi
+print("sum is", add(1, 2))  // Call with multiple arguments
+```
+
+
+## A.7 Selectors
+
+Access a nested value or property, like `event.payload.id`.
+
+```ebnf
+SelectorExpr = Identifier "." Identifier { "." Identifier } .
+```
+
+```mochi
+print(event.payload.value)  // Dot notation for nested fields
+```
+
+
+## A.8 Lists and Indexing
+
+Lists can be indexed with integers or sliced with `start:end` syntax.
+
+```ebnf
+ListLiteral = "[" [ Expression { "," Expression } [ "," ] ] "]" .
+IndexOp     = "[" [ Expression ] [ ":" Expression ] "]" .
+```
+
+```mochi
+let nums = [10, 20, 30, 40]
+print(nums[1])         // 20
+print(nums[1:3])       // [20, 30]
+```
+
+
+## A.9 Types
+
+Mochi supports simple and function types with optional annotations.
+
+```ebnf
+Type        = SimpleType | FuncType .
+SimpleType  = Identifier .
+FuncType    = "fun" "(" [ TypeList ] ")" [ ":" Type ] .
+TypeList    = Type { "," Type } .
+```
+
+```mochi
+let f: fun(int): int = fun(x: int): int => x * x
+```
+
+
+## A.10 Literals
+
+Literals represent constant values — numbers, booleans, and strings.
+
+```ebnf
+Literal  = Integer | Float | Boolean | String .
+Integer  = Digit { Digit } .
+Float    = Digit { Digit } "." Digit { Digit } .
+Boolean  = "true" | "false" .
+String   = '"' { Character | Escape } '"' .
+```
+
+```mochi
+let x = 42
+let y = 3.14
+let b = true
+let s = "hello\nworld"
+```
+
+
+## A.11 Identifiers
+
+Identifiers name variables, functions, and fields.
+
+```ebnf
+Identifier = Letter { Letter | Digit | "_" } .
+Letter     = "a" .. "z" | "A" .. "Z" | "_" .
+Digit      = "0" .. "9" .
+```
+
+```mochi
+let my_var = 123
+let Count42 = my_var
+```
+
+
+## A.12 Comments
+
+Mochi supports both single-line and multi-line (block) comments.
+
+```ebnf
+LineComment  = "//" { any character except newline } .
+BlockComment = "/*" { any character except "*/" } "*/" .
+```
+
+```mochi
+// This is a comment
+let x = 1
+
+/*
+  This is a block comment
+  over multiple lines
+*/
+```
+
+
+## A.13 Test Blocks
+
+Tests help verify behavior during execution.
+
+```ebnf
+TestBlock  = "test" StringLiteral Block .
+ExpectStmt = "expect" Expression .
+```
+
+```mochi
+test "math basics" {
+  expect 1 + 2 == 3
+}
+```
+
+
+## A.14 Streams and Agents
+
+Streams carry events; agents respond to them with `on` handlers.
+
+```ebnf
+StreamDecl  = "stream" Identifier Block .
+OnHandler   = "on" Identifier "as" Identifier Block .
+AgentDecl   = "agent" Identifier Block .
+```
+
+```mochi
+stream clicks {
+  x: int
+  y: int
+}
+
+agent Logger {
+  on clicks as e {
+    print("Clicked at", e.x, e.y)
+  }
+}
+```
 

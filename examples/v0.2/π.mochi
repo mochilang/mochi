@@ -1,0 +1,16 @@
+// Now Mochi support Unicode variable name.
+
+let π = 3.14
+
+fun area(r: float): float {
+    return π * r * r
+}
+print(area(10.0))
+
+test "π" {
+    expect π == 3.14
+    expect area(10.0) == 314.0
+}
+
+let 🍡="🍡૮₍ ˃ ⤙ ˂ ₎ა"
+print(🍡)

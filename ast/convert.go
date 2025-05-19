@@ -2,7 +2,6 @@ package ast
 
 import "mochi/parser"
 
-// FromProgram converts a parsed Program into an AST Node tree.
 func FromProgram(p *parser.Program) *Node {
 	root := &Node{Kind: "program"}
 	for _, stmt := range p.Statements {
@@ -11,14 +10,10 @@ func FromProgram(p *parser.Program) *Node {
 	return root
 }
 
-// FromStatement converts a top-level Statement into a Node.
 func FromStatement(s *parser.Statement) *Node {
 	switch {
 	case s.Let != nil:
-		n := &Node{
-			Kind:  "let",
-			Value: s.Let.Name,
-		}
+		n := &Node{Kind: "let", Value: s.Let.Name}
 		if s.Let.Type != nil {
 			n.Children = append(n.Children, FromTypeRef(s.Let.Type))
 		}
@@ -39,17 +34,17 @@ func FromStatement(s *parser.Statement) *Node {
 	case s.Fun != nil:
 		n := &Node{Kind: "fun", Value: s.Fun.Name}
 		for _, param := range s.Fun.Params {
-			paramNode := &Node{Kind: "param", Value: param.Name}
+			pn := &Node{Kind: "param", Value: param.Name}
 			if param.Type != nil {
-				paramNode.Children = append(paramNode.Children, FromTypeRef(param.Type))
+				pn.Children = append(pn.Children, FromTypeRef(param.Type))
 			}
-			n.Children = append(n.Children, paramNode)
+			n.Children = append(n.Children, pn)
 		}
 		if s.Fun.Return != nil {
 			n.Children = append(n.Children, FromTypeRef(s.Fun.Return))
 		}
-		for _, stmt := range s.Fun.Body {
-			n.Children = append(n.Children, FromStatement(stmt))
+		for _, st := range s.Fun.Body {
+			n.Children = append(n.Children, FromStatement(st))
 		}
 		return n
 
@@ -57,7 +52,8 @@ func FromStatement(s *parser.Statement) *Node {
 		return &Node{Kind: "return", Children: []*Node{FromExpr(s.Return.Value)}}
 
 	case s.Expr != nil:
-		return &Node{Kind: "exprstmt", Children: []*Node{FromExpr(s.Expr.Expr)}}
+		// return &Node{Kind: "expr", Children: []*Node{FromExpr(s.Expr.Expr)}}
+		return FromExpr(s.Expr.Expr)
 
 	case s.If != nil:
 		return fromIfStmt(s.If)
@@ -86,8 +82,8 @@ func FromStatement(s *parser.Statement) *Node {
 
 	case s.Stream != nil:
 		n := &Node{Kind: "stream", Value: s.Stream.Name}
-		for _, field := range s.Stream.Fields {
-			n.Children = append(n.Children, fromStreamField(field))
+		for _, f := range s.Stream.Fields {
+			n.Children = append(n.Children, fromStreamField(f))
 		}
 		return n
 
@@ -142,14 +138,6 @@ func fromForStmt(f *parser.ForStmt) *Node {
 	}
 }
 
-func mapStatements(stmts []*parser.Statement) []*Node {
-	var out []*Node
-	for _, s := range stmts {
-		out = append(out, FromStatement(s))
-	}
-	return out
-}
-
 func fromOnHandler(h *parser.OnHandler) *Node {
 	n := &Node{Kind: "on", Value: h.Stream}
 	for _, stmt := range h.Body {
@@ -161,11 +149,11 @@ func fromOnHandler(h *parser.OnHandler) *Node {
 func fromIntent(i *parser.IntentDecl) *Node {
 	n := &Node{Kind: "intent", Value: i.Name}
 	for _, param := range i.Params {
-		paramNode := &Node{Kind: "param", Value: param.Name}
+		pn := &Node{Kind: "param", Value: param.Name}
 		if param.Type != nil {
-			paramNode.Children = append(paramNode.Children, FromTypeRef(param.Type))
+			pn.Children = append(pn.Children, FromTypeRef(param.Type))
 		}
-		n.Children = append(n.Children, paramNode)
+		n.Children = append(n.Children, pn)
 	}
 	if i.Return != nil {
 		n.Children = append(n.Children, FromTypeRef(i.Return))
@@ -178,25 +166,26 @@ func fromIntent(i *parser.IntentDecl) *Node {
 
 func fromStreamField(f *parser.StreamField) *Node {
 	if f.Simple != nil {
-		return &Node{
-			Kind:  "field",
-			Value: f.Simple.Name + ":" + f.Simple.Type,
-		}
+		return &Node{Kind: "field", Value: f.Simple.Name + ":" + f.Simple.Type}
 	}
 	if f.Nested != nil {
-		n := &Node{
-			Kind:  "field",
-			Value: f.Nested.Name + ":" + f.Nested.Type,
-		}
-		for _, sf := range f.Nested.Body.Fields {
-			n.Children = append(n.Children, fromStreamField(sf))
+		n := &Node{Kind: "field", Value: f.Nested.Name + ":" + f.Nested.Type}
+		for _, sub := range f.Nested.Body.Fields {
+			n.Children = append(n.Children, fromStreamField(sub))
 		}
 		return n
 	}
 	return &Node{Kind: "field"}
 }
 
-// FromExpr converts a high-level expression.
+func mapStatements(stmts []*parser.Statement) []*Node {
+	var out []*Node
+	for _, s := range stmts {
+		out = append(out, FromStatement(s))
+	}
+	return out
+}
+
 func FromExpr(e *parser.Expr) *Node {
 	return FromEquality(e.Equality)
 }
@@ -234,9 +223,32 @@ func FromFactor(f *parser.Factor) *Node {
 }
 
 func FromUnary(u *parser.Unary) *Node {
-	n := FromPrimary(u.Value)
+	n := FromPostfixExpr(u.Value)
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		n = &Node{Kind: "unary", Value: u.Ops[i], Children: []*Node{n}}
+	}
+	return n
+}
+
+func FromPostfixExpr(p *parser.PostfixExpr) *Node {
+	n := FromPrimary(p.Target)
+	for _, op := range p.Index {
+		idx := &Node{Kind: "index", Children: []*Node{n}}
+		if op.Colon == nil {
+			// Simple index: foo[1]
+			if op.Start != nil {
+				idx.Children = append(idx.Children, FromExpr(op.Start))
+			}
+		} else {
+			// Slice: foo[1:3], foo[:3], foo[1:], foo[:]
+			if op.Start != nil {
+				idx.Children = append(idx.Children, &Node{Kind: "start", Children: []*Node{FromExpr(op.Start)}})
+			}
+			if op.End != nil {
+				idx.Children = append(idx.Children, &Node{Kind: "end", Children: []*Node{FromExpr(op.End)}})
+			}
+		}
+		n = idx
 	}
 	return n
 }
@@ -246,11 +258,11 @@ func FromPrimary(p *parser.Primary) *Node {
 	case p.FunExpr != nil:
 		n := &Node{Kind: "funexpr"}
 		for _, param := range p.FunExpr.Params {
-			paramNode := &Node{Kind: "param", Value: param.Name}
+			pn := &Node{Kind: "param", Value: param.Name}
 			if param.Type != nil {
-				paramNode.Children = append(paramNode.Children, FromTypeRef(param.Type))
+				pn.Children = append(pn.Children, FromTypeRef(param.Type))
 			}
-			n.Children = append(n.Children, paramNode)
+			n.Children = append(n.Children, pn)
 		}
 		if p.FunExpr.Return != nil {
 			n.Children = append(n.Children, FromTypeRef(p.FunExpr.Return))
@@ -280,6 +292,30 @@ func FromPrimary(p *parser.Primary) *Node {
 		}
 		return n
 
+	//case p.Index != nil:
+	//	n := &Node{Kind: "index"}
+	//	if p.Index.Target != nil {
+	//		n.Children = append(n.Children, FromPrimary(p.Index.Target))
+	//	}
+	//	if p.Index.Colon == nil {
+	//		n.Children = append(n.Children, FromExpr(p.Index.Start))
+	//	} else {
+	//		if p.Index.Start != nil {
+	//			n.Children = append(n.Children, &Node{Kind: "start", Children: []*Node{FromExpr(p.Index.Start)}})
+	//		}
+	//		if p.Index.End != nil {
+	//			n.Children = append(n.Children, &Node{Kind: "end", Children: []*Node{FromExpr(p.Index.End)}})
+	//		}
+	//	}
+	//	return n
+
+	case p.List != nil:
+		n := &Node{Kind: "list"}
+		for _, el := range p.List.Elems {
+			n.Children = append(n.Children, FromExpr(el))
+		}
+		return n
+
 	case p.Lit != nil:
 		switch {
 		case p.Lit.Float != nil:
@@ -295,10 +331,10 @@ func FromPrimary(p *parser.Primary) *Node {
 	case p.Group != nil:
 		return &Node{Kind: "group", Children: []*Node{FromExpr(p.Group)}}
 	}
+
 	return &Node{Kind: "unknown"}
 }
 
-// FromTypeRef converts a TypeRef (including function types) to a Node.
 func FromTypeRef(t *parser.TypeRef) *Node {
 	if t == nil {
 		return nil

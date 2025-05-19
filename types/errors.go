@@ -98,3 +98,21 @@ func errReturnMismatch(pos lexer.Position, expected, actual Type) error {
 		fmt.Sprintf("return type mismatch: expected %s but got %s", expected, actual),
 		"Ensure the returned value matches the declared function return type.")
 }
+
+func errIndexNotInteger(pos lexer.Position) error {
+	return diagnostic.New("T015", pos,
+		"index must be an integer",
+		"Use an `int` value inside `[...]` indexing or slicing.")
+}
+
+func errNotListType(pos lexer.Position, actual Type) error {
+	return diagnostic.New("T016", pos,
+		fmt.Sprintf("type %s does not support indexing", actual),
+		"Only `list<T>` types support index access.")
+}
+
+func errMissingIndex(pos lexer.Position) error {
+	return diagnostic.New("T017", pos,
+		"missing index expression",
+		"Provide an index value inside `[ ... ]`.")
+}
