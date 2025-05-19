@@ -3,12 +3,15 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
+	"time"
 
 	"github.com/alexflint/go-arg"
 
 	"mochi/ast"
 	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/repl"
 	"mochi/types"
 )
 
@@ -18,42 +21,63 @@ var (
 	buildTime = "unknown" // set via -ldflags "-X main.buildTime=..."
 )
 
-type Args struct {
-	File     string `arg:"positional" help:"Path to .mochi source file"`
-	Run      bool   `arg:"-r,--run" help:"Interpret and execute the program"`
-	PrintAST bool   `arg:"--ast" help:"Print the parsed AST in Lisp format"`
-	Version  bool   `arg:"--version" help:"Show version and exit"`
+type CLI struct {
+	Run     *RunCmd  `arg:"subcommand:run" help:"Run a Mochi source file"`
+	Repl    *ReplCmd `arg:"subcommand:repl" help:"Start an interactive REPL session"`
+	Version bool     `arg:"--version" help:"Print version info and exit"`
 }
 
+type RunCmd struct {
+	File     string `arg:"positional,required" help:"Path to .mochi source file"`
+	PrintAST bool   `arg:"--ast" help:"Print parsed AST in Lisp format"`
+}
+
+type ReplCmd struct{}
+
 func main() {
-	var args Args
-	argParser := arg.MustParse(&args)
+	var cli CLI
+	arg.MustParse(&cli)
 
-	if len(os.Args) == 1 {
-		argParser.WriteHelp(os.Stdout)
-		os.Exit(0)
-	}
-
-	if args.Version {
+	switch {
+	case cli.Version:
 		printVersion()
-		os.Exit(0)
-	}
+		return
 
-	if args.File == "" {
-		fmt.Fprintln(os.Stderr, "error: no input file provided")
-		argParser.WriteHelp(os.Stderr)
-		os.Exit(1)
-	}
+	case cli.Repl != nil:
+		repl := repl.New(os.Stdout, version)
+		repl.Run()
 
-	prog, err := parser.Parse(args.File)
+	case cli.Run != nil:
+		runFile(cli.Run)
+
+	default:
+		printVersion()
+		arg.MustParse(&cli).WriteHelp(os.Stderr)
+	}
+}
+
+func printVersion() {
+	fmt.Printf("Mochi v%s (%s, built %s, %s/%s)\n", version, gitCommit, humanBuildTime(), runtime.GOOS, runtime.GOARCH)
+}
+
+func humanBuildTime() string {
+	// Try parsing RFC 3339/ISO 8601 and format it to readable string
+	t, err := time.Parse(time.RFC3339, buildTime)
+	if err != nil {
+		return buildTime // fallback: print raw string if invalid
+	}
+	return t.Format("Mon Jan 02 15:04:05 2006")
+}
+
+func runFile(cmd *RunCmd) {
+	prog, err := parser.Parse(cmd.File)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	// Type check
-	typeEnv := types.NewEnv(nil)
-	typeErrors := types.Check(prog, typeEnv)
+	env := types.NewEnv(nil)
+	typeErrors := types.Check(prog, env)
 	if len(typeErrors) > 0 {
 		fmt.Fprintln(os.Stderr, "\n== TYPECHECK FAILED ==")
 		for i, err := range typeErrors {
@@ -62,24 +86,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	if args.PrintAST {
+	if cmd.PrintAST {
 		fmt.Println("\n== AST ==")
 		tree := ast.FromProgram(prog)
 		fmt.Println(tree.String())
 	}
 
-	if args.Run {
-		fmt.Println("\n== RUNNING ==")
-		interp := interpreter.New(prog, typeEnv)
-		if err := interp.Run(); err != nil {
-			fmt.Fprintf(os.Stderr, "runtime error: %v\n", err)
-			os.Exit(1)
-		}
+	interp := interpreter.New(prog, env)
+	if err := interp.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "runtime error: %v\n", err)
+		os.Exit(1)
 	}
-}
-
-func printVersion() {
-	fmt.Printf("Mochi v%s\n", version)
-	fmt.Printf("Git commit: %s\n", gitCommit)
-	fmt.Printf("Built at:   %s\n", buildTime)
 }
