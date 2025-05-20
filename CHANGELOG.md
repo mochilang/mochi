@@ -2,6 +2,31 @@
 
 All notable changes to the Mochi programming language are documented in this file.
 
+## [0.2.2] - 2025-05-20
+
+### Added
+
+* Support for parsing `PostfixExpr` with selectors and index operations (e.g., `scores["Alice"]`, `obj.field.subfield`).
+* Support for `map<string, T>` and `list<T>` as first-class data structures.
+* Type checker and runtime support for accessing elements in maps and lists.
+* `len(...)` function now works on maps, lists, and strings.
+* `test "..." { ... }` blocks are now supported for assertions.
+* New runtime error diagnostics for invalid indexing and type mismatches (e.g., `I016`, `T018`).
+* Support for `expect` statements within test blocks.
+* Cleaner error messages with help text for invalid indexing and type usage.
+
+### Changed
+
+* Replaced simple identifier assignment (`x = ...`) with structured assignment using `PostfixExpr` (supports future `obj.field`, `arr[i]`).
+* `AssignStmt` now uses `Target *PostfixExpr` instead of `Name string`.
+* Parser and interpreter refactored to support structural assignment targets.
+
+### Removed
+
+* Mutability features such as `scores["Alice"] = 10` and `del scores["Bob"]` have been disabled for now to enforce immutability by design.
+* Fallback expressions (`scores["Zoe"] or 0`) and inline defaulting are removed until language-level support is finalized.
+* Redundant parser grammar strings such as `Expect string "expect"` and similar unused tags.
+
 ## [0.2.1] – 2025-05-19
 
 ### Added
