@@ -7,11 +7,10 @@ import (
 
 // --- Mochi Lexer ---
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
-	// Combined line and block comment support
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
 	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|fun|return|let|if|else|for|in)\b`},
-	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`}, // Support Unicode identifiers
+	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
@@ -27,6 +26,7 @@ type Program struct {
 }
 
 type Statement struct {
+	Pos    lexer.Position
 	Test   *TestBlock  `parser:"@@"`
 	Expect *ExpectStmt `parser:"| @@"`
 	Agent  *AgentDecl  `parser:"| @@"`
@@ -45,23 +45,20 @@ type Statement struct {
 
 type TestBlock struct {
 	Pos  lexer.Position
-	Test string       `parser:"'test'"`
-	Name string       `parser:"@String"`
+	Name string       `parser:"'test' @String"`
 	Body []*Statement `parser:"'{' @@* '}'"`
 }
 
 type ExpectStmt struct {
-	Pos    lexer.Position
-	Expect string `parser:"'expect'"`
-	Value  *Expr  `parser:"@@"`
+	Pos   lexer.Position
+	Value *Expr `parser:"'expect' @@"`
 }
 
 // --- If Statement ---
 
 type IfStmt struct {
 	Pos    lexer.Position
-	If     string       `parser:"'if'"`
-	Cond   *Expr        `parser:"@@"`
+	Cond   *Expr        `parser:"'if' @@"`
 	Then   []*Statement `parser:"'{' @@* '}'"`
 	ElseIf *IfStmt      `parser:"[ 'else' @@"`
 	Else   []*Statement `parser:"| 'else' '{' @@* '}' ]"`
@@ -71,49 +68,48 @@ type IfStmt struct {
 
 type ForStmt struct {
 	Pos   lexer.Position
-	For   string       `parser:"'for'"`
-	Name  string       `parser:"@Ident"`
-	In    string       `parser:"'in'"`
+	Name  string       `parser:"'for' @Ident 'in'"`
 	Start *Expr        `parser:"@@"`
-	Dots  string       `parser:"'..'"`
-	End   *Expr        `parser:"@@"`
+	End   *Expr        `parser:"'..' @@ "`
 	Body  []*Statement `parser:"'{' @@* '}'"`
 }
 
 // --- Type System ---
 
 type TypeRef struct {
-	Fun    *FunType `parser:"@@"`
-	Simple *string  `parser:"| @Ident"`
+	Fun     *FunType     `parser:"@@"`
+	Generic *GenericType `parser:"| @@"`
+	Simple  *string      `parser:"| @Ident"`
+}
+
+type GenericType struct {
+	Name string     `parser:"@Ident '<'"`
+	Args []*TypeRef `parser:"@@ { ',' @@ } '>'"`
 }
 
 type FunType struct {
-	Fun    string     `parser:"'fun'"`
-	Params []*TypeRef `parser:"'(' [ @@ { ',' @@ } ] ')'"`
+	Params []*TypeRef `parser:"'fun' '(' [ @@ { ',' @@ } ] ')'"`
 	Return *TypeRef   `parser:"[ ':' @@ ]"`
 }
 
-// --- Declarations & Statements ---
+// --- Declarations ---
 
 type LetStmt struct {
 	Pos   lexer.Position
-	Let   string   `parser:"'let'"`
-	Name  string   `parser:"@Ident"`
+	Name  string   `parser:"'let' @Ident"`
 	Type  *TypeRef `parser:"[ ':' @@ ]"`
 	Value *Expr    `parser:"[ '=' @@ ]"`
 }
 
 type AssignStmt struct {
 	Pos   lexer.Position
-	Name  string `parser:"@Ident"`
-	Eq    string `parser:"'='"`
+	Name  string `parser:"@Ident '='"`
 	Value *Expr  `parser:"@@"`
 }
 
 type FunStmt struct {
 	Pos    lexer.Position
-	Fun    string       `parser:"'fun'"`
-	Name   string       `parser:"@Ident"`
+	Name   string       `parser:"'fun' @Ident"`
 	Params []*Param     `parser:"'(' [ @@ { ',' @@ } ] ')'"`
 	Return *TypeRef     `parser:"[ ':' @@ ]"`
 	Body   []*Statement `parser:"'{' @@* '}'"`
@@ -121,8 +117,7 @@ type FunStmt struct {
 
 type ReturnStmt struct {
 	Pos   lexer.Position
-	Ret   string `parser:"'return'"`
-	Value *Expr  `parser:"@@"`
+	Value *Expr `parser:"'return' @@"`
 }
 
 type Param struct {
@@ -187,30 +182,35 @@ type FactorOp struct {
 }
 
 type Unary struct {
-	Pos lexer.Position
-	Ops []string `parser:"{@('-' | '!')}"`
-	// Value *Primary `parser:"@@"`
+	Pos   lexer.Position
+	Ops   []string     `parser:"{@('-' | '!')}"`
 	Value *PostfixExpr `parser:"@@"`
 }
 
 type PostfixExpr struct {
 	Target *Primary   `parser:"@@"`
-	Index  []*IndexOp `parser:"@@*"` // zero or more indexing/slicing
+	Index  []*IndexOp `parser:"@@*"`
 }
 
 type IndexOp struct {
-	Pos    lexer.Position
-	LBrack string  `parser:"'['"`
-	Start  *Expr   `parser:"[ @@ ]"` // optional
-	Colon  *string `parser:"[ @':'"` // optional
-	End    *Expr   `parser:"  @@ ]"` // optional if colon exists
-	RBrack string  `parser:"']'"`
+	Pos   lexer.Position
+	Start *Expr   `parser:"'[' [ @@ "`
+	Colon *string `parser:"[ @':'"`
+	End   *Expr   `parser:"  @@ ] ] ']'"`
 }
 
 type ListLiteral struct {
-	LBracket string  `parser:"'['"`
-	Elems    []*Expr `parser:"[ @@ { ',' @@ } ] [ ',' ]?"` // <- allow trailing comma
-	RBracket string  `parser:"']'"`
+	Elems []*Expr `parser:"'[' [ @@ { ',' @@ } ] [ ',' ]? ']'"`
+}
+
+type MapLiteral struct {
+	Items []*MapEntry `parser:"'{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
+}
+
+type MapEntry struct {
+	Pos   lexer.Position
+	Key   *Expr `parser:"@@ ':'"`
+	Value *Expr `parser:"@@"`
 }
 
 type Primary struct {
@@ -219,17 +219,16 @@ type Primary struct {
 	Call     *CallExpr     `parser:"| @@"`
 	Selector *SelectorExpr `parser:"| @@"`
 	List     *ListLiteral  `parser:"| @@"`
+	Map      *MapLiteral   `parser:"| @@"`
 	Lit      *Literal      `parser:"| @@"`
 	Group    *Expr         `parser:"| '(' @@ ')'"`
 }
 
 type FunExpr struct {
 	Pos       lexer.Position
-	Fun       string       `parser:"'fun'"`
-	Params    []*Param     `parser:"'(' [ @@ { ',' @@ } ] ')'"`
+	Params    []*Param     `parser:"'fun' '(' [ @@ { ',' @@ } ] ')'"`
 	Return    *TypeRef     `parser:"[ ':' @@ ]"`
-	Arrow     string       `parser:"'=>'"`
-	ExprBody  *Expr        `parser:"@@"`
+	ExprBody  *Expr        `parser:"'=>' @@"`
 	BlockBody []*Statement `parser:"| '{' @@* '}'"`
 }
 
@@ -241,26 +240,24 @@ type SelectorExpr struct {
 }
 
 type CallExpr struct {
-	Pos    lexer.Position
-	Func   string  `parser:"@Ident '('"`
-	Args   []*Expr `parser:"[ @@ { ',' @@ } ]"`
-	RParen string  `parser:"')'"`
+	Pos  lexer.Position
+	Func string  `parser:"@Ident '('"`
+	Args []*Expr `parser:"[ @@ { ',' @@ } ] ')'"`
 }
 
 type Literal struct {
 	Pos   lexer.Position
 	Float *float64 `parser:"@Float"`
 	Int   *int     `parser:"| @Int"`
-	Bool  *bool    `parser:"| @(\"true\" | \"false\")"`
+	Bool  *bool    `parser:"| @('true' | 'false')"`
 	Str   *string  `parser:"| @String"`
 }
 
-// --- Stream / Struct Declarations ---
+// --- Stream / Struct ---
 
 type StreamDecl struct {
 	Pos    lexer.Position
-	Stream string         `parser:"'stream'"`
-	Name   string         `parser:"@Ident"`
+	Name   string         `parser:"'stream' @Ident"`
 	Fields []*StreamField `parser:"'{' @@* '}'"`
 }
 
@@ -270,29 +267,25 @@ type StreamField struct {
 }
 
 type StreamSimpleField struct {
-	Name string `parser:"@Ident"`
-	Type string `parser:"':' @Ident"`
+	Name string `parser:"@Ident ':'"`
+	Type string `parser:"@Ident"`
 }
 
 type StreamNestedField struct {
-	Name string     `parser:"@Ident"`
-	Type string     `parser:"':'"`
+	Name string     `parser:"@Ident ':'"`
+	Type string     `parser:"':' @Ident"`
 	Body *StructDef `parser:"@@"`
 }
 
 type StructDef struct {
-	LBrace string         `parser:"'{'"`
-	Fields []*StreamField `parser:"@@*"`
-	RBrace string         `parser:"'}'"`
+	Fields []*StreamField `parser:"'{' @@* '}'"`
 }
 
 // --- On Handler ---
 
 type OnHandler struct {
 	Pos    lexer.Position
-	On     string       `parser:"'on'"`
-	Stream string       `parser:"@Ident"`
-	As     string       `parser:"'as'"`
+	Stream string       `parser:"'on' @Ident 'as'"`
 	Alias  string       `parser:"@Ident"`
 	Body   []*Statement `parser:"'{' @@* '}'"`
 }
@@ -300,10 +293,9 @@ type OnHandler struct {
 // --- Agent DSL ---
 
 type AgentDecl struct {
-	Pos   lexer.Position
-	Agent string        `parser:"'agent'"`
-	Name  string        `parser:"@Ident"`
-	Body  []*AgentBlock `parser:"'{' @@* '}'"`
+	Pos  lexer.Position
+	Name string        `parser:"'agent' @Ident"`
+	Body []*AgentBlock `parser:"'{' @@* '}'"`
 }
 
 type AgentBlock struct {
@@ -315,8 +307,7 @@ type AgentBlock struct {
 
 type IntentDecl struct {
 	Pos    lexer.Position
-	Intent string       `parser:"'intent'"`
-	Name   string       `parser:"@Ident"`
+	Name   string       `parser:"'intent' @Ident"`
 	Params []*Param     `parser:"'(' [ @@ { ',' @@ } ] ')'"`
 	Return *TypeRef     `parser:"[ ':' @@ ]"`
 	Body   []*Statement `parser:"'{' @@* '}'"`

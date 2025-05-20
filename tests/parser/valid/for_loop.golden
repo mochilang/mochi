@@ -2,9 +2,7 @@
   (for i
     (range (int 0) (int 3))
     (block
-      (exprstmt
-        (call print (selector i))
-      )
+      (call print (selector i))
     )
   )
 )

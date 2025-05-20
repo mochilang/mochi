@@ -55,6 +55,25 @@ func (t ListType) Equal(other Type) bool {
 	}
 }
 
+type MapType struct {
+	Key   Type
+	Value Type
+}
+
+func (t MapType) String() string {
+	return fmt.Sprintf("{%s: %s}", t.Key.String(), t.Value.String())
+}
+
+func (t MapType) Equal(other Type) bool {
+	switch o := other.(type) {
+	case MapType:
+		return (t.Key.Equal(o.Key) || isAny(t.Key) || isAny(o.Key)) &&
+			(t.Value.Equal(o.Value) || isAny(t.Value) || isAny(o.Value))
+	default:
+		return false
+	}
+}
+
 func isAny(t Type) bool {
 	_, ok := t.(AnyType)
 	return ok
@@ -127,7 +146,7 @@ func (BuiltinFuncType) Equal(t Type) bool { _, ok := t.(BuiltinFuncType); return
 func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("print", BuiltinFuncType{})
 	env.SetVar("len", FuncType{
-		Params: []Type{AnyListType{}},
+		Params: []Type{AnyType{}}, // loosely typed
 		Return: IntType{},
 	})
 
@@ -258,18 +277,43 @@ func resolveTypeRef(t *parser.TypeRef) Type {
 		}
 		return FuncType{Params: params, Return: ret}
 	}
-	switch *t.Simple {
-	case "int":
-		return IntType{}
-	case "float":
-		return FloatType{}
-	case "string":
-		return StringType{}
-	case "bool":
-		return BoolType{}
-	default:
+
+	if t.Generic != nil {
+		name := t.Generic.Name
+		args := t.Generic.Args
+		switch name {
+		case "list":
+			if len(args) == 1 {
+				return ListType{Elem: resolveTypeRef(args[0])}
+			}
+		case "map":
+			if len(args) == 2 {
+				return MapType{
+					Key:   resolveTypeRef(args[0]),
+					Value: resolveTypeRef(args[1]),
+				}
+			}
+		}
+		// Fallback: unknown generic type
 		return AnyType{}
 	}
+
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return IntType{}
+		case "float":
+			return FloatType{}
+		case "string":
+			return StringType{}
+		case "bool":
+			return BoolType{}
+		default:
+			return AnyType{}
+		}
+	}
+
+	return AnyType{}
 }
 
 func checkExpr(e *parser.Expr, env *Env) (Type, error) {
@@ -361,28 +405,13 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 	}
 
 	for _, idx := range p.Index {
-		listType, ok := typ.(ListType)
-		if !ok {
-			return nil, errNotListType(idx.Pos, typ)
-		}
-
-		// Validate index and slice bounds
-		if idx.Colon == nil {
-			// list[i]
-			if idx.Start == nil {
-				return nil, errMissingIndex(idx.Pos)
-			}
-			startType, err := checkExpr(idx.Start, env)
-			if err != nil {
-				return nil, err
-			}
-			if !startType.Equal(IntType{}) {
-				return nil, errIndexNotInteger(idx.Pos)
-			}
-			typ = listType.Elem // return T
-		} else {
-			// list[i:j], list[:j], list[i:], list[:]
-			if idx.Start != nil {
+		switch t := typ.(type) {
+		case ListType:
+			if idx.Colon == nil {
+				// list[i]
+				if idx.Start == nil {
+					return nil, errMissingIndex(idx.Pos)
+				}
 				startType, err := checkExpr(idx.Start, env)
 				if err != nil {
 					return nil, err
@@ -390,17 +419,48 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				if !startType.Equal(IntType{}) {
 					return nil, errIndexNotInteger(idx.Pos)
 				}
-			}
-			if idx.End != nil {
-				endType, err := checkExpr(idx.End, env)
-				if err != nil {
-					return nil, err
+				typ = t.Elem
+			} else {
+				// list[i:j], list[:j], list[i:], list[:]
+				if idx.Start != nil {
+					startType, err := checkExpr(idx.Start, env)
+					if err != nil {
+						return nil, err
+					}
+					if !startType.Equal(IntType{}) {
+						return nil, errIndexNotInteger(idx.Pos)
+					}
 				}
-				if !endType.Equal(IntType{}) {
-					return nil, errIndexNotInteger(idx.Pos)
+				if idx.End != nil {
+					endType, err := checkExpr(idx.End, env)
+					if err != nil {
+						return nil, err
+					}
+					if !endType.Equal(IntType{}) {
+						return nil, errIndexNotInteger(idx.Pos)
+					}
 				}
+				typ = t // list slice returns same list type
 			}
-			typ = listType // slicing returns same list type
+
+		case MapType:
+			if idx.Colon != nil {
+				return nil, errInvalidMapSlice(idx.Pos)
+			}
+			if idx.Start == nil {
+				return nil, errMissingIndex(idx.Pos)
+			}
+			keyType, err := checkExpr(idx.Start, env)
+			if err != nil {
+				return nil, err
+			}
+			if !keyType.Equal(t.Key) {
+				return nil, errIndexTypeMismatch(idx.Pos, t.Key, keyType)
+			}
+			typ = t.Value
+
+		default:
+			return nil, errNotIndexable(p.Target.Pos, typ)
 		}
 	}
 
@@ -449,7 +509,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				if err != nil {
 					return nil, err
 				}
-				if !argType.Equal(ft.Params[i]) {
+				if !(argType.Equal(ft.Params[i]) || ft.Params[i].Equal(argType)) {
 					return nil, errArgTypeMismatch(p.Pos, i, ft.Params[i], argType)
 				}
 			}
@@ -488,6 +548,36 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			elemType = AnyType{}
 		}
 		return ListType{Elem: elemType}, nil
+
+	case p.Map != nil:
+		var keyT, valT Type
+		for _, item := range p.Map.Items {
+			kt, err := checkExpr(item.Key, env)
+			if err != nil {
+				return nil, err
+			}
+			vt, err := checkExpr(item.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			if keyT == nil {
+				keyT = kt
+			} else if !keyT.Equal(kt) {
+				keyT = AnyType{}
+			}
+			if valT == nil {
+				valT = vt
+			} else if !valT.Equal(vt) {
+				valT = AnyType{}
+			}
+		}
+		if keyT == nil {
+			keyT = AnyType{}
+		}
+		if valT == nil {
+			valT = AnyType{}
+		}
+		return MapType{Key: keyT, Value: valT}, nil
 
 	case p.FunExpr != nil:
 		return checkFunExpr(p.FunExpr, env, expected, p.Pos)

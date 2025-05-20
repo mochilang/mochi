@@ -6,9 +6,7 @@
       (binary * (selector x) (selector x))
     )
   )
-  (exprstmt
-    (call print
-      (call square (int 5))
-    )
+  (call print
+    (call square (int 5))
   )
 )

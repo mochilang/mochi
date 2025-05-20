@@ -1,112 +1,104 @@
 package interpreter
 
 import (
-	"fmt"
-
 	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/diagnostic"
 )
 
-// --- Runtime Diagnostics (I000 - I099) ---
+var Errors = map[string]diagnostic.Template{
+	// --- Variables and Functions ---
+	"I000": {"I000", "undefined variable: %s", "`%s` is not defined. Declare it before use."},
+	"I001": {"I001", "undefined function or closure: %s", "`%s` is not defined. Declare it before calling."},
+	"I002": {"I002", "function %s expects %d arguments, got %d", "Pass exactly %d arguments to `%s`."},
+	"I003": {"I003", "internal error: argument count mismatch in closure", "Check the closure's argument handling logic."},
 
+	// --- Literals and Expressions ---
+	"I004": {"I004", "invalid primary expression", "Expected a literal, variable, or function call."},
+	"I005": {"I005", "invalid literal value", "Check the format or syntax of the literal."},
+	"I006": {"I006", "invalid map key: expected string, got %T", "Only `string` keys are allowed in map literals."},
+	"I007": {"I007", "cannot access field `%s` on non-object of type %s", "Access fields only on objects or maps."},
+
+	// --- Operators ---
+	"I008": {"I008", "cannot apply operator '%s' to types %s and %s", "Use compatible types for the operator."},
+	"I009": {"I009", "invalid use of unary '%s' on %s", "Use unary operators only with numbers or booleans."},
+	"I010": {"I010", "unknown unary operator: %s", "Supported unary operators are: `-`, `!`."},
+	"I011": {"I011", "range bounds must be integers, got %s and %s", "Use integers in `for x in a..b` ranges."},
+	"I012": {"I012", "division by zero", "Ensure the denominator is not zero."},
+
+	// --- Indexing and Slicing ---
+	"I013": {"I013", "index must be an integer, got %T", "Use an `int` value as an index (e.g., `list[0]`)."},
+	"I014": {"I014", "index %d out of bounds for length %d", "Use an index within bounds of the list or string."},
+	"I015": {"I015", "invalid slice range [%d:%d] for length %d", "Make sure the slice range is valid and within bounds."},
+	"I016": {"I016", "cannot take length of type %s", "Use `len(...)` only on lists, strings, or maps."},
+	"I017": {"I017", "cannot take length of type %s", "Use `len(...)` only on lists and strings."},
+
+	// --- Testing ---
+	"I018": {"I018", "expect condition failed", "The condition evaluated to `false`."},
+}
+
+// --- Variables and Functions ---
 func errUndefinedVariable(pos lexer.Position, name string) error {
-	return diagnostic.New("I000", pos,
-		fmt.Sprintf("undefined variable: %s", name),
-		"Make sure the variable is declared before use.")
+	return Errors["I000"].New(pos, name)
 }
-
-func errFieldAccessOnNonObject(pos lexer.Position, field string, typ string) error {
-	return diagnostic.New("I001", pos,
-		fmt.Sprintf("cannot access field '%s' on non-object of type %s", field, typ),
-		"Use a map-like object to access fields.")
-}
-
-func errInvalidPrimaryExpression(pos lexer.Position) error {
-	return diagnostic.New("I002", pos,
-		"invalid primary expression",
-		"Expected a literal, function, or variable.")
-}
-
-func errInvalidLiteral(pos lexer.Position) error {
-	return diagnostic.New("I003", pos,
-		"invalid literal value",
-		"Check the syntax of the literal.")
-}
-
 func errUndefinedFunctionOrClosure(pos lexer.Position, name string) error {
-	return diagnostic.New("I004", pos,
-		fmt.Sprintf("undefined function or closure: %s", name),
-		"Ensure the function or closure exists in scope.")
+	return Errors["I001"].New(pos, name)
 }
-
 func errTooManyFunctionArgs(pos lexer.Position, name string, expected, actual int) error {
-	return diagnostic.New("I005", pos,
-		fmt.Sprintf("function %s expects %d arguments, got %d", name, expected, actual),
-		"Pass the correct number of arguments.")
+	return Errors["I002"].New(pos, name, expected, actual)
 }
-
 func errInternalClosureArgMismatch(pos lexer.Position) error {
-	return diagnostic.New("I006", pos,
-		"internal error: argument count mismatch in closure",
-		"Check closure invocation logic.")
+	return Errors["I003"].New(pos)
 }
 
-func errInvalidOperator(pos lexer.Position, op string, left, right string) error {
-	return diagnostic.New("I007", pos,
-		fmt.Sprintf("cannot apply operator '%s' to types %s and %s", op, left, right),
-		"Use compatible types for this operator.")
+// --- Literals and Expressions ---
+func errInvalidPrimaryExpression(pos lexer.Position) error {
+	return Errors["I004"].New(pos)
+}
+func errInvalidLiteral(pos lexer.Position) error {
+	return Errors["I005"].New(pos)
+}
+func errInvalidMapKey(pos lexer.Position, key any) error {
+	return Errors["I006"].New(pos, key)
+}
+func errFieldAccessOnNonObject(pos lexer.Position, field, typ string) error {
+	return Errors["I007"].New(pos, field, typ)
 }
 
-func errInvalidUnaryOperator(pos lexer.Position, op string, typ string) error {
-	return diagnostic.New("I008", pos,
-		fmt.Sprintf("invalid use of unary '%s' on %s", op, typ),
-		"Use unary operators only with numeric or boolean values.")
+// --- Operators ---
+func errInvalidOperator(pos lexer.Position, op, left, right string) error {
+	return Errors["I008"].New(pos, op, left, right)
 }
-
+func errInvalidUnaryOperator(pos lexer.Position, op, typ string) error {
+	return Errors["I009"].New(pos, op, typ)
+}
 func errUnknownUnaryOperator(pos lexer.Position, op string) error {
-	return diagnostic.New("I009", pos,
-		fmt.Sprintf("unknown unary operator: %s", op),
-		"Supported operators are '-', '!'")
+	return Errors["I010"].New(pos, op)
 }
-
 func errInvalidRangeBounds(pos lexer.Position, fromType, toType string) error {
-	return diagnostic.New("I010", pos,
-		fmt.Sprintf("range bounds must be integers, got %s and %s", fromType, toType),
-		"Ensure both `for x in a..b` bounds are integers.")
+	return Errors["I011"].New(pos, fromType, toType)
 }
-
 func errDivisionByZero(pos lexer.Position) error {
-	return diagnostic.New("I011", pos,
-		"division by zero",
-		"Make sure the denominator is not zero.")
+	return Errors["I012"].New(pos)
 }
 
+// --- Indexing and Slicing ---
 func errInvalidIndex(pos lexer.Position, val any) error {
-	return diagnostic.New("I012", pos,
-		fmt.Sprintf("index must be an integer, got %T", val),
-		"Use an integer value inside the brackets.")
+	return Errors["I013"].New(pos, val)
 }
-
 func errIndexOutOfBounds(pos lexer.Position, index, length int) error {
-	return diagnostic.New("I013", pos,
-		fmt.Sprintf("index %d out of bounds for length %d", index, length),
-		"Ensure the index is within the list or string length.")
+	return Errors["I014"].New(pos, index, length)
 }
-
 func errSliceOutOfBounds(pos lexer.Position, start, end, length int) error {
-	return diagnostic.New("I014", pos,
-		fmt.Sprintf("invalid slice range [%d:%d] for length %d", start, end, length),
-		"Start must be ≤ end and within the sequence bounds.")
+	return Errors["I015"].New(pos, start, end, length)
 }
-
 func errInvalidIndexTarget(pos lexer.Position, typ string) error {
-	return diagnostic.New("I015", pos,
-		fmt.Sprintf("cannot index value of type %s", typ),
-		"Only lists and strings support indexing/slicing.")
+	return Errors["I016"].New(pos, typ)
+}
+func errInvalidLenOperand(pos lexer.Position, typ string) error {
+	return Errors["I017"].New(pos, typ)
 }
 
-func errInvalidLenOperand(pos lexer.Position, typ string) error {
-	return diagnostic.New("I016", pos,
-		fmt.Sprintf("cannot take length of type %s", typ),
-		"Use `len(...)` only with lists or strings.")
+// --- Testing ---
+func errExpectFailed(pos lexer.Position) error {
+	return Errors["I018"].New(pos)
 }

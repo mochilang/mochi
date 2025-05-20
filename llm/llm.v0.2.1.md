@@ -6,7 +6,7 @@
 
 This document includes all core source files used by the Mochi interpreter and runtime toolchain.
 
-## 📖 Overview
+## Overview
 
 - **cmd/mochi/main.go**: Entry point of the Mochi CLI tool.
 - **diagnostic/diagnostic.go**: Structured error reporting with source hints.
@@ -54,6 +54,7 @@ var (
 
 type CLI struct {
 	Run     *RunCmd  `arg:"subcommand:run" help:"Run a Mochi source file"`
+	Test    *TestCmd `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
 	Repl    *ReplCmd `arg:"subcommand:repl" help:"Start an interactive REPL session"`
 	Version bool     `arg:"--version" help:"Print version info and exit"`
 }
@@ -63,12 +64,16 @@ type RunCmd struct {
 	PrintAST bool   `arg:"--ast" help:"Print parsed AST in Lisp format"`
 }
 
+type TestCmd struct {
+	File string `arg:"positional,required" help:"Path to .mochi source file"`
+}
+
 type ReplCmd struct{}
 
-// Minimal, purposeful color
+// Color helpers
 var (
 	cError = color.New(color.FgRed, color.Bold).SprintFunc()
-	cTitle = color.New(color.FgCyan).SprintFunc()
+	cTitle = color.New(color.FgCyan, color.Bold).SprintFunc()
 )
 
 func main() {
@@ -80,20 +85,19 @@ func main() {
 	switch {
 	case cli.Version:
 		printVersion()
-		return
-
 	case cli.Repl != nil:
 		repl := repl.New(os.Stdout, version)
 		repl.Run()
-		return
-
 	case cli.Run != nil:
 		if err := runFile(cli.Run); err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("error:"), err)
 			os.Exit(1)
 		}
-		return
-
+	case cli.Test != nil:
+		if err := runTests(cli.Test); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("test failed:"), err)
+			os.Exit(1)
+		}
 	default:
 		arg.MustParse(&cli).WriteHelp(os.Stderr)
 		os.Exit(2)
@@ -120,29 +124,23 @@ func humanBuildTime() string {
 }
 
 func runFile(cmd *RunCmd) error {
-	prog, err := parser.Parse(cmd.File)
+	prog, err := parseOrPrintError(cmd.File)
 	if err != nil {
-		var pathErr *os.PathError
-		if errors.As(err, &pathErr) && os.IsNotExist(pathErr.Err) {
-			return fmt.Errorf("file not found: %s", cmd.File)
-		}
-		return fmt.Errorf("parse error:\n  %v", err)
+		return err
 	}
 
 	if cmd.PrintAST {
-		tree := ast.FromProgram(prog)
-		fmt.Println(tree.String())
+		fmt.Println(ast.FromProgram(prog).String())
 		return nil
 	}
 
 	env := types.NewEnv(nil)
-	typeErrors := types.Check(prog, env)
-	if len(typeErrors) > 0 {
-		fmt.Fprintln(os.Stderr)
+	if typeErrs := types.Check(prog, env); len(typeErrs) > 0 {
 		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, err := range typeErrors {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
+		for i, e := range typeErrs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, e)
 		}
+		return fmt.Errorf("aborted due to type errors")
 	}
 
 	interp := interpreter.New(prog, env)
@@ -151,6 +149,40 @@ func runFile(cmd *RunCmd) error {
 	}
 
 	return nil
+}
+
+func runTests(cmd *TestCmd) error {
+	prog, err := parseOrPrintError(cmd.File)
+	if err != nil {
+		return err
+	}
+
+	env := types.NewEnv(nil)
+	if typeErrs := types.Check(prog, env); len(typeErrs) > 0 {
+		fmt.Fprintln(os.Stderr, cError("type error:"))
+		for i, e := range typeErrs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, e)
+		}
+		return fmt.Errorf("aborted due to type errors")
+	}
+
+	interp := interpreter.New(prog, env)
+	if err := interp.Test(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func parseOrPrintError(path string) (*parser.Program, error) {
+	prog, err := parser.Parse(path)
+	if err != nil {
+		var pathErr *os.PathError
+		if errors.As(err, &pathErr) && os.IsNotExist(pathErr.Err) {
+			return nil, fmt.Errorf("file not found: %s", path)
+		}
+		return nil, fmt.Errorf("parse error:\n  %v", err)
+	}
+	return prog, nil
 }
 
 ```
@@ -274,6 +306,7 @@ type Program struct {
 }
 
 type Statement struct {
+	Pos    lexer.Position
 	Test   *TestBlock  `parser:"@@"`
 	Expect *ExpectStmt `parser:"| @@"`
 	Agent  *AgentDecl  `parser:"| @@"`
@@ -2061,11 +2094,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
+	"github.com/fatih/color"
 	"mochi/ast"
 	"mochi/parser"
 	"mochi/types"
+	"os"
 	"reflect"
 	"strings"
+	"time"
 )
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
@@ -2090,46 +2126,123 @@ func (i *Interpreter) SetProgram(prog *parser.Program) {
 
 func (i *Interpreter) Env() *types.Env { return i.env }
 
+var (
+	cTest = color.New(color.FgYellow).SprintFunc()
+	cOK   = color.New(color.FgGreen).SprintFunc()
+	cFail = color.New(color.FgRed).SprintFunc()
+)
+
+func printTest(name string) {
+	fmt.Printf("   %s %s ...\n", cTest("test"), name)
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   %s %-30s ...", cTest("test"), name)
+}
+
+func printTestPass(duration time.Duration) {
+	fmt.Printf(" %s (%s)\n", cOK("ok"), formatDuration(duration))
+}
+
+func printTestFail(err error, duration time.Duration) {
+	fmt.Printf(" %s %v (%s)\n", cFail("fail"), err, formatDuration(duration))
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
 func (i *Interpreter) Run() error {
-	var testFailures []error
-
+	// Load all shared definitions (let, fun) first
 	for _, stmt := range i.prog.Statements {
-		if stmt.Test != nil {
-			name := stmt.Test.Name
-			fmt.Printf("🔍 Test %s\n", name)
-
-			child := types.NewEnv(i.env)
-			interp := &Interpreter{prog: i.prog, env: child, types: i.types}
-
-			var failed error
-			for _, s := range stmt.Test.Body {
-				if err := interp.evalStmt(s); err != nil {
-					failed = fmt.Errorf("❌ %s: %w", name, err)
-					break // stop this test, but continue others
-				}
-			}
-
-			if failed != nil {
-				fmt.Println(failed)
-				testFailures = append(testFailures, failed)
-			} else {
-				fmt.Printf("✅ %s passed\n", name)
-			}
-
-		} else {
+		if stmt.Let != nil || stmt.Fun != nil {
 			if err := i.evalStmt(stmt); err != nil {
-				return err // still stop on non-test failure
+				return err
 			}
 		}
 	}
 
-	if len(testFailures) > 0 {
-		var sb strings.Builder
-		fmt.Fprintf(&sb, "\n💥 %d test(s) failed:\n", len(testFailures))
-		for _, err := range testFailures {
-			fmt.Fprintf(&sb, "  - %v\n", err)
+	// Run only non-test, non-decl statements (Expr, If, For, Return)
+	for _, stmt := range i.prog.Statements {
+		if stmt.Test != nil || stmt.Let != nil || stmt.Fun != nil {
+			continue
 		}
-		return errors.New(sb.String())
+		if err := i.evalStmt(stmt); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (i *Interpreter) Test() error {
+	var failures []error
+
+	// Preload all shared declarations (let, fun)
+	for _, stmt := range i.prog.Statements {
+		if stmt.Let != nil || stmt.Fun != nil {
+			if err := i.evalStmt(stmt); err != nil {
+				return err
+			}
+		}
+	}
+
+	// Run each test block independently
+	for _, stmt := range i.prog.Statements {
+		if stmt.Test == nil {
+			continue
+		}
+
+		name := stmt.Test.Name
+		printTestStart(name)
+
+		child := types.NewEnv(i.env)
+		interp := &Interpreter{
+			prog:  i.prog,
+			env:   child,
+			types: i.types,
+		}
+
+		start := time.Now()
+		var failed error
+		for _, s := range stmt.Test.Body {
+			if err := interp.evalStmt(s); err != nil {
+				failed = err
+				break
+			}
+		}
+		duration := time.Since(start)
+
+		if failed != nil {
+			printTestFail(failed, duration)
+			failures = append(failures, failed)
+		} else {
+			printTestPass(duration)
+		}
+	}
+
+	if len(failures) > 0 {
+		fmt.Fprintf(os.Stderr, "\n%s %d test(s) failed.\n", cFail("[FAIL]"), len(failures))
+		/*
+			for _, err := range failures {
+				// Only print the error *message*, not full diagnostic again
+				if diag, ok := err.(interface{ Error() string }); ok {
+					fmt.Fprintf(os.Stderr, "  - %s\n", diag.Error()) // Just single-line summary
+				} else {
+					fmt.Fprintf(os.Stderr, "  - %v\n", err)
+				}
+			}
+		*/
+		return fmt.Errorf("test failed: %d test(s) failed", len(failures))
 	}
 
 	return nil
@@ -2208,7 +2321,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 			return err
 		}
 		if b, ok := val.(bool); !ok || !b {
-			return fmt.Errorf("expect failed: %s", ast.PrettyStatement(s))
+			return errExpectFailed(s.Expect.Pos, fmt.Sprintf("%T", s.Expect.Value))
 		}
 		return nil
 
@@ -2898,7 +3011,6 @@ package interpreter
 
 import (
 	"fmt"
-
 	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/diagnostic"
 )
@@ -3005,6 +3117,12 @@ func errInvalidLenOperand(pos lexer.Position, typ string) error {
 	return diagnostic.New("I016", pos,
 		fmt.Sprintf("cannot take length of type %s", typ),
 		"Use `len(...)` only with lists or strings.")
+}
+
+func errExpectFailed(pos lexer.Position, expr string) error {
+	return diagnostic.New("I016", pos,
+		"expect condition failed",
+		fmt.Sprintf("The condition `%s` evaluated to false.", expr))
 }
 
 ```

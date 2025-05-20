@@ -7,9 +7,7 @@
       (binary + (selector a) (selector b))
     )
   )
-  (exprstmt
-    (call print
-      (call add (int 1) (int 2))
-    )
+  (call print
+    (call add (int 1) (int 2))
   )
 )

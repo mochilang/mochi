@@ -1,8 +1,8 @@
-error[I011]: division by zero
+error[I012]: division by zero
   --> tests/interpreter/errors/divide_by_zero.mochi:1:11
 
   1 | let x = 1 / 0
     |           ^
 
 help:
-  Make sure the denominator is not zero.
+  Ensure the denominator is not zero.

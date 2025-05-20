@@ -1,0 +1,39 @@
+// examples/v0.2/map.mochi
+
+// Declare a map with string keys and int values
+let scores: map<string, int> = {
+  "Alice": 10,
+  "Bob": 15
+}
+
+// Insert or update values
+// scores["Charlie"] = 20 - won't support for now assign only name = expr
+// scores["Alice"] = 12
+
+// Access a value
+let aliceScore = scores["Alice"]
+print("Alice's score:", aliceScore)
+
+// Safe access with default fallback
+// let unknownScore = scores["Zoe"] or 0
+// print("Zoe's score:", unknownScore)  // prints 0
+
+// Remove a key using `del`
+// del scores["Bob"] // Remove this, make it immutable
+
+// Iterate over key-value pairs
+/*
+print("Final scores:")
+for name, score in scores {
+  print(name + " scored " + score)
+}
+*/
+
+// Length of the map
+print("Total players:", len(scores))
+
+// Test block
+test "map basic operations" {
+  expect scores["Alice"] == 10
+  expect len(scores) == 2
+}

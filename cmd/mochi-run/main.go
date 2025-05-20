@@ -13,12 +13,25 @@ import (
 	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/types"
+
+	"github.com/fatih/color"
 )
 
 var version = "dev" // Set via -ldflags "-X main.version=..."
 
+var (
+	bullet = color.New(color.FgHiBlue).SprintFunc()
+	cInfo  = color.New(color.FgWhite).SprintFunc()
+	cTest  = color.New(color.FgYellow).SprintFunc()
+	cOK    = color.New(color.FgGreen).SprintFunc()
+	cFail  = color.New(color.FgRed).SprintFunc()
+	cDone  = color.New(color.FgGreen, color.Bold).SprintFunc()
+)
+
 func main() {
-	fmt.Printf("📦 Mochi Examples Generator (v%s)\n", version)
+	fmt.Printf("🍡 Mochi Examples Generator v%s\n", version)
+
+	color.NoColor = false
 
 	const exampleDir = "examples"
 	const llmDir = "llm"
@@ -28,36 +41,35 @@ func main() {
 	grammarOut := filepath.Join(llmDir, "grammar.ebnf")
 
 	if err := os.MkdirAll(llmDir, 0755); err != nil {
-		exitf("❌ Failed to create %s: %v", llmDir, err)
+		exitf("[FAIL] create %s: %v", llmDir, err)
 	}
 
 	files, err := listExampleFiles(exampleDir)
 	if err != nil {
-		exitf("❌ Failed to list example files: %v", err)
+		exitf("[FAIL] list example files: %v", err)
 	}
 
-	// Generate Examples Markdown
 	if err := writeFile(exampleOut, buildMarkdown(exampleDir, files)); err != nil {
-		exitf("❌ Failed to write %s: %v", exampleOut, err)
+		exitf("[FAIL] write %s: %v", exampleOut, err)
 	}
-	fmt.Printf("✅ Generated %s with %d example(s)\n", exampleOut, len(files))
+	printDone(fmt.Sprintf("generated %s with %d examples", exampleOut, len(files)))
 
-	// Generate LLM Source Markdown
 	if err := generateLLMMarkdown(llmOut); err != nil {
-		exitf("❌ Failed to write %s: %v", llmOut, err)
+		exitf("[FAIL] write %s: %v", llmOut, err)
 	}
-	fmt.Printf("✅ Generated %s for LLM processing\n", llmOut)
+	printDone(fmt.Sprintf("generated %s for LLM", llmOut))
 
-	// Generate EBNF Grammar
 	if err := writeFile(grammarOut, parser.Parser.String()); err != nil {
-		exitf("❌ Failed to write %s: %v", grammarOut, err)
+		exitf("[FAIL] write %s: %v", grammarOut, err)
 	}
-	fmt.Printf("✅ Generated %s for grammar EBNF\n", grammarOut)
+	printDone(fmt.Sprintf("generated %s for grammar", grammarOut))
 
-	// Copy latest
 	copyFile(exampleOut, filepath.Join(llmDir, "examples.latest.md"))
 	copyFile(llmOut, filepath.Join(llmDir, "llm.latest.md"))
 }
+
+func printStep(path string) { fmt.Printf("  %s %s\n", bullet("•"), cInfo(path)) }
+func printDone(msg string)  { fmt.Printf("%s %s\n", cDone("✔"), msg) }
 
 func listExampleFiles(root string) ([]string, error) {
 	var files []string
@@ -80,10 +92,10 @@ func buildMarkdown(exampleDir string, files []string) string {
 	var section strings.Builder
 
 	sb.WriteString("# Mochi Examples Index\n\n")
-	fmt.Fprintf(&sb, "> 📦 Generated with [Mochi Compiler](https://github.com/mochi-lang/mochi) `v%s`\n\n", version)
+	fmt.Fprintf(&sb, "> Generated with [Mochi](https://github.com/mochi-lang/mochi) `v%s`\n\n", version)
 	sb.WriteString("Each example includes source code, AST, and runtime output.\n\n")
 
-	sb.WriteString("## 📚 Files\n\n")
+	sb.WriteString("## Files\n\n")
 	for _, file := range files {
 		rel, _ := filepath.Rel(exampleDir, file)
 		anchor := strings.ReplaceAll(strings.TrimSuffix(strings.ToLower(rel), ".mochi"), string(os.PathSeparator), "-")
@@ -92,15 +104,15 @@ func buildMarkdown(exampleDir string, files []string) string {
 	sb.WriteString("\n---\n")
 
 	for _, file := range files {
-		fmt.Printf("🔍 Processing %s\n", file)
+		printStep(file)
 		if err := appendExampleSection(&section, file); err != nil {
-			fmt.Fprintf(os.Stderr, "❌ %s: %v\n", file, err)
+			fmt.Fprintf(os.Stderr, "[FAIL] %s: %v\n", file, err)
 			errors = append(errors, fmt.Sprintf("- `%s`: %v", file, err))
 		}
 	}
 
 	if len(errors) > 0 {
-		sb.WriteString("## ⚠️ Errors\n\nThe following files failed to compile or run:\n\n")
+		sb.WriteString("## Errors\n\nThe following files failed to compile or run:\n\n")
 		for _, err := range errors {
 			sb.WriteString(err + "\n")
 		}
@@ -116,30 +128,30 @@ func appendExampleSection(sb *strings.Builder, path string) error {
 
 	source, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Fprintf(sb, "## %s\n\n❌ Failed to read file: %v\n", rel, err)
+		fmt.Fprintf(sb, "## %s\n\n[FAIL] Failed to read file: %v\n", rel, err)
 		return err
 	}
 
 	fmt.Fprintf(sb, "\n## %s\n\n", rel)
 	sb.WriteString("<details>\n<summary>View Source, AST, and Output</summary>\n\n")
 
-	sb.WriteString("#### 📄 Source\n```mochi\n")
+	sb.WriteString("#### Source\n```mochi\n")
 	sb.WriteString(strings.TrimSpace(string(source)))
 	sb.WriteString("\n```\n\n")
 
 	prog, err := parser.Parse(path)
 	if err != nil {
-		sb.WriteString("#### ❌ Parse Error\n```text\n")
+		sb.WriteString("#### Parse Error\n```text\n")
 		sb.WriteString(err.Error() + "\n")
 		sb.WriteString("```\n</details>\n")
 		return fmt.Errorf("parse error: %w", err)
 	}
 
-	sb.WriteString("#### 🌲 AST\n```lisp\n")
+	sb.WriteString("#### AST\n```lisp\n")
 	sb.WriteString(ast.FromProgram(prog).String())
 	sb.WriteString("```\n")
 
-	sb.WriteString("#### ▶️ Output\n```text\n")
+	sb.WriteString("#### Output\n```text\n")
 	output, runErr := runProgram(prog)
 	sb.WriteString(output)
 	sb.WriteString("```\n</details>\n")
@@ -153,7 +165,7 @@ func runProgram(prog *parser.Program) (string, error) {
 
 	typeErrors := types.Check(prog, env)
 	if len(typeErrors) > 0 {
-		fmt.Fprintf(output, "🧠 Type Check Failed\n\n")
+		fmt.Fprintf(output, "Type Check Failed\n\n")
 		for i, err := range typeErrors {
 			fmt.Fprintf(output, "  %2d. %v\n", i+1, err)
 		}
@@ -164,7 +176,7 @@ func runProgram(prog *parser.Program) (string, error) {
 	interp.Env().SetWriter(output)
 
 	if err := interp.Run(); err != nil {
-		fmt.Fprintf(output, "💥 Runtime Error\n\n  → %v\n", err)
+		fmt.Fprintf(output, "Runtime Error\n\n  → %v\n", err)
 		return output.String(), fmt.Errorf("runtime error: %w", err)
 	}
 
@@ -183,7 +195,6 @@ func generateLLMMarkdown(outPath string) error {
 		{"parser/errors.go", "## parser/errors.go", "Parser error handling logic."},
 		{"ast/ast.go", "## ast/ast.go", "AST node types."},
 		{"ast/convert.go", "## ast/convert.go", "Converts parser output to typed AST."},
-		{"ast/pretty.go", "## ast/pretty.go", "Pretty-print AST in Lisp-style format."},
 		{"types/env.go", "## types/env.go", "Type environment and symbol resolution."},
 		{"types/check.go", "## types/check.go", "Static type checker implementation."},
 		{"types/errors.go", "## types/errors.go", "Type checker error definitions."},
@@ -196,7 +207,8 @@ func generateLLMMarkdown(outPath string) error {
 	sb.WriteString("// generated by mochi-run, do not edit\n\n")
 	fmt.Fprintf(&sb, "# Mochi Source Files for LLM Ingestion\n\n> Version: `%s`\n\n", version)
 	sb.WriteString("This document includes all core source files used by the Mochi interpreter and runtime toolchain.\n\n")
-	sb.WriteString("## 📖 Overview\n\n")
+
+	sb.WriteString("## Overview\n\n")
 	for _, src := range sources {
 		fmt.Fprintf(&sb, "- **%s**: %s\n", src.Path, src.Description)
 	}
@@ -223,28 +235,28 @@ func writeFile(path, content string) error {
 func copyFile(src, dst string) {
 	in, err := os.Open(src)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Failed to open %s: %v\n", src, err)
+		fmt.Fprintf(os.Stderr, "[FAIL] open %s: %v\n", src, err)
 		return
 	}
 	defer func() {
 		if err := in.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "⚠️ Failed to close %s: %v\n", src, err)
+			fmt.Fprintf(os.Stderr, "[WARN] close %s: %v\n", src, err)
 		}
 	}()
 
 	out, err := os.Create(dst)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Failed to create %s: %v\n", dst, err)
+		fmt.Fprintf(os.Stderr, "[FAIL] create %s: %v\n", dst, err)
 		return
 	}
 	defer func() {
 		if err := out.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "⚠️ Failed to close %s: %v\n", dst, err)
+			fmt.Fprintf(os.Stderr, "[WARN] close %s: %v\n", dst, err)
 		}
 	}()
 
 	if _, err := io.Copy(out, in); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Failed to copy %s to %s: %v\n", src, dst, err)
+		fmt.Fprintf(os.Stderr, "[FAIL] copy %s to %s: %v\n", src, dst, err)
 	}
 }
 

@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
-	"mochi/ast"
+	"github.com/fatih/color"
 	"mochi/parser"
 	"mochi/types"
+	"os"
 	"reflect"
 	"strings"
+	"time"
 )
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
@@ -33,46 +35,113 @@ func (i *Interpreter) SetProgram(prog *parser.Program) {
 
 func (i *Interpreter) Env() *types.Env { return i.env }
 
+var (
+	cTest = color.New(color.FgYellow).SprintFunc()
+	cOK   = color.New(color.FgGreen).SprintFunc()
+	cFail = color.New(color.FgRed).SprintFunc()
+)
+
+func printTest(name string) {
+	fmt.Printf("   %s %s ...\n", cTest("test"), name)
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   %s %-30s ...", cTest("test"), name)
+}
+
+func printTestPass(duration time.Duration) {
+	fmt.Printf(" %s (%s)\n", cOK("ok"), formatDuration(duration))
+}
+
+func printTestFail(err error, duration time.Duration) {
+	fmt.Printf(" %s %v (%s)\n", cFail("fail"), err, formatDuration(duration))
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
 func (i *Interpreter) Run() error {
-	var testFailures []error
-
+	// Load all shared definitions (let, fun) first
 	for _, stmt := range i.prog.Statements {
-		if stmt.Test != nil {
-			name := stmt.Test.Name
-			fmt.Printf("🔍 Test %s\n", name)
-
-			child := types.NewEnv(i.env)
-			interp := &Interpreter{prog: i.prog, env: child, types: i.types}
-
-			var failed error
-			for _, s := range stmt.Test.Body {
-				if err := interp.evalStmt(s); err != nil {
-					failed = fmt.Errorf("❌ %s: %w", name, err)
-					break // stop this test, but continue others
-				}
-			}
-
-			if failed != nil {
-				fmt.Println(failed)
-				testFailures = append(testFailures, failed)
-			} else {
-				fmt.Printf("✅ %s passed\n", name)
-			}
-
-		} else {
+		if stmt.Let != nil || stmt.Fun != nil {
 			if err := i.evalStmt(stmt); err != nil {
-				return err // still stop on non-test failure
+				return err
 			}
 		}
 	}
 
-	if len(testFailures) > 0 {
-		var sb strings.Builder
-		fmt.Fprintf(&sb, "\n💥 %d test(s) failed:\n", len(testFailures))
-		for _, err := range testFailures {
-			fmt.Fprintf(&sb, "  - %v\n", err)
+	// Run only non-test, non-decl statements (Expr, If, For, Return)
+	for _, stmt := range i.prog.Statements {
+		if stmt.Test != nil || stmt.Let != nil || stmt.Fun != nil {
+			continue
 		}
-		return errors.New(sb.String())
+		if err := i.evalStmt(stmt); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (i *Interpreter) Test() error {
+	var failures []error
+
+	// Preload all shared declarations (let, fun)
+	for _, stmt := range i.prog.Statements {
+		if stmt.Let != nil || stmt.Fun != nil {
+			if err := i.evalStmt(stmt); err != nil {
+				return err
+			}
+		}
+	}
+
+	// Run each test block independently
+	for _, stmt := range i.prog.Statements {
+		if stmt.Test == nil {
+			continue
+		}
+
+		name := stmt.Test.Name
+		printTestStart(name)
+
+		child := types.NewEnv(i.env)
+		interp := &Interpreter{
+			prog:  i.prog,
+			env:   child,
+			types: i.types,
+		}
+
+		start := time.Now()
+		var failed error
+		for _, s := range stmt.Test.Body {
+			if err := interp.evalStmt(s); err != nil {
+				failed = err
+				break
+			}
+		}
+		duration := time.Since(start)
+
+		if failed != nil {
+			printTestFail(failed, duration)
+			failures = append(failures, failed)
+		} else {
+			printTestPass(duration)
+		}
+	}
+
+	if len(failures) > 0 {
+		fmt.Fprintf(os.Stderr, "\n%s %d test(s) failed.\n", cFail("[FAIL]"), len(failures))
+		return fmt.Errorf("test failed: %d test(s) failed", len(failures))
 	}
 
 	return nil
@@ -151,12 +220,12 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 			return err
 		}
 		if b, ok := val.(bool); !ok || !b {
-			return fmt.Errorf("expect failed: %s", ast.PrettyStatement(s))
+			return errExpectFailed(s.Expect.Pos)
 		}
 		return nil
 
 	default:
-		return fmt.Errorf("unsupported statement: %s", ast.PrettyStatement(s))
+		return fmt.Errorf("unsupported statement: %#v", s)
 	}
 }
 
@@ -421,6 +490,22 @@ func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
 				}
 				val = string(runes[start:end])
 			}
+		case map[string]any:
+			if op.Colon != nil {
+				return nil, errInvalidIndexTarget(op.Pos, "map")
+			}
+			if op.Start == nil {
+				return nil, errInvalidIndex(op.Pos, nil)
+			}
+			key, err := i.evalExpr(op.Start)
+			if err != nil {
+				return nil, err
+			}
+			keyStr, ok := key.(string)
+			if !ok {
+				return nil, errInvalidMapKey(op.Pos, key)
+			}
+			val = src[keyStr]
 
 		default:
 			return nil, errInvalidIndexTarget(op.Pos, fmt.Sprintf("%T", src))
@@ -467,6 +552,24 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			elems = append(elems, val)
 		}
 		return elems, nil
+	case p.Map != nil:
+		obj := map[string]any{}
+		for _, item := range p.Map.Items {
+			keyVal, err := i.evalExpr(item.Key)
+			if err != nil {
+				return nil, err
+			}
+			strKey, ok := keyVal.(string)
+			if !ok {
+				return nil, errInvalidMapKey(item.Pos, keyVal)
+			}
+			val, err := i.evalExpr(item.Value)
+			if err != nil {
+				return nil, err
+			}
+			obj[strKey] = val
+		}
+		return obj, nil
 
 	default:
 		return nil, errInvalidPrimaryExpression(p.Pos)
@@ -551,6 +654,8 @@ func builtinLen(i *Interpreter, c *parser.CallExpr) (any, error) {
 		return len(v), nil
 	case string:
 		return len([]rune(v)), nil
+	case map[string]any:
+		return len(v), nil
 	default:
 		return nil, errInvalidLenOperand(c.Pos, fmt.Sprintf("%T", val))
 	}

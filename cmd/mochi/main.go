@@ -25,6 +25,7 @@ var (
 
 type CLI struct {
 	Run     *RunCmd  `arg:"subcommand:run" help:"Run a Mochi source file"`
+	Test    *TestCmd `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
 	Repl    *ReplCmd `arg:"subcommand:repl" help:"Start an interactive REPL session"`
 	Version bool     `arg:"--version" help:"Print version info and exit"`
 }
@@ -34,12 +35,16 @@ type RunCmd struct {
 	PrintAST bool   `arg:"--ast" help:"Print parsed AST in Lisp format"`
 }
 
+type TestCmd struct {
+	File string `arg:"positional,required" help:"Path to .mochi source file"`
+}
+
 type ReplCmd struct{}
 
-// Minimal, purposeful color
+// Color helpers
 var (
 	cError = color.New(color.FgRed, color.Bold).SprintFunc()
-	cTitle = color.New(color.FgCyan).SprintFunc()
+	cTitle = color.New(color.FgCyan, color.Bold).SprintFunc()
 )
 
 func main() {
@@ -51,20 +56,19 @@ func main() {
 	switch {
 	case cli.Version:
 		printVersion()
-		return
-
 	case cli.Repl != nil:
 		repl := repl.New(os.Stdout, version)
 		repl.Run()
-		return
-
 	case cli.Run != nil:
 		if err := runFile(cli.Run); err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("error:"), err)
 			os.Exit(1)
 		}
-		return
-
+	case cli.Test != nil:
+		if err := runTests(cli.Test); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("test failed:"), err)
+			os.Exit(1)
+		}
 	default:
 		arg.MustParse(&cli).WriteHelp(os.Stderr)
 		os.Exit(2)
@@ -91,29 +95,23 @@ func humanBuildTime() string {
 }
 
 func runFile(cmd *RunCmd) error {
-	prog, err := parser.Parse(cmd.File)
+	prog, err := parseOrPrintError(cmd.File)
 	if err != nil {
-		var pathErr *os.PathError
-		if errors.As(err, &pathErr) && os.IsNotExist(pathErr.Err) {
-			return fmt.Errorf("file not found: %s", cmd.File)
-		}
-		return fmt.Errorf("parse error:\n  %v", err)
+		return err
 	}
 
 	if cmd.PrintAST {
-		tree := ast.FromProgram(prog)
-		fmt.Println(tree.String())
+		fmt.Println(ast.FromProgram(prog).String())
 		return nil
 	}
 
 	env := types.NewEnv(nil)
-	typeErrors := types.Check(prog, env)
-	if len(typeErrors) > 0 {
-		fmt.Fprintln(os.Stderr)
+	if typeErrs := types.Check(prog, env); len(typeErrs) > 0 {
 		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, err := range typeErrors {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
+		for i, e := range typeErrs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, e)
 		}
+		return fmt.Errorf("aborted due to type errors")
 	}
 
 	interp := interpreter.New(prog, env)
@@ -122,4 +120,38 @@ func runFile(cmd *RunCmd) error {
 	}
 
 	return nil
+}
+
+func runTests(cmd *TestCmd) error {
+	prog, err := parseOrPrintError(cmd.File)
+	if err != nil {
+		return err
+	}
+
+	env := types.NewEnv(nil)
+	if typeErrs := types.Check(prog, env); len(typeErrs) > 0 {
+		fmt.Fprintln(os.Stderr, cError("type error:"))
+		for i, e := range typeErrs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, e)
+		}
+		return fmt.Errorf("aborted due to type errors")
+	}
+
+	interp := interpreter.New(prog, env)
+	if err := interp.Test(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func parseOrPrintError(path string) (*parser.Program, error) {
+	prog, err := parser.Parse(path)
+	if err != nil {
+		var pathErr *os.PathError
+		if errors.As(err, &pathErr) && os.IsNotExist(pathErr.Err) {
+			return nil, fmt.Errorf("file not found: %s", path)
+		}
+		return nil, fmt.Errorf("parse error:\n  %v", err)
+	}
+	return prog, nil
 }

@@ -52,7 +52,6 @@ func FromStatement(s *parser.Statement) *Node {
 		return &Node{Kind: "return", Children: []*Node{FromExpr(s.Return.Value)}}
 
 	case s.Expr != nil:
-		// return &Node{Kind: "expr", Children: []*Node{FromExpr(s.Expr.Expr)}}
 		return FromExpr(s.Expr.Expr)
 
 	case s.If != nil:
@@ -235,12 +234,10 @@ func FromPostfixExpr(p *parser.PostfixExpr) *Node {
 	for _, op := range p.Index {
 		idx := &Node{Kind: "index", Children: []*Node{n}}
 		if op.Colon == nil {
-			// Simple index: foo[1]
 			if op.Start != nil {
 				idx.Children = append(idx.Children, FromExpr(op.Start))
 			}
 		} else {
-			// Slice: foo[1:3], foo[:3], foo[1:], foo[:]
 			if op.Start != nil {
 				idx.Children = append(idx.Children, &Node{Kind: "start", Children: []*Node{FromExpr(op.Start)}})
 			}
@@ -292,27 +289,23 @@ func FromPrimary(p *parser.Primary) *Node {
 		}
 		return n
 
-	//case p.Index != nil:
-	//	n := &Node{Kind: "index"}
-	//	if p.Index.Target != nil {
-	//		n.Children = append(n.Children, FromPrimary(p.Index.Target))
-	//	}
-	//	if p.Index.Colon == nil {
-	//		n.Children = append(n.Children, FromExpr(p.Index.Start))
-	//	} else {
-	//		if p.Index.Start != nil {
-	//			n.Children = append(n.Children, &Node{Kind: "start", Children: []*Node{FromExpr(p.Index.Start)}})
-	//		}
-	//		if p.Index.End != nil {
-	//			n.Children = append(n.Children, &Node{Kind: "end", Children: []*Node{FromExpr(p.Index.End)}})
-	//		}
-	//	}
-	//	return n
-
 	case p.List != nil:
 		n := &Node{Kind: "list"}
 		for _, el := range p.List.Elems {
 			n.Children = append(n.Children, FromExpr(el))
+		}
+		return n
+
+	case p.Map != nil:
+		n := &Node{Kind: "map"}
+		for _, entry := range p.Map.Items {
+			n.Children = append(n.Children, &Node{
+				Kind: "entry",
+				Children: []*Node{
+					FromExpr(entry.Key),
+					FromExpr(entry.Value),
+				},
+			})
 		}
 		return n
 
@@ -349,5 +342,15 @@ func FromTypeRef(t *parser.TypeRef) *Node {
 		}
 		return n
 	}
-	return &Node{Kind: "type", Value: *t.Simple}
+	if t.Generic != nil {
+		n := &Node{Kind: "type", Value: t.Generic.Name}
+		for _, arg := range t.Generic.Args {
+			n.Children = append(n.Children, FromTypeRef(arg))
+		}
+		return n
+	}
+	if t.Simple != nil {
+		return &Node{Kind: "type", Value: *t.Simple}
+	}
+	return &Node{Kind: "type", Value: "unknown"}
 }
