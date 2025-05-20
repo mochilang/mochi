@@ -1,4 +1,4 @@
-1. error[T008]: too many arguments: expected 1, got 2
+1. error[T006]: too many arguments: expected 1, got 2
   --> tests/types/errors/too_many_args.mochi:5:1
 
   5 | greet("Alice", "Bob") // too many args

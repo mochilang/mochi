@@ -1,10 +1,10 @@
 # Mochi Examples Index
 
-> 📦 Generated with [Mochi Compiler](https://github.com/mochi-lang/mochi) `v0.2.1`
+> Generated with [Mochi](https://github.com/mochi-lang/mochi) `v0.2.1`
 
 Each example includes source code, AST, and runtime output.
 
-## 📚 Files
+## Files
 
 - [v0.1/agent.mochi](#v0.1-agent)
 - [v0.1/binary.mochi](#v0.1-binary)
@@ -34,7 +34,7 @@ Each example includes source code, AST, and runtime output.
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 /*
 agent Logger {
@@ -52,11 +52,11 @@ agent Logger {
 */
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program)
 ```
-#### ▶️ Output
+#### Output
 ```text
 ```
 </details>
@@ -66,7 +66,7 @@ agent Logger {
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // Arithmetic operations
 let add = 2 + 3
@@ -111,7 +111,7 @@ print("bool_eq:", ba == ba)
 print("bool_neq:", ba != bb)
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let add
@@ -184,7 +184,7 @@ print("bool_neq:", ba != bb)
   )
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 add: 5
 sub: 3
@@ -209,7 +209,7 @@ bool_neq: false
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // Basic precedence: * before +
 let a = 3 + 4 * 2        // 3 + (4 * 2) = 11
@@ -233,7 +233,7 @@ print("e =", e)
 print("f =", f)
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let a
@@ -298,7 +298,7 @@ print("f =", f)
   (call print (string "f =") (selector f))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 a = 11
 b = 14
@@ -314,7 +314,7 @@ f = 3
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // Basic for loop from 0 to 4
 for i in 0..5 {
@@ -329,7 +329,7 @@ for x in 1..11 {
 print("Sum =", sum)
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (for i
@@ -350,7 +350,7 @@ print("Sum =", sum)
   (call print (string "Sum =") (selector sum))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 i = 0
 i = 1
@@ -366,7 +366,7 @@ Sum = 55
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // --- Basic Setup ---
 let name: string = "Mochi"
@@ -414,7 +414,7 @@ let f: fun(): int = always42()
 print(f())  // 42
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let name (type string) (string Mochi))
@@ -508,7 +508,7 @@ print(f())  // 42
   (call print (call f))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 Hello, Mochi
 15
@@ -523,13 +523,13 @@ Hello, Mochi
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 let square = fun(x: int): int => x * x
 print(square(6)) // 36
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let square
@@ -544,7 +544,7 @@ print(square(6)) // 36
   )
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 36
 ```
@@ -555,7 +555,7 @@ print(square(6)) // 36
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // --- Closure: makeAdder returns a function that captures `n` ---
 fun makeAdder(n: int): fun(int): int {
@@ -566,7 +566,7 @@ let add10 = makeAdder(10)
 print(add10(5))   // 15
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (fun makeAdder
@@ -588,7 +588,7 @@ print(add10(5))   // 15
   )
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 15
 ```
@@ -599,7 +599,7 @@ print(add10(5))   // 15
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 fun add(a: int, b: int, c: int): int {
     return a + b + c
@@ -612,7 +612,7 @@ let result = step2(3)
 print(result)  // 1 + 2 + 3 = 6
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (fun add
@@ -639,7 +639,7 @@ print(result)  // 1 + 2 + 3 = 6
   (call print (selector result))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 6
 ```
@@ -650,7 +650,7 @@ print(result)  // 1 + 2 + 3 = 6
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // --- Higher-order function: accepts function and value ---
 fun apply_twice(f: fun(int): int, x: int): int {
@@ -661,7 +661,7 @@ let square = fun(x: int): int => x * x
 print(apply_twice(square, 6)) // 36 * 36 = 1296
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (fun apply_twice
@@ -688,7 +688,7 @@ print(apply_twice(square, 6)) // 36 * 36 = 1296
   )
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 1296
 ```
@@ -699,7 +699,7 @@ print(apply_twice(square, 6)) // 36 * 36 = 1296
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // --- Basic Setup ---
 let name = "Mochi"
@@ -747,7 +747,7 @@ let f = always42()
 print(f())  // 42
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let name (string Mochi))
@@ -830,7 +830,7 @@ print(f())  // 42
   (call print (call f))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 Hello, Mochi
 15
@@ -845,7 +845,7 @@ Hello, Mochi
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // --- Function expression as return value ---
 fun always42(): fun(): int {
@@ -856,7 +856,7 @@ let f = always42()
 print(f())  // 42
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (fun always42
@@ -869,7 +869,7 @@ print(f())  // 42
   (call print (call f))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 42
 ```
@@ -880,18 +880,18 @@ print(f())  // 42
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 print("Hello, world")
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (call print (string "Hello, world"))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 Hello, world
 ```
@@ -902,7 +902,7 @@ Hello, world
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 let age = 20
 
@@ -924,7 +924,7 @@ if score >= 90 {
 }
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let age (int 20))
@@ -955,7 +955,7 @@ if score >= 90 {
   )
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 You are an adult.
 Grade: B
@@ -967,7 +967,7 @@ Grade: B
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 let x = 42
 let name: string = "Mochi"
@@ -975,7 +975,7 @@ print(x)
 print(name)
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let x (int 42))
@@ -984,7 +984,7 @@ print(name)
   (call print (selector name))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 42
 Mochi
@@ -996,7 +996,7 @@ Mochi
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 /*
 stream sensor_data {
@@ -1014,11 +1014,11 @@ on sensor_data as e {
 */
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program)
 ```
-#### ▶️ Output
+#### Output
 ```text
 ```
 </details>
@@ -1028,7 +1028,7 @@ on sensor_data as e {
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // examples/test.mochi
 
@@ -1101,7 +1101,7 @@ test "for loop and accumulation" {
 }
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (test "basic arithmetic"
@@ -1265,7 +1265,7 @@ test "for loop and accumulation" {
   )
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 ```
 </details>
@@ -1275,7 +1275,7 @@ test "for loop and accumulation" {
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // Basic unary negation and boolean not
 let x = -5
@@ -1299,7 +1299,7 @@ print("d =", d)
 print("e =", e)
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let x
@@ -1351,7 +1351,7 @@ print("e =", e)
   (call print (string "e =") (selector e))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 x = -5
 y = false
@@ -1368,7 +1368,7 @@ e = false
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // examples/v0.2/list.mochi
 
@@ -1415,7 +1415,7 @@ test "indexing and slicing" {
 }
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let values
@@ -1495,7 +1495,7 @@ test "indexing and slicing" {
   )
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 [1 2 3 4 5]
 first:  1
@@ -1513,7 +1513,7 @@ some fruits:  [🍌 🍇]
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // examples/v0.2/matrix.mochi
 
@@ -1546,11 +1546,11 @@ test "matrix indexing" {
   expect matrix[1][1] == 5
   expect matrix[2][2] == 9
   expect matrix[-1][0] == 7
-  expect matrix[1][-1] == 6
+  expect matrix[1][-1] == 60
 }
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let matrix
@@ -1646,13 +1646,13 @@ test "matrix indexing" {
           (index (selector matrix) (int 1))
           (unary - (int 1))
         )
-        (int 6)
+        (int 60)
       )
     )
   )
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 matrix:  [[1 2 3] [4 5 6] [7 8 9]]
 first row:  [1 2 3]
@@ -1669,7 +1669,7 @@ row 1 length:  3
 <details>
 <summary>View Source, AST, and Output</summary>
 
-#### 📄 Source
+#### Source
 ```mochi
 // Now Mochi support Unicode variable name.
 
@@ -1689,7 +1689,7 @@ let 🍡="🍡૮₍ ˃ ⤙ ˂ ₎ა"
 print(🍡)
 ```
 
-#### 🌲 AST
+#### AST
 ```lisp
 (program
   (let "π" (float 3.14))
@@ -1721,7 +1721,7 @@ print(🍡)
   (call print (selector "🍡"))
 )
 ```
-#### ▶️ Output
+#### Output
 ```text
 314
 🍡૮₍ ˃ ⤙ ˂ ₎ა

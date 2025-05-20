@@ -1,58 +1,72 @@
-# 🗺️ Mochi Language Roadmap
+# Mochi Language Roadmap
 
-Mochi is a small, clean programming language built from the ground up for creating **AI agents** that work with **data**
-and **real-time information**.
+Mochi is a small, clean programming language built for clarity, composability, and agent-oriented design.
+It is designed to evolve in small, focused steps—each version introduces one foundational concept, keeping the language
+minimal but expressive.
 
-It’s not a general-purpose language trying to do everything — Mochi is focused. It gives you the tools to build
-intelligent, reactive systems with minimal code.
+This roadmap outlines the language development toward a stable 1.0, with an emphasis on first-class data types, control
+flow, streaming logic, agents, and dataset support.
 
-Use Mochi if you want to:
+# v0.2 - Compose data types
+## v0.2.2 – Maps
 
-- ✅ Define **composable logic** using `let`, `fun`, `if`, and `for`
-- ✅ Write **tests inline** using `test` and `expect`
-- ✅ Prepare for **agents, datasets, and event streams**
-- ✅ Use a **toolchain-friendly language** with Lisp-style ASTs
+- [ ]  Map literals
+- [ ]  Access by key
+- [ ]  Dynamic keys
+- [ ]  Nested maps
+- [ ]  in operator for key presence
 
-| Version  | Feature                      | Status         |
-|----------|------------------------------|----------------|
-| `v0.2.0` | Tuples, Lists, Maps, Sets    | ✅ In Progress  |
-| `v0.2.1` | Struct Types                 | ✅ In Progress  |
-| `v0.2.2` | Block Expressions            | 📝 Planned     |
-| `v0.2.3` | `match` Expressions          | 📝 Planned     |
-| `v0.2.4` | Naive `error` Handling       | 📝 Planned     |
-| `v0.3`   | Streams & Event Handlers     | 📝 Planned     |
-| `v0.4`   | Agents & Generative Text     | 📝 Planned     |
-| `v0.5`   | Datasets & SQL-like Queries  | 📝 Planned     |
-| `v0.6`   | Modules & Import System      | 📝 Planned     |
-| `v1.0`   | Agent Runtime + DX Polishing | 🚧 Coming Soon |
+```
+let scores = {
+  "math": 95,
+  "science": 88
+}
 
-## ✅ v0.2.0 – Tuples, Lists, Maps, Sets
+print(scores["math"])     // 95
 
-Support foundational compound data types:
+let subject = "science"
+if subject in scores {
+  print(scores[subject])
+}
+```
 
-- [ ] Tuples like `(1, "a")`
-- [ ] Lists: `[1, 2, 3]`
-- [ ] Maps: `{ "key": value }`
-- [ ] Sets: `{"a", "b", "c"}`
+## v0.2.3 – Sets
 
-```mochi
+- [ ]  Set literals
+- [ ]  `in` operator
+- [ ]  No duplicates
+- [ ]  Basic set operations: insert, remove, union (future)
+
+```
+let seen = {"apple", "banana"}
+if "apple" in seen {
+  print("Already seen")
+}
+```
+
+## v0.2.4 – Tuples
+
+- [ ]  Tuple literals
+- [ ]  Tuple indexing via `.0`, `.1`
+- [ ]  Destructuring (planned)
+- [ ]  Nesting
+
+```
 let point = (10, 20)
-let items = [1, 2, 3]
-let scores = { "math": 95, "science": 88 }
-let seen = {"a", "b", "c"}
+let nameAndAge = ("Ada", 35)
 
-print(items[1])         // 2
-print(scores["math"])   // 95
-````
+print(point.0)       // 10
+print(nameAndAge.1)  // 35
+```
 
-## ✅ v0.2.1 – Struct Types
+## v0.2.5 – Struct Types
 
-Support for user-defined record types with dot access:
+- [ ]  `type` declarations
+- [ ]  Named field access via dot
+- [ ]  Type annotation on variables
+- [ ]  Nested structs
 
-* [ ] `type Name { field: Type }` declarations
-* [ ] Type-safe field access: `user.name`
-
-```mochi
+```
 type User {
   name: string
   age: int
@@ -66,159 +80,312 @@ let u: User = {
 print(u.name)  // Ana
 ```
 
-## 📝 v0.2.2 – Block Expressions
+## v0.2.6 – Block Expressions
 
-Allow `{ ... }` blocks to be used as values:
+- [ ]  `{}` blocks as expressions
+- [ ]  Evaluate to last value
+- [ ]  Nesting inside `let`, `return`, conditionals
 
-* [ ] Evaluate to the last statement
-* [ ] Useful inside `let`, `return`, and expressions
-
-```mochi
+```
 let result = {
-  let a = 2
-  let b = 3
-  a * b
+  let x = 2
+  let y = 3
+  x + y
 }
 
-print(result)  // 6
+print(result)  // 5
 ```
 
-## 📝 v0.2.3 – `match` Expressions
+## v0.2.7 – match Expressions
 
-Add `match` support to destructure enums, optionals, and simple patterns:
+- [ ]  Pattern matching
+- [ ]  Fallback case `_ =>`
+- [ ]  Literal patterns
+- [ ]  Destructuring (planned)
 
-* [ ] Match variants and values
-* [ ] Destructure with bindings
-
-```mochi
+```
 match value {
+  0 => print("zero")
   1 => print("one")
-  2 => print("two")
-  _ => print("something else")
+  _ => print("other")
 }
 
 match user {
   { name: "Alice" } => print("Hi Alice")
-  { age: 42 } => print("You're 42!")
-  _ => print("Unrecognized")
+  _ => print("Unknown")
 }
 ```
 
-## 📝 v0.2.4 – Naive `error` Type
+## v0.2.8 – Naive error Type
 
-Add minimal error-handling capabilities:
+- [ ]  Union return types
+- [ ]  `error` literal
+- [ ]  `try` expression
+- [ ]  `or` fallback
 
-* [ ] Union return types: `int | error`
-* [ ] `try` expression with fallback using `or`
-
-```mochi
-fun parseInt(s: string): int | error {
-  if s == "bad" {
-    return error "invalid number"
+```
+fun parse(x: string): int | error {
+  if x == "" {
+    return error "empty input"
   }
   return 42
 }
 
-let value = try parseInt("bad") or -1
-print(value)  // -1
+let n = try parse("") or 0
+print(n)  // 0
 ```
 
-## 📝 v0.3 – Streams & Event Handlers
+## v0.3 – Streams
 
-Enable event-driven programming with typed streams:
+- [ ]  `stream` type declaration
+- [ ]  `on` event handler syntax
+- [ ]  Stream events with named fields
+- [ ]  Type-safe field access
+- [ ]  Runtime emit and dispatch
+- [ ]  Support multiple handlers
+- [ ]  Support multiple streams
+- [ ]  Events queued and replayable
+- [ ]  Declarative schema for events
+- [ ]  Distinct stream name and type name
+- [ ]  Streaming values from code
+- [ ]  Optional timestamp field
+- [ ]  Streaming into agents (in v0.4)
 
-* [ ] `stream` definitions with fields
-* [ ] `on ... as ...` handlers
-
-```mochi
+```
+# Define a stream type named SensorReading
 stream SensorReading {
   id: string
   temperature: float
-  time: time
+  timestamp: time
 }
 
+# Listen to the stream using an `on` block
 on SensorReading as r {
-  print("Temp:", r.temperature)
+  print("Temp reading from", r.id)
+  print("  →", r.temperature, "°C at", r.timestamp)
 }
+
+# You can also emit values into the stream at runtime (pseudo-syntax)
+emit SensorReading {
+  id: "sensor-1",
+  temperature: 22.5,
+  timestamp: now()
+}
+
+# Multiple on-handlers can be registered for the same stream
+on SensorReading as r {
+  if r.temperature > 30 {
+    print("🔥 High temperature alert!")
+  }
+}
+
+# Streams are independent from agents (but will be integrated in v0.4)
+# Events are queued and processed in order
 ```
 
-## 📝 v0.4 – Agents & Generative Text
+## v0.4 – Agents
 
-### `v0.4.0` – Generate Text
+- [ ]  `agent` block declaration
+- [ ]  Internal `state` fields with initialization
+- [ ]  `on` handlers for reacting to stream events
+- [ ]  `intent` functions callable from outside
+- [ ]  Local variable scoping inside agents
+- [ ]  Mutable agent state with assignment
+- [ ]  Deterministic execution (no shared memory)
+- [ ]  Support for multiple agents
+- [ ]  Agent lifecycle hooks (optional)
+- [ ]  Support for `generate text` block using LLM
+- [ ]  Automatic state snapshotting (future)
+- [ ]  Integration with stream system (`on Stream as x` inside agent)
 
-* [ ] Native `generate text` block
-* [ ] Use `prompt` + `args` to call language models
-
-```mochi
-let answer = generate text {
-  prompt: "What is $x + $y?",
-  args: { x: 2, y: 3 }
-}
 ```
+# Define a SensorReading stream as in v0.3
+stream SensorReading {
+  id: string
+  temperature: float
+  timestamp: time
+}
 
-### `v0.4.1` – Agent DSL
-
-* [ ] `agent` blocks with `state`, `on`, and `intent`
-* [ ] Respond to streams or user actions
-
-```mochi
-agent Assistant {
+# Define an agent with persistent state
+agent Monitor {
   state {
     count: int = 0
+    lastTemp: float = 0.0
   }
 
+  # React to incoming stream events
   on SensorReading as r {
     count = count + 1
+    lastTemp = r.temperature
+
+    if r.temperature > 30 {
+      print("🔥 Temp warning for", r.id, ":", r.temperature)
+    }
   }
 
-  intent greet(name: string): string {
-    return "Hi, " + name
+  # Define an intent function that can be called externally
+  intent status(): string {
+    return "Readings seen: " + count + ", last = " + lastTemp
+  }
+
+  # Generate a natural language summary using an LLM
+  intent summary(): string {
+    return generate text {
+      prompt: "The sensor has recorded $count readings. The last temperature was $lastTemp °C.",
+      args: {
+        count: count,
+        lastTemp: lastTemp
+      }
+    }
   }
 }
+
+# This defines a reusable, autonomous computation unit.
+# It has memory (state), reacts to the environment (on), and exposes capability (intent).
 ```
 
-## 📝 v0.5 – Datasets & Queries
+## v0.5 – Datasets & Queries
 
-Load datasets and run SQL-style queries inline:
+- [ ]  `from "<file>"` syntax for loading datasets
+- [ ]  Support for CSV, JSONL, Parquet (backend-dependent)
+- [ ]  Row-oriented dataset model
+- [ ]  SQL-like `select` / `from` / `where` / `join` syntax
+- [ ]  Aliasing with `as`
+- [ ]  Aggregation functions: `sum`, `avg`, `count`, etc.
+- [ ]  `group by` and `having`
+- [ ]  Expression support in `select` and `where`
+- [ ]  Type inference from headers and values
+- [ ]  Integration with agents and streams (read-only)
+- [ ]  Deterministic, immutable datasets
+- [ ]  Optional inline datasets (future)
 
-* [ ] `from "data.csv"`
-* [ ] `select`, `where`, `join`, `group by`
-
-```mochi
+```
+# Load a dataset from CSV
 let people = from "people.csv"
 
-let adults = select name
+# Select a subset of rows
+let adults = select name, age
 from people
-where age > 18
+where age >= 18
 
-let result = select o.id, c.name
-from orders as o
-join customers as c on o.customer_id == c.id
+# Join across multiple datasets
+let purchases = from "purchases.parquet"
+let customers = from "customers.jsonl"
+
+let result = select p.id, c.name, p.amount
+from purchases as p
+join customers as c on p.customer_id == c.id
+where p.amount > 100
+
+# Aggregation and grouping
+let summary = select city, count(*), avg(age)
+from people
+group by city
+having count(*) > 10
+
+# Expressions allowed in select
+let short = select name, age * 2 as double_age
+from people
+where name != ""
+
+# Datasets are immutable and queryable, like small in-memory tables.
+# Future: support writing datasets with `write people to "people.jsonl"`
 ```
 
-## 📝 v0.6 – Modules & Imports
+## v0.6 – Modules & Imports
 
-Add support for project structure and modularity:
+- [ ]  `import` statement for loading external modules
+- [ ]  Support importing specific names or full module
+- [ ]  Standard library modules (`math`, `time`, etc.)
+- [ ]  User-defined module files
+- [ ]  Default module resolution via relative path or `std/` prefix
+- [ ]  Aliasing with `import x as y`
+- [ ]  Export control (future: `pub`)
+- [ ]  Namespace access via `mod.name`
+- [ ]  Integration with CLI and runtime loader
+- [ ]  Module system supports agents, types, streams, datasets
 
-* [ ] `import math`, `import "lib/util.mochi"`
-* [ ] Per-file namespaces and clear boundaries
-
-```mochi
+```
+# Import the entire math module
 import math
-let result = math.pow(2, 3)
+
+let x = math.pow(2, 3)
+print(x)  // 8
+
+# Import only a single function
+import time.now
+
+let t = now()
+print(t)
+
+# Import with alias
+import strings as str
+
+let s = "hello"
+print(str.upper(s))  // "HELLO"
+
+# Import from a relative path
+import "./utils/format"
+
+print(format.debug(42))
+
+# Module contents can include:
+# - fun definitions
+# - type declarations
+# - agent declarations
+# - streams
+# - constants
+# - datasets (via `from`)
 ```
 
-## 🚧 v1.0 – Production Agent Runtime
+## v1.0 – Production Agent Runtime & Language Maturity
 
-The 1.0 milestone will unify:
+- [ ]  Fully stable language grammar and core type system
+- [ ]  Long-running agent runtime with scheduling and timers
+- [ ]  Event replay and time-travel debugging
+- [ ]  Stream processing engine with guaranteed ordering
+- [ ]  Snapshotting agent state (disk or memory)
+- [ ]  CLI toolchain: `mochi run`, `mochi test`, `mochi fmt`, `mochi repl`
+- [ ]  Formatter (`mochi fmt`) with deterministic style
+- [ ]  Language Server Protocol (LSP) support
+- [ ]  Configurable module paths, stream sinks, and dataset backends
+- [ ]  Built-in support for structured logging
+- [ ]  Developer-first error messages and diagnostics
+- [ ]  Full test runner with golden tests and simulation traces
+- [ ]  LLM integration with reproducibility (prompt + args + result)
+- [ ]  Safe-by-default execution: no uncontrolled side effects
+- [ ]  Stable serialization for state, datasets, and streams
+- [ ]  Release mode with static linking and cross-platform build
 
-* Full agent runtime (long-running state, background tasks)
-* LLM integration (OpenAI, open models)
-* Datasets and streaming queries
-* Project-level tooling: formatter, type checker, test runner
-* Language server support (LSP)
+```
+# Agent in production mode
+agent BillingWorker {
+  state {
+    total: float = 0
+  }
 
-Mochi is designed to grow step-by-step — cleanly, simply, and always with developer experience in mind.
+  on Invoice as i {
+    total = total + i.amount
+  }
 
-PRs welcome 🙌
+  intent get_summary(): string {
+    return generate text {
+      prompt: "The total billed amount is $total USD.",
+      args: { total: total }
+    }
+  }
+}
 
+# Run test simulation with golden output
+test "billing logic" {
+  emit Invoice { amount: 50 }
+  emit Invoice { amount: 20 }
+
+  expect BillingWorker.total == 70
+  expect BillingWorker.get_summary() contains "70"
+}
+
+# Automatically formatted source file (mochi fmt)
+# Integrated diagnostics and autocompletion (LSP)
+# Stable snapshotting of state and deterministic replay
+```

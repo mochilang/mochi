@@ -19,6 +19,18 @@ var (
 	gray   = color.New(color.FgHiBlack).SprintFunc()
 )
 
+// Template represents a reusable diagnostic pattern with code, message, and help text.
+type Template struct {
+	Code    string // e.g. "T004"
+	Message string // Format string, e.g. "expected %v but got %v"
+	Help    string // Optional help message
+}
+
+// New instantiates a Diagnostic from a Template.
+func (t Template) New(pos lexer.Position, args ...any) Diagnostic {
+	return New(t.Code, pos, fmt.Sprintf(t.Message, args...), t.Help)
+}
+
 // Diagnostic represents a structured, position-aware compiler message.
 type Diagnostic struct {
 	Code string         // e.g. "E1001"

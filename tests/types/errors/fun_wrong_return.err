@@ -1,8 +1,8 @@
-1. error[T014]: return type mismatch: expected int but got string
+1. error[T010]: return type mismatch: expected int, got string
   --> tests/types/errors/fun_wrong_return.mochi:2:3
 
   2 |   return "oops"
     |   ^
 
 help:
-  Ensure the returned value matches the declared function return type.
+  Update the return value to match the function's return type.

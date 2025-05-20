@@ -1,8 +1,8 @@
-error[I008]: invalid use of unary '-' on string
+error[I009]: invalid use of unary '-' on string
   --> tests/interpreter/errors/unary_type_error.mochi:2:7
 
   2 | print(-s) // invalid unary minus on string
     |       ^
 
 help:
-  Use unary operators only with numeric or boolean values.
+  Use unary operators only with numbers or booleans.
