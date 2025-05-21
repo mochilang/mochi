@@ -2,11 +2,8 @@ Program = Statement* .
 Statement = TestBlock | ExpectStmt | AgentDecl | StreamDecl | OnHandler | LetStmt | AssignStmt | FunStmt | ReturnStmt | IfStmt | ForStmt | ExprStmt .
 TestBlock = "test" <string> "{" Statement* "}" .
 ExpectStmt = "expect" Expr .
-Expr = Equality .
-Equality = Comparison EqualOp* .
-Comparison = Term CompOp* .
-Term = Factor TermOp* .
-Factor = Unary FactorOp* .
+Expr = BinaryExpr .
+BinaryExpr = Unary BinaryOp* .
 Unary = ("-" | "!")* PostfixExpr .
 PostfixExpr = Primary IndexOp* .
 Primary = FunExpr | CallExpr | SelectorExpr | ListLiteral | MapLiteral | Literal | ("(" Expr ")") .
@@ -22,10 +19,7 @@ MapLiteral = "{" (MapEntry ("," MapEntry)*)? ","?? "}" .
 MapEntry = Expr ":" Expr .
 Literal = <float> | <int> | ("true" | "false") | <string> .
 IndexOp = "[" (Expr (":" Expr)?)? "]" .
-FactorOp = ("*" | "/") Unary .
-TermOp = ("+" | "-") Factor .
-CompOp = ("<" | "<=" | ">" | ">=") Term .
-EqualOp = ("==" | "!=") Comparison .
+BinaryOp = ("==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/") PostfixExpr .
 AgentDecl = "agent" <ident> "{" AgentBlock* "}" .
 AgentBlock = LetStmt | AssignStmt | OnHandler | IntentDecl .
 LetStmt = "let" <ident> (":" TypeRef)? ("=" Expr)? .

@@ -43,9 +43,7 @@ func FromStatement(s *parser.Statement) *Node {
 		if s.Fun.Return != nil {
 			n.Children = append(n.Children, FromTypeRef(s.Fun.Return))
 		}
-		for _, st := range s.Fun.Body {
-			n.Children = append(n.Children, FromStatement(st))
-		}
+		n.Children = append(n.Children, mapStatements(s.Fun.Body)...)
 		return n
 
 	case s.Return != nil:
@@ -88,9 +86,7 @@ func FromStatement(s *parser.Statement) *Node {
 
 	case s.Test != nil:
 		n := &Node{Kind: "test", Value: s.Test.Name}
-		for _, stmt := range s.Test.Body {
-			n.Children = append(n.Children, FromStatement(stmt))
-		}
+		n.Children = append(n.Children, mapStatements(s.Test.Body)...)
 		return n
 
 	case s.Expect != nil:
@@ -101,25 +97,20 @@ func FromStatement(s *parser.Statement) *Node {
 	}
 }
 
+// --- Control Flow Helpers ---
+
 func fromIfStmt(stmt *parser.IfStmt) *Node {
-	n := &Node{Kind: "if"}
-	n.Children = append(n.Children, FromExpr(stmt.Cond))
-	thenBlock := &Node{Kind: "block"}
-	for _, stmt := range stmt.Then {
-		thenBlock.Children = append(thenBlock.Children, FromStatement(stmt))
-	}
+	n := &Node{Kind: "if", Children: []*Node{FromExpr(stmt.Cond)}}
+
+	thenBlock := &Node{Kind: "block", Children: mapStatements(stmt.Then)}
 	n.Children = append(n.Children, thenBlock)
 
 	if stmt.ElseIf != nil {
 		n.Children = append(n.Children, fromIfStmt(stmt.ElseIf))
 	} else if stmt.Else != nil {
-		elseBlock := &Node{Kind: "block"}
-		for _, stmt := range stmt.Else {
-			elseBlock.Children = append(elseBlock.Children, FromStatement(stmt))
-		}
+		elseBlock := &Node{Kind: "block", Children: mapStatements(stmt.Else)}
 		n.Children = append(n.Children, elseBlock)
 	}
-
 	return n
 }
 
@@ -128,21 +119,20 @@ func fromForStmt(f *parser.ForStmt) *Node {
 		Kind:  "for",
 		Value: f.Name,
 		Children: []*Node{
-			{Kind: "range", Children: []*Node{
-				FromExpr(f.Start),
-				FromExpr(f.End),
-			}},
+			{Kind: "range", Children: []*Node{FromExpr(f.Start), FromExpr(f.End)}},
 			{Kind: "block", Children: mapStatements(f.Body)},
 		},
 	}
 }
 
+// --- DSL Helpers ---
+
 func fromOnHandler(h *parser.OnHandler) *Node {
-	n := &Node{Kind: "on", Value: h.Stream}
-	for _, stmt := range h.Body {
-		n.Children = append(n.Children, FromStatement(stmt))
+	return &Node{
+		Kind:     "on",
+		Value:    h.Stream,
+		Children: mapStatements(h.Body),
 	}
-	return n
 }
 
 func fromIntent(i *parser.IntentDecl) *Node {
@@ -157,9 +147,7 @@ func fromIntent(i *parser.IntentDecl) *Node {
 	if i.Return != nil {
 		n.Children = append(n.Children, FromTypeRef(i.Return))
 	}
-	for _, stmt := range i.Body {
-		n.Children = append(n.Children, FromStatement(stmt))
-	}
+	n.Children = append(n.Children, mapStatements(i.Body)...)
 	return n
 }
 
@@ -174,7 +162,7 @@ func fromStreamField(f *parser.StreamField) *Node {
 		}
 		return n
 	}
-	return &Node{Kind: "field"}
+	return &Node{Kind: "field", Value: "unknown"}
 }
 
 func mapStatements(stmts []*parser.Statement) []*Node {
@@ -185,38 +173,12 @@ func mapStatements(stmts []*parser.Statement) []*Node {
 	return out
 }
 
+// --- Expression Conversion ---
+
 func FromExpr(e *parser.Expr) *Node {
-	return FromEquality(e.Equality)
-}
-
-func FromEquality(e *parser.Equality) *Node {
-	n := FromComparison(e.Left)
-	for _, op := range e.Right {
-		n = &Node{Kind: "binary", Value: op.Op, Children: []*Node{n, FromComparison(op.Right)}}
-	}
-	return n
-}
-
-func FromComparison(c *parser.Comparison) *Node {
-	n := FromTerm(c.Left)
-	for _, op := range c.Right {
-		n = &Node{Kind: "binary", Value: op.Op, Children: []*Node{n, FromTerm(op.Right)}}
-	}
-	return n
-}
-
-func FromTerm(t *parser.Term) *Node {
-	n := FromFactor(t.Left)
-	for _, op := range t.Right {
-		n = &Node{Kind: "binary", Value: op.Op, Children: []*Node{n, FromFactor(op.Right)}}
-	}
-	return n
-}
-
-func FromFactor(f *parser.Factor) *Node {
-	n := FromUnary(f.Left)
-	for _, op := range f.Right {
-		n = &Node{Kind: "binary", Value: op.Op, Children: []*Node{n, FromUnary(op.Right)}}
+	n := FromUnary(e.Binary.Left)
+	for _, op := range e.Binary.Right {
+		n = &Node{Kind: "binary", Value: op.Op, Children: []*Node{n, FromPostfixExpr(op.Right)}}
 	}
 	return n
 }
@@ -267,10 +229,7 @@ func FromPrimary(p *parser.Primary) *Node {
 		if p.FunExpr.ExprBody != nil {
 			n.Children = append(n.Children, FromExpr(p.FunExpr.ExprBody))
 		} else if len(p.FunExpr.BlockBody) > 0 {
-			block := &Node{Kind: "block"}
-			for _, stmt := range p.FunExpr.BlockBody {
-				block.Children = append(block.Children, FromStatement(stmt))
-			}
+			block := &Node{Kind: "block", Children: mapStatements(p.FunExpr.BlockBody)}
 			n.Children = append(n.Children, block)
 		}
 		return n
@@ -283,11 +242,11 @@ func FromPrimary(p *parser.Primary) *Node {
 		return n
 
 	case p.Selector != nil:
-		n := &Node{Kind: "selector", Value: p.Selector.Root}
+		root := &Node{Kind: "selector", Value: p.Selector.Root}
 		for _, field := range p.Selector.Tail {
-			n = &Node{Kind: "selector", Value: field, Children: []*Node{n}}
+			root = &Node{Kind: "selector", Value: field, Children: []*Node{root}}
 		}
-		return n
+		return root
 
 	case p.List != nil:
 		n := &Node{Kind: "list"}
@@ -327,6 +286,8 @@ func FromPrimary(p *parser.Primary) *Node {
 
 	return &Node{Kind: "unknown"}
 }
+
+// --- Type Ref ---
 
 func FromTypeRef(t *parser.TypeRef) *Node {
 	if t == nil {

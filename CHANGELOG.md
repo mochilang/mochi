@@ -2,6 +2,37 @@
 
 All notable changes to the Mochi programming language are documented in this file.
 
+## [0.2.3] - 2025-05-21
+
+### ✨ Added
+
+* **Support for nested unary expressions**, including `!!a`, `--x`, `-!x`, etc.
+* **Support for infix binary expressions** with proper precedence and associativity, replacing older nested `Expr → Term → Factor` form with `BinaryExpr` chain.
+* **`math.mochi`** example to test operator precedence and grouping (e.g. `1 + 2 * 3` vs `(1 + 2) * 3`).
+* `Subst` type and `unifyWith` mechanism for unification with substitution of `TypeVar`s.
+* Type inference for inline anonymous functions (`fun() => 42`) with return type variable `'R` properly resolved through substitution.
+
+### 🛠️ Changed
+
+* `checkFunExpr` now supports return type inference by unifying declared `TypeVar` return with actual return.
+* Function literal type checking flow is now correct even when no type annotation is given on return.
+* `unify` now supports a one-directional fallback to handle inferred return types in a predictable and sound way.
+
+### 🐛 Fixed
+
+* Fixed parser bug where closing parentheses after binary expressions (e.g. `("hello" + "!")`) triggered `unexpected token ')'` errors.
+* Fixed incorrect parse failure on expressions like `-1` due to overly strict `Expr` grammar root.
+* Fixed type inference failure in:
+
+  ```mochi
+  fun always42(): fun(): int {
+    return fun() => 42
+  }
+  ```
+
+  which now correctly infers `fun(): int`.
+
+
 ## [0.2.2] - 2025-05-20
 
 ### Added
