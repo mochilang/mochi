@@ -60,20 +60,20 @@ func runProgram(source string) (string, error) {
 
 	prog, err := parser.ParseString(source)
 	if err != nil {
-		return output.String(), fmt.Errorf("parse error: %w", err)
+		return output.String(), fmt.Errorf("parse error: %w, output: %s", err, output.String())
 	}
 
 	env := types.NewEnv(nil)
 	typeErrors := types.Check(prog, env)
 	if len(typeErrors) > 0 {
-		return output.String(), fmt.Errorf("type error (%d issue(s))", len(typeErrors))
+		return output.String(), fmt.Errorf("type error (%d issue(s)): %s", len(typeErrors), output.String())
 	}
 
 	interp := interpreter.New(prog, env)
 	interp.Env().SetWriter(output)
 
 	if err := interp.Run(); err != nil {
-		return output.String(), fmt.Errorf("runtime error: %w", err)
+		return output.String(), fmt.Errorf("runtime error: %w: output = %s", err, output.String())
 	}
 
 	return output.String(), nil

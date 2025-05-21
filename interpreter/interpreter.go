@@ -317,7 +317,7 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 
 	// Step 2: Apply precedence rules (high to low)
 	for _, level := range [][]string{
-		{"*", "/"},             // highest
+		{"*", "/", "%"},        // highest
 		{"+", "-"},             // middle
 		{"<", "<=", ">", ">="}, // comparison
 		{"==", "!="},           // equality
@@ -928,6 +928,11 @@ func applyIntBinary(pos lexer.Position, l int, op string, r int) (any, error) {
 			return nil, errDivisionByZero(pos)
 		}
 		return l / r, nil
+	case "%":
+		if r == 0 {
+			return nil, errDivisionByZero(pos)
+		}
+		return l % r, nil
 	case "+":
 		return l + r, nil
 	case "-":

@@ -15,7 +15,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
-	{Name: "Punct", Pattern: `==|!=|<=|>=|=>|\.\.|[-+*/=<>!{}\[\](),.:]`},
+	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|\.\.|[-+*/%=<>!{}\[\](),.:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r]+`},
 })
 
@@ -145,60 +145,9 @@ type BinaryExpr struct {
 
 type BinaryOp struct {
 	Pos   lexer.Position
-	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/')"`
+	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%')"`
 	Right *PostfixExpr `parser:"@@"`
 }
-
-/*
-type Expr struct {
-	Pos      lexer.Position
-	Equality *Equality `parser:"@@"`
-}
-
-type Equality struct {
-	Left  *Comparison `parser:"@@"`
-	Right []*EqualOp  `parser:"@@*"`
-}
-
-type EqualOp struct {
-	Pos   lexer.Position
-	Op    string      `parser:"@('==' | '!=')"`
-	Right *Comparison `parser:"@@"`
-}
-
-type Comparison struct {
-	Left  *Term     `parser:"@@"`
-	Right []*CompOp `parser:"@@*"`
-}
-
-type CompOp struct {
-	Pos   lexer.Position
-	Op    string `parser:"@('<' | '<=' | '>' | '>=')"`
-	Right *Term  `parser:"@@"`
-}
-
-type Term struct {
-	Left  *Factor   `parser:"@@"`
-	Right []*TermOp `parser:"@@*"`
-}
-
-type TermOp struct {
-	Pos   lexer.Position
-	Op    string  `parser:"@('+' | '-')"`
-	Right *Factor `parser:"@@"`
-}
-
-type Factor struct {
-	Left  *Unary      `parser:"@@"`
-	Right []*FactorOp `parser:"@@*"`
-}
-
-type FactorOp struct {
-	Pos   lexer.Position
-	Op    string `parser:"@('*' | '/')"`
-	Right *Unary `parser:"@@"`
-}
-*/
 
 type Unary struct {
 	Pos   lexer.Position

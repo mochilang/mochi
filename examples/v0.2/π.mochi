@@ -1,5 +1,3 @@
-// Now Mochi support Unicode variable name.
-
 let π = 3.14
 
 fun area(r: float): float {
