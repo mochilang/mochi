@@ -316,10 +316,157 @@ func resolveTypeRef(t *parser.TypeRef) Type {
 	return AnyType{}
 }
 
+func unify(a, b Type) bool {
+	switch at := a.(type) {
+	case AnyType:
+		return true
+	case *TypeVar:
+		return true
+	case ListType:
+		switch bt := b.(type) {
+		case ListType:
+			return unify(at.Elem, bt.Elem)
+		case AnyListType:
+			return true
+		case AnyType:
+			return true
+		default:
+			return false
+		}
+	case MapType:
+		switch bt := b.(type) {
+		case MapType:
+			return unify(at.Key, bt.Key) && unify(at.Value, bt.Value)
+		case AnyType:
+			return true
+		default:
+			return false
+		}
+	case FuncType:
+		bt, ok := b.(FuncType)
+		if !ok || len(at.Params) != len(bt.Params) {
+			return false
+		}
+		for i := range at.Params {
+			if !unify(at.Params[i], bt.Params[i]) {
+				return false
+			}
+		}
+		return unify(at.Return, bt.Return)
+	case IntType:
+		_, ok := b.(IntType)
+		return ok
+	case FloatType:
+		_, ok := b.(FloatType)
+		return ok
+	case StringType:
+		_, ok := b.(StringType)
+		return ok
+	case BoolType:
+		_, ok := b.(BoolType)
+		return ok
+	case VoidType:
+		_, ok := b.(VoidType)
+		return ok
+	}
+
+	// Check the reverse direction in case b is AnyType or TypeVar
+	return unify(b, a)
+}
+
+type Subst map[string]Type
+
+func unifyWith(a, b Type, subst Subst) bool {
+	switch at := a.(type) {
+	case *TypeVar:
+		if val, ok := subst[at.Name]; ok {
+			return unifyWith(val, b, subst)
+		}
+		subst[at.Name] = b
+		return true
+	case AnyType:
+		return true
+	case ListType:
+		bt, ok := b.(ListType)
+		return ok && unifyWith(at.Elem, bt.Elem, subst)
+	case MapType:
+		bt, ok := b.(MapType)
+		return ok && unifyWith(at.Key, bt.Key, subst) && unifyWith(at.Value, bt.Value, subst)
+	case FuncType:
+		bt, ok := b.(FuncType)
+		if !ok || len(at.Params) != len(bt.Params) {
+			return false
+		}
+		for i := range at.Params {
+			if !unifyWith(at.Params[i], bt.Params[i], subst) {
+				return false
+			}
+		}
+		return unifyWith(at.Return, bt.Return, subst)
+	default:
+		return a.Equal(b)
+	}
+}
+
 func checkExpr(e *parser.Expr, env *Env) (Type, error) {
 	return checkExprWithExpected(e, env, nil)
 }
 
+func checkExprWithExpected(e *parser.Expr, env *Env, expected Type) (Type, error) {
+	actual, err := checkBinaryExpr(e.Binary, env)
+	if err != nil {
+		return nil, err
+	}
+	if expected != nil && !unify(actual, expected) {
+		return nil, errTypeMismatch(e.Pos, expected, actual)
+	}
+	return actual, nil
+}
+func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
+	left, err := checkUnary(b.Left, env, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, op := range b.Right {
+		right, err := checkPostfix(op.Right, env, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		switch op.Op {
+		case "+", "-", "*", "/":
+			// Arithmetic: int, float, or string + string
+			switch {
+			case unify(left, IntType{}) && unify(right, IntType{}):
+				left = IntType{}
+
+			case unify(left, FloatType{}) && unify(right, FloatType{}):
+				left = FloatType{}
+
+			case op.Op == "+" && unify(left, StringType{}) && unify(right, StringType{}):
+				left = StringType{}
+
+			default:
+				return nil, errOperatorMismatch(op.Pos, op.Op, left, right)
+			}
+
+		case "==", "!=", "<", "<=", ">", ">=":
+			// comparison: any comparable types
+			if !unify(left, right) {
+				return nil, errIncompatibleComparison(lexer.Position{}) // you can add op.Pos to BinaryOp
+			}
+			left = BoolType{}
+
+		default:
+			return nil, errUnsupportedOperator(op.Pos, op.Op)
+		}
+	}
+
+	return left, nil
+}
+
+/*
 func checkExprWithExpected(e *parser.Expr, env *Env, expected Type) (Type, error) {
 	return checkEquality(e.Equality, env, expected)
 }
@@ -393,6 +540,7 @@ func checkFactor(f *parser.Factor, env *Env, expected Type) (Type, error) {
 	}
 	return left, nil
 }
+*/
 
 func checkUnary(u *parser.Unary, env *Env, expected Type) (Type, error) {
 	return checkPostfix(u.Value, env, expected)
@@ -620,17 +768,33 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 		child.SetVar(p.Name, paramTypes[i])
 	}
 
+	subst := Subst{}
+	var actualRet Type
+	var err error
+
 	if f.ExprBody != nil {
-		actualRet, err := checkExprWithExpected(f.ExprBody, child, declaredRet)
+		actualRet, err = checkExpr(f.ExprBody, child)
 		if err != nil {
 			return nil, err
 		}
-		declaredRet = actualRet
 	} else {
+		// Block body
 		for _, stmt := range f.BlockBody {
 			if err := checkStmt(stmt, child, declaredRet); err != nil {
 				return nil, err
 			}
+		}
+		actualRet = declaredRet
+	}
+
+	if !unifyWith(declaredRet, actualRet, subst) {
+		return nil, errTypeMismatch(pos, declaredRet, actualRet)
+	}
+
+	// Final substitution: resolve any type variable that was inferred
+	if tv, ok := declaredRet.(*TypeVar); ok {
+		if resolved, ok := subst[tv.Name]; ok {
+			declaredRet = resolved
 		}
 	}
 

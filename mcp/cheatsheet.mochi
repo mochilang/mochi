@@ -1,0 +1,65 @@
+// 0. Mochi (v0.2.2)
+// Mochi is a lightweight programming language for building AI agents, working with real-time data,
+// and querying datasets. It combines declarative and funtional programming, with built-in support
+// for streams, datasets, tools, and prompt-based AI generation.
+
+
+// 1. Variable Bindings
+let name = "Mochi"
+let age = 3
+let active = true
+
+print("name = ", name, ", age = ", age, ", active = ", active)
+
+// let picture: image = load "cat.png"
+// print(picture.size)
+
+
+// 2. Control Flow
+if age > 2 {
+  print("Old enough")
+} else {
+  print("Still young")
+}
+
+for i in 0..3 {
+  print(i) // prints 0, 1, 2
+}
+
+
+// 3. functions
+
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+let square = fun(x: int): int => x * x
+let double = fun(x: int): int => x * 2
+
+fun greet(name: string): string {
+  return "Hello, " + name
+}
+
+fun apply_twice(f: fun(int): int, x: int): int {
+  return f(f(x))
+}
+
+fun make_adder(n: int): fun(int): int {
+  return fun(x: int): int => x + n
+}
+
+print(add(2, 3))
+print(square(4))
+print(greet())
+print(apply_twice(square, 2))
+
+let add10 = make_adder(10)
+print(add10(5))
+
+// 4. Composite Types
+let items = [1, 2, 3]
+let user = {"name": "ana", "age": 22}
+//  let tags = {"a", "b", "c"}
+
+let scores = {"a": 10, "b": 20}
+print(scores["a"])

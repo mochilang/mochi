@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
@@ -133,6 +134,23 @@ type ExprStmt struct {
 // --- Expressions ---
 
 type Expr struct {
+	Pos    lexer.Position
+	Binary *BinaryExpr `parser:"@@"`
+}
+
+type BinaryExpr struct {
+	Left  *Unary      `parser:"@@"`
+	Right []*BinaryOp `parser:"@@*"`
+}
+
+type BinaryOp struct {
+	Pos   lexer.Position
+	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/')"`
+	Right *PostfixExpr `parser:"@@"`
+}
+
+/*
+type Expr struct {
 	Pos      lexer.Position
 	Equality *Equality `parser:"@@"`
 }
@@ -180,6 +198,7 @@ type FactorOp struct {
 	Op    string `parser:"@('*' | '/')"`
 	Right *Unary `parser:"@@"`
 }
+*/
 
 type Unary struct {
 	Pos   lexer.Position
@@ -321,3 +340,11 @@ var Parser = participle.MustBuild[Program](
 	participle.Unquote("String"),
 	participle.UseLookahead(999),
 )
+
+func ParseString(src string) (*Program, error) {
+	prog, err := Parser.ParseString("", src)
+	if err != nil {
+		return nil, fmt.Errorf("parse error: %w", err)
+	}
+	return prog, nil
+}

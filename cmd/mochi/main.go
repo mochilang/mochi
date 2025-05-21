@@ -12,6 +12,7 @@ import (
 
 	"mochi/ast"
 	"mochi/interpreter"
+	"mochi/mcp"
 	"mochi/parser"
 	"mochi/repl"
 	"mochi/types"
@@ -24,10 +25,11 @@ var (
 )
 
 type CLI struct {
-	Run     *RunCmd  `arg:"subcommand:run" help:"Run a Mochi source file"`
-	Test    *TestCmd `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
-	Repl    *ReplCmd `arg:"subcommand:repl" help:"Start an interactive REPL session"`
-	Version bool     `arg:"--version" help:"Print version info and exit"`
+	Run     *RunCmd   `arg:"subcommand:run" help:"Run a Mochi source file"`
+	Test    *TestCmd  `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
+	Repl    *ReplCmd  `arg:"subcommand:repl" help:"Start an interactive REPL session"`
+	Serve   *ServeCmd `arg:"subcommand:serve" help:"Start MCP server over stdio"`
+	Version bool      `arg:"--version" help:"Print version info and exit"`
 }
 
 type RunCmd struct {
@@ -40,8 +42,8 @@ type TestCmd struct {
 }
 
 type ReplCmd struct{}
+type ServeCmd struct{}
 
-// Color helpers
 var (
 	cError = color.New(color.FgRed, color.Bold).SprintFunc()
 	cTitle = color.New(color.FgCyan, color.Bold).SprintFunc()
@@ -50,7 +52,6 @@ var (
 func main() {
 	var cli CLI
 	arg.MustParse(&cli)
-
 	color.NoColor = false
 
 	switch {
@@ -67,6 +68,11 @@ func main() {
 	case cli.Test != nil:
 		if err := runTests(cli.Test); err != nil {
 			fmt.Fprintf(os.Stderr, "%s %v\n", cError("test failed:"), err)
+			os.Exit(1)
+		}
+	case cli.Serve != nil:
+		if err := mcp.ServeStdio(); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("mcp:"), err)
 			os.Exit(1)
 		}
 	default:
@@ -99,27 +105,19 @@ func runFile(cmd *RunCmd) error {
 	if err != nil {
 		return err
 	}
-
 	if cmd.PrintAST {
 		fmt.Println(ast.FromProgram(prog).String())
 		return nil
 	}
-
 	env := types.NewEnv(nil)
-	if typeErrs := types.Check(prog, env); len(typeErrs) > 0 {
+	if errs := types.Check(prog, env); len(errs) > 0 {
 		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, e := range typeErrs {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, e)
+		for i, err := range errs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
 		}
 		return fmt.Errorf("aborted due to type errors")
 	}
-
-	interp := interpreter.New(prog, env)
-	if err := interp.Run(); err != nil {
-		return fmt.Errorf("runtime error: %w", err)
-	}
-
-	return nil
+	return interpreter.New(prog, env).Run()
 }
 
 func runTests(cmd *TestCmd) error {
@@ -127,21 +125,15 @@ func runTests(cmd *TestCmd) error {
 	if err != nil {
 		return err
 	}
-
 	env := types.NewEnv(nil)
-	if typeErrs := types.Check(prog, env); len(typeErrs) > 0 {
+	if errs := types.Check(prog, env); len(errs) > 0 {
 		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, e := range typeErrs {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, e)
+		for i, err := range errs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
 		}
 		return fmt.Errorf("aborted due to type errors")
 	}
-
-	interp := interpreter.New(prog, env)
-	if err := interp.Test(); err != nil {
-		return err
-	}
-	return nil
+	return interpreter.New(prog, env).Test()
 }
 
 func parseOrPrintError(path string) (*parser.Program, error) {

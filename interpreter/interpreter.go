@@ -279,6 +279,84 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 }
 
 // --- Expression Evaluation ---
+func (i *Interpreter) evalExpr(e *parser.Expr) (any, error) {
+	if e == nil {
+		return nil, errors.New("nil expression")
+	}
+	return i.evalBinaryExpr(e.Binary)
+}
+
+func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
+	if b == nil {
+		return nil, errors.New("nil binary expression")
+	}
+
+	// Step 1: Build a list of operands and operators
+	type token struct {
+		pos lexer.Position
+		op  string
+	}
+	var operands []any
+	var operators []token
+
+	// Initial left expression
+	left, err := i.evalUnary(b.Left)
+	if err != nil {
+		return nil, err
+	}
+	operands = append(operands, left)
+
+	for _, part := range b.Right {
+		operators = append(operators, token{part.Pos, part.Op})
+		right, err := i.evalPostfixExpr(part.Right)
+		if err != nil {
+			return nil, err
+		}
+		operands = append(operands, right)
+	}
+
+	// Step 2: Apply precedence rules (high to low)
+	for _, level := range [][]string{
+		{"*", "/"},             // highest
+		{"+", "-"},             // middle
+		{"<", "<=", ">", ">="}, // comparison
+		{"==", "!="},           // equality
+	} {
+		for i := 0; i < len(operators); {
+			op := operators[i].op
+			if contains(level, op) {
+				left := operands[i]
+				right := operands[i+1]
+				result, err := applyBinary(operators[i].pos, left, op, right)
+				if err != nil {
+					return nil, err
+				}
+				// Replace left and right with result
+				operands[i] = result
+				operands = append(operands[:i+1], operands[i+2:]...)  // remove i+1
+				operators = append(operators[:i], operators[i+1:]...) // remove i
+			} else {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("unexpected state after binary eval")
+	}
+	return operands[0], nil
+}
+
+func contains(ops []string, op string) bool {
+	for _, o := range ops {
+		if o == op {
+			return true
+		}
+	}
+	return false
+}
+
+/*
 
 func (i *Interpreter) evalExpr(e *parser.Expr) (any, error) {
 	if e == nil {
@@ -358,6 +436,8 @@ func (i *Interpreter) evalFactor(f *parser.Factor) (any, error) {
 	}
 	return left, nil
 }
+
+*/
 
 func (i *Interpreter) evalUnary(u *parser.Unary) (any, error) {
 	val, err := i.evalPostfixExpr(u.Value)

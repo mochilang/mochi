@@ -1,8 +1,8 @@
-1. error[T008]: type mismatch: expected string, got float
+1. error[T020]: operator `*` cannot be used on types string and float
   --> tests/types/errors/binary_operator_type_error.mochi:1:13
 
   1 | let x = "a" * 3.14 // string * float = invalid
     |             ^
 
 help:
-  Change the value to match the expected type.
+  Choose an operator that supports these operand types.

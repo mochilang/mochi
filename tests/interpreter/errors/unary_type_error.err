@@ -1,7 +1,7 @@
 error[I009]: invalid use of unary '-' on string
   --> tests/interpreter/errors/unary_type_error.mochi:2:7
 
-  2 | print(-s) // invalid unary minus on string
+  2 | print(-s)
     |       ^
 
 help:
