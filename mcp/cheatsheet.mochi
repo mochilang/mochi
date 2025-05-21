@@ -63,3 +63,9 @@ let user = {"name": "ana", "age": 22}
 
 let scores = {"a": 10, "b": 20}
 print(scores["a"])
+
+// 5. Test block with expect.
+test "Some math operator" {
+    expect 2 + 3 == 5
+    expect 1 + 2 * 3 == 7
+}

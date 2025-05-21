@@ -11,49 +11,33 @@ import (
 
 type Type interface {
 	String() string
-	Equal(Type) bool
 }
 
 type IntType struct{}
 
-func (IntType) String() string    { return "int" }
-func (IntType) Equal(t Type) bool { _, ok := t.(IntType); return ok }
+func (IntType) String() string { return "int" }
 
 type FloatType struct{}
 
-func (FloatType) String() string    { return "float" }
-func (FloatType) Equal(t Type) bool { _, ok := t.(FloatType); return ok }
+func (FloatType) String() string { return "float" }
 
 type StringType struct{}
 
-func (StringType) String() string    { return "string" }
-func (StringType) Equal(t Type) bool { _, ok := t.(StringType); return ok }
+func (StringType) String() string { return "string" }
 
 type BoolType struct{}
 
-func (BoolType) String() string    { return "bool" }
-func (BoolType) Equal(t Type) bool { _, ok := t.(BoolType); return ok }
+func (BoolType) String() string { return "bool" }
 
 type VoidType struct{}
 
-func (VoidType) String() string    { return "void" }
-func (VoidType) Equal(t Type) bool { _, ok := t.(VoidType); return ok }
+func (VoidType) String() string { return "void" }
 
 type ListType struct {
 	Elem Type
 }
 
 func (t ListType) String() string { return "[" + t.Elem.String() + "]" }
-func (t ListType) Equal(other Type) bool {
-	switch o := other.(type) {
-	case ListType:
-		return t.Elem.Equal(o.Elem) || isAny(t.Elem) || isAny(o.Elem)
-	case AnyListType:
-		return true
-	default:
-		return false
-	}
-}
 
 type MapType struct {
 	Key   Type
@@ -64,37 +48,15 @@ func (t MapType) String() string {
 	return fmt.Sprintf("{%s: %s}", t.Key.String(), t.Value.String())
 }
 
-func (t MapType) Equal(other Type) bool {
-	switch o := other.(type) {
-	case MapType:
-		return (t.Key.Equal(o.Key) || isAny(t.Key) || isAny(o.Key)) &&
-			(t.Value.Equal(o.Value) || isAny(t.Value) || isAny(o.Value))
-	default:
-		return false
-	}
-}
-
-func isAny(t Type) bool {
-	_, ok := t.(AnyType)
-	return ok
-}
-
 type AnyType struct{}
 
-func (AnyType) String() string    { return "any" }
-func (AnyType) Equal(t Type) bool { return true }
+func (AnyType) String() string { return "any" }
 
 type TypeVar struct {
 	Name string
 }
 
 func (t *TypeVar) String() string { return t.Name }
-func (t *TypeVar) Equal(other Type) bool {
-	if o, ok := other.(*TypeVar); ok {
-		return t.Name == o.Name
-	}
-	return false
-}
 
 type FuncType struct {
 	Params []Type
@@ -115,18 +77,6 @@ func (f FuncType) String() string {
 	}
 	return s
 }
-func (f FuncType) Equal(t Type) bool {
-	other, ok := t.(FuncType)
-	if !ok || len(f.Params) != len(other.Params) {
-		return false
-	}
-	for i := range f.Params {
-		if !f.Params[i].Equal(other.Params[i]) {
-			return false
-		}
-	}
-	return f.Return.Equal(other.Return)
-}
 
 type AnyListType struct{}
 
@@ -138,8 +88,118 @@ func (AnyListType) Equal(t Type) bool {
 
 type BuiltinFuncType struct{}
 
-func (BuiltinFuncType) String() string    { return "fun(...): void" }
-func (BuiltinFuncType) Equal(t Type) bool { _, ok := t.(BuiltinFuncType); return ok }
+func (BuiltinFuncType) String() string { return "fun(...): void" }
+
+type Subst map[string]Type
+
+// unify attempts to determine if type a can be unified with type b.
+// If a substitution map is provided, it will be updated to resolve type variables.
+// If subst == nil, unification checks structural equality.
+// unify attempts to determine if type a can be unified with type b.
+// If a substitution map is provided, it will be updated to resolve type variables.
+// If subst == nil, unification checks structural equality.
+func unify(a, b Type, subst Subst) bool {
+	switch at := a.(type) {
+
+	case AnyType:
+		return true
+
+	case *TypeVar:
+		if subst != nil {
+			if val, ok := subst[at.Name]; ok {
+				return unify(val, b, subst)
+			}
+			subst[at.Name] = b
+		}
+		return true
+
+	case ListType:
+		switch bt := b.(type) {
+		case ListType:
+			return unify(at.Elem, bt.Elem, subst)
+		case AnyType:
+			return true
+		case *TypeVar:
+			if subst != nil {
+				if val, ok := subst[bt.Name]; ok {
+					return unify(at, val, subst)
+				}
+				subst[bt.Name] = at
+			}
+			return true
+		default:
+			return false
+		}
+
+	case MapType:
+		switch bt := b.(type) {
+		case MapType:
+			return unify(at.Key, bt.Key, subst) &&
+				unify(at.Value, bt.Value, subst)
+		case AnyType:
+			return true
+		case *TypeVar:
+			if subst != nil {
+				if val, ok := subst[bt.Name]; ok {
+					return unify(at, val, subst)
+				}
+				subst[bt.Name] = at
+			}
+			return true
+		default:
+			return false
+		}
+
+	case FuncType:
+		bt, ok := b.(FuncType)
+		if !ok || len(at.Params) != len(bt.Params) {
+			return false
+		}
+		for i := range at.Params {
+			if !unify(at.Params[i], bt.Params[i], subst) {
+				return false
+			}
+		}
+		return unify(at.Return, bt.Return, subst)
+
+	case IntType:
+		_, ok := b.(IntType)
+		return ok
+
+	case FloatType:
+		_, ok := b.(FloatType)
+		return ok
+
+	case StringType:
+		_, ok := b.(StringType)
+		return ok
+
+	case BoolType:
+		_, ok := b.(BoolType)
+		return ok
+
+	case VoidType:
+		_, ok := b.(VoidType)
+		return ok
+
+	default:
+		// If a didn't match, maybe b is AnyType or a TypeVar
+		switch bt := b.(type) {
+		case AnyType:
+			return true
+		case *TypeVar:
+			if subst != nil {
+				if val, ok := subst[bt.Name]; ok {
+					return unify(a, val, subst)
+				}
+				subst[bt.Name] = a
+			}
+			return true
+		default:
+			return false
+		}
+	}
+}
 
 // --- Entry Point ---
 
@@ -173,7 +233,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 				if err != nil {
 					return err
 				}
-				if !typ.Equal(exprType) {
+				if !unify(typ, exprType, nil) {
 					return errTypeMismatch(s.Let.Pos, typ, exprType)
 				}
 			}
@@ -198,7 +258,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		if err != nil {
 			return errAssignUndeclared(s.Assign.Pos, s.Assign.Name)
 		}
-		if !lhsType.Equal(rhsType) {
+		if !unify(lhsType, rhsType, nil) {
 			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
 		}
 		return nil
@@ -238,7 +298,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		if err != nil {
 			return err
 		}
-		if !actual.Equal(expectedReturn) {
+		if !unify(actual, expectedReturn, nil) {
 			return errReturnMismatch(s.Return.Pos, expectedReturn, actual)
 		}
 		return nil
@@ -257,7 +317,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		if err != nil {
 			return err
 		}
-		if !t.Equal(BoolType{}) {
+		if !unify(t, BoolType{}, nil) {
 			return errExpectBoolean(s.Expect.Pos)
 		}
 		return nil
@@ -316,98 +376,6 @@ func resolveTypeRef(t *parser.TypeRef) Type {
 	return AnyType{}
 }
 
-func unify(a, b Type) bool {
-	switch at := a.(type) {
-	case AnyType:
-		return true
-	case *TypeVar:
-		return true
-	case ListType:
-		switch bt := b.(type) {
-		case ListType:
-			return unify(at.Elem, bt.Elem)
-		case AnyListType:
-			return true
-		case AnyType:
-			return true
-		default:
-			return false
-		}
-	case MapType:
-		switch bt := b.(type) {
-		case MapType:
-			return unify(at.Key, bt.Key) && unify(at.Value, bt.Value)
-		case AnyType:
-			return true
-		default:
-			return false
-		}
-	case FuncType:
-		bt, ok := b.(FuncType)
-		if !ok || len(at.Params) != len(bt.Params) {
-			return false
-		}
-		for i := range at.Params {
-			if !unify(at.Params[i], bt.Params[i]) {
-				return false
-			}
-		}
-		return unify(at.Return, bt.Return)
-	case IntType:
-		_, ok := b.(IntType)
-		return ok
-	case FloatType:
-		_, ok := b.(FloatType)
-		return ok
-	case StringType:
-		_, ok := b.(StringType)
-		return ok
-	case BoolType:
-		_, ok := b.(BoolType)
-		return ok
-	case VoidType:
-		_, ok := b.(VoidType)
-		return ok
-	}
-
-	// Check the reverse direction in case b is AnyType or TypeVar
-	return unify(b, a)
-}
-
-type Subst map[string]Type
-
-func unifyWith(a, b Type, subst Subst) bool {
-	switch at := a.(type) {
-	case *TypeVar:
-		if val, ok := subst[at.Name]; ok {
-			return unifyWith(val, b, subst)
-		}
-		subst[at.Name] = b
-		return true
-	case AnyType:
-		return true
-	case ListType:
-		bt, ok := b.(ListType)
-		return ok && unifyWith(at.Elem, bt.Elem, subst)
-	case MapType:
-		bt, ok := b.(MapType)
-		return ok && unifyWith(at.Key, bt.Key, subst) && unifyWith(at.Value, bt.Value, subst)
-	case FuncType:
-		bt, ok := b.(FuncType)
-		if !ok || len(at.Params) != len(bt.Params) {
-			return false
-		}
-		for i := range at.Params {
-			if !unifyWith(at.Params[i], bt.Params[i], subst) {
-				return false
-			}
-		}
-		return unifyWith(at.Return, bt.Return, subst)
-	default:
-		return a.Equal(b)
-	}
-}
-
 func checkExpr(e *parser.Expr, env *Env) (Type, error) {
 	return checkExprWithExpected(e, env, nil)
 }
@@ -417,7 +385,7 @@ func checkExprWithExpected(e *parser.Expr, env *Env, expected Type) (Type, error
 	if err != nil {
 		return nil, err
 	}
-	if expected != nil && !unify(actual, expected) {
+	if expected != nil && !unify(actual, expected, nil) {
 		return nil, errTypeMismatch(e.Pos, expected, actual)
 	}
 	return actual, nil
@@ -435,16 +403,16 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 		}
 
 		switch op.Op {
-		case "+", "-", "*", "/":
+		case "+", "-", "*", "/", "%":
 			// Arithmetic: int, float, or string + string
 			switch {
-			case unify(left, IntType{}) && unify(right, IntType{}):
+			case unify(left, IntType{}, nil) && unify(right, IntType{}, nil):
 				left = IntType{}
 
-			case unify(left, FloatType{}) && unify(right, FloatType{}):
+			case unify(left, FloatType{}, nil) && unify(right, FloatType{}, nil):
 				left = FloatType{}
 
-			case op.Op == "+" && unify(left, StringType{}) && unify(right, StringType{}):
+			case op.Op == "+" && unify(left, StringType{}, nil) && unify(right, StringType{}, nil):
 				left = StringType{}
 
 			default:
@@ -453,7 +421,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 
 		case "==", "!=", "<", "<=", ">", ">=":
 			// comparison: any comparable types
-			if !unify(left, right) {
+			if !unify(left, right, nil) {
 				return nil, errIncompatibleComparison(lexer.Position{}) // you can add op.Pos to BinaryOp
 			}
 			left = BoolType{}
@@ -564,7 +532,7 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				if err != nil {
 					return nil, err
 				}
-				if !startType.Equal(IntType{}) {
+				if !unify(startType, IntType{}, nil) {
 					return nil, errIndexNotInteger(idx.Pos)
 				}
 				typ = t.Elem
@@ -575,7 +543,7 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 					if err != nil {
 						return nil, err
 					}
-					if !startType.Equal(IntType{}) {
+					if !unify(startType, IntType{}, nil) {
 						return nil, errIndexNotInteger(idx.Pos)
 					}
 				}
@@ -584,7 +552,7 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 					if err != nil {
 						return nil, err
 					}
-					if !endType.Equal(IntType{}) {
+					if !unify(endType, IntType{}, nil) {
 						return nil, errIndexNotInteger(idx.Pos)
 					}
 				}
@@ -602,7 +570,7 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 			if err != nil {
 				return nil, err
 			}
-			if !keyType.Equal(t.Key) {
+			if !unify(keyType, t.Key, nil) {
 				return nil, errIndexTypeMismatch(idx.Pos, t.Key, keyType)
 			}
 			typ = t.Value
@@ -657,7 +625,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				if err != nil {
 					return nil, err
 				}
-				if !(argType.Equal(ft.Params[i]) || ft.Params[i].Equal(argType)) {
+				if !unify(argType, ft.Params[i], nil) {
 					return nil, errArgTypeMismatch(p.Pos, i, ft.Params[i], argType)
 				}
 			}
@@ -688,7 +656,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			}
 			if elemType == nil {
 				elemType = t
-			} else if !elemType.Equal(t) {
+			} else if !unify(elemType, t, nil) {
 				elemType = AnyType{} // fallback if mixed types
 			}
 		}
@@ -710,12 +678,12 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			}
 			if keyT == nil {
 				keyT = kt
-			} else if !keyT.Equal(kt) {
+			} else if !unify(keyT, kt, nil) {
 				keyT = AnyType{}
 			}
 			if valT == nil {
 				valT = vt
-			} else if !valT.Equal(vt) {
+			} else if !unify(valT, vt, nil) {
 				valT = AnyType{}
 			}
 		}
@@ -787,7 +755,7 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 		actualRet = declaredRet
 	}
 
-	if !unifyWith(declaredRet, actualRet, subst) {
+	if !unify(declaredRet, actualRet, subst) {
 		return nil, errTypeMismatch(pos, declaredRet, actualRet)
 	}
 

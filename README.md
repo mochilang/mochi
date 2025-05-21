@@ -1,185 +1,260 @@
-# 🐣 Mochi Programming Language
+# 🍡 Mochi Programming Language
 
-**Mochi** is a small, statically typed programming language designed for clarity, safety, and expressiveness — whether
-you're a human developer writing tools or an AI agent running code autonomously.
+**Mochi** is a small, statically typed programming language built for clarity, safety, and expressiveness — whether
+you're writing tools, processing real-time data, or powering intelligent agents.
 
-Built to be readable, testable, and embeddable, Mochi makes it easy to:
+Mochi is:
 
-* 🧠 Write expression-first logic with first-class functions and closures
-* ✅ Rely on strong, predictable types (with inference where it matters)
-* 🧪 Add lightweight tests with `test` + `expect` blocks
-* 🌲 Introspect structure using Lisp-style AST output
-* ⚙️ Integrate cleanly into compilers, agents, and dev workflows
+* Agent-friendly: structured, safe, and embeddable
+* Declarative and functional, with clean, expressive syntax
+* Fast and portable: zero-dependency single binary
+* Testable by design with built-in `test` and `expect` blocks
 
-## 📦 Install & Usage
+Designed to be simple enough to explore in minutes, but powerful enough to build with for real.
 
-Clone the repository and build the CLI tools:
+## Getting Started
+
+### Run from a Prebuilt Binary
+
+1. Download the latest version from [Releases](https://github.com/mochilang/mochi/releases)
+2. Make it executable (`chmod +x mochi` on macOS/Linux)
+3. Run a program or launch the server:
+
+```bash
+./mochi run examples/hello.mochi
+./mochi serve
+```
+
+### Run with `npx` (No Install Required)
+
+```bash
+npx mochilang/mochi serve
+```
+
+This is the fastest way to try Mochi — no setup required.
+
+## Using Mochi in Claude Desktop
+
+Mochi works great inside Claude Desktop using the Model Context Protocol (MCP). Once configured, you can write and
+evaluate code directly from your chat window.
+
+### Configure `settings.json`
+
+Using `npx`:
+
+```json
+{
+  "mcpServers": {
+    "mochi": {
+      "command": "npx",
+      "args": [
+        "mochilang/mochi",
+        "serve"
+      ]
+    }
+  }
+}
+```
+
+Or with a local binary:
+
+```json
+{
+  "mcpServers": {
+    "mochi": {
+      "command": "/path/to/mochi",
+      "args": [
+        "serve"
+      ]
+    }
+  }
+}
+```
+
+### Try it in Claude
+
+Once set up, send this snippet to Claude:
+
+```mochi
+let π = 3.14
+
+fun area(r: float): float {
+    return π * r * r
+}
+print(area(10.0))
+
+test "π" {
+    expect π == 3.14
+    expect area(10.0) == 314.0
+}
+
+let 🍡 = "🍡૮₍ ˃ ⤙ ˂ ₎ა"
+print(🍡)
+```
+
+Claude will respond:
+
+```
+314
+🍡૮₍ ˃ ⤙ ˂ ₎ა
+```
+
+It just works — and feels fun to use.
+
+## Language Overview
+
+Mochi is designed to be familiar and intuitive, while keeping things safe and predictable.
+
+### Variable Bindings
+
+```mochi
+let name = "Mochi"
+let age = 3
+let active = true
+```
+
+All bindings are immutable by default — like constants in most functional languages.
+
+### Control Flow
+
+```mochi
+if age > 2 {
+  print("Old enough")
+} else {
+  print("Still young")
+}
+
+for i in 0..3 {
+  print(i)  // prints 0, 1, 2
+}
+```
+
+Range-based iteration keeps loops clean and readable.
+
+### Functions
+
+```mochi
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+let square = fun(x: int): int => x * x
+
+print(add(2, 3))   // 5
+print(square(4))   // 16
+```
+
+Functions are statically typed and first-class — pass them around freely.
+
+```mochi
+fun apply_twice(f: fun(int): int, x: int): int {
+  return f(f(x))
+}
+
+print(apply_twice(square, 3))  // 81
+```
+
+### Collections
+
+Mochi supports lists, maps, and sets out of the box.
+
+```mochi
+let list = [1, 2, 3]
+let user = {"name": "Ana", "age": 22}
+let tags = {"a", "b", "c"}
+let scores = {"a": 10, "b": 20}
+
+print(list[0])
+print(user["name"])
+print(scores["b"])
+```
+
+Use whatever fits your data best.
+
+### Built-in Testing
+
+```mochi
+test "math works" {
+  expect 2 + 2 == 4
+  expect 1 + 2 * 3 == 7
+}
+```
+
+Tests are part of the language. No test runner needed. Just run your code and get feedback immediately.
+
+### Unicode Support
+
+Mochi speaks your language — literally:
+
+```mochi
+let π = 3.14
+
+fun area(r: float): float {
+    return π * r * r
+}
+print(area(10.0))
+
+let 🍡 = "🍡૮₍ ˃ ⤙ ˂ ₎ა"
+print(🍡)
+```
+
+Use symbols, emojis, and multilingual identifiers naturally.
+
+## MCP Tools
+
+Running `mochi serve` exposes these tools via MCP:
+
+| Tool | Description |
+| | |
+| `mochi_eval`       | Evaluate a Mochi program and return output |
+| `mochi_cheatsheet` | Return the full language reference |
+
+Perfect for Claude Desktop, Open Interpreter, or other AI shells.
+
+## Examples
+
+The [`examples/`](./examples) folder contains ready-to-run programs:
+
+* `hello.mochi` – Hello world
+* `math.mochi` – Arithmetic and tests
+* `list.mochi` – Working with lists
+* `agent.mochi` – Logic for autonomous agents
+
+Try editing one or write your own.
+
+## Embedding and Tooling
+
+Mochi can be embedded or integrated in a variety of ways:
+
+* As a command-line interpreter (`mochi run file.mochi`)
+* As an MCP-compatible service (`mochi serve`)
+* As a language core inside your own tools
+* A REPL interface is also planned for interactive use
+
+Custom tools can be added in [`mcp.Register`](./mcp/mcp.go).
+
+## Contributing
+
+Mochi is open to all kinds of contributions — from small bug fixes to new language features or even cool example
+programs.
+
+To get started:
 
 ```bash
 git clone https://github.com/mochilang/mochi
 cd mochi
-make build
+go run ./cmd/mochi/main.go
 ```
 
-This installs:
+You can:
 
-* `mochi`: main compiler & interpreter
-* `mochi-run`: example runner and documentation generator
+* Add or modify examples in `examples/`
+* Run tests with `go test ./...`
+* Open a pull request with a clear description
 
-## ▶️ Run a Mochi program
+Start small, stay focused, and feel free to ask questions by opening a draft PR.
 
-```bash
-mochi run path/to/program.mochi
-```
+## License
 
-This will:
-
-1. Parse the file
-2. Type check it
-3. Run the program
-
-### 🔍 Print the AST
-
-```bash
-mochi run --ast path/to/program.mochi
-```
-
-This prints the parsed syntax tree in Lisp format after type checking.
-
-### 💻 Start the REPL
-
-```bash
-mochi repl
-```
-
-Launches an interactive shell for experimenting with Mochi code.
-
-### 📌 Show version info
-
-```bash
-mochi --version
-```
-
-Prints version, Git commit, build time, and platform (OS/Arch).
-
-### 🆘 Command Help
-
-```bash
-mochi --help
-
-Usage: mochi [--version] <command> [<args>]
-
-Available commands:
-  run      Run a Mochi source file
-  repl     Start an interactive REPL session
-
-Options:
-  --version     Show version and exit
-  --help, -h    Display help and exit
-```
-
-## 💡 Language Overview
-
-```mochi
-// greet.mochi
-
-let name: string = "Mochi"
-
-fun greet(name: string): string {
-  return "Hello, " + name
-}
-
-test "basic greeting" {
-  expect greet("Mochi") == "Hello, Mochi"
-}
-
-print(greet(name))
-```
-
-Mochi combines static types with expressive syntax.
-The language supports:
-
-* Top-level function definitions
-* Lexical scoping and closures
-* Built-in `test` blocks with `expect` assertions
-* Minimal syntax and safe defaults
-
-## 🧪 Golden Testing
-
-Mochi uses golden testing to ensure that example programs produce stable, predictable output.
-
-```bash
-make test            # Run all tests and compare against golden files
-make update-golden   # Regenerate golden output after interpreter changes
-```
-
-Each `.mochi` file in `examples/` is:
-
-* Parsed and type-checked
-* Interpreted and evaluated
-* Rendered to markdown with:
-
-    * ✅ Source code
-    * 🌲 Lisp-style AST
-    * ▶️ Runtime output
-
-Output is saved to the `llm/` folder.
-
-## 🚀 Releasing
-
-To run a **dry-run (snapshot) release** for testing:
-
-```bash
-make snapshot
-```
-
-To **publish a real release**:
-
-```bash
-make release VERSION=0.2.3
-```
-
-This will:
-
-* Update the `VERSION` file
-* Commit and tag as `v0.2.3`
-* Push to GitHub
-* Build and publish cross-platform binaries via GoReleaser
-
-Requires a valid `GITHUB_TOKEN` in your environment.
-
-## 🔧 Developer Experience
-
-```bash
-make build           # Build mochi and mochi-run to $HOME/bin
-make fmt             # Format Go source files
-make lint            # Run linters (golangci-lint or fallback to go vet)
-make clean           # Remove binaries and dist/
-```
-
-## 👥 Contributing
-
-Thanks for your interest in contributing to Mochi!
-
-We welcome feedback, bug reports, and pull requests.
-
-Start by exploring the codebase:
-
-* `parser/` — grammar and syntax
-* `types/` — type checking and inference
-* `interpreter/` — evaluation logic
-* `examples/` — language test cases
-
-Before submitting:
-
-```bash
-make fmt
-make test
-```
-
-We value simplicity, clarity, and great DX.
-
-## 📄 License
-
-Released under the [MIT License](LICENSE)
-© 2025 [mochi-lang.org](https://github.com/mochilang/mochi)
+Mochi is open source under the [MIT License](./LICENSE).
+© 2025 mochilang — lightweight logic for intelligent systems.
