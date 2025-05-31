@@ -1,0 +1,34 @@
+fun is_prime(n: int): bool {
+  if n < 2 { return false }
+  for i in 2..(n - 1) {
+    if n % i == 0 {
+      return false
+    }
+  }
+  return true
+}
+
+let n = {{ .N }}
+// let n = 10
+let repeat = 100
+let last = 0
+
+let start = now()
+for r in 0..repeat {
+  let count = 0
+  for i in 2..n {
+    if is_prime(i) {
+      count = count + 1
+    }
+  }
+  last = count
+}
+let end = now()
+let duration = (end - start) / 1000000
+// print(start, end, end - start, duration)
+
+let output = {
+  "duration_ms": duration,
+  "output": last,
+}
+json(output)

@@ -7,38 +7,38 @@ import (
 
 var Errors = map[string]diagnostic.Template{
 	// --- Declarations & Scope ---
-	"T000": {"T000", "`let` requires a type or a value", "Use `let x = ...` or `let x: int` to declare a variable."},
-	"T001": {"T001", "assignment to undeclared variable: %s", "Declare `%s` first using `let`."},
-	"T002": {"T002", "undefined variable: %s", "Check if the variable was declared in this scope."},
+	"T000": {Code: "T000", Message: "`let` requires a type or a value", Help: "Use `let x = ...` or `let x: int` to declare a variable."},
+	"T001": {Code: "T001", Message: "assignment to undeclared variable: %s", Help: "Declare `%s` first using `let`."},
+	"T002": {Code: "T002", Message: "undefined variable: %s", Help: "Check if the variable was declared in this scope."},
 
 	// --- Functions ---
-	"T003": {"T003", "unknown function: %s", "Ensure the function is defined before it's called."},
-	"T004": {"T004", "`%s` is not callable", "Use a function or closure in this position."},
-	"T005": {"T005", "parameter `%s` is missing a type", "Add a type like `x: int` to this parameter."},
-	"T006": {"T006", "too many arguments: expected %d, got %d", "Remove extra arguments or update the function definition."},
-	"T007": {"T007", "argument %d: expected %s, got %s", "Ensure the argument type matches the function’s signature."},
+	"T003": {Code: "T003", Message: "unknown function: %s", Help: "Ensure the function is defined before it's called."},
+	"T004": {Code: "T004", Message: "`%s` is not callable", Help: "Use a function or closure in this position."},
+	"T005": {Code: "T005", Message: "parameter `%s` is missing a type", Help: "Add a type like `x: int` to this parameter."},
+	"T006": {Code: "T006", Message: "too many arguments: expected %d, got %d", Help: "Remove extra arguments or update the function definition."},
+	"T007": {Code: "T007", Message: "argument %d: expected %s, got %s", Help: "Ensure the argument type matches the function’s signature."},
 
 	// --- Type Mismatches ---
-	"T008": {"T008", "type mismatch: expected %s, got %s", "Change the value to match the expected type."},
-	"T009": {"T009", "cannot assign %s to `%s` (expected %s)", "Make sure the assigned value is compatible with `%s`."},
-	"T010": {"T010", "return type mismatch: expected %s, got %s", "Update the return value to match the function's return type."},
+	"T008": {Code: "T008", Message: "type mismatch: expected %s, got %s", Help: "Change the value to match the expected type."},
+	"T009": {Code: "T009", Message: "cannot assign %s to `%s` (expected %s)", Help: "Make sure the assigned value is compatible with `%s`."},
+	"T010": {Code: "T010", Message: "return type mismatch: expected %s, got %s", Help: "Update the return value to match the function's return type."},
 
 	// --- Boolean and Condition Checks ---
-	"T011": {"T011", "`expect` must be a boolean", "`expect` should evaluate to `true` or `false`."},
-	"T012": {"T012", "incompatible types in equality comparison", "Use `==` or `!=` only with values of the same type."},
-	"T013": {"T013", "incompatible types in comparison", "Use comparable types like numbers or strings with `<`, `>`."},
+	"T011": {Code: "T011", Message: "`expect` must be a boolean", Help: "`expect` should evaluate to `true` or `false`."},
+	"T012": {Code: "T012", Message: "incompatible types in equality comparison", Help: "Use `==` or `!=` only with values of the same type."},
+	"T013": {Code: "T013", Message: "incompatible types in comparison", Help: "Use comparable types like numbers or strings with `<`, `>`."},
 
 	// --- Expressions ---
-	"T014": {"T014", "invalid primary expression", "Expected a complete value or expression (e.g., literal, variable, function)."},
-	"T020": {"T020", "operator `%s` cannot be used on types %s and %s", "Choose an operator that supports these operand types."},
-	"T021": {"T021", "unsupported operator: `%s`", "Use a valid operator like +, -, ==, or <."},
+	"T014": {Code: "T014", Message: "invalid primary expression", Help: "Expected a complete value or expression (e.g., literal, variable, function)."},
+	"T020": {Code: "T020", Message: "operator `%s` cannot be used on types %s and %s", Help: "Choose an operator that supports these operand types."},
+	"T021": {Code: "T021", Message: "unsupported operator: `%s`", Help: "Use a valid operator like +, -, ==, or <."},
 
 	// --- Indexing ---
-	"T015": {"T015", "index must be an integer", "Use an `int` value for indexing (e.g., `list[0]`)."},
-	"T016": {"T016", "missing index expression", "Provide an index inside `[ ... ]`."},
-	"T017": {"T017", "slicing not allowed on map", "Maps do not support slicing like `map[a:b]`."},
-	"T018": {"T018", "type %s does not support indexing", "Only `list<T>` and `map<K,V>` can be indexed."},
-	"T019": {"T019", "map key type mismatch: expected %s, got %s", "Make sure the key matches the map’s key type."},
+	"T015": {Code: "T015", Message: "index must be an integer", Help: "Use an `int` value for indexing (e.g., `list[0]`)."},
+	"T016": {Code: "T016", Message: "missing index expression", Help: "Provide an index inside `[ ... ]`."},
+	"T017": {Code: "T017", Message: "slicing not allowed on map", Help: "Maps do not support slicing like `map[a:b]`."},
+	"T018": {Code: "T018", Message: "type %s does not support indexing", Help: "Only `list<T>` and `map<K,V>` can be indexed."},
+	"T019": {Code: "T019", Message: "map key type mismatch: expected %s, got %s", Help: "Make sure the key matches the map’s key type."},
 }
 
 // --- Wrapper Functions ---
@@ -91,9 +91,9 @@ func errExpectBoolean(pos lexer.Position) error {
 	return Errors["T011"].New(pos)
 }
 
-func errIncompatibleEquality(pos lexer.Position) error {
-	return Errors["T012"].New(pos)
-}
+//func errIncompatibleEquality(pos lexer.Position) error {
+//	return Errors["T012"].New(pos)
+//}
 
 func errIncompatibleComparison(pos lexer.Position) error {
 	return Errors["T013"].New(pos)

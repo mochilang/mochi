@@ -1,0 +1,16 @@
+fun fib(n: int): int {
+  if n <= 1 { return n }
+  return fib(n - 1) + fib(n - 2)
+}
+
+// let n = 10
+let n = {{ .N }}
+let start = now()
+let result = fib(n)
+let duration = (now() - start) / 1000000
+
+let output = {
+    "duration_ms": duration,
+    "output": result,
+}
+json(output)

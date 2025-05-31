@@ -55,7 +55,11 @@ func (r *REPL) Run() {
 		printf(r.out, "%s failed to start REPL: %v\n", cError("error:"), err)
 		return
 	}
-	defer rl.Close()
+	defer func() {
+		if err := rl.Close(); err != nil {
+			printf(r.out, "%s failed to close readline: %v\n", cError("error:"), err)
+		}
+	}()
 	r.rl = rl
 
 	printWelcome(r.out, r.version)
@@ -158,11 +162,21 @@ func printWelcome(out io.Writer, version string) {
 }
 
 func printHelp(out io.Writer) {
-	fmt.Fprintln(out)
-	fmt.Fprintln(out, cSuccess("🌿 REPL Commands"))
-	fmt.Fprintln(out, "  ----------------------------------------")
-	fmt.Fprintf(out, "  %s   Show this help message\n", cCommand(":help"))
-	fmt.Fprintf(out, "  %s   Exit the REPL\n", cCommand(":exit"))
+	if _, err := fmt.Fprintln(out); err != nil {
+		return
+	}
+	if _, err := fmt.Fprintln(out, cSuccess("🌿 REPL Commands")); err != nil {
+		return
+	}
+	if _, err := fmt.Fprintln(out, "  ----------------------------------------"); err != nil {
+		return
+	}
+	if _, err := fmt.Fprintf(out, "  %s   Show this help message\n", cCommand(":help")); err != nil {
+		return
+	}
+	if _, err := fmt.Fprintf(out, "  %s   Exit the REPL\n", cCommand(":exit")); err != nil {
+		return
+	}
 }
 
 func (r *REPL) setPrompt(base string) {

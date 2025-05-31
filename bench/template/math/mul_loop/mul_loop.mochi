@@ -1,0 +1,24 @@
+fun mul(n: int): int {
+  let result = 1
+  for i in 1..n {
+    result = result * i
+  }
+  return result
+}
+
+let n = {{ .N }}
+// let n = 50
+let repeat = 1000
+let last = 0
+
+let start = now()
+for i in 0..repeat {
+  last = mul(n)
+}
+let duration = (now() - start) / 1000000
+
+let output = {
+  "duration_ms": duration,
+  "output": last,
+}
+json(output)
