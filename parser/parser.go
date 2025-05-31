@@ -215,8 +215,8 @@ type CallExpr struct {
 
 type Literal struct {
 	Pos   lexer.Position
-	Float *float64 `parser:"@Float"`
-	Int   *int     `parser:"| @Int"`
+	Int   *int     `parser:"@Int"`
+	Float *float64 `parser:"| @Float"`
 	Bool  *bool    `parser:"| @('true' | 'false')"`
 	Str   *string  `parser:"| @String"`
 }

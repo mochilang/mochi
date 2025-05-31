@@ -5,6 +5,7 @@ fun fact(n: int): int {
   return n * fact(n - 1)
 }
 
+// let n = 4
 let n = {{ .N }}
 let repeat = 1000
 let last = 0
