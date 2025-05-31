@@ -53,11 +53,13 @@ func Benchmarks(tempDir string) []Bench {
 		if err != nil || d.IsDir() {
 			return nil
 		}
-		if !strings.HasSuffix(path, ".mochi") &&
-			!strings.HasSuffix(path, ".py") &&
-			!strings.HasSuffix(path, ".ts") &&
-			!strings.HasSuffix(path, ".go") &&
-			!strings.HasSuffix(path, ".go_tmpl") {
+
+		ext := filepath.Ext(path)
+		if ext == "" {
+			return nil
+		}
+		lang := strings.TrimPrefix(ext, ".")
+		if lang != "mochi" && lang != "py" && lang != "ts" && lang != "go" && lang != "go_tmpl" {
 			return nil
 		}
 
@@ -65,27 +67,32 @@ func Benchmarks(tempDir string) []Bench {
 		if len(parts) < 4 {
 			return nil
 		}
-
 		category := parts[1]
 		name := parts[2]
-		lang := strings.TrimPrefix(filepath.Ext(path), ".")
 		suffix := "." + lang
+		cfg := Range{Start: 10, Step: "+10", Count: 3}
 
+		// If mochi, run twice: once with interpreter, once with --vm
+		if lang == "mochi" {
+			benches = append(benches, generateBenchmarks(tempDir, category, name, cfg, []Template{
+				{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{"mochi", "run"}},
+				{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"mochi", "run", "--vm"}},
+			})...)
+			return nil
+		}
+
+		// Other languages
 		cmd := map[string][]string{
-			"mochi":   {"mochi", "run"},
 			"py":      {"python3"},
 			"ts":      {"deno", "run", "--allow-read"},
 			"go_tmpl": {"go", "run"},
 		}[lang]
-		if len(cmd) == 0 {
+		if cmd == nil {
 			panic("unsupported language: " + lang)
 		}
 
-		cfg := Range{Start: 10, Step: "+10", Count: 3}
-
 		benches = append(benches, generateBenchmarks(tempDir, category, name, cfg,
 			[]Template{{Lang: lang, Path: path, Suffix: suffix, Command: cmd}})...)
-
 		return nil
 	})
 
@@ -212,13 +219,15 @@ func indent(s string) string {
 
 func report(results []Result) {
 	grouped := map[string][]Result{}
+
+	// Group by category.name.size (drop Lang suffix)
 	for _, r := range results {
-		idx := strings.LastIndex(r.Name, ".")
-		if idx == -1 {
+		parts := strings.Split(r.Name, ".")
+		if len(parts) < 4 {
 			fmt.Printf("⚠️ Skipping malformed result name: %s\n", r.Name)
 			continue
 		}
-		group := r.Name[:idx]
+		group := strings.Join(parts[:3], ".") // e.g., "math.fact_rec.10"
 		grouped[group] = append(grouped[group], r)
 	}
 
@@ -229,7 +238,7 @@ func report(results []Result) {
 	}
 	sort.Strings(groups)
 
-	// Print sorted groups
+	// Print each group
 	for _, group := range groups {
 		set := grouped[group]
 		fmt.Printf("\n📦 %s\n", group)
@@ -245,10 +254,22 @@ func report(results []Result) {
 			if delta > 0 {
 				plus = fmt.Sprintf(" +%.1f%%", (delta/best)*100)
 			}
+
+			// Friendly label
+			langName := r.Lang
+			switch langName {
+			case "mochi_interp":
+				langName = "mochi (interp)"
+			case "mochi_vm":
+				langName = "mochi (vm)"
+			case "go_tmpl":
+				langName = "go"
+			}
+
 			status := "✓"
 			fmt.Printf("  %s %-24s %8.4fms  %s\n",
 				color.New(color.FgGreen).Sprint(status),
-				r.Lang,
+				langName,
 				r.DurationMs,
 				color.New(color.FgCyan).Sprint("✓ Best")+plus)
 		}
