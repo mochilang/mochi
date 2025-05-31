@@ -209,6 +209,14 @@ func Check(prog *parser.Program, env *Env) []error {
 		Params: []Type{AnyType{}}, // loosely typed
 		Return: IntType{},
 	})
+	env.SetVar("now", FuncType{
+		Params: []Type{},
+		Return: IntType{},
+	})
+	env.SetVar("json", FuncType{
+		Params: []Type{AnyType{}},
+		Return: VoidType{},
+	})
 
 	var errs []error
 	for _, stmt := range prog.Statements {

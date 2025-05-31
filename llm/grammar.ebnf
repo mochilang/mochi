@@ -19,7 +19,7 @@ MapLiteral = "{" (MapEntry ("," MapEntry)*)? ","?? "}" .
 MapEntry = Expr ":" Expr .
 Literal = <float> | <int> | ("true" | "false") | <string> .
 IndexOp = "[" (Expr (":" Expr)?)? "]" .
-BinaryOp = ("==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/") PostfixExpr .
+BinaryOp = ("==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" | "%") PostfixExpr .
 AgentDecl = "agent" <ident> "{" AgentBlock* "}" .
 AgentBlock = LetStmt | AssignStmt | OnHandler | IntentDecl .
 LetStmt = "let" <ident> (":" TypeRef)? ("=" Expr)? .

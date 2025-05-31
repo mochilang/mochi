@@ -22,10 +22,10 @@ var version = "dev" // Set via -ldflags "-X main.version=..."
 var (
 	bullet = color.New(color.FgHiBlue).SprintFunc()
 	cInfo  = color.New(color.FgWhite).SprintFunc()
-	cTest  = color.New(color.FgYellow).SprintFunc()
-	cOK    = color.New(color.FgGreen).SprintFunc()
-	cFail  = color.New(color.FgRed).SprintFunc()
-	cDone  = color.New(color.FgGreen, color.Bold).SprintFunc()
+	// cTest  = color.New(color.FgYellow).SprintFunc()
+	// cOK    = color.New(color.FgGreen).SprintFunc()
+	// cFail  = color.New(color.FgRed).SprintFunc()
+	cDone = color.New(color.FgGreen, color.Bold).SprintFunc()
 )
 
 func main() {

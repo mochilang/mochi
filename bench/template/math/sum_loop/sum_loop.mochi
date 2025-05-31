@@ -1,0 +1,24 @@
+fun sum(n: int): int {
+  let total = 0
+  for i in 1..n {
+    total = total + i
+  }
+  return total
+}
+
+let n = {{ .N }}
+let repeat = 1000
+let last = 0
+
+let start = now()
+for i in 0..repeat {
+  last = sum(n)
+}
+let duration = (now() - start) / 1000000
+
+
+let output = {
+  "duration_ms": duration,
+  "output": last,
+}
+json(output)

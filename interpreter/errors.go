@@ -7,33 +7,33 @@ import (
 
 var Errors = map[string]diagnostic.Template{
 	// --- Variables and Functions ---
-	"I000": {"I000", "undefined variable: %s", "`%s` is not defined. Declare it before use."},
-	"I001": {"I001", "undefined function or closure: %s", "`%s` is not defined. Declare it before calling."},
-	"I002": {"I002", "function %s expects %d arguments, got %d", "Pass exactly %d arguments to `%s`."},
-	"I003": {"I003", "internal error: argument count mismatch in closure", "Check the closure's argument handling logic."},
+	"I000": {Code: "I000", Message: "undefined variable: %s", Help: "`%s` is not defined. Declare it before use."},
+	"I001": {Code: "I001", Message: "undefined function or closure: %s", Help: "`%s` is not defined. Declare it before calling."},
+	"I002": {Code: "I002", Message: "function %s expects %d arguments, got %d", Help: "Pass exactly %d arguments to `%s`."},
+	"I003": {Code: "I003", Message: "internal error: argument count mismatch in closure", Help: "Check the closure's argument handling logic."},
 
 	// --- Literals and Expressions ---
-	"I004": {"I004", "invalid primary expression", "Expected a literal, variable, or function call."},
-	"I005": {"I005", "invalid literal value", "Check the format or syntax of the literal."},
-	"I006": {"I006", "invalid map key: expected string, got %T", "Only `string` keys are allowed in map literals."},
-	"I007": {"I007", "cannot access field `%s` on non-object of type %s", "Access fields only on objects or maps."},
+	"I004": {Code: "I004", Message: "invalid primary expression", Help: "Expected a literal, variable, or function call."},
+	"I005": {Code: "I005", Message: "invalid literal value", Help: "Check the format or syntax of the literal."},
+	"I006": {Code: "I006", Message: "invalid map key: expected string, got %T", Help: "Only `string` keys are allowed in map literals."},
+	"I007": {Code: "I007", Message: "cannot access field `%s` on non-object of type %s", Help: "Access fields only on objects or maps."},
 
 	// --- Operators ---
-	"I008": {"I008", "cannot apply operator '%s' to types %s and %s", "Use compatible types for the operator."},
-	"I009": {"I009", "invalid use of unary '%s' on %s", "Use unary operators only with numbers or booleans."},
-	"I010": {"I010", "unknown unary operator: %s", "Supported unary operators are: `-`, `!`."},
-	"I011": {"I011", "range bounds must be integers, got %s and %s", "Use integers in `for x in a..b` ranges."},
-	"I012": {"I012", "division by zero", "Ensure the denominator is not zero."},
+	"I008": {Code: "I008", Message: "cannot apply operator '%s' to types %s and %s", Help: "Use compatible types for the operator."},
+	"I009": {Code: "I009", Message: "invalid use of unary '%s' on %s", Help: "Use unary operators only with numbers or booleans."},
+	"I010": {Code: "I010", Message: "unknown unary operator: %s", Help: "Supported unary operators are: `-`, `!`."},
+	"I011": {Code: "I011", Message: "range bounds must be integers, got %s and %s", Help: "Use integers in `for x in a..b` ranges."},
+	"I012": {Code: "I012", Message: "division by zero", Help: "Ensure the denominator is not zero."},
 
 	// --- Indexing and Slicing ---
-	"I013": {"I013", "index must be an integer, got %T", "Use an `int` value as an index (e.g., `list[0]`)."},
-	"I014": {"I014", "index %d out of bounds for length %d", "Use an index within bounds of the list or string."},
-	"I015": {"I015", "invalid slice range [%d:%d] for length %d", "Make sure the slice range is valid and within bounds."},
-	"I016": {"I016", "cannot take length of type %s", "Use `len(...)` only on lists, strings, or maps."},
-	"I017": {"I017", "cannot take length of type %s", "Use `len(...)` only on lists and strings."},
+	"I013": {Code: "I013", Message: "index must be an integer, got %T", Help: "Use an `int` value as an index (e.g., `list[0]`)."},
+	"I014": {Code: "I014", Message: "index %d out of bounds for length %d", Help: "Use an index within bounds of the list or string."},
+	"I015": {Code: "I015", Message: "invalid slice range [%d:%d] for length %d", Help: "Make sure the slice range is valid and within bounds."},
+	"I016": {Code: "I016", Message: "cannot take length of type %s", Help: "Use `len(...)` only on lists, strings, or maps."},
+	"I017": {Code: "I017", Message: "cannot take length of type %s", Help: "Use `len(...)` only on lists and strings."},
 
 	// --- Testing ---
-	"I018": {"I018", "expect condition failed", "The condition evaluated to `false`."},
+	"I018": {Code: "I018", Message: "expect condition failed", Help: "The condition evaluated to `false`."},
 }
 
 // --- Variables and Functions ---

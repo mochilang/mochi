@@ -1,0 +1,22 @@
+fun fact(n: int): int {
+  if n == 0 {
+    return 1
+  }
+  return n * fact(n - 1)
+}
+
+let n = {{ .N }}
+let repeat = 1000
+let last = 0
+
+let start = now()
+for i in 0..repeat {
+  last = fact(n)
+}
+let duration = (now() - start) / 1000000
+
+let output = {
+  "duration_ms": duration,
+  "output": last,
+}
+json(output)

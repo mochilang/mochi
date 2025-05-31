@@ -1,0 +1,35 @@
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"strconv"
+	"time"
+)
+
+func fib(n int) int {
+	if n <= 1 {
+		return n
+	}
+	return fib(n-1) + fib(n-2)
+}
+
+func main() {
+	n := {{ .N }}
+
+	// allow override from CLI
+	if len(os.Args) > 1 {
+		if parsed, err := strconv.Atoi(os.Args[1]); err == nil {
+			n = parsed
+		}
+	}
+
+	start := time.Now()
+	result := fib(n)
+	duration := float64(time.Since(start).Microseconds()) / 1000.0 // in ms
+
+	_ = json.NewEncoder(os.Stdout).Encode(map[string]any{
+		"duration_ms": duration,
+		"output":      result,
+	})
+}

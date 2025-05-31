@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
@@ -41,10 +42,6 @@ var (
 	cFail = color.New(color.FgRed).SprintFunc()
 )
 
-func printTest(name string) {
-	fmt.Printf("   %s %s ...\n", cTest("test"), name)
-}
-
 func printTestStart(name string) {
 	fmt.Printf("   %s %-30s ...", cTest("test"), name)
 }
@@ -71,18 +68,20 @@ func formatDuration(d time.Duration) string {
 }
 
 func (i *Interpreter) Run() error {
-	// Load all shared definitions (let, fun) first
-	for _, stmt := range i.prog.Statements {
-		if stmt.Let != nil || stmt.Fun != nil {
-			if err := i.evalStmt(stmt); err != nil {
-				return err
+	/*
+		// Load all shared definitions (let, fun) first
+		for _, stmt := range i.prog.Statements {
+			if stmt.Let != nil || stmt.Fun != nil {
+				if err := i.evalStmt(stmt); err != nil {
+					return err
+				}
 			}
 		}
-	}
+	*/
 
 	// Run only non-test, non-decl statements (Expr, If, For, Return)
 	for _, stmt := range i.prog.Statements {
-		if stmt.Test != nil || stmt.Let != nil || stmt.Fun != nil {
+		if stmt.Test != nil {
 			continue
 		}
 		if err := i.evalStmt(stmt); err != nil {
@@ -656,42 +655,6 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 	}
 }
 
-/*
-func (i *Interpreter) evalLiteral(l *parser.Literal) (any, error) {
-	switch {
-	case l.Int != nil:
-		var n int
-		if _, err := fmt.Sscanf(*l.Int, "%d", &n); err != nil {
-			return nil, errInvalidIntLiteral(l.Pos, *l.Int)
-		}
-		return n, nil
-
-	case l.Float != nil:
-		var f float64
-		if _, err := fmt.Sscanf(*l.Float, "%f", &f); err != nil {
-			return nil, errInvalidFloatLiteral(l.Pos, *l.Float)
-		}
-		return f, nil
-
-	case l.Str != nil:
-		return *l.Str, nil
-
-	case l.Bool != nil:
-		switch *l.Bool {
-		case "true":
-			return true, nil
-		case "false":
-			return false, nil
-		default:
-			return nil, errInvalidBoolLiteral(l.Pos, *l.Bool)
-		}
-
-	default:
-		return nil, errInvalidLiteral(l.Pos)
-	}
-}
-*/
-
 func (i *Interpreter) evalLiteral(l *parser.Literal) (any, error) {
 	switch {
 	case l.Int != nil:
@@ -741,10 +704,35 @@ func builtinLen(i *Interpreter, c *parser.CallExpr) (any, error) {
 	}
 }
 
+func builtinNow(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 0 {
+		return nil, fmt.Errorf("now() takes no arguments")
+	}
+	return time.Now().UnixNano(), nil
+}
+
+func builtinJSON(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("json(x) takes exactly one argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	data, err := json.MarshalIndent(val, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	_, err = fmt.Fprintln(i.env.Writer(), string(data))
+	return nil, err
+}
+
 func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
 	return map[string]func(*Interpreter, *parser.CallExpr) (any, error){
 		"print": builtinPrint,
 		"len":   builtinLen,
+		"now":   builtinNow,
+		"json":  builtinJSON,
 	}
 }
 
@@ -878,6 +866,8 @@ func applyBinary(pos lexer.Position, left any, op string, right any) (any, error
 	if lSlice, ok := left.([]any); ok {
 		if rSlice, ok := right.([]any); ok {
 			switch op {
+			case "+":
+				return append(lSlice, rSlice...), nil
 			case "==":
 				return reflect.DeepEqual(lSlice, rSlice), nil
 			case "!=":
@@ -897,6 +887,14 @@ func applyBinary(pos lexer.Position, left any, op string, right any) (any, error
 			case "!=":
 				return l != r, nil
 			}
+		}
+
+	case int64:
+		if r, ok := right.(int64); ok {
+			return applyInt64Binary(pos, l, op, r)
+		}
+		if r, ok := right.(int); ok {
+			return applyInt64Binary(pos, l, op, int64(r))
 		}
 	case int:
 		if r, ok := right.(int); ok {
@@ -922,6 +920,41 @@ func applyBinary(pos lexer.Position, left any, op string, right any) (any, error
 }
 
 func applyIntBinary(pos lexer.Position, l int, op string, r int) (any, error) {
+	switch op {
+	case "/":
+		if r == 0 {
+			return nil, errDivisionByZero(pos)
+		}
+		return l / r, nil
+	case "%":
+		if r == 0 {
+			return nil, errDivisionByZero(pos)
+		}
+		return l % r, nil
+	case "+":
+		return l + r, nil
+	case "-":
+		return l - r, nil
+	case "*":
+		return l * r, nil
+	case "==":
+		return l == r, nil
+	case "!=":
+		return l != r, nil
+	case "<":
+		return l < r, nil
+	case "<=":
+		return l <= r, nil
+	case ">":
+		return l > r, nil
+	case ">=":
+		return l >= r, nil
+	default:
+		return nil, errInvalidOperator(pos, op, "int", "int")
+	}
+}
+
+func applyInt64Binary(pos lexer.Position, l int64, op string, r int64) (any, error) {
 	switch op {
 	case "/":
 		if r == 0 {
