@@ -39,6 +39,9 @@ var Errors = map[string]diagnostic.Template{
 	"T017": {Code: "T017", Message: "slicing not allowed on map", Help: "Maps do not support slicing like `map[a:b]`."},
 	"T018": {Code: "T018", Message: "type %s does not support indexing", Help: "Only `list<T>` and `map<K,V>` can be indexed."},
 	"T019": {Code: "T019", Message: "map key type mismatch: expected %s, got %s", Help: "Make sure the key matches the map’s key type."},
+	// --- For Loops ---
+	"T022": {Code: "T022", Message: "cannot iterate over type %s", Help: "Only `list<T>`, `map<K,V>`, or integer ranges are allowed in `for ... in ...` loops."},
+	"T023": {Code: "T023", Message: "range loop requires integer start and end expressions", Help: "Use `for i in 0..10` or ensure both expressions are of type `int`."},
 }
 
 // --- Wrapper Functions ---
@@ -129,4 +132,12 @@ func errOperatorMismatch(pos lexer.Position, op string, left, right Type) error 
 
 func errUnsupportedOperator(pos lexer.Position, op string) error {
 	return Errors["T021"].New(pos, op)
+}
+
+func errCannotIterate(pos lexer.Position, typ Type) error {
+	return Errors["T022"].New(pos, typ)
+}
+
+func errRangeRequiresInts(pos lexer.Position) error {
+	return Errors["T023"].New(pos)
 }

@@ -68,11 +68,11 @@ type IfStmt struct {
 // --- For Statement ---
 
 type ForStmt struct {
-	Pos   lexer.Position
-	Name  string       `parser:"'for' @Ident 'in'"`
-	Start *Expr        `parser:"@@"`
-	End   *Expr        `parser:"'..' @@ "`
-	Body  []*Statement `parser:"'{' @@* '}'"`
+	Pos      lexer.Position
+	Name     string       `parser:"'for' @Ident 'in'"`
+	Source   *Expr        `parser:"@@"`          // expression to iterate
+	RangeEnd *Expr        `parser:"[ '..' @@ ]"` // optional range end
+	Body     []*Statement `parser:"'{' @@* '}'"`
 }
 
 // --- Type System ---

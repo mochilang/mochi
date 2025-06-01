@@ -433,15 +433,55 @@ func (vm *VM) Run(chunk *compiler.Chunk) error {
 			case compiler.OpIndex:
 				index := vm.pop()
 				target := vm.pop()
-				switch t := target.(type) {
+
+				switch coll := target.(type) {
+
+				// --- List indexing ---
 				case []any:
-					i := int(toFloat(index))
-					if i < 0 || i >= len(t) {
-						return fmt.Errorf("index out of range")
+					i, ok := index.(int)
+					if !ok {
+						return fmt.Errorf("index must be int, got %T", index)
 					}
-					vm.push(t[i])
+					if i < 0 || i >= len(coll) {
+						return fmt.Errorf("list index out of range")
+					}
+					vm.push(coll[i])
+
+				// --- Map indexing (generic map[any]any) ---
 				case map[any]any:
-					vm.push(t[index])
+					val, ok := coll[index]
+					if !ok {
+						vm.push(nil) // key not found, return nil (optional: error?)
+					} else {
+						vm.push(val)
+					}
+
+				// --- Map[string]any indexing ---
+				case map[string]any:
+					key, ok := index.(string)
+					if !ok {
+						return fmt.Errorf("index must be string for map[string]any, got %T", index)
+					}
+					val, ok := coll[key]
+					if !ok {
+						vm.push(nil)
+					} else {
+						vm.push(val)
+					}
+
+				// --- Map[int]any indexing ---
+				case map[int]any:
+					key, ok := index.(int)
+					if !ok {
+						return fmt.Errorf("index must be int for map[int]any, got %T", index)
+					}
+					val, ok := coll[key]
+					if !ok {
+						vm.push(nil)
+					} else {
+						vm.push(val)
+					}
+
 				default:
 					return fmt.Errorf("cannot index into type: %T", target)
 				}

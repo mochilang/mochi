@@ -253,27 +253,84 @@ func (i *Interpreter) evalIf(stmt *parser.IfStmt) error {
 }
 
 func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
-	fromVal, err := i.evalExpr(stmt.Start)
+	fromVal, err := i.evalExpr(stmt.Source)
 	if err != nil {
 		return err
 	}
-	toVal, err := i.evalExpr(stmt.End)
-	if err != nil {
-		return err
-	}
-	fromInt, ok1 := fromVal.(int)
-	toInt, ok2 := toVal.(int)
-	if !ok1 || !ok2 {
-		return errInvalidRangeBounds(stmt.Pos, fmt.Sprintf("%T", fromVal), fmt.Sprintf("%T", toVal))
-	}
-	for x := fromInt; x < toInt; x++ {
-		i.env.SetValue(stmt.Name, x)
-		for _, s := range stmt.Body {
-			if err := i.evalStmt(s); err != nil {
-				return err
+
+	// --- Range loop: `for x in a..b` ---
+	if stmt.RangeEnd != nil {
+		toVal, err := i.evalExpr(stmt.RangeEnd)
+		if err != nil {
+			return err
+		}
+		fromInt, ok1 := fromVal.(int)
+		toInt, ok2 := toVal.(int)
+		if !ok1 || !ok2 {
+			return errInvalidRangeBounds(stmt.Pos, fmt.Sprintf("%T", fromVal), fmt.Sprintf("%T", toVal))
+		}
+		for x := fromInt; x < toInt; x++ {
+			i.env.SetValue(stmt.Name, x)
+			for _, s := range stmt.Body {
+				if err := i.evalStmt(s); err != nil {
+					return err
+				}
 			}
 		}
+		return nil
 	}
+
+	// --- Collection loop: `for x in list/map/string` ---
+	switch coll := fromVal.(type) {
+	case []any:
+		for _, item := range coll {
+			i.env.SetValue(stmt.Name, item)
+			for _, s := range stmt.Body {
+				if err := i.evalStmt(s); err != nil {
+					return err
+				}
+			}
+		}
+	case map[any]any:
+		for k := range coll {
+			i.env.SetValue(stmt.Name, k)
+			for _, s := range stmt.Body {
+				if err := i.evalStmt(s); err != nil {
+					return err
+				}
+			}
+		}
+	case map[string]any:
+		for k := range coll {
+			i.env.SetValue(stmt.Name, k)
+			for _, s := range stmt.Body {
+				if err := i.evalStmt(s); err != nil {
+					return err
+				}
+			}
+		}
+	case map[int]any:
+		for k := range coll {
+			i.env.SetValue(stmt.Name, k)
+			for _, s := range stmt.Body {
+				if err := i.evalStmt(s); err != nil {
+					return err
+				}
+			}
+		}
+	case string:
+		for _, r := range coll {
+			i.env.SetValue(stmt.Name, string(r))
+			for _, s := range stmt.Body {
+				if err := i.evalStmt(s); err != nil {
+					return err
+				}
+			}
+		}
+	default:
+		return errInvalidIterator(stmt.Pos, fmt.Sprintf("%T", fromVal))
+	}
+
 	return nil
 }
 

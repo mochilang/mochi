@@ -271,6 +271,51 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		}
 		return nil
 
+	case s.For != nil:
+		// Check the loop expression (either a collection or a range start)
+		sourceType, err := checkExprWithExpected(s.For.Source, env, nil)
+		if err != nil {
+			return err
+		}
+
+		var elemType Type
+
+		if s.For.RangeEnd != nil {
+			// It's a range loop: `for i in start..end`
+			endType, err := checkExprWithExpected(s.For.RangeEnd, env, nil)
+			if err != nil {
+				return err
+			}
+			if !unify(sourceType, IntType{}, nil) || !unify(endType, IntType{}, nil) {
+				return errRangeRequiresInts(s.For.Pos)
+			}
+			elemType = IntType{} // range loop always yields int
+		} else {
+			// It's a collection loop: `for x in collection`
+			switch t := sourceType.(type) {
+			case ListType:
+				elemType = t.Elem
+			case MapType:
+				elemType = t.Key // loop iterates over keys
+			case AnyType:
+				elemType = AnyType{}
+			default:
+				return errCannotIterate(s.For.Pos, sourceType)
+			}
+		}
+
+		// Create new scope for the loop variable
+		child := NewEnv(env)
+		child.SetVar(s.For.Name, elemType)
+
+		// Check loop body
+		for _, stmt := range s.For.Body {
+			if err := checkStmt(stmt, child, expectedReturn); err != nil {
+				return err
+			}
+		}
+		return nil
+
 	case s.Fun != nil:
 		name := s.Fun.Name
 		params := []Type{}

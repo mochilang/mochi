@@ -2,6 +2,107 @@
 
 All notable changes to the Mochi programming language are documented in this file.
 
+## [0.2.6] – 2025-06-01
+
+### Added
+
+* Support for `for-in` loops over lists and maps, enabling iteration with the following pattern:
+
+  ```mochi
+  let items = [1, 2, 3]
+  for item in items {
+    print(item)
+  }
+
+  let users = {"alice": 1, "bob": 2}
+  for user in users {
+    print(user)
+  }
+  ```
+
+* Bytecode compilation and VM execution support for both:
+
+  * Range-based `for x in start..end {}` loops.
+  * Collection-based `for x in expr {}` loops (lists and maps).
+
+* New compiler helper to detect and compile index expressions (e.g. `scores["alice"]`).
+
+* Enhanced runtime handling of `OpIndex` to support both list and map lookups with bounds checking.
+
+* Internal helper function `extractIndexExpr` for simplifying indexed expression detection in the compiler.
+
+### Changed
+
+* Rewrote `compiler.compileStmt` logic to explicitly detect and handle `AssignStmt` with indexed expressions.
+* Updated `parser.ForStmt` grammar to clearly distinguish range loops from collection loops.
+* Improved debug logging and error messages for out-of-bounds index access in the VM.
+
+### Fixed
+
+* Correct binding of loop variables and temporary state tracking (`__start`, `__end`, `__i`, `__coll`) in compiled bytecode.
+* Resolved edge case where invalid index expressions would silently compile without error.
+* Ensured that `for-in` statements over maps produce deterministic iteration in compiled programs.
+
+## [0.2.5] – 2025-06-01
+
+### Added
+
+* Full implementation of the Mochi compiler and virtual machine (VM), providing end-to-end execution from parsed AST to runtime evaluation.
+* Bytecode instruction set and stack-based VM engine supporting arithmetic, comparison, control flow, function calls, list/map literals, and built-in functions.
+* Constant folding for binary expressions with literal operands, including arithmetic (`+`, `*`, etc.), comparison (`==`, `<`, etc.), and list concatenation.
+* Compile-time evaluation of pure user-defined functions when invoked with constant arguments (e.g., `sum(10)` → `55`), enabling early computation and performance gains.
+* `OpDefineFun` and `OpCall` instructions with support for lexical closures and recursive function execution.
+* Debug logging for both compiler and VM execution, including stack inspection and instruction tracing.
+* Built-in functions: `print`, `len`, `now`, and `json`, accessible via `OpConst` and `OpCall`.
+* Bytecode-level `OpMakeList`, `OpMakeMap`, `OpIndex`, and `OpGetAttr` for working with structured literals and dynamic data.
+
+### Changed
+
+* Replaced early interpreter-based execution with VM-based bytecode model.
+* Simplified function body representation using linear `[]Instruction` chunks.
+* Updated compiler stack simulation (`stackDepth`) for validation of balanced push/pop semantics during code generation.
+
+### Fixed
+
+* Corrected handling of operator precedence in binary expressions.
+* Addressed stack underflow in `OpCall` and `OpReturn` for deeply nested calls.
+
+### Notes
+
+* Function call folding is currently limited to pure functions with constant arguments and basic operations; runtime evaluation is used to simulate execution during compile time.
+* List folding is supported for literal concatenation, but runtime list operations remain dynamic.
+* This version forms the foundation for further optimization, including static typing, closure capture analysis, and performance tuning of the VM stack model.
+
+## [0.2.4] – 2025-05-31
+
+### Added
+
+* Introduced initial [benchmark suite](https://github.com/mochi-lang/mochi/tree/main/bench) comparing Mochi against Python, TypeScript, and Go templates.
+* Added `math` benchmark templates covering:
+
+  * Iterative and recursive factorial
+  * Fibonacci (iterative and recursive)
+  * Prime counting
+  * Matrix multiplication
+  * Sum and multiplication loops
+* Included `bench/runner.go` for consistent execution and output aggregation.
+
+### Changed
+
+* Refactored `evalBinaryExpr` with a fast path for `int + int` specialization, reducing arithmetic overhead in tight loops.
+* Improved arithmetic expression evaluation order by explicitly applying operator precedence.
+* Enhanced performance logging in benchmark harness with timing normalization across languages.
+
+### Fixed
+
+* Corrected `now()` implementation to return nanoseconds (int64) for accurate duration measurement.
+* Fixed logic in benchmark templates where loop upper bounds were off-by-one in `range` expressions.
+* Addressed incorrect duration reporting in `prime_count` and `fib_rec` benchmarks due to warm-up effects.
+
+### Performance Notes
+
+While Mochi remains significantly slower than Go and Python due to AST-walking evaluation, this release reduces arithmetic overhead in many microbenchmarks. Benchmarks now provide a clear baseline to track performance regressions and future interpreter optimizations.
+
 ## [0.2.3] - 2025-05-21
 
 ### ✨ Added
