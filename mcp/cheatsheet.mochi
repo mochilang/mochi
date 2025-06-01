@@ -1,6 +1,6 @@
-// 0. Mochi (v0.2.2)
+// 0. Mochi (v0.2.5)
 // Mochi is a lightweight programming language for building AI agents, working with real-time data,
-// and querying datasets. It combines declarative and funtional programming, with built-in support
+// and querying datasets. It combines declarative and functional programming, with built-in support
 // for streams, datasets, tools, and prompt-based AI generation.
 
 
@@ -58,11 +58,19 @@ print(add10(5))
 
 // 4. Composite Types
 let items = [1, 2, 3]
-let user = {"name": "ana", "age": 22}
-//  let tags = {"a", "b", "c"}
+print(items[0]) // print 1
 
 let scores = {"a": 10, "b": 20}
-print(scores["a"])
+print(scores["a"]) // print 10
+
+// 4.1 Loop over a list and map
+for item in items {
+    print("item: ", item)
+}
+
+for name in scores {
+    print(name, " scored ", score)
+}
 
 // 5. Test block with expect.
 test "Some math operator" {

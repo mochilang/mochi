@@ -1,5 +1,3 @@
-// FULLY UPDATED compiler.go with compiled Function.Body ([]Instruction)
-
 package compiler
 
 import (
@@ -358,49 +356,87 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
-	// Store loop start and end
-	if err := c.compileExpr(stmt.Start); err != nil {
+	name := stmt.Name
+
+	if stmt.RangeEnd != nil {
+		// --- Range loop: for i in start..end ---
+		if err := c.compileExpr(stmt.Source); err != nil {
+			return err
+		}
+		c.emit(OpStore, name+"__start")
+
+		if err := c.compileExpr(stmt.RangeEnd); err != nil {
+			return err
+		}
+		c.emit(OpStore, name+"__end")
+
+		loopStart := len(c.chunk.Code)
+
+		c.emit(OpLoad, name+"__start")
+		c.emit(OpLoad, name+"__end")
+		c.emit(OpLt, nil) // while i < end
+
+		exit := c.emit(OpJumpIfFalse, -1)
+
+		c.emit(OpLoad, name+"__start")
+		c.emit(OpStore, name)
+
+		for _, s := range stmt.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+
+		c.emit(OpLoad, name+"__start")
+		c.emit(OpConst, 1)
+		c.emit(OpAdd, nil)
+		c.emit(OpStore, name+"__start")
+
+		c.emit(OpJump, loopStart)
+		c.patchJump(exit, len(c.chunk.Code))
+		return nil
+	}
+
+	// --- Collection loop: for x in expr ---
+	// Evaluate collection → store in temp
+	if err := c.compileExpr(stmt.Source); err != nil {
 		return err
 	}
-	c.emit(OpStore, stmt.Name+"__start")
+	c.emit(OpStore, name+"__coll")
 
-	if err := c.compileExpr(stmt.End); err != nil {
-		return err
-	}
-	c.emit(OpStore, stmt.Name+"__end")
+	// i = 0
+	c.emit(OpConst, 0)
+	c.emit(OpStore, name+"__i")
 
-	// Label: loop condition start
 	loopStart := len(c.chunk.Code)
 
-	// Emit: i__start < i__end
-	c.emit(OpLoad, stmt.Name+"__start")
-	c.emit(OpLoad, stmt.Name+"__end")
-	c.emit(OpLt, nil) // ✅ fix: use OpLt instead of OpSub
+	// if i < len(coll)
+	c.emit(OpLoad, name+"__i")
+	c.emit(OpLoad, name+"__coll")
+	c.emit(OpConst, "len")
+	c.emit(OpCall, 1) // len(coll)
+	c.emit(OpLt, nil)
 
-	// Exit if condition is false
 	exit := c.emit(OpJumpIfFalse, -1)
 
-	// Assign loop variable i = i__start
-	c.emit(OpLoad, stmt.Name+"__start")
-	c.emit(OpStore, stmt.Name)
+	// x = coll[i]
+	c.emit(OpLoad, name+"__coll")
+	c.emit(OpLoad, name+"__i")
+	c.emit(OpIndex, nil) // Runtime must handle: list[i] or map keys()[i]
+	c.emit(OpStore, name)
 
-	// Loop body
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
 
-	// Increment: i__start += 1
-	c.emit(OpLoad, stmt.Name+"__start")
+	c.emit(OpLoad, name+"__i")
 	c.emit(OpConst, 1)
 	c.emit(OpAdd, nil)
-	c.emit(OpStore, stmt.Name+"__start")
+	c.emit(OpStore, name+"__i")
 
-	// Jump back to start of condition
 	c.emit(OpJump, loopStart)
-
-	// Patch jump target for exit
 	c.patchJump(exit, len(c.chunk.Code))
 	return nil
 }
@@ -420,107 +456,6 @@ type binOp struct {
 	left  int // operand index
 	right int // operand index
 }
-
-/*
-func (c *Compiler) compileBinary(bin *parser.BinaryExpr) error {
-	if bin == nil {
-		return fmt.Errorf("nil binary")
-	}
-
-	// Step 1: flatten operands and operators
-	var operands []*parser.Unary
-	var operators []binOp
-
-	operands = append(operands, bin.Left)
-	for i, part := range bin.Right {
-		operands = append(operands, &parser.Unary{
-			Pos:   part.Right.Target.Pos,
-			Ops:   nil,
-			Value: part.Right,
-		})
-		operators = append(operators, binOp{
-			op:    part.Op,
-			pos:   part.Pos,
-			left:  i,
-			right: i + 1,
-		})
-	}
-
-	// ✅ Handle single operand case
-	if len(operators) == 0 && len(operands) == 1 {
-		c.logf("[compile] Unary-only binary expr at %s",
-			operands[0].Pos,
-		)
-		return c.compileUnary(operands[0])
-	}
-
-	// Track emitted operands
-	emitted := make([]bool, len(operands))
-
-	// Operator precedence levels
-	for _, level := range [][]string{
-		{"*", "/", "%"},
-		{"+", "-"},
-		{"<", "<=", ">", ">="},
-		{"==", "!="},
-	} {
-		for i := 0; i < len(operators); {
-			op := operators[i]
-			if !contains(level, op.op) {
-				i++
-				continue
-			}
-
-			c.logf("[compile] BinaryExpr: emitting %q between operands %d and %d", op.op, op.left, op.right)
-
-			if !emitted[op.left] {
-				if err := c.compileUnary(operands[op.left]); err != nil {
-					return err
-				}
-				emitted[op.left] = true
-			}
-			if !emitted[op.right] {
-				if err := c.compileUnary(operands[op.right]); err != nil {
-					return err
-				}
-				emitted[op.right] = true
-			}
-
-			switch op.op {
-			case "*":
-				c.emit(OpMul, nil)
-			case "/":
-				c.emit(OpDiv, nil)
-			case "%":
-				c.emit(OpMod, nil)
-			case "+":
-				c.emit(OpAdd, nil)
-			case "-":
-				c.emit(OpSub, nil)
-			case "==":
-				c.emit(OpEq, nil)
-			case "!=":
-				c.emit(OpNeq, nil)
-			case "<":
-				c.emit(OpLt, nil)
-			case "<=":
-				c.emit(OpLe, nil)
-			case ">":
-				c.emit(OpGt, nil)
-			case ">=":
-				c.emit(OpGe, nil)
-			default:
-				return fmt.Errorf("unsupported binary op: %s", op.op)
-			}
-
-			c.logf("[compile]   emit %s", op.op)
-			operators = append(operators[:i], operators[i+1:]...)
-		}
-	}
-
-	return nil
-}
-*/
 
 func (c *Compiler) compileBinary(bin *parser.BinaryExpr) error {
 	if bin == nil {

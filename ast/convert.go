@@ -115,14 +115,27 @@ func fromIfStmt(stmt *parser.IfStmt) *Node {
 }
 
 func fromForStmt(f *parser.ForStmt) *Node {
-	return &Node{
-		Kind:  "for",
-		Value: f.Name,
-		Children: []*Node{
-			{Kind: "range", Children: []*Node{FromExpr(f.Start), FromExpr(f.End)}},
-			{Kind: "block", Children: mapStatements(f.Body)},
-		},
+	n := &Node{Kind: "for", Value: f.Name}
+
+	if f.RangeEnd != nil {
+		// Range loop: for i in start..end
+		n.Children = append(n.Children, &Node{
+			Kind:     "range",
+			Children: []*Node{FromExpr(f.Source), FromExpr(f.RangeEnd)},
+		})
+	} else {
+		// Collection loop: for x in expr
+		n.Children = append(n.Children, &Node{
+			Kind:     "in",
+			Children: []*Node{FromExpr(f.Source)},
+		})
 	}
+
+	n.Children = append(n.Children, &Node{
+		Kind:     "block",
+		Children: mapStatements(f.Body),
+	})
+	return n
 }
 
 // --- DSL Helpers ---

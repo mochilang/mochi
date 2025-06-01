@@ -1,0 +1,35 @@
+// for-in.mochi
+// Demonstrates iteration over list, map, and range using `for ... in ...`
+
+// 1. Loop over a list
+let fruits = ["apple", "banana", "cherry"]
+for fruit in fruits {
+  print("fruit: ", fruit)
+}
+
+// 2. Loop over a map (dictionary)
+let scores = {
+  "Alice": 90,
+  "Bob": 82,
+  "Charlie": 88,
+}
+for name in scores {
+  let score = scores[name]
+  print(name, " scored ", score)
+}
+
+// 3. Loop over a range
+for i in 1..5 {
+  print("number: ", i)
+}
+
+// 4. Nested loops with 2D list
+let matrix = [
+  [1, 2],
+  [3, 4],
+]
+for row in matrix {
+  for col in row {
+    print("cell: ", col)
+  }
+}

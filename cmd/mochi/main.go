@@ -164,13 +164,8 @@ func runWithVM(prog *parser.Program, debug bool) error {
 	if err != nil {
 		return fmt.Errorf("compile error: %v", err)
 	}
-	/*
-		fmt.Printf("Compiled:\n")
-		for i, inst := range chunk.Code {
-			fmt.Printf("  %02d: %s %v\n", i, inst.Op.String(), inst.Arg)
-		}
-	*/
 	m := vm.NewVM(os.Stdout)
+	m.Debug = debug
 	return m.Run(chunk)
 }
 

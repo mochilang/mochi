@@ -17,7 +17,7 @@ SelectorExpr = <ident> ("." <ident>)* .
 ListLiteral = "[" (Expr ("," Expr)*)? ","?? "]" .
 MapLiteral = "{" (MapEntry ("," MapEntry)*)? ","?? "}" .
 MapEntry = Expr ":" Expr .
-Literal = <float> | <int> | ("true" | "false") | <string> .
+Literal = <int> | <float> | ("true" | "false") | <string> .
 IndexOp = "[" (Expr (":" Expr)?)? "]" .
 BinaryOp = ("==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" | "%") PostfixExpr .
 AgentDecl = "agent" <ident> "{" AgentBlock* "}" .
@@ -34,5 +34,5 @@ StreamSimpleField = <ident> ":" <ident> .
 FunStmt = "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}" .
 ReturnStmt = "return" Expr .
 IfStmt = "if" Expr "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))? .
-ForStmt = "for" <ident> "in" Expr ".." Expr "{" Statement* "}" .
+ForStmt = "for" <ident> "in" Expr (".." Expr)? "{" Statement* "}" .
 ExprStmt = Expr .

@@ -34,6 +34,9 @@ var Errors = map[string]diagnostic.Template{
 
 	// --- Testing ---
 	"I018": {Code: "I018", Message: "expect condition failed", Help: "The condition evaluated to `false`."},
+
+	// --- Loops and Iteration ---
+	"I019": {Code: "I019", Message: "cannot iterate over value of type %s", Help: "Only `list`, `map`, and `string` are iterable in `for ... in` loops."},
 }
 
 // --- Variables and Functions ---
@@ -101,4 +104,9 @@ func errInvalidLenOperand(pos lexer.Position, typ string) error {
 // --- Testing ---
 func errExpectFailed(pos lexer.Position) error {
 	return Errors["I018"].New(pos)
+}
+
+// --- New helper functions for loop errors ---
+func errInvalidIterator(pos lexer.Position, typ string) error {
+	return Errors["I019"].New(pos, typ)
 }
