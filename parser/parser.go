@@ -10,7 +10,7 @@ import (
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
-	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|fun|return|let|var|if|else|for|in)\b`},
+	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|fun|return|let|var|if|else|for|in|generate)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
@@ -189,15 +189,26 @@ type MapEntry struct {
 	Value *Expr `parser:"@@"`
 }
 
+type GenerateField struct {
+	Name  string `parser:"@Ident ':'"`
+	Value *Expr  `parser:"@@"`
+}
+
+type GenerateTextExpr struct {
+	Pos    lexer.Position
+	Fields []*GenerateField `parser:"'generate' 'text' '{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
+}
+
 type Primary struct {
 	Pos      lexer.Position
-	FunExpr  *FunExpr      `parser:"@@"`
-	Call     *CallExpr     `parser:"| @@"`
-	Selector *SelectorExpr `parser:"| @@"`
-	List     *ListLiteral  `parser:"| @@"`
-	Map      *MapLiteral   `parser:"| @@"`
-	Lit      *Literal      `parser:"| @@"`
-	Group    *Expr         `parser:"| '(' @@ ')'"`
+	FunExpr  *FunExpr          `parser:"@@"`
+	Call     *CallExpr         `parser:"| @@"`
+	Selector *SelectorExpr     `parser:"| @@"`
+	List     *ListLiteral      `parser:"| @@"`
+	Map      *MapLiteral       `parser:"| @@"`
+	Generate *GenerateTextExpr `parser:"| @@"`
+	Lit      *Literal          `parser:"| @@"`
+	Group    *Expr             `parser:"| '(' @@ ')'"`
 }
 
 type FunExpr struct {

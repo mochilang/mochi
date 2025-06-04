@@ -291,6 +291,16 @@ func FromPrimary(p *parser.Primary) *Node {
 		}
 		return n
 
+	case p.Generate != nil:
+		n := &Node{Kind: "generate_text"}
+		for _, f := range p.Generate.Fields {
+			n.Children = append(n.Children, &Node{
+				Kind:     f.Name,
+				Children: []*Node{FromExpr(f.Value)},
+			})
+		}
+		return n
+
 	case p.Lit != nil:
 		switch {
 		case p.Lit.Float != nil:

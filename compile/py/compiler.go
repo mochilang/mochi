@@ -300,6 +300,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileListLiteral(p.List)
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Generate != nil:
+		return "\"generated\"", nil
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.Group != nil:

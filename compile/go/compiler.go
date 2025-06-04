@@ -562,6 +562,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 
 		return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
+
+	case p.Generate != nil:
+		// placeholder implementation for generate text
+		return "\"generated\"", nil
 	default:
 		return "nil", fmt.Errorf("unsupported primary expression")
 	}

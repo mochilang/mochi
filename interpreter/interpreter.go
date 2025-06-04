@@ -871,6 +871,26 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		return obj, nil
 
+	case p.Generate != nil:
+		params := map[string]any{}
+		var prompt string
+		for _, f := range p.Generate.Fields {
+			v, err := i.evalExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			switch f.Name {
+			case "prompt":
+				if s, ok := v.(string); ok {
+					prompt = s
+				}
+			default:
+				params[f.Name] = v
+			}
+		}
+		_ = params
+		return fmt.Sprintf("[generated %s]", prompt), nil
+
 	default:
 		return nil, errInvalidPrimaryExpression(p.Pos)
 	}
