@@ -1,5 +1,6 @@
 # Default target
 .DEFAULT_GOAL := help
+.PHONY: bench
 
 # Project metadata
 APP_NAME := mochi
@@ -57,6 +58,10 @@ else
 	@echo "✏️  Updating all golden files"
 	@$(GO) test ./... -update --vet=off
 endif
+
+bench: ## Run Mochi benchmarks
+	@echo "🏃 Running benchmarks..."
+	@$(GO) run ./cmd/mochi-bench
 
 # --------------------------
 # Maintenance

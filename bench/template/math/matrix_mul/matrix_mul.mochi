@@ -3,11 +3,11 @@ fun matmul(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
   let m = len(b[0])
   let p = len(b)
 
-  let result = []
+  var result: list<list<int>> = []
   for i in 0..n {
-    let row = []
+    var row: list<int> = []
     for j in 0..m {
-      let sum = 0
+      var sum: int = 0
       for k in 0..p {
         sum = sum + a[i][k] * b[k][j]
       }
@@ -24,25 +24,25 @@ let size = {{ .N }}
 let repeat = 10
 
 // build input matrices
-let a = []
+var a: list<list<int>> = []
 for i in 0..size {
-  let row = []
+  var row: list<int> = []
   for j in 0..size {
     row = row + [i + j]
   }
   a = a + [row]
 }
 
-let b = []
+var b: list<list<int>> = []
 for i in 0..size {
-  let row = []
+  var row: list<int> = []
   for j in 0..size {
     row = row + [i * j]
   }
   b = b + [row]
 }
 
-let last: list<list<int>> = []
+var last: list<list<int>> = []
 let start = now()
 for i in 0..repeat {
   last = matmul(a, b)

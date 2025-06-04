@@ -11,11 +11,11 @@ fun is_prime(n: int): bool {
 let n = {{ .N }}
 // let n = 10
 let repeat = 100
-let last = 0
+var last = 0
 
 let start = now()
 for r in 0..repeat {
-  let count = 0
+  var count = 0
   for i in 2..n {
     if is_prime(i) {
       count = count + 1
