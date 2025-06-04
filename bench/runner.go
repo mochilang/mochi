@@ -82,7 +82,6 @@ func Benchmarks(tempDir string) []Bench {
 
 		benches = append(benches, generateBenchmarks(tempDir, category, name, cfg, []Template{
 			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run"}},
-			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{mochiBin, "run", "--vm"}},
 		})...)
 		return nil
 	})
@@ -254,8 +253,6 @@ func report(results []Result) {
 			switch langName {
 			case "mochi_interp":
 				langName = "mochi (interp)"
-			case "mochi_vm":
-				langName = "mochi (vm)"
 			case "go_tmpl":
 				langName = "go"
 			}
@@ -339,8 +336,6 @@ func exportMarkdown(results []Result) error {
 			switch langName {
 			case "mochi_interp":
 				langName = "mochi (interp)"
-			case "mochi_vm":
-				langName = "mochi (vm)"
 			case "go_tmpl":
 				langName = "go"
 			}

@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"mochi/vm"
 	"os"
 	"runtime"
 	"time"
@@ -12,7 +11,6 @@ import (
 	"github.com/fatih/color"
 
 	"mochi/ast"
-	"mochi/compiler"
 	"mochi/interpreter"
 	"mochi/mcp"
 	"mochi/parser"
@@ -37,15 +35,12 @@ type CLI struct {
 type RunCmd struct {
 	File     string `arg:"positional,required" help:"Path to .mochi source file"`
 	PrintAST bool   `arg:"--ast" help:"Print parsed AST in Lisp format"`
-	UseVM    bool   `arg:"--vm" help:"Run using compiled VM backend"`
-	VMPrint  bool   `arg:"--vm-dump" help:"Print compiled VM bytecode (no execution)"`
-	Debug    bool   `arg:"--debug" help:"Enable compiler debug output"`
+	Debug    bool   `arg:"--debug" help:"Enable debug output"`
 }
 
 type TestCmd struct {
 	File  string `arg:"positional,required" help:"Path to .mochi source file"`
-	UseVM bool   `arg:"--vm" help:"Run using compiled VM backend"`
-	Debug bool   `arg:"--debug" help:"Enable compiler debug output"`
+	Debug bool   `arg:"--debug" help:"Enable debug output"`
 }
 
 type ReplCmd struct{}
@@ -124,12 +119,6 @@ func runFile(cmd *RunCmd) error {
 		}
 		return fmt.Errorf("aborted due to type errors")
 	}
-	if cmd.VMPrint {
-		return dumpBytecode(prog, cmd.Debug)
-	}
-	if cmd.UseVM {
-		return runWithVM(prog, cmd.Debug)
-	}
 	return interpreter.New(prog, env).Run()
 }
 
@@ -146,47 +135,7 @@ func runTests(cmd *TestCmd) error {
 		}
 		return fmt.Errorf("aborted due to type errors")
 	}
-	if cmd.UseVM {
-		if err := runWithVM(prog, cmd.Debug); err != nil {
-			return err
-		}
-		fmt.Println(color.New(color.FgGreen).Sprint("✓ tests passed (via VM)"))
-		return nil
-	}
 	return interpreter.New(prog, env).Test()
-}
-
-func runWithVM(prog *parser.Program, debug bool) error {
-	c := compiler.New()
-	c.Debug = debug
-	// fmt.Printf("Compiling %d statements...\n", len(prog.Statements))
-	chunk, err := c.Compile(prog)
-	if err != nil {
-		return fmt.Errorf("compile error: %v", err)
-	}
-	m := vm.NewVM(os.Stdout)
-	m.Debug = debug
-	return m.Run(chunk)
-}
-
-func dumpBytecode(prog *parser.Program, debug bool) error {
-	c := compiler.New()
-	c.Debug = debug
-	chunk, err := c.Compile(prog)
-	if err != nil {
-		return fmt.Errorf("compile error: %v", err)
-	}
-
-	fmt.Printf("\n%s\n", cTitle("📦 Compiled Bytecode"))
-	for i, instr := range chunk.Code {
-		op := instr.Op.String()
-		arg := ""
-		if instr.Arg != nil {
-			arg = fmt.Sprintf("%v", instr.Arg)
-		}
-		fmt.Printf("  %3d: %-15s %v\n", i, op, arg)
-	}
-	return nil
 }
 
 func parseOrPrintError(path string) (*parser.Program, error) {
