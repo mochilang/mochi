@@ -25,7 +25,8 @@ func main() {
 	for i := 0; i < repeat; i++ {
 		last = fib(n)
 	}
-	var duration int64 = (int64((int64(time.Now().UnixNano()) - int64(start))) / int64(1000))
+	var duration int64 = (int64(((int64(time.Now().UnixNano()) - int64(start)))) / int64(1000))
 	var output map[string]int64 = map[string]int64{"duration_us": duration, "output": int64(last)}
-	func() { b, _ := json.Marshal(output); fmt.Println(string(b)) }()
+	func(){b,_:=json.Marshal(output);fmt.Println(string(b))}()
 }
+

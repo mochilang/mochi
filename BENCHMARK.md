@@ -3,144 +3,144 @@
 ## math.fact_rec.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 21.0000 | best |
-| mochi (ts) | 385.1420 | +1734.0% |
-| mochi (py) | 579.7090 | +2660.5% |
-| mochi (interp) | 60472.0000 | +287861.9% |
+| Mochi | 8 | best |
+| Typescript | 257 | +3117.2% |
+| Python | 533 | +6562.5% |
+| mochi (interp) | 17204 | +214950.0% |
 
 ## math.fact_rec.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 32.0000 | best |
-| mochi (ts) | 612.7460 | +1814.8% |
-| mochi (py) | 1263.8110 | +3849.4% |
-| mochi (interp) | 34057.0000 | +106328.1% |
+| Mochi | 20 | best |
+| Typescript | 444 | +2119.4% |
+| Python | 1347 | +6635.0% |
+| mochi (interp) | 13900 | +69400.0% |
 
 ## math.fact_rec.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 134.0000 | best |
-| mochi (ts) | 995.0940 | +642.6% |
-| mochi (py) | 3886.0300 | +2800.0% |
-| mochi (interp) | 107324.0000 | +79992.5% |
+| Mochi | 48 | best |
+| Typescript | 573 | +1092.8% |
+| Python | 1883 | +3822.9% |
+| mochi (interp) | 35385 | +73618.8% |
 
 ## math.fib_iter.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 4.0000 | best |
-| mochi (ts) | 262.1690 | +6454.2% |
-| mochi (py) | 388.6380 | +9615.9% |
-| mochi (interp) | 9539.0000 | +238375.0% |
+| Mochi | 7 | best |
+| Typescript | 220 | +3040.5% |
+| Python | 340 | +4757.1% |
+| mochi (interp) | 3570 | +50900.0% |
 
 ## math.fib_iter.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 8.0000 | best |
-| mochi (ts) | 439.9140 | +5398.9% |
-| mochi (py) | 727.2470 | +8990.6% |
-| mochi (interp) | 15788.0000 | +197250.0% |
+| Mochi | 11 | best |
+| Typescript | 263 | +2293.6% |
+| Python | 447 | +3963.6% |
+| mochi (interp) | 8023 | +72836.4% |
 
 ## math.fib_iter.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 12.0000 | best |
-| mochi (ts) | 558.6960 | +4555.8% |
-| mochi (py) | 984.8010 | +8106.7% |
-| mochi (interp) | 23535.0000 | +196025.0% |
+| Mochi | 17 | best |
+| Typescript | 376 | +2108.8% |
+| Python | 605 | +3458.8% |
+| mochi (interp) | 10536 | +61876.5% |
 
 ## math.fib_rec.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 0.0000 | best |
-| mochi (py) | 11.3460 | ++Inf% |
-| mochi (ts) | 32.4680 | ++Inf% |
-| mochi (interp) | 633.0000 | ++Inf% |
+| Mochi | 1 | best |
+| Python | 8 | +700.0% |
+| Typescript | 22 | +2062.5% |
+| mochi (interp) | 146 | +14500.0% |
 
 ## math.fib_rec.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 41.0000 | best |
-| mochi (ts) | 491.5120 | +1098.8% |
-| mochi (py) | 1095.4450 | +2571.8% |
-| mochi (interp) | 64237.0000 | +156575.6% |
+| Mochi | 39 | best |
+| Typescript | 403 | +934.2% |
+| Python | 1190 | +2951.3% |
+| mochi (interp) | 14117 | +36097.4% |
 
 ## math.fib_rec.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 4631.0000 | best |
-| mochi (ts) | 9904.6190 | +113.9% |
-| mochi (py) | 130694.5020 | +2722.2% |
-| mochi (interp) | 5436314.0000 | +117289.6% |
+| Mochi | 4651 | best |
+| Typescript | 5479 | +17.8% |
+| Python | 114922 | +2370.9% |
+| mochi (interp) | 1637309 | +35103.4% |
 
 ## math.mul_loop.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 3.0000 | best |
-| mochi (ts) | 243.9810 | +8032.7% |
-| mochi (py) | 348.8260 | +11527.5% |
-| mochi (interp) | 6646.0000 | +221433.3% |
+| Mochi | 6 | best |
+| Typescript | 163 | +2623.6% |
+| Python | 304 | +4966.7% |
+| mochi (interp) | 2149 | +35716.7% |
 
 ## math.mul_loop.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 8.0000 | best |
-| mochi (ts) | 416.4410 | +5105.5% |
-| mochi (py) | 755.8730 | +9348.4% |
-| mochi (interp) | 11832.0000 | +147800.0% |
+| Mochi | 16 | best |
+| Typescript | 255 | +1494.0% |
+| Python | 597 | +3631.2% |
+| mochi (interp) | 3997 | +24881.2% |
 
 ## math.mul_loop.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 12.0000 | best |
-| mochi (ts) | 736.1370 | +6034.5% |
-| mochi (py) | 1295.7190 | +10697.7% |
-| mochi (interp) | 13747.0000 | +114458.3% |
+| Mochi | 24 | best |
+| Typescript | 345 | +1339.2% |
+| Python | 946 | +3841.7% |
+| mochi (interp) | 5503 | +22829.2% |
 
 ## math.prime_count.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 6.0000 | best |
-| mochi (ts) | 134.8520 | +2147.5% |
-| mochi (py) | 201.1800 | +3253.0% |
-| mochi (interp) | 5157.0000 | +85850.0% |
+| Mochi | 4 | best |
+| Typescript | 102 | +2443.8% |
+| Python | 176 | +4300.0% |
+| mochi (interp) | 1155 | +28775.0% |
 
 ## math.prime_count.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 23.0000 | best |
-| mochi (ts) | 297.5860 | +1193.9% |
-| mochi (py) | 556.0400 | +2317.6% |
-| mochi (interp) | 8229.0000 | +35678.3% |
+| Mochi | 25 | best |
+| Typescript | 192 | +669.0% |
+| Python | 426 | +1604.0% |
+| mochi (interp) | 3604 | +14316.0% |
 
 ## math.prime_count.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 36.0000 | best |
-| mochi (ts) | 488.7260 | +1257.6% |
-| mochi (py) | 1008.1050 | +2700.3% |
-| mochi (interp) | 15938.0000 | +44172.2% |
+| Mochi | 46 | best |
+| Typescript | 269 | +485.1% |
+| Python | 682 | +1382.6% |
+| mochi (interp) | 5894 | +12713.0% |
 
 ## math.sum_loop.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 3.0000 | best |
-| mochi (ts) | 218.7200 | +7190.7% |
-| mochi (py) | 314.6060 | +10386.9% |
-| mochi (interp) | 7636.0000 | +254433.3% |
+| Mochi | 6 | best |
+| Typescript | 161 | +2581.2% |
+| Python | 251 | +4083.3% |
+| mochi (interp) | 2243 | +37283.3% |
 
 ## math.sum_loop.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 6.0000 | best |
-| mochi (ts) | 357.3930 | +5856.5% |
-| mochi (py) | 630.7300 | +10412.2% |
-| mochi (interp) | 9534.0000 | +158800.0% |
+| Mochi | 11 | best |
+| Typescript | 236 | +2047.7% |
+| Python | 398 | +3518.2% |
+| mochi (interp) | 3878 | +35154.5% |
 
 ## math.sum_loop.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| mochi | 18.0000 | best |
-| mochi (ts) | 736.2500 | +3990.3% |
-| mochi (py) | 750.3300 | +4068.5% |
-| mochi (interp) | 13150.0000 | +72955.6% |
+| Mochi | 16 | best |
+| Typescript | 317 | +1881.5% |
+| Python | 593 | +3606.2% |
+| mochi (interp) | 5614 | +34987.5% |
 
