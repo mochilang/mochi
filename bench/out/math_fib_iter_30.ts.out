@@ -15,11 +15,11 @@ function main(): void {
 	let n = 30
 	let repeat = 1000
 	let last = 0
-	let start = Date.now()
+	let start = performance.now() * 1000000
 	for (let i = 0; i < repeat; i++) {
 		last = fib(n)
 	}
-	let duration = (((Date.now() - start)) / 1000000)
+	let duration = (((performance.now() * 1000000 - start)) / 1000000)
 	let output = {["duration_ms"]: duration, ["output"]: last}
 	console.log(JSON.stringify(output))
 }
