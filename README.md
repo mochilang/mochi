@@ -292,6 +292,18 @@ Mochi can be embedded or integrated in a variety of ways:
 
 Custom tools can be added in [`mcp.Register`](./mcp/mcp.go).
 
+## Benchmarks
+
+Mochi includes a suite of microbenchmarks comparing its interpreter and
+generated code. To run them locally:
+
+```bash
+make install   # one-time setup for Python and Deno
+make bench
+```
+
+Benchmark results are written to [BENCHMARK.md](./BENCHMARK.md).
+
 ## Contributing
 
 Mochi is open to all kinds of contributions — from small bug fixes to new language features or even cool example
