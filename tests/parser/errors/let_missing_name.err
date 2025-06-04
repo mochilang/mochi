@@ -1,0 +1,8 @@
+error[P031]: tests/parser/errors/let_missing_name.mochi:1:5: unexpected token ":" (expected <ident> (":" TypeRef)? ("=" Expr)?)
+  --> tests/parser/errors/let_missing_name.mochi:1:5
+
+  1 | let : int = 5
+    |     ^
+
+help:
+  `let` must be followed by a variable name.

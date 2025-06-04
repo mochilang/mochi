@@ -1,0 +1,4 @@
+stream clicks {
+  x: int
+  y: int
+}

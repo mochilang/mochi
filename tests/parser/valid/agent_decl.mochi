@@ -1,0 +1,9 @@
+agent Bot {
+  let name = "mochi"
+  on Message as m {
+    print(m.text)
+  }
+  intent greet(user: string): string {
+    return "hi " + user
+  }
+}

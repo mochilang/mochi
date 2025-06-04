@@ -1,0 +1,8 @@
+error[I014]: index 2 out of bounds for length 1
+  --> tests/interpreter/errors/index_out_of_bounds.mochi:2:9
+
+  2 | print(xs[2])
+    |         ^
+
+help:
+  Use an index within bounds of the list or string.

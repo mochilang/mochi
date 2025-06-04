@@ -1,0 +1,8 @@
+1. error[T017]: slicing not allowed on map
+  --> tests/types/errors/map_slice.mochi:2:10
+
+  2 | let x = m[0:1]
+    |          ^
+
+help:
+  Maps do not support slicing like `map[a:b]`.

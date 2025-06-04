@@ -1,0 +1,11 @@
+(program
+  (let nums
+    (list (int 1) (int 2) (int 3))
+  )
+  (let ages
+    (map
+      (entry (string a) (int 1))
+      (entry (string b) (int 2))
+    )
+  )
+)

@@ -1,0 +1,17 @@
+(program
+  (agent Bot
+    (let name (string mochi))
+    (on Message
+      (call print
+        (selector text (selector m))
+      )
+    )
+    (intent greet
+      (param user (type string))
+      (type string)
+      (return
+        (binary + (string "hi ") (selector user))
+      )
+    )
+  )
+)

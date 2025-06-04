@@ -1,0 +1,8 @@
+1. error[T018]: type string does not support indexing
+  --> tests/types/errors/string_index.mochi:2:9
+
+  2 | let x = s[0]
+    |         ^
+
+help:
+  Only `list<T>` and `map<K,V>` can be indexed.

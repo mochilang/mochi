@@ -1,0 +1,2 @@
+let xs = [1]
+let y = xs["a"]

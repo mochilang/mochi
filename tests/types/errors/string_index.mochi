@@ -1,0 +1,2 @@
+let s = "hi"
+let x = s[0]
