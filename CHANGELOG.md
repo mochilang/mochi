@@ -1,5 +1,22 @@
 # 📦 CHANGELOG.md
 
+## [0.2.10] – 2025-06-07
+
+### Added
+
+* Python compiler via `mochi build --target py` or `.py` output
+* Build command auto-detects target language from extension
+* Benchmarks auto-install Mochi, Deno and Python
+
+### Changed
+
+* Benchmarks measure durations in microseconds
+* Clarified benchmark labels and merged test code
+
+### Fixed
+
+* Go compiler handles map literals with int values
+
 ## [0.2.9] – 2025-06-06
 
 ### Added
