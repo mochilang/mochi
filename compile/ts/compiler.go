@@ -192,9 +192,8 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	c.use("_iter")
 	c.writeIndent()
-	c.buf.WriteString(fmt.Sprintf("for (const %s of _iter(%s)) {\n", name, src))
+	c.buf.WriteString(fmt.Sprintf("for (const %s of %s) {\n", name, src))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -488,13 +487,6 @@ const (
 		"  throw new Error(\"invalid slice target\");\n" +
 		"}\n"
 
-	helperIter = "function _iter(v: any): any[] {\n" +
-		"  if (Array.isArray(v)) return v;\n" +
-		"  if (typeof v === \"string\") return Array.from(v);\n" +
-		"  if (v && typeof v === \"object\") return Object.keys(v);\n" +
-		"  return [];\n" +
-		"}\n"
-
 	helperLen = "function _len(v: any): number {\n" +
 		"  if (Array.isArray(v) || typeof v === \"string\") return (v as any).length;\n" +
 		"  if (v && typeof v === \"object\") return Object.keys(v).length;\n" +
@@ -505,7 +497,6 @@ const (
 var helperMap = map[string]string{
 	"_index": helperIndex,
 	"_slice": helperSlice,
-	"_iter":  helperIter,
 	"_len":   helperLen,
 }
 
