@@ -94,6 +94,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
+	c.writeln("")
+	c.writeln(runtimeHelpers)
 
 	return c.buf.Bytes(), nil
 }
@@ -244,7 +246,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		return err
 	}
 	c.writeIndent()
-	c.buf.WriteString(fmt.Sprintf("for _, %s := range iter(%s) {\n", name, src))
+	c.buf.WriteString(fmt.Sprintf("for _, %s := range _iter(%s) {\n", name, src))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -312,7 +314,32 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
+		switch op.Op {
+		case "+":
+			expr = fmt.Sprintf("_add(%s, %s)", expr, right)
+		case "-":
+			expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
+		case "*":
+			expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
+		case "/":
+			expr = fmt.Sprintf("_div(%s, %s)", expr, right)
+		case "%":
+			expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
+		case "==":
+			expr = fmt.Sprintf("_eq(%s, %s)", expr, right)
+		case "!=":
+			expr = fmt.Sprintf("_neq(%s, %s)", expr, right)
+		case "<":
+			expr = fmt.Sprintf("_lt(%s, %s)", expr, right)
+		case "<=":
+			expr = fmt.Sprintf("_le(%s, %s)", expr, right)
+		case ">":
+			expr = fmt.Sprintf("_gt(%s, %s)", expr, right)
+		case ">=":
+			expr = fmt.Sprintf("_ge(%s, %s)", expr, right)
+		default:
+			expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
+		}
 	}
 	return expr, nil
 }
@@ -342,7 +369,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			val = fmt.Sprintf("index(%s, %s)", val, key)
+			val = fmt.Sprintf("_index(%s, %s)", val, key)
 		} else {
 			start := "0"
 			if op.Start != nil {
@@ -360,7 +387,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				end = e
 			}
-			val = fmt.Sprintf("slice(%s, %s, %s)", val, start, end)
+			val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, end)
 		}
 	}
 	return val, nil
@@ -702,97 +729,109 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 	}
 }
 
-// Helper functions used at runtime for indexing and iteration.
-func init() {}
-
-func index(v any, k any) any {
-	switch s := v.(type) {
-	case []any:
-		i, ok := k.(int)
-		if !ok {
-			panic("invalid list index")
-		}
-		if i < 0 {
-			i += len(s)
-		}
-		if i < 0 || i >= len(s) {
-			panic("index out of range")
-		}
-		return s[i]
-	case string:
-		i, ok := k.(int)
-		if !ok {
-			panic("invalid string index")
-		}
-		runes := []rune(s)
-		if i < 0 {
-			i += len(runes)
-		}
-		if i < 0 || i >= len(runes) {
-			panic("index out of range")
-		}
-		return string(runes[i])
-	case map[string]any:
-		ks, ok := k.(string)
-		if !ok {
-			panic("invalid map key")
-		}
-		return s[ks]
-	default:
-		panic("invalid index target")
-	}
+// runtimeHelpers contains helper functions injected into generated programs.
+const runtimeHelpers = `
+func _index(v any, k any) any {
+    switch s := v.(type) {
+    case []any:
+        i, ok := k.(int)
+        if !ok {
+            panic("invalid list index")
+        }
+        if i < 0 {
+            i += len(s)
+        }
+        if i < 0 || i >= len(s) {
+            panic("index out of range")
+        }
+        return s[i]
+    case string:
+        i, ok := k.(int)
+        if !ok {
+            panic("invalid string index")
+        }
+        runes := []rune(s)
+        if i < 0 {
+            i += len(runes)
+        }
+        if i < 0 || i >= len(runes) {
+            panic("index out of range")
+        }
+        return string(runes[i])
+    case map[string]any:
+        ks, ok := k.(string)
+        if !ok {
+            panic("invalid map key")
+        }
+        return s[ks]
+    default:
+        panic("invalid index target")
+    }
 }
 
-func slice(v any, start, end int) any {
-	switch s := v.(type) {
-	case []any:
-		l := len(s)
-		if start < 0 {
-			start += l
-		}
-		if end < 0 {
-			end += l
-		}
-		if start < 0 || end > l || start > end {
-			panic("slice out of range")
-		}
-		return s[start:end]
-	case string:
-		runes := []rune(s)
-		l := len(runes)
-		if start < 0 {
-			start += l
-		}
-		if end < 0 {
-			end += l
-		}
-		if start < 0 || end > l || start > end {
-			panic("slice out of range")
-		}
-		return string(runes[start:end])
-	default:
-		panic("invalid slice target")
-	}
+func _slice(v any, start, end int) any {
+    switch s := v.(type) {
+    case []any:
+        l := len(s)
+        if start < 0 {
+            start += l
+        }
+        if end < 0 {
+            end += l
+        }
+        if start < 0 || end > l || start > end {
+            panic("slice out of range")
+        }
+        return s[start:end]
+    case string:
+        runes := []rune(s)
+        l := len(runes)
+        if start < 0 {
+            start += l
+        }
+        if end < 0 {
+            end += l
+        }
+        if start < 0 || end > l || start > end {
+            panic("slice out of range")
+        }
+        return string(runes[start:end])
+    default:
+        panic("invalid slice target")
+    }
 }
 
-func iter(v any) []any {
-	switch s := v.(type) {
-	case []any:
-		return s
-	case map[string]any:
-		out := make([]any, 0, len(s))
-		for k := range s {
-			out = append(out, k)
-		}
-		return out
-	case string:
-		runes := []rune(s)
-		out := make([]any, len(runes))
-		for i, r := range runes {
-			out[i] = string(r)
-		}
-		return out
-	default:
-		return nil
-	}
+func _iter(v any) []any {
+    switch s := v.(type) {
+    case []any:
+        return s
+    case map[string]any:
+        out := make([]any, 0, len(s))
+        for k := range s {
+            out = append(out, k)
+        }
+        return out
+    case string:
+        runes := []rune(s)
+        out := make([]any, len(runes))
+        for i, r := range runes {
+            out[i] = string(r)
+        }
+        return out
+    default:
+        return nil
+    }
 }
+
+func _add(a, b any) any { return a.(int) + b.(int) }
+func _sub(a, b any) any { return a.(int) - b.(int) }
+func _mul(a, b any) any { return a.(int) * b.(int) }
+func _div(a, b any) any { return a.(int) / b.(int) }
+func _mod(a, b any) any { return a.(int) % b.(int) }
+func _eq(a, b any) bool { return a == b }
+func _neq(a, b any) bool { return a != b }
+func _lt(a, b any) bool { return a.(int) < b.(int) }
+func _le(a, b any) bool { return a.(int) <= b.(int) }
+func _gt(a, b any) bool { return a.(int) > b.(int) }
+func _ge(a, b any) bool { return a.(int) >= b.(int) }
+`
