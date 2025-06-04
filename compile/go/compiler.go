@@ -792,6 +792,15 @@ func equalTypes(a, b types.Type) bool {
 	if _, ok := b.(types.AnyType); ok {
 		return true
 	}
+	if isInt64(a) && (isInt64(b) || isInt(b)) {
+		return true
+	}
+	if isInt64(b) && (isInt64(a) || isInt(a)) {
+		return true
+	}
+	if isInt(a) && isInt(b) {
+		return true
+	}
 	return reflect.DeepEqual(a, b)
 }
 
