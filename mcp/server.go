@@ -4,37 +4,52 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"os"
 	"strings"
 
+	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/mark3labs/mcp-go/server"
 	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/types"
 )
 
 // Register registers all available Mochi tools to the MCP server.
-func Register(s *Server) {
+func Register(s *server.MCPServer) {
 	registerEval(s)
 	registerCheatsheet(s)
 }
 
 // registerEval registers the "mochi_eval" tool.
-func registerEval(s *Server) {
-	tool := Tool{Name: "mochi_eval", Description: "Evaluate Mochi source code and return the result."}
+func registerEval(s *server.MCPServer) {
+	tool := mcp.NewTool("mochi_eval",
+		mcp.WithDescription("Evaluate Mochi source code and return the result."),
+		mcp.WithString("code", mcp.Required(), mcp.Description("The Mochi source code to evaluate.")),
+	)
 
-	s.AddTool(tool, func(ctx context.Context, args map[string]any) (string, error) {
-		code, _ := args["code"].(string)
+	s.AddTool(tool, func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		args, ok := req.Params.Arguments.(map[string]any)
+		if !ok {
+			return mcp.NewToolResultText("invalid arguments: expected map[string]any"), nil
+		}
+
+		code, ok := args["code"].(string)
+		if !ok {
+			return mcp.NewToolResultText("missing 'code' string parameter"), nil
+		}
+
 		output, err := runProgram(code)
-		return output, err
+		return mcp.NewToolResultText(output), err
 	})
 }
 
 // registerCheatsheet registers the "mochi_cheatsheet" tool.
-func registerCheatsheet(s *Server) {
-	tool := Tool{Name: "mochi_cheatsheet", Description: "Return the full Mochi language cheatsheet."}
+func registerCheatsheet(s *server.MCPServer) {
+	tool := mcp.NewTool("mochi_cheatsheet",
+		mcp.WithDescription("Return the full Mochi language cheatsheet."),
+	)
 
-	s.AddTool(tool, func(ctx context.Context, _ map[string]any) (string, error) {
-		return cheatsheet, nil
+	s.AddTool(tool, func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		return mcp.NewToolResultText(cheatsheet), nil
 	})
 }
 
@@ -66,9 +81,9 @@ func runProgram(source string) (string, error) {
 
 // ServeStdio starts the MCP server using stdio (for Claude/GPT compatibility).
 func ServeStdio() error {
-	s := NewServer("mochi", "0.2.2")
+	s := server.NewMCPServer("mochi", "0.2.2")
 	Register(s)
-	return s.Serve(context.Background(), os.Stdin, os.Stdout)
+	return server.ServeStdio(s)
 }
 
 //go:embed cheatsheet.mochi
