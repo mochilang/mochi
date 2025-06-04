@@ -22,6 +22,16 @@ func FromStatement(s *parser.Statement) *Node {
 		}
 		return n
 
+	case s.Var != nil:
+		n := &Node{Kind: "var", Value: s.Var.Name}
+		if s.Var.Type != nil {
+			n.Children = append(n.Children, FromTypeRef(s.Var.Type))
+		}
+		if s.Var.Value != nil {
+			n.Children = append(n.Children, FromExpr(s.Var.Value))
+		}
+		return n
+
 	case s.Assign != nil:
 		return &Node{
 			Kind:  "assign",

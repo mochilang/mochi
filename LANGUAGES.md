@@ -1,11 +1,12 @@
-# Mochi Language Reference (v0.2.6)
+# Mochi Language Reference (v0.2.7)
 
-Mochi is a small statically typed language focused on clarity and deterministic behavior. This document summarizes the core features available in version 0.2.6.
+Mochi is a small statically typed language focused on clarity and deterministic behavior. This document summarizes the core features available in version 0.2.7.
 
 ## 1. Basics
 
 - Source files are UTF‑8 text.
 - Bindings are introduced with `let` and are immutable.
+- Use `var` to create mutable bindings that can be reassigned.
 - Primitive types include `int`, `float`, `bool`, `string`, and `time`.
 - Composite types: `list<T>`, `map<K,V>`, and `set<T>`.
 

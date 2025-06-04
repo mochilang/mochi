@@ -1,0 +1,8 @@
+1. error[T024]: cannot assign to `x` (immutable)
+  --> tests/types/errors/assign_to_let.mochi:2:1
+
+  2 | x = 3
+    | ^
+
+help:
+  Use `var` to declare mutable variables.

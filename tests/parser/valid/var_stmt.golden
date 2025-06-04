@@ -1,0 +1,3 @@
+(program
+  (var y (type int) (int 1))
+)

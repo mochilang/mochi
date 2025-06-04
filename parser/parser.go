@@ -10,7 +10,7 @@ import (
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
-	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|fun|return|let|if|else|for|in)\b`},
+	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|fun|return|let|var|if|else|for|in)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
@@ -34,6 +34,7 @@ type Statement struct {
 	Stream *StreamDecl `parser:"| @@"`
 	On     *OnHandler  `parser:"| @@"`
 	Let    *LetStmt    `parser:"| @@"`
+	Var    *VarStmt    `parser:"| @@"`
 	Assign *AssignStmt `parser:"| @@"`
 	Fun    *FunStmt    `parser:"| @@"`
 	Return *ReturnStmt `parser:"| @@"`
@@ -98,6 +99,13 @@ type FunType struct {
 type LetStmt struct {
 	Pos   lexer.Position
 	Name  string   `parser:"'let' @Ident"`
+	Type  *TypeRef `parser:"[ ':' @@ ]"`
+	Value *Expr    `parser:"[ '=' @@ ]"`
+}
+
+type VarStmt struct {
+	Pos   lexer.Position
+	Name  string   `parser:"'var' @Ident"`
 	Type  *TypeRef `parser:"[ ':' @@ ]"`
 	Value *Expr    `parser:"[ '=' @@ ]"`
 }

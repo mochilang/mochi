@@ -170,7 +170,19 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 				return err
 			}
 		}
-		i.env.SetValue(s.Let.Name, val)
+		i.env.SetValue(s.Let.Name, val, false)
+		return nil
+
+	case s.Var != nil:
+		val := any(nil)
+		var err error
+		if s.Var.Value != nil {
+			val, err = i.evalExpr(s.Var.Value)
+			if err != nil {
+				return err
+			}
+		}
+		i.env.SetValue(s.Var.Name, val, true)
 		return nil
 
 	case s.Assign != nil:
@@ -270,7 +282,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 			return errInvalidRangeBounds(stmt.Pos, fmt.Sprintf("%T", fromVal), fmt.Sprintf("%T", toVal))
 		}
 		for x := fromInt; x < toInt; x++ {
-			i.env.SetValue(stmt.Name, x)
+			i.env.SetValue(stmt.Name, x, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -284,7 +296,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 	switch coll := fromVal.(type) {
 	case []any:
 		for _, item := range coll {
-			i.env.SetValue(stmt.Name, item)
+			i.env.SetValue(stmt.Name, item, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -293,7 +305,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 	case map[any]any:
 		for k := range coll {
-			i.env.SetValue(stmt.Name, k)
+			i.env.SetValue(stmt.Name, k, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -302,7 +314,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 	case map[string]any:
 		for k := range coll {
-			i.env.SetValue(stmt.Name, k)
+			i.env.SetValue(stmt.Name, k, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -311,7 +323,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 	case map[int]any:
 		for k := range coll {
-			i.env.SetValue(stmt.Name, k)
+			i.env.SetValue(stmt.Name, k, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -320,7 +332,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 	case string:
 		for _, r := range coll {
-			i.env.SetValue(stmt.Name, string(r))
+			i.env.SetValue(stmt.Name, string(r), true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -834,7 +846,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			child.SetValue(param.Name, val)
+			child.SetValue(param.Name, val, true)
 		}
 		old := i.env
 		i.env = child
@@ -888,7 +900,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 
 			child := types.NewEnv(cl.Env)
 			for idx, param := range cl.FullParams {
-				child.SetValue(param.Name, allArgs[idx])
+				child.SetValue(param.Name, allArgs[idx], true)
 			}
 
 			old := i.env

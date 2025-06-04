@@ -256,7 +256,7 @@ func (c *Compiler) compileBaseStmt(stmt *parser.Statement) error {
 	switch {
 	case stmt.Fun != nil:
 		return c.compileFunStmt(stmt.Fun)
-	case stmt.Let != nil || stmt.Assign != nil || stmt.Return != nil || stmt.Expr != nil:
+	case stmt.Let != nil || stmt.Var != nil || stmt.Assign != nil || stmt.Return != nil || stmt.Expr != nil:
 		return c.compileSimpleStmt(stmt)
 	default:
 		return fmt.Errorf("unsupported base statement")
@@ -270,6 +270,18 @@ func (c *Compiler) compileSimpleStmt(stmt *parser.Statement) error {
 		name := stmt.Let.Name
 		if stmt.Let.Value != nil {
 			if err := c.compileExpr(stmt.Let.Value); err != nil {
+				return err
+			}
+		} else {
+			c.emit(OpConst, nil)
+		}
+		c.emit(OpStore, name)
+		c.locals[name] = true
+		return nil
+	case stmt.Var != nil:
+		name := stmt.Var.Name
+		if stmt.Var.Value != nil {
+			if err := c.compileExpr(stmt.Var.Value); err != nil {
 				return err
 			}
 		} else {

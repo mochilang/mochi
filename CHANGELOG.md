@@ -2,6 +2,17 @@
 
 All notable changes to the Mochi programming language are documented in this file.
 
+## [0.2.7] – 2025-06-04
+
+### Added
+
+* Mutable variable bindings via the `var` keyword
+
+### Changed
+
+* `let` variables are now immutable and assignments to them will fail at compile time or runtime
+
+
 ## [0.2.6] – 2025-06-01
 
 ### Added
