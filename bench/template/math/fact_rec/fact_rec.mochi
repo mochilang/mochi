@@ -14,10 +14,10 @@ let start = now()
 for i in 0..repeat {
   last = fact(n)
 }
-let duration = (now() - start) / 1000000
+let duration = (now() - start) / 1000
 
 let output = {
-  "duration_ms": duration,
+  "duration_us": duration,
   "output": last,
 }
 json(output)

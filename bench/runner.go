@@ -45,7 +45,7 @@ type Range struct {
 
 type Result struct {
 	Name       string  `json:"name"`
-	DurationMs float64 `json:"duration_ms"`
+	DurationUs float64 `json:"duration_us"`
 	// Success    bool    `json:"success"`
 	Output any `json:"output"`
 	Lang   string
@@ -189,9 +189,9 @@ func Run() {
 		cmd.Stderr = &stderr
 		cmd.Dir = tempDir
 
-		externalStart := timeNowMs()
+		externalStart := timeNowUs()
 		err := cmd.Run()
-		externalDuration := timeNowMs() - externalStart
+		externalDuration := timeNowUs() - externalStart
 
 		if err != nil {
 			fmt.Printf("❌ %-32s (err: %v)\n", b.Name, err)
@@ -224,9 +224,9 @@ func Run() {
 		r.Lang = strings.Split(b.Name, ".")[3]
 		results = append(results, r)
 
-		fmt.Printf("✅ %-32s ⏱ %.4fms (ext: %.2fms)\n",
+		fmt.Printf("✅ %-32s ⏱ %.4fµs (ext: %.2fµs)\n",
 			r.Name,
-			r.DurationMs,     // internal timing
+			r.DurationUs,     // internal timing
 			externalDuration) // outer exec timing
 	}
 
@@ -271,12 +271,12 @@ func report(results []Result) {
 		fmt.Printf("\n📦 %s\n", group)
 
 		sort.Slice(set, func(i, j int) bool {
-			return set[i].DurationMs < set[j].DurationMs
+			return set[i].DurationUs < set[j].DurationUs
 		})
 
-		best := set[0].DurationMs
+		best := set[0].DurationUs
 		for _, r := range set {
-			delta := r.DurationMs - best
+			delta := r.DurationUs - best
 			plus := ""
 			if delta > 0 {
 				plus = fmt.Sprintf(" +%.1f%%", (float64(delta)/float64(best))*100)
@@ -296,10 +296,10 @@ func report(results []Result) {
 			}
 
 			status := "✓"
-			fmt.Printf("  %s %-24s %8.4fms  %s\n",
+			fmt.Printf("  %s %-24s %8.4fµs  %s\n",
 				color.New(color.FgGreen).Sprint(status),
 				langName,
-				r.DurationMs,
+				r.DurationUs,
 				color.New(color.FgCyan).Sprint("✓ Best")+plus)
 		}
 	}
@@ -379,8 +379,8 @@ func compileToTs(mochiFile, tsFile string) error {
 	return os.WriteFile(tsFile, code, 0644)
 }
 
-func timeNowMs() float64 {
-	return float64(time.Now().UnixNano()) / 1e6
+func timeNowUs() float64 {
+	return float64(time.Now().UnixNano()) / 1e3
 }
 
 func exportMarkdown(results []Result) error {
@@ -406,16 +406,16 @@ func exportMarkdown(results []Result) error {
 	for _, g := range groups {
 		set := grouped[g]
 		sort.Slice(set, func(i, j int) bool {
-			return set[i].DurationMs < set[j].DurationMs
+			return set[i].DurationUs < set[j].DurationUs
 		})
 
 		b.WriteString("## " + g + "\n")
-		b.WriteString("| Language | Time (ms) | +/- |\n")
+		b.WriteString("| Language | Time (µs) | +/- |\n")
 		b.WriteString("| --- | ---: | --- |\n")
 
-		best := set[0].DurationMs
+		best := set[0].DurationUs
 		for _, r := range set {
-			delta := r.DurationMs - best
+			delta := r.DurationUs - best
 			plus := "best"
 			if delta > 0 {
 				plus = fmt.Sprintf("+%.1f%%", (float64(delta)/float64(best))*100)
@@ -432,7 +432,7 @@ func exportMarkdown(results []Result) error {
 			case "mochi_ts":
 				langName = "mochi (ts)"
 			}
-			b.WriteString(fmt.Sprintf("| %s | %.4f | %s |\n", langName, r.DurationMs, plus))
+			b.WriteString(fmt.Sprintf("| %s | %.4f | %s |\n", langName, r.DurationUs, plus))
 		}
 
 		b.WriteString("\n")

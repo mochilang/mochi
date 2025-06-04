@@ -11,8 +11,8 @@ function main(): void {
 	let n = 10
 	let start = performance.now() * 1000000
 	let result = fib(n)
-	let duration = (((performance.now() * 1000000 - start)) / 1000000)
-	let output = {["duration_ms"]: duration, ["output"]: result}
+	let duration = (((performance.now() * 1000000 - start)) / 1000)
+	let output = {["duration_us"]: duration, ["output"]: result}
 	console.log(JSON.stringify(output))
 }
 main()

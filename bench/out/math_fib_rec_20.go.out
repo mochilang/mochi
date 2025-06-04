@@ -7,7 +7,7 @@ import (
 )
 
 func fib(n int) int {
-	if (n <= 1) {
+	if n <= 1 {
 		return n
 	}
 	return (fib((n - 1)) + fib((n - 2)))
@@ -17,8 +17,7 @@ func main() {
 	var n int = 20
 	var start int64 = time.Now().UnixNano()
 	var result int = fib(n)
-	var duration int64 = (int64(((int64(time.Now().UnixNano()) - int64(start)))) / int64(1000000))
-	var output map[string]int64 = map[string]int64{"duration_ms": duration, "output": int64(result)}
-	func(){b,_:=json.Marshal(output);fmt.Println(string(b))}()
+	var duration int64 = (int64((int64(time.Now().UnixNano()) - int64(start))) / int64(1000))
+	var output map[string]int64 = map[string]int64{"duration_us": duration, "output": int64(result)}
+	func() { b, _ := json.Marshal(output); fmt.Println(string(b)) }()
 }
-
