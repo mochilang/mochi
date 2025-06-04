@@ -286,7 +286,7 @@ func report(results []Result) {
 			langName := r.Lang
 			switch langName {
 			case "mochi_interp":
-				langName = "mochi (interp)"
+				langName = "Mochi (interp)"
 			case "mochi_go":
 				langName = "Mochi"
 			case "mochi_py":
