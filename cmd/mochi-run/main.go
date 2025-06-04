@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -36,8 +35,8 @@ func main() {
 	const exampleDir = "examples"
 	const llmDir = "llm"
 
-	exampleOut := filepath.Join(llmDir, fmt.Sprintf("examples.v%s.md", version))
-	llmOut := filepath.Join(llmDir, fmt.Sprintf("llm.v%s.md", version))
+	exampleOut := filepath.Join(llmDir, "examples.latest.md")
+	llmOut := filepath.Join(llmDir, "llm.latest.md")
 	grammarOut := filepath.Join(llmDir, "grammar.ebnf")
 
 	if err := os.MkdirAll(llmDir, 0755); err != nil {
@@ -63,9 +62,6 @@ func main() {
 		exitf("[FAIL] write %s: %v", grammarOut, err)
 	}
 	printDone(fmt.Sprintf("generated %s for grammar", grammarOut))
-
-	copyFile(exampleOut, filepath.Join(llmDir, "examples.latest.md"))
-	copyFile(llmOut, filepath.Join(llmDir, "llm.latest.md"))
 }
 
 func printStep(path string) { fmt.Printf("  %s %s\n", bullet("•"), cInfo(path)) }
@@ -230,34 +226,6 @@ func generateLLMMarkdown(outPath string) error {
 
 func writeFile(path, content string) error {
 	return os.WriteFile(path, []byte(content), 0644)
-}
-
-func copyFile(src, dst string) {
-	in, err := os.Open(src)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "[FAIL] open %s: %v\n", src, err)
-		return
-	}
-	defer func() {
-		if err := in.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "[WARN] close %s: %v\n", src, err)
-		}
-	}()
-
-	out, err := os.Create(dst)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "[FAIL] create %s: %v\n", dst, err)
-		return
-	}
-	defer func() {
-		if err := out.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "[WARN] close %s: %v\n", dst, err)
-		}
-	}()
-
-	if _, err := io.Copy(out, in); err != nil {
-		fmt.Fprintf(os.Stderr, "[FAIL] copy %s to %s: %v\n", src, dst, err)
-	}
 }
 
 func exitf(format string, args ...any) {
