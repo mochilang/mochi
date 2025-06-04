@@ -316,6 +316,7 @@ You can:
 * Clean binaries with `make clean`
 * Update dependencies with `make update`
 * Update golden test files with `make update-golden`
+* Install benchmark dependencies with `make install`
 * Run benchmarks with `make bench`
 * Open a pull request with a clear description
 
