@@ -52,6 +52,15 @@ Run the tests to ensure everything works:
 make test
 ```
 
+### Build a Mochi Program
+
+Compile a Mochi source file into a standalone binary:
+
+```bash
+./mochi build examples/hello.mochi -o hello
+./hello
+```
+
 ## Using Mochi in Claude Desktop
 
 Mochi works great inside Claude Desktop using the Model Context Protocol (MCP). Once configured, you can write and
