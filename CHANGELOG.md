@@ -2,6 +2,27 @@
 
 All notable changes to the Mochi programming language are documented in this file.
 
+## [0.2.8] – 2025-06-05
+
+### Added
+
+* `mochi build` command to compile Mochi source files into standalone binaries
+* Distribution via `npx` (`mochilang/mochi` or `@mochilang/mochi`) without local installation
+* `mochi_eval` and `mochi_cheatsheet` tools exposed through the MCP server
+
+### Changed
+
+* Replaced the external `mcp-go` dependency with a minimal built‑in server
+* Introduced a tagged `Value` type for better interpreter performance
+* Benchmarks updated with a target that ensures the benchmark binary is built
+* Slimmer npm package and new `make publish-npm` target
+* Expanded parser, type checker and interpreter tests
+
+### Fixed
+
+* Clearer runtime errors for invalid slice and map usage
+* Addressed type unification and parameter checking issues
+
 ## [0.2.7] – 2025-06-04
 
 ### Added
