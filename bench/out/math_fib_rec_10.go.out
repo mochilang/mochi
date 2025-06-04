@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func fib(n any) any {
+func fib(n int) int {
 	if (n <= 1) {
 		return n
 	}
@@ -14,11 +14,11 @@ func fib(n any) any {
 }
 
 func main() {
-	var n = 10
-	var start = time.Now().UnixNano()
-	var result = fib(n)
-	var duration = (((time.Now().UnixNano() - start)) / 1000000)
-	var output = map[string]any{"duration_ms": duration, "output": result}
+	var n int = 10
+	var start int = int(time.Now().UnixNano())
+	var result int = fib(n)
+	var duration int = (((int(time.Now().UnixNano()) - start)) / 1000000)
+	var output map[string]int = map[string]int{"duration_ms": duration, "output": result}
 	func(){b,_:=json.Marshal(output);fmt.Println(string(b))}()
 }
 

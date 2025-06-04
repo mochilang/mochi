@@ -154,13 +154,20 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		value = v
 	}
-	typ := "any"
+	typStr := "any"
 	if c.env != nil {
-		if t, err := c.env.GetVar(s.Name); err == nil {
-			typ = goType(t)
+		t, err := c.env.GetVar(s.Name)
+		if err != nil {
+			if s.Value != nil {
+				t = c.inferExprType(s.Value)
+			} else {
+				t = types.AnyType{}
+			}
+			c.env.SetVar(s.Name, t, false)
 		}
+		typStr = goType(t)
 	}
-	c.writeln(fmt.Sprintf("var %s %s = %s", name, typ, value))
+	c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	return nil
 }
 
@@ -174,13 +181,20 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		value = v
 	}
-	typ := "any"
+	typStr := "any"
 	if c.env != nil {
-		if t, err := c.env.GetVar(s.Name); err == nil {
-			typ = goType(t)
+		t, err := c.env.GetVar(s.Name)
+		if err != nil {
+			if s.Value != nil {
+				t = c.inferExprType(s.Value)
+			} else {
+				t = types.AnyType{}
+			}
+			c.env.SetVar(s.Name, t, true)
 		}
+		typStr = goType(t)
 	}
-	c.writeln(fmt.Sprintf("var %s %s = %s", name, typ, value))
+	c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	return nil
 }
 
@@ -245,6 +259,9 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 		c.writeIndent()
 		c.buf.WriteString(fmt.Sprintf("for %s := %s; %s < %s; %s++ {\n", name, start, name, end, name))
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, types.IntType{}, true)
+		}
 		c.indent++
 		for _, s := range stmt.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -264,6 +281,9 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	c.use("_iter")
 	c.writeIndent()
 	c.buf.WriteString(fmt.Sprintf("for _, %s := range _iter(%s) {\n", name, src))
+	if c.env != nil {
+		c.env.SetVar(stmt.Name, types.AnyType{}, true)
+	}
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -623,7 +643,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
 		c.imports["time"] = true
-		return "time.Now().UnixNano()", nil
+		// time.Now().UnixNano() returns int64, but Mochi's type system
+		// represents all integers as Go's int. Cast to int so the
+		// generated code compiles without type errors.
+		return "int(time.Now().UnixNano())", nil
 	case "json":
 		c.imports["encoding/json"] = true
 		c.imports["fmt"] = true

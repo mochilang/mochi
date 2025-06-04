@@ -3,108 +3,144 @@
 ## math.fact_rec.10
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 0.8127 | best |
-| mochi (interp) | 63.0000 | +7651.7% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.5326 | ++Inf% |
+| mochi (py) | 0.8088 | ++Inf% |
+| mochi (interp) | 72.0000 | ++Inf% |
 
 ## math.fact_rec.20
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 1.7251 | best |
-| mochi (interp) | 119.0000 | +6798.1% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 1.0044 | ++Inf% |
+| mochi (py) | 1.9505 | ++Inf% |
+| mochi (interp) | 56.0000 | ++Inf% |
 
 ## math.fact_rec.30
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 2.6813 | best |
-| mochi (interp) | 149.0000 | +5457.0% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 1.3113 | ++Inf% |
+| mochi (py) | 2.7980 | ++Inf% |
+| mochi (interp) | 108.0000 | ++Inf% |
 
 ## math.fib_iter.10
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 0.5667 | best |
-| mochi (interp) | 32.0000 | +5546.6% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.4820 | ++Inf% |
+| mochi (py) | 0.6586 | ++Inf% |
+| mochi (interp) | 14.0000 | ++Inf% |
 
 ## math.fib_iter.20
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 1.0410 | best |
-| mochi (interp) | 37.0000 | +3454.2% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.5874 | ++Inf% |
+| mochi (py) | 0.9773 | ++Inf% |
+| mochi (interp) | 33.0000 | ++Inf% |
 
 ## math.fib_iter.30
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 5.0435 | best |
-| mochi (interp) | 44.0000 | +772.4% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.6131 | ++Inf% |
+| mochi (py) | 1.3592 | ++Inf% |
+| mochi (interp) | 33.0000 | ++Inf% |
 
 ## math.fib_rec.10
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
 | mochi (interp) | 0.0000 | best |
-| mochi (py) | 0.0155 | ++Inf% |
+| mochi | 0.0000 | best |
+| mochi (py) | 0.0200 | ++Inf% |
+| mochi (ts) | 0.0317 | ++Inf% |
 
 ## math.fib_rec.20
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 1.4575 | best |
-| mochi (interp) | 135.0000 | +9162.6% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.7198 | ++Inf% |
+| mochi (py) | 1.4617 | ++Inf% |
+| mochi (interp) | 95.0000 | ++Inf% |
 
 ## math.fib_rec.30
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 181.7278 | best |
-| mochi (interp) | 9643.0000 | +5206.3% |
+| mochi | 6.0000 | best |
+| mochi (ts) | 14.3253 | +138.8% |
+| mochi (py) | 195.4566 | +3157.6% |
+| mochi (interp) | 8794.0000 | +146466.7% |
 
 ## math.mul_loop.10
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 3.0594 | best |
-| mochi (interp) | 13.0000 | +324.9% |
+| mochi | 0.0000 | best |
+| mochi (py) | 0.5140 | ++Inf% |
+| mochi (ts) | 0.6399 | ++Inf% |
+| mochi (interp) | 11.0000 | ++Inf% |
 
 ## math.mul_loop.20
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 1.0821 | best |
-| mochi (interp) | 25.0000 | +2210.3% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.7404 | ++Inf% |
+| mochi (py) | 1.0320 | ++Inf% |
+| mochi (interp) | 13.0000 | ++Inf% |
 
 ## math.mul_loop.30
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 1.8566 | best |
-| mochi (interp) | 29.0000 | +1462.0% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 1.0870 | ++Inf% |
+| mochi (py) | 1.6547 | ++Inf% |
+| mochi (interp) | 25.0000 | ++Inf% |
 
 ## math.prime_count.10
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 0.2952 | best |
-| mochi (interp) | 5.0000 | +1594.0% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.2630 | ++Inf% |
+| mochi (py) | 0.2874 | ++Inf% |
+| mochi (interp) | 5.0000 | ++Inf% |
 
 ## math.prime_count.20
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 0.8658 | best |
-| mochi (interp) | 13.0000 | +1401.6% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.4553 | ++Inf% |
+| mochi (py) | 0.7770 | ++Inf% |
+| mochi (interp) | 11.0000 | ++Inf% |
 
 ## math.prime_count.30
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 1.3450 | best |
-| mochi (interp) | 40.0000 | +2873.9% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.7854 | ++Inf% |
+| mochi (py) | 1.2990 | ++Inf% |
+| mochi (interp) | 21.0000 | ++Inf% |
 
 ## math.sum_loop.10
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 0.5615 | best |
-| mochi (interp) | 8.0000 | +1324.7% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.3948 | ++Inf% |
+| mochi (py) | 0.4529 | ++Inf% |
+| mochi (interp) | 22.0000 | ++Inf% |
 
 ## math.sum_loop.20
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 0.8461 | best |
-| mochi (interp) | 13.0000 | +1436.5% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.5848 | ++Inf% |
+| mochi (py) | 0.8404 | ++Inf% |
+| mochi (interp) | 23.0000 | ++Inf% |
 
 ## math.sum_loop.30
 | Language | Time (ms) | +/- |
 | --- | ---: | --- |
-| mochi (py) | 1.1165 | best |
-| mochi (interp) | 35.0000 | +3034.7% |
+| mochi | 0.0000 | best |
+| mochi (ts) | 0.6022 | ++Inf% |
+| mochi (py) | 1.1337 | ++Inf% |
+| mochi (interp) | 19.0000 | ++Inf% |
 

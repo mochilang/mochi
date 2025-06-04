@@ -6,26 +6,24 @@ import (
 	"time"
 )
 
-func mul(n any) any {
-	var result = 1
+func mul(n int) int {
+	var result int = 1
 	for i := 1; i < n; i++ {
-		result = _mul(result, i)
+		result = (result * i)
 	}
 	return result
 }
 
 func main() {
-	var n = 30
-	var repeat = 1000
-	var last = 0
-	var start = time.Now().UnixNano()
+	var n int = 30
+	var repeat int = 1000
+	var last int = 0
+	var start int = int(time.Now().UnixNano())
 	for i := 0; i < repeat; i++ {
 		last = mul(n)
 	}
-	var duration = (((time.Now().UnixNano() - start)) / 1000000)
-	var output = map[string]any{"duration_ms": duration, "output": last}
+	var duration int = (((int(time.Now().UnixNano()) - start)) / 1000000)
+	var output map[string]int = map[string]int{"duration_ms": duration, "output": last}
 	func(){b,_:=json.Marshal(output);fmt.Println(string(b))}()
 }
-
-func _mul(a, b any) any { return a.(int) * b.(int) }
 
