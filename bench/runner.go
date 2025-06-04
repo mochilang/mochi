@@ -52,16 +52,8 @@ type Result struct {
 
 const keepTempFiles = false
 
-func Benchmarks(tempDir string) []Bench {
+func Benchmarks(tempDir, mochiBin string) []Bench {
 	var benches []Bench
-
-	mochiBin := "mochi"
-	if home := os.Getenv("HOME"); home != "" {
-		candidate := filepath.Join(home, "bin", "mochi")
-		if _, err := os.Stat(candidate); err == nil {
-			mochiBin = candidate
-		}
-	}
 
 	_ = fs.WalkDir(templatesFS, "template", func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
@@ -175,7 +167,11 @@ func Run() {
 		fmt.Println("🔎 Temp files kept at:", tempDir)
 	}
 
-	benches := Benchmarks(tempDir)
+	mochiBin, err := EnsureDeps()
+	if err != nil {
+		panic(err)
+	}
+	benches := Benchmarks(tempDir, mochiBin)
 	var results []Result
 
 	for _, b := range benches {
