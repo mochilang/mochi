@@ -15,6 +15,7 @@ import (
 	"time"
 
 	gocode "mochi/compile/go"
+	tscode "mochi/compile/ts"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -88,6 +89,7 @@ func Benchmarks(tempDir string) []Bench {
 		templates := []Template{
 			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run"}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+			{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}},
 		}
 		if _, err := templatesFS.ReadFile(goTmpl); err == nil {
 			templates = append(templates, Template{Lang: "go_tmpl", Path: goTmpl, Suffix: ".go_tmpl", Command: []string{"go", "run"}})
@@ -127,10 +129,16 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 				"N": fmt.Sprintf("%d", n),
 			}, out)
 
-			// If this benchmark compiles Mochi to Go, do it now.
+			// If this benchmark compiles Mochi to Go or TypeScript, do it now.
 			if t.Lang == "mochi_go" {
 				compiled := strings.TrimSuffix(out, ".mochi") + ".go"
 				if err := compileToGo(out, compiled); err != nil {
+					panic(err)
+				}
+				out = compiled
+			} else if t.Lang == "mochi_ts" {
+				compiled := strings.TrimSuffix(out, ".mochi") + ".ts"
+				if err := compileToTs(out, compiled); err != nil {
 					panic(err)
 				}
 				out = compiled
@@ -275,6 +283,8 @@ func report(results []Result) {
 				langName = "mochi (interp)"
 			case "mochi_go":
 				langName = "mochi (go)"
+			case "mochi_ts":
+				langName = "mochi (ts)"
 			case "go_tmpl":
 				langName = "go"
 			}
@@ -329,6 +339,23 @@ func compileToGo(mochiFile, goFile string) error {
 	return os.WriteFile(goFile, code, 0644)
 }
 
+func compileToTs(mochiFile, tsFile string) error {
+	prog, err := parser.Parse(mochiFile)
+	if err != nil {
+		return err
+	}
+	typeEnv := types.NewEnv(nil)
+	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+		return fmt.Errorf("type error: %v", errs[0])
+	}
+	c := tscode.New()
+	code, err := c.Compile(prog)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(tsFile, code, 0644)
+}
+
 func timeNowMs() float64 {
 	return float64(time.Now().UnixNano()) / 1e6
 }
@@ -377,6 +404,8 @@ func exportMarkdown(results []Result) error {
 				langName = "mochi (interp)"
 			case "mochi_go":
 				langName = "mochi (go)"
+			case "mochi_ts":
+				langName = "mochi (ts)"
 			case "go_tmpl":
 				langName = "go"
 			}
