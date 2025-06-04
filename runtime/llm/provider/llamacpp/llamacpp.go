@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+	"net/url"
 	"strings"
 
 	"mochi/runtime/llm"
@@ -26,10 +26,20 @@ type conn struct {
 
 func init() { llm.Register("llamacpp", provider{}) }
 
-func (provider) Open(opts llm.Options) (llm.Conn, error) {
-	base := os.Getenv("LLAMACPP_BASE_URL")
-	if base == "" {
-		base = "http://localhost:8080/v1"
+func (provider) Open(dsn string, opts llm.Options) (llm.Conn, error) {
+	base := "http://localhost:8080/v1"
+	if dsn != "" {
+		u, err := url.Parse(dsn)
+		if err != nil {
+			return nil, err
+		}
+		if u.Scheme != "" {
+			base = u.Scheme + "://" + u.Host + u.Path
+		} else if u.Host != "" {
+			base = "http://" + u.Host + u.Path
+		} else if u.Path != "" {
+			base = u.Path
+		}
 	}
 	return &conn{opts: opts, baseURL: base, httpClient: http.DefaultClient}, nil
 }

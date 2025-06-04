@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+	"net/url"
 	"strings"
 
 	"mochi/runtime/llm"
@@ -29,21 +29,30 @@ type conn struct {
 
 func init() { llm.Register("claude", provider{}) }
 
-func (provider) Open(opts llm.Options) (llm.Conn, error) {
-	key := os.Getenv("ANTHROPIC_API_KEY")
-	if key == "" {
-		key = os.Getenv("CLAUDE_API_KEY")
+func (provider) Open(dsn string, opts llm.Options) (llm.Conn, error) {
+	base := "https://api.anthropic.com/v1"
+	ver := "2023-06-01"
+	var key string
+	if dsn != "" {
+		u, err := url.Parse(dsn)
+		if err != nil {
+			return nil, err
+		}
+		if u.Scheme != "" {
+			base = u.Scheme + "://" + u.Host + u.Path
+		} else if u.Host != "" {
+			base = "https://" + u.Host + u.Path
+		} else if u.Path != "" {
+			base = u.Path
+		}
+		q := u.Query()
+		key = q.Get("api_key")
+		if v := q.Get("version"); v != "" {
+			ver = v
+		}
 	}
 	if key == "" {
-		return nil, errors.New("claude: missing ANTHROPIC_API_KEY")
-	}
-	base := os.Getenv("ANTHROPIC_BASE_URL")
-	if base == "" {
-		base = "https://api.anthropic.com/v1"
-	}
-	ver := os.Getenv("ANTHROPIC_VERSION")
-	if ver == "" {
-		ver = "2023-06-01"
+		return nil, errors.New("claude: missing api_key")
 	}
 	return &conn{opts: opts, key: key, baseURL: base, version: ver, httpClient: http.DefaultClient}, nil
 }

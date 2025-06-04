@@ -29,14 +29,14 @@ func Register(name string, p Provider) {
 }
 
 // Open opens a new LLM client using the named provider.
-func Open(providerName string, opts Options) (*Client, error) {
+func Open(providerName, dsn string, opts Options) (*Client, error) {
 	mu.RLock()
 	prv := providers[providerName]
 	mu.RUnlock()
 	if prv == nil {
 		return nil, fmt.Errorf("llm: unknown provider %q", providerName)
 	}
-	conn, err := prv.Open(opts)
+	conn, err := prv.Open(dsn, opts)
 	if err != nil {
 		return nil, err
 	}

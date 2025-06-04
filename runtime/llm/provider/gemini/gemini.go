@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+	"net/url"
 	"strings"
 
 	"mochi/runtime/llm"
@@ -28,14 +28,25 @@ type conn struct {
 
 func init() { llm.Register("gemini", provider{}) }
 
-func (provider) Open(opts llm.Options) (llm.Conn, error) {
-	key := os.Getenv("GEMINI_API_KEY")
-	if key == "" {
-		return nil, errors.New("gemini: missing GEMINI_API_KEY")
+func (provider) Open(dsn string, opts llm.Options) (llm.Conn, error) {
+	base := "https://generativelanguage.googleapis.com/v1beta"
+	var key string
+	if dsn != "" {
+		u, err := url.Parse(dsn)
+		if err != nil {
+			return nil, err
+		}
+		if u.Scheme != "" {
+			base = u.Scheme + "://" + u.Host + u.Path
+		} else if u.Host != "" {
+			base = "https://" + u.Host + u.Path
+		} else if u.Path != "" {
+			base = u.Path
+		}
+		key = u.Query().Get("api_key")
 	}
-	base := os.Getenv("GEMINI_BASE_URL")
-	if base == "" {
-		base = "https://generativelanguage.googleapis.com/v1beta"
+	if key == "" {
+		return nil, errors.New("gemini: missing api_key")
 	}
 	return &conn{opts: opts, key: key, baseURL: base, httpClient: http.DefaultClient}, nil
 }

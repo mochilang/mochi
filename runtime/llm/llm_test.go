@@ -16,7 +16,7 @@ type echoStream struct {
 	i       int
 }
 
-func (e echoProvider) Open(opts Options) (Conn, error) {
+func (e echoProvider) Open(dsn string, opts Options) (Conn, error) {
 	return &echoConn{opts: opts}, nil
 }
 
@@ -55,7 +55,7 @@ func TestRegisterOpenChat(t *testing.T) {
 	mu.Unlock()
 	Register("echo", echoProvider{})
 
-	c, err := Open("echo", Options{})
+	c, err := Open("echo", "", Options{})
 	if err != nil {
 		t.Fatalf("open: %v", err)
 	}
@@ -76,7 +76,7 @@ func TestChatStream(t *testing.T) {
 	mu.Unlock()
 	Register("echo", echoProvider{})
 
-	c, err := Open("echo", Options{})
+	c, err := Open("echo", "", Options{})
 	if err != nil {
 		t.Fatalf("open: %v", err)
 	}
