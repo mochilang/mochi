@@ -61,6 +61,31 @@ Compile a Mochi source file into a standalone binary:
 ./hello
 ```
 
+### Mochi CLI
+
+The `mochi` binary provides several subcommands. Run `mochi --help` to see them
+all:
+
+```text
+Usage: mochi [--version] <command> [<args>]
+
+Commands:
+  run     Run a Mochi source file
+  test    Run test blocks inside a Mochi source file
+  build   Compile a Mochi source file to a binary
+  repl    Start an interactive REPL session
+  serve   Start MCP server over stdio
+```
+
+Common examples:
+
+```bash
+./mochi run examples/hello.mochi   # execute a program
+./mochi test examples/math.mochi   # run embedded tests
+./mochi repl                       # interactive shell
+./mochi serve                      # expose MCP tools
+```
+
 ## Using Mochi in Claude Desktop
 
 Mochi works great inside Claude Desktop using the Model Context Protocol (MCP). Once configured, you can write and
@@ -281,6 +306,11 @@ You can:
 * Add or modify examples in `examples/`
 * Format code with `make fmt`
 * Run lints with `make lint`
+* Run `make help` to list all available tasks
+* Clean binaries with `make clean`
+* Update dependencies with `make update`
+* Update golden test files with `make update-golden`
+* Run benchmarks with `make bench`
 * Open a pull request with a clear description
 
 Start small, stay focused, and feel free to ask questions by opening a draft PR.
