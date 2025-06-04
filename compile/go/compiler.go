@@ -380,127 +380,39 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		rightType := c.inferPostfixType(op.Right)
+		var next types.Type
 		switch op.Op {
-		case "+":
-			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
-				expr = fmt.Sprintf("(int64(%s) + int64(%s))", expr, right)
-			} else if _, ok := leftType.(types.IntType); ok {
-				if _, ok := rightType.(types.IntType); ok {
-					expr = fmt.Sprintf("(%s + %s)", expr, right)
-				} else {
-					c.use("_add")
-					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
-				}
-			} else if _, ok := leftType.(types.FloatType); ok {
-				if _, ok := rightType.(types.FloatType); ok {
-					expr = fmt.Sprintf("(%s + %s)", expr, right)
-				} else {
-					c.use("_add")
-					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
-				}
-			} else if _, ok := leftType.(types.StringType); ok {
-				if _, ok := rightType.(types.StringType); ok {
-					expr = fmt.Sprintf("%s + %s", expr, right)
-				} else {
-					c.use("_add")
-					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
-				}
-			} else {
-				c.use("_add")
-				expr = fmt.Sprintf("_add(%s, %s)", expr, right)
+		case "+", "-", "*", "/", "%":
+			if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
+				return "", fmt.Errorf("operator %q cannot be used on types %s and %s", op.Op, leftType, rightType)
 			}
-		case "-":
-			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
-				expr = fmt.Sprintf("(int64(%s) - int64(%s))", expr, right)
-			} else if _, ok := leftType.(types.IntType); ok {
-				if _, ok := rightType.(types.IntType); ok {
-					expr = fmt.Sprintf("(%s - %s)", expr, right)
-				} else {
-					c.use("_sub")
-					expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
-				}
-			} else if _, ok := leftType.(types.FloatType); ok {
-				if _, ok := rightType.(types.FloatType); ok {
-					expr = fmt.Sprintf("(%s - %s)", expr, right)
-				} else {
-					c.use("_sub")
-					expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
-				}
-			} else {
-				c.use("_sub")
-				expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
+			switch {
+			case (isInt64(leftType) && (isInt64(rightType) || isInt(rightType))) ||
+				(isInt64(rightType) && (isInt64(leftType) || isInt(leftType))):
+				expr = fmt.Sprintf("(int64(%s) %s int64(%s))", expr, op.Op, right)
+				next = types.Int64Type{}
+			case isInt(leftType) && isInt(rightType):
+				expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+				next = types.IntType{}
+			case isFloat(leftType) && isFloat(rightType):
+				expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+				next = types.FloatType{}
+			case op.Op == "+" && isString(leftType) && isString(rightType):
+				expr = fmt.Sprintf("%s + %s", expr, right)
+				next = types.StringType{}
+			default:
+				return "", fmt.Errorf("operator %q cannot be used on types %s and %s", op.Op, leftType, rightType)
 			}
-		case "*":
-			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
-				expr = fmt.Sprintf("(int64(%s) * int64(%s))", expr, right)
-			} else if _, ok := leftType.(types.IntType); ok {
-				if _, ok := rightType.(types.IntType); ok {
-					expr = fmt.Sprintf("(%s * %s)", expr, right)
-				} else {
-					c.use("_mul")
-					expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
-				}
-			} else if _, ok := leftType.(types.FloatType); ok {
-				if _, ok := rightType.(types.FloatType); ok {
-					expr = fmt.Sprintf("(%s * %s)", expr, right)
-				} else {
-					c.use("_mul")
-					expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
-				}
-			} else {
-				c.use("_mul")
-				expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
+		case "==", "!=", "<", "<=", ">", ">=":
+			if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
+				return "", fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
 			}
-		case "/":
-			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
-				expr = fmt.Sprintf("(int64(%s) / int64(%s))", expr, right)
-			} else if _, ok := leftType.(types.IntType); ok {
-				if _, ok := rightType.(types.IntType); ok {
-					expr = fmt.Sprintf("(%s / %s)", expr, right)
-				} else {
-					c.use("_div")
-					expr = fmt.Sprintf("_div(%s, %s)", expr, right)
-				}
-			} else if _, ok := leftType.(types.FloatType); ok {
-				if _, ok := rightType.(types.FloatType); ok {
-					expr = fmt.Sprintf("(%s / %s)", expr, right)
-				} else {
-					c.use("_div")
-					expr = fmt.Sprintf("_div(%s, %s)", expr, right)
-				}
-			} else {
-				c.use("_div")
-				expr = fmt.Sprintf("_div(%s, %s)", expr, right)
-			}
-		case "%":
-			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
-				expr = fmt.Sprintf("(int64(%s) %% int64(%s))", expr, right)
-			} else if _, ok := leftType.(types.IntType); ok {
-				if _, ok := rightType.(types.IntType); ok {
-					expr = fmt.Sprintf("(%s %% %s)", expr, right)
-				} else {
-					c.use("_mod")
-					expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
-				}
-			} else {
-				c.use("_mod")
-				expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
-			}
-		case "==":
-			expr = fmt.Sprintf("(%s == %s)", expr, right)
-		case "!=":
-			expr = fmt.Sprintf("(%s != %s)", expr, right)
-		case "<":
-			expr = fmt.Sprintf("(%s < %s)", expr, right)
-		case "<=":
-			expr = fmt.Sprintf("(%s <= %s)", expr, right)
-		case ">":
-			expr = fmt.Sprintf("(%s > %s)", expr, right)
-		case ">=":
-			expr = fmt.Sprintf("(%s >= %s)", expr, right)
+			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+			next = types.BoolType{}
 		default:
-			expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
+			return "", fmt.Errorf("unsupported operator: %s", op.Op)
 		}
+		leftType = next
 	}
 	return expr, nil
 }
@@ -818,6 +730,21 @@ func isInt64(t types.Type) bool {
 
 func isInt(t types.Type) bool {
 	_, ok := t.(types.IntType)
+	return ok
+}
+
+func isFloat(t types.Type) bool {
+	_, ok := t.(types.FloatType)
+	return ok
+}
+
+func isString(t types.Type) bool {
+	_, ok := t.(types.StringType)
+	return ok
+}
+
+func isAny(t types.Type) bool {
+	_, ok := t.(types.AnyType)
 	return ok
 }
 
@@ -1448,23 +1375,12 @@ const (
 		"        return nil\n" +
 		"    }\n" +
 		"}\n"
-
-	helperAdd = "func _add(a, b any) any { return a.(int) + b.(int) }\n"
-	helperSub = "func _sub(a, b any) any { return a.(int) - b.(int) }\n"
-	helperMul = "func _mul(a, b any) any { return a.(int) * b.(int) }\n"
-	helperDiv = "func _div(a, b any) any { return a.(int) / b.(int) }\n"
-	helperMod = "func _mod(a, b any) any { return a.(int) % b.(int) }\n"
 )
 
 var helperMap = map[string]string{
 	"_index": helperIndex,
 	"_slice": helperSlice,
 	"_iter":  helperIter,
-	"_add":   helperAdd,
-	"_sub":   helperSub,
-	"_mul":   helperMul,
-	"_div":   helperDiv,
-	"_mod":   helperMod,
 }
 
 func (c *Compiler) use(name string) {
