@@ -61,8 +61,7 @@ endif
 
 bench: build-mochi ## Run Mochi benchmarks
 	@echo "🏃 Running benchmarks..."
-	@$(GO) run ./cmd/mochi-bench
-
+	@PATH="$(BIN_DIR):$$PATH" $(GO) run ./cmd/mochi-bench
 # --------------------------
 # Maintenance
 # --------------------------
