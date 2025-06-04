@@ -195,9 +195,8 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	c.use("_iter")
 	c.writeIndent()
-	c.buf.WriteString(fmt.Sprintf("for %s in _iter(%s):\n", name, src))
+	c.buf.WriteString(fmt.Sprintf("for %s in %s:\n", name, src))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -431,16 +430,7 @@ var helperSlice = "def _slice(v, start, end):\n" +
 	"        return v[start:end]\n" +
 	"    raise Exception(\"invalid slice target\")\n"
 
-var helperIter = "def _iter(v):\n" +
-	"    if isinstance(v, list):\n" +
-	"        return v\n" +
-	"    if isinstance(v, str):\n" +
-	"        return list(v)\n" +
-	"    if isinstance(v, dict):\n" +
-	"        return list(v.keys())\n" +
-	"    return []\n"
-
-var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_iter": helperIter}
+var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice}
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
 

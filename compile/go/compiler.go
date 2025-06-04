@@ -278,11 +278,21 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	c.use("_iter")
-	c.writeIndent()
-	c.buf.WriteString(fmt.Sprintf("for _, %s := range _iter(%s) {\n", name, src))
-	if c.env != nil {
-		c.env.SetVar(stmt.Name, types.AnyType{}, true)
+	t := c.inferExprType(stmt.Source)
+	switch tt := t.(type) {
+	case types.ListType:
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("for _, %s := range %s {\n", name, src))
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, tt.Elem, true)
+		}
+	default:
+		c.use("_iter")
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("for _, %s := range _iter(%s) {\n", name, src))
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, types.AnyType{}, true)
+		}
 	}
 	c.indent++
 	for _, s := range stmt.Body {
@@ -436,14 +446,28 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	typ := c.inferPrimaryType(p.Target)
 	for _, op := range p.Index {
 		if op.Colon == nil {
 			key, err := c.compileExpr(op.Start)
 			if err != nil {
 				return "", err
 			}
-			c.use("_index")
-			val = fmt.Sprintf("_index(%s, %s)", val, key)
+			switch tt := typ.(type) {
+			case types.ListType:
+				val = fmt.Sprintf("%s[%s]", val, key)
+				typ = tt.Elem
+			case types.MapType:
+				val = fmt.Sprintf("%s[%s]", val, key)
+				typ = tt.Value
+			case types.StringType:
+				val = fmt.Sprintf("string([]rune(%s)[%s])", val, key)
+				typ = types.StringType{}
+			default:
+				c.use("_index")
+				val = fmt.Sprintf("_index(%s, %s)", val, key)
+				typ = types.AnyType{}
+			}
 		} else {
 			start := "0"
 			if op.Start != nil {
@@ -461,8 +485,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				end = e
 			}
-			c.use("_slice")
-			val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, end)
+			switch typ.(type) {
+			case types.ListType:
+				val = fmt.Sprintf("%s[%s:%s]", val, start, end)
+			case types.StringType:
+				val = fmt.Sprintf("string([]rune(%s)[%s:%s])", val, start, end)
+			default:
+				c.use("_slice")
+				val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, end)
+			}
 		}
 	}
 	return val, nil
@@ -859,14 +890,27 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 		return types.AnyType{}
 	}
 	t := c.inferPrimaryType(p.Target)
-	for range p.Index {
-		switch t.(type) {
-		case types.ListType:
-			t = types.AnyType{}
-		case types.MapType:
-			t = types.AnyType{}
-		default:
-			t = types.AnyType{}
+	for _, op := range p.Index {
+		if op.Colon == nil {
+			switch tt := t.(type) {
+			case types.ListType:
+				t = tt.Elem
+			case types.MapType:
+				t = tt.Value
+			case types.StringType:
+				t = types.StringType{}
+			default:
+				t = types.AnyType{}
+			}
+		} else {
+			switch tt := t.(type) {
+			case types.ListType:
+				t = tt
+			case types.StringType:
+				t = types.StringType{}
+			default:
+				t = types.AnyType{}
+			}
 		}
 	}
 	return t
