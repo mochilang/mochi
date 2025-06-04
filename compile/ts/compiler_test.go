@@ -18,7 +18,7 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 	if _, err := exec.LookPath("deno"); err != nil {
 		t.Skip("deno not installed")
 	}
-	golden.Run(t, "tests/tscompiler/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -47,7 +47,7 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestTSCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/tscompiler/valid", ".mochi", ".ts.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".ts.out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
