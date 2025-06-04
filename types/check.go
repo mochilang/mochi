@@ -110,8 +110,12 @@ func unify(a, b Type, subst Subst) bool {
 				return unify(val, b, subst)
 			}
 			subst[at.Name] = b
+			return true
 		}
-		return true
+		if bt, ok := b.(*TypeVar); ok {
+			return at.Name == bt.Name
+		}
+		return false
 
 	case ListType:
 		switch bt := b.(type) {
@@ -125,8 +129,9 @@ func unify(a, b Type, subst Subst) bool {
 					return unify(at, val, subst)
 				}
 				subst[bt.Name] = at
+				return true
 			}
-			return true
+			return false
 		default:
 			return false
 		}
@@ -144,8 +149,9 @@ func unify(a, b Type, subst Subst) bool {
 					return unify(at, val, subst)
 				}
 				subst[bt.Name] = at
+				return true
 			}
-			return true
+			return false
 		default:
 			return false
 		}
@@ -193,8 +199,12 @@ func unify(a, b Type, subst Subst) bool {
 					return unify(a, val, subst)
 				}
 				subst[bt.Name] = a
+				return true
 			}
-			return true
+			if atv, ok := a.(*TypeVar); ok {
+				return atv.Name == bt.Name
+			}
+			return false
 		default:
 			return false
 		}
@@ -799,13 +809,10 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 
 	paramTypes := make([]Type, len(f.Params))
 	for i, p := range f.Params {
-		if p.Type != nil {
-			paramTypes[i] = resolveTypeRef(p.Type)
-		} else if expectedFunc != nil && i < len(expectedFunc.Params) {
-			paramTypes[i] = expectedFunc.Params[i]
-		} else {
-			paramTypes[i] = &TypeVar{Name: fmt.Sprintf("T_%s", p.Name)}
+		if p.Type == nil {
+			return nil, errParamMissingType(pos, p.Name)
 		}
+		paramTypes[i] = resolveTypeRef(p.Type)
 	}
 
 	var declaredRet Type
