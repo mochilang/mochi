@@ -1,22 +1,25 @@
 # 🍡 Mochi Programming Language
 
-**Mochi** is a small, statically typed programming language built for clarity, safety, and expressiveness — whether
-you're writing tools, processing real-time data, or powering intelligent agents.
+**Mochi** is a small, statically typed programming language built for clarity,
+safety, and expressiveness — whether you're writing tools, processing real-time
+data, or powering intelligent agents.
 
 Mochi is:
 
-* Agent-friendly: structured, safe, and embeddable
-* Declarative and functional, with clean, expressive syntax
-* Fast and portable: zero-dependency single binary
-* Testable by design with built-in `test` and `expect` blocks
+- Agent-friendly: structured, safe, and embeddable
+- Declarative and functional, with clean, expressive syntax
+- Fast and portable: zero-dependency single binary
+- Testable by design with built-in `test` and `expect` blocks
 
-Designed to be simple enough to explore in minutes, but powerful enough to build with for real.
+Designed to be simple enough to explore in minutes, but powerful enough to build
+with for real.
 
 ## Getting Started
 
 ### Run from a Prebuilt Binary
 
-1. Download the latest version from [Releases](https://github.com/mochilang/mochi/releases)
+1. Download the latest version from
+   [Releases](https://github.com/mochilang/mochi/releases)
 2. Make it executable (`chmod +x mochi` on macOS/Linux)
 3. Run a program or launch the server:
 
@@ -28,7 +31,6 @@ Designed to be simple enough to explore in minutes, but powerful enough to build
 ### Run with `npx` (No Install Required)
 
 ```bash
-npx mochilang/mochi serve     # from GitHub
 npx @mochilang/mochi serve    # from npm
 ```
 
@@ -97,8 +99,8 @@ Common examples:
 
 ## Using Mochi in Claude Desktop
 
-Mochi works great inside Claude Desktop using the Model Context Protocol (MCP). Once configured, you can write and
-evaluate code directly from your chat window.
+Mochi works great inside Claude Desktop using the Model Context Protocol (MCP).
+Once configured, you can write and evaluate code directly from your chat window.
 
 ### Configure `settings.json`
 
@@ -110,7 +112,7 @@ Using `npx`:
     "mochi": {
       "command": "npx",
       "args": [
-        "mochilang/mochi",
+        "@mochilang/mochi",
         "serve"
       ]
     }
@@ -165,7 +167,8 @@ It just works — and feels fun to use.
 
 ## Language Overview
 
-Mochi is designed to be familiar and intuitive, while keeping things safe and predictable.
+Mochi is designed to be familiar and intuitive, while keeping things safe and
+predictable.
 
 ### Variable Bindings
 
@@ -175,7 +178,8 @@ let age = 3
 let active = true
 ```
 
-All bindings are immutable by default — like constants in most functional languages.
+All bindings are immutable by default — like constants in most functional
+languages.
 
 ### Control Flow
 
@@ -242,7 +246,8 @@ test "math works" {
 }
 ```
 
-Tests are part of the language. No test runner needed. Just run your code and get feedback immediately.
+Tests are part of the language. No test runner needed. Just run your code and
+get feedback immediately.
 
 ### Unicode Support
 
@@ -266,10 +271,10 @@ Use symbols, emojis, and multilingual identifiers naturally.
 
 Running `mochi serve` exposes these tools via MCP:
 
-| Tool | Description |
-| | |
+| Tool               | Description                                |
+| ------------------ | ------------------------------------------ |
 | `mochi_eval`       | Evaluate a Mochi program and return output |
-| `mochi_cheatsheet` | Return the full language reference |
+| `mochi_cheatsheet` | Return the full language reference         |
 
 Perfect for Claude Desktop, Open Interpreter, or other AI shells.
 
@@ -277,10 +282,10 @@ Perfect for Claude Desktop, Open Interpreter, or other AI shells.
 
 The [`examples/`](./examples) folder contains ready-to-run programs:
 
-* `hello.mochi` – Hello world
-* `math.mochi` – Arithmetic and tests
-* `list.mochi` – Working with lists
-* `agent.mochi` – Logic for autonomous agents
+- `hello.mochi` – Hello world
+- `math.mochi` – Arithmetic and tests
+- `list.mochi` – Working with lists
+- `agent.mochi` – Logic for autonomous agents
 
 Try editing one or write your own.
 
@@ -288,10 +293,10 @@ Try editing one or write your own.
 
 Mochi can be embedded or integrated in a variety of ways:
 
-* As a command-line interpreter (`mochi run file.mochi`)
-* As an MCP-compatible service (`mochi serve`)
-* As a language core inside your own tools
-* A REPL interface is also planned for interactive use
+- As a command-line interpreter (`mochi run file.mochi`)
+- As an MCP-compatible service (`mochi serve`)
+- As a language core inside your own tools
+- A REPL interface is also planned for interactive use
 
 Custom tools can be added in [`mcp.Register`](./mcp/mcp.go).
 
@@ -309,8 +314,8 @@ Benchmark results are written to [BENCHMARK.md](./BENCHMARK.md).
 
 ## Contributing
 
-Mochi is open to all kinds of contributions — from small bug fixes to new language features or even cool example
-programs.
+Mochi is open to all kinds of contributions — from small bug fixes to new
+language features or even cool example programs.
 
 To get started:
 
@@ -324,16 +329,16 @@ go run ./cmd/mochi/main.go  # run directly from source
 
 You can:
 
-* Add or modify examples in `examples/`
-* Format code with `make fmt`
-* Run lints with `make lint`
-* Run `make help` to list all available tasks
-* Clean binaries with `make clean`
-* Update dependencies with `make update`
-* Update golden test files with `make update-golden`
-* Install benchmark dependencies with `make install`
-* Run benchmarks with `make bench`
-* Open a pull request with a clear description
+- Add or modify examples in `examples/`
+- Format code with `make fmt`
+- Run lints with `make lint`
+- Run `make help` to list all available tasks
+- Clean binaries with `make clean`
+- Update dependencies with `make update`
+- Update golden test files with `make update-golden`
+- Install benchmark dependencies with `make install`
+- Run benchmarks with `make bench`
+- Open a pull request with a clear description
 
 Start small, stay focused, and feel free to ask questions by opening a draft PR.
 
@@ -341,10 +346,12 @@ Start small, stay focused, and feel free to ask questions by opening a draft PR.
 
 Releases are built with GoReleaser. To publish a new version:
 
-1. Set the desired version: `make release VERSION=X.Y.Z` (requires `$GITHUB_TOKEN`).
-2. Once the GitHub release is created, run `npm publish` to update the `@mochilang/mochi` package.
+1. Set the desired version: `make release VERSION=X.Y.Z` (requires
+   `$GITHUB_TOKEN`).
+2. Once the GitHub release is created, run `npm publish` to update the
+   `@mochilang/mochi` package.
 
 ## License
 
-Mochi is open source under the [MIT License](./LICENSE).
-© 2025 mochilang — lightweight logic for intelligent systems.
+Mochi is open source under the [MIT License](./LICENSE). © 2025 mochilang —
+lightweight logic for intelligent systems.
