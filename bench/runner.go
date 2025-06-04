@@ -43,8 +43,8 @@ type Range struct {
 }
 
 type Result struct {
-	Name       string `json:"name"`
-	DurationMs int64  `json:"duration_ms"`
+	Name       string  `json:"name"`
+	DurationMs float64 `json:"duration_ms"`
 	// Success    bool    `json:"success"`
 	Output any `json:"output"`
 	Lang   string
@@ -211,7 +211,15 @@ func Run() {
 
 		var r Result
 		if err := json.Unmarshal(stdout.Bytes(), &r); err != nil {
-			fmt.Printf("❌ %-32s (invalid json)\n", b.Name)
+			fmt.Printf("❌ %-32s (invalid json: %v)\n", b.Name, err)
+			if stdout.Len() > 0 {
+				fmt.Println("📤 stdout:")
+				fmt.Println(indent(stdout.String()))
+			}
+			if stderr.Len() > 0 {
+				fmt.Println("🔻 stderr:")
+				fmt.Println(indent(stderr.String()))
+			}
 			continue
 		}
 
@@ -219,7 +227,7 @@ func Run() {
 		r.Lang = strings.Split(b.Name, ".")[3]
 		results = append(results, r)
 
-		fmt.Printf("✅ %-32s ⏱ %dms (ext: %.2fms)\n",
+		fmt.Printf("✅ %-32s ⏱ %.0fms (ext: %.2fms)\n",
 			r.Name,
 			r.DurationMs,     // internal timing
 			externalDuration) // outer exec timing
@@ -291,7 +299,7 @@ func report(results []Result) {
 			}
 
 			status := "✓"
-			fmt.Printf("  %s %-24s %8dms  %s\n",
+			fmt.Printf("  %s %-24s %8.0fms  %s\n",
 				color.New(color.FgGreen).Sprint(status),
 				langName,
 				r.DurationMs,
@@ -427,7 +435,7 @@ func exportMarkdown(results []Result) error {
 			case "mochi_ts":
 				langName = "mochi (ts)"
 			}
-			b.WriteString(fmt.Sprintf("| %s | %d | %s |\n", langName, r.DurationMs, plus))
+			b.WriteString(fmt.Sprintf("| %s | %.0f | %s |\n", langName, r.DurationMs, plus))
 		}
 
 		b.WriteString("\n")
