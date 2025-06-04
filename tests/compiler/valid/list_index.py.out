@@ -12,4 +12,3 @@ def _index(v, k):
     return v[k]
 if __name__ == "__main__":
 	main()
-

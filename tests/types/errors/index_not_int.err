@@ -6,4 +6,3 @@
 
 help:
   Use an `int` value for indexing (e.g., `list[0]`).
-
