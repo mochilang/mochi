@@ -33,6 +33,22 @@ npx mochilang/mochi serve
 
 This is the fastest way to try Mochi — no setup required.
 
+### Build from Source
+
+Clone the repo if you want to hack on Mochi:
+
+```bash
+git clone https://github.com/mochilang/mochi
+cd mochi
+make build   # or: go build ./cmd/mochi
+```
+
+Run the tests to ensure everything works:
+
+```bash
+make test
+```
+
 ## Using Mochi in Claude Desktop
 
 Mochi works great inside Claude Desktop using the Model Context Protocol (MCP). Once configured, you can write and
@@ -243,13 +259,16 @@ To get started:
 ```bash
 git clone https://github.com/mochilang/mochi
 cd mochi
-go run ./cmd/mochi/main.go
+make build   # build binaries into ~/bin
+make test    # run the full test suite
+go run ./cmd/mochi/main.go  # run directly from source
 ```
 
 You can:
 
 * Add or modify examples in `examples/`
-* Run tests with `go test ./...`
+* Format code with `make fmt`
+* Run lints with `make lint`
 * Open a pull request with a clear description
 
 Start small, stay focused, and feel free to ask questions by opening a draft PR.
