@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+	"net/url"
 	"strings"
 
 	"mochi/runtime/llm"
@@ -28,14 +28,25 @@ type conn struct {
 
 func init() { llm.Register("openai", provider{}) }
 
-func (provider) Open(opts llm.Options) (llm.Conn, error) {
-	key := os.Getenv("OPENAI_API_KEY")
-	if key == "" {
-		return nil, errors.New("openai: missing OPENAI_API_KEY")
+func (provider) Open(dsn string, opts llm.Options) (llm.Conn, error) {
+	base := "https://api.openai.com/v1"
+	var key string
+	if dsn != "" {
+		u, err := url.Parse(dsn)
+		if err != nil {
+			return nil, err
+		}
+		if u.Scheme != "" {
+			base = u.Scheme + "://" + u.Host + u.Path
+		} else if u.Host != "" {
+			base = "https://" + u.Host + u.Path
+		} else if u.Path != "" {
+			base = u.Path
+		}
+		key = u.Query().Get("api_key")
 	}
-	base := os.Getenv("OPENAI_BASE_URL")
-	if base == "" {
-		base = "https://api.openai.com/v1"
+	if key == "" {
+		return nil, errors.New("openai: missing api_key")
 	}
 	return &conn{opts: opts, key: key, baseURL: base, httpClient: http.DefaultClient}, nil
 }

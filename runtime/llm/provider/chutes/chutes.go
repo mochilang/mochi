@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+	"net/url"
 	"strings"
 
 	"mochi/runtime/llm"
@@ -28,14 +28,21 @@ type conn struct {
 
 func init() { llm.Register("chutes", provider{}) }
 
-func (provider) Open(opts llm.Options) (llm.Conn, error) {
-	key := os.Getenv("CHUTES_API_TOKEN")
-	if key == "" {
-		return nil, errors.New("chutes: missing CHUTES_API_TOKEN")
+func (provider) Open(dsn string, opts llm.Options) (llm.Conn, error) {
+	var key, base string
+	if dsn != "" {
+		u, err := url.Parse(dsn)
+		if err != nil {
+			return nil, err
+		}
+		base = u.Scheme + "://" + u.Host + u.Path
+		key = u.Query().Get("api_token")
 	}
-	base := os.Getenv("CHUTES_BASE_URL")
 	if base == "" {
-		return nil, errors.New("chutes: missing CHUTES_BASE_URL")
+		return nil, errors.New("chutes: missing base url")
+	}
+	if key == "" {
+		return nil, errors.New("chutes: missing api_token")
 	}
 	return &conn{opts: opts, token: key, baseURL: base, httpClient: http.DefaultClient}, nil
 }

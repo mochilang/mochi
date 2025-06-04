@@ -62,5 +62,7 @@ type Conn interface {
 
 // Provider opens new connections for a given configuration.
 type Provider interface {
-	Open(opts Options) (Conn, error)
+	// Open initializes a new connection using the provider specific DSN.
+	// The DSN follows the form BASE_URL?api_key=KEY&opt=value.
+	Open(dsn string, opts Options) (Conn, error)
 }
