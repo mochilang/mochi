@@ -5,7 +5,6 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
-	"github.com/fatih/color"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -13,6 +12,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 
 	gocode "mochi/compile/go"
 	pycode "mochi/compile/py"
@@ -223,7 +224,7 @@ func Run() {
 		r.Lang = strings.Split(b.Name, ".")[3]
 		results = append(results, r)
 
-		fmt.Printf("✅ %-32s ⏱ %.0fms (ext: %.2fms)\n",
+		fmt.Printf("✅ %-32s ⏱ %.4fms (ext: %.2fms)\n",
 			r.Name,
 			r.DurationMs,     // internal timing
 			externalDuration) // outer exec timing
@@ -295,7 +296,7 @@ func report(results []Result) {
 			}
 
 			status := "✓"
-			fmt.Printf("  %s %-24s %8.0fms  %s\n",
+			fmt.Printf("  %s %-24s %8.4fms  %s\n",
 				color.New(color.FgGreen).Sprint(status),
 				langName,
 				r.DurationMs,
@@ -431,7 +432,7 @@ func exportMarkdown(results []Result) error {
 			case "mochi_ts":
 				langName = "mochi (ts)"
 			}
-			b.WriteString(fmt.Sprintf("| %s | %.0f | %s |\n", langName, r.DurationMs, plus))
+			b.WriteString(fmt.Sprintf("| %s | %.4f | %s |\n", langName, r.DurationMs, plus))
 		}
 
 		b.WriteString("\n")
