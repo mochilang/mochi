@@ -99,6 +99,14 @@ release-src: ## Sync source code to GitHub repo
 		--exclude="dist/" \
 		./ $(HOME)/github/mochilang/mochi/
 
+pull-src: ## Pull latest source code from GitHub repo
+	@rsync -avh --delete \
+		--exclude=".git" \
+		--exclude=".DS_Store" \
+		--exclude="*/.DS_Store" \
+		--exclude="dist/" \
+		$(HOME)/github/mochilang/mochi/ ./
+
 release: ## Release new version. Usage: make release VERSION=X.Y.Z
 ifndef VERSION
 	$(error ❌ VERSION not set. Usage: make release VERSION=X.Y.Z)
