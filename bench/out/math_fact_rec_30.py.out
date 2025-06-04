@@ -15,8 +15,8 @@ def main():
 	start = time.time_ns()
 	for i in range(0, repeat):
 		last = fact(n)
-	duration = (((time.time_ns() - start)) / 1000000)
-	output = {"duration_ms": duration, "output": last}
+	duration = (((time.time_ns() - start)) / 1000)
+	output = {"duration_us": duration, "output": last}
 	print(json.dumps(output))
 
 if __name__ == "__main__":

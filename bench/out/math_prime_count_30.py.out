@@ -23,8 +23,8 @@ def main():
 				count = (count + 1)
 		last = count
 	end = time.time_ns()
-	duration = (((end - start)) / 1000000)
-	output = {"duration_ms": duration, "output": last}
+	duration = (((end - start)) / 1000)
+	output = {"duration_us": duration, "output": last}
 	print(json.dumps(output))
 
 if __name__ == "__main__":

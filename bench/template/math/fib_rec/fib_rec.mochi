@@ -7,10 +7,10 @@ fun fib(n: int): int {
 let n = {{ .N }}
 let start = now()
 let result = fib(n)
-let duration = (now() - start) / 1000000
+let duration = (now() - start) / 1000
 
 let output = {
-    "duration_ms": duration,
+    "duration_us": duration,
     "output": result,
 }
 json(output)

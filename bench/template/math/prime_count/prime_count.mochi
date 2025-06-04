@@ -24,11 +24,11 @@ for r in 0..repeat {
   last = count
 }
 let end = now()
-let duration = (end - start) / 1000000
+let duration = (end - start) / 1000
 // print(start, end, end - start, duration)
 
 let output = {
-  "duration_ms": duration,
+  "duration_us": duration,
   "output": last,
 }
 json(output)

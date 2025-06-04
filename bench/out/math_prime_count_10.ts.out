@@ -27,8 +27,8 @@ function main(): void {
 		last = count
 	}
 	let end = performance.now() * 1000000
-	let duration = (((end - start)) / 1000000)
-	let output = {["duration_ms"]: duration, ["output"]: last}
+	let duration = (((end - start)) / 1000)
+	let output = {["duration_us"]: duration, ["output"]: last}
 	console.log(JSON.stringify(output))
 }
 main()

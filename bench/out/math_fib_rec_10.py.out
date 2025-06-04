@@ -12,8 +12,8 @@ def main():
 	n = 10
 	start = time.time_ns()
 	result = fib(n)
-	duration = (((time.time_ns() - start)) / 1000000)
-	output = {"duration_ms": duration, "output": result}
+	duration = (((time.time_ns() - start)) / 1000)
+	output = {"duration_us": duration, "output": result}
 	print(json.dumps(output))
 
 if __name__ == "__main__":
