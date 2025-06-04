@@ -884,6 +884,19 @@ func (c *Compiler) scanImports(s *parser.Statement) {
 	if s.Expect != nil {
 		c.scanExprImports(s.Expect.Value)
 	}
+	if s.Let != nil {
+		if s.Let.Value != nil {
+			c.scanExprImports(s.Let.Value)
+		}
+	}
+	if s.Var != nil {
+		if s.Var.Value != nil {
+			c.scanExprImports(s.Var.Value)
+		}
+	}
+	if s.Assign != nil {
+		c.scanExprImports(s.Assign.Value)
+	}
 	if s.If != nil {
 		c.scanExprImports(s.If.Cond)
 		for _, t := range s.If.Then {
