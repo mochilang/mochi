@@ -18,7 +18,7 @@ func TestPyCompiler_SubsetPrograms(t *testing.T) {
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
 	}
-	golden.Run(t, "tests/pycompiler/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -47,7 +47,7 @@ func TestPyCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestPyCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/pycompiler/valid", ".mochi", ".py.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".py.out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
