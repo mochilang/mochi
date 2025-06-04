@@ -1,0 +1,142 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func is_prime(n any) any {
+	if n < 2 {
+		return true
+	}
+	for i := 2; i < (n - 1); i++ {
+		if _mod(n, i) == 0 {
+			return true
+		}
+	}
+	return true
+}
+
+func main() {
+	var n = 10
+	var repeat = 100
+	var last = 0
+	var start = time.Now().UnixNano()
+	for r := 0; r < repeat; r++ {
+		var count = 0
+		for i := 2; i < n; i++ {
+			if is_prime(i) {
+				count = _add(count, 1)
+			}
+		}
+		last = count
+	}
+	var end = time.Now().UnixNano()
+	var duration = ((end - start) / 1000000)
+	var output = map[string]any{"duration_ms": duration, "output": last}
+	func() { b, _ := json.Marshal(output); fmt.Println(string(b)) }()
+}
+
+func _index(v any, k any) any {
+	switch s := v.(type) {
+	case []any:
+		i, ok := k.(int)
+		if !ok {
+			panic("invalid list index")
+		}
+		if i < 0 {
+			i += len(s)
+		}
+		if i < 0 || i >= len(s) {
+			panic("index out of range")
+		}
+		return s[i]
+	case string:
+		i, ok := k.(int)
+		if !ok {
+			panic("invalid string index")
+		}
+		runes := []rune(s)
+		if i < 0 {
+			i += len(runes)
+		}
+		if i < 0 || i >= len(runes) {
+			panic("index out of range")
+		}
+		return string(runes[i])
+	case map[string]any:
+		ks, ok := k.(string)
+		if !ok {
+			panic("invalid map key")
+		}
+		return s[ks]
+	default:
+		panic("invalid index target")
+	}
+}
+
+func _slice(v any, start, end int) any {
+	switch s := v.(type) {
+	case []any:
+		l := len(s)
+		if start < 0 {
+			start += l
+		}
+		if end < 0 {
+			end += l
+		}
+		if start < 0 || end > l || start > end {
+			panic("slice out of range")
+		}
+		return s[start:end]
+	case string:
+		runes := []rune(s)
+		l := len(runes)
+		if start < 0 {
+			start += l
+		}
+		if end < 0 {
+			end += l
+		}
+		if start < 0 || end > l || start > end {
+			panic("slice out of range")
+		}
+		return string(runes[start:end])
+	default:
+		panic("invalid slice target")
+	}
+}
+
+func _iter(v any) []any {
+	switch s := v.(type) {
+	case []any:
+		return s
+	case map[string]any:
+		out := make([]any, 0, len(s))
+		for k := range s {
+			out = append(out, k)
+		}
+		return out
+	case string:
+		runes := []rune(s)
+		out := make([]any, len(runes))
+		for i, r := range runes {
+			out[i] = string(r)
+		}
+		return out
+	default:
+		return nil
+	}
+}
+
+func _add(a, b any) any  { return a.(int) + b.(int) }
+func _sub(a, b any) any  { return a.(int) - b.(int) }
+func _mul(a, b any) any  { return a.(int) * b.(int) }
+func _div(a, b any) any  { return a.(int) / b.(int) }
+func _mod(a, b any) any  { return a.(int) % b.(int) }
+func _eq(a, b any) bool  { return a == b }
+func _neq(a, b any) bool { return a != b }
+func _lt(a, b any) bool  { return a.(int) < b.(int) }
+func _le(a, b any) bool  { return a.(int) <= b.(int) }
+func _gt(a, b any) bool  { return a.(int) > b.(int) }
+func _ge(a, b any) bool  { return a.(int) >= b.(int) }

@@ -227,6 +227,10 @@ web_modules/
 .next
 out
 
+# Keep generated benchmark output files
+!bench/out
+!bench/out/*
+
 # Nuxt.js build / generate output
 .nuxt
 dist
