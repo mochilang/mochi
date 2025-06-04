@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println(len([]any{1, 2, 3}))
+	fmt.Println(len([]int{1, 2, 3}))
 }

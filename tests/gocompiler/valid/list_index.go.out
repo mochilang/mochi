@@ -5,13 +5,61 @@ import (
 )
 
 func main() {
-	var xs = []any{10, 20, 30}
+	var xs []int = []int{10, 20, 30}
 	fmt.Println(_index(xs, 1))
 }
 
 func _index(v any, k any) any {
     switch s := v.(type) {
     case []any:
+        i, ok := k.(int)
+        if !ok {
+            panic("invalid list index")
+        }
+        if i < 0 {
+            i += len(s)
+        }
+        if i < 0 || i >= len(s) {
+            panic("index out of range")
+        }
+        return s[i]
+    case []int:
+        i, ok := k.(int)
+        if !ok {
+            panic("invalid list index")
+        }
+        if i < 0 {
+            i += len(s)
+        }
+        if i < 0 || i >= len(s) {
+            panic("index out of range")
+        }
+        return s[i]
+    case []float64:
+        i, ok := k.(int)
+        if !ok {
+            panic("invalid list index")
+        }
+        if i < 0 {
+            i += len(s)
+        }
+        if i < 0 || i >= len(s) {
+            panic("index out of range")
+        }
+        return s[i]
+    case []string:
+        i, ok := k.(int)
+        if !ok {
+            panic("invalid list index")
+        }
+        if i < 0 {
+            i += len(s)
+        }
+        if i < 0 || i >= len(s) {
+            panic("index out of range")
+        }
+        return s[i]
+    case []bool:
         i, ok := k.(int)
         if !ok {
             panic("invalid list index")
