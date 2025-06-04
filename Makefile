@@ -59,7 +59,7 @@ else
 	@$(GO) test ./... -update --vet=off
 endif
 
-bench: build-mochi ## Run Mochi benchmarks (after 'make install')
+bench: install build-mochi ## Run Mochi benchmarks
 	@echo "🏃 Running benchmarks..."
 	@$(GO) run ./cmd/mochi-bench
 
