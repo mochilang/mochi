@@ -123,14 +123,14 @@ endif
 	@echo "✅ Release complete: v$(VERSION)"
 
 snapshot: ## Dry-run snapshot build (no publish)
-        @echo "🧪 Running GoReleaser snapshot..."
-        @goreleaser release --snapshot --clean
-        @echo "✅ Snapshot build complete"
+	@echo "🧪 Running GoReleaser snapshot..."
+	@goreleaser release --snapshot --clean
+	@echo "✅ Snapshot build complete"
 
 publish-npm: ## Publish npm package using VERSION file
-        @echo "📦 Publishing npm package v$(VERSION)..."
-        @npm version $(VERSION) --no-git-tag-version --allow-same-version
-        @npm publish
+	@echo "📦 Publishing npm package v$(VERSION)..."
+	@npm version $(VERSION) --no-git-tag-version --allow-same-version
+	@npm publish
 
 help: ## Show help message
 	@echo ""
