@@ -21,13 +21,17 @@ type Env struct {
 
 // NewEnv creates a new lexical scope environment.
 func NewEnv(parent *Env) *Env {
+	var out io.Writer = os.Stdout
+	if parent != nil {
+		out = parent.output
+	}
 	return &Env{
 		parent: parent,
 		types:  make(map[string]Type),
 		mut:    make(map[string]bool),
 		values: make(map[string]any),
 		funcs:  make(map[string]*parser.FunStmt),
-		output: os.Stdout,
+		output: out,
 	}
 }
 

@@ -1,0 +1,19 @@
+// shadow.mochi
+// Demonstrates variable shadowing in nested scopes
+
+let x = 10
+print("outer x:", x)
+
+if x > 5 {
+  let x = 20
+  print("inner x:", x)
+}
+
+print("outer x after if:", x)
+
+for i in 1..3 {
+  let x = i
+  print("loop x:", x)
+}
+
+print("outer x after loop:", x)
