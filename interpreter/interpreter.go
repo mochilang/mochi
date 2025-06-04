@@ -9,10 +9,146 @@ import (
 	"mochi/parser"
 	"mochi/types"
 	"os"
-	"reflect"
 	"strings"
 	"time"
 )
+
+// ValueTag represents the type of a runtime value.
+type ValueTag uint8
+
+const (
+	TagNull ValueTag = iota
+	TagInt
+	TagFloat
+	TagStr
+	TagBool
+	TagList
+	TagMap
+	TagFunc
+)
+
+func (t ValueTag) String() string {
+	switch t {
+	case TagNull:
+		return "null"
+	case TagInt:
+		return "int"
+	case TagFloat:
+		return "float"
+	case TagStr:
+		return "string"
+	case TagBool:
+		return "bool"
+	case TagList:
+		return "list"
+	case TagMap:
+		return "map"
+	case TagFunc:
+		return "func"
+	default:
+		return "unknown"
+	}
+}
+
+// Value is a tagged union used at runtime to avoid reflection.
+type Value struct {
+	Tag   ValueTag
+	Int   int
+	Float float64
+	Str   string
+	Bool  bool
+	List  []Value
+	Map   map[string]Value
+	Func  *closure
+}
+
+// Truthy returns the boolean interpretation of v.
+func (v Value) Truthy() bool {
+	switch v.Tag {
+	case TagBool:
+		return v.Bool
+	case TagInt:
+		return v.Int != 0
+	case TagFloat:
+		return v.Float != 0
+	case TagStr:
+		return v.Str != ""
+	case TagList:
+		return len(v.List) > 0
+	case TagMap:
+		return len(v.Map) > 0
+	default:
+		return false
+	}
+}
+
+func anyToValue(v any) Value {
+	switch val := v.(type) {
+	case nil:
+		return Value{Tag: TagNull}
+	case int:
+		return Value{Tag: TagInt, Int: val}
+	case int64:
+		return Value{Tag: TagInt, Int: int(val)}
+	case float64:
+		return Value{Tag: TagFloat, Float: val}
+	case string:
+		return Value{Tag: TagStr, Str: val}
+	case bool:
+		return Value{Tag: TagBool, Bool: val}
+	case []Value:
+		return Value{Tag: TagList, List: val}
+	case []any:
+		list := make([]Value, len(val))
+		for i, x := range val {
+			list[i] = anyToValue(x)
+		}
+		return Value{Tag: TagList, List: list}
+	case map[string]Value:
+		return Value{Tag: TagMap, Map: val}
+	case map[string]any:
+		m := make(map[string]Value, len(val))
+		for k, x := range val {
+			m[k] = anyToValue(x)
+		}
+		return Value{Tag: TagMap, Map: m}
+	case closure:
+		return Value{Tag: TagFunc, Func: &val}
+	case *closure:
+		return Value{Tag: TagFunc, Func: val}
+	default:
+		return Value{Tag: TagNull}
+	}
+}
+
+func valueToAny(v Value) any {
+	switch v.Tag {
+	case TagInt:
+		return v.Int
+	case TagFloat:
+		return v.Float
+	case TagStr:
+		return v.Str
+	case TagBool:
+		return v.Bool
+	case TagList:
+		list := make([]any, len(v.List))
+		for i, x := range v.List {
+			list[i] = valueToAny(x)
+		}
+		return list
+	case TagMap:
+		m := make(map[string]any, len(v.Map))
+		for k, x := range v.Map {
+			m[k] = valueToAny(x)
+		}
+		return m
+	case TagFunc:
+		return v.Func
+	default:
+		return nil
+	}
+}
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
 type Interpreter struct {
@@ -149,7 +285,7 @@ func (i *Interpreter) Test() error {
 type closure struct {
 	Fn         *parser.FunExpr
 	Env        *types.Env
-	Args       []any
+	Args       []Value
 	FullParams []*parser.Param
 }
 
@@ -820,13 +956,13 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 		}
 
 		if argCount < paramCount {
-			applied := make([]any, argCount)
+			applied := make([]Value, argCount)
 			for idx := range c.Args {
-				val, err := i.evalExpr(c.Args[idx])
+				v, err := i.evalExpr(c.Args[idx])
 				if err != nil {
 					return nil, err
 				}
-				applied[idx] = val
+				applied[idx] = anyToValue(v)
 			}
 			remainingParams := fn.Params[argCount:]
 			return closure{
@@ -842,11 +978,11 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 
 		child := types.NewEnv(i.env)
 		for idx, param := range fn.Params {
-			val, err := i.evalExpr(c.Args[idx])
+			v, err := i.evalExpr(c.Args[idx])
 			if err != nil {
 				return nil, err
 			}
-			child.SetValue(param.Name, val, true)
+			child.SetValue(param.Name, v, true)
 		}
 		old := i.env
 		i.env = child
@@ -872,13 +1008,13 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 				return nil, errTooManyFunctionArgs(c.Pos, c.Func, fullParamCount, totalArgs)
 			}
 
-			allArgs := append([]any{}, cl.Args...)
+			allArgs := append([]Value{}, cl.Args...)
 			for _, arg := range c.Args {
-				val, err := i.evalExpr(arg)
+				v, err := i.evalExpr(arg)
 				if err != nil {
 					return nil, err
 				}
-				allArgs = append(allArgs, val)
+				allArgs = append(allArgs, anyToValue(v))
 			}
 
 			if totalArgs < fullParamCount {
@@ -900,7 +1036,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 
 			child := types.NewEnv(cl.Env)
 			for idx, param := range cl.FullParams {
-				child.SetValue(param.Name, allArgs[idx], true)
+				child.SetValue(param.Name, valueToAny(allArgs[idx]), true)
 			}
 
 			old := i.env
@@ -931,195 +1067,206 @@ type returnSignal struct{ value any }
 func (r returnSignal) Error() string { return "return" }
 
 func applyBinary(pos lexer.Position, left any, op string, right any) (any, error) {
-	// Deep compare slices
-	if lSlice, ok := left.([]any); ok {
-		if rSlice, ok := right.([]any); ok {
+	lv := anyToValue(left)
+	rv := anyToValue(right)
+	res, err := applyBinaryValue(pos, lv, op, rv)
+	if err != nil {
+		return nil, err
+	}
+	return valueToAny(res), nil
+}
+
+func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (Value, error) {
+	if left.Tag == TagList && right.Tag == TagList {
+		switch op {
+		case "+":
+			return Value{Tag: TagList, List: append(append([]Value{}, left.List...), right.List...)}, nil
+		case "==":
+			if len(left.List) != len(right.List) {
+				return Value{Tag: TagBool, Bool: false}, nil
+			}
+			for i := range left.List {
+				eq, err := applyBinaryValue(pos, left.List[i], "==", right.List[i])
+				if err != nil {
+					return Value{}, err
+				}
+				if !eq.Bool {
+					return Value{Tag: TagBool, Bool: false}, nil
+				}
+			}
+			return Value{Tag: TagBool, Bool: true}, nil
+		case "!=":
+			eq, err := applyBinaryValue(pos, left, "==", right)
+			if err != nil {
+				return Value{}, err
+			}
+			return Value{Tag: TagBool, Bool: !eq.Bool}, nil
+		}
+	}
+
+	switch left.Tag {
+	case TagBool:
+		if right.Tag == TagBool {
+			switch op {
+			case "==":
+				return Value{Tag: TagBool, Bool: left.Bool == right.Bool}, nil
+			case "!=":
+				return Value{Tag: TagBool, Bool: left.Bool != right.Bool}, nil
+			}
+		}
+	case TagInt:
+		if right.Tag == TagInt {
+			return applyIntBinaryValue(pos, left.Int, op, right.Int)
+		}
+	case TagFloat:
+		if right.Tag == TagFloat {
+			return applyFloatBinaryValue(pos, left.Float, op, right.Float)
+		}
+	case TagStr:
+		if right.Tag == TagStr {
 			switch op {
 			case "+":
-				return append(lSlice, rSlice...), nil
+				return Value{Tag: TagStr, Str: left.Str + right.Str}, nil
 			case "==":
-				return reflect.DeepEqual(lSlice, rSlice), nil
+				return Value{Tag: TagBool, Bool: left.Str == right.Str}, nil
 			case "!=":
-				return !reflect.DeepEqual(lSlice, rSlice), nil
-			default:
-				return nil, errInvalidOperator(pos, op, "[]any", "[]any")
+				return Value{Tag: TagBool, Bool: left.Str != right.Str}, nil
 			}
 		}
 	}
-
-	switch l := left.(type) {
-	case bool:
-		if r, ok := right.(bool); ok {
-			switch op {
-			case "==":
-				return l == r, nil
-			case "!=":
-				return l != r, nil
-			}
-		}
-
-	case int64:
-		if r, ok := right.(int64); ok {
-			return applyInt64Binary(pos, l, op, r)
-		}
-		if r, ok := right.(int); ok {
-			return applyInt64Binary(pos, l, op, int64(r))
-		}
-	case int:
-		if r, ok := right.(int); ok {
-			return applyIntBinary(pos, l, op, r)
-		}
-	case float64:
-		if r, ok := right.(float64); ok {
-			return applyFloatBinary(pos, l, op, r)
-		}
-	case string:
-		if r, ok := right.(string); ok {
-			switch op {
-			case "+":
-				return l + r, nil
-			case "==":
-				return l == r, nil
-			case "!=":
-				return l != r, nil
-			}
-		}
-	}
-	return nil, errInvalidOperator(pos, op, fmt.Sprintf("%T", left), fmt.Sprintf("%T", right))
+	return Value{}, errInvalidOperator(pos, op, left.Tag.String(), right.Tag.String())
 }
 
-func applyIntBinary(pos lexer.Position, l int, op string, r int) (any, error) {
+func applyIntBinaryValue(pos lexer.Position, l int, op string, r int) (Value, error) {
 	switch op {
 	case "/":
 		if r == 0 {
-			return nil, errDivisionByZero(pos)
+			return Value{}, errDivisionByZero(pos)
 		}
-		return l / r, nil
+		return Value{Tag: TagInt, Int: l / r}, nil
 	case "%":
 		if r == 0 {
-			return nil, errDivisionByZero(pos)
+			return Value{}, errDivisionByZero(pos)
 		}
-		return l % r, nil
+		return Value{Tag: TagInt, Int: l % r}, nil
 	case "+":
-		return l + r, nil
+		return Value{Tag: TagInt, Int: l + r}, nil
 	case "-":
-		return l - r, nil
+		return Value{Tag: TagInt, Int: l - r}, nil
 	case "*":
-		return l * r, nil
+		return Value{Tag: TagInt, Int: l * r}, nil
 	case "==":
-		return l == r, nil
+		return Value{Tag: TagBool, Bool: l == r}, nil
 	case "!=":
-		return l != r, nil
+		return Value{Tag: TagBool, Bool: l != r}, nil
 	case "<":
-		return l < r, nil
+		return Value{Tag: TagBool, Bool: l < r}, nil
 	case "<=":
-		return l <= r, nil
+		return Value{Tag: TagBool, Bool: l <= r}, nil
 	case ">":
-		return l > r, nil
+		return Value{Tag: TagBool, Bool: l > r}, nil
 	case ">=":
-		return l >= r, nil
+		return Value{Tag: TagBool, Bool: l >= r}, nil
 	default:
-		return nil, errInvalidOperator(pos, op, "int", "int")
+		return Value{}, errInvalidOperator(pos, op, "int", "int")
 	}
 }
 
-func applyInt64Binary(pos lexer.Position, l int64, op string, r int64) (any, error) {
+func applyInt64Binary(pos lexer.Position, l int64, op string, r int64) (Value, error) {
 	switch op {
 	case "/":
 		if r == 0 {
-			return nil, errDivisionByZero(pos)
+			return Value{}, errDivisionByZero(pos)
 		}
-		return l / r, nil
+		return Value{Tag: TagInt, Int: int(l / r)}, nil
 	case "%":
 		if r == 0 {
-			return nil, errDivisionByZero(pos)
+			return Value{}, errDivisionByZero(pos)
 		}
-		return l % r, nil
+		return Value{Tag: TagInt, Int: int(l % r)}, nil
 	case "+":
-		return l + r, nil
+		return Value{Tag: TagInt, Int: int(l + r)}, nil
 	case "-":
-		return l - r, nil
+		return Value{Tag: TagInt, Int: int(l - r)}, nil
 	case "*":
-		return l * r, nil
+		return Value{Tag: TagInt, Int: int(l * r)}, nil
 	case "==":
-		return l == r, nil
+		return Value{Tag: TagBool, Bool: l == r}, nil
 	case "!=":
-		return l != r, nil
+		return Value{Tag: TagBool, Bool: l != r}, nil
 	case "<":
-		return l < r, nil
+		return Value{Tag: TagBool, Bool: l < r}, nil
 	case "<=":
-		return l <= r, nil
+		return Value{Tag: TagBool, Bool: l <= r}, nil
 	case ">":
-		return l > r, nil
+		return Value{Tag: TagBool, Bool: l > r}, nil
 	case ">=":
-		return l >= r, nil
+		return Value{Tag: TagBool, Bool: l >= r}, nil
 	default:
-		return nil, errInvalidOperator(pos, op, "int", "int")
+		return Value{}, errInvalidOperator(pos, op, "int", "int")
 	}
 }
 
-func applyFloatBinary(pos lexer.Position, l float64, op string, r float64) (any, error) {
+func applyFloatBinaryValue(pos lexer.Position, l float64, op string, r float64) (Value, error) {
 	switch op {
 	case "/":
 		if r == 0 {
-			return nil, errDivisionByZero(pos)
+			return Value{}, errDivisionByZero(pos)
 		}
-		return l / r, nil
+		return Value{Tag: TagFloat, Float: l / r}, nil
 	case "+":
-		return l + r, nil
+		return Value{Tag: TagFloat, Float: l + r}, nil
 	case "-":
-		return l - r, nil
+		return Value{Tag: TagFloat, Float: l - r}, nil
 	case "*":
-		return l * r, nil
+		return Value{Tag: TagFloat, Float: l * r}, nil
 	case "==":
-		return l == r, nil
+		return Value{Tag: TagBool, Bool: l == r}, nil
 	case "!=":
-		return l != r, nil
+		return Value{Tag: TagBool, Bool: l != r}, nil
 	case "<":
-		return l < r, nil
+		return Value{Tag: TagBool, Bool: l < r}, nil
 	case "<=":
-		return l <= r, nil
+		return Value{Tag: TagBool, Bool: l <= r}, nil
 	case ">":
-		return l > r, nil
+		return Value{Tag: TagBool, Bool: l > r}, nil
 	case ">=":
-		return l >= r, nil
+		return Value{Tag: TagBool, Bool: l >= r}, nil
 	default:
-		return nil, errInvalidOperator(pos, op, "float", "float")
+		return Value{}, errInvalidOperator(pos, op, "float", "float")
 	}
 }
 
 func applyUnary(pos lexer.Position, op string, val any) (any, error) {
+	v := anyToValue(val)
+	res, err := applyUnaryValue(pos, op, v)
+	if err != nil {
+		return nil, err
+	}
+	return valueToAny(res), nil
+}
+
+func applyUnaryValue(pos lexer.Position, op string, val Value) (Value, error) {
 	switch op {
 	case "-":
-		switch v := val.(type) {
-		case int:
-			return -v, nil
-		case float64:
-			return -v, nil
+		switch val.Tag {
+		case TagInt:
+			return Value{Tag: TagInt, Int: -val.Int}, nil
+		case TagFloat:
+			return Value{Tag: TagFloat, Float: -val.Float}, nil
 		default:
-			return nil, errInvalidUnaryOperator(pos, op, fmt.Sprintf("%T", val))
+			return Value{}, errInvalidUnaryOperator(pos, op, val.Tag.String())
 		}
 	case "!":
-		if b, ok := val.(bool); ok {
-			return !b, nil
+		if val.Tag == TagBool {
+			return Value{Tag: TagBool, Bool: !val.Bool}, nil
 		}
-		return nil, errInvalidUnaryOperator(pos, op, fmt.Sprintf("%T", val))
+		return Value{}, errInvalidUnaryOperator(pos, op, val.Tag.String())
 	default:
-		return nil, errUnknownUnaryOperator(pos, op)
+		return Value{}, errUnknownUnaryOperator(pos, op)
 	}
 }
 
 func truthy(val any) bool {
-	switch v := val.(type) {
-	case bool:
-		return v
-	case int:
-		return v != 0
-	case float64:
-		return v != 0
-	case string:
-		return v != ""
-	default:
-		return val != nil
-	}
+	return anyToValue(val).Truthy()
 }
