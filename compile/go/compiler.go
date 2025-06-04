@@ -592,6 +592,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[]" + elemType + "{" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
+		typ := c.inferPrimaryType(p)
+		keyType := "string"
+		valType := "any"
+		if mt, ok := typ.(types.MapType); ok {
+			keyType = goType(mt.Key)
+			valType = goType(mt.Value)
+		}
+
 		parts := make([]string, len(p.Map.Items))
 		for i, item := range p.Map.Items {
 			k, err := c.compileExpr(item.Key)
@@ -602,15 +610,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			// If the map value type is int64 but the expression is int,
+			// cast to int64 to satisfy the Go compiler.
+			if valType == "int64" && goType(c.inferExprType(item.Value)) == "int" {
+				v = fmt.Sprintf("int64(%s)", v)
+			}
 			parts[i] = fmt.Sprintf("%s: %s", k, v)
 		}
-		typ := c.inferPrimaryType(p)
-		keyType := "string"
-		valType := "any"
-		if mt, ok := typ.(types.MapType); ok {
-			keyType = goType(mt.Key)
-			valType = goType(mt.Value)
-		}
+
 		return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
 	default:
 		return "nil", fmt.Errorf("unsupported primary expression")

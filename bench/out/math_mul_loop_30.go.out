@@ -18,12 +18,12 @@ func main() {
 	var n int = 30
 	var repeat int = 1000
 	var last int = 0
-	var start int = int(time.Now().UnixNano())
+	var start int64 = time.Now().UnixNano()
 	for i := 0; i < repeat; i++ {
 		last = mul(n)
 	}
-	var duration int = (((int(time.Now().UnixNano()) - start)) / 1000000)
-	var output map[string]int = map[string]int{"duration_ms": duration, "output": last}
+	var duration int64 = (int64(((int64(time.Now().UnixNano()) - int64(start)))) / int64(1000000))
+	var output map[string]int64 = map[string]int64{"duration_ms": duration, "output": int64(last)}
 	func(){b,_:=json.Marshal(output);fmt.Println(string(b))}()
 }
 
