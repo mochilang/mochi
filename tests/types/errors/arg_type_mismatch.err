@@ -1,0 +1,8 @@
+1. error[T007]: argument 1: expected int, got string
+  --> tests/types/errors/arg_type_mismatch.mochi:5:1
+
+  5 | square("hi")
+    | ^
+
+help:
+  Ensure the argument type matches the function’s signature.

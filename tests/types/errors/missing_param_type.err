@@ -1,0 +1,8 @@
+1. error[T005]: parameter `x` is missing a type
+  --> tests/types/errors/missing_param_type.mochi:1:9
+
+  1 | let f = fun(x) => x + 1
+    |         ^
+
+help:
+  Add a type like `x: int` to this parameter.
