@@ -1,0 +1,9 @@
+1. error[T015]: index must be an integer
+  --> tests/types/errors/index_not_int.mochi:2:11
+
+  2 | let y = xs["a"]
+    |           ^
+
+help:
+  Use an `int` value for indexing (e.g., `list[0]`).
+
