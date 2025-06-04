@@ -5,6 +5,13 @@
   "bin": {
     "mochi": "./index.js"
   },
+  "files": [
+    "index.js",
+    "install.js",
+    "bin/",
+    "LICENSE",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/mochilang/mochi"
