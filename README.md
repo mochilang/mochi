@@ -61,6 +61,12 @@ Compile a Mochi source file into a standalone binary:
 ./hello
 ```
 
+Generate TypeScript instead of a binary with the `--ts` flag:
+
+```bash
+./mochi build --ts examples/hello.mochi -o hello.ts
+```
+
 ### Mochi CLI
 
 The `mochi` binary provides several subcommands. Run `mochi --help` to see them
@@ -72,7 +78,7 @@ Usage: mochi [--version] <command> [<args>]
 Commands:
   run     Run a Mochi source file
   test    Run test blocks inside a Mochi source file
-  build   Compile a Mochi source file to a binary
+  build   Compile a Mochi source file to a binary or TypeScript
   repl    Start an interactive REPL session
   serve   Start MCP server over stdio
 ```
