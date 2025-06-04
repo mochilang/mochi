@@ -1,0 +1,8 @@
+error[I015]: invalid slice range [2:1] for length 3
+  --> tests/interpreter/errors/invalid_slice_range.mochi:2:9
+
+  2 | print(xs[2:1])
+    |         ^
+
+help:
+  Make sure the slice range is valid and within bounds.
