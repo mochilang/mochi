@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 // Compiler translates a Mochi AST into Go source code.
@@ -14,11 +15,12 @@ type Compiler struct {
 	buf     bytes.Buffer
 	indent  int
 	imports map[string]bool
+	env     *types.Env
 }
 
 // New creates a new Go compiler instance.
-func New() *Compiler {
-	return &Compiler{imports: make(map[string]bool)}
+func New(env *types.Env) *Compiler {
+	return &Compiler{imports: make(map[string]bool), env: env}
 }
 
 // Compile returns Go source code implementing prog.
@@ -309,34 +311,106 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	leftType := c.inferUnaryType(b.Left)
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rightType := c.inferPostfixType(op.Right)
 		switch op.Op {
 		case "+":
-			expr = fmt.Sprintf("_add(%s, %s)", expr, right)
+			if _, ok := leftType.(types.IntType); ok {
+				if _, ok := rightType.(types.IntType); ok {
+					expr = fmt.Sprintf("(%s + %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
+				}
+			} else if _, ok := leftType.(types.FloatType); ok {
+				if _, ok := rightType.(types.FloatType); ok {
+					expr = fmt.Sprintf("(%s + %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
+				}
+			} else if _, ok := leftType.(types.StringType); ok {
+				if _, ok := rightType.(types.StringType); ok {
+					expr = fmt.Sprintf("%s + %s", expr, right)
+				} else {
+					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
+				}
+			} else {
+				expr = fmt.Sprintf("_add(%s, %s)", expr, right)
+			}
 		case "-":
-			expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
+			if _, ok := leftType.(types.IntType); ok {
+				if _, ok := rightType.(types.IntType); ok {
+					expr = fmt.Sprintf("(%s - %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
+				}
+			} else if _, ok := leftType.(types.FloatType); ok {
+				if _, ok := rightType.(types.FloatType); ok {
+					expr = fmt.Sprintf("(%s - %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
+				}
+			} else {
+				expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
+			}
 		case "*":
-			expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
+			if _, ok := leftType.(types.IntType); ok {
+				if _, ok := rightType.(types.IntType); ok {
+					expr = fmt.Sprintf("(%s * %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
+				}
+			} else if _, ok := leftType.(types.FloatType); ok {
+				if _, ok := rightType.(types.FloatType); ok {
+					expr = fmt.Sprintf("(%s * %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
+				}
+			} else {
+				expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
+			}
 		case "/":
-			expr = fmt.Sprintf("_div(%s, %s)", expr, right)
+			if _, ok := leftType.(types.IntType); ok {
+				if _, ok := rightType.(types.IntType); ok {
+					expr = fmt.Sprintf("(%s / %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("_div(%s, %s)", expr, right)
+				}
+			} else if _, ok := leftType.(types.FloatType); ok {
+				if _, ok := rightType.(types.FloatType); ok {
+					expr = fmt.Sprintf("(%s / %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("_div(%s, %s)", expr, right)
+				}
+			} else {
+				expr = fmt.Sprintf("_div(%s, %s)", expr, right)
+			}
 		case "%":
-			expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
+			if _, ok := leftType.(types.IntType); ok {
+				if _, ok := rightType.(types.IntType); ok {
+					expr = fmt.Sprintf("(%s %% %s)", expr, right)
+				} else {
+					expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
+				}
+			} else {
+				expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
+			}
 		case "==":
-			expr = fmt.Sprintf("_eq(%s, %s)", expr, right)
+			expr = fmt.Sprintf("(%s == %s)", expr, right)
 		case "!=":
-			expr = fmt.Sprintf("_neq(%s, %s)", expr, right)
+			expr = fmt.Sprintf("(%s != %s)", expr, right)
 		case "<":
-			expr = fmt.Sprintf("_lt(%s, %s)", expr, right)
+			expr = fmt.Sprintf("(%s < %s)", expr, right)
 		case "<=":
-			expr = fmt.Sprintf("_le(%s, %s)", expr, right)
+			expr = fmt.Sprintf("(%s <= %s)", expr, right)
 		case ">":
-			expr = fmt.Sprintf("_gt(%s, %s)", expr, right)
+			expr = fmt.Sprintf("(%s > %s)", expr, right)
 		case ">=":
-			expr = fmt.Sprintf("_ge(%s, %s)", expr, right)
+			expr = fmt.Sprintf("(%s >= %s)", expr, right)
 		default:
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
 		}
@@ -554,6 +628,183 @@ func sanitizeName(name string) string {
 		return "_" + b.String()
 	}
 	return b.String()
+}
+
+func goType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType:
+		return "int"
+	case types.FloatType:
+		return "float64"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		return "[]" + goType(tt.Elem)
+	case types.MapType:
+		return fmt.Sprintf("map[%s]%s", goType(tt.Key), goType(tt.Value))
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = goType(p)
+		}
+		ret := goType(tt.Return)
+		if ret == "" || ret == "void" {
+			return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
+		}
+		return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
+	case types.AnyType:
+		return "any"
+	default:
+		return "any"
+	}
+}
+
+func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
+	if e == nil {
+		return types.AnyType{}
+	}
+	return c.inferBinaryType(e.Binary)
+}
+
+func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
+	if b == nil {
+		return types.AnyType{}
+	}
+	t := c.inferUnaryType(b.Left)
+	for _, op := range b.Right {
+		rt := c.inferPostfixType(op.Right)
+		switch op.Op {
+		case "+", "-", "*", "/", "%":
+			if _, ok := t.(types.IntType); ok {
+				if _, ok := rt.(types.IntType); ok {
+					t = types.IntType{}
+					continue
+				}
+			}
+			if _, ok := t.(types.FloatType); ok {
+				if _, ok := rt.(types.FloatType); ok {
+					t = types.FloatType{}
+					continue
+				}
+			}
+			if op.Op == "+" {
+				if _, ok := t.(types.StringType); ok {
+					if _, ok := rt.(types.StringType); ok {
+						t = types.StringType{}
+						continue
+					}
+				}
+			}
+			t = types.AnyType{}
+		case "==", "!=", "<", "<=", ">", ">=":
+			t = types.BoolType{}
+		default:
+			t = types.AnyType{}
+		}
+	}
+	return t
+}
+
+func (c *Compiler) inferUnaryType(u *parser.Unary) types.Type {
+	if u == nil {
+		return types.AnyType{}
+	}
+	return c.inferPostfixType(u.Value)
+}
+
+func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
+	if p == nil {
+		return types.AnyType{}
+	}
+	t := c.inferPrimaryType(p.Target)
+	for range p.Index {
+		switch t.(type) {
+		case types.ListType:
+			t = types.AnyType{}
+		case types.MapType:
+			t = types.AnyType{}
+		default:
+			t = types.AnyType{}
+		}
+	}
+	return t
+}
+
+func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
+	if p == nil {
+		return types.AnyType{}
+	}
+	switch {
+	case p.Lit != nil:
+		switch {
+		case p.Lit.Int != nil:
+			return types.IntType{}
+		case p.Lit.Float != nil:
+			return types.FloatType{}
+		case p.Lit.Str != nil:
+			return types.StringType{}
+		case p.Lit.Bool != nil:
+			return types.BoolType{}
+		}
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 && c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				return t
+			}
+		}
+		return types.AnyType{}
+	case p.Call != nil:
+		switch p.Call.Func {
+		case "len", "now":
+			return types.IntType{}
+		default:
+			if c.env != nil {
+				if t, err := c.env.GetVar(p.Call.Func); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						return ft.Return
+					}
+				}
+			}
+			return types.AnyType{}
+		}
+	case p.Group != nil:
+		return c.inferExprType(p.Group)
+	case p.List != nil:
+		return types.ListType{Elem: types.AnyType{}}
+	case p.Map != nil:
+		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+	}
+	return types.AnyType{}
+}
+
+func resultType(op string, left, right types.Type) types.Type {
+	switch op {
+	case "+", "-", "*", "/", "%":
+		if _, ok := left.(types.IntType); ok {
+			if _, ok := right.(types.IntType); ok {
+				return types.IntType{}
+			}
+		}
+		if _, ok := left.(types.FloatType); ok {
+			if _, ok := right.(types.FloatType); ok {
+				return types.FloatType{}
+			}
+		}
+		if op == "+" {
+			if _, ok := left.(types.StringType); ok {
+				if _, ok := right.(types.StringType); ok {
+					return types.StringType{}
+				}
+			}
+		}
+		return types.AnyType{}
+	case "==", "!=", "<", "<=", ">", ">=":
+		return types.BoolType{}
+	default:
+		return types.AnyType{}
+	}
 }
 
 func hasExpect(p *parser.Program) bool {
