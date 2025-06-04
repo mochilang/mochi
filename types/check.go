@@ -17,6 +17,13 @@ type IntType struct{}
 
 func (IntType) String() string { return "int" }
 
+// Int64Type specifically represents 64-bit integers. It unifies with IntType
+// for most operations but allows the Go compiler to emit int64 values where
+// precision matters (e.g. now()).
+type Int64Type struct{}
+
+func (Int64Type) String() string { return "int64" }
+
 type FloatType struct{}
 
 func (FloatType) String() string { return "float" }
@@ -172,6 +179,14 @@ func unify(a, b Type, subst Subst) bool {
 		_, ok := b.(IntType)
 		return ok
 
+	case Int64Type:
+		switch b.(type) {
+		case Int64Type, IntType:
+			return true
+		default:
+			return false
+		}
+
 	case FloatType:
 		_, ok := b.(FloatType)
 		return ok
@@ -221,7 +236,7 @@ func Check(prog *parser.Program, env *Env) []error {
 	}, false)
 	env.SetVar("now", FuncType{
 		Params: []Type{},
-		Return: IntType{},
+		Return: Int64Type{},
 	}, false)
 	env.SetVar("json", FuncType{
 		Params: []Type{AnyType{}},
@@ -329,10 +344,16 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			if err != nil {
 				return err
 			}
-			if !unify(sourceType, IntType{}, nil) || !unify(endType, IntType{}, nil) {
+			if !(unify(sourceType, IntType{}, nil) || unify(sourceType, Int64Type{}, nil)) ||
+				!(unify(endType, IntType{}, nil) || unify(endType, Int64Type{}, nil)) {
 				return errRangeRequiresInts(s.For.Pos)
 			}
-			elemType = IntType{} // range loop always yields int
+			// Range loop yields integers matching the input type.
+			if _, ok := sourceType.(Int64Type); ok {
+				elemType = Int64Type{}
+			} else {
+				elemType = IntType{}
+			}
 		} else {
 			// It's a collection loop: `for x in collection`
 			switch t := sourceType.(type) {
@@ -502,8 +523,15 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 		case "+", "-", "*", "/", "%":
 			// Arithmetic: int, float, or string + string
 			switch {
-			case unify(left, IntType{}, nil) && unify(right, IntType{}, nil):
-				left = IntType{}
+			case (unify(left, IntType{}, nil) || unify(left, Int64Type{}, nil)) &&
+				(unify(right, IntType{}, nil) || unify(right, Int64Type{}, nil)):
+				if _, ok := left.(Int64Type); ok {
+					left = Int64Type{}
+				} else if _, ok := right.(Int64Type); ok {
+					left = Int64Type{}
+				} else {
+					left = IntType{}
+				}
 
 			case unify(left, FloatType{}, nil) && unify(right, FloatType{}, nil):
 				left = FloatType{}
@@ -628,7 +656,7 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				if err != nil {
 					return nil, err
 				}
-				if !unify(startType, IntType{}, nil) {
+				if !(unify(startType, IntType{}, nil) || unify(startType, Int64Type{}, nil)) {
 					return nil, errIndexNotInteger(idx.Pos)
 				}
 				typ = t.Elem
@@ -639,7 +667,7 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 					if err != nil {
 						return nil, err
 					}
-					if !unify(startType, IntType{}, nil) {
+					if !(unify(startType, IntType{}, nil) || unify(startType, Int64Type{}, nil)) {
 						return nil, errIndexNotInteger(idx.Pos)
 					}
 				}
@@ -648,7 +676,7 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 					if err != nil {
 						return nil, err
 					}
-					if !unify(endType, IntType{}, nil) {
+					if !(unify(endType, IntType{}, nil) || unify(endType, Int64Type{}, nil)) {
 						return nil, errIndexNotInteger(idx.Pos)
 					}
 				}
