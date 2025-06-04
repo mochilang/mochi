@@ -4,13 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/alexflint/go-arg"
 	"github.com/fatih/color"
 
 	"mochi/ast"
+	gocode "mochi/compile/go"
 	"mochi/interpreter"
 	"mochi/mcp"
 	"mochi/parser"
@@ -27,6 +31,7 @@ var (
 type CLI struct {
 	Run     *RunCmd   `arg:"subcommand:run" help:"Run a Mochi source file"`
 	Test    *TestCmd  `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
+	Build   *BuildCmd `arg:"subcommand:build" help:"Compile a Mochi source file to a binary"`
 	Repl    *ReplCmd  `arg:"subcommand:repl" help:"Start an interactive REPL session"`
 	Serve   *ServeCmd `arg:"subcommand:serve" help:"Start MCP server over stdio"`
 	Version bool      `arg:"--version" help:"Print version info and exit"`
@@ -41,6 +46,11 @@ type RunCmd struct {
 type TestCmd struct {
 	File  string `arg:"positional,required" help:"Path to .mochi source file"`
 	Debug bool   `arg:"--debug" help:"Enable debug output"`
+}
+
+type BuildCmd struct {
+	File string `arg:"positional,required" help:"Path to .mochi source file"`
+	Out  string `arg:"-o" help:"Output binary path"`
 }
 
 type ReplCmd struct{}
@@ -62,6 +72,11 @@ func main() {
 	case cli.Repl != nil:
 		repl := repl.New(os.Stdout, version)
 		repl.Run()
+	case cli.Build != nil:
+		if err := buildBinary(cli.Build); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("build:"), err)
+			os.Exit(1)
+		}
 	case cli.Run != nil:
 		if err := runFile(cli.Run); err != nil {
 			fmt.Fprintf(os.Stderr, "%s %v\n", cError("error:"), err)
@@ -148,4 +163,49 @@ func parseOrPrintError(path string) (*parser.Program, error) {
 		return nil, fmt.Errorf("parse error:\n  %v", err)
 	}
 	return prog, nil
+}
+
+func buildBinary(cmd *BuildCmd) error {
+	prog, err := parseOrPrintError(cmd.File)
+	if err != nil {
+		return err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		fmt.Fprintln(os.Stderr, cError("type error:"))
+		for i, err := range errs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
+		}
+		return fmt.Errorf("aborted due to type errors")
+	}
+	c := gocode.New()
+	code, err := c.Compile(prog)
+	if err != nil {
+		return err
+	}
+	dir, err := os.MkdirTemp("", "mochi-build-*")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(dir)
+	goFile := filepath.Join(dir, "main.go")
+	if err := os.WriteFile(goFile, code, 0644); err != nil {
+		return err
+	}
+	out := cmd.Out
+	if out == "" {
+		base := strings.TrimSuffix(filepath.Base(cmd.File), filepath.Ext(cmd.File))
+		if base == "" {
+			base = "a.out"
+		}
+		out = base
+	}
+	bcmd := exec.Command("go", "build", "-o", out, goFile)
+	bcmd.Env = append(os.Environ(), "GO111MODULE=off")
+	bcmd.Stdout = os.Stdout
+	bcmd.Stderr = os.Stderr
+	if err := bcmd.Run(); err != nil {
+		return fmt.Errorf("go build failed: %w", err)
+	}
+	return nil
 }
