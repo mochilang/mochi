@@ -49,19 +49,24 @@ const keepTempFiles = false
 func Benchmarks(tempDir string) []Bench {
 	var benches []Bench
 
+	mochiBin := "mochi"
+	if home := os.Getenv("HOME"); home != "" {
+		candidate := filepath.Join(home, "bin", "mochi")
+		if _, err := os.Stat(candidate); err == nil {
+			mochiBin = candidate
+		}
+	}
+
 	_ = fs.WalkDir(templatesFS, "template", func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
 			return nil
 		}
 
 		ext := filepath.Ext(path)
-		if ext == "" {
+		if ext != ".mochi" {
 			return nil
 		}
 		lang := strings.TrimPrefix(ext, ".")
-		if lang != "mochi" && lang != "py" && lang != "ts" && lang != "go" && lang != "go_tmpl" {
-			return nil
-		}
 
 		parts := strings.Split(path, "/")
 		if len(parts) < 4 {
@@ -69,30 +74,16 @@ func Benchmarks(tempDir string) []Bench {
 		}
 		category := parts[1]
 		name := parts[2]
+		if name == "matrix_mul" {
+			return nil
+		}
 		suffix := "." + lang
 		cfg := Range{Start: 10, Step: "+10", Count: 3}
 
-		// If mochi, run twice: once with interpreter, once with --vm
-		if lang == "mochi" {
-			benches = append(benches, generateBenchmarks(tempDir, category, name, cfg, []Template{
-				{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{"mochi", "run"}},
-				{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"mochi", "run", "--vm"}},
-			})...)
-			return nil
-		}
-
-		// Other languages
-		cmd := map[string][]string{
-			"py":      {"python3"},
-			"ts":      {"deno", "run", "--allow-read"},
-			"go_tmpl": {"go", "run"},
-		}[lang]
-		if cmd == nil {
-			panic("unsupported language: " + lang)
-		}
-
-		benches = append(benches, generateBenchmarks(tempDir, category, name, cfg,
-			[]Template{{Lang: lang, Path: path, Suffix: suffix, Command: cmd}})...)
+		benches = append(benches, generateBenchmarks(tempDir, category, name, cfg, []Template{
+			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run"}},
+			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{mochiBin, "run", "--vm"}},
+		})...)
 		return nil
 	})
 

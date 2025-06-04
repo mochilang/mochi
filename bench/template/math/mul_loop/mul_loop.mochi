@@ -1,5 +1,5 @@
 fun mul(n: int): int {
-  let result = 1
+  var result = 1
   for i in 1..n {
     result = result * i
   }
@@ -9,7 +9,7 @@ fun mul(n: int): int {
 let n = {{ .N }}
 // let n = 50
 let repeat = 1000
-let last = 0
+var last = 0
 
 let start = now()
 for i in 0..repeat {

@@ -1,6 +1,6 @@
 fun fib(n: int): int {
-  let a = 0
-  let b = 1
+  var a = 0
+  var b = 1
   for i in 0..n {
     let tmp = a + b
     a = b
@@ -12,7 +12,7 @@ fun fib(n: int): int {
 // let n = 100
 let n = {{ .N }}
 let repeat = 1000
-let last = 0
+var last = 0
 
 let start = now()
 for i in 0..repeat {
