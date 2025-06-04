@@ -28,7 +28,8 @@ Designed to be simple enough to explore in minutes, but powerful enough to build
 ### Run with `npx` (No Install Required)
 
 ```bash
-npx mochilang/mochi serve
+npx mochilang/mochi serve     # from GitHub
+npx @mochilang/mochi serve    # from npm
 ```
 
 The first run downloads a prebuilt Mochi binary for your OS.
@@ -274,6 +275,13 @@ You can:
 * Open a pull request with a clear description
 
 Start small, stay focused, and feel free to ask questions by opening a draft PR.
+
+## Publishing
+
+Releases are built with GoReleaser. To publish a new version:
+
+1. Set the desired version: `make release VERSION=X.Y.Z` (requires `$GITHUB_TOKEN`).
+2. Once the GitHub release is created, run `npm publish` to update the `@mochilang/mochi` package.
 
 ## License
 
