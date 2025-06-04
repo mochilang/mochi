@@ -1,6 +1,6 @@
 # Default target
 .DEFAULT_GOAL := help
-.PHONY: bench
+.PHONY: bench install
 
 # Project metadata
 APP_NAME := mochi
@@ -62,6 +62,23 @@ endif
 bench: build-mochi ## Run Mochi benchmarks
 	@echo "🏃 Running benchmarks..."
 	@$(GO) run ./cmd/mochi-bench
+
+install: ## Install Deno and Python for benchmarks
+	@echo "📥 Installing benchmark dependencies..."
+	@if ! command -v python3 > /dev/null 2>&1; then \
+	echo "🐍 Installing Python..."; \
+	apt-get update && apt-get install -y python3; \
+	else \
+	echo "🐍 Python already installed"; \
+	fi
+	@if ! command -v deno > /dev/null 2>&1; then \
+	echo "🦕 Installing Deno..."; \
+	curl -fsSL https://deno.land/install.sh | DENO_INSTALL=$(HOME)/.deno sh; \
+	install -m 755 $(HOME)/.deno/bin/deno /usr/local/bin/deno; \
+	else \
+	echo "🦕 Deno already installed"; \
+	fi
+	@echo "✅ Dependencies installed"
 
 # --------------------------
 # Maintenance
