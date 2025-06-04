@@ -31,6 +31,8 @@ Designed to be simple enough to explore in minutes, but powerful enough to build
 npx mochilang/mochi serve
 ```
 
+The first run downloads a prebuilt Mochi binary for your OS.
+
 This is the fastest way to try Mochi — no setup required.
 
 ### Build from Source
