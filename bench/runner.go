@@ -288,11 +288,11 @@ func report(results []Result) {
 			case "mochi_interp":
 				langName = "mochi (interp)"
 			case "mochi_go":
-				langName = "mochi"
+				langName = "Mochi"
 			case "mochi_py":
-				langName = "mochi (py)"
+				langName = "Python"
 			case "mochi_ts":
-				langName = "mochi (ts)"
+				langName = "Typescript"
 			}
 
 			status := "✓"
@@ -426,11 +426,11 @@ func exportMarkdown(results []Result) error {
 			case "mochi_interp":
 				langName = "mochi (interp)"
 			case "mochi_go":
-				langName = "mochi"
+				langName = "Mochi"
 			case "mochi_py":
-				langName = "mochi (py)"
+				langName = "Python"
 			case "mochi_ts":
-				langName = "mochi (ts)"
+				langName = "Typescript"
 			}
 			b.WriteString(fmt.Sprintf("| %s | %.0f | %s |\n", langName, r.DurationUs, plus))
 		}
