@@ -204,19 +204,19 @@ func unify(a, b Type, subst Subst) bool {
 // --- Entry Point ---
 
 func Check(prog *parser.Program, env *Env) []error {
-	env.SetVar("print", BuiltinFuncType{})
+	env.SetVar("print", BuiltinFuncType{}, false)
 	env.SetVar("len", FuncType{
 		Params: []Type{AnyType{}}, // loosely typed
 		Return: IntType{},
-	})
+	}, false)
 	env.SetVar("now", FuncType{
 		Params: []Type{},
 		Return: IntType{},
-	})
+	}, false)
 	env.SetVar("json", FuncType{
 		Params: []Type{AnyType{}},
 		Return: VoidType{},
-	})
+	}, false)
 
 	var errs []error
 	for _, stmt := range prog.Statements {
@@ -254,7 +254,33 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		} else {
 			return errLetMissingTypeOrValue(s.Let.Pos)
 		}
-		env.SetVar(name, typ)
+		env.SetVar(name, typ, false)
+		return nil
+
+	case s.Var != nil:
+		name := s.Var.Name
+		var typ Type
+		if s.Var.Type != nil {
+			typ = resolveTypeRef(s.Var.Type)
+			if s.Var.Value != nil {
+				exprType, err := checkExprWithExpected(s.Var.Value, env, typ)
+				if err != nil {
+					return err
+				}
+				if !unify(typ, exprType, nil) {
+					return errTypeMismatch(s.Var.Pos, typ, exprType)
+				}
+			}
+		} else if s.Var.Value != nil {
+			var err error
+			typ, err = checkExprWithExpected(s.Var.Value, env, nil)
+			if err != nil {
+				return err
+			}
+		} else {
+			return errLetMissingTypeOrValue(s.Var.Pos)
+		}
+		env.SetVar(name, typ, true)
 		return nil
 
 	case s.Assign != nil:
@@ -265,6 +291,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		lhsType, err := env.GetVar(s.Assign.Name)
 		if err != nil {
 			return errAssignUndeclared(s.Assign.Pos, s.Assign.Name)
+		}
+		mutable, err := env.IsMutable(s.Assign.Name)
+		if err != nil {
+			return errAssignUndeclared(s.Assign.Pos, s.Assign.Name)
+		}
+		if !mutable {
+			return errAssignImmutableVar(s.Assign.Pos, s.Assign.Name)
 		}
 		if !unify(lhsType, rhsType, nil) {
 			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
@@ -306,7 +339,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 
 		// Create new scope for the loop variable
 		child := NewEnv(env)
-		child.SetVar(s.For.Name, elemType)
+		child.SetVar(s.For.Name, elemType, true)
 
 		// Check loop body
 		for _, stmt := range s.For.Body {
@@ -329,11 +362,11 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		if s.Fun.Return != nil {
 			ret = resolveTypeRef(s.Fun.Return)
 		}
-		env.SetVar(name, FuncType{Params: params, Return: ret})
+		env.SetVar(name, FuncType{Params: params, Return: ret}, false)
 
 		child := NewEnv(env)
 		for i, p := range s.Fun.Params {
-			child.SetVar(p.Name, params[i])
+			child.SetVar(p.Name, params[i], true)
 		}
 		for _, stmt := range s.Fun.Body {
 			if err := checkStmt(stmt, child, ret); err != nil {
@@ -786,7 +819,7 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 
 	child := NewEnv(env)
 	for i, p := range f.Params {
-		child.SetVar(p.Name, paramTypes[i])
+		child.SetVar(p.Name, paramTypes[i], true)
 	}
 
 	subst := Subst{}

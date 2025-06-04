@@ -42,6 +42,7 @@ var Errors = map[string]diagnostic.Template{
 	// --- For Loops ---
 	"T022": {Code: "T022", Message: "cannot iterate over type %s", Help: "Only `list<T>`, `map<K,V>`, or integer ranges are allowed in `for ... in ...` loops."},
 	"T023": {Code: "T023", Message: "range loop requires integer start and end expressions", Help: "Use `for i in 0..10` or ensure both expressions are of type `int`."},
+	"T024": {Code: "T024", Message: "cannot assign to `%s` (immutable)", Help: "Use `var` to declare mutable variables."},
 }
 
 // --- Wrapper Functions ---
@@ -140,4 +141,8 @@ func errCannotIterate(pos lexer.Position, typ Type) error {
 
 func errRangeRequiresInts(pos lexer.Position) error {
 	return Errors["T023"].New(pos)
+}
+
+func errAssignImmutableVar(pos lexer.Position, name string) error {
+	return Errors["T024"].New(pos, name)
 }
