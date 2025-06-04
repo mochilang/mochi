@@ -339,7 +339,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "len":
 		return fmt.Sprintf("_len(%s)", argStr), nil
 	case "now":
-		return "Date.now()", nil
+		// performance.now() returns milliseconds as a float. Multiply
+		// by 1e6 so that `now()` is consistent with Go's UnixNano()
+		// and the interpreter which return nanoseconds.
+		return "performance.now() * 1000000", nil
 	case "json":
 		return fmt.Sprintf("console.log(JSON.stringify(%s))", argStr), nil
 	default:
