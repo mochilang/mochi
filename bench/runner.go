@@ -15,6 +15,7 @@ import (
 	"time"
 
 	gocode "mochi/compile/go"
+	pycode "mochi/compile/py"
 	tscode "mochi/compile/ts"
 	"mochi/parser"
 	"mochi/types"
@@ -85,14 +86,11 @@ func Benchmarks(tempDir string) []Bench {
 		suffix := "." + lang
 		cfg := Range{Start: 10, Step: "+10", Count: 3}
 
-		goTmpl := strings.TrimSuffix(path, ".mochi") + ".go_tmpl"
 		templates := []Template{
 			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run"}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
 			{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}},
-		}
-		if _, err := templatesFS.ReadFile(goTmpl); err == nil {
-			templates = append(templates, Template{Lang: "go_tmpl", Path: goTmpl, Suffix: ".go_tmpl", Command: []string{"go", "run"}})
 		}
 
 		benches = append(benches, generateBenchmarks(tempDir, category, name, cfg, templates)...)
@@ -118,9 +116,6 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 
 		for _, t := range templates {
 			actualSuffix := t.Suffix
-			if actualSuffix == ".go_tmpl" {
-				actualSuffix = ".go"
-			}
 
 			fileName := fmt.Sprintf("%s_%s_%d%s", category, name, n, actualSuffix)
 			out := filepath.Join(tempDir, fileName)
@@ -129,7 +124,7 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 				"N": fmt.Sprintf("%d", n),
 			}, out)
 
-			// If this benchmark compiles Mochi to Go or TypeScript, do it now.
+			// If this benchmark compiles Mochi to another language, do it now.
 			if t.Lang == "mochi_go" {
 				compiled := strings.TrimSuffix(out, ".mochi") + ".go"
 				if err := compileToGo(out, compiled); err != nil {
@@ -139,6 +134,12 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 			} else if t.Lang == "mochi_ts" {
 				compiled := strings.TrimSuffix(out, ".mochi") + ".ts"
 				if err := compileToTs(out, compiled); err != nil {
+					panic(err)
+				}
+				out = compiled
+			} else if t.Lang == "mochi_py" {
+				compiled := strings.TrimSuffix(out, ".mochi") + ".py"
+				if err := compileToPy(out, compiled); err != nil {
 					panic(err)
 				}
 				out = compiled
@@ -282,11 +283,11 @@ func report(results []Result) {
 			case "mochi_interp":
 				langName = "mochi (interp)"
 			case "mochi_go":
-				langName = "mochi (go)"
+				langName = "mochi"
+			case "mochi_py":
+				langName = "mochi (py)"
 			case "mochi_ts":
 				langName = "mochi (ts)"
-			case "go_tmpl":
-				langName = "go"
 			}
 
 			status := "✓"
@@ -337,6 +338,23 @@ func compileToGo(mochiFile, goFile string) error {
 		return err
 	}
 	return os.WriteFile(goFile, code, 0644)
+}
+
+func compileToPy(mochiFile, pyFile string) error {
+	prog, err := parser.Parse(mochiFile)
+	if err != nil {
+		return err
+	}
+	typeEnv := types.NewEnv(nil)
+	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+		return fmt.Errorf("type error: %v", errs[0])
+	}
+	c := pycode.New()
+	code, err := c.Compile(prog)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(pyFile, code, 0644)
 }
 
 func compileToTs(mochiFile, tsFile string) error {
@@ -403,11 +421,11 @@ func exportMarkdown(results []Result) error {
 			case "mochi_interp":
 				langName = "mochi (interp)"
 			case "mochi_go":
-				langName = "mochi (go)"
+				langName = "mochi"
+			case "mochi_py":
+				langName = "mochi (py)"
 			case "mochi_ts":
 				langName = "mochi (ts)"
-			case "go_tmpl":
-				langName = "go"
 			}
 			b.WriteString(fmt.Sprintf("| %s | %.4f | %s |\n", langName, r.DurationMs, plus))
 		}
@@ -418,7 +436,7 @@ func exportMarkdown(results []Result) error {
 	return os.WriteFile("BENCHMARK.md", []byte(b.String()), 0644)
 }
 
-// GenerateOutputs compiles all benchmark templates to Go and TypeScript under
+// GenerateOutputs compiles all benchmark templates to Go, Python and TypeScript under
 // outDir. It mirrors the functionality previously provided by the
 // gen-bench-out command.
 func GenerateOutputs(outDir string) error {
@@ -453,6 +471,11 @@ func GenerateOutputs(outDir string) error {
 
 			goOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.go.out", category, name, n))
 			if err := compileToGo(tmp, goOut); err != nil {
+				return err
+			}
+
+			pyOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.py.out", category, name, n))
+			if err := compileToPy(tmp, pyOut); err != nil {
 				return err
 			}
 
