@@ -7,6 +7,7 @@ All notable changes to the Mochi programming language are documented in this fil
 ### Added
 
 * `mochi build` command to compile Mochi source files into standalone binaries
+* `mochi build --ts` flag to generate TypeScript instead of a binary
 * Distribution via `npx` (`mochilang/mochi` or `@mochilang/mochi`) without local installation
 * `mochi_eval` and `mochi_cheatsheet` tools exposed through the MCP server
 

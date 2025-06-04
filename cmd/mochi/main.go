@@ -15,6 +15,7 @@ import (
 
 	"mochi/ast"
 	gocode "mochi/compile/go"
+	tscode "mochi/compile/ts"
 	"mochi/interpreter"
 	"mochi/mcp"
 	"mochi/parser"
@@ -31,7 +32,7 @@ var (
 type CLI struct {
 	Run     *RunCmd   `arg:"subcommand:run" help:"Run a Mochi source file"`
 	Test    *TestCmd  `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
-	Build   *BuildCmd `arg:"subcommand:build" help:"Compile a Mochi source file to a binary"`
+	Build   *BuildCmd `arg:"subcommand:build" help:"Compile a Mochi source file"`
 	Repl    *ReplCmd  `arg:"subcommand:repl" help:"Start an interactive REPL session"`
 	Serve   *ServeCmd `arg:"subcommand:serve" help:"Start MCP server over stdio"`
 	Version bool      `arg:"--version" help:"Print version info and exit"`
@@ -50,7 +51,8 @@ type TestCmd struct {
 
 type BuildCmd struct {
 	File string `arg:"positional,required" help:"Path to .mochi source file"`
-	Out  string `arg:"-o" help:"Output binary path"`
+	Out  string `arg:"-o" help:"Output file path"`
+	Ts   bool   `arg:"--ts" help:"Generate TypeScript instead of Go"`
 }
 
 type ReplCmd struct{}
@@ -73,7 +75,7 @@ func main() {
 		repl := repl.New(os.Stdout, version)
 		repl.Run()
 	case cli.Build != nil:
-		if err := buildBinary(cli.Build); err != nil {
+		if err := build(cli.Build); err != nil {
 			fmt.Fprintf(os.Stderr, "%s %v\n", cError("build:"), err)
 			os.Exit(1)
 		}
@@ -165,7 +167,14 @@ func parseOrPrintError(path string) (*parser.Program, error) {
 	return prog, nil
 }
 
-func buildBinary(cmd *BuildCmd) error {
+func build(cmd *BuildCmd) error {
+	if cmd.Ts {
+		return buildTS(cmd)
+	}
+	return buildGo(cmd)
+}
+
+func buildGo(cmd *BuildCmd) error {
 	prog, err := parseOrPrintError(cmd.File)
 	if err != nil {
 		return err
@@ -207,5 +216,38 @@ func buildBinary(cmd *BuildCmd) error {
 	if err := bcmd.Run(); err != nil {
 		return fmt.Errorf("go build failed: %w", err)
 	}
+	return nil
+}
+
+func buildTS(cmd *BuildCmd) error {
+	prog, err := parseOrPrintError(cmd.File)
+	if err != nil {
+		return err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		fmt.Fprintln(os.Stderr, cError("type error:"))
+		for i, err := range errs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
+		}
+		return fmt.Errorf("aborted due to type errors")
+	}
+	c := tscode.New()
+	code, err := c.Compile(prog)
+	if err != nil {
+		return err
+	}
+	out := cmd.Out
+	if out == "" {
+		base := strings.TrimSuffix(filepath.Base(cmd.File), filepath.Ext(cmd.File))
+		if base == "" {
+			base = "a"
+		}
+		out = base + ".ts"
+	}
+	if err := os.WriteFile(out, code, 0644); err != nil {
+		return err
+	}
+	fmt.Printf("generated %s\n", out)
 	return nil
 }
