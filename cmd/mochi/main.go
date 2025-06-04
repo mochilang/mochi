@@ -15,6 +15,7 @@ import (
 
 	"mochi/ast"
 	gocode "mochi/compile/go"
+	pycode "mochi/compile/py"
 	tscode "mochi/compile/ts"
 	"mochi/interpreter"
 	"mochi/mcp"
@@ -50,9 +51,9 @@ type TestCmd struct {
 }
 
 type BuildCmd struct {
-	File string `arg:"positional,required" help:"Path to .mochi source file"`
-	Out  string `arg:"-o" help:"Output file path"`
-	Ts   bool   `arg:"--ts" help:"Generate TypeScript instead of Go"`
+        File string `arg:"positional,required" help:"Path to .mochi source file"`
+        Out  string `arg:"-o" help:"Output file path"`
+       Target string `arg:"--target" help:"Output language (go|py|ts)"`
 }
 
 type ReplCmd struct{}
@@ -168,13 +169,30 @@ func parseOrPrintError(path string) (*parser.Program, error) {
 }
 
 func build(cmd *BuildCmd) error {
-	if cmd.Ts {
-		return buildTS(cmd)
-	}
-	return buildGo(cmd)
+       target := strings.ToLower(cmd.Target)
+       if target == "" && cmd.Out != "" {
+               switch strings.ToLower(filepath.Ext(cmd.Out)) {
+               case ".go":
+                       target = "go"
+               case ".py":
+                       target = "py"
+               case ".ts":
+                       target = "ts"
+               }
+       }
+       switch target {
+       case "go":
+               return buildGo(cmd)
+       case "py":
+               return buildPy(cmd)
+       case "ts":
+               return buildTS(cmd)
+       default:
+               return buildBinary(cmd)
+       }
 }
 
-func buildGo(cmd *BuildCmd) error {
+func buildBinary(cmd *BuildCmd) error {
 	prog, err := parseOrPrintError(cmd.File)
 	if err != nil {
 		return err
@@ -219,6 +237,71 @@ func buildGo(cmd *BuildCmd) error {
 	return nil
 }
 
+func buildGo(cmd *BuildCmd) error {
+	prog, err := parseOrPrintError(cmd.File)
+	if err != nil {
+		return err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		fmt.Fprintln(os.Stderr, cError("type error:"))
+		for i, err := range errs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
+		}
+		return fmt.Errorf("aborted due to type errors")
+	}
+	c := gocode.New(env)
+	code, err := c.Compile(prog)
+	if err != nil {
+		return err
+	}
+	out := cmd.Out
+	if out == "" {
+		base := strings.TrimSuffix(filepath.Base(cmd.File), filepath.Ext(cmd.File))
+		if base == "" {
+			base = "main"
+		}
+		out = base + ".go"
+	}
+	if err := os.WriteFile(out, code, 0644); err != nil {
+		return err
+	}
+	fmt.Printf("generated %s\n", out)
+	return nil
+}
+
+func buildPy(cmd *BuildCmd) error {
+	prog, err := parseOrPrintError(cmd.File)
+	if err != nil {
+		return err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		fmt.Fprintln(os.Stderr, cError("type error:"))
+		for i, err := range errs {
+			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
+		}
+		return fmt.Errorf("aborted due to type errors")
+	}
+	c := pycode.New()
+	code, err := c.Compile(prog)
+	if err != nil {
+		return err
+	}
+	out := cmd.Out
+	if out == "" {
+		base := strings.TrimSuffix(filepath.Base(cmd.File), filepath.Ext(cmd.File))
+		if base == "" {
+			base = "main"
+		}
+		out = base + ".py"
+	}
+	if err := os.WriteFile(out, code, 0644); err != nil {
+		return err
+	}
+	fmt.Printf("generated %s\n", out)
+	return nil
+}
 func buildTS(cmd *BuildCmd) error {
 	prog, err := parseOrPrintError(cmd.File)
 	if err != nil {

@@ -61,10 +61,13 @@ Compile a Mochi source file into a standalone binary:
 ./hello
 ```
 
-Generate TypeScript instead of a binary with the `--ts` flag:
+Generate Go, Python or TypeScript code by setting a target or using the output
+extension:
 
 ```bash
-./mochi build --ts examples/hello.mochi -o hello.ts
+./mochi build examples/hello.mochi -o hello.go             # auto-detects Go
+./mochi build --target py examples/hello.mochi -o hello.py
+./mochi build --target ts examples/hello.mochi -o hello.ts
 ```
 
 ### Mochi CLI
