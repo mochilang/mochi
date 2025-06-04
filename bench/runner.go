@@ -224,7 +224,7 @@ func Run() {
 		r.Lang = strings.Split(b.Name, ".")[3]
 		results = append(results, r)
 
-		fmt.Printf("✅ %-32s ⏱ %.4fµs (ext: %.2fµs)\n",
+		fmt.Printf("✅ %-32s ⏱ %.0fµs (ext: %.2fµs)\n",
 			r.Name,
 			r.DurationUs,     // internal timing
 			externalDuration) // outer exec timing
@@ -296,7 +296,7 @@ func report(results []Result) {
 			}
 
 			status := "✓"
-			fmt.Printf("  %s %-24s %8.4fµs  %s\n",
+			fmt.Printf("  %s %-24s %8.0fµs  %s\n",
 				color.New(color.FgGreen).Sprint(status),
 				langName,
 				r.DurationUs,
@@ -432,7 +432,7 @@ func exportMarkdown(results []Result) error {
 			case "mochi_ts":
 				langName = "mochi (ts)"
 			}
-			b.WriteString(fmt.Sprintf("| %s | %.4f | %s |\n", langName, r.DurationUs, plus))
+			b.WriteString(fmt.Sprintf("| %s | %.0f | %s |\n", langName, r.DurationUs, plus))
 		}
 
 		b.WriteString("\n")
