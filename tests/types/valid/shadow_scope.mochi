@@ -1,0 +1,11 @@
+let x = 10
+if x > 5 {
+  let x = 20
+  print(x)
+}
+print(x)
+for i in 1..3 {
+  let x = i
+  print(x)
+}
+print(x)

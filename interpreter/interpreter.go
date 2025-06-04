@@ -382,21 +382,31 @@ func (i *Interpreter) evalIf(stmt *parser.IfStmt) error {
 		return err
 	}
 	if truthy(condVal) {
+		child := types.NewEnv(i.env)
+		old := i.env
+		i.env = child
 		for _, s := range stmt.Then {
 			if err := i.evalStmt(s); err != nil {
+				i.env = old
 				return err
 			}
 		}
+		i.env = old
 		return nil
 	}
 	if stmt.ElseIf != nil {
 		return i.evalIf(stmt.ElseIf)
 	}
+	child := types.NewEnv(i.env)
+	old := i.env
+	i.env = child
 	for _, s := range stmt.Else {
 		if err := i.evalStmt(s); err != nil {
+			i.env = old
 			return err
 		}
 	}
+	i.env = old
 	return nil
 }
 
@@ -405,6 +415,12 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+
+	// Create loop scope
+	child := types.NewEnv(i.env)
+	oldEnv := i.env
+	i.env = child
+	defer func() { i.env = oldEnv }()
 
 	// --- Range loop: `for x in a..b` ---
 	if stmt.RangeEnd != nil {
@@ -418,7 +434,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 			return errInvalidRangeBounds(stmt.Pos, fmt.Sprintf("%T", fromVal), fmt.Sprintf("%T", toVal))
 		}
 		for x := fromInt; x < toInt; x++ {
-			i.env.SetValue(stmt.Name, x, true)
+			child.SetValue(stmt.Name, x, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -432,7 +448,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 	switch coll := fromVal.(type) {
 	case []any:
 		for _, item := range coll {
-			i.env.SetValue(stmt.Name, item, true)
+			child.SetValue(stmt.Name, item, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -441,7 +457,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 	case map[any]any:
 		for k := range coll {
-			i.env.SetValue(stmt.Name, k, true)
+			child.SetValue(stmt.Name, k, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -450,7 +466,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 	case map[string]any:
 		for k := range coll {
-			i.env.SetValue(stmt.Name, k, true)
+			child.SetValue(stmt.Name, k, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -459,7 +475,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 	case map[int]any:
 		for k := range coll {
-			i.env.SetValue(stmt.Name, k, true)
+			child.SetValue(stmt.Name, k, true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
@@ -468,7 +484,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 	case string:
 		for _, r := range coll {
-			i.env.SetValue(stmt.Name, string(r), true)
+			child.SetValue(stmt.Name, string(r), true)
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
 					return err
