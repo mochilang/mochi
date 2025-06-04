@@ -643,10 +643,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
 		c.imports["time"] = true
-		// time.Now().UnixNano() returns int64, but Mochi's type system
-		// represents all integers as Go's int. Cast to int so the
-		// generated code compiles without type errors.
-		return "int(time.Now().UnixNano())", nil
+		// time.Now().UnixNano() already returns an int64. Use it directly
+		// so `now()` provides nanosecond precision consistent with the
+		// interpreter.
+		return "time.Now().UnixNano()", nil
 	case "json":
 		c.imports["encoding/json"] = true
 		c.imports["fmt"] = true
@@ -744,6 +744,8 @@ func goType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType:
 		return "int"
+	case types.Int64Type:
+		return "int64"
 	case types.FloatType:
 		return "float64"
 	case types.StringType:
