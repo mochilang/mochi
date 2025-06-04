@@ -1,0 +1,319 @@
+# Mochi Programming Language Specification (v0.2.6)
+
+This document describes version 0.2.6 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
+
+## 0. Introduction
+
+Mochi is a statically typed, expression-oriented language designed for simplicity, safety, and clarity. Programs are composed of statements executed in order. Mochi supports functions, first-class closures, immutable bindings, built-in testing, and agent-oriented constructs.
+
+A Mochi program is stored in a UTF-8 encoded text file and executed top to bottom. There is no required `main` function; execution begins with the first statement.
+
+The following sections cover lexical structure, types, expressions, statements, functions, built-ins, and the runtime environment. An appendix summarizes the grammar in EBNF form.
+
+## 1. Program Structure
+
+A Mochi program consists of a sequence of statements. Statements may declare values, define functions, perform control flow, or respond to events. The general form of a program is:
+
+```ebnf
+Program = { Statement }.
+```
+
+Statements are executed in the order they appear. Top-level statements share a single global scope.
+
+### Blocks
+
+Blocks are sequences of statements enclosed in braces and introduce a new lexical scope:
+
+```ebnf
+Block = "{" { Statement } "}".
+```
+
+Blocks are used in function bodies, control flow constructs, tests, streams, and agents.
+
+## 2. Lexical Elements
+
+### Characters
+
+Source files are UTF-8. Identifiers and string literals may contain any Unicode characters. The language treats ASCII letters, digits, and the underscore as special for identifiers.
+
+### Tokens
+
+The scanner breaks the source into the following token categories:
+
+* identifiers
+* keywords
+* operators and delimiters
+* literals (integers, floats, strings, booleans)
+* comments
+
+Whitespace is ignored except as a separator.
+
+### Identifiers
+
+Identifiers begin with a letter, underscore, or Unicode symbol. Subsequent characters may be letters, digits, underscores, or additional Unicode symbols. Identifiers are case sensitive.
+
+Examples of valid identifiers:
+
+```mochi
+foo
+π
+🍣
+result42
+```
+
+### Keywords
+
+The following keywords are reserved:
+
+```
+let  fun  return
+if   else
+for  in
+stream  on  as
+agent  test  expect
+```
+
+### Operators and Delimiters
+
+Operators perform arithmetic and comparisons. Delimiters structure expressions and statements.
+
+```
++  -  *  /            arithmetic
+== != < <= > >=       comparison
+! -                  unary
+=                    assignment
+..                   range
+( ) { } , : => .      delimiters
+```
+
+### Literals
+
+Mochi supports integer, floating point, string, and boolean literals. Strings use double quotes and support basic escape sequences (`\n`, `\t`, `\"`, `\\`).
+
+### Comments
+
+A comment begins with `//` and continues to the end of the line. Block comments using `/*` and `*/` are also supported.
+
+## 3. Types
+
+Mochi is statically typed. The built-in primitive types are `int`, `float`, `bool`, `string`, and `null`. Function values have type `fun` with a parameter and result signature.
+
+Type annotations may appear in variable declarations and function signatures. When omitted in `let` declarations, the type is inferred from the initializer.
+
+Examples:
+
+```mochi
+let x: int = 3
+let y = 4.2        // inferred float
+fun add(a: int, b: int): int { return a + b }
+```
+
+Function types use the syntax:
+
+```mochi
+fun(T1, T2): R
+```
+
+where `T1`, `T2`, and `R` are type references.
+
+## 4. Expressions
+
+Expressions compute values. The grammar defines expressions in precedence order.
+
+```ebnf
+Expression  = Equality
+Equality    = Comparison { ("==" | "!=") Comparison }
+Comparison  = Term { ("<" | "<=" | ">" | ">=") Term }
+Term        = Factor { ("+" | "-") Factor }
+Factor      = Unary { ("*" | "/") Unary }
+Unary       = { "-" | "!" } PostfixExpr
+PostfixExpr = Primary { IndexOp }
+Primary     = FunExpr | CallExpr | SelectorExpr | ListLiteral |
+              Literal | Identifier | "(" Expression ")"
+```
+
+#### Function Expressions
+
+Functions may be expressed inline using `fun`:
+
+```mochi
+fun(x: int): int => x * x
+fun(x: int): int {
+  return x * x
+}
+```
+
+#### Calls and Selectors
+
+Function calls use parentheses. Selector expressions access fields using dot notation.
+
+```mochi
+print("hi")
+event.payload.id
+```
+
+#### Lists and Indexing
+
+Lists use square brackets. Elements are accessed by index or slice.
+
+```mochi
+let nums = [1, 2, 3]
+print(nums[0])
+print(nums[1:3])
+```
+
+## 5. Statements
+
+Statements control execution and may declare bindings, functions, or agents.
+
+```ebnf
+Statement   = LetStmt | AssignStmt | FunDecl | ReturnStmt |
+              IfStmt | ForStmt | ExprStmt | TestBlock |
+              ExpectStmt | StreamDecl | OnHandler | AgentDecl .
+```
+
+### Let Statement
+
+`let` introduces an immutable binding:
+
+```mochi
+let name = "Mochi"
+```
+
+### Assignment
+
+Assignments update an existing binding or indexed element:
+
+```mochi
+x = x + 1
+scores["alice"] = 10
+```
+
+### Function Declaration
+
+Named functions bind an identifier to a function value:
+
+```mochi
+fun square(x: int): int {
+  return x * x
+}
+```
+
+### If Statement
+
+Conditional execution based on a boolean expression:
+
+```mochi
+if x > 0 {
+  print("positive")
+} else {
+  print("non-positive")
+}
+```
+
+### For Statement
+
+Two forms of `for` loops are supported:
+
+```mochi
+for i in 0..5 { print(i) }            // range loop
+for item in items { print(item) }      // collection loop
+```
+
+### Test and Expect
+
+`test` blocks group expectations. `expect` asserts a condition is true.
+
+```mochi
+test "math" {
+  expect 1 + 2 == 3
+}
+```
+
+### Streams and Agents
+
+Streams declare named event types. Agents define event handlers with `on` blocks.
+
+```mochi
+stream Click { x: int, y: int }
+
+agent Logger {
+  on Click as e {
+    print(e.x, e.y)
+  }
+}
+```
+
+## 6. Functions
+
+Functions are first-class. Parameters are typed, and the return type may be omitted in block-bodied functions if `return` is used. Functions may capture variables from their enclosing scope, forming closures.
+
+```mochi
+fun makeCounter(): fun(): int {
+  let count = 0
+  return fun(): int {
+    count = count + 1
+    return count
+  }
+}
+```
+
+## 7. Built-in Functions
+
+Mochi provides a small set of built-ins available in all scopes. The most common is `print`, which writes its arguments to standard output and returns `null`.
+
+Other built-ins include `len` for obtaining the length of strings, lists, or maps, and `now` which returns the current time as an integer.
+
+## 8. Runtime Semantics
+
+Mochi uses lexical scoping and a chain of environments for variable resolution. Blocks and functions create new environments that reference their parent scope. Functions capture the environment at the point of declaration.
+
+Bindings are immutable; attempts to reassign produce a runtime error unless via explicit assignment to an indexed element.
+
+## 9. Errors
+
+Runtime errors occur for invalid operations, such as type mismatches, out-of-bounds indexing, or use of undeclared identifiers. Errors include a message and source location to aid debugging.
+
+## Appendix A. Grammar Summary
+
+The complete grammar for Mochi in EBNF notation:
+
+```ebnf
+Program       = { Statement }.
+Statement     = LetStmt | AssignStmt | FunDecl | ReturnStmt |
+                IfStmt | ForStmt | ExprStmt | TestBlock |
+                ExpectStmt | StreamDecl | OnHandler | AgentDecl .
+LetStmt       = "let" Identifier [ ":" TypeRef ] [ "=" Expression ] .
+AssignStmt    = PostfixExpr "=" Expression .
+FunDecl       = "fun" Identifier "(" [ ParamList ] ")" [ ":" TypeRef ] Block .
+ReturnStmt    = "return" Expression .
+IfStmt        = "if" Expression Block [ "else" (IfStmt | Block) ] .
+ForStmt       = "for" Identifier "in" Expression [ ".." Expression ] Block .
+ExprStmt      = Expression .
+TestBlock     = "test" StringLiteral Block .
+ExpectStmt    = "expect" Expression .
+StreamDecl    = "stream" Identifier Block .
+OnHandler     = "on" Identifier "as" Identifier Block .
+AgentDecl     = "agent" Identifier Block .
+
+Expression    = Equality .
+Equality      = Comparison { ("==" | "!=") Comparison } .
+Comparison    = Term { ("<" | "<=" | ">" | ">=") Term } .
+Term          = Factor { ("+" | "-") Factor } .
+Factor        = Unary { ("*" | "/") Unary } .
+Unary         = { "-" | "!" } PostfixExpr .
+PostfixExpr   = Primary { IndexOp } .
+Primary       = FunExpr | CallExpr | SelectorExpr | ListLiteral |
+                Literal | Identifier | "(" Expression ")" .
+FunExpr       = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] ("=>" Expression | Block) .
+CallExpr      = Identifier "(" [ Expression { "," Expression } ] ")" .
+SelectorExpr  = Identifier { "." Identifier } .
+ListLiteral   = "[" [ Expression { "," Expression } [ "," ] ] "]" .
+IndexOp       = "[" [ Expression ] [ ":" Expression ] "]" .
+ParamList     = Param { "," Param } .
+Param         = Identifier [ ":" TypeRef ] .
+TypeRef       = FunType | Identifier .
+FunType       = "fun" "(" [ TypeRef { "," TypeRef } ] ")" [ ":" TypeRef ] .
+```
+
+This specification outlines the core language as of version 0.2.6. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.
