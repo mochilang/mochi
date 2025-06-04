@@ -43,8 +43,8 @@ type Range struct {
 }
 
 type Result struct {
-	Name       string  `json:"name"`
-	DurationMs float64 `json:"duration_ms"`
+	Name       string `json:"name"`
+	DurationMs int64  `json:"duration_ms"`
 	// Success    bool    `json:"success"`
 	Output any `json:"output"`
 	Lang   string
@@ -219,7 +219,7 @@ func Run() {
 		r.Lang = strings.Split(b.Name, ".")[3]
 		results = append(results, r)
 
-		fmt.Printf("✅ %-32s ⏱ %.3fms (ext: %.2fms)\n",
+		fmt.Printf("✅ %-32s ⏱ %dms (ext: %.2fms)\n",
 			r.Name,
 			r.DurationMs,     // internal timing
 			externalDuration) // outer exec timing
@@ -274,7 +274,7 @@ func report(results []Result) {
 			delta := r.DurationMs - best
 			plus := ""
 			if delta > 0 {
-				plus = fmt.Sprintf(" +%.1f%%", (delta/best)*100)
+				plus = fmt.Sprintf(" +%.1f%%", (float64(delta)/float64(best))*100)
 			}
 
 			// Friendly label
@@ -291,7 +291,7 @@ func report(results []Result) {
 			}
 
 			status := "✓"
-			fmt.Printf("  %s %-24s %8.4fms  %s\n",
+			fmt.Printf("  %s %-24s %8dms  %s\n",
 				color.New(color.FgGreen).Sprint(status),
 				langName,
 				r.DurationMs,
@@ -413,7 +413,7 @@ func exportMarkdown(results []Result) error {
 			delta := r.DurationMs - best
 			plus := "best"
 			if delta > 0 {
-				plus = fmt.Sprintf("+%.1f%%", (delta/best)*100)
+				plus = fmt.Sprintf("+%.1f%%", (float64(delta)/float64(best))*100)
 			}
 
 			langName := r.Lang
@@ -427,7 +427,7 @@ func exportMarkdown(results []Result) error {
 			case "mochi_ts":
 				langName = "mochi (ts)"
 			}
-			b.WriteString(fmt.Sprintf("| %s | %.4f | %s |\n", langName, r.DurationMs, plus))
+			b.WriteString(fmt.Sprintf("| %s | %d | %s |\n", langName, r.DurationMs, plus))
 		}
 
 		b.WriteString("\n")
