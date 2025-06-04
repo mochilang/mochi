@@ -7,30 +7,11 @@ minimal but expressive.
 This roadmap outlines the language development toward a stable 1.0, with an emphasis on first-class data types, control
 flow, streaming logic, agents, and dataset support.
 
-# v0.2 - Compose data types
-## v0.2.2 – Maps
+Current release: v0.2.10. Upcoming 0.2.x versions will expand data types before moving on to streams and agents.
 
-- [ ]  Map literals
-- [ ]  Access by key
-- [ ]  Dynamic keys
-- [ ]  Nested maps
-- [ ]  in operator for key presence
+# v0.2.x – Compose data types
 
-```
-let scores = {
-  "math": 95,
-  "science": 88
-}
-
-print(scores["math"])     // 95
-
-let subject = "science"
-if subject in scores {
-  print(scores[subject])
-}
-```
-
-## v0.2.3 – Sets
+## v0.2.11 – Sets
 
 - [ ]  Set literals
 - [ ]  `in` operator
@@ -44,7 +25,7 @@ if "apple" in seen {
 }
 ```
 
-## v0.2.4 – Tuples
+## v0.2.12 – Tuples
 
 - [ ]  Tuple literals
 - [ ]  Tuple indexing via `.0`, `.1`
@@ -59,7 +40,7 @@ print(point.0)       // 10
 print(nameAndAge.1)  // 35
 ```
 
-## v0.2.5 – Struct Types
+## v0.2.13 – Struct Types
 
 - [ ]  `type` declarations
 - [ ]  Named field access via dot
@@ -80,7 +61,7 @@ let u: User = {
 print(u.name)  // Ana
 ```
 
-## v0.2.6 – Block Expressions
+## v0.2.14 – Block Expressions
 
 - [ ]  `{}` blocks as expressions
 - [ ]  Evaluate to last value
@@ -96,7 +77,7 @@ let result = {
 print(result)  // 5
 ```
 
-## v0.2.7 – match Expressions
+## v0.2.15 – match Expressions
 
 - [ ]  Pattern matching
 - [ ]  Fallback case `_ =>`
@@ -116,7 +97,7 @@ match user {
 }
 ```
 
-## v0.2.8 – Naive error Type
+## v0.2.16 – Naive error Type
 
 - [ ]  Union return types
 - [ ]  `error` literal
