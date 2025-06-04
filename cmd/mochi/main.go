@@ -178,7 +178,7 @@ func buildBinary(cmd *BuildCmd) error {
 		}
 		return fmt.Errorf("aborted due to type errors")
 	}
-	c := gocode.New()
+	c := gocode.New(env)
 	code, err := c.Compile(prog)
 	if err != nil {
 		return err

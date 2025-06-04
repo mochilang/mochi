@@ -321,7 +321,7 @@ func compileToGo(mochiFile, goFile string) error {
 	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 		return fmt.Errorf("type error: %v", errs[0])
 	}
-	c := gocode.New()
+	c := gocode.New(typeEnv)
 	code, err := c.Compile(prog)
 	if err != nil {
 		return err

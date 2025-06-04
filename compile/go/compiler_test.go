@@ -24,7 +24,7 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := gocode.New()
+		c := gocode.New(typeEnv)
 		code, err := c.Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
@@ -54,7 +54,7 @@ func TestGoCompiler_GoldenOutput(t *testing.T) {
 		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := gocode.New()
+		c := gocode.New(typeEnv)
 		code, err := c.Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
