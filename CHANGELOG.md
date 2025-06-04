@@ -1,5 +1,23 @@
 # 📦 CHANGELOG.md
 
+## [0.2.9] – 2025-06-06
+
+### Added
+
+* TypeScript compiler for generating `.ts` output via `mochi build --ts`
+* Integrated benchmarks that compile to Go and TypeScript with checked-in results
+
+### Changed
+
+* `mochi build` emits runtime helpers only when necessary
+* Benchmarks use `performance.now` for accurate Deno timings
+* Documentation covers new CLI options and Makefile tasks
+
+### Fixed
+
+* Minor Makefile issue affecting builds
+
+
 All notable changes to the Mochi programming language are documented in this file.
 
 ## [0.2.8] – 2025-06-05
