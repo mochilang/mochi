@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	var value = (((1 + 2)) * 3)
+	var value int = (((1 + 2)) * 3)
 	fmt.Println(value)
 }

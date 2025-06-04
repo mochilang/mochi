@@ -4,12 +4,10 @@ import (
 	"fmt"
 )
 
-func add(a any, b any) any {
-	return _add(a, b)
+func add(a int, b int) int {
+	return (a + b)
 }
 
 func main() {
 	fmt.Println(add(2, 3))
 }
-
-func _add(a, b any) any { return a.(int) + b.(int) }

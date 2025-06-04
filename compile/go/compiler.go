@@ -3,6 +3,7 @@ package gocode
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -153,7 +154,13 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		value = v
 	}
-	c.writeln(fmt.Sprintf("var %s = %s", name, value))
+	typ := "any"
+	if c.env != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			typ = goType(t)
+		}
+	}
+	c.writeln(fmt.Sprintf("var %s %s = %s", name, typ, value))
 	return nil
 }
 
@@ -167,7 +174,13 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		value = v
 	}
-	c.writeln(fmt.Sprintf("var %s = %s", name, value))
+	typ := "any"
+	if c.env != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			typ = goType(t)
+		}
+	}
+	c.writeln(fmt.Sprintf("var %s %s = %s", name, typ, value))
 	return nil
 }
 
@@ -265,22 +278,49 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
+	var ft types.FuncType
+	if c.env != nil {
+		if t, err := c.env.GetVar(fun.Name); err == nil {
+			if f, ok := t.(types.FuncType); ok {
+				ft = f
+			}
+		}
+	}
 	c.writeIndent()
 	c.buf.WriteString("func " + name + "(")
 	for i, p := range fun.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
 		}
-		c.buf.WriteString(sanitizeName(p.Name) + " any")
+		paramType := "any"
+		if i < len(ft.Params) {
+			paramType = goType(ft.Params[i])
+		}
+		c.buf.WriteString(sanitizeName(p.Name) + " " + paramType)
 	}
-	c.buf.WriteString(") any {\n")
+	retType := goType(ft.Return)
+	if retType == "" {
+		c.buf.WriteString(") {\n")
+	} else {
+		c.buf.WriteString(") " + retType + " {\n")
+	}
+	child := types.NewEnv(c.env)
+	for i, p := range fun.Params {
+		if i < len(ft.Params) {
+			child.SetVar(p.Name, ft.Params[i], true)
+		}
+	}
+	originalEnv := c.env
+	c.env = child
 	c.indent++
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.env = originalEnv
 			return err
 		}
 	}
 	c.indent--
+	c.env = originalEnv
 	c.writeIndent()
 	c.buf.WriteString("}\n")
 	return nil
@@ -515,7 +555,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
-		return "[]any{" + strings.Join(elems, ", ") + "}", nil
+		typ := c.inferPrimaryType(p)
+		elemType := "any"
+		if lt, ok := typ.(types.ListType); ok {
+			elemType = goType(lt.Elem)
+		}
+		return "[]" + elemType + "{" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
 		parts := make([]string, len(p.Map.Items))
 		for i, item := range p.Map.Items {
@@ -529,7 +574,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			parts[i] = fmt.Sprintf("%s: %s", k, v)
 		}
-		return "map[string]any{" + strings.Join(parts, ", ") + "}", nil
+		typ := c.inferPrimaryType(p)
+		keyType := "string"
+		valType := "any"
+		if mt, ok := typ.(types.MapType); ok {
+			keyType = goType(mt.Key)
+			valType = goType(mt.Value)
+		}
+		return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
 	default:
 		return "nil", fmt.Errorf("unsupported primary expression")
 	}
@@ -584,9 +636,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		params[i] = sanitizeName(p.Name) + " any"
+		typ := "any"
+		if p.Type != nil {
+			typ = goType(resolveTypeRef(p.Type))
+		}
+		params[i] = sanitizeName(p.Name) + " " + typ
 	}
-	sub := &Compiler{imports: c.imports}
+	child := types.NewEnv(c.env)
+	for _, p := range fn.Params {
+		if p.Type != nil {
+			child.SetVar(p.Name, resolveTypeRef(p.Type), true)
+		}
+	}
+	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child}
 	sub.indent = 1
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody)
@@ -602,8 +664,14 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 	}
 	body := indentBlock(sub.buf.String(), 1)
-	code := "func(" + strings.Join(params, ", ") + ") any {\n" + body + "}"
-	return code, nil
+	retType := "any"
+	if fn.Return != nil {
+		retType = goType(resolveTypeRef(fn.Return))
+	}
+	if retType == "" {
+		return "func(" + strings.Join(params, ", ") + ") {\n" + body + "}", nil
+	}
+	return "func(" + strings.Join(params, ", ") + ") " + retType + " {\n" + body + "}", nil
 }
 
 // --- Helpers ---
@@ -673,11 +741,70 @@ func goType(t types.Type) string {
 			return fmt.Sprintf("func(%s)", strings.Join(params, ", "))
 		}
 		return fmt.Sprintf("func(%s) %s", strings.Join(params, ", "), ret)
+	case types.VoidType:
+		return ""
 	case types.AnyType:
 		return "any"
 	default:
 		return "any"
 	}
+}
+
+func equalTypes(a, b types.Type) bool {
+	if _, ok := a.(types.AnyType); ok {
+		return true
+	}
+	if _, ok := b.(types.AnyType); ok {
+		return true
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func resolveTypeRef(t *parser.TypeRef) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = resolveTypeRef(p)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = resolveTypeRef(t.Fun.Return)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		args := t.Generic.Args
+		switch name {
+		case "list":
+			if len(args) == 1 {
+				return types.ListType{Elem: resolveTypeRef(args[0])}
+			}
+		case "map":
+			if len(args) == 2 {
+				return types.MapType{Key: resolveTypeRef(args[0]), Value: resolveTypeRef(args[1])}
+			}
+		}
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			return types.AnyType{}
+		}
+	}
+	return types.AnyType{}
 }
 
 func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
@@ -791,9 +918,36 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 	case p.Group != nil:
 		return c.inferExprType(p.Group)
 	case p.List != nil:
-		return types.ListType{Elem: types.AnyType{}}
+		var elemType types.Type = types.AnyType{}
+		if len(p.List.Elems) > 0 {
+			elemType = c.inferExprType(p.List.Elems[0])
+			for _, e := range p.List.Elems[1:] {
+				t := c.inferExprType(e)
+				if !equalTypes(elemType, t) {
+					elemType = types.AnyType{}
+					break
+				}
+			}
+		}
+		return types.ListType{Elem: elemType}
 	case p.Map != nil:
-		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+		var keyType types.Type = types.AnyType{}
+		var valType types.Type = types.AnyType{}
+		if len(p.Map.Items) > 0 {
+			keyType = c.inferExprType(p.Map.Items[0].Key)
+			valType = c.inferExprType(p.Map.Items[0].Value)
+			for _, it := range p.Map.Items[1:] {
+				kt := c.inferExprType(it.Key)
+				vt := c.inferExprType(it.Value)
+				if !equalTypes(keyType, kt) {
+					keyType = types.AnyType{}
+				}
+				if !equalTypes(valType, vt) {
+					valType = types.AnyType{}
+				}
+			}
+		}
+		return types.MapType{Key: keyType, Value: valType}
 	}
 	return types.AnyType{}
 }
@@ -1028,6 +1182,54 @@ const (
 		"            panic(\"index out of range\")\n" +
 		"        }\n" +
 		"        return s[i]\n" +
+		"    case []int:\n" +
+		"        i, ok := k.(int)\n" +
+		"        if !ok {\n" +
+		"            panic(\"invalid list index\")\n" +
+		"        }\n" +
+		"        if i < 0 {\n" +
+		"            i += len(s)\n" +
+		"        }\n" +
+		"        if i < 0 || i >= len(s) {\n" +
+		"            panic(\"index out of range\")\n" +
+		"        }\n" +
+		"        return s[i]\n" +
+		"    case []float64:\n" +
+		"        i, ok := k.(int)\n" +
+		"        if !ok {\n" +
+		"            panic(\"invalid list index\")\n" +
+		"        }\n" +
+		"        if i < 0 {\n" +
+		"            i += len(s)\n" +
+		"        }\n" +
+		"        if i < 0 || i >= len(s) {\n" +
+		"            panic(\"index out of range\")\n" +
+		"        }\n" +
+		"        return s[i]\n" +
+		"    case []string:\n" +
+		"        i, ok := k.(int)\n" +
+		"        if !ok {\n" +
+		"            panic(\"invalid list index\")\n" +
+		"        }\n" +
+		"        if i < 0 {\n" +
+		"            i += len(s)\n" +
+		"        }\n" +
+		"        if i < 0 || i >= len(s) {\n" +
+		"            panic(\"index out of range\")\n" +
+		"        }\n" +
+		"        return s[i]\n" +
+		"    case []bool:\n" +
+		"        i, ok := k.(int)\n" +
+		"        if !ok {\n" +
+		"            panic(\"invalid list index\")\n" +
+		"        }\n" +
+		"        if i < 0 {\n" +
+		"            i += len(s)\n" +
+		"        }\n" +
+		"        if i < 0 || i >= len(s) {\n" +
+		"            panic(\"index out of range\")\n" +
+		"        }\n" +
+		"        return s[i]\n" +
 		"    case string:\n" +
 		"        i, ok := k.(int)\n" +
 		"        if !ok {\n" +
@@ -1066,6 +1268,54 @@ const (
 		"            panic(\"slice out of range\")\n" +
 		"        }\n" +
 		"        return s[start:end]\n" +
+		"    case []int:\n" +
+		"        l := len(s)\n" +
+		"        if start < 0 {\n" +
+		"            start += l\n" +
+		"        }\n" +
+		"        if end < 0 {\n" +
+		"            end += l\n" +
+		"        }\n" +
+		"        if start < 0 || end > l || start > end {\n" +
+		"            panic(\"slice out of range\")\n" +
+		"        }\n" +
+		"        return s[start:end]\n" +
+		"    case []float64:\n" +
+		"        l := len(s)\n" +
+		"        if start < 0 {\n" +
+		"            start += l\n" +
+		"        }\n" +
+		"        if end < 0 {\n" +
+		"            end += l\n" +
+		"        }\n" +
+		"        if start < 0 || end > l || start > end {\n" +
+		"            panic(\"slice out of range\")\n" +
+		"        }\n" +
+		"        return s[start:end]\n" +
+		"    case []string:\n" +
+		"        l := len(s)\n" +
+		"        if start < 0 {\n" +
+		"            start += l\n" +
+		"        }\n" +
+		"        if end < 0 {\n" +
+		"            end += l\n" +
+		"        }\n" +
+		"        if start < 0 || end > l || start > end {\n" +
+		"            panic(\"slice out of range\")\n" +
+		"        }\n" +
+		"        return s[start:end]\n" +
+		"    case []bool:\n" +
+		"        l := len(s)\n" +
+		"        if start < 0 {\n" +
+		"            start += l\n" +
+		"        }\n" +
+		"        if end < 0 {\n" +
+		"            end += l\n" +
+		"        }\n" +
+		"        if start < 0 || end > l || start > end {\n" +
+		"            panic(\"slice out of range\")\n" +
+		"        }\n" +
+		"        return s[start:end]\n" +
 		"    case string:\n" +
 		"        runes := []rune(s)\n" +
 		"        l := len(runes)\n" +
@@ -1088,6 +1338,30 @@ const (
 		"    switch s := v.(type) {\n" +
 		"    case []any:\n" +
 		"        return s\n" +
+		"    case []int:\n" +
+		"        out := make([]any, len(s))\n" +
+		"        for i, v := range s {\n" +
+		"            out[i] = v\n" +
+		"        }\n" +
+		"        return out\n" +
+		"    case []float64:\n" +
+		"        out := make([]any, len(s))\n" +
+		"        for i, v := range s {\n" +
+		"            out[i] = v\n" +
+		"        }\n" +
+		"        return out\n" +
+		"    case []string:\n" +
+		"        out := make([]any, len(s))\n" +
+		"        for i, v := range s {\n" +
+		"            out[i] = v\n" +
+		"        }\n" +
+		"        return out\n" +
+		"    case []bool:\n" +
+		"        out := make([]any, len(s))\n" +
+		"        for i, v := range s {\n" +
+		"            out[i] = v\n" +
+		"        }\n" +
+		"        return out\n" +
 		"    case map[string]any:\n" +
 		"        out := make([]any, 0, len(s))\n" +
 		"        for k := range s {\n" +
