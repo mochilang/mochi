@@ -6,26 +6,24 @@ import (
 	"time"
 )
 
-func sum(n any) any {
-	var total = 0
+func sum(n int) int {
+	var total int = 0
 	for i := 1; i < n; i++ {
-		total = _add(total, i)
+		total = (total + i)
 	}
 	return total
 }
 
 func main() {
-	var n = 10
-	var repeat = 1000
-	var last = 0
-	var start = time.Now().UnixNano()
+	var n int = 10
+	var repeat int = 1000
+	var last int = 0
+	var start int = int(time.Now().UnixNano())
 	for i := 0; i < repeat; i++ {
 		last = sum(n)
 	}
-	var duration = (((time.Now().UnixNano() - start)) / 1000000)
-	var output = map[string]any{"duration_ms": duration, "output": last}
+	var duration int = (((int(time.Now().UnixNano()) - start)) / 1000000)
+	var output map[string]int = map[string]int{"duration_ms": duration, "output": last}
 	func(){b,_:=json.Marshal(output);fmt.Println(string(b))}()
 }
-
-func _add(a, b any) any { return a.(int) + b.(int) }
 
