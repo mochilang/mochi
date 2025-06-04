@@ -1,5 +1,5 @@
 {
-  "name": "mochi",
+  "name": "@mochilang/mochi",
   "version": "0.2.7",
   "description": "Run the Mochi programming language via npx",
   "bin": {
