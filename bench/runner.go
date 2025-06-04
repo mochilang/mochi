@@ -198,6 +198,9 @@ func Run() {
 	}
 
 	report(results)
+	if err := exportMarkdown(results); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to write BENCHMARK.md: %v\n", err)
+	}
 }
 
 func indent(s string) string {
@@ -292,4 +295,60 @@ func pow(base, exp int) int {
 
 func timeNowMs() float64 {
 	return float64(time.Now().UnixNano()) / 1e6
+}
+
+func exportMarkdown(results []Result) error {
+	var b strings.Builder
+	b.WriteString("# Benchmarks\n\n")
+
+	grouped := map[string][]Result{}
+	for _, r := range results {
+		parts := strings.Split(r.Name, ".")
+		if len(parts) < 4 {
+			continue
+		}
+		group := strings.Join(parts[:3], ".")
+		grouped[group] = append(grouped[group], r)
+	}
+
+	var groups []string
+	for g := range grouped {
+		groups = append(groups, g)
+	}
+	sort.Strings(groups)
+
+	for _, g := range groups {
+		set := grouped[g]
+		sort.Slice(set, func(i, j int) bool {
+			return set[i].DurationMs < set[j].DurationMs
+		})
+
+		b.WriteString("## " + g + "\n")
+		b.WriteString("| Language | Time (ms) | +/- |\n")
+		b.WriteString("| --- | ---: | --- |\n")
+
+		best := set[0].DurationMs
+		for _, r := range set {
+			delta := r.DurationMs - best
+			plus := "best"
+			if delta > 0 {
+				plus = fmt.Sprintf("+%.1f%%", (delta/best)*100)
+			}
+
+			langName := r.Lang
+			switch langName {
+			case "mochi_interp":
+				langName = "mochi (interp)"
+			case "mochi_vm":
+				langName = "mochi (vm)"
+			case "go_tmpl":
+				langName = "go"
+			}
+			b.WriteString(fmt.Sprintf("| %s | %.4f | %s |\n", langName, r.DurationMs, plus))
+		}
+
+		b.WriteString("\n")
+	}
+
+	return os.WriteFile("BENCHMARK.md", []byte(b.String()), 0644)
 }

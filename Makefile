@@ -59,7 +59,7 @@ else
 	@$(GO) test ./... -update --vet=off
 endif
 
-bench: ## Run Mochi benchmarks
+bench: build-mochi ## Run Mochi benchmarks
 	@echo "🏃 Running benchmarks..."
 	@$(GO) run ./cmd/mochi-bench
 
