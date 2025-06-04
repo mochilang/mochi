@@ -1,12 +1,12 @@
-# Mochi Programming Language Specification (v0.2.6)
+# Mochi Programming Language Specification (v0.2.10)
 
-This document describes version 0.2.6 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
+This document describes version 0.2.10 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
 
 ## 0. Introduction
 
 Mochi is a statically typed, expression-oriented language designed for simplicity, safety, and clarity. Programs are composed of statements executed in order. Mochi supports functions, first-class closures, immutable bindings, built-in testing, and agent-oriented constructs.
 
-A Mochi program is stored in a UTF-8 encoded text file and executed top to bottom. There is no required `main` function; execution begins with the first statement.
+A Mochi program is stored in a UTF-8 encoded text file and executed top to bottom. There is no required `main` function; execution begins with the first statement. The reference implementation can compile Mochi sources to native binaries or generate Go, TypeScript, and Python code.
 
 The following sections cover lexical structure, types, expressions, statements, functions, built-ins, and the runtime environment. An appendix summarizes the grammar in EBNF form.
 
@@ -66,7 +66,7 @@ result42
 The following keywords are reserved:
 
 ```
-let  fun  return
+let  var  fun  return
 if   else
 for  in
 stream  on  as
@@ -116,6 +116,14 @@ fun(T1, T2): R
 
 where `T1`, `T2`, and `R` are type references.
 
+Generic container types use angle brackets. `list<T>` denotes a list of `T` and
+`map<K, V>` denotes a mapping from keys of type `K` to values of type `V`.
+For example:
+
+```mochi
+let scores: map<string, int> = {"alice": 1}
+```
+
 ## 4. Expressions
 
 Expressions compute values. The grammar defines expressions in precedence order.
@@ -152,7 +160,7 @@ print("hi")
 event.payload.id
 ```
 
-#### Lists and Indexing
+#### Lists and Maps
 
 Lists use square brackets. Elements are accessed by index or slice.
 
@@ -162,12 +170,19 @@ print(nums[0])
 print(nums[1:3])
 ```
 
+Maps use braces with `key: value` pairs and share the same indexing syntax.
+
+```mochi
+let scores = {"alice": 1, "bob": 2}
+print(scores["alice"])
+```
+
 ## 5. Statements
 
 Statements control execution and may declare bindings, functions, or agents.
 
 ```ebnf
-Statement   = LetStmt | AssignStmt | FunDecl | ReturnStmt |
+Statement   = LetStmt | VarStmt | AssignStmt | FunDecl | ReturnStmt |
               IfStmt | ForStmt | ExprStmt | TestBlock |
               ExpectStmt | StreamDecl | OnHandler | AgentDecl .
 ```
@@ -178,6 +193,15 @@ Statement   = LetStmt | AssignStmt | FunDecl | ReturnStmt |
 
 ```mochi
 let name = "Mochi"
+```
+
+### Var Statement
+
+`var` introduces a mutable binding:
+
+```mochi
+var counter = 0
+counter = counter + 1
 ```
 
 ### Assignment
@@ -262,7 +286,7 @@ fun makeCounter(): fun(): int {
 
 Mochi provides a small set of built-ins available in all scopes. The most common is `print`, which writes its arguments to standard output and returns `null`.
 
-Other built-ins include `len` for obtaining the length of strings, lists, or maps, and `now` which returns the current time as an integer.
+Other built-ins include `len` for obtaining the length of strings, lists, or maps; `now` which returns the current time as an integer; and `json` for printing values in JSON format.
 
 ## 8. Runtime Semantics
 
@@ -280,10 +304,11 @@ The complete grammar for Mochi in EBNF notation:
 
 ```ebnf
 Program       = { Statement }.
-Statement     = LetStmt | AssignStmt | FunDecl | ReturnStmt |
+Statement     = LetStmt | VarStmt | AssignStmt | FunDecl | ReturnStmt |
                 IfStmt | ForStmt | ExprStmt | TestBlock |
                 ExpectStmt | StreamDecl | OnHandler | AgentDecl .
 LetStmt       = "let" Identifier [ ":" TypeRef ] [ "=" Expression ] .
+VarStmt       = "var" Identifier [ ":" TypeRef ] [ "=" Expression ] .
 AssignStmt    = PostfixExpr "=" Expression .
 FunDecl       = "fun" Identifier "(" [ ParamList ] ")" [ ":" TypeRef ] Block .
 ReturnStmt    = "return" Expression .
@@ -303,17 +328,20 @@ Term          = Factor { ("+" | "-") Factor } .
 Factor        = Unary { ("*" | "/") Unary } .
 Unary         = { "-" | "!" } PostfixExpr .
 PostfixExpr   = Primary { IndexOp } .
-Primary       = FunExpr | CallExpr | SelectorExpr | ListLiteral |
+Primary       = FunExpr | CallExpr | SelectorExpr | ListLiteral | MapLiteral |
                 Literal | Identifier | "(" Expression ")" .
 FunExpr       = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] ("=>" Expression | Block) .
 CallExpr      = Identifier "(" [ Expression { "," Expression } ] ")" .
 SelectorExpr  = Identifier { "." Identifier } .
 ListLiteral   = "[" [ Expression { "," Expression } [ "," ] ] "]" .
+MapLiteral    = "{" [ MapEntry { "," MapEntry } ] [ "," ] "}" .
+MapEntry      = Expression ":" Expression .
 IndexOp       = "[" [ Expression ] [ ":" Expression ] "]" .
 ParamList     = Param { "," Param } .
 Param         = Identifier [ ":" TypeRef ] .
-TypeRef       = FunType | Identifier .
+TypeRef       = FunType | GenericType | Identifier .
+GenericType   = Identifier "<" TypeRef { "," TypeRef } ">" .
 FunType       = "fun" "(" [ TypeRef { "," TypeRef } ] ")" [ ":" TypeRef ] .
 ```
 
-This specification outlines the core language as of version 0.2.6. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.
+This specification outlines the core language as of version 0.2.10. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.
