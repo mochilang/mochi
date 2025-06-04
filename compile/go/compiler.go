@@ -16,11 +16,12 @@ type Compiler struct {
 	indent  int
 	imports map[string]bool
 	env     *types.Env
+	helpers map[string]bool
 }
 
 // New creates a new Go compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{imports: make(map[string]bool), env: env}
+	return &Compiler{imports: make(map[string]bool), env: env, helpers: make(map[string]bool)}
 }
 
 // Compile returns Go source code implementing prog.
@@ -97,7 +98,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	c.writeln("")
-	c.writeln(runtimeHelpers)
+	c.emitRuntime()
 
 	return c.buf.Bytes(), nil
 }
@@ -247,6 +248,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	c.use("_iter")
 	c.writeIndent()
 	c.buf.WriteString(fmt.Sprintf("for _, %s := range _iter(%s) {\n", name, src))
 	c.indent++
@@ -324,21 +326,25 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s + %s)", expr, right)
 				} else {
+					c.use("_add")
 					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.FloatType); ok {
 				if _, ok := rightType.(types.FloatType); ok {
 					expr = fmt.Sprintf("(%s + %s)", expr, right)
 				} else {
+					c.use("_add")
 					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.StringType); ok {
 				if _, ok := rightType.(types.StringType); ok {
 					expr = fmt.Sprintf("%s + %s", expr, right)
 				} else {
+					c.use("_add")
 					expr = fmt.Sprintf("_add(%s, %s)", expr, right)
 				}
 			} else {
+				c.use("_add")
 				expr = fmt.Sprintf("_add(%s, %s)", expr, right)
 			}
 		case "-":
@@ -346,15 +352,18 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s - %s)", expr, right)
 				} else {
+					c.use("_sub")
 					expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.FloatType); ok {
 				if _, ok := rightType.(types.FloatType); ok {
 					expr = fmt.Sprintf("(%s - %s)", expr, right)
 				} else {
+					c.use("_sub")
 					expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
 				}
 			} else {
+				c.use("_sub")
 				expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
 			}
 		case "*":
@@ -362,15 +371,18 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s * %s)", expr, right)
 				} else {
+					c.use("_mul")
 					expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.FloatType); ok {
 				if _, ok := rightType.(types.FloatType); ok {
 					expr = fmt.Sprintf("(%s * %s)", expr, right)
 				} else {
+					c.use("_mul")
 					expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
 				}
 			} else {
+				c.use("_mul")
 				expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
 			}
 		case "/":
@@ -378,15 +390,18 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s / %s)", expr, right)
 				} else {
+					c.use("_div")
 					expr = fmt.Sprintf("_div(%s, %s)", expr, right)
 				}
 			} else if _, ok := leftType.(types.FloatType); ok {
 				if _, ok := rightType.(types.FloatType); ok {
 					expr = fmt.Sprintf("(%s / %s)", expr, right)
 				} else {
+					c.use("_div")
 					expr = fmt.Sprintf("_div(%s, %s)", expr, right)
 				}
 			} else {
+				c.use("_div")
 				expr = fmt.Sprintf("_div(%s, %s)", expr, right)
 			}
 		case "%":
@@ -394,9 +409,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s %% %s)", expr, right)
 				} else {
+					c.use("_mod")
 					expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
 				}
 			} else {
+				c.use("_mod")
 				expr = fmt.Sprintf("_mod(%s, %s)", expr, right)
 			}
 		case "==":
@@ -443,6 +460,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			c.use("_index")
 			val = fmt.Sprintf("_index(%s, %s)", val, key)
 		} else {
 			start := "0"
@@ -461,6 +479,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				end = e
 			}
+			c.use("_slice")
 			val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, end)
 		}
 	}
@@ -980,109 +999,133 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 	}
 }
 
-// runtimeHelpers contains helper functions injected into generated programs.
-const runtimeHelpers = `
-func _index(v any, k any) any {
-    switch s := v.(type) {
-    case []any:
-        i, ok := k.(int)
-        if !ok {
-            panic("invalid list index")
-        }
-        if i < 0 {
-            i += len(s)
-        }
-        if i < 0 || i >= len(s) {
-            panic("index out of range")
-        }
-        return s[i]
-    case string:
-        i, ok := k.(int)
-        if !ok {
-            panic("invalid string index")
-        }
-        runes := []rune(s)
-        if i < 0 {
-            i += len(runes)
-        }
-        if i < 0 || i >= len(runes) {
-            panic("index out of range")
-        }
-        return string(runes[i])
-    case map[string]any:
-        ks, ok := k.(string)
-        if !ok {
-            panic("invalid map key")
-        }
-        return s[ks]
-    default:
-        panic("invalid index target")
-    }
+// Runtime helper functions injected into generated programs.
+const (
+	helperIndex = "func _index(v any, k any) any {\n" +
+		"    switch s := v.(type) {\n" +
+		"    case []any:\n" +
+		"        i, ok := k.(int)\n" +
+		"        if !ok {\n" +
+		"            panic(\"invalid list index\")\n" +
+		"        }\n" +
+		"        if i < 0 {\n" +
+		"            i += len(s)\n" +
+		"        }\n" +
+		"        if i < 0 || i >= len(s) {\n" +
+		"            panic(\"index out of range\")\n" +
+		"        }\n" +
+		"        return s[i]\n" +
+		"    case string:\n" +
+		"        i, ok := k.(int)\n" +
+		"        if !ok {\n" +
+		"            panic(\"invalid string index\")\n" +
+		"        }\n" +
+		"        runes := []rune(s)\n" +
+		"        if i < 0 {\n" +
+		"            i += len(runes)\n" +
+		"        }\n" +
+		"        if i < 0 || i >= len(runes) {\n" +
+		"            panic(\"index out of range\")\n" +
+		"        }\n" +
+		"        return string(runes[i])\n" +
+		"    case map[string]any:\n" +
+		"        ks, ok := k.(string)\n" +
+		"        if !ok {\n" +
+		"            panic(\"invalid map key\")\n" +
+		"        }\n" +
+		"        return s[ks]\n" +
+		"    default:\n" +
+		"        panic(\"invalid index target\")\n" +
+		"    }\n" +
+		"}\n"
+
+	helperSlice = "func _slice(v any, start, end int) any {\n" +
+		"    switch s := v.(type) {\n" +
+		"    case []any:\n" +
+		"        l := len(s)\n" +
+		"        if start < 0 {\n" +
+		"            start += l\n" +
+		"        }\n" +
+		"        if end < 0 {\n" +
+		"            end += l\n" +
+		"        }\n" +
+		"        if start < 0 || end > l || start > end {\n" +
+		"            panic(\"slice out of range\")\n" +
+		"        }\n" +
+		"        return s[start:end]\n" +
+		"    case string:\n" +
+		"        runes := []rune(s)\n" +
+		"        l := len(runes)\n" +
+		"        if start < 0 {\n" +
+		"            start += l\n" +
+		"        }\n" +
+		"        if end < 0 {\n" +
+		"            end += l\n" +
+		"        }\n" +
+		"        if start < 0 || end > l || start > end {\n" +
+		"            panic(\"slice out of range\")\n" +
+		"        }\n" +
+		"        return string(runes[start:end])\n" +
+		"    default:\n" +
+		"        panic(\"invalid slice target\")\n" +
+		"    }\n" +
+		"}\n"
+
+	helperIter = "func _iter(v any) []any {\n" +
+		"    switch s := v.(type) {\n" +
+		"    case []any:\n" +
+		"        return s\n" +
+		"    case map[string]any:\n" +
+		"        out := make([]any, 0, len(s))\n" +
+		"        for k := range s {\n" +
+		"            out = append(out, k)\n" +
+		"        }\n" +
+		"        return out\n" +
+		"    case string:\n" +
+		"        runes := []rune(s)\n" +
+		"        out := make([]any, len(runes))\n" +
+		"        for i, r := range runes {\n" +
+		"            out[i] = string(r)\n" +
+		"        }\n" +
+		"        return out\n" +
+		"    default:\n" +
+		"        return nil\n" +
+		"    }\n" +
+		"}\n"
+
+	helperAdd = "func _add(a, b any) any { return a.(int) + b.(int) }\n"
+	helperSub = "func _sub(a, b any) any { return a.(int) - b.(int) }\n"
+	helperMul = "func _mul(a, b any) any { return a.(int) * b.(int) }\n"
+	helperDiv = "func _div(a, b any) any { return a.(int) / b.(int) }\n"
+	helperMod = "func _mod(a, b any) any { return a.(int) % b.(int) }\n"
+)
+
+var helperMap = map[string]string{
+	"_index": helperIndex,
+	"_slice": helperSlice,
+	"_iter":  helperIter,
+	"_add":   helperAdd,
+	"_sub":   helperSub,
+	"_mul":   helperMul,
+	"_div":   helperDiv,
+	"_mod":   helperMod,
 }
 
-func _slice(v any, start, end int) any {
-    switch s := v.(type) {
-    case []any:
-        l := len(s)
-        if start < 0 {
-            start += l
-        }
-        if end < 0 {
-            end += l
-        }
-        if start < 0 || end > l || start > end {
-            panic("slice out of range")
-        }
-        return s[start:end]
-    case string:
-        runes := []rune(s)
-        l := len(runes)
-        if start < 0 {
-            start += l
-        }
-        if end < 0 {
-            end += l
-        }
-        if start < 0 || end > l || start > end {
-            panic("slice out of range")
-        }
-        return string(runes[start:end])
-    default:
-        panic("invalid slice target")
-    }
+func (c *Compiler) use(name string) {
+	c.helpers[name] = true
 }
 
-func _iter(v any) []any {
-    switch s := v.(type) {
-    case []any:
-        return s
-    case map[string]any:
-        out := make([]any, 0, len(s))
-        for k := range s {
-            out = append(out, k)
-        }
-        return out
-    case string:
-        runes := []rune(s)
-        out := make([]any, len(runes))
-        for i, r := range runes {
-            out[i] = string(r)
-        }
-        return out
-    default:
-        return nil
-    }
+func (c *Compiler) emitRuntime() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.buf.WriteString(helperMap[n])
+		c.buf.WriteByte('\n')
+	}
 }
-
-func _add(a, b any) any { return a.(int) + b.(int) }
-func _sub(a, b any) any { return a.(int) - b.(int) }
-func _mul(a, b any) any { return a.(int) * b.(int) }
-func _div(a, b any) any { return a.(int) / b.(int) }
-func _mod(a, b any) any { return a.(int) % b.(int) }
-func _eq(a, b any) bool { return a == b }
-func _neq(a, b any) bool { return a != b }
-func _lt(a, b any) bool { return a.(int) < b.(int) }
-func _le(a, b any) bool { return a.(int) <= b.(int) }
-func _gt(a, b any) bool { return a.(int) > b.(int) }
-func _ge(a, b any) bool { return a.(int) >= b.(int) }
-`

@@ -6,35 +6,3 @@ function main(): void {
 	console.log(x)
 }
 main()
-
-
-function _index(v: any, k: any): any {
-  if (Array.isArray(v) || typeof v === "string") {
-    const l = (v as any).length;
-    if (typeof k === "number" && k < 0) k = l + k;
-  }
-  return (v as any)[k];
-}
-
-function _slice(v: any, start: number, end: number): any {
-  if (typeof v === "string" || Array.isArray(v)) {
-    const l = (v as any).length;
-    if (start < 0) start = l + start;
-    if (end < 0) end = l + end;
-    return (v as any).slice(start, end);
-  }
-  throw new Error("invalid slice target");
-}
-
-function _iter(v: any): any[] {
-  if (Array.isArray(v)) return v;
-  if (typeof v === "string") return Array.from(v);
-  if (v && typeof v === "object") return Object.keys(v);
-  return [];
-}
-
-function _len(v: any): number {
-  if (Array.isArray(v) || typeof v === "string") return (v as any).length;
-  if (v && typeof v === "object") return Object.keys(v).length;
-  return 0;
-}

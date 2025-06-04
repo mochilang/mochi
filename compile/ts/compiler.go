@@ -3,6 +3,7 @@ package tscode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -10,13 +11,14 @@ import (
 
 // Compiler translates a Mochi AST into TypeScript source code that can be run with Deno.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
+	buf     bytes.Buffer
+	indent  int
+	helpers map[string]bool
 }
 
 // New creates a new TypeScript compiler instance.
 func New() *Compiler {
-	return &Compiler{}
+	return &Compiler{helpers: make(map[string]bool)}
 }
 
 // Compile generates TypeScript source code for the given program.
@@ -48,7 +50,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("}")
 	c.writeln("main()")
 	c.writeln("")
-	c.writeln(runtimeHelpers)
+	c.emitRuntime()
 	return c.buf.Bytes(), nil
 }
 
@@ -190,6 +192,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	c.use("_iter")
 	c.writeIndent()
 	c.buf.WriteString(fmt.Sprintf("for (const %s of _iter(%s)) {\n", name, src))
 	c.indent++
@@ -282,12 +285,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 			}
+			c.use("_slice")
 			expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
 		} else {
 			idxExpr, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return "", err
 			}
+			c.use("_index")
 			expr = fmt.Sprintf("_index(%s, %s)", expr, idxExpr)
 		}
 	}
@@ -337,6 +342,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "print":
 		return fmt.Sprintf("console.log(%s)", argStr), nil
 	case "len":
+		c.use("_len")
 		return fmt.Sprintf("_len(%s)", argStr), nil
 	case "now":
 		// performance.now() returns milliseconds as a float. Multiply
@@ -462,36 +468,62 @@ func sanitizeName(name string) string {
 	return b.String()
 }
 
-// runtimeHelpers contains helper functions injected into generated programs.
-const runtimeHelpers = `
-function _index(v: any, k: any): any {
-  if (Array.isArray(v) || typeof v === "string") {
-    const l = (v as any).length;
-    if (typeof k === "number" && k < 0) k = l + k;
-  }
-  return (v as any)[k];
+// Runtime helper functions injected into generated programs.
+const (
+	helperIndex = "function _index(v: any, k: any): any {\n" +
+		"  if (Array.isArray(v) || typeof v === \"string\") {\n" +
+		"    const l = (v as any).length;\n" +
+		"    if (typeof k === \"number\" && k < 0) k = l + k;\n" +
+		"  }\n" +
+		"  return (v as any)[k];\n" +
+		"}\n"
+
+	helperSlice = "function _slice(v: any, start: number, end: number): any {\n" +
+		"  if (typeof v === \"string\" || Array.isArray(v)) {\n" +
+		"    const l = (v as any).length;\n" +
+		"    if (start < 0) start = l + start;\n" +
+		"    if (end < 0) end = l + end;\n" +
+		"    return (v as any).slice(start, end);\n" +
+		"  }\n" +
+		"  throw new Error(\"invalid slice target\");\n" +
+		"}\n"
+
+	helperIter = "function _iter(v: any): any[] {\n" +
+		"  if (Array.isArray(v)) return v;\n" +
+		"  if (typeof v === \"string\") return Array.from(v);\n" +
+		"  if (v && typeof v === \"object\") return Object.keys(v);\n" +
+		"  return [];\n" +
+		"}\n"
+
+	helperLen = "function _len(v: any): number {\n" +
+		"  if (Array.isArray(v) || typeof v === \"string\") return (v as any).length;\n" +
+		"  if (v && typeof v === \"object\") return Object.keys(v).length;\n" +
+		"  return 0;\n" +
+		"}\n"
+)
+
+var helperMap = map[string]string{
+	"_index": helperIndex,
+	"_slice": helperSlice,
+	"_iter":  helperIter,
+	"_len":   helperLen,
 }
 
-function _slice(v: any, start: number, end: number): any {
-  if (typeof v === "string" || Array.isArray(v)) {
-    const l = (v as any).length;
-    if (start < 0) start = l + start;
-    if (end < 0) end = l + end;
-    return (v as any).slice(start, end);
-  }
-  throw new Error("invalid slice target");
+func (c *Compiler) use(name string) {
+	c.helpers[name] = true
 }
 
-function _iter(v: any): any[] {
-  if (Array.isArray(v)) return v;
-  if (typeof v === "string") return Array.from(v);
-  if (v && typeof v === "object") return Object.keys(v);
-  return [];
+func (c *Compiler) emitRuntime() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.buf.WriteString(helperMap[n])
+		c.buf.WriteByte('\n')
+	}
 }
-
-function _len(v: any): number {
-  if (Array.isArray(v) || typeof v === "string") return (v as any).length;
-  if (v && typeof v === "object") return Object.keys(v).length;
-  return 0;
-}
-`
