@@ -382,7 +382,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		rightType := c.inferPostfixType(op.Right)
 		switch op.Op {
 		case "+":
-			if _, ok := leftType.(types.IntType); ok {
+			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
+				expr = fmt.Sprintf("(int64(%s) + int64(%s))", expr, right)
+			} else if _, ok := leftType.(types.IntType); ok {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s + %s)", expr, right)
 				} else {
@@ -408,7 +410,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("_add(%s, %s)", expr, right)
 			}
 		case "-":
-			if _, ok := leftType.(types.IntType); ok {
+			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
+				expr = fmt.Sprintf("(int64(%s) - int64(%s))", expr, right)
+			} else if _, ok := leftType.(types.IntType); ok {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s - %s)", expr, right)
 				} else {
@@ -427,7 +431,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("_sub(%s, %s)", expr, right)
 			}
 		case "*":
-			if _, ok := leftType.(types.IntType); ok {
+			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
+				expr = fmt.Sprintf("(int64(%s) * int64(%s))", expr, right)
+			} else if _, ok := leftType.(types.IntType); ok {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s * %s)", expr, right)
 				} else {
@@ -446,7 +452,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("_mul(%s, %s)", expr, right)
 			}
 		case "/":
-			if _, ok := leftType.(types.IntType); ok {
+			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
+				expr = fmt.Sprintf("(int64(%s) / int64(%s))", expr, right)
+			} else if _, ok := leftType.(types.IntType); ok {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s / %s)", expr, right)
 				} else {
@@ -465,7 +473,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("_div(%s, %s)", expr, right)
 			}
 		case "%":
-			if _, ok := leftType.(types.IntType); ok {
+			if _, lok := leftType.(types.Int64Type); lok || isInt64(rightType) {
+				expr = fmt.Sprintf("(int64(%s) %% int64(%s))", expr, right)
+			} else if _, ok := leftType.(types.IntType); ok {
 				if _, ok := rightType.(types.IntType); ok {
 					expr = fmt.Sprintf("(%s %% %s)", expr, right)
 				} else {
@@ -785,6 +795,16 @@ func equalTypes(a, b types.Type) bool {
 	return reflect.DeepEqual(a, b)
 }
 
+func isInt64(t types.Type) bool {
+	_, ok := t.(types.Int64Type)
+	return ok
+}
+
+func isInt(t types.Type) bool {
+	_, ok := t.(types.IntType)
+	return ok
+}
+
 func resolveTypeRef(t *parser.TypeRef) types.Type {
 	if t == nil {
 		return types.AnyType{}
@@ -848,6 +868,12 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 		rt := c.inferPostfixType(op.Right)
 		switch op.Op {
 		case "+", "-", "*", "/", "%":
+			if isInt64(t) {
+				if isInt64(rt) || isInt(rt) {
+					t = types.Int64Type{}
+					continue
+				}
+			}
 			if _, ok := t.(types.IntType); ok {
 				if _, ok := rt.(types.IntType); ok {
 					t = types.IntType{}
@@ -928,8 +954,10 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		return types.AnyType{}
 	case p.Call != nil:
 		switch p.Call.Func {
-		case "len", "now":
+		case "len":
 			return types.IntType{}
+		case "now":
+			return types.Int64Type{}
 		default:
 			if c.env != nil {
 				if t, err := c.env.GetVar(p.Call.Func); err == nil {
