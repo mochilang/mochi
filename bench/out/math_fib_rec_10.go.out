@@ -15,10 +15,10 @@ func fib(n int) int {
 
 func main() {
 	var n int = 10
-	var start int = int(time.Now().UnixNano())
+	var start int64 = time.Now().UnixNano()
 	var result int = fib(n)
-	var duration int = (((int(time.Now().UnixNano()) - start)) / 1000000)
-	var output map[string]int = map[string]int{"duration_ms": duration, "output": result}
+	var duration int64 = (int64(((int64(time.Now().UnixNano()) - int64(start)))) / int64(1000000))
+	var output map[string]int64 = map[string]int64{"duration_ms": duration, "output": int64(result)}
 	func(){b,_:=json.Marshal(output);fmt.Println(string(b))}()
 }
 
