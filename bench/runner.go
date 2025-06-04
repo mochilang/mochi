@@ -417,3 +417,52 @@ func exportMarkdown(results []Result) error {
 
 	return os.WriteFile("BENCHMARK.md", []byte(b.String()), 0644)
 }
+
+// GenerateOutputs compiles all benchmark templates to Go and TypeScript under
+// outDir. It mirrors the functionality previously provided by the
+// gen-bench-out command.
+func GenerateOutputs(outDir string) error {
+	base := "template"
+
+	os.RemoveAll(outDir)
+	if err := os.MkdirAll(outDir, 0755); err != nil {
+		return err
+	}
+
+	return fs.WalkDir(templatesFS, base, func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return err
+		}
+		if filepath.Ext(path) != ".mochi" {
+			return nil
+		}
+
+		parts := strings.Split(path, "/")
+		if len(parts) < 4 {
+			return nil
+		}
+		category := parts[1]
+		name := strings.TrimSuffix(parts[2], "")
+		if name == "matrix_mul" {
+			return nil
+		}
+
+		for _, n := range []int{10, 20, 30} {
+			tmp := filepath.Join(outDir, "tmp.mochi")
+			render(path, map[string]string{"N": fmt.Sprintf("%d", n)}, tmp)
+
+			goOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.go.out", category, name, n))
+			if err := compileToGo(tmp, goOut); err != nil {
+				return err
+			}
+
+			tsOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.ts.out", category, name, n))
+			if err := compileToTs(tmp, tsOut); err != nil {
+				return err
+			}
+
+			os.Remove(tmp)
+		}
+		return nil
+	})
+}
