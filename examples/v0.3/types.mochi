@@ -33,3 +33,5 @@ let book: Book = Book {
 }
 
 print("custom types defined")
+print(book.author.name)
+

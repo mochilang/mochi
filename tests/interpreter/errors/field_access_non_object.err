@@ -1,8 +1,0 @@
-error[I007]: cannot access field `name` on non-object of type int
-  --> tests/interpreter/errors/field_access_non_object.mochi:2:7
-
-  2 | print(x.name) // 42 is not an object
-    |       ^
-
-help:
-  Access fields only on objects or maps.

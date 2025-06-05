@@ -1,2 +1,0 @@
-let x = 42
-print(x.name) // 42 is not an object

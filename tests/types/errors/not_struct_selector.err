@@ -1,0 +1,8 @@
+1. error[T027]: int is not a struct
+  --> tests/types/errors/not_struct_selector.mochi:2:10
+
+  2 |  let y = x.foo
+    |          ^
+
+help:
+  Field access is only valid on struct types.

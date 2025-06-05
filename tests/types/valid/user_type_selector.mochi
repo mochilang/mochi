@@ -1,0 +1,4 @@
+ type Person { name: string }
+ type Book { author: Person }
+ let book: Book = Book { author: Person { name: "Bob" } }
+ let n: string = book.author.name
