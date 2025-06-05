@@ -14,11 +14,12 @@ import (
 )
 
 var update = flag.Bool("update", false, "update golden files")
+var LogToDB = os.Getenv("MOCHI_LOG_GOLDEN") == "true"
 
 // Runner defines a test processor function.
 type Runner func(srcPath string) ([]byte, error)
 
-// Run executes golden file-based tests and logs to db.GoldenModel.
+// Run executes golden file-based tests and optionally logs to db.GoldenModel.
 func Run(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 	rootDir := findRepoRoot(t)
 	pattern := filepath.Join(rootDir, dir, "*"+srcExt)
@@ -54,16 +55,22 @@ func Run(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 				CreatedAt: time.Now(),
 			}
 
+			log := func() {
+				if LogToDB {
+					db.LogGolden(context.Background(), model)
+				}
+			}
+
 			if err != nil {
 				model.Status = "error"
 				model.Error = err.Error()
-				db.LogGolden(context.Background(), model)
+				log()
 				t.Fatalf("process error: %v", err)
 			}
 			if got == nil {
 				model.Status = "fail"
 				model.Error = "got nil output"
-				db.LogGolden(context.Background(), model)
+				log()
 				t.Fatal("got nil output")
 			}
 
@@ -75,7 +82,7 @@ func Run(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 				}
 				t.Logf("updated: %s", wantPath)
 				model.Status = "ok"
-				db.LogGolden(context.Background(), model)
+				log()
 				return
 			}
 
@@ -83,7 +90,7 @@ func Run(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 			if err != nil {
 				model.Status = "error"
 				model.Error = "missing golden: " + err.Error()
-				db.LogGolden(context.Background(), model)
+				log()
 				t.Fatalf("failed to read golden: %v", err)
 			}
 			want = bytes.TrimSpace(want)
@@ -92,13 +99,13 @@ func Run(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 			if !bytes.Equal(got, want) {
 				model.Status = "fail"
 				model.Error = "golden mismatch"
-				db.LogGolden(context.Background(), model)
+				log()
 				t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name+goldenExt, got, want)
 				return
 			}
 
 			model.Status = "ok"
-			db.LogGolden(context.Background(), model)
+			log()
 		})
 	}
 }
