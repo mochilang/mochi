@@ -933,7 +933,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 
 		if p.Generate.Target != "text" {
-			opts = append(opts, llm.WithResponseFormat("json_object"))
+			opts = append(opts, llm.WithResponseFormat(llm.ResponseFormat{Type: "json_object"}))
 		}
 
 		resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)

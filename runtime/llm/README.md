@@ -79,9 +79,14 @@ type Options struct {
     Params         map[string]any
     Tools          []llm.Tool
     ToolChoice     string
-    ResponseFormat string
+    ResponseFormat *llm.ResponseFormat
 }
 ```
+
+`ResponseFormat` specifies structured output requirements. Set `Type` to
+`"json_object"` to force JSON output and optionally provide a JSON Schema in
+`Schema`. When requesting JSON output, ensure your prompt explicitly instructs
+the model to produce JSON.
 
 ### Optional Fields
 
