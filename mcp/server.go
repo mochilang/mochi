@@ -29,6 +29,7 @@ func registerEval(s *server.MCPServer) {
 	tool := mcp.NewTool("mochi_eval",
 		mcp.WithDescription("Evaluate Mochi source code and return the result."),
 		mcp.WithString("code", mcp.Required(), mcp.Description("The Mochi source code to evaluate.")),
+		mcp.WithString("filename", mcp.Description("Optional filename for logging/debugging.")),
 	)
 
 	s.AddTool(tool, func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -42,7 +43,12 @@ func registerEval(s *server.MCPServer) {
 			return mcp.NewToolResultText("missing 'code' string parameter"), nil
 		}
 
-		output, err := runProgram(ctx, code)
+		filename := ""
+		if fname, ok := args["filename"].(string); ok {
+			filename = fname
+		}
+
+		output, err := runProgram(ctx, code, filename)
 		return mcp.NewToolResultText(output), err
 	})
 }
@@ -60,7 +66,7 @@ func registerCheatsheet(s *server.MCPServer) {
 
 // runProgram parses, type-checks, and executes the given Mochi source code.
 // It returns captured output as a string and a possible error.
-func runProgram(ctx context.Context, source string) (string, error) {
+func runProgram(ctx context.Context, source string, filename string) (string, error) {
 	color.NoColor = true // Ensure plain output for MCP clients
 
 	start := time.Now()
@@ -68,12 +74,11 @@ func runProgram(ctx context.Context, source string) (string, error) {
 	sessionID := getSessionID()
 	agent := getAgent()
 
-	// Log success on normal execution
 	logSuccess := func() {
 		db.LogRun(ctx, &db.RunModel{
 			SessionID: sessionID,
 			Agent:     agent,
-			File:      "",
+			File:      filename,
 			Source:    source,
 			Status:    "ok",
 			Error:     "",
@@ -81,13 +86,12 @@ func runProgram(ctx context.Context, source string) (string, error) {
 		})
 	}
 
-	// Log failure with full error output from output.String()
 	logFailure := func(stage string) error {
 		fullOutput := output.String()
 		db.LogRun(ctx, &db.RunModel{
 			SessionID: sessionID,
 			Agent:     agent,
-			File:      "",
+			File:      filename,
 			Source:    source,
 			Status:    stage,
 			Error:     fullOutput,
