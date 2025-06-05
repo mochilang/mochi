@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -37,6 +38,7 @@ func (s *llmStore) Insert(ctx context.Context, m *LLMModel) error {
 	if m.CreatedAt.IsZero() {
 		m.CreatedAt = time.Now()
 	}
+	duration := fmt.Sprintf("%.9f seconds", m.Duration.Seconds())
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO llm (
 			session_id, agent, model, request, response,
@@ -50,7 +52,7 @@ func (s *llmStore) Insert(ctx context.Context, m *LLMModel) error {
 	`,
 		m.SessionID, m.Agent, m.Model, m.Request, m.Response,
 		m.Prompt, m.Reply, m.PromptTok, m.ReplyTok, m.TotalTok,
-		m.Duration.String(), m.Status, m.CreatedAt,
+		duration, m.Status, m.CreatedAt,
 	)
 	return err
 }

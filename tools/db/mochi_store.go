@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 )
@@ -119,11 +120,12 @@ func (s *mochiStore) logRun(ctx context.Context, r *RunModel) {
 	if r.CreatedAt.IsZero() {
 		r.CreatedAt = time.Now()
 	}
+	duration := fmt.Sprintf("%.9f seconds", r.Duration.Seconds())
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO run (session_id, agent, file, source, status, error, duration, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7::interval, $8)
 	`,
-		r.SessionID, r.Agent, r.File, r.Source, r.Status, r.Error, r.Duration.String(), r.CreatedAt,
+		r.SessionID, r.Agent, r.File, r.Source, r.Status, r.Error, duration, r.CreatedAt,
 	)
 	if err != nil {
 		log.Printf("[mochi] insert run: %v", err)
@@ -140,11 +142,12 @@ func (s *mochiStore) logBuild(ctx context.Context, b *BuildModel) {
 	if b.CreatedAt.IsZero() {
 		b.CreatedAt = time.Now()
 	}
+	duration := fmt.Sprintf("%.9f seconds", b.Duration.Seconds())
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO build (session_id, agent, file, out, target, source, status, error, duration, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::interval, $10)
 	`,
-		b.SessionID, b.Agent, b.File, b.Out, b.Target, b.Source, b.Status, b.Error, b.Duration.String(), b.CreatedAt,
+		b.SessionID, b.Agent, b.File, b.Out, b.Target, b.Source, b.Status, b.Error, duration, b.CreatedAt,
 	)
 	if err != nil {
 		log.Printf("[mochi] insert build: %v", err)
@@ -161,11 +164,12 @@ func (s *mochiStore) logGolden(ctx context.Context, g *GoldenModel) {
 	if g.CreatedAt.IsZero() {
 		g.CreatedAt = time.Now()
 	}
+	duration := fmt.Sprintf("%.9f seconds", g.Duration.Seconds())
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO golden (session_id, agent, name, file, input, output, status, error, duration, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::interval, $10)
 	`,
-		g.SessionID, g.Agent, g.Name, g.File, g.Input, g.Output, g.Status, g.Error, g.Duration.String(), g.CreatedAt,
+		g.SessionID, g.Agent, g.Name, g.File, g.Input, g.Output, g.Status, g.Error, duration, g.CreatedAt,
 	)
 	if err != nil {
 		log.Printf("[mochi] insert golden: %v", err)
