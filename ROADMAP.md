@@ -7,7 +7,7 @@ minimal but expressive.
 This roadmap outlines the language development toward a stable 1.0, with an emphasis on first-class data types, control
 flow, streaming logic, agents, and dataset support.
 
-Current release: v0.2.10. Upcoming 0.2.x versions will expand data types before moving on to streams and agents.
+Current release: v0.2.11. Upcoming 0.2.x versions will expand data types before moving on to streams and agents.
 
 # v0.2.x – Compose data types
 
