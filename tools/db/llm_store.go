@@ -45,12 +45,12 @@ func (s *llmStore) Insert(ctx context.Context, m *LLMModel) error {
 		) VALUES (
 			$1, $2, $3, $4, $5,
 			$6, $7, $8, $9, $10,
-			$11, $12, $13
+			$11::interval, $12, $13
 		)
 	`,
 		m.SessionID, m.Agent, m.Model, m.Request, m.Response,
 		m.Prompt, m.Reply, m.PromptTok, m.ReplyTok, m.TotalTok,
-		m.Duration, m.Status, m.CreatedAt,
+		m.Duration.String(), m.Status, m.CreatedAt,
 	)
 	return err
 }
