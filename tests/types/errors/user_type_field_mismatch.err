@@ -1,0 +1,16 @@
+1. error[T002]: undefined variable: Person
+  --> tests/types/errors/user_type_field_mismatch.mochi:6:19
+
+  6 | let bob: Person = Person { name: 123, age: "old" }
+    |                   ^
+
+help:
+  Check if the variable was declared in this scope.
+   2. error[T002]: undefined variable: name
+  --> tests/types/errors/user_type_field_mismatch.mochi:6:28
+
+  6 | let bob: Person = Person { name: 123, age: "old" }
+    |                            ^
+
+help:
+  Check if the variable was declared in this scope.
