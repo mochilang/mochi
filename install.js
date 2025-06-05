@@ -18,6 +18,7 @@ const filename = `mochi_${platform}_${arch}.tar.gz`;
 const url = `https://github.com/mochilang/mochi/releases/latest/download/${filename}`;
 const destDir = path.join(__dirname, 'bin');
 const destFile = path.join(destDir, filename);
+const binaryName = process.platform === 'win32' ? 'mochi.exe' : 'mochi';
 
 fs.mkdirSync(destDir, { recursive: true });
 
@@ -38,10 +39,16 @@ function download(url, outputPath) {
 async function run() {
   try {
     await download(url, destFile);
-    await tar.x({ file: destFile, cwd: destDir, gzip: true, filter: p => p === 'mochi' });
+    await tar.x({
+      file: destFile,
+      cwd: destDir,
+      gzip: true,
+      filter: p => path.basename(p) === binaryName,
+      strip: 1,
+    });
     fs.unlinkSync(destFile);
     if (process.platform !== 'win32') {
-      fs.chmodSync(path.join(destDir, 'mochi'), 0o755);
+      fs.chmodSync(path.join(destDir, binaryName), 0o755);
     }
     console.log('Mochi binary installed to', destDir);
   } catch (err) {

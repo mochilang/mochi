@@ -97,7 +97,7 @@ func runProgram(ctx context.Context, source string, filename string) (string, er
 			Error:     fullOutput,
 			Duration:  time.Since(start),
 		})
-		return fmt.Errorf(fullOutput)
+		return fmt.Errorf("%s", fullOutput)
 	}
 
 	// Step 1: Parse
@@ -111,7 +111,7 @@ func runProgram(ctx context.Context, source string, filename string) (string, er
 	env := types.NewEnv(nil)
 	typeErrors := types.Check(prog, env)
 	if len(typeErrors) > 0 {
-		fmt.Fprintln(output, "❌ Type Check Failed\n")
+		fmt.Fprintln(output, "❌ Type Check Failed")
 		for i, e := range typeErrors {
 			fmt.Fprintf(output, "  %2d. %v\n", i+1, e)
 		}
