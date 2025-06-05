@@ -11,9 +11,10 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 # Final minimal image
 FROM debian:bookworm-slim
 
-# Install CA certificates for TLS
+# Install CA certificates and ensure update
 RUN apt-get update \
- && apt-get install -y ca-certificates \
+ && apt-get install -y --no-install-recommends ca-certificates openssl \
+ && update-ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
 # Add mochi binary
