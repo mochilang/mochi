@@ -153,6 +153,13 @@ func (c *conn) doRequest(ctx context.Context, req llm.ChatRequest) (*http.Respon
 			payload[k] = v
 		}
 	}
+	format := req.ResponseFormat
+	if format == nil {
+		format = c.opts.ResponseFormat
+	}
+	if format != nil {
+		payload["response_format"] = format
+	}
 	if req.Stream {
 		payload["stream"] = true
 	}

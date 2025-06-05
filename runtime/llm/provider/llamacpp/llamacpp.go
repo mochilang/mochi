@@ -193,8 +193,12 @@ func (c *conn) doRequest(ctx context.Context, req llm.ChatRequest) (*http.Respon
 	if req.ToolChoice != "" {
 		payload["tool_choice"] = req.ToolChoice
 	}
-	if req.ResponseFormat != "" {
-		payload["response_format"] = map[string]any{"type": req.ResponseFormat}
+	format := req.ResponseFormat
+	if format == nil {
+		format = c.opts.ResponseFormat
+	}
+	if format != nil {
+		payload["response_format"] = format
 	}
 	if req.Stream {
 		payload["stream"] = true

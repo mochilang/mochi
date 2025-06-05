@@ -1,12 +1,17 @@
 package llm
 
 // Options are used when opening a connection to a provider.
+type ResponseFormat struct {
+	Type   string         `json:"type"`
+	Schema map[string]any `json:"schema,omitempty"`
+}
+
 type Options struct {
 	Model          string
 	Params         map[string]any
 	Tools          []Tool
 	ToolChoice     string
-	ResponseFormat string
+	ResponseFormat *ResponseFormat
 }
 
 // ChatRequest contains the messages and per-call options sent to the provider.
@@ -63,8 +68,8 @@ func WithTools(tools []Tool) Option { return func(r *ChatRequest) { r.Tools = to
 func WithToolChoice(choice string) Option { return func(r *ChatRequest) { r.ToolChoice = choice } }
 
 // WithResponseFormat requests structured output.
-func WithResponseFormat(format string) Option {
-	return func(r *ChatRequest) { r.ResponseFormat = format }
+func WithResponseFormat(format ResponseFormat) Option {
+	return func(r *ChatRequest) { r.ResponseFormat = &format }
 }
 
 // WithStream enables streaming responses.
