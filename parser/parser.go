@@ -10,7 +10,7 @@ import (
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
-	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|fun|return|let|var|if|else|for|in|generate)\b`},
+	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|type|fun|return|let|var|if|else|for|in|generate)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
@@ -32,6 +32,7 @@ type Statement struct {
 	Expect *ExpectStmt `parser:"| @@"`
 	Agent  *AgentDecl  `parser:"| @@"`
 	Stream *StreamDecl `parser:"| @@"`
+	Type   *TypeDecl   `parser:"| @@"`
 	On     *OnHandler  `parser:"| @@"`
 	Let    *LetStmt    `parser:"| @@"`
 	Var    *VarStmt    `parser:"| @@"`
@@ -74,6 +75,20 @@ type ForStmt struct {
 	Source   *Expr        `parser:"@@"`          // expression to iterate
 	RangeEnd *Expr        `parser:"[ '..' @@ ]"` // optional range end
 	Body     []*Statement `parser:"'{' @@* '}'"`
+}
+
+// --- User-defined Types ---
+
+type TypeDecl struct {
+	Pos    lexer.Position
+	Name   string       `parser:"'type' @Ident"`
+	Fields []*TypeField `parser:"'{' @@* '}'"`
+}
+
+type TypeField struct {
+	Pos  lexer.Position
+	Name string   `parser:"@Ident ':'"`
+	Type *TypeRef `parser:"@@"`
 }
 
 // --- Type System ---
@@ -189,6 +204,17 @@ type MapEntry struct {
 	Value *Expr `parser:"@@"`
 }
 
+type StructLiteral struct {
+	Name   string            `parser:"@Ident"`
+	Fields []*StructLitField `parser:"'{' @@* '}'"`
+}
+
+type StructLitField struct {
+	Pos   lexer.Position
+	Name  string `parser:"@Ident ':'"`
+	Value *Expr  `parser:"@@"`
+}
+
 type GenerateField struct {
 	Name  string `parser:"@Ident ':'"`
 	Value *Expr  `parser:"@@"`
@@ -202,6 +228,7 @@ type GenerateTextExpr struct {
 type Primary struct {
 	Pos      lexer.Position
 	FunExpr  *FunExpr          `parser:"@@"`
+	Struct   *StructLiteral    `parser:"| @@"`
 	Call     *CallExpr         `parser:"| @@"`
 	Selector *SelectorExpr     `parser:"| @@"`
 	List     *ListLiteral      `parser:"| @@"`

@@ -1,0 +1,78 @@
+// core/types.mochi
+// User-defined types: Person and Book
+
+/// Type: Person
+type Person {
+  name: string
+  age: int
+  email: string
+}
+
+/// Type: Book
+type Book {
+  title: string
+  author: Person
+  pages: int
+  tags: list<string>
+  metadata: map<string, string>
+  published: bool
+}
+
+/// Create a Person
+fun new_person(name: string, age: int, email: string): Person {
+  return Person {
+    name: name
+    age: age
+    email: email
+  }
+}
+
+/// Create a Book
+fun new_book(
+  title: string,
+  author: Person,
+  pages: int,
+  tags: list<string>,
+  metadata: map<string, string>,
+  published: bool
+): Book {
+  return Book {
+    title: title
+    author: author
+    pages: pages
+    tags: tags
+    metadata: metadata
+    published: published
+  }
+}
+
+/// Format a Person as string
+fun person_summary(p: Person): string {
+  return p.name + " (" + p.age + ") - " + p.email
+}
+
+/// Format a Book as string
+fun book_summary(b: Book): string {
+  let pub = if b.published { "published" } else { "draft" }
+  let tag_str = join(b.tags, ", ")
+  return "\"" + b.title + "\" by " + b.author.name + ", " +
+         b.pages + " pages [" + pub + "] — Tags: " + tag_str
+}
+
+// ------------------------------
+// ✅ Example usage
+// ------------------------------
+
+let author = new_person("Jane", 35, "jane@example.com")
+
+let book = new_book(
+  "Mochi Essentials",
+  author,
+  180,
+  ["language", "core", "intro"],
+  { "isbn": "111-222-333", "version": "1.0" },
+  true
+)
+
+print(person_summary(author))
+print(book_summary(book))

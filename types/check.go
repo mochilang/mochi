@@ -55,6 +55,13 @@ func (t MapType) String() string {
 	return fmt.Sprintf("{%s: %s}", t.Key.String(), t.Value.String())
 }
 
+type StructType struct {
+	Name   string
+	Fields map[string]Type
+}
+
+func (t StructType) String() string { return t.Name }
+
 type AnyType struct{}
 
 func (AnyType) String() string { return "any" }
@@ -163,6 +170,25 @@ func unify(a, b Type, subst Subst) bool {
 			return false
 		}
 
+	case StructType:
+		bt, ok := b.(StructType)
+		if !ok || at.Name != bt.Name {
+			return false
+		}
+		if len(at.Fields) != len(bt.Fields) {
+			return false
+		}
+		for k, v := range at.Fields {
+			if bv, ok := bt.Fields[k]; ok {
+				if !unify(v, bv, subst) {
+					return false
+				}
+			} else {
+				return false
+			}
+		}
+		return true
+
 	case FuncType:
 		bt, ok := b.(FuncType)
 		if !ok || len(at.Params) != len(bt.Params) {
@@ -260,7 +286,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		name := s.Let.Name
 		var typ Type
 		if s.Let.Type != nil {
-			typ = resolveTypeRef(s.Let.Type)
+			typ = resolveTypeRef(s.Let.Type, env)
 			if s.Let.Value != nil {
 				exprType, err := checkExprWithExpected(s.Let.Value, env, typ)
 				if err != nil {
@@ -286,7 +312,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		name := s.Var.Name
 		var typ Type
 		if s.Var.Type != nil {
-			typ = resolveTypeRef(s.Var.Type)
+			typ = resolveTypeRef(s.Var.Type, env)
 			if s.Var.Value != nil {
 				exprType, err := checkExprWithExpected(s.Var.Value, env, typ)
 				if err != nil {
@@ -380,6 +406,14 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		}
 		return nil
 
+	case s.Type != nil:
+		fields := map[string]Type{}
+		for _, f := range s.Type.Fields {
+			fields[f.Name] = resolveTypeRef(f.Type, env)
+		}
+		env.SetStruct(s.Type.Name, StructType{Name: s.Type.Name, Fields: fields})
+		return nil
+
 	case s.Fun != nil:
 		name := s.Fun.Name
 		params := []Type{}
@@ -387,11 +421,11 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			if p.Type == nil {
 				return errParamMissingType(s.Fun.Pos, p.Name)
 			}
-			params = append(params, resolveTypeRef(p.Type))
+			params = append(params, resolveTypeRef(p.Type, env))
 		}
 		var ret Type = VoidType{}
 		if s.Fun.Return != nil {
-			ret = resolveTypeRef(s.Fun.Return)
+			ret = resolveTypeRef(s.Fun.Return, env)
 		}
 		env.SetVar(name, FuncType{Params: params, Return: ret}, false)
 
@@ -442,15 +476,15 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 	return nil
 }
 
-func resolveTypeRef(t *parser.TypeRef) Type {
+func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 	if t.Fun != nil {
 		params := make([]Type, len(t.Fun.Params))
 		for i, p := range t.Fun.Params {
-			params[i] = resolveTypeRef(p)
+			params[i] = resolveTypeRef(p, env)
 		}
 		var ret Type = VoidType{}
 		if t.Fun.Return != nil {
-			ret = resolveTypeRef(t.Fun.Return)
+			ret = resolveTypeRef(t.Fun.Return, env)
 		}
 		return FuncType{Params: params, Return: ret}
 	}
@@ -461,13 +495,13 @@ func resolveTypeRef(t *parser.TypeRef) Type {
 		switch name {
 		case "list":
 			if len(args) == 1 {
-				return ListType{Elem: resolveTypeRef(args[0])}
+				return ListType{Elem: resolveTypeRef(args[0], env)}
 			}
 		case "map":
 			if len(args) == 2 {
 				return MapType{
-					Key:   resolveTypeRef(args[0]),
-					Value: resolveTypeRef(args[1]),
+					Key:   resolveTypeRef(args[0], env),
+					Value: resolveTypeRef(args[1], env),
 				}
 			}
 		}
@@ -486,6 +520,9 @@ func resolveTypeRef(t *parser.TypeRef) Type {
 		case "bool":
 			return BoolType{}
 		default:
+			if st, ok := env.GetStruct(*t.Simple); ok {
+				return st
+			}
 			return AnyType{}
 		}
 	}
@@ -771,6 +808,26 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return nil, errNotFunction(p.Pos, p.Call.Func)
 		}
 
+	case p.Struct != nil:
+		st, ok := env.GetStruct(p.Struct.Name)
+		if !ok {
+			return nil, errUnknownType(p.Pos, p.Struct.Name)
+		}
+		for _, field := range p.Struct.Fields {
+			ft, ok := st.Fields[field.Name]
+			if !ok {
+				return nil, errUnknownField(p.Pos, field.Name, st)
+			}
+			valT, err := checkExpr(field.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			if !unify(ft, valT, nil) {
+				return nil, errTypeMismatch(field.Value.Pos, ft, valT)
+			}
+		}
+		return st, nil
+
 	case p.List != nil:
 		var elemType Type = nil
 		for _, elem := range p.List.Elems {
@@ -867,12 +924,12 @@ func checkFunExpr(f *parser.FunExpr, env *Env, expected Type, pos lexer.Position
 		if p.Type == nil {
 			return nil, errParamMissingType(pos, p.Name)
 		}
-		paramTypes[i] = resolveTypeRef(p.Type)
+		paramTypes[i] = resolveTypeRef(p.Type, env)
 	}
 
 	var declaredRet Type
 	if f.Return != nil {
-		declaredRet = resolveTypeRef(f.Return)
+		declaredRet = resolveTypeRef(f.Return, env)
 	} else if expectedFunc != nil {
 		declaredRet = expectedFunc.Return
 	} else {

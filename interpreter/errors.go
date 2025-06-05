@@ -29,8 +29,8 @@ var Errors = map[string]diagnostic.Template{
 	"I013": {Code: "I013", Message: "index must be an integer, got %T", Help: "Use an `int` value as an index (e.g., `list[0]`)."},
 	"I014": {Code: "I014", Message: "index %d out of bounds for length %d", Help: "Use an index within bounds of the list or string."},
 	"I015": {Code: "I015", Message: "invalid slice range [%d:%d] for length %d", Help: "Make sure the slice range is valid and within bounds."},
-        "I016": {Code: "I016", Message: "cannot index value of type %s", Help: "Indexing is supported only on lists, strings, or maps."},
-        "I017": {Code: "I017", Message: "cannot take length of type %s", Help: "Use `len(...)` only on lists and strings."},
+	"I016": {Code: "I016", Message: "cannot index value of type %s", Help: "Indexing is supported only on lists, strings, or maps."},
+	"I017": {Code: "I017", Message: "cannot take length of type %s", Help: "Use `len(...)` only on lists and strings."},
 
 	// --- Testing ---
 	"I018": {Code: "I018", Message: "expect condition failed", Help: "The condition evaluated to `false`."},
