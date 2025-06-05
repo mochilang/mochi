@@ -763,7 +763,17 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if err != nil {
 			return nil, errUnknownVariable(p.Pos, p.Selector.Root)
 		}
-		// TODO: implement proper struct/stream field access checking
+		for _, field := range p.Selector.Tail {
+			st, ok := typ.(StructType)
+			if !ok {
+				return nil, errNotStruct(p.Pos, typ)
+			}
+			ft, ok := st.Fields[field]
+			if !ok {
+				return nil, errUnknownField(p.Pos, field, st)
+			}
+			typ = ft
+		}
 		return typ, nil
 
 	case p.Call != nil:

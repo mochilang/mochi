@@ -1,0 +1,3 @@
+ type Person { name: string }
+ let p: Person
+ let x = p.age

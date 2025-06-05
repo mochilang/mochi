@@ -1,0 +1,8 @@
+1. error[T026]: unknown field `age` on Person
+  --> tests/types/errors/user_unknown_field.mochi:3:10
+
+  3 |  let x = p.age
+    |          ^
+
+help:
+  Check the struct definition for valid fields.
