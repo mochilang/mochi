@@ -789,8 +789,8 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return ListType{Elem: elemType}, nil
 
-       case p.Map != nil:
-               var keyT, valT Type
+	case p.Map != nil:
+		var keyT, valT Type
 		for _, item := range p.Map.Items {
 			kt, err := checkExpr(item.Key, env)
 			if err != nil {
@@ -817,18 +817,37 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if valT == nil {
 			valT = AnyType{}
 		}
-               return MapType{Key: keyT, Value: valT}, nil
+		return MapType{Key: keyT, Value: valT}, nil
 
-       case p.Generate != nil:
-               for _, f := range p.Generate.Fields {
-                       if _, err := checkExpr(f.Value, env); err != nil {
-                               return nil, err
-                       }
-               }
-               return StringType{}, nil
+	case p.Generate != nil:
+		for _, f := range p.Generate.Fields {
+			var expect Type
+			switch f.Name {
+			case "prompt", "model":
+				expect = StringType{}
+			case "temperature", "top_p":
+				expect = FloatType{}
+			case "max_tokens":
+				expect = IntType{}
+			case "stop":
+				expect = ListType{Elem: StringType{}}
+			case "args":
+				expect = nil
+			}
+			var err error
+			if expect != nil {
+				_, err = checkExprWithExpected(f.Value, env, expect)
+			} else {
+				_, err = checkExpr(f.Value, env)
+			}
+			if err != nil {
+				return nil, err
+			}
+		}
+		return StringType{}, nil
 
-       case p.FunExpr != nil:
-               return checkFunExpr(p.FunExpr, env, expected, p.Pos)
+	case p.FunExpr != nil:
+		return checkFunExpr(p.FunExpr, env, expected, p.Pos)
 
 	case p.Group != nil:
 		return checkExprWithExpected(p.Group, env, expected)

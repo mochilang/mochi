@@ -76,16 +76,20 @@ func init() { llm.Register("my", myProvider{}) }
 ```go
 type Options struct {
     Model          string
-    Temperature    float64
-    MaxTokens      int
+    Params         map[string]any
     Tools          []llm.Tool
     ToolChoice     string
     ResponseFormat string
 }
 ```
 
-Per-call overrides use functional options such as `llm.WithModel`,
-`llm.WithTemperature`, `llm.WithMaxTokens` and `llm.WithStream`.
+### Optional Fields
+
+Requests accept arbitrary parameters stored in a `Params` map. Common fields
+include `temperature`, `top_p`, `max_tokens` and `stop`. Convenience helpers
+like `llm.WithTemperature`, `llm.WithTopP`, `llm.WithMaxTokens` and
+`llm.WithStop` set these parameters, but you can pass any supported option using
+`llm.WithParam` or `llm.WithParams`.
 
 ## DSN Format
 
@@ -131,3 +135,16 @@ Each provider exposes different models. Common options include:
 | ollama   | any local model name |
 | chutes   | any model exposed by the service |
 
+### Provider Documentation
+
+Links to official API docs for each provider:
+
+- [OpenAI](https://platform.openai.com/docs/api-reference/chat)
+- [Claude](https://docs.anthropic.com/claude/reference/messages_post)
+- [Cohere](https://docs.cohere.com/reference/chat)
+- [Gemini](https://ai.google.dev/api/rest)
+- [Grok](https://docs.x.ai)
+- [Mistral](https://docs.mistral.ai)
+- [llama.cpp](https://github.com/ggerganov/llama.cpp/tree/master/examples/server#rest-api)
+- [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md)
+- [Chutes](https://github.com/chutes-dev/chutes)

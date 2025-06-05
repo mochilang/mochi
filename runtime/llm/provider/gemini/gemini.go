@@ -169,24 +169,31 @@ func (c *conn) doRequest(ctx context.Context, req llm.ChatRequest) (*http.Respon
 	payload := map[string]any{
 		"contents": convertMessages(req.Messages),
 	}
-	temp := req.Temperature
-	if temp == 0 {
-		temp = c.opts.Temperature
+
+	params := map[string]any{}
+	for k, v := range c.opts.Params {
+		params[k] = v
 	}
-	if temp != 0 {
-		payload["generationConfig"] = map[string]any{"temperature": temp}
+	for k, v := range req.Params {
+		params[k] = v
 	}
-	mt := req.MaxTokens
-	if mt == 0 {
-		mt = c.opts.MaxTokens
-	}
-	if mt != 0 {
-		cfg, ok := payload["generationConfig"].(map[string]any)
-		if !ok {
-			cfg = make(map[string]any)
-			payload["generationConfig"] = cfg
+	gc := map[string]any{}
+	for k, v := range params {
+		switch k {
+		case "temperature":
+			gc["temperature"] = v
+		case "top_p":
+			gc["topP"] = v
+		case "max_tokens":
+			gc["maxOutputTokens"] = v
+		case "stop":
+			gc["stopSequences"] = v
+		default:
+			gc[k] = v
 		}
-		cfg["maxOutputTokens"] = mt
+	}
+	if len(gc) > 0 {
+		payload["generationConfig"] = gc
 	}
 	if req.Stream {
 		payload["stream"] = true
