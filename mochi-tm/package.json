@@ -2,7 +2,7 @@
   "name": "mochi-tm",
   "displayName": "Mochi",
   "description": "TextMate grammar and language configuration for the Mochi programming language.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "mochi-lang.org",
   "license": "MIT",
   "engines": {
