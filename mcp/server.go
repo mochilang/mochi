@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/google/uuid"
 	"mochi/tools/db"
 	"os"
@@ -60,58 +61,68 @@ func registerCheatsheet(s *server.MCPServer) {
 // runProgram parses, type-checks, and executes the given Mochi source code.
 // It returns captured output as a string and a possible error.
 func runProgram(ctx context.Context, source string) (string, error) {
+	color.NoColor = true // Ensure plain output for MCP clients
+
 	start := time.Now()
 	output := &strings.Builder{}
-	status := "ok"
-	errMsg := ""
-
 	sessionID := getSessionID()
 	agent := getAgent()
 
-	defer func() {
+	// Log success on normal execution
+	logSuccess := func() {
 		db.LogRun(ctx, &db.RunModel{
 			SessionID: sessionID,
 			Agent:     agent,
 			File:      "",
 			Source:    source,
-			Status:    status,
-			Error:     errMsg,
+			Status:    "ok",
+			Error:     "",
 			Duration:  time.Since(start),
 		})
-	}()
+	}
+
+	// Log failure with full error output from output.String()
+	logFailure := func(stage string) error {
+		fullOutput := output.String()
+		db.LogRun(ctx, &db.RunModel{
+			SessionID: sessionID,
+			Agent:     agent,
+			File:      "",
+			Source:    source,
+			Status:    stage,
+			Error:     fullOutput,
+			Duration:  time.Since(start),
+		})
+		return fmt.Errorf(fullOutput)
+	}
 
 	// Step 1: Parse
 	prog, err := parser.ParseString(source)
 	if err != nil {
-		status = "parse_error"
 		fmt.Fprintf(output, "❌ Parse Error\n\n  → %v\n", err)
-		errMsg = err.Error()
-		return "", fmt.Errorf(output.String())
+		return "", logFailure("parse_error")
 	}
 
 	// Step 2: Type Check
 	env := types.NewEnv(nil)
 	typeErrors := types.Check(prog, env)
 	if len(typeErrors) > 0 {
-		status = "type_error"
 		fmt.Fprintln(output, "❌ Type Check Failed\n")
 		for i, e := range typeErrors {
 			fmt.Fprintf(output, "  %2d. %v\n", i+1, e)
 		}
-		errMsg = fmt.Sprintf("%d type issues", len(typeErrors))
-		return "", fmt.Errorf(output.String())
+		return "", logFailure("type_error")
 	}
 
-	// Step 3: Runtime
+	// Step 3: Run
 	interp := interpreter.New(prog, env)
 	interp.Env().SetWriter(output)
 	if err := interp.Run(); err != nil {
-		status = "runtime_error"
 		fmt.Fprintf(output, "❌ Runtime Error\n\n  → %v\n", err)
-		errMsg = err.Error()
-		return "", fmt.Errorf(output.String())
+		return "", logFailure("runtime_error")
 	}
 
+	logSuccess()
 	return output.String(), nil
 }
 
@@ -131,6 +142,7 @@ func getAgent() string {
 
 // ServeStdio starts the MCP server using stdio (for Claude/GPT compatibility).
 func ServeStdio() error {
+	color.NoColor = true // important for non-TTY environments like Claude/GPT
 	s := server.NewMCPServer("mochi", "0.2.10")
 	Register(s)
 	return server.ServeStdio(s)
