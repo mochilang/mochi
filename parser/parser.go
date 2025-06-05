@@ -32,6 +32,7 @@ type Statement struct {
 	Expect *ExpectStmt `parser:"| @@"`
 	Agent  *AgentDecl  `parser:"| @@"`
 	Stream *StreamDecl `parser:"| @@"`
+	Model  *ModelDecl  `parser:"| @@"`
 	Type   *TypeDecl   `parser:"| @@"`
 	On     *OnHandler  `parser:"| @@"`
 	Let    *LetStmt    `parser:"| @@"`
@@ -274,6 +275,18 @@ type StreamDecl struct {
 	Pos    lexer.Position
 	Name   string         `parser:"'stream' @Ident"`
 	Fields []*StreamField `parser:"'{' @@* '}'"`
+}
+
+type ModelDecl struct {
+	Pos    lexer.Position
+	Name   string        `parser:"'model' @Ident"`
+	Fields []*ModelField `parser:"'{' @@* '}'"`
+}
+
+type ModelField struct {
+	Pos   lexer.Position
+	Name  string `parser:"@Ident ':'"`
+	Value *Expr  `parser:"@@"`
 }
 
 type StreamField struct {

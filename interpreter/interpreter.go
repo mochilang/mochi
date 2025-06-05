@@ -355,6 +355,29 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		// type declarations have no runtime effect
 		return nil
 
+	case s.Model != nil:
+		spec := types.ModelSpec{Params: map[string]any{}}
+		for _, f := range s.Model.Fields {
+			v, err := i.evalExpr(f.Value)
+			if err != nil {
+				return err
+			}
+			switch f.Name {
+			case "provider":
+				if s, ok := v.(string); ok {
+					spec.Provider = s
+				}
+			case "name":
+				if s, ok := v.(string); ok {
+					spec.Name = s
+				}
+			default:
+				spec.Params[f.Name] = v
+			}
+		}
+		i.env.SetModel(s.Model.Name, spec)
+		return nil
+
 	case s.Test != nil:
 		fmt.Printf("🔍 Test %s\n", s.Test.Name)
 		child := types.NewEnv(i.env)
@@ -892,8 +915,9 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		params := map[string]any{}
 		reqParams := map[string]any{}
 		var (
-			prompt string
-			model  string
+			prompt   string
+			modelStr string
+			provider string
 		)
 		for _, f := range p.Generate.Fields {
 			v, err := i.evalExpr(f.Value)
@@ -915,7 +939,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				reqParams[f.Name] = v
 			case "model":
 				if s, ok := v.(string); ok {
-					model = s
+					modelStr = s
 				}
 			default:
 				reqParams[f.Name] = v
@@ -924,9 +948,26 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 
 		prompt = interpolatePrompt(prompt, params)
 
+		if modelStr != "" {
+			if parts := strings.SplitN(modelStr, ":", 2); len(parts) == 2 {
+				provider = parts[0]
+				modelStr = parts[1]
+			} else if spec, ok := i.env.GetModel(modelStr); ok {
+				provider = spec.Provider
+				if spec.Name != "" {
+					modelStr = spec.Name
+				}
+				for k, v := range spec.Params {
+					if _, ok := reqParams[k]; !ok {
+						reqParams[k] = v
+					}
+				}
+			}
+		}
+
 		opts := []llm.Option{}
-		if model != "" {
-			opts = append(opts, llm.WithModel(model))
+		if modelStr != "" {
+			opts = append(opts, llm.WithModel(modelStr))
 		}
 		for k, v := range reqParams {
 			opts = append(opts, llm.WithParam(k, v))
@@ -940,7 +981,18 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			opts = append(opts, llm.WithResponseFormat(format))
 		}
 
-		resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
+		var resp *llm.ChatResponse
+		var err error
+		if provider != "" {
+			client, errOpen := llm.Open(provider, "", llm.Options{Model: modelStr})
+			if errOpen != nil {
+				return nil, errOpen
+			}
+			defer client.Close()
+			resp, err = client.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
+		} else {
+			resp, err = llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
+		}
 		if err != nil {
 			return nil, err
 		}

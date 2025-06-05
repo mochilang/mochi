@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"mochi/runtime/llm"
@@ -40,6 +41,9 @@ func (provider) Open(dsn string, opts llm.Options) (llm.Conn, error) {
 	}
 	if base == "" {
 		return nil, errors.New("chutes: missing base url")
+	}
+	if key == "" {
+		key = os.Getenv("CHUTES_API_TOKEN")
 	}
 	if key == "" {
 		return nil, errors.New("chutes: missing api_token")

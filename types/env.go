@@ -7,6 +7,13 @@ import (
 	"os"
 )
 
+// ModelSpec defines a named model configuration.
+type ModelSpec struct {
+	Provider string
+	Name     string
+	Params   map[string]any
+}
+
 // Env holds both type and value bindings for variables and functions.
 type Env struct {
 	parent *Env
@@ -16,6 +23,7 @@ type Env struct {
 	mut     map[string]bool            // mutability of variables
 	values  map[string]any             // runtime values
 	funcs   map[string]*parser.FunStmt // function declarations
+	models  map[string]ModelSpec       // model aliases
 
 	output io.Writer // default: os.Stdout
 }
@@ -33,6 +41,7 @@ func NewEnv(parent *Env) *Env {
 		mut:     make(map[string]bool),
 		values:  make(map[string]any),
 		funcs:   make(map[string]*parser.FunStmt),
+		models:  make(map[string]ModelSpec),
 		output:  out,
 	}
 }
@@ -53,6 +62,20 @@ func (e *Env) GetStruct(name string) (StructType, bool) {
 		return e.parent.GetStruct(name)
 	}
 	return StructType{}, false
+}
+
+// SetModel defines a model alias.
+func (e *Env) SetModel(name string, spec ModelSpec) { e.models[name] = spec }
+
+// GetModel retrieves a model alias.
+func (e *Env) GetModel(name string) (ModelSpec, bool) {
+	if m, ok := e.models[name]; ok {
+		return m, true
+	}
+	if e.parent != nil {
+		return e.parent.GetModel(name)
+	}
+	return ModelSpec{}, false
 }
 
 // SetVar defines a variable's static type.
@@ -156,6 +179,7 @@ func (e *Env) Copy() *Env {
 		mut:    make(map[string]bool, len(e.mut)),
 		values: make(map[string]any, len(e.values)),
 		funcs:  make(map[string]*parser.FunStmt, len(e.funcs)),
+		models: make(map[string]ModelSpec, len(e.models)),
 		output: e.output,
 	}
 	for k, v := range e.types {
@@ -169,6 +193,9 @@ func (e *Env) Copy() *Env {
 	}
 	for k, v := range e.funcs {
 		newEnv.funcs[k] = v
+	}
+	for k, v := range e.models {
+		newEnv.models[k] = v
 	}
 	return newEnv
 }
