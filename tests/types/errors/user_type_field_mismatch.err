@@ -1,16 +1,8 @@
-1. error[T002]: undefined variable: Person
-  --> tests/types/errors/user_type_field_mismatch.mochi:6:19
+1. error[T008]: type mismatch: expected string, got int
+  --> tests/types/errors/user_type_field_mismatch.mochi:6:34
 
   6 | let bob: Person = Person { name: 123, age: "old" }
-    |                   ^
+    |                                  ^
 
 help:
-  Check if the variable was declared in this scope.
-   2. error[T002]: undefined variable: name
-  --> tests/types/errors/user_type_field_mismatch.mochi:6:28
-
-  6 | let bob: Person = Person { name: 123, age: "old" }
-    |                            ^
-
-help:
-  Check if the variable was declared in this scope.
+  Change the value to match the expected type.

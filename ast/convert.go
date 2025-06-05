@@ -94,6 +94,17 @@ func FromStatement(s *parser.Statement) *Node {
 		}
 		return n
 
+	case s.Type != nil:
+		n := &Node{Kind: "type", Value: s.Type.Name}
+		for _, f := range s.Type.Fields {
+			n.Children = append(n.Children, &Node{
+				Kind:     "field",
+				Value:    f.Name,
+				Children: []*Node{FromTypeRef(f.Type)},
+			})
+		}
+		return n
+
 	case s.Test != nil:
 		n := &Node{Kind: "test", Value: s.Test.Name}
 		n.Children = append(n.Children, mapStatements(s.Test.Body)...)
@@ -270,6 +281,17 @@ func FromPrimary(p *parser.Primary) *Node {
 			root = &Node{Kind: "selector", Value: field, Children: []*Node{root}}
 		}
 		return root
+
+	case p.Struct != nil:
+		n := &Node{Kind: "struct", Value: p.Struct.Name}
+		for _, field := range p.Struct.Fields {
+			n.Children = append(n.Children, &Node{
+				Kind:     "field",
+				Value:    field.Name,
+				Children: []*Node{FromExpr(field.Value)},
+			})
+		}
+		return n
 
 	case p.List != nil:
 		n := &Node{Kind: "list"}
