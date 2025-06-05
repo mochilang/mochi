@@ -48,11 +48,14 @@ func Open(providerName, dsn string, opts Options) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Client{conn: conn}, nil
+	return &Client{conn: conn, opts: opts}, nil
 }
 
 // Client represents a connection to an LLM backend.
-type Client struct{ conn Conn }
+type Client struct {
+	conn Conn
+	opts Options
+}
 
 // Close closes the underlying connection.
 func (c *Client) Close() error { return c.conn.Close() }
@@ -63,6 +66,11 @@ func (c *Client) Chat(ctx context.Context, msgs []Message, opts ...Option) (*Cha
 	for _, opt := range opts {
 		opt(&req)
 	}
+
+	if req.Model == "" {
+		req.Model = c.opts.Model
+	}
+	selectedModel := req.Model
 
 	start := time.Now()
 	resp, err := c.conn.Chat(ctx, req)
@@ -81,11 +89,15 @@ func (c *Client) Chat(ctx context.Context, msgs []Message, opts ...Option) (*Cha
 		respJSON, _ = json.Marshal(resp)
 		reply = resp.Message.Content
 		model = resp.Model
+		if model == "" {
+			model = selectedModel
+		}
 		if prompt == "" {
 			prompt = lastUser(msgs)
 		}
 	} else {
 		prompt = lastUser(msgs)
+		model = selectedModel
 	}
 	var pt, rt, tt int
 	if resp != nil && resp.Usage != nil {
@@ -118,6 +130,10 @@ func (c *Client) ChatStream(ctx context.Context, msgs []Message, opts ...Option)
 	for _, opt := range opts {
 		opt(&req)
 	}
+	if req.Model == "" {
+		req.Model = c.opts.Model
+	}
+	selectedModel := req.Model
 	req.Stream = true
 	start := time.Now()
 	sid := getSessionID()
@@ -127,7 +143,7 @@ func (c *Client) ChatStream(ctx context.Context, msgs []Message, opts ...Option)
 		db.LogLLM(ctx, &db.LLMModel{
 			SessionID: sid,
 			Agent:     agent,
-			Model:     "",
+			Model:     selectedModel,
 			Request:   mustJSON(req),
 			Response:  nil,
 			Prompt:    lastUser(msgs),
@@ -144,6 +160,7 @@ func (c *Client) ChatStream(ctx context.Context, msgs []Message, opts ...Option)
 		start:     start,
 		sessionID: sid,
 		agent:     agent,
+		model:     selectedModel,
 	}, nil
 }
 
@@ -170,6 +187,7 @@ type logStream struct {
 	start     time.Time
 	sessionID string
 	agent     string
+	model     string
 	buf       strings.Builder
 	logged    bool
 }
@@ -206,7 +224,7 @@ func (ls *logStream) log(status string) {
 	db.LogLLM(context.Background(), &db.LLMModel{
 		SessionID: ls.sessionID,
 		Agent:     ls.agent,
-		Model:     ls.req.Model,
+		Model:     ls.model,
 		Request:   mustJSON(ls.req),
 		Response:  mustJSON(map[string]string{"content": ls.buf.String()}),
 		Prompt:    lastUser(ls.req.Messages),
