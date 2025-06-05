@@ -157,19 +157,15 @@ func (c *conn) doRequest(ctx context.Context, req llm.ChatRequest) (*http.Respon
 		"model":    model,
 		"messages": convertMessages(req.Messages),
 	}
-	temp := req.Temperature
-	if temp == 0 {
-		temp = c.opts.Temperature
+	params := map[string]any{}
+	for k, v := range c.opts.Params {
+		params[k] = v
 	}
-	if temp != 0 {
-		payload["temperature"] = temp
+	for k, v := range req.Params {
+		params[k] = v
 	}
-	mt := req.MaxTokens
-	if mt == 0 {
-		mt = c.opts.MaxTokens
-	}
-	if mt != 0 {
-		payload["max_tokens"] = mt
+	for k, v := range params {
+		payload[k] = v
 	}
 	if req.Stream {
 		payload["stream"] = true

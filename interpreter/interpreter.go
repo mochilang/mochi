@@ -875,11 +875,10 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 
 	case p.Generate != nil:
 		params := map[string]any{}
+		reqParams := map[string]any{}
 		var (
-			prompt      string
-			temperature float64
-			maxTokens   int
-			model       string
+			prompt string
+			model  string
 		)
 		for _, f := range p.Generate.Fields {
 			v, err := i.evalExpr(f.Value)
@@ -897,28 +896,14 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 						params[k] = vv
 					}
 				}
-			case "temperature":
-				switch x := v.(type) {
-				case float64:
-					temperature = x
-				case int:
-					temperature = float64(x)
-				case int64:
-					temperature = float64(x)
-				}
-			case "max_tokens":
-				switch x := v.(type) {
-				case int:
-					maxTokens = x
-				case int64:
-					maxTokens = int(x)
-				}
+			case "temperature", "top_p", "max_tokens", "stop":
+				reqParams[f.Name] = v
 			case "model":
 				if s, ok := v.(string); ok {
 					model = s
 				}
 			default:
-				params[f.Name] = v
+				reqParams[f.Name] = v
 			}
 		}
 
@@ -928,11 +913,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		if model != "" {
 			opts = append(opts, llm.WithModel(model))
 		}
-		if temperature != 0 {
-			opts = append(opts, llm.WithTemperature(temperature))
-		}
-		if maxTokens != 0 {
-			opts = append(opts, llm.WithMaxTokens(maxTokens))
+		for k, v := range reqParams {
+			opts = append(opts, llm.WithParam(k, v))
 		}
 
 		resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)

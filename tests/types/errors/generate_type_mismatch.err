@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected string, got int
+  --> tests/types/errors/generate_type_mismatch.mochi:2:11
+
+  2 |   prompt: 123,
+    |           ^
+
+help:
+  Change the value to match the expected type.

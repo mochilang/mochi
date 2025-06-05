@@ -1,0 +1,8 @@
+let poem = generate text {
+  prompt: "hello",
+  temperature: 0.5,
+  top_p: 0.9,
+  max_tokens: 5,
+  stop: ["\n"]
+}
+print(poem)

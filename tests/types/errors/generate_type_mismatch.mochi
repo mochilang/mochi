@@ -1,0 +1,4 @@
+let result = generate text {
+  prompt: 123,
+  temperature: "hot"
+}
