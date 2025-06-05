@@ -1,10 +1,7 @@
 let topic = "spring"
 
 let poem = generate text {
-  prompt: "Write a haiku about $topic",
-  args: { topic: topic },
-  temperature: 0.7,
-  max_tokens: 32,
+  prompt: "Write a haiku about " + topic
 }
 
 print(poem)

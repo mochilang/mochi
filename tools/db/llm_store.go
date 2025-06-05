@@ -39,19 +39,37 @@ func (s *llmStore) Insert(ctx context.Context, m *LLMModel) error {
 	if m.CreatedAt.IsZero() {
 		m.CreatedAt = time.Now()
 	}
+
+	// Ensure request/response JSON are not nil and are valid
+	var reqJSON, respJSON []byte
+	var err error
+
+	if m.Request != nil {
+		reqJSON = m.Request
+	} else {
+		reqJSON = []byte("null")
+	}
+
+	if m.Response != nil {
+		respJSON = m.Response
+	} else {
+		respJSON = []byte("null")
+	}
+
 	duration := fmt.Sprintf("%.9f seconds", m.Duration.Seconds())
-	_, err := s.db.ExecContext(ctx, `
+
+	_, err = s.db.ExecContext(ctx, `
 		INSERT INTO llm (
 			session_id, agent, model, request, response,
 			prompt, reply, prompt_tok, reply_tok, total_tok,
 			duration, status, created_at
 		) VALUES (
-			$1, $2, $3, $4, $5,
+			$1, $2, $3, $4::jsonb, $5::jsonb,
 			$6, $7, $8, $9, $10,
 			$11::interval, $12, $13
 		)
 	`,
-		m.SessionID, m.Agent, m.Model, m.Request, m.Response,
+		m.SessionID, m.Agent, m.Model, reqJSON, respJSON,
 		m.Prompt, m.Reply, m.PromptTok, m.ReplyTok, m.TotalTok,
 		duration, m.Status, m.CreatedAt,
 	)
