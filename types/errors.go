@@ -43,6 +43,9 @@ var Errors = map[string]diagnostic.Template{
 	"T022": {Code: "T022", Message: "cannot iterate over type %s", Help: "Only `list<T>`, `map<K,V>`, or integer ranges are allowed in `for ... in ...` loops."},
 	"T023": {Code: "T023", Message: "range loop requires integer start and end expressions", Help: "Use `for i in 0..10` or ensure both expressions are of type `int`."},
 	"T024": {Code: "T024", Message: "cannot assign to `%s` (immutable)", Help: "Use `var` to declare mutable variables."},
+	"T025": {Code: "T025", Message: "unknown type: %s", Help: "Ensure the type is defined before use."},
+	"T026": {Code: "T026", Message: "unknown field `%s` on %s", Help: "Check the struct definition for valid fields."},
+	"T027": {Code: "T027", Message: "%s is not a struct", Help: "Field access is only valid on struct types."},
 }
 
 // --- Wrapper Functions ---
@@ -145,4 +148,16 @@ func errRangeRequiresInts(pos lexer.Position) error {
 
 func errAssignImmutableVar(pos lexer.Position, name string) error {
 	return Errors["T024"].New(pos, name)
+}
+
+func errUnknownType(pos lexer.Position, name string) error {
+	return Errors["T025"].New(pos, name)
+}
+
+func errUnknownField(pos lexer.Position, field string, typ Type) error {
+	return Errors["T026"].New(pos, field, typ)
+}
+
+func errNotStruct(pos lexer.Position, typ Type) error {
+	return Errors["T027"].New(pos, typ)
 }

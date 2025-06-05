@@ -11,10 +11,11 @@ import (
 type Env struct {
 	parent *Env
 
-	types  map[string]Type            // static types
-	mut    map[string]bool            // mutability of variables
-	values map[string]any             // runtime values
-	funcs  map[string]*parser.FunStmt // function declarations
+	types   map[string]Type            // static types
+	structs map[string]StructType      // user-defined struct types
+	mut     map[string]bool            // mutability of variables
+	values  map[string]any             // runtime values
+	funcs   map[string]*parser.FunStmt // function declarations
 
 	output io.Writer // default: os.Stdout
 }
@@ -26,16 +27,33 @@ func NewEnv(parent *Env) *Env {
 		out = parent.output
 	}
 	return &Env{
-		parent: parent,
-		types:  make(map[string]Type),
-		mut:    make(map[string]bool),
-		values: make(map[string]any),
-		funcs:  make(map[string]*parser.FunStmt),
-		output: out,
+		parent:  parent,
+		types:   make(map[string]Type),
+		structs: make(map[string]StructType),
+		mut:     make(map[string]bool),
+		values:  make(map[string]any),
+		funcs:   make(map[string]*parser.FunStmt),
+		output:  out,
 	}
 }
 
 // --- Type (Static) Binding ---
+
+// SetStruct defines a user-defined struct type.
+func (e *Env) SetStruct(name string, st StructType) {
+	e.structs[name] = st
+}
+
+// GetStruct retrieves a struct type by name.
+func (e *Env) GetStruct(name string) (StructType, bool) {
+	if t, ok := e.structs[name]; ok {
+		return t, true
+	}
+	if e.parent != nil {
+		return e.parent.GetStruct(name)
+	}
+	return StructType{}, false
+}
 
 // SetVar defines a variable's static type.
 func (e *Env) SetVar(name string, typ Type, mutable bool) {

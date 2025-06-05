@@ -351,6 +351,10 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 	case s.For != nil:
 		return i.evalFor(s.For)
 
+	case s.Type != nil:
+		// type declarations have no runtime effect
+		return nil
+
 	case s.Test != nil:
 		fmt.Printf("🔍 Test %s\n", s.Test.Name)
 		child := types.NewEnv(i.env)
@@ -843,6 +847,17 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			val = obj[field]
 		}
 		return val, nil
+
+	case p.Struct != nil:
+		obj := map[string]any{}
+		for _, field := range p.Struct.Fields {
+			v, err := i.evalExpr(field.Value)
+			if err != nil {
+				return nil, err
+			}
+			obj[field.Name] = v
+		}
+		return obj, nil
 
 	case p.List != nil:
 		var elems []any
