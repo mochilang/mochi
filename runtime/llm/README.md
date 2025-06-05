@@ -24,6 +24,11 @@ if err != nil {
 defer client.Close()
 ```
 
+If no explicit client is created, `llm` initializes a package-level default
+client using the `LLM_PROVIDER` and `LLM_DSN` environment variables. The default
+falls back to the built-in `echo` provider which simply returns the last user
+message. Helper functions `llm.Chat` and `llm.ChatStream` use this client.
+
 ### Chatting
 
 Send a set of messages and receive a single response:
@@ -96,6 +101,7 @@ providers.
 | Provider | Sample DSN | Notes |
 |----------|------------|-------|
 | openai   | `https://api.openai.com/v1?api_key=sk-...` | base optional, defaults to `https://api.openai.com/v1` |
+| echo     | `` | built-in provider that echoes the last user message |
 | claude   | `https://api.anthropic.com/v1?api_key=...&version=2023-06-01` | `version` defaults to `2023-06-01` |
 | cohere   | `https://api.cohere.ai/v1?api_key=...` | base optional |
 | gemini   | `https://generativelanguage.googleapis.com/v1beta?api_key=...` | base optional |

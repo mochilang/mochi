@@ -2,8 +2,16 @@ package llm
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
 	"sync"
+	"time"
+
+	"github.com/google/uuid"
+
+	"mochi/tools/db"
 )
 
 var (
@@ -55,7 +63,53 @@ func (c *Client) Chat(ctx context.Context, msgs []Message, opts ...Option) (*Cha
 	for _, opt := range opts {
 		opt(&req)
 	}
-	return c.conn.Chat(ctx, req)
+
+	start := time.Now()
+	resp, err := c.conn.Chat(ctx, req)
+	duration := time.Since(start)
+
+	// Prepare log entry
+	reqJSON, _ := json.Marshal(req)
+	var respJSON []byte
+	var prompt, reply, model, status string
+	if err != nil {
+		status = "error"
+	} else {
+		status = "ok"
+	}
+	if resp != nil {
+		respJSON, _ = json.Marshal(resp)
+		reply = resp.Message.Content
+		model = resp.Model
+		if prompt == "" {
+			prompt = lastUser(msgs)
+		}
+	} else {
+		prompt = lastUser(msgs)
+	}
+	var pt, rt, tt int
+	if resp != nil && resp.Usage != nil {
+		pt = resp.Usage.PromptTokens
+		rt = resp.Usage.CompletionTokens
+		tt = resp.Usage.TotalTokens
+	}
+	db.LogLLM(ctx, &db.LLMModel{
+		SessionID: getSessionID(),
+		Agent:     getAgent(),
+		Model:     model,
+		Request:   reqJSON,
+		Response:  respJSON,
+		Prompt:    prompt,
+		Reply:     reply,
+		PromptTok: pt,
+		ReplyTok:  rt,
+		TotalTok:  tt,
+		Duration:  duration,
+		Status:    status,
+		CreatedAt: time.Now(),
+	})
+
+	return resp, err
 }
 
 // ChatStream requests a streaming response.
@@ -65,5 +119,114 @@ func (c *Client) ChatStream(ctx context.Context, msgs []Message, opts ...Option)
 		opt(&req)
 	}
 	req.Stream = true
-	return c.conn.ChatStream(ctx, req)
+	start := time.Now()
+	sid := getSessionID()
+	agent := getAgent()
+	s, err := c.conn.ChatStream(ctx, req)
+	if err != nil {
+		db.LogLLM(ctx, &db.LLMModel{
+			SessionID: sid,
+			Agent:     agent,
+			Model:     "",
+			Request:   mustJSON(req),
+			Response:  nil,
+			Prompt:    lastUser(msgs),
+			Reply:     "",
+			Status:    "error",
+			CreatedAt: time.Now(),
+			Duration:  time.Since(start),
+		})
+		return nil, err
+	}
+	return &logStream{
+		Stream:    s,
+		req:       req,
+		start:     start,
+		sessionID: sid,
+		agent:     agent,
+	}, nil
+}
+
+func lastUser(msgs []Message) string {
+	for i := len(msgs) - 1; i >= 0; i-- {
+		if msgs[i].Role == "user" {
+			return msgs[i].Content
+		}
+	}
+	if len(msgs) > 0 {
+		return msgs[len(msgs)-1].Content
+	}
+	return ""
+}
+
+func mustJSON(v any) json.RawMessage {
+	b, _ := json.Marshal(v)
+	return b
+}
+
+type logStream struct {
+	Stream
+	req       ChatRequest
+	start     time.Time
+	sessionID string
+	agent     string
+	buf       strings.Builder
+	logged    bool
+}
+
+func (ls *logStream) Recv() (*Chunk, error) {
+	ch, err := ls.Stream.Recv()
+	if err != nil {
+		ls.log("error")
+		return ch, err
+	}
+	if ch != nil {
+		ls.buf.WriteString(ch.Content)
+		if ch.Done {
+			ls.log("ok")
+		}
+	}
+	return ch, nil
+}
+
+func (ls *logStream) Close() error {
+	err := ls.Stream.Close()
+	if !ls.logged {
+		if err != nil {
+			ls.log("error")
+		} else {
+			ls.log("ok")
+		}
+	}
+	return err
+}
+
+func (ls *logStream) log(status string) {
+	ls.logged = true
+	db.LogLLM(context.Background(), &db.LLMModel{
+		SessionID: ls.sessionID,
+		Agent:     ls.agent,
+		Model:     ls.req.Model,
+		Request:   mustJSON(ls.req),
+		Response:  mustJSON(map[string]string{"content": ls.buf.String()}),
+		Prompt:    lastUser(ls.req.Messages),
+		Reply:     ls.buf.String(),
+		Status:    status,
+		Duration:  time.Since(ls.start),
+		CreatedAt: time.Now(),
+	})
+}
+
+func getAgent() string {
+	if agent := os.Getenv("MOCHI_AGENT"); agent != "" {
+		return agent
+	}
+	return "llm"
+}
+
+func getSessionID() string {
+	if sid := os.Getenv("MOCHI_SESSION"); sid != "" {
+		return sid
+	}
+	return uuid.NewString()
 }

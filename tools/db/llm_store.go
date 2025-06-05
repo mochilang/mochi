@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -79,4 +80,16 @@ func (s *llmStore) ensureTable() error {
 		CREATE INDEX IF NOT EXISTS idx_llm_created ON llm(created_at);
 	`)
 	return err
+}
+
+func LogLLM(ctx context.Context, m *LLMModel) {
+	if llm == nil {
+		return
+	}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if err := llm.Insert(ctx, m); err != nil {
+		log.Printf("[llm] insert: %v", err)
+	}
 }
