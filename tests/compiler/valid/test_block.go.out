@@ -1,0 +1,19 @@
+package main
+
+import (
+	"fmt"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func addition_works() {
+	var x int = (1 + 2)
+	expect((x == 3))
+}
+
+func main() {
+	fmt.Println("ok")
+	addition_works()
+}
