@@ -5,6 +5,8 @@ import (
 	"mochi/golden"
 	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/llm"
+	_ "mochi/runtime/llm/provider/echo"
 	"mochi/types"
 	"strings"
 	"testing"
@@ -18,6 +20,11 @@ func TestInterpreter_ValidPrograms(t *testing.T) {
 		}
 
 		typeEnv := types.NewEnv(nil)
+		var errOpen error
+		llm.Default, errOpen = llm.Open("echo", "", llm.Options{})
+		if errOpen != nil {
+			return nil, fmt.Errorf("❌ open llm: %w", errOpen)
+		}
 		typeErrors := types.Check(prog, typeEnv)
 		if len(typeErrors) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", typeErrors[0])
