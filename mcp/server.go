@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/google/uuid"
 	"mochi/tools/db"
 	"os"
@@ -131,6 +132,7 @@ func getAgent() string {
 
 // ServeStdio starts the MCP server using stdio (for Claude/GPT compatibility).
 func ServeStdio() error {
+	color.NoColor = true // important for non-TTY environments like Claude/GPT
 	s := server.NewMCPServer("mochi", "0.2.10")
 	Register(s)
 	return server.ServeStdio(s)
