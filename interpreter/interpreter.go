@@ -1,12 +1,14 @@
 package interpreter
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
 	"github.com/fatih/color"
 	"mochi/parser"
+	"mochi/runtime/llm"
 	"mochi/types"
 	"os"
 	"strings"
@@ -873,7 +875,12 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 
 	case p.Generate != nil:
 		params := map[string]any{}
-		var prompt string
+		var (
+			prompt      string
+			temperature float64
+			maxTokens   int
+			model       string
+		)
 		for _, f := range p.Generate.Fields {
 			v, err := i.evalExpr(f.Value)
 			if err != nil {
@@ -884,12 +891,55 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				if s, ok := v.(string); ok {
 					prompt = s
 				}
+			case "args":
+				if m, ok := v.(map[string]any); ok {
+					for k, vv := range m {
+						params[k] = vv
+					}
+				}
+			case "temperature":
+				switch x := v.(type) {
+				case float64:
+					temperature = x
+				case int:
+					temperature = float64(x)
+				case int64:
+					temperature = float64(x)
+				}
+			case "max_tokens":
+				switch x := v.(type) {
+				case int:
+					maxTokens = x
+				case int64:
+					maxTokens = int(x)
+				}
+			case "model":
+				if s, ok := v.(string); ok {
+					model = s
+				}
 			default:
 				params[f.Name] = v
 			}
 		}
-		_ = params
-		return fmt.Sprintf("[generated %s]", prompt), nil
+
+		prompt = interpolatePrompt(prompt, params)
+
+		opts := []llm.Option{}
+		if model != "" {
+			opts = append(opts, llm.WithModel(model))
+		}
+		if temperature != 0 {
+			opts = append(opts, llm.WithTemperature(temperature))
+		}
+		if maxTokens != 0 {
+			opts = append(opts, llm.WithMaxTokens(maxTokens))
+		}
+
+		resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return resp.Message.Content, nil
 
 	default:
 		return nil, errInvalidPrimaryExpression(p.Pos)
@@ -1305,4 +1355,12 @@ func applyUnaryValue(pos lexer.Position, op string, val Value) (Value, error) {
 
 func truthy(val any) bool {
 	return anyToValue(val).Truthy()
+}
+
+func interpolatePrompt(prompt string, args map[string]any) string {
+	for k, v := range args {
+		placeholder := "$" + k
+		prompt = strings.ReplaceAll(prompt, placeholder, fmt.Sprintf("%v", v))
+	}
+	return prompt
 }
