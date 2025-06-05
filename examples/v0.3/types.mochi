@@ -20,6 +20,16 @@ type Book {
 
 // Example variables using the custom types
 let author: Person
-let book: Book
+
+let bob: Person = Person { name: "Bob", age: 42, email: "bob@ex.com" }
+
+let book: Book = Book {
+  title: "Example",
+  author: bob,
+  pages: 100,
+  tags: ["guide"],
+  metadata: {"isbn": "123"},
+  published: true,
+}
 
 print("custom types defined")

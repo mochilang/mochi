@@ -206,7 +206,7 @@ type MapEntry struct {
 
 type StructLiteral struct {
 	Name   string            `parser:"@Ident"`
-	Fields []*StructLitField `parser:"'{' @@* '}'"`
+	Fields []*StructLitField `parser:"'{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
 }
 
 type StructLitField struct {

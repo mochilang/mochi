@@ -1,0 +1,12 @@
+(program
+  (type Person
+    (field name (type string))
+    (field age (type int))
+  )
+  (let bob
+    (struct Person
+      (field name (string Bob))
+      (field age (int 30))
+    )
+  )
+)
