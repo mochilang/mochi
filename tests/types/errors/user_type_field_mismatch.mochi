@@ -1,0 +1,6 @@
+type Person {
+  name: string
+  age: int
+}
+
+let bob: Person = Person { name: 123, age: "old" }
