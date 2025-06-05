@@ -13,7 +13,7 @@ FROM debian:bookworm-slim
 
 # Install CA certificates for TLS
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates \
+ && apt-get install -y ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
 # Add mochi binary
