@@ -1,4 +1,22 @@
 # 📦 CHANGELOG.md
+## [0.3.0] – 2025-06-06
+
+### Added
+
+* `stream` declarations for event types
+* `on` handlers and `emit` for dispatching events
+* `agent` blocks with persistent `state` and `intent` functions
+* `generate text` expression with pluggable LLM providers
+
+### Changed
+
+* MCP server reports version 0.3.0
+* Documentation and cheatsheet updated
+
+### Fixed
+
+* Minor issues discovered during streaming integration
+
 
 ## [0.2.11] – 2025-06-05
 

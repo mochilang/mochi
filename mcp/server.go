@@ -147,7 +147,7 @@ func getAgent() string {
 // ServeStdio starts the MCP server using stdio (for Claude/GPT compatibility).
 func ServeStdio() error {
 	color.NoColor = true // important for non-TTY environments like Claude/GPT
-	s := server.NewMCPServer("mochi", "0.2.10")
+	s := server.NewMCPServer("mochi", "0.3.0")
 	Register(s)
 	return server.ServeStdio(s)
 }
