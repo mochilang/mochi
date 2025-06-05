@@ -16,7 +16,7 @@ var (
 func init() {
 	dsn := os.Getenv("POSTGRES_DSN")
 	if dsn == "" {
-		log.Println("[db] warning: POSTGRES_DSN not set, database features disabled")
+		// log.Println("[db] warning: POSTGRES_DSN not set, database features disabled")
 		return
 	}
 	db, err := sql.Open("postgres", dsn)
