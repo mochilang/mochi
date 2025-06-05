@@ -1,0 +1,9 @@
+type Person {
+  name: string
+  age: int
+  email: string
+}
+
+let p: Person = generate Person {
+  prompt: "{\"name\":\"Alice\",\"age\":30,\"email\":\"a@b.c\"}"
+}
