@@ -13,7 +13,7 @@ FROM debian:bookworm-slim
 
 # Install CA certificates and ensure update
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates openssl \
+ && apt-get install -y ca-certificates \
  && update-ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
