@@ -8,7 +8,7 @@ import (
 )
 
 // Default is the client opened during package initialization.
-// It uses environment variables `LLM_PROVIDER` and `LLM_DSN`.
+// It uses environment variables `LLM_PROVIDER`, `LLM_DSN` and `LLM_MODEL`.
 // If not set, the provider defaults to "echo" which simply echoes
 // the last user message. This is useful for collecting metrics
 // without calling an external service.
@@ -20,8 +20,9 @@ func init() {
 		prv = "echo"
 	}
 	dsn := os.Getenv("LLM_DSN")
+	model := os.Getenv("LLM_MODEL")
 
-	c, err := Open(prv, dsn, Options{})
+	c, err := Open(prv, dsn, Options{Model: model})
 	if err != nil {
 		log.Printf("[llm] failed to open default provider %q: %v", prv, err)
 		return

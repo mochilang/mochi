@@ -25,9 +25,10 @@ defer client.Close()
 ```
 
 If no explicit client is created, `llm` initializes a package-level default
-client using the `LLM_PROVIDER` and `LLM_DSN` environment variables. The default
-falls back to the built-in `echo` provider which simply returns the last user
-message. Helper functions `llm.Chat` and `llm.ChatStream` use this client.
+client using the `LLM_PROVIDER`, `LLM_DSN` and `LLM_MODEL` environment
+variables. The provider defaults to `echo` which simply returns the last user
+message when `LLM_PROVIDER` is not set. Helper functions `llm.Chat` and
+`llm.ChatStream` use this client.
 
 ### Chatting
 
@@ -113,4 +114,20 @@ providers.
 
 Use the appropriate provider name with `llm.Open` to select one of these
 implementations.
+
+### Supported Models
+
+Each provider exposes different models. Common options include:
+
+| Provider | Example Models |
+|----------|----------------|
+| openai   | `gpt-3.5-turbo`, `gpt-4o` |
+| claude   | `claude-3-opus`, `claude-3-sonnet` |
+| cohere   | `command-r`, `command-r-plus` |
+| gemini   | `models/gemini-pro` (default) |
+| grok     | `grok-1`, `grok-1-hd` |
+| mistral  | `mistral-small`, `mistral-medium` |
+| llamacpp | any local model name |
+| ollama   | any local model name |
+| chutes   | any model exposed by the service |
 
