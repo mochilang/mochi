@@ -4,46 +4,45 @@ import "context"
 
 // Message represents a chat message exchanged with the model.
 type Message struct {
-	Role    string
-	Content string
-	// Optional tool call returned by the model.
-	ToolCall *ToolCall
+	Role     string    `json:"role"`
+	Content  string    `json:"content"`
+	ToolCall *ToolCall `json:"tool_call,omitempty"`
 }
 
 // ToolCall represents a request from the model to execute a tool.
 type ToolCall struct {
-	ID   string
-	Name string
-	Args map[string]any
+	ID   string         `json:"id"`
+	Name string         `json:"name"`
+	Args map[string]any `json:"args"`
 }
 
 // Tool defines a function that can be called by the model.
 type Tool struct {
-	Name        string
-	Description string
-	Parameters  map[string]any
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Parameters  map[string]any `json:"parameters"`
 }
 
 // Usage tracks token usage information when provided by the provider.
 type Usage struct {
-	PromptTokens     int
-	CompletionTokens int
-	TotalTokens      int
+	PromptTokens     int `json:"prompt_tokens"`
+	CompletionTokens int `json:"completion_tokens"`
+	TotalTokens      int `json:"total_tokens"`
 }
 
 // ChatResponse is a single response from the model.
 type ChatResponse struct {
-	Message    Message
-	Model      string
-	StopReason string
-	Usage      *Usage
+	Message    Message `json:"message"`
+	Model      string  `json:"model"`
+	StopReason string  `json:"stop_reason"`
+	Usage      *Usage  `json:"usage,omitempty"`
 }
 
 // Chunk represents a streamed piece of a response.
 type Chunk struct {
-	Content   string
-	ToolCalls []ToolCall
-	Done      bool
+	Content   string     `json:"content"`
+	ToolCalls []ToolCall `json:"tool_calls,omitempty"`
+	Done      bool       `json:"done"`
 }
 
 // Stream yields chunks until completion or error.

@@ -1,33 +1,36 @@
 package llm
 
-// Options are used when opening a connection to a provider.
+// ResponseFormat specifies the type and optional schema of the expected response.
 type ResponseFormat struct {
-	Type   string         `json:"type"`
-	Schema map[string]any `json:"schema,omitempty"`
+	Type   string         `json:"type"`             // e.g., "json"
+	Schema map[string]any `json:"schema,omitempty"` // optional schema definition
 }
 
+// Options define model selection, parameters, tool usage, and response formatting.
 type Options struct {
-	Model          string
-	Params         map[string]any
-	Tools          []Tool
-	ToolChoice     string
-	ResponseFormat *ResponseFormat
+	Model          string          `json:"model"`                     // model name, e.g., "gpt-4"
+	Params         map[string]any  `json:"params,omitempty"`          // model-specific parameters like temperature, top_p
+	Tools          []Tool          `json:"tools,omitempty"`           // available tools to call
+	ToolChoice     string          `json:"tool_choice,omitempty"`     // name of the tool to call
+	ResponseFormat *ResponseFormat `json:"response_format,omitempty"` // desired response format
 }
 
-// ChatRequest contains the messages and per-call options sent to the provider.
+// ChatRequest contains a series of messages and options for the LLM provider.
 type ChatRequest struct {
-	Messages []Message
-	Options
-	Stream bool
+	Messages []Message `json:"messages"` // chat history
+	Options                              // embeds Options fields
+	Stream   bool      `json:"stream"`   // whether to stream responses
 }
 
-// Option is a functional option for chat requests.
+// Option is a functional option for configuring ChatRequest.
 type Option func(*ChatRequest)
 
 // WithModel sets the model name.
-func WithModel(model string) Option { return func(r *ChatRequest) { r.Model = model } }
+func WithModel(model string) Option {
+	return func(r *ChatRequest) { r.Model = model }
+}
 
-// WithParam sets an arbitrary generation parameter.
+// WithParam sets a single generation parameter.
 func WithParam(name string, value any) Option {
 	return func(r *ChatRequest) {
 		if r.Params == nil {
@@ -52,25 +55,31 @@ func WithParams(params map[string]any) Option {
 // WithTemperature sets the sampling temperature.
 func WithTemperature(t float64) Option { return WithParam("temperature", t) }
 
-// WithTopP sets nucleus sampling probability.
+// WithTopP sets the nucleus sampling probability.
 func WithTopP(p float64) Option { return WithParam("top_p", p) }
 
-// WithMaxTokens limits the number of completion tokens.
+// WithMaxTokens sets the maximum number of generated tokens.
 func WithMaxTokens(n int) Option { return WithParam("max_tokens", n) }
 
-// WithStop specifies stop sequences.
+// WithStop sets custom stop sequences.
 func WithStop(stop []string) Option { return WithParam("stop", stop) }
 
-// WithTools declares available tools for the request.
-func WithTools(tools []Tool) Option { return func(r *ChatRequest) { r.Tools = tools } }
+// WithTools sets the available tools for tool calling.
+func WithTools(tools []Tool) Option {
+	return func(r *ChatRequest) { r.Tools = tools }
+}
 
-// WithToolChoice specifies which tool should be used.
-func WithToolChoice(choice string) Option { return func(r *ChatRequest) { r.ToolChoice = choice } }
+// WithToolChoice sets the preferred tool to use during generation.
+func WithToolChoice(choice string) Option {
+	return func(r *ChatRequest) { r.ToolChoice = choice }
+}
 
-// WithResponseFormat requests structured output.
+// WithResponseFormat sets the expected structured response format.
 func WithResponseFormat(format ResponseFormat) Option {
 	return func(r *ChatRequest) { r.ResponseFormat = &format }
 }
 
-// WithStream enables streaming responses.
-func WithStream() Option { return func(r *ChatRequest) { r.Stream = true } }
+// WithStream enables streaming mode for the response.
+func WithStream() Option {
+	return func(r *ChatRequest) { r.Stream = true }
+}
