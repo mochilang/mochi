@@ -33,6 +33,7 @@ func Register(name string, p Provider) {
 	if _, dup := providers[name]; dup {
 		panic("llm: Register called twice for provider " + name)
 	}
+	// log.Printf("llm: registering provider %s", name)
 	providers[name] = p
 }
 

@@ -16,6 +16,10 @@ import (
 	"github.com/fatih/color"
 	_ "github.com/lib/pq"
 
+	_ "mochi/runtime/llm/provider/chutes"
+	_ "mochi/runtime/llm/provider/cohere"
+	_ "mochi/runtime/llm/provider/echo"
+
 	"mochi/ast"
 	"mochi/compile/go"
 	"mochi/compile/py"
