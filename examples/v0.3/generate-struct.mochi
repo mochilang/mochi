@@ -14,7 +14,7 @@ let p = generate Person {
 
 // Print the generated fields manually
 print("Generated Person:")
-print("Name: " + p.name)
-print("Age: " + p.age)
-print("Email: " + p.email)
+print("Name: ",p.name)
+print("Age: ",  p.age)
+print("Email: ", p.email)
 
