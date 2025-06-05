@@ -4,7 +4,11 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"github.com/google/uuid"
+	"mochi/tools/db"
+	"os"
 	"strings"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -37,7 +41,7 @@ func registerEval(s *server.MCPServer) {
 			return mcp.NewToolResultText("missing 'code' string parameter"), nil
 		}
 
-		output, err := runProgram(code)
+		output, err := runProgram(ctx, code)
 		return mcp.NewToolResultText(output), err
 	})
 }
@@ -55,34 +59,69 @@ func registerCheatsheet(s *server.MCPServer) {
 
 // runProgram parses, type-checks, and executes the given Mochi source code.
 // It returns captured output as a string and a possible error.
-func runProgram(source string) (string, error) {
+func runProgram(ctx context.Context, source string) (string, error) {
 	output := &strings.Builder{}
+	start := time.Now()
+
+	status := "ok"
+	var errMsg string
+	var runErr error
 
 	prog, err := parser.ParseString(source)
 	if err != nil {
+		status = "parse_error"
+		errMsg = err.Error()
 		fmt.Fprintf(output, "Parse Error\n\n  %v\n", err)
-		return output.String(), fmt.Errorf("parse error: %w", err)
-	}
+		runErr = fmt.Errorf("parse error: %w", err)
+	} else {
+		env := types.NewEnv(nil)
+		typeErrors := types.Check(prog, env)
+		if len(typeErrors) > 0 {
+			status = "type_error"
+			errMsg = fmt.Sprintf("%d issues", len(typeErrors))
+			fmt.Fprintf(output, "Type Check Failed\n\n")
+			for i, e := range typeErrors {
+				fmt.Fprintf(output, "  %2d. %v\n", i+1, e)
+			}
+			runErr = fmt.Errorf("type error: %v", errMsg)
+		} else {
+			interp := interpreter.New(prog, env)
+			interp.Env().SetWriter(output)
 
-	env := types.NewEnv(nil)
-	typeErrors := types.Check(prog, env)
-	if len(typeErrors) > 0 {
-		fmt.Fprintf(output, "Type Check Failed\n\n")
-		for i, err := range typeErrors {
-			fmt.Fprintf(output, "  %2d. %v\n", i+1, err)
+			if err := interp.Run(); err != nil {
+				status = "runtime_error"
+				errMsg = err.Error()
+				fmt.Fprintf(output, "Runtime Error\n\n  → %v\n", err)
+				runErr = fmt.Errorf("runtime error: %w", err)
+			}
 		}
-		return output.String(), fmt.Errorf("type error (%d issue(s))", len(typeErrors))
 	}
 
-	interp := interpreter.New(prog, env)
-	interp.Env().SetWriter(output)
+	db.LogRun(ctx, &db.RunModel{
+		SessionID: getSessionID(),
+		Agent:     getAgent(),
+		File:      "",
+		Source:    source,
+		Status:    status,
+		Error:     errMsg,
+		Duration:  time.Since(start),
+	})
 
-	if err := interp.Run(); err != nil {
-		fmt.Fprintf(output, "Runtime Error\n\n  \u2192 %v\n", err)
-		return output.String(), fmt.Errorf("runtime error: %w", err)
+	return output.String(), runErr
+}
+
+func getSessionID() string {
+	if sid := os.Getenv("MOCHI_SESSION"); sid != "" {
+		return sid
 	}
+	return uuid.New().String()
+}
 
-	return output.String(), nil
+func getAgent() string {
+	if agent := os.Getenv("MOCHI_AGENT"); agent != "" {
+		return agent
+	}
+	return "MCP"
 }
 
 // ServeStdio starts the MCP server using stdio (for Claude/GPT compatibility).
