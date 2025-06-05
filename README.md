@@ -278,6 +278,28 @@ test "math" {
 }
 ```
 
+### Generative AI
+
+Invoke large language models directly from Mochi using the `generate` block.
+
+```mochi
+let poem = generate text {
+  prompt: "Write a haiku about spring"
+}
+print(poem)
+
+type Person {
+  name: string
+  age: int
+  email: string
+}
+
+let p = generate Person {
+  prompt: "Generate a fictional software engineer"
+}
+print(p.name)
+```
+
 ## MCP Tools
 
 When running `mochi serve`, the following tools are available:
