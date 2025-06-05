@@ -35,6 +35,10 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
+          flavor: |
+            latest=auto  # <-- This makes `latest` only apply to main
+            prefix=
+            suffix=
 
       - name: Build and push (multi-platform)
         uses: docker/build-push-action@v5
