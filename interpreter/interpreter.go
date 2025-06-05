@@ -932,11 +932,22 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			opts = append(opts, llm.WithParam(k, v))
 		}
 
+		if p.Generate.Target != "text" {
+			opts = append(opts, llm.WithResponseFormat("json_object"))
+		}
+
 		resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
 		if err != nil {
 			return nil, err
 		}
-		return resp.Message.Content, nil
+		if p.Generate.Target == "text" {
+			return resp.Message.Content, nil
+		}
+		var obj map[string]any
+		if err := json.Unmarshal([]byte(resp.Message.Content), &obj); err != nil {
+			return nil, err
+		}
+		return obj, nil
 
 	default:
 		return nil, errInvalidPrimaryExpression(p.Pos)

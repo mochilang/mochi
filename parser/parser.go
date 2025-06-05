@@ -220,22 +220,23 @@ type GenerateField struct {
 	Value *Expr  `parser:"@@"`
 }
 
-type GenerateTextExpr struct {
+type GenerateExpr struct {
 	Pos    lexer.Position
-	Fields []*GenerateField `parser:"'generate' 'text' '{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
+	Target string           `parser:"'generate' @Ident"`
+	Fields []*GenerateField `parser:"'{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
 }
 
 type Primary struct {
 	Pos      lexer.Position
-	FunExpr  *FunExpr          `parser:"@@"`
-	Struct   *StructLiteral    `parser:"| @@"`
-	Call     *CallExpr         `parser:"| @@"`
-	Selector *SelectorExpr     `parser:"| @@"`
-	List     *ListLiteral      `parser:"| @@"`
-	Map      *MapLiteral       `parser:"| @@"`
-	Generate *GenerateTextExpr `parser:"| @@"`
-	Lit      *Literal          `parser:"| @@"`
-	Group    *Expr             `parser:"| '(' @@ ')'"`
+	FunExpr  *FunExpr       `parser:"@@"`
+	Struct   *StructLiteral `parser:"| @@"`
+	Call     *CallExpr      `parser:"| @@"`
+	Selector *SelectorExpr  `parser:"| @@"`
+	List     *ListLiteral   `parser:"| @@"`
+	Map      *MapLiteral    `parser:"| @@"`
+	Generate *GenerateExpr  `parser:"| @@"`
+	Lit      *Literal       `parser:"| @@"`
+	Group    *Expr          `parser:"| '(' @@ ')'"`
 }
 
 type FunExpr struct {

@@ -911,7 +911,14 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				return nil, err
 			}
 		}
-		return StringType{}, nil
+		if p.Generate.Target == "text" {
+			return StringType{}, nil
+		}
+		st, ok := env.GetStruct(p.Generate.Target)
+		if !ok {
+			return nil, errUnknownType(p.Pos, p.Generate.Target)
+		}
+		return st, nil
 
 	case p.FunExpr != nil:
 		return checkFunExpr(p.FunExpr, env, expected, p.Pos)
