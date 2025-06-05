@@ -34,15 +34,31 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Test blocks
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// Main function
 	c.writeln("def main():")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := sanitizeName(s.Test.Name)
+			c.writeln(fmt.Sprintf("%s()", name))
 		}
 	}
 	c.indent--
@@ -101,6 +117,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln("return " + expr)
 		return nil
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.If != nil:
 		return c.compileIf(s.If, "if")
 	case s.For != nil:
@@ -225,6 +243,29 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		}
 	}
 	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := sanitizeName(t.Name)
+	c.writeIndent()
+	c.buf.WriteString("def " + name + "():\n")
+	c.indent++
+	for _, s := range t.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("assert %s", expr))
 	return nil
 }
 
