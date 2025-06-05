@@ -298,6 +298,8 @@ Explore the [`examples/`](./examples) directory:
 * `list.mochi`
 * `agent.mochi`
 * `generate.mochi`
+* `generate-struct.mochi`
+* `types.mochi`
 
 Edit one or start fresh. It’s all yours.
 

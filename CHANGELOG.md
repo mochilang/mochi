@@ -1,4 +1,27 @@
 # 📦 CHANGELOG.md
+## [0.3.1] – 2025-06-07
+
+### Added
+
+* Structured `generate` blocks return typed structs
+* Optional fields `temperature`, `top_p`, `max_tokens` and `stop`
+* `type` declarations and struct literals
+* Nested field selectors with type checking
+* Python compiler support for `test` blocks
+* JSON schema inference for `generate`
+
+### Changed
+
+* LLM parameters passed via `Params` map
+* Providers honor `ResponseFormat`
+* Cheatsheet updated with examples
+
+### Fixed
+
+* Type errors for struct fields
+* Minor provider issues
+
+
 ## [0.3.0] – 2025-06-06
 
 ### Added
