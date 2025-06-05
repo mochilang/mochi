@@ -933,7 +933,11 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 
 		if p.Generate.Target != "text" {
-			opts = append(opts, llm.WithResponseFormat(llm.ResponseFormat{Type: "json_object"}))
+			format := llm.ResponseFormat{Type: "json_object"}
+			if st, ok := i.types.GetStruct(p.Generate.Target); ok {
+				format.Schema = structToSchema(st)
+			}
+			opts = append(opts, llm.WithResponseFormat(format))
 		}
 
 		resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
