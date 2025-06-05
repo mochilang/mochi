@@ -1,0 +1,16 @@
+model quick {
+  provider: "echo"
+  name: "echo"
+}
+
+let a = generate text {
+  model: "quick",
+  prompt: "model alias"
+}
+print(a)
+
+let b = generate text {
+  model: "echo:whatever",
+  prompt: "colon"
+}
+print(b)

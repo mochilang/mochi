@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"mochi/runtime/llm"
@@ -50,6 +51,9 @@ func (provider) Open(dsn string, opts llm.Options) (llm.Conn, error) {
 		if v := q.Get("version"); v != "" {
 			ver = v
 		}
+	}
+	if key == "" {
+		key = os.Getenv("CLAUDE_API_KEY")
 	}
 	if key == "" {
 		return nil, errors.New("claude: missing api_key")

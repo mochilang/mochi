@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"mochi/runtime/llm"
@@ -42,6 +43,9 @@ func (provider) Open(dsn string, opts llm.Options) (llm.Conn, error) {
 			base = u.Path
 		}
 		key = u.Query().Get("api_key")
+	}
+	if key == "" {
+		key = os.Getenv("MISTRAL_API_KEY")
 	}
 	if key == "" {
 		return nil, errors.New("mistral: missing api_key")

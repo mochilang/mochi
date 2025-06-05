@@ -414,6 +414,14 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		env.SetStruct(s.Type.Name, StructType{Name: s.Type.Name, Fields: fields})
 		return nil
 
+	case s.Model != nil:
+		for _, f := range s.Model.Fields {
+			if _, err := checkExpr(f.Value, env); err != nil {
+				return err
+			}
+		}
+		return nil
+
 	case s.Fun != nil:
 		name := s.Fun.Name
 		params := []Type{}
