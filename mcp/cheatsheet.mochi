@@ -78,3 +78,12 @@ test "Some math operator" {
     expect 2 + 3 == 5
     expect 1 + 2 * 3 == 7
 }
+
+// 6. Generative AI
+let topic = "spring"
+
+let poem = generate text {
+  prompt: "Write a haiku about " + topic
+}
+
+print(poem)
