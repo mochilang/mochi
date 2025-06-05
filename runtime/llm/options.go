@@ -40,46 +40,7 @@ func WithParam(name string, value any) Option {
 	}
 }
 
-// WithParams sets multiple generation parameters.
-func WithParams(params map[string]any) Option {
-	return func(r *ChatRequest) {
-		if r.Params == nil {
-			r.Params = map[string]any{}
-		}
-		for k, v := range params {
-			r.Params[k] = v
-		}
-	}
-}
-
-// WithTemperature sets the sampling temperature.
-func WithTemperature(t float64) Option { return WithParam("temperature", t) }
-
-// WithTopP sets the nucleus sampling probability.
-func WithTopP(p float64) Option { return WithParam("top_p", p) }
-
-// WithMaxTokens sets the maximum number of generated tokens.
-func WithMaxTokens(n int) Option { return WithParam("max_tokens", n) }
-
-// WithStop sets custom stop sequences.
-func WithStop(stop []string) Option { return WithParam("stop", stop) }
-
-// WithTools sets the available tools for tool calling.
-func WithTools(tools []Tool) Option {
-	return func(r *ChatRequest) { r.Tools = tools }
-}
-
-// WithToolChoice sets the preferred tool to use during generation.
-func WithToolChoice(choice string) Option {
-	return func(r *ChatRequest) { r.ToolChoice = choice }
-}
-
 // WithResponseFormat sets the expected structured response format.
 func WithResponseFormat(format ResponseFormat) Option {
 	return func(r *ChatRequest) { r.ResponseFormat = &format }
-}
-
-// WithStream enables streaming mode for the response.
-func WithStream() Option {
-	return func(r *ChatRequest) { r.Stream = true }
 }

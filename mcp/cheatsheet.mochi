@@ -87,3 +87,22 @@ let poem = generate text {
 }
 
 print(poem)
+
+// Generate a structured Person using AI
+
+type Person {
+  name: string
+  age: int
+  email: string
+}
+
+// Generate a Person using AI and a prompt
+let p = generate Person {
+  prompt: "Generate a fictional software engineer with name, age, and email."
+}
+
+// Print the generated fields manually
+print("Generated Person:")
+print("Name: ",p.name)
+print("Age: ",  p.age)
+print("Email: ", p.email)
