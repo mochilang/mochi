@@ -129,25 +129,35 @@ ifndef VERSION
 	$(error ❌ VERSION not set. Usage: make release VERSION=X.Y.Z)
 endif
 	@echo "✏️  Preparing Mochi v$(VERSION)..."
+
+	# Step 1: Update Go version
 	@echo "$(VERSION)" > VERSION
-	@git add VERSION
-	@git commit -m "release: prepare v$(VERSION)" || echo "⚠️  Nothing to commit"
+
+	# Step 2: Update npm version, but prevent automatic commit/tag
+	@npm version $(VERSION) --no-git-tag-version --no-commit-hooks --no-commit
+
+	# Step 3: Commit all version-related files together
+	@git add VERSION package.json package-lock.json
+	@git commit -m "release: v$(VERSION)" || echo "⚠️  Nothing to commit"
+
+	# Step 4: Create and push Git tag
 	@git tag -f v$(VERSION)
 	@git push origin v$(VERSION)
 
+	# Step 5: Release Go binaries via GoReleaser
 	@echo "🚀 Running GoReleaser (full release)..."
 	@GITHUB_TOKEN=$${GITHUB_TOKEN} goreleaser release --clean
-	@echo "✅ Release complete: v$(VERSION)"
+	@echo "✅ Go binary release complete"
+
+	# Step 6: Publish npm package
+	@echo "📦 Publishing npm package..."
+	@npm publish
+	@echo "✅ npm package published"
 
 snapshot: ## Dry-run snapshot build (no publish)
 	@echo "🧪 Running GoReleaser snapshot..."
 	@goreleaser release --snapshot --clean
 	@echo "✅ Snapshot build complete"
-
-publish-npm: ## Publish npm package using VERSION file
-	@echo "📦 Publishing npm package v$(VERSION)..."
-	@npm version $(VERSION) --no-git-tag-version --allow-same-version
-	@npm publish
 
 help: ## Show help message
 	@echo ""
