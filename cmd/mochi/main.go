@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,15 +14,17 @@ import (
 
 	"github.com/alexflint/go-arg"
 	"github.com/fatih/color"
+	_ "github.com/lib/pq"
 
 	"mochi/ast"
-	gocode "mochi/compile/go"
-	pycode "mochi/compile/py"
-	tscode "mochi/compile/ts"
+	"mochi/compile/go"
+	"mochi/compile/py"
+	"mochi/compile/ts"
 	"mochi/interpreter"
 	"mochi/mcp"
 	"mochi/parser"
 	"mochi/repl"
+	"mochi/tools/db"
 	"mochi/types"
 )
 
@@ -51,9 +55,9 @@ type TestCmd struct {
 }
 
 type BuildCmd struct {
-        File string `arg:"positional,required" help:"Path to .mochi source file"`
-        Out  string `arg:"-o" help:"Output file path"`
-       Target string `arg:"--target" help:"Output language (go|py|ts)"`
+	File   string `arg:"positional,required" help:"Path to .mochi source file"`
+	Out    string `arg:"-o" help:"Output file path"`
+	Target string `arg:"--target" help:"Output language (go|py|ts)"`
 }
 
 type ReplCmd struct{}
@@ -121,23 +125,39 @@ func humanBuildTime() string {
 }
 
 func runFile(cmd *RunCmd) error {
+	start := time.Now()
 	prog, err := parseOrPrintError(cmd.File)
 	if err != nil {
 		return err
 	}
+	source, _ := os.ReadFile(cmd.File)
+
 	if cmd.PrintAST {
 		fmt.Println(ast.FromProgram(prog).String())
 		return nil
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, err := range errs {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
-		}
+		printTypeErrors(errs)
 		return fmt.Errorf("aborted due to type errors")
 	}
-	return interpreter.New(prog, env).Run()
+	err = interpreter.New(prog, env).Run()
+	status := "ok"
+	msg := ""
+	if err != nil {
+		status = "error"
+		msg = err.Error()
+	}
+	db.LogRun(context.Background(), &db.RunModel{
+		File:      cmd.File,
+		Source:    string(source),
+		Status:    status,
+		Error:     msg,
+		Agent:     getAgent(),
+		SessionID: getSessionID(),
+		Duration:  time.Since(start),
+	})
+	return err
 }
 
 func runTests(cmd *TestCmd) error {
@@ -147,10 +167,7 @@ func runTests(cmd *TestCmd) error {
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, err := range errs {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
-		}
+		printTypeErrors(errs)
 		return fmt.Errorf("aborted due to type errors")
 	}
 	return interpreter.New(prog, env).Test()
@@ -169,168 +186,140 @@ func parseOrPrintError(path string) (*parser.Program, error) {
 }
 
 func build(cmd *BuildCmd) error {
-       target := strings.ToLower(cmd.Target)
-       if target == "" && cmd.Out != "" {
-               switch strings.ToLower(filepath.Ext(cmd.Out)) {
-               case ".go":
-                       target = "go"
-               case ".py":
-                       target = "py"
-               case ".ts":
-                       target = "ts"
-               }
-       }
-       switch target {
-       case "go":
-               return buildGo(cmd)
-       case "py":
-               return buildPy(cmd)
-       case "ts":
-               return buildTS(cmd)
-       default:
-               return buildBinary(cmd)
-       }
-}
+	start := time.Now()
+	source, _ := os.ReadFile(cmd.File)
 
-func buildBinary(cmd *BuildCmd) error {
+	target := strings.ToLower(cmd.Target)
+	if target == "" && cmd.Out != "" {
+		switch strings.ToLower(filepath.Ext(cmd.Out)) {
+		case ".go":
+			target = "go"
+		case ".py":
+			target = "py"
+		case ".ts":
+			target = "ts"
+		}
+	}
+
 	prog, err := parseOrPrintError(cmd.File)
 	if err != nil {
 		return err
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, err := range errs {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
-		}
+		printTypeErrors(errs)
 		return fmt.Errorf("aborted due to type errors")
 	}
-	c := gocode.New(env)
-	code, err := c.Compile(prog)
-	if err != nil {
-		return err
-	}
-	dir, err := os.MkdirTemp("", "mochi-build-*")
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(dir)
-	goFile := filepath.Join(dir, "main.go")
-	if err := os.WriteFile(goFile, code, 0644); err != nil {
-		return err
-	}
-	out := cmd.Out
-	if out == "" {
-		base := strings.TrimSuffix(filepath.Base(cmd.File), filepath.Ext(cmd.File))
-		if base == "" {
-			base = "a.out"
-		}
-		out = base
-	}
-	bcmd := exec.Command("go", "build", "-o", out, goFile)
-	bcmd.Env = append(os.Environ(), "GO111MODULE=off")
-	bcmd.Stdout = os.Stdout
-	bcmd.Stderr = os.Stderr
-	if err := bcmd.Run(); err != nil {
-		return fmt.Errorf("go build failed: %w", err)
-	}
-	return nil
-}
 
-func buildGo(cmd *BuildCmd) error {
-	prog, err := parseOrPrintError(cmd.File)
-	if err != nil {
-		return err
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, err := range errs {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
-		}
-		return fmt.Errorf("aborted due to type errors")
-	}
-	c := gocode.New(env)
-	code, err := c.Compile(prog)
-	if err != nil {
-		return err
-	}
 	out := cmd.Out
-	if out == "" {
-		base := strings.TrimSuffix(filepath.Base(cmd.File), filepath.Ext(cmd.File))
-		if base == "" {
-			base = "main"
-		}
-		out = base + ".go"
+	base := strings.TrimSuffix(filepath.Base(cmd.File), filepath.Ext(cmd.File))
+	if base == "" {
+		base = "main"
 	}
-	if err := os.WriteFile(out, code, 0644); err != nil {
+	status := "ok"
+	msg := ""
+
+	switch target {
+	case "go":
+		if out == "" {
+			out = base + ".go"
+		}
+		code, err := gocode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "py":
+		if out == "" {
+			out = base + ".py"
+		}
+		code, err := pycode.New().Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "ts":
+		if out == "" {
+			out = base + ".ts"
+		}
+		code, err := tscode.New().Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	default:
+		tmpDir, err := os.MkdirTemp("", "mochi-build-*")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(tmpDir)
+		goFile := filepath.Join(tmpDir, "main.go")
+		code, err := gocode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(goFile, code, 0644)
+		}
+		if err == nil {
+			if out == "" {
+				out = base
+			}
+			cmd := exec.Command("go", "build", "-o", out, goFile)
+			cmd.Env = append(os.Environ(), "GO111MODULE=off")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			err = cmd.Run()
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	}
+
+	db.LogBuild(context.Background(), &db.BuildModel{
+		File:      cmd.File,
+		Source:    string(source),
+		Out:       out,
+		Target:    target,
+		Status:    status,
+		Error:     msg,
+		Agent:     getAgent(),
+		SessionID: getSessionID(),
+		Duration:  time.Since(start),
+	})
+
+	if err != nil {
 		return err
 	}
+
 	fmt.Printf("generated %s\n", out)
 	return nil
 }
 
-func buildPy(cmd *BuildCmd) error {
-	prog, err := parseOrPrintError(cmd.File)
-	if err != nil {
-		return err
+func printTypeErrors(errs []error) {
+	fmt.Fprintln(os.Stderr, cError("type error:"))
+	for i, err := range errs {
+		fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
 	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, err := range errs {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
-		}
-		return fmt.Errorf("aborted due to type errors")
-	}
-	c := pycode.New()
-	code, err := c.Compile(prog)
-	if err != nil {
-		return err
-	}
-	out := cmd.Out
-	if out == "" {
-		base := strings.TrimSuffix(filepath.Base(cmd.File), filepath.Ext(cmd.File))
-		if base == "" {
-			base = "main"
-		}
-		out = base + ".py"
-	}
-	if err := os.WriteFile(out, code, 0644); err != nil {
-		return err
-	}
-	fmt.Printf("generated %s\n", out)
-	return nil
 }
-func buildTS(cmd *BuildCmd) error {
-	prog, err := parseOrPrintError(cmd.File)
-	if err != nil {
-		return err
+
+func getAgent() string {
+	if agent := os.Getenv("MOCHI_AGENT"); agent != "" {
+		return agent
 	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		fmt.Fprintln(os.Stderr, cError("type error:"))
-		for i, err := range errs {
-			fmt.Fprintf(os.Stderr, "  %2d. %v\n", i+1, err)
-		}
-		return fmt.Errorf("aborted due to type errors")
+	return "cli"
+}
+
+func getSessionID() string {
+	if sid := os.Getenv("MOCHI_SESSION"); sid != "" {
+		return sid
 	}
-	c := tscode.New()
-	code, err := c.Compile(prog)
-	if err != nil {
-		return err
-	}
-	out := cmd.Out
-	if out == "" {
-		base := strings.TrimSuffix(filepath.Base(cmd.File), filepath.Ext(cmd.File))
-		if base == "" {
-			base = "a"
-		}
-		out = base + ".ts"
-	}
-	if err := os.WriteFile(out, code, 0644); err != nil {
-		return err
-	}
-	fmt.Printf("generated %s\n", out)
-	return nil
+	return uuid.NewString()
 }
