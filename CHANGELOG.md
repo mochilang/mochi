@@ -1,6 +1,24 @@
 # 📦 CHANGELOG.md
 
-## [0.2.10] – 2025-06-07
+## [0.2.11] – 2025-06-05
+
+### Added
+
+* `runtime/llm` package with DSN-based providers (OpenAI, Claude, Cohere, Mistral, Gemini, Grok, Ollama, LlamaCPP, Chutes)
+* Experimental `generate text` expression
+* Optional Postgres logging via `tools/db`
+
+### Changed
+
+* MCP server logs full errors and disables color
+* `mochi_eval` accepts a filename parameter
+* Node installer works across platforms
+
+### Fixed
+
+* Various logging issues in the MCP server
+
+## [0.2.10] – 2025-06-04
 
 ### Added
 
@@ -17,7 +35,7 @@
 
 * Go compiler handles map literals with int values
 
-## [0.2.9] – 2025-06-06
+## [0.2.9] – 2025-06-04
 
 ### Added
 
@@ -37,7 +55,7 @@
 
 All notable changes to the Mochi programming language are documented in this file.
 
-## [0.2.8] – 2025-06-05
+## [0.2.8] – 2025-06-04
 
 ### Added
 
