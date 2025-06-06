@@ -7,6 +7,7 @@ function main(): void {
 main()
 
 function _gen_text(prompt: string, args: Record<string, any>): string {
+  // TODO: integrate with your preferred LLM
   for (const k in args) {
     const placeholder = '$' + k;
     prompt = prompt.split(placeholder).join(String(args[k]));

@@ -1,7 +1,10 @@
 package main
 
 import (
+	_ "mochi/runtime/llm/provider/echo"
+	"context"
 	"fmt"
+	"mochi/runtime/llm"
 	"strings"
 )
 
@@ -15,7 +18,9 @@ func _genText(prompt string, args map[string]any) string {
         placeholder := "$" + k
         prompt = strings.ReplaceAll(prompt, placeholder, fmt.Sprintf("%v", v))
     }
-    return prompt
+    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}})
+    if err != nil { panic(err) }
+    return resp.Message.Content
 }
 
 func _toAnyMap(m any) map[string]any {

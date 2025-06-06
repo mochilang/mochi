@@ -304,12 +304,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call)
 	case p.List != nil:
 		return c.compileListLiteral(p.List)
-       case p.Map != nil:
-               return c.compileMapLiteral(p.Map)
-       case p.Generate != nil:
-                return c.compileGenerateExpr(p.Generate)
-        case p.Lit != nil:
-                return c.compileLiteral(p.Lit)
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
+	case p.Lit != nil:
+		return c.compileLiteral(p.Lit)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -411,25 +411,25 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
-        var prompt string
-        args := "{}"
-        for _, f := range g.Fields {
-                v, err := c.compileExpr(f.Value)
-                if err != nil {
-                        return "", err
-                }
-                switch f.Name {
-                case "prompt":
-                        prompt = v
-                case "args":
-                        args = v
-                }
-        }
-        if prompt == "" {
-                prompt = "\"\""
-        }
-        c.use("_gen_text")
-        return fmt.Sprintf("_gen_text(%s, %s)", prompt, args), nil
+	var prompt string
+	args := "{}"
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "args":
+			args = v
+		}
+	}
+	if prompt == "" {
+		prompt = "\"\""
+	}
+	c.use("_gen_text")
+	return fmt.Sprintf("_gen_text(%s, %s)", prompt, args), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -493,7 +493,7 @@ func sanitizeName(name string) string {
 
 // Runtime helper functions injected into generated programs.
 const (
-        helperIndex = "function _index(v: any, k: any): any {\n" +
+	helperIndex = "function _index(v: any, k: any): any {\n" +
 		"  if (Array.isArray(v) || typeof v === \"string\") {\n" +
 		"    const l = (v as any).length;\n" +
 		"    if (typeof k === \"number\" && k < 0) k = l + k;\n" +
@@ -511,26 +511,27 @@ const (
 		"  throw new Error(\"invalid slice target\");\n" +
 		"}\n"
 
-        helperLen = "function _len(v: any): number {\n" +
-                "  if (Array.isArray(v) || typeof v === \"string\") return (v as any).length;\n" +
-                "  if (v && typeof v === \"object\") return Object.keys(v).length;\n" +
-                "  return 0;\n" +
-                "}\n"
+	helperLen = "function _len(v: any): number {\n" +
+		"  if (Array.isArray(v) || typeof v === \"string\") return (v as any).length;\n" +
+		"  if (v && typeof v === \"object\") return Object.keys(v).length;\n" +
+		"  return 0;\n" +
+		"}\n"
 
-       helperGenText = "function _gen_text(prompt: string, args: Record<string, any>): string {\n" +
-               "  for (const k in args) {\n" +
-               "    const placeholder = '$' + k;\n" +
-               "    prompt = prompt.split(placeholder).join(String(args[k]));\n" +
-               "  }\n" +
-               "  return prompt;\n" +
-               "}\n"
+	helperGenText = "function _gen_text(prompt: string, args: Record<string, any>): string {\n" +
+		"  // TODO: integrate with your preferred LLM\n" +
+		"  for (const k in args) {\n" +
+		"    const placeholder = '$' + k;\n" +
+		"    prompt = prompt.split(placeholder).join(String(args[k]));\n" +
+		"  }\n" +
+		"  return prompt;\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
-        "_index": helperIndex,
-        "_slice": helperSlice,
-        "_len":   helperLen,
-       "_gen_text": helperGenText,
+	"_index":    helperIndex,
+	"_slice":    helperSlice,
+	"_len":      helperLen,
+	"_gen_text": helperGenText,
 }
 
 func (c *Compiler) use(name string) {
