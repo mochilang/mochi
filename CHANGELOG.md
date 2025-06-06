@@ -1,12 +1,12 @@
 # 📦 CHANGELOG.md
-## [0.3.3] – 2025-06-09
+## [0.3.3] – 2025-06-06
 
 ### Added
 
 * `match` expression with pattern cases
 * Logical operators `&&` and `||`
 
-## [0.3.2] – 2025-06-08
+## [0.3.2] – 2025-06-06
 
 ### Added
 
@@ -25,7 +25,7 @@
 * Documentation and tests for generative features
 
 
-## [0.3.1] – 2025-06-07
+## [0.3.1] – 2025-06-05
 
 ### Added
 
@@ -48,7 +48,7 @@
 * Minor provider issues
 
 
-## [0.3.0] – 2025-06-06
+## [0.3.0] – 2025-06-05
 
 ### Added
 
@@ -287,7 +287,7 @@ While Mochi remains significantly slower than Go and Python due to AST-walking e
   which now correctly infers `fun(): int`.
 
 
-## [0.2.2] - 2025-05-20
+## [0.2.2] - 2025-05-21
 
 ### Added
 
