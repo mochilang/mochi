@@ -339,12 +339,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call)
 	case p.List != nil:
 		return c.compileListLiteral(p.List)
-	case p.Map != nil:
-		return c.compileMapLiteral(p.Map)
-	case p.Generate != nil:
-		return "\"generated\"", nil
-	case p.Lit != nil:
-		return c.compileLiteral(p.Lit)
+       case p.Map != nil:
+               return c.compileMapLiteral(p.Map)
+       case p.Generate != nil:
+                return c.compileGenerateExpr(p.Generate)
+        case p.Lit != nil:
+                return c.compileLiteral(p.Lit)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -433,6 +433,28 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	return "{" + strings.Join(items, ", ") + "}", nil
 }
 
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+        var prompt string
+        args := "{}"
+        for _, f := range g.Fields {
+                v, err := c.compileExpr(f.Value)
+                if err != nil {
+                        return "", err
+                }
+                switch f.Name {
+                case "prompt":
+                        prompt = v
+                case "args":
+                        args = v
+                }
+        }
+        if prompt == "" {
+                prompt = "\"\""
+        }
+        c.use("_gen_text")
+        return fmt.Sprintf("_gen_text(%s, %s)", prompt, args), nil
+}
+
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
@@ -469,11 +491,17 @@ var helperIndex = "def _index(v, k):\n" +
 	"    return v[k]\n"
 
 var helperSlice = "def _slice(v, start, end):\n" +
-	"    if isinstance(v, (list, str)):\n" +
-	"        return v[start:end]\n" +
-	"    raise Exception(\"invalid slice target\")\n"
+        "    if isinstance(v, (list, str)):\n" +
+        "        return v[start:end]\n" +
+        "    raise Exception(\"invalid slice target\")\n"
 
-var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice}
+var helperGenText = "def _gen_text(prompt, args):\n" +
+        "    for k, v in args.items():\n" +
+        "        placeholder = '$' + k\n" +
+        "        prompt = prompt.replace(placeholder, str(v))\n" +
+        "    return prompt\n"
+
+var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_gen_text": helperGenText}
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
 

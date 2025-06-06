@@ -563,12 +563,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 		return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
 
-	case p.Generate != nil:
-		// placeholder implementation for generate text
-		return "\"generated\"", nil
-	default:
-		return "nil", fmt.Errorf("unsupported primary expression")
-	}
+        case p.Generate != nil:
+                return c.compileGenerateExpr(p.Generate)
+        default:
+                return "nil", fmt.Errorf("unsupported primary expression")
+        }
+}
+
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+        var prompt string
+        args := "map[string]any{}"
+        for _, f := range g.Fields {
+                v, err := c.compileExpr(f.Value)
+                if err != nil {
+                        return "", err
+                }
+                switch f.Name {
+                case "prompt":
+                        prompt = v
+                case "args":
+                        args = v
+                }
+        }
+        if prompt == "" {
+                prompt = "\"\""
+        }
+        c.use("_genText")
+        c.use("_toAnyMap")
+        c.imports["fmt"] = true
+        c.imports["strings"] = true
+        return fmt.Sprintf("_genText(%s, _toAnyMap(%s))", prompt, args), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -1198,21 +1222,27 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 		for _, e := range p.List.Elems {
 			c.scanExprImports(e)
 		}
-	case p.Map != nil:
-		for _, it := range p.Map.Items {
-			c.scanExprImports(it.Key)
-			c.scanExprImports(it.Value)
-		}
-	case p.Selector != nil:
-		// no imports
-	case p.Lit != nil:
-		// none
-	}
+       case p.Map != nil:
+               for _, it := range p.Map.Items {
+                       c.scanExprImports(it.Key)
+                       c.scanExprImports(it.Value)
+               }
+       case p.Generate != nil:
+               c.imports["fmt"] = true
+               c.imports["strings"] = true
+               for _, f := range p.Generate.Fields {
+                       c.scanExprImports(f.Value)
+               }
+       case p.Selector != nil:
+               // no imports
+       case p.Lit != nil:
+               // none
+       }
 }
 
 // Runtime helper functions injected into generated programs.
 const (
-	helperIndex = "func _index(v any, k any) any {\n" +
+        helperIndex = "func _index(v any, k any) any {\n" +
 		"    switch s := v.(type) {\n" +
 		"    case []any:\n" +
 		"        i, ok := k.(int)\n" +
@@ -1378,8 +1408,8 @@ const (
 		"    }\n" +
 		"}\n"
 
-	helperIter = "func _iter(v any) []any {\n" +
-		"    switch s := v.(type) {\n" +
+        helperIter = "func _iter(v any) []any {\n" +
+                "    switch s := v.(type) {\n" +
 		"    case []any:\n" +
 		"        return s\n" +
 		"    case []int:\n" +
@@ -1422,13 +1452,38 @@ const (
 		"    default:\n" +
 		"        return nil\n" +
 		"    }\n" +
-		"}\n"
+                "}\n"
+
+        helperGenText = "func _genText(prompt string, args map[string]any) string {\n" +
+                "    for k, v := range args {\n" +
+                "        placeholder := \"$\" + k\n" +
+                "        prompt = strings.ReplaceAll(prompt, placeholder, fmt.Sprintf(\"%v\", v))\n" +
+                "    }\n" +
+                "    return prompt\n" +
+                "}\n"
+
+       helperToAnyMap = "func _toAnyMap(m any) map[string]any {\n" +
+               "    switch v := m.(type) {\n" +
+               "    case map[string]any:\n" +
+               "        return v\n" +
+               "    case map[string]string:\n" +
+               "        out := make(map[string]any, len(v))\n" +
+               "        for k, vv := range v {\n" +
+               "            out[k] = vv\n" +
+               "        }\n" +
+               "        return out\n" +
+               "    default:\n" +
+               "        return nil\n" +
+               "    }\n" +
+               "}\n"
 )
 
 var helperMap = map[string]string{
-	"_index": helperIndex,
-	"_slice": helperSlice,
-	"_iter":  helperIter,
+        "_index": helperIndex,
+        "_slice": helperSlice,
+        "_iter":  helperIter,
+        "_genText": helperGenText,
+       "_toAnyMap": helperToAnyMap,
 }
 
 func (c *Compiler) use(name string) {
