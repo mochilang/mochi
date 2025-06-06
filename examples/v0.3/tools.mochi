@@ -1,0 +1,28 @@
+fun getWeather(location: string): string {
+  if location == "Paris" {
+    return "sunny with a gentle breeze"
+  }
+  return "weather data unavailable"
+}
+
+fun calc(expression: string): string {
+  if expression == "2 + 2" {
+    return "4"
+  }
+  return "error"
+}
+
+let result = generate text {
+  prompt: "What's the weather like in Paris and what's 2 + 2?",
+  tools: [
+    getWeather {
+      description: "Returns the current weather for a given city"
+    },
+    calc {
+      description: "Evaluates a simple math expression"
+    }
+  ]
+}
+
+print(result)
+

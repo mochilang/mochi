@@ -878,16 +878,19 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		return val, nil
 
-	case p.Struct != nil:
-		obj := map[string]any{}
-		for _, field := range p.Struct.Fields {
-			v, err := i.evalExpr(field.Value)
-			if err != nil {
-				return nil, err
-			}
-			obj[field.Name] = v
-		}
-		return obj, nil
+       case p.Struct != nil:
+               obj := map[string]any{}
+               for _, field := range p.Struct.Fields {
+                       v, err := i.evalExpr(field.Value)
+                       if err != nil {
+                               return nil, err
+                       }
+                       obj[field.Name] = v
+               }
+               if _, ok := i.types.GetStruct(p.Struct.Name); !ok {
+                       obj["__name"] = p.Struct.Name
+               }
+               return obj, nil
 
 	case p.List != nil:
 		var elems []any
@@ -959,11 +962,11 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 					normalize = b
 					haveNorm = true
 				}
-			case "tools":
-				if list, ok := v.([]any); ok {
-					for _, item := range list {
-						switch t := item.(type) {
-						case closure:
+                       case "tools":
+                                if list, ok := v.([]any); ok {
+                                        for _, item := range list {
+                                                switch t := item.(type) {
+                                                case closure:
 							if t.Name == "" {
 								continue
 							}
@@ -974,21 +977,40 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 									toolsList = append(toolsList, funcToTool(t.Name, fn, ft))
 								}
 							}
-						case *closure:
-							cl := *t
-							if cl.Name == "" {
-								continue
-							}
-							toolFuncs[cl.Name] = cl
-							if fn, ok := i.env.GetFunc(cl.Name); ok {
-								typ, _ := i.types.GetVar(cl.Name)
-								if ft, ok2 := typ.(types.FuncType); ok2 {
-									toolsList = append(toolsList, funcToTool(cl.Name, fn, ft))
-								}
-							}
-						}
-					}
-				}
+                                                case *closure:
+                                                        cl := *t
+                                                        if cl.Name == "" {
+                                                                continue
+                                                        }
+                                                        toolFuncs[cl.Name] = cl
+                                                        if fn, ok := i.env.GetFunc(cl.Name); ok {
+                                                                typ, _ := i.types.GetVar(cl.Name)
+                                                                if ft, ok2 := typ.(types.FuncType); ok2 {
+                                                                        toolsList = append(toolsList, funcToTool(cl.Name, fn, ft))
+                                                                }
+                                                        }
+                                                case map[string]any:
+                                                        nameAny, has := t["__name"]
+                                                        name, ok1 := nameAny.(string)
+                                                        if !has || !ok1 {
+                                                                continue
+                                                        }
+                                                        desc, _ := t["description"].(string)
+                                                        if fn, ok := i.env.GetFunc(name); ok {
+                                                                typ, _ := i.types.GetVar(name)
+                                                                if ft, ok2 := typ.(types.FuncType); ok2 {
+                                                                        tool := funcToTool(name, fn, ft)
+                                                                        if desc != "" {
+                                                                                tool.Description = desc
+                                                                        }
+                                                                        toolsList = append(toolsList, tool)
+                                                                        cl := closure{Name: name, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
+                                                                        toolFuncs[name] = cl
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                }
 			case "tool_choice":
 				if s, ok := v.(string); ok {
 					toolChoice = s

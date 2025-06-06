@@ -336,8 +336,15 @@ fun calc(expression: string): string {
 }
 
 let result = generate text {
-  tools: [getWeather, calc],
-  prompt: "What's the weather like in Paris and what's 2 + 2?"
+  prompt: "What's the weather like in Paris and what's 2 + 2?",
+  tools: [
+    getWeather {
+      description: "Returns the current weather for a given city"
+    },
+    calc {
+      description: "Evaluates a simple math expression"
+    }
+  ]
 }
 
 print(result)
@@ -365,7 +372,7 @@ Explore the [`examples/`](./examples) directory:
 * `generate.mochi`
 * `generate-struct.mochi`
 * `generate-model.mochi`
-* `generate-tools.mochi`
+* `tools.mochi`
 * `types.mochi`
 
 Edit one or start fresh. It’s all yours.
