@@ -959,7 +959,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				expect = ListType{Elem: StringType{}}
 			case "normalize":
 				expect = BoolType{}
-			case "args":
+			case "args", "tools", "tool_choice":
 				expect = nil
 			}
 			var err error
