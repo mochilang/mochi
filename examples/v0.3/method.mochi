@@ -1,0 +1,19 @@
+// method.mochi
+
+type Circle {
+  radius: float
+
+  fun area(): float {
+    let a = 3.14 * radius * radius
+    print("Calculating area:", a)
+    return a
+  }
+
+  fun describe() {
+    print("Circle with radius", radius)
+  }
+}
+
+let c = Circle { radius: 5 }
+c.describe()
+print("Area is", c.area())
