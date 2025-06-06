@@ -894,6 +894,9 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return MapType{Key: keyT, Value: valT}, nil
 
+	case p.Match != nil:
+		return checkMatchExpr(p.Match, env, expected)
+
 	case p.Generate != nil:
 		for _, f := range p.Generate.Fields {
 			var expect Type
@@ -1012,4 +1015,60 @@ func curryFuncType(params []Type, ret Type) Type {
 		Params: []Type{params[0]},
 		Return: curryFuncType(params[1:], ret),
 	}
+}
+
+func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) {
+	targetType, err := checkExpr(m.Target, env)
+	if err != nil {
+		return nil, err
+	}
+	var resultType Type
+	for _, c := range m.Cases {
+		if !isUnderscoreExpr(c.Pattern) {
+			pType, err := checkExpr(c.Pattern, env)
+			if err != nil {
+				return nil, err
+			}
+			if !unify(targetType, pType, nil) {
+				return nil, errTypeMismatch(c.Pos, targetType, pType)
+			}
+		}
+		rType, err := checkExprWithExpected(c.Result, env, expected)
+		if err != nil {
+			return nil, err
+		}
+		if resultType == nil {
+			resultType = rType
+		} else if !unify(resultType, rType, nil) {
+			resultType = AnyType{}
+		}
+	}
+	if resultType == nil {
+		resultType = AnyType{}
+	}
+	if expected != nil && !unify(resultType, expected, nil) {
+		return nil, errTypeMismatch(m.Pos, expected, resultType)
+	}
+	return resultType, nil
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Index) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
 }
