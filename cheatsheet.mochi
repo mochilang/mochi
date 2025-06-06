@@ -71,10 +71,7 @@ model quick {
 
 generate text {
   model: "quick"
-  prompt: "Write a haiku about $topic"
-  args: {
-    topic: "spring rain"
-  }
+  prompt: "Write a haiku about spring rain"
   temperature: 0.7
   max_tokens: 64
 }

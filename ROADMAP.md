@@ -304,11 +304,7 @@ agent Monitor {
 
   intent summary(): string {
     return generate text {
-      prompt: "There have been $count readings. The last temperature was $lastTemp °C.",
-      args: {
-        count: count,
-        lastTemp: lastTemp
-      }
+      prompt: "There have been " + count + " readings. The last temperature was " + lastTemp + " °C."
     }
   }
 }
