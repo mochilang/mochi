@@ -411,25 +411,21 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
-	var prompt string
-	args := "{}"
-	for _, f := range g.Fields {
-		v, err := c.compileExpr(f.Value)
-		if err != nil {
-			return "", err
-		}
-		switch f.Name {
-		case "prompt":
-			prompt = v
-		case "args":
-			args = v
-		}
-	}
-	if prompt == "" {
-		prompt = "\"\""
-	}
-	c.use("_gen_text")
-	return fmt.Sprintf("_gen_text(%s, %s)", prompt, args), nil
+       var prompt string
+       for _, f := range g.Fields {
+               v, err := c.compileExpr(f.Value)
+               if err != nil {
+                       return "", err
+               }
+               if f.Name == "prompt" {
+                       prompt = v
+               }
+       }
+       if prompt == "" {
+               prompt = "\"\""
+       }
+       c.use("_gen_text")
+       return fmt.Sprintf("_gen_text(%s)", prompt), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -517,14 +513,10 @@ const (
 		"  return 0;\n" +
 		"}\n"
 
-	helperGenText = "function _gen_text(prompt: string, args: Record<string, any>): string {\n" +
-		"  // TODO: integrate with your preferred LLM\n" +
-		"  for (const k in args) {\n" +
-		"    const placeholder = '$' + k;\n" +
-		"    prompt = prompt.split(placeholder).join(String(args[k]));\n" +
-		"  }\n" +
-		"  return prompt;\n" +
-		"}\n"
+       helperGenText = "function _gen_text(prompt: string): string {\n" +
+               "  // TODO: integrate with your preferred LLM\n" +
+               "  return prompt;\n" +
+               "}\n"
 )
 
 var helperMap = map[string]string{

@@ -434,25 +434,21 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
-	var prompt string
-	args := "{}"
-	for _, f := range g.Fields {
-		v, err := c.compileExpr(f.Value)
-		if err != nil {
-			return "", err
-		}
-		switch f.Name {
-		case "prompt":
-			prompt = v
-		case "args":
-			args = v
-		}
-	}
-	if prompt == "" {
-		prompt = "\"\""
-	}
-	c.use("_gen_text")
-	return fmt.Sprintf("_gen_text(%s, %s)", prompt, args), nil
+       var prompt string
+       for _, f := range g.Fields {
+               v, err := c.compileExpr(f.Value)
+               if err != nil {
+                       return "", err
+               }
+               if f.Name == "prompt" {
+                       prompt = v
+               }
+       }
+       if prompt == "" {
+               prompt = "\"\""
+       }
+       c.use("_gen_text")
+       return fmt.Sprintf("_gen_text(%s)", prompt), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -495,12 +491,9 @@ var helperSlice = "def _slice(v, start, end):\n" +
 	"        return v[start:end]\n" +
 	"    raise Exception(\"invalid slice target\")\n"
 
-var helperGenText = "def _gen_text(prompt, args):\n" +
-	"    # TODO: send prompt to your LLM of choice\n" +
-	"    for k, v in args.items():\n" +
-	"        placeholder = '$' + k\n" +
-	"        prompt = prompt.replace(placeholder, str(v))\n" +
-	"    return prompt\n"
+var helperGenText = "def _gen_text(prompt):\n" +
+       "    # TODO: send prompt to your LLM of choice\n" +
+       "    return prompt\n"
 
 var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_gen_text": helperGenText}
 

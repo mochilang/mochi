@@ -575,30 +575,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
-	var prompt string
-	args := "map[string]any{}"
-	for _, f := range g.Fields {
-		v, err := c.compileExpr(f.Value)
-		if err != nil {
-			return "", err
-		}
-		switch f.Name {
-		case "prompt":
-			prompt = v
-		case "args":
-			args = v
-		}
-	}
-	if prompt == "" {
-		prompt = "\"\""
-	}
-	c.use("_genText")
-	c.use("_toAnyMap")
-	c.imports["fmt"] = true
-	c.imports["strings"] = true
-	c.imports["context"] = true
-	c.imports["mochi/runtime/llm"] = true
-	return fmt.Sprintf("_genText(%s, _toAnyMap(%s))", prompt, args), nil
+       var prompt string
+       for _, f := range g.Fields {
+               v, err := c.compileExpr(f.Value)
+               if err != nil {
+                       return "", err
+               }
+               if f.Name == "prompt" {
+                       prompt = v
+               }
+       }
+       if prompt == "" {
+               prompt = "\"\""
+       }
+       c.use("_genText")
+       c.imports["context"] = true
+       c.imports["mochi/runtime/llm"] = true
+       return fmt.Sprintf("_genText(%s)", prompt), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -1233,15 +1226,14 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 			c.scanExprImports(it.Key)
 			c.scanExprImports(it.Value)
 		}
-	case p.Generate != nil:
-		c.imports["fmt"] = true
-		c.imports["strings"] = true
-		c.imports["context"] = true
-		c.imports["mochi/runtime/llm"] = true
-		c.imports["_ \"mochi/runtime/llm/provider/echo\""] = true
-		for _, f := range p.Generate.Fields {
-			c.scanExprImports(f.Value)
-		}
+       case p.Generate != nil:
+               c.imports["fmt"] = true
+               c.imports["context"] = true
+               c.imports["mochi/runtime/llm"] = true
+               c.imports["_ \"mochi/runtime/llm/provider/echo\""] = true
+               for _, f := range p.Generate.Fields {
+                       c.scanExprImports(f.Value)
+               }
 	case p.Selector != nil:
 		// no imports
 	case p.Lit != nil:
@@ -1463,15 +1455,11 @@ const (
 		"    }\n" +
 		"}\n"
 
-	helperGenText = "func _genText(prompt string, args map[string]any) string {\n" +
-		"    for k, v := range args {\n" +
-		"        placeholder := \"$\" + k\n" +
-		"        prompt = strings.ReplaceAll(prompt, placeholder, fmt.Sprintf(\"%v\", v))\n" +
-		"    }\n" +
-		"    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: \"user\", Content: prompt}})\n" +
-		"    if err != nil { panic(err) }\n" +
-		"    return resp.Message.Content\n" +
-		"}\n"
+       helperGenText = "func _genText(prompt string) string {\n" +
+               "    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: \"user\", Content: prompt}})\n" +
+               "    if err != nil { panic(err) }\n" +
+               "    return resp.Message.Content\n" +
+               "}\n"
 
 	helperToAnyMap = "func _toAnyMap(m any) map[string]any {\n" +
 		"    switch v := m.(type) {\n" +

@@ -912,14 +912,13 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return obj, nil
 
 	case p.Generate != nil:
-		params := map[string]any{}
-		reqParams := map[string]any{}
-		var (
-			prompt   string
-			modelStr string
-			provider string
-		)
-		for _, f := range p.Generate.Fields {
+               reqParams := map[string]any{}
+               var (
+                       prompt   string
+                       modelStr string
+                       provider string
+               )
+               for _, f := range p.Generate.Fields {
 			v, err := i.evalExpr(f.Value)
 			if err != nil {
 				return nil, err
@@ -929,24 +928,16 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				if s, ok := v.(string); ok {
 					prompt = s
 				}
-			case "args":
-				if m, ok := v.(map[string]any); ok {
-					for k, vv := range m {
-						params[k] = vv
-					}
-				}
-			case "temperature", "top_p", "max_tokens", "stop":
-				reqParams[f.Name] = v
-			case "model":
-				if s, ok := v.(string); ok {
-					modelStr = s
-				}
-			default:
-				reqParams[f.Name] = v
-			}
-		}
-
-		prompt = interpolatePrompt(prompt, params)
+                       case "temperature", "top_p", "max_tokens", "stop":
+                               reqParams[f.Name] = v
+                       case "model":
+                               if s, ok := v.(string); ok {
+                                       modelStr = s
+                               }
+                       default:
+                               reqParams[f.Name] = v
+                       }
+               }
 
 		if modelStr != "" {
 			if parts := strings.SplitN(modelStr, ":", 2); len(parts) == 2 {
@@ -1421,10 +1412,3 @@ func truthy(val any) bool {
 	return anyToValue(val).Truthy()
 }
 
-func interpolatePrompt(prompt string, args map[string]any) string {
-	for k, v := range args {
-		placeholder := "$" + k
-		prompt = strings.ReplaceAll(prompt, placeholder, fmt.Sprintf("%v", v))
-	}
-	return prompt
-}
