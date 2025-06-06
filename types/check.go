@@ -875,24 +875,30 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 
 	case p.Struct != nil:
-		st, ok := env.GetStruct(p.Struct.Name)
-		if !ok {
-			return nil, errUnknownType(p.Pos, p.Struct.Name)
-		}
-		for _, field := range p.Struct.Fields {
-			ft, ok := st.Fields[field.Name]
-			if !ok {
-				return nil, errUnknownField(p.Pos, field.Name, st)
-			}
-			valT, err := checkExpr(field.Value, env)
-			if err != nil {
-				return nil, err
-			}
-			if !unify(ft, valT, nil) {
-				return nil, errTypeMismatch(field.Value.Pos, ft, valT)
-			}
-		}
-		return st, nil
+               st, ok := env.GetStruct(p.Struct.Name)
+               if !ok {
+                       // treat unknown struct literal as map for tool specs
+                       for _, field := range p.Struct.Fields {
+                               if _, err := checkExpr(field.Value, env); err != nil {
+                                       return nil, err
+                               }
+                       }
+                       return MapType{Key: StringType{}, Value: AnyType{}}, nil
+               }
+               for _, field := range p.Struct.Fields {
+                       ft, ok := st.Fields[field.Name]
+                       if !ok {
+                               return nil, errUnknownField(p.Pos, field.Name, st)
+                       }
+                       valT, err := checkExpr(field.Value, env)
+                       if err != nil {
+                               return nil, err
+                       }
+                       if !unify(ft, valT, nil) {
+                               return nil, errTypeMismatch(field.Value.Pos, ft, valT)
+                       }
+               }
+               return st, nil
 
 	case p.List != nil:
 		var elemType Type = nil
