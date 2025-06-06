@@ -70,7 +70,7 @@ let  var  fun  return
 if   else
 for  in
 stream  on  as
-agent  test  expect
+model  agent  test  expect
 ```
 
 ### Operators and Delimiters
@@ -306,7 +306,7 @@ The complete grammar for Mochi in EBNF notation:
 Program       = { Statement }.
 Statement     = LetStmt | VarStmt | AssignStmt | FunDecl | ReturnStmt |
                 IfStmt | ForStmt | ExprStmt | TestBlock |
-                ExpectStmt | StreamDecl | OnHandler | AgentDecl .
+                ExpectStmt | StreamDecl | OnHandler | ModelDecl | AgentDecl .
 LetStmt       = "let" Identifier [ ":" TypeRef ] [ "=" Expression ] .
 VarStmt       = "var" Identifier [ ":" TypeRef ] [ "=" Expression ] .
 AssignStmt    = PostfixExpr "=" Expression .
@@ -320,6 +320,7 @@ ExpectStmt    = "expect" Expression .
 StreamDecl    = "stream" Identifier Block .
 OnHandler     = "on" Identifier "as" Identifier Block .
 AgentDecl     = "agent" Identifier Block .
+ModelDecl     = "model" Identifier Block .
 
 Expression    = Equality .
 Equality      = Comparison { ("==" | "!=") Comparison } .

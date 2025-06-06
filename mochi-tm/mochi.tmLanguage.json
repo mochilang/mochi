@@ -6,7 +6,7 @@
   "patterns": [
     {
       "name": "keyword.control.mochi",
-      "match": "\\b(let|fun|func|return|if|else|for|in|on|as|test|expect|replay|simulate|agent|state|intent|stream|generate|text|await|async|call|cancel|emit|window|from|where|group|by|select|join|having)\\b"
+      "match": "\\b(let|fun|func|return|if|else|for|in|on|as|test|expect|replay|simulate|agent|state|intent|stream|model|generate|text|await|async|call|cancel|emit|window|from|where|group|by|select|join|having)\\b"
     },
     {
       "name": "storage.type.mochi",

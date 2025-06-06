@@ -80,9 +80,14 @@ test "Some math operator" {
 }
 
 // 6. Generative AI
-let topic = "spring"
+model quick {
+  provider: "openai"
+  name: "gpt-3.5-turbo"
+}
 
+let topic = "spring"
 let poem = generate text {
+  model: "quick"
   prompt: "Write a haiku about " + topic
 }
 

@@ -1,0 +1,6 @@
+(program
+  (model quick
+    (provider (string openai))
+    (name (string gpt-3.5-turbo))
+  )
+)
