@@ -20,6 +20,7 @@ type Env struct {
 
 	types   map[string]Type            // static types
 	structs map[string]StructType      // user-defined struct types
+	unions  map[string]UnionType       // user-defined union types
 	mut     map[string]bool            // mutability of variables
 	values  map[string]any             // runtime values
 	funcs   map[string]*parser.FunStmt // function declarations
@@ -38,6 +39,7 @@ func NewEnv(parent *Env) *Env {
 		parent:  parent,
 		types:   make(map[string]Type),
 		structs: make(map[string]StructType),
+		unions:  make(map[string]UnionType),
 		mut:     make(map[string]bool),
 		values:  make(map[string]any),
 		funcs:   make(map[string]*parser.FunStmt),
@@ -62,6 +64,20 @@ func (e *Env) GetStruct(name string) (StructType, bool) {
 		return e.parent.GetStruct(name)
 	}
 	return StructType{}, false
+}
+
+// SetUnion defines a user-defined union type.
+func (e *Env) SetUnion(name string, ut UnionType) { e.unions[name] = ut }
+
+// GetUnion retrieves a union type by name.
+func (e *Env) GetUnion(name string) (UnionType, bool) {
+	if u, ok := e.unions[name]; ok {
+		return u, true
+	}
+	if e.parent != nil {
+		return e.parent.GetUnion(name)
+	}
+	return UnionType{}, false
 }
 
 // SetModel defines a model alias.
@@ -179,6 +195,7 @@ func (e *Env) Copy() *Env {
 		mut:    make(map[string]bool, len(e.mut)),
 		values: make(map[string]any, len(e.values)),
 		funcs:  make(map[string]*parser.FunStmt, len(e.funcs)),
+		unions: make(map[string]UnionType, len(e.unions)),
 		models: make(map[string]ModelSpec, len(e.models)),
 		output: e.output,
 	}
@@ -193,6 +210,9 @@ func (e *Env) Copy() *Env {
 	}
 	for k, v := range e.funcs {
 		newEnv.funcs[k] = v
+	}
+	for k, v := range e.unions {
+		newEnv.unions[k] = v
 	}
 	for k, v := range e.models {
 		newEnv.models[k] = v
