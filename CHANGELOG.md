@@ -1,4 +1,23 @@
 # 📦 CHANGELOG.md
+## [0.3.2] – 2025-06-08
+
+### Added
+
+* `model` block for reusable model aliases
+* `model` field in `generate` blocks
+* `generate embedding` block producing vectors
+* Embedding support with optional `normalize`
+
+### Changed
+
+* Generate blocks call the shared LLM runtime
+* Removed interpolation in generate fields
+
+### Fixed
+
+* Documentation and tests for generative features
+
+
 ## [0.3.1] – 2025-06-07
 
 ### Added
