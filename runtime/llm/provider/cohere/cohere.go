@@ -68,21 +68,31 @@ func (c *conn) Chat(ctx context.Context, req llm.ChatRequest) (*llm.ChatResponse
 		return nil, fmt.Errorf("cohere: %s", b)
 	}
 	var r struct {
-		Text      string `json:"text"`
-		Model     string `json:"model"`
-		Finish    string `json:"finish_reason"`
-		ToolCalls []struct {
-			Name       string         `json:"name"`
-			Parameters map[string]any `json:"parameters"`
-		} `json:"tool_calls"`
+		Model   string `json:"model"`
+		Finish  string `json:"finish_reason"`
+		Message struct {
+			Role      string `json:"role"`
+			Content   string `json:"content"`
+			ToolPlan  string `json:"tool_plan"`
+			ToolCalls []struct {
+				ID       string `json:"id"`
+				Type     string `json:"type"`
+				Function struct {
+					Name      string `json:"name"`
+					Arguments string `json:"arguments"`
+				} `json:"function"`
+			} `json:"tool_calls"`
+		} `json:"message"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
 		return nil, err
 	}
-	msg := llm.Message{Role: "assistant", Content: r.Text}
-	if len(r.ToolCalls) > 0 {
-		tc := r.ToolCalls[0]
-		msg.ToolCall = &llm.ToolCall{Name: tc.Name, Args: tc.Parameters}
+	msg := llm.Message{Role: r.Message.Role, Content: r.Message.Content, ToolPlan: r.Message.ToolPlan}
+	if len(r.Message.ToolCalls) > 0 {
+		tc := r.Message.ToolCalls[0]
+		var args map[string]any
+		json.Unmarshal([]byte(tc.Function.Arguments), &args)
+		msg.ToolCall = &llm.ToolCall{ID: tc.ID, Name: tc.Function.Name, Args: args}
 	}
 	return &llm.ChatResponse{Message: msg, Model: r.Model, StopReason: r.Finish}, nil
 }
@@ -234,9 +244,12 @@ func convertTools(tools []llm.Tool) []map[string]any {
 	for _, t := range tools {
 		params := cloneWithDescriptions(t.Parameters)
 		out = append(out, map[string]any{
-			"name":        t.Name,
-			"description": t.Description,
-			"parameters":  params,
+			"type": "function",
+			"function": map[string]any{
+				"name":        t.Name,
+				"description": t.Description,
+				"parameters":  params,
+			},
 		})
 	}
 	return out

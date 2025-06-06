@@ -6,6 +6,7 @@ import "context"
 type Message struct {
 	Role     string    `json:"role"`
 	Content  string    `json:"content"`
+	ToolPlan string    `json:"tool_plan,omitempty"`
 	ToolCall *ToolCall `json:"tool_call,omitempty"`
 }
 
