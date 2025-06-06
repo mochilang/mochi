@@ -94,9 +94,14 @@ type ForStmt struct {
 // --- User-defined Types ---
 
 type TypeDecl struct {
-	Pos    lexer.Position
-	Name   string       `parser:"'type' @Ident"`
-	Fields []*TypeField `parser:"'{' @@* '}'"`
+	Pos     lexer.Position
+	Name    string        `parser:"'type' @Ident"`
+	Members []*TypeMember `parser:"'{' @@* '}'"`
+}
+
+type TypeMember struct {
+	Field  *TypeField `parser:"@@"`
+	Method *FunStmt   `parser:"| @@"`
 }
 
 type TypeField struct {
@@ -254,16 +259,17 @@ type MatchCase struct {
 
 type Primary struct {
 	Pos      lexer.Position
-	FunExpr  *FunExpr       `parser:"@@"`
-	Struct   *StructLiteral `parser:"| @@"`
-	Call     *CallExpr      `parser:"| @@"`
-	Selector *SelectorExpr  `parser:"| @@"`
-	List     *ListLiteral   `parser:"| @@"`
-	Map      *MapLiteral    `parser:"| @@"`
-	Match    *MatchExpr     `parser:"| @@"`
-	Generate *GenerateExpr  `parser:"| @@"`
-	Lit      *Literal       `parser:"| @@"`
-	Group    *Expr          `parser:"| '(' @@ ')'"`
+	FunExpr  *FunExpr        `parser:"@@"`
+	Struct   *StructLiteral  `parser:"| @@"`
+	Method   *MethodCallExpr `parser:"| @@"`
+	Call     *CallExpr       `parser:"| @@"`
+	Selector *SelectorExpr   `parser:"| @@"`
+	List     *ListLiteral    `parser:"| @@"`
+	Map      *MapLiteral     `parser:"| @@"`
+	Match    *MatchExpr      `parser:"| @@"`
+	Generate *GenerateExpr   `parser:"| @@"`
+	Lit      *Literal        `parser:"| @@"`
+	Group    *Expr           `parser:"| '(' @@ ')'"`
 }
 
 type FunExpr struct {
@@ -285,6 +291,13 @@ type CallExpr struct {
 	Pos  lexer.Position
 	Func string  `parser:"@Ident '('"`
 	Args []*Expr `parser:"[ @@ { ',' @@ } ] ')'"`
+}
+
+type MethodCallExpr struct {
+	Pos  lexer.Position
+	Root string   `parser:"@Ident"`
+	Path []string `parser:"'.' @Ident { '.' @Ident } '('"`
+	Args []*Expr  `parser:"[ @@ { ',' @@ } ] ')'"`
 }
 
 type Literal struct {

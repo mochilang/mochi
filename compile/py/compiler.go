@@ -167,11 +167,20 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	c.writeln("@dataclasses.dataclass")
 	c.writeln(fmt.Sprintf("class %s:", name))
 	c.indent++
-	if len(t.Fields) == 0 {
+	hasField := false
+	for _, m := range t.Members {
+		if m.Field != nil {
+			hasField = true
+			break
+		}
+	}
+	if !hasField {
 		c.writeln("pass")
 	} else {
-		for _, f := range t.Fields {
-			c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(f.Name)))
+		for _, m := range t.Members {
+			if m.Field != nil {
+				c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(m.Field.Name)))
+			}
 		}
 	}
 	c.indent--

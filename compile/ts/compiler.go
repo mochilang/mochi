@@ -133,8 +133,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("type %s = {", name))
 	c.indent++
-	for _, f := range t.Fields {
-		c.writeln(fmt.Sprintf("%s: any;", sanitizeName(f.Name)))
+	for _, m := range t.Members {
+		if m.Field != nil {
+			c.writeln(fmt.Sprintf("%s: any;", sanitizeName(m.Field.Name)))
+		}
 	}
 	c.indent--
 	c.writeln("}")

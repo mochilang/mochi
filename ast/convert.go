@@ -106,12 +106,16 @@ func FromStatement(s *parser.Statement) *Node {
 
 	case s.Type != nil:
 		n := &Node{Kind: "type", Value: s.Type.Name}
-		for _, f := range s.Type.Fields {
-			n.Children = append(n.Children, &Node{
-				Kind:     "field",
-				Value:    f.Name,
-				Children: []*Node{FromTypeRef(f.Type)},
-			})
+		for _, m := range s.Type.Members {
+			if m.Field != nil {
+				n.Children = append(n.Children, &Node{
+					Kind:     "field",
+					Value:    m.Field.Name,
+					Children: []*Node{FromTypeRef(m.Field.Type)},
+				})
+			} else if m.Method != nil {
+				n.Children = append(n.Children, FromStatement(&parser.Statement{Fun: m.Method}))
+			}
 		}
 		return n
 

@@ -228,10 +228,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("type %s struct {", name))
 	c.indent++
-	for _, f := range t.Fields {
-		fieldName := exportName(sanitizeName(f.Name))
-		typ := goType(resolveTypeRef(f.Type))
-		c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, f.Name))
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fieldName := exportName(sanitizeName(m.Field.Name))
+			typ := goType(resolveTypeRef(m.Field.Type))
+			c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, m.Field.Name))
+		}
 	}
 	c.indent--
 	c.writeln("}")
