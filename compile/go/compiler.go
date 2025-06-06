@@ -246,10 +246,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.writeln(fmt.Sprintf("type %s struct {", name))
 	c.indent++
-	for _, f := range t.Fields {
-		fieldName := exportName(sanitizeName(f.Name))
-		typ := goType(resolveTypeRef(f.Type))
-		c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, f.Name))
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fieldName := exportName(sanitizeName(m.Field.Name))
+			typ := goType(resolveTypeRef(m.Field.Type))
+			c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, m.Field.Name))
+		}
 	}
 	c.indent--
 	c.writeln("}")
@@ -495,9 +497,26 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	typ := c.inferPrimaryType(p.Target)
-	for _, op := range p.Index {
-		if op.Colon == nil {
-			key, err := c.compileExpr(op.Start)
+	for _, op := range p.Ops {
+		if op.Index == nil {
+			if op.Call != nil {
+				args := make([]string, len(op.Call.Args))
+				for i, a := range op.Call.Args {
+					v, err := c.compileExpr(a)
+					if err != nil {
+						return "", err
+					}
+					args[i] = v
+				}
+				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+				typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
+				continue
+			}
+			continue
+		}
+		idx := op.Index
+		if idx.Colon == nil {
+			key, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return "", err
 			}
@@ -518,16 +537,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		} else {
 			start := "0"
-			if op.Start != nil {
-				s, err := c.compileExpr(op.Start)
+			if idx.Start != nil {
+				s, err := c.compileExpr(idx.Start)
 				if err != nil {
 					return "", err
 				}
 				start = s
 			}
 			end := fmt.Sprintf("len(%s)", val)
-			if op.End != nil {
-				e, err := c.compileExpr(op.End)
+			if idx.End != nil {
+				e, err := c.compileExpr(idx.End)
 				if err != nil {
 					return "", err
 				}
@@ -1051,8 +1070,8 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 		return types.AnyType{}
 	}
 	t := c.inferPrimaryType(p.Target)
-	for _, op := range p.Index {
-		if op.Colon == nil {
+	for _, op := range p.Ops {
+		if op.Index != nil && op.Index.Colon == nil {
 			switch tt := t.(type) {
 			case types.ListType:
 				t = tt.Elem
@@ -1063,13 +1082,19 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 			default:
 				t = types.AnyType{}
 			}
-		} else {
+		} else if op.Index != nil {
 			switch tt := t.(type) {
 			case types.ListType:
 				t = tt
 			case types.StringType:
 				t = types.StringType{}
 			default:
+				t = types.AnyType{}
+			}
+		} else if op.Call != nil {
+			if ft, ok := t.(types.FuncType); ok {
+				t = ft.Return
+			} else {
 				t = types.AnyType{}
 			}
 		}
@@ -1338,9 +1363,18 @@ func (c *Compiler) scanPostfixImports(p *parser.PostfixExpr) {
 		return
 	}
 	c.scanPrimaryImports(p.Target)
-	for _, op := range p.Index {
-		c.scanExprImports(op.Start)
-		c.scanExprImports(op.End)
+	for _, op := range p.Ops {
+		if op.Index == nil {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					c.scanExprImports(a)
+				}
+			}
+			continue
+		}
+		idx := op.Index
+		c.scanExprImports(idx.Start)
+		c.scanExprImports(idx.End)
 	}
 }
 
@@ -1696,7 +1730,7 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	p := u.Value
-	if len(p.Index) != 0 {
+	if len(p.Ops) != 0 {
 		return false
 	}
 	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {

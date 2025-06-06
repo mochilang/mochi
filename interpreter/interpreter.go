@@ -711,136 +711,195 @@ func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
 		return nil, err
 	}
 
-	for _, op := range p.Index {
-		switch src := val.(type) {
-		case []any:
-			// Index
-			if op.Colon == nil {
-				index, err := i.evalExpr(op.Start)
+	for _, op := range p.Ops {
+		if idx := op.Index; idx != nil {
+			switch src := val.(type) {
+			case []any:
+				// Index
+				if idx.Colon == nil {
+					index, err := i.evalExpr(idx.Start)
+					if err != nil {
+						return nil, err
+					}
+					n, ok := index.(int)
+					if !ok {
+						return nil, errInvalidIndex(idx.Pos, index)
+					}
+					if n < 0 {
+						n += len(src)
+					}
+					if n < 0 || n >= len(src) {
+						return nil, errIndexOutOfBounds(idx.Pos, n, len(src))
+					}
+					val = src[n]
+
+				} else {
+					// Slice
+					start, end := 0, len(src)
+					if idx.Start != nil {
+						s, err := i.evalExpr(idx.Start)
+						if err != nil {
+							return nil, err
+						}
+						if n, ok := s.(int); ok {
+							if n < 0 {
+								n += len(src)
+							}
+							start = n
+						} else {
+							return nil, errInvalidIndex(idx.Pos, s)
+						}
+					}
+					if idx.End != nil {
+						e, err := i.evalExpr(idx.End)
+						if err != nil {
+							return nil, err
+						}
+						if n, ok := e.(int); ok {
+							if n < 0 {
+								n += len(src)
+							}
+							end = n
+						} else {
+							return nil, errInvalidIndex(idx.Pos, e)
+						}
+					}
+					if start < 0 || end > len(src) || start > end {
+						return nil, errSliceOutOfBounds(idx.Pos, start, end, len(src))
+					}
+					val = src[start:end]
+				}
+
+			case string:
+				runes := []rune(src)
+				if idx.Colon == nil {
+					index, err := i.evalExpr(idx.Start)
+					if err != nil {
+						return nil, err
+					}
+					n, ok := index.(int)
+					if !ok {
+						return nil, errInvalidIndex(idx.Pos, index)
+					}
+					if n < 0 {
+						n += len(runes)
+					}
+					if n < 0 || n >= len(runes) {
+						return nil, errIndexOutOfBounds(idx.Pos, n, len(runes))
+					}
+					val = string(runes[n])
+				} else {
+					start, end := 0, len(runes)
+					if idx.Start != nil {
+						s, err := i.evalExpr(idx.Start)
+						if err != nil {
+							return nil, err
+						}
+						if n, ok := s.(int); ok {
+							if n < 0 {
+								n += len(runes)
+							}
+							start = n
+						} else {
+							return nil, errInvalidIndex(idx.Pos, s)
+						}
+					}
+					if idx.End != nil {
+						e, err := i.evalExpr(idx.End)
+						if err != nil {
+							return nil, err
+						}
+						if n, ok := e.(int); ok {
+							if n < 0 {
+								n += len(runes)
+							}
+							end = n
+						} else {
+							return nil, errInvalidIndex(idx.Pos, e)
+						}
+					}
+					if start < 0 || end > len(runes) || start > end {
+						return nil, errSliceOutOfBounds(idx.Pos, start, end, len(runes))
+					}
+					val = string(runes[start:end])
+				}
+			case map[string]any:
+				if idx.Colon != nil {
+					return nil, errInvalidIndexTarget(idx.Pos, "map")
+				}
+				if idx.Start == nil {
+					return nil, errInvalidIndex(idx.Pos, nil)
+				}
+				key, err := i.evalExpr(idx.Start)
 				if err != nil {
 					return nil, err
 				}
-				n, ok := index.(int)
+				keyStr, ok := key.(string)
 				if !ok {
-					return nil, errInvalidIndex(op.Pos, index)
+					return nil, errInvalidMapKey(idx.Pos, key)
 				}
-				if n < 0 {
-					n += len(src)
-				}
-				if n < 0 || n >= len(src) {
-					return nil, errIndexOutOfBounds(op.Pos, n, len(src))
-				}
-				val = src[n]
+				val = src[keyStr]
 
-			} else {
-				// Slice
-				start, end := 0, len(src)
-				if op.Start != nil {
-					s, err := i.evalExpr(op.Start)
-					if err != nil {
-						return nil, err
-					}
-					if n, ok := s.(int); ok {
-						if n < 0 {
-							n += len(src)
-						}
-						start = n
-					} else {
-						return nil, errInvalidIndex(op.Pos, s)
-					}
-				}
-				if op.End != nil {
-					e, err := i.evalExpr(op.End)
-					if err != nil {
-						return nil, err
-					}
-					if n, ok := e.(int); ok {
-						if n < 0 {
-							n += len(src)
-						}
-						end = n
-					} else {
-						return nil, errInvalidIndex(op.Pos, e)
-					}
-				}
-				if start < 0 || end > len(src) || start > end {
-					return nil, errSliceOutOfBounds(op.Pos, start, end, len(src))
-				}
-				val = src[start:end]
+			default:
+				return nil, errInvalidIndexTarget(idx.Pos, fmt.Sprintf("%T", src))
 			}
-
-		case string:
-			runes := []rune(src)
-			if op.Colon == nil {
-				index, err := i.evalExpr(op.Start)
-				if err != nil {
-					return nil, err
-				}
-				n, ok := index.(int)
-				if !ok {
-					return nil, errInvalidIndex(op.Pos, index)
-				}
-				if n < 0 {
-					n += len(runes)
-				}
-				if n < 0 || n >= len(runes) {
-					return nil, errIndexOutOfBounds(op.Pos, n, len(runes))
-				}
-				val = string(runes[n])
-			} else {
-				start, end := 0, len(runes)
-				if op.Start != nil {
-					s, err := i.evalExpr(op.Start)
-					if err != nil {
-						return nil, err
-					}
-					if n, ok := s.(int); ok {
-						if n < 0 {
-							n += len(runes)
-						}
-						start = n
-					} else {
-						return nil, errInvalidIndex(op.Pos, s)
-					}
-				}
-				if op.End != nil {
-					e, err := i.evalExpr(op.End)
-					if err != nil {
-						return nil, err
-					}
-					if n, ok := e.(int); ok {
-						if n < 0 {
-							n += len(runes)
-						}
-						end = n
-					} else {
-						return nil, errInvalidIndex(op.Pos, e)
-					}
-				}
-				if start < 0 || end > len(runes) || start > end {
-					return nil, errSliceOutOfBounds(op.Pos, start, end, len(runes))
-				}
-				val = string(runes[start:end])
-			}
-		case map[string]any:
-			if op.Colon != nil {
-				return nil, errInvalidIndexTarget(op.Pos, "map")
-			}
-			if op.Start == nil {
-				return nil, errInvalidIndex(op.Pos, nil)
-			}
-			key, err := i.evalExpr(op.Start)
-			if err != nil {
-				return nil, err
-			}
-			keyStr, ok := key.(string)
+			continue
+		} else if call := op.Call; call != nil {
+			cl, ok := val.(closure)
 			if !ok {
-				return nil, errInvalidMapKey(op.Pos, key)
+				return nil, errUndefinedFunctionOrClosure(call.Pos, "")
 			}
-			val = src[keyStr]
-
-		default:
-			return nil, errInvalidIndexTarget(op.Pos, fmt.Sprintf("%T", src))
+			totalArgs := len(cl.Args) + len(call.Args)
+			fullParamCount := len(cl.FullParams)
+			if totalArgs > fullParamCount {
+				return nil, errTooManyFunctionArgs(call.Pos, cl.Name, fullParamCount, totalArgs)
+			}
+			allArgs := append([]Value{}, cl.Args...)
+			for _, a := range call.Args {
+				v, err := i.evalExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				allArgs = append(allArgs, anyToValue(v))
+			}
+			if totalArgs < fullParamCount {
+				val = closure{
+					Name:       cl.Name,
+					Fn:         cl.Fn,
+					Env:        cl.Env,
+					Args:       allArgs,
+					FullParams: cl.FullParams,
+				}
+				continue
+			}
+			child := types.NewEnv(cl.Env)
+			for idx, param := range cl.FullParams {
+				child.SetValue(param.Name, valueToAny(allArgs[idx]), true)
+			}
+			old := i.env
+			i.env = child
+			if cl.Fn.ExprBody != nil {
+				val, err = i.evalExpr(cl.Fn.ExprBody)
+				i.env = old
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				var ret any
+				for _, stmt := range cl.Fn.BlockBody {
+					if err := i.evalStmt(stmt); err != nil {
+						if r, ok := err.(returnSignal); ok {
+							ret = r.value
+							err = nil
+							break
+						}
+						i.env = old
+						return nil, err
+					}
+				}
+				i.env = old
+				val = ret
+			}
 		}
 	}
 	return val, nil
@@ -878,7 +937,26 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			if !ok {
 				return nil, errFieldAccessOnNonObject(p.Pos, field, fmt.Sprintf("%T", val))
 			}
-			val = obj[field]
+			if v, ok := obj[field]; ok {
+				val = v
+				continue
+			}
+			name, _ := obj["__name"].(string)
+			if st, ok := i.types.GetStruct(name); ok {
+				if m, ok := st.Methods[field]; ok {
+					env := i.env.Copy()
+					for k, v := range obj {
+						if k == "__name" {
+							continue
+						}
+						env.SetValue(k, v, true)
+					}
+					cl := closure{Name: field, Fn: &parser.FunExpr{Params: m.Decl.Params, Return: m.Decl.Return, BlockBody: m.Decl.Body}, Env: env, FullParams: m.Decl.Params}
+					val = cl
+					continue
+				}
+			}
+			val = nil
 		}
 		return val, nil
 
@@ -1245,7 +1323,7 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	p := u.Value
-	if len(p.Index) != 0 {
+	if len(p.Ops) != 0 {
 		return false
 	}
 	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
@@ -1266,7 +1344,7 @@ func identName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	p := u.Value
-	if len(p.Index) != 0 {
+	if len(p.Ops) != 0 {
 		return "", false
 	}
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
@@ -1287,7 +1365,7 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 		return nil, false
 	}
 	p := u.Value
-	if len(p.Index) != 0 || p.Target.Call == nil {
+	if len(p.Ops) != 0 || p.Target.Call == nil {
 		return nil, false
 	}
 	return p.Target.Call, true

@@ -133,8 +133,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("type %s = {", name))
 	c.indent++
-	for _, f := range t.Fields {
-		c.writeln(fmt.Sprintf("%s: any;", sanitizeName(f.Name)))
+	for _, m := range t.Members {
+		if m.Field != nil {
+			c.writeln(fmt.Sprintf("%s: any;", sanitizeName(m.Field.Name)))
+		}
 	}
 	c.indent--
 	c.writeln("}")
@@ -284,7 +286,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, idx := range p.Index {
+	for _, op := range p.Ops {
+		if op.Index == nil {
+			if op.Call != nil {
+				args := make([]string, len(op.Call.Args))
+				for i, a := range op.Call.Args {
+					v, err := c.compileExpr(a)
+					if err != nil {
+						return "", err
+					}
+					args[i] = v
+				}
+				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+			}
+			continue
+		}
+		idx := op.Index
 		if idx.Colon != nil {
 			start := "0"
 			end := "0"
@@ -654,7 +671,7 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	p := u.Value
-	if len(p.Index) != 0 {
+	if len(p.Ops) != 0 {
 		return false
 	}
 	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
