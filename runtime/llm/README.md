@@ -52,6 +52,14 @@ for {
 }
 ```
 
+### Embeddings
+
+Request an embedding vector for a piece of text:
+
+```go
+vec, err := client.Embed(ctx, "hello world")
+```
+
 ## Registering a Provider
 
 A provider implements the `llm.Conn` interface and exposes an `Open` method.

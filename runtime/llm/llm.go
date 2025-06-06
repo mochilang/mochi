@@ -165,6 +165,18 @@ func (c *Client) ChatStream(ctx context.Context, msgs []Message, opts ...Option)
 	}, nil
 }
 
+// Embed returns an embedding vector for the given text.
+func (c *Client) Embed(ctx context.Context, text string, opts ...EmbedOption) (*EmbedResponse, error) {
+	req := EmbedRequest{Text: text}
+	for _, opt := range opts {
+		opt(&req)
+	}
+	if req.Model == "" {
+		req.Model = c.opts.Model
+	}
+	return c.conn.Embed(ctx, req)
+}
+
 func lastUser(msgs []Message) string {
 	for i := len(msgs) - 1; i >= 0; i-- {
 		if msgs[i].Role == "user" {

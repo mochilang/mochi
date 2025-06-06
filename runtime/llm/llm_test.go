@@ -38,6 +38,17 @@ func (c *echoConn) ChatStream(ctx context.Context, req ChatRequest) (Stream, err
 	return &echoStream{content: []rune(last.Content)}, nil
 }
 
+func (c *echoConn) Embed(ctx context.Context, req EmbedRequest) (*EmbedResponse, error) {
+	if req.Text == "" {
+		return nil, errors.New("no text")
+	}
+	vec := make([]float64, len(req.Text))
+	for i, b := range []byte(req.Text) {
+		vec[i] = float64(b)
+	}
+	return &EmbedResponse{Vector: vec, Model: "echo"}, nil
+}
+
 func (s *echoStream) Recv() (*Chunk, error) {
 	if s.i >= len(s.content) {
 		return &Chunk{Done: true}, nil
@@ -101,5 +112,26 @@ func TestChatStream(t *testing.T) {
 
 	if out != "yo" {
 		t.Fatalf("unexpected stream output %q", out)
+	}
+}
+
+func TestEmbed(t *testing.T) {
+	mu.Lock()
+	providers = make(map[string]Provider)
+	mu.Unlock()
+	Register("echo", echoProvider{})
+
+	c, err := Open("echo", "", Options{})
+	if err != nil {
+		t.Fatalf("open: %v", err)
+	}
+	defer c.Close()
+
+	resp, err := c.Embed(context.Background(), "abc")
+	if err != nil {
+		t.Fatalf("embed: %v", err)
+	}
+	if len(resp.Vector) != 3 {
+		t.Fatalf("unexpected vector len %d", len(resp.Vector))
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -178,6 +179,75 @@ func (s *stream) Recv() (*llm.Chunk, error) {
 }
 
 func (s *stream) Close() error { return s.body.Close() }
+
+func (c *conn) Embed(ctx context.Context, req llm.EmbedRequest) (*llm.EmbedResponse, error) {
+	model := req.Model
+	if model == "" {
+		model = c.opts.Model
+	}
+	payload := map[string]any{
+		"model": model,
+		"input": req.Text,
+	}
+	for k, v := range c.opts.Params {
+		payload[k] = v
+	}
+	for k, v := range req.Params {
+		payload[k] = v
+	}
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", c.baseURL+"/embeddings", bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set("Authorization", "Bearer "+c.key)
+	httpReq.Header.Set("Content-Type", "application/json")
+	resp, err := c.httpClient.Do(httpReq)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		b, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("openai: %s", b)
+	}
+	var r struct {
+		Model string `json:"model"`
+		Data  []struct {
+			Embedding []float64 `json:"embedding"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+		return nil, err
+	}
+	if len(r.Data) == 0 {
+		return nil, errors.New("openai: empty response")
+	}
+	vec := r.Data[0].Embedding
+	if req.Normalize {
+		vec = normalize(vec)
+	}
+	return &llm.EmbedResponse{Vector: vec, Model: r.Model}, nil
+}
+
+func normalize(v []float64) []float64 {
+	var sum float64
+	for _, x := range v {
+		sum += x * x
+	}
+	if sum == 0 {
+		return v
+	}
+	n := math.Sqrt(sum)
+	out := make([]float64, len(v))
+	for i, x := range v {
+		out[i] = x / n
+	}
+	return out
+}
 
 func (c *conn) doRequest(ctx context.Context, req llm.ChatRequest) (*http.Response, error) {
 	model := req.Model

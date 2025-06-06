@@ -53,3 +53,14 @@ func (s *stream) Recv() (*llm.Chunk, error) {
 }
 
 func (s *stream) Close() error { return nil }
+
+func (c *conn) Embed(ctx context.Context, req llm.EmbedRequest) (*llm.EmbedResponse, error) {
+	if req.Text == "" {
+		return nil, errors.New("echo: empty text")
+	}
+	vec := make([]float64, len(req.Text))
+	for i, b := range []byte(req.Text) {
+		vec[i] = float64(b)
+	}
+	return &llm.EmbedResponse{Vector: vec, Model: "echo"}, nil
+}
