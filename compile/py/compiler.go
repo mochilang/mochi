@@ -96,18 +96,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 // --- Statements ---
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
-	switch {
-	case s.Let != nil:
-		return c.compileLet(s.Let)
-	case s.Var != nil:
-		return c.compileVar(s.Var)
-	case s.Assign != nil:
-		return c.compileAssign(s.Assign)
-	case s.Expr != nil:
-		expr, err := c.compileExpr(s.Expr.Expr)
-		if err != nil {
-			return err
-		}
+        switch {
+        case s.Let != nil:
+                return c.compileLet(s.Let)
+        case s.Var != nil:
+                return c.compileVar(s.Var)
+        case s.Assign != nil:
+                return c.compileAssign(s.Assign)
+       case s.Type != nil:
+               return c.compileTypeDecl(s.Type)
+        case s.Expr != nil:
+                expr, err := c.compileExpr(s.Expr.Expr)
+                if err != nil {
+                        return err
+                }
 		c.writeln(expr)
 		return nil
 	case s.Return != nil:
@@ -147,13 +149,31 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
-	name := sanitizeName(s.Name)
-	val, err := c.compileExpr(s.Value)
-	if err != nil {
-		return err
-	}
-	c.writeln(fmt.Sprintf("%s = %s", name, val))
-	return nil
+        name := sanitizeName(s.Name)
+        val, err := c.compileExpr(s.Value)
+        if err != nil {
+                return err
+        }
+        c.writeln(fmt.Sprintf("%s = %s", name, val))
+        return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+       c.imports["dataclasses"] = true
+       c.imports["typing"] = true
+       name := sanitizeName(t.Name)
+       c.writeln("@dataclasses.dataclass")
+       c.writeln(fmt.Sprintf("class %s:", name))
+       c.indent++
+       if len(t.Fields) == 0 {
+               c.writeln("pass")
+       } else {
+               for _, f := range t.Fields {
+                       c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(f.Name)))
+               }
+       }
+       c.indent--
+       return nil
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt, kw string) error {
@@ -354,14 +374,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return "(" + expr + ")", nil
-	case p.Selector != nil:
-		expr := sanitizeName(p.Selector.Root)
-		for _, s := range p.Selector.Tail {
-			expr += "." + sanitizeName(s)
-		}
-		return expr, nil
-	case p.FunExpr != nil:
-		return c.compileFunExpr(p.FunExpr)
+       case p.Selector != nil:
+               expr := sanitizeName(p.Selector.Root)
+               for _, s := range p.Selector.Tail {
+                       expr += "." + sanitizeName(s)
+               }
+               return expr, nil
+       case p.Struct != nil:
+               parts := make([]string, len(p.Struct.Fields))
+               for i, f := range p.Struct.Fields {
+                       v, err := c.compileExpr(f.Value)
+                       if err != nil {
+                               return "", err
+                       }
+                       parts[i] = fmt.Sprintf("%s=%s", sanitizeName(f.Name), v)
+               }
+               return fmt.Sprintf("%s(%s)", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+       case p.FunExpr != nil:
+               return c.compileFunExpr(p.FunExpr)
 	default:
 		return "", fmt.Errorf("invalid primary expression")
 	}
@@ -454,23 +484,23 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		}
 		c.use("_gen_embed")
 		return fmt.Sprintf("_gen_embed(%s)", text), nil
-	default:
-		var prompt string
-		for _, f := range g.Fields {
-			v, err := c.compileExpr(f.Value)
-			if err != nil {
-				return "", err
-			}
-			if f.Name == "prompt" {
-				prompt = v
-			}
-		}
-		if prompt == "" {
-			prompt = "\"\""
-		}
-		c.use("_gen_text")
-		return fmt.Sprintf("_gen_text(%s)", prompt), nil
-	}
+       default:
+               var prompt string
+               for _, f := range g.Fields {
+                       v, err := c.compileExpr(f.Value)
+                       if err != nil {
+                               return "", err
+                       }
+                       if f.Name == "prompt" {
+                               prompt = v
+                       }
+               }
+               if prompt == "" {
+                       prompt = "\"\""
+               }
+               c.use("_gen_struct")
+               return fmt.Sprintf("_gen_struct(%s, %s)", sanitizeName(g.Target), prompt), nil
+       }
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
@@ -547,10 +577,16 @@ var helperGenText = "def _gen_text(prompt):\n" +
 	"    return prompt\n"
 
 var helperGenEmbed = "def _gen_embed(text):\n" +
-	"    # TODO: send text to your embedding model of choice\n" +
-	"    return [float(ord(c)) for c in text]\n"
+        "    # TODO: send text to your embedding model of choice\n" +
+        "    return [float(ord(c)) for c in text]\n"
 
-var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_gen_text": helperGenText, "_gen_embed": helperGenEmbed}
+var helperGenStruct = "def _gen_struct(cls, prompt):\n" +
+       "    # TODO: send prompt to your LLM of choice and parse JSON\n" +
+       "    import json\n" +
+       "    data = json.loads(prompt)\n" +
+       "    return cls(**data)\n"
+
+var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_gen_text": helperGenText, "_gen_embed": helperGenEmbed, "_gen_struct": helperGenStruct}
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
 

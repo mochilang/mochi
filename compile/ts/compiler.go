@@ -64,6 +64,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -122,6 +124,18 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	name := sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("type %s = {", name))
+	c.indent++
+	for _, f := range t.Fields {
+		c.writeln(fmt.Sprintf("%s: any;", sanitizeName(f.Name)))
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -325,6 +339,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			expr += "." + sanitizeName(s)
 		}
 		return expr, nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
+		}
+		return "{" + strings.Join(parts, ", ") + "}", nil
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	default:
@@ -445,8 +469,8 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		if prompt == "" {
 			prompt = "\"\""
 		}
-		c.use("_gen_text")
-		return fmt.Sprintf("_gen_text(%s)", prompt), nil
+		c.use("_gen_struct")
+		return fmt.Sprintf("_gen_struct<%s>(%s)", sanitizeName(g.Target), prompt), nil
 	}
 }
 
@@ -575,14 +599,20 @@ const (
 		"  // TODO: integrate with your preferred embedding model\n" +
 		"  return Array.from(text).map(c => c.charCodeAt(0));\n" +
 		"}\n"
+
+	helperGenStruct = "function _gen_struct<T>(prompt: string): T {\n" +
+		"  // TODO: integrate with your preferred LLM and parse JSON\n" +
+		"  return JSON.parse(prompt) as T;\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
-	"_index":     helperIndex,
-	"_slice":     helperSlice,
-	"_len":       helperLen,
-	"_gen_text":  helperGenText,
-	"_gen_embed": helperGenEmbed,
+	"_index":      helperIndex,
+	"_slice":      helperSlice,
+	"_len":        helperLen,
+	"_gen_text":   helperGenText,
+	"_gen_embed":  helperGenEmbed,
+	"_gen_struct": helperGenStruct,
 }
 
 func (c *Compiler) use(name string) {

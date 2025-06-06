@@ -64,6 +64,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
+	// Emit type declarations.
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// Emit function declarations first.
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -118,6 +128,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -209,6 +221,20 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	name := sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("type %s struct {", name))
+	c.indent++
+	for _, f := range t.Fields {
+		fieldName := exportName(sanitizeName(f.Name))
+		typ := goType(resolveTypeRef(f.Type))
+		c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, f.Name))
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -523,6 +549,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			base += "." + sanitizeName(field)
 		}
 		return base, nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(f.Name)), v)
+		}
+		return fmt.Sprintf("%s{%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -611,9 +647,14 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		if prompt == "" {
 			prompt = "\"\""
 		}
-		c.use("_genText")
 		c.imports["context"] = true
 		c.imports["mochi/runtime/llm"] = true
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.use("_genStruct")
+			c.imports["encoding/json"] = true
+			return fmt.Sprintf("_genStruct[%s](%s)", sanitizeName(g.Target), prompt), nil
+		}
+		c.use("_genText")
 		return fmt.Sprintf("_genText(%s)", prompt), nil
 	}
 }
@@ -789,6 +830,17 @@ func sanitizeName(name string) string {
 	return b.String()
 }
 
+func exportName(name string) string {
+	if name == "" {
+		return ""
+	}
+	runes := []rune(name)
+	if runes[0] >= 'a' && runes[0] <= 'z' {
+		runes[0] = runes[0] - 'a' + 'A'
+	}
+	return string(runes)
+}
+
 func goType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType:
@@ -805,6 +857,8 @@ func goType(t types.Type) string {
 		return "[]" + goType(tt.Elem)
 	case types.MapType:
 		return fmt.Sprintf("map[%s]%s", goType(tt.Key), goType(tt.Value))
+	case types.StructType:
+		return sanitizeName(tt.Name)
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
@@ -1025,6 +1079,13 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		if len(p.Selector.Tail) == 0 && c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 				return t
+			}
+		}
+		return types.AnyType{}
+	case p.Struct != nil:
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+				return st
 			}
 		}
 		return types.AnyType{}
@@ -1313,6 +1374,9 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 		c.imports["context"] = true
 		c.imports["mochi/runtime/llm"] = true
 		c.imports["_ \"mochi/runtime/llm/provider/echo\""] = true
+		if _, ok := c.env.GetStruct(p.Generate.Target); ok {
+			c.imports["encoding/json"] = true
+		}
 		for _, f := range p.Generate.Fields {
 			c.scanExprImports(f.Value)
 		}
@@ -1549,6 +1613,14 @@ const (
 		"    return resp.Vector\n" +
 		"}\n"
 
+	helperGenStruct = "func _genStruct[T any](prompt string) T {\n" +
+		"    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: \"user\", Content: prompt}})\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    var out T\n" +
+		"    if err := json.Unmarshal([]byte(resp.Message.Content), &out); err != nil { panic(err) }\n" +
+		"    return out\n" +
+		"}\n"
+
 	helperToAnyMap = "func _toAnyMap(m any) map[string]any {\n" +
 		"    switch v := m.(type) {\n" +
 		"    case map[string]any:\n" +
@@ -1566,12 +1638,13 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_index":    helperIndex,
-	"_slice":    helperSlice,
-	"_iter":     helperIter,
-	"_genText":  helperGenText,
-	"_genEmbed": helperGenEmbed,
-	"_toAnyMap": helperToAnyMap,
+	"_index":     helperIndex,
+	"_slice":     helperSlice,
+	"_iter":      helperIter,
+	"_genText":   helperGenText,
+	"_genEmbed":  helperGenEmbed,
+	"_genStruct": helperGenStruct,
+	"_toAnyMap":  helperToAnyMap,
 }
 
 func (c *Compiler) use(name string) {
