@@ -1099,8 +1099,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			msgs = append(msgs, llm.Message{Role: "assistant", ToolCall: tc})
-			msgs = append(msgs, llm.Message{Role: "tool", Content: fmt.Sprint(result), ToolCall: &llm.ToolCall{ID: tc.ID}})
+			msgs = append(msgs, resp.Message)
+			msgs = append(msgs, llm.Message{Role: "tool", Content: fmt.Sprint(result), ToolCall: &llm.ToolCall{ID: tc.ID, Name: tc.Name}})
 		}
 		if p.Generate.Target == "text" {
 			return resp.Message.Content, nil
