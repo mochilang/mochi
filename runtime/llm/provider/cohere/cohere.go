@@ -232,11 +232,46 @@ func prepareMessages(msgs []llm.Message) (string, []map[string]string, []map[str
 func convertTools(tools []llm.Tool) []map[string]any {
 	out := make([]map[string]any, 0, len(tools))
 	for _, t := range tools {
+		params := cloneWithDescriptions(t.Parameters)
 		out = append(out, map[string]any{
 			"name":        t.Name,
 			"description": t.Description,
-			"parameters":  t.Parameters,
+			"parameters":  params,
 		})
 	}
 	return out
+}
+
+func cloneWithDescriptions(m map[string]any) map[string]any {
+	if m == nil {
+		return nil
+	}
+	b, _ := json.Marshal(m)
+	var out map[string]any
+	json.Unmarshal(b, &out)
+	addDescriptions(out)
+	return out
+}
+
+func addDescriptions(v any) {
+	switch node := v.(type) {
+	case map[string]any:
+		if props, ok := node["properties"].(map[string]any); ok {
+			for _, pv := range props {
+				if pm, ok := pv.(map[string]any); ok {
+					if _, ok := pm["description"]; !ok {
+						pm["description"] = ""
+					}
+					addDescriptions(pm)
+				}
+			}
+		}
+		if items, ok := node["items"]; ok {
+			addDescriptions(items)
+		}
+	case []any:
+		for _, item := range node {
+			addDescriptions(item)
+		}
+	}
 }
