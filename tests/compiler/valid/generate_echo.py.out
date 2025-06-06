@@ -5,6 +5,7 @@ def main():
 	print(poem)
 
 def _gen_text(prompt, args):
+    # TODO: send prompt to your LLM of choice
     for k, v in args.items():
         placeholder = '$' + k
         prompt = prompt.replace(placeholder, str(v))

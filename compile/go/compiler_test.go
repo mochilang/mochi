@@ -35,7 +35,7 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("go", "run", file)
-		cmd.Env = append(os.Environ(), "GO111MODULE=off")
+		cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)
