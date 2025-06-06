@@ -302,22 +302,18 @@ func convertMessages(msgs []llm.Message) []map[string]any {
 	out := make([]map[string]any, 0, len(msgs))
 	for _, m := range msgs {
 		mm := map[string]any{"role": m.Role}
-		if m.Content != "" || m.Role == "tool" {
+		if m.Content != "" {
 			mm["content"] = m.Content
 		} else {
 			mm["content"] = ""
 		}
 		if m.ToolCall != nil {
-			if m.Role == "tool" {
-				mm["tool_call_id"] = m.ToolCall.ID
-			} else {
-				args, _ := json.Marshal(m.ToolCall.Args)
-				mm["tool_calls"] = []map[string]any{{
-					"id":       m.ToolCall.ID,
-					"type":     "function",
-					"function": map[string]any{"name": m.ToolCall.Name, "arguments": string(args)},
-				}}
-			}
+			args, _ := json.Marshal(m.ToolCall.Args)
+			mm["tool_calls"] = []map[string]any{{
+				"id":       m.ToolCall.ID,
+				"type":     "function",
+				"function": map[string]any{"name": m.ToolCall.Name, "arguments": string(args)},
+			}}
 		}
 		out = append(out, mm)
 	}
@@ -327,49 +323,14 @@ func convertMessages(msgs []llm.Message) []map[string]any {
 func convertTools(tools []llm.Tool) []map[string]any {
 	out := make([]map[string]any, 0, len(tools))
 	for _, t := range tools {
-		params := cloneWithDescriptions(t.Parameters)
 		out = append(out, map[string]any{
 			"type": "function",
 			"function": map[string]any{
 				"name":        t.Name,
 				"description": t.Description,
-				"parameters":  params,
+				"parameters":  t.Parameters,
 			},
 		})
 	}
 	return out
-}
-
-func cloneWithDescriptions(m map[string]any) map[string]any {
-	if m == nil {
-		return nil
-	}
-	b, _ := json.Marshal(m)
-	var out map[string]any
-	json.Unmarshal(b, &out)
-	addDescriptions(out)
-	return out
-}
-
-func addDescriptions(v any) {
-	switch node := v.(type) {
-	case map[string]any:
-		if props, ok := node["properties"].(map[string]any); ok {
-			for _, pv := range props {
-				if pm, ok := pv.(map[string]any); ok {
-					if _, ok := pm["description"]; !ok {
-						pm["description"] = ""
-					}
-					addDescriptions(pm)
-				}
-			}
-		}
-		if items, ok := node["items"]; ok {
-			addDescriptions(items)
-		}
-	case []any:
-		for _, item := range node {
-			addDescriptions(item)
-		}
-	}
 }
