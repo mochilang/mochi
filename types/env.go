@@ -203,14 +203,15 @@ func (e *Env) GetFunc(name string) (*parser.FunStmt, bool) {
 // Useful for closures capturing current bindings.
 func (e *Env) Copy() *Env {
 	newEnv := &Env{
-		parent: nil, // flatten parent chain
-		types:  make(map[string]Type, len(e.types)),
-		mut:    make(map[string]bool, len(e.mut)),
-		values: make(map[string]any, len(e.values)),
-		funcs:  make(map[string]*parser.FunStmt, len(e.funcs)),
-		unions: make(map[string]UnionType, len(e.unions)),
-		models: make(map[string]ModelSpec, len(e.models)),
-		output: e.output,
+		parent:  nil, // flatten parent chain
+		types:   make(map[string]Type, len(e.types)),
+		mut:     make(map[string]bool, len(e.mut)),
+		values:  make(map[string]any, len(e.values)),
+		funcs:   make(map[string]*parser.FunStmt, len(e.funcs)),
+		structs: make(map[string]StructType, len(e.structs)),
+		unions:  make(map[string]UnionType, len(e.unions)),
+		models:  make(map[string]ModelSpec, len(e.models)),
+		output:  e.output,
 	}
 	for k, v := range e.types {
 		newEnv.types[k] = v
@@ -223,6 +224,9 @@ func (e *Env) Copy() *Env {
 	}
 	for k, v := range e.funcs {
 		newEnv.funcs[k] = v
+	}
+	for k, v := range e.structs {
+		newEnv.structs[k] = v
 	}
 	for k, v := range e.unions {
 		newEnv.unions[k] = v

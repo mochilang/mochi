@@ -96,8 +96,13 @@ type ForStmt struct {
 type TypeDecl struct {
 	Pos      lexer.Position
 	Name     string         `parser:"'type' @Ident"`
-	Fields   []*TypeField   `parser:"[ '{' @@* '}' ]"`
+	Members  []*TypeMember  `parser:"[ '{' @@* '}' ]"`
 	Variants []*TypeVariant `parser:"[ '=' @@ { '|' @@ } ]"`
+}
+
+type TypeMember struct {
+	Field  *TypeField `parser:"@@"`
+	Method *FunStmt   `parser:"| @@"`
 }
 
 type TypeVariant struct {
@@ -200,8 +205,18 @@ type Unary struct {
 }
 
 type PostfixExpr struct {
-	Target *Primary   `parser:"@@"`
-	Index  []*IndexOp `parser:"@@*"`
+	Target *Primary     `parser:"@@"`
+	Ops    []*PostfixOp `parser:"@@*"`
+}
+
+type PostfixOp struct {
+	Call  *CallOp  `parser:"@@"`
+	Index *IndexOp `parser:"| @@"`
+}
+
+type CallOp struct {
+	Pos  lexer.Position
+	Args []*Expr `parser:"'(' [ @@ { ',' @@ } ] ')'"`
 }
 
 type IndexOp struct {

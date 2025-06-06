@@ -106,12 +106,14 @@ func FromStatement(s *parser.Statement) *Node {
 
 	case s.Type != nil:
 		n := &Node{Kind: "type", Value: s.Type.Name}
-		for _, f := range s.Type.Fields {
-			n.Children = append(n.Children, &Node{
-				Kind:     "field",
-				Value:    f.Name,
-				Children: []*Node{FromTypeRef(f.Type)},
-			})
+		for _, m := range s.Type.Members {
+			if m.Field != nil {
+				n.Children = append(n.Children, &Node{
+					Kind:     "field",
+					Value:    m.Field.Name,
+					Children: []*Node{FromTypeRef(m.Field.Type)},
+				})
+			}
 		}
 		return n
 
@@ -229,7 +231,7 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	p := u.Value
-	if len(p.Index) != 0 {
+	if len(p.Ops) != 0 {
 		return false
 	}
 	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
@@ -258,21 +260,29 @@ func FromUnary(u *parser.Unary) *Node {
 
 func FromPostfixExpr(p *parser.PostfixExpr) *Node {
 	n := FromPrimary(p.Target)
-	for _, op := range p.Index {
-		idx := &Node{Kind: "index", Children: []*Node{n}}
-		if op.Colon == nil {
-			if op.Start != nil {
-				idx.Children = append(idx.Children, FromExpr(op.Start))
+	for _, op := range p.Ops {
+		if idx := op.Index; idx != nil {
+			idxNode := &Node{Kind: "index", Children: []*Node{n}}
+			if idx.Colon == nil {
+				if idx.Start != nil {
+					idxNode.Children = append(idxNode.Children, FromExpr(idx.Start))
+				}
+			} else {
+				if idx.Start != nil {
+					idxNode.Children = append(idxNode.Children, &Node{Kind: "start", Children: []*Node{FromExpr(idx.Start)}})
+				}
+				if idx.End != nil {
+					idxNode.Children = append(idxNode.Children, &Node{Kind: "end", Children: []*Node{FromExpr(idx.End)}})
+				}
 			}
-		} else {
-			if op.Start != nil {
-				idx.Children = append(idx.Children, &Node{Kind: "start", Children: []*Node{FromExpr(op.Start)}})
+			n = idxNode
+		} else if call := op.Call; call != nil {
+			callNode := &Node{Kind: "call", Children: []*Node{n}}
+			for _, a := range call.Args {
+				callNode.Children = append(callNode.Children, FromExpr(a))
 			}
-			if op.End != nil {
-				idx.Children = append(idx.Children, &Node{Kind: "end", Children: []*Node{FromExpr(op.End)}})
-			}
+			n = callNode
 		}
-		n = idx
 	}
 	return n
 }

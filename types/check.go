@@ -56,9 +56,15 @@ func (t MapType) String() string {
 }
 
 type StructType struct {
-	Name   string
-	Fields map[string]Type
-	Order  []string
+	Name    string
+	Fields  map[string]Type
+	Order   []string
+	Methods map[string]Method
+}
+
+type Method struct {
+	Decl *parser.FunStmt
+	Type FuncType
 }
 
 func (t StructType) String() string { return t.Name }
@@ -457,14 +463,52 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		return nil
 
 	case s.Type != nil:
-		if len(s.Type.Fields) > 0 {
+		if len(s.Type.Members) > 0 {
 			fields := map[string]Type{}
 			order := []string{}
-			for _, f := range s.Type.Fields {
-				fields[f.Name] = resolveTypeRef(f.Type, env)
-				order = append(order, f.Name)
+			methods := map[string]Method{}
+			st := StructType{Name: s.Type.Name, Fields: fields, Order: order, Methods: methods}
+			env.SetStruct(s.Type.Name, st)
+			env.types[s.Type.Name] = st
+			// First pass: collect fields
+			for _, m := range s.Type.Members {
+				if m.Field != nil {
+					fields[m.Field.Name] = resolveTypeRef(m.Field.Type, env)
+					order = append(order, m.Field.Name)
+				}
 			}
-			st := StructType{Name: s.Type.Name, Fields: fields, Order: order}
+			// Second pass: check methods
+			for _, m := range s.Type.Members {
+				if m.Method != nil {
+					params := []Type{}
+					for _, p := range m.Method.Params {
+						if p.Type == nil {
+							return errParamMissingType(m.Method.Pos, p.Name)
+						}
+						params = append(params, resolveTypeRef(p.Type, env))
+					}
+					var ret Type = VoidType{}
+					if m.Method.Return != nil {
+						ret = resolveTypeRef(m.Method.Return, env)
+					}
+					methodEnv := NewEnv(env)
+					for name, t := range fields {
+						methodEnv.SetVar(name, t, true)
+					}
+					for i, p := range m.Method.Params {
+						methodEnv.SetVar(p.Name, params[i], true)
+					}
+					for _, stmt := range m.Method.Body {
+						if err := checkStmt(stmt, methodEnv, ret); err != nil {
+							return err
+						}
+					}
+					methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret}}
+				}
+			}
+			st.Fields = fields
+			st.Order = order
+			st.Methods = methods
 			env.SetStruct(s.Type.Name, st)
 			env.types[s.Type.Name] = st
 			return nil
@@ -820,25 +864,15 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 		return nil, err
 	}
 
-	for _, idx := range p.Index {
-		switch t := typ.(type) {
-		case ListType:
-			if idx.Colon == nil {
-				// list[i]
-				if idx.Start == nil {
-					return nil, errMissingIndex(idx.Pos)
-				}
-				startType, err := checkExpr(idx.Start, env)
-				if err != nil {
-					return nil, err
-				}
-				if !(unify(startType, IntType{}, nil) || unify(startType, Int64Type{}, nil)) {
-					return nil, errIndexNotInteger(idx.Pos)
-				}
-				typ = t.Elem
-			} else {
-				// list[i:j], list[:j], list[i:], list[:]
-				if idx.Start != nil {
+	for _, op := range p.Ops {
+		if idx := op.Index; idx != nil {
+			switch t := typ.(type) {
+			case ListType:
+				if idx.Colon == nil {
+					// list[i]
+					if idx.Start == nil {
+						return nil, errMissingIndex(idx.Pos)
+					}
 					startType, err := checkExpr(idx.Start, env)
 					if err != nil {
 						return nil, err
@@ -846,37 +880,73 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 					if !(unify(startType, IntType{}, nil) || unify(startType, Int64Type{}, nil)) {
 						return nil, errIndexNotInteger(idx.Pos)
 					}
-				}
-				if idx.End != nil {
-					endType, err := checkExpr(idx.End, env)
-					if err != nil {
-						return nil, err
+					typ = t.Elem
+				} else {
+					// list[i:j], list[:j], list[i:], list[:]
+					if idx.Start != nil {
+						startType, err := checkExpr(idx.Start, env)
+						if err != nil {
+							return nil, err
+						}
+						if !(unify(startType, IntType{}, nil) || unify(startType, Int64Type{}, nil)) {
+							return nil, errIndexNotInteger(idx.Pos)
+						}
 					}
-					if !(unify(endType, IntType{}, nil) || unify(endType, Int64Type{}, nil)) {
-						return nil, errIndexNotInteger(idx.Pos)
+					if idx.End != nil {
+						endType, err := checkExpr(idx.End, env)
+						if err != nil {
+							return nil, err
+						}
+						if !(unify(endType, IntType{}, nil) || unify(endType, Int64Type{}, nil)) {
+							return nil, errIndexNotInteger(idx.Pos)
+						}
 					}
+					typ = t // list slice returns same list type
 				}
-				typ = t // list slice returns same list type
-			}
 
-		case MapType:
-			if idx.Colon != nil {
-				return nil, errInvalidMapSlice(idx.Pos)
-			}
-			if idx.Start == nil {
-				return nil, errMissingIndex(idx.Pos)
-			}
-			keyType, err := checkExpr(idx.Start, env)
-			if err != nil {
-				return nil, err
-			}
-			if !unify(keyType, t.Key, nil) {
-				return nil, errIndexTypeMismatch(idx.Pos, t.Key, keyType)
-			}
-			typ = t.Value
+			case MapType:
+				if idx.Colon != nil {
+					return nil, errInvalidMapSlice(idx.Pos)
+				}
+				if idx.Start == nil {
+					return nil, errMissingIndex(idx.Pos)
+				}
+				keyType, err := checkExpr(idx.Start, env)
+				if err != nil {
+					return nil, err
+				}
+				if !unify(keyType, t.Key, nil) {
+					return nil, errIndexTypeMismatch(idx.Pos, t.Key, keyType)
+				}
+				typ = t.Value
 
-		default:
-			return nil, errNotIndexable(p.Target.Pos, typ)
+			default:
+				return nil, errNotIndexable(p.Target.Pos, typ)
+			}
+		} else if call := op.Call; call != nil {
+			ft, ok := typ.(FuncType)
+			if !ok {
+				return nil, errNotFunction(call.Pos, "")
+			}
+			argCount := len(call.Args)
+			paramCount := len(ft.Params)
+			if argCount > paramCount {
+				return nil, errTooManyArgs(call.Pos, paramCount, argCount)
+			}
+			for i := 0; i < argCount; i++ {
+				at, err := checkExprWithExpected(call.Args[i], env, ft.Params[i])
+				if err != nil {
+					return nil, err
+				}
+				if !unify(at, ft.Params[i], nil) {
+					return nil, errArgTypeMismatch(call.Pos, i, ft.Params[i], at)
+				}
+			}
+			if argCount == paramCount {
+				typ = ft.Return
+			} else {
+				typ = curryFuncType(ft.Params[argCount:], ft.Return)
+			}
 		}
 	}
 
@@ -907,11 +977,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			if !ok {
 				return nil, errNotStruct(p.Pos, typ)
 			}
-			ft, ok := st.Fields[field]
-			if !ok {
-				return nil, errUnknownField(p.Pos, field, st)
+			if ft, ok := st.Fields[field]; ok {
+				typ = ft
+				continue
 			}
-			typ = ft
+			if m, ok := st.Methods[field]; ok {
+				typ = m.Type
+				continue
+			}
+			return nil, errUnknownField(p.Pos, field, st)
 		}
 		return typ, nil
 
@@ -1235,7 +1309,7 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	p := u.Value
-	if len(p.Index) != 0 {
+	if len(p.Ops) != 0 {
 		return false
 	}
 	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
@@ -1256,7 +1330,7 @@ func identName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	p := u.Value
-	if len(p.Index) != 0 {
+	if len(p.Ops) != 0 {
 		return "", false
 	}
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
@@ -1277,7 +1351,7 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 		return nil, false
 	}
 	p := u.Value
-	if len(p.Index) != 0 || p.Target.Call == nil {
+	if len(p.Ops) != 0 || p.Target.Call == nil {
 		return nil, false
 	}
 	return p.Target.Call, true
