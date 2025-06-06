@@ -1,6 +1,6 @@
-# Mochi Programming Language Specification (v0.3.2)
+# Mochi Programming Language Specification (v0.3.3)
 
-This document describes version 0.3.2 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
+This document describes version 0.3.3 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
 
 ## 0. Introduction
 
@@ -129,7 +129,9 @@ let scores: map<string, int> = {"alice": 1}
 Expressions compute values. The grammar defines expressions in precedence order.
 
 ```ebnf
-Expression  = Equality
+Expression  = OrExpr
+OrExpr      = AndExpr { "||" AndExpr }
+AndExpr     = Equality { "&&" Equality }
 Equality    = Comparison { ("==" | "!=") Comparison }
 Comparison  = Term { ("<" | "<=" | ">" | ">=") Term }
 Term        = Factor { ("+" | "-") Factor }
@@ -137,6 +139,7 @@ Factor      = Unary { ("*" | "/") Unary }
 Unary       = { "-" | "!" } PostfixExpr
 PostfixExpr = Primary { IndexOp }
 Primary     = FunExpr | CallExpr | SelectorExpr | ListLiteral |
+              MapLiteral | MatchExpr | GenerateExpr |
               Literal | Identifier | "(" Expression ")"
 ```
 
@@ -175,6 +178,18 @@ Maps use braces with `key: value` pairs and share the same indexing syntax.
 ```mochi
 let scores = {"alice": 1, "bob": 2}
 print(scores["alice"])
+```
+
+#### Match Expressions
+
+`match` evaluates patterns in order and yields the corresponding result. `_` matches any value.
+
+```mochi
+let label = match x {
+  1 => "one"
+  2 => "two"
+  _ => "other"
+}
 ```
 
 ## 5. Statements
@@ -349,15 +364,16 @@ OnHandler     = "on" Identifier "as" Identifier Block .
 AgentDecl     = "agent" Identifier Block .
 ModelDecl     = "model" Identifier Block .
 
-Expression    = Equality .
-Equality      = Comparison { ("==" | "!=") Comparison } .
-Comparison    = Term { ("<" | "<=" | ">" | ">=") Term } .
-Term          = Factor { ("+" | "-") Factor } .
-Factor        = Unary { ("*" | "/") Unary } .
-Unary         = { "-" | "!" } PostfixExpr .
-PostfixExpr   = Primary { IndexOp } .
-Primary       = FunExpr | CallExpr | SelectorExpr | ListLiteral | MapLiteral |
-                Literal | Identifier | "(" Expression ")" .
+Expression    = OrExpr .
+OrExpr       = AndExpr { "||" AndExpr } .
+AndExpr      = Equality { "&&" Equality } .
+Equality     = Comparison { ("==" | "!=") Comparison } .
+Comparison   = Term { ("<" | "<=" | ">" | ">=") Term } .
+Term         = Factor { ("+" | "-") Factor } .
+Factor       = Unary { ("*" | "/") Unary } .
+Unary        = { "-" | "!" } PostfixExpr .
+PostfixExpr  = Primary { IndexOp } .
+Primary      = FunExpr | CallExpr | SelectorExpr | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | Literal | Identifier | "(" Expression ")" .
 FunExpr       = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] ("=>" Expression | Block) .
 CallExpr      = Identifier "(" [ Expression { "," Expression } ] ")" .
 SelectorExpr  = Identifier { "." Identifier } .
@@ -372,4 +388,4 @@ GenericType   = Identifier "<" TypeRef { "," TypeRef } ">" .
 FunType       = "fun" "(" [ TypeRef { "," TypeRef } ] ")" [ ":" TypeRef ] .
 ```
 
-This specification outlines the core language as of version 0.3.2. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.
+This specification outlines the core language as of version 0.3.3. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.

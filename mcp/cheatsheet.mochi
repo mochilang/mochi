@@ -1,4 +1,4 @@
-// 0. Mochi (v0.3.2)
+// 0. Mochi (v0.3.3)
 // Mochi is a lightweight programming language for building AI agents, working with real-time data,
 // and querying datasets. It combines declarative and functional programming, with built-in support
 // for streams, datasets, tools, and prompt-based AI generation.
@@ -118,3 +118,19 @@ let vec = generate embedding {
   normalize: true
 }
 print(len(vec))
+
+// 7. Pattern Matching
+let day = "sun"
+let mood = match day {
+  "mon" => "tired"
+  "sun" => "relaxed"
+  _     => "normal"
+}
+print(mood)
+
+// 8. Logical operators
+let a = true
+let b = false
+if a && b || !b {
+  print("logic works")
+}

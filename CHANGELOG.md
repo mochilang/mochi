@@ -1,4 +1,11 @@
 # 📦 CHANGELOG.md
+## [0.3.3] – 2025-06-09
+
+### Added
+
+* `match` expression with pattern cases
+* Logical operators `&&` and `||`
+
 ## [0.3.2] – 2025-06-08
 
 ### Added
