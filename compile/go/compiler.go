@@ -567,6 +567,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 		return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
 
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
+
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
 	default:
@@ -613,6 +616,44 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		c.imports["mochi/runtime/llm"] = true
 		return fmt.Sprintf("_genText(%s)", prompt), nil
 	}
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: m}}}}}
+	retType := goType(c.inferExprType(expr))
+	if retType == "" {
+		retType = "any"
+	}
+	var buf bytes.Buffer
+	buf.WriteString("func() " + retType + " {\n")
+	buf.WriteString("\t_t := " + target + "\n")
+	buf.WriteString("\tswitch _t {\n")
+	for _, cse := range m.Cases {
+		if isUnderscoreExpr(cse.Pattern) {
+			buf.WriteString("\tdefault:\n")
+		} else {
+			pat, err := c.compileExpr(cse.Pattern)
+			if err != nil {
+				return "", err
+			}
+			buf.WriteString("\tcase " + pat + ":\n")
+		}
+		res, err := c.compileExpr(cse.Result)
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString("\t\treturn " + res + "\n")
+	}
+	buf.WriteString("\t}\n")
+	if retType == "any" {
+		buf.WriteString("\treturn nil\n")
+	}
+	buf.WriteString("}()")
+	return buf.String(), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -1036,6 +1077,20 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 		return types.MapType{Key: keyType, Value: valType}
+	case p.Match != nil:
+		var rType types.Type
+		for _, cs := range p.Match.Cases {
+			t := c.inferExprType(cs.Result)
+			if rType == nil {
+				rType = t
+			} else if !equalTypes(rType, t) {
+				rType = types.AnyType{}
+			}
+		}
+		if rType == nil {
+			rType = types.AnyType{}
+		}
+		return rType
 	}
 	return types.AnyType{}
 }
@@ -1246,6 +1301,12 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 		for _, it := range p.Map.Items {
 			c.scanExprImports(it.Key)
 			c.scanExprImports(it.Value)
+		}
+	case p.Match != nil:
+		c.scanExprImports(p.Match.Target)
+		for _, cs := range p.Match.Cases {
+			c.scanExprImports(cs.Pattern)
+			c.scanExprImports(cs.Result)
 		}
 	case p.Generate != nil:
 		c.imports["fmt"] = true
@@ -1530,4 +1591,25 @@ func (c *Compiler) emitRuntime() {
 		c.buf.WriteString(helperMap[n])
 		c.buf.WriteByte('\n')
 	}
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Index) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
 }

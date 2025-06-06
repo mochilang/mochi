@@ -341,6 +341,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileListLiteral(p.List)
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
+
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
 	case p.Lit != nil:
@@ -470,6 +473,35 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 	}
 }
 
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var expr string
+	for i, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			expr += res
+			break
+		}
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		cond := fmt.Sprintf("_t == %s", pat)
+		part := fmt.Sprintf("%s if %s else ", res, cond)
+		expr += part
+		if i == len(m.Cases)-1 {
+			expr += "None"
+		}
+	}
+	return fmt.Sprintf("(lambda _t=%s: %s)()", target, expr), nil
+}
+
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
@@ -546,4 +578,25 @@ func sanitizeName(name string) string {
 		return "_" + b.String()
 	}
 	return b.String()
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Index) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
 }
