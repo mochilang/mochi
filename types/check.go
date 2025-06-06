@@ -898,7 +898,7 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		for _, f := range p.Generate.Fields {
 			var expect Type
 			switch f.Name {
-			case "prompt", "model":
+			case "prompt", "model", "text":
 				expect = StringType{}
 			case "temperature", "top_p":
 				expect = FloatType{}
@@ -906,6 +906,8 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				expect = IntType{}
 			case "stop":
 				expect = ListType{Elem: StringType{}}
+			case "normalize":
+				expect = BoolType{}
 			case "args":
 				expect = nil
 			}
@@ -921,6 +923,9 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		if p.Generate.Target == "text" {
 			return StringType{}, nil
+		}
+		if p.Generate.Target == "embedding" {
+			return ListType{Elem: FloatType{}}, nil
 		}
 		st, ok := env.GetStruct(p.Generate.Target)
 		if !ok {

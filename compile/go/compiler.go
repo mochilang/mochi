@@ -575,23 +575,44 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
-       var prompt string
-       for _, f := range g.Fields {
-               v, err := c.compileExpr(f.Value)
-               if err != nil {
-                       return "", err
-               }
-               if f.Name == "prompt" {
-                       prompt = v
-               }
-       }
-       if prompt == "" {
-               prompt = "\"\""
-       }
-       c.use("_genText")
-       c.imports["context"] = true
-       c.imports["mochi/runtime/llm"] = true
-       return fmt.Sprintf("_genText(%s)", prompt), nil
+	switch g.Target {
+	case "embedding":
+		var text string
+		for _, f := range g.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			if f.Name == "text" {
+				text = v
+			}
+		}
+		if text == "" {
+			text = "\"\""
+		}
+		c.use("_genEmbed")
+		c.imports["context"] = true
+		c.imports["mochi/runtime/llm"] = true
+		return fmt.Sprintf("_genEmbed(%s)", text), nil
+	default:
+		var prompt string
+		for _, f := range g.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			if f.Name == "prompt" {
+				prompt = v
+			}
+		}
+		if prompt == "" {
+			prompt = "\"\""
+		}
+		c.use("_genText")
+		c.imports["context"] = true
+		c.imports["mochi/runtime/llm"] = true
+		return fmt.Sprintf("_genText(%s)", prompt), nil
+	}
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -1226,14 +1247,14 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 			c.scanExprImports(it.Key)
 			c.scanExprImports(it.Value)
 		}
-       case p.Generate != nil:
-               c.imports["fmt"] = true
-               c.imports["context"] = true
-               c.imports["mochi/runtime/llm"] = true
-               c.imports["_ \"mochi/runtime/llm/provider/echo\""] = true
-               for _, f := range p.Generate.Fields {
-                       c.scanExprImports(f.Value)
-               }
+	case p.Generate != nil:
+		c.imports["fmt"] = true
+		c.imports["context"] = true
+		c.imports["mochi/runtime/llm"] = true
+		c.imports["_ \"mochi/runtime/llm/provider/echo\""] = true
+		for _, f := range p.Generate.Fields {
+			c.scanExprImports(f.Value)
+		}
 	case p.Selector != nil:
 		// no imports
 	case p.Lit != nil:
@@ -1455,11 +1476,17 @@ const (
 		"    }\n" +
 		"}\n"
 
-       helperGenText = "func _genText(prompt string) string {\n" +
-               "    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: \"user\", Content: prompt}})\n" +
-               "    if err != nil { panic(err) }\n" +
-               "    return resp.Message.Content\n" +
-               "}\n"
+	helperGenText = "func _genText(prompt string) string {\n" +
+		"    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: \"user\", Content: prompt}})\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    return resp.Message.Content\n" +
+		"}\n"
+
+	helperGenEmbed = "func _genEmbed(text string) []float64 {\n" +
+		"    resp, err := llm.Embed(context.Background(), text)\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    return resp.Vector\n" +
+		"}\n"
 
 	helperToAnyMap = "func _toAnyMap(m any) map[string]any {\n" +
 		"    switch v := m.(type) {\n" +
@@ -1482,6 +1509,7 @@ var helperMap = map[string]string{
 	"_slice":    helperSlice,
 	"_iter":     helperIter,
 	"_genText":  helperGenText,
+	"_genEmbed": helperGenEmbed,
 	"_toAnyMap": helperToAnyMap,
 }
 
