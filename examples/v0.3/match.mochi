@@ -1,0 +1,50 @@
+// match.mochi
+
+// 1. Match integer
+let x = 2
+
+let label = match x {
+  1 => "one"
+  2 => "two"
+  3 => "three"
+  _ => "unknown"
+}
+
+print(label)  // "two"
+
+
+// 2. Match string
+let day = "sun"
+
+let mood = match day {
+  "mon" => "tired"
+  "fri" => "excited"
+  "sun" => "relaxed"
+  _     => "normal"
+}
+
+print(mood)  // "relaxed"
+
+
+// 3. Match boolean
+let ok = true
+
+let status = match ok {
+  true => "confirmed"
+  false => "denied"
+}
+
+print(status)  // "confirmed"
+
+
+// 4. Match inside function with return
+fun classify(n: int): string {
+  return match n {
+    0 => "zero"
+    1 => "one"
+    _ => "many"
+  }
+}
+
+print(classify(0))  // "zero"
+print(classify(5))  // "many"
