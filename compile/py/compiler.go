@@ -167,11 +167,20 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	c.writeln("@dataclasses.dataclass")
 	c.writeln(fmt.Sprintf("class %s:", name))
 	c.indent++
-	if len(t.Fields) == 0 {
+	hasField := false
+	for _, m := range t.Members {
+		if m.Field != nil {
+			hasField = true
+			break
+		}
+	}
+	if !hasField {
 		c.writeln("pass")
 	} else {
-		for _, f := range t.Fields {
-			c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(f.Name)))
+		for _, m := range t.Members {
+			if m.Field != nil {
+				c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(m.Field.Name)))
+			}
 		}
 	}
 	c.indent--
@@ -409,20 +418,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		args[i] = v
 	}
 	argStr := strings.Join(args, ", ")
-	switch call.Func {
-	case "print":
-		return fmt.Sprintf("print(%s)", argStr), nil
-	case "len":
-		return fmt.Sprintf("len(%s)", argStr), nil
-	case "now":
-		c.imports["time"] = true
-		return "time.time_ns()", nil
-	case "json":
-		c.imports["json"] = true
-		return fmt.Sprintf("print(json.dumps(%s))", argStr), nil
-	default:
-		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
+	if len(call.Func.Tail) == 0 {
+		switch call.Func.Root {
+		case "print":
+			return fmt.Sprintf("print(%s)", argStr), nil
+		case "len":
+			return fmt.Sprintf("len(%s)", argStr), nil
+		case "now":
+			c.imports["time"] = true
+			return "time.time_ns()", nil
+		case "json":
+			c.imports["json"] = true
+			return fmt.Sprintf("print(json.dumps(%s))", argStr), nil
+		}
 	}
+	return fmt.Sprintf("%s(%s)", selectorToString(call.Func), argStr), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
@@ -622,6 +632,17 @@ func sanitizeName(name string) string {
 		return "_" + b.String()
 	}
 	return b.String()
+}
+
+func selectorToString(sel *parser.SelectorExpr) string {
+	if sel == nil {
+		return ""
+	}
+	s := sanitizeName(sel.Root)
+	for _, f := range sel.Tail {
+		s += "." + sanitizeName(f)
+	}
+	return s
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {

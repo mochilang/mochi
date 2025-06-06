@@ -292,6 +292,26 @@ type closure struct {
 	FullParams []*parser.Param
 }
 
+func (i *Interpreter) evalSelector(sel *parser.SelectorExpr) (any, error) {
+	val, err := i.env.GetValue(sel.Root)
+	if err != nil {
+		if fn, ok := i.env.GetFunc(sel.Root); ok {
+			cl := closure{Name: sel.Root, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
+			val = cl
+		} else {
+			return nil, errUndefinedVariable(lexer.Position{}, sel.Root)
+		}
+	}
+	for _, field := range sel.Tail {
+		obj, ok := val.(map[string]any)
+		if !ok {
+			return nil, errFieldAccessOnNonObject(lexer.Position{}, field, fmt.Sprintf("%T", val))
+		}
+		val = obj[field]
+	}
+	return val, nil
+}
+
 func (c closure) String() string {
 	return fmt.Sprintf("<closure %d/%d args>", len(c.Args), len(c.Fn.Params)+len(c.Args))
 }
@@ -861,36 +881,30 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return closure{Name: "", Fn: p.FunExpr, Env: i.env.Copy(), FullParams: p.FunExpr.Params}, nil
 
 	case p.Selector != nil:
-		val, err := i.env.GetValue(p.Selector.Root)
-		if err != nil {
-			if fn, ok := i.env.GetFunc(p.Selector.Root); ok {
-				cl := closure{Name: p.Selector.Root, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
-				return cl, nil
-			}
-			return nil, errUndefinedVariable(p.Pos, p.Selector.Root)
-		}
-		for _, field := range p.Selector.Tail {
-			obj, ok := val.(map[string]any)
-			if !ok {
-				return nil, errFieldAccessOnNonObject(p.Pos, field, fmt.Sprintf("%T", val))
-			}
-			val = obj[field]
-		}
-		return val, nil
+		return i.evalSelector(p.Selector)
 
-       case p.Struct != nil:
-               obj := map[string]any{}
-               for _, field := range p.Struct.Fields {
-                       v, err := i.evalExpr(field.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       obj[field.Name] = v
-               }
-               if _, ok := i.types.GetStruct(p.Struct.Name); !ok {
-                       obj["__name"] = p.Struct.Name
-               }
-               return obj, nil
+	case p.Struct != nil:
+		obj := map[string]any{}
+		for _, field := range p.Struct.Fields {
+			v, err := i.evalExpr(field.Value)
+			if err != nil {
+				return nil, err
+			}
+			obj[field.Name] = v
+		}
+		if st, ok := i.types.GetStruct(p.Struct.Name); ok {
+			for name, fn := range st.Methods {
+				env := i.env.Copy()
+				for k, v := range obj {
+					env.SetValue(k, v, true)
+				}
+				cl := closure{Name: name, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: env, FullParams: fn.Params}
+				obj[name] = cl
+			}
+		} else {
+			obj["__name"] = p.Struct.Name
+		}
+		return obj, nil
 
 	case p.List != nil:
 		var elems []any
@@ -962,11 +976,11 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 					normalize = b
 					haveNorm = true
 				}
-                       case "tools":
-                                if list, ok := v.([]any); ok {
-                                        for _, item := range list {
-                                                switch t := item.(type) {
-                                                case closure:
+			case "tools":
+				if list, ok := v.([]any); ok {
+					for _, item := range list {
+						switch t := item.(type) {
+						case closure:
 							if t.Name == "" {
 								continue
 							}
@@ -977,40 +991,40 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 									toolsList = append(toolsList, funcToTool(t.Name, fn, ft))
 								}
 							}
-                                                case *closure:
-                                                        cl := *t
-                                                        if cl.Name == "" {
-                                                                continue
-                                                        }
-                                                        toolFuncs[cl.Name] = cl
-                                                        if fn, ok := i.env.GetFunc(cl.Name); ok {
-                                                                typ, _ := i.types.GetVar(cl.Name)
-                                                                if ft, ok2 := typ.(types.FuncType); ok2 {
-                                                                        toolsList = append(toolsList, funcToTool(cl.Name, fn, ft))
-                                                                }
-                                                        }
-                                                case map[string]any:
-                                                        nameAny, has := t["__name"]
-                                                        name, ok1 := nameAny.(string)
-                                                        if !has || !ok1 {
-                                                                continue
-                                                        }
-                                                        desc, _ := t["description"].(string)
-                                                        if fn, ok := i.env.GetFunc(name); ok {
-                                                                typ, _ := i.types.GetVar(name)
-                                                                if ft, ok2 := typ.(types.FuncType); ok2 {
-                                                                        tool := funcToTool(name, fn, ft)
-                                                                        if desc != "" {
-                                                                                tool.Description = desc
-                                                                        }
-                                                                        toolsList = append(toolsList, tool)
-                                                                        cl := closure{Name: name, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
-                                                                        toolFuncs[name] = cl
-                                                                }
-                                                        }
-                                                }
-                                        }
-                                }
+						case *closure:
+							cl := *t
+							if cl.Name == "" {
+								continue
+							}
+							toolFuncs[cl.Name] = cl
+							if fn, ok := i.env.GetFunc(cl.Name); ok {
+								typ, _ := i.types.GetVar(cl.Name)
+								if ft, ok2 := typ.(types.FuncType); ok2 {
+									toolsList = append(toolsList, funcToTool(cl.Name, fn, ft))
+								}
+							}
+						case map[string]any:
+							nameAny, has := t["__name"]
+							name, ok1 := nameAny.(string)
+							if !has || !ok1 {
+								continue
+							}
+							desc, _ := t["description"].(string)
+							if fn, ok := i.env.GetFunc(name); ok {
+								typ, _ := i.types.GetVar(name)
+								if ft, ok2 := typ.(types.FuncType); ok2 {
+									tool := funcToTool(name, fn, ft)
+									if desc != "" {
+										tool.Description = desc
+									}
+									toolsList = append(toolsList, tool)
+									cl := closure{Name: name, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
+									toolFuncs[name] = cl
+								}
+							}
+						}
+					}
+				}
 			case "tool_choice":
 				if s, ok := v.(string); ok {
 					toolChoice = s
@@ -1287,17 +1301,18 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 }
 
 func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
-	// Built-in function dispatch
-	if fn, ok := i.builtinFuncs()[c.Func]; ok {
+	name := selectorString(c.Func)
+	// Built-in functions only apply to simple identifiers
+	if fn, ok := i.builtinFuncs()[name]; ok && len(c.Func.Tail) == 0 {
 		return fn(i, c)
 	}
 
-	if fn, ok := i.env.GetFunc(c.Func); ok {
+	if fn, ok := i.env.GetFunc(name); ok && len(c.Func.Tail) == 0 {
 		argCount := len(c.Args)
 		paramCount := len(fn.Params)
 
 		if argCount > paramCount {
-			return nil, errTooManyFunctionArgs(c.Pos, c.Func, paramCount, argCount)
+			return nil, errTooManyFunctionArgs(c.Pos, name, paramCount, argCount)
 		}
 
 		if argCount < paramCount {
@@ -1311,7 +1326,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 			}
 			remainingParams := fn.Params[argCount:]
 			return closure{
-				Name: c.Func,
+				Name: name,
 				Fn: &parser.FunExpr{
 					Params:    remainingParams,
 					BlockBody: fn.Body,
@@ -1344,14 +1359,14 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 		return nil, nil
 	}
 
-	val, err := i.env.GetValue(c.Func)
+	val, err := i.evalSelector(c.Func)
 	if err == nil {
 		if cl, ok := val.(closure); ok {
 			totalArgs := len(cl.Args) + len(c.Args)
 			fullParamCount := len(cl.FullParams)
 
 			if totalArgs > fullParamCount {
-				return nil, errTooManyFunctionArgs(c.Pos, c.Func, fullParamCount, totalArgs)
+				return nil, errTooManyFunctionArgs(c.Pos, name, fullParamCount, totalArgs)
 			}
 
 			allArgs := append([]Value{}, cl.Args...)
@@ -1404,7 +1419,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 		}
 	}
 
-	return nil, errUndefinedFunctionOrClosure(c.Pos, c.Func)
+	return nil, errUndefinedFunctionOrClosure(c.Pos, name)
 }
 
 // --- Return ---
@@ -1620,4 +1635,15 @@ func applyUnaryValue(pos lexer.Position, op string, val Value) (Value, error) {
 
 func truthy(val any) bool {
 	return anyToValue(val).Truthy()
+}
+
+func selectorString(sel *parser.SelectorExpr) string {
+	if sel == nil {
+		return ""
+	}
+	s := sel.Root
+	for _, f := range sel.Tail {
+		s += "." + f
+	}
+	return s
 }

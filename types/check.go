@@ -56,8 +56,9 @@ func (t MapType) String() string {
 }
 
 type StructType struct {
-	Name   string
-	Fields map[string]Type
+	Name    string
+	Fields  map[string]Type
+	Methods map[string]*parser.FunStmt
 }
 
 func (t StructType) String() string { return t.Name }
@@ -408,10 +409,41 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 
 	case s.Type != nil:
 		fields := map[string]Type{}
-		for _, f := range s.Type.Fields {
-			fields[f.Name] = resolveTypeRef(f.Type, env)
+		methods := map[string]*parser.FunStmt{}
+		for _, m := range s.Type.Members {
+			if m.Field != nil {
+				fields[m.Field.Name] = resolveTypeRef(m.Field.Type, env)
+			} else if m.Method != nil {
+				methods[m.Method.Name] = m.Method
+			}
 		}
-		env.SetStruct(s.Type.Name, StructType{Name: s.Type.Name, Fields: fields})
+		env.SetStruct(s.Type.Name, StructType{Name: s.Type.Name, Fields: fields, Methods: methods})
+
+		for _, meth := range methods {
+			params := []Type{}
+			for _, p := range meth.Params {
+				if p.Type == nil {
+					return errParamMissingType(meth.Pos, p.Name)
+				}
+				params = append(params, resolveTypeRef(p.Type, env))
+			}
+			var ret Type = VoidType{}
+			if meth.Return != nil {
+				ret = resolveTypeRef(meth.Return, env)
+			}
+			child := NewEnv(env)
+			for name, t := range fields {
+				child.SetVar(name, t, true)
+			}
+			for i, p := range meth.Params {
+				child.SetVar(p.Name, params[i], true)
+			}
+			for _, stmt := range meth.Body {
+				if err := checkStmt(stmt, child, ret); err != nil {
+					return err
+				}
+			}
+		}
 		return nil
 
 	case s.Model != nil:
@@ -536,6 +568,58 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 	}
 
 	return AnyType{}
+}
+
+func resolveSelectorType(sel *parser.SelectorExpr, env *Env) (Type, error) {
+	typ, err := env.GetVar(sel.Root)
+	if err != nil {
+		return nil, errUnknownVariable(sel.Pos, sel.Root)
+	}
+	for i, field := range sel.Tail {
+		st, ok := typ.(StructType)
+		if !ok {
+			return nil, errNotStruct(sel.Pos, typ)
+		}
+		if i == len(sel.Tail)-1 {
+			if mt, ok := st.Methods[field]; ok {
+				params := make([]Type, len(mt.Params))
+				for i, p := range mt.Params {
+					if p.Type != nil {
+						params[i] = resolveTypeRef(p.Type, env)
+					} else {
+						params[i] = AnyType{}
+					}
+				}
+				var ret Type = VoidType{}
+				if mt.Return != nil {
+					ret = resolveTypeRef(mt.Return, env)
+				}
+				typ = FuncType{Params: params, Return: ret}
+			} else if ft, ok := st.Fields[field]; ok {
+				typ = ft
+			} else {
+				return nil, errUnknownField(sel.Pos, field, st)
+			}
+		} else {
+			ft, ok := st.Fields[field]
+			if !ok {
+				return nil, errUnknownField(sel.Pos, field, st)
+			}
+			typ = ft
+		}
+	}
+	return typ, nil
+}
+
+func selectorString(sel *parser.SelectorExpr) string {
+	if sel == nil {
+		return ""
+	}
+	s := sel.Root
+	for _, f := range sel.Tail {
+		s += "." + f
+	}
+	return s
 }
 
 func checkExpr(e *parser.Expr, env *Env) (Type, error) {
@@ -815,27 +899,12 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 
 	case p.Selector != nil:
-		typ, err := env.GetVar(p.Selector.Root)
-		if err != nil {
-			return nil, errUnknownVariable(p.Pos, p.Selector.Root)
-		}
-		for _, field := range p.Selector.Tail {
-			st, ok := typ.(StructType)
-			if !ok {
-				return nil, errNotStruct(p.Pos, typ)
-			}
-			ft, ok := st.Fields[field]
-			if !ok {
-				return nil, errUnknownField(p.Pos, field, st)
-			}
-			typ = ft
-		}
-		return typ, nil
+		return resolveSelectorType(p.Selector, env)
 
 	case p.Call != nil:
-		fnType, err := env.GetVar(p.Call.Func)
+		fnType, err := resolveSelectorType(p.Call.Func, env)
 		if err != nil {
-			return nil, errUnknownFunction(p.Pos, p.Call.Func)
+			return nil, errUnknownFunction(p.Pos, selectorString(p.Call.Func))
 		}
 
 		switch ft := fnType.(type) {
@@ -871,34 +940,34 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return VoidType{}, nil
 
 		default:
-			return nil, errNotFunction(p.Pos, p.Call.Func)
+			return nil, errNotFunction(p.Pos, selectorString(p.Call.Func))
 		}
 
 	case p.Struct != nil:
-               st, ok := env.GetStruct(p.Struct.Name)
-               if !ok {
-                       // treat unknown struct literal as map for tool specs
-                       for _, field := range p.Struct.Fields {
-                               if _, err := checkExpr(field.Value, env); err != nil {
-                                       return nil, err
-                               }
-                       }
-                       return MapType{Key: StringType{}, Value: AnyType{}}, nil
-               }
-               for _, field := range p.Struct.Fields {
-                       ft, ok := st.Fields[field.Name]
-                       if !ok {
-                               return nil, errUnknownField(p.Pos, field.Name, st)
-                       }
-                       valT, err := checkExpr(field.Value, env)
-                       if err != nil {
-                               return nil, err
-                       }
-                       if !unify(ft, valT, nil) {
-                               return nil, errTypeMismatch(field.Value.Pos, ft, valT)
-                       }
-               }
-               return st, nil
+		st, ok := env.GetStruct(p.Struct.Name)
+		if !ok {
+			// treat unknown struct literal as map for tool specs
+			for _, field := range p.Struct.Fields {
+				if _, err := checkExpr(field.Value, env); err != nil {
+					return nil, err
+				}
+			}
+			return MapType{Key: StringType{}, Value: AnyType{}}, nil
+		}
+		for _, field := range p.Struct.Fields {
+			ft, ok := st.Fields[field.Name]
+			if !ok {
+				return nil, errUnknownField(p.Pos, field.Name, st)
+			}
+			valT, err := checkExpr(field.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			if !unify(ft, valT, nil) {
+				return nil, errTypeMismatch(field.Value.Pos, ft, valT)
+			}
+		}
+		return st, nil
 
 	case p.List != nil:
 		var elemType Type = nil

@@ -97,7 +97,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("func main() {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil {
+		if s.Fun != nil || s.Test != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -228,13 +228,26 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("type %s struct {", name))
 	c.indent++
-	for _, f := range t.Fields {
-		fieldName := exportName(sanitizeName(f.Name))
-		typ := goType(resolveTypeRef(f.Type))
-		c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, f.Name))
+	fields := []string{}
+	fieldMap := map[string]types.Type{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fieldName := exportName(sanitizeName(m.Field.Name))
+			typ := goType(resolveTypeRef(m.Field.Type))
+			c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, m.Field.Name))
+			fields = append(fields, m.Field.Name)
+			fieldMap[m.Field.Name] = resolveTypeRef(m.Field.Type)
+		}
 	}
 	c.indent--
 	c.writeln("}")
+	for _, m := range t.Members {
+		if m.Method != nil {
+			if err := c.compileMethod(name, m.Method, fieldMap, fields); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
@@ -373,6 +386,75 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	originalEnv := c.env
 	c.env = child
 	c.indent++
+	for _, s := range fun.Body {
+		if err := c.compileStmt(s); err != nil {
+			c.env = originalEnv
+			return err
+		}
+	}
+	c.indent--
+	c.env = originalEnv
+	c.writeIndent()
+	c.buf.WriteString("}\n")
+	return nil
+}
+
+func (c *Compiler) compileMethod(typeName string, fun *parser.FunStmt, fields map[string]types.Type, order []string) error {
+	name := sanitizeName(fun.Name)
+	c.writeIndent()
+	c.buf.WriteString(fmt.Sprintf("func (self *%s) %s(", sanitizeName(typeName), name))
+	var ft types.FuncType
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(typeName); ok {
+			if m, ok := st.Methods[fun.Name]; ok {
+				params := make([]types.Type, len(m.Params))
+				for i, p := range m.Params {
+					if p.Type != nil {
+						params[i] = resolveTypeRef(p.Type)
+					} else {
+						params[i] = types.AnyType{}
+					}
+				}
+				var ret types.Type = types.VoidType{}
+				if m.Return != nil {
+					ret = resolveTypeRef(m.Return)
+				}
+				ft = types.FuncType{Params: params, Return: ret}
+			}
+		}
+	}
+	for i, p := range fun.Params {
+		if i > 0 {
+			c.buf.WriteString(", ")
+		}
+		paramType := "any"
+		if i < len(ft.Params) {
+			paramType = goType(ft.Params[i])
+		}
+		c.buf.WriteString(sanitizeName(p.Name) + " " + paramType)
+	}
+	retType := goType(ft.Return)
+	if retType == "" {
+		c.buf.WriteString(") {\n")
+	} else {
+		c.buf.WriteString(") " + retType + " {\n")
+	}
+	child := types.NewEnv(c.env)
+	for name, t := range fields {
+		child.SetVar(name, t, true)
+	}
+	for i, p := range fun.Params {
+		if i < len(ft.Params) {
+			child.SetVar(p.Name, ft.Params[i], true)
+		}
+	}
+	originalEnv := c.env
+	c.env = child
+	c.indent++
+	// alias fields
+	for _, f := range order {
+		c.writeln(fmt.Sprintf("%s := self.%s", sanitizeName(f), exportName(sanitizeName(f))))
+	}
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
 			c.env = originalEnv
@@ -725,25 +807,26 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		args[i] = v
 	}
 	argStr := strings.Join(args, ", ")
-	switch call.Func {
-	case "print":
-		c.imports["fmt"] = true
-		return fmt.Sprintf("fmt.Println(%s)", argStr), nil
-	case "len":
-		return fmt.Sprintf("len(%s)", argStr), nil
-	case "now":
-		c.imports["time"] = true
-		// time.Now().UnixNano() already returns an int64. Use it directly
-		// so `now()` provides nanosecond precision consistent with the
-		// interpreter.
-		return "time.Now().UnixNano()", nil
-	case "json":
-		c.imports["encoding/json"] = true
-		c.imports["fmt"] = true
-		return fmt.Sprintf("func(){b,_:=json.Marshal(%s);fmt.Println(string(b))}()", argStr), nil
-	default:
-		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
+	if len(call.Func.Tail) == 0 {
+		switch call.Func.Root {
+		case "print":
+			c.imports["fmt"] = true
+			return fmt.Sprintf("fmt.Println(%s)", argStr), nil
+		case "len":
+			return fmt.Sprintf("len(%s)", argStr), nil
+		case "now":
+			c.imports["time"] = true
+			// time.Now().UnixNano() already returns an int64. Use it directly
+			// so `now()` provides nanosecond precision consistent with the
+			// interpreter.
+			return "time.Now().UnixNano()", nil
+		case "json":
+			c.imports["encoding/json"] = true
+			c.imports["fmt"] = true
+			return fmt.Sprintf("func(){b,_:=json.Marshal(%s);fmt.Println(string(b))}()", argStr), nil
+		}
 	}
+	return fmt.Sprintf("%s(%s)", selectorToString(call.Func), argStr), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
@@ -839,6 +922,17 @@ func exportName(name string) string {
 		runes[0] = runes[0] - 'a' + 'A'
 	}
 	return string(runes)
+}
+
+func selectorToString(sel *parser.SelectorExpr) string {
+	if sel == nil {
+		return ""
+	}
+	s := sanitizeName(sel.Root)
+	for _, f := range sel.Tail {
+		s += "." + sanitizeName(f)
+	}
+	return s
 }
 
 func goType(t types.Type) string {
@@ -1090,21 +1184,26 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		}
 		return types.AnyType{}
 	case p.Call != nil:
-		switch p.Call.Func {
-		case "len":
-			return types.IntType{}
-		case "now":
-			return types.Int64Type{}
-		default:
-			if c.env != nil {
-				if t, err := c.env.GetVar(p.Call.Func); err == nil {
-					if ft, ok := t.(types.FuncType); ok {
-						return ft.Return
-					}
+		if len(p.Call.Func.Tail) == 0 {
+			switch p.Call.Func.Root {
+			case "len":
+				return types.IntType{}
+			case "now":
+				return types.Int64Type{}
+			case "print":
+				return types.VoidType{}
+			case "json":
+				return types.VoidType{}
+			}
+		}
+		if c.env != nil {
+			if t, err := c.env.GetVar(selectorToString(p.Call.Func)); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					return ft.Return
 				}
 			}
-			return types.AnyType{}
 		}
+		return types.AnyType{}
 	case p.Group != nil:
 		return c.inferExprType(p.Group)
 	case p.List != nil:
@@ -1332,15 +1431,17 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 	}
 	switch {
 	case p.Call != nil:
-		if p.Call.Func == "print" {
-			c.imports["fmt"] = true
-		}
-		if p.Call.Func == "now" {
-			c.imports["time"] = true
-		}
-		if p.Call.Func == "json" {
-			c.imports["encoding/json"] = true
-			c.imports["fmt"] = true
+		if len(p.Call.Func.Tail) == 0 {
+			if p.Call.Func.Root == "print" {
+				c.imports["fmt"] = true
+			}
+			if p.Call.Func.Root == "now" {
+				c.imports["time"] = true
+			}
+			if p.Call.Func.Root == "json" {
+				c.imports["encoding/json"] = true
+				c.imports["fmt"] = true
+			}
 		}
 		for _, a := range p.Call.Args {
 			c.scanExprImports(a)

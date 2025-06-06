@@ -1,0 +1,26 @@
+(program
+  (type Circle
+    (field radius (type float))
+    (fun area
+      (type float)
+      (let a
+        (binary *
+          (binary * (float 3.14) (selector radius))
+          (selector radius)
+        )
+      )
+      (call print (string "Calculating area:") (selector a))
+      (return (selector a))
+    )
+    (fun describe
+      (call print (string "Circle with radius") (selector radius))
+    )
+  )
+  (let c
+    (struct Circle
+      (field radius (float 5))
+    )
+  )
+  (call c.describe)
+  (call print (string "Area is") (call c.area))
+)

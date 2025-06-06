@@ -133,8 +133,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("type %s = {", name))
 	c.indent++
-	for _, f := range t.Fields {
-		c.writeln(fmt.Sprintf("%s: any;", sanitizeName(f.Name)))
+	for _, m := range t.Members {
+		if m.Field != nil {
+			c.writeln(fmt.Sprintf("%s: any;", sanitizeName(m.Field.Name)))
+		}
 	}
 	c.indent--
 	c.writeln("}")
@@ -368,22 +370,23 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		args[i] = v
 	}
 	argStr := strings.Join(args, ", ")
-	switch call.Func {
-	case "print":
-		return fmt.Sprintf("console.log(%s)", argStr), nil
-	case "len":
-		c.use("_len")
-		return fmt.Sprintf("_len(%s)", argStr), nil
-	case "now":
-		// performance.now() returns milliseconds as a float. Multiply
-		// by 1e6 so that `now()` is consistent with Go's UnixNano()
-		// and the interpreter which return nanoseconds.
-		return "performance.now() * 1000000", nil
-	case "json":
-		return fmt.Sprintf("console.log(JSON.stringify(%s))", argStr), nil
-	default:
-		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
+	if len(call.Func.Tail) == 0 {
+		switch call.Func.Root {
+		case "print":
+			return fmt.Sprintf("console.log(%s)", argStr), nil
+		case "len":
+			c.use("_len")
+			return fmt.Sprintf("_len(%s)", argStr), nil
+		case "now":
+			// performance.now() returns milliseconds as a float. Multiply
+			// by 1e6 so that `now()` is consistent with Go's UnixNano()
+			// and the interpreter which return nanoseconds.
+			return "performance.now() * 1000000", nil
+		case "json":
+			return fmt.Sprintf("console.log(JSON.stringify(%s))", argStr), nil
+		}
 	}
+	return fmt.Sprintf("%s(%s)", selectorToString(call.Func), argStr), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
@@ -570,6 +573,17 @@ func sanitizeName(name string) string {
 		return "_" + b.String()
 	}
 	return b.String()
+}
+
+func selectorToString(sel *parser.SelectorExpr) string {
+	if sel == nil {
+		return ""
+	}
+	s := sanitizeName(sel.Root)
+	for _, f := range sel.Tail {
+		s += "." + sanitizeName(f)
+	}
+	return s
 }
 
 // Runtime helper functions injected into generated programs.

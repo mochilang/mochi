@@ -94,9 +94,14 @@ type ForStmt struct {
 // --- User-defined Types ---
 
 type TypeDecl struct {
-	Pos    lexer.Position
-	Name   string       `parser:"'type' @Ident"`
-	Fields []*TypeField `parser:"'{' @@* '}'"`
+	Pos     lexer.Position
+	Name    string        `parser:"'type' @Ident"`
+	Members []*TypeMember `parser:"'{' @@* '}'"`
+}
+
+type TypeMember struct {
+	Field  *TypeField `parser:"@@"`
+	Method *FunStmt   `parser:"| @@"`
 }
 
 type TypeField struct {
@@ -277,14 +282,15 @@ type FunExpr struct {
 // --- Atoms ---
 
 type SelectorExpr struct {
+	Pos  lexer.Position
 	Root string   `parser:"@Ident"`
 	Tail []string `parser:"{ '.' @Ident }"`
 }
 
 type CallExpr struct {
 	Pos  lexer.Position
-	Func string  `parser:"@Ident '('"`
-	Args []*Expr `parser:"[ @@ { ',' @@ } ] ')'"`
+	Func *SelectorExpr `parser:"@@ '('"`
+	Args []*Expr       `parser:"[ @@ { ',' @@ } ] ')'"`
 }
 
 type Literal struct {

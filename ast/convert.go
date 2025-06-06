@@ -106,12 +106,17 @@ func FromStatement(s *parser.Statement) *Node {
 
 	case s.Type != nil:
 		n := &Node{Kind: "type", Value: s.Type.Name}
-		for _, f := range s.Type.Fields {
-			n.Children = append(n.Children, &Node{
-				Kind:     "field",
-				Value:    f.Name,
-				Children: []*Node{FromTypeRef(f.Type)},
-			})
+		for _, m := range s.Type.Members {
+			if m.Field != nil {
+				n.Children = append(n.Children, &Node{
+					Kind:     "field",
+					Value:    m.Field.Name,
+					Children: []*Node{FromTypeRef(m.Field.Type)},
+				})
+			} else if m.Method != nil {
+				fn := FromStatement(&parser.Statement{Fun: m.Method})
+				n.Children = append(n.Children, fn)
+			}
 		}
 		return n
 
@@ -300,7 +305,7 @@ func FromPrimary(p *parser.Primary) *Node {
 		return n
 
 	case p.Call != nil:
-		n := &Node{Kind: "call", Value: p.Call.Func}
+		n := &Node{Kind: "call", Value: selectorString(p.Call.Func)}
 		for _, arg := range p.Call.Args {
 			n.Children = append(n.Children, FromExpr(arg))
 		}
@@ -415,4 +420,15 @@ func FromTypeRef(t *parser.TypeRef) *Node {
 		return &Node{Kind: "type", Value: *t.Simple}
 	}
 	return &Node{Kind: "type", Value: "unknown"}
+}
+
+func selectorString(sel *parser.SelectorExpr) string {
+	if sel == nil {
+		return ""
+	}
+	s := sel.Root
+	for _, f := range sel.Tail {
+		s += "." + f
+	}
+	return s
 }
