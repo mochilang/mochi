@@ -336,7 +336,7 @@ fun calc(expression: string): string {
 }
 
 let result = generate text {
-  tools: [getWeather, calc]
+  tools: [getWeather, calc],
   prompt: "What's the weather like in Paris and what's 2 + 2?"
 }
 
