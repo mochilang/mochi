@@ -310,6 +310,12 @@ let p = generate Person {
   prompt: "Generate a fictional software engineer"
 }
 print(p.name)
+
+let vec = generate embedding {
+  text: "hello world"
+  normalize: true
+}
+print(len(vec))
 ```
 
 ## MCP Tools
