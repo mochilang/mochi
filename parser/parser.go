@@ -28,7 +28,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
-	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|\.\.|[-+*/%=<>!{}\[\](),.:]`},
+	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r]+`},
 })
 
@@ -96,14 +96,14 @@ type ForStmt struct {
 type TypeDecl struct {
 	Pos      lexer.Position
 	Name     string         `parser:"'type' @Ident"`
-	Fields   []*TypeField   `parser:"'{' @@* '}'"`
-	Variants []*TypeVariant `parser:"| '=' @@ { '|' @@ }"`
+	Fields   []*TypeField   `parser:"[ '{' @@* '}' ]"`
+	Variants []*TypeVariant `parser:"[ '=' @@ { '|' @@ } ]"`
 }
 
 type TypeVariant struct {
 	Pos    lexer.Position
 	Name   string       `parser:"@Ident"`
-	Fields []*TypeField `parser:"[ '{' @@* '}' ]"`
+	Fields []*TypeField `parser:"[ '(' @@ { ',' @@ } [ ',' ]? ')' | '{' @@* '}' ]"`
 }
 
 type TypeField struct {
