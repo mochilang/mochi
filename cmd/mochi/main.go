@@ -240,7 +240,7 @@ func build(cmd *BuildCmd) error {
 		if out == "" {
 			out = base + ".py"
 		}
-		code, err := pycode.New().Compile(prog)
+		code, err := pycode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
@@ -252,7 +252,7 @@ func build(cmd *BuildCmd) error {
 		if out == "" {
 			out = base + ".ts"
 		}
-		code, err := tscode.New().Compile(prog)
+		code, err := tscode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}

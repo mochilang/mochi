@@ -354,7 +354,7 @@ func compileToPy(mochiFile, pyFile string) error {
 	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 		return fmt.Errorf("type error: %v", errs[0])
 	}
-	c := pycode.New()
+	c := pycode.New(typeEnv)
 	code, err := c.Compile(prog)
 	if err != nil {
 		return err
@@ -371,7 +371,7 @@ func compileToTs(mochiFile, tsFile string) error {
 	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 		return fmt.Errorf("type error: %v", errs[0])
 	}
-	c := tscode.New()
+	c := tscode.New(typeEnv)
 	code, err := c.Compile(prog)
 	if err != nil {
 		return err

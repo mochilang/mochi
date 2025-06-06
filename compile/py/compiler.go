@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 // Compiler translates a Mochi AST into Python source code.
@@ -15,10 +16,11 @@ type Compiler struct {
 	indent  int
 	helpers map[string]bool
 	imports map[string]bool
+	env     *types.Env
 }
 
-func New() *Compiler {
-	return &Compiler{helpers: make(map[string]bool), imports: make(map[string]bool)}
+func New(env *types.Env) *Compiler {
+	return &Compiler{helpers: make(map[string]bool), imports: make(map[string]bool), env: env}
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -103,6 +105,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -153,6 +157,24 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, val))
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	c.imports["dataclasses"] = true
+	c.imports["typing"] = true
+	name := sanitizeName(t.Name)
+	c.writeln("@dataclasses.dataclass")
+	c.writeln(fmt.Sprintf("class %s:", name))
+	c.indent++
+	if len(t.Fields) == 0 {
+		c.writeln("pass")
+	} else {
+		for _, f := range t.Fields {
+			c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(f.Name)))
+		}
+	}
+	c.indent--
 	return nil
 }
 
@@ -360,6 +382,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			expr += "." + sanitizeName(s)
 		}
 		return expr, nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s=%s", sanitizeName(f.Name), v)
+		}
+		return fmt.Sprintf("%s(%s)", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	default:
@@ -468,6 +500,12 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		if prompt == "" {
 			prompt = "\"\""
 		}
+		if c.env != nil {
+			if _, ok := c.env.GetStruct(g.Target); ok {
+				c.use("_gen_struct")
+				return fmt.Sprintf("_gen_struct(%s, %s)", sanitizeName(g.Target), prompt), nil
+			}
+		}
 		c.use("_gen_text")
 		return fmt.Sprintf("_gen_text(%s)", prompt), nil
 	}
@@ -550,7 +588,13 @@ var helperGenEmbed = "def _gen_embed(text):\n" +
 	"    # TODO: send text to your embedding model of choice\n" +
 	"    return [float(ord(c)) for c in text]\n"
 
-var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_gen_text": helperGenText, "_gen_embed": helperGenEmbed}
+var helperGenStruct = "def _gen_struct(cls, prompt):\n" +
+	"    # TODO: send prompt to your LLM of choice and parse JSON\n" +
+	"    import json\n" +
+	"    data = json.loads(prompt)\n" +
+	"    return cls(**data)\n"
+
+var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_gen_text": helperGenText, "_gen_embed": helperGenEmbed, "_gen_struct": helperGenStruct}
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
 

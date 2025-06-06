@@ -27,7 +27,7 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := tscode.New()
+		c := tscode.New(typeEnv)
 		code, err := c.Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
@@ -56,7 +56,7 @@ func TestTSCompiler_GoldenOutput(t *testing.T) {
 		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := tscode.New()
+		c := tscode.New(typeEnv)
 		code, err := c.Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
