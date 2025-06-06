@@ -306,6 +306,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileListLiteral(p.List)
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
+
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
 	case p.Lit != nil:
@@ -447,6 +450,37 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 	}
 }
 
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(() => {\n")
+	b.WriteString("\tconst _t = " + target + ";\n")
+	b.WriteString("\tswitch (_t) {\n")
+	for _, cs := range m.Cases {
+		if isUnderscoreExpr(cs.Pattern) {
+			b.WriteString("\tdefault:\n")
+		} else {
+			p, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString("\tcase " + p + ":\n")
+		}
+		r, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString("\t\treturn " + r + ";\n")
+	}
+	b.WriteString("\t}\n")
+	b.WriteString("\treturn undefined;\n")
+	b.WriteString("})()")
+	return b.String(), nil
+}
+
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
@@ -568,4 +602,25 @@ func (c *Compiler) emitRuntime() {
 		c.buf.WriteString(helperMap[n])
 		c.buf.WriteByte('\n')
 	}
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Index) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
 }

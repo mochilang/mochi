@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected int, got string
+  --> tests/types/errors/match_pattern_mismatch.mochi:3:3
+
+  3 |   "one" => 1
+    |   ^
+
+help:
+  Change the value to match the expected type.
