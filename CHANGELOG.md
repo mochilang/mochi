@@ -1,4 +1,20 @@
 # 📦 CHANGELOG.md
+## [0.3.4] – 2025-06-07
+
+### Added
+
+* Tool calling via `tools` field in `generate` blocks
+* Inline methods defined inside `type` blocks
+* Basic union types with pattern matching
+
+### Changed
+
+* Tool descriptions exported in schemas
+
+### Fixed
+
+* Various improvements to tool call handling
+
 ## [0.3.3] – 2025-06-06
 
 ### Added
