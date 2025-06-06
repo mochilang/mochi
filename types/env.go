@@ -80,6 +80,19 @@ func (e *Env) GetUnion(name string) (UnionType, bool) {
 	return UnionType{}, false
 }
 
+// FindUnionByVariant returns the union type that contains the given variant name.
+func (e *Env) FindUnionByVariant(variant string) (UnionType, bool) {
+	for _, u := range e.unions {
+		if _, ok := u.Variants[variant]; ok {
+			return u, true
+		}
+	}
+	if e.parent != nil {
+		return e.parent.FindUnionByVariant(variant)
+	}
+	return UnionType{}, false
+}
+
 // SetModel defines a model alias.
 func (e *Env) SetModel(name string, spec ModelSpec) { e.models[name] = spec }
 

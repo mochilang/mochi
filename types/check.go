@@ -58,6 +58,7 @@ func (t MapType) String() string {
 type StructType struct {
 	Name   string
 	Fields map[string]Type
+	Order  []string
 }
 
 func (t StructType) String() string { return t.Name }
@@ -458,21 +459,26 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 	case s.Type != nil:
 		if len(s.Type.Fields) > 0 {
 			fields := map[string]Type{}
+			order := []string{}
 			for _, f := range s.Type.Fields {
 				fields[f.Name] = resolveTypeRef(f.Type, env)
+				order = append(order, f.Name)
 			}
-			env.SetStruct(s.Type.Name, StructType{Name: s.Type.Name, Fields: fields})
-			env.types[s.Type.Name] = StructType{Name: s.Type.Name, Fields: fields}
+			st := StructType{Name: s.Type.Name, Fields: fields, Order: order}
+			env.SetStruct(s.Type.Name, st)
+			env.types[s.Type.Name] = st
 			return nil
 		}
 		if len(s.Type.Variants) > 0 {
 			variants := map[string]StructType{}
 			for _, v := range s.Type.Variants {
 				vf := map[string]Type{}
+				order := []string{}
 				for _, f := range v.Fields {
 					vf[f.Name] = resolveTypeRef(f.Type, env)
+					order = append(order, f.Name)
 				}
-				st := StructType{Name: v.Name, Fields: vf}
+				st := StructType{Name: v.Name, Fields: vf, Order: order}
 				variants[v.Name] = st
 				env.SetStruct(v.Name, st)
 				params := make([]Type, 0, len(v.Fields))
@@ -1155,7 +1161,40 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 	}
 	var resultType Type
 	for _, c := range m.Cases {
-		if !isUnderscoreExpr(c.Pattern) {
+		caseEnv := env
+		if call, ok := callPattern(c.Pattern); ok {
+			if ut, ok := env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				if len(call.Args) != len(st.Order) {
+					return nil, errTypeMismatch(c.Pos, targetType, st)
+				}
+				if !unify(targetType, st, nil) {
+					return nil, errTypeMismatch(c.Pos, targetType, st)
+				}
+				child := NewEnv(env)
+				for idx, arg := range call.Args {
+					if name, ok := identName(arg); ok {
+						child.SetVar(name, st.Fields[st.Order[idx]], true)
+					}
+				}
+				caseEnv = child
+			}
+		} else if ident, ok := identName(c.Pattern); ok {
+			if ut, ok := env.FindUnionByVariant(ident); ok {
+				st := ut.Variants[ident]
+				if !unify(targetType, st, nil) {
+					return nil, errTypeMismatch(c.Pos, targetType, st)
+				}
+			} else if !isUnderscoreExpr(c.Pattern) {
+				pType, err := checkExpr(c.Pattern, env)
+				if err != nil {
+					return nil, err
+				}
+				if !unify(targetType, pType, nil) {
+					return nil, errTypeMismatch(c.Pos, targetType, pType)
+				}
+			}
+		} else if !isUnderscoreExpr(c.Pattern) {
 			pType, err := checkExpr(c.Pattern, env)
 			if err != nil {
 				return nil, err
@@ -1164,7 +1203,8 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 				return nil, errTypeMismatch(c.Pos, targetType, pType)
 			}
 		}
-		rType, err := checkExprWithExpected(c.Result, env, expected)
+
+		rType, err := checkExprWithExpected(c.Result, caseEnv, expected)
 		if err != nil {
 			return nil, err
 		}
@@ -1202,4 +1242,43 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return true
 	}
 	return false
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Index) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Index) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
 }

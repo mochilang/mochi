@@ -1,0 +1,26 @@
+// tree.mochi
+
+// Algebraic data type for a binary tree of integers
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+fun sum(t: Tree): int {
+  return match t {
+    Leaf => 0
+    Node(left, value, right) => sum(left) + value + sum(right)
+  }
+}
+
+let t = Node {
+  left: Leaf,
+  value: 1,
+  right: Node {
+    left: Leaf,
+    value: 2,
+    right: Leaf
+  }
+}
+
+print(sum(t))

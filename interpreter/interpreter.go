@@ -867,7 +867,11 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				cl := closure{Name: p.Selector.Root, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
 				return cl, nil
 			}
-			return nil, errUndefinedVariable(p.Pos, p.Selector.Root)
+			if _, ok := i.types.FindUnionByVariant(p.Selector.Root); ok {
+				val = map[string]any{"__name": p.Selector.Root}
+			} else {
+				return nil, errUndefinedVariable(p.Pos, p.Selector.Root)
+			}
 		}
 		for _, field := range p.Selector.Tail {
 			obj, ok := val.(map[string]any)
@@ -878,19 +882,16 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		return val, nil
 
-       case p.Struct != nil:
-               obj := map[string]any{}
-               for _, field := range p.Struct.Fields {
-                       v, err := i.evalExpr(field.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       obj[field.Name] = v
-               }
-               if _, ok := i.types.GetStruct(p.Struct.Name); !ok {
-                       obj["__name"] = p.Struct.Name
-               }
-               return obj, nil
+	case p.Struct != nil:
+		obj := map[string]any{"__name": p.Struct.Name}
+		for _, field := range p.Struct.Fields {
+			v, err := i.evalExpr(field.Value)
+			if err != nil {
+				return nil, err
+			}
+			obj[field.Name] = v
+		}
+		return obj, nil
 
 	case p.List != nil:
 		var elems []any
@@ -962,11 +963,11 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 					normalize = b
 					haveNorm = true
 				}
-                       case "tools":
-                                if list, ok := v.([]any); ok {
-                                        for _, item := range list {
-                                                switch t := item.(type) {
-                                                case closure:
+			case "tools":
+				if list, ok := v.([]any); ok {
+					for _, item := range list {
+						switch t := item.(type) {
+						case closure:
 							if t.Name == "" {
 								continue
 							}
@@ -977,40 +978,40 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 									toolsList = append(toolsList, funcToTool(t.Name, fn, ft))
 								}
 							}
-                                                case *closure:
-                                                        cl := *t
-                                                        if cl.Name == "" {
-                                                                continue
-                                                        }
-                                                        toolFuncs[cl.Name] = cl
-                                                        if fn, ok := i.env.GetFunc(cl.Name); ok {
-                                                                typ, _ := i.types.GetVar(cl.Name)
-                                                                if ft, ok2 := typ.(types.FuncType); ok2 {
-                                                                        toolsList = append(toolsList, funcToTool(cl.Name, fn, ft))
-                                                                }
-                                                        }
-                                                case map[string]any:
-                                                        nameAny, has := t["__name"]
-                                                        name, ok1 := nameAny.(string)
-                                                        if !has || !ok1 {
-                                                                continue
-                                                        }
-                                                        desc, _ := t["description"].(string)
-                                                        if fn, ok := i.env.GetFunc(name); ok {
-                                                                typ, _ := i.types.GetVar(name)
-                                                                if ft, ok2 := typ.(types.FuncType); ok2 {
-                                                                        tool := funcToTool(name, fn, ft)
-                                                                        if desc != "" {
-                                                                                tool.Description = desc
-                                                                        }
-                                                                        toolsList = append(toolsList, tool)
-                                                                        cl := closure{Name: name, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
-                                                                        toolFuncs[name] = cl
-                                                                }
-                                                        }
-                                                }
-                                        }
-                                }
+						case *closure:
+							cl := *t
+							if cl.Name == "" {
+								continue
+							}
+							toolFuncs[cl.Name] = cl
+							if fn, ok := i.env.GetFunc(cl.Name); ok {
+								typ, _ := i.types.GetVar(cl.Name)
+								if ft, ok2 := typ.(types.FuncType); ok2 {
+									toolsList = append(toolsList, funcToTool(cl.Name, fn, ft))
+								}
+							}
+						case map[string]any:
+							nameAny, has := t["__name"]
+							name, ok1 := nameAny.(string)
+							if !has || !ok1 {
+								continue
+							}
+							desc, _ := t["description"].(string)
+							if fn, ok := i.env.GetFunc(name); ok {
+								typ, _ := i.types.GetVar(name)
+								if ft, ok2 := typ.(types.FuncType); ok2 {
+									tool := funcToTool(name, fn, ft)
+									if desc != "" {
+										tool.Description = desc
+									}
+									toolsList = append(toolsList, tool)
+									cl := closure{Name: name, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
+									toolFuncs[name] = cl
+								}
+							}
+						}
+					}
+				}
 			case "tool_choice":
 				if s, ok := v.(string); ok {
 					toolChoice = s
@@ -1253,6 +1254,45 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	return false
 }
 
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Index) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Index) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
 func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
 	val, err := i.evalExpr(m.Target)
 	if err != nil {
@@ -1262,16 +1302,56 @@ func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
 		if isUnderscoreExpr(c.Pattern) {
 			return i.evalExpr(c.Result)
 		}
-		pv, err := i.evalExpr(c.Pattern)
-		if err != nil {
-			return nil, err
+		// Variant pattern like Node(left, value, right)
+		if call, ok := callPattern(c.Pattern); ok {
+			obj, ok := val.(map[string]any)
+			if !ok {
+				continue
+			}
+			name, _ := obj["__name"].(string)
+			if name != call.Func {
+				continue
+			}
+			st, ok := i.types.GetStruct(call.Func)
+			if !ok {
+				continue
+			}
+			if len(call.Args) != len(st.Order) {
+				continue
+			}
+			child := types.NewEnv(i.env)
+			for idx, arg := range call.Args {
+				if n, ok := identName(arg); ok {
+					child.SetValue(n, obj[st.Order[idx]], true)
+				}
+			}
+			old := i.env
+			i.env = child
+			res, err := i.evalExpr(c.Result)
+			i.env = old
+			return res, err
 		}
-		eq, err := applyBinary(c.Pos, val, "==", pv)
-		if err != nil {
-			return nil, err
-		}
-		if b, ok := eq.(bool); ok && b {
-			return i.evalExpr(c.Result)
+
+		if ident, ok := identName(c.Pattern); ok {
+			obj, ok := val.(map[string]any)
+			if ok {
+				name, _ := obj["__name"].(string)
+				if name == ident {
+					return i.evalExpr(c.Result)
+				}
+			}
+		} else {
+			pv, err := i.evalExpr(c.Pattern)
+			if err != nil {
+				return nil, err
+			}
+			eq, err := applyBinary(c.Pos, val, "==", pv)
+			if err != nil {
+				return nil, err
+			}
+			if b, ok := eq.(bool); ok && b {
+				return i.evalExpr(c.Result)
+			}
 		}
 	}
 	return nil, nil
