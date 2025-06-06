@@ -1,6 +1,6 @@
-# Mochi Programming Language Specification (v0.3.1)
+# Mochi Programming Language Specification (v0.3.2)
 
-This document describes version 0.3.1 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
+This document describes version 0.3.2 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
 
 ## 0. Introduction
 
@@ -268,6 +268,33 @@ agent Logger {
 }
 ```
 
+### Model Declarations
+
+`model` blocks define reusable language model aliases. Each block specifies a
+`provider`, `name`, and optional parameters. Models can be referenced by name in
+`generate` expressions.
+
+```mochi
+model quick {
+  provider: "openai"
+  name: "gpt-3.5-turbo"
+}
+```
+
+### Generative Blocks
+
+`generate` expressions invoke a language model. `generate text` returns a string,
+`generate <Type>` returns a struct of the given type, and `generate embedding`
+produces a `list<float>` vector. Embeddings may be normalized with the optional
+`normalize` field.
+
+```mochi
+let vec = generate embedding {
+  text: "hello world"
+  normalize: true
+}
+```
+
 ## 6. Functions
 
 Functions are first-class. Parameters are typed, and the return type may be omitted in block-bodied functions if `return` is used. Functions may capture variables from their enclosing scope, forming closures.
@@ -345,4 +372,4 @@ GenericType   = Identifier "<" TypeRef { "," TypeRef } ">" .
 FunType       = "fun" "(" [ TypeRef { "," TypeRef } ] ")" [ ":" TypeRef ] .
 ```
 
-This specification outlines the core language as of version 0.3.1. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.
+This specification outlines the core language as of version 0.3.2. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.
