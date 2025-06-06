@@ -2,9 +2,22 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
+
+type boolLit bool
+
+func (b *boolLit) Capture(values []string) error {
+	v, err := strconv.ParseBool(values[0])
+	if err != nil {
+		return err
+	}
+	*b = boolLit(v)
+	return nil
+}
 
 // --- Mochi Lexer ---
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
@@ -169,7 +182,7 @@ type BinaryExpr struct {
 
 type BinaryOp struct {
 	Pos   lexer.Position
-	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%')"`
+	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | '&&' | '||')"`
 	Right *PostfixExpr `parser:"@@"`
 }
 
@@ -278,7 +291,7 @@ type Literal struct {
 	Pos   lexer.Position
 	Int   *int     `parser:"@Int"`
 	Float *float64 `parser:"| @Float"`
-	Bool  *bool    `parser:"| @('true' | 'false')"`
+	Bool  *boolLit `parser:"| @('true' | 'false')"`
 	Str   *string  `parser:"| @String"`
 }
 

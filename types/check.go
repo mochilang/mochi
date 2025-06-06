@@ -558,49 +558,97 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 		return nil, err
 	}
 
-	for _, op := range b.Right {
-		right, err := checkPostfix(op.Right, env, nil)
+	type token struct {
+		pos lexer.Position
+		op  string
+	}
+
+	operands := []Type{left}
+	operators := []token{}
+
+	for _, part := range b.Right {
+		typ, err := checkPostfix(part.Right, env, nil)
 		if err != nil {
 			return nil, err
 		}
+		operands = append(operands, typ)
+		operators = append(operators, token{part.Pos, part.Op})
+	}
 
-		switch op.Op {
-		case "+", "-", "*", "/", "%":
-			// Arithmetic: int, float, or string + string
-			switch {
-			case (unify(left, IntType{}, nil) || unify(left, Int64Type{}, nil)) &&
-				(unify(right, IntType{}, nil) || unify(right, Int64Type{}, nil)):
-				if _, ok := left.(Int64Type); ok {
-					left = Int64Type{}
-				} else if _, ok := right.(Int64Type); ok {
-					left = Int64Type{}
-				} else {
-					left = IntType{}
+	for _, level := range [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!="},
+		{"&&"},
+		{"||"},
+	} {
+		for i := 0; i < len(operators); {
+			op := operators[i].op
+			if contains(level, op) {
+				l := operands[i]
+				r := operands[i+1]
+				res, err := applyBinaryType(operators[i].pos, op, l, r)
+				if err != nil {
+					return nil, err
 				}
-
-			case unify(left, FloatType{}, nil) && unify(right, FloatType{}, nil):
-				left = FloatType{}
-
-			case op.Op == "+" && unify(left, StringType{}, nil) && unify(right, StringType{}, nil):
-				left = StringType{}
-
-			default:
-				return nil, errOperatorMismatch(op.Pos, op.Op, left, right)
+				operands[i] = res
+				operands = append(operands[:i+1], operands[i+2:]...)
+				operators = append(operators[:i], operators[i+1:]...)
+			} else {
+				i++
 			}
-
-		case "==", "!=", "<", "<=", ">", ">=":
-			// comparison: any comparable types
-			if !unify(left, right, nil) {
-				return nil, errIncompatibleComparison(lexer.Position{}) // you can add op.Pos to BinaryOp
-			}
-			left = BoolType{}
-
-		default:
-			return nil, errUnsupportedOperator(op.Pos, op.Op)
 		}
 	}
 
-	return left, nil
+	if len(operands) != 1 {
+		return nil, fmt.Errorf("unexpected state after binary type eval")
+	}
+	return operands[0], nil
+}
+
+func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, error) {
+	switch op {
+	case "+", "-", "*", "/", "%":
+		switch {
+		case (unify(left, IntType{}, nil) || unify(left, Int64Type{}, nil)) &&
+			(unify(right, IntType{}, nil) || unify(right, Int64Type{}, nil)):
+			if _, ok := left.(Int64Type); ok {
+				return Int64Type{}, nil
+			}
+			if _, ok := right.(Int64Type); ok {
+				return Int64Type{}, nil
+			}
+			return IntType{}, nil
+		case unify(left, FloatType{}, nil) && unify(right, FloatType{}, nil):
+			return FloatType{}, nil
+		case op == "+" && unify(left, StringType{}, nil) && unify(right, StringType{}, nil):
+			return StringType{}, nil
+		default:
+			return nil, errOperatorMismatch(pos, op, left, right)
+		}
+	case "==", "!=", "<", "<=", ">", ">=":
+		if !unify(left, right, nil) {
+			return nil, errIncompatibleComparison(pos)
+		}
+		return BoolType{}, nil
+	case "&&", "||":
+		if !(unify(left, BoolType{}, nil) && unify(right, BoolType{}, nil)) {
+			return nil, errOperatorMismatch(pos, op, left, right)
+		}
+		return BoolType{}, nil
+	default:
+		return nil, errUnsupportedOperator(pos, op)
+	}
+}
+
+func contains(ops []string, op string) bool {
+	for _, o := range ops {
+		if o == op {
+			return true
+		}
+	}
+	return false
 }
 
 /*

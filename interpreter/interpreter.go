@@ -567,9 +567,11 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 	// Step 2: Apply precedence rules (high to low)
 	for _, level := range [][]string{
 		{"*", "/", "%"},        // highest
-		{"+", "-"},             // middle
+		{"+", "-"},             // addition
 		{"<", "<=", ">", ">="}, // comparison
 		{"==", "!="},           // equality
+		{"&&"},                 // logical AND
+		{"||"},                 // logical OR (lowest)
 	} {
 		for i := 0; i < len(operators); {
 			op := operators[i].op
@@ -1058,7 +1060,7 @@ func (i *Interpreter) evalLiteral(l *parser.Literal) (any, error) {
 	case l.Str != nil:
 		return *l.Str, nil
 	case l.Bool != nil:
-		return *l.Bool, nil
+		return bool(*l.Bool), nil
 	default:
 		return nil, errInvalidLiteral(l.Pos)
 	}
@@ -1346,6 +1348,10 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 				return Value{Tag: TagBool, Bool: left.Bool == right.Bool}, nil
 			case "!=":
 				return Value{Tag: TagBool, Bool: left.Bool != right.Bool}, nil
+			case "&&":
+				return Value{Tag: TagBool, Bool: left.Bool && right.Bool}, nil
+			case "||":
+				return Value{Tag: TagBool, Bool: left.Bool || right.Bool}, nil
 			}
 		}
 	case TagInt:

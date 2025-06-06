@@ -1,0 +1,23 @@
+// logic.mochi
+
+let a = true
+let b = false
+let x = 3
+let y = 5
+
+// Demonstrate `||` (logical OR)
+print("true || false =", a || b)
+print("false || false =", b || b)
+print("x > 0 || y < 0 =", x > 0 || y < 0)
+
+// Demonstrate `&&` (logical AND)
+print("true && false =", a && b)
+print("true && true =", a && a)
+print("x < 10 && y > 2 =", x < 10 && y > 2)
+
+// Combine both in a complex condition
+if x > 0 && y > 2 || x == 0 {
+  print("Condition matched!")
+} else {
+  print("Condition failed.")
+}
