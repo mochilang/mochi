@@ -1,0 +1,5 @@
+let poem = generate text {
+  prompt: "echo $word",
+  args: { "word": "hello" }
+}
+print(poem)

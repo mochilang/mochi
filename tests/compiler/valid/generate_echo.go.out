@@ -1,0 +1,34 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	var poem string = _genText("echo $word", _toAnyMap(map[string]string{"word": "hello"}))
+	fmt.Println(poem)
+}
+
+func _genText(prompt string, args map[string]any) string {
+    for k, v := range args {
+        placeholder := "$" + k
+        prompt = strings.ReplaceAll(prompt, placeholder, fmt.Sprintf("%v", v))
+    }
+    return prompt
+}
+
+func _toAnyMap(m any) map[string]any {
+    switch v := m.(type) {
+    case map[string]any:
+        return v
+    case map[string]string:
+        out := make(map[string]any, len(v))
+        for k, vv := range v {
+            out[k] = vv
+        }
+        return out
+    default:
+        return nil
+    }
+}
