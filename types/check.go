@@ -62,6 +62,13 @@ type StructType struct {
 
 func (t StructType) String() string { return t.Name }
 
+type UnionType struct {
+	Name     string
+	Variants map[string]StructType
+}
+
+func (t UnionType) String() string { return t.Name }
+
 type AnyType struct{}
 
 func (AnyType) String() string { return "any" }
@@ -171,23 +178,65 @@ func unify(a, b Type, subst Subst) bool {
 		}
 
 	case StructType:
-		bt, ok := b.(StructType)
-		if !ok || at.Name != bt.Name {
-			return false
-		}
-		if len(at.Fields) != len(bt.Fields) {
-			return false
-		}
-		for k, v := range at.Fields {
-			if bv, ok := bt.Fields[k]; ok {
-				if !unify(v, bv, subst) {
-					return false
-				}
-			} else {
+		switch bt := b.(type) {
+		case StructType:
+			if at.Name != bt.Name {
 				return false
 			}
+			if len(at.Fields) != len(bt.Fields) {
+				return false
+			}
+			for k, v := range at.Fields {
+				if bv, ok := bt.Fields[k]; ok {
+					if !unify(v, bv, subst) {
+						return false
+					}
+				} else {
+					return false
+				}
+			}
+			return true
+		case UnionType:
+			if vt, ok := bt.Variants[at.Name]; ok {
+				return unify(at, vt, subst)
+			}
+			return false
+		default:
+			return false
 		}
-		return true
+
+	case UnionType:
+		switch bt := b.(type) {
+		case UnionType:
+			if at.Name != bt.Name || len(at.Variants) != len(bt.Variants) {
+				return false
+			}
+			for k, v := range at.Variants {
+				bv, ok := bt.Variants[k]
+				if !ok || !unify(v, bv, subst) {
+					return false
+				}
+			}
+			return true
+		case StructType:
+			if vt, ok := at.Variants[bt.Name]; ok {
+				return unify(vt, bt, subst)
+			}
+			return false
+		case AnyType:
+			return true
+		case *TypeVar:
+			if subst != nil {
+				if val, ok := subst[bt.Name]; ok {
+					return unify(at, val, subst)
+				}
+				subst[bt.Name] = at
+				return true
+			}
+			return false
+		default:
+			return false
+		}
 
 	case FuncType:
 		bt, ok := b.(FuncType)
@@ -407,11 +456,36 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		return nil
 
 	case s.Type != nil:
-		fields := map[string]Type{}
-		for _, f := range s.Type.Fields {
-			fields[f.Name] = resolveTypeRef(f.Type, env)
+		if len(s.Type.Fields) > 0 {
+			fields := map[string]Type{}
+			for _, f := range s.Type.Fields {
+				fields[f.Name] = resolveTypeRef(f.Type, env)
+			}
+			env.SetStruct(s.Type.Name, StructType{Name: s.Type.Name, Fields: fields})
+			env.types[s.Type.Name] = StructType{Name: s.Type.Name, Fields: fields}
+			return nil
 		}
-		env.SetStruct(s.Type.Name, StructType{Name: s.Type.Name, Fields: fields})
+		if len(s.Type.Variants) > 0 {
+			variants := map[string]StructType{}
+			for _, v := range s.Type.Variants {
+				vf := map[string]Type{}
+				for _, f := range v.Fields {
+					vf[f.Name] = resolveTypeRef(f.Type, env)
+				}
+				st := StructType{Name: v.Name, Fields: vf}
+				variants[v.Name] = st
+				env.SetStruct(v.Name, st)
+				params := make([]Type, 0, len(v.Fields))
+				for _, f := range v.Fields {
+					params = append(params, resolveTypeRef(f.Type, env))
+				}
+				env.SetFuncType(v.Name, FuncType{Params: params, Return: UnionType{Name: s.Type.Name, Variants: nil}})
+			}
+			ut := UnionType{Name: s.Type.Name, Variants: variants}
+			env.SetUnion(s.Type.Name, ut)
+			env.types[s.Type.Name] = ut
+			return nil
+		}
 		return nil
 
 	case s.Model != nil:
@@ -530,6 +604,9 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 		default:
 			if st, ok := env.GetStruct(*t.Simple); ok {
 				return st
+			}
+			if ut, ok := env.GetUnion(*t.Simple); ok {
+				return ut
 			}
 			return AnyType{}
 		}
@@ -875,30 +952,30 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 
 	case p.Struct != nil:
-               st, ok := env.GetStruct(p.Struct.Name)
-               if !ok {
-                       // treat unknown struct literal as map for tool specs
-                       for _, field := range p.Struct.Fields {
-                               if _, err := checkExpr(field.Value, env); err != nil {
-                                       return nil, err
-                               }
-                       }
-                       return MapType{Key: StringType{}, Value: AnyType{}}, nil
-               }
-               for _, field := range p.Struct.Fields {
-                       ft, ok := st.Fields[field.Name]
-                       if !ok {
-                               return nil, errUnknownField(p.Pos, field.Name, st)
-                       }
-                       valT, err := checkExpr(field.Value, env)
-                       if err != nil {
-                               return nil, err
-                       }
-                       if !unify(ft, valT, nil) {
-                               return nil, errTypeMismatch(field.Value.Pos, ft, valT)
-                       }
-               }
-               return st, nil
+		st, ok := env.GetStruct(p.Struct.Name)
+		if !ok {
+			// treat unknown struct literal as map for tool specs
+			for _, field := range p.Struct.Fields {
+				if _, err := checkExpr(field.Value, env); err != nil {
+					return nil, err
+				}
+			}
+			return MapType{Key: StringType{}, Value: AnyType{}}, nil
+		}
+		for _, field := range p.Struct.Fields {
+			ft, ok := st.Fields[field.Name]
+			if !ok {
+				return nil, errUnknownField(p.Pos, field.Name, st)
+			}
+			valT, err := checkExpr(field.Value, env)
+			if err != nil {
+				return nil, err
+			}
+			if !unify(ft, valT, nil) {
+				return nil, errTypeMismatch(field.Value.Pos, ft, valT)
+			}
+		}
+		return st, nil
 
 	case p.List != nil:
 		var elemType Type = nil

@@ -226,6 +226,24 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
+	if len(t.Variants) > 0 {
+		iface := fmt.Sprintf("type %s interface { is%s() }", name, name)
+		c.writeln(iface)
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			c.writeln(fmt.Sprintf("type %s struct {", vname))
+			c.indent++
+			for _, f := range v.Fields {
+				fieldName := exportName(sanitizeName(f.Name))
+				typ := goType(resolveTypeRef(f.Type))
+				c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, f.Name))
+			}
+			c.indent--
+			c.writeln("}")
+			c.writeln(fmt.Sprintf("func (%s) is%s() {}", vname, name))
+		}
+		return nil
+	}
 	c.writeln(fmt.Sprintf("type %s struct {", name))
 	c.indent++
 	for _, f := range t.Fields {

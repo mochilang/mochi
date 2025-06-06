@@ -94,9 +94,16 @@ type ForStmt struct {
 // --- User-defined Types ---
 
 type TypeDecl struct {
+	Pos      lexer.Position
+	Name     string         `parser:"'type' @Ident"`
+	Fields   []*TypeField   `parser:"'{' @@* '}'"`
+	Variants []*TypeVariant `parser:"| '=' @@ { '|' @@ }"`
+}
+
+type TypeVariant struct {
 	Pos    lexer.Position
-	Name   string       `parser:"'type' @Ident"`
-	Fields []*TypeField `parser:"'{' @@* '}'"`
+	Name   string       `parser:"@Ident"`
+	Fields []*TypeField `parser:"[ '{' @@* '}' ]"`
 }
 
 type TypeField struct {
