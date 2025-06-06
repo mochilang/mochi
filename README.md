@@ -318,6 +318,31 @@ let vec = generate embedding {
 print(len(vec))
 ```
 
+You can also expose Mochi functions as tools for the LLM to call:
+
+```mochi
+fun getWeather(location: string): string {
+  if location == "Paris" {
+    return "sunny with a gentle breeze"
+  }
+  return "weather data unavailable"
+}
+
+fun calc(expression: string): string {
+  if expression == "2 + 2" {
+    return "4"
+  }
+  return "error"
+}
+
+let result = generate text {
+  tools: [getWeather, calc]
+  prompt: "What's the weather like in Paris and what's 2 + 2?"
+}
+
+print(result)
+```
+
 ## MCP Tools
 
 When running `mochi serve`, the following tools are available:
@@ -340,6 +365,7 @@ Explore the [`examples/`](./examples) directory:
 * `generate.mochi`
 * `generate-struct.mochi`
 * `generate-model.mochi`
+* `generate-tools.mochi`
 * `types.mochi`
 
 Edit one or start fresh. It’s all yours.

@@ -285,6 +285,7 @@ func (i *Interpreter) Test() error {
 }
 
 type closure struct {
+	Name       string
 	Fn         *parser.FunExpr
 	Env        *types.Env
 	Args       []Value
@@ -857,11 +858,15 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return i.evalExpr(p.Group)
 
 	case p.FunExpr != nil:
-		return closure{Fn: p.FunExpr, Env: i.env.Copy(), FullParams: p.FunExpr.Params}, nil
+		return closure{Name: "", Fn: p.FunExpr, Env: i.env.Copy(), FullParams: p.FunExpr.Params}, nil
 
 	case p.Selector != nil:
 		val, err := i.env.GetValue(p.Selector.Root)
 		if err != nil {
+			if fn, ok := i.env.GetFunc(p.Selector.Root); ok {
+				cl := closure{Name: p.Selector.Root, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
+				return cl, nil
+			}
 			return nil, errUndefinedVariable(p.Pos, p.Selector.Root)
 		}
 		for _, field := range p.Selector.Tail {
@@ -919,12 +924,15 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 	case p.Generate != nil:
 		reqParams := map[string]any{}
 		var (
-			prompt    string
-			text      string
-			modelStr  string
-			provider  string
-			normalize bool
-			haveNorm  bool
+			prompt     string
+			text       string
+			modelStr   string
+			provider   string
+			normalize  bool
+			haveNorm   bool
+			toolsList  []llm.Tool
+			toolFuncs  = map[string]closure{}
+			toolChoice string
 		)
 		for _, f := range p.Generate.Fields {
 			v, err := i.evalExpr(f.Value)
@@ -950,6 +958,40 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				if b, ok := v.(bool); ok {
 					normalize = b
 					haveNorm = true
+				}
+			case "tools":
+				if list, ok := v.([]any); ok {
+					for _, item := range list {
+						switch t := item.(type) {
+						case closure:
+							if t.Name == "" {
+								continue
+							}
+							toolFuncs[t.Name] = t
+							if fn, ok := i.env.GetFunc(t.Name); ok {
+								typ, _ := i.types.GetVar(t.Name)
+								if ft, ok2 := typ.(types.FuncType); ok2 {
+									toolsList = append(toolsList, funcToTool(t.Name, fn, ft))
+								}
+							}
+						case *closure:
+							cl := *t
+							if cl.Name == "" {
+								continue
+							}
+							toolFuncs[cl.Name] = cl
+							if fn, ok := i.env.GetFunc(cl.Name); ok {
+								typ, _ := i.types.GetVar(cl.Name)
+								if ft, ok2 := typ.(types.FuncType); ok2 {
+									toolsList = append(toolsList, funcToTool(cl.Name, fn, ft))
+								}
+							}
+						}
+					}
+				}
+			case "tool_choice":
+				if s, ok := v.(string); ok {
+					toolChoice = s
 				}
 			default:
 				reqParams[f.Name] = v
@@ -979,6 +1021,12 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		for k, v := range reqParams {
 			opts = append(opts, llm.WithParam(k, v))
+		}
+		if len(toolsList) > 0 {
+			opts = append(opts, llm.WithTools(toolsList))
+		}
+		if toolChoice != "" {
+			opts = append(opts, llm.WithToolChoice(toolChoice))
 		}
 
 		if p.Generate.Target != "text" && p.Generate.Target != "embedding" {
@@ -1023,19 +1071,36 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 
 		var resp *llm.ChatResponse
-		var err error
-		if provider != "" {
-			client, errOpen := llm.Open(provider, "", llm.Options{Model: modelStr})
-			if errOpen != nil {
-				return nil, errOpen
+		msgs := []llm.Message{{Role: "user", Content: prompt}}
+		for {
+			var err error
+			if provider != "" {
+				client, errOpen := llm.Open(provider, "", llm.Options{Model: modelStr})
+				if errOpen != nil {
+					return nil, errOpen
+				}
+				defer client.Close()
+				resp, err = client.Chat(context.Background(), msgs, opts...)
+			} else {
+				resp, err = llm.Chat(context.Background(), msgs, opts...)
 			}
-			defer client.Close()
-			resp, err = client.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
-		} else {
-			resp, err = llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
-		}
-		if err != nil {
-			return nil, err
+			if err != nil {
+				return nil, err
+			}
+			if resp.Message.ToolCall == nil {
+				break
+			}
+			tc := resp.Message.ToolCall
+			tool, ok := toolFuncs[tc.Name]
+			if !ok {
+				return nil, fmt.Errorf("unknown tool %s", tc.Name)
+			}
+			result, err := i.invokeTool(tool, tc.Args)
+			if err != nil {
+				return nil, err
+			}
+			msgs = append(msgs, llm.Message{Role: "assistant", ToolCall: tc})
+			msgs = append(msgs, llm.Message{Role: "tool", Content: fmt.Sprint(result), ToolCall: &llm.ToolCall{ID: tc.ID}})
 		}
 		if p.Generate.Target == "text" {
 			return resp.Message.Content, nil
@@ -1123,6 +1188,28 @@ func builtinJSON(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return nil, err
 }
 
+func (i *Interpreter) invokeTool(cl closure, args map[string]any) (any, error) {
+	child := types.NewEnv(cl.Env)
+	for _, param := range cl.FullParams {
+		child.SetValue(param.Name, args[param.Name], true)
+	}
+	old := i.env
+	i.env = child
+	defer func() { i.env = old }()
+	if cl.Fn.ExprBody != nil {
+		return i.evalExpr(cl.Fn.ExprBody)
+	}
+	for _, stmt := range cl.Fn.BlockBody {
+		if err := i.evalStmt(stmt); err != nil {
+			if r, ok := err.(returnSignal); ok {
+				return r.value, nil
+			}
+			return nil, err
+		}
+	}
+	return nil, nil
+}
+
 func isUnderscoreExpr(e *parser.Expr) bool {
 	if e == nil {
 		return false
@@ -1202,6 +1289,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 			}
 			remainingParams := fn.Params[argCount:]
 			return closure{
+				Name: c.Func,
 				Fn: &parser.FunExpr{
 					Params:    remainingParams,
 					BlockBody: fn.Body,
@@ -1255,6 +1343,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 
 			if totalArgs < fullParamCount {
 				return closure{
+					Name: cl.Name,
 					Fn: &parser.FunExpr{
 						Params:    cl.Fn.Params[totalArgs-len(cl.Args):],
 						BlockBody: cl.Fn.BlockBody,
