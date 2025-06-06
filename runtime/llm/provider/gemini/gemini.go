@@ -162,6 +162,10 @@ func (s *stream) Recv() (*llm.Chunk, error) {
 
 func (s *stream) Close() error { return s.body.Close() }
 
+func (c *conn) Embed(ctx context.Context, req llm.EmbedRequest) (*llm.EmbedResponse, error) {
+	return nil, errors.New("gemini: embedding not supported")
+}
+
 func (c *conn) doRequest(ctx context.Context, req llm.ChatRequest) (*http.Response, error) {
 	model := req.Model
 	if model == "" {

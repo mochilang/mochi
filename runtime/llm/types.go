@@ -56,6 +56,7 @@ type Stream interface {
 type Conn interface {
 	Chat(ctx context.Context, req ChatRequest) (*ChatResponse, error)
 	ChatStream(ctx context.Context, req ChatRequest) (Stream, error)
+	Embed(ctx context.Context, req EmbedRequest) (*EmbedResponse, error)
 	Close() error
 }
 
@@ -64,4 +65,41 @@ type Provider interface {
 	// Open initializes a new connection using the provider specific DSN.
 	// The DSN follows the form BASE_URL?api_key=KEY&opt=value.
 	Open(dsn string, opts Options) (Conn, error)
+}
+
+// EmbedRequest requests an embedding vector for the given text.
+type EmbedRequest struct {
+	Text      string         `json:"text"`
+	Model     string         `json:"model,omitempty"`
+	Params    map[string]any `json:"params,omitempty"`
+	Normalize bool           `json:"normalize,omitempty"`
+}
+
+// EmbedResponse contains the returned embedding vector.
+type EmbedResponse struct {
+	Vector []float64 `json:"vector"`
+	Model  string    `json:"model"`
+}
+
+// EmbedOption configures an EmbedRequest.
+type EmbedOption func(*EmbedRequest)
+
+// WithEmbedModel sets the embedding model name.
+func WithEmbedModel(model string) EmbedOption {
+	return func(r *EmbedRequest) { r.Model = model }
+}
+
+// WithEmbedParam sets a provider-specific parameter.
+func WithEmbedParam(name string, value any) EmbedOption {
+	return func(r *EmbedRequest) {
+		if r.Params == nil {
+			r.Params = map[string]any{}
+		}
+		r.Params[name] = value
+	}
+}
+
+// WithEmbedNormalize controls L2 normalization of the returned vector.
+func WithEmbedNormalize(v bool) EmbedOption {
+	return func(r *EmbedRequest) { r.Normalize = v }
 }

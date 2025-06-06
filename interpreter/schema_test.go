@@ -36,6 +36,10 @@ func (c *captureConn) ChatStream(ctx context.Context, req llm.ChatRequest) (llm.
 	return nil, nil
 }
 
+func (c *captureConn) Embed(ctx context.Context, req llm.EmbedRequest) (*llm.EmbedResponse, error) {
+	return nil, nil
+}
+
 func TestGenerateStructSchema(t *testing.T) {
 	src := `type Foo { bar: int }
 let f = generate Foo { prompt: "{}" }`
