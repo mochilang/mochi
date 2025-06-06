@@ -411,21 +411,40 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
-       var prompt string
-       for _, f := range g.Fields {
-               v, err := c.compileExpr(f.Value)
-               if err != nil {
-                       return "", err
-               }
-               if f.Name == "prompt" {
-                       prompt = v
-               }
-       }
-       if prompt == "" {
-               prompt = "\"\""
-       }
-       c.use("_gen_text")
-       return fmt.Sprintf("_gen_text(%s)", prompt), nil
+	switch g.Target {
+	case "embedding":
+		var text string
+		for _, f := range g.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			if f.Name == "text" {
+				text = v
+			}
+		}
+		if text == "" {
+			text = "\"\""
+		}
+		c.use("_gen_embed")
+		return fmt.Sprintf("_gen_embed(%s)", text), nil
+	default:
+		var prompt string
+		for _, f := range g.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			if f.Name == "prompt" {
+				prompt = v
+			}
+		}
+		if prompt == "" {
+			prompt = "\"\""
+		}
+		c.use("_gen_text")
+		return fmt.Sprintf("_gen_text(%s)", prompt), nil
+	}
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -513,17 +532,23 @@ const (
 		"  return 0;\n" +
 		"}\n"
 
-       helperGenText = "function _gen_text(prompt: string): string {\n" +
-               "  // TODO: integrate with your preferred LLM\n" +
-               "  return prompt;\n" +
-               "}\n"
+	helperGenText = "function _gen_text(prompt: string): string {\n" +
+		"  // TODO: integrate with your preferred LLM\n" +
+		"  return prompt;\n" +
+		"}\n"
+
+	helperGenEmbed = "function _gen_embed(text: string): number[] {\n" +
+		"  // TODO: integrate with your preferred embedding model\n" +
+		"  return Array.from(text).map(c => c.charCodeAt(0));\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
-	"_index":    helperIndex,
-	"_slice":    helperSlice,
-	"_len":      helperLen,
-	"_gen_text": helperGenText,
+	"_index":     helperIndex,
+	"_slice":     helperSlice,
+	"_len":       helperLen,
+	"_gen_text":  helperGenText,
+	"_gen_embed": helperGenEmbed,
 }
 
 func (c *Compiler) use(name string) {

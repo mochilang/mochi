@@ -64,6 +64,14 @@ func ChatStream(ctx context.Context, msgs []Message, opts ...Option) (Stream, er
 	return Default.ChatStream(ctx, msgs, opts...)
 }
 
+// Embed requests an embedding vector using the default client.
+func Embed(ctx context.Context, text string, opts ...EmbedOption) (*EmbedResponse, error) {
+	if err := ensureDefault(); err != nil {
+		return nil, err
+	}
+	return Default.Embed(ctx, text, opts...)
+}
+
 // Close shuts down the default client if initialized.
 func Close() error {
 	if Default == nil {

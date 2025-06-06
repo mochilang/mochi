@@ -434,21 +434,40 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
-       var prompt string
-       for _, f := range g.Fields {
-               v, err := c.compileExpr(f.Value)
-               if err != nil {
-                       return "", err
-               }
-               if f.Name == "prompt" {
-                       prompt = v
-               }
-       }
-       if prompt == "" {
-               prompt = "\"\""
-       }
-       c.use("_gen_text")
-       return fmt.Sprintf("_gen_text(%s)", prompt), nil
+	switch g.Target {
+	case "embedding":
+		var text string
+		for _, f := range g.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			if f.Name == "text" {
+				text = v
+			}
+		}
+		if text == "" {
+			text = "\"\""
+		}
+		c.use("_gen_embed")
+		return fmt.Sprintf("_gen_embed(%s)", text), nil
+	default:
+		var prompt string
+		for _, f := range g.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			if f.Name == "prompt" {
+				prompt = v
+			}
+		}
+		if prompt == "" {
+			prompt = "\"\""
+		}
+		c.use("_gen_text")
+		return fmt.Sprintf("_gen_text(%s)", prompt), nil
+	}
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -492,10 +511,14 @@ var helperSlice = "def _slice(v, start, end):\n" +
 	"    raise Exception(\"invalid slice target\")\n"
 
 var helperGenText = "def _gen_text(prompt):\n" +
-       "    # TODO: send prompt to your LLM of choice\n" +
-       "    return prompt\n"
+	"    # TODO: send prompt to your LLM of choice\n" +
+	"    return prompt\n"
 
-var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_gen_text": helperGenText}
+var helperGenEmbed = "def _gen_embed(text):\n" +
+	"    # TODO: send text to your embedding model of choice\n" +
+	"    return [float(ord(c)) for c in text]\n"
+
+var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_gen_text": helperGenText, "_gen_embed": helperGenEmbed}
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
 

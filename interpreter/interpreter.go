@@ -912,13 +912,16 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return obj, nil
 
 	case p.Generate != nil:
-               reqParams := map[string]any{}
-               var (
-                       prompt   string
-                       modelStr string
-                       provider string
-               )
-               for _, f := range p.Generate.Fields {
+		reqParams := map[string]any{}
+		var (
+			prompt    string
+			text      string
+			modelStr  string
+			provider  string
+			normalize bool
+			haveNorm  bool
+		)
+		for _, f := range p.Generate.Fields {
 			v, err := i.evalExpr(f.Value)
 			if err != nil {
 				return nil, err
@@ -928,16 +931,25 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				if s, ok := v.(string); ok {
 					prompt = s
 				}
-                       case "temperature", "top_p", "max_tokens", "stop":
-                               reqParams[f.Name] = v
-                       case "model":
-                               if s, ok := v.(string); ok {
-                                       modelStr = s
-                               }
-                       default:
-                               reqParams[f.Name] = v
-                       }
-               }
+			case "text":
+				if s, ok := v.(string); ok {
+					text = s
+				}
+			case "temperature", "top_p", "max_tokens", "stop":
+				reqParams[f.Name] = v
+			case "model":
+				if s, ok := v.(string); ok {
+					modelStr = s
+				}
+			case "normalize":
+				if b, ok := v.(bool); ok {
+					normalize = b
+					haveNorm = true
+				}
+			default:
+				reqParams[f.Name] = v
+			}
+		}
 
 		if modelStr != "" {
 			if parts := strings.SplitN(modelStr, ":", 2); len(parts) == 2 {
@@ -964,12 +976,45 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			opts = append(opts, llm.WithParam(k, v))
 		}
 
-		if p.Generate.Target != "text" {
+		if p.Generate.Target != "text" && p.Generate.Target != "embedding" {
 			format := llm.ResponseFormat{Type: "json_object"}
 			if st, ok := i.types.GetStruct(p.Generate.Target); ok {
 				format.Schema = structToSchema(st)
 			}
 			opts = append(opts, llm.WithResponseFormat(format))
+		}
+
+		if p.Generate.Target == "embedding" {
+			embedOpts := []llm.EmbedOption{}
+			if modelStr != "" {
+				embedOpts = append(embedOpts, llm.WithEmbedModel(modelStr))
+			}
+			for k, v := range reqParams {
+				embedOpts = append(embedOpts, llm.WithEmbedParam(k, v))
+			}
+			if haveNorm {
+				embedOpts = append(embedOpts, llm.WithEmbedNormalize(normalize))
+			}
+			var resp *llm.EmbedResponse
+			var err error
+			if provider != "" {
+				client, errOpen := llm.Open(provider, "", llm.Options{Model: modelStr})
+				if errOpen != nil {
+					return nil, errOpen
+				}
+				defer client.Close()
+				resp, err = client.Embed(context.Background(), text, embedOpts...)
+			} else {
+				resp, err = llm.Embed(context.Background(), text, embedOpts...)
+			}
+			if err != nil {
+				return nil, err
+			}
+			out := make([]any, len(resp.Vector))
+			for i, v := range resp.Vector {
+				out[i] = v
+			}
+			return out, nil
 		}
 
 		var resp *llm.ChatResponse
@@ -1411,4 +1456,3 @@ func applyUnaryValue(pos lexer.Position, op string, val Value) (Value, error) {
 func truthy(val any) bool {
 	return anyToValue(val).Truthy()
 }
-

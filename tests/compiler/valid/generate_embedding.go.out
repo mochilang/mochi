@@ -1,0 +1,20 @@
+package main
+
+import (
+	_ "mochi/runtime/llm/provider/echo"
+	"context"
+	"fmt"
+	"mochi/runtime/llm"
+)
+
+func main() {
+	var vec []float64 = _genEmbed("hi")
+	fmt.Println(len(vec))
+}
+
+func _genEmbed(text string) []float64 {
+    resp, err := llm.Embed(context.Background(), text)
+    if err != nil { panic(err) }
+    return resp.Vector
+}
+
