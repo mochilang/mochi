@@ -217,6 +217,27 @@ func mapStatements(stmts []*parser.Statement) []*Node {
 	return out
 }
 
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Index) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
+}
+
 // --- Expression Conversion ---
 
 func FromExpr(e *parser.Expr) *Node {
@@ -320,6 +341,21 @@ func FromPrimary(p *parser.Primary) *Node {
 					FromExpr(entry.Value),
 				},
 			})
+		}
+		return n
+
+	case p.Match != nil:
+		n := &Node{Kind: "match"}
+		n.Children = append(n.Children, FromExpr(p.Match.Target))
+		for _, c := range p.Match.Cases {
+			cn := &Node{Kind: "case"}
+			if !isUnderscoreExpr(c.Pattern) {
+				cn.Children = append(cn.Children, FromExpr(c.Pattern))
+			} else {
+				cn.Children = append(cn.Children, &Node{Kind: "_"})
+			}
+			cn.Children = append(cn.Children, FromExpr(c.Result))
+			n.Children = append(n.Children, cn)
 		}
 		return n
 

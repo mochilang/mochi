@@ -1,0 +1,6 @@
+let x = 1
+let result = match x {
+  1 => "one"
+  2 => "two"
+  _ => "other"
+}

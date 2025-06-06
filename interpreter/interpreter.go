@@ -911,6 +911,9 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		return obj, nil
 
+	case p.Match != nil:
+		return i.evalMatch(p.Match)
+
 	case p.Generate != nil:
 		reqParams := map[string]any{}
 		var (
@@ -1116,6 +1119,51 @@ func builtinJSON(i *Interpreter, c *parser.CallExpr) (any, error) {
 	}
 	_, err = fmt.Fprintln(i.env.Writer(), string(data))
 	return nil, err
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Index) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
+}
+
+func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
+	val, err := i.evalExpr(m.Target)
+	if err != nil {
+		return nil, err
+	}
+	for _, c := range m.Cases {
+		if isUnderscoreExpr(c.Pattern) {
+			return i.evalExpr(c.Result)
+		}
+		pv, err := i.evalExpr(c.Pattern)
+		if err != nil {
+			return nil, err
+		}
+		eq, err := applyBinary(c.Pos, val, "==", pv)
+		if err != nil {
+			return nil, err
+		}
+		if b, ok := eq.(bool); ok && b {
+			return i.evalExpr(c.Result)
+		}
+	}
+	return nil, nil
 }
 
 func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
