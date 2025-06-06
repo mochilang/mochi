@@ -350,6 +350,32 @@ let result = generate text {
 print(result)
 ```
 
+### Union Types and Methods
+
+Mochi now supports union types declared with the `|` syntax as well as inline
+methods defined inside `type` blocks.
+
+```mochi
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+fun sum(t: Tree): int {
+  return match t {
+    Leaf => 0
+    Node(l, v, r) => sum(l) + v + sum(r)
+  }
+}
+
+type Circle {
+  radius: float
+
+  fun area(): float {
+    return 3.14 * radius * radius
+  }
+}
+```
+
 ## MCP Tools
 
 When running `mochi serve`, the following tools are available:

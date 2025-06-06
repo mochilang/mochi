@@ -1,4 +1,4 @@
-// 0. Mochi (v0.3.3)
+// 0. Mochi (v0.3.4)
 // Mochi is a lightweight programming language for building AI agents, working with real-time data,
 // and querying datasets. It combines declarative and functional programming, with built-in support
 // for streams, datasets, tools, and prompt-based AI generation.
@@ -134,3 +134,32 @@ let b = false
 if a && b || !b {
   print("logic works")
 }
+
+// 9. Union Types
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+fun sum(t: Tree): int {
+  return match t {
+    Leaf => 0
+    Node(l, v, r) => sum(l) + v + sum(r)
+  }
+}
+
+let t = Node { left: Leaf, value: 1, right: Leaf }
+print(sum(t))
+
+// 10. Methods
+
+type Circle {
+  radius: float
+
+  fun area(): float {
+    return 3.14 * radius * radius
+  }
+}
+
+let c = Circle { radius: 5 }
+print(c.area())

@@ -7,7 +7,7 @@ minimal but expressive.
 This roadmap outlines the language development toward a stable 1.0, with an emphasis on first-class data types, control
 flow, streaming logic, agents, and dataset support.
 
-Current release: v0.3.3. Upcoming 0.3.x versions will focus on generative AI.
+Current release: v0.3.4. Upcoming 0.3.x versions will focus on generative AI.
 
 # v0.3.x – Generative AI
 
@@ -65,7 +65,7 @@ let summary = generate text {
 }
 ```
 
-## v0.3.3 – Output postprocessing
+## v0.3.4 – Output postprocessing
 
 * [ ] `as` clause for structured result decoding
 * [ ] Modes: `json`, `yaml`, `list`, `lines`, `markdown`
