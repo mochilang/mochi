@@ -94,6 +94,16 @@ func FromStatement(s *parser.Statement) *Node {
 		}
 		return n
 
+	case s.Model != nil:
+		n := &Node{Kind: "model", Value: s.Model.Name}
+		for _, f := range s.Model.Fields {
+			n.Children = append(n.Children, &Node{
+				Kind:     f.Name,
+				Children: []*Node{FromExpr(f.Value)},
+			})
+		}
+		return n
+
 	case s.Type != nil:
 		n := &Node{Kind: "type", Value: s.Type.Name}
 		for _, f := range s.Type.Fields {

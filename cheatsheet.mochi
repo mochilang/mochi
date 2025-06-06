@@ -64,7 +64,13 @@ print(scores["a"])
 
 // 5. Generative AI
 
+model quick {
+  provider: "openai"
+  name: "gpt-3.5-turbo"
+}
+
 generate text {
+  model: "quick"
   prompt: "Write a haiku about $topic"
   args: {
     topic: "spring rain"

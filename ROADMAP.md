@@ -48,9 +48,9 @@ let response = generate text {
 
 ## v0.3.2 – Model selection
 
-* [ ] `model` field with values like `"openai:gpt-4"` or `"claude:opus"`
-* [ ] Environment-based key loading per provider
-* [ ] Custom alias models via `model` block
+* [x] `model` field with values like `"openai:gpt-4"` or `"claude:opus"`
+* [x] Environment-based key loading per provider
+* [x] Custom alias models via `model` block
 
 ```
 model quick {

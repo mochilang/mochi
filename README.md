@@ -281,12 +281,24 @@ test "math" {
 ### Generative AI
 
 Invoke large language models directly from Mochi using the `generate` block.
+Models can be configured globally with a `model` block and referenced by name.
 
 ```mochi
 let poem = generate text {
   prompt: "Write a haiku about spring"
 }
 print(poem)
+
+model quick {
+  provider: "openai"
+  name: "gpt-3.5-turbo"
+}
+
+let fancy = generate text {
+  model: "quick"
+  prompt: "Write a haiku about spring"
+}
+print(fancy)
 
 type Person {
   name: string
@@ -321,6 +333,7 @@ Explore the [`examples/`](./examples) directory:
 * `agent.mochi`
 * `generate.mochi`
 * `generate-struct.mochi`
+* `generate-model.mochi`
 * `types.mochi`
 
 Edit one or start fresh. It’s all yours.
