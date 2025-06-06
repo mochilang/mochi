@@ -302,18 +302,22 @@ func convertMessages(msgs []llm.Message) []map[string]any {
 	out := make([]map[string]any, 0, len(msgs))
 	for _, m := range msgs {
 		mm := map[string]any{"role": m.Role}
-		if m.Content != "" {
+		if m.Content != "" || m.Role == "tool" {
 			mm["content"] = m.Content
 		} else {
 			mm["content"] = ""
 		}
 		if m.ToolCall != nil {
-			args, _ := json.Marshal(m.ToolCall.Args)
-			mm["tool_calls"] = []map[string]any{{
-				"id":       m.ToolCall.ID,
-				"type":     "function",
-				"function": map[string]any{"name": m.ToolCall.Name, "arguments": string(args)},
-			}}
+			if m.Role == "tool" {
+				mm["tool_call_id"] = m.ToolCall.ID
+			} else {
+				args, _ := json.Marshal(m.ToolCall.Args)
+				mm["tool_calls"] = []map[string]any{{
+					"id":       m.ToolCall.ID,
+					"type":     "function",
+					"function": map[string]any{"name": m.ToolCall.Name, "arguments": string(args)},
+				}}
+			}
 		}
 		out = append(out, mm)
 	}

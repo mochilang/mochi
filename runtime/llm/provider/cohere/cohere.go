@@ -68,14 +68,23 @@ func (c *conn) Chat(ctx context.Context, req llm.ChatRequest) (*llm.ChatResponse
 		return nil, fmt.Errorf("cohere: %s", b)
 	}
 	var r struct {
-		Text  string `json:"text"`
-		Model string `json:"model"`
+		Text      string `json:"text"`
+		Model     string `json:"model"`
+		Finish    string `json:"finish_reason"`
+		ToolCalls []struct {
+			Name       string         `json:"name"`
+			Parameters map[string]any `json:"parameters"`
+		} `json:"tool_calls"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
 		return nil, err
 	}
 	msg := llm.Message{Role: "assistant", Content: r.Text}
-	return &llm.ChatResponse{Message: msg, Model: r.Model}, nil
+	if len(r.ToolCalls) > 0 {
+		tc := r.ToolCalls[0]
+		msg.ToolCall = &llm.ToolCall{Name: tc.Name, Args: tc.Parameters}
+	}
+	return &llm.ChatResponse{Message: msg, Model: r.Model, StopReason: r.Finish}, nil
 }
 
 func (c *conn) ChatStream(ctx context.Context, req llm.ChatRequest) (llm.Stream, error) {
@@ -136,13 +145,16 @@ func (c *conn) doRequest(ctx context.Context, req llm.ChatRequest) (*http.Respon
 	if model == "" {
 		model = c.opts.Model
 	}
-	message, history := prepareMessages(req.Messages)
+	message, history, results := prepareMessages(req.Messages)
 	payload := map[string]any{
 		"model":   model,
 		"message": message,
 	}
 	if len(history) > 0 {
 		payload["chat_history"] = history
+	}
+	if len(results) > 0 {
+		payload["tool_results"] = results
 	}
 	params := map[string]any{}
 	for k, v := range c.opts.Params {
@@ -171,6 +183,12 @@ func (c *conn) doRequest(ctx context.Context, req llm.ChatRequest) (*http.Respon
 	if req.Stream {
 		payload["stream"] = true
 	}
+	if len(req.Tools) > 0 {
+		payload["tools"] = convertTools(req.Tools)
+	}
+	if req.ToolChoice != "" {
+		payload["tool_choice"] = req.ToolChoice
+	}
 	b, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
@@ -184,19 +202,41 @@ func (c *conn) doRequest(ctx context.Context, req llm.ChatRequest) (*http.Respon
 	return c.httpClient.Do(httpReq)
 }
 
-func prepareMessages(msgs []llm.Message) (string, []map[string]string) {
+func prepareMessages(msgs []llm.Message) (string, []map[string]string, []map[string]any) {
 	var history []map[string]string
+	var results []map[string]any
 	var last string
 	for i, m := range msgs {
 		role := strings.ToUpper(m.Role)
+		if m.Role == "assistant" {
+			role = "CHATBOT"
+		} else if m.Role == "tool" {
+			results = append(results, map[string]any{
+				"call": map[string]any{
+					"name":       m.ToolCall.Name,
+					"parameters": m.ToolCall.Args,
+				},
+				"outputs": []map[string]any{{"text": m.Content}},
+			})
+			continue
+		}
 		if i == len(msgs)-1 {
 			last = m.Content
 		} else {
-			if role == "ASSISTANT" {
-				role = "CHATBOT"
-			}
 			history = append(history, map[string]string{"role": role, "message": m.Content})
 		}
 	}
-	return last, history
+	return last, history, results
+}
+
+func convertTools(tools []llm.Tool) []map[string]any {
+	out := make([]map[string]any, 0, len(tools))
+	for _, t := range tools {
+		out = append(out, map[string]any{
+			"name":        t.Name,
+			"description": t.Description,
+			"parameters":  t.Parameters,
+		})
+	}
+	return out
 }
