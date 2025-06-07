@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
 	"github.com/fatih/color"
+	"io"
 	"mochi/parser"
 	"mochi/runtime/llm"
 	"mochi/types"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -1002,6 +1004,30 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 
 	case p.Match != nil:
 		return i.evalMatch(p.Match)
+
+	case p.Fetch != nil:
+		urlVal, err := i.evalExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		urlStr, ok := urlVal.(string)
+		if !ok {
+			return nil, fmt.Errorf("fetch URL must be a string")
+		}
+		resp, err := http.Get(urlStr)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+		data, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		var out any
+		if err := json.Unmarshal(data, &out); err != nil {
+			return nil, err
+		}
+		return out, nil
 
 	case p.Generate != nil:
 		reqParams := map[string]any{}

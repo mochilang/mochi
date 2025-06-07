@@ -643,11 +643,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
 	default:
 		return "nil", fmt.Errorf("unsupported primary expression")
 	}
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	urlStr, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	c.imports["net/http"] = true
+	c.imports["io"] = true
+	c.imports["encoding/json"] = true
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch(%s)", urlStr), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
@@ -1673,6 +1688,17 @@ const (
 		"    return out\n" +
 		"}\n"
 
+	helperFetch = "func _fetch(url string) any {\n" +
+		"    resp, err := http.Get(url)\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    defer resp.Body.Close()\n" +
+		"    data, err := io.ReadAll(resp.Body)\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    var out any\n" +
+		"    if err := json.Unmarshal(data, &out); err != nil { panic(err) }\n" +
+		"    return out\n" +
+		"}\n"
+
 	helperToAnyMap = "func _toAnyMap(m any) map[string]any {\n" +
 		"    switch v := m.(type) {\n" +
 		"    case map[string]any:\n" +
@@ -1696,6 +1722,7 @@ var helperMap = map[string]string{
 	"_genText":   helperGenText,
 	"_genEmbed":  helperGenEmbed,
 	"_genStruct": helperGenStruct,
+	"_fetch":     helperFetch,
 	"_toAnyMap":  helperToAnyMap,
 }
 
