@@ -3,6 +3,7 @@ package stream
 import (
 	"context"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -14,211 +15,233 @@ type Event struct {
 	Data   any       // Application-defined payload
 }
 
-// Stream represents an append-only in-memory log with fixed capacity.
-// Events are stored in a ring buffer. Older events may be evicted via Compact.
-type Stream struct {
-	mu       sync.RWMutex
-	name     string
-	capacity int
-	ring     []*Event
-	tx       int64 // Next tx to assign (exclusive)
-	first    int64 // First tx retained (inclusive)
-	len      int
-
-	subs map[string]*Subscriber // Registered subscribers
+// streamState holds the in-memory slice of events and stream metadata.
+type streamState struct {
+	name  string
+	ring  []*Event
+	tx    int64 // Next tx to assign (exclusive)
+	first int64 // First tx retained (inclusive)
+	len   int
+	mu    sync.RWMutex
 }
 
-// New creates a new stream with a given name and ring buffer capacity.
+// Stream is an append-only in-memory log with concurrent access and subscriber tracking.
+type Stream struct {
+	state atomic.Pointer[streamState]
+	subs  sync.Map // map[string]*Subscriber
+}
+
+// New creates a new stream with a given name and initial ring capacity.
 func New(name string, capacity int) *Stream {
-	// fmt.Printf(">> Stream[%s] initialized with capacity=%d\n", name, capacity)
-	return &Stream{
-		name:     name,
-		capacity: capacity,
-		ring:     make([]*Event, capacity),
-		tx:       1,
-		first:    1,
-		subs:     make(map[string]*Subscriber),
-	}
+	s := &Stream{}
+	s.state.Store(&streamState{
+		name:  name,
+		ring:  make([]*Event, 0, capacity),
+		tx:    1,
+		first: 1,
+	})
+	return s
 }
 
 // Append inserts a new event into the stream and notifies all subscribers.
 func (s *Stream) Append(ctx context.Context, data any) (Event, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	st := s.state.Load()
 
-	tx := s.tx
-	s.tx++
+	st.mu.Lock()
+	defer st.mu.Unlock()
+
+	tx := st.tx
+	st.tx++
 
 	ev := Event{
-		Stream: s.name,
+		Stream: st.name,
 		Tx:     tx,
 		Time:   time.Now(),
 		Data:   data,
 	}
 
-	idx := tx % int64(s.capacity)
-	old := s.ring[idx]
-	s.ring[idx] = &ev
-	if old == nil {
-		s.len++
+	offset := tx - st.first
+	if int(offset) >= len(st.ring) {
+		// Extend ring slice with nils if there's a gap
+		for int64(len(st.ring)) <= offset {
+			st.ring = append(st.ring, nil)
+		}
 	}
 
-	// fmt.Printf(">> Append(tx=%d, data=%v) -> slot=%d\n", tx, data, idx)
+	st.ring[offset] = &ev
+	st.len = int(st.tx - st.first)
 
-	for _, sub := range s.subs {
+	s.subs.Range(func(_, v any) bool {
+		sub := v.(*Subscriber)
 		select {
 		case sub.updateCh <- tx:
 		default:
 		}
-	}
+		return true
+	})
 
 	return ev, nil
 }
 
+// Get returns a single event by tx if still available.
+func (s *Stream) Get(tx int64) (*Event, bool) {
+	st := s.state.Load()
+
+	st.mu.RLock()
+	defer st.mu.RUnlock()
+
+	if tx < st.first || tx >= st.tx {
+		return nil, false
+	}
+	offset := tx - st.first
+	if int(offset) >= len(st.ring) {
+		return nil, false
+	}
+	ev := st.ring[offset]
+	if ev == nil || ev.Tx != tx {
+		return nil, false
+	}
+	return ev, true
+}
+
 // Read returns up to `count` events starting from `start` tx.
-// Events not retained in the ring will be skipped.
 func (s *Stream) Read(start, count int64) ([]*Event, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	st := s.state.Load()
+
+	st.mu.RLock()
+	defer st.mu.RUnlock()
 
 	var out []*Event
 	for i := int64(0); i < count; i++ {
 		tx := start + i
-		if tx < s.first || tx >= s.tx {
+		if tx < st.first || tx >= st.tx {
 			break
 		}
-		idx := tx % int64(s.capacity)
-		ev := s.ring[idx]
+		offset := tx - st.first
+		if int(offset) >= len(st.ring) {
+			break
+		}
+		ev := st.ring[offset]
 		if ev != nil && ev.Tx == tx {
 			out = append(out, ev)
 		}
 	}
-	// fmt.Printf(">> Read(start=%d, count=%d) -> %d events\n", start, count, len(out))
 	return out, nil
-}
-
-// Get returns a single event by tx if still available.
-func (s *Stream) Get(tx int64) (*Event, bool) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	if tx < s.first || tx >= s.tx {
-		// fmt.Printf(">> Get(tx=%d): out of range [%d,%d)\n", tx, s.first, s.tx)
-		return nil, false
-	}
-	idx := tx % int64(s.capacity)
-	ev := s.ring[idx]
-	if ev == nil || ev.Tx != tx {
-		// fmt.Printf(">> Get(tx=%d): slot empty or mismatch\n", tx)
-		return nil, false
-	}
-	// fmt.Printf(">> Get(tx=%d): found event with data=%v\n", tx, ev.Data)
-	return ev, true
 }
 
 // Compact discards events older than the minimum subscriber cursor.
 func (s *Stream) Compact() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	st := s.state.Load()
 
-	min := s.minCursorUnsafe()
-	if min <= s.first {
-		// fmt.Printf(">> Compact: no change (min=%d, first=%d)\n", min, s.first)
+	st.mu.Lock()
+	defer st.mu.Unlock()
+
+	min := s.minCursorLocked()
+
+	// log.Printf("[Compact] first=%d, tx=%d, minCursor=%d, len=%d\n", st.first, st.tx, min, st.len)
+
+	if min <= st.first {
+		// log.Println("[Compact] No compaction needed.")
 		return
 	}
 
-	dropped := 0
-	for tx := s.first; tx < min; tx++ {
-		idx := tx % int64(s.capacity)
-		if s.ring[idx] != nil {
-			// fmt.Printf(">> Compact: drop tx=%d from slot=%d (data=%v)\n", tx, idx, s.ring[idx].Data)
-			s.ring[idx] = nil
-			dropped++
-		}
+	dropCount := min - st.first
+	if dropCount > int64(len(st.ring)) {
+		dropCount = int64(len(st.ring))
 	}
-	s.first = min
-	s.len -= dropped
-	// fmt.Printf(">> Compact: updated firstTx=%d, dropped=%d, len=%d\n", s.first, dropped, s.len)
+	st.ring = st.ring[dropCount:]
+	st.first = min
+	st.len = int(st.tx - st.first)
+
+	// log.Printf("[Compact] Dropped %d events. New first=%d, len=%d\n", dropCount, st.first, st.len)
 }
 
 // Len returns the number of events currently retained in memory.
 func (s *Stream) Len() int {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	return s.len
+	st := s.state.Load()
+
+	st.mu.RLock()
+	defer st.mu.RUnlock()
+	return st.len
 }
 
 // FirstTx returns the earliest transaction ID still retained.
 func (s *Stream) FirstTx() int64 {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	return s.first
+	st := s.state.Load()
+
+	st.mu.RLock()
+	defer st.mu.RUnlock()
+	return st.first
 }
 
 // NextTx returns the next transaction ID that will be assigned.
 func (s *Stream) NextTx() int64 {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	return s.tx
+	st := s.state.Load()
+
+	st.mu.RLock()
+	defer st.mu.RUnlock()
+	return st.tx
 }
 
 // RegisterSubscriber creates a named subscriber and tracks its cursor.
 func (s *Stream) RegisterSubscriber(name string) *Subscriber {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
+	st := s.state.Load()
 	sub := &Subscriber{
 		name:     name,
 		stream:   s,
-		cursor:   s.first,
 		updateCh: make(chan int64, 1),
 	}
-	s.subs[name] = sub
-	s.updateMinTxLocked()
-	// fmt.Printf(">> Subscriber[%s] registered at cursor=%d\n", name, sub.cursor)
+	sub.cursor.Store(st.first)
+	s.subs.Store(name, sub)
 	return sub
 }
 
-// updateMinTxLocked updates the minimum retained tx based on all cursors.
-func (s *Stream) updateMinTxLocked() {
-	min := s.tx
-	for _, sub := range s.subs {
-		if sub.cursor < min {
-			min = sub.cursor
-		}
-	}
-	if min != s.first {
-		s.first = min
-		// fmt.Printf(">> updated minTx to %d\n", min)
-	}
-}
+// minCursorLocked returns the minimum cursor value across all subscribers.
+// Must be called under st.mu.
+func (s *Stream) minCursorLocked() int64 {
+	st := s.state.Load()
+	min := st.tx
 
-// minCursorUnsafe returns the minimum subscriber cursor without locking.
-func (s *Stream) minCursorUnsafe() int64 {
-	min := s.tx
-	for _, sub := range s.subs {
-		if sub.cursor < min {
-			min = sub.cursor
+	s.subs.Range(func(name, v any) bool {
+		sub := v.(*Subscriber)
+		cur := sub.cursor.Load()
+		// log.Printf("[minCursor] %s: cursor=%d\n", name, cur)
+		if cur < min {
+			min = cur
 		}
-	}
+		return true
+	})
+
+	// log.Printf("[minCursor] min=%d\n", min)
 	return min
 }
 
-func (s *Subscriber) Cursor() int64 {
-	s.stream.mu.RLock()
-	defer s.stream.mu.RUnlock()
-	return s.cursor
+// updateMinCursor forces recalculation of the FirstTx based on subscriber positions.
+func (s *Stream) updateMinCursor() {
+	st := s.state.Load()
+	st.mu.Lock()
+	defer st.mu.Unlock()
+
+	newMin := s.minCursorLocked()
+	if newMin > st.first {
+		dropCount := newMin - st.first
+		if dropCount > int64(len(st.ring)) {
+			dropCount = int64(len(st.ring))
+		}
+		st.ring = st.ring[dropCount:]
+		st.first = newMin
+		st.len = int(st.tx - st.first)
+	}
 }
 
-// Close shuts down the stream and notifies all subscribers.
+// Close shuts down the stream and all subscribers.
 func (s *Stream) Close() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	for _, sub := range s.subs {
+	s.subs.Range(func(k, v any) bool {
+		sub := v.(*Subscriber)
 		close(sub.updateCh)
-		// fmt.Printf(">> Closed updateCh for subscriber[%s]\n", sub.name)
-	}
-	s.subs = nil
+		s.subs.Delete(k)
+		return true
+	})
 }
 
 // --- Subscriber ---
@@ -227,7 +250,7 @@ func (s *Stream) Close() {
 type Subscriber struct {
 	name     string
 	stream   *Stream
-	cursor   int64
+	cursor   atomic.Int64
 	updateCh chan int64
 }
 
@@ -236,16 +259,17 @@ func (s *Subscriber) UpdateCh() <-chan int64 {
 	return s.updateCh
 }
 
-// AdvanceTo moves the subscriber cursor forward, allowing old events to be compacted.
+// AdvanceTo moves the subscriber cursor forward and updates stream cursor.
 func (s *Subscriber) AdvanceTo(tx int64) {
-	s.stream.mu.Lock()
-	defer s.stream.mu.Unlock()
-
-	if tx > s.cursor {
-		// fmt.Printf(">> Subscriber[%s] AdvanceTo(%d)\n", s.name, tx)
-		s.cursor = tx
-		s.stream.updateMinTxLocked()
+	if tx > s.cursor.Load() {
+		s.cursor.Store(tx)
+		s.stream.updateMinCursor()
 	}
+}
+
+// Cursor returns the current cursor of the subscriber.
+func (s *Subscriber) Cursor() int64 {
+	return s.cursor.Load()
 }
 
 // Watch loops over new updates and calls a handler on each event.
@@ -265,7 +289,7 @@ func (s *Subscriber) Watch(ctx context.Context, fn func(ev *Event) error) error 
 			if err := fn(ev); err != nil {
 				return err
 			}
-			s.AdvanceTo(tx + 1) // ✅ This is required
+			s.AdvanceTo(tx + 1)
 		}
 	}
 }

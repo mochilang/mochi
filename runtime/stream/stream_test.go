@@ -57,44 +57,36 @@ func TestStream_SubscriberCursor(t *testing.T) {
 	sub.AdvanceTo(4)
 
 	waitForMinCursor(t, s, 4)
+
 	require.Equal(t, int64(4), s.FirstTx())
 }
 
 func TestStream_Compact(t *testing.T) {
 	s := stream.New("metrics", 16)
 
-	// Append 0..99 (100 events)
-	for i := 0; i < 100; i++ {
+	sub := s.RegisterSubscriber("reader") // ✅ move this up
+
+	for i := 0; i < 101; i++ {
 		_, err := s.Append(context.Background(), i)
 		require.NoError(t, err)
 	}
 
-	// Append 100th event to make total tx=1..101 (NextTx = 102)
-	_, err := s.Append(context.Background(), 100)
-	require.NoError(t, err)
+	sub.AdvanceTo(91)
 
-	// Register subscriber and advance cursor to 91
-	sub := s.RegisterSubscriber("reader")
-	sub.AdvanceTo(91) // meaning: I don't care about ≤ 90
-
-	// Wait for stream's min cursor to be updated
 	waitForMinCursor(t, s, 91)
 
-	// Compact should remove all events before tx=91
 	s.Compact()
 
 	require.Equal(t, int64(91), s.FirstTx())
-	require.Equal(t, int64(102), s.NextTx()) // 102 because last tx was 101
-	require.Equal(t, 16, s.Len())            // tx 91..101
+	require.Equal(t, int64(102), s.NextTx())
+	require.Equal(t, 11, s.Len()) // tx 91..101 inclusive
 
-	// Ensure tx=90 has been dropped
 	_, ok := s.Get(90)
 	require.False(t, ok)
 
-	// Ensure tx=91 is still present and correct
 	ev, ok := s.Get(91)
 	require.True(t, ok)
-	require.Equal(t, 90, ev.Data) // data from append(i), i=90 → tx=91
+	require.Equal(t, 90, ev.Data)
 }
 
 func TestStream_Close(t *testing.T) {
@@ -127,30 +119,6 @@ func waitForMinCursor(t *testing.T, s *stream.Stream, want int64) {
 		time.Sleep(10 * time.Millisecond)
 	}
 	t.Fatalf("minCursor did not advance to %d (got %d)", want, s.FirstTx())
-}
-
-func TestStream_RingBufferOverwrite(t *testing.T) {
-	s := stream.New("log", 4)
-
-	// Append 4 events (fills ring)
-	for i := 0; i < 4; i++ {
-		_, err := s.Append(context.Background(), i)
-		require.NoError(t, err)
-	}
-	require.Equal(t, 4, s.Len())
-
-	// Append one more (should overwrite tx=1)
-	_, err := s.Append(context.Background(), 99)
-	require.NoError(t, err)
-
-	// Oldest tx (1) should be gone
-	_, ok := s.Get(1)
-	require.False(t, ok)
-
-	// Latest tx should exist
-	ev, ok := s.Get(5)
-	require.True(t, ok)
-	require.Equal(t, 99, ev.Data)
 }
 
 func TestStream_AdvanceCursorNoShrink(t *testing.T) {
@@ -193,19 +161,49 @@ func TestStream_EmptyRead(t *testing.T) {
 	require.Len(t, evs, 0)
 }
 
-func TestSubscriber_AdvanceToAffectsFirstTx(t *testing.T) {
-	s := stream.New("subtest", 8)
+func TestStream_AutoGrowRing(t *testing.T) {
+	s := stream.New("log", 4)
 
 	for i := 0; i < 10; i++ {
 		_, err := s.Append(context.Background(), i)
 		require.NoError(t, err)
 	}
+
+	require.Equal(t, 10, s.Len())
+	require.Equal(t, int64(1), s.FirstTx()) // nothing should be evicted
+
+	// st := s.StateForTest()
+	// require.GreaterOrEqual(t, st.capacity, 10) // ensure auto-grow actually happened
+
+	for i := 1; i <= 10; i++ {
+		ev, ok := s.Get(int64(i))
+		require.True(t, ok)
+		require.Equal(t, i-1, ev.Data)
+	}
+}
+
+func TestSubscriber_AdvanceToAffectsFirstTx(t *testing.T) {
+	s := stream.New("subtest", 8)
+
+	// Append 10 events: ring should auto-grow to prevent overwrite
+	for i := 0; i < 10; i++ {
+		_, err := s.Append(context.Background(), i)
+		require.NoError(t, err)
+	}
+
 	sub := s.RegisterSubscriber("reader")
 
-	require.Equal(t, int64(1), s.FirstTx())
+	// Ring should have grown — all tx from 1..10 should still be available
+	require.Equal(t, int64(1), s.FirstTx(), "Auto-growing ring should preserve all entries")
 
+	// Advance the subscriber's cursor to tx=6
 	sub.AdvanceTo(6)
-	require.Equal(t, int64(6), s.FirstTx())
+
+	// Wait for stream to recompute the new minimum cursor
+	waitForMinCursor(t, s, 6)
+
+	// FirstTx should reflect compaction triggered by cursor advancement
+	require.Equal(t, int64(6), s.FirstTx(), "Compaction should remove tx < 6")
 }
 
 func TestSubscriber_UpdateChReceivesTx(t *testing.T) {
