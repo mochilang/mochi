@@ -1,0 +1,13 @@
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+for n in numbers {
+  if n % 2 == 0 {
+    continue    // skip even numbers
+  }
+
+  if n > 7 {
+    break       // stop loop once number exceeds 7
+  }
+
+  print("odd number:", n)
+}

@@ -59,6 +59,12 @@ func FromStatement(s *parser.Statement) *Node {
 	case s.Return != nil:
 		return &Node{Kind: "return", Children: []*Node{FromExpr(s.Return.Value)}}
 
+	case s.Break != nil:
+		return &Node{Kind: "break"}
+
+	case s.Continue != nil:
+		return &Node{Kind: "continue"}
+
 	case s.Expr != nil:
 		return FromExpr(s.Expr.Expr)
 
