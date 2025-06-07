@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
 	"github.com/fatih/color"
+	"sync"
 
 	"mochi/parser"
 	mhttp "mochi/runtime/http"
@@ -162,6 +163,9 @@ type Interpreter struct {
 	types    *types.Env
 	streams  map[string]*stream.Stream
 	handlers map[string][]onHandler
+	subs     []*stream.Subscriber
+	cancels  []context.CancelFunc
+	wg       *sync.WaitGroup
 }
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
@@ -172,6 +176,9 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		types:    typesEnv,
 		streams:  map[string]*stream.Stream{},
 		handlers: map[string][]onHandler{},
+		subs:     []*stream.Subscriber{},
+		cancels:  []context.CancelFunc{},
+		wg:       &sync.WaitGroup{},
 	}
 }
 
@@ -213,6 +220,7 @@ func formatDuration(d time.Duration) string {
 }
 
 func (i *Interpreter) Run() error {
+	defer i.Close()
 	/*
 		// Load all shared definitions (let, fun) first
 		for _, stmt := range i.prog.Statements {
@@ -238,6 +246,7 @@ func (i *Interpreter) Run() error {
 }
 
 func (i *Interpreter) Test() error {
+	defer i.Close()
 	var failures []error
 
 	// Preload all shared declarations (let, fun)
@@ -379,7 +388,33 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		return nil
 
 	case s.On != nil:
-		i.handlers[s.On.Stream] = append(i.handlers[s.On.Stream], onHandler{alias: s.On.Alias, body: s.On.Body})
+		strm, ok := i.streams[s.On.Stream]
+		if !ok {
+			return fmt.Errorf("undefined stream: %s", s.On.Stream)
+		}
+		h := onHandler{alias: s.On.Alias, body: s.On.Body}
+		i.handlers[s.On.Stream] = append(i.handlers[s.On.Stream], h)
+		sub := strm.RegisterSubscriber(fmt.Sprintf("handler-%d", len(i.subs)))
+		i.subs = append(i.subs, sub)
+		ctx, cancel := context.WithCancel(context.Background())
+		i.cancels = append(i.cancels, cancel)
+		i.wg.Add(1)
+		go func() {
+			defer i.wg.Done()
+			if err := sub.Watch(ctx, func(ev *stream.Event) error {
+				child := types.NewEnv(i.env)
+				child.SetValue(h.alias, ev.Data, true)
+				interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg}
+				for _, stmt := range h.body {
+					if err := interp.evalStmt(stmt); err != nil {
+						return err
+					}
+				}
+				return nil
+			}); err != nil && !errors.Is(err, context.Canceled) {
+				fmt.Fprintf(os.Stderr, "handler error: %v\n", err)
+			}
+		}()
 		return nil
 
 	case s.Emit != nil:
@@ -397,16 +432,6 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		}
 		if _, err := strm.Append(context.Background(), ev); err != nil {
 			return err
-		}
-		for _, h := range i.handlers[s.Emit.Stream] {
-			child := types.NewEnv(i.env)
-			child.SetValue(h.alias, ev, true)
-			interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers}
-			for _, stmt := range h.body {
-				if err := interp.evalStmt(stmt); err != nil {
-					return err
-				}
-			}
 		}
 		return nil
 
@@ -2141,4 +2166,14 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+func (i *Interpreter) Close() {
+	for _, cancel := range i.cancels {
+		cancel()
+	}
+	i.wg.Wait()
+	for _, s := range i.streams {
+		s.Close()
+	}
 }
