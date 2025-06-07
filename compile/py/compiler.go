@@ -390,6 +390,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
 	case p.Lit != nil:
@@ -490,6 +493,28 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		items[i] = fmt.Sprintf("%s: %s", k, v)
 	}
 	return "{" + strings.Join(items, ", ") + "}", nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	urlStr, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	var withStr string
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		c.use("_to_any_map")
+		withStr = fmt.Sprintf("_to_any_map(%s)", w)
+	} else {
+		withStr = "None"
+	}
+	c.imports["urllib.request"] = true
+	c.imports["json"] = true
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
@@ -618,7 +643,35 @@ var helperGenStruct = "def _gen_struct(cls, prompt):\n" +
 	"    data = json.loads(prompt)\n" +
 	"    return cls(**data)\n"
 
-var helperMap = map[string]string{"_index": helperIndex, "_slice": helperSlice, "_gen_text": helperGenText, "_gen_embed": helperGenEmbed, "_gen_struct": helperGenStruct}
+var helperFetch = "def _fetch(url, opts):\n" +
+	"    import urllib.request, json\n" +
+	"    method = 'GET'\n" +
+	"    data = None\n" +
+	"    headers = {}\n" +
+	"    if opts:\n" +
+	"        method = opts.get('method', method)\n" +
+	"        if 'body' in opts:\n" +
+	"            data = json.dumps(opts['body']).encode()\n" +
+	"        if 'headers' in opts:\n" +
+	"            for k, v in _to_any_map(opts['headers']).items():\n" +
+	"                headers[k] = str(v)\n" +
+	"    req = urllib.request.Request(url, data=data, headers=headers, method=method)\n" +
+	"    with urllib.request.urlopen(req) as resp:\n" +
+	"        text = resp.read()\n" +
+	"    return json.loads(text)\n"
+
+var helperToAnyMap = "def _to_any_map(m):\n" +
+	"    return dict(m) if isinstance(m, dict) else dict(m)\n"
+
+var helperMap = map[string]string{
+	"_index":      helperIndex,
+	"_slice":      helperSlice,
+	"_gen_text":   helperGenText,
+	"_gen_embed":  helperGenEmbed,
+	"_gen_struct": helperGenStruct,
+	"_fetch":      helperFetch,
+	"_to_any_map": helperToAnyMap,
+}
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
 

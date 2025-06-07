@@ -342,6 +342,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
 	case p.Lit != nil:
@@ -454,6 +457,26 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		items[i] = fmt.Sprintf("[%s]: %s", k, v)
 	}
 	return "{" + strings.Join(items, ", ") + "}", nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	urlStr, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	var withStr string
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		c.use("_toAnyMap")
+		withStr = fmt.Sprintf("_toAnyMap(%s)", w)
+	} else {
+		withStr = "undefined"
+	}
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
@@ -629,6 +652,27 @@ const (
 		"  // TODO: integrate with your preferred LLM and parse JSON\n" +
 		"  return JSON.parse(prompt) as T;\n" +
 		"}\n"
+
+	helperFetch = "function _fetch(url: string, opts: any): any {\n" +
+		"  const args: string[] = ['-s'];\n" +
+		"  const method = opts?.method ?? 'GET';\n" +
+		"  args.push('-X', method);\n" +
+		"  if (opts?.headers) {\n" +
+		"    for (const [k, v] of Object.entries(_toAnyMap(opts.headers))) {\n" +
+		"      args.push('-H', `${k}: ${String(v)}`);\n" +
+		"    }\n" +
+		"  }\n" +
+		"  if (opts && 'body' in opts) {\n" +
+		"    args.push('-d', JSON.stringify(opts.body));\n" +
+		"  }\n" +
+		"  args.push(url);\n" +
+		"  const { stdout } = new Deno.Command('curl', { args }).outputSync();\n" +
+		"  return JSON.parse(new TextDecoder().decode(stdout));\n" +
+		"}\n"
+
+	helperToAnyMap = "function _toAnyMap(m: any): Record<string, any> {\n" +
+		"  return m as Record<string, any>;\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -638,6 +682,8 @@ var helperMap = map[string]string{
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
+	"_fetch":      helperFetch,
+	"_toAnyMap":   helperToAnyMap,
 }
 
 func (c *Compiler) use(name string) {
