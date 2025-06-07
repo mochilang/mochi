@@ -1,0 +1,1 @@
+let nums: list<int> = [1, 2]

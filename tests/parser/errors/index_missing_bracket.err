@@ -1,0 +1,5 @@
+error[P999]: tests/parser/errors/index_missing_bracket.mochi:3:1: unexpected token "<EOF>" (expected "]")
+  --> tests/parser/errors/index_missing_bracket.mochi:3:1
+
+help:
+  Parse error occurred. Check syntax near this location.
