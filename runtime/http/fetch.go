@@ -3,8 +3,11 @@ package http
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	nethttp "net/http"
+	neturl "net/url"
+	"time"
 )
 
 // Fetch retrieves JSON from the given URL and unmarshals it into an
@@ -33,7 +36,21 @@ func FetchWith(url string, opts map[string]any) (any, error) {
 		}
 	}
 
-	req, err := nethttp.NewRequest(method, url, body)
+	u, err := neturl.Parse(url)
+	if err != nil {
+		return nil, err
+	}
+	if opts != nil {
+		if q, ok := opts["query"]; ok {
+			vals := u.Query()
+			for k, v := range toAnyMap(q) {
+				vals.Set(k, fmt.Sprint(v))
+			}
+			u.RawQuery = vals.Encode()
+		}
+	}
+
+	req, err := nethttp.NewRequest(method, u.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +64,23 @@ func FetchWith(url string, opts map[string]any) (any, error) {
 		}
 	}
 
-	resp, err := nethttp.DefaultClient.Do(req)
+	client := nethttp.DefaultClient
+	if opts != nil {
+		if t, ok := opts["timeout"]; ok {
+			switch v := t.(type) {
+			case int:
+				client = &nethttp.Client{Timeout: time.Duration(v) * time.Second}
+			case int64:
+				client = &nethttp.Client{Timeout: time.Duration(v) * time.Second}
+			case float64:
+				client = &nethttp.Client{Timeout: time.Duration(v * float64(time.Second))}
+			case float32:
+				client = &nethttp.Client{Timeout: time.Duration(float64(v) * float64(time.Second))}
+			}
+		}
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}

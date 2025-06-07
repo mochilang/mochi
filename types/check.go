@@ -1141,6 +1141,10 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 							expect = MapType{Key: StringType{}, Value: StringType{}}
 						case "body":
 							expect = nil
+						case "query":
+							expect = MapType{Key: StringType{}, Value: StringType{}}
+						case "timeout":
+							expect = FloatType{}
 						default:
 							expect = nil
 						}
