@@ -401,6 +401,21 @@ type Circle {
 }
 ```
 
+### Streams and Agents
+
+Declare streams of structured events and handle them with agents. Use `emit` to
+send events to a stream.
+
+```mochi
+stream Sensor { id: string, temperature: float }
+
+on Sensor as s {
+  print(s.id, s.temperature)
+}
+
+emit Sensor { id: "sensor-1", temperature: 22.5 }
+```
+
 ## MCP Tools
 
 When running `mochi serve`, the following tools are available:
@@ -427,6 +442,7 @@ Explore the [`examples/`](./examples) directory:
 * `types.mochi`
 * `fetch.mochi`
 * `fetch-post.mochi`
+* `stream.mochi`
 
 Edit one or start fresh. It’s all yours.
 

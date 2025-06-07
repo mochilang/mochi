@@ -69,7 +69,7 @@ The following keywords are reserved:
 let  var  fun  return
 if   else
 for  in
-stream  on  as
+stream  emit  on  as
 model  agent  test  expect
 ```
 
@@ -198,7 +198,7 @@ Statements control execution and may declare bindings, functions, or agents.
 
 ```ebnf
 Statement   = LetStmt | VarStmt | AssignStmt | FunDecl | ReturnStmt |
-              IfStmt | ForStmt | ExprStmt | TestBlock |
+              IfStmt | ForStmt | EmitStmt | ExprStmt | TestBlock |
               ExpectStmt | StreamDecl | OnHandler | AgentDecl .
 ```
 
@@ -259,6 +259,14 @@ for i in 0..5 { print(i) }            // range loop
 for item in items { print(item) }      // collection loop
 ```
 
+### Emit Statement
+
+`emit` sends an event to a named stream using struct literal syntax:
+
+```mochi
+emit Sensor { id: "s1", temperature: 21.3 }
+```
+
 ### Test and Expect
 
 `test` blocks group expectations. `expect` asserts a condition is true.
@@ -271,7 +279,7 @@ test "math" {
 
 ### Streams and Agents
 
-Streams declare named event types. Agents define event handlers with `on` blocks.
+Streams declare named event types. Use `emit` to send events. Agents define event handlers with `on` blocks.
 
 ```mochi
 stream Click { x: int, y: int }
@@ -281,6 +289,8 @@ agent Logger {
     print(e.x, e.y)
   }
 }
+
+emit Click { x: 10, y: 20 }
 ```
 
 ### Model Declarations
@@ -372,7 +382,7 @@ The complete grammar for Mochi in EBNF notation:
 ```ebnf
 Program       = { Statement }.
 Statement     = LetStmt | VarStmt | AssignStmt | FunDecl | ReturnStmt |
-                IfStmt | ForStmt | ExprStmt | TestBlock |
+                IfStmt | ForStmt | EmitStmt | ExprStmt | TestBlock |
                 ExpectStmt | StreamDecl | OnHandler | ModelDecl | AgentDecl .
 LetStmt       = "let" Identifier [ ":" TypeRef ] [ "=" Expression ] .
 VarStmt       = "var" Identifier [ ":" TypeRef ] [ "=" Expression ] .
@@ -381,6 +391,7 @@ FunDecl       = "fun" Identifier "(" [ ParamList ] ")" [ ":" TypeRef ] Block .
 ReturnStmt    = "return" Expression .
 IfStmt        = "if" Expression Block [ "else" (IfStmt | Block) ] .
 ForStmt       = "for" Identifier "in" Expression [ ".." Expression ] Block .
+EmitStmt      = "emit" Identifier MapLiteral .
 ExprStmt      = Expression .
 TestBlock     = "test" StringLiteral Block .
 ExpectStmt    = "expect" Expression .
