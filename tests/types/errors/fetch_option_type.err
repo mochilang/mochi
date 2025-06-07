@@ -1,0 +1,8 @@
+1. error[T030]: invalid type for fetch option `method`: expected string, got int
+  --> tests/types/errors/fetch_option_type.mochi:1:53
+
+  1 | let x = fetch "https://example.com" with {"method": 10}
+    |                                                     ^
+
+help:
+  Ensure the option value matches the expected type.

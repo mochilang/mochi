@@ -1,0 +1,8 @@
+1. error[T028]: fetch URL must be a string
+  --> tests/types/errors/fetch_url_type.mochi:1:9
+
+  1 | let x = fetch 123
+    |         ^
+
+help:
+  Use a string literal or variable of type string.

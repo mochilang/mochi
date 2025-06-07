@@ -1,0 +1,8 @@
+1. error[T029]: fetch options must be a map
+  --> tests/types/errors/fetch_opts_map.mochi:1:9
+
+  1 | let x = fetch "https://example.com" with 10
+    |         ^
+
+help:
+  Pass a map like `{"method": "POST"}` after `with`.

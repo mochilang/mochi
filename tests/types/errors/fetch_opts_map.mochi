@@ -1,0 +1,1 @@
+let x = fetch "https://example.com" with 10
