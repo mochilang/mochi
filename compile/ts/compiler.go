@@ -12,15 +12,21 @@ import (
 
 // Compiler translates a Mochi AST into TypeScript source code that can be run with Deno.
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	helpers map[string]bool
-	env     *types.Env
+	buf          bytes.Buffer
+	indent       int
+	helpers      map[string]bool
+	env          *types.Env
+	structs      map[string]bool
+	handlerCount int
 }
 
 // New creates a new TypeScript compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{helpers: make(map[string]bool), env: env}
+	return &Compiler{
+		helpers: make(map[string]bool),
+		env:     env,
+		structs: make(map[string]bool),
+	}
 }
 
 // Compile generates TypeScript source code for the given program.
@@ -66,6 +72,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Stream != nil:
+		return c.compileStreamDecl(s.Stream)
+	case s.On != nil:
+		return c.compileOnHandler(s.On)
+	case s.Emit != nil:
+		return c.compileEmit(s.Emit)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
 	case s.Expr != nil:
@@ -132,6 +144,70 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	return nil
+}
+
+func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
+	st, ok := c.env.GetStream(s.Name)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", s.Name)
+	}
+	c.compileStructType(st)
+	varName := unexportName(sanitizeName(s.Name)) + "Stream"
+	c.use("_stream")
+	c.writeln(fmt.Sprintf("const %s = new Stream(%q)", varName, s.Name))
+	return nil
+}
+
+func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
+	st, ok := c.env.GetStream(h.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", h.Stream)
+	}
+	c.compileStructType(st)
+	streamVar := unexportName(sanitizeName(h.Stream)) + "Stream"
+	handlerName := fmt.Sprintf("_handler_%d", c.handlerCount)
+	c.handlerCount++
+	c.writeln(fmt.Sprintf("function %s(ev: %s): void {", handlerName, sanitizeName(st.Name)))
+	c.indent++
+	alias := sanitizeName(h.Alias)
+	c.writeln(fmt.Sprintf("const %s = ev", alias))
+	child := types.NewEnv(c.env)
+	child.SetVar(h.Alias, st, true)
+	orig := c.env
+	c.env = child
+	for _, stmt := range h.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			c.env = orig
+			return err
+		}
+	}
+	c.env = orig
+	c.indent--
+	c.writeln("}")
+	c.writeln(fmt.Sprintf("%s.register(%s)", streamVar, handlerName))
+	c.use("_stream")
+	return nil
+}
+
+func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
+	st, ok := c.env.GetStream(e.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", e.Stream)
+	}
+	c.compileStructType(st)
+	parts := make([]string, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
+	}
+	lit := "{" + strings.Join(parts, ", ") + "}"
+	streamVar := unexportName(sanitizeName(e.Stream)) + "Stream"
+	c.writeln(fmt.Sprintf("%s.append(%s)", streamVar, lit))
+	c.use("_stream")
 	return nil
 }
 
@@ -603,6 +679,38 @@ func indentBlock(s string, depth int) string {
 	return strings.Join(lines, "\n") + "\n"
 }
 
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("type %s = {", name))
+	c.indent++
+	for _, fn := range st.Order {
+		c.writeln(fmt.Sprintf("%s: any;", sanitizeName(fn)))
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
+}
+
+func unexportName(name string) string {
+	if name == "" {
+		return ""
+	}
+	runes := []rune(name)
+	if runes[0] >= 'A' && runes[0] <= 'Z' {
+		runes[0] = runes[0] - 'A' + 'a'
+	}
+	return string(runes)
+}
+
 func sanitizeName(name string) string {
 	var b strings.Builder
 	for i, r := range name {
@@ -690,6 +798,23 @@ const (
 	helperToAnyMap = "function _toAnyMap(m: any): Record<string, any> {\n" +
 		"  return m as Record<string, any>;\n" +
 		"}\n"
+
+	helperStream = "class Stream {\n" +
+		"  name: string;\n" +
+		"  handlers: Array<(data: any) => void> = [];\n" +
+		"  constructor(name: string) {\n" +
+		"    this.name = name;\n" +
+		"  }\n" +
+		"  append(data: any): any {\n" +
+		"    for (const h of [...this.handlers]) {\n" +
+		"      h(data);\n" +
+		"    }\n" +
+		"    return data;\n" +
+		"  }\n" +
+		"  register(handler: (data: any) => void): void {\n" +
+		"    this.handlers.push(handler);\n" +
+		"  }\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -701,6 +826,7 @@ var helperMap = map[string]string{
 	"_gen_struct": helperGenStruct,
 	"_fetch":      helperFetch,
 	"_toAnyMap":   helperToAnyMap,
+	"_stream":     helperStream,
 }
 
 func (c *Compiler) use(name string) {
