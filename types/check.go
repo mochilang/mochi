@@ -336,8 +336,64 @@ func Check(prog *parser.Program, env *Env) []error {
 
 // --- Helpers ---
 
+func buildStreamFields(fields []*parser.StreamField, env *Env) (map[string]Type, []string) {
+	out := map[string]Type{}
+	order := []string{}
+	for _, f := range fields {
+		if f.Simple != nil {
+			out[f.Simple.Name] = resolveTypeName(f.Simple.Type, env)
+			order = append(order, f.Simple.Name)
+		} else if f.Nested != nil {
+			sub, subOrder := buildStreamFields(f.Nested.Body.Fields, env)
+			st := StructType{Name: f.Nested.Type, Fields: sub, Order: subOrder}
+			env.SetStruct(f.Nested.Type, st)
+			out[f.Nested.Name] = st
+			order = append(order, f.Nested.Name)
+		}
+	}
+	return out, order
+}
+
 func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 	switch {
+	case s.Stream != nil:
+		fields, order := buildStreamFields(s.Stream.Fields, env)
+		st := StructType{Name: s.Stream.Name, Fields: fields, Order: order}
+		env.SetStream(s.Stream.Name, st)
+		env.SetStruct(s.Stream.Name, st)
+		env.types[s.Stream.Name] = st
+		return nil
+
+	case s.On != nil:
+		st, ok := env.GetStream(s.On.Stream)
+		if !ok {
+			return errUnknownStream(s.On.Pos, s.On.Stream)
+		}
+		child := NewEnv(env)
+		child.SetVar(s.On.Alias, st, true)
+		for _, stmt := range s.On.Body {
+			if err := checkStmt(stmt, child, expectedReturn); err != nil {
+				return err
+			}
+		}
+		return nil
+
+	case s.Emit != nil:
+		st, ok := env.GetStream(s.Emit.Stream)
+		if !ok {
+			return errUnknownStream(s.Emit.Pos, s.Emit.Stream)
+		}
+		for _, f := range s.Emit.Fields {
+			ft, ok := st.Fields[f.Name]
+			if !ok {
+				return errUnknownField(f.Pos, f.Name, st)
+			}
+			if _, err := checkExprWithExpected(f.Value, env, ft); err != nil {
+				return err
+			}
+		}
+		return nil
+
 	case s.Let != nil:
 		name := s.Let.Name
 		var typ Type
@@ -663,6 +719,10 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 	}
 
 	return AnyType{}
+}
+
+func resolveTypeName(name string, env *Env) Type {
+	return resolveTypeRef(&parser.TypeRef{Simple: &name}, env)
 }
 
 func checkExpr(e *parser.Expr, env *Env) (Type, error) {

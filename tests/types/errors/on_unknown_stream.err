@@ -1,0 +1,8 @@
+1. error[T031]: unknown stream: Foo
+  --> tests/types/errors/on_unknown_stream.mochi:1:1
+
+  1 | on Foo as e {
+    | ^
+
+help:
+  Declare the stream before using it.

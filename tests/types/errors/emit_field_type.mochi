@@ -1,0 +1,3 @@
+stream Sensor { id: string }
+
+emit Sensor { id: 123 }
