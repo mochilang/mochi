@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
 	"github.com/fatih/color"
-	"io"
+
 	"mochi/parser"
+	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
 	"mochi/types"
-	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -1014,20 +1014,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		if !ok {
 			return nil, fmt.Errorf("fetch URL must be a string")
 		}
-		resp, err := http.Get(urlStr)
-		if err != nil {
-			return nil, err
-		}
-		defer resp.Body.Close()
-		data, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		var out any
-		if err := json.Unmarshal(data, &out); err != nil {
-			return nil, err
-		}
-		return out, nil
+		return mhttp.Fetch(urlStr)
 
 	case p.Generate != nil:
 		reqParams := map[string]any{}
