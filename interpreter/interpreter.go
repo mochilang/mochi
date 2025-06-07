@@ -993,13 +993,19 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 	case p.Map != nil:
 		obj := map[string]any{}
 		for _, item := range p.Map.Items {
-			keyVal, err := i.evalExpr(item.Key)
-			if err != nil {
-				return nil, err
-			}
-			strKey, ok := keyVal.(string)
-			if !ok {
-				return nil, errInvalidMapKey(item.Pos, keyVal)
+			var strKey string
+			if k, ok := simpleStringKey(item.Key); ok {
+				strKey = k
+			} else {
+				keyVal, err := i.evalExpr(item.Key)
+				if err != nil {
+					return nil, err
+				}
+				s, ok := keyVal.(string)
+				if !ok {
+					return nil, errInvalidMapKey(item.Pos, keyVal)
+				}
+				strKey = s
 			}
 			val, err := i.evalExpr(item.Value)
 			if err != nil {
@@ -1949,4 +1955,28 @@ func toAnyMap(m any) map[string]any {
 	default:
 		return nil
 	}
+}
+
+func simpleStringKey(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
 }
