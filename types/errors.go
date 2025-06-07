@@ -46,6 +46,9 @@ var Errors = map[string]diagnostic.Template{
 	"T025": {Code: "T025", Message: "unknown type: %s", Help: "Ensure the type is defined before use."},
 	"T026": {Code: "T026", Message: "unknown field `%s` on %s", Help: "Check the struct definition for valid fields."},
 	"T027": {Code: "T027", Message: "%s is not a struct", Help: "Field access is only valid on struct types."},
+	"T028": {Code: "T028", Message: "fetch URL must be a string", Help: "Use a string literal or variable of type string."},
+	"T029": {Code: "T029", Message: "fetch options must be a map", Help: "Pass a map like `{\"method\": \"POST\"}` after `with`."},
+	"T030": {Code: "T030", Message: "invalid type for fetch option `%s`: expected %s, got %s", Help: "Ensure the option value matches the expected type."},
 }
 
 // --- Wrapper Functions ---
@@ -160,4 +163,16 @@ func errUnknownField(pos lexer.Position, field string, typ Type) error {
 
 func errNotStruct(pos lexer.Position, typ Type) error {
 	return Errors["T027"].New(pos, typ)
+}
+
+func errFetchURLString(pos lexer.Position) error {
+	return Errors["T028"].New(pos)
+}
+
+func errFetchOptsMap(pos lexer.Position) error {
+	return Errors["T029"].New(pos)
+}
+
+func errFetchOptType(pos lexer.Position, name string, expected, actual Type) error {
+	return Errors["T030"].New(pos, name, expected, actual)
 }

@@ -1105,6 +1105,63 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return MapType{Key: keyT, Value: valT}, nil
 
+	case p.Fetch != nil:
+		urlT, err := checkExpr(p.Fetch.URL, env)
+		if err != nil {
+			return nil, err
+		}
+		if !unify(urlT, StringType{}, nil) {
+			return nil, errFetchURLString(p.Pos)
+		}
+		if p.Fetch.With != nil {
+			wt, err := checkExpr(p.Fetch.With, env)
+			if err != nil {
+				return nil, err
+			}
+			mt, ok := wt.(MapType)
+			if !ok || !unify(mt.Key, StringType{}, nil) {
+				return nil, errFetchOptsMap(p.Pos)
+			}
+			if withMl := p.Fetch.With.Binary.Left.Value.Target.Map; withMl != nil {
+				for _, item := range withMl.Items {
+					if key, ok := stringKey(item.Key); ok {
+						var expect Type
+						switch key {
+						case "method":
+							expect = StringType{}
+						case "headers":
+							expect = MapType{Key: StringType{}, Value: StringType{}}
+						case "body":
+							expect = nil
+						default:
+							expect = nil
+						}
+						if expect != nil {
+							vt, err := checkExpr(item.Value, env)
+							if err != nil {
+								return nil, err
+							}
+							if !unify(vt, expect, nil) {
+								return nil, errFetchOptType(item.Value.Pos, key, expect, vt)
+							}
+						} else {
+							if _, err := checkExpr(item.Value, env); err != nil {
+								return nil, err
+							}
+						}
+					} else {
+						if _, err := checkExpr(item.Value, env); err != nil {
+							return nil, err
+						}
+					}
+				}
+			}
+		}
+		if expected != nil {
+			return expected, nil
+		}
+		return AnyType{}, nil
+
 	case p.Match != nil:
 		return checkMatchExpr(p.Match, env, expected)
 
@@ -1335,6 +1392,30 @@ func identName(e *parser.Expr) (string, bool) {
 	}
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func stringKey(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
 	}
 	return "", false
 }
