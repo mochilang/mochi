@@ -658,11 +658,25 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	var withStr string
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		c.use("_toAnyMap")
+		withStr = fmt.Sprintf("_toAnyMap(%s)", w)
+	} else {
+		withStr = "nil"
+	}
+
 	c.imports["net/http"] = true
 	c.imports["io"] = true
 	c.imports["encoding/json"] = true
+	c.imports["bytes"] = true
 	c.use("_fetch")
-	return fmt.Sprintf("_fetch(%s)", urlStr), nil
+	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
@@ -1688,8 +1702,33 @@ const (
 		"    return out\n" +
 		"}\n"
 
-	helperFetch = "func _fetch(url string) any {\n" +
-		"    resp, err := http.Get(url)\n" +
+	helperFetch = "func _fetch(url string, opts map[string]any) any {\n" +
+		"    method := \"GET\"\n" +
+		"    if opts != nil {\n" +
+		"        if m, ok := opts[\"method\"].(string); ok {\n" +
+		"            method = m\n" +
+		"        }\n" +
+		"    }\n" +
+		"    var body io.Reader\n" +
+		"    if opts != nil {\n" +
+		"        if b, ok := opts[\"body\"]; ok {\n" +
+		"            data, err := json.Marshal(b)\n" +
+		"            if err != nil { panic(err) }\n" +
+		"            body = bytes.NewReader(data)\n" +
+		"        }\n" +
+		"    }\n" +
+		"    req, err := http.NewRequest(method, url, body)\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    if opts != nil {\n" +
+		"        if hs, ok := opts[\"headers\"]; ok {\n" +
+		"            for k, v := range _toAnyMap(hs) {\n" +
+		"                if s, ok := v.(string); ok {\n" +
+		"                    req.Header.Set(k, s)\n" +
+		"                }\n" +
+		"            }\n" +
+		"        }\n" +
+		"    }\n" +
+		"    resp, err := http.DefaultClient.Do(req)\n" +
 		"    if err != nil { panic(err) }\n" +
 		"    defer resp.Body.Close()\n" +
 		"    data, err := io.ReadAll(resp.Body)\n" +

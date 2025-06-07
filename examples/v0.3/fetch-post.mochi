@@ -1,0 +1,39 @@
+// typed-post.mochi
+
+// Define the request body type
+type NewTodo {
+  userId: int
+  title: string
+  completed: bool
+}
+
+// Define the expected response type
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+
+// Create a request payload using the NewTodo type
+let payload: NewTodo = NewTodo {
+  userId: 1,
+  title: "Learn Mochi",
+  completed: false
+}
+
+// Perform a typed POST request
+// The `with {}` block is a nested map — use commas `,` between fields
+// This structure is flexible and easy to extend in the future (e.g. timeout, query)
+// Avoid hardcoding fixed arguments; treat this as a generic config map
+let result: Todo = fetch "https://jsonplaceholder.typicode.com/todos" with {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: payload
+}
+
+// Access fields from the typed response
+print("Created:", result.title)
+print("ID:", result.id)
