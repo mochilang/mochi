@@ -12,15 +12,22 @@ import (
 
 // Compiler translates a Mochi AST into Python source code.
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	helpers map[string]bool
-	imports map[string]bool
-	env     *types.Env
+	buf          bytes.Buffer
+	indent       int
+	helpers      map[string]bool
+	imports      map[string]bool
+	env          *types.Env
+	structs      map[string]bool
+	handlerCount int
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{helpers: make(map[string]bool), imports: make(map[string]bool), env: env}
+	return &Compiler{
+		helpers: make(map[string]bool),
+		imports: make(map[string]bool),
+		env:     env,
+		structs: make(map[string]bool),
+	}
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -133,6 +140,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue")
 		return nil
+	case s.Stream != nil:
+		return c.compileStreamDecl(s.Stream)
+	case s.On != nil:
+		return c.compileOnHandler(s.On)
+	case s.Emit != nil:
+		return c.compileEmit(s.Emit)
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -164,6 +177,91 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, val))
 	return nil
+}
+
+func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
+	st, ok := c.env.GetStream(s.Name)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", s.Name)
+	}
+	c.compileStructType(st)
+	varName := unexportName(sanitizeName(s.Name)) + "Stream"
+	c.use("_stream")
+	c.writeln(fmt.Sprintf("%s = Stream(%q)", varName, s.Name))
+	return nil
+}
+
+func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
+	st, ok := c.env.GetStream(h.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", h.Stream)
+	}
+	c.compileStructType(st)
+	streamVar := unexportName(sanitizeName(h.Stream)) + "Stream"
+	handlerName := fmt.Sprintf("_handler_%d", c.handlerCount)
+	c.handlerCount++
+	c.writeln(fmt.Sprintf("def %s(ev):", handlerName))
+	c.indent++
+	alias := sanitizeName(h.Alias)
+	c.writeln(fmt.Sprintf("%s = ev", alias))
+	for _, stmt := range h.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			c.indent--
+			return err
+		}
+	}
+	c.indent--
+	c.writeln(fmt.Sprintf("%s.register(%s)", streamVar, handlerName))
+	c.use("_stream")
+	return nil
+}
+
+func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
+	st, ok := c.env.GetStream(e.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", e.Stream)
+	}
+	c.compileStructType(st)
+	parts := make([]string, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("%s=%s", sanitizeName(f.Name), v)
+	}
+	lit := fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(parts, ", "))
+	streamVar := unexportName(sanitizeName(e.Stream)) + "Stream"
+	c.writeln(fmt.Sprintf("%s.append(%s)", streamVar, lit))
+	c.use("_stream")
+	return nil
+}
+
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.imports["dataclasses"] = true
+	c.imports["typing"] = true
+	c.writeln("@dataclasses.dataclass")
+	c.writeln(fmt.Sprintf("class %s:", name))
+	c.indent++
+	if len(st.Order) == 0 {
+		c.writeln("pass")
+	} else {
+		for _, fn := range st.Order {
+			c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(fn)))
+		}
+	}
+	c.indent--
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -675,6 +773,17 @@ var helperFetch = "def _fetch(url, opts):\n" +
 var helperToAnyMap = "def _to_any_map(m):\n" +
 	"    return dict(m) if isinstance(m, dict) else dict(m)\n"
 
+var helperStream = "class Stream:\n" +
+	"    def __init__(self, name):\n" +
+	"        self.name = name\n" +
+	"        self.handlers = []\n" +
+	"    def append(self, data):\n" +
+	"        for h in list(self.handlers):\n" +
+	"            h(data)\n" +
+	"        return data\n" +
+	"    def register(self, handler):\n" +
+	"        self.handlers.append(handler)\n"
+
 var helperMap = map[string]string{
 	"_index":      helperIndex,
 	"_slice":      helperSlice,
@@ -683,6 +792,7 @@ var helperMap = map[string]string{
 	"_gen_struct": helperGenStruct,
 	"_fetch":      helperFetch,
 	"_to_any_map": helperToAnyMap,
+	"_stream":     helperStream,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
@@ -711,6 +821,17 @@ func sanitizeName(name string) string {
 		return "_" + b.String()
 	}
 	return b.String()
+}
+
+func unexportName(name string) string {
+	if name == "" {
+		return ""
+	}
+	runes := []rune(name)
+	if runes[0] >= 'A' && runes[0] <= 'Z' {
+		runes[0] = runes[0] - 'A' + 'a'
+	}
+	return string(runes)
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
