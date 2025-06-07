@@ -1,0 +1,282 @@
+package stream_test
+
+import (
+	"context"
+	"reflect"
+	"sync"
+	"testing"
+	"time"
+
+	"mochi/runtime/stream"
+
+	"github.com/stretchr/testify/require"
+)
+
+func TestStream_AppendAndRead(t *testing.T) {
+	s := stream.New("test", 4)
+
+	_, err := s.Append(context.Background(), "a")
+	require.NoError(t, err)
+
+	_, err = s.Append(context.Background(), "b")
+	require.NoError(t, err)
+
+	evs, err := s.Read(1, 2)
+	require.NoError(t, err)
+	require.Len(t, evs, 2)
+	require.Equal(t, "a", evs[0].Data)
+	require.Equal(t, "b", evs[1].Data)
+}
+
+func TestStream_Get(t *testing.T) {
+	s := stream.New("test", 4)
+
+	ev1, err := s.Append(context.Background(), "a")
+	require.NoError(t, err)
+	ev2, err := s.Append(context.Background(), "b")
+	require.NoError(t, err)
+
+	ev, ok := s.Get(ev1.Tx)
+	require.True(t, ok)
+	require.Equal(t, "a", ev.Data)
+
+	ev, ok = s.Get(ev2.Tx)
+	require.True(t, ok)
+	require.Equal(t, "b", ev.Data)
+}
+
+func TestStream_SubscriberCursor(t *testing.T) {
+	s := stream.New("test", 4)
+
+	for i := 0; i < 5; i++ {
+		_, err := s.Append(context.Background(), i)
+		require.NoError(t, err)
+	}
+
+	sub := s.RegisterSubscriber("reader")
+	sub.AdvanceTo(4)
+
+	waitForMinCursor(t, s, 4)
+	require.Equal(t, int64(4), s.FirstTx())
+}
+
+func TestStream_Compact(t *testing.T) {
+	s := stream.New("metrics", 16)
+
+	// Append 0..99 (100 events)
+	for i := 0; i < 100; i++ {
+		_, err := s.Append(context.Background(), i)
+		require.NoError(t, err)
+	}
+
+	// Append 100th event to make total tx=1..101 (NextTx = 102)
+	_, err := s.Append(context.Background(), 100)
+	require.NoError(t, err)
+
+	// Register subscriber and advance cursor to 91
+	sub := s.RegisterSubscriber("reader")
+	sub.AdvanceTo(91) // meaning: I don't care about ≤ 90
+
+	// Wait for stream's min cursor to be updated
+	waitForMinCursor(t, s, 91)
+
+	// Compact should remove all events before tx=91
+	s.Compact()
+
+	require.Equal(t, int64(91), s.FirstTx())
+	require.Equal(t, int64(102), s.NextTx()) // 102 because last tx was 101
+	require.Equal(t, 16, s.Len())            // tx 91..101
+
+	// Ensure tx=90 has been dropped
+	_, ok := s.Get(90)
+	require.False(t, ok)
+
+	// Ensure tx=91 is still present and correct
+	ev, ok := s.Get(91)
+	require.True(t, ok)
+	require.Equal(t, 90, ev.Data) // data from append(i), i=90 → tx=91
+}
+
+func TestStream_Close(t *testing.T) {
+	s := stream.New("test", 4)
+	sub1 := s.RegisterSubscriber("a")
+	sub2 := s.RegisterSubscriber("b")
+
+	sub1.AdvanceTo(5)
+	sub2.AdvanceTo(5)
+
+	s.Close()
+
+	select {
+	case _, ok := <-sub1.UpdateCh():
+		require.False(t, ok, "sub1 updateCh should be closed")
+	case <-time.After(50 * time.Millisecond):
+		t.Fatal("timeout waiting for sub1 updateCh to close")
+	}
+}
+
+// --- Helper ---
+
+func waitForMinCursor(t *testing.T, s *stream.Stream, want int64) {
+	t.Helper()
+	start := time.Now()
+	for time.Since(start) < time.Second {
+		if s.FirstTx() == want {
+			return
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	t.Fatalf("minCursor did not advance to %d (got %d)", want, s.FirstTx())
+}
+
+func TestStream_RingBufferOverwrite(t *testing.T) {
+	s := stream.New("log", 4)
+
+	// Append 4 events (fills ring)
+	for i := 0; i < 4; i++ {
+		_, err := s.Append(context.Background(), i)
+		require.NoError(t, err)
+	}
+	require.Equal(t, 4, s.Len())
+
+	// Append one more (should overwrite tx=1)
+	_, err := s.Append(context.Background(), 99)
+	require.NoError(t, err)
+
+	// Oldest tx (1) should be gone
+	_, ok := s.Get(1)
+	require.False(t, ok)
+
+	// Latest tx should exist
+	ev, ok := s.Get(5)
+	require.True(t, ok)
+	require.Equal(t, 99, ev.Data)
+}
+
+func TestStream_AdvanceCursorNoShrink(t *testing.T) {
+	s := stream.New("metrics", 4)
+
+	// Append a few events
+	for i := 0; i < 4; i++ {
+		_, err := s.Append(context.Background(), i)
+		require.NoError(t, err)
+	}
+
+	_ = s.RegisterSubscriber("slow-reader")
+
+	// Compact should be a no-op because sub.cursor == 1
+	s.Compact()
+	require.Equal(t, int64(1), s.FirstTx())
+}
+
+func TestStream_SubscriberUpdateCh(t *testing.T) {
+	s := stream.New("test", 4)
+	sub := s.RegisterSubscriber("watcher")
+
+	go func() {
+		time.Sleep(10 * time.Millisecond)
+		s.Append(context.Background(), "event-1")
+	}()
+
+	select {
+	case tx := <-sub.UpdateCh():
+		require.Equal(t, int64(1), tx)
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("did not receive update")
+	}
+}
+
+func TestStream_EmptyRead(t *testing.T) {
+	s := stream.New("empty", 4)
+	evs, err := s.Read(1, 10)
+	require.NoError(t, err)
+	require.Len(t, evs, 0)
+}
+
+func TestSubscriber_AdvanceToAffectsFirstTx(t *testing.T) {
+	s := stream.New("subtest", 8)
+
+	for i := 0; i < 10; i++ {
+		_, err := s.Append(context.Background(), i)
+		require.NoError(t, err)
+	}
+	sub := s.RegisterSubscriber("reader")
+
+	require.Equal(t, int64(1), s.FirstTx())
+
+	sub.AdvanceTo(6)
+	require.Equal(t, int64(6), s.FirstTx())
+}
+
+func TestSubscriber_UpdateChReceivesTx(t *testing.T) {
+	s := stream.New("subtest", 8)
+	sub := s.RegisterSubscriber("reader")
+
+	_, err := s.Append(context.Background(), "hello")
+	require.NoError(t, err)
+
+	select {
+	case tx := <-sub.UpdateCh():
+		require.Equal(t, int64(1), tx)
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("did not receive tx on UpdateCh")
+	}
+}
+
+func TestSubscriber_WatchAutoAdvance(t *testing.T) {
+	s := stream.New("test", 8)
+	sub := s.RegisterSubscriber("reader")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	var mu sync.Mutex
+	var got []any
+	errCh := make(chan error, 1)
+
+	go func() {
+		err := sub.Watch(ctx, func(ev *stream.Event) error {
+			mu.Lock()
+			got = append(got, ev.Data)
+			mu.Unlock()
+			return nil
+		})
+		errCh <- err // send to channel instead of calling require
+	}()
+
+	// Append events
+	for i := 0; i < 3; i++ {
+		_, err := s.Append(context.Background(), i)
+		require.NoError(t, err)
+		time.Sleep(20 * time.Millisecond)
+	}
+
+	// Wait for got to contain expected values
+	require.Eventually(t, func() bool {
+		mu.Lock()
+		defer mu.Unlock()
+		return reflect.DeepEqual(got, []any{0, 1, 2})
+	}, time.Second, 10*time.Millisecond)
+
+	// Assert watcher exited cleanly or with context error
+	select {
+	case err := <-errCh:
+		require.ErrorIs(t, err, context.DeadlineExceeded)
+	default:
+		// still running
+	}
+}
+
+func TestSubscriber_CloseStreamShutsDown(t *testing.T) {
+	s := stream.New("subtest", 4)
+	sub := s.RegisterSubscriber("reader")
+
+	s.Close()
+
+	select {
+	case _, ok := <-sub.UpdateCh():
+		require.False(t, ok, "UpdateCh should be closed")
+	case <-time.After(50 * time.Millisecond):
+		t.Fatal("timeout: subscriber not closed after stream.Close()")
+	}
+}
