@@ -11,6 +11,7 @@ import (
 	"mochi/parser"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
+	"mochi/runtime/stream"
 	"mochi/types"
 	"os"
 	"strings"
@@ -156,17 +157,21 @@ func valueToAny(v Value) any {
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
 type Interpreter struct {
-	prog  *parser.Program
-	env   *types.Env
-	types *types.Env
+	prog     *parser.Program
+	env      *types.Env
+	types    *types.Env
+	streams  map[string]*stream.Stream
+	handlers map[string][]onHandler
 }
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 	return &Interpreter{
 		prog: prog,
 		// env:   types.NewEnv(nil),
-		env:   typesEnv,
-		types: typesEnv,
+		env:      typesEnv,
+		types:    typesEnv,
+		streams:  map[string]*stream.Stream{},
+		handlers: map[string][]onHandler{},
 	}
 }
 
@@ -294,6 +299,11 @@ type closure struct {
 	FullParams []*parser.Param
 }
 
+type onHandler struct {
+	alias string
+	body  []*parser.Statement
+}
+
 func (c closure) String() string {
 	return fmt.Sprintf("<closure %d/%d args>", len(c.Args), len(c.Fn.Params)+len(c.Args))
 }
@@ -362,6 +372,42 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 
 	case s.Type != nil:
 		// type declarations have no runtime effect
+		return nil
+
+	case s.Stream != nil:
+		i.streams[s.Stream.Name] = stream.New(s.Stream.Name, 64)
+		return nil
+
+	case s.On != nil:
+		i.handlers[s.On.Stream] = append(i.handlers[s.On.Stream], onHandler{alias: s.On.Alias, body: s.On.Body})
+		return nil
+
+	case s.Emit != nil:
+		ev := map[string]any{}
+		for _, f := range s.Emit.Fields {
+			v, err := i.evalExpr(f.Value)
+			if err != nil {
+				return err
+			}
+			ev[f.Name] = v
+		}
+		strm, ok := i.streams[s.Emit.Stream]
+		if !ok {
+			return fmt.Errorf("undefined stream: %s", s.Emit.Stream)
+		}
+		if _, err := strm.Append(context.Background(), ev); err != nil {
+			return err
+		}
+		for _, h := range i.handlers[s.Emit.Stream] {
+			child := types.NewEnv(i.env)
+			child.SetValue(h.alias, ev, true)
+			interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers}
+			for _, stmt := range h.body {
+				if err := interp.evalStmt(stmt); err != nil {
+					return err
+				}
+			}
+		}
 		return nil
 
 	case s.Model != nil:
