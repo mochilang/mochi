@@ -127,6 +127,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If, "if")
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Break != nil:
+		c.writeln("break")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue")
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -644,27 +650,27 @@ var helperGenStruct = "def _gen_struct(cls, prompt):\n" +
 	"    return cls(**data)\n"
 
 var helperFetch = "def _fetch(url, opts):\n" +
-        "    import urllib.request, urllib.parse, json\n" +
-        "    method = 'GET'\n" +
-        "    data = None\n" +
-        "    headers = {}\n" +
-        "    timeout = None\n" +
-        "    if opts:\n" +
-        "        method = opts.get('method', method)\n" +
-        "        if 'body' in opts:\n" +
-        "            data = json.dumps(opts['body']).encode()\n" +
-        "        if 'headers' in opts:\n" +
-        "            for k, v in _to_any_map(opts['headers']).items():\n" +
-        "                headers[k] = str(v)\n" +
-        "        if 'query' in opts:\n" +
-        "            q = urllib.parse.urlencode({k: str(v) for k, v in _to_any_map(opts['query']).items()})\n" +
-        "            sep = '&' if '?' in url else '?'\n" +
-        "            url = url + sep + q\n" +
-        "        timeout = opts.get('timeout', None)\n" +
-        "    req = urllib.request.Request(url, data=data, headers=headers, method=method)\n" +
-        "    with urllib.request.urlopen(req, timeout=timeout) as resp:\n" +
-        "        text = resp.read()\n" +
-        "    return json.loads(text)\n"
+	"    import urllib.request, urllib.parse, json\n" +
+	"    method = 'GET'\n" +
+	"    data = None\n" +
+	"    headers = {}\n" +
+	"    timeout = None\n" +
+	"    if opts:\n" +
+	"        method = opts.get('method', method)\n" +
+	"        if 'body' in opts:\n" +
+	"            data = json.dumps(opts['body']).encode()\n" +
+	"        if 'headers' in opts:\n" +
+	"            for k, v in _to_any_map(opts['headers']).items():\n" +
+	"                headers[k] = str(v)\n" +
+	"        if 'query' in opts:\n" +
+	"            q = urllib.parse.urlencode({k: str(v) for k, v in _to_any_map(opts['query']).items()})\n" +
+	"            sep = '&' if '?' in url else '?'\n" +
+	"            url = url + sep + q\n" +
+	"        timeout = opts.get('timeout', None)\n" +
+	"    req = urllib.request.Request(url, data=data, headers=headers, method=method)\n" +
+	"    with urllib.request.urlopen(req, timeout=timeout) as resp:\n" +
+	"        text = resp.read()\n" +
+	"    return json.loads(text)\n"
 
 var helperToAnyMap = "def _to_any_map(m):\n" +
 	"    return dict(m) if isinstance(m, dict) else dict(m)\n"

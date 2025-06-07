@@ -354,6 +354,12 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 	case s.For != nil:
 		return i.evalFor(s.For)
 
+	case s.Break != nil:
+		return breakSignal{}
+
+	case s.Continue != nil:
+		return continueSignal{}
+
 	case s.Type != nil:
 		// type declarations have no runtime effect
 		return nil
@@ -467,10 +473,27 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 		for x := fromInt; x < toInt; x++ {
 			child.SetValue(stmt.Name, x, true)
+			var cont bool
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
-					return err
+					switch err.(type) {
+					case continueSignal:
+						cont = true
+						err = nil
+					case breakSignal:
+						return nil
+					case returnSignal:
+						return err
+					default:
+						return err
+					}
+					if cont {
+						break
+					}
 				}
+			}
+			if cont {
+				continue
 			}
 		}
 		return nil
@@ -481,46 +504,131 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 	case []any:
 		for _, item := range coll {
 			child.SetValue(stmt.Name, item, true)
+			var cont bool
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
-					return err
+					switch err.(type) {
+					case continueSignal:
+						cont = true
+						err = nil
+					case breakSignal:
+						return nil
+					case returnSignal:
+						return err
+					default:
+						return err
+					}
+					if cont {
+						break
+					}
 				}
+			}
+			if cont {
+				continue
 			}
 		}
 	case map[any]any:
 		for k := range coll {
 			child.SetValue(stmt.Name, k, true)
+			var cont bool
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
-					return err
+					switch err.(type) {
+					case continueSignal:
+						cont = true
+						err = nil
+					case breakSignal:
+						return nil
+					case returnSignal:
+						return err
+					default:
+						return err
+					}
+					if cont {
+						break
+					}
 				}
+			}
+			if cont {
+				continue
 			}
 		}
 	case map[string]any:
 		for k := range coll {
 			child.SetValue(stmt.Name, k, true)
+			var cont bool
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
-					return err
+					switch err.(type) {
+					case continueSignal:
+						cont = true
+						err = nil
+					case breakSignal:
+						return nil
+					case returnSignal:
+						return err
+					default:
+						return err
+					}
+					if cont {
+						break
+					}
 				}
+			}
+			if cont {
+				continue
 			}
 		}
 	case map[int]any:
 		for k := range coll {
 			child.SetValue(stmt.Name, k, true)
+			var cont bool
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
-					return err
+					switch err.(type) {
+					case continueSignal:
+						cont = true
+						err = nil
+					case breakSignal:
+						return nil
+					case returnSignal:
+						return err
+					default:
+						return err
+					}
+					if cont {
+						break
+					}
 				}
+			}
+			if cont {
+				continue
 			}
 		}
 	case string:
 		for _, r := range coll {
 			child.SetValue(stmt.Name, string(r), true)
+			var cont bool
 			for _, s := range stmt.Body {
 				if err := i.evalStmt(s); err != nil {
-					return err
+					switch err.(type) {
+					case continueSignal:
+						cont = true
+						err = nil
+					case breakSignal:
+						return nil
+					case returnSignal:
+						return err
+					default:
+						return err
+					}
+					if cont {
+						break
+					}
 				}
+			}
+			if cont {
+				continue
 			}
 		}
 	default:
@@ -1604,6 +1712,14 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 type returnSignal struct{ value any }
 
 func (r returnSignal) Error() string { return "return" }
+
+type breakSignal struct{}
+
+func (b breakSignal) Error() string { return "break" }
+
+type continueSignal struct{}
+
+func (c continueSignal) Error() string { return "continue" }
 
 func applyBinary(pos lexer.Position, left any, op string, right any) (any, error) {
 	lv := anyToValue(left)

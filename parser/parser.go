@@ -23,7 +23,7 @@ func (b *boolLit) Capture(values []string) error {
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
-	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|type|fun|return|let|var|if|else|for|in|generate|match|fetch)\b`},
+	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|type|fun|return|break|continue|let|var|if|else|for|in|generate|match|fetch)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
@@ -40,22 +40,24 @@ type Program struct {
 }
 
 type Statement struct {
-	Pos    lexer.Position
-	Test   *TestBlock  `parser:"@@"`
-	Expect *ExpectStmt `parser:"| @@"`
-	Agent  *AgentDecl  `parser:"| @@"`
-	Stream *StreamDecl `parser:"| @@"`
-	Model  *ModelDecl  `parser:"| @@"`
-	Type   *TypeDecl   `parser:"| @@"`
-	On     *OnHandler  `parser:"| @@"`
-	Let    *LetStmt    `parser:"| @@"`
-	Var    *VarStmt    `parser:"| @@"`
-	Assign *AssignStmt `parser:"| @@"`
-	Fun    *FunStmt    `parser:"| @@"`
-	Return *ReturnStmt `parser:"| @@"`
-	If     *IfStmt     `parser:"| @@"`
-	For    *ForStmt    `parser:"| @@"`
-	Expr   *ExprStmt   `parser:"| @@"`
+	Pos      lexer.Position
+	Test     *TestBlock    `parser:"@@"`
+	Expect   *ExpectStmt   `parser:"| @@"`
+	Agent    *AgentDecl    `parser:"| @@"`
+	Stream   *StreamDecl   `parser:"| @@"`
+	Model    *ModelDecl    `parser:"| @@"`
+	Type     *TypeDecl     `parser:"| @@"`
+	On       *OnHandler    `parser:"| @@"`
+	Let      *LetStmt      `parser:"| @@"`
+	Var      *VarStmt      `parser:"| @@"`
+	Assign   *AssignStmt   `parser:"| @@"`
+	Fun      *FunStmt      `parser:"| @@"`
+	Return   *ReturnStmt   `parser:"| @@"`
+	If       *IfStmt       `parser:"| @@"`
+	For      *ForStmt      `parser:"| @@"`
+	Break    *BreakStmt    `parser:"| @@"`
+	Continue *ContinueStmt `parser:"| @@"`
+	Expr     *ExprStmt     `parser:"| @@"`
 }
 
 // --- Test and Expect ---
@@ -168,6 +170,14 @@ type FunStmt struct {
 type ReturnStmt struct {
 	Pos   lexer.Position
 	Value *Expr `parser:"'return' @@"`
+}
+
+type BreakStmt struct {
+	Pos lexer.Position `parser:"'break'"`
+}
+
+type ContinueStmt struct {
+	Pos lexer.Position `parser:"'continue'"`
 }
 
 type Param struct {
