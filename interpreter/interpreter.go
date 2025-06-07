@@ -1014,7 +1014,15 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		if !ok {
 			return nil, fmt.Errorf("fetch URL must be a string")
 		}
-		return mhttp.Fetch(urlStr)
+		var opts map[string]any
+		if p.Fetch.With != nil {
+			v, err := i.evalExpr(p.Fetch.With)
+			if err != nil {
+				return nil, err
+			}
+			opts = toAnyMap(v)
+		}
+		return mhttp.FetchWith(urlStr, opts)
 
 	case p.Generate != nil:
 		reqParams := map[string]any{}
@@ -1791,4 +1799,19 @@ func applyUnaryValue(pos lexer.Position, op string, val Value) (Value, error) {
 
 func truthy(val any) bool {
 	return anyToValue(val).Truthy()
+}
+
+func toAnyMap(m any) map[string]any {
+	switch v := m.(type) {
+	case map[string]any:
+		return v
+	case map[string]string:
+		out := make(map[string]any, len(v))
+		for k, vv := range v {
+			out[k] = vv
+		}
+		return out
+	default:
+		return nil
+	}
 }

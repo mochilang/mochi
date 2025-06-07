@@ -263,8 +263,9 @@ type GenerateExpr struct {
 }
 
 type FetchExpr struct {
-	Pos lexer.Position
-	URL *Expr `parser:"'fetch' @@"`
+	Pos  lexer.Position
+	URL  *Expr `parser:"'fetch' @@"`
+	With *Expr `parser:"[ 'with' @@ ]"`
 }
 
 type MatchExpr struct {
