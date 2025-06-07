@@ -350,6 +350,31 @@ let result = generate text {
 print(result)
 ```
 
+### HTTP Fetch
+
+Retrieve JSON over HTTP with the new `fetch` expression. Results are automatically
+decoded into the expected type. Use `with` to supply options such as the HTTP
+method, headers, or request body.
+
+```mochi
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+
+let todo: Todo = fetch "https://example.com/todos/1"
+
+let created: Todo = fetch "https://example.com/todos" with {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: todo
+}
+```
+
 ### Union Types and Methods
 
 Mochi now supports union types declared with the `|` syntax as well as inline
@@ -400,6 +425,8 @@ Explore the [`examples/`](./examples) directory:
 * `generate-model.mochi`
 * `tools.mochi`
 * `types.mochi`
+* `fetch.mochi`
+* `fetch-post.mochi`
 
 Edit one or start fresh. It’s all yours.
 

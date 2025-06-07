@@ -1,6 +1,6 @@
-# Mochi Programming Language Specification (v0.3.4)
+# Mochi Programming Language Specification (v0.3.5)
 
-This document describes version 0.3.4 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
+This document describes version 0.3.5 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
 
 ## 0. Introduction
 
@@ -139,7 +139,7 @@ Factor      = Unary { ("*" | "/") Unary }
 Unary       = { "-" | "!" } PostfixExpr
 PostfixExpr = Primary { IndexOp }
 Primary     = FunExpr | CallExpr | SelectorExpr | ListLiteral |
-              MapLiteral | MatchExpr | GenerateExpr |
+              MapLiteral | MatchExpr | GenerateExpr | FetchExpr |
               Literal | Identifier | "(" Expression ")"
 ```
 
@@ -310,6 +310,29 @@ let vec = generate embedding {
 }
 ```
 
+### Fetch Expression
+
+`fetch` performs an HTTP request and decodes the JSON response into the
+expected type. Additional options may be provided with `with`.
+
+```mochi
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+
+let todo: Todo = fetch "https://example.com/todos/1"
+```
+
+```mochi
+let created: Todo = fetch "https://example.com/todos" with {
+  method: "POST",
+  body: todo
+}
+```
+
 ## 6. Functions
 
 Functions are first-class. Parameters are typed, and the return type may be omitted in block-bodied functions if `return` is used. Functions may capture variables from their enclosing scope, forming closures.
@@ -373,7 +396,7 @@ Term         = Factor { ("+" | "-") Factor } .
 Factor       = Unary { ("*" | "/") Unary } .
 Unary        = { "-" | "!" } PostfixExpr .
 PostfixExpr  = Primary { IndexOp } .
-Primary      = FunExpr | CallExpr | SelectorExpr | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | Literal | Identifier | "(" Expression ")" .
+Primary      = FunExpr | CallExpr | SelectorExpr | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | FetchExpr | Literal | Identifier | "(" Expression ")" .
 FunExpr       = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] ("=>" Expression | Block) .
 CallExpr      = Identifier "(" [ Expression { "," Expression } ] ")" .
 SelectorExpr  = Identifier { "." Identifier } .
@@ -388,4 +411,4 @@ GenericType   = Identifier "<" TypeRef { "," TypeRef } ">" .
 FunType       = "fun" "(" [ TypeRef { "," TypeRef } ] ")" [ ":" TypeRef ] .
 ```
 
-This specification outlines the core language as of version 0.3.4. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.
+This specification outlines the core language as of version 0.3.5. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.

@@ -1,4 +1,4 @@
-// 0. Mochi (v0.3.4)
+// 0. Mochi (v0.3.5)
 // Mochi is a lightweight programming language for building AI agents, working with real-time data,
 // and querying datasets. It combines declarative and functional programming, with built-in support
 // for streams, datasets, tools, and prompt-based AI generation.
@@ -163,3 +163,21 @@ type Circle {
 
 let c = Circle { radius: 5 }
 print(c.area())
+
+// 11. HTTP Fetch
+
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+
+let todo: Todo = fetch "https://example.com/todos/1"
+print(todo.title)
+
+let created: Todo = fetch "https://example.com/todos" with {
+  method: "POST",
+  body: todo
+}
+print(created.id)
