@@ -902,6 +902,13 @@ func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
 				i.env = old
 				val = ret
 			}
+		} else if cast := op.Cast; cast != nil {
+			typ := resolveTypeRef(cast.Type, i.types)
+			cv, err := castValue(cast.Pos, typ, val)
+			if err != nil {
+				return nil, err
+			}
+			val = cv
 		}
 	}
 	return val, nil
@@ -1799,6 +1806,134 @@ func applyUnaryValue(pos lexer.Position, op string, val Value) (Value, error) {
 
 func truthy(val any) bool {
 	return anyToValue(val).Truthy()
+}
+
+func castValue(pos lexer.Position, t types.Type, v any) (any, error) {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		switch x := v.(type) {
+		case int:
+			return x, nil
+		case float64:
+			return int(x), nil
+		default:
+			return nil, errCastType(pos, v, t)
+		}
+	case types.FloatType:
+		switch x := v.(type) {
+		case float64:
+			return x, nil
+		case int:
+			return float64(x), nil
+		default:
+			return nil, errCastType(pos, v, t)
+		}
+	case types.StringType:
+		if s, ok := v.(string); ok {
+			return s, nil
+		}
+		return nil, errCastType(pos, v, t)
+	case types.BoolType:
+		if b, ok := v.(bool); ok {
+			return b, nil
+		}
+		return nil, errCastType(pos, v, t)
+	case types.ListType:
+		list, ok := v.([]any)
+		if !ok {
+			return nil, errCastType(pos, v, t)
+		}
+		out := make([]any, len(list))
+		for i, item := range list {
+			cv, err := castValue(pos, tt.Elem, item)
+			if err != nil {
+				return nil, err
+			}
+			out[i] = cv
+		}
+		return out, nil
+	case types.MapType:
+		m, ok := v.(map[string]any)
+		if !ok {
+			return nil, errCastType(pos, v, t)
+		}
+		out := map[string]any{}
+		for k, val := range m {
+			cv, err := castValue(pos, tt.Value, val)
+			if err != nil {
+				return nil, err
+			}
+			out[k] = cv
+		}
+		return out, nil
+	case types.StructType:
+		m, ok := v.(map[string]any)
+		if !ok {
+			return nil, errCastType(pos, v, t)
+		}
+		out := map[string]any{"__name": tt.Name}
+		for name, ft := range tt.Fields {
+			fv, ok := m[name]
+			if !ok {
+				return nil, errCastMissingField(pos, name, tt.Name)
+			}
+			cv, err := castValue(pos, ft, fv)
+			if err != nil {
+				return nil, err
+			}
+			out[name] = cv
+		}
+		return out, nil
+	default:
+		return v, nil
+	}
+}
+
+func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = resolveTypeRef(p, env)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = resolveTypeRef(t.Fun.Return, env)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				return types.ListType{Elem: resolveTypeRef(t.Generic.Args[0], env)}
+			}
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				return types.MapType{Key: resolveTypeRef(t.Generic.Args[0], env), Value: resolveTypeRef(t.Generic.Args[1], env)}
+			}
+		}
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			if st, ok := env.GetStruct(*t.Simple); ok {
+				return st
+			}
+			if ut, ok := env.GetUnion(*t.Simple); ok {
+				return ut
+			}
+		}
+	}
+	return types.AnyType{}
 }
 
 func toAnyMap(m any) map[string]any {

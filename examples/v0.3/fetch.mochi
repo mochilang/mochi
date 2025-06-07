@@ -7,7 +7,7 @@ type Todo {
   completed: bool
 }
 
-let todo: Todo = fetch "https://jsonplaceholder.typicode.com/todos/1"
+let todo = fetch "https://jsonplaceholder.typicode.com/todos/1" as Todo
 
 print("Title:", todo.title)
 print("Completed:", todo.completed)

@@ -282,6 +282,8 @@ func FromPostfixExpr(p *parser.PostfixExpr) *Node {
 				callNode.Children = append(callNode.Children, FromExpr(a))
 			}
 			n = callNode
+		} else if cast := op.Cast; cast != nil {
+			n = &Node{Kind: "cast", Children: []*Node{n, FromTypeRef(cast.Type)}}
 		}
 	}
 	return n

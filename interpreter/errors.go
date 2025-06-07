@@ -3,6 +3,7 @@ package interpreter
 import (
 	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/diagnostic"
+	"mochi/types"
 )
 
 var Errors = map[string]diagnostic.Template{
@@ -37,6 +38,8 @@ var Errors = map[string]diagnostic.Template{
 
 	// --- Loops and Iteration ---
 	"I019": {Code: "I019", Message: "cannot iterate over value of type %s", Help: "Only `list`, `map`, and `string` are iterable in `for ... in` loops."},
+	"I020": {Code: "I020", Message: "cannot cast %T to %s", Help: "Ensure the value matches the expected type."},
+	"I021": {Code: "I021", Message: "missing field `%s` for %s", Help: "Check that all required fields are present."},
 }
 
 // --- Variables and Functions ---
@@ -109,4 +112,12 @@ func errExpectFailed(pos lexer.Position) error {
 // --- New helper functions for loop errors ---
 func errInvalidIterator(pos lexer.Position, typ string) error {
 	return Errors["I019"].New(pos, typ)
+}
+
+func errCastType(pos lexer.Position, val any, typ types.Type) error {
+	return Errors["I020"].New(pos, val, typ)
+}
+
+func errCastMissingField(pos lexer.Position, field, typ string) error {
+	return Errors["I021"].New(pos, field, typ)
 }

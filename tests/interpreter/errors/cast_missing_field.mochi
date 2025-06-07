@@ -1,0 +1,5 @@
+type Todo {
+  title: string
+}
+
+let todo = {"name": "bob"} as Todo
