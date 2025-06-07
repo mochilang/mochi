@@ -1,0 +1,29 @@
+// stream.mochi
+
+# Define a stream for sensor data
+stream Sensor {
+  id: string
+  temperature: float
+}
+
+# Print each reading when received
+on Sensor as r {
+  print("Reading from", r.id)
+  print(" →", r.temperature, "°C")
+}
+
+# Emit a few sample events
+emit Sensor {
+  id: "sensor-1",
+  temperature: 22.5
+}
+
+emit Sensor {
+  id: "sensor-2",
+  temperature: 30.2
+}
+
+emit Sensor {
+  id: "sensor-3",
+  temperature: 18.9
+}
