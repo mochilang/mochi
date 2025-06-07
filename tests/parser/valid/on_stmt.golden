@@ -1,0 +1,7 @@
+(program
+  (on Message
+    (call print
+      (selector text (selector m))
+    )
+  )
+)

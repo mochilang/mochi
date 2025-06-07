@@ -1,0 +1,7 @@
+(program
+  (let out
+    (generate_text
+      (prompt (string hi))
+    )
+  )
+)

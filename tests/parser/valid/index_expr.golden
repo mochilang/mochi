@@ -1,0 +1,21 @@
+(program
+  (let x
+    (list (int 1) (int 2) (int 3))
+  )
+  (let y
+    (index (selector x) (int 1))
+  )
+  (let z
+    (index
+      (selector x)
+      (start (int 1))
+      (end (int 3))
+    )
+  )
+  (let w
+    (index
+      (selector x)
+      (unary - (int 1))
+    )
+  )
+)

@@ -1,0 +1,5 @@
+error[P999]: tests/parser/errors/assign_missing_expr.mochi:3:1: unexpected token "<EOF>" (expected PostfixExpr)
+  --> tests/parser/errors/assign_missing_expr.mochi:3:1
+
+help:
+  Parse error occurred. Check syntax near this location.

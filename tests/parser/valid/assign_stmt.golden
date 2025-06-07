@@ -1,0 +1,6 @@
+(program
+  (let x (int 1))
+  (assign x
+    (binary + (selector x) (int 1))
+  )
+)
