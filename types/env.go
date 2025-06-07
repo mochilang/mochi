@@ -21,6 +21,7 @@ type Env struct {
 	types   map[string]Type            // static types
 	structs map[string]StructType      // user-defined struct types
 	unions  map[string]UnionType       // user-defined union types
+	streams map[string]StructType      // stream declarations
 	mut     map[string]bool            // mutability of variables
 	values  map[string]any             // runtime values
 	funcs   map[string]*parser.FunStmt // function declarations
@@ -40,6 +41,7 @@ func NewEnv(parent *Env) *Env {
 		types:   make(map[string]Type),
 		structs: make(map[string]StructType),
 		unions:  make(map[string]UnionType),
+		streams: make(map[string]StructType),
 		mut:     make(map[string]bool),
 		values:  make(map[string]any),
 		funcs:   make(map[string]*parser.FunStmt),
@@ -78,6 +80,20 @@ func (e *Env) GetUnion(name string) (UnionType, bool) {
 		return e.parent.GetUnion(name)
 	}
 	return UnionType{}, false
+}
+
+// SetStream defines a stream declaration.
+func (e *Env) SetStream(name string, st StructType) { e.streams[name] = st }
+
+// GetStream retrieves a stream by name.
+func (e *Env) GetStream(name string) (StructType, bool) {
+	if st, ok := e.streams[name]; ok {
+		return st, true
+	}
+	if e.parent != nil {
+		return e.parent.GetStream(name)
+	}
+	return StructType{}, false
 }
 
 // FindUnionByVariant returns the union type that contains the given variant name.
@@ -210,6 +226,7 @@ func (e *Env) Copy() *Env {
 		funcs:   make(map[string]*parser.FunStmt, len(e.funcs)),
 		structs: make(map[string]StructType, len(e.structs)),
 		unions:  make(map[string]UnionType, len(e.unions)),
+		streams: make(map[string]StructType, len(e.streams)),
 		models:  make(map[string]ModelSpec, len(e.models)),
 		output:  e.output,
 	}
@@ -230,6 +247,9 @@ func (e *Env) Copy() *Env {
 	}
 	for k, v := range e.unions {
 		newEnv.unions[k] = v
+	}
+	for k, v := range e.streams {
+		newEnv.streams[k] = v
 	}
 	for k, v := range e.models {
 		newEnv.models[k] = v

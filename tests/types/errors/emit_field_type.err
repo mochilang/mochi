@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected string, got int
+  --> tests/types/errors/emit_field_type.mochi:3:19
+
+  3 | emit Sensor { id: 123 }
+    |                   ^
+
+help:
+  Change the value to match the expected type.
