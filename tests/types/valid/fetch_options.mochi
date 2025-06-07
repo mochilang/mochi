@@ -1,5 +1,5 @@
 let result = fetch "https://example.com" with {
-  "method": "POST",
-  "headers": {"Content-Type": "application/json"},
-  "body": {"x": 1}
+  method: "POST",
+  headers: {"Content-Type": "application/json"},
+  body: {"x": 1}
 }

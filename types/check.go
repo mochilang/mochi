@@ -1080,9 +1080,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 	case p.Map != nil:
 		var keyT, valT Type
 		for _, item := range p.Map.Items {
-			kt, err := checkExpr(item.Key, env)
-			if err != nil {
-				return nil, err
+			var kt Type
+			if _, ok := stringKey(item.Key); ok {
+				kt = StringType{}
+			} else {
+				var err error
+				kt, err = checkExpr(item.Key, env)
+				if err != nil {
+					return nil, err
+				}
 			}
 			vt, err := checkExpr(item.Value, env)
 			if err != nil {
