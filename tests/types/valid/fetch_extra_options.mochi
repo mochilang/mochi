@@ -1,0 +1,4 @@
+let result = fetch "https://example.com" with {
+  query: {"q": "1"},
+  timeout: 1.5
+}

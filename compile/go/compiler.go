@@ -675,6 +675,9 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	c.imports["io"] = true
 	c.imports["encoding/json"] = true
 	c.imports["bytes"] = true
+	c.imports["net/url"] = true
+	c.imports["time"] = true
+	c.imports["fmt"] = true
 	c.use("_fetch")
 	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
 }
@@ -1717,7 +1720,18 @@ const (
 		"            body = bytes.NewReader(data)\n" +
 		"        }\n" +
 		"    }\n" +
-		"    req, err := http.NewRequest(method, url, body)\n" +
+		"    u, err := url.Parse(url)\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    if opts != nil {\n" +
+		"        if q, ok := opts[\"query\"]; ok {\n" +
+		"            vals := u.Query()\n" +
+		"            for k, v := range _toAnyMap(q) {\n" +
+		"                vals.Set(k, fmt.Sprint(v))\n" +
+		"            }\n" +
+		"            u.RawQuery = vals.Encode()\n" +
+		"        }\n" +
+		"    }\n" +
+		"    req, err := http.NewRequest(method, u.String(), body)\n" +
 		"    if err != nil { panic(err) }\n" +
 		"    if opts != nil {\n" +
 		"        if hs, ok := opts[\"headers\"]; ok {\n" +
@@ -1728,7 +1742,22 @@ const (
 		"            }\n" +
 		"        }\n" +
 		"    }\n" +
-		"    resp, err := http.DefaultClient.Do(req)\n" +
+		"    client := http.DefaultClient\n" +
+		"    if opts != nil {\n" +
+		"        if t, ok := opts[\"timeout\"]; ok {\n" +
+		"            switch v := t.(type) {\n" +
+		"            case int:\n" +
+		"                client = &http.Client{Timeout: time.Duration(v) * time.Second}\n" +
+		"            case int64:\n" +
+		"                client = &http.Client{Timeout: time.Duration(v) * time.Second}\n" +
+		"            case float64:\n" +
+		"                client = &http.Client{Timeout: time.Duration(v * float64(time.Second))}\n" +
+		"            case float32:\n" +
+		"                client = &http.Client{Timeout: time.Duration(float64(v) * float64(time.Second))}\n" +
+		"            }\n" +
+		"        }\n" +
+		"    }\n" +
+		"    resp, err := client.Do(req)\n" +
 		"    if err != nil { panic(err) }\n" +
 		"    defer resp.Body.Close()\n" +
 		"    data, err := io.ReadAll(resp.Body)\n" +
