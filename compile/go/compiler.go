@@ -13,16 +13,23 @@ import (
 
 // Compiler translates a Mochi AST into Go source code.
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	imports map[string]bool
-	env     *types.Env
-	helpers map[string]bool
+	buf          bytes.Buffer
+	indent       int
+	imports      map[string]bool
+	env          *types.Env
+	helpers      map[string]bool
+	structs      map[string]bool
+	handlerCount int
 }
 
 // New creates a new Go compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{imports: make(map[string]bool), env: env, helpers: make(map[string]bool)}
+	return &Compiler{
+		imports: make(map[string]bool),
+		env:     env,
+		helpers: make(map[string]bool),
+		structs: make(map[string]bool),
+	}
 }
 
 // Compile returns Go source code implementing prog.
@@ -154,6 +161,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue")
 		return nil
+	case s.Stream != nil:
+		return c.compileStreamDecl(s.Stream)
+	case s.On != nil:
+		return c.compileOnHandler(s.On)
+	case s.Emit != nil:
+		return c.compileEmit(s.Emit)
 	case s.Expect != nil:
 		expr, err := c.compileExpr(s.Expect.Value)
 		if err != nil {
@@ -230,8 +243,110 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
+	st, ok := c.env.GetStream(s.Name)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", s.Name)
+	}
+	c.compileStructType(st)
+	varName := unexportName(sanitizeName(s.Name)) + "Stream"
+	c.imports["mochi/runtime/stream"] = true
+	c.writeln(fmt.Sprintf("var %s = stream.New(%q, 64)", varName, s.Name))
+	return nil
+}
+
+func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
+	st, ok := c.env.GetStream(h.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", h.Stream)
+	}
+	streamVar := unexportName(sanitizeName(h.Stream)) + "Stream"
+	handlerID := c.handlerCount
+	c.handlerCount++
+	c.writeln("go func() {")
+	c.indent++
+	c.writeln(fmt.Sprintf("sub := %s.RegisterSubscriber(\"handler-%d\")", streamVar, handlerID))
+	c.writeln("_ = sub.Watch(context.Background(), func(ev *stream.Event) error {")
+	c.indent++
+	alias := sanitizeName(h.Alias)
+	c.writeln(fmt.Sprintf("%s := ev.Data.(%s)", alias, sanitizeName(st.Name)))
+	child := types.NewEnv(c.env)
+	child.SetVar(h.Alias, st, true)
+	orig := c.env
+	c.env = child
+	for _, stmt := range h.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			c.env = orig
+			return err
+		}
+	}
+	c.env = orig
+	c.writeln("return nil")
+	c.indent--
+	c.writeln("})")
+	c.indent--
+	c.writeln("}()")
+	return nil
+}
+
+func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
+	st, ok := c.env.GetStream(e.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", e.Stream)
+	}
+	parts := make([]string, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(f.Name)), v)
+	}
+	lit := fmt.Sprintf("%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+	streamVar := unexportName(sanitizeName(e.Stream)) + "Stream"
+	c.writeln(fmt.Sprintf("_, _ = %s.Append(context.Background(), %s)", streamVar, lit))
+	return nil
+}
+
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("type %s struct {", name))
+	c.indent++
+	for _, fn := range st.Order {
+		ft := st.Fields[fn]
+		c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", exportName(sanitizeName(fn)), goType(ft), fn))
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
+}
+
+func unexportName(name string) string {
+	if name == "" {
+		return ""
+	}
+	runes := []rune(name)
+	if runes[0] >= 'A' && runes[0] <= 'Z' {
+		runes[0] = runes[0] - 'A' + 'a'
+	}
+	return string(runes)
+}
+
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
 	if len(t.Variants) > 0 {
 		iface := fmt.Sprintf("type %s interface { is%s() }", name, name)
 		c.writeln(iface)
@@ -1355,6 +1470,23 @@ func (c *Compiler) scanImports(s *parser.Statement) {
 		}
 		for _, t := range s.For.Body {
 			c.scanImports(t)
+		}
+	}
+	if s.Stream != nil {
+		c.imports["mochi/runtime/stream"] = true
+	}
+	if s.On != nil {
+		c.imports["context"] = true
+		c.imports["mochi/runtime/stream"] = true
+		for _, t := range s.On.Body {
+			c.scanImports(t)
+		}
+	}
+	if s.Emit != nil {
+		c.imports["context"] = true
+		c.imports["mochi/runtime/stream"] = true
+		for _, f := range s.Emit.Fields {
+			c.scanExprImports(f.Value)
 		}
 	}
 	if s.Fun != nil {
