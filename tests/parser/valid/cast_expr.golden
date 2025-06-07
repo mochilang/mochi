@@ -1,0 +1,13 @@
+(program
+  (type Todo
+    (field title (type string))
+  )
+  (let x
+    (cast
+      (map
+        (entry (string title) (string a))
+      )
+      (type Todo)
+    )
+  )
+)

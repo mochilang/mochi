@@ -1,0 +1,8 @@
+error[I021]: missing field `title` for Todo
+  --> tests/interpreter/errors/cast_missing_field.mochi:5:28
+
+  5 | let todo = {"name": "bob"} as Todo
+    |                            ^
+
+help:
+  Check that all required fields are present.

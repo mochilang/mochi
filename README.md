@@ -364,7 +364,7 @@ type Todo {
   completed: bool
 }
 
-let todo: Todo = fetch "https://example.com/todos/1"
+let todo = fetch "https://example.com/todos/1" as Todo
 
 let created: Todo = fetch "https://example.com/todos" with {
   method: "POST",

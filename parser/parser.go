@@ -212,6 +212,12 @@ type PostfixExpr struct {
 type PostfixOp struct {
 	Call  *CallOp  `parser:"@@"`
 	Index *IndexOp `parser:"| @@"`
+	Cast  *CastOp  `parser:"| @@"`
+}
+
+type CastOp struct {
+	Pos  lexer.Position
+	Type *TypeRef `parser:"'as' @@"`
 }
 
 type CallOp struct {

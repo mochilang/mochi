@@ -312,8 +312,10 @@ let vec = generate embedding {
 
 ### Fetch Expression
 
-`fetch` performs an HTTP request and decodes the JSON response into the
-expected type. Additional options may be provided with `with`.
+`fetch` performs an HTTP request and decodes the JSON response. If the
+target variable has a known type or you cast with `as`, Mochi validates
+that the JSON matches the expected structure. Additional options may be
+provided with `with`.
 
 ```mochi
 type Todo {
@@ -323,7 +325,7 @@ type Todo {
   completed: bool
 }
 
-let todo: Todo = fetch "https://example.com/todos/1"
+let todo = fetch "https://example.com/todos/1" as Todo
 ```
 
 ```mochi

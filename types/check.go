@@ -947,6 +947,8 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 			} else {
 				typ = curryFuncType(ft.Params[argCount:], ft.Return)
 			}
+		} else if cast := op.Cast; cast != nil {
+			typ = resolveTypeRef(cast.Type, env)
 		}
 	}
 

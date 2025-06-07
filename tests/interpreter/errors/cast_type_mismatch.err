@@ -1,0 +1,8 @@
+error[I020]: cannot cast int to string
+  --> tests/interpreter/errors/cast_type_mismatch.mochi:5:25
+
+  5 | let todo = {"title": 1} as Todo
+    |                         ^
+
+help:
+  Ensure the value matches the expected type.
