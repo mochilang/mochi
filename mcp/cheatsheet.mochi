@@ -181,3 +181,16 @@ let created: Todo = fetch "https://example.com/todos" with {
   body: todo
 }
 print(created.id)
+
+// 12. Streams
+
+stream Sensor {
+  id: string
+  temperature: float
+}
+
+on Sensor as r {
+  print(r.id, r.temperature)
+}
+
+emit Sensor { id: "s1", temperature: 21.3 }

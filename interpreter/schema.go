@@ -1,12 +1,12 @@
 package interpreter
 
 import (
-        "fmt"
-        "sort"
+	"fmt"
+	"sort"
 
-        "mochi/parser"
-        "mochi/runtime/llm"
-        "mochi/types"
+	"mochi/parser"
+	"mochi/runtime/llm"
+	"mochi/types"
 )
 
 func typeToSchema(t types.Type) map[string]any {
@@ -67,10 +67,10 @@ func funcToTool(name string, fn *parser.FunStmt, ft types.FuncType) llm.Tool {
 		props[p.Name] = typeToSchema(t)
 		required = append(required, p.Name)
 	}
-        schema := map[string]any{"type": "object", "properties": props}
-        if len(required) > 0 {
-                schema["required"] = required
-        }
-        desc := fmt.Sprintf("Call the %s function", name)
-        return llm.Tool{Name: name, Description: desc, Parameters: schema}
+	schema := map[string]any{"type": "object", "properties": props}
+	if len(required) > 0 {
+		schema["required"] = required
+	}
+	desc := fmt.Sprintf("Call the %s function", name)
+	return llm.Tool{Name: name, Description: desc, Parameters: schema}
 }
