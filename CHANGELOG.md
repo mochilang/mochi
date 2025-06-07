@@ -1,4 +1,20 @@
 # 📦 CHANGELOG.md
+## [0.3.5] – 2025-06-07
+
+### Added
+
+* `fetch` expression for HTTP requests with typed JSON
+* `with` options for method, headers and body
+* Python and TypeScript compiler support for `fetch`
+
+### Changed
+
+* Type checking for fetch options
+
+### Fixed
+
+* Minor runtime improvements for HTTP requests
+
 ## [0.3.4] – 2025-06-07
 
 ### Added
