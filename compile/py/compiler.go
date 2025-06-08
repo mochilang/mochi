@@ -18,6 +18,7 @@ type Compiler struct {
 	imports      map[string]bool
 	env          *types.Env
 	structs      map[string]bool
+	agents       map[string]bool
 	handlerCount int
 }
 
@@ -27,6 +28,7 @@ func New(env *types.Env) *Compiler {
 		imports: make(map[string]bool),
 		env:     env,
 		structs: make(map[string]bool),
+		agents:  make(map[string]bool),
 	}
 }
 
@@ -157,6 +159,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileOnHandler(s.On)
 	case s.Emit != nil:
 		return c.compileEmit(s.Emit)
+	case s.Agent != nil:
+		return c.compileAgentDecl(s.Agent)
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -245,6 +249,100 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	streamVar := unexportName(sanitizeName(e.Stream)) + "Stream"
 	c.writeln(fmt.Sprintf("%s.append(%s)", streamVar, lit))
 	c.use("_stream")
+	return nil
+}
+
+func (c *Compiler) compileAgentDecl(a *parser.AgentDecl) error {
+	st, ok := c.env.GetStruct(a.Name)
+	if !ok {
+		return fmt.Errorf("unknown agent: %s", a.Name)
+	}
+	name := sanitizeName(a.Name)
+	if c.agents[name] {
+		return nil
+	}
+	c.agents[name] = true
+
+	baseEnv := types.NewEnv(c.env)
+	for _, fn := range st.Order {
+		baseEnv.SetVar(fn, st.Fields[fn], true)
+	}
+
+	c.writeln(fmt.Sprintf("class %s:", name))
+	c.indent++
+	c.writeln("def __init__(self):")
+	c.indent++
+	c.use("_agent")
+	c.writeln(fmt.Sprintf("self.Agent = Agent(%q)", a.Name))
+
+	origEnv := c.env
+	c.env = baseEnv
+	for _, blk := range a.Body {
+		switch {
+		case blk.Let != nil:
+			val := "None"
+			if blk.Let.Value != nil {
+				v, err := c.compileExpr(blk.Let.Value)
+				if err != nil {
+					c.env = origEnv
+					return err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("self.%s = %s", sanitizeName(blk.Let.Name), val))
+		case blk.Var != nil:
+			val := "None"
+			if blk.Var.Value != nil {
+				v, err := c.compileExpr(blk.Var.Value)
+				if err != nil {
+					c.env = origEnv
+					return err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("self.%s = %s", sanitizeName(blk.Var.Name), val))
+		}
+	}
+	c.env = origEnv
+
+	handlerID := 0
+	for _, blk := range a.Body {
+		if blk.On != nil {
+			streamVar := unexportName(sanitizeName(blk.On.Stream)) + "Stream"
+			c.writeln(fmt.Sprintf("self.Agent.on(%s, self._on%d)", streamVar, handlerID))
+			handlerID++
+		}
+	}
+	for _, blk := range a.Body {
+		if blk.Intent != nil {
+			mname := sanitizeName(blk.Intent.Name)
+			c.writeln(fmt.Sprintf("self.Agent.register_intent(%q, self.%s)", blk.Intent.Name, mname))
+		}
+	}
+	c.writeln("self.Agent.start()")
+	c.indent--
+
+	handlerID = 0
+	for _, blk := range a.Body {
+		switch {
+		case blk.Intent != nil:
+			if err := c.compileAgentIntent(name, baseEnv, blk.Intent); err != nil {
+				return err
+			}
+		case blk.On != nil:
+			if _, err := c.compileAgentOn(name, baseEnv, blk.On, handlerID); err != nil {
+				return err
+			}
+			handlerID++
+		}
+	}
+	c.indent--
+	c.writeln("")
+	c.writeln(fmt.Sprintf("def New%s():", name))
+	c.indent++
+	c.writeln(fmt.Sprintf("return %s()", name))
+	c.indent--
+	c.writeln("")
 	return nil
 }
 
@@ -406,6 +504,55 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	return nil
 }
 
+func (c *Compiler) compileAgentIntent(agentName string, env *types.Env, in *parser.IntentDecl) error {
+	name := sanitizeName(in.Name)
+	c.writeIndent()
+	c.buf.WriteString("def " + name + "(self")
+	for _, p := range in.Params {
+		c.buf.WriteString(", " + sanitizeName(p.Name))
+	}
+	c.buf.WriteString("):\n")
+	child := types.NewEnv(env)
+	orig := c.env
+	c.env = child
+	c.indent++
+	for _, s := range in.Body {
+		if err := c.compileStmt(s); err != nil {
+			c.env = orig
+			return err
+		}
+	}
+	c.indent--
+	c.env = orig
+	return nil
+}
+
+func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.OnHandler, id int) (string, error) {
+	st, ok := c.env.GetStream(h.Stream)
+	if !ok {
+		return "", fmt.Errorf("unknown stream: %s", h.Stream)
+	}
+	fname := fmt.Sprintf("_on%d", id)
+	c.writeIndent()
+	c.buf.WriteString("def " + fname + "(self, ev):\n")
+	alias := sanitizeName(h.Alias)
+	child := types.NewEnv(env)
+	child.SetVar(h.Alias, st, true)
+	orig := c.env
+	c.env = child
+	c.indent++
+	c.writeln(fmt.Sprintf("%s = ev", alias))
+	for _, stmt := range h.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.indent--
+	c.env = orig
+	return fname, nil
+}
+
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	expr, err := c.compileExpr(e.Value)
 	if err != nil {
@@ -525,6 +672,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return expr, nil
 	case p.Struct != nil:
+		if c.env != nil {
+			if _, ok := c.env.GetAgent(p.Struct.Name); ok {
+				if len(p.Struct.Fields) > 0 {
+					return "", fmt.Errorf("agent initialization with fields not supported")
+				}
+				return fmt.Sprintf("New%s()", sanitizeName(p.Struct.Name)), nil
+			}
+		}
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)
@@ -809,6 +964,32 @@ var helperWaitAll = "import asyncio\n" +
 	"async def _wait_all():\n" +
 	"    await asyncio.gather(*_pending)\n"
 
+var helperAgent = "import asyncio\n" +
+	"class Agent:\n" +
+	"    def __init__(self, name):\n" +
+	"        self.name = name\n" +
+	"        self.handlers = {}\n" +
+	"        self.intents = {}\n" +
+	"        self.state = {}\n" +
+	"    def start(self):\n" +
+	"        pass\n" +
+	"    def on(self, stream, handler):\n" +
+	"        stream.register(handler)\n" +
+	"    def register_intent(self, name, handler):\n" +
+	"        self.intents[name] = handler\n" +
+	"    async def call(self, name, *args):\n" +
+	"        fn = self.intents.get(name)\n" +
+	"        if fn is None:\n" +
+	"            raise Exception('unknown intent: ' + name)\n" +
+	"        res = fn(*args)\n" +
+	"        if asyncio.iscoroutine(res):\n" +
+	"            res = await res\n" +
+	"        return res\n" +
+	"    def set(self, name, value):\n" +
+	"        self.state[name] = value\n" +
+	"    def get(self, name):\n" +
+	"        return self.state.get(name)\n"
+
 var helperMap = map[string]string{
 	"_index":      helperIndex,
 	"_slice":      helperSlice,
@@ -819,6 +1000,7 @@ var helperMap = map[string]string{
 	"_to_any_map": helperToAnyMap,
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
+	"_agent":      helperAgent,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
