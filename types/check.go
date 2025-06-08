@@ -821,7 +821,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 		{"*", "/", "%"},
 		{"+", "-"},
 		{"<", "<=", ">", ">="},
-		{"==", "!="},
+                {"==", "!=", "in"},
 		{"&&"},
 		{"||"},
 	} {
@@ -869,12 +869,17 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 		default:
 			return nil, errOperatorMismatch(pos, op, left, right)
 		}
-	case "==", "!=", "<", "<=", ">", ">=":
-		if !unify(left, right, nil) {
-			return nil, errIncompatibleComparison(pos)
-		}
-		return BoolType{}, nil
-	case "&&", "||":
+        case "==", "!=", "<", "<=", ">", ">=":
+                if !unify(left, right, nil) {
+                        return nil, errIncompatibleComparison(pos)
+                }
+                return BoolType{}, nil
+        case "in":
+                if !(unify(left, StringType{}, nil) && unify(right, StringType{}, nil)) {
+                        return nil, errOperatorMismatch(pos, op, left, right)
+                }
+                return BoolType{}, nil
+        case "&&", "||":
 		if !(unify(left, BoolType{}, nil) && unify(right, BoolType{}, nil)) {
 			return nil, errOperatorMismatch(pos, op, left, right)
 		}

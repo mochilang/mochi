@@ -16,7 +16,7 @@ let vowels = "aeiou"
 let count = 0
 
 for ch in s {
-  if vowels.contains(ch) {
+  if ch in vowels {
     count += 1
   }
 }
