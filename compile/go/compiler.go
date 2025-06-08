@@ -659,6 +659,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		return err
 	}
 	t := c.inferExprType(stmt.Source)
+	preBody := ""
 	switch tt := t.(type) {
 	case types.ListType:
 		c.writeIndent()
@@ -666,6 +667,13 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		if c.env != nil {
 			c.env.SetVar(stmt.Name, tt.Elem, true)
 		}
+	case types.StringType:
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("for _, r := range []rune(%s) {\n", src))
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, types.StringType{}, true)
+		}
+		preBody = fmt.Sprintf("%s := string(r)\n", name)
 	default:
 		c.use("_iter")
 		c.writeIndent()
@@ -675,6 +683,10 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 	}
 	c.indent++
+	if preBody != "" {
+		c.writeIndent()
+		c.buf.WriteString(preBody)
+	}
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
@@ -858,7 +870,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				val = fmt.Sprintf("%s[%s]", val, key)
 				typ = tt.Value
 			case types.StringType:
-				val = fmt.Sprintf("string([]rune(%s)[%s])", val, key)
+				c.use("_index")
+				val = fmt.Sprintf("_index(%s, %s).(string)", val, key)
 				typ = types.StringType{}
 			default:
 				c.use("_index")
@@ -886,7 +899,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case types.ListType:
 				val = fmt.Sprintf("%s[%s:%s]", val, start, end)
 			case types.StringType:
-				val = fmt.Sprintf("string([]rune(%s)[%s:%s])", val, start, end)
+				c.use("_slice")
+				val = fmt.Sprintf("_slice(%s, %s, %s).(string)", val, start, end)
 			default:
 				c.use("_slice")
 				val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, end)
