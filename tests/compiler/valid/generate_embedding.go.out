@@ -17,4 +17,3 @@ func _genEmbed(text string) []float64 {
     if err != nil { panic(err) }
     return resp.Vector
 }
-
