@@ -20,6 +20,7 @@ type Compiler struct {
 	helpers      map[string]bool
 	structs      map[string]bool
 	handlerCount int
+	handlerDones []string
 	streams      []string
 	usesHandlers bool
 }
@@ -27,10 +28,11 @@ type Compiler struct {
 // New creates a new Go compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		imports: make(map[string]bool),
-		env:     env,
-		helpers: make(map[string]bool),
-		structs: make(map[string]bool),
+		imports:      make(map[string]bool),
+		env:          env,
+		helpers:      make(map[string]bool),
+		structs:      make(map[string]bool),
+		handlerDones: []string{},
 	}
 }
 
@@ -61,11 +63,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		c.indent--
 		c.writeln(")")
-		c.writeln("")
-	}
-
-	if c.usesHandlers {
-		c.writeln("var _wg sync.WaitGroup")
 		c.writeln("")
 	}
 
@@ -125,10 +122,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	if c.usesHandlers {
+		for _, dn := range c.handlerDones {
+			c.writeln(fmt.Sprintf("<-%s", dn))
+		}
 		for _, sn := range c.streams {
 			c.writeln(fmt.Sprintf("%s.Close()", sn))
 		}
-		c.writeln("_wg.Wait()")
 	}
 	c.indent--
 	c.writeln("}")
@@ -275,17 +274,12 @@ func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
 		return fmt.Errorf("unknown stream: %s", h.Stream)
 	}
 	c.usesHandlers = true
-	c.imports["sync"] = true
 	streamVar := unexportName(sanitizeName(h.Stream)) + "Stream"
 	handlerID := c.handlerCount
 	c.handlerCount++
-	subVar := fmt.Sprintf("_sub%d", handlerID)
-	c.writeln(fmt.Sprintf("%s := %s.RegisterSubscriber(\"handler-%d\")", subVar, streamVar, handlerID))
-	c.writeln("_wg.Add(1)")
-	c.writeln("go func() {")
-	c.indent++
-	c.writeln("defer _wg.Done()")
-	c.writeln(fmt.Sprintf("_ = %s.Watch(context.Background(), func(ev *stream.Event) error {", subVar))
+	doneVar := fmt.Sprintf("_done%d", handlerID)
+	c.writeln(fmt.Sprintf("%s := make(chan struct{})", doneVar))
+	c.writeln(fmt.Sprintf("%s.Subscribe(\"handler-%d\", func(ev *stream.Event) error {", streamVar, handlerID))
 	c.indent++
 	alias := sanitizeName(h.Alias)
 	c.writeln(fmt.Sprintf("%s := ev.Data.(%s)", alias, sanitizeName(st.Name)))
@@ -300,11 +294,11 @@ func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
 		}
 	}
 	c.env = orig
+	c.writeln(fmt.Sprintf("close(%s)", doneVar))
 	c.writeln("return nil")
 	c.indent--
 	c.writeln("})")
-	c.indent--
-	c.writeln("}()")
+	c.handlerDones = append(c.handlerDones, doneVar)
 	return nil
 }
 
@@ -323,7 +317,7 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	}
 	lit := fmt.Sprintf("%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
 	streamVar := unexportName(sanitizeName(e.Stream)) + "Stream"
-	c.writeln(fmt.Sprintf("_, _ = %s.Append(context.Background(), %s)", streamVar, lit))
+	c.writeln(fmt.Sprintf("_, _ = %s.Emit(context.Background(), %s)", streamVar, lit))
 	return nil
 }
 
@@ -1497,7 +1491,6 @@ func (c *Compiler) scanImports(s *parser.Statement) {
 	if s.On != nil {
 		c.imports["context"] = true
 		c.imports["mochi/runtime/stream"] = true
-		c.imports["sync"] = true
 		c.usesHandlers = true
 		for _, t := range s.On.Body {
 			c.scanImports(t)
