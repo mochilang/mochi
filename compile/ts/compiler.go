@@ -454,7 +454,8 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		return err
 	}
 	c.writeIndent()
-	c.buf.WriteString(fmt.Sprintf("for (const %s of %s) {\n", name, src))
+	c.use("_iter")
+	c.buf.WriteString(fmt.Sprintf("for (const %s of _iter(%s)) {\n", name, src))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -898,9 +899,21 @@ func sanitizeName(name string) string {
 // Runtime helper functions injected into generated programs.
 const (
 	helperIndex = "function _index(v: any, k: any): any {\n" +
-		"  if (Array.isArray(v) || typeof v === \"string\") {\n" +
-		"    const l = (v as any).length;\n" +
-		"    if (typeof k === \"number\" && k < 0) k = l + k;\n" +
+		"  if (Array.isArray(v)) {\n" +
+		"    if (typeof k !== 'number') throw new Error('invalid list index');\n" +
+		"    if (k < 0) k += v.length;\n" +
+		"    if (k < 0 || k >= v.length) throw new Error('index out of range');\n" +
+		"    return v[k];\n" +
+		"  }\n" +
+		"  if (typeof v === 'string') {\n" +
+		"    if (typeof k !== 'number') throw new Error('invalid string index');\n" +
+		"    const chars = Array.from(v);\n" +
+		"    if (k < 0) k += chars.length;\n" +
+		"    if (k < 0 || k >= chars.length) throw new Error('index out of range');\n" +
+		"    return chars[k];\n" +
+		"  }\n" +
+		"  if (v && typeof v === 'object') {\n" +
+		"    return (v as any)[k];\n" +
 		"  }\n" +
 		"  return (v as any)[k];\n" +
 		"}\n"
@@ -919,6 +932,13 @@ const (
 		"  if (Array.isArray(v) || typeof v === \"string\") return (v as any).length;\n" +
 		"  if (v && typeof v === \"object\") return Object.keys(v).length;\n" +
 		"  return 0;\n" +
+		"}\n"
+
+	helperIter = "function _iter(v: any): any {\n" +
+		"  if (v && typeof v === 'object' && !Array.isArray(v) && !(Symbol.iterator in v)) {\n" +
+		"    return Object.keys(v);\n" +
+		"  }\n" +
+		"  return v;\n" +
 		"}\n"
 
 	helperGenText = "function _gen_text(prompt: string): string {\n" +
@@ -1024,6 +1044,7 @@ var helperMap = map[string]string{
 	"_index":      helperIndex,
 	"_slice":      helperSlice,
 	"_len":        helperLen,
+	"_iter":       helperIter,
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
