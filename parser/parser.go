@@ -214,7 +214,7 @@ type BinaryExpr struct {
 
 type BinaryOp struct {
 	Pos   lexer.Position
-    Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||')"`
+	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||')"`
 	Right *PostfixExpr `parser:"@@"`
 }
 
@@ -371,23 +371,9 @@ type ModelField struct {
 }
 
 type StreamField struct {
-	Nested *StreamNestedField `parser:"@@"`
-	Simple *StreamSimpleField `parser:"| @@"`
-}
-
-type StreamSimpleField struct {
-	Name string `parser:"@Ident ':'"`
-	Type string `parser:"@Ident"`
-}
-
-type StreamNestedField struct {
-	Name string     `parser:"@Ident ':'"`
-	Type string     `parser:"':' @Ident"`
-	Body *StructDef `parser:"@@"`
-}
-
-type StructDef struct {
-	Fields []*StreamField `parser:"'{' @@* '}'"`
+	Pos  lexer.Position
+	Name string   `parser:"@Ident ':'"`
+	Type *TypeRef `parser:"@@"`
 }
 
 // --- On Handler ---

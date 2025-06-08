@@ -511,8 +511,20 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		h := onHandler{alias: s.On.Alias, body: s.On.Body}
 		i.handlers[s.On.Stream] = append(i.handlers[s.On.Stream], h)
 		sub := strm.Subscribe(fmt.Sprintf("handler-%d", len(i.subs)), func(ev *stream.Event) error {
+			data := ev.Data
+			if st, ok := i.types.GetStream(s.On.Stream); ok {
+				if m, ok2 := data.(map[string]any); ok2 {
+					if _, has := m["__name"]; !has {
+						if cv, err := castValue(s.On.Pos, st, m); err == nil {
+							if mm, ok3 := cv.(map[string]any); ok3 {
+								data = mm
+							}
+						}
+					}
+				}
+			}
 			child := types.NewEnv(i.env)
-			child.SetValue(h.alias, ev.Data, true)
+			child.SetValue(h.alias, data, true)
 			interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg}
 			for _, stmt := range h.body {
 				if err := interp.evalStmt(stmt); err != nil {
@@ -532,6 +544,13 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 				return err
 			}
 			ev[f.Name] = v
+		}
+		if st, ok := i.types.GetStream(s.Emit.Stream); ok {
+			if cv, err := castValue(s.Emit.Pos, st, ev); err == nil {
+				if mm, ok2 := cv.(map[string]any); ok2 {
+					ev = mm
+				}
+			}
 		}
 		strm, ok := i.streams[s.Emit.Stream]
 		if !ok {
@@ -899,7 +918,7 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 		{"*", "/", "%"},        // highest
 		{"+", "-"},             // addition
 		{"<", "<=", ">", ">="}, // comparison
-                {"==", "!=", "in"},           // equality and membership
+		{"==", "!=", "in"},     // equality and membership
 		{"&&"},                 // logical AND
 		{"||"},                 // logical OR (lowest)
 	} {
@@ -2111,18 +2130,18 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 		}
 	case TagStr:
 		if right.Tag == TagStr {
-                        switch op {
-                        case "+":
-                                return Value{Tag: TagStr, Str: left.Str + right.Str}, nil
-                        case "==":
-                                return Value{Tag: TagBool, Bool: left.Str == right.Str}, nil
-                        case "!=":
-                                return Value{Tag: TagBool, Bool: left.Str != right.Str}, nil
-                        case "in":
-                                return Value{Tag: TagBool, Bool: strings.Contains(right.Str, left.Str)}, nil
-                        }
-                }
-        }
+			switch op {
+			case "+":
+				return Value{Tag: TagStr, Str: left.Str + right.Str}, nil
+			case "==":
+				return Value{Tag: TagBool, Bool: left.Str == right.Str}, nil
+			case "!=":
+				return Value{Tag: TagBool, Bool: left.Str != right.Str}, nil
+			case "in":
+				return Value{Tag: TagBool, Bool: strings.Contains(right.Str, left.Str)}, nil
+			}
+		}
+	}
 	return Value{}, errInvalidOperator(pos, op, left.Tag.String(), right.Tag.String())
 }
 

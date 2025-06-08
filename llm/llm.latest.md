@@ -508,29 +508,15 @@ type Literal struct {
 // --- Stream / Struct ---
 
 type StreamDecl struct {
-	Pos    lexer.Position
-	Name   string         `parser:"'stream' @Ident"`
-	Fields []*StreamField `parser:"'{' @@* '}'"`
+        Pos    lexer.Position
+        Name   string         `parser:"'stream' @Ident"`
+        Fields []*StreamField `parser:"'{' @@* '}'"`
 }
 
 type StreamField struct {
-	Nested *StreamNestedField `parser:"@@"`
-	Simple *StreamSimpleField `parser:"| @@"`
-}
-
-type StreamSimpleField struct {
-	Name string `parser:"@Ident ':'"`
-	Type string `parser:"@Ident"`
-}
-
-type StreamNestedField struct {
-	Name string     `parser:"@Ident ':'"`
-	Type string     `parser:"':' @Ident"`
-	Body *StructDef `parser:"@@"`
-}
-
-type StructDef struct {
-	Fields []*StreamField `parser:"'{' @@* '}'"`
+        Pos  lexer.Position
+        Name string   `parser:"@Ident ':'"`
+        Type *TypeRef `parser:"@@"`
 }
 
 // --- On Handler ---

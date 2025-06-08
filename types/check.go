@@ -351,16 +351,11 @@ func buildStreamFields(fields []*parser.StreamField, env *Env) (map[string]Type,
 	out := map[string]Type{}
 	order := []string{}
 	for _, f := range fields {
-		if f.Simple != nil {
-			out[f.Simple.Name] = resolveTypeName(f.Simple.Type, env)
-			order = append(order, f.Simple.Name)
-		} else if f.Nested != nil {
-			sub, subOrder := buildStreamFields(f.Nested.Body.Fields, env)
-			st := StructType{Name: f.Nested.Type, Fields: sub, Order: subOrder}
-			env.SetStruct(f.Nested.Type, st)
-			out[f.Nested.Name] = st
-			order = append(order, f.Nested.Name)
+		if f == nil {
+			continue
 		}
+		out[f.Name] = resolveTypeRef(f.Type, env)
+		order = append(order, f.Name)
 	}
 	return out, order
 }
@@ -821,7 +816,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 		{"*", "/", "%"},
 		{"+", "-"},
 		{"<", "<=", ">", ">="},
-                {"==", "!=", "in"},
+		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
 	} {
@@ -869,17 +864,17 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 		default:
 			return nil, errOperatorMismatch(pos, op, left, right)
 		}
-        case "==", "!=", "<", "<=", ">", ">=":
-                if !unify(left, right, nil) {
-                        return nil, errIncompatibleComparison(pos)
-                }
-                return BoolType{}, nil
-        case "in":
-                if !(unify(left, StringType{}, nil) && unify(right, StringType{}, nil)) {
-                        return nil, errOperatorMismatch(pos, op, left, right)
-                }
-                return BoolType{}, nil
-        case "&&", "||":
+	case "==", "!=", "<", "<=", ">", ">=":
+		if !unify(left, right, nil) {
+			return nil, errIncompatibleComparison(pos)
+		}
+		return BoolType{}, nil
+	case "in":
+		if !(unify(left, StringType{}, nil) && unify(right, StringType{}, nil)) {
+			return nil, errOperatorMismatch(pos, op, left, right)
+		}
+		return BoolType{}, nil
+	case "&&", "||":
 		if !(unify(left, BoolType{}, nil) && unify(right, BoolType{}, nil)) {
 			return nil, errOperatorMismatch(pos, op, left, right)
 		}
