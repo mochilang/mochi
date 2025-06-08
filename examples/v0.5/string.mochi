@@ -1,0 +1,33 @@
+let s = "hello world"
+
+// Indexing: access individual characters by index (0-based)
+print("s[0] =", s[0])     // h
+print("s[4] =", s[4])     // o
+
+// Length of string
+print("length =", len(s)) // 11
+
+// Iteration: loop over each character
+for ch in s {
+  print("char:", ch)
+}
+
+// Use `in` operator: check if character is in the string
+if "w" in s {
+  print("'w' is in the string")
+}
+
+if "z" in s {
+  print("'z' is in the string") // will not print
+}
+
+// Count vowels
+let vowels = "aeiou"
+let count = 0
+
+for ch in s {
+  if ch in vowels {
+    count += 1
+  }
+}
+print("vowel count:", count) // 3

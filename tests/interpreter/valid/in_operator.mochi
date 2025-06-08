@@ -1,0 +1,3 @@
+let s = "hello"
+print("e" in s)
+print("x" in s)

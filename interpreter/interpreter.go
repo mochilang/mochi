@@ -899,7 +899,7 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 		{"*", "/", "%"},        // highest
 		{"+", "-"},             // addition
 		{"<", "<=", ">", ">="}, // comparison
-		{"==", "!="},           // equality
+                {"==", "!=", "in"},           // equality and membership
 		{"&&"},                 // logical AND
 		{"||"},                 // logical OR (lowest)
 	} {
@@ -2111,16 +2111,18 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 		}
 	case TagStr:
 		if right.Tag == TagStr {
-			switch op {
-			case "+":
-				return Value{Tag: TagStr, Str: left.Str + right.Str}, nil
-			case "==":
-				return Value{Tag: TagBool, Bool: left.Str == right.Str}, nil
-			case "!=":
-				return Value{Tag: TagBool, Bool: left.Str != right.Str}, nil
-			}
-		}
-	}
+                        switch op {
+                        case "+":
+                                return Value{Tag: TagStr, Str: left.Str + right.Str}, nil
+                        case "==":
+                                return Value{Tag: TagBool, Bool: left.Str == right.Str}, nil
+                        case "!=":
+                                return Value{Tag: TagBool, Bool: left.Str != right.Str}, nil
+                        case "in":
+                                return Value{Tag: TagBool, Bool: strings.Contains(right.Str, left.Str)}, nil
+                        }
+                }
+        }
 	return Value{}, errInvalidOperator(pos, op, left.Tag.String(), right.Tag.String())
 }
 
