@@ -8,9 +8,21 @@ await main()
 await _waitAll()
 
 function _index(v: any, k: any): any {
-  if (Array.isArray(v) || typeof v === "string") {
-    const l = (v as any).length;
-    if (typeof k === "number" && k < 0) k = l + k;
+  if (Array.isArray(v)) {
+    if (typeof k !== 'number') throw new Error('invalid list index');
+    if (k < 0) k += v.length;
+    if (k < 0 || k >= v.length) throw new Error('index out of range');
+    return v[k];
+  }
+  if (typeof v === 'string') {
+    if (typeof k !== 'number') throw new Error('invalid string index');
+    const chars = Array.from(v);
+    if (k < 0) k += chars.length;
+    if (k < 0 || k >= chars.length) throw new Error('index out of range');
+    return chars[k];
+  }
+  if (v && typeof v === 'object') {
+    return (v as any)[k];
   }
   return (v as any)[k];
 }
