@@ -19,3 +19,6 @@ while j < 3 {
   j = j + 1
 }
 ```
+
+`while` repeats the body as long as its condition evaluates to `true`. Use `break`
+to exit early or `continue` to skip to the next iteration.
