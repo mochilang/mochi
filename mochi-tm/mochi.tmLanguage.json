@@ -6,11 +6,11 @@
   "patterns": [
     {
       "name": "keyword.control.mochi",
-      "match": "\\b(let|fun|func|return|if|else|for|in|on|as|test|expect|replay|simulate|agent|state|intent|stream|model|generate|text|await|async|call|cancel|emit|window|from|where|group|by|select|join|having)\\b"
+      "match": "\\b(test|expect|agent|intent|on|stream|emit|type|fun|return|break|continue|let|var|if|else|for|in|generate|match|fetch)\\b"
     },
     {
       "name": "storage.type.mochi",
-      "match": "\\b(int|float|string|bool|time|image|func|list|map|set|dataset|stream<[^>]+>|func\\([^)]*\\):\\s*\\w+)\\b"
+      "match": "\\b(int|float|string|bool|list|map|fun\\([^)]*\\):\\s*\\w+)\\b"
     },
     {
       "name": "constant.language.mochi",
@@ -56,7 +56,7 @@
     },
     {
       "name": "keyword.operator.mochi",
-      "match": "\\+|-|\\*|/|==|!=|<=|>=|<|>|=|\\.|\\!|\\?|\\:\\:|::=|\\|\\||&&"
+      "match": "==|!=|<=|>=|&&|\\|\\||=>|\\.\\.|[-+*/%=<>!|{}\\[\\](),.:]"
     },
     {
       "name": "punctuation.separator.mochi",
