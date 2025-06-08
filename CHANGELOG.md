@@ -1,4 +1,19 @@
 # 📦 CHANGELOG.md
+## [0.5.0] – 2025-06-09
+
+### Added
+
+* `agent` blocks with persistent state and `intent` functions
+* Agent runtime integrated with the interpreter
+* String indexing and iteration
+* `in` operator for string containment
+* `while` statement for loops
+* Compiler support for agents, strings and `while` in Go, Python and TypeScript
+
+### Fixed
+
+* Race condition in agent runtime
+
 ## [0.4.0] – 2025-06-08
 
 ### Added
