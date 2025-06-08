@@ -1,10 +1,14 @@
 ## Streams and Agents
 
-Define streams and react to emitted events.
+Streams deliver structured events to interested handlers. Use the `stream` keyword to define the fields carried with each event.
 
 ```mochi
 stream Sensor { id: string, temperature: float }
+```
 
+Handlers are declared with `on`. Each time an event is emitted, matching handlers run concurrently.
+
+```mochi
 on Sensor as s {
   print(s.id, s.temperature)
 }
@@ -12,7 +16,7 @@ on Sensor as s {
 emit Sensor { id: "sensor-1", temperature: 22.5 }
 ```
 
-Agents may store state and expose **intent** functions for external callers.
+Agents combine handlers with persistent state. They can expose **intent** functions that other code may call or that the MCP server invokes in response to user actions.
 
 ```mochi
 agent Monitor {
@@ -33,4 +37,4 @@ sleep(50)
 print(m.status())
 ```
 
-These features are explained further in the [language specification](../SPEC.md).
+Events are delivered asynchronously, so `sleep` is used here to allow the handler time to run before calling `status`. For more details about concurrency semantics see the [language specification](../SPEC.md).
