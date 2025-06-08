@@ -74,6 +74,9 @@ mochi build --target py examples/hello.mochi -o hello.py
 
 Mochi integrates well with agent-oriented tools. You can run an MCP server for Visual Studio Code or Claude Desktop using the `serve` subcommand. See the [README](../README.md) for full configuration examples.
 
+Agents now support persistent state and `intent` functions that can be called
+from editor integrations or other Mochi code.
+
 ## Repository Overview
 
 The source tree is organized as follows:
