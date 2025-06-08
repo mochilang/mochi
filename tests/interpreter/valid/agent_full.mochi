@@ -1,0 +1,54 @@
+stream SensorReading {
+  id: string
+  temperature: float
+  timestamp: time
+}
+
+agent Monitor {
+  var count: int = 0
+  var lastTemp: float = 0.0
+
+  on SensorReading as r {
+    count = count + 1
+    lastTemp = r.temperature
+    print("handler", count)
+
+    if r.temperature > 30 {
+      print("High temperature from", r.id, ":", r.temperature)
+    }
+  }
+
+  intent status(): string {
+    return "Seen " + str(count) + " readings, last = " + str(lastTemp)
+  }
+
+  intent summary(): string {
+    return "Last recorded temperature is " + str(lastTemp) + " \xC2\xB0C"
+  }
+}
+
+let monitor = Monitor {}
+
+emit SensorReading {
+  id: "sensor-1",
+  temperature: 28.0,
+  timestamp: now(),
+}
+
+sleep(50)
+
+emit SensorReading {
+  id: "sensor-2",
+  temperature: 35.5,
+  timestamp: now(),
+}
+
+sleep(300)
+
+let s = monitor.status()
+print(s)
+
+let summary = monitor.summary()
+print(summary)
+
+sleep(100)
