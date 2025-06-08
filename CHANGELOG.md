@@ -9,6 +9,7 @@
 * Runtime library queuing and replay
 * Go, Python and TypeScript compiler support
 * Interpreter with async stream handlers
+* VS Code extension for syntax highlighting and agent integration
 
 ### Changed
 
