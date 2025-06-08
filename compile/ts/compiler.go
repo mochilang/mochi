@@ -44,7 +44,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	c.writeln("function main(): void {")
+        c.writeln("async function main(): Promise<void> {")
 	c.indent++
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -55,9 +55,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	c.indent--
-	c.writeln("}")
-	c.writeln("main()")
-	c.writeln("")
+        c.writeln("}")
+        c.writeln("await main()")
+        c.writeln("await _waitAll()")
+        c.use("_waitAll")
+        c.writeln("")
 	c.emitRuntime()
 	return c.buf.Bytes(), nil
 }
@@ -799,22 +801,30 @@ const (
 		"  return m as Record<string, any>;\n" +
 		"}\n"
 
-	helperStream = "class Stream {\n" +
-		"  name: string;\n" +
-		"  handlers: Array<(data: any) => void> = [];\n" +
-		"  constructor(name: string) {\n" +
-		"    this.name = name;\n" +
-		"  }\n" +
-		"  append(data: any): any {\n" +
-		"    for (const h of [...this.handlers]) {\n" +
-		"      h(data);\n" +
-		"    }\n" +
-		"    return data;\n" +
-		"  }\n" +
-		"  register(handler: (data: any) => void): void {\n" +
-		"    this.handlers.push(handler);\n" +
-		"  }\n" +
-		"}\n"
+        helperStream = "class Stream {\n" +
+                "  name: string;\n" +
+                "  handlers: Array<(data: any) => any | Promise<any>> = [];\n" +
+                "  constructor(name: string) {\n" +
+                "    this.name = name;\n" +
+                "  }\n" +
+                "  append(data: any): Promise<any> {\n" +
+                "    const tasks: Promise<any>[] = [];\n" +
+                "    for (const h of [...this.handlers]) {\n" +
+                "      tasks.push(Promise.resolve(h(data)));\n" +
+                "    }\n" +
+                "    const p = Promise.all(tasks).then(() => data);\n" +
+                "    _pending.push(p);\n" +
+                "    return p;\n" +
+                "  }\n" +
+                "  register(handler: (data: any) => any | Promise<any>): void {\n" +
+                "    this.handlers.push(handler);\n" +
+                "  }\n" +
+                "}\n"
+
+        helperWaitAll = "const _pending: Promise<any>[] = [];\n" +
+                "async function _waitAll(): Promise<void> {\n" +
+                "  await Promise.all(_pending);\n" +
+                "}\n"
 )
 
 var helperMap = map[string]string{
@@ -825,8 +835,9 @@ var helperMap = map[string]string{
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
 	"_fetch":      helperFetch,
-	"_toAnyMap":   helperToAnyMap,
-	"_stream":     helperStream,
+        "_toAnyMap":   helperToAnyMap,
+        "_stream":     helperStream,
+        "_waitAll":    helperWaitAll,
 }
 
 func (c *Compiler) use(name string) {

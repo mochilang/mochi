@@ -4,7 +4,13 @@ function add(a, b) {
 	return (a + b)
 }
 
-function main(): void {
+async function main(): Promise<void> {
 	console.log(add(2, 3))
 }
-main()
+await main()
+await _waitAll()
+
+const _pending: Promise<any>[] = [];
+async function _waitAll(): Promise<void> {
+  await Promise.all(_pending);
+}
