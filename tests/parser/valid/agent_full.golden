@@ -1,0 +1,73 @@
+(program
+  (stream SensorReading (field "id:string") (field "temperature:float") (field "timestamp:time"))
+  (agent Monitor
+    (on SensorReading
+      (assign count
+        (binary + (selector count) (int 1))
+      )
+      (assign lastTemp
+        (selector temperature (selector r))
+      )
+      (call print (string handler) (selector count))
+      (if
+        (binary >
+          (selector temperature (selector r))
+          (int 30)
+        )
+        (block
+          (call print
+            (string "High temperature from")
+            (selector id (selector r))
+            (string ":")
+            (selector temperature (selector r))
+          )
+        )
+      )
+    )
+    (intent status
+      (type string)
+      (return
+        (binary +
+          (binary +
+            (binary +
+              (string "Seen ")
+              (call str (selector count))
+            )
+            (string " readings, last = ")
+          )
+          (call str (selector lastTemp))
+        )
+      )
+    )
+    (intent summary
+      (type string)
+      (return
+        (binary +
+          (binary +
+            (string "Last recorded temperature is ")
+            (call str (selector lastTemp))
+          )
+          (string " Â°C")
+        )
+      )
+    )
+  )
+  (let monitor (struct Monitor))
+  (unknown)
+  (call sleep (int 50))
+  (unknown)
+  (call sleep (int 300))
+  (let s
+    (call
+      (selector status (selector monitor))
+    )
+  )
+  (call print (selector s))
+  (let summary
+    (call
+      (selector summary (selector monitor))
+    )
+  )
+  (call print (selector summary))
+  (call sleep (int 100))
+)
