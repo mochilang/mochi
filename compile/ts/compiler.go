@@ -17,6 +17,7 @@ type Compiler struct {
 	helpers      map[string]bool
 	env          *types.Env
 	structs      map[string]bool
+	agents       map[string]bool
 	handlerCount int
 }
 
@@ -26,6 +27,7 @@ func New(env *types.Env) *Compiler {
 		helpers: make(map[string]bool),
 		env:     env,
 		structs: make(map[string]bool),
+		agents:  make(map[string]bool),
 	}
 }
 
@@ -44,7 +46,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-        c.writeln("async function main(): Promise<void> {")
+	c.writeln("async function main(): Promise<void> {")
 	c.indent++
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -55,11 +57,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	c.indent--
-        c.writeln("}")
-        c.writeln("await main()")
-        c.writeln("await _waitAll()")
-        c.use("_waitAll")
-        c.writeln("")
+	c.writeln("}")
+	c.writeln("await main()")
+	c.writeln("await _waitAll()")
+	c.use("_waitAll")
+	c.writeln("")
 	c.emitRuntime()
 	return c.buf.Bytes(), nil
 }
@@ -80,6 +82,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileOnHandler(s.On)
 	case s.Emit != nil:
 		return c.compileEmit(s.Emit)
+	case s.Agent != nil:
+		return c.compileAgentDecl(s.Agent)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
 	case s.Expr != nil:
@@ -211,6 +215,161 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	c.writeln(fmt.Sprintf("%s.append(%s)", streamVar, lit))
 	c.use("_stream")
 	return nil
+}
+
+func (c *Compiler) compileAgentDecl(a *parser.AgentDecl) error {
+	st, ok := c.env.GetStruct(a.Name)
+	if !ok {
+		return fmt.Errorf("unknown agent: %s", a.Name)
+	}
+	name := sanitizeName(a.Name)
+	if c.agents[name] {
+		return nil
+	}
+	c.agents[name] = true
+
+	baseEnv := types.NewEnv(c.env)
+	for _, fn := range st.Order {
+		baseEnv.SetVar(fn, st.Fields[fn], true)
+	}
+
+	c.writeln(fmt.Sprintf("class %s {", name))
+	c.indent++
+	c.writeln("Agent: Agent")
+	for _, fn := range st.Order {
+		c.writeln(fmt.Sprintf("%s: any", sanitizeName(fn)))
+	}
+	c.writeln("constructor() {")
+	c.indent++
+	c.use("_agent")
+	c.writeln(fmt.Sprintf("this.Agent = new Agent(%q)", a.Name))
+	orig := c.env
+	c.env = baseEnv
+	for _, blk := range a.Body {
+		switch {
+		case blk.Let != nil:
+			val := "undefined"
+			if blk.Let.Value != nil {
+				v, err := c.compileExpr(blk.Let.Value)
+				if err != nil {
+					c.env = orig
+					return err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("this.%s = %s", sanitizeName(blk.Let.Name), val))
+		case blk.Var != nil:
+			val := "undefined"
+			if blk.Var.Value != nil {
+				v, err := c.compileExpr(blk.Var.Value)
+				if err != nil {
+					c.env = orig
+					return err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("this.%s = %s", sanitizeName(blk.Var.Name), val))
+		}
+	}
+	c.env = orig
+	handlerID := 0
+	for _, blk := range a.Body {
+		if blk.On != nil {
+			streamVar := unexportName(sanitizeName(blk.On.Stream)) + "Stream"
+			c.writeln(fmt.Sprintf("this.Agent.on(%s, this._on%d.bind(this))", streamVar, handlerID))
+			handlerID++
+		}
+	}
+	for _, blk := range a.Body {
+		if blk.Intent != nil {
+			mname := sanitizeName(blk.Intent.Name)
+			c.writeln(fmt.Sprintf("this.Agent.registerIntent(%q, this.%s.bind(this))", blk.Intent.Name, mname))
+		}
+	}
+	c.writeln("this.Agent.start()")
+	c.indent--
+	c.writeln("}")
+
+	handlerID = 0
+	for _, blk := range a.Body {
+		switch {
+		case blk.Intent != nil:
+			if err := c.compileAgentIntent(name, baseEnv, blk.Intent); err != nil {
+				return err
+			}
+		case blk.On != nil:
+			if _, err := c.compileAgentOn(name, baseEnv, blk.On, handlerID); err != nil {
+				return err
+			}
+			handlerID++
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	c.writeln(fmt.Sprintf("function New%s(): %s {", name, name))
+	c.indent++
+	c.writeln(fmt.Sprintf("return new %s()", name))
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	return nil
+}
+
+func (c *Compiler) compileAgentIntent(agentName string, env *types.Env, in *parser.IntentDecl) error {
+	name := sanitizeName(in.Name)
+	c.writeIndent()
+	c.buf.WriteString(name + "(")
+	for i, p := range in.Params {
+		if i > 0 {
+			c.buf.WriteString(", ")
+		}
+		c.buf.WriteString(sanitizeName(p.Name))
+	}
+	c.buf.WriteString(") {\n")
+	child := types.NewEnv(env)
+	orig := c.env
+	c.env = child
+	c.indent++
+	for _, s := range in.Body {
+		if err := c.compileStmt(s); err != nil {
+			c.env = orig
+			return err
+		}
+	}
+	c.indent--
+	c.env = orig
+	c.writeIndent()
+	c.buf.WriteString("}\n\n")
+	return nil
+}
+
+func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.OnHandler, id int) (string, error) {
+	st, ok := c.env.GetStream(h.Stream)
+	if !ok {
+		return "", fmt.Errorf("unknown stream: %s", h.Stream)
+	}
+	fname := fmt.Sprintf("_on%d", id)
+	c.writeIndent()
+	c.buf.WriteString(fmt.Sprintf("%s(ev: %s): void {\n", fname, sanitizeName(st.Name)))
+	alias := sanitizeName(h.Alias)
+	child := types.NewEnv(env)
+	child.SetVar(h.Alias, st, true)
+	orig := c.env
+	c.env = child
+	c.indent++
+	c.writeln(fmt.Sprintf("const %s = ev", alias))
+	for _, stmt := range h.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.indent--
+	c.env = orig
+	c.writeIndent()
+	c.buf.WriteString("}\n\n")
+	return fname, nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -446,6 +605,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return expr, nil
 	case p.Struct != nil:
+		if c.env != nil {
+			if _, ok := c.env.GetAgent(p.Struct.Name); ok {
+				if len(p.Struct.Fields) > 0 {
+					return "", fmt.Errorf("agent initialization with fields not supported")
+				}
+				return fmt.Sprintf("New%s()", sanitizeName(p.Struct.Name)), nil
+			}
+		}
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)
@@ -801,30 +968,56 @@ const (
 		"  return m as Record<string, any>;\n" +
 		"}\n"
 
-        helperStream = "class Stream {\n" +
-                "  name: string;\n" +
-                "  handlers: Array<(data: any) => any | Promise<any>> = [];\n" +
-                "  constructor(name: string) {\n" +
-                "    this.name = name;\n" +
-                "  }\n" +
-                "  append(data: any): Promise<any> {\n" +
-                "    const tasks: Promise<any>[] = [];\n" +
-                "    for (const h of [...this.handlers]) {\n" +
-                "      tasks.push(Promise.resolve(h(data)));\n" +
-                "    }\n" +
-                "    const p = Promise.all(tasks).then(() => data);\n" +
-                "    _pending.push(p);\n" +
-                "    return p;\n" +
-                "  }\n" +
-                "  register(handler: (data: any) => any | Promise<any>): void {\n" +
-                "    this.handlers.push(handler);\n" +
-                "  }\n" +
-                "}\n"
+	helperStream = "class Stream {\n" +
+		"  name: string;\n" +
+		"  handlers: Array<(data: any) => any | Promise<any>> = [];\n" +
+		"  constructor(name: string) {\n" +
+		"    this.name = name;\n" +
+		"  }\n" +
+		"  append(data: any): Promise<any> {\n" +
+		"    const tasks: Promise<any>[] = [];\n" +
+		"    for (const h of [...this.handlers]) {\n" +
+		"      tasks.push(Promise.resolve(h(data)));\n" +
+		"    }\n" +
+		"    const p = Promise.all(tasks).then(() => data);\n" +
+		"    _pending.push(p);\n" +
+		"    return p;\n" +
+		"  }\n" +
+		"  register(handler: (data: any) => any | Promise<any>): void {\n" +
+		"    this.handlers.push(handler);\n" +
+		"  }\n" +
+		"}\n"
 
-        helperWaitAll = "const _pending: Promise<any>[] = [];\n" +
-                "async function _waitAll(): Promise<void> {\n" +
-                "  await Promise.all(_pending);\n" +
-                "}\n"
+	helperWaitAll = "const _pending: Promise<any>[] = [];\n" +
+		"async function _waitAll(): Promise<void> {\n" +
+		"  await Promise.all(_pending);\n" +
+		"}\n"
+
+	helperAgent = "class Agent {\n" +
+		"  name: string;\n" +
+		"  handlers: Record<string, (ev: any) => any | Promise<any>> = {};\n" +
+		"  intents: Record<string, (...args: any[]) => any> = {};\n" +
+		"  state: Record<string, any> = {};\n" +
+		"  constructor(name: string) {\n" +
+		"    this.name = name;\n" +
+		"  }\n" +
+		"  start(): void {}\n" +
+		"  on(stream: Stream, handler: (ev: any) => any | Promise<any>): void {\n" +
+		"    stream.register(handler);\n" +
+		"  }\n" +
+		"  registerIntent(name: string, handler: (...args: any[]) => any): void {\n" +
+		"    this.intents[name] = handler;\n" +
+		"  }\n" +
+		"  async call(name: string, ...args: any[]): Promise<any> {\n" +
+		"    const fn = this.intents[name];\n" +
+		"    if (!fn) throw new Error('unknown intent: ' + name);\n" +
+		"    let res = fn(...args);\n" +
+		"    if (res instanceof Promise) res = await res;\n" +
+		"    return res;\n" +
+		"  }\n" +
+		"  set(name: string, value: any): void { this.state[name] = value; }\n" +
+		"  get(name: string): any { return this.state[name]; }\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -835,9 +1028,10 @@ var helperMap = map[string]string{
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
 	"_fetch":      helperFetch,
-        "_toAnyMap":   helperToAnyMap,
-        "_stream":     helperStream,
-        "_waitAll":    helperWaitAll,
+	"_toAnyMap":   helperToAnyMap,
+	"_stream":     helperStream,
+	"_waitAll":    helperWaitAll,
+	"_agent":      helperAgent,
 }
 
 func (c *Compiler) use(name string) {
