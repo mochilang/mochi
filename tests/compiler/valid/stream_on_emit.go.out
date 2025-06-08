@@ -1,0 +1,32 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"mochi/runtime/stream"
+	"sync"
+)
+
+var _wg sync.WaitGroup
+
+func main() {
+	type Sensor struct {
+		Id string `json:"id"`
+		Temperature float64 `json:"temperature"`
+	}
+	
+	var sensorStream = stream.New("Sensor", 64)
+	_sub0 := sensorStream.RegisterSubscriber("handler-0")
+	_wg.Add(1)
+	go func() {
+		defer _wg.Done()
+		_ = _sub0.Watch(context.Background(), func(ev *stream.Event) error {
+			s := ev.Data.(Sensor)
+			fmt.Println(s.Id, s.Temperature)
+			return nil
+		})
+	}()
+	_, _ = sensorStream.Append(context.Background(), Sensor{Id: "sensor-1", Temperature: 22.500000})
+	sensorStream.Close()
+	_wg.Wait()
+}

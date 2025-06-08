@@ -20,6 +20,8 @@ type Compiler struct {
 	helpers      map[string]bool
 	structs      map[string]bool
 	handlerCount int
+	streams      []string
+	usesHandlers bool
 }
 
 // New creates a new Go compiler instance.
@@ -59,6 +61,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		c.indent--
 		c.writeln(")")
+		c.writeln("")
+	}
+
+	if c.usesHandlers {
+		c.writeln("var _wg sync.WaitGroup")
 		c.writeln("")
 	}
 
@@ -116,6 +123,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			name := sanitizeName(s.Test.Name)
 			c.writeln(fmt.Sprintf("%s()", name))
 		}
+	}
+	if c.usesHandlers {
+		for _, sn := range c.streams {
+			c.writeln(fmt.Sprintf("%s.Close()", sn))
+		}
+		c.writeln("_wg.Wait()")
 	}
 	c.indent--
 	c.writeln("}")
@@ -252,6 +265,7 @@ func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
 	varName := unexportName(sanitizeName(s.Name)) + "Stream"
 	c.imports["mochi/runtime/stream"] = true
 	c.writeln(fmt.Sprintf("var %s = stream.New(%q, 64)", varName, s.Name))
+	c.streams = append(c.streams, varName)
 	return nil
 }
 
@@ -260,13 +274,18 @@ func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", h.Stream)
 	}
+	c.usesHandlers = true
+	c.imports["sync"] = true
 	streamVar := unexportName(sanitizeName(h.Stream)) + "Stream"
 	handlerID := c.handlerCount
 	c.handlerCount++
+	subVar := fmt.Sprintf("_sub%d", handlerID)
+	c.writeln(fmt.Sprintf("%s := %s.RegisterSubscriber(\"handler-%d\")", subVar, streamVar, handlerID))
+	c.writeln("_wg.Add(1)")
 	c.writeln("go func() {")
 	c.indent++
-	c.writeln(fmt.Sprintf("sub := %s.RegisterSubscriber(\"handler-%d\")", streamVar, handlerID))
-	c.writeln("_ = sub.Watch(context.Background(), func(ev *stream.Event) error {")
+	c.writeln("defer _wg.Done()")
+	c.writeln(fmt.Sprintf("_ = %s.Watch(context.Background(), func(ev *stream.Event) error {", subVar))
 	c.indent++
 	alias := sanitizeName(h.Alias)
 	c.writeln(fmt.Sprintf("%s := ev.Data.(%s)", alias, sanitizeName(st.Name)))
@@ -704,7 +723,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		base := sanitizeName(p.Selector.Root)
 		for _, field := range p.Selector.Tail {
-			base += "." + sanitizeName(field)
+			base += "." + exportName(sanitizeName(field))
 		}
 		return base, nil
 	case p.Struct != nil:
@@ -1478,6 +1497,8 @@ func (c *Compiler) scanImports(s *parser.Statement) {
 	if s.On != nil {
 		c.imports["context"] = true
 		c.imports["mochi/runtime/stream"] = true
+		c.imports["sync"] = true
+		c.usesHandlers = true
 		for _, t := range s.On.Body {
 			c.scanImports(t)
 		}
