@@ -75,15 +75,17 @@ model  agent  test  expect
 
 ### Operators and Delimiters
 
-Operators perform arithmetic and comparisons. Delimiters structure expressions and statements.
+Operators perform arithmetic, comparison, logical, and membership operations. Delimiters structure expressions and statements.
 
 ```
-+  -  *  /            arithmetic
++  -  *  /  %         arithmetic
 == != < <= > >=       comparison
-! -                  unary
-=                    assignment
-..                   range
-( ) { } , : => .      delimiters
+&& ||                 logical
+! -                   unary
+=                     assignment
+in                    membership
+..                    range
+( ) [ ] { } , : => .  delimiters
 ```
 
 ### Literals
@@ -124,6 +126,36 @@ For example:
 let scores: map<string, int> = {"alice": 1}
 ```
 
+### Type Declarations
+
+User-defined types are introduced with the `type` keyword. A type may define a set of
+named fields forming a struct. Methods may also be declared inside the type block.
+
+```mochi
+type Person {
+  name: string
+  age: int
+
+  fun greet(): string {
+    return "hello " + name
+  }
+}
+```
+
+Types can alternatively declare variants separated by `|` to form sum types:
+
+```mochi
+type Result = Ok(value: int) | Err(message: string)
+```
+
+Field syntax for variants mirrors struct fields and may use either parentheses or braces.
+
+Instances of a type are created using struct literal syntax:
+
+```mochi
+let user = Person { name: "Ada", age: 42 }
+```
+
 ## 4. Expressions
 
 Expressions compute values. The grammar defines expressions in precedence order.
@@ -137,8 +169,8 @@ Comparison  = Term { ("<" | "<=" | ">" | ">=") Term }
 Term        = Factor { ("+" | "-") Factor }
 Factor      = Unary { ("*" | "/") Unary }
 Unary       = { "-" | "!" } PostfixExpr
-PostfixExpr = Primary { IndexOp }
-Primary     = FunExpr | CallExpr | SelectorExpr | ListLiteral |
+PostfixExpr = Primary { CallOp | IndexOp | CastOp }
+Primary     = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral |
               MapLiteral | MatchExpr | GenerateExpr | FetchExpr |
               Literal | Identifier | "(" Expression ")"
 ```
@@ -173,6 +205,12 @@ print(nums[0])
 print(nums[1:3])
 ```
 
+The `in` operator tests membership in a collection:
+
+```mochi
+expect 2 in nums
+```
+
 Maps use braces with `key: value` pairs and share the same indexing syntax.
 
 ```mochi
@@ -189,6 +227,24 @@ print(text[1])
 for ch in text {
   print(ch)
 }
+```
+
+#### Struct Literals
+
+Values of user-defined types are constructed with struct literal syntax. The field
+order is irrelevant and missing fields default to `null` if allowed by the type.
+
+```mochi
+let p = Person { name: "Bob", age: 30 }
+```
+
+#### Type Casts
+
+Use `as` to cast a value to a specific type. Casting validates that the runtime
+value conforms to the target type and returns the converted value.
+
+```mochi
+let todo = fetch "https://example.com/todo" as Todo
 ```
 
 #### Match Expressions
@@ -443,6 +499,10 @@ AgentDecl     = "agent" Identifier "{" AgentField* "}" .
 AgentField    = LetStmt | VarStmt | AssignStmt | OnHandler | IntentDecl .
 IntentDecl    = "intent" Identifier "(" [ ParamList ] ")" [ ":" TypeRef ] Block .
 ModelDecl     = "model" Identifier Block .
+TypeDecl      = "type" Identifier [ "{" TypeMember* "}" ] [ "=" TypeVariant { "|" TypeVariant } ] .
+TypeMember    = TypeField | FunDecl .
+TypeVariant   = Identifier [ "(" TypeField { "," TypeField } [ "," ]? ")" | "{" TypeField* "}" ] .
+TypeField     = Identifier ":" TypeRef .
 
 Expression    = OrExpr .
 OrExpr       = AndExpr { "||" AndExpr } .
@@ -452,8 +512,8 @@ Comparison   = Term { ("<" | "<=" | ">" | ">=") Term } .
 Term         = Factor { ("+" | "-") Factor } .
 Factor       = Unary { ("*" | "/") Unary } .
 Unary        = { "-" | "!" } PostfixExpr .
-PostfixExpr  = Primary { IndexOp } .
-Primary      = FunExpr | CallExpr | SelectorExpr | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | FetchExpr | Literal | Identifier | "(" Expression ")" .
+PostfixExpr  = Primary { CallOp | IndexOp | CastOp } .
+Primary      = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | FetchExpr | Literal | Identifier | "(" Expression ")" .
 FunExpr       = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] ("=>" Expression | Block) .
 CallExpr      = Identifier "(" [ Expression { "," Expression } ] ")" .
 SelectorExpr  = Identifier { "." Identifier } .
@@ -461,6 +521,10 @@ ListLiteral   = "[" [ Expression { "," Expression } [ "," ] ] "]" .
 MapLiteral    = "{" [ MapEntry { "," MapEntry } ] [ "," ] "}" .
 MapEntry      = Expression ":" Expression .
 IndexOp       = "[" [ Expression ] [ ":" Expression ] "]" .
+CallOp        = "(" [ Expression { "," Expression } ] ")" .
+CastOp        = "as" TypeRef .
+StructLiteral = Identifier "{" [ StructField { "," StructField } ] [ "," ] "}" .
+StructField   = Identifier ":" Expression .
 ParamList     = Param { "," Param } .
 Param         = Identifier [ ":" TypeRef ] .
 TypeRef       = FunType | GenericType | Identifier .
