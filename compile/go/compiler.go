@@ -163,10 +163,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln("return " + expr)
 		return nil
-	case s.If != nil:
-		return c.compileIf(s.If)
-	case s.For != nil:
-		return c.compileFor(s.For)
+       case s.If != nil:
+               return c.compileIf(s.If)
+       case s.While != nil:
+               return c.compileWhile(s.While)
+       case s.For != nil:
+               return c.compileFor(s.For)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -624,6 +626,25 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	}
 	c.buf.WriteByte('\n')
 	return nil
+}
+
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+       cond, err := c.compileExpr(stmt.Cond)
+       if err != nil {
+               return err
+       }
+       c.writeIndent()
+       c.buf.WriteString("for " + cond + " {\n")
+       c.indent++
+       for _, s := range stmt.Body {
+               if err := c.compileStmt(s); err != nil {
+                       return err
+               }
+       }
+       c.indent--
+       c.writeIndent()
+       c.buf.WriteString("}\n")
+       return nil
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
@@ -1638,17 +1659,23 @@ func containsExpect(s *parser.Statement) bool {
 				return true
 			}
 		}
-	case s.For != nil:
-		for _, t := range s.For.Body {
-			if containsExpect(t) {
-				return true
-			}
-		}
-	case s.Test != nil:
-		for _, t := range s.Test.Body {
-			if containsExpect(t) {
-				return true
-			}
+       case s.For != nil:
+               for _, t := range s.For.Body {
+                       if containsExpect(t) {
+                               return true
+                       }
+               }
+       case s.While != nil:
+               for _, t := range s.While.Body {
+                       if containsExpect(t) {
+                               return true
+                       }
+               }
+       case s.Test != nil:
+               for _, t := range s.Test.Body {
+                       if containsExpect(t) {
+                               return true
+                       }
 		}
 	case s.Fun != nil:
 		for _, t := range s.Fun.Body {
@@ -1692,18 +1719,24 @@ func (c *Compiler) scanImports(s *parser.Statement) {
 			c.scanImports(t)
 		}
 	}
-	if s.For != nil {
-		c.scanExprImports(s.For.Source)
-		if s.For.RangeEnd != nil {
-			c.scanExprImports(s.For.RangeEnd)
-		}
-		for _, t := range s.For.Body {
-			c.scanImports(t)
-		}
-	}
-	if s.Stream != nil {
-		c.imports["mochi/runtime/stream"] = true
-	}
+       if s.For != nil {
+               c.scanExprImports(s.For.Source)
+               if s.For.RangeEnd != nil {
+                       c.scanExprImports(s.For.RangeEnd)
+               }
+               for _, t := range s.For.Body {
+                       c.scanImports(t)
+               }
+       }
+       if s.While != nil {
+               c.scanExprImports(s.While.Cond)
+               for _, t := range s.While.Body {
+                       c.scanImports(t)
+               }
+       }
+       if s.Stream != nil {
+               c.imports["mochi/runtime/stream"] = true
+       }
 	if s.On != nil {
 		c.imports["context"] = true
 		c.imports["mochi/runtime/stream"] = true

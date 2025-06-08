@@ -100,10 +100,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln("return " + expr)
 		return nil
-	case s.If != nil:
-		return c.compileIf(s.If)
-	case s.For != nil:
-		return c.compileFor(s.For)
+       case s.If != nil:
+               return c.compileIf(s.If)
+       case s.While != nil:
+               return c.compileWhile(s.While)
+       case s.For != nil:
+               return c.compileFor(s.For)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -422,6 +424,25 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	}
 	c.buf.WriteByte('\n')
 	return nil
+}
+
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+       cond, err := c.compileExpr(stmt.Cond)
+       if err != nil {
+               return err
+       }
+       c.writeIndent()
+       c.buf.WriteString("while (" + cond + ") {\n")
+       c.indent++
+       for _, s := range stmt.Body {
+               if err := c.compileStmt(s); err != nil {
+                       return err
+               }
+       }
+       c.indent--
+       c.writeIndent()
+       c.buf.WriteString("}\n")
+       return nil
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
