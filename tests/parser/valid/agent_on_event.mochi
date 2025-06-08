@@ -1,0 +1,13 @@
+stream Temp {
+  value: float
+}
+
+agent Logger {
+  var last: float = 0.0
+  on Temp as t {
+    last = t.value
+  }
+  intent lastTemp(): float {
+    return last
+  }
+}

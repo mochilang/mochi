@@ -1,0 +1,15 @@
+(program
+  (stream Temp (field "value:float"))
+  (agent Logger
+    (on Temp
+      (assign last
+        (selector value (selector t))
+      )
+    )
+    (intent lastTemp
+      (type float)
+      (return (selector last))
+    )
+  )
+)
+
