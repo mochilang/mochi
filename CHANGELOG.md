@@ -1,4 +1,24 @@
 # 📦 CHANGELOG.md
+## [0.4.0] – 2025-06-08
+
+### Added
+
+* `stream` declarations for typed event flows
+* `emit` statements for sending events
+* `on` handlers for asynchronous processing
+* Runtime library queuing and replay
+* Go, Python and TypeScript compiler support
+* Interpreter with async stream handlers
+
+### Changed
+
+* Stream runtime refactored with interfaces
+* Syntax highlighting updated for new keywords
+
+### Fixed
+
+* Go compiler deadlock in stream handler
+
 ## [0.3.5] – 2025-06-07
 
 ### Added
