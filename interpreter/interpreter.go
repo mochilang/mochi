@@ -161,9 +161,9 @@ type Interpreter struct {
 	prog     *parser.Program
 	env      *types.Env
 	types    *types.Env
-	streams  map[string]*stream.Stream
+	streams  map[string]stream.Stream
 	handlers map[string][]onHandler
-	subs     []*stream.Subscriber
+	subs     []stream.Subscriber
 	cancels  []context.CancelFunc
 	wg       *sync.WaitGroup
 }
@@ -174,9 +174,9 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		// env:   types.NewEnv(nil),
 		env:      typesEnv,
 		types:    typesEnv,
-		streams:  map[string]*stream.Stream{},
+		streams:  map[string]stream.Stream{},
 		handlers: map[string][]onHandler{},
-		subs:     []*stream.Subscriber{},
+		subs:     []stream.Subscriber{},
 		cancels:  []context.CancelFunc{},
 		wg:       &sync.WaitGroup{},
 	}
@@ -394,27 +394,18 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		}
 		h := onHandler{alias: s.On.Alias, body: s.On.Body}
 		i.handlers[s.On.Stream] = append(i.handlers[s.On.Stream], h)
-		sub := strm.RegisterSubscriber(fmt.Sprintf("handler-%d", len(i.subs)))
-		i.subs = append(i.subs, sub)
-		ctx, cancel := context.WithCancel(context.Background())
-		i.cancels = append(i.cancels, cancel)
-		i.wg.Add(1)
-		go func() {
-			defer i.wg.Done()
-			if err := sub.Watch(ctx, func(ev *stream.Event) error {
-				child := types.NewEnv(i.env)
-				child.SetValue(h.alias, ev.Data, true)
-				interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg}
-				for _, stmt := range h.body {
-					if err := interp.evalStmt(stmt); err != nil {
-						return err
-					}
+		sub := strm.Subscribe(fmt.Sprintf("handler-%d", len(i.subs)), func(ev *stream.Event) error {
+			child := types.NewEnv(i.env)
+			child.SetValue(h.alias, ev.Data, true)
+			interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg}
+			for _, stmt := range h.body {
+				if err := interp.evalStmt(stmt); err != nil {
+					return err
 				}
-				return nil
-			}); err != nil && !errors.Is(err, context.Canceled) {
-				fmt.Fprintf(os.Stderr, "handler error: %v\n", err)
 			}
-		}()
+			return nil
+		})
+		i.subs = append(i.subs, sub)
 		return nil
 
 	case s.Emit != nil:
@@ -430,7 +421,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		if !ok {
 			return fmt.Errorf("undefined stream: %s", s.Emit.Stream)
 		}
-		if _, err := strm.Append(context.Background(), ev); err != nil {
+		if _, err := strm.Emit(context.Background(), ev); err != nil {
 			return err
 		}
 		return nil
