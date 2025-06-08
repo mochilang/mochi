@@ -163,12 +163,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln("return " + expr)
 		return nil
-       case s.If != nil:
-               return c.compileIf(s.If)
-       case s.While != nil:
-               return c.compileWhile(s.While)
-       case s.For != nil:
-               return c.compileFor(s.For)
+	case s.If != nil:
+		return c.compileIf(s.If)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.For != nil:
+		return c.compileFor(s.For)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -629,22 +629,22 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
-       cond, err := c.compileExpr(stmt.Cond)
-       if err != nil {
-               return err
-       }
-       c.writeIndent()
-       c.buf.WriteString("for " + cond + " {\n")
-       c.indent++
-       for _, s := range stmt.Body {
-               if err := c.compileStmt(s); err != nil {
-                       return err
-               }
-       }
-       c.indent--
-       c.writeIndent()
-       c.buf.WriteString("}\n")
-       return nil
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeIndent()
+	c.buf.WriteString("for " + cond + " {\n")
+	c.indent++
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeIndent()
+	c.buf.WriteString("}\n")
+	return nil
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
@@ -861,71 +861,75 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	typ := c.inferPrimaryType(p.Target)
 	for _, op := range p.Ops {
-		if op.Index == nil {
-			if op.Call != nil {
-				args := make([]string, len(op.Call.Args))
-				for i, a := range op.Call.Args {
-					v, err := c.compileExpr(a)
+		switch {
+		case op.Call != nil:
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
+			}
+			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
+		case op.Index != nil:
+			idx := op.Index
+			if idx.Colon == nil {
+				key, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return "", err
+				}
+				switch tt := typ.(type) {
+				case types.ListType:
+					val = fmt.Sprintf("%s[%s]", val, key)
+					typ = tt.Elem
+				case types.MapType:
+					val = fmt.Sprintf("%s[%s]", val, key)
+					typ = tt.Value
+				case types.StringType:
+					c.use("_index")
+					val = fmt.Sprintf("_index(%s, %s).(string)", val, key)
+					typ = types.StringType{}
+				default:
+					c.use("_index")
+					val = fmt.Sprintf("_index(%s, %s)", val, key)
+					typ = types.AnyType{}
+				}
+			} else {
+				start := "0"
+				if idx.Start != nil {
+					s, err := c.compileExpr(idx.Start)
 					if err != nil {
 						return "", err
 					}
-					args[i] = v
+					start = s
 				}
-				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
-				typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
-				continue
-			}
-			continue
-		}
-		idx := op.Index
-		if idx.Colon == nil {
-			key, err := c.compileExpr(idx.Start)
-			if err != nil {
-				return "", err
-			}
-			switch tt := typ.(type) {
-			case types.ListType:
-				val = fmt.Sprintf("%s[%s]", val, key)
-				typ = tt.Elem
-			case types.MapType:
-				val = fmt.Sprintf("%s[%s]", val, key)
-				typ = tt.Value
-			case types.StringType:
-				c.use("_index")
-				val = fmt.Sprintf("_index(%s, %s).(string)", val, key)
-				typ = types.StringType{}
-			default:
-				c.use("_index")
-				val = fmt.Sprintf("_index(%s, %s)", val, key)
-				typ = types.AnyType{}
-			}
-		} else {
-			start := "0"
-			if idx.Start != nil {
-				s, err := c.compileExpr(idx.Start)
-				if err != nil {
-					return "", err
+				end := fmt.Sprintf("len(%s)", val)
+				if idx.End != nil {
+					e, err := c.compileExpr(idx.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
 				}
-				start = s
-			}
-			end := fmt.Sprintf("len(%s)", val)
-			if idx.End != nil {
-				e, err := c.compileExpr(idx.End)
-				if err != nil {
-					return "", err
+				switch typ.(type) {
+				case types.ListType:
+					val = fmt.Sprintf("%s[%s:%s]", val, start, end)
+				case types.StringType:
+					c.use("_slice")
+					val = fmt.Sprintf("_slice(%s, %s, %s).(string)", val, start, end)
+				default:
+					c.use("_slice")
+					val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, end)
 				}
-				end = e
 			}
-			switch typ.(type) {
-			case types.ListType:
-				val = fmt.Sprintf("%s[%s:%s]", val, start, end)
-			case types.StringType:
-				c.use("_slice")
-				val = fmt.Sprintf("_slice(%s, %s, %s).(string)", val, start, end)
-			default:
-				c.use("_slice")
-				val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, end)
-			}
+		case op.Cast != nil:
+			t := resolveTypeRef(op.Cast.Type)
+			c.use("_cast")
+			c.imports["encoding/json"] = true
+			val = fmt.Sprintf("_cast[%s](%s)", goType(t), val)
+			typ = t
 		}
 	}
 	return val, nil
@@ -1500,6 +1504,8 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 			} else {
 				t = types.AnyType{}
 			}
+		} else if op.Cast != nil {
+			t = resolveTypeRef(op.Cast.Type)
 		}
 	}
 	return t
@@ -1659,23 +1665,23 @@ func containsExpect(s *parser.Statement) bool {
 				return true
 			}
 		}
-       case s.For != nil:
-               for _, t := range s.For.Body {
-                       if containsExpect(t) {
-                               return true
-                       }
-               }
-       case s.While != nil:
-               for _, t := range s.While.Body {
-                       if containsExpect(t) {
-                               return true
-                       }
-               }
-       case s.Test != nil:
-               for _, t := range s.Test.Body {
-                       if containsExpect(t) {
-                               return true
-                       }
+	case s.For != nil:
+		for _, t := range s.For.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.While != nil:
+		for _, t := range s.While.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.Test != nil:
+		for _, t := range s.Test.Body {
+			if containsExpect(t) {
+				return true
+			}
 		}
 	case s.Fun != nil:
 		for _, t := range s.Fun.Body {
@@ -1719,24 +1725,24 @@ func (c *Compiler) scanImports(s *parser.Statement) {
 			c.scanImports(t)
 		}
 	}
-       if s.For != nil {
-               c.scanExprImports(s.For.Source)
-               if s.For.RangeEnd != nil {
-                       c.scanExprImports(s.For.RangeEnd)
-               }
-               for _, t := range s.For.Body {
-                       c.scanImports(t)
-               }
-       }
-       if s.While != nil {
-               c.scanExprImports(s.While.Cond)
-               for _, t := range s.While.Body {
-                       c.scanImports(t)
-               }
-       }
-       if s.Stream != nil {
-               c.imports["mochi/runtime/stream"] = true
-       }
+	if s.For != nil {
+		c.scanExprImports(s.For.Source)
+		if s.For.RangeEnd != nil {
+			c.scanExprImports(s.For.RangeEnd)
+		}
+		for _, t := range s.For.Body {
+			c.scanImports(t)
+		}
+	}
+	if s.While != nil {
+		c.scanExprImports(s.While.Cond)
+		for _, t := range s.While.Body {
+			c.scanImports(t)
+		}
+	}
+	if s.Stream != nil {
+		c.imports["mochi/runtime/stream"] = true
+	}
 	if s.On != nil {
 		c.imports["context"] = true
 		c.imports["mochi/runtime/stream"] = true
@@ -1818,17 +1824,19 @@ func (c *Compiler) scanPostfixImports(p *parser.PostfixExpr) {
 	}
 	c.scanPrimaryImports(p.Target)
 	for _, op := range p.Ops {
-		if op.Index == nil {
-			if op.Call != nil {
-				for _, a := range op.Call.Args {
-					c.scanExprImports(a)
-				}
+		switch {
+		case op.Call != nil:
+			for _, a := range op.Call.Args {
+				c.scanExprImports(a)
 			}
-			continue
+		case op.Index != nil:
+			idx := op.Index
+			c.scanExprImports(idx.Start)
+			c.scanExprImports(idx.End)
+		case op.Cast != nil:
+			c.imports["encoding/json"] = true
+			c.use("_cast")
 		}
-		idx := op.Index
-		c.scanExprImports(idx.Start)
-		c.scanExprImports(idx.End)
 	}
 }
 
@@ -2203,6 +2211,14 @@ const (
 		"        return nil\n" +
 		"    }\n" +
 		"}\n"
+
+	helperCast = "func _cast[T any](v any) T {\n" +
+		"    data, err := json.Marshal(v)\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    var out T\n" +
+		"    if err := json.Unmarshal(data, &out); err != nil { panic(err) }\n" +
+		"    return out\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -2214,6 +2230,7 @@ var helperMap = map[string]string{
 	"_genStruct": helperGenStruct,
 	"_fetch":     helperFetch,
 	"_toAnyMap":  helperToAnyMap,
+	"_cast":      helperCast,
 }
 
 func (c *Compiler) use(name string) {
