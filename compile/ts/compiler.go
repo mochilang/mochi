@@ -46,14 +46,30 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Emit test block declarations.
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	c.writeln("async function main(): Promise<void> {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := sanitizeName(s.Test.Name)
+			c.writeln(fmt.Sprintf("%s()", name))
 		}
 	}
 	c.indent--
@@ -86,6 +102,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileAgentDecl(s.Agent)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -100,12 +118,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln("return " + expr)
 		return nil
-       case s.If != nil:
-               return c.compileIf(s.If)
-       case s.While != nil:
-               return c.compileWhile(s.While)
-       case s.For != nil:
-               return c.compileFor(s.For)
+	case s.If != nil:
+		return c.compileIf(s.If)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.For != nil:
+		return c.compileFor(s.For)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -152,6 +170,15 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("if (!(%s)) { throw new Error('expect failed') }", expr))
 	return nil
 }
 
@@ -427,22 +454,22 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
-       cond, err := c.compileExpr(stmt.Cond)
-       if err != nil {
-               return err
-       }
-       c.writeIndent()
-       c.buf.WriteString("while (" + cond + ") {\n")
-       c.indent++
-       for _, s := range stmt.Body {
-               if err := c.compileStmt(s); err != nil {
-                       return err
-               }
-       }
-       c.indent--
-       c.writeIndent()
-       c.buf.WriteString("}\n")
-       return nil
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeIndent()
+	c.buf.WriteString("while (" + cond + ") {\n")
+	c.indent++
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeIndent()
+	c.buf.WriteString("}\n")
+	return nil
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
@@ -503,6 +530,22 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	c.buf.WriteByte('\n')
 	c.indent++
 	for _, s := range fun.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeIndent()
+	c.buf.WriteString("}\n")
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := sanitizeName(t.Name)
+	c.writeIndent()
+	c.buf.WriteString("function " + name + "(): void {\n")
+	c.indent++
+	for _, s := range t.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
