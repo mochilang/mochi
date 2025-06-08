@@ -127,6 +127,9 @@ type Subst map[string]Type
 // If a substitution map is provided, it will be updated to resolve type variables.
 // If subst == nil, unification checks structural equality.
 func unify(a, b Type, subst Subst) bool {
+	if _, ok := b.(AnyType); ok {
+		return true
+	}
 	switch at := a.(type) {
 
 	case AnyType:
@@ -324,6 +327,14 @@ func Check(prog *parser.Program, env *Env) []error {
 		Params: []Type{AnyType{}},
 		Return: VoidType{},
 	}, false)
+	env.SetVar("str", FuncType{
+		Params: []Type{AnyType{}},
+		Return: StringType{},
+	}, false)
+	env.SetVar("sleep", FuncType{
+		Params: []Type{IntType{}},
+		Return: VoidType{},
+	}, false)
 
 	var errs []error
 	for _, stmt := range prog.Statements {
@@ -362,6 +373,48 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		env.SetStream(s.Stream.Name, st)
 		env.SetStruct(s.Stream.Name, st)
 		env.types[s.Stream.Name] = st
+		return nil
+
+	case s.Agent != nil:
+		fields := map[string]Type{}
+		order := []string{}
+		methods := map[string]Method{}
+		for _, blk := range s.Agent.Body {
+			switch {
+			case blk.Let != nil:
+				var t Type = AnyType{}
+				if blk.Let.Type != nil {
+					t = resolveTypeRef(blk.Let.Type, env)
+				}
+				fields[blk.Let.Name] = t
+				order = append(order, blk.Let.Name)
+			case blk.Var != nil:
+				var t Type = AnyType{}
+				if blk.Var.Type != nil {
+					t = resolveTypeRef(blk.Var.Type, env)
+				}
+				fields[blk.Var.Name] = t
+				order = append(order, blk.Var.Name)
+			case blk.Intent != nil:
+				params := make([]Type, len(blk.Intent.Params))
+				for i, p := range blk.Intent.Params {
+					if p.Type != nil {
+						params[i] = resolveTypeRef(p.Type, env)
+					} else {
+						params[i] = AnyType{}
+					}
+				}
+				var ret Type = AnyType{}
+				if blk.Intent.Return != nil {
+					ret = resolveTypeRef(blk.Intent.Return, env)
+				}
+				methods[blk.Intent.Name] = Method{Decl: &parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, Type: FuncType{Params: params, Return: ret}}
+			}
+		}
+		st := StructType{Name: s.Agent.Name, Fields: fields, Order: order, Methods: methods}
+		env.SetStruct(s.Agent.Name, st)
+		env.SetAgent(s.Agent.Name, s.Agent)
+		env.types[s.Agent.Name] = st
 		return nil
 
 	case s.On != nil:

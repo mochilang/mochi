@@ -18,14 +18,15 @@ type ModelSpec struct {
 type Env struct {
 	parent *Env
 
-	types   map[string]Type            // static types
-	structs map[string]StructType      // user-defined struct types
-	unions  map[string]UnionType       // user-defined union types
-	streams map[string]StructType      // stream declarations
-	mut     map[string]bool            // mutability of variables
-	values  map[string]any             // runtime values
-	funcs   map[string]*parser.FunStmt // function declarations
-	models  map[string]ModelSpec       // model aliases
+	types   map[string]Type              // static types
+	structs map[string]StructType        // user-defined struct types
+	unions  map[string]UnionType         // user-defined union types
+	streams map[string]StructType        // stream declarations
+	agents  map[string]*parser.AgentDecl // agent declarations
+	mut     map[string]bool              // mutability of variables
+	values  map[string]any               // runtime values
+	funcs   map[string]*parser.FunStmt   // function declarations
+	models  map[string]ModelSpec         // model aliases
 
 	output io.Writer // default: os.Stdout
 }
@@ -42,6 +43,7 @@ func NewEnv(parent *Env) *Env {
 		structs: make(map[string]StructType),
 		unions:  make(map[string]UnionType),
 		streams: make(map[string]StructType),
+		agents:  make(map[string]*parser.AgentDecl),
 		mut:     make(map[string]bool),
 		values:  make(map[string]any),
 		funcs:   make(map[string]*parser.FunStmt),
@@ -112,6 +114,9 @@ func (e *Env) FindUnionByVariant(variant string) (UnionType, bool) {
 // SetModel defines a model alias.
 func (e *Env) SetModel(name string, spec ModelSpec) { e.models[name] = spec }
 
+// SetAgent defines an agent declaration.
+func (e *Env) SetAgent(name string, decl *parser.AgentDecl) { e.agents[name] = decl }
+
 // GetModel retrieves a model alias.
 func (e *Env) GetModel(name string) (ModelSpec, bool) {
 	if m, ok := e.models[name]; ok {
@@ -121,6 +126,17 @@ func (e *Env) GetModel(name string) (ModelSpec, bool) {
 		return e.parent.GetModel(name)
 	}
 	return ModelSpec{}, false
+}
+
+// GetAgent retrieves an agent declaration.
+func (e *Env) GetAgent(name string) (*parser.AgentDecl, bool) {
+	if a, ok := e.agents[name]; ok {
+		return a, true
+	}
+	if e.parent != nil {
+		return e.parent.GetAgent(name)
+	}
+	return nil, false
 }
 
 // SetVar defines a variable's static type.
@@ -227,6 +243,7 @@ func (e *Env) Copy() *Env {
 		structs: make(map[string]StructType, len(e.structs)),
 		unions:  make(map[string]UnionType, len(e.unions)),
 		streams: make(map[string]StructType, len(e.streams)),
+		agents:  make(map[string]*parser.AgentDecl, len(e.agents)),
 		models:  make(map[string]ModelSpec, len(e.models)),
 		output:  e.output,
 	}
@@ -250,6 +267,9 @@ func (e *Env) Copy() *Env {
 	}
 	for k, v := range e.streams {
 		newEnv.streams[k] = v
+	}
+	for k, v := range e.agents {
+		newEnv.agents[k] = v
 	}
 	for k, v := range e.models {
 		newEnv.models[k] = v

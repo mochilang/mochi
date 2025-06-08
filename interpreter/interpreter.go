@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"mochi/parser"
+	"mochi/runtime/agent"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
 	"mochi/runtime/stream"
@@ -166,6 +167,7 @@ type Interpreter struct {
 	subs     []stream.Subscriber
 	cancels  []context.CancelFunc
 	wg       *sync.WaitGroup
+	agents   []*agent.Agent
 }
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
@@ -179,6 +181,7 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		subs:     []stream.Subscriber{},
 		cancels:  []context.CancelFunc{},
 		wg:       &sync.WaitGroup{},
+		agents:   []*agent.Agent{},
 	}
 }
 
@@ -308,6 +311,107 @@ type closure struct {
 	FullParams []*parser.Param
 }
 
+type agentInstance struct {
+	decl  *parser.AgentDecl
+	agent *agent.Agent
+	env   *types.Env
+}
+
+type agentIntent struct {
+	inst *agentInstance
+	decl *parser.IntentDecl
+}
+
+func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, error) {
+	inst := &agentInstance{
+		decl:  decl,
+		agent: agent.New(agent.Config{Name: decl.Name, BufSize: 16}),
+		env:   types.NewEnv(i.env),
+	}
+
+	for _, blk := range decl.Body {
+		switch {
+		case blk.Let != nil:
+			val := any(nil)
+			var err error
+			if blk.Let.Value != nil {
+				val, err = i.evalExpr(blk.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			inst.env.SetValue(blk.Let.Name, val, false)
+
+		case blk.Var != nil:
+			val := any(nil)
+			var err error
+			if blk.Var.Value != nil {
+				val, err = i.evalExpr(blk.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			inst.env.SetValue(blk.Var.Name, val, true)
+		}
+	}
+
+	for _, blk := range decl.Body {
+		switch {
+		case blk.On != nil:
+			strm, ok := i.streams[blk.On.Stream]
+			if !ok {
+				return nil, fmt.Errorf("undefined stream: %s", blk.On.Stream)
+			}
+			alias := blk.On.Alias
+			body := blk.On.Body
+			inst.agent.On(strm, func(ctx context.Context, ev *stream.Event) {
+				child := types.NewEnv(inst.env)
+				child.SetValue(alias, ev.Data, true)
+				interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, agents: i.agents}
+				for _, stmt := range body {
+					_ = interp.evalStmt(stmt)
+				}
+			})
+
+		case blk.Intent != nil:
+			intent := blk.Intent
+			inst.agent.RegisterIntent(intent.Name, func(ctx context.Context, args ...agent.Value) (agent.Value, error) {
+				child := types.NewEnv(inst.env)
+				for idx, p := range intent.Params {
+					if idx < len(args) {
+						child.SetValue(p.Name, args[idx], true)
+					} else {
+						child.SetValue(p.Name, nil, true)
+					}
+				}
+				old := i.env
+				i.env = child
+				defer func() { i.env = old }()
+				for _, stmt := range intent.Body {
+					if err := i.evalStmt(stmt); err != nil {
+						if r, ok := err.(returnSignal); ok {
+							return r.value, nil
+						}
+						return nil, err
+					}
+				}
+				return nil, nil
+			})
+		}
+	}
+
+	return inst, nil
+}
+
+func findIntent(decl *parser.AgentDecl, name string) *parser.IntentDecl {
+	for _, blk := range decl.Body {
+		if blk.Intent != nil && blk.Intent.Name == name {
+			return blk.Intent
+		}
+	}
+	return nil
+}
+
 type onHandler struct {
 	alias string
 	body  []*parser.Statement
@@ -378,6 +482,10 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 
 	case s.Continue != nil:
 		return continueSignal{}
+
+	case s.Agent != nil:
+		i.env.SetAgent(s.Agent.Name, s.Agent)
+		return nil
 
 	case s.Type != nil:
 		// type declarations have no runtime effect
@@ -1017,6 +1125,22 @@ func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
 			}
 			continue
 		} else if call := op.Call; call != nil {
+			if ai, ok := val.(agentIntent); ok {
+				args := make([]agent.Value, len(call.Args))
+				for idx, a := range call.Args {
+					v, err := i.evalExpr(a)
+					if err != nil {
+						return nil, err
+					}
+					args[idx] = v
+				}
+				res, err := ai.inst.agent.Call(context.Background(), ai.decl.Name, args...)
+				if err != nil {
+					return nil, err
+				}
+				val = res
+				continue
+			}
 			cl, ok := val.(closure)
 			if !ok {
 				return nil, errUndefinedFunctionOrClosure(call.Pos, "")
@@ -1112,6 +1236,18 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			}
 		}
 		for _, field := range p.Selector.Tail {
+			if inst, ok := val.(*agentInstance); ok {
+				if v, err := inst.env.GetValue(field); err == nil {
+					val = v
+					continue
+				}
+				if intent := findIntent(inst.decl, field); intent != nil {
+					val = agentIntent{inst: inst, decl: intent}
+					continue
+				}
+				val = nil
+				continue
+			}
 			obj, ok := val.(map[string]any)
 			if !ok {
 				return nil, errFieldAccessOnNonObject(p.Pos, field, fmt.Sprintf("%T", val))
@@ -1140,6 +1276,15 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return val, nil
 
 	case p.Struct != nil:
+		if decl, ok := i.env.GetAgent(p.Struct.Name); ok {
+			inst, err := i.newAgentInstance(decl)
+			if err != nil {
+				return nil, err
+			}
+			i.agents = append(i.agents, inst.agent)
+			inst.agent.Start(context.Background())
+			return inst, nil
+		}
 		obj := map[string]any{"__name": p.Struct.Name}
 		for _, field := range p.Struct.Fields {
 			v, err := i.evalExpr(field.Value)
@@ -1493,6 +1638,36 @@ func builtinJSON(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return nil, err
 }
 
+func builtinStr(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("str(x) takes exactly one argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	return fmt.Sprint(val), nil
+}
+
+func builtinSleep(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("sleep(x) takes exactly one argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	switch v := val.(type) {
+	case int:
+		time.Sleep(time.Duration(v) * time.Millisecond)
+	case int64:
+		time.Sleep(time.Duration(v) * time.Millisecond)
+	case float64:
+		time.Sleep(time.Duration(v * float64(time.Millisecond)))
+	}
+	return nil, nil
+}
+
 func (i *Interpreter) invokeTool(cl closure, args map[string]any) (any, error) {
 	child := types.NewEnv(cl.Env)
 	for _, param := range cl.FullParams {
@@ -1645,6 +1820,8 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"len":   builtinLen,
 		"now":   builtinNow,
 		"json":  builtinJSON,
+		"str":   builtinStr,
+		"sleep": builtinSleep,
 	}
 }
 
@@ -1708,7 +1885,9 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 
 	val, err := i.env.GetValue(c.Func)
 	if err == nil {
-		if cl, ok := val.(closure); ok {
+		switch fn := val.(type) {
+		case closure:
+			cl := fn
 			totalArgs := len(cl.Args) + len(c.Args)
 			fullParamCount := len(cl.FullParams)
 
@@ -1763,6 +1942,17 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 				}
 			}
 			return nil, nil
+
+		case agentIntent:
+			args := make([]agent.Value, len(c.Args))
+			for idx, arg := range c.Args {
+				v, err := i.evalExpr(arg)
+				if err != nil {
+					return nil, err
+				}
+				args[idx] = v
+			}
+			return fn.inst.agent.Call(context.Background(), fn.decl.Name, args...)
 		}
 	}
 
@@ -2166,5 +2356,8 @@ func (i *Interpreter) Close() {
 	i.wg.Wait()
 	for _, s := range i.streams {
 		s.Close()
+	}
+	for _, a := range i.agents {
+		a.Stop()
 	}
 }
