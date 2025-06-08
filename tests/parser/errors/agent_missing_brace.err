@@ -1,0 +1,5 @@
+error[P001]: tests/parser/errors/agent_missing_brace.mochi:6:1: unexpected token "<EOF>" (expected "}")
+  --> tests/parser/errors/agent_missing_brace.mochi:6:1
+
+help:
+  Check for a missing `{` or `}` to close the block.

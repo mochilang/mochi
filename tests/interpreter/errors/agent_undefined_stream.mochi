@@ -1,0 +1,7 @@
+agent Monitor {
+  on MissingStream as e {
+    print("event", e)
+  }
+}
+
+let m = Monitor {}
