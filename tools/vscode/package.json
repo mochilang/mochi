@@ -1,0 +1,42 @@
+{
+  "name": "mochi",
+  "displayName": "Mochi",
+  "description": "VS Code extension for the Mochi programming language.",
+  "version": "0.1.0",
+  "publisher": "mochi-lang.org",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": ["Programming Languages"],
+  "activationEvents": ["onLanguage:mochi"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mochi",
+        "aliases": ["Mochi", "mochi"],
+        "extensions": [".mochi"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mochi",
+        "scopeName": "source.mochi",
+        "path": "./syntaxes/mochi.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "package": "vsce package",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "tslib": "^2.5.0",
+    "typescript": "^5.4.5",
+    "vsce": "^3.16.0"
+  }
+}

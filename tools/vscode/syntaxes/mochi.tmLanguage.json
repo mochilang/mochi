@@ -1,0 +1,70 @@
+{
+  "name": "Mochi",
+  "scopeName": "source.mochi",
+  "fileTypes": ["mochi"],
+  "uuid": "e65d71dc-9a56-41f6-a502-89adff3a0f3d",
+  "patterns": [
+    {
+      "name": "keyword.control.mochi",
+      "match": "\\b(test|expect|agent|intent|on|stream|emit|type|fun|return|break|continue|let|var|if|else|for|in|generate|match|fetch)\\b"
+    },
+    {
+      "name": "storage.type.mochi",
+      "match": "\\b(int|float|string|bool|list|map|fun\\([^)]*\\):\\s*\\w+)\\b"
+    },
+    {
+      "name": "constant.language.mochi",
+      "match": "\\b(true|false|null)\\b"
+    },
+    {
+      "name": "constant.numeric.mochi",
+      "match": "\\b\\d+(\\.\\d+)?\\b"
+    },
+    {
+      "name": "variable.other.mochi",
+      "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+    },
+    {
+      "name": "string.quoted.double.mochi",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.mochi",
+          "match": "\\\\."
+        }
+      ]
+    },
+    {
+      "name": "comment.line.double-slash.mochi",
+      "match": "//.*$"
+    },
+    {
+      "name": "comment.block.mochi",
+      "begin": "/\\*",
+      "end": "\\*/",
+      "patterns": [
+        {
+          "name": "comment.block.documentation.mochi",
+          "match": "(\\*\\s.*)"
+        }
+      ]
+    },
+    {
+      "name": "punctuation.definition.comment.mochi",
+      "match": "(//)"
+    },
+    {
+      "name": "keyword.operator.mochi",
+      "match": "==|!=|<=|>=|&&|\\|\\||=>|\\.\\.|[-+*/%=<>!|{}\\[\\](),.:]"
+    },
+    {
+      "name": "punctuation.separator.mochi",
+      "match": "[,;]"
+    },
+    {
+      "name": "punctuation.brackets.mochi",
+      "match": "[\\[\\]\\(\\)\\{\\}]"
+    }
+  ]
+}

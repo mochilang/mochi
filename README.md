@@ -80,7 +80,9 @@ This installs `mochi` into `~/bin` and runs the full test suite.
 
 ## Usage with Visual Studio Code
 
-You can run Mochi as an [MCP server](https://github.com/modelcontext/protocol) inside **VS Code’s agent mode**.
+There is a VS Code extension under `tools/vscode` that bundles the Mochi language syntax. Run `npm install` and `npm run package` in that folder to build `mochi.vsix` for local installation.
+
+You can also run Mochi as an [MCP server](https://github.com/modelcontext/protocol) inside **VS Code’s agent mode**.
 
 The easiest way is to use a `.vscode/mcp.json` config file in your project:
 
