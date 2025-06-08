@@ -1,0 +1,23 @@
+let s = "hello world"
+
+// Indexing
+let first = s[0]
+let fifth = s[4]
+print("first character:", first)
+print("fifth character:", fifth)
+
+// Iteration
+for ch in s {
+  print("char:", ch)
+}
+
+// Count number of vowels
+let vowels = "aeiou"
+let count = 0
+
+for ch in s {
+  if vowels.contains(ch) {
+    count += 1
+  }
+}
+print("number of vowels:", count)

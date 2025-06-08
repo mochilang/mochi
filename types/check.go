@@ -552,6 +552,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 				elemType = t.Elem
 			case MapType:
 				elemType = t.Key // loop iterates over keys
+			case StringType:
+				elemType = StringType{}
 			case AnyType:
 				elemType = AnyType{}
 			default:
@@ -1033,6 +1035,30 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				}
 				typ = t.Value
 
+			case StringType:
+				if idx.Start == nil && idx.Colon == nil {
+					return nil, errMissingIndex(idx.Pos)
+				}
+				if idx.Start != nil {
+					startType, err := checkExpr(idx.Start, env)
+					if err != nil {
+						return nil, err
+					}
+					if !(unify(startType, IntType{}, nil) || unify(startType, Int64Type{}, nil)) {
+						return nil, errIndexNotInteger(idx.Pos)
+					}
+				}
+				if idx.End != nil {
+					endType, err := checkExpr(idx.End, env)
+					if err != nil {
+						return nil, err
+					}
+					if !(unify(endType, IntType{}, nil) || unify(endType, Int64Type{}, nil)) {
+						return nil, errIndexNotInteger(idx.Pos)
+					}
+				}
+				typ = StringType{}
+
 			default:
 				return nil, errNotIndexable(p.Target.Pos, typ)
 			}
@@ -1088,19 +1114,26 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return nil, errUnknownVariable(p.Pos, p.Selector.Root)
 		}
 		for _, field := range p.Selector.Tail {
-			st, ok := typ.(StructType)
-			if !ok {
+			switch t := typ.(type) {
+			case StructType:
+				if ft, ok := t.Fields[field]; ok {
+					typ = ft
+					continue
+				}
+				if m, ok := t.Methods[field]; ok {
+					typ = m.Type
+					continue
+				}
+				return nil, errUnknownField(p.Pos, field, t)
+			case StringType:
+				if field == "contains" {
+					typ = FuncType{Params: []Type{StringType{}}, Return: BoolType{}}
+					continue
+				}
+				return nil, errNotStruct(p.Pos, typ)
+			default:
 				return nil, errNotStruct(p.Pos, typ)
 			}
-			if ft, ok := st.Fields[field]; ok {
-				typ = ft
-				continue
-			}
-			if m, ok := st.Methods[field]; ok {
-				typ = m.Type
-				continue
-			}
-			return nil, errUnknownField(p.Pos, field, st)
 		}
 		return typ, nil
 
