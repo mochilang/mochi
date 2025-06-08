@@ -5,14 +5,8 @@ function addition_works(): void {
 	if (!((x == 3))) { throw new Error('expect failed') }
 }
 
-async function main(): Promise<void> {
+function main(): void {
 	console.log("ok")
 	addition_works()
 }
-await main()
-await _waitAll()
-
-const _pending: Promise<any>[] = [];
-async function _waitAll(): Promise<void> {
-  await Promise.all(_pending);
-}
+main()

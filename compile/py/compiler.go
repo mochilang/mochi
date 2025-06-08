@@ -34,8 +34,47 @@ func New(env *types.Env) *Compiler {
 	}
 }
 
+func containsStreamCode(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		if stmtHasStream(s) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtHasStream(s *parser.Statement) bool {
+	switch {
+	case s.Stream != nil, s.Emit != nil, s.On != nil, s.Agent != nil:
+		return true
+	case s.Fun != nil:
+		return containsStreamCode(s.Fun.Body)
+	case s.Test != nil:
+		return containsStreamCode(s.Test.Body)
+	case s.If != nil:
+		if containsStreamCode(s.If.Then) {
+			return true
+		}
+		if s.If.ElseIf != nil {
+			if stmtHasStream(&parser.Statement{If: s.If.ElseIf}) {
+				return true
+			}
+		}
+		return containsStreamCode(s.If.Else)
+	case s.While != nil:
+		return containsStreamCode(s.While.Body)
+	case s.For != nil:
+		return containsStreamCode(s.For.Body)
+	case s.On != nil:
+		return containsStreamCode(s.On.Body)
+	}
+	return false
+}
+
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+
+	needsAsync := containsStreamCode(prog.Statements)
 
 	// Function declarations
 	for _, s := range prog.Statements {
@@ -58,7 +97,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	// Main function
-	c.writeln("async def main():")
+	if needsAsync {
+		c.writeln("async def main():")
+	} else {
+		c.writeln("def main():")
+	}
 	c.indent++
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil {
@@ -99,25 +142,34 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
-	c.use("_wait_all")
+	if needsAsync {
+		c.use("_wait_all")
+	}
 
 	c.buf.Write(body)
 	if len(c.helpers) > 0 {
 		c.emitRuntime()
 	}
 
-	c.writeln("async def _run():")
-	c.indent++
-	c.writeln("await main()")
-	c.writeln("await _wait_all()")
-	c.indent--
-	c.writeln("")
+	if needsAsync {
+		c.writeln("async def _run():")
+		c.indent++
+		c.writeln("await main()")
+		c.writeln("await _wait_all()")
+		c.indent--
+		c.writeln("")
 
-	c.writeln("if __name__ == \"__main__\":")
-	c.indent++
-	c.writeln("import asyncio")
-	c.writeln("asyncio.run(_run())")
-	c.indent--
+		c.writeln("if __name__ == \"__main__\":")
+		c.indent++
+		c.writeln("import asyncio")
+		c.writeln("asyncio.run(_run())")
+		c.indent--
+	} else {
+		c.writeln("if __name__ == \"__main__\":")
+		c.indent++
+		c.writeln("main()")
+		c.indent--
+	}
 
 	return c.buf.Bytes(), nil
 }

@@ -6,14 +6,8 @@ function makeAdder(n) {
 }
 }
 
-async function main(): Promise<void> {
+function main(): void {
 	let add10 = makeAdder(10)
 	console.log(add10(7))
 }
-await main()
-await _waitAll()
-
-const _pending: Promise<any>[] = [];
-async function _waitAll(): Promise<void> {
-  await Promise.all(_pending);
-}
+main()
