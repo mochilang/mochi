@@ -25,7 +25,6 @@ var Errors = map[string]diagnostic.Template{
 
 	// --- Boolean and Condition Checks ---
 	"T011": {Code: "T011", Message: "`expect` must be a boolean", Help: "`expect` should evaluate to `true` or `false`."},
-	"T012": {Code: "T012", Message: "incompatible types in equality comparison", Help: "Use `==` or `!=` only with values of the same type."},
 	"T013": {Code: "T013", Message: "incompatible types in comparison", Help: "Use comparable types like numbers or strings with `<`, `>`."},
 
 	// --- Expressions ---
@@ -101,10 +100,6 @@ func errReturnMismatch(pos lexer.Position, expected, actual Type) error {
 func errExpectBoolean(pos lexer.Position) error {
 	return Errors["T011"].New(pos)
 }
-
-//func errIncompatibleEquality(pos lexer.Position) error {
-//	return Errors["T012"].New(pos)
-//}
 
 func errIncompatibleComparison(pos lexer.Position) error {
 	return Errors["T013"].New(pos)
