@@ -474,6 +474,9 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 	case s.If != nil:
 		return i.evalIf(s.If)
 
+	case s.While != nil:
+		return i.evalWhile(s.While)
+
 	case s.For != nil:
 		return i.evalFor(s.For)
 
@@ -616,6 +619,47 @@ func (i *Interpreter) evalIf(stmt *parser.IfStmt) error {
 	}
 	i.env = old
 	return nil
+}
+
+func (i *Interpreter) evalWhile(stmt *parser.WhileStmt) error {
+	// Create loop scope
+	child := types.NewEnv(i.env)
+	old := i.env
+	i.env = child
+	defer func() { i.env = old }()
+
+	for {
+		condVal, err := i.evalExpr(stmt.Cond)
+		if err != nil {
+			return err
+		}
+		if !truthy(condVal) {
+			return nil
+		}
+
+		var cont bool
+		for _, s := range stmt.Body {
+			if err := i.evalStmt(s); err != nil {
+				switch err.(type) {
+				case continueSignal:
+					cont = true
+					err = nil
+				case breakSignal:
+					return nil
+				case returnSignal:
+					return err
+				default:
+					return err
+				}
+				if cont {
+					break
+				}
+			}
+		}
+		if cont {
+			continue
+		}
+	}
 }
 
 func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {

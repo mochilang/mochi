@@ -71,6 +71,9 @@ func FromStatement(s *parser.Statement) *Node {
 	case s.If != nil:
 		return fromIfStmt(s.If)
 
+	case s.While != nil:
+		return fromWhileStmt(s.While)
+
 	case s.For != nil:
 		return fromForStmt(s.For)
 
@@ -150,6 +153,12 @@ func fromIfStmt(stmt *parser.IfStmt) *Node {
 		elseBlock := &Node{Kind: "block", Children: mapStatements(stmt.Else)}
 		n.Children = append(n.Children, elseBlock)
 	}
+	return n
+}
+
+func fromWhileStmt(stmt *parser.WhileStmt) *Node {
+	n := &Node{Kind: "while", Children: []*Node{FromExpr(stmt.Cond)}}
+	n.Children = append(n.Children, &Node{Kind: "block", Children: mapStatements(stmt.Body)})
 	return n
 }
 

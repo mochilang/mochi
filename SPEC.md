@@ -259,6 +259,18 @@ for i in 0..5 { print(i) }            // range loop
 for item in items { print(item) }      // collection loop
 ```
 
+### While Statement
+
+Repeatedly execute a block while a condition is true:
+
+```mochi
+var j = 0
+while j < 3 {
+  print(j)
+  j = j + 1
+}
+```
+
 ### Emit Statement
 
 `emit` sends an event to a named stream using struct literal syntax:

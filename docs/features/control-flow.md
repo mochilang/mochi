@@ -12,4 +12,10 @@ if count > 0 {
 for i in 0..3 {
   print(i)
 }
+
+var j = 0
+while j < 3 {
+  print(j)
+  j = j + 1
+}
 ```
