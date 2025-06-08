@@ -2,7 +2,7 @@
 
 async function main(): Promise<void> {
 	let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-	for (const n of numbers) {
+	for (const n of _iter(numbers)) {
 		if (((n % 2) == 0)) {
 			continue
 		}
@@ -15,7 +15,15 @@ async function main(): Promise<void> {
 await main()
 await _waitAll()
 
+function _iter(v: any): any[] {
+  if (Array.isArray(v)) return v;
+  if (typeof v === "string") return Array.from(v);
+  if (v && typeof v === "object") return Object.keys(v);
+  return [];
+}
+
 const _pending: Promise<any>[] = [];
 async function _waitAll(): Promise<void> {
   await Promise.all(_pending);
 }
+

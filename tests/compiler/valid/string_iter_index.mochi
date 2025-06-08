@@ -1,0 +1,5 @@
+let text = "hello"
+print(text[1])
+for ch in text {
+  print(ch)
+}
