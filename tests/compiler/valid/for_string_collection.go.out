@@ -1,0 +1,12 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	for _, r := range []rune("hi") {
+		ch := string(r)
+		fmt.Println(ch)
+	}
+}
