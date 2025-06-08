@@ -1,0 +1,8 @@
+error[I001]: undefined function or closure: x
+  --> tests/interpreter/errors/undefined_function.mochi:2:1
+
+  2 | x()
+    | ^
+
+help:
+  `%s` is not defined. Declare it before calling.

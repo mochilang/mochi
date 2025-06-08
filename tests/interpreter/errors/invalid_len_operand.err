@@ -1,0 +1,8 @@
+error[I017]: cannot take length of type int
+  --> tests/interpreter/errors/invalid_len_operand.mochi:2:7
+
+  2 | print(len(x))
+    |       ^
+
+help:
+  Use `len(...)` only on lists and strings.
