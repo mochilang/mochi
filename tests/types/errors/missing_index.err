@@ -1,0 +1,8 @@
+1. error[T016]: missing index expression
+  --> tests/types/errors/missing_index.mochi:2:10
+
+  2 | let x = a[]
+    |          ^
+
+help:
+  Provide an index inside `[ ... ]`.

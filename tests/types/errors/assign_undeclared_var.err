@@ -1,0 +1,8 @@
+1. error[T001]: assignment to undeclared variable: x
+  --> tests/types/errors/assign_undeclared_var.mochi:1:1
+
+  1 | x = 3
+    | ^
+
+help:
+  Declare `%s` first using `let`.

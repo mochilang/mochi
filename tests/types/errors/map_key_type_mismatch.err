@@ -1,0 +1,8 @@
+1. error[T019]: map key type mismatch: expected string, got int
+  --> tests/types/errors/map_key_type_mismatch.mochi:2:10
+
+  2 | let x = m[1]
+    |          ^
+
+help:
+  Make sure the key matches the map’s key type.

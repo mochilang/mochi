@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected bool, got int
+  --> tests/types/errors/expect_non_boolean.mochi:1:8
+
+  1 | expect 5
+    |        ^
+
+help:
+  Change the value to match the expected type.

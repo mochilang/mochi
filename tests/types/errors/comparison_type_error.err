@@ -1,0 +1,8 @@
+1. error[T013]: incompatible types in comparison
+  --> tests/types/errors/comparison_type_error.mochi:1:14
+
+  1 | let _ = "hi" < 3
+    |              ^
+
+help:
+  Use comparable types like numbers or strings with `<`, `>`.

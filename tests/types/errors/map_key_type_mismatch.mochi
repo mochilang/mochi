@@ -1,0 +1,2 @@
+let m: map<string, int> = {"a": 1}
+let x = m[1]
