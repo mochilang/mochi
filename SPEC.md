@@ -282,6 +282,8 @@ while j < 3 {
 }
 ```
 
+`break` exits the loop immediately, while `continue` skips to the next iteration.
+
 ### Emit Statement
 
 `emit` sends an event to a named stream using struct literal syntax:

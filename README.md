@@ -255,6 +255,9 @@ while j < 3 {
 }
 ```
 
+Use `for` to iterate over ranges or collections. A `while` loop continues
+running until its condition becomes false.
+
 ### Functions
 
 ```mochi
