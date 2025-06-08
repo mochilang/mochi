@@ -4,10 +4,7 @@ import (
 	"context"
 	"fmt"
 	"mochi/runtime/stream"
-	"sync"
 )
-
-var _wg sync.WaitGroup
 
 func main() {
 	type Sensor struct {
@@ -16,17 +13,14 @@ func main() {
 	}
 	
 	var sensorStream = stream.New("Sensor", 64)
-	_sub0 := sensorStream.RegisterSubscriber("handler-0")
-	_wg.Add(1)
-	go func() {
-		defer _wg.Done()
-		_ = _sub0.Watch(context.Background(), func(ev *stream.Event) error {
-			s := ev.Data.(Sensor)
-			fmt.Println(s.Id, s.Temperature)
-			return nil
-		})
-	}()
-	_, _ = sensorStream.Append(context.Background(), Sensor{Id: "sensor-1", Temperature: 22.500000})
+	_done0 := make(chan struct{})
+	sensorStream.Subscribe("handler-0", func(ev *stream.Event) error {
+		s := ev.Data.(Sensor)
+		fmt.Println(s.Id, s.Temperature)
+		close(_done0)
+		return nil
+	})
+	_, _ = sensorStream.Emit(context.Background(), Sensor{Id: "sensor-1", Temperature: 22.500000})
+	<-_done0
 	sensorStream.Close()
-	_wg.Wait()
 }
