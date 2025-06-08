@@ -8,7 +8,7 @@ def twoSum(nums, target):
 				return [i, j]
 	return [(-1), (-1)]
 
-async def main():
+def main():
 	result = twoSum([2, 7, 11, 15], 9)
 	print(_index(result, 0))
 	print(_index(result, 1))
@@ -33,14 +33,5 @@ def _index(v, k):
     if isinstance(v, dict):
         return v[k]
     return v[k]
-import asyncio
-_pending = []
-async def _wait_all():
-    await asyncio.gather(*_pending)
-async def _run():
-	await main()
-	await _wait_all()
-
 if __name__ == "__main__":
-	import asyncio
-	asyncio.run(_run())
+	main()

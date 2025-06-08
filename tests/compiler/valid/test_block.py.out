@@ -4,18 +4,9 @@ def addition_works():
 	x = (1 + 2)
 	assert (x == 3)
 
-async def main():
+def main():
 	print("ok")
 	addition_works()
 
-import asyncio
-_pending = []
-async def _wait_all():
-    await asyncio.gather(*_pending)
-async def _run():
-	await main()
-	await _wait_all()
-
 if __name__ == "__main__":
-	import asyncio
-	asyncio.run(_run())
+	main()
