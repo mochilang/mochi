@@ -54,7 +54,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	// Main function
-	c.writeln("def main():")
+	c.writeln("async def main():")
 	c.indent++
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil {
@@ -90,13 +90,24 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
+	c.use("_wait_all")
+
 	c.buf.Write(body)
 	if len(c.helpers) > 0 {
 		c.emitRuntime()
 	}
+
+	c.writeln("async def _run():")
+	c.indent++
+	c.writeln("await main()")
+	c.writeln("await _wait_all()")
+	c.indent--
+	c.writeln("")
+
 	c.writeln("if __name__ == \"__main__\":")
 	c.indent++
-	c.writeln("main()")
+	c.writeln("import asyncio")
+	c.writeln("asyncio.run(_run())")
 	c.indent--
 
 	return c.buf.Bytes(), nil
@@ -778,11 +789,25 @@ var helperStream = "class Stream:\n" +
 	"        self.name = name\n" +
 	"        self.handlers = []\n" +
 	"    def append(self, data):\n" +
+	"        tasks = []\n" +
 	"        for h in list(self.handlers):\n" +
-	"            h(data)\n" +
-	"        return data\n" +
+	"            r = h(data)\n" +
+	"            if asyncio.iscoroutine(r):\n" +
+	"                tasks.append(asyncio.create_task(r))\n" +
+	"        async def _wait():\n" +
+	"            if tasks:\n" +
+	"                await asyncio.gather(*tasks)\n" +
+	"            return data\n" +
+	"        p = asyncio.create_task(_wait())\n" +
+	"        _pending.append(p)\n" +
+	"        return p\n" +
 	"    def register(self, handler):\n" +
 	"        self.handlers.append(handler)\n"
+
+var helperWaitAll = "import asyncio\n" +
+	"_pending = []\n" +
+	"async def _wait_all():\n" +
+	"    await asyncio.gather(*_pending)\n"
 
 var helperMap = map[string]string{
 	"_index":      helperIndex,
@@ -793,6 +818,7 @@ var helperMap = map[string]string{
 	"_fetch":      helperFetch,
 	"_to_any_map": helperToAnyMap,
 	"_stream":     helperStream,
+	"_wait_all":   helperWaitAll,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }

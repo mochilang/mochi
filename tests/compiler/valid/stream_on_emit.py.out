@@ -3,7 +3,7 @@
 import dataclasses
 import typing
 
-def main():
+async def main():
 	@dataclasses.dataclass
 	class Sensor:
 		id: typing.Any
@@ -21,10 +21,28 @@ class Stream:
         self.name = name
         self.handlers = []
     def append(self, data):
+        tasks = []
         for h in list(self.handlers):
-            h(data)
-        return data
+            r = h(data)
+            if asyncio.iscoroutine(r):
+                tasks.append(asyncio.create_task(r))
+        async def _wait():
+            if tasks:
+                await asyncio.gather(*tasks)
+            return data
+        p = asyncio.create_task(_wait())
+        _pending.append(p)
+        return p
     def register(self, handler):
         self.handlers.append(handler)
+import asyncio
+_pending = []
+async def _wait_all():
+    await asyncio.gather(*_pending)
+async def _run():
+	await main()
+	await _wait_all()
+
 if __name__ == "__main__":
-	main()
+	import asyncio
+	asyncio.run(_run())
