@@ -20,6 +20,7 @@ type Compiler struct {
 	structs      map[string]bool
 	agents       map[string]bool
 	handlerCount int
+	models       bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -29,6 +30,7 @@ func New(env *types.Env) *Compiler {
 		env:     env,
 		structs: make(map[string]bool),
 		agents:  make(map[string]bool),
+		models:  false,
 	}
 }
 
@@ -92,6 +94,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
+	if c.models {
+		c.writeln("_models = {}")
+		c.writeln("")
+	}
+
 	c.use("_wait_all")
 
 	c.buf.Write(body)
@@ -143,12 +150,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
-       case s.If != nil:
-               return c.compileIf(s.If, "if")
-       case s.While != nil:
-               return c.compileWhile(s.While)
-       case s.For != nil:
-               return c.compileFor(s.For)
+	case s.If != nil:
+		return c.compileIf(s.If, "if")
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.For != nil:
+		return c.compileFor(s.For)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -157,6 +164,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Stream != nil:
 		return c.compileStreamDecl(s.Stream)
+	case s.Model != nil:
+		return c.compileModelDecl(s.Model)
 	case s.On != nil:
 		return c.compileOnHandler(s.On)
 	case s.Emit != nil:
@@ -205,6 +214,20 @@ func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
 	varName := unexportName(sanitizeName(s.Name)) + "Stream"
 	c.use("_stream")
 	c.writeln(fmt.Sprintf("%s = Stream(%q)", varName, s.Name))
+	return nil
+}
+
+func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
+	c.models = true
+	parts := make([]string, len(m.Fields))
+	for i, f := range m.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("%q: %s", f.Name, v)
+	}
+	c.writeln(fmt.Sprintf("_models[%q] = {%s}", m.Name, strings.Join(parts, ", ")))
 	return nil
 }
 
@@ -434,20 +457,20 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt, kw string) error {
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
-       cond, err := c.compileExpr(stmt.Cond)
-       if err != nil {
-               return err
-       }
-       c.writeIndent()
-       c.buf.WriteString(fmt.Sprintf("while %s:\n", cond))
-       c.indent++
-       for _, s := range stmt.Body {
-               if err := c.compileStmt(s); err != nil {
-                       return err
-               }
-       }
-       c.indent--
-       return nil
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeIndent()
+	c.buf.WriteString(fmt.Sprintf("while %s:\n", cond))
+	c.indent++
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	return nil
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
@@ -618,44 +641,49 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	for _, op := range p.Ops {
-		if op.Index == nil {
-			if op.Call != nil {
-				args := make([]string, len(op.Call.Args))
-				for i, a := range op.Call.Args {
-					v, err := c.compileExpr(a)
+		if op.Call != nil {
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
+			}
+			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+			continue
+		}
+		if op.Index != nil {
+			idx := op.Index
+			if idx.Colon != nil {
+				start, end := "0", "0"
+				if idx.Start != nil {
+					start, err = c.compileExpr(idx.Start)
 					if err != nil {
 						return "", err
 					}
-					args[i] = v
 				}
-				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+				if idx.End != nil {
+					end, err = c.compileExpr(idx.End)
+					if err != nil {
+						return "", err
+					}
+				}
+				c.use("_slice")
+				expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
+			} else {
+				idxExpr, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return "", err
+				}
+				c.use("_index")
+				expr = fmt.Sprintf("_index(%s, %s)", expr, idxExpr)
 			}
 			continue
 		}
-		idx := op.Index
-		if idx.Colon != nil {
-			start, end := "0", "0"
-			if idx.Start != nil {
-				start, err = c.compileExpr(idx.Start)
-				if err != nil {
-					return "", err
-				}
-			}
-			if idx.End != nil {
-				end, err = c.compileExpr(idx.End)
-				if err != nil {
-					return "", err
-				}
-			}
-			c.use("_slice")
-			expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
-		} else {
-			idxExpr, err := c.compileExpr(idx.Start)
-			if err != nil {
-				return "", err
-			}
-			c.use("_index")
-			expr = fmt.Sprintf("_index(%s, %s)", expr, idxExpr)
+		if op.Cast != nil {
+			// Casts are ignored in Python code generation
+			continue
 		}
 	}
 	return expr, nil
