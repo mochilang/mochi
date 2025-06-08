@@ -5,10 +5,24 @@ async def main():
 	print(_index(scores, "Bob"))
 
 def _index(v, k):
-    if isinstance(v, (list, str)):
-        l = len(v)
-        if isinstance(k, int) and k < 0:
-            k += l
+    if isinstance(v, list):
+        if not isinstance(k, int):
+            raise Exception('invalid list index')
+        if k < 0:
+            k += len(v)
+        if k < 0 or k >= len(v):
+            raise Exception('index out of range')
+        return v[k]
+    if isinstance(v, str):
+        if not isinstance(k, int):
+            raise Exception('invalid string index')
+        if k < 0:
+            k += len(v)
+        if k < 0 or k >= len(v):
+            raise Exception('index out of range')
+        return v[k]
+    if isinstance(v, dict):
+        return v[k]
     return v[k]
 import asyncio
 _pending = []
