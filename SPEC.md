@@ -180,6 +180,17 @@ let scores = {"alice": 1, "bob": 2}
 print(scores["alice"])
 ```
 
+Strings are also indexable and iterable:
+
+```mochi
+let text = "hello"
+print(text[1])
+
+for ch in text {
+  print(ch)
+}
+```
+
 #### Match Expressions
 
 `match` evaluates patterns in order and yields the corresponding result. `_` matches any value.

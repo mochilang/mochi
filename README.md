@@ -277,6 +277,18 @@ print(tags)
 print(nums[1])
 ```
 
+Strings behave like read‐only lists of characters. They can be indexed
+and iterated just like a list:
+
+```mochi
+let text = "hello"
+print(text[1]) // "e"
+
+for ch in text {
+  print(ch)
+}
+```
+
 ### Tests
 
 ```mochi

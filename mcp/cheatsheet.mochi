@@ -73,6 +73,14 @@ for name in scores {
     print(name, " scored ", score)
 }
 
+// 4.2 String indexing and iteration
+let text = "hello"
+print(text[1]) // "e"
+
+for ch in text {
+    print("char:", ch)
+}
+
 // 5. Test block with expect.
 test "Some math operator" {
     expect 2 + 3 == 5
