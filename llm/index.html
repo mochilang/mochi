@@ -159,22 +159,7 @@ Diagram(Choice(0, Sequence(Terminal("stream"), NonTerminal("ident"), Terminal("{
 
 <h1 id="StreamField">StreamField</h1>
 <script>
-Diagram(Choice(0, Sequence(NonTerminal("StreamNestedField", {href:"#StreamNestedField"})), Sequence(NonTerminal("StreamSimpleField", {href:"#StreamSimpleField"})))).addTo();
-</script>
-
-<h1 id="StreamNestedField">StreamNestedField</h1>
-<script>
-Diagram(Choice(0, Sequence(NonTerminal("ident"), Terminal(":"), NonTerminal("StructDef", {href:"#StructDef"})))).addTo();
-</script>
-
-<h1 id="StructDef">StructDef</h1>
-<script>
-Diagram(Choice(0, Sequence(Terminal("{"), ZeroOrMore(NonTerminal("StreamField", {href:"#StreamField"})), Terminal("}")))).addTo();
-</script>
-
-<h1 id="StreamSimpleField">StreamSimpleField</h1>
-<script>
-Diagram(Choice(0, Sequence(NonTerminal("ident"), Terminal(":"), NonTerminal("ident")))).addTo();
+Diagram(Choice(0, Sequence(NonTerminal("ident"), Terminal(":"), NonTerminal("TypeRef", {href:"#TypeRef"})))).addTo();
 </script>
 
 <h1 id="FunStmt">FunStmt</h1>

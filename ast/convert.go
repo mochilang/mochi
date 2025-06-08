@@ -1,6 +1,11 @@
 package ast
 
-import "mochi/parser"
+import (
+	"fmt"
+	"strings"
+
+	"mochi/parser"
+)
 
 func FromProgram(p *parser.Program) *Node {
 	root := &Node{Kind: "program"}
@@ -213,17 +218,10 @@ func fromIntent(i *parser.IntentDecl) *Node {
 }
 
 func fromStreamField(f *parser.StreamField) *Node {
-	if f.Simple != nil {
-		return &Node{Kind: "field", Value: f.Simple.Name + ":" + f.Simple.Type}
+	if f == nil {
+		return &Node{Kind: "field", Value: "unknown"}
 	}
-	if f.Nested != nil {
-		n := &Node{Kind: "field", Value: f.Nested.Name + ":" + f.Nested.Type}
-		for _, sub := range f.Nested.Body.Fields {
-			n.Children = append(n.Children, fromStreamField(sub))
-		}
-		return n
-	}
-	return &Node{Kind: "field", Value: "unknown"}
+	return &Node{Kind: "field", Value: f.Name + ":" + typeRefString(f.Type)}
 }
 
 func mapStatements(stmts []*parser.Statement) []*Node {
@@ -442,4 +440,32 @@ func FromTypeRef(t *parser.TypeRef) *Node {
 		return &Node{Kind: "type", Value: *t.Simple}
 	}
 	return &Node{Kind: "type", Value: "unknown"}
+}
+
+func typeRefString(t *parser.TypeRef) string {
+	if t == nil {
+		return ""
+	}
+	if t.Simple != nil {
+		return *t.Simple
+	}
+	if t.Generic != nil {
+		parts := make([]string, len(t.Generic.Args))
+		for i, a := range t.Generic.Args {
+			parts[i] = typeRefString(a)
+		}
+		return fmt.Sprintf("%s<%s>", t.Generic.Name, strings.Join(parts, ","))
+	}
+	if t.Fun != nil {
+		parts := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			parts[i] = typeRefString(p)
+		}
+		s := fmt.Sprintf("fun(%s)", strings.Join(parts, ","))
+		if t.Fun.Return != nil {
+			s += ":" + typeRefString(t.Fun.Return)
+		}
+		return s
+	}
+	return ""
 }

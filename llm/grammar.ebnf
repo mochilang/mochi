@@ -27,10 +27,7 @@ AssignStmt = <ident> "=" Expr .
 OnHandler = "on" <ident> "as" <ident> "{" Statement* "}" .
 IntentDecl = "intent" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}" .
 StreamDecl = "stream" <ident> "{" StreamField* "}" .
-StreamField = StreamNestedField | StreamSimpleField .
-StreamNestedField = <ident> ":" ":" <ident> StructDef .
-StructDef = "{" StreamField* "}" .
-StreamSimpleField = <ident> ":" <ident> .
+StreamField = <ident> ":" TypeRef .
 FunStmt = "fun" <ident> "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}" .
 ReturnStmt = "return" Expr .
 IfStmt = "if" Expr "{" Statement* "}" (("else" IfStmt) | ("else" "{" Statement* "}"))? .
