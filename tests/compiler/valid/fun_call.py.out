@@ -3,8 +3,17 @@
 def add(a, b):
 	return (a + b)
 
-def main():
+async def main():
 	print(add(2, 3))
 
+import asyncio
+_pending = []
+async def _wait_all():
+    await asyncio.gather(*_pending)
+async def _run():
+	await main()
+	await _wait_all()
+
 if __name__ == "__main__":
-	main()
+	import asyncio
+	asyncio.run(_run())
