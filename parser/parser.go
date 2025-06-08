@@ -406,6 +406,7 @@ type AgentDecl struct {
 
 type AgentBlock struct {
 	Let    *LetStmt    `parser:"@@"`
+	Var    *VarStmt    `parser:"| @@"`
 	Assign *AssignStmt `parser:"| @@"`
 	On     *OnHandler  `parser:"| @@"`
 	Intent *IntentDecl `parser:"| @@"`
