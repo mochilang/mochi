@@ -1,0 +1,19 @@
+(program
+  (agent Greeter
+    (intent hi
+      (param name (type string))
+      (type string)
+      (return
+        (binary + (string "hi ") (selector name))
+      )
+    )
+  )
+  (let g (struct Greeter))
+  (let msg
+    (call
+      (selector hi (selector g))
+      (string mochi)
+    )
+  )
+)
+

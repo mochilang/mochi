@@ -1,0 +1,8 @@
+agent Greeter {
+  intent hi(name: string): string {
+    return "hi " + name
+  }
+}
+
+let g = Greeter {}
+let msg = g.hi("mochi")

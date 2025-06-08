@@ -37,6 +37,9 @@ emit SensorReading {
   timestamp: now(),
 }
 
+// Give the agent time to process the first event
+sleep(50)
+
 emit SensorReading {
   id: "sensor-2",
   temperature: 35.5,
