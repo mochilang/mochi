@@ -888,8 +888,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("%s[%s]", val, key)
 					typ = tt.Value
 				case types.StringType:
-					c.use("_index")
-					val = fmt.Sprintf("_index(%s, %s).(string)", val, key)
+					c.use("_indexString")
+					val = fmt.Sprintf("_indexString(%s, %s)", val, key)
 					typ = types.StringType{}
 				default:
 					c.use("_index")
@@ -1989,6 +1989,17 @@ const (
 		"    }\n" +
 		"}\n"
 
+	helperIndexString = "func _indexString(s string, i int) string {\n" +
+		"    runes := []rune(s)\n" +
+		"    if i < 0 {\n" +
+		"        i += len(runes)\n" +
+		"    }\n" +
+		"    if i < 0 || i >= len(runes) {\n" +
+		"        panic(\"index out of range\")\n" +
+		"    }\n" +
+		"    return string(runes[i])\n" +
+		"}\n"
+
 	helperSlice = "func _slice(v any, start, end int) any {\n" +
 		"    switch s := v.(type) {\n" +
 		"    case []any:\n" +
@@ -2222,15 +2233,16 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_index":     helperIndex,
-	"_slice":     helperSlice,
-	"_iter":      helperIter,
-	"_genText":   helperGenText,
-	"_genEmbed":  helperGenEmbed,
-	"_genStruct": helperGenStruct,
-	"_fetch":     helperFetch,
-	"_toAnyMap":  helperToAnyMap,
-	"_cast":      helperCast,
+	"_index":       helperIndex,
+	"_indexString": helperIndexString,
+	"_slice":       helperSlice,
+	"_iter":        helperIter,
+	"_genText":     helperGenText,
+	"_genEmbed":    helperGenEmbed,
+	"_genStruct":   helperGenStruct,
+	"_fetch":       helperFetch,
+	"_toAnyMap":    helperToAnyMap,
+	"_cast":        helperCast,
 }
 
 func (c *Compiler) use(name string) {
