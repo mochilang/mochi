@@ -1,0 +1,37 @@
+fun characterReplacement(s: string, k: int): int {
+  let letters = [
+    "A","B","C","D","E","F","G","H","I","J","K","L","M",
+    "N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
+  ]
+  let n = len(s)
+  var best = 0
+  for i in 0..n {
+    for j in i+1..n+1 {
+      let length = j - i
+      if length <= best {
+        continue
+      }
+      let sub = s[i:j]
+      for ch in letters {
+        var diff = 0
+        for idx in 0..len(sub) {
+          let c = sub[idx]
+          if c != ch {
+            diff = diff + 1
+            if diff > k {
+              break
+            }
+          }
+        }
+        if diff <= k {
+          best = length
+          break
+        }
+      }
+    }
+  }
+  return best
+}
+
+print(characterReplacement("ABAB", 2))
+print(characterReplacement("AABABBA", 1))
