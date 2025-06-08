@@ -16,10 +16,12 @@ type IntentHandler func(context.Context, ...Value) (Value, error)
 
 // Agent is a reactive runtime component that handles stream events and intent calls.
 type Agent struct {
-	Name     string
-	Inbox    chan *stream.Event
-	cancel   context.CancelFunc
-	wg       sync.WaitGroup
+	Name   string
+	Inbox  chan *stream.Event
+	cancel context.CancelFunc
+	wg     sync.WaitGroup
+
+	mu       sync.RWMutex
 	state    map[string]Value
 	handlers map[string]func(context.Context, *stream.Event)
 	intents  map[string]IntentHandler
@@ -73,7 +75,7 @@ func (a *Agent) Stop() {
 
 // On registers a stream handler and subscribes to the given stream.
 func (a *Agent) On(s stream.Stream, handler func(context.Context, *stream.Event)) error {
-	streamName := "" // assume first event determines it
+	streamName := "" // assigned on first event
 	a.handlers[streamName] = handler
 
 	s.Subscribe(a.Name, func(ev *stream.Event) error {
@@ -85,7 +87,7 @@ func (a *Agent) On(s stream.Stream, handler func(context.Context, *stream.Event)
 		case a.Inbox <- ev:
 			return nil
 		default:
-			return nil // drop if inbox full
+			return nil // drop if inbox is full
 		}
 	})
 	return nil
@@ -93,29 +95,44 @@ func (a *Agent) On(s stream.Stream, handler func(context.Context, *stream.Event)
 
 // RegisterIntent binds a named intent handler to the agent.
 func (a *Agent) RegisterIntent(name string, handler IntentHandler) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	a.intents[name] = handler
 }
 
 // Call invokes a named intent handler.
 func (a *Agent) Call(ctx context.Context, method string, args ...Value) (Value, error) {
-	if fn, ok := a.intents[method]; ok {
-		return fn(ctx, args...)
+	a.mu.RLock()
+	fn, ok := a.intents[method]
+	a.mu.RUnlock()
+	if !ok {
+		return nil, fmt.Errorf("unknown intent: %s", method)
 	}
-	return nil, fmt.Errorf("unknown intent: %s", method)
+	return fn(ctx, args...)
 }
 
-// State returns full agent state map.
+// State returns a full snapshot of the agent’s internal state.
 func (a *Agent) State() map[string]Value {
-	return a.state
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	copy := make(map[string]Value, len(a.state))
+	for k, v := range a.state {
+		copy[k] = v
+	}
+	return copy
 }
 
 // Set sets a variable in the agent’s state.
 func (a *Agent) Set(name string, value Value) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	a.state[name] = value
 }
 
 // Get returns a variable from the agent’s state.
 func (a *Agent) Get(name string) (Value, bool) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	v, ok := a.state[name]
 	return v, ok
 }
