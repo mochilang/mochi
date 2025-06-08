@@ -418,6 +418,28 @@ on Sensor as s {
 emit Sensor { id: "sensor-1", temperature: 22.5 }
 ```
 
+Agents can also maintain persistent state and expose **intent** functions that
+can be called like methods or via the MCP server.
+
+```mochi
+agent Monitor {
+  var count: int = 0
+
+  on Sensor as s {
+    count = count + 1
+  }
+
+  intent status(): string {
+    return "events = " + str(count)
+  }
+}
+
+let m = Monitor {}
+emit Sensor { id: "sensor-2", temperature: 30.0 }
+sleep(50)
+print(m.status())
+```
+
 ## MCP Tools
 
 When running `mochi serve`, the following tools are available:

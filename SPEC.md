@@ -293,6 +293,23 @@ agent Logger {
 emit Click { x: 10, y: 20 }
 ```
 
+Agents may also declare persistent variables using `var` and expose `intent`
+functions that can be called from other code or via an MCP server.
+
+```mochi
+agent Counter {
+  var n: int = 0
+
+  on Click as _ {
+    n = n + 1
+  }
+
+  intent total(): int {
+    return n
+  }
+}
+```
+
 ### Model Declarations
 
 `model` blocks define reusable language model aliases. Each block specifies a
@@ -397,7 +414,9 @@ TestBlock     = "test" StringLiteral Block .
 ExpectStmt    = "expect" Expression .
 StreamDecl    = "stream" Identifier Block .
 OnHandler     = "on" Identifier "as" Identifier Block .
-AgentDecl     = "agent" Identifier Block .
+AgentDecl     = "agent" Identifier "{" AgentField* "}" .
+AgentField    = LetStmt | VarStmt | AssignStmt | OnHandler | IntentDecl .
+IntentDecl    = "intent" Identifier "(" [ ParamList ] ")" [ ":" TypeRef ] Block .
 ModelDecl     = "model" Identifier Block .
 
 Expression    = OrExpr .
