@@ -1,0 +1,8 @@
+error[I019]: cannot iterate over value of type int
+  --> tests/interpreter/errors/invalid_iterator.mochi:2:1
+
+  2 | for i in x {
+    | ^
+
+help:
+  Only `list`, `map`, and `string` are iterable in `for ... in` loops.

@@ -1,0 +1,8 @@
+error[I013]: index must be an integer, got string
+  --> tests/interpreter/errors/index_not_integer.mochi:3:9
+
+  3 | print(xs[i])
+    |         ^
+
+help:
+  Use an `int` value as an index (e.g., `list[0]`).

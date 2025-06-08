@@ -1,0 +1,8 @@
+error[I008]: cannot apply operator '+' to types int and string
+  --> tests/interpreter/errors/invalid_operator.mochi:3:9
+
+  3 | print(x + y)
+    |         ^
+
+help:
+  Use compatible types for the operator.

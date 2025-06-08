@@ -1,0 +1,8 @@
+error[I018]: expect condition failed
+  --> tests/interpreter/errors/expect_failed.mochi:1:1
+
+  1 | expect 1 == 2
+    | ^
+
+help:
+  The condition evaluated to `false`.

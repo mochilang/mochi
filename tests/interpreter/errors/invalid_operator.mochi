@@ -1,0 +1,3 @@
+let x: any = 1
+let y: any = "two"
+print(x + y)

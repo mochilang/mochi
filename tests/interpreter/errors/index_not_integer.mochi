@@ -1,0 +1,3 @@
+let xs = [1,2,3]
+let i: any = "one"
+print(xs[i])
