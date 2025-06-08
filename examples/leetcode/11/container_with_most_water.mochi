@@ -1,0 +1,44 @@
+fun maxArea(height: list<int>): int {
+  var left = 0
+  var right = len(height) - 1
+  var maxArea = 0
+  while left < right {
+    let width = right - left
+    var h = 0
+    if height[left] < height[right] {
+      h = height[left]
+    } else {
+      h = height[right]
+    }
+    let area = h * width
+    if area > maxArea {
+      maxArea = area
+    }
+    if height[left] < height[right] {
+      left = left + 1
+    } else {
+      right = right - 1
+    }
+  }
+  return maxArea
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect maxArea([1,8,6,2,5,4,8,3,7]) == 49
+}
+
+test "example 2" {
+  expect maxArea([1,1]) == 1
+}
+
+// Additional edge cases
+
+test "decreasing heights" {
+  expect maxArea([4,3,2,1,4]) == 16
+}
+
+test "short array" {
+  expect maxArea([1,2,1]) == 2
+}
