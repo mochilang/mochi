@@ -322,6 +322,11 @@ type agentIntent struct {
 	decl *parser.IntentDecl
 }
 
+type stringMethod struct {
+	recv string
+	name string
+}
+
 func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, error) {
 	inst := &agentInstance{
 		decl:  decl,
@@ -1185,6 +1190,23 @@ func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
 				val = res
 				continue
 			}
+			if sm, ok := val.(stringMethod); ok {
+				if sm.name == "contains" {
+					if len(call.Args) != 1 {
+						return nil, errTooManyFunctionArgs(call.Pos, sm.name, 1, len(call.Args))
+					}
+					arg, err := i.evalExpr(call.Args[0])
+					if err != nil {
+						return nil, err
+					}
+					s, ok := arg.(string)
+					if !ok {
+						return nil, fmt.Errorf("contains() arg must be string")
+					}
+					val = strings.Contains(sm.recv, s)
+					continue
+				}
+			}
 			cl, ok := val.(closure)
 			if !ok {
 				return nil, errUndefinedFunctionOrClosure(call.Pos, "")
@@ -1291,6 +1313,16 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				}
 				val = nil
 				continue
+			}
+			if str, ok := val.(string); ok {
+				switch field {
+				case "contains":
+					val = stringMethod{recv: str, name: "contains"}
+					continue
+				default:
+					val = nil
+					continue
+				}
 			}
 			obj, ok := val.(map[string]any)
 			if !ok {
