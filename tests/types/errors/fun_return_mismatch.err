@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected int, got string
+  --> tests/types/errors/fun_return_mismatch.mochi:2:10
+
+  2 |   return "hello"
+    |          ^
+
+help:
+  Change the value to match the expected type.

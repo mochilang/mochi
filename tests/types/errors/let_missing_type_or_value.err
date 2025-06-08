@@ -1,0 +1,8 @@
+1. error[T000]: `let` requires a type or a value
+  --> tests/types/errors/let_missing_type_or_value.mochi:1:1
+
+  1 | let x
+    | ^
+
+help:
+  Use `let x = ...` or `let x: int` to declare a variable.

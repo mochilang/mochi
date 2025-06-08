@@ -1,0 +1,8 @@
+1. error[T025]: unknown type: Foo
+  --> tests/types/errors/unknown_generate_type.mochi:1:14
+
+  1 | let result = generate Foo {}
+    |              ^
+
+help:
+  Ensure the type is defined before use.

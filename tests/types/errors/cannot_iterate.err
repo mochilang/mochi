@@ -1,0 +1,8 @@
+1. error[T022]: cannot iterate over type int
+  --> tests/types/errors/cannot_iterate.mochi:1:1
+
+  1 | for i in 3 {
+    | ^
+
+help:
+  Only `list<T>`, `map<K,V>`, or integer ranges are allowed in `for ... in ...` loops.

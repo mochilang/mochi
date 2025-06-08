@@ -1,0 +1,8 @@
+1. error[T004]: `x` is not callable
+  --> tests/types/errors/not_callable.mochi:2:1
+
+  2 | x()
+    | ^
+
+help:
+  Use a function or closure in this position.

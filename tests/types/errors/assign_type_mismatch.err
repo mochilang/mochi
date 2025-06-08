@@ -1,0 +1,8 @@
+1. error[T009]: cannot assign string to `x` (expected int)
+  --> tests/types/errors/assign_type_mismatch.mochi:2:1
+
+  2 | x = "hi"
+    | ^
+
+help:
+  Make sure the assigned value is compatible with `%s`.
