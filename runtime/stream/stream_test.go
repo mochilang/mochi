@@ -1,4 +1,4 @@
-package stream_test
+package stream
 
 import (
 	"context"
@@ -7,18 +7,16 @@ import (
 	"testing"
 	"time"
 
-	"mochi/runtime/stream"
-
 	"github.com/stretchr/testify/require"
 )
 
 func TestStream_AppendAndRead(t *testing.T) {
-	s := stream.New("test", 4)
+	s := New("test", 4).(*stream)
 
-	_, err := s.Append(context.Background(), "a")
+	_, err := s.Emit(context.Background(), "a")
 	require.NoError(t, err)
 
-	_, err = s.Append(context.Background(), "b")
+	_, err = s.Emit(context.Background(), "b")
 	require.NoError(t, err)
 
 	evs, err := s.Read(1, 2)
@@ -29,11 +27,11 @@ func TestStream_AppendAndRead(t *testing.T) {
 }
 
 func TestStream_Get(t *testing.T) {
-	s := stream.New("test", 4)
+	s := New("test", 4).(*stream)
 
-	ev1, err := s.Append(context.Background(), "a")
+	ev1, err := s.Emit(context.Background(), "a")
 	require.NoError(t, err)
-	ev2, err := s.Append(context.Background(), "b")
+	ev2, err := s.Emit(context.Background(), "b")
 	require.NoError(t, err)
 
 	ev, ok := s.Get(ev1.Tx)
@@ -46,10 +44,10 @@ func TestStream_Get(t *testing.T) {
 }
 
 func TestStream_SubscriberCursor(t *testing.T) {
-	s := stream.New("test", 4)
+	s := New("test", 4).(*stream)
 
 	for i := 0; i < 5; i++ {
-		_, err := s.Append(context.Background(), i)
+		_, err := s.Emit(context.Background(), i)
 		require.NoError(t, err)
 	}
 
@@ -62,12 +60,12 @@ func TestStream_SubscriberCursor(t *testing.T) {
 }
 
 func TestStream_Compact(t *testing.T) {
-	s := stream.New("metrics", 16)
+	s := New("metrics", 16).(*stream)
 
 	sub := s.RegisterSubscriber("reader") // ✅ move this up
 
 	for i := 0; i < 101; i++ {
-		_, err := s.Append(context.Background(), i)
+		_, err := s.Emit(context.Background(), i)
 		require.NoError(t, err)
 	}
 
@@ -90,7 +88,7 @@ func TestStream_Compact(t *testing.T) {
 }
 
 func TestStream_Close(t *testing.T) {
-	s := stream.New("test", 4)
+	s := New("test", 4).(*stream)
 	sub1 := s.RegisterSubscriber("a")
 	sub2 := s.RegisterSubscriber("b")
 
@@ -109,7 +107,7 @@ func TestStream_Close(t *testing.T) {
 
 // --- Helper ---
 
-func waitForMinCursor(t *testing.T, s *stream.Stream, want int64) {
+func waitForMinCursor(t *testing.T, s *stream, want int64) {
 	t.Helper()
 	start := time.Now()
 	for time.Since(start) < time.Second {
@@ -122,11 +120,11 @@ func waitForMinCursor(t *testing.T, s *stream.Stream, want int64) {
 }
 
 func TestStream_AdvanceCursorNoShrink(t *testing.T) {
-	s := stream.New("metrics", 4)
+	s := New("metrics", 4).(*stream)
 
 	// Append a few events
 	for i := 0; i < 4; i++ {
-		_, err := s.Append(context.Background(), i)
+		_, err := s.Emit(context.Background(), i)
 		require.NoError(t, err)
 	}
 
@@ -138,12 +136,12 @@ func TestStream_AdvanceCursorNoShrink(t *testing.T) {
 }
 
 func TestStream_SubscriberUpdateCh(t *testing.T) {
-	s := stream.New("test", 4)
+	s := New("test", 4).(*stream)
 	sub := s.RegisterSubscriber("watcher")
 
 	go func() {
 		time.Sleep(10 * time.Millisecond)
-		s.Append(context.Background(), "event-1")
+		s.Emit(context.Background(), "event-1")
 	}()
 
 	select {
@@ -155,17 +153,17 @@ func TestStream_SubscriberUpdateCh(t *testing.T) {
 }
 
 func TestStream_EmptyRead(t *testing.T) {
-	s := stream.New("empty", 4)
+	s := New("empty", 4).(*stream)
 	evs, err := s.Read(1, 10)
 	require.NoError(t, err)
 	require.Len(t, evs, 0)
 }
 
 func TestStream_AutoGrowRing(t *testing.T) {
-	s := stream.New("log", 4)
+	s := New("log", 4).(*stream)
 
 	for i := 0; i < 10; i++ {
-		_, err := s.Append(context.Background(), i)
+		_, err := s.Emit(context.Background(), i)
 		require.NoError(t, err)
 	}
 
@@ -183,11 +181,11 @@ func TestStream_AutoGrowRing(t *testing.T) {
 }
 
 func TestSubscriber_AdvanceToAffectsFirstTx(t *testing.T) {
-	s := stream.New("subtest", 8)
+	s := New("subtest", 8).(*stream)
 
 	// Append 10 events: ring should auto-grow to prevent overwrite
 	for i := 0; i < 10; i++ {
-		_, err := s.Append(context.Background(), i)
+		_, err := s.Emit(context.Background(), i)
 		require.NoError(t, err)
 	}
 
@@ -207,10 +205,10 @@ func TestSubscriber_AdvanceToAffectsFirstTx(t *testing.T) {
 }
 
 func TestSubscriber_UpdateChReceivesTx(t *testing.T) {
-	s := stream.New("subtest", 8)
+	s := New("subtest", 8).(*stream)
 	sub := s.RegisterSubscriber("reader")
 
-	_, err := s.Append(context.Background(), "hello")
+	_, err := s.Emit(context.Background(), "hello")
 	require.NoError(t, err)
 
 	select {
@@ -222,7 +220,7 @@ func TestSubscriber_UpdateChReceivesTx(t *testing.T) {
 }
 
 func TestSubscriber_WatchAutoAdvance(t *testing.T) {
-	s := stream.New("test", 8)
+	s := New("test", 8).(*stream)
 	sub := s.RegisterSubscriber("reader")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -233,7 +231,7 @@ func TestSubscriber_WatchAutoAdvance(t *testing.T) {
 	errCh := make(chan error, 1)
 
 	go func() {
-		err := sub.Watch(ctx, func(ev *stream.Event) error {
+		err := sub.Watch(ctx, func(ev *Event) error {
 			mu.Lock()
 			got = append(got, ev.Data)
 			mu.Unlock()
@@ -244,7 +242,7 @@ func TestSubscriber_WatchAutoAdvance(t *testing.T) {
 
 	// Append events
 	for i := 0; i < 3; i++ {
-		_, err := s.Append(context.Background(), i)
+		_, err := s.Emit(context.Background(), i)
 		require.NoError(t, err)
 		time.Sleep(20 * time.Millisecond)
 	}
@@ -266,7 +264,7 @@ func TestSubscriber_WatchAutoAdvance(t *testing.T) {
 }
 
 func TestSubscriber_CloseStreamShutsDown(t *testing.T) {
-	s := stream.New("subtest", 4)
+	s := New("subtest", 4).(*stream)
 	sub := s.RegisterSubscriber("reader")
 
 	s.Close()
