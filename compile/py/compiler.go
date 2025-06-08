@@ -458,7 +458,8 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		return err
 	}
 	c.writeIndent()
-	c.buf.WriteString(fmt.Sprintf("for %s in %s:\n", name, src))
+	c.use("_iter")
+	c.buf.WriteString(fmt.Sprintf("for %s in _iter(%s):\n", name, src))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -888,16 +889,46 @@ func (c *Compiler) writeIndent() {
 }
 
 var helperIndex = "def _index(v, k):\n" +
-	"    if isinstance(v, (list, str)):\n" +
-	"        l = len(v)\n" +
-	"        if isinstance(k, int) and k < 0:\n" +
-	"            k += l\n" +
+	"    if isinstance(v, list):\n" +
+	"        if not isinstance(k, int):\n" +
+	"            raise Exception('invalid list index')\n" +
+	"        if k < 0:\n" +
+	"            k += len(v)\n" +
+	"        if k < 0 or k >= len(v):\n" +
+	"            raise Exception('index out of range')\n" +
+	"        return v[k]\n" +
+	"    if isinstance(v, str):\n" +
+	"        if not isinstance(k, int):\n" +
+	"            raise Exception('invalid string index')\n" +
+	"        if k < 0:\n" +
+	"            k += len(v)\n" +
+	"        if k < 0 or k >= len(v):\n" +
+	"            raise Exception('index out of range')\n" +
+	"        return v[k]\n" +
+	"    if isinstance(v, dict):\n" +
+	"        return v[k]\n" +
 	"    return v[k]\n"
 
 var helperSlice = "def _slice(v, start, end):\n" +
-	"    if isinstance(v, (list, str)):\n" +
+	"    if isinstance(v, list):\n" +
+	"        l = len(v)\n" +
+	"        if start < 0:\n" +
+	"            start += l\n" +
+	"        if end < 0:\n" +
+	"            end += l\n" +
+	"        if start < 0 or end > l or start > end:\n" +
+	"            raise Exception('slice out of range')\n" +
 	"        return v[start:end]\n" +
-	"    raise Exception(\"invalid slice target\")\n"
+	"    if isinstance(v, str):\n" +
+	"        l = len(v)\n" +
+	"        if start < 0:\n" +
+	"            start += l\n" +
+	"        if end < 0:\n" +
+	"            end += l\n" +
+	"        if start < 0 or end > l or start > end:\n" +
+	"            raise Exception('slice out of range')\n" +
+	"        return v[start:end]\n" +
+	"    raise Exception('invalid slice target')\n"
 
 var helperGenText = "def _gen_text(prompt):\n" +
 	"    # TODO: send prompt to your LLM of choice\n" +
@@ -938,6 +969,11 @@ var helperFetch = "def _fetch(url, opts):\n" +
 
 var helperToAnyMap = "def _to_any_map(m):\n" +
 	"    return dict(m) if isinstance(m, dict) else dict(m)\n"
+
+var helperIter = "def _iter(v):\n" +
+	"    if isinstance(v, dict):\n" +
+	"        return list(v.keys())\n" +
+	"    return v\n"
 
 var helperStream = "class Stream:\n" +
 	"    def __init__(self, name):\n" +
@@ -998,6 +1034,7 @@ var helperMap = map[string]string{
 	"_gen_struct": helperGenStruct,
 	"_fetch":      helperFetch,
 	"_to_any_map": helperToAnyMap,
+	"_iter":       helperIter,
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,
