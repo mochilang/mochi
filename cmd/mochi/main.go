@@ -39,12 +39,13 @@ var (
 )
 
 type CLI struct {
-	Run     *RunCmd   `arg:"subcommand:run" help:"Run a Mochi source file"`
-	Test    *TestCmd  `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
-	Build   *BuildCmd `arg:"subcommand:build" help:"Compile a Mochi source file"`
-	Repl    *ReplCmd  `arg:"subcommand:repl" help:"Start an interactive REPL session"`
-	Serve   *ServeCmd `arg:"subcommand:serve" help:"Start MCP server over stdio"`
-	Version bool      `arg:"--version" help:"Print version info and exit"`
+	Run        *RunCmd        `arg:"subcommand:run" help:"Run a Mochi source file"`
+	Test       *TestCmd       `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
+	Build      *BuildCmd      `arg:"subcommand:build" help:"Compile a Mochi source file"`
+	Repl       *ReplCmd       `arg:"subcommand:repl" help:"Start an interactive REPL session"`
+	Serve      *ServeCmd      `arg:"subcommand:serve" help:"Start MCP server over stdio"`
+	Cheatsheet *CheatsheetCmd `arg:"subcommand:cheatsheet" help:"Print language cheatsheet"`
+	Version    bool           `arg:"--version" help:"Print version info and exit"`
 }
 
 type RunCmd struct {
@@ -68,6 +69,7 @@ type BuildCmd struct {
 
 type ReplCmd struct{}
 type ServeCmd struct{}
+type CheatsheetCmd struct{}
 
 var (
 	cError = color.New(color.FgRed, color.Bold).SprintFunc()
@@ -82,6 +84,8 @@ func main() {
 	switch {
 	case cli.Version:
 		printVersion()
+	case cli.Cheatsheet != nil:
+		fmt.Print(mcp.Cheatsheet())
 	case cli.Repl != nil:
 		repl := repl.New(os.Stdout, version)
 		repl.Run()

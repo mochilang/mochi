@@ -151,6 +151,3 @@ func ServeStdio() error {
 	Register(s)
 	return server.ServeStdio(s)
 }
-
-//go:embed cheatsheet.mochi
-var cheatsheet string
