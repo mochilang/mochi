@@ -38,6 +38,7 @@ Just grab the binary and run:
 ```bash
 chmod +x mochi
 ./mochi run examples/hello.mochi
+./mochi cheatsheet
 ```
 
 It’s a single binary — no dependencies, no setup.
@@ -63,6 +64,7 @@ Then use it anywhere:
 mochi run examples/hello.mochi
 mochi test examples/math.mochi
 mochi build examples/hello.mochi -o hello
+mochi cheatsheet
 ```
 
 ### Build from Source
@@ -193,6 +195,7 @@ mochi run examples/hello.mochi
 mochi test examples/math.mochi
 mochi build examples/hello.mochi -o hello
 mochi build --target py examples/hello.mochi -o hello.py
+mochi cheatsheet
 ```
 
 ## Try It
