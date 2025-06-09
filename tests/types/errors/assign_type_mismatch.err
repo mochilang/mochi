@@ -5,4 +5,4 @@
     | ^
 
 help:
-  Make sure the assigned value is compatible with `%s`.
+  Make sure the assigned value is compatible with `x`.

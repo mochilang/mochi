@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/diagnostic"
 )
@@ -58,7 +59,10 @@ func errLetMissingTypeOrValue(pos lexer.Position) error {
 }
 
 func errAssignUndeclared(pos lexer.Position, name string) error {
-	return Errors["T001"].New(pos, name)
+	tmpl := Errors["T001"]
+	msg := fmt.Sprintf(tmpl.Message, name)
+	help := fmt.Sprintf(tmpl.Help, name)
+	return diagnostic.New(tmpl.Code, pos, msg, help)
 }
 
 func errUnknownVariable(pos lexer.Position, name string) error {
@@ -90,7 +94,10 @@ func errTypeMismatch(pos lexer.Position, expected, actual Type) error {
 }
 
 func errCannotAssign(pos lexer.Position, rhs Type, lhsName string, lhs Type) error {
-	return Errors["T009"].New(pos, rhs, lhsName, lhs)
+	tmpl := Errors["T009"]
+	msg := fmt.Sprintf(tmpl.Message, rhs, lhsName, lhs)
+	help := fmt.Sprintf(tmpl.Help, lhsName)
+	return diagnostic.New(tmpl.Code, pos, msg, help)
 }
 
 func errReturnMismatch(pos lexer.Position, expected, actual Type) error {
