@@ -191,6 +191,12 @@ func (i *Interpreter) SetProgram(prog *parser.Program) {
 
 func (i *Interpreter) Env() *types.Env { return i.env }
 
+// EvalExpr evaluates a Mochi expression using the interpreter.
+// This is exported for compile-time evaluation of pure expressions.
+func (i *Interpreter) EvalExpr(e *parser.Expr) (any, error) {
+	return i.evalExpr(e)
+}
+
 var (
 	cTest = color.New(color.FgYellow).SprintFunc()
 	cOK   = color.New(color.FgGreen).SprintFunc()
