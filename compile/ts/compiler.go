@@ -571,14 +571,6 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
 	c.writeIndent()
 	c.buf.WriteString("function " + name + "(")
-	for i, p := range fun.Params {
-		if i > 0 {
-			c.buf.WriteString(", ")
-		}
-		c.buf.WriteString(sanitizeName(p.Name))
-	}
-	c.buf.WriteString(") {")
-	c.buf.WriteByte('\n')
 	var ft types.FuncType
 	if c.env != nil {
 		if t, err := c.env.GetVar(fun.Name); err == nil {
@@ -587,6 +579,36 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			}
 		}
 	}
+	for i, p := range fun.Params {
+		if i > 0 {
+			c.buf.WriteString(", ")
+		}
+		c.buf.WriteString(sanitizeName(p.Name))
+		var typ types.Type
+		if i < len(ft.Params) {
+			typ = ft.Params[i]
+		} else if p.Type != nil {
+			typ = resolveTypeRef(p.Type)
+		}
+		if typ != nil {
+			ts := tsType(typ)
+			if ts != "" {
+				c.buf.WriteString(": " + ts)
+			}
+		}
+	}
+	retType := "void"
+	if ft.Return != nil {
+		if ts := tsType(ft.Return); ts != "" {
+			retType = ts
+		}
+	} else if fun.Return != nil {
+		if ts := tsType(resolveTypeRef(fun.Return)); ts != "" {
+			retType = ts
+		}
+	}
+	c.buf.WriteString(") : " + retType + " {")
+	c.buf.WriteByte('\n')
 	child := types.NewEnv(c.env)
 	for i, p := range fun.Params {
 		if i < len(ft.Params) {
@@ -827,7 +849,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		params[i] = sanitizeName(p.Name)
+		part := sanitizeName(p.Name)
+		if p.Type != nil {
+			part += ": " + tsType(resolveTypeRef(p.Type))
+		}
+		params[i] = part
+	}
+	retType := "any"
+	if fn.Return != nil {
+		if ts := tsType(resolveTypeRef(fn.Return)); ts != "" {
+			retType = ts
+		}
 	}
 	sub := &Compiler{}
 	sub.indent = 1
@@ -845,7 +877,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 	}
 	body := indentBlock(sub.buf.String(), 1)
-	code := "function(" + strings.Join(params, ", ") + ") {\n" + body + "}"
+	code := "function(" + strings.Join(params, ", ") + "): " + retType + " {\n" + body + "}"
 	return code, nil
 }
 
@@ -1287,6 +1319,31 @@ func isFloat(t types.Type) bool {
 func isString(t types.Type) bool {
 	_, ok := t.(types.StringType)
 	return ok
+}
+
+func tsType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType:
+		return "number"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "boolean"
+	case types.ListType:
+		return "Array<" + tsType(tt.Elem) + ">"
+	case types.MapType:
+		return "Record<" + tsType(tt.Key) + ", " + tsType(tt.Value) + ">"
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.FuncType:
+		return "any"
+	case types.VoidType:
+		return "void"
+	case types.AnyType:
+		return "any"
+	default:
+		return "any"
+	}
 }
 
 func isAny(t types.Type) bool {
