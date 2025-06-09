@@ -50,6 +50,8 @@ var Errors = map[string]diagnostic.Template{
 	"T029": {Code: "T029", Message: "fetch options must be a map", Help: "Pass a map like `{\"method\": \"POST\"}` after `with`."},
 	"T030": {Code: "T030", Message: "invalid type for fetch option `%s`: expected %s, got %s", Help: "Ensure the option value matches the expected type."},
 	"T031": {Code: "T031", Message: "unknown stream: %s", Help: "Declare the stream before using it."},
+	"T032": {Code: "T032", Message: "query source must be a list", Help: "Use a list value after `in`."},
+	"T033": {Code: "T033", Message: "`where` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
 }
 
 // --- Wrapper Functions ---
@@ -182,4 +184,12 @@ func errFetchOptType(pos lexer.Position, name string, expected, actual Type) err
 
 func errUnknownStream(pos lexer.Position, name string) error {
 	return Errors["T031"].New(pos, name)
+}
+
+func errQuerySourceList(pos lexer.Position) error {
+	return Errors["T032"].New(pos)
+}
+
+func errWhereBoolean(pos lexer.Position) error {
+	return Errors["T033"].New(pos)
 }
