@@ -833,6 +833,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.Group != nil:
@@ -1027,6 +1029,46 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		c.use("_gen_text")
 		return fmt.Sprintf("_gen_text(%s)", prompt), nil
 	}
+
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(() => {\n")
+	b.WriteString("\tconst _src = " + src + ";\n")
+	b.WriteString("\tconst _res = [];\n")
+	b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _src) {\n")
+	child := types.NewEnv(c.env)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+		elemType = lt.Elem
+	}
+	child.SetVar(q.Var, elemType, true)
+	orig := c.env
+	c.env = child
+	if q.Where != nil {
+		cond, err := c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		b.WriteString("\t\tif (!(" + cond + ")) { continue }\n")
+	}
+	val, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	c.env = orig
+	b.WriteString("\t\t_res.push(" + val + ")\n")
+	b.WriteString("\t}\n")
+	b.WriteString("\treturn _res;\n")
+	b.WriteString("})()")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
@@ -1632,6 +1674,8 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 		return types.MapType{Key: keyType, Value: valType}
+	case p.Query != nil:
+		return types.ListType{Elem: c.inferExprType(p.Query.Select)}
 	case p.Match != nil:
 		var rType types.Type
 		for _, cs := range p.Match.Cases {
