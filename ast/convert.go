@@ -369,6 +369,15 @@ func FromPrimary(p *parser.Primary) *Node {
 		}
 		return n
 
+	case p.Query != nil:
+		n := &Node{Kind: "query", Value: p.Query.Var}
+		n.Children = append(n.Children, &Node{Kind: "source", Children: []*Node{FromExpr(p.Query.Source)}})
+		if p.Query.Where != nil {
+			n.Children = append(n.Children, &Node{Kind: "where", Children: []*Node{FromExpr(p.Query.Where)}})
+		}
+		n.Children = append(n.Children, &Node{Kind: "select", Children: []*Node{FromExpr(p.Query.Select)}})
+		return n
+
 	case p.Match != nil:
 		n := &Node{Kind: "match"}
 		n.Children = append(n.Children, FromExpr(p.Match.Target))
