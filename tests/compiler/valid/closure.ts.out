@@ -7,7 +7,7 @@ function makeAdder(n: number) : any {
 }
 
 function main(): void {
-	let add10 = makeAdder(10)
+	let add10: any = makeAdder(10)
 	console.log(add10(7))
 }
 main()

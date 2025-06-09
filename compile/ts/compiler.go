@@ -196,7 +196,25 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		value = v
 	}
-	c.writeln(fmt.Sprintf("let %s = %s", name, value))
+	var typ types.Type = types.AnyType{}
+	if c.env != nil {
+		t, err := c.env.GetVar(s.Name)
+		if err != nil {
+			if s.Value != nil {
+				t = c.inferExprType(s.Value)
+			} else {
+				t = types.AnyType{}
+			}
+			c.env.SetVar(s.Name, t, false)
+		}
+		typ = t
+	}
+	typStr := tsType(typ)
+	if typStr != "" {
+		c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+	} else {
+		c.writeln(fmt.Sprintf("let %s = %s", name, value))
+	}
 	return nil
 }
 
@@ -210,7 +228,25 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		value = v
 	}
-	c.writeln(fmt.Sprintf("let %s = %s", name, value))
+	var typ types.Type = types.AnyType{}
+	if c.env != nil {
+		t, err := c.env.GetVar(s.Name)
+		if err != nil {
+			if s.Value != nil {
+				t = c.inferExprType(s.Value)
+			} else {
+				t = types.AnyType{}
+			}
+			c.env.SetVar(s.Name, t, true)
+		}
+		typ = t
+	}
+	typStr := tsType(typ)
+	if typStr != "" {
+		c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+	} else {
+		c.writeln(fmt.Sprintf("let %s = %s", name, value))
+	}
 	return nil
 }
 
@@ -535,7 +571,12 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			return err
 		}
 		c.writeIndent()
-		c.buf.WriteString(fmt.Sprintf("for (let %s = %s; %s < %s; %s++) {\n", name, start, name, end, name))
+		var t types.Type = types.IntType{}
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, t, true)
+		}
+		ts := tsType(t)
+		c.buf.WriteString(fmt.Sprintf("for (let %s: %s = %s; %s < %s; %s++) {\n", name, ts, start, name, end, name))
 		c.indent++
 		for _, s := range stmt.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -552,9 +593,25 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeIndent()
-	c.use("_iter")
-	c.buf.WriteString(fmt.Sprintf("for (const %s of _iter(%s)) {\n", name, src))
+	t := c.inferExprType(stmt.Source)
+	var elem types.Type = types.AnyType{}
+	switch tt := t.(type) {
+	case types.ListType:
+		elem = tt.Elem
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("for (const %s of %s) {\n", name, src))
+	case types.StringType:
+		elem = types.StringType{}
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("for (const %s of %s) {\n", name, src))
+	default:
+		c.writeIndent()
+		c.use("_iter")
+		c.buf.WriteString(fmt.Sprintf("for (const %s of _iter(%s)) {\n", name, src))
+	}
+	if c.env != nil {
+		c.env.SetVar(stmt.Name, elem, true)
+	}
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
