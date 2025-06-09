@@ -1,0 +1,69 @@
+(program
+  (let people
+    (list
+      (map
+        (entry (selector name) (string Alice))
+        (entry (selector age) (int 30))
+      )
+      (map
+        (entry (selector name) (string Bob))
+        (entry (selector age) (int 15))
+      )
+      (map
+        (entry (selector name) (string Charlie))
+        (entry (selector age) (int 65))
+      )
+      (map
+        (entry (selector name) (string Diana))
+        (entry (selector age) (int 45))
+      )
+    )
+  )
+  (let adults
+    (query person
+      (source (selector people))
+      (where
+        (binary >=
+          (selector age (selector person))
+          (int 18)
+        )
+      )
+      (select
+        (map
+          (entry
+            (selector name)
+            (selector name (selector person))
+          )
+          (entry
+            (selector age)
+            (selector age (selector person))
+          )
+          (entry
+            (selector is_senior)
+            (binary >=
+              (selector age (selector person))
+              (int 60)
+            )
+          )
+        )
+      )
+    )
+  )
+  (for person
+    (in (selector adults))
+    (block
+      (call print
+        (selector name (selector person))
+        (string is)
+        (selector age (selector person))
+        (string "years old.")
+      )
+      (if
+        (selector is_senior (selector person))
+        (block
+          (call print (string " (senior)"))
+        )
+      )
+    )
+  )
+)

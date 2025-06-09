@@ -294,6 +294,14 @@ type FetchExpr struct {
 	With *Expr `parser:"[ 'with' @@ ]"`
 }
 
+type QueryExpr struct {
+	Pos    lexer.Position
+	Var    string `parser:"'from' @Ident 'in'"`
+	Source *Expr  `parser:"@@"`
+	Where  *Expr  `parser:"[ 'where' @@ ]"`
+	Select *Expr  `parser:"'select' @@"`
+}
+
 type MatchExpr struct {
 	Pos    lexer.Position
 	Target *Expr        `parser:"'match' @@ '{'"`
@@ -311,6 +319,7 @@ type Primary struct {
 	FunExpr  *FunExpr       `parser:"@@"`
 	Struct   *StructLiteral `parser:"| @@"`
 	Call     *CallExpr      `parser:"| @@"`
+	Query    *QueryExpr     `parser:"| @@"`
 	Selector *SelectorExpr  `parser:"| @@"`
 	List     *ListLiteral   `parser:"| @@"`
 	Map      *MapLiteral    `parser:"| @@"`
