@@ -3,6 +3,7 @@ package tscode
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -575,13 +576,31 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	}
 	c.buf.WriteString(") {")
 	c.buf.WriteByte('\n')
+	var ft types.FuncType
+	if c.env != nil {
+		if t, err := c.env.GetVar(fun.Name); err == nil {
+			if f, ok := t.(types.FuncType); ok {
+				ft = f
+			}
+		}
+	}
+	child := types.NewEnv(c.env)
+	for i, p := range fun.Params {
+		if i < len(ft.Params) {
+			child.SetVar(p.Name, ft.Params[i], true)
+		}
+	}
+	origEnv := c.env
+	c.env = child
 	c.indent++
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
 	c.indent--
+	c.env = origEnv
 	c.writeIndent()
 	c.buf.WriteString("}\n")
 	return nil
@@ -641,6 +660,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	typ := c.inferPrimaryType(p.Target)
 	for _, op := range p.Ops {
 		if op.Index == nil {
 			if op.Call != nil {
@@ -653,6 +673,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					args[i] = v
 				}
 				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+				typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
 			}
 			continue
 		}
@@ -674,13 +695,33 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			c.use("_slice")
 			expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
+			switch typ.(type) {
+			case types.ListType:
+			case types.StringType:
+				typ = types.StringType{}
+			default:
+				typ = types.AnyType{}
+			}
 		} else {
 			idxExpr, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return "", err
 			}
-			c.use("_index")
-			expr = fmt.Sprintf("_index(%s, %s)", expr, idxExpr)
+			switch tt := typ.(type) {
+			case types.ListType:
+				expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
+				typ = tt.Elem
+			case types.MapType:
+				expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
+				typ = tt.Value
+			case types.StringType:
+				expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
+				typ = types.StringType{}
+			default:
+				c.use("_index")
+				expr = fmt.Sprintf("_index(%s, %s)", expr, idxExpr)
+				typ = types.AnyType{}
+			}
 		}
 	}
 	return expr, nil
@@ -1204,4 +1245,290 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return true
 	}
 	return false
+}
+
+func equalTypes(a, b types.Type) bool {
+	if _, ok := a.(types.AnyType); ok {
+		return true
+	}
+	if _, ok := b.(types.AnyType); ok {
+		return true
+	}
+	if isInt64(a) && (isInt64(b) || isInt(b)) {
+		return true
+	}
+	if isInt64(b) && (isInt64(a) || isInt(a)) {
+		return true
+	}
+	if isInt(a) && isInt(b) {
+		return true
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func isInt64(t types.Type) bool {
+	_, ok := t.(types.Int64Type)
+	return ok
+}
+
+func isInt(t types.Type) bool {
+	_, ok := t.(types.IntType)
+	return ok
+}
+
+func isFloat(t types.Type) bool {
+	_, ok := t.(types.FloatType)
+	return ok
+}
+
+func isString(t types.Type) bool {
+	_, ok := t.(types.StringType)
+	return ok
+}
+
+func isAny(t types.Type) bool {
+	_, ok := t.(types.AnyType)
+	return ok
+}
+
+func resolveTypeRef(t *parser.TypeRef) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = resolveTypeRef(p)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = resolveTypeRef(t.Fun.Return)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		args := t.Generic.Args
+		switch name {
+		case "list":
+			if len(args) == 1 {
+				return types.ListType{Elem: resolveTypeRef(args[0])}
+			}
+		case "map":
+			if len(args) == 2 {
+				return types.MapType{Key: resolveTypeRef(args[0]), Value: resolveTypeRef(args[1])}
+			}
+		}
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			return types.AnyType{}
+		}
+	}
+	return types.AnyType{}
+}
+
+func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
+	if e == nil {
+		return types.AnyType{}
+	}
+	return c.inferBinaryType(e.Binary)
+}
+
+func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
+	if b == nil {
+		return types.AnyType{}
+	}
+	t := c.inferUnaryType(b.Left)
+	for _, op := range b.Right {
+		rt := c.inferPostfixType(op.Right)
+		switch op.Op {
+		case "+", "-", "*", "/", "%":
+			if isInt64(t) {
+				if isInt64(rt) || isInt(rt) {
+					t = types.Int64Type{}
+					continue
+				}
+			}
+			if _, ok := t.(types.IntType); ok {
+				if _, ok := rt.(types.IntType); ok {
+					t = types.IntType{}
+					continue
+				}
+			}
+			if _, ok := t.(types.FloatType); ok {
+				if _, ok := rt.(types.FloatType); ok {
+					t = types.FloatType{}
+					continue
+				}
+			}
+			if op.Op == "+" {
+				if _, ok := t.(types.StringType); ok {
+					if _, ok := rt.(types.StringType); ok {
+						t = types.StringType{}
+						continue
+					}
+				}
+			}
+			t = types.AnyType{}
+		case "==", "!=", "<", "<=", ">", ">=":
+			t = types.BoolType{}
+		default:
+			t = types.AnyType{}
+		}
+	}
+	return t
+}
+
+func (c *Compiler) inferUnaryType(u *parser.Unary) types.Type {
+	if u == nil {
+		return types.AnyType{}
+	}
+	return c.inferPostfixType(u.Value)
+}
+
+func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
+	if p == nil {
+		return types.AnyType{}
+	}
+	t := c.inferPrimaryType(p.Target)
+	for _, op := range p.Ops {
+		if op.Index != nil && op.Index.Colon == nil {
+			switch tt := t.(type) {
+			case types.ListType:
+				t = tt.Elem
+			case types.MapType:
+				t = tt.Value
+			case types.StringType:
+				t = types.StringType{}
+			default:
+				t = types.AnyType{}
+			}
+		} else if op.Index != nil {
+			switch tt := t.(type) {
+			case types.ListType:
+				t = tt
+			case types.StringType:
+				t = types.StringType{}
+			default:
+				t = types.AnyType{}
+			}
+		} else if op.Call != nil {
+			if ft, ok := t.(types.FuncType); ok {
+				t = ft.Return
+			} else {
+				t = types.AnyType{}
+			}
+		} else if op.Cast != nil {
+			t = resolveTypeRef(op.Cast.Type)
+		}
+	}
+	return t
+}
+
+func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
+	if p == nil {
+		return types.AnyType{}
+	}
+	switch {
+	case p.Lit != nil:
+		switch {
+		case p.Lit.Int != nil:
+			return types.IntType{}
+		case p.Lit.Float != nil:
+			return types.FloatType{}
+		case p.Lit.Str != nil:
+			return types.StringType{}
+		case p.Lit.Bool != nil:
+			return types.BoolType{}
+		}
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 && c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				return t
+			}
+		}
+		return types.AnyType{}
+	case p.Struct != nil:
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+				return st
+			}
+		}
+		return types.AnyType{}
+	case p.Call != nil:
+		switch p.Call.Func {
+		case "len":
+			return types.IntType{}
+		case "now":
+			return types.Int64Type{}
+		default:
+			if c.env != nil {
+				if t, err := c.env.GetVar(p.Call.Func); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						return ft.Return
+					}
+				}
+			}
+			return types.AnyType{}
+		}
+	case p.Group != nil:
+		return c.inferExprType(p.Group)
+	case p.List != nil:
+		var elemType types.Type = types.AnyType{}
+		if len(p.List.Elems) > 0 {
+			elemType = c.inferExprType(p.List.Elems[0])
+			for _, e := range p.List.Elems[1:] {
+				t := c.inferExprType(e)
+				if !equalTypes(elemType, t) {
+					elemType = types.AnyType{}
+					break
+				}
+			}
+		}
+		return types.ListType{Elem: elemType}
+	case p.Map != nil:
+		var keyType types.Type = types.AnyType{}
+		var valType types.Type = types.AnyType{}
+		if len(p.Map.Items) > 0 {
+			keyType = c.inferExprType(p.Map.Items[0].Key)
+			valType = c.inferExprType(p.Map.Items[0].Value)
+			for _, it := range p.Map.Items[1:] {
+				kt := c.inferExprType(it.Key)
+				vt := c.inferExprType(it.Value)
+				if !equalTypes(keyType, kt) {
+					keyType = types.AnyType{}
+				}
+				if !equalTypes(valType, vt) {
+					valType = types.AnyType{}
+				}
+			}
+		}
+		return types.MapType{Key: keyType, Value: valType}
+	case p.Match != nil:
+		var rType types.Type
+		for _, cs := range p.Match.Cases {
+			t := c.inferExprType(cs.Result)
+			if rType == nil {
+				rType = t
+			} else if !equalTypes(rType, t) {
+				rType = types.AnyType{}
+			}
+		}
+		if rType == nil {
+			rType = types.AnyType{}
+		}
+		return rType
+	}
+	return types.AnyType{}
 }

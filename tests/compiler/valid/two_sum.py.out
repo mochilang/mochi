@@ -4,34 +4,14 @@ def twoSum(nums, target):
 	n = len(nums)
 	for i in range(0, n):
 		for j in range((i + 1), n):
-			if ((_index(nums, i) + _index(nums, j)) == target):
+			if ((nums[i] + nums[j]) == target):
 				return [i, j]
 	return [(-1), (-1)]
 
 def main():
 	result = twoSum([2, 7, 11, 15], 9)
-	print(_index(result, 0))
-	print(_index(result, 1))
+	print(result[0])
+	print(result[1])
 
-def _index(v, k):
-    if isinstance(v, list):
-        if not isinstance(k, int):
-            raise Exception('invalid list index')
-        if k < 0:
-            k += len(v)
-        if k < 0 or k >= len(v):
-            raise Exception('index out of range')
-        return v[k]
-    if isinstance(v, str):
-        if not isinstance(k, int):
-            raise Exception('invalid string index')
-        if k < 0:
-            k += len(v)
-        if k < 0 or k >= len(v):
-            raise Exception('index out of range')
-        return v[k]
-    if isinstance(v, dict):
-        return v[k]
-    return v[k]
 if __name__ == "__main__":
 	main()
