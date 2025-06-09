@@ -1189,6 +1189,9 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return MapType{Key: keyT, Value: valT}, nil
 
+	case p.Query != nil:
+		return checkQueryExpr(p.Query, env, expected)
+
 	case p.Fetch != nil:
 		urlT, err := checkExpr(p.Fetch.URL, env)
 		if err != nil {
@@ -1440,6 +1443,33 @@ func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) 
 		return nil, errTypeMismatch(m.Pos, expected, resultType)
 	}
 	return resultType, nil
+}
+
+func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) {
+	srcT, err := checkExpr(q.Source, env)
+	if err != nil {
+		return nil, err
+	}
+	listT, ok := srcT.(ListType)
+	if !ok {
+		return nil, errQuerySourceList(q.Pos)
+	}
+	child := NewEnv(env)
+	child.SetVar(q.Var, listT.Elem, true)
+	if q.Where != nil {
+		wt, err := checkExprWithExpected(q.Where, child, BoolType{})
+		if err != nil {
+			return nil, err
+		}
+		if !unify(wt, BoolType{}, nil) {
+			return nil, errWhereBoolean(q.Where.Pos)
+		}
+	}
+	selT, err := checkExpr(q.Select, child)
+	if err != nil {
+		return nil, err
+	}
+	return ListType{Elem: selT}, nil
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {

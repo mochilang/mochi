@@ -832,6 +832,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileListLiteral(p.List)
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 
@@ -971,6 +973,27 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	c.imports["json"] = true
 	c.use("_fetch")
 	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		w, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		cond = " if " + w
+	}
+	c.use("_iter")
+	return fmt.Sprintf("[ %s for %s in _iter(%s)%s ]", sel, sanitizeName(q.Var), src, cond), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
