@@ -27,6 +27,9 @@ func foldStmt(s *parser.Statement, env *types.Env) {
 	switch {
 	case s.Let != nil && s.Let.Value != nil:
 		foldExpr(s.Let.Value, env)
+		if lit, ok := evalConstExpr(s.Let.Value, env); ok {
+			env.SetValue(s.Let.Name, literalValue(lit), false)
+		}
 	case s.Var != nil && s.Var.Value != nil:
 		foldExpr(s.Var.Value, env)
 	case s.Assign != nil:
@@ -73,7 +76,7 @@ func foldExpr(e *parser.Expr, env *types.Env) {
 		foldPostfixExpr(op.Right, env)
 	}
 	if call, ok := callPattern(e); ok {
-		if lit, ok := EvalPureCall(call, env); ok {
+		if lit, ok := foldCall(call, env); ok {
 			e.Binary.Left = &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: lit}}}
 			e.Binary.Right = nil
 		}
@@ -158,4 +161,49 @@ func extractLiteral(e *parser.Expr) *parser.Literal {
 		return p.Target.Lit
 	}
 	return nil
+}
+
+func evalConstExpr(e *parser.Expr, env *types.Env) (*parser.Literal, bool) {
+	if lit := extractLiteral(e); lit != nil {
+		return lit, true
+	}
+	if call, ok := callPattern(e); ok {
+		return foldCall(call, env)
+	}
+	return nil, false
+}
+
+func literalValue(l *parser.Literal) any {
+	switch {
+	case l.Int != nil:
+		return *l.Int
+	case l.Float != nil:
+		return *l.Float
+	case l.Str != nil:
+		return *l.Str
+	case l.Bool != nil:
+		return *l.Bool
+	default:
+		return nil
+	}
+}
+
+func foldCall(call *parser.CallExpr, env *types.Env) (*parser.Literal, bool) {
+	args := make([]*parser.Expr, len(call.Args))
+	for i, a := range call.Args {
+		if lit := extractLiteral(a); lit != nil {
+			args[i] = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: lit}}}}}
+			continue
+		}
+		if name, ok := identName(a); ok {
+			if val, err := env.GetValue(name); err == nil {
+				if l := types.AnyToLiteral(val); l != nil {
+					args[i] = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: l}}}}}
+					continue
+				}
+			}
+		}
+		return nil, false
+	}
+	return EvalPureCall(&parser.CallExpr{Func: call.Func, Args: args}, env)
 }
