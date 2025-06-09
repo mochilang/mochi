@@ -89,6 +89,7 @@ func (t *TypeVar) String() string { return t.Name }
 type FuncType struct {
 	Params []Type
 	Return Type
+	Pure   bool
 }
 
 func (f FuncType) String() string {
@@ -318,6 +319,7 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("len", FuncType{
 		Params: []Type{AnyType{}}, // loosely typed
 		Return: IntType{},
+		Pure:   true,
 	}, false)
 	env.SetVar("now", FuncType{
 		Params: []Type{},
@@ -330,6 +332,7 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("str", FuncType{
 		Params: []Type{AnyType{}},
 		Return: StringType{},
+		Pure:   true,
 	}, false)
 	env.SetVar("sleep", FuncType{
 		Params: []Type{IntType{}},
@@ -403,7 +406,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 				if blk.Intent.Return != nil {
 					ret = resolveTypeRef(blk.Intent.Return, env)
 				}
-				methods[blk.Intent.Name] = Method{Decl: &parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, Type: FuncType{Params: params, Return: ret}}
+				pure := isPureFunction(&parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, env)
+				methods[blk.Intent.Name] = Method{Decl: &parser.FunStmt{Params: blk.Intent.Params, Return: blk.Intent.Return, Body: blk.Intent.Body}, Type: FuncType{Params: params, Return: ret, Pure: pure}}
 			}
 		}
 		st := StructType{Name: s.Agent.Name, Fields: fields, Order: order, Methods: methods}
@@ -609,7 +613,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 							return err
 						}
 					}
-					methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret}}
+					pure := isPureFunction(&parser.FunStmt{Params: m.Method.Params, Return: m.Method.Return, Body: m.Method.Body}, methodEnv)
+					methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret, Pure: pure}}
 				}
 			}
 			st.Fields = fields
@@ -665,7 +670,8 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		if s.Fun.Return != nil {
 			ret = resolveTypeRef(s.Fun.Return, env)
 		}
-		env.SetVar(name, FuncType{Params: params, Return: ret}, false)
+		pure := isPureFunction(s.Fun, env)
+		env.SetVar(name, FuncType{Params: params, Return: ret, Pure: pure}, false)
 
 		child := NewEnv(env)
 		for i, p := range s.Fun.Params {

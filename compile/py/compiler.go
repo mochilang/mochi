@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -848,6 +849,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
+	if lit, ok := interpreter.EvalPureCall(call, c.env); ok {
+		return c.compileLiteral(lit)
+	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
 		v, err := c.compileExpr(a)
