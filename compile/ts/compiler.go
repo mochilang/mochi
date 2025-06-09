@@ -120,14 +120,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	if needsAsync {
+		c.use("_waitAll")
+	}
+	c.emitRuntime()
+	if needsAsync {
 		c.writeln("await main()")
 		c.writeln("await _waitAll()")
-		c.use("_waitAll")
 	} else {
 		c.writeln("main()")
 	}
 	c.writeln("")
-	c.emitRuntime()
 	return c.buf.Bytes(), nil
 }
 

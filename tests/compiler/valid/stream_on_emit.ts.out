@@ -14,9 +14,6 @@ async function main(): Promise<void> {
 	sensorStream.register(_handler_0)
 	sensorStream.append({id: "sensor-1", temperature: 22.500000})
 }
-await main()
-await _waitAll()
-
 class Stream {
   name: string;
   handlers: Array<(data: any) => any | Promise<any>> = [];
@@ -41,3 +38,6 @@ const _pending: Promise<any>[] = [];
 async function _waitAll(): Promise<void> {
   await Promise.all(_pending);
 }
+
+await main()
+await _waitAll()
