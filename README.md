@@ -195,6 +195,7 @@ mochi run examples/hello.mochi
 mochi test examples/math.mochi
 mochi build examples/hello.mochi -o hello
 mochi build --target py examples/hello.mochi -o hello.py
+mochi build --target qs examples/hello.mochi -o hello.qs
 mochi cheatsheet
 ```
 

@@ -8,7 +8,7 @@
 * String indexing and iteration
 * `in` operator for string containment
 * `while` statement for loops
-* Compiler support for agents, strings and `while` in Go, Python and TypeScript
+* Compiler support for agents, strings and `while` in Go, Python, TypeScript and Q#
 
 ### Fixed
 
