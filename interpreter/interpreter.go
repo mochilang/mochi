@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
 	"github.com/fatih/color"
+	"sort"
+	"strconv"
 	"sync"
 
 	"mochi/parser"
@@ -158,8 +160,63 @@ func valueToAny(v Value) any {
 }
 
 func argsKey(args []any) string {
-	b, _ := json.Marshal(args)
-	return string(b)
+	var sb strings.Builder
+	for i, a := range args {
+		if i > 0 {
+			sb.WriteByte('|')
+		}
+		writeArgKey(&sb, a)
+	}
+	return sb.String()
+}
+
+func writeArgKey(sb *strings.Builder, v any) {
+	switch x := v.(type) {
+	case int:
+		sb.WriteString("i:")
+		sb.WriteString(strconv.Itoa(x))
+	case float64:
+		sb.WriteString("f:")
+		sb.WriteString(strconv.FormatFloat(x, 'g', -1, 64))
+	case string:
+		sb.WriteString("s:")
+		sb.WriteString(strconv.Quote(x))
+	case bool:
+		sb.WriteString("b:")
+		if x {
+			sb.WriteByte('1')
+		} else {
+			sb.WriteByte('0')
+		}
+	case []any:
+		sb.WriteByte('[')
+		for i, e := range x {
+			if i > 0 {
+				sb.WriteByte(',')
+			}
+			writeArgKey(sb, e)
+		}
+		sb.WriteByte(']')
+	case map[string]any:
+		sb.WriteByte('{')
+		keys := make([]string, 0, len(x))
+		for k := range x {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for i, k := range keys {
+			if i > 0 {
+				sb.WriteByte(',')
+			}
+			sb.WriteString(k)
+			sb.WriteByte(':')
+			writeArgKey(sb, x[k])
+		}
+		sb.WriteByte('}')
+	default:
+		sb.WriteString("p:")
+		sb.WriteString(fmt.Sprintf("%p", v))
+	}
 }
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
