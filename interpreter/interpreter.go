@@ -157,6 +157,11 @@ func valueToAny(v Value) any {
 	}
 }
 
+func argsKey(args []any) string {
+	b, _ := json.Marshal(args)
+	return string(b)
+}
+
 // Interpreter executes Mochi programs using a shared runtime and type environment.
 type Interpreter struct {
 	prog     *parser.Program
@@ -168,6 +173,7 @@ type Interpreter struct {
 	cancels  []context.CancelFunc
 	wg       *sync.WaitGroup
 	agents   []*agent.Agent
+	memo     map[string]map[string]any
 }
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
@@ -182,6 +188,7 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		cancels:  []context.CancelFunc{},
 		wg:       &sync.WaitGroup{},
 		agents:   []*agent.Agent{},
+		memo:     map[string]map[string]any{},
 	}
 }
 
@@ -1940,14 +1947,19 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 			return nil, errTooManyFunctionArgs(c.Pos, c.Func, paramCount, argCount)
 		}
 
+		argVals := make([]any, argCount)
+		for idx := range c.Args {
+			v, err := i.evalExpr(c.Args[idx])
+			if err != nil {
+				return nil, err
+			}
+			argVals[idx] = v
+		}
+
 		if argCount < paramCount {
 			applied := make([]Value, argCount)
-			for idx := range c.Args {
-				v, err := i.evalExpr(c.Args[idx])
-				if err != nil {
-					return nil, err
-				}
-				applied[idx] = anyToValue(v)
+			for idx := range argVals {
+				applied[idx] = anyToValue(argVals[idx])
 			}
 			remainingParams := fn.Params[argCount:]
 			return closure{
@@ -1962,26 +1974,45 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 			}, nil
 		}
 
+		var pure bool
+		var key string
+		if t, err := i.types.GetVar(c.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok && ft.Pure {
+				pure = true
+				key = argsKey(argVals)
+				if fnCache, ok := i.memo[c.Func]; ok {
+					if res, ok := fnCache[key]; ok {
+						return res, nil
+					}
+				}
+			}
+		}
+
 		child := types.NewEnv(i.env)
 		for idx, param := range fn.Params {
-			v, err := i.evalExpr(c.Args[idx])
-			if err != nil {
-				return nil, err
-			}
-			child.SetValue(param.Name, v, true)
+			child.SetValue(param.Name, argVals[idx], true)
 		}
 		old := i.env
 		i.env = child
 		defer func() { i.env = old }()
+		var ret any
 		for _, stmt := range fn.Body {
 			if err := i.evalStmt(stmt); err != nil {
 				if r, ok := err.(returnSignal); ok {
-					return r.value, nil
+					ret = r.value
+					err = nil
+					break
 				}
 				return nil, err
 			}
 		}
-		return nil, nil
+		if pure {
+			if _, ok := i.memo[c.Func]; !ok {
+				i.memo[c.Func] = map[string]any{}
+			}
+			i.memo[c.Func][key] = ret
+		}
+		return ret, nil
 	}
 
 	val, err := i.env.GetValue(c.Func)
