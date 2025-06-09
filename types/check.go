@@ -1061,6 +1061,12 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					continue
 				}
 				return nil, errNotStruct(p.Pos, typ)
+			case MapType:
+				if unify(t.Key, StringType{}, nil) {
+					typ = t.Value
+					continue
+				}
+				return nil, errNotStruct(p.Pos, typ)
 			default:
 				return nil, errNotStruct(p.Pos, typ)
 			}
@@ -1252,6 +1258,32 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return expected, nil
 		}
 		return AnyType{}, nil
+
+	case p.Query != nil:
+		srcT, err := checkExpr(p.Query.Source, env)
+		if err != nil {
+			return nil, err
+		}
+		var elemT Type = AnyType{}
+		if lt, ok := srcT.(ListType); ok {
+			elemT = lt.Elem
+		}
+		child := NewEnv(env)
+		child.SetVar(p.Query.Var, elemT, true)
+		if p.Query.Where != nil {
+			if _, err := checkExprWithExpected(p.Query.Where, child, BoolType{}); err != nil {
+				return nil, err
+			}
+		}
+		selT, err := checkExpr(p.Query.Select, child)
+		if err != nil {
+			return nil, err
+		}
+		result := ListType{Elem: selT}
+		if expected != nil && !unify(result, expected, nil) {
+			return nil, errTypeMismatch(p.Pos, expected, result)
+		}
+		return result, nil
 
 	case p.Match != nil:
 		return checkMatchExpr(p.Match, env, expected)
