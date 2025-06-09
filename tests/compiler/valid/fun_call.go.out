@@ -9,5 +9,7 @@ func add(a int, b int) int {
 }
 
 func main() {
-	fmt.Println(add(2, 3))
+	fmt.Println(5)
 }
+
+
