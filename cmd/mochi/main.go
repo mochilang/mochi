@@ -22,6 +22,7 @@ import (
 
 	"mochi/ast"
 	"mochi/compile/go"
+	"mochi/compile/php"
 	"mochi/compile/py"
 	"mochi/compile/ts"
 	"mochi/interpreter"
@@ -261,6 +262,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".py"
 		}
 		code, err := pycode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "php":
+		if out == "" {
+			out = base + ".php"
+		}
+		code, err := phpcode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
