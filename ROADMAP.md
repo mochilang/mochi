@@ -7,7 +7,7 @@ minimal but expressive.
 This roadmap outlines the language development toward a stable 1.0, with an emphasis on first-class data types, control
 flow, streaming logic, agents, and dataset support.
 
-Current release: v0.3.5. Upcoming 0.3.x versions will focus on generative AI.
+Current release: v0.5.0.
 
 # v0.3.x – Generative AI
 
