@@ -2,27 +2,7 @@
 
 def main():
 	scores = {"Alice": 10, "Bob": 15}
-	print(_index(scores, "Bob"))
+	print(scores["Bob"])
 
-def _index(v, k):
-    if isinstance(v, list):
-        if not isinstance(k, int):
-            raise Exception('invalid list index')
-        if k < 0:
-            k += len(v)
-        if k < 0 or k >= len(v):
-            raise Exception('index out of range')
-        return v[k]
-    if isinstance(v, str):
-        if not isinstance(k, int):
-            raise Exception('invalid string index')
-        if k < 0:
-            k += len(v)
-        if k < 0 or k >= len(v):
-            raise Exception('index out of range')
-        return v[k]
-    if isinstance(v, dict):
-        return v[k]
-    return v[k]
 if __name__ == "__main__":
 	main()

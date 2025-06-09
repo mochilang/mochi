@@ -4,7 +4,7 @@ function twoSum(nums, target) {
 	let n = _len(nums)
 	for (let i = 0; i < n; i++) {
 		for (let j = (i + 1); j < n; j++) {
-			if (((_index(nums, i) + _index(nums, j)) == target)) {
+			if (((nums[i] + nums[j]) == target)) {
 				return [i, j]
 			}
 		}
@@ -14,33 +14,14 @@ function twoSum(nums, target) {
 
 function main(): void {
 	let result = twoSum([2, 7, 11, 15], 9)
-	console.log(_index(result, 0))
-	console.log(_index(result, 1))
+	console.log(result[0])
+	console.log(result[1])
 }
 main()
-
-function _index(v: any, k: any): any {
-  if (Array.isArray(v)) {
-    if (typeof k !== 'number') throw new Error('invalid list index');
-    if (k < 0) k += v.length;
-    if (k < 0 || k >= v.length) throw new Error('index out of range');
-    return v[k];
-  }
-  if (typeof v === 'string') {
-    if (typeof k !== 'number') throw new Error('invalid string index');
-    const chars = Array.from(v);
-    if (k < 0) k += chars.length;
-    if (k < 0 || k >= chars.length) throw new Error('index out of range');
-    return chars[k];
-  }
-  if (v && typeof v === 'object') {
-    return (v as any)[k];
-  }
-  return (v as any)[k];
-}
 
 function _len(v: any): number {
   if (Array.isArray(v) || typeof v === "string") return (v as any).length;
   if (v && typeof v === "object") return Object.keys(v).length;
   return 0;
 }
+
