@@ -1505,6 +1505,9 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		return obj, nil
 
+	case p.Query != nil:
+		return i.evalQuery(p.Query)
+
 	case p.Match != nil:
 		return i.evalMatch(p.Match)
 
@@ -1923,6 +1926,40 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 		return nil, false
 	}
 	return p.Target.Call, true
+}
+
+func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
+	src, err := i.evalExpr(q.Source)
+	if err != nil {
+		return nil, err
+	}
+	list, ok := src.([]any)
+	if !ok {
+		return nil, fmt.Errorf("query source must be list, got %T", src)
+	}
+	results := make([]any, 0, len(list))
+	child := types.NewEnv(i.env)
+	old := i.env
+	i.env = child
+	defer func() { i.env = old }()
+	for _, item := range list {
+		child.SetValue(q.Var, item, true)
+		if q.Where != nil {
+			cond, err := i.evalExpr(q.Where)
+			if err != nil {
+				return nil, err
+			}
+			if !truthy(cond) {
+				continue
+			}
+		}
+		val, err := i.evalExpr(q.Select)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, val)
+	}
+	return results, nil
 }
 
 func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
