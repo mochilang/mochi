@@ -686,12 +686,25 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	leftType := c.inferUnaryType(b.Left)
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rightType := c.inferPostfixType(op.Right)
+		if op.Op == "/" && isInt(leftType) && isInt(rightType) {
+			expr = fmt.Sprintf("(%s // %s)", expr, r)
+			leftType = types.IntType{}
+			continue
+		}
 		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, r)
+		switch op.Op {
+		case "+", "-", "*", "/", "%":
+			leftType = leftType // approximate
+		case "==", "!=", "<", "<=", ">", ">=":
+			leftType = types.BoolType{}
+		}
 	}
 	return expr, nil
 }
