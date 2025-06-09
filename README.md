@@ -2,6 +2,8 @@
 
 **Mochi** is a small, statically typed programming language built for clarity, safety, and expressiveness — whether you're writing tools, processing real-time data, or powering intelligent agents.
 
+Current version: **0.5.0**
+
 Mochi is:
 
 * Agent-friendly: structured, safe, and embeddable
