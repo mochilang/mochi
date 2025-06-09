@@ -1,4 +1,19 @@
 # 📦 CHANGELOG.md
+## [0.5.1] – 2025-06-09
+
+### Added
+
+* `cheatsheet` command for language reference
+* `--memo` flag to memoize pure function calls
+* `--aot` flag for ahead-of-time constant folding
+* Interpreter folds constants in `let` declarations
+* Go compiler memoizes pure calls
+* Python compiler emits type hints
+* TypeScript compiler annotates variables and functions
+* Agent stream example
+* Compilers skip async overhead when no streams
+
+
 ## [0.5.0] – 2025-06-09
 
 ### Added
