@@ -5,4 +5,3 @@ function main(): void {
 	console.log(xs[1])
 }
 main()
-

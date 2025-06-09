@@ -24,4 +24,3 @@ function _len(v: any): number {
   if (v && typeof v === "object") return Object.keys(v).length;
   return 0;
 }
-
