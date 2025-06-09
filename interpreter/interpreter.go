@@ -230,6 +230,7 @@ type Interpreter struct {
 	cancels  []context.CancelFunc
 	wg       *sync.WaitGroup
 	agents   []*agent.Agent
+	memoize  bool
 	memo     map[string]map[string]any
 }
 
@@ -245,12 +246,21 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		cancels:  []context.CancelFunc{},
 		wg:       &sync.WaitGroup{},
 		agents:   []*agent.Agent{},
+		memoize:  false,
 		memo:     map[string]map[string]any{},
 	}
 }
 
 func (i *Interpreter) SetProgram(prog *parser.Program) {
 	i.prog = prog
+}
+
+// SetMemoization enables or disables memoization of pure function calls.
+func (i *Interpreter) SetMemoization(enable bool) {
+	i.memoize = enable
+	if !enable {
+		i.memo = map[string]map[string]any{}
+	}
 }
 
 func (i *Interpreter) Env() *types.Env { return i.env }
@@ -2037,9 +2047,11 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 			if ft, ok := t.(types.FuncType); ok && ft.Pure {
 				pure = true
 				key = argsKey(argVals)
-				if fnCache, ok := i.memo[c.Func]; ok {
-					if res, ok := fnCache[key]; ok {
-						return res, nil
+				if i.memoize {
+					if fnCache, ok := i.memo[c.Func]; ok {
+						if res, ok := fnCache[key]; ok {
+							return res, nil
+						}
 					}
 				}
 			}
@@ -2063,7 +2075,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 				return nil, err
 			}
 		}
-		if pure {
+		if pure && i.memoize {
 			if _, ok := i.memo[c.Func]; !ok {
 				i.memo[c.Func] = map[string]any{}
 			}
