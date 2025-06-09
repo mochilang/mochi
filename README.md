@@ -183,6 +183,7 @@ Commands:
   build   Compile to binary or other languages
   repl    Start interactive REPL
   serve   Start MCP server
+  cheatsheet  Print language reference
 ```
 
 Examples:
