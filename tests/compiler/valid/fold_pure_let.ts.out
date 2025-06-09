@@ -5,7 +5,7 @@ function sum(n: number) : number {
 }
 
 function main(): void {
-	let n = 10
+	let n: number = 10
 	console.log(sum(n))
 	console.log(n)
 }
