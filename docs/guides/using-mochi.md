@@ -14,6 +14,7 @@ Mochi can run as a single native binary, inside Docker, or built from source.
 ```bash
 chmod +x mochi
 ./mochi run examples/hello.mochi
+./mochi cheatsheet
 ```
 
 Place the binary anywhere on your `PATH` for convenient access. You can also install completion scripts from the repository's `tools` folder.
@@ -61,6 +62,7 @@ Commands:
   build   Compile to binary or other languages
   repl    Start interactive REPL
   serve   Start MCP server
+  cheatsheet  Print language reference
 ```
 
 Additional flags allow you to configure search paths and enable debug output. Use `--help` after any command for details.
@@ -72,6 +74,7 @@ mochi run examples/hello.mochi
 mochi test examples/math.mochi
 mochi build examples/hello.mochi -o hello
 mochi build --target py examples/hello.mochi -o hello.py
+mochi cheatsheet
 ```
 
 ## Development Environment
