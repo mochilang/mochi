@@ -24,6 +24,8 @@ func EvalPureCall(call *parser.CallExpr, env *types.Env) (*parser.Literal, bool)
 		}
 	}
 	interp := New(&parser.Program{}, env.Copy())
+	// Avoid recursive const-evaluation when interpreting the call.
+	interp.disablePureEval = true
 	val, err := interp.EvalExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Call: call}}}}})
 	if err != nil {
 		return nil, false

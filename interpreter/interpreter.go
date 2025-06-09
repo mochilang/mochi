@@ -159,15 +159,16 @@ func valueToAny(v Value) any {
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
 type Interpreter struct {
-	prog     *parser.Program
-	env      *types.Env
-	types    *types.Env
-	streams  map[string]stream.Stream
-	handlers map[string][]onHandler
-	subs     []stream.Subscriber
-	cancels  []context.CancelFunc
-	wg       *sync.WaitGroup
-	agents   []*agent.Agent
+	prog            *parser.Program
+	env             *types.Env
+	types           *types.Env
+	streams         map[string]stream.Stream
+	handlers        map[string][]onHandler
+	subs            []stream.Subscriber
+	cancels         []context.CancelFunc
+	wg              *sync.WaitGroup
+	agents          []*agent.Agent
+	disablePureEval bool
 }
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
@@ -1927,6 +1928,16 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 }
 
 func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
+	// If the call is to a pure function with literal arguments, evaluate it
+	// directly using a temporary interpreter. This avoids unnecessary
+	// environment setup and ensures deterministic results. Skip this when
+	// pure evaluation is disabled (e.g., during const-eval).
+	if !i.disablePureEval {
+		if lit, ok := EvalPureCall(c, i.env); ok {
+			return i.evalLiteral(lit)
+		}
+	}
+
 	// Built-in function dispatch
 	if fn, ok := i.builtinFuncs()[c.Func]; ok {
 		return fn(i, c)
