@@ -6,8 +6,8 @@ import typing
 async def main():
 	@dataclasses.dataclass
 	class Sensor:
-		id: typing.Any
-		temperature: typing.Any
+		id: str
+		temperature: float
 	
 	sensorStream = Stream("Sensor")
 	def _handler_0(ev):

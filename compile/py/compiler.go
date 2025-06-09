@@ -440,7 +440,8 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		c.writeln("pass")
 	} else {
 		for _, fn := range st.Order {
-			c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(fn)))
+			typStr := pyType(st.Fields[fn])
+			c.writeln(fmt.Sprintf("%s: %s", sanitizeName(fn), typStr))
 		}
 	}
 	c.indent--
@@ -471,7 +472,8 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	} else {
 		for _, m := range t.Members {
 			if m.Field != nil {
-				c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(m.Field.Name)))
+				typStr := pyType(resolveTypeRef(m.Field.Type))
+				c.writeln(fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typStr))
 			}
 		}
 	}
@@ -568,15 +570,9 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
+	c.imports["typing"] = true
 	c.writeIndent()
 	c.buf.WriteString("def " + name + "(")
-	for i, p := range fun.Params {
-		if i > 0 {
-			c.buf.WriteString(", ")
-		}
-		c.buf.WriteString(sanitizeName(p.Name))
-	}
-	c.buf.WriteString("):\n")
 	var ft types.FuncType
 	if c.env != nil {
 		if t, err := c.env.GetVar(fun.Name); err == nil {
@@ -585,6 +581,28 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			}
 		}
 	}
+	for i, p := range fun.Params {
+		if i > 0 {
+			c.buf.WriteString(", ")
+		}
+		c.buf.WriteString(sanitizeName(p.Name))
+		var typ types.Type
+		if i < len(ft.Params) {
+			typ = ft.Params[i]
+		} else if p.Type != nil {
+			typ = resolveTypeRef(p.Type)
+		}
+		if typ != nil {
+			c.buf.WriteString(": " + pyType(typ))
+		}
+	}
+	retType := "None"
+	if ft.Return != nil {
+		retType = pyType(ft.Return)
+	} else if fun.Return != nil {
+		retType = pyType(resolveTypeRef(fun.Return))
+	}
+	c.buf.WriteString(") -> " + retType + ":\n")
 	child := types.NewEnv(c.env)
 	for i, p := range fun.Params {
 		if i < len(ft.Params) {
@@ -1287,6 +1305,33 @@ func isString(t types.Type) bool {
 func isAny(t types.Type) bool {
 	_, ok := t.(types.AnyType)
 	return ok
+}
+
+func pyType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "float"
+	case types.StringType:
+		return "str"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		return "list[" + pyType(tt.Elem) + "]"
+	case types.MapType:
+		return "dict[" + pyType(tt.Key) + ", " + pyType(tt.Value) + "]"
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.FuncType:
+		return "typing.Callable"
+	case types.VoidType:
+		return "None"
+	case types.AnyType:
+		return "typing.Any"
+	default:
+		return "typing.Any"
+	}
 }
 
 func resolveTypeRef(t *parser.TypeRef) types.Type {
