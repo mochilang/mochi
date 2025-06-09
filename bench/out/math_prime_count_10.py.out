@@ -5,10 +5,10 @@ import time
 
 def is_prime(n):
 	if (n < 2):
-		return True
+		return False
 	for i in range(2, ((n - 1))):
 		if ((n % i) == 0):
-			return True
+			return False
 	return True
 
 def main():
