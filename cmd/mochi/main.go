@@ -21,6 +21,7 @@ import (
 	_ "mochi/runtime/llm/provider/echo"
 
 	"mochi/ast"
+	ccode "mochi/compile/c"
 	"mochi/compile/go"
 	"mochi/compile/py"
 	"mochi/compile/ts"
@@ -273,6 +274,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".ts"
 		}
 		code, err := tscode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "c":
+		if out == "" {
+			out = base + ".c"
+		}
+		code, err := ccode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
