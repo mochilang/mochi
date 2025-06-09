@@ -201,12 +201,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
 	value := "nil"
+	var lit *parser.Literal
 	if s.Value != nil {
 		v, err := c.compileExpr(s.Value)
 		if err != nil {
 			return err
 		}
 		value = v
+		if l, ok := c.evalConstExpr(s.Value); ok {
+			lit = l
+		}
 	}
 	typStr := "any"
 	if c.env != nil {
@@ -222,6 +226,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		typStr = goType(t)
 	}
 	c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
+	if lit != nil && c.env != nil {
+		c.env.SetValue(s.Name, literalValue(lit), false)
+	}
 	return nil
 }
 
@@ -1208,12 +1215,82 @@ func extractLiteral(e *parser.Expr) *parser.Literal {
 	return nil
 }
 
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func (c *Compiler) evalConstExpr(e *parser.Expr) (*parser.Literal, bool) {
+	if lit := extractLiteral(e); lit != nil {
+		return lit, true
+	}
+	if call, ok := callPattern(e); ok {
+		return interpreter.EvalPureCall(call, c.env)
+	}
+	return nil, false
+}
+
+func literalValue(l *parser.Literal) any {
+	switch {
+	case l.Int != nil:
+		return *l.Int
+	case l.Float != nil:
+		return *l.Float
+	case l.Str != nil:
+		return *l.Str
+	case l.Bool != nil:
+		return *l.Bool
+	default:
+		return nil
+	}
+}
+
 func (c *Compiler) callKey(call *parser.CallExpr) string {
 	parts := make([]string, len(call.Args)+1)
 	parts[0] = call.Func
 	for i, arg := range call.Args {
 		if lit := extractLiteral(arg); lit != nil {
 			parts[i+1] = literalKey(lit)
+		} else if name, ok := identName(arg); ok {
+			if val, err := c.env.GetValue(name); err == nil {
+				if l := types.AnyToLiteral(val); l != nil {
+					parts[i+1] = literalKey(l)
+				}
+			}
 		}
 	}
 	return strings.Join(parts, ":")
@@ -1224,7 +1301,23 @@ func (c *Compiler) foldCall(call *parser.CallExpr) (*parser.Literal, bool) {
 	if lit, ok := c.memo[key]; ok {
 		return lit, true
 	}
-	lit, ok := interpreter.EvalPureCall(call, c.env)
+	args := make([]*parser.Expr, len(call.Args))
+	for i, a := range call.Args {
+		if lit := extractLiteral(a); lit != nil {
+			args[i] = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: lit}}}}}
+			continue
+		}
+		if name, ok := identName(a); ok {
+			if val, err := c.env.GetValue(name); err == nil {
+				if l := types.AnyToLiteral(val); l != nil {
+					args[i] = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: l}}}}}
+					continue
+				}
+			}
+		}
+		return nil, false
+	}
+	lit, ok := interpreter.EvalPureCall(&parser.CallExpr{Func: call.Func, Args: args}, c.env)
 	if ok {
 		c.memo[key] = lit
 	}

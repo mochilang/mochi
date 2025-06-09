@@ -1,0 +1,3 @@
+let a = 21
+print(str(a))
+print(a)
