@@ -1,0 +1,47 @@
+// examples/v0.5/agent-stream.mochi
+
+// Define a temperature reading event
+stream SensorInput {
+  temp: float
+}
+
+// Define an alert event
+stream Alert {
+  message: string
+  severity: string
+}
+
+// Define the TemperatureMonitor agent
+agent TemperatureMonitor {
+  var last_temp = 0.0
+
+  // React to temperature readings
+  on SensorInput as input {
+    last_temp = input.temp
+    print("Received temperature:", input.temp)
+
+    if input.temp > 37.5 {
+      emit Alert {
+        message: "High temperature: " + str(input.temp),
+        severity: "warning"
+      }
+    }
+  }
+
+  // React to alerts
+  on Alert as a {
+    print("[Alert]", a.message, "(severity =", a.severity, ")")
+  }
+}
+
+// Instantiate the agent
+let monitor = TemperatureMonitor {}
+
+// Emit temperature events into the stream
+emit SensorInput { temp: 36.0 }
+// allow async handler to run
+sleep(50)
+emit SensorInput { temp: 38.2 }
+sleep(50)
+emit SensorInput { temp: 39.5 }
+sleep(50)
