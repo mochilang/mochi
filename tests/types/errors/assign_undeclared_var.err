@@ -5,4 +5,4 @@
     | ^
 
 help:
-  Declare `%s` first using `let`.
+  Declare `x` first using `let`.
