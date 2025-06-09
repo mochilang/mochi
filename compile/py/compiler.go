@@ -729,7 +729,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		if op.Index != nil {
 			idx := op.Index
 			if idx.Colon != nil {
-				start, end := "0", "0"
+				start, end := "", ""
 				if idx.Start != nil {
 					start, err = c.compileExpr(idx.Start)
 					if err != nil {
@@ -742,14 +742,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 				}
-				c.use("_slice")
-				expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
 				switch typ.(type) {
-				case types.ListType:
-					// slice of list yields list
-				case types.StringType:
-					typ = types.StringType{}
+				case types.ListType, types.StringType:
+					expr = fmt.Sprintf("%s[%s:%s]", expr, start, end)
+					if _, ok := typ.(types.StringType); ok {
+						typ = types.StringType{}
+					}
 				default:
+					startArg, endArg := "0", "0"
+					if idx.Start != nil {
+						startArg = start
+					}
+					if idx.End != nil {
+						endArg = end
+					}
+					c.use("_slice")
+					expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, startArg, endArg)
 					typ = types.AnyType{}
 				}
 			} else {
@@ -1051,27 +1059,6 @@ var helperIndex = "def _index(v, k):\n" +
 	"        return v[k]\n" +
 	"    return v[k]\n"
 
-var helperSlice = "def _slice(v, start, end):\n" +
-	"    if isinstance(v, list):\n" +
-	"        l = len(v)\n" +
-	"        if start < 0:\n" +
-	"            start += l\n" +
-	"        if end < 0:\n" +
-	"            end += l\n" +
-	"        if start < 0 or end > l or start > end:\n" +
-	"            raise Exception('slice out of range')\n" +
-	"        return v[start:end]\n" +
-	"    if isinstance(v, str):\n" +
-	"        l = len(v)\n" +
-	"        if start < 0:\n" +
-	"            start += l\n" +
-	"        if end < 0:\n" +
-	"            end += l\n" +
-	"        if start < 0 or end > l or start > end:\n" +
-	"            raise Exception('slice out of range')\n" +
-	"        return v[start:end]\n" +
-	"    raise Exception('invalid slice target')\n"
-
 var helperGenText = "def _gen_text(prompt):\n" +
 	"    # TODO: send prompt to your LLM of choice\n" +
 	"    return prompt\n"
@@ -1170,7 +1157,6 @@ var helperAgent = "import asyncio\n" +
 
 var helperMap = map[string]string{
 	"_index":      helperIndex,
-	"_slice":      helperSlice,
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,

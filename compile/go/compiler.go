@@ -915,13 +915,20 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				switch typ.(type) {
 				case types.ListType:
+					if idx.End == nil {
+						end = fmt.Sprintf("len(%s)", val)
+					}
 					val = fmt.Sprintf("%s[%s:%s]", val, start, end)
 				case types.StringType:
-					c.use("_slice")
-					val = fmt.Sprintf("_slice(%s, %s, %s).(string)", val, start, end)
+					if idx.End == nil {
+						end = fmt.Sprintf("len([]rune(%s))", val)
+					}
+					val = fmt.Sprintf("string([]rune(%s)[%s:%s])", val, start, end)
 				default:
-					c.use("_slice")
-					val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, end)
+					if idx.End == nil {
+						end = fmt.Sprintf("len(%s)", val)
+					}
+					val = fmt.Sprintf("%s[%s:%s]", val, start, end)
 				}
 			}
 		case op.Cast != nil:
@@ -2000,86 +2007,6 @@ const (
 		"    return string(runes[i])\n" +
 		"}\n"
 
-	helperSlice = "func _slice(v any, start, end int) any {\n" +
-		"    switch s := v.(type) {\n" +
-		"    case []any:\n" +
-		"        l := len(s)\n" +
-		"        if start < 0 {\n" +
-		"            start += l\n" +
-		"        }\n" +
-		"        if end < 0 {\n" +
-		"            end += l\n" +
-		"        }\n" +
-		"        if start < 0 || end > l || start > end {\n" +
-		"            panic(\"slice out of range\")\n" +
-		"        }\n" +
-		"        return s[start:end]\n" +
-		"    case []int:\n" +
-		"        l := len(s)\n" +
-		"        if start < 0 {\n" +
-		"            start += l\n" +
-		"        }\n" +
-		"        if end < 0 {\n" +
-		"            end += l\n" +
-		"        }\n" +
-		"        if start < 0 || end > l || start > end {\n" +
-		"            panic(\"slice out of range\")\n" +
-		"        }\n" +
-		"        return s[start:end]\n" +
-		"    case []float64:\n" +
-		"        l := len(s)\n" +
-		"        if start < 0 {\n" +
-		"            start += l\n" +
-		"        }\n" +
-		"        if end < 0 {\n" +
-		"            end += l\n" +
-		"        }\n" +
-		"        if start < 0 || end > l || start > end {\n" +
-		"            panic(\"slice out of range\")\n" +
-		"        }\n" +
-		"        return s[start:end]\n" +
-		"    case []string:\n" +
-		"        l := len(s)\n" +
-		"        if start < 0 {\n" +
-		"            start += l\n" +
-		"        }\n" +
-		"        if end < 0 {\n" +
-		"            end += l\n" +
-		"        }\n" +
-		"        if start < 0 || end > l || start > end {\n" +
-		"            panic(\"slice out of range\")\n" +
-		"        }\n" +
-		"        return s[start:end]\n" +
-		"    case []bool:\n" +
-		"        l := len(s)\n" +
-		"        if start < 0 {\n" +
-		"            start += l\n" +
-		"        }\n" +
-		"        if end < 0 {\n" +
-		"            end += l\n" +
-		"        }\n" +
-		"        if start < 0 || end > l || start > end {\n" +
-		"            panic(\"slice out of range\")\n" +
-		"        }\n" +
-		"        return s[start:end]\n" +
-		"    case string:\n" +
-		"        runes := []rune(s)\n" +
-		"        l := len(runes)\n" +
-		"        if start < 0 {\n" +
-		"            start += l\n" +
-		"        }\n" +
-		"        if end < 0 {\n" +
-		"            end += l\n" +
-		"        }\n" +
-		"        if start < 0 || end > l || start > end {\n" +
-		"            panic(\"slice out of range\")\n" +
-		"        }\n" +
-		"        return string(runes[start:end])\n" +
-		"    default:\n" +
-		"        panic(\"invalid slice target\")\n" +
-		"    }\n" +
-		"}\n"
-
 	helperIter = "func _iter(v any) []any {\n" +
 		"    switch s := v.(type) {\n" +
 		"    case []any:\n" +
@@ -2235,7 +2162,6 @@ const (
 var helperMap = map[string]string{
 	"_index":       helperIndex,
 	"_indexString": helperIndexString,
-	"_slice":       helperSlice,
 	"_iter":        helperIter,
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,

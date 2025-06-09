@@ -693,13 +693,21 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 			}
-			c.use("_slice")
-			expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
 			switch typ.(type) {
-			case types.ListType:
-			case types.StringType:
-				typ = types.StringType{}
+			case types.ListType, types.StringType:
+				if idx.Start == nil {
+					start = "0"
+				}
+				if idx.End == nil {
+					end = fmt.Sprintf("%s.length", expr)
+				}
+				expr = fmt.Sprintf("%s.slice(%s, %s)", expr, start, end)
+				if _, ok := typ.(types.StringType); ok {
+					typ = types.StringType{}
+				}
 			default:
+				c.use("_slice")
+				expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
 				typ = types.AnyType{}
 			}
 		} else {
@@ -1070,16 +1078,6 @@ const (
 		"  return (v as any)[k];\n" +
 		"}\n"
 
-	helperSlice = "function _slice(v: any, start: number, end: number): any {\n" +
-		"  if (typeof v === \"string\" || Array.isArray(v)) {\n" +
-		"    const l = (v as any).length;\n" +
-		"    if (start < 0) start = l + start;\n" +
-		"    if (end < 0) end = l + end;\n" +
-		"    return (v as any).slice(start, end);\n" +
-		"  }\n" +
-		"  throw new Error(\"invalid slice target\");\n" +
-		"}\n"
-
 	helperLen = "function _len(v: any): number {\n" +
 		"  if (Array.isArray(v) || typeof v === \"string\") return (v as any).length;\n" +
 		"  if (v && typeof v === \"object\") return Object.keys(v).length;\n" +
@@ -1194,7 +1192,6 @@ const (
 
 var helperMap = map[string]string{
 	"_index":      helperIndex,
-	"_slice":      helperSlice,
 	"_len":        helperLen,
 	"_iter":       helperIter,
 	"_gen_text":   helperGenText,
