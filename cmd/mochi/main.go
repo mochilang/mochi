@@ -53,12 +53,14 @@ type RunCmd struct {
 	PrintAST bool   `arg:"--ast" help:"Print parsed AST in Lisp format"`
 	Debug    bool   `arg:"--debug" help:"Enable debug output"`
 	Memoize  bool   `arg:"--memo" help:"Enable memoization of pure functions"`
+	Fold     bool   `arg:"--aot" help:"Fold pure calls before execution"`
 }
 
 type TestCmd struct {
 	File    string `arg:"positional,required" help:"Path to .mochi source file"`
 	Debug   bool   `arg:"--debug" help:"Enable debug output"`
 	Memoize bool   `arg:"--memo" help:"Enable memoization of pure functions"`
+	Fold    bool   `arg:"--aot" help:"Fold pure calls before execution"`
 }
 
 type BuildCmd struct {
@@ -151,6 +153,9 @@ func runFile(cmd *RunCmd) error {
 		printTypeErrors(errs)
 		return fmt.Errorf("aborted due to type errors")
 	}
+	if cmd.Fold {
+		interpreter.FoldPureCalls(prog, env)
+	}
 	memo := cmd.Memoize || os.Getenv("MOCHI_MEMO") == "1" || strings.ToLower(os.Getenv("MOCHI_MEMO")) == "true"
 	interp := interpreter.New(prog, env)
 	interp.SetMemoization(memo)
@@ -182,6 +187,9 @@ func runTests(cmd *TestCmd) error {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		printTypeErrors(errs)
 		return fmt.Errorf("aborted due to type errors")
+	}
+	if cmd.Fold {
+		interpreter.FoldPureCalls(prog, env)
 	}
 	memo := cmd.Memoize || os.Getenv("MOCHI_MEMO") == "1" || strings.ToLower(os.Getenv("MOCHI_MEMO")) == "true"
 	interp := interpreter.New(prog, env)

@@ -4,8 +4,6 @@ function main(): void {
 	let vec = _gen_embed("hi")
 	console.log(_len(vec))
 }
-main()
-
 function _gen_embed(text: string): number[] {
   // TODO: integrate with your preferred embedding model
   return Array.from(text).map(c => c.charCodeAt(0));
@@ -16,3 +14,5 @@ function _len(v: any): number {
   if (v && typeof v === "object") return Object.keys(v).length;
   return 0;
 }
+
+main()

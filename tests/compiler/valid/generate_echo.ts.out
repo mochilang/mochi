@@ -4,9 +4,9 @@ function main(): void {
 	let poem = _gen_text("echo hello")
 	console.log(poem)
 }
-main()
-
 function _gen_text(prompt: string): string {
   // TODO: integrate with your preferred LLM
   return prompt;
 }
+
+main()

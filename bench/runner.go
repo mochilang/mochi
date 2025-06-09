@@ -80,7 +80,7 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		cfg := Range{Start: 10, Step: "+10", Count: 3}
 
 		templates := []Template{
-			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run"}},
+			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run", "--aot"}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
 			{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}},
