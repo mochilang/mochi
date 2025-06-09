@@ -24,6 +24,7 @@ type Compiler struct {
 	handlerDones []string
 	streams      []string
 	usesHandlers bool
+	memo         map[string]*parser.Literal
 }
 
 // New creates a new Go compiler instance.
@@ -34,6 +35,7 @@ func New(env *types.Env) *Compiler {
 		helpers:      make(map[string]bool),
 		structs:      make(map[string]bool),
 		handlerDones: []string{},
+		memo:         map[string]*parser.Literal{},
 	}
 }
 
@@ -1167,8 +1169,66 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	}
 }
 
+func literalKey(l *parser.Literal) string {
+	switch {
+	case l.Int != nil:
+		return fmt.Sprintf("i%v", *l.Int)
+	case l.Float != nil:
+		return fmt.Sprintf("f%v", *l.Float)
+	case l.Str != nil:
+		return fmt.Sprintf("s%q", *l.Str)
+	case l.Bool != nil:
+		if *l.Bool {
+			return "btrue"
+		}
+		return "bfalse"
+	default:
+		return "nil"
+	}
+}
+
+func extractLiteral(e *parser.Expr) *parser.Literal {
+	if e == nil {
+		return nil
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	if p.Target != nil {
+		return p.Target.Lit
+	}
+	return nil
+}
+
+func (c *Compiler) callKey(call *parser.CallExpr) string {
+	parts := make([]string, len(call.Args)+1)
+	parts[0] = call.Func
+	for i, arg := range call.Args {
+		if lit := extractLiteral(arg); lit != nil {
+			parts[i+1] = literalKey(lit)
+		}
+	}
+	return strings.Join(parts, ":")
+}
+
 func (c *Compiler) foldCall(call *parser.CallExpr) (*parser.Literal, bool) {
-	return interpreter.EvalPureCall(call, c.env)
+	key := c.callKey(call)
+	if lit, ok := c.memo[key]; ok {
+		return lit, true
+	}
+	lit, ok := interpreter.EvalPureCall(call, c.env)
+	if ok {
+		c.memo[key] = lit
+	}
+	return lit, ok
 }
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
