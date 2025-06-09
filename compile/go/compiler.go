@@ -917,8 +917,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case types.ListType:
 					val = fmt.Sprintf("%s[%s:%s]", val, start, end)
 				case types.StringType:
-					c.use("_slice")
-					val = fmt.Sprintf("_slice(%s, %s, %s).(string)", val, start, end)
+					c.use("_sliceString")
+					val = fmt.Sprintf("_sliceString(%s, %s, %s)", val, start, end)
 				default:
 					c.use("_slice")
 					val = fmt.Sprintf("_slice(%s, %s, %s)", val, start, end)
@@ -2000,6 +2000,21 @@ const (
 		"    return string(runes[i])\n" +
 		"}\n"
 
+	helperSliceString = "func _sliceString(s string, start, end int) string {\n" +
+		"    runes := []rune(s)\n" +
+		"    l := len(runes)\n" +
+		"    if start < 0 {\n" +
+		"        start += l\n" +
+		"    }\n" +
+		"    if end < 0 {\n" +
+		"        end += l\n" +
+		"    }\n" +
+		"    if start < 0 || end > l || start > end {\n" +
+		"        panic(\"slice out of range\")\n" +
+		"    }\n" +
+		"    return string(runes[start:end])\n" +
+		"}\n"
+
 	helperSlice = "func _slice(v any, start, end int) any {\n" +
 		"    switch s := v.(type) {\n" +
 		"    case []any:\n" +
@@ -2236,6 +2251,7 @@ var helperMap = map[string]string{
 	"_index":       helperIndex,
 	"_indexString": helperIndexString,
 	"_slice":       helperSlice,
+	"_sliceString": helperSliceString,
 	"_iter":        helperIter,
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,

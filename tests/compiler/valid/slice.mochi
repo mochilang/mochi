@@ -1,0 +1,4 @@
+let xs = [1, 2, 3, 4]
+print(len(xs[1:3]))
+let text = "hello"
+print(text[1:4])

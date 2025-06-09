@@ -672,8 +672,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 			}
-			c.use("_slice")
-			expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
+			typ := c.inferPrimaryType(p.Target)
+			if _, ok := typ.(types.StringType); ok {
+				c.use("_sliceString")
+				expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+			} else {
+				c.use("_slice")
+				expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
+			}
 		} else {
 			idxExpr, err := c.compileExpr(idx.Start)
 			if err != nil {
@@ -739,6 +745,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("invalid primary expression")
 	}
+}
+
+func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
+	switch {
+	case p == nil:
+		return types.AnyType{}
+	case p.Lit != nil:
+		switch {
+		case p.Lit.Str != nil:
+			return types.StringType{}
+		case p.Lit.Int != nil:
+			return types.IntType{}
+		case p.Lit.Float != nil:
+			return types.FloatType{}
+		case p.Lit.Bool != nil:
+			return types.BoolType{}
+		}
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 && c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				return t
+			}
+		}
+		return types.AnyType{}
+	case p.List != nil:
+		return types.ListType{Elem: types.AnyType{}}
+	case p.Map != nil:
+		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+	}
+	return types.AnyType{}
 }
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
@@ -1038,6 +1074,14 @@ const (
 		"  }\n" +
 		"  throw new Error(\"invalid slice target\");\n" +
 		"}\n"
+	helperSliceString = "function _sliceString(s: string, start: number, end: number): string {\n" +
+		"  const chars = Array.from(s);\n" +
+		"  const l = chars.length;\n" +
+		"  if (start < 0) start = l + start;\n" +
+		"  if (end < 0) end = l + end;\n" +
+		"  if (start < 0 || end > l || start > end) throw new Error('slice out of range');\n" +
+		"  return chars.slice(start, end).join('');\n" +
+		"}\n"
 
 	helperLen = "function _len(v: any): number {\n" +
 		"  if (Array.isArray(v) || typeof v === \"string\") return (v as any).length;\n" +
@@ -1152,18 +1196,19 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_index":      helperIndex,
-	"_slice":      helperSlice,
-	"_len":        helperLen,
-	"_iter":       helperIter,
-	"_gen_text":   helperGenText,
-	"_gen_embed":  helperGenEmbed,
-	"_gen_struct": helperGenStruct,
-	"_fetch":      helperFetch,
-	"_toAnyMap":   helperToAnyMap,
-	"_stream":     helperStream,
-	"_waitAll":    helperWaitAll,
-	"_agent":      helperAgent,
+	"_index":       helperIndex,
+	"_slice":       helperSlice,
+	"_sliceString": helperSliceString,
+	"_len":         helperLen,
+	"_iter":        helperIter,
+	"_gen_text":    helperGenText,
+	"_gen_embed":   helperGenEmbed,
+	"_gen_struct":  helperGenStruct,
+	"_fetch":       helperFetch,
+	"_toAnyMap":    helperToAnyMap,
+	"_stream":      helperStream,
+	"_waitAll":     helperWaitAll,
+	"_agent":       helperAgent,
 }
 
 func (c *Compiler) use(name string) {

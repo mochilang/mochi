@@ -721,8 +721,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 				}
-				c.use("_slice")
-				expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
+				typ := c.inferPrimaryType(p.Target)
+				if _, ok := typ.(types.StringType); ok {
+					c.use("_slice_string")
+					expr = fmt.Sprintf("_slice_string(%s, %s, %s)", expr, start, end)
+				} else {
+					c.use("_slice")
+					expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
+				}
 			} else {
 				idxExpr, err := c.compileExpr(idx.Start)
 				if err != nil {
@@ -794,6 +800,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("invalid primary expression")
 	}
+}
+
+func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
+	switch {
+	case p == nil:
+		return types.AnyType{}
+	case p.Lit != nil:
+		switch {
+		case p.Lit.Str != nil:
+			return types.StringType{}
+		case p.Lit.Int != nil:
+			return types.IntType{}
+		case p.Lit.Float != nil:
+			return types.FloatType{}
+		case p.Lit.Bool != nil:
+			return types.BoolType{}
+		}
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 && c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				return t
+			}
+		}
+		return types.AnyType{}
+	case p.List != nil:
+		return types.ListType{Elem: types.AnyType{}}
+	case p.Map != nil:
+		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+	}
+	return types.AnyType{}
 }
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
@@ -1029,6 +1065,16 @@ var helperSlice = "def _slice(v, start, end):\n" +
 	"        return v[start:end]\n" +
 	"    raise Exception('invalid slice target')\n"
 
+var helperSliceString = "def _slice_string(s, start, end):\n" +
+	"    l = len(s)\n" +
+	"    if start < 0:\n" +
+	"        start += l\n" +
+	"    if end < 0:\n" +
+	"        end += l\n" +
+	"    if start < 0 or end > l or start > end:\n" +
+	"        raise Exception('slice out of range')\n" +
+	"    return s[start:end]\n"
+
 var helperGenText = "def _gen_text(prompt):\n" +
 	"    # TODO: send prompt to your LLM of choice\n" +
 	"    return prompt\n"
@@ -1126,17 +1172,18 @@ var helperAgent = "import asyncio\n" +
 	"        return self.state.get(name)\n"
 
 var helperMap = map[string]string{
-	"_index":      helperIndex,
-	"_slice":      helperSlice,
-	"_gen_text":   helperGenText,
-	"_gen_embed":  helperGenEmbed,
-	"_gen_struct": helperGenStruct,
-	"_fetch":      helperFetch,
-	"_to_any_map": helperToAnyMap,
-	"_iter":       helperIter,
-	"_stream":     helperStream,
-	"_wait_all":   helperWaitAll,
-	"_agent":      helperAgent,
+	"_index":        helperIndex,
+	"_slice":        helperSlice,
+	"_slice_string": helperSliceString,
+	"_gen_text":     helperGenText,
+	"_gen_embed":    helperGenEmbed,
+	"_gen_struct":   helperGenStruct,
+	"_fetch":        helperFetch,
+	"_to_any_map":   helperToAnyMap,
+	"_iter":         helperIter,
+	"_stream":       helperStream,
+	"_wait_all":     helperWaitAll,
+	"_agent":        helperAgent,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
