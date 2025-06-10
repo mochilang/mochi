@@ -298,12 +298,20 @@ type QueryExpr struct {
 	Pos    lexer.Position
 	Var    string         `parser:"'from' @Ident 'in'"`
 	Source *Expr          `parser:"@@"`
+	Joins  []*JoinClause  `parser:"{ @@ }"`
 	Where  *Expr          `parser:"[ 'where' @@ ]"`
 	Group  *GroupByClause `parser:"[ @@ ]"`
 	Sort   *Expr          `parser:"[ 'sort' 'by' @@ ]"`
 	Skip   *Expr          `parser:"[ 'skip' @@ ]"`
 	Take   *Expr          `parser:"[ 'take' @@ ]"`
 	Select *Expr          `parser:"'select' @@"`
+}
+
+type JoinClause struct {
+	Pos lexer.Position
+	Var string `parser:"'join' 'from' @Ident 'in'"`
+	Src *Expr  `parser:"@@"`
+	On  *Expr  `parser:"'on' @@"`
 }
 
 type GroupByClause struct {
