@@ -451,7 +451,9 @@ func FromPrimary(p *parser.Primary) *Node {
 
 	case p.Load != nil:
 		n := &Node{Kind: "load"}
-		n.Children = append(n.Children, &Node{Kind: "string", Value: p.Load.Path})
+		if p.Load.Path != nil {
+			n.Children = append(n.Children, &Node{Kind: "string", Value: *p.Load.Path})
+		}
 		if p.Load.Type != nil {
 			n.Children = append(n.Children, FromTypeRef(p.Load.Type))
 		}
@@ -463,7 +465,9 @@ func FromPrimary(p *parser.Primary) *Node {
 	case p.Save != nil:
 		n := &Node{Kind: "save"}
 		n.Children = append(n.Children, FromExpr(p.Save.Src))
-		n.Children = append(n.Children, &Node{Kind: "string", Value: p.Save.Path})
+		if p.Save.Path != nil {
+			n.Children = append(n.Children, &Node{Kind: "string", Value: *p.Save.Path})
+		}
 		if p.Save.With != nil {
 			n.Children = append(n.Children, FromExpr(p.Save.With))
 		}

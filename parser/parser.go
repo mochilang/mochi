@@ -323,16 +323,16 @@ type FetchExpr struct {
 
 type LoadExpr struct {
 	Pos  lexer.Position
-	Path string   `parser:"'load' @String 'as'"`
+	Path *string  `parser:"'load' [ @String ] 'as'"`
 	Type *TypeRef `parser:"@@"`
 	With *Expr    `parser:"[ 'with' @@ ]"`
 }
 
 type SaveExpr struct {
 	Pos  lexer.Position
-	Src  *Expr  `parser:"'save' @@ 'to'"`
-	Path string `parser:"@String"`
-	With *Expr  `parser:"[ 'with' @@ ]"`
+	Src  *Expr   `parser:"'save' @@"`
+	Path *string `parser:"[ 'to' @String ]"`
+	With *Expr   `parser:"[ 'with' @@ ]"`
 }
 
 type QueryExpr struct {

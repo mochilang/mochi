@@ -1,0 +1,32 @@
+(program
+  (type Person
+    (field name (type string))
+    (field age (type int))
+  )
+  (let people
+    (load
+      (type Person)
+      (map
+        (entry (selector format) (string jsonl))
+      )
+    )
+  )
+  (let adults
+    (query p
+      (source (selector people))
+      (where
+        (binary >=
+          (selector age (selector p))
+          (int 18)
+        )
+      )
+      (select (selector p))
+    )
+  )
+  (save
+    (selector adults)
+    (map
+      (entry (selector format) (string jsonl))
+    )
+  )
+)

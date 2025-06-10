@@ -1,0 +1,19 @@
+// load_save_stdinout.mochi
+// Read JSONL from stdin, filter, and write JSONL to stdout
+
+ type Person {
+  name: string,
+  age: int
+}
+
+let people = load as Person with {
+  format: "jsonl"
+}
+
+let adults = from p in people
+             where p.age >= 18
+             select p
+
+save adults with {
+  format: "jsonl"
+}

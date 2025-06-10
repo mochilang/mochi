@@ -1062,9 +1062,17 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		)
 		switch format {
 		case "jsonl":
-			rows, err = data.LoadJSONL(p.Load.Path)
+			if p.Load.Path == nil {
+				rows, err = data.LoadJSONLReader(os.Stdin)
+			} else {
+				rows, err = data.LoadJSONL(*p.Load.Path)
+			}
 		default:
-			rows, err = data.LoadCSV(p.Load.Path)
+			if p.Load.Path == nil {
+				rows, err = data.LoadCSVReader(os.Stdin)
+			} else {
+				rows, err = data.LoadCSV(*p.Load.Path)
+			}
 		}
 		if err != nil {
 			return nil, err
@@ -1117,9 +1125,17 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		switch format {
 		case "jsonl":
-			err = data.SaveJSONL(rows, p.Save.Path)
+			if p.Save.Path == nil {
+				err = data.SaveJSONLWriter(rows, os.Stdout)
+			} else {
+				err = data.SaveJSONL(rows, *p.Save.Path)
+			}
 		default:
-			err = data.SaveCSV(rows, p.Save.Path, header, delim)
+			if p.Save.Path == nil {
+				err = data.SaveCSVWriter(rows, os.Stdout, header, delim)
+			} else {
+				err = data.SaveCSV(rows, *p.Save.Path, header, delim)
+			}
 		}
 		if err != nil {
 			return nil, err
