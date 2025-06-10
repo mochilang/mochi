@@ -2132,8 +2132,8 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 				m[jc.Var] = right
 				return m, nil
 			},
-			Left:  jc.Side != nil && *jc.Side == "left",
-			Right: jc.Side != nil && *jc.Side == "right",
+			Left:  jc.Side != nil && (*jc.Side == "left" || *jc.Side == "outer"),
+			Right: jc.Side != nil && (*jc.Side == "right" || *jc.Side == "outer"),
 		})
 	}
 

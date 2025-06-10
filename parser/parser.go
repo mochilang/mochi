@@ -316,7 +316,7 @@ type FromClause struct {
 
 type JoinClause struct {
 	Pos  lexer.Position
-	Side *string `parser:"[ @('left' | 'right') ]"`
+	Side *string `parser:"[ @('left' | 'right' | 'outer') ]"`
 	Var  string  `parser:"'join' [ 'from' ] @Ident 'in'"`
 	Src  *Expr   `parser:"@@"`
 	On   *Expr   `parser:"'on' @@"`
