@@ -17,13 +17,37 @@ import (
 // Go compiler package and then invoking the Go toolchain to build
 // the resulting source for the js/wasm target.
 // The resulting WebAssembly binary bytes are returned.
+// Toolchain specifies the compiler toolchain used to build the WebAssembly
+// module.
+type Toolchain string
+
+const (
+	// ToolchainGo uses the standard Go toolchain targeting js/wasm.
+	ToolchainGo Toolchain = "go"
+	// ToolchainTinyGo uses the TinyGo compiler.
+	ToolchainTinyGo Toolchain = "tinygo"
+)
+
+// Option configures the Compiler.
+type Option func(*Compiler)
+
+// WithToolchain selects the toolchain used for compilation.
+func WithToolchain(tc Toolchain) Option {
+	return func(c *Compiler) { c.toolchain = tc }
+}
+
 type Compiler struct {
-	env *types.Env
+	env       *types.Env
+	toolchain Toolchain
 }
 
 // New creates a new WASM compiler.
-func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+func New(env *types.Env, opts ...Option) *Compiler {
+	c := &Compiler{env: env, toolchain: ToolchainGo}
+	for _, opt := range opts {
+		opt(c)
+	}
+	return c
 }
 
 // Compile returns a WebAssembly binary that executes prog.
@@ -44,10 +68,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	outPath := filepath.Join(dir, "prog.wasm")
-	cmd := exec.Command("go", "build", "-o", outPath, srcPath)
-	cmd.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm")
+	var cmd *exec.Cmd
+	switch c.toolchain {
+	case ToolchainTinyGo:
+		cmd = exec.Command("tinygo", "build", "-o", outPath, "-target", "wasm", srcPath)
+	default:
+		cmd = exec.Command("go", "build", "-o", outPath, srcPath)
+		cmd.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm")
+	}
 	if out, err := cmd.CombinedOutput(); err != nil {
-		return nil, fmt.Errorf("go build failed: %w\n%s", err, out)
+		return nil, fmt.Errorf("%s build failed: %w\n%s", c.toolchain, err, out)
 	}
 	data, err := os.ReadFile(outPath)
 	if err != nil {

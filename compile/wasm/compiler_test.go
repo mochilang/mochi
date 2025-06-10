@@ -14,10 +14,10 @@ import (
 	"mochi/types"
 )
 
-func TestWasmCompiler(t *testing.T) {
-	if _, err := exec.LookPath("node"); err != nil {
-		t.Skip("node not installed")
-	}
+// runWasm compiles prog using the given toolchain and executes the resulting
+// WebAssembly module with node and wasm_exec.js. It returns the stdout output.
+func runWasm(t *testing.T, tc wasm.Toolchain) string {
+	t.Helper()
 
 	prog, err := parser.ParseString("print(\"hello wasm\")")
 	if err != nil {
@@ -27,7 +27,10 @@ func TestWasmCompiler(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	wasmBytes, err := wasm.New(env).Compile(prog)
+
+	// compile
+	compiler := wasm.New(env, wasm.WithToolchain(tc))
+	wasmBytes, err := compiler.Compile(prog)
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
@@ -67,7 +70,23 @@ WebAssembly.instantiate(fs.readFileSync('prog.wasm'), go.importObject).then((res
 		t.Fatalf("node run failed: %v\n%s", err, buf.String())
 	}
 
-	if strings.TrimSpace(buf.String()) != "hello wasm" {
-		t.Fatalf("unexpected output: %q", buf.String())
+	return strings.TrimSpace(buf.String())
+}
+
+func TestWasmCompiler(t *testing.T) {
+	if _, err := exec.LookPath("node"); err != nil {
+		t.Skip("node not installed")
+	}
+
+	// Always test the Go toolchain
+	if out := runWasm(t, wasm.ToolchainGo); out != "hello wasm" {
+		t.Fatalf("unexpected output: %q", out)
+	}
+
+	// Test TinyGo toolchain if tinygo is available
+	if _, err := exec.LookPath("tinygo"); err == nil {
+		if out := runWasm(t, wasm.ToolchainTinyGo); out != "hello wasm" {
+			t.Fatalf("unexpected output (tinygo): %q", out)
+		}
 	}
 }

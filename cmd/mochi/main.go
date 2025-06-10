@@ -65,9 +65,10 @@ type TestCmd struct {
 }
 
 type BuildCmd struct {
-	File   string `arg:"positional,required" help:"Path to .mochi source file"`
-	Out    string `arg:"-o" help:"Output file path"`
-	Target string `arg:"--target" help:"Output language (go|py|ts|wasm)"`
+	File          string `arg:"positional,required" help:"Path to .mochi source file"`
+	Out           string `arg:"-o" help:"Output file path"`
+	Target        string `arg:"--target" help:"Output language (go|py|ts|wasm)"`
+	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
 type ReplCmd struct{}
@@ -287,7 +288,13 @@ func build(cmd *BuildCmd) error {
 		if out == "" {
 			out = base + ".wasm"
 		}
-		data, err := wasm.New(env).Compile(prog)
+		tc := wasm.ToolchainGo
+		if strings.ToLower(cmd.WasmToolchain) == "tinygo" {
+			tc = wasm.ToolchainTinyGo
+		} else if cmd.WasmToolchain != "" && strings.ToLower(cmd.WasmToolchain) != "go" {
+			return fmt.Errorf("unknown wasm toolchain: %s", cmd.WasmToolchain)
+		}
+		data, err := wasm.New(env, wasm.WithToolchain(tc)).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, data, 0644)
 		}
