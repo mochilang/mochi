@@ -25,15 +25,15 @@ var helperIndex = "def _index(v, k):\n" +
 	"        return v[k]\n" +
 	"    return v[k]\n"
 
-var helperGenText = "def _gen_text(prompt):\n" +
+var helperGenText = "def _gen_text(prompt, model=None, params=None):\n" +
 	"    # TODO: send prompt to your LLM of choice\n" +
 	"    return prompt\n"
 
-var helperGenEmbed = "def _gen_embed(text):\n" +
+var helperGenEmbed = "def _gen_embed(text, model=None, params=None):\n" +
 	"    # TODO: send text to your embedding model of choice\n" +
 	"    return [float(ord(c)) for c in text]\n"
 
-var helperGenStruct = "def _gen_struct(cls, prompt):\n" +
+var helperGenStruct = "def _gen_struct(cls, prompt, model=None, params=None):\n" +
 	"    # TODO: send prompt to your LLM of choice and parse JSON\n" +
 	"    import json\n" +
 	"    data = json.loads(prompt)\n" +
