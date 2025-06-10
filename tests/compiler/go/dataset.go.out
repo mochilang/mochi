@@ -1,0 +1,26 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Person struct {
+	Name string `json:"name"`
+	Age int `json:"age"`
+}
+
+func main() {
+	var people []Person = []Person{Person{Name: "Alice", Age: 30}, Person{Name: "Bob", Age: 15}, Person{Name: "Charlie", Age: 65}}
+	var names []string = func() []string {
+	res := []string{}
+	for _, p := range people {
+		if (p.Age >= 18) {
+			res = append(res, p.Name)
+		}
+	}
+	return res
+}()
+	for _, n := range names {
+		fmt.Println(n)
+	}
+}

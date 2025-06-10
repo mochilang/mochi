@@ -730,10 +730,10 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
-       name := sanitizeName(fun.Name)
-       if c.env != nil {
-               c.env.SetFunc(fun.Name, fun)
-       }
+	name := sanitizeName(fun.Name)
+	if c.env != nil {
+		c.env.SetFunc(fun.Name, fun)
+	}
 	var ft types.FuncType
 	if c.env != nil {
 		if t, err := c.env.GetVar(fun.Name); err == nil {
@@ -1035,6 +1035,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 		return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
 
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
+
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 
@@ -1121,6 +1124,69 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		c.use("_genText")
 		return fmt.Sprintf("_genText(%s)", prompt), nil
 	}
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	// Prepare environment for the query variable
+	srcType := c.inferExprType(q.Source)
+	var elemType types.Type = types.AnyType{}
+	directRange := false
+	if lt, ok := srcType.(types.ListType); ok {
+		elemType = lt.Elem
+		directRange = true
+	}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, elemType, true)
+	original := c.env
+	c.env = child
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = original
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+	}
+	retElem := goType(c.inferExprType(q.Select))
+	if retElem == "" {
+		retElem = "any"
+	}
+
+	c.env = original
+	if !directRange {
+		c.use("_iter")
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
+	buf.WriteString(fmt.Sprintf("\tres := []%s{}\n", retElem))
+	if directRange {
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", sanitizeName(q.Var), src))
+	} else {
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range _iter(%s) {\n", sanitizeName(q.Var), src))
+	}
+	if cond != "" {
+		buf.WriteString(fmt.Sprintf("\t\tif %s {\n", cond))
+		buf.WriteString(fmt.Sprintf("\t\t\tres = append(res, %s)\n", sel))
+		buf.WriteString("\t\t}\n")
+	} else {
+		buf.WriteString(fmt.Sprintf("\t\tres = append(res, %s)\n", sel))
+	}
+	buf.WriteString("\t}\n")
+	buf.WriteString("\treturn res\n")
+	buf.WriteString("}()")
+	return buf.String(), nil
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
@@ -1699,9 +1765,29 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			return types.BoolType{}
 		}
 	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 && c.env != nil {
+		if c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-				return t
+				if len(p.Selector.Tail) == 0 {
+					return t
+				}
+				st, ok := t.(types.StructType)
+				if ok {
+					cur := st
+					for idx, field := range p.Selector.Tail {
+						ft, ok := cur.Fields[field]
+						if !ok {
+							return types.AnyType{}
+						}
+						if idx == len(p.Selector.Tail)-1 {
+							return ft
+						}
+						if next, ok := ft.(types.StructType); ok {
+							cur = next
+						} else {
+							return types.AnyType{}
+						}
+					}
+				}
 			}
 		}
 		return types.AnyType{}
@@ -1743,6 +1829,9 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 		return types.ListType{Elem: elemType}
+	case p.Query != nil:
+		elem := c.inferExprType(p.Query.Select)
+		return types.ListType{Elem: elem}
 	case p.Map != nil:
 		var keyType types.Type = types.AnyType{}
 		var valType types.Type = types.AnyType{}
@@ -2048,6 +2137,12 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 			c.scanExprImports(it.Key)
 			c.scanExprImports(it.Value)
 		}
+	case p.Query != nil:
+		c.scanExprImports(p.Query.Source)
+		if p.Query.Where != nil {
+			c.scanExprImports(p.Query.Where)
+		}
+		c.scanExprImports(p.Query.Select)
 	case p.Match != nil:
 		c.scanExprImports(p.Match.Target)
 		for _, cs := range p.Match.Cases {
