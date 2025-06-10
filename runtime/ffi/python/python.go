@@ -6,7 +6,44 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"mochi/runtime/ffi"
 )
+
+// Ensure *Runtime implements ffi.Caller.
+var _ ffi.Caller = (*Runtime)(nil)
+
+// Runtime provides access to Python code via subprocess execution.
+type Runtime struct{}
+
+// NewRuntime returns a new Python FFI runtime.
+func NewRuntime() *Runtime { return &Runtime{} }
+
+var defaultRuntime = NewRuntime()
+
+// Invoke calls a Python function "module:function" using the default runtime.
+func Invoke(name string, args ...any) (any, error) {
+	return defaultRuntime.Call(name, args...)
+}
+
+// ExecDefault executes a code snippet using the default runtime.
+func ExecDefault(code string, args ...any) (any, error) {
+	return defaultRuntime.Exec(code, args...)
+}
+
+// Call invokes a Python function specified as "module:function".
+func (r *Runtime) Call(name string, args ...any) (any, error) {
+	parts := strings.SplitN(name, ":", 2)
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("python: name must be module:function")
+	}
+	return Call(parts[0], parts[1], args...)
+}
+
+// Exec runs an arbitrary Python code block using this runtime.
+func (r *Runtime) Exec(code string, args ...any) (any, error) {
+	return Exec(code, args...)
+}
 
 // Call executes fn from the given module with the provided arguments.
 //
