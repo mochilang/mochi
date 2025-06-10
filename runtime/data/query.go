@@ -28,9 +28,10 @@ type QueryOptions struct {
 // records should be joined. Merge combines the left and right records
 // into a new item for further processing.
 type Join struct {
-	Items []any
-	On    func(left, right any) (bool, error)
-	Merge func(left, right any) (any, error)
+        Items []any
+        On    func(left, right any) (bool, error)
+        Merge func(left, right any) (any, error)
+        Left  bool
 }
 
 // Query executes a query over src using the provided options.
@@ -40,35 +41,48 @@ func Query(src []any, opt QueryOptions) ([]any, error) {
 	items := append([]any(nil), src...)
 
 	// Apply joins sequentially
-	for _, j := range opt.Joins {
-		joined := make([]any, 0)
-		for _, left := range items {
-			for _, right := range j.Items {
-				keep := true
-				var err error
-				if j.On != nil {
-					keep, err = j.On(left, right)
-					if err != nil {
-						return nil, err
-					}
-				}
-				if !keep {
-					continue
-				}
-				if j.Merge != nil {
-					var merged any
-					merged, err = j.Merge(left, right)
-					if err != nil {
-						return nil, err
-					}
-					joined = append(joined, merged)
-				} else {
-					joined = append(joined, []any{left, right})
-				}
-			}
-		}
-		items = joined
-	}
+       for _, j := range opt.Joins {
+               joined := make([]any, 0)
+               for _, left := range items {
+                       matched := false
+                       for _, right := range j.Items {
+                               keep := true
+                               var err error
+                               if j.On != nil {
+                                       keep, err = j.On(left, right)
+                                       if err != nil {
+                                               return nil, err
+                                       }
+                               }
+                               if !keep {
+                                       continue
+                               }
+                               matched = true
+                               if j.Merge != nil {
+                                       var merged any
+                                       merged, err = j.Merge(left, right)
+                                       if err != nil {
+                                               return nil, err
+                                       }
+                                       joined = append(joined, merged)
+                               } else {
+                                       joined = append(joined, []any{left, right})
+                               }
+                       }
+                       if j.Left && !matched {
+                               if j.Merge != nil {
+                                       merged, err := j.Merge(left, nil)
+                                       if err != nil {
+                                               return nil, err
+                                       }
+                                       joined = append(joined, merged)
+                               } else {
+                                       joined = append(joined, []any{left, nil})
+                               }
+                       }
+               }
+               items = joined
+       }
 
 	// Where filtering
 	if opt.Where != nil {
