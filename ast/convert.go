@@ -460,6 +460,15 @@ func FromPrimary(p *parser.Primary) *Node {
 		}
 		return n
 
+	case p.Save != nil:
+		n := &Node{Kind: "save"}
+		n.Children = append(n.Children, FromExpr(p.Save.Src))
+		n.Children = append(n.Children, &Node{Kind: "string", Value: p.Save.Path})
+		if p.Save.With != nil {
+			n.Children = append(n.Children, FromExpr(p.Save.With))
+		}
+		return n
+
 	case p.Lit != nil:
 		switch {
 		case p.Lit.Float != nil:

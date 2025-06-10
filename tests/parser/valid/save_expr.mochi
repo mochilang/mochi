@@ -1,0 +1,7 @@
+let people = [
+  { name: "Alice", age: 30, email: "alice@example.com" },
+  { name: "Bob", age: 25, email: "bob@example.com" }
+]
+
+save people to "people.jsonl" with { format: "jsonl" }
+
