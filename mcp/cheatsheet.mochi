@@ -182,7 +182,19 @@ type Circle {
 let c = Circle { radius: 5 }
 print(c.area())
 
-// 11. HTTP Fetch
+// 11. Dataset Queries
+let people = [
+  { name: "Alice", age: 30 },
+  { name: "Bob", age: 15 },
+  { name: "Charlie", age: 65 }
+]
+
+let adults = from p in people
+             where p.age >= 18
+             select p.name
+print(adults)
+
+// 12. HTTP Fetch
 
 type Todo {
   userId: int
@@ -200,7 +212,7 @@ let created: Todo = fetch "https://example.com/todos" with {
 }
 print(created.id)
 
-// 12. Streams
+// 13. Streams
 
 stream Sensor {
   id: string
@@ -213,7 +225,7 @@ on Sensor as r {
 
 emit Sensor { id: "s1", temperature: 21.3 }
 
-// 13. Agents
+// 14. Agents
 agent Monitor {
   var count: int = 0
 

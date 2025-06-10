@@ -298,6 +298,27 @@ for ch in text {
 }
 ```
 
+### Dataset Queries
+
+Query lists with SQL-like syntax using `from`, `where`, `sort by`, `skip`, `take` and `select`.
+
+```mochi
+let people = [
+  { name: "Alice", age: 30 },
+  { name: "Bob", age: 15 },
+  { name: "Charlie", age: 65 },
+  { name: "Diana", age: 45 }
+]
+
+let adults = from p in people
+             where p.age >= 18
+             select { name: p.name, age: p.age }
+
+for a in adults {
+  print(a.name, "is", a.age)
+}
+```
+
 ### Tests
 
 ```mochi
