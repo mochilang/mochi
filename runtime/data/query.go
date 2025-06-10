@@ -18,26 +18,71 @@ type QueryOptions struct {
 	Select      func(item any) (any, error)
 	SelectGroup func(g *Group) (any, error)
 	SortKey     func(item any) (any, error)
+	Joins       []Join
 	Skip        *int
 	Take        *int
+}
+
+// Join describes one join operation against the current items.
+// Items is the right-hand dataset. On determines whether a pair of
+// records should be joined. Merge combines the left and right records
+// into a new item for further processing.
+type Join struct {
+	Items []any
+	On    func(left, right any) (bool, error)
+	Merge func(left, right any) (any, error)
 }
 
 // Query executes a query over src using the provided options.
 // It implements filtering, grouping, sorting, skipping and taking
 // semantics used by Mochi's "from" expression.
 func Query(src []any, opt QueryOptions) ([]any, error) {
-	items := make([]any, 0, len(src))
-	for _, it := range src {
-		if opt.Where != nil {
+	items := append([]any(nil), src...)
+
+	// Apply joins sequentially
+	for _, j := range opt.Joins {
+		joined := make([]any, 0)
+		for _, left := range items {
+			for _, right := range j.Items {
+				keep := true
+				var err error
+				if j.On != nil {
+					keep, err = j.On(left, right)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if !keep {
+					continue
+				}
+				if j.Merge != nil {
+					var merged any
+					merged, err = j.Merge(left, right)
+					if err != nil {
+						return nil, err
+					}
+					joined = append(joined, merged)
+				} else {
+					joined = append(joined, []any{left, right})
+				}
+			}
+		}
+		items = joined
+	}
+
+	// Where filtering
+	if opt.Where != nil {
+		filtered := make([]any, 0, len(items))
+		for _, it := range items {
 			keep, err := opt.Where(it)
 			if err != nil {
 				return nil, err
 			}
-			if !keep {
-				continue
+			if keep {
+				filtered = append(filtered, it)
 			}
 		}
-		items = append(items, it)
+		items = filtered
 	}
 
 	if opt.GroupBy != nil {
