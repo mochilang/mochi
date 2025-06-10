@@ -89,15 +89,11 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 }
 
 func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
-	src, err := i.evalExpr(q.Source)
-	if err != nil {
-		return nil, err
-	}
 	child := types.NewEnv(i.env)
 	old := i.env
 	i.env = child
 	defer func() { i.env = old }()
-	return data.EvalQuery(src, q, child, func(e *parser.Expr) (any, error) {
+	return data.EvalQuery(q, child, func(e *parser.Expr) (any, error) {
 		return i.evalExpr(e)
 	})
 }
