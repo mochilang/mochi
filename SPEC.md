@@ -455,6 +455,21 @@ let created: Todo = fetch "https://example.com/todos" with {
 }
 ```
 
+### Load Expression
+
+`load` reads a CSV or JSONL file and returns a list of records. Provide the
+expected type with `as`. Additional options such as the file format may be
+given with `with`.
+
+```mochi
+type Person {
+  name: string
+  age: int
+}
+
+let people = load "people.csv" as Person
+```
+
 ### Dataset Queries
 
 `from` expressions iterate over lists with optional filtering, joining,
@@ -583,7 +598,7 @@ Term         = Factor { ("+" | "-") Factor } .
 Factor       = Unary { ("*" | "/") Unary } .
 Unary        = { "-" | "!" } PostfixExpr .
 PostfixExpr  = Primary { CallOp | IndexOp | CastOp } .
-Primary      = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | FetchExpr | QueryExpr | Literal | Identifier | "(" Expression ")" .
+Primary      = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | FetchExpr | LoadExpr | QueryExpr | Literal | Identifier | "(" Expression ")" .
 FunExpr       = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] ("=>" Expression | Block) .
 CallExpr      = Identifier "(" [ Expression { "," Expression } ] ")" .
 SelectorExpr  = Identifier { "." Identifier } .
@@ -593,6 +608,7 @@ MapEntry      = Expression ":" Expression .
 IndexOp       = "[" [ Expression ] [ ":" Expression ] "]" .
 CallOp        = "(" [ Expression { "," Expression } ] ")" .
 CastOp        = "as" TypeRef .
+LoadExpr      = "load" StringLiteral "as" TypeRef [ "with" Expression ] .
 QueryExpr     = "from" Identifier "in" Expression
                 { "from" Identifier "in" Expression }
                 { [ "left" | "right" | "outer" ] "join" [ "from" ] Identifier "in" Expression "on" Expression }

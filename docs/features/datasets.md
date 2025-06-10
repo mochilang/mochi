@@ -1,14 +1,14 @@
 ## Dataset Queries
 
-`from` expressions treat lists as simple datasets. Combine optional `where`, `sort by`, `skip`, `take` and `select` clauses to shape the result.
+`from` expressions treat lists as simple datasets. Combine optional `where`, `sort by`, `skip`, `take` and `select` clauses to shape the result. Use `load` to read a CSV or JSONL file into a typed list.
 
 ```mochi
-let people = [
-  { name: "Alice", age: 30 },
-  { name: "Bob", age: 15 },
-  { name: "Charlie", age: 65 },
-  { name: "Diana", age: 45 }
-]
+type Person {
+  name: string
+  age: int
+}
+
+let people = load "people.csv" as Person
 
 let adults = from person in people
              where person.age >= 18

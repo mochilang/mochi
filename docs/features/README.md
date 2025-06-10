@@ -6,7 +6,7 @@ This section outlines each major feature of the Mochi programming language. Each
 - [Control Flow](control-flow.md) covers conditionals, loops and pattern matching.
 - [Functions](functions.md) explains named and anonymous functions plus recursion.
 - [Collections](collections.md) details built-in lists, maps and sets.
-- [Dataset Queries](datasets.md) shows SQL-like queries over lists.
+- [Dataset Queries](datasets.md) shows SQL-like queries over lists and loading files.
 - [Tests](tests.md) shows the lightweight test framework.
 - [Generative AI](generative-ai.md) demonstrates calling large language models.
 - [HTTP Fetch](http-fetch.md) describes retrieving JSON over the network.
