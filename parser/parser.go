@@ -325,6 +325,7 @@ type LoadExpr struct {
 	Pos  lexer.Position
 	Path string   `parser:"'load' @String 'as'"`
 	Type *TypeRef `parser:"@@"`
+	With *Expr    `parser:"[ 'with' @@ ]"`
 }
 
 type QueryExpr struct {
