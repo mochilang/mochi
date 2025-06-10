@@ -1,6 +1,9 @@
 package extern
 
-import "sync"
+import (
+	"sort"
+	"sync"
+)
 
 // Registry manages a collection of registered objects.
 type Registry struct {
@@ -28,6 +31,18 @@ func (r *Registry) Get(name string) (any, bool) {
 	return obj, ok
 }
 
+// Names returns a sorted list of registered object names.
+func (r *Registry) Names() []string {
+	r.mu.RLock()
+	names := make([]string, 0, len(r.objects))
+	for name := range r.objects {
+		names = append(names, name)
+	}
+	r.mu.RUnlock()
+	sort.Strings(names)
+	return names
+}
+
 // Reset clears all registered objects.
 func (r *Registry) Reset() {
 	r.mu.Lock()
@@ -46,3 +61,6 @@ func Get(name string) (any, bool) { return DefaultRegistry.Get(name) }
 
 // Reset clears all objects from the DefaultRegistry.
 func Reset() { DefaultRegistry.Reset() }
+
+// Names returns all registered object names from the DefaultRegistry.
+func Names() []string { return DefaultRegistry.Names() }
