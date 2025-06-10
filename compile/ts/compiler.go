@@ -1037,18 +1037,170 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	simple := q.Sort == nil && q.Skip == nil && q.Take == nil
 
-	var b strings.Builder
-	b.WriteString("(() => {\n")
-	b.WriteString("\tconst _src = " + src + ";\n")
-	if simple {
-		b.WriteString("\tconst _res = [];\n")
-	} else {
-		b.WriteString("\tlet _items = [];\n")
+	needsHelper := false
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			needsHelper = true
+			break
+		}
 	}
-	b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _src) {\n")
+	if !needsHelper {
+		simple := q.Sort == nil && q.Skip == nil && q.Take == nil
+
+		var b strings.Builder
+		b.WriteString("(() => {\n")
+		b.WriteString("\tconst _src = " + src + ";\n")
+		if simple {
+			b.WriteString("\tconst _res = [];\n")
+		} else {
+			b.WriteString("\tlet _items = [];\n")
+		}
+		b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _src) {\n")
+		child := types.NewEnv(c.env)
+		var elemType types.Type = types.AnyType{}
+		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+			elemType = lt.Elem
+		}
+		child.SetVar(q.Var, elemType, true)
+		for _, f := range q.Froms {
+			ft := c.inferExprType(f.Src)
+			var fe types.Type = types.AnyType{}
+			if lt, ok := ft.(types.ListType); ok {
+				fe = lt.Elem
+			}
+			child.SetVar(f.Var, fe, true)
+		}
+		for _, j := range q.Joins {
+			jt := c.inferExprType(j.Src)
+			var je types.Type = types.AnyType{}
+			if lt, ok := jt.(types.ListType); ok {
+				je = lt.Elem
+			}
+			child.SetVar(j.Var, je, true)
+		}
+		orig := c.env
+		c.env = child
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			fromSrcs[i] = fs
+		}
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinSrcs[i] = js
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinOns[i] = on
+		}
+		val, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		indent := "\t\t"
+		for i := range q.Froms {
+			fvar := sanitizeName(q.Froms[i].Var)
+			b.WriteString(indent + "for (const " + fvar + " of " + fromSrcs[i] + ") {\n")
+			indent += "\t"
+		}
+		for i := range q.Joins {
+			jvar := sanitizeName(q.Joins[i].Var)
+			b.WriteString(indent + "for (const " + jvar + " of " + joinSrcs[i] + ") {\n")
+			indent += "\t"
+			b.WriteString(indent + "if (!(" + joinOns[i] + ")) { continue }\n")
+		}
+		if q.Where != nil {
+			cond, err := c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			b.WriteString(indent + "if (!(" + cond + ")) { continue }\n")
+		}
+		if simple {
+			b.WriteString(indent + "_res.push(" + val + ")\n")
+		} else {
+			b.WriteString(indent + "_items.push(" + sanitizeName(q.Var) + ");\n")
+		}
+		for i := len(q.Joins) - 1; i >= 0; i-- {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "}\n")
+		}
+		for i := len(q.Froms) - 1; i >= 0; i-- {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "}\n")
+		}
+		b.WriteString("\t}\n")
+
+		if simple {
+			b.WriteString("\treturn _res;\n")
+			b.WriteString("})()")
+			c.env = orig
+			return b.String(), nil
+		}
+
+		var sortExpr string
+		if q.Sort != nil {
+			sortExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			b.WriteString("\tlet _pairs = _items.map(it => { const " + sanitizeName(q.Var) + " = it; return {item: it, key: " + sortExpr + "}; });\n")
+			b.WriteString("\t_pairs.sort((a, b) => {\n")
+			b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
+			b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
+			b.WriteString("\t\tif (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n")
+			b.WriteString("\t\treturn String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n")
+			b.WriteString("\t});\n")
+			b.WriteString("\t_items = _pairs.map(p => p.item);\n")
+		}
+
+		if q.Skip != nil {
+			sk, err := c.compileExpr(q.Skip)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			b.WriteString("\t{ const _n = " + sk + "; _items = _n < _items.length ? _items.slice(_n) : []; }\n")
+		}
+
+		if q.Take != nil {
+			tk, err := c.compileExpr(q.Take)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			b.WriteString("\t{ const _n = " + tk + "; if (_n < _items.length) _items = _items.slice(0, _n); }\n")
+		}
+
+		c.env = orig
+		b.WriteString("\tconst _res = [];\n")
+		b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _items) {\n")
+		b.WriteString("\t\t_res.push(" + val + ")\n")
+		b.WriteString("\t}\n")
+		b.WriteString("\treturn _res;\n")
+		b.WriteString("})()")
+		return b.String(), nil
+	}
+
+	// helper-based implementation for joins with sides
 	child := types.NewEnv(c.env)
+	varNames := []string{sanitizeName(q.Var)}
 	var elemType types.Type = types.AnyType{}
 	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 		elemType = lt.Elem
@@ -1080,9 +1232,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		fromSrcs[i] = fs
+		varNames = append(varNames, sanitizeName(f.Var))
 	}
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
+	paramCopy := append([]string(nil), varNames...)
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -1096,96 +1250,105 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinOns[i] = on
+		varNames = append(varNames, sanitizeName(j.Var))
 	}
 	val, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
 		return "", err
 	}
-	indent := "\t\t"
-	for i := range q.Froms {
-		fvar := sanitizeName(q.Froms[i].Var)
-		b.WriteString(indent + "for (const " + fvar + " of " + fromSrcs[i] + ") {\n")
-		indent += "\t"
-	}
-	for i := range q.Joins {
-		jvar := sanitizeName(q.Joins[i].Var)
-		b.WriteString(indent + "for (const " + jvar + " of " + joinSrcs[i] + ") {\n")
-		indent += "\t"
-		b.WriteString(indent + "if (!(" + joinOns[i] + ")) { continue }\n")
-	}
+	var whereExpr, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
-		cond, err := c.compileExpr(q.Where)
+		whereExpr, err = c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		b.WriteString(indent + "if (!(" + cond + ")) { continue }\n")
 	}
-	if simple {
-		b.WriteString(indent + "_res.push(" + val + ")\n")
-	} else {
-		b.WriteString(indent + "_items.push(" + sanitizeName(q.Var) + ");\n")
-	}
-	for i := len(q.Joins) - 1; i >= 0; i-- {
-		indent = indent[:len(indent)-1]
-		b.WriteString(indent + "}\n")
-	}
-	for i := len(q.Froms) - 1; i >= 0; i-- {
-		indent = indent[:len(indent)-1]
-		b.WriteString(indent + "}\n")
-	}
-	b.WriteString("\t}\n")
-
-	if simple {
-		b.WriteString("\treturn _res;\n")
-		b.WriteString("})()")
-		c.env = orig
-		return b.String(), nil
-	}
-
-	var sortExpr string
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		b.WriteString("\tlet _pairs = _items.map(it => { const " + sanitizeName(q.Var) + " = it; return {item: it, key: " + sortExpr + "}; });\n")
-		b.WriteString("\t_pairs.sort((a, b) => {\n")
-		b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
-		b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
-		b.WriteString("\t\tif (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n")
-		b.WriteString("\t\treturn String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n")
-		b.WriteString("\t});\n")
-		b.WriteString("\t_items = _pairs.map(p => p.item);\n")
 	}
-
 	if q.Skip != nil {
-		sk, err := c.compileExpr(q.Skip)
+		skipExpr, err = c.compileExpr(q.Skip)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		b.WriteString("\t{ const _n = " + sk + "; _items = _n < _items.length ? _items.slice(_n) : []; }\n")
 	}
-
 	if q.Take != nil {
-		tk, err := c.compileExpr(q.Take)
+		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		b.WriteString("\t{ const _n = " + tk + "; if (_n < _items.length) _items = _items.slice(0, _n); }\n")
+	}
+	c.env = orig
+
+	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+	params := []string{sanitizeName(q.Var)}
+	for i, fs := range fromSrcs {
+		joins = append(joins, fmt.Sprintf("{ items: %s }", fs))
+		params = append(params, sanitizeName(q.Froms[i].Var))
+	}
+	paramCopy = append([]string(nil), params...)
+	for i, js := range joinSrcs {
+		onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+		spec := fmt.Sprintf("{ items: %s, on: (%s) => (%s)", js, strings.Join(onParams, ", "), joinOns[i])
+		if q.Joins[i].Side != nil {
+			side := *q.Joins[i].Side
+			if side == "left" || side == "outer" {
+				spec += ", left: true"
+			}
+			if side == "right" || side == "outer" {
+				spec += ", right: true"
+			}
+		}
+		spec += " }"
+		joins = append(joins, spec)
+		paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
 	}
 
-	c.env = orig
-	b.WriteString("\tconst _res = [];\n")
-	b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _items) {\n")
-	b.WriteString("\t\t_res.push(" + val + ")\n")
-	b.WriteString("\t}\n")
-	b.WriteString("\treturn _res;\n")
+	allParams := strings.Join(paramCopy, ", ")
+	selectFn := fmt.Sprintf("(%s) => %s", allParams, val)
+	var whereFn, sortFn string
+	if whereExpr != "" {
+		whereFn = fmt.Sprintf("(%s) => (%s)", allParams, whereExpr)
+	}
+	if sortExpr != "" {
+		sortFn = fmt.Sprintf("(%s) => (%s)", allParams, sortExpr)
+	}
+
+	var b strings.Builder
+	b.WriteString("(() => {\n")
+	b.WriteString("\tconst _src = " + src + ";\n")
+	b.WriteString("\treturn _query(_src, [\n")
+	for i, j := range joins {
+		b.WriteString("\t\t" + j)
+		if i != len(joins)-1 {
+			b.WriteString(",")
+		}
+		b.WriteString("\n")
+	}
+	b.WriteString("\t], { select: " + selectFn)
+	if whereFn != "" {
+		b.WriteString(", where: " + whereFn)
+	}
+	if sortFn != "" {
+		b.WriteString(", sortKey: " + sortFn)
+	}
+	if skipExpr != "" {
+		b.WriteString(", skip: " + skipExpr)
+	}
+	if takeExpr != "" {
+		b.WriteString(", take: " + takeExpr)
+	}
+	b.WriteString(" });\n")
 	b.WriteString("})()")
+	c.use("_query")
 	return b.String(), nil
 }
 
@@ -1443,6 +1606,76 @@ const (
 		"  set(name: string, value: any): void { this.state[name] = value; }\n" +
 		"  get(name: string): any { return this.state[name]; }\n" +
 		"}\n"
+
+	helperQuery = "function _query(src: any[], joins: any[], opts: any): any {\n" +
+		"  let items = src.map(v => [v]);\n" +
+		"  for (const j of joins) {\n" +
+		"    const joined: any[] = [];\n" +
+		"    if (j.right && j.left) {\n" +
+		"      const matched: boolean[] = new Array(j.items.length).fill(false);\n" +
+		"      for (const left of items) {\n" +
+		"        let m = false;\n" +
+		"        for (let ri = 0; ri < j.items.length; ri++) {\n" +
+		"          const right = j.items[ri];\n" +
+		"          let keep = true;\n" +
+		"          if (j.on) keep = j.on(...left, right);\n" +
+		"          if (!keep) continue;\n" +
+		"          m = true; matched[ri] = true;\n" +
+		"          joined.push([...left, right]);\n" +
+		"        }\n" +
+		"        if (!m) joined.push([...left, undefined]);\n" +
+		"      }\n" +
+		"      for (let ri = 0; ri < j.items.length; ri++) {\n" +
+		"        if (!matched[ri]) {\n" +
+		"          const undef = Array(items[0]?.length || 0).fill(undefined);\n" +
+		"          joined.push([...undef, j.items[ri]]);\n" +
+		"        }\n" +
+		"      }\n" +
+		"    } else if (j.right) {\n" +
+		"      for (const right of j.items) {\n" +
+		"        let m = false;\n" +
+		"        for (const left of items) {\n" +
+		"          let keep = true;\n" +
+		"          if (j.on) keep = j.on(...left, right);\n" +
+		"          if (!keep) continue;\n" +
+		"          m = true; joined.push([...left, right]);\n" +
+		"        }\n" +
+		"        if (!m) {\n" +
+		"          const undef = Array(items[0]?.length || 0).fill(undefined);\n" +
+		"          joined.push([...undef, right]);\n" +
+		"        }\n" +
+		"      }\n" +
+		"    } else {\n" +
+		"      for (const left of items) {\n" +
+		"        let m = false;\n" +
+		"        for (const right of j.items) {\n" +
+		"          let keep = true;\n" +
+		"          if (j.on) keep = j.on(...left, right);\n" +
+		"          if (!keep) continue;\n" +
+		"          m = true; joined.push([...left, right]);\n" +
+		"        }\n" +
+		"        if (j.left && !m) joined.push([...left, undefined]);\n" +
+		"      }\n" +
+		"    }\n" +
+		"    items = joined;\n" +
+		"  }\n" +
+		"  if (opts.where) items = items.filter(r => opts.where(...r));\n" +
+		"  if (opts.sortKey) {\n" +
+		"    let pairs = items.map(it => ({item: it, key: opts.sortKey(...it)}));\n" +
+		"    pairs.sort((a,b) => {\n" +
+		"      const ak = a.key; const bk = b.key;\n" +
+		"      if (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n" +
+		"      if (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n" +
+		"      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n" +
+		"    });\n" +
+		"    items = pairs.map(p => p.item);\n" +
+		"  }\n" +
+		"  if (opts.skip !== undefined) { const n = opts.skip; items = n < items.length ? items.slice(n) : []; }\n" +
+		"  if (opts.take !== undefined) { const n = opts.take; if (n < items.length) items = items.slice(0, n); }\n" +
+		"  const res = [];\n" +
+		"  for (const r of items) res.push(opts.select(...r));\n" +
+		"  return res;\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -1457,6 +1690,7 @@ var helperMap = map[string]string{
 	"_stream":     helperStream,
 	"_waitAll":    helperWaitAll,
 	"_agent":      helperAgent,
+	"_query":      helperQuery,
 }
 
 func (c *Compiler) use(name string) {
