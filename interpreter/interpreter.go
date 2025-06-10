@@ -1000,6 +1000,7 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 	type token struct {
 		pos lexer.Position
 		op  string
+		all bool
 	}
 	var operands []any
 	var operators []token
@@ -1012,7 +1013,7 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 	operands = append(operands, left)
 
 	for _, part := range b.Right {
-		operators = append(operators, token{part.Pos, part.Op})
+		operators = append(operators, token{part.Pos, part.Op, part.All})
 		right, err := i.evalPostfixExpr(part.Right)
 		if err != nil {
 			return nil, err
@@ -1024,6 +1025,7 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 	for _, level := range [][]string{
 		{"*", "/", "%"},        // highest
 		{"+", "-"},             // addition
+		{"union"},              // union operations
 		{"<", "<=", ">", ">="}, // comparison
 		{"==", "!=", "in"},     // equality and membership
 		{"&&"},                 // logical AND
@@ -1034,7 +1036,7 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 			if contains(level, op) {
 				left := operands[i]
 				right := operands[i+1]
-				result, err := applyBinary(operators[i].pos, left, op, right)
+				result, err := applyBinary(operators[i].pos, left, op, right, operators[i].all)
 				if err != nil {
 					return nil, err
 				}
@@ -2087,7 +2089,7 @@ func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
 			if err != nil {
 				return nil, err
 			}
-			eq, err := applyBinary(c.Pos, val, "==", pv)
+			eq, err := applyBinary(c.Pos, val, "==", pv, false)
 			if err != nil {
 				return nil, err
 			}
@@ -2286,27 +2288,50 @@ type continueSignal struct{}
 
 func (c continueSignal) Error() string { return "continue" }
 
-func applyBinary(pos lexer.Position, left any, op string, right any) (any, error) {
+func applyBinary(pos lexer.Position, left any, op string, right any, all bool) (any, error) {
 	lv := anyToValue(left)
 	rv := anyToValue(right)
-	res, err := applyBinaryValue(pos, lv, op, rv)
+	res, err := applyBinaryValue(pos, lv, op, rv, all)
 	if err != nil {
 		return nil, err
 	}
 	return valueToAny(res), nil
 }
 
-func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (Value, error) {
+func applyBinaryValue(pos lexer.Position, left Value, op string, right Value, all bool) (Value, error) {
 	if left.Tag == TagList && right.Tag == TagList {
 		switch op {
 		case "+":
 			return Value{Tag: TagList, List: append(append([]Value{}, left.List...), right.List...)}, nil
+		case "union":
+			if all {
+				return Value{Tag: TagList, List: append(append([]Value{}, left.List...), right.List...)}, nil
+			}
+			// deduplicate
+			result := append([]Value{}, left.List...)
+			for _, rv := range right.List {
+				exists := false
+				for _, lv := range result {
+					eq, err := applyBinaryValue(pos, lv, "==", rv, false)
+					if err != nil {
+						return Value{}, err
+					}
+					if eq.Bool {
+						exists = true
+						break
+					}
+				}
+				if !exists {
+					result = append(result, rv)
+				}
+			}
+			return Value{Tag: TagList, List: result}, nil
 		case "==":
 			if len(left.List) != len(right.List) {
 				return Value{Tag: TagBool, Bool: false}, nil
 			}
 			for i := range left.List {
-				eq, err := applyBinaryValue(pos, left.List[i], "==", right.List[i])
+				eq, err := applyBinaryValue(pos, left.List[i], "==", right.List[i], false)
 				if err != nil {
 					return Value{}, err
 				}
@@ -2316,7 +2341,7 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 			}
 			return Value{Tag: TagBool, Bool: true}, nil
 		case "!=":
-			eq, err := applyBinaryValue(pos, left, "==", right)
+			eq, err := applyBinaryValue(pos, left, "==", right, false)
 			if err != nil {
 				return Value{}, err
 			}

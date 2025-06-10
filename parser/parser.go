@@ -214,7 +214,8 @@ type BinaryExpr struct {
 
 type BinaryOp struct {
 	Pos   lexer.Position
-	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||')"`
+	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | 'union')"`
+	All   bool         `parser:"[ @'all' ]"`
 	Right *PostfixExpr `parser:"@@"`
 }
 
