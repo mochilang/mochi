@@ -4,22 +4,15 @@ import (
 	"bufio"
 	"encoding/json"
 	"io"
-	"os"
 )
 
 // LoadJSONL reads a JSON lines file and returns its rows as a slice of maps.
 func LoadJSONL(path string) ([]map[string]any, error) {
-	var r io.Reader
-	if path == "" || path == "-" {
-		r = os.Stdin
-	} else {
-		f, err := os.Open(path)
-		if err != nil {
-			return nil, err
-		}
-		defer f.Close()
-		r = f
+	r, closeFn, err := openReader(path)
+	if err != nil {
+		return nil, err
 	}
+	defer closeFn()
 	return LoadJSONLReader(r)
 }
 
@@ -47,17 +40,11 @@ func LoadJSONLReader(r io.Reader) ([]map[string]any, error) {
 // SaveJSONL writes rows to a JSON lines file. If path is empty or "-",
 // data is written to stdout.
 func SaveJSONL(rows []map[string]any, path string) error {
-	var w io.Writer
-	if path == "" || path == "-" {
-		w = os.Stdout
-	} else {
-		f, err := os.Create(path)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		w = f
+	w, closeFn, err := openWriter(path)
+	if err != nil {
+		return err
 	}
+	defer closeFn()
 	return SaveJSONLWriter(rows, w)
 }
 
