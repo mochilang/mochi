@@ -1509,6 +1509,23 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	child := NewEnv(env)
 	child.SetVar(q.Var, elemT, true)
 
+	for _, f := range q.Froms {
+		ft, err := checkExpr(f.Src, env)
+		if err != nil {
+			return nil, err
+		}
+		var fe Type
+		switch t := ft.(type) {
+		case ListType:
+			fe = t.Elem
+		case GroupType:
+			fe = t.Elem
+		default:
+			return nil, errJoinSourceList(f.Pos)
+		}
+		child.SetVar(f.Var, fe, true)
+	}
+
 	for _, j := range q.Joins {
 		jt, err := checkExpr(j.Src, env)
 		if err != nil {

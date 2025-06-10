@@ -372,6 +372,11 @@ func FromPrimary(p *parser.Primary) *Node {
 	case p.Query != nil:
 		n := &Node{Kind: "query", Value: p.Query.Var}
 		n.Children = append(n.Children, &Node{Kind: "source", Children: []*Node{FromExpr(p.Query.Source)}})
+		for _, f := range p.Query.Froms {
+			fn := &Node{Kind: "from", Value: f.Var}
+			fn.Children = append(fn.Children, &Node{Kind: "source", Children: []*Node{FromExpr(f.Src)}})
+			n.Children = append(n.Children, fn)
+		}
 		for _, j := range p.Query.Joins {
 			jn := &Node{Kind: "join", Value: j.Var}
 			jn.Children = append(jn.Children, &Node{Kind: "source", Children: []*Node{FromExpr(j.Src)}})
