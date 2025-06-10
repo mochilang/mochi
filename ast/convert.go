@@ -258,7 +258,11 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 func FromExpr(e *parser.Expr) *Node {
 	n := FromUnary(e.Binary.Left)
 	for _, op := range e.Binary.Right {
-		n = &Node{Kind: "binary", Value: op.Op, Children: []*Node{n, FromPostfixExpr(op.Right)}}
+		val := op.Op
+		if op.All {
+			val += "_all"
+		}
+		n = &Node{Kind: "binary", Value: val, Children: []*Node{n, FromPostfixExpr(op.Right)}}
 	}
 	return n
 }

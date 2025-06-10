@@ -1029,7 +1029,7 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 		{"==", "!=", "in"},     // equality and membership
 		{"&&"},                 // logical AND
 		{"||"},                 // logical OR
-		{"union"},              // set union (dedup) lowest
+		{"union", "union_all"}, // set unions lowest
 	} {
 		for i := 0; i < len(operators); {
 			op := operators[i].op
@@ -2302,6 +2302,8 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 	if left.Tag == TagList && right.Tag == TagList {
 		switch op {
 		case "+":
+			return Value{Tag: TagList, List: append(append([]Value{}, left.List...), right.List...)}, nil
+		case "union_all":
 			return Value{Tag: TagList, List: append(append([]Value{}, left.List...), right.List...)}, nil
 		case "union":
 			merged := append([]Value{}, left.List...)
