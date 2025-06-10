@@ -296,13 +296,20 @@ type FetchExpr struct {
 
 type QueryExpr struct {
 	Pos    lexer.Position
-	Var    string `parser:"'from' @Ident 'in'"`
-	Source *Expr  `parser:"@@"`
-	Where  *Expr  `parser:"[ 'where' @@ ]"`
-	Sort   *Expr  `parser:"[ 'sort' 'by' @@ ]"`
-	Skip   *Expr  `parser:"[ 'skip' @@ ]"`
-	Take   *Expr  `parser:"[ 'take' @@ ]"`
-	Select *Expr  `parser:"'select' @@"`
+	Var    string         `parser:"'from' @Ident 'in'"`
+	Source *Expr          `parser:"@@"`
+	Where  *Expr          `parser:"[ 'where' @@ ]"`
+	Group  *GroupByClause `parser:"[ @@ ]"`
+	Sort   *Expr          `parser:"[ 'sort' 'by' @@ ]"`
+	Skip   *Expr          `parser:"[ 'skip' @@ ]"`
+	Take   *Expr          `parser:"[ 'take' @@ ]"`
+	Select *Expr          `parser:"'select' @@"`
+}
+
+type GroupByClause struct {
+	Pos  lexer.Position
+	Expr *Expr  `parser:"'group' 'by' @@ 'into'"`
+	Name string `parser:"@Ident"`
 }
 
 type MatchExpr struct {

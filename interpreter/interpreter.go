@@ -407,6 +407,11 @@ type stringMethod struct {
 	name string
 }
 
+type group struct {
+	Key   any
+	Items []any
+}
+
 func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, error) {
 	inst := &agentInstance{
 		decl:  decl,
@@ -821,6 +826,32 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 	switch coll := fromVal.(type) {
 	case []any:
 		for _, item := range coll {
+			child.SetValue(stmt.Name, item, true)
+			var cont bool
+			for _, s := range stmt.Body {
+				if err := i.evalStmt(s); err != nil {
+					switch err.(type) {
+					case continueSignal:
+						cont = true
+						err = nil
+					case breakSignal:
+						return nil
+					case returnSignal:
+						return err
+					default:
+						return err
+					}
+					if cont {
+						break
+					}
+				}
+			}
+			if cont {
+				continue
+			}
+		}
+	case *group:
+		for _, item := range coll.Items {
 			child.SetValue(stmt.Name, item, true)
 			var cont bool
 			for _, s := range stmt.Body {
@@ -1401,6 +1432,16 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			}
 		}
 		for _, field := range p.Selector.Tail {
+			if g, ok := val.(*group); ok {
+				switch field {
+				case "key":
+					val = g.Key
+					continue
+				case "values":
+					val = g.Items
+					continue
+				}
+			}
 			if inst, ok := val.(*agentInstance); ok {
 				if v, err := inst.env.GetValue(field); err == nil {
 					val = v
@@ -1846,6 +1887,60 @@ func builtinSleep(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return nil, nil
 }
 
+func builtinCount(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("count(x) takes exactly one argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	switch v := val.(type) {
+	case []any:
+		return len(v), nil
+	case *group:
+		return len(v.Items), nil
+	default:
+		return nil, fmt.Errorf("count() expects list or group, got %T", val)
+	}
+}
+
+func builtinAvg(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("avg(x) takes exactly one argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	var list []any
+	switch v := val.(type) {
+	case []any:
+		list = v
+	case *group:
+		list = v.Items
+	default:
+		return nil, fmt.Errorf("avg() expects list or group, got %T", val)
+	}
+	if len(list) == 0 {
+		return 0, nil
+	}
+	var sum float64
+	for _, it := range list {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			return nil, fmt.Errorf("avg() expects numbers, got %T", it)
+		}
+	}
+	return sum / float64(len(list)), nil
+}
+
 func (i *Interpreter) invokeTool(cl closure, args map[string]any) (any, error) {
 	child := types.NewEnv(cl.Env)
 	for _, param := range cl.FullParams {
@@ -1933,8 +2028,13 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	list, ok := src.([]any)
-	if !ok {
+	var list []any
+	switch v := src.(type) {
+	case []any:
+		list = v
+	case *group:
+		list = v.Items
+	default:
 		return nil, fmt.Errorf("query source must be list, got %T", src)
 	}
 
@@ -1956,6 +2056,37 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 			}
 		}
 		items = append(items, item)
+	}
+
+	if q.Group != nil {
+		groups := map[string]*group{}
+		order := []string{}
+		for _, item := range items {
+			child.SetValue(q.Var, item, true)
+			key, err := i.evalExpr(q.Group.Expr)
+			if err != nil {
+				return nil, err
+			}
+			ks := fmt.Sprint(key)
+			g, ok := groups[ks]
+			if !ok {
+				g = &group{Key: key}
+				groups[ks] = g
+				order = append(order, ks)
+			}
+			g.Items = append(g.Items, item)
+		}
+		results := make([]any, 0, len(groups))
+		for _, ks := range order {
+			g := groups[ks]
+			child.SetValue(q.Group.Name, g, true)
+			val, err := i.evalExpr(q.Select)
+			if err != nil {
+				return nil, err
+			}
+			results = append(results, val)
+		}
+		return results, nil
 	}
 
 	if q.Sort != nil {
@@ -2114,6 +2245,8 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"json":  builtinJSON,
 		"str":   builtinStr,
 		"sleep": builtinSleep,
+		"count": builtinCount,
+		"avg":   builtinAvg,
 	}
 }
 

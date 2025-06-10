@@ -55,6 +55,12 @@ func (t MapType) String() string {
 	return fmt.Sprintf("{%s: %s}", t.Key.String(), t.Value.String())
 }
 
+type GroupType struct {
+	Elem Type
+}
+
+func (GroupType) String() string { return "group" }
+
 type StructType struct {
 	Name    string
 	Fields  map[string]Type
@@ -173,6 +179,25 @@ func unify(a, b Type, subst Subst) bool {
 		case MapType:
 			return unify(at.Key, bt.Key, subst) &&
 				unify(at.Value, bt.Value, subst)
+		case AnyType:
+			return true
+		case *TypeVar:
+			if subst != nil {
+				if val, ok := subst[bt.Name]; ok {
+					return unify(at, val, subst)
+				}
+				subst[bt.Name] = at
+				return true
+			}
+			return false
+		default:
+			return false
+		}
+
+	case GroupType:
+		switch bt := b.(type) {
+		case GroupType:
+			return unify(at.Elem, bt.Elem, subst)
 		case AnyType:
 			return true
 		case *TypeVar:
@@ -337,6 +362,16 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("sleep", FuncType{
 		Params: []Type{IntType{}},
 		Return: VoidType{},
+	}, false)
+	env.SetVar("count", FuncType{
+		Params: []Type{AnyType{}},
+		Return: IntType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("avg", FuncType{
+		Params: []Type{AnyType{}},
+		Return: FloatType{},
+		Pure:   true,
 	}, false)
 
 	var errs []error
@@ -1055,6 +1090,12 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					continue
 				}
 				return nil, errUnknownField(p.Pos, field, t)
+			case GroupType:
+				if field == "key" {
+					typ = AnyType{}
+					continue
+				}
+				return nil, errUnknownField(p.Pos, field, t)
 			case StringType:
 				if field == "contains" {
 					typ = FuncType{Params: []Type{StringType{}}, Return: BoolType{}}
@@ -1457,8 +1498,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		return nil, err
 	}
 	var elemT Type = AnyType{}
-	if lt, ok := srcT.(ListType); ok {
-		elemT = lt.Elem
+	switch t := srcT.(type) {
+	case ListType:
+		elemT = t.Elem
+	case GroupType:
+		elemT = t.Elem
 	}
 	child := NewEnv(env)
 	child.SetVar(q.Var, elemT, true)
@@ -1471,7 +1515,19 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 			return nil, errWhereBoolean(q.Where.Pos)
 		}
 	}
-	selT, err := checkExpr(q.Select, child)
+
+	var selT Type
+	if q.Group != nil {
+		if _, err := checkExpr(q.Group.Expr, child); err != nil {
+			return nil, err
+		}
+		genv := NewEnv(child)
+		gStruct := GroupType{Elem: elemT}
+		genv.SetVar(q.Group.Name, gStruct, true)
+		selT, err = checkExpr(q.Select, genv)
+	} else {
+		selT, err = checkExpr(q.Select, child)
+	}
 	if err != nil {
 		return nil, err
 	}
