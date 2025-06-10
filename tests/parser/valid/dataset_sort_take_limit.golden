@@ -34,6 +34,13 @@
   (let expensive
     (query p
       (source (selector products))
+      (sort
+        (unary -
+          (selector price (selector p))
+        )
+      )
+      (skip (int 1))
+      (take (int 3))
       (select (selector p))
     )
   )
