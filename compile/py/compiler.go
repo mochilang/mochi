@@ -240,12 +240,44 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		value = v
 	}
+	if c.env != nil {
+		t, err := c.env.GetVar(s.Name)
+		if err != nil {
+			if s.Value != nil {
+				t = c.inferExprType(s.Value)
+			} else {
+				t = types.AnyType{}
+			}
+			c.env.SetVar(s.Name, t, false)
+		}
+	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	return nil
 }
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
-	return c.compileLet(&parser.LetStmt{Name: s.Name, Value: s.Value})
+	name := sanitizeName(s.Name)
+	value := "None"
+	if s.Value != nil {
+		v, err := c.compileExpr(s.Value)
+		if err != nil {
+			return err
+		}
+		value = v
+	}
+	if c.env != nil {
+		t, err := c.env.GetVar(s.Name)
+		if err != nil {
+			if s.Value != nil {
+				t = c.inferExprType(s.Value)
+			} else {
+				t = types.AnyType{}
+			}
+			c.env.SetVar(s.Name, t, true)
+		}
+	}
+	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	return nil
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
