@@ -1054,6 +1054,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		elemType = lt.Elem
 	}
 	child.SetVar(q.Var, elemType, true)
+	for _, f := range q.Froms {
+		ft := c.inferExprType(f.Src)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
+	}
 	for _, j := range q.Joins {
 		jt := c.inferExprType(j.Src)
 		var je types.Type = types.AnyType{}
@@ -1064,6 +1072,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	orig := c.env
 	c.env = child
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
 	for i, j := range q.Joins {
@@ -1086,6 +1103,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	indent := "\t\t"
+	for i := range q.Froms {
+		fvar := sanitizeName(q.Froms[i].Var)
+		b.WriteString(indent + "for (const " + fvar + " of " + fromSrcs[i] + ") {\n")
+		indent += "\t"
+	}
 	for i := range q.Joins {
 		jvar := sanitizeName(q.Joins[i].Var)
 		b.WriteString(indent + "for (const " + jvar + " of " + joinSrcs[i] + ") {\n")
@@ -1106,6 +1128,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "_items.push(" + sanitizeName(q.Var) + ");\n")
 	}
 	for i := len(q.Joins) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	for i := len(q.Froms) - 1; i >= 0; i-- {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
 	}
