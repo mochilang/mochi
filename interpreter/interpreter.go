@@ -13,6 +13,7 @@ import (
 
 	"mochi/parser"
 	"mochi/runtime/agent"
+	"mochi/runtime/data"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
 	"mochi/runtime/stream"
@@ -407,10 +408,6 @@ type stringMethod struct {
 	name string
 }
 
-type group struct {
-	Key   any
-	Items []any
-}
 
 func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, error) {
 	inst := &agentInstance{
@@ -850,7 +847,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 				continue
 			}
 		}
-	case *group:
+       case *data.Group:
 		for _, item := range coll.Items {
 			child.SetValue(stmt.Name, item, true)
 			var cont bool
@@ -1431,8 +1428,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				return nil, errUndefinedVariable(p.Pos, p.Selector.Root)
 			}
 		}
-		for _, field := range p.Selector.Tail {
-			if g, ok := val.(*group); ok {
+               for _, field := range p.Selector.Tail {
+                       if g, ok := val.(*data.Group); ok {
 				switch field {
 				case "key":
 					val = g.Key
@@ -1898,8 +1895,8 @@ func builtinCount(i *Interpreter, c *parser.CallExpr) (any, error) {
 	switch v := val.(type) {
 	case []any:
 		return len(v), nil
-	case *group:
-		return len(v.Items), nil
+       case *data.Group:
+               return len(v.Items), nil
 	default:
 		return nil, fmt.Errorf("count() expects list or group, got %T", val)
 	}
@@ -1917,8 +1914,8 @@ func builtinAvg(i *Interpreter, c *parser.CallExpr) (any, error) {
 	switch v := val.(type) {
 	case []any:
 		list = v
-	case *group:
-		list = v.Items
+       case *data.Group:
+               list = v.Items
 	default:
 		return nil, fmt.Errorf("avg() expects list or group, got %T", val)
 	}
@@ -2032,8 +2029,8 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 	switch v := src.(type) {
 	case []any:
 		list = v
-	case *group:
-		list = v.Items
+       case *data.Group:
+               list = v.Items
 	default:
 		return nil, fmt.Errorf("query source must be list, got %T", src)
 	}
@@ -2043,91 +2040,39 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 	i.env = child
 	defer func() { i.env = old }()
 
-	items := make([]any, 0, len(list))
-	for _, item := range list {
-		child.SetValue(q.Var, item, true)
-		if q.Where != nil {
+	opts := data.QueryOptions{}
+
+	if q.Where != nil {
+		opts.Where = func(item any) (bool, error) {
+			child.SetValue(q.Var, item, true)
 			cond, err := i.evalExpr(q.Where)
 			if err != nil {
-				return nil, err
+				return false, err
 			}
-			if !truthy(cond) {
-				continue
-			}
+			return truthy(cond), nil
 		}
-		items = append(items, item)
 	}
 
 	if q.Group != nil {
-		groups := map[string]*group{}
-		order := []string{}
-		for _, item := range items {
+		opts.GroupBy = func(item any) (any, error) {
 			child.SetValue(q.Var, item, true)
-			key, err := i.evalExpr(q.Group.Expr)
-			if err != nil {
-				return nil, err
-			}
-			ks := fmt.Sprint(key)
-			g, ok := groups[ks]
-			if !ok {
-				g = &group{Key: key}
-				groups[ks] = g
-				order = append(order, ks)
-			}
-			g.Items = append(g.Items, item)
+			return i.evalExpr(q.Group.Expr)
 		}
-		results := make([]any, 0, len(groups))
-		for _, ks := range order {
-			g := groups[ks]
+		opts.SelectGroup = func(g *data.Group) (any, error) {
 			child.SetValue(q.Group.Name, g, true)
-			val, err := i.evalExpr(q.Select)
-			if err != nil {
-				return nil, err
-			}
-			results = append(results, val)
+			return i.evalExpr(q.Select)
 		}
-		return results, nil
+	} else {
+		opts.Select = func(item any) (any, error) {
+			child.SetValue(q.Var, item, true)
+			return i.evalExpr(q.Select)
+		}
 	}
 
 	if q.Sort != nil {
-		type pair struct {
-			item any
-			key  any
-		}
-		pairs := make([]pair, len(items))
-		for idx, it := range items {
-			child.SetValue(q.Var, it, true)
-			key, err := i.evalExpr(q.Sort)
-			if err != nil {
-				return nil, err
-			}
-			pairs[idx] = pair{it, key}
-		}
-		sort.Slice(pairs, func(i, j int) bool {
-			a, b := pairs[i].key, pairs[j].key
-			switch av := a.(type) {
-			case int:
-				switch bv := b.(type) {
-				case int:
-					return av < bv
-				case float64:
-					return float64(av) < bv
-				}
-			case float64:
-				switch bv := b.(type) {
-				case int:
-					return av < float64(bv)
-				case float64:
-					return av < bv
-				}
-			case string:
-				bs, _ := b.(string)
-				return av < bs
-			}
-			return fmt.Sprint(a) < fmt.Sprint(b)
-		})
-		for idx, p := range pairs {
-			items[idx] = p.item
+		opts.SortKey = func(item any) (any, error) {
+			child.SetValue(q.Var, item, true)
+			return i.evalExpr(q.Sort)
 		}
 	}
 
@@ -2140,11 +2085,7 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 		if !ok {
 			return nil, fmt.Errorf("skip expects int, got %T", v)
 		}
-		if n < len(items) {
-			items = items[n:]
-		} else {
-			items = []any{}
-		}
+		opts.Skip = &n
 	}
 
 	if q.Take != nil {
@@ -2156,21 +2097,10 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 		if !ok {
 			return nil, fmt.Errorf("take expects int, got %T", v)
 		}
-		if n < len(items) {
-			items = items[:n]
-		}
+		opts.Take = &n
 	}
 
-	results := make([]any, 0, len(items))
-	for _, item := range items {
-		child.SetValue(q.Var, item, true)
-		val, err := i.evalExpr(q.Select)
-		if err != nil {
-			return nil, err
-		}
-		results = append(results, val)
-	}
-	return results, nil
+	return data.Query(list, opts)
 }
 
 func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
