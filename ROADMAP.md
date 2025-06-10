@@ -32,10 +32,10 @@ print(poem)
 
 ## v0.3.1 – Parameterized generation
 
-* [ ] Support for optional fields: `temperature`, `top_p`, `max_tokens`, `stop`
-* [ ] Static type checks for parameter types
-* [ ] Full model request encoded at runtime
-* [ ] Fallback to default values if omitted
+* [x] Support for optional fields: `temperature`, `top_p`, `max_tokens`, `stop`
+* [x] Static type checks for parameter types
+* [x] Full model request encoded at runtime
+* [x] Fallback to default values if omitted
 
 ```
 let response = generate text {
@@ -80,10 +80,10 @@ let { title, body } = generate text {
 
 ## v0.3.4 – Embedding support
 
-* [ ] `generate embedding` block with `text` field
-* [ ] Returns a `list<float>` vector
-* [ ] Optional `normalize: true`
-* [ ] Supports different embedding models
+* [x] `generate embedding` block with `text` field
+* [x] Returns a `list<float>` vector
+* [x] Optional `normalize: true`
+* [x] Supports different embedding models
 
 ```
 let vec = generate embedding {
@@ -125,10 +125,10 @@ print(result)
 
 ## v0.3.7 – Tool-assisted generation (preview)
 
-* [ ] Define `fun` functions as callable tools
-* [ ] Use `tools: [...]` in generate block
-* [ ] Resolve structured tool\_call payloads
-* [ ] Runtime loop to simulate tool invocation
+* [x] Define `fun` functions as callable tools
+* [x] Use `tools: [...]` in generate block
+* [x] Resolve structured tool\_call payloads
+* [x] Runtime loop to simulate tool invocation
 
 ```
 fun search(q: string): string {
@@ -195,17 +195,17 @@ versions. Each stream defines a schema, and events are processed deterministical
 
 ### Features
 
-* [ ] `stream` type declaration with named fields
-* [ ] Optional `time` field with implicit default (`now()` if omitted)
-* [ ] `on Stream as x {}` blocks to register event handlers
-* [ ] Multiple `on` blocks for the same stream allowed
-* [ ] Runtime `emit Stream { ... }` support
-* [ ] Type-checked access to stream fields
-* [ ] Events are queued and replayable deterministically
-* [ ] Support for multiple independent stream types
-* [ ] Distinct stream name and event type
-* [ ] Internal system clock for ordering
-* [ ] Integration with `test` and `expect` simulation
+* [x] `stream` type declaration with named fields
+* [x] Optional `time` field with implicit default (`now()` if omitted)
+* [x] `on Stream as x {}` blocks to register event handlers
+* [x] Multiple `on` blocks for the same stream allowed
+* [x] Runtime `emit Stream { ... }` support
+* [x] Type-checked access to stream fields
+* [x] Events are queued and replayable deterministically
+* [x] Support for multiple independent stream types
+* [x] Distinct stream name and event type
+* [x] Internal system clock for ordering
+* [x] Integration with `test` and `expect` simulation
 * [ ] Future: stream-to-agent routing (`on Stream as x` inside agent)
 
 ### Example
@@ -265,16 +265,16 @@ bindings.
 
 ### Features
 
-* [ ] `agent` block declaration
-* [ ] Internal `let` / `var` bindings scoped to the agent
-* [ ] `on Stream as x {}` to handle stream events
-* [ ] `intent` blocks for exposed callable logic
-* [ ] Mutable internal state via `var`
-* [ ] Supports `generate text` in `intent`
-* [ ] Type-safe and deterministic execution
-* [ ] Single instance per agent definition
-* [ ] Access to all internal variables in all blocks
-* [ ] Compatible with `test` blocks and stream simulation
+* [x] `agent` block declaration
+* [x] Internal `let` / `var` bindings scoped to the agent
+* [x] `on Stream as x {}` to handle stream events
+* [x] `intent` blocks for exposed callable logic
+* [x] Mutable internal state via `var`
+* [x] Supports `generate text` in `intent`
+* [x] Type-safe and deterministic execution
+* [x] Single instance per agent definition
+* [x] Access to all internal variables in all blocks
+* [x] Compatible with `test` blocks and stream simulation
 
 ### Example
 
@@ -346,13 +346,13 @@ computation.
 * [ ] `from "<file>"` syntax for loading datasets
 * [ ] Support for CSV, JSONL, and Parquet formats
 * [ ] Header-based type inference
-* [ ] SQL-style `select`, `from`, `where`, `join`, `group by`, and `having`
-* [ ] Aliasing via `as`
-* [ ] Expression support in `select` and `where`
-* [ ] Built-in aggregation functions: `sum`, `avg`, `count`, `min`, `max`
-* [ ] Deterministic evaluation
+* [x] SQL-style `select`, `from`, `where`, `join`, `group by`, and `having`
+* [x] Aliasing via `as`
+* [x] Expression support in `select` and `where`
+* [x] Built-in aggregation functions: `sum`, `avg`, `count`, `min`, `max`
+* [x] Deterministic evaluation
 * [ ] Integration with agents and streams (read-only access)
-* [ ] Optional `let` bindings for intermediate datasets
+* [x] Optional `let` bindings for intermediate datasets
 * [ ] Testable query results via `expect`
 
 ### Example
