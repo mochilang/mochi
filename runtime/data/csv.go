@@ -3,6 +3,7 @@ package data
 import (
 	"encoding/csv"
 	"encoding/json"
+	"io"
 	"os"
 	"sort"
 	"strconv"
@@ -10,13 +11,24 @@ import (
 
 // LoadCSV reads a CSV file and returns its rows as a slice of maps.
 func LoadCSV(path string) ([]map[string]any, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
+	var reader io.Reader
+	if path == "" || path == "-" {
+		reader = os.Stdin
+	} else {
+		f, err := os.Open(path)
+		if err != nil {
+			return nil, err
+		}
+		defer f.Close()
+		reader = f
 	}
-	defer f.Close()
-	r := csv.NewReader(f)
-	rows, err := r.ReadAll()
+	return LoadCSVReader(reader)
+}
+
+// LoadCSVReader reads CSV data from the provided reader.
+func LoadCSVReader(r io.Reader) ([]map[string]any, error) {
+	csvr := csv.NewReader(r)
+	rows, err := csvr.ReadAll()
 	if err != nil {
 		return nil, err
 	}
@@ -47,22 +59,33 @@ func LoadCSV(path string) ([]map[string]any, error) {
 
 // SaveCSV writes rows to a CSV file using the given options.
 func SaveCSV(rows []map[string]any, path string, header bool, delim rune) error {
-	f, err := os.Create(path)
-	if err != nil {
-		return err
+	var writer io.Writer
+	if path == "" || path == "-" {
+		writer = os.Stdout
+	} else {
+		f, err := os.Create(path)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		writer = f
 	}
-	defer f.Close()
-	w := csv.NewWriter(f)
+	return SaveCSVWriter(rows, writer, header, delim)
+}
+
+// SaveCSVWriter writes CSV rows to the provided writer.
+func SaveCSVWriter(rows []map[string]any, w io.Writer, header bool, delim rune) error {
+	csvw := csv.NewWriter(w)
 	if delim != 0 {
-		w.Comma = delim
+		csvw.Comma = delim
 	}
 
 	if len(rows) == 0 {
 		if header {
-			w.Write([]string{})
+			csvw.Write([]string{})
 		}
-		w.Flush()
-		return w.Error()
+		csvw.Flush()
+		return csvw.Error()
 	}
 
 	// Determine column order from first row
@@ -72,7 +95,7 @@ func SaveCSV(rows []map[string]any, path string, header bool, delim rune) error 
 	}
 	sort.Strings(headers)
 	if header {
-		if err := w.Write(headers); err != nil {
+		if err := csvw.Write(headers); err != nil {
 			return err
 		}
 	}
@@ -98,10 +121,10 @@ func SaveCSV(rows []map[string]any, path string, header bool, delim rune) error 
 				}
 			}
 		}
-		if err := w.Write(rec); err != nil {
+		if err := csvw.Write(rec); err != nil {
 			return err
 		}
 	}
-	w.Flush()
-	return w.Error()
+	csvw.Flush()
+	return csvw.Error()
 }
