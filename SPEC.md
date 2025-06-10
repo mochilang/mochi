@@ -67,10 +67,10 @@ The following keywords are reserved:
 
 ```
 let  var  fun  return
-if   else
-for  in
-stream  emit  on  as
-model  agent  test  expect
+if   else  while
+for  in   break  continue
+type model agent intent on stream emit as
+test expect generate match fetch
 ```
 
 ### Operators and Delimiters
@@ -265,8 +265,9 @@ Statements control execution and may declare bindings, functions, or agents.
 
 ```ebnf
 Statement   = LetStmt | VarStmt | AssignStmt | FunDecl | ReturnStmt |
-              IfStmt | ForStmt | EmitStmt | ExprStmt | TestBlock |
-              ExpectStmt | StreamDecl | OnHandler | AgentDecl .
+              IfStmt | WhileStmt | ForStmt | BreakStmt | ContinueStmt |
+              EmitStmt | ExprStmt | TestBlock | ExpectStmt |
+              StreamDecl | OnHandler | ModelDecl | TypeDecl | AgentDecl .
 ```
 
 ### Let Statement
@@ -337,6 +338,8 @@ while j < 3 {
   j = j + 1
 }
 ```
+
+### Break and Continue
 
 `break` exits the loop immediately, while `continue` skips to the next iteration.
 
@@ -445,7 +448,8 @@ let created: Todo = fetch "https://example.com/todos" with {
 
 ### Dataset Queries
 
-`from` expressions iterate over lists with optional filtering, sorting and projection.
+`from` expressions iterate over lists with optional filtering, grouping, sorting,
+skipping and limiting before projecting the result.
 
 ```mochi
 let people = [
@@ -453,9 +457,13 @@ let people = [
   { name: "Bob", age: 15 }
 ]
 
-let names = from p in people
+let stats = from p in people
             where p.age >= 18
-            select p.name
+            group by p.city into g
+            sort by len(g)
+            skip 1
+            take 10
+            select { city: g.key, count: len(g) }
 ```
 
 ## 6. Functions
@@ -495,15 +503,19 @@ The complete grammar for Mochi in EBNF notation:
 ```ebnf
 Program       = { Statement }.
 Statement     = LetStmt | VarStmt | AssignStmt | FunDecl | ReturnStmt |
-                IfStmt | ForStmt | EmitStmt | ExprStmt | TestBlock |
-                ExpectStmt | StreamDecl | OnHandler | ModelDecl | AgentDecl .
+                IfStmt | WhileStmt | ForStmt | BreakStmt | ContinueStmt |
+                EmitStmt | ExprStmt | TestBlock | ExpectStmt |
+                StreamDecl | OnHandler | ModelDecl | TypeDecl | AgentDecl .
 LetStmt       = "let" Identifier [ ":" TypeRef ] [ "=" Expression ] .
 VarStmt       = "var" Identifier [ ":" TypeRef ] [ "=" Expression ] .
 AssignStmt    = PostfixExpr "=" Expression .
 FunDecl       = "fun" Identifier "(" [ ParamList ] ")" [ ":" TypeRef ] Block .
 ReturnStmt    = "return" Expression .
 IfStmt        = "if" Expression Block [ "else" (IfStmt | Block) ] .
+WhileStmt     = "while" Expression Block .
 ForStmt       = "for" Identifier "in" Expression [ ".." Expression ] Block .
+BreakStmt     = "break" .
+ContinueStmt  = "continue" .
 EmitStmt      = "emit" Identifier MapLiteral .
 ExprStmt      = Expression .
 TestBlock     = "test" StringLiteral Block .
@@ -528,7 +540,7 @@ Term         = Factor { ("+" | "-") Factor } .
 Factor       = Unary { ("*" | "/") Unary } .
 Unary        = { "-" | "!" } PostfixExpr .
 PostfixExpr  = Primary { CallOp | IndexOp | CastOp } .
-Primary      = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | FetchExpr | Literal | Identifier | "(" Expression ")" .
+Primary      = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | FetchExpr | QueryExpr | Literal | Identifier | "(" Expression ")" .
 FunExpr       = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] ("=>" Expression | Block) .
 CallExpr      = Identifier "(" [ Expression { "," Expression } ] ")" .
 SelectorExpr  = Identifier { "." Identifier } .
@@ -538,6 +550,14 @@ MapEntry      = Expression ":" Expression .
 IndexOp       = "[" [ Expression ] [ ":" Expression ] "]" .
 CallOp        = "(" [ Expression { "," Expression } ] ")" .
 CastOp        = "as" TypeRef .
+QueryExpr     = "from" Identifier "in" Expression
+                [ "where" Expression ]
+                [ GroupByClause ]
+                [ "sort" "by" Expression ]
+                [ "skip" Expression ]
+                [ "take" Expression ]
+                "select" Expression .
+GroupByClause = "group" "by" Expression "into" Identifier .
 StructLiteral = Identifier "{" [ StructField { "," StructField } ] [ "," ] "}" .
 StructField   = Identifier ":" Expression .
 ParamList     = Param { "," Param } .
