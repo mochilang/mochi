@@ -93,9 +93,16 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 	old := i.env
 	i.env = child
 	defer func() { i.env = old }()
-	return data.EvalQuery(q, child, func(e *parser.Expr) (any, error) {
-		return i.evalExpr(e)
-	})
+	switch i.dataPlan {
+	case "duckdb":
+		return data.EvalQueryDuckDB(q, child, func(e *parser.Expr) (any, error) {
+			return i.evalExpr(e)
+		})
+	default:
+		return data.EvalQuery(q, child, func(e *parser.Expr) (any, error) {
+			return i.evalExpr(e)
+		})
+	}
 }
 
 func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
