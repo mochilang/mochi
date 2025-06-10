@@ -4,6 +4,8 @@
 extern type socket
 extern type time
 extern type file
+extern object console
+extern object fs
 
 extern var OS: string
 extern var ARGV: list<string>

@@ -40,6 +40,7 @@ var Errors = map[string]diagnostic.Template{
 	"I019": {Code: "I019", Message: "cannot iterate over value of type %s", Help: "Only `list`, `map`, and `string` are iterable in `for ... in` loops."},
 	"I020": {Code: "I020", Message: "cannot cast %T to %s", Help: "Ensure the value matches the expected type."},
 	"I021": {Code: "I021", Message: "missing field `%s` for %s", Help: "Check that all required fields are present."},
+	"I022": {Code: "I022", Message: "extern object not resolved: %s", Help: "Register extern object `%s` before use."},
 }
 
 // --- Variables and Functions ---
@@ -120,4 +121,8 @@ func errCastType(pos lexer.Position, val any, typ types.Type) error {
 
 func errCastMissingField(pos lexer.Position, field, typ string) error {
 	return Errors["I021"].New(pos, field, typ)
+}
+
+func errExternObject(pos lexer.Position, name string) error {
+	return Errors["I022"].New(pos, name, name)
 }
