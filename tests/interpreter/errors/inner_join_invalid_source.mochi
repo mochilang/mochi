@@ -1,0 +1,6 @@
+let src: any = 42
+let customers: list<any> = src
+let orders = [{id:100}]
+let result = from o in orders
+             join from c in customers on true
+             select o.id

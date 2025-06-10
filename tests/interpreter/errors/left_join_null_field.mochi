@@ -1,0 +1,9 @@
+let customers = [
+  { id: 1, name: "Alice" }
+]
+let orders = [
+  { id: 101, customerId: 2 }
+]
+let result = from o in orders
+             left join c in customers on o.customerId == c.id
+             select c.name

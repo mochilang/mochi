@@ -1,0 +1,6 @@
+let src: any = 42
+let xs = [1]
+let ys: list<any> = src
+let result = from x in xs
+             from y in ys
+             select x + 1
