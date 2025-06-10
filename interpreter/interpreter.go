@@ -1046,6 +1046,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 
 	case p.Load != nil:
 		format := "csv"
+		header := true
+		delim := ','
 		if p.Load.With != nil {
 			v, err := i.evalExpr(p.Load.With)
 			if err != nil {
@@ -1054,6 +1056,12 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			opts := toAnyMap(v)
 			if f, ok := opts["format"].(string); ok {
 				format = f
+			}
+			if h, ok := opts["header"].(bool); ok {
+				header = h
+			}
+			if d, ok := opts["delimiter"].(string); ok && len(d) > 0 {
+				delim = rune(d[0])
 			}
 		}
 
@@ -1068,11 +1076,26 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			} else {
 				rows, err = data.LoadJSONL(*p.Load.Path)
 			}
+		case "json":
+			if p.Load.Path == nil {
+				rows, err = data.LoadJSONReader(os.Stdin)
+			} else {
+				rows, err = data.LoadJSON(*p.Load.Path)
+			}
+		case "yaml":
+			if p.Load.Path == nil {
+				rows, err = data.LoadYAMLReader(os.Stdin)
+			} else {
+				rows, err = data.LoadYAML(*p.Load.Path)
+			}
+		case "tsv":
+			delim = '\t'
+			fallthrough
 		default:
 			if p.Load.Path == nil {
-				rows, err = data.LoadCSVReader(os.Stdin)
+				rows, err = data.LoadCSVReader(os.Stdin, header, delim)
 			} else {
-				rows, err = data.LoadCSV(*p.Load.Path)
+				rows, err = data.LoadCSV(*p.Load.Path, header, delim)
 			}
 		}
 		if err != nil {
@@ -1131,6 +1154,21 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			} else {
 				err = data.SaveJSONL(rows, *p.Save.Path)
 			}
+		case "json":
+			if p.Save.Path == nil {
+				err = data.SaveJSONWriter(rows, os.Stdout)
+			} else {
+				err = data.SaveJSON(rows, *p.Save.Path)
+			}
+		case "yaml":
+			if p.Save.Path == nil {
+				err = data.SaveYAMLWriter(rows, os.Stdout)
+			} else {
+				err = data.SaveYAML(rows, *p.Save.Path)
+			}
+		case "tsv":
+			delim = '\t'
+			fallthrough
 		default:
 			if p.Save.Path == nil {
 				err = data.SaveCSVWriter(rows, os.Stdout, header, delim)

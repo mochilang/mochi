@@ -3,24 +3,28 @@ package data
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"io"
 	"sort"
 	"strconv"
 )
 
 // LoadCSV reads a CSV file and returns its rows as a slice of maps.
-func LoadCSV(path string) ([]map[string]any, error) {
+func LoadCSV(path string, header bool, delim rune) ([]map[string]any, error) {
 	r, closeFn, err := openReader(path)
 	if err != nil {
 		return nil, err
 	}
 	defer closeFn()
-	return LoadCSVReader(r)
+	return LoadCSVReader(r, header, delim)
 }
 
 // LoadCSVReader reads CSV data from the provided reader.
-func LoadCSVReader(r io.Reader) ([]map[string]any, error) {
+func LoadCSVReader(r io.Reader, header bool, delim rune) ([]map[string]any, error) {
 	csvr := csv.NewReader(r)
+	if delim != 0 {
+		csvr.Comma = delim
+	}
 	rows, err := csvr.ReadAll()
 	if err != nil {
 		return nil, err
@@ -28,9 +32,27 @@ func LoadCSVReader(r io.Reader) ([]map[string]any, error) {
 	if len(rows) == 0 {
 		return nil, nil
 	}
-	headers := rows[0]
-	out := make([]map[string]any, 0, len(rows)-1)
-	for _, rec := range rows[1:] {
+
+	var headers []string
+	start := 0
+	if header {
+		headers = rows[0]
+		start = 1
+	} else {
+		max := 0
+		for _, rec := range rows {
+			if len(rec) > max {
+				max = len(rec)
+			}
+		}
+		headers = make([]string, max)
+		for i := range headers {
+			headers[i] = fmt.Sprintf("c%d", i)
+		}
+	}
+
+	out := make([]map[string]any, 0, len(rows)-start)
+	for _, rec := range rows[start:] {
 		m := map[string]any{}
 		for idx, h := range headers {
 			var val string
