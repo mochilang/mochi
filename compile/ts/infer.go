@@ -120,9 +120,28 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			return types.BoolType{}
 		}
 	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 && c.env != nil {
+		if c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-				return t
+				if len(p.Selector.Tail) == 0 {
+					return t
+				}
+				if st, ok := t.(types.StructType); ok {
+					cur := st
+					for idx, field := range p.Selector.Tail {
+						ft, ok := cur.Fields[field]
+						if !ok {
+							return types.AnyType{}
+						}
+						if idx == len(p.Selector.Tail)-1 {
+							return ft
+						}
+						if next, ok := ft.(types.StructType); ok {
+							cur = next
+						} else {
+							return types.AnyType{}
+						}
+					}
+				}
 			}
 		}
 		return types.AnyType{}
