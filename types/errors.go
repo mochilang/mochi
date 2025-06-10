@@ -52,6 +52,8 @@ var Errors = map[string]diagnostic.Template{
 	"T031": {Code: "T031", Message: "unknown stream: %s", Help: "Declare the stream before using it."},
 	"T032": {Code: "T032", Message: "query source must be a list", Help: "Use a list value after `in`."},
 	"T033": {Code: "T033", Message: "`where` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
+	"T034": {Code: "T034", Message: "join source must be a list", Help: "Use a list value after `in`."},
+	"T035": {Code: "T035", Message: "`on` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
 }
 
 // --- Wrapper Functions ---
@@ -192,4 +194,12 @@ func errQuerySourceList(pos lexer.Position) error {
 
 func errWhereBoolean(pos lexer.Position) error {
 	return Errors["T033"].New(pos)
+}
+
+func errJoinSourceList(pos lexer.Position) error {
+	return Errors["T034"].New(pos)
+}
+
+func errJoinOnBoolean(pos lexer.Position) error {
+	return Errors["T035"].New(pos)
 }

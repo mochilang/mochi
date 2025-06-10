@@ -1497,17 +1497,42 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	if err != nil {
 		return nil, err
 	}
-       var elemT Type
-       switch t := srcT.(type) {
-       case ListType:
-               elemT = t.Elem
-       case GroupType:
-               elemT = t.Elem
-       default:
-               return nil, errQuerySourceList(q.Pos)
-       }
+	var elemT Type
+	switch t := srcT.(type) {
+	case ListType:
+		elemT = t.Elem
+	case GroupType:
+		elemT = t.Elem
+	default:
+		return nil, errQuerySourceList(q.Pos)
+	}
 	child := NewEnv(env)
 	child.SetVar(q.Var, elemT, true)
+
+	for _, j := range q.Joins {
+		jt, err := checkExpr(j.Src, env)
+		if err != nil {
+			return nil, err
+		}
+		var je Type
+		switch t := jt.(type) {
+		case ListType:
+			je = t.Elem
+		case GroupType:
+			je = t.Elem
+		default:
+			return nil, errJoinSourceList(j.Pos)
+		}
+		child.SetVar(j.Var, je, true)
+		onT, err := checkExpr(j.On, child)
+		if err != nil {
+			return nil, err
+		}
+		if !unify(onT, BoolType{}, nil) {
+			return nil, errJoinOnBoolean(j.On.Pos)
+		}
+	}
+
 	if q.Where != nil {
 		wt, err := checkExprWithExpected(q.Where, child, BoolType{})
 		if err != nil {
