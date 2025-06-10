@@ -986,6 +986,61 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.use("_iter")
 
+	// Special handling for single left/right join without additional clauses
+	if len(q.Froms) == 0 && len(q.Joins) == 1 && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil {
+		j := q.Joins[0]
+		if j.Side != nil {
+			child := types.NewEnv(c.env)
+			var elemType types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+				elemType = lt.Elem
+			}
+			child.SetVar(q.Var, elemType, true)
+			jt := c.inferExprType(j.Src)
+			var je types.Type = types.AnyType{}
+			if lt, ok := jt.(types.ListType); ok {
+				je = lt.Elem
+			}
+			child.SetVar(j.Var, je, true)
+			orig := c.env
+			c.env = child
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			c.env = orig
+			leftFlag := false
+			rightFlag := false
+			switch *j.Side {
+			case "left":
+				leftFlag = true
+			case "right":
+				rightFlag = true
+			case "outer":
+				leftFlag = true
+				rightFlag = true
+			}
+			c.use("_join")
+			lf := "False"
+			rf := "False"
+			if leftFlag {
+				lf = "True"
+			}
+			if rightFlag {
+				rf = "True"
+			}
+			return fmt.Sprintf("_join(_iter(%s), _iter(%s), lambda %s, %s: %s, lambda %s, %s: %s, %s, %s)",
+				src, js, sanitizeName(q.Var), sanitizeName(j.Var), on,
+				sanitizeName(q.Var), sanitizeName(j.Var), sel, lf, rf), nil
+		}
+	}
+
 	child := types.NewEnv(c.env)
 	var elemType types.Type = types.AnyType{}
 	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
@@ -1295,6 +1350,42 @@ var helperAgent = "import asyncio\n" +
 	"    def get(self, name):\n" +
 	"        return self.state.get(name)\n"
 
+var helperJoin = "def _join(left, right, on, build, left_outer=False, right_outer=False):\n" +
+	"    res = []\n" +
+	"    if right_outer and left_outer:\n" +
+	"        matched_rights = [False] * len(right)\n" +
+	"        for l in left:\n" +
+	"            matched = False\n" +
+	"            for ri, r in enumerate(right):\n" +
+	"                if on(l, r):\n" +
+	"                    matched = True\n" +
+	"                    matched_rights[ri] = True\n" +
+	"                    res.append(build(l, r))\n" +
+	"            if not matched:\n" +
+	"                res.append(build(l, None))\n" +
+	"        for ri, r in enumerate(right):\n" +
+	"            if not matched_rights[ri]:\n" +
+	"                res.append(build(None, r))\n" +
+	"    elif right_outer:\n" +
+	"        for r in right:\n" +
+	"            matched = False\n" +
+	"            for l in left:\n" +
+	"                if on(l, r):\n" +
+	"                    matched = True\n" +
+	"                    res.append(build(l, r))\n" +
+	"            if not matched:\n" +
+	"                res.append(build(None, r))\n" +
+	"    else:\n" +
+	"        for l in left:\n" +
+	"            matched = False\n" +
+	"            for r in right:\n" +
+	"                if on(l, r):\n" +
+	"                    matched = True\n" +
+	"                    res.append(build(l, r))\n" +
+	"            if left_outer and not matched:\n" +
+	"                res.append(build(l, None))\n" +
+	"    return res\n"
+
 var helperMap = map[string]string{
 	"_index":      helperIndex,
 	"_gen_text":   helperGenText,
@@ -1306,6 +1397,7 @@ var helperMap = map[string]string{
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,
+	"_join":       helperJoin,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
