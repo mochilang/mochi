@@ -194,6 +194,79 @@ let adults = from p in people
              select p.name
 print(adults)
 
+// Sort, skip and limit
+let oldest = from p in people
+             sort by -p.age
+             take 2
+             select p
+print(oldest)
+
+// Join and cross join
+let orders = [
+  { id: 1, customerId: 1, total: 250 },
+  { id: 2, customerId: 2, total: 100 }
+]
+
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+
+let joined = from o in orders
+             join c in customers on o.customerId == c.id
+             select { id: o.id, name: c.name }
+print(joined)
+
+let pairs = from o in orders
+            from c in customers
+            select { order: o.id, customer: c.name }
+print(pairs)
+
+let left = from o in orders
+           left join c in customers on o.customerId == c.id
+           select { order: o.id, cust: c }
+print(left)
+
+let right = from c in customers
+            right join o in orders on o.customerId == c.id
+            select { customer: c.name, order: o }
+print(right)
+
+let outer = from o in orders
+            outer join c in customers on o.customerId == c.id
+            select { order: o?.id, customer: c?.name }
+print(outer)
+
+// Group by with aggregation
+let grouped = from p in people
+              group by p.age >= 60 ? "senior" : "adult" into g
+              select { type: g.key, count: count(g) }
+print(grouped)
+
+// Set operations
+let listA = [1, 2]
+let listB = [2, 3]
+
+let u = (from x in listA select x)
+        union
+        (from y in listB select y)
+print(u)
+
+let ua = (from x in listA select x)
+         union all
+         (from y in listB select y)
+print(ua)
+
+let inter = (from x in listA select x)
+            intersect
+            (from y in listB select y)
+print(inter)
+
+let diff = (from x in listA select x)
+           except
+           (from y in listB select y)
+print(diff)
+
 // 12. HTTP Fetch
 
 type Todo {
