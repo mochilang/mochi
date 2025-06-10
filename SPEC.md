@@ -84,6 +84,7 @@ Operators perform arithmetic, comparison, logical, and membership operations. De
 ! -                   unary
 =                     assignment
 in                    membership
+union [all]           list union
 ..                    range
 ( ) [ ] { } , : => .  delimiters
 ```
@@ -216,6 +217,14 @@ Maps use braces with `key: value` pairs and share the same indexing syntax.
 ```mochi
 let scores = {"alice": 1, "bob": 2}
 print(scores["alice"])
+```
+
+List unions merge elements from two lists. The `union` operator removes
+duplicates while `union all` preserves them:
+
+```mochi
+let merged = [1, 2, 3] union [3, 4]
+let both   = [1, 2] union all [2, 3]
 ```
 
 Strings are also indexable and iterable:
@@ -476,6 +485,19 @@ let result = from o in orders
                customerName: c.name,
                total: o.total
              }
+```
+
+Query results may also be combined with `union` or `union all` to merge
+lists produced by separate queries:
+
+```mochi
+let deduped  = (from x in listA select x)
+               union
+               (from y in listB select y)
+
+let appended = (from x in listA select x)
+               union all
+               (from y in listB select y)
 ```
 
 An expression may contain multiple `from` clauses. Each additional clause
