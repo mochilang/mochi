@@ -24,33 +24,39 @@ import (
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
 type Interpreter struct {
-	prog     *parser.Program
-	env      *types.Env
-	types    *types.Env
-	streams  map[string]stream.Stream
-	handlers map[string][]onHandler
-	subs     []stream.Subscriber
-	cancels  []context.CancelFunc
-	wg       *sync.WaitGroup
-	agents   []*agent.Agent
-	memoize  bool
-	memo     map[string]map[string]any
+	prog        *parser.Program
+	env         *types.Env
+	types       *types.Env
+	streams     map[string]stream.Stream
+	handlers    map[string][]onHandler
+	subs        []stream.Subscriber
+	cancels     []context.CancelFunc
+	wg          *sync.WaitGroup
+	agents      []*agent.Agent
+	externTypes map[string]*parser.ExternTypeDecl
+	externVars  map[string]*parser.ExternVarDecl
+	externFuncs map[string]*parser.ExternFunDecl
+	memoize     bool
+	memo        map[string]map[string]any
 }
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 	return &Interpreter{
 		prog: prog,
 		// env:   types.NewEnv(nil),
-		env:      typesEnv,
-		types:    typesEnv,
-		streams:  map[string]stream.Stream{},
-		handlers: map[string][]onHandler{},
-		subs:     []stream.Subscriber{},
-		cancels:  []context.CancelFunc{},
-		wg:       &sync.WaitGroup{},
-		agents:   []*agent.Agent{},
-		memoize:  false,
-		memo:     map[string]map[string]any{},
+		env:         typesEnv,
+		types:       typesEnv,
+		streams:     map[string]stream.Stream{},
+		handlers:    map[string][]onHandler{},
+		subs:        []stream.Subscriber{},
+		cancels:     []context.CancelFunc{},
+		wg:          &sync.WaitGroup{},
+		agents:      []*agent.Agent{},
+		externTypes: map[string]*parser.ExternTypeDecl{},
+		externVars:  map[string]*parser.ExternVarDecl{},
+		externFuncs: map[string]*parser.ExternFunDecl{},
+		memoize:     false,
+		memo:        map[string]map[string]any{},
 	}
 }
 
@@ -380,6 +386,21 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 
 	case s.Type != nil:
 		// type declarations have no runtime effect
+		return nil
+
+	case s.ExternType != nil:
+		// Placeholder for registering external types later
+		i.externTypes[s.ExternType.Name] = s.ExternType
+		return nil
+
+	case s.ExternVar != nil:
+		// Placeholder for registering external variables later
+		i.externVars[s.ExternVar.Name] = s.ExternVar
+		return nil
+
+	case s.ExternFun != nil:
+		// Placeholder for registering external functions later
+		i.externFuncs[s.ExternFun.Name] = s.ExternFun
 		return nil
 
 	case s.Stream != nil:
