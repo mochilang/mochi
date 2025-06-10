@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Mochi Wasm</title>
+</head>
+<body>
+<pre id="out"></pre>
+<script src="wasm_exec.js"></script>
+<script>
+const go = new Go();
+WebAssembly.instantiateStreaming(fetch("mochi.wasm"), go.importObject).then((result) => {
+    go.run(result.instance);
+    document.getElementById('out').textContent = runMochi('print("hello world")');
+});
+</script>
+</body>
+</html>
