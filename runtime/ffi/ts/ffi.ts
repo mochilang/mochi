@@ -1,11 +1,12 @@
 export type FfiFunction = (...args: any[]) => any | Promise<any>;
+export type FfiValue = any;
 
 export interface Caller {
   call(name: string, ...args: any[]): Promise<any>;
 }
 
 export interface Registerer {
-  register(name: string, fn: FfiFunction): void;
+  register(name: string, value: FfiValue): void;
 }
 
 export interface Loader {
@@ -13,29 +14,45 @@ export interface Loader {
 }
 
 export class Runtime implements Caller, Registerer, Loader {
-  private registry: Record<string, FfiFunction> = {};
+  private registry: Record<string, FfiValue> = {};
 
-  register(name: string, fn: FfiFunction): void {
-    this.registry[name] = fn;
+  register(name: string, value: FfiValue): void {
+    this.registry[name] = value;
   }
 
   async call(name: string, ...args: any[]): Promise<any> {
-    const fn = this.registry[name];
-    if (!fn) {
-      throw new Error(`unknown ffi function: ${name}`);
+    const value = this.registry[name];
+    if (value === undefined) {
+      throw new Error(`unknown ffi symbol: ${name}`);
     }
-    return await fn(...args);
+    if (typeof value === 'function') {
+      return await (value as FfiFunction)(...args);
+    }
+    if (args.length === 0) {
+      return value;
+    }
+    throw new Error(`ffi symbol ${name} is not callable`);
   }
 
   async loadModule(path: string): Promise<void> {
-    await import(path);
+    const mod = await import(path);
+    const entries = Object.entries(mod);
+    if (entries.length === 1 && entries[0][0] === 'default' && typeof mod.default === 'object') {
+      for (const [k, v] of Object.entries(mod.default)) {
+        this.register(k, v);
+      }
+      return;
+    }
+    for (const [k, v] of entries) {
+      this.register(k, v);
+    }
   }
 }
 
 const defaultRuntime = new Runtime();
 
-export function register(name: string, fn: FfiFunction): void {
-  defaultRuntime.register(name, fn);
+export function register(name: string, value: FfiValue): void {
+  defaultRuntime.register(name, value);
 }
 
 export function call(name: string, ...args: any[]): Promise<any> {
