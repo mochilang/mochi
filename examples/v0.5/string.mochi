@@ -23,11 +23,11 @@ if "z" in s {
 
 // Count vowels
 let vowels = "aeiou"
-let count = 0
+var count = 0
 
 for ch in s {
   if ch in vowels {
-    count += 1
+    count = count + 1
   }
 }
 print("vowel count:", count) // 3

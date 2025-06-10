@@ -59,7 +59,7 @@ test "if/else logic" {
 }
 
 test "for loop and accumulation" {
-  let sum = 0
+  var sum = 0
   for i in 1..5 {
     sum = sum + i
   }

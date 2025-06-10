@@ -11,12 +11,12 @@ Each example includes source code, AST, and runtime output.
 - [v0.1/expr.mochi](#v0.1-expr)
 - [v0.1/for.mochi](#v0.1-for)
 - [v0.1/fun.mochi](#v0.1-fun)
-- [v0.1/fun_anon.mochi](#v0.1-fun_anon)
-- [v0.1/fun_closure.mochi](#v0.1-fun_closure)
-- [v0.1/fun_curry.mochi](#v0.1-fun_curry)
-- [v0.1/fun_high_order.mochi](#v0.1-fun_high_order)
-- [v0.1/fun_infer.mochi](#v0.1-fun_infer)
-- [v0.1/fun_return.mochi](#v0.1-fun_return)
+- [v0.1/fun-anon.mochi](#v0.1-fun-anon)
+- [v0.1/fun-closure.mochi](#v0.1-fun-closure)
+- [v0.1/fun-curry.mochi](#v0.1-fun-curry)
+- [v0.1/fun-high-order.mochi](#v0.1-fun-high-order)
+- [v0.1/fun-infer.mochi](#v0.1-fun-infer)
+- [v0.1/fun-return.mochi](#v0.1-fun-return)
 - [v0.1/hello.mochi](#v0.1-hello)
 - [v0.1/if.mochi](#v0.1-if)
 - [v0.1/let.mochi](#v0.1-let)
@@ -520,7 +520,7 @@ Hello, Mochi
 ```
 </details>
 
-## v0.1/fun_anon.mochi
+## v0.1/fun-anon.mochi
 
 <details>
 <summary>View Source, AST, and Output</summary>
@@ -552,7 +552,7 @@ print(square(6)) // 36
 ```
 </details>
 
-## v0.1/fun_closure.mochi
+## v0.1/fun-closure.mochi
 
 <details>
 <summary>View Source, AST, and Output</summary>
@@ -596,7 +596,7 @@ print(add10(5))   // 15
 ```
 </details>
 
-## v0.1/fun_curry.mochi
+## v0.1/fun-curry.mochi
 
 <details>
 <summary>View Source, AST, and Output</summary>
@@ -647,7 +647,7 @@ print(result)  // 1 + 2 + 3 = 6
 ```
 </details>
 
-## v0.1/fun_high_order.mochi
+## v0.1/fun-high-order.mochi
 
 <details>
 <summary>View Source, AST, and Output</summary>
@@ -696,7 +696,7 @@ print(apply_twice(square, 6)) // 36 * 36 = 1296
 ```
 </details>
 
-## v0.1/fun_infer.mochi
+## v0.1/fun-infer.mochi
 
 <details>
 <summary>View Source, AST, and Output</summary>
@@ -842,7 +842,7 @@ Hello, Mochi
 ```
 </details>
 
-## v0.1/fun_return.mochi
+## v0.1/fun-return.mochi
 
 <details>
 <summary>View Source, AST, and Output</summary>

@@ -503,18 +503,16 @@ These tools integrate with Claude, Open Interpreter, and others.
 
 Explore the [`examples/`](./examples) directory:
 
-* `hello.mochi`
-* `math.mochi`
-* `list.mochi`
-* `agent.mochi`
-* `generate.mochi`
-* `generate-struct.mochi`
-* `generate-model.mochi`
-* `tools.mochi`
-* `types.mochi`
-* `fetch.mochi`
-* `fetch-post.mochi`
-* `stream.mochi`
+* `v0.1/hello.mochi`
+* `v0.2/list.mochi`
+* `v0.3/generate.mochi`
+* `v0.3/generate-struct.mochi`
+* `v0.3/generate-model.mochi`
+* `v0.3/tools.mochi`
+* `v0.3/types.mochi`
+* `v0.3/fetch.mochi`
+* `v0.3/fetch-post.mochi`
+* `v0.4/stream.mochi`
 
 Edit one or start fresh. It’s all yours.
 
