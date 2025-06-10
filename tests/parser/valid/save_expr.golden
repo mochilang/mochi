@@ -1,0 +1,23 @@
+(program
+  (let people
+    (list
+      (map
+        (entry (selector name) (string Alice))
+        (entry (selector age) (int 30))
+        (entry (selector email) (string "alice@example.com"))
+      )
+      (map
+        (entry (selector name) (string Bob))
+        (entry (selector age) (int 25))
+        (entry (selector email) (string "bob@example.com"))
+      )
+    )
+  )
+  (save
+    (selector people)
+    (string people.jsonl)
+    (map
+      (entry (selector format) (string jsonl))
+    )
+  )
+)

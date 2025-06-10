@@ -1087,6 +1087,45 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		return items, nil
 
+	case p.Save != nil:
+		srcVal, err := i.evalExpr(p.Save.Src)
+		if err != nil {
+			return nil, err
+		}
+		format := "csv"
+		header := false
+		delim := ','
+		if p.Save.With != nil {
+			v, err := i.evalExpr(p.Save.With)
+			if err != nil {
+				return nil, err
+			}
+			opts := toAnyMap(v)
+			if f, ok := opts["format"].(string); ok {
+				format = f
+			}
+			if h, ok := opts["header"].(bool); ok {
+				header = h
+			}
+			if d, ok := opts["delimiter"].(string); ok && len(d) > 0 {
+				delim = rune(d[0])
+			}
+		}
+		rows, ok := toMapSlice(srcVal)
+		if !ok {
+			return nil, fmt.Errorf("save source must be list of maps")
+		}
+		switch format {
+		case "jsonl":
+			err = data.SaveJSONL(rows, p.Save.Path)
+		default:
+			err = data.SaveCSV(rows, p.Save.Path, header, delim)
+		}
+		if err != nil {
+			return nil, err
+		}
+		return nil, nil
+
 	case p.Generate != nil:
 		reqParams := map[string]any{}
 		var (
@@ -2008,6 +2047,25 @@ func toAnyMap(m any) map[string]any {
 		return out
 	default:
 		return nil
+	}
+}
+
+func toMapSlice(v any) ([]map[string]any, bool) {
+	switch rows := v.(type) {
+	case []map[string]any:
+		return rows, true
+	case []any:
+		out := make([]map[string]any, len(rows))
+		for i, item := range rows {
+			m, ok := item.(map[string]any)
+			if !ok {
+				return nil, false
+			}
+			out[i] = m
+		}
+		return out, true
+	default:
+		return nil, false
 	}
 }
 

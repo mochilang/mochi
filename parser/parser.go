@@ -23,7 +23,7 @@ func (b *boolLit) Capture(values []string) error {
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
-	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|return|break|continue|let|var|if|else|for|while|in|generate|match|fetch|load)\b`},
+	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|return|break|continue|let|var|if|else|for|while|in|generate|match|fetch|load|save)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
@@ -328,6 +328,13 @@ type LoadExpr struct {
 	With *Expr    `parser:"[ 'with' @@ ]"`
 }
 
+type SaveExpr struct {
+	Pos  lexer.Position
+	Src  *Expr  `parser:"'save' @@ 'to'"`
+	Path string `parser:"@String"`
+	With *Expr  `parser:"[ 'with' @@ ]"`
+}
+
 type QueryExpr struct {
 	Pos    lexer.Position
 	Var    string         `parser:"'from' @Ident 'in'"`
@@ -387,6 +394,7 @@ type Primary struct {
 	Generate *GenerateExpr  `parser:"| @@"`
 	Fetch    *FetchExpr     `parser:"| @@"`
 	Load     *LoadExpr      `parser:"| @@"`
+	Save     *SaveExpr      `parser:"| @@"`
 	Lit      *Literal       `parser:"| @@"`
 	Group    *Expr          `parser:"| '(' @@ ')'"`
 }

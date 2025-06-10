@@ -1,0 +1,20 @@
+// save.mochi
+// Save a list of records to both JSONL and CSV formats
+
+let people = [
+  { name: "Alice", age: 30, email: "alice@example.com" },
+  { name: "Bob", age: 25, email: "bob@example.com" }
+]
+
+// Save as JSONL
+save people to "people.jsonl" with {
+  format: "jsonl"
+}
+
+// Save as CSV
+save people to "people.csv" with {
+  format: "csv",
+  header: true,
+  delimiter: ","
+}
+

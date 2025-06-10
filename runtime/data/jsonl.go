@@ -31,3 +31,20 @@ func LoadJSONL(path string) ([]map[string]any, error) {
 	}
 	return out, nil
 }
+
+// SaveJSONL writes rows to a JSON lines file.
+func SaveJSONL(rows []map[string]any, path string) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	w := bufio.NewWriter(f)
+	enc := json.NewEncoder(w)
+	for _, row := range rows {
+		if err := enc.Encode(row); err != nil {
+			return err
+		}
+	}
+	return w.Flush()
+}
