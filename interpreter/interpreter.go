@@ -1023,13 +1023,13 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 
 	// Step 2: Apply precedence rules (high to low)
 	for _, level := range [][]string{
-		{"*", "/", "%"},        // highest
-		{"+", "-"},             // addition
-		{"<", "<=", ">", ">="}, // comparison
-		{"==", "!=", "in"},     // equality and membership
-		{"&&"},                 // logical AND
-		{"||"},                 // logical OR
-		{"union", "union_all"}, // set unions lowest
+		{"*", "/", "%"},                  // highest
+		{"+", "-"},                       // addition
+		{"<", "<=", ">", ">="},           // comparison
+		{"==", "!=", "in"},               // equality and membership
+		{"&&"},                           // logical AND
+		{"||"},                           // logical OR
+		{"union", "union_all", "except"}, // set unions and difference lowest
 	} {
 		for i := 0; i < len(operators); {
 			op := operators[i].op
@@ -2325,6 +2325,26 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 				}
 			}
 			return Value{Tag: TagList, List: merged}, nil
+		case "except":
+			diff := []Value{}
+			for _, lv := range left.List {
+				found := false
+				for _, rv := range right.List {
+					eq, err := applyBinaryValue(pos, lv, "==", rv)
+					if err == nil && eq.Tag == TagBool && eq.Bool {
+						found = true
+						break
+					}
+					if err != nil && reflect.DeepEqual(valueToAny(lv), valueToAny(rv)) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					diff = append(diff, lv)
+				}
+			}
+			return Value{Tag: TagList, List: diff}, nil
 		case "==":
 			if len(left.List) != len(right.List) {
 				return Value{Tag: TagBool, Bool: false}, nil
