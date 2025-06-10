@@ -24,6 +24,7 @@ import (
 	"mochi/compile/go"
 	"mochi/compile/py"
 	"mochi/compile/ts"
+	"mochi/compile/wasm"
 	"mochi/interpreter"
 	"mochi/mcp"
 	"mochi/parser"
@@ -66,7 +67,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File   string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out    string `arg:"-o" help:"Output file path"`
-	Target string `arg:"--target" help:"Output language (go|py|ts)"`
+	Target string `arg:"--target" help:"Output language (go|py|ts|wasm)"`
 }
 
 type ReplCmd struct{}
@@ -222,6 +223,8 @@ func build(cmd *BuildCmd) error {
 			target = "py"
 		case ".ts":
 			target = "ts"
+		case ".wasm":
+			target = "wasm"
 		}
 	}
 
@@ -275,6 +278,18 @@ func build(cmd *BuildCmd) error {
 		code, err := tscode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "wasm":
+		if out == "" {
+			out = base + ".wasm"
+		}
+		data, err := wasm.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, data, 0644)
 		}
 		if err != nil {
 			status = "error"
