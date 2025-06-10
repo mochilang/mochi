@@ -1259,32 +1259,6 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return AnyType{}, nil
 
-	case p.Query != nil:
-		srcT, err := checkExpr(p.Query.Source, env)
-		if err != nil {
-			return nil, err
-		}
-		var elemT Type = AnyType{}
-		if lt, ok := srcT.(ListType); ok {
-			elemT = lt.Elem
-		}
-		child := NewEnv(env)
-		child.SetVar(p.Query.Var, elemT, true)
-		if p.Query.Where != nil {
-			if _, err := checkExprWithExpected(p.Query.Where, child, BoolType{}); err != nil {
-				return nil, err
-			}
-		}
-		selT, err := checkExpr(p.Query.Select, child)
-		if err != nil {
-			return nil, err
-		}
-		result := ListType{Elem: selT}
-		if expected != nil && !unify(result, expected, nil) {
-			return nil, errTypeMismatch(p.Pos, expected, result)
-		}
-		return result, nil
-
 	case p.Match != nil:
 		return checkMatchExpr(p.Match, env, expected)
 
@@ -1482,12 +1456,12 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	if err != nil {
 		return nil, err
 	}
-	listT, ok := srcT.(ListType)
-	if !ok {
-		return nil, errQuerySourceList(q.Pos)
+	var elemT Type = AnyType{}
+	if lt, ok := srcT.(ListType); ok {
+		elemT = lt.Elem
 	}
 	child := NewEnv(env)
-	child.SetVar(q.Var, listT.Elem, true)
+	child.SetVar(q.Var, elemT, true)
 	if q.Where != nil {
 		wt, err := checkExprWithExpected(q.Where, child, BoolType{})
 		if err != nil {
@@ -1501,7 +1475,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	if err != nil {
 		return nil, err
 	}
-	return ListType{Elem: selT}, nil
+	result := ListType{Elem: selT}
+	if expected != nil && !unify(result, expected, nil) {
+		return nil, errTypeMismatch(q.Pos, expected, result)
+	}
+	return result, nil
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
