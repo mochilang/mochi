@@ -1013,7 +1013,13 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return obj, nil
 
 	case p.Query != nil:
-		return i.evalQuery(p.Query)
+		return data.RunQuery(p.Query, i.env, i.dataPlan, func(env *types.Env, e *parser.Expr) (any, error) {
+			old := i.env
+			i.env = env
+			val, err := i.evalExpr(e)
+			i.env = old
+			return val, err
+		})
 
 	case p.Match != nil:
 		return i.evalMatch(p.Match)
@@ -1038,7 +1044,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return mhttp.FetchWith(urlStr, opts)
 
 	case p.Load != nil:
-		rows, err := loadCSV(p.Load.Path)
+		rows, err := data.LoadCSV(p.Load.Path)
 		if err != nil {
 			return nil, err
 		}
