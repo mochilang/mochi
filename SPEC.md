@@ -478,6 +478,15 @@ let result = from o in orders
              }
 ```
 
+An expression may contain multiple `from` clauses. Each additional clause
+performs a **cross join**, producing the Cartesian product of the sources
+before any filters or joins are applied.
+
+A plain `join` is an **inner join**, keeping only pairs of rows that satisfy
+the `on` condition. Prefixing the clause with `left` or `right` yields a
+**left join** or **right join** respectively. These joins preserve all rows
+from the indicated side and use `null` when no matching partner exists.
+
 ## 6. Functions
 
 Functions are first-class. Parameters are typed, and the return type may be omitted in block-bodied functions if `return` is used. Functions may capture variables from their enclosing scope, forming closures.
@@ -563,6 +572,8 @@ IndexOp       = "[" [ Expression ] [ ":" Expression ] "]" .
 CallOp        = "(" [ Expression { "," Expression } ] ")" .
 CastOp        = "as" TypeRef .
 QueryExpr     = "from" Identifier "in" Expression
+                { "from" Identifier "in" Expression }
+                { [ "left" | "right" | "outer" ] "join" [ "from" ] Identifier "in" Expression "on" Expression }
                 [ "where" Expression ]
                 [ GroupByClause ]
                 [ "sort" "by" Expression ]
