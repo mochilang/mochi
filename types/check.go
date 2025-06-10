@@ -1497,13 +1497,15 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	if err != nil {
 		return nil, err
 	}
-	var elemT Type = AnyType{}
-	switch t := srcT.(type) {
-	case ListType:
-		elemT = t.Elem
-	case GroupType:
-		elemT = t.Elem
-	}
+       var elemT Type
+       switch t := srcT.(type) {
+       case ListType:
+               elemT = t.Elem
+       case GroupType:
+               elemT = t.Elem
+       default:
+               return nil, errQuerySourceList(q.Pos)
+       }
 	child := NewEnv(env)
 	child.SetVar(q.Var, elemT, true)
 	if q.Where != nil {

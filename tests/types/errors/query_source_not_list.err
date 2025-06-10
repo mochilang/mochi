@@ -1,0 +1,8 @@
+1. error[T032]: query source must be a list
+  --> tests/types/errors/query_source_not_list.mochi:2:9
+
+  2 | let q = from n in x select n
+    |         ^
+
+help:
+  Use a list value after `in`.
