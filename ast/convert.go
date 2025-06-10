@@ -385,6 +385,8 @@ func FromPrimary(p *parser.Primary) *Node {
 					kind = "left_join"
 				case "right":
 					kind = "right_join"
+				case "outer":
+					kind = "outer_join"
 				}
 			}
 			jn := &Node{Kind: kind, Value: j.Var}

@@ -44,7 +44,62 @@ func Query(src []any, opt QueryOptions) ([]any, error) {
 	// Apply joins sequentially
 	for _, j := range opt.Joins {
 		joined := make([]any, 0)
-		if j.Right {
+
+		if j.Right && j.Left { // full outer join
+			matchedRights := make([]bool, len(j.Items))
+			for _, left := range items {
+				matched := false
+				for ri, right := range j.Items {
+					keep := true
+					var err error
+					if j.On != nil {
+						keep, err = j.On(left, right)
+						if err != nil {
+							return nil, err
+						}
+					}
+					if !keep {
+						continue
+					}
+					matched = true
+					matchedRights[ri] = true
+					if j.Merge != nil {
+						var merged any
+						merged, err = j.Merge(left, right)
+						if err != nil {
+							return nil, err
+						}
+						joined = append(joined, merged)
+					} else {
+						joined = append(joined, []any{left, right})
+					}
+				}
+				if !matched {
+					if j.Merge != nil {
+						merged, err := j.Merge(left, nil)
+						if err != nil {
+							return nil, err
+						}
+						joined = append(joined, merged)
+					} else {
+						joined = append(joined, []any{left, nil})
+					}
+				}
+			}
+			for ri, right := range j.Items {
+				if !matchedRights[ri] {
+					if j.Merge != nil {
+						merged, err := j.Merge(nil, right)
+						if err != nil {
+							return nil, err
+						}
+						joined = append(joined, merged)
+					} else {
+						joined = append(joined, []any{nil, right})
+					}
+				}
+			}
+		} else if j.Right {
 			for _, right := range j.Items {
 				matched := false
 				for _, left := range items {

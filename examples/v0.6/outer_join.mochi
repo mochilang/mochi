@@ -1,0 +1,34 @@
+// outer_join.mochi
+// Full outer join: include all orders and all customers
+
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Charlie" },
+  { id: 4, name: "Diana" } // Has no order
+]
+
+let orders = [
+  { id: 100, customerId: 1, total: 250 },
+  { id: 101, customerId: 2, total: 125 },
+  { id: 102, customerId: 1, total: 300 },
+  { id: 103, customerId: 5, total: 80 } // Unknown customer
+]
+
+let result = from o in orders
+             outer join c in customers on o.customerId == c.id
+             select {
+               orderId: o?.id,
+               customerId: o?.customerId ?? c?.id,
+               customerName: c?.name ?? "Unknown",
+               total: o?.total ?? null
+             }
+
+print("--- Outer Join using syntax ---")
+for row in result {
+  if row.orderId != null {
+    print("Order", row.orderId, "by", row.customerName, "- $", row.total)
+  } else {
+    print("Customer", row.customerName, "has no orders")
+  }
+}

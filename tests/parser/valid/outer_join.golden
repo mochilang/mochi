@@ -1,0 +1,119 @@
+(program
+  (let customers
+    (list
+      (map
+        (entry (selector id) (int 1))
+        (entry (selector name) (string Alice))
+      )
+      (map
+        (entry (selector id) (int 2))
+        (entry (selector name) (string Bob))
+      )
+      (map
+        (entry (selector id) (int 3))
+        (entry (selector name) (string Charlie))
+      )
+      (map
+        (entry (selector id) (int 4))
+        (entry (selector name) (string Diana))
+      )
+    )
+  )
+  (let orders
+    (list
+      (map
+        (entry (selector id) (int 100))
+        (entry (selector customerId) (int 1))
+        (entry (selector total) (int 250))
+      )
+      (map
+        (entry (selector id) (int 101))
+        (entry (selector customerId) (int 2))
+        (entry (selector total) (int 125))
+      )
+      (map
+        (entry (selector id) (int 102))
+        (entry (selector customerId) (int 1))
+        (entry (selector total) (int 300))
+      )
+      (map
+        (entry (selector id) (int 103))
+        (entry (selector customerId) (int 5))
+        (entry (selector total) (int 80))
+      )
+    )
+  )
+  (let result
+    (query o
+      (source (selector orders))
+      (outer_join c
+        (source (selector customers))
+        (on
+          (binary ==
+            (selector customerId (selector o))
+            (selector id (selector c))
+          )
+        )
+      )
+      (select
+        (map
+          (entry (selector order) (selector o))
+          (entry (selector customer) (selector c))
+        )
+      )
+    )
+  )
+  (call print (string "--- Outer Join using syntax ---"))
+  (for row
+    (in (selector result))
+    (block
+      (if
+        (selector order (selector row))
+        (block
+          (if
+            (selector customer (selector row))
+            (block
+              (call print
+                (string Order)
+                (selector id
+                  (selector order (selector row))
+                )
+                (string by)
+                (selector name
+                  (selector customer (selector row))
+                )
+                (string "- $")
+                (selector total
+                  (selector order (selector row))
+                )
+              )
+            )
+            (block
+              (call print
+                (string Order)
+                (selector id
+                  (selector order (selector row))
+                )
+                (string by)
+                (string Unknown)
+                (string "- $")
+                (selector total
+                  (selector order (selector row))
+                )
+              )
+            )
+          )
+        )
+        (block
+          (call print
+            (string Customer)
+            (selector name
+              (selector customer (selector row))
+            )
+            (string "has no orders")
+          )
+        )
+      )
+    )
+  )
+)

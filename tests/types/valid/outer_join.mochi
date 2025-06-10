@@ -1,0 +1,17 @@
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Charlie" },
+  { id: 4, name: "Diana" }
+]
+
+let orders = [
+  { id: 100, customerId: 1 },
+  { id: 101, customerId: 2 },
+  { id: 102, customerId: 1 },
+  { id: 103, customerId: 5 }
+]
+
+let result = from o in orders
+             outer join c in customers on o.customerId == c.id
+             select { order: o, customer: c }
