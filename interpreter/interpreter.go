@@ -1023,13 +1023,13 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 
 	// Step 2: Apply precedence rules (high to low)
 	for _, level := range [][]string{
-		{"*", "/", "%"},                  // highest
-		{"+", "-"},                       // addition
-		{"<", "<=", ">", ">="},           // comparison
-		{"==", "!=", "in"},               // equality and membership
-		{"&&"},                           // logical AND
-		{"||"},                           // logical OR
-		{"union", "union_all", "except"}, // set unions and difference lowest
+		{"*", "/", "%"},        // highest
+		{"+", "-"},             // addition
+		{"<", "<=", ">", ">="}, // comparison
+		{"==", "!=", "in"},     // equality and membership
+		{"&&"},                 // logical AND
+		{"||"},                 // logical OR
+		{"union", "union_all", "except", "intersect"}, // set unions, intersection, and difference lowest
 	} {
 		for i := 0; i < len(operators); {
 			op := operators[i].op
@@ -2345,6 +2345,41 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 				}
 			}
 			return Value{Tag: TagList, List: diff}, nil
+		case "intersect":
+			inter := []Value{}
+			for _, lv := range left.List {
+				match := false
+				for _, rv := range right.List {
+					eq, err := applyBinaryValue(pos, lv, "==", rv)
+					if err == nil && eq.Tag == TagBool && eq.Bool {
+						match = true
+						break
+					}
+					if err != nil && reflect.DeepEqual(valueToAny(lv), valueToAny(rv)) {
+						match = true
+						break
+					}
+				}
+				if match {
+					// avoid duplicates in result
+					exists := false
+					for _, iv := range inter {
+						eq, err := applyBinaryValue(pos, iv, "==", lv)
+						if err == nil && eq.Tag == TagBool && eq.Bool {
+							exists = true
+							break
+						}
+						if err != nil && reflect.DeepEqual(valueToAny(iv), valueToAny(lv)) {
+							exists = true
+							break
+						}
+					}
+					if !exists {
+						inter = append(inter, lv)
+					}
+				}
+			}
+			return Value{Tag: TagList, List: inter}, nil
 		case "==":
 			if len(left.List) != len(right.List) {
 				return Value{Tag: TagBool, Bool: false}, nil
