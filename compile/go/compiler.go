@@ -1142,6 +1142,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elemType, true)
+	// Add join variables to environment
+	for _, j := range q.Joins {
+		jt := c.inferExprType(j.Src)
+		var jelem types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			jelem = lt.Elem
+		}
+		child.SetVar(j.Var, jelem, true)
+	}
 	original := c.env
 	c.env = child
 
@@ -1182,6 +1191,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+
+	// compile join sources and conditions while join vars are in scope
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	joinDirect := make([]bool, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+		joinSrcs[i] = js
+		jt := c.inferExprType(j.Src)
+		if _, ok := jt.(types.ListType); ok {
+			joinDirect[i] = true
+		}
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+		joinOns[i] = on
+	}
 	retElem := goType(c.inferExprType(q.Select))
 	if retElem == "" {
 		retElem = "any"
@@ -1206,29 +1238,50 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	} else {
 		buf.WriteString(fmt.Sprintf("\titems := []%s{}\n", elemGo))
 	}
+	indent := "\t"
 	if directRange {
-		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", sanitizeName(q.Var), src))
+		buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", sanitizeName(q.Var), src))
 	} else {
-		buf.WriteString(fmt.Sprintf("\tfor _, %s := range _iter(%s) {\n", sanitizeName(q.Var), src))
+		buf.WriteString(fmt.Sprintf(indent+"for _, %s := range _iter(%s) {\n", sanitizeName(q.Var), src))
 	}
+	indent += "\t"
+
+	for i := range q.Joins {
+		jvar := sanitizeName(q.Joins[i].Var)
+		jsrc := joinSrcs[i]
+		if joinDirect[i] {
+			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", jvar, jsrc))
+		} else {
+			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range _iter(%s) {\n", jvar, jsrc))
+		}
+		indent += "\t"
+		buf.WriteString(fmt.Sprintf(indent+"if !(%s) { continue }\n", joinOns[i]))
+	}
+
 	if cond != "" {
 		if simple {
-			buf.WriteString(fmt.Sprintf("\t\tif %s {\n", cond))
-			buf.WriteString(fmt.Sprintf("\t\t\tres = append(res, %s)\n", sel))
-			buf.WriteString("\t\t}\n")
+			buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+			buf.WriteString(fmt.Sprintf(indent+"\tres = append(res, %s)\n", sel))
+			buf.WriteString(indent + "}\n")
 		} else {
-			buf.WriteString(fmt.Sprintf("\t\tif %s {\n", cond))
-			buf.WriteString(fmt.Sprintf("\t\t\titems = append(items, %s)\n", sanitizeName(q.Var)))
-			buf.WriteString("\t\t}\n")
+			buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+			buf.WriteString(fmt.Sprintf(indent+"\titems = append(items, %s)\n", sanitizeName(q.Var)))
+			buf.WriteString(indent + "}\n")
 		}
 	} else {
 		if simple {
-			buf.WriteString(fmt.Sprintf("\t\tres = append(res, %s)\n", sel))
+			buf.WriteString(fmt.Sprintf(indent+"res = append(res, %s)\n", sel))
 		} else {
-			buf.WriteString(fmt.Sprintf("\t\titems = append(items, %s)\n", sanitizeName(q.Var)))
+			buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
 		}
 	}
-	buf.WriteString("\t}\n")
+
+	for i := len(q.Joins) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-1]
+		buf.WriteString(indent + "}\n")
+	}
+	indent = indent[:len(indent)-1]
+	buf.WriteString(indent + "}\n")
 
 	if simple {
 		buf.WriteString("\treturn res\n")

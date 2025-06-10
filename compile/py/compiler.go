@@ -984,21 +984,60 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	var cond string
+	c.use("_iter")
+
+	child := types.NewEnv(c.env)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+		elemType = lt.Elem
+	}
+	child.SetVar(q.Var, elemType, true)
+	for _, j := range q.Joins {
+		jt := c.inferExprType(j.Src)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+	}
+	orig := c.env
+	c.env = child
+	loops := []string{fmt.Sprintf("%s in _iter(%s)", sanitizeName(q.Var), src)}
+	condParts := []string{}
+	joinSrcs := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinSrcs[i] = js
+		loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(j.Var), js))
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		condParts = append(condParts, on)
+	}
 	if q.Where != nil {
 		w, err := c.compileExpr(q.Where)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
-		cond = " if " + w
+		condParts = append(condParts, w)
 	}
-	c.use("_iter")
-
+	c.env = orig
+	cond := ""
+	if len(condParts) > 0 {
+		cond = " if " + strings.Join(condParts, " and ")
+	}
 	if q.Sort == nil && q.Skip == nil && q.Take == nil {
-		return fmt.Sprintf("[ %s for %s in _iter(%s)%s ]", sel, sanitizeName(q.Var), src, cond), nil
+		return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
 	}
 
-	items := fmt.Sprintf("[ %s for %s in _iter(%s)%s ]", sanitizeName(q.Var), sanitizeName(q.Var), src, cond)
+	items := fmt.Sprintf("[ %s for %s%s ]", sanitizeName(q.Var), strings.Join(loops, " for "), cond)
 	if q.Sort != nil {
 		s, err := c.compileExpr(q.Sort)
 		if err != nil {
