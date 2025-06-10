@@ -375,6 +375,22 @@ func FromPrimary(p *parser.Primary) *Node {
 		if p.Query.Where != nil {
 			n.Children = append(n.Children, &Node{Kind: "where", Children: []*Node{FromExpr(p.Query.Where)}})
 		}
+		if p.Query.Group != nil {
+			n.Children = append(n.Children, &Node{
+				Kind:     "group_by",
+				Value:    p.Query.Group.Name,
+				Children: []*Node{FromExpr(p.Query.Group.Expr)},
+			})
+		}
+		if p.Query.Sort != nil {
+			n.Children = append(n.Children, &Node{Kind: "sort_by", Children: []*Node{FromExpr(p.Query.Sort)}})
+		}
+		if p.Query.Skip != nil {
+			n.Children = append(n.Children, &Node{Kind: "skip", Children: []*Node{FromExpr(p.Query.Skip)}})
+		}
+		if p.Query.Take != nil {
+			n.Children = append(n.Children, &Node{Kind: "take", Children: []*Node{FromExpr(p.Query.Take)}})
+		}
 		n.Children = append(n.Children, &Node{Kind: "select", Children: []*Node{FromExpr(p.Query.Select)}})
 		return n
 
