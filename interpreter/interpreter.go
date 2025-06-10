@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
 	"github.com/fatih/color"
+	"reflect"
 	"sort"
 	"strconv"
 	"sync"
@@ -1027,7 +1028,8 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 		{"<", "<=", ">", ">="}, // comparison
 		{"==", "!=", "in"},     // equality and membership
 		{"&&"},                 // logical AND
-		{"||"},                 // logical OR (lowest)
+		{"||"},                 // logical OR
+		{"union"},              // set union (dedup) lowest
 	} {
 		for i := 0; i < len(operators); {
 			op := operators[i].op
@@ -2301,6 +2303,26 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 		switch op {
 		case "+":
 			return Value{Tag: TagList, List: append(append([]Value{}, left.List...), right.List...)}, nil
+		case "union":
+			merged := append([]Value{}, left.List...)
+			for _, rv := range right.List {
+				found := false
+				for _, lv := range merged {
+					eq, err := applyBinaryValue(pos, lv, "==", rv)
+					if err == nil && eq.Tag == TagBool && eq.Bool {
+						found = true
+						break
+					}
+					if err != nil && reflect.DeepEqual(valueToAny(lv), valueToAny(rv)) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					merged = append(merged, rv)
+				}
+			}
+			return Value{Tag: TagList, List: merged}, nil
 		case "==":
 			if len(left.List) != len(right.List) {
 				return Value{Tag: TagBool, Bool: false}, nil
