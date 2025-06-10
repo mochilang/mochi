@@ -301,14 +301,15 @@ for ch in text {
 ### Dataset Queries
 
 Query lists with SQL-like syntax using `from`, `where`, `sort by`, `skip`, `take` and `select`.
+Datasets can also be loaded from external files.
 
 ```mochi
-let people = [
-  { name: "Alice", age: 30 },
-  { name: "Bob", age: 15 },
-  { name: "Charlie", age: 65 },
-  { name: "Diana", age: 45 }
-]
+type Person {
+  name: string
+  age: int
+}
+
+let people = load "people.csv" as Person
 
 let adults = from p in people
              where p.age >= 18
