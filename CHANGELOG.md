@@ -1,4 +1,18 @@
 # 📦 CHANGELOG.md
+## [0.6.0] – 2025-06-10
+
+### Added
+
+* Dataset queries with `from`, `where`, `select` and `group by`
+* Join operations: `join`, `left join`, `right join`, `outer join` and cross joins
+* `sort by`, `skip` and `take` clauses for datasets
+* In-memory dataset driver and runtime library
+* Dataset support in Go, Python and TypeScript compilers
+* WebAssembly compiler
+* `%%mochi` Jupyter cell magic
+* List set operators `union`, `union all`, `except` and `intersect`
+* Vector search runtime with a flat index
+
 ## [0.5.1] – 2025-06-09
 
 ### Added
