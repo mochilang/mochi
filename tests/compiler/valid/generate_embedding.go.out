@@ -8,12 +8,15 @@ import (
 )
 
 func main() {
-	var vec []float64 = _genEmbed("hi")
+	var vec []float64 = _genEmbed("hi", "", nil)
 	fmt.Println(len(vec))
 }
 
-func _genEmbed(text string) []float64 {
-    resp, err := llm.Embed(context.Background(), text)
-    if err != nil { panic(err) }
-    return resp.Vector
+func _genEmbed(text string, model string, params map[string]any) []float64 {
+	opts := []llm.EmbedOption{}
+	if model != "" { opts = append(opts, llm.WithEmbedModel(model)) }
+	for k, v := range params { opts = append(opts, llm.WithEmbedParam(k, v)) }
+	resp, err := llm.Embed(context.Background(), text, opts...)
+	if err != nil { panic(err) }
+	return resp.Vector
 }

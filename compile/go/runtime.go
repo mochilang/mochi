@@ -147,20 +147,29 @@ const (
 		"    }\n" +
 		"}\n"
 
-	helperGenText = "func _genText(prompt string) string {\n" +
-		"    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: \"user\", Content: prompt}})\n" +
+	helperGenText = "func _genText(prompt string, model string, params map[string]any) string {\n" +
+		"    opts := []llm.Option{}\n" +
+		"    if model != \"\" { opts = append(opts, llm.WithModel(model)) }\n" +
+		"    for k, v := range params { opts = append(opts, llm.WithParam(k, v)) }\n" +
+		"    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: \"user\", Content: prompt}}, opts...)\n" +
 		"    if err != nil { panic(err) }\n" +
 		"    return resp.Message.Content\n" +
 		"}\n"
 
-	helperGenEmbed = "func _genEmbed(text string) []float64 {\n" +
-		"    resp, err := llm.Embed(context.Background(), text)\n" +
+	helperGenEmbed = "func _genEmbed(text string, model string, params map[string]any) []float64 {\n" +
+		"    opts := []llm.EmbedOption{}\n" +
+		"    if model != \"\" { opts = append(opts, llm.WithEmbedModel(model)) }\n" +
+		"    for k, v := range params { opts = append(opts, llm.WithEmbedParam(k, v)) }\n" +
+		"    resp, err := llm.Embed(context.Background(), text, opts...)\n" +
 		"    if err != nil { panic(err) }\n" +
 		"    return resp.Vector\n" +
 		"}\n"
 
-	helperGenStruct = "func _genStruct[T any](prompt string) T {\n" +
-		"    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: \"user\", Content: prompt}})\n" +
+	helperGenStruct = "func _genStruct[T any](prompt string, model string, params map[string]any) T {\n" +
+		"    opts := []llm.Option{}\n" +
+		"    if model != \"\" { opts = append(opts, llm.WithModel(model)) }\n" +
+		"    for k, v := range params { opts = append(opts, llm.WithParam(k, v)) }\n" +
+		"    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: \"user\", Content: prompt}}, opts...)\n" +
 		"    if err != nil { panic(err) }\n" +
 		"    var out T\n" +
 		"    if err := json.Unmarshal([]byte(resp.Message.Content), &out); err != nil { panic(err) }\n" +

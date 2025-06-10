@@ -37,17 +37,17 @@ const (
 		"  return v;\n" +
 		"}\n"
 
-	helperGenText = "function _gen_text(prompt: string): string {\n" +
+	helperGenText = "function _gen_text(prompt: string, model: string | null, params: any | null): string {\n" +
 		"  // TODO: integrate with your preferred LLM\n" +
 		"  return prompt;\n" +
 		"}\n"
 
-	helperGenEmbed = "function _gen_embed(text: string): number[] {\n" +
+	helperGenEmbed = "function _gen_embed(text: string, model: string | null, params: any | null): number[] {\n" +
 		"  // TODO: integrate with your preferred embedding model\n" +
 		"  return Array.from(text).map(c => c.charCodeAt(0));\n" +
 		"}\n"
 
-	helperGenStruct = "function _gen_struct<T>(prompt: string): T {\n" +
+	helperGenStruct = "function _gen_struct<T>(prompt: string, model: string | null, params: any | null): T {\n" +
 		"  // TODO: integrate with your preferred LLM and parse JSON\n" +
 		"  return JSON.parse(prompt) as T;\n" +
 		"}\n"

@@ -1115,49 +1115,61 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
-	switch g.Target {
-	case "embedding":
-		var text string
-		for _, f := range g.Fields {
-			v, err := c.compileExpr(f.Value)
-			if err != nil {
-				return "", err
-			}
-			if f.Name == "text" {
-				text = v
-			}
+	var (
+		prompt string
+		text   string
+		model  string
+		params []string
+	)
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
 		}
-		if text == "" {
-			text = "\"\""
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("%q: %s", f.Name, v))
 		}
-		c.use("_genEmbed")
-		c.imports["context"] = true
-		c.imports["mochi/runtime/llm"] = true
-		return fmt.Sprintf("_genEmbed(%s)", text), nil
-	default:
-		var prompt string
-		for _, f := range g.Fields {
-			v, err := c.compileExpr(f.Value)
-			if err != nil {
-				return "", err
-			}
-			if f.Name == "prompt" {
-				prompt = v
-			}
-		}
-		if prompt == "" {
-			prompt = "\"\""
-		}
-		c.imports["context"] = true
-		c.imports["mochi/runtime/llm"] = true
-		if _, ok := c.env.GetStruct(g.Target); ok {
-			c.use("_genStruct")
-			c.imports["encoding/json"] = true
-			return fmt.Sprintf("_genStruct[%s](%s)", sanitizeName(g.Target), prompt), nil
-		}
-		c.use("_genText")
-		return fmt.Sprintf("_genText(%s)", prompt), nil
 	}
+
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+
+	paramStr := "nil"
+	if len(params) > 0 {
+		paramStr = fmt.Sprintf("map[string]any{%s}", strings.Join(params, ", "))
+	}
+
+	if model == "" {
+		model = "\"\""
+	}
+
+	c.imports["context"] = true
+	c.imports["mochi/runtime/llm"] = true
+
+	if g.Target == "embedding" {
+		c.use("_genEmbed")
+		return fmt.Sprintf("_genEmbed(%s, %s, %s)", text, model, paramStr), nil
+	}
+
+	if _, ok := c.env.GetStruct(g.Target); ok {
+		c.use("_genStruct")
+		c.imports["encoding/json"] = true
+		return fmt.Sprintf("_genStruct[%s](%s, %s, %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
+	}
+
+	c.use("_genText")
+	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramStr), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
