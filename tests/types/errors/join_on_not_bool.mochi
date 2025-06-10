@@ -1,0 +1,5 @@
+let a = [ { id: 1 }, { id: 2 } ]
+let b = [ { id: 1 }, { id: 2 } ]
+let r = from x in a
+        join from y in b on x.id
+        select x
