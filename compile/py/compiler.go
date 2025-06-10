@@ -993,7 +993,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		cond = " if " + w
 	}
 	c.use("_iter")
-	return fmt.Sprintf("[ %s for %s in _iter(%s)%s ]", sel, sanitizeName(q.Var), src, cond), nil
+
+	if q.Sort == nil && q.Skip == nil && q.Take == nil {
+		return fmt.Sprintf("[ %s for %s in _iter(%s)%s ]", sel, sanitizeName(q.Var), src, cond), nil
+	}
+
+	items := fmt.Sprintf("[ %s for %s in _iter(%s)%s ]", sanitizeName(q.Var), sanitizeName(q.Var), src, cond)
+	if q.Sort != nil {
+		s, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		items = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", items, sanitizeName(q.Var), s)
+	}
+	if q.Skip != nil {
+		sk, err := c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		items = fmt.Sprintf("(%s)[%s:]", items, sk)
+	}
+	if q.Take != nil {
+		tk, err := c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		items = fmt.Sprintf("(%s)[:%s]", items, tk)
+	}
+	return fmt.Sprintf("[ %s for %s in %s ]", sel, sanitizeName(q.Var), items), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {

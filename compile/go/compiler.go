@@ -1158,6 +1158,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	var sortExpr string
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+	}
+	var skipExpr string
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+	}
+	var takeExpr string
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+	}
 	retElem := goType(c.inferExprType(q.Select))
 	if retElem == "" {
 		retElem = "any"
@@ -1168,21 +1192,104 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.use("_iter")
 	}
 
+	simple := q.Sort == nil && q.Skip == nil && q.Take == nil
+
+	elemGo := goType(elemType)
+	if elemGo == "" {
+		elemGo = "any"
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
-	buf.WriteString(fmt.Sprintf("\tres := []%s{}\n", retElem))
+	if simple {
+		buf.WriteString(fmt.Sprintf("\tres := []%s{}\n", retElem))
+	} else {
+		buf.WriteString(fmt.Sprintf("\titems := []%s{}\n", elemGo))
+	}
 	if directRange {
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", sanitizeName(q.Var), src))
 	} else {
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range _iter(%s) {\n", sanitizeName(q.Var), src))
 	}
 	if cond != "" {
-		buf.WriteString(fmt.Sprintf("\t\tif %s {\n", cond))
-		buf.WriteString(fmt.Sprintf("\t\t\tres = append(res, %s)\n", sel))
-		buf.WriteString("\t\t}\n")
+		if simple {
+			buf.WriteString(fmt.Sprintf("\t\tif %s {\n", cond))
+			buf.WriteString(fmt.Sprintf("\t\t\tres = append(res, %s)\n", sel))
+			buf.WriteString("\t\t}\n")
+		} else {
+			buf.WriteString(fmt.Sprintf("\t\tif %s {\n", cond))
+			buf.WriteString(fmt.Sprintf("\t\t\titems = append(items, %s)\n", sanitizeName(q.Var)))
+			buf.WriteString("\t\t}\n")
+		}
 	} else {
-		buf.WriteString(fmt.Sprintf("\t\tres = append(res, %s)\n", sel))
+		if simple {
+			buf.WriteString(fmt.Sprintf("\t\tres = append(res, %s)\n", sel))
+		} else {
+			buf.WriteString(fmt.Sprintf("\t\titems = append(items, %s)\n", sanitizeName(q.Var)))
+		}
 	}
+	buf.WriteString("\t}\n")
+
+	if simple {
+		buf.WriteString("\treturn res\n")
+		buf.WriteString("}()")
+		return buf.String(), nil
+	}
+
+	if sortExpr != "" {
+		buf.WriteString("\ttype pair struct { item " + elemGo + "; key any }\n")
+		buf.WriteString("\tpairs := make([]pair, len(items))\n")
+		buf.WriteString("\tfor idx, it := range items {\n")
+		buf.WriteString(fmt.Sprintf("\t\t%s := it\n", sanitizeName(q.Var)))
+		buf.WriteString(fmt.Sprintf("\t\tpairs[idx] = pair{item: it, key: %s}\n", sortExpr))
+		buf.WriteString("\t}\n")
+		buf.WriteString("\tsort.Slice(pairs, func(i, j int) bool {\n")
+		buf.WriteString("\t\ta, b := pairs[i].key, pairs[j].key\n")
+		buf.WriteString("\t\tswitch av := a.(type) {\n")
+		buf.WriteString("\t\tcase int:\n")
+		buf.WriteString("\t\t\tswitch bv := b.(type) {\n")
+		buf.WriteString("\t\t\tcase int:\n")
+		buf.WriteString("\t\t\t\treturn av < bv\n")
+		buf.WriteString("\t\t\tcase float64:\n")
+		buf.WriteString("\t\t\t\treturn float64(av) < bv\n")
+		buf.WriteString("\t\t\t}\n")
+		buf.WriteString("\t\tcase float64:\n")
+		buf.WriteString("\t\t\tswitch bv := b.(type) {\n")
+		buf.WriteString("\t\t\tcase int:\n")
+		buf.WriteString("\t\t\t\treturn av < float64(bv)\n")
+		buf.WriteString("\t\t\tcase float64:\n")
+		buf.WriteString("\t\t\t\treturn av < bv\n")
+		buf.WriteString("\t\t\t}\n")
+		buf.WriteString("\t\tcase string:\n")
+		buf.WriteString("\t\t\tbs, _ := b.(string)\n")
+		buf.WriteString("\t\t\treturn av < bs\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\treturn fmt.Sprint(a) < fmt.Sprint(b)\n")
+		buf.WriteString("\t})\n")
+		buf.WriteString("\tfor idx, p := range pairs {\n")
+		buf.WriteString("\t\titems[idx] = p.item\n")
+		buf.WriteString("\t}\n")
+	}
+
+	if skipExpr != "" {
+		buf.WriteString(fmt.Sprintf("\tn := %s\n", skipExpr))
+		buf.WriteString("\tif n < len(items) {\n")
+		buf.WriteString("\t\titems = items[n:]\n")
+		buf.WriteString("\t} else {\n")
+		buf.WriteString(fmt.Sprintf("\t\titems = []%s{}\n", elemGo))
+		buf.WriteString("\t}\n")
+	}
+
+	if takeExpr != "" {
+		buf.WriteString(fmt.Sprintf("\tn := %s\n", takeExpr))
+		buf.WriteString("\tif n < len(items) {\n")
+		buf.WriteString("\t\titems = items[:n]\n")
+		buf.WriteString("\t}\n")
+	}
+
+	buf.WriteString(fmt.Sprintf("\tres := []%s{}\n", retElem))
+	buf.WriteString(fmt.Sprintf("\tfor _, %s := range items {\n", sanitizeName(q.Var)))
+	buf.WriteString(fmt.Sprintf("\t\tres = append(res, %s)\n", sel))
 	buf.WriteString("\t}\n")
 	buf.WriteString("\treturn res\n")
 	buf.WriteString("}()")
@@ -2141,6 +2248,17 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 		c.scanExprImports(p.Query.Source)
 		if p.Query.Where != nil {
 			c.scanExprImports(p.Query.Where)
+		}
+		if p.Query.Sort != nil {
+			c.scanExprImports(p.Query.Sort)
+			c.imports["sort"] = true
+			c.imports["fmt"] = true
+		}
+		if p.Query.Skip != nil {
+			c.scanExprImports(p.Query.Skip)
+		}
+		if p.Query.Take != nil {
+			c.scanExprImports(p.Query.Take)
 		}
 		c.scanExprImports(p.Query.Select)
 	case p.Match != nil:

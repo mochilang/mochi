@@ -1037,10 +1037,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	simple := q.Sort == nil && q.Skip == nil && q.Take == nil
+
 	var b strings.Builder
 	b.WriteString("(() => {\n")
 	b.WriteString("\tconst _src = " + src + ";\n")
-	b.WriteString("\tconst _res = [];\n")
+	if simple {
+		b.WriteString("\tconst _res = [];\n")
+	} else {
+		b.WriteString("\tlet _items = [];\n")
+	}
 	b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _src) {\n")
 	child := types.NewEnv(c.env)
 	var elemType types.Type = types.AnyType{}
@@ -1050,6 +1056,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	child.SetVar(q.Var, elemType, true)
 	orig := c.env
 	c.env = child
+	val, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
 	if q.Where != nil {
 		cond, err := c.compileExpr(q.Where)
 		if err != nil {
@@ -1058,12 +1069,58 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString("\t\tif (!(" + cond + ")) { continue }\n")
 	}
-	val, err := c.compileExpr(q.Select)
-	if err != nil {
-		c.env = orig
-		return "", err
+	if simple {
+		b.WriteString("\t\t_res.push(" + val + ")\n")
+	} else {
+		b.WriteString("\t\t_items.push(" + sanitizeName(q.Var) + ");\n")
 	}
+	b.WriteString("\t}\n")
+
+	if simple {
+		b.WriteString("\treturn _res;\n")
+		b.WriteString("})()")
+		c.env = orig
+		return b.String(), nil
+	}
+
+	var sortExpr string
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		b.WriteString("\tlet _pairs = _items.map(it => { const " + sanitizeName(q.Var) + " = it; return {item: it, key: " + sortExpr + "}; });\n")
+		b.WriteString("\t_pairs.sort((a, b) => {\n")
+		b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
+		b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
+		b.WriteString("\t\tif (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n")
+		b.WriteString("\t\treturn String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n")
+		b.WriteString("\t});\n")
+		b.WriteString("\t_items = _pairs.map(p => p.item);\n")
+	}
+
+	if q.Skip != nil {
+		sk, err := c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		b.WriteString("\t{ const _n = " + sk + "; _items = _n < _items.length ? _items.slice(_n) : []; }\n")
+	}
+
+	if q.Take != nil {
+		tk, err := c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		b.WriteString("\t{ const _n = " + tk + "; if (_n < _items.length) _items = _items.slice(0, _n); }\n")
+	}
+
 	c.env = orig
+	b.WriteString("\tconst _res = [];\n")
+	b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _items) {\n")
 	b.WriteString("\t\t_res.push(" + val + ")\n")
 	b.WriteString("\t}\n")
 	b.WriteString("\treturn _res;\n")
