@@ -4,25 +4,18 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"io"
-	"os"
 	"sort"
 	"strconv"
 )
 
 // LoadCSV reads a CSV file and returns its rows as a slice of maps.
 func LoadCSV(path string) ([]map[string]any, error) {
-	var reader io.Reader
-	if path == "" || path == "-" {
-		reader = os.Stdin
-	} else {
-		f, err := os.Open(path)
-		if err != nil {
-			return nil, err
-		}
-		defer f.Close()
-		reader = f
+	r, closeFn, err := openReader(path)
+	if err != nil {
+		return nil, err
 	}
-	return LoadCSVReader(reader)
+	defer closeFn()
+	return LoadCSVReader(r)
 }
 
 // LoadCSVReader reads CSV data from the provided reader.
@@ -59,18 +52,12 @@ func LoadCSVReader(r io.Reader) ([]map[string]any, error) {
 
 // SaveCSV writes rows to a CSV file using the given options.
 func SaveCSV(rows []map[string]any, path string, header bool, delim rune) error {
-	var writer io.Writer
-	if path == "" || path == "-" {
-		writer = os.Stdout
-	} else {
-		f, err := os.Create(path)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-		writer = f
+	w, closeFn, err := openWriter(path)
+	if err != nil {
+		return err
 	}
-	return SaveCSVWriter(rows, writer, header, delim)
+	defer closeFn()
+	return SaveCSVWriter(rows, w, header, delim)
 }
 
 // SaveCSVWriter writes CSV rows to the provided writer.
