@@ -1132,6 +1132,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
+	needsHelper := false
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			needsHelper = true
+			break
+		}
+	}
+
 	// Prepare environment for the query variable
 	srcType := c.inferExprType(q.Source)
 	var elemType types.Type = types.AnyType{}
@@ -1256,6 +1264,80 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	c.env = original
+	if needsHelper {
+		varNames := []string{sanitizeName(q.Var)}
+		for _, f := range q.Froms {
+			varNames = append(varNames, sanitizeName(f.Var))
+		}
+		params := append([]string(nil), varNames...)
+		joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+		for _, fs := range fromSrcs {
+			joins = append(joins, fmt.Sprintf("{items: _iter(%s)}", fs))
+		}
+		for i, js := range joinSrcs {
+			onParams := append(params, sanitizeName(q.Joins[i].Var))
+			onFn := fmt.Sprintf("func(%s) bool { return %s }", strings.Join(onParams, ", "), joinOns[i])
+			spec := fmt.Sprintf("{items: _iter(%s), on: %s", js, onFn)
+			if joinSides[i] == "left" || joinSides[i] == "outer" {
+				spec += ", left: true"
+			}
+			if joinSides[i] == "right" || joinSides[i] == "outer" {
+				spec += ", right: true"
+			}
+			spec += "}"
+			joins = append(joins, spec)
+			params = append(params, sanitizeName(q.Joins[i].Var))
+		}
+		allParams := strings.Join(params, ", ")
+		selectFn := fmt.Sprintf("func(%s) any { return %s }", allParams, sel)
+		var whereFn, sortFn string
+		if cond != "" {
+			whereFn = fmt.Sprintf("func(%s) bool { return %s }", allParams, cond)
+		}
+		if sortExpr != "" {
+			sortFn = fmt.Sprintf("func(%s) any { return %s }", allParams, sortExpr)
+		}
+
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
+		c.use("_iter")
+		c.use("_query")
+		buf.WriteString(fmt.Sprintf("\tsrc := _iter(%s)\n", src))
+		buf.WriteString("\tresAny := _query(src, []_joinSpec{\n")
+		for _, j := range joins {
+			buf.WriteString("\t\t" + j + ",\n")
+		}
+		buf.WriteString("\t}, _queryOpts{selectFn: " + selectFn)
+		if whereFn != "" {
+			buf.WriteString(", where: " + whereFn)
+		}
+		if sortFn != "" {
+			buf.WriteString(", sortKey: " + sortFn)
+		}
+		if skipExpr != "" {
+			buf.WriteString(", skip: " + skipExpr)
+		} else {
+			buf.WriteString(", skip: -1")
+		}
+		if takeExpr != "" {
+			buf.WriteString(", take: " + takeExpr)
+		} else {
+			buf.WriteString(", take: -1")
+		}
+		buf.WriteString("})\n")
+		buf.WriteString(fmt.Sprintf("\tout := make([]%s, len(resAny))\n", retElem))
+		buf.WriteString("\tfor i, v := range resAny {\n")
+		if retElem == "any" {
+			buf.WriteString("\t\tout[i] = v\n")
+		} else {
+			c.use("_cast")
+			buf.WriteString(fmt.Sprintf("\t\tout[i] = _cast[%s](v)\n", retElem))
+		}
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn out\n")
+		buf.WriteString("}()")
+		return buf.String(), nil
+	}
 	if !directRange {
 		c.use("_iter")
 	}
@@ -2697,6 +2779,84 @@ const (
 		"    if err := json.Unmarshal(data, &out); err != nil { panic(err) }\n" +
 		"    return out\n" +
 		"}\n"
+
+	helperQuery = "type _joinSpec struct { items []any; on func(...any) bool; left bool; right bool }\n" +
+		"type _queryOpts struct { selectFn func(...any) any; where func(...any) bool; sortKey func(...any) any; skip int; take int }\n" +
+		"func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {\n" +
+		"    items := make([][]any, len(src))\n" +
+		"    for i, v := range src { items[i] = []any{v} }\n" +
+		"    for _, j := range joins {\n" +
+		"        joined := [][]any{}\n" +
+		"        if j.right && j.left {\n" +
+		"            matched := make([]bool, len(j.items))\n" +
+		"            for _, left := range items {\n" +
+		"                m := false\n" +
+		"                for ri, right := range j.items {\n" +
+		"                    keep := true\n" +
+		"                    if j.on != nil { args := append(append([]any(nil), left...), right); keep = j.on(args...) }\n" +
+		"                    if !keep { continue }\n" +
+		"                    m = true; matched[ri] = true\n" +
+		"                    joined = append(joined, append(append([]any(nil), left...), right))\n" +
+		"                }\n" +
+		"                if !m { joined = append(joined, append(append([]any(nil), left...), nil)) }\n" +
+		"            }\n" +
+		"            for ri, right := range j.items {\n" +
+		"                if !matched[ri] { undef := make([]any, len(items[0])); joined = append(joined, append(undef, right)) }\n" +
+		"            }\n" +
+		"        } else if j.right {\n" +
+		"            for _, right := range j.items {\n" +
+		"                m := false\n" +
+		"                for _, left := range items {\n" +
+		"                    keep := true\n" +
+		"                    if j.on != nil { args := append(append([]any(nil), left...), right); keep = j.on(args...) }\n" +
+		"                    if !keep { continue }\n" +
+		"                    m = true; joined = append(joined, append(append([]any(nil), left...), right))\n" +
+		"                }\n" +
+		"                if !m { undef := make([]any, len(items[0])); joined = append(joined, append(undef, right)) }\n" +
+		"            }\n" +
+		"        } else {\n" +
+		"            for _, left := range items {\n" +
+		"                m := false\n" +
+		"                for _, right := range j.items {\n" +
+		"                    keep := true\n" +
+		"                    if j.on != nil { args := append(append([]any(nil), left...), right); keep = j.on(args...) }\n" +
+		"                    if !keep { continue }\n" +
+		"                    m = true; joined = append(joined, append(append([]any(nil), left...), right))\n" +
+		"                }\n" +
+		"                if j.left && !m { joined = append(joined, append(append([]any(nil), left...), nil)) }\n" +
+		"            }\n" +
+		"        }\n" +
+		"        items = joined\n" +
+		"    }\n" +
+		"    if opts.where != nil {\n" +
+		"        filtered := [][]any{}\n" +
+		"        for _, r := range items { if opts.where(r...) { filtered = append(filtered, r) } }\n" +
+		"        items = filtered\n" +
+		"    }\n" +
+		"    if opts.sortKey != nil {\n" +
+		"        type pair struct { item []any; key any }\n" +
+		"        pairs := make([]pair, len(items))\n" +
+		"        for i, it := range items { pairs[i] = pair{it, opts.sortKey(it...)} }\n" +
+		"        sort.Slice(pairs, func(i, j int) bool {\n" +
+		"            a, b := pairs[i].key, pairs[j].key\n" +
+		"            switch av := a.(type) {\n" +
+		"            case int:\n" +
+		"                switch bv := b.(type) { case int: return av < bv; case float64: return float64(av) < bv }\n" +
+		"            case float64:\n" +
+		"                switch bv := b.(type) { case int: return av < float64(bv); case float64: return av < bv }\n" +
+		"            case string:\n" +
+		"                bs, _ := b.(string); return av < bs\n" +
+		"            }\n" +
+		"            return fmt.Sprint(a) < fmt.Sprint(b)\n" +
+		"        })\n" +
+		"        for i, p := range pairs { items[i] = p.item }\n" +
+		"    }\n" +
+		"    if opts.skip >= 0 { if opts.skip < len(items) { items = items[opts.skip:] } else { items = [][]any{} } }\n" +
+		"    if opts.take >= 0 { if opts.take < len(items) { items = items[:opts.take] } }\n" +
+		"    res := make([]any, len(items))\n" +
+		"    for i, r := range items { res[i] = opts.selectFn(r...) }\n" +
+		"    return res\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -2709,6 +2869,7 @@ var helperMap = map[string]string{
 	"_fetch":       helperFetch,
 	"_toAnyMap":    helperToAnyMap,
 	"_cast":        helperCast,
+	"_query":       helperQuery,
 }
 
 func (c *Compiler) use(name string) {
