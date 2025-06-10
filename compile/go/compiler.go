@@ -44,70 +44,104 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("package main")
 	c.writeln("")
 
-	// Top level statements may require imports.
 	for _, stmt := range prog.Statements {
 		c.scanImports(stmt)
 	}
 
-	if len(c.imports) > 0 {
-		c.writeln("import (")
-		c.indent++
-		keys := make([]string, 0, len(c.imports))
-		for k := range c.imports {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, imp := range keys {
-			if strings.Contains(imp, " ") {
-				c.writeln(imp)
-			} else {
-				c.writeln(fmt.Sprintf("\"%s\"", imp))
-			}
-		}
-		c.indent--
-		c.writeln(")")
-		c.writeln("")
+	c.writeImports()
+	c.writeExpectFunc(prog)
+
+	if err := c.compileTypeDecls(prog); err != nil {
+		return nil, err
+	}
+	if err := c.compileFunDecls(prog); err != nil {
+		return nil, err
+	}
+	if err := c.compileTestBlocks(prog); err != nil {
+		return nil, err
+	}
+	if err := c.compileMainFunc(prog); err != nil {
+		return nil, err
 	}
 
-	if hasExpect(prog) {
-		c.writeln("func expect(cond bool) {")
-		c.indent++
-		c.writeln("if !cond { panic(\"expect failed\") }")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
+	c.writeln("")
+	c.emitRuntime()
 
-	// Emit type declarations.
+	return c.buf.Bytes(), nil
+}
+
+func (c *Compiler) writeImports() {
+	if len(c.imports) == 0 {
+		return
+	}
+	c.writeln("import (")
+	c.indent++
+	keys := make([]string, 0, len(c.imports))
+	for k := range c.imports {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, imp := range keys {
+		if strings.Contains(imp, " ") {
+			c.writeln(imp)
+		} else {
+			c.writeln(fmt.Sprintf("\"%s\"", imp))
+		}
+	}
+	c.indent--
+	c.writeln(")")
+	c.writeln("")
+}
+
+func (c *Compiler) writeExpectFunc(prog *parser.Program) {
+	if !hasExpect(prog) {
+		return
+	}
+	c.writeln("func expect(cond bool) {")
+	c.indent++
+	c.writeln("if !cond { panic(\"expect failed\") }")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+}
+
+func (c *Compiler) compileTypeDecls(prog *parser.Program) error {
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			if err := c.compileTypeDecl(s.Type); err != nil {
-				return nil, err
+				return err
 			}
 			c.writeln("")
 		}
 	}
+	return nil
+}
 
-	// Emit function declarations first.
+func (c *Compiler) compileFunDecls(prog *parser.Program) error {
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFunStmt(s.Fun); err != nil {
-				return nil, err
+				return err
 			}
 			c.writeln("")
 		}
 	}
+	return nil
+}
 
-	// Emit test functions.
+func (c *Compiler) compileTestBlocks(prog *parser.Program) error {
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			if err := c.compileTestBlock(s.Test); err != nil {
-				return nil, err
+				return err
 			}
 			c.writeln("")
 		}
 	}
+	return nil
+}
 
+func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	c.writeln("func main() {")
 	c.indent++
 	for _, s := range prog.Statements {
@@ -115,7 +149,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
-			return nil, err
+			return err
 		}
 	}
 	for _, s := range prog.Statements {
@@ -134,10 +168,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
-	c.writeln("")
-	c.emitRuntime()
-
-	return c.buf.Bytes(), nil
+	return nil
 }
 
 // --- Statement Compilation ---
