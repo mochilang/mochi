@@ -17,6 +17,8 @@ let adults = from person in people
              }
 
 for person in adults {
-  print(person.name, "is", person.age, "years old.",
-        if person.is_senior { " (senior)" } else { "" })
+  print(person.name, "is", person.age, "years old.")
+  if person.is_senior {
+    print(" (senior)")
+  }
 }

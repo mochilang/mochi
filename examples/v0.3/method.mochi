@@ -14,6 +14,6 @@ type Circle {
   }
 }
 
-let c = Circle { radius: 5 }
+let c = Circle { radius: 5.0 }
 c.describe()
 print("Area is", c.area())

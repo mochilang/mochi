@@ -4,7 +4,7 @@ for i in 0..5 {
 }
 
 // Sum from 1 to 10
-let sum = 0
+var sum = 0
 for x in 1..11 {
   sum = sum + x
 }
