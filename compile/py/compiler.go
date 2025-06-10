@@ -1247,46 +1247,57 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
-	switch g.Target {
-	case "embedding":
-		var text string
-		for _, f := range g.Fields {
-			v, err := c.compileExpr(f.Value)
-			if err != nil {
-				return "", err
-			}
-			if f.Name == "text" {
-				text = v
-			}
+	var (
+		prompt string
+		text   string
+		model  string
+		params []string
+	)
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
 		}
-		if text == "" {
-			text = "\"\""
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("%q: %s", f.Name, v))
 		}
-		c.use("_gen_embed")
-		return fmt.Sprintf("_gen_embed(%s)", text), nil
-	default:
-		var prompt string
-		for _, f := range g.Fields {
-			v, err := c.compileExpr(f.Value)
-			if err != nil {
-				return "", err
-			}
-			if f.Name == "prompt" {
-				prompt = v
-			}
-		}
-		if prompt == "" {
-			prompt = "\"\""
-		}
-		if c.env != nil {
-			if _, ok := c.env.GetStruct(g.Target); ok {
-				c.use("_gen_struct")
-				return fmt.Sprintf("_gen_struct(%s, %s)", sanitizeName(g.Target), prompt), nil
-			}
-		}
-		c.use("_gen_text")
-		return fmt.Sprintf("_gen_text(%s)", prompt), nil
 	}
+
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+
+	paramStr := "None"
+	if len(params) > 0 {
+		paramStr = fmt.Sprintf("{ %s }", strings.Join(params, ", "))
+	}
+	if model == "" {
+		model = "None"
+	}
+
+	if g.Target == "embedding" {
+		c.use("_gen_embed")
+		return fmt.Sprintf("_gen_embed(%s, %s, %s)", text, model, paramStr), nil
+	}
+
+	if c.env != nil {
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.use("_gen_struct")
+			return fmt.Sprintf("_gen_struct(%s, %s, %s, %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
+		}
+	}
+	c.use("_gen_text")
+	return fmt.Sprintf("_gen_text(%s, %s, %s)", prompt, model, paramStr), nil
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
