@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"mochi/runtime/data"
+	data "mochi/runtime/datav1"
 )
 
 // Register the in-memory driver as "mem"

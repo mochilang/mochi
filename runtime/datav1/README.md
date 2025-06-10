@@ -1,4 +1,4 @@
-# `mochi/runtime/data`
+# `mochi/runtime/datav1`
 
 `data` provides a minimal logical query layer used by the Mochi interpreter to
 deal with structured datasets. It defines core types such as `Dataset`,
@@ -22,7 +22,7 @@ blocks to load data, filter rows and join tables.
 ## Usage
 
 ```go
-import "mochi/runtime/data"
+import "mochi/runtime/datav1"
 
 // Open a connection using a registered driver.
 conn, err := data.Open("duckdb", "file:example.db")
