@@ -1,0 +1,22 @@
+// except.mochi
+// Set difference: A EXCEPT B → values in A that are NOT in B
+
+let listA = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Charlie" }
+]
+
+let listB = [
+  { id: 2, name: "Bob" },
+  { id: 4, name: "Diana" }
+]
+
+let result = (from x in listA select x)
+             except
+             (from x in listB select x)
+
+print("--- EXCEPT ---")
+for x in result {
+  print("Customer", x.id, "-", x.name)
+}
