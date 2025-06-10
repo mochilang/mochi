@@ -93,9 +93,10 @@ type TypeVar struct {
 func (t *TypeVar) String() string { return t.Name }
 
 type FuncType struct {
-	Params []Type
-	Return Type
-	Pure   bool
+	Params   []Type
+	Return   Type
+	Pure     bool
+	Variadic bool
 }
 
 func (f FuncType) String() string {
@@ -106,24 +107,22 @@ func (f FuncType) String() string {
 		}
 		s += p.String()
 	}
+	if f.Variadic {
+		if len(f.Params) > 0 {
+			s += ", ..."
+		} else {
+			s += "..."
+		}
+	}
 	s += ")"
 	if f.Return != nil && f.Return.String() != "void" {
 		s += ": " + f.Return.String()
 	}
+	if f.Pure {
+		s += " [pure]"
+	}
 	return s
 }
-
-type AnyListType struct{}
-
-func (AnyListType) String() string { return "[_]" }
-func (AnyListType) Equal(t Type) bool {
-	_, ok := t.(ListType)
-	return ok
-}
-
-type BuiltinFuncType struct{}
-
-func (BuiltinFuncType) String() string { return "fun(...): void" }
 
 type Subst map[string]Type
 
@@ -276,7 +275,7 @@ func unify(a, b Type, subst Subst) bool {
 
 	case FuncType:
 		bt, ok := b.(FuncType)
-		if !ok || len(at.Params) != len(bt.Params) {
+		if !ok || at.Variadic != bt.Variadic || len(at.Params) != len(bt.Params) {
 			return false
 		}
 		for i := range at.Params {
@@ -340,7 +339,11 @@ func unify(a, b Type, subst Subst) bool {
 // --- Entry Point ---
 
 func Check(prog *parser.Program, env *Env) []error {
-	env.SetVar("print", BuiltinFuncType{}, false)
+	env.SetVar("print", FuncType{
+		Params:   []Type{AnyType{}},
+		Return:   VoidType{},
+		Variadic: true,
+	}, false)
 	env.SetVar("len", FuncType{
 		Params: []Type{AnyType{}}, // loosely typed
 		Return: IntType{},
@@ -1120,41 +1123,56 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return nil, errUnknownFunction(p.Pos, p.Call.Func)
 		}
 
-		switch ft := fnType.(type) {
-		case FuncType:
-			argCount := len(p.Call.Args)
-			paramCount := len(ft.Params)
+		ft, ok := fnType.(FuncType)
+		if !ok {
+			return nil, errNotFunction(p.Pos, p.Call.Func)
+		}
+		argCount := len(p.Call.Args)
+		paramCount := len(ft.Params)
 
-			if argCount > paramCount {
-				return nil, errTooManyArgs(p.Pos, paramCount, argCount)
+		if !ft.Variadic && argCount > paramCount {
+			return nil, errTooManyArgs(p.Pos, paramCount, argCount)
+		}
+
+		// check fixed parameters
+		fixed := paramCount
+		if ft.Variadic && paramCount > 0 {
+			fixed = paramCount - 1
+		}
+
+		for i := 0; i < argCount && i < fixed; i++ {
+			argType, err := checkExprWithExpected(p.Call.Args[i], env, ft.Params[i])
+			if err != nil {
+				return nil, err
 			}
+			if !unify(argType, ft.Params[i], nil) {
+				return nil, errArgTypeMismatch(p.Pos, i, ft.Params[i], argType)
+			}
+		}
 
-			for i := 0; i < argCount; i++ {
-				argType, err := checkExprWithExpected(p.Call.Args[i], env, ft.Params[i])
+		var variadicType Type
+		if ft.Variadic {
+			if paramCount == 0 {
+				variadicType = AnyType{}
+			} else {
+				variadicType = ft.Params[paramCount-1]
+			}
+			for i := fixed; i < argCount; i++ {
+				argType, err := checkExprWithExpected(p.Call.Args[i], env, variadicType)
 				if err != nil {
 					return nil, err
 				}
-				if !unify(argType, ft.Params[i], nil) {
-					return nil, errArgTypeMismatch(p.Pos, i, ft.Params[i], argType)
+				if !unify(argType, variadicType, nil) {
+					return nil, errArgTypeMismatch(p.Pos, i, variadicType, argType)
 				}
 			}
-
-			if argCount == paramCount {
-				return ft.Return, nil
-			}
-			return curryFuncType(ft.Params[argCount:], ft.Return), nil
-
-		case BuiltinFuncType:
-			for _, arg := range p.Call.Args {
-				if _, err := checkExpr(arg, env); err != nil {
-					return nil, err
-				}
-			}
-			return VoidType{}, nil
-
-		default:
-			return nil, errNotFunction(p.Pos, p.Call.Func)
+			return ft.Return, nil
 		}
+
+		if argCount == paramCount {
+			return ft.Return, nil
+		}
+		return curryFuncType(ft.Params[argCount:], ft.Return), nil
 
 	case p.Struct != nil:
 		st, ok := env.GetStruct(p.Struct.Name)
