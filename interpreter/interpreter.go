@@ -1013,7 +1013,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return obj, nil
 
 	case p.Query != nil:
-		return data.RunQuery(p.Query, i.env, i.dataPlan, func(env *types.Env, e *parser.Expr) (any, error) {
+		eng := data.EngineByName(i.dataPlan)
+		return data.RunQuery(p.Query, i.env, eng, func(env *types.Env, e *parser.Expr) (any, error) {
 			old := i.env
 			i.env = env
 			val, err := i.evalExpr(e)

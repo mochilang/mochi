@@ -329,28 +329,3 @@ func EvalQuery(q *parser.QueryExpr, env *types.Env, eval func(*parser.Expr) (any
 	}
 	return ExecPlan(plan, env, eval)
 }
-
-func truthy(val any) bool {
-	switch v := val.(type) {
-	case nil:
-		return false
-	case bool:
-		return v
-	case int:
-		return v != 0
-	case int64:
-		return v != 0
-	case float64:
-		return v != 0
-	case string:
-		return v != ""
-	case []any:
-		return len(v) > 0
-	case map[string]any:
-		return len(v) > 0
-	case *Group:
-		return len(v.Items) > 0
-	default:
-		return true
-	}
-}
