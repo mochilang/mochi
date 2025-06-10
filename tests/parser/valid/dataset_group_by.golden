@@ -1,0 +1,77 @@
+(program
+  (let people
+    (list
+      (map
+        (entry (selector name) (string Alice))
+        (entry (selector age) (int 30))
+        (entry (selector city) (string Paris))
+      )
+      (map
+        (entry (selector name) (string Bob))
+        (entry (selector age) (int 15))
+        (entry (selector city) (string Hanoi))
+      )
+      (map
+        (entry (selector name) (string Charlie))
+        (entry (selector age) (int 65))
+        (entry (selector city) (string Paris))
+      )
+      (map
+        (entry (selector name) (string Diana))
+        (entry (selector age) (int 45))
+        (entry (selector city) (string Hanoi))
+      )
+      (map
+        (entry (selector name) (string Eve))
+        (entry (selector age) (int 70))
+        (entry (selector city) (string Paris))
+      )
+      (map
+        (entry (selector name) (string Frank))
+        (entry (selector age) (int 22))
+        (entry (selector city) (string Hanoi))
+      )
+    )
+  )
+  (let stats
+    (query person
+      (source (selector people))
+      (select
+        (map
+          (entry
+            (selector city)
+            (selector key (selector g))
+          )
+          (entry
+            (selector count)
+            (call count (selector g))
+          )
+          (entry
+            (selector avg_age)
+            (call avg
+              (query p
+                (source (selector g))
+                (select
+                  (selector age (selector p))
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (call print (string "--- People grouped by city ---"))
+  (for s
+    (in (selector stats))
+    (block
+      (call print
+        (selector city (selector s))
+        (string ": count =")
+        (selector count (selector s))
+        (string ", avg_age =")
+        (selector avg_age (selector s))
+      )
+    )
+  )
+)

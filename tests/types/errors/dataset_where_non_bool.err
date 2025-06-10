@@ -1,0 +1,8 @@
+1. error[T008]: type mismatch: expected bool, got int
+  --> tests/types/errors/dataset_where_non_bool.mochi:2:37
+
+  2 | let result = from p in people where 123 select p
+    |                                     ^
+
+help:
+  Change the value to match the expected type.

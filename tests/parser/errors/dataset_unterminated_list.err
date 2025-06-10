@@ -1,0 +1,5 @@
+error[P999]: tests/parser/errors/dataset_unterminated_list.mochi:2:1: unexpected token "<EOF>" (expected "]")
+  --> tests/parser/errors/dataset_unterminated_list.mochi:2:1
+
+help:
+  Parse error occurred. Check syntax near this location.
