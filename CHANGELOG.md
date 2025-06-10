@@ -1,4 +1,24 @@
 # 📦 CHANGELOG.md
+## [0.6.1] – 2025-06-11
+
+### Added
+
+* `load` expression for CSV and JSONL files
+* `save` statement for writing datasets
+* STDIN/STDOUT support for load/save
+* Foreign function interface and `extern object`
+* Optional DuckDB query engine
+* `--wasm-toolchain` flag
+
+### Changed
+
+* Compiler type inference improvements
+
+### Fixed
+
+* Build without DuckDB
+* Updated golden tests
+
 ## [0.6.0] – 2025-06-10
 
 ### Added
