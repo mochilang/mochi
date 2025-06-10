@@ -1037,6 +1037,29 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		return mhttp.FetchWith(urlStr, opts)
 
+	case p.Load != nil:
+		rows, err := loadCSV(p.Load.Path)
+		if err != nil {
+			return nil, err
+		}
+		items := make([]any, len(rows))
+		var typ types.Type
+		if p.Load.Type != nil {
+			typ = resolveTypeRef(p.Load.Type, i.types)
+		}
+		for idx, row := range rows {
+			v := any(row)
+			if p.Load.Type != nil {
+				cv, err := castValue(p.Load.Pos, typ, row)
+				if err != nil {
+					return nil, err
+				}
+				v = cv
+			}
+			items[idx] = v
+		}
+		return items, nil
+
 	case p.Generate != nil:
 		reqParams := map[string]any{}
 		var (
