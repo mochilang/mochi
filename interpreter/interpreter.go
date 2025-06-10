@@ -2105,35 +2105,36 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 			return nil, fmt.Errorf("join source must be list, got %T", srcVal)
 		}
 
-		jc := j // capture
-		opts.Joins = append(opts.Joins, data.Join{
-			Items: joinList,
-			On: func(left, right any) (bool, error) {
-				setEnv(left)
-				child.SetValue(jc.Var, right, true)
-				cond, err := i.evalExpr(jc.On)
-				if err != nil {
-					return false, err
-				}
-				return truthy(cond), nil
-			},
-			Merge: func(left, right any) (any, error) {
-				m := map[string]any{"__join__": true}
-				if lm, ok := left.(map[string]any); ok && lm["__join__"] == true {
-					for k, v := range lm {
-						if k == "__join__" {
-							continue
-						}
-						m[k] = v
-					}
-				} else {
-					m[q.Var] = left
-				}
-				m[jc.Var] = right
-				return m, nil
-			},
-		})
-	}
+               jc := j // capture
+               opts.Joins = append(opts.Joins, data.Join{
+                       Items: joinList,
+                       On: func(left, right any) (bool, error) {
+                               setEnv(left)
+                               child.SetValue(jc.Var, right, true)
+                               cond, err := i.evalExpr(jc.On)
+                               if err != nil {
+                                       return false, err
+                               }
+                               return truthy(cond), nil
+                       },
+                       Merge: func(left, right any) (any, error) {
+                               m := map[string]any{"__join__": true}
+                               if lm, ok := left.(map[string]any); ok && lm["__join__"] == true {
+                                       for k, v := range lm {
+                                               if k == "__join__" {
+                                                       continue
+                                               }
+                                               m[k] = v
+                                       }
+                               } else {
+                                       m[q.Var] = left
+                               }
+                               m[jc.Var] = right
+                               return m, nil
+                       },
+                       Left: jc.Left != nil,
+               })
+       }
 
 	if q.Where != nil {
 		opts.Where = func(item any) (bool, error) {

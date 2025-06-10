@@ -1,0 +1,14 @@
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+let orders = [
+  { id: 100, customerId: 1 },
+  { id: 101, customerId: 3 }
+]
+let result = from o in orders
+             left join c in customers on o.customerId == c.id
+             select {
+               orderId: o.id,
+               customer: c
+             }

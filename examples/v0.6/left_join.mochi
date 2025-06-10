@@ -1,0 +1,28 @@
+// left_join.mochi
+// Left join: keep all orders, include customer if available
+
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Charlie" }
+]
+
+let orders = [
+  { id: 100, customerId: 1, total: 250 },
+  { id: 101, customerId: 2, total: 125 },
+  { id: 102, customerId: 1, total: 300 },
+  { id: 103, customerId: 4, total: 80 } // No matching customer
+]
+
+let result = from o in orders
+             left join c in customers on o.customerId == c.id
+             select {
+               orderId: o.id,
+               customer: c,
+               total: o.total
+             }
+
+print("--- Left Join using syntax ---")
+for entry in result {
+  print("Order", entry.orderId, "customer", entry.customer, "- $", entry.total)
+}
