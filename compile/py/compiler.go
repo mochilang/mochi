@@ -1028,13 +1028,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinSrcs[i] = js
-		loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(j.Var), js))
 		on, err := c.compileExpr(j.On)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		condParts = append(condParts, on)
+		if j.Left != nil {
+			loops = append(loops, fmt.Sprintf("%s in ([ %s for %s in _iter(%s) if %s ] or [None])", sanitizeName(j.Var), sanitizeName(j.Var), sanitizeName(j.Var), js, on))
+		} else {
+			loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(j.Var), js))
+			condParts = append(condParts, on)
+		}
 	}
 	if q.Where != nil {
 		w, err := c.compileExpr(q.Where)

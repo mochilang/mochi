@@ -1083,6 +1083,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
+	joinLeft := make([]bool, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -1096,6 +1097,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinOns[i] = on
+		if j.Left != nil {
+			joinLeft[i] = true
+		}
 	}
 	val, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -1108,29 +1112,50 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "for (const " + fvar + " of " + fromSrcs[i] + ") {\n")
 		indent += "\t"
 	}
-	for i := range q.Joins {
-		jvar := sanitizeName(q.Joins[i].Var)
-		b.WriteString(indent + "for (const " + jvar + " of " + joinSrcs[i] + ") {\n")
-		indent += "\t"
-		b.WriteString(indent + "if (!(" + joinOns[i] + ")) { continue }\n")
-	}
-	if q.Where != nil {
-		cond, err := c.compileExpr(q.Where)
-		if err != nil {
-			c.env = orig
-			return "", err
+
+	var joinLoops func(int, string)
+	joinLoops = func(idx int, ind string) {
+		if idx == len(q.Joins) {
+			if q.Where != nil {
+				cond, err := c.compileExpr(q.Where)
+				if err != nil {
+					return
+				}
+				b.WriteString(ind + "if (!(" + cond + ")) { continue }\n")
+			}
+			if simple {
+				b.WriteString(ind + "_res.push(" + val + ")\n")
+			} else {
+				b.WriteString(ind + "_items.push(" + sanitizeName(q.Var) + ");\n")
+			}
+			return
 		}
-		b.WriteString(indent + "if (!(" + cond + ")) { continue }\n")
+
+		jvar := sanitizeName(q.Joins[idx].Var)
+		jsrc := joinSrcs[idx]
+		left := joinLeft[idx]
+		if left {
+			b.WriteString(ind + "let _matched" + fmt.Sprint(idx) + " = false;\n")
+		}
+		b.WriteString(ind + "for (const " + jvar + " of " + jsrc + ") {\n")
+		ni := ind + "\t"
+		b.WriteString(ni + "if (!(" + joinOns[idx] + ")) { continue }\n")
+		if left {
+			b.WriteString(ni + "_matched" + fmt.Sprint(idx) + " = true;\n")
+		}
+		joinLoops(idx+1, ni)
+		b.WriteString(ind + "}\n")
+		if left {
+			b.WriteString(ind + "if (!_matched" + fmt.Sprint(idx) + ") {\n")
+			ni2 := ind + "\t"
+			b.WriteString(ni2 + "const " + jvar + " = undefined;\n")
+			joinLoops(idx+1, ni2)
+			b.WriteString(ind + "}\n")
+		}
 	}
-	if simple {
-		b.WriteString(indent + "_res.push(" + val + ")\n")
-	} else {
-		b.WriteString(indent + "_items.push(" + sanitizeName(q.Var) + ");\n")
-	}
-	for i := len(q.Joins) - 1; i >= 0; i-- {
-		indent = indent[:len(indent)-1]
-		b.WriteString(indent + "}\n")
-	}
+
+	joinLoops(0, indent)
+
 	for i := len(q.Froms) - 1; i >= 0; i-- {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
