@@ -544,24 +544,12 @@ func (i *Interpreter) evalWhile(stmt *parser.WhileStmt) error {
 			return nil
 		}
 
-		var cont bool
-		for _, s := range stmt.Body {
-			if err := i.evalStmt(s); err != nil {
-				switch err.(type) {
-				case continueSignal:
-					cont = true
-					err = nil
-				case breakSignal:
-					return nil
-				case returnSignal:
-					return err
-				default:
-					return err
-				}
-				if cont {
-					break
-				}
+		cont, err := i.execLoopBody(stmt.Body)
+		if err != nil {
+			if _, ok := err.(breakSignal); ok {
+				return nil
 			}
+			return err
 		}
 		if cont {
 			continue
@@ -594,24 +582,12 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 		}
 		for x := fromInt; x < toInt; x++ {
 			child.SetValue(stmt.Name, x, true)
-			var cont bool
-			for _, s := range stmt.Body {
-				if err := i.evalStmt(s); err != nil {
-					switch err.(type) {
-					case continueSignal:
-						cont = true
-						err = nil
-					case breakSignal:
-						return nil
-					case returnSignal:
-						return err
-					default:
-						return err
-					}
-					if cont {
-						break
-					}
+			cont, err := i.execLoopBody(stmt.Body)
+			if err != nil {
+				if _, ok := err.(breakSignal); ok {
+					return nil
 				}
+				return err
 			}
 			if cont {
 				continue
@@ -621,165 +597,15 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 	}
 
 	// --- Collection loop: `for x in list/map/string` ---
-	switch coll := fromVal.(type) {
-	case []any:
-		for _, item := range coll {
-			child.SetValue(stmt.Name, item, true)
-			var cont bool
-			for _, s := range stmt.Body {
-				if err := i.evalStmt(s); err != nil {
-					switch err.(type) {
-					case continueSignal:
-						cont = true
-						err = nil
-					case breakSignal:
-						return nil
-					case returnSignal:
-						return err
-					default:
-						return err
-					}
-					if cont {
-						break
-					}
-				}
-			}
-			if cont {
-				continue
-			}
+	err = i.forEach(stmt.Pos, fromVal, func(item any) (bool, error) {
+		child.SetValue(stmt.Name, item, true)
+		return i.execLoopBody(stmt.Body)
+	})
+	if err != nil {
+		if _, ok := err.(breakSignal); ok {
+			return nil
 		}
-	case *data.Group:
-		for _, item := range coll.Items {
-			child.SetValue(stmt.Name, item, true)
-			var cont bool
-			for _, s := range stmt.Body {
-				if err := i.evalStmt(s); err != nil {
-					switch err.(type) {
-					case continueSignal:
-						cont = true
-						err = nil
-					case breakSignal:
-						return nil
-					case returnSignal:
-						return err
-					default:
-						return err
-					}
-					if cont {
-						break
-					}
-				}
-			}
-			if cont {
-				continue
-			}
-		}
-	case map[any]any:
-		for k := range coll {
-			child.SetValue(stmt.Name, k, true)
-			var cont bool
-			for _, s := range stmt.Body {
-				if err := i.evalStmt(s); err != nil {
-					switch err.(type) {
-					case continueSignal:
-						cont = true
-						err = nil
-					case breakSignal:
-						return nil
-					case returnSignal:
-						return err
-					default:
-						return err
-					}
-					if cont {
-						break
-					}
-				}
-			}
-			if cont {
-				continue
-			}
-		}
-	case map[string]any:
-		for k := range coll {
-			child.SetValue(stmt.Name, k, true)
-			var cont bool
-			for _, s := range stmt.Body {
-				if err := i.evalStmt(s); err != nil {
-					switch err.(type) {
-					case continueSignal:
-						cont = true
-						err = nil
-					case breakSignal:
-						return nil
-					case returnSignal:
-						return err
-					default:
-						return err
-					}
-					if cont {
-						break
-					}
-				}
-			}
-			if cont {
-				continue
-			}
-		}
-	case map[int]any:
-		for k := range coll {
-			child.SetValue(stmt.Name, k, true)
-			var cont bool
-			for _, s := range stmt.Body {
-				if err := i.evalStmt(s); err != nil {
-					switch err.(type) {
-					case continueSignal:
-						cont = true
-						err = nil
-					case breakSignal:
-						return nil
-					case returnSignal:
-						return err
-					default:
-						return err
-					}
-					if cont {
-						break
-					}
-				}
-			}
-			if cont {
-				continue
-			}
-		}
-	case string:
-		for _, r := range coll {
-			child.SetValue(stmt.Name, string(r), true)
-			var cont bool
-			for _, s := range stmt.Body {
-				if err := i.evalStmt(s); err != nil {
-					switch err.(type) {
-					case continueSignal:
-						cont = true
-						err = nil
-					case breakSignal:
-						return nil
-					case returnSignal:
-						return err
-					default:
-						return err
-					}
-					if cont {
-						break
-					}
-				}
-			}
-			if cont {
-				continue
-			}
-		}
-	default:
-		return errInvalidIterator(stmt.Pos, fmt.Sprintf("%T", fromVal))
+		return err
 	}
 
 	return nil
@@ -2059,6 +1885,96 @@ func applyUnaryValue(pos lexer.Position, op string, val Value) (Value, error) {
 
 func truthy(val any) bool {
 	return anyToValue(val).Truthy()
+}
+
+// execLoopBody executes a sequence of statements that form the body of a loop.
+// It returns true if a `continue` statement was encountered. Any `break` or
+// `return` signals are passed back to the caller as errors.
+func (i *Interpreter) execLoopBody(body []*parser.Statement) (bool, error) {
+	for _, s := range body {
+		if err := i.evalStmt(s); err != nil {
+			switch err.(type) {
+			case continueSignal:
+				return true, nil
+			case breakSignal, returnSignal:
+				return false, err
+			default:
+				return false, err
+			}
+		}
+	}
+	return false, nil
+}
+
+// forEach iterates over any supported collection type and invokes fn for each
+// item. The callback may return a `continue` flag to skip to the next iteration.
+// Errors, including break and return signals, are propagated to the caller.
+func (i *Interpreter) forEach(pos lexer.Position, src any, fn func(any) (bool, error)) error {
+	switch coll := src.(type) {
+	case []any:
+		for _, item := range coll {
+			cont, err := fn(item)
+			if err != nil {
+				return err
+			}
+			if cont {
+				continue
+			}
+		}
+	case *data.Group:
+		for _, item := range coll.Items {
+			cont, err := fn(item)
+			if err != nil {
+				return err
+			}
+			if cont {
+				continue
+			}
+		}
+	case map[any]any:
+		for k := range coll {
+			cont, err := fn(k)
+			if err != nil {
+				return err
+			}
+			if cont {
+				continue
+			}
+		}
+	case map[string]any:
+		for k := range coll {
+			cont, err := fn(k)
+			if err != nil {
+				return err
+			}
+			if cont {
+				continue
+			}
+		}
+	case map[int]any:
+		for k := range coll {
+			cont, err := fn(k)
+			if err != nil {
+				return err
+			}
+			if cont {
+				continue
+			}
+		}
+	case string:
+		for _, r := range coll {
+			cont, err := fn(string(r))
+			if err != nil {
+				return err
+			}
+			if cont {
+				continue
+			}
+		}
+	default:
+		return errInvalidIterator(pos, fmt.Sprintf("%T", src))
+	}
+	return nil
 }
 
 func castValue(pos lexer.Position, t types.Type, v any) (any, error) {
