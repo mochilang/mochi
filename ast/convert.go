@@ -449,6 +449,14 @@ func FromPrimary(p *parser.Primary) *Node {
 		}
 		return n
 
+	case p.Load != nil:
+		n := &Node{Kind: "load"}
+		n.Children = append(n.Children, &Node{Kind: "string", Value: p.Load.Path})
+		if p.Load.Type != nil {
+			n.Children = append(n.Children, FromTypeRef(p.Load.Type))
+		}
+		return n
+
 	case p.Lit != nil:
 		switch {
 		case p.Lit.Float != nil:

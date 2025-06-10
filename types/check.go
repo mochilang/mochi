@@ -1318,6 +1318,13 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return AnyType{}, nil
 
+	case p.Load != nil:
+		var elem Type = AnyType{}
+		if p.Load.Type != nil {
+			elem = resolveTypeRef(p.Load.Type, env)
+		}
+		return ListType{Elem: elem}, nil
+
 	case p.Match != nil:
 		return checkMatchExpr(p.Match, env, expected)
 

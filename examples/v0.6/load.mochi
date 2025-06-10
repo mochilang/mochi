@@ -1,0 +1,21 @@
+// Define a type for the record structure
+type Person {
+  name: string,
+  age: int
+}
+
+// Load the dataset with type enforcement
+let people = load "people.csv" as Person
+
+// Query only adults
+let adults = from person in people
+             where person.age >= 18
+             select {
+               name: person.name,
+               age: person.age
+             }
+
+// Print each adult
+for person in adults {
+  print(person.name, "is", person.age, "years old")
+}
