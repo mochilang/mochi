@@ -14,6 +14,7 @@ import (
 	"mochi/parser"
 	"mochi/runtime/agent"
 	"mochi/runtime/data"
+	"mochi/runtime/extern"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
 	"mochi/runtime/stream"
@@ -24,39 +25,41 @@ import (
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
 type Interpreter struct {
-	prog        *parser.Program
-	env         *types.Env
-	types       *types.Env
-	streams     map[string]stream.Stream
-	handlers    map[string][]onHandler
-	subs        []stream.Subscriber
-	cancels     []context.CancelFunc
-	wg          *sync.WaitGroup
-	agents      []*agent.Agent
-	externTypes map[string]*parser.ExternTypeDecl
-	externVars  map[string]*parser.ExternVarDecl
-	externFuncs map[string]*parser.ExternFunDecl
-	memoize     bool
-	memo        map[string]map[string]any
+	prog          *parser.Program
+	env           *types.Env
+	types         *types.Env
+	streams       map[string]stream.Stream
+	handlers      map[string][]onHandler
+	subs          []stream.Subscriber
+	cancels       []context.CancelFunc
+	wg            *sync.WaitGroup
+	agents        []*agent.Agent
+	externTypes   map[string]*parser.ExternTypeDecl
+	externVars    map[string]*parser.ExternVarDecl
+	externFuncs   map[string]*parser.ExternFunDecl
+	externObjects map[string]*parser.ExternObjectDecl
+	memoize       bool
+	memo          map[string]map[string]any
 }
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 	return &Interpreter{
 		prog: prog,
 		// env:   types.NewEnv(nil),
-		env:         typesEnv,
-		types:       typesEnv,
-		streams:     map[string]stream.Stream{},
-		handlers:    map[string][]onHandler{},
-		subs:        []stream.Subscriber{},
-		cancels:     []context.CancelFunc{},
-		wg:          &sync.WaitGroup{},
-		agents:      []*agent.Agent{},
-		externTypes: map[string]*parser.ExternTypeDecl{},
-		externVars:  map[string]*parser.ExternVarDecl{},
-		externFuncs: map[string]*parser.ExternFunDecl{},
-		memoize:     false,
-		memo:        map[string]map[string]any{},
+		env:           typesEnv,
+		types:         typesEnv,
+		streams:       map[string]stream.Stream{},
+		handlers:      map[string][]onHandler{},
+		subs:          []stream.Subscriber{},
+		cancels:       []context.CancelFunc{},
+		wg:            &sync.WaitGroup{},
+		agents:        []*agent.Agent{},
+		externTypes:   map[string]*parser.ExternTypeDecl{},
+		externVars:    map[string]*parser.ExternVarDecl{},
+		externFuncs:   map[string]*parser.ExternFunDecl{},
+		externObjects: map[string]*parser.ExternObjectDecl{},
+		memoize:       false,
+		memo:          map[string]map[string]any{},
 	}
 }
 
@@ -401,6 +404,10 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 	case s.ExternFun != nil:
 		// Placeholder for registering external functions later
 		i.externFuncs[s.ExternFun.Name] = s.ExternFun
+		return nil
+
+	case s.ExternObject != nil:
+		i.externObjects[s.ExternObject.Name] = s.ExternObject
 		return nil
 
 	case s.Stream != nil:
@@ -849,11 +856,14 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 	case p.Selector != nil:
 		val, err := i.env.GetValue(p.Selector.Root)
 		if err != nil {
-			if fn, ok := i.env.GetFunc(p.Selector.Root); ok {
+			if v, ok := extern.Get(p.Selector.Root); ok {
+				val = v
+			} else if _, ok := i.externObjects[p.Selector.Root]; ok {
+				return nil, errExternObject(p.Pos, p.Selector.Root)
+			} else if fn, ok := i.env.GetFunc(p.Selector.Root); ok {
 				cl := closure{Name: p.Selector.Root, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
 				return cl, nil
-			}
-			if _, ok := i.types.FindUnionByVariant(p.Selector.Root); ok {
+			} else if _, ok := i.types.FindUnionByVariant(p.Selector.Root); ok {
 				val = map[string]any{"__name": p.Selector.Root}
 			} else {
 				return nil, errUndefinedVariable(p.Pos, p.Selector.Root)

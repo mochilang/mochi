@@ -40,29 +40,30 @@ type Program struct {
 }
 
 type Statement struct {
-	Pos        lexer.Position
-	Test       *TestBlock      `parser:"@@"`
-	Expect     *ExpectStmt     `parser:"| @@"`
-	Agent      *AgentDecl      `parser:"| @@"`
-	Stream     *StreamDecl     `parser:"| @@"`
-	Model      *ModelDecl      `parser:"| @@"`
-	Type       *TypeDecl       `parser:"| @@"`
-	ExternType *ExternTypeDecl `parser:"| @@"`
-	ExternVar  *ExternVarDecl  `parser:"| @@"`
-	ExternFun  *ExternFunDecl  `parser:"| @@"`
-	On         *OnHandler      `parser:"| @@"`
-	Emit       *EmitStmt       `parser:"| @@"`
-	Let        *LetStmt        `parser:"| @@"`
-	Var        *VarStmt        `parser:"| @@"`
-	Assign     *AssignStmt     `parser:"| @@"`
-	Fun        *FunStmt        `parser:"| @@"`
-	Return     *ReturnStmt     `parser:"| @@"`
-	If         *IfStmt         `parser:"| @@"`
-	While      *WhileStmt      `parser:"| @@"`
-	For        *ForStmt        `parser:"| @@"`
-	Break      *BreakStmt      `parser:"| @@"`
-	Continue   *ContinueStmt   `parser:"| @@"`
-	Expr       *ExprStmt       `parser:"| @@"`
+	Pos          lexer.Position
+	Test         *TestBlock        `parser:"@@"`
+	Expect       *ExpectStmt       `parser:"| @@"`
+	Agent        *AgentDecl        `parser:"| @@"`
+	Stream       *StreamDecl       `parser:"| @@"`
+	Model        *ModelDecl        `parser:"| @@"`
+	Type         *TypeDecl         `parser:"| @@"`
+	ExternType   *ExternTypeDecl   `parser:"| @@"`
+	ExternVar    *ExternVarDecl    `parser:"| @@"`
+	ExternFun    *ExternFunDecl    `parser:"| @@"`
+	ExternObject *ExternObjectDecl `parser:"| @@"`
+	On           *OnHandler        `parser:"| @@"`
+	Emit         *EmitStmt         `parser:"| @@"`
+	Let          *LetStmt          `parser:"| @@"`
+	Var          *VarStmt          `parser:"| @@"`
+	Assign       *AssignStmt       `parser:"| @@"`
+	Fun          *FunStmt          `parser:"| @@"`
+	Return       *ReturnStmt       `parser:"| @@"`
+	If           *IfStmt           `parser:"| @@"`
+	While        *WhileStmt        `parser:"| @@"`
+	For          *ForStmt          `parser:"| @@"`
+	Break        *BreakStmt        `parser:"| @@"`
+	Continue     *ContinueStmt     `parser:"| @@"`
+	Expr         *ExprStmt         `parser:"| @@"`
 }
 
 // --- Test and Expect ---
@@ -209,6 +210,10 @@ type ExternFunDecl struct {
 	Name   string   `parser:"'extern' 'fun' @Ident"`
 	Params []*Param `parser:"'(' [ @@ { ',' @@ } ] ')'"`
 	Return *TypeRef `parser:"[ ':' @@ ]"`
+}
+type ExternObjectDecl struct {
+	Pos  lexer.Position
+	Name string `parser:"'extern' 'object' @Ident"`
 }
 
 type Param struct {
