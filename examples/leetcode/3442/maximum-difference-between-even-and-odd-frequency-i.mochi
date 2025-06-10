@@ -1,0 +1,30 @@
+fun maxDiffEvenOdd(s: string): int {
+  let counts = from ch in s
+               group by ch into g
+               select {
+                 ch: g.key,
+                 freq: count(g)
+               }
+  var maxOdd = -1
+  var minEven = 1_000_000
+  for item in counts {
+    if item.freq % 2 == 1 {
+      if item.freq > maxOdd {
+        maxOdd = item.freq
+      }
+    } else {
+      if item.freq < minEven {
+        minEven = item.freq
+      }
+    }
+  }
+  return maxOdd - minEven
+}
+
+test "example 1" {
+  expect maxDiffEvenOdd("aaaaabbc") == 3
+}
+
+test "example 2" {
+  expect maxDiffEvenOdd("abcabcab") == 1
+}
