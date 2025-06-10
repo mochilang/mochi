@@ -33,5 +33,15 @@ return args[0] + args[1]
 fmt.Println(result) // 5
 ```
 
+`Attr` can retrieve variables or call functions dynamically:
+
+```go
+v, _ := python.Attr("math", "pi")
+fmt.Println(v) // 3.141592653589793
+
+res, _ := python.Attr("math", "pow", 2, 3)
+fmt.Println(res) // 8
+```
+
 This lightweight approach avoids cgo dependencies while making it easy
 to leverage Python's vast ecosystem from Mochi programs.
