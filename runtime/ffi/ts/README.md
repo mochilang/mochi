@@ -1,11 +1,10 @@
 # TypeScript FFI Runtime
 
-The `runtime/ffi/ts` package provides a minimal foreign function interface for
-running Mochi programs compiled to TypeScript. It exposes a small registry that
-allows host applications to register native TypeScript functions that can be
-invoked from generated Mochi code. The goal is to keep the runtime lightweight
-while making it easy to integrate with existing JavaScript or TypeScript
-libraries.
+The `runtime/ffi/ts` package provides a lightweight foreign function interface
+for running Mochi programs compiled to TypeScript. It exposes a registry of
+values and functions that can be looked up dynamically at runtime. The goal is
+to keep the API small while making it easy to integrate with existing
+JavaScript or TypeScript libraries.
 
 ## Goals
 
@@ -21,36 +20,41 @@ import { register, call, loadModule } from "./ffi.ts";
 // Register a simple function
 register("add", (a: number, b: number) => a + b);
 
-// Dynamically load functions from another module
+// Register a value
+register("answer", 42);
+
+// Dynamically load values from another module
 await loadModule("./math.ts");
 
 // Call a registered function from Mochi
 const result = await call("add", 1, 2);
+const ans = await call("answer");
 ```
 
-All functions return `Promise<any>` so that both synchronous and asynchronous
+All lookups return `Promise<any>` so that both synchronous and asynchronous
 handlers are supported. Mochi's TypeScript compiler emits calls to `call()` when
-an `ffi` function is invoked in source code.
+an `ffi` expression is evaluated in the source code.
 
 ## API
 
-### `register(name: string, fn: (...args: any[]) => any)`
-Registers a function under the given name.
+### `register(name: string, value: any)`
+Registers a function or value under the given name.
 
 ### `call(name: string, ...args: any[]): Promise<any>`
-Invokes a registered function. An error is thrown if the name is unknown.
+Looks up the named symbol. If it is a function it is invoked with `args`,
+otherwise the value is returned. An error is thrown if the symbol is unknown or
+if arguments are provided for a non-function.
 
 ### `loadModule(path: string): Promise<void>`
-Dynamically imports the module at `path`. The module should call `register()`
-to expose its functions.
+Dynamically imports the module at `path` and automatically registers all of its
+exports.
 
 ## Example Module
 
 ```ts
 // math.ts
-import { register } from "./ffi.ts";
-
-register("square", (n: number) => n * n);
+export const pi = 3.14;
+export function square(n: number) { return n * n; }
 ```
 
 With this design, Mochi programs can easily access existing TypeScript code
