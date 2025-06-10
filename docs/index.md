@@ -14,6 +14,7 @@ The language overview is split into individual topics for easy navigation:
 - [Control Flow](features/control-flow.md)
 - [Functions](features/functions.md)
 - [Collections](features/collections.md)
+- [Dataset Queries](features/datasets.md)
 - [Tests](features/tests.md)
 - [Generative AI](features/generative-ai.md)
 - [HTTP Fetch](features/http-fetch.md)

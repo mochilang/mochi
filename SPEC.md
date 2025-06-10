@@ -443,6 +443,21 @@ let created: Todo = fetch "https://example.com/todos" with {
 }
 ```
 
+### Dataset Queries
+
+`from` expressions iterate over lists with optional filtering, sorting and projection.
+
+```mochi
+let people = [
+  { name: "Alice", age: 30 },
+  { name: "Bob", age: 15 }
+]
+
+let names = from p in people
+            where p.age >= 18
+            select p.name
+```
+
 ## 6. Functions
 
 Functions are first-class. Parameters are typed, and the return type may be omitted in block-bodied functions if `return` is used. Functions may capture variables from their enclosing scope, forming closures.
