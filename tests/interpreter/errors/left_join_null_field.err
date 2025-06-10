@@ -1,0 +1,8 @@
+error[I007]: cannot access field `name` on non-object of type <nil>
+  --> tests/interpreter/errors/left_join_null_field.mochi:9:21
+
+  9 |              select c.name
+    |                     ^
+
+help:
+  Access fields only on objects or maps.
