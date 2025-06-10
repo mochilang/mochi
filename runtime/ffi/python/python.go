@@ -46,17 +46,30 @@ func (r *Runtime) Exec(code string, args ...any) (any, error) {
 }
 
 // Call executes fn from the given module with the provided arguments.
-//
-// The arguments are encoded to JSON and exposed to the Python process
-// via the MOCHI_ARGS environment variable. The function's return value
-// must be JSON serialisable and is decoded into an arbitrary Go value.
+// It is a specialised version of Attr that requires the attribute to be
+// callable.
 func Call(module, fn string, args ...any) (any, error) {
-	src := fmt.Sprintf(`import json, os, importlib, sys
+	return Attr(module, fn, args...)
+}
+
+// Attr returns a module attribute. If the attribute is a callable it is
+// invoked with the provided arguments, otherwise the arguments must be empty
+// and the raw value is returned. The arguments are passed via the MOCHI_ARGS
+// environment variable as JSON and the result is decoded from the process
+// output.
+func Attr(module, name string, args ...any) (any, error) {
+	src := fmt.Sprintf(`import json, os, importlib, sys, inspect
 args = json.loads(os.environ.get("MOCHI_ARGS", "[]"))
 mod = importlib.import_module("%s")
-res = getattr(mod, "%s")(*args)
+attr = getattr(mod, "%s")
+if inspect.isroutine(attr):
+    res = attr(*args)
+else:
+    if len(args) != 0:
+        raise TypeError("%s.%s is not callable")
+    res = attr
 json.dump(res, sys.stdout)
-`, module, fn)
+`, module, name, module, name)
 	return run(src, args)
 }
 
@@ -83,6 +96,9 @@ func run(code string, args []any) (any, error) {
 	}
 	file.Close()
 
+	if args == nil {
+		args = []any{}
+	}
 	data, err := json.Marshal(args)
 	if err != nil {
 		return nil, err
