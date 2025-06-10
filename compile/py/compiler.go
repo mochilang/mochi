@@ -986,6 +986,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.use("_iter")
 
+	hasSide := false
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			hasSide = true
+			break
+		}
+	}
+
 	child := types.NewEnv(c.env)
 	var elemType types.Type = types.AnyType{}
 	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
@@ -1010,17 +1018,90 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	orig := c.env
 	c.env = child
-	loops := []string{fmt.Sprintf("%s in _iter(%s)", sanitizeName(q.Var), src)}
-	for _, f := range q.Froms {
+
+	if !hasSide {
+		loops := []string{fmt.Sprintf("%s in _iter(%s)", sanitizeName(q.Var), src)}
+		for _, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(f.Var), fs))
+		}
+		condParts := []string{}
+		joinSrcs := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinSrcs[i] = js
+			loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(j.Var), js))
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			condParts = append(condParts, on)
+		}
+		if q.Where != nil {
+			w, err := c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			condParts = append(condParts, w)
+		}
+		c.env = orig
+		cond := ""
+		if len(condParts) > 0 {
+			cond = " if " + strings.Join(condParts, " and ")
+		}
+		if q.Sort == nil && q.Skip == nil && q.Take == nil {
+			return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
+		}
+
+		items := fmt.Sprintf("[ %s for %s%s ]", sanitizeName(q.Var), strings.Join(loops, " for "), cond)
+		if q.Sort != nil {
+			s, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			items = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", items, sanitizeName(q.Var), s)
+		}
+		if q.Skip != nil {
+			sk, err := c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			items = fmt.Sprintf("(%s)[%s:]", items, sk)
+		}
+		if q.Take != nil {
+			tk, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			items = fmt.Sprintf("(%s)[:%s]", items, tk)
+		}
+		return fmt.Sprintf("[ %s for %s in %s ]", sel, sanitizeName(q.Var), items), nil
+	}
+
+	fromSrcs := make([]string, len(q.Froms))
+	varNames := []string{sanitizeName(q.Var)}
+	for i, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(f.Var), fs))
+		fromSrcs[i] = fs
+		varNames = append(varNames, sanitizeName(f.Var))
 	}
-	condParts := []string{}
 	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	paramCopy := append([]string(nil), varNames...)
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -1028,54 +1109,110 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinSrcs[i] = js
-		loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(j.Var), js))
 		on, err := c.compileExpr(j.On)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		condParts = append(condParts, on)
+		joinOns[i] = on
+		varNames = append(varNames, sanitizeName(j.Var))
 	}
+	val, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var whereExpr, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
-		w, err := c.compileExpr(q.Where)
+		whereExpr, err = c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		condParts = append(condParts, w)
 	}
-	c.env = orig
-	cond := ""
-	if len(condParts) > 0 {
-		cond = " if " + strings.Join(condParts, " and ")
-	}
-	if q.Sort == nil && q.Skip == nil && q.Take == nil {
-		return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
-	}
-
-	items := fmt.Sprintf("[ %s for %s%s ]", sanitizeName(q.Var), strings.Join(loops, " for "), cond)
 	if q.Sort != nil {
-		s, err := c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
-		items = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", items, sanitizeName(q.Var), s)
 	}
 	if q.Skip != nil {
-		sk, err := c.compileExpr(q.Skip)
+		skipExpr, err = c.compileExpr(q.Skip)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
-		items = fmt.Sprintf("(%s)[%s:]", items, sk)
 	}
 	if q.Take != nil {
-		tk, err := c.compileExpr(q.Take)
+		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
-		items = fmt.Sprintf("(%s)[:%s]", items, tk)
 	}
-	return fmt.Sprintf("[ %s for %s in %s ]", sel, sanitizeName(q.Var), items), nil
+	c.env = orig
+
+	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+	params := []string{sanitizeName(q.Var)}
+	for i, fs := range fromSrcs {
+		joins = append(joins, fmt.Sprintf("{ 'items': %s }", fs))
+		params = append(params, sanitizeName(q.Froms[i].Var))
+	}
+	paramCopy = append([]string(nil), params...)
+	for i, js := range joinSrcs {
+		onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+		spec := fmt.Sprintf("{ 'items': %s, 'on': lambda %s: (%s)", js, strings.Join(onParams, ", "), joinOns[i])
+		if q.Joins[i].Side != nil {
+			side := *q.Joins[i].Side
+			if side == "left" || side == "outer" {
+				spec += ", 'left': True"
+			}
+			if side == "right" || side == "outer" {
+				spec += ", 'right': True"
+			}
+		}
+		spec += " }"
+		joins = append(joins, spec)
+		paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+	}
+	allParams := strings.Join(paramCopy, ", ")
+	selectFn := fmt.Sprintf("lambda %s: %s", allParams, val)
+	var whereFn, sortFn string
+	if whereExpr != "" {
+		whereFn = fmt.Sprintf("lambda %s: (%s)", allParams, whereExpr)
+	}
+	if sortExpr != "" {
+		sortFn = fmt.Sprintf("lambda %s: (%s)", allParams, sortExpr)
+	}
+	var b strings.Builder
+	b.WriteString("(lambda:\n")
+	b.WriteString("\t_src = " + src + "\n")
+	b.WriteString("\treturn _query(_src, [\n")
+	for i, j := range joins {
+		b.WriteString("\t\t" + j)
+		if i != len(joins)-1 {
+			b.WriteString(",")
+		}
+		b.WriteString("\n")
+	}
+	b.WriteString("\t], { 'select': " + selectFn)
+	if whereFn != "" {
+		b.WriteString(", 'where': " + whereFn)
+	}
+	if sortFn != "" {
+		b.WriteString(", 'sortKey': " + sortFn)
+	}
+	if skipExpr != "" {
+		b.WriteString(", 'skip': " + skipExpr)
+	}
+	if takeExpr != "" {
+		b.WriteString(", 'take': " + takeExpr)
+	}
+	b.WriteString(" })\n")
+	b.WriteString(")()")
+	c.use("_query")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
@@ -1295,6 +1432,67 @@ var helperAgent = "import asyncio\n" +
 	"    def get(self, name):\n" +
 	"        return self.state.get(name)\n"
 
+var helperQuery = "def _query(src, joins, opts):\n" +
+	"    items = [[v] for v in src]\n" +
+	"    for j in joins:\n" +
+	"        joined = []\n" +
+	"        if j.get('right') and j.get('left'):\n" +
+	"            matched = [False] * len(j['items'])\n" +
+	"            for left in items:\n" +
+	"                m = False\n" +
+	"                for ri, right in enumerate(j['items']):\n" +
+	"                    keep = True\n" +
+	"                    if j.get('on'):\n" +
+	"                        keep = j['on'](*left, right)\n" +
+	"                    if not keep:\n" +
+	"                        continue\n" +
+	"                    m = True; matched[ri] = True\n" +
+	"                    joined.append(left + [right])\n" +
+	"                if not m:\n" +
+	"                    joined.append(left + [None])\n" +
+	"            for ri, right in enumerate(j['items']):\n" +
+	"                if not matched[ri]:\n" +
+	"                    undef = [None] * (len(items[0]) if items else 0)\n" +
+	"                    joined.append(undef + [right])\n" +
+	"        elif j.get('right'):\n" +
+	"            for right in j['items']:\n" +
+	"                m = False\n" +
+	"                for left in items:\n" +
+	"                    keep = True\n" +
+	"                    if j.get('on'):\n" +
+	"                        keep = j['on'](*left, right)\n" +
+	"                    if not keep:\n" +
+	"                        continue\n" +
+	"                    m = True; joined.append(left + [right])\n" +
+	"                if not m:\n" +
+	"                    undef = [None] * (len(items[0]) if items else 0)\n" +
+	"                    joined.append(undef + [right])\n" +
+	"        else:\n" +
+	"            for left in items:\n" +
+	"                m = False\n" +
+	"                for right in j['items']:\n" +
+	"                    keep = True\n" +
+	"                    if j.get('on'):\n" +
+	"                        keep = j['on'](*left, right)\n" +
+	"                    if not keep:\n" +
+	"                        continue\n" +
+	"                    m = True; joined.append(left + [right])\n" +
+	"                if j.get('left') and not m:\n" +
+	"                    joined.append(left + [None])\n" +
+	"        items = joined\n" +
+	"    if opts.get('where'):\n" +
+	"        items = [r for r in items if opts['where'](*r)]\n" +
+	"    if opts.get('sortKey'):\n" +
+	"        items.sort(key=lambda it: opts['sortKey'](*it))\n" +
+	"    if 'skip' in opts:\n" +
+	"        n = opts['skip']; items = items[n:] if n < len(items) else []\n" +
+	"    if 'take' in opts:\n" +
+	"        n = opts['take']; items = items[:n] if n < len(items) else items\n" +
+	"    res = []\n" +
+	"    for r in items:\n" +
+	"        res.append(opts['select'](*r))\n" +
+	"    return res\n"
+
 var helperMap = map[string]string{
 	"_index":      helperIndex,
 	"_gen_text":   helperGenText,
@@ -1306,6 +1504,7 @@ var helperMap = map[string]string{
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,
+	"_query":      helperQuery,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
