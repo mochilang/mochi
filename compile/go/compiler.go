@@ -915,7 +915,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args[i] = v
 			}
 			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
-			typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
+			if ft, ok := typ.(types.FuncType); ok {
+				typ = ft.Return
+			} else {
+				typ = types.AnyType{}
+			}
 		case op.Index != nil:
 			idx := op.Index
 			if idx.Colon == nil {
