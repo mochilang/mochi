@@ -1220,6 +1220,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
 	joinDirect := make([]bool, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	joinTypes := make([]string, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -1228,8 +1230,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		joinSrcs[i] = js
 		jt := c.inferExprType(j.Src)
-		if _, ok := jt.(types.ListType); ok {
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
 			joinDirect[i] = true
+			je = lt.Elem
 		}
 		on, err := c.compileExpr(j.On)
 		if err != nil {
@@ -1237,6 +1241,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinOns[i] = on
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+		t := goType(je)
+		if t == "" {
+			t = "any"
+		}
+		joinTypes[i] = t
 	}
 	retElem := goType(c.inferExprType(q.Select))
 	if retElem == "" {
@@ -1281,39 +1293,98 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		indent += "\t"
 	}
 
-	for i := range q.Joins {
-		jvar := sanitizeName(q.Joins[i].Var)
-		jsrc := joinSrcs[i]
-		if joinDirect[i] {
+	specialJoin := len(q.Joins) == 1 && (joinSides[0] == "left")
+	if specialJoin {
+		jvar := sanitizeName(q.Joins[0].Var)
+		jsrc := joinSrcs[0]
+		buf.WriteString(indent + "matched := false\n")
+		if joinDirect[0] {
 			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", jvar, jsrc))
 		} else {
 			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range _iter(%s) {\n", jvar, jsrc))
 		}
 		indent += "\t"
-		buf.WriteString(fmt.Sprintf(indent+"if !(%s) { continue }\n", joinOns[i]))
-	}
-
-	if cond != "" {
-		if simple {
-			buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
-			buf.WriteString(fmt.Sprintf(indent+"\tres = append(res, %s)\n", sel))
-			buf.WriteString(indent + "}\n")
-		} else {
-			buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
-			buf.WriteString(fmt.Sprintf(indent+"\titems = append(items, %s)\n", sanitizeName(q.Var)))
-			buf.WriteString(indent + "}\n")
-		}
+		buf.WriteString(fmt.Sprintf(indent+"if !(%s) { continue }\n", joinOns[0]))
+		buf.WriteString(indent + "matched = true\n")
 	} else {
-		if simple {
-			buf.WriteString(fmt.Sprintf(indent+"res = append(res, %s)\n", sel))
-		} else {
-			buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
+		for i := range q.Joins {
+			jvar := sanitizeName(q.Joins[i].Var)
+			jsrc := joinSrcs[i]
+			if joinDirect[i] {
+				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", jvar, jsrc))
+			} else {
+				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range _iter(%s) {\n", jvar, jsrc))
+			}
+			indent += "\t"
+			buf.WriteString(fmt.Sprintf(indent+"if !(%s) { continue }\n", joinOns[i]))
 		}
 	}
 
-	for i := len(q.Joins) - 1; i >= 0; i-- {
+	if specialJoin {
+		if cond != "" {
+			if simple {
+				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+				buf.WriteString(fmt.Sprintf(indent+"\tres = append(res, %s)\n", sel))
+				buf.WriteString(indent + "}\n")
+			} else {
+				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+				buf.WriteString(fmt.Sprintf(indent+"\titems = append(items, %s)\n", sanitizeName(q.Var)))
+				buf.WriteString(indent + "}\n")
+			}
+		} else {
+			if simple {
+				buf.WriteString(fmt.Sprintf(indent+"res = append(res, %s)\n", sel))
+			} else {
+				buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
+			}
+		}
 		indent = indent[:len(indent)-1]
 		buf.WriteString(indent + "}\n")
+		buf.WriteString(indent + "if !matched {\n")
+		indent += "\t"
+		buf.WriteString(fmt.Sprintf(indent+"var %s %s\n", sanitizeName(q.Joins[0].Var), joinTypes[0]))
+		if cond != "" {
+			if simple {
+				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+				buf.WriteString(fmt.Sprintf(indent+"\tres = append(res, %s)\n", sel))
+				buf.WriteString(indent + "}\n")
+			} else {
+				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+				buf.WriteString(fmt.Sprintf(indent+"\titems = append(items, %s)\n", sanitizeName(q.Var)))
+				buf.WriteString(indent + "}\n")
+			}
+		} else {
+			if simple {
+				buf.WriteString(fmt.Sprintf(indent+"res = append(res, %s)\n", sel))
+			} else {
+				buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
+			}
+		}
+		indent = indent[:len(indent)-1]
+		buf.WriteString(indent + "}\n")
+	} else {
+		if cond != "" {
+			if simple {
+				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+				buf.WriteString(fmt.Sprintf(indent+"\tres = append(res, %s)\n", sel))
+				buf.WriteString(indent + "}\n")
+			} else {
+				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+				buf.WriteString(fmt.Sprintf(indent+"\titems = append(items, %s)\n", sanitizeName(q.Var)))
+				buf.WriteString(indent + "}\n")
+			}
+		} else {
+			if simple {
+				buf.WriteString(fmt.Sprintf(indent+"res = append(res, %s)\n", sel))
+			} else {
+				buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
+			}
+		}
+
+		for i := len(q.Joins) - 1; i >= 0; i-- {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
 	}
 	for i := len(q.Froms) - 1; i >= 0; i-- {
 		indent = indent[:len(indent)-1]
