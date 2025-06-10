@@ -2106,12 +2106,13 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 		}
 
 		jc := j // capture
-		opts.Joins = append(opts.Joins, data.Join{
-			Items: joinList,
-			On: func(left, right any) (bool, error) {
-				setEnv(left)
-				child.SetValue(jc.Var, right, true)
-				cond, err := i.evalExpr(jc.On)
+               opts.Joins = append(opts.Joins, data.Join{
+                        Items: joinList,
+                        Left:  jc.Left != nil,
+                        On: func(left, right any) (bool, error) {
+                                setEnv(left)
+                                child.SetValue(jc.Var, right, true)
+                                cond, err := i.evalExpr(jc.On)
 				if err != nil {
 					return false, err
 				}

@@ -315,10 +315,11 @@ type FromClause struct {
 }
 
 type JoinClause struct {
-	Pos lexer.Position
-	Var string `parser:"'join' 'from' @Ident 'in'"`
-	Src *Expr  `parser:"@@"`
-	On  *Expr  `parser:"'on' @@"`
+        Pos  lexer.Position
+        Left *string `parser:"[ @'left' ]"`
+        Var  string  `parser:"'join' [ 'from' ] @Ident 'in'"`
+        Src  *Expr   `parser:"@@"`
+        On   *Expr   `parser:"'on' @@"`
 }
 
 type GroupByClause struct {
