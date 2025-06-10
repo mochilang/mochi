@@ -408,7 +408,6 @@ type stringMethod struct {
 	name string
 }
 
-
 func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, error) {
 	inst := &agentInstance{
 		decl:  decl,
@@ -847,7 +846,7 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 				continue
 			}
 		}
-       case *data.Group:
+	case *data.Group:
 		for _, item := range coll.Items {
 			child.SetValue(stmt.Name, item, true)
 			var cont bool
@@ -1428,8 +1427,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				return nil, errUndefinedVariable(p.Pos, p.Selector.Root)
 			}
 		}
-               for _, field := range p.Selector.Tail {
-                       if g, ok := val.(*data.Group); ok {
+		for _, field := range p.Selector.Tail {
+			if g, ok := val.(*data.Group); ok {
 				switch field {
 				case "key":
 					val = g.Key
@@ -1895,8 +1894,8 @@ func builtinCount(i *Interpreter, c *parser.CallExpr) (any, error) {
 	switch v := val.(type) {
 	case []any:
 		return len(v), nil
-       case *data.Group:
-               return len(v.Items), nil
+	case *data.Group:
+		return len(v.Items), nil
 	default:
 		return nil, fmt.Errorf("count() expects list or group, got %T", val)
 	}
@@ -1914,8 +1913,8 @@ func builtinAvg(i *Interpreter, c *parser.CallExpr) (any, error) {
 	switch v := val.(type) {
 	case []any:
 		list = v
-       case *data.Group:
-               list = v.Items
+	case *data.Group:
+		list = v.Items
 	default:
 		return nil, fmt.Errorf("avg() expects list or group, got %T", val)
 	}
@@ -2029,8 +2028,8 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 	switch v := src.(type) {
 	case []any:
 		list = v
-       case *data.Group:
-               list = v.Items
+	case *data.Group:
+		list = v.Items
 	default:
 		return nil, fmt.Errorf("query source must be list, got %T", src)
 	}
@@ -2042,9 +2041,67 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 
 	opts := data.QueryOptions{}
 
+	setEnv := func(item any) {
+		if m, ok := item.(map[string]any); ok && m["__join__"] == true {
+			for k, v := range m {
+				if k == "__join__" {
+					continue
+				}
+				child.SetValue(k, v, true)
+			}
+		} else {
+			child.SetValue(q.Var, item, true)
+		}
+	}
+
+	for _, j := range q.Joins {
+		srcVal, err := i.evalExpr(j.Src)
+		if err != nil {
+			return nil, err
+		}
+		var joinList []any
+		switch vv := srcVal.(type) {
+		case []any:
+			joinList = vv
+		case *data.Group:
+			joinList = vv.Items
+		default:
+			return nil, fmt.Errorf("join source must be list, got %T", srcVal)
+		}
+
+		jc := j // capture
+		opts.Joins = append(opts.Joins, data.Join{
+			Items: joinList,
+			On: func(left, right any) (bool, error) {
+				setEnv(left)
+				child.SetValue(jc.Var, right, true)
+				cond, err := i.evalExpr(jc.On)
+				if err != nil {
+					return false, err
+				}
+				return truthy(cond), nil
+			},
+			Merge: func(left, right any) (any, error) {
+				m := map[string]any{"__join__": true}
+				if lm, ok := left.(map[string]any); ok && lm["__join__"] == true {
+					for k, v := range lm {
+						if k == "__join__" {
+							continue
+						}
+						m[k] = v
+					}
+				} else {
+					m[q.Var] = left
+				}
+				m[jc.Var] = right
+				return m, nil
+			},
+		})
+	}
+
 	if q.Where != nil {
 		opts.Where = func(item any) (bool, error) {
-			child.SetValue(q.Var, item, true)
+			setEnv(item)
 			cond, err := i.evalExpr(q.Where)
 			if err != nil {
 				return false, err
@@ -2055,7 +2112,7 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 
 	if q.Group != nil {
 		opts.GroupBy = func(item any) (any, error) {
-			child.SetValue(q.Var, item, true)
+			setEnv(item)
 			return i.evalExpr(q.Group.Expr)
 		}
 		opts.SelectGroup = func(g *data.Group) (any, error) {
@@ -2064,14 +2121,14 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 		}
 	} else {
 		opts.Select = func(item any) (any, error) {
-			child.SetValue(q.Var, item, true)
+			setEnv(item)
 			return i.evalExpr(q.Select)
 		}
 	}
 
 	if q.Sort != nil {
 		opts.SortKey = func(item any) (any, error) {
-			child.SetValue(q.Var, item, true)
+			setEnv(item)
 			return i.evalExpr(q.Sort)
 		}
 	}
