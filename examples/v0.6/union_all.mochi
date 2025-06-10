@@ -1,0 +1,22 @@
+// union_all.mochi
+// Union ALL – include duplicates
+
+let listA = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+
+let listB = [
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Charlie" }
+]
+
+// Union all (no deduplication)
+let result = (from x in listA select x)
+             union all
+             (from x in listB select x)
+
+print("--- UNION ALL (with duplicates) ---")
+for x in result {
+  print("Customer", x.id, "-", x.name)
+}
