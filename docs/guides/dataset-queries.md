@@ -1,6 +1,8 @@
-## Dataset Queries
+# Dataset Queries
 
-`from` expressions treat lists as simple datasets. Combine optional `where`, `sort by`, `skip`, `take` and `select` clauses to shape the result.
+Mochi treats lists as in-memory datasets. The `from` expression provides a concise way to filter and transform these collections.
+
+## Selecting Data
 
 ```mochi
 let people = [
@@ -10,21 +12,15 @@ let people = [
   { name: "Diana", age: 45 }
 ]
 
-let adults = from person in people
-             where person.age >= 18
+let adults = from p in people
+             where p.age >= 18
              select {
-               name: person.name,
-               age: person.age,
-               is_senior: person.age >= 60
+               name: p.name,
+               age: p.age
              }
-
-for person in adults {
-  print(person.name, "is", person.age,
-        if person.is_senior { " (senior)" } else { "" })
-}
 ```
 
-Queries can also sort records and limit the results:
+## Sorting and Limiting
 
 ```mochi
 let products = [
@@ -42,13 +38,9 @@ let top = from p in products
           skip 1
           take 3
           select p
-
-for item in top {
-  print(item.name, "costs $", item.price)
-}
 ```
 
-Datasets can be joined together to combine related records:
+## Joining Lists
 
 ```mochi
 let result = from o in orders

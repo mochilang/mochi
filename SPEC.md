@@ -448,8 +448,8 @@ let created: Todo = fetch "https://example.com/todos" with {
 
 ### Dataset Queries
 
-`from` expressions iterate over lists with optional filtering, grouping, sorting,
-skipping and limiting before projecting the result.
+`from` expressions iterate over lists with optional filtering, joining,
+grouping, sorting, skipping and limiting before projecting the result.
 
 ```mochi
 let people = [
@@ -464,6 +464,18 @@ let stats = from p in people
             skip 1
             take 10
             select { city: g.key, count: len(g) }
+```
+
+Datasets can also be joined to combine records from multiple sources:
+
+```mochi
+let result = from o in orders
+             join from c in customers on o.customerId == c.id
+             select {
+               orderId: o.id,
+               customerName: c.name,
+               total: o.total
+             }
 ```
 
 ## 6. Functions
