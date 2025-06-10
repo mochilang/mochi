@@ -40,6 +40,7 @@ type Interpreter struct {
 	externObjects map[string]*parser.ExternObjectDecl
 	memoize       bool
 	memo          map[string]map[string]any
+	dataPlan      string
 }
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
@@ -60,11 +61,23 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		externObjects: map[string]*parser.ExternObjectDecl{},
 		memoize:       false,
 		memo:          map[string]map[string]any{},
+		dataPlan:      "memory",
 	}
 }
 
 func (i *Interpreter) SetProgram(prog *parser.Program) {
 	i.prog = prog
+}
+
+// SetDataPlan chooses how dataset queries are executed. Valid options are
+// "memory" and "duckdb".
+func (i *Interpreter) SetDataPlan(plan string) {
+	switch plan {
+	case "duckdb":
+		i.dataPlan = "duckdb"
+	default:
+		i.dataPlan = "memory"
+	}
 }
 
 func (i *Interpreter) checkExternObjects() error {
