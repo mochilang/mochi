@@ -17,3 +17,9 @@ extern fun exists(path: string): bool
 extern fun sin(x: float): float
 extern fun fetch(url: string): string
 extern fun generate_text(prompt: string): string
+
+// Extern objects can be referenced directly.
+// These calls will resolve to host implementations
+// registered via `runtime/extern`.
+
+console.log("running on", OS)

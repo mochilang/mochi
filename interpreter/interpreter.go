@@ -67,6 +67,15 @@ func (i *Interpreter) SetProgram(prog *parser.Program) {
 	i.prog = prog
 }
 
+func (i *Interpreter) checkExternObjects() error {
+	for name, decl := range i.externObjects {
+		if _, ok := extern.Get(name); !ok {
+			return errExternObject(decl.Pos, name)
+		}
+	}
+	return nil
+}
+
 // SetMemoization enables or disables memoization of pure function calls.
 func (i *Interpreter) SetMemoization(enable bool) {
 	i.memoize = enable
@@ -116,6 +125,9 @@ func formatDuration(d time.Duration) string {
 
 func (i *Interpreter) Run() error {
 	defer i.Close()
+	if err := i.checkExternObjects(); err != nil {
+		return err
+	}
 	/*
 		// Load all shared definitions (let, fun) first
 		for _, stmt := range i.prog.Statements {
@@ -142,6 +154,9 @@ func (i *Interpreter) Run() error {
 
 func (i *Interpreter) Test() error {
 	defer i.Close()
+	if err := i.checkExternObjects(); err != nil {
+		return err
+	}
 	var failures []error
 
 	// Preload all shared declarations (let, fun)
