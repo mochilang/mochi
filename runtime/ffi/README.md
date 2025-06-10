@@ -22,4 +22,6 @@ type Loader interface {
 ```
 
 The Go, TypeScript and Python runtimes expose concrete implementations of these
-APIs while also providing package level helpers for convenience.
+APIs while also providing package level helpers for convenience. The Go runtime
+can additionally load functions from modules compiled as plugins exposing an
+`Exports` map.

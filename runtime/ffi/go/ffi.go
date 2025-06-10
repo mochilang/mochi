@@ -2,6 +2,7 @@ package goffi
 
 import (
 	"fmt"
+	"plugin"
 	"reflect"
 
 	"mochi/runtime/ffi"
@@ -10,6 +11,7 @@ import (
 // Ensure *Runtime implements ffi.Caller and ffi.Registerer.
 var _ ffi.Caller = (*Runtime)(nil)
 var _ ffi.Registerer = (*Runtime)(nil)
+var _ ffi.Loader = (*Runtime)(nil)
 
 // Runtime maintains a registry of Go functions available to Mochi.
 type Runtime struct {
@@ -86,3 +88,33 @@ func (r *Runtime) Call(name string, args ...any) (any, error) {
 		return res, nil
 	}
 }
+
+// LoadModule implements ffi.Loader. The module must be a Go plugin built with
+// -buildmode=plugin that exports a variable named "Exports" of type
+// map[string]any. Each entry in the map is registered under its key.
+func (r *Runtime) LoadModule(path string) error {
+	p, err := plugin.Open(path)
+	if err != nil {
+		return fmt.Errorf("goffi: open plugin %s: %w", path, err)
+	}
+
+	sym, err := p.Lookup("Exports")
+	if err != nil {
+		return fmt.Errorf("goffi: plugin %s missing Exports: %w", path, err)
+	}
+
+	exports, ok := sym.(*map[string]any)
+	if !ok {
+		return fmt.Errorf("goffi: Exports has unexpected type %T", sym)
+	}
+
+	for name, fn := range *exports {
+		if err := r.Register(name, fn); err != nil {
+			return fmt.Errorf("goffi: register %s from %s: %w", name, path, err)
+		}
+	}
+	return nil
+}
+
+// LoadModule opens a plugin using the default runtime.
+func LoadModule(path string) error { return defaultRuntime.LoadModule(path) }

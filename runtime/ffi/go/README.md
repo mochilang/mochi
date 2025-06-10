@@ -2,7 +2,8 @@
 
 `runtime/ffi/go` exposes a small foreign function interface for calling native Go
 functions from Mochi. Functions are registered under a name and invoked by that
-name at runtime.
+name at runtime. In addition to manual registration, runtime modules can be
+loaded from Go plugins that expose an `Exports` map.
 
 ```go
 import goffi "mochi/runtime/ffi/go"
@@ -10,6 +11,30 @@ import goffi "mochi/runtime/ffi/go"
 func init() {
     goffi.Register("add", func(a, b int) int { return a + b })
 }
+```
+
+Modules built as Go plugins can automatically register functions by exporting an
+`Exports` map. Use `LoadModule` to load the plugin:
+
+```go
+err := goffi.LoadModule("./math.so")
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+The plugin should expose a global variable named `Exports`:
+
+```go
+package main
+
+import goffi "mochi/runtime/ffi/go"
+
+var Exports = map[string]any{
+    "square": func(n int) int { return n * n },
+}
+
+func main() {}
 ```
 
 A registered function can later be called dynamically:
