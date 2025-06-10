@@ -319,6 +319,42 @@ for a in adults {
 }
 ```
 
+### Joins
+
+Combine records from multiple lists using different join types.
+
+**Inner join** keeps only matching pairs:
+
+```mochi
+let result = from o in orders
+             join from c in customers on o.customerId == c.id
+             select { orderId: o.id, customer: c.name }
+```
+
+**Cross join** pairs every item from both lists:
+
+```mochi
+let pairs = from o in orders
+            from c in customers
+            select { order: o.id, customer: c.name }
+```
+
+**Left join** keeps all left items even if the right side has no match:
+
+```mochi
+let ordersWithCustomer = from o in orders
+                         left join c in customers on o.customerId == c.id
+                         select { orderId: o.id, customer: c }
+```
+
+**Right join** keeps all right items even if the left side has no match:
+
+```mochi
+let customersWithOrder = from c in customers
+                         right join o in orders on o.customerId == c.id
+                         select { customerName: c.name, order: o }
+```
+
 ### Tests
 
 ```mochi
