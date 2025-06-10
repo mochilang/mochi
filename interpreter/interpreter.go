@@ -1044,7 +1044,28 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return mhttp.FetchWith(urlStr, opts)
 
 	case p.Load != nil:
-		rows, err := data.LoadCSV(p.Load.Path)
+		format := "csv"
+		if p.Load.With != nil {
+			v, err := i.evalExpr(p.Load.With)
+			if err != nil {
+				return nil, err
+			}
+			opts := toAnyMap(v)
+			if f, ok := opts["format"].(string); ok {
+				format = f
+			}
+		}
+
+		var (
+			rows []map[string]any
+			err  error
+		)
+		switch format {
+		case "jsonl":
+			rows, err = data.LoadJSONL(p.Load.Path)
+		default:
+			rows, err = data.LoadCSV(p.Load.Path)
+		}
 		if err != nil {
 			return nil, err
 		}

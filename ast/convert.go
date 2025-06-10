@@ -455,6 +455,9 @@ func FromPrimary(p *parser.Primary) *Node {
 		if p.Load.Type != nil {
 			n.Children = append(n.Children, FromTypeRef(p.Load.Type))
 		}
+		if p.Load.With != nil {
+			n.Children = append(n.Children, FromExpr(p.Load.With))
+		}
 		return n
 
 	case p.Lit != nil:

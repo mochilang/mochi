@@ -1,0 +1,17 @@
+(program
+  (type Person
+    (field name (type string))
+    (field age (type int))
+    (field email (type string))
+  )
+  (let people
+    (load
+      (string people.jsonl)
+      (type Person)
+      (map
+        (entry (selector format) (string jsonl))
+      )
+    )
+  )
+)
+

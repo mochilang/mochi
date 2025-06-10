@@ -1,0 +1,7 @@
+type Person {
+  name: string
+  age: int
+  email: string
+}
+
+let people = load "people.jsonl" as Person with { format: "jsonl" }

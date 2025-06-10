@@ -1,0 +1,16 @@
+// load_with.mochi
+// Load JSONL file into a typed list with options
+
+extern type Person {
+  name: string,
+  age: int,
+  email: string
+}
+
+let people = load "people.jsonl" as Person with {
+  format: "jsonl"
+}
+
+for p in people {
+  print(p.name, "is", p.age, "years old. Email:", p.email)
+}
