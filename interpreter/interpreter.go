@@ -2054,6 +2054,42 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 		}
 	}
 
+	for _, f := range q.Froms {
+		srcVal, err := i.evalExpr(f.Src)
+		if err != nil {
+			return nil, err
+		}
+		var joinList []any
+		switch vv := srcVal.(type) {
+		case []any:
+			joinList = vv
+		case *data.Group:
+			joinList = vv.Items
+		default:
+			return nil, fmt.Errorf("join source must be list, got %T", srcVal)
+		}
+
+		fc := f
+		opts.Joins = append(opts.Joins, data.Join{
+			Items: joinList,
+			Merge: func(left, right any) (any, error) {
+				m := map[string]any{"__join__": true}
+				if lm, ok := left.(map[string]any); ok && lm["__join__"] == true {
+					for k, v := range lm {
+						if k == "__join__" {
+							continue
+						}
+						m[k] = v
+					}
+				} else {
+					m[q.Var] = left
+				}
+				m[fc.Var] = right
+				return m, nil
+			},
+		})
+	}
+
 	for _, j := range q.Joins {
 		srcVal, err := i.evalExpr(j.Src)
 		if err != nil {
