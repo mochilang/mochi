@@ -47,3 +47,25 @@ for item in top {
   print(item.name, "costs $", item.price)
 }
 ```
+
+You can join two lists on matching fields to combine related data:
+
+```mochi
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+
+let orders = [
+  { id: 100, customerId: 1, total: 250 },
+  { id: 101, customerId: 2, total: 125 }
+]
+
+let summary = from o in orders
+              join from c in customers on o.customerId == c.id
+              select { id: o.id, name: c.name, total: o.total }
+
+for row in summary {
+  print(row.name, "ordered $", row.total)
+}
+```

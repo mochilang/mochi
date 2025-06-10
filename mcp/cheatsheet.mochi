@@ -194,6 +194,21 @@ let adults = from p in people
              select p.name
 print(adults)
 
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+
+let orders = [
+  { id: 100, customerId: 1 },
+  { id: 101, customerId: 2 }
+]
+
+let summary = from o in orders
+              join from c in customers on o.customerId == c.id
+              select c.name
+print(summary)
+
 // 12. HTTP Fetch
 
 type Todo {

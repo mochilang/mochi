@@ -319,6 +319,26 @@ for a in adults {
 }
 ```
 
+Combine two lists using `join`:
+
+```mochi
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+
+let orders = [
+  { id: 100, customerId: 1, total: 250 },
+  { id: 101, customerId: 2, total: 125 }
+]
+
+let joined = from o in orders
+             join from c in customers on o.customerId == c.id
+             select { id: o.id, name: c.name }
+
+print(joined)
+```
+
 ### Tests
 
 ```mochi
