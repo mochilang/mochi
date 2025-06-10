@@ -1,0 +1,21 @@
+// intersect.mochi
+
+let listA = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Charlie" }
+]
+
+let listB = [
+  { id: 2, name: "Bob" },
+  { id: 4, name: "Diana" }
+]
+
+let result = (from x in listA select x)
+             intersect
+             (from x in listB select x)
+
+print("--- INTERSECT ---")
+for x in result {
+  print("Customer", x.id, "-", x.name)
+}
