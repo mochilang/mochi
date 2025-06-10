@@ -299,6 +299,9 @@ type QueryExpr struct {
 	Var    string `parser:"'from' @Ident 'in'"`
 	Source *Expr  `parser:"@@"`
 	Where  *Expr  `parser:"[ 'where' @@ ]"`
+	Sort   *Expr  `parser:"[ 'sort' 'by' @@ ]"`
+	Skip   *Expr  `parser:"[ 'skip' @@ ]"`
+	Take   *Expr  `parser:"[ 'take' @@ ]"`
 	Select *Expr  `parser:"'select' @@"`
 }
 

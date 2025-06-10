@@ -1937,11 +1937,13 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 	if !ok {
 		return nil, fmt.Errorf("query source must be list, got %T", src)
 	}
-	results := make([]any, 0, len(list))
+
 	child := types.NewEnv(i.env)
 	old := i.env
 	i.env = child
 	defer func() { i.env = old }()
+
+	items := make([]any, 0, len(list))
 	for _, item := range list {
 		child.SetValue(q.Var, item, true)
 		if q.Where != nil {
@@ -1953,6 +1955,84 @@ func (i *Interpreter) evalQuery(q *parser.QueryExpr) (any, error) {
 				continue
 			}
 		}
+		items = append(items, item)
+	}
+
+	if q.Sort != nil {
+		type pair struct {
+			item any
+			key  any
+		}
+		pairs := make([]pair, len(items))
+		for idx, it := range items {
+			child.SetValue(q.Var, it, true)
+			key, err := i.evalExpr(q.Sort)
+			if err != nil {
+				return nil, err
+			}
+			pairs[idx] = pair{it, key}
+		}
+		sort.Slice(pairs, func(i, j int) bool {
+			a, b := pairs[i].key, pairs[j].key
+			switch av := a.(type) {
+			case int:
+				switch bv := b.(type) {
+				case int:
+					return av < bv
+				case float64:
+					return float64(av) < bv
+				}
+			case float64:
+				switch bv := b.(type) {
+				case int:
+					return av < float64(bv)
+				case float64:
+					return av < bv
+				}
+			case string:
+				bs, _ := b.(string)
+				return av < bs
+			}
+			return fmt.Sprint(a) < fmt.Sprint(b)
+		})
+		for idx, p := range pairs {
+			items[idx] = p.item
+		}
+	}
+
+	if q.Skip != nil {
+		v, err := i.evalExpr(q.Skip)
+		if err != nil {
+			return nil, err
+		}
+		n, ok := v.(int)
+		if !ok {
+			return nil, fmt.Errorf("skip expects int, got %T", v)
+		}
+		if n < len(items) {
+			items = items[n:]
+		} else {
+			items = []any{}
+		}
+	}
+
+	if q.Take != nil {
+		v, err := i.evalExpr(q.Take)
+		if err != nil {
+			return nil, err
+		}
+		n, ok := v.(int)
+		if !ok {
+			return nil, fmt.Errorf("take expects int, got %T", v)
+		}
+		if n < len(items) {
+			items = items[:n]
+		}
+	}
+
+	results := make([]any, 0, len(items))
+	for _, item := range items {
+		child.SetValue(q.Var, item, true)
 		val, err := i.evalExpr(q.Select)
 		if err != nil {
 			return nil, err
