@@ -1272,18 +1272,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if skipExpr != "" {
-		buf.WriteString(fmt.Sprintf("\tn := %s\n", skipExpr))
-		buf.WriteString("\tif n < len(items) {\n")
-		buf.WriteString("\t\titems = items[n:]\n")
+		buf.WriteString(fmt.Sprintf("\tskip := %s\n", skipExpr))
+		buf.WriteString("\tif skip < len(items) {\n")
+		buf.WriteString("\t\titems = items[skip:]\n")
 		buf.WriteString("\t} else {\n")
 		buf.WriteString(fmt.Sprintf("\t\titems = []%s{}\n", elemGo))
 		buf.WriteString("\t}\n")
 	}
 
 	if takeExpr != "" {
-		buf.WriteString(fmt.Sprintf("\tn := %s\n", takeExpr))
-		buf.WriteString("\tif n < len(items) {\n")
-		buf.WriteString("\t\titems = items[:n]\n")
+		buf.WriteString(fmt.Sprintf("\ttake := %s\n", takeExpr))
+		buf.WriteString("\tif take < len(items) {\n")
+		buf.WriteString("\t\titems = items[:take]\n")
 		buf.WriteString("\t}\n")
 	}
 
