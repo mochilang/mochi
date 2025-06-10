@@ -1054,12 +1054,43 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		elemType = lt.Elem
 	}
 	child.SetVar(q.Var, elemType, true)
+	for _, j := range q.Joins {
+		jt := c.inferExprType(j.Src)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+	}
 	orig := c.env
 	c.env = child
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinSrcs[i] = js
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinOns[i] = on
+	}
 	val, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
 		return "", err
+	}
+	indent := "\t\t"
+	for i := range q.Joins {
+		jvar := sanitizeName(q.Joins[i].Var)
+		b.WriteString(indent + "for (const " + jvar + " of " + joinSrcs[i] + ") {\n")
+		indent += "\t"
+		b.WriteString(indent + "if (!(" + joinOns[i] + ")) { continue }\n")
 	}
 	if q.Where != nil {
 		cond, err := c.compileExpr(q.Where)
@@ -1067,12 +1098,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
-		b.WriteString("\t\tif (!(" + cond + ")) { continue }\n")
+		b.WriteString(indent + "if (!(" + cond + ")) { continue }\n")
 	}
 	if simple {
-		b.WriteString("\t\t_res.push(" + val + ")\n")
+		b.WriteString(indent + "_res.push(" + val + ")\n")
 	} else {
-		b.WriteString("\t\t_items.push(" + sanitizeName(q.Var) + ");\n")
+		b.WriteString(indent + "_items.push(" + sanitizeName(q.Var) + ");\n")
+	}
+	for i := len(q.Joins) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("\t}\n")
 
