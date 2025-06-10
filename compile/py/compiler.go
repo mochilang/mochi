@@ -992,6 +992,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		elemType = lt.Elem
 	}
 	child.SetVar(q.Var, elemType, true)
+	for _, f := range q.Froms {
+		ft := c.inferExprType(f.Src)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
+	}
 	for _, j := range q.Joins {
 		jt := c.inferExprType(j.Src)
 		var je types.Type = types.AnyType{}
@@ -1003,6 +1011,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	orig := c.env
 	c.env = child
 	loops := []string{fmt.Sprintf("%s in _iter(%s)", sanitizeName(q.Var), src)}
+	for _, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(f.Var), fs))
+	}
 	condParts := []string{}
 	joinSrcs := make([]string, len(q.Joins))
 	for i, j := range q.Joins {

@@ -1142,6 +1142,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elemType, true)
+	// Add cross join variables to environment
+	for _, f := range q.Froms {
+		ft := c.inferExprType(f.Src)
+		var felem types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			felem = lt.Elem
+		}
+		child.SetVar(f.Var, felem, true)
+	}
 	// Add join variables to environment
 	for _, j := range q.Joins {
 		jt := c.inferExprType(j.Src)
@@ -1153,6 +1162,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	original := c.env
 	c.env = child
+
+	// compile cross join sources
+	fromSrcs := make([]string, len(q.Froms))
+	fromDirect := make([]bool, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+		fromSrcs[i] = fs
+		if _, ok := c.inferExprType(f.Src).(types.ListType); ok {
+			fromDirect[i] = true
+		}
+	}
 
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -1246,6 +1270,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	indent += "\t"
 
+	for i := range q.Froms {
+		fvar := sanitizeName(q.Froms[i].Var)
+		fsrc := fromSrcs[i]
+		if fromDirect[i] {
+			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", fvar, fsrc))
+		} else {
+			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range _iter(%s) {\n", fvar, fsrc))
+		}
+		indent += "\t"
+	}
+
 	for i := range q.Joins {
 		jvar := sanitizeName(q.Joins[i].Var)
 		jsrc := joinSrcs[i]
@@ -1277,6 +1312,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	for i := len(q.Joins) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-1]
+		buf.WriteString(indent + "}\n")
+	}
+	for i := len(q.Froms) - 1; i >= 0; i-- {
 		indent = indent[:len(indent)-1]
 		buf.WriteString(indent + "}\n")
 	}
