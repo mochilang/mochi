@@ -12,5 +12,6 @@ This section outlines each major feature of the Mochi programming language. Each
 - [HTTP Fetch](http-fetch.md) describes retrieving JSON over the network.
 - [Union Types](union-types.md) discusses custom data structures with variants.
 - [Streams and Agents](streams.md) introduces event streams and long-lived agents.
+- [Foreign Function Interface](ffi.md) for calling Go, Python and TypeScript code.
 
 These topics build upon the language specification and provide a hands-on tour of Mochi's capabilities.

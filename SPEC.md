@@ -1,6 +1,6 @@
-# Mochi Programming Language Specification (v0.5.0)
+# Mochi Programming Language Specification (v0.6.1)
 
-This document describes version 0.5.0 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
+This document describes version 0.6.1 of the **Mochi programming language**. It is inspired by the structure of the [Go language specification](https://golang.org/ref/spec) and aims to formally define the syntax and semantics of Mochi.
 
 ## 0. Introduction
 

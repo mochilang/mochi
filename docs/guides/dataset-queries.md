@@ -1,6 +1,6 @@
 # Dataset Queries
 
-Mochi treats lists as in-memory datasets. The `from` expression provides a concise way to filter and transform these collections. Use `load` to read data from CSV or JSONL files.
+Mochi treats lists as in-memory datasets. The `from` expression provides a concise way to filter and transform these collections. Use `load` to read data from CSV, JSON, JSONL or YAML files and `save` to write results.
 
 ## Selecting Data
 
@@ -10,14 +10,16 @@ type Person {
   age: int
 }
 
-let people = load "people.csv" as Person
+let people = load "people.yaml" as Person
 
 let adults = from p in people
              where p.age >= 18
              select {
                name: p.name,
-               age: p.age
-             }
+             age: p.age
+            }
+
+save adults to "adults.json"
 ```
 
 ## Sorting and Limiting

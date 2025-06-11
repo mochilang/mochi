@@ -2,7 +2,7 @@
 
 **Mochi** is a small, statically typed programming language built for clarity, safety, and expressiveness — whether you're writing tools, processing real-time data, or powering intelligent agents.
 
-Current version: **0.5.0**
+Current version: **0.6.1**
 
 Mochi is:
 
@@ -309,7 +309,7 @@ type Person {
   age: int
 }
 
-let people = load "people.csv" as Person
+let people = load "people.yaml" as Person
 
 let adults = from p in people
              where p.age >= 18
@@ -318,6 +318,8 @@ let adults = from p in people
 for a in adults {
   print(a.name, "is", a.age)
 }
+
+save adults to "adults.json"
 ```
 
 ### Joins
@@ -523,6 +525,19 @@ let m = Monitor {}
 emit Sensor { id: "sensor-2", temperature: 30.0 }
 sleep(50)
 print(m.status())
+```
+
+### Foreign Function Interface
+
+Use the `import` keyword to access libraries from other languages. Declare
+`extern` variables and functions to call them directly.
+
+```mochi
+import go "math" as math
+
+extern fun math.Sqrt(x: float): float
+
+print(math.Sqrt(16.0))
 ```
 
 ## MCP Tools
