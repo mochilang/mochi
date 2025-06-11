@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "libmochi"
+version = "0.1.0"
+description = "Python helpers for executing Mochi code"
+readme = "README.md"
+requires-python = ">=3.8"
+
+[tool.setuptools]
+py-modules = ["libmochi"]
