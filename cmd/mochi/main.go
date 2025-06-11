@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -27,6 +26,7 @@ import (
 	goffi "mochi/runtime/ffi/go"
 	ffiinfo "mochi/runtime/ffi/infer"
 	python "mochi/runtime/ffi/python"
+	goexec "mochi/runtime/go"
 
 	"mochi/ast"
 	"mochi/compile/go"
@@ -460,7 +460,7 @@ func build(cmd *BuildCmd) error {
 			if out == "" {
 				out = base
 			}
-			cmd := exec.Command("go", "build", "-o", out, goFile)
+			cmd := goexec.Command("build", "-o", out, goFile)
 			cmd.Env = append(os.Environ(), "GO111MODULE=off")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -504,20 +504,20 @@ func initModule(cmd *InitCmd) error {
 	if _, err := os.Stat("go.mod"); err == nil {
 		return fmt.Errorf("go.mod already exists")
 	}
-	c := exec.Command("go", "mod", "init", modPath)
+	c := goexec.Command("mod", "init", modPath)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	return c.Run()
 }
 
 func modGet(cmd *GetCmd) error {
-	c := exec.Command("go", "mod", "tidy")
+	c := goexec.Command("mod", "tidy")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	if err := c.Run(); err != nil {
 		return err
 	}
-	c = exec.Command("go", "mod", "download")
+	c = goexec.Command("mod", "download")
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	return c.Run()

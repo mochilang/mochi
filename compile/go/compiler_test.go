@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"testing"
 
 	gocode "mochi/compile/go"
 	"mochi/golden"
 	"mochi/parser"
+	goexec "mochi/runtime/go"
 	"mochi/types"
 )
 
@@ -34,7 +34,7 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
-		cmd := exec.Command("go", "run", file)
+		cmd := goexec.Command("run", file)
 		cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
 		out, err := cmd.CombinedOutput()
 		if err != nil {
@@ -62,7 +62,7 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
-		cmd := exec.Command("go", "run", file)
+		cmd := goexec.Command("run", file)
 		cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
 		out, err := cmd.CombinedOutput()
 		if err != nil {

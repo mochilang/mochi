@@ -2,11 +2,11 @@ package libmochi_test
 
 import (
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	goexec "mochi/runtime/go"
 	"mochi/tools/libmochi/go"
 )
 
@@ -14,7 +14,7 @@ func TestLibMochi(t *testing.T) {
 	tmpDir := t.TempDir()
 	mochiPath := filepath.Join(tmpDir, "mochi")
 
-	buildCmd := exec.Command("go", "build", "-o", mochiPath, "./cmd/mochi")
+	buildCmd := goexec.Command("build", "-o", mochiPath, "./cmd/mochi")
 	buildCmd.Env = append(os.Environ(), "CGO_ENABLED=0")
 	buildCmd.Dir = filepath.Join("..", "..", "..")
 	if out, err := buildCmd.CombinedOutput(); err != nil {

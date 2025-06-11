@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	goexec "mochi/runtime/go"
 )
 
 func TestNotebookMagic(t *testing.T) {
@@ -13,7 +15,7 @@ func TestNotebookMagic(t *testing.T) {
 	mochiPath := filepath.Join(tmpDir, "mochi")
 
 	// build the mochi CLI
-	buildCmd := exec.Command("go", "build", "-o", mochiPath, "./cmd/mochi")
+	buildCmd := goexec.Command("build", "-o", mochiPath, "./cmd/mochi")
 	buildCmd.Env = append(os.Environ(), "CGO_ENABLED=0")
 	buildCmd.Dir = filepath.Join("..", "..")
 	if out, err := buildCmd.CombinedOutput(); err != nil {

@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	goexec "mochi/runtime/go"
 )
 
 // EnsureDeps verifies that Mochi, Deno and Python3 are installed.
@@ -37,7 +39,7 @@ func ensureMochi() (string, error) {
 	if err := os.MkdirAll(filepath.Dir(out), 0755); err != nil {
 		return "", err
 	}
-	cmd := exec.Command("go", "build", "-o", out, "./cmd/mochi")
+	cmd := goexec.Command("build", "-o", out, "./cmd/mochi")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

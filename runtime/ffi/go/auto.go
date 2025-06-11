@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
+
+	goexec "mochi/runtime/go"
 )
 
 // AttrAuto retrieves or calls a symbol from a package using `go run` with reflection.
@@ -76,7 +77,7 @@ func main() {
 		return nil, err
 	}
 
-	cmd := exec.Command("go", "run", file.Name())
+	cmd := goexec.Command("run", file.Name())
 	cmd.Env = append(os.Environ(), "MOCHI_ARGS="+string(data))
 	out, err := cmd.CombinedOutput()
 	if err != nil {

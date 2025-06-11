@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+
+	goexec "mochi/runtime/go"
 )
 
 func TestWasmInterpreter(t *testing.T) {
@@ -15,7 +17,7 @@ func TestWasmInterpreter(t *testing.T) {
 
 	// build wasm
 	wasmPath := filepath.Join(tmp, "mochi.wasm")
-	cmd := exec.Command("go", "build", "-o", wasmPath, ".")
+	cmd := goexec.Command("build", "-o", wasmPath, ".")
 	cmd.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("go build failed: %v\n%s", err, out)

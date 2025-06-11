@@ -8,6 +8,7 @@ import (
 
 	gocode "mochi/compile/go"
 	"mochi/parser"
+	goexec "mochi/runtime/go"
 	"mochi/types"
 )
 
@@ -73,7 +74,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	case ToolchainTinyGo:
 		cmd = exec.Command("tinygo", "build", "-o", outPath, "-target", "wasm", srcPath)
 	default:
-		cmd = exec.Command("go", "build", "-o", outPath, srcPath)
+		cmd = goexec.Command("build", "-o", outPath, srcPath)
 		cmd.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm")
 	}
 	if out, err := cmd.CombinedOutput(); err != nil {
