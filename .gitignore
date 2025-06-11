@@ -285,3 +285,4 @@ dist/
 
 node_modules/
 bin/
+tools/libmochi/typescript/mochi.wasm.gz
