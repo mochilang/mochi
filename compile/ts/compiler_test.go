@@ -11,6 +11,7 @@ import (
 	tscode "mochi/compile/ts"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -27,7 +28,11 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := tscode.New(typeEnv)
+		modRoot, _ := mod.FindRoot(filepath.Dir(src))
+		if modRoot == "" {
+			modRoot = filepath.Dir(src)
+		}
+		c := tscode.New(typeEnv, modRoot)
 		code, err := c.Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
@@ -53,7 +58,11 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := tscode.New(typeEnv)
+		modRoot, _ := mod.FindRoot(filepath.Dir(src))
+		if modRoot == "" {
+			modRoot = filepath.Dir(src)
+		}
+		c := tscode.New(typeEnv, modRoot)
 		code, err := c.Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
@@ -82,7 +91,11 @@ func TestTSCompiler_GoldenOutput(t *testing.T) {
 		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := tscode.New(typeEnv)
+		modRoot, _ := mod.FindRoot(filepath.Dir(src))
+		if modRoot == "" {
+			modRoot = filepath.Dir(src)
+		}
+		c := tscode.New(typeEnv, modRoot)
 		code, err := c.Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
@@ -98,7 +111,11 @@ func TestTSCompiler_GoldenOutput(t *testing.T) {
 		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", errs[0])
 		}
-		c := tscode.New(typeEnv)
+		modRoot, _ := mod.FindRoot(filepath.Dir(src))
+		if modRoot == "" {
+			modRoot = filepath.Dir(src)
+		}
+		c := tscode.New(typeEnv, modRoot)
 		code, err := c.Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)

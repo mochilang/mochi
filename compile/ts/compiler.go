@@ -3,6 +3,9 @@ package tscode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
+	"sort"
 	"strings"
 
 	"mochi/interpreter"
@@ -20,16 +23,20 @@ type Compiler struct {
 	structs      map[string]bool
 	agents       map[string]bool
 	handlerCount int
+	packages     map[string]bool
+	root         string
 }
 
 // New creates a new TypeScript compiler instance.
-func New(env *types.Env) *Compiler {
+func New(env *types.Env, root string) *Compiler {
 	return &Compiler{
-		helpers: make(map[string]bool),
-		imports: make(map[string]string),
-		env:     env,
-		structs: make(map[string]bool),
-		agents:  make(map[string]bool),
+		helpers:  make(map[string]bool),
+		imports:  make(map[string]string),
+		env:      env,
+		structs:  make(map[string]bool),
+		agents:   make(map[string]bool),
+		packages: make(map[string]bool),
+		root:     root,
 	}
 }
 
@@ -55,6 +62,68 @@ func (c *Compiler) collectImports(stmts []*parser.Statement) {
 			c.imports[alias] = path
 		}
 	}
+}
+
+func (c *Compiler) compilePackageImport(alias, path string) error {
+	if c.packages[alias] {
+		return nil
+	}
+	c.packages[alias] = true
+	dir := filepath.Join(c.root, strings.Trim(path, "\""))
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return fmt.Errorf("import package: %w", err)
+	}
+	var files []string
+	for _, e := range entries {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+			files = append(files, filepath.Join(dir, e.Name()))
+		}
+	}
+	sort.Strings(files)
+	var stmts []*parser.Statement
+	pkgName := alias
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			return err
+		}
+		if prog.Package != "" {
+			pkgName = prog.Package
+		}
+		stmts = append(stmts, prog.Statements...)
+	}
+	c.writeln(fmt.Sprintf("const %s = (() => {", sanitizeName(alias)))
+	c.indent++
+	pkgEnv := types.NewEnv(c.env)
+	origEnv := c.env
+	c.env = pkgEnv
+	exports := []string{}
+	for _, s := range stmts {
+		if s.Fun != nil && s.Fun.Export {
+			exports = append(exports, s.Fun.Name)
+		}
+		if err := c.compileStmt(s); err != nil {
+			c.env = origEnv
+			return err
+		}
+		if s.Fun != nil {
+			c.writeln("")
+		}
+	}
+	c.env = origEnv
+	c.writeln("return {")
+	c.indent++
+	c.writeln(fmt.Sprintf("__name: \"%s\",", pkgName))
+	for _, name := range exports {
+		c.writeln(fmt.Sprintf("%s: %s,", sanitizeName(name), sanitizeName(name)))
+	}
+	c.indent--
+	c.writeln("}")
+	c.indent--
+	c.writeln("})()")
+	c.writeln("")
+	return nil
 }
 
 func stmtHasStream(s *parser.Statement) bool {
@@ -99,6 +168,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if len(c.imports) > 0 {
 		c.writeln("")
+	}
+
+	// Compile Mochi package imports.
+	for _, s := range prog.Statements {
+		if s.Import != nil && s.Import.Lang == nil {
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			alias = sanitizeName(alias)
+			if err := c.compilePackageImport(alias, s.Import.Path); err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	// Emit function declarations first.
