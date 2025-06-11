@@ -210,3 +210,11 @@ type pythonValue struct {
 	module string
 	attrs  []string
 }
+
+// goValue is a placeholder for a value from a Go module.
+// Like pythonValue, resolution is deferred until used so chains like
+// math.Sqrt(9) can be constructed.
+type goValue struct {
+	module string
+	attrs  []string
+}

@@ -1,0 +1,21 @@
+// math_import_go.mochi
+import go "math" as math
+
+extern let math.Pi: float
+extern let math.E: float
+extern fun math.Sqrt(x: float): float
+extern fun math.Pow(x: float, y: float): float
+extern fun math.Sin(x: float): float
+extern fun math.Log(x: float): float
+
+let r = 3.0
+
+let area = math.Pi * math.Pow(r, 2.0)
+let root = math.Sqrt(49.0)
+let sin45 = math.Sin(math.Pi / 4.0)
+let log_e = math.Log(math.E)
+
+print("Circle area with r =", r, "=>", area)
+print("Square root of 49:", root)
+print("sin(π/4):", sin45)
+print("log(e):", log_e)
