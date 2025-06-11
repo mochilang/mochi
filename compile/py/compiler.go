@@ -74,7 +74,7 @@ func stmtHasStream(s *parser.Statement) bool {
 
 func (c *Compiler) collectImports(stmts []*parser.Statement) {
 	for _, s := range stmts {
-		if s.Import != nil && s.Import.Lang == "python" {
+		if s.Import != nil && s.Import.Lang != nil && *s.Import.Lang == "python" {
 			path := strings.Trim(s.Import.Path, "\"")
 			alias := sanitizeName(s.Import.As)
 			c.imports[alias] = path
@@ -244,8 +244,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Agent != nil:
 		return c.compileAgentDecl(s.Agent)
 	case s.Import != nil:
-		if s.Import.Lang != "python" {
-			return fmt.Errorf("unsupported import language: %s", s.Import.Lang)
+		if s.Import.Lang == nil || *s.Import.Lang != "python" {
+			return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
 		}
 		return nil
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:

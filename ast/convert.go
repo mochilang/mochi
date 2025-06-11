@@ -9,6 +9,9 @@ import (
 
 func FromProgram(p *parser.Program) *Node {
 	root := &Node{Kind: "program"}
+	if p.Package != "" {
+		root.Value = p.Package
+	}
 	for _, stmt := range p.Statements {
 		root.Children = append(root.Children, FromStatement(stmt))
 	}
@@ -59,6 +62,9 @@ func FromStatement(s *parser.Statement) *Node {
 			n.Children = append(n.Children, FromTypeRef(s.Fun.Return))
 		}
 		n.Children = append(n.Children, mapStatements(s.Fun.Body)...)
+		if s.Fun.Export {
+			return &Node{Kind: "export", Children: []*Node{n}}
+		}
 		return n
 
 	case s.Return != nil:

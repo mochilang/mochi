@@ -45,7 +45,7 @@ func containsStreamCode(stmts []*parser.Statement) bool {
 // collectImports scans statements for TypeScript imports.
 func (c *Compiler) collectImports(stmts []*parser.Statement) {
 	for _, s := range stmts {
-		if s.Import != nil && s.Import.Lang == "typescript" {
+		if s.Import != nil && s.Import.Lang != nil && *s.Import.Lang == "typescript" {
 			path := strings.Trim(s.Import.Path, "\"")
 			alias := sanitizeName(s.Import.As)
 			c.imports[alias] = path

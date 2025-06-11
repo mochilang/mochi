@@ -24,7 +24,7 @@ func (b *boolLit) Capture(values []string) error {
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
-	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|import|return|break|continue|let|var|if|else|for|while|in|generate|match|fetch|load|save)\b`},
+	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|import|return|break|continue|let|var|if|else|for|while|in|generate|match|fetch|load|save|package|export)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
@@ -37,6 +37,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 
 type Program struct {
 	Pos        lexer.Position
+	Package    string       `parser:"[ 'package' @Ident ]"`
 	Statements []*Statement `parser:"@@*"`
 }
 
@@ -177,6 +178,7 @@ type AssignStmt struct {
 
 type FunStmt struct {
 	Pos    lexer.Position
+	Export bool         `parser:"[ @'export' ]"`
 	Name   string       `parser:"'fun' @Ident"`
 	Params []*Param     `parser:"'(' [ @@ { ',' @@ } ] ')'"`
 	Return *TypeRef     `parser:"[ ':' @@ ]"`
@@ -470,9 +472,9 @@ type ModelField struct {
 // ImportStmt declares a foreign module import, eg. `import python "math" as math`.
 type ImportStmt struct {
 	Pos  lexer.Position
-	Lang string `parser:"'import' @Ident"`
-	Path string `parser:"@String"`
-	As   string `parser:"'as' @Ident"`
+	Lang *string `parser:"'import' [ @Ident ]"`
+	Path string  `parser:"@String"`
+	As   string  `parser:"'as' @Ident"`
 }
 
 type StreamField struct {
