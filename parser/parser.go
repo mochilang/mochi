@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
@@ -23,7 +24,7 @@ func (b *boolLit) Capture(values []string) error {
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
-	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|return|break|continue|let|var|if|else|for|while|in|generate|match|fetch|load|save)\b`},
+	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|import|return|break|continue|let|var|if|else|for|while|in|generate|match|fetch|load|save)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
@@ -46,6 +47,7 @@ type Statement struct {
 	Agent        *AgentDecl        `parser:"| @@"`
 	Stream       *StreamDecl       `parser:"| @@"`
 	Model        *ModelDecl        `parser:"| @@"`
+	Import       *ImportStmt       `parser:"| @@"`
 	Type         *TypeDecl         `parser:"| @@"`
 	ExternType   *ExternTypeDecl   `parser:"| @@"`
 	ExternVar    *ExternVarDecl    `parser:"| @@"`
@@ -201,16 +203,33 @@ type ExternTypeDecl struct {
 
 type ExternVarDecl struct {
 	Pos  lexer.Position
-	Name string   `parser:"'extern' 'var' @Ident ':'"`
+	Root string   `parser:"'extern' ('var'|'let') @Ident"`
+	Tail []string `parser:"{ '.' @Ident } ':'"`
 	Type *TypeRef `parser:"@@"`
+}
+
+func (e *ExternVarDecl) Name() string {
+	if len(e.Tail) == 0 {
+		return e.Root
+	}
+	return e.Root + "." + strings.Join(e.Tail, ".")
 }
 
 type ExternFunDecl struct {
 	Pos    lexer.Position
-	Name   string   `parser:"'extern' 'fun' @Ident"`
+	Root   string   `parser:"'extern' 'fun' @Ident"`
+	Tail   []string `parser:"{ '.' @Ident }"`
 	Params []*Param `parser:"'(' [ @@ { ',' @@ } ] ')'"`
 	Return *TypeRef `parser:"[ ':' @@ ]"`
 }
+
+func (e *ExternFunDecl) Name() string {
+	if len(e.Tail) == 0 {
+		return e.Root
+	}
+	return e.Root + "." + strings.Join(e.Tail, ".")
+}
+
 type ExternObjectDecl struct {
 	Pos  lexer.Position
 	Name string `parser:"'extern' 'object' @Ident"`
@@ -446,6 +465,14 @@ type ModelField struct {
 	Pos   lexer.Position
 	Name  string `parser:"@Ident ':'"`
 	Value *Expr  `parser:"@@"`
+}
+
+// ImportStmt declares a foreign module import, eg. `import python "math" as math`.
+type ImportStmt struct {
+	Pos  lexer.Position
+	Lang string `parser:"'import' @Ident"`
+	Path string `parser:"@String"`
+	As   string `parser:"'as' @Ident"`
 }
 
 type StreamField struct {

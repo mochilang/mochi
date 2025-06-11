@@ -536,6 +536,22 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		env.SetVar(name, typ, true)
 		return nil
 
+	case s.Import != nil:
+		env.SetVar(s.Import.As, AnyType{}, false)
+		return nil
+
+	case s.ExternVar != nil:
+		env.SetVar(s.ExternVar.Name(), AnyType{}, false)
+		return nil
+
+	case s.ExternFun != nil:
+		params := make([]Type, len(s.ExternFun.Params))
+		for i := range params {
+			params[i] = AnyType{}
+		}
+		env.SetVar(s.ExternFun.Name(), FuncType{Params: params, Return: AnyType{}}, false)
+		return nil
+
 	case s.Assign != nil:
 		rhsType, err := checkExprWithExpected(s.Assign.Value, env, nil)
 		if err != nil {
@@ -889,6 +905,12 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 }
 
 func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, error) {
+	if _, ok := left.(AnyType); ok {
+		return AnyType{}, nil
+	}
+	if _, ok := right.(AnyType); ok {
+		return AnyType{}, nil
+	}
 	switch op {
 	case "+", "-", "*", "/", "%":
 		switch {
@@ -1033,6 +1055,16 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 		} else if call := op.Call; call != nil {
 			ft, ok := typ.(FuncType)
 			if !ok {
+				if _, isAny := typ.(AnyType); isAny {
+					// dynamic call, assume any
+					for _, arg := range call.Args {
+						if _, err := checkExpr(arg, env); err != nil {
+							return nil, err
+						}
+					}
+					typ = AnyType{}
+					continue
+				}
 				return nil, errNotFunction(call.Pos, "")
 			}
 			argCount := len(call.Args)
@@ -1081,7 +1113,13 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		if err != nil {
 			return nil, errUnknownVariable(p.Pos, p.Selector.Root)
 		}
+		prefix := p.Selector.Root
 		for _, field := range p.Selector.Tail {
+			if t, err := env.GetVar(prefix + "." + field); err == nil {
+				typ = t
+				prefix = prefix + "." + field
+				continue
+			}
 			switch t := typ.(type) {
 			case StructType:
 				if ft, ok := t.Fields[field]; ok {
@@ -1111,6 +1149,9 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					continue
 				}
 				return nil, errNotStruct(p.Pos, typ)
+			case AnyType:
+				typ = AnyType{}
+				continue
 			default:
 				return nil, errNotStruct(p.Pos, typ)
 			}

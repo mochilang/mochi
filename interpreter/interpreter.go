@@ -15,6 +15,7 @@ import (
 	"mochi/runtime/agent"
 	"mochi/runtime/data"
 	"mochi/runtime/extern"
+	pythonffi "mochi/runtime/ffi/python"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
 	"mochi/runtime/stream"
@@ -38,6 +39,7 @@ type Interpreter struct {
 	externVars    map[string]*parser.ExternVarDecl
 	externFuncs   map[string]*parser.ExternFunDecl
 	externObjects map[string]*parser.ExternObjectDecl
+	pyModules     map[string]string
 	memoize       bool
 	memo          map[string]map[string]any
 	dataPlan      string
@@ -59,6 +61,7 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		externVars:    map[string]*parser.ExternVarDecl{},
 		externFuncs:   map[string]*parser.ExternFunDecl{},
 		externObjects: map[string]*parser.ExternObjectDecl{},
+		pyModules:     map[string]string{},
 		memoize:       false,
 		memo:          map[string]map[string]any{},
 		dataPlan:      "memory",
@@ -419,6 +422,14 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		// type declarations have no runtime effect
 		return nil
 
+	case s.Import != nil:
+		if s.Import.Lang == "python" {
+			mod := strings.Trim(s.Import.Path, "\"")
+			i.pyModules[s.Import.As] = mod
+			return nil
+		}
+		return fmt.Errorf("unsupported import language: %s", s.Import.Lang)
+
 	case s.ExternType != nil:
 		// Placeholder for registering external types later
 		i.externTypes[s.ExternType.Name] = s.ExternType
@@ -426,12 +437,12 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 
 	case s.ExternVar != nil:
 		// Placeholder for registering external variables later
-		i.externVars[s.ExternVar.Name] = s.ExternVar
+		i.externVars[s.ExternVar.Name()] = s.ExternVar
 		return nil
 
 	case s.ExternFun != nil:
 		// Placeholder for registering external functions later
-		i.externFuncs[s.ExternFun.Name] = s.ExternFun
+		i.externFuncs[s.ExternFun.Name()] = s.ExternFun
 		return nil
 
 	case s.ExternObject != nil:
@@ -864,6 +875,13 @@ func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
 			return nil, err
 		}
 	}
+	if pv, ok := val.(pythonValue); ok {
+		res, err := pythonffi.Attr(pv.module, strings.Join(pv.attrs, "."))
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
 	return val, nil
 }
 
@@ -886,6 +904,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		if err != nil {
 			if v, ok := extern.Get(p.Selector.Root); ok {
 				val = v
+			} else if mod, ok := i.pyModules[p.Selector.Root]; ok {
+				val = pythonValue{module: mod}
 			} else if _, ok := i.externObjects[p.Selector.Root]; ok {
 				return nil, errExternObject(p.Pos, p.Selector.Root)
 			} else if fn, ok := i.env.GetFunc(p.Selector.Root); ok {
@@ -898,6 +918,11 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			}
 		}
 		for _, field := range p.Selector.Tail {
+			if pv, ok := val.(pythonValue); ok {
+				pv.attrs = append(pv.attrs, field)
+				val = pv
+				continue
+			}
 			if g, ok := val.(*data.Group); ok {
 				switch field {
 				case "key":
