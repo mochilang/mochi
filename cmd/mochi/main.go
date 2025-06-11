@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
@@ -21,6 +22,11 @@ import (
 	_ "mochi/runtime/llm/provider/chutes"
 	_ "mochi/runtime/llm/provider/cohere"
 	_ "mochi/runtime/llm/provider/echo"
+
+	denoffi "mochi/runtime/ffi/deno"
+	goffi "mochi/runtime/ffi/go"
+	ffiinfo "mochi/runtime/ffi/infer"
+	python "mochi/runtime/ffi/python"
 
 	"mochi/ast"
 	"mochi/compile/go"
@@ -50,6 +56,7 @@ type CLI struct {
 	Get        *GetCmd        `arg:"subcommand:get" help:"Download module dependencies"`
 	Repl       *ReplCmd       `arg:"subcommand:repl" help:"Start an interactive REPL session"`
 	LLM        *LLMCmd        `arg:"subcommand:llm" help:"Send a prompt to the default LLM"`
+	Infer      *InferCmd      `arg:"subcommand:infer" help:"Infer externs from a package"`
 	Serve      *ServeCmd      `arg:"subcommand:serve" help:"Start MCP server over stdio"`
 	Cheatsheet *CheatsheetCmd `arg:"subcommand:cheatsheet" help:"Print language cheatsheet"`
 	Version    bool           `arg:"--version" help:"Print version info and exit"`
@@ -88,6 +95,11 @@ type LLMCmd struct {
 	Prompt string `arg:"positional" help:"Prompt text"`
 	File   string `arg:"-f" help:"Read prompt from file ('-' for stdin)"`
 }
+type InferCmd struct {
+	Language string `arg:"positional,required" help:"Language (python|typescript|go)"`
+	Package  string `arg:"positional,required" help:"Package or module path"`
+	Format   string `arg:"--format" help:"Output format (json|mochi)"`
+}
 type ServeCmd struct{}
 type CheatsheetCmd struct{}
 
@@ -112,6 +124,11 @@ func main() {
 	case cli.LLM != nil:
 		if err := runLLM(cli.LLM); err != nil {
 			fmt.Fprintf(os.Stderr, "%s %v\n", cError("llm:"), err)
+			os.Exit(1)
+		}
+	case cli.Infer != nil:
+		if err := runInfer(cli.Infer); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("infer:"), err)
 			os.Exit(1)
 		}
 	case cli.Build != nil:
@@ -277,6 +294,46 @@ func runLLM(cmd *LLMCmd) error {
 		}
 	}
 	fmt.Println()
+	return nil
+}
+
+func runInfer(cmd *InferCmd) error {
+	lang := strings.ToLower(cmd.Language)
+	format := strings.ToLower(cmd.Format)
+	if format == "" {
+		format = "mochi"
+	}
+
+	var info *ffiinfo.ModuleInfo
+	var err error
+	switch lang {
+	case "python", "py":
+		info, err = python.Infer(cmd.Package)
+	case "typescript", "ts":
+		info, err = denoffi.Infer(cmd.Package)
+	case "go":
+		info, err = goffi.Infer(cmd.Package)
+	default:
+		return fmt.Errorf("unknown language: %s", cmd.Language)
+	}
+	if err != nil {
+		return err
+	}
+
+	switch format {
+	case "json":
+		data, err := json.MarshalIndent(info, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(data))
+	case "mochi":
+		alias := parser.AliasFromPath(cmd.Package)
+		fmt.Printf("import %s %q as %s\n", lang, cmd.Package, alias)
+		fmt.Print(externsForAlias(info, alias))
+	default:
+		return fmt.Errorf("unknown format: %s", cmd.Format)
+	}
 	return nil
 }
 
@@ -464,6 +521,90 @@ func modGet(cmd *GetCmd) error {
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	return c.Run()
+}
+
+func externsForAlias(info *ffiinfo.ModuleInfo, alias string) string {
+	var b strings.Builder
+	for _, t := range info.Types {
+		if len(t.Fields) == 0 {
+			fmt.Fprintf(&b, "extern type %s\n", t.Name)
+		} else {
+			fmt.Fprintf(&b, "extern type %s {\n", t.Name)
+			for i, f := range t.Fields {
+				fmt.Fprintf(&b, "  %s: %s", f.Name, f.Type)
+				if i < len(t.Fields)-1 {
+					b.WriteString(",\n")
+				} else {
+					b.WriteString("\n")
+				}
+			}
+			b.WriteString("}\n")
+		}
+		for _, m := range t.Methods {
+			fmt.Fprintf(&b, "extern fun %s.%s(%s)%s\n", t.Name, m.Name, formatParams(m.Params), formatResults(m.Results))
+		}
+	}
+	for _, c := range info.Consts {
+		fmt.Fprintf(&b, "extern let %s.%s: %s\n", alias, c.Name, normalizeType(c.Type))
+	}
+	for _, v := range info.Vars {
+		fmt.Fprintf(&b, "extern var %s.%s: %s\n", alias, v.Name, normalizeType(v.Type))
+	}
+	for _, f := range info.Functions {
+		fmt.Fprintf(&b, "extern fun %s.%s(%s)%s\n", alias, f.Name, formatParams(f.Params), formatResults(f.Results))
+	}
+	return b.String()
+}
+
+func formatParams(ps []ffiinfo.ParamInfo) string {
+	if len(ps) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	for i, p := range ps {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		if p.Name != "" {
+			b.WriteString(p.Name)
+			if p.Type != "" {
+				b.WriteString(": ")
+				b.WriteString(p.Type)
+			}
+		} else if p.Type != "" {
+			b.WriteString(p.Type)
+		}
+	}
+	return b.String()
+}
+
+func formatResults(rs []ffiinfo.ParamInfo) string {
+	if len(rs) == 0 {
+		return ""
+	}
+	if len(rs) == 1 {
+		if rs[0].Type == "" {
+			return ""
+		}
+		return ": " + rs[0].Type
+	}
+	var b strings.Builder
+	b.WriteString(": (")
+	for i, r := range rs {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		b.WriteString(r.Type)
+	}
+	b.WriteString(")")
+	return b.String()
+}
+
+func normalizeType(t string) string {
+	if strings.HasPrefix(t, "untyped ") {
+		return strings.TrimPrefix(t, "untyped ")
+	}
+	return t
 }
 
 func printTypeErrors(errs []error) {
