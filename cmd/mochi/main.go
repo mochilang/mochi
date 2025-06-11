@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -16,6 +17,7 @@ import (
 	"github.com/fatih/color"
 	_ "github.com/lib/pq"
 
+	"mochi/runtime/llm"
 	_ "mochi/runtime/llm/provider/chutes"
 	_ "mochi/runtime/llm/provider/cohere"
 	_ "mochi/runtime/llm/provider/echo"
@@ -47,6 +49,7 @@ type CLI struct {
 	Init       *InitCmd       `arg:"subcommand:init" help:"Initialize a new Mochi module"`
 	Get        *GetCmd        `arg:"subcommand:get" help:"Download module dependencies"`
 	Repl       *ReplCmd       `arg:"subcommand:repl" help:"Start an interactive REPL session"`
+	LLM        *LLMCmd        `arg:"subcommand:llm" help:"Send a prompt to the default LLM"`
 	Serve      *ServeCmd      `arg:"subcommand:serve" help:"Start MCP server over stdio"`
 	Cheatsheet *CheatsheetCmd `arg:"subcommand:cheatsheet" help:"Print language cheatsheet"`
 	Version    bool           `arg:"--version" help:"Print version info and exit"`
@@ -81,6 +84,10 @@ type InitCmd struct {
 type GetCmd struct{}
 
 type ReplCmd struct{}
+type LLMCmd struct {
+	Prompt string `arg:"positional" help:"Prompt text"`
+	File   string `arg:"-f" help:"Read prompt from file ('-' for stdin)"`
+}
 type ServeCmd struct{}
 type CheatsheetCmd struct{}
 
@@ -102,6 +109,11 @@ func main() {
 	case cli.Repl != nil:
 		repl := repl.New(os.Stdout, version)
 		repl.Run()
+	case cli.LLM != nil:
+		if err := runLLM(cli.LLM); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("llm:"), err)
+			os.Exit(1)
+		}
 	case cli.Build != nil:
 		if err := build(cli.Build); err != nil {
 			fmt.Fprintf(os.Stderr, "%s %v\n", cError("build:"), err)
@@ -224,6 +236,48 @@ func runTests(cmd *TestCmd) error {
 	interp := interpreter.New(prog, env, modRoot)
 	interp.SetMemoization(memo)
 	return interp.Test()
+}
+
+func runLLM(cmd *LLMCmd) error {
+	var data []byte
+	var err error
+	switch {
+	case cmd.File != "":
+		if cmd.File == "-" {
+			data, err = io.ReadAll(os.Stdin)
+		} else {
+			data, err = os.ReadFile(cmd.File)
+		}
+	case cmd.Prompt != "":
+		data = []byte(cmd.Prompt)
+	default:
+		data, err = io.ReadAll(os.Stdin)
+	}
+	if err != nil {
+		return err
+	}
+	prompt := string(data)
+	stream, err := llm.ChatStream(context.Background(), []llm.Message{{Role: "user", Content: prompt}})
+	if err != nil {
+		return err
+	}
+	defer stream.Close()
+	for {
+		ch, err := stream.Recv()
+		if err != nil {
+			return err
+		}
+		if ch != nil {
+			if ch.Content != "" {
+				fmt.Print(ch.Content)
+			}
+			if ch.Done {
+				break
+			}
+		}
+	}
+	fmt.Println()
+	return nil
 }
 
 func parseOrPrintError(path string) (*parser.Program, error) {
