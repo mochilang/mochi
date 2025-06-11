@@ -1,4 +1,4 @@
-import ts "https://deno.land/std@0.224.0/math/mod.ts" as math
+import ts "../../../runtime/ffi/deno/math.ts" as math
 
 extern let math.PI: float
 extern fun math.pow(x: float, y: float): float
