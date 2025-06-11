@@ -186,6 +186,8 @@ Commands:
   run     Run a Mochi source file
   test    Run test blocks
   build   Compile to binary or other languages
+  init    Initialize a new module
+  get     Download module dependencies
   repl    Start interactive REPL
   serve   Start MCP server
   cheatsheet  Print language reference
@@ -198,6 +200,8 @@ mochi run examples/hello.mochi
 mochi test examples/math.mochi
 mochi build examples/hello.mochi -o hello
 mochi build --target py examples/hello.mochi -o hello.py
+mochi init mymodule
+mochi get
 mochi cheatsheet
 ```
 

@@ -44,6 +44,8 @@ type CLI struct {
 	Run        *RunCmd        `arg:"subcommand:run" help:"Run a Mochi source file"`
 	Test       *TestCmd       `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
 	Build      *BuildCmd      `arg:"subcommand:build" help:"Compile a Mochi source file"`
+	Init       *InitCmd       `arg:"subcommand:init" help:"Initialize a new Mochi module"`
+	Get        *GetCmd        `arg:"subcommand:get" help:"Download module dependencies"`
 	Repl       *ReplCmd       `arg:"subcommand:repl" help:"Start an interactive REPL session"`
 	Serve      *ServeCmd      `arg:"subcommand:serve" help:"Start MCP server over stdio"`
 	Cheatsheet *CheatsheetCmd `arg:"subcommand:cheatsheet" help:"Print language cheatsheet"`
@@ -72,6 +74,12 @@ type BuildCmd struct {
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
+type InitCmd struct {
+	Path string `arg:"positional" help:"Module path (default current directory)"`
+}
+
+type GetCmd struct{}
+
 type ReplCmd struct{}
 type ServeCmd struct{}
 type CheatsheetCmd struct{}
@@ -97,6 +105,16 @@ func main() {
 	case cli.Build != nil:
 		if err := build(cli.Build); err != nil {
 			fmt.Fprintf(os.Stderr, "%s %v\n", cError("build:"), err)
+			os.Exit(1)
+		}
+	case cli.Init != nil:
+		if err := initModule(cli.Init); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("init:"), err)
+			os.Exit(1)
+		}
+	case cli.Get != nil:
+		if err := modGet(cli.Get); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("get:"), err)
 			os.Exit(1)
 		}
 	case cli.Run != nil:
@@ -361,6 +379,37 @@ func build(cmd *BuildCmd) error {
 
 	fmt.Printf("generated %s\n", out)
 	return nil
+}
+
+func initModule(cmd *InitCmd) error {
+	modPath := cmd.Path
+	if modPath == "" {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		modPath = filepath.Base(cwd)
+	}
+	if _, err := os.Stat("go.mod"); err == nil {
+		return fmt.Errorf("go.mod already exists")
+	}
+	c := exec.Command("go", "mod", "init", modPath)
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	return c.Run()
+}
+
+func modGet(cmd *GetCmd) error {
+	c := exec.Command("go", "mod", "tidy")
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	if err := c.Run(); err != nil {
+		return err
+	}
+	c = exec.Command("go", "mod", "download")
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	return c.Run()
 }
 
 func printTypeErrors(errs []error) {
