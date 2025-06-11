@@ -1,0 +1,4 @@
+import python "math" as math auto
+
+print(math.sqrt(16.0))
+print(math.pi)

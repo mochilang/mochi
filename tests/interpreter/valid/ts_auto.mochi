@@ -1,0 +1,4 @@
+import typescript "./runtime/ffi/deno/math.ts" as math auto
+
+print(math.pow(2.0,8.0))
+print(math.PI)

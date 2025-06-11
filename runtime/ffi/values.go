@@ -5,16 +5,19 @@ package ffi
 type PythonValue struct {
 	Module string
 	Attrs  []string
+	Auto   bool
 }
 
 // GoValue is a placeholder for a value from a Go module.
 type GoValue struct {
 	Module string
 	Attrs  []string
+	Auto   bool
 }
 
 // TSValue is a placeholder for a value from a TypeScript module accessed via Deno.
 type TSValue struct {
 	Module string
 	Attrs  []string
+	Auto   bool
 }

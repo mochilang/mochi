@@ -475,7 +475,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		if s.Import.Lang == nil {
 			return i.importPackage(alias, s.Import.Path, s.Pos.Filename)
 		}
-		return i.ffi.Import(*s.Import.Lang, alias, s.Import.Path, i.root)
+		return i.ffi.Import(*s.Import.Lang, alias, s.Import.Path, i.root, s.Import.Auto)
 
 	case s.ExternType != nil:
 		// type declarations have no runtime effect
