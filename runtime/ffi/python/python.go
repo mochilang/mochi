@@ -25,16 +25,13 @@ else:
     res = attr
 json.dump(res, sys.stdout)
 `, module, name, module, name)
-	return run(src, args)
-}
 
-func run(code string, args []any) (any, error) {
 	file, err := os.CreateTemp("", "mochi_py_*.py")
 	if err != nil {
 		return nil, err
 	}
 	defer os.Remove(file.Name())
-	if _, err := file.WriteString(code); err != nil {
+	if _, err := file.WriteString(src); err != nil {
 		file.Close()
 		return nil, err
 	}
