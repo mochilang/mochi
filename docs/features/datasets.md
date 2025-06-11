@@ -1,6 +1,6 @@
 ## Dataset Queries
 
-`from` expressions treat lists as simple datasets. Combine optional `where`, `sort by`, `skip`, `take` and `select` clauses to shape the result. Use `load` to read a CSV or JSONL file into a typed list.
+`from` expressions treat lists as simple datasets. Combine optional `where`, `sort by`, `skip`, `take` and `select` clauses to shape the result. Use `load` to read CSV, JSON, JSONL or YAML files into a typed list. Results can be written back with `save`.
 
 ```mochi
 type Person {
@@ -8,7 +8,7 @@ type Person {
   age: int
 }
 
-let people = load "people.csv" as Person
+let people = load "people.yaml" as Person
 
 let adults = from person in people
              where person.age >= 18
@@ -22,6 +22,8 @@ for person in adults {
   print(person.name, "is", person.age,
         if person.is_senior { " (senior)" } else { "" })
 }
+
+save adults to "adults.json"
 ```
 
 Queries can also sort records and limit the results:

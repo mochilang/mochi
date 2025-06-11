@@ -21,5 +21,6 @@ The language overview is split into individual topics for easy navigation:
 - [HTTP Fetch](features/http-fetch.md)
 - [Union Types](features/union-types.md)
 - [Streams and Agents](features/streams.md)
+- [Foreign Function Interface](features/ffi.md)
 
 As the language evolves these docs will expand with more examples, so check back often for updates.
