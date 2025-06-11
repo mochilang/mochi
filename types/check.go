@@ -545,15 +545,27 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		return nil
 
 	case s.ExternVar != nil:
-		env.SetVar(s.ExternVar.Name(), AnyType{}, false)
+		var typ Type = AnyType{}
+		if s.ExternVar.Type != nil {
+			typ = resolveTypeRef(s.ExternVar.Type, env)
+		}
+		env.SetVar(s.ExternVar.Name(), typ, false)
 		return nil
 
 	case s.ExternFun != nil:
 		params := make([]Type, len(s.ExternFun.Params))
-		for i := range params {
-			params[i] = AnyType{}
+		for i, p := range s.ExternFun.Params {
+			if p.Type != nil {
+				params[i] = resolveTypeRef(p.Type, env)
+			} else {
+				params[i] = AnyType{}
+			}
 		}
-		env.SetVar(s.ExternFun.Name(), FuncType{Params: params, Return: AnyType{}}, false)
+		var ret Type = AnyType{}
+		if s.ExternFun.Return != nil {
+			ret = resolveTypeRef(s.ExternFun.Return, env)
+		}
+		env.SetVar(s.ExternFun.Name(), FuncType{Params: params, Return: ret}, false)
 		return nil
 
 	case s.Assign != nil:

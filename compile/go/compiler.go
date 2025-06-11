@@ -153,6 +153,17 @@ func (c *Compiler) compileTestBlocks(prog *parser.Program) error {
 func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	c.writeln("func main() {")
 	c.indent++
+	if len(c.externObjects) > 0 {
+		c.imports["mochi/runtime/ffi/extern"] = true
+		names := make([]string, 0, len(c.externObjects))
+		for name := range c.externObjects {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			c.writeln(fmt.Sprintf("if _, ok := extern.Get(%q); !ok { panic(\"extern object not registered: %s\") }", name, name))
+		}
+	}
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil {
 			continue
@@ -928,12 +939,29 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					args[i] = v
 				}
-				val := fmt.Sprintf("python.Attr(%q, %q, %s)", mod, attr, strings.Join(args, ", "))
 				c.imports["mochi/runtime/ffi/python"] = true
+				var rtype types.Type = types.AnyType{}
+				if t, err := c.env.GetVar(sel.Root + "." + attr); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						rtype = ft.Return
+					}
+				}
+				val := fmt.Sprintf("func() %s { v, _ := python.Attr(%q, %q, %s); return v.(%s) }()", goType(rtype), mod, attr, strings.Join(args, ", "), goType(rtype))
+				if goType(rtype) == "any" {
+					val = fmt.Sprintf("func() any { v, _ := python.Attr(%q, %q, %s); return v }()", mod, attr, strings.Join(args, ", "))
+				}
 				return val, nil
 			}
 			c.imports["mochi/runtime/ffi/python"] = true
-			val := fmt.Sprintf("python.Attr(%q, %q)", mod, attr)
+			var rtype types.Type = types.AnyType{}
+			if t, err := c.env.GetVar(sel.Root + "." + attr); err == nil {
+				rtype = t
+			}
+			if goType(rtype) == "any" {
+				val := fmt.Sprintf("func() any { v, _ := python.Attr(%q, %q); return v }()", mod, attr)
+				return val, nil
+			}
+			val := fmt.Sprintf("func() %s { v, _ := python.Attr(%q, %q); return v.(%s) }()", goType(rtype), mod, attr, goType(rtype))
 			return val, nil
 		}
 		if mod, ok := c.goModules[sel.Root]; ok {
@@ -950,12 +978,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					args[i] = v
 				}
-				val := fmt.Sprintf("goffi.Call(%q, %s)", name, strings.Join(args, ", "))
 				c.imports["mochi/runtime/ffi/go"] = true
+				val := fmt.Sprintf("func() any { v, _ := goffi.Call(%q, %s); return v }()", name, strings.Join(args, ", "))
 				return val, nil
 			}
 			c.imports["mochi/runtime/ffi/go"] = true
-			val := fmt.Sprintf("goffi.Call(%q)", name)
+			val := fmt.Sprintf("func() any { v, _ := goffi.Call(%q); return v }()", name)
 			return val, nil
 		}
 		if mod, ok := c.tsModules[sel.Root]; ok {
@@ -969,12 +997,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					args[i] = v
 				}
-				val := fmt.Sprintf("denoffi.Attr(%q, %q, %s)", mod, attr, strings.Join(args, ", "))
 				c.imports["mochi/runtime/ffi/deno"] = true
+				val := fmt.Sprintf("func() any { v, _ := denoffi.Attr(%q, %q, %s); return v }()", mod, attr, strings.Join(args, ", "))
 				return val, nil
 			}
 			c.imports["mochi/runtime/ffi/deno"] = true
-			val := fmt.Sprintf("denoffi.Attr(%q, %q)", mod, attr)
+			val := fmt.Sprintf("func() any { v, _ := denoffi.Attr(%q, %q); return v }()", mod, attr)
 			return val, nil
 		}
 	}

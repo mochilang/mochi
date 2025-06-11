@@ -1,0 +1,12 @@
+package main
+
+import (
+	"fmt"
+	"mochi/runtime/ffi/python"
+)
+
+func main() {
+	var r float64 = 3.000000
+	var area float64 = (func() float64 { v, _ := python.Attr("math", "pi"); return v.(float64) }() * func() float64 { v, _ := python.Attr("math", "pow", r, 2.000000); return v.(float64) }())
+	fmt.Println("Area:", area)
+}
