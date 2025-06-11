@@ -859,6 +859,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Lit != nil:
@@ -1074,6 +1078,54 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 	c.use("_gen_text")
 	return fmt.Sprintf("_gen_text(%s, %s, %s)", prompt, model, paramStr), nil
 
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "null"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "undefined"
+	if l.With != nil {
+		w, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		c.use("_toAnyMap")
+		opts = fmt.Sprintf("_toAnyMap(%s)", w)
+	}
+	c.use("_dataset")
+	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
+	if l.Type != nil {
+		t := resolveTypeRef(l.Type)
+		ts := tsType(t)
+		if ts != "" {
+			expr = fmt.Sprintf("%s as Array<%s>", expr, ts)
+		}
+	}
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "null"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "undefined"
+	if s.With != nil {
+		w, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		c.use("_toAnyMap")
+		opts = fmt.Sprintf("_toAnyMap(%s)", w)
+	}
+	c.use("_dataset")
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {

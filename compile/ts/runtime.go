@@ -204,6 +204,90 @@ const (
 		"  for (const r of items) res.push(opts.select(...r));\n" +
 		"  return res;\n" +
 		"}\n"
+
+	helperDataset = "import { readAllSync } from \"https://deno.land/std@0.221.0/io/read_all.ts\";\n" +
+		"import { parse as _yamlParse, stringify as _yamlStringify } from \"https://deno.land/std@0.221.0/yaml/mod.ts\";\n" +
+		"function _readInput(path: string | null): string {\n" +
+		"  if (!path || path === '-') {\n" +
+		"    const data = readAllSync(Deno.stdin);\n" +
+		"    return new TextDecoder().decode(data);\n" +
+		"  }\n" +
+		"  return Deno.readTextFileSync(path);\n" +
+		"}\n" +
+		"function _writeOutput(path: string | null, text: string): void {\n" +
+		"  const data = new TextEncoder().encode(text);\n" +
+		"  if (!path || path === '-') {\n" +
+		"    Deno.stdout.writeSync(data);\n" +
+		"  } else {\n" +
+		"    Deno.writeFileSync(path, data);\n" +
+		"  }\n" +
+		"}\n" +
+		"function _parseCSV(text: string, header: boolean, delim: string): any[] {\n" +
+		"  const lines = text.trim().split(/\\r?\\n/);\n" +
+		"  if (lines.length === 0) return [];\n" +
+		"  let headers: string[] = [];\n" +
+		"  let start = 0;\n" +
+		"  if (header) { headers = lines[0].split(delim); start = 1; } else { headers = lines[0].split(delim).map((_,i)=>`c${i}`); }\n" +
+		"  const out: any[] = [];\n" +
+		"  for (let i=start; i<lines.length; i++) {\n" +
+		"    if (!lines[i]) continue;\n" +
+		"    const parts = lines[i].split(delim);\n" +
+		"    const m: Record<string, any> = {};\n" +
+		"    for (let j=0; j<headers.length; j++) {\n" +
+		"      const val = parts[j] ?? '';\n" +
+		"      if (/^-?\\d+$/.test(val)) m[headers[j]] = parseInt(val,10);\n" +
+		"      else if (/^-?\\d*\\.\\d+(e[+-]?\\d+)?$/i.test(val)) m[headers[j]] = parseFloat(val);\n" +
+		"      else m[headers[j]] = val;\n" +
+		"    }\n" +
+		"    out.push(m);\n" +
+		"  }\n" +
+		"  return out;\n" +
+		"}\n" +
+		"function _load(path: string | null, opts: any): any[] {\n" +
+		"  const format = opts?.format ?? 'csv';\n" +
+		"  const header = opts?.header ?? true;\n" +
+		"  let delim = (opts?.delimiter ?? ',')[0];\n" +
+		"  const text = _readInput(path);\n" +
+		"  switch (format) {\n" +
+		"    case 'jsonl':\n" +
+		"      return text.trim().split(/\\r?\\n/).filter(l=>l).map(l=>JSON.parse(l));\n" +
+		"    case 'json':\n" +
+		"      const d = JSON.parse(text); return Array.isArray(d)?d:[d];\n" +
+		"    case 'yaml':\n" +
+		"      const y = _yamlParse(text); return Array.isArray(y)?y:[y];\n" +
+		"    case 'tsv':\n" +
+		"      delim = '\t';\n" +
+		"      return _parseCSV(text, header, delim);\n" +
+		"    default:\n" +
+		"      return _parseCSV(text, header, delim);\n" +
+		"  }\n" +
+		"}\n" +
+		"function _save(rows: any[], path: string | null, opts: any): void {\n" +
+		"  const format = opts?.format ?? 'csv';\n" +
+		"  const header = opts?.header ?? false;\n" +
+		"  let delim = (opts?.delimiter ?? ',')[0];\n" +
+		"  switch (format) {\n" +
+		"    case 'jsonl':\n" +
+		"      _writeOutput(path, rows.map(r=>JSON.stringify(r)).join('\\n') + '\\n');\n" +
+		"      break;\n" +
+		"    case 'json':\n" +
+		"      _writeOutput(path, rows.length===1 ? JSON.stringify(rows[0]) : JSON.stringify(rows));\n" +
+		"      break;\n" +
+		"    case 'yaml':\n" +
+		"      _writeOutput(path, rows.length===1 ? _yamlStringify(rows[0]) : _yamlStringify(rows));\n" +
+		"      break;\n" +
+		"    case 'tsv':\n" +
+		"      delim = '\t';\n" +
+		"    default:\n" +
+		"      const headers = rows.length > 0 ? Object.keys(rows[0]).sort() : [];\n" +
+		"      const lines: string[] = [];\n" +
+		"      if (header) lines.push(headers.join(delim));\n" +
+		"      for (const row of rows) {\n" +
+		"        lines.push(headers.map(h => row[h] !== undefined ? String(row[h]) : '').join(delim));\n" +
+		"      }\n" +
+		"      _writeOutput(path, lines.join('\\n') + '\\n');\n" +
+		"  }\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -219,6 +303,7 @@ var helperMap = map[string]string{
 	"_waitAll":    helperWaitAll,
 	"_agent":      helperAgent,
 	"_query":      helperQuery,
+	"_dataset":    helperDataset,
 }
 
 func (c *Compiler) use(name string) {
