@@ -1,6 +1,7 @@
 package deno
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -13,14 +14,22 @@ import (
 // output into a ModuleInfo structure describing exported symbols.
 func Infer(path string) (*ffiinfo.ModuleInfo, error) {
 	cmd := exec.Command("deno", "doc", "--json", path)
-	out, err := cmd.CombinedOutput()
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	out, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("deno doc failed: %w\n%s", err, out)
+		return nil, fmt.Errorf("deno doc failed: %w\n%s", err, stderr.String())
 	}
 
 	var nodes []map[string]any
 	if err := json.Unmarshal(out, &nodes); err != nil {
-		return nil, fmt.Errorf("decode error: %w", err)
+		var wrapper struct {
+			Nodes []map[string]any `json:"nodes"`
+		}
+		if err2 := json.Unmarshal(out, &wrapper); err2 != nil {
+			return nil, fmt.Errorf("decode error: %w", err)
+		}
+		nodes = wrapper.Nodes
 	}
 
 	info := &ffiinfo.ModuleInfo{
@@ -106,8 +115,45 @@ func tsType(m map[string]any) string {
 	if m == nil {
 		return ""
 	}
-	if r, ok := m["repr"].(string); ok {
+	if r, ok := m["repr"].(string); ok && r != "" {
 		return r
+	}
+	kind, _ := m["kind"].(string)
+	switch kind {
+	case "array":
+		if elem, ok := m["array"].(map[string]any); ok {
+			t := tsType(elem)
+			if t != "" {
+				return t + "[]"
+			}
+		}
+	case "keyword":
+		if kw, ok := m["keyword"].(string); ok {
+			return kw
+		}
+	case "union":
+		if us, ok := m["union"].([]any); ok {
+			parts := []string{}
+			for _, u := range us {
+				if um, ok := u.(map[string]any); ok {
+					if part := tsType(um); part != "" {
+						parts = append(parts, part)
+					}
+				}
+			}
+			if len(parts) > 0 {
+				return strings.Join(parts, " | ")
+			}
+		}
+	case "typeRef":
+		if tr, ok := m["typeRef"].(map[string]any); ok {
+			if r, ok := tr["repr"].(string); ok && r != "" {
+				return r
+			}
+			if name, ok := tr["typeName"].(string); ok {
+				return name
+			}
+		}
 	}
 	return ""
 }
