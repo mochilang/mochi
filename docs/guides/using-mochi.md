@@ -72,8 +72,8 @@ Examples:
 ```bash
 mochi run examples/hello.mochi
 mochi test examples/math.mochi
-mochi build examples/hello.mochi -o hello
-mochi build --target py examples/hello.mochi -o hello.py
+mochi compile examples/hello.mochi -o hello
+mochi compile --target py examples/hello.mochi -o hello.py
 mochi cheatsheet
 ```
 

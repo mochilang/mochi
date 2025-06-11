@@ -65,7 +65,7 @@ Then use it anywhere:
 ```bash
 mochi run examples/hello.mochi
 mochi test examples/math.mochi
-mochi build examples/hello.mochi -o hello
+mochi compile examples/hello.mochi -o hello
 mochi cheatsheet
 ```
 
@@ -185,7 +185,7 @@ Usage: mochi [--version] <command> [args]
 Commands:
   run     Run a Mochi source file
   test    Run test blocks
-  build   Compile to binary or other languages
+  compile   Compile to binary or other languages
   repl    Start interactive REPL
   serve   Start MCP server
   cheatsheet  Print language reference
@@ -196,8 +196,8 @@ Examples:
 ```bash
 mochi run examples/hello.mochi
 mochi test examples/math.mochi
-mochi build examples/hello.mochi -o hello
-mochi build --target py examples/hello.mochi -o hello.py
+mochi compile examples/hello.mochi -o hello
+mochi compile --target py examples/hello.mochi -o hello.py
 mochi cheatsheet
 ```
 

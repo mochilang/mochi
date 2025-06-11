@@ -41,9 +41,12 @@ var (
 )
 
 type CLI struct {
+	Init       *InitCmd       `arg:"subcommand:init" help:"Initialize a new Mochi module"`
+	Get        *GetCmd        `arg:"subcommand:get" help:"Download module dependencies"`
+	Build      *BuildGoCmd    `arg:"subcommand:build" help:"Build using the Go toolchain"`
+	Compile    *CompileCmd    `arg:"subcommand:compile" help:"Compile a Mochi source file"`
 	Run        *RunCmd        `arg:"subcommand:run" help:"Run a Mochi source file"`
 	Test       *TestCmd       `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
-	Build      *BuildCmd      `arg:"subcommand:build" help:"Compile a Mochi source file"`
 	Repl       *ReplCmd       `arg:"subcommand:repl" help:"Start an interactive REPL session"`
 	Serve      *ServeCmd      `arg:"subcommand:serve" help:"Start MCP server over stdio"`
 	Cheatsheet *CheatsheetCmd `arg:"subcommand:cheatsheet" help:"Print language cheatsheet"`
@@ -65,7 +68,19 @@ type TestCmd struct {
 	Fold    bool   `arg:"--aot" help:"Fold pure calls before execution"`
 }
 
-type BuildCmd struct {
+type InitCmd struct {
+	Module string `arg:"positional,required" help:"Module path"`
+}
+
+type GetCmd struct {
+	Packages []string `arg:"positional" help:"Packages to add"`
+}
+
+type BuildGoCmd struct {
+	Args []string `arg:"positional" help:"Arguments passed to go build"`
+}
+
+type CompileCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
 	Target        string `arg:"--target" help:"Output language (go|py|ts|wasm)"`
@@ -89,14 +104,29 @@ func main() {
 	switch {
 	case cli.Version:
 		printVersion()
+	case cli.Init != nil:
+		if err := goInit(cli.Init); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("init:"), err)
+			os.Exit(1)
+		}
+	case cli.Get != nil:
+		if err := goGet(cli.Get); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("get:"), err)
+			os.Exit(1)
+		}
 	case cli.Cheatsheet != nil:
 		fmt.Print(mcp.Cheatsheet())
 	case cli.Repl != nil:
 		repl := repl.New(os.Stdout, version)
 		repl.Run()
 	case cli.Build != nil:
-		if err := build(cli.Build); err != nil {
+		if err := goBuild(cli.Build); err != nil {
 			fmt.Fprintf(os.Stderr, "%s %v\n", cError("build:"), err)
+			os.Exit(1)
+		}
+	case cli.Compile != nil:
+		if err := compile(cli.Compile); err != nil {
+			fmt.Fprintf(os.Stderr, "%s %v\n", cError("compile:"), err)
 			os.Exit(1)
 		}
 	case cli.Run != nil:
@@ -220,7 +250,7 @@ func parseOrPrintError(path string) (*parser.Program, error) {
 	return prog, nil
 }
 
-func build(cmd *BuildCmd) error {
+func compile(cmd *CompileCmd) error {
 	start := time.Now()
 	source, _ := os.ReadFile(cmd.File)
 
@@ -361,6 +391,29 @@ func build(cmd *BuildCmd) error {
 
 	fmt.Printf("generated %s\n", out)
 	return nil
+}
+
+func goInit(cmd *InitCmd) error {
+	c := exec.Command("go", "mod", "init", cmd.Module)
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	return c.Run()
+}
+
+func goGet(cmd *GetCmd) error {
+	args := append([]string{"get"}, cmd.Packages...)
+	c := exec.Command("go", args...)
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	return c.Run()
+}
+
+func goBuild(cmd *BuildGoCmd) error {
+	args := append([]string{"build"}, cmd.Args...)
+	c := exec.Command("go", args...)
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	return c.Run()
 }
 
 func printTypeErrors(errs []error) {
