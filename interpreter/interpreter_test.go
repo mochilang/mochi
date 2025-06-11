@@ -9,8 +9,10 @@ import (
 	goffi "mochi/runtime/ffi/go"
 	"mochi/runtime/llm"
 	_ "mochi/runtime/llm/provider/echo"
+	"mochi/runtime/mod"
 	"mochi/types"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -45,7 +47,8 @@ func TestInterpreter_ValidPrograms(t *testing.T) {
 		goffi.Register("math.Log", math.Log)
 
 		out := &strings.Builder{}
-		interp := interpreter.New(prog, typeEnv)
+		modRoot, _ := mod.FindRoot(filepath.Dir(src))
+		interp := interpreter.New(prog, typeEnv, modRoot)
 		interp.Env().SetWriter(out)
 		if err := interp.Run(); err != nil {
 			return nil, fmt.Errorf("❌ runtime error: %w", err)
@@ -75,7 +78,8 @@ func TestInterpreter_RuntimeErrors(t *testing.T) {
 		goffi.Register("math.Log", math.Log)
 
 		out := &strings.Builder{}
-		interp := interpreter.New(prog, typeEnv)
+		modRoot, _ := mod.FindRoot(filepath.Dir(src))
+		interp := interpreter.New(prog, typeEnv, modRoot)
 		interp.Env().SetWriter(out)
 		err = interp.Run()
 		if err == nil {

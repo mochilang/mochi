@@ -8,6 +8,7 @@ import (
 
 	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -17,11 +18,12 @@ func runProgram(t *testing.T, src string, plan string) string {
 		t.Fatalf("parse: %v", err)
 	}
 	env := types.NewEnv(nil)
+	modRoot, _ := mod.FindRoot(".")
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
 	out := &strings.Builder{}
-	interp := interpreter.New(prog, env)
+	interp := interpreter.New(prog, env, modRoot)
 	interp.SetDataPlan(plan)
 	interp.Env().SetWriter(out)
 	if err := interp.Run(); err != nil {

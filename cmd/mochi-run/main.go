@@ -11,6 +11,7 @@ import (
 	"mochi/ast"
 	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 
 	"github.com/fatih/color"
@@ -148,16 +149,20 @@ func appendExampleSection(sb *strings.Builder, path string) error {
 	sb.WriteString("```\n")
 
 	sb.WriteString("#### Output\n```text\n")
-	output, runErr := runProgram(prog)
+	output, runErr := runProgram(path, prog)
 	sb.WriteString(output)
 	sb.WriteString("```\n</details>\n")
 
 	return runErr
 }
 
-func runProgram(prog *parser.Program) (string, error) {
+func runProgram(path string, prog *parser.Program) (string, error) {
 	output := &strings.Builder{}
 	env := types.NewEnv(nil)
+	modRoot, errRoot := mod.FindRoot(filepath.Dir(path))
+	if errRoot != nil {
+		modRoot = filepath.Dir(path)
+	}
 
 	typeErrors := types.Check(prog, env)
 	if len(typeErrors) > 0 {
@@ -168,7 +173,7 @@ func runProgram(prog *parser.Program) (string, error) {
 		return output.String(), fmt.Errorf("type error (%d issue(s))", len(typeErrors))
 	}
 
-	interp := interpreter.New(prog, env)
+	interp := interpreter.New(prog, env, modRoot)
 	interp.Env().SetWriter(output)
 
 	if err := interp.Run(); err != nil {

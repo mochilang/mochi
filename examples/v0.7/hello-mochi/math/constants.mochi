@@ -1,0 +1,7 @@
+// math/constants.mochi
+// Math constants exported for reuse
+
+let pi = 3.14159
+let e = 2.71828
+
+export { pi, e }

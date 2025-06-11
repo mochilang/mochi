@@ -29,6 +29,7 @@ import (
 	"mochi/mcp"
 	"mochi/parser"
 	"mochi/repl"
+	"mochi/runtime/mod"
 	"mochi/tools/db"
 	"mochi/types"
 )
@@ -151,6 +152,10 @@ func runFile(cmd *RunCmd) error {
 		return nil
 	}
 	env := types.NewEnv(nil)
+	modRoot, errRoot := mod.FindRoot(filepath.Dir(cmd.File))
+	if errRoot != nil {
+		modRoot = filepath.Dir(cmd.File)
+	}
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		printTypeErrors(errs)
 		return fmt.Errorf("aborted due to type errors")
@@ -159,7 +164,7 @@ func runFile(cmd *RunCmd) error {
 		interpreter.FoldPureCalls(prog, env)
 	}
 	memo := cmd.Memoize || os.Getenv("MOCHI_MEMO") == "1" || strings.ToLower(os.Getenv("MOCHI_MEMO")) == "true"
-	interp := interpreter.New(prog, env)
+	interp := interpreter.New(prog, env, modRoot)
 	interp.SetMemoization(memo)
 	err = interp.Run()
 	status := "ok"
@@ -186,6 +191,10 @@ func runTests(cmd *TestCmd) error {
 		return err
 	}
 	env := types.NewEnv(nil)
+	modRoot, errRoot := mod.FindRoot(filepath.Dir(cmd.File))
+	if errRoot != nil {
+		modRoot = filepath.Dir(cmd.File)
+	}
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		printTypeErrors(errs)
 		return fmt.Errorf("aborted due to type errors")
@@ -194,7 +203,7 @@ func runTests(cmd *TestCmd) error {
 		interpreter.FoldPureCalls(prog, env)
 	}
 	memo := cmd.Memoize || os.Getenv("MOCHI_MEMO") == "1" || strings.ToLower(os.Getenv("MOCHI_MEMO")) == "true"
-	interp := interpreter.New(prog, env)
+	interp := interpreter.New(prog, env, modRoot)
 	interp.SetMemoization(memo)
 	return interp.Test()
 }
