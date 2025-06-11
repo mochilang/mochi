@@ -189,6 +189,7 @@ Commands:
   init    Initialize a new module
   get     Download module dependencies
   repl    Start interactive REPL
+  llm     Send prompt to LLM
   serve   Start MCP server
   cheatsheet  Print language reference
 ```
@@ -202,6 +203,7 @@ mochi build examples/hello.mochi -o hello
 mochi build --target py examples/hello.mochi -o hello.py
 mochi init mymodule
 mochi get
+mochi llm "hello"
 mochi cheatsheet
 ```
 
