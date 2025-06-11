@@ -1,6 +1,7 @@
 package goffi_test
 
 import (
+	"strings"
 	"testing"
 
 	goffi "mochi/runtime/ffi/go"
@@ -11,6 +12,14 @@ func TestInfer(t *testing.T) {
 	info, err := goffi.Infer("mochi/runtime/ffi/go/testpkg")
 	if err != nil {
 		t.Fatalf("infer failed: %v", err)
+	}
+
+	if info.Path != "mochi/runtime/ffi/go/testpkg" {
+		t.Fatalf("unexpected module path %s", info.Path)
+	}
+
+	if len(info.Functions) != 2 {
+		t.Fatalf("expected 2 functions, got %d", len(info.Functions))
 	}
 
 	var add ffiinfo.FuncInfo
@@ -36,6 +45,29 @@ func TestInfer(t *testing.T) {
 	}
 	if len(add.Examples) == 0 {
 		t.Fatalf("Add examples missing")
+	}
+	if !strings.Contains(add.Examples[0].Code, "Add(2, 3)") {
+		t.Fatalf("Add example code incorrect: %s", add.Examples[0].Code)
+	}
+	if strings.TrimSpace(add.Examples[0].Output) != "5" {
+		t.Fatalf("Add example output incorrect: %q", add.Examples[0].Output)
+	}
+
+	foundFail := false
+	for _, f := range info.Functions {
+		if f.Name == "Fail" {
+			foundFail = true
+			if len(f.Params) != 0 {
+				t.Fatalf("Fail should have no params")
+			}
+			if len(f.Results) != 1 || f.Results[0].Type != "error" {
+				t.Fatalf("Fail results incorrect: %+v", f.Results)
+			}
+			break
+		}
+	}
+	if !foundFail {
+		t.Fatalf("expected Fail function in inference results")
 	}
 
 	foundPi := false
