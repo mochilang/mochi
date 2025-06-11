@@ -218,3 +218,10 @@ type goValue struct {
 	module string
 	attrs  []string
 }
+
+// tsValue is a placeholder for a value from a TypeScript module accessed via Deno.
+// Resolution is deferred until used so chains like math.pow(2,3) can be built.
+type tsValue struct {
+	module string
+	attrs  []string
+}

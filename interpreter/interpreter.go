@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/alecthomas/participle/v2/lexer"
 	"github.com/fatih/color"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"sync"
@@ -15,6 +16,7 @@ import (
 	"mochi/runtime/agent"
 	"mochi/runtime/data"
 	"mochi/runtime/extern"
+	denoffi "mochi/runtime/ffi/deno"
 	goffi "mochi/runtime/ffi/go"
 	pythonffi "mochi/runtime/ffi/python"
 	mhttp "mochi/runtime/http"
@@ -42,9 +44,30 @@ type Interpreter struct {
 	externObjects map[string]*parser.ExternObjectDecl
 	pyModules     map[string]string
 	goModules     map[string]string
+	tsModules     map[string]string
 	memoize       bool
 	memo          map[string]map[string]any
 	dataPlan      string
+}
+
+var repoRoot string
+
+func init() {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			repoRoot = dir
+			break
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	if repoRoot == "" {
+		repoRoot = dir
+	}
 }
 
 func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
@@ -65,6 +88,7 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		externObjects: map[string]*parser.ExternObjectDecl{},
 		pyModules:     map[string]string{},
 		goModules:     map[string]string{},
+		tsModules:     map[string]string{},
 		memoize:       false,
 		memo:          map[string]map[string]any{},
 		dataPlan:      "memory",
@@ -434,6 +458,14 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		case "go":
 			mod := strings.Trim(s.Import.Path, "\"")
 			i.goModules[s.Import.As] = mod
+			return nil
+		case "ts":
+			mod := strings.Trim(s.Import.Path, "\"")
+			if !strings.HasPrefix(mod, "http://") && !strings.HasPrefix(mod, "https://") && !strings.HasPrefix(mod, "file://") {
+				abs := filepath.Join(repoRoot, mod)
+				mod = "file://" + abs
+			}
+			i.tsModules[s.Import.As] = mod
 			return nil
 		default:
 			return fmt.Errorf("unsupported import language: %s", s.Import.Lang)
@@ -902,6 +934,13 @@ func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
 		}
 		return res, nil
 	}
+	if tv, ok := val.(tsValue); ok {
+		res, err := denoffi.Attr(tv.module, strings.Join(tv.attrs, ":"))
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
 	return val, nil
 }
 
@@ -928,6 +967,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				val = pythonValue{module: mod}
 			} else if mod, ok := i.goModules[p.Selector.Root]; ok {
 				val = goValue{module: mod}
+			} else if mod, ok := i.tsModules[p.Selector.Root]; ok {
+				val = tsValue{module: mod}
 			} else if _, ok := i.externObjects[p.Selector.Root]; ok {
 				return nil, errExternObject(p.Pos, p.Selector.Root)
 			} else if fn, ok := i.env.GetFunc(p.Selector.Root); ok {
@@ -948,6 +989,11 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			if gv, ok := val.(goValue); ok {
 				gv.attrs = append(gv.attrs, field)
 				val = gv
+				continue
+			}
+			if tv, ok := val.(tsValue); ok {
+				tv.attrs = append(tv.attrs, field)
+				val = tv
 				continue
 			}
 			if g, ok := val.(*data.Group); ok {

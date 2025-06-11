@@ -9,6 +9,7 @@ import (
 
 	"mochi/parser"
 	"mochi/runtime/agent"
+	denoffi "mochi/runtime/ffi/deno"
 	goffi "mochi/runtime/ffi/go"
 	pythonffi "mochi/runtime/ffi/python"
 	"mochi/types"
@@ -97,6 +98,18 @@ func (i *Interpreter) applyCallOp(val any, call *parser.CallOp) (any, error) {
 			name += "." + strings.Join(gv.attrs, ".")
 		}
 		return goffi.Call(name, args...)
+	}
+
+	if tv, ok := val.(tsValue); ok {
+		args := make([]any, len(call.Args))
+		for idx, a := range call.Args {
+			v, err := i.evalExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args[idx] = v
+		}
+		return denoffi.Attr(tv.module, strings.Join(tv.attrs, ":"), args...)
 	}
 
 	if ai, ok := val.(agentIntent); ok {
