@@ -491,6 +491,29 @@ type Circle {
 }
 ```
 
+### Packages
+
+Organize reusable code with packages. Each directory forms a package. Declare
+the package name at the top of each file and mark exported names with `export`.
+
+```mochi
+package mathutils
+
+export fun add(a: int, b: int): int {
+  return a + b
+}
+```
+
+Import packages in other files:
+
+```mochi
+import "mathutils"
+print(mathutils.add(2, 3))
+
+import "mathutils" as mu
+print(mu.add(2, 3))
+```
+
 ### Streams and Agents
 
 Declare streams of structured events and handle them with agents. Use `emit` to
