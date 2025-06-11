@@ -8,6 +8,7 @@ import (
 	"github.com/alecthomas/participle/v2/lexer"
 	"github.com/fatih/color"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 
@@ -261,6 +262,58 @@ type stringMethod struct {
 	name string
 }
 
+// importPackage loads a Mochi package from a directory and binds it to alias.
+func (i *Interpreter) importPackage(alias, path, filename string) error {
+	dir := filepath.Join(repoRoot, path)
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return fmt.Errorf("import package: %w", err)
+	}
+	var files []string
+	for _, e := range entries {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+			files = append(files, filepath.Join(dir, e.Name()))
+		}
+	}
+	sort.Strings(files)
+	pkgEnv := types.NewEnv(i.env)
+	var stmts []*parser.Statement
+	pkgName := alias
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			return err
+		}
+		if prog.Package != "" {
+			pkgName = prog.Package
+		}
+		stmts = append(stmts, prog.Statements...)
+	}
+
+	oldProg := i.prog
+	oldEnv := i.env
+	i.env = pkgEnv
+	for _, s := range stmts {
+		if err := i.evalStmt(s); err != nil {
+			i.prog = oldProg
+			i.env = oldEnv
+			return err
+		}
+	}
+	i.env = oldEnv
+	i.prog = oldProg
+
+	obj := map[string]any{"__name": pkgName}
+	for _, s := range stmts {
+		if s.Fun != nil && s.Fun.Export {
+			cl := closure{Name: s.Fun.Name, Fn: &parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}, Env: pkgEnv.Copy(), FullParams: s.Fun.Params}
+			obj[s.Fun.Name] = cl
+		}
+	}
+	i.env.SetValue(alias, obj, false)
+	return nil
+}
+
 func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, error) {
 	inst := &agentInstance{
 		decl:  decl,
@@ -434,7 +487,10 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		return nil
 
 	case s.Import != nil:
-		return i.ffi.Import(s.Import.Lang, s.Import.As, s.Import.Path, repoRoot)
+		if s.Import.Lang == nil {
+			return i.importPackage(s.Import.As, s.Import.Path, s.Pos.Filename)
+		}
+		return i.ffi.Import(*s.Import.Lang, s.Import.As, s.Import.Path, repoRoot)
 
 	case s.ExternType != nil:
 		// type declarations have no runtime effect

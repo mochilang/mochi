@@ -2354,7 +2354,10 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 
 func (c *Compiler) addImport(im *parser.ImportStmt) error {
 	mod := strings.Trim(im.Path, "\"")
-	switch im.Lang {
+	if im.Lang == nil {
+		return fmt.Errorf("unsupported import language: <nil>")
+	}
+	switch *im.Lang {
 	case "python":
 		c.pyModules[im.As] = mod
 		c.imports["mochi/runtime/ffi/python"] = true
@@ -2365,7 +2368,7 @@ func (c *Compiler) addImport(im *parser.ImportStmt) error {
 		c.tsModules[im.As] = mod
 		c.imports["mochi/runtime/ffi/deno"] = true
 	default:
-		return fmt.Errorf("unsupported import language: %s", im.Lang)
+		return fmt.Errorf("unsupported import language: %s", *im.Lang)
 	}
 	return nil
 }

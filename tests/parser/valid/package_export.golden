@@ -1,0 +1,21 @@
+(program mathutils
+  (export
+    (fun add
+      (param a (type int))
+      (param b (type int))
+      (type int)
+      (return
+        (binary + (selector a) (selector b))
+      )
+    )
+  )
+  (export
+    (fun square
+      (param x (type int))
+      (type int)
+      (return
+        (binary * (selector x) (selector x))
+      )
+    )
+  )
+)
