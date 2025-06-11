@@ -1086,6 +1086,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.Selector != nil:
 		base := sanitizeName(p.Selector.Root)
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
+		if _, ok := typ.(types.MapType); ok && len(p.Selector.Tail) > 0 {
+			key := p.Selector.Tail[0]
+			base = fmt.Sprintf("%s[%q]", base, key)
+			for _, field := range p.Selector.Tail[1:] {
+				base += ".[" + fmt.Sprintf("%q", field) + "]"
+			}
+			return base, nil
+		}
 		for _, field := range p.Selector.Tail {
 			base += "." + exportName(sanitizeName(field))
 		}
@@ -1132,9 +1146,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 		parts := make([]string, len(p.Map.Items))
 		for i, item := range p.Map.Items {
-			k, err := c.compileExpr(item.Key)
-			if err != nil {
-				return "", err
+			var k string
+			if s, ok := simpleStringKey(item.Key); ok {
+				k = fmt.Sprintf("\"%s\"", s)
+			} else {
+				kk, err := c.compileExpr(item.Key)
+				if err != nil {
+					return "", err
+				}
+				k = fmt.Sprintf("%s", kk)
+				if !(strings.HasPrefix(k, "\"") && strings.HasSuffix(k, "\"")) {
+					k = fmt.Sprintf("%s", kk)
+				}
 			}
 			v, err := c.compileExpr(item.Value)
 			if err != nil {
@@ -1161,6 +1184,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	default:
 		return "nil", fmt.Errorf("unsupported primary expression")
 	}
@@ -1251,6 +1278,78 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 
 	c.use("_genText")
 	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramStr), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		c.use("_toAnyMap")
+		opts = fmt.Sprintf("_toAnyMap(%s)", v)
+	}
+	c.imports["mochi/runtime/data"] = true
+	c.imports["os"] = true
+	c.use("_load")
+	if l.Type != nil {
+		t := resolveTypeRef(l.Type)
+		if st, ok := c.env.GetStruct(*l.Type.Simple); t == (types.AnyType{}) && ok {
+			t = st
+		}
+		goT := goType(t)
+		if goT == "" {
+			goT = "any"
+		}
+		c.use("_cast")
+		if goT != "any" {
+			c.imports["encoding/json"] = true
+		}
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("func() []%s {\n", goT))
+		buf.WriteString(fmt.Sprintf("\trows := _load(%s, %s)\n", path, opts))
+		buf.WriteString(fmt.Sprintf("\tout := make([]%s, len(rows))\n", goT))
+		buf.WriteString("\tfor i, r := range rows {\n")
+		if goT == "any" {
+			buf.WriteString("\t\tout[i] = r\n")
+		} else {
+			buf.WriteString(fmt.Sprintf("\t\tout[i] = _cast[%s](r)\n", goT))
+		}
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn out\n")
+		buf.WriteString("}()")
+		return buf.String(), nil
+	}
+	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		c.use("_toAnyMap")
+		opts = fmt.Sprintf("_toAnyMap(%s)", v)
+	}
+	c.imports["mochi/runtime/data"] = true
+	c.imports["os"] = true
+	c.use("_save")
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -2225,6 +2324,27 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 		for _, f := range p.Generate.Fields {
 			c.scanExprImports(f.Value)
 		}
+	case p.Load != nil:
+		if p.Load.With != nil {
+			c.scanExprImports(p.Load.With)
+		}
+		if p.Load.Type != nil {
+			if st, ok := c.env.GetStruct(*p.Load.Type.Simple); ok {
+				c.imports["encoding/json"] = true
+				_ = st
+			}
+		}
+		c.imports["mochi/runtime/data"] = true
+		c.imports["os"] = true
+		c.use("_load")
+	case p.Save != nil:
+		c.scanExprImports(p.Save.Src)
+		if p.Save.With != nil {
+			c.scanExprImports(p.Save.With)
+		}
+		c.imports["mochi/runtime/data"] = true
+		c.imports["os"] = true
+		c.use("_save")
 	case p.Selector != nil:
 		// no imports
 	case p.Lit != nil:

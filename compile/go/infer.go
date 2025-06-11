@@ -184,6 +184,17 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 		return types.ListType{Elem: elemType}
+	case p.Load != nil:
+		var elem types.Type = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+		if p.Load.Type != nil {
+			elem = resolveTypeRef(p.Load.Type)
+			if st, ok := c.env.GetStruct(*p.Load.Type.Simple); elem == (types.AnyType{}) && ok {
+				elem = st
+			}
+		}
+		return types.ListType{Elem: elem}
+	case p.Save != nil:
+		return types.VoidType{}
 	case p.Query != nil:
 		elem := c.inferExprType(p.Query.Select)
 		return types.ListType{Elem: elem}
@@ -191,10 +202,19 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		var keyType types.Type = types.AnyType{}
 		var valType types.Type = types.AnyType{}
 		if len(p.Map.Items) > 0 {
-			keyType = c.inferExprType(p.Map.Items[0].Key)
+			if _, ok := simpleStringKey(p.Map.Items[0].Key); ok {
+				keyType = types.StringType{}
+			} else {
+				keyType = c.inferExprType(p.Map.Items[0].Key)
+			}
 			valType = c.inferExprType(p.Map.Items[0].Value)
 			for _, it := range p.Map.Items[1:] {
-				kt := c.inferExprType(it.Key)
+				var kt types.Type
+				if _, ok := simpleStringKey(it.Key); ok {
+					kt = types.StringType{}
+				} else {
+					kt = c.inferExprType(it.Key)
+				}
 				vt := c.inferExprType(it.Value)
 				if !equalTypes(keyType, kt) {
 					keyType = types.AnyType{}
