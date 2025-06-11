@@ -6,12 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"mochi/runtime/ffi"
 )
-
-// Ensure *Runtime implements ffi.Caller.
-var _ ffi.Caller = (*Runtime)(nil)
 
 // Runtime provides access to Deno TypeScript code via subprocess execution.
 type Runtime struct{}

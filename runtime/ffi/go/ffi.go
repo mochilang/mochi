@@ -3,13 +3,7 @@ package goffi
 import (
 	"fmt"
 	"reflect"
-
-	"mochi/runtime/ffi"
 )
-
-// Ensure *Runtime implements ffi.Caller and ffi.Registerer.
-var _ ffi.Caller = (*Runtime)(nil)
-var _ ffi.Registerer = (*Runtime)(nil)
 
 // Runtime maintains a registry of Go functions available to Mochi.
 type Runtime struct {

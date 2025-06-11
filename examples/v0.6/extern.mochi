@@ -20,6 +20,6 @@ extern fun generate_text(prompt: string): string
 
 // Extern objects can be referenced directly.
 // These calls will resolve to host implementations
-// registered via `runtime/extern`.
+// registered via `runtime/ffi`.
 
 console.log("running on", OS)
