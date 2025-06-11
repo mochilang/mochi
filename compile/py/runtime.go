@@ -62,6 +62,114 @@ var helperFetch = "def _fetch(url, opts):\n" +
 	"        text = resp.read()\n" +
 	"    return json.loads(text)\n"
 
+var helperLoad = "def _load(path, opts):\n" +
+	"    import csv, json, sys\n" +
+	"    fmt = 'csv'\n" +
+	"    header = True\n" +
+	"    delim = ','\n" +
+	"    if opts:\n" +
+	"        fmt = opts.get('format', fmt)\n" +
+	"        header = opts.get('header', header)\n" +
+	"        delim = opts.get('delimiter', delim)\n" +
+	"        if isinstance(delim, str) and delim:\n" +
+	"            delim = delim[0]\n" +
+	"    f = sys.stdin if path is None else open(path, 'r')\n" +
+	"    try:\n" +
+	"        if fmt == 'tsv':\n" +
+	"            delim = '\t'; fmt = 'csv'\n" +
+	"        if fmt == 'csv':\n" +
+	"            rows = list(csv.reader(f, delimiter=delim))\n" +
+	"            if not rows:\n" +
+	"                return []\n" +
+	"            if header:\n" +
+	"                headers = rows[0]; rows = rows[1:]\n" +
+	"            else:\n" +
+	"                m = max(len(r) for r in rows)\n" +
+	"                headers = [f'c{i}' for i in range(m)]\n" +
+	"            out = []\n" +
+	"            for rec in rows:\n" +
+	"                row = {}\n" +
+	"                for i, h in enumerate(headers):\n" +
+	"                    val = rec[i] if i < len(rec) else ''\n" +
+	"                    if val.isdigit():\n" +
+	"                        row[h] = int(val)\n" +
+	"                    else:\n" +
+	"                        try:\n" +
+	"                            row[h] = float(val)\n" +
+	"                        except:\n" +
+	"                            row[h] = val\n" +
+	"                out.append(row)\n" +
+	"            return out\n" +
+	"        elif fmt == 'json':\n" +
+	"            data = json.load(f)\n" +
+	"            if isinstance(data, list):\n" +
+	"                return [dict(d) for d in data]\n" +
+	"            if isinstance(data, dict):\n" +
+	"                return [dict(data)]\n" +
+	"            return []\n" +
+	"        elif fmt == 'jsonl':\n" +
+	"            return [json.loads(line) for line in f if line.strip()]\n" +
+	"        elif fmt == 'yaml':\n" +
+	"            import yaml\n" +
+	"            data = yaml.safe_load(f)\n" +
+	"            if isinstance(data, list):\n" +
+	"                return [dict(d) for d in data]\n" +
+	"            if isinstance(data, dict):\n" +
+	"                return [dict(data)]\n" +
+	"            return []\n" +
+	"        else:\n" +
+	"            raise Exception('unknown format: ' + fmt)\n" +
+	"    finally:\n" +
+	"        if path is not None:\n" +
+	"            f.close()\n"
+
+var helperSave = "def _save(rows, path, opts):\n" +
+	"    import csv, json, sys\n" +
+	"    fmt = 'csv'\n" +
+	"    header = False\n" +
+	"    delim = ','\n" +
+	"    if opts:\n" +
+	"        fmt = opts.get('format', fmt)\n" +
+	"        header = opts.get('header', header)\n" +
+	"        delim = opts.get('delimiter', delim)\n" +
+	"        if isinstance(delim, str) and delim:\n" +
+	"            delim = delim[0]\n" +
+	"    f = sys.stdout if path is None else open(path, 'w')\n" +
+	"    try:\n" +
+	"        if fmt == 'tsv':\n" +
+	"            delim = '\t'; fmt = 'csv'\n" +
+	"        if fmt == 'csv':\n" +
+	"            w = csv.writer(f, delimiter=delim)\n" +
+	"            headers = sorted(rows[0].keys()) if rows else []\n" +
+	"            if header:\n" +
+	"                w.writerow(headers)\n" +
+	"            for row in rows:\n" +
+	"                rec = []\n" +
+	"                for h in headers:\n" +
+	"                    val = row.get(h)\n" +
+	"                    if isinstance(val, (dict, list)):\n" +
+	"                        rec.append(json.dumps(val))\n" +
+	"                    elif val is None:\n" +
+	"                        rec.append('')\n" +
+	"                    else:\n" +
+	"                        rec.append(str(val))\n" +
+	"                w.writerow(rec)\n" +
+	"            return\n" +
+	"        elif fmt == 'json':\n" +
+	"            json.dump(rows, f)\n" +
+	"        elif fmt == 'jsonl':\n" +
+	"            for row in rows:\n" +
+	"                f.write(json.dumps(row))\n" +
+	"                f.write('\\n')\n" +
+	"        elif fmt == 'yaml':\n" +
+	"            import yaml\n" +
+	"            yaml.safe_dump(rows[0] if len(rows) == 1 else rows, f)\n" +
+	"        else:\n" +
+	"            raise Exception('unknown format: ' + fmt)\n" +
+	"    finally:\n" +
+	"        if path is not None:\n" +
+	"            f.close()\n"
+
 var helperToAnyMap = "def _to_any_map(m):\n" +
 	"    return dict(m) if isinstance(m, dict) else dict(m)\n"
 
@@ -188,6 +296,8 @@ var helperMap = map[string]string{
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
 	"_fetch":      helperFetch,
+	"_load":       helperLoad,
+	"_save":       helperSave,
 	"_to_any_map": helperToAnyMap,
 	"_iter":       helperIter,
 	"_stream":     helperStream,
