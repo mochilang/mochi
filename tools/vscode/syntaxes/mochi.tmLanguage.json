@@ -6,7 +6,7 @@
   "patterns": [
     {
       "name": "keyword.control.mochi",
-      "match": "\\b(test|expect|agent|intent|on|stream|emit|type|fun|return|break|continue|let|var|if|else|for|in|generate|match|fetch)\\b"
+      "match": "\b(agent|all|as|break|by|continue|else|emit|except|expect|extern|fetch|for|from|fun|generate|group|if|import|in|intent|intersect|into|join|left|let|load|match|model|object|on|outer|return|right|save|select|skip|sort|stream|take|test|to|type|union|var|where|while|with)\b"
     },
     {
       "name": "storage.type.mochi",
@@ -56,7 +56,7 @@
     },
     {
       "name": "keyword.operator.mochi",
-      "match": "==|!=|<=|>=|&&|\\|\\||=>|\\.\\.|[-+*/%=<>!|{}\\[\\](),.:]"
+      "match": "==|!=|<=|>=|&&|\\|\\||=>|\\.\\.|\\b(union|except|intersect)\\b|[-+*/%=<>!|{}\\[\\](),.:]"
     },
     {
       "name": "punctuation.separator.mochi",
