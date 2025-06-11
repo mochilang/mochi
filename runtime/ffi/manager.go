@@ -18,6 +18,9 @@ type Manager struct {
 	pyModules     map[string]string
 	goModules     map[string]string
 	tsModules     map[string]string
+	pyAuto        map[string]bool
+	goAuto        map[string]bool
+	tsAuto        map[string]bool
 	externObjects map[string]*parser.ExternObjectDecl
 }
 
@@ -27,24 +30,36 @@ func NewManager() *Manager {
 		pyModules:     map[string]string{},
 		goModules:     map[string]string{},
 		tsModules:     map[string]string{},
+		pyAuto:        map[string]bool{},
+		goAuto:        map[string]bool{},
+		tsAuto:        map[string]bool{},
 		externObjects: map[string]*parser.ExternObjectDecl{},
 	}
 }
 
 // Import registers a module alias for the given language.
 // repoRoot is used to resolve relative TypeScript paths.
-func (m *Manager) Import(lang, alias, path, repoRoot string) error {
+func (m *Manager) Import(lang, alias, path, repoRoot string, auto bool) error {
 	mod := strings.Trim(path, "\"")
 	switch lang {
 	case "python":
 		m.pyModules[alias] = mod
+		if auto {
+			m.pyAuto[alias] = true
+		}
 	case "go":
 		m.goModules[alias] = mod
+		if auto {
+			m.goAuto[alias] = true
+		}
 	case "typescript":
 		if !strings.HasPrefix(mod, "http://") && !strings.HasPrefix(mod, "https://") && !strings.HasPrefix(mod, "file://") {
 			mod = "file://" + filepath.Join(repoRoot, mod)
 		}
 		m.tsModules[alias] = mod
+		if auto {
+			m.tsAuto[alias] = true
+		}
 	default:
 		return fmt.Errorf("unsupported import language: %s", lang)
 	}
@@ -75,13 +90,13 @@ func (m *Manager) CheckExternObjects() error {
 // Lookup returns a placeholder value for the imported module if present.
 func (m *Manager) Lookup(name string) (any, bool) {
 	if mod, ok := m.pyModules[name]; ok {
-		return PythonValue{Module: mod}, true
+		return PythonValue{Module: mod, Auto: m.pyAuto[name]}, true
 	}
 	if mod, ok := m.goModules[name]; ok {
-		return GoValue{Module: mod}, true
+		return GoValue{Module: mod, Auto: m.goAuto[name]}, true
 	}
 	if mod, ok := m.tsModules[name]; ok {
-		return TSValue{Module: mod}, true
+		return TSValue{Module: mod, Auto: m.tsAuto[name]}, true
 	}
 	return nil, false
 }
@@ -108,6 +123,9 @@ func (m *Manager) Final(val any) (any, error) {
 	case PythonValue:
 		return pythonffi.Attr(v.Module, strings.Join(v.Attrs, "."))
 	case GoValue:
+		if v.Auto {
+			return goffi.AttrAuto(v.Module, strings.Join(v.Attrs, "."))
+		}
 		name := v.Module
 		if len(v.Attrs) > 0 {
 			name += "." + strings.Join(v.Attrs, ".")
@@ -125,6 +143,9 @@ func (m *Manager) Call(val any, args []any) (any, error) {
 	case PythonValue:
 		return pythonffi.Attr(v.Module, strings.Join(v.Attrs, "."), args...)
 	case GoValue:
+		if v.Auto {
+			return goffi.AttrAuto(v.Module, strings.Join(v.Attrs, "."), args...)
+		}
 		name := v.Module
 		if len(v.Attrs) > 0 {
 			name += "." + strings.Join(v.Attrs, ".")

@@ -480,6 +480,7 @@ type ImportStmt struct {
 	Lang *string `parser:"'import' [ @Ident ]"`
 	Path string  `parser:"@String"`
 	As   string  `parser:"[ 'as' @Ident ]"`
+	Auto bool    `parser:"@'auto'?"`
 }
 
 type StreamField struct {

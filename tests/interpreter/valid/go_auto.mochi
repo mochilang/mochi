@@ -1,0 +1,5 @@
+import go "mochi/runtime/ffi/go/testpkg" as testpkg auto
+
+print(testpkg.Add(2,3))
+print(testpkg.Pi)
+print(testpkg.Answer)
