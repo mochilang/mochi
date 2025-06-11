@@ -1,0 +1,24 @@
+import ts "https://deno.land/std@0.211.0/math/constants.ts" as constants
+import ts "https://deno.land/std@0.211.0/math/mod.ts" as math
+import ts "deno" as deno
+
+extern let constants.PI: float
+extern let constants.E: float
+extern fun math.pow(x: float, y: float): float
+extern fun math.sqrt(x: float): float
+
+extern fun deno.readTextFile(path: string): string
+extern fun deno.writeTextFile(path: string, data: string): void
+
+let r = 5.0
+let area = constants.PI * math.pow(r, 2.0)
+let root = math.sqrt(144.0)
+
+print("Circle with r =", r, "has area =", area)
+print("Square root of 144:", root)
+
+let output = "Area = " + area + "\nRoot = " + root
+deno.writeTextFile("area.txt", output)
+
+let content = deno.readTextFile("area.txt")
+print("File content:\n", content)

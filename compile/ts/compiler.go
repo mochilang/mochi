@@ -91,6 +91,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Collect TypeScript imports and emit them.
 	c.collectImports(prog.Statements)
 	for alias, path := range c.imports {
+		if path == "deno" {
+			continue
+		}
 		c.writeln(fmt.Sprintf("import * as %s from \"%s\"", alias, path))
 	}
 	if len(c.imports) > 0 {
@@ -870,7 +873,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(" + expr + ")", nil
 	case p.Selector != nil:
-		expr := sanitizeName(p.Selector.Root)
+		root := sanitizeName(p.Selector.Root)
+		if path, ok := c.imports[root]; ok && path == "deno" {
+			root = "Deno"
+		}
+		expr := root
 		for _, s := range p.Selector.Tail {
 			expr += "." + sanitizeName(s)
 		}
