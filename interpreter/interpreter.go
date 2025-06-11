@@ -15,10 +15,8 @@ import (
 	"mochi/parser"
 	"mochi/runtime/agent"
 	"mochi/runtime/data"
-	"mochi/runtime/extern"
-	denoffi "mochi/runtime/ffi/deno"
-	goffi "mochi/runtime/ffi/go"
-	pythonffi "mochi/runtime/ffi/python"
+	ffi "mochi/runtime/ffi"
+	"mochi/runtime/ffi/extern"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
 	"mochi/runtime/stream"
@@ -29,25 +27,19 @@ import (
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
 type Interpreter struct {
-	prog          *parser.Program
-	env           *types.Env
-	types         *types.Env
-	streams       map[string]stream.Stream
-	handlers      map[string][]onHandler
-	subs          []stream.Subscriber
-	cancels       []context.CancelFunc
-	wg            *sync.WaitGroup
-	agents        []*agent.Agent
-	externTypes   map[string]*parser.ExternTypeDecl
-	externVars    map[string]*parser.ExternVarDecl
-	externFuncs   map[string]*parser.ExternFunDecl
-	externObjects map[string]*parser.ExternObjectDecl
-	pyModules     map[string]string
-	goModules     map[string]string
-	tsModules     map[string]string
-	memoize       bool
-	memo          map[string]map[string]any
-	dataPlan      string
+	prog     *parser.Program
+	env      *types.Env
+	types    *types.Env
+	streams  map[string]stream.Stream
+	handlers map[string][]onHandler
+	subs     []stream.Subscriber
+	cancels  []context.CancelFunc
+	wg       *sync.WaitGroup
+	agents   []*agent.Agent
+	ffi      *ffi.Manager
+	memoize  bool
+	memo     map[string]map[string]any
+	dataPlan string
 }
 
 var repoRoot string
@@ -74,24 +66,18 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 	return &Interpreter{
 		prog: prog,
 		// env:   types.NewEnv(nil),
-		env:           typesEnv,
-		types:         typesEnv,
-		streams:       map[string]stream.Stream{},
-		handlers:      map[string][]onHandler{},
-		subs:          []stream.Subscriber{},
-		cancels:       []context.CancelFunc{},
-		wg:            &sync.WaitGroup{},
-		agents:        []*agent.Agent{},
-		externTypes:   map[string]*parser.ExternTypeDecl{},
-		externVars:    map[string]*parser.ExternVarDecl{},
-		externFuncs:   map[string]*parser.ExternFunDecl{},
-		externObjects: map[string]*parser.ExternObjectDecl{},
-		pyModules:     map[string]string{},
-		goModules:     map[string]string{},
-		tsModules:     map[string]string{},
-		memoize:       false,
-		memo:          map[string]map[string]any{},
-		dataPlan:      "memory",
+		env:      typesEnv,
+		types:    typesEnv,
+		streams:  map[string]stream.Stream{},
+		handlers: map[string][]onHandler{},
+		subs:     []stream.Subscriber{},
+		cancels:  []context.CancelFunc{},
+		wg:       &sync.WaitGroup{},
+		agents:   []*agent.Agent{},
+		ffi:      ffi.NewManager(),
+		memoize:  false,
+		memo:     map[string]map[string]any{},
+		dataPlan: "memory",
 	}
 }
 
@@ -111,10 +97,9 @@ func (i *Interpreter) SetDataPlan(plan string) {
 }
 
 func (i *Interpreter) checkExternObjects() error {
-	for name, decl := range i.externObjects {
-		if _, ok := extern.Get(name); !ok {
-			return errExternObject(decl.Pos, name)
-		}
+	if err := i.ffi.CheckExternObjects(); err != nil {
+		// Error positions are stored in the manager, so just forward.
+		return err
 	}
 	return nil
 }
@@ -450,44 +435,20 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		return nil
 
 	case s.Import != nil:
-		switch s.Import.Lang {
-		case "python":
-			mod := strings.Trim(s.Import.Path, "\"")
-			i.pyModules[s.Import.As] = mod
-			return nil
-		case "go":
-			mod := strings.Trim(s.Import.Path, "\"")
-			i.goModules[s.Import.As] = mod
-			return nil
-		case "ts":
-			mod := strings.Trim(s.Import.Path, "\"")
-			if !strings.HasPrefix(mod, "http://") && !strings.HasPrefix(mod, "https://") && !strings.HasPrefix(mod, "file://") {
-				abs := filepath.Join(repoRoot, mod)
-				mod = "file://" + abs
-			}
-			i.tsModules[s.Import.As] = mod
-			return nil
-		default:
-			return fmt.Errorf("unsupported import language: %s", s.Import.Lang)
-		}
+		return i.ffi.Import(s.Import.Lang, s.Import.As, s.Import.Path, repoRoot)
 
 	case s.ExternType != nil:
-		// Placeholder for registering external types later
-		i.externTypes[s.ExternType.Name] = s.ExternType
+		// type declarations have no runtime effect
 		return nil
 
 	case s.ExternVar != nil:
-		// Placeholder for registering external variables later
-		i.externVars[s.ExternVar.Name()] = s.ExternVar
 		return nil
 
 	case s.ExternFun != nil:
-		// Placeholder for registering external functions later
-		i.externFuncs[s.ExternFun.Name()] = s.ExternFun
 		return nil
 
 	case s.ExternObject != nil:
-		i.externObjects[s.ExternObject.Name] = s.ExternObject
+		i.ffi.DeclareExternObject(s.ExternObject)
 		return nil
 
 	case s.Stream != nil:
@@ -916,32 +877,7 @@ func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
 			return nil, err
 		}
 	}
-	if pv, ok := val.(pythonValue); ok {
-		res, err := pythonffi.Attr(pv.module, strings.Join(pv.attrs, "."))
-		if err != nil {
-			return nil, err
-		}
-		return res, nil
-	}
-	if gv, ok := val.(goValue); ok {
-		name := gv.module
-		if len(gv.attrs) > 0 {
-			name += "." + strings.Join(gv.attrs, ".")
-		}
-		res, err := goffi.Call(name)
-		if err != nil {
-			return nil, err
-		}
-		return res, nil
-	}
-	if tv, ok := val.(tsValue); ok {
-		res, err := denoffi.Attr(tv.module, strings.Join(tv.attrs, ":"))
-		if err != nil {
-			return nil, err
-		}
-		return res, nil
-	}
-	return val, nil
+	return i.ffi.Final(val)
 }
 
 func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
@@ -963,13 +899,9 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		if err != nil {
 			if v, ok := extern.Get(p.Selector.Root); ok {
 				val = v
-			} else if mod, ok := i.pyModules[p.Selector.Root]; ok {
-				val = pythonValue{module: mod}
-			} else if mod, ok := i.goModules[p.Selector.Root]; ok {
-				val = goValue{module: mod}
-			} else if mod, ok := i.tsModules[p.Selector.Root]; ok {
-				val = tsValue{module: mod}
-			} else if _, ok := i.externObjects[p.Selector.Root]; ok {
+			} else if mval, ok := i.ffi.Lookup(p.Selector.Root); ok {
+				val = mval
+			} else if i.ffi.IsExternObjectDeclared(p.Selector.Root) {
 				return nil, errExternObject(p.Pos, p.Selector.Root)
 			} else if fn, ok := i.env.GetFunc(p.Selector.Root); ok {
 				cl := closure{Name: p.Selector.Root, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
@@ -981,19 +913,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			}
 		}
 		for _, field := range p.Selector.Tail {
-			if pv, ok := val.(pythonValue); ok {
-				pv.attrs = append(pv.attrs, field)
-				val = pv
-				continue
-			}
-			if gv, ok := val.(goValue); ok {
-				gv.attrs = append(gv.attrs, field)
-				val = gv
-				continue
-			}
-			if tv, ok := val.(tsValue); ok {
-				tv.attrs = append(tv.attrs, field)
-				val = tv
+			if nv, ok := i.ffi.Append(val, field); ok {
+				val = nv
 				continue
 			}
 			if g, ok := val.(*data.Group); ok {

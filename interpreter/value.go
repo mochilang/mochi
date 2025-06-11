@@ -203,25 +203,3 @@ func writeArgKey(sb *strings.Builder, v any) {
 		sb.WriteString(fmt.Sprintf("%p", v))
 	}
 }
-
-// pythonValue is a placeholder for a value from a Python module.
-// It defers resolution until used, allowing chains like math.sqrt(x).
-type pythonValue struct {
-	module string
-	attrs  []string
-}
-
-// goValue is a placeholder for a value from a Go module.
-// Like pythonValue, resolution is deferred until used so chains like
-// math.Sqrt(9) can be constructed.
-type goValue struct {
-	module string
-	attrs  []string
-}
-
-// tsValue is a placeholder for a value from a TypeScript module accessed via Deno.
-// Resolution is deferred until used so chains like math.pow(2,3) can be built.
-type tsValue struct {
-	module string
-	attrs  []string
-}

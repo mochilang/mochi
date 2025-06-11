@@ -9,9 +9,6 @@ import (
 
 	"mochi/parser"
 	"mochi/runtime/agent"
-	denoffi "mochi/runtime/ffi/deno"
-	goffi "mochi/runtime/ffi/go"
-	pythonffi "mochi/runtime/ffi/python"
 	"mochi/types"
 )
 
@@ -72,7 +69,7 @@ func (i *Interpreter) invokeClosure(pos lexer.Position, cl closure, args []*pars
 
 // applyCallOp handles a postfix call operation on a value.
 func (i *Interpreter) applyCallOp(val any, call *parser.CallOp) (any, error) {
-	if pv, ok := val.(pythonValue); ok {
+	if i.ffi.IsValue(val) {
 		args := make([]any, len(call.Args))
 		for idx, a := range call.Args {
 			v, err := i.evalExpr(a)
@@ -81,35 +78,7 @@ func (i *Interpreter) applyCallOp(val any, call *parser.CallOp) (any, error) {
 			}
 			args[idx] = v
 		}
-		return pythonffi.Attr(pv.module, strings.Join(pv.attrs, "."), args...)
-	}
-
-	if gv, ok := val.(goValue); ok {
-		args := make([]any, len(call.Args))
-		for idx, a := range call.Args {
-			v, err := i.evalExpr(a)
-			if err != nil {
-				return nil, err
-			}
-			args[idx] = v
-		}
-		name := gv.module
-		if len(gv.attrs) > 0 {
-			name += "." + strings.Join(gv.attrs, ".")
-		}
-		return goffi.Call(name, args...)
-	}
-
-	if tv, ok := val.(tsValue); ok {
-		args := make([]any, len(call.Args))
-		for idx, a := range call.Args {
-			v, err := i.evalExpr(a)
-			if err != nil {
-				return nil, err
-			}
-			args[idx] = v
-		}
-		return denoffi.Attr(tv.module, strings.Join(tv.attrs, ":"), args...)
+		return i.ffi.Call(val, args)
 	}
 
 	if ai, ok := val.(agentIntent); ok {
