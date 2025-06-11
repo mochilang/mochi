@@ -76,6 +76,7 @@ To hack on the language or contribute:
 ```bash
 git clone https://github.com/mochilang/mochi
 cd mochi
+make install # install Deno for TypeScript tests
 make build
 make test
 ```
@@ -586,6 +587,7 @@ Mochi is open source and happy to have your contributions.
 ```bash
 git clone https://github.com/mochilang/mochi
 cd mochi
+make install # install Deno for TypeScript tests
 make build
 make test
 ```
