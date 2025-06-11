@@ -1,0 +1,7 @@
+import "tests/interpreter/valid/mathmulti" as mathmulti
+
+let sum = mathmulti.add(1, 2)
+let cubed = mathmulti.cube(3)
+
+print("1 + 2 =", sum)
+print("3 cubed =", cubed)
