@@ -1,4 +1,23 @@
 # 📦 CHANGELOG.md
+## [0.6.3] – 2025-06-13
+
+### Added
+
+* `package` and `export` keywords for modules
+* Default alias when `import` has no `as`
+* `init` and `get` commands for the CLI
+* Dataset `load` and `save` in Go, Python and TypeScript
+* `libmochi` helpers for Go, Python and TypeScript
+* Parser captures documentation comments
+
+### Changed
+
+* WebAssembly interpreter built on demand
+
+### Fixed
+
+* TypeScript package import declarations
+
 ## [0.6.2] – 2025-06-12
 
 ### Added
