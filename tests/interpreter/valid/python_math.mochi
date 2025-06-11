@@ -1,0 +1,20 @@
+// math_import_extern_fun.mochi
+import python "math" as math
+
+extern let math.pi: float
+extern let math.e: float
+extern fun math.sqrt(x: float): float
+extern fun math.pow(x: float, y: float): float
+extern fun math.sin(x: float): float
+extern fun math.log(x: float): float
+
+let r = 3.0
+let area = math.pi * math.pow(r, 2.0)
+let root = math.sqrt(49.0)
+let sin45 = math.sin(math.pi / 4.0)
+let log_e = math.log(math.e)
+
+print("Circle area with r =", r, "=>", area)
+print("Square root of 49:", root)
+print("sin(π/4):", sin45)
+print("log(e):", log_e)

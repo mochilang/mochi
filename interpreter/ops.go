@@ -9,6 +9,7 @@ import (
 
 	"mochi/parser"
 	"mochi/runtime/agent"
+	pythonffi "mochi/runtime/ffi/python"
 	"mochi/types"
 )
 
@@ -69,6 +70,18 @@ func (i *Interpreter) invokeClosure(pos lexer.Position, cl closure, args []*pars
 
 // applyCallOp handles a postfix call operation on a value.
 func (i *Interpreter) applyCallOp(val any, call *parser.CallOp) (any, error) {
+	if pv, ok := val.(pythonValue); ok {
+		args := make([]any, len(call.Args))
+		for idx, a := range call.Args {
+			v, err := i.evalExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args[idx] = v
+		}
+		return pythonffi.Attr(pv.module, strings.Join(pv.attrs, "."), args...)
+	}
+
 	if ai, ok := val.(agentIntent); ok {
 		args := make([]agent.Value, len(call.Args))
 		for idx, a := range call.Args {
