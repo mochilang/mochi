@@ -5,7 +5,7 @@ import tempfile
 from collections.abc import Sequence
 from typing import Any
 
-__all__ = ["run", "call"]
+__all__ = ["run", "call", "eval"]
 
 
 def _run(code: str, mochi_bin: str = "mochi") -> str:
@@ -16,7 +16,9 @@ def _run(code: str, mochi_bin: str = "mochi") -> str:
     try:
         proc = subprocess.run([mochi_bin, "run", fname], capture_output=True, text=True)
         if proc.returncode != 0:
-            raise RuntimeError(f"mochi exited with status {proc.returncode}: {proc.stderr}")
+            raise RuntimeError(
+                f"mochi exited with status {proc.returncode}: {proc.stderr}"
+            )
         return proc.stdout
     finally:
         os.unlink(fname)
@@ -40,6 +42,23 @@ def call(code: str, func: str, *args: Any, mochi_bin: str = "mochi") -> Any:
     return json.loads(out.strip())
 
 
+def eval(code: str) -> str:
+    """Evaluate Mochi source using a Go subprocess and return output."""
+    here = os.path.dirname(__file__)
+    eval_src = os.path.join(here, "runner", "main.go")
+    env = os.environ.copy()
+    env["MOCHI_CODE"] = code
+    proc = subprocess.run(
+        ["go", "run", eval_src], capture_output=True, text=True, env=env
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(f"go run failed: {proc.stderr}")
+    result = json.loads(proc.stdout)
+    if "error" in result and result["error"]:
+        raise RuntimeError(result["error"])
+    return result.get("output", "")
+
+
 def _to_mochi(v: Any) -> str:
     if v is None:
         return "null"
@@ -48,10 +67,10 @@ def _to_mochi(v: Any) -> str:
     if isinstance(v, (int, float)):
         return str(v)
     if isinstance(v, str):
-        return "\"" + v.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+        return '"' + v.replace("\\", "\\\\").replace('"', '\\"') + '"'
     if isinstance(v, Sequence) and not isinstance(v, (str, bytes, bytearray)):
         return "[" + ", ".join(_to_mochi(x) for x in v) + "]"
     if isinstance(v, dict):
-        items = ", ".join(f'{_to_mochi(k)}: {_to_mochi(val)}' for k, val in v.items())
+        items = ", ".join(f"{_to_mochi(k)}: {_to_mochi(val)}" for k, val in v.items())
         return "{" + items + "}"
     raise TypeError(f"unsupported value type: {type(v).__name__}")
