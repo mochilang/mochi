@@ -24,6 +24,11 @@ type Compiler struct {
 	streams      []string
 	usesHandlers bool
 	memo         map[string]*parser.Literal
+
+	pyModules     map[string]string
+	goModules     map[string]string
+	tsModules     map[string]string
+	externObjects map[string]bool
 }
 
 // New creates a new Go compiler instance.
@@ -35,6 +40,11 @@ func New(env *types.Env) *Compiler {
 		structs:      make(map[string]bool),
 		handlerDones: []string{},
 		memo:         map[string]*parser.Literal{},
+
+		pyModules:     map[string]string{},
+		goModules:     map[string]string{},
+		tsModules:     map[string]string{},
+		externObjects: map[string]bool{},
 	}
 }
 
@@ -216,6 +226,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileEmit(s.Emit)
 	case s.Agent != nil:
 		return c.compileAgentDecl(s.Agent)
+	case s.Import != nil:
+		return c.addImport(s.Import)
+	case s.ExternObject != nil:
+		c.externObjects[s.ExternObject.Name] = true
+		return nil
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil:
+		return nil
 	case s.Expect != nil:
 		expr, err := c.compileExpr(s.Expect.Value)
 		if err != nil {
@@ -898,6 +915,70 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	// Special handling for FFI selectors
+	if sel := p.Target.Selector; sel != nil {
+		if mod, ok := c.pyModules[sel.Root]; ok {
+			attr := strings.Join(sel.Tail, ".")
+			if len(p.Ops) > 0 && p.Ops[0].Call != nil {
+				args := make([]string, len(p.Ops[0].Call.Args))
+				for i, a := range p.Ops[0].Call.Args {
+					v, err := c.compileExpr(a)
+					if err != nil {
+						return "", err
+					}
+					args[i] = v
+				}
+				val := fmt.Sprintf("python.Attr(%q, %q, %s)", mod, attr, strings.Join(args, ", "))
+				c.imports["mochi/runtime/ffi/python"] = true
+				return val, nil
+			}
+			c.imports["mochi/runtime/ffi/python"] = true
+			val := fmt.Sprintf("python.Attr(%q, %q)", mod, attr)
+			return val, nil
+		}
+		if mod, ok := c.goModules[sel.Root]; ok {
+			name := mod
+			if len(sel.Tail) > 0 {
+				name += "." + strings.Join(sel.Tail, ".")
+			}
+			if len(p.Ops) > 0 && p.Ops[0].Call != nil {
+				args := make([]string, len(p.Ops[0].Call.Args))
+				for i, a := range p.Ops[0].Call.Args {
+					v, err := c.compileExpr(a)
+					if err != nil {
+						return "", err
+					}
+					args[i] = v
+				}
+				val := fmt.Sprintf("goffi.Call(%q, %s)", name, strings.Join(args, ", "))
+				c.imports["mochi/runtime/ffi/go"] = true
+				return val, nil
+			}
+			c.imports["mochi/runtime/ffi/go"] = true
+			val := fmt.Sprintf("goffi.Call(%q)", name)
+			return val, nil
+		}
+		if mod, ok := c.tsModules[sel.Root]; ok {
+			attr := strings.Join(sel.Tail, ":")
+			if len(p.Ops) > 0 && p.Ops[0].Call != nil {
+				args := make([]string, len(p.Ops[0].Call.Args))
+				for i, a := range p.Ops[0].Call.Args {
+					v, err := c.compileExpr(a)
+					if err != nil {
+						return "", err
+					}
+					args[i] = v
+				}
+				val := fmt.Sprintf("denoffi.Attr(%q, %q, %s)", mod, attr, strings.Join(args, ", "))
+				c.imports["mochi/runtime/ffi/deno"] = true
+				return val, nil
+			}
+			c.imports["mochi/runtime/ffi/deno"] = true
+			val := fmt.Sprintf("denoffi.Attr(%q, %q)", mod, attr)
+			return val, nil
+		}
+	}
+
 	val, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -2019,6 +2100,9 @@ func (c *Compiler) scanImports(s *parser.Statement) {
 			c.scanImports(t)
 		}
 	}
+	if s.Import != nil {
+		c.addImport(s.Import)
+	}
 }
 
 func (c *Compiler) scanExprImports(e *parser.Expr) {
@@ -2146,4 +2230,22 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 	case p.Lit != nil:
 		// none
 	}
+}
+
+func (c *Compiler) addImport(im *parser.ImportStmt) error {
+	mod := strings.Trim(im.Path, "\"")
+	switch im.Lang {
+	case "python":
+		c.pyModules[im.As] = mod
+		c.imports["mochi/runtime/ffi/python"] = true
+	case "go":
+		c.goModules[im.As] = mod
+		c.imports["mochi/runtime/ffi/go"] = true
+	case "ts":
+		c.tsModules[im.As] = mod
+		c.imports["mochi/runtime/ffi/deno"] = true
+	default:
+		return fmt.Errorf("unsupported import language: %s", im.Lang)
+	}
+	return nil
 }
