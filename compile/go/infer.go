@@ -1,6 +1,8 @@
 package gocode
 
 import (
+	"strings"
+
 	"mochi/parser"
 	"mochi/types"
 )
@@ -121,12 +123,17 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		}
 	case p.Selector != nil:
 		if c.env != nil {
+			if len(p.Selector.Tail) > 0 {
+				full := p.Selector.Root + "." + strings.Join(p.Selector.Tail, ".")
+				if t, err := c.env.GetVar(full); err == nil {
+					return t
+				}
+			}
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 				if len(p.Selector.Tail) == 0 {
 					return t
 				}
-				st, ok := t.(types.StructType)
-				if ok {
+				if st, ok := t.(types.StructType); ok {
 					cur := st
 					for idx, field := range p.Selector.Tail {
 						ft, ok := cur.Fields[field]
