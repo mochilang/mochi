@@ -9,8 +9,3 @@ type Caller interface {
 type Registerer interface {
 	Register(name string, fn any) error
 }
-
-// Loader loads modules that may register additional functions.
-type Loader interface {
-	LoadModule(path string) error
-}
