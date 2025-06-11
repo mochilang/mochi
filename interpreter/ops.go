@@ -10,6 +10,7 @@ import (
 	"mochi/parser"
 	"mochi/runtime/agent"
 	pythonffi "mochi/runtime/ffi/python"
+	tsffi "mochi/runtime/ffi/ts"
 	"mochi/types"
 )
 
@@ -80,6 +81,17 @@ func (i *Interpreter) applyCallOp(val any, call *parser.CallOp) (any, error) {
 			args[idx] = v
 		}
 		return pythonffi.Attr(pv.module, strings.Join(pv.attrs, "."), args...)
+	}
+	if tv, ok := val.(tsValue); ok {
+		args := make([]any, len(call.Args))
+		for idx, a := range call.Args {
+			v, err := i.evalExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args[idx] = v
+		}
+		return tsffi.Attr(tv.module, strings.Join(tv.attrs, "."), args...)
 	}
 
 	if ai, ok := val.(agentIntent); ok {

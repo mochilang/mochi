@@ -1,0 +1,16 @@
+// ts_math.mochi
+import ts "/workspace/mochi/runtime/ffi/ts/deno_math.ts" as math
+
+extern let math.PI: float
+extern fun math.pow(x: float, y: float): float
+extern fun math.sqrt(x: float): float
+extern fun math.sin(x: float): float
+
+let r = 3.0
+let area = math.PI * math.pow(r, 2.0)
+let root = math.sqrt(49.0)
+let sin45 = math.sin(math.PI / 4.0)
+
+print("Circle area with r =", r, "=>", area)
+print("Square root of 49:", root)
+print("sin(π/4):", sin45)

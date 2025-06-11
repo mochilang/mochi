@@ -210,3 +210,10 @@ type pythonValue struct {
 	module string
 	attrs  []string
 }
+
+// tsValue is a placeholder for a value from a TypeScript module.
+// It defers resolution until used, allowing chains like math.pow(x, 2).
+type tsValue struct {
+	module string
+	attrs  []string
+}
