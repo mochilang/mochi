@@ -37,6 +37,10 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
+		// Copy supporting TS modules if present
+		if data, err := os.ReadFile(filepath.Join("runtime", "ffi", "deno", "math.ts")); err == nil {
+			_ = os.WriteFile(filepath.Join(dir, "math.ts"), data, 0644)
+		}
 		cmd := exec.Command("deno", "run", "--quiet", file)
 		out, err := cmd.CombinedOutput()
 		if err != nil {
@@ -62,6 +66,10 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		file := filepath.Join(dir, "main.ts")
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
+		}
+		// Copy supporting TS modules if present
+		if data, err := os.ReadFile(filepath.Join("runtime", "ffi", "deno", "math.ts")); err == nil {
+			_ = os.WriteFile(filepath.Join(dir, "math.ts"), data, 0644)
 		}
 		cmd := exec.Command("deno", "run", "--quiet", file)
 		out, err := cmd.CombinedOutput()
