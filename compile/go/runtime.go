@@ -261,6 +261,79 @@ const (
 		"    return out\n" +
 		"}\n"
 
+	helperToMapSlice = "func _toMapSlice(v any) ([]map[string]any, bool) {\n" +
+		"    switch rows := v.(type) {\n" +
+		"    case []map[string]any:\n" +
+		"        return rows, true\n" +
+		"    case []any:\n" +
+		"        out := make([]map[string]any, len(rows))\n" +
+		"        for i, item := range rows {\n" +
+		"            m, ok := item.(map[string]any)\n" +
+		"            if !ok { return nil, false }\n" +
+		"            out[i] = m\n" +
+		"        }\n" +
+		"        return out, true\n" +
+		"    default:\n" +
+		"        return nil, false\n" +
+		"    }\n" +
+		"}\n"
+
+	helperLoad = "func _load(path string, opts map[string]any) []map[string]any {\n" +
+		"    format := \"csv\"\n" +
+		"    header := false\n" +
+		"    delim := ','\n" +
+		"    if opts != nil {\n" +
+		"        if f, ok := opts[\"format\"].(string); ok { format = f }\n" +
+		"        if h, ok := opts[\"header\"].(bool); ok { header = h }\n" +
+		"        if d, ok := opts[\"delimiter\"].(string); ok && len(d) > 0 { delim = rune(d[0]) }\n" +
+		"    }\n" +
+		"    var rows []map[string]any\n" +
+		"    var err error\n" +
+		"    switch format {\n" +
+		"    case \"jsonl\":\n" +
+		"        if path == \"\" || path == \"-\" { rows, err = data.LoadJSONLReader(os.Stdin) } else { rows, err = data.LoadJSONL(path) }\n" +
+		"    case \"json\":\n" +
+		"        if path == \"\" || path == \"-\" { rows, err = data.LoadJSONReader(os.Stdin) } else { rows, err = data.LoadJSON(path) }\n" +
+		"    case \"yaml\":\n" +
+		"        if path == \"\" || path == \"-\" { rows, err = data.LoadYAMLReader(os.Stdin) } else { rows, err = data.LoadYAML(path) }\n" +
+		"    case \"tsv\":\n" +
+		"        delim = '\t'\n" +
+		"        fallthrough\n" +
+		"    default:\n" +
+		"        if path == \"\" || path == \"-\" { rows, err = data.LoadCSVReader(os.Stdin, header, delim) } else { rows, err = data.LoadCSV(path, header, delim) }\n" +
+		"    }\n" +
+		"    if err != nil { panic(err) }\n" +
+		"    return rows\n" +
+		"}\n"
+
+	helperSave = "func _save(src any, path string, opts map[string]any) {\n" +
+		"    rows, ok := _toMapSlice(src)\n" +
+		"    if !ok { panic(\"save source must be list of maps\") }\n" +
+		"    format := \"csv\"\n" +
+		"    header := false\n" +
+		"    delim := ','\n" +
+		"    if opts != nil {\n" +
+		"        if f, ok := opts[\"format\"].(string); ok { format = f }\n" +
+		"        if h, ok := opts[\"header\"].(bool); ok { header = h }\n" +
+		"        if d, ok := opts[\"delimiter\"].(string); ok && len(d) > 0 { delim = rune(d[0]) }\n" +
+		"    }\n" +
+		"    var err error\n" +
+		"    switch format {\n" +
+		"    case \"jsonl\":\n" +
+		"        if path == \"\" || path == \"-\" { err = data.SaveJSONLWriter(rows, os.Stdout) } else { err = data.SaveJSONL(rows, path) }\n" +
+		"    case \"json\":\n" +
+		"        if path == \"\" || path == \"-\" { err = data.SaveJSONWriter(rows, os.Stdout) } else { err = data.SaveJSON(rows, path) }\n" +
+		"    case \"yaml\":\n" +
+		"        if path == \"\" || path == \"-\" { err = data.SaveYAMLWriter(rows, os.Stdout) } else { err = data.SaveYAML(rows, path) }\n" +
+		"    case \"tsv\":\n" +
+		"        delim = '\t'\n" +
+		"        fallthrough\n" +
+		"    default:\n" +
+		"        if path == \"\" || path == \"-\" { err = data.SaveCSVWriter(rows, os.Stdout, header, delim) } else { err = data.SaveCSV(rows, path, header, delim) }\n" +
+		"    }\n" +
+		"    if err != nil { panic(err) }\n" +
+		"}\n"
+
 	helperQuery = "type _joinSpec struct { items []any; on func(...any) bool; left bool; right bool }\n" +
 		"type _queryOpts struct { selectFn func(...any) any; where func(...any) bool; sortKey func(...any) any; skip int; take int }\n" +
 		"func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {\n" +
@@ -351,6 +424,9 @@ var helperMap = map[string]string{
 	"_toAnyMap":    helperToAnyMap,
 	"_cast":        helperCast,
 	"_query":       helperQuery,
+	"_load":        helperLoad,
+	"_save":        helperSave,
+	"_toMapSlice":  helperToMapSlice,
 }
 
 func (c *Compiler) use(name string) {
