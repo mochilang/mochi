@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -474,7 +475,7 @@ type ImportStmt struct {
 	Pos  lexer.Position
 	Lang *string `parser:"'import' [ @Ident ]"`
 	Path string  `parser:"@String"`
-	As   string  `parser:"'as' @Ident"`
+	As   string  `parser:"[ 'as' @Ident ]"`
 }
 
 type StreamField struct {
@@ -537,4 +538,11 @@ func ParseString(src string) (*Program, error) {
 		return nil, fmt.Errorf("parse error: %w", err)
 	}
 	return prog, nil
+}
+
+// AliasFromPath derives an import alias from a module path.
+func AliasFromPath(path string) string {
+	base := filepath.Base(strings.Trim(path, "\""))
+	ext := filepath.Ext(base)
+	return strings.TrimSuffix(base, ext)
 }

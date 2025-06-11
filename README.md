@@ -530,7 +530,8 @@ print(m.status())
 ### Foreign Function Interface
 
 Use the `import` keyword to access libraries from other languages. Declare
-`extern` variables and functions to call them directly.
+`extern` variables and functions to call them directly. If an alias is not
+specified with `as`, the final path component will be used as the module name.
 
 ```mochi
 import go "math" as math

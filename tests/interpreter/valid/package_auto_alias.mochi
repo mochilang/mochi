@@ -1,0 +1,7 @@
+import "mathutils"
+
+let sum = mathutils.add(3, 5)
+let sq = mathutils.square(4)
+
+print("3 + 5 =", sum)
+print("4 squared =", sq)

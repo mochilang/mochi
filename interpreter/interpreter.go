@@ -468,10 +468,14 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		return nil
 
 	case s.Import != nil:
-		if s.Import.Lang == nil {
-			return i.importPackage(s.Import.As, s.Import.Path, s.Pos.Filename)
+		alias := s.Import.As
+		if alias == "" {
+			alias = parser.AliasFromPath(s.Import.Path)
 		}
-		return i.ffi.Import(*s.Import.Lang, s.Import.As, s.Import.Path, i.root)
+		if s.Import.Lang == nil {
+			return i.importPackage(alias, s.Import.Path, s.Pos.Filename)
+		}
+		return i.ffi.Import(*s.Import.Lang, alias, s.Import.Path, i.root)
 
 	case s.ExternType != nil:
 		// type declarations have no runtime effect
