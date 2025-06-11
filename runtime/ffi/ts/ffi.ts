@@ -1,19 +1,7 @@
 export type FfiFunction = (...args: any[]) => any | Promise<any>;
 export type FfiValue = any;
 
-export interface Caller {
-  call(name: string, ...args: any[]): Promise<any>;
-}
-
-export interface Registerer {
-  register(name: string, value: FfiValue): void;
-}
-
-export interface Loader {
-  loadModule(path: string): Promise<void>;
-}
-
-export class Runtime implements Caller, Registerer, Loader {
+export class Runtime {
   private registry: Record<string, FfiValue> = {};
 
   register(name: string, value: FfiValue): void {
