@@ -69,8 +69,8 @@ The following keywords are reserved:
 let  var  fun  return
 if   else  while
 for  in   break  continue
-type model agent intent on stream emit as
-test expect generate match fetch
+import extern type model agent intent on stream emit as
+test expect generate match fetch load save
 ```
 
 ### Operators and Delimiters
@@ -84,7 +84,7 @@ Operators perform arithmetic, comparison, logical, and membership operations. De
 ! -                   unary
 =                     assignment
 in                    membership
-union [all]           list union
+union [all] except intersect  list operators
 ..                    range
 ( ) [ ] { } , : => .  delimiters
 ```
