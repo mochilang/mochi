@@ -1,7 +1,7 @@
 # Runtime FFI
 
 This directory contains language specific runtimes used to invoke foreign
-functions from Mochi programs. Each runtime implements a small set of common
+functions from Mochi programs. Most runtimes expose a small set of common
 interfaces defined in [`ffi.go`](./ffi.go):
 
 ```go
@@ -21,7 +21,7 @@ type Loader interface {
 }
 ```
 
-The Go, TypeScript and Python runtimes expose concrete implementations of these
-APIs while also providing package level helpers for convenience. The Go runtime
-can additionally load functions from modules compiled as plugins exposing an
-`Exports` map.
+The Go and TypeScript runtimes implement these APIs and provide package level
+helpers. The Python runtime offers a simplified `Attr` function for retrieving
+or invoking module attributes. The Go runtime can additionally load functions
+from plugins exposing an `Exports` map.
