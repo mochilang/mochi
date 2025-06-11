@@ -15,10 +15,14 @@ The following sections cover lexical structure, types, expressions, statements, 
 A Mochi program consists of a sequence of statements. Statements may declare values, define functions, perform control flow, or respond to events. The general form of a program is:
 
 ```ebnf
-Program = { Statement }.
+Program = [ "package" Identifier ] { Statement }.
 ```
 
 Statements are executed in the order they appear. Top-level statements share a single global scope.
+
+If a file begins with `package name`, it belongs to that package along with any
+other files in the same directory. Package declarations must precede all other
+statements.
 
 ### Blocks
 
@@ -68,7 +72,7 @@ The following keywords are reserved:
 ```
 let  var  fun  return
 if   else  while
-for  in   break  continue
+for  in   break  continue  package  export
 import extern type model agent intent on stream emit as
 test expect generate match fetch load save
 ```
@@ -559,8 +563,8 @@ Runtime errors occur for invalid operations, such as type mismatches, out-of-bou
 The complete grammar for Mochi in EBNF notation:
 
 ```ebnf
-Program       = { Statement }.
-Statement     = LetStmt | VarStmt | AssignStmt | FunDecl | ReturnStmt |
+Program       = [ "package" Identifier ] { Statement }.
+Statement     = ImportStmt | LetStmt | VarStmt | AssignStmt | FunDecl | ReturnStmt |
                 IfStmt | WhileStmt | ForStmt | BreakStmt | ContinueStmt |
                 EmitStmt | ExprStmt | TestBlock | ExpectStmt |
                 StreamDecl | OnHandler | ModelDecl | TypeDecl | AgentDecl .
@@ -574,6 +578,7 @@ WhileStmt     = "while" Expression Block .
 ForStmt       = "for" Identifier "in" Expression [ ".." Expression ] Block .
 BreakStmt     = "break" .
 ContinueStmt  = "continue" .
+ImportStmt    = "import" [ Identifier ] StringLiteral [ "as" Identifier ] .
 EmitStmt      = "emit" Identifier MapLiteral .
 ExprStmt      = Expression .
 TestBlock     = "test" StringLiteral Block .
@@ -628,4 +633,4 @@ GenericType   = Identifier "<" TypeRef { "," TypeRef } ">" .
 FunType       = "fun" "(" [ TypeRef { "," TypeRef } ] ")" [ ":" TypeRef ] .
 ```
 
-This specification outlines the core language as of version 0.5.0. Future versions may introduce modules, user-defined types, pattern matching, and asynchronous operations while preserving backward compatibility.
+This specification outlines the core language as of version 0.6.1. Future versions may introduce additional features while preserving backward compatibility.

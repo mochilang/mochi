@@ -15,6 +15,7 @@ The language overview is split into individual topics for easy navigation:
 - [Control Flow](features/control-flow.md)
 - [Functions](features/functions.md)
 - [Collections](features/collections.md)
+- [Packages and Imports](features/packages.md)
 - [Dataset Queries](features/datasets.md) and loading files
 - [Tests](features/tests.md)
 - [Generative AI](features/generative-ai.md)
