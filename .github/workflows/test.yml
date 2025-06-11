@@ -21,6 +21,11 @@ jobs:
           cache-dependency-path: |
             go.sum
 
+      - name: Set up Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
       - name: Install dependencies
         run: go mod tidy
 
