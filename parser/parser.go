@@ -38,7 +38,8 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 
 type Program struct {
 	Pos        lexer.Position
-	Package    string       `parser:"[ 'package' @Ident ]"`
+	Package    string `parser:"[ 'package' @Ident ]"`
+	PackageDoc string
 	Statements []*Statement `parser:"@@*"`
 }
 
@@ -115,7 +116,8 @@ type ForStmt struct {
 
 type TypeDecl struct {
 	Pos      lexer.Position
-	Name     string         `parser:"'type' @Ident"`
+	Name     string `parser:"'type' @Ident"`
+	Doc      string
 	Members  []*TypeMember  `parser:"[ '{' @@* '}' ]"`
 	Variants []*TypeVariant `parser:"[ '=' @@ { '|' @@ } ]"`
 }
@@ -179,8 +181,9 @@ type AssignStmt struct {
 
 type FunStmt struct {
 	Pos    lexer.Position
-	Export bool         `parser:"[ @'export' ]"`
-	Name   string       `parser:"'fun' @Ident"`
+	Export bool   `parser:"[ @'export' ]"`
+	Name   string `parser:"'fun' @Ident"`
+	Doc    string
 	Params []*Param     `parser:"'(' [ @@ { ',' @@ } ] ')'"`
 	Return *TypeRef     `parser:"[ ':' @@ ]"`
 	Body   []*Statement `parser:"'{' @@* '}'"`
@@ -454,7 +457,8 @@ type Literal struct {
 
 type StreamDecl struct {
 	Pos    lexer.Position
-	Name   string         `parser:"'stream' @Ident"`
+	Name   string `parser:"'stream' @Ident"`
+	Doc    string
 	Fields []*StreamField `parser:"'{' @@* '}'"`
 }
 
@@ -503,7 +507,8 @@ type EmitStmt struct {
 
 type AgentDecl struct {
 	Pos  lexer.Position
-	Name string        `parser:"'agent' @Ident"`
+	Name string `parser:"'agent' @Ident"`
+	Doc  string
 	Body []*AgentBlock `parser:"'{' @@* '}'"`
 }
 
@@ -537,6 +542,7 @@ func ParseString(src string) (*Program, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
 	}
+	attachDocs(src, prog)
 	return prog, nil
 }
 

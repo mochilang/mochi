@@ -1,0 +1,51 @@
+// Package mathutil provides helper functions for math operations.
+// This package includes functions like square, clamp, and average.
+package mathutil
+
+// PI is the mathematical constant \u03c0 (approx. 3.14159).
+let PI = 3.14159
+
+// square returns the square of a number.
+// Example:
+//   square(3) => 9
+fun square(x: float): float {
+  return x * x
+}
+
+// clamp restricts a value to a given min and max range.
+// Example:
+//   clamp(5, 0, 10) => 5
+//   clamp(15, 0, 10) => 10
+fun clamp(value: float, min: float, max: float): float {
+  if value < min {
+    return min
+  } else if value > max {
+    return max
+  }
+  return value
+}
+
+// average computes the mean of a list of floats.
+// If the list is empty, returns 0.
+fun average(nums: list<float>): float {
+  if nums.len == 0 {
+    return 0.0
+  }
+  let sum = 0.0
+  for x in nums {
+    sum = sum + x
+  }
+  return sum / nums.len
+}
+
+// Person represents a simple record with a name and age.
+type Person {
+  // The person's name.
+  name: string,
+
+  // The person's age in years.
+  age: int
+}
+
+// Status represents a state a task can be in.
+type Status = Pending | Done | Failed

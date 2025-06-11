@@ -20,6 +20,7 @@ func Parse(path string) (*Program, error) {
 	if err != nil {
 		return nil, wrapParseError(path, err)
 	}
+	attachDocs(string(src), prog)
 	return prog, nil
 }
 
