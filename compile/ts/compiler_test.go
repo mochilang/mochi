@@ -43,6 +43,7 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("deno", "run", "--quiet", file)
+		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ deno run error: %w\n%s", err, out)
@@ -73,6 +74,7 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("deno", "run", "--quiet", file)
+		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ deno run error: %w\n%s", err, out)
