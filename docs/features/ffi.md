@@ -16,3 +16,23 @@ print(math.sqrt(49.0))
 Modules may be loaded from the host language's package system or from a
 local file. Functions and variables must be declared with `extern` before
 use so the compiler knows their types.
+
+### Go Example
+
+```mochi
+import go "math" as math
+
+extern fun math.Sqrt(x: float): float
+
+print(math.Sqrt(49.0))
+```
+
+### TypeScript Example
+
+```mochi
+import typescript "./runtime/ffi/deno/math.ts" as math
+
+extern fun math.sqrt(x: float): float
+
+print(math.sqrt(49.0))
+```
