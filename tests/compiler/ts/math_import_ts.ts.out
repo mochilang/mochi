@@ -3,10 +3,9 @@
 import * as path from "https://deno.land/std@0.224.0/path/mod.ts"
 
 function main(): void {
-	let p: any = path.join("foo", "bar", "baz.txt")
-	let base: any = path.basename(p)
+	let p: string = path.join("foo", "bar", "baz.txt")
+	let base: string = path.basename(p)
 	console.log("Joined path:", p)
 	console.log("Basename:", base)
 }
 main()
-
