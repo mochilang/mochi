@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 
 	ffiinfo "mochi/runtime/ffi/infer"
+	pyruntime "mochi/runtime/python"
 )
 
 // Infer loads the given Python module and returns information about its exported symbols.
@@ -102,7 +102,7 @@ json.dump(info, sys.stdout)`
 	}
 	file.Close()
 
-	cmd := exec.Command("python3", file.Name(), module)
+	cmd := pyruntime.Cmd(file.Name(), module)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, fmt.Errorf("python error: %w\n%s", err, out)

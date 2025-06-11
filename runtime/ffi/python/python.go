@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
+
+	pyruntime "mochi/runtime/python"
 )
 
 // Attr returns a module attribute. If the attribute is a callable it is
@@ -45,7 +46,7 @@ json.dump(res, sys.stdout)
 		return nil, err
 	}
 
-	cmd := exec.Command("python3", file.Name())
+	cmd := pyruntime.Cmd(file.Name())
 	cmd.Env = append(os.Environ(), "MOCHI_ARGS="+string(data))
 	out, err := cmd.CombinedOutput()
 	if err != nil {

@@ -6,11 +6,12 @@ import (
 
 	ffiinfo "mochi/runtime/ffi/infer"
 	"mochi/runtime/ffi/python"
+	pyruntime "mochi/runtime/python"
 )
 
 func TestRealInfer(t *testing.T) {
-	if _, err := exec.LookPath("python3"); err != nil {
-		t.Skip("python3 not installed")
+	if _, err := exec.LookPath(pyruntime.Binary()); err != nil {
+		t.Skip("python not installed")
 	}
 
 	info, err := python.Infer("textwrap")

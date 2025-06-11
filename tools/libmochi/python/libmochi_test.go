@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	python "mochi/runtime/python"
 )
 
 func TestLibMochi(t *testing.T) {
@@ -19,7 +21,7 @@ func TestLibMochi(t *testing.T) {
 		t.Fatalf("go build failed: %v\n%s", err, out)
 	}
 
-	pipCmd := exec.Command("python3", "-m", "pip", "install", "-e", "tools/libmochi/python")
+	pipCmd := python.Cmd("-m", "pip", "install", "-e", "tools/libmochi/python")
 	pipCmd.Dir = filepath.Join("..", "..", "..")
 	if out, err := pipCmd.CombinedOutput(); err != nil {
 		t.Fatalf("pip install failed: %v\n%s", err, out)
@@ -31,7 +33,7 @@ func TestLibMochi(t *testing.T) {
 print(run('print("hi")').strip())
 print(call('fun add(a:int, b:int): int { return a + b }', 'add', 2, 3))
 print(eval('print("ffi")').strip())`
-	runCmd := exec.Command("python3", "-")
+	runCmd := python.Cmd("-")
 	runCmd.Dir = filepath.Join("..", "..", "..")
 	runCmd.Env = append(os.Environ(), "PATH="+tmpDir+string(os.PathListSeparator)+os.Getenv("PATH"))
 	runCmd.Stdin = strings.NewReader(script)

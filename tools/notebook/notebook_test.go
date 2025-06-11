@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	python "mochi/runtime/python"
 )
 
 func TestNotebookMagic(t *testing.T) {
@@ -21,7 +23,7 @@ func TestNotebookMagic(t *testing.T) {
 	}
 
 	// ensure ipython is installed
-	pipCmd := exec.Command("python3", "-m", "pip", "install", "ipython")
+	pipCmd := python.Cmd("-m", "pip", "install", "ipython")
 	if out, err := pipCmd.CombinedOutput(); err != nil {
 		t.Fatalf("pip install failed: %v\n%s", err, out)
 	} else {
@@ -39,7 +41,7 @@ mochi_magic.load_ipython_extension(sh)
 with capture_output() as cap:
     sh.run_cell("%%mochi\nprint(\"hello\")")
 print(cap.stdout.strip())`
-	runCmd := exec.Command("python3", "-")
+	runCmd := python.Cmd("-")
 	runCmd.Dir = filepath.Join("..", "..")
 	runCmd.Env = append(os.Environ(), "PATH="+tmpDir+string(os.PathListSeparator)+os.Getenv("PATH"))
 	runCmd.Stdin = strings.NewReader(script)

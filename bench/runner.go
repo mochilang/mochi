@@ -19,6 +19,7 @@ import (
 	pycode "mochi/compile/py"
 	tscode "mochi/compile/ts"
 	"mochi/parser"
+	python "mochi/runtime/python"
 	"mochi/types"
 )
 
@@ -82,7 +83,7 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		templates := []Template{
 			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run", "--aot"}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
-			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
+			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{python.Binary()}},
 			{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}},
 		}
 

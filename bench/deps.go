@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	python "mochi/runtime/python"
 )
 
 // EnsureDeps verifies that Mochi, Deno and Python3 are installed.
@@ -47,7 +49,7 @@ func ensureMochi() (string, error) {
 }
 
 func ensurePython() error {
-	if _, err := exec.LookPath("python3"); err == nil {
+	if _, err := exec.LookPath(python.Binary()); err == nil {
 		return nil
 	}
 	fmt.Println("🐍 Installing Python3...")
