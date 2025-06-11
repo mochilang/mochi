@@ -899,6 +899,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.Group != nil:
@@ -1030,6 +1034,55 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	c.imports["json"] = "json"
 	c.use("_fetch")
 	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	var pathStr string
+	if l.Path != nil {
+		pathStr = fmt.Sprintf("%q", *l.Path)
+	} else {
+		pathStr = "None"
+	}
+	optsStr := "None"
+	if l.With != nil {
+		w, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		c.use("_to_any_map")
+		optsStr = fmt.Sprintf("_to_any_map(%s)", w)
+	}
+	c.use("_load")
+	expr := fmt.Sprintf("_load(%s, %s)", pathStr, optsStr)
+	if l.Type != nil && l.Type.Simple != nil {
+		tname := sanitizeName(*l.Type.Simple)
+		expr = fmt.Sprintf("[ %s(**_it) for _it in %s ]", tname, expr)
+	}
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	var pathStr string
+	if s.Path != nil {
+		pathStr = fmt.Sprintf("%q", *s.Path)
+	} else {
+		pathStr = "None"
+	}
+	optsStr := "None"
+	if s.With != nil {
+		w, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		c.use("_to_any_map")
+		optsStr = fmt.Sprintf("_to_any_map(%s)", w)
+	}
+	c.use("_save")
+	return fmt.Sprintf("_save(%s, %s, %s)", src, pathStr, optsStr), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
