@@ -40,7 +40,7 @@ func (m *Manager) Import(lang, alias, path, repoRoot string) error {
 		m.pyModules[alias] = mod
 	case "go":
 		m.goModules[alias] = mod
-	case "ts":
+	case "typescript":
 		if !strings.HasPrefix(mod, "http://") && !strings.HasPrefix(mod, "https://") && !strings.HasPrefix(mod, "file://") {
 			mod = "file://" + filepath.Join(repoRoot, mod)
 		}
