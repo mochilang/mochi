@@ -8,6 +8,7 @@ import (
 	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/llm"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -55,7 +56,8 @@ let f = generate Foo { prompt: "{}" }`
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	interp := interpreter.New(prog, env)
+	modRoot, _ := mod.FindRoot(".")
+	interp := interpreter.New(prog, env, modRoot)
 	if err := interp.Run(); err != nil {
 		t.Fatalf("run error: %v", err)
 	}
@@ -93,7 +95,8 @@ let result = generate text { tools: [getWeather, calc], prompt: "hi" }`
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	interp := interpreter.New(prog, env)
+	modRoot, _ := mod.FindRoot(".")
+	interp := interpreter.New(prog, env, modRoot)
 	if err := interp.Run(); err != nil {
 		t.Fatalf("run error: %v", err)
 	}

@@ -15,6 +15,7 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -109,6 +110,10 @@ func runProgram(ctx context.Context, source string, filename string) (string, er
 
 	// Step 2: Type Check
 	env := types.NewEnv(nil)
+	modRoot, errRoot := mod.FindRoot(".")
+	if errRoot != nil {
+		modRoot, _ = os.Getwd()
+	}
 	typeErrors := types.Check(prog, env)
 	if len(typeErrors) > 0 {
 		fmt.Fprintln(output, "❌ Type Check Failed")
@@ -119,7 +124,7 @@ func runProgram(ctx context.Context, source string, filename string) (string, er
 	}
 
 	// Step 3: Run
-	interp := interpreter.New(prog, env)
+	interp := interpreter.New(prog, env, modRoot)
 	interp.Env().SetWriter(output)
 	if err := interp.Run(); err != nil {
 		fmt.Fprintf(output, "❌ Runtime Error\n\n  → %v\n", err)

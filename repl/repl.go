@@ -3,6 +3,7 @@ package repl
 import (
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -10,6 +11,7 @@ import (
 
 	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -25,9 +27,14 @@ func New(out io.Writer, version string) *REPL {
 	env := types.NewEnv(nil)
 	env.SetWriter(out)
 
+	root, err := mod.FindRoot(".")
+	if err != nil {
+		root, _ = os.Getwd()
+	}
+
 	return &REPL{
 		env:     env,
-		interp:  interpreter.New(nil, env),
+		interp:  interpreter.New(nil, env, root),
 		out:     out,
 		version: version,
 	}

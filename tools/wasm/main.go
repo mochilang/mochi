@@ -9,6 +9,7 @@ import (
 
 	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -26,6 +27,10 @@ func runMochi(this js.Value, args []js.Value) any {
 	env := types.NewEnv(nil)
 	var buf bytes.Buffer
 	env.SetWriter(&buf)
+	modRoot, errRoot := mod.FindRoot(".")
+	if errRoot != nil {
+		modRoot = "."
+	}
 
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		var sb strings.Builder
@@ -36,7 +41,7 @@ func runMochi(this js.Value, args []js.Value) any {
 		return js.ValueOf(sb.String())
 	}
 
-	i := interpreter.New(prog, env)
+	i := interpreter.New(prog, env, modRoot)
 	if err := i.Run(); err != nil {
 		return js.ValueOf(err.Error())
 	}

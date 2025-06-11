@@ -37,35 +37,15 @@ type Interpreter struct {
 	wg       *sync.WaitGroup
 	agents   []*agent.Agent
 	ffi      *ffi.Manager
+	root     string
 	memoize  bool
 	memo     map[string]map[string]any
 	dataPlan string
 }
 
-var repoRoot string
-
-func init() {
-	dir, _ := os.Getwd()
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			repoRoot = dir
-			break
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	if repoRoot == "" {
-		repoRoot = dir
-	}
-}
-
-func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
+func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
 	return &Interpreter{
-		prog: prog,
-		// env:   types.NewEnv(nil),
+		prog:     prog,
 		env:      typesEnv,
 		types:    typesEnv,
 		streams:  map[string]stream.Stream{},
@@ -75,6 +55,7 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		wg:       &sync.WaitGroup{},
 		agents:   []*agent.Agent{},
 		ffi:      ffi.NewManager(),
+		root:     root,
 		memoize:  false,
 		memo:     map[string]map[string]any{},
 		dataPlan: "memory",
@@ -264,7 +245,7 @@ type stringMethod struct {
 
 // importPackage loads a Mochi package from a directory and binds it to alias.
 func (i *Interpreter) importPackage(alias, path, filename string) error {
-	dir := filepath.Join(repoRoot, path)
+	dir := filepath.Join(i.root, path)
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("import package: %w", err)
@@ -490,7 +471,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		if s.Import.Lang == nil {
 			return i.importPackage(s.Import.As, s.Import.Path, s.Pos.Filename)
 		}
-		return i.ffi.Import(*s.Import.Lang, s.Import.As, s.Import.Path, repoRoot)
+		return i.ffi.Import(*s.Import.Lang, s.Import.As, s.Import.Path, i.root)
 
 	case s.ExternType != nil:
 		// type declarations have no runtime effect

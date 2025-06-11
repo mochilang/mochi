@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"mochi/runtime/mod"
 	"os"
 	"strings"
 
@@ -35,6 +36,10 @@ func main() {
 	env := types.NewEnv(nil)
 	var out bytes.Buffer
 	env.SetWriter(&out)
+	modRoot, errRoot := mod.FindRoot(".")
+	if errRoot != nil {
+		modRoot, _ = os.Getwd()
+	}
 
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		var sb strings.Builder
@@ -47,7 +52,7 @@ func main() {
 		return
 	}
 
-	interp := interpreter.New(prog, env)
+	interp := interpreter.New(prog, env, modRoot)
 	if err := interp.Run(); err != nil {
 		res.Error = err.Error()
 		json.NewEncoder(os.Stdout).Encode(res)

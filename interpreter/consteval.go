@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -23,7 +24,8 @@ func EvalPureCall(call *parser.CallExpr, env *types.Env) (*parser.Literal, bool)
 			return nil, false
 		}
 	}
-	interp := New(&parser.Program{}, env.Copy())
+	modRoot, _ := mod.FindRoot(".")
+	interp := New(&parser.Program{}, env.Copy(), modRoot)
 	val, err := interp.EvalExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Call: call}}}}})
 	if err != nil {
 		return nil, false
