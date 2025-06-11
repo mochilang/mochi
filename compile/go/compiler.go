@@ -2361,7 +2361,7 @@ func (c *Compiler) addImport(im *parser.ImportStmt) error {
 	case "go":
 		c.goModules[im.As] = mod
 		c.imports["mochi/runtime/ffi/go"] = true
-	case "ts":
+	case "typescript":
 		c.tsModules[im.As] = mod
 		c.imports["mochi/runtime/ffi/deno"] = true
 	default:

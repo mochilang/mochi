@@ -1,4 +1,4 @@
-import ts "https://deno.land/std@0.224.0/path/mod.ts" as path
+import typescript "https://deno.land/std@0.224.0/path/mod.ts" as path
 
 extern fun path.join(a: string, b: string, c: string): string
 extern fun path.basename(p: string): string

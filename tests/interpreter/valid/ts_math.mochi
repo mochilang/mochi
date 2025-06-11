@@ -1,5 +1,5 @@
 // math_import_ts.mochi
-import ts "./runtime/ffi/deno/math.ts" as math
+import typescript "./runtime/ffi/deno/math.ts" as math
 
 extern let math.PI: float
 extern fun math.pow(x: float, y: float): float
