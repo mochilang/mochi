@@ -15,6 +15,7 @@ import (
 	"mochi/runtime/agent"
 	"mochi/runtime/data"
 	"mochi/runtime/extern"
+	goffi "mochi/runtime/ffi/go"
 	pythonffi "mochi/runtime/ffi/python"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
@@ -40,6 +41,7 @@ type Interpreter struct {
 	externFuncs   map[string]*parser.ExternFunDecl
 	externObjects map[string]*parser.ExternObjectDecl
 	pyModules     map[string]string
+	goModules     map[string]string
 	memoize       bool
 	memo          map[string]map[string]any
 	dataPlan      string
@@ -62,6 +64,7 @@ func New(prog *parser.Program, typesEnv *types.Env) *Interpreter {
 		externFuncs:   map[string]*parser.ExternFunDecl{},
 		externObjects: map[string]*parser.ExternObjectDecl{},
 		pyModules:     map[string]string{},
+		goModules:     map[string]string{},
 		memoize:       false,
 		memo:          map[string]map[string]any{},
 		dataPlan:      "memory",
@@ -423,12 +426,18 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		return nil
 
 	case s.Import != nil:
-		if s.Import.Lang == "python" {
+		switch s.Import.Lang {
+		case "python":
 			mod := strings.Trim(s.Import.Path, "\"")
 			i.pyModules[s.Import.As] = mod
 			return nil
+		case "go":
+			mod := strings.Trim(s.Import.Path, "\"")
+			i.goModules[s.Import.As] = mod
+			return nil
+		default:
+			return fmt.Errorf("unsupported import language: %s", s.Import.Lang)
 		}
-		return fmt.Errorf("unsupported import language: %s", s.Import.Lang)
 
 	case s.ExternType != nil:
 		// Placeholder for registering external types later
@@ -882,6 +891,17 @@ func (i *Interpreter) evalPostfixExpr(p *parser.PostfixExpr) (any, error) {
 		}
 		return res, nil
 	}
+	if gv, ok := val.(goValue); ok {
+		name := gv.module
+		if len(gv.attrs) > 0 {
+			name += "." + strings.Join(gv.attrs, ".")
+		}
+		res, err := goffi.Call(name)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
 	return val, nil
 }
 
@@ -906,6 +926,8 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				val = v
 			} else if mod, ok := i.pyModules[p.Selector.Root]; ok {
 				val = pythonValue{module: mod}
+			} else if mod, ok := i.goModules[p.Selector.Root]; ok {
+				val = goValue{module: mod}
 			} else if _, ok := i.externObjects[p.Selector.Root]; ok {
 				return nil, errExternObject(p.Pos, p.Selector.Root)
 			} else if fn, ok := i.env.GetFunc(p.Selector.Root); ok {
@@ -921,6 +943,11 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			if pv, ok := val.(pythonValue); ok {
 				pv.attrs = append(pv.attrs, field)
 				val = pv
+				continue
+			}
+			if gv, ok := val.(goValue); ok {
+				gv.attrs = append(gv.attrs, field)
+				val = gv
 				continue
 			}
 			if g, ok := val.(*data.Group); ok {

@@ -25,3 +25,14 @@ func TestCallWithError(t *testing.T) {
 		t.Fatalf("expected boom error, got %v", err)
 	}
 }
+
+func TestCallValue(t *testing.T) {
+	goffi.Register("pi", 3.14)
+	res, err := goffi.Call("pi")
+	if err != nil {
+		t.Fatalf("call value failed: %v", err)
+	}
+	if res.(float64) != 3.14 {
+		t.Fatalf("expected 3.14, got %v", res)
+	}
+}

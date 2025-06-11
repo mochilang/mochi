@@ -2,9 +2,11 @@ package interpreter_test
 
 import (
 	"fmt"
+	"math"
 	"mochi/golden"
 	"mochi/interpreter"
 	"mochi/parser"
+	goffi "mochi/runtime/ffi/go"
 	"mochi/runtime/llm"
 	_ "mochi/runtime/llm/provider/echo"
 	"mochi/types"
@@ -30,6 +32,14 @@ func TestInterpreter_ValidPrograms(t *testing.T) {
 			return nil, fmt.Errorf("❌ type error: %v", typeErrors[0])
 		}
 
+		// register Go math functions for FFI tests
+		goffi.Register("math.Pi", math.Pi)
+		goffi.Register("math.E", math.E)
+		goffi.Register("math.Sqrt", math.Sqrt)
+		goffi.Register("math.Pow", math.Pow)
+		goffi.Register("math.Sin", math.Sin)
+		goffi.Register("math.Log", math.Log)
+
 		out := &strings.Builder{}
 		interp := interpreter.New(prog, typeEnv)
 		interp.Env().SetWriter(out)
@@ -52,6 +62,13 @@ func TestInterpreter_RuntimeErrors(t *testing.T) {
 		if len(typeErrors) > 0 {
 			return nil, fmt.Errorf("❌ type error: %v", typeErrors[0])
 		}
+
+		goffi.Register("math.Pi", math.Pi)
+		goffi.Register("math.E", math.E)
+		goffi.Register("math.Sqrt", math.Sqrt)
+		goffi.Register("math.Pow", math.Pow)
+		goffi.Register("math.Sin", math.Sin)
+		goffi.Register("math.Log", math.Log)
 
 		out := &strings.Builder{}
 		interp := interpreter.New(prog, typeEnv)
