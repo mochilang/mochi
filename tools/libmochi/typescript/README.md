@@ -1,14 +1,18 @@
 # libmochi for TypeScript/Deno
 
-This library provides a small helper for executing Mochi code from
-TypeScript using Deno's subprocess API. It expects the `mochi`
-executable to be available on the system `PATH` (or a custom path can
-be supplied).
+This library executes Mochi code directly in Deno using a WebAssembly build
+of the interpreter. It does **not** require the `mochi` binary. The provided
+`mod.ts` lazily loads `mochi.wasm.gz` and exposes two helpers. If the compressed
+module is missing it is built automatically using `go build` and cached next to
+`mod.ts`.
+
+If the `deno` command is missing, run `make install` from the project root to
+download it.
 
 ## Usage
 
 ```ts
-import { run, runFile } from './mod.ts';
+import { run, runFile } from "./mod.ts";
 
 const out = await run('print("hello")');
 console.log(out); // => "hello\n"
@@ -16,7 +20,4 @@ console.log(out); // => "hello\n"
 const out2 = await runFile('program.mochi');
 ```
 
-Both helpers return the captured standard output as a string and throw
-an error if the Mochi process exits with a non‐zero status.
-```
-
+Both helpers return the program's standard output as a string.

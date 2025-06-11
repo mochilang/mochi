@@ -1,19 +1,27 @@
-import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import { run, runFile } from "./mod.ts";
 
-Deno.test("run source string", async () => {
+function assertEquals(actual: unknown, expected: unknown): void {
+  if (actual !== expected) {
+    throw new Error(`assertEquals failed: ${actual} !== ${expected}`);
+  }
+}
+
+denoTest('run source string', async () => {
   const out = await run('print("deno")');
-  assertEquals(out.trim(), "deno");
+  assertEquals(out.trim(), 'deno');
 });
 
-Deno.test("run file", async () => {
-  const path = await Deno.makeTempFile({ suffix: ".mochi" });
+denoTest('run file', async () => {
+  const path = await Deno.makeTempFile({ suffix: '.mochi' });
   await Deno.writeTextFile(path, 'print("file")');
   try {
     const out = await runFile(path);
-    assertEquals(out.trim(), "file");
+    assertEquals(out.trim(), 'file');
   } finally {
     await Deno.remove(path);
   }
 });
 
+function denoTest(name: string, fn: () => Promise<void>) {
+  Deno.test(name, fn);
+}
