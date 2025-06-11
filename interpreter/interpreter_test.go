@@ -10,11 +10,15 @@ import (
 	"mochi/runtime/llm"
 	_ "mochi/runtime/llm/provider/echo"
 	"mochi/types"
+	"os/exec"
 	"strings"
 	"testing"
 )
 
 func TestInterpreter_ValidPrograms(t *testing.T) {
+	if _, err := exec.LookPath("deno"); err != nil {
+		t.Skip("deno not installed")
+	}
 	golden.Run(t, "tests/interpreter/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
