@@ -1,0 +1,38 @@
+// python_polars.mochi
+// Demonstrates using Python Polars from Mochi to filter and compute over a DataFrame
+
+import python "polars" as pl
+
+// Define extern types and functions from Polars
+extern type DataFrame
+extern type Series
+extern fun pl.DataFrame(data: map<string, list<any>>): DataFrame
+extern fun DataFrame.filter(df: DataFrame, mask: Series): DataFrame
+extern fun DataFrame.select(df: DataFrame, cols: list<string>): DataFrame
+extern fun DataFrame.with_column(df: DataFrame, col: Series): DataFrame
+extern fun DataFrame.get_column(df: DataFrame, name: string): Series
+extern fun pl.col(name: string): Series
+extern fun Series.gt(lhs: Series, rhs: any): Series
+extern fun Series.mul(lhs: Series, rhs: any): Series
+extern fun Series.alias(s: Series, name: string): Series
+
+// Create a sample DataFrame
+let df = pl.DataFrame({
+  "name": ["Alice", "Bob", "Charlie", "Diana"],
+  "age": [25, 17, 32, 45],
+  "salary": [50000, 20000, 70000, 90000]
+})
+
+// Filter where age > 18
+let mask = pl.col("age").gt(18)
+let adults = df.filter(mask)
+
+// Add new column: "bonus" = salary * 0.10
+let bonus = pl.col("salary").mul(0.10).alias("bonus")
+let enriched = adults.with_column(bonus)
+
+// Select name, salary, bonus
+let result = enriched.select(["name", "salary", "bonus"])
+
+// Print result (assumes Mochi FFI auto stringifies Python objects)
+print(result)
