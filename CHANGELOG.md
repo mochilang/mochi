@@ -1,4 +1,22 @@
 # 📦 CHANGELOG.md
+## [0.6.2] – 2025-06-12
+
+### Added
+
+* `import` statement and FFI runtimes for Go, Python and TypeScript
+* Deno FFI runtime for TypeScript
+* JSON and YAML dataset loaders
+
+### Changed
+
+* Consolidated FFI logic under `runtime/ffi`
+
+### Fixed
+
+* Notebook magic path test
+* TypeScript remote import test
+
+
 ## [0.6.1] – 2025-06-11
 
 ### Added
