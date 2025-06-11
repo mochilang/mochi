@@ -3,6 +3,8 @@ package pycode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -248,7 +250,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Agent != nil:
 		return c.compileAgentDecl(s.Agent)
 	case s.Import != nil:
-		if s.Import.Lang == nil || *s.Import.Lang != "python" {
+		if s.Import.Lang == nil {
+			return c.compilePackageImport(s.Import)
+		}
+		if *s.Import.Lang != "python" {
 			return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
 		}
 		return nil
@@ -1428,4 +1433,79 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	default:
 		return "None", fmt.Errorf("invalid literal")
 	}
+}
+
+// compilePackageImport compiles a Mochi package import. The package directory
+// is loaded relative to the importing file and all exported functions are
+// returned as attributes on the alias object.
+func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	path := strings.Trim(im.Path, "\"")
+	dir := path
+	if !filepath.IsAbs(path) {
+		base := filepath.Dir(im.Pos.Filename)
+		dir = filepath.Join(base, path)
+	}
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return fmt.Errorf("import package: %w", err)
+	}
+
+	var files []string
+	for _, e := range entries {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+			files = append(files, filepath.Join(dir, e.Name()))
+		}
+	}
+	sort.Strings(files)
+
+	pkgEnv := types.NewEnv(c.env)
+	var programs []*parser.Program
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			return err
+		}
+		c.collectImports(prog.Statements)
+		if errs := types.Check(prog, pkgEnv); len(errs) > 0 {
+			return errs[0]
+		}
+		programs = append(programs, prog)
+	}
+
+	c.writeln(fmt.Sprintf("def _import_%s():", alias))
+	c.indent++
+	c.writeln("class _Pkg: pass")
+	c.writeln("_pkg = _Pkg()")
+
+	origEnv := c.env
+	c.env = pkgEnv
+	for _, prog := range programs {
+		for _, s := range prog.Statements {
+			if s.Fun != nil && s.Fun.Export {
+				if err := c.compileFunStmt(s.Fun); err != nil {
+					c.env = origEnv
+					return err
+				}
+				name := sanitizeName(s.Fun.Name)
+				c.writeln(fmt.Sprintf("_pkg.%s = %s", name, name))
+				c.writeln("")
+			} else {
+				if err := c.compileStmt(s); err != nil {
+					c.env = origEnv
+					return err
+				}
+			}
+		}
+	}
+	c.writeln("return _pkg")
+	c.env = origEnv
+	c.indent--
+	c.writeln(fmt.Sprintf("%s = _import_%s()", alias, alias))
+	c.writeln("")
+	return nil
 }
