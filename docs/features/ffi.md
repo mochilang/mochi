@@ -2,7 +2,8 @@
 
 Mochi can call into Go, Python and TypeScript libraries using the `import`
 statement and `extern` declarations. Imported modules expose their values
-through an FFI runtime so Mochi code can invoke them directly.
+through an FFI runtime so Mochi code can invoke them directly. When `as`
+is omitted, the last path component becomes the module name.
 
 ```mochi
 import python "math" as math

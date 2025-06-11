@@ -47,7 +47,11 @@ func (c *Compiler) collectImports(stmts []*parser.Statement) {
 	for _, s := range stmts {
 		if s.Import != nil && s.Import.Lang != nil && *s.Import.Lang == "typescript" {
 			path := strings.Trim(s.Import.Path, "\"")
-			alias := sanitizeName(s.Import.As)
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			alias = sanitizeName(alias)
 			c.imports[alias] = path
 		}
 	}

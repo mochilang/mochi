@@ -537,7 +537,11 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		return nil
 
 	case s.Import != nil:
-		env.SetVar(s.Import.As, AnyType{}, false)
+		alias := s.Import.As
+		if alias == "" {
+			alias = parser.AliasFromPath(s.Import.Path)
+		}
+		env.SetVar(alias, AnyType{}, false)
 		return nil
 
 	case s.ExternVar != nil:
