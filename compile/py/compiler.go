@@ -776,7 +776,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, r)
 		switch op.Op {
 		case "+", "-", "*", "/", "%":
-			leftType = leftType // approximate
+			// The resulting type roughly mirrors the left operand.
 		case "==", "!=", "<", "<=", ">", ">=":
 			leftType = types.BoolType{}
 		}
