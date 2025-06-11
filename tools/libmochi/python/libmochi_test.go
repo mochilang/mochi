@@ -27,9 +27,10 @@ func TestLibMochi(t *testing.T) {
 		t.Log(string(out))
 	}
 
-	script := `from libmochi import run, call
+	script := `from libmochi import run, call, eval
 print(run('print("hi")').strip())
-print(call('fun add(a:int, b:int): int { return a + b }', 'add', 2, 3))`
+print(call('fun add(a:int, b:int): int { return a + b }', 'add', 2, 3))
+print(eval('print("ffi")').strip())`
 	runCmd := exec.Command("python3", "-")
 	runCmd.Dir = filepath.Join("..", "..", "..")
 	runCmd.Env = append(os.Environ(), "PATH="+tmpDir+string(os.PathListSeparator)+os.Getenv("PATH"))
@@ -39,7 +40,7 @@ print(call('fun add(a:int, b:int): int { return a + b }', 'add', 2, 3))`
 		t.Fatalf("python run failed: %v\n%s", err, out)
 	}
 	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
-	if len(lines) != 2 {
+	if len(lines) != 3 {
 		t.Fatalf("unexpected output: %q", string(out))
 	}
 	if lines[0] != "hi" {
@@ -47,5 +48,8 @@ print(call('fun add(a:int, b:int): int { return a + b }', 'add', 2, 3))`
 	}
 	if lines[1] != "5" {
 		t.Fatalf("call() output: %q", lines[1])
+	}
+	if lines[2] != "ffi" {
+		t.Fatalf("eval() output: %q", lines[2])
 	}
 }
