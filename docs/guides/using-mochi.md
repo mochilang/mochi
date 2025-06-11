@@ -64,6 +64,7 @@ Commands:
   get     Download module dependencies
   repl    Start interactive REPL
   llm     Send prompt to LLM
+  infer   Infer externs from a package
   serve   Start MCP server
   cheatsheet  Print language reference
 ```
@@ -80,6 +81,7 @@ mochi build --target py examples/hello.mochi -o hello.py
 mochi init mymodule
 mochi get
 mochi llm "hello"
+mochi infer go fmt
 mochi cheatsheet
 ```
 
