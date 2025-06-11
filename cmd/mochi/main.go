@@ -98,7 +98,7 @@ type LLMCmd struct {
 type InferCmd struct {
 	Language string `arg:"positional,required" help:"Language (python|typescript|go)"`
 	Package  string `arg:"positional,required" help:"Package or module path"`
-	Format   string `arg:"--format" help:"Output format (json|mochi)"`
+	Format   string `arg:"-f,--format" default:"mochi" help:"Output format (json|mochi)"`
 }
 type ServeCmd struct{}
 type CheatsheetCmd struct{}
