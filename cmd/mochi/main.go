@@ -224,6 +224,11 @@ func build(cmd *BuildCmd) error {
 	start := time.Now()
 	source, _ := os.ReadFile(cmd.File)
 
+	modRoot, errRoot := mod.FindRoot(filepath.Dir(cmd.File))
+	if errRoot != nil {
+		modRoot = filepath.Dir(cmd.File)
+	}
+
 	target := strings.ToLower(cmd.Target)
 	if target == "" && cmd.Out != "" {
 		switch strings.ToLower(filepath.Ext(cmd.Out)) {
@@ -285,7 +290,7 @@ func build(cmd *BuildCmd) error {
 		if out == "" {
 			out = base + ".ts"
 		}
-		code, err := tscode.New(env).Compile(prog)
+		code, err := tscode.New(env, modRoot).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}

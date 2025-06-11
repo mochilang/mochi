@@ -371,7 +371,7 @@ func compileToTs(mochiFile, tsFile string) error {
 	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
 		return fmt.Errorf("type error: %v", errs[0])
 	}
-	c := tscode.New(typeEnv)
+	c := tscode.New(typeEnv, filepath.Dir(mochiFile))
 	code, err := c.Compile(prog)
 	if err != nil {
 		return err
