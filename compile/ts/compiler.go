@@ -953,15 +953,22 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if s, ok := simpleStringKey(it.Key); ok {
+			k = fmt.Sprintf("\"%s\"", s)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			k = fmt.Sprintf("[%s]", k)
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
 			return "", err
 		}
-		items[i] = fmt.Sprintf("[%s]: %s", k, v)
+		items[i] = fmt.Sprintf("%s: %s", k, v)
 	}
 	return "{" + strings.Join(items, ", ") + "}", nil
 }
