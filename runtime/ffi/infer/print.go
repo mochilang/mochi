@@ -12,8 +12,11 @@ func (m *ModuleInfo) String() string {
 	var b strings.Builder
 	alias := filepath.Base(m.Path)
 
+	writeDoc(&b, m.Doc)
+
 	// Types
 	for _, t := range m.Types {
+		writeDoc(&b, t.Doc)
 		if len(t.Fields) == 0 {
 			fmt.Fprintf(&b, "extern type %s\n", t.Name)
 		} else {
@@ -29,20 +32,24 @@ func (m *ModuleInfo) String() string {
 			b.WriteString("}\n")
 		}
 		for _, mth := range t.Methods {
+			writeDoc(&b, mth.Doc)
 			fmt.Fprintf(&b, "extern fun %s.%s(%s)%s\n", t.Name, mth.Name, formatParams(mth.Params), formatResults(mth.Results))
 		}
 	}
 
 	// Constants
 	for _, c := range m.Consts {
+		writeDoc(&b, c.Doc)
 		fmt.Fprintf(&b, "extern let %s.%s: %s\n", alias, c.Name, c.Type)
 	}
 	// Variables
 	for _, v := range m.Vars {
+		writeDoc(&b, v.Doc)
 		fmt.Fprintf(&b, "extern var %s.%s: %s\n", alias, v.Name, v.Type)
 	}
 	// Functions
 	for _, f := range m.Functions {
+		writeDoc(&b, f.Doc)
 		fmt.Fprintf(&b, "extern fun %s.%s(%s)%s\n", alias, f.Name, formatParams(f.Params), formatResults(f.Results))
 	}
 
@@ -96,4 +103,14 @@ func formatResults(rs []ParamInfo) string {
 	}
 	b.WriteString(")")
 	return b.String()
+}
+
+func writeDoc(b *strings.Builder, doc string) {
+	doc = strings.TrimSpace(doc)
+	if doc == "" {
+		return
+	}
+	for _, line := range strings.Split(doc, "\n") {
+		fmt.Fprintf(b, "/// %s\n", strings.TrimSpace(line))
+	}
 }
