@@ -118,7 +118,7 @@ func TestInferFullFlow(t *testing.T) {
 	src.WriteString("import go \"mochi/runtime/ffi/go/testpkg\" as testpkg\n")
 	src.WriteString(externs(goInfo))
 	if tsInfo != nil {
-		src.WriteString("import typescript \"../ffi/deno/testpkg.ts\" as testpkgts\n")
+		src.WriteString("import typescript \"./runtime/ffi/deno/testpkg.ts\" as testpkgts\n")
 		src.WriteString(externs(tsInfo))
 	}
 	src.WriteString("print(testmod.add(2,3))\n")
