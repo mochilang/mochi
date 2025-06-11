@@ -14,14 +14,8 @@ type Caller interface {
 type Registerer interface {
     Register(name string, fn any) error
 }
-
-// Loader loads additional modules that may register functions.
-type Loader interface {
-    LoadModule(path string) error
-}
 ```
 
 The Go and TypeScript runtimes implement these APIs and provide package level
 helpers. The Python runtime offers a simplified `Attr` function for retrieving
-or invoking module attributes. The Go runtime can additionally load functions
-from plugins exposing an `Exports` map.
+or invoking module attributes.
