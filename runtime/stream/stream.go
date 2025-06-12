@@ -9,11 +9,14 @@ import (
 
 // Event represents a single item in the stream with metadata.
 type Event struct {
-	Stream string    // Name of the stream
-	Tx     int64     // Monotonic transaction ID
-	Time   time.Time // Timestamp of the event
-	Data   any       // Application-defined payload
-	wg     *sync.WaitGroup
+	Stream string // Name of the stream
+	Tx     int64  // Transaction ID scoped to this stream
+	// Gtx is a monotonically increasing transaction ID shared across all
+	// streams when a global counter is used.
+	Gtx  int64
+	Time time.Time // Timestamp of the event
+	Data any       // Application-defined payload
+	wg   *sync.WaitGroup
 }
 
 // Ack marks the event as fully processed.
@@ -49,14 +52,21 @@ type streamState struct {
 
 // Stream is an append-only in-memory log with concurrent access and subscriber tracking.
 type stream struct {
-	state atomic.Pointer[streamState]
-	subs  sync.Map // map[string]*subscriber
-	wg    sync.WaitGroup
+	state  atomic.Pointer[streamState]
+	subs   sync.Map // map[string]*subscriber
+	wg     sync.WaitGroup
+	global *atomic.Int64
 }
 
 // New creates a new stream with a given name and initial ring capacity.
 func New(name string, capacity int) Stream {
-	s := &stream{}
+	return NewWithCounter(name, capacity, nil)
+}
+
+// NewWithCounter creates a new stream that draws transaction IDs from a shared
+// counter when provided. If counter is nil, tx IDs are local to the stream.
+func NewWithCounter(name string, capacity int, counter *atomic.Int64) Stream {
+	s := &stream{global: counter}
 	s.state.Store(&streamState{
 		name:  name,
 		ring:  make([]*Event, 0, capacity),
@@ -76,9 +86,15 @@ func (s *stream) Emit(ctx context.Context, data any) (Event, error) {
 	tx := st.tx
 	st.tx++
 
+	gtx := tx
+	if s.global != nil {
+		gtx = s.global.Add(1)
+	}
+
 	ev := Event{
 		Stream: st.name,
 		Tx:     tx,
+		Gtx:    gtx,
 		Time:   time.Now(),
 		Data:   data,
 		wg:     &s.wg,
