@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"mochi/parser"
 	"mochi/runtime/agent"
@@ -41,6 +42,7 @@ type Interpreter struct {
 	memoize  bool
 	memo     map[string]map[string]any
 	dataPlan string
+	tx       *atomic.Int64
 }
 
 func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
@@ -59,6 +61,7 @@ func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
 		memoize:  false,
 		memo:     map[string]map[string]any{},
 		dataPlan: "memory",
+		tx:       &atomic.Int64{},
 	}
 }
 
@@ -191,6 +194,7 @@ func (i *Interpreter) Test() error {
 			prog:  i.prog,
 			env:   child,
 			types: i.types,
+			tx:    i.tx,
 		}
 
 		start := time.Now()
@@ -364,7 +368,7 @@ func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, 
 			inst.agent.On(strm, func(ctx context.Context, ev *stream.Event) {
 				child := types.NewEnv(inst.env)
 				child.SetValue(alias, ev.Data, true)
-				interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, agents: i.agents}
+				interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, agents: i.agents, tx: i.tx}
 				for _, stmt := range body {
 					_ = interp.evalStmt(stmt)
 				}
@@ -516,7 +520,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		return nil
 
 	case s.Stream != nil:
-		i.streams[s.Stream.Name] = stream.New(s.Stream.Name, 64)
+		i.streams[s.Stream.Name] = stream.NewWithCounter(s.Stream.Name, 64, i.tx)
 		return nil
 
 	case s.On != nil:
@@ -541,7 +545,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 			}
 			child := types.NewEnv(i.env)
 			child.SetValue(h.alias, data, true)
-			interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg}
+			interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, tx: i.tx}
 			for _, stmt := range h.body {
 				if err := interp.evalStmt(stmt); err != nil {
 					return err
@@ -608,7 +612,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 	case s.Test != nil:
 		fmt.Printf("🔍 Test %s\n", s.Test.Name)
 		child := types.NewEnv(i.env)
-		interp := &Interpreter{prog: i.prog, env: child, types: i.types}
+		interp := &Interpreter{prog: i.prog, env: child, types: i.types, tx: i.tx}
 		for _, stmt := range s.Test.Body {
 			if err := interp.evalStmt(stmt); err != nil {
 				return fmt.Errorf("❌ %s: %w", s.Test.Name, err)

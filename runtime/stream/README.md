@@ -106,14 +106,15 @@ Each event appended to the stream is represented by the `Event` struct:
 
 ```go
 type Event struct {
-	Stream string
-	Tx     int64
-	Time   time.Time
-	Data   any
+       Stream string
+       Tx     int64
+       Gtx    int64  // Global transaction ID if a shared counter is used
+       Time   time.Time
+       Data   any
 }
 ```
 
-Every event is assigned a unique `Tx` (transaction ID) and a timestamp upon append. The `Stream` field identifies which logical stream the event belongs to, and `Data` holds arbitrary user content.
+Every event is assigned both a per-stream `Tx` and an optional global `Gtx` that is monotonically increasing across all streams when a shared counter is provided. The `Stream` field identifies which logical stream the event belongs to, and `Data` holds arbitrary user content.
 
 ### Stream Initialization
 
