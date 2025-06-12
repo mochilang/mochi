@@ -26,3 +26,7 @@ Otherwise the first return value (or slice of values) is provided.
 This package is intentionally minimal and keeps an in-process registry. Mochi's
 interpreter and compilers can translate `ffi("go", name)` expressions into
 `goffi.Call` invocations.
+
+The helper `Packages()` lists all Go packages visible to the current
+environment using `go list`. It returns basic details such as import path and
+package documentation which can be used for introspection or tooling support.
