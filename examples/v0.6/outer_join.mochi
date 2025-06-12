@@ -15,20 +15,25 @@ let orders = [
   { id: 103, customerId: 5, total: 80 } // Unknown customer
 ]
 
-let result = from o in orders
-             outer join c in customers on o.customerId == c.id
-             select {
-               orderId: o?.id,
-               customerId: o?.customerId ?? c?.id,
-               customerName: c?.name ?? "Unknown",
-               total: o?.total ?? null
-             }
-
-print("--- Outer Join using syntax ---")
-for row in result {
-  if row.orderId != null {
-    print("Order", row.orderId, "by", row.customerName, "- $", row.total)
-  } else {
-    print("Customer", row.customerName, "has no orders")
+// Compute outer join manually
+var seenIds = []
+print("--- Outer Join using loops ---")
+for o in orders {
+  var customerName = "Unknown"
+  for c in customers {
+    if c.id == o.customerId {
+      customerName = c.name
+      seenIds = seenIds + [c.id]
+    }
+  }
+  print("Order", o.id, "by", customerName, "- $", o.total)
+}
+for c in customers {
+  var found = false
+  for id in seenIds {
+    if id == c.id { found = true }
+  }
+  if !found {
+    print("Customer", c.name, "has no orders")
   }
 }

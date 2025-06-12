@@ -15,11 +15,11 @@ extern fun getenv(key: string, default: string): string
 extern fun read_file(path: string): string
 extern fun exists(path: string): bool
 extern fun sin(x: float): float
-extern fun fetch(url: string): string
+extern fun fetch_url(url: string): string
 extern fun generate_text(prompt: string): string
 
 // Extern objects can be referenced directly.
 // These calls will resolve to host implementations
 // registered via `runtime/ffi`.
 
-console.log("running on", OS)
+// console.log("running on", OS)
