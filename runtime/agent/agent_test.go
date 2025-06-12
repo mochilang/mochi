@@ -61,7 +61,7 @@ func TestAgent_BasicFlow(t *testing.T) {
 		t.Fatalf("Emit failed: %v", err)
 	}
 
-	time.Sleep(30 * time.Millisecond) // wait for async delivery
+	s.Wait()
 
 	// Call the intent
 	result, err := a.Call(ctx, "status")

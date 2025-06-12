@@ -60,6 +60,9 @@ func (a *Agent) Start(ctx context.Context) {
 				if h, ok := a.handlers[e.Stream]; ok {
 					h(ctx, e)
 				}
+				if e != nil {
+					e.Ack()
+				}
 			}
 		}
 	}()

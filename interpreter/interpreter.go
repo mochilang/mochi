@@ -1647,6 +1647,13 @@ func (i *Interpreter) Close() {
 	for _, cancel := range i.cancels {
 		cancel()
 	}
+	// Wait for all stream handlers to finish processing events before
+	// shutting everything down.
+	for _, s := range i.streams {
+		if w, ok := s.(interface{ Wait() }); ok {
+			w.Wait()
+		}
+	}
 	i.wg.Wait()
 	for _, s := range i.streams {
 		s.Close()
