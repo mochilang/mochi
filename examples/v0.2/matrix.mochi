@@ -29,5 +29,5 @@ test "matrix indexing" {
   expect matrix[1][1] == 5
   expect matrix[2][2] == 9
   expect matrix[-1][0] == 7
-  expect matrix[1][-1] == 60
+  expect matrix[1][-1] == 6
 }
