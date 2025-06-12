@@ -575,6 +575,11 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		if _, err := strm.Emit(context.Background(), ev); err != nil {
 			return err
 		}
+		// Wait until all subscribers have processed the event to ensure
+		// deterministic ordering for tests.
+		if w, ok := strm.(interface{ Wait() }); ok {
+			w.Wait()
+		}
 		return nil
 
 	case s.Model != nil:
