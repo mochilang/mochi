@@ -13,6 +13,14 @@ type Event struct {
 	Tx     int64     // Monotonic transaction ID
 	Time   time.Time // Timestamp of the event
 	Data   any       // Application-defined payload
+	wg     *sync.WaitGroup
+}
+
+// Ack marks the event as fully processed.
+func (e *Event) Ack() {
+	if e.wg != nil {
+		e.wg.Done()
+	}
 }
 
 // Stream defines the public operations for a stream implementation.
@@ -20,6 +28,7 @@ type Stream interface {
 	Emit(ctx context.Context, data any) (Event, error)
 	Subscribe(name string, handler func(*Event) error) Subscriber
 	Close()
+	Wait()
 }
 
 // Subscriber represents an active subscription to a stream.
@@ -42,6 +51,7 @@ type streamState struct {
 type stream struct {
 	state atomic.Pointer[streamState]
 	subs  sync.Map // map[string]*subscriber
+	wg    sync.WaitGroup
 }
 
 // New creates a new stream with a given name and initial ring capacity.
@@ -71,6 +81,7 @@ func (s *stream) Emit(ctx context.Context, data any) (Event, error) {
 		Tx:     tx,
 		Time:   time.Now(),
 		Data:   data,
+		wg:     &s.wg,
 	}
 
 	offset := tx - st.first
@@ -88,6 +99,7 @@ func (s *stream) Emit(ctx context.Context, data any) (Event, error) {
 		sub := v.(*subscriber)
 		select {
 		case sub.updateCh <- tx:
+			s.wg.Add(1)
 		default:
 		}
 		return true
@@ -266,6 +278,11 @@ func (s *stream) Close() {
 		sub.Close()
 		return true
 	})
+}
+
+// Wait blocks until all in-flight event handlers have completed.
+func (s *stream) Wait() {
+	s.wg.Wait()
 }
 
 // --- Subscriber ---
