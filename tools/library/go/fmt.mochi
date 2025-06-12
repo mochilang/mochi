@@ -1,0 +1,129 @@
+import go "fmt" as fmt
+/// Formatter is implemented by any value that has a Format method.
+/// The implementation controls how [State] and rune are interpreted,
+/// and may call [Sprint] or [Fprint](f) etc. to generate its output.
+extern type Formatter
+/// GoStringer is implemented by any value that has a GoString method,
+/// which defines the Go syntax for that value.
+/// The GoString method is used to print values passed as an operand
+/// to a %#v format.
+extern type GoStringer
+/// ScanState represents the scanner state passed to custom scanners.
+/// Scanners may do rune-at-a-time scanning or ask the ScanState
+/// to discover the next space-delimited token.
+extern type ScanState
+/// Scanner is implemented by any value that has a Scan method, which scans
+/// the input for the representation of a value and stores the result in the
+/// receiver, which must be a pointer to be useful. The Scan method is called
+/// for any argument to [Scan], [Scanf], or [Scanln] that implements it.
+extern type Scanner
+/// State represents the printer state passed to custom formatters.
+/// It provides access to the [io.Writer] interface plus information about
+/// the flags and options for the operand's format specifier.
+extern type State
+/// Stringer is implemented by any value that has a String method,
+/// which defines the “native” format for that value.
+/// The String method is used to print values passed as an operand
+/// to any format that accepts a string or to an unformatted printer
+/// such as [Print].
+extern type Stringer
+/// Append formats using the default formats for its operands, appends the result to
+/// the byte slice, and returns the updated slice.
+extern fun fmt.Append(b: []byte, a: []any): []byte
+/// Appendf formats according to a format specifier, appends the result to the byte
+/// slice, and returns the updated slice.
+extern fun fmt.Appendf(b: []byte, format: string, a: []any): []byte
+/// Appendln formats using the default formats for its operands, appends the result
+/// to the byte slice, and returns the updated slice. Spaces are always added
+/// between operands and a newline is appended.
+extern fun fmt.Appendln(b: []byte, a: []any): []byte
+/// Errorf formats according to a format specifier and returns the string as a
+/// value that satisfies error.
+/// 
+/// If the format specifier includes a %w verb with an error operand,
+/// the returned error will implement an Unwrap method returning the operand.
+/// If there is more than one %w verb, the returned error will implement an
+/// Unwrap method returning a []error containing all the %w operands in the
+/// order they appear in the arguments.
+/// It is invalid to supply the %w verb with an operand that does not implement
+/// the error interface. The %w verb is otherwise a synonym for %v.
+extern fun fmt.Errorf(format: string, a: []any): error
+/// FormatString returns a string representing the fully qualified formatting
+/// directive captured by the [State], followed by the argument verb. ([State] does not
+/// itself contain the verb.) The result has a leading percent sign followed by any
+/// flags, the width, and the precision. Missing flags, width, and precision are
+/// omitted. This function allows a [Formatter] to reconstruct the original
+/// directive triggering the call to Format.
+extern fun fmt.FormatString(state: State, verb: rune): string
+/// Fprint formats using the default formats for its operands and writes to w.
+/// Spaces are added between operands when neither is a string.
+/// It returns the number of bytes written and any write error encountered.
+extern fun fmt.Fprint(w: io.Writer, a: []any): (int, error)
+/// Fprintf formats according to a format specifier and writes to w.
+/// It returns the number of bytes written and any write error encountered.
+extern fun fmt.Fprintf(w: io.Writer, format: string, a: []any): (int, error)
+/// Fprintln formats using the default formats for its operands and writes to w.
+/// Spaces are always added between operands and a newline is appended.
+/// It returns the number of bytes written and any write error encountered.
+extern fun fmt.Fprintln(w: io.Writer, a: []any): (int, error)
+/// Fscan scans text read from r, storing successive space-separated
+/// values into successive arguments. Newlines count as space. It
+/// returns the number of items successfully scanned. If that is less
+/// than the number of arguments, err will report why.
+extern fun fmt.Fscan(r: io.Reader, a: []any): (int, error)
+/// Fscanf scans text read from r, storing successive space-separated
+/// values into successive arguments as determined by the format. It
+/// returns the number of items successfully parsed.
+/// Newlines in the input must match newlines in the format.
+extern fun fmt.Fscanf(r: io.Reader, format: string, a: []any): (int, error)
+/// Fscanln is similar to [Fscan], but stops scanning at a newline and
+/// after the final item there must be a newline or EOF.
+extern fun fmt.Fscanln(r: io.Reader, a: []any): (int, error)
+/// Print formats using the default formats for its operands and writes to standard output.
+/// Spaces are added between operands when neither is a string.
+/// It returns the number of bytes written and any write error encountered.
+extern fun fmt.Print(a: []any): (int, error)
+/// Printf formats according to a format specifier and writes to standard output.
+/// It returns the number of bytes written and any write error encountered.
+extern fun fmt.Printf(format: string, a: []any): (int, error)
+/// Println formats using the default formats for its operands and writes to standard output.
+/// Spaces are always added between operands and a newline is appended.
+/// It returns the number of bytes written and any write error encountered.
+extern fun fmt.Println(a: []any): (int, error)
+/// Scan scans text read from standard input, storing successive
+/// space-separated values into successive arguments. Newlines count
+/// as space. It returns the number of items successfully scanned.
+/// If that is less than the number of arguments, err will report why.
+extern fun fmt.Scan(a: []any): (int, error)
+/// Scanf scans text read from standard input, storing successive
+/// space-separated values into successive arguments as determined by
+/// the format. It returns the number of items successfully scanned.
+/// If that is less than the number of arguments, err will report why.
+/// Newlines in the input must match newlines in the format.
+/// The one exception: the verb %c always scans the next rune in the
+/// input, even if it is a space (or tab etc.) or newline.
+extern fun fmt.Scanf(format: string, a: []any): (int, error)
+/// Scanln is similar to [Scan], but stops scanning at a newline and
+/// after the final item there must be a newline or EOF.
+extern fun fmt.Scanln(a: []any): (int, error)
+/// Sprint formats using the default formats for its operands and returns the resulting string.
+/// Spaces are added between operands when neither is a string.
+extern fun fmt.Sprint(a: []any): string
+/// Sprintf formats according to a format specifier and returns the resulting string.
+extern fun fmt.Sprintf(format: string, a: []any): string
+/// Sprintln formats using the default formats for its operands and returns the resulting string.
+/// Spaces are always added between operands and a newline is appended.
+extern fun fmt.Sprintln(a: []any): string
+/// Sscan scans the argument string, storing successive space-separated
+/// values into successive arguments. Newlines count as space. It
+/// returns the number of items successfully scanned. If that is less
+/// than the number of arguments, err will report why.
+extern fun fmt.Sscan(str: string, a: []any): (int, error)
+/// Sscanf scans the argument string, storing successive space-separated
+/// values into successive arguments as determined by the format. It
+/// returns the number of items successfully parsed.
+/// Newlines in the input must match newlines in the format.
+extern fun fmt.Sscanf(str: string, format: string, a: []any): (int, error)
+/// Sscanln is similar to [Sscan], but stops scanning at a newline and
+/// after the final item there must be a newline or EOF.
+extern fun fmt.Sscanln(str: string, a: []any): (int, error)
