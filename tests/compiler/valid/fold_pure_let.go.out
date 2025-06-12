@@ -13,5 +13,3 @@ func main() {
 	fmt.Println(55)
 	fmt.Println(n)
 }
-
-

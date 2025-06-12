@@ -22,15 +22,17 @@ This package is designed to integrate cleanly with the `mochi` interpreter, stre
 ### 1. Create a Stream
 
 ```go
-s := stream.New("SensorReading", 64)
+wg := &sync.WaitGroup{}
+s := stream.New("SensorReading", 64, wg)
 ```
 
 ### 2. Initialize an Agent
 
 ```go
 a := agent.New(agent.Config{
-	Name:    "Monitor",
-	BufSize: 16,
+        Name:    "Monitor",
+        BufSize: 16,
+        WG:      wg,
 })
 ```
 

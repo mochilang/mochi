@@ -335,7 +335,7 @@ func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
 	c.compileStructType(st)
 	varName := unexportName(sanitizeName(s.Name)) + "Stream"
 	c.imports["mochi/runtime/stream"] = true
-	c.writeln(fmt.Sprintf("var %s = stream.New(%q, 64)", varName, s.Name))
+	c.writeln(fmt.Sprintf("var %s = stream.New(%q, 64, nil)", varName, s.Name))
 	c.streams = append(c.streams, varName)
 	return nil
 }
@@ -445,7 +445,7 @@ func (c *Compiler) compileAgentDecl(a *parser.AgentDecl) error {
 	// constructor
 	c.writeln(fmt.Sprintf("func New%s() *%s {", name, name))
 	c.indent++
-	c.writeln(fmt.Sprintf("inst := &%s{Agent: agent.New(agent.Config{Name: %q, BufSize: 16})}", name, a.Name))
+	c.writeln(fmt.Sprintf("inst := &%s{Agent: agent.New(agent.Config{Name: %q, BufSize: 16, WG: nil})}", name, a.Name))
 
 	origEnv := c.env
 	c.env = baseEnv
