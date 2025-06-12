@@ -3,6 +3,7 @@ export type FfiValue = any;
 
 export class Runtime {
   private registry: Record<string, FfiValue> = {};
+  private modules: Record<string, any> = {};
 
   register(name: string, value: FfiValue): void {
     this.registry[name] = value;
@@ -24,6 +25,7 @@ export class Runtime {
 
   async loadModule(path: string): Promise<void> {
     const mod = await import(path);
+    this.modules[path] = mod;
     const entries = Object.entries(mod);
     if (entries.length === 1 && entries[0][0] === 'default' && typeof mod.default === 'object') {
       for (const [k, v] of Object.entries(mod.default)) {
@@ -34,6 +36,23 @@ export class Runtime {
     for (const [k, v] of entries) {
       this.register(k, v);
     }
+  }
+
+  listPackages(): PackageInfo[] {
+    const out: PackageInfo[] = [];
+    for (const [path, mod] of Object.entries(this.modules)) {
+      let exportsObj: Record<string, any> = mod;
+      const entries = Object.entries(mod);
+      if (entries.length === 1 && entries[0][0] === 'default' && typeof mod.default === 'object') {
+        exportsObj = mod.default as Record<string, any>;
+      }
+      const exportsInfo = Object.entries(exportsObj).map(([name, value]) => ({
+        name,
+        type: typeof value,
+      }));
+      out.push({ path, exports: exportsInfo });
+    }
+    return out;
   }
 }
 
@@ -49,4 +68,13 @@ export function call(name: string, ...args: any[]): Promise<any> {
 
 export function loadModule(path: string): Promise<void> {
   return defaultRuntime.loadModule(path);
+}
+
+export function listPackages(): PackageInfo[] {
+  return defaultRuntime.listPackages();
+}
+
+export interface PackageInfo {
+  path: string;
+  exports: { name: string; type: string }[];
 }
