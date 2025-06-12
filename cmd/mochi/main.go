@@ -526,6 +526,7 @@ func modGet(cmd *GetCmd) error {
 func externsForAlias(info *ffiinfo.ModuleInfo, alias string) string {
 	var b strings.Builder
 	for _, t := range info.Types {
+		writeDoc(&b, t.Doc)
 		if len(t.Fields) == 0 {
 			fmt.Fprintf(&b, "extern type %s\n", t.Name)
 		} else {
@@ -541,19 +542,33 @@ func externsForAlias(info *ffiinfo.ModuleInfo, alias string) string {
 			b.WriteString("}\n")
 		}
 		for _, m := range t.Methods {
+			writeDoc(&b, m.Doc)
 			fmt.Fprintf(&b, "extern fun %s.%s(%s)%s\n", t.Name, m.Name, formatParams(m.Params), formatResults(m.Results))
 		}
 	}
 	for _, c := range info.Consts {
+		writeDoc(&b, c.Doc)
 		fmt.Fprintf(&b, "extern let %s.%s: %s\n", alias, c.Name, normalizeType(c.Type))
 	}
 	for _, v := range info.Vars {
+		writeDoc(&b, v.Doc)
 		fmt.Fprintf(&b, "extern var %s.%s: %s\n", alias, v.Name, normalizeType(v.Type))
 	}
 	for _, f := range info.Functions {
+		writeDoc(&b, f.Doc)
 		fmt.Fprintf(&b, "extern fun %s.%s(%s)%s\n", alias, f.Name, formatParams(f.Params), formatResults(f.Results))
 	}
 	return b.String()
+}
+
+func writeDoc(b *strings.Builder, doc string) {
+	doc = strings.TrimSpace(doc)
+	if doc == "" {
+		return
+	}
+	for _, line := range strings.Split(doc, "\n") {
+		fmt.Fprintf(b, "/// %s\n", strings.TrimSpace(line))
+	}
 }
 
 func formatParams(ps []ffiinfo.ParamInfo) string {
