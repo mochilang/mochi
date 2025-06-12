@@ -54,9 +54,7 @@
   )
   (let monitor (struct Monitor))
   (unknown)
-  (call sleep (int 50))
   (unknown)
-  (call sleep (int 300))
   (let s
     (call
       (selector status (selector monitor))
@@ -69,5 +67,4 @@
     )
   )
   (call print (selector summary))
-  (call sleep (int 100))
 )

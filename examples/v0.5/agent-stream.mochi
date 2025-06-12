@@ -39,9 +39,5 @@ let monitor = TemperatureMonitor {}
 
 // Emit temperature events into the stream
 emit SensorInput { temp: 36.0 }
-// allow async handler to run
-sleep(50)
 emit SensorInput { temp: 38.2 }
-sleep(50)
 emit SensorInput { temp: 39.5 }
-sleep(50)

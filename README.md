@@ -546,7 +546,6 @@ agent Monitor {
 
 let m = Monitor {}
 emit Sensor { id: "sensor-2", temperature: 30.0 }
-sleep(50)
 print(m.status())
 ```
 

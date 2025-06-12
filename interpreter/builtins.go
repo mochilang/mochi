@@ -79,25 +79,6 @@ func builtinStr(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return fmt.Sprint(val), nil
 }
 
-func builtinSleep(i *Interpreter, c *parser.CallExpr) (any, error) {
-	if len(c.Args) != 1 {
-		return nil, fmt.Errorf("sleep(x) takes exactly one argument")
-	}
-	val, err := i.evalExpr(c.Args[0])
-	if err != nil {
-		return nil, err
-	}
-	switch v := val.(type) {
-	case int:
-		time.Sleep(time.Duration(v) * time.Millisecond)
-	case int64:
-		time.Sleep(time.Duration(v) * time.Millisecond)
-	case float64:
-		time.Sleep(time.Duration(v * float64(time.Millisecond)))
-	}
-	return nil, nil
-}
-
 func builtinCount(i *Interpreter, c *parser.CallExpr) (any, error) {
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("count(x) takes exactly one argument")
@@ -159,7 +140,6 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"now":   builtinNow,
 		"json":  builtinJSON,
 		"str":   builtinStr,
-		"sleep": builtinSleep,
 		"count": builtinCount,
 		"avg":   builtinAvg,
 	}
