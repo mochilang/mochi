@@ -1445,11 +1445,12 @@ func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
 	}
 	alias = sanitizeName(alias)
 	path := strings.Trim(im.Path, "\"")
-	dir := path
-	if !filepath.IsAbs(path) {
-		base := filepath.Dir(im.Pos.Filename)
-		dir = filepath.Join(base, path)
+	base := ""
+	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
+		base = filepath.Dir(im.Pos.Filename)
 	}
+	dir := filepath.Join(base, path)
+
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("import package: %w", err)

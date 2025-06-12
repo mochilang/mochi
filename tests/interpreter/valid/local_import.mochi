@@ -1,0 +1,3 @@
+import "./localpkg"
+
+print("Pi =", localpkg.pi())

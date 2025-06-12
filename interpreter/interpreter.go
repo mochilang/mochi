@@ -245,11 +245,18 @@ type stringMethod struct {
 
 // importPackage loads a Mochi package from a directory and binds it to alias.
 func (i *Interpreter) importPackage(alias, path, filename string) error {
-	dir := filepath.Join(i.root, path)
+	p := strings.Trim(path, "\"")
+	base := i.root
+	if strings.HasPrefix(p, "./") || strings.HasPrefix(p, "../") {
+		base = filepath.Dir(filename)
+	}
+	dir := filepath.Join(base, p)
+
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("import package: %w", err)
 	}
+
 	var files []string
 	for _, e := range entries {
 		if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
