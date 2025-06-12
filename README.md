@@ -2,8 +2,6 @@
 
 **Mochi** is a small, statically typed programming language built for clarity, safety, and expressiveness — whether you're writing tools, processing real-time data, or powering intelligent agents.
 
-Current version: **0.6.1**
-
 Mochi is:
 
 * Agent-friendly: structured, safe, and embeddable
@@ -14,17 +12,10 @@ Mochi is:
 Simple enough to explore in minutes. Powerful enough to build something real.
 
 ## Prerequisites
-
 To run Mochi in a container, you’ll need to have Docker installed.
 Make sure Docker is running before using any container-based commands.
 
-If you experience issues pulling from GitHub Container Registry (`ghcr.io`), run:
-
-```bash
-docker logout ghcr.io
-```
-
-Also, to use Mochi inside tools like Claude or VS Code Agent Mode, you may need a local LLM (like `llama.cpp`) and optionally a GitHub Personal Access Token if using GitHub-specific tools.
+Also, to use Mochi inside tools like Claude or VS Code Agent Mode, you may need a local LLM (like `llama.cpp`). 
 
 ## Installation
 
@@ -39,8 +30,8 @@ Just grab the binary and run:
 
 ```bash
 chmod +x mochi
-./mochi run examples/hello.mochi
-./mochi cheatsheet
+mochi run examples/hello.mochi
+mochi cheatsheet
 ```
 
 It’s a single binary — no dependencies, no setup.
@@ -633,21 +624,7 @@ Helpful commands:
 
 PRs and issues welcome!
 
-## Releasing
-
-Releases are handled with [GoReleaser](https://goreleaser.com):
-
-```bash
-make release VERSION=0.X.Y
-```
-
-This builds binaries and pushes to:
-
-```
-ghcr.io/mochilang/mochi
-```
-
 ## License
 
 Mochi is open source under the [MIT License](./LICENSE).
-© 2025 mochilang — Your agent’s favorite language 
+© 2025 Mochi — Your agent’s favorite language.
