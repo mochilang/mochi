@@ -23,8 +23,9 @@ import (
 )
 
 func main() {
-	// Create a new stream named "metrics" with a capacity of 128 events.
-	s := stream.New("metrics", 128)
+        // Create a new stream named "metrics" with a capacity of 128 events.
+        wg := &sync.WaitGroup{}
+        s := stream.New("metrics", 128, wg)
 
 	// Append some events to the stream.
 	for i := 0; i < 3; i++ {
@@ -121,7 +122,8 @@ Every event is assigned both a per-stream `Tx` and an optional global `Gtx` that
 A new stream is created with a name and a fixed buffer capacity:
 
 ```go
-stream := stream.New("my-stream", 16)
+wg := &sync.WaitGroup{}
+stream := stream.New("my-stream", 16, wg)
 ```
 
 Internally, the stream maintains a circular buffer (ring) to store events. The core fields are:

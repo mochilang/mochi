@@ -54,19 +54,19 @@ type streamState struct {
 type stream struct {
 	state  atomic.Pointer[streamState]
 	subs   sync.Map // map[string]*subscriber
-	wg     sync.WaitGroup
+	wg     *sync.WaitGroup
 	global *atomic.Int64
 }
 
 // New creates a new stream with a given name and initial ring capacity.
-func New(name string, capacity int) Stream {
-	return NewWithCounter(name, capacity, nil)
+func New(name string, capacity int, wg *sync.WaitGroup) Stream {
+	return NewWithCounter(name, capacity, nil, wg)
 }
 
 // NewWithCounter creates a new stream that draws transaction IDs from a shared
 // counter when provided. If counter is nil, tx IDs are local to the stream.
-func NewWithCounter(name string, capacity int, counter *atomic.Int64) Stream {
-	s := &stream{global: counter}
+func NewWithCounter(name string, capacity int, counter *atomic.Int64, wg *sync.WaitGroup) Stream {
+	s := &stream{global: counter, wg: wg}
 	s.state.Store(&streamState{
 		name:  name,
 		ring:  make([]*Event, 0, capacity),
@@ -97,7 +97,7 @@ func (s *stream) Emit(ctx context.Context, data any) (Event, error) {
 		Gtx:    gtx,
 		Time:   time.Now(),
 		Data:   data,
-		wg:     &s.wg,
+		wg:     s.wg,
 	}
 
 	offset := tx - st.first
@@ -115,7 +115,9 @@ func (s *stream) Emit(ctx context.Context, data any) (Event, error) {
 		sub := v.(*subscriber)
 		select {
 		case sub.updateCh <- tx:
-			s.wg.Add(1)
+			if s.wg != nil {
+				s.wg.Add(1)
+			}
 		default:
 		}
 		return true
@@ -298,7 +300,9 @@ func (s *stream) Close() {
 
 // Wait blocks until all in-flight event handlers have completed.
 func (s *stream) Wait() {
-	s.wg.Wait()
+	if s.wg != nil {
+		s.wg.Wait()
+	}
 }
 
 // --- Subscriber ---

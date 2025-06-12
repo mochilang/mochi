@@ -32,6 +32,7 @@ type Agent struct {
 type Config struct {
 	Name    string
 	BufSize int
+	WG      *sync.WaitGroup
 }
 
 // New creates a new Agent with empty state and stream inbox.
@@ -42,7 +43,7 @@ func New(cfg Config) *Agent {
 	}
 	return &Agent{
 		Name:     cfg.Name,
-		Inbox:    stream.New(inboxName+"-inbox", cfg.BufSize),
+		Inbox:    stream.New(inboxName+"-inbox", cfg.BufSize, cfg.WG),
 		state:    make(map[string]Value),
 		handlers: make(map[string]func(context.Context, *stream.Event)),
 		intents:  make(map[string]IntentHandler),

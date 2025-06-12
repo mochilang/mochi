@@ -11,5 +11,3 @@ func add(a int, b int) int {
 func main() {
 	fmt.Println(5)
 }
-
-

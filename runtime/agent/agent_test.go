@@ -3,6 +3,7 @@ package agent_test
 import (
 	"context"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -13,13 +14,16 @@ import (
 func TestAgent_BasicFlow(t *testing.T) {
 	ctx := context.Background()
 
+	// Create a shared wait group for deterministic ordering
+	wg := &sync.WaitGroup{}
 	// Create a test stream
-	s := stream.New("SensorReading", 64)
+	s := stream.New("SensorReading", 64, wg)
 
 	// Initialize agent
 	a := agent.New(agent.Config{
 		Name:    "monitor",
 		BufSize: 16,
+		WG:      wg,
 	})
 
 	// Register stream handler

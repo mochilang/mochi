@@ -326,7 +326,7 @@ func (i *Interpreter) importPackage(alias, path, filename string) error {
 func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, error) {
 	inst := &agentInstance{
 		decl:  decl,
-		agent: agent.New(agent.Config{Name: decl.Name, BufSize: 16}),
+		agent: agent.New(agent.Config{Name: decl.Name, BufSize: 16, WG: i.wg}),
 		env:   types.NewEnv(i.env),
 	}
 
@@ -520,7 +520,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		return nil
 
 	case s.Stream != nil:
-		i.streams[s.Stream.Name] = stream.NewWithCounter(s.Stream.Name, 64, i.tx)
+		i.streams[s.Stream.Name] = stream.NewWithCounter(s.Stream.Name, 64, i.tx, i.wg)
 		return nil
 
 	case s.On != nil:
