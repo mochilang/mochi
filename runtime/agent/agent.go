@@ -17,7 +17,8 @@ type IntentHandler func(context.Context, ...Value) (Value, error)
 // Agent is a reactive runtime component that handles stream events and intent calls.
 type Agent struct {
 	Name   string
-	Inbox  chan *stream.Event
+	Inbox  stream.Stream
+	sub    stream.Subscriber
 	cancel context.CancelFunc
 	wg     sync.WaitGroup
 
@@ -33,11 +34,15 @@ type Config struct {
 	BufSize int
 }
 
-// New creates a new Agent with empty state and inbox.
+// New creates a new Agent with empty state and stream inbox.
 func New(cfg Config) *Agent {
+	inboxName := cfg.Name
+	if inboxName == "" {
+		inboxName = "agent"
+	}
 	return &Agent{
 		Name:     cfg.Name,
-		Inbox:    make(chan *stream.Event, cfg.BufSize),
+		Inbox:    stream.New(inboxName+"-inbox", cfg.BufSize),
 		state:    make(map[string]Value),
 		handlers: make(map[string]func(context.Context, *stream.Event)),
 		intents:  make(map[string]IntentHandler),
@@ -48,23 +53,23 @@ func New(cfg Config) *Agent {
 func (a *Agent) Start(ctx context.Context) {
 	ctx, cancel := context.WithCancel(ctx)
 	a.cancel = cancel
-	a.wg.Add(1)
+	a.sub = a.Inbox.Subscribe(a.Name+"-processor", func(ev *stream.Event) error {
+		inner, ok := ev.Data.(*stream.Event)
+		if ok && inner != nil {
+			if h, ok := a.handlers[inner.Stream]; ok {
+				h(ctx, inner)
+			}
+			inner.Ack()
+		}
+		ev.Ack()
+		return nil
+	})
 
+	a.wg.Add(1)
 	go func() {
 		defer a.wg.Done()
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case e := <-a.Inbox:
-				if h, ok := a.handlers[e.Stream]; ok {
-					h(ctx, e)
-				}
-				if e != nil {
-					e.Ack()
-				}
-			}
-		}
+		<-ctx.Done()
+		a.sub.Close()
 	}()
 }
 
@@ -73,7 +78,14 @@ func (a *Agent) Stop() {
 	if a.cancel != nil {
 		a.cancel()
 	}
+	if a.sub != nil {
+		a.sub.Close()
+	}
 	a.wg.Wait()
+	if a.Inbox != nil {
+		a.Inbox.Close()
+		a.Inbox.Wait()
+	}
 }
 
 // On registers a stream handler and subscribes to the given stream.
@@ -86,12 +98,8 @@ func (a *Agent) On(s stream.Stream, handler func(context.Context, *stream.Event)
 			streamName = ev.Stream
 			a.handlers[streamName] = handler
 		}
-		select {
-		case a.Inbox <- ev:
-			return nil
-		default:
-			return nil // drop if inbox is full
-		}
+		_, _ = a.Inbox.Emit(context.Background(), ev)
+		return nil
 	})
 	return nil
 }

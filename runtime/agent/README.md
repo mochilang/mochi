@@ -11,7 +11,7 @@ This package is designed to integrate cleanly with the `mochi` interpreter, stre
 
 ## Features
 
-* In-memory inbox for stream delivery
+* Stream-backed inbox for event delivery
 * Dynamic stream handler registration
 * Named intent registration and execution
 * Mutable state with `Set` and `Get`
