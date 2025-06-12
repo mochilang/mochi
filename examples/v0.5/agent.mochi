@@ -37,8 +37,6 @@ emit SensorReading {
   timestamp: now(),
 }
 
-// Give the agent time to process the first event
-sleep(50)
 
 emit SensorReading {
   id: "sensor-2",
@@ -46,8 +44,6 @@ emit SensorReading {
   timestamp: now(),
 }
 
-// Wait for async processing
-sleep(100)
 
 // Call intents (method style)
 let s = monitor.status()
