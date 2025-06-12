@@ -17,13 +17,17 @@ emit Sensor {
   id: "sensor-1",
   temperature: 22.5
 }
+// allow async handler to run
+sleep(50)
 
 emit Sensor {
   id: "sensor-2",
   temperature: 30.2
 }
+sleep(50)
 
 emit Sensor {
   id: "sensor-3",
   temperature: 18.9
 }
+sleep(50)
