@@ -12,4 +12,4 @@ fun sqrt(x: float): float {
   return result
 }
 
-export { sqrt }
+export fun sqrt

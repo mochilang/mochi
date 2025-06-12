@@ -1,8 +1,8 @@
 // Main program entrypoint
 // Uses local modules under math/
 
-import "math/constants"
-import "math/sqrt"
+import "./math/constants" as constants
+import "./math/sqrt" as sqrt
 
-print("Pi =", constants.pi)
+print("Pi =", constants.pi())
 print("sqrt(49) =", sqrt.sqrt(49))

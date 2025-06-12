@@ -27,21 +27,21 @@ fun clamp(value: float, min: float, max: float): float {
 
 // average computes the mean of a list of floats.
 // If the list is empty, returns 0.
-fun average(nums: list<float>): float {
-  if nums.len == 0 {
-    return 0.0
+  fun average(nums: list<float>): float {
+    if len(nums) == 0 {
+      return 0.0
+    }
+    var sum = 0.0
+    for x in nums {
+      sum = sum + x
+    }
+    return sum / (len(nums) as float)
   }
-  let sum = 0.0
-  for x in nums {
-    sum = sum + x
-  }
-  return sum / nums.len
-}
 
 // Person represents a simple record with a name and age.
 type Person {
   // The person's name.
-  name: string,
+  name: string
 
   // The person's age in years.
   age: int
