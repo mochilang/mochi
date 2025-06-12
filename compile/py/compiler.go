@@ -1445,23 +1445,41 @@ func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
 	}
 	alias = sanitizeName(alias)
 	path := strings.Trim(im.Path, "\"")
-	dir := path
-	if !filepath.IsAbs(path) {
-		base := filepath.Dir(im.Pos.Filename)
-		dir = filepath.Join(base, path)
+	base := ""
+	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
+		base = filepath.Dir(im.Pos.Filename)
 	}
-	entries, err := os.ReadDir(dir)
+	target := filepath.Join(base, path)
+
+	info, err := os.Stat(target)
 	if err != nil {
-		return fmt.Errorf("import package: %w", err)
+		if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
+			if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
+				info = fi
+				target += ".mochi"
+			} else {
+				return fmt.Errorf("import package: %w", err)
+			}
+		} else {
+			return fmt.Errorf("import package: %w", err)
+		}
 	}
 
 	var files []string
-	for _, e := range entries {
-		if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
-			files = append(files, filepath.Join(dir, e.Name()))
+	if info.IsDir() {
+		entries, err := os.ReadDir(target)
+		if err != nil {
+			return fmt.Errorf("import package: %w", err)
 		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+				files = append(files, filepath.Join(target, e.Name()))
+			}
+		}
+		sort.Strings(files)
+	} else {
+		files = []string{target}
 	}
-	sort.Strings(files)
 
 	pkgEnv := types.NewEnv(c.env)
 	var programs []*parser.Program
