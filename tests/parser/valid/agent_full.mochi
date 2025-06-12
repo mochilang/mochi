@@ -35,7 +35,6 @@ emit SensorReading {
   timestamp: now(),
 }
 
-sleep(50)
 
 emit SensorReading {
   id: "sensor-2",
@@ -43,7 +42,6 @@ emit SensorReading {
   timestamp: now(),
 }
 
-sleep(300)
 
 let s = monitor.status()
 print(s)
@@ -51,4 +49,3 @@ print(s)
 let summary = monitor.summary()
 print(summary)
 
-sleep(100)

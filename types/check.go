@@ -362,10 +362,6 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
-	env.SetVar("sleep", FuncType{
-		Params: []Type{IntType{}},
-		Return: VoidType{},
-	}, false)
 	env.SetVar("count", FuncType{
 		Params: []Type{AnyType{}},
 		Return: IntType{},
