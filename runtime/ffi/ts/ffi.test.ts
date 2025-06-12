@@ -1,6 +1,6 @@
 import assert from 'assert';
 import path from 'path';
-import { register, call, loadModule } from './ffi';
+import { register, call, loadModule, listPackages } from './ffi';
 
 (async () => {
   register('add', (a: number, b: number) => a + b);
@@ -18,6 +18,11 @@ import { register, call, loadModule } from './ffi';
 
   const sq = await call('square', 4);
   assert.strictEqual(sq, 16);
+
+  const pkgs = listPackages();
+  assert.strictEqual(pkgs.length, 1);
+  const names = pkgs[0].exports.map(e => e.name).sort();
+  assert.deepStrictEqual(names, ['pi', 'square']);
 
   try {
     await call('pi', 1);
