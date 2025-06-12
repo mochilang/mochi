@@ -1,31 +1,18 @@
 // deno_math.mochi
-// Use latest Deno standard library math module and Deno file APIs
+// Demonstrate calling TypeScript and Deno APIs
 
-import typescript "https://deno.land/std@0.211.0/math/constants.ts" as constants
-import typescript "https://deno.land/std@0.211.0/math/mod.ts" as math
-import typescript "deno" as deno
+import typescript "file:///workspace/mochi/runtime/ffi/deno/math.ts" as math
 
 // Extern bindings
-extern let constants.PI: float
-extern let constants.E: float
+extern let math.PI: float
 extern fun math.pow(x: float, y: float): float
 extern fun math.sqrt(x: float): float
 
-extern fun deno.readTextFile(path: string): string
-extern fun deno.writeTextFile(path: string, data: string): void
 
 // Computation
 let r = 5.0
-let area = constants.PI * math.pow(r, 2.0)
+let area = math.PI * math.pow(r, 2.0)
 let root = math.sqrt(144.0)
 
 print("Circle with r =", r, "has area =", area)
 print("Square root of 144:", root)
-
-// Write result to file
-let output = "Area = " + area + "\nRoot = " + root
-deno.writeTextFile("area.txt", output)
-
-// Read back
-let content = deno.readTextFile("area.txt")
-print("File content:\n", content)
