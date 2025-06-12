@@ -1,0 +1,3 @@
+import "./localpkg/constants"
+
+print("Pi =", constants.pi())

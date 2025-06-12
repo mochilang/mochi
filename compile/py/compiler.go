@@ -1445,21 +1445,35 @@ func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
 	}
 	alias = sanitizeName(alias)
 	path := strings.Trim(im.Path, "\"")
-	dir := path
-	if !filepath.IsAbs(path) {
-		base := filepath.Dir(im.Pos.Filename)
-		dir = filepath.Join(base, path)
+	base := filepath.Dir(im.Pos.Filename)
+	if filepath.IsAbs(path) {
+		base = ""
 	}
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		return fmt.Errorf("import package: %w", err)
-	}
+	dir := filepath.Join(base, path)
 
 	var files []string
-	for _, e := range entries {
-		if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
-			files = append(files, filepath.Join(dir, e.Name()))
+	if info, err := os.Stat(dir); err == nil {
+		if info.IsDir() {
+			entries, err := os.ReadDir(dir)
+			if err != nil {
+				return fmt.Errorf("import package: %w", err)
+			}
+			for _, e := range entries {
+				if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+					files = append(files, filepath.Join(dir, e.Name()))
+				}
+			}
+		} else {
+			files = append(files, dir)
 		}
+	} else {
+		if !strings.HasSuffix(dir, ".mochi") {
+			dir += ".mochi"
+		}
+		if _, err := os.Stat(dir); err != nil {
+			return fmt.Errorf("import package: %w", err)
+		}
+		files = append(files, dir)
 	}
 	sort.Strings(files)
 

@@ -26,3 +26,12 @@ print(mu.add(2, 3))
 ```
 
 If `as` is omitted, the alias defaults to the last segment of the import path.
+
+Paths starting with `./` or `../` are resolved relative to the importing file.
+They may refer to a single file or a directory of `.mochi` files. When
+referencing a file, the `.mochi` extension is optional.
+
+```mochi
+import "./local/constants"
+print(constants.pi())
+```

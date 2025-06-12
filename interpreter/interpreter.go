@@ -245,16 +245,37 @@ type stringMethod struct {
 
 // importPackage loads a Mochi package from a directory and binds it to alias.
 func (i *Interpreter) importPackage(alias, path, filename string) error {
-	dir := filepath.Join(i.root, path)
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		return fmt.Errorf("import package: %w", err)
+	p := strings.Trim(path, "\"")
+	base := i.root
+	if strings.HasPrefix(p, "./") || strings.HasPrefix(p, "../") {
+		base = filepath.Dir(filename)
 	}
+	dir := filepath.Join(base, p)
+
 	var files []string
-	for _, e := range entries {
-		if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
-			files = append(files, filepath.Join(dir, e.Name()))
+
+	if info, err := os.Stat(dir); err == nil {
+		if info.IsDir() {
+			entries, err := os.ReadDir(dir)
+			if err != nil {
+				return fmt.Errorf("import package: %w", err)
+			}
+			for _, e := range entries {
+				if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+					files = append(files, filepath.Join(dir, e.Name()))
+				}
+			}
+		} else {
+			files = append(files, dir)
 		}
+	} else {
+		if !strings.HasSuffix(dir, ".mochi") {
+			dir += ".mochi"
+		}
+		if _, err := os.Stat(dir); err != nil {
+			return fmt.Errorf("import package: %w", err)
+		}
+		files = append(files, dir)
 	}
 	sort.Strings(files)
 	pkgEnv := types.NewEnv(i.env)
