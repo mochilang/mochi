@@ -6,6 +6,7 @@ Welcome to the Mochi documentation. The guides and references here will be publi
 
 - [Using Mochi](guides/using-mochi.md) explains installation methods and the overall project layout.
 - [Dataset Queries](guides/dataset-queries.md) demonstrates loading data, filtering, sorting and joining lists.
+- [Common Language Errors](guides/common-errors.md) shows frequent mistakes and their fixes.
 
 ## Language Features
 
