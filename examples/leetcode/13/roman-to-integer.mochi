@@ -1,0 +1,54 @@
+fun romanToInt(s: string): int {
+  let values: map<string, int> = {
+    "I": 1,
+    "V": 5,
+    "X": 10,
+    "L": 50,
+    "C": 100,
+    "D": 500,
+    "M": 1000,
+  }
+  var total = 0
+  var i = 0
+  let n = len(s)
+  while i < n {
+    let curr = values[s[i]]
+    if i + 1 < n {
+      let next = values[s[i+1]]
+      if curr < next {
+        total = total + next - curr
+        i = i + 2
+        continue
+      }
+    }
+    total = total + curr
+    i = i + 1
+  }
+  return total
+}
+
+// Example tests from the LeetCode problem statement
+
+test "example 1" {
+  expect romanToInt("III") == 3
+}
+
+test "example 2" {
+  expect romanToInt("LVIII") == 58
+}
+
+test "example 3" {
+  expect romanToInt("MCMXCIV") == 1994
+}
+
+// Additional tests
+
+test "subtractive" {
+  expect romanToInt("IV") == 4
+  expect romanToInt("IX") == 9
+}
+
+test "tens" {
+  expect romanToInt("XL") == 40
+  expect romanToInt("XC") == 90
+}
