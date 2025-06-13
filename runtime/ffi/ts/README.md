@@ -1,61 +1,23 @@
-# TypeScript FFI Runtime
+# TypeScript FFI Runtime (Go)
 
-The `runtime/ffi/ts` package provides a lightweight foreign function interface
-for running Mochi programs compiled to TypeScript. It exposes a registry of
-values and functions that can be looked up dynamically at runtime. The goal is
-to keep the API small while making it easy to integrate with existing
-JavaScript or TypeScript libraries.
+This package mirrors the old TypeScript implementation of the FFI runtime but is
+implemented in Go. It allows Mochi programs to call functions and values
+exposed from Go or from TypeScript modules executed via Deno.
 
-## Goals
+Values can be registered directly or loaded from a module. Symbols are invoked
+by name at runtime.
 
-- Allow Mochi code compiled to TypeScript to call host functions in a safe way.
-- Keep the API simple so it works in both Node and Deno environments.
-- Provide a mechanism to asynchronously load additional modules at runtime.
+```go
+import tsffi "mochi/runtime/ffi/ts"
 
-## Usage
+func init() {
+    tsffi.Register("add", func(a, b int) int { return a + b })
+    tsffi.LoadModule("runtime/ffi/ts/sample-module.mjs")
+}
 
-```ts
-import { register, call, loadModule } from "./ffi.ts";
-
-// Register a simple function
-register("add", (a: number, b: number) => a + b);
-
-// Register a value
-register("answer", 42);
-
-// Dynamically load values from another module
-await loadModule("./math.ts");
-
-// Call a registered function from Mochi
-const result = await call("add", 1, 2);
-const ans = await call("answer");
+res, _ := tsffi.Call("add", 1, 2)
+pi, _ := tsffi.Call("pi")
 ```
 
-All lookups return `Promise<any>` so that both synchronous and asynchronous
-handlers are supported. Mochi's TypeScript compiler emits calls to `call()` when
-an `ffi` expression is evaluated in the source code.
-
-## API
-
-### `register(name: string, value: any)`
-Registers a function or value under the given name.
-
-### `call(name: string, ...args: any[]): Promise<any>`
-Looks up the named symbol. If it is a function it is invoked with `args`,
-otherwise the value is returned. An error is thrown if the symbol is unknown or
-if arguments are provided for a non-function.
-
-### `loadModule(path: string): Promise<void>`
-Dynamically imports the module at `path` and automatically registers all of its
-exports.
-
-## Example Module
-
-```ts
-// math.ts
-export const pi = 3.14;
-export function square(n: number) { return n * n; }
-```
-
-With this design, Mochi programs can easily access existing TypeScript code
-through a stable FFI layer without pulling in large dependencies.
+`LoadModule` uses Deno to import the module and register all of its exports so
+they can be called later.
