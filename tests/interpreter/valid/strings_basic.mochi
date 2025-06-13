@@ -1,0 +1,7 @@
+import go "strings" as strings
+
+extern fun strings.ToUpper(s: string): string
+extern fun strings.HasPrefix(s: string, prefix: string): bool
+
+print(strings.ToUpper("hello"))
+print(strings.HasPrefix("foobar", "foo"))
