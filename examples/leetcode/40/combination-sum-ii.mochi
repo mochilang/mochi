@@ -1,0 +1,43 @@
+fun combinationSum2(candidates: list<int>, target: int): list<list<int>> {
+  let sorted = from c in candidates sort by c select c
+  var result: list<list<int>> = []
+
+  fun dfs(start: int, remain: int, path: list<int>) {
+    if remain == 0 {
+      result = result + [path]
+      return
+    }
+    var i = start
+    while i < len(sorted) {
+      let val = sorted[i]
+      if val > remain {
+        break
+      }
+      if i > start && val == sorted[i-1] {
+        i = i + 1
+        continue
+      }
+      dfs(i + 1, remain - val, path + [val])
+      i = i + 1
+    }
+  }
+
+  dfs(0, target, [])
+  return result
+}
+
+// Test cases from LeetCode problem 40
+
+test "example 1" {
+  expect combinationSum2([10,1,2,7,6,1,5], 8) == [[1,1,6],[1,2,5],[1,7],[2,6]]
+}
+
+test "example 2" {
+  expect combinationSum2([2,5,2,1,2], 5) == [[1,2,2],[5]]
+}
+
+// Additional tests
+
+test "no solution" {
+  expect combinationSum2([3,4,5], 2) == []
+}
