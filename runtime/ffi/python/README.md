@@ -36,3 +36,16 @@ fmt.Println(res) // 8
 
 This lightweight approach avoids cgo dependencies while making it easy
 to leverage Python's vast ecosystem from Mochi programs.
+
+## Generating extern declarations
+
+`Export` writes Mochi `extern` declarations for a Python module to a file. The
+output can be checked into source control or used by tools.
+
+```go
+err := python.Export("math", "externs")
+// creates externs/math.mochi
+```
+
+`ExportAll` uses the installed package list to export every available module into
+a directory, skipping any failures.
