@@ -409,13 +409,13 @@ type MatchCase struct {
 
 type Primary struct {
 	Pos      lexer.Position
-	FunExpr  *FunExpr       `parser:"@@"`
-	Struct   *StructLiteral `parser:"| @@"`
+	Struct   *StructLiteral `parser:"@@"`
 	Call     *CallExpr      `parser:"| @@"`
 	Query    *QueryExpr     `parser:"| @@"`
 	Selector *SelectorExpr  `parser:"| @@"`
 	List     *ListLiteral   `parser:"| @@"`
 	Map      *MapLiteral    `parser:"| @@"`
+	FunExpr  *FunExpr       `parser:"| @@"`
 	Match    *MatchExpr     `parser:"| @@"`
 	Generate *GenerateExpr  `parser:"| @@"`
 	Fetch    *FetchExpr     `parser:"| @@"`

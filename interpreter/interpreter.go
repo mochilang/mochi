@@ -488,6 +488,27 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 					return nil
 				}
 				container = cur[key]
+			case map[int]any:
+				var k int
+				switch v := idxVal.(type) {
+				case int:
+					k = v
+				case int64:
+					k = int(v)
+				default:
+					return fmt.Errorf("map key must be int")
+				}
+				if last {
+					cur[k] = val
+					return nil
+				}
+				container = cur[k]
+			case map[any]any:
+				if last {
+					cur[idxVal] = val
+					return nil
+				}
+				container = cur[idxVal]
 			case []any:
 				n, ok := idxVal.(int)
 				if !ok {
