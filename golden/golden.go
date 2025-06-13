@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	_ "mochi/runtime/llm/provider/cohere"
 	"mochi/tools/db"
 )
 

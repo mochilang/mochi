@@ -34,6 +34,7 @@ func Solve(id int, iterate int) (string, error) {
 			return "", err
 		}
 	}
+	fmt.Printf("problem #%d:\n%s\n", id, text)
 
 	// Generate initial Mochi solution.
 	start := time.Now()
@@ -42,6 +43,7 @@ func Solve(id int, iterate int) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fmt.Printf("%s\n", code)
 	fmt.Printf("initial generation took %s\n", dur)
 
 	for i := 0; i < iterate; i++ {
@@ -58,8 +60,9 @@ func Solve(id int, iterate int) (string, error) {
 		}
 
 		// Ask the LLM to fix the code using the failing output as context.
-		prompt := fmt.Sprintf("The following Mochi program failed its tests:\n\n%s\n\nError output:\n%s\n\nPlease provide a corrected version of the code only.", code, out)
+		prompt := fmt.Sprintf("The following Mochi program failed its tests:\n\n%s\n\nError:%s\nError output:\n%s\n\nPlease provide a corrected version of the code only.", code, testErr.Error(), out)
 		start = time.Now()
+		fmt.Println(prompt)
 		resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}})
 		dur = time.Since(start)
 		if err != nil {

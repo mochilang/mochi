@@ -43,7 +43,8 @@ func Open(providerName, dsn string, opts Options) (*Client, error) {
 	prv := providers[providerName]
 	mu.RUnlock()
 	if prv == nil {
-		return nil, fmt.Errorf("llm: unknown provider %q", providerName)
+		return nil, fmt.Errorf("llm: unknown provider %q, init with `_ \"mochi/runtime/llm/provider/%s\"`",
+			providerName, providerName)
 	}
 	conn, err := prv.Open(dsn, opts)
 	if err != nil {

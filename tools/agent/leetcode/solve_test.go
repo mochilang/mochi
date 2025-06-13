@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"mochi/runtime/llm"
+	_ "mochi/runtime/llm/provider/cohere"
 )
 
 type solveProvider struct{}
@@ -33,8 +34,8 @@ func (solveConn) Embed(ctx context.Context, req llm.EmbedRequest) (*llm.EmbedRes
 }
 
 func TestSolve(t *testing.T) {
-	llm.Default, _ = llm.Open("solvefake", "", llm.Options{})
-	code, err := Solve(1, 2)
+	// llm.Default, _ = llm.Open("solvefake", "", llm.Options{})
+	code, err := Solve(3, 1)
 	if err != nil {
 		t.Fatalf("Solve error: %v", err)
 	}
