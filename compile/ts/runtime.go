@@ -4,32 +4,6 @@ import "sort"
 
 // Runtime helper functions injected into generated programs.
 const (
-	helperIndex = "function _index(v: any, k: any): any {\n" +
-		"  if (Array.isArray(v)) {\n" +
-		"    if (typeof k !== 'number') throw new Error('invalid list index');\n" +
-		"    if (k < 0) k += v.length;\n" +
-		"    if (k < 0 || k >= v.length) throw new Error('index out of range');\n" +
-		"    return v[k];\n" +
-		"  }\n" +
-		"  if (typeof v === 'string') {\n" +
-		"    if (typeof k !== 'number') throw new Error('invalid string index');\n" +
-		"    const chars = Array.from(v);\n" +
-		"    if (k < 0) k += chars.length;\n" +
-		"    if (k < 0 || k >= chars.length) throw new Error('index out of range');\n" +
-		"    return chars[k];\n" +
-		"  }\n" +
-		"  if (v && typeof v === 'object') {\n" +
-		"    return (v as any)[k];\n" +
-		"  }\n" +
-		"  return (v as any)[k];\n" +
-		"}\n"
-
-	helperLen = "function _len(v: any): number {\n" +
-		"  if (Array.isArray(v) || typeof v === \"string\") return (v as any).length;\n" +
-		"  if (v && typeof v === \"object\") return Object.keys(v).length;\n" +
-		"  return 0;\n" +
-		"}\n"
-
 	helperCount = "function _count(v: any): number {\n" +
 		"  if (Array.isArray(v)) return v.length;\n" +
 		"  if (v && typeof v === 'object') {\n" +
@@ -313,8 +287,6 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_index":      helperIndex,
-	"_len":        helperLen,
 	"_count":      helperCount,
 	"_avg":        helperAvg,
 	"_iter":       helperIter,

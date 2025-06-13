@@ -958,8 +958,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 				typ = types.StringType{}
 			default:
-				c.use("_index")
-				expr = fmt.Sprintf("_index(%s, %s)", expr, idxExpr)
+				expr = fmt.Sprintf("(%s as any)[%s]", expr, idxExpr)
 				typ = types.AnyType{}
 			}
 		}
@@ -1052,10 +1051,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("%s.length", args[0]), nil
 			case types.MapType, types.StructType, types.UnionType:
 				return fmt.Sprintf("Object.keys(%s).length", args[0]), nil
+			default:
+				a := args[0]
+				return fmt.Sprintf("(Array.isArray(%[1]s) || typeof %[1]s === 'string' ? (%[1]s as any).length : (%[1]s && typeof %[1]s === 'object' ? Object.keys(%[1]s).length : 0))", a), nil
 			}
 		}
-		c.use("_len")
-		return fmt.Sprintf("_len(%s)", argStr), nil
+		return fmt.Sprintf("(Array.isArray(%[1]s) || typeof %[1]s === 'string' ? (%[1]s as any).length : (%[1]s && typeof %[1]s === 'object' ? Object.keys(%[1]s).length : 0))", argStr), nil
 	case "str":
 		return fmt.Sprintf("String(%s)", argStr), nil
 	case "count":
