@@ -1,0 +1,38 @@
+fun removeElement(nums: list<int>, val: int): int {
+  var k = 0
+  var i = 0
+  while i < len(nums) {
+    if nums[i] != val {
+      nums[k] = nums[i]
+      k = k + 1
+    }
+    i = i + 1
+  }
+  return k
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  var nums = [3,2,2,3]
+  let k = removeElement(nums, 3)
+  expect k == 2
+  expect nums[0:k] == [2,2]
+}
+
+test "example 2" {
+  var nums = [0,1,2,2,3,0,4,2]
+  let k = removeElement(nums, 2)
+  expect k == 5
+  expect nums[0:k] == [0,1,3,0,4]
+}
+
+// Additional edge cases
+
+test "no removal" {
+  var nums = [1,2,3]
+  let k = removeElement(nums, 4)
+  expect k == 3
+  expect nums[0:k] == [1,2,3]
+}
+
