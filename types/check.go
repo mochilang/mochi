@@ -372,6 +372,10 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: FloatType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("eval", FuncType{
+		Params: []Type{StringType{}},
+		Return: AnyType{},
+	}, false)
 
 	var errs []error
 	for _, stmt := range prog.Statements {

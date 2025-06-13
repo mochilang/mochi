@@ -8,6 +8,7 @@ import (
 
 	"mochi/parser"
 	"mochi/runtime/data"
+	"mochi/types"
 )
 
 // builtinPrint implements the print(...) function.
@@ -79,6 +80,49 @@ func builtinStr(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return fmt.Sprint(val), nil
 }
 
+// builtinEval implements eval(code).
+func builtinEval(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("eval(code) takes exactly one argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	src, ok := val.(string)
+	if !ok {
+		return nil, fmt.Errorf("eval() expects a string argument")
+	}
+
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		return nil, err
+	}
+
+	if errs := types.Check(prog, i.env); len(errs) > 0 {
+		return nil, errs[0]
+	}
+
+	// If the program is a single expression statement, just evaluate it and
+	// return the result.
+	if len(prog.Statements) == 1 && prog.Statements[0].Expr != nil {
+		return i.evalExpr(prog.Statements[0].Expr.Expr)
+	}
+
+	var result any
+	for idx, stmt := range prog.Statements {
+		if stmt.Expr != nil && idx == len(prog.Statements)-1 {
+			result, err = i.evalExpr(stmt.Expr.Expr)
+		} else {
+			err = i.evalStmt(stmt)
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	return result, nil
+}
+
 func builtinCount(i *Interpreter, c *parser.CallExpr) (any, error) {
 	if len(c.Args) != 1 {
 		return nil, fmt.Errorf("count(x) takes exactly one argument")
@@ -142,5 +186,6 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"str":   builtinStr,
 		"count": builtinCount,
 		"avg":   builtinAvg,
+		"eval":  builtinEval,
 	}
 }
