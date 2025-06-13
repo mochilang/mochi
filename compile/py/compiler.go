@@ -641,8 +641,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			c.env.SetVar(stmt.Name, tt.Key, true)
 		}
 	default:
-		iter = fmt.Sprintf("_iter(%s)", src)
-		c.use("_iter")
+		iter = src
 		if c.env != nil {
 			c.env.SetVar(stmt.Name, types.AnyType{}, true)
 		}
@@ -914,8 +913,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 					typ = types.StringType{}
 				default:
-					c.use("_index")
-					expr = fmt.Sprintf("_index(%s, %s)", expr, idxExpr)
+					expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 					typ = types.AnyType{}
 				}
 			}
@@ -1153,8 +1151,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	c.use("_iter")
-
 	hasSide := false
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -1189,14 +1185,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.env = child
 
 	if !hasSide {
-		loops := []string{fmt.Sprintf("%s in _iter(%s)", sanitizeName(q.Var), src)}
+		loops := []string{fmt.Sprintf("%s in %s", sanitizeName(q.Var), src)}
 		for _, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
 			if err != nil {
 				c.env = orig
 				return "", err
 			}
-			loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(f.Var), fs))
+			loops = append(loops, fmt.Sprintf("%s in %s", sanitizeName(f.Var), fs))
 		}
 		condParts := []string{}
 		joinSrcs := make([]string, len(q.Joins))
@@ -1207,7 +1203,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			joinSrcs[i] = js
-			loops = append(loops, fmt.Sprintf("%s in _iter(%s)", sanitizeName(j.Var), js))
+			loops = append(loops, fmt.Sprintf("%s in %s", sanitizeName(j.Var), js))
 			on, err := c.compileExpr(j.On)
 			if err != nil {
 				c.env = orig
