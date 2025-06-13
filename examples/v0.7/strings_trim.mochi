@@ -1,0 +1,17 @@
+// String trimming and splitting with Go's strings package
+import go "strings" as strings auto
+
+let raw = "  hello,world,mochi  "
+
+// Trim leading and trailing spaces
+let trimmed = strings.TrimSpace(raw)
+print("Trimmed:", trimmed)
+
+// Split by comma
+let parts = strings.Split(trimmed, ",") as list<string>
+print("Parts:", parts)
+
+// Access individual parts
+print("First:", parts[0])
+print("Second:", parts[1])
+print("Third:", parts[2])
