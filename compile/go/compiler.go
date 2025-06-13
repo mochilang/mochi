@@ -777,12 +777,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			c.env.SetVar(stmt.Name, tt.Key, true)
 		}
 	default:
-		c.use("_iter")
-		c.writeIndent()
-		c.buf.WriteString(fmt.Sprintf("for _, %s := range _iter(%s) {\n", name, src))
-		if c.env != nil {
-			c.env.SetVar(stmt.Name, types.AnyType{}, true)
-		}
+		return fmt.Errorf("cannot iterate over type %s", t)
 	}
 	c.indent++
 	if preBody != "" {
@@ -1061,9 +1056,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("_indexString(%s, %s)", val, key)
 					typ = types.StringType{}
 				default:
-					c.use("_index")
-					val = fmt.Sprintf("_index(%s, %s)", val, key)
-					typ = types.AnyType{}
+					return "", fmt.Errorf("cannot index into type %s", typ)
 				}
 			} else {
 				start := "0"
@@ -1539,12 +1532,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		params := append([]string(nil), varNames...)
 		joins := make([]string, 0, len(q.Froms)+len(q.Joins))
 		for _, fs := range fromSrcs {
-			joins = append(joins, fmt.Sprintf("{items: _iter(%s)}", fs))
+			joins = append(joins, fmt.Sprintf("{items: %s}", fs))
 		}
 		for i, js := range joinSrcs {
 			onParams := append(params, sanitizeName(q.Joins[i].Var))
 			onFn := fmt.Sprintf("func(%s) bool { return %s }", strings.Join(onParams, ", "), joinOns[i])
-			spec := fmt.Sprintf("{items: _iter(%s), on: %s", js, onFn)
+			spec := fmt.Sprintf("{items: %s, on: %s", js, onFn)
 			if joinSides[i] == "left" || joinSides[i] == "outer" {
 				spec += ", left: true"
 			}
@@ -1567,9 +1560,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		var buf bytes.Buffer
 		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
-		c.use("_iter")
 		c.use("_query")
-		buf.WriteString(fmt.Sprintf("\tsrc := _iter(%s)\n", src))
+		buf.WriteString(fmt.Sprintf("\tsrc := %s\n", src))
 		buf.WriteString("\tresAny := _query(src, []_joinSpec{\n")
 		for _, j := range joins {
 			buf.WriteString("\t\t" + j + ",\n")
@@ -1606,7 +1598,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return buf.String(), nil
 	}
 	if !directRange {
-		c.use("_iter")
+		return "", fmt.Errorf("query source must be list")
 	}
 
 	simple := q.Sort == nil && q.Skip == nil && q.Take == nil
@@ -1624,11 +1616,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("\titems := []%s{}\n", elemGo))
 	}
 	indent := "\t"
-	if directRange {
-		buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", sanitizeName(q.Var), src))
-	} else {
-		buf.WriteString(fmt.Sprintf(indent+"for _, %s := range _iter(%s) {\n", sanitizeName(q.Var), src))
-	}
+	buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", sanitizeName(q.Var), src))
 	indent += "\t"
 
 	for i := range q.Froms {
@@ -1637,7 +1625,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if fromDirect[i] {
 			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", fvar, fsrc))
 		} else {
-			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range _iter(%s) {\n", fvar, fsrc))
+			return "", fmt.Errorf("query from source must be list")
 		}
 		indent += "\t"
 	}
@@ -1650,7 +1638,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if joinDirect[0] {
 			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", jvar, jsrc))
 		} else {
-			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range _iter(%s) {\n", jvar, jsrc))
+			return "", fmt.Errorf("join source must be list")
 		}
 		indent += "\t"
 		buf.WriteString(fmt.Sprintf(indent+"if !(%s) { continue }\n", joinOns[0]))
@@ -1662,7 +1650,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if joinDirect[i] {
 				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", jvar, jsrc))
 			} else {
-				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range _iter(%s) {\n", jvar, jsrc))
+				return "", fmt.Errorf("join source must be list")
 			}
 			indent += "\t"
 			buf.WriteString(fmt.Sprintf(indent+"if !(%s) { continue }\n", joinOns[i]))
@@ -2035,12 +2023,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "count":
 		c.imports["mochi/runtime/data"] = true
 		c.use("_count")
-		c.use("_iter")
 		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "avg":
 		c.imports["mochi/runtime/data"] = true
 		c.use("_avg")
-		c.use("_iter")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil

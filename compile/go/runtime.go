@@ -4,92 +4,6 @@ import "sort"
 
 // Runtime helper functions injected into generated programs.
 const (
-	helperIndex = "func _index(v any, k any) any {\n" +
-		"    switch s := v.(type) {\n" +
-		"    case []any:\n" +
-		"        i, ok := k.(int)\n" +
-		"        if !ok {\n" +
-		"            panic(\"invalid list index\")\n" +
-		"        }\n" +
-		"        if i < 0 {\n" +
-		"            i += len(s)\n" +
-		"        }\n" +
-		"        if i < 0 || i >= len(s) {\n" +
-		"            panic(\"index out of range\")\n" +
-		"        }\n" +
-		"        return s[i]\n" +
-		"    case []int:\n" +
-		"        i, ok := k.(int)\n" +
-		"        if !ok {\n" +
-		"            panic(\"invalid list index\")\n" +
-		"        }\n" +
-		"        if i < 0 {\n" +
-		"            i += len(s)\n" +
-		"        }\n" +
-		"        if i < 0 || i >= len(s) {\n" +
-		"            panic(\"index out of range\")\n" +
-		"        }\n" +
-		"        return s[i]\n" +
-		"    case []float64:\n" +
-		"        i, ok := k.(int)\n" +
-		"        if !ok {\n" +
-		"            panic(\"invalid list index\")\n" +
-		"        }\n" +
-		"        if i < 0 {\n" +
-		"            i += len(s)\n" +
-		"        }\n" +
-		"        if i < 0 || i >= len(s) {\n" +
-		"            panic(\"index out of range\")\n" +
-		"        }\n" +
-		"        return s[i]\n" +
-		"    case []string:\n" +
-		"        i, ok := k.(int)\n" +
-		"        if !ok {\n" +
-		"            panic(\"invalid list index\")\n" +
-		"        }\n" +
-		"        if i < 0 {\n" +
-		"            i += len(s)\n" +
-		"        }\n" +
-		"        if i < 0 || i >= len(s) {\n" +
-		"            panic(\"index out of range\")\n" +
-		"        }\n" +
-		"        return s[i]\n" +
-		"    case []bool:\n" +
-		"        i, ok := k.(int)\n" +
-		"        if !ok {\n" +
-		"            panic(\"invalid list index\")\n" +
-		"        }\n" +
-		"        if i < 0 {\n" +
-		"            i += len(s)\n" +
-		"        }\n" +
-		"        if i < 0 || i >= len(s) {\n" +
-		"            panic(\"index out of range\")\n" +
-		"        }\n" +
-		"        return s[i]\n" +
-		"    case string:\n" +
-		"        i, ok := k.(int)\n" +
-		"        if !ok {\n" +
-		"            panic(\"invalid string index\")\n" +
-		"        }\n" +
-		"        runes := []rune(s)\n" +
-		"        if i < 0 {\n" +
-		"            i += len(runes)\n" +
-		"        }\n" +
-		"        if i < 0 || i >= len(runes) {\n" +
-		"            panic(\"index out of range\")\n" +
-		"        }\n" +
-		"        return string(runes[i])\n" +
-		"    case map[string]any:\n" +
-		"        ks, ok := k.(string)\n" +
-		"        if !ok {\n" +
-		"            panic(\"invalid map key\")\n" +
-		"        }\n" +
-		"        return s[ks]\n" +
-		"    default:\n" +
-		"        panic(\"invalid index target\")\n" +
-		"    }\n" +
-		"}\n"
-
 	helperIndexString = "func _indexString(s string, i int) string {\n" +
 		"    runes := []rune(s)\n" +
 		"    if i < 0 {\n" +
@@ -101,63 +15,50 @@ const (
 		"    return string(runes[i])\n" +
 		"}\n"
 
-	helperIter = "func _iter(v any) []any {\n" +
-		"    switch s := v.(type) {\n" +
-		"    case []any:\n" +
-		"        return s\n" +
-		"    case []int:\n" +
-		"        out := make([]any, len(s))\n" +
-		"        for i, v := range s {\n" +
-		"            out[i] = v\n" +
-		"        }\n" +
-		"        return out\n" +
-		"    case []float64:\n" +
-		"        out := make([]any, len(s))\n" +
-		"        for i, v := range s {\n" +
-		"            out[i] = v\n" +
-		"        }\n" +
-		"        return out\n" +
-		"    case []string:\n" +
-		"        out := make([]any, len(s))\n" +
-		"        for i, v := range s {\n" +
-		"            out[i] = v\n" +
-		"        }\n" +
-		"        return out\n" +
-		"    case []bool:\n" +
-		"        out := make([]any, len(s))\n" +
-		"        for i, v := range s {\n" +
-		"            out[i] = v\n" +
-		"        }\n" +
-		"        return out\n" +
-		"    case map[string]any:\n" +
-		"        out := make([]any, 0, len(s))\n" +
-		"        for k := range s {\n" +
-		"            out = append(out, k)\n" +
-		"        }\n" +
-		"        return out\n" +
-		"    case string:\n" +
-		"        runes := []rune(s)\n" +
-		"        out := make([]any, len(runes))\n" +
-		"        for i, r := range runes {\n" +
-		"            out[i] = string(r)\n" +
-		"        }\n" +
-		"        return out\n" +
-		"    default:\n" +
-		"        return nil\n" +
-		"    }\n" +
-		"}\n"
-
 	helperCount = "func _count(v any) int {\n" +
 		"    if g, ok := v.(*data.Group); ok { return len(g.Items) }\n" +
-		"    it := _iter(v)\n" +
-		"    if it == nil { panic(\"count() expects list or group\") }\n" +
-		"    return len(it)\n" +
+		"    switch s := v.(type) {\n" +
+		"    case []any: return len(s)\n" +
+		"    case []int: return len(s)\n" +
+		"    case []float64: return len(s)\n" +
+		"    case []string: return len(s)\n" +
+		"    case []bool: return len(s)\n" +
+		"    case map[string]any: return len(s)\n" +
+		"    case string: return len([]rune(s))\n" +
+		"    default: panic(\"count() expects list or group\")\n" +
+		"    }\n" +
 		"}\n"
 
 	helperAvg = "func _avg(v any) float64 {\n" +
 		"    var items []any\n" +
-		"    if g, ok := v.(*data.Group); ok { items = g.Items } else { items = _iter(v) }\n" +
-		"    if items == nil { panic(\"avg() expects list or group\") }\n" +
+		"    if g, ok := v.(*data.Group); ok { items = g.Items } else {\n" +
+		"        switch s := v.(type) {\n" +
+		"        case []any:\n" +
+		"            items = s\n" +
+		"        case []int:\n" +
+		"            items = make([]any, len(s))\n" +
+		"            for i, v := range s {\n" +
+		"                items[i] = v\n" +
+		"            }\n" +
+		"        case []float64:\n" +
+		"            items = make([]any, len(s))\n" +
+		"            for i, v := range s {\n" +
+		"                items[i] = v\n" +
+		"            }\n" +
+		"        case []string:\n" +
+		"            items = make([]any, len(s))\n" +
+		"            for i, v := range s {\n" +
+		"                items[i] = v\n" +
+		"            }\n" +
+		"        case []bool:\n" +
+		"            items = make([]any, len(s))\n" +
+		"            for i, v := range s {\n" +
+		"                items[i] = v\n" +
+		"            }\n" +
+		"        default:\n" +
+		"            panic(\"avg() expects list or group\")\n" +
+		"        }\n" +
+		"    }\n" +
 		"    if len(items) == 0 { return 0 }\n" +
 		"    var sum float64\n" +
 		"    for _, it := range items {\n" +
@@ -437,9 +338,7 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_index":       helperIndex,
 	"_indexString": helperIndexString,
-	"_iter":        helperIter,
 	"_count":       helperCount,
 	"_avg":         helperAvg,
 	"_genText":     helperGenText,
