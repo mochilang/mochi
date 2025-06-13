@@ -1,0 +1,54 @@
+fun longestValidParentheses(s: string): int {
+  let n = len(s)
+  var stack = []
+  var best = 0
+  var last = -1
+  for i in 0..n {
+    let c = s[i]
+    if c == "(" {
+      stack = stack + [i]
+    } else {
+      if len(stack) == 0 {
+        last = i
+      } else {
+        stack = stack[0:len(stack)-1]
+        if len(stack) == 0 {
+          let length = i - last
+          if length > best {
+            best = length
+          }
+        } else {
+          let length = i - stack[len(stack)-1]
+          if length > best {
+            best = length
+          }
+        }
+      }
+    }
+  }
+  return best
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect longestValidParentheses("(()") == 2
+}
+
+test "example 2" {
+  expect longestValidParentheses(")()())") == 4
+}
+
+test "example 3" {
+  expect longestValidParentheses("") == 0
+}
+
+// Additional edge cases
+
+test "all open" {
+  expect longestValidParentheses("(((") == 0
+}
+
+test "balanced" {
+  expect longestValidParentheses("()()") == 4
+}
