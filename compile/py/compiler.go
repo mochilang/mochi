@@ -621,9 +621,33 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	t := c.inferExprType(stmt.Source)
 	c.writeIndent()
-	c.use("_iter")
-	c.buf.WriteString(fmt.Sprintf("for %s in _iter(%s):\n", name, src))
+	iter := ""
+	switch tt := t.(type) {
+	case types.ListType:
+		iter = src
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, tt.Elem, true)
+		}
+	case types.StringType:
+		iter = src
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, types.StringType{}, true)
+		}
+	case types.MapType:
+		iter = src
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, tt.Key, true)
+		}
+	default:
+		iter = fmt.Sprintf("_iter(%s)", src)
+		c.use("_iter")
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, types.AnyType{}, true)
+		}
+	}
+	c.buf.WriteString(fmt.Sprintf("for %s in %s:\n", name, iter))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {

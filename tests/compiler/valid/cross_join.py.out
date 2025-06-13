@@ -23,7 +23,7 @@ def main():
 	orders = [Order(id=100, customerId=1, total=250), Order(id=101, customerId=2, total=125), Order(id=102, customerId=1, total=300)]
 	result = [ PairInfo(orderId=o.id, orderCustomerId=o.customerId, pairedCustomerName=c.name, orderTotal=o.total) for o in _iter(orders) for c in _iter(customers) ]
 	print("--- Cross Join: All order-customer pairs ---")
-	for entry in _iter(result):
+	for entry in result:
 		print("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName)
 
 def _iter(v):
