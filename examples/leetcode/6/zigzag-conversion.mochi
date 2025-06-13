@@ -1,0 +1,42 @@
+fun convert(s: string, numRows: int): string {
+  if numRows <= 1 || numRows >= len(s) {
+    return s
+  }
+
+  var rows = []
+  for i in 0..numRows {
+    rows = rows + [""]
+  }
+
+  var curr = 0
+  var step = 1
+  for ch in s {
+    rows[curr] = rows[curr] + ch
+    if curr == 0 {
+      step = 1
+    } else if curr == numRows - 1 {
+      step = -1
+    }
+    curr = curr + step
+  }
+
+  var result = ""
+  for row in rows {
+    result = result + row
+  }
+  return result
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect convert("PAYPALISHIRING", 3) == "PAHNAPLSIIGYIR"
+}
+
+test "example 2" {
+  expect convert("PAYPALISHIRING", 4) == "PINALSIGYAHRPI"
+}
+
+test "single row" {
+  expect convert("A", 1) == "A"
+}
