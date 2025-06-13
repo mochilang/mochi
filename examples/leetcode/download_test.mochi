@@ -1,0 +1,36 @@
+// Tests for remove_html_tags in download.mochi
+
+fun remove_html_tags(text: string): string {
+  var i = 0
+  var output = ""
+  while i < len(text) {
+    if text[i] == "<" {
+      var j = i + 1
+      while j < len(text) && text[j] != ">" {
+        j = j + 1
+      }
+      if j < len(text) {
+        i = j + 1
+      } else {
+        i = i + 1
+      }
+    } else {
+      output = output + text[i]
+      i = i + 1
+    }
+  }
+  return output
+}
+
+test "remove simple tags" {
+  expect remove_html_tags("<p>hello</p>") == "hello"
+}
+
+test "no tags" {
+  expect remove_html_tags("just text") == "just text"
+}
+
+test "nested tags" {
+  expect remove_html_tags("<div><span>hi</span></div>") == "hi"
+}
+
