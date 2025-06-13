@@ -1,0 +1,54 @@
+fun letterCombinations(digits: string): list<string> {
+  if len(digits) == 0 {
+    return []
+  }
+  let mapping = {
+    "2": ["a","b","c"],
+    "3": ["d","e","f"],
+    "4": ["g","h","i"],
+    "5": ["j","k","l"],
+    "6": ["m","n","o"],
+    "7": ["p","q","r","s"],
+    "8": ["t","u","v"],
+    "9": ["w","x","y","z"],
+  }
+  var result = [""]
+  for d in digits {
+    if !(d in mapping) {
+      continue
+    }
+    let letters = mapping[d]
+    let next = from p in result from ch in letters select p + ch
+    result = next
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect letterCombinations("23") == ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+}
+
+test "example 2" {
+  expect letterCombinations("") == []
+}
+
+test "example 3" {
+  expect letterCombinations("2") == ["a","b","c"]
+}
+
+// Additional tests
+
+test "single seven" {
+  expect letterCombinations("7") == ["p","q","r","s"]
+}
+
+test "mix" {
+  expect letterCombinations("79") == [
+    "pw","px","py","pz",
+    "qw","qx","qy","qz",
+    "rw","rx","ry","rz",
+    "sw","sx","sy","sz",
+  ]
+}
