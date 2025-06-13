@@ -1,4 +1,18 @@
 # 📦 CHANGELOG.md
+## [0.7.0] – 2025-06-13
+
+### Added
+
+* `eval` builtin for dynamic code execution
+* Stream-backed mailboxes for agents
+* Go, Python and TypeScript package listing helpers
+* Go FFI supports struct types and methods
+* Local file imports with `./` and `../`
+
+### Changed
+
+* Removed `sleep` builtin
+
 ## [0.6.3] – 2025-06-13
 
 ### Added
