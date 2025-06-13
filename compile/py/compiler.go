@@ -782,7 +782,19 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			leftType = types.IntType{}
 			continue
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, r)
+		pyOp := op.Op
+		switch op.Op {
+		case "&&":
+			pyOp = "and"
+		case "||":
+			pyOp = "or"
+		case "union", "union_all", "except", "intersect":
+			c.use("_" + pyOp)
+			expr = fmt.Sprintf("_%s(%s, %s)", pyOp, expr, r)
+			leftType = types.ListType{Elem: types.AnyType{}}
+			continue
+		}
+		expr = fmt.Sprintf("(%s %s %s)", expr, pyOp, r)
 		switch op.Op {
 		case "+", "-", "*", "/", "%":
 			// The resulting type roughly mirrors the left operand.
@@ -799,7 +811,11 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		return "", err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		val = fmt.Sprintf("(%s%s)", u.Ops[i], val)
+		op := u.Ops[i]
+		if op == "!" {
+			op = "not "
+		}
+		val = fmt.Sprintf("(%s%s)", op, val)
 	}
 	return val, nil
 }
@@ -975,6 +991,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "json":
 		c.imports["json"] = "json"
 		return fmt.Sprintf("print(json.dumps(%s))", argStr), nil
+	case "str":
+		return fmt.Sprintf("str(%s)", argStr), nil
+	case "count":
+		c.use("_count")
+		return fmt.Sprintf("_count(%s)", argStr), nil
+	case "avg":
+		c.use("_avg")
+		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "eval":
+		return fmt.Sprintf("eval(%s)", argStr), nil
 	default:
 		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 	}
