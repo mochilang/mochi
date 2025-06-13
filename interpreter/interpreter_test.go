@@ -13,7 +13,7 @@ import (
 	"mochi/types"
 	"os/exec"
 	"path/filepath"
-	"strings"
+	stdstrings "strings"
 	"testing"
 )
 
@@ -45,8 +45,10 @@ func TestInterpreter_ValidPrograms(t *testing.T) {
 		goffi.Register("math.Pow", math.Pow)
 		goffi.Register("math.Sin", math.Sin)
 		goffi.Register("math.Log", math.Log)
+		goffi.Register("strings.ToUpper", stdstrings.ToUpper)
+		goffi.Register("strings.HasPrefix", stdstrings.HasPrefix)
 
-		out := &strings.Builder{}
+		out := &stdstrings.Builder{}
 		modRoot, _ := mod.FindRoot(filepath.Dir(src))
 		interp := interpreter.New(prog, typeEnv, modRoot)
 		interp.Env().SetWriter(out)
@@ -76,8 +78,10 @@ func TestInterpreter_RuntimeErrors(t *testing.T) {
 		goffi.Register("math.Pow", math.Pow)
 		goffi.Register("math.Sin", math.Sin)
 		goffi.Register("math.Log", math.Log)
+		goffi.Register("strings.ToUpper", stdstrings.ToUpper)
+		goffi.Register("strings.HasPrefix", stdstrings.HasPrefix)
 
-		out := &strings.Builder{}
+		out := &stdstrings.Builder{}
 		modRoot, _ := mod.FindRoot(filepath.Dir(src))
 		interp := interpreter.New(prog, typeEnv, modRoot)
 		interp.Env().SetWriter(out)
