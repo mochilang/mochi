@@ -1,0 +1,70 @@
+fun findSubstring(s: string, words: list<string>): list<int> {
+  if len(words) == 0 {
+    return []
+  }
+  let wordLen = len(words[0])
+  let wordCount = len(words)
+  let totalLen = wordLen * wordCount
+  if len(s) < totalLen {
+    return []
+  }
+  var freq: map<string, int> = {}
+  for w in words {
+    if w in freq {
+      freq[w] = freq[w] + 1
+    } else {
+      freq[w] = 1
+    }
+  }
+  var result: list<int> = []
+  for offset in 0..wordLen {
+    var left = offset
+    var count = 0
+    var seen: map<string, int> = {}
+    var j = offset
+    while j + wordLen <= len(s) {
+      let word = s[j:j+wordLen]
+      j = j + wordLen
+      if word in freq {
+        if word in seen {
+          seen[word] = seen[word] + 1
+        } else {
+          seen[word] = 1
+        }
+        count = count + 1
+        while seen[word] > freq[word] {
+          let lw = s[left:left+wordLen]
+          seen[lw] = seen[lw] - 1
+          left = left + wordLen
+          count = count - 1
+        }
+        if count == wordCount {
+          result = result + [left]
+          let lw = s[left:left+wordLen]
+          seen[lw] = seen[lw] - 1
+          left = left + wordLen
+          count = count - 1
+        }
+      } else {
+        seen = {}
+        count = 0
+        left = j
+      }
+    }
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect findSubstring("barfoothefoobarman", ["foo", "bar"]) == [0,9]
+}
+
+test "example 2" {
+  expect findSubstring("wordgoodgoodgoodbestword", ["word","good","best","word"]) == []
+}
+
+test "example 3" {
+  expect findSubstring("barfoofoobarthefoobarman", ["bar","foo","the"]) == [6,9,12]
+}
