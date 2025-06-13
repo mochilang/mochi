@@ -1,0 +1,61 @@
+fun isValid(s: string): bool {
+  var stack = []
+  let n = len(s)
+  for i in 0..n {
+    let c = s[i]
+    if c == "(" {
+      stack = stack + [")"]
+    } else if c == "[" {
+      stack = stack + ["]"]
+    } else if c == "{" {
+      stack = stack + ["}"]
+    } else {
+      if len(stack) == 0 {
+        return false
+      }
+      let top = stack[len(stack) - 1]
+      if top != c {
+        return false
+      }
+      stack = stack[0:len(stack)-1]
+    }
+  }
+  return len(stack) == 0
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isValid("()") == true
+}
+
+test "example 2" {
+  expect isValid("()[]{}") == true
+}
+
+test "example 3" {
+  expect isValid("(]") == false
+}
+
+test "example 4" {
+  expect isValid("([)]") == false
+}
+
+test "example 5" {
+  expect isValid("{[]}") == true
+}
+
+// Additional edge cases
+
+test "empty string" {
+  expect isValid("") == true
+}
+
+
+test "single closing" {
+  expect isValid("]") == false
+}
+
+test "unmatched open" {
+  expect isValid("((") == false
+}
