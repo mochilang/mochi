@@ -1,0 +1,41 @@
+fun longestCommonPrefix(strs: list<string>): string {
+  if len(strs) == 0 {
+    return ""
+  }
+  var prefix = strs[0]
+  for i in 1..len(strs) {
+    var j = 0
+    let current = strs[i]
+    while j < len(prefix) && j < len(current) {
+      if prefix[j] != current[j] {
+        break
+      }
+      j = j + 1
+    }
+    prefix = prefix[0:j]
+    if prefix == "" {
+      break
+    }
+  }
+  return prefix
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect longestCommonPrefix(["flower","flow","flight"]) == "fl"
+}
+
+test "example 2" {
+  expect longestCommonPrefix(["dog","racecar","car"]) == ""
+}
+
+// Additional tests
+
+test "single string" {
+  expect longestCommonPrefix(["single"]) == "single"
+}
+
+test "no common prefix" {
+  expect longestCommonPrefix(["a","b","c"]) == ""
+}
