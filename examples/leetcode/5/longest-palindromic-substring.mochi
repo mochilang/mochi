@@ -1,0 +1,50 @@
+fun expand(s: string, left: int, right: int): int {
+  var l = left
+  var r = right
+  let n = len(s)
+  while l >= 0 && r < n && s[l] == s[r] {
+    l = l - 1
+    r = r + 1
+  }
+  return r - l - 1
+}
+
+export fun longestPalindrome(s: string): string {
+  if len(s) <= 1 {
+    return s
+  }
+  var start = 0
+  var end = 0
+  let n = len(s)
+  for i in 0..n {
+    let len1 = expand(s, i, i)
+    let len2 = expand(s, i, i+1)
+    var l = len1
+    if len2 > len1 {
+      l = len2
+    }
+    if l > end - start {
+      start = i - (l - 1) / 2
+      end = i + l / 2
+    }
+  }
+  return s[start:end+1]
+}
+
+test "example 1" {
+  let ans = longestPalindrome("babad")
+  expect ans == "bab" || ans == "aba"
+}
+
+test "example 2" {
+  expect longestPalindrome("cbbd") == "bb"
+}
+
+test "single char" {
+  expect longestPalindrome("a") == "a"
+}
+
+test "two chars" {
+  let ans = longestPalindrome("ac")
+  expect ans == "a" || ans == "c"
+}
