@@ -1,0 +1,43 @@
+fun strStr(haystack: string, needle: string): int {
+  let n = len(haystack)
+  let m = len(needle)
+  if m == 0 {
+    return 0
+  }
+  if m > n {
+    return -1
+  }
+  for i in 0..n - m + 1 {
+    var j = 0
+    while j < m {
+      if haystack[i + j] != needle[j] {
+        break
+      }
+      j = j + 1
+    }
+    if j == m {
+      return i
+    }
+  }
+  return -1
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect strStr("sadbutsad", "sad") == 0
+}
+
+test "example 2" {
+  expect strStr("leetcode", "leeto") == (-1)
+}
+
+// Additional edge cases
+
+test "empty needle" {
+  expect strStr("abc", "") == 0
+}
+
+test "needle at end" {
+  expect strStr("hello", "lo") == 3
+}
