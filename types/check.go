@@ -980,10 +980,23 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 		}
 		return BoolType{}, nil
 	case "in":
-		if !(unify(left, StringType{}, nil) && unify(right, StringType{}, nil)) {
-			return nil, errOperatorMismatch(pos, op, left, right)
+		switch rt := right.(type) {
+		case MapType:
+			if !unify(left, rt.Key, nil) {
+				return nil, errOperatorMismatch(pos, op, left, right)
+			}
+			return BoolType{}, nil
+		case ListType:
+			if !unify(left, rt.Elem, nil) {
+				return nil, errOperatorMismatch(pos, op, left, right)
+			}
+			return BoolType{}, nil
+		default:
+			if !(unify(left, StringType{}, nil) && unify(right, StringType{}, nil)) {
+				return nil, errOperatorMismatch(pos, op, left, right)
+			}
+			return BoolType{}, nil
 		}
-		return BoolType{}, nil
 	case "&&", "||":
 		if !(unify(left, BoolType{}, nil) && unify(right, BoolType{}, nil)) {
 			return nil, errOperatorMismatch(pos, op, left, right)
