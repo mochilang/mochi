@@ -4,27 +4,6 @@ import "sort"
 
 // Runtime helpers emitted by the Python compiler.
 
-var helperIndex = "def _index(v, k):\n" +
-	"    if isinstance(v, list):\n" +
-	"        if not isinstance(k, int):\n" +
-	"            raise Exception('invalid list index')\n" +
-	"        if k < 0:\n" +
-	"            k += len(v)\n" +
-	"        if k < 0 or k >= len(v):\n" +
-	"            raise Exception('index out of range')\n" +
-	"        return v[k]\n" +
-	"    if isinstance(v, str):\n" +
-	"        if not isinstance(k, int):\n" +
-	"            raise Exception('invalid string index')\n" +
-	"        if k < 0:\n" +
-	"            k += len(v)\n" +
-	"        if k < 0 or k >= len(v):\n" +
-	"            raise Exception('index out of range')\n" +
-	"        return v[k]\n" +
-	"    if isinstance(v, dict):\n" +
-	"        return v[k]\n" +
-	"    return v[k]\n"
-
 var helperGenText = "def _gen_text(prompt, model=None, params=None):\n" +
 	"    # TODO: send prompt to your LLM of choice\n" +
 	"    return prompt\n"
@@ -195,11 +174,6 @@ var helperSave = "def _save(rows, path, opts):\n" +
 var helperToAnyMap = "def _to_any_map(m):\n" +
 	"    return dict(m) if isinstance(m, dict) else dict(m)\n"
 
-var helperIter = "def _iter(v):\n" +
-	"    if isinstance(v, dict):\n" +
-	"        return list(v.keys())\n" +
-	"    return v\n"
-
 var helperUnionAll = "def _union_all(a, b):\n" +
 	"    return list(a) + list(b)\n"
 
@@ -337,7 +311,6 @@ var helperQuery = "def _query(src, joins, opts):\n" +
 	"    return res\n"
 
 var helperMap = map[string]string{
-	"_index":      helperIndex,
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
@@ -351,7 +324,6 @@ var helperMap = map[string]string{
 	"_load":       helperLoad,
 	"_save":       helperSave,
 	"_to_any_map": helperToAnyMap,
-	"_iter":       helperIter,
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,
