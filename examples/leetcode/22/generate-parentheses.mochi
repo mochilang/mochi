@@ -1,0 +1,35 @@
+fun generateParenthesis(n: int): list<string> {
+  var result: list<string> = []
+
+  fun backtrack(current: string, open: int, close: int) {
+    if len(current) == n * 2 {
+      result = result + [current]
+    } else {
+      if open < n {
+        backtrack(current + "(", open + 1, close)
+      }
+      if close < open {
+        backtrack(current + ")", open, close + 1)
+      }
+    }
+  }
+
+  backtrack("", 0, 0)
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect generateParenthesis(3) == ["((()))","(()())","(())()","()(())","()()()"]
+}
+
+test "example 2" {
+  expect generateParenthesis(1) == ["()"]
+}
+
+// Additional edge case
+
+test "two pairs" {
+  expect generateParenthesis(2) == ["(())","()()"]
+}
