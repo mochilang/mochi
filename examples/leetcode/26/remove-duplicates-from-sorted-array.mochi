@@ -1,0 +1,33 @@
+fun removeDuplicates(nums: list<int>): int {
+  if len(nums) == 0 {
+    return 0
+  }
+  var count = 1
+  var prev = nums[0]
+  var i = 1
+  while i < len(nums) {
+    let cur = nums[i]
+    if cur != prev {
+      count = count + 1
+      prev = cur
+    }
+    i = i + 1
+  }
+  return count
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect removeDuplicates([1,1,2]) == 2
+}
+
+test "example 2" {
+  expect removeDuplicates([0,0,1,1,1,2,2,3,3,4]) == 5
+}
+
+// Additional edge case
+
+test "empty" {
+  expect removeDuplicates([]) == 0
+}
