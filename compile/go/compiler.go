@@ -763,6 +763,12 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			c.env.SetVar(stmt.Name, types.StringType{}, true)
 		}
 		preBody = fmt.Sprintf("%s := string(r)\n", name)
+	case types.MapType:
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("for %s := range %s {\n", name, src))
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, tt.Key, true)
+		}
 	default:
 		c.use("_iter")
 		c.writeIndent()

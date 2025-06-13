@@ -11,7 +11,7 @@ def main():
 	products = [Product(name="Laptop", price=1500), Product(name="Smartphone", price=900), Product(name="Tablet", price=600), Product(name="Monitor", price=300), Product(name="Keyboard", price=100), Product(name="Mouse", price=50), Product(name="Headphones", price=200)]
 	expensive = [ p for p in ((sorted([ p for p in _iter(products) ], key=lambda p: (-p.price)))[1:])[:3] ]
 	print("--- Top products (excluding most expensive) ---")
-	for item in _iter(expensive):
+	for item in expensive:
 		print(item.name, "costs $", item.price)
 
 def _iter(v):

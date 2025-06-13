@@ -750,6 +750,10 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		elem = types.StringType{}
 		c.writeIndent()
 		c.buf.WriteString(fmt.Sprintf("for (const %s of %s) {\n", name, src))
+	case types.MapType:
+		elem = tt.Key
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("for (const %s of Object.keys(%s)) {\n", name, src))
 	default:
 		c.writeIndent()
 		c.use("_iter")

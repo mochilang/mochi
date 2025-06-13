@@ -10,7 +10,7 @@ def main():
 		age: int
 	people = [Person(name="Alice", age=30), Person(name="Bob", age=15), Person(name="Charlie", age=65)]
 	names = [ p.name for p in _iter(people) if (p.age >= 18) ]
-	for n in _iter(names):
+	for n in names:
 		print(n)
 
 def _iter(v):
