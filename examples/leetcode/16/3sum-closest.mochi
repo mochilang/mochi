@@ -1,0 +1,44 @@
+fun threeSumClosest(nums: list<int>, target: int): int {
+  // sort the numbers using a dataset query
+  let sorted = from n in nums
+               sort by n
+               select n
+  let n = len(sorted)
+  // initialize with the sum of the first three numbers
+  var best = sorted[0] + sorted[1] + sorted[2]
+  for i in 0..n {
+    var left = i + 1
+    var right = n - 1
+    while left < right {
+      let sum = sorted[i] + sorted[left] + sorted[right]
+      if sum == target {
+        return target
+      }
+      let diff = if sum > target { sum - target } else { target - sum }
+      let bestDiff = if best > target { best - target } else { target - best }
+      if diff < bestDiff {
+        best = sum
+      }
+      if sum < target {
+        left = left + 1
+      } else {
+        right = right - 1
+      }
+    }
+  }
+  return best
+}
+
+// Test cases based on LeetCode problem 16
+
+test "example 1" {
+  expect threeSumClosest([-1,2,1,-4], 1) == 2
+}
+
+test "example 2" {
+  expect threeSumClosest([0,0,0], 1) == 0
+}
+
+test "additional" {
+  expect threeSumClosest([1,1,1,0], -100) == 2
+}
