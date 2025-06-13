@@ -39,6 +39,28 @@ var helperGenStruct = "def _gen_struct(cls, prompt, model=None, params=None):\n"
 	"    data = json.loads(prompt)\n" +
 	"    return cls(**data)\n"
 
+var helperCount = "def _count(v):\n" +
+	"    if isinstance(v, list):\n" +
+	"        return len(v)\n" +
+	"    if hasattr(v, 'Items'):\n" +
+	"        return len(v.Items)\n" +
+	"    raise Exception('count() expects list or group')\n"
+
+var helperAvg = "def _avg(v):\n" +
+	"    if hasattr(v, 'Items'):\n" +
+	"        v = v.Items\n" +
+	"    if not isinstance(v, list):\n" +
+	"        raise Exception('avg() expects list or group')\n" +
+	"    if not v:\n" +
+	"        return 0\n" +
+	"    s = 0.0\n" +
+	"    for it in v:\n" +
+	"        if isinstance(it, (int, float)):\n" +
+	"            s += float(it)\n" +
+	"        else:\n" +
+	"            raise Exception('avg() expects numbers')\n" +
+	"    return s / len(v)\n"
+
 var helperFetch = "def _fetch(url, opts):\n" +
 	"    import urllib.request, urllib.parse, json\n" +
 	"    method = 'GET'\n" +
@@ -178,6 +200,30 @@ var helperIter = "def _iter(v):\n" +
 	"        return list(v.keys())\n" +
 	"    return v\n"
 
+var helperUnionAll = "def _union_all(a, b):\n" +
+	"    return list(a) + list(b)\n"
+
+var helperUnion = "def _union(a, b):\n" +
+	"    res = list(a)\n" +
+	"    for it in b:\n" +
+	"        if it not in res:\n" +
+	"            res.append(it)\n" +
+	"    return res\n"
+
+var helperExcept = "def _except(a, b):\n" +
+	"    res = []\n" +
+	"    for it in a:\n" +
+	"        if it not in b:\n" +
+	"            res.append(it)\n" +
+	"    return res\n"
+
+var helperIntersect = "def _intersect(a, b):\n" +
+	"    res = []\n" +
+	"    for it in a:\n" +
+	"        if it in b and it not in res:\n" +
+	"            res.append(it)\n" +
+	"    return res\n"
+
 var helperStream = "class Stream:\n" +
 	"    def __init__(self, name):\n" +
 	"        self.name = name\n" +
@@ -295,6 +341,12 @@ var helperMap = map[string]string{
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
+	"_count":      helperCount,
+	"_avg":        helperAvg,
+	"_union_all":  helperUnionAll,
+	"_union":      helperUnion,
+	"_except":     helperExcept,
+	"_intersect":  helperIntersect,
 	"_fetch":      helperFetch,
 	"_load":       helperLoad,
 	"_save":       helperSave,
