@@ -1045,6 +1045,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "print":
 		return fmt.Sprintf("console.log(%s)", argStr), nil
 	case "len":
+		if len(call.Args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType, types.StringType:
+				return fmt.Sprintf("%s.length", args[0]), nil
+			case types.MapType, types.StructType, types.UnionType:
+				return fmt.Sprintf("Object.keys(%s).length", args[0]), nil
+			}
+		}
 		c.use("_len")
 		return fmt.Sprintf("_len(%s)", argStr), nil
 	case "str":

@@ -2,17 +2,11 @@
 
 function main(): void {
 	let vec: Array<number> = _gen_embed("hi", null, null)
-	console.log(_len(vec))
+	console.log(vec.length)
 }
 function _gen_embed(text: string, model: string | null, params: any | null): number[] {
   // TODO: integrate with your preferred embedding model
   return Array.from(text).map(c => c.charCodeAt(0));
-}
-
-function _len(v: any): number {
-  if (Array.isArray(v) || typeof v === "string") return (v as any).length;
-  if (v && typeof v === "object") return Object.keys(v).length;
-  return 0;
 }
 
 main()
