@@ -1,0 +1,57 @@
+fun isMatch(s: string, p: string): bool {
+  let m = len(s)
+  let n = len(p)
+  var memo: map<int, bool> = {}
+
+  fun dfs(i: int, j: int): bool {
+    let key = i * (n + 1) + j
+    if key in memo {
+      return memo[key]
+    }
+    if j == n {
+      return i == m
+    }
+    var first = false
+    if i < m && (p[j] == s[i] || p[j] == ".") {
+      first = true
+    }
+    var ans = false
+    if j + 1 < n && p[j+1] == "*" {
+      if dfs(i, j+2) {
+        ans = true
+      } else if first && dfs(i+1, j) {
+        ans = true
+      }
+    } else {
+      if first && dfs(i+1, j+1) {
+        ans = true
+      }
+    }
+    memo[key] = ans
+    return ans
+  }
+
+  return dfs(0, 0)
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isMatch("aa", "a") == false
+}
+
+test "example 2" {
+  expect isMatch("aa", "a*") == true
+}
+
+test "example 3" {
+  expect isMatch("ab", ".*") == true
+}
+
+test "example 4" {
+  expect isMatch("aab", "c*a*b") == true
+}
+
+test "example 5" {
+  expect isMatch("mississippi", "mis*is*p*.") == false
+}
