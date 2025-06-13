@@ -455,7 +455,34 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		return i.env.UpdateValue(s.Assign.Name, val)
+		if len(s.Assign.Index) == 0 {
+			return i.env.UpdateValue(s.Assign.Name, val)
+		}
+		mutable, err := i.env.IsMutable(s.Assign.Name)
+		if err != nil {
+			return err
+		}
+		if !mutable {
+			return fmt.Errorf("cannot assign to immutable variable: %s", s.Assign.Name)
+		}
+		target, err := i.env.GetValue(s.Assign.Name)
+		if err != nil {
+			return err
+		}
+		m, ok := target.(map[string]any)
+		if !ok {
+			return fmt.Errorf("%s is not a map", s.Assign.Name)
+		}
+		idxVal, err := i.evalExpr(s.Assign.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		key, ok := idxVal.(string)
+		if !ok {
+			return fmt.Errorf("map key must be string")
+		}
+		m[key] = val
+		return nil
 
 	case s.Expr != nil:
 		_, err := i.evalExpr(s.Expr.Expr)

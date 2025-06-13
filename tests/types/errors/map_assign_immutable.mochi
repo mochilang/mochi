@@ -1,0 +1,2 @@
+let scores: map<string, int> = {"alice": 1}
+scores["alice"] = 2

@@ -1,0 +1,2 @@
+var scores = {"alice": 1}
+scores["alice"] = 2

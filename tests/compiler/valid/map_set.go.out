@@ -1,0 +1,11 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var scores map[string]int = map[string]int{"a": 1}
+	scores["b"] = 2
+	fmt.Println(scores["b"])
+}

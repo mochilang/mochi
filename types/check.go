@@ -584,6 +584,22 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		if !mutable {
 			return errAssignImmutableVar(s.Assign.Pos, s.Assign.Name)
 		}
+		if len(s.Assign.Index) > 0 {
+			for _, idx := range s.Assign.Index {
+				mt, ok := lhsType.(MapType)
+				if !ok {
+					return errNotIndexable(s.Assign.Pos, lhsType)
+				}
+				keyType, err := checkExpr(idx.Start, env)
+				if err != nil {
+					return err
+				}
+				if !unify(keyType, mt.Key, nil) {
+					return errIndexTypeMismatch(idx.Pos, mt.Key, keyType)
+				}
+				lhsType = mt.Value
+			}
+		}
 		if !unify(lhsType, rhsType, nil) {
 			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
 		}

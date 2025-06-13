@@ -41,12 +41,23 @@ func FromStatement(s *parser.Statement) *Node {
 		return n
 
 	case s.Assign != nil:
+		if len(s.Assign.Index) == 0 {
+			return &Node{
+				Kind:  "assign",
+				Value: s.Assign.Name,
+				Children: []*Node{
+					FromExpr(s.Assign.Value),
+				},
+			}
+		}
+		// Build target expression with indexes
+		target := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: s.Assign.Name}}}
+		for _, idx := range s.Assign.Index {
+			target.Ops = append(target.Ops, &parser.PostfixOp{Index: idx})
+		}
 		return &Node{
-			Kind:  "assign",
-			Value: s.Assign.Name,
-			Children: []*Node{
-				FromExpr(s.Assign.Value),
-			},
+			Kind:     "assign",
+			Children: []*Node{FromPostfixExpr(target), FromExpr(s.Assign.Value)},
 		}
 
 	case s.Fun != nil:

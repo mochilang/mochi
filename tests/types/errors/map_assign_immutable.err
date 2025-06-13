@@ -1,0 +1,8 @@
+1. error[T024]: cannot assign to `scores` (immutable)
+  --> tests/types/errors/map_assign_immutable.mochi:2:1
+
+  2 | scores["alice"] = 2
+    | ^
+
+help:
+  Use `var` to declare mutable variables.

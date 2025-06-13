@@ -308,6 +308,7 @@ Assignments update an existing binding or indexed element:
 x = x + 1
 scores["alice"] = 10
 ```
+Indexed assignments require the map to be declared with `var`.
 
 ### Function Declaration
 
