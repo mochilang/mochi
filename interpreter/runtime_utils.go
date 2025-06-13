@@ -3,6 +3,7 @@ package interpreter
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
@@ -438,19 +439,54 @@ func castValue(pos lexer.Position, t types.Type, v any) (any, error) {
 		}
 		return out, nil
 	case types.MapType:
-		m, ok := v.(map[string]any)
-		if !ok {
+		switch m := v.(type) {
+		case map[string]any:
+			out := map[string]any{}
+			for k, val := range m {
+				cv, err := castValue(pos, tt.Value, val)
+				if err != nil {
+					return nil, err
+				}
+				out[k] = cv
+			}
+			if _, ok := tt.Key.(types.StringType); ok {
+				return out, nil
+			}
+			if _, ok := tt.Key.(types.IntType); ok {
+				intMap := make(map[int]any, len(out))
+				for k, v := range out {
+					iv, err := strconv.Atoi(k)
+					if err != nil {
+						return nil, errCastType(pos, v, t)
+					}
+					intMap[iv] = v
+				}
+				return intMap, nil
+			}
+			return out, nil
+		case map[int]any:
+			out := make(map[int]any, len(m))
+			for k, val := range m {
+				cv, err := castValue(pos, tt.Value, val)
+				if err != nil {
+					return nil, err
+				}
+				out[k] = cv
+			}
+			return out, nil
+		case map[any]any:
+			out := make(map[any]any, len(m))
+			for k, val := range m {
+				cv, err := castValue(pos, tt.Value, val)
+				if err != nil {
+					return nil, err
+				}
+				out[k] = cv
+			}
+			return out, nil
+		default:
 			return nil, errCastType(pos, v, t)
 		}
-		out := map[string]any{}
-		for k, val := range m {
-			cv, err := castValue(pos, tt.Value, val)
-			if err != nil {
-				return nil, err
-			}
-			out[k] = cv
-		}
-		return out, nil
 	case types.StructType:
 		m, ok := v.(map[string]any)
 		if !ok {
@@ -529,6 +565,18 @@ func toAnyMap(m any) map[string]any {
 		out := make(map[string]any, len(v))
 		for k, vv := range v {
 			out[k] = vv
+		}
+		return out
+	case map[int]any:
+		out := make(map[string]any, len(v))
+		for k, vv := range v {
+			out[strconv.Itoa(k)] = vv
+		}
+		return out
+	case map[any]any:
+		out := make(map[string]any, len(v))
+		for kk, vv := range v {
+			out[fmt.Sprint(kk)] = vv
 		}
 		return out
 	default:

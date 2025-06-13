@@ -242,11 +242,52 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		keyStr, ok := key.(string)
+		k, ok := key.(string)
 		if !ok {
 			return nil, errInvalidMapKey(idx.Pos, key)
 		}
-		return src[keyStr], nil
+		return src[k], nil
+	case map[int]any:
+		if idx.Colon != nil {
+			return nil, errInvalidIndexTarget(idx.Pos, "map")
+		}
+		if idx.Start == nil {
+			return nil, errInvalidIndex(idx.Pos, nil)
+		}
+		key, err := i.evalExpr(idx.Start)
+		if err != nil {
+			return nil, err
+		}
+		var k int
+		switch v := key.(type) {
+		case int:
+			k = v
+		case int64:
+			k = int(v)
+		default:
+			return nil, errInvalidMapKey(idx.Pos, key)
+		}
+		return src[k], nil
+	case map[any]any:
+		if idx.Colon != nil {
+			return nil, errInvalidIndexTarget(idx.Pos, "map")
+		}
+		if idx.Start == nil {
+			return nil, errInvalidIndex(idx.Pos, nil)
+		}
+		key, err := i.evalExpr(idx.Start)
+		if err != nil {
+			return nil, err
+		}
+		switch key.(type) {
+		case string, int, int64:
+			if iv, ok := key.(int64); ok {
+				key = int(iv)
+			}
+			return src[key], nil
+		default:
+			return nil, errInvalidMapKey(idx.Pos, key)
+		}
 
 	default:
 		return nil, errInvalidIndexTarget(idx.Pos, fmt.Sprintf("%T", src))

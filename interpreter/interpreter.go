@@ -1130,29 +1130,109 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		}
 		return elems, nil
 	case p.Map != nil:
-		obj := map[string]any{}
+		var (
+			kind   string
+			objStr map[string]any
+			objInt map[int]any
+			objAny map[any]any
+		)
 		for _, item := range p.Map.Items {
-			var strKey string
+			var key any
 			if k, ok := simpleStringKey(item.Key); ok {
-				strKey = k
+				key = k
 			} else {
-				keyVal, err := i.evalExpr(item.Key)
+				kv, err := i.evalExpr(item.Key)
 				if err != nil {
 					return nil, err
 				}
-				s, ok := keyVal.(string)
-				if !ok {
-					return nil, errInvalidMapKey(item.Pos, keyVal)
+				switch v := kv.(type) {
+				case string:
+					key = v
+				case int:
+					key = v
+				case int64:
+					key = int(v)
+				default:
+					return nil, errInvalidMapKey(item.Pos, kv)
 				}
-				strKey = s
 			}
+
 			val, err := i.evalExpr(item.Value)
 			if err != nil {
 				return nil, err
 			}
-			obj[strKey] = val
+
+			switch k := key.(type) {
+			case string:
+				switch kind {
+				case "":
+					kind = "string"
+					objStr = map[string]any{}
+				case "int":
+					if objAny == nil {
+						objAny = make(map[any]any, len(objInt))
+						for kk, vv := range objInt {
+							objAny[kk] = vv
+						}
+					}
+					kind = "any"
+				}
+				if kind == "string" {
+					objStr[k] = val
+				} else {
+					objAny[k] = val
+				}
+			case int:
+				switch kind {
+				case "":
+					kind = "int"
+					objInt = map[int]any{}
+				case "string":
+					if objAny == nil {
+						objAny = make(map[any]any, len(objStr))
+						for kk, vv := range objStr {
+							objAny[kk] = vv
+						}
+					}
+					kind = "any"
+				}
+				if kind == "int" {
+					objInt[k] = val
+				} else {
+					objAny[k] = val
+				}
+			default:
+				if objAny == nil {
+					switch kind {
+					case "string":
+						objAny = make(map[any]any, len(objStr))
+						for kk, vv := range objStr {
+							objAny[kk] = vv
+						}
+					case "int":
+						objAny = make(map[any]any, len(objInt))
+						for kk, vv := range objInt {
+							objAny[kk] = vv
+						}
+					default:
+						objAny = map[any]any{}
+					}
+					kind = "any"
+				}
+				objAny[k] = val
+			}
 		}
-		return obj, nil
+		switch kind {
+		case "string":
+			return objStr, nil
+		case "int":
+			return objInt, nil
+		default:
+			if objAny == nil {
+				objAny = map[any]any{}
+			}
+			return objAny, nil
+		}
 
 	case p.Query != nil:
 		eng := data.EngineByName(i.dataPlan)
