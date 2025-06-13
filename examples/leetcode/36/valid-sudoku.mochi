@@ -1,0 +1,89 @@
+fun isValidSudoku(board: list<list<string>>): bool {
+  // Check rows
+  for r in 0..9 {
+    var seen: map<string, bool> = {}
+    for c in 0..9 {
+      let val = board[r][c]
+      if val != "." {
+        if val in seen {
+          return false
+        }
+        seen[val] = true
+      }
+    }
+  }
+
+  // Check columns
+  for c in 0..9 {
+    var seen: map<string, bool> = {}
+    for r in 0..9 {
+      let val = board[r][c]
+      if val != "." {
+        if val in seen {
+          return false
+        }
+        seen[val] = true
+      }
+    }
+  }
+
+  // Check 3x3 sub-boxes
+  for br in 0..3 {
+    for bc in 0..3 {
+      var seen: map<string, bool> = {}
+      for r in 0..3 {
+        for c in 0..3 {
+          let val = board[br*3 + r][bc*3 + c]
+          if val != "." {
+            if val in seen {
+              return false
+            }
+            seen[val] = true
+          }
+        }
+      }
+    }
+  }
+
+  return true
+}
+
+// LeetCode examples
+
+let example1: list<list<string>> = [
+  ["5","3",".",".","7",".",".",".","."],
+  ["6",".",".","1","9","5",".",".","."],
+  [".","9","8",".",".",".",".","6","."],
+  ["8",".",".",".","6",".",".",".","3"],
+  ["4",".",".","8",".","3",".",".","1"],
+  ["7",".",".",".","2",".",".",".","6"],
+  [".","6",".",".",".",".","2","8","."],
+  [".",".",".","4","1","9",".",".","5"],
+  [".",".",".",".","8",".",".","7","9"],
+]
+
+let example2: list<list<string>> = [
+  ["8","3",".",".","7",".",".",".","."],
+  ["6",".",".","1","9","5",".",".","."],
+  [".","9","8",".",".",".",".","6","."],
+  ["8",".",".",".","6",".",".",".","3"],
+  ["4",".",".","8",".","3",".",".","1"],
+  ["7",".",".",".","2",".",".",".","6"],
+  [".","6",".",".",".",".","2","8","."],
+  [".",".",".","4","1","9",".",".","5"],
+  [".",".",".",".","8",".",".","7","9"],
+]
+
+test "example 1" {
+  expect isValidSudoku(example1) == true
+}
+
+test "example 2" {
+  expect isValidSudoku(example2) == false
+}
+
+// Common Mochi errors:
+// 1. Using = instead of == in comparisons.
+// 2. Forgetting to initialize maps before assignment.
+// 3. Mixing tabs and spaces leading to indentation issues.
+// 4. Using out-of-bounds indices when accessing lists.
