@@ -67,7 +67,7 @@ type RunCmd struct {
 }
 
 type TestCmd struct {
-        File  string `arg:"positional,required" help:"Path to .mochi source file"`
+        Path  string `arg:"positional,required" help:"File or directory to test"`
         Debug bool   `arg:"--debug" help:"Enable debug output"`
 }
 
@@ -151,10 +151,10 @@ func runFile(cmd *RunCmd) error {
 }
 
 func runTests(cmd *TestCmd) error {
-	prog, err := parseOrPrintError(cmd.File)
-	if err != nil {
-		return err
-	}
+        prog, err := parseOrPrintError(cmd.Path)
+        if err != nil {
+                return err
+        }
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		fmt.Fprintln(os.Stderr, cError("type error:"))

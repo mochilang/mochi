@@ -56,6 +56,7 @@ Then use it anywhere:
 ```bash
 mochi run examples/hello.mochi
 mochi test examples/math.mochi
+mochi test examples/leetcode/...
 mochi build examples/hello.mochi -o hello
 mochi cheatsheet
 ```
@@ -191,6 +192,7 @@ Examples:
 ```bash
 mochi run examples/hello.mochi
 mochi test examples/math.mochi
+mochi test examples/leetcode/...
 mochi build examples/hello.mochi -o hello
 mochi build --target py examples/hello.mochi -o hello.py
 mochi init mymodule

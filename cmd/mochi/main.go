@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"io"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"time"
 
@@ -71,7 +73,7 @@ type RunCmd struct {
 }
 
 type TestCmd struct {
-	File    string `arg:"positional,required" help:"Path to .mochi source file"`
+	Path    string `arg:"positional,required" help:"File or directory to test"`
 	Debug   bool   `arg:"--debug" help:"Enable debug output"`
 	Memoize bool   `arg:"--memo" help:"Enable memoization of pure functions"`
 	Fold    bool   `arg:"--aot" help:"Fold pure calls before execution"`
@@ -233,14 +235,65 @@ func runFile(cmd *RunCmd) error {
 }
 
 func runTests(cmd *TestCmd) error {
-	prog, err := parseOrPrintError(cmd.File)
+	path := cmd.Path
+	if strings.HasSuffix(path, "/...") {
+		return runTestsInDir(strings.TrimSuffix(path, "/..."), true, cmd)
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	if info.IsDir() {
+		return runTestsInDir(path, true, cmd)
+	}
+	return testFile(path, cmd)
+}
+
+func runTestsInDir(dir string, recursive bool, cmd *TestCmd) error {
+	var files []string
+	if recursive {
+		filepath.WalkDir(dir, func(p string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if !d.IsDir() && strings.HasSuffix(d.Name(), ".mochi") {
+				files = append(files, p)
+			}
+			return nil
+		})
+	} else {
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			return err
+		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+				files = append(files, filepath.Join(dir, e.Name()))
+			}
+		}
+	}
+	sort.Strings(files)
+	var failures int
+	for _, f := range files {
+		if err := testFile(f, cmd); err != nil {
+			failures++
+		}
+	}
+	if failures > 0 {
+		return fmt.Errorf("%d file(s) failed", failures)
+	}
+	return nil
+}
+
+func testFile(file string, cmd *TestCmd) error {
+	prog, err := parseOrPrintError(file)
 	if err != nil {
 		return err
 	}
 	env := types.NewEnv(nil)
-	modRoot, errRoot := mod.FindRoot(filepath.Dir(cmd.File))
+	modRoot, errRoot := mod.FindRoot(filepath.Dir(file))
 	if errRoot != nil {
-		modRoot = filepath.Dir(cmd.File)
+		modRoot = filepath.Dir(file)
 	}
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		printTypeErrors(errs)
