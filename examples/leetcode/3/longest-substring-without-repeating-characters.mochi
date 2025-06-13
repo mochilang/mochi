@@ -1,0 +1,42 @@
+fun lengthOfLongestSubstring(s: string): int {
+  let n = len(s)
+  var start = 0
+  var best = 0
+  var i = 0
+  while i < n {
+    var j = start
+    while j < i {
+      if s[j] == s[i] {
+        start = j + 1
+        break
+      }
+      j = j + 1
+    }
+    let length = i - start + 1
+    if length > best {
+      best = length
+    }
+    i = i + 1
+  }
+  return best
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect lengthOfLongestSubstring("abcabcbb") == 3
+}
+
+test "example 2" {
+  expect lengthOfLongestSubstring("bbbbb") == 1
+}
+
+test "example 3" {
+  expect lengthOfLongestSubstring("pwwkew") == 3
+}
+
+// Additional edge cases
+
+test "empty string" {
+  expect lengthOfLongestSubstring("") == 0
+}
