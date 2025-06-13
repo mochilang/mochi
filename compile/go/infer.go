@@ -164,6 +164,12 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		switch p.Call.Func {
 		case "len":
 			return types.IntType{}
+		case "str":
+			return types.StringType{}
+		case "count":
+			return types.IntType{}
+		case "avg":
+			return types.FloatType{}
 		case "now":
 			return types.Int64Type{}
 		default:
