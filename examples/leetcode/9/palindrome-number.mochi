@@ -1,0 +1,34 @@
+fun isPalindrome(x: int): bool {
+  if x < 0 {
+    return false
+  }
+  let s = str(x)
+  let n = len(s)
+  for i in 0..n/2 {
+    if s[i] != s[n-1-i] {
+      return false
+    }
+  }
+  return true
+}
+
+// Example tests from the LeetCode problem statement
+
+test "example 1" {
+  expect isPalindrome(121) == true
+}
+
+test "example 2" {
+  expect isPalindrome(-121) == false
+}
+
+test "example 3" {
+  expect isPalindrome(10) == false
+}
+
+// Additional tests
+
+test "zero" {
+  expect isPalindrome(0) == true
+}
+
