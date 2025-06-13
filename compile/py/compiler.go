@@ -316,12 +316,19 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
-	name := sanitizeName(s.Name)
+	lhs := sanitizeName(s.Name)
+	for _, idx := range s.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+	}
 	val, err := c.compileExpr(s.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s", name, val))
+	c.writeln(fmt.Sprintf("%s = %s", lhs, val))
 	return nil
 }
 

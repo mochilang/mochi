@@ -175,8 +175,9 @@ type VarStmt struct {
 
 type AssignStmt struct {
 	Pos   lexer.Position
-	Name  string `parser:"@Ident '='"`
-	Value *Expr  `parser:"@@"`
+	Name  string     `parser:"@Ident"`
+	Index []*IndexOp `parser:"@@*"`
+	Value *Expr      `parser:"'=' @@"`
 }
 
 type FunStmt struct {

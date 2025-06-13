@@ -1,0 +1,11 @@
+(program
+  (var scores
+    (map
+      (entry (string alice) (int 1))
+    )
+  )
+  (assign
+    (index (selector scores) (string alice))
+    (int 2)
+  )
+)
