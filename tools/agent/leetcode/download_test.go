@@ -1,3 +1,5 @@
+//go:build leetcode
+
 package leetcode
 
 import (

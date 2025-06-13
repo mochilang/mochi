@@ -586,18 +586,30 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		}
 		if len(s.Assign.Index) > 0 {
 			for _, idx := range s.Assign.Index {
-				mt, ok := lhsType.(MapType)
-				if !ok {
+				switch lt := lhsType.(type) {
+				case MapType:
+					keyType, err := checkExpr(idx.Start, env)
+					if err != nil {
+						return err
+					}
+					if !unify(keyType, lt.Key, nil) {
+						return errIndexTypeMismatch(idx.Pos, lt.Key, keyType)
+					}
+					lhsType = lt.Value
+				case ListType:
+					idxType, err := checkExpr(idx.Start, env)
+					if err != nil {
+						return err
+					}
+					if _, ok := idxType.(IntType); !ok {
+						if _, ok := idxType.(Int64Type); !ok {
+							return errIndexNotInteger(idx.Pos)
+						}
+					}
+					lhsType = lt.Elem
+				default:
 					return errNotIndexable(s.Assign.Pos, lhsType)
 				}
-				keyType, err := checkExpr(idx.Start, env)
-				if err != nil {
-					return err
-				}
-				if !unify(keyType, mt.Key, nil) {
-					return errIndexTypeMismatch(idx.Pos, mt.Key, keyType)
-				}
-				lhsType = mt.Value
 			}
 		}
 		if !unify(lhsType, rhsType, nil) {

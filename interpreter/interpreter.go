@@ -469,19 +469,42 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		m, ok := target.(map[string]any)
-		if !ok {
-			return fmt.Errorf("%s is not a map", s.Assign.Name)
+		container := target
+		for idx, op := range s.Assign.Index {
+			idxVal, err := i.evalExpr(op.Start)
+			if err != nil {
+				return err
+			}
+			last := idx == len(s.Assign.Index)-1
+
+			switch cur := container.(type) {
+			case map[string]any:
+				key, ok := idxVal.(string)
+				if !ok {
+					return fmt.Errorf("map key must be string")
+				}
+				if last {
+					cur[key] = val
+					return nil
+				}
+				container = cur[key]
+			case []any:
+				n, ok := idxVal.(int)
+				if !ok {
+					return fmt.Errorf("list index must be int")
+				}
+				if n < 0 || n >= len(cur) {
+					return fmt.Errorf("index out of range")
+				}
+				if last {
+					cur[n] = val
+					return nil
+				}
+				container = cur[n]
+			default:
+				return fmt.Errorf("%s is not indexable", s.Assign.Name)
+			}
 		}
-		idxVal, err := i.evalExpr(s.Assign.Index[0].Start)
-		if err != nil {
-			return err
-		}
-		key, ok := idxVal.(string)
-		if !ok {
-			return fmt.Errorf("map key must be string")
-		}
-		m[key] = val
 		return nil
 
 	case s.Expr != nil:
