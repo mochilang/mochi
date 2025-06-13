@@ -11,8 +11,34 @@ func main() {
 
 func _avg(v any) float64 {
     var items []any
-    if g, ok := v.(*data.Group); ok { items = g.Items } else { items = _iter(v) }
-    if items == nil { panic("avg() expects list or group") }
+    if g, ok := v.(*data.Group); ok { items = g.Items } else {
+        switch s := v.(type) {
+        case []any:
+            items = s
+        case []int:
+            items = make([]any, len(s))
+            for i, v := range s {
+                items[i] = v
+            }
+        case []float64:
+            items = make([]any, len(s))
+            for i, v := range s {
+                items[i] = v
+            }
+        case []string:
+            items = make([]any, len(s))
+            for i, v := range s {
+                items[i] = v
+            }
+        case []bool:
+            items = make([]any, len(s))
+            for i, v := range s {
+                items[i] = v
+            }
+        default:
+            panic("avg() expects list or group")
+        }
+    }
     if len(items) == 0 { return 0 }
     var sum float64
     for _, it := range items {
@@ -23,50 +49,4 @@ func _avg(v any) float64 {
         default: panic("avg() expects numbers") }
     }
     return sum / float64(len(items))
-}
-
-func _iter(v any) []any {
-    switch s := v.(type) {
-    case []any:
-        return s
-    case []int:
-        out := make([]any, len(s))
-        for i, v := range s {
-            out[i] = v
-        }
-        return out
-    case []float64:
-        out := make([]any, len(s))
-        for i, v := range s {
-            out[i] = v
-        }
-        return out
-    case []string:
-        out := make([]any, len(s))
-        for i, v := range s {
-            out[i] = v
-        }
-        return out
-    case []bool:
-        out := make([]any, len(s))
-        for i, v := range s {
-            out[i] = v
-        }
-        return out
-    case map[string]any:
-        out := make([]any, 0, len(s))
-        for k := range s {
-            out = append(out, k)
-        }
-        return out
-    case string:
-        runes := []rune(s)
-        out := make([]any, len(runes))
-        for i, r := range runes {
-            out[i] = string(r)
-        }
-        return out
-    default:
-        return nil
-    }
 }
