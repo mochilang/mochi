@@ -1,0 +1,33 @@
+fun intToRoman(num: int): string {
+  let values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+  let symbols = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+  var result = ""
+  var i = 0
+  while num > 0 {
+    while num >= values[i] {
+      result = result + symbols[i]
+      num = num - values[i]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+test "example 1" {
+  expect intToRoman(3) == "III"
+}
+
+test "example 2" {
+  expect intToRoman(58) == "LVIII"
+}
+
+test "example 3" {
+  expect intToRoman(1994) == "MCMXCIV"
+}
+
+// Additional edge cases
+
+test "small numbers" {
+  expect intToRoman(4) == "IV"
+  expect intToRoman(9) == "IX"
+}
