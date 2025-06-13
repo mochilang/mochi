@@ -1,0 +1,36 @@
+fun reverse(x: int): int {
+  var sign = 1
+  var n = x
+  if n < 0 {
+    sign = -1
+    n = -n
+  }
+  var rev = 0
+  while n != 0 {
+    let digit = n % 10
+    rev = rev * 10 + digit
+    n = n / 10
+  }
+  rev = rev * sign
+  // avoid constant overflow by computing MIN as -2147483647 - 1
+  if rev < (-2147483647 - 1) || rev > 2147483647 {
+    return 0
+  }
+  return rev
+}
+
+test "example 1" {
+  expect reverse(123) == 321
+}
+
+test "example 2" {
+  expect reverse(-123) == (-321)
+}
+
+test "example 3" {
+  expect reverse(120) == 21
+}
+
+test "overflow" {
+  expect reverse(1534236469) == 0
+}
