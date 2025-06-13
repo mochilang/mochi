@@ -294,11 +294,23 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeName(s.Name)
 	value := "nil"
 	if s.Value != nil {
-		v, err := c.compileExpr(s.Value)
-		if err != nil {
-			return err
+		// Special case: empty map literal should respect declared type
+		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
+			if c.env != nil {
+				if t, err := c.env.GetVar(s.Name); err == nil {
+					if mt, ok := t.(types.MapType); ok {
+						value = fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value))
+					}
+				}
+			}
 		}
-		value = v
+		if value == "nil" {
+			v, err := c.compileExpr(s.Value)
+			if err != nil {
+				return err
+			}
+			value = v
+		}
 	}
 	typStr := "any"
 	if c.env != nil {

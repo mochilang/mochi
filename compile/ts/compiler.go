@@ -368,11 +368,22 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeName(s.Name)
 	value := "undefined"
 	if s.Value != nil {
-		v, err := c.compileExpr(s.Value)
-		if err != nil {
-			return err
+		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
+			if c.env != nil {
+				if t, err := c.env.GetVar(s.Name); err == nil {
+					if mt, ok := t.(types.MapType); ok {
+						value = fmt.Sprintf("{} as Record<%s, %s>", tsType(mt.Key), tsType(mt.Value))
+					}
+				}
+			}
 		}
-		value = v
+		if value == "undefined" {
+			v, err := c.compileExpr(s.Value)
+			if err != nil {
+				return err
+			}
+			value = v
+		}
 	}
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {

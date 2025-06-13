@@ -294,11 +294,22 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeName(s.Name)
 	value := "None"
 	if s.Value != nil {
-		v, err := c.compileExpr(s.Value)
-		if err != nil {
-			return err
+		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
+			if c.env != nil {
+				if t, err := c.env.GetVar(s.Name); err == nil {
+					if mt, ok := t.(types.MapType); ok {
+						value = fmt.Sprintf("{} as dict[%s, %s]", pyType(mt.Key), pyType(mt.Value))
+					}
+				}
+			}
 		}
-		value = v
+		if value == "None" {
+			v, err := c.compileExpr(s.Value)
+			if err != nil {
+				return err
+			}
+			value = v
+		}
 	}
 	if c.env != nil {
 		t, err := c.env.GetVar(s.Name)
