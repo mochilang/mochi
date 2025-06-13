@@ -1,0 +1,324 @@
+import go "strings" as strings
+/// A Builder is used to efficiently build a string using [Builder.Write] methods.
+/// It minimizes memory copying. The zero value is ready to use.
+/// Do not copy a non-zero Builder.
+extern type Builder {
+  addr: *Builder,
+  buf: []byte
+}
+/// Cap returns the capacity of the builder's underlying byte slice. It is the
+/// total space allocated for the string being built and includes any bytes
+/// already written.
+extern fun Builder.Cap(): int
+/// Grow grows b's capacity, if necessary, to guarantee space for
+/// another n bytes. After Grow(n), at least n bytes can be written to b
+/// without another allocation. If n is negative, Grow panics.
+extern fun Builder.Grow(n: int)
+/// Len returns the number of accumulated bytes; b.Len() == len(b.String()).
+extern fun Builder.Len(): int
+/// Reset resets the [Builder] to be empty.
+extern fun Builder.Reset()
+/// String returns the accumulated string.
+extern fun Builder.String(): string
+/// Write appends the contents of p to b's buffer.
+/// Write always returns len(p), nil.
+extern fun Builder.Write(p: []byte): (int, error)
+/// WriteByte appends the byte c to b's buffer.
+/// The returned error is always nil.
+extern fun Builder.WriteByte(c: byte): error
+/// WriteRune appends the UTF-8 encoding of Unicode code point r to b's buffer.
+/// It returns the length of r and a nil error.
+extern fun Builder.WriteRune(r: rune): (int, error)
+/// WriteString appends the contents of s to b's buffer.
+/// It returns the length of s and a nil error.
+extern fun Builder.WriteString(s: string): (int, error)
+/// A Reader implements the [io.Reader], [io.ReaderAt], [io.ByteReader], [io.ByteScanner],
+/// [io.RuneReader], [io.RuneScanner], [io.Seeker], and [io.WriterTo] interfaces by reading
+/// from a string.
+/// The zero value for Reader operates like a Reader of an empty string.
+extern type Reader {
+  s: string,
+  i: int64,
+  prevRune: int
+}
+/// Len returns the number of bytes of the unread portion of the
+/// string.
+extern fun Reader.Len(): int
+/// Read implements the [io.Reader] interface.
+extern fun Reader.Read(b: []byte): (int, error)
+/// ReadAt implements the [io.ReaderAt] interface.
+extern fun Reader.ReadAt(b: []byte, off: int64): (int, error)
+/// ReadByte implements the [io.ByteReader] interface.
+extern fun Reader.ReadByte(): (byte, error)
+/// ReadRune implements the [io.RuneReader] interface.
+extern fun Reader.ReadRune(): (rune, int, error)
+/// Reset resets the [Reader] to be reading from s.
+extern fun Reader.Reset(s: string)
+/// Seek implements the [io.Seeker] interface.
+extern fun Reader.Seek(offset: int64, whence: int): (int64, error)
+/// Size returns the original length of the underlying string.
+/// Size is the number of bytes available for reading via [Reader.ReadAt].
+/// The returned value is always the same and is not affected by calls
+/// to any other method.
+extern fun Reader.Size(): int64
+/// UnreadByte implements the [io.ByteScanner] interface.
+extern fun Reader.UnreadByte(): error
+/// UnreadRune implements the [io.RuneScanner] interface.
+extern fun Reader.UnreadRune(): error
+/// WriteTo implements the [io.WriterTo] interface.
+extern fun Reader.WriteTo(w: io.Writer): (int64, error)
+/// Replacer replaces a list of strings with replacements.
+/// It is safe for concurrent use by multiple goroutines.
+extern type Replacer {
+  once: sync.Once,
+  r: replacer,
+  oldnew: []string
+}
+/// Replace returns a copy of s with all replacements performed.
+extern fun Replacer.Replace(s: string): string
+/// WriteString writes s to w with all replacements performed.
+extern fun Replacer.WriteString(w: io.Writer, s: string): (int, error)
+/// Clone returns a fresh copy of s.
+/// It guarantees to make a copy of s into a new allocation,
+/// which can be important when retaining only a small substring
+/// of a much larger string. Using Clone can help such programs
+/// use less memory. Of course, since using Clone makes a copy,
+/// overuse of Clone can make programs use more memory.
+/// Clone should typically be used only rarely, and only when
+/// profiling indicates that it is needed.
+/// For strings of length zero the string "" will be returned
+/// and no allocation is made.
+extern fun strings.Clone(s: string): string
+/// Compare returns an integer comparing two strings lexicographically.
+/// The result will be 0 if a == b, -1 if a < b, and +1 if a > b.
+/// 
+/// Use Compare when you need to perform a three-way comparison (with
+/// [slices.SortFunc], for example). It is usually clearer and always faster
+/// to use the built-in string comparison operators ==, <, >, and so on.
+extern fun strings.Compare(a: string, b: string): int
+/// Contains reports whether substr is within s.
+extern fun strings.Contains(s: string, substr: string): bool
+/// ContainsAny reports whether any Unicode code points in chars are within s.
+extern fun strings.ContainsAny(s: string, chars: string): bool
+/// ContainsFunc reports whether any Unicode code points r within s satisfy f(r).
+extern fun strings.ContainsFunc(s: string, f: func(rune) bool): bool
+/// ContainsRune reports whether the Unicode code point r is within s.
+extern fun strings.ContainsRune(s: string, r: rune): bool
+/// Count counts the number of non-overlapping instances of substr in s.
+/// If substr is an empty string, Count returns 1 + the number of Unicode code points in s.
+extern fun strings.Count(s: string, substr: string): int
+/// Cut slices s around the first instance of sep,
+/// returning the text before and after sep.
+/// The found result reports whether sep appears in s.
+/// If sep does not appear in s, cut returns s, "", false.
+extern fun strings.Cut(s: string, sep: string): (string, string, bool)
+/// CutPrefix returns s without the provided leading prefix string
+/// and reports whether it found the prefix.
+/// If s doesn't start with prefix, CutPrefix returns s, false.
+/// If prefix is the empty string, CutPrefix returns s, true.
+extern fun strings.CutPrefix(s: string, prefix: string): (string, bool)
+/// CutSuffix returns s without the provided ending suffix string
+/// and reports whether it found the suffix.
+/// If s doesn't end with suffix, CutSuffix returns s, false.
+/// If suffix is the empty string, CutSuffix returns s, true.
+extern fun strings.CutSuffix(s: string, suffix: string): (string, bool)
+/// EqualFold reports whether s and t, interpreted as UTF-8 strings,
+/// are equal under simple Unicode case-folding, which is a more general
+/// form of case-insensitivity.
+extern fun strings.EqualFold(s: string, t: string): bool
+/// Fields splits the string s around each instance of one or more consecutive white space
+/// characters, as defined by [unicode.IsSpace], returning a slice of substrings of s or an
+/// empty slice if s contains only white space.
+extern fun strings.Fields(s: string): []string
+/// FieldsFunc splits the string s at each run of Unicode code points c satisfying f(c)
+/// and returns an array of slices of s. If all code points in s satisfy f(c) or the
+/// string is empty, an empty slice is returned.
+/// 
+/// FieldsFunc makes no guarantees about the order in which it calls f(c)
+/// and assumes that f always returns the same value for a given c.
+extern fun strings.FieldsFunc(s: string, f: func(rune) bool): []string
+/// FieldsFuncSeq returns an iterator over substrings of s split around runs of
+/// Unicode code points satisfying f(c).
+/// The iterator yields the same strings that would be returned by [FieldsFunc](s),
+/// but without constructing the slice.
+extern fun strings.FieldsFuncSeq(s: string, f: func(rune) bool): iter.Seq[string]
+/// FieldsSeq returns an iterator over substrings of s split around runs of
+/// whitespace characters, as defined by [unicode.IsSpace].
+/// The iterator yields the same strings that would be returned by [Fields](s),
+/// but without constructing the slice.
+extern fun strings.FieldsSeq(s: string): iter.Seq[string]
+/// HasPrefix reports whether the string s begins with prefix.
+extern fun strings.HasPrefix(s: string, prefix: string): bool
+/// HasSuffix reports whether the string s ends with suffix.
+extern fun strings.HasSuffix(s: string, suffix: string): bool
+/// Index returns the index of the first instance of substr in s, or -1 if substr is not present in s.
+extern fun strings.Index(s: string, substr: string): int
+/// IndexAny returns the index of the first instance of any Unicode code point
+/// from chars in s, or -1 if no Unicode code point from chars is present in s.
+extern fun strings.IndexAny(s: string, chars: string): int
+/// IndexByte returns the index of the first instance of c in s, or -1 if c is not present in s.
+extern fun strings.IndexByte(s: string, c: byte): int
+/// IndexFunc returns the index into s of the first Unicode
+/// code point satisfying f(c), or -1 if none do.
+extern fun strings.IndexFunc(s: string, f: func(rune) bool): int
+/// IndexRune returns the index of the first instance of the Unicode code point
+/// r, or -1 if rune is not present in s.
+/// If r is [utf8.RuneError], it returns the first instance of any
+/// invalid UTF-8 byte sequence.
+extern fun strings.IndexRune(s: string, r: rune): int
+/// Join concatenates the elements of its first argument to create a single string. The separator
+/// string sep is placed between elements in the resulting string.
+extern fun strings.Join(elems: []string, sep: string): string
+/// LastIndex returns the index of the last instance of substr in s, or -1 if substr is not present in s.
+extern fun strings.LastIndex(s: string, substr: string): int
+/// LastIndexAny returns the index of the last instance of any Unicode code
+/// point from chars in s, or -1 if no Unicode code point from chars is
+/// present in s.
+extern fun strings.LastIndexAny(s: string, chars: string): int
+/// LastIndexByte returns the index of the last instance of c in s, or -1 if c is not present in s.
+extern fun strings.LastIndexByte(s: string, c: byte): int
+/// LastIndexFunc returns the index into s of the last
+/// Unicode code point satisfying f(c), or -1 if none do.
+extern fun strings.LastIndexFunc(s: string, f: func(rune) bool): int
+/// Lines returns an iterator over the newline-terminated lines in the string s.
+/// The lines yielded by the iterator include their terminating newlines.
+/// If s is empty, the iterator yields no lines at all.
+/// If s does not end in a newline, the final yielded line will not end in a newline.
+/// It returns a single-use iterator.
+extern fun strings.Lines(s: string): iter.Seq[string]
+/// Map returns a copy of the string s with all its characters modified
+/// according to the mapping function. If mapping returns a negative value, the character is
+/// dropped from the string with no replacement.
+extern fun strings.Map(mapping: func(rune) rune, s: string): string
+/// Repeat returns a new string consisting of count copies of the string s.
+/// 
+/// It panics if count is negative or if the result of (len(s) * count)
+/// overflows.
+extern fun strings.Repeat(s: string, count: int): string
+/// Replace returns a copy of the string s with the first n
+/// non-overlapping instances of old replaced by new.
+/// If old is empty, it matches at the beginning of the string
+/// and after each UTF-8 sequence, yielding up to k+1 replacements
+/// for a k-rune string.
+/// If n < 0, there is no limit on the number of replacements.
+extern fun strings.Replace(s: string, old: string, new: string, n: int): string
+/// ReplaceAll returns a copy of the string s with all
+/// non-overlapping instances of old replaced by new.
+/// If old is empty, it matches at the beginning of the string
+/// and after each UTF-8 sequence, yielding up to k+1 replacements
+/// for a k-rune string.
+extern fun strings.ReplaceAll(s: string, old: string, new: string): string
+/// Split slices s into all substrings separated by sep and returns a slice of
+/// the substrings between those separators.
+/// 
+/// If s does not contain sep and sep is not empty, Split returns a
+/// slice of length 1 whose only element is s.
+/// 
+/// If sep is empty, Split splits after each UTF-8 sequence. If both s
+/// and sep are empty, Split returns an empty slice.
+/// 
+/// It is equivalent to [SplitN] with a count of -1.
+/// 
+/// To split around the first instance of a separator, see [Cut].
+extern fun strings.Split(s: string, sep: string): []string
+/// SplitAfter slices s into all substrings after each instance of sep and
+/// returns a slice of those substrings.
+/// 
+/// If s does not contain sep and sep is not empty, SplitAfter returns
+/// a slice of length 1 whose only element is s.
+/// 
+/// If sep is empty, SplitAfter splits after each UTF-8 sequence. If
+/// both s and sep are empty, SplitAfter returns an empty slice.
+/// 
+/// It is equivalent to [SplitAfterN] with a count of -1.
+extern fun strings.SplitAfter(s: string, sep: string): []string
+/// SplitAfterN slices s into substrings after each instance of sep and
+/// returns a slice of those substrings.
+/// 
+/// The count determines the number of substrings to return:
+/// - n > 0: at most n substrings; the last substring will be the unsplit remainder;
+/// - n == 0: the result is nil (zero substrings);
+/// - n < 0: all substrings.
+/// 
+/// Edge cases for s and sep (for example, empty strings) are handled
+/// as described in the documentation for [SplitAfter].
+extern fun strings.SplitAfterN(s: string, sep: string, n: int): []string
+/// SplitAfterSeq returns an iterator over substrings of s split after each instance of sep.
+/// The iterator yields the same strings that would be returned by [SplitAfter](s, sep),
+/// but without constructing the slice.
+/// It returns a single-use iterator.
+extern fun strings.SplitAfterSeq(s: string, sep: string): iter.Seq[string]
+/// SplitN slices s into substrings separated by sep and returns a slice of
+/// the substrings between those separators.
+/// 
+/// The count determines the number of substrings to return:
+/// - n > 0: at most n substrings; the last substring will be the unsplit remainder;
+/// - n == 0: the result is nil (zero substrings);
+/// - n < 0: all substrings.
+/// 
+/// Edge cases for s and sep (for example, empty strings) are handled
+/// as described in the documentation for [Split].
+/// 
+/// To split around the first instance of a separator, see [Cut].
+extern fun strings.SplitN(s: string, sep: string, n: int): []string
+/// SplitSeq returns an iterator over all substrings of s separated by sep.
+/// The iterator yields the same strings that would be returned by [Split](s, sep),
+/// but without constructing the slice.
+/// It returns a single-use iterator.
+extern fun strings.SplitSeq(s: string, sep: string): iter.Seq[string]
+/// Title returns a copy of the string s with all Unicode letters that begin words
+/// mapped to their Unicode title case.
+/// 
+/// Deprecated: The rule Title uses for word boundaries does not handle Unicode
+/// punctuation properly. Use golang.org/x/text/cases instead.
+extern fun strings.Title(s: string): string
+/// ToLower returns s with all Unicode letters mapped to their lower case.
+extern fun strings.ToLower(s: string): string
+/// ToLowerSpecial returns a copy of the string s with all Unicode letters mapped to their
+/// lower case using the case mapping specified by c.
+extern fun strings.ToLowerSpecial(c: unicode.SpecialCase, s: string): string
+/// ToTitle returns a copy of the string s with all Unicode letters mapped to
+/// their Unicode title case.
+extern fun strings.ToTitle(s: string): string
+/// ToTitleSpecial returns a copy of the string s with all Unicode letters mapped to their
+/// Unicode title case, giving priority to the special casing rules.
+extern fun strings.ToTitleSpecial(c: unicode.SpecialCase, s: string): string
+/// ToUpper returns s with all Unicode letters mapped to their upper case.
+extern fun strings.ToUpper(s: string): string
+/// ToUpperSpecial returns a copy of the string s with all Unicode letters mapped to their
+/// upper case using the case mapping specified by c.
+extern fun strings.ToUpperSpecial(c: unicode.SpecialCase, s: string): string
+/// ToValidUTF8 returns a copy of the string s with each run of invalid UTF-8 byte sequences
+/// replaced by the replacement string, which may be empty.
+extern fun strings.ToValidUTF8(s: string, replacement: string): string
+/// Trim returns a slice of the string s with all leading and
+/// trailing Unicode code points contained in cutset removed.
+extern fun strings.Trim(s: string, cutset: string): string
+/// TrimFunc returns a slice of the string s with all leading
+/// and trailing Unicode code points c satisfying f(c) removed.
+extern fun strings.TrimFunc(s: string, f: func(rune) bool): string
+/// TrimLeft returns a slice of the string s with all leading
+/// Unicode code points contained in cutset removed.
+/// 
+/// To remove a prefix, use [TrimPrefix] instead.
+extern fun strings.TrimLeft(s: string, cutset: string): string
+/// TrimLeftFunc returns a slice of the string s with all leading
+/// Unicode code points c satisfying f(c) removed.
+extern fun strings.TrimLeftFunc(s: string, f: func(rune) bool): string
+/// TrimPrefix returns s without the provided leading prefix string.
+/// If s doesn't start with prefix, s is returned unchanged.
+extern fun strings.TrimPrefix(s: string, prefix: string): string
+/// TrimRight returns a slice of the string s, with all trailing
+/// Unicode code points contained in cutset removed.
+/// 
+/// To remove a suffix, use [TrimSuffix] instead.
+extern fun strings.TrimRight(s: string, cutset: string): string
+/// TrimRightFunc returns a slice of the string s with all trailing
+/// Unicode code points c satisfying f(c) removed.
+extern fun strings.TrimRightFunc(s: string, f: func(rune) bool): string
+/// TrimSpace returns a slice of the string s, with all leading
+/// and trailing white space removed, as defined by Unicode.
+extern fun strings.TrimSpace(s: string): string
+/// TrimSuffix returns s without the provided trailing suffix string.
+/// If s doesn't end with suffix, s is returned unchanged.
+extern fun strings.TrimSuffix(s: string, suffix: string): string
