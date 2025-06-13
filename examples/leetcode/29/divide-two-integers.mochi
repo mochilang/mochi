@@ -1,0 +1,65 @@
+fun divide(dividend: int, divisor: int): int {
+  // Handle overflow case
+  if dividend == (-2147483647 - 1) && divisor == (-1) {
+    return 2147483647
+  }
+
+  var negative = false
+  if dividend < 0 {
+    negative = !negative
+    dividend = -dividend
+  }
+  if divisor < 0 {
+    negative = !negative
+    divisor = -divisor
+  }
+
+  var quotient = 0
+  while dividend >= divisor {
+    var temp = divisor
+    var multiple = 1
+    while dividend >= temp + temp {
+      temp = temp + temp
+      multiple = multiple + multiple
+    }
+    dividend = dividend - temp
+    quotient = quotient + multiple
+  }
+
+  if negative {
+    quotient = -quotient
+  }
+
+  // Clamp to 32-bit signed integer range
+  if quotient > 2147483647 {
+    return 2147483647
+  }
+  if quotient < (-2147483647 - 1) {
+    return -2147483648
+  }
+  return quotient
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect divide(10, 3) == 3
+}
+
+test "example 2" {
+  expect divide(7, -3) == (-2)
+}
+
+test "overflow" {
+  expect divide(-2147483648, -1) == 2147483647
+}
+
+// Additional edge cases
+
+test "divide by 1" {
+  expect divide(12345, 1) == 12345
+}
+
+test "negative result" {
+  expect divide(-15, 2) == (-7)
+}
