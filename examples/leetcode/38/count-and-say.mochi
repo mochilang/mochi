@@ -1,0 +1,38 @@
+fun countAndSay(n: int): string {
+  var term = "1"
+  var i = 1
+  while i < n {
+    var next = ""
+    var j = 0
+    while j < len(term) {
+      var k = j
+      while k < len(term) {
+        if term[k] == term[j] {
+          k = k + 1
+        } else {
+          break
+        }
+      }
+      let count = k - j
+      next = next + str(count) + term[j]
+      j = k
+    }
+    term = next
+    i = i + 1
+  }
+  return term
+}
+
+// Test cases from LeetCode
+
+test "n = 1" {
+  expect countAndSay(1) == "1"
+}
+
+test "n = 4" {
+  expect countAndSay(4) == "1211"
+}
+
+test "n = 5" {
+  expect countAndSay(5) == "111221"
+}
