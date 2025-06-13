@@ -1,4 +1,19 @@
 # 📦 CHANGELOG.md
+## [0.7.1] – 2025-06-13
+
+### Added
+
+* `str`, `count` and `avg` builtins across compilers
+* Index assignment for lists and maps
+* `in` operator checks map membership
+* Empty map initialization
+
+### Changed
+
+* Maps allow integer keys and infer iteration
+* TypeScript inlines `len` for typed arrays and strings
+* Removed dynamic iteration helpers
+
 ## [0.7.0] – 2025-06-13
 
 ### Added
