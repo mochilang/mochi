@@ -1,0 +1,34 @@
+fun swapPairs(nums: list<int>): list<int> {
+  var i = 0
+  var result = []
+  while i < len(nums) {
+    if i + 1 < len(nums) {
+      result = result + [nums[i+1], nums[i]]
+    } else {
+      result = result + [nums[i]]
+    }
+    i = i + 2
+  }
+  return result
+}
+
+// Test cases from LeetCode problem 24
+
+test "example 1" {
+  expect swapPairs([1,2,3,4]) == [2,1,4,3]
+}
+
+test "example 2" {
+  expect swapPairs([]) == []
+}
+
+test "example 3" {
+  expect swapPairs([1]) == [1]
+}
+
+// Additional edge cases
+
+test "odd length" {
+  expect swapPairs([1,2,3]) == [2,1,3]
+}
+
