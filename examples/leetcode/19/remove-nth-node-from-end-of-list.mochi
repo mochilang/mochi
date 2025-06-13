@@ -1,0 +1,36 @@
+fun removeNthFromEnd(nums: list<int>, n: int): list<int> {
+  let idx = len(nums) - n
+  var result = []
+  var i = 0
+  while i < len(nums) {
+    if i != idx {
+      result = result + [nums[i]]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect removeNthFromEnd([1,2,3,4,5], 2) == [1,2,3,5]
+}
+
+test "example 2" {
+  expect removeNthFromEnd([1], 1) == []
+}
+
+test "example 3" {
+  expect removeNthFromEnd([1,2], 1) == [1]
+}
+
+// Additional edge cases
+
+test "remove first" {
+  expect removeNthFromEnd([7,8,9], 3) == [8,9]
+}
+
+test "remove last" {
+  expect removeNthFromEnd([7,8,9], 1) == [7,8]
+}
