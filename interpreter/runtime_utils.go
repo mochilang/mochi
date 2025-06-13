@@ -26,6 +26,26 @@ func applyBinary(pos lexer.Position, left any, op string, right any) (any, error
 
 // applyBinaryValue applies a binary operator on two Value operands.
 func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (Value, error) {
+	if op == "in" {
+		switch right.Tag {
+		case TagList:
+			for _, item := range right.List {
+				eq, err := applyBinaryValue(pos, left, "==", item)
+				if err == nil && eq.Tag == TagBool && eq.Bool {
+					return Value{Tag: TagBool, Bool: true}, nil
+				}
+				if err != nil && reflect.DeepEqual(valueToAny(left), valueToAny(item)) {
+					return Value{Tag: TagBool, Bool: true}, nil
+				}
+			}
+			return Value{Tag: TagBool, Bool: false}, nil
+		case TagMap:
+			key := fmt.Sprint(valueToAny(left))
+			_, ok := right.Map[key]
+			return Value{Tag: TagBool, Bool: ok}, nil
+		}
+	}
+
 	if left.Tag == TagList && right.Tag == TagList {
 		switch op {
 		case "+":
@@ -163,6 +183,26 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 			case "in":
 				return Value{Tag: TagBool, Bool: strings.Contains(right.Str, left.Str)}, nil
 			}
+		}
+	case TagList:
+		if op == "in" {
+			for _, item := range right.List {
+				eq, err := applyBinaryValue(pos, left, "==", item)
+				if err == nil && eq.Tag == TagBool && eq.Bool {
+					return Value{Tag: TagBool, Bool: true}, nil
+				}
+				if err != nil && reflect.DeepEqual(valueToAny(left), valueToAny(item)) {
+					return Value{Tag: TagBool, Bool: true}, nil
+				}
+			}
+			return Value{Tag: TagBool, Bool: false}, nil
+		}
+	case TagMap:
+		if op == "in" {
+			key := valueToAny(left)
+			k := fmt.Sprint(key)
+			_, ok := right.Map[k]
+			return Value{Tag: TagBool, Bool: ok}, nil
 		}
 	}
 	return Value{}, errInvalidOperator(pos, op, left.Tag.String(), right.Tag.String())

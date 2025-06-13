@@ -106,6 +106,18 @@ func anyToValue(v any) Value {
 			m[k] = anyToValue(x)
 		}
 		return Value{Tag: TagMap, Map: m}
+	case map[int]any:
+		m := make(map[string]Value, len(val))
+		for k, x := range val {
+			m[strconv.Itoa(k)] = anyToValue(x)
+		}
+		return Value{Tag: TagMap, Map: m}
+	case map[any]any:
+		m := make(map[string]Value, len(val))
+		for k, x := range val {
+			m[fmt.Sprint(k)] = anyToValue(x)
+		}
+		return Value{Tag: TagMap, Map: m}
 	case closure:
 		return Value{Tag: TagFunc, Func: &val}
 	case *closure:
