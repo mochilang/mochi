@@ -1,8 +1,8 @@
-error[I006]: invalid map key: expected string, got int
+error[I006]: invalid map key: expected string or int, got bool
   --> tests/interpreter/errors/map_key_non_string.mochi:1:10
 
-  1 | let x = {1: 2}
+  1 | let x = {true: 2}
     |          ^
 
 help:
-  Only `string` keys are allowed in map literals.
+  Map keys must be `string` or `int`.

@@ -41,6 +41,10 @@ func builtinLen(i *Interpreter, c *parser.CallExpr) (any, error) {
 		return len([]rune(v)), nil
 	case map[string]any:
 		return len(v), nil
+	case map[int]any:
+		return len(v), nil
+	case map[any]any:
+		return len(v), nil
 	default:
 		return nil, errInvalidLenOperand(c.Pos, fmt.Sprintf("%T", val))
 	}

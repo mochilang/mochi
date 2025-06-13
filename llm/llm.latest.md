@@ -3408,7 +3408,7 @@ var Errors = map[string]diagnostic.Template{
 	// --- Literals and Expressions ---
 	"I004": {Code: "I004", Message: "invalid primary expression", Help: "Expected a literal, variable, or function call."},
 	"I005": {Code: "I005", Message: "invalid literal value", Help: "Check the format or syntax of the literal."},
-	"I006": {Code: "I006", Message: "invalid map key: expected string, got %T", Help: "Only `string` keys are allowed in map literals."},
+        "I006": {Code: "I006", Message: "invalid map key: expected string or int, got %T", Help: "Map keys must be `string` or `int`."},
 	"I007": {Code: "I007", Message: "cannot access field `%s` on non-object of type %s", Help: "Access fields only on objects or maps."},
 
 	// --- Operators ---
