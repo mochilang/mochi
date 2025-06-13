@@ -1,5 +1,4 @@
 // Demonstrates calling Go and Python code in the same file
-// Name is hardcoded; radius is hardcoded
 
 import go "strings" as strings auto
 import python "math" as math
