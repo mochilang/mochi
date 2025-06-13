@@ -147,6 +147,29 @@ const (
 		"    }\n" +
 		"}\n"
 
+	helperCount = "func _count(v any) int {\n" +
+		"    if g, ok := v.(*data.Group); ok { return len(g.Items) }\n" +
+		"    it := _iter(v)\n" +
+		"    if it == nil { panic(\"count() expects list or group\") }\n" +
+		"    return len(it)\n" +
+		"}\n"
+
+	helperAvg = "func _avg(v any) float64 {\n" +
+		"    var items []any\n" +
+		"    if g, ok := v.(*data.Group); ok { items = g.Items } else { items = _iter(v) }\n" +
+		"    if items == nil { panic(\"avg() expects list or group\") }\n" +
+		"    if len(items) == 0 { return 0 }\n" +
+		"    var sum float64\n" +
+		"    for _, it := range items {\n" +
+		"        switch n := it.(type) {\n" +
+		"        case int: sum += float64(n)\n" +
+		"        case int64: sum += float64(n)\n" +
+		"        case float64: sum += n\n" +
+		"        default: panic(\"avg() expects numbers\") }\n" +
+		"    }\n" +
+		"    return sum / float64(len(items))\n" +
+		"}\n"
+
 	helperGenText = "func _genText(prompt string, model string, params map[string]any) string {\n" +
 		"    opts := []llm.Option{}\n" +
 		"    if model != \"\" { opts = append(opts, llm.WithModel(model)) }\n" +
@@ -417,6 +440,8 @@ var helperMap = map[string]string{
 	"_index":       helperIndex,
 	"_indexString": helperIndexString,
 	"_iter":        helperIter,
+	"_count":       helperCount,
+	"_avg":         helperAvg,
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,

@@ -2016,6 +2016,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "print":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Println(%s)", argStr), nil
+	case "str":
+		c.imports["fmt"] = true
+		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil
+	case "count":
+		c.imports["mochi/runtime/data"] = true
+		c.use("_count")
+		c.use("_iter")
+		return fmt.Sprintf("_count(%s)", argStr), nil
+	case "avg":
+		c.imports["mochi/runtime/data"] = true
+		c.use("_avg")
+		c.use("_iter")
+		return fmt.Sprintf("_avg(%s)", argStr), nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
@@ -2289,6 +2302,12 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 	case p.Call != nil:
 		if p.Call.Func == "print" {
 			c.imports["fmt"] = true
+		}
+		if p.Call.Func == "str" {
+			c.imports["fmt"] = true
+		}
+		if p.Call.Func == "count" || p.Call.Func == "avg" {
+			c.imports["mochi/runtime/data"] = true
 		}
 		if p.Call.Func == "now" {
 			c.imports["time"] = true
