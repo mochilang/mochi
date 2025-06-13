@@ -30,6 +30,28 @@ const (
 		"  return 0;\n" +
 		"}\n"
 
+	helperCount = "function _count(v: any): number {\n" +
+		"  if (Array.isArray(v)) return v.length;\n" +
+		"  if (v && typeof v === 'object') {\n" +
+		"    if (Array.isArray((v as any).items)) return (v as any).items.length;\n" +
+		"    if (Array.isArray((v as any).Items)) return (v as any).Items.length;\n" +
+		"  }\n" +
+		"  return 0;\n" +
+		"}\n"
+
+	helperAvg = "function _avg(v: any): number {\n" +
+		"  let list: any[] | null = null;\n" +
+		"  if (Array.isArray(v)) list = v;\n" +
+		"  else if (v && typeof v === 'object') {\n" +
+		"    if (Array.isArray((v as any).items)) list = (v as any).items;\n" +
+		"    else if (Array.isArray((v as any).Items)) list = (v as any).Items;\n" +
+		"  }\n" +
+		"  if (!list || list.length === 0) return 0;\n" +
+		"  let sum = 0;\n" +
+		"  for (const n of list) sum += Number(n);\n" +
+		"  return sum / list.length;\n" +
+		"}\n"
+
 	helperIter = "function _iter(v: any): any {\n" +
 		"  if (v && typeof v === 'object' && !Array.isArray(v) && !(Symbol.iterator in v)) {\n" +
 		"    return Object.keys(v);\n" +
@@ -293,6 +315,8 @@ const (
 var helperMap = map[string]string{
 	"_index":      helperIndex,
 	"_len":        helperLen,
+	"_count":      helperCount,
+	"_avg":        helperAvg,
 	"_iter":       helperIter,
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
