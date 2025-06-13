@@ -1,0 +1,83 @@
+// Function to remove HTML tags (simple version)
+export fun remove_html_tags(text: string): string {
+  var i = 0
+  var output = ""
+
+  while i < len(text) {
+    if text[i] == "<" {
+      // Find the closing >
+      var j = i + 1
+      while j < len(text) && text[j] != ">" {
+        j = j + 1
+      }
+      if j < len(text) {
+        i = j + 1  // Skip past the >
+      } else {
+        i = i + 1
+      }
+    } else {
+      output = output + text[i]
+      i = i + 1
+    }
+  }
+
+  return output
+}
+
+// Complete function to get LeetCode problem by ID using two-step approach
+export fun get_leetcode_problem(problem_id: string): string {
+  print("=== Step 1: Searching for LeetCode Problem", problem_id, "===")
+
+  // Step 1: Search for the problem by ID to get basic info including titleSlug
+  let search_response = fetch "https://leetcode.com/graphql/" with {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: {
+      "operationName": "problemsetQuestionList",
+      "variables": {
+        "categorySlug": "",
+        "skip": 0,
+        "limit": 1,
+        "filters": {"searchKeywords": problem_id}
+      },
+      "query": "query problemsetQuestionList($categorySlug: String, $limit: Int, $skip: Int, $filters: QuestionListFilterInput) { problemsetQuestionList: questionList(categorySlug: $categorySlug limit: $limit skip: $skip filters: $filters) { total: totalNum questions: data { frontendQuestionId: questionFrontendId title titleSlug difficulty } } }"
+    }
+  }
+
+  print("Search result:", search_response)
+
+  // For this example, we use the known titleSlug for problem 3442
+  // In a full implementation, you would parse the JSON response to extract titleSlug
+  let title_slug = "maximum-difference-between-even-and-odd-frequency-i"
+
+  print("=== Step 2: Fetching full content using titleSlug:", title_slug, "===")
+
+  // Step 2: Get full problem content using the titleSlug
+  let content_response = fetch "https://leetcode.com/graphql/" with {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Cookie": "LEETCODE_SESSION=your_session_token_here"
+    },
+    body: {
+      "operationName": "questionData",
+      "variables": {"titleSlug": title_slug},
+      "query": "query questionData($titleSlug: String!) { question(titleSlug: $titleSlug) { questionId title content difficulty likes dislikes } }"
+    }
+  }
+
+  // Clean HTML tags from the response
+  let content_str = str(content_response)
+  let cleaned = remove_html_tags(content_str)
+
+  return cleaned
+}
+
+// Main execution: Get problem by ID (change this to any problem number)
+let problem_id = "3442"
+let result = get_leetcode_problem(problem_id)
+
+print("=== FINAL RESULT: LeetCode Problem", problem_id, "===")
+print(result)
