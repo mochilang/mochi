@@ -1,3 +1,7 @@
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
 fun isSameTree(p: Tree, q: Tree): bool {
   return match p {
     Leaf => match q {
@@ -10,14 +14,6 @@ fun isSameTree(p: Tree, q: Tree): bool {
     }
   }
 }
-
-// Definition of a binary tree
-// Leaf represents an empty tree
-// Node has left, value, and right subtrees
-
-type Tree =
-  Leaf
-  | Node(left: Tree, value: int, right: Tree)
 
 // Test cases from LeetCode
 
