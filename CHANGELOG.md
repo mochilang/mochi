@@ -1,4 +1,12 @@
 # 📦 CHANGELOG.md
+## [0.7.2] – 2025-06-14
+
+### Added
+
+* LeetCode solutions 1–100 with Makefile and Sudoku example
+* `mochi test` now accepts directories with `...`
+* Documentation on common language errors
+
 ## [0.7.1] – 2025-06-13
 
 ### Added
