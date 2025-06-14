@@ -1,0 +1,62 @@
+fun totalNQueens(n: int): int {
+  var cols: list<bool> = []
+  for _ in 0..n { cols = cols + [false] }
+  var diag1: list<bool> = []
+  for _ in 0..(2*n) { diag1 = diag1 + [false] }
+  var diag2: list<bool> = []
+  for _ in 0..(2*n) { diag2 = diag2 + [false] }
+
+  var count = 0
+
+  fun backtrack(row: int) {
+    if row == n {
+      count = count + 1
+      return
+    }
+    for col in 0..n {
+      let d1 = row - col + n
+      let d2 = row + col
+      if cols[col] || diag1[d1] || diag2[d2] {
+        continue
+      }
+      cols[col] = true
+      diag1[d1] = true
+      diag2[d2] = true
+      backtrack(row + 1)
+      cols[col] = false
+      diag1[d1] = false
+      diag2[d2] = false
+    }
+  }
+
+  backtrack(0)
+  return count
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect totalNQueens(1) == 1
+}
+
+test "example 2" {
+  expect totalNQueens(4) == 2
+}
+
+test "example 3" {
+  expect totalNQueens(5) == 10
+}
+
+// Common Mochi language errors and fixes:
+// 1. Trying to use 'i++' for incrementing.
+//    var i = 0
+//    i++            // ❌ parse error
+//    i = i + 1      // ✅ use explicit addition
+// 2. Reassigning a value declared with 'let'.
+//    let cnt = 0
+//    cnt = cnt + 1  // ❌ cannot assign to immutable binding
+//    var cnt = 0
+//    cnt = cnt + 1  // ✅ use 'var' when mutation is needed
+// 3. Using Python style loops.
+//    for col in range(n) { }  // ❌ not valid Mochi
+//    for col in 0..n { }      // ✅ correct range loop
