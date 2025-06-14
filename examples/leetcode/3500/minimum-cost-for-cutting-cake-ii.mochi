@@ -1,0 +1,70 @@
+// LeetCode 3500 - Minimum Cost for Cutting Cake II
+
+fun minCostCutCake(m: int, n: int, horizontalCut: list<int>, verticalCut: list<int>): int {
+  // sort costs descending so we cut expensive lines first
+  let h = from x in horizontalCut sort by -x select x
+  let v = from x in verticalCut sort by -x select x
+  var hi = 0
+  var vi = 0
+  var hSegments = 1
+  var vSegments = 1
+  var cost = 0
+
+  while hi < len(h) && vi < len(v) {
+    if h[hi] > v[vi] {
+      cost = cost + h[hi] * vSegments
+      hSegments = hSegments + 1
+      hi = hi + 1
+    } else {
+      cost = cost + v[vi] * hSegments
+      vSegments = vSegments + 1
+      vi = vi + 1
+    }
+  }
+
+  while hi < len(h) {
+    cost = cost + h[hi] * vSegments
+    hi = hi + 1
+  }
+
+  while vi < len(v) {
+    cost = cost + v[vi] * hSegments
+    vi = vi + 1
+  }
+
+  return cost
+}
+
+// Test cases from the problem description
+
+test "example 1" {
+  expect minCostCutCake(3, 2, [1,3], [5]) == 13
+}
+
+test "example 2" {
+  expect minCostCutCake(2, 2, [7], [4]) == 15
+}
+
+// Additional test
+
+test "mixed order" {
+  expect minCostCutCake(4, 3, [2,1,3], [1,4]) == 19
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to specify element types when creating an empty list:
+     var arr = []                      // ERROR: type cannot be inferred
+   Provide the element type:
+     var arr: list<int> = []
+
+2. Confusing assignment '=' with equality '==':
+     if x = 1 { }                      // ERROR: '=' assigns a value
+   Use '==' for comparisons:
+     if x == 1 { }
+
+3. Attempting to mutate a value declared with 'let':
+     let segments = 1
+     segments = 2                      // ERROR[E004]
+   Use 'var' when the value needs to change.
+*/
