@@ -9,7 +9,7 @@ type Tree =
 
 fun sortedArrayToBST(nums: list<int>): Tree {
   fun helper(lo: int, hi: int): Tree {
-    if lo > hi { return Leaf }
+    if lo > hi { return Leaf {} }
     let mid = (lo + hi) / 2
     return Node {
       left: helper(lo, mid - 1),

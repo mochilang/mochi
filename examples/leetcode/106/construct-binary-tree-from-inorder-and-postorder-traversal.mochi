@@ -6,7 +6,7 @@ type Tree =
 
 fun buildTree(inorder: list<int>, postorder: list<int>): Tree {
   if len(inorder) == 0 {
-    return Leaf
+    return Leaf {}
   }
 
   let rootVal = postorder[len(postorder) - 1]
@@ -44,12 +44,12 @@ test "example 1" {
   let inorder = [9,3,15,20,7]
   let postorder = [9,15,7,20,3]
   let expected = Node {
-    left: Node { left: Leaf, value: 9, right: Leaf },
+    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
     value: 3,
     right: Node {
-      left: Node { left: Leaf, value: 15, right: Leaf },
+      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
       value: 20,
-      right: Node { left: Leaf, value: 7, right: Leaf }
+      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
     }
   }
   expect isSameTree(buildTree(inorder, postorder), expected) == true
@@ -58,12 +58,12 @@ test "example 1" {
 test "example 2" {
   let inorder = [-1]
   let postorder = [-1]
-  let expected = Node { left: Leaf, value: -1, right: Leaf }
+  let expected = Node { left: Leaf {}, value: -1, right: Leaf {} }
   expect isSameTree(buildTree(inorder, postorder), expected) == true
 }
 
 test "empty" {
-  expect buildTree([], []) == Leaf
+  expect buildTree([], []) == Leaf {}
 }
 
 /*
