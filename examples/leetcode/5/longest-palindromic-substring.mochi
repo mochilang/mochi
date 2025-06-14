@@ -2,7 +2,10 @@ fun expand(s: string, left: int, right: int): int {
   var l = left
   var r = right
   let n = len(s)
-  while l >= 0 && r < n && s[l] == s[r] {
+  while l >= 0 && r < n {
+    if s[l] != s[r] {
+      break
+    }
     l = l - 1
     r = r + 1
   }
