@@ -1,0 +1,79 @@
+fun maxDiff(num: int): int {
+  let s = str(num)
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+
+  // build max value by mapping the first non-9 digit to 9
+  var digitMax = ""
+  var i = 0
+  while i < len(s) {
+    if s[i] != "9" {
+      digitMax = s[i]
+      break
+    }
+    i = i + 1
+  }
+  var maxVal = 0
+  for ch in s {
+    var c = ch
+    if c == digitMax {
+      c = "9"
+    }
+    maxVal = maxVal * 10 + digits[c]
+  }
+
+  // build min value by mapping the first digit that is not 0 to 0
+  var digitMin = ""
+  i = 0
+  while i < len(s) {
+    if s[i] != "0" {
+      digitMin = s[i]
+      break
+    }
+    i = i + 1
+  }
+  var minVal = 0
+  for ch in s {
+    var c = ch
+    if c == digitMin {
+      c = "0"
+    }
+    minVal = minVal * 10 + digits[c]
+  }
+
+  return maxVal - minVal
+}
+
+// Tests based on LeetCode examples
+
+test "example 1" {
+  expect maxDiff(11891) == 99009
+}
+
+test "example 2" {
+  expect maxDiff(90) == 99
+}
+
+/*
+Common Mochi language errors and fixes:
+1. Using '=' instead of '==' for comparisons.
+   if ch = "9" { ... }   // ❌ compile error
+   if ch == "9" { ... }  // ✅ correct
+2. Forgetting 'var' for variables that are modified.
+   let maxStr = ""
+   maxStr = maxStr + "9"  // ❌ cannot assign to immutable value
+   // Fix: declare with 'var maxStr = ""'.
+3. Off-by-one mistakes in loops.
+   while i <= len(s) { ... }  // ❌ may index past end
+   while i < len(s) { ... }   // ✅ proper bound
+*/
