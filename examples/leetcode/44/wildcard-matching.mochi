@@ -1,0 +1,82 @@
+// LeetCode #44: Wildcard Matching
+// Implement wildcard pattern matching with '?' and '*'.
+// Below are some common Mochi language errors and how to fix them.
+
+// Error 1: Missing 'fun' keyword or return type separator
+// isMatch(s: string, p: string) bool { ... }
+// Fix:
+fun isMatch(s: string, p: string): bool {
+  let m = len(s)
+  let n = len(p)
+  // Error 3: Using "let" for mutable maps causes assignment errors
+  // let memo: map<int, bool> = {}
+  // Fix:
+  var memo: map<int, bool> = {}
+
+  fun dfs(i: int, j: int): bool {
+    let key = i * (n + 1) + j
+    if key in memo {
+      return memo[key]
+    }
+  // Error 4: Accessing out-of-bounds index would crash
+  // let ch = s[m] 
+  // Fix: check bounds before indexing
+  if j == n {
+      return i == m
+    }
+
+    var ans = false
+
+    // Error 2: Using '=' instead of '==' for comparison
+    // if p[j] = star { ... }
+    // Fix:
+    if p[j] == "*" {
+      // "*" can match zero characters or consume one and stay
+      if dfs(i, j+1) {
+        ans = true
+      } else if i < m && dfs(i+1, j) {
+        ans = true
+      }
+    } else {
+      if i < m && (p[j] == "?" || p[j] == s[i]) {
+        if dfs(i+1, j+1) {
+          ans = true
+        }
+      }
+    }
+
+    memo[key] = ans
+    return ans
+  }
+
+  return dfs(0, 0)
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isMatch("aa", "a") == false
+}
+
+test "example 2" {
+  expect isMatch("aa", "*") == true
+}
+
+test "example 3" {
+  expect isMatch("cb", "?a") == false
+}
+
+test "example 4" {
+  expect isMatch("adceb", "*a*b") == true
+}
+
+// Additional tests for edge cases
+
+test "empty pattern" {
+  expect isMatch("", "") == true
+}
+
+test "only star" {
+  expect isMatch("abc", "*") == true
+}
+
