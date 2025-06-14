@@ -1,0 +1,45 @@
+fun rotateRight(nums: list<int>, k: int): list<int> {
+  let n = len(nums)
+  if n == 0 {
+    return nums
+  }
+  let r = k % n
+  if r == 0 {
+    return nums
+  }
+  let start = n - r
+  return nums[start:n] + nums[0:start]
+}
+
+// Test cases based on LeetCode #61: Rotate List
+
+test "example 1" {
+  expect rotateRight([1,2,3,4,5], 2) == [4,5,1,2,3]
+}
+
+test "example 2" {
+  expect rotateRight([0,1,2], 4) == [2,0,1]
+}
+
+// Additional edge cases
+
+test "k is zero" {
+  expect rotateRight([1,2,3], 0) == [1,2,3]
+}
+
+test "empty list" {
+  expect rotateRight([], 5) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Missing ':' before the return type in a function declaration.
+   fun bad(nums: list<int>) list<int> { return nums }
+   // Fix: fun bad(nums: list<int>): list<int> { ... }
+2. Using '=' instead of '==' inside conditions.
+   if n = 0 { return [] }
+   // Fix: use '==' for comparison: if n == 0 { ... }
+3. Incorrect slice syntax when splitting lists.
+   nums[n-r:]           // ❌ error: missing end index
+   // Fix: specify both indices: nums[n-r:n]
+*/
