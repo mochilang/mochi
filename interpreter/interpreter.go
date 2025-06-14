@@ -16,6 +16,7 @@ import (
 	"mochi/parser"
 	"mochi/runtime/agent"
 	"mochi/runtime/data"
+	"mochi/runtime/datalog"
 	ffi "mochi/runtime/ffi"
 	"mochi/runtime/ffi/extern"
 	mhttp "mochi/runtime/http"
@@ -43,6 +44,7 @@ type Interpreter struct {
 	memo     map[string]map[string]any
 	dataPlan string
 	tx       *atomic.Int64
+	logic    *datalog.Engine
 }
 
 func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
@@ -62,6 +64,7 @@ func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
 		memo:     map[string]map[string]any{},
 		dataPlan: "memory",
 		tx:       &atomic.Int64{},
+		logic:    datalog.NewEngine(),
 	}
 }
 
@@ -557,6 +560,42 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 
 	case s.Continue != nil:
 		return continueSignal{}
+
+	case s.Fact != nil:
+		args := []any{}
+		for _, a := range s.Fact.Call.Args {
+			v, err := i.evalExpr(a)
+			if err != nil {
+				return err
+			}
+			args = append(args, v)
+		}
+		i.logic.AddFact(s.Fact.Call.Func, args)
+		return nil
+
+	case s.Rule != nil:
+		r := datalog.Rule{Name: s.Rule.Name, Params: s.Rule.Params}
+		for _, b := range s.Rule.Body {
+			if call, ok := callFromExpr(b); ok {
+				terms := []datalog.Term{}
+				for _, arg := range call.Args {
+					if vname, ok := varNameFromExpr(arg); ok {
+						terms = append(terms, datalog.Term{Var: vname})
+					} else {
+						val, err := i.evalExpr(arg)
+						if err != nil {
+							return err
+						}
+						terms = append(terms, datalog.Term{Val: val})
+					}
+				}
+				r.Body = append(r.Body, datalog.Atom{Call: &datalog.Pred{Name: call.Func, Args: terms}})
+			} else {
+				r.Body = append(r.Body, datalog.Atom{Cond: b})
+			}
+		}
+		i.logic.AddRule(r)
+		return nil
 
 	case s.Agent != nil:
 		i.env.SetAgent(s.Agent.Name, s.Agent)
@@ -1264,6 +1303,9 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			i.env = old
 			return val, err
 		})
+
+	case p.LogicQuery != nil:
+		return i.evalLogicQuery(p.LogicQuery)
 
 	case p.Match != nil:
 		return i.evalMatch(p.Match)

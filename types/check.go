@@ -1355,6 +1355,13 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 	case p.Query != nil:
 		return checkQueryExpr(p.Query, env, expected)
 
+	case p.LogicQuery != nil:
+		result := ListType{Elem: MapType{Key: StringType{}, Value: AnyType{}}}
+		if expected != nil && !unify(result, expected, nil) {
+			return nil, errTypeMismatch(p.Pos, expected, result)
+		}
+		return result, nil
+
 	case p.Fetch != nil:
 		urlT, err := checkExpr(p.Fetch.URL, env)
 		if err != nil {

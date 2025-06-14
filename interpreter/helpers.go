@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"mochi/parser"
+	"mochi/runtime/datalog"
 	"mochi/types"
 )
 
@@ -147,4 +148,44 @@ func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
 		}
 	}
 	return nil, nil
+}
+
+func (i *Interpreter) evalLogicQuery(q *parser.LogicQueryExpr) (any, error) {
+	terms := []datalog.Term{}
+	vars := []string{}
+	for _, arg := range q.Call.Args {
+		if n, ok := varNameFromExpr(arg); ok {
+			terms = append(terms, datalog.Term{Var: n})
+			vars = append(vars, n)
+		} else {
+			v, err := i.evalExpr(arg)
+			if err != nil {
+				return nil, err
+			}
+			terms = append(terms, datalog.Term{Val: v})
+		}
+	}
+	res, err := i.logic.Query(q.Call.Func, terms, func(bind map[string]any, e *parser.Expr) (any, error) {
+		child := types.NewEnv(i.env)
+		for k, v := range bind {
+			child.SetValue(k, v, true)
+		}
+		old := i.env
+		i.env = child
+		val, err := i.evalExpr(e)
+		i.env = old
+		return val, err
+	})
+	if err != nil {
+		return nil, err
+	}
+	out := make([]any, len(res))
+	for i, r := range res {
+		m := map[string]any{}
+		for _, v := range vars {
+			m[v] = r[v]
+		}
+		out[i] = m
+	}
+	return out, nil
 }

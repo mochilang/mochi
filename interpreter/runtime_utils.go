@@ -666,3 +666,39 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+func callFromExpr(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil, false
+	}
+	if p.Target.Call != nil {
+		return p.Target.Call, true
+	}
+	return nil, false
+}
+
+func varNameFromExpr(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
