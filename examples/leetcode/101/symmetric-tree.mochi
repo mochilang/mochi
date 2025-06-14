@@ -85,7 +85,19 @@ Common language errors and how to fix them:
    x = 2  // error[E004]: cannot reassign immutable binding
  // Fix: declare with `var x = 1` if it needs to change.
 
-3. Using `null` instead of the `Leaf` constructor:
-   let t = null  // error[I001]: undefined value null
-   // Fix: use `Leaf` to represent an empty subtree.
+  3. Using `null` instead of the `Leaf` constructor:
+     let t = null  // error[I001]: undefined value null
+     // Fix: use `Leaf` to represent an empty subtree.
+
+  4. Confusing assignment with equality:
+     if x = 1 { }
+     // error[P000]: '=' is assignment, not comparison
+     // Fix: use '==' for comparisons.
+
+  5. Off-by-one mistakes in ranges:
+     for i in 0..len(nums) {
+       print(nums[i])
+     }
+     // error[I003]: index out of bounds when i == len(nums)
+     // Fix: use 0..len(nums) for < n or 0..=len(nums)-1 if inclusive.
 */
