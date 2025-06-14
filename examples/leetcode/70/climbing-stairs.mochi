@@ -1,0 +1,51 @@
+fun climbStairs(n: int): int {
+  if n <= 2 {
+    return n
+  }
+  var first = 1
+  var second = 2
+  var i = 3
+  while i <= n {
+    let next = first + second
+    first = second
+    second = next
+    i = i + 1
+  }
+  return second
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect climbStairs(2) == 2
+}
+
+test "example 2" {
+  expect climbStairs(3) == 3
+}
+
+// Additional tests
+
+test "n = 4" {
+  expect climbStairs(4) == 5
+}
+
+test "n = 5" {
+  expect climbStairs(5) == 8
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to initialize variables with `var` when they will be reassigned.
+   For example:
+     let a = 1
+     a = 2            // error[E004]
+   Fix: use `var a = 1` if you need to mutate `a`.
+2. Misusing the range operator instead of a standard while loop:
+     for i in 1..n { ... }
+   This creates a list of all integers which may waste memory. A `while` loop
+   is often more efficient.
+3. Using '=' instead of '==' for comparison:
+     if n = 1 { ... }      // ERROR: assignment instead of comparison
+   Always use '==' when comparing values.
+*/
