@@ -1,0 +1,81 @@
+fun consistentlyImproving(employees: list<{ employee_id: int, name: string }>, reviews: list<{ employee_id: int, review_date: string, rating: int }>): list<{ employee_id: int, name: string, improvement_score: int }> {
+  let grouped = from r in reviews
+                group by r.employee_id into g
+                select {
+                  id: g.key,
+                  reviews: from x in g sort by x.review_date select x
+                }
+
+  var result: list<{ employee_id: int, name: string, improvement_score: int }> = []
+  for item in grouped {
+    let rlist = item.reviews
+    if len(rlist) >= 3 {
+      let n = len(rlist)
+      let last3 = rlist[n-3:n]
+      if last3[0].rating < last3[1].rating && last3[1].rating < last3[2].rating {
+        let diff = last3[2].rating - last3[0].rating
+        for emp in employees {
+          if emp.employee_id == item.id {
+            result = result + [{ employee_id: emp.employee_id, name: emp.name, improvement_score: diff }]
+            break
+          }
+        }
+      }
+    }
+  }
+
+  let sorted = from e in result sort by -e.improvement_score, e.name select e
+  return sorted
+}
+
+// Test case derived from the problem statement
+
+let employees = [
+  { employee_id: 1, name: "Alice Johnson" },
+  { employee_id: 2, name: "Bob Smith" },
+  { employee_id: 3, name: "Carol Davis" },
+  { employee_id: 4, name: "David Wilson" },
+  { employee_id: 5, name: "Emma Brown" }
+]
+
+let performance_reviews = [
+  { review_id: 1, employee_id: 1, review_date: "2023-01-15", rating: 2 },
+  { review_id: 2, employee_id: 1, review_date: "2023-04-15", rating: 3 },
+  { review_id: 3, employee_id: 1, review_date: "2023-07-15", rating: 4 },
+  { review_id: 4, employee_id: 1, review_date: "2023-10-15", rating: 5 },
+  { review_id: 5, employee_id: 2, review_date: "2023-02-01", rating: 3 },
+  { review_id: 6, employee_id: 2, review_date: "2023-05-01", rating: 2 },
+  { review_id: 7, employee_id: 2, review_date: "2023-08-01", rating: 4 },
+  { review_id: 8, employee_id: 2, review_date: "2023-11-01", rating: 5 },
+  { review_id: 9, employee_id: 3, review_date: "2023-03-10", rating: 1 },
+  { review_id: 10, employee_id: 3, review_date: "2023-06-10", rating: 2 },
+  { review_id: 11, employee_id: 3, review_date: "2023-09-10", rating: 3 },
+  { review_id: 12, employee_id: 3, review_date: "2023-12-10", rating: 4 },
+  { review_id: 13, employee_id: 4, review_date: "2023-01-20", rating: 4 },
+  { review_id: 14, employee_id: 4, review_date: "2023-04-20", rating: 4 },
+  { review_id: 15, employee_id: 4, review_date: "2023-07-20", rating: 4 },
+  { review_id: 16, employee_id: 5, review_date: "2023-02-15", rating: 3 },
+  { review_id: 17, employee_id: 5, review_date: "2023-05-15", rating: 2 }
+]
+
+test "example" {
+  expect consistentlyImproving(employees, performance_reviews) == [
+    { employee_id: 2, name: "Bob Smith", improvement_score: 3 },
+    { employee_id: 1, name: "Alice Johnson", improvement_score: 2 },
+    { employee_id: 3, name: "Carol Davis", improvement_score: 2 }
+  ]
+}
+
+/*
+Common language errors and how to fix them:
+1. Omitting element types when initializing an empty list:
+   var res = []                       // ERROR: type cannot be inferred
+   var res: list<int> = []            // Fix: specify the element type.
+2. Using '=' instead of '==' for comparison:
+   if a = b { }                       // ERROR: '=' assigns instead of compares
+   if a == b { }                      // Fix: use '==' for equality checks.
+3. Reassigning an immutable 'let' binding:
+   let x = 1
+   x = 2                              // ERROR[E004]: cannot reassign immutable binding
+   var x = 1                          // Fix: declare with 'var' if mutation is needed.
+*/
