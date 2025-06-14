@@ -1,0 +1,74 @@
+fun simplifyPath(path: string): string {
+  var stack: list<string> = []
+  var part = ""
+  var i = 0
+  let n = len(path)
+
+  while i <= n {
+    if i == n || path[i] == '/' {
+      if part == ".." {
+        if len(stack) > 0 {
+          stack = stack[0:len(stack)-1]
+        }
+      } else if part != "" && part != "." {
+        stack = stack + [part]
+      }
+      part = ""
+    } else {
+      part = part + path[i]
+    }
+    i = i + 1
+  }
+
+  var result = "/"
+  var j = 0
+  while j < len(stack) {
+    result = result + stack[j]
+    if j < len(stack) - 1 {
+      result = result + "/"
+    }
+    j = j + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect simplifyPath("/home/") == "/home"
+}
+
+test "example 2" {
+  expect simplifyPath("/../") == "/"
+}
+
+test "example 3" {
+  expect simplifyPath("/home//foo/") == "/home/foo"
+}
+
+// Additional tests
+
+test "complex" {
+  expect simplifyPath("/a/./b/../../c/") == "/c"
+}
+
+test "dots" {
+  expect simplifyPath("/a/../../b/../c//.//") == "/c"
+}
+
+test "long" {
+  expect simplifyPath("/a//b////c/d//././/..") == "/a/b/c"
+}
+
+/*
+Common Mochi language errors and fixes:
+1. Using '=' instead of '==' when comparing strings:
+     if part = ".." { ... }      // error[E004]
+   Fix: use '==' for equality checks.
+2. Reassigning a value declared with 'let':
+     let part = ""
+     part = s               // error[E004]
+   Fix: declare mutable variables with 'var' when they need reassignment.
+3. Forgetting to reset temporary strings when parsing.
+   Always set `part = ""` after processing each path segment.
+*/
