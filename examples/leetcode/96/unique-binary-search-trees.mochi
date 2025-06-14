@@ -1,0 +1,58 @@
+fun numTrees(n: int): int {
+  var dp: list<int> = []
+  var i = 0
+  while i <= n {
+    dp = dp + [0]
+    i = i + 1
+  }
+
+  dp[0] = 1
+  if n >= 1 {
+    dp[1] = 1
+  }
+
+  i = 2
+  while i <= n {
+    var j = 1
+    while j <= i {
+      dp[i] = dp[i] + dp[j-1] * dp[i-j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  return dp[n]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect numTrees(3) == 5
+}
+
+test "example 2" {
+  expect numTrees(1) == 1
+}
+
+// Additional tests
+
+test "n = 2" {
+  expect numTrees(2) == 2
+}
+
+test "n = 5" {
+  expect numTrees(5) == 42
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons.
+   if n = 0 { }    // ❌ assignment, not comparison
+   if n == 0 { }   // ✅ use '==' for equality
+2. Reassigning a variable declared with 'let'.
+   let count = 0
+   count = 1       // ❌ immutable; use 'var' when mutation is needed
+3. Off-by-one loop ranges leading to missing iterations.
+   while i < n { } // ❌ won't run when i == n; for dp we need <= n
+   while i <= n { } // ✅ loops through all values 0..n
+*/
