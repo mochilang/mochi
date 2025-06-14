@@ -6,20 +6,20 @@ fun combinationSum2(candidates: list<int>, target: int): list<list<int>> {
   fun backtrack(remain: int, start: int, path: list<int>) {
     if remain == 0 {
       result = result + [path]
-      return
-    }
-    var i = start
-    while i < n {
-      let current = arr[i]
-      if current > remain {
-        break
-      }
-      if i > start && arr[i] == arr[i-1] {
+    } else {
+      var i = start
+      while i < n {
+        let current = arr[i]
+        if current > remain {
+          break
+        }
+        if i > start && arr[i] == arr[i-1] {
+          i = i + 1
+          continue
+        }
+        backtrack(remain - current, i + 1, path + [current])
         i = i + 1
-        continue
       }
-      backtrack(remain - current, i + 1, path + [current])
-      i = i + 1
     }
   }
 

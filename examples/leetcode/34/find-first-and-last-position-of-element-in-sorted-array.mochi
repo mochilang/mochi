@@ -20,7 +20,7 @@ fun searchRange(nums: list<int>, target: int): list<int> {
     }
   }
 
-  if start == -1 {
+  if start == (-1) {
     return [-1, -1]
   }
 
