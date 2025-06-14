@@ -11,8 +11,14 @@ fun hasPathSum(root: Tree, targetSum: int): bool {
     Leaf {} => false
     Node(l, v, r) => {
       let remaining = targetSum - v
-      let leftEmpty = match l { Leaf {} => true _ => false }
-      let rightEmpty = match r { Leaf {} => true _ => false }
+      let leftEmpty = match l {
+        Leaf {} => true
+        _ => false
+      }
+      let rightEmpty = match r {
+        Leaf {} => true
+        _ => false
+      }
       if leftEmpty && rightEmpty {
         remaining == 0
       } else {
