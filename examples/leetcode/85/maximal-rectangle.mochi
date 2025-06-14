@@ -5,8 +5,10 @@ fun maximalRectangle(matrix: list<list<string>>): int {
   let rows = len(matrix)
   let cols = len(matrix[0])
   var heights: list<int> = []
-  for _ in 0..cols {
+  var init = 0
+  while init < cols {
     heights = heights + [0]
+    init = init + 1
   }
   var best = 0
 
@@ -20,13 +22,20 @@ fun maximalRectangle(matrix: list<list<string>>): int {
       if i < n {
         curr = hs[i]
       }
-      while len(stack) > 0 && curr < hs[stack[len(stack)-1]] {
-        let h = hs[stack[len(stack)-1]]
-        stack = stack[0:len(stack)-1]
-        let width = if len(stack) == 0 { i } else { i - stack[len(stack)-1] - 1 }
-        let area = h * width
-        if area > maxArea {
-          maxArea = area
+      while len(stack) > 0 {
+        if curr < hs[stack[len(stack)-1]] {
+          let h = hs[stack[len(stack)-1]]
+          stack = stack[0:len(stack)-1]
+          var width = i
+          if len(stack) > 0 {
+            width = i - stack[len(stack)-1] - 1
+          }
+          let area = h * width
+          if area > maxArea {
+            maxArea = area
+          }
+        } else {
+          break
         }
       }
       stack = stack + [i]

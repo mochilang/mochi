@@ -22,14 +22,24 @@ fun subsetsWithDup(nums: list<int>): list<list<int>> {
   var result: list<list<int>> = []
 
   fun backtrack(start: int, path: list<int>) {
-    result = result + [path]
+    var once = 0
+    while once < 1 {
+      result = result + [path]
+      once = once + 1
+    }
     var i = start
     while i < n {
       if i > start && arr[i] == arr[i - 1] {
         i = i + 1
         continue
       }
-      backtrack(i + 1, path + [arr[i]])
+      var newPath = path
+      var t = 0
+      while t < 1 {
+        newPath = newPath + [arr[i]]
+        t = t + 1
+      }
+      backtrack(i + 1, newPath)
       i = i + 1
     }
   }
