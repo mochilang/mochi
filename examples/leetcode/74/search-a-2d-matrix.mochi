@@ -1,0 +1,52 @@
+// Solution for LeetCode problem 74 - Search a 2D Matrix
+
+fun searchMatrix(matrix: list<list<int>>, target: int): bool {
+  let m = len(matrix)
+  if m == 0 {
+    return false
+  }
+  let n = len(matrix[0])
+
+  var left = 0
+  var right = m * n - 1
+  while left <= right {
+    let mid = left + (right - left) / 2
+    let row = mid / n
+    let col = mid % n
+    let value = matrix[row][col]
+    if value == target {
+      return true
+    } else if value < target {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
+  }
+  return false
+}
+
+// Tests from LeetCode
+
+test "example 1" {
+  expect searchMatrix([[1,3,5,7],[10,11,16,20],[23,30,34,60]], 3) == true
+}
+
+test "example 2" {
+  expect searchMatrix([[1,3,5,7],[10,11,16,20],[23,30,34,60]], 13) == false
+}
+
+// Additional edge cases
+
+test "single row" {
+  expect searchMatrix([[1,2,3,4]], 3) == true
+}
+
+test "not found" {
+  expect searchMatrix([[5]], 1) == false
+}
+
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' for comparisons. '=' assigns a value; use '==' to compare.
+// 2. Forgetting to declare mutable variables with 'var'. Here 'left' and 'right' must use 'var'.
+// 3. Off-by-one mistakes when converting 'mid' to row and column. Remember rows are 0-indexed.
+// 4. Attempting Python-style loops like 'for row in matrix:'; use 'for i in 0..len(matrix)' in Mochi.
