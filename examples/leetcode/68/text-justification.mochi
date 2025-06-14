@@ -5,9 +5,13 @@ fun fullJustify(words: list<string>, maxWidth: int): list<string> {
     var j = i
     var lineLen = 0
     // find how many words fit into the current line
-    while j < len(words) && lineLen + len(words[j]) + (j - i) <= maxWidth {
-      lineLen = lineLen + len(words[j])
-      j = j + 1
+    while j < len(words) {
+      if lineLen + len(words[j]) + (j - i) <= maxWidth {
+        lineLen = lineLen + len(words[j])
+        j = j + 1
+      } else {
+        break
+      }
     }
 
     var line = ""
@@ -77,10 +81,10 @@ test "example 3" {
   let words = ["Science","is","what","we","understand","well","enough","to","explain","to","a","computer.","Art","is","everything","else","we","do"]
   expect fullJustify(words, 20) == [
     "Science  is  what we",
-    "understand   well",
+    "understand      well",
     "enough to explain to",
-    "a computer.  Art is",
-    "everything else  we",
+    "a  computer.  Art is",
+    "everything  else  we",
     "do                  "
   ]
 }

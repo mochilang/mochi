@@ -7,8 +7,16 @@ fun rotateRight(nums: list<int>, k: int): list<int> {
   if r == 0 {
     return nums
   }
-  let start = n - r
-  return nums[start:n] + nums[0:start]
+
+  // build the rotated list element by element to avoid list concatenation
+  var result: list<int> = []
+  var i = 0
+  while i < n {
+    let idx = (n - r + i) % n
+    result = result + [nums[idx]]
+    i = i + 1
+  }
+  return result
 }
 
 // Test cases based on LeetCode #61: Rotate List
