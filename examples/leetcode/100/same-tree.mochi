@@ -1,0 +1,90 @@
+fun isSameTree(p: Tree, q: Tree): bool {
+  return match p {
+    Leaf => match q {
+      Leaf => true
+      _ => false
+    }
+    Node(pl, pv, pr) => match q {
+      Node(ql, qv, qr) => pv == qv && isSameTree(pl, ql) && isSameTree(pr, qr)
+      _ => false
+    }
+  }
+}
+
+// Definition of a binary tree
+// Leaf represents an empty tree
+// Node has left, value, and right subtrees
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let p = Node {
+    left: Node { left: Leaf, value: 2, right: Leaf },
+    value: 1,
+    right: Node { left: Leaf, value: 3, right: Leaf }
+  }
+  let q = Node {
+    left: Node { left: Leaf, value: 2, right: Leaf },
+    value: 1,
+    right: Node { left: Leaf, value: 3, right: Leaf }
+  }
+  expect isSameTree(p, q) == true
+}
+
+test "example 2" {
+  let p = Node {
+    left: Node { left: Leaf, value: 2, right: Leaf },
+    value: 1,
+    right: Leaf
+  }
+  let q = Node {
+    left: Leaf,
+    value: 1,
+    right: Node { left: Leaf, value: 2, right: Leaf }
+  }
+  expect isSameTree(p, q) == false
+}
+
+test "example 3" {
+  let p = Node {
+    left: Node { left: Leaf, value: 2, right: Leaf },
+    value: 1,
+    right: Node { left: Leaf, value: 1, right: Leaf }
+  }
+  let q = Node {
+    left: Node { left: Leaf, value: 1, right: Leaf },
+    value: 1,
+    right: Node { left: Leaf, value: 2, right: Leaf }
+  }
+  expect isSameTree(p, q) == false
+}
+
+test "both empty" {
+  expect isSameTree(Leaf, Leaf) == true
+}
+
+/*
+Common language errors and how to fix them:
+1. Forgetting to break out of `match` branches with `return`:
+   fun foo(x: int): int {
+     match x {
+       1 => 1
+       2 => 2
+     }
+   }
+   // error: missing return. Fix by using `return` or an else branch.
+
+2. Reassigning a `let` binding:
+   let x = 1
+   x = 2  // error[E004]: cannot reassign immutable binding
+   // Fix: declare with `var x = 1` if it needs to change.
+
+3. Accessing a field on the wrong variant:
+   let t = Leaf
+   t.value  // error[I003]: Leaf has no field `value`
+   // Fix: pattern match on `Node` before accessing its fields.
+*/
