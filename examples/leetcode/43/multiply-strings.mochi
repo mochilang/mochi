@@ -1,0 +1,95 @@
+fun multiply(num1: string, num2: string): string {
+  // quick return if either input is zero
+  if num1 == "0" || num2 == "0" {
+    return "0"
+  }
+
+  // map of character digits to their numeric values
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+
+  let m = len(num1)
+  let n = len(num2)
+  // result can have at most m + n digits
+  var result: list<int> = []
+  for _ in 0..m+n {
+    result = result + [0]
+  }
+
+  var i = m
+  while i > 0 {
+    i = i - 1
+    let d1 = digits[num1[i]]
+    var j = n
+    while j > 0 {
+      j = j - 1
+      let d2 = digits[num2[j]]
+      let sum = d1 * d2 + result[i+j+1]
+      result[i+j+1] = sum % 10
+      result[i+j] = result[i+j] + sum / 10
+    }
+  }
+
+  var out = ""
+  var k = 0
+  while k < len(result) {
+    let digit = result[k]
+    if out == "" && digit == 0 {
+      // skip leading zeros
+    } else {
+      out = out + str(digit)
+    }
+    k = k + 1
+  }
+  if out == "" {
+    return "0"
+  }
+  return out
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect multiply("2", "3") == "6"
+}
+
+test "example 2" {
+  expect multiply("123", "456") == "56088"
+}
+
+// Additional edge cases
+
+test "leading zeros" {
+  expect multiply("0002", "03") == "6"
+}
+
+test "large numbers" {
+  expect multiply("999", "999") == "998001"
+}
+
+// --------------------------------------------------
+// Common Mochi language errors and how to fix them
+// --------------------------------------------------
+// Error: using ++ to increment (not supported)
+// var i = 0
+// i++          // ❌ compile error
+// Fix:
+var ok = 0
+ok = ok + 1
+
+// Error: assigning to a let binding
+// let x = 1
+// x = 2        // ❌ cannot assign to immutable binding
+// Fix:
+var y = 1
+y = 2
