@@ -20,6 +20,7 @@ import (
 	"mochi/runtime/ffi/extern"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
+	"mochi/runtime/logic"
 	"mochi/runtime/stream"
 	"mochi/types"
 	"os"
@@ -43,6 +44,7 @@ type Interpreter struct {
 	memo     map[string]map[string]any
 	dataPlan string
 	tx       *atomic.Int64
+	logic    *logic.Engine
 }
 
 func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
@@ -62,6 +64,7 @@ func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
 		memo:     map[string]map[string]any{},
 		dataPlan: "memory",
 		tx:       &atomic.Int64{},
+		logic:    logic.NewEngine(),
 	}
 }
 
@@ -588,6 +591,16 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 
 	case s.ExternObject != nil:
 		i.ffi.DeclareExternObject(s.ExternObject)
+		return nil
+
+	case s.Fact != nil:
+		pred := convertLogicPredicate(s.Fact.Pred)
+		i.logic.AddFact(pred)
+		return nil
+
+	case s.Rule != nil:
+		rule := convertLogicRule(s.Rule)
+		i.logic.AddRule(rule)
 		return nil
 
 	case s.Stream != nil:
@@ -1265,6 +1278,15 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			return val, err
 		})
 
+	case p.LogicQuery != nil:
+		pred := convertLogicPredicate(p.LogicQuery.Pred)
+		results := i.logic.Query(pred)
+		out := make([]any, len(results))
+		for idx, r := range results {
+			out[idx] = r
+		}
+		return out, nil
+
 	case p.Match != nil:
 		return i.evalMatch(p.Match)
 
@@ -1826,6 +1848,41 @@ func (b breakSignal) Error() string { return "break" }
 type continueSignal struct{}
 
 func (c continueSignal) Error() string { return "continue" }
+
+func convertLogicTerm(t *parser.LogicTerm) logic.Term {
+	if t.Var != nil {
+		return logic.Term{Var: *t.Var, IsVar: true}
+	}
+	if t.Str != nil {
+		return logic.Term{Val: *t.Str}
+	}
+	if t.Int != nil {
+		return logic.Term{Val: *t.Int}
+	}
+	return logic.Term{}
+}
+
+func convertLogicPredicate(p *parser.LogicPredicate) logic.Predicate {
+	args := make([]logic.Term, len(p.Args))
+	for i, a := range p.Args {
+		args[i] = convertLogicTerm(a)
+	}
+	return logic.Predicate{Name: p.Name, Args: args}
+}
+
+func convertLogicRule(r *parser.RuleStmt) logic.Rule {
+	head := convertLogicPredicate(r.Head)
+	body := make([]logic.Condition, len(r.Body))
+	for i, c := range r.Body {
+		if c.Pred != nil {
+			p := convertLogicPredicate(c.Pred)
+			body[i] = logic.Condition{Pred: &p}
+		} else if c.Neq != nil {
+			body[i] = logic.Condition{Neq: &logic.NotEqual{A: c.Neq.A, B: c.Neq.B}}
+		}
+	}
+	return logic.Rule{Head: head, Body: body}
+}
 
 func (i *Interpreter) Close() {
 	for _, cancel := range i.cancels {
