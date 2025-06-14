@@ -1,0 +1,46 @@
+// Solution for LeetCode problem 62 - Unique Paths
+
+fun uniquePaths(m: int, n: int): int {
+  var dp: list<int> = []
+  var i = 0
+  while i < n {
+    dp = dp + [1]
+    i = i + 1
+  }
+  var row = 1
+  while row < m {
+    var col = 1
+    while col < n {
+      dp[col] = dp[col] + dp[col - 1]
+      col = col + 1
+    }
+    row = row + 1
+  }
+  return dp[n - 1]
+}
+
+// Tests from LeetCode
+
+test "example 1" {
+  expect uniquePaths(3, 7) == 28
+}
+
+test "example 2" {
+  expect uniquePaths(3, 2) == 3
+}
+
+test "example 3" {
+  expect uniquePaths(7, 3) == 28
+}
+
+test "example 4" {
+  expect uniquePaths(3, 3) == 6
+}
+
+// Common Mochi language errors and fixes:
+// 1. Using '=' instead of '==' for equality checks.
+// 2. Trying to use 'i++' for increment; use 'i = i + 1' instead.
+// 3. Forgetting 'var' when a variable is reassigned, e.g. 'let dp = []' would
+//    make 'dp = dp + [1]' invalid. Use 'var' for mutable variables.
+// 4. Off-by-one errors in ranges. 'for i in 0..n' iterates n times from 0 to
+//    n-1.
