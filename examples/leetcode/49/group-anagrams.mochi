@@ -1,0 +1,57 @@
+fun groupAnagrams(strs: list<string>): list<list<string>> {
+  var index: map<string, int> = {}
+  var groups: list<list<string>> = []
+  for word in strs {
+    let chars = from ch in word sort by ch select ch
+    var key = ""
+    for ch in chars {
+      key = key + ch
+    }
+    if key in index {
+      let idx = index[key]
+      groups[idx] = groups[idx] + [word]
+    } else {
+      groups = groups + [[word]]
+      index[key] = len(groups) - 1
+    }
+  }
+  return groups
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  let res = groupAnagrams(["eat","tea","tan","ate","nat","bat"])
+  let normalize = fun(g: list<string>): list<string> {
+    return from x in g sort by x select x
+  }
+  let sorted = from g in res select normalize(g)
+  let final = from g in sorted sort by g[0] select g
+  let expected = [["ate","eat","tea"],["bat"],["nat","tan"]]
+  let expSorted = from g in expected select normalize(g)
+  let expFinal = from g in expSorted sort by g[0] select g
+  expect final == expFinal
+}
+
+test "example 2" {
+  expect groupAnagrams([""]) == [[""]]
+}
+
+test "example 3" {
+  expect groupAnagrams(["a"]) == [["a"]]
+}
+
+// Common Mochi mistakes and how to avoid them:
+// 1. Using unsupported increment operators:
+//    // count++               // ❌ parse error
+//    count = count + 1        // ✅ use explicit addition
+// 2. Forgetting to initialize a map before use:
+//    var m: map<string, int>
+//    // m["a"] = 1           // ❌ runtime error (nil map)
+//    var m: map<string, int> = {}
+//    m["a"] = 1               // ✅ initialized map
+// 3. Mutating a value declared with `let`:
+//    let x = 5
+//    // x = 6                // ❌ cannot assign to immutable variable
+//    var y = 5
+//    y = 6                    // ✅ use var when mutation is needed
