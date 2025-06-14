@@ -8,7 +8,7 @@ type Tree =
 // Recursively traverse the tree in-order.
 fun inorderTraversal(t: Tree): list<int> {
   return match t {
-    Leaf => []
+    Leaf => [] as list<int>
     Node(l, v, r) => inorderTraversal(l) + [v] + inorderTraversal(r)
   }
 }
