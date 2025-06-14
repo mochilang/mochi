@@ -1,0 +1,80 @@
+// Solution for LeetCode problem 106 - Construct Binary Tree from Inorder and Postorder Traversal
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+fun buildTree(inorder: list<int>, postorder: list<int>): Tree {
+  if len(inorder) == 0 {
+    return Leaf
+  }
+
+  let rootVal = postorder[len(postorder) - 1]
+  var index = 0
+  while index < len(inorder) && inorder[index] != rootVal {
+    index = index + 1
+  }
+
+  let leftIn = inorder[0:index]
+  let rightIn = inorder[index + 1:len(inorder)]
+  let leftPost = postorder[0:index]
+  let rightPost = postorder[index:len(postorder) - 1]
+
+  return Node {
+    left: buildTree(leftIn, leftPost),
+    value: rootVal,
+    right: buildTree(rightIn, rightPost),
+  }
+}
+
+fun isSameTree(p: Tree, q: Tree): bool {
+  return match p {
+    Leaf => match q {
+      Leaf => true
+      _ => false
+    }
+    Node(pl, pv, pr) => match q {
+      Node(ql, qv, qr) => pv == qv && isSameTree(pl, ql) && isSameTree(pr, qr)
+      _ => false
+    }
+  }
+}
+
+test "example 1" {
+  let inorder = [9,3,15,20,7]
+  let postorder = [9,15,7,20,3]
+  let expected = Node {
+    left: Node { left: Leaf, value: 9, right: Leaf },
+    value: 3,
+    right: Node {
+      left: Node { left: Leaf, value: 15, right: Leaf },
+      value: 20,
+      right: Node { left: Leaf, value: 7, right: Leaf }
+    }
+  }
+  expect isSameTree(buildTree(inorder, postorder), expected) == true
+}
+
+test "example 2" {
+  let inorder = [-1]
+  let postorder = [-1]
+  let expected = Node { left: Leaf, value: -1, right: Leaf }
+  expect isSameTree(buildTree(inorder, postorder), expected) == true
+}
+
+test "empty" {
+  expect buildTree([], []) == Leaf
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons.
+   if len(inorder) = 0 { } // ❌ assignment
+   if len(inorder) == 0 { } // ✅ comparison
+2. Forgetting to declare mutable variables with 'var'.
+   index = index + 1 // ❌ if 'index' was declared with 'let'
+   var index = 0     // ✅ declare as 'var' when mutation is needed
+3. Slicing with out-of-range indices causes runtime errors.
+   list[0:len(list)+1] // ❌ out of bounds
+   list[0:len(list)]   // ✅ valid slice
+*/
