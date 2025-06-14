@@ -1,0 +1,85 @@
+fun maximalRectangle(matrix: list<list<string>>): int {
+  if len(matrix) == 0 {
+    return 0
+  }
+  let rows = len(matrix)
+  let cols = len(matrix[0])
+  var heights: list<int> = []
+  for _ in 0..cols {
+    heights = heights + [0]
+  }
+  var best = 0
+
+  fun largestRectangleArea(hs: list<int>): int {
+    var stack: list<int> = []
+    var i = 0
+    let n = len(hs)
+    var maxArea = 0
+    while i <= n {
+      let curr = if i == n { 0 } else { hs[i] }
+      while len(stack) > 0 && curr < hs[stack[len(stack)-1]] {
+        let h = hs[stack[len(stack)-1]]
+        stack = stack[0:len(stack)-1]
+        let width = if len(stack) == 0 { i } else { i - stack[len(stack)-1] - 1 }
+        let area = h * width
+        if area > maxArea {
+          maxArea = area
+        }
+      }
+      stack = stack + [i]
+      i = i + 1
+    }
+    return maxArea
+  }
+
+  var r = 0
+  while r < rows {
+    var c = 0
+    while c < cols {
+      if matrix[r][c] == "1" {
+        heights[c] = heights[c] + 1
+      } else {
+        heights[c] = 0
+      }
+      c = c + 1
+    }
+    let area = largestRectangleArea(heights)
+    if area > best {
+      best = area
+    }
+    r = r + 1
+  }
+  return best
+}
+
+// Test cases from LeetCode
+
+let matrix1 = [
+  ["1","0","1","0","0"],
+  ["1","0","1","1","1"],
+  ["1","1","1","1","1"],
+  ["1","0","0","1","0"],
+]
+
+test "example 1" {
+  expect maximalRectangle(matrix1) == 6
+}
+
+test "single zero" {
+  expect maximalRectangle([["0"]]) == 0
+}
+
+test "single one" {
+  expect maximalRectangle([["1"]]) == 1
+}
+
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' for comparisons.
+//    if matrix[r][c] = "1" { ... }    // ❌ wrong
+//    if matrix[r][c] == "1" { ... }   // ✅ use '=='
+// 2. Forgetting 'var' when a variable changes.
+//    let heights = []                // ❌ cannot modify later
+//    var heights: list<int> = []     // ✅ declare as var for mutation
+// 3. Off-by-one mistakes in loops when traversing rows/cols.
+//    for r in 0..rows { }            // ✅ iterates rows elements
+//    while r <= rows { ... }         // ❌ runs one step too far
