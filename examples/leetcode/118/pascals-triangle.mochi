@@ -1,0 +1,54 @@
+// Solution for LeetCode problem 118 - Pascal's Triangle
+//
+// Build each row based on the previous one. The first and last
+// values of a row are always 1. Intermediate values are sums of the
+// two numbers above.
+
+fun generateTriangle(numRows: int): list<list<int>> {
+  if numRows <= 0 {
+    return []
+  }
+  var result: list<list<int>> = [[1]]
+  var i = 1
+  while i < numRows {
+    let prev = result[i-1]
+    var row: list<int> = [1]
+    var j = 1
+    while j < len(prev) {
+      row = row + [prev[j-1] + prev[j]]
+      j = j + 1
+    }
+    row = row + [1]
+    result = result + [row]
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect generateTriangle(5) == [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
+}
+
+test "example 2" {
+  expect generateTriangle(1) == [[1]]
+}
+
+test "zero rows" {
+  expect generateTriangle(0) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons.
+   if numRows = 0 { }       // ❌ assignment
+   if numRows == 0 { }      // ✅ comparison
+2. Reassigning an immutable value bound with 'let'.
+   let row = []
+   row = row + [1]          // ❌ cannot assign to 'let'
+   // Fix: declare 'var row: list<int> = [1]'
+3. Forgetting to specify list element types when starting with an empty list.
+   var result = []          // ❌ type unknown
+   var result: list<list<int>> = []  // ✅ specify type
+*/
