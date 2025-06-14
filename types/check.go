@@ -376,6 +376,20 @@ func Check(prog *parser.Program, env *Env) []error {
 		Params: []Type{StringType{}},
 		Return: AnyType{},
 	}, false)
+	env.SetVar("fact", FuncType{
+		Params:   []Type{StringType{}, AnyType{}},
+		Return:   VoidType{},
+		Variadic: true,
+	}, false)
+	env.SetVar("rule", FuncType{
+		Params: []Type{StringType{}},
+		Return: VoidType{},
+	}, false)
+	env.SetVar("query", FuncType{
+		Params: []Type{StringType{}},
+		Return: ListType{Elem: MapType{Key: StringType{}, Value: AnyType{}}},
+		Pure:   true,
+	}, false)
 
 	var errs []error
 	for _, stmt := range prog.Statements {

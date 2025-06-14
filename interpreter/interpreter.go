@@ -16,6 +16,7 @@ import (
 	"mochi/parser"
 	"mochi/runtime/agent"
 	"mochi/runtime/data"
+	"mochi/runtime/datalog"
 	ffi "mochi/runtime/ffi"
 	"mochi/runtime/ffi/extern"
 	mhttp "mochi/runtime/http"
@@ -43,6 +44,7 @@ type Interpreter struct {
 	memo     map[string]map[string]any
 	dataPlan string
 	tx       *atomic.Int64
+	datalog  *datalog.DB
 }
 
 func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
@@ -62,6 +64,7 @@ func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
 		memo:     map[string]map[string]any{},
 		dataPlan: "memory",
 		tx:       &atomic.Int64{},
+		datalog:  datalog.NewDB(),
 	}
 }
 

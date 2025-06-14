@@ -8,6 +8,7 @@ import (
 
 	"mochi/parser"
 	"mochi/runtime/data"
+	"mochi/runtime/datalog"
 	"mochi/types"
 )
 
@@ -181,6 +182,77 @@ func builtinAvg(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return sum / float64(len(list)), nil
 }
 
+func builtinFact(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) < 2 {
+		return nil, fmt.Errorf("fact(name, args...) requires at least one argument")
+	}
+	nameVal, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	name, ok := nameVal.(string)
+	if !ok {
+		return nil, fmt.Errorf("fact name must be string")
+	}
+	args := make([]any, 0, len(c.Args)-1)
+	for _, a := range c.Args[1:] {
+		v, err := i.evalExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, v)
+	}
+	i.datalog.AddFact(name, args)
+	return nil, nil
+}
+
+func builtinRule(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("rule() expects a single string argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	s, ok := val.(string)
+	if !ok {
+		return nil, fmt.Errorf("rule() expects a string")
+	}
+	r, err := datalog.ParseRule(s)
+	if err != nil {
+		return nil, err
+	}
+	i.datalog.AddRule(r)
+	return nil, nil
+}
+
+func builtinQuery(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("query() expects a single string argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	s, ok := val.(string)
+	if !ok {
+		return nil, fmt.Errorf("query() expects a string")
+	}
+	q, err := datalog.ParseQuery(s)
+	if err != nil {
+		return nil, err
+	}
+	res, err := i.datalog.Query(q)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]any, len(res))
+	for idx, m := range res {
+		out[idx] = m
+	}
+	return out, nil
+}
+
 func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
 	return map[string]func(*Interpreter, *parser.CallExpr) (any, error){
 		"print": builtinPrint,
@@ -191,5 +263,8 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"count": builtinCount,
 		"avg":   builtinAvg,
 		"eval":  builtinEval,
+		"fact":  builtinFact,
+		"rule":  builtinRule,
+		"query": builtinQuery,
 	}
 }
