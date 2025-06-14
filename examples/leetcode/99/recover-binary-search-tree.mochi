@@ -4,7 +4,7 @@
 // A tree is either a Leaf or a Node with left/right subtrees
 // and an integer value.
 type Tree =
-  Leaf
+  Leaf {}
   | Node(left: Tree, value: int, right: Tree)
 
 // Inorder traversal returning the list of values
@@ -12,7 +12,7 @@ fun inorder(t: Tree): list<int> {
   var res = []
   fun dfs(n: Tree) {
     match n {
-      Leaf => {}
+      Leaf {} => {}
       Node(l, v, r) => {
         dfs(l)
         res = res + [v]
@@ -33,7 +33,7 @@ fun recoverTree(t: Tree): Tree {
 
   fun build(n: Tree): Tree {
     return match n {
-      Leaf => Leaf
+      Leaf {} => Leaf {}
       Node(l, v, r) => {
         let leftNew = build(l)
         let newVal = sortedVals[idx]
@@ -49,9 +49,9 @@ fun recoverTree(t: Tree): Tree {
 
 // Example tree with two nodes swapped
 let ex = Node {
-  left: Node { left: Leaf, value: 3, right: Leaf },
+  left: Node { left: Leaf {}, value: 3, right: Leaf {} },
   value: 1,
-  right: Node { left: Leaf, value: 4, right: Leaf }
+  right: Node { left: Leaf {}, value: 4, right: Leaf {} }
 }
 
 let fixed = recoverTree(ex)
@@ -59,9 +59,9 @@ expect inorder(fixed) == [1,3,4]
 
 // Another test with swapped leaf values
 let ex2 = Node {
-  left: Node { left: Leaf, value: 2, right: Leaf },
+  left: Node { left: Leaf {}, value: 2, right: Leaf {} },
   value: 4,
-  right: Node { left: Leaf, value: 1, right: Leaf }
+  right: Node { left: Leaf {}, value: 1, right: Leaf {} }
 }
 
 let fixed2 = recoverTree(ex2)
