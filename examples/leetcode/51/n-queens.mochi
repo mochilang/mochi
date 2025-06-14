@@ -1,0 +1,86 @@
+// Solution for LeetCode problem 51 - N-Queens
+//
+// Common Mochi language mistakes:
+// 1. Reassigning a value declared with `let` will fail. Use `var` for mutable values.
+//    let count = 0
+//    count = 1         // ❌ cannot assign to immutable binding
+//    var count = 0
+//    count = 1         // ✅
+// 2. Using '=' instead of '==' in a condition.
+//    if row = n { ... }  // ❌ assignment instead of comparison
+//    if row == n { ... } // ✅ correct comparison
+// 3. Off-by-one errors in loops. `0..n` iterates from 0 to n-1.
+//    for i in 0..n { ... } // ✅ visits n elements
+
+fun solveNQueens(n: int): list<list<string>> {
+  var results: list<list<string>> = []
+  var cols: map<int, bool> = {}
+  var diag1: map<int, bool> = {}
+  var diag2: map<int, bool> = {}
+
+  fun backtrack(row: int, board: list<string>) {
+    if row == n {
+      results = results + [board]
+    } else {
+      var c = 0
+      while c < n {
+        var usedCol = false
+        if c in cols {
+          usedCol = cols[c]
+        }
+      if usedCol {
+        c = c + 1
+        continue
+      }
+      let d1 = row - c
+      let d2 = row + c
+      var usedD1 = false
+      var usedD2 = false
+      if d1 in diag1 {
+        usedD1 = diag1[d1]
+      }
+      if d2 in diag2 {
+        usedD2 = diag2[d2]
+      }
+      if !(usedD1 || usedD2) {
+        cols[c] = true
+        diag1[d1] = true
+        diag2[d2] = true
+        var rowStr = ""
+        var i = 0
+        while i < n {
+          if i == c {
+            rowStr = rowStr + "Q"
+          } else {
+            rowStr = rowStr + "."
+          }
+          i = i + 1
+        }
+        backtrack(row + 1, board + [rowStr])
+        cols[c] = false
+        diag1[d1] = false
+        diag2[d2] = false
+        }
+        c = c + 1
+      }
+    }
+  }
+
+  backtrack(0, [])
+  return results
+}
+
+// Test cases from LeetCode
+let result4 = solveNQueens(4)
+let expected4 = [
+  [".Q..","...Q","Q...","..Q."],
+  ["..Q.","Q...","...Q",".Q.."]
+]
+
+test "n=4" {
+  expect result4 == expected4
+}
+
+test "n=1" {
+  expect solveNQueens(1) == [["Q"]]
+}
