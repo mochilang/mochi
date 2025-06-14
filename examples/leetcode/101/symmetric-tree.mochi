@@ -1,0 +1,80 @@
+// LeetCode 101 - Symmetric Tree
+
+// Binary tree type definition
+// Leaf represents an empty tree
+// Node has left, value, and right subtrees
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Determine if two subtrees are mirror images of each other
+fun isMirror(t1: Tree, t2: Tree): bool {
+  return match t1 {
+    Leaf => match t2 {
+      Leaf => true
+      _ => false
+    }
+    Node(l1, v1, r1) => match t2 {
+      Node(l2, v2, r2) => v1 == v2 && isMirror(l1, r2) && isMirror(r1, l2)
+      _ => false
+    }
+  }
+}
+
+fun isSymmetric(root: Tree): bool {
+  return isMirror(root, root)
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tree = Node {
+    left: Node { left: Leaf, value: 2, right: Leaf },
+    value: 1,
+    right: Node { left: Leaf, value: 2, right: Leaf }
+  }
+  expect isSymmetric(tree) == true
+}
+
+test "example 2" {
+  let tree = Node {
+    left: Node {
+      left: Node { left: Leaf, value: 3, right: Leaf },
+      value: 2,
+      right: Node { left: Leaf, value: 4, right: Leaf }
+    },
+    value: 1,
+    right: Node {
+      left: Node { left: Leaf, value: 4, right: Leaf },
+      value: 2,
+      right: Node { left: Leaf, value: 3, right: Leaf }
+    }
+  }
+  expect isSymmetric(tree) == true
+}
+
+test "not symmetric" {
+  let tree = Node {
+    left: Node { left: Leaf, value: 2, right: Leaf },
+    value: 1,
+    right: Node { left: Leaf, value: 3, right: Leaf }
+  }
+  expect isSymmetric(tree) == false
+}
+
+test "empty" {
+  expect isSymmetric(Leaf) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to pattern match before accessing fields:
+     let v = Leaf.value   // ❌ Leaf has no field `value`
+   Fix: match on `Node` first.
+2. Using Python's `None` instead of the `Leaf` constructor for an empty tree.
+   Always use `Leaf` as defined in the type.
+3. Mixing up assignment and comparison operators:
+     if x = 1 { ... }     // ❌ assignment in condition
+   Use `==` for equality comparison.
+*/
