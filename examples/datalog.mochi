@@ -1,0 +1,21 @@
+import go "mochi/runtime/datalog" as datalog
+
+datalog.fact("parent", "Alice", "Bob")
+datalog.fact("parent", "Alice", "Carol")
+datalog.fact("parent", "Bob", "David")
+datalog.fact("parent", "Carol", "Eva")
+
+datalog.rule("grandparent(x, z):- parent(x, y), parent(y, z)")
+datalog.rule("sibling(x, y):- parent(p, x), parent(p, y), x != y")
+
+let gps = datalog.query("grandparent(x, z)")
+print("Grandparents:")
+for g in gps {
+  print(g.x, "is grandparent of", g.z)
+}
+
+let sibs = datalog.query("sibling(x, y)")
+print("Siblings:")
+for s in sibs {
+  print(s.x, "<->", s.y)
+}
