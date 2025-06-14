@@ -1,0 +1,42 @@
+// Solution for LeetCode problem 50 - Pow(x, n)
+//
+// Common Mochi language mistakes:
+// 1. Using the `^` operator for exponentiation. In Mochi `^` performs
+//    bitwise XOR. Use a loop or math.pow instead.
+// 2. Forgetting to handle negative exponents.
+// 3. Mixing int and float literals, e.g. writing `var result = 1` when
+//    a float is expected. Use `1.0` for floats.
+
+fun myPow(x: float, n: int): float {
+  if n == 0 {
+    return 1.0
+  }
+  if n < 0 {
+    return 1.0 / myPow(x, -n)
+  }
+  var base = x
+  var exp = n
+  var result = 1.0
+  while exp > 0 {
+    if exp % 2 == 1 {
+      result = result * base
+    }
+    base = base * base
+    exp = exp / 2
+  }
+  return result
+}
+
+// Example usage and tests
+
+test "example 1" {
+  expect myPow(2.0, 10) == 1024.0
+}
+
+test "example 2" {
+  expect myPow(2.1, 3) == 9.261000000000001
+}
+
+test "example 3" {
+  expect myPow(2.0, -2) == 0.25
+}
