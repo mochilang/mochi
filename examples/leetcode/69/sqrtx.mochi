@@ -1,0 +1,50 @@
+fun mySqrt(x: int): int {
+  if x < 2 {
+    return x
+  }
+  var left = 1
+  var right = x / 2
+  var ans = 0
+  while left <= right {
+    let mid = left + (right - left) / 2
+    let sq = mid * mid
+    if sq == x {
+      return mid
+    } else if sq < x {
+      left = mid + 1
+      ans = mid
+    } else {
+      right = mid - 1
+    }
+  }
+  return ans
+}
+
+// Tests from the LeetCode problem statement
+
+test "example 1" {
+  expect mySqrt(4) == 2
+}
+
+test "example 2" {
+  expect mySqrt(8) == 2
+}
+
+// Additional tests
+
+test "zero" {
+  expect mySqrt(0) == 0
+}
+
+test "large" {
+  expect mySqrt(2147395599) == 46339
+}
+
+// Common Mochi language mistakes:
+// 1. Using the `^` operator for exponentiation. In Mochi `^` is bitwise XOR.
+//    Use multiplication or a loop to compute squares.
+// 2. Forgetting `var` for variables that change inside the loop.
+// 3. Off-by-one errors in binary search ranges. Ensure the loop uses
+//    `left <= right` and updates `ans` correctly.
+// 4. Using floating point math (`math.sqrt`) and casting to int can lead to
+//    rounding errors. Use integer arithmetic as shown above.
