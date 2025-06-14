@@ -568,6 +568,12 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		env.SetVar(s.ExternFun.Name(), FuncType{Params: params, Return: ret}, false)
 		return nil
 
+	case s.Fact != nil:
+		return nil
+
+	case s.Rule != nil:
+		return nil
+
 	case s.Assign != nil:
 		rhsType, err := checkExprWithExpected(s.Assign.Value, env, nil)
 		if err != nil {
@@ -1354,6 +1360,9 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 
 	case p.Query != nil:
 		return checkQueryExpr(p.Query, env, expected)
+
+	case p.LogicQuery != nil:
+		return ListType{Elem: MapType{Key: StringType{}, Value: AnyType{}}}, nil
 
 	case p.Fetch != nil:
 		urlT, err := checkExpr(p.Fetch.URL, env)

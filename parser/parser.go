@@ -25,12 +25,12 @@ func (b *boolLit) Capture(values []string) error {
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
-	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|import|return|break|continue|let|var|if|else|for|while|in|generate|match|fetch|load|save|package|export)\b`},
+	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|import|return|break|continue|let|var|if|else|for|while|in|generate|match|fetch|load|save|package|export|fact|rule)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
-	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
+	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r]+`},
 })
 
@@ -56,6 +56,8 @@ type Statement struct {
 	ExternVar    *ExternVarDecl    `parser:"| @@"`
 	ExternFun    *ExternFunDecl    `parser:"| @@"`
 	ExternObject *ExternObjectDecl `parser:"| @@"`
+	Fact         *FactStmt         `parser:"| @@"`
+	Rule         *RuleStmt         `parser:"| @@"`
 	On           *OnHandler        `parser:"| @@"`
 	Emit         *EmitStmt         `parser:"| @@"`
 	Let          *LetStmt          `parser:"| @@"`
@@ -242,6 +244,39 @@ type ExternObjectDecl struct {
 	Name string `parser:"'extern' 'object' @Ident"`
 }
 
+type FactStmt struct {
+	Pos  lexer.Position
+	Pred *LogicPredicate `parser:"'fact' @@"`
+}
+
+type RuleStmt struct {
+	Pos  lexer.Position
+	Head *LogicPredicate `parser:"'rule' @@ ':-'"`
+	Body []*LogicCond    `parser:"@@ { ',' @@ }"`
+}
+
+type LogicCond struct {
+	Pred *LogicPredicate `parser:"@@"`
+	Neq  *LogicNeq       `parser:"| @@"`
+}
+
+type LogicNeq struct {
+	A string `parser:"@Ident"`
+	B string `parser:"'!=' @Ident"`
+}
+
+type LogicPredicate struct {
+	Pos  lexer.Position
+	Name string       `parser:"@Ident '('"`
+	Args []*LogicTerm `parser:"[ @@ { ',' @@ } ] ')'"`
+}
+
+type LogicTerm struct {
+	Var *string `parser:"@Ident"`
+	Str *string `parser:"| @String"`
+	Int *int    `parser:"| @Int"`
+}
+
 type Param struct {
 	Name string   `parser:"@Ident"`
 	Type *TypeRef `parser:"[ ':' @@ ]"`
@@ -375,6 +410,11 @@ type QueryExpr struct {
 	Select *Expr          `parser:"'select' @@"`
 }
 
+type LogicQueryExpr struct {
+	Pos  lexer.Position
+	Pred *LogicPredicate `parser:"'query' @@"`
+}
+
 type FromClause struct {
 	Pos lexer.Position
 	Var string `parser:"'from' @Ident 'in'"`
@@ -408,21 +448,22 @@ type MatchCase struct {
 }
 
 type Primary struct {
-	Pos      lexer.Position
-	Struct   *StructLiteral `parser:"@@"`
-	Call     *CallExpr      `parser:"| @@"`
-	Query    *QueryExpr     `parser:"| @@"`
-	Selector *SelectorExpr  `parser:"| @@"`
-	List     *ListLiteral   `parser:"| @@"`
-	Map      *MapLiteral    `parser:"| @@"`
-	FunExpr  *FunExpr       `parser:"| @@"`
-	Match    *MatchExpr     `parser:"| @@"`
-	Generate *GenerateExpr  `parser:"| @@"`
-	Fetch    *FetchExpr     `parser:"| @@"`
-	Load     *LoadExpr      `parser:"| @@"`
-	Save     *SaveExpr      `parser:"| @@"`
-	Lit      *Literal       `parser:"| @@"`
-	Group    *Expr          `parser:"| '(' @@ ')'"`
+	Pos        lexer.Position
+	Struct     *StructLiteral  `parser:"@@"`
+	Call       *CallExpr       `parser:"| @@"`
+	Query      *QueryExpr      `parser:"| @@"`
+	LogicQuery *LogicQueryExpr `parser:"| @@"`
+	Selector   *SelectorExpr   `parser:"| @@"`
+	List       *ListLiteral    `parser:"| @@"`
+	Map        *MapLiteral     `parser:"| @@"`
+	FunExpr    *FunExpr        `parser:"| @@"`
+	Match      *MatchExpr      `parser:"| @@"`
+	Generate   *GenerateExpr   `parser:"| @@"`
+	Fetch      *FetchExpr      `parser:"| @@"`
+	Load       *LoadExpr       `parser:"| @@"`
+	Save       *SaveExpr       `parser:"| @@"`
+	Lit        *Literal        `parser:"| @@"`
+	Group      *Expr           `parser:"| '(' @@ ')'"`
 }
 
 type FunExpr struct {
