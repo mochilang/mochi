@@ -55,7 +55,7 @@ let board = [
   [".",".",".",".","8",".",".","7","9"],
 ]
 
-let board = solveSudoku(board)
+let solvedBoard = solveSudoku(board)
 
 // Expected solved board
 let solved = [
@@ -71,5 +71,5 @@ let solved = [
 ]
 
 test "solve" {
-  expect board == solved
+  expect solvedBoard == solved
 }
