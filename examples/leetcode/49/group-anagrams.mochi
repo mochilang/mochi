@@ -2,7 +2,14 @@ fun groupAnagrams(strs: list<string>): list<list<string>> {
   var index: map<string, int> = {}
   var groups: list<list<string>> = []
   for word in strs {
-    let chars = from ch in word sort by ch select ch
+    // Build a list of characters because query sources must be lists.
+    var letters: list<string> = []
+    var i = 0
+    while i < len(word) {
+      letters = letters + [word[i]]
+      i = i + 1
+    }
+    let chars = from ch in letters sort by ch select ch
     var key = ""
     for ch in chars {
       key = key + ch
@@ -22,9 +29,8 @@ fun groupAnagrams(strs: list<string>): list<list<string>> {
 
 test "example 1" {
   let res = groupAnagrams(["eat","tea","tan","ate","nat","bat"])
-  let normalize = fun(g: list<string>): list<string> {
-    return from x in g sort by x select x
-  }
+  let normalize = fun(g: list<string>): list<string> =>
+    from x in g sort by x select x
   let sorted = from g in res select normalize(g)
   let final = from g in sorted sort by g[0] select g
   let expected = [["ate","eat","tea"],["bat"],["nat","tan"]]

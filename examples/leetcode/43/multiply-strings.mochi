@@ -20,11 +20,9 @@ fun multiply(num1: string, num2: string): string {
 
   let m = len(num1)
   let n = len(num2)
-  // result can have at most m + n digits
-  var result: list<int> = []
-  for _ in 0..m+n {
-    result = result + [0]
-  }
+  // Use a map of digit position -> value to avoid list concatenation
+  // operations which are not supported in older Mochi binaries.
+  var result: map<int, int> = {}
 
   var i = m
   while i > 0 {
@@ -34,16 +32,30 @@ fun multiply(num1: string, num2: string): string {
     while j > 0 {
       j = j - 1
       let d2 = digits[num2[j]]
-      let sum = d1 * d2 + result[i+j+1]
-      result[i+j+1] = sum % 10
-      result[i+j] = result[i+j] + sum / 10
+      let idx1 = i + j + 1
+      var existing = 0
+      if idx1 in result {
+        existing = result[idx1]
+      }
+      let sum = d1 * d2 + existing
+      result[idx1] = sum % 10
+      let carry = sum / 10
+      let idx0 = i + j
+      var prev = 0
+      if idx0 in result {
+        prev = result[idx0]
+      }
+      result[idx0] = prev + carry
     }
   }
 
   var out = ""
   var k = 0
-  while k < len(result) {
-    let digit = result[k]
+  while k < m + n {
+    var digit = 0
+    if k in result {
+      digit = result[k]
+    }
     if out == "" && digit == 0 {
       // skip leading zeros
     } else {

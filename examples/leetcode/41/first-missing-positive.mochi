@@ -1,9 +1,12 @@
 fun firstMissingPositive(nums: list<int>): int {
-  // Approach: place numbers into a set then find the smallest missing
-  var seen: set<int> = {}
+  // Approach: record all positive numbers in a map acting as a set.
+  // The language version bundled with these examples does not
+  // support the `set` type used in some documentation, so we simply
+  // use a map from int to bool for membership checks.
+  var seen: map<int, bool> = {}
   for n in nums {
     if n > 0 {
-      seen.add(n)
+      seen[n] = true
     }
   }
   var i = 1
