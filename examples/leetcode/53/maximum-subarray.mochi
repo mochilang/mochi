@@ -1,0 +1,53 @@
+// LeetCode Problem 53: Maximum Subarray
+// The classic solution uses Kadane's algorithm.
+//
+// Common Mochi language mistakes and fixes:
+// 1. Using unsupported ++ increment operator.
+//    // count++              // ❌ parse error
+//    count = count + 1       // ✅ use explicit addition
+// 2. Trying to reassign a value declared with `let`.
+//    let total = 0
+//    // total = 5            // ❌ cannot assign to immutable variable
+//    var total = 0
+//    total = 5               // ✅ declare with `var` if mutation is needed
+// 3. Forgetting that lists are 0-indexed.
+//    nums[1]                 // second element, not first
+
+fun maxSubArray(nums: list<int>): int {
+  let n = len(nums)
+  var current = nums[0]
+  var best = nums[0]
+  for i in 1..n {
+    let val = nums[i]
+    if current + val > val {
+      current = current + val
+    } else {
+      current = val
+    }
+    if current > best {
+      best = current
+    }
+  }
+  return best
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect maxSubArray([-2,1,-3,4,-1,2,1,-5,4]) == 6
+}
+
+test "example 2" {
+  expect maxSubArray([1]) == 1
+}
+
+test "example 3" {
+  expect maxSubArray([5,4,-1,7,8]) == 23
+}
+
+// Additional edge cases
+
+test "all negative" {
+  expect maxSubArray([-3,-2,-5]) == (-2)
+}
+
