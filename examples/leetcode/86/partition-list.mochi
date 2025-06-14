@@ -16,16 +16,22 @@ fun partition(head: list<int>, x: int): list<int> {
   var less: list<int> = []
   var greater: list<int> = []
 
-  for val in head {
+  var idx = 0
+  while idx < len(head) {
+    let val = head[idx]
     if val < x {
       less = less + [val]
     } else {
       greater = greater + [val]
     }
+    idx = idx + 1
   }
 
-  for val in greater {
+  var j = 0
+  while j < len(greater) {
+    let val = greater[j]
     less = less + [val]
+    j = j + 1
   }
   return less
 }
