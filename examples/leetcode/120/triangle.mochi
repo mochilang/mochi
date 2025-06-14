@@ -1,0 +1,59 @@
+// Solution for LeetCode problem 120 - Triangle
+
+fun minimumTotal(triangle: list<list<int>>): int {
+  let n = len(triangle)
+  if n == 0 {
+    return 0
+  }
+  // copy the last row as our initial DP array
+  var dp = triangle[n-1]
+  var i = n - 2
+  while i >= 0 {
+    var j = 0
+    while j <= i {
+      // choose the smaller sum from the two adjacent numbers below
+      let left = dp[j]
+      let right = dp[j+1]
+      if left < right {
+        dp[j] = triangle[i][j] + left
+      } else {
+        dp[j] = triangle[i][j] + right
+      }
+      j = j + 1
+    }
+    i = i - 1
+  }
+  return dp[0]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect minimumTotal([
+    [2],
+    [3,4],
+    [6,5,7],
+    [4,1,8,3],
+  ]) == 11
+}
+
+test "example 2" {
+  expect minimumTotal([[-10]]) == (-10)
+}
+
+test "single level" {
+  expect minimumTotal([[1]]) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using Python style loops like `for i in range(n)` causes a parse error.
+   Mochi uses `for i in 0..n` or `while` loops.
+2. Forgetting `var` when mutating a variable:
+   let dp = []
+   dp = dp + [1]  // error[E004]
+   // Fix: declare with `var dp = []` when it will change.
+3. Mixing assignment `=` with comparison `==` in conditions:
+   if left = right { ... }  // error[P000]
+   // Fix: use `==` when comparing values.
+*/
