@@ -1,0 +1,132 @@
+// Solution for LeetCode problem 117 - Populating Next Right Pointers in Each Node II
+
+// Binary tree where every node has an extra `next` field
+// pointing to its neighbor on the same level. `Leaf` denotes
+// the absence of a node.
+
+type Tree =
+  Leaf {}
+  | Node(left: Tree, value: int, right: Tree, next: Tree)
+
+// Return the first child encountered when traversing along
+// `node` and its `next` pointers. Used to determine the value
+// that each node's `next` field should point to.
+fun firstChild(node: Tree): Tree {
+  return match node {
+    Leaf => Leaf {}
+    Node(l, _, r, n) => {
+      match l {
+        Leaf => {
+          match r {
+            Leaf => firstChild(n)
+            _ => r
+          }
+        }
+        _ => l
+      }
+    }
+  }
+}
+
+// Recursively connect a subtree so that each node's `next` field
+// points to its neighbor on the right. The `nxt` parameter
+// specifies the node that should follow `tree` on the same level.
+fun connectHelper(tree: Tree, nxt: Tree): Tree {
+  return match tree {
+    Leaf => Leaf {}
+    Node(l, v, r, _) => {
+      let rightNext = firstChild(nxt)
+      let newRight = connectHelper(r, rightNext)
+      let leftNext = match r {
+        Leaf => rightNext
+        _ => r
+      }
+      let newLeft = connectHelper(l, leftNext)
+      return Node { left: newLeft, value: v, right: newRight, next: nxt }
+    }
+  }
+}
+
+// Public entry that connects all nodes starting from `root`.
+fun connect(root: Tree): Tree {
+  return connectHelper(root, Leaf {})
+}
+
+// Produce the level order traversal using established `next` pointers.
+fun levelOrderUsingNext(root: Tree): list<list<int>> {
+  var result: list<list<int>> = []
+  var levelStart = root
+  while match levelStart { Leaf => false, _ => true } {
+    var node = levelStart
+    var level: list<int> = []
+    var nextStart: Tree = Leaf {}
+    while match node { Leaf => false, _ => true } {
+      match node {
+        Leaf => {}
+        Node(l, v, r, n) => {
+          level = level + [v]
+          if match nextStart { Leaf => true, _ => false } {
+            match l {
+              Leaf => {
+                match r {
+                  Leaf => {}
+                  _ => { nextStart = r }
+                }
+              }
+              _ => { nextStart = l }
+            }
+          }
+          node = n
+        }
+      }
+    }
+    result = result + [level]
+    levelStart = nextStart
+  }
+  return result
+}
+
+// Test cases
+
+test "example" {
+  let tree = Node {
+    left: Node {
+      left: Node { left: Leaf {}, value: 4, right: Leaf {}, next: Leaf {} },
+      value: 2,
+      right: Node { left: Leaf {}, value: 5, right: Leaf {}, next: Leaf {} },
+      next: Leaf {}
+    },
+    value: 1,
+    right: Node {
+      left: Leaf {},
+      value: 3,
+      right: Node { left: Leaf {}, value: 7, right: Leaf {}, next: Leaf {} },
+      next: Leaf {}
+    },
+    next: Leaf {}
+  }
+  let connected = connect(tree)
+  expect levelOrderUsingNext(connected) == [[1], [2,3], [4,5,7]]
+}
+
+test "single node" {
+  let tree = Node { left: Leaf {}, value: 1, right: Leaf {}, next: Leaf {} }
+  expect levelOrderUsingNext(connect(tree)) == [[1]]
+}
+
+test "empty" {
+  expect levelOrderUsingNext(connect(Leaf {})) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Mixing assignment `=` with comparison `==` in conditions.
+   if node = Leaf { }   // ❌ this assigns
+   if node == Leaf { }  // ✅ use `==` to compare values
+2. Forgetting to mark variables as mutable with `var` when
+   modifying them:
+   let nextStart = Leaf {}  // ❌ cannot assign later
+   var nextStart: Tree = Leaf {} // ✅ allows mutation
+3. Attempting Python-style range loops like `for i in range(n)`.
+   Mochi uses `for i in 0..n` or `while` loops instead.
+*/
