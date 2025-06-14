@@ -1,0 +1,48 @@
+fun permute(nums: list<int>): list<list<int>> {
+  var result: list<list<int>> = []
+
+  fun backtrack(path: list<int>, remaining: list<int>) {
+    if len(remaining) == 0 {
+      result = result + [path]
+    } else {
+      for i in 0..len(remaining) {
+        let nextPath = path + [remaining[i]]
+        let nextRemaining = remaining[0:i] + remaining[i+1:len(remaining)]
+        backtrack(nextPath, nextRemaining)
+      }
+    }
+  }
+
+  backtrack([], nums)
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect permute([1,2,3]) == [
+    [1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]
+  ]
+}
+
+test "example 2" {
+  expect permute([0,1]) == [[0,1], [1,0]]
+}
+
+test "example 3" {
+  expect permute([1]) == [[1]]
+}
+
+// Common language errors and how to fix them:
+//
+// 1. Omitting the element type when initializing an empty list:
+//      var res = []              // ERROR: type cannot be inferred
+//      var res: list<list<int>> = []  // Correct
+//
+// 2. Using '=' instead of '==' in comparisons:
+//      if len(nums) = 0 { ... }  // ERROR: '=' assigns instead of compares
+//      if len(nums) == 0 { ... } // Correct
+//
+// 3. Mixing range syntax with slicing:
+//      remaining[i+1..len(remaining)] // ERROR: ranges can't slice lists
+//      remaining[i+1:len(remaining)]   // Correct slice syntax
