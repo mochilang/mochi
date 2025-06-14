@@ -1,0 +1,82 @@
+// LeetCode Problem 99: Recover Binary Search Tree
+
+// Binary tree definition
+// A tree is either a Leaf or a Node with left/right subtrees
+// and an integer value.
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Inorder traversal returning the list of values
+fun inorder(t: Tree): list<int> {
+  var res = []
+  fun dfs(n: Tree) {
+    match n {
+      Leaf => {}
+      Node(l, v, r) => {
+        dfs(l)
+        res = res + [v]
+        dfs(r)
+      }
+    }
+  }
+  dfs(t)
+  return res
+}
+
+// Rebuild the tree using the sorted values. The index is captured from the
+// enclosing scope so the function can update it as nodes are visited.
+fun recoverTree(t: Tree): Tree {
+  let vals = inorder(t)
+  let sortedVals = from x in vals sort by x select x
+  var idx = 0
+
+  fun build(n: Tree): Tree {
+    return match n {
+      Leaf => Leaf
+      Node(l, v, r) => {
+        let leftNew = build(l)
+        let newVal = sortedVals[idx]
+        idx = idx + 1
+        let rightNew = build(r)
+        return Node { left: leftNew, value: newVal, right: rightNew }
+      }
+    }
+  }
+
+  return build(t)
+}
+
+// Example tree with two nodes swapped
+let ex = Node {
+  left: Node { left: Leaf, value: 3, right: Leaf },
+  value: 1,
+  right: Node { left: Leaf, value: 4, right: Leaf }
+}
+
+let fixed = recoverTree(ex)
+expect inorder(fixed) == [1,3,4]
+
+// Another test with swapped leaf values
+let ex2 = Node {
+  left: Node { left: Leaf, value: 2, right: Leaf },
+  value: 4,
+  right: Node { left: Leaf, value: 1, right: Leaf }
+}
+
+let fixed2 = recoverTree(ex2)
+expect inorder(fixed2) == [1,2,4]
+
+/*
+Common Mochi language errors and how to fix them:
+1. Omitting the return type on functions:
+     fun inorder(t: Tree) { ... }            // ❌
+     fun inorder(t: Tree): list<int> { ... } // ✅ specify the result type
+2. Trying to mutate a pattern variable from match:
+     match node {
+       Node(_, v, _) => v = 5       // ❌ cannot assign to immutable binding
+     }
+   Fix: construct a new Node value instead of mutating fields.
+3. Using Python's `None` instead of the `Leaf` constructor for empty children.
+   Use `Leaf` to represent a missing child.
+*/
