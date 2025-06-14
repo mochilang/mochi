@@ -1,0 +1,50 @@
+fun merge(intervals: list<list<int>>): list<list<int>> {
+  if len(intervals) == 0 {
+    return []
+  }
+  let sorted = from x in intervals sort by x[0] select x
+  var result: list<list<int>> = []
+  for inter in sorted {
+    if len(result) == 0 {
+      result = result + [inter]
+    } else if result[len(result)-1][1] < inter[0] {
+      result = result + [inter]
+    } else if inter[1] > result[len(result)-1][1] {
+      result[len(result)-1][1] = inter[1]
+    }
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect merge([[1,3],[2,6],[8,10],[15,18]]) == [[1,6],[8,10],[15,18]]
+}
+
+test "example 2" {
+  expect merge([[1,4],[4,5]]) == [[1,5]]
+}
+
+// Additional edge cases
+
+test "single interval" {
+  expect merge([[1,4]]) == [[1,4]]
+}
+
+test "empty list" {
+  expect merge([]) == []
+}
+
+/*
+Common Mochi language mistakes and fixes:
+1. Forgetting to initialize an empty list with a type:
+     var res = []            // error[E003]: type cannot be inferred
+     var res: list<int> = [] // Correct
+2. Trying to use Python-style negative indices:
+     result[-1]              // error[I006]: negative indices not allowed
+     result[len(result)-1]   // Correct way to access last element
+3. Using '=' instead of '==' in conditions:
+     if len(result) = 0 { }  // error[E004]: '=' is assignment
+     if len(result) == 0 { } // Correct comparison
+*/
