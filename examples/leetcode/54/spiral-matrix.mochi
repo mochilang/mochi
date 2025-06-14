@@ -1,0 +1,89 @@
+fun spiralOrder(matrix: list<list<int>>): list<int> {
+  let rows = len(matrix)
+  if rows == 0 {
+    return []
+  }
+  let cols = len(matrix[0])
+  var top = 0
+  var bottom = rows - 1
+  var left = 0
+  var right = cols - 1
+  var result: list<int> = []
+  while top <= bottom && left <= right {
+    var j = left
+    while j <= right {
+      result = result + [matrix[top][j]]
+      j = j + 1
+    }
+    top = top + 1
+
+    j = top
+    while j <= bottom {
+      result = result + [matrix[j][right]]
+      j = j + 1
+    }
+    right = right - 1
+
+    if top <= bottom {
+      j = right
+      while j >= left {
+        result = result + [matrix[bottom][j]]
+        j = j - 1
+      }
+      bottom = bottom - 1
+    }
+
+    if left <= right {
+      j = bottom
+      while j >= top {
+        result = result + [matrix[j][left]]
+        j = j - 1
+      }
+      left = left + 1
+    }
+  }
+  return result
+}
+
+// Test cases from LeetCode problem 54
+
+test "example 1" {
+  var m = [
+    [1,2,3],
+    [4,5,6],
+    [7,8,9],
+  ]
+  expect spiralOrder(m) == [1,2,3,6,9,8,7,4,5]
+}
+
+test "example 2" {
+  var m = [
+    [1,2,3,4],
+    [5,6,7,8],
+    [9,10,11,12],
+  ]
+  expect spiralOrder(m) == [1,2,3,4,8,12,11,10,9,5,6,7]
+}
+
+test "single row" {
+  var m = [[1,2,3]]
+  expect spiralOrder(m) == [1,2,3]
+}
+
+test "single column" {
+  var m = [
+    [1],
+    [2],
+    [3],
+  ]
+  expect spiralOrder(m) == [1,2,3]
+}
+
+test "empty" {
+  expect spiralOrder([]) == []
+}
+
+// Common Mochi language errors and fixes:
+// 1. Forgetting 'var' when assigning to a variable. Use 'var' for mutable bindings.
+// 2. Using '=' instead of '==' in comparisons. '=' assigns, '==' compares.
+// 3. Trying Python-style loops like 'for i in range(n)'. Use 'for i in 0..n' in Mochi.
