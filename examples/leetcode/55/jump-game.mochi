@@ -1,0 +1,42 @@
+fun canJump(nums: list<int>): bool {
+  let n = len(nums)
+  var farthest = 0
+  for i in 0..n {
+    if i > farthest {
+      return false
+    }
+    if i + nums[i] > farthest {
+      farthest = i + nums[i]
+    }
+  }
+  return true
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect canJump([2,3,1,1,4]) == true
+}
+
+test "example 2" {
+  expect canJump([3,2,1,0,4]) == false
+}
+
+test "single element" {
+  expect canJump([0]) == true
+}
+
+test "with zeros" {
+  expect canJump([2,0,0]) == true
+}
+
+// Common Mochi language errors and fixes:
+// 1. Using '=' instead of '==' in comparisons.
+//    if x = 1 { }       // ❌ wrong
+//    if x == 1 { }      // ✅ correct
+// 2. Forgetting 'var' when a variable needs to change.
+//    farthest = 0       // ❌ missing var
+//    var farthest = 0   // ✅ declare mutable variable
+// 3. Writing Python-style loops like 'for i in range(n)'.
+//    Use 'for i in 0..n' in Mochi.
+// 4. Off-by-one ranges when iterating lists. '0..n' iterates up to 'n-1'.
