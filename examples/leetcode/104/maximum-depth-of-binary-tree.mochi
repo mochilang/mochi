@@ -1,0 +1,70 @@
+// LeetCode 104 - Maximum Depth of Binary Tree
+
+// Binary tree definition used in other examples.
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Return the greater of two integers.
+fun max(a: int, b: int): int {
+  if a > b {
+    return a
+  } else {
+    return b
+  }
+}
+
+// Recursively compute the maximum depth of the tree.
+fun maxDepth(root: Tree): int {
+  return match root {
+    Leaf => 0
+    Node(l, _, r) => max(maxDepth(l), maxDepth(r)) + 1
+  }
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tree = Node {
+    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
+    value: 3,
+    right: Node {
+      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
+      value: 20,
+      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
+    }
+  }
+  expect maxDepth(tree) == 3
+}
+
+test "example 2" {
+  let tree = Node {
+    left: Leaf {},
+    value: 1,
+    right: Node { left: Leaf {}, value: 2, right: Leaf {} }
+  }
+  expect maxDepth(tree) == 2
+}
+
+test "single node" {
+  expect maxDepth(Node { left: Leaf {}, value: 0, right: Leaf {} }) == 1
+}
+
+test "empty" {
+  expect maxDepth(Leaf {}) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+   if depth = 1 { ... }  // ❌ assignment
+   if depth == 1 { ... } // ✅ comparison
+2. Reassigning a value bound with 'let':
+   let d = 0
+   d = d + 1          // ❌ cannot reassign immutable binding
+   // Fix: declare with 'var' if it needs to change.
+3. Accessing fields of the wrong variant:
+   let t = Leaf {}
+   t.value            // ❌ Leaf has no field 'value'
+   // Fix: pattern match on 'Node' before using its fields.
+*/
