@@ -1,0 +1,45 @@
+fun plusOne(digits: list<int>): list<int> {
+  var carry = 1
+  var i = len(digits) - 1
+  // make a mutable copy
+  var result = digits
+  while i >= 0 && carry > 0 {
+    var sum = result[i] + carry
+    result[i] = sum % 10
+    carry = sum / 10
+    i = i - 1
+  }
+  if carry > 0 {
+    return [carry] + result
+  }
+  return result
+}
+
+// Test cases from LeetCode problem statement
+
+test "example 1" {
+  expect plusOne([1,2,3]) == [1,2,4]
+}
+
+test "example 2" {
+  expect plusOne([4,3,2,1]) == [4,3,2,2]
+}
+
+test "example 3" {
+  expect plusOne([9]) == [1,0]
+}
+
+// Additional edge cases
+
+test "carry through all digits" {
+  expect plusOne([9,9,9]) == [1,0,0,0]
+}
+
+test "zero" {
+  expect plusOne([0]) == [1]
+}
+
+// Common Mochi language errors and how to fix them:
+// 1. Using '+=' to increment a variable. Mochi does not support '+=', use 'x = x + 1'.
+// 2. Mutating values bound with 'let'. Use 'var' for variables that change.
+// 3. Off-by-one mistakes when looping over arrays. Remember '0..n' iterates indices 0 to n-1.
