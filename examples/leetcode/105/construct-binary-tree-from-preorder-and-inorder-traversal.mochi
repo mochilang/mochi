@@ -1,0 +1,90 @@
+// LeetCode 105 - Construct Binary Tree from Preorder and Inorder Traversal
+
+// Binary tree definition
+// Leaf represents an empty subtree
+// Node has left, value, and right children
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Build the tree from preorder and inorder sequences.
+fun buildTree(preorder: list<int>, inorder: list<int>): Tree {
+  let n = len(preorder)
+  // Map each value to its index in the inorder traversal for O(1) lookups
+  var indexMap: map<int, int> = {}
+  for i in 0..n {
+    indexMap[inorder[i]] = i
+  }
+  var preIdx = 0
+
+  fun helper(left: int, right: int): Tree {
+    if left >= right {
+      return Leaf
+    }
+    let rootVal = preorder[preIdx]
+    preIdx = preIdx + 1
+    let mid = indexMap[rootVal]
+    let leftTree = helper(left, mid)
+    let rightTree = helper(mid + 1, right)
+    return Node { left: leftTree, value: rootVal, right: rightTree }
+  }
+
+  return helper(0, n)
+}
+
+// Preorder traversal of a tree
+fun preorderTraversal(t: Tree): list<int> {
+  return match t {
+    Leaf => []
+    Node(l, v, r) => [v] + preorderTraversal(l) + preorderTraversal(r)
+  }
+}
+
+// Inorder traversal of a tree
+fun inorderTraversal(t: Tree): list<int> {
+  return match t {
+    Leaf => []
+    Node(l, v, r) => inorderTraversal(l) + [v] + inorderTraversal(r)
+  }
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let preorder = [3,9,20,15,7]
+  let inorder = [9,3,15,20,7]
+  let tree = buildTree(preorder, inorder)
+  expect preorderTraversal(tree) == preorder
+  expect inorderTraversal(tree) == inorder
+}
+
+test "single node" {
+  let preorder = [1]
+  let inorder = [1]
+  let tree = buildTree(preorder, inorder)
+  expect preorderTraversal(tree) == preorder
+  expect inorderTraversal(tree) == inorder
+}
+
+test "empty" {
+  let tree = buildTree([], [])
+  expect tree == Leaf
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Mixing assignment with equality in conditionals:
+   if n = 0 { }
+   // error[P000]: '=' is assignment, not comparison
+   // Fix: use '==' for equality.
+
+2. Reassigning an immutable binding:
+   let idx = 0
+   idx = idx + 1  // error[E004]: cannot reassign immutable binding
+   // Fix: declare with 'var idx = 0' when mutation is needed.
+
+3. Using 'None' instead of the 'Leaf' constructor for an empty tree:
+   let t = None  // error[I001]: undefined value 'None'
+   // Fix: use 'Leaf' to represent a missing child.
+*/
