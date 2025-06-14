@@ -1,0 +1,53 @@
+// LeetCode #92: Reverse Linked List II
+// Below are some common Mochi language errors and how to fix them.
+//
+// Error 1: Using '=' instead of '==' in conditions
+// if left = right { return nums }
+// Fix:
+// if left == right { return nums }
+//
+// Error 2: Declaring a mutable variable with 'let'
+// let result = nums
+// result[0] = 1  // error
+// Fix:
+// var result = nums
+// result[0] = 1
+//
+// Error 3: Trying Python style loops
+// for i in range(left-1, right) { }
+// Fix:
+// var i = left - 1
+// while i < right {
+//   i = i + 1
+// }
+
+fun reverseBetween(nums: list<int>, left: int, right: int): list<int> {
+  if left >= right {
+    return nums
+  }
+  if left < 1 || right > len(nums) {
+    return nums
+  }
+  var result = nums
+  var i = left - 1
+  var j = right - 1
+  while i < j {
+    let temp = result[i]
+    result[i] = result[j]
+    result[j] = temp
+    i = i + 1
+    j = j - 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect reverseBetween([1,2,3,4,5], 2, 4) == [1,4,3,2,5]
+}
+
+test "left equals right" {
+  expect reverseBetween([1,2,3], 2, 2) == [1,2,3]
+}
+
