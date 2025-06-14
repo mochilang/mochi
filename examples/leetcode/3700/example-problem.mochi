@@ -1,0 +1,34 @@
+fun sumUnique(nums: list<int>): int {
+  var freq: map<int,int> = {}
+  var result = 0
+  for n in nums {
+    if n in freq {
+      freq[n] = freq[n] + 1
+      if freq[n] == 2 {
+        result = result - n
+      }
+    } else {
+      freq[n] = 1
+      result = result + n
+    }
+  }
+  return result
+}
+
+// Simple checks based on typical LeetCode examples
+print(sumUnique([1,2,3,2]))  // -> 4
+print(sumUnique([1,1,1,1,1]))  // -> 0
+
+/*
+Common Mochi language errors and fixes:
+1. Using '=' instead of '==' for comparisons.
+   if entry.value = 1 { ... }   // ❌ assignment, will not compile
+   if entry.value == 1 { ... }  // ✅ comparison
+2. Forgetting to declare mutable variables with 'var'.
+   let result = 0
+   result = result + 1  // ❌ cannot assign to immutable value
+   // Fix: declare with 'var result = 0'.
+3. Accessing map values without checking existence.
+   let x = freq[10]  // ❌ may cause runtime error if 10 not in map
+   // Fix: use 'freq.contains(10)' before accessing or provide default.
+*/
