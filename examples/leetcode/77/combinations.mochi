@@ -1,0 +1,50 @@
+fun combine(n: int, k: int): list<list<int>> {
+  var result: list<list<int>> = []
+
+  fun backtrack(start: int, path: list<int>) {
+    if len(path) == k {
+      result = result + [path]
+      return
+    }
+    var i = start
+    while i <= n {
+      backtrack(i + 1, path + [i])
+      i = i + 1
+    }
+  }
+
+  backtrack(1, [])
+  return result
+}
+
+// Tests from the LeetCode problem statement
+
+test "example 1" {
+  expect combine(4, 2) == [
+    [1,2],[1,3],[1,4],[2,3],[2,4],[3,4]
+  ]
+}
+
+test "example 2" {
+  expect combine(1, 1) == [[1]]
+}
+
+// Additional test
+
+test "n = 3, k = 3" {
+  expect combine(3, 3) == [[1,2,3]]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a value declared with `let`:
+     let res = []
+     res = res + [1]  // error[E004]
+   Fix: use `var res` if you need to mutate the variable.
+2. Using `=` instead of `==` in conditions:
+     if k = 0 { ... }  // wrong
+   Always use `==` for comparison.
+3. Off-by-one mistakes when iterating 1..n:
+     for i in 1..n { }  // iterates while i < n
+   Use `while` with `<=` when you need to include `n` as shown above.
+*/
