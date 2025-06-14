@@ -1,0 +1,82 @@
+// LeetCode 116 - Populating Next Right Pointers in Each Node
+
+// Binary tree where each node has left, value, right and a next pointer.
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree, next: Tree)
+
+// Recursively connect child nodes passing the neighbor as 'nxt'.
+fun connect(root: Tree): Tree {
+  fun helper(node: Tree, nxt: Tree): Tree {
+    return match node {
+      Leaf => Leaf {}
+      Node(l, v, r, _) => {
+        let rNext = match nxt {
+          Leaf => Leaf {}
+          Node(nl, _, _, _) => nl
+        }
+        let right = helper(r, rNext)
+        let left = helper(l, right)
+        return Node { left: left, value: v, right: right, next: nxt }
+      }
+    }
+  }
+  return helper(root, Leaf {})
+}
+
+// Traverse levels using the next pointers to verify connections.
+fun levels(root: Tree): list<list<int>> {
+  var result: list<list<int>> = []
+  var node = root
+  while match node { Leaf => false _ => true } {
+    var level: list<int> = []
+    var curr = node
+    var nextLevel = Leaf {}
+    while match curr { Leaf => false _ => true } {
+      match curr {
+        Node(l, v, _, nxt) => {
+          level = level + [v]
+          if match nextLevel { Leaf => true _ => false } {
+            nextLevel = l
+          }
+          curr = nxt
+        }
+        Leaf => {}
+      }
+    }
+    result = result + [level]
+    node = nextLevel
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example" {
+  let tree = Node {
+    left: Node {
+      left: Node { left: Leaf {}, value: 4, right: Leaf {}, next: Leaf {} },
+      value: 2,
+      right: Node { left: Leaf {}, value: 5, right: Leaf {}, next: Leaf {} },
+      next: Leaf {}
+    },
+    value: 1,
+    right: Node {
+      left: Node { left: Leaf {}, value: 6, right: Leaf {}, next: Leaf {} },
+      value: 3,
+      right: Node { left: Leaf {}, value: 7, right: Leaf {}, next: Leaf {} },
+      next: Leaf {}
+    },
+    next: Leaf {}
+  }
+  let connected = connect(tree)
+  expect levels(connected) == [[1], [2,3], [4,5,6,7]]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Confusing '=' assignment with '==' comparison inside conditions.
+2. Reassigning a value declared with 'let'. Use 'var' when mutation is required.
+3. Using Python-style 'None' instead of the 'Leaf' variant for empty nodes.
+4. Forgetting that pattern matches must cover all variants when deconstructing.
+*/
