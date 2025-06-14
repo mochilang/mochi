@@ -1,0 +1,52 @@
+fun addBinary(a: string, b: string): string {
+  let digits = {
+    "0": 0,
+    "1": 1,
+  }
+  var i = len(a)
+  var j = len(b)
+  var carry = 0
+  var out = ""
+  while i > 0 || j > 0 || carry > 0 {
+    var x = 0
+    if i > 0 {
+      i = i - 1
+      x = digits[a[i]]
+    }
+    var y = 0
+    if j > 0 {
+      j = j - 1
+      y = digits[b[j]]
+    }
+    let sum = x + y + carry
+    carry = sum / 2
+    let bit = sum % 2
+    out = str(bit) + out
+  }
+  return out
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect addBinary("11", "1") == "100"
+}
+
+test "example 2" {
+  expect addBinary("1010", "1011") == "10101"
+}
+
+// Additional edge cases
+
+test "zero" {
+  expect addBinary("0", "0") == "0"
+}
+
+test "different lengths" {
+  expect addBinary("1", "111") == "1000"
+}
+
+// Common Mochi language errors and how to fix them:
+// 1. Writing 'if a = b' instead of 'if a == b' causes a compile error.
+// 2. Forgetting 'var' for variables that change, e.g. 'count = count + 1'.
+// 3. Off-by-one mistakes when looping backwards: start with len(s) and decrement before indexing.
