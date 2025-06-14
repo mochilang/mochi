@@ -1,0 +1,70 @@
+fun isInterleave(s1: string, s2: string, s3: string): bool {
+  let m = len(s1)
+  let n = len(s2)
+  if m + n != len(s3) {
+    return false
+  }
+
+  // create (m+1) x (n+1) dp table initialized to false
+  var dp: list<list<bool>> = []
+  var i = 0
+  while i <= m {
+    var row: list<bool> = []
+    var j = 0
+    while j <= n {
+      row = row + [false]
+      j = j + 1
+    }
+    dp = dp + [row]
+    i = i + 1
+  }
+
+  dp[0][0] = true
+
+  i = 0
+  while i <= m {
+    var j = 0
+    while j <= n {
+      if i > 0 {
+        if dp[i-1][j] && s1[i-1] == s3[i+j-1] {
+          dp[i][j] = true
+        }
+      }
+      if j > 0 {
+        if dp[i][j-1] && s2[j-1] == s3[i+j-1] {
+          dp[i][j] = true
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  return dp[m][n]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isInterleave("aabcc", "dbbca", "aadbbcbcac") == true
+}
+
+test "example 2" {
+  expect isInterleave("aabcc", "dbbca", "aadbbbaccc") == false
+}
+
+test "empty" {
+  expect isInterleave("", "", "") == true
+}
+
+/*
+Common Mochi language errors and fixes:
+1. Using '=' instead of '==' when comparing characters:
+     if s1[i] = s3[k] { }  // ❌
+   Fix: use '==' for equality checks.
+2. Reassigning a value bound with 'let':
+     let valid = true
+     valid = false           // ❌ use 'var' for mutable variables
+3. Off-by-one mistakes when indexing strings:
+     s1[i] accesses index i, so the last valid index is len(s1) - 1.
+*/
