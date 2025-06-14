@@ -1,0 +1,82 @@
+// LeetCode 111 - Minimum Depth of Binary Tree
+
+// Binary tree definition reused across examples.
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Recursively compute the minimum depth of a binary tree.
+fun minDepth(root: Tree): int {
+  return match root {
+    Leaf => 0
+    Node(l, _, r) => {
+      let left = minDepth(l)
+      let right = minDepth(r)
+      if left == 0 && right == 0 {
+        return 1
+      }
+      if left == 0 {
+        return right + 1
+      }
+      if right == 0 {
+        return left + 1
+      }
+      if left < right {
+        return left + 1
+      } else {
+        return right + 1
+      }
+    }
+  }
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tree = Node {
+    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
+    value: 3,
+    right: Node {
+      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
+      value: 20,
+      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
+    }
+  }
+  expect minDepth(tree) == 2
+}
+
+test "example 2" {
+  let tree = Node {
+    left: Leaf {},
+    value: 2,
+    right: Node { left: Leaf {}, value: 3, right: Leaf {} }
+  }
+  expect minDepth(tree) == 2
+}
+
+test "single node" {
+  expect minDepth(Node { left: Leaf {}, value: 1, right: Leaf {} }) == 1
+}
+
+test "empty" {
+  expect minDepth(Leaf {}) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons:
+     if depth = 1 { }
+   // Fix: use '==' to compare values.
+2. Reassigning an immutable binding declared with 'let':
+     let d = 0
+     d = 1  // error[E004]
+   // Fix: declare with 'var d = 0' if mutation is required.
+3. Using 'null' or 'None' instead of the 'Leaf' constructor:
+     let t = null  // error[I001]
+   // Fix: use 'Leaf' for an empty tree node.
+4. Forgetting to return a value from all match branches:
+     fun f(x: int): int {
+       match x { 1 => 1 }
+     }
+   // Fix: include all branches and return a value from each.
+*/
