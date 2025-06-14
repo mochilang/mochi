@@ -1,0 +1,47 @@
+// Solution for LeetCode problem 86 - Partition List
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' in conditionals.
+//    if value = x { }      // ❌ assignment, not comparison
+//    if value == x { }     // ✅ use '==' to compare values
+// 2. Forgetting to declare mutable variables with 'var'.
+//    count = 0             // ❌ produces undefined variable error
+//    var count = 0         // ✅ declare variables with var or let
+// 3. Trying to modify a 'let' binding.
+//    let nums = []
+//    nums = [1]           // ❌ cannot reassign immutable binding
+//    var nums = []        // ✅ use var when mutation is needed
+
+fun partition(head: list<int>, x: int): list<int> {
+  var less: list<int> = []
+  var greater: list<int> = []
+
+  for val in head {
+    if val < x {
+      less = less + [val]
+    } else {
+      greater = greater + [val]
+    }
+  }
+
+  for val in greater {
+    less = less + [val]
+  }
+  return less
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect partition([1,4,3,2,5,2], 3) == [1,2,2,4,3,5]
+}
+
+test "example 2" {
+  expect partition([2,1], 2) == [1,2]
+}
+
+// Additional edge case
+
+test "all less" {
+  expect partition([1,1,1], 5) == [1,1,1]
+}
