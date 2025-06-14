@@ -1,0 +1,84 @@
+// LeetCode 110 - Balanced Binary Tree
+
+// Definition of a binary tree
+// Leaf represents an empty tree
+// Node has left, value, and right subtrees
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Determine if a binary tree is height-balanced.
+fun isBalanced(root: Tree): bool {
+  fun check(t: Tree): { h: int, balanced: bool } {
+    return match t {
+      Leaf => { h: 0, balanced: true }
+      Node(l, _, r) => {
+        let left = check(l)
+        let right = check(r)
+        let diff = if left.h > right.h { left.h - right.h } else { right.h - left.h }
+        {
+          h: (if left.h > right.h { left.h } else { right.h }) + 1,
+          balanced: left.balanced && right.balanced && diff <= 1
+        }
+      }
+    }
+  }
+  return check(root).balanced
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tree = Node {
+    left: Node { left: Leaf, value: 9, right: Leaf },
+    value: 3,
+    right: Node {
+      left: Node { left: Leaf, value: 15, right: Leaf },
+      value: 20,
+      right: Node { left: Leaf, value: 7, right: Leaf }
+    }
+  }
+  expect isBalanced(tree) == true
+}
+
+test "example 2" {
+  let tree = Node {
+    left: Node {
+      left: Node {
+        left: Node { left: Leaf, value: 4, right: Leaf },
+        value: 3,
+        right: Node { left: Leaf, value: 4, right: Leaf }
+      },
+      value: 2,
+      right: Node { left: Leaf, value: 3, right: Leaf }
+    },
+    value: 1,
+    right: Node { left: Leaf, value: 2, right: Leaf }
+  }
+  expect isBalanced(tree) == false
+}
+
+test "single node" {
+  expect isBalanced(Node { left: Leaf, value: 1, right: Leaf }) == true
+}
+
+test "empty" {
+  expect isBalanced(Leaf) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning an immutable value with `let`:
+     let height = 0
+     height = 1        // error[E004]
+   Fix: declare with `var height = 0` if it must change.
+2. Using Python-style method calls on lists:
+     stack.append(x)   // ❌ not Mochi
+   Instead use `stack = stack + [x]` to push.
+3. Forgetting to handle the `Leaf` case when pattern matching:
+     match tree {
+       Node(l, v, r) => ...
+     }
+   This misses the `Leaf` branch and causes a compile error. Always cover all variants.
+*/
