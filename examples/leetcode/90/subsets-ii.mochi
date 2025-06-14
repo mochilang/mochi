@@ -1,0 +1,51 @@
+// Solution for LeetCode problem 90 - Subsets II
+//
+// This demonstrates how to generate all subsets from a list that may
+// contain duplicate values. We sort the input and skip duplicates while
+// exploring the backtracking tree.
+//
+// Common Mochi language errors and how to fix them:
+// 1. Reassigning a variable declared with `let`. Use `var` for mutable values.
+//    let res = []
+//    res = res + [1]        // ❌ cannot assign to immutable binding
+// 2. Using '=' instead of '==' when comparing values.
+//    if nums[i] = 0 { }     // ❌ assignment, not comparison
+//    if nums[i] == 0 { }    // ✅ correct
+// 3. Forgetting to specify the element type for an empty list.
+//    var path = []          // ❌ type cannot be inferred
+//    var path: list<int> = [] // ✅ specify type
+
+fun subsetsWithDup(nums: list<int>): list<list<int>> {
+  // Sort the numbers so duplicates are adjacent
+  let arr = from x in nums sort by x select x
+  let n = len(arr)
+  var result: list<list<int>> = []
+
+  fun backtrack(start: int, path: list<int>) {
+    result = result + [path]
+    var i = start
+    while i < n {
+      if i > start && arr[i] == arr[i - 1] {
+        i = i + 1
+        continue
+      }
+      backtrack(i + 1, path + [arr[i]])
+      i = i + 1
+    }
+  }
+
+  backtrack(0, [])
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect subsetsWithDup([1,2,2]) == [
+    [], [1], [1,2], [1,2,2], [2], [2,2]
+  ]
+}
+
+test "example 2" {
+  expect subsetsWithDup([0]) == [[], [0]]
+}
