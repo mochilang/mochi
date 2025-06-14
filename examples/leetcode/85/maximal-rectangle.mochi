@@ -16,7 +16,10 @@ fun maximalRectangle(matrix: list<list<string>>): int {
     let n = len(hs)
     var maxArea = 0
     while i <= n {
-      let curr = if i == n { 0 } else { hs[i] }
+      var curr = 0
+      if i < n {
+        curr = hs[i]
+      }
       while len(stack) > 0 && curr < hs[stack[len(stack)-1]] {
         let h = hs[stack[len(stack)-1]]
         stack = stack[0:len(stack)-1]
