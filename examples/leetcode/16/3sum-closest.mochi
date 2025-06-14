@@ -14,8 +14,18 @@ fun threeSumClosest(nums: list<int>, target: int): int {
       if sum == target {
         return target
       }
-      let diff = if sum > target { sum - target } else { target - sum }
-      let bestDiff = if best > target { best - target } else { target - best }
+      var diff = 0
+      if sum > target {
+        diff = sum - target
+      } else {
+        diff = target - sum
+      }
+      var bestDiff = 0
+      if best > target {
+        bestDiff = best - target
+      } else {
+        bestDiff = target - best
+      }
       if diff < bestDiff {
         best = sum
       }
