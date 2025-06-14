@@ -1,0 +1,100 @@
+fun fullJustify(words: list<string>, maxWidth: int): list<string> {
+  var result: list<string> = []
+  var i = 0
+  while i < len(words) {
+    var j = i
+    var lineLen = 0
+    // find how many words fit into the current line
+    while j < len(words) && lineLen + len(words[j]) + (j - i) <= maxWidth {
+      lineLen = lineLen + len(words[j])
+      j = j + 1
+    }
+
+    var line = ""
+    let numWords = j - i
+    if j == len(words) || numWords == 1 {
+      // left justify
+      var k = i
+      while k < j {
+        line = line + words[k]
+        if k < j - 1 {
+          line = line + " "
+        }
+        k = k + 1
+      }
+      while len(line) < maxWidth {
+        line = line + " "
+      }
+    } else {
+      let totalSpaces = maxWidth - lineLen
+      let gaps = numWords - 1
+      let spaceEach = totalSpaces / gaps
+      var extra = totalSpaces % gaps
+      var k = i
+      while k < j {
+        line = line + words[k]
+        if k < j - 1 {
+          var s = 0
+          while s < spaceEach {
+            line = line + " "
+            s = s + 1
+          }
+          if extra > 0 {
+            line = line + " "
+            extra = extra - 1
+          }
+        }
+        k = k + 1
+      }
+    }
+    result = result + [line]
+    i = j
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let words = ["This","is","an","example","of","text","justification."]
+  expect fullJustify(words, 16) == [
+    "This    is    an",
+    "example  of text",
+    "justification.  "
+  ]
+}
+
+test "example 2" {
+  let words = ["What","must","be","acknowledgment","shall","be"]
+  expect fullJustify(words, 16) == [
+    "What   must   be",
+    "acknowledgment  ",
+    "shall be        "
+  ]
+}
+
+test "example 3" {
+  let words = ["Science","is","what","we","understand","well","enough","to","explain","to","a","computer.","Art","is","everything","else","we","do"]
+  expect fullJustify(words, 20) == [
+    "Science  is  what we",
+    "understand   well",
+    "enough to explain to",
+    "a computer.  Art is",
+    "everything else  we",
+    "do                  "
+  ]
+}
+
+/*
+Common Mochi errors and fixes:
+1. Using '=' instead of '==' for comparisons leads to assignment errors.
+   if len(words) = 0 { ... }   // ❌ will not compile
+   if len(words) == 0 { ... }  // ✅ correct
+2. Forgetting to declare a variable as 'var' when you need to modify it.
+   let line = ""               // ❌ immutable
+   line = line + word
+   // Fix: use 'var line = ""' for a mutable string.
+3. Off-by-one mistakes in loops when building lines can cause index errors.
+   while k <= j { ... }        // ❌ runs past end
+   while k < j { ... }         // ✅ correct bound
+*/
