@@ -5,17 +5,17 @@ fun combinationSum(candidates: list<int>, target: int): list<list<int>> {
   fun backtrack(remain: int, start: int, path: list<int>) {
     if remain == 0 {
       result = result + [path]
-      return
-    }
-    var i = start
-    let n = len(sorted)
-    while i < n {
-      let current = sorted[i]
-      if current > remain {
-        break
+    } else {
+      var i = start
+      let n = len(sorted)
+      while i < n {
+        let current = sorted[i]
+        if current > remain {
+          break
+        }
+        backtrack(remain - current, i, path + [current])
+        i = i + 1
       }
-      backtrack(remain - current, i, path + [current])
-      i = i + 1
     }
   }
 
