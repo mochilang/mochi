@@ -1,0 +1,91 @@
+// LeetCode 101 - Symmetric Tree
+
+// Definition of a binary tree
+// Leaf represents an empty tree
+// Node has left, value, and right subtrees
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Determine if a binary tree is a mirror of itself.
+fun isSymmetric(root: Tree): bool {
+  fun isMirror(t1: Tree, t2: Tree): bool {
+    return match t1 {
+      Leaf => match t2 {
+        Leaf => true
+        _ => false
+      }
+      Node(l1, v1, r1) => match t2 {
+        Node(l2, v2, r2) => v1 == v2 && isMirror(l1, r2) && isMirror(r1, l2)
+        _ => false
+      }
+    }
+  }
+  return isMirror(root, root)
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tree = Node {
+    left: Node {
+      left: Node { left: Leaf {}, value: 3, right: Leaf {} },
+      value: 2,
+      right: Node { left: Leaf {}, value: 4, right: Leaf {} }
+    },
+    value: 1,
+    right: Node {
+      left: Node { left: Leaf {}, value: 4, right: Leaf {} },
+      value: 2,
+      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
+    }
+  }
+  expect isSymmetric(tree) == true
+}
+
+test "example 2" {
+  let tree = Node {
+    left: Node {
+      left: Leaf {},
+      value: 2,
+      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
+    },
+    value: 1,
+    right: Node {
+      left: Leaf {},
+      value: 2,
+      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
+    }
+  }
+  expect isSymmetric(tree) == false
+}
+
+test "single node" {
+  expect isSymmetric(Node { left: Leaf {}, value: 1, right: Leaf {} }) == true
+}
+
+test "empty" {
+  expect isSymmetric(Leaf {}) == true
+}
+
+/*
+Common language errors and how to fix them:
+1. Forgetting to break out of `match` branches with `return`:
+   fun foo(x: int): int {
+     match x {
+       1 => 1
+       2 => 2
+     }
+   }
+   // error: missing return. Fix by using `return` or an else branch.
+
+2. Reassigning a `let` binding:
+   let x = 1
+   x = 2  // error[E004]: cannot reassign immutable binding
+ // Fix: declare with `var x = 1` if it needs to change.
+
+3. Using `null` instead of the `Leaf` constructor:
+   let t = null  // error[I001]: undefined value null
+   // Fix: use `Leaf` to represent an empty subtree.
+*/
