@@ -1,0 +1,62 @@
+fun restoreIpAddresses(s: string): list<string> {
+  var result: list<string> = []
+
+  fun backtrack(start: int, part: int, current: string) {
+    if part == 4 {
+      if start == len(s) {
+        // remove leading '.' from accumulated string
+        result = result + [current[1:len(current)]]
+      }
+      return
+    }
+    for l in 1..4 {
+      if start + l > len(s) {
+        break
+      }
+      let segment = s[start:start+l]
+      if len(segment) > 1 && segment[0] == "0" {
+        continue
+      }
+      if int(segment) > 255 {
+        continue
+      }
+      backtrack(start + l, part + 1, current + "." + segment)
+    }
+  }
+
+  backtrack(0, 0, "")
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect restoreIpAddresses("25525511135") == ["255.255.11.135", "255.255.111.35"]
+}
+
+test "all zeros" {
+  expect restoreIpAddresses("0000") == ["0.0.0.0"]
+}
+
+test "example 2" {
+  expect restoreIpAddresses("101023") == [
+    "1.0.10.23",
+    "1.0.102.3",
+    "10.1.0.23",
+    "10.10.2.3",
+    "101.0.2.3",
+  ]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+     if len(s) = 0 { }
+   Use '==' to compare values.
+2. Reassigning a value declared with 'let':
+     let count = 0
+     count = count + 1   // ❌ cannot modify immutable binding
+   Declare with 'var' when mutation is required.
+3. Off-by-one mistakes when slicing strings:
+     s[a:b] includes index 'a' but excludes 'b'.
+*/
