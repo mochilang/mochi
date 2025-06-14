@@ -1,0 +1,53 @@
+// LeetCode 108 - Convert Sorted Array to Binary Search Tree
+//
+// Recursively build a height-balanced BST from a sorted array by
+// choosing the middle element as the root.
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+fun sortedArrayToBST(nums: list<int>): Tree {
+  fun helper(lo: int, hi: int): Tree {
+    if lo > hi { return Leaf }
+    let mid = (lo + hi) / 2
+    return Node {
+      left: helper(lo, mid - 1),
+      value: nums[mid],
+      right: helper(mid + 1, hi)
+    }
+  }
+  return helper(0, len(nums) - 1)
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tree = sortedArrayToBST([-10,-3,0,5,9])
+  expect match tree {
+    Node(_, v, _) => v == 0
+    _ => false
+  }
+}
+
+test "example 2" {
+  let tree = sortedArrayToBST([1,3])
+  expect match tree {
+    Node(_, v, _) => v == 1 || v == 3
+    _ => false
+  }
+}
+
+/*
+Common language errors and how to fix them:
+1. Using '=' instead of '==' in conditions:
+   if len(nums) = 0 { }  // error[P000]
+   // Fix: use '==' when comparing values.
+2. Reassigning an immutable variable:
+   let mid = 0
+   mid = 1  // error[E004]
+   // Fix: declare with 'var mid = 0' if mutation is needed.
+3. Using 'null' instead of 'Leaf' for an empty tree:
+   let t = null  // error[I001]
+   // Fix: use the 'Leaf' variant to represent emptiness.
+*/
