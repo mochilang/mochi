@@ -10,16 +10,20 @@ fun largestRectangleArea(heights: list<int>): int {
   var maxArea = 0
   var i = 0
   while i < n {
-    while len(stack) > 0 && heights[i] < heights[stack[len(stack)-1]] {
-      let h = heights[stack[len(stack)-1]]
-      stack = stack[0:len(stack)-1]
-      var width = i
-      if len(stack) > 0 {
-        width = i - stack[len(stack)-1] - 1
-      }
-      let area = h * width
-      if area > maxArea {
-        maxArea = area
+    while len(stack) > 0 {
+      if heights[i] < heights[stack[len(stack)-1]] {
+        let h = heights[stack[len(stack)-1]]
+        stack = stack[0:len(stack)-1]
+        var width = i
+        if len(stack) > 0 {
+          width = i - stack[len(stack)-1] - 1
+        }
+        let area = h * width
+        if area > maxArea {
+          maxArea = area
+        }
+      } else {
+        break
       }
     }
     stack = stack + [i]
