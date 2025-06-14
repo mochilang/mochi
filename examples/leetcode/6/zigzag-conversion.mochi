@@ -4,8 +4,10 @@ fun convert(s: string, numRows: int): string {
   }
 
   var rows = []
-  for i in 0..numRows {
+  var i = 0
+  while i < numRows {
     rows = rows + [""]
+    i = i + 1
   }
 
   var curr = 0
