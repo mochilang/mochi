@@ -1,0 +1,49 @@
+// Solution for LeetCode problem 95 - Unique Binary Search Trees II
+
+// Binary tree represented as an algebraic data type
+// Empty denotes a missing child node
+
+type Tree =
+  Empty
+  | Node(left: Tree, val: int, right: Tree)
+
+fun build(start: int, end: int): list<Tree> {
+  if start > end {
+    return [Empty]
+  }
+  var result: list<Tree> = []
+  for i in start..end + 1 {
+    let leftTrees = build(start, i - 1)
+    let rightTrees = build(i + 1, end)
+    for l in leftTrees {
+      for r in rightTrees {
+        result = result + [Node { left: l, val: i, right: r }]
+      }
+    }
+  }
+  return result
+}
+
+fun generateTrees(n: int): list<Tree> {
+  if n == 0 {
+    return []
+  }
+  return build(1, n)
+}
+
+// Example usage: print number of trees for n = 3
+let trees = generateTrees(3)
+print(len(trees))
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons.
+   if n = 0 { }       // ❌ assignment
+   if n == 0 { }      // ✅ comparison
+2. Forgetting 'var' for mutable variables.
+   result = []        // ❌ if 'result' was declared with 'let'
+   var result = []    // ✅ declare mutable variables with 'var'
+3. Off-by-one range mistakes in loops.
+   for i in start..end { }     // ❌ end value not included
+   for i in start..end + 1 { } // ✅ include end value
+*/
