@@ -1,0 +1,69 @@
+// LeetCode 98 - Validate Binary Search Tree
+
+// Binary tree of integers using an algebraic data type
+// Leaf represents an empty subtree
+// Node has a left child, value, and right child
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Optional integer used for lower/upper bounds during validation
+// None means unbounded
+
+type MaybeInt =
+  None
+  | Some(value: int)
+
+fun isValidBST(root: Tree): bool {
+  fun helper(node: Tree, low: MaybeInt, high: MaybeInt): bool {
+    return match node {
+      Leaf => true
+      Node(l, v, r) => {
+        if match low { Some(x) => v <= x, None => false } {
+          return false
+        }
+        if match high { Some(y) => v >= y, None => false } {
+          return false
+        }
+        return helper(l, low, Some { value: v }) && helper(r, Some { value: v }, high)
+      }
+    }
+  }
+  return helper(root, None, None)
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tree = Node {
+    left: Node { left: Leaf, value: 1, right: Leaf },
+    value: 2,
+    right: Node { left: Leaf, value: 3, right: Leaf }
+  }
+  expect isValidBST(tree) == true
+}
+
+test "example 2" {
+  let tree = Node {
+    left: Node { left: Leaf, value: 1, right: Leaf },
+    value: 5,
+    right: Node {
+      left: Node { left: Leaf, value: 3, right: Leaf },
+      value: 4,
+      right: Node { left: Leaf, value: 6, right: Leaf }
+    }
+  }
+  expect isValidBST(tree) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to return a value from each match branch. Every branch must
+   produce the same type.
+2. Mixing up '=' assignment with '==' comparison in conditions.
+3. Attempting to mutate a variable declared with 'let'. Use 'var' when mutation
+   is required.
+4. Using Python-style 'None' instead of the defined variant 'Leaf' for an empty
+   tree. Stick to the declared variants.
+*/
