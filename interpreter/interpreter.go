@@ -20,6 +20,7 @@ import (
 	"mochi/runtime/ffi/extern"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
+	"mochi/runtime/logic"
 	"mochi/runtime/stream"
 	"mochi/types"
 	"os"
@@ -43,6 +44,7 @@ type Interpreter struct {
 	memo     map[string]map[string]any
 	dataPlan string
 	tx       *atomic.Int64
+	logic    *logic.Engine
 }
 
 func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
@@ -62,6 +64,7 @@ func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
 		memo:     map[string]map[string]any{},
 		dataPlan: "memory",
 		tx:       &atomic.Int64{},
+		logic:    logic.New(),
 	}
 }
 
@@ -557,6 +560,49 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 
 	case s.Continue != nil:
 		return continueSignal{}
+
+	case s.Fact != nil:
+		args := []any{}
+		for _, a := range s.Fact.Fact.Args {
+			v, err := i.evalExpr(a)
+			if err != nil {
+				return err
+			}
+			args = append(args, v)
+		}
+		i.logic.AddFact(s.Fact.Fact.Func, args)
+		return nil
+
+	case s.Rule != nil:
+		rule := logic.Rule{HeadName: s.Rule.Head.Func}
+		for _, a := range s.Rule.Head.Args {
+			if name, ok := isVarExpr(a); ok {
+				rule.HeadVars = append(rule.HeadVars, name)
+			} else {
+				return fmt.Errorf("rule head args must be variables")
+			}
+		}
+		for _, g := range s.Rule.Body {
+			if g.Call != nil {
+				pred := logic.Predicate{Name: g.Call.Func}
+				for _, arg := range g.Call.Args {
+					if name, ok := isVarExpr(arg); ok {
+						pred.Terms = append(pred.Terms, logic.Term{Var: name, IsVar: true})
+					} else {
+						val, err := i.evalExpr(arg)
+						if err != nil {
+							return err
+						}
+						pred.Terms = append(pred.Terms, logic.Term{Value: val})
+					}
+				}
+				rule.BodyPreds = append(rule.BodyPreds, pred)
+			} else if g.Expr != nil {
+				rule.BodyExprs = append(rule.BodyExprs, g.Expr)
+			}
+		}
+		i.logic.AddRule(rule)
+		return nil
 
 	case s.Agent != nil:
 		i.env.SetAgent(s.Agent.Name, s.Agent)
@@ -1265,6 +1311,19 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			return val, err
 		})
 
+	case p.LogicQuery != nil:
+		return i.logic.Query(p.LogicQuery.Name, p.LogicQuery.Vars, func(ex *parser.Expr, bind map[string]any) (any, error) {
+			child := types.NewEnv(i.env)
+			for k, v := range bind {
+				child.SetValue(k, v, true)
+			}
+			old := i.env
+			i.env = child
+			val, err := i.evalExpr(ex)
+			i.env = old
+			return val, err
+		})
+
 	case p.Match != nil:
 		return i.evalMatch(p.Match)
 
@@ -1826,6 +1885,28 @@ func (b breakSignal) Error() string { return "break" }
 type continueSignal struct{}
 
 func (c continueSignal) Error() string { return "continue" }
+
+// isVarExpr checks if the expression is a simple variable reference.
+func isVarExpr(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	if len(u.Value.Ops) != 0 {
+		return "", false
+	}
+	if u.Value.Target == nil || u.Value.Target.Selector == nil {
+		return "", false
+	}
+	sel := u.Value.Target.Selector
+	if sel == nil || len(sel.Tail) != 0 {
+		return "", false
+	}
+	return sel.Root, true
+}
 
 func (i *Interpreter) Close() {
 	for _, cancel := range i.cancels {
