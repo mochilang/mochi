@@ -1,0 +1,81 @@
+fun multiply(num1: string, num2: string): string {
+  if num1 == "0" || num2 == "0" {
+    return "0"
+  }
+
+  // 1. Converting characters to digits.
+  //    ❌ Common error: using int(num1[i]) to get a digit.
+  //    This fails because `int` expects a number, not a string.
+  //    ✅ Fix: map each character to its numeric value.
+  let digits = {
+    "0": 0, "1": 1, "2": 2, "3": 3, "4": 4,
+    "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
+  }
+  // 4. Integer overflow
+  //    ❌ Common error: converting the entire string to an int and multiplying.
+  //    This overflows for large inputs. Manual digit multiplication avoids this.
+
+  // 2. Immutable variables
+  //    ❌ Common error: trying to reassign a `let` binding.
+  //    let n = 0
+  //    n = 1  // <-- compile-time error
+  //    ✅ Fix: declare the variable with `var` if it needs to change.
+  let total = len(num1) + len(num2)
+  var res: map<int, int> = {}
+
+  // 3. Loop ranges are half-open.
+  //    ❌ Common error: using `for i in 0..len(nums)` and then accessing nums[i]
+  //    at the end results in out-of-bounds access because the upper bound is
+  //    excluded. Keep this in mind when building arrays.
+
+  //    ❌ Common error: negative indexes like num1[-1] are invalid.
+  //    ✅ Use a while loop and decrement the index.
+  var i = len(num1) - 1
+  while i >= 0 {
+    let d1 = digits[num1[i]]
+    var carry = 0
+    var j = len(num2) - 1
+    while j >= 0 {
+      let d2 = digits[num2[j]]
+      let pos = i + j + 1
+      var cur = 0
+      if pos in res {
+        cur = res[pos]
+      }
+      let sum = cur + d1 * d2 + carry
+      res[pos] = sum % 10
+      carry = sum / 10
+      j = j - 1
+    }
+    var cur2 = 0
+    if i in res {
+      cur2 = res[i]
+    }
+    res[i] = cur2 + carry
+    i = i - 1
+  }
+
+  // Remove leading zeros and build result string.
+  var start = 0
+  while start < total && (!(start in res) || res[start] == 0) {
+    start = start + 1
+  }
+
+  var s = ""
+  for k in start..total {
+    var digit = 0
+    if k in res {
+      digit = res[k]
+    }
+    s = s + str(digit)
+  }
+  return s
+}
+
+test "example 1" {
+  expect multiply("2", "3") == "6"
+}
+
+test "example 2" {
+  expect multiply("123", "456") == "56088"
+}
