@@ -17,8 +17,8 @@ type MaybeInt =
 
 fun isValidBST(root: Tree): bool {
   fun helper(node: Tree, low: MaybeInt, high: MaybeInt): bool {
-    return match node {
-      Leaf => true
+    match node {
+      Leaf => { return true }
       Node(l, v, r) => {
         if match low {
           Some(x) => v <= x
@@ -35,6 +35,7 @@ fun isValidBST(root: Tree): bool {
         return helper(l, low, Some { value: v }) && helper(r, Some { value: v }, high)
       }
     }
+    return false
   }
   return helper(root, None, None)
 }
