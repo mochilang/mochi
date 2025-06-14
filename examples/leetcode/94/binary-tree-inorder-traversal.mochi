@@ -15,12 +15,12 @@ fun inorderTraversal(t: Tree): list<int> {
 
 // Example tree: [1,null,2,3]
 let example1 = Node {
-  left: Leaf,
+  left: Leaf {},
   value: 1,
   right: Node {
-    left: Node { left: Leaf, value: 3, right: Leaf },
+    left: Node { left: Leaf {}, value: 3, right: Leaf {} },
     value: 2,
-    right: Leaf
+    right: Leaf {}
   }
 }
 
@@ -31,11 +31,11 @@ test "example 1" {
 }
 
 test "empty" {
-  expect inorderTraversal(Leaf) == []
+  expect inorderTraversal(Leaf {}) == []
 }
 
 test "single node" {
-  expect inorderTraversal(Node { left: Leaf, value: 1, right: Leaf }) == [1]
+  expect inorderTraversal(Node { left: Leaf {}, value: 1, right: Leaf {} }) == [1]
 }
 
 /*

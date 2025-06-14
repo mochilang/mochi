@@ -9,7 +9,7 @@ type Tree =
 
 fun build(start: int, end: int): list<Tree> {
   if start > end {
-    return [Empty]
+    return [Empty {}]
   }
   var result: list<Tree> = []
   for i in start..end + 1 {

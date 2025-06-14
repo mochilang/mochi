@@ -1,5 +1,5 @@
 type Tree =
-  Leaf
+  Leaf {}
   | Node(left: Tree, value: int, right: Tree)
 
 fun isSameTree(p: Tree, q: Tree): bool {
@@ -19,48 +19,48 @@ fun isSameTree(p: Tree, q: Tree): bool {
 
 test "example 1" {
   let p = Node {
-    left: Node { left: Leaf, value: 2, right: Leaf },
+    left: Node { left: Leaf {}, value: 2, right: Leaf {} },
     value: 1,
-    right: Node { left: Leaf, value: 3, right: Leaf }
+    right: Node { left: Leaf {}, value: 3, right: Leaf {} }
   }
   let q = Node {
-    left: Node { left: Leaf, value: 2, right: Leaf },
+    left: Node { left: Leaf {}, value: 2, right: Leaf {} },
     value: 1,
-    right: Node { left: Leaf, value: 3, right: Leaf }
+    right: Node { left: Leaf {}, value: 3, right: Leaf {} }
   }
   expect isSameTree(p, q) == true
 }
 
 test "example 2" {
   let p = Node {
-    left: Node { left: Leaf, value: 2, right: Leaf },
+    left: Node { left: Leaf {}, value: 2, right: Leaf {} },
     value: 1,
-    right: Leaf
+    right: Leaf {}
   }
   let q = Node {
-    left: Leaf,
+    left: Leaf {},
     value: 1,
-    right: Node { left: Leaf, value: 2, right: Leaf }
+    right: Node { left: Leaf {}, value: 2, right: Leaf {} }
   }
   expect isSameTree(p, q) == false
 }
 
 test "example 3" {
   let p = Node {
-    left: Node { left: Leaf, value: 2, right: Leaf },
+    left: Node { left: Leaf {}, value: 2, right: Leaf {} },
     value: 1,
-    right: Node { left: Leaf, value: 1, right: Leaf }
+    right: Node { left: Leaf {}, value: 1, right: Leaf {} }
   }
   let q = Node {
-    left: Node { left: Leaf, value: 1, right: Leaf },
+    left: Node { left: Leaf {}, value: 1, right: Leaf {} },
     value: 1,
-    right: Node { left: Leaf, value: 2, right: Leaf }
+    right: Node { left: Leaf {}, value: 2, right: Leaf {} }
   }
   expect isSameTree(p, q) == false
 }
 
 test "both empty" {
-  expect isSameTree(Leaf, Leaf) == true
+  expect isSameTree(Leaf {}, Leaf {}) == true
 }
 
 /*
