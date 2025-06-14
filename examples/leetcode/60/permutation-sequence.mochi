@@ -1,0 +1,50 @@
+fun getPermutation(n: int, k: int): string {
+  // Precompute factorial values
+  var fact = 1
+  for i in 1..n+1 {
+    fact = fact * i
+  }
+
+  // Initialize list of available numbers
+  var nums: list<int> = []
+  for i in 1..n+1 {
+    nums = nums + [i]
+  }
+
+  var k0 = k - 1
+  var result = ""
+  for i in 0..n {
+    fact = fact / (n - i)
+    let idx = k0 / fact
+    let digit = nums[idx]
+    result = result + digit
+    nums = nums[0:idx] + nums[idx+1:len(nums)]
+    k0 = k0 % fact
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect getPermutation(3, 3) == "213"
+}
+
+test "example 2" {
+  expect getPermutation(4, 9) == "2314"
+}
+
+test "example 3" {
+  expect getPermutation(3, 1) == "123"
+}
+
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' inside comparisons causes compile errors.
+//    if n = 1 { }       // ❌ wrong
+//    if n == 1 { }      // ✅ correct
+// 2. Forgetting to declare variables with 'var' or 'let'.
+//    result = ""        // ❌ wrong
+//    var result = ""    // ✅ correct
+// 3. Off-by-one mistakes when creating ranges.
+//    for i in 1..n { }  // ❌ loops from 1 to n-1
+//    for i in 1..n+1 { } // ✅ loops from 1 to n
