@@ -1,0 +1,65 @@
+// LeetCode 3600 - Find the K-th Character in String Game I
+
+fun kthCharacter(k: int): string {
+  var word = "a"
+  let letters = "abcdefghijklmnopqrstuvwxyz"
+
+  fun nextChar(ch: string): string {
+    for i in 0..len(letters) {
+      if letters[i] == ch {
+        if i == len(letters) - 1 {
+          return "a"
+        }
+        return letters[i+1]
+      }
+    }
+    return ch
+  }
+
+  while len(word) < k {
+    var extra = ""
+    for ch in word {
+      extra = extra + nextChar(ch)
+    }
+    word = word + extra
+  }
+
+  return word[k-1]
+}
+
+// Test cases from the problem description
+
+test "example 1" {
+  expect kthCharacter(5) == "b"
+}
+
+test "example 2" {
+  expect kthCharacter(10) == "c"
+}
+
+// Additional tests
+
+test "k = 1" {
+  expect kthCharacter(1) == "a"
+}
+
+test "k = 50" {
+  expect kthCharacter(50) == "d"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons:
+     if ch = "z" { }
+   Use '==' when comparing values.
+2. Reassigning an immutable value declared with 'let':
+     let word = "a"
+     word = word + "b"   // error[E004]
+   Declare with 'var' if mutation is required.
+3. Off-by-one indexing for the k-th character:
+     word[k]              // wrong index
+   Use 'word[k-1]' since lists are zero-based.
+4. Trying to mutate characters of a string directly:
+     word[0] = "b"        // strings are immutable
+   Build a new string instead and concatenate.
+*/
