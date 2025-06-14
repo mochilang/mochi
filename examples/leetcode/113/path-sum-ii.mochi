@@ -1,0 +1,89 @@
+// Solution for LeetCode problem 113 - Path Sum II
+
+// Binary tree definition identical to other tree problems
+
+type Tree =
+  Leaf {}
+  | Node(left: Tree, value: int, right: Tree)
+
+fun pathSum(root: Tree, targetSum: int): list<list<int>> {
+  fun dfs(node: Tree, remaining: int, path: list<int>): list<list<int>> {
+    match node {
+      Leaf {} => []
+      Node(l, v, r) => {
+        let newRemaining = remaining - v
+        let newPath = path + [v]
+        let leftEmpty = match l { Leaf {} => true _ => false }
+        let rightEmpty = match r { Leaf {} => true _ => false }
+        if leftEmpty && rightEmpty {
+          if newRemaining == 0 {
+            [newPath]
+          } else {
+            []
+          }
+        } else {
+          dfs(l, newRemaining, newPath) + dfs(r, newRemaining, newPath)
+        }
+      }
+    }
+  }
+  return dfs(root, targetSum, [])
+}
+
+// Tests from LeetCode
+
+test "example 1" {
+  let rootLeft = Node {
+    left: Node { left: Leaf {}, value: 7, right: Leaf {} },
+    value: 11,
+    right: Node { left: Leaf {}, value: 2, right: Leaf {} }
+  }
+  let tree = Node {
+    left: Node { left: rootLeft, value: 4, right: Leaf {} },
+    value: 5,
+    right: Node {
+      left: Node { left: Leaf {}, value: 13, right: Leaf {} },
+      value: 8,
+      right: Node {
+        left: Node { left: Leaf {}, value: 5, right: Leaf {} },
+        value: 4,
+        right: Node { left: Leaf {}, value: 1, right: Leaf {} }
+      }
+    }
+  }
+  expect pathSum(tree, 22) == [
+    [5,4,11,2],
+    [5,8,4,5]
+  ]
+}
+
+test "example 2" {
+  let tree = Node {
+    left: Node { left: Leaf {}, value: 2, right: Leaf {} },
+    value: 1,
+    right: Node { left: Leaf {}, value: 3, right: Leaf {} }
+  }
+  expect pathSum(tree, 5) == []
+}
+
+test "example 3" {
+  let tree = Node {
+    left: Node { left: Leaf {}, value: 2, right: Leaf {} },
+    value: 1,
+    right: Leaf {}
+  }
+  expect pathSum(tree, 0) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Attempting to mutate an immutable binding:
+     let path = []
+     path = path + [x]      // ❌ cannot reassign
+   Use 'var path = []' if mutation is required.
+2. Forgetting to create a new list when adding to the path:
+     path + [v]  // ✅ returns a new list, original unchanged
+3. Using Python-style 'append' on lists:
+     path.append(v)         // ❌ not valid Mochi
+   Instead use list concatenation as shown above.
+*/
