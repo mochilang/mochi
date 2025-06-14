@@ -1,0 +1,110 @@
+// Solution for LeetCode problem 65 - Valid Number
+// The function parses the string manually to determine if it represents
+// a valid decimal number with optional exponent.
+
+fun isNumber(s: string): bool {
+  var i = 0
+  let n = len(s)
+  // skip leading spaces
+  while i < n && s[i] == " " {
+    i = i + 1
+  }
+
+  // optional sign
+  if i < n && (s[i] == "+" || s[i] == "-") {
+    i = i + 1
+  }
+
+  var num = false
+  var dot = false
+  var exp = false
+  var numAfterExp = true
+
+  while i < n {
+    let c = s[i]
+    if c == " " {
+      break
+    }
+    if c == "+" || c == "-" {
+      // sign is only allowed right after 'e'
+      return false
+    } else if c == "." {
+      if dot || exp {
+        return false
+      }
+      dot = true
+    } else if c == "e" || c == "E" {
+      if exp || !num {
+        return false
+      }
+      exp = true
+      numAfterExp = false
+      // check sign after exponent
+      if i + 1 < n && (s[i+1] == "+" || s[i+1] == "-") {
+        i = i + 1
+      }
+    } else {
+      // check digit
+      let digits = {
+        "0": true,
+        "1": true,
+        "2": true,
+        "3": true,
+        "4": true,
+        "5": true,
+        "6": true,
+        "7": true,
+        "8": true,
+        "9": true,
+      }
+      if !(c in digits) {
+        return false
+      }
+      num = true
+      if exp {
+        numAfterExp = true
+      }
+    }
+    i = i + 1
+  }
+
+  // skip trailing spaces
+  while i < n && s[i] == " " {
+    i = i + 1
+  }
+
+  return num && (!exp || numAfterExp) && i == n
+}
+
+// Test cases from LeetCode
+
+test "valid simple" {
+  expect isNumber("0") == true
+}
+
+test "invalid single e" {
+  expect isNumber("e") == false
+}
+
+test "valid exponent" {
+  expect isNumber("2e10") == true
+}
+
+test "invalid mixed" {
+  expect isNumber("99e2.5") == false
+}
+
+test "spaces around" {
+  expect isNumber(" 0.1 ") == true
+}
+
+test "invalid sign" {
+  expect isNumber("--6") == false
+}
+
+// Common Mochi language errors and fixes:
+// 1. Using '=' instead of '==' in conditions. Mochi uses '==' for comparison.
+// 2. Forgetting 'var' for mutable variables like 'i' above. 'let' bindings
+//    are immutable and cannot be reassigned.
+// 3. Trying to use unsupported operators such as '++'. Use 'i = i + 1' instead.
+
