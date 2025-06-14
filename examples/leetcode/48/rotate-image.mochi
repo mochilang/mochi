@@ -1,0 +1,71 @@
+fun rotate(matrix: list<list<int>>): list<list<int>> {
+  let n = len(matrix)
+  var i = 0
+  while i < n {
+    var j = i
+    while j < n {
+      let temp = matrix[i][j]
+      matrix[i][j] = matrix[j][i]
+      matrix[j][i] = temp
+      j = j + 1
+    }
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    var left = 0
+    var right = n - 1
+    while left < right {
+      let tmp = matrix[i][left]
+      matrix[i][left] = matrix[i][right]
+      matrix[i][right] = tmp
+      left = left + 1
+      right = right - 1
+    }
+    i = i + 1
+  }
+  return matrix
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  var m = [
+    [1,2,3],
+    [4,5,6],
+    [7,8,9],
+  ]
+  rotate(m)
+  expect m == [
+    [7,4,1],
+    [8,5,2],
+    [9,6,3],
+  ]
+}
+
+test "example 2" {
+  var m = [
+    [5,1,9,11],
+    [2,4,8,10],
+    [13,3,6,7],
+    [15,14,12,16],
+  ]
+  rotate(m)
+  expect m == [
+    [15,13,2,5],
+    [14,3,4,1],
+    [12,6,8,9],
+    [16,7,10,11],
+  ]
+}
+
+test "single element" {
+  var m = [[1]]
+  rotate(m)
+  expect m == [[1]]
+}
+
+// Common Mochi language errors and fixes:
+// 1. Using '=' for comparison. Use '==' instead, e.g. 'if x == 1 { }'.
+// 2. Forgetting 'var' when assigning to a variable. Variables that change must be declared with 'var'.
+// 3. Trying Python syntax like 'for i in range(n)'—use 'for i in 0..n' in Mochi.
