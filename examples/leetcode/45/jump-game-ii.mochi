@@ -1,0 +1,49 @@
+fun jump(nums: list<int>): int {
+  let n = len(nums)
+  var jumps = 0
+  var end = 0
+  var farthest = 0
+  for i in 0..n {
+    if i > farthest {
+      return -1 // unreachable
+    }
+    if i + nums[i] > farthest {
+      farthest = i + nums[i]
+    }
+    if i == end && i != n - 1 {
+      jumps = jumps + 1
+      end = farthest
+    }
+  }
+  return jumps
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect jump([2,3,1,1,4]) == 2
+}
+
+test "example 2" {
+  expect jump([2,3,0,1,4]) == 2
+}
+
+// Additional edge cases
+
+test "single element" {
+  expect jump([0]) == 0
+}
+
+test "two elements" {
+  expect jump([1,2]) == 1
+}
+
+// Common Mochi errors and fixes
+// 1. Using '=' instead of '==' for comparison will cause a compile error.
+//    if a = b { }       // ❌ wrong
+//    if a == b { }      // ✅ correct
+// 2. Omitting 'var' or 'let' when defining a variable leads to an error.
+//    count = 0          // ❌ wrong
+//    var count = 0      // ✅ correct
+// 3. Mochi arrays are 0-indexed. Accessing with 1-based index is incorrect.
+//    nums[1]            // second element, not first
