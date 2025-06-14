@@ -1,0 +1,88 @@
+fun generateMatrix(n: int): list<list<int>> {
+  var matrix: list<list<int>> = []
+  for i in 0..n {
+    var row: list<int> = []
+    for j in 0..n {
+      row = row + [0]
+    }
+    matrix = matrix + [row]
+  }
+
+  var left = 0
+  var right = n - 1
+  var top = 0
+  var bottom = n - 1
+  var num = 1
+
+  while left <= right && top <= bottom {
+    for j in left..right + 1 {
+      matrix[top][j] = num
+      num = num + 1
+    }
+    top = top + 1
+
+    for i in top..bottom + 1 {
+      matrix[i][right] = num
+      num = num + 1
+    }
+    right = right - 1
+
+    if top <= bottom {
+      var j = right
+      while j >= left {
+        matrix[bottom][j] = num
+        num = num + 1
+        j = j - 1
+      }
+      bottom = bottom - 1
+    }
+
+    if left <= right {
+      var i = bottom
+      while i >= top {
+        matrix[i][left] = num
+        num = num + 1
+        i = i - 1
+      }
+      left = left + 1
+    }
+  }
+
+  return matrix
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect generateMatrix(3) == [
+    [1,2,3],
+    [8,9,4],
+    [7,6,5],
+  ]
+}
+
+test "example 2" {
+  expect generateMatrix(1) == [[1]]
+}
+
+test "n = 4" {
+  expect generateMatrix(4) == [
+    [1,2,3,4],
+    [12,13,14,5],
+    [11,16,15,6],
+    [10,9,8,7],
+  ]
+}
+
+// Common Mochi language mistakes and fixes:
+// 1. Writing loops with 1-based indexing:
+//    for i in 1..n { }        // ❌ misses index 0
+//    for i in 0..n { }        // ✅ correct 0-based indexing
+// 2. Using '=' where '==' is needed:
+//    if a = b { }             // ❌ assigns instead of compares
+//    if a == b { }            // ✅ proper comparison
+// 3. Attempting to modify a 'let' variable:
+//    let x = 5
+//    // x = 6                // ❌ cannot reassign
+//    var y = 5
+//    y = 6                    // ✅ use var when mutation is required
