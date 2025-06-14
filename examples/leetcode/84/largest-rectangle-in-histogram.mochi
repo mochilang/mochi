@@ -1,0 +1,77 @@
+// Solution for LeetCode problem 84 - Largest Rectangle in Histogram
+//
+// This uses a stack to track indices of increasing bar heights. When a new
+// bar is shorter than the one on the stack top, areas are computed for the
+// popped bars.
+
+fun largestRectangleArea(heights: list<int>): int {
+  let n = len(heights)
+  var stack: list<int> = []
+  var maxArea = 0
+  var i = 0
+  while i < n {
+    while len(stack) > 0 && heights[i] < heights[stack[len(stack)-1]] {
+      let h = heights[stack[len(stack)-1]]
+      stack = stack[0:len(stack)-1]
+      var width = i
+      if len(stack) > 0 {
+        width = i - stack[len(stack)-1] - 1
+      }
+      let area = h * width
+      if area > maxArea {
+        maxArea = area
+      }
+    }
+    stack = stack + [i]
+    i = i + 1
+  }
+  while len(stack) > 0 {
+    let h = heights[stack[len(stack)-1]]
+    stack = stack[0:len(stack)-1]
+    var width = n
+    if len(stack) > 0 {
+      width = n - stack[len(stack)-1] - 1
+    }
+    let area = h * width
+    if area > maxArea {
+      maxArea = area
+    }
+  }
+  return maxArea
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect largestRectangleArea([2,1,5,6,2,3]) == 10
+}
+
+test "example 2" {
+  expect largestRectangleArea([2,4]) == 4
+}
+
+test "single bar" {
+  expect largestRectangleArea([1]) == 1
+}
+
+test "valley" {
+  expect largestRectangleArea([2,1,2]) == 3
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' to compare values.
+   if height[i] = 0 { }  // ❌ assignment
+   if height[i] == 0 { } // ✅ comparison
+2. Reassigning a value bound with 'let'.
+   let max = 0
+   max = 1                // ❌ cannot modify immutable binding
+   var max = 0            // ✅ use 'var' when mutation is required
+3. Trying Python stack methods like 'stack.append' or 'stack.pop'.
+   stack.append(i)        // ❌ not valid Mochi
+   stack = stack + [i]    // ✅ push element
+   stack.pop()            // ❌ not valid Mochi
+   stack = stack[0:len(stack)-1] // ✅ pop element
+4. Off-by-one when computing widths. Remember to subtract one after popping:
+   width = i - stack[len(stack)-1] - 1
+*/
