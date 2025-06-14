@@ -5,12 +5,16 @@ fun exist(board: list<list<string>>, word: string): bool {
   }
   let n = len(board[0])
   var visited: list<list<bool>> = []
-  for _ in 0..m {
+  var r = 0
+  while r < m {
     var row: list<bool> = []
-    for _ in 0..n {
+    var c = 0
+    while c < n {
       row = row + [false]
+      c = c + 1
     }
     visited = visited + [row]
+    r = r + 1
   }
 
   fun dfs(r: int, c: int, idx: int): bool {

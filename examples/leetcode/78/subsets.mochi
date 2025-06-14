@@ -2,10 +2,17 @@ fun subsets(nums: list<int>): list<list<int>> {
   var result: list<list<int>> = [[]]
   for num in nums {
     var newSets: list<list<int>> = []
-    for subset in result {
+    var i = 0
+    while i < len(result) {
+      let subset = result[i]
       newSets = newSets + [subset + [num]]
+      i = i + 1
     }
-    result = result + newSets
+    var j = 0
+    while j < len(newSets) {
+      result = result + [newSets[j]]
+      j = j + 1
+    }
   }
   return result
 }
