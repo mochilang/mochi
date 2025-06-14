@@ -1,0 +1,57 @@
+// Solution for LeetCode problem 82 - Remove Duplicates from Sorted List II
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' when comparing values.
+//    if nums[i] = val { }      // ❌ assignment, not comparison
+//    if nums[i] == val { }     // ✅ use '==' for equality
+// 2. Reassigning a variable declared with 'let'.
+//    let res = []
+//    res = [1]                // ❌ immutable binding
+//    var res = []             // ✅ use 'var' for mutable variables
+// 3. Accessing indices without checking bounds first.
+//    let x = nums[i]          // ❌ may panic if i >= len(nums)
+//    if i < len(nums) {       // ✅ check bounds before indexing
+//      let x = nums[i]
+//    }
+
+fun deleteDuplicates(nums: list<int>): list<int> {
+  let n = len(nums)
+  var result: list<int> = []
+  var i = 0
+  while i < n {
+    let value = nums[i]
+    var j = i + 1
+    while j < n {
+      if nums[j] == value {
+        j = j + 1
+      } else {
+        break
+      }
+    }
+    if j == i + 1 {
+      result = result + [value]
+    }
+    i = j
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect deleteDuplicates([1,2,3,3,4,4,5]) == [1,2,5]
+}
+
+test "example 2" {
+  expect deleteDuplicates([1,1,1,2,3]) == [2,3]
+}
+
+// Additional edge cases
+
+test "empty" {
+  expect deleteDuplicates([]) == []
+}
+
+test "no duplicates" {
+  expect deleteDuplicates([1,2,3]) == [1,2,3]
+}
