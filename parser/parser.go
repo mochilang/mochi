@@ -58,6 +58,8 @@ type Statement struct {
 	ExternObject *ExternObjectDecl `parser:"| @@"`
 	On           *OnHandler        `parser:"| @@"`
 	Emit         *EmitStmt         `parser:"| @@"`
+	Fact         *FactStmt         `parser:"| @@"`
+	Rule         *RuleStmt         `parser:"| @@"`
 	Let          *LetStmt          `parser:"| @@"`
 	Var          *VarStmt          `parser:"| @@"`
 	Assign       *AssignStmt       `parser:"| @@"`
@@ -201,6 +203,24 @@ type BreakStmt struct {
 
 type ContinueStmt struct {
 	Pos lexer.Position `parser:"'continue'"`
+}
+
+type FactStmt struct {
+	Pos  lexer.Position
+	Name string  `parser:"'fact' @Ident '('"`
+	Args []*Expr `parser:"[ @@ { ',' @@ } ] ')'"`
+}
+
+type PredicateCall struct {
+	Name string  `parser:"@Ident '('"`
+	Args []*Expr `parser:"[ @@ { ',' @@ } ] ')'"`
+}
+
+type RuleStmt struct {
+	Pos  lexer.Position
+	Name string           `parser:"'rule' @Ident '('"`
+	Vars []string         `parser:"[ @Ident { ',' @Ident } ] ')' ':' '-'"`
+	Body []*PredicateCall `parser:"@@ { ',' @@ }"`
 }
 
 type ExternTypeDecl struct {
@@ -375,6 +395,12 @@ type QueryExpr struct {
 	Select *Expr          `parser:"'select' @@"`
 }
 
+type LogicQueryExpr struct {
+	Pos  lexer.Position
+	Name string   `parser:"'query' @Ident '('"`
+	Vars []string `parser:"[ @Ident { ',' @Ident } ] ')'"`
+}
+
 type FromClause struct {
 	Pos lexer.Position
 	Var string `parser:"'from' @Ident 'in'"`
@@ -408,21 +434,22 @@ type MatchCase struct {
 }
 
 type Primary struct {
-	Pos      lexer.Position
-	Struct   *StructLiteral `parser:"@@"`
-	Call     *CallExpr      `parser:"| @@"`
-	Query    *QueryExpr     `parser:"| @@"`
-	Selector *SelectorExpr  `parser:"| @@"`
-	List     *ListLiteral   `parser:"| @@"`
-	Map      *MapLiteral    `parser:"| @@"`
-	FunExpr  *FunExpr       `parser:"| @@"`
-	Match    *MatchExpr     `parser:"| @@"`
-	Generate *GenerateExpr  `parser:"| @@"`
-	Fetch    *FetchExpr     `parser:"| @@"`
-	Load     *LoadExpr      `parser:"| @@"`
-	Save     *SaveExpr      `parser:"| @@"`
-	Lit      *Literal       `parser:"| @@"`
-	Group    *Expr          `parser:"| '(' @@ ')'"`
+	Pos        lexer.Position
+	Struct     *StructLiteral  `parser:"@@"`
+	Call       *CallExpr       `parser:"| @@"`
+	Query      *QueryExpr      `parser:"| @@"`
+	LogicQuery *LogicQueryExpr `parser:"| @@"`
+	Selector   *SelectorExpr   `parser:"| @@"`
+	List       *ListLiteral    `parser:"| @@"`
+	Map        *MapLiteral     `parser:"| @@"`
+	FunExpr    *FunExpr        `parser:"| @@"`
+	Match      *MatchExpr      `parser:"| @@"`
+	Generate   *GenerateExpr   `parser:"| @@"`
+	Fetch      *FetchExpr      `parser:"| @@"`
+	Load       *LoadExpr       `parser:"| @@"`
+	Save       *SaveExpr       `parser:"| @@"`
+	Lit        *Literal        `parser:"| @@"`
+	Group      *Expr           `parser:"| '(' @@ ')'"`
 }
 
 type FunExpr struct {

@@ -10,6 +10,7 @@ import (
 
 	"mochi/parser"
 	"mochi/runtime/data"
+	"mochi/runtime/logic"
 	"mochi/types"
 )
 
@@ -665,4 +666,32 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+// exprToTerm converts a Mochi expression into a logic Term. Identifiers become
+// variables, while literals are evaluated to constants.
+func (i *Interpreter) exprToTerm(e *parser.Expr) (logic.Term, error) {
+	if e == nil {
+		return logic.Term{}, fmt.Errorf("nil expression")
+	}
+	// Check for simple identifier
+	if id, ok := simpleStringKey(e); ok {
+		// If the identifier came from a literal string, treat as constant
+		if strings.HasPrefix(id, "\"") && strings.HasSuffix(id, "\"") {
+			v, err := i.evalExpr(e)
+			if err != nil {
+				return logic.Term{}, err
+			}
+			return logic.Term{Const: v}, nil
+		}
+		// plain identifier -> variable
+		if _, err := strconv.Atoi(id); err != nil && !strings.HasPrefix(id, "\"") {
+			return logic.Term{Var: strings.Trim(id, "\"")}, nil
+		}
+	}
+	v, err := i.evalExpr(e)
+	if err != nil {
+		return logic.Term{}, err
+	}
+	return logic.Term{Const: v}, nil
 }

@@ -1,0 +1,24 @@
+// Datalog logic programming example
+
+fact parent("Alice", "Bob")
+fact parent("Alice", "Carol")
+fact parent("Bob", "David")
+fact parent("Carol", "Eva")
+
+rule grandparent(x, z):-
+  parent(x, y), parent(y, z)
+
+rule sibling(x, y):-
+  parent(p, x), parent(p, y), x != y
+
+let grandparents = query grandparent(x, z)
+print("Grandparents:")
+for g in grandparents {
+  print(g.x, "is grandparent of", g.z)
+}
+
+let siblings = query sibling(x, y)
+print("Siblings:")
+for s in siblings {
+  print(s.x, "<->", s.y)
+}

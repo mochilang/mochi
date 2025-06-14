@@ -20,6 +20,7 @@ import (
 	"mochi/runtime/ffi/extern"
 	mhttp "mochi/runtime/http"
 	"mochi/runtime/llm"
+	"mochi/runtime/logic"
 	"mochi/runtime/stream"
 	"mochi/types"
 	"os"
@@ -43,6 +44,7 @@ type Interpreter struct {
 	memo     map[string]map[string]any
 	dataPlan string
 	tx       *atomic.Int64
+	logic    *logic.DB
 }
 
 func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
@@ -62,6 +64,7 @@ func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
 		memo:     map[string]map[string]any{},
 		dataPlan: "memory",
 		tx:       &atomic.Int64{},
+		logic:    logic.New(),
 	}
 }
 
@@ -526,6 +529,34 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 				return fmt.Errorf("%s is not indexable", s.Assign.Name)
 			}
 		}
+		return nil
+
+	case s.Fact != nil:
+		args := []any{}
+		for _, e := range s.Fact.Args {
+			v, err := i.evalExpr(e)
+			if err != nil {
+				return err
+			}
+			args = append(args, v)
+		}
+		i.logic.AddFact(s.Fact.Name, args)
+		return nil
+
+	case s.Rule != nil:
+		body := []logic.Predicate{}
+		for _, p := range s.Rule.Body {
+			terms := []logic.Term{}
+			for _, a := range p.Args {
+				t, err := i.exprToTerm(a)
+				if err != nil {
+					return err
+				}
+				terms = append(terms, t)
+			}
+			body = append(body, logic.Predicate{Name: p.Name, Terms: terms})
+		}
+		i.logic.AddRule(s.Rule.Name, s.Rule.Vars, body)
 		return nil
 
 	case s.Expr != nil:
@@ -1264,6 +1295,10 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			i.env = old
 			return val, err
 		})
+
+	case p.LogicQuery != nil:
+		res := i.logic.Query(p.LogicQuery.Name, p.LogicQuery.Vars)
+		return res, nil
 
 	case p.Match != nil:
 		return i.evalMatch(p.Match)
