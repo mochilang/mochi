@@ -1,13 +1,25 @@
 fun restoreIpAddresses(s: string): list<string> {
   var result: list<string> = []
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
 
-  fun backtrack(start: int, part: int, current: string) {
+  fun backtrack(start: int, part: int, current: string): int {
     if part == 4 {
       if start == len(s) {
         // remove leading '.' from accumulated string
         result = result + [current[1:len(current)]]
       }
-      return
+      return 0
     }
     for l in 1..4 {
       if start + l > len(s) {
@@ -17,11 +29,16 @@ fun restoreIpAddresses(s: string): list<string> {
       if len(segment) > 1 && segment[0] == "0" {
         continue
       }
-      if int(segment) > 255 {
+      var val = 0
+      for ch in segment {
+        val = val * 10 + digits[ch]
+      }
+      if val > 255 {
         continue
       }
       backtrack(start + l, part + 1, current + "." + segment)
     }
+    return 0
   }
 
   backtrack(0, 0, "")
