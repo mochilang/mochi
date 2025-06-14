@@ -1,0 +1,81 @@
+// Solution for LeetCode problem 112 - Path Sum
+
+// Binary tree type with empty Leaf and Node with left, value, right
+
+type Tree =
+  Leaf {}
+  | Node(left: Tree, value: int, right: Tree)
+
+fun hasPathSum(root: Tree, targetSum: int): bool {
+  return match root {
+    Leaf {} => false
+    Node(l, v, r) => {
+      let remaining = targetSum - v
+      let leftEmpty = match l { Leaf {} => true _ => false }
+      let rightEmpty = match r { Leaf {} => true _ => false }
+      if leftEmpty && rightEmpty {
+        remaining == 0
+      } else {
+        hasPathSum(l, remaining) || hasPathSum(r, remaining)
+      }
+    }
+  }
+}
+
+// Tests from LeetCode
+
+test "example 1" {
+  let root = Node {
+    left: Node {
+      left: Node { left: Leaf {}, value: 7, right: Leaf {} },
+      value: 11,
+      right: Node { left: Leaf {}, value: 2, right: Leaf {} }
+    },
+    value: 4,
+    right: Leaf {}
+  }
+  let tree = Node {
+    left: root,
+    value: 5,
+    right: Node {
+      left: Node { left: Leaf {}, value: 13, right: Leaf {} },
+      value: 8,
+      right: Node { left: Leaf {}, value: 4, right: Node { left: Leaf {}, value: 1, right: Leaf {} } }
+    }
+  }
+  expect hasPathSum(tree, 22) == true
+}
+
+test "example 2" {
+  let tree = Node {
+    left: Node { left: Leaf {}, value: 2, right: Leaf {} },
+    value: 1,
+    right: Node { left: Leaf {}, value: 3, right: Leaf {} }
+  }
+  expect hasPathSum(tree, 5) == false
+}
+
+test "example 3" {
+  let tree = Node {
+    left: Node { left: Leaf {}, value: 2, right: Leaf {} },
+    value: 1,
+    right: Leaf {}
+  }
+  expect hasPathSum(tree, 0) == false
+}
+
+test "single node" {
+  expect hasPathSum(Node { left: Leaf {}, value: 5, right: Leaf {} }, 5) == true
+}
+
+test "empty" {
+  expect hasPathSum(Leaf {}, 1) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using Python style `None` for empty trees instead of `Leaf {}`.
+2. Reassigning a value defined with `let`. Use `var` if mutation is needed.
+3. Confusing assignment '=' with equality '=='.
+4. Omitting an else branch in `if` expressions which leads to null results.
+*/
