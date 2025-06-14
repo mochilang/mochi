@@ -1,0 +1,78 @@
+fun exist(board: list<list<string>>, word: string): bool {
+  let m = len(board)
+  if m == 0 {
+    return false
+  }
+  let n = len(board[0])
+  var visited: list<list<bool>> = []
+  for _ in 0..m {
+    var row: list<bool> = []
+    for _ in 0..n {
+      row = row + [false]
+    }
+    visited = visited + [row]
+  }
+
+  fun dfs(r: int, c: int, idx: int): bool {
+    if idx == len(word) {
+      return true
+    }
+    if r < 0 || r >= m || c < 0 || c >= n {
+      return false
+    }
+    if visited[r][c] {
+      return false
+    }
+    if board[r][c] != word[idx] {
+      return false
+    }
+    visited[r][c] = true
+    if dfs(r+1, c, idx+1) || dfs(r-1, c, idx+1) || dfs(r, c+1, idx+1) || dfs(r, c-1, idx+1) {
+      visited[r][c] = false
+      return true
+    }
+    visited[r][c] = false
+    return false
+  }
+
+  for i in 0..m {
+    for j in 0..n {
+      if dfs(i, j, 0) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+// Test cases from LeetCode
+let board: list<list<string>> = [
+  ["A","B","C","E"],
+  ["S","F","C","S"],
+  ["A","D","E","E"],
+]
+
+test "example 1" {
+  expect exist(board, "ABCCED") == true
+}
+
+test "example 2" {
+  expect exist(board, "SEE") == true
+}
+
+test "example 3" {
+  expect exist(board, "ABCB") == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons will not compile.
+   if board[i][j] = "A" { ... }  // ❌
+   if board[i][j] == "A" { ... } // ✅
+2. Reassigning a 'let' variable.
+   let found = false
+   found = true               // ❌ use 'var' when a value changes
+3. Off-by-one mistakes in loops.
+   for i in 0..n { ... }      // ✅ iterates n times (0..n-1)
+   for i in 0..n-1 { ... }    // ❌ misses last index
+*/
