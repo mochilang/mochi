@@ -1,0 +1,78 @@
+fun minWindow(s: string, t: string): string {
+  if len(t) == 0 {
+    return ""
+  }
+  var need: map<string, int> = {}
+  for ch in t {
+    if ch in need {
+      need[ch] = need[ch] + 1
+    } else {
+      need[ch] = 1
+    }
+  }
+  let required = len(need)
+  var have: map<string, int> = {}
+  var formed = 0
+  var left = 0
+  var bestStart = 0
+  var bestLen = len(s) + 1
+  var right = 0
+  while right < len(s) {
+    let ch = s[right]
+    if ch in need {
+      if ch in have {
+        have[ch] = have[ch] + 1
+      } else {
+        have[ch] = 1
+      }
+      if have[ch] == need[ch] {
+        formed = formed + 1
+      }
+    }
+    while formed == required && left <= right {
+      if right - left + 1 < bestLen {
+        bestLen = right - left + 1
+        bestStart = left
+      }
+      let leftCh = s[left]
+      if leftCh in need {
+        have[leftCh] = have[leftCh] - 1
+        if have[leftCh] < need[leftCh] {
+          formed = formed - 1
+        }
+      }
+      left = left + 1
+    }
+    right = right + 1
+  }
+  if bestLen == len(s) + 1 {
+    return ""
+  }
+  return s[bestStart:bestStart+bestLen]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect minWindow("ADOBECODEBANC", "ABC") == "BANC"
+}
+
+test "example 2" {
+  expect minWindow("a", "a") == "a"
+}
+
+test "example 3" {
+  expect minWindow("a", "aa") == ""
+}
+
+/*
+Common Mochi language mistakes and how to fix them:
+1. Reassigning a value bound with `let`.
+   let x = 1
+   x = 2            // ❌ use `var` if mutation is required
+2. Using '=' instead of '==' inside conditions.
+   if n = 0 { }     // ❌ assignment
+   // Fix: if n == 0 { }
+3. Off-by-one errors when slicing strings.
+   s[a:b] includes indices a..b-1. Ensure end index is +1 past the last char.
+*/
