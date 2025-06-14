@@ -4,15 +4,25 @@ fun setZeroes(matrix: list<list<int>>): list<list<int>> {
     return matrix
   }
   let cols = len(matrix[0])
-  var zeroRows: set<int> = {}
-  var zeroCols: set<int> = {}
+  var zeroRows: list<bool> = []
+  var zeroCols: list<bool> = []
+  var r = 0
+  while r < rows {
+    zeroRows = zeroRows + [false]
+    r = r + 1
+  }
+  var c = 0
+  while c < cols {
+    zeroCols = zeroCols + [false]
+    c = c + 1
+  }
   var i = 0
   while i < rows {
     var j = 0
     while j < cols {
       if matrix[i][j] == 0 {
-        zeroRows.add(i)
-        zeroCols.add(j)
+        zeroRows[i] = true
+        zeroCols[j] = true
       }
       j = j + 1
     }
@@ -22,7 +32,7 @@ fun setZeroes(matrix: list<list<int>>): list<list<int>> {
   while i < rows {
     var j = 0
     while j < cols {
-      if (i in zeroRows) || (j in zeroCols) {
+      if zeroRows[i] || zeroCols[j] {
         matrix[i][j] = 0
       }
       j = j + 1

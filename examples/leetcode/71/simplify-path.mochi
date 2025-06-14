@@ -5,7 +5,16 @@ fun simplifyPath(path: string): string {
   let n = len(path)
 
   while i <= n {
-    if i == n || path[i] == '/' {
+    if i == n {
+      if part == ".." {
+        if len(stack) > 0 {
+          stack = stack[0:len(stack)-1]
+        }
+      } else if part != "" && part != "." {
+        stack = stack + [part]
+      }
+      part = ""
+    } else if path[i] == "/" {
       if part == ".." {
         if len(stack) > 0 {
           stack = stack[0:len(stack)-1]
