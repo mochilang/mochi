@@ -1,0 +1,61 @@
+// Solution for LeetCode problem 109 - Convert Sorted List to Binary Search Tree
+
+// Binary tree type used for the result
+// Leaf represents an empty subtree
+// Node contains left child, value and right child
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Build a height-balanced BST from a sorted list of integers
+fun sortedListToBST(nums: list<int>): Tree {
+  fun build(lo: int, hi: int): Tree {
+    if lo >= hi {
+      return Leaf
+    }
+    let mid = (lo + hi) / 2
+    return Node {
+      left: build(lo, mid),
+      value: nums[mid],
+      right: build(mid + 1, hi)
+    }
+  }
+  return build(0, len(nums))
+}
+
+// Helper: inorder traversal of the tree
+fun inorder(t: Tree): list<int> {
+  return match t {
+    Leaf => []
+    Node(l, v, r) => inorder(l) + [v] + inorder(r)
+  }
+}
+
+// Test cases based on LeetCode examples
+
+test "example" {
+  let nums = [-10, -3, 0, 5, 9]
+  let tree = sortedListToBST(nums)
+  expect inorder(tree) == nums
+}
+
+test "empty" {
+  expect inorder(sortedListToBST([])) == []
+}
+
+test "single" {
+  expect inorder(sortedListToBST([1])) == [1]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Omitting return types on helper functions.
+   fun build(lo: int, hi: int) { ... }        // ❌ missing result type
+   fun build(lo: int, hi: int): Tree { ... } // ✅ specify the return type
+2. Using '=' instead of '==' in conditions.
+   if lo = hi { }    // ❌ assignment
+   if lo == hi { }   // ✅ comparison
+3. Representing an empty tree with 'None' or 'null'.
+   Use the 'Leaf' constructor defined in the Tree type.
+*/
