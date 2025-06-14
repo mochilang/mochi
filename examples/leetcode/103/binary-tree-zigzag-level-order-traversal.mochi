@@ -1,0 +1,100 @@
+// LeetCode 103 - Binary Tree Zigzag Level Order Traversal
+
+// Binary tree type used across tree problems
+// Leaf represents an empty node
+// Node has left subtree, integer value, and right subtree
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+fun zigzagLevelOrder(root: Tree): list<list<int>> {
+  return match root {
+    Leaf => [] as list<list<int>>
+    Node(_, _, _) => {
+      var result: list<list<int>> = []
+      var queue: list<Tree> = [root]
+      var level = 0
+      while len(queue) > 0 {
+        var next: list<Tree> = []
+        var values: list<int> = []
+        for node in queue {
+          match node {
+            Leaf => {}
+            Node(l, v, r) => {
+              values = values + [v]
+              match l {
+                Leaf => {}
+                _ => { next = next + [l] }
+              }
+              match r {
+                Leaf => {}
+                _ => { next = next + [r] }
+              }
+            }
+          }
+        }
+        if level % 2 == 1 {
+          values = reverse(values)
+        }
+        result = result + [values]
+        queue = next
+        level = level + 1
+      }
+      result
+    }
+  }
+}
+
+// Test cases derived from LeetCode
+
+test "example 1" {
+  let tree = Node {
+    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
+    value: 3,
+    right: Node {
+      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
+      value: 20,
+      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
+    }
+  }
+  expect (zigzagLevelOrder(tree) == [[3], [20, 9], [15, 7]])
+}
+
+test "single node" {
+  expect (zigzagLevelOrder(Node { left: Leaf {}, value: 1, right: Leaf {} }) == [[1]])
+}
+
+test "empty" {
+  expect (zigzagLevelOrder(Leaf {}) == [])
+}
+
+test "unbalanced" {
+  let tree = Node {
+    left: Node {
+      left: Node { left: Leaf {}, value: 4, right: Leaf {} },
+      value: 2,
+      right: Leaf {}
+    },
+    value: 1,
+    right: Node {
+      left: Leaf {},
+      value: 3,
+      right: Node { left: Leaf {}, value: 5, right: Leaf {} }
+    }
+  }
+  expect (zigzagLevelOrder(tree) == [[1], [3, 2], [4, 5]])
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when checking the level parity.
+   if level = 1 { }      // ❌ assignment
+   if level == 1 { }     // ✅ comparison
+2. Reassigning a variable declared with 'let'.
+   let queue = []
+   queue = next            // ❌ cannot modify immutable binding
+   var queue = []          // ✅ declare with 'var' if it will change
+3. Forgetting to reset `values` or `next` inside the loop leads to incorrect
+   output. Re-initialize them on each level as shown above.
+*/
