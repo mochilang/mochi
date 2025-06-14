@@ -1,0 +1,78 @@
+// Solution for LeetCode problem 114 - Flatten Binary Tree to Linked List
+
+// Binary tree type used across examples
+// Leaf represents an empty node
+// Node has left/right subtrees and an integer value
+
+type Tree =
+  Leaf {}
+  | Node(left: Tree, value: int, right: Tree)
+
+// Concatenate two right-skewed lists
+fun concat(a: Tree, b: Tree): Tree {
+  return match a {
+    Leaf => b
+    Node(_, v, r) => Node { left: Leaf {}, value: v, right: concat(r, b) }
+  }
+}
+
+// Flatten a binary tree into a linked list using preorder traversal
+fun flatten(root: Tree): Tree {
+  return match root {
+    Leaf => Leaf {}
+    Node(l, v, r) => {
+      let leftFlat = flatten(l)
+      let rightFlat = flatten(r)
+      let head = Node { left: Leaf {}, value: v, right: leftFlat }
+      concat(head, rightFlat)
+    }
+  }
+}
+
+// Convert a flattened tree to a list of values
+fun toList(t: Tree): list<int> {
+  return match t {
+    Leaf => []
+    Node(_, v, r) => [v] + toList(r)
+  }
+}
+
+// Test cases based on LeetCode examples
+
+test "example 1" {
+  let tree = Node {
+    left: Node {
+      left: Node { left: Leaf {}, value: 3, right: Leaf {} },
+      value: 2,
+      right: Node { left: Leaf {}, value: 4, right: Leaf {} }
+    },
+    value: 1,
+    right: Node {
+      left: Leaf {},
+      value: 5,
+      right: Node { left: Leaf {}, value: 6, right: Leaf {} }
+    }
+  }
+  expect toList(flatten(tree)) == [1,2,3,4,5,6]
+}
+
+test "example 2" {
+  expect toList(flatten(Leaf {})) == []
+}
+
+test "single node" {
+  expect toList(flatten(Node { left: Leaf {}, value: 0, right: Leaf {} })) == [0]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Attempting to mutate a Node's fields:
+     node.left = Leaf {}          // error[E004]: fields are immutable
+   Fix: create a new Node value with the desired children.
+2. Using '=' instead of '==' for comparison:
+     if x = 1 { }                 // wrong
+   Fix: use '==' when comparing values.
+3. Omitting the Leaf branch when matching on Tree:
+     match t { Node(l,v,r) => ... } // error[I002]: non-exhaustive match
+   Fix: include a `Leaf => ...` case to handle empty nodes.
+*/
