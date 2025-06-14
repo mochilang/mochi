@@ -1,0 +1,37 @@
+fun merge(nums1: list<int>, m: int, nums2: list<int>, n: int): list<int> {
+  var i = m - 1
+  var j = n - 1
+  var k = m + n - 1
+
+  while j >= 0 {
+    if i >= 0 && nums1[i] > nums2[j] {
+      nums1[k] = nums1[i]
+      i = i - 1
+    } else {
+      nums1[k] = nums2[j]
+      j = j - 1
+    }
+    k = k - 1
+  }
+  return nums1
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect merge([1,2,3,0,0,0], 3, [2,5,6], 3) == [1,2,2,3,5,6]
+}
+
+test "example 2" {
+  expect merge([1], 1, [], 0) == [1]
+}
+
+test "example 3" {
+  expect merge([0], 0, [1], 1) == [1]
+}
+
+// Common Mochi language errors and fixes:
+// 1. Using '=' instead of '==' in comparisons. '=' assigns; use '==' inside 'if'.
+// 2. Trying to modify a 'let' variable. Use 'var' for mutable counters like 'i'.
+// 3. Off-by-one mistakes when setting the starting index 'k = m + n - 1'.
+// 4. Using Python-style 'nums1.append(x)'; assign by index instead.
