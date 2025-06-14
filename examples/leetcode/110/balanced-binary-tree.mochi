@@ -9,8 +9,10 @@ type Tree =
   | Node(left: Tree, value: int, right: Tree)
 
 // Determine if a binary tree is height-balanced.
+type BalanceInfo = { h: int, balanced: bool }
+
 fun isBalanced(root: Tree): bool {
-  fun check(t: Tree): { h: int, balanced: bool } {
+  fun check(t: Tree): BalanceInfo {
     return match t {
       Leaf => { h: 0, balanced: true }
       Node(l, _, r) => {
@@ -31,12 +33,12 @@ fun isBalanced(root: Tree): bool {
 
 test "example 1" {
   let tree = Node {
-    left: Node { left: Leaf, value: 9, right: Leaf },
+    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
     value: 3,
     right: Node {
-      left: Node { left: Leaf, value: 15, right: Leaf },
+      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
       value: 20,
-      right: Node { left: Leaf, value: 7, right: Leaf }
+      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
     }
   }
   expect isBalanced(tree) == true
@@ -46,25 +48,25 @@ test "example 2" {
   let tree = Node {
     left: Node {
       left: Node {
-        left: Node { left: Leaf, value: 4, right: Leaf },
+        left: Node { left: Leaf {}, value: 4, right: Leaf {} },
         value: 3,
-        right: Node { left: Leaf, value: 4, right: Leaf }
+        right: Node { left: Leaf {}, value: 4, right: Leaf {} }
       },
       value: 2,
-      right: Node { left: Leaf, value: 3, right: Leaf }
+      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
     },
     value: 1,
-    right: Node { left: Leaf, value: 2, right: Leaf }
+    right: Node { left: Leaf {}, value: 2, right: Leaf {} }
   }
   expect isBalanced(tree) == false
 }
 
 test "single node" {
-  expect isBalanced(Node { left: Leaf, value: 1, right: Leaf }) == true
+  expect isBalanced(Node { left: Leaf {}, value: 1, right: Leaf {} }) == true
 }
 
 test "empty" {
-  expect isBalanced(Leaf) == true
+  expect isBalanced(Leaf {}) == true
 }
 
 /*

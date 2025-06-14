@@ -21,8 +21,14 @@ fun levelOrderBottom(root: Tree): list<list<int>> {
             Leaf => {}
             Node(l, v, r) => {
               level = level + [v]
-              match l { Leaf => {} _ => { next = next + [l] } }
-              match r { Leaf => {} _ => { next = next + [r] } }
+              match l {
+                Leaf => {}
+                _ => { next = next + [l] }
+              }
+              match r {
+                Leaf => {}
+                _ => { next = next + [r] }
+              }
             }
           }
         }

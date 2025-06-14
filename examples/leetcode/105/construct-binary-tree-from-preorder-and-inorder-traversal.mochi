@@ -20,7 +20,7 @@ fun buildTree(preorder: list<int>, inorder: list<int>): Tree {
 
   fun helper(left: int, right: int): Tree {
     if left >= right {
-      return Leaf
+      return Leaf {}
     }
     let rootVal = preorder[preIdx]
     preIdx = preIdx + 1
@@ -69,7 +69,7 @@ test "single node" {
 
 test "empty" {
   let tree = buildTree([], [])
-  expect tree == Leaf
+  expect tree == Leaf {}
 }
 
 /*

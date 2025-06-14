@@ -12,7 +12,7 @@ type Tree =
 fun sortedListToBST(nums: list<int>): Tree {
   fun build(lo: int, hi: int): Tree {
     if lo >= hi {
-      return Leaf
+      return Leaf {}
     }
     let mid = (lo + hi) / 2
     return Node {
