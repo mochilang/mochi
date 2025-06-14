@@ -1,0 +1,111 @@
+// Solution for LeetCode problem 87 - Scramble String
+
+fun isScramble(s1: string, s2: string): bool {
+  if len(s1) != len(s2) {
+    return false
+  }
+
+  // frequency check to quickly rule out impossible cases
+  fun sameLetters(a: string, b: string): bool {
+    if len(a) != len(b) {
+      return false
+    }
+    var count: map<string, int> = {}
+    var i = 0
+    while i < len(a) {
+      let ch = a[i]
+      if ch in count {
+        count[ch] = count[ch] + 1
+      } else {
+        count[ch] = 1
+      }
+      i = i + 1
+    }
+    i = 0
+    while i < len(b) {
+      let ch = b[i]
+      if ch in count {
+        count[ch] = count[ch] - 1
+      } else {
+        return false
+      }
+      i = i + 1
+    }
+    for key in count {
+      if count[key] != 0 {
+        return false
+      }
+    }
+    return true
+  }
+
+  if !sameLetters(s1, s2) {
+    return false
+  }
+
+  var memo: map<int, bool> = {}
+  let n = len(s1)
+
+  fun dfs(i1: int, i2: int, length: int): bool {
+    let key = i1 * n * 31 + i2 * 31 + length
+    if key in memo {
+      return memo[key]
+    }
+    let a = s1[i1:i1+length]
+    let b = s2[i2:i2+length]
+    if a == b {
+      memo[key] = true
+      return true
+    }
+    if !sameLetters(a, b) {
+      memo[key] = false
+      return false
+    }
+    var k = 1
+    while k < length {
+      if dfs(i1, i2, k) && dfs(i1+k, i2+k, length-k) {
+        memo[key] = true
+        return true
+      }
+      if dfs(i1, i2+length-k, k) && dfs(i1+k, i2, length-k) {
+        memo[key] = true
+        return true
+      }
+      k = k + 1
+    }
+    memo[key] = false
+    return false
+  }
+
+  return dfs(0, 0, n)
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isScramble("great", "rgeat") == true
+}
+
+test "example 2" {
+  expect isScramble("abcde", "caebd") == false
+}
+
+test "example 3" {
+  expect isScramble("a", "a") == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons.
+   if s1 = s2 { ... }    // ❌ assignment
+   if s1 == s2 { ... }   // ✅ comparison
+2. Reassigning a 'let' variable.
+   let res = false
+   res = true             // ❌ cannot assign to immutable binding
+   var res = false        // ✅ use 'var' for mutable data
+3. Forgetting bounds when slicing strings.
+   s1[0:len(s1)] is valid but indexes past the end cause errors.
+4. Using unsupported operators like '++'.
+   k++                   // ❌ not allowed
+   k = k + 1             // ✅ increment properly
+*/
