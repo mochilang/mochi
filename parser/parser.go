@@ -120,7 +120,7 @@ type TypeDecl struct {
 	Pos      lexer.Position
 	Name     string `parser:"'type' @Ident"`
 	Doc      string
-	Members  []*TypeMember  `parser:"[ '{' @@* '}' ]"`
+	Members  []*TypeMember  `parser:"[ [ '=' ] '{' @@ { [ ',' ] @@ } [ ',' ]? '}' ]"`
 	Variants []*TypeVariant `parser:"[ '=' @@ { '|' @@ } ]"`
 }
 
