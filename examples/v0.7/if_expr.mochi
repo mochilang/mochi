@@ -1,0 +1,12 @@
+// if_expr.mochi
+// Demonstrates that `if` can return a value
+
+let age = 20
+
+let status = if age >= 18 {
+  "adult"
+} else {
+  "minor"
+}
+
+print("Status:", status)  // => Status: adult

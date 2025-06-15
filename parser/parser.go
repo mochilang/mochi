@@ -441,6 +441,14 @@ type MatchExpr struct {
 	Cases  []*MatchCase `parser:"@@* '}'"`
 }
 
+type IfExpr struct {
+	Pos    lexer.Position
+	Cond   *Expr   `parser:"'if' @@"`
+	Then   *Expr   `parser:"'{' @@ '}'"`
+	ElseIf *IfExpr `parser:"[ 'else' @@"`
+	Else   *Expr   `parser:"| 'else' '{' @@ '}' ]"`
+}
+
 type MatchCase struct {
 	Pos     lexer.Position
 	Pattern *Expr `parser:"@@ '=>'"`
@@ -453,6 +461,7 @@ type Primary struct {
 	Call       *CallExpr       `parser:"| @@"`
 	Query      *QueryExpr      `parser:"| @@"`
 	LogicQuery *LogicQueryExpr `parser:"| @@"`
+	If         *IfExpr         `parser:"| @@"`
 	Selector   *SelectorExpr   `parser:"| @@"`
 	List       *ListLiteral    `parser:"| @@"`
 	Map        *MapLiteral     `parser:"| @@"`

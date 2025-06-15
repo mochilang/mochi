@@ -1051,6 +1051,9 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 	case p.FunExpr != nil:
 		return closure{Name: "", Fn: p.FunExpr, Env: i.env.Copy(), FullParams: p.FunExpr.Params}, nil
 
+	case p.If != nil:
+		return i.evalIfExpr(p.If)
+
 	case p.Selector != nil:
 		val, err := i.env.GetValue(p.Selector.Root)
 		if err != nil {

@@ -178,6 +178,16 @@ func fromIfStmt(stmt *parser.IfStmt) *Node {
 	return n
 }
 
+func fromIfExpr(expr *parser.IfExpr) *Node {
+	n := &Node{Kind: "if_expr", Children: []*Node{FromExpr(expr.Cond), FromExpr(expr.Then)}}
+	if expr.ElseIf != nil {
+		n.Children = append(n.Children, fromIfExpr(expr.ElseIf))
+	} else if expr.Else != nil {
+		n.Children = append(n.Children, FromExpr(expr.Else))
+	}
+	return n
+}
+
 func fromWhileStmt(stmt *parser.WhileStmt) *Node {
 	n := &Node{Kind: "while", Children: []*Node{FromExpr(stmt.Cond)}}
 	n.Children = append(n.Children, &Node{Kind: "block", Children: mapStatements(stmt.Body)})
@@ -455,6 +465,9 @@ func FromPrimary(p *parser.Primary) *Node {
 			n.Children = append(n.Children, cn)
 		}
 		return n
+
+	case p.If != nil:
+		return fromIfExpr(p.If)
 
 	case p.Generate != nil:
 		n := &Node{Kind: "generate_text"}
