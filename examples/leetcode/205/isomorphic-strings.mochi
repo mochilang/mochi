@@ -1,0 +1,66 @@
+fun isIsomorphic(s: string, t: string): bool {
+  let m = len(s)
+  if m != len(t) {
+    return false
+  }
+
+  var mapST: map<string, string> = {}
+  var mapTS: map<string, string> = {}
+  var i = 0
+  while i < m {
+    let c1 = s[i]
+    let c2 = t[i]
+    if c1 in mapST {
+      if mapST[c1] != c2 {
+        return false
+      }
+    } else {
+      if c2 in mapTS {
+        return false
+      }
+      mapST[c1] = c2
+      mapTS[c2] = c1
+    }
+    i = i + 1
+  }
+  return true
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isIsomorphic("egg", "add") == true
+}
+
+test "example 2" {
+  expect isIsomorphic("foo", "bar") == false
+}
+
+test "example 3" {
+  expect isIsomorphic("paper", "title") == true
+}
+
+// Additional edge cases
+
+test "single letter" {
+  expect isIsomorphic("a", "b") == true
+}
+
+test "mismatch length" {
+  expect isIsomorphic("ab", "a") == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to initialize maps with a type:
+   var mapST = {}                // ❌ type cannot be inferred
+   var mapST: map<string, string> = {}  // ✅ specify key and value types
+2. Using '=' instead of '==' when comparing values:
+   if mapST[c1] = c2 { }        // ❌ assignment, not comparison
+   if mapST[c1] == c2 { }       // ✅ use '==' for equality checks
+3. Reassigning a value bound with 'let':
+   let c1 = s[i]
+   c1 = "x"                     // ❌ cannot reassign immutable variable
+   var ch = s[i]
+   ch = "x"                     // ✅ use 'var' for mutable variables
+*/
