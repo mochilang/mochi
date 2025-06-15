@@ -6,6 +6,7 @@ import (
 
 func main() {
 	var x int = 1
+	_ = x
 	x = 2
 	fmt.Println(x)
 }
