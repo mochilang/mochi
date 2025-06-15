@@ -4,24 +4,15 @@
 // A tree is either a Leaf or a Node with left/right subtrees
 // and an integer value.
 type Tree =
-  Leaf {}
+  Leaf
   | Node(left: Tree, value: int, right: Tree)
 
 // Inorder traversal returning the list of values
 fun inorder(t: Tree): list<int> {
-  var res = []
-  fun dfs(n: Tree) {
-    match n {
-      Leaf {} => {}
-      Node(l, v, r) => {
-        dfs(l)
-        res = res + [v]
-        dfs(r)
-      }
-    }
+  return match t {
+    Leaf => [] as list<int>
+    Node(l, v, r) => inorder(l) + [v] + inorder(r)
   }
-  dfs(t)
-  return res
 }
 
 // Rebuild the tree using the sorted values. The index is captured from the
@@ -29,36 +20,33 @@ fun inorder(t: Tree): list<int> {
 fun recoverTree(t: Tree): Tree {
   let vals = inorder(t)
   let sortedVals = from x in vals sort by x select x
-  var idx = 0
 
-  fun build(n: Tree): Tree {
-    return match n {
-      Leaf {} => Leaf {}
-      Node(l, v, r) => {
-        let leftNew = build(l)
-        let newVal = sortedVals[idx]
-        idx = idx + 1
-        let rightNew = build(r)
-        return Node { left: leftNew, value: newVal, right: rightNew }
-      }
+  fun build(lo: int, hi: int): Tree {
+    if lo >= hi {
+      return Leaf {}
+    }
+    let mid = (lo + hi) / 2
+    return Node {
+      left: build(lo, mid),
+      value: sortedVals[mid],
+      right: build(mid + 1, hi)
     }
   }
 
-  return build(t)
+  return build(0, len(sortedVals))
 }
 
 // Example tree with two nodes swapped
-let ex = Node {
+let ex: Tree = Node {
   left: Node { left: Leaf {}, value: 3, right: Leaf {} },
   value: 1,
   right: Node { left: Leaf {}, value: 4, right: Leaf {} }
 }
-
 let fixed = recoverTree(ex)
 expect inorder(fixed) == [1,3,4]
 
 // Another test with swapped leaf values
-let ex2 = Node {
+let ex2: Tree = Node {
   left: Node { left: Leaf {}, value: 2, right: Leaf {} },
   value: 4,
   right: Node { left: Leaf {}, value: 1, right: Leaf {} }
