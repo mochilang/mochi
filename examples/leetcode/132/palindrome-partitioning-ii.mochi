@@ -31,14 +31,20 @@ fun minCut(s: string): int {
   while i < n {
     var j = 0
     while j <= i {
-      if s[j] == s[i] && (i - j <= 1 || isPal[j+1][i-1]) {
-        isPal[j][i] = true
-        if j == 0 {
-          dp[i] = 0
-        } else {
-          let candidate = dp[j-1] + 1
-          if candidate < dp[i] {
-            dp[i] = candidate
+      if s[j] == s[i] {
+        if i - j <= 1 {
+          isPal[j][i] = true
+        } else if isPal[j+1][i-1] {
+          isPal[j][i] = true
+        }
+        if isPal[j][i] {
+          if j == 0 {
+            dp[i] = 0
+          } else {
+            let candidate = dp[j-1] + 1
+            if candidate < dp[i] {
+              dp[i] = candidate
+            }
           }
         }
       }
@@ -79,4 +85,6 @@ Common Mochi language errors and how to fix them:
    if s[i] == s[j] { } // ✅ comparison
 3. Forgetting to allocate inner lists when building 2D arrays.
    row = [] // ✅ initialize before pushing values
+4. Assuming '&&' and '||' short-circuit.
+   Both sides are evaluated, so split conditions to avoid invalid indexes.
 */
