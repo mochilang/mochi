@@ -1,0 +1,94 @@
+// Solution for LeetCode problem 192 - Word Frequency
+// Given a list of text lines, return the words sorted by descending
+// frequency. For words with the same count, sort alphabetically.
+
+ type WordCount {
+  word: string,
+  count: int,
+ }
+
+ fun wordFrequency(lines: list<string>): list<WordCount> {
+  var counts: map<string,int> = {}
+  for line in lines {
+    var i = 0
+    var word = ""
+    let n = len(line)
+    while i <= n {
+      var ch = ""
+      if i < n {
+        ch = line[i]
+      } else {
+        ch = " "
+      }
+      if ch == " " {
+        if word != "" {
+          var c = 0
+          if word in counts {
+            c = counts[word]
+          }
+          counts[word] = c + 1
+          word = ""
+        }
+      } else {
+        word = word + ch
+      }
+      i = i + 1
+    }
+  }
+
+  var result: list<WordCount> = []
+  for w in counts {
+    result = result + [WordCount { word: w, count: counts[w] }]
+  }
+  let alpha = from wc in result sort by wc.word select wc
+  let sorted = from wc in alpha sort by -wc.count select wc
+  return sorted
+ }
+
+// Test cases
+
+test "example" {
+  let lines = ["the day is sunny the the the sunny is is"]
+  let res = wordFrequency(lines)
+  let e0 = res[0]
+  expect e0.word == "the"
+  expect e0.count == 4
+  let e1 = res[1]
+  expect e1.word == "is"
+  expect e1.count == 3
+  let e2 = res[2]
+  expect e2.word == "sunny"
+  expect e2.count == 2
+  let e3 = res[3]
+  expect e3.word == "day"
+  expect e3.count == 1
+}
+
+test "multiple lines" {
+  let lines = ["hello world", "hello mochi world"]
+  let res = wordFrequency(lines)
+  let a0 = res[0]
+  expect a0.word == "hello"
+  expect a0.count == 2
+  let a1 = res[1]
+  expect a1.word == "world"
+  expect a1.count == 2
+  let a2 = res[2]
+  expect a2.word == "mochi"
+  expect a2.count == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if word = "" { }    // ❌ assignment
+   if word == "" { }   // ✅ comparison
+2. Declaring a variable with 'let' when it needs mutation.
+   let count = 0
+   count = count + 1     // ❌ cannot modify
+   var count = 0         // ✅ use 'var'
+3. Accessing a map key without checking for existence.
+   let val = counts[word]            // ❌ may fail
+   var val = 0
+   if word in counts { val = counts[word] }  // ✅ safe lookup
+*/
