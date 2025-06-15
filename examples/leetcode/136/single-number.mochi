@@ -1,0 +1,43 @@
+// Solution for LeetCode problem 136 - Single Number
+
+fun singleNumber(nums: list<int>): int {
+  var result = 0
+  for n in nums {
+    result = result ^ n
+  }
+  return result
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect singleNumber([2,2,1]) == 1
+}
+
+test "example 2" {
+  expect singleNumber([4,1,2,1,2]) == 4
+}
+
+test "example 3" {
+  expect singleNumber([1]) == 1
+}
+
+// Additional edge case
+
+test "with negatives" {
+  expect singleNumber([4,-1,2,-1,2]) == 4
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons.
+   if result = n { ... }   // ❌ assignment
+   if result == n { ... }  // ✅ comparison
+2. Reassigning a value bound with 'let'.
+   let result = 0
+   result = result ^ n      // ❌ cannot modify immutable binding
+   var result = 0           // ✅ use 'var' for mutable state
+3. Confusing the '^' operator with exponentiation.
+   In Mochi '^' performs bitwise XOR, which is correct here.
+   Use multiplication or loops for powers.
+*/
