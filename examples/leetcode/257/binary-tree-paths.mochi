@@ -1,0 +1,85 @@
+// LeetCode 257 - Binary Tree Paths
+
+// Tree helpers implemented without using union types or pattern matching.
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// Return all root-to-leaf paths in the binary tree as strings like "1->2->3".
+fun binaryTreePaths(root: map<string, any>): list<string> {
+  fun dfs(t: map<string, any>, path: string): list<string> {
+    if isLeaf(t) {
+      return [] as list<string>
+    }
+
+    var current = path
+    if path == "" {
+      current = str(value(t))
+    } else {
+      current = path + "->" + str(value(t))
+    }
+
+    let l = left(t)
+    let r = right(t)
+
+    if isLeaf(l) && isLeaf(r) {
+      return [current]
+    }
+
+    var res: list<string> = []
+    if !isLeaf(l) { res = res + dfs(l, current) }
+    if !isLeaf(r) { res = res + dfs(r, current) }
+    return res
+  }
+
+  return dfs(root, "")
+}
+
+// Example tree: [1,2,3,nil,5]
+let example1 = Node(
+  Node(Leaf(), 2, Node(Leaf(), 5, Leaf())),
+  1,
+  Node(Leaf(), 3, Leaf())
+)
+
+// Tests from LeetCode
+
+test "example 1" {
+  expect binaryTreePaths(example1) == ["1->2->5", "1->3"]
+}
+
+test "single node" {
+  expect binaryTreePaths(Node(Leaf(), 1, Leaf())) == ["1"]
+}
+
+test "empty" {
+  expect binaryTreePaths(Leaf()) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing strings or numbers.
+   if path = "" { }       // ❌ assignment
+   if path == "" { }      // ✅ comparison
+2. Forgetting to declare mutable variables with 'var'.
+   let p = ""; p = "1"    // ❌ cannot assign to immutable value
+   var p = ""; p = "1"     // ✅
+3. Omitting parentheses when calling Leaf or Node.
+   Node(Leaf, 1, Leaf)     // ❌ not a function call
+   Node(Leaf(), 1, Leaf()) // ✅
+4. Missing element type for empty lists.
+   var paths = []          // ❌ type cannot be inferred
+   var paths: list<string> = [] // ✅ specify list type
+*/
