@@ -1,0 +1,59 @@
+// Solution for LeetCode problem 279 - Perfect Squares
+//
+// Given an integer n, return the least number of perfect square
+// numbers that sum to n. For example n=12 -> 3 because 4+4+4.
+// We compute the answer using dynamic programming without union
+// types or pattern matching.
+
+fun numSquares(n: int): int {
+  if n <= 0 {
+    return 0
+  }
+  var dp: list<int> = []
+  var i = 0
+  while i <= n {
+    dp = dp + [i]
+    i = i + 1
+  }
+  i = 1
+  while i <= n {
+    var j = 1
+    dp[i] = i
+    while j*j <= i {
+      let candidate = dp[i - j*j] + 1
+      if candidate < dp[i] {
+        dp[i] = candidate
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return dp[n]
+}
+
+test "example 1" {
+  expect numSquares(12) == 3
+}
+
+test "example 2" {
+  expect numSquares(13) == 2
+}
+
+test "example 3" {
+  expect numSquares(1) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+   if n = 1 { ... }  // ❌ assignment
+   if n == 1 { ... } // ✅ comparison
+2. Reassigning an immutable variable declared with 'let':
+   let count = 0
+   count = count + 1      // ❌ cannot assign
+   var count = 0
+   count = count + 1      // ✅ declare with 'var' if it needs to change
+3. Forgetting to specify a type for an empty list:
+   var dp = []            // ❌ type cannot be inferred
+   var dp: list<int> = [] // ✅ specify the element type
+*/
