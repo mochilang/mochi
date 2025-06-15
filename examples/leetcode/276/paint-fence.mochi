@@ -1,0 +1,51 @@
+fun numWays(n: int, k: int): int {
+  if n == 0 || k == 0 {
+    return 0
+  }
+  if n == 1 {
+    return k
+  }
+  var same = 0
+  var diff = k
+  var i = 2
+  while i <= n {
+    let prevDiff = diff
+    diff = (same + diff) * (k - 1)
+    same = prevDiff
+    i = i + 1
+  }
+  return same + diff
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect numWays(3, 2) == 6
+}
+
+test "example 2" {
+  expect numWays(1, 1) == 1
+}
+
+// Additional tests
+
+test "no posts" {
+  expect numWays(0, 5) == 0
+}
+
+test "one color" {
+  expect numWays(3, 1) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning immutable values:
+   let same = 0
+   same = 1            // ❌ cannot assign to a 'let' variable; use 'var'.
+2. Using '=' for comparison:
+   if n = 0 { ... }    // ❌ assignment instead of comparison.
+   if n == 0 { ... }   // ✅ correct.
+3. Forgetting parentheses in arithmetic expressions:
+   diff = same + diff * k - 1    // ❌ wrong precedence.
+   diff = (same + diff) * (k - 1) // ✅ intended order.
+*/
