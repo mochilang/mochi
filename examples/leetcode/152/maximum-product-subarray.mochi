@@ -1,0 +1,72 @@
+// LeetCode Problem 152 - Maximum Product Subarray
+
+fun max(a: int, b: int): int {
+  if a > b {
+    return a
+  }
+  return b
+}
+
+fun min(a: int, b: int): int {
+  if a < b {
+    return a
+  }
+  return b
+}
+
+fun maxProduct(nums: list<int>): int {
+  let n = len(nums)
+  var maxEnding = nums[0]
+  var minEnding = nums[0]
+  var result = nums[0]
+  var i = 1
+  while i < n {
+    let v = nums[i]
+    if v < 0 {
+      let temp = maxEnding
+      maxEnding = minEnding
+      minEnding = temp
+    }
+    maxEnding = max(v, maxEnding * v)
+    minEnding = min(v, minEnding * v)
+    if maxEnding > result {
+      result = maxEnding
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect maxProduct([2,3,-2,4]) == 6
+}
+
+test "example 2" {
+  expect maxProduct([-2,0,-1]) == 0
+}
+
+// Additional edge cases
+
+test "negatives" {
+  expect maxProduct([-2,3,-4]) == 24
+}
+
+test "single" {
+  expect maxProduct([-2]) == (-2)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning an immutable binding:
+   let x = 1
+   x = 2           // error[E004]
+   // Fix: use `var x` if mutation is needed.
+2. Using '=' instead of '==' in comparisons:
+   if v = 0 { }    // ❌ assignment
+   if v == 0 { }   // ✅ comparison
+3. Accessing an index outside the list bounds:
+   nums[len(nums)] // error[I003]
+   // Fix: ensure index < len(nums).
+*/
