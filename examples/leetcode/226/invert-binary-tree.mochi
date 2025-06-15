@@ -1,0 +1,79 @@
+// LeetCode 226 - Invert Binary Tree
+// This solution avoids union types and pattern matching by
+// representing each node as a map. A Leaf node is {"__name": "Leaf"}
+// and a regular node is {"__name": "Node", "left": left, "value": value, "right": right}.
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// Recursively swap the left and right children of every node.
+fun invertTree(root: map<string, any>): map<string, any> {
+  if isLeaf(root) {
+    return root
+  }
+  let l = left(root)
+  let r = right(root)
+  return Node(invertTree(r), value(root), invertTree(l))
+}
+
+fun equalTrees(a: map<string, any>, b: map<string, any>): bool {
+  if isLeaf(a) && isLeaf(b) { return true }
+  if isLeaf(a) || isLeaf(b) { return false }
+  return value(a) == value(b) &&
+    equalTrees(left(a), left(b)) &&
+    equalTrees(right(a), right(b))
+}
+
+// Example from the LeetCode description
+let example = Node(
+  Node(Leaf(), 2, Leaf()),
+  1,
+  Node(Leaf(), 3, Leaf())
+)
+
+let inverted = Node(
+  Node(Leaf(), 3, Leaf()),
+  1,
+  Node(Leaf(), 2, Leaf())
+)
+
+test "invert small tree" {
+  expect equalTrees(invertTree(example), inverted) == true
+}
+
+test "single node" {
+  let t = Node(Leaf(), 1, Leaf())
+  expect equalTrees(invertTree(t), t) == true
+}
+
+test "empty tree" {
+  expect isLeaf(invertTree(Leaf())) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if isLeaf(node) = true { }  // ❌ assignment
+   if isLeaf(node) == true { } // ✅ comparison
+2. Reassigning a value declared with 'let'.
+   let x = 1
+   x = 2                     // ❌ cannot assign
+   var x = 1
+   x = 2                     // ✅ use 'var' for mutable bindings
+3. Accessing a field on a Leaf node without checking.
+   left(Leaf())              // ❌ runtime error
+   if !isLeaf(node) { left(node) } // ✅ ensure the node is not a Leaf
+*/
