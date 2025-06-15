@@ -1,0 +1,60 @@
+fun verifyPreorder(preorder: list<int>): bool {
+  var stack: list<int> = []
+  var lower = -2147483648
+  for value in preorder {
+    if value < lower {
+      return false
+    }
+    while len(stack) > 0 {
+      let top = stack[len(stack)-1]
+      if value > top {
+        lower = top
+        stack = stack[0:len(stack)-1]
+      } else {
+        break
+      }
+    }
+    stack = stack + [value]
+  }
+  return true
+}
+
+// Test cases from LeetCode problem 255
+
+test "example 1" {
+  expect verifyPreorder([5,2,1,3,6]) == true
+}
+
+test "example 2" {
+  expect verifyPreorder([5,2,6,1,3]) == false
+}
+
+// Additional edge cases
+
+test "single node" {
+  expect verifyPreorder([1]) == true
+}
+
+test "empty list" {
+  expect verifyPreorder([]) == true
+}
+
+test "strictly increasing" {
+  expect verifyPreorder([1,2,3,4,5]) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+     if value = lower { }   // ❌ assignment
+   Use '==' for equality checks.
+2. Reassigning an immutable variable bound with 'let'.
+     let x = 0
+     x = 1                 // ❌ cannot modify immutable binding
+   Declare it with 'var' when mutation is required.
+3. Attempting Python list methods like 'append' or 'pop'.
+     stack.append(v)       // ❌ not valid Mochi
+   Build new lists instead:
+     stack = stack + [v]   // push
+     stack = stack[0:len(stack)-1] // pop
+*/
