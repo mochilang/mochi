@@ -1,0 +1,109 @@
+// Solution for LeetCode problem 232 - Implement Queue using Stacks
+
+// The queue is represented by two stacks: 'ins' for enqueue operations
+// and 'outs' for dequeue operations. Field names avoid reserved words.
+type MyQueue {
+  ins: list<int>
+  outs: list<int>
+}
+
+fun newQueue(): MyQueue {
+  return MyQueue { ins: [] as list<int>, outs: [] as list<int> }
+}
+
+// Push element x to the back of the queue
+fun push(q: MyQueue, x: int): MyQueue {
+  var s = q.ins
+  s = s + [x]
+  return MyQueue { ins: s, outs: q.outs }
+}
+
+// Move elements from 'in' to 'out' if needed so that 'out' contains
+// the next element to dequeue at its end
+fun ensureOut(q: MyQueue): MyQueue {
+  var inStack = q.ins
+  var outStack = q.outs
+  if len(outStack) == 0 {
+    while len(inStack) > 0 {
+      let v = inStack[len(inStack)-1]
+      inStack = inStack[0:len(inStack)-1]
+      outStack = outStack + [v]
+    }
+  }
+  return MyQueue { ins: inStack, outs: outStack }
+}
+
+type PopResult {
+  queue: MyQueue
+  val: int
+}
+
+// Removes the element from in front of the queue and returns it
+fun pop(q: MyQueue): PopResult {
+  let shifted = ensureOut(q)
+  var outStack = shifted.outs
+  let v = outStack[len(outStack)-1]
+  outStack = outStack[0:len(outStack)-1]
+  let newQ = MyQueue { ins: shifted.ins, outs: outStack }
+  return PopResult { queue: newQ, val: v }
+}
+
+// Get the front element
+fun peek(q: MyQueue): int {
+  let shifted = ensureOut(q)
+  return shifted.outs[len(shifted.outs)-1]
+}
+
+// Return whether the queue is empty
+fun empty(q: MyQueue): bool {
+  return len(q.ins) == 0 && len(q.outs) == 0
+}
+
+// Test cases based on the LeetCode examples
+
+test "example" {
+  var q = newQueue()
+  q = push(q, 1)
+  q = push(q, 2)
+  expect peek(q) == 1
+  let r1 = pop(q)
+  q = r1.queue
+  expect r1.val == 1
+  expect empty(q) == false
+}
+
+// Additional edge cases
+
+test "multiple operations" {
+  var q = newQueue()
+  q = push(q, 3)
+  q = push(q, 4)
+  let r1 = pop(q)
+  q = r1.queue
+  expect r1.val == 3
+  q = push(q, 5)
+  expect peek(q) == 4
+  let r2 = pop(q)
+  q = r2.queue
+  expect r2.val == 4
+  let r3 = pop(q)
+  q = r3.queue
+  expect r3.val == 5
+  expect empty(q) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using list methods like 'stack.push(x)' or 'stack.pop()'.
+   Mochi lists do not have such methods; use concatenation:
+     stack = stack + [x]
+     stack = stack[0:len(stack)-1]
+2. Trying to mutate struct fields directly:
+     q.ins = q.ins + [x]    // ❌ immutable field
+   Build a new struct instead:
+     q = MyQueue { ins: q.ins + [x], outs: q.outs }
+3. Declaring a variable with 'let' and later reassigning it:
+     let s = q.ins
+     s = s + [x]          // ❌ cannot assign to immutable binding
+   Use 'var s = q.ins' when mutation is required.
+*/
