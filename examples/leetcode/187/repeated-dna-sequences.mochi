@@ -1,0 +1,61 @@
+// Solution for LeetCode problem 187 - Repeated DNA Sequences
+//
+// Scan every 10-letter substring and count how many times it
+// appears. When a substring is seen twice, add it to the result.
+// This avoids duplicates in the output list.
+
+fun findRepeatedDnaSequences(s: string): list<string> {
+  let n = len(s)
+  if n < 10 {
+    return []
+  }
+  var seen: map<string, int> = {}
+  var result: list<string> = []
+  var i = 0
+  while i + 10 <= n {
+    let sub = s[i:i+10]
+    var count = 0
+    if sub in seen {
+      count = seen[sub]
+    }
+    count = count + 1
+    seen[sub] = count
+    if count == 2 {
+      result = result + [sub]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect findRepeatedDnaSequences("AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT") == ["AAAAACCCCC", "CCCCCAAAAA"]
+}
+
+test "example 2" {
+  expect findRepeatedDnaSequences("AAAAAAAAAAAAA") == ["AAAAAAAAAA"]
+}
+
+test "no repeats" {
+  expect findRepeatedDnaSequences("ACGTACGTAC") == []
+}
+
+test "short string" {
+  expect findRepeatedDnaSequences("AAAAA") == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Declaring an empty map without types:
+     var m = {}                  // ❌ type cannot be inferred
+   Specify the key and value types:
+     var m: map<string, int> = {}
+2. Using '=' instead of '==' when comparing values:
+     if count = 2 { }            // ❌ assignment
+     if count == 2 { }           // ✅ comparison
+3. Attempting Python-style set operations:
+     var s = {} as set<string>   // ❌ 'set' is not a built-in type
+   Use a map or list to keep track of seen items instead.
+*/
