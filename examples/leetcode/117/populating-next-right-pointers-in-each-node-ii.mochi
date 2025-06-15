@@ -1,73 +1,97 @@
-// Solution for LeetCode problem 117 - Populating Next Right Pointers in Each Node II
+// LeetCode 117 - Populating Next Right Pointers in Each Node II
+// This version avoids union types and pattern matching by representing
+// the tree as parallel lists of left and right child indices. A value
+// of (-1) means no child or no next pointer.
 
-// Binary tree with an additional `next` pointer.
-type Tree =
-  Leaf
-  | Node(left: Tree, value: int, right: Tree, next: Tree)
+fun connect(lefts: list<int>, rights: list<int>, root: int): list<int> {
+  var nexts: list<int> = []
+  var i = 0
+  while i < len(lefts) {
+    nexts = nexts + [(-1)]
+    i = i + 1
+  }
 
-// Connect nodes on the same level. The tree nodes are immutable so
-// this function simply returns the original tree.
-fun connect(root: Tree): Tree {
-  return root
+  var queue: list<int> = []
+  if root != (-1) { queue = [root] }
+
+  while len(queue) > 0 {
+    var next: list<int> = []
+    var prev = (-1)
+    for idx in queue {
+      if prev != (-1) { nexts[prev] = idx }
+      prev = idx
+      if lefts[idx] != (-1) { next = next + [lefts[idx]] }
+      if rights[idx] != (-1) { next = next + [rights[idx]] }
+    }
+    queue = next
+  }
+
+  return nexts
 }
 
-// Return the values of the tree level by level.
-fun levels(root: Tree): list<list<int>> {
+fun levels(lefts: list<int>, rights: list<int>, values: list<int>, root: int): list<list<int>> {
   var result: list<list<int>> = []
-  var queue: list<Tree> = []
-  if match root { Leaf => false _ => true } { queue = [root] }
+  var queue: list<int> = []
+  if root != (-1) { queue = [root] }
+
   while len(queue) > 0 {
-    var next: list<Tree> = []
     var vals: list<int> = []
-    for node in queue {
-      if match node { Leaf => false _ => true } {
-        vals = vals + [node.value]
-        if match node.left { Leaf => false _ => true } { next = next + [node.left] }
-        if match node.right { Leaf => false _ => true } { next = next + [node.right] }
-      }
+    var next: list<int> = []
+    for idx in queue {
+      vals = vals + [values[idx]]
+      if lefts[idx] != (-1) { next = next + [lefts[idx]] }
+      if rights[idx] != (-1) { next = next + [rights[idx]] }
     }
     result = result + [vals]
     queue = next
   }
+
   return result
 }
 
-// Example tree from the LeetCode description.
-let example = Node {
-  left: Node {
-    left: Node { left: Leaf {}, value: 4, right: Leaf {}, next: Leaf {} },
-    value: 2,
-    right: Node { left: Leaf {}, value: 5, right: Leaf {}, next: Leaf {} },
-    next: Leaf {}
-  },
-  value: 1,
-  right: Node {
-    left: Leaf {},
-    value: 3,
-    right: Node { left: Leaf {}, value: 7, right: Leaf {}, next: Leaf {} },
-    next: Leaf {}
-  },
-  next: Leaf {}
-}
+// Example tree arrays corresponding to [1,[2,3],[4,5,7]]
+let exLefts  = [1,3,(-1),(-1),(-1),(-1)] as list<int>
+let exRights = [2,4,5,(-1),(-1),(-1)] as list<int>
+let exValues = [1,2,3,4,5,7] as list<int>
+let exRoot = 0
 
 // Basic tests
 
 test "example" {
-  expect levels(connect(example)) == [[1],[2,3],[4,5,7]]
+  let ns = connect(exLefts, exRights, exRoot)
+  expect levels(exLefts, exRights, exValues, exRoot) == [[1],[2,3],[4,5,7]]
+  expect ns == [(-1),2,(-1),4,5,(-1)]
 }
 
 test "single node" {
-  let tree = Node { left: Leaf {}, value: 1, right: Leaf {}, next: Leaf {} }
-  expect levels(connect(tree)) == [[1]]
+  let lefts = [(-1)] as list<int>
+  let rights = [(-1)] as list<int>
+  let values = [1] as list<int>
+  let root = 0
+  let ns = connect(lefts, rights, root)
+  expect levels(lefts, rights, values, root) == [[1]]
+  expect ns == [(-1)]
 }
 
 test "empty" {
-  expect levels(connect(Leaf {})) == []
+  let lefts = [] as list<int>
+  let rights = [] as list<int>
+  let values = [] as list<int>
+  let ns = connect(lefts, rights, (-1))
+  expect levels(lefts, rights, values, (-1)) == []
+  expect ns == []
 }
 
 /*
 Common Mochi language errors and how to fix them:
-1. Confusing assignment '=' with comparison '=='.
-2. Reassigning a value declared with 'let'. Use 'var' when mutation is required.
-3. Forgetting to handle the 'Leaf' case when pattern matching a Tree.
+1. Using '=' instead of '==' for comparisons:
+     if idx = (-1) { ... }   // ❌ assignment
+     if idx == (-1) { ... }  // ✅ comparison
+2. Reassigning a value declared with 'let':
+     let q = []
+     q = [1]                // ❌ cannot reassign
+     var q = []             // ✅ use 'var' when mutation is needed
+3. Forgetting to give element types for empty lists:
+     var nodes = []         // ❌ type unknown
+     var nodes: list<int> = [] // ✅ specify element type
 */
