@@ -34,12 +34,12 @@ fun minDepth(root: Tree): int {
 
 test "example 1" {
   let tree = Node {
-    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
+    left: Node { left: Leaf, value: 9, right: Leaf },
     value: 3,
     right: Node {
-      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
+      left: Node { left: Leaf, value: 15, right: Leaf },
       value: 20,
-      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
+      right: Node { left: Leaf, value: 7, right: Leaf }
     }
   }
   expect minDepth(tree) == 2
@@ -47,19 +47,19 @@ test "example 1" {
 
 test "example 2" {
   let tree = Node {
-    left: Leaf {},
+    left: Leaf,
     value: 2,
-    right: Node { left: Leaf {}, value: 3, right: Leaf {} }
+    right: Node { left: Leaf, value: 3, right: Leaf }
   }
   expect minDepth(tree) == 2
 }
 
 test "single node" {
-  expect minDepth(Node { left: Leaf {}, value: 1, right: Leaf {} }) == 1
+  expect minDepth(Node { left: Leaf, value: 1, right: Leaf }) == 1
 }
 
 test "empty" {
-  expect minDepth(Leaf {}) == 0
+  expect minDepth(Leaf) == 0
 }
 
 /*
