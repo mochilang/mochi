@@ -1,0 +1,29 @@
+// Define the Tree type
+
+// A Tree is either a Leaf or a Node with left and right children,
+// a node value, and a link to the next tree in a list.
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree, next: Tree)
+
+// Example 1: An empty tree
+let empty = Leaf
+print("empty =", empty)
+
+// Example 2: A single node with no children
+let single = Node {
+  left: Leaf,
+  value: 42,
+  right: Leaf,
+  next: Leaf
+}
+print("single =", single)
+
+// Example 3: One-level binary tree
+let oneLevel = Node {
+  left: Node { left: Leaf, value: 2, right: Leaf, next: Leaf },
+  value: 1,
+  right: Node { left: Leaf, value: 3, right: Leaf, next: Leaf },
+  next: Leaf
+}
+print("oneLevel =", oneLevel)
