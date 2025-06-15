@@ -1,0 +1,81 @@
+// LeetCode 299 - Bulls and Cows
+// Count how many digits are in the correct place (bulls) and how many
+// correct digits are in the wrong place (cows).
+//
+// This solution avoids union types and `match`.
+fun getHint(secret: string, guess: string): string {
+  var bulls = 0
+  var countSecret: map<string, int> = {}
+  var countGuess: map<string, int> = {}
+  var i = 0
+  while i < len(secret) {
+    let s = secret[i]
+    let g = guess[i]
+    if s == g {
+      bulls = bulls + 1
+    } else {
+      if s in countSecret {
+        countSecret[s] = countSecret[s] + 1
+      } else {
+        countSecret[s] = 1
+      }
+      if g in countGuess {
+        countGuess[g] = countGuess[g] + 1
+      } else {
+        countGuess[g] = 1
+      }
+    }
+    i = i + 1
+  }
+  var cows = 0
+  for ch in countSecret {
+    if ch in countGuess {
+      let a = countSecret[ch]
+      let b = countGuess[ch]
+      if a < b {
+        cows = cows + a
+      } else {
+        cows = cows + b
+      }
+    }
+  }
+  return str(bulls) + "A" + str(cows) + "B"
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect getHint("1807", "7810") == "1A3B"
+}
+
+test "example 2" {
+  expect getHint("1123", "0111") == "1A1B"
+}
+
+// Additional edge cases
+
+test "all bulls" {
+  expect getHint("1234", "1234") == "4A0B"
+}
+
+test "all cows" {
+  expect getHint("1122", "2211") == "0A4B"
+}
+
+test "no matches" {
+  expect getHint("1234", "5678") == "0A0B"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons:
+   if s = g { ... }   // ❌ assignment
+   if s == g { ... }  // ✅ comparison
+2. Modifying an immutable binding:
+   let bulls = 0
+   bulls = bulls + 1    // ❌ cannot assign to 'let'
+   var bulls = 0        // ✅ use 'var' for mutable variables
+3. Writing Python-style for loops:
+   for i in range(len(secret)) { ... }  // ❌ unsupported
+   for i in 0..len(secret) { ... }      // ✅ Mochi range syntax
+*/
