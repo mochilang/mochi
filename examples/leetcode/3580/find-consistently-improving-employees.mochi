@@ -1,4 +1,26 @@
-fun consistentlyImproving(employees: list<{ employee_id: int, name: string }>, reviews: list<{ employee_id: int, review_date: string, rating: int }>): list<{ employee_id: int, name: string, improvement_score: int }> {
+// Solution for LeetCode problem 3580 - Find Consistently Improving Employees
+
+// Define record types used in the query
+
+type Employee {
+  employee_id: int
+  name: string
+}
+
+type Review {
+  review_id: int
+  employee_id: int
+  review_date: string
+  rating: int
+}
+
+type Result {
+  employee_id: int
+  name: string
+  improvement_score: int
+}
+
+fun consistentlyImproving(employees: list<Employee>, reviews: list<Review>): list<Result> {
   let grouped = from r in reviews
                 group by r.employee_id into g
                 select {
@@ -6,17 +28,24 @@ fun consistentlyImproving(employees: list<{ employee_id: int, name: string }>, r
                   reviews: from x in g sort by x.review_date select x
                 }
 
-  var result: list<{ employee_id: int, name: string, improvement_score: int }> = []
+  var result: list<Result> = []
   for item in grouped {
     let rlist = item.reviews
     if len(rlist) >= 3 {
       let n = len(rlist)
       let last3 = rlist[n-3:n]
-      if last3[0].rating < last3[1].rating && last3[1].rating < last3[2].rating {
-        let diff = last3[2].rating - last3[0].rating
+      let r1 = last3[0]
+      let r2 = last3[1]
+      let r3 = last3[2]
+      if r1.rating < r2.rating && r2.rating < r3.rating {
+        let diff = r3.rating - r1.rating
         for emp in employees {
           if emp.employee_id == item.id {
-            result = result + [{ employee_id: emp.employee_id, name: emp.name, improvement_score: diff }]
+            result = result + [Result {
+              employee_id: emp.employee_id,
+              name: emp.name,
+              improvement_score: diff
+            }]
             break
           }
         }
@@ -24,46 +53,49 @@ fun consistentlyImproving(employees: list<{ employee_id: int, name: string }>, r
     }
   }
 
-  let sorted = from e in result sort by -e.improvement_score, e.name select e
+  // sort by name first, then by descending improvement score
+  let byName = from e in result sort by e.name select e
+  let sorted = from e in byName sort by -e.improvement_score select e
   return sorted
 }
 
 // Test case derived from the problem statement
 
-let employees = [
-  { employee_id: 1, name: "Alice Johnson" },
-  { employee_id: 2, name: "Bob Smith" },
-  { employee_id: 3, name: "Carol Davis" },
-  { employee_id: 4, name: "David Wilson" },
-  { employee_id: 5, name: "Emma Brown" }
+let employees: list<Employee> = [
+  Employee { employee_id: 1, name: "Alice Johnson" },
+  Employee { employee_id: 2, name: "Bob Smith" },
+  Employee { employee_id: 3, name: "Carol Davis" },
+  Employee { employee_id: 4, name: "David Wilson" },
+  Employee { employee_id: 5, name: "Emma Brown" }
 ]
 
-let performance_reviews = [
-  { review_id: 1, employee_id: 1, review_date: "2023-01-15", rating: 2 },
-  { review_id: 2, employee_id: 1, review_date: "2023-04-15", rating: 3 },
-  { review_id: 3, employee_id: 1, review_date: "2023-07-15", rating: 4 },
-  { review_id: 4, employee_id: 1, review_date: "2023-10-15", rating: 5 },
-  { review_id: 5, employee_id: 2, review_date: "2023-02-01", rating: 3 },
-  { review_id: 6, employee_id: 2, review_date: "2023-05-01", rating: 2 },
-  { review_id: 7, employee_id: 2, review_date: "2023-08-01", rating: 4 },
-  { review_id: 8, employee_id: 2, review_date: "2023-11-01", rating: 5 },
-  { review_id: 9, employee_id: 3, review_date: "2023-03-10", rating: 1 },
-  { review_id: 10, employee_id: 3, review_date: "2023-06-10", rating: 2 },
-  { review_id: 11, employee_id: 3, review_date: "2023-09-10", rating: 3 },
-  { review_id: 12, employee_id: 3, review_date: "2023-12-10", rating: 4 },
-  { review_id: 13, employee_id: 4, review_date: "2023-01-20", rating: 4 },
-  { review_id: 14, employee_id: 4, review_date: "2023-04-20", rating: 4 },
-  { review_id: 15, employee_id: 4, review_date: "2023-07-20", rating: 4 },
-  { review_id: 16, employee_id: 5, review_date: "2023-02-15", rating: 3 },
-  { review_id: 17, employee_id: 5, review_date: "2023-05-15", rating: 2 }
+let performance_reviews: list<Review> = [
+  Review { review_id: 1, employee_id: 1, review_date: "2023-01-15", rating: 2 },
+  Review { review_id: 2, employee_id: 1, review_date: "2023-04-15", rating: 3 },
+  Review { review_id: 3, employee_id: 1, review_date: "2023-07-15", rating: 4 },
+  Review { review_id: 4, employee_id: 1, review_date: "2023-10-15", rating: 5 },
+  Review { review_id: 5, employee_id: 2, review_date: "2023-02-01", rating: 3 },
+  Review { review_id: 6, employee_id: 2, review_date: "2023-05-01", rating: 2 },
+  Review { review_id: 7, employee_id: 2, review_date: "2023-08-01", rating: 4 },
+  Review { review_id: 8, employee_id: 2, review_date: "2023-11-01", rating: 5 },
+  Review { review_id: 9, employee_id: 3, review_date: "2023-03-10", rating: 1 },
+  Review { review_id: 10, employee_id: 3, review_date: "2023-06-10", rating: 2 },
+  Review { review_id: 11, employee_id: 3, review_date: "2023-09-10", rating: 3 },
+  Review { review_id: 12, employee_id: 3, review_date: "2023-12-10", rating: 4 },
+  Review { review_id: 13, employee_id: 4, review_date: "2023-01-20", rating: 4 },
+  Review { review_id: 14, employee_id: 4, review_date: "2023-04-20", rating: 4 },
+  Review { review_id: 15, employee_id: 4, review_date: "2023-07-20", rating: 4 },
+  Review { review_id: 16, employee_id: 5, review_date: "2023-02-15", rating: 3 },
+  Review { review_id: 17, employee_id: 5, review_date: "2023-05-15", rating: 2 }
 ]
 
 test "example" {
-  expect consistentlyImproving(employees, performance_reviews) == [
-    { employee_id: 2, name: "Bob Smith", improvement_score: 3 },
-    { employee_id: 1, name: "Alice Johnson", improvement_score: 2 },
-    { employee_id: 3, name: "Carol Davis", improvement_score: 2 }
+  let expected = [
+    Result { employee_id: 2, name: "Bob Smith", improvement_score: 3 },
+    Result { employee_id: 1, name: "Alice Johnson", improvement_score: 2 },
+    Result { employee_id: 3, name: "Carol Davis", improvement_score: 2 }
   ]
+  expect str(consistentlyImproving(employees, performance_reviews)) == str(expected)
 }
 
 /*
