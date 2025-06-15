@@ -1,0 +1,138 @@
+// Solution for LeetCode problem 281 - Zigzag Iterator
+//
+// The iterator alternates between two lists without using union types or
+// pattern matching. Each call to `zigzagNext` returns the next value along
+// with the updated iterator state.
+
+type ZigzagIterator {
+  v1: list<int>
+  v2: list<int>
+  i1: int
+  i2: int
+  turn: int
+}
+
+fun newZigzagIterator(v1: list<int>, v2: list<int>): ZigzagIterator {
+  return ZigzagIterator { v1: v1, v2: v2, i1: 0, i2: 0, turn: 0 }
+}
+
+fun zigzagHasNext(it: ZigzagIterator): bool {
+  return it.i1 < len(it.v1) || it.i2 < len(it.v2)
+}
+
+// Result type returned by `zigzagNext`
+type NextResult {
+  it: ZigzagIterator
+  val: int
+}
+
+fun zigzagNext(it: ZigzagIterator): NextResult {
+  var idx1 = it.i1
+  var idx2 = it.i2
+  var t = it.turn
+  let a = it.v1
+  let b = it.v2
+  var value = 0
+
+  if t == 0 {
+    if idx1 < len(a) {
+      value = a[idx1]
+      idx1 = idx1 + 1
+      if idx2 < len(b) { t = 1 }
+    } else {
+      value = b[idx2]
+      idx2 = idx2 + 1
+    }
+  } else {
+    if idx2 < len(b) {
+      value = b[idx2]
+      idx2 = idx2 + 1
+      if idx1 < len(a) { t = 0 }
+    } else {
+      value = a[idx1]
+      idx1 = idx1 + 1
+    }
+  }
+
+  return NextResult {
+    it: ZigzagIterator { v1: a, v2: b, i1: idx1, i2: idx2, turn: t },
+    val: value
+  }
+}
+
+// Tests based on the LeetCode examples
+
+test "example" {
+  var it = newZigzagIterator([1,2], [3,4,5,6])
+  expect zigzagHasNext(it) == true
+  let r1 = zigzagNext(it)
+  it = r1.it
+  expect r1.val == 1
+
+  expect zigzagHasNext(it) == true
+  let r2 = zigzagNext(it)
+  it = r2.it
+  expect r2.val == 3
+
+  expect zigzagHasNext(it) == true
+  let r3 = zigzagNext(it)
+  it = r3.it
+  expect r3.val == 2
+
+  expect zigzagHasNext(it) == true
+  let r4 = zigzagNext(it)
+  it = r4.it
+  expect r4.val == 4
+
+  expect zigzagHasNext(it) == true
+  let r5 = zigzagNext(it)
+  it = r5.it
+  expect r5.val == 5
+
+  expect zigzagHasNext(it) == true
+  let r6 = zigzagNext(it)
+  it = r6.it
+  expect r6.val == 6
+
+  expect zigzagHasNext(it) == false
+}
+
+test "uneven lists" {
+  var it = newZigzagIterator([1,2,3], [4])
+  let r1 = zigzagNext(it)
+  it = r1.it
+  expect r1.val == 1
+  let r2 = zigzagNext(it)
+  it = r2.it
+  expect r2.val == 4
+  let r3 = zigzagNext(it)
+  it = r3.it
+  expect r3.val == 2
+  let r4 = zigzagNext(it)
+  it = r4.it
+  expect r4.val == 3
+  expect zigzagHasNext(it) == false
+}
+
+test "empty second list" {
+  var it = newZigzagIterator([7,8], [])
+  let r1 = zigzagNext(it)
+  it = r1.it
+  expect r1.val == 7
+  let r2 = zigzagNext(it)
+  it = r2.it
+  expect r2.val == 8
+  expect zigzagHasNext(it) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if zigzagHasNext(it) = true { } // ❌ assignment
+     if zigzagHasNext(it) == true { } // ✅ comparison
+2. Attempting to modify a field of a struct directly:
+     it.i1 = 1 // ❌ structs are immutable
+     it = ZigzagIterator { v1: it.v1, v2: it.v2, i1: 1, i2: it.i2, turn: it.turn } // ✅ create a new struct
+3. Forgetting to check bounds before indexing a list:
+     value = a[idx1] // ensure idx1 < len(a) to avoid runtime error
+*/
