@@ -27,9 +27,19 @@ fun countUnivalSubtrees(root: map<string, any>): int {
     let leftUni = dfs(l)
     let rightUni = dfs(r)
 
-    if leftUni && rightUni &&
-       (isLeaf(l) || value(l) == value(node)) &&
-       (isLeaf(r) || value(r) == value(node)) {
+    var isUni = true
+
+    if !isLeaf(l) {
+      if !leftUni { isUni = false }
+      if value(l) != value(node) { isUni = false }
+    }
+
+    if !isLeaf(r) {
+      if !rightUni { isUni = false }
+      if value(r) != value(node) { isUni = false }
+    }
+
+    if isUni {
       count = count + 1
       return true
     }
@@ -100,4 +110,7 @@ Common Mochi language errors and how to fix them:
 3. Accessing fields of Leaf without checking.
    left(Leaf())           // ❌ runtime error
    if !isLeaf(node) { left(node) } // ✅ ensure node is not Leaf
+4. Assuming '&&' or '||' short-circuit.
+   boolA && boolB         // both sides evaluated
+   if boolA { boolB }     // ✅ split the checks
 */
