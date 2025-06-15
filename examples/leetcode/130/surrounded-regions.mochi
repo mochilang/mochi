@@ -33,17 +33,25 @@ fun solve(board: list<list<string>>): list<list<string>> {
     let c = pos[1]
     if board[r][c] == "O" {
       board[r][c] = "S"
-      if r > 0 && board[r-1][c] == "O" {
-        queue = queue + [[r-1, c]]
+      if r > 0 {
+        if board[r-1][c] == "O" {
+          queue = queue + [[r-1, c]]
+        }
       }
-      if r + 1 < rows && board[r+1][c] == "O" {
-        queue = queue + [[r+1, c]]
+      if r + 1 < rows {
+        if board[r+1][c] == "O" {
+          queue = queue + [[r+1, c]]
+        }
       }
-      if c > 0 && board[r][c-1] == "O" {
-        queue = queue + [[r, c-1]]
+      if c > 0 {
+        if board[r][c-1] == "O" {
+          queue = queue + [[r, c-1]]
+        }
       }
-      if c + 1 < cols && board[r][c+1] == "O" {
-        queue = queue + [[r, c+1]]
+      if c + 1 < cols {
+        if board[r][c+1] == "O" {
+          queue = queue + [[r, c+1]]
+        }
       }
     }
     i = i + 1
