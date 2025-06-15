@@ -1,0 +1,80 @@
+// Solution for LeetCode problem 114 - Flatten Binary Tree to Linked List
+
+// Binary tree type used across examples
+// Leaf represents an empty node
+// Node stores left subtree, value, and right subtree
+
+type Tree =
+  Leaf {}
+  | Node(left: Tree, value: int, right: Tree)
+
+// Return a new tree where nodes appear in preorder as a right-skewed list
+fun flatten(root: Tree): Tree {
+  fun preorder(t: Tree): list<int> {
+    return match t {
+      Leaf {} => []
+      Node(l, v, r) => [v] + preorder(l) + preorder(r)
+    }
+  }
+
+  fun build(vals: list<int>, i: int): Tree {
+    if i >= len(vals) { return Leaf {} }
+    return Node {
+      left: Leaf {},
+      value: vals[i],
+      right: build(vals, i + 1)
+    }
+  }
+
+  let vals = preorder(root)
+  return build(vals, 0)
+}
+
+// Convert a flattened tree to the list of values by following right pointers
+fun toList(t: Tree): list<int> {
+  return match t {
+    Leaf {} => []
+    Node(_, v, r) => [v] + toList(r)
+  }
+}
+
+// Example 1 tree: [1,2,5,3,4,null,6]
+let ex1 = Node {
+  left: Node {
+    left: Node { left: Leaf {}, value: 3, right: Leaf {} },
+    value: 2,
+    right: Node { left: Leaf {}, value: 4, right: Leaf {} }
+  },
+  value: 1,
+  right: Node {
+    left: Leaf {},
+    value: 5,
+    right: Node { left: Leaf {}, value: 6, right: Leaf {} }
+  }
+}
+
+let flat1 = flatten(ex1)
+
+// After flattening the values should be [1,2,3,4,5,6]
+expect toList(flat1) == [1,2,3,4,5,6]
+
+// Example 2: empty tree remains empty
+expect flatten(Leaf {}) == Leaf {}
+
+// Example 3: single node
+let ex3 = Node { left: Leaf {}, value: 0, right: Leaf {} }
+let flat3 = flatten(ex3)
+expect toList(flat3) == [0]
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to set the left child to `Leaf {}` when building the flattened list.
+   Each node in the result must have `left: Leaf {}`.
+2. Using '=' instead of '==' when comparing indices, e.g. `if i = len(vals)`.
+   Use '==' for equality checks.
+3. Trying to mutate fields of a Node after creation:
+     Node(l, v, r) => { r = Leaf {} }
+   Nodes are immutable; build a new Node instead.
+4. Declaring temporary lists with `let` and then attempting to append to them.
+   Use `var` when the variable needs to change.
+*/
