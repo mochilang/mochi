@@ -1,0 +1,107 @@
+fun parseInt(s: string): int {
+  var result = 0
+  var i = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(s) {
+    result = result * 10 + digits[s[i]]
+    i = i + 1
+  }
+  return result
+}
+
+fun addOperators(num: string, target: int): list<string> {
+  var result: list<string> = []
+
+  fun backtrack(pos: int, expr: string, value: int, prev: int) {
+    if pos == len(num) {
+      if value == target {
+        result = result + [expr]
+      }
+    } else {
+      var i = pos
+      while i < len(num) {
+        if i != pos && num[pos] == "0" {
+          break
+        }
+        let part = num[pos:i+1]
+        let cur = parseInt(part)
+        if pos == 0 {
+          backtrack(i + 1, part, cur, cur)
+        } else {
+          backtrack(i + 1, expr + "+" + part, value + cur, cur)
+          backtrack(i + 1, expr + "-" + part, value - cur, -cur)
+          backtrack(i + 1, expr + "*" + part, value - prev + prev * cur, prev * cur)
+        }
+        i = i + 1
+      }
+    }
+  }
+
+  backtrack(0, "", 0, 0)
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let res = addOperators("123", 6)
+  let sorted = from x in res sort by x select x
+  expect sorted == ["1*2*3", "1+2+3"]
+}
+
+test "example 2" {
+  let res = addOperators("232", 8)
+  let sorted = from x in res sort by x select x
+  expect sorted == ["2*3+2", "2+3*2"]
+}
+
+test "example 3" {
+  let res = addOperators("105", 5)
+  let sorted = from x in res sort by x select x
+  expect sorted == ["1*0+5", "10-5"]
+}
+
+test "example 4" {
+  let res = addOperators("00", 0)
+  let sorted = from x in res sort by x select x
+  expect sorted == ["0*0", "0+0", "0-0"]
+}
+
+test "example 5" {
+  expect addOperators("3456237490", 9191) == []
+}
+
+// Additional edge case
+
+test "single number" {
+  expect addOperators("5", 5) == ["5"]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+   if value = target { }
+   // ❌ assignment
+   if value == target { }
+   // ✅ comparison
+2. Reassigning a variable declared with 'let':
+   let res = []
+   res = res + ["x"]
+   // ❌ cannot modify immutable value
+   var res: list<string> = []
+   // ✅ declare with var when mutation is needed
+3. Forgetting to convert a substring to an int before math:
+   let cur = part  // ❌ type mismatch (string vs int)
+   let cur = parseInt(part)  // ✅ convert the string
+*/
