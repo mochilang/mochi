@@ -1,0 +1,56 @@
+// Solution for LeetCode problem 145 - Binary Tree Postorder Traversal
+
+// Define the binary tree structure
+// Leaf represents an empty subtree
+// Node contains left child, value and right child
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Recursively traverse the tree in post-order
+fun postorderTraversal(t: Tree): list<int> {
+  return match t {
+    Leaf => [] as list<int>
+    Node(l, v, r) => postorderTraversal(l) + postorderTraversal(r) + [v]
+  }
+}
+
+// Example tree: [1,null,2,3]
+let example1 = Node {
+  left: Leaf {},
+  value: 1,
+  right: Node {
+    left: Node { left: Leaf {}, value: 3, right: Leaf {} },
+    value: 2,
+    right: Leaf {}
+  }
+}
+
+// Test cases based on LeetCode
+
+test "example 1" {
+  expect postorderTraversal(example1) == [3,2,1]
+}
+
+test "single node" {
+  expect postorderTraversal(Node { left: Leaf {}, value: 1, right: Leaf {} }) == [1]
+}
+
+test "empty" {
+  expect postorderTraversal(Leaf {}) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Missing type annotations for empty lists.
+   var result = []              // ❌ type cannot be inferred
+   var result: list<int> = []   // ✅ specify the element type
+2. Confusing '=' with '==' in conditions.
+   if t = Leaf { ... }          // ❌ assignment
+   if t == Leaf { ... }         // ✅ comparison
+3. Reassigning values declared with 'let'.
+   let tree = Leaf {}
+   tree = Node { ... }          // ❌ cannot assign
+   var tree = Leaf {}           // ✅ use 'var' when mutation is needed
+*/
