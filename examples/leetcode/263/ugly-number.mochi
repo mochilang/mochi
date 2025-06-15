@@ -1,0 +1,53 @@
+fun isUgly(n: int): bool {
+  if n <= 0 {
+    return false
+  }
+  var num = n
+  while num % 2 == 0 {
+    num = num / 2
+  }
+  while num % 3 == 0 {
+    num = num / 3
+  }
+  while num % 5 == 0 {
+    num = num / 5
+  }
+  return num == 1
+}
+
+// Test cases from LeetCode problem 263
+
+test "example 1" {
+  expect isUgly(6) == true
+}
+
+test "example 2" {
+  expect isUgly(1) == true
+}
+
+test "example 3" {
+  expect isUgly(14) == false
+}
+
+// Additional edge cases
+
+test "zero" {
+  expect isUgly(0) == false
+}
+
+test "negative" {
+  expect isUgly(-6) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when checking equality:
+   if n = 1 { }
+   // error[P000]: '=' assigns a value. Use '==' for comparisons.
+2. Reassigning a variable declared with 'let':
+   let x = 2
+   x = x / 2  // error[E004]: cannot reassign immutable binding.
+   // Fix: declare with 'var' if mutation is required.
+3. Forgetting to return a value on all code paths.
+   Ensure each branch of your if/while logic eventually returns a bool.
+*/
