@@ -1,45 +1,49 @@
 // LeetCode 124 - Binary Tree Maximum Path Sum
 
-// Binary tree definition reused from other examples
-// A tree is either Leaf or Node with left, value, and right
-
+// Binary tree definition used across the examples.
 type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree)
 
-// Helper function to compute max path sum. It updates the
-// outer 'best' variable with the highest sum seen and returns
-// the maximum sum of a path that starts at this node and goes
-// downward.
-fun maxPathSum(root: Tree): int {
-  var best = match root {
-    Leaf => 0
-    Node(_, v, _) => v
-  }
+fun max(a: int, b: int): int {
+  if a > b { return a }
+  return b
+}
 
-  fun helper(t: Tree): int {
+// Return `x` if it is positive, otherwise 0.
+fun pos(x: int): int {
+  if x > 0 { return x }
+  return 0
+}
+
+// Compute the maximum path sum in the given tree.
+fun maxPathSum(root: Tree): int {
+  // smallest 32 bit integer: -(2^31)
+  var best = -2147483647 - 1
+
+  fun dfs(t: Tree): int {
     return match t {
       Leaf => 0
       Node(l, v, r) => {
-        let leftDown = helper(l)
-        let rightDown = helper(r)
-        let leftBest = if leftDown > 0 { leftDown } else { 0 }
-        let rightBest = if rightDown > 0 { rightDown } else { 0 }
-        let through = v + leftBest + rightBest
-        if through > best {
-          best = through
-        }
-        let downward = v + (if leftBest > rightBest { leftBest } else { rightBest })
-        return if downward > 0 { downward } else { 0 }
+        let left = dfs(l)
+        let right = dfs(r)
+        let leftPos = pos(left)
+        let rightPos = pos(right)
+
+        let through = v + leftPos + rightPos
+        if through > best { best = through }
+
+        let down = v + max(leftPos, rightPos)
+        pos(down)
       }
     }
   }
 
-  helper(root)
+  dfs(root)
   return best
 }
 
-// Test cases from LeetCode
+// Test cases based on LeetCode examples
 
 test "example 1" {
   let tree = Node {
@@ -64,21 +68,28 @@ test "example 2" {
 }
 
 test "single negative" {
-  expect maxPathSum(Node { left: Leaf, value: -3, right: Leaf }) == -3
+  expect maxPathSum(Node { left: Leaf, value: -3, right: Leaf }) == (-3)
+}
+
+test "all negative" {
+  let tree = Node {
+    left: Node { left: Leaf, value: -5, right: Leaf },
+    value: -2,
+    right: Node { left: Leaf, value: -4, right: Leaf }
+  }
+  expect maxPathSum(tree) == (-2)
 }
 
 /*
 Common Mochi language errors and how to fix them:
-1. Forgetting the `Leaf` branch when pattern matching on a tree.
-   match node {
-     Node(l, v, r) => ... // ❌ missing Leaf => ...
-   }
-   Always handle all variants.
-2. Using Python's `None` instead of `Leaf` for empty children.
+1. Using '=' instead of '==' when comparing values.
+   if x = 1 { ... }  // ❌ assignment
+   if x == 1 { ... } // ✅ comparison
+2. Reassigning a value bound with 'let'.
+   let n = 0
+   n = 1  // error[E004]
+   // Fix: declare with 'var n = 0' if mutation is needed.
+3. Using 'None' or 'null' instead of the 'Leaf' variant for empty children.
    Node { left: None, value: 1, right: None } // ❌
-   Node { left: Leaf {}, value: 1, right: Leaf {} } // ✅
-3. Reassigning an immutable `let` variable:
-   let sum = 0
-   sum = sum + 1 // error[E004]
-   // Fix: declare with `var sum = 0` if it must change.
+   Node { left: Leaf, value: 1, right: Leaf } // ✅
 */
