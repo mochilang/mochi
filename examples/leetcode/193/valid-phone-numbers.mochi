@@ -1,0 +1,70 @@
+// Solution for LeetCode problem 193 - Valid Phone Numbers
+// The problem asks to print numbers matching one of these formats:
+//  - "xxx-xxx-xxxx"
+//  - "(xxx) xxx-xxxx"
+// We'll implement a function that filters a list of strings.
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' when comparing characters.
+// 2. Forgetting to declare mutable variables with 'var'.
+// 3. Accessing an index out of range without checking length first.
+// 4. Leaving off a return statement when all branches must return a value.
+
+fun isDigit(ch: string): bool {
+  return ch >= "0" && ch <= "9"
+}
+
+fun isValidPhoneNumber(s: string): bool {
+  let n = len(s)
+  if n == 12 {
+    if s[3] != "-" || s[7] != "-" { return false }
+    var i = 0
+    while i < n {
+      if i == 3 || i == 7 {
+        i = i + 1
+        continue
+      }
+      if !isDigit(s[i]) { return false }
+      i = i + 1
+    }
+    return true
+  }
+  if n == 14 {
+    if s[0] != "(" || s[4] != ")" || s[5] != " " || s[9] != "-" { return false }
+    var i = 0
+    while i < n {
+      if i == 0 || i == 4 || i == 5 || i == 9 {
+        i = i + 1
+        continue
+      }
+      if !isDigit(s[i]) { return false }
+      i = i + 1
+    }
+    return true
+  }
+  return false
+}
+
+fun validPhoneNumbers(lines: list<string>): list<string> {
+  var result: list<string> = []
+  for line in lines {
+    if isValidPhoneNumber(line) {
+      result = result + [line]
+    }
+  }
+  return result
+}
+
+// Basic tests from the LeetCode problem statement
+
+test "example" {
+  let input = [
+    "987-123-4567",
+    "123 456 7890",
+    "(123) 456-7890"
+  ]
+  expect validPhoneNumbers(input) == [
+    "987-123-4567",
+    "(123) 456-7890"
+  ]
+}
