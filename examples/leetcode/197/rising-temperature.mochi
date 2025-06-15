@@ -1,0 +1,52 @@
+// Solution for LeetCode problem 197 - Rising Temperature
+
+// Record representing a day's weather
+
+type Weather {
+  id: int
+  recordDate: string
+  temperature: int
+}
+
+// Return the ids of days with a higher temperature than the previous day.
+fun risingTemperature(records: list<Weather>): list<int> {
+  var result: list<int> = []
+  var i = 1
+  while i < len(records) {
+    let today = records[i]
+    let yesterday = records[i-1]
+    if today.temperature > yesterday.temperature {
+      result = result + [today.id]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Example data from the problem description
+let sampleWeather: list<Weather> = [
+  Weather { id: 1, recordDate: "2015-01-01", temperature: 10 },
+  Weather { id: 2, recordDate: "2015-01-02", temperature: 25 },
+  Weather { id: 3, recordDate: "2015-01-03", temperature: 20 },
+  Weather { id: 4, recordDate: "2015-01-04", temperature: 30 },
+]
+
+test "rising days" {
+  expect risingTemperature(sampleWeather) == [2,4]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Omitting element types for an empty list.
+     var result = []            // ❌ type cannot be inferred
+   Fix by specifying the list type:
+     var result: list<int> = []
+2. Using '=' instead of '==' when comparing values.
+     if today.temperature = yesterday.temperature { ... } // ❌ assignment
+   Use '>' or '==' as appropriate:
+     if today.temperature > yesterday.temperature { ... }
+3. Trying to modify a value bound with 'let'.
+     let i = 0
+     i = i + 1                     // ❌ cannot assign
+   Use 'var i = 0' when mutation is needed.
+*/
