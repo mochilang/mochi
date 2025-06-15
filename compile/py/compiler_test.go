@@ -113,7 +113,7 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
 	}
-       for i := 1; i <= 20; i++ {
+	for i := 1; i <= 30; i++ {
 		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
 		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 		if err != nil {
@@ -141,13 +141,13 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 					t.Fatalf("write error: %v", err)
 				}
 				cmd := exec.Command("python3", file)
-                               out, err := cmd.CombinedOutput()
-                               if err != nil {
-                                       t.Fatalf("python run error: %v\n%s", err, out)
-                               }
-                               // Older examples may print results; just ensure the
-                               // program executes without error.
-                       })
-               }
-       }
+				out, err := cmd.CombinedOutput()
+				if err != nil {
+					t.Fatalf("python run error: %v\n%s", err, out)
+				}
+				// Older examples may print results; just ensure the
+				// program executes without error.
+			})
+		}
+	}
 }

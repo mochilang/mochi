@@ -252,12 +252,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Stream != nil:
 		return c.compileStreamDecl(s.Stream)
-       case s.Model != nil:
-               return c.compileModelDecl(s.Model)
-       case s.Fun != nil:
-               return c.compileFunStmt(s.Fun)
-       case s.On != nil:
-               return c.compileOnHandler(s.On)
+	case s.Model != nil:
+		return c.compileModelDecl(s.Model)
+	case s.Fun != nil:
+		return c.compileFunStmt(s.Fun)
+	case s.On != nil:
+		return c.compileOnHandler(s.On)
 	case s.Emit != nil:
 		return c.compileEmit(s.Emit)
 	case s.Agent != nil:
@@ -751,9 +751,28 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			child.SetVar(p.Name, ft.Params[i], true)
 		}
 	}
+	locals := map[string]bool{}
+	for _, p := range fun.Params {
+		locals[p.Name] = true
+	}
+	assigns := map[string]bool{}
+	collectScopeInfo(fun.Body, locals, assigns)
+	var nonlocals []string
+	if c.env != nil {
+		for name := range assigns {
+			if !locals[name] {
+				if _, err := c.env.GetVar(name); err == nil {
+					nonlocals = append(nonlocals, sanitizeName(name))
+				}
+			}
+		}
+	}
 	origEnv := c.env
 	c.env = child
 	c.indent++
+	for _, n := range nonlocals {
+		c.writeln("nonlocal " + n)
+	}
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
 			c.env = origEnv
