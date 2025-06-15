@@ -1,0 +1,93 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Vector2D struct {
+	Data [][]int `json:"data"`
+	Row int `json:"row"`
+	Col int `json:"col"`
+}
+
+type NextResult struct {
+	Vec any `json:"vec"`
+	Val int `json:"val"`
+}
+
+func newVector2D(v [][]int) Vector2D {
+	return Vector2D{Data: v, Row: 0, Col: 0}
+}
+
+func advance(vec Vector2D) Vector2D {
+	var r int = vec.Row
+	_ = r
+	var c int = vec.Col
+	_ = c
+	var d [][]int = vec.Data
+	for (r < len(d)) {
+		if (c >= len(d[r])) {
+			r = (r + 1)
+			c = 0
+		} else {
+			break
+		}
+	}
+	return Vector2D{Data: d, Row: r, Col: c}
+}
+
+func hasNext(vec Vector2D) bool {
+	var v Vector2D = advance(vec)
+	return (v.Row < len(v.Data))
+}
+
+func next(vec Vector2D) NextResult {
+	var v Vector2D = advance(vec)
+	_ = v
+	var value int = v.Data[v.Row][v.Col]
+	v = Vector2D{Data: v.Data, Row: v.Row, Col: (v.Col + 1)}
+	return NextResult{Vec: v, Val: value}
+}
+
+func example() {
+	var it Vector2D = newVector2D([][]int{[]int{1, 2}, []int{3}, []int{4}})
+	_ = it
+	var r1 NextResult = next(it)
+	it = r1.Vec
+	expect((r1.Val == 1))
+	expect((hasNext(it) == true))
+	var r2 NextResult = next(it)
+	it = r2.Vec
+	expect((r2.Val == 2))
+	expect((hasNext(it) == true))
+	var r3 NextResult = next(it)
+	it = r3.Vec
+	expect((r3.Val == 3))
+	expect((hasNext(it) == true))
+	var r4 NextResult = next(it)
+	it = r4.Vec
+	expect((r4.Val == 4))
+	expect((hasNext(it) == false))
+}
+
+func empty_inner_lists() {
+	var it Vector2D = newVector2D([]any{[]any{}, []int{1}, []any{}, []int{2, 3}})
+	_ = it
+	expect((hasNext(it) == true))
+	var r1 NextResult = next(it)
+	it = r1.Vec
+	expect((r1.Val == 1))
+	var r2 NextResult = next(it)
+	it = r2.Vec
+	expect((r2.Val == 2))
+	var r3 NextResult = next(it)
+	it = r3.Vec
+	expect((r3.Val == 3))
+	expect((hasNext(it) == false))
+}
+
+func main() {
+	example()
+	empty_inner_lists()
+}
+

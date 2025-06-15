@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 MOCHI_BIN := $(CURDIR)/bin/mochi
 MOCHI_ROOT := $(abspath $(CURDIR)/../..)
 
@@ -49,15 +50,18 @@ run: mochi
 	@$(MOCHI_BIN) run $(ID)/*.mochi
 
 test: mochi
-@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
+	@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
 
 compile: mochi
 	@mkdir -p ../leetcode-out
 	@find . -path ./bin -prune -o -name '*.mochi' -print0 | \
-	while IFS= read -r -d  f; do \
-		base=$(basename $$f .mochi); \
-		$(MOCHI_BIN) build $$f -o ../leetcode-out/$$base.go.out --target go; \
-	done
+	while IFS= read -r -d '' f; do \
+        dir=$$(dirname "$$f"); \
+        dir=$${dir#./}; \
+        mkdir -p ../leetcode-out/"$$dir"; \
+        base=$$(basename "$$f" .mochi); \
+        $(MOCHI_BIN) build "$$f" -o ../leetcode-out/"$$dir"/"$$base".go.out --target go; \
+        done
 
 clean:
 	@rm -rf bin
