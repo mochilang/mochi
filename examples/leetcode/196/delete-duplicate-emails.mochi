@@ -1,0 +1,62 @@
+// Solution for LeetCode problem 196 - Delete Duplicate Emails
+//
+// Given a list of user records, remove users with duplicate emails
+// keeping only the record with the smallest id for each email.
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' to compare values.
+//    if u.email = "x" { }   // ❌ assignment
+//    if u.email == "x" { }  // ✅ comparison
+// 2. Reassigning a value bound with 'let'.
+//    let minId = u.id
+//    minId = 0              // ❌ cannot modify immutable binding
+//    var minId = u.id       // ✅ use 'var' for mutable variables
+// 3. Forgetting to specify the element type when creating an empty list or map.
+//    var m = {}             // ❌ type cannot be inferred
+//    var m: map<string, User> = {} // ✅ specify type
+// 4. Writing Python style loops like 'for i in range(n)'. Use 'for i in 0..n'.
+
+// Record for a user table row
+ type User {
+  id: int
+  email: string
+ }
+
+// Remove duplicate emails and return the remaining rows
+fun deleteDuplicateEmails(users: list<User>): list<User> {
+  var byEmail: map<string, User> = {}
+  for u in users {
+    if u.email in byEmail {
+      let existing = byEmail[u.email]
+      if u.id < existing.id {
+        byEmail[u.email] = u
+      }
+    } else {
+      byEmail[u.email] = u
+    }
+  }
+  var result: list<User> = []
+  for key in byEmail {
+    result = result + [byEmail[key]]
+  }
+  // sort by id for deterministic order
+  let sorted = from x in result sort by x.id select x
+  return sorted
+}
+
+// Example from the problem statement
+let users: list<User> = [
+  User { id: 1, email: "a@b.com" },
+  User { id: 2, email: "c@d.com" },
+  User { id: 3, email: "a@b.com" }
+]
+
+// After removing duplicates only the smallest id for each email remains
+let expected: list<User> = [
+  User { id: 1, email: "a@b.com" },
+  User { id: 2, email: "c@d.com" }
+]
+
+test "remove duplicates" {
+  expect str(deleteDuplicateEmails(users)) == str(expected)
+}
