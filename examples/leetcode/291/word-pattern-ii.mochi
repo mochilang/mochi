@@ -1,0 +1,63 @@
+fun wordPatternMatch(pattern: string, s: string): bool {
+  let m = len(pattern)
+  let n = len(s)
+
+  fun dfs(pi: int, si: int, mapping: map<string,string>, used: map<string,bool>): bool {
+    if pi == m && si == n { return true }
+    if pi == m || si == n { return false }
+
+    let ch = pattern[pi:pi+1]
+    if ch in mapping {
+      let word = mapping[ch]
+      let l = len(word)
+      if si + l > n { return false }
+      if s[si:si+l] != word { return false }
+      return dfs(pi+1, si+l, mapping, used)
+    }
+
+    var end = si + 1
+    while end <= n {
+      let word = s[si:end]
+      var already = false
+      if word in used { already = used[word] }
+      if !already {
+        var nextMap = mapping
+        var nextUsed = used
+        nextMap[ch] = word
+        nextUsed[word] = true
+        if dfs(pi+1, end, nextMap, nextUsed) { return true }
+      }
+      end = end + 1
+    }
+    return false
+  }
+
+  return dfs(0, 0, {} as map<string,string>, {} as map<string,bool>)
+}
+
+// Tests based on the LeetCode examples
+
+test "example 1" {
+  expect wordPatternMatch("abab", "redblueredblue") == true
+}
+
+test "example 2" {
+  expect wordPatternMatch("aaaa", "asdasdasdasd") == true
+}
+
+test "example 3" {
+  expect wordPatternMatch("aabb", "xyzabcxzyabc") == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing strings:
+     if ch = "a" { }         // ❌ assignment
+     if ch == "a" { }        // ✅ comparison
+2. Forgetting to declare mutable variables with 'var':
+     mapping[ch] = word      // ❌ if mapping was declared with 'let'
+   Use 'var mapping: map<string,string> = {}' when updates are needed.
+3. Expecting methods like 'startsWith' on strings:
+     s.startsWith(word)      // ❌ not available
+   Compare slices directly: s[si:si+len(word)] == word
+*/
