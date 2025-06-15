@@ -1,16 +1,13 @@
 // Solution for LeetCode problem 138 - Copy List with Random Pointer
 
-// Each node either contains a value with next/random pointers or Nil
-// to represent the end of the list or a missing reference.
-
-// Linked list node with random pointer
-// Nil denotes the absence of a node
-
+// A node in the linked list. Nil represents the end of the list or an empty pointer.
 type Node =
-   Nil
-   | Node(val: int, next: Node, random: Node)
+  Nil
+  | Node(val: int, next: Node, random: Node)
 
+// Create a deep copy of the list starting at `head`.
 fun copyRandomList(head: Node): Node {
+  // Map from original nodes to their copied counterparts
   var seen: map<Node, Node> = {}
 
   fun clone(n: Node): Node {
@@ -18,9 +15,9 @@ fun copyRandomList(head: Node): Node {
       Nil => Nil {}
       Node(v, nxt, rnd) => {
         if n in seen { return seen[n] }
-        // create placeholder first to handle cycles
-        var temp = Node { val: v, next: Nil {}, random: Nil {} }
-        seen[n] = temp
+        // placeholder node to break potential cycles
+        var tmp = Node { val: v, next: Nil {}, random: Nil {} }
+        seen[n] = tmp
         let newNext = clone(nxt)
         let newRand = clone(rnd)
         let res = Node { val: v, next: newNext, random: newRand }
@@ -33,7 +30,7 @@ fun copyRandomList(head: Node): Node {
   return clone(head)
 }
 
-// Convert list to [[val, randomIndex], ...] representation
+// Helper to convert the list into a [[val, randomIndex], ...] form for testing
 fun serialize(head: Node): list<list<int>> {
   var nodes: list<Node> = []
   var curr = head
@@ -64,7 +61,7 @@ fun serialize(head: Node): list<list<int>> {
   return result
 }
 
-// Test case based on LeetCode example
+// Basic test mirroring the example from LeetCode
 
 test "copy list" {
   var n1: Node = Node { val: 7, next: Nil {}, random: Nil {} }
@@ -85,7 +82,11 @@ test "copy list" {
 
 /*
 Common Mochi language errors and how to fix them:
-1. Attempting to modify fields directly. Create a new `Node` instead of mutating.
-2. Using '=' instead of '==' when comparing nodes or indices.
-3. Forgetting to handle the `Nil` variant when pattern matching on nodes.
+1. Confusing assignment '=' with comparison '=='.
+   if node = Nil { ... }   // ❌
+   if node == Nil { ... }  // ✅
+2. Forgetting to declare mutable variables with 'var'.
+   count = 0               // ❌ use 'var count = 0'
+3. Failing to handle the 'Nil' case when pattern matching on a Node.
+4. Attempting to change fields of a Node after creation. Create a new Node instead.
 */
