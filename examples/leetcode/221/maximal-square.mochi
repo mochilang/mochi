@@ -1,0 +1,94 @@
+fun maximalSquare(matrix: list<list<string>>): int {
+  let rows = len(matrix)
+  if rows == 0 {
+    return 0
+  }
+  let cols = len(matrix[0])
+  // initialize dp with zeros
+  var dp: list<list<int>> = []
+  var r = 0
+  while r < rows {
+    var row: list<int> = []
+    var c = 0
+    while c < cols {
+      row = row + [0]
+      c = c + 1
+    }
+    dp = dp + [row]
+    r = r + 1
+  }
+
+  var maxSide = 0
+  r = 0
+  while r < rows {
+    var c = 0
+    while c < cols {
+      if matrix[r][c] == "1" {
+        if r == 0 || c == 0 {
+          dp[r][c] = 1
+        } else {
+          let top = dp[r-1][c]
+          let left = dp[r][c-1]
+          let diag = dp[r-1][c-1]
+          var small = top
+          if left < small {
+            small = left
+          }
+          if diag < small {
+            small = diag
+          }
+          dp[r][c] = small + 1
+        }
+        if dp[r][c] > maxSide {
+          maxSide = dp[r][c]
+        }
+      } else {
+        dp[r][c] = 0
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+
+  return maxSide * maxSide
+}
+
+// Tests based on LeetCode examples
+
+let example1: list<list<string>> = [
+  ["1","0","1","0","0"],
+  ["1","0","1","1","1"],
+  ["1","1","1","1","1"],
+  ["1","0","0","1","0"],
+]
+
+test "example 1" {
+  expect maximalSquare(example1) == 4
+}
+
+let example2: list<list<string>> = [
+  ["0","1"],
+  ["1","0"],
+]
+
+test "example 2" {
+  expect maximalSquare(example2) == 1
+}
+
+let example3: list<list<string>> = [
+  ["0"]
+]
+
+test "single zero" {
+  expect maximalSquare(example3) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Writing 'if a = b { }' instead of '==' causes an assignment error.
+2. Declaring a variable with 'let' and later modifying it:
+   let x = 0
+   x = 1              // ❌ use 'var' when a value changes.
+3. Using Python-style indexing past the end of a list.
+   matrix[rows][0]    // ❌ out of bounds, highest index is rows-1.
+*/
