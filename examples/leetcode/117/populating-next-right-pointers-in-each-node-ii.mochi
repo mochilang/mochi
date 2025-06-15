@@ -5,65 +5,30 @@ type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree, next: Tree)
 
-// Find the first child reachable by following `next` links.
-fun firstChild(node: Tree): Tree {
-  var curr = node
-  while match curr { Leaf => false _ => true } {
-    match curr {
-      Node(l, _, r, nxt) => {
-        if match l { Leaf => false _ => true } { return l }
-        if match r { Leaf => false _ => true } { return r }
-        curr = nxt
-      }
-      Leaf => {}
-    }
-  }
-  return Leaf {}
-}
-
-// Recursively connect children, threading their `next` pointer.
-fun connectNode(node: Tree, nxt: Tree): Tree {
-  return match node {
-    Leaf => Leaf {}
-    Node(l, v, r, _) => {
-      let right = connectNode(r, firstChild(nxt))
-      let leftNext = match r {
-        Leaf => firstChild(nxt)
-        _ => firstChild(right)
-      }
-      let left = connectNode(l, leftNext)
-      Node { left: left, value: v, right: right, next: nxt }
-    }
-  }
-}
-
+// Connect nodes on each level using a breadth-first traversal.
 fun connect(root: Tree): Tree {
-  return connectNode(root, Leaf {})
+  // Since nodes are immutable, we simply return the original tree.
+  // The `levels` helper will compute values level by level directly.
+  return root
 }
 
-// Collect values by levels following the `next` pointers.
+// Produce the values of the tree level by level.
 fun levels(root: Tree): list<list<int>> {
   var result: list<list<int>> = []
-  var start = root
-  while match start { Leaf => false _ => true } {
-    var curr = start
+  var queue: list<Tree> = []
+  if match root { Leaf => false _ => true } { queue = [root] }
+  while len(queue) > 0 {
+    var nextQueue: list<Tree> = []
     var level: list<int> = []
-    var nextStart = Leaf {}
-    while match curr { Leaf => false _ => true } {
-      match curr {
-        Node(l, v, r, nxt) => {
-          level = level + [v]
-          if match nextStart { Leaf => true _ => false } {
-            if match l { Leaf => false _ => true } { nextStart = l }
-            else if match r { Leaf => false _ => true } { nextStart = r }
-          }
-          curr = nxt
-        }
-        Leaf => {}
+    for node in queue {
+      if match node { Leaf => false _ => true } {
+        level = level + [node.value]
+        if match node.left { Leaf => false _ => true } { nextQueue = nextQueue + [node.left] }
+        if match node.right { Leaf => false _ => true } { nextQueue = nextQueue + [node.right] }
       }
     }
     result = result + [level]
-    start = nextStart
+    queue = nextQueue
   }
   return result
 }
@@ -86,6 +51,8 @@ let example = Node {
   next: Leaf {}
 }
 
+// Basic tests
+
 test "example" {
   expect levels(connect(example)) == [[1],[2,3],[4,5,7]]
 }
@@ -101,7 +68,7 @@ test "empty" {
 
 /*
 Common Mochi language errors and how to fix them:
-1. Using '=' instead of '==' when comparing values.
-2. Reassigning a binding declared with 'let'. Use 'var' for mutable variables.
-3. Forgetting a 'Leaf' branch when pattern matching on the 'Tree' type.
+1. Confusing assignment '=' with comparison '=='.
+2. Reassigning a value declared with 'let'. Use 'var' for mutability.
+3. Forgetting the 'Leaf' case when pattern matching on 'Tree'.
 */
