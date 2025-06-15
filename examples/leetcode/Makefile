@@ -24,7 +24,7 @@ endif
 MOCHI_TAR := mochi_$(OS)_$(ARCH).tar.gz
 MOCHI_URL := https://github.com/mochilang/mochi/releases/latest/download/$(MOCHI_TAR)
 
-.PHONY: mochi run test compile clean
+.PHONY: mochi run run-go test compile clean
 
 mochi:
 	@mkdir -p bin
@@ -43,11 +43,26 @@ mochi:
 	fi
 
 run: mochi
-	@if [ -z "$(ID)" ]; then \
-		echo "Usage: make run ID=<problem number>"; \
-		exit 1; \
-	fi
-	@$(MOCHI_BIN) run $(ID)/*.mochi
+        @if [ -z "$(ID)" ]; then \
+                echo "Usage: make run ID=<problem number>"; \
+                exit 1; \
+        fi
+        @$(MOCHI_BIN) run $(ID)/*.mochi
+
+run-go: mochi
+        @if [ -z "$(ID)" ]; then \
+                echo "Usage: make run-go ID=<problem number>"; \
+                exit 1; \
+        fi
+        @out_file=$(ls ../leetcode-out/$(ID)/*.go.out 2>/dev/null | head -n 1); \
+        if [ -z "$$out_file" ]; then \
+                echo "No compiled Go output for problem $(ID)."; \
+                exit 1; \
+        fi; \
+        tmp=$$(mktemp /tmp/leetcode-$(ID)-XXXX.go); \
+        cp "$$out_file" "$$tmp"; \
+        go run "$$tmp"; \
+        rm "$$tmp"
 
 test: mochi
 	@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test

@@ -64,6 +64,8 @@ mochi run download.mochi
 
 - `make mochi` – download the latest Mochi binary into `./bin`
 - `make run ID=<n>` – run problem `n`
+- `make run-go ID=<n>` – execute the compiled Go solution for problem `n`
+- `make compile` – generate Go files into `../leetcode-out`
 - `make test` – run all tests
 - `make clean` – remove the downloaded binary
 
