@@ -1,0 +1,102 @@
+// LeetCode 289 - Game of Life
+
+fun gameOfLife(board: list<list<int>>): list<list<int>> {
+  let m = len(board)
+  if m == 0 {
+    return board
+  }
+  let n = len(board[0])
+  var result: list<list<int>> = []
+  var i = 0
+  while i < m {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      var live = 0
+      var di = -1
+      while di <= 1 {
+        var dj = -1
+        while dj <= 1 {
+          if !(di == 0 && dj == 0) {
+            let ni = i + di
+            let nj = j + dj
+            if ni >= 0 && ni < m && nj >= 0 && nj < n {
+              if board[ni][nj] == 1 {
+                live = live + 1
+              }
+            }
+          }
+          dj = dj + 1
+        }
+        di = di + 1
+      }
+      let cell = board[i][j]
+      var next = cell
+      if cell == 1 {
+        if live < 2 || live > 3 {
+          next = 0
+        } else {
+          next = 1
+        }
+      } else {
+        if live == 3 {
+          next = 1
+        } else {
+          next = 0
+        }
+      }
+      row = row + [next]
+      j = j + 1
+    }
+    result = result + [row]
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode problem statement
+
+test "example 1" {
+  let board = [
+    [0,1,0],
+    [0,0,1],
+    [1,1,1],
+    [0,0,0],
+  ]
+  expect gameOfLife(board) == [
+    [0,0,0],
+    [1,0,1],
+    [0,1,1],
+    [0,1,0],
+  ]
+}
+
+test "example 2" {
+  let board = [
+    [1,1],
+    [1,0],
+  ]
+  expect gameOfLife(board) == [
+    [1,1],
+    [1,1],
+  ]
+}
+
+// Additional tests
+
+test "empty board" {
+  let board: list<list<int>> = []
+  expect gameOfLife(board) == []
+}
+
+test "single dead cell" {
+  let board = [[0]]
+  expect gameOfLife(board) == [[0]]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Attempting to use Python-style loops like 'for row in board'. Use index loops 'var i = 0; while i < len(board) { ... }'.
+2. Forgetting 'var' when a variable is reassigned. Use 'var live = 0' if the value changes.
+3. Using assignment '=' instead of comparison '==' inside conditions.
+*/
