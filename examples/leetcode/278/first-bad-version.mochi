@@ -1,0 +1,51 @@
+// Solution for LeetCode problem 278 - First Bad Version
+
+// Use binary search to locate the earliest bad version.
+fun firstBadVersion(n: int, isBadVersion: fun(int): bool): int {
+  var low = 1
+  var high = n
+  while low < high {
+    let mid = (low + high) / 2
+    if isBadVersion(mid) {
+      high = mid
+    } else {
+      low = mid + 1
+    }
+  }
+  return low
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let first = 4
+  let bad = fun(v: int): bool => v >= first
+  expect firstBadVersion(5, bad) == 4
+}
+
+test "example 2" {
+  let first = 1
+  let bad = fun(v: int): bool => v >= first
+  expect firstBadVersion(1, bad) == 1
+}
+
+test "larger n" {
+  let first = 123
+  let bad = fun(v: int): bool => v >= first
+  expect firstBadVersion(200, bad) == 123
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a variable declared with `let`:
+   let low = 1
+   low = 2       // ❌ cannot modify immutable value
+   // Fix: declare with `var low = 1` if it will be mutated.
+2. Using `=` instead of `==` in conditions:
+   if isBadVersion(mid) = true { ... }
+   // Fix: use `==` for equality comparison.
+3. Forgetting to update loop bounds leading to infinite loops.
+   Ensure `low` or `high` changes inside the loop.
+4. Trying to use pattern matching or union types for a simple search.
+   Simple `if` statements are clearer here.
+*/
