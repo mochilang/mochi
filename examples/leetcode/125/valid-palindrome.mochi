@@ -1,0 +1,67 @@
+fun isAlphaNum(ch: string): bool {
+  if "0" <= ch && ch <= "9" {
+    return true
+  }
+  if "a" <= ch && ch <= "z" {
+    return true
+  }
+  if "A" <= ch && ch <= "Z" {
+    return true
+  }
+  return false
+}
+
+fun toLower(ch: string): string {
+  let map = {
+    "A": "a", "B": "b", "C": "c", "D": "d", "E": "e", "F": "f",
+    "G": "g", "H": "h", "I": "i", "J": "j", "K": "k", "L": "l",
+    "M": "m", "N": "n", "O": "o", "P": "p", "Q": "q", "R": "r",
+    "S": "s", "T": "t", "U": "u", "V": "v", "W": "w", "X": "x",
+    "Y": "y", "Z": "z",
+  }
+  if ch in map {
+    return map[ch]
+  }
+  return ch
+}
+
+fun isPalindrome(s: string): bool {
+  var filtered: list<string> = []
+  for ch in s {
+    if isAlphaNum(ch) {
+      filtered = filtered + [toLower(ch)]
+    }
+  }
+  let n = len(filtered)
+  for i in 0..n/2 {
+    if filtered[i] != filtered[n-1-i] {
+      return false
+    }
+  }
+  return true
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isPalindrome("A man, a plan, a canal: Panama") == true
+}
+
+test "example 2" {
+  expect isPalindrome("race a car") == false
+}
+
+test "example 3" {
+  expect isPalindrome(" ") == true
+}
+
+// Common Mochi language errors and how to fix them:
+// 1. Reassigning a value declared with `let` will fail.
+//    let n = 0
+//    n = 1            // ❌ use `var n = 0` if mutation is needed
+// 2. Using '=' instead of '==' to compare strings.
+//    if ch = "a" { }  // ❌ assignment
+//    if ch == "a" { } // ✅ comparison
+// 3. Creating an empty list without a type causes a compile error.
+//    var arr = []      // ❌ type cannot be inferred
+//    var arr: list<string> = [] // ✅ specify element type
