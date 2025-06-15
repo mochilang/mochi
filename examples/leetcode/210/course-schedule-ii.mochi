@@ -1,0 +1,107 @@
+// Solution for LeetCode problem 210 - Course Schedule II
+//
+// This implementation uses a breadth-first search (Kahn's algorithm)
+// to return a valid order of courses to take. If no such order exists,
+// it returns an empty list.
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' in conditions.
+//    if count = 0 { }      // ❌ assignment
+//    if count == 0 { }     // ✅ comparison
+// 2. Forgetting to make variables mutable with 'var'.
+//    let q = []
+//    q = [1]              // ❌ cannot reassign
+//    var q: list<int> = [] // ✅ allows mutation
+// 3. Creating an empty list without a type.
+//    var res = []         // ❌ type cannot be inferred
+//    var res: list<int> = [] // ✅ specify element type
+// 4. Indexing a map without checking membership first.
+//    let v = indegree[i]  // ❌ might fail if key missing
+//    if i in indegree { let v = indegree[i] } // ✅ safe access
+
+fun findOrder(numCourses: int, prerequisites: list<list<int>>): list<int> {
+  // Build graph and indegree counts
+  var graph: map<int, list<int>> = {}
+  var indegree: map<int, int> = {}
+
+  var i = 0
+  while i < numCourses {
+    graph[i] = []
+    indegree[i] = 0
+    i = i + 1
+  }
+
+  for pair in prerequisites {
+    let dest = pair[0]
+    let src = pair[1]
+    graph[src] = graph[src] + [dest]
+    indegree[dest] = indegree[dest] + 1
+  }
+
+  // Collect courses with no prerequisites
+  var queue: list<int> = []
+  var j = 0
+  while j < numCourses {
+    if indegree[j] == 0 {
+      queue = queue + [j]
+    }
+    j = j + 1
+  }
+
+  var order: list<int> = []
+  while len(queue) > 0 {
+    var next: list<int> = []
+    for course in queue {
+      order = order + [course]
+      for neighbor in graph[course] {
+        indegree[neighbor] = indegree[neighbor] - 1
+        if indegree[neighbor] == 0 {
+          next = next + [neighbor]
+        }
+      }
+    }
+    queue = next
+  }
+
+  if len(order) == numCourses {
+    return order
+  }
+  return []
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect findOrder(2, [[1,0]]) == [0,1]
+}
+
+test "example 2" {
+  let order = findOrder(4, [[1,0],[2,0],[3,1],[3,2]])
+  // Either [0,1,2,3] or [0,2,1,3] are valid. Check by prerequisites.
+  var valid = true
+  if len(order) == 4 {
+    var idx: map<int, int> = {}
+    var k = 0
+    while k < len(order) {
+      idx[order[k]] = k
+      k = k + 1
+    }
+    if idx[0] > idx[1] && idx[0] > idx[2] {
+      valid = false
+    }
+    if idx[1] > idx[3] {
+      valid = false
+    }
+    if idx[2] > idx[3] {
+      valid = false
+    }
+  } else {
+    valid = false
+  }
+  expect valid == true
+}
+
+test "cycle" {
+  expect findOrder(2, [[0,1],[1,0]]) == []
+}
+
