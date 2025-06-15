@@ -1,0 +1,72 @@
+// Solution for LeetCode problem 177 - Nth Highest Salary
+
+// Employee table represented as a list of records
+// Only basic types and if statements are used - no union types or match.
+
+type Employee {
+  id: int
+  salary: int
+}
+
+fun nthHighestSalary(employees: list<Employee>, n: int): int {
+  // Build a list of distinct salaries
+  var uniqList: list<int> = []
+  for e in employees {
+    var seen = false
+    for s in uniqList {
+      if s == e.salary {
+        seen = true
+        break
+      }
+    }
+    if !seen {
+      uniqList = uniqList + [e.salary]
+    }
+  }
+
+  // Sort salaries in descending order
+  let sorted = from v in uniqList
+               sort by -v
+               select v
+
+  if n <= len(sorted) {
+    return sorted[n - 1]
+  }
+  return 0
+}
+
+// Example data
+let employees: list<Employee> = [
+  Employee { id: 1, salary: 100 },
+  Employee { id: 2, salary: 200 },
+  Employee { id: 3, salary: 300 },
+  Employee { id: 4, salary: 300 }
+]
+
+// Tests matching the SQL version of the problem
+
+test "first highest" {
+  expect nthHighestSalary(employees, 1) == 300
+}
+
+test "second highest" {
+  expect nthHighestSalary(employees, 2) == 200
+}
+
+test "too high" {
+  expect nthHighestSalary(employees, 5) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying to append to a list without using a variable declared with `var`.
+   let xs: list<int> = []
+   xs = xs + [1]         // ❌ cannot modify immutable binding
+   var xs2: list<int> = []
+   xs2 = xs2 + [1]       // ✅ use `var` when mutation is needed
+2. Using '=' instead of '==' in conditions.
+   if n = 1 { }          // ❌ assignment
+   if n == 1 { }         // ✅ comparison
+3. Forgetting to deduplicate salaries before sorting, leading to incorrect rank.
+   // Fix: put salaries in a set first, as done above.
+*/
