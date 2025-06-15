@@ -126,6 +126,8 @@ func pyType(t types.Type) string {
 		return "dict[" + pyType(tt.Key) + ", " + pyType(tt.Value) + "]"
 	case types.StructType:
 		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
 	case types.FuncType:
 		return "typing.Callable"
 	case types.VoidType:
@@ -182,4 +184,43 @@ func resolveTypeRef(t *parser.TypeRef) types.Type {
 		}
 	}
 	return types.AnyType{}
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
