@@ -1,0 +1,88 @@
+// Solution for LeetCode problem 175 - Combine Two Tables
+
+// Define record types for the two tables and the result
+
+type Person {
+  personId: int
+  firstName: string
+  lastName: string
+}
+
+type Address {
+  addressId: int
+  personId: int
+  city: string
+  state: string
+}
+
+type Result {
+  firstName: string
+  lastName: string
+  city: string
+  state: string
+}
+
+// Combine people with addresses using a simple loop based join.
+fun combineTables(persons: list<Person>, addresses: list<Address>): list<Result> {
+  var results: list<Result> = []
+  for p in persons {
+    var found = false
+    for a in addresses {
+      if a.personId == p.personId {
+        results = results + [Result {
+          firstName: p.firstName,
+          lastName: p.lastName,
+          city: a.city,
+          state: a.state
+        }]
+        found = true
+        break
+      }
+    }
+    if !found {
+      // When no address exists, use empty strings for city and state
+      results = results + [Result {
+        firstName: p.firstName,
+        lastName: p.lastName,
+        city: "",
+        state: ""
+      }]
+    }
+  }
+  return results
+}
+
+// Example tables from the problem statement
+let person: list<Person> = [
+  Person { personId: 1, firstName: "Wang", lastName: "Allen" },
+  Person { personId: 2, firstName: "Alice", lastName: "Bob" },
+  Person { personId: 3, firstName: "Bob", lastName: "Brown" }
+]
+
+let address: list<Address> = [
+  Address { addressId: 1, personId: 2, city: "New York City", state: "New York" },
+  Address { addressId: 2, personId: 3, city: "Leetcode", state: "California" }
+]
+
+test "combine tables" {
+  let expected = [
+    Result { firstName: "Wang", lastName: "Allen", city: "", state: "" },
+    Result { firstName: "Alice", lastName: "Bob", city: "New York City", state: "New York" },
+    Result { firstName: "Bob", lastName: "Brown", city: "Leetcode", state: "California" }
+  ]
+  expect str(combineTables(person, address)) == str(expected)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Omitting element types when creating an empty list.
+   var res = []            // ❌ type cannot be inferred
+   var res: list<Result> = []  // ✅ specify the list element type
+2. Using '=' instead of '==' in comparisons.
+   if a = b { }            // ❌ assignment instead of comparison
+   if a == b { }           // ✅ correct equality check
+3. Reassigning a value bound with 'let'.
+   let x = 1
+   x = 2                   // ❌ cannot reassign immutable binding
+   var x = 1               // ✅ use 'var' when mutation is needed
+*/
