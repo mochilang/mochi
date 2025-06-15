@@ -1,0 +1,63 @@
+// Solution for LeetCode problem 259 - 3Sum Smaller
+// This implementation avoids union types and pattern matching.
+// It sorts the array and uses a two-pointer approach.
+
+fun threeSumSmaller(nums: list<int>, target: int): int {
+  let sorted = from x in nums sort by x select x
+  let n = len(sorted)
+  var count = 0
+  var i = 0
+  while i < n - 2 {
+    var left = i + 1
+    var right = n - 1
+    while left < right {
+      let sum = sorted[i] + sorted[left] + sorted[right]
+      if sum < target {
+        count = count + (right - left)
+        left = left + 1
+      } else {
+        right = right - 1
+      }
+    }
+    i = i + 1
+  }
+  return count
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect threeSumSmaller([-2,0,1,3], 2) == 2
+}
+
+test "example 2" {
+  expect threeSumSmaller([], 0) == 0
+}
+
+test "example 3" {
+  expect threeSumSmaller([0], 0) == 0
+}
+
+// Additional edge cases
+
+test "all negatives" {
+  expect threeSumSmaller([-5,-4,-3,-2], -1) == 4
+}
+
+test "mixed numbers" {
+  expect threeSumSmaller([-2,0,1,3], 1) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions:
+     if a = b { }   // ❌ assignment
+     if a == b { }  // ✅ comparison
+2. Reassigning a constant 'let' variable:
+     let x = 1
+     x = 2          // ❌ cannot modify
+     var y = 1      // ✅ use 'var' for mutation
+3. Forgetting element types for empty lists:
+     var xs = []    // ❌ unknown type
+     var xs: list<int> = [] // ✅ specify type
+*/
