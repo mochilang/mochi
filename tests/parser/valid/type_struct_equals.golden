@@ -1,0 +1,6 @@
+(program
+  (type BalanceInfo
+    (field h (type int))
+    (field balanced (type bool))
+  )
+)

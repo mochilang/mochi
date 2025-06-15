@@ -134,7 +134,8 @@ let scores: map<string, int> = {"alice": 1}
 ### Type Declarations
 
 User-defined types are introduced with the `type` keyword. A type may define a set of
-named fields forming a struct. Methods may also be declared inside the type block.
+named fields forming a struct. An optional `=` may appear before the struct block.
+Methods may also be declared inside the type block.
 
 ```mochi
 type Person {
@@ -598,7 +599,7 @@ AgentDecl     = "agent" Identifier "{" AgentField* "}" .
 AgentField    = LetStmt | VarStmt | AssignStmt | OnHandler | IntentDecl .
 IntentDecl    = "intent" Identifier "(" [ ParamList ] ")" [ ":" TypeRef ] Block .
 ModelDecl     = "model" Identifier Block .
-TypeDecl      = "type" Identifier [ "{" TypeMember* "}" ] [ "=" TypeVariant { "|" TypeVariant } ] .
+TypeDecl      = "type" Identifier [ [ "=" ] "{" TypeMember* "}" ] [ "=" TypeVariant { "|" TypeVariant } ] .
 TypeMember    = TypeField | FunDecl .
 TypeVariant   = Identifier [ "(" TypeField { "," TypeField } [ "," ]? ")" | "{" TypeField* "}" ] .
 TypeField     = Identifier ":" TypeRef .
