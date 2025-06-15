@@ -1,0 +1,56 @@
+// Solution for LeetCode problem 169 - Majority Element
+
+fun majorityElement(nums: list<int>): int {
+  var count = 0
+  var candidate = 0
+  for n in nums {
+    if count == 0 {
+      candidate = n
+      count = 1
+    } else {
+      if n == candidate {
+        count = count + 1
+      } else {
+        count = count - 1
+      }
+    }
+  }
+  return candidate
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect majorityElement([3,2,3]) == 3
+}
+
+test "example 2" {
+  expect majorityElement([2,2,1,1,1,2,2]) == 2
+}
+
+// Additional edge cases
+
+test "single element" {
+  expect majorityElement([1]) == 1
+}
+
+test "large majority" {
+  expect majorityElement([1,1,1,2,2]) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparison.
+   if n = candidate { }  // ❌ assignment
+   if n == candidate { } // ✅ comparison
+2. Declaring a variable with 'let' when it needs mutation.
+   let count = 0
+   count = count + 1     // ❌ cannot modify immutable binding
+   var count = 0         // ✅ use 'var' when mutation is required
+3. Trying Python-style '+=' operators.
+   count += 1            // ❌ not valid Mochi
+   count = count + 1     // ✅ explicit addition
+4. Omitting type annotations on parameters or return values.
+   fun majorityElement(nums) { }      // ❌ types missing
+   fun majorityElement(nums: list<int>): int { } // ✅
+*/
