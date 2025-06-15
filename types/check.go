@@ -868,11 +868,14 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 		case "bool":
 			return BoolType{}
 		default:
-			if st, ok := env.GetStruct(*t.Simple); ok {
-				return st
-			}
 			if ut, ok := env.GetUnion(*t.Simple); ok {
 				return ut
+			}
+			if ut, ok := env.FindUnionByVariant(*t.Simple); ok {
+				return ut
+			}
+			if st, ok := env.GetStruct(*t.Simple); ok {
+				return st
 			}
 			return AnyType{}
 		}
@@ -961,19 +964,19 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 	if _, ok := right.(AnyType); ok {
 		return AnyType{}, nil
 	}
-       if op == "+" || op == "union" || op == "union_all" || op == "except" || op == "intersect" {
-               if llist, ok := left.(ListType); ok {
-                       if rlist, ok := right.(ListType); ok {
-                               if !unify(llist.Elem, rlist.Elem, nil) {
-                                       return nil, errOperatorMismatch(pos, op, left, right)
-                               }
-                               return ListType{Elem: llist.Elem}, nil
-                       }
-               }
-       }
-       switch op {
-       case "+", "-", "*", "/", "%":
-               switch {
+	if op == "+" || op == "union" || op == "union_all" || op == "except" || op == "intersect" {
+		if llist, ok := left.(ListType); ok {
+			if rlist, ok := right.(ListType); ok {
+				if !unify(llist.Elem, rlist.Elem, nil) {
+					return nil, errOperatorMismatch(pos, op, left, right)
+				}
+				return ListType{Elem: llist.Elem}, nil
+			}
+		}
+	}
+	switch op {
+	case "+", "-", "*", "/", "%":
+		switch {
 		case (unify(left, IntType{}, nil) || unify(left, Int64Type{}, nil)) &&
 			(unify(right, IntType{}, nil) || unify(right, Int64Type{}, nil)):
 			if _, ok := left.(Int64Type); ok {
@@ -986,10 +989,10 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 		case unify(left, FloatType{}, nil) && unify(right, FloatType{}, nil):
 			return FloatType{}, nil
 		case op == "+" && unify(left, StringType{}, nil) && unify(right, StringType{}, nil):
-                       return StringType{}, nil
-               default:
-                       return nil, errOperatorMismatch(pos, op, left, right)
-               }
+			return StringType{}, nil
+		default:
+			return nil, errOperatorMismatch(pos, op, left, right)
+		}
 	case "==", "!=", "<", "<=", ">", ">=":
 		if !unify(left, right, nil) {
 			return nil, errIncompatibleComparison(pos)

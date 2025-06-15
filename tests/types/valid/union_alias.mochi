@@ -1,0 +1,6 @@
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+let l: Leaf = Leaf {}
+let n: Node = Node { left: l, value: 1, right: l }
