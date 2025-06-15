@@ -1,0 +1,80 @@
+// LeetCode 298 - Binary Tree Longest Consecutive Sequence
+//
+// This solution avoids union types and match statements by representing
+// the tree using parallel arrays of left and right child indices along
+// with an array of node values. A value of (-1) indicates the absence
+// of a child.
+
+fun longestConsecutive(lefts: list<int>, rights: list<int>, values: list<int>, root: int): int {
+  if root == (-1) {
+    return 0
+  }
+
+  fun dfs(node: int, parentVal: int, length: int): int {
+    if node == (-1) {
+      return length
+    }
+
+    var curr = 1
+    if values[node] == parentVal + 1 {
+      curr = length + 1
+    }
+
+    let leftLen = dfs(lefts[node], values[node], curr)
+    let rightLen = dfs(rights[node], values[node], curr)
+
+    var best = curr
+    if leftLen > best { best = leftLen }
+    if rightLen > best { best = rightLen }
+    return best
+  }
+
+  return dfs(root, values[root]-1, 0)
+}
+
+// Example trees
+// [1,2,3] -> longest consecutive path length is 2
+let lefts1  = [1,(-1),(-1)] as list<int>
+let rights1 = [2,(-1),(-1)] as list<int>
+let values1 = [1,2,3] as list<int>
+let root1   = 0
+
+// [1,null,2,3,4,5] -> longest consecutive path is 3 (1->2->3 or 2->3->4)
+let lefts2  = [(-1),2,(-1),(-1),(-1),(-1)] as list<int>
+let rights2 = [1,4,3,5,(-1),(-1)] as list<int>
+let values2 = [1,2,3,4,5,6] as list<int>
+let root2   = 0
+
+// [3,2,4,1,null,3] -> longest consecutive path is 2
+let lefts3  = [1,3,(-1),(-1)] as list<int>
+let rights3 = [2,(-1),(-1),(-1)] as list<int>
+let values3 = [3,2,4,1] as list<int>
+let root3   = 0
+
+// Test cases
+
+test "simple chain" {
+  expect longestConsecutive(lefts1, rights1, values1, root1) == 2
+}
+
+test "increasing right" {
+  expect longestConsecutive(lefts2, rights2, values2, root2) == 4
+}
+
+test "mixed values" {
+  expect longestConsecutive(lefts3, rights3, values3, root3) == 2
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+     if curr = length { ... }   // ❌ assignment
+     if curr == length { ... }  // ✅ comparison
+2. Declaring a variable with 'let' and then trying to modify it:
+     let best = 0
+     best = 1                // ❌ cannot reassign
+     var best = 0            // ✅ use 'var' for mutable variables
+3. Omitting element types for empty lists:
+     var nodes = []            // ❌ type cannot be inferred
+     var nodes: list<int> = [] // ✅ specify the list element type
+*/
