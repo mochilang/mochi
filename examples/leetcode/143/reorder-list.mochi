@@ -1,0 +1,48 @@
+// Solution for LeetCode problem 143 - Reorder List
+
+fun reorderList(nums: list<int>): list<int> {
+  let n = len(nums)
+  var result: list<int> = []
+  var i = 0
+  var j = n - 1
+  while i <= j {
+    if i == j {
+      result = result + [nums[i]]
+    } else {
+      result = result + [nums[i], nums[j]]
+    }
+    i = i + 1
+    j = j - 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect reorderList([1,2,3,4]) == [1,4,2,3]
+}
+
+test "example 2" {
+  expect reorderList([1,2,3,4,5]) == [1,5,2,4,3]
+}
+
+test "single element" {
+  expect reorderList([1]) == [1]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using Python style range loops.
+   for i in range(len(nums)) { }  // ❌ not valid Mochi
+   var i = 0
+   while i < len(nums) { ... }    // ✅ use while or for .. in
+2. Reassigning an immutable `let` variable.
+   let n = 1
+   n = 2                              // ❌ cannot assign to let binding
+   var m = 1
+   m = 2                              // ✅ use var when mutation is needed
+3. Initializing an empty list without a type.
+   var r = []                         // ❌ type cannot be inferred
+   var r: list<int> = []             // ✅ specify the element type
+*/
