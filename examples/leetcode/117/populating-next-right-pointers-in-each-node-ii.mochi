@@ -29,7 +29,10 @@ fun connect(root: Tree): Tree {
       Node(l, v, r, _) => {
         let rightNext = firstChild(nxt)
         let right = helper(r, rightNext)
-        let leftNext = if match r { Leaf => true _ => false } { rightNext } else { firstChild(right) }
+        let leftNext = match r {
+          Leaf => rightNext
+          _ => firstChild(right)
+        }
         let left = helper(l, leftNext)
         return Node { left: left, value: v, right: right, next: nxt }
       }
