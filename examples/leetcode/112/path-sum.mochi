@@ -7,18 +7,12 @@ type Tree =
   | Node(left: Tree, value: int, right: Tree)
 
 fun hasPathSum(root: Tree, targetSum: int): bool {
-  match root {
-    Leaf {} => false
+  return match root {
+    Leaf => false
     Node(l, v, r) => {
       let remaining = targetSum - v
-      let leftEmpty = match l {
-        Leaf {} => true
-        _ => false
-      }
-      let rightEmpty = match r {
-        Leaf {} => true
-        _ => false
-      }
+      let leftEmpty = match l { Leaf => true _ => false }
+      let rightEmpty = match r { Leaf => true _ => false }
       if leftEmpty && rightEmpty {
         remaining == 0
       } else {
@@ -80,8 +74,18 @@ test "empty" {
 
 /*
 Common Mochi language errors and how to fix them:
-1. Using Python style `None` for empty trees instead of `Leaf {}`.
-2. Reassigning a value defined with `let`. Use `var` if mutation is needed.
-3. Confusing assignment '=' with equality '=='.
-4. Omitting an else branch in `if` expressions which leads to null results.
+1. Using Python style `None` for empty trees:
+     let empty = None        // ❌ invalid
+     let empty = Leaf {}     // ✅ use the variant
+2. Reassigning a value defined with `let`:
+     let sum = 0
+     sum = 1                 // ❌ cannot reassign
+     var sum = 0
+     sum = 1                 // ✅ mutable variable
+3. Confusing assignment '=' with equality '==':
+     if v = 3 { ... }        // ❌ assignment
+     if v == 3 { ... }       // ✅ comparison
+4. Omitting an else branch in an `if` expression:
+     if cond { 1 }           // ❌ returns null when cond is false
+     if cond { 1 } else { 0 } // ✅ both branches return a value
 */
