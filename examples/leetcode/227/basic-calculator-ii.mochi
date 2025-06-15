@@ -1,0 +1,86 @@
+fun calculate(s: string): int {
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  var stack: list<int> = []
+  var current = 0
+  var op = "+"
+  var i = 0
+  let n = len(s)
+  while i <= n {
+    var ch = " "
+    if i < n {
+      ch = s[i]
+    }
+    if ch in digits {
+      current = current * 10 + digits[ch]
+    }
+    if (!(ch in digits) && ch != " ") || i == n {
+      if op == "+" {
+        stack = stack + [current]
+      } else if op == "-" {
+        stack = stack + [-current]
+      } else if op == "*" {
+        let last = stack[len(stack) - 1]
+        stack = stack[0:len(stack)-1]
+        stack = stack + [last * current]
+      } else {
+        let last = stack[len(stack) - 1]
+        stack = stack[0:len(stack)-1]
+        stack = stack + [last / current]
+      }
+      op = ch
+      current = 0
+    }
+    i = i + 1
+  }
+  var result = 0
+  for num in stack {
+    result = result + num
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect calculate("3+2*2") == 7
+}
+
+test "example 2" {
+  expect calculate(" 3/2 ") == 1
+}
+
+test "example 3" {
+  expect calculate(" 3+5 / 2 ") == 5
+}
+
+// Additional tests
+
+test "mix operations" {
+  expect calculate("14-3/2") == 13
+}
+
+test "single number" {
+  expect calculate("0") == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing characters:
+     if op = "+" { ... }   // ❌ compile error
+   Use '==' for comparisons.
+2. Forgetting to reset the current number after applying an operator.
+   This leads to incorrect results when parsing multi-digit values.
+3. Not processing the final number when reaching the end of the string.
+   Ensure the loop runs with 'i <= n' so the last number is handled.
+*/
