@@ -1,0 +1,90 @@
+// LeetCode 230 - Kth Smallest Element in a BST
+
+// Helpers for tree nodes without using union types
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// In-order traversal to find the kth smallest value
+fun kthSmallest(root: map<string, any>, k: int): int {
+  var stack: list<map<string, any>> = []
+  var curr = root
+  var count = 0
+  while !isLeaf(curr) || len(stack) > 0 {
+    while !isLeaf(curr) {
+      stack = stack + [curr]
+      curr = left(curr)
+    }
+    let node = stack[len(stack) - 1]
+    stack = stack[0:len(stack) - 1]
+    count = count + 1
+    if count == k {
+      return value(node)
+    }
+    curr = right(node)
+  }
+  return 0
+}
+
+// Example tree 1: [3,1,4,null,2], k=1 -> 1
+let example1 = Node(
+  Node(Leaf(), 1, Node(Leaf(), 2, Leaf())),
+  3,
+  Node(Leaf(), 4, Leaf())
+)
+
+test "example 1" {
+  expect kthSmallest(example1, 1) == 1
+}
+
+// Example tree 2: [5,3,6,2,4,null,null,1], k=3 -> 3
+let example2 = Node(
+  Node(
+    Node(Leaf(), 2, Node(Leaf(), 1, Leaf())),
+    3,
+    Node(Leaf(), 4, Leaf())
+  ),
+  5,
+  Node(Leaf(), 6, Leaf())
+)
+
+test "example 2" {
+  expect kthSmallest(example2, 3) == 3
+}
+
+test "single node" {
+  expect kthSmallest(Node(Leaf(), 8, Leaf()), 1) == 8
+}
+
+test "k equals number of nodes" {
+  expect kthSmallest(example1, 4) == 4
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if count = k { }    // ❌ assignment
+   if count == k { }   // ✅ comparison
+2. Reassigning a variable declared with 'let'.
+   let s = [] as list<int>
+   s = [1]             // ❌ cannot assign
+   var s: list<int> = [] // ✅ use 'var' when mutation is needed
+3. Forgetting to call Leaf() for empty child nodes.
+   Node(Leaf, 1, Leaf) // ❌
+   Node(Leaf(), 1, Leaf()) // ✅
+4. Missing element type for empty lists.
+   var st = []                    // ❌ type unknown
+   var st: list<map<string, any>> = [] // ✅ specify the type
+*/
