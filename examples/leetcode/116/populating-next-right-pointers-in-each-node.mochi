@@ -17,7 +17,7 @@ fun connect(root: Tree): Tree {
         }
         let right = helper(r, rNext)
         let left = helper(l, right)
-        return Node { left: left, value: v, right: right, next: nxt }
+        Node { left: left, value: v, right: right, next: nxt }
       }
     }
   }
