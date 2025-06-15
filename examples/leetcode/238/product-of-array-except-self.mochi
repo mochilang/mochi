@@ -1,0 +1,68 @@
+// Solution for LeetCode problem 238 - Product of Array Except Self
+//
+// Compute prefix products going left to right, then multiply
+// by suffix products from right to left.
+
+fun productExceptSelf(nums: list<int>): list<int> {
+  let n = len(nums)
+  if n == 0 {
+    return []
+  }
+  var result: list<int> = []
+  var prefix = 1
+  var i = 0
+  while i < n {
+    result = result + [prefix]
+    prefix = prefix * nums[i]
+    i = i + 1
+  }
+  var suffix = 1
+  i = n - 1
+  while i >= 0 {
+    result[i] = result[i] * suffix
+    suffix = suffix * nums[i]
+    i = i - 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect productExceptSelf([1,2,3,4]) == [24,12,8,6]
+}
+
+test "example 2" {
+  expect productExceptSelf([0,1,2,3]) == [6,0,0,0]
+}
+
+test "example 3" {
+  expect productExceptSelf([-1,1,0,-3,3]) == [0,0,9,0,0]
+}
+
+// Additional edge cases
+
+test "single element" {
+  expect productExceptSelf([5]) == [1]
+}
+
+test "two zeros" {
+  expect productExceptSelf([0,0]) == [0,0]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons.
+   if n = 0 { }            // ❌ assignment
+   if n == 0 { }           // ✅ comparison
+2. Declaring immutable variables when mutation is needed.
+   let prefix = 1
+   prefix = prefix * x     // ❌ cannot assign to a 'let'
+   var prefix = 1          // ✅ use 'var' for mutable bindings
+3. Forgetting to give a type when creating an empty list.
+   var result = []         // ❌ type unknown
+   var result: list<int> = []  // ✅ specify element type
+4. Trying negative indexing like in Python.
+   nums[-1]                // ❌ invalid index
+   nums[len(nums)-1]       // ✅ use explicit last index
+*/
