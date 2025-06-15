@@ -1,0 +1,101 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Entry struct {
+	Key int `json:"key"`
+	Val int `json:"val"`
+}
+
+type LRUCache struct {
+	Cap int `json:"cap"`
+	Items []any `json:"items"`
+}
+
+type LookupResult struct {
+	Val int `json:"val"`
+	Cache any `json:"cache"`
+}
+
+func newCache(cap int) LRUCache {
+	return LRUCache{Cap: cap, Items: _cast[[]any]([]any{})}
+}
+
+func find(items []Entry, k int) int {
+	var i int = 0
+	_ = i
+	for (i < len(items)) {
+		var e Entry = items[i]
+		if (e.Key == k) {
+			return i
+		}
+		i = (i + 1)
+	}
+	return -1
+}
+
+func get(cache LRUCache, key int) LookupResult {
+	var idx int = find(cache.Items, key)
+	if (idx == (0 - 1)) {
+		return LookupResult{Val: (0 - 1), Cache: cache}
+	}
+	var entry Entry = cache.Items[idx]
+	var items []Entry = append(append([]Entry{}, append(append([]Entry{}, []Entry{entry}...), cache.Items[0:idx]...)...), cache.Items[(idx + 1):len(cache.Items)]...)
+	_ = items
+	return LookupResult{Val: entry.Val, Cache: LRUCache{Cap: cache.Cap, Items: items}}
+}
+
+func put(cache LRUCache, key int, value int) LRUCache {
+	var items []Entry = cache.Items
+	_ = items
+	var idx int = find(items, key)
+	if (idx != (0 - 1)) {
+		items = append(append([]Entry{}, items[0:idx]...), items[(idx + 1):len(items)]...)
+	}
+	items = append(append([]Entry{}, []Entry{Entry{Key: key, Val: value}}...), items...)
+	if (len(items) > cache.Cap) {
+		items = items[0:cache.Cap]
+	}
+	return LRUCache{Cap: cache.Cap, Items: items}
+}
+
+func example() {
+	var c LRUCache = newCache(2)
+	_ = c
+	var r1 LookupResult = get(c, 1)
+	expect((r1.Val == (0 - 1)))
+	c = r1.Cache
+	c = put(c, 1, 1)
+	c = put(c, 2, 2)
+	var r2 LookupResult = get(c, 1)
+	expect((r2.Val == 1))
+	c = r2.Cache
+	c = put(c, 3, 3)
+	var r3 LookupResult = get(c, 2)
+	expect((r3.Val == (0 - 1)))
+	c = r3.Cache
+	c = put(c, 4, 4)
+	var r4 LookupResult = get(c, 1)
+	expect((r4.Val == (0 - 1)))
+	c = r4.Cache
+	var r5 LookupResult = get(c, 3)
+	expect((r5.Val == 3))
+	c = r5.Cache
+	var r6 LookupResult = get(c, 4)
+	expect((r6.Val == 4))
+}
+
+func main() {
+	example()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+

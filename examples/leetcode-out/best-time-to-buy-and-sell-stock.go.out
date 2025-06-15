@@ -1,0 +1,57 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func maxProfit(prices []int) int {
+	if (len(prices) == 0) {
+		return 0
+	}
+	var minPrice int = prices[0]
+	_ = minPrice
+	var maxProfit func([]int) int = 0
+	_ = maxProfit
+	var i int = 1
+	_ = i
+	for (i < len(prices)) {
+		var price int = prices[i]
+		if (price < minPrice) {
+			minPrice = price
+		} else {
+			var profit int = (price - minPrice)
+			if (profit > maxProfit) {
+				maxProfit = profit
+			}
+		}
+		i = (i + 1)
+	}
+	return _cast[int](maxProfit)
+}
+
+func example_1() {
+	expect((maxProfit([]int{7, 1, 5, 3, 6, 4}) == 5))
+}
+
+func example_2() {
+	expect((maxProfit([]int{7, 6, 4, 3, 1}) == 0))
+}
+
+func single_price() {
+	expect((maxProfit([]int{5}) == 0))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_price()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+

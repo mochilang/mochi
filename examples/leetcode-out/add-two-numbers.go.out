@@ -1,0 +1,76 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func addTwoNumbers(l1 []int, l2 []int) []int {
+	var i int = 0
+	_ = i
+	var j int = 0
+	_ = j
+	var carry int = 0
+	_ = carry
+	var result []any = []any{}
+	_ = result
+	for (((i < len(l1)) || (j < len(l2))) || (carry > 0)) {
+		var x int = 0
+		_ = x
+		if (i < len(l1)) {
+			x = l1[i]
+			i = (i + 1)
+		}
+		var y int = 0
+		_ = y
+		if (j < len(l2)) {
+			y = l2[j]
+			j = (j + 1)
+		}
+		var sum int = ((x + y) + carry)
+		var digit int = (sum % 10)
+		carry = (sum / 10)
+		result = append(append([]any{}, result...), _toAnySlice([]int{digit})...)
+	}
+	return _cast[[]int](result)
+}
+
+func example_1() {
+	expect(_equal(addTwoNumbers([]int{2, 4, 3}, []int{5, 6, 4}), []int{7, 0, 8}))
+}
+
+func example_2() {
+	expect(_equal(addTwoNumbers([]int{0}, []int{0}), []int{0}))
+}
+
+func example_3() {
+	expect(_equal(addTwoNumbers([]int{9, 9, 9, 9, 9, 9, 9}, []int{9, 9, 9, 9}), []int{8, 9, 9, 9, 0, 0, 0, 1}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    return reflect.DeepEqual(a, b)
+}
+
+func _toAnySlice[T any](s []T) []any {
+    out := make([]any, len(s))
+    for i, v := range s { out[i] = v }
+    return out
+}
+

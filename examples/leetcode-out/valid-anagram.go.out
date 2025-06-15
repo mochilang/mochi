@@ -1,0 +1,81 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func isAnagram(s string, t string) bool {
+	if (len(s) != len(t)) {
+		return false
+	}
+	var counts map[string]int = map[string]int{}
+	_ = counts
+	var i int = 0
+	_ = i
+	for (i < len(s)) {
+		var ch string = _indexString(s, i)
+		_tmp0 := ch
+		_tmp1 := counts
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			counts[ch] = (counts[ch] + 1)
+		} else {
+			counts[ch] = 1
+		}
+		i = (i + 1)
+	}
+	i = 0
+	for (i < len(t)) {
+		var ch string = _indexString(t, i)
+		_tmp3 := ch
+		_tmp4 := counts
+		_, _tmp5 := _tmp4[_tmp3]
+		if _tmp5 {
+			counts[ch] = (counts[ch] - 1)
+		} else {
+			return false
+		}
+		i = (i + 1)
+	}
+	for key := range counts {
+		if (counts[key] != 0) {
+			return false
+		}
+	}
+	return true
+}
+
+func example_1() {
+	expect((isAnagram("anagram", "nagaram") == true))
+}
+
+func example_2() {
+	expect((isAnagram("rat", "car") == false))
+}
+
+func empty_strings() {
+	expect((isAnagram("", "") == true))
+}
+
+func different_lengths() {
+	expect((isAnagram("a", "ab") == false))
+}
+
+func main() {
+	example_1()
+	example_2()
+	empty_strings()
+	different_lengths()
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

@@ -1,0 +1,56 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func detectCycle(next []int) int {
+	if (len(next) == 0) {
+		return -1
+	}
+	var slow int = 0
+	_ = slow
+	var fast int = 0
+	_ = fast
+	for ((fast != (-1)) && (next[fast] != (-1))) {
+		slow = next[slow]
+		fast = next[next[fast]]
+		if (slow == fast) {
+			break
+		}
+	}
+	if ((fast == (-1)) || (next[fast] == (-1))) {
+		return -1
+	}
+	var start int = 0
+	_ = start
+	for (start != slow) {
+		start = next[start]
+		slow = next[slow]
+	}
+	return start
+}
+
+func example_1() {
+	expect((detectCycle([]int{1, 2, 3, 1}) == 1))
+}
+
+func no_cycle() {
+	expect((detectCycle([]int{1, 2, 3, -1}) == (-1)))
+}
+
+func cycle_at_head() {
+	expect((detectCycle([]int{0}) == 0))
+}
+
+func single_node_no_cycle() {
+	expect((detectCycle([]int{-1}) == (-1)))
+}
+
+func main() {
+	example_1()
+	no_cycle()
+	cycle_at_head()
+	single_node_no_cycle()
+}
+

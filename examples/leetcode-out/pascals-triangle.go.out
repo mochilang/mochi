@@ -1,0 +1,65 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func generateTriangle(numRows int) [][]int {
+	if (numRows <= 0) {
+		return _cast[[][]int]([]any{})
+	}
+	var result [][]int = [][]int{[]int{1}}
+	_ = result
+	var i int = 1
+	_ = i
+	for (i < numRows) {
+		var prev []int = result[(i - 1)]
+		var row []int = []int{1}
+		_ = row
+		var j int = 1
+		_ = j
+		for (j < len(prev)) {
+			row = append(append([]int{}, row...), []int{(prev[(j - 1)] + prev[j])}...)
+			j = (j + 1)
+		}
+		row = append(append([]int{}, row...), []int{1}...)
+		result = append(append([][]int{}, result...), [][]int{row}...)
+		i = (i + 1)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(generateTriangle(5), [][]int{[]int{1}, []int{1, 1}, []int{1, 2, 1}, []int{1, 3, 3, 1}, []int{1, 4, 6, 4, 1}}))
+}
+
+func example_2() {
+	expect(_equal(generateTriangle(1), [][]int{[]int{1}}))
+}
+
+func zero_rows() {
+	expect(_equal(generateTriangle(0), []any{}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	zero_rows()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    return reflect.DeepEqual(a, b)
+}
+

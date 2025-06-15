@@ -1,0 +1,52 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func searchMatrix(matrix [][]int, target int) bool {
+	var m int = len(matrix)
+	if (m == 0) {
+		return false
+	}
+	var n int = len(matrix[0])
+	var row int = 0
+	_ = row
+	var col int = (n - 1)
+	_ = col
+	for ((row < m) && (col >= 0)) {
+		var value int = matrix[row][col]
+		if (value == target) {
+			return true
+		} else 		if (value > target) {
+			col = (col - 1)
+		} else {
+			row = (row + 1)
+		}
+	}
+	return false
+}
+
+func example_1() {
+	expect((searchMatrix([][]int{[]int{1, 4, 7, 11, 15}, []int{2, 5, 8, 12, 19}, []int{3, 6, 9, 16, 22}, []int{10, 13, 14, 17, 24}, []int{18, 21, 23, 26, 30}}, 5) == true))
+}
+
+func example_2() {
+	expect((searchMatrix([][]int{[]int{1, 4, 7, 11, 15}, []int{2, 5, 8, 12, 19}, []int{3, 6, 9, 16, 22}, []int{10, 13, 14, 17, 24}, []int{18, 21, 23, 26, 30}}, 20) == false))
+}
+
+func single_element_found() {
+	expect((searchMatrix([][]int{[]int{5}}, 5) == true))
+}
+
+func single_element_missing() {
+	expect((searchMatrix([][]int{[]int{5}}, 3) == false))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_element_found()
+	single_element_missing()
+}
+

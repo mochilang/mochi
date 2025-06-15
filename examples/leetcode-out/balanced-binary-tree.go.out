@@ -1,0 +1,91 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left any `json:"left"`
+	Value int `json:"value"`
+	Right any `json:"right"`
+}
+func (Node) isTree() {}
+
+type Info struct {
+	Height int `json:"height"`
+	Balanced bool `json:"balanced"`
+}
+
+func max(a int, b int) int {
+	if (a > b) {
+		return a
+	} else {
+		return b
+	}
+}
+
+func abs(x int) int {
+	if (x < 0) {
+		return -x
+	} else {
+		return x
+	}
+}
+
+func height(t any) int {
+	return func() int {
+	_t := t
+	switch _t {
+	case Leaf:
+		return 0
+	case Node(l, _, r):
+		return (max(height(l), height(r)) + 1)
+	}
+}()
+}
+
+func balanced(t any) bool {
+	return func() bool {
+	_t := t
+	switch _t {
+	case Leaf:
+		return true
+	case Node(l, _, r):
+		return ((balanced(l) && balanced(r)) && (abs((height(l) - height(r))) <= 1))
+	}
+}()
+}
+
+func isBalanced(root any) bool {
+	return balanced(root)
+}
+
+func example_1() {
+	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 9, Right: Leaf{}}, Value: 3, Right: Node{Left: Node{Left: Leaf{}, Value: 15, Right: Leaf{}}, Value: 20, Right: Node{Left: Leaf{}, Value: 7, Right: Leaf{}}}}
+	expect((isBalanced(tree) == true))
+}
+
+func example_2() {
+	var tree Node = Node{Left: Node{Left: Node{Left: Node{Left: Leaf{}, Value: 4, Right: Leaf{}}, Value: 3, Right: Node{Left: Leaf{}, Value: 4, Right: Leaf{}}}, Value: 2, Right: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}}, Value: 1, Right: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}}
+	expect((isBalanced(tree) == false))
+}
+
+func single_node() {
+	expect((isBalanced(Node{Left: Leaf{}, Value: 1, Right: Leaf{}}) == true))
+}
+
+func empty() {
+	expect((isBalanced(Leaf{}) == true))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_node()
+	empty()
+}
+

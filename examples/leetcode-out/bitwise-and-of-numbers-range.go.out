@@ -1,0 +1,54 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func rangeBitwiseAnd(left int, right int) int {
+	var l int = left
+	_ = l
+	var r int = right
+	_ = r
+	var shift int = 0
+	_ = shift
+	for (l < r) {
+		l = (l / 2)
+		r = (r / 2)
+		shift = (shift + 1)
+	}
+	var factor int = 1
+	_ = factor
+	for _ := 0; _ < shift; _++ {
+		factor = (factor * 2)
+	}
+	return (l * factor)
+}
+
+func example_1() {
+	expect((rangeBitwiseAnd(5, 7) == 4))
+}
+
+func example_2() {
+	expect((rangeBitwiseAnd(0, 0) == 0))
+}
+
+func example_3() {
+	expect((rangeBitwiseAnd(1, 2147483647) == 0))
+}
+
+func single_number() {
+	expect((rangeBitwiseAnd(13, 13) == 13))
+}
+
+func power_of_two() {
+	expect((rangeBitwiseAnd(8, 15) == 8))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+	single_number()
+	power_of_two()
+}
+

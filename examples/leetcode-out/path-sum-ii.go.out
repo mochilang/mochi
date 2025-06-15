@@ -1,0 +1,101 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left any `json:"left"`
+	Value int `json:"value"`
+	Right any `json:"right"`
+}
+func (Node) isTree() {}
+
+func pathSum(root any, targetSum int) [][]int {
+	var dfs func(any, int, []int) [][]int
+	dfs = func(node any, remaining int, path []int) [][]int {
+		var handle = func(l any, v int, r any, rem int, p []int) [][]int {
+			var leftEmpty bool = func() bool {
+			_t := l
+			switch _t {
+			case Leaf:
+				return true
+			default:
+				return false
+			}
+		}()
+			var rightEmpty bool = func() bool {
+			_t := r
+			switch _t {
+			case Leaf:
+				return true
+			default:
+				return false
+			}
+		}()
+			var newRemaining int = (rem - v)
+			var newPath []int = append(append([]int{}, p...), []int{v}...)
+			if (leftEmpty && rightEmpty) {
+				if (newRemaining == 0) {
+					return [][]int{newPath}
+				} else {
+					return _cast[[][]int]([]any{})
+				}
+			}
+			return append(append([][]int{}, dfs(l, newRemaining, newPath)...), dfs(r, newRemaining, newPath)...)
+	}
+		return func() [][]int {
+		_t := node
+		switch _t {
+		case Leaf:
+			return _cast[[][]int]([]any{})
+		case Node(l, v, r):
+			return handle(l, v, r, remaining, path)
+		}
+	}()
+}
+	return dfs(root, targetSum, []int{})
+}
+
+func example_1() {
+	var rootLeft Node = Node{Left: Node{Left: Leaf{}, Value: 7, Right: Leaf{}}, Value: 11, Right: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}}
+	var tree Node = Node{Left: Node{Left: rootLeft, Value: 4, Right: Leaf{}}, Value: 5, Right: Node{Left: Node{Left: Leaf{}, Value: 13, Right: Leaf{}}, Value: 8, Right: Node{Left: Node{Left: Leaf{}, Value: 5, Right: Leaf{}}, Value: 4, Right: Node{Left: Leaf{}, Value: 1, Right: Leaf{}}}}}
+	expect(_equal(pathSum(tree, 22), [][]int{[]int{5, 4, 11, 2}, []int{5, 8, 4, 5}}))
+}
+
+func example_2() {
+	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}, Value: 1, Right: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}}
+	expect(_equal(pathSum(tree, 5), []any{}))
+}
+
+func example_3() {
+	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}, Value: 1, Right: Leaf{}}
+	expect(_equal(pathSum(tree, 0), []any{}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    return reflect.DeepEqual(a, b)
+}
+

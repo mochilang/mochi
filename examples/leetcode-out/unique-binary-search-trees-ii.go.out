@@ -1,0 +1,61 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Tree interface { isTree() }
+type Empty struct {
+}
+func (Empty) isTree() {}
+type Node struct {
+	Left any `json:"left"`
+	Val int `json:"val"`
+	Right any `json:"right"`
+}
+func (Node) isTree() {}
+
+func build(start int, end int) []any {
+	if (start > end) {
+		return _cast[[]any]([]Empty{Empty{}})
+	}
+	var result []any = []any{}
+	_ = result
+	for i := start; i < (end + 1); i++ {
+		var leftTrees []any = build(start, (i - 1))
+		var rightTrees []any = build((i + 1), end)
+		for _, l := range leftTrees {
+			for _, r := range rightTrees {
+				result = append(append([]any{}, result...), _toAnySlice([]Node{Node{Left: l, Val: i, Right: r}})...)
+			}
+		}
+	}
+	return _cast[[]any](result)
+}
+
+func generateTrees(n int) []any {
+	if (n == 0) {
+		return _cast[[]any]([]any{})
+	}
+	return build(1, n)
+}
+
+func main() {
+	var trees []any = generateTrees(3)
+	fmt.Println(len(trees))
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _toAnySlice[T any](s []T) []any {
+    out := make([]any, len(s))
+    for i, v := range s { out[i] = v }
+    return out
+}
+

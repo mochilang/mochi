@@ -1,0 +1,62 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left any `json:"left"`
+	Value int `json:"value"`
+	Right any `json:"right"`
+}
+func (Node) isTree() {}
+
+func max(a int, b int) int {
+	if (a > b) {
+		return a
+	} else {
+		return b
+	}
+}
+
+func maxDepth(root any) int {
+	return func() int {
+	_t := root
+	switch _t {
+	case Leaf:
+		return 0
+	case Node(l, _, r):
+		return (max(maxDepth(l), maxDepth(r)) + 1)
+	}
+}()
+}
+
+func example_1() {
+	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 9, Right: Leaf{}}, Value: 3, Right: Node{Left: Node{Left: Leaf{}, Value: 15, Right: Leaf{}}, Value: 20, Right: Node{Left: Leaf{}, Value: 7, Right: Leaf{}}}}
+	expect((maxDepth(tree) == 3))
+}
+
+func example_2() {
+	var tree Node = Node{Left: Leaf{}, Value: 1, Right: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}}
+	expect((maxDepth(tree) == 2))
+}
+
+func single_node() {
+	expect((maxDepth(Node{Left: Leaf{}, Value: 0, Right: Leaf{}}) == 1))
+}
+
+func empty() {
+	expect((maxDepth(Leaf{}) == 0))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_node()
+	empty()
+}
+

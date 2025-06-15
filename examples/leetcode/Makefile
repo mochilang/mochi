@@ -23,7 +23,7 @@ endif
 MOCHI_TAR := mochi_$(OS)_$(ARCH).tar.gz
 MOCHI_URL := https://github.com/mochilang/mochi/releases/latest/download/$(MOCHI_TAR)
 
-.PHONY: mochi run test clean
+.PHONY: mochi run test compile clean
 
 mochi:
 	@mkdir -p bin
@@ -49,7 +49,15 @@ run: mochi
 	@$(MOCHI_BIN) run $(ID)/*.mochi
 
 test: mochi
-	@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
+@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
+
+compile: mochi
+	@mkdir -p ../leetcode-out
+	@find . -path ./bin -prune -o -name '*.mochi' -print0 | \
+	while IFS= read -r -d  f; do \
+		base=$(basename $$f .mochi); \
+		$(MOCHI_BIN) build $$f -o ../leetcode-out/$$base.go.out --target go; \
+	done
 
 clean:
 	@rm -rf bin

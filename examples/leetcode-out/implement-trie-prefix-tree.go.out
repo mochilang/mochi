@@ -1,0 +1,132 @@
+package main
+
+import (
+	"encoding/json"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func Node() map[string]any {
+	return map[string]any{"children": _cast[map[string]map[string]any](map[any]any{}), "end": false}
+}
+
+func insert(trie map[string]any, word string) {
+	var node map[string]any = trie
+	_ = node
+	var i int = 0
+	_ = i
+	for (i < len(word)) {
+		var ch string = _indexString(word, i)
+		var kids map[string]map[string]any = _cast[map[string]map[string]any](node["children"])
+		_ = kids
+		var child map[string]any = map[string]any{}
+		_ = child
+		_tmp0 := ch
+		_tmp1 := kids
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			child = _cast[map[string]any](kids[ch])
+		} else {
+			child = Node()
+		}
+		if (i == (len(word) - 1)) {
+			child["end"] = true
+		}
+		kids[ch] = child
+		node["children"] = kids
+		node = child
+		i = (i + 1)
+	}
+}
+
+func search(trie map[string]any, word string) bool {
+	var node map[string]any = trie
+	_ = node
+	for _, r := range []rune(word) {
+		ch := string(r)
+		var kids map[string]map[string]any = _cast[map[string]map[string]any](node["children"])
+		_tmp3 := ch
+		_tmp4 := kids
+		_, _tmp5 := _tmp4[_tmp3]
+		if !(_tmp5) {
+			return false
+		}
+		node = kids[ch]
+	}
+	return _cast[bool](node["end"])
+}
+
+func startsWith(trie map[string]any, prefix string) bool {
+	var node map[string]any = trie
+	_ = node
+	for _, r := range []rune(prefix) {
+		ch := string(r)
+		var kids map[string]map[string]any = _cast[map[string]map[string]any](node["children"])
+		_tmp6 := ch
+		_tmp7 := kids
+		_, _tmp8 := _tmp7[_tmp6]
+		if !(_tmp8) {
+			return false
+		}
+		node = kids[ch]
+	}
+	return true
+}
+
+func search_apple() {
+	var t map[string]any = Node()
+	_ = t
+	insert(t, "apple")
+	expect((search(t, "apple") == true))
+}
+
+func search_app() {
+	var t map[string]any = Node()
+	_ = t
+	insert(t, "apple")
+	expect((search(t, "app") == false))
+}
+
+func startsWith_app() {
+	var t map[string]any = Node()
+	_ = t
+	insert(t, "apple")
+	expect((startsWith(t, "app") == true))
+}
+
+func search_app_after_insert() {
+	var t map[string]any = Node()
+	_ = t
+	insert(t, "apple")
+	insert(t, "app")
+	expect((search(t, "app") == true))
+}
+
+func main() {
+	search_apple()
+	search_app()
+	startsWith_app()
+	search_app_after_insert()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

@@ -1,0 +1,56 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func isHappy(n int) bool {
+	var seen map[int]bool = map[int]bool{}
+	_ = seen
+	var current int = n
+	_ = current
+	for (current != 1) {
+		_tmp0 := current
+		_tmp1 := seen
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			break
+		}
+		seen[current] = true
+		var sum int = 0
+		_ = sum
+		var x int = current
+		_ = x
+		for (x > 0) {
+			var digit int = (x % 10)
+			sum = (sum + (digit * digit))
+			x = (x / 10)
+		}
+		current = sum
+	}
+	return (current == 1)
+}
+
+func example_1() {
+	expect((isHappy(19) == true))
+}
+
+func example_2() {
+	expect((isHappy(2) == false))
+}
+
+func one_is_happy() {
+	expect((isHappy(1) == true))
+}
+
+func not_happy() {
+	expect((isHappy(3) == false))
+}
+
+func main() {
+	example_1()
+	example_2()
+	one_is_happy()
+	not_happy()
+}
+

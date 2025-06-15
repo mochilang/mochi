@@ -1,0 +1,39 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func convertToTitle(columnNumber int) string {
+	var letters string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	var n int = columnNumber
+	_ = n
+	var result string = ""
+	_ = result
+	for (n > 0) {
+		n = (n - 1)
+		var idx int = (n % 26)
+		result = string([]rune(letters)[idx:(idx + 1)]) + result
+		n = (n / 26)
+	}
+	return result
+}
+
+func example_1() {
+	expect((convertToTitle(1) == "A"))
+}
+
+func example_2() {
+	expect((convertToTitle(28) == "AB"))
+}
+
+func example_3() {
+	expect((convertToTitle(701) == "ZY"))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+

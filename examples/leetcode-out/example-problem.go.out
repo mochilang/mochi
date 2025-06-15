@@ -1,0 +1,33 @@
+package main
+
+import (
+	"fmt"
+)
+
+func sumUnique(nums []int) int {
+	var freq map[int]int = map[int]int{}
+	_ = freq
+	var result int = 0
+	_ = result
+	for _, n := range nums {
+		_tmp0 := n
+		_tmp1 := freq
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			freq[n] = (freq[n] + 1)
+			if (freq[n] == 2) {
+				result = (result - n)
+			}
+		} else {
+			freq[n] = 1
+			result = (result + n)
+		}
+	}
+	return result
+}
+
+func main() {
+	fmt.Println(sumUnique([]int{1, 2, 3, 2}))
+	fmt.Println(sumUnique([]int{1, 1, 1, 1, 1}))
+}
+
