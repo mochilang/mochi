@@ -1,0 +1,38 @@
+fun findKthLargest(nums: list<int>, k: int): int {
+  let sorted = from x in nums sort by -x select x
+  return sorted[k - 1]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect findKthLargest([3,2,1,5,6,4], 2) == 5
+}
+
+test "example 2" {
+  expect findKthLargest([3,2,3,1,2,4,5,5,6], 4) == 4
+}
+
+// Additional edge cases
+
+test "single element" {
+  expect findKthLargest([1], 1) == 1
+}
+
+test "with negatives" {
+  expect findKthLargest([-1,-2,-3,-4], 2) == (-2)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+   if k = 1 { }      // ❌ assignment
+   if k == 1 { }     // ✅ comparison
+2. Reassigning an immutable binding declared with 'let':
+   let x = 5
+   x = x + 1          // ❌ cannot modify
+   var x2 = 5         // ✅ declare with 'var' when mutation is needed
+3. Accessing a list out of bounds:
+   nums[len(nums)]    // ❌ index out of range
+   nums[len(nums)-1]  // ✅ last element
+*/
