@@ -1,0 +1,78 @@
+// Solution for LeetCode problem 300 - Longest Increasing Subsequence
+
+fun lengthOfLIS(nums: list<int>): int {
+  let n = len(nums)
+  if n == 0 {
+    return 0
+  }
+  // dp[i] holds the LIS ending at index i
+  var dp: list<int> = []
+  var fill = 0
+  while fill < n {
+    dp = dp + [1]
+    fill = fill + 1
+  }
+  var i = 1
+  while i < n {
+    var j = 0
+    while j < i {
+      if nums[i] > nums[j] {
+        let candidate = dp[j] + 1
+        if candidate > dp[i] {
+          dp[i] = candidate
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  // find the maximum value in dp
+  var result = dp[0]
+  var k = 1
+  while k < n {
+    if dp[k] > result {
+      result = dp[k]
+    }
+    k = k + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect lengthOfLIS([10,9,2,5,3,7,101,18]) == 4
+}
+
+test "example 2" {
+  expect lengthOfLIS([0,1,0,3,2,3]) == 4
+}
+
+test "example 3" {
+  expect lengthOfLIS([7,7,7,7,7,7,7]) == 1
+}
+
+// Additional edge cases
+
+test "empty" {
+  expect lengthOfLIS([]) == 0
+}
+
+test "single" {
+  expect lengthOfLIS([5]) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning an immutable variable:
+   let i = 0
+   i = i + 1           // ❌ cannot modify 'let'
+   var j = 0           // ✅ declare with 'var' when mutation is needed
+2. Using '=' instead of '==' in a comparison:
+   if n = 0 { }        // ❌ assignment
+   if n == 0 { }       // ✅ equality check
+3. Attempting Python-style loops like 'for num in nums'.
+   Mochi requires numeric indices: 'for i in 0..len(nums)' or a 'while' loop.
+4. Expecting a built-in 'max' on lists like dp.max().
+   Use a loop to compute the maximum value as shown above.
+*/
