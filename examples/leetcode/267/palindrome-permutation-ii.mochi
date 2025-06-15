@@ -1,0 +1,125 @@
+// Solution for LeetCode problem 267 - Palindrome Permutation II
+
+fun generatePalindromes(s: string): list<string> {
+  // Count characters in the input string
+  var letters: list<string> = []
+  var i = 0
+  while i < len(s) {
+    letters = letters + [s[i]]
+    i = i + 1
+  }
+  let counts = from ch in letters
+               group by ch into g
+               select {
+                 ch: g.key,
+                 cnt: count(g)
+               }
+
+  var odd = 0
+  var center = ""
+  var half: list<string> = []
+  for item in counts {
+    if item.cnt % 2 == 1 {
+      odd = odd + 1
+      center = item.ch
+    }
+    var j = 0
+    while j < item.cnt / 2 {
+      half = half + [item.ch]
+      j = j + 1
+    }
+  }
+  if odd > 1 {
+    return []
+  }
+
+  // Sort half to generate unique permutations
+  let arr = from x in half sort by x select x
+  let n = len(arr)
+  var result: list<string> = []
+  var used: map<int, bool> = {}
+
+  fun backtrack(path: list<string>) {
+    if len(path) == n {
+      // Build the palindrome from the path
+      var left = ""
+      var k = 0
+      while k < n {
+        left = left + path[k]
+        k = k + 1
+      }
+      var right = ""
+      k = n - 1
+      while k >= 0 {
+        right = right + path[k]
+        k = k - 1
+      }
+      var pal = left
+      if odd == 1 {
+        pal = pal + center
+      }
+      pal = pal + right
+      result = result + [pal]
+    } else {
+      var i = 0
+      while i < n {
+        var curUsed = false
+        if i in used {
+          curUsed = used[i]
+        }
+        if curUsed {
+          i = i + 1
+          continue
+        }
+        if i > 0 && arr[i] == arr[i-1] {
+          var prevUsed = false
+          if i-1 in used {
+            prevUsed = used[i-1]
+          }
+          if !prevUsed {
+            i = i + 1
+            continue
+          }
+        }
+        used[i] = true
+        backtrack(path + [arr[i]])
+        used[i] = false
+        i = i + 1
+      }
+    }
+  }
+
+  backtrack([])
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let ans = generatePalindromes("aabb")
+  let sorted = from x in ans sort by x select x
+  expect sorted == ["abba", "baab"]
+}
+
+test "example 2" {
+  expect generatePalindromes("abc") == []
+}
+
+// Additional edge cases
+
+test "single char" {
+  expect generatePalindromes("a") == ["a"]
+}
+
+test "triple" {
+  let res = generatePalindromes("aaa")
+  expect res == ["aaa"]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Mixing assignment '=' with comparison '=='. Always use '==' in conditions.
+2. Reassigning an immutable 'let' binding. Use 'var' when a variable changes.
+3. Forgetting to check map membership before reading: use 'if key in map { ... }'.
+4. Assuming arrays auto-resize; append with `list = list + [item]` instead.
+*/
