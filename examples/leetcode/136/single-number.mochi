@@ -1,11 +1,20 @@
 // Solution for LeetCode problem 136 - Single Number
 
 fun singleNumber(nums: list<int>): int {
-  var result = 0
+  var counts: map<int, int> = {}
   for n in nums {
-    result = result ^ n
+    if n in counts {
+      counts[n] = counts[n] + 1
+    } else {
+      counts[n] = 1
+    }
   }
-  return result
+  for n in nums {
+    if counts[n] == 1 {
+      return n
+    }
+  }
+  return 0
 }
 
 // Test cases from the LeetCode problem statement
@@ -30,14 +39,7 @@ test "with negatives" {
 
 /*
 Common Mochi language errors and how to fix them:
-1. Using '=' instead of '==' in comparisons.
-   if result = n { ... }   // ❌ assignment
-   if result == n { ... }  // ✅ comparison
-2. Reassigning a value bound with 'let'.
-   let result = 0
-   result = result ^ n      // ❌ cannot modify immutable binding
-   var result = 0           // ✅ use 'var' for mutable state
-3. Confusing the '^' operator with exponentiation.
-   In Mochi '^' performs bitwise XOR, which is correct here.
-   Use multiplication or loops for powers.
+1. Writing `=` instead of `==` in conditionals.
+2. Updating a variable declared with `let` (use `var` for mutation).
+3. Forgetting to check `n in counts` before accessing `counts[n]`.
 */
