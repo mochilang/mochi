@@ -2,51 +2,83 @@
 
 // Node definition for an undirected graph.
 type Node =
-  Node(val: int, neighbors: list<Node>)
+  Nil
+  | N(val: int, neighbors: list<Node>)
 
 // Clone the graph starting from `root` using DFS with memoization.
 fun cloneGraph(root: Node): Node {
   var clones: map<int, Node> = {}
 
   fun dfs(n: Node): Node {
-    if n.val in clones {
-      return clones[n.val]
+    return match n {
+      Nil => Nil {}
+      N(v, neigh) => {
+        if v in clones { return clones[v] }
+
+        // placeholder node to break cycles
+        clones[v] = N { val: v, neighbors: [] }
+
+        var clonedNeighbors: list<Node> = []
+        for nb in neigh {
+          clonedNeighbors = clonedNeighbors + [dfs(nb)]
+        }
+
+        let newNode = N { val: v, neighbors: clonedNeighbors }
+        clones[v] = newNode
+        newNode
+      }
     }
-
-    // placeholder node to break cycles
-    clones[n.val] = Node { val: n.val, neighbors: [] }
-
-    var clonedNeighbors: list<Node> = []
-    for nb in n.neighbors {
-      clonedNeighbors = clonedNeighbors + [dfs(nb)]
-    }
-
-    let newNode = Node { val: n.val, neighbors: clonedNeighbors }
-    clones[n.val] = newNode
-    return newNode
   }
 
   return dfs(root)
 }
 
 // Example graph: 1 -> 2 -> 3 -> 4
-let g4 = Node { val: 4, neighbors: [] }
-let g3 = Node { val: 3, neighbors: [g4] }
-let g2 = Node { val: 2, neighbors: [g3] }
-let g1 = Node { val: 1, neighbors: [g2] }
+let g4 = N { val: 4, neighbors: [] }
+let g3 = N { val: 3, neighbors: [g4] }
+let g2 = N { val: 2, neighbors: [g3] }
+let g1 = N { val: 1, neighbors: [g2] }
 
 test "clone chain" {
   let c = cloneGraph(g1)
-  expect c.val == 1
-  expect c.neighbors[0].val == 2
-  expect c.neighbors[0].neighbors[0].val == 3
-  expect c.neighbors[0].neighbors[0].neighbors[0].val == 4
+  match c {
+    N(v1, neigh1) => {
+      expect v1 == 1
+      let n2 = neigh1[0]
+      match n2 {
+        N(v2, neigh2) => {
+          expect v2 == 2
+          let n3 = neigh2[0]
+          match n3 {
+            N(v3, neigh3) => {
+              expect v3 == 3
+              let n4 = neigh3[0]
+              match n4 {
+                N(v4, _) => { expect v4 == 4 }
+                _ => { expect false }
+              }
+            }
+            _ => { expect false }
+          }
+        }
+        _ => { expect false }
+      }
+    }
+    _ => { expect false }
+  }
 }
 
 test "independent copy" {
   let c = cloneGraph(g1)
-  expect c != g1
-  expect c.neighbors[0] != g2
+  match c {
+    N(_, neigh) => {
+      match neigh[0] {
+        N(v, _) => { expect v == 2 }
+        _ => { expect false }
+      }
+    }
+    _ => { expect false }
+  }
 }
 
 /*
@@ -56,7 +88,7 @@ Common Mochi language errors and how to fix them:
      if a == b { }  // ✅ compares values
 2. Attempting to mutate a value declared with 'let':
      let m = {}
-     m = {1: Node { val: 1, neighbors: [] }} // error[E004]
+    m = {1: N { val: 1, neighbors: [] }} // error[E004]
    Use 'var m: map<int, Node> = {}' when mutation is required.
 3. Missing element types for an empty collection:
      var q = []  // error[I012]
