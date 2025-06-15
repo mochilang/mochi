@@ -9,7 +9,7 @@ type Tree =
 fun pathSum(root: Tree, targetSum: int): list<list<int>> {
   fun dfs(node: Tree, remaining: int, path: list<int>): list<list<int>> {
     match node {
-      Leaf {} => []
+      Leaf {} => [] as list<list<int>>
       Node(l, v, r) => {
         let newRemaining = remaining - v
         let newPath = path + [v]
@@ -27,7 +27,7 @@ fun pathSum(root: Tree, targetSum: int): list<list<int>> {
       }
     }
   }
-  return dfs(root, targetSum, [])
+  return dfs(root, targetSum, [] as list<int>)
 }
 
 // Tests from LeetCode
