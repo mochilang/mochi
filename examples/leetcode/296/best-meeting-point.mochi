@@ -1,0 +1,80 @@
+// Solution for LeetCode problem 296 - Best Meeting Point
+//
+// Given a grid of 0s and 1s representing people's homes,
+// return the minimal total Manhattan distance for them to meet.
+
+fun abs(x: int): int {
+  if x < 0 { return -x } else { return x }
+}
+
+fun minTotalDistance(grid: list<list<int>>): int {
+  var rows: list<int> = []
+  var cols: list<int> = []
+  var i = 0
+  while i < len(grid) {
+    var j = 0
+    let row = grid[i]
+    while j < len(row) {
+      if row[j] == 1 {
+        rows = rows + [i]
+        cols = cols + [j]
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  let sortedRows = from r in rows sort by r select r
+  let sortedCols = from c in cols sort by c select c
+  let mid = len(sortedRows) / 2
+  let rowMedian = sortedRows[mid]
+  let colMedian = sortedCols[mid]
+
+  var dist = 0
+  var k = 0
+  while k < len(sortedRows) {
+    dist = dist + abs(sortedRows[k] - rowMedian)
+    k = k + 1
+  }
+  k = 0
+  while k < len(sortedCols) {
+    dist = dist + abs(sortedCols[k] - colMedian)
+    k = k + 1
+  }
+  return dist
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect minTotalDistance([[1,0,0,0,1],[0,0,0,0,0],[0,0,1,0,0]]) == 6
+}
+
+test "example 2" {
+  expect minTotalDistance([[1,1]]) == 1
+}
+
+// Additional edge cases
+
+test "single column" {
+  expect minTotalDistance([[1],[1]]) == 1
+}
+
+test "single cell" {
+  expect minTotalDistance([[1]]) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if row[j] = 1 { }  // ❌ assignment
+     if row[j] == 1 { } // ✅ comparison
+2. Forgetting to declare a mutable variable with 'var':
+     let dist = 0
+     dist = dist + 1       // ❌ cannot assign
+     var dist = 0
+     dist = dist + 1       // ✅ mutable
+3. Off-by-one mistakes when looping through lists:
+     while i <= len(grid) { ... }  // ❌ may run past end
+     while i < len(grid) { ... }   // ✅ correct bound
+*/
