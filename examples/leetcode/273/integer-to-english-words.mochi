@@ -1,0 +1,101 @@
+fun convertBelow1000(n: int): string {
+  let ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
+  let teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
+  let tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
+  var words = ""
+  var num = n
+  if num >= 100 {
+    let hundred = num / 100
+    words = words + ones[hundred] + " Hundred"
+    num = num % 100
+    if num > 0 {
+      words = words + " "
+    }
+  }
+  if num >= 20 {
+    let t = num / 10
+    words = words + tens[t]
+    num = num % 10
+    if num > 0 {
+      words = words + " " + ones[num]
+    }
+  } else if num >= 10 {
+    words = words + teens[num - 10]
+  } else if num > 0 {
+    words = words + ones[num]
+  }
+  return words
+}
+
+fun numberToWords(num: int): string {
+  if num == 0 {
+    return "Zero"
+  }
+  let groups = ["", "Thousand", "Million", "Billion"]
+  var parts: list<string> = []
+  var n = num
+  var i = 0
+  while n > 0 {
+    let chunk = n % 1000
+    if chunk > 0 {
+      let chunkWords = convertBelow1000(chunk)
+      var part = chunkWords
+      if groups[i] != "" {
+        part = part + " " + groups[i]
+      }
+      parts = [part] + parts
+    }
+    n = n / 1000
+    i = i + 1
+  }
+  var result = ""
+  var j = 0
+  while j < len(parts) {
+    result = result + parts[j]
+    if j < len(parts) - 1 {
+      result = result + " "
+    }
+    j = j + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect numberToWords(123) == "One Hundred Twenty Three"
+}
+
+test "example 2" {
+  expect numberToWords(12345) == "Twelve Thousand Three Hundred Forty Five"
+}
+
+test "example 3" {
+  expect numberToWords(1234567) == "One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven"
+}
+
+// Additional edge cases
+
+test "zero" {
+  expect numberToWords(0) == "Zero"
+}
+
+test "million and tens" {
+  expect numberToWords(1000010) == "One Million Ten"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to annotate the type of an empty list:
+     var parts = []             // ❌ type cannot be inferred
+   Provide the element type:
+     var parts: list<string> = []
+2. Using '=' instead of '==' in comparisons:
+     if num = 0 { ... }         // ❌ assignment
+   Use '==' for equality checks:
+     if num == 0 { ... }
+3. Trying to mutate a 'let' binding:
+     let words = ""
+     words = "a"                 // ❌ immutable value
+   Declare it with 'var' when it needs reassignment.
+*/
