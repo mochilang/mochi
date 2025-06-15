@@ -1,0 +1,52 @@
+fun isStrobogrammatic(num: string): bool {
+  let pairs = {
+    "0": "0",
+    "1": "1",
+    "6": "9",
+    "8": "8",
+    "9": "6",
+  }
+  var left = 0
+  var right = len(num) - 1
+  while left <= right {
+    let a = num[left]
+    let b = num[right]
+    if !(a in pairs) {
+      return false
+    }
+    if pairs[a] != b {
+      return false
+    }
+    left = left + 1
+    right = right - 1
+  }
+  return true
+}
+
+// Tests from LeetCode examples
+
+test "example 1" {
+  expect isStrobogrammatic("69") == true
+}
+
+test "example 2" {
+  expect isStrobogrammatic("88") == true
+}
+
+test "example 3" {
+  expect isStrobogrammatic("962") == false
+}
+
+/*
+Common Mochi language errors and fixes:
+1. Using '=' instead of '==' for comparison:
+   if a = b { }         // ❌ assigns instead of compares
+   if a == b { }        // ✅ correct
+2. Forgetting to declare mutable variables with 'var':
+   let i = 0
+   i = i + 1            // ❌ cannot reassign immutable 'let'
+   var i = 0            // ✅ use 'var' for variables that change
+3. Misusing list indices:
+   num[len(num)]        // ❌ out of bounds
+   num[len(num) - 1]    // ✅ last element
+*/
