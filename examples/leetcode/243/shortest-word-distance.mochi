@@ -1,0 +1,60 @@
+fun abs(x: int): int {
+  if x < 0 { return -x } else { return x }
+}
+
+fun shortestDistance(words: list<string>, word1: string, word2: string): int {
+  var index1 = -1
+  var index2 = -1
+  var result = len(words)
+  var i = 0
+  while i < len(words) {
+    if words[i] == word1 {
+      index1 = i
+    }
+    if words[i] == word2 {
+      index2 = i
+    }
+    if index1 >= 0 && index2 >= 0 {
+      let dist = abs(index1 - index2)
+      if dist < result {
+        result = dist
+      }
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode problem 243
+
+test "example 1" {
+  let words = ["practice","makes","perfect","coding","makes"]
+  expect shortestDistance(words, "coding", "practice") == 3
+}
+
+test "example 2" {
+  let words = ["practice","makes","perfect","coding","makes"]
+  expect shortestDistance(words, "makes", "coding") == 1
+}
+
+// Additional edge cases
+
+test "same adjacent" {
+  let words = ["a", "b", "a"]
+  expect shortestDistance(words, "a", "b") == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to initialize variables with a type when type inference fails.
+   var index1 = nil                // ❌ nil requires an explicit type
+   var index1: int = -1            // ✅ specify the type explicitly
+2. Using '=' instead of '==' in comparisons.
+   if words[i] = word1 { }         // ❌ assignment instead of comparison
+   if words[i] == word1 { }        // ✅ use '==' for equality tests
+3. Attempting to modify a value bound with 'let'.
+   let result = 0
+   result = 1                      // ❌ cannot reassign immutable binding
+   var best = 0
+   best = 1                        // ✅ use 'var' for mutable variables
+*/
