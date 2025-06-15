@@ -1,0 +1,84 @@
+// Solution for LeetCode problem 235 - Lowest Common Ancestor of a BST
+// This version avoids union types and pattern matching by representing
+// the tree as an array of nodes indexed by position.
+
+// Each node stores its value and the index of its left and right child.
+// A value of -1 means no child.
+type Node {
+  val: int
+  left: int
+  right: int
+}
+
+// Return the index of the lowest common ancestor of nodes p and q.
+fun lowestCommonAncestor(tree: list<Node>, root: int, p: int, q: int): int {
+  let pNode = tree[p]
+  let qNode = tree[q]
+  let pVal = pNode.val
+  let qVal = qNode.val
+  var current = root
+  while true {
+    let node = tree[current]
+    if pVal < node.val && qVal < node.val {
+      current = node.left
+    } else if pVal > node.val && qVal > node.val {
+      current = node.right
+    } else {
+      return current
+    }
+  }
+}
+
+// Example BST used in tests:
+//       6
+//      / \
+//     2   8
+//    / \ / \
+//   0  4 7  9
+//     / \
+//    3   5
+let example: list<Node> = [
+  Node { val: 6, left: 1, right: 2 }, // 0
+  Node { val: 2, left: 3, right: 4 }, // 1
+  Node { val: 8, left: 5, right: 6 }, // 2
+  Node { val: 0, left: -1, right: -1 }, // 3
+  Node { val: 4, left: 7, right: 8 }, // 4
+  Node { val: 7, left: -1, right: -1 }, // 5
+  Node { val: 9, left: -1, right: -1 }, // 6
+  Node { val: 3, left: -1, right: -1 }, // 7
+  Node { val: 5, left: -1, right: -1 }  // 8
+]
+
+// Test cases mirroring the examples from LeetCode
+
+test "example 1" {
+  // p = 2, q = 8 -> LCA is 6 (index 0)
+  expect lowestCommonAncestor(example, 0, 1, 2) == 0
+}
+
+test "example 2" {
+  // p = 2, q = 4 -> LCA is 2 (index 1)
+  expect lowestCommonAncestor(example, 0, 1, 4) == 1
+}
+
+test "single node" {
+  let single = [Node { val: 1, left: -1, right: -1 }]
+  expect lowestCommonAncestor(single, 0, 0, 0) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning an immutable binding:
+     let idx = 0
+     idx = 1             // ❌ cannot modify 'let' value
+   Use 'var idx = 0' if mutation is required.
+2. Using '=' instead of '==' for comparisons:
+     if a = b { }        // ❌ assignment
+     if a == b { }       // ✅ comparison
+3. Creating an empty list without specifying its element type:
+     var nodes = []              // ❌ type unknown
+     var nodes: list<Node> = []  // ✅ specify the type
+4. Accessing an invalid index in a list:
+     let n = example[99]         // ❌ out of bounds
+   Ensure indices are valid before access.
+*/
