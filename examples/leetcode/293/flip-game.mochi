@@ -1,0 +1,47 @@
+// LeetCode #293: Flip Game
+// Below are some common Mochi language errors and how to fix them.
+//
+// Error 1: Using '=' instead of '==' for comparison
+// if s[i:i+2] = "++" { }
+// Fix:
+// if s[i:i+2] == "++" { }
+//
+// Error 2: Reassigning an immutable variable
+// let moves = []
+// moves = moves + [new]  // ❌
+// Fix:
+// var moves: list<string> = []
+//
+// Error 3: Off-by-one slice bounds
+// s[i+2]  // may go out of range
+// Fix:
+// check i + 1 < len(s) before slicing
+
+fun generatePossibleNextMoves(s: string): list<string> {
+  var result: list<string> = []
+  var i = 0
+  let n = len(s)
+  while i + 1 < n {
+    if s[i] == "+" && s[i+1] == "+" {
+      let next = s[0:i] + "--" + s[i+2:n]
+      result = result + [next]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect generatePossibleNextMoves("++++") == ["--++", "+--+", "++--"]
+}
+
+test "no moves" {
+  expect generatePossibleNextMoves("+-") == []
+}
+
+test "three plus" {
+  expect generatePossibleNextMoves("+++") == ["--+", "+--"]
+}
+
