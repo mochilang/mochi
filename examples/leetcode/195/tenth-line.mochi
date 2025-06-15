@@ -1,0 +1,27 @@
+fun tenthLine(lines: list<string>): string {
+  if len(lines) < 10 {
+    return ""
+  }
+  return lines[9]
+}
+
+// Example tests from the LeetCode problem statement
+
+test "has tenth line" {
+  let lines = ["Line1","Line2","Line3","Line4","Line5","Line6","Line7","Line8","Line9","Line10"]
+  expect tenthLine(lines) == "Line10"
+}
+
+test "not enough lines" {
+  let lines = ["a","b","c"]
+  expect tenthLine(lines) == ""
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Off-by-one mistakes with 0-based indexing. The tenth element is lines[9].
+2. Using '=' instead of '==' for comparison:
+     if len(lines) = 10 { ... }  // ❌ assignment
+     if len(lines) == 10 { ... } // ✅ comparison
+3. Trying to reassign a `let` binding. Use `var` when mutation is needed.
+*/
