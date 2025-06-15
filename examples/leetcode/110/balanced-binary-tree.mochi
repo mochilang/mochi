@@ -9,24 +9,37 @@ type Tree =
   | Node(left: Tree, value: int, right: Tree)
 
 // Determine if a binary tree is height-balanced.
-type BalanceInfo = { h: int, balanced: bool }
+type BalanceInfo {
+  h: int
+  balanced: bool
+}
 
 fun isBalanced(root: Tree): bool {
-  fun check(t: Tree): BalanceInfo {
-    return match t {
-      Leaf => { h: 0, balanced: true }
+    fun check(t: Tree): BalanceInfo {
+      return match t {
+        Leaf => BalanceInfo { h: 0, balanced: true }
       Node(l, _, r) => {
         let left = check(l)
         let right = check(r)
-        let diff = if left.h > right.h { left.h - right.h } else { right.h - left.h }
-        {
-          h: (if left.h > right.h { left.h } else { right.h }) + 1,
+        var diff = 0
+        if left.h > right.h {
+          diff = left.h - right.h
+        } else {
+          diff = right.h - left.h
+        }
+        var height = left.h
+        if right.h > height {
+          height = right.h
+        }
+        BalanceInfo {
+          h: height + 1,
           balanced: left.balanced && right.balanced && diff <= 1
         }
       }
     }
   }
-  return check(root).balanced
+  let result = check(root)
+  return result.balanced
 }
 
 // Test cases from LeetCode
