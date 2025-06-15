@@ -1,0 +1,57 @@
+// Solution for LeetCode problem 287 - Find the Duplicate Number
+// Uses Floyd's cycle detection to locate the repeated element
+
+fun findDuplicate(nums: list<int>): int {
+  // Start tortoise and hare at the first element
+  var slow = nums[0]
+  var fast = nums[0]
+  // First phase to find an intersection point
+  while true {
+    slow = nums[slow]
+    fast = nums[nums[fast]]
+    if slow == fast {
+      break
+    }
+  }
+  // Second phase to locate the start of the cycle
+  var ptr1 = nums[0]
+  var ptr2 = slow
+  while ptr1 != ptr2 {
+    ptr1 = nums[ptr1]
+    ptr2 = nums[ptr2]
+  }
+  return ptr1
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect findDuplicate([1,3,4,2,2]) == 2
+}
+
+test "example 2" {
+  expect findDuplicate([3,1,3,4,2]) == 3
+}
+
+// Additional edge cases
+
+test "duplicate at end" {
+  expect findDuplicate([1,4,6,2,6,3,5]) == 6
+}
+
+test "many duplicates" {
+  expect findDuplicate([2,2,2,2,2]) == 2
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparison:
+     if slow = fast { }     // ❌ assignment
+     if slow == fast { }    // ✅ equality check
+2. Reassigning an immutable variable declared with 'let':
+     let a = nums[0]
+     a = 1                  // ❌ cannot assign
+     var a = nums[0]        // ✅ use 'var' for mutable values
+3. Off-by-one mistakes when indexing lists. Remember lists are 0-based,
+   and accessing nums[len(nums)] will cause an error.
+*/
