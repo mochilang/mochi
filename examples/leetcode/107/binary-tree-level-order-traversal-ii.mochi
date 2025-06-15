@@ -7,37 +7,31 @@ type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree)
 
+// Breadth-first traversal collecting values from bottom to top.
 fun levelOrderBottom(root: Tree): list<list<int>> {
-  return match root {
-    Leaf => []
-    Node(_, _, _) => {
-      var queue: list<Tree> = [root]
-      var result: list<list<int>> = []
-      while len(queue) > 0 {
-        var level: list<int> = []
-        var next: list<Tree> = []
-        for node in queue {
-          match node {
-            Leaf => {}
-            Node(l, v, r) => {
-              level = level + [v]
-              match l {
-                Leaf => {}
-                _ => { next = next + [l] }
-              }
-              match r {
-                Leaf => {}
-                _ => { next = next + [r] }
-              }
-            }
-          }
-        }
-        result = [level] + result
-        queue = next
-      }
-      result
-    }
+  if match root { Leaf => true _ => false } {
+    return []
   }
+  var result: list<list<int>> = []
+  var queue: list<Tree> = [root]
+  while len(queue) > 0 {
+    var level: list<int> = []
+    var next: list<Tree> = []
+    for node in queue {
+      if match node { Leaf => false _ => true } {
+        level = level + [node.value]
+        if match node.left { Leaf => false _ => true } {
+          next = next + [node.left]
+        }
+        if match node.right { Leaf => false _ => true } {
+          next = next + [node.right]
+        }
+      }
+    }
+    result = [level] + result
+    queue = next
+  }
+  return result
 }
 
 // Example tree: [3,9,20,null,null,15,7]
