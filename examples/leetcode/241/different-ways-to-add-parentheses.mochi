@@ -1,0 +1,85 @@
+// Solution for LeetCode problem 241 - Different Ways to Add Parentheses
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' when comparing characters or strings.
+// 2. Forgetting to declare mutable variables with 'var'.
+// 3. Attempting to use Python methods like s.split(",") or list.append(x).
+//    Instead use Mochi string slicing and list concatenation.
+// 4. Mixing number and string types without conversion.
+
+fun parseInt(s: string): int {
+  var result = 0
+  var i = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(s) {
+    result = result * 10 + digits[s[i]]
+    i = i + 1
+  }
+  return result
+}
+
+fun diffWaysToCompute(expr: string): list<int> {
+  var results: list<int> = []
+  var i = 0
+  while i < len(expr) {
+    let ch = expr[i]
+    if ch == "+" || ch == "-" || ch == "*" {
+      let leftPart = expr[0:i]
+      let rightPart = expr[i+1:len(expr)]
+      let leftVals = diffWaysToCompute(leftPart)
+      let rightVals = diffWaysToCompute(rightPart)
+      for a in leftVals {
+        for b in rightVals {
+          var val = 0
+          if ch == "+" {
+            val = a + b
+          } else if ch == "-" {
+            val = a - b
+          } else {
+            val = a * b
+          }
+          results = results + [val]
+        }
+      }
+    }
+    i = i + 1
+  }
+  if len(results) == 0 {
+    results = [parseInt(expr)]
+  }
+  return results
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let res = diffWaysToCompute("2-1-1")
+  let sorted = from x in res sort by x select x
+  let expected = [0,2]
+  expect sorted == expected
+}
+
+test "example 2" {
+  let res = diffWaysToCompute("2*3-4*5")
+  let sorted = from x in res sort by x select x
+  let expected = [-34,-14,-10,-10,10]
+  let expSorted = from x in expected sort by x select x
+  expect sorted == expSorted
+}
+
+// Additional edge case
+
+test "single number" {
+  expect diffWaysToCompute("3") == [3]
+}
