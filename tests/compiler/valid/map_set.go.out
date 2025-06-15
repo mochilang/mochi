@@ -6,6 +6,7 @@ import (
 
 func main() {
 	var scores map[string]int = map[string]int{"a": 1}
+	_ = scores
 	scores["b"] = 2
 	fmt.Println(scores["b"])
 }
