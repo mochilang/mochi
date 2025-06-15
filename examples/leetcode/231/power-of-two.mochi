@@ -1,0 +1,53 @@
+fun isPowerOfTwo(n: int): bool {
+  if n <= 0 {
+    return false
+  }
+  var num = n
+  while num > 1 {
+    if num % 2 != 0 {
+      return false
+    }
+    num = num / 2
+  }
+  return true
+}
+
+// Test cases from LeetCode problem 231
+
+test "example 1" {
+  expect isPowerOfTwo(1) == true
+}
+
+test "example 2" {
+  expect isPowerOfTwo(16) == true
+}
+
+test "example 3" {
+  expect isPowerOfTwo(3) == false
+}
+
+// Additional edge cases
+
+test "zero" {
+  expect isPowerOfTwo(0) == false
+}
+
+test "negative" {
+  expect isPowerOfTwo(-2) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare a variable mutable when changing it:
+     let num = n
+     num = num / 2     // ❌ cannot reassign immutable variable
+   Use 'var num = n' when you need to modify it.
+2. Using '=' instead of '==' when comparing values:
+     if num % 2 = 0 { ... }
+   Use '==' for equality checks:
+     if num % 2 == 0 { ... }
+3. Missing return statement on all paths of the function.
+   Ensure every conditional branch returns a value or falls through to a return.
+4. Attempting to use pattern matching or union types for simple loops.
+   Straightforward conditionals and loops are enough for this problem.
+*/
