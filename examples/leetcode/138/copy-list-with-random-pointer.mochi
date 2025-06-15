@@ -11,18 +11,20 @@ fun copyRandomList(head: Node): Node {
   var seen: map<Node, Node> = {}
 
   fun clone(n: Node): Node {
-    return match n {
+    match n {
       Nil => Nil {}
       Node(v, nxt, rnd) => {
-        if n in seen { return seen[n] }
-        // placeholder node to break potential cycles
-        var tmp = Node { val: v, next: Nil {}, random: Nil {} }
-        seen[n] = tmp
-        let newNext = clone(nxt)
-        let newRand = clone(rnd)
-        let res = Node { val: v, next: newNext, random: newRand }
-        seen[n] = res
-        return res
+        if n in seen { seen[n] }
+        else {
+          // placeholder node to break potential cycles
+          var tmp = Node { val: v, next: Nil {}, random: Nil {} }
+          seen[n] = tmp
+          let newNext = clone(nxt)
+          let newRand = clone(rnd)
+          let res = Node { val: v, next: newNext, random: newRand }
+          seen[n] = res
+          res
+        }
       }
     }
   }
