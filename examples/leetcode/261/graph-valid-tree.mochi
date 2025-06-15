@@ -1,0 +1,60 @@
+fun validTree(n: int, edges: list<list<int>>): bool {
+  if len(edges) != n - 1 {
+    return false
+  }
+
+  var parent: list<int> = []
+  for i in 0..n {
+    parent = parent + [i]
+  }
+
+  fun find(x: int): int {
+    var root = x
+    while parent[root] != root {
+      root = parent[root]
+    }
+    var node = x
+    while parent[node] != node {
+      let next = parent[node]
+      parent[node] = root
+      node = next
+    }
+    return root
+  }
+
+  for e in edges {
+    let a = e[0]
+    let b = e[1]
+    let pa = find(a)
+    let pb = find(b)
+    if pa == pb {
+      return false
+    }
+    parent[pb] = pa
+  }
+
+  return true
+}
+
+test "example 1" {
+  expect validTree(5, [[0,1],[0,2],[0,3],[1,4]]) == true
+}
+
+test "example 2" {
+  expect validTree(5, [[0,1],[1,2],[2,3],[1,3],[1,4]]) == false
+}
+
+test "disconnected" {
+  expect validTree(4, [[0,1],[2,3]]) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+2. Declaring an immutable list with 'let' and then trying to modify it.
+   Use 'var parent: list<int> = []' so you can assign elements.
+3. Forgetting that ranges '0..n' iterate up to but not including n.
+   Writing 'for i in 0..n-1' would skip the last element.
+4. Trying to pattern match on values or use union types.
+   Simple data structures like lists and maps are sufficient here.
+*/
