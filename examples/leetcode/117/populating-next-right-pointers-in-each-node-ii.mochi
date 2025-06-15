@@ -1,12 +1,12 @@
 // LeetCode 117 - Populating Next Right Pointers in Each Node II
 
-// Binary tree where each node has left, value, right and a next pointer.
+// Binary tree node with an extra `next` pointer for the same level.
 type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree, next: Tree)
 
-// Find the first child node starting from 'node' following next pointers.
-fun firstChild(node: Tree): Tree {
+// Return the first child encountered when following `next` pointers.
+fun childAfter(node: Tree): Tree {
   var curr = node
   while match curr { Leaf => false _ => true } {
     match curr {
@@ -21,40 +21,41 @@ fun firstChild(node: Tree): Tree {
   return Leaf {}
 }
 
-// Recursively connect nodes level by level using next pointers.
-fun connect(root: Tree): Tree {
-  fun helper(node: Tree, nxt: Tree): Tree {
-    return match node {
-      Leaf => Leaf {}
-      Node(l, v, r, _) => {
-        let rightNext = firstChild(nxt)
-        let right = helper(r, rightNext)
-        let leftNext = match r {
-          Leaf => rightNext
-          _ => firstChild(right)
-        }
-        let left = helper(l, leftNext)
-        return Node { left: left, value: v, right: right, next: nxt }
+// Connect nodes level by level using already established `next` links.
+fun dfs(node: Tree, nxt: Tree): Tree {
+  return match node {
+    Leaf => Leaf {}
+    Node(l, v, r, _) => {
+      let right = dfs(r, childAfter(nxt))
+      let leftNext = match r {
+        Leaf => childAfter(nxt)
+        _ => childAfter(right)
       }
+      let left = dfs(l, leftNext)
+      Node { left: left, value: v, right: right, next: nxt }
     }
   }
-  return helper(root, Leaf {})
 }
 
-// Traverse levels using the next pointers to verify connections.
-fun levels(root: Tree): list<list<int>> {
+fun connect(root: Tree): Tree {
+  return dfs(root, Leaf {})
+}
+
+// Read values level by level by traversing `next` pointers.
+fun byLevels(root: Tree): list<list<int>> {
   var result: list<list<int>> = []
-  var node = root
-  while match node { Leaf => false _ => true } {
+  var start = root
+  while match start { Leaf => false _ => true } {
     var level: list<int> = []
-    var curr = node
-    var nextLevel = Leaf {}
+    var curr = start
+    var nextStart = Leaf {}
     while match curr { Leaf => false _ => true } {
       match curr {
-        Node(l, v, _, nxt) => {
+        Node(l, v, r, nxt) => {
           level = level + [v]
-          if match nextLevel { Leaf => true _ => false } {
-            nextLevel = l
+          if match nextStart { Leaf => true _ => false } {
+            if match l { Leaf => false _ => true } { nextStart = l }
+            else if match r { Leaf => false _ => true } { nextStart = r }
           }
           curr = nxt
         }
@@ -62,38 +63,47 @@ fun levels(root: Tree): list<list<int>> {
       }
     }
     result = result + [level]
-    node = nextLevel
+    start = nextStart
   }
   return result
 }
 
-// Test case based on LeetCode example
+// Example tree from LeetCode
+let example = Node {
+  left: Node {
+    left: Node { left: Leaf {}, value: 4, right: Leaf {}, next: Leaf {} },
+    value: 2,
+    right: Node { left: Leaf {}, value: 5, right: Leaf {}, next: Leaf {} },
+    next: Leaf {}
+  },
+  value: 1,
+  right: Node {
+    left: Leaf {},
+    value: 3,
+    right: Node { left: Leaf {}, value: 7, right: Leaf {}, next: Leaf {} },
+    next: Leaf {}
+  },
+  next: Leaf {}
+}
 
 test "example" {
-  let tree = Node {
-    left: Node {
-      left: Node { left: Leaf {}, value: 4, right: Leaf {}, next: Leaf {} },
-      value: 2,
-      right: Node { left: Leaf {}, value: 5, right: Leaf {}, next: Leaf {} },
-      next: Leaf {}
-    },
-    value: 1,
-    right: Node {
-      left: Leaf {},
-      value: 3,
-      right: Node { left: Leaf {}, value: 7, right: Leaf {}, next: Leaf {} },
-      next: Leaf {}
-    },
-    next: Leaf {}
-  }
-  let connected = connect(tree)
-  expect levels(connected) == [[1], [2,3], [4,5,7]]
+  let connected = connect(example)
+  expect byLevels(connected) == [[1], [2,3], [4,5,7]]
+}
+
+test "single node" {
+  let tree = Node { left: Leaf {}, value: 1, right: Leaf {}, next: Leaf {} }
+  expect byLevels(connect(tree)) == [[1]]
+}
+
+test "empty" {
+  expect byLevels(connect(Leaf {})) == []
 }
 
 /*
 Common Mochi language errors and how to fix them:
-1. Attempting to mutate fields directly. Instead, construct a new `Node` with the updated `next` pointer.
-2. Using Python-style `None` instead of the `Leaf` variant for empty nodes.
-3. Forgetting to use `var` when a variable will be reassigned inside loops.
-4. Omitting a case for `Leaf` when pattern matching on trees.
+1. Reassigning a constant binding. Use `var` when a variable needs to change.
+2. Confusing assignment `=` with comparison `==` in conditions.
+3. Using `None` or `null` instead of the `Leaf` constructor for empty trees.
+4. Forgetting a `Leaf` branch when pattern matching on the `Tree` type.
 */
