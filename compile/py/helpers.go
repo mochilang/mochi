@@ -11,6 +11,19 @@ import (
 	"mochi/types"
 )
 
+var pyReserved = map[string]struct{}{
+	// Python keywords
+	"False": {}, "None": {}, "True": {}, "and": {}, "as": {}, "assert": {},
+	"async": {}, "await": {}, "break": {}, "class": {}, "continue": {},
+	"def": {}, "del": {}, "elif": {}, "else": {}, "except": {},
+	"finally": {}, "for": {}, "from": {}, "global": {}, "if": {},
+	"import": {}, "in": {}, "is": {}, "lambda": {}, "nonlocal": {},
+	"not": {}, "or": {}, "pass": {}, "raise": {}, "return": {},
+	"try": {}, "while": {}, "with": {}, "yield": {},
+	// Builtins that commonly appear in generated code
+	"sorted": {},
+}
+
 func (c *Compiler) writeln(s string) { c.writeIndent(); c.buf.WriteString(s); c.buf.WriteByte('\n') }
 
 func (c *Compiler) writeIndent() {
@@ -31,7 +44,11 @@ func sanitizeName(name string) string {
 	if b.Len() == 0 || !((b.String()[0] >= 'A' && b.String()[0] <= 'Z') || (b.String()[0] >= 'a' && b.String()[0] <= 'z') || b.String()[0] == '_') {
 		return "_" + b.String()
 	}
-	return b.String()
+	out := b.String()
+	if _, ok := pyReserved[out]; ok {
+		return "_" + out
+	}
+	return out
 }
 
 func unexportName(name string) string {
