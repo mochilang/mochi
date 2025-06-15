@@ -1,0 +1,72 @@
+fun findCelebrity(mat: list<list<bool>>): int {
+  let n = len(mat)
+
+  fun knows(a: int, b: int): bool {
+    return mat[a][b]
+  }
+
+  var candidate = 0
+  var i = 1
+  while i < n {
+    if knows(candidate, i) {
+      candidate = i
+    }
+    i = i + 1
+  }
+
+  var j = 0
+  while j < n {
+    if j != candidate {
+      if knows(candidate, j) {
+        return -1
+      }
+      if !knows(j, candidate) {
+        return -1
+      }
+    }
+    j = j + 1
+  }
+  return candidate
+}
+
+test "example 1" {
+  let mat: list<list<bool>> = [
+    [false,true],
+    [false,false]
+  ]
+  expect findCelebrity(mat) == 1
+}
+
+test "example 2" {
+  let mat: list<list<bool>> = [
+    [false,true,false],
+    [false,false,false],
+    [true,true,false]
+  ]
+  expect findCelebrity(mat) == 1
+}
+
+test "no celebrity" {
+  let mat: list<list<bool>> = [
+    [false,true],
+    [true,false]
+  ]
+  expect findCelebrity(mat) == (-1)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions:
+   if a = b { }  // error[P000] assignment
+   // Fix: use '==' for comparisons
+2. Reassigning an immutable variable:
+   let x = 1
+   x = 2        // error[E004]
+   // Fix: declare with 'var' if the value needs to change
+3. Forgetting to increment loop counters:
+   while i < n {
+     // ...
+     // missing i = i + 1 -> infinite loop
+   }
+   // Fix: ensure loop variables are updated
+*/
