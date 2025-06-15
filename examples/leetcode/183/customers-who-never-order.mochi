@@ -1,0 +1,82 @@
+// Solution for LeetCode problem 183 - Customers Who Never Order
+
+// Record types representing the tables
+
+// Customer has an id and a name
+type Customer {
+  id: int
+  name: string
+}
+
+// Order references a customer by id
+type Order {
+  id: int
+  customerId: int
+}
+
+// Return the names of customers that have no matching order
+fun customersWithoutOrders(customers: list<Customer>, orders: list<Order>): list<string> {
+  var result: list<string> = []
+  for c in customers {
+    var placed = false
+    for o in orders {
+      if o.customerId == c.id {
+        placed = true
+        break
+      }
+    }
+    if !placed {
+      result = result + [c.name]
+    }
+  }
+  return result
+}
+
+// Example data from the problem statement
+let customers: list<Customer> = [
+  Customer { id: 1, name: "Joe" },
+  Customer { id: 2, name: "Henry" },
+  Customer { id: 3, name: "Sam" },
+  Customer { id: 4, name: "Max" }
+]
+
+let orders: list<Order> = [
+  Order { id: 1, customerId: 3 },
+  Order { id: 2, customerId: 1 }
+]
+
+test "example" {
+  expect customersWithoutOrders(customers, orders) == ["Henry", "Max"]
+}
+
+test "all customers" {
+  let emptyOrders: list<Order> = []
+  expect str(customersWithoutOrders(customers, emptyOrders)) == str(["Joe", "Henry", "Sam", "Max"])
+}
+
+test "none left" {
+  let allOrders: list<Order> = [
+    Order { id: 1, customerId: 1 },
+    Order { id: 2, customerId: 2 },
+    Order { id: 3, customerId: 3 },
+    Order { id: 4, customerId: 4 }
+  ]
+  expect customersWithoutOrders(customers, allOrders) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying to reassign a 'let' binding:
+     let count = 0
+     count = count + 1      // ERROR[E004]: cannot reassign immutable binding
+     var count = 0          // Fix: declare with 'var' when mutation is needed.
+
+2. Using '=' instead of '==' in an if condition:
+     if placed = true { }   // ERROR[P000]: '=' is assignment, not comparison
+     if placed == true { }  // Fix: use '==' to compare values.
+
+3. Leaving out the element type for an empty list:
+     var result = []        // ERROR: type cannot be inferred
+     var result: list<string> = []  // Fix: include the list element type.
+*/
+
