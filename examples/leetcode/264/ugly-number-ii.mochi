@@ -1,0 +1,66 @@
+// Solution for LeetCode 264 - Ugly Number II
+
+fun min3(a: int, b: int, c: int): int {
+  var m = a
+  if b < m { m = b }
+  if c < m { m = c }
+  return m
+}
+
+// Return the n-th ugly number (positive integers whose
+// prime factors are only 2, 3, or 5).
+fun nthUglyNumber(n: int): int {
+  var i2 = 0
+  var i3 = 0
+  var i5 = 0
+  var uglies: list<int> = [1]
+  var count = 1
+  while count < n {
+    let next2 = uglies[i2] * 2
+    let next3 = uglies[i3] * 3
+    let next5 = uglies[i5] * 5
+    let nextUgly = min3(next2, next3, next5)
+    uglies = uglies + [nextUgly]
+    if nextUgly == next2 { i2 = i2 + 1 }
+    if nextUgly == next3 { i3 = i3 + 1 }
+    if nextUgly == next5 { i5 = i5 + 1 }
+    count = count + 1
+  }
+  return uglies[n-1]
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect nthUglyNumber(10) == 12
+}
+
+test "example 2" {
+  expect nthUglyNumber(1) == 1
+}
+
+test "example 3" {
+  expect nthUglyNumber(3) == 3
+}
+
+// Additional tests
+
+test "larger n" {
+  expect nthUglyNumber(15) == 24
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if nextUgly = next2 { }   // ❌ assignment
+   if nextUgly == next2 { }  // ✅ comparison
+2. Declaring loop counters with 'let' then trying to modify them.
+   let i = 0
+   i = i + 1                 // ❌ cannot reassign
+   var i = 0                 // ✅ use 'var' for mutable variables
+3. Forgetting that list indices start at 0 and the n-th element is at n-1.
+   uglies[n]                 // ❌ out of range
+   uglies[n-1]               // ✅ correct index
+4. Introducing union types or 'match' for simple numeric algorithms.
+   Simple 'if' statements keep the code clear and efficient.
+*/
