@@ -1,0 +1,80 @@
+// Solution for LeetCode problem 115 - Distinct Subsequences
+//
+// Count how many distinct subsequences of s equal t.
+// Dynamic programming builds a table of ways to match prefixes.
+
+fun numDistinct(s: string, t: string): int {
+  let m = len(s)
+  let n = len(t)
+  // dp[i][j] = number of ways to form t[0..j-1] using s[0..i-1]
+  var dp: list<list<int>> = []
+  var i = 0
+  while i <= m {
+    var row: list<int> = []
+    var j = 0
+    while j <= n {
+      row = row + [0]
+      j = j + 1
+    }
+    dp = dp + [row]
+    i = i + 1
+  }
+
+  // empty t can always be formed once
+  i = 0
+  while i <= m {
+    dp[i][0] = 1
+    i = i + 1
+  }
+
+  i = 1
+  while i <= m {
+    var j = 1
+    while j <= n {
+      dp[i][j] = dp[i-1][j]
+      if s[i-1] == t[j-1] {
+        dp[i][j] = dp[i][j] + dp[i-1][j-1]
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  return dp[m][n]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect numDistinct("rabbbit", "rabbit") == 3
+}
+
+test "example 2" {
+  expect numDistinct("babgbag", "bag") == 5
+}
+
+// Additional tests
+
+test "empty target" {
+  expect numDistinct("abc", "") == 1
+}
+
+test "no subsequence" {
+  expect numDistinct("abc", "abcd") == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing characters:
+     if s[i] = t[j] { }
+   Fix: use '==' for equality.
+2. Declaring dp with 'let' then attempting to modify it:
+     let dp = []
+     dp[0][0] = 1          // ❌ cannot assign
+   Use 'var dp: list<list<int>> = []' to allow mutation.
+3. Trying Python-style append:
+     row.append(0)         // ❌ not Mochi
+   Instead use 'row = row + [0]'.
+4. Off-by-one indexing when accessing s or t.
+   Remember strings are 0-indexed and dp is sized (m+1) by (n+1).
+*/
