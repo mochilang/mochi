@@ -1,25 +1,25 @@
-// Solution for LeetCode problem 112 - Path Sum
+// LeetCode 112 - Path Sum
 
-// Binary tree type with empty Leaf and Node with left, value, right
-
+// Binary tree definition used by many LeetCode examples.
 type Tree =
-  Leaf {}
+  Leaf
   | Node(left: Tree, value: int, right: Tree)
 
-fun hasPathSum(root: Tree, targetSum: int): bool {
+// Determine if the tree has a root-to-leaf path that sums to target.
+fun hasPathSum(root: Tree, target: int): bool {
   match root {
-    Leaf {} => false
+    Leaf => false
     Node(l, v, r) => {
-      let remaining = targetSum - v
-      let leftEmpty = match l {
-        Leaf {} => true
+      let remaining = target - v
+      let leftLeaf = match l {
+        Leaf => true
         _ => false
       }
-      let rightEmpty = match r {
-        Leaf {} => true
+      let rightLeaf = match r {
+        Leaf => true
         _ => false
       }
-      if leftEmpty && rightEmpty {
+      if leftLeaf && rightLeaf {
         remaining == 0
       } else {
         hasPathSum(l, remaining) || hasPathSum(r, remaining)
@@ -28,7 +28,7 @@ fun hasPathSum(root: Tree, targetSum: int): bool {
   }
 }
 
-// Tests from LeetCode
+// Tests from the LeetCode problem statement
 
 test "example 1" {
   let root = Node {
@@ -80,8 +80,9 @@ test "empty" {
 
 /*
 Common Mochi language errors and how to fix them:
-1. Using Python style `None` for empty trees instead of `Leaf {}`.
-2. Reassigning a value defined with `let`. Use `var` if mutation is needed.
-3. Confusing assignment '=' with equality '=='.
-4. Omitting an else branch in `if` expressions which leads to null results.
+1. Matching on a Leaf node with `Leaf {}` instead of `Leaf`.
+   Use `match t { Leaf => ... }` when pattern matching.
+2. Using `=` instead of `==` for comparisons inside conditions.
+3. Reassigning a binding declared with `let`; use `var` if it should change.
+4. Forgetting to construct an empty tree with `Leaf {}` when creating a value.
 */
