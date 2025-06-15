@@ -1,0 +1,39 @@
+fun findPeakElement(nums: list<int>): int {
+  let n = len(nums)
+  var left = 0
+  var right = n - 1
+  while left < right {
+    let mid = (left + right) / 2
+    if nums[mid] > nums[mid + 1] {
+      right = mid
+    } else {
+      left = mid + 1
+    }
+  }
+  return left
+}
+
+// Tests based on LeetCode problem 162
+
+test "example 1" {
+  expect findPeakElement([1,2,3,1]) == 2
+}
+
+test "example 2" {
+  let idx = findPeakElement([1,2,1,3,5,6,4])
+  expect idx == 1 || idx == 5
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a value bound with 'let':
+     let left = 0
+     left = 1        // error[E004]
+   // Use 'var' when the value needs to change.
+2. Using Python-style negative indexing:
+     nums[-1]        // ❌ not allowed in Mochi
+   // Check boundaries explicitly instead.
+3. Using '=' instead of '==' when comparing:
+     if left = right { }
+   // Use '==' for comparisons.
+*/
