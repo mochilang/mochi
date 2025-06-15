@@ -1,0 +1,57 @@
+// LeetCode #134: Gas Station
+// Below are some common Mochi language errors and how to fix them.
+//
+// Error 1: Using '=' instead of '==' for comparison
+// if gas[i] = cost[i] { ... }
+// Fix:
+// if gas[i] == cost[i] { ... }
+//
+// Error 2: Declaring a mutable variable with 'let'
+// let total = 0
+// total = total + gas[i]  // ❌
+// Fix:
+// var total = 0
+// total = total + gas[i]
+//
+// Error 3: Off-by-one loop range
+// for i in 1..n { }
+// Fix:
+// for i in 0..n { }
+
+fun canCompleteCircuit(gas: list<int>, cost: list<int>): int {
+  let n = len(gas)
+  var total = 0
+  var tank = 0
+  var start = 0
+  var i = 0
+  while i < n {
+    total = total + gas[i] - cost[i]
+    tank = tank + gas[i] - cost[i]
+    if tank < 0 {
+      start = i + 1
+      tank = 0
+    }
+    i = i + 1
+  }
+  if total >= 0 {
+    return start
+  }
+  return -1
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect canCompleteCircuit([1,2,3,4,5], [3,4,5,1,2]) == 3
+}
+
+test "example 2" {
+  expect canCompleteCircuit([2,3,4], [3,4,3]) == (-1)
+}
+
+// Additional tests
+
+test "single station" {
+  expect canCompleteCircuit([5], [4]) == 0
+}
+
