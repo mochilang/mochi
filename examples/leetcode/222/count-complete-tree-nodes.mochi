@@ -1,0 +1,59 @@
+// Solution for LeetCode problem 222 - Count Complete Tree Nodes
+
+// Binary tree definition reused across the LeetCode examples.
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Count the number of nodes in a complete binary tree.
+fun countNodes(root: Tree): int {
+  return match root {
+    Leaf => 0
+    Node(l, _, r) => countNodes(l) + countNodes(r) + 1
+  }
+}
+
+// Example tree: [1,2,3,4,5,6]
+let example1 = Node {
+  left: Node {
+    left: Node { left: Leaf {}, value: 4, right: Leaf {} },
+    value: 2,
+    right: Node { left: Leaf {}, value: 5, right: Leaf {} }
+  },
+  value: 1,
+  right: Node {
+    left: Node { left: Leaf {}, value: 6, right: Leaf {} },
+    value: 3,
+    right: Leaf {}
+  }
+}
+
+// Basic test cases from LeetCode
+
+test "example 1" {
+  expect countNodes(example1) == 6
+}
+
+test "single node" {
+  expect countNodes(Node { left: Leaf {}, value: 1, right: Leaf {} }) == 1
+}
+
+test "empty" {
+  expect countNodes(Leaf {}) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to return 0 for the Leaf case:
+     fun countNodes(t: Tree): int {
+       Node(l, _, r) => ...   // ❌ missing Leaf branch
+     }
+   // Provide a branch for Leaf as shown above.
+2. Using '=' instead of '==' in tests:
+     expect countNodes(Leaf {}) = 0  // ❌ assignment
+   // Use '==' for equality comparison.
+3. Reassigning an immutable binding:
+     let n = 0
+     n = n + 1  // ❌ cannot reassign
+   // Declare with 'var' when mutation is required.
+*/
