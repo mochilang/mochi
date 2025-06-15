@@ -1,0 +1,61 @@
+fun rob(nums: list<int>): int {
+  let n = len(nums)
+  if n == 0 {
+    return 0
+  }
+  if n == 1 {
+    return nums[0]
+  }
+
+  var prev2 = nums[0]
+  var prev1 = nums[0]
+  if nums[1] > prev1 {
+    prev1 = nums[1]
+  }
+  var i = 2
+  while i < n {
+    let take = prev2 + nums[i]
+    var best = prev1
+    if take > best {
+      best = take
+    }
+    prev2 = prev1
+    prev1 = best
+    i = i + 1
+  }
+  return prev1
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect rob([1,2,3,1]) == 4
+}
+
+test "example 2" {
+  expect rob([2,7,9,3,1]) == 12
+}
+
+// Additional tests
+
+test "empty" {
+  expect rob([]) == 0
+}
+
+test "single house" {
+  expect rob([5]) == 5
+}
+
+test "two houses" {
+  expect rob([2,1]) == 2
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare mutable variables with `var` when they will be reassigned.
+   Here `prev2` and `prev1` must use `var` because their values change.
+2. Using Python-style increments like `i++` is invalid syntax.
+   Instead write `i = i + 1`.
+3. Confusing assignment `=` with equality `==` in conditions will cause errors.
+   Always use `==` when comparing values.
+*/
