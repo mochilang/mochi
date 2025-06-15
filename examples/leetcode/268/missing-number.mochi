@@ -1,0 +1,43 @@
+// Solution for LeetCode problem 268 - Missing Number
+
+fun missingNumber(nums: list<int>): int {
+  let n = len(nums)
+  var sum = 0
+  for num in nums {
+    sum = sum + num
+  }
+  let expected = n * (n + 1) / 2
+  return expected - sum
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect missingNumber([3,0,1]) == 2
+}
+
+test "example 2" {
+  expect missingNumber([0,1]) == 2
+}
+
+test "example 3" {
+  expect missingNumber([9,6,4,2,3,5,7,0,1]) == 8
+}
+
+// Additional edge cases
+
+test "single zero" {
+  expect missingNumber([0]) == 1
+}
+
+test "already ordered" {
+  expect missingNumber([0,2,1,4,5,6,7,8,9]) == 3
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparison in tests or conditionals.
+2. Attempting to call non-existent helpers like 'sum(nums)' - accumulate with a loop instead.
+3. Declaring a variable with 'let' and then trying to modify it. Use 'var' when mutation is needed, as with 'sum'.
+4. Off-by-one mistakes in ranges. Remember the array contains numbers 0..n with exactly one missing.
+*/
