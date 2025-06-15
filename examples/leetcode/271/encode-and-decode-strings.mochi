@@ -1,0 +1,75 @@
+fun parseInt(s: string): int {
+  var result = 0
+  var i = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(s) {
+    result = result * 10 + digits[s[i]]
+    i = i + 1
+  }
+  return result
+}
+
+fun encode(strs: list<string>): string {
+  var result = ""
+  var i = 0
+  while i < len(strs) {
+    let s = strs[i]
+    result = result + str(len(s)) + "#" + s
+    i = i + 1
+  }
+  return result
+}
+
+fun decode(s: string): list<string> {
+  var result: list<string> = []
+  var i = 0
+  while i < len(s) {
+    var j = i
+    while s[j] != "#" {
+      j = j + 1
+    }
+    let lenStr = s[i:j]
+    let n = parseInt(lenStr)
+    let word = s[j+1:j+1+n]
+    result = result + [word]
+    i = j + 1 + n
+  }
+  return result
+}
+
+// Test round trip encoding/decoding
+
+test "round trip" {
+  let strs = ["lint", "code", "love", "you"]
+  expect decode(encode(strs)) == strs
+}
+
+test "empty list" {
+  var strs: list<string> = []
+  expect decode(encode(strs)) == strs
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying Python-style string join:
+     "#".join(strs)    // ❌ not Mochi
+   Fix: loop and concatenate strings manually.
+2. Using '=' instead of '==' in conditions:
+     if s[i] = "#" { ... }  // ❌ assignment
+   Fix: use '==' for comparison.
+3. Reassigning a value declared with 'let':
+     let x = 1
+     x = x + 1          // ❌ cannot reassign
+   Fix: use 'var x = 1' when a variable changes.
+*/
