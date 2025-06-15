@@ -1,31 +1,35 @@
-// LeetCode 133 - Clone Graph
+// LeetCode 133 - Clone Graph implementation from scratch
 
-// Node definition for an undirected graph.
+// Node definition for an undirected graph
+// A node can be Nil or a record with a value and list of neighbors
+// This mirrors the typical LeetCode structure where each node
+// is identified by its integer value
+
 type Node =
   Nil
   | N(val: int, neighbors: list<Node>)
 
-// Clone the graph starting from `root` using DFS with memoization.
+// cloneGraph performs a deep copy using DFS with memoization
 fun cloneGraph(root: Node): Node {
-  var clones: map<int, Node> = {}
+  var seen: map<int, Node> = {}
 
   fun dfs(n: Node): Node {
     return match n {
       Nil => Nil {}
       N(v, neigh) => {
-        if v in clones { return clones[v] }
+        if v in seen { return seen[v] }
 
-        // placeholder node to break cycles
-        clones[v] = N { val: v, neighbors: [] }
+        // create placeholder first so cycles don't loop forever
+        seen[v] = N { val: v, neighbors: [] }
 
-        var clonedNeighbors: list<Node> = []
+        var resultNeighbors: list<Node> = []
         for nb in neigh {
-          clonedNeighbors = clonedNeighbors + [dfs(nb)]
+          resultNeighbors = resultNeighbors + [dfs(nb)]
         }
 
-        let newNode = N { val: v, neighbors: clonedNeighbors }
-        clones[v] = newNode
-        newNode
+        let nodeCopy = N { val: v, neighbors: resultNeighbors }
+        seen[v] = nodeCopy
+        nodeCopy
       }
     }
   }
@@ -33,7 +37,7 @@ fun cloneGraph(root: Node): Node {
   return dfs(root)
 }
 
-// Example graph: 1 -> 2 -> 3 -> 4
+// Example graph for tests: chain 1 -> 2 -> 3 -> 4
 let g4 = N { val: 4, neighbors: [] }
 let g3 = N { val: 3, neighbors: [g4] }
 let g2 = N { val: 2, neighbors: [g3] }
@@ -83,20 +87,21 @@ test "independent copy" {
 
 /*
 Common Mochi language errors and how to fix them:
-1. Confusing '=' with '==' in conditions:
-     if a = b { }   // ❌ assigns to a
-     if a == b { }  // ✅ compares values
-2. Attempting to mutate a value declared with 'let':
+1. Using '=' instead of '==' in a condition will assign instead of compare:
+     if a = b { }
+   Use '==' for equality checks.
+2. Reassigning a value defined with 'let':
      let m = {}
-    m = {1: N { val: 1, neighbors: [] }} // error[E004]
-   Use 'var m: map<int, Node> = {}' when mutation is required.
-3. Missing element types for an empty collection:
+     m = {1: N { val: 1, neighbors: [] }} // error[E004]
+   Use 'var m: map<int, Node> = {}' when you need mutation.
+3. Creating an empty collection without specifying element types:
      var q = []  // error[I012]
    Provide the type, e.g. 'var q: list<Node> = []'.
-4. Not returning a value from every branch:
+4. Failing to return a value on every code path:
      fun f(x: int): int {
        if x > 0 { return 1 }
        // missing else branch -> error
      }
-   Ensure all paths yield the expected type.
+   Ensure all branches return the expected type.
 */
+
