@@ -1,0 +1,91 @@
+// Solution for LeetCode problem 212 - Word Search II
+
+fun exist(board: list<list<string>>, word: string): bool {
+  let m = len(board)
+  if m == 0 {
+    return false
+  }
+  let n = len(board[0])
+  var visited: list<list<bool>> = []
+  var r = 0
+  while r < m {
+    var row: list<bool> = []
+    var c = 0
+    while c < n {
+      row = row + [false]
+      c = c + 1
+    }
+    visited = visited + [row]
+    r = r + 1
+  }
+
+  fun dfs(r: int, c: int, idx: int): bool {
+    if idx == len(word) {
+      return true
+    }
+    if r < 0 || r >= m || c < 0 || c >= n {
+      return false
+    }
+    if visited[r][c] {
+      return false
+    }
+    if board[r][c] != word[idx] {
+      return false
+    }
+    visited[r][c] = true
+    if dfs(r+1, c, idx+1) || dfs(r-1, c, idx+1) || dfs(r, c+1, idx+1) || dfs(r, c-1, idx+1) {
+      visited[r][c] = false
+      return true
+    }
+    visited[r][c] = false
+    return false
+  }
+
+  for i in 0..m {
+    for j in 0..n {
+      if dfs(i, j, 0) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+fun findWords(board: list<list<string>>, words: list<string>): list<string> {
+  var found: list<string> = []
+  for w in words {
+    if exist(board, w) {
+      found = found + [w]
+    }
+  }
+  return found
+}
+
+// Test cases from LeetCode
+let board: list<list<string>> = [
+  ["o","a","a","n"],
+  ["e","t","a","e"],
+  ["i","h","k","r"],
+  ["i","f","l","v"],
+]
+
+let words = ["oath", "pea", "eat", "rain"]
+
+test "example" {
+  let result = from w in findWords(board, words) sort by w select w
+  expect result == ["eat", "oath"]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing characters:
+     if board[i][j] = word[k] { ... }   // ❌ assignment
+   Use '==' for equality:
+     if board[i][j] == word[k] { ... }  // ✅
+2. Forgetting to mark cells as visited, leading to reused letters:
+   always set 'visited[r][c] = true' before recursive calls and reset after.
+3. Reassigning an immutable binding:
+     let found = []
+     found = found + [w]               // ❌ cannot reassign
+   Declare with 'var' when the value will change.
+*/
