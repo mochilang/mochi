@@ -1,0 +1,84 @@
+fun getSkyline(buildings: list<list<int>>): list<list<int>> {
+  var edges: list<list<int>> = []
+  for b in buildings {
+    // start edge uses negative height so it sorts before ending at same x
+    edges = edges + [[b[0], -b[2]]]
+    edges = edges + [[b[1], b[2]]]
+  }
+  // sort by x then height
+  let byH = from e in edges sort by e[1] select e
+  let sorted = from e in byH sort by e[0] select e
+  var heights: list<int> = [0]
+  var prev = 0
+  var result: list<list<int>> = []
+  for edge in sorted {
+    let x = edge[0]
+    let h = edge[1]
+    if h < 0 {
+      // add building height
+      heights = heights + [-h]
+    } else {
+      // remove one occurrence of height
+      var idx = -1
+      for i in 0..len(heights) {
+        if heights[i] == h {
+          idx = i
+          break
+        }
+      }
+      if idx >= 0 {
+        heights = heights[0:idx] + heights[idx+1:len(heights)]
+      }
+    }
+    // find current max height
+    var curr = 0
+    for ht in heights {
+      if ht > curr {
+        curr = ht
+      }
+    }
+    if curr != prev {
+      result = result + [[x, curr]]
+      prev = curr
+    }
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect getSkyline([[2,9,10],[3,7,15],[5,12,12],[15,20,10],[19,24,8]]) == [
+    [2,10], [3,15], [7,12], [12,0], [15,10], [20,8], [24,0]
+  ]
+}
+
+test "example 2" {
+  expect getSkyline([[0,2,3],[2,5,3]]) == [[0,3],[5,0]]
+}
+
+// Additional edge cases
+
+test "single building" {
+  expect getSkyline([[1,5,4]]) == [[1,4],[5,0]]
+}
+
+test "overlap" {
+  expect getSkyline([[1,3,3],[1,4,2],[3,4,1]]) == [[1,3],[3,2],[4,0]]
+}
+
+/*
+Common Mochi language mistakes and fixes:
+1. Forgetting to specify a type for an empty list:
+     var edges = []
+   Provide the element type:
+     var edges: list<list<int>> = []
+2. Using Python-style list methods:
+     heights.append(h)
+   In Mochi use concatenation:
+     heights = heights + [h]
+3. Writing '=' instead of '==' in comparisons:
+     if curr = prev { }
+   Use '==' to compare values:
+     if curr == prev { }
+*/
