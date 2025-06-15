@@ -1,8 +1,8 @@
 fun getPermutation(n: int, k: int): string {
   // Precompute factorial values
-  var fact = 1
+  var factVal = 1
   for i in 1..n+1 {
-    fact = fact * i
+    factVal = factVal * i
   }
 
   // Initialize list of available numbers
@@ -17,12 +17,12 @@ fun getPermutation(n: int, k: int): string {
   var result = ""
   i = 0
   while i < n {
-    fact = fact / (n - i)
-    let idx = k0 / fact
+    factVal = factVal / (n - i)
+    let idx = k0 / factVal
     let digit = nums[idx]
     result = result + str(digit)
     nums = nums[0:idx] + nums[idx+1:len(nums)]
-    k0 = k0 % fact
+    k0 = k0 % factVal
     i = i + 1
   }
   return result
@@ -52,3 +52,6 @@ test "example 3" {
 // 3. Off-by-one mistakes when creating ranges.
 //    for i in 1..n { }  // ❌ loops from 1 to n-1
 //    for i in 1..n+1 { } // ✅ loops from 1 to n
+// 4. Using reserved keywords like 'fact' as variable names.
+//    var fact = 1       // ❌ parse error
+//    var factVal = 1    // ✅ choose a different name
