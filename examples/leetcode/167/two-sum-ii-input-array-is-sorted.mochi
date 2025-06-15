@@ -1,0 +1,36 @@
+fun twoSum(numbers: list<int>, target: int): list<int> {
+  var left = 0
+  var right = len(numbers) - 1
+  while left < right {
+    let sum = numbers[left] + numbers[right]
+    if sum == target {
+      // return 1-indexed positions
+      return [left + 1, right + 1]
+    } else if sum < target {
+      left = left + 1
+    } else {
+      right = right - 1
+    }
+  }
+  return []
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect twoSum([2,7,11,15], 9) == [1,2]
+}
+
+test "example 2" {
+  expect twoSum([2,3,4], 6) == [1,3]
+}
+
+test "example 3" {
+  expect twoSum([-1,0], -1) == [1,2]
+}
+
+// Common Mochi mistakes and how to avoid them:
+// 1. Confusing assignment '=' with comparison '=='. Use '==' inside conditionals.
+// 2. Using a 'let' variable when mutation is needed. Declare pointers with 'var'.
+// 3. Forgetting that list indices start at 0. Adjust the result to be 1-indexed.
+// 4. Attempting to use Python-style range like 'for i in range(n)'. Use '0..n'.
