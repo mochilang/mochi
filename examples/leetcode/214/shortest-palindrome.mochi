@@ -1,0 +1,70 @@
+// Solution for LeetCode problem 214 - Shortest Palindrome
+
+fun isPalindrome(s: string): bool {
+  var i = 0
+  var j = len(s) - 1
+  while i < j {
+    if s[i] != s[j] {
+      return false
+    }
+    i = i + 1
+    j = j - 1
+  }
+  return true
+}
+
+fun shortestPalindrome(s: string): string {
+  let n = len(s)
+  var i = n
+  while i > 0 {
+    if isPalindrome(s[0:i]) {
+      let suffix = s[i:n]
+      var rev = ""
+      var k = len(suffix) - 1
+      while k >= 0 {
+        rev = rev + suffix[k]
+        k = k - 1
+      }
+      return rev + s
+    }
+    i = i - 1
+  }
+  return s
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect shortestPalindrome("aacecaaa") == "aaacecaaa"
+}
+
+test "example 2" {
+  expect shortestPalindrome("abcd") == "dcbabcd"
+}
+
+// Additional edge cases
+
+test "empty" {
+  expect shortestPalindrome("") == ""
+}
+
+test "already palindrome" {
+  expect shortestPalindrome("aba") == "aba"
+}
+
+test "single char" {
+  expect shortestPalindrome("a") == "a"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Confusing assignment '=' with comparison '=='.
+   if s[i] = s[j] { }  // ❌ assignment
+   if s[i] == s[j] { } // ✅ comparison
+2. Using negative indices like s[-1]. Mochi does not allow this.
+   // Fix: track indices manually and check >= 0 before indexing.
+3. Reassigning an immutable value.
+   let count = 0
+   count = count + 1   // ❌ cannot modify 'let'
+   // Fix: declare with 'var count = 0' when mutation is needed.
+*/
