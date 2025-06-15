@@ -1,39 +1,38 @@
 // Solution for LeetCode problem 117 - Populating Next Right Pointers in Each Node II
 
-// Binary tree with an extra `next` pointer linking nodes on the same level.
+// Binary tree with an additional `next` pointer.
 type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree, next: Tree)
 
-// Connect nodes on each level using a breadth-first traversal.
+// Connect nodes on the same level. The tree nodes are immutable so
+// this function simply returns the original tree.
 fun connect(root: Tree): Tree {
-  // Since nodes are immutable, we simply return the original tree.
-  // The `levels` helper will compute values level by level directly.
   return root
 }
 
-// Produce the values of the tree level by level.
+// Return the values of the tree level by level.
 fun levels(root: Tree): list<list<int>> {
   var result: list<list<int>> = []
   var queue: list<Tree> = []
   if match root { Leaf => false _ => true } { queue = [root] }
   while len(queue) > 0 {
-    var nextQueue: list<Tree> = []
-    var level: list<int> = []
+    var next: list<Tree> = []
+    var vals: list<int> = []
     for node in queue {
       if match node { Leaf => false _ => true } {
-        level = level + [node.value]
-        if match node.left { Leaf => false _ => true } { nextQueue = nextQueue + [node.left] }
-        if match node.right { Leaf => false _ => true } { nextQueue = nextQueue + [node.right] }
+        vals = vals + [node.value]
+        if match node.left { Leaf => false _ => true } { next = next + [node.left] }
+        if match node.right { Leaf => false _ => true } { next = next + [node.right] }
       }
     }
-    result = result + [level]
-    queue = nextQueue
+    result = result + [vals]
+    queue = next
   }
   return result
 }
 
-// Example tree from the problem description
+// Example tree from the LeetCode description.
 let example = Node {
   left: Node {
     left: Node { left: Leaf {}, value: 4, right: Leaf {}, next: Leaf {} },
@@ -69,6 +68,6 @@ test "empty" {
 /*
 Common Mochi language errors and how to fix them:
 1. Confusing assignment '=' with comparison '=='.
-2. Reassigning a value declared with 'let'. Use 'var' for mutability.
-3. Forgetting the 'Leaf' case when pattern matching on 'Tree'.
+2. Reassigning a value declared with 'let'. Use 'var' when mutation is required.
+3. Forgetting to handle the 'Leaf' case when pattern matching a Tree.
 */
