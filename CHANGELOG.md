@@ -1,4 +1,17 @@
 # 📦 CHANGELOG.md
+## [0.7.3] – 2025-06-15
+
+### Added
+
+* Logic programming with `fact`, `rule` and `query`
+* `if` expressions return a value
+* List concatenation using `+`
+* Nested functions and `nonlocal` in Python
+* Nested functions, `in` operator and precedence fixes in Go
+* Union variant recognition and list binary ops
+* Optional `=` for struct types
+* More LeetCode examples 101–200
+
 ## [0.7.2] – 2025-06-14
 
 ### Added
