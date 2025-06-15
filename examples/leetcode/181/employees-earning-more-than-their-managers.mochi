@@ -1,0 +1,54 @@
+// Solution for LeetCode problem 181 - Employees Earning More Than Their Managers
+
+// Define a record type representing the Employee table
+
+type Employee {
+  id: int
+  name: string
+  salary: int
+  managerId: int
+}
+
+// Return the list of employee names whose salary is greater than their manager's
+fun higherSalaryThanManager(employees: list<Employee>): list<string> {
+  var result: list<string> = []
+  for e in employees {
+    if e.managerId != 0 { // assume 0 means no manager (null)
+      for m in employees {
+        if m.id == e.managerId {
+          if e.salary > m.salary {
+            result = result + [e.name]
+          }
+          break
+        }
+      }
+    }
+  }
+  return result
+}
+
+// Example data from the LeetCode problem statement
+let employees: list<Employee> = [
+  Employee { id: 1, name: "Joe", salary: 70000, managerId: 3 },
+  Employee { id: 2, name: "Henry", salary: 80000, managerId: 4 },
+  Employee { id: 3, name: "Sam", salary: 60000, managerId: 0 },
+  Employee { id: 4, name: "Max", salary: 90000, managerId: 0 }
+]
+
+test "example" {
+  expect higherSalaryThanManager(employees) == ["Joe"]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if e.salary = m.salary { ... }      // ❌ assignment
+     if e.salary == m.salary { ... }     // ✅ comparison
+2. Reassigning a 'let' binding:
+     let names = []
+     names = names + ["Bob"]              // ❌ cannot reassign immutable binding
+   Use 'var' when mutation is required.
+3. Forgetting to specify the element type when initializing an empty list:
+     var res = []                          // ❌ type cannot be inferred
+     var res: list<string> = []            // ✅ specify the list element type
+*/
