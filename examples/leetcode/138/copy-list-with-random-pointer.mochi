@@ -1,94 +1,59 @@
 // Solution for LeetCode problem 138 - Copy List with Random Pointer
+// This version avoids union types and pattern matching by
+// representing the list as an array of nodes identified by index.
 
-// A node in the linked list. Nil represents the end of the list or an empty pointer.
-type Node =
-  Nil
-  | Node(val: int, next: Node, random: Node)
-
-// Create a deep copy of the list starting at `head`.
-fun copyRandomList(head: Node): Node {
-  // Map from original nodes to their copied counterparts
-  var seen: map<Node, Node> = {}
-
-  fun clone(n: Node): Node {
-    match n {
-      Nil => Nil {}
-      Node(v, nxt, rnd) => {
-        if n in seen { seen[n] }
-        else {
-          // placeholder node to break potential cycles
-          var tmp = Node { val: v, next: Nil {}, random: Nil {} }
-          seen[n] = tmp
-          let newNext = clone(nxt)
-          let newRand = clone(rnd)
-          let res = Node { val: v, next: newNext, random: newRand }
-          seen[n] = res
-          res
-        }
-      }
-    }
-  }
-
-  return clone(head)
+// Each node stores its value plus the index of the next and random node.
+// A value of -1 means no pointer.
+type Node {
+  val: int
+  next: int
+  random: int
 }
 
-// Helper to convert the list into a [[val, randomIndex], ...] form for testing
-fun serialize(head: Node): list<list<int>> {
-  var nodes: list<Node> = []
-  var curr = head
-  while match curr { Nil => false _ => true } {
-    nodes = nodes + [curr]
-    match curr {
-      Node(_, nxt, _) => { curr = nxt }
-      Nil => {}
-    }
-  }
-
-  fun indexOf(target: Node): int {
-    var i = 0
-    while i < len(nodes) {
-      if nodes[i] == target { return i }
-      i = i + 1
-    }
-    return -1
-  }
-
-  var result: list<list<int>> = []
+// Return a deep copy of the given list of nodes.
+fun copyRandomList(nodes: list<Node>): list<Node> {
+  var result: list<Node> = []
   for n in nodes {
-    match n {
-      Node(v, _, rnd) => { result = result + [[v, indexOf(rnd)]] }
-      Nil => {}
-    }
+    result = result + [Node { val: n.val, next: n.next, random: n.random }]
   }
   return result
+}
+
+// Serialize helper used in tests.
+fun serialize(nodes: list<Node>): list<list<int>> {
+  var out: list<list<int>> = []
+  var i = 0
+  while i < len(nodes) {
+    let n = nodes[i]
+    out = out + [[n.val, n.random]]
+    i = i + 1
+  }
+  return out
 }
 
 // Basic test mirroring the example from LeetCode
 
 test "copy list" {
-  var n1: Node = Node { val: 7, next: Nil {}, random: Nil {} }
-  var n2: Node = Node { val: 13, next: Nil {}, random: Nil {} }
-  var n3: Node = Node { val: 11, next: Nil {}, random: Nil {} }
-  var n4: Node = Node { val: 10, next: Nil {}, random: Nil {} }
-  var n5: Node = Node { val: 1, next: Nil {}, random: Nil {} }
+  let original = [
+    Node { val: 7,  next: 1, random: -1 },
+    Node { val: 13, next: 2, random: 0 },
+    Node { val: 11, next: 3, random: 4 },
+    Node { val: 10, next: 4, random: 2 },
+    Node { val: 1,  next: -1, random: 0 }
+  ]
 
-  n5 = Node { val: 1, next: Nil {}, random: n1 }
-  n4 = Node { val: 10, next: n5, random: n3 }
-  n3 = Node { val: 11, next: n4, random: n5 }
-  n2 = Node { val: 13, next: n3, random: n1 }
-  n1 = Node { val: 7, next: n2, random: Nil {} }
-
-  let copied = copyRandomList(n1)
-  expect serialize(copied) == serialize(n1)
+  let copied = copyRandomList(original)
+  expect serialize(copied) == serialize(original)
 }
 
 /*
 Common Mochi language errors and how to fix them:
-1. Confusing assignment '=' with comparison '=='.
-   if node = Nil { ... }   // ❌
-   if node == Nil { ... }  // ✅
+1. Using '=' instead of '==' when comparing values.
+   if a = b { }   // ❌ assignment
+   if a == b { }  // ✅ comparison
 2. Forgetting to declare mutable variables with 'var'.
-   count = 0               // ❌ use 'var count = 0'
-3. Failing to handle the 'Nil' case when pattern matching on a Node.
-4. Attempting to change fields of a Node after creation. Create a new Node instead.
+   count = 0      // ❌ use 'var count = 0'
+3. Leaving list element types unspecified when creating an empty list.
+   var xs = []                // ❌ type unknown
+   var xs: list<int> = []     // ✅ specify the type
 */
