@@ -34,12 +34,12 @@ fun minDepth(root: Tree): int {
 
 test "example 1" {
   let tree = Node {
-    left: Node { left: Leaf, value: 9, right: Leaf },
+    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
     value: 3,
     right: Node {
-      left: Node { left: Leaf, value: 15, right: Leaf },
+      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
       value: 20,
-      right: Node { left: Leaf, value: 7, right: Leaf }
+      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
     }
   }
   expect minDepth(tree) == 2
@@ -47,19 +47,19 @@ test "example 1" {
 
 test "example 2" {
   let tree = Node {
-    left: Leaf,
+    left: Leaf {},
     value: 2,
-    right: Node { left: Leaf, value: 3, right: Leaf }
+    right: Node { left: Leaf {}, value: 3, right: Leaf {} }
   }
   expect minDepth(tree) == 2
 }
 
 test "single node" {
-  expect minDepth(Node { left: Leaf, value: 1, right: Leaf }) == 1
+  expect minDepth(Node { left: Leaf {}, value: 1, right: Leaf {} }) == 1
 }
 
 test "empty" {
-  expect minDepth(Leaf) == 0
+  expect minDepth(Leaf {}) == 0
 }
 
 /*
@@ -74,7 +74,10 @@ Common Mochi language errors and how to fix them:
 3. Using 'null' or 'None' instead of the 'Leaf' constructor:
      let t = null  // error[I001]
    // Fix: use 'Leaf' for an empty tree node.
-4. Forgetting to return a value from all match branches:
+4. Writing `Leaf` instead of `Leaf {}` when constructing a value:
+     let t = Leaf  // error[T008]
+   // Fix: call the constructor with `Leaf {}`.
+5. Forgetting to return a value from all match branches:
      fun f(x: int): int {
        match x { 1 => 1 }
      }
