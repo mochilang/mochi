@@ -1,0 +1,52 @@
+// Solution for LeetCode problem 144 - Binary Tree Preorder Traversal
+
+// Define a binary tree with Leaf for empty and Node for value with children.
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Recursively traverse the tree in preorder.
+fun preorderTraversal(t: Tree): list<int> {
+  return match t {
+    Leaf => [] as list<int>
+    Node(l, v, r) => [v] + preorderTraversal(l) + preorderTraversal(r)
+  }
+}
+
+// Example tree: [1,null,2,3]
+let example1 = Node {
+  left: Leaf {},
+  value: 1,
+  right: Node {
+    left: Node { left: Leaf {}, value: 3, right: Leaf {} },
+    value: 2,
+    right: Leaf {}
+  }
+}
+
+// Basic test cases based on LeetCode
+
+test "example 1" {
+  expect preorderTraversal(example1) == [1,2,3]
+}
+
+test "empty" {
+  expect preorderTraversal(Leaf {}) == []
+}
+
+test "single node" {
+  expect preorderTraversal(Node { left: Leaf {}, value: 1, right: Leaf {} }) == [1]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons.
+   if value = 1 { ... }  // ❌ assignment
+   if value == 1 { ... } // ✅ comparison
+2. Reassigning an immutable 'let' variable.
+   let res = []
+   res = [1]             // ❌ cannot assign, use 'var'
+3. Forgetting type annotations for empty lists.
+   var path = []         // ❌ type unknown
+   var path: list<int> = [] // ✅ specify element type
+*/
