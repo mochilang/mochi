@@ -1,0 +1,80 @@
+// Solution for LeetCode problem 133 - Clone Graph
+
+// Each node has a value and a list of neighbor nodes.
+// We model this using a single variant ADT.
+
+type Node =
+  Node(val: int, neighbors: list<Node>)
+
+// Clone the graph rooted at `node` using BFS to gather edges
+// and DFS to rebuild the structure.
+fun cloneGraph(node: Node): Node {
+  // First gather adjacency information
+  var edges: map<int, list<int>> = {}
+  var visited: map<int, bool> = {}
+  var queue: list<Node> = [node]
+  while len(queue) > 0 {
+    let curr = queue[0]
+    queue = queue[1:len(queue)]
+    if curr.val in visited {
+      continue
+    }
+    visited[curr.val] = true
+    var adj: list<int> = []
+    for nb in curr.neighbors {
+      adj = adj + [nb.val]
+      if !(nb.val in visited) {
+        queue = queue + [nb]
+      }
+    }
+    edges[curr.val] = adj
+  }
+
+  // Now recursively rebuild nodes from the adjacency map
+  var clones: map<int, Node> = {}
+  fun build(v: int): Node {
+    if v in clones {
+      return clones[v]
+    }
+    let neigh = from n in edges[v] select build(n)
+    let c = Node { val: v, neighbors: neigh }
+    clones[v] = c
+    return c
+  }
+
+  return build(node.val)
+}
+
+// Example graph: 1-2-3-4 forming a square
+let n4 = Node { val: 4, neighbors: [] }
+let n3 = Node { val: 3, neighbors: [n4] }
+let n2 = Node { val: 2, neighbors: [n3] }
+let g1 = Node { val: 1, neighbors: [n2] }
+
+// Tests verifying the cloned structure
+
+test "clone value" {
+  let cloned = cloneGraph(g1)
+  expect cloned.val == 1
+  expect len(cloned.neighbors) == 1
+}
+
+test "clone neighbors" {
+  let cloned = cloneGraph(g1)
+  let vals = from x in cloned.neighbors select x.val
+  expect (from x in vals sort by x select x) == [2]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+     if a = b { }            // ❌ assignment
+     if a == b { }           // ✅ comparison
+2. Reassigning a value declared with 'let':
+     let seen = {}
+     seen = {1: Node { val: 1, neighbors: [] }} // error[E004]
+   Use 'var seen: map<int, Node> = {}' when mutation is needed.
+3. Forgetting to specify types when initializing an empty list:
+     var q = []              // error[I012]
+   Declare the element type, e.g. 'var q: list<Node> = []'.
+*/
