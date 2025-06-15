@@ -1,0 +1,46 @@
+// Solution for LeetCode problem 206 - Reverse Linked List
+// This example operates on a list of integers to mimic a linked list.
+
+fun reverseList(nums: list<int>): list<int> {
+  var result: list<int> = []
+  var i = len(nums) - 1
+  while i >= 0 {
+    result = result + [nums[i]]
+    i = i - 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect reverseList([1,2,3,4,5]) == [5,4,3,2,1]
+}
+
+test "example 2" {
+  expect reverseList([1,2]) == [2,1]
+}
+
+// Additional edge cases
+
+test "single element" {
+  expect reverseList([1]) == [1]
+}
+
+test "empty list" {
+  expect reverseList([]) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to use `var` for a mutable variable.
+   let i = 0
+   i = i + 1          // ❌ cannot assign to immutable binding
+   var j = 0          // ✅ use `var` when the value will change
+2. Assuming Python-style negative indices work.
+   nums[-1]           // ❌ invalid index in Mochi
+   // Use a loop to access elements from the end as shown above.
+3. Trying to append to an immutable list without reassignment.
+   result.append(x)   // ❌ lists are immutable
+   result = result + [x]   // ✅ create a new list instead
+*/
