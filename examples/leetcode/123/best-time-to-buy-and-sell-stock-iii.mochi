@@ -1,0 +1,60 @@
+fun maxProfit(prices: list<int>): int {
+  let n = len(prices)
+  if n == 0 {
+    return 0
+  }
+  var buy1 = 0 - prices[0]
+  var sell1 = 0
+  var buy2 = 0 - prices[0]
+  var sell2 = 0
+  var i = 1
+  while i < n {
+    let price = prices[i]
+    let b1 = 0 - price
+    if b1 > buy1 {
+      buy1 = b1
+    }
+    let s1 = buy1 + price
+    if s1 > sell1 {
+      sell1 = s1
+    }
+    let b2 = sell1 - price
+    if b2 > buy2 {
+      buy2 = b2
+    }
+    let s2 = buy2 + price
+    if s2 > sell2 {
+      sell2 = s2
+    }
+    i = i + 1
+  }
+  return sell2
+}
+
+// Test cases from LeetCode problem statement
+
+test "example 1" {
+  expect maxProfit([3,3,5,0,0,3,1,4]) == 6
+}
+
+test "example 2" {
+  expect maxProfit([1,2,3,4,5]) == 4
+}
+
+test "example 3" {
+  expect maxProfit([7,6,4,3,1]) == 0
+}
+
+// Additional tests
+
+test "single price" {
+  expect maxProfit([5]) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '++' to increment a variable. Mochi does not support '++'; use 'i = i + 1'.
+2. Reassigning a variable defined with 'let'. Use 'var' for mutable bindings.
+3. Writing 'if x = y' for comparisons. Use '==' instead.
+4. Off-by-one mistakes when looping through lists. Remember 'while i < n' visits indices 0..n-1.
+*/
