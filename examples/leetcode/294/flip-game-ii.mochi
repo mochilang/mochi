@@ -1,0 +1,62 @@
+// Solution for LeetCode problem 294 - Flip Game II
+// Determine if the starting player can guarantee a win.
+
+fun canWin(s: string): bool {
+  var memo: map<string, bool> = {}
+
+  fun helper(cur: string): bool {
+    if cur in memo {
+      return memo[cur]
+    }
+    var i = 0
+    while i + 1 < len(cur) {
+      if cur[i] == "+" && cur[i+1] == "+" {
+        let next = cur[0:i] + "--" + cur[i+2:len(cur)]
+        if !helper(next) {
+          memo[cur] = true
+          return true
+        }
+      }
+      i = i + 1
+    }
+    memo[cur] = false
+    return false
+  }
+
+  return helper(s)
+}
+
+// Test cases from LeetCode examples
+
+test "example 1" {
+  expect canWin("++++") == true
+}
+
+test "example 2" {
+  expect canWin("+") == false
+}
+
+// Additional cases
+
+test "five plus" {
+  expect canWin("+++++") == false
+}
+
+test "mixed" {
+  expect canWin("+-++") == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a value declared with 'let':
+   let count = 0
+   count = count + 1       // ❌ cannot assign to immutable binding
+   var count = 0
+   count = count + 1       // ✅ declare with 'var' when mutation is needed
+2. Using the wrong equality operator:
+   if s[i] === '+' { ... } // ❌ '===' is invalid in Mochi
+   if s[i] == '+' { ... }  // ✅ use '==' for comparison
+3. Off-by-one mistakes when looping over indices:
+   for i in 0..len(s) { ... }   // ❌ last index is out of bounds
+   while i + 1 < len(s) { ... } // ✅ ensure valid slices
+*/
