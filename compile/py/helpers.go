@@ -241,3 +241,49 @@ func identName(e *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+// collectScopeInfo traverses statements to track locally declared variables and
+// variables that are assigned to. Nested function bodies are ignored since they
+// are handled separately when compiled.
+func collectScopeInfo(stmts []*parser.Statement, locals, assigns map[string]bool) {
+	for _, s := range stmts {
+		switch {
+		case s.Let != nil:
+			locals[s.Let.Name] = true
+		case s.Var != nil:
+			locals[s.Var.Name] = true
+		case s.Assign != nil:
+			assigns[s.Assign.Name] = true
+		case s.For != nil:
+			locals[s.For.Name] = true
+			collectScopeInfo(s.For.Body, locals, assigns)
+		case s.While != nil:
+			collectScopeInfo(s.While.Body, locals, assigns)
+		case s.If != nil:
+			collectScopeInfo(s.If.Then, locals, assigns)
+			if s.If.ElseIf != nil {
+				collectScopeInfo([]*parser.Statement{{If: s.If.ElseIf}}, locals, assigns)
+			}
+			collectScopeInfo(s.If.Else, locals, assigns)
+		case s.Test != nil:
+			collectScopeInfo(s.Test.Body, locals, assigns)
+		case s.On != nil:
+			collectScopeInfo(s.On.Body, locals, assigns)
+		case s.Agent != nil:
+			for _, blk := range s.Agent.Body {
+				switch {
+				case blk.Let != nil:
+					locals[blk.Let.Name] = true
+				case blk.Var != nil:
+					locals[blk.Var.Name] = true
+				case blk.Assign != nil:
+					assigns[blk.Assign.Name] = true
+				case blk.On != nil:
+					collectScopeInfo(blk.On.Body, locals, assigns)
+				case blk.Intent != nil:
+					collectScopeInfo(blk.Intent.Body, locals, assigns)
+				}
+			}
+		}
+	}
+}
