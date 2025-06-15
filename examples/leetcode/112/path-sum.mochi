@@ -20,10 +20,9 @@ fun hasPathSum(root: Tree, targetSum: int): bool {
         _ => false
       }
       if leftEmpty && rightEmpty {
-        remaining == 0
-      } else {
-        hasPathSum(l, remaining) || hasPathSum(r, remaining)
+        return remaining == 0
       }
+      return hasPathSum(l, remaining) || hasPathSum(r, remaining)
     }
   }
 }
