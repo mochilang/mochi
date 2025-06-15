@@ -904,95 +904,156 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
-	expr, err := c.compileUnary(b.Left)
+	if b == nil {
+		return "", nil
+	}
+
+	leftExpr, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
 	leftType := c.inferUnaryType(b.Left)
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+
+	operands := []string{leftExpr}
+	typesList := []types.Type{leftType}
+	ops := []string{}
+
+	for _, part := range b.Right {
+		right, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rightType := c.inferPostfixType(op.Right)
-		var next types.Type
-		switch op.Op {
-		case "+", "-", "*", "/", "%":
-			if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
-				return "", fmt.Errorf("operator %q cannot be used on types %s and %s", op.Op, leftType, rightType)
-			}
-			switch {
-			case (isInt64(leftType) && (isInt64(rightType) || isInt(rightType))) ||
-				(isInt64(rightType) && (isInt64(leftType) || isInt(leftType))):
-				expr = fmt.Sprintf("(int64(%s) %s int64(%s))", expr, op.Op, right)
-				next = types.Int64Type{}
-			case isInt(leftType) && isInt(rightType):
-				expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
-				next = types.IntType{}
-			case isFloat(leftType) && isFloat(rightType):
-				expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
-				next = types.FloatType{}
-			case op.Op == "+" && isList(leftType) && isList(rightType):
-				expr = fmt.Sprintf("append(%s, %s...)", expr, right)
-				next = leftType
-			case op.Op == "+" && isString(leftType) && isString(rightType):
-				expr = fmt.Sprintf("%s + %s", expr, right)
-				next = types.StringType{}
-			default:
-				return "", fmt.Errorf("operator %q cannot be used on types %s and %s", op.Op, leftType, rightType)
-			}
-		case "==", "!=", "<", "<=", ">", ">=":
-			if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
-				return "", fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
-			}
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
-			next = types.BoolType{}
-		case "&&", "||":
-			if !(isBool(leftType) && isBool(rightType)) {
-				return "", fmt.Errorf("operator %q cannot be used on types %s and %s", op.Op, leftType, rightType)
-			}
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
-			next = types.BoolType{}
-		case "in":
-			switch rt := rightType.(type) {
-			case types.MapType:
-				_ = rt
-				keyTemp := c.newVar()
-				mapTemp := c.newVar()
-				c.writeln(fmt.Sprintf("%s := %s", keyTemp, expr))
-				c.writeln(fmt.Sprintf("%s := %s", mapTemp, right))
-				okVar := c.newVar()
-				c.writeln(fmt.Sprintf("_, %s := %s[%s]", okVar, mapTemp, keyTemp))
-				expr = okVar
-				next = types.BoolType{}
-			case types.ListType:
-				itemVar := c.newVar()
-				listVar := c.newVar()
-				c.writeln(fmt.Sprintf("%s := %s", itemVar, expr))
-				c.writeln(fmt.Sprintf("%s := %s", listVar, right))
-				resultVar := c.newVar()
-				c.writeln(fmt.Sprintf("%s := false", resultVar))
-				iterVar := c.newVar()
-				c.writeln(fmt.Sprintf("for _, %s := range %s {", iterVar, listVar))
-				c.indent++
-				c.writeln(fmt.Sprintf("if %s == %s { %s = true; break }", iterVar, itemVar, resultVar))
-				c.indent--
-				c.writeln("}")
-				expr = resultVar
-				next = types.BoolType{}
-			case types.StringType:
-				c.imports["strings"] = true
-				expr = fmt.Sprintf("strings.Contains(%s, %s)", right, expr)
-				next = types.BoolType{}
-			default:
-				return "", fmt.Errorf("operator %q cannot be used on types %s and %s", op.Op, leftType, rightType)
-			}
-		default:
-			return "", fmt.Errorf("unsupported operator: %s", op.Op)
-		}
-		leftType = next
+		rightType := c.inferPostfixType(part.Right)
+		ops = append(ops, part.Op)
+		operands = append(operands, right)
+		typesList = append(typesList, rightType)
 	}
-	return expr, nil
+
+	precLevels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	for _, level := range precLevels {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				expr, typ, err := c.compileBinaryOp(operands[i], typesList[i], ops[i], operands[i+1], typesList[i+1])
+				if err != nil {
+					return "", err
+				}
+				operands[i] = expr
+				typesList[i] = typ
+				operands = append(operands[:i+1], operands[i+2:]...)
+				typesList = append(typesList[:i+1], typesList[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0], nil
+}
+
+func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, right string, rightType types.Type) (string, types.Type, error) {
+	var expr string
+	var next types.Type
+	switch op {
+	case "+", "-", "*", "/", "%":
+		if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
+			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+		}
+		switch {
+		case (isInt64(leftType) && (isInt64(rightType) || isInt(rightType))) ||
+			(isInt64(rightType) && (isInt64(leftType) || isInt(leftType))):
+			expr = fmt.Sprintf("(int64(%s) %s int64(%s))", left, op, right)
+			next = types.Int64Type{}
+		case isInt(leftType) && isInt(rightType):
+			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			next = types.IntType{}
+		case isFloat(leftType) && isFloat(rightType):
+			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			next = types.FloatType{}
+		case op == "+" && isList(leftType) && isList(rightType):
+			lt := leftType.(types.ListType)
+			rt := rightType.(types.ListType)
+			if equalTypes(lt.Elem, rt.Elem) {
+				expr = fmt.Sprintf("append(%s, %s...)", left, right)
+				next = leftType
+			} else {
+				c.use("_toAnySlice")
+				if _, ok := lt.Elem.(types.AnyType); !ok {
+					left = fmt.Sprintf("_toAnySlice(%s)", left)
+				}
+				if _, ok := rt.Elem.(types.AnyType); !ok {
+					right = fmt.Sprintf("_toAnySlice(%s)", right)
+				}
+				expr = fmt.Sprintf("append(%s, %s...)", left, right)
+				next = types.ListType{Elem: types.AnyType{}}
+			}
+		case op == "+" && isString(leftType) && isString(rightType):
+			expr = fmt.Sprintf("%s + %s", left, right)
+			next = types.StringType{}
+		default:
+			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+		}
+	case "==", "!=", "<", "<=", ">", ">=":
+		if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
+			return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
+		}
+		expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+		next = types.BoolType{}
+	case "&&", "||":
+		if !(isBool(leftType) && isBool(rightType)) {
+			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+		}
+		expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+		next = types.BoolType{}
+	case "in":
+		switch rightType.(type) {
+		case types.MapType:
+			keyTemp := c.newVar()
+			mapTemp := c.newVar()
+			c.writeln(fmt.Sprintf("%s := %s", keyTemp, left))
+			c.writeln(fmt.Sprintf("%s := %s", mapTemp, right))
+			okVar := c.newVar()
+			c.writeln(fmt.Sprintf("_, %s := %s[%s]", okVar, mapTemp, keyTemp))
+			expr = okVar
+			next = types.BoolType{}
+		case types.ListType:
+			itemVar := c.newVar()
+			listVar := c.newVar()
+			c.writeln(fmt.Sprintf("%s := %s", itemVar, left))
+			c.writeln(fmt.Sprintf("%s := %s", listVar, right))
+			resultVar := c.newVar()
+			c.writeln(fmt.Sprintf("%s := false", resultVar))
+			iterVar := c.newVar()
+			c.writeln(fmt.Sprintf("for _, %s := range %s {", iterVar, listVar))
+			c.indent++
+			c.writeln(fmt.Sprintf("if %s == %s { %s = true; break }", iterVar, itemVar, resultVar))
+			c.indent--
+			c.writeln("}")
+			expr = resultVar
+			next = types.BoolType{}
+		case types.StringType:
+			c.imports["strings"] = true
+			expr = fmt.Sprintf("strings.Contains(%s, %s)", right, left)
+			next = types.BoolType{}
+		default:
+			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+		}
+	default:
+		return "", types.AnyType{}, fmt.Errorf("unsupported operator: %s", op)
+	}
+	return expr, next, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {

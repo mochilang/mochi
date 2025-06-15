@@ -177,6 +177,12 @@ const (
 		"    }\n" +
 		"}\n"
 
+	helperToAnySlice = "func _toAnySlice[T any](s []T) []any {\n" +
+		"    out := make([]any, len(s))\n" +
+		"    for i, v := range s { out[i] = v }\n" +
+		"    return out\n" +
+		"}\n"
+
 	helperCast = "func _cast[T any](v any) T {\n" +
 		"    data, err := json.Marshal(v)\n" +
 		"    if err != nil { panic(err) }\n" +
@@ -346,6 +352,7 @@ var helperMap = map[string]string{
 	"_genStruct":   helperGenStruct,
 	"_fetch":       helperFetch,
 	"_toAnyMap":    helperToAnyMap,
+	"_toAnySlice":  helperToAnySlice,
 	"_cast":        helperCast,
 	"_query":       helperQuery,
 	"_load":        helperLoad,
