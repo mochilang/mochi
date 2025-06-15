@@ -1,7 +1,11 @@
-// Solution for LeetCode problem 106 - Construct Binary Tree from Inorder and Postorder Traversal
+// Solution for LeetCode 106 - Construct Binary Tree from Inorder and Postorder Traversal
+
+// Binary tree definition
+// Leaf represents an empty node
+// Node stores a value with left and right children
 
 type Tree =
-  Leaf
+  Leaf {}
   | Node(left: Tree, value: int, right: Tree)
 
 fun buildTree(inorder: list<int>, postorder: list<int>): Tree {
@@ -10,15 +14,15 @@ fun buildTree(inorder: list<int>, postorder: list<int>): Tree {
   }
 
   let rootVal = postorder[len(postorder) - 1]
-  var index = 0
-  while index < len(inorder) && inorder[index] != rootVal {
-    index = index + 1
+  var idx = 0
+  while idx < len(inorder) && inorder[idx] != rootVal {
+    idx = idx + 1
   }
 
-  let leftIn = inorder[0:index]
-  let rightIn = inorder[index + 1:len(inorder)]
-  let leftPost = postorder[0:index]
-  let rightPost = postorder[index:len(postorder) - 1]
+  let leftIn = inorder[0:idx]
+  let rightIn = inorder[idx + 1:len(inorder)]
+  let leftPost = postorder[0:idx]
+  let rightPost = postorder[idx:len(postorder) - 1]
 
   return Node {
     left: buildTree(leftIn, leftPost),
@@ -27,18 +31,20 @@ fun buildTree(inorder: list<int>, postorder: list<int>): Tree {
   }
 }
 
-fun isSameTree(p: Tree, q: Tree): bool {
-  return match p {
-    Leaf => match q {
+fun isSameTree(a: Tree, b: Tree): bool {
+  return match a {
+    Leaf => match b {
       Leaf => true
       _ => false
     }
-    Node(pl, pv, pr) => match q {
-      Node(ql, qv, qr) => pv == qv && isSameTree(pl, ql) && isSameTree(pr, qr)
+    Node(al, av, ar) => match b {
+      Node(bl, bv, br) => av == bv && isSameTree(al, bl) && isSameTree(ar, br)
       _ => false
     }
   }
 }
+
+// Test cases from LeetCode
 
 test "example 1" {
   let inorder = [9,3,15,20,7]
@@ -63,18 +69,27 @@ test "example 2" {
 }
 
 test "empty" {
-  expect buildTree([], []) == Leaf
+  let result = buildTree([], [])
+  expect match result {
+    Leaf => true
+    _ => false
+  }
 }
+
+
 
 /*
 Common Mochi language errors and how to fix them:
-1. Using '=' instead of '==' for comparisons.
+1. Using '=' instead of '=='. Example:
    if len(inorder) = 0 { } // ❌ assignment
    if len(inorder) == 0 { } // ✅ comparison
-2. Forgetting to declare mutable variables with 'var'.
-   index = index + 1 // ❌ if 'index' was declared with 'let'
-   var index = 0     // ✅ declare as 'var' when mutation is needed
-3. Slicing with out-of-range indices causes runtime errors.
+2. Forgetting to mark variables mutable with 'var'.
+   idx = idx + 1 // ❌ when 'idx' is a 'let'
+   var idx = 0    // ✅ declare as 'var' for mutation
+3. Comparing complex data types using '=='.
+   result == Leaf // ❌ type error
+   match result { Leaf => true, _ => false } // ✅ use pattern matching
+4. Slicing beyond list bounds which causes runtime errors.
    list[0:len(list)+1] // ❌ out of bounds
-   list[0:len(list)]   // ✅ valid slice
+   list[0:len(list)]   // ✅ safe slice
 */
