@@ -22,22 +22,13 @@ fun levelOrder(root: Tree): list<list<int>> {
     var level: list<int> = []
     var next: list<Tree> = []
     for node in queue {
-      match node {
-        Leaf => {}
-        Node(l, v, r) => {
-          level = level + [v]
-          match l {
-            Leaf => {}
-            _ => {
-              next = next + [l]
-            }
-          }
-          match r {
-            Leaf => {}
-            _ => {
-              next = next + [r]
-            }
-          }
+      if match node { Leaf => false _ => true } {
+        level = level + [node.value]
+        if match node.left { Leaf => false _ => true } {
+          next = next + [node.left]
+        }
+        if match node.right { Leaf => false _ => true } {
+          next = next + [node.right]
         }
       }
     }
