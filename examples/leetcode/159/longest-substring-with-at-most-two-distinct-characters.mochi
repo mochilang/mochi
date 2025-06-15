@@ -1,0 +1,73 @@
+// Solution for LeetCode problem 159 - Longest Substring with At Most Two Distinct Characters
+
+fun lengthOfLongestSubstringTwoDistinct(s: string): int {
+  var left = 0
+  var best = 0
+  var counts: map<string, int> = {}
+  var distinct = 0
+  var right = 0
+  while right < len(s) {
+    let ch = s[right]
+    if ch in counts {
+      if counts[ch] == 0 {
+        distinct = distinct + 1
+      }
+      counts[ch] = counts[ch] + 1
+    } else {
+      counts[ch] = 1
+      distinct = distinct + 1
+    }
+    while distinct > 2 {
+      let leftCh = s[left]
+      counts[leftCh] = counts[leftCh] - 1
+      if counts[leftCh] == 0 {
+        distinct = distinct - 1
+      }
+      left = left + 1
+    }
+    let length = right - left + 1
+    if length > best {
+      best = length
+    }
+    right = right + 1
+  }
+  return best
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect lengthOfLongestSubstringTwoDistinct("eceba") == 3
+}
+
+test "example 2" {
+  expect lengthOfLongestSubstringTwoDistinct("ccaabbb") == 5
+}
+
+// Additional edge cases
+
+test "empty string" {
+  expect lengthOfLongestSubstringTwoDistinct("") == 0
+}
+
+test "single char" {
+  expect lengthOfLongestSubstringTwoDistinct("aaaa") == 4
+}
+
+test "three distinct" {
+  expect lengthOfLongestSubstringTwoDistinct("abcabc") == 2
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare a mutable variable with `var` when updating state.
+     let left = 0
+     left = left + 1       // ❌ cannot assign to immutable binding
+   Use `var left = 0` instead.
+2. Accessing a map entry without checking membership first.
+     counts[ch] = counts[ch] + 1  // ❌ if `ch` not in counts
+   Check with `if ch in counts { ... }`.
+3. Using '=' instead of '==' in conditions.
+     if distinct = 2 { ... }      // ❌ assignment
+   Write `if distinct == 2 { ... }`.
+*/
