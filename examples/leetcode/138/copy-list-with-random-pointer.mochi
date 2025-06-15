@@ -1,0 +1,102 @@
+// Solution for LeetCode problem 138 - Copy List with Random Pointer
+
+// Define a linked list where each node has a value, next pointer and random pointer.
+// Nil represents the end of the list (like null).
+type ListNode =
+  Nil
+  | Node(val: int, next: ListNode, random: ListNode)
+
+// Recursively clone the list using a map to preserve random links.
+fun copyRandomList(head: ListNode): ListNode {
+  var clones: map<ListNode, ListNode> = {}
+  fun clone(node: ListNode): ListNode {
+    return match node {
+      Nil => Nil {}
+      Node(v, n, r) => {
+        if node in clones { return clones[node] }
+        // placeholder to break cycles
+        var temp = Node { val: v, next: Nil {}, random: Nil {} }
+        clones[node] = temp
+        let newNext = clone(n)
+        let newRandom = clone(r)
+        let result = Node { val: v, next: newNext, random: newRandom }
+        clones[node] = result
+        return result
+      }
+    }
+  }
+  return clone(head)
+}
+
+// Convert a list to the sequence of values for easy comparison in tests.
+fun values(head: ListNode): list<int> {
+  var result: list<int> = []
+  var node = head
+  while match node { Nil => false _ => true } {
+    match node {
+      Node(v, n, _) => {
+        result = result + [v]
+        node = n
+      }
+      _ => {}
+    }
+  }
+  return result
+}
+
+// Convert random pointers to a list of values (or -1 for Nil) for testing.
+fun randomVals(head: ListNode): list<int> {
+  var result: list<int> = []
+  var node = head
+  while match node { Nil => false _ => true } {
+    match node {
+      Node(_, n, r) => {
+        let rv = match r { Nil => -1 Node(v, _, _) => v }
+        result = result + [rv]
+        node = n
+      }
+      _ => {}
+    }
+  }
+  return result
+}
+
+// Example list from LeetCode
+var n5 = Node { val: 1, next: Nil {}, random: Nil {} }
+var n4 = Node { val: 10, next: n5, random: Nil {} }
+let n3 = Node { val: 11, next: n4, random: n5 }
+let n2 = Node { val: 13, next: n3, random: n5 }
+let n1 = Node { val: 7, next: n2, random: Nil {} }
+// complete random pointers
+n4 = Node { val: 10, next: n5, random: n3 }
+n5 = Node { val: 1, next: Nil {}, random: n1 }
+
+// Tests verifying the clone
+
+test "values" {
+  let cloned = copyRandomList(n1)
+  expect values(cloned) == [7,13,11,10,1]
+}
+
+test "random" {
+  let cloned = copyRandomList(n1)
+  expect randomVals(cloned) == [-1,1,1,11,7]
+}
+
+test "empty" {
+  expect copyRandomList(Nil {}) == Nil {}
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if v = 1 { }       // ❌ assignment
+   if v == 1 { }      // ✅ comparison
+2. Using Python's 'None' instead of the 'Nil' variant for an empty node.
+   let x = None       // ❌ undefined
+   let x = Nil {}     // ✅ use Nil
+3. Reassigning a variable declared with 'let'.
+   let node = head
+   node = Nil {}      // ❌ immutable
+   var node = head    // ✅ declare with var if it will change
+*/
