@@ -562,16 +562,31 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeName(s.Name)
+
+	var typ types.Type = types.AnyType{}
+	if c.env != nil {
+		var err error
+		typ, err = c.env.GetVar(s.Name)
+		if err != nil {
+			if s.Type != nil {
+				typ = resolveTypeRef(s.Type)
+			} else if s.Value != nil {
+				typ = c.inferExprType(s.Value)
+			}
+			c.env.SetVar(s.Name, typ, true)
+		}
+	}
+	typStr := goType(typ)
+
 	value := "nil"
 	if s.Value != nil {
-		// Special case: empty map literal should respect declared type
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
-			if c.env != nil {
-				if t, err := c.env.GetVar(s.Name); err == nil {
-					if mt, ok := t.(types.MapType); ok {
-						value = fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value))
-					}
-				}
+			if mt, ok := typ.(types.MapType); ok {
+				value = fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value))
+			}
+		} else if ll := s.Value.Binary.Left.Value.Target.List; ll != nil && len(ll.Elems) == 0 {
+			if lt, ok := typ.(types.ListType); ok {
+				value = fmt.Sprintf("[]%s{}", goType(lt.Elem))
 			}
 		}
 		if value == "nil" {
@@ -582,25 +597,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			value = v
 		}
 	}
-	typStr := "any"
-	if c.env != nil {
-		t, err := c.env.GetVar(s.Name)
-		if err != nil {
-			if s.Value != nil {
-				t = c.inferExprType(s.Value)
-			} else {
-				t = types.AnyType{}
-			}
-			c.env.SetVar(s.Name, t, true)
-		}
-		typStr = goType(t)
-	}
+
 	if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
 		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
 		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	}
+	c.writeln(fmt.Sprintf("_ = %s", name))
 	return nil
 }
 
@@ -996,7 +1000,11 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 		return err
 	}
 	c.writeIndent()
-	c.buf.WriteString("for " + cond + " {\n")
+	if lit, ok := c.evalConstExpr(stmt.Cond); ok && lit.Bool != nil && bool(*lit.Bool) {
+		c.buf.WriteString("for {\n")
+	} else {
+		c.buf.WriteString("for " + cond + " {\n")
+	}
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -1107,6 +1115,9 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	}
 	if ft.Return == nil && fun.Return != nil {
 		ft.Return = resolveTypeRef(fun.Return)
+	}
+	if ft.Return == nil {
+		ft.Return = types.VoidType{}
 	}
 	if c.env != nil {
 		c.env.SetVar(fun.Name, ft, false)
@@ -1278,15 +1289,15 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			if _, ok := lt.Elem.(types.AnyType); ok && !isAny(rt.Elem) {
 				c.use("_toAnySlice")
 				right = fmt.Sprintf("_toAnySlice(%s)", right)
-				expr = fmt.Sprintf("append(%s, %s...)", left, right)
+				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 				next = leftType
 			} else if !isAny(lt.Elem) && isAny(rt.Elem) {
 				c.use("_toAnySlice")
 				left = fmt.Sprintf("_toAnySlice(%s)", left)
-				expr = fmt.Sprintf("append(%s, %s...)", left, right)
+				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(rt.Elem), left, right)
 				next = types.ListType{Elem: types.AnyType{}}
 			} else if equalTypes(lt.Elem, rt.Elem) {
-				expr = fmt.Sprintf("append(%s, %s...)", left, right)
+				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 				next = leftType
 			} else {
 				c.use("_toAnySlice")
@@ -1296,7 +1307,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				if !isAny(rt.Elem) {
 					right = fmt.Sprintf("_toAnySlice(%s)", right)
 				}
-				expr = fmt.Sprintf("append(%s, %s...)", left, right)
+				expr = fmt.Sprintf("append(append([]any{}, %s...), %s...)", left, right)
 				next = types.ListType{Elem: types.AnyType{}}
 			}
 		case op == "+" && isString(leftType) && isString(rightType):
@@ -2454,7 +2465,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return c.compileLiteral(lit)
 	}
 	args := make([]string, len(call.Args))
+	var paramTypes []types.Type
+	if t, err := c.env.GetVar(call.Func); err == nil {
+		if ft, ok := t.(types.FuncType); ok {
+			paramTypes = ft.Params
+		}
+	}
 	for i, a := range call.Args {
+		if len(paramTypes) > i {
+			if ll := a.Binary.Left.Value.Target.List; ll != nil && len(ll.Elems) == 0 {
+				if lt, ok := paramTypes[i].(types.ListType); ok {
+					args[i] = fmt.Sprintf("[]%s{}", goType(lt.Elem))
+					continue
+				}
+			}
+		}
 		v, err := c.compileExpr(a)
 		if err != nil {
 			return "", err
@@ -2528,7 +2553,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 	}
 	body := indentBlock(sub.buf.String(), 1)
-	retType := "any"
+	retType := ""
 	if fn.Return != nil {
 		retType = goType(resolveTypeRef(fn.Return))
 	}
