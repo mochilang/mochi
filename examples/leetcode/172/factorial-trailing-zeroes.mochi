@@ -1,0 +1,46 @@
+// LeetCode 172 - Factorial Trailing Zeroes
+
+fun trailingZeroes(n: int): int {
+  var count = 0
+  var divisor = 5
+  while divisor <= n {
+    count = count + (n / divisor)
+    divisor = divisor * 5
+  }
+  return count
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect trailingZeroes(3) == 0
+}
+
+test "example 2" {
+  expect trailingZeroes(5) == 1
+}
+
+test "example 3" {
+  expect trailingZeroes(0) == 0
+}
+
+// Additional edge cases
+
+test "large value" {
+  expect trailingZeroes(30) == 7
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons.
+   if n = 5 { ... }  // ❌ assignment
+   if n == 5 { ... } // ✅ comparison
+2. Trying to modify a variable declared with 'let'.
+   let count = 0
+   // count = 1       // ❌ cannot assign to immutable variable
+   var count = 0      // ✅ declare with var if mutation is needed
+3. Forgetting to update the loop variable.
+   while divisor <= n {
+     // divisor = divisor * 5  // ✅ make sure divisor changes or you'll loop forever
+   }
+*/
