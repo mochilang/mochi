@@ -1,89 +1,109 @@
 // Solution for LeetCode problem 146 - LRU Cache
 
-// Cache storing up to `cap` key/value pairs. `order` keeps the most recent key
-// at the front.
-type LRUCache = { cap: int, data: map<int, int>, order: list<int> }
-
-fun newCache(cap: int): LRUCache {
-  return { cap: cap, data: {}, order: [] }
+// Each entry stores a key and value.
+type Entry {
+  key: int
+  val: int
 }
 
-fun removeKey(keys: list<int>, key: int): list<int> {
+// Cache keeps its capacity and a list of entries with the
+// most recently used item at the front.
+type LRUCache {
+  cap: int
+  items: list<Entry>
+}
+
+fun newCache(cap: int): LRUCache {
+  return LRUCache { cap: cap, items: [] as list<Entry> }
+}
+
+// Find the index of a key in the item list, or -1 if missing.
+fun find(items: list<Entry>, k: int): int {
   var i = 0
-  var result = keys
-  while i < len(result) {
-    if result[i] == key {
-      result = result[0:i] + result[i+1:len(result)]
-      break
+  while i < len(items) {
+    let e = items[i]
+    if e.key == k {
+      return i
     }
     i = i + 1
   }
-  return result
+  return -1
 }
 
-fun touch(cache: LRUCache, key: int): LRUCache {
-  let keys = [key] + removeKey(cache.order, key)
-  return { cap: cache.cap, data: cache.data, order: keys }
+type LookupResult {
+  val: int
+  cache: LRUCache
 }
 
-fun get(cache: LRUCache, key: int): { val: int, cache: LRUCache } {
-  if key in cache.data {
-    let v = cache.data[key]
-    let c = touch(cache, key)
-    return { val: v, cache: c }
+fun get(cache: LRUCache, key: int): LookupResult {
+  let idx = find(cache.items, key)
+  if idx == 0 - 1 {
+    return LookupResult { val: 0 - 1, cache: cache }
   }
-  return { val: -1, cache: cache }
+  // Move the found entry to the front.
+  let entry = cache.items[idx]
+  var items = [entry] + cache.items[0:idx] + cache.items[idx+1:len(cache.items)]
+  return LookupResult { val: entry.val, cache: LRUCache { cap: cache.cap, items: items } }
 }
 
 fun put(cache: LRUCache, key: int, value: int): LRUCache {
-  var data = cache.data
-  data[key] = value
-  var keys = [key] + removeKey(cache.order, key)
-  if len(keys) > cache.cap {
-    let old = keys[len(keys)-1]
-    keys = keys[0:len(keys)-1]
-    var newData: map<int, int> = {}
-    for k in data { if k != old { newData[k] = data[k] } }
-    data = newData
+  var items = cache.items
+  let idx = find(items, key)
+  if idx != 0 - 1 {
+    // Remove old occurrence
+    items = items[0:idx] + items[idx+1:len(items)]
   }
-  return { cap: cache.cap, data: data, order: keys }
+  // Insert new entry at the front
+  items = [Entry { key: key, val: value }] + items
+  if len(items) > cache.cap {
+    // Drop least recently used item
+    items = items[0:cache.cap]
+  }
+  return LRUCache { cap: cache.cap, items: items }
 }
 
-// Basic tests based on the LeetCode examples
+// Basic test from LeetCode description
 
 test "example" {
   var c = newCache(2)
-  let r0 = get(c, 1)
-  expect r0.val == -1
-  c = r0.cache
+  let r1 = get(c, 1)
+  expect r1.val == 0 - 1
+  c = r1.cache
 
   c = put(c, 1, 1)
   c = put(c, 2, 2)
-  let r1 = get(c, 1)
-  expect r1.val == 1
-  c = r1.cache
-
-  c = put(c, 3, 3)  // evicts key 2
-  let r2 = get(c, 2)
-  expect r2.val == -1
+  let r2 = get(c, 1)
+  expect r2.val == 1
   c = r2.cache
 
-  c = put(c, 4, 4)  // evicts key 1
-  let r3 = get(c, 1)
-  expect r3.val == -1
+  c = put(c, 3, 3)  // evicts key 2
+  let r3 = get(c, 2)
+  expect r3.val == 0 - 1
   c = r3.cache
 
-  let r4 = get(c, 3)
-  expect r4.val == 3
+  c = put(c, 4, 4)  // evicts key 1
+  let r4 = get(c, 1)
+  expect r4.val == 0 - 1
   c = r4.cache
 
-  let r5 = get(c, 4)
-  expect r5.val == 4
+  let r5 = get(c, 3)
+  expect r5.val == 3
+  c = r5.cache
+
+  let r6 = get(c, 4)
+  expect r6.val == 4
 }
 
 /*
 Common Mochi language errors and how to fix them:
-1. Forgetting to declare maps or lists with `var` when mutating them.
-2. Using Python style `dict.pop(key)` – instead rebuild the map without the key.
-3. Mixing assignment `=` with comparison `==` inside conditions.
+1. Reassigning a value declared with `let`.
+   let x = 1
+   x = 2           // ❌ cannot assign
+   var x = 1       // ✅ use `var` if mutation is needed
+2. Mixing assignment `=` with comparison `==`.
+   if a = b { }    // ❌ always assigns
+   if a == b { }   // ✅ compares values
+3. Leaving a list type unspecified when empty.
+   var xs = []               // ❌ element type unknown
+   var xs: list<int> = []    // ✅ specify the type
 */
