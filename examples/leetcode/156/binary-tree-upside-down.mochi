@@ -1,0 +1,117 @@
+// LeetCode 156 - Binary Tree Upside Down
+// This solution avoids union types by representing tree nodes as maps.
+// A Leaf node is {"__name": "Leaf"} and a Node is
+// {"__name": "Node", "left": left, "value": value, "right": right}.
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> {
+  return t["left"]
+}
+
+fun right(t: map<string, any>): map<string, any> {
+  return t["right"]
+}
+
+fun value(t: map<string, any>): int {
+  return t["value"] as int
+}
+
+fun setLeft(t: map<string, any>, l: map<string, any>) {
+  t["left"] = l
+}
+
+fun setRight(t: map<string, any>, r: map<string, any>) {
+  t["right"] = r
+}
+
+// Flip the tree so that the leftmost node becomes the new root.
+fun upsideDown(root: map<string, any>): map<string, any> {
+  if isLeaf(root) {
+    return root
+  }
+  var curr = root
+  var parent = Leaf()
+  var parentRight = Leaf()
+  while !isLeaf(curr) {
+    let next = left(curr)
+    let oldRight = right(curr)
+    setLeft(curr, parentRight)
+    setRight(curr, parent)
+    parentRight = oldRight
+    parent = curr
+    curr = next
+  }
+  return parent
+}
+
+// Helper to check tree structure level by level
+fun levelOrder(root: map<string, any>): list<list<int>> {
+  var result: list<list<int>> = []
+  var queue: list<map<string, any>> = []
+  if !isLeaf(root) { queue = [root] }
+  while len(queue) > 0 {
+    var vals: list<int> = []
+    var next: list<map<string, any>> = []
+    for node in queue {
+      vals = vals + [value(node)]
+      let l = left(node)
+      let r = right(node)
+      if !isLeaf(l) { next = next + [l] }
+      if !isLeaf(r) { next = next + [r] }
+    }
+    result = result + [vals]
+    queue = next
+  }
+  return result
+}
+
+// Example tree: [1,2,3,4,5]
+let example = Node(
+  Node(
+    Node(Leaf(), 4, Leaf()),
+    2,
+    Node(Leaf(), 5, Leaf())
+  ),
+  1,
+  Node(Leaf(), 3, Leaf())
+)
+
+test "flip example" {
+  let newRoot = upsideDown(example)
+  expect levelOrder(newRoot) == [[4],[5,2],[3,1]]
+}
+
+test "single node" {
+  let tree = Node(Leaf(), 1, Leaf())
+  expect levelOrder(upsideDown(tree)) == [[1]]
+}
+
+test "empty tree" {
+  expect isLeaf(upsideDown(Leaf())) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions.
+   if isLeaf(node) = true { }  // ❌ assignment
+   if isLeaf(node) == true { } // ✅ comparison
+2. Reassigning a map created with 'let'.
+   let t = Node(Leaf(), 1, Leaf())
+   t["left"] = Leaf()           // ❌ cannot assign
+   var t = Node(Leaf(), 1, Leaf())
+   t["left"] = Leaf()           // ✅
+3. Missing element type for empty lists.
+   var q = []                   // ❌ type can't be inferred
+   var q: list<map<string, any>> = [] // ✅ specify the type
+*/
