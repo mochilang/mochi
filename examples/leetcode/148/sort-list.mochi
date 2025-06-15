@@ -1,0 +1,72 @@
+// Solution for LeetCode problem 148 - Sort List
+//
+// Sort a list of integers using merge sort. This mirrors the linked list
+// version of the problem but uses Mochi lists for simplicity.
+
+fun mergeSorted(a: list<int>, b: list<int>): list<int> {
+  var i = 0
+  var j = 0
+  var result: list<int> = []
+  while i < len(a) && j < len(b) {
+    if a[i] <= b[j] {
+      result = result + [a[i]]
+      i = i + 1
+    } else {
+      result = result + [b[j]]
+      j = j + 1
+    }
+  }
+  while i < len(a) {
+    result = result + [a[i]]
+    i = i + 1
+  }
+  while j < len(b) {
+    result = result + [b[j]]
+    j = j + 1
+  }
+  return result
+}
+
+fun sortList(nums: list<int>): list<int> {
+  if len(nums) <= 1 {
+    return nums
+  }
+  let mid = len(nums) / 2
+  let left = sortList(nums[0:mid])
+  let right = sortList(nums[mid:len(nums)])
+  return mergeSorted(left, right)
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect sortList([4,2,1,3]) == [1,2,3,4]
+}
+
+test "example 2" {
+  expect sortList([-1,5,3,4,0]) == [-1,0,3,4,5]
+}
+
+// Additional edge cases
+
+test "single" {
+  expect sortList([1]) == [1]
+}
+
+test "empty" {
+  expect sortList([]) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if a = b { }     // ❌ assignment
+   if a == b { }    // ✅ comparison
+2. Declaring a list with 'let' and then trying to modify it.
+   let result = []
+   result = result + [1]  // ❌ cannot reassign immutable value
+   var result: list<int> = [] // ✅ use 'var' for mutable lists
+3. Forgetting that slicing uses half-open ranges.
+   nums[0:mid]  // elements 0..mid-1
+   nums[mid:len(nums)]  // elements mid..end
+*/
