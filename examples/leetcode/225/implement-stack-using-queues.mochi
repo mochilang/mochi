@@ -1,0 +1,84 @@
+// LeetCode 225 - Implement Stack using Queues
+
+// We represent the stack with a map containing a single queue.
+// The queue is a list<int> where the front of the queue is the top of the stack.
+
+fun NewStack(): map<string, any> {
+  return { "q": [] as list<int> }
+}
+
+fun push(stack: map<string, any>, x: int) {
+  var q = stack["q"] as list<int>
+  q = q + [x]
+  // rotate so the new element appears at the front
+  var i = 0
+  while i < len(q) - 1 {
+    q = q[1:len(q)] + [q[0]]
+    i = i + 1
+  }
+  stack["q"] = q
+}
+
+fun pop(stack: map<string, any>): int {
+  var q = stack["q"] as list<int>
+  let v = q[0]
+  q = q[1:len(q)]
+  stack["q"] = q
+  return v
+}
+
+fun top(stack: map<string, any>): int {
+  let q = stack["q"] as list<int>
+  return q[0]
+}
+
+fun empty(stack: map<string, any>): bool {
+  let q = stack["q"] as list<int>
+  return len(q) == 0
+}
+
+// Test cases from LeetCode
+
+test "example" {
+  let st = NewStack()
+  push(st, 1)
+  push(st, 2)
+  expect top(st) == 2
+  expect pop(st) == 2
+  expect empty(st) == false
+}
+
+// Additional edge cases
+
+test "single push pop" {
+  let st = NewStack()
+  push(st, 5)
+  expect pop(st) == 5
+  expect empty(st) == true
+}
+
+test "multiple pushes" {
+  let st = NewStack()
+  push(st, 1)
+  push(st, 2)
+  push(st, 3)
+  expect pop(st) == 3
+  expect pop(st) == 2
+  expect pop(st) == 1
+  expect empty(st) == true
+}
+
+/*
+Common language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+   if len(q) = 0 { }
+   // error[P000]: '=' assigns instead of compares
+   // Fix: use '==' for equality checks.
+2. Reassigning an immutable variable:
+   let q = []
+   q = [1]  // error[E004]: cannot reassign immutable binding
+   // Fix: declare with 'var' if mutation is needed.
+3. Trying to call methods like queue.push(x):
+   q.push(x)  // not supported
+   // Fix: build a new list: q = q + [x]
+*/
