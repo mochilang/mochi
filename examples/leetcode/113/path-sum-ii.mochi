@@ -8,23 +8,23 @@ type Tree =
 
 fun pathSum(root: Tree, targetSum: int): list<list<int>> {
   fun dfs(node: Tree, remaining: int, path: list<int>): list<list<int>> {
-    match node {
-      Leaf {} => [] as list<list<int>>
-      Node(l, v, r) => {
-        let newRemaining = remaining - v
-        let newPath = path + [v]
-        let leftEmpty = match l { Leaf {} => true _ => false }
-        let rightEmpty = match r { Leaf {} => true _ => false }
-        if leftEmpty && rightEmpty {
-          if newRemaining == 0 {
-            [newPath]
-          } else {
-            []
-          }
+    fun handle(l: Tree, v: int, r: Tree, rem: int, p: list<int>): list<list<int>> {
+      let leftEmpty = match l { Leaf => true _ => false }
+      let rightEmpty = match r { Leaf => true _ => false }
+      let newRemaining = rem - v
+      let newPath = p + [v]
+      if leftEmpty && rightEmpty {
+        if newRemaining == 0 {
+          return [newPath]
         } else {
-          dfs(l, newRemaining, newPath) + dfs(r, newRemaining, newPath)
+          return []
         }
       }
+      return dfs(l, newRemaining, newPath) + dfs(r, newRemaining, newPath)
+    }
+    return match node {
+      Leaf => [] as list<list<int>>
+      Node(l, v, r) => handle(l, v, r, remaining, path)
     }
   }
   return dfs(root, targetSum, [] as list<int>)
