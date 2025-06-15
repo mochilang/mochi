@@ -1,0 +1,67 @@
+// Solution for LeetCode problem 266 - Palindrome Permutation
+// Determine if any permutation of the input string can form a palindrome.
+
+fun canPermutePalindrome(s: string): bool {
+  var counts: map<string, int> = {}
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch in counts {
+      counts[ch] = counts[ch] + 1
+    } else {
+      counts[ch] = 1
+    }
+    i = i + 1
+  }
+
+  var oddCount = 0
+  for key in counts {
+    if counts[key] % 2 == 1 {
+      oddCount = oddCount + 1
+      if oddCount > 1 {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect canPermutePalindrome("code") == false
+}
+
+test "example 2" {
+  expect canPermutePalindrome("aab") == true
+}
+
+test "example 3" {
+  expect canPermutePalindrome("carerac") == true
+}
+
+// Additional edge cases
+
+test "empty string" {
+  expect canPermutePalindrome("") == true
+}
+
+test "single char" {
+  expect canPermutePalindrome("a") == true
+}
+
+test "two odds" {
+  expect canPermutePalindrome("abc") == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Declaring an empty map without specifying key/value types:
+   var counts = {}                     // ❌ type cannot be inferred
+   var counts: map<string, int> = {}   // ✅ provide the types
+2. Confusing '=' with '==' in conditionals:
+   if oddCount = 1 { }                 // ❌ assignment instead of comparison
+   if oddCount == 1 { }                // ✅ use '==' for equality checks
+3. Attempting to use union types or 'match' for this simple problem.
+   Loops and 'if' statements keep the solution clear and efficient.
+*/
