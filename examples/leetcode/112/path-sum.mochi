@@ -7,7 +7,7 @@ type Tree =
   | Node(left: Tree, value: int, right: Tree)
 
 fun hasPathSum(root: Tree, targetSum: int): bool {
-  return match root {
+  match root {
     Leaf {} => false
     Node(l, v, r) => {
       let remaining = targetSum - v
@@ -20,9 +20,10 @@ fun hasPathSum(root: Tree, targetSum: int): bool {
         _ => false
       }
       if leftEmpty && rightEmpty {
-        return remaining == 0
+        remaining == 0
+      } else {
+        hasPathSum(l, remaining) || hasPathSum(r, remaining)
       }
-      return hasPathSum(l, remaining) || hasPathSum(r, remaining)
     }
   }
 }
