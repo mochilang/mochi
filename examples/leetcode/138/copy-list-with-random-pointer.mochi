@@ -14,10 +14,12 @@ fun copyRandomList(head: Node): Node {
   var seen: map<Node, Node> = {}
 
   fun clone(n: Node): Node {
+    if n in seen {
+      return seen[n]
+    }
     return match n {
       Nil => Nil {}
       Node(v, nxt, rnd) => {
-        if n in seen { return seen[n] }
         // create placeholder first to handle cycles
         var temp = Node { val: v, next: Nil {}, random: Nil {} }
         seen[n] = temp
@@ -25,7 +27,7 @@ fun copyRandomList(head: Node): Node {
         let newRand = clone(rnd)
         let res = Node { val: v, next: newNext, random: newRand }
         seen[n] = res
-        return res
+        res
       }
     }
   }
@@ -88,4 +90,6 @@ Common Mochi language errors and how to fix them:
 1. Attempting to modify fields directly. Create a new `Node` instead of mutating.
 2. Using '=' instead of '==' when comparing nodes or indices.
 3. Forgetting to handle the `Nil` variant when pattern matching on nodes.
+4. Writing `None` or `null` instead of the `Nil {}` constructor.
+5. Reassigning a value declared with `let`; use `var` for variables that change.
 */
