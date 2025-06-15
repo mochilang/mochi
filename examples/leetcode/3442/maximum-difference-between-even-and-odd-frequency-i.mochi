@@ -1,5 +1,7 @@
 fun maxDiffEvenOdd(s: string): int {
-  let counts = from ch in s
+  // Query sources must be lists, so convert the string into
+  // a list of characters using `chars`.
+  let counts = from ch in chars(s)
                group by ch into g
                select {
                  ch: g.key,
