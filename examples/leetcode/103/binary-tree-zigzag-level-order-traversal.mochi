@@ -1,49 +1,57 @@
 // LeetCode 103 - Binary Tree Zigzag Level Order Traversal
 
-// Binary tree type used across tree problems
-// Leaf represents an empty node
-// Node has left subtree, integer value, and right subtree
+// Binary tree type shared across tree problems.
+// Leaf represents an empty node.
+// Node has left subtree, integer value, and right subtree.
 
 type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree)
 
-fun zigzagLevelOrder(root: Tree): list<list<int>> {
-  return match root {
-    Leaf => [] as list<list<int>>
-    Node(_, _, _) => {
-      var result: list<list<int>> = []
-      var queue: list<Tree> = [root]
-      var level = 0
-      while len(queue) > 0 {
-        var next: list<Tree> = []
-        var values: list<int> = []
-        for node in queue {
-          match node {
-            Leaf => {}
-            Node(l, v, r) => {
-              values = values + [v]
-              match l {
-                Leaf => {}
-                _ => { next = next + [l] }
-              }
-              match r {
-                Leaf => {}
-                _ => { next = next + [r] }
-              }
-            }
-          }
-        }
-        if level % 2 == 1 {
-          values = reverse(values)
-        }
-        result = result + [values]
-        queue = next
-        level = level + 1
-      }
-      result
-    }
+// Helper to reverse a list of integers.
+fun reverseList(xs: list<int>): list<int> {
+  var out: list<int> = []
+  var i = len(xs) - 1
+  while i >= 0 {
+    out = out + [xs[i]]
+    i = i - 1
   }
+  return out
+}
+
+// Perform a level order traversal alternating direction on each level.
+fun zigzagLevelOrder(root: Tree): list<list<int>> {
+  if match root { Leaf => true _ => false } {
+    return []
+  }
+
+  var result: list<list<int>> = []
+  var queue: list<Tree> = [root]
+  var level = 0
+
+  while len(queue) > 0 {
+    var vals: list<int> = []
+    var next: list<Tree> = []
+    for node in queue {
+      if match node { Leaf => false _ => true } {
+        vals = vals + [node.value]
+        if match node.left { Leaf => false _ => true } {
+          next = next + [node.left]
+        }
+        if match node.right { Leaf => false _ => true } {
+          next = next + [node.right]
+        }
+      }
+    }
+    if level % 2 == 1 {
+      vals = reverseList(vals)
+    }
+    result = result + [vals]
+    queue = next
+    level = level + 1
+  }
+
+  return result
 }
 
 // Test cases derived from LeetCode
@@ -58,15 +66,15 @@ test "example 1" {
       right: Node { left: Leaf {}, value: 7, right: Leaf {} }
     }
   }
-  expect (zigzagLevelOrder(tree) == [[3], [20, 9], [15, 7]])
+  expect zigzagLevelOrder(tree) == [[3], [20, 9], [15, 7]]
 }
 
 test "single node" {
-  expect (zigzagLevelOrder(Node { left: Leaf {}, value: 1, right: Leaf {} }) == [[1]])
+  expect zigzagLevelOrder(Node { left: Leaf {}, value: 1, right: Leaf {} }) == [[1]]
 }
 
 test "empty" {
-  expect (zigzagLevelOrder(Leaf {}) == [])
+  expect zigzagLevelOrder(Leaf {}) == []
 }
 
 test "unbalanced" {
@@ -83,18 +91,18 @@ test "unbalanced" {
       right: Node { left: Leaf {}, value: 5, right: Leaf {} }
     }
   }
-  expect (zigzagLevelOrder(tree) == [[1], [3, 2], [4, 5]])
+  expect zigzagLevelOrder(tree) == [[1], [3, 2], [4, 5]]
 }
 
 /*
 Common Mochi language errors and how to fix them:
-1. Using '=' instead of '==' when checking the level parity.
+1. Using '=' instead of '==' when comparing values.
    if level = 1 { }      // ❌ assignment
    if level == 1 { }     // ✅ comparison
-2. Reassigning a variable declared with 'let'.
+2. Reassigning a value declared with 'let'.
    let queue = []
    queue = next            // ❌ cannot modify immutable binding
    var queue = []          // ✅ declare with 'var' if it will change
-3. Forgetting to reset `values` or `next` inside the loop leads to incorrect
-   output. Re-initialize them on each level as shown above.
+3. Forgetting to reset `vals` or `next` each loop causes incorrect output.
+   Re-initialize them on every iteration as shown above.
 */
