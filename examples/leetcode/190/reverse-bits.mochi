@@ -1,0 +1,32 @@
+// Solution for LeetCode problem 190 - Reverse Bits
+
+fun reverseBits(n: int): int {
+  var result = 0
+  var x = n
+  var count = 0
+  while count < 32 {
+    let bit = x % 2
+    result = result * 2 + bit
+    x = x / 2
+    count = count + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect reverseBits(43261596) == 964176192
+}
+
+test "example 2" {
+  expect reverseBits(4294967293) == 3221225471
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '==' when assignment is intended, or vice versa. In conditions use '=='.
+2. Forgetting to declare mutable variables with 'var', leading to "cannot assign" errors.
+3. Trying to use Python-style bit shifts (like n >> 1) before they are implemented.
+   Instead divide by 2 to shift right when working with positive numbers.
+*/
