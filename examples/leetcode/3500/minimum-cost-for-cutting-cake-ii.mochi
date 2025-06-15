@@ -48,7 +48,8 @@ test "example 2" {
 // Additional test
 
 test "mixed order" {
-  expect minCostCutCake(4, 3, [2,1,3], [1,4]) == 19
+  // The optimal strategy for this combination of cuts costs 20.
+  expect minCostCutCake(4, 3, [2,1,3], [1,4]) == 20
 }
 
 /*
