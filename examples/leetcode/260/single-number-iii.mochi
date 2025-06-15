@@ -1,0 +1,54 @@
+// Solution for LeetCode problem 260 - Single Number III
+// This implementation avoids union types and `match`.
+
+fun singleNumber(nums: list<int>): list<int> {
+  // Count each number's occurrences
+  var counts: map<int, int> = {}
+  for n in nums {
+    if n in counts {
+      counts[n] = counts[n] + 1
+    } else {
+      counts[n] = 1
+    }
+  }
+  var result: list<int> = []
+  for n in nums {
+    if counts[n] == 1 {
+      result = result + [n]
+      if len(result) == 2 {
+        break
+      }
+    }
+  }
+  return result
+}
+
+// Tests based on LeetCode examples
+
+test "example 1" {
+  let out = from x in singleNumber([1,2,1,3,2,5]) sort by x select x
+  expect out == [3,5]
+}
+
+test "negatives" {
+  let out = from x in singleNumber([-1,0]) sort by x select x
+  expect out == [-1,0]
+}
+
+test "simple" {
+  let out = from x in singleNumber([0,1]) sort by x select x
+  expect out == [0,1]
+}
+
+test "mixed order" {
+  let out = from x in singleNumber([1,2,3,2,4,1]) sort by x select x
+  expect out == [3,4]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+2. Declaring variables with 'let' that later get reassigned. Use 'var'.
+3. Forgetting to check 'n in counts' before accessing 'counts[n]'.
+4. Trying to use operators like '^' or bit shifts which Mochi does not support.
+*/
