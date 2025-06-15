@@ -1,0 +1,67 @@
+// Solution for LeetCode problem 182 - Duplicate Emails
+//
+// Given a list of email addresses, return the emails that appear more than once.
+// The returned list should contain each duplicate only once and in the order of
+// their first appearance.
+
+fun findDuplicateEmails(emails: list<string>): list<string> {
+  var counts: map<string,int> = {} as map<string,int>
+  for e in emails {
+    var c = 0
+    if e in counts {
+      c = counts[e]
+    }
+    counts[e] = c + 1
+  }
+  var result: list<string> = []
+  for e in emails {
+    if counts[e] > 1 {
+      var exists = false
+      for r in result {
+        if r == e {
+          exists = true
+          break
+        }
+      }
+      if !exists {
+        result = result + [e]
+      }
+    }
+  }
+  return result
+}
+
+// Tests based on possible inputs
+
+test "example duplicates" {
+  let emails = ["a@x.com", "b@y.com", "a@x.com"]
+  expect findDuplicateEmails(emails) == ["a@x.com"]
+}
+
+test "multiple duplicates" {
+  let emails = ["a@x.com", "b@y.com", "a@x.com", "b@y.com", "c@z.com", "a@x.com"]
+  expect findDuplicateEmails(emails) == ["a@x.com", "b@y.com"]
+}
+
+test "no duplicates" {
+  expect findDuplicateEmails(["a@x.com", "b@y.com"]) == []
+}
+
+test "empty list" {
+  expect findDuplicateEmails([]) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing strings:
+     if email = target { ... }  // ❌ assignment
+     if email == target { ... } // ✅ comparison
+2. Forgetting 'var' for mutable variables:
+     let result = []
+     result = result + [e]      // ❌ cannot assign to immutable binding
+     var result = []            // ✅ use 'var' when mutation is needed
+3. Accessing map values without checking if the key exists:
+     let count = counts[e]      // ❌ may fail if e not in counts
+     var count = 0
+     if e in counts { count = counts[e] } // ✅ safe lookup
+*/
