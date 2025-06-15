@@ -6,9 +6,10 @@
 * Logic programming with `fact`, `rule` and `query`
 * `if` expressions return a value
 * List concatenation using `+`
-* Nested functions and `nonlocal` in Python
-* Nested functions, `in` operator and precedence fixes in Go
-* Union variant recognition and list binary ops
+* Python nested functions and `nonlocal` assignments
+* Go nested functions, `in` operator and operator precedence fixes
+* Union variants recognized as union types
+* Typed list binary operations
 * Optional `=` for struct types
 * More LeetCode examples 101–200
 
