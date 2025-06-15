@@ -1,0 +1,61 @@
+// LeetCode 157 - Read N Characters Given read4
+
+// Read up to n characters from the given source string.
+fun readFrom(src: string, n: int): string {
+  var pos = 0
+  fun read4(buf: list<string>): int {
+    var count = 0
+    var i = 0
+    while i < 4 && pos < len(src) {
+      buf[i] = src[pos]
+      i = i + 1
+      pos = pos + 1
+      count = count + 1
+    }
+    return count
+  }
+
+  var buf4: list<string> = ["","","",""]
+  var result = ""
+  var total = 0
+  while total < n {
+    let count = read4(buf4)
+    var i = 0
+    while i < count && total < n {
+      result = result + buf4[i]
+      total = total + 1
+      i = i + 1
+    }
+    if count < 4 {
+      break
+    }
+  }
+  return result
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons.
+   if count = 0 { }     // ❌ assignment
+   if count == 0 { }    // ✅ comparison
+2. Reassigning a value bound with 'let'.
+   let total = 0
+   total = total + 1     // ❌ cannot mutate
+   // Fix: use 'var total' if mutation is needed.
+3. Creating a list without specifying its element type when empty.
+   var tmp = []          // ❌ type cannot be inferred
+   var tmp: list<string> = [] // ✅ provide the element type
+*/
+
+test "read less than file" {
+  expect readFrom("leetcode", 5) == "leetc"
+}
+
+test "read exact" {
+  expect readFrom("mochi", 5) == "mochi"
+}
+
+test "read beyond end" {
+  expect readFrom("hi", 5) == "hi"
+}
+
