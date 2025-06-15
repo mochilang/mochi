@@ -1,0 +1,64 @@
+fun partition(s: string): list<list<string>> {
+  let n = len(s)
+  var result: list<list<string>> = []
+
+  fun isPal(left: int, right: int): bool {
+    var l = left
+    var r = right
+    while l < r {
+      if s[l] != s[r] {
+        return false
+      }
+      l = l + 1
+      r = r - 1
+    }
+    return true
+  }
+
+  fun dfs(start: int, path: list<string>) {
+    if start == n {
+      result = result + [path]
+    } else {
+      var end = start
+      while end < n {
+        if isPal(start, end) {
+          dfs(end + 1, path + [s[start:end+1]])
+        }
+        end = end + 1
+      }
+    }
+  }
+
+  dfs(0, [])
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect partition("aab") == [["a","a","b"],["aa","b"]]
+}
+
+test "example 2" {
+  expect partition("a") == [["a"]]
+}
+
+// Additional test
+
+test "no palindrome" {
+  expect partition("abc") == [["a","b","c"]]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a value declared with `let`:
+     let parts = []
+     parts = parts + ["a"] // error[E004]
+   Use `var parts` if mutation is required.
+2. Using '=' instead of '==' in conditionals:
+     if s[i] = s[j] { } // ❌ assignment
+     if s[i] == s[j] { } // ✅ comparison
+3. Creating a list without specifying its type when it cannot be inferred:
+     var res = [] // error[I012]
+   Declare the type explicitly, e.g. `var res: list<string> = []`.
+*/
