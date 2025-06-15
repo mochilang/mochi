@@ -1,0 +1,81 @@
+// Solution for LeetCode problem 295 - Find Median from Data Stream
+//
+// This implementation stores all numbers in a sorted list so that
+// the median can be computed quickly. It avoids union types and
+// pattern matching by using simple lists and helper functions.
+
+// Data structure holding the sorted values
+type MedianFinder {
+  values: list<int>
+ }
+
+fun newFinder(): MedianFinder {
+  return MedianFinder { values: [] as list<int> }
+}
+
+// Insert the number into the sorted list using a simple linear search
+fun addNum(mf: MedianFinder, num: int): MedianFinder {
+  var vals = mf.values
+  var i = 0
+  while i < len(vals) {
+    if vals[i] < num {
+      i = i + 1
+    } else {
+      break
+    }
+  }
+  vals = vals[0:i] + [num] + vals[i:len(vals)]
+  return MedianFinder { values: vals }
+}
+
+fun findMedian(mf: MedianFinder): float {
+  let n = len(mf.values)
+  if n % 2 == 1 {
+    return (mf.values[n / 2] as float)
+  }
+  let a = mf.values[n / 2 - 1]
+  let b = mf.values[n / 2]
+  return ((a as float) + (b as float)) / 2.0
+}
+
+// Basic test from the LeetCode description
+ test "example" {
+  var mf = newFinder()
+  mf = addNum(mf, 1)
+  mf = addNum(mf, 2)
+  expect findMedian(mf) == 1.5
+  mf = addNum(mf, 3)
+  expect findMedian(mf) == 2.0
+ }
+
+// Additional edge cases
+
+test "single value" {
+  var mf = newFinder()
+  mf = addNum(mf, 5)
+  expect findMedian(mf) == 5.0
+}
+
+test "even count" {
+  var mf = newFinder()
+  mf = addNum(mf, 2)
+  mf = addNum(mf, 4)
+  mf = addNum(mf, 6)
+  mf = addNum(mf, 8)
+  expect findMedian(mf) == 5.0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in a comparison:
+   if n = 1 { }        // ❌ assignment
+   if n == 1 { }       // ✅ comparison
+2. Reassigning a value declared with 'let':
+   let x = 3
+   x = 4               // ❌ cannot assign
+   var y = 3
+   y = 4               // ✅ use 'var' when mutation is needed
+3. Trying to call Python methods on lists:
+   vals.append(x)      // ❌ not valid
+   vals = vals + [x]   // ✅ concatenate lists
+*/
