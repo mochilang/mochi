@@ -1,0 +1,103 @@
+// Solution for LeetCode problem 250 - Count Univalue Subtrees
+// This version avoids union types and `match` by representing
+// each tree node as a map. A "Leaf" node represents the absence of a child.
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool { return t["__name"] == "Leaf" }
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// Return the number of uni-value subtrees in the given binary tree.
+fun countUnivalSubtrees(root: map<string, any>): int {
+  var count = 0
+
+  fun dfs(node: map<string, any>): bool {
+    if isLeaf(node) { return true }
+
+    let l = left(node)
+    let r = right(node)
+    let leftUni = dfs(l)
+    let rightUni = dfs(r)
+
+    if leftUni && rightUni &&
+       (isLeaf(l) || value(l) == value(node)) &&
+       (isLeaf(r) || value(r) == value(node)) {
+      count = count + 1
+      return true
+    }
+    return false
+  }
+
+  if !isLeaf(root) { dfs(root) }
+  return count
+}
+
+// Example 1: [5,1,5,5,5,null,5] -> 4
+let example1 = Node(
+  Node(
+    Node(Leaf(), 5, Leaf()),
+    1,
+    Node(Leaf(), 5, Leaf())
+  ),
+  5,
+  Node(
+    Leaf(),
+    5,
+    Node(Leaf(), 5, Leaf())
+  )
+)
+
+test "example 1" {
+  expect countUnivalSubtrees(example1) == 4
+}
+
+// Example 2: [5,5,5,5,5,null,5] -> 6
+let example2 = Node(
+  Node(
+    Node(Leaf(), 5, Leaf()),
+    5,
+    Node(Leaf(), 5, Leaf())
+  ),
+  5,
+  Node(
+    Leaf(),
+    5,
+    Node(Leaf(), 5, Leaf())
+  )
+)
+
+test "example 2" {
+  expect countUnivalSubtrees(example2) == 6
+}
+
+// Additional edge cases
+
+test "single node" {
+  expect countUnivalSubtrees(Node(Leaf(), 1, Leaf())) == 1
+}
+
+test "empty" {
+  expect countUnivalSubtrees(Leaf()) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons.
+   if value(node) = 5 { }   // ❌ assignment
+   if value(node) == 5 { }  // ✅ comparison
+2. Reassigning a variable declared with 'let'.
+   let n = 1
+   n = 2                  // ❌ cannot assign
+   var n = 1              // ✅ use 'var' for mutable variables
+3. Accessing fields of Leaf without checking.
+   left(Leaf())           // ❌ runtime error
+   if !isLeaf(node) { left(node) } // ✅ ensure node is not Leaf
+*/
