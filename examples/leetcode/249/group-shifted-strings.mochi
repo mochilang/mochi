@@ -1,0 +1,74 @@
+// Solution for LeetCode problem 249 - Group Shifted Strings
+//
+// Strings are shifted if each letter is moved the same number of
+// steps forward in the alphabet, wrapping around from 'z' to 'a'.
+// We group strings that share the same shifting pattern.
+
+fun patternKey(s: string): string {
+  if len(s) == 0 {
+    return ""
+  }
+  var key = ""
+  let base = ord(s[0])
+  var i = 0
+  while i < len(s) {
+    let diff = (ord(s[i]) - base + 26) % 26
+    key = key + toString(diff) + ","
+    i = i + 1
+  }
+  return key
+}
+
+fun groupStrings(strings: list<string>): list<list<string>> {
+  var groups: map<string, list<string>> = {}
+  for s in strings {
+    let k = patternKey(s)
+    var lst: list<string> = []
+    if k in groups {
+      lst = groups[k]
+    }
+    lst = lst + [s]
+    groups[k] = lst
+  }
+
+  var result: list<list<string>> = []
+  for k in groups {
+    result = result + [groups[k]]
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let input = ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"]
+  let res = groupStrings(input)
+  // Each group should contain shifted variations
+  expect len(res) == 4
+}
+
+// Additional tests
+
+test "single" {
+  expect groupStrings(["a"])[0][0] == "a"
+}
+
+test "empty list" {
+  let res = groupStrings([])
+  expect len(res) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when checking keys:
+     if k = "" { ... }  // ❌ assignment
+     if k == "" { ... } // ✅ comparison
+2. Forgetting to declare a variable mutable with 'var':
+     let lst = []
+     lst = lst + [s]     // ❌ cannot assign to immutable binding
+     var lst: list<string> = []
+     lst = lst + [s]     // ✅ mutable variable
+3. Missing type annotation for an empty map or list:
+     var groups = {}                 // ❌ type unknown
+     var groups: map<string,list<string>> = {} // ✅ specify types
+*/
