@@ -1,0 +1,92 @@
+fun calculateMinimumHP(dungeon: list<list<int>>): int {
+  let m = len(dungeon)
+  if m == 0 {
+    return 1
+  }
+  let n = len(dungeon[0])
+
+  // build dp matrix m x n filled with zeros
+  var dp: list<list<int>> = []
+  var i = 0
+  while i < m {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = row + [0]
+      j = j + 1
+    }
+    dp = dp + [row]
+    i = i + 1
+  }
+
+  // bottom-right cell
+  var need = 1 - dungeon[m-1][n-1]
+  if need <= 0 { need = 1 }
+  dp[m-1][n-1] = need
+
+  // last row
+  var col = n - 2
+  while col >= 0 {
+    need = dp[m-1][col+1] - dungeon[m-1][col]
+    if need <= 0 { need = 1 }
+    dp[m-1][col] = need
+    col = col - 1
+  }
+
+  // last column
+  var rowi = m - 2
+  while rowi >= 0 {
+    need = dp[rowi+1][n-1] - dungeon[rowi][n-1]
+    if need <= 0 { need = 1 }
+    dp[rowi][n-1] = need
+    rowi = rowi - 1
+  }
+
+  i = m - 2
+  while i >= 0 {
+    col = n - 2
+    while col >= 0 {
+      var best = dp[i+1][col]
+      if dp[i][col+1] < best { best = dp[i][col+1] }
+      need = best - dungeon[i][col]
+      if need <= 0 { need = 1 }
+      dp[i][col] = need
+      col = col - 1
+    }
+    i = i - 1
+  }
+
+  return dp[0][0]
+}
+
+test "example 1" {
+  let board = [[-2,-3,3],[-5,-10,1],[10,30,-5]]
+  expect calculateMinimumHP(board) == 7
+}
+
+test "single cell positive" {
+  expect calculateMinimumHP([[5]]) == 1
+}
+
+test "single cell negative" {
+  expect calculateMinimumHP([[-5]]) == 6
+}
+
+test "two by two" {
+  let board = [[1,-2,3],[2,-2,-2]]
+  expect calculateMinimumHP(board) == 2
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+   if need = 0 { ... }   // ❌ assignment
+   if need == 0 { ... }  // ✅ comparison
+2. Trying to modify a value declared with 'let':
+   let val = 1
+   val = 2              // ❌ cannot reassign immutable binding
+   // Fix: declare with 'var' when mutation is required.
+3. Using Python-style list multiplication to create rows:
+   var row = [0] * n     // ❌ not supported in Mochi
+   // Fix: build the list with a loop instead.
+*/
