@@ -1,0 +1,104 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func parseInt(s string) int {
+	var result int = 0
+	_ = result
+	var digits map[string]int = map[string]int{"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+	var i int = 0
+	_ = i
+	for (i < len(s)) {
+		var ch string = _indexString(s, i)
+		result = ((result * 10) + digits[ch])
+		i = (i + 1)
+	}
+	return result
+}
+
+func parseVersion(v string) []int {
+	var parts []int = []int{}
+	_ = parts
+	var start int = 0
+	_ = start
+	var i int = 0
+	_ = i
+	for (i < len(v)) {
+		if (_indexString(v, i) == ".") {
+			var segment string = string([]rune(v)[start:i])
+			parts = append(append([]int{}, parts...), []int{parseInt(segment)}...)
+			start = (i + 1)
+		}
+		i = (i + 1)
+	}
+	var segment string = string([]rune(v)[start:len(v)])
+	parts = append(append([]int{}, parts...), []int{parseInt(segment)}...)
+	return parts
+}
+
+func compareVersion(v1 string, v2 string) int {
+	var a1 []int = parseVersion(v1)
+	var a2 []int = parseVersion(v2)
+	var i int = 0
+	_ = i
+	var j int = 0
+	_ = j
+	for ((i < len(a1)) || (j < len(a2))) {
+		var n1 int = 0
+		_ = n1
+		if (i < len(a1)) {
+			n1 = a1[i]
+			i = (i + 1)
+		}
+		var n2 int = 0
+		_ = n2
+		if (j < len(a2)) {
+			n2 = a2[j]
+			j = (j + 1)
+		}
+		if (n1 > n2) {
+			return 1
+		}
+		if (n1 < n2) {
+			return -1
+		}
+	}
+	return 0
+}
+
+func example_1() {
+	expect((compareVersion("1.01", "1.001") == 0))
+}
+
+func example_2() {
+	expect((compareVersion("1.0", "1.0.0") == 0))
+}
+
+func example_3() {
+	expect((compareVersion("0.1", "1.1") == (-1)))
+}
+
+func example_4() {
+	expect((compareVersion("1.0.1", "1") == 1))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+	example_4()
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

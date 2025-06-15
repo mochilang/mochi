@@ -1,0 +1,75 @@
+package main
+
+import (
+	"fmt"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func addBinary(a string, b string) string {
+	var digits map[string]int = map[string]int{"0": 0, "1": 1}
+	var i int = len(a)
+	_ = i
+	var j int = len(b)
+	_ = j
+	var carry int = 0
+	_ = carry
+	var out string = ""
+	_ = out
+	for (((i > 0) || (j > 0)) || (carry > 0)) {
+		var x int = 0
+		_ = x
+		if (i > 0) {
+			i = (i - 1)
+			x = digits[_indexString(a, i)]
+		}
+		var y int = 0
+		_ = y
+		if (j > 0) {
+			j = (j - 1)
+			y = digits[_indexString(b, j)]
+		}
+		var sum int = ((x + y) + carry)
+		carry = (sum / 2)
+		var bit int = (sum % 2)
+		out = fmt.Sprint(bit) + out
+	}
+	return out
+}
+
+func example_1() {
+	expect((addBinary("11", "1") == "100"))
+}
+
+func example_2() {
+	expect((addBinary("1010", "1011") == "10101"))
+}
+
+func zero() {
+	expect((addBinary("0", "0") == "0"))
+}
+
+func different_lengths() {
+	expect((addBinary("1", "111") == "1000"))
+}
+
+func main() {
+	example_1()
+	example_2()
+	zero()
+	different_lengths()
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

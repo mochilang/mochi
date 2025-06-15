@@ -1,0 +1,45 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func firstMissingPositive(nums []int) int {
+	var seen map[int]bool = map[int]bool{}
+	_ = seen
+	for _, n := range nums {
+		if (n > 0) {
+			seen[n] = true
+		}
+	}
+	var i int = 1
+	_ = i
+	for {
+		_tmp0 := i
+		_tmp1 := seen
+		_, _tmp2 := _tmp1[_tmp0]
+		if !(_tmp2) {
+			return i
+		}
+		i = (i + 1)
+	}
+}
+
+func example_1() {
+	expect((firstMissingPositive([]int{1, 2, 0}) == 3))
+}
+
+func example_2() {
+	expect((firstMissingPositive([]int{3, 4, -1, 1}) == 2))
+}
+
+func example_3() {
+	expect((firstMissingPositive([]int{7, 8, 9, 11, 12}) == 1))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+

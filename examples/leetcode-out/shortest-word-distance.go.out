@@ -1,0 +1,62 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func abs(x int) int {
+	if (x < 0) {
+		return -x
+	} else {
+		return x
+	}
+}
+
+func shortestDistance(words []string, word1 string, word2 string) int {
+	var index1 int = -1
+	_ = index1
+	var index2 int = -1
+	_ = index2
+	var result int = len(words)
+	_ = result
+	var i int = 0
+	_ = i
+	for (i < len(words)) {
+		if (words[i] == word1) {
+			index1 = i
+		}
+		if (words[i] == word2) {
+			index2 = i
+		}
+		if ((index1 >= 0) && (index2 >= 0)) {
+			var dist int = abs((index1 - index2))
+			if (dist < result) {
+				result = dist
+			}
+		}
+		i = (i + 1)
+	}
+	return result
+}
+
+func example_1() {
+	var words []string = []string{"practice", "makes", "perfect", "coding", "makes"}
+	expect((shortestDistance(words, "coding", "practice") == 3))
+}
+
+func example_2() {
+	var words []string = []string{"practice", "makes", "perfect", "coding", "makes"}
+	expect((shortestDistance(words, "makes", "coding") == 1))
+}
+
+func same_adjacent() {
+	var words []string = []string{"a", "b", "a"}
+	expect((shortestDistance(words, "a", "b") == 1))
+}
+
+func main() {
+	example_1()
+	example_2()
+	same_adjacent()
+}
+

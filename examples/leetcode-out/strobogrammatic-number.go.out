@@ -1,0 +1,59 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func isStrobogrammatic(num string) bool {
+	var pairs map[string]string = map[string]string{"0": "0", "1": "1", "6": "9", "8": "8", "9": "6"}
+	var left int = 0
+	_ = left
+	var right int = (len(num) - 1)
+	_ = right
+	for (left <= right) {
+		var a string = _indexString(num, left)
+		var b string = _indexString(num, right)
+		_tmp0 := a
+		_tmp1 := pairs
+		_, _tmp2 := _tmp1[_tmp0]
+		if !(_tmp2) {
+			return false
+		}
+		if (pairs[a] != b) {
+			return false
+		}
+		left = (left + 1)
+		right = (right - 1)
+	}
+	return true
+}
+
+func example_1() {
+	expect((isStrobogrammatic("69") == true))
+}
+
+func example_2() {
+	expect((isStrobogrammatic("88") == true))
+}
+
+func example_3() {
+	expect((isStrobogrammatic("962") == false))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

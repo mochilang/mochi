@@ -1,0 +1,55 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func lengthOfLastWord(s string) int {
+	var i int = (len(s) - 1)
+	_ = i
+	for ((i >= 0) && (_indexString(s, i) == " ")) {
+		i = (i - 1)
+	}
+	var length int = 0
+	_ = length
+	for ((i >= 0) && (_indexString(s, i) != " ")) {
+		length = (length + 1)
+		i = (i - 1)
+	}
+	return length
+}
+
+func example_1() {
+	expect((lengthOfLastWord("Hello World") == 5))
+}
+
+func example_2() {
+	expect((lengthOfLastWord("   fly me   to   the moon  ") == 4))
+}
+
+func example_3() {
+	expect((lengthOfLastWord("luffy is still joyboy") == 6))
+}
+
+func only_spaces() {
+	expect((lengthOfLastWord("   ") == 0))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+	only_spaces()
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

@@ -1,0 +1,94 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func generateMatrix(n int) [][]int {
+	var matrix [][]int = [][]int{}
+	_ = matrix
+	var i int = 0
+	_ = i
+	for (i < n) {
+		var row []int = []int{}
+		_ = row
+		var j int = 0
+		_ = j
+		for (j < n) {
+			row = append(append([]int{}, row...), []int{0}...)
+			j = (j + 1)
+		}
+		matrix = append(append([][]int{}, matrix...), [][]int{row}...)
+		i = (i + 1)
+	}
+	var left int = 0
+	_ = left
+	var right int = (n - 1)
+	_ = right
+	var top int = 0
+	_ = top
+	var bottom int = (n - 1)
+	_ = bottom
+	var num int = 1
+	_ = num
+	for ((left <= right) && (top <= bottom)) {
+		for j := left; j < (right + 1); j++ {
+			matrix[top][j] = num
+			num = (num + 1)
+		}
+		top = (top + 1)
+		for i := top; i < (bottom + 1); i++ {
+			matrix[i][right] = num
+			num = (num + 1)
+		}
+		right = (right - 1)
+		if (top <= bottom) {
+			var j int = right
+			_ = j
+			for (j >= left) {
+				matrix[bottom][j] = num
+				num = (num + 1)
+				j = (j - 1)
+			}
+			bottom = (bottom - 1)
+		}
+		if (left <= right) {
+			var i int = bottom
+			_ = i
+			for (i >= top) {
+				matrix[i][left] = num
+				num = (num + 1)
+				i = (i - 1)
+			}
+			left = (left + 1)
+		}
+	}
+	return matrix
+}
+
+func example_1() {
+	expect(_equal(generateMatrix(3), [][]int{[]int{1, 2, 3}, []int{8, 9, 4}, []int{7, 6, 5}}))
+}
+
+func example_2() {
+	expect(_equal(generateMatrix(1), [][]int{[]int{1}}))
+}
+
+func n___4() {
+	expect(_equal(generateMatrix(4), [][]int{[]int{1, 2, 3, 4}, []int{12, 13, 14, 5}, []int{11, 16, 15, 6}, []int{10, 9, 8, 7}}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	n___4()
+}
+
+func _equal(a, b any) bool {
+    return reflect.DeepEqual(a, b)
+}
+

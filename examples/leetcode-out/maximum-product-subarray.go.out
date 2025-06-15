@@ -1,0 +1,70 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func max(a int, b int) int {
+	if (a > b) {
+		return a
+	}
+	return b
+}
+
+func min(a int, b int) int {
+	if (a < b) {
+		return a
+	}
+	return b
+}
+
+func maxProduct(nums []int) int {
+	var n int = len(nums)
+	var maxEnding int = nums[0]
+	_ = maxEnding
+	var minEnding int = nums[0]
+	_ = minEnding
+	var result int = nums[0]
+	_ = result
+	var i int = 1
+	_ = i
+	for (i < n) {
+		var v int = nums[i]
+		if (v < 0) {
+			var temp int = maxEnding
+			maxEnding = minEnding
+			minEnding = temp
+		}
+		maxEnding = max(v, (maxEnding * v))
+		minEnding = min(v, (minEnding * v))
+		if (maxEnding > result) {
+			result = maxEnding
+		}
+		i = (i + 1)
+	}
+	return result
+}
+
+func example_1() {
+	expect((maxProduct([]int{2, 3, -2, 4}) == 6))
+}
+
+func example_2() {
+	expect((maxProduct([]int{-2, 0, -1}) == 0))
+}
+
+func negatives() {
+	expect((maxProduct([]int{-2, 3, -4}) == 24))
+}
+
+func single() {
+	expect((maxProduct([]int{-2}) == (-2)))
+}
+
+func main() {
+	example_1()
+	example_2()
+	negatives()
+	single()
+}
+

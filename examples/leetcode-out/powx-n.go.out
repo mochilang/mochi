@@ -1,0 +1,47 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func myPow(x float64, n int) float64 {
+	if (n == 0) {
+		return 1.000000
+	}
+	if (n < 0) {
+		return (1.000000 / myPow(x, -n))
+	}
+	var base float64 = x
+	_ = base
+	var exp int = n
+	_ = exp
+	var result float64 = 1.000000
+	_ = result
+	for (exp > 0) {
+		if ((exp % 2) == 1) {
+			result = (result * base)
+		}
+		base = (base * base)
+		exp = (exp / 2)
+	}
+	return result
+}
+
+func example_1() {
+	expect((myPow(2.000000, 10) == 1024.000000))
+}
+
+func example_2() {
+	expect((myPow(2.100000, 3) == 9.261000))
+}
+
+func example_3() {
+	expect((myPow(2.000000, -2) == 0.250000))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+

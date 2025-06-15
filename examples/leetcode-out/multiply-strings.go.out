@@ -1,0 +1,118 @@
+package main
+
+import (
+	"fmt"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func multiply(num1 string, num2 string) string {
+	if ((num1 == "0") || (num2 == "0")) {
+		return "0"
+	}
+	var digits map[string]int = map[string]int{"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+	var m int = len(num1)
+	var n int = len(num2)
+	var result map[int]int = map[int]int{}
+	_ = result
+	var i int = m
+	_ = i
+	for (i > 0) {
+		i = (i - 1)
+		var d1 int = digits[_indexString(num1, i)]
+		var j int = n
+		_ = j
+		for (j > 0) {
+			j = (j - 1)
+			var d2 int = digits[_indexString(num2, j)]
+			var idx1 int = ((i + j) + 1)
+			var existing int = 0
+			_ = existing
+			_tmp0 := idx1
+			_tmp1 := result
+			_, _tmp2 := _tmp1[_tmp0]
+			if _tmp2 {
+				existing = result[idx1]
+			}
+			var sum int = ((d1 * d2) + existing)
+			result[idx1] = (sum % 10)
+			var carry int = (sum / 10)
+			var idx0 int = (i + j)
+			var prev int = 0
+			_ = prev
+			_tmp3 := idx0
+			_tmp4 := result
+			_, _tmp5 := _tmp4[_tmp3]
+			if _tmp5 {
+				prev = result[idx0]
+			}
+			result[idx0] = (prev + carry)
+		}
+	}
+	var out string = ""
+	_ = out
+	var k int = 0
+	_ = k
+	for (k < (m + n)) {
+		var digit int = 0
+		_ = digit
+		_tmp6 := k
+		_tmp7 := result
+		_, _tmp8 := _tmp7[_tmp6]
+		if _tmp8 {
+			digit = result[k]
+		}
+		if ((out == "") && (digit == 0)) {
+		} else {
+			out = out + fmt.Sprint(digit)
+		}
+		k = (k + 1)
+	}
+	if (out == "") {
+		return "0"
+	}
+	return out
+}
+
+func example_1() {
+	expect((multiply("2", "3") == "6"))
+}
+
+func example_2() {
+	expect((multiply("123", "456") == "56088"))
+}
+
+func leading_zeros() {
+	expect((multiply("0002", "03") == "6"))
+}
+
+func large_numbers() {
+	expect((multiply("999", "999") == "998001"))
+}
+
+func main() {
+	var ok int = 0
+	_ = ok
+	ok = (ok + 1)
+	var y int = 1
+	_ = y
+	y = 2
+	example_1()
+	example_2()
+	leading_zeros()
+	large_numbers()
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

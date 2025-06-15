@@ -1,0 +1,48 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Employee struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+	Salary int `json:"salary"`
+	ManagerId int `json:"managerId"`
+}
+
+func higherSalaryThanManager(employees []Employee) []string {
+	var result []string = []string{}
+	_ = result
+	for _, e := range employees {
+		if (e.ManagerId != 0) {
+			for _, m := range employees {
+				if (m.Id == e.ManagerId) {
+					if (e.Salary > m.Salary) {
+						result = append(append([]string{}, result...), []string{e.Name}...)
+					}
+					break
+				}
+			}
+		}
+	}
+	return result
+}
+
+func example() {
+	expect(_equal(higherSalaryThanManager(employees), []string{"Joe"}))
+}
+
+var employees []Employee = []Employee{Employee{Id: 1, Name: "Joe", Salary: 70000, ManagerId: 3}, Employee{Id: 2, Name: "Henry", Salary: 80000, ManagerId: 4}, Employee{Id: 3, Name: "Sam", Salary: 60000, ManagerId: 0}, Employee{Id: 4, Name: "Max", Salary: 90000, ManagerId: 0}}
+func main() {
+	example()
+}
+
+func _equal(a, b any) bool {
+    return reflect.DeepEqual(a, b)
+}
+

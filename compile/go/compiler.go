@@ -2534,7 +2534,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			child.SetVar(p.Name, resolveTypeRef(p.Type), true)
 		}
 	}
-	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child}
+       sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
 	sub.indent = 1
 	if fn.Return != nil {
 		sub.returnType = resolveTypeRef(fn.Return)

@@ -1,0 +1,50 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func reverseBetween(nums []int, left int, right int) []int {
+	if (left >= right) {
+		return nums
+	}
+	if ((left < 1) || (right > len(nums))) {
+		return nums
+	}
+	var result []int = nums
+	_ = result
+	var i int = (left - 1)
+	_ = i
+	var j int = (right - 1)
+	_ = j
+	for (i < j) {
+		var temp int = result[i]
+		result[i] = result[j]
+		result[j] = temp
+		i = (i + 1)
+		j = (j - 1)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(reverseBetween([]int{1, 2, 3, 4, 5}, 2, 4), []int{1, 4, 3, 2, 5}))
+}
+
+func left_equals_right() {
+	expect(_equal(reverseBetween([]int{1, 2, 3}, 2, 2), []int{1, 2, 3}))
+}
+
+func main() {
+	example_1()
+	left_equals_right()
+}
+
+func _equal(a, b any) bool {
+    return reflect.DeepEqual(a, b)
+}
+

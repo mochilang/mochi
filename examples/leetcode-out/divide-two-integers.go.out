@@ -1,0 +1,74 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func divide(dividend int, divisor int) int {
+	if ((dividend == ((-2147483647 - 1))) && (divisor == (-1))) {
+		return 2147483647
+	}
+	var negative bool = false
+	_ = negative
+	if (dividend < 0) {
+		negative = !negative
+		dividend = -dividend
+	}
+	if (divisor < 0) {
+		negative = !negative
+		divisor = -divisor
+	}
+	var quotient int = 0
+	_ = quotient
+	for (dividend >= divisor) {
+		var temp int = divisor
+		_ = temp
+		var multiple int = 1
+		_ = multiple
+		for (dividend >= (temp + temp)) {
+			temp = (temp + temp)
+			multiple = (multiple + multiple)
+		}
+		dividend = (dividend - temp)
+		quotient = (quotient + multiple)
+	}
+	if negative {
+		quotient = -quotient
+	}
+	if (quotient > 2147483647) {
+		return 2147483647
+	}
+	if (quotient < ((-2147483647 - 1))) {
+		return -2147483648
+	}
+	return quotient
+}
+
+func example_1() {
+	expect((divide(10, 3) == 3))
+}
+
+func example_2() {
+	expect((divide(7, -3) == (-2)))
+}
+
+func overflow() {
+	expect((divide(-2147483648, -1) == 2147483647))
+}
+
+func divide_by_1() {
+	expect((divide(12345, 1) == 12345))
+}
+
+func negative_result() {
+	expect((divide(-15, 2) == (-7)))
+}
+
+func main() {
+	example_1()
+	example_2()
+	overflow()
+	divide_by_1()
+	negative_result()
+}
+

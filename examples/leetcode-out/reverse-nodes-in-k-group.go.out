@@ -1,0 +1,87 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func reverseKGroup(nums []int, k int) []int {
+	var n int = len(nums)
+	if (k <= 1) {
+		return nums
+	}
+	var result []any = []any{}
+	_ = result
+	var i int = 0
+	_ = i
+	for (i < n) {
+		var end int = (i + k)
+		if (end <= n) {
+			var j int = (end - 1)
+			_ = j
+			for (j >= i) {
+				result = append(append([]any{}, result...), _toAnySlice([]int{nums[j]})...)
+				j = (j - 1)
+			}
+		} else {
+			var j int = i
+			_ = j
+			for (j < n) {
+				result = append(append([]any{}, result...), _toAnySlice([]int{nums[j]})...)
+				j = (j + 1)
+			}
+		}
+		i = (i + k)
+	}
+	return _cast[[]int](result)
+}
+
+func example_1() {
+	expect(_equal(reverseKGroup([]int{1, 2, 3, 4, 5}, 2), []int{2, 1, 4, 3, 5}))
+}
+
+func example_2() {
+	expect(_equal(reverseKGroup([]int{1, 2, 3, 4, 5}, 3), []int{3, 2, 1, 4, 5}))
+}
+
+func k_equals_list_length() {
+	expect(_equal(reverseKGroup([]int{1, 2, 3, 4}, 4), []int{4, 3, 2, 1}))
+}
+
+func k_greater_than_length() {
+	expect(_equal(reverseKGroup([]int{1, 2, 3}, 5), []int{1, 2, 3}))
+}
+
+func k_is_one() {
+	expect(_equal(reverseKGroup([]int{1, 2, 3}, 1), []int{1, 2, 3}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	k_equals_list_length()
+	k_greater_than_length()
+	k_is_one()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    return reflect.DeepEqual(a, b)
+}
+
+func _toAnySlice[T any](s []T) []any {
+    out := make([]any, len(s))
+    for i, v := range s { out[i] = v }
+    return out
+}
+

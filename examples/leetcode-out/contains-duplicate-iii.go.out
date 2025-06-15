@@ -1,0 +1,68 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func abs(x int) int {
+	if (x < 0) {
+		return -x
+	} else {
+		return x
+	}
+}
+
+func containsNearbyAlmostDuplicate(nums []int, indexDiff int, valueDiff int) bool {
+	if ((indexDiff <= 0) || (valueDiff < 0)) {
+		return false
+	}
+	var i int = 0
+	_ = i
+	for (i < len(nums)) {
+		var j int = (i - 1)
+		_ = j
+		var left int = 0
+		_ = left
+		if ((i - indexDiff) > 0) {
+			left = (i - indexDiff)
+		}
+		j = (i - 1)
+		for (j >= left) {
+			if (abs((nums[i] - nums[j])) <= valueDiff) {
+				return true
+			}
+			j = (j - 1)
+		}
+		i = (i + 1)
+	}
+	return false
+}
+
+func example_1() {
+	expect((containsNearbyAlmostDuplicate([]int{1, 2, 3, 1}, 3, 0) == true))
+}
+
+func example_2() {
+	expect((containsNearbyAlmostDuplicate([]int{1, 0, 1, 1}, 1, 2) == true))
+}
+
+func example_3() {
+	expect((containsNearbyAlmostDuplicate([]int{1, 5, 9, 1, 5, 9}, 2, 3) == false))
+}
+
+func negative_numbers() {
+	expect((containsNearbyAlmostDuplicate([]int{-3, -1, -4, -2}, 2, 1) == true))
+}
+
+func no_pairs() {
+	expect((containsNearbyAlmostDuplicate([]int{1, 2, 3, 4}, 1, 0) == false))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+	negative_numbers()
+	no_pairs()
+}
+

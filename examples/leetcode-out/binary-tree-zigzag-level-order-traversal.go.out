@@ -1,0 +1,144 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left any `json:"left"`
+	Value int `json:"value"`
+	Right any `json:"right"`
+}
+func (Node) isTree() {}
+
+func reverseList(xs []int) []int {
+	var out []int = []int{}
+	_ = out
+	var i int = (len(xs) - 1)
+	_ = i
+	for (i >= 0) {
+		out = append(append([]int{}, out...), []int{xs[i]}...)
+		i = (i - 1)
+	}
+	return out
+}
+
+func zigzagLevelOrder(root any) [][]int {
+	if func() bool {
+	_t := root
+	switch _t {
+	case Leaf:
+		return true
+	default:
+		return false
+	}
+}() {
+		return _cast[[][]int]([]any{})
+	}
+	var result [][]int = [][]int{}
+	_ = result
+	var queue []any = []any{root}
+	_ = queue
+	var level int = 0
+	_ = level
+	for (len(queue) > 0) {
+		var vals []int = []int{}
+		_ = vals
+		var next []any = []any{}
+		_ = next
+		for _, node := range queue {
+			if func() bool {
+	_t := node
+	switch _t {
+	case Leaf:
+		return false
+	default:
+		return true
+	}
+}() {
+				vals = append(append([]any{}, _toAnySlice(vals)...), []any{node.Value}...)
+				if func() bool {
+	_t := node.Left
+	switch _t {
+	case Leaf:
+		return false
+	default:
+		return true
+	}
+}() {
+					next = append(append([]any{}, next...), []any{node.Left}...)
+				}
+				if func() bool {
+	_t := node.Right
+	switch _t {
+	case Leaf:
+		return false
+	default:
+		return true
+	}
+}() {
+					next = append(append([]any{}, next...), []any{node.Right}...)
+				}
+			}
+		}
+		if ((level % 2) == 1) {
+			vals = reverseList(vals)
+		}
+		result = append(append([][]int{}, result...), [][]int{vals}...)
+		queue = next
+		level = (level + 1)
+	}
+	return result
+}
+
+func example_1() {
+	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 9, Right: Leaf{}}, Value: 3, Right: Node{Left: Node{Left: Leaf{}, Value: 15, Right: Leaf{}}, Value: 20, Right: Node{Left: Leaf{}, Value: 7, Right: Leaf{}}}}
+	expect(_equal(zigzagLevelOrder(tree), [][]int{[]int{3}, []int{20, 9}, []int{15, 7}}))
+}
+
+func single_node() {
+	expect(_equal(zigzagLevelOrder(Node{Left: Leaf{}, Value: 1, Right: Leaf{}}), [][]int{[]int{1}}))
+}
+
+func empty() {
+	expect(_equal(zigzagLevelOrder(Leaf{}), []any{}))
+}
+
+func unbalanced() {
+	var tree Node = Node{Left: Node{Left: Node{Left: Leaf{}, Value: 4, Right: Leaf{}}, Value: 2, Right: Leaf{}}, Value: 1, Right: Node{Left: Leaf{}, Value: 3, Right: Node{Left: Leaf{}, Value: 5, Right: Leaf{}}}}
+	expect(_equal(zigzagLevelOrder(tree), [][]int{[]int{1}, []int{3, 2}, []int{4, 5}}))
+}
+
+func main() {
+	example_1()
+	single_node()
+	empty()
+	unbalanced()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    return reflect.DeepEqual(a, b)
+}
+
+func _toAnySlice[T any](s []T) []any {
+    out := make([]any, len(s))
+    for i, v := range s { out[i] = v }
+    return out
+}
+

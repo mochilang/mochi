@@ -1,0 +1,52 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func jump(nums []int) int {
+	var n int = len(nums)
+	var jumps int = 0
+	_ = jumps
+	var end int = 0
+	_ = end
+	var farthest int = 0
+	_ = farthest
+	for i := 0; i < n; i++ {
+		if (i > farthest) {
+			return -1
+		}
+		if ((i + nums[i]) > farthest) {
+			farthest = (i + nums[i])
+		}
+		if ((i == end) && (i != (n - 1))) {
+			jumps = (jumps + 1)
+			end = farthest
+		}
+	}
+	return jumps
+}
+
+func example_1() {
+	expect((jump([]int{2, 3, 1, 1, 4}) == 2))
+}
+
+func example_2() {
+	expect((jump([]int{2, 3, 0, 1, 4}) == 2))
+}
+
+func single_element() {
+	expect((jump([]int{0}) == 0))
+}
+
+func two_elements() {
+	expect((jump([]int{1, 2}) == 1))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_element()
+	two_elements()
+}
+
