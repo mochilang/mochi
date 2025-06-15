@@ -1,0 +1,79 @@
+// Solution for LeetCode problem 199 - Binary Tree Right Side View
+
+// This solution avoids union types and pattern matching by representing
+// tree nodes as maps. A Leaf node is {"__name": "Leaf"} and a Node is
+// {"__name": "Node", "left": left, "value": value, "right": right}.
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// Return the values of the nodes visible from the right side.
+fun rightSideView(root: map<string, any>): list<int> {
+  var result: list<int> = []
+  var queue: list<map<string, any>> = []
+  if !isLeaf(root) {
+    queue = [root]
+  }
+  while len(queue) > 0 {
+    var next: list<map<string, any>> = []
+    var last = 0
+    for node in queue {
+      last = value(node)
+      let l = left(node)
+      let r = right(node)
+      if !isLeaf(l) { next = next + [l] }
+      if !isLeaf(r) { next = next + [r] }
+    }
+    result = result + [last]
+    queue = next
+  }
+  return result
+}
+
+// Example tree: [1,2,3,null,5,null,4]
+let example1 = Node(
+  Node(Leaf(), 2, Node(Leaf(), 5, Leaf())),
+  1,
+  Node(Leaf(), 3, Node(Leaf(), 4, Leaf()))
+)
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect rightSideView(example1) == [1,3,4]
+}
+
+test "example 2" {
+  expect rightSideView(Node(Leaf(), 1, Node(Leaf(), 3, Leaf()))) == [1,3]
+}
+
+test "empty" {
+  expect rightSideView(Leaf()) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if len(queue) = 0 { }    // ❌ assignment
+   if len(queue) == 0 { }   // ✅ comparison
+2. Reassigning a variable declared with 'let'.
+   let q = [] as list<int>
+   q = [1]                  // ❌ cannot assign
+   var q: list<int> = []    // ✅ use 'var' when mutation is needed
+3. Missing element type for empty lists.
+   var nodes = []           // ❌ type can't be inferred
+   var nodes: list<map<string, any>> = [] // ✅ specify the type
+*/
