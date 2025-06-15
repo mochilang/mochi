@@ -1,0 +1,60 @@
+fun searchMatrix(matrix: list<list<int>>, target: int): bool {
+  let m = len(matrix)
+  if m == 0 {
+    return false
+  }
+  let n = len(matrix[0])
+  var row = 0
+  var col = n - 1
+  while row < m && col >= 0 {
+    let value = matrix[row][col]
+    if value == target {
+      return true
+    } else if value > target {
+      col = col - 1
+    } else {
+      row = row + 1
+    }
+  }
+  return false
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect searchMatrix([
+    [1,4,7,11,15],
+    [2,5,8,12,19],
+    [3,6,9,16,22],
+    [10,13,14,17,24],
+    [18,21,23,26,30]
+  ], 5) == true
+}
+
+test "example 2" {
+  expect searchMatrix([
+    [1,4,7,11,15],
+    [2,5,8,12,19],
+    [3,6,9,16,22],
+    [10,13,14,17,24],
+    [18,21,23,26,30]
+  ], 20) == false
+}
+
+// Additional edge cases
+
+test "single element found" {
+  expect searchMatrix([[5]], 5) == true
+}
+
+test "single element missing" {
+  expect searchMatrix([[5]], 3) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Confusing assignment '=' with comparison '=='. Use '==' in conditions.
+2. Forgetting to mark mutable variables with 'var'. Here 'row' and 'col' must be 'var'.
+3. Using Python-style loops like 'for row in matrix'. Use index-based loops or while loops in Mochi.
+4. Off-by-one mistakes when updating 'col = col - 1' or 'row = row + 1'. Ensure indices stay within bounds.
+*/
