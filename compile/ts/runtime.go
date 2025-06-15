@@ -284,6 +284,27 @@ const (
 		"      _writeOutput(path, lines.join('\\n') + '\\n');\n" +
 		"  }\n" +
 		"}\n"
+
+	helperEqual = "function _equal(a: any, b: any): boolean {\n" +
+		"  if (Array.isArray(a) && Array.isArray(b)) {\n" +
+		"    if (a.length !== b.length) return false;\n" +
+		"    for (let i = 0; i < a.length; i++) {\n" +
+		"      if (!_equal(a[i], b[i])) return false;\n" +
+		"    }\n" +
+		"    return true;\n" +
+		"  }\n" +
+		"  if (a && b && typeof a === 'object' && typeof b === 'object') {\n" +
+		"    const ak = Object.keys(a);\n" +
+		"    const bk = Object.keys(b);\n" +
+		"    if (ak.length !== bk.length) return false;\n" +
+		"    for (const k of ak) {\n" +
+		"      if (!(k in b)) return false;\n" +
+		"      if (!_equal((a as any)[k], (b as any)[k])) return false;\n" +
+		"    }\n" +
+		"    return true;\n" +
+		"  }\n" +
+		"  return a === b;\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -295,6 +316,7 @@ var helperMap = map[string]string{
 	"_gen_struct": helperGenStruct,
 	"_fetch":      helperFetch,
 	"_toAnyMap":   helperToAnyMap,
+	"_equal":      helperEqual,
 	"_stream":     helperStream,
 	"_waitAll":    helperWaitAll,
 	"_agent":      helperAgent,

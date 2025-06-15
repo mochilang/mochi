@@ -879,31 +879,96 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
-	expr, err := c.compileUnary(b.Left)
+	type token struct {
+		expr string
+		typ  types.Type
+	}
+	ops := []string{}
+	items := []token{}
+
+	e, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	leftType := c.inferUnaryType(b.Left)
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+	items = append(items, token{expr: e, typ: c.inferUnaryType(b.Left)})
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rightType := c.inferPostfixType(op.Right)
-		if op.Op == "+" && isList(leftType) && isList(rightType) {
-			expr = fmt.Sprintf("%s.concat(%s)", expr, right)
-			leftType = leftType
-			continue
+		ops = append(ops, part.Op)
+		items = append(items, token{expr: r, typ: c.inferPostfixType(part.Right)})
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, o := range list {
+			if o == op {
+				return true
+			}
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
-		switch op.Op {
-		case "+", "-", "*", "/", "%":
-			// result type approximates left operand
-		case "==", "!=", "<", "<=", ">", ">=":
-			leftType = types.BoolType{}
+		return false
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(lvl, ops[i]) {
+				i++
+				continue
+			}
+			left := items[i]
+			right := items[i+1]
+			op := ops[i]
+			var expr string
+			var t types.Type = types.AnyType{}
+			switch op {
+			case "+":
+				if isList(left.typ) && isList(right.typ) {
+					expr = fmt.Sprintf("%s.concat(%s)", left.expr, right.expr)
+					t = left.typ
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", left.expr, right.expr)
+					t = left.typ
+				}
+			case "-", "*", "/", "%", "<", "<=", ">", ">=", "&&", "||":
+				expr = fmt.Sprintf("(%s %s %s)", left.expr, op, right.expr)
+				if op == "<" || op == "<=" || op == ">" || op == ">=" || op == "&&" || op == "||" {
+					t = types.BoolType{}
+				} else {
+					t = left.typ
+				}
+			case "==", "!=":
+				c.use("_equal")
+				if op == "==" {
+					expr = fmt.Sprintf("_equal(%s, %s)", left.expr, right.expr)
+				} else {
+					expr = fmt.Sprintf("!_equal(%s, %s)", left.expr, right.expr)
+				}
+				t = types.BoolType{}
+			case "in":
+				expr = fmt.Sprintf("(%s in %s)", left.expr, right.expr)
+				t = types.BoolType{}
+			default:
+				expr = fmt.Sprintf("(%s %s %s)", left.expr, op, right.expr)
+			}
+			items[i] = token{expr: expr, typ: t}
+			items = append(items[:i+1], items[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return expr, nil
+
+	if len(items) != 1 {
+		return "", fmt.Errorf("unexpected binary expression")
+	}
+	return items[0].expr, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
