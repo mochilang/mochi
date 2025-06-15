@@ -1,0 +1,53 @@
+// Solution for LeetCode problem 202 - Happy Number
+
+fun isHappy(n: int): bool {
+  var seen: map<int, bool> = {}
+  var current = n
+  while current != 1 {
+    if current in seen {
+      break
+    }
+    seen[current] = true
+    var sum = 0
+    var x = current
+    while x > 0 {
+      let digit = x % 10
+      sum = sum + digit * digit
+      x = x / 10
+    }
+    current = sum
+  }
+  return current == 1
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect isHappy(19) == true
+}
+
+test "example 2" {
+  expect isHappy(2) == false
+}
+
+test "one is happy" {
+  expect isHappy(1) == true
+}
+
+test "not happy" {
+  expect isHappy(3) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions:
+     if current = 1 { ... }  // ❌ assignment
+     if current == 1 { ... } // ✅ comparison
+2. Declaring a variable with 'let' when it needs mutation:
+     let sum = 0
+     sum = sum + digit    // ❌ cannot modify immutable binding
+     var sum = 0          // ✅ use 'var' for mutable variables
+3. Forgetting to check membership before reading from a map:
+     if seen[current] { ... } // ❌ causes error if key missing
+     if current in seen { ... } // ✅ verify key exists first
+*/
