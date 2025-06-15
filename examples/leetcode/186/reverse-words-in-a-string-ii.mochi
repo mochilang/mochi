@@ -1,0 +1,107 @@
+// Solution for LeetCode problem 186 - Reverse Words in a String II
+
+// Convert a string to a list of single-character strings
+fun toList(s: string): list<string> {
+  var out: list<string> = []
+  for i in 0..len(s) {
+    out = out + [s[i]]
+  }
+  return out
+}
+
+// Convert a list of single-character strings back into a string
+fun fromList(arr: list<string>): string {
+  var out = ""
+  for ch in arr {
+    out = out + ch
+  }
+  return out
+}
+
+// Reverse the words of `chars` in place and return the result
+fun reverseWords(chars: list<string>): list<string> {
+  // Make a mutable copy
+  var arr = chars
+  var left = 0
+  var right = len(arr) - 1
+  while left < right {
+    let temp = arr[left]
+    arr[left] = arr[right]
+    arr[right] = temp
+    left = left + 1
+    right = right - 1
+  }
+
+  var start = 0
+  var i = 0
+  let n = len(arr)
+  while i <= n {
+    if i == n {
+      var l = start
+      var r = i - 1
+      while l < r {
+        let t = arr[l]
+        arr[l] = arr[r]
+        arr[r] = t
+        l = l + 1
+        r = r - 1
+      }
+    } else if arr[i] == " " {
+      var l = start
+      var r = i - 1
+      while l < r {
+        let t = arr[l]
+        arr[l] = arr[r]
+        arr[r] = t
+        l = l + 1
+        r = r - 1
+      }
+      start = i + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let input = toList("the sky is blue")
+  let result = reverseWords(input)
+  expect fromList(result) == "blue is sky the"
+}
+
+test "example 2" {
+  let input = toList("hello world")
+  let result = reverseWords(input)
+  expect fromList(result) == "world hello"
+}
+
+// Additional edge cases
+
+test "single word" {
+  let input = toList("hello")
+  let result = reverseWords(input)
+  expect fromList(result) == "hello"
+}
+
+test "trailing space" {
+  let input = toList("a b ")
+  let result = reverseWords(input)
+  expect fromList(result) == " b a" // trailing space preserved
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for equality:
+   if arr[i] = " " { }
+   // ❌ assignment! Use '=='
+2. Reassigning a value declared with 'let':
+   let n = len(arr)
+   n = n + 1 // ❌ 'n' is immutable
+   var count = len(arr)
+   count = count + 1 // ✅ use 'var' for mutable values
+3. Trying to append to a list with Python-style syntax:
+   arr.append("x") // ❌ not supported
+   arr = arr + ["x"] // ✅ create a new list
+*/
