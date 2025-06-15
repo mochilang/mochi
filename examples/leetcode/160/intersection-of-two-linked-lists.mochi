@@ -1,0 +1,67 @@
+fun getIntersectionNode(next: list<int>, headA: int, headB: int): int {
+  var a = headA
+  var b = headB
+  while a != b {
+    if a == (-1) {
+      a = headB
+    } else {
+      a = next[a]
+    }
+    if b == (-1) {
+      b = headA
+    } else {
+      b = next[b]
+    }
+  }
+  return a
+}
+
+// Test cases based on the LeetCode problem statement
+
+test "example 1" {
+  // listA: 4->1->8->4->5
+  // listB: 5->6->1->8->4->5
+  let next = [1,2,3,4,-1,6,7,2]
+  expect getIntersectionNode(next, 0, 5) == 2
+}
+
+test "example 2" {
+  // listA: 1->9->1->2->4
+  // listB: 3->2->4
+  let next = [1,2,3,4,-1,3]
+  expect getIntersectionNode(next, 0, 5) == 3
+}
+
+test "example 3" {
+  // listA: 2->6->4
+  // listB: 1->5
+  let next = [1,2,-1,4,-1]
+  expect getIntersectionNode(next, 0, 3) == (-1)
+}
+
+test "same head" {
+  let next = [1,2,3,-1]
+  expect getIntersectionNode(next, 0, 0) == 0
+}
+
+test "one empty" {
+  let next = [1,-1]
+  expect getIntersectionNode(next, 0, -1) == (-1)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a `let` binding:
+   let x = 1
+   x = 2  // error[E004]: cannot reassign immutable binding
+   // Fix: declare as `var x = 1` when mutation is needed.
+
+2. Using '=' instead of '==' in conditions:
+   if a = b { }
+   // error[P000]: '=' is assignment, not comparison
+   // Fix: use '==' to compare values.
+
+3. Accessing an index that is out of bounds:
+   next[len(next)]  // error[I003]: index out of bounds
+   // Fix: valid indexes range from 0 to len(next)-1.
+*/
