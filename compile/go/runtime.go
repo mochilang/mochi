@@ -191,6 +191,10 @@ const (
 		"    return out\n" +
 		"}\n"
 
+	helperEqual = "func _equal(a, b any) bool {\n" +
+		"    return reflect.DeepEqual(a, b)\n" +
+		"}\n"
+
 	helperToMapSlice = "func _toMapSlice(v any) ([]map[string]any, bool) {\n" +
 		"    switch rows := v.(type) {\n" +
 		"    case []map[string]any:\n" +
@@ -354,6 +358,7 @@ var helperMap = map[string]string{
 	"_toAnyMap":    helperToAnyMap,
 	"_toAnySlice":  helperToAnySlice,
 	"_cast":        helperCast,
+	"_equal":       helperEqual,
 	"_query":       helperQuery,
 	"_load":        helperLoad,
 	"_save":        helperSave,

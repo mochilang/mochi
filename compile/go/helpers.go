@@ -147,6 +147,16 @@ func isList(t types.Type) bool {
 	return ok
 }
 
+func isMap(t types.Type) bool {
+	_, ok := t.(types.MapType)
+	return ok
+}
+
+func isStruct(t types.Type) bool {
+	_, ok := t.(types.StructType)
+	return ok
+}
+
 func isAny(t types.Type) bool {
 	_, ok := t.(types.AnyType)
 	return ok
