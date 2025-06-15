@@ -1,0 +1,61 @@
+// Solution for LeetCode problem 142 - Linked List Cycle II
+// Represent the list using an array of next indices. -1 means no next node.
+
+fun detectCycle(next: list<int>): int {
+  if len(next) == 0 {
+    return -1
+  }
+  var slow = 0
+  var fast = 0
+  // Move slow by one step and fast by two steps
+  while fast != (-1) && next[fast] != (-1) {
+    slow = next[slow]
+    fast = next[next[fast]]
+    if slow == fast {
+      break
+    }
+  }
+  if fast == (-1) || next[fast] == (-1) {
+    return -1
+  }
+  var start = 0
+  while start != slow {
+    start = next[start]
+    slow = next[slow]
+  }
+  return start
+}
+
+// Test cases based on the original problem
+
+test "example 1" {
+  // list [3,2,0,-4] with cycle back to index 1
+  expect detectCycle([1,2,3,1]) == 1
+}
+
+test "no cycle" {
+  expect detectCycle([1,2,3,-1]) == (-1)
+}
+
+test "cycle at head" {
+  expect detectCycle([0]) == 0
+}
+
+test "single node no cycle" {
+  expect detectCycle([-1]) == (-1)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions.
+   if slow = fast { }    // ❌ assignment
+   if slow == fast { }   // ✅ comparison
+2. Reassigning an immutable binding.
+   let idx = 0
+   idx = idx + 1        // ❌ use 'var' when mutation is needed
+3. Off-by-one mistakes when indexing lists.
+   next[len(next)]       // ❌ out of bounds
+   next[len(next)-1]     // ✅ last element
+4. Writing Python-style loops like 'for i in range(n)'.
+   Mochi uses numeric ranges: 'for i in 0..n { }'
+*/
