@@ -152,6 +152,15 @@ func isAny(t types.Type) bool {
 	return ok
 }
 
+func contains(ops []string, op string) bool {
+	for _, o := range ops {
+		if o == op {
+			return true
+		}
+	}
+	return false
+}
+
 func resolveTypeRef(t *parser.TypeRef) types.Type {
 	if t == nil {
 		return types.AnyType{}
