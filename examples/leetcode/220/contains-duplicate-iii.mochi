@@ -1,0 +1,65 @@
+fun abs(x: int): int {
+  if x < 0 { return -x } else { return x }
+}
+
+// Check if there are two indices i and j such that:
+//   |nums[i] - nums[j]| <= valueDiff
+//   |i - j| <= indexDiff
+fun containsNearbyAlmostDuplicate(nums: list<int>, indexDiff: int, valueDiff: int): bool {
+  if indexDiff <= 0 || valueDiff < 0 {
+    return false
+  }
+
+  var i = 0
+  while i < len(nums) {
+    var j = i - 1
+    var left = 0
+    if i - indexDiff > 0 {
+      left = i - indexDiff
+    }
+    j = i - 1
+    while j >= left {
+      if abs(nums[i] - nums[j]) <= valueDiff {
+        return true
+      }
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return false
+}
+
+// Tests based on LeetCode examples
+
+test "example 1" {
+  expect containsNearbyAlmostDuplicate([1,2,3,1], 3, 0) == true
+}
+
+test "example 2" {
+  expect containsNearbyAlmostDuplicate([1,0,1,1], 1, 2) == true
+}
+
+test "example 3" {
+  expect containsNearbyAlmostDuplicate([1,5,9,1,5,9], 2, 3) == false
+}
+
+// Additional edge cases
+
+test "negative numbers" {
+  expect containsNearbyAlmostDuplicate([-3,-1,-4,-2], 2, 1) == true
+}
+
+test "no pairs" {
+  expect containsNearbyAlmostDuplicate([1,2,3,4], 1, 0) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons.
+   if i = j { }    // ❌ assignment
+   if i == j { }   // ✅ comparison
+2. Reassigning a value declared with 'let'. Use 'var' for variables that change.
+3. Off-by-one mistakes when checking the window bounds.
+4. Writing Python-style loops like 'for i in range(n)'. Mochi uses numeric ranges
+   and while loops as shown above.
+*/
