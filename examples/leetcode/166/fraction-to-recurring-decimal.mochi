@@ -1,0 +1,85 @@
+fun fractionToDecimal(numerator: int, denominator: int): string {
+  if denominator == 0 {
+    return ""
+  }
+  if numerator == 0 {
+    return "0"
+  }
+  var result = ""
+  let minus = str(-1)[0]
+  var negative = false
+  if (numerator < 0 && denominator > 0) || (numerator > 0 && denominator < 0) {
+    negative = true
+  }
+  if numerator < 0 {
+    numerator = -numerator
+  }
+  if denominator < 0 {
+    denominator = -denominator
+  }
+  let integerPart = numerator / denominator
+  result = str(integerPart)
+  var remainder = numerator % denominator
+  if remainder == 0 {
+    if negative {
+      return minus + result
+    }
+    return result
+  }
+  result = result + "."
+  var mapIndex: map<int, int> = {}
+  var decimal = ""
+  while remainder != 0 {
+    if remainder in mapIndex {
+      let idx = mapIndex[remainder]
+      let prefix = decimal[0:idx]
+      let suffix = decimal[idx:len(decimal)]
+      decimal = prefix + "(" + suffix + ")"
+      break
+    }
+    mapIndex[remainder] = len(decimal)
+    remainder = remainder * 10
+    let digit = remainder / denominator
+    decimal = decimal + str(digit)
+    remainder = remainder % denominator
+  }
+  result = result + decimal
+  if negative {
+    return minus + result
+  }
+  return result
+}
+
+test "example 1" {
+  expect fractionToDecimal(1, 2) == "0.5"
+}
+
+test "example 2" {
+  expect fractionToDecimal(2, 1) == "2"
+}
+
+test "example 3" {
+  expect fractionToDecimal(2, 3) == "0.(6)"
+}
+
+test "negative" {
+  expect fractionToDecimal(-50, 8) == "-6.25"
+}
+
+test "repeat zeros" {
+  expect fractionToDecimal(1, 6) == "0.1(6)"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Comparing with '=' instead of '==':
+     if numerator = 0 { }  // ❌ assignment
+   Use '==' for comparison.
+2. Reassigning a value declared with 'let':
+     let r = numerator % denominator
+     r = r * 10             // ❌ cannot reassign
+   Declare it with 'var' when mutation is required.
+3. Forgetting to convert numbers to strings when building the result:
+     result = result + digit  // ❌ type mismatch
+   Convert explicitly: result = result + str(digit)
+*/
