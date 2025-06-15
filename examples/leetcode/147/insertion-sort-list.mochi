@@ -1,0 +1,55 @@
+fun insertionSortList(nums: list<int>): list<int> {
+  var arr = nums
+  var i = 1
+  while i < len(arr) {
+    var key = arr[i]
+    var j = i - 1
+    while j >= 0 && arr[j] > key {
+      arr[j + 1] = arr[j]
+      j = j - 1
+    }
+    arr[j + 1] = key
+    i = i + 1
+  }
+  return arr
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect insertionSortList([4,2,1,3]) == [1,2,3,4]
+}
+
+test "example 2" {
+  expect insertionSortList([-1,5,3,4,0]) == [-1,0,3,4,5]
+}
+
+// Additional edge cases
+
+test "already sorted" {
+  expect insertionSortList([1,2,3,4]) == [1,2,3,4]
+}
+
+test "single element" {
+  expect insertionSortList([1]) == [1]
+}
+
+test "empty" {
+  expect insertionSortList([]) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons:
+     if arr[i] = key { ... }   // ❌ assignment
+   Use '==' to compare values.
+2. Reassigning a value bound with 'let':
+     let i = 0
+     i = i + 1              // ❌ immutable binding
+   Declare with 'var' when mutation is required.
+3. Forgetting Mochi range syntax and writing Python-style loops:
+     for i in range(len(arr)) { ... }  // ❌ invalid in Mochi
+   Use 'for i in 0..len(arr) { ... }'.
+4. Off-by-one mistakes when inserting:
+     while j >= 0 && arr[j] > key { ... } // ensure j starts at i - 1
+*/
