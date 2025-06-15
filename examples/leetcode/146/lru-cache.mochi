@@ -1,0 +1,89 @@
+// Solution for LeetCode problem 146 - LRU Cache
+
+// Cache storing up to `cap` key/value pairs. `order` keeps the most recent key
+// at the front.
+type LRUCache = { cap: int, data: map<int, int>, order: list<int> }
+
+fun newCache(cap: int): LRUCache {
+  return { cap: cap, data: {}, order: [] }
+}
+
+fun removeKey(keys: list<int>, key: int): list<int> {
+  var i = 0
+  var result = keys
+  while i < len(result) {
+    if result[i] == key {
+      result = result[0:i] + result[i+1:len(result)]
+      break
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun touch(cache: LRUCache, key: int): LRUCache {
+  let keys = [key] + removeKey(cache.order, key)
+  return { cap: cache.cap, data: cache.data, order: keys }
+}
+
+fun get(cache: LRUCache, key: int): { val: int, cache: LRUCache } {
+  if key in cache.data {
+    let v = cache.data[key]
+    let c = touch(cache, key)
+    return { val: v, cache: c }
+  }
+  return { val: -1, cache: cache }
+}
+
+fun put(cache: LRUCache, key: int, value: int): LRUCache {
+  var data = cache.data
+  data[key] = value
+  var keys = [key] + removeKey(cache.order, key)
+  if len(keys) > cache.cap {
+    let old = keys[len(keys)-1]
+    keys = keys[0:len(keys)-1]
+    var newData: map<int, int> = {}
+    for k in data { if k != old { newData[k] = data[k] } }
+    data = newData
+  }
+  return { cap: cache.cap, data: data, order: keys }
+}
+
+// Basic tests based on the LeetCode examples
+
+test "example" {
+  var c = newCache(2)
+  let r0 = get(c, 1)
+  expect r0.val == -1
+  c = r0.cache
+
+  c = put(c, 1, 1)
+  c = put(c, 2, 2)
+  let r1 = get(c, 1)
+  expect r1.val == 1
+  c = r1.cache
+
+  c = put(c, 3, 3)  // evicts key 2
+  let r2 = get(c, 2)
+  expect r2.val == -1
+  c = r2.cache
+
+  c = put(c, 4, 4)  // evicts key 1
+  let r3 = get(c, 1)
+  expect r3.val == -1
+  c = r3.cache
+
+  let r4 = get(c, 3)
+  expect r4.val == 3
+  c = r4.cache
+
+  let r5 = get(c, 4)
+  expect r5.val == 4
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare maps or lists with `var` when mutating them.
+2. Using Python style `dict.pop(key)` – instead rebuild the map without the key.
+3. Mixing assignment `=` with comparison `==` inside conditions.
+*/
