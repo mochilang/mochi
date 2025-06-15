@@ -1,0 +1,44 @@
+fun maxProfit(prices: list<int>): int {
+  let n = len(prices)
+  var profit = 0
+  var i = 1
+  while i < n {
+    let diff = prices[i] - prices[i-1]
+    if diff > 0 {
+      profit = profit + diff
+    }
+    i = i + 1
+  }
+  return profit
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect maxProfit([7,1,5,3,6,4]) == 7
+}
+
+test "example 2" {
+  expect maxProfit([1,2,3,4,5]) == 4
+}
+
+test "example 3" {
+  expect maxProfit([7,6,4,3,1]) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '+=' or '++' to accumulate results.
+   profit += diff  // ❌ not supported
+   Fix: profit = profit + diff
+2. Reassigning a value bound with 'let'.
+   let profit = 0
+   profit = 1      // ❌ cannot assign to immutable binding
+   Fix: declare with 'var profit = 0'.
+3. Writing Python style loops:
+   for i in range(1, n) { ... }  // ❌ parse error
+   Fix: use 'for i in 1..n { ... }' or a while loop.
+4. Starting the loop at 0 then accessing prices[i-1] causes an
+   out-of-bounds index.
+   Fix: begin from index 1 as shown above.
+*/
