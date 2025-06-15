@@ -1,0 +1,44 @@
+fun isPalindromeList(values: list<int>): bool {
+  let n = len(values)
+  var i = 0
+  var j = n - 1
+  while i < j {
+    if values[i] != values[j] {
+      return false
+    }
+    i = i + 1
+    j = j - 1
+  }
+  return true
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isPalindromeList([1,2,2,1]) == true
+}
+
+test "example 2" {
+  expect isPalindromeList([1,2]) == false
+}
+
+test "single element" {
+  expect isPalindromeList([7]) == true
+}
+
+test "empty list" {
+  expect isPalindromeList([] as list<int>) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare mutable variables with `var`:
+     i = 0
+   Should be: `var i = 0`.
+2. Using '=' instead of '==' for comparison:
+     if values[i] = values[j] { }
+   Use '==' to compare values.
+3. Creating an empty list without specifying its type:
+     isPalindromeList([])
+   Provide the element type: `[] as list<int>`.
+*/
