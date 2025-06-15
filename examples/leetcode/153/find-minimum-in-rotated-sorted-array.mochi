@@ -1,0 +1,53 @@
+// Solution for LeetCode problem 153 - Find Minimum in Rotated Sorted Array
+// No union types or pattern matching are used.
+
+fun findMin(nums: list<int>): int {
+  var left = 0
+  var right = len(nums) - 1
+  while left < right {
+    let mid = left + (right - left) / 2
+    if nums[mid] > nums[right] {
+      left = mid + 1
+    } else {
+      right = mid
+    }
+  }
+  return nums[left]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect findMin([3,4,5,1,2]) == 1
+}
+
+test "example 2" {
+  expect findMin([4,5,6,7,0,1,2]) == 0
+}
+
+test "example 3" {
+  expect findMin([11,13,15,17]) == 11
+}
+
+// Additional edge cases
+
+test "single element" {
+  expect findMin([5]) == 5
+}
+
+test "two elements" {
+  expect findMin([2,1]) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if nums[mid] = nums[right] { } // ❌ assignment
+   Fix: use '==' for equality checks.
+2. Forgetting to declare mutable variables with 'var':
+     left = 0              // ❌ cannot assign to implicit 'let'
+   Declare with 'var left = 0'.
+3. Creating an empty list without specifying its type:
+     var xs = []           // ❌ type unknown
+   Use 'var xs: list<int> = []'.
+*/
