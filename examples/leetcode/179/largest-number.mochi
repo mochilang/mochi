@@ -1,0 +1,69 @@
+fun largestNumber(nums: list<int>): string {
+  // Convert numbers to strings
+  var strs: list<string> = []
+  var i = 0
+  while i < len(nums) {
+    strs = strs + [str(nums[i])]
+    i = i + 1
+  }
+
+  // Sort strings by concatenation order using bubble sort
+  var j = 0
+  while j < len(strs) {
+    var k = j + 1
+    while k < len(strs) {
+      let ab = strs[j] + strs[k]
+      let ba = strs[k] + strs[j]
+      if ab < ba {
+        let tmp = strs[j]
+        strs[j] = strs[k]
+        strs[k] = tmp
+      }
+      k = k + 1
+    }
+    j = j + 1
+  }
+
+  // Build the final string
+  var result = ""
+  i = 0
+  while i < len(strs) {
+    result = result + strs[i]
+    i = i + 1
+  }
+
+  // Remove leading zeros
+  var pos = 0
+  while pos < len(result)-1 && result[pos] == "0" {
+    pos = pos + 1
+  }
+  return result[pos:len(result)]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect largestNumber([10,2]) == "210"
+}
+
+test "example 2" {
+  expect largestNumber([3,30,34,5,9]) == "9534330"
+}
+
+test "multiple zeros" {
+  expect largestNumber([0,0]) == "0"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare mutable variables with 'var':
+     let i = 0
+     i = i + 1    // ❌ cannot reassign immutable binding
+   Fix: use 'var i = 0' when the value changes.
+2. Using '=' instead of '==' in conditions:
+     if ab = ba { }
+   Fix: use '==' to compare values.
+3. Assuming Python style negative indices work:
+     result[-1]        // ❌ invalid index
+   Fix: use len(result)-1 for the last index.
+*/
