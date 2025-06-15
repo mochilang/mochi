@@ -164,6 +164,11 @@ func isString(t types.Type) bool {
 	return ok
 }
 
+func isList(t types.Type) bool {
+	_, ok := t.(types.ListType)
+	return ok
+}
+
 func tsType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType:
