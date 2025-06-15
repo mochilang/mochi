@@ -1,0 +1,58 @@
+// LeetCode 141 - Linked List Cycle
+
+// Detect if a linked list contains a cycle. The list is represented
+// by an array of node values and an index `pos` where the last node
+// points back to form a cycle. A `pos` of -1 means no cycle.
+fun hasCycle(values: list<int>, pos: int): bool {
+  let n = len(values)
+
+  fun nextIndex(i: int): int {
+    if i == n - 1 {
+      if pos >= 0 { return pos } else { return n }
+    } else {
+      return i + 1
+    }
+  }
+
+  if n == 0 || pos < 0 { return false }
+
+  var slow = 0
+  var fast = 0
+  while true {
+    slow = nextIndex(slow)
+    fast = nextIndex(fast)
+    if fast >= n { return false }
+    fast = nextIndex(fast)
+    if slow >= n || fast >= n { return false }
+    if slow == fast { return true }
+  }
+  return false
+}
+
+// Test cases based on LeetCode examples
+
+test "example 1" {
+  expect hasCycle([3,2,0,-4], 1) == true
+}
+
+test "example 2" {
+  expect hasCycle([1,2], 0) == true
+}
+
+test "example 3" {
+  expect hasCycle([1], -1) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+     if slow = fast { }
+   Use '==' to compare values.
+2. Forgetting to declare loop variables as 'var':
+     let slow = 0
+     slow = slow + 1  // error[E004]
+   Declare with 'var' when mutation is required.
+3. Accessing an index beyond the list length:
+     values[len(values)]  // out-of-bounds
+   Valid indices are 0..len(values)-1.
+*/
