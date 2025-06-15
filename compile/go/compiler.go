@@ -31,6 +31,8 @@ type Compiler struct {
 	externObjects map[string]bool
 
 	tempVarCount int
+
+	returnType types.Type
 }
 
 // New creates a new Go compiler instance.
@@ -217,6 +219,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
 			return err
+		}
+		if c.returnType != nil && !equalTypes(c.returnType, c.inferExprType(s.Return.Value)) {
+			c.use("_cast")
+			expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
 		}
 		c.writeln("return " + expr)
 		return nil
@@ -841,6 +847,17 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	if c.env != nil {
 		c.env.SetVar(fun.Name, ft, false)
 	}
+
+	// Nested functions are compiled as function literals assigned to a variable.
+	if c.indent > 0 {
+		expr, err := c.compileFunExpr(&parser.FunExpr{Params: fun.Params, Return: fun.Return, BlockBody: fun.Body})
+		if err != nil {
+			return err
+		}
+		c.writeln("var " + name + " = " + expr)
+		return nil
+	}
+
 	c.writeIndent()
 	c.buf.WriteString("func " + name + "(")
 	for i, p := range fun.Params {
@@ -866,16 +883,20 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		}
 	}
 	originalEnv := c.env
+	origRet := c.returnType
+	c.returnType = ft.Return
 	c.env = child
 	c.indent++
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
 			c.env = originalEnv
+			c.returnType = origRet
 			return err
 		}
 	}
 	c.indent--
 	c.env = originalEnv
+	c.returnType = origRet
 	c.writeIndent()
 	c.buf.WriteString("}\n")
 	return nil
@@ -985,15 +1006,25 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		case op == "+" && isList(leftType) && isList(rightType):
 			lt := leftType.(types.ListType)
 			rt := rightType.(types.ListType)
-			if equalTypes(lt.Elem, rt.Elem) {
+			if _, ok := lt.Elem.(types.AnyType); ok && !isAny(rt.Elem) {
+				c.use("_toAnySlice")
+				right = fmt.Sprintf("_toAnySlice(%s)", right)
+				expr = fmt.Sprintf("append(%s, %s...)", left, right)
+				next = leftType
+			} else if !isAny(lt.Elem) && isAny(rt.Elem) {
+				c.use("_toAnySlice")
+				left = fmt.Sprintf("_toAnySlice(%s)", left)
+				expr = fmt.Sprintf("append(%s, %s...)", left, right)
+				next = types.ListType{Elem: types.AnyType{}}
+			} else if equalTypes(lt.Elem, rt.Elem) {
 				expr = fmt.Sprintf("append(%s, %s...)", left, right)
 				next = leftType
 			} else {
 				c.use("_toAnySlice")
-				if _, ok := lt.Elem.(types.AnyType); !ok {
+				if !isAny(lt.Elem) {
 					left = fmt.Sprintf("_toAnySlice(%s)", left)
 				}
-				if _, ok := rt.Elem.(types.AnyType); !ok {
+				if !isAny(rt.Elem) {
 					right = fmt.Sprintf("_toAnySlice(%s)", right)
 				}
 				expr = fmt.Sprintf("append(%s, %s...)", left, right)
@@ -2199,6 +2230,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child}
 	sub.indent = 1
+	if fn.Return != nil {
+		sub.returnType = resolveTypeRef(fn.Return)
+	}
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody)
 		if err != nil {
