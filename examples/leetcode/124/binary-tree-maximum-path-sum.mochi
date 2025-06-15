@@ -1,42 +1,49 @@
 // LeetCode 124 - Binary Tree Maximum Path Sum
 
-// Binary tree definition used across the examples.
-type Tree =
-  Leaf
-  | Node(left: Tree, value: int, right: Tree)
-
-fun max(a: int, b: int): int {
-  if a > b { return a }
-  return b
+// Basic tree helpers without using union types
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
 }
 
-// Return x when it is positive, otherwise 0.
-fun positive(x: int): int {
-  if x > 0 { return x }
-  return 0
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
 }
 
-// Compute the maximum path sum in the given tree.
-fun maxPathSum(root: Tree): int {
-  // smallest 32 bit integer is -(2^31)
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> {
+  return t["left"]
+}
+
+fun right(t: map<string, any>): map<string, any> {
+  return t["right"]
+}
+
+fun value(t: map<string, any>): int {
+  return t["value"] as int
+}
+
+fun max(a: int, b: int): int { if a > b { return a } return b }
+fun positive(x: int): int { if x > 0 { return x } return 0 }
+
+fun maxPathSum(root: map<string, any>): int {
   var best = -2147483648
 
-  fun dfs(t: Tree): int {
-    match t {
-      Leaf => 0
-      Node(l, v, r) => {
-        let left = dfs(l)
-        let right = dfs(r)
+  fun dfs(t: map<string, any>): int {
+    if isLeaf(t) { return 0 }
 
-        let leftPos = positive(left)
-        let rightPos = positive(right)
+    let leftVal = dfs(left(t))
+    let rightVal = dfs(right(t))
 
-        let candidate = v + leftPos + rightPos
-        if candidate > best { best = candidate }
+    let leftPos = positive(leftVal)
+    let rightPos = positive(rightVal)
 
-        positive(v + max(leftPos, rightPos))
-      }
-    }
+    let candidate = value(t) + leftPos + rightPos
+    if candidate > best { best = candidate }
+
+    return positive(value(t) + max(leftPos, rightPos))
   }
 
   dfs(root)
@@ -46,37 +53,37 @@ fun maxPathSum(root: Tree): int {
 // Test cases based on the LeetCode examples
 
 test "example 1" {
-  let tree = Node {
-    left: Node { left: Leaf, value: 2, right: Leaf },
-    value: 1,
-    right: Node { left: Leaf, value: 3, right: Leaf }
-  }
+  let tree = Node(
+    Node(Leaf(), 2, Leaf()),
+    1,
+    Node(Leaf(), 3, Leaf())
+  )
   expect maxPathSum(tree) == 6
 }
 
 test "example 2" {
-  let tree = Node {
-    left: Node { left: Leaf, value: 9, right: Leaf },
-    value: -10,
-    right: Node {
-      left: Node { left: Leaf, value: 15, right: Leaf },
-      value: 20,
-      right: Node { left: Leaf, value: 7, right: Leaf }
-    }
-  }
+  let tree = Node(
+    Node(Leaf(), 9, Leaf()),
+    -10,
+    Node(
+      Node(Leaf(), 15, Leaf()),
+      20,
+      Node(Leaf(), 7, Leaf())
+    )
+  )
   expect maxPathSum(tree) == 42
 }
 
 test "single negative" {
-  expect maxPathSum(Node { left: Leaf, value: -3, right: Leaf }) == (-3)
+  expect maxPathSum(Node(Leaf(), -3, Leaf())) == (-3)
 }
 
 test "all negative" {
-  let tree = Node {
-    left: Node { left: Leaf, value: -5, right: Leaf },
-    value: -2,
-    right: Node { left: Leaf, value: -4, right: Leaf }
-  }
+  let tree = Node(
+    Node(Leaf(), -5, Leaf()),
+    -2,
+    Node(Leaf(), -4, Leaf())
+  )
   expect maxPathSum(tree) == (-2)
 }
 
@@ -89,7 +96,7 @@ Common Mochi language errors and how to fix them:
    let n = 0
    n = 1  // error[E004]
    // Fix: declare with 'var n = 0' if mutation is needed.
-3. Using 'None' or 'null' instead of the 'Leaf' variant for empty children.
-   Node { left: None, value: 1, right: None } // ❌
-   Node { left: Leaf, value: 1, right: Leaf } // ✅
+3. Using 'None' or 'null' instead of calling Leaf() for empty children.
+   Node(Leaf, 1, Leaf) // ❌ not a function call
+   Node(Leaf(), 1, Leaf()) // ✅
 */
