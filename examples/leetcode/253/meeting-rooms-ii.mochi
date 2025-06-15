@@ -1,0 +1,66 @@
+// LeetCode Problem 253: Meeting Rooms II
+// Determine the minimum number of conference rooms required for all meetings.
+//
+// The algorithm sorts the start and end times separately and then walks
+// through them to count overlapping meetings.
+fun minMeetingRooms(intervals: list<list<int>>): int {
+  if len(intervals) == 0 {
+    return 0
+  }
+  let starts = from iv in intervals sort by iv[0] select iv[0]
+  let ends = from iv in intervals sort by iv[1] select iv[1]
+  var s = 0
+  var e = 0
+  var rooms = 0
+  var maxRooms = 0
+  let n = len(intervals)
+  while s < n {
+    if starts[s] < ends[e] {
+      rooms = rooms + 1
+      s = s + 1
+      if rooms > maxRooms {
+        maxRooms = rooms
+      }
+    } else {
+      rooms = rooms - 1
+      e = e + 1
+    }
+  }
+  return maxRooms
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect minMeetingRooms([[0,30],[5,10],[15,20]]) == 2
+}
+
+test "example 2" {
+  expect minMeetingRooms([[7,10],[2,4]]) == 1
+}
+
+// Additional edge cases
+
+test "no meetings" {
+  expect minMeetingRooms([]) == 0
+}
+
+test "same start end" {
+  expect minMeetingRooms([[0,10],[10,20]]) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions:
+     if a = b { }      // ❌ assigns b to a
+     if a == b { }     // ✅ compares values
+2. Forgetting 'var' for mutable variables:
+     let count = 0
+     count = count + 1  // ❌ cannot reassign immutable binding
+     var count = 0      // ✅ use 'var' when the value changes
+3. Attempting to call an undefined 'append' method on a list:
+     list.append(x)     // ❌ use '+' to concatenate
+     list = list + [x] // ✅ concatenate lists
+4. Slicing ranges are half-open:
+     nums[0:2]  // ✅ returns elements 0 and 1
+*/
