@@ -1,0 +1,82 @@
+// LeetCode Problem 132: Palindrome Partitioning II
+fun minCut(s: string): int {
+  let n = len(s)
+  if n <= 1 {
+    return 0
+  }
+
+  // dp[i] is the minimum cuts for s[0..i]
+  var dp: list<int> = []
+  var i = 0
+  while i < n {
+    dp = dp + [i] // worst case: cut at every character
+    i = i + 1
+  }
+
+  // isPal[i][j] tells if s[i..j] is a palindrome
+  var isPal: list<list<bool>> = []
+  i = 0
+  while i < n {
+    var row: list<bool> = []
+    var j = 0
+    while j < n {
+      row = row + [false]
+      j = j + 1
+    }
+    isPal = isPal + [row]
+    i = i + 1
+  }
+
+  i = 0
+  while i < n {
+    var j = 0
+    while j <= i {
+      if s[j] == s[i] && (i - j <= 1 || isPal[j+1][i-1]) {
+        isPal[j][i] = true
+        if j == 0 {
+          dp[i] = 0
+        } else {
+          let candidate = dp[j-1] + 1
+          if candidate < dp[i] {
+            dp[i] = candidate
+          }
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  return dp[n-1]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect minCut("aab") == 1
+}
+
+test "example 2" {
+  expect minCut("a") == 0
+}
+
+// Additional tests
+
+test "already palindrome" {
+  expect minCut("aba") == 0
+}
+
+test "all same" {
+  expect minCut("aaaa") == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Declaring a mutable variable with `let` and then trying to change it.
+   Use `var` for variables that will be reassigned.
+2. Using '=' inside comparisons.
+   if s[i] = s[j] { } // ❌ assignment
+   if s[i] == s[j] { } // ✅ comparison
+3. Forgetting to allocate inner lists when building 2D arrays.
+   row = [] // ✅ initialize before pushing values
+*/
