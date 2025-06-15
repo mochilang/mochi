@@ -1,0 +1,124 @@
+// Solution for LeetCode problem 126 - Word Ladder II
+
+fun findLadders(beginWord: string, endWord: string, wordList: list<string>): list<list<string>> {
+  var dict: map<string, bool> = {}
+  for w in wordList {
+    dict[w] = true
+  }
+  if !(endWord in dict) {
+    return []
+  }
+
+  let letters = "abcdefghijklmnopqrstuvwxyz"
+  var queue: list<string> = [beginWord]
+  var visited: map<string, int> = { beginWord: 0 }
+  var parents: map<string, list<string>> = {}
+  var step = 0
+  var found = false
+
+  while len(queue) > 0 {
+    if found {
+      break
+    }
+    step = step + 1
+    var next: list<string> = []
+    for word in queue {
+      var i = 0
+      while i < len(word) {
+        var j = 0
+        while j < len(letters) {
+          let ch = letters[j]
+          if ch != word[i] {
+            let candidate = word[0:i] + ch + word[i+1:len(word)]
+            if candidate in dict {
+              if !(candidate in visited) {
+                visited[candidate] = step
+                next = next + [candidate]
+              }
+              if visited[candidate] == step {
+                if candidate in parents {
+                  parents[candidate] = parents[candidate] + [word]
+                } else {
+                  parents[candidate] = [word]
+                }
+              }
+              if candidate == endWord {
+                found = true
+              }
+            }
+          }
+          j = j + 1
+        }
+        i = i + 1
+      }
+    }
+    queue = next
+  }
+
+  if !found {
+    return []
+  }
+
+  var results: list<list<string>> = []
+  fun rev(lst: list<string>): list<string> {
+    var out: list<string> = []
+    var i = len(lst) - 1
+    while i >= 0 {
+      out = out + [lst[i]]
+      i = i - 1
+    }
+    return out
+  }
+  fun backtrack(word: string, path: list<string>) {
+    if word == beginWord {
+      results = results + [rev(path + [word])]
+    } else {
+      let ps = parents[word]
+      for p in ps {
+        backtrack(p, path + [word])
+      }
+    }
+  }
+
+  backtrack(endWord, [])
+  return results
+}
+
+// Test cases from LeetCode problem statement
+
+test "example 1" {
+  let res = findLadders(
+    "hit",
+    "cog",
+    ["hot","dot","dog","lot","log","cog"]
+  )
+  let sorted = from r in res sort by r[2] select r
+  let expected = [
+    ["hit","hot","dot","dog","cog"],
+    ["hit","hot","lot","log","cog"],
+  ]
+  let expSorted = from r in expected sort by r[2] select r
+  expect sorted == expSorted
+}
+
+test "example 2" {
+  expect findLadders(
+    "hit",
+    "cog",
+    ["hot","dot","dog","lot","log"]
+  ) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a variable bound with `let`:
+     let q = []
+     q = ["x"]
+   Fix: declare mutable lists with `var` when they change.
+2. Using `=` instead of `==` in conditions:
+     if candidate = endWord { }
+   Always use `==` to compare values.
+3. Forgetting to check membership before indexing a map:
+     parents[word][0]
+   Use `if word in parents { ... }` to avoid runtime errors.
+*/
