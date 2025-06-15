@@ -1,0 +1,75 @@
+fun helper(n: int, total: int): list<string> {
+  if n == 0 {
+    return [""]
+  }
+  if n == 1 {
+    return ["0", "1", "8"]
+  }
+  let prev = helper(n - 2, total)
+  var result: list<string> = []
+  for x in prev {
+    if n != total {
+      result = result + ["0" + x + "0"]
+    }
+    result = result + ["1" + x + "1"]
+    result = result + ["6" + x + "9"]
+    result = result + ["8" + x + "8"]
+    result = result + ["9" + x + "6"]
+  }
+  return result
+}
+
+export fun strobogrammaticInRange(low: string, high: string): int {
+  let m = len(low)
+  let n = len(high)
+  var count = 0
+  var len = m
+  while len <= n {
+    let nums = helper(len, len)
+    for num in nums {
+      if len == m && num < low {
+        continue
+      }
+      if len == n && num > high {
+        continue
+      }
+      if len > 1 && num[0] == "0" {
+        continue
+      }
+      count = count + 1
+    }
+    len = len + 1
+  }
+  return count
+}
+
+// Test cases from LeetCode problem 248
+
+test "example 1" {
+  expect strobogrammaticInRange("50", "100") == 3
+}
+
+test "example 2" {
+  expect strobogrammaticInRange("0", "0") == 1
+}
+
+test "example 3" {
+  expect strobogrammaticInRange("2", "3") == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a value defined with `let`:
+     let n = 1
+     n = 2        // ❌ cannot assign
+   Use `var n = 1` if mutation is needed.
+2. Using `=` instead of `==` for comparison:
+     if n = 1 { }
+   Replace with `==`.
+3. Forgetting to give an empty list a type:
+     var xs = []          // ❌ type unknown
+   Write `var xs: list<string> = []`.
+4. Attempting to use `null` as a value:
+     let s = null         // ❌ undefined value
+   Choose an appropriate default like "" instead.
+*/
