@@ -1,48 +1,44 @@
 // LeetCode 110 - Balanced Binary Tree
 
-// Definition of a binary tree
-// Leaf represents an empty tree
-// Node has left, value, and right subtrees
-
+// Basic binary tree definition used in many examples.
 type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree)
 
-// Determine if a binary tree is height-balanced.
-type BalanceInfo {
-  h: int
+// Helper struct returned by the recursive check function.
+type Info {
+  height: int
   balanced: bool
 }
 
+// Determine if the tree is height-balanced. A tree is balanced if the depths
+// of the left and right subtrees of every node never differ by more than one.
 fun isBalanced(root: Tree): bool {
-    fun check(t: Tree): BalanceInfo {
-      return match t {
-        Leaf => BalanceInfo { h: 0, balanced: true }
+  fun check(t: Tree): Info {
+    match t {
+      Leaf => Info { height: 0, balanced: true }
       Node(l, _, r) => {
         let left = check(l)
         let right = check(r)
-        var diff = 0
-        if left.h > right.h {
-          diff = left.h - right.h
+        let diff = if left.height > right.height {
+          left.height - right.height
         } else {
-          diff = right.h - left.h
+          right.height - left.height
         }
-        var height = left.h
-        if right.h > height {
-          height = right.h
-        }
-        BalanceInfo {
-          h: height + 1,
+        let h = if left.height > right.height { left.height } else { right.height }
+        Info {
+          height: h + 1,
           balanced: left.balanced && right.balanced && diff <= 1
         }
       }
     }
   }
-  let result = check(root)
-  return result.balanced
+
+  let info = check(root)
+  info.balanced
 }
 
-// Test cases from LeetCode
+// Test cases from the LeetCode problem statement
 
 test "example 1" {
   let tree = Node {
@@ -84,16 +80,23 @@ test "empty" {
 
 /*
 Common Mochi language errors and how to fix them:
-1. Reassigning an immutable value with `let`:
-     let height = 0
-     height = 1        // error[E004]
-   Fix: declare with `var height = 0` if it must change.
-2. Using Python-style method calls on lists:
-     stack.append(x)   // ❌ not Mochi
-   Instead use `stack = stack + [x]` to push.
-3. Forgetting to handle the `Leaf` case when pattern matching:
+1. Confusing '=' with '==' in a condition:
+     if diff = 1 { }
+   // Use '==' for comparisons.
+2. Reassigning a constant bound with 'let':
+     let h = 0
+     h = 1        // error[E004]
+   // Declare with 'var' when the value must change.
+3. Forgetting the Leaf branch in a match expression:
      match tree {
        Node(l, v, r) => ...
      }
-   This misses the `Leaf` branch and causes a compile error. Always cover all variants.
+   // Always provide a case for 'Leaf' to handle empty subtrees.
+4. Calling Python-style methods on lists:
+     stack.append(x)
+   // Instead build a new list: stack = stack + [x].
+5. Omitting braces when constructing Leaf:
+     let t = Leaf
+   // The correct syntax is 'Leaf {}'.
 */
+
