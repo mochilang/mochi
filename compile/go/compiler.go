@@ -156,6 +156,18 @@ func (c *Compiler) compileTestBlocks(prog *parser.Program) error {
 }
 
 func (c *Compiler) compileMainFunc(prog *parser.Program) error {
+	// Emit global variables for statements that appear before any test block.
+	for i, s := range prog.Statements {
+		if s.Let == nil && s.Var == nil {
+			continue
+		}
+		if hasLaterTest(prog, i) {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+	}
+
 	c.writeln("func main() {")
 	c.indent++
 	if len(c.externObjects) > 0 {
@@ -169,8 +181,11 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 			c.writeln(fmt.Sprintf("if _, ok := extern.Get(%q); !ok { panic(\"extern object not registered: %s\") }", name, name))
 		}
 	}
-	for _, s := range prog.Statements {
+	for i, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil {
+			continue
+		}
+		if (s.Let != nil || s.Var != nil) && hasLaterTest(prog, i) {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -194,6 +209,245 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func hasLaterTest(prog *parser.Program, idx int) bool {
+	for _, s := range prog.Statements[idx+1:] {
+		if s.Test != nil {
+			return true
+		}
+	}
+	return false
+}
+
+func exprUsesVarFun(fn *parser.FunExpr, name string) bool {
+	for _, s := range fn.BlockBody {
+		if stmtUsesVar(s, name) {
+			return true
+		}
+	}
+	if fn.ExprBody != nil && exprUsesVar(fn.ExprBody, name) {
+		return true
+	}
+	return false
+}
+
+func stmtUsesVar(s *parser.Statement, name string) bool {
+	switch {
+	case s.Let != nil:
+		if s.Let.Name == name {
+			return true
+		}
+		return exprUsesVar(s.Let.Value, name)
+	case s.Var != nil:
+		if s.Var.Name == name {
+			return true
+		}
+		return exprUsesVar(s.Var.Value, name)
+	case s.Assign != nil:
+		if s.Assign.Name == name {
+			return true
+		}
+		return exprUsesVar(s.Assign.Value, name)
+	case s.Expr != nil:
+		return exprUsesVar(s.Expr.Expr, name)
+	case s.Return != nil:
+		return exprUsesVar(s.Return.Value, name)
+	case s.If != nil:
+		if exprUsesVar(s.If.Cond, name) {
+			return true
+		}
+		for _, t := range s.If.Then {
+			if stmtUsesVar(t, name) {
+				return true
+			}
+		}
+		if s.If.ElseIf != nil {
+			if stmtUsesVar(&parser.Statement{If: s.If.ElseIf}, name) {
+				return true
+			}
+		}
+		for _, t := range s.If.Else {
+			if stmtUsesVar(t, name) {
+				return true
+			}
+		}
+	case s.For != nil:
+		if exprUsesVar(s.For.Source, name) || exprUsesVar(s.For.RangeEnd, name) {
+			return true
+		}
+		for _, t := range s.For.Body {
+			if stmtUsesVar(t, name) {
+				return true
+			}
+		}
+	case s.While != nil:
+		if exprUsesVar(s.While.Cond, name) {
+			return true
+		}
+		for _, t := range s.While.Body {
+			if stmtUsesVar(t, name) {
+				return true
+			}
+		}
+	case s.Test != nil:
+		for _, t := range s.Test.Body {
+			if stmtUsesVar(t, name) {
+				return true
+			}
+		}
+	case s.Fun != nil:
+		for _, t := range s.Fun.Body {
+			if stmtUsesVar(t, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func exprUsesVar(e *parser.Expr, name string) bool {
+	if e == nil {
+		return false
+	}
+	if unaryUsesVar(e.Binary.Left, name) {
+		return true
+	}
+	for _, op := range e.Binary.Right {
+		if postfixUsesVar(op.Right, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func unaryUsesVar(u *parser.Unary, name string) bool {
+	if u == nil {
+		return false
+	}
+	return postfixUsesVar(u.Value, name)
+}
+
+func postfixUsesVar(p *parser.PostfixExpr, name string) bool {
+	if p == nil {
+		return false
+	}
+	if primaryUsesVar(p.Target, name) {
+		return true
+	}
+	for _, op := range p.Ops {
+		if op.Index != nil {
+			if exprUsesVar(op.Index.Start, name) || exprUsesVar(op.Index.End, name) {
+				return true
+			}
+		}
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				if exprUsesVar(a, name) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func primaryUsesVar(p *parser.Primary, name string) bool {
+	if p == nil {
+		return false
+	}
+	if p.Selector != nil {
+		if p.Selector.Root == name && len(p.Selector.Tail) == 0 {
+			return true
+		}
+	}
+	if p.Group != nil {
+		return exprUsesVar(p.Group, name)
+	}
+	if p.FunExpr != nil {
+		return exprUsesVarFun(p.FunExpr, name)
+	}
+	if p.Call != nil {
+		if p.Call.Func == name {
+			return true
+		}
+		for _, a := range p.Call.Args {
+			if exprUsesVar(a, name) {
+				return true
+			}
+		}
+	}
+	if p.List != nil {
+		for _, e := range p.List.Elems {
+			if exprUsesVar(e, name) {
+				return true
+			}
+		}
+	}
+	if p.Map != nil {
+		for _, it := range p.Map.Items {
+			if exprUsesVar(it.Key, name) || exprUsesVar(it.Value, name) {
+				return true
+			}
+		}
+	}
+	if p.Match != nil {
+		if exprUsesVar(p.Match.Target, name) {
+			return true
+		}
+		for _, cs := range p.Match.Cases {
+			if exprUsesVar(cs.Pattern, name) || exprUsesVar(cs.Result, name) {
+				return true
+			}
+		}
+	}
+	if p.Query != nil {
+		if exprUsesVar(p.Query.Source, name) {
+			return true
+		}
+		if p.Query.Where != nil && exprUsesVar(p.Query.Where, name) {
+			return true
+		}
+		if p.Query.Sort != nil && exprUsesVar(p.Query.Sort, name) {
+			return true
+		}
+		if p.Query.Skip != nil && exprUsesVar(p.Query.Skip, name) {
+			return true
+		}
+		if p.Query.Take != nil && exprUsesVar(p.Query.Take, name) {
+			return true
+		}
+		if exprUsesVar(p.Query.Select, name) {
+			return true
+		}
+	}
+	if p.Load != nil {
+		// path is a string literal; no variable usage
+	}
+	if p.Save != nil {
+		if exprUsesVar(p.Save.Src, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func pureFunExpr(e *parser.Expr) *parser.FunExpr {
+	if e == nil {
+		return nil
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	return p.Target.FunExpr
 }
 
 // --- Statement Compilation ---
@@ -294,7 +548,12 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		typStr = goType(t)
 	}
-	c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
+	if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
+		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
+		c.writeln(fmt.Sprintf("%s = %s", name, value))
+	} else {
+		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
+	}
 	if lit != nil && c.env != nil {
 		c.env.SetValue(s.Name, literalValue(lit), false)
 	}
@@ -336,7 +595,12 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		typStr = goType(t)
 	}
-	c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
+	if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
+		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
+		c.writeln(fmt.Sprintf("%s = %s", name, value))
+	} else {
+		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
+	}
 	return nil
 }
 
@@ -854,7 +1118,12 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln("var " + name + " = " + expr)
+		if exprUsesVarFun(&parser.FunExpr{Params: fun.Params, Return: fun.Return, BlockBody: fun.Body}, fun.Name) {
+			c.writeln(fmt.Sprintf("var %s %s", name, goType(ft)))
+			c.writeln(fmt.Sprintf("%s = %s", name, expr))
+		} else {
+			c.writeln("var " + name + " = " + expr)
+		}
 		return nil
 	}
 
@@ -1040,7 +1309,19 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
 			return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
 		}
-		expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+		if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
+			c.use("_equal")
+			c.imports["reflect"] = true
+			if op == "==" {
+				expr = fmt.Sprintf("_equal(%s, %s)", left, right)
+			} else if op == "!=" {
+				expr = fmt.Sprintf("!_equal(%s, %s)", left, right)
+			} else {
+				return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+			}
+		} else {
+			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+		}
 		next = types.BoolType{}
 	case "&&", "||":
 		if !(isBool(leftType) && isBool(rightType)) {
@@ -2426,12 +2707,16 @@ func (c *Compiler) scanBinaryImports(b *parser.BinaryExpr) {
 	if b == nil {
 		return
 	}
+	leftType := c.inferUnaryType(b.Left)
 	c.scanUnaryImports(b.Left)
 	for _, op := range b.Right {
 		c.scanPostfixImports(op.Right)
-		if op.Op == "==" || op.Op == "!=" || op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" || op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%" {
-			// no import needed
+		rightType := c.inferPostfixType(op.Right)
+		if (op.Op == "==" || op.Op == "!=") && (isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType)) {
+			c.imports["reflect"] = true
+			c.use("_equal")
 		}
+		leftType = resultType(op.Op, leftType, rightType)
 	}
 }
 
