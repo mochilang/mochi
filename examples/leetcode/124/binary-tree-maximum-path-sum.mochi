@@ -1,0 +1,84 @@
+// LeetCode 124 - Binary Tree Maximum Path Sum
+
+// Binary tree definition reused from other examples
+// A tree is either Leaf or Node with left, value, and right
+
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+// Helper function to compute max path sum. It updates the
+// outer 'best' variable with the highest sum seen and returns
+// the maximum sum of a path that starts at this node and goes
+// downward.
+fun maxPathSum(root: Tree): int {
+  var best = match root {
+    Leaf => 0
+    Node(_, v, _) => v
+  }
+
+  fun helper(t: Tree): int {
+    return match t {
+      Leaf => 0
+      Node(l, v, r) => {
+        let leftDown = helper(l)
+        let rightDown = helper(r)
+        let leftBest = if leftDown > 0 { leftDown } else { 0 }
+        let rightBest = if rightDown > 0 { rightDown } else { 0 }
+        let through = v + leftBest + rightBest
+        if through > best {
+          best = through
+        }
+        let downward = v + (if leftBest > rightBest { leftBest } else { rightBest })
+        return if downward > 0 { downward } else { 0 }
+      }
+    }
+  }
+
+  helper(root)
+  return best
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tree = Node {
+    left: Node { left: Leaf, value: 2, right: Leaf },
+    value: 1,
+    right: Node { left: Leaf, value: 3, right: Leaf }
+  }
+  expect maxPathSum(tree) == 6
+}
+
+test "example 2" {
+  let tree = Node {
+    left: Node { left: Leaf, value: 9, right: Leaf },
+    value: -10,
+    right: Node {
+      left: Node { left: Leaf, value: 15, right: Leaf },
+      value: 20,
+      right: Node { left: Leaf, value: 7, right: Leaf }
+    }
+  }
+  expect maxPathSum(tree) == 42
+}
+
+test "single negative" {
+  expect maxPathSum(Node { left: Leaf, value: -3, right: Leaf }) == -3
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting the `Leaf` branch when pattern matching on a tree.
+   match node {
+     Node(l, v, r) => ... // ❌ missing Leaf => ...
+   }
+   Always handle all variants.
+2. Using Python's `None` instead of `Leaf` for empty children.
+   Node { left: None, value: 1, right: None } // ❌
+   Node { left: Leaf {}, value: 1, right: Leaf {} } // ✅
+3. Reassigning an immutable `let` variable:
+   let sum = 0
+   sum = sum + 1 // error[E004]
+   // Fix: declare with `var sum = 0` if it must change.
+*/
