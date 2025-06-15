@@ -15,29 +15,25 @@ type MaybeInt =
   None
   | Some(value: int)
 
-fun isValidBST(root: Tree): bool {
-  fun helper(node: Tree, low: MaybeInt, high: MaybeInt): bool {
-    match node {
-      Leaf => { return true }
-      Node(l, v, r) => {
-        if match low {
-          Some(x) => v <= x
-          None => false
-        } {
-          return false
-        }
-        if match high {
-          Some(y) => v >= y
-          None => false
-        } {
-          return false
-        }
-        return helper(l, low, Some { value: v }) && helper(r, Some { value: v }, high)
-      }
-    }
-    return false
+fun helper(node: Tree, low: MaybeInt, high: MaybeInt): bool {
+  return match node {
+    Leaf => true
+    Node(l, v, r) =>
+      (match low {
+        Some(x) => v > x
+        None => true
+      }) &&
+      (match high {
+        Some(y) => v < y
+        None => true
+      }) &&
+      helper(l, low, Some { value: v }) &&
+      helper(r, Some { value: v }, high)
   }
-  return helper(root, None, None)
+}
+
+fun isValidBST(root: Tree): bool {
+  return helper(root, None {}, None {})
 }
 
 // Test cases from LeetCode
