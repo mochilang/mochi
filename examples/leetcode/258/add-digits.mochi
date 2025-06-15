@@ -1,0 +1,53 @@
+// Solution for LeetCode problem 258 - Add Digits
+// Repeatedly sum the digits of a non-negative integer until a single digit is produced.
+// This example avoids union types and `match`.
+
+fun addDigits(num: int): int {
+  var n = num
+  while n >= 10 {
+    var sum = 0
+    while n > 0 {
+      sum = sum + n % 10
+      n = n / 10
+    }
+    n = sum
+  }
+  return n
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect addDigits(38) == 2
+}
+
+test "example 2" {
+  expect addDigits(0) == 0
+}
+
+test "example 3" {
+  expect addDigits(99) == 9
+}
+
+// Additional edge cases
+
+test "single digit" {
+  expect addDigits(7) == 7
+}
+
+test "large number" {
+  expect addDigits(123456) == 3
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare variables with `var` when they will be reassigned.
+   sum = 0              // ❌ undeclared variable
+   var sum = 0          // ✅ declare with `var`
+2. Using '=' instead of '==' for comparison in `expect` or `if`.
+   expect addDigits(38) = 2   // ❌ assignment
+   expect addDigits(38) == 2  // ✅ comparison
+3. Missing whitespace between tokens can cause parse errors.
+   n=n/10            // ❌ hard to read
+   n = n / 10        // ✅ spaces around operators
+*/
