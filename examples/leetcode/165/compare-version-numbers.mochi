@@ -1,0 +1,96 @@
+// LeetCode Problem 165: Compare Version Numbers
+fun parseInt(s: string): int {
+  var result = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    result = result * 10 + digits[ch]
+    i = i + 1
+  }
+  return result
+}
+
+fun parseVersion(v: string): list<int> {
+  var parts: list<int> = []
+  var start = 0
+  var i = 0
+  while i < len(v) {
+    if v[i] == "." {
+      let segment = v[start:i]
+      parts = parts + [parseInt(segment)]
+      start = i + 1
+    }
+    i = i + 1
+  }
+  let segment = v[start:len(v)]
+  parts = parts + [parseInt(segment)]
+  return parts
+}
+
+fun compareVersion(v1: string, v2: string): int {
+  let a1 = parseVersion(v1)
+  let a2 = parseVersion(v2)
+  var i = 0
+  var j = 0
+  while i < len(a1) || j < len(a2) {
+    var n1 = 0
+    if i < len(a1) {
+      n1 = a1[i]
+      i = i + 1
+    }
+    var n2 = 0
+    if j < len(a2) {
+      n2 = a2[j]
+      j = j + 1
+    }
+    if n1 > n2 {
+      return 1
+    }
+    if n1 < n2 {
+      return -1
+    }
+  }
+  return 0
+}
+
+test "example 1" {
+  expect compareVersion("1.01", "1.001") == 0
+}
+
+test "example 2" {
+  expect compareVersion("1.0", "1.0.0") == 0
+}
+
+test "example 3" {
+  expect compareVersion("0.1", "1.1") == (-1)
+}
+
+test "example 4" {
+  expect compareVersion("1.0.1", "1") == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to convert a substring to an int.
+   n1 = segment            // ❌ segment is a string
+   // Fix: n1 = parseInt(segment)
+2. Using '=' instead of '==' in comparisons.
+   if n1 = n2 { ... }    // ❌ assigns instead of compares
+   // Fix: if n1 == n2 { ... }
+3. Reassigning a 'let' variable.
+   let n1 = 0
+   n1 = 2                // ❌ can't modify an immutable value
+   // Fix: use 'var n1 = 0'
+*/
