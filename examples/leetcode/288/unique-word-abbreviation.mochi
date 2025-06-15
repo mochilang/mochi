@@ -1,0 +1,88 @@
+// Solution for LeetCode problem 288 - Unique Word Abbreviation
+//
+// We build a map from abbreviation to the unique set of dictionary words
+// that share that abbreviation. The abbreviation of a word is defined as:
+//   first letter + (length - 2) + last letter (for length > 2)
+// For words of length 2 or less the abbreviation is the word itself.
+// The function `isUnique` checks if a word's abbreviation appears only
+// for that exact same word in the dictionary.
+
+fun abbrev(word: string): string {
+  let n = len(word)
+  if n <= 2 {
+    return word
+  }
+  return word[0] + str(n - 2) + word[n - 1]
+}
+
+// Build abbreviation table from the dictionary
+fun buildAbbrs(dict: list<string>): map<string, map<string,bool>> {
+  var table: map<string, map<string,bool>> = {}
+  for w in dict {
+    let a = abbrev(w)
+    var set: map<string,bool> = {}
+    if a in table {
+      set = table[a]
+    }
+    set[w] = true
+    table[a] = set
+  }
+  return table
+}
+
+// Return true if word's abbreviation is unique in the table
+fun isUnique(word: string, table: map<string,map<string,bool>>): bool {
+  let a = abbrev(word)
+  if !(a in table) {
+    return true
+  }
+  let words = table[a]
+  var count = 0
+  var exists = false
+  for k in words {
+    count = count + 1
+    if k == word {
+      exists = true
+    }
+  }
+  if count == 1 && exists {
+    return true
+  }
+  return false
+}
+
+// Example usage and tests
+
+test "unique 1" {
+  let sample = buildAbbrs(["deer", "door", "cake", "card"])
+  expect isUnique("dear", sample) == false
+}
+
+test "unique 2" {
+  let sample = buildAbbrs(["deer", "door", "cake", "card"])
+  expect isUnique("cart", sample) == true
+}
+
+test "unique 3" {
+  let sample = buildAbbrs(["deer", "door", "cake", "card"])
+  expect isUnique("cane", sample) == false
+}
+
+test "unique 4" {
+  let sample = buildAbbrs(["deer", "door", "cake", "card"])
+  expect isUnique("make", sample) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing strings:
+     if k = word { }
+   // Fix: use '=='.
+2. Reassigning a variable declared with 'let':
+     let count = 0
+     count = count + 1  // error
+   // Fix: declare with 'var' if it needs to change.
+3. Forgetting to initialize an empty map with type information:
+     var t = {}
+   // Fix: specify types, e.g. var t: map<string,bool> = {}
+*/
