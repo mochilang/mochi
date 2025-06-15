@@ -932,6 +932,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			case isFloat(leftType) && isFloat(rightType):
 				expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
 				next = types.FloatType{}
+			case op.Op == "+" && isList(leftType) && isList(rightType):
+				expr = fmt.Sprintf("append(%s, %s...)", expr, right)
+				next = leftType
 			case op.Op == "+" && isString(leftType) && isString(rightType):
 				expr = fmt.Sprintf("%s + %s", expr, right)
 				next = types.StringType{}

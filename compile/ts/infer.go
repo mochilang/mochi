@@ -40,6 +40,12 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 				}
 			}
 			if op.Op == "+" {
+				if llist, ok := t.(types.ListType); ok {
+					if rlist, ok := rt.(types.ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
+						t = llist
+						continue
+					}
+				}
 				if _, ok := t.(types.StringType); ok {
 					if _, ok := rt.(types.StringType); ok {
 						t = types.StringType{}
