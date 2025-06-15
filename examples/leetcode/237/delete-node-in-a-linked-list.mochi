@@ -1,0 +1,53 @@
+// Solution for LeetCode problem 237 - Delete Node in a Linked List
+//
+// We model the linked list as a Mochi list of integers. The `index`
+// parameter represents the position of the node to delete (0-based).
+// The node is guaranteed not to be the last element.
+fun deleteNode(values: list<int>, index: int): list<int> {
+  // make a mutable copy so we can modify values
+  var arr: list<int> = values
+  var i = index
+  // shift all elements after `index` one position left
+  while i < len(arr) - 1 {
+    arr[i] = arr[i + 1]
+    i = i + 1
+  }
+  // return the list without the last element
+  return arr[0:len(arr)-1]
+}
+
+// Test cases based on the LeetCode problem statement
+
+test "example 1" {
+  // [4,5,1,9], delete node with value 5 at index 1
+  expect deleteNode([4,5,1,9], 1) == [4,1,9]
+}
+
+test "example 2" {
+  // [4,5,1,9], delete node with value 1 at index 2
+  expect deleteNode([4,5,1,9], 2) == [4,5,9]
+}
+
+// Additional edge cases
+
+test "delete first" {
+  expect deleteNode([1,2,3], 0) == [2,3]
+}
+
+test "delete middle" {
+  expect deleteNode([1,2,3,4], 2) == [1,2,4]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Declaring a list with `let` when it needs to be mutated.
+   let arr = values
+   arr[0] = 1          // ❌ cannot assign to immutable binding
+   var arr = values    // ✅ use `var` for mutable lists
+2. Using `=` instead of `==` in comparisons.
+   if i = index { }    // ❌ assignment
+   if i == index { }   // ✅ comparison
+3. Off-by-one mistakes when iterating up to the last element.
+   while i <= len(arr) - 1 { }  // ❌ i becomes out of bounds
+   while i < len(arr) - 1 { }   // ✅ loop stops before the last index
+*/
