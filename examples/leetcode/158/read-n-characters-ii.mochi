@@ -1,0 +1,114 @@
+// Solution for LeetCode problem 158 - Read N Characters Given Read4 II - Call multiple times
+
+// Reader stores the file content, the current index, and leftover characters
+// from the previous call to read().
+type Reader {
+  data: string
+  index: int
+  buffer: string
+}
+
+fun newReader(s: string): Reader {
+  return Reader { data: s, index: 0, buffer: "" }
+}
+
+// read4 reads up to 4 characters from the reader's data starting at index.
+// It returns the updated reader and the characters read.
+type Read4Result {
+  reader: Reader
+  chunk: string
+}
+
+fun read4(r: Reader): Read4Result {
+  var i = 0
+  var chunk = ""
+  var idx = r.index
+  while i < 4 && idx < len(r.data) {
+    chunk = chunk + r.data[idx]
+    idx = idx + 1
+    i = i + 1
+  }
+  let newReader = Reader { data: r.data, index: idx, buffer: r.buffer }
+  return Read4Result { reader: newReader, chunk: chunk }
+}
+
+// read reads up to n characters from the reader, persisting leftovers for
+// subsequent calls. It returns the characters read, the updated reader, and the
+// number of characters actually read.
+type ReadResult {
+  reader: Reader
+  data: string
+  count: int
+}
+
+fun read(reader: Reader, n: int): ReadResult {
+  var r = reader
+  var output = ""
+  var total = 0
+
+  // Consume leftover characters first
+  while total < n && len(r.buffer) > 0 {
+    output = output + r.buffer[0]
+    r = Reader { data: r.data, index: r.index, buffer: r.buffer[1:len(r.buffer)] }
+    total = total + 1
+  }
+
+  // Read new characters using read4
+  while total < n {
+    let r4 = read4(r)
+    r = r4.reader
+    let chunk = r4.chunk
+    if len(chunk) == 0 {
+      break
+    }
+    var i = 0
+    while i < len(chunk) && total < n {
+      output = output + chunk[i]
+      i = i + 1
+      total = total + 1
+    }
+    r = Reader { data: r.data, index: r.index, buffer: chunk[i:len(chunk)] }
+  }
+
+  return ReadResult { reader: r, data: output, count: total }
+}
+
+// Test cases from LeetCode
+
+test "multiple calls" {
+  var r = newReader("abc")
+  let r1 = read(r, 1)
+  expect r1.data == "a"
+  r = r1.reader
+  let r2 = read(r, 2)
+  expect r2.data == "bc"
+}
+
+test "leftover handling" {
+  var r = newReader("abcde")
+  let r1 = read(r, 2)
+  expect r1.data == "ab"
+  r = r1.reader
+  let r2 = read(r, 3)
+  expect r2.data == "cde"
+}
+
+test "request past end" {
+  var r = newReader("abcd")
+  let r1 = read(r, 6)
+  expect r1.data == "abcd"
+  expect r1.count == 4
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying to mutate struct fields directly:
+     r.buffer[0] = "x"    // ❌ structs are immutable
+   Fix: create a new Reader with the updated field.
+2. Using '=' instead of '==' in conditions:
+     if len(chunk) = 0 { } // ❌ assignment
+   Fix: use '==' to compare values.
+3. Slicing beyond string bounds:
+     chunk[0:len(chunk)+1] // ❌ out of bounds
+   Fix: ensure the end index does not exceed the string length.
+*/
