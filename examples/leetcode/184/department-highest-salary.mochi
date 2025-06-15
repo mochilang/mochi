@@ -1,0 +1,86 @@
+// Solution for LeetCode problem 184 - Department Highest Salary
+//
+// Given a list of employees and departments, return the employee name and
+// salary of the highest paid employee(s) in each department.
+
+// Record types for the tables and the result
+
+type Department {
+  id: int
+  name: string
+}
+
+type Employee {
+  id: int
+  name: string
+  salary: int
+  departmentId: int
+}
+
+type Result {
+  Department: string
+  Employee: string
+  Salary: int
+}
+
+// Find the highest salary per department and return matching employees.
+fun departmentHighestSalary(employees: list<Employee>, departments: list<Department>): list<Result> {
+  // Map department id -> highest salary seen so far
+  var maxSalary: map<int,int> = {} as map<int,int>
+  for e in employees {
+    var current = 0
+    if e.departmentId in maxSalary {
+      current = maxSalary[e.departmentId]
+    }
+    if e.salary > current {
+      maxSalary[e.departmentId] = e.salary
+    }
+  }
+
+  var results: list<Result> = []
+  for d in departments {
+    if d.id in maxSalary {
+      let highest = maxSalary[d.id]
+      for e in employees {
+        if e.departmentId == d.id && e.salary == highest {
+          results = results + [Result { Department: d.name, Employee: e.name, Salary: e.salary }]
+        }
+      }
+    }
+  }
+  return results
+}
+
+let departments: list<Department> = [
+  Department { id: 1, name: "IT" },
+  Department { id: 2, name: "Sales" }
+]
+
+let employees: list<Employee> = [
+  Employee { id: 1, name: "Joe", salary: 70000, departmentId: 1 },
+  Employee { id: 2, name: "Henry", salary: 80000, departmentId: 2 },
+  Employee { id: 3, name: "Sam", salary: 60000, departmentId: 2 },
+  Employee { id: 4, name: "Max", salary: 90000, departmentId: 1 }
+]
+
+test "highest salary" {
+  let expected = [
+    Result { Department: "IT", Employee: "Max", Salary: 90000 },
+    Result { Department: "Sales", Employee: "Henry", Salary: 80000 }
+  ]
+  expect str(departmentHighestSalary(employees, departments)) == str(expected)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+   if salary = current { }
+   // Use '==' for comparisons.
+2. Reassigning a value declared with 'let':
+   let lst = []
+   lst = lst + [1]     // error[E004]
+   // Declare with 'var' when mutation is required.
+3. Creating an empty map without a type annotation:
+   var m = {}          // error[T009]
+   var m: map<int,int> = {} as map<int,int>
+*/
