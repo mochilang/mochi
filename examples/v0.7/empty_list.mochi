@@ -1,0 +1,6 @@
+// Explicitly cast an empty list to a list of integers
+let emptyInts: list<int> = []
+print(emptyInts)  // => []
+
+let casted = [] as list<int>
+print(casted)
