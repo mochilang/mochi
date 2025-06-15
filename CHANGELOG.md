@@ -1,4 +1,20 @@
 # 📦 CHANGELOG.md
+## [0.7.3] – 2025-06-15
+
+### Added
+
+* LeetCode solutions 101–240 with improved examples
+* Operator precedence handling in the Go compiler
+* Documentation clarifies string comparison semantics
+
+### Changed
+
+* Rewrote the LRU cache example for clarity
+
+### Fixed
+
+* Python compiler precedence and reserved name handling
+
 ## [0.7.2] – 2025-06-14
 
 ### Added
