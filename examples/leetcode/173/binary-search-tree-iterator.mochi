@@ -1,0 +1,91 @@
+// Solution for LeetCode problem 173 - Binary Search Tree Iterator
+
+// Basic tree helpers without using union types
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+fun pushLeft(it: map<string, any>, node: map<string, any>) {
+  var n = node
+  var st = it["stack"] as list<map<string, any>>
+  while !isLeaf(n) {
+    st = st + [n]
+    n = left(n)
+  }
+  it["stack"] = st
+}
+
+fun NewBSTIterator(root: map<string, any>): map<string, any> {
+  let it: map<string, any> = { "stack": [] as list<map<string, any>> }
+  pushLeft(it, root)
+  return it
+}
+
+fun bstNext(it: map<string, any>): int {
+  var st = it["stack"] as list<map<string, any>>
+  let node = st[len(st) - 1]
+  st = st[0:len(st)-1]
+  it["stack"] = st
+  pushLeft(it, right(node))
+  return value(node)
+}
+
+fun bstHasNext(it: map<string, any>): bool {
+  let st = it["stack"] as list<map<string, any>>
+  return len(st) > 0
+}
+
+// Tests based on the LeetCode example
+
+test "example" {
+  let iterator = NewBSTIterator(
+    Node(
+      Node(Leaf(), 3, Leaf()),
+      7,
+      Node(Node(Leaf(), 9, Leaf()), 15, Node(Leaf(), 20, Leaf()))
+    )
+  )
+  expect bstNext(iterator) == 3
+  expect bstNext(iterator) == 7
+  expect bstHasNext(iterator) == true
+  expect bstNext(iterator) == 9
+  expect bstHasNext(iterator) == true
+  expect bstNext(iterator) == 15
+  expect bstHasNext(iterator) == true
+  expect bstNext(iterator) == 20
+  expect bstHasNext(iterator) == false
+}
+
+// Additional test: single node tree
+
+test "single node" {
+  let it = NewBSTIterator(Node(Leaf(), 5, Leaf()))
+  expect bstNext(it) == 5
+  expect bstHasNext(it) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if len(stack) = 0 { }    // ❌ assignment
+   if len(stack) == 0 { }   // ✅ comparison
+2. Reassigning an immutable variable bound with 'let'.
+   let s = []
+   s = [1]                  // error[E004]
+   // Use 'var s' when mutation is required.
+3. Trying to call Python-style list methods like push.
+   stack.push(node)         // ❌ not supported
+   // Build a new list instead: stack = stack + [node]
+*/
