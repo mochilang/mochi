@@ -1,0 +1,81 @@
+// Solution for LeetCode problem 155 - Min Stack
+//
+// The structure keeps two stacks:
+// - `stack` stores all pushed values
+// - `mins` stores the minimum value at each depth
+// Each operation returns a new MinStack because values are immutable.
+
+type MinStack {
+  stack: list<int>
+  mins: list<int>
+}
+
+fun newStack(): MinStack {
+  return MinStack { stack: [] as list<int>, mins: [] as list<int> }
+}
+
+fun push(ms: MinStack, x: int): MinStack {
+  var s = ms.stack
+  var m = ms.mins
+  s = s + [x]
+  if len(m) == 0 || x <= m[len(m)-1] {
+    m = m + [x]
+  }
+  return MinStack { stack: s, mins: m }
+}
+
+fun pop(ms: MinStack): MinStack {
+  var s = ms.stack
+  var m = ms.mins
+  let v = s[len(s)-1]
+  s = s[0:len(s)-1]
+  if v == m[len(m)-1] {
+    m = m[0:len(m)-1]
+  }
+  return MinStack { stack: s, mins: m }
+}
+
+fun top(ms: MinStack): int {
+  return ms.stack[len(ms.stack)-1]
+}
+
+fun getMin(ms: MinStack): int {
+  return ms.mins[len(ms.mins)-1]
+}
+
+// Basic test from LeetCode description
+
+test "example" {
+  var s = newStack()
+  s = push(s, -2)
+  s = push(s, 0)
+  s = push(s, -3)
+  expect getMin(s) == -3
+  s = pop(s)
+  expect top(s) == 0
+  expect getMin(s) == -2
+}
+
+// Additional edge cases
+
+test "single element" {
+  var s = newStack()
+  s = push(s, 5)
+  expect top(s) == 5
+  expect getMin(s) == 5
+  s = pop(s)
+  expect len(s.stack) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying Python style stack methods:
+     s.push(x) or s.pop()     // ❌ not Mochi
+   Use list concatenation and slicing:
+     s = s + [x]              // push
+     s = s[0:len(s)-1]        // pop
+2. Using '=' instead of '==' when comparing values.
+3. Forgetting 'var' for variables that change.
+4. Indexing with len-1 after popping can underflow if the list is empty.
+   Ensure the stack is non-empty before calling `top` or `pop`.
+*/
