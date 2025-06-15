@@ -49,7 +49,7 @@ run: mochi
 	@$(MOCHI_BIN) run $(ID)/*.mochi
 
 test: mochi
-@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
+	@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
 
 compile: mochi
 	@mkdir -p ../leetcode-out
