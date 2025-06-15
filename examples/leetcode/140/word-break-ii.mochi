@@ -1,56 +1,59 @@
 fun wordBreak(s: string, wordDict: list<string>): list<string> {
+  // Build a map for constant-time word lookup
   var dict: map<string, bool> = {}
   for w in wordDict {
     dict[w] = true
   }
   let n = len(s)
+  // memo[start] stores all sentences for substring s[start:]
   var memo: map<int, list<string>> = {}
 
-  fun dfs(start: int): list<string> {
+  fun backtrack(start: int): list<string> {
     if start in memo {
       return memo[start]
     }
+    var results: list<string> = []
     if start == n {
-      return [""]
-    }
-    var res: list<string> = []
-    var end = start + 1
-    while end <= n {
-      let word = s[start:end]
-      var exists = false
-      if word in dict {
-        exists = dict[word]
-      }
-      if exists {
-        let subs = dfs(end)
-        for sub in subs {
-          if len(sub) == 0 {
-            res = res + [word]
-          } else {
-            res = res + [word + " " + sub]
+      results = [""]
+    } else {
+      var end = start + 1
+      while end <= n {
+        let word = s[start:end]
+        var exists = false
+        if word in dict {
+          exists = dict[word]
+        }
+        if exists {
+          let tails = backtrack(end)
+          for t in tails {
+            if len(t) == 0 {
+              results = results + [word]
+            } else {
+              results = results + [word + " " + t]
+            }
           }
         }
+        end = end + 1
       }
-      end = end + 1
     }
-    memo[start] = res
-    return res
+    memo[start] = results
+    return results
   }
 
-  let ans = dfs(0)
-  let sorted = from x in ans sort by x select x
-  return sorted
+  let sentences = backtrack(0)
+  let ordered = from s in sentences sort by s select s
+  return ordered
 }
 
 // Test cases based on LeetCode examples
 
-let dict1 = ["cat","cats","and","sand","dog"]
+let dict1 = ["cat", "cats", "and", "sand", "dog"]
 
 test "example 1" {
-  expect wordBreak("catsanddog", dict1) == ["cat sand dog","cats and dog"]
+  expect wordBreak("catsanddog", dict1) == ["cat sand dog", "cats and dog"]
 }
 
-let dict2 = ["apple","pen","applepen","pine","pineapple"]
+let dict2 = ["apple", "pen", "applepen", "pine", "pineapple"]
 
 test "example 2" {
   expect wordBreak("pineapplepenapple", dict2) == [
@@ -66,14 +69,14 @@ test "example 3" {
 
 /*
 Common Mochi language errors and how to fix them:
-1. Using '=' instead of '==' for comparisons:
-     if word = target { ... }      // ❌ assignment
-   Use '==' when comparing values.
-2. Forgetting to declare mutable variables with 'var':
+1. Confusing '=' with '==' for comparison:
+     if word = target { ... }   // ❌ assignment, not comparison
+   Use '==' when checking equality.
+2. Modifying a value declared with 'let':
      let res: list<string> = []
-     res = res + [w]               // ❌ cannot modify immutable binding
-   Declare with 'var' when mutation is needed.
-3. Omitting type annotation for an empty map or list:
-     var memo = {}                 // ❌ type cannot be inferred
-   Specify the types explicitly, e.g. 'var memo: map<int, list<string>> = {}'.
+     res = res + [w]            // ❌ immutable binding
+   Declare with 'var' when mutation is required.
+3. Missing type annotation on empty collections:
+     var memo = {}              // ❌ type cannot be inferred
+   Provide explicit types, e.g. 'var memo: map<int, list<string>> = {}'.
 */
