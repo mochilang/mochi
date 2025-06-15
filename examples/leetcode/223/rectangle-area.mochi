@@ -1,0 +1,56 @@
+fun max(a: int, b: int): int { if a > b { return a } return b }
+fun min(a: int, b: int): int { if a < b { return a } return b }
+
+fun computeArea(ax1: int, ay1: int, ax2: int, ay2: int,
+                bx1: int, by1: int, bx2: int, by2: int): int {
+  let areaA = (ax2 - ax1) * (ay2 - ay1)
+  let areaB = (bx2 - bx1) * (by2 - by1)
+
+  let overlapWidth = min(ax2, bx2) - max(ax1, bx1)
+  let overlapHeight = min(ay2, by2) - max(ay1, by1)
+
+  var overlap = 0
+  if overlapWidth > 0 && overlapHeight > 0 {
+    overlap = overlapWidth * overlapHeight
+  }
+  return areaA + areaB - overlap
+}
+
+// Test cases from LeetCode problem statement
+
+test "example 1" {
+  expect computeArea(-3, 0, 3, 4, 0, -1, 9, 2) == 45
+}
+
+test "example 2" {
+  expect computeArea(-2, -2, 2, 2, -2, -2, 2, 2) == 16
+}
+
+// Additional edge cases
+
+test "no overlap" {
+  expect computeArea(-1, -1, 1, 1, 2, 2, 3, 3) == 5
+}
+
+test "touching edges" {
+  expect computeArea(0, 0, 1, 1, 1, 0, 2, 1) == 2
+}
+
+test "one inside another" {
+  expect computeArea(-2, -2, 2, 2, -1, -1, 1, 1) == 16
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditionals:
+   // if overlap = 0 { ... }   // ❌ assignment
+   // if overlap == 0 { ... }  // ✅ comparison
+2. Attempting to mutate a value declared with 'let':
+   // let total = 0
+   // total = 1               // ❌ cannot reassign
+   // var total = 0
+   // total = 1               // ✅ use 'var' for mutable values
+3. Expecting Python-style operator '+=':
+   // area += delta           // ❌ not supported
+   // area = area + delta     // ✅ use explicit addition
+*/
