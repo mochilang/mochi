@@ -1,0 +1,91 @@
+// Solution for LeetCode problem 138 - Copy List with Random Pointer
+
+// Each node either contains a value with next/random pointers or Nil
+// to represent the end of the list or a missing reference.
+
+// Linked list node with random pointer
+// Nil denotes the absence of a node
+
+type Node =
+   Nil
+   | Node(val: int, next: Node, random: Node)
+
+fun copyRandomList(head: Node): Node {
+  var seen: map<Node, Node> = {}
+
+  fun clone(n: Node): Node {
+    return match n {
+      Nil => Nil {}
+      Node(v, nxt, rnd) => {
+        if n in seen { return seen[n] }
+        // create placeholder first to handle cycles
+        var temp = Node { val: v, next: Nil {}, random: Nil {} }
+        seen[n] = temp
+        let newNext = clone(nxt)
+        let newRand = clone(rnd)
+        let res = Node { val: v, next: newNext, random: newRand }
+        seen[n] = res
+        return res
+      }
+    }
+  }
+
+  return clone(head)
+}
+
+// Convert list to [[val, randomIndex], ...] representation
+fun serialize(head: Node): list<list<int>> {
+  var nodes: list<Node> = []
+  var curr = head
+  while match curr { Nil => false _ => true } {
+    nodes = nodes + [curr]
+    match curr {
+      Node(_, nxt, _) => { curr = nxt }
+      Nil => {}
+    }
+  }
+
+  fun indexOf(target: Node): int {
+    var i = 0
+    while i < len(nodes) {
+      if nodes[i] == target { return i }
+      i = i + 1
+    }
+    return -1
+  }
+
+  var result: list<list<int>> = []
+  for n in nodes {
+    match n {
+      Node(v, _, rnd) => { result = result + [[v, indexOf(rnd)]] }
+      Nil => {}
+    }
+  }
+  return result
+}
+
+// Test case based on LeetCode example
+
+test "copy list" {
+  var n1: Node = Node { val: 7, next: Nil {}, random: Nil {} }
+  var n2: Node = Node { val: 13, next: Nil {}, random: Nil {} }
+  var n3: Node = Node { val: 11, next: Nil {}, random: Nil {} }
+  var n4: Node = Node { val: 10, next: Nil {}, random: Nil {} }
+  var n5: Node = Node { val: 1, next: Nil {}, random: Nil {} }
+
+  n5 = Node { val: 1, next: Nil {}, random: n1 }
+  n4 = Node { val: 10, next: n5, random: n3 }
+  n3 = Node { val: 11, next: n4, random: n5 }
+  n2 = Node { val: 13, next: n3, random: n1 }
+  n1 = Node { val: 7, next: n2, random: Nil {} }
+
+  let copied = copyRandomList(n1)
+  expect serialize(copied) == serialize(n1)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Attempting to modify fields directly. Create a new `Node` instead of mutating.
+2. Using '=' instead of '==' when comparing nodes or indices.
+3. Forgetting to handle the `Nil` variant when pattern matching on nodes.
+*/
