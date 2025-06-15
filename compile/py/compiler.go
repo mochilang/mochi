@@ -840,43 +840,110 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) { return c.compileBinaryExpr(e.Binary) }
 
 func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
-	expr, err := c.compileUnary(b.Left)
+	if b == nil {
+		return "", fmt.Errorf("nil binary expression")
+	}
+
+	operands := []string{}
+	typesList := []types.Type{}
+
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	leftType := c.inferUnaryType(b.Left)
-	for _, op := range b.Right {
-		r, err := c.compilePostfix(op.Right)
+	operands = append(operands, first)
+	typesList = append(typesList, c.inferUnaryType(b.Left))
+
+	ops := []string{}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rightType := c.inferPostfixType(op.Right)
-		if op.Op == "/" && isInt(leftType) && isInt(rightType) {
-			expr = fmt.Sprintf("(%s // %s)", expr, r)
-			leftType = types.IntType{}
-			continue
+		operands = append(operands, r)
+		typesList = append(typesList, c.inferPostfixType(part.Right))
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
+			}
 		}
-		pyOp := op.Op
-		switch op.Op {
-		case "&&":
-			pyOp = "and"
-		case "||":
-			pyOp = "or"
-		case "union", "union_all", "except", "intersect":
-			c.use("_" + pyOp)
-			expr = fmt.Sprintf("_%s(%s, %s)", pyOp, expr, r)
-			leftType = types.ListType{Elem: types.AnyType{}}
-			continue
-		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, pyOp, r)
-		switch op.Op {
-		case "+", "-", "*", "/", "%":
-			// The resulting type roughly mirrors the left operand.
-		case "==", "!=", "<", "<=", ">", ">=":
-			leftType = types.BoolType{}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+			op := ops[i]
+			lExpr := operands[i]
+			rExpr := operands[i+1]
+			lType := typesList[i]
+			rType := typesList[i+1]
+
+			pyOp := op
+			switch op {
+			case "&&":
+				pyOp = "and"
+			case "||":
+				pyOp = "or"
+			}
+
+			var expr string
+			var t types.Type = types.AnyType{}
+
+			switch op {
+			case "/":
+				if isInt(lType) && isInt(rType) {
+					expr = fmt.Sprintf("(%s // %s)", lExpr, rExpr)
+					t = types.IntType{}
+				} else {
+					expr = fmt.Sprintf("(%s / %s)", lExpr, rExpr)
+					if isFloat(lType) && isFloat(rType) {
+						t = types.FloatType{}
+					}
+				}
+			case "union", "union_all", "except", "intersect":
+				c.use("_" + op)
+				expr = fmt.Sprintf("_%s(%s, %s)", op, lExpr, rExpr)
+				t = types.ListType{Elem: types.AnyType{}}
+			default:
+				expr = fmt.Sprintf("(%s %s %s)", lExpr, pyOp, rExpr)
+				switch op {
+				case "==", "!=", "<", "<=", ">", ">=", "in", "&&", "||":
+					t = types.BoolType{}
+				case "+", "-", "*", "%":
+					t = lType
+				}
+			}
+
+			operands[i] = expr
+			typesList[i] = t
+			operands = append(operands[:i+1], operands[i+2:]...)
+			typesList = append(typesList[:i+1], typesList[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state in binary expr")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {

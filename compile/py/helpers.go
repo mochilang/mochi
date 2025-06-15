@@ -19,6 +19,19 @@ func (c *Compiler) writeIndent() {
 	}
 }
 
+var pyReserved = map[string]struct{}{
+	// Python keywords
+	"False": {}, "None": {}, "True": {}, "and": {}, "as": {}, "assert": {},
+	"async": {}, "await": {}, "break": {}, "class": {}, "continue": {},
+	"def": {}, "del": {}, "elif": {}, "else": {}, "except": {}, "finally": {},
+	"for": {}, "from": {}, "global": {}, "if": {}, "import": {}, "in": {},
+	"is": {}, "lambda": {}, "nonlocal": {}, "not": {}, "or": {}, "pass": {},
+	"raise": {}, "return": {}, "try": {}, "while": {}, "with": {}, "yield": {},
+	// Builtins commonly emitted by the compiler
+	"range": {}, "len": {}, "print": {}, "sorted": {}, "list": {}, "dict": {},
+	"set": {}, "str": {}, "int": {}, "float": {}, "bool": {}, "type": {},
+}
+
 func sanitizeName(name string) string {
 	var b strings.Builder
 	for i, r := range name {
@@ -31,7 +44,11 @@ func sanitizeName(name string) string {
 	if b.Len() == 0 || !((b.String()[0] >= 'A' && b.String()[0] <= 'Z') || (b.String()[0] >= 'a' && b.String()[0] <= 'z') || b.String()[0] == '_') {
 		return "_" + b.String()
 	}
-	return b.String()
+	res := b.String()
+	if _, ok := pyReserved[res]; ok {
+		return "_" + res
+	}
+	return res
 }
 
 func unexportName(name string) string {
