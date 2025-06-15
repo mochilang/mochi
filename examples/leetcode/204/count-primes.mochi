@@ -1,0 +1,72 @@
+// Solution for LeetCode problem 204 - Count Primes
+// Counts the number of prime numbers less than n using the Sieve of Eratosthenes.
+
+fun countPrimes(n: int): int {
+  if n <= 2 {
+    return 0
+  }
+  // Initialize a boolean list of length n with all true values
+  var isPrime: list<bool> = []
+  var i = 0
+  while i < n {
+    isPrime = isPrime + [true]
+    i = i + 1
+  }
+
+  isPrime[0] = false
+  isPrime[1] = false
+
+  var p = 2
+  while p * p < n {
+    if isPrime[p] {
+      var j = p * p
+      while j < n {
+        isPrime[j] = false
+        j = j + p
+      }
+    }
+    p = p + 1
+  }
+
+  var count = 0
+  var k = 0
+  while k < n {
+    if isPrime[k] {
+      count = count + 1
+    }
+    k = k + 1
+  }
+  return count
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect countPrimes(10) == 4
+}
+
+test "example 2" {
+  expect countPrimes(0) == 0
+}
+
+test "example 3" {
+  expect countPrimes(1) == 0
+}
+
+// Additional edge cases
+
+test "primes under 20" {
+  expect countPrimes(20) == 8
+}
+
+test "larger input" {
+  expect countPrimes(100) == 25
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning an immutable variable. Use 'var' for counters like 'i', 'p', and 'count'.
+2. Confusing '=' with '==' when checking values inside loops.
+3. Forgetting to set initial non-prime values for 0 and 1 results in wrong counts.
+4. Trying to use union types or 'match' here is unnecessary; simple 'if' statements work best.
+*/
