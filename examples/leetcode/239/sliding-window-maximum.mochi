@@ -1,0 +1,74 @@
+// LeetCode 239 - Sliding Window Maximum
+// This solution avoids union types and pattern matching by using a list
+// of indices to maintain a decreasing deque for the window.
+
+fun maxSlidingWindow(nums: list<int>, k: int): list<int> {
+  let n = len(nums)
+  if n == 0 { return [] }
+  var result: list<int> = []
+  var deque: list<int> = []  // stores indices of potential maximums
+  var i = 0
+  while i < n {
+    // remove indices whose corresponding values are smaller
+    while len(deque) > 0 {
+      let last = deque[len(deque)-1]
+      if nums[last] < nums[i] {
+        deque = deque[0:len(deque)-1]
+      } else {
+        break
+      }
+    }
+    // add current index
+    deque = deque + [i]
+    // drop indices that are outside the window
+    if len(deque) > 0 {
+      if deque[0] <= i - k {
+        deque = deque[1:len(deque)]
+      }
+    }
+    // append current max once the first window is formed
+    if i + 1 >= k {
+      result = result + [nums[deque[0]]]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect maxSlidingWindow([1,3,-1,-3,5,3,6,7], 3) == [3,3,5,5,6,7]
+}
+
+test "example 2" {
+  expect maxSlidingWindow([1], 1) == [1]
+}
+
+test "k equals array length" {
+  expect maxSlidingWindow([2,1], 2) == [2]
+}
+
+// Additional edge cases
+
+test "all decreasing" {
+  expect maxSlidingWindow([9,8,7,6,5], 2) == [9,8,7,6]
+}
+
+test "window size 1" {
+  expect maxSlidingWindow([4,2], 1) == [4,2]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for equality checks:
+     if nums[i] = 0 { ... }   // ❌ assignment
+     if nums[i] == 0 { ... }  // ✅ comparison
+2. Reassigning a 'let'-bound variable:
+     let dq = []
+     dq = [1]                 // ❌ cannot reassign immutable value
+     var dq = []              // ✅ use 'var' when mutation is needed
+3. Forgetting to specify list element types for empty lists:
+     var res = []             // ❌ type unknown
+     var res: list<int> = []  // ✅ specify the element type
+*/
