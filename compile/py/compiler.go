@@ -252,10 +252,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Stream != nil:
 		return c.compileStreamDecl(s.Stream)
-	case s.Model != nil:
-		return c.compileModelDecl(s.Model)
-	case s.On != nil:
-		return c.compileOnHandler(s.On)
+       case s.Model != nil:
+               return c.compileModelDecl(s.Model)
+       case s.Fun != nil:
+               return c.compileFunStmt(s.Fun)
+       case s.On != nil:
+               return c.compileOnHandler(s.On)
 	case s.Emit != nil:
 		return c.compileEmit(s.Emit)
 	case s.Agent != nil:
