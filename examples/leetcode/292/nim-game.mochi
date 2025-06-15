@@ -1,0 +1,35 @@
+// Solution for LeetCode problem 292 - Nim Game
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' when comparing numbers.
+// 2. Trying to change a value declared with 'let'. Use 'var' for variables that change.
+// 3. Introducing union types or 'match' for simple boolean logic. Plain 'if' statements are clearer.
+
+fun canWinNim(n: int): bool {
+  // The first player wins unless n is a multiple of 4
+  return n % 4 != 0
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect canWinNim(4) == false
+}
+
+test "example 2" {
+  expect canWinNim(1) == true
+}
+
+test "example 3" {
+  expect canWinNim(2) == true
+}
+
+// Additional tests
+
+test "multiple of four" {
+  expect canWinNim(8) == false
+}
+
+test "not multiple of four" {
+  expect canWinNim(7) == true
+}
