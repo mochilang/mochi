@@ -148,3 +148,20 @@ func (i *Interpreter) evalMatch(m *parser.MatchExpr) (any, error) {
 	}
 	return nil, nil
 }
+
+func (i *Interpreter) evalIfExpr(e *parser.IfExpr) (any, error) {
+	cond, err := i.evalExpr(e.Cond)
+	if err != nil {
+		return nil, err
+	}
+	if truthy(cond) {
+		return i.evalExpr(e.Then)
+	}
+	if e.ElseIf != nil {
+		return i.evalIfExpr(e.ElseIf)
+	}
+	if e.Else != nil {
+		return i.evalExpr(e.Else)
+	}
+	return nil, nil
+}
