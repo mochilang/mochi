@@ -1,0 +1,78 @@
+// Solution for LeetCode problem 284 - Peeking Iterator
+// Implements a simple iterator over a list with a peek() method.
+// No union types or pattern matching are used.
+
+type PeekingIterator {
+  nums: list<int>
+  index: int
+}
+
+type NextResult {
+  iter: PeekingIterator
+  val: int
+}
+
+fun newPeekingIterator(nums: list<int>): PeekingIterator {
+  return PeekingIterator { nums: nums, index: 0 }
+}
+
+fun hasNext(it: PeekingIterator): bool {
+  return it.index < len(it.nums)
+}
+
+fun peek(it: PeekingIterator): int {
+  return it.nums[it.index]
+}
+
+fun next(it: PeekingIterator): NextResult {
+  let v = it.nums[it.index]
+  let newIt = PeekingIterator { nums: it.nums, index: it.index + 1 }
+  return NextResult { iter: newIt, val: v }
+}
+
+// Test cases based on the LeetCode example
+
+test "example" {
+  var it = newPeekingIterator([1,2,3])
+  let r1 = next(it)
+  it = r1.iter
+  expect r1.val == 1
+  expect peek(it) == 2
+  let r2 = next(it)
+  it = r2.iter
+  expect r2.val == 2
+  let r3 = next(it)
+  it = r3.iter
+  expect r3.val == 3
+  expect hasNext(it) == false
+}
+
+// Additional edge cases
+
+test "single element" {
+  var it = newPeekingIterator([5])
+  expect peek(it) == 5
+  let r = next(it)
+  it = r.iter
+  expect r.val == 5
+  expect hasNext(it) == false
+}
+
+test "empty" {
+  let it = newPeekingIterator([])
+  expect hasNext(it) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if hasNext(it) = true { }
+   // ❌ assignment, use '==' for comparison.
+2. Attempting to mutate struct fields directly:
+     it.index = 1
+   // ❌ fields are immutable; build a new struct instead.
+3. Reassigning a variable declared with 'let':
+     let it = newPeekingIterator([1])
+     it = newPeekingIterator([2])
+   // ❌ cannot reassign immutable binding; use 'var it = ...' when mutation is required.
+*/
