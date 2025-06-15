@@ -1,0 +1,50 @@
+// Solution for LeetCode problem 203 - Remove Linked List Elements
+// We model the linked list as a simple Mochi list of integers.
+// The function returns a new list with all occurrences of `val` removed.
+
+fun removeElements(nums: list<int>, val: int): list<int> {
+  var result: list<int> = []
+  for x in nums {
+    if x != val {
+      result = result + [x]
+    }
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect removeElements([1,2,6,3,4,5,6], 6) == [1,2,3,4,5]
+}
+
+test "example 2" {
+  expect removeElements([], 1) == []
+}
+
+test "example 3" {
+  expect removeElements([7,7,7,7], 7) == []
+}
+
+// Additional edge cases
+
+test "no removals" {
+  expect removeElements([1,2,3], 4) == [1,2,3]
+}
+
+test "all removed" {
+  expect removeElements([2,2,2], 2) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if x = val { }       // ❌ assignment
+   Fix: use '==' for equality checks.
+2. Forgetting to declare mutable variables with 'var':
+     result = result + [x]  // ❌ cannot assign to immutable binding
+   Declare with 'var result: list<int> = []'.
+3. Omitting element types when creating an empty list:
+     var xs = []           // ❌ type unknown
+   Use 'var xs: list<int> = []'.
+*/
