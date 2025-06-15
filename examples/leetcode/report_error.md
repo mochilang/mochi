@@ -1,25 +1,38 @@
+## ./103/binary-tree-zigzag-level-order-traversal.mochi
+```
+   [33mtest[0m example 1                      ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types func and list
+  --> ./103/binary-tree-zigzag-level-order-traversal.mochi:61:34
 
+[90m 61[0m |   expect (zigzagLevelOrder(tree) == [[3], [20, 9], [15, 7]])
+    | [31;1m                                 ^[0;22m
+
+[33mhelp:[0m
+  Use compatible types for the operator. (34.0µs)
+   [33mtest[0m single node                    ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types func and list
+  --> ./103/binary-tree-zigzag-level-order-traversal.mochi:65:78
+
+[90m 65[0m |   expect (zigzagLevelOrder(Node { left: Leaf {}, value: 1, right: Leaf {} }) == [[1]])
+    | [31;1m                                                                             ^[0;22m
+
+[33mhelp:[0m
+  Use compatible types for the operator. (9.0µs)
+   [33mtest[0m empty                          ... [32mok[0m (6.0µs)
+   [33mtest[0m unbalanced                     ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types func and list
+  --> ./103/binary-tree-zigzag-level-order-traversal.mochi:86:34
+
+[90m 86[0m |   expect (zigzagLevelOrder(tree) == [[1], [3, 2], [4, 5]])
+    | [31;1m                                 ^[0;22m
+
+[33mhelp:[0m
+  Use compatible types for the operator. (14.0µs)
+
+[31m[FAIL][0m 3 test(s) failed.
+[31;1mtest failed:[0;22m test failed: 3 test(s) failed
+```
 ## ./105/construct-binary-tree-from-preorder-and-inorder-traversal.mochi
-
 ```
 [31;1mtype error:[0;22m
-   1. [31;1merror[T020][0;22m: operator `+` cannot be used on types [int] and [int]
-  --> ./105/construct-binary-tree-from-preorder-and-inorder-traversal.mochi:40:26
-
-[90m 40[0m |     Node(l, v, r) => [v] + preorderTraversal(l) + preorderTraversal(r)
-    | [31;1m                         ^[0;22m
-
-[33mhelp:[0m
-  Choose an operator that supports these operand types.
-   2. [31;1merror[T020][0;22m: operator `+` cannot be used on types [int] and [int]
-  --> ./105/construct-binary-tree-from-preorder-and-inorder-traversal.mochi:48:42
-
-[90m 48[0m |     Node(l, v, r) => inorderTraversal(l) + [v] + inorderTraversal(r)
-    | [31;1m                                         ^[0;22m
-
-[33mhelp:[0m
-  Choose an operator that supports these operand types.
-   3. [31;1merror[T013][0;22m: incompatible types in comparison
+   1. [31;1merror[T013][0;22m: incompatible types in comparison
   --> ./105/construct-binary-tree-from-preorder-and-inorder-traversal.mochi:72:15
 
 [90m 72[0m |   expect tree == Leaf
@@ -27,10 +40,9 @@
 
 [33mhelp:[0m
   Use comparable types like numbers or strings with `<`, `>`.
-[31;1merror:[0;22m aborted due to type errors
+[31;1mtest failed:[0;22m aborted due to type errors
 ```
 ## ./106/construct-binary-tree-from-inorder-and-postorder-traversal.mochi
-
 ```
 [31;1mtype error:[0;22m
    1. [31;1merror[T013][0;22m: incompatible types in comparison
@@ -41,26 +53,34 @@
 
 [33mhelp:[0m
   Use comparable types like numbers or strings with `<`, `>`.
-[31;1merror:[0;22m aborted due to type errors
+[31;1mtest failed:[0;22m aborted due to type errors
 ```
-## ./109/convert-sorted-list-to-binary-search-tree.mochi
-
+## ./107/binary-tree-level-order-traversal-ii.mochi
 ```
-[31;1mtype error:[0;22m
-   1. [31;1merror[T020][0;22m: operator `+` cannot be used on types [int] and [int]
-  --> ./109/convert-sorted-list-to-binary-search-tree.mochi:31:33
+   [33mtest[0m example 1                      ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types func and list
+  --> ./107/binary-tree-level-order-traversal-ii.mochi:55:37
 
-[90m 31[0m |     Node(l, v, r) => inorder(l) + [v] + inorder(r)
-    | [31;1m                                ^[0;22m
+[90m 55[0m |   expect levelOrderBottom(example1) == [[15,7],[9,20],[3]]
+    | [31;1m                                    ^[0;22m
 
 [33mhelp:[0m
-  Choose an operator that supports these operand types.
-[31;1merror:[0;22m aborted due to type errors
+  Use compatible types for the operator. (22.0µs)
+   [33mtest[0m single node                    ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types func and list
+  --> ./107/binary-tree-level-order-traversal-ii.mochi:59:77
+
+[90m 59[0m |   expect levelOrderBottom(Node { left: Leaf {}, value: 1, right: Leaf {} }) == [[1]]
+    | [31;1m                                                                            ^[0;22m
+
+[33mhelp:[0m
+  Use compatible types for the operator. (15.0µs)
+   [33mtest[0m empty                          ... [32mok[0m (4.0µs)
+
+[31m[FAIL][0m 2 test(s) failed.
+[31;1mtest failed:[0;22m test failed: 2 test(s) failed
 ```
 ## ./110/balanced-binary-tree.mochi
-
 ```
-[31;1merror:[0;22m parse error:
+[31;1mtest failed:[0;22m parse error:
   [31;1merror[P999][0;22m: ./110/balanced-binary-tree.mochi:12:20: unexpected token "{" (expected TypeVariant ("|" TypeVariant)*)
   --> ./110/balanced-binary-tree.mochi:12:20
 
@@ -71,7 +91,6 @@
   Parse error occurred. Check syntax near this location.
 ```
 ## ./111/minimum-depth-of-binary-tree.mochi
-
 ```
 [31;1mtype error:[0;22m
    1. [31;1merror[T008][0;22m: type mismatch: expected Tree, got fun(): Tree
@@ -82,24 +101,55 @@
 
 [33mhelp:[0m
   Change the value to match the expected type.
-[31;1merror:[0;22m aborted due to type errors
+[31;1mtest failed:[0;22m aborted due to type errors
 ```
-## ./113/path-sum-ii.mochi
-
+## ./112/path-sum.mochi
 ```
-[31;1mtype error:[0;22m
-   1. [31;1merror[T020][0;22m: operator `+` cannot be used on types [int] and [int]
-  --> ./113/path-sum-ii.mochi:15:23
+   [33mtest[0m example 1                      ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types map and map
+  --> ./112/path-sum.mochi:11:5
 
-[90m 15[0m |       let newPath = p + [v]
-    | [31;1m                      ^[0;22m
+[90m 11[0m |     Leaf {} => false
+    | [31;1m    ^[0;22m
 
 [33mhelp:[0m
-  Choose an operator that supports these operand types.
-[31;1merror:[0;22m aborted due to type errors
+  Use compatible types for the operator. (46.0µs)
+   [33mtest[0m example 2                      ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types map and map
+  --> ./112/path-sum.mochi:11:5
+
+[90m 11[0m |     Leaf {} => false
+    | [31;1m    ^[0;22m
+
+[33mhelp:[0m
+  Use compatible types for the operator. (11.0µs)
+   [33mtest[0m example 3                      ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types map and map
+  --> ./112/path-sum.mochi:11:5
+
+[90m 11[0m |     Leaf {} => false
+    | [31;1m    ^[0;22m
+
+[33mhelp:[0m
+  Use compatible types for the operator. (10.0µs)
+   [33mtest[0m single node                    ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types map and map
+  --> ./112/path-sum.mochi:11:5
+
+[90m 11[0m |     Leaf {} => false
+    | [31;1m    ^[0;22m
+
+[33mhelp:[0m
+  Use compatible types for the operator. (5.0µs)
+   [33mtest[0m empty                          ... [31mfail[0m [31;1merror[I008][0;22m: cannot apply operator '==' to types map and map
+  --> ./112/path-sum.mochi:11:5
+
+[90m 11[0m |     Leaf {} => false
+    | [31;1m    ^[0;22m
+
+[33mhelp:[0m
+  Use compatible types for the operator. (4.0µs)
+
+[31m[FAIL][0m 5 test(s) failed.
+[31;1mtest failed:[0;22m test failed: 5 test(s) failed
 ```
 ## ./117/populating-next-right-pointers-in-each-node-ii.mochi
-
 ```
 [31;1mtype error:[0;22m
    1. [31;1merror[T008][0;22m: type mismatch: expected R, got Node
@@ -110,25 +160,87 @@
 
 [33mhelp:[0m
   Change the value to match the expected type.
-[31;1merror:[0;22m aborted due to type errors
+[31;1mtest failed:[0;22m aborted due to type errors
 ```
 ## ./124/binary-tree-maximum-path-sum.mochi
-
 ```
-[31;1merror:[0;22m parse error:
-  [31;1merror[P999][0;22m: ./124/binary-tree-maximum-path-sum.mochi:26:24: unexpected token "if" (expected PostfixExpr)
-  --> ./124/binary-tree-maximum-path-sum.mochi:26:24
+[31;1mtest failed:[0;22m parse error:
+  [31;1merror[P999][0;22m: ./124/binary-tree-maximum-path-sum.mochi:67:69: unexpected token "-" (expected PostfixExpr)
+  --> ./124/binary-tree-maximum-path-sum.mochi:67:69
 
-[90m 26[0m |         let leftBest = if leftDown > 0 { leftDown } else { 0 }
-    | [31;1m                       ^[0;22m
+[90m 67[0m |   expect maxPathSum(Node { left: Leaf, value: -3, right: Leaf }) == -3
+    | [31;1m                                                                    ^[0;22m
 
 [33mhelp:[0m
   Parse error occurred. Check syntax near this location.
 ```
-## ./3580/find-consistently-improving-employees.mochi
-
+## ./132/palindrome-partitioning-ii.mochi
 ```
-[31;1merror:[0;22m parse error:
+   [33mtest[0m example 1                      ... [31mfail[0m [31;1merror[I014][0;22m: index 3 out of bounds for length 3
+  --> ./132/palindrome-partitioning-ii.mochi:34:46
+
+[90m 34[0m |       if s[j] == s[i] && (i - j <= 1 || isPal[j+1][i-1]) {
+    | [31;1m                                             ^[0;22m
+
+[33mhelp:[0m
+  Use an index within bounds of the list or string. (134.0µs)
+   [33mtest[0m example 2                      ... [32mok[0m (8.0µs)
+   [33mtest[0m already palindrome             ... [31mfail[0m [31;1merror[I014][0;22m: index 3 out of bounds for length 3
+  --> ./132/palindrome-partitioning-ii.mochi:34:46
+
+[90m 34[0m |       if s[j] == s[i] && (i - j <= 1 || isPal[j+1][i-1]) {
+    | [31;1m                                             ^[0;22m
+
+[33mhelp:[0m
+  Use an index within bounds of the list or string. (104.0µs)
+   [33mtest[0m all same                       ... [31mfail[0m [31;1merror[I014][0;22m: index 4 out of bounds for length 4
+  --> ./132/palindrome-partitioning-ii.mochi:34:46
+
+[90m 34[0m |       if s[j] == s[i] && (i - j <= 1 || isPal[j+1][i-1]) {
+    | [31;1m                                             ^[0;22m
+
+[33mhelp:[0m
+  Use an index within bounds of the list or string. (216.0µs)
+
+[31m[FAIL][0m 3 test(s) failed.
+[31;1mtest failed:[0;22m test failed: 3 test(s) failed
+```
+## ./136/single-number.mochi
+```
+[31;1mtest failed:[0;22m parse error:
+  [31;1merror[P040][0;22m: ./136/single-number.mochi:6:21: lexer: invalid input text "^ n\n  }\n  return..."
+  --> ./136/single-number.mochi:6:21
+
+[90m  6[0m |     result = result ^ n
+    | [31;1m                    ^[0;22m
+
+[33mhelp:[0m
+  String literals must be properly closed with a `"`.
+```
+## ./138/copy-list-with-random-pointer.mochi
+```
+[31;1mtype error:[0;22m
+   1. [31;1merror[T008][0;22m: type mismatch: expected Node, got Nil
+  --> ./138/copy-list-with-random-pointer.mochi:18:7
+
+[90m 18[0m |       Nil => Nil {}
+    | [31;1m      ^[0;22m
+
+[33mhelp:[0m
+  Change the value to match the expected type.
+   2. [31;1merror[T008][0;22m: type mismatch: expected Node, got Nil
+  --> ./138/copy-list-with-random-pointer.mochi:61:7
+
+[90m 61[0m |       Nil => {}
+    | [31;1m      ^[0;22m
+
+[33mhelp:[0m
+  Change the value to match the expected type.
+[31;1mtest failed:[0;22m aborted due to type errors
+```
+## ./3580/find-consistently-improving-employees.mochi
+```
+[31;1mtest failed:[0;22m parse error:
   [31;1merror[P999][0;22m: ./3580/find-consistently-improving-employees.mochi:1:43: unexpected token "{" (expected TypeRef ("," TypeRef)* ">")
   --> ./3580/find-consistently-improving-employees.mochi:1:43
 
@@ -138,45 +250,15 @@
 [33mhelp:[0m
   Parse error occurred. Check syntax near this location.
 ```
-## ./94/binary-tree-inorder-traversal.mochi
-
+## ./60/permutation-sequence.mochi
 ```
-[31;1mtype error:[0;22m
-   1. [31;1merror[T020][0;22m: operator `+` cannot be used on types [int] and [int]
-  --> ./94/binary-tree-inorder-traversal.mochi:12:42
+[31;1mtest failed:[0;22m parse error:
+  [31;1merror[P999][0;22m: ./60/permutation-sequence.mochi:3:7: unexpected token "fact" (expected <ident> (":" TypeRef)? ("=" Expr)?)
+  --> ./60/permutation-sequence.mochi:3:7
 
-[90m 12[0m |     Node(l, v, r) => inorderTraversal(l) + [v] + inorderTraversal(r)
-    | [31;1m                                         ^[0;22m
+[90m  3[0m |   var fact = 1
+    | [31;1m      ^[0;22m
 
 [33mhelp:[0m
-  Choose an operator that supports these operand types.
-[31;1merror:[0;22m aborted due to type errors
-```
-## ./95/unique-binary-search-trees-ii.mochi
-
-```
-[31;1mtype error:[0;22m
-   1. [31;1merror[T020][0;22m: operator `+` cannot be used on types [Tree] and [Node]
-  --> ./95/unique-binary-search-trees-ii.mochi:20:25
-
-[90m 20[0m |         result = result + [Node { left: l, val: i, right: r }]
-    | [31;1m                        ^[0;22m
-
-[33mhelp:[0m
-  Choose an operator that supports these operand types.
-[31;1merror:[0;22m aborted due to type errors
-```
-## ./99/recover-binary-search-tree.mochi
-
-```
-[31;1mtype error:[0;22m
-   1. [31;1merror[T020][0;22m: operator `+` cannot be used on types [int] and [int]
-  --> ./99/recover-binary-search-tree.mochi:14:33
-
-[90m 14[0m |     Node(l, v, r) => inorder(l) + [v] + inorder(r)
-    | [31;1m                                ^[0;22m
-
-[33mhelp:[0m
-  Choose an operator that supports these operand types.
-[31;1merror:[0;22m aborted due to type errors
+  Parse error occurred. Check syntax near this location.
 ```
