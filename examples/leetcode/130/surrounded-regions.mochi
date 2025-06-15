@@ -1,0 +1,103 @@
+// Solution for LeetCode problem 130 - Surrounded Regions
+
+fun solve(board: list<list<string>>): list<list<string>> {
+  let rows = len(board)
+  if rows == 0 {
+    return board
+  }
+  let cols = len(board[0])
+
+  var queue: list<list<int>> = []
+  // enqueue border cells that contain 'O'
+  for r in 0..rows {
+    if board[r][0] == "O" {
+      queue = queue + [[r, 0]]
+    }
+    if cols > 1 && board[r][cols-1] == "O" {
+      queue = queue + [[r, cols-1]]
+    }
+  }
+  for c in 0..cols {
+    if board[0][c] == "O" {
+      queue = queue + [[0, c]]
+    }
+    if rows > 1 && board[rows-1][c] == "O" {
+      queue = queue + [[rows-1, c]]
+    }
+  }
+
+  var i = 0
+  while i < len(queue) {
+    let pos = queue[i]
+    let r = pos[0]
+    let c = pos[1]
+    if board[r][c] == "O" {
+      board[r][c] = "S"
+      if r > 0 && board[r-1][c] == "O" {
+        queue = queue + [[r-1, c]]
+      }
+      if r + 1 < rows && board[r+1][c] == "O" {
+        queue = queue + [[r+1, c]]
+      }
+      if c > 0 && board[r][c-1] == "O" {
+        queue = queue + [[r, c-1]]
+      }
+      if c + 1 < cols && board[r][c+1] == "O" {
+        queue = queue + [[r, c+1]]
+      }
+    }
+    i = i + 1
+  }
+
+  // flip captured regions
+  for r in 0..rows {
+    for c in 0..cols {
+      if board[r][c] == "O" {
+        board[r][c] = "X"
+      } else if board[r][c] == "S" {
+        board[r][c] = "O"
+      }
+    }
+  }
+
+  return board
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let board = [
+    ["X","X","X","X"],
+    ["X","O","O","X"],
+    ["X","X","O","X"],
+    ["X","O","X","X"],
+  ]
+  let expected = [
+    ["X","X","X","X"],
+    ["X","X","X","X"],
+    ["X","X","X","X"],
+    ["X","O","X","X"],
+  ]
+  expect solve(board) == expected
+}
+
+test "no change" {
+  let board = [
+    ["X","X"],
+    ["X","X"],
+  ]
+  expect solve(board) == board
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing characters:
+     if board[r][c] = "O" { } // ❌ assignment
+     if board[r][c] == "O" { } // ✅ comparison
+2. Reassigning variables declared with 'let':
+     let rows = len(board)
+     rows = rows + 1          // ❌ immutable
+     var rows = len(board)    // ✅ use 'var' if it will change
+3. Forgetting that ranges exclude the end value:
+     for r in 0..rows { ... } // iterates while r < rows
+*/
