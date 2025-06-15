@@ -48,6 +48,21 @@ const (
 		"  return JSON.parse(prompt) as T;\n" +
 		"}\n"
 
+	helperEqual = "function _equal(a: any, b: any): boolean {\n" +
+		"  if (Array.isArray(a) && Array.isArray(b)) {\n" +
+		"    if (a.length !== b.length) return false;\n" +
+		"    for (let i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }\n" +
+		"    return true;\n" +
+		"  }\n" +
+		"  if (a && b && typeof a === 'object' && typeof b === 'object') {\n" +
+		"    const ak = Object.keys(a); const bk = Object.keys(b);\n" +
+		"    if (ak.length !== bk.length) return false;\n" +
+		"    for (const k of ak) { if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) return false; }\n" +
+		"    return true;\n" +
+		"  }\n" +
+		"  return a === b;\n" +
+		"}\n"
+
 	helperFetch = "function _fetch(url: string, opts: any): any {\n" +
 		"  const args: string[] = ['-s'];\n" +
 		"  const method = opts?.method ?? 'GET';\n" +
@@ -293,6 +308,7 @@ var helperMap = map[string]string{
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
+	"_equal":      helperEqual,
 	"_fetch":      helperFetch,
 	"_toAnyMap":   helperToAnyMap,
 	"_stream":     helperStream,

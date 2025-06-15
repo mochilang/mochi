@@ -169,6 +169,16 @@ func isList(t types.Type) bool {
 	return ok
 }
 
+func isMap(t types.Type) bool {
+	_, ok := t.(types.MapType)
+	return ok
+}
+
+func isStruct(t types.Type) bool {
+	_, ok := t.(types.StructType)
+	return ok
+}
+
 func tsType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType:
@@ -197,6 +207,15 @@ func tsType(t types.Type) string {
 func isAny(t types.Type) bool {
 	_, ok := t.(types.AnyType)
 	return ok
+}
+
+func contains(sl []string, s string) bool {
+	for _, v := range sl {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }
 
 func resolveTypeRef(t *parser.TypeRef) types.Type {

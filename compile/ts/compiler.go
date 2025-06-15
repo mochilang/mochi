@@ -879,31 +879,97 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
-	expr, err := c.compileUnary(b.Left)
+	if b == nil {
+		return "", fmt.Errorf("nil binary expression")
+	}
+
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	leftType := c.inferUnaryType(b.Left)
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+	operands := []string{first}
+	typesList := []types.Type{c.inferUnaryType(b.Left)}
+	ops := []string{}
+
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rightType := c.inferPostfixType(op.Right)
-		if op.Op == "+" && isList(leftType) && isList(rightType) {
-			expr = fmt.Sprintf("%s.concat(%s)", expr, right)
-			leftType = leftType
-			continue
-		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
-		switch op.Op {
-		case "+", "-", "*", "/", "%":
-			// result type approximates left operand
-		case "==", "!=", "<", "<=", ">", ">=":
-			leftType = types.BoolType{}
+		operands = append(operands, r)
+		typesList = append(typesList, c.inferPostfixType(part.Right))
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			if contains(lvl, ops[i]) {
+				expr, typ, err := c.compileBinaryOp(operands[i], typesList[i], ops[i], operands[i+1], typesList[i+1])
+				if err != nil {
+					return "", err
+				}
+				operands[i] = expr
+				typesList[i] = typ
+				operands = append(operands[:i+1], operands[i+2:]...)
+				typesList = append(typesList[:i+1], typesList[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0], nil
+}
+
+func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, right string, rightType types.Type) (string, types.Type, error) {
+	switch op {
+	case "+", "-", "*", "/", "%":
+		if op == "+" && isList(leftType) && isList(rightType) {
+			return fmt.Sprintf("%s.concat(%s)", left, right), leftType, nil
+		}
+		if op == "+" && isString(leftType) && isString(rightType) {
+			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
+		}
+		return fmt.Sprintf("(%s %s %s)", left, op, right), leftType, nil
+	case "==", "!=":
+		if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) || isAny(leftType) || isAny(rightType) {
+			c.use("_equal")
+			if op == "==" {
+				return fmt.Sprintf("_equal(%s, %s)", left, right), types.BoolType{}, nil
+			}
+			return fmt.Sprintf("!_equal(%s, %s)", left, right), types.BoolType{}, nil
+		}
+		return fmt.Sprintf("(%s %s %s)", left, op, right), types.BoolType{}, nil
+	case "<", "<=", ">", ">=":
+		return fmt.Sprintf("(%s %s %s)", left, op, right), types.BoolType{}, nil
+	case "&&", "||":
+		return fmt.Sprintf("(%s %s %s)", left, op, right), types.BoolType{}, nil
+	case "in":
+		switch rightType.(type) {
+		case types.MapType:
+			return fmt.Sprintf("Object.prototype.hasOwnProperty.call(%s, String(%s))", right, left), types.BoolType{}, nil
+		case types.ListType, types.StringType:
+			return fmt.Sprintf("%s.includes(%s)", right, left), types.BoolType{}, nil
+		default:
+			return "false", types.BoolType{}, nil
+		}
+	default:
+		return fmt.Sprintf("(%s %s %s)", left, op, right), types.AnyType{}, nil
+	}
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
