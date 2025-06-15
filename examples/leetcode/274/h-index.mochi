@@ -1,0 +1,48 @@
+// LeetCode 274 - H-Index
+
+fun hIndex(citations: list<int>): int {
+  // sort citations in descending order
+  let sorted = from c in citations sort by -c select c
+  var h = 0
+  var i = 0
+  while i < len(sorted) {
+    if sorted[i] >= i + 1 {
+      h = i + 1
+    }
+    i = i + 1
+  }
+  return h
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect hIndex([3,0,6,1,5]) == 3
+}
+
+test "example 2" {
+  expect hIndex([1,3,1]) == 1
+}
+
+// Additional edge cases
+
+test "all zeros" {
+  expect hIndex([0,0,0]) == 0
+}
+
+test "all high" {
+  expect hIndex([10,8,5,4,3]) == 4
+}
+
+test "empty" {
+  expect hIndex([]) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions:
+     if x = 1 { }      // ❌ assignment
+     if x == 1 { }     // ✅ comparison
+2. Forgetting 'var' for mutable variables like 'i' and 'h'.
+3. Mochi doesn't support '+='; use 'i = i + 1'.
+*/
