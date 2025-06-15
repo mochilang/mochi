@@ -1,0 +1,41 @@
+fun rotate(nums: list<int>, k: int): list<int> {
+  let n = len(nums)
+  if n == 0 {
+    return nums
+  }
+  let r = k % n
+  if r == 0 {
+    return nums
+  }
+  return nums[n - r:len(nums)] + nums[0:n - r]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect rotate([1,2,3,4,5,6,7], 3) == [5,6,7,1,2,3,4]
+}
+
+test "example 2" {
+  expect rotate([-1,-100,3,99], 2) == [3,99,-1,-100]
+}
+
+test "k greater than length" {
+  expect rotate([1,2], 5) == [2,1]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to specify the element type when creating an empty list:
+     var arr = []            // ❌ type cannot be inferred
+   Fix: declare the type explicitly:
+     var arr: list<int> = [] // ✅
+2. Using '=' instead of '==' in an if condition:
+     if r = 0 { ... }        // ❌ assignment
+   Use '==' for comparison:
+     if r == 0 { ... }       // ✅
+3. Attempting to modify a value defined with 'let':
+     let n = len(nums)
+     n = n + 1               // ❌ cannot reassign
+   Use 'var' for mutable variables if needed.
+*/
