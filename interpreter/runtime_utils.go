@@ -180,6 +180,14 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 				return Value{Tag: TagBool, Bool: left.Str == right.Str}, nil
 			case "!=":
 				return Value{Tag: TagBool, Bool: left.Str != right.Str}, nil
+			case "<":
+				return Value{Tag: TagBool, Bool: left.Str < right.Str}, nil
+			case "<=":
+				return Value{Tag: TagBool, Bool: left.Str <= right.Str}, nil
+			case ">":
+				return Value{Tag: TagBool, Bool: left.Str > right.Str}, nil
+			case ">=":
+				return Value{Tag: TagBool, Bool: left.Str >= right.Str}, nil
 			case "in":
 				return Value{Tag: TagBool, Bool: strings.Contains(right.Str, left.Str)}, nil
 			}

@@ -242,6 +242,14 @@ for ch in text {
 }
 ```
 
+String comparison operators (`<`, `<=`, `>`, `>=`) compare values
+lexicographically using Unicode code point order. For example:
+
+```mochi
+print("a" < "b")  // true
+print("cat" >= "car")  // true
+```
+
 #### Struct Literals
 
 Values of user-defined types are constructed with struct literal syntax. The field
