@@ -1,0 +1,53 @@
+fun wiggleSort(nums: list<int>): list<int> {
+  var i = 1
+  while i < len(nums) {
+    if i % 2 == 1 {
+      if nums[i] < nums[i - 1] {
+        let temp = nums[i]
+        nums[i] = nums[i - 1]
+        nums[i - 1] = temp
+      }
+    } else {
+      if nums[i] > nums[i - 1] {
+        let temp = nums[i]
+        nums[i] = nums[i - 1]
+        nums[i - 1] = temp
+      }
+    }
+    i = i + 1
+  }
+  return nums
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect wiggleSort([3,5,2,1,6,4]) == [3,5,1,6,2,4]
+}
+
+test "example 2" {
+  expect wiggleSort([6,6,5,6,3,8]) == [6,6,5,6,3,8]
+}
+
+// Additional edge cases
+
+test "already wiggle" {
+  expect wiggleSort([1,3,2,4]) == [1,3,2,4]
+}
+
+test "two elements" {
+  expect wiggleSort([2,1]) == [1,2]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if a = b { }            // WRONG: assignment
+     if a == b { }           // RIGHT: comparison
+2. Reassigning a variable declared with 'let':
+     let i = 0
+     i = 1                   // ERROR[E004]
+   Use 'var' for mutable variables.
+3. Forgetting modulo operator precedence:
+     if i % 2 == 1 && ...    // ALWAYS include parentheses when needed.
+*/
