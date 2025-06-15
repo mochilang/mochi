@@ -1,0 +1,50 @@
+// Solution for LeetCode problem 121 - Best Time to Buy and Sell Stock
+
+// Track the minimum price seen so far and the maximum profit.
+fun maxProfit(prices: list<int>): int {
+  if len(prices) == 0 {
+    return 0
+  }
+  var minPrice = prices[0]
+  var maxProfit = 0
+  var i = 1
+  while i < len(prices) {
+    let price = prices[i]
+    if price < minPrice {
+      minPrice = price
+    } else {
+      let profit = price - minPrice
+      if profit > maxProfit {
+        maxProfit = profit
+      }
+    }
+    i = i + 1
+  }
+  return maxProfit
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect maxProfit([7,1,5,3,6,4]) == 5
+}
+
+test "example 2" {
+  expect maxProfit([7,6,4,3,1]) == 0
+}
+
+// Additional edge case
+
+test "single price" {
+  expect maxProfit([5]) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare mutable variables with 'var'. Here 'minPrice' and 'maxProfit' must be mutable.
+2. Using '=' instead of '==' in comparisons:
+     if price = minPrice { ... }   // ❌ assignment
+     if price == minPrice { ... }  // ✅ comparison
+3. Trying Python-style loops like 'for price in prices':
+   Mochi uses numeric ranges: 'for i in 0..len(prices)' or a 'while' loop.
+*/
