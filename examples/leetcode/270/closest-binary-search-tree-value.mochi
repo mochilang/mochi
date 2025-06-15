@@ -1,0 +1,81 @@
+// LeetCode 270 - Closest Binary Search Tree Value
+//
+// Tree nodes are represented as maps to avoid union types and pattern
+// matching. Each leaf node is {"__name": "Leaf"} and each internal node is
+// {"__name": "Node", "left": left, "value": value, "right": right}.
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+fun absFloat(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+// Return the value in the BST that is closest to `target`.
+fun closestValue(root: map<string, any>, target: float): int {
+  var closest = value(root)
+  var node = root
+  while !isLeaf(node) {
+    let v = value(node)
+    if absFloat((v as float) - target) < absFloat((closest as float) - target) {
+      closest = v
+    }
+    if target < (v as float) {
+      let l = left(node)
+      if isLeaf(l) { break }
+      node = l
+    } else {
+      let r = right(node)
+      if isLeaf(r) { break }
+      node = r
+    }
+  }
+  return closest
+}
+
+// Example tree used in the tests: [4,2,5,1,3]
+let example = Node(
+  Node(Node(Leaf(), 1, Leaf()), 2, Node(Leaf(), 3, Leaf())),
+  4,
+  Node(Leaf(), 5, Leaf())
+)
+
+test "example 1" {
+  expect closestValue(example, 3.714286) == 4
+}
+
+test "target in tree" {
+  expect closestValue(example, 5.0) == 5
+}
+
+test "target below minimum" {
+  expect closestValue(example, 0.0) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if isLeaf(node) = true { }  // ❌ assignment
+   if isLeaf(node) == true { } // ✅ comparison
+2. Reassigning a value declared with 'let'.
+   let n = root
+   n = left(n)                // ❌ cannot assign
+   var n = root
+   n = left(n)                // ✅ use 'var' for mutable bindings
+3. Forgetting to cast when mixing ints and floats.
+   if v - target < 0 { }         // ❌ type error
+   if (v as float) - target < 0 { } // ✅ convert int to float
+*/
