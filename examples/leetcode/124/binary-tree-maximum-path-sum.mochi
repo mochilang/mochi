@@ -10,31 +10,31 @@ fun max(a: int, b: int): int {
   return b
 }
 
-// Return `x` if it is positive, otherwise 0.
-fun pos(x: int): int {
+// Return x when it is positive, otherwise 0.
+fun positive(x: int): int {
   if x > 0 { return x }
   return 0
 }
 
 // Compute the maximum path sum in the given tree.
 fun maxPathSum(root: Tree): int {
-  // smallest 32 bit integer: -(2^31)
-  var best = -2147483647 - 1
+  // smallest 32 bit integer is -(2^31)
+  var best = -2147483648
 
   fun dfs(t: Tree): int {
-    return match t {
+    match t {
       Leaf => 0
       Node(l, v, r) => {
         let left = dfs(l)
         let right = dfs(r)
-        let leftPos = pos(left)
-        let rightPos = pos(right)
 
-        let through = v + leftPos + rightPos
-        if through > best { best = through }
+        let leftPos = positive(left)
+        let rightPos = positive(right)
 
-        let down = v + max(leftPos, rightPos)
-        pos(down)
+        let candidate = v + leftPos + rightPos
+        if candidate > best { best = candidate }
+
+        positive(v + max(leftPos, rightPos))
       }
     }
   }
@@ -43,7 +43,7 @@ fun maxPathSum(root: Tree): int {
   return best
 }
 
-// Test cases based on LeetCode examples
+// Test cases based on the LeetCode examples
 
 test "example 1" {
   let tree = Node {
