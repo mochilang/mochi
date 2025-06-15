@@ -1,0 +1,56 @@
+fun countDigitOne(n: int): int {
+  var count = 0
+  var i = 1
+  while i <= n {
+    let high = n / (i * 10)
+    let current = (n / i) % 10
+    let low = n % i
+    if current == 0 {
+      count = count + high * i
+    } else if current == 1 {
+      count = count + high * i + (low + 1)
+    } else {
+      count = count + (high + 1) * i
+    }
+    i = i * 10
+  }
+  return count
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect countDigitOne(13) == 6
+}
+
+test "example 2" {
+  expect countDigitOne(0) == 0
+}
+
+// Additional tests
+
+test "single digit" {
+  expect countDigitOne(1) == 1
+}
+
+test "two digits" {
+  expect countDigitOne(20) == 12
+}
+
+test "hundreds" {
+  expect countDigitOne(111) == 36
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Mixing mutable and immutable variables:
+     let i = 0
+     i = i + 1       // ❌ cannot reassign 'let' binding
+   Fix: use 'var i = 0' when the variable will change.
+2. Using '=' for comparison:
+     if current = 1 { }
+   Fix: use '==' to compare values.
+3. Assuming negative indices work like Python:
+     digits[-1]      // ❌ invalid index
+   Use len(digits)-1 for the last element instead.
+*/
