@@ -57,7 +57,7 @@ test "example 1" {
 }
 
 test "example 2" {
-  expect toList(flatten(Leaf)) == []
+  expect toList(flatten(Leaf {})) == []
 }
 
 test "single node" {
