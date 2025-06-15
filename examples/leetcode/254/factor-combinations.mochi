@@ -1,0 +1,48 @@
+// Solution for LeetCode problem 254 - Factor Combinations
+
+fun getFactors(n: int): list<list<int>> {
+  if n <= 3 {
+    return []
+  }
+  var result: list<list<int>> = []
+
+  fun dfs(start: int, num: int, path: list<int>) {
+    var i = start
+    while i * i <= num {
+      if num % i == 0 {
+        let next = num / i
+        result = result + [path + [i, next]]
+        dfs(i, next, path + [i])
+      }
+      i = i + 1
+    }
+  }
+
+  dfs(2, n, [])
+  return result
+}
+
+// Test cases
+
+test "example 1" {
+  expect getFactors(12) == [[2,6], [2,2,3], [3,4]]
+}
+
+test "example 2" {
+  expect getFactors(15) == [[3,5]]
+}
+
+test "prime" {
+  expect getFactors(37) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using Python style `append` on lists:
+     result.append(x)  // ❌ method not found
+   Use list concatenation instead:
+     result = result + [x]
+2. Forgetting to declare variables with `var` when you want to mutate them.
+   A `let` binding is immutable and cannot be reassigned.
+3. Missing return for all code paths in a function will cause a compile error.
+*/
