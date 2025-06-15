@@ -1,0 +1,57 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func verifyPreorder(preorder []int) bool {
+	var stack []int = []int{}
+	_ = stack
+	var lower int = -2147483648
+	_ = lower
+	for _, value := range preorder {
+		if (value < lower) {
+			return false
+		}
+		for (len(stack) > 0) {
+			var top int = stack[(len(stack) - 1)]
+			if (value > top) {
+				lower = top
+				stack = stack[0:(len(stack) - 1)]
+			} else {
+				break
+			}
+		}
+		stack = append(append([]int{}, stack...), []int{value}...)
+	}
+	return true
+}
+
+func example_1() {
+	expect((verifyPreorder([]int{5, 2, 1, 3, 6}) == true))
+}
+
+func example_2() {
+	expect((verifyPreorder([]int{5, 2, 6, 1, 3}) == false))
+}
+
+func single_node() {
+	expect((verifyPreorder([]int{1}) == true))
+}
+
+func empty_list() {
+	expect((verifyPreorder([]int{}) == true))
+}
+
+func strictly_increasing() {
+	expect((verifyPreorder([]int{1, 2, 3, 4, 5}) == true))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_node()
+	empty_list()
+	strictly_increasing()
+}
+
