@@ -108,6 +108,7 @@ type CheatsheetCmd struct{}
 var (
 	cError = color.New(color.FgRed, color.Bold).SprintFunc()
 	cTitle = color.New(color.FgCyan, color.Bold).SprintFunc()
+	cFile  = color.New(color.FgHiBlue, color.Bold).SprintFunc()
 )
 
 func main() {
@@ -286,6 +287,12 @@ func runTestsInDir(dir string, recursive bool, cmd *TestCmd) error {
 }
 
 func testFile(file string, cmd *TestCmd) error {
+	rel := file
+	if r, err := filepath.Rel(".", file); err == nil {
+		rel = r
+	}
+	fmt.Println(cFile(rel))
+
 	prog, err := parseOrPrintError(file)
 	if err != nil {
 		return err
