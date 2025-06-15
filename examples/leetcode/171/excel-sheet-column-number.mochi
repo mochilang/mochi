@@ -1,0 +1,46 @@
+// Solution for LeetCode problem 171 - Excel Sheet Column Number
+
+fun titleToNumber(columnTitle: string): int {
+  let values = {
+    "A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7,
+    "H": 8, "I": 9, "J": 10, "K": 11, "L": 12, "M": 13,
+    "N": 14, "O": 15, "P": 16, "Q": 17, "R": 18, "S": 19,
+    "T": 20, "U": 21, "V": 22, "W": 23, "X": 24, "Y": 25,
+    "Z": 26,
+  }
+  var result = 0
+  for ch in columnTitle {
+    result = result * 26 + values[ch]
+  }
+  return result
+}
+
+// Example tests from the LeetCode problem statement
+
+test "example 1" {
+  expect titleToNumber("A") == 1
+}
+
+test "example 2" {
+  expect titleToNumber("AB") == 28
+}
+
+test "example 3" {
+  expect titleToNumber("ZY") == 701
+}
+
+// Additional edge cases
+
+test "single Z" {
+  expect titleToNumber("Z") == 26
+}
+
+test "large input" {
+  expect titleToNumber("FXSHRXW") == 2147483647
+}
+
+// Common Mochi language errors and how to fix them:
+// 1. Reassigning an immutable value. Use 'var' for the accumulating 'result'.
+// 2. Attempting Python's 'ord' to convert letters. Build a map instead.
+// 3. Off-by-one mistakes when iterating over the string. 'for ch in s' covers all characters.
+// 4. Using pattern matching or union types for simple branches; plain 'if' statements are enough.
