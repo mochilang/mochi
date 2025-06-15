@@ -63,7 +63,7 @@ test "example 2" {
 }
 
 test "empty" {
-  expect buildTree([], []) == Leaf {}
+  expect buildTree([], []) == Leaf
 }
 
 /*

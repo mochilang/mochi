@@ -69,7 +69,7 @@ test "single node" {
 
 test "empty" {
   let tree = buildTree([], [])
-  expect tree == Leaf {}
+  expect tree == Leaf
 }
 
 /*
