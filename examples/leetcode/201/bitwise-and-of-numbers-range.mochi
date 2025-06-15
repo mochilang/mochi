@@ -1,0 +1,59 @@
+// LeetCode 201 - Bitwise AND of Numbers Range
+// Compute the bitwise AND of all numbers in the inclusive range [left, right].
+//
+// This solution uses bit shifts until the two values become equal.
+// It avoids `match` and union types entirely.
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' for comparison.
+//    if left = right { }      // ❌ assignment
+//    if left == right { }     // ✅ comparison
+// 2. Forgetting to declare mutable variables with `var`.
+//    let x = 0
+//    x = 1                   // ❌ cannot assign to immutable binding
+//    var x = 0
+//    x = 1                   // ✅
+// 3. Mochi currently lacks '<<' and '>>' operators.
+//    Attempting to use them causes a parse error.
+//    r = r >> 1               // ❌ parse error
+//    Use arithmetic like r / 2 or bit tricks instead.
+
+fun rangeBitwiseAnd(left: int, right: int): int {
+  var l = left
+  var r = right
+  var shift = 0
+  while l < r {
+    l = l / 2
+    r = r / 2
+    shift = shift + 1
+  }
+  var factor = 1
+  for _ in 0..shift {
+    factor = factor * 2
+  }
+  return l * factor
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect rangeBitwiseAnd(5, 7) == 4
+}
+
+test "example 2" {
+  expect rangeBitwiseAnd(0, 0) == 0
+}
+
+test "example 3" {
+  expect rangeBitwiseAnd(1, 2147483647) == 0
+}
+
+// Additional edge cases
+
+test "single number" {
+  expect rangeBitwiseAnd(13, 13) == 13
+}
+
+test "power of two" {
+  expect rangeBitwiseAnd(8, 15) == 8
+}
