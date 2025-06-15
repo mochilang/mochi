@@ -1,0 +1,77 @@
+// Solution for LeetCode problem 285 - Inorder Successor in BST
+//
+// We avoid union types and pattern matching by representing each
+// tree node as a record with integer indexes for its children.
+// An index of -1 means there is no child.
+
+type Node {
+  val: int
+  left: int
+  right: int
+}
+
+// Return the index of the inorder successor of node `p`.
+// If `p` has no successor in the BST, return -1.
+fun inorderSuccessor(tree: list<Node>, root: int, p: int): int {
+  let pNode = tree[p]
+  let targetVal = pNode.val
+  var current = root
+  var successor = -1
+  while current != (-1) {
+    let node = tree[current]
+    if targetVal < node.val {
+      successor = current
+      current = node.left
+    } else {
+      current = node.right
+    }
+  }
+  return successor
+}
+
+// Example BST used in tests:
+//        5
+//       / \
+//      3   6
+//     / \
+//    2   4
+//   /
+//  1
+let example: list<Node> = [
+  Node { val: 5, left: 1, right: 2 }, // 0
+  Node { val: 3, left: 3, right: 4 }, // 1
+  Node { val: 6, left: -1, right: -1 }, // 2
+  Node { val: 2, left: 5, right: -1 }, // 3
+  Node { val: 4, left: -1, right: -1 }, // 4
+  Node { val: 1, left: -1, right: -1 }  // 5
+]
+
+// Test cases mirroring common scenarios from LeetCode
+
+test "successor in middle" {
+  // Node 3 (index 1) -> successor is node 4 (index 4)
+  expect inorderSuccessor(example, 0, 1) == 4
+}
+
+test "no successor" {
+  // Node 6 has no successor
+  expect inorderSuccessor(example, 0, 2) == (-1)
+}
+
+test "left subtree" {
+  // Node 2 (index 3) -> successor is node 3 (index 1)
+  expect inorderSuccessor(example, 0, 3) == 1
+}
+
+test "single node" {
+  let tree = [Node { val: 1, left: -1, right: -1 }]
+  expect inorderSuccessor(tree, 0, 0) == (-1)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+2. Reassigning an immutable variable declared with 'let'. Use 'var' when mutation is needed.
+3. Creating an empty list without specifying its element type.
+4. Accessing child indexes that are -1 without checking first.
+*/
