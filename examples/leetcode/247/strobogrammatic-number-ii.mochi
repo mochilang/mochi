@@ -1,0 +1,58 @@
+// LeetCode 247 - Strobogrammatic Number II
+
+fun findStrobogrammatic(n: int): list<string> {
+  fun build(len: int, total: int): list<string> {
+    if len == 0 {
+      return [""]
+    }
+    if len == 1 {
+      return ["0", "1", "8"]
+    }
+    let mids = build(len - 2, total)
+    var result: list<string> = []
+    for s in mids {
+      if len != total {
+        result = result + ["0" + s + "0"]
+      }
+      result = result + ["1" + s + "1"]
+      result = result + ["6" + s + "9"]
+      result = result + ["8" + s + "8"]
+      result = result + ["9" + s + "6"]
+    }
+    return result
+  }
+
+  return build(n, n)
+}
+
+// Test cases from LeetCode
+
+test "n = 1" {
+  expect findStrobogrammatic(1) == ["0", "1", "8"]
+}
+
+test "n = 2" {
+  expect findStrobogrammatic(2) == ["11", "69", "88", "96"]
+}
+
+test "n = 3" {
+  expect findStrobogrammatic(3) == [
+    "101", "609", "808", "906",
+    "111", "619", "818", "916",
+    "181", "689", "888", "986"
+  ]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Missing return type for a function:
+     fun build(n) { ... }
+   Always specify parameter types and the return type, e.g. `fun build(n: int): list<string>`.
+2. Reassigning a constant `let` value:
+     let res = []
+     res = res + ["0"]  // error
+   Declare with `var` when mutation is required.
+3. Using Python-style for loops:
+     for i in range(n) { }
+   Mochi uses `0..n` ranges or `while` loops instead.
+*/
