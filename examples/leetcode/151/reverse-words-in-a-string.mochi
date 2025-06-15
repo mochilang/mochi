@@ -1,0 +1,71 @@
+// Solution for LeetCode problem 151 - Reverse Words in a String
+
+fun reverseWords(s: string): string {
+  // Collect words from the end of the string
+  var i = len(s) - 1
+  var words: list<string> = []
+  while i >= 0 {
+    // Skip trailing spaces
+    while i >= 0 && s[i] == " " {
+      i = i - 1
+    }
+    if i < 0 {
+      break
+    }
+    var j = i
+    while j >= 0 && s[j] != " " {
+      j = j - 1
+    }
+    // Add the word slice [j+1:i+1]
+    words = words + [s[j+1:i+1]]
+    i = j
+  }
+
+  // Join the collected words with a single space
+  var result = ""
+  var k = 0
+  while k < len(words) {
+    if k > 0 {
+      result = result + " "
+    }
+    result = result + words[k]
+    k = k + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect reverseWords("the sky is blue") == "blue is sky the"
+}
+
+test "example 2" {
+  expect reverseWords("  hello world  ") == "world hello"
+}
+
+test "example 3" {
+  expect reverseWords("a good   example") == "example good a"
+}
+
+// Additional edge cases
+
+test "single word" {
+  expect reverseWords("hello") == "hello"
+}
+
+test "only spaces" {
+  expect reverseWords("    ") == ""
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare mutable variables with `var`.
+   i = i - 1          // ❌ if `i` was declared with `let`
+2. Using Python-style negative indices.
+   s[-1]              // ❌ not allowed
+   // Fix: track the index manually and check bounds.
+3. Trying to mutate an immutable slice.
+   words.append(w)    // ❌ Mochi lists are immutable
+   // Fix: use `words = words + [w]` to add an element.
+*/
