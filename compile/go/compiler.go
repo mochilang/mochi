@@ -29,6 +29,8 @@ type Compiler struct {
 	goModules     map[string]string
 	tsModules     map[string]string
 	externObjects map[string]bool
+
+	tempVarCount int
 }
 
 // New creates a new Go compiler instance.
@@ -45,6 +47,7 @@ func New(env *types.Env) *Compiler {
 		goModules:     map[string]string{},
 		tsModules:     map[string]string{},
 		externObjects: map[string]bool{},
+		tempVarCount:  0,
 	}
 }
 
@@ -242,6 +245,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.ExternObject != nil:
 		c.externObjects[s.ExternObject.Name] = true
 		return nil
+	case s.Fun != nil:
+		return c.compileFunStmt(s.Fun)
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil:
 		return nil
 	case s.Expect != nil:
@@ -820,6 +825,22 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			}
 		}
 	}
+	// Fallback to declared parameter and return types when type checker
+	// hasn't populated the env (e.g. for nested functions).
+	if ft.Params == nil {
+		ft.Params = make([]types.Type, len(fun.Params))
+		for i, p := range fun.Params {
+			if p.Type != nil {
+				ft.Params[i] = resolveTypeRef(p.Type)
+			}
+		}
+	}
+	if ft.Return == nil && fun.Return != nil {
+		ft.Return = resolveTypeRef(fun.Return)
+	}
+	if c.env != nil {
+		c.env.SetVar(fun.Name, ft, false)
+	}
 	c.writeIndent()
 	c.buf.WriteString("func " + name + "(")
 	for i, p := range fun.Params {
@@ -923,6 +944,46 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			}
 			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
 			next = types.BoolType{}
+		case "&&", "||":
+			if !(isBool(leftType) && isBool(rightType)) {
+				return "", fmt.Errorf("operator %q cannot be used on types %s and %s", op.Op, leftType, rightType)
+			}
+			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+			next = types.BoolType{}
+		case "in":
+			switch rt := rightType.(type) {
+			case types.MapType:
+				_ = rt
+				keyTemp := c.newVar()
+				mapTemp := c.newVar()
+				c.writeln(fmt.Sprintf("%s := %s", keyTemp, expr))
+				c.writeln(fmt.Sprintf("%s := %s", mapTemp, right))
+				okVar := c.newVar()
+				c.writeln(fmt.Sprintf("_, %s := %s[%s]", okVar, mapTemp, keyTemp))
+				expr = okVar
+				next = types.BoolType{}
+			case types.ListType:
+				itemVar := c.newVar()
+				listVar := c.newVar()
+				c.writeln(fmt.Sprintf("%s := %s", itemVar, expr))
+				c.writeln(fmt.Sprintf("%s := %s", listVar, right))
+				resultVar := c.newVar()
+				c.writeln(fmt.Sprintf("%s := false", resultVar))
+				iterVar := c.newVar()
+				c.writeln(fmt.Sprintf("for _, %s := range %s {", iterVar, listVar))
+				c.indent++
+				c.writeln(fmt.Sprintf("if %s == %s { %s = true; break }", iterVar, itemVar, resultVar))
+				c.indent--
+				c.writeln("}")
+				expr = resultVar
+				next = types.BoolType{}
+			case types.StringType:
+				c.imports["strings"] = true
+				expr = fmt.Sprintf("strings.Contains(%s, %s)", right, expr)
+				next = types.BoolType{}
+			default:
+				return "", fmt.Errorf("operator %q cannot be used on types %s and %s", op.Op, leftType, rightType)
+			}
 		default:
 			return "", fmt.Errorf("unsupported operator: %s", op.Op)
 		}

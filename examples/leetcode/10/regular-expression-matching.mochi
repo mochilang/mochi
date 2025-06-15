@@ -13,7 +13,7 @@ fun isMatch(s: string, p: string): bool {
     }
     var first = false
     if i < m {
-      if p[j] == s[i] || p[j] == "." {
+      if (p[j] == s[i]) || (p[j] == ".") {
         first = true
       }
     }
