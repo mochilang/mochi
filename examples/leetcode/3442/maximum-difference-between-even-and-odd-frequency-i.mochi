@@ -1,12 +1,19 @@
 fun maxDiffEvenOdd(s: string): int {
-  let counts = from ch in s
+  // Build a list of characters because query sources must be lists.
+  var letters: list<string> = []
+  var i = 0
+  while i < len(s) {
+    letters = letters + [s[i]]
+    i = i + 1
+  }
+  let counts = from ch in letters
                group by ch into g
                select {
                  ch: g.key,
                  freq: count(g)
                }
   var maxOdd = -1
-  var minEven = 1_000_000
+  var minEven = 1000000
   for item in counts {
     if item.freq % 2 == 1 {
       if item.freq > maxOdd {
