@@ -1,0 +1,73 @@
+// Solution for LeetCode problem 161 - One Edit Distance
+// Returns true if strings s and t are exactly one edit apart.
+// Allowed edits are insert a char, delete a char, or replace a char.
+
+fun isOneEditDistance(s: string, t: string): bool {
+  let m = len(s)
+  let n = len(t)
+
+  if m > n {
+    // ensure s is the shorter string
+    return isOneEditDistance(t, s)
+  }
+
+  if n - m > 1 {
+    return false
+  }
+
+  var i = 0
+  while i < m {
+    if s[i] != t[i] {
+      // first difference found
+      if m == n {
+        // check replace scenario
+        return s[i+1:m] == t[i+1:n]
+      }
+      // check insert into s scenario
+      return s[i:m] == t[i+1:n]
+    }
+    i = i + 1
+  }
+
+  // all previous chars equal; only valid if t has one extra char
+  return n - m == 1
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isOneEditDistance("ab", "acb") == true
+}
+
+test "example 2" {
+  expect isOneEditDistance("cab", "ad") == false
+}
+
+test "example 3" {
+  expect isOneEditDistance("1203", "1213") == true
+}
+
+// Additional edge cases
+
+test "identical" {
+  expect isOneEditDistance("a", "a") == false
+}
+
+test "insert at end" {
+  expect isOneEditDistance("abc", "abcc") == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing strings or numbers.
+   if s[i] = t[i] { }    // ❌ assignment, not comparison
+   if s[i] == t[i] { }   // ✅ use '==' for equality
+2. Attempting to reassign a value declared with 'let'.
+   let m = len(s)
+   m = m + 1              // ❌ cannot assign to immutable variable
+   var count = len(s)
+   count = count + 1      // ✅ use 'var' when mutation is required
+3. Using unsupported increment syntax.
+   i++                    // ❌ not valid in Mochi
+   i = i + 1              // ✅ explicit addition
+*/
