@@ -52,6 +52,8 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 			t = types.AnyType{}
 		case "==", "!=", "<", "<=", ">", ">=":
 			t = types.BoolType{}
+		case "&&", "||":
+			t = types.BoolType{}
 		default:
 			t = types.AnyType{}
 		}

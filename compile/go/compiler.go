@@ -923,6 +923,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			}
 			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
 			next = types.BoolType{}
+		case "&&", "||":
+			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+			next = types.BoolType{}
 		default:
 			return "", fmt.Errorf("unsupported operator: %s", op.Op)
 		}
@@ -1814,34 +1817,121 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		return "", err
 	}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: m}}}}}
-	retType := goType(c.inferExprType(expr))
+	rType := c.inferExprType(expr)
+	if _, ok := rType.(types.AnyType); ok {
+		for idx, cs := range m.Cases {
+			env := c.env
+			if call, ok := callPattern(cs.Pattern); ok {
+				if st, ok := c.env.GetStruct(call.Func); ok {
+					env = types.NewEnv(c.env)
+					for i, arg := range call.Args {
+						if name, ok := identName(arg); ok {
+							env.SetVar(name, st.Fields[st.Order[i]], true)
+						}
+					}
+				}
+			}
+			old := c.env
+			c.env = env
+			t := c.inferExprType(cs.Result)
+			c.env = old
+			if idx == 0 {
+				rType = t
+			} else if !equalTypes(rType, t) {
+				rType = types.AnyType{}
+				break
+			}
+		}
+	}
+	retType := goType(rType)
 	if retType == "" {
 		retType = "any"
 	}
+
 	var buf bytes.Buffer
 	buf.WriteString("func() " + retType + " {\n")
 	buf.WriteString("\t_t := " + target + "\n")
-	buf.WriteString("\tswitch _t {\n")
+
+	first := true
 	for _, cse := range m.Cases {
 		if isUnderscoreExpr(cse.Pattern) {
-			buf.WriteString("\tdefault:\n")
-		} else {
-			pat, err := c.compileExpr(cse.Pattern)
+			if first {
+				buf.WriteString("\t{\n")
+			} else {
+				buf.WriteString("\t} else {\n")
+			}
+			res, err := c.compileExpr(cse.Result)
 			if err != nil {
 				return "", err
 			}
-			buf.WriteString("\tcase " + pat + ":\n")
+			buf.WriteString("\t\treturn " + res + "\n")
+			first = false
+			continue
+		}
+
+		if call, ok := callPattern(cse.Pattern); ok {
+			if st, ok := c.env.GetStruct(call.Func); ok {
+				if first {
+					buf.WriteString("\tif v, ok := _t.(" + sanitizeName(call.Func) + "); ok {\n")
+				} else {
+					buf.WriteString("\t} else if v, ok := _t.(" + sanitizeName(call.Func) + "); ok {\n")
+				}
+				child := types.NewEnv(c.env)
+				old := c.env
+				c.env = child
+				for idx, arg := range call.Args {
+					if name, ok := identName(arg); ok {
+						field := exportName(sanitizeName(st.Order[idx]))
+						buf.WriteString("\t\t" + sanitizeName(name) + " := v." + field + "\n")
+						child.SetVar(name, st.Fields[st.Order[idx]], true)
+					}
+				}
+				res, err := c.compileExpr(cse.Result)
+				c.env = old
+				if err != nil {
+					return "", err
+				}
+				buf.WriteString("\t\treturn " + res + "\n")
+				first = false
+				continue
+			}
+		}
+
+		if ident, ok := identName(cse.Pattern); ok {
+			if first {
+				buf.WriteString("\tif _, ok := _t.(" + sanitizeName(ident) + "); ok {\n")
+			} else {
+				buf.WriteString("\t} else if _, ok := _t.(" + sanitizeName(ident) + "); ok {\n")
+			}
+			res, err := c.compileExpr(cse.Result)
+			if err != nil {
+				return "", err
+			}
+			buf.WriteString("\t\treturn " + res + "\n")
+			first = false
+			continue
+		}
+
+		pat, err := c.compileExpr(cse.Pattern)
+		if err != nil {
+			return "", err
+		}
+		if first {
+			buf.WriteString("\tif _t == " + pat + " {\n")
+		} else {
+			buf.WriteString("\t} else if _t == " + pat + " {\n")
 		}
 		res, err := c.compileExpr(cse.Result)
 		if err != nil {
 			return "", err
 		}
 		buf.WriteString("\t\treturn " + res + "\n")
+		first = false
 	}
-	buf.WriteString("\t}\n")
-	if retType == "any" {
-		buf.WriteString("\treturn nil\n")
+	if !first {
+		buf.WriteString("\t}\n")
 	}
+	buf.WriteString("\treturn " + zeroValue(retType) + "\n")
 	buf.WriteString("}()")
 	return buf.String(), nil
 }

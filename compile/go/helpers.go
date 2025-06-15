@@ -233,3 +233,18 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+func zeroValue(goType string) string {
+	switch goType {
+	case "int", "int64", "float64":
+		return "0"
+	case "string":
+		return "\"\""
+	case "bool":
+		return "false"
+	case "", "any":
+		return "nil"
+	default:
+		return fmt.Sprintf("%s{}", goType)
+	}
+}
