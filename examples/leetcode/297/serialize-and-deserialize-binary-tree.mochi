@@ -1,0 +1,113 @@
+// LeetCode 297 - Serialize and Deserialize Binary Tree
+// Tree helpers implemented without using union types or pattern matching.
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// Convert the binary tree to a comma separated string using BFS
+fun serialize(root: map<string, any>): string {
+  if isLeaf(root) { return "" }
+  var queue: list<map<string, any>> = [root]
+  var parts: list<string> = []
+  while len(queue) > 0 {
+    let node = queue[0]
+    queue = queue[1:len(queue)]
+    if isLeaf(node) {
+      parts = parts + ["null"]
+    } else {
+      parts = parts + [str(value(node))]
+      queue = queue + [left(node)]
+      queue = queue + [right(node)]
+    }
+  }
+  // remove trailing "null" values
+  var i = len(parts) - 1
+  while i >= 0 && parts[i] == "null" {
+    i = i - 1
+  }
+  parts = parts[0:i+1]
+  return join(parts, ",")
+}
+
+// Reconstruct the tree from a serialized string
+fun deserialize(data: string): map<string, any> {
+  if data == "" { return Leaf() }
+  let vals = split(data, ",")
+  let root = Node(Leaf(), int(vals[0]), Leaf())
+  var queue: list<map<string, any>> = [root]
+  var idx = 1
+  while idx < len(vals) && len(queue) > 0 {
+    var node = queue[0]
+    queue = queue[1:len(queue)]
+    if idx < len(vals) {
+      let v = vals[idx]
+      idx = idx + 1
+      if v != "null" {
+        let leftNode = Node(Leaf(), int(v), Leaf())
+        node["left"] = leftNode
+        queue = queue + [leftNode]
+      }
+    }
+    if idx < len(vals) {
+      let v2 = vals[idx]
+      idx = idx + 1
+      if v2 != "null" {
+        let rightNode = Node(Leaf(), int(v2), Leaf())
+        node["right"] = rightNode
+        queue = queue + [rightNode]
+      }
+    }
+  }
+  return root
+}
+
+// Example tree: [1,2,3,null,null,4,5]
+let example = Node(
+  Node(Leaf(), 2, Leaf()),
+  1,
+  Node(Node(Leaf(), 4, Leaf()), 3, Node(Leaf(), 5, Leaf()))
+)
+
+test "serialize round trip" {
+  let s = serialize(example)
+  let t = deserialize(s)
+  expect serialize(t) == s
+}
+
+test "empty tree" {
+  expect serialize(Leaf()) == ""
+  expect isLeaf(deserialize("")) == true
+}
+
+test "single node" {
+  let s = serialize(Node(Leaf(), 7, Leaf()))
+  expect s == "7"
+  expect serialize(deserialize(s)) == "7"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to call Leaf() when creating empty children:
+     Node(Leaf, 1, Leaf) // ❌ not a function call
+   Use Leaf() instead.
+2. Using '=' instead of '==' when comparing strings:
+     if v = "null" { } // ❌ assignment
+   Use '==' for comparison.
+3. Declaring a variable with 'let' and then reassigning it.
+   Use 'var' for mutable values like queues or indices.
+4. Trying Python-style methods like parts.join(",").
+   Use the built-in join(parts, ",") function.
+*/
