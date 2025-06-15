@@ -105,4 +105,4 @@ The source tree is organized as follows:
 
 Other directories contain supporting assets (`tools/`, `types/`, `ast/`) and release metadata.
 
-The main documentation lives in [`README.md`](../README.md) and [`SPEC.md`](../SPEC.md). Additional notes can be found in `ROADMAP.md` and release files.
+The main documentation lives in [`README.md`](../../README.md) and [`SPEC.md`](../../SPEC.md). Additional notes can be found in `ROADMAP.md` and release files.
