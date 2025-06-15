@@ -1,0 +1,44 @@
+fun findConsecutive(nums: list<int>): list<int> {
+  let n = len(nums)
+  var result: list<int> = []
+  var i = 0
+  while i + 2 < n {
+    if nums[i] == nums[i+1] && nums[i+1] == nums[i+2] {
+      if len(result) == 0 {
+        result = result + [nums[i]]
+      } else if result[len(result)-1] != nums[i] {
+        result = result + [nums[i]]
+      }
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Tests
+
+test "example" {
+  expect str(findConsecutive([1,1,1,2,2,2,3])) == str([1,2])
+}
+
+test "no triples" {
+  expect str(findConsecutive([1,2,3,4])) == str([])
+}
+
+test "long sequence" {
+  expect str(findConsecutive([4,4,4,4,4])) == str([4])
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons.
+   if nums[i] = nums[i+1] { ... }  // ❌ assignment
+   if nums[i] == nums[i+1] { ... } // ✅ comparison
+2. Reassigning a value bound with 'let'.
+   let x = 1
+   x = 2                       // ❌ cannot reassign immutable binding
+   var x = 1                   // ✅ declare with 'var' for mutable values
+3. Off-by-one errors when indexing lists.
+   while i <= n - 3 { ... }    // ❌ may access out-of-range index
+   while i + 2 < n { ... }     // ✅ safe loop condition
+*/
