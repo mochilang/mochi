@@ -1,0 +1,63 @@
+// LeetCode Problem 252: Meeting Rooms
+// Determine if a person can attend all meetings given a list of intervals.
+// The solution sorts the intervals by start time and checks for overlaps.
+
+fun canAttendMeetings(intervals: list<list<int>>): bool {
+  let sorted = from iv in intervals
+               sort by iv[0]
+               select iv
+  var prevEnd = -2147483648
+  for iv in sorted {
+    let start = iv[0]
+    let end = iv[1]
+    if start < prevEnd {
+      return false
+    }
+    prevEnd = end
+  }
+  return true
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect canAttendMeetings([[0,30],[5,10],[15,20]]) == false
+}
+
+test "example 2" {
+  expect canAttendMeetings([[7,10],[2,4]]) == true
+}
+
+// Additional edge cases
+
+test "empty" {
+  expect canAttendMeetings([]) == true
+}
+
+test "single interval" {
+  expect canAttendMeetings([[1,2]]) == true
+}
+
+test "zero length" {
+  expect canAttendMeetings([[1,1],[2,2]]) == true
+}
+
+test "overlap at end" {
+  expect canAttendMeetings([[1,4],[4,5]]) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons.
+   if start = prevEnd { }  // ❌ assignment
+   if start == prevEnd { } // ✅ comparison
+2. Reassigning a 'let' binding when mutation is required.
+   let prev = 0
+   prev = 1              // ❌ cannot assign
+   var prev = 0          // ✅ use 'var' for mutable values
+3. Writing Python-style for loops.
+   for i in range(len(xs)) { }    // ❌ not valid Mochi
+   for i in 0..len(xs) { }        // ✅ correct range syntax
+4. Trying to use union types or 'match'.
+   // This solution avoids them; simple lists work fine here.
+*/
