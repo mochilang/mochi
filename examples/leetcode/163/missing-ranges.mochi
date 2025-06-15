@@ -1,0 +1,54 @@
+// LeetCode 163 - Missing Ranges
+// Given a sorted list of numbers and a lower and upper bound,
+// return the missing ranges between the bounds.
+
+fun formatRange(start: int, end: int): string {
+  if start == end {
+    return str(start)
+  }
+  return str(start) + "->" + str(end)
+}
+
+fun findMissingRanges(nums: list<int>, lower: int, upper: int): list<string> {
+  var result: list<string> = []
+  var prev = lower - 1
+  var i = 0
+  while i <= len(nums) {
+    var curr = 0
+    if i == len(nums) {
+      curr = upper + 1
+    } else {
+      curr = nums[i]
+    }
+    if curr - prev >= 2 {
+      result = result + [formatRange(prev + 1, curr - 1)]
+    }
+    prev = curr
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect findMissingRanges([0,1,3,50,75], 0, 99) == ["2", "4->49", "51->74", "76->99"]
+}
+
+test "example 2" {
+  expect findMissingRanges([], 1, 1) == ["1"]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting the ':' before the return type:
+     fun findMissingRanges(nums: list<int>, lower: int, upper: int) list<string> { }
+   Fix: use ':' before the return type.
+2. Using '=' instead of '==' in comparisons:
+     if curr = prev { }
+   Fix: use '==' for comparison.
+3. Reassigning a 'let' variable:
+     let prev = 0
+     prev = 1  // error
+   Fix: declare mutable variables with 'var'.
+*/
