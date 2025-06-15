@@ -1,0 +1,73 @@
+// Solution for LeetCode problem 213 - House Robber II
+
+// Helper function to solve the linear house robber problem for
+// houses[start..end] inclusive.
+fun robLinear(nums: list<int>, start: int, end: int): int {
+  var prev1 = 0
+  var prev2 = 0
+  var i = start
+  while i <= end {
+    let pick = nums[i] + prev2
+    var curr = pick
+    if prev1 > curr {
+      curr = prev1
+    }
+    prev2 = prev1
+    prev1 = curr
+    i = i + 1
+  }
+  return prev1
+}
+
+fun rob(nums: list<int>): int {
+  let n = len(nums)
+  if n == 0 {
+    return 0
+  }
+  if n == 1 {
+    return nums[0]
+  }
+  let option1 = robLinear(nums, 0, n-2)
+  let option2 = robLinear(nums, 1, n-1)
+  if option1 > option2 {
+    return option1
+  }
+  return option2
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect rob([2,3,2]) == 3
+}
+
+test "example 2" {
+  expect rob([1,2,3,1]) == 4
+}
+
+test "example 3" {
+  expect rob([1,2,3]) == 3
+}
+
+// Additional edge cases
+
+test "single" {
+  expect rob([5]) == 5
+}
+
+test "empty" {
+  expect rob([]) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing numbers:
+     if n = 0 { }  // ❌ assignment
+   Fix: use '==' to compare.
+2. Reassigning a value bound with 'let':
+     let x = 1
+     x = 2         // ❌ cannot reassign
+   Fix: declare mutable variables with 'var'.
+3. Forgetting that ranges and loops are zero-indexed:
+     while i < n { ... }    // ensure indices stay within bounds
+*/
