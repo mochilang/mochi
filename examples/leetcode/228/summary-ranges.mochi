@@ -1,0 +1,63 @@
+// LeetCode 228 - Summary Ranges
+fun summaryRanges(nums: list<int>): list<string> {
+  var result: list<string> = []
+  if len(nums) == 0 {
+    return result
+  }
+  var start = nums[0]
+  var prev = nums[0]
+  var i = 1
+  while i < len(nums) {
+    let n = nums[i]
+    if n == prev + 1 {
+      prev = n
+    } else {
+      if start == prev {
+        result = result + [str(start)]
+      } else {
+        result = result + [str(start) + "->" + str(prev)]
+      }
+      start = n
+      prev = n
+    }
+    i = i + 1
+  }
+  if start == prev {
+    result = result + [str(start)]
+  } else {
+    result = result + [str(start) + "->" + str(prev)]
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect summaryRanges([0,1,2,4,5,7]) == ["0->2", "4->5", "7"]
+}
+
+test "example 2" {
+  expect summaryRanges([0,2,3,4,6,8,9]) == ["0", "2->4", "6", "8->9"]
+}
+
+test "single element" {
+  expect summaryRanges([5]) == ["5"]
+}
+
+test "empty" {
+  expect summaryRanges([]) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting the ':' before the return type:
+     fun summaryRanges(nums: list<int>) list<string> { }
+   Fix: use ':' before the return type.
+2. Using '=' instead of '==' in comparisons:
+     if n = prev { }
+   Fix: use '==' for comparison.
+3. Reassigning an immutable variable declared with 'let':
+     let start = 0
+     start = 1  // error
+   Fix: declare mutable variables with 'var'.
+*/
