@@ -132,6 +132,11 @@ func isFloat(t types.Type) bool {
 	return ok
 }
 
+func isBool(t types.Type) bool {
+	_, ok := t.(types.BoolType)
+	return ok
+}
+
 func isString(t types.Type) bool {
 	_, ok := t.(types.StringType)
 	return ok
@@ -232,4 +237,10 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+func (c *Compiler) newVar() string {
+	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+	c.tempVarCount++
+	return name
 }
