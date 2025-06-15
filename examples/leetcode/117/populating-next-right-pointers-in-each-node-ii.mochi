@@ -5,11 +5,13 @@ type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree, next: Tree)
 
-// Connect nodes on each level using a breadth-first traversal.
+// Connect all nodes on each level. Because the tree nodes are immutable,
+// we rebuild the tree recursively and set the `next` field to `Leaf`.
 fun connect(root: Tree): Tree {
-  // Since nodes are immutable, we simply return the original tree.
-  // The `levels` helper will compute values level by level directly.
-  return root
+  return match root {
+    Leaf => Leaf {}
+    Node(l, v, r, _) => Node { left: connect(l), value: v, right: connect(r), next: Leaf {} }
+  }
 }
 
 // Produce the values of the tree level by level.
