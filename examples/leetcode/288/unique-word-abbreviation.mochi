@@ -1,0 +1,98 @@
+// Solution for LeetCode problem 288 - Unique Word Abbreviation
+//
+// We build a map from abbreviations to a representative word.
+// If more than one distinct word shares the same abbreviation,
+// we store an empty string to mark it as non-unique. This avoids
+// union types or pattern matching.
+
+fun abbreviate(word: string): string {
+  let n = len(word)
+  if n <= 2 {
+    return word
+  }
+  return word[0] + str(n - 2) + word[n - 1]
+}
+
+type ValidWordAbbr {
+  abbrs: map<string, string>
+}
+
+fun newValidWordAbbr(dictionary: list<string>): ValidWordAbbr {
+  var m: map<string, string> = {}
+  for w in dictionary {
+    let ab = abbreviate(w)
+    if ab in m {
+      if m[ab] != w {
+        m[ab] = ""
+      }
+    } else {
+      m[ab] = w
+    }
+  }
+  return ValidWordAbbr { abbrs: m }
+}
+
+fun isUnique(v: ValidWordAbbr, word: string): bool {
+  let ab = abbreviate(word)
+  if !(ab in v.abbrs) {
+    return true
+  }
+  let rep = v.abbrs[ab]
+  if rep == word {
+    return true
+  }
+  if rep == "" {
+    return false
+  }
+  return false
+}
+
+// Test cases from the LeetCode description
+
+test "example 1" {
+  let v = newValidWordAbbr(["deer","door","cake","card"])
+  expect isUnique(v, "dear") == false
+}
+
+test "example 2" {
+  let v = newValidWordAbbr(["deer","door","cake","card"])
+  expect isUnique(v, "cart") == true
+}
+
+test "example 3" {
+  let v = newValidWordAbbr(["deer","door","cake","card"])
+  expect isUnique(v, "cane") == false
+}
+
+test "example 4" {
+  let v = newValidWordAbbr(["deer","door","cake","card"])
+  expect isUnique(v, "make") == true
+}
+
+// Additional edge cases
+
+test "duplicates" {
+  let v = newValidWordAbbr(["deer","deer"])
+  expect isUnique(v, "deer") == true
+}
+
+test "short words" {
+  let v = newValidWordAbbr(["it","in"])
+  expect isUnique(v, "on") == true
+  expect isUnique(v, "it") == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+   if ab = "d2r" { }    // ❌ assignment
+   if ab == "d2r" { }   // ✅ comparison
+2. Reassigning an immutable variable declared with 'let':
+   let count = 0
+   count = count + 1      // ❌ cannot assign
+   var count = 0
+   count = count + 1      // ✅ use 'var' for mutable values
+3. Accessing a map key without checking existence:
+   let val = m[key]       // ❌ error if key not present
+   if key in m { val = m[key] } // ✅ check first
+*/
