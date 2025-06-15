@@ -1,0 +1,99 @@
+// Solution for LeetCode problem 290 - Word Pattern
+//
+// Given a pattern and a string s, return true if s follows the same pattern.
+// A string follows a pattern if there is a bijection between letters in the
+// pattern and words in the string. This implementation avoids union types and
+// pattern matching.
+
+fun splitWords(s: string): list<string> {
+  var i = 0
+  var words: list<string> = []
+  var current = ""
+  while i < len(s) {
+    let c = s[i]
+    if c == " " {
+      if len(current) > 0 {
+        words = words + [current]
+        current = ""
+      }
+    } else {
+      current = current + c
+    }
+    i = i + 1
+  }
+  if len(current) > 0 {
+    words = words + [current]
+  }
+  return words
+}
+
+fun wordPattern(pattern: string, s: string): bool {
+  let words = splitWords(s)
+  if len(words) != len(pattern) { return false }
+
+  var p2w: map<string, string> = {}
+  var w2p: map<string, string> = {}
+  var i = 0
+  while i < len(pattern) {
+    let pch = pattern[i]
+    let word = words[i]
+
+    if pch in p2w {
+      if p2w[pch] != word { return false }
+    } else {
+      p2w[pch] = word
+    }
+
+    if word in w2p {
+      if w2p[word] != pch { return false }
+    } else {
+      w2p[word] = pch
+    }
+
+    i = i + 1
+  }
+  return true
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect wordPattern("abba", "dog cat cat dog") == true
+}
+
+test "example 2" {
+  expect wordPattern("abba", "dog cat cat fish") == false
+}
+
+test "example 3" {
+  expect wordPattern("aaaa", "dog cat cat dog") == false
+}
+
+test "example 4" {
+  expect wordPattern("abba", "dog dog dog dog") == false
+}
+
+// Additional edge cases
+
+test "single word" {
+  expect wordPattern("a", "dog") == true
+}
+
+test "mismatch lengths" {
+  expect wordPattern("ab", "one") == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons:
+   if pch = "a" { }  // ❌ assignment
+   if pch == "a" { } // ✅ comparison
+2. Reassigning an immutable variable declared with 'let':
+   let words = []
+   words = ["a"]           // ❌ cannot assign
+   var words: list<string> = []
+   words = ["a"]           // ✅ use 'var' for mutation
+3. Forgetting to specify a type for an empty map:
+   var m = {}                     // ❌ type cannot be inferred
+   var m: map<string, int> = {}   // ✅ specify key and value types
+*/
