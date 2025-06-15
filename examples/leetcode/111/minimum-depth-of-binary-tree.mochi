@@ -8,23 +8,27 @@ type Tree =
 // Recursively compute the minimal number of nodes from the root to
 // the nearest leaf.
 fun minDepth(root: Tree): int {
-  match root {
-    Leaf => 0
-    Node(l, _, r) => {
-      let leftDepth = minDepth(l)
-      let rightDepth = minDepth(r)
-      if leftDepth == 0 && rightDepth == 0 {
-        1
-      } else if leftDepth == 0 {
-        rightDepth + 1
-      } else if rightDepth == 0 {
-        leftDepth + 1
-      } else if leftDepth < rightDepth {
-        leftDepth + 1
-      } else {
-        rightDepth + 1
-      }
+  fun helper(left: Tree, right: Tree): int {
+    let leftDepth = minDepth(left)
+    let rightDepth = minDepth(right)
+    if leftDepth == 0 && rightDepth == 0 {
+      return 1
     }
+    if leftDepth == 0 {
+      return rightDepth + 1
+    }
+    if rightDepth == 0 {
+      return leftDepth + 1
+    }
+    if leftDepth < rightDepth {
+      return leftDepth + 1
+    }
+    return rightDepth + 1
+  }
+
+  return match root {
+    Leaf => 0
+    Node(l, _, r) => helper(l, r)
   }
 }
 
@@ -74,10 +78,15 @@ Common Mochi language errors and how to fix them:
    // Construct an empty tree with 'Leaf {}'.
 4. Forgetting braces when creating a Leaf instance:
      let t = Leaf   // error[T008]
-   // The correct form is 'Leaf {}'.
+  // The correct form is 'Leaf {}'.
 5. Missing a branch when matching on an enum:
      fun f(t: Tree): int {
        match t { Node(_, v, _) => v }  // error[T007]
      }
    // Provide a case for 'Leaf' as well to return a value.
+6. Forgetting to use 'return' inside branches:
+     fun foo(x: int): int {
+       if x > 0 { 1 }  // error: returns null
+     }
+   // Use 'return 1' so the function returns an int.
 */
