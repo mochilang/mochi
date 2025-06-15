@@ -1,41 +1,45 @@
 // LeetCode 110 - Balanced Binary Tree
 
-// Basic binary tree definition used in many examples.
+// Definition for a binary tree node used across the examples.
 type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree)
 
-// Helper struct returned by the recursive check function.
+// Helper struct returned from the recursive check function.
 type Info {
   height: int
   balanced: bool
 }
 
-// Determine if the tree is height-balanced. A tree is balanced if the depths
-// of the left and right subtrees of every node never differ by more than one.
-fun isBalanced(root: Tree): bool {
-  fun check(t: Tree): Info {
-    match t {
-      Leaf => Info { height: 0, balanced: true }
-      Node(l, _, r) => {
-        let left = check(l)
-        let right = check(r)
-        let diff = if left.height > right.height {
-          left.height - right.height
-        } else {
-          right.height - left.height
-        }
-        let h = if left.height > right.height { left.height } else { right.height }
-        Info {
-          height: h + 1,
-          balanced: left.balanced && right.balanced && diff <= 1
-        }
-      }
-    }
-  }
+// Determine if the tree is height-balanced.  A tree is balanced if
+// the depths of the left and right subtrees of every node never
+// differ by more than one.
+fun max(a: int, b: int): int {
+  if a > b { return a } else { return b }
+}
 
-  let info = check(root)
-  info.balanced
+fun abs(x: int): int {
+  if x < 0 { return -x } else { return x }
+}
+
+fun height(t: Tree): int {
+  return match t {
+    Leaf => 0
+    Node(l, _, r) => max(height(l), height(r)) + 1
+  }
+}
+
+fun balanced(t: Tree): bool {
+  return match t {
+    Leaf => true
+    Node(l, _, r) =>
+      balanced(l) && balanced(r) &&
+      abs(height(l) - height(r)) <= 1
+  }
+}
+
+fun isBalanced(root: Tree): bool {
+  return balanced(root)
 }
 
 // Test cases from the LeetCode problem statement
@@ -80,23 +84,22 @@ test "empty" {
 
 /*
 Common Mochi language errors and how to fix them:
-1. Confusing '=' with '==' in a condition:
+1. Using '=' instead of '==' in a condition:
      if diff = 1 { }
-   // Use '==' for comparisons.
-2. Reassigning a constant bound with 'let':
+   // Use '==' when comparing values.
+2. Reassigning a value bound with 'let':
      let h = 0
      h = 1        // error[E004]
-   // Declare with 'var' when the value must change.
+   // Use 'var' when the value needs to change.
 3. Forgetting the Leaf branch in a match expression:
      match tree {
        Node(l, v, r) => ...
      }
-   // Always provide a case for 'Leaf' to handle empty subtrees.
-4. Calling Python-style methods on lists:
+   // Always provide a case for 'Leaf' to handle empty trees.
+4. Calling methods like Python lists:
      stack.append(x)
    // Instead build a new list: stack = stack + [x].
-5. Omitting braces when constructing Leaf:
+5. Omitting braces when creating Leaf:
      let t = Leaf
-   // The correct syntax is 'Leaf {}'.
+   // The correct form is 'Leaf {}'.
 */
-
