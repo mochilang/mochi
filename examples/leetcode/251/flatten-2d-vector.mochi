@@ -1,0 +1,104 @@
+// Solution for LeetCode problem 251 - Flatten 2D Vector
+
+// Vector2D stores the 2D list along with the current row and column indices.
+type Vector2D {
+  data: list<list<int>>
+  row: int
+  col: int
+}
+
+// Create a new iterator for the given 2D list
+fun newVector2D(v: list<list<int>>): Vector2D {
+  return Vector2D { data: v, row: 0, col: 0 }
+}
+
+// Move the row/col pointers forward until they are positioned
+// at a valid element or at the end of the data.
+fun advance(vec: Vector2D): Vector2D {
+  var r = vec.row
+  var c = vec.col
+  let d = vec.data
+  while r < len(d) {
+    if c >= len(d[r]) {
+      r = r + 1
+      c = 0
+    } else {
+      break
+    }
+  }
+  return Vector2D { data: d, row: r, col: c }
+}
+
+fun hasNext(vec: Vector2D): bool {
+  let v = advance(vec)
+  return v.row < len(v.data)
+}
+
+// Result structure returned by next()
+type NextResult {
+  vec: Vector2D
+  val: int
+}
+
+fun next(vec: Vector2D): NextResult {
+  var v = advance(vec)
+  let value = v.data[v.row][v.col]
+  v = Vector2D { data: v.data, row: v.row, col: v.col + 1 }
+  return NextResult { vec: v, val: value }
+}
+
+// Test cases from LeetCode examples
+
+test "example" {
+  var it = newVector2D([[1,2],[3],[4]])
+  let r1 = next(it)
+  it = r1.vec
+  expect r1.val == 1
+
+  expect hasNext(it) == true
+
+  let r2 = next(it)
+  it = r2.vec
+  expect r2.val == 2
+
+  expect hasNext(it) == true
+
+  let r3 = next(it)
+  it = r3.vec
+  expect r3.val == 3
+
+  expect hasNext(it) == true
+
+  let r4 = next(it)
+  it = r4.vec
+  expect r4.val == 4
+
+  expect hasNext(it) == false
+}
+
+test "empty inner lists" {
+  var it = newVector2D([[], [1], [], [2,3]])
+  expect hasNext(it) == true
+  let r1 = next(it)
+  it = r1.vec
+  expect r1.val == 1
+  let r2 = next(it)
+  it = r2.vec
+  expect r2.val == 2
+  let r3 = next(it)
+  it = r3.vec
+  expect r3.val == 3
+  expect hasNext(it) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+     if hasNext(it) = true { } // ❌ assignment
+     if hasNext(it) == true { } // ✅ comparison
+2. Attempting to mutate struct fields directly:
+     it.row = 1 // ❌ structs are immutable
+     it = Vector2D { data: it.data, row: 1, col: it.col } // ✅ create a new struct
+3. Forgetting that list indices start at 0:
+     it.data[1][1] refers to the second element in both dimensions.
+*/
