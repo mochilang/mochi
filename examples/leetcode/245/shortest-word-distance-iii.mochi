@@ -1,0 +1,63 @@
+fun abs(x: int): int {
+  if x < 0 { return -x } else { return x }
+}
+
+fun shortestWordDistance(words: list<string>, word1: string, word2: string): int {
+  var index1 = (-1)
+  var index2 = (-1)
+  var minDist = len(words)
+  var i = 0
+  while i < len(words) {
+    let w = words[i]
+    if w == word1 {
+      if word1 == word2 {
+        if index1 != (-1) {
+          let d = i - index1
+          if d < minDist {
+            minDist = d
+          }
+        }
+        index1 = i
+      } else {
+        index1 = i
+        if index2 != (-1) {
+          let d = abs(index1 - index2)
+          if d < minDist {
+            minDist = d
+          }
+        }
+      }
+    } else if w == word2 {
+      index2 = i
+      if index1 != (-1) {
+        let d = abs(index1 - index2)
+        if d < minDist {
+          minDist = d
+        }
+      }
+    }
+    i = i + 1
+  }
+  return minDist
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect shortestWordDistance(["practice","makes","perfect","coding","makes"], "makes", "coding") == 1
+}
+
+test "example 2" {
+  expect shortestWordDistance(["practice","makes","perfect","coding","makes"], "makes", "makes") == 3
+}
+
+test "example 3" {
+  expect shortestWordDistance(["a","a","b","b"], "a", "b") == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a `let` variable will fail. Use `var` for mutable values.
+2. Using Python-style `for i in range(n)` loops is invalid. Mochi uses numeric ranges or while loops.
+3. Confusing assignment `=` with comparison `==` in conditions.
+*/
