@@ -1,0 +1,64 @@
+fun wordBreak(s: string, wordDict: list<string>): bool {
+  // Convert list to map for O(1) lookup
+  var dict: map<string,bool> = {}
+  for w in wordDict { dict[w] = true }
+
+  let n = len(s)
+  // dp[i] is true if s[0:i] can be segmented using dict words
+  var dp: list<bool> = []
+  var i = 0
+  while i <= n {
+    dp = dp + [false]
+    i = i + 1
+  }
+  dp[0] = true
+
+  var idx = 1
+  while idx <= n {
+    var j = 0
+    while j < idx {
+      if dp[j] {
+        let part = s[j:idx]
+        if part in dict {
+          dp[idx] = true
+          break
+        }
+      }
+      j = j + 1
+    }
+    idx = idx + 1
+  }
+
+  return dp[n]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect wordBreak("leetcode", ["leet", "code"]) == true
+}
+
+test "example 2" {
+  expect wordBreak("applepenapple", ["apple", "pen"]) == true
+}
+
+test "example 3" {
+  expect wordBreak("catsandog", ["cats", "dog", "sand", "and", "cat"]) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing strings:
+     if part = "foo" { }
+   // Fix: use '==' to compare values.
+2. Reassigning an immutable binding declared with 'let':
+     let n = 1
+     n = n + 1  // error[E004]
+   // Fix: declare with 'var n = 1' if it must change.
+3. Off-by-one mistakes with slices:
+     s[0:i+1]   // includes extra char
+   // Fix: slices exclude the end index, use s[0:i].
+4. Trying to append to a list with '+=' like in Python:
+     dp += [true]  // invalid syntax
+   // Fix: use 'dp = dp + [true]' instead.
+*/
