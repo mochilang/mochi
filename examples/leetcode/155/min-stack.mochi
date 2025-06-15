@@ -1,0 +1,89 @@
+// Solution for LeetCode problem 155 - Min Stack
+
+// MinStack keeps the stack items and the current minimums.
+type MinStack {
+  items: list<int>
+  mins: list<int>
+}
+
+fun newStack(): MinStack {
+  return MinStack { items: [] as list<int>, mins: [] as list<int> }
+}
+
+fun push(s: MinStack, x: int): MinStack {
+  var items = s.items + [x]
+  var mins = s.mins
+  if len(mins) == 0 {
+    mins = [x]
+  } else {
+    let m = mins[len(mins)-1]
+    if x <= m {
+      mins = mins + [x]
+    }
+  }
+  return MinStack { items: items, mins: mins }
+}
+
+fun pop(s: MinStack): MinStack {
+  var items = s.items
+  var mins = s.mins
+  let val = items[len(items)-1]
+  items = items[0:len(items)-1]
+  if val == mins[len(mins)-1] {
+    mins = mins[0:len(mins)-1]
+  }
+  return MinStack { items: items, mins: mins }
+}
+
+fun top(s: MinStack): int {
+  return s.items[len(s.items)-1]
+}
+
+fun getMin(s: MinStack): int {
+  return s.mins[len(s.mins)-1]
+}
+
+// Test cases based on the LeetCode description
+
+test "example" {
+  var s = newStack()
+  s = push(s, -2)
+  s = push(s, 0)
+  s = push(s, -3)
+  expect getMin(s) == (-3)
+  s = pop(s)
+  expect top(s) == 0
+  expect getMin(s) == (-2)
+}
+
+// Additional edge cases
+
+test "single element" {
+  var s = newStack()
+  s = push(s, 4)
+  expect top(s) == 4
+  expect getMin(s) == 4
+}
+
+test "increasing" {
+  var s = newStack()
+  s = push(s, 1)
+  s = push(s, 2)
+  s = push(s, 3)
+  expect getMin(s) == 1
+  s = pop(s)
+  expect getMin(s) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying Python methods like 'stack.append(x)'. Use list concatenation:
+     items = items + [x]
+2. Forgetting to make variables mutable:
+     let mins = [] as list<int>
+     mins = mins + [x]  // ❌ cannot assign
+   Declare with 'var' when mutation is needed.
+3. Attempting to modify struct fields directly:
+     s.items = s.items + [x]  // ❌ immutable field
+   Build a new struct instead, as shown in 'push' and 'pop'.
+*/
