@@ -25,7 +25,7 @@ func build(start int, end int) []Tree {
 		var rightTrees []Tree = build((i + 1), end)
 		for _, l := range leftTrees {
 			for _, r := range rightTrees {
-				result = append(append([]Tree{}, result...), _convSlice[Node,Tree]([]Node{Node{Left: l, Val: i, Right: r}})...)
+				result = append(append([]Tree{}, result...), []Tree{Node{Left: l, Val: i, Right: r}}...)
 			}
 		}
 	}
@@ -49,3 +49,4 @@ func _convSlice[T any, U any](s []T) []U {
     for i, v := range s { out[i] = any(v).(U) }
     return out
 }
+
