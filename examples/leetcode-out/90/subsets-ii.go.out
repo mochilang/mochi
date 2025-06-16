@@ -1,0 +1,74 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func subsetsWithDup(nums []int) [][]int {
+	var arr []any = func() []int {
+	items := []int{}
+	for _, x := range nums {
+		items = append(items, x)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		x := it
+		pairs[idx] = pair{item: it, key: x}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	res := []int{}
+	for _, x := range items {
+		res = append(res, x)
+	}
+	return res
+}()
+	var n int = len(arr)
+	var result []any = []any{}
+	backtrack(0, []any{})
+	return result
+}
+
+func example_1() {
+	expect((subsetsWithDup([]int{1, 2, 2}) == []any{[]any{}, []int{1}, []int{1, 2}, []int{1, 2, 2}, []int{2}, []int{2, 2}}))
+}
+
+func example_2() {
+	expect((subsetsWithDup([]int{0}) == []any{[]any{}, []int{0}}))
+}
+
+func main() {
+	example_1()
+	example_2()
+}
+

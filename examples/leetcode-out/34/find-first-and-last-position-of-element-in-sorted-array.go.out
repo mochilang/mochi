@@ -1,9 +1,5 @@
 package main
 
-import (
-	"reflect"
-)
-
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
@@ -11,13 +7,9 @@ func expect(cond bool) {
 func searchRange(nums []int, target int) []int {
 	var n int = len(nums)
 	var left int = 0
-	_ = left
 	var right int = (n - 1)
-	_ = right
 	var start int = -1
-	_ = start
 	var end int = -1
-	_ = end
 	left = 0
 	right = (n - 1)
 	for (left <= right) {
@@ -51,23 +43,23 @@ func searchRange(nums []int, target int) []int {
 }
 
 func example_1() {
-	expect(_equal(searchRange([]int{5, 7, 7, 8, 8, 10}, 8), []int{3, 4}))
+	expect((searchRange([]int{5, 7, 7, 8, 8, 10}, 8) == []int{3, 4}))
 }
 
 func example_2() {
-	expect(_equal(searchRange([]int{5, 7, 7, 8, 8, 10}, 6), []int{-1, -1}))
+	expect((searchRange([]int{5, 7, 7, 8, 8, 10}, 6) == []int{-1, -1}))
 }
 
 func example_3() {
-	expect(_equal(searchRange([]int{}, 0), []int{-1, -1}))
+	expect((searchRange([]any{}, 0) == []int{-1, -1}))
 }
 
 func single_element_match() {
-	expect(_equal(searchRange([]int{1}, 1), []int{0, 0}))
+	expect((searchRange([]int{1}, 1) == []int{0, 0}))
 }
 
 func single_element_missing() {
-	expect(_equal(searchRange([]int{1}, 0), []int{-1, -1}))
+	expect((searchRange([]int{1}, 0) == []int{-1, -1}))
 }
 
 func main() {
@@ -76,9 +68,5 @@ func main() {
 	example_3()
 	single_element_match()
 	single_element_missing()
-}
-
-func _equal(a, b any) bool {
-    return reflect.DeepEqual(a, b)
 }
 

@@ -6,15 +6,11 @@ func expect(cond bool) {
 
 func robLinear(nums []int, start int, end int) int {
 	var prev1 int = 0
-	_ = prev1
 	var prev2 int = 0
-	_ = prev2
 	var i int = start
-	_ = i
 	for (i <= end) {
 		var pick int = (nums[i] + prev2)
 		var curr int = pick
-		_ = curr
 		if (prev1 > curr) {
 			curr = prev1
 		}
@@ -58,7 +54,7 @@ func single() {
 }
 
 func empty() {
-	expect((rob([]int{}) == 0))
+	expect((rob([]any{}) == 0))
 }
 
 func main() {

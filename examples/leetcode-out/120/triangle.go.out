@@ -10,12 +10,9 @@ func minimumTotal(triangle [][]int) int {
 		return 0
 	}
 	var dp []int = triangle[(n - 1)]
-	_ = dp
 	var i int = (n - 2)
-	_ = i
 	for (i >= 0) {
 		var j int = 0
-		_ = j
 		for (j <= i) {
 			var left int = dp[j]
 			var right int = dp[(j + 1)]

@@ -1,0 +1,75 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func permuteUnique(nums []int) [][]int {
+	var arr []any = func() []int {
+	items := []int{}
+	for _, x := range nums {
+		items = append(items, x)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		x := it
+		pairs[idx] = pair{item: it, key: x}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	res := []int{}
+	for _, x := range items {
+		res = append(res, x)
+	}
+	return res
+}()
+	var n int = len(arr)
+	var result []any = []any{}
+	var used map[any]any = map[any]any{}
+	backtrack([]any{})
+	return result
+}
+
+func example_1() {
+	expect((permuteUnique([]int{1, 1, 2}) == [][]int{[]int{1, 1, 2}, []int{1, 2, 1}, []int{2, 1, 1}}))
+}
+
+func example_2() {
+	expect((permuteUnique([]int{1, 2, 3}) == [][]int{[]int{1, 2, 3}, []int{1, 3, 2}, []int{2, 1, 3}, []int{2, 3, 1}, []int{3, 1, 2}, []int{3, 2, 1}}))
+}
+
+func main() {
+	example_1()
+	example_2()
+}
+

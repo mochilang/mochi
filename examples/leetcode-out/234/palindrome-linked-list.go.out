@@ -11,9 +11,7 @@ func expect(cond bool) {
 func isPalindromeList(values []int) bool {
 	var n int = len(values)
 	var i int = 0
-	_ = i
 	var j int = (n - 1)
-	_ = j
 	for (i < j) {
 		if (values[i] != values[j]) {
 			return false
@@ -37,7 +35,7 @@ func single_element() {
 }
 
 func empty_list() {
-	expect((isPalindromeList([]int{}) == true))
+	expect((isPalindromeList(_cast[[]int]([]any{})) == true))
 }
 
 func main() {

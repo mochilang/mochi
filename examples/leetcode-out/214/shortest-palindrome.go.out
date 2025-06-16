@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func isPalindrome(s string) bool {
 	var i int = 0
-	_ = i
 	var j int = (len(s) - 1)
-	_ = j
 	for (i < j) {
 		if (_indexString(s, i) != _indexString(s, j)) {
 			return false
@@ -22,14 +20,11 @@ func isPalindrome(s string) bool {
 func shortestPalindrome(s string) string {
 	var n int = len(s)
 	var i int = n
-	_ = i
 	for (i > 0) {
 		if isPalindrome(string([]rune(s)[0:i])) {
 			var suffix string = string([]rune(s)[i:n])
 			var rev string = ""
-			_ = rev
 			var k int = (len(suffix) - 1)
-			_ = k
 			for (k >= 0) {
 				rev = rev + _indexString(suffix, k)
 				k = (k - 1)

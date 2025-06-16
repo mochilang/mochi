@@ -7,9 +7,7 @@ func expect(cond bool) {
 func maxProfit(prices []int) int {
 	var n int = len(prices)
 	var profit int = 0
-	_ = profit
 	var i int = 1
-	_ = i
 	for (i < n) {
 		var diff int = (prices[i] - prices[(i - 1)])
 		if (diff > 0) {

@@ -13,18 +13,14 @@ func rob(nums []int) int {
 		return nums[0]
 	}
 	var prev2 int = nums[0]
-	_ = prev2
 	var prev1 int = nums[0]
-	_ = prev1
 	if (nums[1] > prev1) {
 		prev1 = nums[1]
 	}
 	var i int = 2
-	_ = i
 	for (i < n) {
 		var take int = (prev2 + nums[i])
 		var best int = prev1
-		_ = best
 		if (take > best) {
 			best = take
 		}
@@ -44,7 +40,7 @@ func example_2() {
 }
 
 func empty() {
-	expect((rob([]int{}) == 0))
+	expect((rob([]any{}) == 0))
 }
 
 func single_house() {

@@ -9,11 +9,8 @@ func climbStairs(n int) int {
 		return n
 	}
 	var first int = 1
-	_ = first
 	var second int = 2
-	_ = second
 	var i int = 3
-	_ = i
 	for (i <= n) {
 		var next int = (first + second)
 		first = second

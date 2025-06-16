@@ -1,20 +1,13 @@
 package main
 
-import (
-	"reflect"
-)
-
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
 
 func sortColors(nums []int) []int {
 	var low int = 0
-	_ = low
 	var mid int = 0
-	_ = mid
 	var high int = (len(nums) - 1)
-	_ = high
 	for (mid <= high) {
 		if (nums[mid] == 0) {
 			var temp int = nums[low]
@@ -35,23 +28,23 @@ func sortColors(nums []int) []int {
 }
 
 func example_1() {
-	expect(_equal(sortColors([]int{2, 0, 2, 1, 1, 0}), []int{0, 0, 1, 1, 2, 2}))
+	expect((sortColors([]int{2, 0, 2, 1, 1, 0}) == []int{0, 0, 1, 1, 2, 2}))
 }
 
 func example_2() {
-	expect(_equal(sortColors([]int{2, 0, 1}), []int{0, 1, 2}))
+	expect((sortColors([]int{2, 0, 1}) == []int{0, 1, 2}))
 }
 
 func single_zero() {
-	expect(_equal(sortColors([]int{0}), []int{0}))
+	expect((sortColors([]int{0}) == []int{0}))
 }
 
 func single_one() {
-	expect(_equal(sortColors([]int{1}), []int{1}))
+	expect((sortColors([]int{1}) == []int{1}))
 }
 
 func single_two() {
-	expect(_equal(sortColors([]int{2}), []int{2}))
+	expect((sortColors([]int{2}) == []int{2}))
 }
 
 func main() {
@@ -60,9 +53,5 @@ func main() {
 	single_zero()
 	single_one()
 	single_two()
-}
-
-func _equal(a, b any) bool {
-    return reflect.DeepEqual(a, b)
 }
 

@@ -21,13 +21,9 @@ func min(a int, b int) int {
 func maxProduct(nums []int) int {
 	var n int = len(nums)
 	var maxEnding int = nums[0]
-	_ = maxEnding
 	var minEnding int = nums[0]
-	_ = minEnding
 	var result int = nums[0]
-	_ = result
 	var i int = 1
-	_ = i
 	for (i < n) {
 		var v int = nums[i]
 		if (v < 0) {

@@ -16,23 +16,6 @@ type Node struct {
 func (Node) isTree() {}
 
 func minDepth(root any) int {
-	var helper = func(left any, right any) int {
-		var leftDepth int = minDepth(left)
-		var rightDepth int = minDepth(right)
-		if ((leftDepth == 0) && (rightDepth == 0)) {
-			return 1
-		}
-		if (leftDepth == 0) {
-			return (rightDepth + 1)
-		}
-		if (rightDepth == 0) {
-			return (leftDepth + 1)
-		}
-		if (leftDepth < rightDepth) {
-			return (leftDepth + 1)
-		}
-		return (rightDepth + 1)
-}
 	return func() int {
 	_t := root
 	switch _t {

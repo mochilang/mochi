@@ -8,9 +8,7 @@ func intToRoman(num int) string {
 	var values []int = []int{1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1}
 	var symbols []string = []string{"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"}
 	var result string = ""
-	_ = result
 	var i int = 0
-	_ = i
 	for (num > 0) {
 		for (num >= values[i]) {
 			result = result + symbols[i]

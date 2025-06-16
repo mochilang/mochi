@@ -1,0 +1,50 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func firstBadVersion(n int, isBadVersion func(int) bool) int {
+	var low int = 1
+	var high int = n
+	for (low < high) {
+		var mid int = (((low + high)) / 2)
+		if isBadVersion(mid) {
+			high = mid
+		} else {
+			low = (mid + 1)
+		}
+	}
+	return low
+}
+
+func example_1() {
+	var first int = 4
+	var bad any = func(v int) bool {
+		return (v >= first)
+}
+	expect((firstBadVersion(5, bad) == 4))
+}
+
+func example_2() {
+	var first int = 1
+	var bad any = func(v int) bool {
+		return (v >= first)
+}
+	expect((firstBadVersion(1, bad) == 1))
+}
+
+func larger_n() {
+	var first int = 123
+	var bad any = func(v int) bool {
+		return (v >= first)
+}
+	expect((firstBadVersion(200, bad) == 123))
+}
+
+func main() {
+	example_1()
+	example_2()
+	larger_n()
+}
+

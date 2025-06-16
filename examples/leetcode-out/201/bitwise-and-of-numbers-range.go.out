@@ -6,18 +6,14 @@ func expect(cond bool) {
 
 func rangeBitwiseAnd(left int, right int) int {
 	var l int = left
-	_ = l
 	var r int = right
-	_ = r
 	var shift int = 0
-	_ = shift
 	for (l < r) {
 		l = (l / 2)
 		r = (r / 2)
 		shift = (shift + 1)
 	}
 	var factor int = 1
-	_ = factor
 	for _ := 0; _ < shift; _++ {
 		factor = (factor * 2)
 	}

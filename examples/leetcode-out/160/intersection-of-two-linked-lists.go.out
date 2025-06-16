@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func getIntersectionNode(next []int, headA int, headB int) int {
 	var a int = headA
-	_ = a
 	var b int = headB
-	_ = b
 	for (a != b) {
 		if (a == (-1)) {
 			a = headB

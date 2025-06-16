@@ -11,11 +11,9 @@ func searchMatrix(matrix [][]int, target int) bool {
 	}
 	var n int = len(matrix[0])
 	var left int = 0
-	_ = left
 	var right int = ((m * n) - 1)
-	_ = right
 	for (left <= right) {
-		var mid int = (left + (((right - left)) / 2))
+		var mid int = ((left + ((right - left))) / 2)
 		var row int = (mid / n)
 		var col int = (mid % n)
 		var value int = matrix[row][col]

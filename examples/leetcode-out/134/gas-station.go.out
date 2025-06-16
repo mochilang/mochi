@@ -7,13 +7,9 @@ func expect(cond bool) {
 func canCompleteCircuit(gas []int, cost []int) int {
 	var n int = len(gas)
 	var total int = 0
-	_ = total
 	var tank int = 0
-	_ = tank
 	var start int = 0
-	_ = start
 	var i int = 0
-	_ = i
 	for (i < n) {
 		total = ((total + gas[i]) - cost[i])
 		tank = ((tank + gas[i]) - cost[i])

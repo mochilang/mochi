@@ -6,11 +6,9 @@ func expect(cond bool) {
 
 func findMin(nums []int) int {
 	var left int = 0
-	_ = left
 	var right int = (len(nums) - 1)
-	_ = right
 	for (left < right) {
-		var mid int = (left + (((right - left)) / 2))
+		var mid int = ((left + ((right - left))) / 2)
 		if (nums[mid] > nums[right]) {
 			left = (mid + 1)
 		} else {

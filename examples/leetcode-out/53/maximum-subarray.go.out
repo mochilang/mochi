@@ -7,9 +7,7 @@ func expect(cond bool) {
 func maxSubArray(nums []int) int {
 	var n int = len(nums)
 	var current int = nums[0]
-	_ = current
 	var best int = nums[0]
-	_ = best
 	for i := 1; i < n; i++ {
 		var val int = nums[i]
 		if ((current + val) > val) {

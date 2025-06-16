@@ -15,7 +15,6 @@ func strStr(haystack string, needle string) int {
 	}
 	for i := 0; i < ((n - m) + 1); i++ {
 		var j int = 0
-		_ = j
 		for (j < m) {
 			if (_indexString(haystack, (i + j)) != _indexString(needle, j)) {
 				break
