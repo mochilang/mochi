@@ -1,0 +1,125 @@
+package main
+
+import (
+	"fmt"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func alienOrder(words []string) string {
+	var graph map[string][]string = map[string][]string{}
+	var indegree map[string]int = map[string]int{}
+	for _, w := range words {
+		for _, r := range []rune(w) {
+			ch := string(r)
+			_tmp0 := ch
+			_tmp1 := graph
+			_, _tmp2 := _tmp1[_tmp0]
+			if !(_tmp2) {
+				graph[ch] = []string{}
+			}
+			_tmp3 := ch
+			_tmp4 := indegree
+			_, _tmp5 := _tmp4[_tmp3]
+			if !(_tmp5) {
+				indegree[ch] = 0
+			}
+		}
+	}
+	var i int = 0
+	for {
+		if !((i < (len(words) - 1))) {
+			break
+		}
+		var w1 string = words[i]
+		var w2 string = words[(i + 1)]
+		var j int = 0
+		var found bool = false
+		for {
+			if !(((j < len(w1)) && (j < len(w2)))) {
+				break
+			}
+			var c1 string = _indexString(w1, j)
+			var c2 string = _indexString(w2, j)
+			if (c1 != c2) {
+				var neighbors []string = graph[c1]
+				var exists bool = false
+				for _, n := range neighbors {
+					if (n == c2) {
+						exists = true
+					}
+				}
+				if !exists {
+					graph[c1] = append(append([]string{}, neighbors...), []string{c2}...)
+					indegree[c2] = (indegree[c2] + 1)
+				}
+				found = true
+				break
+			}
+			j = (j + 1)
+		}
+		if (!found && (len(w1) > len(w2))) {
+			return ""
+		}
+		i = (i + 1)
+	}
+	var queue []string = []string{}
+	for ch := range indegree {
+		if (indegree[ch] == 0) {
+			queue = append(append([]string{}, queue...), []string{ch}...)
+		}
+	}
+	var order string = ""
+	var idx int = 0
+	for {
+		if !((idx < len(queue))) {
+			break
+		}
+		var ch string = queue[idx]
+		idx = (idx + 1)
+		order = order + ch
+		for _, nxt := range graph[ch] {
+			indegree[nxt] = (indegree[nxt] - 1)
+			if (indegree[nxt] == 0) {
+				queue = append(append([]string{}, queue...), []string{nxt}...)
+			}
+		}
+	}
+	if (len(order) != len(indegree)) {
+		return ""
+	}
+	return order
+}
+
+func example_1() {
+	expect((alienOrder([]string{"wrt", "wrf", "er", "ett", "rftt"}) == "wertf"))
+}
+
+func example_2() {
+	expect((alienOrder([]string{"z", "x"}) == "zx"))
+}
+
+func invalid_order() {
+	expect((alienOrder([]string{"z", "x", "z"}) == ""))
+}
+
+func main() {
+	fmt.Println(alienOrder([]string{"wrt", "wrf", "er", "ett", "rftt"}))
+	example_1()
+	example_2()
+	invalid_order()
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

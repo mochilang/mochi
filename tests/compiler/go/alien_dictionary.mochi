@@ -1,0 +1,104 @@
+// Solution for LeetCode problem 269 - Alien Dictionary
+// This solution builds a graph of character precedence and
+// performs a topological sort using BFS. It avoids union types
+// and pattern matching.
+
+fun alienOrder(words: list<string>): string {
+  // Initialize graph and indegree for each unique letter
+  var graph: map<string, list<string>> = {}
+  var indegree: map<string, int> = {}
+  for w in words {
+    for ch in w {
+      if !(ch in graph) { graph[ch] = [] }
+      if !(ch in indegree) { indegree[ch] = 0 }
+    }
+  }
+
+  // Build edges from adjacent words
+  var i = 0
+  while i < len(words) - 1 {
+    let w1 = words[i]
+    let w2 = words[i+1]
+    var j = 0
+    var found = false
+    while j < len(w1) && j < len(w2) {
+      let c1 = w1[j]
+      let c2 = w2[j]
+      if c1 != c2 {
+        var neighbors = graph[c1]
+        var exists = false
+        for n in neighbors {
+          if n == c2 { exists = true }
+        }
+        if !exists {
+          graph[c1] = neighbors + [c2]
+          indegree[c2] = indegree[c2] + 1
+        }
+        found = true
+        break
+      }
+      j = j + 1
+    }
+    if !found && len(w1) > len(w2) {
+      return ""
+    }
+    i = i + 1
+  }
+
+  // Collect nodes with zero indegree
+  var queue: list<string> = []
+  for ch in indegree {
+    if indegree[ch] == 0 {
+      queue = queue + [ch]
+    }
+  }
+
+  var order = ""
+  var idx = 0
+  while idx < len(queue) {
+    let ch = queue[idx]
+    idx = idx + 1
+    order = order + ch
+    for nxt in graph[ch] {
+      indegree[nxt] = indegree[nxt] - 1
+      if indegree[nxt] == 0 {
+        queue = queue + [nxt]
+      }
+    }
+  }
+
+  if len(order) != len(indegree) {
+    return ""
+  }
+  return order
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect alienOrder(["wrt","wrf","er","ett","rftt"]) == "wertf"
+}
+
+test "example 2" {
+  expect alienOrder(["z","x"]) == "zx"
+}
+
+test "invalid order" {
+  expect alienOrder(["z","x","z"]) == ""
+}
+
+print(alienOrder(["wrt","wrf","er","ett","rftt"]))
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if c1 = c2 { }   // ❌ assignment
+   if c1 == c2 { }  // ✅ comparison
+2. Reassigning a variable declared with 'let'.
+   let q = []
+   q = ["a"]        // ❌ cannot reassign immutable value
+   var q: list<string> = [] // ✅ use 'var' for mutation
+3. Forgetting to give types for empty collections.
+   var g = {}       // ❌ type cannot be inferred
+   var g: map<string, list<string>> = {} // ✅ specify types
+*/
