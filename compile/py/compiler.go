@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"mochi/interpreter"
@@ -1725,7 +1726,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int), nil
 	case l.Float != nil:
-		return fmt.Sprintf("%f", *l.Float), nil
+		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str), nil
 	case l.Bool != nil:
