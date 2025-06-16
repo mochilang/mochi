@@ -1,0 +1,67 @@
+// Solution for LeetCode problem 382 - Linked List Random Node
+// Implemented without using union types or pattern matching.
+
+// Structure holding the list of node values and a pseudo-random seed.
+type RandomPicker {
+  values: list<int>
+  seed: int
+}
+
+fun newRandomPicker(values: list<int>, seed: int): RandomPicker {
+  return RandomPicker { values: values, seed: seed }
+}
+
+// Linear congruential generator step
+fun nextSeed(seed: int): int {
+  return (seed * 1103515245 + 12345) % 2147483648
+}
+
+// getRandom returns a value and the updated picker with a new seed
+// so repeated calls produce a deterministic sequence.
+type PickResult {
+  picker: RandomPicker
+  value: int
+}
+
+fun getRandom(p: RandomPicker): PickResult {
+  let seed2 = nextSeed(p.seed)
+  let idx = seed2 % len(p.values)
+  let np = RandomPicker { values: p.values, seed: seed2 }
+  return PickResult { picker: np, value: p.values[idx] }
+}
+
+// Test cases
+
+test "single element" {
+  var p = newRandomPicker([5], 1)
+  let r1 = getRandom(p)
+  expect r1.value == 5
+  let r2 = getRandom(r1.picker)
+  expect r2.value == 5
+}
+
+test "deterministic sequence" {
+  var p = newRandomPicker([10,20,30], 42)
+  let r1 = getRandom(p)
+  expect r1.value == 10
+  p = r1.picker
+  let r2 = getRandom(p)
+  expect r2.value == 30
+  p = r2.picker
+  let r3 = getRandom(p)
+  expect r3.value == 30
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a value bound with `let`:
+     let p = newRandomPicker([1], 1)
+     p = r.picker          // ❌ cannot reassign immutable `let`
+   Use `var` if a variable needs to change.
+2. Using '=' instead of '==' when comparing values:
+     if idx = 0 { }        // ❌ assignment
+   Use '==' for comparisons.
+3. Creating an empty list without specifying its type:
+     var nums = []         // ❌ element type unknown
+   Use 'var nums: list<int> = []' to declare the type.
+*/
