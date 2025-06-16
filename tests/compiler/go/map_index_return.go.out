@@ -1,0 +1,23 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func left(t map[string]any) map[string]any {
+	return _cast[map[string]any](t["x"])
+}
+
+func main() {
+	fmt.Println((_cast[int](left(_cast[map[string]any](map[string]map[string]int{"x": map[string]int{"y": 2}}))["y"])))
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+

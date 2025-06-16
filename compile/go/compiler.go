@@ -622,9 +622,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		if c.returnType != nil && !equalTypes(c.returnType, c.inferExprType(s.Return.Value)) {
-			c.use("_cast")
-			expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+		if c.returnType != nil {
+			exprType := c.inferExprType(s.Return.Value)
+			if _, ok := exprType.(types.AnyType); ok {
+				if _, anyRet := c.returnType.(types.AnyType); !anyRet {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+				}
+			} else if !equalTypes(c.returnType, exprType) {
+				c.use("_cast")
+				expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+			}
 		}
 		c.writeln("return " + expr)
 		return nil

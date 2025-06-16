@@ -1,0 +1,5 @@
+fun left(t: map<string, any>): map<string, any> {
+  return t["x"]
+}
+
+print((left({"x": {"y": 2}} as map<string, any>)["y"] as int))
