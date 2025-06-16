@@ -1,0 +1,137 @@
+// LeetCode 381 - Insert Delete GetRandom O(1) - Duplicates allowed
+// Implementation uses a list to store values and a map from value to
+// a list of positions. Random numbers are generated with a simple
+// linear congruential generator so the tests are deterministic.
+
+// Data structure keeping elements, positions and a pseudo random seed
+ type RandomizedCollection {
+  values: list<int>
+  pos: map<int, list<int>>
+  seed: int
+ }
+
+fun newCollection(): RandomizedCollection {
+  return RandomizedCollection {
+    values: [] as list<int>,
+    pos: {} as map<int, list<int>>,
+    seed: 1
+  }
+}
+
+// Helper to update the pseudo random seed
+fun nextSeed(x: int): int {
+  return (x * 1103515245 + 12345) % 2147483648
+}
+
+// Result wrapper used by insert/remove
+ type OpResult {
+  ok: bool
+  col: RandomizedCollection
+ }
+
+fun insert(col: RandomizedCollection, val: int): OpResult {
+  var values = col.values
+  var posMap = col.pos
+  var existed = false
+  var idxs: list<int> = []
+  if val in posMap {
+    existed = len(posMap[val]) > 0
+    idxs = posMap[val]
+  }
+  idxs = idxs + [len(values)]
+  posMap[val] = idxs
+  values = values + [val]
+  return OpResult {
+    ok: !existed,
+    col: RandomizedCollection { values: values, pos: posMap, seed: col.seed }
+  }
+}
+
+fun remove(col: RandomizedCollection, val: int): OpResult {
+  var values = col.values
+  var posMap = col.pos
+  if !(val in posMap) || len(posMap[val]) == 0 {
+    return OpResult { ok: false, col: col }
+  }
+
+  var idxs = posMap[val]
+  let removeIdx = idxs[len(idxs)-1]
+  idxs = idxs[0:len(idxs)-1]
+  posMap[val] = idxs
+
+  let lastIdx = len(values) - 1
+  let lastVal = values[lastIdx]
+  values[removeIdx] = lastVal
+  values = values[0:lastIdx]
+
+  var lastList = posMap[lastVal]
+  var i = 0
+  while i < len(lastList) {
+    if lastList[i] == lastIdx {
+      lastList[i] = removeIdx
+      break
+    }
+    i = i + 1
+  }
+  posMap[lastVal] = lastList
+
+  return OpResult {
+    ok: true,
+    col: RandomizedCollection { values: values, pos: posMap, seed: col.seed }
+  }
+}
+
+ type RandResult {
+  val: int
+  col: RandomizedCollection
+ }
+
+fun getRandom(col: RandomizedCollection): RandResult {
+  var seed = nextSeed(col.seed)
+  let idx = seed % len(col.values)
+  return RandResult {
+    val: col.values[idx],
+    col: RandomizedCollection { values: col.values, pos: col.pos, seed: seed }
+  }
+}
+
+// Basic test sequence from LeetCode description
+
+test "example operations" {
+  var c = newCollection()
+  let r1 = insert(c, 1)
+  expect r1.ok == true
+  c = r1.col
+
+  let r2 = insert(c, 1)
+  expect r2.ok == false
+  c = r2.col
+
+  let r3 = insert(c, 2)
+  expect r3.ok == true
+  c = r3.col
+
+  let g1 = getRandom(c)
+  expect g1.val == 1 || g1.val == 2
+  c = g1.col
+
+  let r4 = remove(c, 1)
+  expect r4.ok == true
+  c = r4.col
+
+  let g2 = getRandom(c)
+  expect g2.val == 1 || g2.val == 2
+}
+
+/*
+Common Mochi language errors and fixes:
+1. Forgetting to declare mutable variables with `var`.
+   values = []                 // ❌ unknown binding
+   var values: list<int> = []  // ✅ specify and use `var`
+2. Using `=` instead of `==` for comparisons.
+   if a = b { }   // ❌ assignment
+   if a == b { }  // ✅ comparison
+3. Omitting element types for empty containers.
+   var m = {}                      // ❌ type cannot be inferred
+   var m: map<int, list<int>> = {} // ✅ explicitly state the type
+*/
