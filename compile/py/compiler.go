@@ -1691,6 +1691,9 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 				values := []string{}
 				for idx, arg := range call.Args {
 					if id, ok := identName(arg); ok {
+						if id == "_" {
+							continue
+						}
 						names = append(names, sanitizeName(id))
 						field := sanitizeName(st.Order[idx])
 						values = append(values, fmt.Sprintf("_t.%s", field))
