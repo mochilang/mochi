@@ -1,0 +1,106 @@
+// Solution for LeetCode problem 310 - Minimum Height Trees
+//
+// Given a number of nodes and undirected edges, return all nodes that can be
+// roots of a tree with minimum height. The algorithm trims leaves level by
+// level until only the center nodes remain.
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' in a condition.
+//    if degree[i] = 1 { }
+//    // ❌ assignment, not comparison
+//    if degree[i] == 1 { }
+//    // ✅ equality check
+// 2. Forgetting to declare variables as mutable with 'var'.
+//    let queue = []
+//    queue = [1]        // ❌ cannot reassign immutable 'let'
+//    var queue: list<int> = []
+//    queue = [1]        // ✅ allowed
+// 3. Creating an empty list without a type annotation.
+//    var leaves = []          // ❌ type unknown
+//    var leaves: list<int> = [] // ✅ specify element type
+//
+fun findMinHeightTrees(n: int, edges: list<list<int>>): list<int> {
+  if n <= 2 {
+    var result: list<int> = []
+    var i = 0
+    while i < n {
+      result = result + [i]
+      i = i + 1
+    }
+    return result
+  }
+
+  var graph: list<list<int>> = []
+  var degree: list<int> = []
+  var i = 0
+  while i < n {
+    graph = graph + [[]]
+    degree = degree + [0]
+    i = i + 1
+  }
+
+  for e in edges {
+    let a = e[0]
+    let b = e[1]
+    graph[a] = graph[a] + [b]
+    graph[b] = graph[b] + [a]
+    degree[a] = degree[a] + 1
+    degree[b] = degree[b] + 1
+  }
+
+  var leaves: list<int> = []
+  var j = 0
+  while j < n {
+    if degree[j] == 1 {
+      leaves = leaves + [j]
+    }
+    j = j + 1
+  }
+
+  var remaining = n
+  while remaining > 2 {
+    var newLeaves: list<int> = []
+    for leaf in leaves {
+      remaining = remaining - 1
+      for neighbor in graph[leaf] {
+        degree[neighbor] = degree[neighbor] - 1
+        if degree[neighbor] == 1 {
+          newLeaves = newLeaves + [neighbor]
+        }
+      }
+    }
+    leaves = newLeaves
+  }
+
+  return leaves
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect findMinHeightTrees(4, [[1,0],[1,2],[1,3]]) == [1]
+}
+
+test "example 2" {
+  let res = findMinHeightTrees(6, [[3,0],[3,1],[3,2],[3,4],[5,4]])
+  // order may vary, check contents
+  var ok = false
+  if len(res) == 2 {
+    let a = res[0]
+    let b = res[1]
+    if (a == 3 && b == 4) || (a == 4 && b == 3) {
+      ok = true
+    }
+  }
+  expect ok == true
+}
+
+// Additional edge cases
+
+test "single node" {
+  expect findMinHeightTrees(1, []) == [0]
+}
+
+test "line" {
+  expect findMinHeightTrees(2, [[0,1]]) == [0,1]
+}
