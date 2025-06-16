@@ -1902,6 +1902,21 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Cast != nil:
 			t := c.resolveTypeRef(op.Cast.Type)
+			// If casting an empty map or list literal, emit a typed literal
+			if p.Target.Map != nil && len(p.Target.Map.Items) == 0 {
+				if mt, ok := t.(types.MapType); ok {
+					val = fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value))
+					typ = t
+					continue
+				}
+			}
+			if p.Target.List != nil && len(p.Target.List.Elems) == 0 {
+				if lt, ok := t.(types.ListType); ok {
+					val = fmt.Sprintf("[]%s{}", goType(lt.Elem))
+					typ = t
+					continue
+				}
+			}
 			c.use("_cast")
 			c.imports["encoding/json"] = true
 			val = fmt.Sprintf("_cast[%s](%s)", goType(t), val)
