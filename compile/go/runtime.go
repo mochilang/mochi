@@ -192,6 +192,11 @@ const (
 		"}\n"
 
 	helperEqual = "func _equal(a, b any) bool {\n" +
+		"    av := reflect.ValueOf(a)\n" +
+		"    bv := reflect.ValueOf(b)\n" +
+		"    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {\n" +
+		"        return true\n" +
+		"    }\n" +
 		"    return reflect.DeepEqual(a, b)\n" +
 		"}\n"
 
