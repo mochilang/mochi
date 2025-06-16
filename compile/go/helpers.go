@@ -303,7 +303,7 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 }
 
 func (c *Compiler) newVar() string {
-	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+	name := fmt.Sprintf("tmp%d", c.tempVarCount)
 	c.tempVarCount++
 	return name
 }
