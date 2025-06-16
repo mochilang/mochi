@@ -2502,6 +2502,27 @@ func (c *Compiler) foldCall(call *parser.CallExpr) (*parser.Literal, bool) {
 	return lit, ok
 }
 
+// compileExprHint compiles an expression using a type hint when dealing with
+// literals that would otherwise default to `any`, such as empty list literals.
+// The hint is currently only used for list literals and is applied recursively
+// for nested lists.
+func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
+	if lt, ok := hint.(types.ListType); ok {
+		if ll := e.Binary.Left.Value.Target.List; ll != nil {
+			elems := make([]string, len(ll.Elems))
+			for i, el := range ll.Elems {
+				ev, err := c.compileExprHint(el, lt.Elem)
+				if err != nil {
+					return "", err
+				}
+				elems[i] = ev
+			}
+			return "[]" + goType(lt.Elem) + "{" + strings.Join(elems, ", ") + "}", nil
+		}
+	}
+	return c.compileExpr(e)
+}
+
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	if lit, ok := c.foldCall(call); ok {
 		return c.compileLiteral(lit)
@@ -2521,6 +2542,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 					continue
 				}
 			}
+			v, err := c.compileExprHint(a, paramTypes[i])
+			if err != nil {
+				return "", err
+			}
+			args[i] = v
+			continue
 		}
 		v, err := c.compileExpr(a)
 		if err != nil {
