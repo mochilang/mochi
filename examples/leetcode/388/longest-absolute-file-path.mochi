@@ -1,0 +1,82 @@
+// Helper: split a string by newline characters
+fun splitLines(s: string): list<string> {
+  var lines: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c == "\n" {
+      lines = lines + [current]
+      current = ""
+    } else {
+      current = current + c
+    }
+    i = i + 1
+  }
+  lines = lines + [current]
+  return lines
+}
+
+fun lengthLongestPath(input: string): int {
+  if input == "" {
+    return 0
+  }
+  let lines = splitLines(input)
+  var maxLen = 0
+  var levels: map<int,int> = {}
+  var i = 0
+  while i < len(lines) {
+    let line = lines[i]
+    var depth = 0
+    while depth < len(line) && line[depth] == "\t" {
+      depth = depth + 1
+    }
+    let name = line[depth:len(line)]
+    var curr = len(name)
+    if depth > 0 {
+      curr = levels[depth-1] + 1 + len(name)
+    }
+    levels[depth] = curr
+    if "." in name {
+      if curr > maxLen {
+        maxLen = curr
+      }
+    }
+    i = i + 1
+  }
+  return maxLen
+}
+
+// Basic tests from LeetCode examples
+
+test "example 1" {
+  let input = "dir\n\tsubdir1\n\tsubdir2\n\t\tfile.ext"
+  expect lengthLongestPath(input) == 20
+}
+
+test "example 2" {
+  let input = "dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext"
+  expect lengthLongestPath(input) == 32
+}
+
+// Edge case: no files
+
+test "no files" {
+  expect lengthLongestPath("dir\n\tsubdir") == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a value declared with `let`.
+   let depth = 0
+   depth = depth + 1       // ❌ cannot modify immutable value
+   var depth = 0           // ✅ use `var` for variables that change
+2. Using Python-style list append.
+   levels.append(x)        // ❌ not available
+   levels = levels + [x]   // ✅ concatenate instead
+3. Forgetting to check membership before reading from a map.
+   curr = levels[d-1]      // ❌ runtime error if key missing
+   if d-1 in levels {      // ✅ check first
+     curr = levels[d-1]
+   }
+*/
