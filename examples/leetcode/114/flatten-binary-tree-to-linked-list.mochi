@@ -1,0 +1,104 @@
+// LeetCode 114 - Flatten Binary Tree to Linked List
+
+// This implementation uses simple maps to represent tree nodes
+// to avoid union types and pattern matching.
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// Collect the values from the tree using preorder traversal.
+fun preorder(t: map<string, any>): list<int> {
+  if isLeaf(t) { return [] as list<int> }
+  return [value(t)] + preorder(left(t)) + preorder(right(t))
+}
+
+fun reverse(xs: list<int>): list<int> {
+  var result: list<int> = []
+  for x in xs {
+    result = [x] + result
+  }
+  return result
+}
+
+// Build a new flattened tree whose right children form the preorder sequence.
+fun flatten(root: map<string, any>): map<string, any> {
+  let vals = reverse(preorder(root))
+  var t: map<string, any> = Leaf()
+  for v in vals {
+    t = Node(Leaf(), v, t)
+  }
+  return t
+}
+
+fun equalTrees(a: map<string, any>, b: map<string, any>): bool {
+  if isLeaf(a) && isLeaf(b) { return true }
+  if isLeaf(a) || isLeaf(b) { return false }
+  return value(a) == value(b) &&
+    equalTrees(left(a), left(b)) &&
+    equalTrees(right(a), right(b))
+}
+
+// Example tree: [1,2,5,3,4,Leaf,6]
+let example1 = Node(
+  Node(Node(Leaf(), 3, Leaf()), 2, Node(Leaf(), 4, Leaf())),
+  1,
+  Node(Leaf(), 5, Node(Leaf(), 6, Leaf()))
+)
+
+let flattened1 = Node(
+  Leaf(), 1,
+  Node(
+    Leaf(), 2,
+    Node(
+      Leaf(), 3,
+      Node(
+        Leaf(), 4,
+        Node(
+          Leaf(), 5,
+          Node(Leaf(), 6, Leaf())
+        )
+      )
+    )
+  )
+)
+
+// Tests derived from the LeetCode examples
+
+test "example 1" {
+  expect equalTrees(flatten(example1), flattened1) == true
+}
+
+test "single node" {
+  let tree = Node(Leaf(), 0, Leaf())
+  expect equalTrees(flatten(tree), tree) == true
+}
+
+test "empty" {
+  expect isLeaf(flatten(Leaf())) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if isLeaf(node) = true { }
+   // Use '==' for comparisons.
+2. Forgetting to declare mutable variables with 'var':
+     let r = Leaf()
+     r = Node(Leaf(), 1, r)  // error[E004]
+   // Declare mutable bindings with 'var' when reassignment is needed.
+3. Omitting parentheses when calling Leaf or Node:
+     Node(Leaf, 1, Leaf)  // invalid
+   // Call functions with parentheses: Node(Leaf(), 1, Leaf()).
+*/
