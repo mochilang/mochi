@@ -93,19 +93,32 @@ build-one: mochi ## Compile one .mochi to a language. Usage: make build-one ID=1
 	@file=$$(ls $(ID)/*.mochi | head -n 1); \
 	$(call build_one_lang,$$file,$(LANG))
 
-build-all: mochi ## Compile all problems from FROM to TO (default: 1–400). Usage: make build-all [FROM=1] [TO=400]
-	@FROM=$${FROM:-1}; TO=$${TO:-400}; \
-	i=$$FROM; \
-	while [ $$i -le $$TO ]; do \
+build-all: mochi ## Compile all problems from FROM to TO in parallel. Usage: make build-all [FROM=1] [TO=400] [JOBS=6]
+	@FROM=$${FROM:-1}; TO=$${TO:-400}; JOBS=$${JOBS:-6}; \
+	pids=(); \
+	sem() { \
+		while [ "$${#pids[@]}" -ge $$JOBS ]; do \
+			wait -n "${pids[@]}" 2>/dev/null || break; \
+			new_pids=(); \
+			for pid in "$${pids[@]}"; do \
+				if kill -0 $$pid 2>/dev/null; then new_pids+=($$pid); fi; \
+			done; \
+			pids=($${new_pids[@]}); \
+		done; \
+	}; \
+	for i in $$(seq $$FROM $$TO); do \
 		if [ -d "$$i" ]; then \
 			for file in $$(find "$$i" -name '*.mochi' 2>/dev/null); do \
 				for lang in go py ts; do \
-					$(call build_one_lang,$$file,$$lang); \
+					( $(call build_one_lang,$$file,$$lang) ) & \
+					pids+=($$!); \
+					sem; \
 				done; \
 			done; \
 		fi; \
-		i=$$((i + 1)); \
-	done
+	done; \
+	for pid in "$${pids[@]}"; do wait $$pid; done
+
 
 
 test: mochi ## Run all tests
