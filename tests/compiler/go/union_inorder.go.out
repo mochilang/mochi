@@ -22,10 +22,10 @@ func inorder(t Tree) []int {
 	if _, ok := _t.(Leaf); ok {
 		return _cast[[]int]([]any{})
 	}
-	if _tmp0, ok := _t.(Node); ok {
-		l := _tmp0.Left
-		v := _tmp0.Value
-		r := _tmp0.Right
+	if tmp0, ok := _t.(Node); ok {
+		l := tmp0.Left
+		v := tmp0.Value
+		r := tmp0.Right
 		return append(append([]int{}, append(append([]int{}, inorder(l)...), []int{v}...)...), inorder(r)...)
 	}
 	var _zero []int

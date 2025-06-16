@@ -12,10 +12,10 @@ func main() {
 	var i int = 1
 	var count int = 0
 	for {
-		_tmp0 := i
-		_tmp1 := set
-		_, _tmp2 := _tmp1[_tmp0]
-		if !(_tmp2) {
+		tmp0 := i
+		tmp1 := set
+		_, tmp2 := tmp1[tmp0]
+		if !(tmp2) {
 			break
 		}
 		i = (i + 1)
