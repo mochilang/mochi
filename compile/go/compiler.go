@@ -1354,10 +1354,45 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
 		}
 	case "==", "!=", "<", "<=", ">", ">=":
-		if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
-			return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
+
+		if ll, rok := leftType.(types.ListType); rok {
+			if rl, ok := rightType.(types.ListType); ok {
+				if _, ok := ll.Elem.(types.AnyType); ok && !isAny(rl.Elem) {
+					c.use("_cast")
+					left = fmt.Sprintf("_cast[[]%s](%s)", goType(rl.Elem), left)
+					leftType = rightType
+				} else if _, ok := rl.Elem.(types.AnyType); ok && !isAny(ll.Elem) {
+					c.use("_cast")
+					right = fmt.Sprintf("_cast[[]%s](%s)", goType(ll.Elem), right)
+					rightType = leftType
+				}
+			}
 		}
+		if lm, rok := leftType.(types.MapType); rok {
+			if rm, ok := rightType.(types.MapType); ok {
+				if _, ok := lm.Key.(types.AnyType); ok && !isAny(rm.Key) {
+					c.use("_cast")
+					left = fmt.Sprintf("_cast[map[%s]%s](%s)", goType(rm.Key), goType(rm.Value), left)
+					leftType = rightType
+				} else if _, ok := rm.Key.(types.AnyType); ok && !isAny(lm.Key) {
+					c.use("_cast")
+					right = fmt.Sprintf("_cast[map[%s]%s](%s)", goType(lm.Key), goType(lm.Value), right)
+					rightType = leftType
+				}
+			}
+		}
+
 		if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
+			c.use("_equal")
+			c.imports["reflect"] = true
+			if op == "==" {
+				expr = fmt.Sprintf("_equal(%s, %s)", left, right)
+			} else if op == "!=" {
+				expr = fmt.Sprintf("!_equal(%s, %s)", left, right)
+			} else {
+				return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+			}
+		} else if isAny(leftType) || isAny(rightType) {
 			c.use("_equal")
 			c.imports["reflect"] = true
 			if op == "==" {
