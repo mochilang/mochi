@@ -622,9 +622,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		if c.returnType != nil && !equalTypes(c.returnType, c.inferExprType(s.Return.Value)) {
+		retT := c.returnType
+		exprT := c.inferExprType(s.Return.Value)
+		if retT != nil && (!equalTypes(retT, exprT) || isAny(exprT)) {
 			c.use("_cast")
-			expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+			expr = fmt.Sprintf("_cast[%s](%s)", goType(retT), expr)
 		}
 		c.writeln("return " + expr)
 		return nil
@@ -2556,7 +2558,8 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		return "", err
 	}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: m}}}}}
-	retType := goType(c.inferExprType(expr))
+	retT := c.inferExprType(expr)
+	retType := goType(retT)
 	if retType == "" {
 		retType = "any"
 	}
@@ -2579,9 +2582,14 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		origEnv := c.env
 		c.env = caseEnv
 		res, err := c.compileExpr(cse.Result)
+		resType := c.inferExprType(cse.Result)
 		c.env = origEnv
 		if err != nil {
 			return "", err
+		}
+		if retType != "any" && !equalTypes(retT, resType) {
+			c.use("_cast")
+			res = fmt.Sprintf("_cast[%s](%s)", retType, res)
 		}
 
 		if isUnderscoreExpr(cse.Pattern) {
