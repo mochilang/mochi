@@ -15,7 +15,7 @@ async def main():
 		s = ev
 		print(s.id, s.temperature)
 	sensorStream.register(_handler_0)
-	sensorStream.append(Sensor(id="sensor-1", temperature=22.500000))
+	sensorStream.append(Sensor(id="sensor-1", temperature=22.5))
 
 class Stream:
     def __init__(self, name):
