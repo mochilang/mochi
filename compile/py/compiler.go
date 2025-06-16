@@ -24,17 +24,19 @@ type Compiler struct {
 	structs      map[string]bool
 	agents       map[string]bool
 	handlerCount int
+	tmpCount     int
 	models       bool
 }
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		helpers: make(map[string]bool),
-		imports: make(map[string]string),
-		env:     env,
-		structs: make(map[string]bool),
-		agents:  make(map[string]bool),
-		models:  false,
+		helpers:  make(map[string]bool),
+		imports:  make(map[string]string),
+		env:      env,
+		structs:  make(map[string]bool),
+		agents:   make(map[string]bool),
+		models:   false,
+		tmpCount: 0,
 	}
 }
 
@@ -1672,6 +1674,8 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	tmp := fmt.Sprintf("_t%d", c.tmpCount)
+	c.tmpCount++
 	var expr string
 	for i, cs := range m.Cases {
 		res, err := c.compileExpr(cs.Result)
@@ -1686,7 +1690,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if call, ok := callPattern(cs.Pattern); ok {
 			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
-				cond = fmt.Sprintf("isinstance(_t, %s)", sanitizeName(call.Func))
+				cond = fmt.Sprintf("isinstance(%s, %s)", tmp, sanitizeName(call.Func))
 				names := []string{}
 				values := []string{}
 				for idx, arg := range call.Args {
@@ -1696,7 +1700,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 						}
 						names = append(names, sanitizeName(id))
 						field := sanitizeName(st.Order[idx])
-						values = append(values, fmt.Sprintf("_t.%s", field))
+						values = append(values, fmt.Sprintf("%s.%s", tmp, field))
 					}
 				}
 				if len(names) > 0 {
@@ -1705,7 +1709,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			}
 		} else if ident, ok := identName(cs.Pattern); ok {
 			if _, ok := c.env.FindUnionByVariant(ident); ok {
-				cond = fmt.Sprintf("isinstance(_t, %s)", sanitizeName(ident))
+				cond = fmt.Sprintf("isinstance(%s, %s)", tmp, sanitizeName(ident))
 			}
 		}
 		if cond == "" {
@@ -1713,7 +1717,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			cond = fmt.Sprintf("_t == %s", pat)
+			cond = fmt.Sprintf("%s == %s", tmp, pat)
 		}
 		part := fmt.Sprintf("%s if %s else ", res, cond)
 		expr += part
@@ -1721,7 +1725,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			expr += "None"
 		}
 	}
-	return fmt.Sprintf("(lambda _t=%s: %s)()", target, expr), nil
+	return fmt.Sprintf("(lambda %s=%s: %s)()", tmp, target, expr), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
