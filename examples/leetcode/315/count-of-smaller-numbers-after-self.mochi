@@ -1,0 +1,76 @@
+// Solution for LeetCode problem 315 - Count of Smaller Numbers After Self
+//
+// This implementation uses a straightforward double loop. For each
+// element in the list we count how many of the elements to its right
+// are smaller. Although this approach is O(n^2), it is simple and keeps
+// the code easy to understand.
+
+fun countSmaller(nums: list<int>): list<int> {
+  let n = len(nums)
+  var result: list<int> = []
+  var fill = 0
+  while fill < n {
+    result = result + [0]
+    fill = fill + 1
+  }
+
+  if n == 0 {
+    return result
+  }
+
+  var i = n - 1
+  while i >= 0 {
+    var count = 0
+    var j = i + 1
+    while j < n {
+      if nums[j] < nums[i] {
+        count = count + 1
+      }
+      j = j + 1
+    }
+    result[i] = count
+    i = i - 1
+  }
+  return result
+}
+
+// Tests from LeetCode examples
+
+test "example 1" {
+  expect countSmaller([5,2,6,1]) == [2,1,1,0]
+}
+
+test "example 2" {
+  expect countSmaller([-1]) == [0]
+}
+
+test "example 3" {
+  expect countSmaller([-1,-1]) == [0,0]
+}
+
+// Additional edge cases
+
+ test "empty" {
+   expect countSmaller([]) == []
+ }
+
+test "single value" {
+  expect countSmaller([7]) == [0]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+   if nums[j] = nums[i] { }      // ❌ assignment
+   if nums[j] == nums[i] { }     // ✅ comparison
+2. Reassigning a variable declared with 'let':
+   let x = 3
+   x = 4               // ❌ cannot reassign
+   var y = 3
+   y = 4               // ✅ use 'var' for mutable values
+3. Trying to append to a list using Python methods:
+   result.append(x)    // ❌ invalid
+   result = result + [x] // ✅ concatenate lists
+4. Forgetting to update loop counters, causing infinite loops.
+5. Off-by-one mistakes when looping over indices.
+*/
