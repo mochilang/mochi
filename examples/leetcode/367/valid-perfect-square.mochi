@@ -1,0 +1,49 @@
+// Solution for LeetCode problem 367 - Valid Perfect Square
+
+fun isPerfectSquare(num: int): bool {
+  if num < 1 {
+    return false
+  }
+  var left = 1
+  var right = num
+  while left <= right {
+    let mid = (left + right) / 2
+    let square = mid * mid
+    if square == num {
+      return true
+    } else if square < num {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
+  }
+  return false
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect isPerfectSquare(16) == true
+}
+
+test "example 2" {
+  expect isPerfectSquare(14) == false
+}
+
+// Additional edge cases
+
+test "one" {
+  expect isPerfectSquare(1) == true
+}
+
+test "large non square" {
+  expect isPerfectSquare(2147483647) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values in conditions or tests.
+2. Declaring a variable with 'let' and later trying to modify it. Use 'var' for mutable values like 'left' and 'right'.
+3. Forgetting to specify a type for an empty collection, which makes the compiler unable to infer it.
+4. Writing Python-style ranges like 'for i in range(n)'. In Mochi use numeric ranges: 'for i in 0..n'.
+*/
