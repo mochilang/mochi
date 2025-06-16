@@ -1,18 +1,12 @@
 package main
 
-import (
-	"reflect"
-)
-
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
 
 func twoSum(numbers []int, target int) []int {
 	var left int = 0
-	_ = left
 	var right int = (len(numbers) - 1)
-	_ = right
 	for (left < right) {
 		var sum int = (numbers[left] + numbers[right])
 		if (sum == target) {
@@ -23,36 +17,24 @@ func twoSum(numbers []int, target int) []int {
 			right = (right - 1)
 		}
 	}
-	return _cast[[]int]([]any{})
+	return []any{}
 }
 
 func example_1() {
-	expect(_equal(twoSum([]int{2, 7, 11, 15}, 9), []int{1, 2}))
+	expect((twoSum([]int{2, 7, 11, 15}, 9) == []int{1, 2}))
 }
 
 func example_2() {
-	expect(_equal(twoSum([]int{2, 3, 4}, 6), []int{1, 3}))
+	expect((twoSum([]int{2, 3, 4}, 6) == []int{1, 3}))
 }
 
 func example_3() {
-	expect(_equal(twoSum([]int{-1, 0}, -1), []int{1, 2}))
+	expect((twoSum([]int{-1, 0}, -1) == []int{1, 2}))
 }
 
 func main() {
 	example_1()
 	example_2()
 	example_3()
-}
-
-func _cast[T any](v any) T {
-    data, err := json.Marshal(v)
-    if err != nil { panic(err) }
-    var out T
-    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
-    return out
-}
-
-func _equal(a, b any) bool {
-    return reflect.DeepEqual(a, b)
 }
 

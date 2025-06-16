@@ -10,17 +10,12 @@ func expect(cond bool) {
 
 func countAndSay(n int) string {
 	var term string = "1"
-	_ = term
 	var i int = 1
-	_ = i
 	for (i < n) {
 		var next string = ""
-		_ = next
 		var j int = 0
-		_ = j
 		for (j < len(term)) {
 			var k int = j
-			_ = k
 			for (k < len(term)) {
 				if (_indexString(term, k) == _indexString(term, j)) {
 					k = (k + 1)

@@ -1,0 +1,74 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func combinationSum2(candidates []int, target int) [][]int {
+	var arr []any = func() []int {
+	items := []int{}
+	for _, c := range candidates {
+		items = append(items, c)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		c := it
+		pairs[idx] = pair{item: it, key: c}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	res := []int{}
+	for _, c := range items {
+		res = append(res, c)
+	}
+	return res
+}()
+	var n int = len(arr)
+	var result []any = []any{}
+	backtrack(target, 0, []any{})
+	return result
+}
+
+func example_1() {
+	expect((combinationSum2([]int{10, 1, 2, 7, 6, 1, 5}, 8) == [][]int{[]int{1, 1, 6}, []int{1, 2, 5}, []int{1, 7}, []int{2, 6}}))
+}
+
+func example_2() {
+	expect((combinationSum2([]int{2, 5, 2, 1, 2}, 5) == [][]int{[]int{1, 2, 2}, []int{5}}))
+}
+
+func main() {
+	example_1()
+	example_2()
+}
+

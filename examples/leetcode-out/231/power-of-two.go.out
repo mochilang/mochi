@@ -9,7 +9,6 @@ func isPowerOfTwo(n int) bool {
 		return false
 	}
 	var num int = n
-	_ = num
 	for (num > 1) {
 		if ((num % 2) != 0) {
 			return false

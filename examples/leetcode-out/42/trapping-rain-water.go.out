@@ -6,15 +6,10 @@ func expect(cond bool) {
 
 func trap(height []int) int {
 	var left int = 0
-	_ = left
 	var right int = (len(height) - 1)
-	_ = right
 	var left_max int = 0
-	_ = left_max
 	var right_max int = 0
-	_ = right_max
 	var water int = 0
-	_ = water
 	for (left < right) {
 		if (height[left] < height[right]) {
 			if (height[left] >= left_max) {

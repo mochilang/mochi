@@ -7,9 +7,7 @@ func expect(cond bool) {
 func convertToTitle(columnNumber int) string {
 	var letters string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	var n int = columnNumber
-	_ = n
 	var result string = ""
-	_ = result
 	for (n > 0) {
 		n = (n - 1)
 		var idx int = (n % 26)

@@ -6,14 +6,10 @@ func expect(cond bool) {
 
 func maxAreaAlt(height []int) int {
 	var left int = 0
-	_ = left
 	var right int = (len(height) - 1)
-	_ = right
 	var best int = 0
-	_ = best
 	for (left < right) {
 		var h int = height[left]
-		_ = h
 		if (height[right] < h) {
 			h = height[right]
 		}

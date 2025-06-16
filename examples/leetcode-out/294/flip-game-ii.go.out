@@ -1,0 +1,34 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func canWin(s string) bool {
+	var memo map[any]any = map[any]any{}
+	return helper(s)
+}
+
+func example_1() {
+	expect((canWin("++++") == true))
+}
+
+func example_2() {
+	expect((canWin("+") == false))
+}
+
+func five_plus() {
+	expect((canWin("+++++") == false))
+}
+
+func mixed() {
+	expect((canWin("+-++") == true))
+}
+
+func main() {
+	example_1()
+	example_2()
+	five_plus()
+	mixed()
+}
+

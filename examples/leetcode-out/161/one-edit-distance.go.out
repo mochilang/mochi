@@ -14,7 +14,6 @@ func isOneEditDistance(s string, t string) bool {
 		return false
 	}
 	var i int = 0
-	_ = i
 	for (i < m) {
 		if (_indexString(s, i) != _indexString(t, i)) {
 			if (m == n) {

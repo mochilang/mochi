@@ -1,0 +1,38 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func wordPatternMatch(pattern string, s string) bool {
+	var m int = len(pattern)
+	var n int = len(s)
+	return dfs(0, 0, _cast[map[string]string](map[any]any{}), _cast[map[string]bool](map[any]any{}))
+}
+
+func example_1() {
+	expect((wordPatternMatch("abab", "redblueredblue") == true))
+}
+
+func example_2() {
+	expect((wordPatternMatch("aaaa", "asdasdasdasd") == true))
+}
+
+func example_3() {
+	expect((wordPatternMatch("aabb", "xyzabcxzyabc") == false))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+

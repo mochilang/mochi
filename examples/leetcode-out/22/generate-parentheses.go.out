@@ -1,52 +1,30 @@
 package main
 
-import (
-	"reflect"
-)
-
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
 
 func generateParenthesis(n int) []string {
-	var result []string = []string{}
-	_ = result
-	var backtrack func(string, int, int)
-	backtrack = func(current string, open int, close int) {
-		if (len(current) == (n * 2)) {
-			result = append(append([]string{}, result...), []string{current}...)
-		} else {
-			if (open < n) {
-				backtrack(current + "(", (open + 1), close)
-			}
-			if (close < open) {
-				backtrack(current + ")", open, (close + 1))
-			}
-		}
-}
+	var result []any = []any{}
 	backtrack("", 0, 0)
 	return result
 }
 
 func example_1() {
-	expect(_equal(generateParenthesis(3), []string{"((()))", "(()())", "(())()", "()(())", "()()()"}))
+	expect((generateParenthesis(3) == []string{"((()))", "(()())", "(())()", "()(())", "()()()"}))
 }
 
 func example_2() {
-	expect(_equal(generateParenthesis(1), []string{"()"}))
+	expect((generateParenthesis(1) == []string{"()"}))
 }
 
 func two_pairs() {
-	expect(_equal(generateParenthesis(2), []string{"(())", "()()"}))
+	expect((generateParenthesis(2) == []string{"(())", "()()"}))
 }
 
 func main() {
 	example_1()
 	example_2()
 	two_pairs()
-}
-
-func _equal(a, b any) bool {
-    return reflect.DeepEqual(a, b)
 }
 

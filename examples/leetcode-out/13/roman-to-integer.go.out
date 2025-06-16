@@ -7,9 +7,7 @@ func expect(cond bool) {
 func romanToInt(s string) int {
 	var values map[string]int = map[string]int{"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
 	var total int = 0
-	_ = total
 	var i int = 0
-	_ = i
 	var n int = len(s)
 	for (i < n) {
 		var curr int = values[_indexString(s, i)]

@@ -21,9 +21,7 @@ func newVector2D(v [][]int) Vector2D {
 
 func advance(vec Vector2D) Vector2D {
 	var r int = vec.Row
-	_ = r
 	var c int = vec.Col
-	_ = c
 	var d [][]int = vec.Data
 	for (r < len(d)) {
 		if (c >= len(d[r])) {
@@ -43,7 +41,6 @@ func hasNext(vec Vector2D) bool {
 
 func next(vec Vector2D) NextResult {
 	var v Vector2D = advance(vec)
-	_ = v
 	var value int = v.Data[v.Row][v.Col]
 	v = Vector2D{Data: v.Data, Row: v.Row, Col: (v.Col + 1)}
 	return NextResult{Vec: v, Val: value}
@@ -51,7 +48,6 @@ func next(vec Vector2D) NextResult {
 
 func example() {
 	var it Vector2D = newVector2D([][]int{[]int{1, 2}, []int{3}, []int{4}})
-	_ = it
 	var r1 NextResult = next(it)
 	it = r1.Vec
 	expect((r1.Val == 1))
@@ -72,7 +68,6 @@ func example() {
 
 func empty_inner_lists() {
 	var it Vector2D = newVector2D([]any{[]any{}, []int{1}, []any{}, []int{2, 3}})
-	_ = it
 	expect((hasNext(it) == true))
 	var r1 NextResult = next(it)
 	it = r1.Vec

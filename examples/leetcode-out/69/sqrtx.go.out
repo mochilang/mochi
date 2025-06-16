@@ -9,13 +9,10 @@ func mySqrt(x int) int {
 		return x
 	}
 	var left int = 1
-	_ = left
 	var right int = (x / 2)
-	_ = right
 	var ans int = 0
-	_ = ans
 	for (left <= right) {
-		var mid int = (left + (((right - left)) / 2))
+		var mid int = ((left + ((right - left))) / 2)
 		var sq int = (mid * mid)
 		if (sq == x) {
 			return mid

@@ -1,0 +1,46 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left any `json:"left"`
+	Value int `json:"value"`
+	Right any `json:"right"`
+}
+func (Node) isTree() {}
+
+func isSymmetric(root any) bool {
+	return isMirror(root, root)
+}
+
+func example_1() {
+	var tree Node = Node{Left: Node{Left: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}, Value: 2, Right: Node{Left: Leaf{}, Value: 4, Right: Leaf{}}}, Value: 1, Right: Node{Left: Node{Left: Leaf{}, Value: 4, Right: Leaf{}}, Value: 2, Right: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}}}
+	expect((isSymmetric(tree) == true))
+}
+
+func example_2() {
+	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 2, Right: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}}, Value: 1, Right: Node{Left: Leaf{}, Value: 2, Right: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}}}
+	expect((isSymmetric(tree) == false))
+}
+
+func single_node() {
+	expect((isSymmetric(Node{Left: Leaf{}, Value: 1, Right: Leaf{}}) == true))
+}
+
+func empty() {
+	expect((isSymmetric(Leaf{}) == true))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_node()
+	empty()
+}
+

@@ -1,0 +1,29 @@
+package main
+
+import (
+	"fmt"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func generateAbbreviations(word string) []string {
+	var result []any = []any{}
+	backtrack(0, "", 0)
+	return result
+}
+
+func example_1() {
+	expect((generateAbbreviations("word") == []string{"4", "3d", "2r1", "2rd", "1o2", "1o1d", "1or1", "1ord", "w3", "w2d", "w1r1", "w1rd", "wo2", "wo1d", "wor1", "word"}))
+}
+
+func empty_string() {
+	expect((generateAbbreviations("") == []string{""}))
+}
+
+func main() {
+	example_1()
+	empty_string()
+}
+

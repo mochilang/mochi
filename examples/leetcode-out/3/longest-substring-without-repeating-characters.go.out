@@ -7,14 +7,10 @@ func expect(cond bool) {
 func lengthOfLongestSubstring(s string) int {
 	var n int = len(s)
 	var start int = 0
-	_ = start
 	var best int = 0
-	_ = best
 	var i int = 0
-	_ = i
 	for (i < n) {
 		var j int = start
-		_ = j
 		for (j < i) {
 			if (_indexString(s, j) == _indexString(s, i)) {
 				start = (j + 1)

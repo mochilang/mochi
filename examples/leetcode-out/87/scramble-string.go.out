@@ -1,0 +1,36 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func isScramble(s1 string, s2 string) bool {
+	if (len(s1) != len(s2)) {
+		return false
+	}
+	if !sameLetters(s1, s2) {
+		return false
+	}
+	var memo map[any]any = map[any]any{}
+	var n int = len(s1)
+	return dfs(0, 0, n)
+}
+
+func example_1() {
+	expect((isScramble("great", "rgeat") == true))
+}
+
+func example_2() {
+	expect((isScramble("abcde", "caebd") == false))
+}
+
+func example_3() {
+	expect((isScramble("a", "a") == true))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+

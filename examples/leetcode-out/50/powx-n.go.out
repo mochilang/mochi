@@ -12,11 +12,8 @@ func myPow(x float64, n int) float64 {
 		return (1.000000 / myPow(x, -n))
 	}
 	var base float64 = x
-	_ = base
 	var exp int = n
-	_ = exp
 	var result float64 = 1.000000
-	_ = result
 	for (exp > 0) {
 		if ((exp % 2) == 1) {
 			result = (result * base)

@@ -10,15 +10,10 @@ func maxProfit(prices []int) int {
 		return 0
 	}
 	var buy1 int = (0 - prices[0])
-	_ = buy1
 	var sell1 int = 0
-	_ = sell1
 	var buy2 int = (0 - prices[0])
-	_ = buy2
 	var sell2 int = 0
-	_ = sell2
 	var i int = 1
-	_ = i
 	for (i < n) {
 		var price int = prices[i]
 		var b1 int = (0 - price)

@@ -6,12 +6,10 @@ func expect(cond bool) {
 
 func addDigits(num int) int {
 	var n int = num
-	_ = n
 	for (n >= 10) {
 		var sum int = 0
-		_ = sum
 		for (n > 0) {
-			sum = (sum + (n % 10))
+			sum = ((sum + n) % 10)
 			n = (n / 10)
 		}
 		n = sum

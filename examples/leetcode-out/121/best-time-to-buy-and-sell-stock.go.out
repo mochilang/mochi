@@ -9,11 +9,8 @@ func maxProfit(prices []int) int {
 		return 0
 	}
 	var minPrice int = prices[0]
-	_ = minPrice
 	var maxProfit func([]int) int = 0
-	_ = maxProfit
 	var i int = 1
-	_ = i
 	for (i < len(prices)) {
 		var price int = prices[i]
 		if (price < minPrice) {
@@ -26,7 +23,7 @@ func maxProfit(prices []int) int {
 		}
 		i = (i + 1)
 	}
-	return _cast[int](maxProfit)
+	return maxProfit
 }
 
 func example_1() {
@@ -45,13 +42,5 @@ func main() {
 	example_1()
 	example_2()
 	single_price()
-}
-
-func _cast[T any](v any) T {
-    data, err := json.Marshal(v)
-    if err != nil { panic(err) }
-    var out T
-    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
-    return out
 }
 
