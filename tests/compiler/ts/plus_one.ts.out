@@ -20,4 +20,3 @@ function main(): void {
 	console.log(plusOne([1, 2, 3]))
 }
 main()
-

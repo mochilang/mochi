@@ -6,4 +6,3 @@ function main(): void {
 	console.log(Object.prototype.hasOwnProperty.call(count, String("a")))
 }
 main()
-

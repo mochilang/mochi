@@ -11,4 +11,3 @@ function _gen_embed(text: string, model: string | null, params: any | null): num
 }
 
 main()
-

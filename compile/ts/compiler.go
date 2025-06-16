@@ -218,6 +218,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Emit type declarations first so they're visible globally.
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// Emit global variable declarations before functions/tests.
 	for _, s := range prog.Statements {
 		if s.Let != nil || s.Var != nil {
@@ -255,7 +265,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil || s.Let != nil || s.Var != nil {
+		if s.Fun != nil || s.Test != nil || s.Let != nil || s.Var != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -321,7 +331,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(expr)
+		if strings.HasPrefix(expr, "(") {
+			c.writeln(";" + expr)
+		} else {
+			c.writeln(expr)
+		}
 		return nil
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
