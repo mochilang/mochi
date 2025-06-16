@@ -1,103 +1,77 @@
 // LeetCode 101 - Symmetric Tree
+//
+// This version avoids union types and pattern matching by representing
+// the tree as an array of nodes indexed by position. A child index of
+// -1 means there is no child.
 
-// Definition of a binary tree
-// Leaf represents an empty tree
-// Node has left, value, and right subtrees
+type Node {
+  value: int
+  left: int
+  right: int
+}
 
-type Tree =
-  Leaf
-  | Node(left: Tree, value: int, right: Tree)
+fun isMirror(tree: list<Node>, i: int, j: int): bool {
+  if i == (-1) && j == (-1) { return true }
+  if i == (-1) || j == (-1) { return false }
+  let n1 = tree[i]
+  let n2 = tree[j]
+  if n1.value != n2.value { return false }
+  return isMirror(tree, n1.left, n2.right) && isMirror(tree, n1.right, n2.left)
+}
 
-// Determine if a binary tree is a mirror of itself.
-fun isSymmetric(root: Tree): bool {
-  fun isMirror(t1: Tree, t2: Tree): bool {
-    return match t1 {
-      Leaf => match t2 {
-        Leaf => true
-        _ => false
-      }
-      Node(l1, v1, r1) => match t2 {
-        Node(l2, v2, r2) => v1 == v2 && isMirror(l1, r2) && isMirror(r1, l2)
-        _ => false
-      }
-    }
-  }
-  return isMirror(root, root)
+fun isSymmetric(tree: list<Node>, root: int): bool {
+  return isMirror(tree, root, root)
 }
 
 // Test cases from LeetCode
 
 test "example 1" {
-  let tree = Node {
-    left: Node {
-      left: Node { left: Leaf {}, value: 3, right: Leaf {} },
-      value: 2,
-      right: Node { left: Leaf {}, value: 4, right: Leaf {} }
-    },
-    value: 1,
-    right: Node {
-      left: Node { left: Leaf {}, value: 4, right: Leaf {} },
-      value: 2,
-      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
-    }
-  }
-  expect isSymmetric(tree) == true
+  let tree: list<Node> = [
+    Node { value: 1, left: 1, right: 2 },  // 0
+    Node { value: 2, left: 3, right: 4 },  // 1
+    Node { value: 2, left: 5, right: 6 },  // 2
+    Node { value: 3, left: -1, right: -1 }, // 3
+    Node { value: 4, left: -1, right: -1 }, // 4
+    Node { value: 4, left: -1, right: -1 }, // 5
+    Node { value: 3, left: -1, right: -1 }  // 6
+  ]
+  expect isSymmetric(tree, 0) == true
 }
 
 test "example 2" {
-  let tree = Node {
-    left: Node {
-      left: Leaf {},
-      value: 2,
-      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
-    },
-    value: 1,
-    right: Node {
-      left: Leaf {},
-      value: 2,
-      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
-    }
-  }
-  expect isSymmetric(tree) == false
+  let tree: list<Node> = [
+    Node { value: 1, left: 1, right: 2 }, // 0
+    Node { value: 2, left: -1, right: 3 }, // 1
+    Node { value: 2, left: -1, right: 4 }, // 2
+    Node { value: 3, left: -1, right: -1 }, // 3
+    Node { value: 3, left: -1, right: -1 }  // 4
+  ]
+  expect isSymmetric(tree, 0) == false
 }
 
 test "single node" {
-  expect isSymmetric(Node { left: Leaf {}, value: 1, right: Leaf {} }) == true
+  let tree = [Node { value: 1, left: -1, right: -1 }]
+  expect isSymmetric(tree, 0) == true
 }
 
 test "empty" {
-  expect isSymmetric(Leaf {}) == true
+  let empty: list<Node> = []
+  expect isSymmetric(empty, -1) == true
 }
 
 /*
-Common language errors and how to fix them:
-1. Forgetting to break out of `match` branches with `return`:
-   fun foo(x: int): int {
-     match x {
-       1 => 1
-       2 => 2
-     }
-   }
-   // error: missing return. Fix by using `return` or an else branch.
-
-2. Reassigning a `let` binding:
-   let x = 1
-   x = 2  // error[E004]: cannot reassign immutable binding
- // Fix: declare with `var x = 1` if it needs to change.
-
-  3. Using `null` instead of the `Leaf` constructor:
-     let t = null  // error[I001]: undefined value null
-     // Fix: use `Leaf` to represent an empty subtree.
-
-  4. Confusing assignment with equality:
-     if x = 1 { }
-     // error[P000]: '=' is assignment, not comparison
-     // Fix: use '==' for comparisons.
-
-  5. Off-by-one mistakes in ranges:
-     for i in 0..len(nums) {
-       print(nums[i])
-     }
-     // error[I003]: index out of bounds when i == len(nums)
-     // Fix: use 0..len(nums) for < n or 0..=len(nums)-1 if inclusive.
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if n1.value = n2.value { }
+   // Use '==' when comparing values.
+2. Reassigning a value bound with 'let':
+     let idx = 0
+     idx = 1      // error[E004]
+   // Use 'var' when the value needs to change.
+3. Creating an empty list without specifying its element type:
+     var nodes = []            // error[E027]
+   // Provide the type: var nodes: list<Node> = []
+4. Accessing a child index that is -1:
+     let n = tree[node.left]
+   // Check the index is not -1 before indexing.
 */
