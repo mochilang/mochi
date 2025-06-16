@@ -1,0 +1,52 @@
+// Solution for LeetCode problem 303 - Range Sum Query - Immutable
+
+// NumArray holds the prefix sums of the input numbers.
+type NumArray {
+  prefix: list<int>
+}
+
+// Create a new NumArray from the given list of numbers.
+fun newNumArray(nums: list<int>): NumArray {
+  var p = [0] as list<int>
+  var sum = 0
+  let n = len(nums)
+  for i in 0..n {
+    sum = sum + nums[i]
+    p = p + [sum]
+  }
+  return NumArray { prefix: p }
+}
+
+// Return the sum of elements between left and right inclusive.
+fun sumRange(arr: NumArray, left: int, right: int): int {
+  let p = arr.prefix
+  return p[right + 1] - p[left]
+}
+
+// Test cases from LeetCode
+
+test "example" {
+  let arr = newNumArray([-2,0,3,-5,2,-1])
+  expect sumRange(arr, 0, 2) == 1
+  expect sumRange(arr, 2, 5) == (-1)
+  expect sumRange(arr, 0, 5) == (-3)
+}
+
+test "single" {
+  let arr = newNumArray([5])
+  expect sumRange(arr, 0, 0) == 5
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to initialize the prefix list with 0:
+     var p = []        // ❌ first sumRange would access out of range
+   Start with [0] so that p[i+1] is the sum of first i elements.
+2. Using '=' for comparison inside tests:
+     expect sumRange(arr, 0, 2) = 1  // ❌ assignment, not comparison
+   Use '==' to compare values.
+3. Reassigning a 'let' variable:
+     let sum = 0
+     sum = sum + nums[i]            // ❌ cannot assign
+   Declare with 'var sum' when mutation is needed.
+*/
