@@ -1,0 +1,69 @@
+// Solution for LeetCode 313 - Super Ugly Number
+
+fun nthSuperUglyNumber(n: int, primes: list<int>): int {
+  let k = len(primes)
+  // indices[i] tracks which multiple of primes[i] to use next
+  var indices: list<int> = []
+  var t = 0
+  while t < k {
+    indices = indices + [0]
+    t = t + 1
+  }
+  var uglies: list<int> = [1]
+  var count = 1
+  while count < n {
+    // find the smallest next candidate
+    var next = 1000000000
+    var i = 0
+    while i < k {
+      let candidate = primes[i] * uglies[indices[i]]
+      if candidate < next {
+        next = candidate
+      }
+      i = i + 1
+    }
+    uglies = uglies + [next]
+    // advance indices that produced the next value
+    var j = 0
+    while j < k {
+      if primes[j] * uglies[indices[j]] == next {
+        indices[j] = indices[j] + 1
+      }
+      j = j + 1
+    }
+    count = count + 1
+  }
+  return uglies[n-1]
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect nthSuperUglyNumber(12, [2,7,13,19]) == 32
+}
+
+test "example 2" {
+  expect nthSuperUglyNumber(1, [2,3,5]) == 1
+}
+
+// Additional tests
+
+test "small primes" {
+  expect nthSuperUglyNumber(3, [2,3,5]) == 3
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if a = b { }    // ❌ assignment
+   if a == b { }   // ✅ comparison
+2. Declaring loop counters with 'let' and then trying to modify them.
+   let i = 0
+   i = i + 1        // ❌ cannot reassign
+   var i = 0        // ✅ use 'var' for mutable variables
+3. Forgetting list indices start at 0. The n-th element is at n-1.
+   uglies[n]        // ❌ out of range
+   uglies[n-1]      // ✅ correct index
+4. Introducing union types or 'match' for simple loops.
+   Straightforward 'if' checks keep the solution clear.
+*/
