@@ -13,25 +13,25 @@ def reverseList(xs: list[int]) -> list[int]:
 	return out
 
 def zigzagLevelOrder(root: Tree) -> list[list[int]]:
-	if (lambda _t=root: True if isinstance(_t, Leaf) else False)():
+	if (lambda _t0=root: True if isinstance(_t0, Leaf) else False)():
 		return []
 	result = []
 	queue = [root]
 	level = 0
 	while (len(queue) > 0):
 		vals = []
-		next = []
+		_next = []
 		for node in queue:
-			if (lambda _t=node: False if isinstance(_t, Leaf) else True)():
+			if (lambda _t1=node: False if isinstance(_t1, Leaf) else True)():
 				vals = (vals + [node.value])
-				if (lambda _t=node.left: False if isinstance(_t, Leaf) else True)():
-					next = (next + [node.left])
-				if (lambda _t=node.right: False if isinstance(_t, Leaf) else True)():
-					next = (next + [node.right])
+				if (lambda _t2=node.left: False if isinstance(_t2, Leaf) else True)():
+					_next = (_next + [node.left])
+				if (lambda _t3=node.right: False if isinstance(_t3, Leaf) else True)():
+					_next = (_next + [node.right])
 		if ((level % 2) == 1):
 			vals = reverseList(vals)
 		result = (result + [vals])
-		queue = next
+		queue = _next
 		level = (level + 1)
 	return result
 
@@ -42,9 +42,9 @@ class Leaf(Tree):
 	pass
 @dataclasses.dataclass
 class Node(Tree):
-	left: typing.Any
+	left: Tree
 	value: int
-	right: typing.Any
+	right: Tree
 
 def example_1():
 	tree = Node(left=Node(left=Leaf(), value=9, right=Leaf()), value=3, right=Node(left=Node(left=Leaf(), value=15, right=Leaf()), value=20, right=Node(left=Leaf(), value=7, right=Leaf())))

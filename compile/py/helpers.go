@@ -29,7 +29,7 @@ var pyReserved = map[string]struct{}{
 	"raise": {}, "return": {}, "try": {}, "while": {}, "with": {}, "yield": {},
 	// Builtins commonly emitted by the compiler
 	"range": {}, "len": {}, "print": {}, "sorted": {}, "list": {}, "dict": {},
-	"set": {}, "str": {}, "int": {}, "float": {}, "bool": {}, "type": {},
+	"set": {}, "str": {}, "int": {}, "float": {}, "bool": {}, "type": {}, "next": {},
 }
 
 func sanitizeName(name string) string {
