@@ -1,0 +1,56 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func deleteNode(values []int, index int) []int {
+	var arr []int = values
+	var i int = index
+	for (i < (len(arr) - 1)) {
+		arr[i] = arr[(i + 1)]
+		i = (i + 1)
+	}
+	return arr[0:(len(arr) - 1)]
+}
+
+func example_1() {
+	expect(_equal(deleteNode([]int{4, 5, 1, 9}, 1), []int{4, 1, 9}))
+}
+
+func example_2() {
+	expect(_equal(deleteNode([]int{4, 5, 1, 9}, 2), []int{4, 5, 9}))
+}
+
+func delete_first() {
+	expect(_equal(deleteNode([]int{1, 2, 3}, 0), []int{2, 3}))
+}
+
+func delete_middle() {
+	expect(_equal(deleteNode([]int{1, 2, 3, 4}, 2), []int{1, 2, 4}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	delete_first()
+	delete_middle()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

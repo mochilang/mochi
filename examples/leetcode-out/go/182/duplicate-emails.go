@@ -1,0 +1,89 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func findDuplicateEmails(emails []string) []string {
+	var counts map[string]int = map[string]int{}
+	for _, e := range emails {
+		var c int = 0
+		_tmp0 := e
+		_tmp1 := counts
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			c = counts[e]
+		}
+		counts[e] = (c + 1)
+	}
+	var result []string = []string{}
+	for _, e := range emails {
+		if (counts[e] > 1) {
+			var exists bool = false
+			for _, r := range result {
+				if (r == e) {
+					exists = true
+					break
+				}
+			}
+			if !exists {
+				result = append(append([]string{}, result...), []string{e}...)
+			}
+		}
+	}
+	return result
+}
+
+func example_duplicates() {
+	var emails []string = []string{"a@x.com", "b@y.com", "a@x.com"}
+	_ = emails
+	expect(_equal(findDuplicateEmails(emails), []string{"a@x.com"}))
+}
+
+func multiple_duplicates() {
+	var emails []string = []string{"a@x.com", "b@y.com", "a@x.com", "b@y.com", "c@z.com", "a@x.com"}
+	_ = emails
+	expect(_equal(findDuplicateEmails(emails), []string{"a@x.com", "b@y.com"}))
+}
+
+func no_duplicates() {
+	expect(_equal(findDuplicateEmails([]string{"a@x.com", "b@y.com"}), []any{}))
+}
+
+func empty_list() {
+	expect(_equal(findDuplicateEmails([]string{}), []any{}))
+}
+
+func main() {
+	example_duplicates()
+	multiple_duplicates()
+	no_duplicates()
+	empty_list()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

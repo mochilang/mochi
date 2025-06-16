@@ -1,0 +1,131 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func Leaf() map[string]any {
+	return _cast[map[string]any](map[string]string{"__name": "Leaf"})
+}
+
+func Node(left map[string]any, value int, right map[string]any) map[string]any {
+	return map[string]any{"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+func isLeaf(t map[string]any) bool {
+	return _equal(t["__name"], "Leaf")
+}
+
+func left(t map[string]any) map[string]any {
+	return t["left"]
+}
+
+func right(t map[string]any) map[string]any {
+	return t["right"]
+}
+
+func value(t map[string]any) int {
+	return _cast[int](t["value"])
+}
+
+func minInt(a int, b int) int {
+	if (a < b) {
+		return a
+	}
+	return b
+}
+
+func maxInt(a int, b int) int {
+	if (a > b) {
+		return a
+	}
+	return b
+}
+
+func helper(node map[string]any) map[string]any {
+	if isLeaf(node) {
+		return map[string]any{"min": 2147483647, "max": -2147483648, "size": 0, "largest": 0, "bst": true}
+	}
+	var l map[string]any = helper(left(node))
+	var r map[string]any = helper(right(node))
+	var minVal int = value(node)
+	var maxVal int = value(node)
+	if !isLeaf(left(node)) {
+		minVal = minInt(minVal, _cast[int](l["min"]))
+		maxVal = maxInt(maxVal, _cast[int](l["max"]))
+	}
+	if !isLeaf(right(node)) {
+		minVal = minInt(minVal, _cast[int](r["min"]))
+		maxVal = maxInt(maxVal, _cast[int](r["max"]))
+	}
+	var size int = (((_cast[int](l["size"])) + (_cast[int](r["size"]))) + 1)
+	var bst bool = false
+	if ((((_cast[bool](l["bst"])) && (_cast[bool](r["bst"]))) && (value(node) > (_cast[int](l["max"])))) && (value(node) < (_cast[int](r["min"])))) {
+		bst = true
+	}
+	var largest int = size
+	if !bst {
+		var ll int = _cast[int](l["largest"])
+		var rl int = _cast[int](r["largest"])
+		largest = maxInt(ll, rl)
+	}
+	return map[string]any{"min": minVal, "max": maxVal, "size": size, "largest": largest, "bst": bst}
+}
+
+func largestBSTSubtree(root map[string]any) int {
+	var info map[string]any = helper(root)
+	return _cast[int](info["largest"])
+}
+
+func example_1() {
+	expect((largestBSTSubtree(example1) == 3))
+}
+
+func single_node() {
+	expect((largestBSTSubtree(Node(Leaf(), 1, Leaf())) == 1))
+}
+
+func already_bst() {
+	var tree map[string]any = Node(Node(Leaf(), 2, Leaf()), 3, Node(Leaf(), 4, Node(Leaf(), 5, Leaf())))
+	_ = tree
+	expect((largestBSTSubtree(tree) == 4))
+}
+
+func empty() {
+	expect((largestBSTSubtree(Leaf()) == 0))
+}
+
+var example1 map[string]any = Node(Node(Node(Leaf(), 1, Leaf()), 5, Node(Leaf(), 8, Leaf())), 10, Node(Leaf(), 15, Node(Leaf(), 7, Leaf())))
+func main() {
+	example_1()
+	single_node()
+	already_bst()
+	empty()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

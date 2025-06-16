@@ -1,0 +1,117 @@
+package main
+
+import (
+	"fmt"
+	"reflect"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func fourSum(nums []int, target int) [][]int {
+	var sorted []int = func() []int {
+	items := []int{}
+	for _, n := range nums {
+		items = append(items, n)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		n := it
+		pairs[idx] = pair{item: it, key: n}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []int{}
+	for _, n := range items {
+		_res = append(_res, n)
+	}
+	return _res
+}()
+	var n int = len(sorted)
+	var result [][]int = [][]int{}
+	for i := 0; i < n; i++ {
+		if ((i > 0) && (sorted[i] == sorted[(i - 1)])) {
+			continue
+		}
+		for j := (i + 1); j < n; j++ {
+			if ((j > (i + 1)) && (sorted[j] == sorted[(j - 1)])) {
+				continue
+			}
+			var left int = (j + 1)
+			var right int = (n - 1)
+			for (left < right) {
+				var sum int = (((sorted[i] + sorted[j]) + sorted[left]) + sorted[right])
+				if (sum == target) {
+					result = append(append([][]int{}, result...), [][]int{[]int{sorted[i], sorted[j], sorted[left], sorted[right]}}...)
+					left = (left + 1)
+					right = (right - 1)
+					for ((left < right) && (sorted[left] == sorted[(left - 1)])) {
+						left = (left + 1)
+					}
+					for ((left < right) && (sorted[right] == sorted[(right + 1)])) {
+						right = (right - 1)
+					}
+				} else 				if (sum < target) {
+					left = (left + 1)
+				} else {
+					right = (right - 1)
+				}
+			}
+		}
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(fourSum([]int{1, 0, -1, 0, -2, 2}, 0), [][]int{[]int{-2, -1, 1, 2}, []int{-2, 0, 0, 2}, []int{-1, 0, 0, 1}}))
+}
+
+func example_2() {
+	expect(_equal(fourSum([]int{2, 2, 2, 2, 2}, 8), [][]int{[]int{2, 2, 2, 2}}))
+}
+
+func main() {
+	example_1()
+	example_2()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

@@ -1,0 +1,135 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func Leaf() map[string]any {
+	return _cast[map[string]any](map[string]string{"__name": "Leaf"})
+}
+
+func Node(left map[string]any, value int, right map[string]any) map[string]any {
+	return map[string]any{"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+func isLeaf(t map[string]any) bool {
+	return _equal(t["__name"], "Leaf")
+}
+
+func left(t map[string]any) map[string]any {
+	return t["left"]
+}
+
+func right(t map[string]any) map[string]any {
+	return t["right"]
+}
+
+func value(t map[string]any) int {
+	return _cast[int](t["value"])
+}
+
+func inorder(root map[string]any) []int {
+	if isLeaf(root) {
+		return _cast[[]int]([]any{})
+	}
+	return append(append([]int{}, append(append([]int{}, inorder(left(root))...), []int{value(root)}...)...), inorder(right(root))...)
+}
+
+func absFloat(x float64) float64 {
+	if (x < 0) {
+		return -x
+	} else {
+		return x
+	}
+}
+
+func closestKValues(root map[string]any, target float64, k int) []int {
+	var vals []int = inorder(root)
+	var sorted []int = func() []int {
+	items := []int{}
+	for _, v := range vals {
+		items = append(items, v)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		v := it
+		pairs[idx] = pair{item: it, key: absFloat(((_cast[float64](v)) - target))}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []int{}
+	for _, v := range items {
+		_res = append(_res, v)
+	}
+	return _res
+}()
+	return sorted[0:k]
+}
+
+func example() {
+	expect(_equal(closestKValues(example, 3.714286, 2), []int{4, 3}))
+}
+
+func single_node() {
+	expect(_equal(closestKValues(Node(Leaf(), 1, Leaf()), 0, 1), []int{1}))
+}
+
+var example map[string]any = Node(Node(Node(Leaf(), 1, Leaf()), 2, Node(Leaf(), 3, Leaf())), 4, Node(Leaf(), 5, Leaf()))
+func main() {
+	example()
+	single_node()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

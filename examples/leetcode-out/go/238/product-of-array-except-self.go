@@ -1,0 +1,83 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func productExceptSelf(nums []int) []int {
+	var n int = len(nums)
+	if (n == 0) {
+		return _cast[[]int]([]any{})
+	}
+	var result []int = []int{}
+	var prefix int = 1
+	var i int = 0
+	for (i < n) {
+		result = append(append([]int{}, result...), []int{prefix}...)
+		prefix = (prefix * nums[i])
+		i = (i + 1)
+	}
+	var suffix int = 1
+	i = (n - 1)
+	for (i >= 0) {
+		result[i] = (result[i] * suffix)
+		suffix = (suffix * nums[i])
+		i = (i - 1)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(productExceptSelf([]int{1, 2, 3, 4}), []int{24, 12, 8, 6}))
+}
+
+func example_2() {
+	expect(_equal(productExceptSelf([]int{0, 1, 2, 3}), []int{6, 0, 0, 0}))
+}
+
+func example_3() {
+	expect(_equal(productExceptSelf([]int{-1, 1, 0, -3, 3}), []int{0, 0, 9, 0, 0}))
+}
+
+func single_element() {
+	expect(_equal(productExceptSelf([]int{5}), []int{1}))
+}
+
+func two_zeros() {
+	expect(_equal(productExceptSelf([]int{0, 0}), []int{0, 0}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+	single_element()
+	two_zeros()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

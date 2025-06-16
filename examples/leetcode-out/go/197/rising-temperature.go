@@ -1,0 +1,54 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Weather struct {
+	Id int `json:"id"`
+	RecordDate string `json:"recordDate"`
+	Temperature int `json:"temperature"`
+}
+
+func risingTemperature(records []Weather) []int {
+	var result []int = []int{}
+	var i int = 1
+	for (i < len(records)) {
+		var today Weather = records[i]
+		_ = today
+		var yesterday Weather = records[(i - 1)]
+		_ = yesterday
+		if (today.Temperature > yesterday.Temperature) {
+			result = append(append([]int{}, result...), []int{today.Id}...)
+		}
+		i = (i + 1)
+	}
+	return result
+}
+
+func rising_days() {
+	expect(_equal(risingTemperature(sampleWeather), []int{2, 4}))
+}
+
+var sampleWeather []Weather = []Weather{Weather{Id: 1, RecordDate: "2015-01-01", Temperature: 10}, Weather{Id: 2, RecordDate: "2015-01-02", Temperature: 25}, Weather{Id: 3, RecordDate: "2015-01-03", Temperature: 20}, Weather{Id: 4, RecordDate: "2015-01-04", Temperature: 30}}
+func main() {
+	rising_days()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

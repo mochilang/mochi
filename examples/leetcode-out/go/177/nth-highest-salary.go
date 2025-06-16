@@ -1,0 +1,98 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Employee struct {
+	Id int `json:"id"`
+	Salary int `json:"salary"`
+}
+
+func nthHighestSalary(employees []Employee, n int) int {
+	var uniqList []int = []int{}
+	for _, e := range employees {
+		var seen bool = false
+		for _, s := range uniqList {
+			if (s == e.Salary) {
+				seen = true
+				break
+			}
+		}
+		if !seen {
+			uniqList = append(append([]int{}, uniqList...), []int{e.Salary}...)
+		}
+	}
+	var sorted []int = func() []int {
+	items := []int{}
+	for _, v := range uniqList {
+		items = append(items, v)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		v := it
+		pairs[idx] = pair{item: it, key: -v}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []int{}
+	for _, v := range items {
+		_res = append(_res, v)
+	}
+	return _res
+}()
+	if (n <= len(sorted)) {
+		return sorted[(n - 1)]
+	}
+	return 0
+}
+
+func first_highest() {
+	expect((nthHighestSalary(employees, 1) == 300))
+}
+
+func second_highest() {
+	expect((nthHighestSalary(employees, 2) == 200))
+}
+
+func too_high() {
+	expect((nthHighestSalary(employees, 5) == 0))
+}
+
+var employees []Employee = []Employee{Employee{Id: 1, Salary: 100}, Employee{Id: 2, Salary: 200}, Employee{Id: 3, Salary: 300}, Employee{Id: 4, Salary: 300}}
+func main() {
+	first_highest()
+	second_highest()
+	too_high()
+}
+

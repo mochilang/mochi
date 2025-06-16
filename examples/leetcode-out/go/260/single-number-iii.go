@@ -1,0 +1,248 @@
+package main
+
+import (
+	"fmt"
+	"reflect"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func singleNumber(nums []int) []int {
+	var counts map[int]int = map[int]int{}
+	for _, n := range nums {
+		_tmp0 := n
+		_tmp1 := counts
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			counts[n] = (counts[n] + 1)
+		} else {
+			counts[n] = 1
+		}
+	}
+	var result []int = []int{}
+	for _, n := range nums {
+		if (counts[n] == 1) {
+			result = append(append([]int{}, result...), []int{n}...)
+			if (len(result) == 2) {
+				break
+			}
+		}
+	}
+	return result
+}
+
+func example_1() {
+	var out []int = func() []int {
+	items := []int{}
+	for _, x := range singleNumber([]int{1, 2, 1, 3, 2, 5}) {
+		items = append(items, x)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		x := it
+		pairs[idx] = pair{item: it, key: x}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []int{}
+	for _, x := range items {
+		_res = append(_res, x)
+	}
+	return _res
+}()
+	_ = out
+	expect(_equal(out, []int{3, 5}))
+}
+
+func negatives() {
+	var out []int = func() []int {
+	items := []int{}
+	for _, x := range singleNumber([]int{-1, 0}) {
+		items = append(items, x)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		x := it
+		pairs[idx] = pair{item: it, key: x}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []int{}
+	for _, x := range items {
+		_res = append(_res, x)
+	}
+	return _res
+}()
+	_ = out
+	expect(_equal(out, []int{-1, 0}))
+}
+
+func simple() {
+	var out []int = func() []int {
+	items := []int{}
+	for _, x := range singleNumber([]int{0, 1}) {
+		items = append(items, x)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		x := it
+		pairs[idx] = pair{item: it, key: x}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []int{}
+	for _, x := range items {
+		_res = append(_res, x)
+	}
+	return _res
+}()
+	_ = out
+	expect(_equal(out, []int{0, 1}))
+}
+
+func mixed_order() {
+	var out []int = func() []int {
+	items := []int{}
+	for _, x := range singleNumber([]int{1, 2, 3, 2, 4, 1}) {
+		items = append(items, x)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		x := it
+		pairs[idx] = pair{item: it, key: x}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []int{}
+	for _, x := range items {
+		_res = append(_res, x)
+	}
+	return _res
+}()
+	_ = out
+	expect(_equal(out, []int{3, 4}))
+}
+
+func main() {
+	example_1()
+	negatives()
+	simple()
+	mixed_order()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

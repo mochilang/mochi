@@ -1,0 +1,69 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func combinationSum3(k int, n int) [][]int {
+	var result [][]int = [][]int{}
+	var backtrack func(int, int, []int)
+	backtrack = func(start int, remain int, path []int) {
+		if (len(path) == k) {
+			if (remain == 0) {
+				result = append(append([][]int{}, result...), [][]int{path}...)
+			}
+		} else 	if (remain > 0) {
+			var i int = start
+			for (i <= 9) {
+				if (i > remain) {
+					break
+				}
+				backtrack((i + 1), (remain - i), append(append([]int{}, path...), []int{i}...))
+				i = (i + 1)
+			}
+		}
+}
+	backtrack(1, n, []int{})
+	return result
+}
+
+func example_1() {
+	expect(_equal(combinationSum3(3, 7), [][]int{[]int{1, 2, 4}}))
+}
+
+func example_2() {
+	expect(_equal(combinationSum3(3, 9), [][]int{[]int{1, 2, 6}, []int{1, 3, 5}, []int{2, 3, 4}}))
+}
+
+func example_3() {
+	expect(_equal(combinationSum3(4, 1), []any{}))
+}
+
+func no_combination() {
+	expect(_equal(combinationSum3(3, 2), []any{}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+	no_combination()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

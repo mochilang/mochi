@@ -1,0 +1,107 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func solve(board [][]string) [][]string {
+	var rows int = len(board)
+	if (rows == 0) {
+		return board
+	}
+	var cols int = len(board[0])
+	var queue [][]int = [][]int{}
+	for r := 0; r < rows; r++ {
+		if (board[r][0] == "O") {
+			queue = append(append([][]int{}, queue...), [][]int{[]int{r, 0}}...)
+		}
+		if ((cols > 1) && (board[r][(cols - 1)] == "O")) {
+			queue = append(append([][]int{}, queue...), [][]int{[]int{r, (cols - 1)}}...)
+		}
+	}
+	for c := 0; c < cols; c++ {
+		if (board[0][c] == "O") {
+			queue = append(append([][]int{}, queue...), [][]int{[]int{0, c}}...)
+		}
+		if ((rows > 1) && (board[(rows - 1)][c] == "O")) {
+			queue = append(append([][]int{}, queue...), [][]int{[]int{(rows - 1), c}}...)
+		}
+	}
+	var i int = 0
+	for (i < len(queue)) {
+		var pos []int = queue[i]
+		var r int = pos[0]
+		var c int = pos[1]
+		if (board[r][c] == "O") {
+			board[r][c] = "S"
+			if (r > 0) {
+				if (board[(r - 1)][c] == "O") {
+					queue = append(append([][]int{}, queue...), [][]int{[]int{(r - 1), c}}...)
+				}
+			}
+			if ((r + 1) < rows) {
+				if (board[(r + 1)][c] == "O") {
+					queue = append(append([][]int{}, queue...), [][]int{[]int{(r + 1), c}}...)
+				}
+			}
+			if (c > 0) {
+				if (board[r][(c - 1)] == "O") {
+					queue = append(append([][]int{}, queue...), [][]int{[]int{r, (c - 1)}}...)
+				}
+			}
+			if ((c + 1) < cols) {
+				if (board[r][(c + 1)] == "O") {
+					queue = append(append([][]int{}, queue...), [][]int{[]int{r, (c + 1)}}...)
+				}
+			}
+		}
+		i = (i + 1)
+	}
+	for r := 0; r < rows; r++ {
+		for c := 0; c < cols; c++ {
+			if (board[r][c] == "O") {
+				board[r][c] = "X"
+			} else 			if (board[r][c] == "S") {
+				board[r][c] = "O"
+			}
+		}
+	}
+	return board
+}
+
+func example_1() {
+	var board [][]string = [][]string{[]string{"X", "X", "X", "X"}, []string{"X", "O", "O", "X"}, []string{"X", "X", "O", "X"}, []string{"X", "O", "X", "X"}}
+	_ = board
+	var expected [][]string = [][]string{[]string{"X", "X", "X", "X"}, []string{"X", "X", "X", "X"}, []string{"X", "X", "X", "X"}, []string{"X", "O", "X", "X"}}
+	_ = expected
+	expect(_equal(solve(board), expected))
+}
+
+func no_change() {
+	var board [][]string = [][]string{[]string{"X", "X"}, []string{"X", "X"}}
+	_ = board
+	expect(_equal(solve(board), board))
+}
+
+func main() {
+	example_1()
+	no_change()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

@@ -1,0 +1,91 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func isPalindrome(s string) bool {
+	var left int = 0
+	var right int = (len(s) - 1)
+	for (left < right) {
+		if (_indexString(s, left) != _indexString(s, right)) {
+			return false
+		}
+		left = (left + 1)
+		right = (right - 1)
+	}
+	return true
+}
+
+func palindromePairs(words []string) [][]int {
+	var result [][]int = [][]int{}
+	var n int = len(words)
+	var i int = 0
+	for (i < n) {
+		var j int = 0
+		for (j < n) {
+			if (i != j) {
+				var combined string = words[i] + words[j]
+				if isPalindrome(combined) {
+					result = append(append([][]int{}, result...), [][]int{[]int{i, j}}...)
+				}
+			}
+			j = (j + 1)
+		}
+		i = (i + 1)
+	}
+	return result
+}
+
+func example_1() {
+	var words []string = []string{"abcd", "dcba", "lls", "s", "sssll"}
+	_ = words
+	expect(_equal(palindromePairs(words), [][]int{[]int{0, 1}, []int{1, 0}, []int{2, 4}, []int{3, 2}}))
+}
+
+func example_2() {
+	var words []string = []string{"bat", "tab", "cat"}
+	_ = words
+	expect(_equal(palindromePairs(words), [][]int{[]int{0, 1}, []int{1, 0}}))
+}
+
+func example_3() {
+	var words []string = []string{"a", ""}
+	_ = words
+	expect(_equal(palindromePairs(words), [][]int{[]int{0, 1}, []int{1, 0}}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

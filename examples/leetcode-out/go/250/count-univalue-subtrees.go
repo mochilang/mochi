@@ -1,0 +1,121 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func Leaf() map[string]any {
+	return _cast[map[string]any](map[string]string{"__name": "Leaf"})
+}
+
+func Node(left map[string]any, value int, right map[string]any) map[string]any {
+	return map[string]any{"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+func isLeaf(t map[string]any) bool {
+	return _equal(t["__name"], "Leaf")
+}
+
+func left(t map[string]any) map[string]any {
+	return t["left"]
+}
+
+func right(t map[string]any) map[string]any {
+	return t["right"]
+}
+
+func value(t map[string]any) int {
+	return _cast[int](t["value"])
+}
+
+func countUnivalSubtrees(root map[string]any) int {
+	var count int = 0
+	var dfs func(map[string]any) bool
+	dfs = func(node map[string]any) bool {
+		if isLeaf(node) {
+			return true
+		}
+		var l map[string]any = left(node)
+		var r map[string]any = right(node)
+		var leftUni bool = dfs(l)
+		var rightUni bool = dfs(r)
+		var isUni bool = true
+		if !isLeaf(l) {
+			if !leftUni {
+				isUni = false
+			}
+			if (value(l) != value(node)) {
+				isUni = false
+			}
+		}
+		if !isLeaf(r) {
+			if !rightUni {
+				isUni = false
+			}
+			if (value(r) != value(node)) {
+				isUni = false
+			}
+		}
+		if isUni {
+			count = (count + 1)
+			return true
+		}
+		return false
+}
+	if !isLeaf(root) {
+		dfs(root)
+	}
+	return count
+}
+
+func example_1() {
+	expect((countUnivalSubtrees(example1) == 4))
+}
+
+func example_2() {
+	expect((countUnivalSubtrees(example2) == 6))
+}
+
+func single_node() {
+	expect((countUnivalSubtrees(Node(Leaf(), 1, Leaf())) == 1))
+}
+
+func empty() {
+	expect((countUnivalSubtrees(Leaf()) == 0))
+}
+
+var example1 map[string]any = Node(Node(Node(Leaf(), 5, Leaf()), 1, Node(Leaf(), 5, Leaf())), 5, Node(Leaf(), 5, Node(Leaf(), 5, Leaf())))
+var example2 map[string]any = Node(Node(Node(Leaf(), 5, Leaf()), 5, Node(Leaf(), 5, Leaf())), 5, Node(Leaf(), 5, Node(Leaf(), 5, Leaf())))
+func main() {
+	example_1()
+	example_2()
+	single_node()
+	empty()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

@@ -1,0 +1,56 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func reverseBetween(nums []int, left int, right int) []int {
+	if (left >= right) {
+		return nums
+	}
+	if ((left < 1) || (right > len(nums))) {
+		return nums
+	}
+	var result []int = nums
+	var i int = (left - 1)
+	var j int = (right - 1)
+	for (i < j) {
+		var temp int = result[i]
+		result[i] = result[j]
+		result[j] = temp
+		i = (i + 1)
+		j = (j - 1)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(reverseBetween([]int{1, 2, 3, 4, 5}, 2, 4), []int{1, 4, 3, 2, 5}))
+}
+
+func left_equals_right() {
+	expect(_equal(reverseBetween([]int{1, 2, 3}, 2, 2), []int{1, 2, 3}))
+}
+
+func main() {
+	example_1()
+	left_equals_right()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

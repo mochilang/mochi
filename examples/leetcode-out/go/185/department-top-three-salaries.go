@@ -1,0 +1,88 @@
+package main
+
+import (
+	"fmt"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Employee struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+	Salary int `json:"salary"`
+	DepartmentId int `json:"departmentId"`
+}
+
+type Department struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+}
+
+type Result struct {
+	Department string `json:"Department"`
+	Employee string `json:"Employee"`
+	Salary int `json:"Salary"`
+}
+
+func topThreeSalaries(employees []Employee, departments []Department) []Result {
+	var results []Result = []Result{}
+	for _, dept := range departments {
+		var salaries []int = []int{}
+		for _, emp := range employees {
+			if (emp.DepartmentId == dept.Id) {
+				var found bool = false
+				for _, s := range salaries {
+					if (s == emp.Salary) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					salaries = append(append([]int{}, salaries...), []int{emp.Salary}...)
+				}
+			}
+		}
+		var i1 int = 0
+		for (i1 < len(salaries)) {
+			var j int = (i1 + 1)
+			for (j < len(salaries)) {
+				if (salaries[j] > salaries[i1]) {
+					var t int = salaries[i1]
+					salaries[i1] = salaries[j]
+					salaries[j] = t
+				}
+				j = (j + 1)
+			}
+			i1 = (i1 + 1)
+		}
+		var i int = 0
+		for ((i < len(salaries)) && (i < 3)) {
+			var sal int = salaries[i]
+			for _, emp := range employees {
+				if ((emp.DepartmentId == dept.Id) && (emp.Salary == sal)) {
+					results = append(append([]Result{}, results...), []Result{Result{Department: dept.Name, Employee: emp.Name, Salary: sal}}...)
+				}
+			}
+			i = (i + 1)
+		}
+	}
+	return results
+}
+
+func top_three_salaries() {
+	var res []Result = topThreeSalaries(employees, departments)
+	var names []string = []string{}
+	for _, r := range res {
+		names = append(append([]string{}, names...), []string{r.Employee}...)
+	}
+	expect((fmt.Sprint(names) == fmt.Sprint([]string{"Max", "Joe", "Randy", "Will", "Henry", "Sam"})))
+}
+
+var employees []Employee = []Employee{Employee{Id: 1, Name: "Joe", Salary: 85000, DepartmentId: 1}, Employee{Id: 2, Name: "Henry", Salary: 80000, DepartmentId: 2}, Employee{Id: 3, Name: "Sam", Salary: 60000, DepartmentId: 2}, Employee{Id: 4, Name: "Max", Salary: 90000, DepartmentId: 1}, Employee{Id: 5, Name: "Janet", Salary: 69000, DepartmentId: 1}, Employee{Id: 6, Name: "Randy", Salary: 85000, DepartmentId: 1}, Employee{Id: 7, Name: "Will", Salary: 70000, DepartmentId: 1}}
+var departments []Department = []Department{Department{Id: 1, Name: "IT"}, Department{Id: 2, Name: "Sales"}}
+func main() {
+	top_three_salaries()
+}
+

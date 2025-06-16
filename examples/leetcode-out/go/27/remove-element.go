@@ -1,0 +1,66 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func removeElement(nums []int, val int) int {
+	var k int = 0
+	var i int = 0
+	for (i < len(nums)) {
+		if (nums[i] != val) {
+			nums[k] = nums[i]
+			k = (k + 1)
+		}
+		i = (i + 1)
+	}
+	return k
+}
+
+func example_1() {
+	var nums []int = []int{3, 2, 2, 3}
+	var k int = removeElement(nums, 3)
+	_ = k
+	expect((k == 2))
+	expect(_equal(nums[0:k], []int{2, 2}))
+}
+
+func example_2() {
+	var nums []int = []int{0, 1, 2, 2, 3, 0, 4, 2}
+	var k int = removeElement(nums, 2)
+	_ = k
+	expect((k == 5))
+	expect(_equal(nums[0:k], []int{0, 1, 3, 0, 4}))
+}
+
+func no_removal() {
+	var nums []int = []int{1, 2, 3}
+	var k int = removeElement(nums, 4)
+	_ = k
+	expect((k == 3))
+	expect(_equal(nums[0:k], []int{1, 2, 3}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	no_removal()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

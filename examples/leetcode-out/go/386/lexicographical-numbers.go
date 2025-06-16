@@ -1,0 +1,72 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func lexicalOrder(n int) []int {
+	var result []int = []int{}
+	var curr int = 1
+	var i int = 0
+	for (i < n) {
+		result = append(append([]int{}, result...), []int{curr}...)
+		if ((curr * 10) <= n) {
+			curr = (curr * 10)
+		} else {
+			if (curr >= n) {
+				curr = (curr / 10)
+			}
+			curr = (curr + 1)
+			for ((curr % 10) == 0) {
+				curr = (curr / 10)
+			}
+		}
+		i = (i + 1)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(lexicalOrder(13), []int{1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9}))
+}
+
+func example_2() {
+	expect(_equal(lexicalOrder(2), []int{1, 2}))
+}
+
+func example_3() {
+	expect(_equal(lexicalOrder(1), []int{1}))
+}
+
+func hundred() {
+	var out []int = lexicalOrder(20)
+	_ = out
+	expect((len(out) == 20))
+	expect((out[0] == 1))
+	expect((out[(len(out) - 1)] == 9))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+	hundred()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

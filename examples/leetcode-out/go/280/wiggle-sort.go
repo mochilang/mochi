@@ -1,0 +1,67 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func wiggleSort(nums []int) []int {
+	var i int = 1
+	for (i < len(nums)) {
+		if ((i % 2) == 1) {
+			if (nums[i] < nums[(i - 1)]) {
+				var temp int = nums[i]
+				nums[i] = nums[(i - 1)]
+				nums[(i - 1)] = temp
+			}
+		} else {
+			if (nums[i] > nums[(i - 1)]) {
+				var temp int = nums[i]
+				nums[i] = nums[(i - 1)]
+				nums[(i - 1)] = temp
+			}
+		}
+		i = (i + 1)
+	}
+	return nums
+}
+
+func example_1() {
+	expect(_equal(wiggleSort([]int{3, 5, 2, 1, 6, 4}), []int{3, 5, 1, 6, 2, 4}))
+}
+
+func example_2() {
+	expect(_equal(wiggleSort([]int{6, 6, 5, 6, 3, 8}), []int{6, 6, 5, 6, 3, 8}))
+}
+
+func already_wiggle() {
+	expect(_equal(wiggleSort([]int{1, 3, 2, 4}), []int{1, 3, 2, 4}))
+}
+
+func two_elements() {
+	expect(_equal(wiggleSort([]int{2, 1}), []int{1, 2}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	already_wiggle()
+	two_elements()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

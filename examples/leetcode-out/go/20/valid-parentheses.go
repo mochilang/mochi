@@ -1,0 +1,108 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func isValid(s string) bool {
+	var stack []any = []any{}
+	var n int = len(s)
+	for i := 0; i < n; i++ {
+		var c string = _indexString(s, i)
+		if (c == "(") {
+			stack = append(append([]any{}, stack...), _toAnySlice([]string{")"})...)
+		} else 		if (c == "[") {
+			stack = append(append([]any{}, stack...), _toAnySlice([]string{"]"})...)
+		} else 		if (c == "{") {
+			stack = append(append([]any{}, stack...), _toAnySlice([]string{"}"})...)
+		} else {
+			if (len(stack) == 0) {
+				return false
+			}
+			var top any = stack[(len(stack) - 1)]
+			if !_equal(top, c) {
+				return false
+			}
+			stack = stack[0:(len(stack) - 1)]
+		}
+	}
+	return (len(stack) == 0)
+}
+
+func example_1() {
+	expect((isValid("()") == true))
+}
+
+func example_2() {
+	expect((isValid("()[]{}") == true))
+}
+
+func example_3() {
+	expect((isValid("(]") == false))
+}
+
+func example_4() {
+	expect((isValid("([)]") == false))
+}
+
+func example_5() {
+	expect((isValid("{[]}") == true))
+}
+
+func empty_string() {
+	expect((isValid("") == true))
+}
+
+func single_closing() {
+	expect((isValid("]") == false))
+}
+
+func unmatched_open() {
+	expect((isValid("((") == false))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+	example_4()
+	example_5()
+	empty_string()
+	single_closing()
+	unmatched_open()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+
+func _toAnySlice[T any](s []T) []any {
+    out := make([]any, len(s))
+    for i, v := range s { out[i] = v }
+    return out
+}
+

@@ -1,0 +1,178 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type ParseRes struct {
+	Val map[string]any `json:"val"`
+	Idx int `json:"idx"`
+}
+
+func IntItem(v int) map[string]any {
+	return map[string]any{"kind": "int", "value": v}
+}
+
+func ListItem(items []map[string]any) map[string]any {
+	return map[string]any{"kind": "list", "items": items}
+}
+
+func isInt(item map[string]any) bool {
+	return _equal(item["kind"], "int")
+}
+
+func itemValue(item map[string]any) int {
+	return _cast[int](item["value"])
+}
+
+func itemList(item map[string]any) []map[string]any {
+	return _cast[[]map[string]any](item["items"])
+}
+
+func parseInt(s string) int {
+	var i int = 0
+	var sign int = 1
+	if ((len(s) > 0) && (((_indexString(s, 0) == "-") || (_indexString(s, 0) == "+")))) {
+		if (_indexString(s, 0) == "-") {
+			sign = -1
+		}
+		i = 1
+	}
+	var digits map[string]int = map[string]int{"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+	var result int = 0
+	for (i < len(s)) {
+		result = ((result * 10) + digits[_indexString(s, i)])
+		i = (i + 1)
+	}
+	return (result * sign)
+}
+
+func parseFrom(s string, i int) ParseRes {
+	if (_indexString(s, i) == "[") {
+		var items []map[string]any = []map[string]any{}
+		var j int = (i + 1)
+		for ((j < len(s)) && (_indexString(s, j) != "]")) {
+			var res ParseRes = parseFrom(s, j)
+			_ = res
+			items = append(append([]map[string]any{}, items...), []map[string]any{res.Val}...)
+			j = res.Idx
+			if ((j < len(s)) && (_indexString(s, j) == ",")) {
+				j = (j + 1)
+			}
+		}
+		return ParseRes{Val: ListItem(items), Idx: (j + 1)}
+	} else {
+		var j int = i
+		var numStr string = ""
+		if (_indexString(s, j) == "-") {
+			numStr = numStr + "-"
+			j = (j + 1)
+		}
+		for (j < len(s)) {
+			var ch string = _indexString(s, j)
+			if ((ch >= "0") && (ch <= "9")) {
+				numStr = numStr + ch
+				j = (j + 1)
+			} else {
+				break
+			}
+		}
+		return ParseRes{Val: IntItem(parseInt(numStr)), Idx: j}
+	}
+}
+
+func deserialize(s string) map[string]any {
+	if (len(s) == 0) {
+		return ListItem([]map[string]any{})
+	}
+	var res ParseRes = parseFrom(s, 0)
+	_ = res
+	return res.Val
+}
+
+func serialize(node map[string]any) string {
+	if isInt(node) {
+		return fmt.Sprint(itemValue(node))
+	} else {
+		var parts []string = []string{}
+		var items []map[string]any = itemList(node)
+		var i int = 0
+		for (i < len(items)) {
+			parts = append(append([]string{}, parts...), []string{serialize(items[i])}...)
+			i = (i + 1)
+		}
+		var body string = ""
+		var j int = 0
+		for (j < len(parts)) {
+			if (j > 0) {
+				body = body + ","
+			}
+			body = body + parts[j]
+			j = (j + 1)
+		}
+		return "[" + body + "]"
+	}
+}
+
+func single_integer() {
+	var parsed map[string]any = deserialize("324")
+	_ = parsed
+	expect((serialize(parsed) == "324"))
+}
+
+func nested_list() {
+	var parsed map[string]any = deserialize("[123,[456,[789]]]")
+	_ = parsed
+	expect((serialize(parsed) == "[123,[456,[789]]]"))
+}
+
+func negative() {
+	var parsed map[string]any = deserialize("[-1]")
+	_ = parsed
+	expect((serialize(parsed) == "[-1]"))
+}
+
+func main() {
+	single_integer()
+	nested_list()
+	negative()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+
