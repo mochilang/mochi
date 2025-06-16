@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
 )
 
@@ -36,6 +37,7 @@ func example_2() {
 }
 
 func main() {
+	fmt.Println("ok")
 	example_1()
 	example_2()
 }

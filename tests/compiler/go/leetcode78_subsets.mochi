@@ -1,0 +1,30 @@
+fun subsets(nums: list<int>): list<list<int>> {
+  var result: list<list<int>> = [[]]
+  for num in nums {
+    var newSets: list<list<int>> = []
+    var i = 0
+    while i < len(result) {
+      let subset = result[i]
+      newSets = newSets + [subset + [num]]
+      i = i + 1
+    }
+    var j = 0
+    while j < len(newSets) {
+      result = result + [newSets[j]]
+      j = j + 1
+    }
+  }
+  return result
+}
+
+test "example 1" {
+  expect subsets([1,2,3]) == [
+    [], [1], [2], [1,2], [3], [1,3], [2,3], [1,2,3]
+  ]
+}
+
+test "example 2" {
+  expect subsets([0]) == [[], [0]]
+}
+
+print("ok")
