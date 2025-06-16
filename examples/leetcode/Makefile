@@ -81,7 +81,7 @@ test: mochi ## Run all tests in *.mochi files
 
 compile: mochi ## Compile all .mochi files to Go and save to ../leetcode-out
 	@mkdir -p ../leetcode-out
-	@for f in $$(find $(shell seq -s " " 1 360) -name '*.mochi'); do \
+	@for f in $$(find $(shell seq -s " " 1 400) -name '*.mochi'); do \
 		start=$$(date +%s%N); \
 		dir=$$(dirname "$$f"); \
 		rel=$${dir#./}; \
