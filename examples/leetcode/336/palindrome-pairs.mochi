@@ -1,0 +1,68 @@
+// Solution for LeetCode problem 336 - Palindrome Pairs
+// The goal is to find all index pairs (i, j) where words[i] + words[j]
+// forms a palindrome. This straightforward approach checks every
+// possible pair.
+
+fun isPalindrome(s: string): bool {
+  var left = 0
+  var right = len(s) - 1
+  while left < right {
+    if s[left] != s[right] {
+      return false
+    }
+    left = left + 1
+    right = right - 1
+  }
+  return true
+}
+
+fun palindromePairs(words: list<string>): list<list<int>> {
+  var result: list<list<int>> = []
+  let n = len(words)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n {
+      if i != j {
+        let combined = words[i] + words[j]
+        if isPalindrome(combined) {
+          result = result + [[i, j]]
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Tests based on the LeetCode examples
+
+test "example 1" {
+  let words = ["abcd", "dcba", "lls", "s", "sssll"]
+  expect palindromePairs(words) == [[0,1],[1,0],[2,4],[3,2]]
+}
+
+test "example 2" {
+  let words = ["bat", "tab", "cat"]
+  expect palindromePairs(words) == [[0,1],[1,0]]
+}
+
+test "example 3" {
+  let words = ["a", ""]
+  expect palindromePairs(words) == [[0,1],[1,0]]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a variable declared with `let`:
+     let pairs = []
+     pairs = [[0,1]]        // ❌ cannot reassign immutable binding
+   Use `var pairs` if mutation is needed.
+2. Using '=' instead of '==' in comparisons:
+     if s[i] = s[j] { }     // ❌ assignment
+     if s[i] == s[j] { }    // ✅ correct comparison
+3. Creating an empty list without a type:
+     var res = []           // ❌ type cannot be inferred
+   Declare the element type, e.g. `var res: list<int> = []`.
+*/
