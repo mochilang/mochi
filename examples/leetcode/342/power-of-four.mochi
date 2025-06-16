@@ -1,0 +1,48 @@
+// Solution for LeetCode problem 342 - Power of Four
+// Determine if a given integer is a power of four.
+// This implementation avoids union types and the 'match' expression.
+
+fun isPowerOfFour(n: int): bool {
+  if n <= 0 {
+    return false
+  }
+  var x = n
+  while x % 4 == 0 {
+    x = x / 4
+  }
+  return x == 1
+}
+
+// Test cases from the LeetCode description
+
+test "example 1" {
+  expect isPowerOfFour(16) == true
+}
+
+test "example 2" {
+  expect isPowerOfFour(5) == false
+}
+
+// Additional edge cases
+
+test "power of two but not four" {
+  expect isPowerOfFour(8) == false
+}
+
+test "largest power of four within 32-bit" {
+  expect isPowerOfFour(1073741824) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparison.
+   if n = 0 { }       // ❌ assignment
+   if n == 0 { }      // ✅ comparison
+2. Declaring variables with 'let' when mutation is needed.
+   let x = 1
+   x = x + 1          // ❌ cannot modify immutable binding
+   var x = 1          // ✅ use 'var' for mutable variables
+3. Attempting Python style 'elif' instead of 'else if'.
+   elif n % 3 == 1 { } // ❌ invalid syntax
+   else if n % 3 == 1 { } // ✅ correct
+*/
