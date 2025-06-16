@@ -26,4 +26,3 @@ func _convSlice[T any, U any](s []T) []U {
     for i, v := range s { out[i] = any(v).(U) }
     return out
 }
-
