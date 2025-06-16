@@ -59,11 +59,11 @@ func main() {
 	if take < len(items) {
 		items = items[:take]
 	}
-	res := []Product{}
+	_res := []Product{}
 	for _, p := range items {
-		res = append(res, p)
+		_res = append(_res, p)
 	}
-	return res
+	return _res
 }()
 	fmt.Println("--- Top products (excluding most expensive) ---")
 	for _, item := range expensive {
