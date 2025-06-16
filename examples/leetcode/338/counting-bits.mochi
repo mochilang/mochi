@@ -1,0 +1,49 @@
+// Solution for LeetCode problem 338 - Counting Bits
+
+fun countBits(n: int): list<int> {
+  var result: list<int> = []
+  var i = 0
+  while i <= n {
+    if i == 0 {
+      result = result + [0]
+    } else {
+      let bits = result[i / 2] + (i % 2)
+      result = result + [bits]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect countBits(2) == [0,1,1]
+}
+
+test "example 2" {
+  expect countBits(5) == [0,1,1,2,1,2]
+}
+
+// Additional edge cases
+
+test "zero" {
+  expect countBits(0) == [0]
+}
+
+test "larger" {
+  expect countBits(8) == [0,1,1,2,1,2,2,3,1]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to mark variables as mutable:
+   let result = []              // ❌ cannot append to an immutable list
+   var result: list<int> = []   // ✅ declare as 'var' with a type
+2. Off-by-one errors in loops:
+   while i < n { }              // ❌ misses the case i == n
+   while i <= n { }             // ✅ iterate through 0..n
+3. Using '=' instead of '==' in conditions:
+   if i = 0 { }                 // ❌ assignment
+   if i == 0 { }                // ✅ comparison
+*/
