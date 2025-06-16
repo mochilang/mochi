@@ -374,7 +374,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
 		if s.Type != nil {
-			typ = resolveTypeRef(s.Type)
+			typ = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
 			typ = c.inferExprType(s.Value)
 		}
@@ -413,7 +413,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
 		if s.Type != nil {
-			typ = resolveTypeRef(s.Type)
+			typ = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
 			typ = c.inferExprType(s.Value)
 		}
@@ -691,7 +691,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			c.indent++
 			c.writeln(fmt.Sprintf("__name: \"%s\";", v.Name))
 			for _, f := range v.Fields {
-				ts := tsType(resolveTypeRef(f.Type))
+				ts := tsType(c.resolveTypeRef(f.Type))
 				if ts != "" {
 					c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(f.Name), ts))
 				} else {
@@ -709,7 +709,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	c.indent++
 	for _, m := range t.Members {
 		if m.Field != nil {
-			ts := tsType(resolveTypeRef(m.Field.Type))
+			ts := tsType(c.resolveTypeRef(m.Field.Type))
 			if ts != "" {
 				c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(m.Field.Name), ts))
 			} else {
@@ -873,14 +873,14 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			params := make([]types.Type, len(fun.Params))
 			for i, p := range fun.Params {
 				if p.Type != nil {
-					params[i] = resolveTypeRef(p.Type)
+					params[i] = c.resolveTypeRef(p.Type)
 				} else {
 					params[i] = types.AnyType{}
 				}
 			}
 			var ret types.Type = types.VoidType{}
 			if fun.Return != nil {
-				ret = resolveTypeRef(fun.Return)
+				ret = c.resolveTypeRef(fun.Return)
 			}
 			ft = types.FuncType{Params: params, Return: ret}
 			c.env.SetVar(fun.Name, ft, false)
@@ -895,7 +895,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		if i < len(ft.Params) {
 			typ = ft.Params[i]
 		} else if p.Type != nil {
-			typ = resolveTypeRef(p.Type)
+			typ = c.resolveTypeRef(p.Type)
 		}
 		if typ != nil {
 			ts := tsType(typ)
@@ -910,7 +910,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			retType = ts
 		}
 	} else if fun.Return != nil {
-		if ts := tsType(resolveTypeRef(fun.Return)); ts != "" {
+		if ts := tsType(c.resolveTypeRef(fun.Return)); ts != "" {
 			retType = ts
 		}
 	}
@@ -921,7 +921,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		if i < len(ft.Params) {
 			child.SetVar(p.Name, ft.Params[i], true)
 		} else if p.Type != nil {
-			child.SetVar(p.Name, resolveTypeRef(p.Type), true)
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
 		} else {
 			child.SetVar(p.Name, types.AnyType{}, true)
 		}
@@ -1284,13 +1284,13 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	for i, p := range fn.Params {
 		part := sanitizeName(p.Name)
 		if p.Type != nil {
-			part += ": " + tsType(resolveTypeRef(p.Type))
+			part += ": " + tsType(c.resolveTypeRef(p.Type))
 		}
 		params[i] = part
 	}
 	retType := "any"
 	if fn.Return != nil {
-		if ts := tsType(resolveTypeRef(fn.Return)); ts != "" {
+		if ts := tsType(c.resolveTypeRef(fn.Return)); ts != "" {
 			retType = ts
 		}
 	} else if fn.ExprBody != nil {
@@ -1472,7 +1472,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	c.use("_dataset")
 	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
 	if l.Type != nil {
-		t := resolveTypeRef(l.Type)
+		t := c.resolveTypeRef(l.Type)
 		ts := tsType(t)
 		if ts != "" {
 			expr = fmt.Sprintf("%s as Array<%s>", expr, ts)

@@ -6,9 +6,9 @@ type Leaf = {
 
 type _Node = {
 	__name: "Node";
-	left: any;
+	left: Tree;
 	value: number;
-	right: any;
+	right: Tree;
 }
 
 type Tree = Leaf | _Node
