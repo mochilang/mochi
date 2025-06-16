@@ -1,0 +1,78 @@
+// Solution for LeetCode problem 343 - Integer Break
+//
+// Given an integer n >= 2, split it into the sum of at least two
+// positive integers and maximize the product of those integers.
+// This implementation uses dynamic programming without union types
+// or pattern matching.
+
+fun max(a: int, b: int): int {
+  if a > b {
+    return a
+  }
+  return b
+}
+
+fun integerBreak(n: int): int {
+  if n <= 2 {
+    return 1
+  }
+  var dp: list<int> = []
+  var i = 0
+  while i <= n {
+    dp = dp + [0]
+    i = i + 1
+  }
+  dp[1] = 1
+  dp[2] = 1
+  i = 3
+  while i <= n {
+    var j = 1
+    var best = 0
+    while j < i {
+      let direct = j * (i - j)
+      let broken = j * dp[i - j]
+      let candidate = max(direct, broken)
+      if candidate > best {
+        best = candidate
+      }
+      j = j + 1
+    }
+    dp[i] = best
+    i = i + 1
+  }
+  return dp[n]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect integerBreak(2) == 1
+}
+
+test "example 2" {
+  expect integerBreak(10) == 36
+}
+
+// Additional edge cases
+
+test "n equals 3" {
+  expect integerBreak(3) == 2
+}
+
+test "n equals 4" {
+  expect integerBreak(4) == 4
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Mutating a variable declared with `let`:
+     let best = 0
+     best = 1    // ❌ cannot assign
+   Use `var` when the value will change.
+2. Using `=` instead of `==` for comparisons:
+     if direct = broken { ... } // ❌ assignment
+     if direct == broken { ... } // ✅ comparison
+3. Creating an empty list without a type annotation:
+     var arr = []            // ❌ type cannot be inferred
+     var arr: list<int> = [] // ✅ specify the element type
+*/
