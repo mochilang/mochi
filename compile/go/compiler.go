@@ -1504,11 +1504,23 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	ops := []string{}
 
 	for _, part := range b.Right {
-		right, err := c.compilePostfix(part.Right)
-		if err != nil {
-			return "", err
-		}
 		rightType := c.inferPostfixType(part.Right)
+		right := ""
+		var err error
+		if part.Op == "+" && isList(leftType) && len(part.Right.Ops) == 0 && part.Right.Target.List != nil {
+			lt := leftType.(types.ListType)
+			right, err = c.compilePostfixHint(part.Right, leftType)
+			if err != nil {
+				return "", err
+			}
+			rightType = lt
+		}
+		if right == "" {
+			right, err = c.compilePostfix(part.Right)
+			if err != nil {
+				return "", err
+			}
+		}
 		ops = append(ops, part.Op)
 		operands = append(operands, right)
 		typesList = append(typesList, rightType)
@@ -3006,6 +3018,11 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 		}
 	}
 	return c.compileExpr(e)
+}
+
+func (c *Compiler) compilePostfixHint(p *parser.PostfixExpr, hint types.Type) (string, error) {
+	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}
+	return c.compileExprHint(e, hint)
 }
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
