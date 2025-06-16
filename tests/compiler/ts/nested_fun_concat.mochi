@@ -1,0 +1,5 @@
+fun outer(): list<int> {
+  fun inner(): list<int> { return [1] }
+  return inner() + inner()
+}
+print(len(outer()))
