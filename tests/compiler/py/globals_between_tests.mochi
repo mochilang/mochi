@@ -1,0 +1,13 @@
+let a = 1
+
+test "first" {
+  expect a == 1
+}
+
+let b = 2
+
+test "second" {
+  expect b == 2
+}
+
+print("done")

@@ -121,13 +121,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	// Placeholder globals for variables used in tests
 	wrotePlaceholder := false
+	seen := map[string]bool{}
 	for _, s := range prog.Statements {
 		if s.Test != nil {
-			break
+			continue
 		}
 		switch {
 		case s.Let != nil:
 			name := sanitizeName(s.Let.Name)
+			if seen[name] {
+				continue
+			}
+			seen[name] = true
 			if isLiteralExpr(s.Let.Value) || isPureExpr(s.Let.Value) {
 				expr, err := c.compileExpr(s.Let.Value)
 				if err != nil {
@@ -140,6 +145,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			wrotePlaceholder = true
 		case s.Var != nil:
 			name := sanitizeName(s.Var.Name)
+			if seen[name] {
+				continue
+			}
+			seen[name] = true
 			if isLiteralExpr(s.Var.Value) || isPureExpr(s.Var.Value) {
 				expr, err := c.compileExpr(s.Var.Value)
 				if err != nil {
