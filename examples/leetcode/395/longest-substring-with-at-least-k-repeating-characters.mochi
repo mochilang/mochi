@@ -1,0 +1,84 @@
+fun longestSubstring(s: string, k: int): int {
+  if len(s) == 0 {
+    return 0
+  }
+  var maxLen = 0
+  var target = 1
+  while target <= 26 {
+    var counts: map<string, int> = {}
+    var left = 0
+    var right = 0
+    var unique = 0
+    var atLeast = 0
+    while right < len(s) {
+      let ch = s[right]
+      if ch in counts {
+        counts[ch] = counts[ch] + 1
+      } else {
+        counts[ch] = 1
+        unique = unique + 1
+      }
+      if counts[ch] == k {
+        atLeast = atLeast + 1
+      }
+      while unique > target {
+        let leftCh = s[left]
+        if counts[leftCh] == k {
+          atLeast = atLeast - 1
+        }
+        counts[leftCh] = counts[leftCh] - 1
+        if counts[leftCh] == 0 {
+          unique = unique - 1
+        }
+        left = left + 1
+      }
+      if unique == target && atLeast == target {
+        let length = right - left + 1
+        if length > maxLen {
+          maxLen = length
+        }
+      }
+      right = right + 1
+    }
+    target = target + 1
+  }
+  return maxLen
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect longestSubstring("aaabb", 3) == 3
+}
+
+test "example 2" {
+  expect longestSubstring("ababbc", 2) == 5
+}
+
+// Additional edge cases
+
+test "all same" {
+  expect longestSubstring("aaaaa", 1) == 5
+}
+
+test "no valid substring" {
+  expect longestSubstring("abcde", 2) == 0
+}
+
+test "empty string" {
+  expect longestSubstring("", 3) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if length = maxLen { }    // ❌ assignment
+   if length == maxLen { }   // ✅ comparison
+2. Reassigning a binding declared with 'let'.
+   let left = 0
+   left = left + 1           // ❌ cannot modify immutable binding
+   Use 'var left = 0' for mutable variables.
+3. Accessing a map entry without checking if it exists.
+   let n = counts[ch]        // ❌ fails if 'ch' not in counts
+   if ch in counts { n = counts[ch] } // ✅ check first
+*/
