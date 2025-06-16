@@ -138,11 +138,8 @@ func TestTSCompiler_LeetCodeExamples(t *testing.T) {
 			t.Fatalf("glob error: %v", err)
 		}
 		for _, f := range files {
-			name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
-			t.Run(name, func(t *testing.T) {
-				if i == 87 {
-					t.Skip("example 87 fails under TypeScript compiler")
-				}
+                        name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
+                        t.Run(name, func(t *testing.T) {
 				prog, err := parser.Parse(f)
 				if err != nil {
 					t.Fatalf("parse error: %v", err)
