@@ -801,6 +801,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 	t := c.inferExprType(stmt.Source)
 	var elem types.Type = types.AnyType{}
+	preBody := ""
 	switch tt := t.(type) {
 	case types.ListType:
 		elem = tt.Elem
@@ -813,7 +814,14 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	case types.MapType:
 		elem = tt.Key
 		c.writeIndent()
-		c.buf.WriteString(fmt.Sprintf("for (const %s of Object.keys(%s)) {\n", name, src))
+		tmp := "_" + name + "_k"
+		c.buf.WriteString(fmt.Sprintf("for (const %s of Object.keys(%s)) {\n", tmp, src))
+		switch elem.(type) {
+		case types.IntType, types.Int64Type, types.FloatType:
+			preBody = fmt.Sprintf("const %s = Number(%s)\n", name, tmp)
+		default:
+			preBody = fmt.Sprintf("const %s = %s\n", name, tmp)
+		}
 	default:
 		c.writeIndent()
 		c.use("_iter")
@@ -823,6 +831,10 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		c.env.SetVar(stmt.Name, elem, true)
 	}
 	c.indent++
+	if preBody != "" {
+		c.writeIndent()
+		c.buf.WriteString(preBody)
+	}
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err

@@ -1,0 +1,4 @@
+var set: map<int, bool> = {1: true, 2: false}
+for n in set {
+  print(n)
+}
