@@ -1,0 +1,10 @@
+fun wrapper(n: int): int {
+  fun build(m: int): int {
+    if m <= 1 {
+      return 1
+    }
+    return m * build(m - 1)
+  }
+  return build(n)
+}
+print(wrapper(4))

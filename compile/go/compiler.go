@@ -1304,12 +1304,10 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		if err != nil {
 			return err
 		}
-		if exprUsesVarFun(&parser.FunExpr{Params: fun.Params, Return: fun.Return, BlockBody: fun.Body}, fun.Name) {
-			c.writeln(fmt.Sprintf("var %s %s", name, goType(ft)))
-			c.writeln(fmt.Sprintf("%s = %s", name, expr))
-		} else {
-			c.writeln("var " + name + " = " + expr)
-		}
+		// Always declare the variable separately so recursive references
+		// are valid even if not detected by exprUsesVarFun.
+		c.writeln(fmt.Sprintf("var %s %s", name, goType(ft)))
+		c.writeln(fmt.Sprintf("%s = %s", name, expr))
 		return nil
 	}
 
