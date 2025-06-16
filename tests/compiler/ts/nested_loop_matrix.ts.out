@@ -6,7 +6,7 @@ let i: number = 0
 
 function main(): void {
 	while ((i < 2)) {
-		let row: Array<any> = []
+		let row: Array<number> = []
 		let j: number = 0
 		while ((j < 2)) {
 			row = row.concat([(i + j)])

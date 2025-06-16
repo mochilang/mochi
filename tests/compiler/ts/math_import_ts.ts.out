@@ -2,12 +2,13 @@
 
 import * as path from "https://deno.land/std@0.224.0/path/mod.ts"
 
-let p: string = path.join("foo", "bar", "baz.txt")
+let p: any = path.join("foo", "bar", "baz.txt")
 
-let base: string = path.basename(p)
+let base: any = path.basename(p)
 
 function main(): void {
 	console.log("Joined path:", p)
 	console.log("Basename:", base)
 }
 main()
+

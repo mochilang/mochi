@@ -357,19 +357,15 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		value = v
 	}
-	var typ types.Type = types.AnyType{}
-	if c.env != nil {
-		t, err := c.env.GetVar(s.Name)
-		if err != nil {
-			if s.Value != nil {
-				t = c.inferExprType(s.Value)
-			} else {
-				t = types.AnyType{}
-			}
-			c.env.SetVar(s.Name, t, false)
-		}
-		typ = t
-	}
+       var typ types.Type = types.AnyType{}
+       if c.env != nil {
+               if s.Type != nil {
+                       typ = resolveTypeRef(s.Type)
+               } else if s.Value != nil {
+                       typ = c.inferExprType(s.Value)
+               }
+               c.env.SetVar(s.Name, typ, false)
+       }
 	typStr := tsType(typ)
 	if typStr != "" {
 		c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
@@ -400,19 +396,15 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			value = v
 		}
 	}
-	var typ types.Type = types.AnyType{}
-	if c.env != nil {
-		t, err := c.env.GetVar(s.Name)
-		if err != nil {
-			if s.Value != nil {
-				t = c.inferExprType(s.Value)
-			} else {
-				t = types.AnyType{}
-			}
-			c.env.SetVar(s.Name, t, true)
-		}
-		typ = t
-	}
+       var typ types.Type = types.AnyType{}
+       if c.env != nil {
+               if s.Type != nil {
+                       typ = resolveTypeRef(s.Type)
+               } else if s.Value != nil {
+                       typ = c.inferExprType(s.Value)
+               }
+               c.env.SetVar(s.Name, typ, true)
+       }
 	typStr := tsType(typ)
 	if typStr != "" {
 		c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
