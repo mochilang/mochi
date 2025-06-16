@@ -1,0 +1,72 @@
+// Solution for LeetCode problem 365 - Water and Jug Problem
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  if x < 0 {
+    x = -x
+  }
+  var y = b
+  if y < 0 {
+    y = -y
+  }
+  while y != 0 {
+    let temp = x % y
+    x = y
+    y = temp
+  }
+  return x
+}
+
+fun canMeasureWater(jug1Capacity: int, jug2Capacity: int, targetCapacity: int): bool {
+  if targetCapacity == 0 {
+    return true
+  }
+  if jug1Capacity + jug2Capacity < targetCapacity {
+    return false
+  }
+  if jug1Capacity == targetCapacity || jug2Capacity == targetCapacity || jug1Capacity + jug2Capacity == targetCapacity {
+    return true
+  }
+  let g = gcd(jug1Capacity, jug2Capacity)
+  return targetCapacity % g == 0
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect canMeasureWater(3, 5, 4) == true
+}
+
+test "example 2" {
+  expect canMeasureWater(2, 6, 5) == false
+}
+
+test "example 3" {
+  expect canMeasureWater(1, 2, 3) == true
+}
+
+// Additional edge cases
+
+test "zero target" {
+  expect canMeasureWater(1, 2, 0) == true
+}
+
+test "unreachable" {
+  expect canMeasureWater(1, 1, 12) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Assigning when you meant to compare:
+   if jug1Capacity = 3 { }    // ❌ assignment
+   // Fix: use '==', e.g., if jug1Capacity == 3 { }
+2. Trying to mutate a constant value:
+   let g = 0
+   g = g + 1                // ❌ cannot modify 'let'
+   // Fix: declare with 'var' when you need mutation.
+3. Forgetting to close a block with '}'.
+   fun bad(x: int): int {
+     if x > 0 {
+       return x
+   // ❌ missing '}' causes syntax error
+*/
