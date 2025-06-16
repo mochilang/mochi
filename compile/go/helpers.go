@@ -9,6 +9,8 @@ import (
 	"mochi/types"
 )
 
+var currentEnv *types.Env
+
 func (c *Compiler) writeln(s string) {
 	c.writeIndent()
 	c.buf.WriteString(s)
@@ -78,6 +80,8 @@ func goType(t types.Type) string {
 	case types.MapType:
 		return fmt.Sprintf("map[%s]%s", goType(tt.Key), goType(tt.Value))
 	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
 		return sanitizeName(tt.Name)
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
@@ -212,6 +216,14 @@ func resolveTypeRef(t *parser.TypeRef) types.Type {
 		case "bool":
 			return types.BoolType{}
 		default:
+			if currentEnv != nil {
+				if ut, ok := currentEnv.GetUnion(*t.Simple); ok {
+					return ut
+				}
+				if st, ok := currentEnv.GetStruct(*t.Simple); ok {
+					return st
+				}
+			}
 			return types.AnyType{}
 		}
 	}

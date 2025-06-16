@@ -40,6 +40,7 @@ type Compiler struct {
 
 // New creates a new Go compiler instance.
 func New(env *types.Env) *Compiler {
+	currentEnv = env
 	return &Compiler{
 		imports:      make(map[string]bool),
 		env:          env,
@@ -1827,6 +1828,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return base, nil
 		}
 		for _, field := range p.Selector.Tail {
+			if ut, ok := typ.(types.UnionType); ok {
+				var variant string
+				var ft types.Type
+				for name, st := range ut.Variants {
+					if t, ok := st.Fields[field]; ok {
+						if variant != "" {
+							variant = ""
+							break
+						}
+						variant = name
+						ft = t
+					}
+				}
+				if variant != "" {
+					base = fmt.Sprintf("%s.(%s)", base, sanitizeName(variant))
+					typ = ut.Variants[variant]
+					base += "." + exportName(sanitizeName(field))
+					typ = ft
+					continue
+				}
+			}
 			base += "." + exportName(sanitizeName(field))
 		}
 		return base, nil
@@ -2517,12 +2539,12 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if call, ok := callPattern(cse.Pattern); ok {
 			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
-				cond := fmt.Sprintf("v, ok := _t.(%s); ok", sanitizeName(call.Func))
+				cond := fmt.Sprintf("_v, ok := _t.(%s); ok", sanitizeName(call.Func))
 				buf.WriteString("\tif " + cond + " {\n")
 				for idx, arg := range call.Args {
 					if id, ok := identName(arg); ok && id != "_" {
 						field := exportName(sanitizeName(st.Order[idx]))
-						buf.WriteString(fmt.Sprintf("\t\t%s := v.%s\n", sanitizeName(id), field))
+						buf.WriteString(fmt.Sprintf("\t\t%s := _v.%s\n", sanitizeName(id), field))
 					}
 				}
 				buf.WriteString("\t\treturn " + res + "\n")

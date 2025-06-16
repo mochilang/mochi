@@ -147,5 +147,44 @@ func TestGoCompiler_LeetCodeExamples(t *testing.T) {
 				_ = out
 			})
 		}
+
+		// Run example 102 separately
+		{
+			dir := filepath.Join("..", "..", "examples", "leetcode", "102")
+			files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+			if err != nil {
+				t.Fatalf("glob error: %v", err)
+			}
+			for _, f := range files {
+				name := fmt.Sprintf("102/%s", filepath.Base(f))
+				t.Run(name, func(t *testing.T) {
+					prog, err := parser.Parse(f)
+					if err != nil {
+						t.Fatalf("parse error: %v", err)
+					}
+					typeEnv := types.NewEnv(nil)
+					if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+						t.Fatalf("type error: %v", errs[0])
+					}
+					c := gocode.New(typeEnv)
+					code, err := c.Compile(prog)
+					if err != nil {
+						t.Fatalf("compile error: %v", err)
+					}
+					tmp := t.TempDir()
+					file := filepath.Join(tmp, "main.go")
+					if err := os.WriteFile(file, code, 0644); err != nil {
+						t.Fatalf("write error: %v", err)
+					}
+					cmd := exec.Command("go", "run", file)
+					cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+					out, err := cmd.CombinedOutput()
+					if err != nil {
+						t.Fatalf("go run error: %v\n%s", err, out)
+					}
+					_ = out
+				})
+			}
+		}
 	}
 }
