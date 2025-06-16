@@ -1,0 +1,45 @@
+// Solution for LeetCode problem 369 - Plus One Linked List
+//
+// Common Mochi language errors and how to fix them:
+// 1. Forgetting to declare mutable variables with 'var'.
+//    count = 0           // ❌ produces undefined variable error
+//    var count = 0       // ✅ use var when you need a mutable variable
+// 2. Using '=' instead of '==' in conditionals.
+//    if a = b { }        // ❌ assignment, not comparison
+//    if a == b { }       // ✅ use '==' for equality checks
+// 3. Off-by-one mistakes when iterating from the end of a list.
+//    Start with len(list) - 1 and decrement before indexing.
+
+fun plusOne(head: list<int>): list<int> {
+  var carry = 1
+  var i = len(head) - 1
+  var result = head
+  while i >= 0 && carry > 0 {
+    var sum = result[i] + carry
+    result[i] = sum % 10
+    carry = sum / 10
+    i = i - 1
+  }
+  if carry > 0 {
+    return [carry] + result
+  }
+  return result
+}
+
+// Test cases derived from LeetCode examples
+
+test "example 1" {
+  expect plusOne([1,2,3]) == [1,2,4]
+}
+
+test "example 2" {
+  expect plusOne([0]) == [1]
+}
+
+test "carry through" {
+  expect plusOne([9,9,9]) == [1,0,0,0]
+}
+
+test "middle carry" {
+  expect plusOne([1,2,9]) == [1,3,0]
+}
