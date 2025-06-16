@@ -1,0 +1,21 @@
+type Pair {
+  ch: string
+  cnt: int
+}
+
+fun countChars(s: string): list<Pair> {
+  var letters: list<string> = []
+  var i = 0
+  while i < len(s) {
+    letters = letters + [s[i]]
+    i = i + 1
+  }
+  let counts = from ch in letters
+               group by ch into g
+               select Pair { ch: g.key, cnt: count(g) }
+  return counts
+}
+
+for item in countChars("aab") {
+  print(item.ch, item.cnt)
+}

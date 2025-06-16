@@ -1,0 +1,85 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+)
+
+type Pair struct {
+	Ch string `json:"ch"`
+	Cnt int `json:"cnt"`
+}
+
+func countChars(s string) []Pair {
+	var letters []string = []string{}
+	var i int = 0
+	for {
+		if !((i < len(s))) {
+			break
+		}
+		letters = append(append([]string{}, letters...), []string{_indexString(s, i)}...)
+		i = (i + 1)
+	}
+	var counts []Pair = func() []Pair {
+	groups := []*data.Group{}
+	idx := map[string]int{}
+	for _, ch := range letters {
+		key := ch
+		ks := fmt.Sprint(key)
+		i, ok := idx[ks]
+		if !ok {
+			idx[ks] = len(groups)
+			groups = append(groups, &data.Group{Key: key})
+			i = len(groups) - 1
+		}
+		groups[i].Items = append(groups[i].Items, ch)
+	}
+	_res := []Pair{}
+	for _, g := range groups {
+		g := g
+		_res = append(_res, Pair{Ch: _cast[string](g.Key), Cnt: _count(g)})
+	}
+	return _res
+}()
+	return counts
+}
+
+func main() {
+	for _, item := range countChars("aab") {
+		fmt.Println(item.Ch, item.Cnt)
+	}
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _count(v any) int {
+    if g, ok := v.(*data.Group); ok { return len(g.Items) }
+    switch s := v.(type) {
+    case []any: return len(s)
+    case []int: return len(s)
+    case []float64: return len(s)
+    case []string: return len(s)
+    case []bool: return len(s)
+    case map[string]any: return len(s)
+    case string: return len([]rune(s))
+    default: panic("count() expects list or group")
+    }
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}

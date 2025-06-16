@@ -93,6 +93,8 @@ func goType(t types.Type) string {
 		return sanitizeName(tt.Name)
 	case types.UnionType:
 		return sanitizeName(tt.Name)
+	case types.GroupType:
+		return "*data.Group"
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {

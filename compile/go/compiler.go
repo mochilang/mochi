@@ -2243,6 +2243,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		return c.compileSimpleGroupQuery(q, src)
+	}
+
 	needsHelper := false
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -2448,6 +2452,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("}()")
 		return buf.String(), nil
 	}
+
 	if !directRange {
 		return "", fmt.Errorf("query source must be list")
 	}
@@ -2742,6 +2747,68 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	} else {
 		buf.WriteString(fmt.Sprintf("\tvar _zero %s\n\treturn _zero\n", retType))
 	}
+	buf.WriteString("}()")
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileSimpleGroupQuery(q *parser.QueryExpr, src string) (string, error) {
+	// setup environment for group key expression
+	srcType := c.inferExprType(q.Source)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elemType = lt.Elem
+	}
+
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, elemType, true)
+	orig := c.env
+	c.env = child
+	keyExpr, err := c.compileExpr(q.Group.Expr)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+
+	groupEnv := types.NewEnv(orig)
+	groupEnv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+	c.env = groupEnv
+	selExpr, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	selExpr = strings.ReplaceAll(selExpr, sanitizeName(q.Group.Name)+".Key", fmt.Sprintf("_cast[string](%s.Key)", sanitizeName(q.Group.Name)))
+	c.use("_cast")
+	retType := goType(c.inferExprType(q.Select))
+	if retType == "" {
+		retType = "any"
+	}
+	c.env = orig
+
+	c.imports["fmt"] = true
+	c.imports["mochi/runtime/data"] = true
+
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("func() []%s {\n", retType))
+	buf.WriteString("\tgroups := []*data.Group{}\n")
+	buf.WriteString("\tidx := map[string]int{}\n")
+	buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", sanitizeName(q.Var), src))
+	buf.WriteString(fmt.Sprintf("\t\tkey := %s\n", keyExpr))
+	buf.WriteString("\t\tks := fmt.Sprint(key)\n")
+	buf.WriteString("\t\ti, ok := idx[ks]\n")
+	buf.WriteString("\t\tif !ok {\n")
+	buf.WriteString("\t\t\tidx[ks] = len(groups)\n")
+	buf.WriteString("\t\t\tgroups = append(groups, &data.Group{Key: key})\n")
+	buf.WriteString("\t\t\ti = len(groups) - 1\n")
+	buf.WriteString("\t\t}\n")
+	buf.WriteString(fmt.Sprintf("\t\tgroups[i].Items = append(groups[i].Items, %s)\n", sanitizeName(q.Var)))
+	buf.WriteString("\t}\n")
+	buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retType))
+	buf.WriteString("\tfor _, g := range groups {\n")
+	buf.WriteString(fmt.Sprintf("\t\t%s := g\n", sanitizeName(q.Group.Name)))
+	buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", selExpr))
+	buf.WriteString("\t}\n")
+	buf.WriteString("\treturn _res\n")
 	buf.WriteString("}()")
 	return buf.String(), nil
 }
