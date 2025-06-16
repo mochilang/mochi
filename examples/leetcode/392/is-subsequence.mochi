@@ -1,0 +1,57 @@
+// Solution for LeetCode problem 392 - Is Subsequence
+// Given strings s and t, return true if s is a subsequence of t.
+
+fun isSubsequence(s: string, t: string): bool {
+  let n = len(s)
+  let m = len(t)
+  var i = 0
+  var j = 0
+  while i < n && j < m {
+    if s[i] == t[j] {
+      i = i + 1
+    }
+    j = j + 1
+  }
+  return i == n
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect isSubsequence("abc", "ahbgdc") == true
+}
+
+test "example 2" {
+  expect isSubsequence("axc", "ahbgdc") == false
+}
+
+// Additional edge cases
+
+test "empty s" {
+  expect isSubsequence("", "ahbgdc") == true
+}
+
+test "empty t" {
+  expect isSubsequence("a", "") == false
+}
+
+test "both empty" {
+  expect isSubsequence("", "") == true
+}
+
+/*
+Common language errors and how to fix them:
+1. Using '=' instead of '==' when comparing characters:
+   if s[i] = t[j] { }
+   // error[P000]: '=' assigns instead of compares
+   // Fix: use '==' for equality checks.
+2. Reassigning an immutable variable:
+   let k = 0
+   k = 1  // error[E004]: cannot reassign immutable binding
+   // Fix: declare with 'var' if mutation is needed.
+3. Forgetting to return a value from a function:
+   fun foo(): int {
+     let x = 1
+   }
+   // error: missing return statement. Fix by returning a value on all paths.
+*/
