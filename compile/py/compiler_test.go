@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	pycode "mochi/compile/py"
@@ -38,6 +39,9 @@ func TestPyCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("python3", file)
+		if strings.Contains(src, "input_builtin.mochi") {
+			cmd.Stdin = strings.NewReader("hello\n")
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ python run error: %w\n%s", err, out)
@@ -65,6 +69,9 @@ func TestPyCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("python3", file)
+		if strings.Contains(src, "input_builtin.mochi") {
+			cmd.Stdin = strings.NewReader("hello\n")
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ python run error: %w\n%s", err, out)

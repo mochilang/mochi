@@ -1,0 +1,10 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var v string = func() string { var s string; fmt.Scanln(&s); return s }()
+	fmt.Println(v)
+}

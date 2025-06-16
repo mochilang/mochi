@@ -3009,6 +3009,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "print":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Println(%s)", argStr), nil
+	case "input":
+		c.imports["fmt"] = true
+		return "func() string { var s string; fmt.Scanln(&s); return s }()", nil
 	case "str":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil

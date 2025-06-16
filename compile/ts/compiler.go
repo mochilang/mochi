@@ -1231,6 +1231,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		return fmt.Sprintf("console.log(%s)", argStr), nil
+	case "input":
+		return "(prompt() ?? \"\")", nil
 	case "len":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])

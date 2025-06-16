@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	gocode "mochi/compile/go"
@@ -36,6 +37,9 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		}
 		cmd := exec.Command("go", "run", file)
 		cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+		if strings.Contains(src, "input_builtin.mochi") {
+			cmd.Stdin = strings.NewReader("hello\n")
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)

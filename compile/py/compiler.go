@@ -1232,6 +1232,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		return fmt.Sprintf("print(%s)", argStr), nil
+	case "input":
+		return "input()", nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":

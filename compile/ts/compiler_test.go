@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"mochi/bench"
@@ -45,6 +46,9 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		}
 		cmd := exec.Command("deno", "run", "--quiet", file)
 		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+		if strings.Contains(src, "input_builtin.mochi") {
+			cmd.Stdin = strings.NewReader("hello\n")
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ deno run error: %w\n%s", err, out)
@@ -76,6 +80,9 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		}
 		cmd := exec.Command("deno", "run", "--quiet", file)
 		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+		if strings.Contains(src, "input_builtin.mochi") {
+			cmd.Stdin = strings.NewReader("hello\n")
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ deno run error: %w\n%s", err, out)
