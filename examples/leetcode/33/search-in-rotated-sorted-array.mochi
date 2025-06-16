@@ -1,3 +1,23 @@
+// LeetCode #33: Search in Rotated Sorted Array
+// Below are some common Mochi language errors and how to fix them.
+//
+// Error 1: Using '=' instead of '==' for comparison
+// if nums[mid] = target { ... }
+// Fix:
+// if nums[mid] == target { ... }
+//
+// Error 2: Declaring a mutable variable with 'let'
+// let left = 0
+// left = left + 1  // ❌ cannot reassign
+// Fix:
+// var left = 0
+// left = left + 1
+//
+// Error 3: Off-by-one loop condition
+// while left < right { }
+// Fix:
+// while left <= right { }
+
 fun search(nums: list<int>, target: int): int {
   var left = 0
   var right = len(nums) - 1
