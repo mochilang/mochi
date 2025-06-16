@@ -1,0 +1,25 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var set map[int]bool = map[int]bool{}
+	for _, n := range []int{1, 2, 3} {
+		set[n] = true
+	}
+	var i int = 1
+	var count int = 0
+	for {
+		_tmp0 := i
+		_tmp1 := set
+		_, _tmp2 := _tmp1[_tmp0]
+		if !(_tmp2) {
+			break
+		}
+		i = (i + 1)
+		count = (count + 1)
+	}
+	fmt.Println(count)
+}
