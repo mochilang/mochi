@@ -26,8 +26,7 @@ fun pick(p: RandomPicker, target: int): int {
   if len(matches) == 0 {
     return -1
   }
-  let ts = now()
-  let idx = int(ts % len(matches))
+  let idx = now() % len(matches)
   return matches[idx]
 }
 
@@ -46,7 +45,7 @@ test "single match" {
 
 test "no match" {
   let p = newPicker([1,2])
-  expect pick(p, 3) == -1
+  expect pick(p, 3) == (-1)
 }
 
 /*
