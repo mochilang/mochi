@@ -1,0 +1,62 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left Tree `json:"left"`
+	Value int `json:"value"`
+	Right Tree `json:"right"`
+}
+func (Node) isTree() {}
+
+func fromList(nums []int) Tree {
+	var helper func(int, int) Tree
+	helper = func(lo int, hi int) Tree {
+		if (lo >= hi) {
+			return Leaf{}
+		}
+		var mid int = (((lo + hi)) / 2)
+		return Node{Left: helper(lo, mid), Value: nums[mid], Right: helper((mid + 1), hi)}
+}
+	return helper(0, len(nums))
+}
+
+func inorder(t Tree) []int {
+	return _convSlice[any,int](func() []any {
+	_t := t
+	if _, ok := _t.(Leaf); ok {
+		return []any{}
+	}
+	if _tmp0, ok := _t.(Node); ok {
+		l := _tmp0.Left
+		v := _tmp0.Value
+		r := _tmp0.Right
+		return _toAnySlice(append(append([]int{}, append(append([]int{}, inorder(l)...), []int{v}...)...), inorder(r)...))
+	}
+	var _zero []any
+	return _zero
+}())
+}
+
+func main() {
+	fmt.Println(inorder(fromList([]int{-10, -3, 0, 5, 9})))
+}
+
+func _convSlice[T any, U any](s []T) []U {
+    out := make([]U, len(s))
+    for i, v := range s { out[i] = any(v).(U) }
+    return out
+}
+
+func _toAnySlice[T any](s []T) []any {
+    out := make([]any, len(s))
+    for i, v := range s { out[i] = v }
+    return out
+}
+
