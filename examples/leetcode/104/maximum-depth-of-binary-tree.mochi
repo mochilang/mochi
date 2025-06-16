@@ -1,9 +1,21 @@
 // LeetCode 104 - Maximum Depth of Binary Tree
 
-// Binary tree definition used in other examples.
-type Tree =
-  Leaf
-  | Node(left: Tree, value: int, right: Tree)
+// Binary tree helpers without using union types.
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
 
 // Return the greater of two integers.
 fun max(a: int, b: int): int {
@@ -15,43 +27,43 @@ fun max(a: int, b: int): int {
 }
 
 // Recursively compute the maximum depth of the tree.
-fun maxDepth(root: Tree): int {
-  return match root {
-    Leaf => 0
-    Node(l, _, r) => max(maxDepth(l), maxDepth(r)) + 1
+fun maxDepth(root: map<string, any>): int {
+  if isLeaf(root) {
+    return 0
   }
+  let l = left(root)
+  let r = right(root)
+  let ld = maxDepth(l)
+  let rd = maxDepth(r)
+  return max(ld, rd) + 1
 }
 
 // Test cases from LeetCode
 
 test "example 1" {
-  let tree = Node {
-    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
-    value: 3,
-    right: Node {
-      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
-      value: 20,
-      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
-    }
-  }
+  let tree = Node(
+    Node(Leaf(), 9, Leaf()),
+    3,
+    Node(Node(Leaf(), 15, Leaf()), 20, Node(Leaf(), 7, Leaf()))
+  )
   expect maxDepth(tree) == 3
 }
 
 test "example 2" {
-  let tree = Node {
-    left: Leaf {},
-    value: 1,
-    right: Node { left: Leaf {}, value: 2, right: Leaf {} }
-  }
+  let tree = Node(
+    Leaf(),
+    1,
+    Node(Leaf(), 2, Leaf())
+  )
   expect maxDepth(tree) == 2
 }
 
 test "single node" {
-  expect maxDepth(Node { left: Leaf {}, value: 0, right: Leaf {} }) == 1
+  expect maxDepth(Node(Leaf(), 0, Leaf())) == 1
 }
 
 test "empty" {
-  expect maxDepth(Leaf {}) == 0
+  expect maxDepth(Leaf()) == 0
 }
 
 /*
@@ -63,8 +75,7 @@ Common Mochi language errors and how to fix them:
    let d = 0
    d = d + 1          // ❌ cannot reassign immutable binding
    // Fix: declare with 'var' if it needs to change.
-3. Accessing fields of the wrong variant:
-   let t = Leaf {}
-   t.value            // ❌ Leaf has no field 'value'
-   // Fix: pattern match on 'Node' before using its fields.
+3. Forgetting to construct empty nodes with Leaf():
+   let t = Leaf       // ❌ missing parentheses
+   Node(t, 1, Leaf()) // ✅ call Leaf() to create an empty node
 */
