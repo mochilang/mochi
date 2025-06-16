@@ -9,6 +9,19 @@ import (
 	"mochi/types"
 )
 
+var tsReserved = map[string]struct{}{
+	// JavaScript/TypeScript keywords
+	"break": {}, "case": {}, "catch": {}, "class": {}, "const": {}, "continue": {},
+	"debugger": {}, "default": {}, "delete": {}, "do": {}, "else": {}, "enum": {},
+	"export": {}, "extends": {}, "false": {}, "finally": {}, "for": {}, "function": {},
+	"if": {}, "import": {}, "in": {}, "instanceof": {}, "new": {}, "null": {},
+	"return": {}, "super": {}, "switch": {}, "this": {}, "throw": {}, "true": {},
+	"try": {}, "typeof": {}, "var": {}, "void": {}, "while": {}, "with": {},
+	"yield": {}, "let": {}, "interface": {}, "package": {}, "private": {},
+	"protected": {}, "public": {}, "static": {}, "await": {}, "implements": {},
+	"arguments": {}, "eval": {},
+}
+
 func (c *Compiler) writeln(s string) {
 	c.writeIndent()
 	c.buf.WriteString(s)
@@ -101,7 +114,11 @@ func sanitizeName(name string) string {
 	if b.Len() == 0 || !((b.String()[0] >= 'A' && b.String()[0] <= 'Z') || (b.String()[0] >= 'a' && b.String()[0] <= 'z') || b.String()[0] == '_') {
 		return "_" + b.String()
 	}
-	return b.String()
+	res := b.String()
+	if _, ok := tsReserved[res]; ok {
+		return "_" + res
+	}
+	return res
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
