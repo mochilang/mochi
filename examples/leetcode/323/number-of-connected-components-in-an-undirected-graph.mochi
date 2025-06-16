@@ -1,0 +1,91 @@
+// Solution for LeetCode problem 323 - Number of Connected Components in an Undirected Graph
+
+fun countComponents(n: int, edges: list<list<int>>): int {
+  // build adjacency list
+  var graph: list<list<int>> = []
+  var i = 0
+  while i < n {
+    graph = graph + [[]]
+    i = i + 1
+  }
+
+  for e in edges {
+    let u = e[0]
+    let v = e[1]
+    graph[u] = graph[u] + [v]
+    graph[v] = graph[v] + [u]
+  }
+
+  // track visited nodes
+  var visited: list<bool> = []
+  i = 0
+  while i < n {
+    visited = visited + [false]
+    i = i + 1
+  }
+
+  var components = 0
+  var start = 0
+  while start < n {
+    if !visited[start] {
+      components = components + 1
+      var queue: list<int> = [start]
+      visited[start] = true
+      var idx = 0
+      while idx < len(queue) {
+        let cur = queue[idx]
+        idx = idx + 1
+        for nei in graph[cur] {
+          if !visited[nei] {
+            visited[nei] = true
+            queue = queue + [nei]
+          }
+        }
+      }
+    }
+    start = start + 1
+  }
+
+  return components
+}
+
+// Test cases based on LeetCode examples
+
+test "example 1" {
+  expect countComponents(5, [[0,1],[1,2],[3,4]]) == 2
+}
+
+test "example 2" {
+  expect countComponents(5, [[0,1],[1,2],[2,3],[3,4]]) == 1
+}
+
+// Additional edge cases
+
+test "single node" {
+  expect countComponents(1, []) == 1
+}
+
+test "two disjoint edges" {
+  expect countComponents(4, [[0,1],[2,3]]) == 2
+}
+
+test "no edges" {
+  expect countComponents(4, []) == 4
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if visited[i] = true { }   // ❌ assignment
+     if visited[i] == true { }  // ✅ comparison
+2. Declaring a variable with 'let' and then trying to modify it:
+     let queue = []
+     queue = queue + [x]        // ❌ cannot reassign
+     var queue = []             // ✅ use 'var' for mutable lists
+3. Trying to call methods like 'queue.push(x)':
+     queue.push(x)              // ❌ method doesn't exist
+     queue = queue + [x]        // ✅ concatenate lists
+4. Forgetting to initialize lists with element types:
+     var graph = []             // ❌ type cannot be inferred
+     var graph: list<list<int>> = [] // ✅ specify the type
+*/
