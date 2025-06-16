@@ -5,7 +5,7 @@ import dataclasses
 import typing
 
 def value_of_root(t: Tree) -> int:
-	return (lambda _t=t: (lambda v: v)(_t.value) if isinstance(_t, Node) else 0)()
+	return (lambda _t0=t: (lambda v: v)(_t0.value) if isinstance(_t0, Node) else 0)()
 
 class Tree:
 	pass

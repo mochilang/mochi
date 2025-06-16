@@ -6,7 +6,7 @@ label = None
 
 def main():
 	x = 2
-	label = (lambda _t=x: "one" if _t == 1 else "two" if _t == 2 else "three" if _t == 3 else "unknown")()
+	label = (lambda _t0=x: "one" if _t0 == 1 else "two" if _t0 == 2 else "three" if _t0 == 3 else "unknown")()
 	print(label)
 
 if __name__ == "__main__":
