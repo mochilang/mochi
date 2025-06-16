@@ -1195,17 +1195,31 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	if lit, ok := c.evalConstExpr(stmt.Cond); ok && lit.Bool != nil {
+		if !bool(*lit.Bool) {
+			return nil
+		}
+		c.writeIndent()
+		c.buf.WriteString("for {\n")
+		c.indent++
+		if err := c.compileStmtList(stmt.Body); err != nil {
+			return err
+		}
+		c.indent--
+		c.writeIndent()
+		c.buf.WriteString("}\n")
+		return nil
+	}
+
+	c.writeIndent()
+	c.buf.WriteString("for {\n")
+	c.indent++
 	cond, err := c.compileExpr(stmt.Cond)
 	if err != nil {
 		return err
 	}
 	c.writeIndent()
-	if lit, ok := c.evalConstExpr(stmt.Cond); ok && lit.Bool != nil && bool(*lit.Bool) {
-		c.buf.WriteString("for {\n")
-	} else {
-		c.buf.WriteString("for " + cond + " {\n")
-	}
-	c.indent++
+	c.buf.WriteString(fmt.Sprintf("if !(%s) { break }\n", cond))
 	if err := c.compileStmtList(stmt.Body); err != nil {
 		return err
 	}
