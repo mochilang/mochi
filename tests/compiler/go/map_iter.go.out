@@ -1,0 +1,14 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var m map[int]int = map[int]int{1: 1, 2: 2, 3: 3}
+	var sum int = 0
+	for k := range m {
+		sum = (sum + k)
+	}
+	fmt.Println(sum)
+}

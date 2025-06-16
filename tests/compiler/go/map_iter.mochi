@@ -1,0 +1,6 @@
+var m: map<int, int> = {1:1, 2:2, 3:3}
+var sum = 0
+for k in m {
+  sum = sum + k
+}
+print(sum)
