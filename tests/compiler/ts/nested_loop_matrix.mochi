@@ -1,0 +1,13 @@
+var matrix: list<list<int>> = []
+var i = 0
+while i < 2 {
+  var row: list<int> = []
+  var j = 0
+  while j < 2 {
+    row = row + [i + j]
+    j = j + 1
+  }
+  matrix = matrix + [row]
+  i = i + 1
+}
+print(matrix[1][1])
