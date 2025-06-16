@@ -1,0 +1,86 @@
+// Solution for LeetCode problem 368 - Largest Divisible Subset
+
+fun largestDivisibleSubset(nums: list<int>): list<int> {
+  let n = len(nums)
+  if n == 0 {
+    return []
+  }
+
+  // sort numbers ascending
+  let sorted = from x in nums sort by x select x
+
+  // dp[i] stores the length of the subset ending at i
+  var dp: list<int> = []
+  // parent index to reconstruct the subset
+  var parent: list<int> = []
+  var fill = 0
+  while fill < n {
+    dp = dp + [1]
+    parent = parent + [-1]
+    fill = fill + 1
+  }
+
+  var maxLen = 1
+  var maxIdx = 0
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < i {
+      if sorted[i] % sorted[j] == 0 {
+        let candidate = dp[j] + 1
+        if candidate > dp[i] {
+          dp[i] = candidate
+          parent[i] = j
+        }
+      }
+      j = j + 1
+    }
+    if dp[i] > maxLen {
+      maxLen = dp[i]
+      maxIdx = i
+    }
+    i = i + 1
+  }
+
+  var subset: list<int> = []
+  var k = maxIdx
+  while k >= 0 {
+    subset = [sorted[k]] + subset
+    k = parent[k]
+  }
+  return subset
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect largestDivisibleSubset([1,2,3]) == [1,2]
+}
+
+test "example 2" {
+  expect largestDivisibleSubset([1,2,4,8]) == [1,2,4,8]
+}
+
+// Additional edge cases
+
+test "empty" {
+  expect largestDivisibleSubset([]) == []
+}
+
+test "mixed numbers" {
+  expect largestDivisibleSubset([4,8,10,240]) == [4,8,240]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if n = 0 { }         // ❌ assignment
+     if n == 0 { }        // ✅ comparison
+2. Declaring with 'let' and then trying to modify the variable:
+     let max = 0
+     max = 1              // ❌ cannot assign
+     var max = 0          // ✅ use 'var' for mutable values
+3. Creating an empty list without a type annotation:
+     var arr = []         // ❌ type cannot be inferred
+     var arr: list<int> = [] // ✅ specify the element type
+*/
