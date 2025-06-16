@@ -1,0 +1,120 @@
+// LeetCode 305 - Number of Islands II
+//
+// Given a grid size m x n and a list of land positions, return the number of
+// islands after each addition. This implementation avoids union types and
+// pattern matching. A simple union-find data structure keeps track of connected
+// components.
+
+fun numIslands2(m: int, n: int, positions: list<list<int>>): list<int> {
+  var parent: list<int> = []
+  var rank: list<int> = []
+  var land: list<bool> = []
+  var i = 0
+  while i < m * n {
+    parent = parent + [i]
+    rank = rank + [0]
+    land = land + [false]
+    i = i + 1
+  }
+
+  fun find(x: int): int {
+    var p = parent[x]
+    while p != parent[p] {
+      parent[p] = parent[parent[p]]
+      p = parent[p]
+    }
+    parent[x] = p
+    return p
+  }
+
+  fun unite(a: int, b: int, count: int): int {
+    var pa = find(a)
+    var pb = find(b)
+    if pa == pb {
+      return count
+    }
+    if rank[pa] < rank[pb] {
+      parent[pa] = pb
+    } else if rank[pa] > rank[pb] {
+      parent[pb] = pa
+    } else {
+      parent[pb] = pa
+      rank[pa] = rank[pa] + 1
+    }
+    return count - 1
+  }
+
+  var result: list<int> = []
+  var count = 0
+  var idx = 0
+  while idx < len(positions) {
+    let r = positions[idx][0]
+    let c = positions[idx][1]
+    let id = r * n + c
+    if !land[id] {
+      land[id] = true
+      count = count + 1
+      if r > 0 {
+        let up = (r - 1) * n + c
+        if land[up] {
+          count = unite(id, up, count)
+        }
+      }
+      if r + 1 < m {
+        let down = (r + 1) * n + c
+        if land[down] {
+          count = unite(id, down, count)
+        }
+      }
+      if c > 0 {
+        let left = r * n + (c - 1)
+        if land[left] {
+          count = unite(id, left, count)
+        }
+      }
+      if c + 1 < n {
+        let right = r * n + (c + 1)
+        if land[right] {
+          count = unite(id, right, count)
+        }
+      }
+    }
+    result = result + [count]
+    idx = idx + 1
+  }
+  return result
+}
+
+// Basic tests from the LeetCode problem statement
+
+test "example 1" {
+  let m = 3
+  let n = 3
+  let positions = [[0,0],[0,1],[1,2],[2,1],[1,1]]
+  expect numIslands2(m, n, positions) == [1,1,2,3,1]
+}
+
+test "add same cell" {
+  let m = 1
+  let n = 2
+  let positions = [[0,0],[0,1],[0,1]]
+  expect numIslands2(m, n, positions) == [1,1,1]
+}
+
+test "single cell" {
+  expect numIslands2(1,1,[[0,0]]) == [1]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions:
+   if r = 0 { }  // ❌ assignment
+   if r == 0 { } // ✅ comparison
+2. Reassigning an immutable binding:
+   let count = 0
+   count = 1      // ❌ cannot assign
+   var count = 0  // ✅ use 'var' for mutable values
+3. Forgetting to specify a type for empty lists:
+   var parents = []           // ❌ type cannot be inferred
+   var parents: list<int> = [] // ✅ specify the element type
+*/
