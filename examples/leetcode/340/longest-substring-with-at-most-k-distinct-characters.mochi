@@ -1,0 +1,78 @@
+fun lengthOfLongestSubstringKDistinct(s: string, k: int): int {
+  if k <= 0 {
+    return 0
+  }
+  var left = 0
+  var best = 0
+  var counts: map<string, int> = {}
+  var distinct = 0
+  var right = 0
+  while right < len(s) {
+    let ch = s[right]
+    if ch in counts {
+      if counts[ch] == 0 {
+        distinct = distinct + 1
+      }
+      counts[ch] = counts[ch] + 1
+    } else {
+      counts[ch] = 1
+      distinct = distinct + 1
+    }
+    while distinct > k {
+      let leftCh = s[left]
+      counts[leftCh] = counts[leftCh] - 1
+      if counts[leftCh] == 0 {
+        distinct = distinct - 1
+      }
+      left = left + 1
+    }
+    let length = right - left + 1
+    if length > best {
+      best = length
+    }
+    right = right + 1
+  }
+  return best
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect lengthOfLongestSubstringKDistinct("eceba", 2) == 3
+}
+
+test "example 2" {
+  expect lengthOfLongestSubstringKDistinct("aa", 1) == 2
+}
+
+// Additional edge cases
+
+test "empty" {
+  expect lengthOfLongestSubstringKDistinct("", 3) == 0
+}
+
+test "k zero" {
+  expect lengthOfLongestSubstringKDistinct("abc", 0) == 0
+}
+
+test "k larger than distinct" {
+  expect lengthOfLongestSubstringKDistinct("abc", 5) == 3
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a variable declared with `let`.
+   let left = 0
+   left = left + 1           // ❌ cannot modify immutable value
+   var left = 0              // ✅ use `var` for mutable bindings
+2. Using `=` instead of `==` in conditions.
+   if distinct = k { }       // ❌ assignment
+   if distinct == k { }      // ✅ comparison
+3. Accessing a map entry before ensuring it exists.
+   counts[ch] = counts[ch] + 1  // ❌ might fail if `ch` not in counts
+   if ch in counts {            // ✅ check first
+     counts[ch] = counts[ch] + 1
+   } else {
+     counts[ch] = 1
+   }
+*/
