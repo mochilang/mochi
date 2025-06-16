@@ -1,35 +1,36 @@
 // Solution for LeetCode problem 102 - Binary Tree Level Order Traversal
 
-// Binary tree node definition
-// Leaf represents an empty tree
-// Node has left, value, and right children
+// This version mirrors the approach in problem 110 and avoids union types and
+// pattern matching. A binary tree is represented as an array of `Node`
+// structures. Each node stores the indexes of its left and right children. An
+// index of -1 means there is no child.
 
-type Tree =
-  Leaf
-  | Node(left: Tree, value: int, right: Tree)
+type Node {
+  value: int,
+  left: int,
+  right: int,
+}
 
-// Perform a breadth-first traversal returning values level by level
-fun levelOrder(root: Tree): list<list<int>> {
-  if match root {
-       Leaf => true
-       _ => false
-     } {
+// Perform a breadth-first traversal returning values level by level.
+// `tree` is the list of nodes and `root` is the index of the root node. If the
+// tree is empty `root` should be -1.
+fun levelOrder(tree: list<Node>, root: int): list<list<int>> {
+  if root == (-1) {
     return []
   }
   var result: list<list<int>> = []
-  var queue: list<Tree> = [root]
+  var queue: list<int> = [root]
   while len(queue) > 0 {
     var level: list<int> = []
-    var next: list<Tree> = []
-    for node in queue {
-      if match node { Leaf => false _ => true } {
-        level = level + [node.value]
-        if match node.left { Leaf => false _ => true } {
-          next = next + [node.left]
-        }
-        if match node.right { Leaf => false _ => true } {
-          next = next + [node.right]
-        }
+    var next: list<int> = []
+    for idx in queue {
+      let node = tree[idx]
+      level = level + [node.value]
+      if node.left != (-1) {
+        next = next + [node.left]
+      }
+      if node.right != (-1) {
+        next = next + [node.right]
       }
     }
     result = result + [level]
@@ -41,39 +42,39 @@ fun levelOrder(root: Tree): list<list<int>> {
 // Test cases based on LeetCode examples
 
 test "example 1" {
-  let tree = Node {
-    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
-    value: 3,
-    right: Node {
-      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
-      value: 20,
-      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
-    }
-  }
-  expect levelOrder(tree) == [[3], [9,20], [15,7]]
+  let tree: list<Node> = [
+    Node { value: 3, left: 1, right: 2 }, // 0
+    Node { value: 9, left: -1, right: -1 }, // 1
+    Node { value: 20, left: 3, right: 4 }, // 2
+    Node { value: 15, left: -1, right: -1 }, // 3
+    Node { value: 7, left: -1, right: -1 }  // 4
+  ]
+  expect levelOrder(tree, 0) == [[3], [9,20], [15,7]]
 }
 
 test "single node" {
-  expect levelOrder(Node { left: Leaf {}, value: 1, right: Leaf {} }) == [[1]]
+  let tree = [Node { value: 1, left: -1, right: -1 }]
+  expect levelOrder(tree, 0) == [[1]]
 }
 
 test "empty" {
-  expect levelOrder(Leaf {}) == []
+  let empty: list<Node> = []
+  expect levelOrder(empty, -1) == []
 }
 
 /*
 Common Mochi language errors and how to fix them:
-1. Using '=' instead of '==' for comparisons.
-   if node = Leaf { ... }   // ❌ assignment
-   if node == Leaf { ... }  // ✅ comparison
-2. Declaring a list without a type and later appending values.
-   var q = []               // ❌ type unknown
-   var q: list<Tree> = []   // ✅ specify element type
-3. Reassigning an immutable binding.
-   let level = []
-   level = level + [1]      // ❌ cannot assign to 'let'
-   // Fix: use 'var level = []' if mutation is needed.
-4. Using 'null' for empty trees.
-   let t = null             // ❌ undefined value
-   // Fix: use 'Leaf' to represent an empty subtree.
+1. Using '=' instead of '==' in a comparison:
+   if idx = -1 { }     // ❌ assignment
+   if idx == -1 { }    // ✅ comparison
+2. Reassigning an immutable binding:
+   let q = []
+   q = [1]             // ❌ cannot assign to 'let'
+   // Fix: use 'var q = []' when mutation is required.
+3. Creating an empty list without specifying its element type:
+   var nodes = []      // ❌ element type unknown
+   var nodes: list<Node> = []  // ✅ specify the type
+4. Accessing a child index that is -1:
+   let n = tree[node.left]
+   // Check 'node.left' is not -1 before indexing.
 */
