@@ -110,42 +110,47 @@ func TestGoCompiler_GoldenOutput(t *testing.T) {
 
 func TestGoCompiler_LeetCodeExamples(t *testing.T) {
 	for i := 1; i <= 90; i++ {
-		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
-		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
-		if err != nil {
-			t.Fatalf("glob error: %v", err)
-		}
-		for _, f := range files {
-			name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
-			t.Run(name, func(t *testing.T) {
-				prog, err := parser.Parse(f)
-				if err != nil {
-					t.Fatalf("parse error: %v", err)
-				}
-				typeEnv := types.NewEnv(nil)
-				if errs := types.Check(prog, typeEnv); len(errs) > 0 {
-					t.Fatalf("type error: %v", errs[0])
-				}
-				c := gocode.New(typeEnv)
-				code, err := c.Compile(prog)
-				if err != nil {
-					t.Fatalf("compile error: %v", err)
-				}
-				tmp := t.TempDir()
-				file := filepath.Join(tmp, "main.go")
-				if err := os.WriteFile(file, code, 0644); err != nil {
-					t.Fatalf("write error: %v", err)
-				}
-				cmd := exec.Command("go", "run", file)
-				cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
-				out, err := cmd.CombinedOutput()
-				if err != nil {
-					t.Fatalf("go run error: %v\n%s", err, out)
-				}
-				// Older examples may print results; just ensure the
-				// program executes without error.
-				_ = out
-			})
-		}
+		runExample(t, i)
+	}
+	runExample(t, 102)
+}
+
+func runExample(t *testing.T, i int) {
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			typeEnv := types.NewEnv(nil)
+			if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			c := gocode.New(typeEnv)
+			code, err := c.Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.go")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("go", "run", file)
+			cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("go run error: %v\n%s", err, out)
+			}
+			// Older examples may print results; just ensure the
+			// program executes without error.
+			_ = out
+		})
 	}
 }

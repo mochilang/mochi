@@ -118,7 +118,7 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 				t = types.AnyType{}
 			}
 		} else if op.Cast != nil {
-			t = resolveTypeRef(op.Cast.Type)
+			t = c.resolveTypeRef(op.Cast.Type)
 		}
 	}
 	return t
@@ -169,6 +169,34 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 						}
 					}
 				}
+				if ut, ok := t.(types.UnionType); ok {
+					variant := ""
+					var cur types.Type
+					for name, sv := range ut.Variants {
+						if ft, ok := sv.Fields[p.Selector.Tail[0]]; ok {
+							if variant != "" {
+								variant = ""
+								break
+							}
+							variant = name
+							cur = ft
+						}
+					}
+					if variant != "" {
+						for _, field := range p.Selector.Tail[1:] {
+							st, ok := cur.(types.StructType)
+							if !ok {
+								return types.AnyType{}
+							}
+							ft, ok := st.Fields[field]
+							if !ok {
+								return types.AnyType{}
+							}
+							cur = ft
+						}
+						return cur
+					}
+				}
 			}
 		}
 		return types.AnyType{}
@@ -183,14 +211,14 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		params := make([]types.Type, len(p.FunExpr.Params))
 		for i, par := range p.FunExpr.Params {
 			if par.Type != nil {
-				params[i] = resolveTypeRef(par.Type)
+				params[i] = c.resolveTypeRef(par.Type)
 			} else {
 				params[i] = types.AnyType{}
 			}
 		}
 		var ret types.Type = types.VoidType{}
 		if p.FunExpr.Return != nil {
-			ret = resolveTypeRef(p.FunExpr.Return)
+			ret = c.resolveTypeRef(p.FunExpr.Return)
 		} else if p.FunExpr.ExprBody != nil {
 			ret = c.inferExprType(p.FunExpr.ExprBody)
 		} else {
@@ -251,7 +279,7 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 	case p.Load != nil:
 		var elem types.Type = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
 		if p.Load.Type != nil {
-			elem = resolveTypeRef(p.Load.Type)
+			elem = c.resolveTypeRef(p.Load.Type)
 			if st, ok := c.env.GetStruct(*p.Load.Type.Simple); elem == (types.AnyType{}) && ok {
 				elem = st
 			}

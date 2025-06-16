@@ -667,7 +667,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	var t types.Type = types.AnyType{}
 	if c.env != nil {
 		if s.Type != nil {
-			t = resolveTypeRef(s.Type)
+			t = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
 			t = c.inferExprType(s.Value)
 		} else if old, err := c.env.GetVar(s.Name); err == nil {
@@ -709,7 +709,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
 		if s.Type != nil {
-			typ = resolveTypeRef(s.Type)
+			typ = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
 			typ = c.inferExprType(s.Value)
 		} else if t, err := c.env.GetVar(s.Name); err == nil {
@@ -1099,12 +1099,29 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			c.indent++
 			for _, f := range v.Fields {
 				fieldName := exportName(sanitizeName(f.Name))
-				typ := goType(resolveTypeRef(f.Type))
+				rtype := c.resolveTypeRef(f.Type)
+				typ := goType(rtype)
 				c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, f.Name))
+				if c.env != nil {
+					if st, ok := c.env.GetStruct(v.Name); ok {
+						st.Fields[f.Name] = rtype
+						c.env.SetStruct(v.Name, st)
+					}
+				}
 			}
 			c.indent--
 			c.writeln("}")
 			c.writeln(fmt.Sprintf("func (%s) is%s() {}", vname, name))
+		}
+		if c.env != nil {
+			if ut, ok := c.env.GetUnion(t.Name); ok {
+				for _, v := range t.Variants {
+					if st, ok := c.env.GetStruct(v.Name); ok {
+						ut.Variants[v.Name] = st
+					}
+				}
+				c.env.SetUnion(t.Name, ut)
+			}
 		}
 		return nil
 	}
@@ -1113,7 +1130,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	for _, m := range t.Members {
 		if m.Field != nil {
 			fieldName := exportName(sanitizeName(m.Field.Name))
-			typ := goType(resolveTypeRef(m.Field.Type))
+			typ := goType(c.resolveTypeRef(m.Field.Type))
 			c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, m.Field.Name))
 		}
 	}
@@ -1267,12 +1284,12 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		ft.Params = make([]types.Type, len(fun.Params))
 		for i, p := range fun.Params {
 			if p.Type != nil {
-				ft.Params[i] = resolveTypeRef(p.Type)
+				ft.Params[i] = c.resolveTypeRef(p.Type)
 			}
 		}
 	}
 	if ft.Return == nil && fun.Return != nil {
-		ft.Return = resolveTypeRef(fun.Return)
+		ft.Return = c.resolveTypeRef(fun.Return)
 	}
 	if ft.Return == nil {
 		ft.Return = types.VoidType{}
@@ -1786,7 +1803,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		case op.Cast != nil:
-			t := resolveTypeRef(op.Cast.Type)
+			t := c.resolveTypeRef(op.Cast.Type)
 			c.use("_cast")
 			c.imports["encoding/json"] = true
 			val = fmt.Sprintf("_cast[%s](%s)", goType(t), val)
@@ -1825,6 +1842,38 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				base += ".[" + fmt.Sprintf("%q", field) + "]"
 			}
 			return base, nil
+		}
+		if ut, ok := typ.(types.UnionType); ok && len(p.Selector.Tail) > 0 {
+			field := p.Selector.Tail[0]
+			var variant string
+			var ftyp types.Type
+			for name, st := range ut.Variants {
+				if ft, ok := st.Fields[field]; ok {
+					if variant != "" {
+						variant = ""
+						break
+					}
+					variant = name
+					ftyp = ft
+				}
+			}
+			if variant != "" {
+				base = fmt.Sprintf("%s.(%s).%s", base, sanitizeName(variant), exportName(sanitizeName(field)))
+				typ = ftyp
+				for _, f := range p.Selector.Tail[1:] {
+					if st, ok := typ.(types.StructType); ok {
+						if ft, ok := st.Fields[f]; ok {
+							typ = ft
+						} else {
+							typ = types.AnyType{}
+						}
+					} else {
+						typ = types.AnyType{}
+					}
+					base += "." + exportName(sanitizeName(f))
+				}
+				return base, nil
+			}
 		}
 		for _, field := range p.Selector.Tail {
 			base += "." + exportName(sanitizeName(field))
@@ -2024,7 +2073,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	c.imports["os"] = true
 	c.use("_load")
 	if l.Type != nil {
-		t := resolveTypeRef(l.Type)
+		t := c.resolveTypeRef(l.Type)
 		if st, ok := c.env.GetStruct(*l.Type.Simple); t == (types.AnyType{}) && ok {
 			t = st
 		}
@@ -2517,12 +2566,13 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if call, ok := callPattern(cse.Pattern); ok {
 			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
-				cond := fmt.Sprintf("v, ok := _t.(%s); ok", sanitizeName(call.Func))
+				varName := c.newVar()
+				cond := fmt.Sprintf("%s, ok := _t.(%s); ok", varName, sanitizeName(call.Func))
 				buf.WriteString("\tif " + cond + " {\n")
 				for idx, arg := range call.Args {
 					if id, ok := identName(arg); ok && id != "_" {
 						field := exportName(sanitizeName(st.Order[idx]))
-						buf.WriteString(fmt.Sprintf("\t\t%s := v.%s\n", sanitizeName(id), field))
+						buf.WriteString(fmt.Sprintf("\t\t%s := %s.%s\n", sanitizeName(id), varName, field))
 					}
 				}
 				buf.WriteString("\t\treturn " + res + "\n")
@@ -2817,20 +2867,20 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	for i, p := range fn.Params {
 		typ := "any"
 		if p.Type != nil {
-			typ = goType(resolveTypeRef(p.Type))
+			typ = goType(c.resolveTypeRef(p.Type))
 		}
 		params[i] = sanitizeName(p.Name) + " " + typ
 	}
 	child := types.NewEnv(c.env)
 	for _, p := range fn.Params {
 		if p.Type != nil {
-			child.SetVar(p.Name, resolveTypeRef(p.Type), true)
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
 		}
 	}
 	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
 	sub.indent = 1
 	if fn.Return != nil {
-		sub.returnType = resolveTypeRef(fn.Return)
+		sub.returnType = c.resolveTypeRef(fn.Return)
 	}
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody)
@@ -2846,7 +2896,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	body := indentBlock(sub.buf.String(), 1)
 	retType := ""
 	if fn.Return != nil {
-		retType = goType(resolveTypeRef(fn.Return))
+		retType = goType(c.resolveTypeRef(fn.Return))
 	}
 	if retType == "" {
 		return "func(" + strings.Join(params, ", ") + ") {\n" + body + "}", nil
