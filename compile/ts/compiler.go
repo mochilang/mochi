@@ -801,6 +801,8 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 	t := c.inferExprType(stmt.Source)
 	var elem types.Type = types.AnyType{}
+	convert := ""
+	keyVar := name
 	switch tt := t.(type) {
 	case types.ListType:
 		elem = tt.Elem
@@ -813,7 +815,11 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	case types.MapType:
 		elem = tt.Key
 		c.writeIndent()
-		c.buf.WriteString(fmt.Sprintf("for (const %s of Object.keys(%s)) {\n", name, src))
+		if isInt(tt.Key) || isInt64(tt.Key) || isFloat(tt.Key) {
+			keyVar = name + "Key"
+			convert = fmt.Sprintf("const %s: number = Number(%s)\n", name, keyVar)
+		}
+		c.buf.WriteString(fmt.Sprintf("for (const %s of Object.keys(%s)) {\n", keyVar, src))
 	default:
 		c.writeIndent()
 		c.use("_iter")
@@ -823,6 +829,10 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		c.env.SetVar(stmt.Name, elem, true)
 	}
 	c.indent++
+	if convert != "" {
+		c.writeIndent()
+		c.buf.WriteString(convert)
+	}
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
