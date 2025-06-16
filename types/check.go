@@ -382,9 +382,22 @@ func Check(prog *parser.Program, env *Env) []error {
 	}, false)
 
 	var errs []error
+
+	// First process all type declarations so functions can reference them
+	// regardless of their order in the source file.
 	for _, stmt := range prog.Statements {
-		if err := checkStmt(stmt, env, VoidType{}); err != nil {
-			errs = append(errs, err)
+		if stmt.Type != nil {
+			if err := checkStmt(stmt, env, VoidType{}); err != nil {
+				errs = append(errs, err)
+			}
+		}
+	}
+
+	for _, stmt := range prog.Statements {
+		if stmt.Type == nil {
+			if err := checkStmt(stmt, env, VoidType{}); err != nil {
+				errs = append(errs, err)
+			}
 		}
 	}
 	return errs
