@@ -1,0 +1,35 @@
+// LeetCode 95 - Unique Binary Search Trees II
+
+// Binary tree represented as a union type
+// Empty denotes a missing child node
+
+type Tree =
+  Empty
+  | Node(left: Tree, val: int, right: Tree)
+
+fun build(start: int, end: int): list<Tree> {
+  if start > end {
+    return [Empty {}]
+  }
+  var result: list<Tree> = []
+  for i in start..end + 1 {
+    let leftTrees = build(start, i - 1)
+    let rightTrees = build(i + 1, end)
+    for l in leftTrees {
+      for r in rightTrees {
+        result = result + [Node { left: l, val: i, right: r }]
+      }
+    }
+  }
+  return result
+}
+
+fun generateTrees(n: int): list<Tree> {
+  if n == 0 {
+    return []
+  }
+  return build(1, n)
+}
+
+let trees = generateTrees(3)
+print(len(trees))
