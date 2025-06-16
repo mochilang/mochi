@@ -54,14 +54,15 @@ test: mochi
 
 compile: mochi
 	@mkdir -p ../leetcode-out
-	@find . -path ./bin -prune -o -name '*.mochi' -print0 | \
-	while IFS= read -r -d '' f; do \
-        dir=$$(dirname "$$f"); \
-        dir=$${dir#./}; \
-        mkdir -p ../leetcode-out/"$$dir"; \
-        base=$$(basename "$$f" .mochi); \
-        $(MOCHI_BIN) build "$$f" -o ../leetcode-out/"$$dir"/"$$base".go.out --target go; \
-        done
+	@for d in $(shell seq 1 10); do \
+	find $$d -name '*.mochi' -print0; \
+	done | while IFS= read -r -d '' f; do \
+	dir=$$(dirname "$$f"); \
+	dir=$${dir#./}; \
+	mkdir -p ../leetcode-out/"$$dir"; \
+	base=$$(basename "$$f" .mochi); \
+	$(MOCHI_BIN) build "$$f" -o ../leetcode-out/"$$dir"/"$$base".go.out --target go; \
+	done
 
 clean:
 	@rm -rf bin

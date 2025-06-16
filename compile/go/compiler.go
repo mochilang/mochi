@@ -55,14 +55,17 @@ func New(env *types.Env) *Compiler {
 
 // Compile returns Go source code implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	c.writeln("package main")
-	c.writeln("")
+	// Compile the program body first so we know all helper imports.
+	var body bytes.Buffer
+	oldBuf := c.buf
+	c.buf = body
+	c.indent = 0
 
 	for _, stmt := range prog.Statements {
 		c.scanImports(stmt)
 	}
 
-	c.writeImports()
+	// Generate program body.
 	c.writeExpectFunc(prog)
 
 	if err := c.compileTypeDecls(prog); err != nil {
@@ -80,6 +83,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("")
 	c.emitRuntime()
+
+	bodyBytes := c.buf.Bytes()
+
+	// Restore buffer and write final output with updated imports.
+	c.buf = oldBuf
+	c.indent = 0
+	c.writeln("package main")
+	c.writeln("")
+	c.writeImports()
+	c.buf.Write(bodyBytes)
 
 	return c.buf.Bytes(), nil
 }
@@ -1269,7 +1282,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	var next types.Type
 	switch op {
 	case "+", "-", "*", "/", "%":
-		if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
+		if op != "+" && (isAny(leftType) || isAny(rightType)) {
 			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
 		}
 		switch {
@@ -1283,6 +1296,26 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		case isFloat(leftType) && isFloat(rightType):
 			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 			next = types.FloatType{}
+		case op == "+" && isAny(leftType) && isList(rightType):
+			rt := rightType.(types.ListType)
+			c.use("_cast")
+			left = fmt.Sprintf("_cast[%s](%s)", goType(rightType), left)
+			expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(rt.Elem), left, right)
+			next = rightType
+		case op == "+" && isList(leftType) && isAny(rightType):
+			lt := leftType.(types.ListType)
+			c.use("_cast")
+			right = fmt.Sprintf("_cast[%s](%s)", goType(leftType), right)
+			expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
+			next = leftType
+		case op == "+" && isAny(leftType) && isString(rightType):
+			expr = fmt.Sprintf("fmt.Sprint(%s) + %s", left, right)
+			c.imports["fmt"] = true
+			next = types.StringType{}
+		case op == "+" && isString(leftType) && isAny(rightType):
+			expr = fmt.Sprintf("%s + fmt.Sprint(%s)", left, right)
+			c.imports["fmt"] = true
+			next = types.StringType{}
 		case op == "+" && isList(leftType) && isList(rightType):
 			lt := leftType.(types.ListType)
 			rt := rightType.(types.ListType)
@@ -1313,6 +1346,12 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		case op == "+" && isString(leftType) && isString(rightType):
 			expr = fmt.Sprintf("%s + %s", left, right)
 			next = types.StringType{}
+		case op == "+" && isAny(leftType) && isAny(rightType):
+			c.use("_cast")
+			left = fmt.Sprintf("_cast[[]any](%s)", left)
+			right = fmt.Sprintf("_cast[[]any](%s)", right)
+			expr = fmt.Sprintf("append(append([]any{}, %s...), %s...)", left, right)
+			next = types.ListType{Elem: types.AnyType{}}
 		default:
 			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
 		}
@@ -2534,7 +2573,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			child.SetVar(p.Name, resolveTypeRef(p.Type), true)
 		}
 	}
-       sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
+	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
 	sub.indent = 1
 	if fn.Return != nil {
 		sub.returnType = resolveTypeRef(fn.Return)
