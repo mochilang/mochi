@@ -1,0 +1,94 @@
+// LeetCode 361 - Bomb Enemy
+
+fun maxKilledEnemies(grid: list<list<string>>): int {
+  let m = len(grid)
+  if m == 0 {
+    return 0
+  }
+  let n = len(grid[0])
+  var result = 0
+  var colHits: list<int> = []
+  var i = 0
+  while i < n {
+    colHits = colHits + [0]
+    i = i + 1
+  }
+  var rowHits = 0
+  var r = 0
+  while r < m {
+    var c = 0
+    while c < n {
+      if c == 0 || grid[r][c-1] == "W" {
+        rowHits = 0
+        var k = c
+        while k < n {
+          if grid[r][k] == "W" {
+            break
+          }
+          if grid[r][k] == "E" {
+            rowHits = rowHits + 1
+          }
+          k = k + 1
+        }
+      }
+      if r == 0 || grid[r-1][c] == "W" {
+        colHits[c] = 0
+        var k = r
+        while k < m {
+          if grid[k][c] == "W" {
+            break
+          }
+          if grid[k][c] == "E" {
+            colHits[c] = colHits[c] + 1
+          }
+          k = k + 1
+        }
+      }
+      if grid[r][c] == "0" {
+        let total = rowHits + colHits[c]
+        if total > result {
+          result = total
+        }
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let grid = [
+    ["0","E","0","0"],
+    ["E","0","W","E"],
+    ["0","E","0","0"]
+  ]
+  expect maxKilledEnemies(grid) == 3
+}
+
+test "empty grid" {
+  expect maxKilledEnemies([]) == 0
+}
+
+// Additional tests
+
+test "all walls" {
+  expect maxKilledEnemies([["W","W"],["W","W"]]) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions:
+     if grid[r][c] = "W" { }
+   Use '==' for comparisons.
+2. Reassigning a value defined with 'let':
+     let n = 2
+     n = n + 1      // error[E004]
+   Declare with 'var' if mutation is needed.
+3. Accessing an index out of bounds:
+     grid[m][n]
+   Indices run from 0 to len(grid)-1.
+4. Forgetting to initialize lists like 'colHits' before assignment.
+*/
