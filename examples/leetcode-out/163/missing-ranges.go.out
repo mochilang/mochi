@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
 )
 
@@ -17,14 +18,10 @@ func formatRange(start int, end int) string {
 
 func findMissingRanges(nums []int, lower int, upper int) []string {
 	var result []string = []string{}
-	_ = result
 	var prev int = (lower - 1)
-	_ = prev
 	var i int = 0
-	_ = i
 	for (i <= len(nums)) {
 		var curr int = 0
-		_ = curr
 		if (i == len(nums)) {
 			curr = (upper + 1)
 		} else {
@@ -53,6 +50,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

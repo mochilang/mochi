@@ -10,14 +10,10 @@ func expect(cond bool) {
 
 func fullJustify(words []string, maxWidth int) []string {
 	var result []string = []string{}
-	_ = result
 	var i int = 0
-	_ = i
 	for (i < len(words)) {
 		var j int = i
-		_ = j
 		var lineLen int = 0
-		_ = lineLen
 		for (j < len(words)) {
 			if (((lineLen + len(words[j])) + ((j - i))) <= maxWidth) {
 				lineLen = (lineLen + len(words[j]))
@@ -27,11 +23,9 @@ func fullJustify(words []string, maxWidth int) []string {
 			}
 		}
 		var line string = ""
-		_ = line
 		var numWords int = (j - i)
 		if ((j == len(words)) || (numWords == 1)) {
 			var k int = i
-			_ = k
 			for (k < j) {
 				line = line + words[k]
 				if (k < (j - 1)) {
@@ -47,14 +41,11 @@ func fullJustify(words []string, maxWidth int) []string {
 			var gaps int = (numWords - 1)
 			var spaceEach int = (totalSpaces / gaps)
 			var extra int = (totalSpaces % gaps)
-			_ = extra
 			var k int = i
-			_ = k
 			for (k < j) {
 				line = line + words[k]
 				if (k < (j - 1)) {
 					var s int = 0
-					_ = s
 					for (s < spaceEach) {
 						line = line + " "
 						s = (s + 1)
@@ -75,16 +66,19 @@ func fullJustify(words []string, maxWidth int) []string {
 
 func example_1() {
 	var words []string = []string{"This", "is", "an", "example", "of", "text", "justification."}
+	_ = words
 	expect(_equal(fullJustify(words, 16), []string{"This    is    an", "example  of text", "justification.  "}))
 }
 
 func example_2() {
 	var words []string = []string{"What", "must", "be", "acknowledgment", "shall", "be"}
+	_ = words
 	expect(_equal(fullJustify(words, 16), []string{"What   must   be", "acknowledgment  ", "shall be        "}))
 }
 
 func example_3() {
 	var words []string = []string{"Science", "is", "what", "we", "understand", "well", "enough", "to", "explain", "to", "a", "computer.", "Art", "is", "everything", "else", "we", "do"}
+	_ = words
 	expect(_equal(fullJustify(words, 20), []string{"Science  is  what we", "understand      well", "enough to explain to", "a  computer.  Art is", "everything  else  we", "do                  "}))
 }
 
@@ -95,6 +89,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

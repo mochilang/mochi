@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func expand(s string, left int, right int) int {
 	var l int = left
-	_ = l
 	var r int = right
-	_ = r
 	var n int = len(s)
 	for ((l >= 0) && (r < n)) {
 		if (_indexString(s, l) != _indexString(s, r)) {
@@ -25,15 +23,12 @@ func longestPalindrome(s string) string {
 		return s
 	}
 	var start int = 0
-	_ = start
 	var end int = 0
-	_ = end
 	var n int = len(s)
 	for i := 0; i < n; i++ {
 		var len1 int = expand(s, i, i)
 		var len2 int = expand(s, i, (i + 1))
 		var l int = len1
-		_ = l
 		if (len2 > len1) {
 			l = len2
 		}
@@ -47,6 +42,7 @@ func longestPalindrome(s string) string {
 
 func example_1() {
 	var ans string = longestPalindrome("babad")
+	_ = ans
 	expect(((ans == "bab") || (ans == "aba")))
 }
 
@@ -60,6 +56,7 @@ func single_char() {
 
 func two_chars() {
 	var ans string = longestPalindrome("ac")
+	_ = ans
 	expect(((ans == "a") || (ans == "c")))
 }
 

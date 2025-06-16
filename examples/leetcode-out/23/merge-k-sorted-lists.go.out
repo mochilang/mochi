@@ -11,24 +11,17 @@ func expect(cond bool) {
 func mergeKLists(lists [][]int) []int {
 	var k int = len(lists)
 	var indices []int = []int{}
-	_ = indices
 	var i int = 0
-	_ = i
 	for (i < k) {
 		indices = append(append([]int{}, indices...), []int{0}...)
 		i = (i + 1)
 	}
 	var result []int = []int{}
-	_ = result
 	for {
 		var best int = 0
-		_ = best
 		var bestList int = -1
-		_ = bestList
 		var found bool = false
-		_ = found
 		var j int = 0
-		_ = j
 		for (j < k) {
 			var idx int = indices[j]
 			if (idx < len(lists[j])) {
@@ -59,7 +52,7 @@ func example_2() {
 }
 
 func example_3() {
-	expect(_equal(mergeKLists([][]any{[]any{}}), []any{}))
+	expect(_equal(mergeKLists([][]int{[]int{}}), []any{}))
 }
 
 func main() {
@@ -69,6 +62,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

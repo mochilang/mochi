@@ -14,6 +14,7 @@ func newNumArray(values []int) NumArray {
 
 func update(arr NumArray, index int, val int) NumArray {
 	var data []int = arr.Nums
+	_ = data
 	data[index] = val
 	return NumArray{Nums: data}
 }

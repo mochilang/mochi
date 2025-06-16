@@ -21,9 +21,7 @@ func hasCycle(values []int, pos int) bool {
 		return false
 	}
 	var slow int = 0
-	_ = slow
 	var fast int = 0
-	_ = fast
 	for {
 		slow = nextIndex(slow)
 		fast = nextIndex(fast)

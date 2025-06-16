@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 )
 
@@ -10,7 +11,7 @@ func expect(cond bool) {
 }
 
 func combinationSum(candidates []int, target int) [][]int {
-	var sorted []any = func() []int {
+	var sorted []int = func() []int {
 	items := []int{}
 	for _, c := range candidates {
 		items = append(items, c)
@@ -47,32 +48,58 @@ func combinationSum(candidates []int, target int) [][]int {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, c := range items {
-		res = append(res, c)
+		_res = append(_res, c)
 	}
-	return res
+	return _res
 }()
-	var result []any = []any{}
-	backtrack(target, 0, []any{})
+	var result [][]int = [][]int{}
+	var backtrack func(int, int, []int)
+	backtrack = func(remain int, start int, path []int) {
+		if (remain == 0) {
+			result = append(append([][]int{}, result...), [][]int{path}...)
+		} else {
+			var i int = start
+			var n int = len(sorted)
+			for (i < n) {
+				var current int = sorted[i]
+				if (current > remain) {
+					break
+				}
+				backtrack((remain - current), i, append(append([]int{}, path...), []int{current}...))
+				i = (i + 1)
+			}
+		}
+}
+	backtrack(target, 0, []int{})
 	return result
 }
 
 func example_1() {
-	expect((combinationSum([]int{2, 3, 6, 7}, 7) == [][]int{[]int{2, 2, 3}, []int{7}}))
+	expect(_equal(combinationSum([]int{2, 3, 6, 7}, 7), [][]int{[]int{2, 2, 3}, []int{7}}))
 }
 
 func example_2() {
-	expect((combinationSum([]int{2, 3, 5}, 8) == [][]int{[]int{2, 2, 2, 2}, []int{2, 3, 3}, []int{3, 5}}))
+	expect(_equal(combinationSum([]int{2, 3, 5}, 8), [][]int{[]int{2, 2, 2, 2}, []int{2, 3, 3}, []int{3, 5}}))
 }
 
 func example_3() {
-	expect((combinationSum([]int{2}, 1) == []any{}))
+	expect(_equal(combinationSum([]int{2}, 1), []any{}))
 }
 
 func main() {
 	example_1()
 	example_2()
 	example_3()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
 }
 

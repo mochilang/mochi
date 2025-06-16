@@ -12,9 +12,7 @@ func expect(cond bool) {
 
 func parseInt(s string) int {
 	var result int = 0
-	_ = result
 	var i int = 0
-	_ = i
 	var digits map[string]int = map[string]int{"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
 	for (i < len(s)) {
 		result = ((result * 10) + digits[_indexString(s, i)])
@@ -25,9 +23,7 @@ func parseInt(s string) int {
 
 func diffWaysToCompute(expr string) []int {
 	var results []int = []int{}
-	_ = results
 	var i int = 0
-	_ = i
 	for (i < len(expr)) {
 		var ch string = _indexString(expr, i)
 		if (((ch == "+") || (ch == "-")) || (ch == "*")) {
@@ -38,7 +34,6 @@ func diffWaysToCompute(expr string) []int {
 			for _, a := range leftVals {
 				for _, b := range rightVals {
 					var val int = 0
-					_ = val
 					if (ch == "+") {
 						val = (a + b)
 					} else 					if (ch == "-") {
@@ -60,7 +55,7 @@ func diffWaysToCompute(expr string) []int {
 
 func example_1() {
 	var res []int = diffWaysToCompute("2-1-1")
-	var sorted []any = func() []int {
+	var sorted []int = func() []int {
 	items := []int{}
 	for _, x := range res {
 		items = append(items, x)
@@ -97,19 +92,21 @@ func example_1() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
+	_ = sorted
 	var expected []int = []int{0, 2}
+	_ = expected
 	expect(_equal(sorted, expected))
 }
 
 func example_2() {
 	var res []int = diffWaysToCompute("2*3-4*5")
-	var sorted []any = func() []int {
+	var sorted []int = func() []int {
 	items := []int{}
 	for _, x := range res {
 		items = append(items, x)
@@ -146,14 +143,15 @@ func example_2() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
+	_ = sorted
 	var expected []int = []int{-34, -14, -10, -10, 10}
-	var expSorted []any = func() []int {
+	var expSorted []int = func() []int {
 	items := []int{}
 	for _, x := range expected {
 		items = append(items, x)
@@ -190,12 +188,13 @@ func example_2() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
+	_ = expSorted
 	expect(_equal(sorted, expSorted))
 }
 
@@ -210,6 +209,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

@@ -54,7 +54,7 @@ func single() {
 }
 
 func empty() {
-	expect((rob([]any{}) == 0))
+	expect((rob([]int{}) == 0))
 }
 
 func main() {

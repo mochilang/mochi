@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -14,7 +15,6 @@ func letterCombinations(digits string) []string {
 	}
 	var mapping map[string][]string = map[string][]string{"2": []string{"a", "b", "c"}, "3": []string{"d", "e", "f"}, "4": []string{"g", "h", "i"}, "5": []string{"j", "k", "l"}, "6": []string{"m", "n", "o"}, "7": []string{"p", "q", "r", "s"}, "8": []string{"t", "u", "v"}, "9": []string{"w", "x", "y", "z"}}
 	var result []string = []string{""}
-	_ = result
 	for _, r := range []rune(digits) {
 		d := string(r)
 		_tmp0 := d
@@ -24,14 +24,15 @@ func letterCombinations(digits string) []string {
 			continue
 		}
 		var letters []string = mapping[d]
-		var next []any = func() []string {
-	res := []string{}
+		_ = letters
+		var next []string = func() []string {
+	_res := []string{}
 	for _, p := range result {
 		for _, ch := range letters {
-			res = append(res, p + ch)
+			_res = append(_res, p + ch)
 		}
 	}
-	return res
+	return _res
 }()
 		result = next
 	}
@@ -75,6 +76,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

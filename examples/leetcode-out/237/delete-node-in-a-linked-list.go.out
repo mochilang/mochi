@@ -10,9 +10,7 @@ func expect(cond bool) {
 
 func deleteNode(values []int, index int) []int {
 	var arr []int = values
-	_ = arr
 	var i int = index
-	_ = i
 	for (i < (len(arr) - 1)) {
 		arr[i] = arr[(i + 1)]
 		i = (i + 1)
@@ -44,6 +42,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

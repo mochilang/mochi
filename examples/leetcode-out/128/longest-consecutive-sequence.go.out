@@ -6,21 +6,17 @@ func expect(cond bool) {
 
 func longestConsecutive(nums []int) int {
 	var set map[int]bool = map[int]bool{}
-	_ = set
 	for _, n := range nums {
 		set[n] = true
 	}
 	var best int = 0
-	_ = best
 	for n := range set {
 		_tmp0 := (n - 1)
 		_tmp1 := set
 		_, _tmp2 := _tmp1[_tmp0]
 		if !(_tmp2) {
 			var curr int = n
-			_ = curr
 			var length int = 1
-			_ = length
 			_tmp3 := (curr + 1)
 			_tmp4 := set
 			_, _tmp5 := _tmp4[_tmp3]

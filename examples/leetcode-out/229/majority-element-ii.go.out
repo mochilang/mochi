@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -14,13 +15,9 @@ func majorityElement(nums []int) []int {
 		return _cast[[]int]([]any{})
 	}
 	var candidate1 int = 0
-	_ = candidate1
 	var candidate2 int = 0
-	_ = candidate2
 	var count1 int = 0
-	_ = count1
 	var count2 int = 0
-	_ = count2
 	for _, num := range nums {
 		if (num == candidate1) {
 			count1 = (count1 + 1)
@@ -38,11 +35,8 @@ func majorityElement(nums []int) []int {
 		}
 	}
 	var res []int = []int{}
-	_ = res
 	var c1 int = 0
-	_ = c1
 	var c2 int = 0
-	_ = c2
 	for _, num := range nums {
 		if (num == candidate1) {
 			c1 = (c1 + 1)
@@ -89,6 +83,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

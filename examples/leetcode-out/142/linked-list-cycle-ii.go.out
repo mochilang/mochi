@@ -9,9 +9,7 @@ func detectCycle(next []int) int {
 		return -1
 	}
 	var slow int = 0
-	_ = slow
 	var fast int = 0
-	_ = fast
 	for ((fast != (-1)) && (next[fast] != (-1))) {
 		slow = next[slow]
 		fast = next[next[fast]]
@@ -23,7 +21,6 @@ func detectCycle(next []int) int {
 		return -1
 	}
 	var start int = 0
-	_ = start
 	for (start != slow) {
 		start = next[start]
 		slow = next[slow]

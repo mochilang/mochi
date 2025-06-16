@@ -6,7 +6,6 @@ func expect(cond bool) {
 
 func toList(s string) []string {
 	var out []string = []string{}
-	_ = out
 	for i := 0; i < len(s); i++ {
 		out = append(append([]string{}, out...), []string{_indexString(s, i)}...)
 	}
@@ -15,7 +14,6 @@ func toList(s string) []string {
 
 func fromList(arr []string) string {
 	var out string = ""
-	_ = out
 	for _, ch := range arr {
 		out = out + ch
 	}
@@ -24,11 +22,8 @@ func fromList(arr []string) string {
 
 func reverseWords(chars []string) []string {
 	var arr []string = chars
-	_ = arr
 	var left int = 0
-	_ = left
 	var right int = (len(arr) - 1)
-	_ = right
 	for (left < right) {
 		var temp string = arr[left]
 		arr[left] = arr[right]
@@ -37,16 +32,12 @@ func reverseWords(chars []string) []string {
 		right = (right - 1)
 	}
 	var start int = 0
-	_ = start
 	var i int = 0
-	_ = i
 	var n int = len(arr)
 	for (i <= n) {
 		if (i == n) {
 			var l int = start
-			_ = l
 			var r int = (i - 1)
-			_ = r
 			for (l < r) {
 				var t string = arr[l]
 				arr[l] = arr[r]
@@ -56,9 +47,7 @@ func reverseWords(chars []string) []string {
 			}
 		} else 		if (arr[i] == " ") {
 			var l int = start
-			_ = l
 			var r int = (i - 1)
-			_ = r
 			for (l < r) {
 				var t string = arr[l]
 				arr[l] = arr[r]
@@ -76,24 +65,28 @@ func reverseWords(chars []string) []string {
 func example_1() {
 	var input []string = toList("the sky is blue")
 	var result []string = reverseWords(input)
+	_ = result
 	expect((fromList(result) == "blue is sky the"))
 }
 
 func example_2() {
 	var input []string = toList("hello world")
 	var result []string = reverseWords(input)
+	_ = result
 	expect((fromList(result) == "world hello"))
 }
 
 func single_word() {
 	var input []string = toList("hello")
 	var result []string = reverseWords(input)
+	_ = result
 	expect((fromList(result) == "hello"))
 }
 
 func trailing_space() {
 	var input []string = toList("a b ")
 	var result []string = reverseWords(input)
+	_ = result
 	expect((fromList(result) == " b a"))
 }
 

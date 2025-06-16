@@ -6,14 +6,12 @@ func expect(cond bool) {
 
 func firstMissingPositive(nums []int) int {
 	var seen map[int]bool = map[int]bool{}
-	_ = seen
 	for _, n := range nums {
 		if (n > 0) {
 			seen[n] = true
 		}
 	}
 	var i int = 1
-	_ = i
 	for {
 		_tmp0 := i
 		_tmp1 := seen

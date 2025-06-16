@@ -25,6 +25,7 @@ func sortedListToBST(nums []int) any {
 			return Leaf{}
 		}
 		var mid int = (((lo + hi)) / 2)
+		_ = mid
 		return Node{Left: build(lo, mid), Value: nums[mid], Right: build((mid + 1), hi)}
 }
 	return build(0, len(nums))
@@ -46,6 +47,7 @@ func inorder(t any) []int {
 func example() {
 	var nums []int = []int{-10, -3, 0, 5, 9}
 	var tree any = sortedListToBST(nums)
+	_ = tree
 	expect(_equal(inorder(tree), nums))
 }
 
@@ -64,6 +66,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

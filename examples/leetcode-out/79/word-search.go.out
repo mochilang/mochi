@@ -11,14 +11,10 @@ func exist(board [][]string, word string) bool {
 	}
 	var n int = len(board[0])
 	var visited [][]bool = [][]bool{}
-	_ = visited
 	var r int = 0
-	_ = r
 	for (r < m) {
 		var row []bool = []bool{}
-		_ = row
 		var c int = 0
-		_ = c
 		for (c < n) {
 			row = append(append([]bool{}, row...), []bool{false}...)
 			c = (c + 1)

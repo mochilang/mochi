@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -14,21 +15,17 @@ func reverseKGroup(nums []int, k int) []int {
 		return nums
 	}
 	var result []any = []any{}
-	_ = result
 	var i int = 0
-	_ = i
 	for (i < n) {
 		var end int = (i + k)
 		if (end <= n) {
 			var j int = (end - 1)
-			_ = j
 			for (j >= i) {
 				result = append(append([]any{}, result...), _toAnySlice([]int{nums[j]})...)
 				j = (j - 1)
 			}
 		} else {
 			var j int = i
-			_ = j
 			for (j < n) {
 				result = append(append([]any{}, result...), _toAnySlice([]int{nums[j]})...)
 				j = (j + 1)
@@ -76,6 +73,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

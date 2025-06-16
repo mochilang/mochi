@@ -27,27 +27,22 @@ func newReader(s string) Reader {
 
 func read4(r Reader) Read4Result {
 	var i int = 0
-	_ = i
 	var chunk string = ""
-	_ = chunk
 	var idx int = r.Index
-	_ = idx
 	for ((i < 4) && (idx < len(r.Data))) {
 		chunk = chunk + _indexString(r.Data, idx)
 		idx = (idx + 1)
 		i = (i + 1)
 	}
-	var newReader func(string) Reader = Reader{Data: r.Data, Index: idx, Buffer: r.Buffer}
+	var newReader Reader = Reader{Data: r.Data, Index: idx, Buffer: r.Buffer}
+	_ = newReader
 	return Read4Result{Reader: newReader, Chunk: chunk}
 }
 
 func read(reader Reader, n int) ReadResult {
 	var r Reader = reader
-	_ = r
 	var output string = ""
-	_ = output
 	var total int = 0
-	_ = total
 	for ((total < n) && (len(r.Buffer) > 0)) {
 		output = output + _indexString(r.Buffer, 0)
 		r = Reader{Data: r.Data, Index: r.Index, Buffer: string([]rune(r.Buffer)[1:len(r.Buffer)])}
@@ -55,13 +50,13 @@ func read(reader Reader, n int) ReadResult {
 	}
 	for (total < n) {
 		var r4 Read4Result = read4(r)
+		_ = r4
 		r = r4.Reader
 		var chunk string = r4.Chunk
 		if (len(chunk) == 0) {
 			break
 		}
 		var i int = 0
-		_ = i
 		for ((i < len(chunk)) && (total < n)) {
 			output = output + _indexString(chunk, i)
 			i = (i + 1)
@@ -74,28 +69,30 @@ func read(reader Reader, n int) ReadResult {
 
 func multiple_calls() {
 	var r Reader = newReader("abc")
-	_ = r
 	var r1 ReadResult = read(r, 1)
+	_ = r1
 	expect((r1.Data == "a"))
 	r = r1.Reader
 	var r2 ReadResult = read(r, 2)
+	_ = r2
 	expect((r2.Data == "bc"))
 }
 
 func leftover_handling() {
 	var r Reader = newReader("abcde")
-	_ = r
 	var r1 ReadResult = read(r, 2)
+	_ = r1
 	expect((r1.Data == "ab"))
 	r = r1.Reader
 	var r2 ReadResult = read(r, 3)
+	_ = r2
 	expect((r2.Data == "cde"))
 }
 
 func request_past_end() {
 	var r Reader = newReader("abcd")
-	_ = r
 	var r1 ReadResult = read(r, 6)
+	_ = r1
 	expect((r1.Data == "abcd"))
 	expect((r1.Count == 4))
 }

@@ -8,14 +8,10 @@ func minDistance(word1 string, word2 string) int {
 	var m int = len(word1)
 	var n int = len(word2)
 	var dp [][]int = [][]int{}
-	_ = dp
 	var i int = 0
-	_ = i
 	for (i <= m) {
 		var row []int = []int{}
-		_ = row
 		var j int = 0
-		_ = j
 		for (j <= n) {
 			row = append(append([]int{}, row...), []int{0}...)
 			j = (j + 1)
@@ -29,7 +25,6 @@ func minDistance(word1 string, word2 string) int {
 		i = (i + 1)
 	}
 	var j int = 0
-	_ = j
 	for (j <= n) {
 		dp[0][j] = j
 		j = (j + 1)
@@ -45,7 +40,6 @@ func minDistance(word1 string, word2 string) int {
 				var delete int = (dp[(i - 1)][j] + 1)
 				var replace int = (dp[(i - 1)][(j - 1)] + 1)
 				var best int = insert
-				_ = best
 				if (delete < best) {
 					best = delete
 				}

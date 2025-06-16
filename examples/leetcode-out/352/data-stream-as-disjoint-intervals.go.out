@@ -1,0 +1,108 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type SummaryRanges struct {
+	Intervals [][]int `json:"intervals"`
+}
+
+func newSummaryRanges() SummaryRanges {
+	return SummaryRanges{Intervals: []any{}}
+}
+
+func addNum(sr SummaryRanges, val int) SummaryRanges {
+	var intervals [][]int = sr.Intervals
+	var i int = 0
+	var n int = len(intervals)
+	var result [][]int = [][]int{}
+	for (i < n) {
+		if (intervals[i][1] < (val - 1)) {
+			result = append(append([][]int{}, result...), [][]int{intervals[i]}...)
+			i = (i + 1)
+		} else {
+			break
+		}
+	}
+	var start int = val
+	var end int = val
+	if (i < n) {
+		if (intervals[i][0] <= (val + 1)) {
+			if (intervals[i][0] < start) {
+				start = intervals[i][0]
+			}
+			if (intervals[i][1] > end) {
+				end = intervals[i][1]
+			}
+			i = (i + 1)
+			for (i < n) {
+				if (intervals[i][0] <= (end + 1)) {
+					if (intervals[i][1] > end) {
+						end = intervals[i][1]
+					}
+					i = (i + 1)
+				} else {
+					break
+				}
+			}
+		}
+	}
+	result = append(append([][]int{}, result...), [][]int{[]int{start, end}}...)
+	for (i < n) {
+		result = append(append([][]int{}, result...), [][]int{intervals[i]}...)
+		i = (i + 1)
+	}
+	return SummaryRanges{Intervals: result}
+}
+
+func getIntervals(sr SummaryRanges) [][]int {
+	return sr.Intervals
+}
+
+func example() {
+	var sr SummaryRanges = newSummaryRanges()
+	sr = addNum(sr, 1)
+	expect(_equal(getIntervals(sr), [][]int{[]int{1, 1}}))
+	sr = addNum(sr, 3)
+	expect(_equal(getIntervals(sr), [][]int{[]int{1, 1}, []int{3, 3}}))
+	sr = addNum(sr, 7)
+	sr = addNum(sr, 2)
+	sr = addNum(sr, 6)
+	expect(_equal(getIntervals(sr), [][]int{[]int{1, 3}, []int{6, 7}}))
+}
+
+func duplicate() {
+	var sr SummaryRanges = newSummaryRanges()
+	sr = addNum(sr, 5)
+	sr = addNum(sr, 5)
+	expect(_equal(getIntervals(sr), [][]int{[]int{5, 5}}))
+}
+
+func merge_all() {
+	var sr SummaryRanges = newSummaryRanges()
+	sr = addNum(sr, 1)
+	sr = addNum(sr, 2)
+	sr = addNum(sr, 3)
+	expect(_equal(getIntervals(sr), [][]int{[]int{1, 3}}))
+}
+
+func main() {
+	example()
+	duplicate()
+	merge_all()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

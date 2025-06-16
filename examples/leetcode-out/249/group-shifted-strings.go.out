@@ -24,10 +24,8 @@ func patternKey(s string) string {
 		return ""
 	}
 	var key string = ""
-	_ = key
 	var base int = ord(_indexString(s, 0))
 	var i int = 0
-	_ = i
 	for (i < len(s)) {
 		var diff int = ((((ord(_indexString(s, i)) - base) + 26)) % 26)
 		key = key + fmt.Sprint(diff) + ","
@@ -38,11 +36,9 @@ func patternKey(s string) string {
 
 func groupStrings(strings []string) [][]string {
 	var groups map[string][]string = map[string][]string{}
-	_ = groups
 	for _, s := range strings {
 		var k string = patternKey(s)
 		var lst []string = []string{}
-		_ = lst
 		_tmp3 := k
 		_tmp4 := groups
 		_, _tmp5 := _tmp4[_tmp3]
@@ -53,7 +49,6 @@ func groupStrings(strings []string) [][]string {
 		groups[k] = lst
 	}
 	var result [][]string = [][]string{}
-	_ = result
 	for k := range groups {
 		result = append(append([][]string{}, result...), [][]string{groups[k]}...)
 	}
@@ -63,6 +58,7 @@ func groupStrings(strings []string) [][]string {
 func example_1() {
 	var input []string = []string{"abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"}
 	var res [][]string = groupStrings(input)
+	_ = res
 	expect((len(res) == 4))
 }
 
@@ -72,6 +68,7 @@ func single() {
 
 func empty_list() {
 	var res [][]string = groupStrings([]string{})
+	_ = res
 	expect((len(res) == 0))
 }
 

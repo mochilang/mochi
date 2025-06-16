@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func containsNearbyDuplicate(nums []int, k int) bool {
 	var index map[int]int = map[int]int{}
-	_ = index
 	var i int = 0
-	_ = i
 	for (i < len(nums)) {
 		var num int = nums[i]
 		_tmp0 := num

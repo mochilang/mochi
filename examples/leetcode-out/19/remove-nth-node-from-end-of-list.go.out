@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -11,9 +12,7 @@ func expect(cond bool) {
 func removeNthFromEnd(nums []int, n int) []int {
 	var idx int = (len(nums) - n)
 	var result []any = []any{}
-	_ = result
 	var i int = 0
-	_ = i
 	for (i < len(nums)) {
 		if (i != idx) {
 			result = append(append([]any{}, result...), _toAnySlice([]int{nums[i]})...)
@@ -60,6 +59,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

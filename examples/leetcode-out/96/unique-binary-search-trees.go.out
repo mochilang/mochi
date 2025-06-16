@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func numTrees(n int) int {
 	var dp []int = []int{}
-	_ = dp
 	var i int = 0
-	_ = i
 	for (i <= n) {
 		dp = append(append([]int{}, dp...), []int{0}...)
 		i = (i + 1)
@@ -20,7 +18,6 @@ func numTrees(n int) int {
 	i = 2
 	for (i <= n) {
 		var j int = 1
-		_ = j
 		for (j <= i) {
 			dp[i] = (dp[i] + (dp[(j - 1)] * dp[(i - j)]))
 			j = (j + 1)

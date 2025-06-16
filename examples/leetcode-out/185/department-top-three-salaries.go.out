@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -28,14 +29,11 @@ type Result struct {
 
 func topThreeSalaries(employees []Employee, departments []Department) []Result {
 	var results []any = []any{}
-	_ = results
 	for _, dept := range departments {
 		var salaries []int = []int{}
-		_ = salaries
 		for _, emp := range employees {
 			if (emp.DepartmentId == dept.Id) {
 				var found bool = false
-				_ = found
 				for _, s := range salaries {
 					if (s == emp.Salary) {
 						found = true
@@ -48,10 +46,8 @@ func topThreeSalaries(employees []Employee, departments []Department) []Result {
 			}
 		}
 		var i1 int = 0
-		_ = i1
 		for (i1 < len(salaries)) {
 			var j int = (i1 + 1)
-			_ = j
 			for (j < len(salaries)) {
 				if (salaries[j] > salaries[i1]) {
 					var t int = salaries[i1]
@@ -63,7 +59,6 @@ func topThreeSalaries(employees []Employee, departments []Department) []Result {
 			i1 = (i1 + 1)
 		}
 		var i int = 0
-		_ = i
 		for ((i < len(salaries)) && (i < 3)) {
 			var sal int = salaries[i]
 			for _, emp := range employees {
@@ -80,15 +75,14 @@ func topThreeSalaries(employees []Employee, departments []Department) []Result {
 func top_three_salaries() {
 	var res []Result = topThreeSalaries(employees, departments)
 	var names []string = []string{}
-	_ = names
 	for _, r := range res {
 		names = append(append([]string{}, names...), []string{r.Employee}...)
 	}
 	expect((fmt.Sprint(names) == fmt.Sprint([]string{"Max", "Joe", "Randy", "Will", "Henry", "Sam"})))
 }
 
-var employees []Employee = []Employee{Employee{Id: 1, Name: "Joe", Salary: 85000, DepartmentId: 1}, Employee{Id: 2, Name: "Henry", Salary: 80000, DepartmentId: 2}, Employee{Id: 3, Name: "Sam", Salary: 60000, DepartmentId: 2}, Employee{Id: 4, Name: "Max", Salary: 90000, DepartmentId: 1}, Employee{Id: 5, Name: "Janet", Salary: 69000, DepartmentId: 1}, Employee{Id: 6, Name: "Randy", Salary: 85000, DepartmentId: 1}, Employee{Id: 7, Name: "Will", Salary: 70000, DepartmentId: 1}}
-var departments []Department = []Department{Department{Id: 1, Name: "IT"}, Department{Id: 2, Name: "Sales"}}
+var employees []any = []Employee{Employee{Id: 1, Name: "Joe", Salary: 85000, DepartmentId: 1}, Employee{Id: 2, Name: "Henry", Salary: 80000, DepartmentId: 2}, Employee{Id: 3, Name: "Sam", Salary: 60000, DepartmentId: 2}, Employee{Id: 4, Name: "Max", Salary: 90000, DepartmentId: 1}, Employee{Id: 5, Name: "Janet", Salary: 69000, DepartmentId: 1}, Employee{Id: 6, Name: "Randy", Salary: 85000, DepartmentId: 1}, Employee{Id: 7, Name: "Will", Salary: 70000, DepartmentId: 1}}
+var departments []any = []Department{Department{Id: 1, Name: "IT"}, Department{Id: 2, Name: "Sales"}}
 func main() {
 	top_three_salaries()
 }

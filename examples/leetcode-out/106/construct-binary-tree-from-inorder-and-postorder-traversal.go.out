@@ -1,0 +1,127 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left any `json:"left"`
+	Value int `json:"value"`
+	Right any `json:"right"`
+}
+func (Node) isTree() {}
+
+func buildTree(inorder []int, postorder []int) any {
+	if (len(inorder) == 0) {
+		return _cast[any](Leaf{})
+	}
+	var rootVal int = postorder[(len(postorder) - 1)]
+	var idx int = 0
+	for ((idx < len(inorder)) && (inorder[idx] != rootVal)) {
+		idx = (idx + 1)
+	}
+	var leftIn []int = inorder[0:idx]
+	_ = leftIn
+	var rightIn []int = inorder[(idx + 1):len(inorder)]
+	_ = rightIn
+	var leftPost []int = postorder[0:idx]
+	_ = leftPost
+	var rightPost []int = postorder[idx:(len(postorder) - 1)]
+	_ = rightPost
+	return _cast[any](Node{Left: buildTree(leftIn, leftPost), Value: rootVal, Right: buildTree(rightIn, rightPost)})
+}
+
+func isSameTree(a any, b any) bool {
+	return func() bool {
+	_t := a
+	switch _t {
+	case Leaf:
+		return func() bool {
+	_t := b
+	switch _t {
+	case Leaf:
+		return true
+	default:
+		return false
+	}
+}()
+	case Node(al, av, ar):
+		return func() bool {
+	_t := b
+	switch _t {
+	case Node(bl, bv, br):
+		return ((_equal(av, bv) && isSameTree(al, bl)) && isSameTree(ar, br))
+	default:
+		return false
+	}
+}()
+	}
+}()
+}
+
+func example_1() {
+	var inorder []int = []int{9, 3, 15, 20, 7}
+	_ = inorder
+	var postorder []int = []int{9, 15, 7, 20, 3}
+	_ = postorder
+	var expected Node = Node{Left: Node{Left: Leaf{}, Value: 9, Right: Leaf{}}, Value: 3, Right: Node{Left: Node{Left: Leaf{}, Value: 15, Right: Leaf{}}, Value: 20, Right: Node{Left: Leaf{}, Value: 7, Right: Leaf{}}}}
+	_ = expected
+	expect((isSameTree(buildTree(inorder, postorder), expected) == true))
+}
+
+func example_2() {
+	var inorder []int = []int{-1}
+	_ = inorder
+	var postorder []int = []int{-1}
+	_ = postorder
+	var expected Node = Node{Left: Leaf{}, Value: -1, Right: Leaf{}}
+	_ = expected
+	expect((isSameTree(buildTree(inorder, postorder), expected) == true))
+}
+
+func empty() {
+	var result any = buildTree([]int{}, []int{})
+	_ = result
+	expect(func() bool {
+	_t := result
+	switch _t {
+	case Leaf:
+		return true
+	default:
+		return false
+	}
+}())
+}
+
+func main() {
+	example_1()
+	example_2()
+	empty()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

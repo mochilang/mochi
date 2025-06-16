@@ -11,13 +11,10 @@ func expect(cond bool) {
 func deleteDuplicates(nums []int) []int {
 	var n int = len(nums)
 	var result []int = []int{}
-	_ = result
 	var i int = 0
-	_ = i
 	for (i < n) {
 		var value int = nums[i]
 		var j int = (i + 1)
-		_ = j
 		for (j < n) {
 			if (nums[j] == value) {
 				j = (j + 1)
@@ -57,6 +54,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

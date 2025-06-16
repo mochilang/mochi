@@ -10,11 +10,8 @@ func isIsomorphic(s string, t string) bool {
 		return false
 	}
 	var mapST map[string]string = map[string]string{}
-	_ = mapST
 	var mapTS map[string]string = map[string]string{}
-	_ = mapTS
 	var i int = 0
-	_ = i
 	for (i < m) {
 		var c1 string = _indexString(s, i)
 		var c2 string = _indexString(t, i)

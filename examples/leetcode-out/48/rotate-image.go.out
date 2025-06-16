@@ -1,5 +1,9 @@
 package main
 
+import (
+	"reflect"
+)
+
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
@@ -36,24 +40,33 @@ func rotate(matrix [][]int) [][]int {
 func example_1() {
 	var m [][]int = [][]int{[]int{1, 2, 3}, []int{4, 5, 6}, []int{7, 8, 9}}
 	rotate(m)
-	expect((m == [][]int{[]int{7, 4, 1}, []int{8, 5, 2}, []int{9, 6, 3}}))
+	expect(_equal(m, [][]int{[]int{7, 4, 1}, []int{8, 5, 2}, []int{9, 6, 3}}))
 }
 
 func example_2() {
 	var m [][]int = [][]int{[]int{5, 1, 9, 11}, []int{2, 4, 8, 10}, []int{13, 3, 6, 7}, []int{15, 14, 12, 16}}
 	rotate(m)
-	expect((m == [][]int{[]int{15, 13, 2, 5}, []int{14, 3, 4, 1}, []int{12, 6, 8, 9}, []int{16, 7, 10, 11}}))
+	expect(_equal(m, [][]int{[]int{15, 13, 2, 5}, []int{14, 3, 4, 1}, []int{12, 6, 8, 9}, []int{16, 7, 10, 11}}))
 }
 
 func single_element() {
 	var m [][]int = [][]int{[]int{1}}
 	rotate(m)
-	expect((m == [][]int{[]int{1}}))
+	expect(_equal(m, [][]int{[]int{1}}))
 }
 
 func main() {
 	example_1()
 	example_2()
 	single_element()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
 }
 

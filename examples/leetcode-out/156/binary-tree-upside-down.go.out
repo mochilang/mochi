@@ -1,0 +1,128 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func Leaf() map[string]any {
+	return _cast[map[string]any](map[string]string{"__name": "Leaf"})
+}
+
+func Node(left map[string]any, value int, right map[string]any) map[string]any {
+	return map[string]any{"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+func isLeaf(t map[string]any) bool {
+	return _equal(t["__name"], "Leaf")
+}
+
+func left(t map[string]any) map[string]any {
+	return t["left"]
+}
+
+func right(t map[string]any) map[string]any {
+	return t["right"]
+}
+
+func value(t map[string]any) int {
+	return _cast[int](t["value"])
+}
+
+func setLeft(t map[string]any, l map[string]any) {
+	t["left"] = l
+}
+
+func setRight(t map[string]any, r map[string]any) {
+	t["right"] = r
+}
+
+func upsideDown(root map[string]any) map[string]any {
+	if isLeaf(root) {
+		return root
+	}
+	var curr map[string]any = root
+	var parent map[string]any = Leaf()
+	var parentRight map[string]any = Leaf()
+	for !isLeaf(curr) {
+		var next map[string]any = left(curr)
+		var oldRight map[string]any = right(curr)
+		setLeft(curr, parentRight)
+		setRight(curr, parent)
+		parentRight = oldRight
+		parent = curr
+		curr = next
+	}
+	return parent
+}
+
+func levelOrder(root map[string]any) [][]int {
+	var result [][]int = [][]int{}
+	var queue []map[string]any = []map[string]any{}
+	if !isLeaf(root) {
+		queue = []map[string]any{root}
+	}
+	for (len(queue) > 0) {
+		var vals []int = []int{}
+		var next []map[string]any = []map[string]any{}
+		for _, node := range queue {
+			vals = append(append([]int{}, vals...), []int{value(node)}...)
+			var l map[string]any = left(node)
+			var r map[string]any = right(node)
+			if !isLeaf(l) {
+				next = append(append([]map[string]any{}, next...), []map[string]any{l}...)
+			}
+			if !isLeaf(r) {
+				next = append(append([]map[string]any{}, next...), []map[string]any{r}...)
+			}
+		}
+		result = append(append([][]int{}, result...), [][]int{vals}...)
+		queue = next
+	}
+	return result
+}
+
+func flip_example() {
+	var newRoot map[string]any = upsideDown(example)
+	_ = newRoot
+	expect(_equal(levelOrder(newRoot), [][]int{[]int{4}, []int{5, 2}, []int{3, 1}}))
+}
+
+func single_node() {
+	var tree map[string]any = Node(Leaf(), 1, Leaf())
+	_ = tree
+	expect(_equal(levelOrder(upsideDown(tree)), [][]int{[]int{1}}))
+}
+
+func empty_tree() {
+	expect((isLeaf(upsideDown(Leaf())) == true))
+}
+
+var example map[string]any = Node(Node(Node(Leaf(), 4, Leaf()), 2, Node(Leaf(), 5, Leaf())), 1, Node(Leaf(), 3, Leaf()))
+func main() {
+	flip_example()
+	single_node()
+	empty_tree()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

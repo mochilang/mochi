@@ -10,21 +10,16 @@ func minCut(s string) int {
 		return 0
 	}
 	var dp []int = []int{}
-	_ = dp
 	var i int = 0
-	_ = i
 	for (i < n) {
 		dp = append(append([]int{}, dp...), []int{i}...)
 		i = (i + 1)
 	}
 	var isPal [][]bool = [][]bool{}
-	_ = isPal
 	i = 0
 	for (i < n) {
 		var row []bool = []bool{}
-		_ = row
 		var j int = 0
-		_ = j
 		for (j < n) {
 			row = append(append([]bool{}, row...), []bool{false}...)
 			j = (j + 1)
@@ -35,7 +30,6 @@ func minCut(s string) int {
 	i = 0
 	for (i < n) {
 		var j int = 0
-		_ = j
 		for (j <= i) {
 			if (_indexString(s, j) == _indexString(s, i)) {
 				if ((i - j) <= 1) {

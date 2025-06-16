@@ -6,11 +6,8 @@ func expect(cond bool) {
 
 func simplifyPath(path string) string {
 	var stack []string = []string{}
-	_ = stack
 	var part string = ""
-	_ = part
 	var i int = 0
-	_ = i
 	var n int = len(path)
 	for (i <= n) {
 		if (i == n) {
@@ -37,9 +34,7 @@ func simplifyPath(path string) string {
 		i = (i + 1)
 	}
 	var result string = "/"
-	_ = result
 	var j int = 0
-	_ = j
 	for (j < len(stack)) {
 		result = result + stack[j]
 		if (j < (len(stack) - 1)) {

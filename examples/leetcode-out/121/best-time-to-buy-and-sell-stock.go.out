@@ -9,7 +9,7 @@ func maxProfit(prices []int) int {
 		return 0
 	}
 	var minPrice int = prices[0]
-	var maxProfit func([]int) int = 0
+	var maxProfit int = 0
 	var i int = 1
 	for (i < len(prices)) {
 		var price int = prices[i]

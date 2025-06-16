@@ -1,5 +1,9 @@
 package main
 
+import (
+	"encoding/json"
+)
+
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
@@ -14,9 +18,7 @@ func newTwoSum() TwoSum {
 
 func add(ts TwoSum, number int) TwoSum {
 	var counts map[int]int = ts.Counts
-	_ = counts
 	var current int = 0
-	_ = current
 	_tmp0 := number
 	_tmp1 := counts
 	_, _tmp2 := _tmp1[_tmp0]
@@ -29,7 +31,8 @@ func add(ts TwoSum, number int) TwoSum {
 
 func find(ts TwoSum, value int) bool {
 	for key := range ts.Counts {
-		var count func(any) int = ts.Counts[key]
+		var count int = ts.Counts[key]
+		_ = count
 		var complement int = (value - key)
 		_tmp3 := complement
 		_tmp4 := ts.Counts
@@ -50,7 +53,6 @@ func find(ts TwoSum, value int) bool {
 
 func example() {
 	var ts TwoSum = newTwoSum()
-	_ = ts
 	ts = add(ts, 1)
 	ts = add(ts, 3)
 	ts = add(ts, 5)
@@ -60,7 +62,6 @@ func example() {
 
 func duplicate_numbers() {
 	var ts TwoSum = newTwoSum()
-	_ = ts
 	ts = add(ts, 2)
 	ts = add(ts, 2)
 	expect((find(ts, 4) == true))

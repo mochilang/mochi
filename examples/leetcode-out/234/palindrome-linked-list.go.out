@@ -35,7 +35,7 @@ func single_element() {
 }
 
 func empty_list() {
-	expect((isPalindromeList(_cast[[]int]([]any{})) == true))
+	expect((isPalindromeList([]int{}) == true))
 }
 
 func main() {

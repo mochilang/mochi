@@ -10,13 +10,11 @@ func expect(cond bool) {
 
 func nextPermutation(nums []int) []int {
 	var i int = (len(nums) - 2)
-	_ = i
 	for ((i >= 0) && (nums[i] >= nums[(i + 1)])) {
 		i = (i - 1)
 	}
 	if (i >= 0) {
 		var j int = (len(nums) - 1)
-		_ = j
 		for (nums[j] <= nums[i]) {
 			j = (j - 1)
 		}
@@ -25,9 +23,7 @@ func nextPermutation(nums []int) []int {
 		nums[j] = temp
 	}
 	var start int = (i + 1)
-	_ = start
 	var end int = (len(nums) - 1)
-	_ = end
 	for (start < end) {
 		var temp int = nums[start]
 		nums[start] = nums[end]
@@ -62,6 +58,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

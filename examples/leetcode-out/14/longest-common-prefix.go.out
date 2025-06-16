@@ -9,10 +9,8 @@ func longestCommonPrefix(strs []string) string {
 		return ""
 	}
 	var prefix string = strs[0]
-	_ = prefix
 	for i := 1; i < len(strs); i++ {
 		var j int = 0
-		_ = j
 		var current string = strs[i]
 		for ((j < len(prefix)) && (j < len(current))) {
 			if (_indexString(prefix, j) != _indexString(current, j)) {

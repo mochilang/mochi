@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"sort"
@@ -12,7 +13,6 @@ func expect(cond bool) {
 
 func findLadders(beginWord string, endWord string, wordList []string) [][]string {
 	var dict map[string]bool = map[string]bool{}
-	_ = dict
 	for _, w := range wordList {
 		dict[w] = true
 	}
@@ -24,28 +24,20 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 	}
 	var letters string = "abcdefghijklmnopqrstuvwxyz"
 	var queue []string = []string{beginWord}
-	_ = queue
 	var visited map[string]int = map[string]int{"beginWord": 0}
-	_ = visited
 	var parents map[string][]string = map[string][]string{}
-	_ = parents
 	var step int = 0
-	_ = step
 	var found bool = false
-	_ = found
 	for (len(queue) > 0) {
 		if found {
 			break
 		}
 		step = (step + 1)
 		var next []string = []string{}
-		_ = next
 		for _, word := range queue {
 			var i int = 0
-			_ = i
 			for (i < len(word)) {
 				var j int = 0
-				_ = j
 				for (j < 26) {
 					var ch string = _indexString(letters, j)
 					if (ch != _indexString(word, i)) {
@@ -87,12 +79,9 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 		return _cast[[][]string]([]any{})
 	}
 	var results [][]string = [][]string{}
-	_ = results
 	var rev = func(lst []string) []string {
 		var out []string = []string{}
-		_ = out
 		var i int = (len(lst) - 1)
-		_ = i
 		for (i >= 0) {
 			out = append(append([]string{}, out...), []string{lst[i]}...)
 			i = (i - 1)
@@ -116,7 +105,7 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 
 func example_1() {
 	var res [][]string = findLadders("hit", "cog", []string{"hot", "dot", "dog", "lot", "log", "cog"})
-	var sorted []any = func() [][]string {
+	var sorted [][]string = func() [][]string {
 	items := [][]string{}
 	for _, r := range res {
 		items = append(items, r)
@@ -153,14 +142,15 @@ func example_1() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := [][]string{}
+	_res := [][]string{}
 	for _, r := range items {
-		res = append(res, r)
+		_res = append(_res, r)
 	}
-	return res
+	return _res
 }()
+	_ = sorted
 	var expected [][]string = [][]string{[]string{"hit", "hot", "dot", "dog", "cog"}, []string{"hit", "hot", "lot", "log", "cog"}}
-	var expSorted []any = func() [][]string {
+	var expSorted [][]string = func() [][]string {
 	items := [][]string{}
 	for _, r := range expected {
 		items = append(items, r)
@@ -197,12 +187,13 @@ func example_1() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := [][]string{}
+	_res := [][]string{}
 	for _, r := range items {
-		res = append(res, r)
+		_res = append(_res, r)
 	}
-	return res
+	return _res
 }()
+	_ = expSorted
 	expect(_equal(sorted, expSorted))
 }
 
@@ -224,6 +215,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

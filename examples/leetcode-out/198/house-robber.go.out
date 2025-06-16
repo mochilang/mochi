@@ -40,7 +40,7 @@ func example_2() {
 }
 
 func empty() {
-	expect((rob([]any{}) == 0))
+	expect((rob([]int{}) == 0))
 }
 
 func single_house() {

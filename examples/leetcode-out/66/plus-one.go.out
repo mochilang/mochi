@@ -10,14 +10,10 @@ func expect(cond bool) {
 
 func plusOne(digits []int) []int {
 	var carry int = 1
-	_ = carry
 	var i int = (len(digits) - 1)
-	_ = i
 	var result []int = digits
-	_ = result
 	for ((i >= 0) && (carry > 0)) {
 		var sum int = (result[i] + carry)
-		_ = sum
 		result[i] = (sum % 10)
 		carry = (sum / 10)
 		i = (i - 1)
@@ -57,6 +53,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

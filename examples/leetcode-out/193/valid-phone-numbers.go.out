@@ -19,7 +19,6 @@ func isValidPhoneNumber(s string) bool {
 			return false
 		}
 		var i int = 0
-		_ = i
 		for (i < n) {
 			if ((i == 3) || (i == 7)) {
 				i = (i + 1)
@@ -37,7 +36,6 @@ func isValidPhoneNumber(s string) bool {
 			return false
 		}
 		var i int = 0
-		_ = i
 		for (i < n) {
 			if ((((i == 0) || (i == 4)) || (i == 5)) || (i == 9)) {
 				i = (i + 1)
@@ -55,7 +53,6 @@ func isValidPhoneNumber(s string) bool {
 
 func validPhoneNumbers(lines []string) []string {
 	var result []string = []string{}
-	_ = result
 	for _, line := range lines {
 		if isValidPhoneNumber(line) {
 			result = append(append([]string{}, result...), []string{line}...)
@@ -66,6 +63,7 @@ func validPhoneNumbers(lines []string) []string {
 
 func example() {
 	var input []string = []string{"987-123-4567", "123 456 7890", "(123) 456-7890"}
+	_ = input
 	expect(_equal(validPhoneNumbers(input), []string{"987-123-4567", "(123) 456-7890"}))
 }
 
@@ -74,6 +72,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

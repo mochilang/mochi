@@ -1,0 +1,97 @@
+package main
+
+import (
+	"fmt"
+	"reflect"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func rankScores(scores []int) []int {
+	var sorted []int = func() []int {
+	items := []int{}
+	for _, s := range scores {
+		items = append(items, s)
+	}
+	type pair struct { item int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		s := it
+		pairs[idx] = pair{item: it, key: -s}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []int{}
+	for _, s := range items {
+		_res = append(_res, s)
+	}
+	return _res
+}()
+	var rankMap map[int]int = map[int]int{}
+	var rank int = 1
+	var hasPrev bool = false
+	var prev int = 0
+	for _, s := range sorted {
+		if (!hasPrev || (s != prev)) {
+			rankMap[s] = rank
+			prev = s
+			hasPrev = true
+		}
+		rank = (rank + 1)
+	}
+	var result []int = []int{}
+	for _, s := range scores {
+		result = append(append([]int{}, result...), []int{rankMap[s]}...)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(rankScores([]int{100, 90, 90, 80}), []int{1, 2, 2, 4}))
+}
+
+func example_2() {
+	expect(_equal(rankScores([]int{10, 20, 30}), []int{3, 2, 1}))
+}
+
+func main() {
+	example_1()
+	example_2()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

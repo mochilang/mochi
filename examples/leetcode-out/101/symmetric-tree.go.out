@@ -1,5 +1,9 @@
 package main
 
+import (
+	"reflect"
+)
+
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
@@ -16,16 +20,46 @@ type Node struct {
 func (Node) isTree() {}
 
 func isSymmetric(root any) bool {
+	var isMirror func(any, any) bool
+	isMirror = func(t1 any, t2 any) bool {
+		return func() bool {
+		_t := t1
+		switch _t {
+		case Leaf:
+			return func() bool {
+		_t := t2
+		switch _t {
+		case Leaf:
+			return true
+		default:
+			return false
+		}
+	}()
+		case Node(l1, v1, r1):
+			return func() bool {
+		_t := t2
+		switch _t {
+		case Node(l2, v2, r2):
+			return ((_equal(v1, v2) && isMirror(l1, r2)) && isMirror(r1, l2))
+		default:
+			return false
+		}
+	}()
+		}
+	}()
+}
 	return isMirror(root, root)
 }
 
 func example_1() {
 	var tree Node = Node{Left: Node{Left: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}, Value: 2, Right: Node{Left: Leaf{}, Value: 4, Right: Leaf{}}}, Value: 1, Right: Node{Left: Node{Left: Leaf{}, Value: 4, Right: Leaf{}}, Value: 2, Right: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}}}
+	_ = tree
 	expect((isSymmetric(tree) == true))
 }
 
 func example_2() {
 	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 2, Right: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}}, Value: 1, Right: Node{Left: Leaf{}, Value: 2, Right: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}}}
+	_ = tree
 	expect((isSymmetric(tree) == false))
 }
 
@@ -42,5 +76,14 @@ func main() {
 	example_2()
 	single_node()
 	empty()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
 }
 

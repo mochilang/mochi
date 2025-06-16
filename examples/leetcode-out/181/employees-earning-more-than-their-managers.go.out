@@ -17,7 +17,6 @@ type Employee struct {
 
 func higherSalaryThanManager(employees []Employee) []string {
 	var result []string = []string{}
-	_ = result
 	for _, e := range employees {
 		if (e.ManagerId != 0) {
 			for _, m := range employees {
@@ -37,12 +36,17 @@ func example() {
 	expect(_equal(higherSalaryThanManager(employees), []string{"Joe"}))
 }
 
-var employees []Employee = []Employee{Employee{Id: 1, Name: "Joe", Salary: 70000, ManagerId: 3}, Employee{Id: 2, Name: "Henry", Salary: 80000, ManagerId: 4}, Employee{Id: 3, Name: "Sam", Salary: 60000, ManagerId: 0}, Employee{Id: 4, Name: "Max", Salary: 90000, ManagerId: 0}}
+var employees []any = []Employee{Employee{Id: 1, Name: "Joe", Salary: 70000, ManagerId: 3}, Employee{Id: 2, Name: "Henry", Salary: 80000, ManagerId: 4}, Employee{Id: 3, Name: "Sam", Salary: 60000, ManagerId: 0}, Employee{Id: 4, Name: "Max", Salary: 90000, ManagerId: 0}}
 func main() {
 	example()
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

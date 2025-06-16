@@ -11,9 +11,7 @@ func searchMatrix(matrix [][]int, target int) bool {
 	}
 	var n int = len(matrix[0])
 	var row int = 0
-	_ = row
 	var col int = (n - 1)
-	_ = col
 	for ((row < m) && (col >= 0)) {
 		var value int = matrix[row][col]
 		if (value == target) {

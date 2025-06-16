@@ -1,0 +1,97 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func Leaf() map[string]any {
+	return _cast[map[string]any](map[string]string{"__name": "Leaf"})
+}
+
+func Node(left map[string]any, value int, right map[string]any) map[string]any {
+	return map[string]any{"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+func isLeaf(t map[string]any) bool {
+	return _equal(t["__name"], "Leaf")
+}
+
+func left(t map[string]any) map[string]any {
+	return t["left"]
+}
+
+func right(t map[string]any) map[string]any {
+	return t["right"]
+}
+
+func value(t map[string]any) int {
+	return _cast[int](t["value"])
+}
+
+func rightSideView(root map[string]any) []int {
+	var result []int = []int{}
+	var queue []map[string]any = []map[string]any{}
+	if !isLeaf(root) {
+		queue = []map[string]any{root}
+	}
+	for (len(queue) > 0) {
+		var next []map[string]any = []map[string]any{}
+		var last int = 0
+		for _, node := range queue {
+			last = value(node)
+			var l map[string]any = left(node)
+			var r map[string]any = right(node)
+			if !isLeaf(l) {
+				next = append(append([]map[string]any{}, next...), []map[string]any{l}...)
+			}
+			if !isLeaf(r) {
+				next = append(append([]map[string]any{}, next...), []map[string]any{r}...)
+			}
+		}
+		result = append(append([]int{}, result...), []int{last}...)
+		queue = next
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(rightSideView(example1), []int{1, 3, 4}))
+}
+
+func example_2() {
+	expect(_equal(rightSideView(Node(Leaf(), 1, Node(Leaf(), 3, Leaf()))), []int{1, 3}))
+}
+
+func empty() {
+	expect(_equal(rightSideView(Leaf()), []any{}))
+}
+
+var example1 map[string]any = Node(Node(Leaf(), 2, Node(Leaf(), 5, Leaf())), 1, Node(Leaf(), 3, Node(Leaf(), 4, Leaf())))
+func main() {
+	example_1()
+	example_2()
+	empty()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

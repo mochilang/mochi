@@ -10,11 +10,8 @@ func expect(cond bool) {
 
 func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 	var merged []int = []int{}
-	_ = merged
 	var i int = 0
-	_ = i
 	var j int = 0
-	_ = j
 	for ((i < len(nums1)) || (j < len(nums2))) {
 		if (j >= len(nums2)) {
 			merged = append(append([]int{}, merged...), []int{nums1[i]}...)
@@ -36,23 +33,23 @@ func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 	}
 	var mid1 int = merged[((total / 2) - 1)]
 	var mid2 int = merged[(total / 2)]
-	return (_cast[float64](((mid1 + mid2))) / 2.000000)
+	return (_cast[float64](((mid1 + mid2))) / 2)
 }
 
 func example_1() {
-	expect((findMedianSortedArrays([]int{1, 3}, []int{2}) == 2.000000))
+	expect((findMedianSortedArrays([]int{1, 3}, []int{2}) == 2))
 }
 
 func example_2() {
-	expect((findMedianSortedArrays([]int{1, 2}, []int{3, 4}) == 2.500000))
+	expect((findMedianSortedArrays([]int{1, 2}, []int{3, 4}) == 2.5))
 }
 
 func empty_first() {
-	expect((findMedianSortedArrays([]int{}, []int{1}) == 1.000000))
+	expect((findMedianSortedArrays([]int{}, []int{1}) == 1))
 }
 
 func empty_second() {
-	expect((findMedianSortedArrays([]int{2}, []int{}) == 2.000000))
+	expect((findMedianSortedArrays([]int{2}, []int{}) == 2))
 }
 
 func main() {

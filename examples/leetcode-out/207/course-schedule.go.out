@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func canFinish(numCourses int, prerequisites [][]int) bool {
 	var graph [][]int = [][]int{}
-	_ = graph
 	var indegree []int = []int{}
-	_ = indegree
 	for _ := 0; _ < numCourses; _++ {
 		graph = append(append([]any{}, _toAnySlice(graph)...), _toAnySlice([][]any{[]any{}})...)
 		indegree = append(append([]int{}, indegree...), []int{0}...)
@@ -20,16 +18,13 @@ func canFinish(numCourses int, prerequisites [][]int) bool {
 		indegree[a] = (indegree[a] + 1)
 	}
 	var queue []int = []int{}
-	_ = queue
 	for i := 0; i < numCourses; i++ {
 		if (indegree[i] == 0) {
 			queue = append(append([]int{}, queue...), []int{i}...)
 		}
 	}
 	var visited int = 0
-	_ = visited
 	var idx int = 0
-	_ = idx
 	for (idx < len(queue)) {
 		var course int = queue[idx]
 		idx = (idx + 1)

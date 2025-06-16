@@ -6,13 +6,11 @@ func expect(cond bool) {
 
 func myAtoi(s string) int {
 	var i int = 0
-	_ = i
 	var n int = len(s)
 	for ((i < n) && (_indexString(s, i) == " ")) {
 		i = (i + 1)
 	}
 	var sign int = 1
-	_ = sign
 	if ((i < n) && (((_indexString(s, i) == "+") || (_indexString(s, i) == "-")))) {
 		if (_indexString(s, i) == "-") {
 			sign = -1
@@ -21,7 +19,6 @@ func myAtoi(s string) int {
 	}
 	var digits map[string]int = map[string]int{"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
 	var result int = 0
-	_ = result
 	for (i < n) {
 		var ch string = _indexString(s, i)
 		_tmp0 := ch

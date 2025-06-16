@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -13,15 +14,11 @@ func generateTriangle(numRows int) [][]int {
 		return _cast[[][]int]([]any{})
 	}
 	var result [][]int = [][]int{[]int{1}}
-	_ = result
 	var i int = 1
-	_ = i
 	for (i < numRows) {
 		var prev []int = result[(i - 1)]
 		var row []int = []int{1}
-		_ = row
 		var j int = 1
-		_ = j
 		for (j < len(prev)) {
 			row = append(append([]int{}, row...), []int{(prev[(j - 1)] + prev[j])}...)
 			j = (j + 1)
@@ -60,6 +57,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

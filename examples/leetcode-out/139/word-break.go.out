@@ -6,25 +6,20 @@ func expect(cond bool) {
 
 func wordBreak(s string, wordDict []string) bool {
 	var dict map[string]bool = map[string]bool{}
-	_ = dict
 	for _, w := range wordDict {
 		dict[w] = true
 	}
 	var n int = len(s)
 	var dp []bool = []bool{}
-	_ = dp
 	var i int = 0
-	_ = i
 	for (i <= n) {
 		dp = append(append([]bool{}, dp...), []bool{false}...)
 		i = (i + 1)
 	}
 	dp[0] = true
 	var idx int = 1
-	_ = idx
 	for (idx <= n) {
 		var j int = 0
-		_ = j
 		for (j < idx) {
 			if dp[j] {
 				var part string = string([]rune(s)[j:idx])

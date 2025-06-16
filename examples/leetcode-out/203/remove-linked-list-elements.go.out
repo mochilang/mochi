@@ -10,7 +10,6 @@ func expect(cond bool) {
 
 func removeElements(nums []int, val int) []int {
 	var result []int = []int{}
-	_ = result
 	for _, x := range nums {
 		if (x != val) {
 			result = append(append([]int{}, result...), []int{x}...)
@@ -48,6 +47,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

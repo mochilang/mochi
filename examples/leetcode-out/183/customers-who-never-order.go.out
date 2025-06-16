@@ -21,10 +21,8 @@ type Order struct {
 
 func customersWithoutOrders(customers []Customer, orders []Order) []string {
 	var result []string = []string{}
-	_ = result
 	for _, c := range customers {
 		var placed bool = false
-		_ = placed
 		for _, o := range orders {
 			if (o.CustomerId == c.Id) {
 				placed = true
@@ -44,16 +42,18 @@ func example() {
 
 func all_customers() {
 	var emptyOrders []any = []any{}
+	_ = emptyOrders
 	expect((fmt.Sprint(customersWithoutOrders(customers, emptyOrders)) == fmt.Sprint([]string{"Joe", "Henry", "Sam", "Max"})))
 }
 
 func none_left() {
-	var allOrders []Order = []Order{Order{Id: 1, CustomerId: 1}, Order{Id: 2, CustomerId: 2}, Order{Id: 3, CustomerId: 3}, Order{Id: 4, CustomerId: 4}}
+	var allOrders []any = []Order{Order{Id: 1, CustomerId: 1}, Order{Id: 2, CustomerId: 2}, Order{Id: 3, CustomerId: 3}, Order{Id: 4, CustomerId: 4}}
+	_ = allOrders
 	expect(_equal(customersWithoutOrders(customers, allOrders), []any{}))
 }
 
-var customers []Customer = []Customer{Customer{Id: 1, Name: "Joe"}, Customer{Id: 2, Name: "Henry"}, Customer{Id: 3, Name: "Sam"}, Customer{Id: 4, Name: "Max"}}
-var orders []Order = []Order{Order{Id: 1, CustomerId: 3}, Order{Id: 2, CustomerId: 1}}
+var customers []any = []Customer{Customer{Id: 1, Name: "Joe"}, Customer{Id: 2, Name: "Henry"}, Customer{Id: 3, Name: "Sam"}, Customer{Id: 4, Name: "Max"}}
+var orders []any = []Order{Order{Id: 1, CustomerId: 3}, Order{Id: 2, CustomerId: 1}}
 func main() {
 	example()
 	all_customers()
@@ -61,6 +61,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

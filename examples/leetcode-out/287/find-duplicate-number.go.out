@@ -7,7 +7,7 @@ func expect(cond bool) {
 func findDuplicate(nums []int) int {
 	var slow int = nums[0]
 	var fast int = nums[0]
-	for true {
+	for {
 		slow = nums[slow]
 		fast = nums[nums[fast]]
 		if (slow == fast) {

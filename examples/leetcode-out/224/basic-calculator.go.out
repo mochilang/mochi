@@ -15,17 +15,11 @@ func isDigit(c string) bool {
 
 func calculate(s string) int {
 	var i int = 0
-	_ = i
 	var n int = len(s)
-	_ = n
 	var result int = 0
-	_ = result
 	var sign int = 1
-	_ = sign
 	var num int = 0
-	_ = num
 	var stack []int = []int{}
-	_ = stack
 	for (i < n) {
 		var c string = _indexString(s, i)
 		if isDigit(c) {

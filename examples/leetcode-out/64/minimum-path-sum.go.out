@@ -11,14 +11,10 @@ func minPathSum(grid [][]int) int {
 	}
 	var cols int = len(grid[0])
 	var dp [][]int = [][]int{}
-	_ = dp
 	var r int = 0
-	_ = r
 	for (r < rows) {
 		var row []int = []int{}
-		_ = row
 		var c int = 0
-		_ = c
 		for (c < cols) {
 			row = append(append([]int{}, row...), []int{0}...)
 			c = (c + 1)
@@ -28,7 +24,6 @@ func minPathSum(grid [][]int) int {
 	}
 	dp[0][0] = grid[0][0]
 	var c int = 1
-	_ = c
 	for (c < cols) {
 		dp[0][c] = (dp[0][(c - 1)] + grid[0][c])
 		c = (c + 1)
@@ -37,7 +32,6 @@ func minPathSum(grid [][]int) int {
 	for (r < rows) {
 		dp[r][0] = (dp[(r - 1)][0] + grid[r][0])
 		var c int = 1
-		_ = c
 		for (c < cols) {
 			var top int = dp[(r - 1)][c]
 			var left int = dp[r][(c - 1)]

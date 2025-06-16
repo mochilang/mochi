@@ -1,0 +1,104 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func gameOfLife(board [][]int) [][]int {
+	var m int = len(board)
+	if (m == 0) {
+		return board
+	}
+	var n int = len(board[0])
+	var result [][]int = [][]int{}
+	var i int = 0
+	for (i < m) {
+		var row []int = []int{}
+		var j int = 0
+		for (j < n) {
+			var live int = 0
+			var di int = -1
+			for (di <= 1) {
+				var dj int = -1
+				for (dj <= 1) {
+					if !(((di == 0) && (dj == 0))) {
+						var ni int = (i + di)
+						var nj int = (j + dj)
+						if ((((ni >= 0) && (ni < m)) && (nj >= 0)) && (nj < n)) {
+							if (board[ni][nj] == 1) {
+								live = (live + 1)
+							}
+						}
+					}
+					dj = (dj + 1)
+				}
+				di = (di + 1)
+			}
+			var cell int = board[i][j]
+			var next int = cell
+			if (cell == 1) {
+				if ((live < 2) || (live > 3)) {
+					next = 0
+				} else {
+					next = 1
+				}
+			} else {
+				if (live == 3) {
+					next = 1
+				} else {
+					next = 0
+				}
+			}
+			row = append(append([]int{}, row...), []int{next}...)
+			j = (j + 1)
+		}
+		result = append(append([][]int{}, result...), [][]int{row}...)
+		i = (i + 1)
+	}
+	return result
+}
+
+func example_1() {
+	var board [][]int = [][]int{[]int{0, 1, 0}, []int{0, 0, 1}, []int{1, 1, 1}, []int{0, 0, 0}}
+	_ = board
+	expect(_equal(gameOfLife(board), [][]int{[]int{0, 0, 0}, []int{1, 0, 1}, []int{0, 1, 1}, []int{0, 1, 0}}))
+}
+
+func example_2() {
+	var board [][]int = [][]int{[]int{1, 1}, []int{1, 0}}
+	_ = board
+	expect(_equal(gameOfLife(board), [][]int{[]int{1, 1}, []int{1, 1}}))
+}
+
+func empty_board() {
+	var board [][]int = []any{}
+	_ = board
+	expect(_equal(gameOfLife(board), []any{}))
+}
+
+func single_dead_cell() {
+	var board [][]int = [][]int{[]int{0}}
+	_ = board
+	expect(_equal(gameOfLife(board), [][]int{[]int{0}}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	empty_board()
+	single_dead_cell()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

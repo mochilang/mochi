@@ -11,7 +11,6 @@ func maxProfit(k int, prices []int) int {
 	}
 	if (k >= (n / 2)) {
 		var profit int = 0
-		_ = profit
 		for i := 1; i < n; i++ {
 			var diff int = (prices[i] - prices[(i - 1)])
 			if (diff > 0) {
@@ -21,18 +20,14 @@ func maxProfit(k int, prices []int) int {
 		return profit
 	}
 	var buy []int = []int{}
-	_ = buy
 	var sell []int = []int{}
-	_ = sell
 	var idx int = 0
-	_ = idx
 	for (idx < k) {
 		buy = append(append([]int{}, buy...), []int{(0 - prices[0])}...)
 		sell = append(append([]int{}, sell...), []int{0}...)
 		idx = (idx + 1)
 	}
 	var i int = 1
-	_ = i
 	for (i < n) {
 		var price int = prices[i]
 		var b0 int = (0 - price)
@@ -44,7 +39,6 @@ func maxProfit(k int, prices []int) int {
 			sell[0] = s0
 		}
 		var j int = 1
-		_ = j
 		for (j < k) {
 			var b int = (sell[(j - 1)] - price)
 			if (b > buy[j]) {

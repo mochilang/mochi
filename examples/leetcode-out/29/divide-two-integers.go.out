@@ -9,7 +9,6 @@ func divide(dividend int, divisor int) int {
 		return 2147483647
 	}
 	var negative bool = false
-	_ = negative
 	if (dividend < 0) {
 		negative = !negative
 		dividend = -dividend
@@ -19,12 +18,9 @@ func divide(dividend int, divisor int) int {
 		divisor = -divisor
 	}
 	var quotient int = 0
-	_ = quotient
 	for (dividend >= divisor) {
 		var temp int = divisor
-		_ = temp
 		var multiple int = 1
-		_ = multiple
 		for (dividend >= (temp + temp)) {
 			temp = (temp + temp)
 			multiple = (multiple + multiple)

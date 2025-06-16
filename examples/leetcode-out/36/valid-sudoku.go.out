@@ -7,7 +7,6 @@ func expect(cond bool) {
 func isValidSudoku(board [][]string) bool {
 	for r := 0; r < 9; r++ {
 		var seen map[string]bool = map[string]bool{}
-		_ = seen
 		for c := 0; c < 9; c++ {
 			var val string = board[r][c]
 			if (val != ".") {
@@ -23,7 +22,6 @@ func isValidSudoku(board [][]string) bool {
 	}
 	for c := 0; c < 9; c++ {
 		var seen map[string]bool = map[string]bool{}
-		_ = seen
 		for r := 0; r < 9; r++ {
 			var val string = board[r][c]
 			if (val != ".") {
@@ -40,7 +38,6 @@ func isValidSudoku(board [][]string) bool {
 	for br := 0; br < 3; br++ {
 		for bc := 0; bc < 3; bc++ {
 			var seen map[string]bool = map[string]bool{}
-			_ = seen
 			for r := 0; r < 3; r++ {
 				for c := 0; c < 3; c++ {
 					var val string = board[((br * 3) + r)][((bc * 3) + c)]

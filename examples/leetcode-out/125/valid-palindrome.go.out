@@ -30,7 +30,6 @@ func toLower(ch string) string {
 
 func isPalindrome(s string) bool {
 	var filtered []string = []string{}
-	_ = filtered
 	for _, r := range []rune(s) {
 		ch := string(r)
 		if isAlphaNum(ch) {

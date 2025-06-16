@@ -9,9 +9,7 @@ func isAnagram(s string, t string) bool {
 		return false
 	}
 	var counts map[string]int = map[string]int{}
-	_ = counts
 	var i int = 0
-	_ = i
 	for (i < len(s)) {
 		var ch string = _indexString(s, i)
 		_tmp0 := ch

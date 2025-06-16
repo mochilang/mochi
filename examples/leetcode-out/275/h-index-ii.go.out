@@ -10,7 +10,7 @@ func hIndex(citations []int) int {
 	var right int = (n - 1)
 	var result int = 0
 	for (left <= right) {
-		var mid int = ((left + ((right - left))) / 2)
+		var mid int = (left + (((right - left)) / 2))
 		var h int = (n - mid)
 		if (citations[mid] >= h) {
 			result = h

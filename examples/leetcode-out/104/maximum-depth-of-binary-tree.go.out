@@ -37,11 +37,13 @@ func maxDepth(root any) int {
 
 func example_1() {
 	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 9, Right: Leaf{}}, Value: 3, Right: Node{Left: Node{Left: Leaf{}, Value: 15, Right: Leaf{}}, Value: 20, Right: Node{Left: Leaf{}, Value: 7, Right: Leaf{}}}}
+	_ = tree
 	expect((maxDepth(tree) == 3))
 }
 
 func example_2() {
 	var tree Node = Node{Left: Leaf{}, Value: 1, Right: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}}
+	_ = tree
 	expect((maxDepth(tree) == 2))
 }
 

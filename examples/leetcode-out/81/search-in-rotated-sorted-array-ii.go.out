@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func search(nums []int, target int) bool {
 	var left int = 0
-	_ = left
 	var right int = (len(nums) - 1)
-	_ = right
 	for (left <= right) {
 		var mid int = (((left + right)) / 2)
 		if (nums[mid] == target) {

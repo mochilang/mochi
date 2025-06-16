@@ -10,14 +10,10 @@ func expect(cond bool) {
 
 func getRow(rowIndex int) []int {
 	var row []int = []int{1}
-	_ = row
 	var i int = 0
-	_ = i
 	for (i < rowIndex) {
 		var next []int = []int{1}
-		_ = next
 		var j int = 1
-		_ = j
 		for (j < len(row)) {
 			next = append(append([]int{}, next...), []int{(row[(j - 1)] + row[j])}...)
 			j = (j + 1)
@@ -58,6 +54,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

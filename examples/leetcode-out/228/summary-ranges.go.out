@@ -11,16 +11,12 @@ func expect(cond bool) {
 
 func summaryRanges(nums []int) []string {
 	var result []string = []string{}
-	_ = result
 	if (len(nums) == 0) {
 		return result
 	}
 	var start int = nums[0]
-	_ = start
 	var prev int = nums[0]
-	_ = prev
 	var i int = 1
-	_ = i
 	for (i < len(nums)) {
 		var n int = nums[i]
 		if (n == (prev + 1)) {
@@ -68,6 +64,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

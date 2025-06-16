@@ -23,7 +23,7 @@ func countAndSay(n int) string {
 					break
 				}
 			}
-			var count func(any) int = (k - j)
+			var count int = (k - j)
 			next = next + fmt.Sprint(count) + _indexString(term, j)
 			j = k
 		}

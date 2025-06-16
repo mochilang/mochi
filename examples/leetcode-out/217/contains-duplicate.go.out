@@ -6,7 +6,6 @@ func expect(cond bool) {
 
 func containsDuplicate(nums []int) bool {
 	var seen map[int]bool = map[int]bool{}
-	_ = seen
 	for _, n := range nums {
 		_tmp0 := n
 		_tmp1 := seen

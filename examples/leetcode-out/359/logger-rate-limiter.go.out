@@ -1,0 +1,77 @@
+package main
+
+import (
+	"encoding/json"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Logger struct {
+	Log map[string]int `json:"log"`
+}
+
+type PrintResult struct {
+	Ok bool `json:"ok"`
+	Logger any `json:"logger"`
+}
+
+func newLogger() Logger {
+	return Logger{Log: _cast[map[string]int](map[any]any{})}
+}
+
+func shouldPrintMessage(logger Logger, timestamp int, message string) PrintResult {
+	var log map[string]int = logger.Log
+	_tmp0 := message
+	_tmp1 := log
+	_, _tmp2 := _tmp1[_tmp0]
+	if _tmp2 {
+		var last int = log[message]
+		if ((timestamp - last) < 10) {
+			return PrintResult{Ok: false, Logger: Logger{Log: log}}
+		}
+	}
+	log[message] = timestamp
+	return PrintResult{Ok: true, Logger: Logger{Log: log}}
+}
+
+func example() {
+	var l Logger = newLogger()
+	var r1 PrintResult = shouldPrintMessage(l, 1, "foo")
+	_ = r1
+	expect((r1.Ok == true))
+	l = r1.Logger
+	var r2 PrintResult = shouldPrintMessage(l, 2, "bar")
+	_ = r2
+	expect((r2.Ok == true))
+	l = r2.Logger
+	var r3 PrintResult = shouldPrintMessage(l, 3, "foo")
+	_ = r3
+	expect((r3.Ok == false))
+	l = r3.Logger
+	var r4 PrintResult = shouldPrintMessage(l, 8, "bar")
+	_ = r4
+	expect((r4.Ok == false))
+	l = r4.Logger
+	var r5 PrintResult = shouldPrintMessage(l, 10, "foo")
+	_ = r5
+	expect((r5.Ok == false))
+	l = r5.Logger
+	var r6 PrintResult = shouldPrintMessage(l, 11, "foo")
+	_ = r6
+	expect((r6.Ok == true))
+}
+
+func main() {
+	example()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+

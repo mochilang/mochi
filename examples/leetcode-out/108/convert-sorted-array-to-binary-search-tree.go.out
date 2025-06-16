@@ -1,0 +1,75 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left any `json:"left"`
+	Value int `json:"value"`
+	Right any `json:"right"`
+}
+func (Node) isTree() {}
+
+func sortedArrayToBST(nums []int) any {
+	var helper = func(lo int, hi int) any {
+		if (lo > hi) {
+			return Leaf{}
+		}
+		var mid int = (((lo + hi)) / 2)
+		_ = mid
+		return Node{Left: helper(lo, (mid - 1)), Value: nums[mid], Right: helper((mid + 1), hi)}
+}
+	return helper(0, (len(nums) - 1))
+}
+
+func example_1() {
+	var tree any = sortedArrayToBST([]int{-10, -3, 0, 5, 9})
+	_ = tree
+	expect(func() bool {
+	_t := tree
+	switch _t {
+	case Node(_, v, _):
+		return _equal(v, 0)
+	default:
+		return false
+	}
+}())
+}
+
+func example_2() {
+	var tree any = sortedArrayToBST([]int{1, 3})
+	_ = tree
+	expect(func() bool {
+	_t := tree
+	switch _t {
+	case Node(_, v, _):
+		return (_equal(v, 1) || _equal(v, 3))
+	default:
+		return false
+	}
+}())
+}
+
+func main() {
+	example_1()
+	example_2()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

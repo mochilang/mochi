@@ -7,7 +7,7 @@ func expect(cond bool) {
 func maxArea(height []int) int {
 	var left int = 0
 	var right int = (len(height) - 1)
-	var maxArea func([]int) int = 0
+	var maxArea int = 0
 	for (left < right) {
 		var width int = (right - left)
 		var h int = 0

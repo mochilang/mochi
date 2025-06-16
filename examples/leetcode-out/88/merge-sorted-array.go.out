@@ -10,11 +10,8 @@ func expect(cond bool) {
 
 func merge(nums1 []int, m int, nums2 []int, n int) []int {
 	var i int = (m - 1)
-	_ = i
 	var j int = (n - 1)
-	_ = j
 	var k int = ((m + n) - 1)
-	_ = k
 	for (j >= 0) {
 		if ((i >= 0) && (nums1[i] > nums2[j])) {
 			nums1[k] = nums1[i]
@@ -47,6 +44,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

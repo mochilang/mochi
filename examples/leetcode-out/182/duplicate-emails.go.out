@@ -11,10 +11,8 @@ func expect(cond bool) {
 
 func findDuplicateEmails(emails []string) []string {
 	var counts map[string]int = map[string]int{}
-	_ = counts
 	for _, e := range emails {
 		var c int = 0
-		_ = c
 		_tmp0 := e
 		_tmp1 := counts
 		_, _tmp2 := _tmp1[_tmp0]
@@ -24,11 +22,9 @@ func findDuplicateEmails(emails []string) []string {
 		counts[e] = (c + 1)
 	}
 	var result []string = []string{}
-	_ = result
 	for _, e := range emails {
 		if (counts[e] > 1) {
 			var exists bool = false
-			_ = exists
 			for _, r := range result {
 				if (r == e) {
 					exists = true
@@ -45,11 +41,13 @@ func findDuplicateEmails(emails []string) []string {
 
 func example_duplicates() {
 	var emails []string = []string{"a@x.com", "b@y.com", "a@x.com"}
+	_ = emails
 	expect(_equal(findDuplicateEmails(emails), []string{"a@x.com"}))
 }
 
 func multiple_duplicates() {
 	var emails []string = []string{"a@x.com", "b@y.com", "a@x.com", "b@y.com", "c@z.com", "a@x.com"}
+	_ = emails
 	expect(_equal(findDuplicateEmails(emails), []string{"a@x.com", "b@y.com"}))
 }
 
@@ -77,6 +75,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 
