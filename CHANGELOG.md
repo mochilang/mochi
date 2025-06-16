@@ -1,4 +1,22 @@
 # 📦 CHANGELOG.md
+## [0.7.5] – 2025-06-17
+
+### Added
+
+* Reorganized `leetcode-out` directory and compiled outputs
+* Palindrome, nested recursion and LeetCode 105 tests
+* Go compiler union list and slice assignment support
+* Map literals with type hints and empty containers
+
+### Changed
+
+* `make build-all` runs in parallel with simplified commands
+
+### Fixed
+
+* Reserved keyword sanitization in the Go compiler
+* Match result casting, list concatenation and while loops
+
 ## [0.7.4] – 2025-06-16
 
 ### Added
