@@ -1,0 +1,38 @@
+// LeetCode 378 - Kth Smallest Element in a Sorted Matrix
+
+// Flatten the matrix, sort all numbers and return the k-th smallest.
+fun kthSmallest(matrix: list<list<int>>, k: int): int {
+  var flat: list<int> = []
+  for row in matrix {
+    flat = flat + row
+  }
+  let nums = from n in flat sort by n select n
+  return nums[k - 1]
+}
+
+// Example from LeetCode
+let example = [
+  [1,5,9],
+  [10,11,13],
+  [12,13,15]
+]
+
+// Tests
+
+test "example" {
+  expect kthSmallest(example, 8) == 13
+}
+
+test "single value" {
+  expect kthSmallest([[7]], 1) == 7
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Off-by-one when indexing. The k-th smallest uses index k-1 because
+   lists are zero-based.
+2. Forgetting to indent the query properly. Each clause should be on
+   its own line starting with the keyword `from`, `sort by`, or `select`.
+3. Attempting Python syntax like `matrix.flatten()` or `sorted(...)`.
+   Use Mochi's query expressions instead, as shown above.
+*/
