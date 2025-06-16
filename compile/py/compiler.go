@@ -1674,8 +1674,63 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// Check if any case result contains a block expression.
+	hasBlock := false
+	for _, cs := range m.Cases {
+		if fe, ok := funExpr(cs.Result); ok && fe.BlockBody != nil {
+			hasBlock = true
+			break
+		}
+	}
+
 	tmp := fmt.Sprintf("_t%d", c.tmpCount)
 	c.tmpCount++
+
+	if hasBlock {
+		res := fmt.Sprintf("_r%d", c.tmpCount)
+		c.tmpCount++
+		c.writeln(fmt.Sprintf("%s = %s", tmp, target))
+		c.writeln(fmt.Sprintf("%s = None", res))
+		for i, cs := range m.Cases {
+			cond, names, values, err := c.matchCond(cs.Pattern, tmp)
+			if err != nil {
+				return "", err
+			}
+			kw := "if"
+			if i > 0 {
+				kw = "elif"
+			}
+			if isUnderscoreExpr(cs.Pattern) && i == len(m.Cases)-1 {
+				c.writeIndent()
+				c.buf.WriteString("else:\n")
+			} else {
+				c.writeIndent()
+				c.buf.WriteString(fmt.Sprintf("%s %s:\n", kw, cond))
+			}
+			c.indent++
+			for idx, n := range names {
+				c.writeln(fmt.Sprintf("%s = %s", n, values[idx]))
+			}
+			if fe, ok := funExpr(cs.Result); ok && fe.BlockBody != nil {
+				fname := fmt.Sprintf("_f%d", c.tmpCount)
+				c.tmpCount++
+				if err := c.compileBlockFun(fname, fe.BlockBody, fe.Params, fe.Return); err != nil {
+					return "", err
+				}
+				c.writeln(fmt.Sprintf("%s = %s()", res, fname))
+			} else {
+				val, err := c.compileExpr(cs.Result)
+				if err != nil {
+					return "", err
+				}
+				c.writeln(fmt.Sprintf("%s = %s", res, val))
+			}
+			c.indent--
+		}
+		return res, nil
+	}
+
 	var expr string
 	for i, cs := range m.Cases {
 		res, err := c.compileExpr(cs.Result)
@@ -1686,46 +1741,67 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			expr += res
 			break
 		}
-		cond := ""
-		if call, ok := callPattern(cs.Pattern); ok {
-			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
-				st := ut.Variants[call.Func]
-				cond = fmt.Sprintf("isinstance(%s, %s)", tmp, sanitizeName(call.Func))
-				names := []string{}
-				values := []string{}
-				for idx, arg := range call.Args {
-					if id, ok := identName(arg); ok {
-						if id == "_" {
-							continue
-						}
-						names = append(names, sanitizeName(id))
-						field := sanitizeName(st.Order[idx])
-						values = append(values, fmt.Sprintf("%s.%s", tmp, field))
-					}
-				}
-				if len(names) > 0 {
-					res = fmt.Sprintf("(lambda %s: %s)(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
-				}
-			}
-		} else if ident, ok := identName(cs.Pattern); ok {
-			if _, ok := c.env.FindUnionByVariant(ident); ok {
-				cond = fmt.Sprintf("isinstance(%s, %s)", tmp, sanitizeName(ident))
-			}
-		}
-		if cond == "" {
-			pat, err := c.compileExpr(cs.Pattern)
-			if err != nil {
-				return "", err
-			}
-			cond = fmt.Sprintf("%s == %s", tmp, pat)
+		cond, names, values, err := c.matchCond(cs.Pattern, tmp)
+		if err != nil {
+			return "", err
 		}
 		part := fmt.Sprintf("%s if %s else ", res, cond)
+		if len(names) > 0 {
+			part = fmt.Sprintf("(lambda %s: %s)(%s) if %s else ", strings.Join(names, ", "), res, strings.Join(values, ", "), cond)
+		}
 		expr += part
 		if i == len(m.Cases)-1 {
 			expr += "None"
 		}
 	}
 	return fmt.Sprintf("(lambda %s=%s: %s)()", tmp, target, expr), nil
+}
+
+func (c *Compiler) matchCond(pat *parser.Expr, tmp string) (string, []string, []string, error) {
+	cond := ""
+	names := []string{}
+	values := []string{}
+	if call, ok := callPattern(pat); ok {
+		if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+			st := ut.Variants[call.Func]
+			cond = fmt.Sprintf("isinstance(%s, %s)", tmp, sanitizeName(call.Func))
+			for idx, arg := range call.Args {
+				if id, ok := identName(arg); ok {
+					if id == "_" {
+						continue
+					}
+					names = append(names, sanitizeName(id))
+					field := sanitizeName(st.Order[idx])
+					values = append(values, fmt.Sprintf("%s.%s", tmp, field))
+				}
+			}
+		}
+	} else if ident, ok := identName(pat); ok {
+		if _, ok := c.env.FindUnionByVariant(ident); ok {
+			cond = fmt.Sprintf("isinstance(%s, %s)", tmp, sanitizeName(ident))
+		}
+	}
+	if cond == "" {
+		pexpr, err := c.compileExpr(pat)
+		if err != nil {
+			return "", nil, nil, err
+		}
+		cond = fmt.Sprintf("%s == %s", tmp, pexpr)
+	}
+	return cond, names, values, nil
+}
+
+func (c *Compiler) compileBlockFun(name string, body []*parser.Statement, params []*parser.Param, ret *parser.TypeRef) error {
+	stmts := make([]*parser.Statement, len(body))
+	copy(stmts, body)
+	if len(stmts) > 0 {
+		last := stmts[len(stmts)-1]
+		if last.Expr != nil {
+			stmts[len(stmts)-1] = &parser.Statement{Return: &parser.ReturnStmt{Value: last.Expr.Expr}}
+		}
+	}
+	fs := &parser.FunStmt{Name: name, Params: params, Return: ret, Body: stmts}
+	return c.compileFunStmt(fs)
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {

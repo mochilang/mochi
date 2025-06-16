@@ -417,6 +417,24 @@ func identName(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func funExpr(e *parser.Expr) (*parser.FunExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.FunExpr == nil {
+		return nil, false
+	}
+	return p.Target.FunExpr, true
+}
+
 // collectScopeInfo traverses statements to track locally declared variables and
 // variables that are assigned to. Nested function bodies are ignored since they
 // are handled separately when compiled.
