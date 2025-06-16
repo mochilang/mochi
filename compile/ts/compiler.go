@@ -669,6 +669,24 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
+	if len(t.Variants) > 0 {
+		var variants []string
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			variants = append(variants, vname)
+			c.writeln(fmt.Sprintf("type %s = {", vname))
+			c.indent++
+			c.writeln(fmt.Sprintf("__name: \"%s\";", v.Name))
+			for _, f := range v.Fields {
+				c.writeln(fmt.Sprintf("%s: any;", sanitizeName(f.Name)))
+			}
+			c.indent--
+			c.writeln("}")
+			c.writeln("")
+		}
+		c.writeln(fmt.Sprintf("type %s = %s", name, strings.Join(variants, " | ")))
+		return nil
+	}
 	c.writeln(fmt.Sprintf("type %s = {", name))
 	c.indent++
 	for _, m := range t.Members {
@@ -1133,6 +1151,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 				return fmt.Sprintf("New%s()", sanitizeName(p.Struct.Name)), nil
 			}
+			if _, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
+				parts := make([]string, 0, len(p.Struct.Fields)+1)
+				parts = append(parts, fmt.Sprintf("__name: \"%s\"", p.Struct.Name))
+				for _, f := range p.Struct.Fields {
+					v, err := c.compileExpr(f.Value)
+					if err != nil {
+						return "", err
+					}
+					parts = append(parts, fmt.Sprintf("%s: %s", sanitizeName(f.Name), v))
+				}
+				return "{" + strings.Join(parts, ", ") + "}", nil
+			}
 		}
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
@@ -1215,8 +1245,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			retType = ts
 		}
 	}
-	sub := &Compiler{}
+	sub := &Compiler{helpers: c.helpers, imports: c.imports}
 	sub.indent = 1
+	sub.env = c.env
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody)
 		if err != nil {
@@ -1224,7 +1255,15 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		sub.writeln("return " + expr)
 	} else {
-		for _, s := range fn.BlockBody {
+		for i, s := range fn.BlockBody {
+			if i == len(fn.BlockBody)-1 && s.Expr != nil {
+				expr, err := sub.compileExpr(s.Expr.Expr)
+				if err != nil {
+					return "", err
+				}
+				sub.writeln("return " + expr)
+				continue
+			}
 			if err := sub.compileStmt(s); err != nil {
 				return "", err
 			}
@@ -1232,6 +1271,10 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	body := indentBlock(sub.buf.String(), 1)
 	code := "function(" + strings.Join(params, ", ") + "): " + retType + " {\n" + body + "}"
+	// Block expression with no params behaves like an IIFE
+	if len(fn.Params) == 0 && fn.ExprBody == nil {
+		return "(() => {\n" + body + "})()", nil
+	}
 	return code, nil
 }
 
@@ -1721,25 +1764,53 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("(() => {\n")
 	b.WriteString("\tconst _t = " + target + ";\n")
-	b.WriteString("\tswitch (_t) {\n")
 	for _, cs := range m.Cases {
-		if isUnderscoreExpr(cs.Pattern) {
-			b.WriteString("\tdefault:\n")
-		} else {
-			p, err := c.compileExpr(cs.Pattern)
-			if err != nil {
-				return "", err
-			}
-			b.WriteString("\tcase " + p + ":\n")
-		}
 		r, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
-		b.WriteString("\t\treturn " + r + ";\n")
+		if isUnderscoreExpr(cs.Pattern) {
+			b.WriteString("\treturn " + r + "\n")
+			b.WriteString("})()")
+			return b.String(), nil
+		}
+		cond := ""
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond = fmt.Sprintf("_t.__name === \"%s\"", call.Func)
+				names := []string{}
+				values := []string{}
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok {
+						if id == "_" {
+							continue
+						}
+						names = append(names, sanitizeName(id))
+						field := sanitizeName(st.Order[idx])
+						values = append(values, fmt.Sprintf("_t.%s", field))
+					}
+				}
+				if len(names) > 0 {
+					r = fmt.Sprintf("((%s) => %s)(%s)", strings.Join(names, ", "), r, strings.Join(values, ", "))
+				}
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond = fmt.Sprintf("_t.__name === \"%s\"", ident)
+			}
+		}
+		if cond == "" {
+			p, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			c.use("_equal")
+			cond = fmt.Sprintf("_equal(_t, %s)", p)
+		}
+		b.WriteString(fmt.Sprintf("\tif (%s) { return %s }\n", cond, r))
 	}
-	b.WriteString("\t}\n")
-	b.WriteString("\treturn undefined;\n")
+	b.WriteString("\treturn undefined\n")
 	b.WriteString("})()")
 	return b.String(), nil
 }
@@ -1760,4 +1831,43 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	default:
 		return "null", fmt.Errorf("invalid literal")
 	}
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
