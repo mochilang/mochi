@@ -113,7 +113,7 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
 	}
-	for i := 1; i <= 40; i++ {
+	for i := 1; i <= 45; i++ {
 		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
 		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 		if err != nil {
