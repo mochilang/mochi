@@ -1,0 +1,52 @@
+fun guessNumber(n: int, pick: int): int {
+  var low = 1
+  var high = n
+  while low <= high {
+    let mid = (low + high) / 2
+    if mid == pick {
+      return mid
+    } else if mid > pick {
+      high = mid - 1
+    } else {
+      low = mid + 1
+    }
+  }
+  return -1
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect guessNumber(10, 6) == 6
+}
+
+test "example 2" {
+  expect guessNumber(1, 1) == 1
+}
+
+// Additional edge cases
+
+test "first number" {
+  expect guessNumber(5, 1) == 1
+}
+
+test "last number" {
+  expect guessNumber(5, 5) == 5
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in if statements:
+     if mid = pick { }    // ❌ assignment
+     if mid == pick { }   // ✅ comparison
+2. Reassigning variables declared with 'let':
+     let low = 1
+     low = 2              // ❌ cannot reassign
+     var low = 1          // ✅ use 'var' for mutable variables
+3. Forgetting to update loop variables leading to infinite loops:
+     while low <= high {
+       let mid = (low + high) / 2
+       // missing updates to low/high
+     }
+   Always adjust `low` or `high` in each iteration.
+*/
