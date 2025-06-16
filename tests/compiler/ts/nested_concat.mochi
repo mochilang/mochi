@@ -1,0 +1,8 @@
+fun outer(n: int): list<int> {
+  fun helper(acc: list<int>): list<int> {
+    if len(acc) == n { return acc }
+    return helper(acc + [len(acc)])
+  }
+  return helper([])
+}
+print(outer(3))

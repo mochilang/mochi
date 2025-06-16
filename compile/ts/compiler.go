@@ -217,6 +217,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Emit global variable declarations before functions/tests.
+	for _, s := range prog.Statements {
+		if s.Let != nil || s.Var != nil {
+			if err := c.compileStmt(s); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// Emit function declarations first.
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -244,7 +254,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil {
+		if s.Fun != nil || s.Test != nil || s.Let != nil || s.Var != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -842,6 +852,10 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	for i, p := range fun.Params {
 		if i < len(ft.Params) {
 			child.SetVar(p.Name, ft.Params[i], true)
+		} else if p.Type != nil {
+			child.SetVar(p.Name, resolveTypeRef(p.Type), true)
+		} else {
+			child.SetVar(p.Name, types.AnyType{}, true)
 		}
 	}
 	origEnv := c.env
