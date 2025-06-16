@@ -1,0 +1,14 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Node struct {
+	Value int `json:"value"`
+}
+
+func main() {
+	var nodes []Node = []Node{Node{Value: 1}, Node{Value: 2}}
+	fmt.Println(len(nodes))
+}

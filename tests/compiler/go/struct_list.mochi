@@ -1,0 +1,10 @@
+type Node {
+  value: int
+}
+
+let nodes: list<Node> = [
+  Node { value: 1 },
+  Node { value: 2 }
+]
+
+print(len(nodes))
