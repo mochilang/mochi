@@ -1,0 +1,70 @@
+// LeetCode Problem 322: Coin Change
+
+fun coinChange(coins: list<int>, amount: int): int {
+  var dp: list<int> = []
+  var i = 0
+  while i <= amount {
+    dp = dp + [amount + 1]
+    i = i + 1
+  }
+  dp[0] = 0
+  i = 1
+  while i <= amount {
+    var j = 0
+    while j < len(coins) {
+      let c = coins[j]
+      if i - c >= 0 {
+        let candidate = dp[i - c] + 1
+        if candidate < dp[i] {
+          dp[i] = candidate
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  if dp[amount] > amount {
+    return -1
+  }
+  return dp[amount]
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect coinChange([1,2,5], 11) == 3
+}
+
+test "example 2" {
+  expect coinChange([2], 3) == (-1)
+}
+
+test "example 3" {
+  expect coinChange([1], 0) == 0
+}
+
+// Additional edge cases
+
+test "single coin" {
+  expect coinChange([2], 4) == 2
+}
+
+test "mixed coins" {
+  expect coinChange([1,2,5], 7) == 2
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Declaring a list without a type when it starts empty.
+   var dp = []        // ❌ type cannot be inferred
+   var dp: list<int> = [] // ✅ specify the element type
+2. Using immutable bindings for variables that change.
+   let i = 0
+   i = i + 1          // ❌ cannot reassign 'let'
+   var i = 0          // ✅ use 'var' when mutation is needed
+3. Confusing '=' assignment with '==' comparison.
+   if a = b { }       // ❌ assignment
+   if a == b { }      // ✅ comparison
+4. Forgetting that arrays are 0-indexed.
+   coins[1]           // second element, not first
+*/
