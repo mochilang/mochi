@@ -1,0 +1,49 @@
+fun oddEvenList(nums: list<int>): list<int> {
+  var odd: list<int> = []
+  var even: list<int> = []
+  var i = 0
+  let n = len(nums)
+  while i < n {
+    if (i % 2) == 0 {
+      odd = odd + [nums[i]]
+    } else {
+      even = even + [nums[i]]
+    }
+    i = i + 1
+  }
+  return odd + even
+}
+
+// Test cases based on LeetCode examples
+
+test "example 1" {
+  expect oddEvenList([1,2,3,4,5]) == [1,3,5,2,4]
+}
+
+test "example 2" {
+  expect oddEvenList([2,1,3,5,6,4,7]) == [2,3,6,7,1,5,4]
+}
+
+// Additional edge cases
+
+test "single element" {
+  expect oddEvenList([1]) == [1]
+}
+
+test "empty list" {
+  expect oddEvenList([] as list<int>) == [] as list<int>
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Attempting to mutate a value declared with `let`:
+     let n = 0
+     n = 1          // ❌ immutable binding
+   Use `var` if the value needs to change.
+2. Using Python-style negative indexes:
+     nums[-1]       // ❌ invalid in Mochi
+   Access elements with a positive index only.
+3. Forgetting to specify the list element type for an empty list:
+     oddEvenList([])
+   Provide the type: `[] as list<int>`.
+*/
