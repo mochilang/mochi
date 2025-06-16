@@ -625,19 +625,36 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		retT := c.returnType
 		exprT := c.inferExprType(s.Return.Value)
 		if retT != nil {
+			retGo := goType(retT)
+			exprGo := goType(exprT)
 			if rl, ok := retT.(types.ListType); ok {
 				if el, ok := exprT.(types.ListType); ok && equalTypes(rl.Elem, el.Elem) {
-					if goType(rl.Elem) != goType(el.Elem) {
+					if retGo != exprGo {
 						c.use("_convSlice")
 						expr = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(el.Elem), goType(rl.Elem), expr)
 					}
-				} else if !equalTypes(retT, exprT) || isAny(exprT) {
+				} else if retGo != exprGo || !equalTypes(retT, exprT) || isAny(exprT) {
 					c.use("_cast")
-					expr = fmt.Sprintf("_cast[%s](%s)", goType(retT), expr)
+					expr = fmt.Sprintf("_cast[%s](%s)", retGo, expr)
 				}
-			} else if !equalTypes(retT, exprT) || isAny(exprT) {
-				c.use("_cast")
-				expr = fmt.Sprintf("_cast[%s](%s)", goType(retT), expr)
+			} else if retGo != exprGo || !equalTypes(retT, exprT) || isAny(exprT) {
+				if ut, ok := retT.(types.UnionType); ok {
+					if st, ok := exprT.(types.StructType); ok {
+						if _, ok := ut.Variants[st.Name]; ok {
+							// struct variant implements union interface
+							// no cast needed
+						} else {
+							c.use("_cast")
+							expr = fmt.Sprintf("_cast[%s](%s)", retGo, expr)
+						}
+					} else {
+						c.use("_cast")
+						expr = fmt.Sprintf("_cast[%s](%s)", retGo, expr)
+					}
+				} else {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast[%s](%s)", retGo, expr)
+				}
 			}
 		}
 		c.writeln("return " + expr)
@@ -2894,6 +2911,36 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					elems[i] = ev
 				}
 				return "[]" + goType(lt.Elem) + "{" + strings.Join(elems, ", ") + "}", nil
+			}
+		}
+	}
+	if mt, ok := hint.(types.MapType); ok {
+		if e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+				keyType := goType(mt.Key)
+				valType := goType(mt.Value)
+				parts := make([]string, len(ml.Items))
+				for i, item := range ml.Items {
+					var k string
+					if s, ok := simpleStringKey(item.Key); ok {
+						k = fmt.Sprintf("\"%s\"", s)
+					} else {
+						kk, err := c.compileExprHint(item.Key, mt.Key)
+						if err != nil {
+							return "", err
+						}
+						k = kk
+					}
+					v, err := c.compileExprHint(item.Value, mt.Value)
+					if err != nil {
+						return "", err
+					}
+					if valType == "int64" && goType(c.inferExprType(item.Value)) == "int" {
+						v = fmt.Sprintf("int64(%s)", v)
+					}
+					parts[i] = fmt.Sprintf("%s: %s", k, v)
+				}
+				return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
 			}
 		}
 	}

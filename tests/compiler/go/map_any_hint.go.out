@@ -1,0 +1,28 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func Leaf() map[string]any {
+	return _cast[map[string]any](map[string]string{"__name": "Leaf"})
+}
+
+func Node(left map[string]any, value int, right map[string]any) map[string]any {
+	return map[string]any{"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+func main() {
+	var tree map[string]any = Node(Leaf(), 1, Leaf())
+	fmt.Println((_cast[map[string]any](tree["left"]))["__name"])
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
