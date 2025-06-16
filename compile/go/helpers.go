@@ -340,3 +340,19 @@ func (c *Compiler) newVar() string {
 	c.tempVarCount++
 	return name
 }
+
+// testFuncName returns a sanitized name for a test function. If the
+// test name collides with an existing top-level variable or function,
+// the result is prefixed with "test_" to avoid redeclaration errors.
+func (c *Compiler) testFuncName(name string) string {
+	fn := sanitizeName(name)
+	if c.env != nil {
+		if _, err := c.env.GetVar(name); err == nil {
+			return "test_" + fn
+		}
+		if _, ok := c.env.GetFunc(name); ok {
+			return "test_" + fn
+		}
+	}
+	return fn
+}
