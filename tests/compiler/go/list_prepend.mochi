@@ -1,0 +1,8 @@
+fun prepend(): list<list<int>> {
+  var result: list<list<int>> = [[1], [2]]
+  var level: list<int> = [0]
+  result = [level] + result
+  return result
+}
+
+print(prepend())

@@ -1,0 +1,16 @@
+package main
+
+import (
+	"fmt"
+)
+
+func prepend() [][]int {
+	var result [][]int = [][]int{[]int{1}, []int{2}}
+	var level []int = []int{0}
+	result = append(append([][]int{}, [][]int{level}...), result...)
+	return result
+}
+
+func main() {
+	fmt.Println(prepend())
+}
