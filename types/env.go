@@ -29,13 +29,16 @@ type Env struct {
 	models  map[string]ModelSpec         // model aliases
 
 	output io.Writer // default: os.Stdout
+	input  io.Reader // default: os.Stdin
 }
 
 // NewEnv creates a new lexical scope environment.
 func NewEnv(parent *Env) *Env {
 	var out io.Writer = os.Stdout
+	var in io.Reader = os.Stdin
 	if parent != nil {
 		out = parent.output
+		in = parent.input
 	}
 	return &Env{
 		parent:  parent,
@@ -49,6 +52,7 @@ func NewEnv(parent *Env) *Env {
 		funcs:   make(map[string]*parser.FunStmt),
 		models:  make(map[string]ModelSpec),
 		output:  out,
+		input:   in,
 	}
 }
 
@@ -246,6 +250,7 @@ func (e *Env) Copy() *Env {
 		agents:  make(map[string]*parser.AgentDecl, len(e.agents)),
 		models:  make(map[string]ModelSpec, len(e.models)),
 		output:  e.output,
+		input:   e.input,
 	}
 	for k, v := range e.types {
 		newEnv.types[k] = v
@@ -288,3 +293,9 @@ func (e *Env) SetWriter(w io.Writer) {
 func (e *Env) Writer() io.Writer {
 	return e.output
 }
+
+// SetReader sets the input source.
+func (e *Env) SetReader(r io.Reader) { e.input = r }
+
+// Reader returns the current input reader.
+func (e *Env) Reader() io.Reader { return e.input }

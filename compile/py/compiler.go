@@ -1242,6 +1242,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("print(json.dumps(%s))", argStr), nil
 	case "str":
 		return fmt.Sprintf("str(%s)", argStr), nil
+	case "input":
+		return "input()", nil
 	case "count":
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil

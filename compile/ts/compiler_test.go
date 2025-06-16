@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"mochi/bench"
@@ -45,6 +46,9 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		}
 		cmd := exec.Command("deno", "run", "--quiet", file)
 		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ deno run error: %w\n%s", err, out)
@@ -76,6 +80,9 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 		}
 		cmd := exec.Command("deno", "run", "--quiet", file)
 		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ deno run error: %w\n%s", err, out)
@@ -160,6 +167,9 @@ func TestTSCompiler_LeetCodeExamples(t *testing.T) {
 				}
 				cmd := exec.Command("deno", "run", "--quiet", file)
 				cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+				if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+					cmd.Stdin = bytes.NewReader(data)
+				}
 				out, err := cmd.CombinedOutput()
 				if err != nil {
 					t.Fatalf("deno run error: %v\n%s", err, out)

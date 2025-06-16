@@ -1,8 +1,15 @@
 package interpreter_test
 
 import (
+	"bytes"
 	"fmt"
 	"math"
+	"os"
+	"os/exec"
+	"path/filepath"
+	stdstrings "strings"
+	"testing"
+
 	"mochi/golden"
 	"mochi/interpreter"
 	"mochi/parser"
@@ -11,10 +18,6 @@ import (
 	_ "mochi/runtime/llm/provider/echo"
 	"mochi/runtime/mod"
 	"mochi/types"
-	"os/exec"
-	"path/filepath"
-	stdstrings "strings"
-	"testing"
 )
 
 func TestInterpreter_ValidPrograms(t *testing.T) {
@@ -52,6 +55,9 @@ func TestInterpreter_ValidPrograms(t *testing.T) {
 		modRoot, _ := mod.FindRoot(filepath.Dir(src))
 		interp := interpreter.New(prog, typeEnv, modRoot)
 		interp.Env().SetWriter(out)
+		if data, err := os.ReadFile(stdstrings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			interp.Env().SetReader(bytes.NewReader(data))
+		}
 		if err := interp.Run(); err != nil {
 			return nil, fmt.Errorf("❌ runtime error: %w", err)
 		}

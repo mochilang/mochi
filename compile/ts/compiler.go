@@ -1261,6 +1261,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("(Array.isArray(%[1]s) || typeof %[1]s === 'string' ? (%[1]s as any).length : (%[1]s && typeof %[1]s === 'object' ? Object.keys(%[1]s).length : 0))", argStr), nil
 	case "str":
 		return fmt.Sprintf("String(%s)", argStr), nil
+	case "input":
+		c.use("_input")
+		return "_input()", nil
 	case "count":
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
