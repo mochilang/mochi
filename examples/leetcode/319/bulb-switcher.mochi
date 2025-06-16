@@ -1,0 +1,42 @@
+// LeetCode Problem 319: Bulb Switcher
+// Only bulbs at positions that are perfect squares remain on after n rounds.
+// The count of bulbs that stay on is simply how many perfect squares are <= n.
+//
+// Common Mochi language mistakes and how to fix them:
+// 1. Trying to use an undeclared function like sqrt without importing it.
+//    // let r = sqrt(n)        // ❌ undefined function
+//    // Use integer math instead.
+// 2. Using floating point variables for loop counters.
+//    // var i: float = 1       // ❌ unnecessary float
+//    var i: int = 1           // ✅ use int for counting
+// 3. Confusing assignment with comparison in conditions.
+//    // if i * i = n { ... }   // ❌ assignment
+//    // if i * i == n { ... }  // ✅ comparison
+
+fun bulbSwitch(n: int): int {
+  var count = 0
+  var i = 1
+  while i * i <= n {
+    count = count + 1
+    i = i + 1
+  }
+  return count
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect bulbSwitch(3) == 1
+}
+
+test "example 2" {
+  expect bulbSwitch(0) == 0
+}
+
+test "example 3" {
+  expect bulbSwitch(1) == 1
+}
+
+test "larger n" {
+  expect bulbSwitch(9999) == 99
+}
