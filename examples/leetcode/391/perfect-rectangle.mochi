@@ -1,0 +1,93 @@
+// Solution for LeetCode problem 391 - Perfect Rectangle
+// Determine if a set of rectangles exactly cover one larger rectangle
+// without overlaps or gaps.
+
+fun isRectangleCover(rectangles: list<list<int>>): bool {
+  if len(rectangles) == 0 { return false }
+
+  var minX = rectangles[0][0]
+  var minY = rectangles[0][1]
+  var maxX = rectangles[0][2]
+  var maxY = rectangles[0][3]
+  var area = 0
+  var counts: map<string,int> = {}
+
+  for rect in rectangles {
+    let x1 = rect[0]
+    let y1 = rect[1]
+    let x2 = rect[2]
+    let y2 = rect[3]
+
+    if x1 < minX { minX = x1 }
+    if y1 < minY { minY = y1 }
+    if x2 > maxX { maxX = x2 }
+    if y2 > maxY { maxY = y2 }
+
+    area = area + (x2 - x1) * (y2 - y1)
+
+    var i = 0
+    var pts: list<list<int>> = [[x1,y1],[x1,y2],[x2,y1],[x2,y2]]
+    while i < 4 {
+      let pt = pts[i]
+      let key = str(pt[0]) + ":" + str(pt[1])
+      if key in counts {
+        counts[key] = counts[key] + 1
+      } else {
+        counts[key] = 1
+      }
+      i = i + 1
+    }
+  }
+
+  let expectArea = (maxX - minX) * (maxY - minY)
+  if area != expectArea { return false }
+
+  var unique: list<string> = []
+  for key in counts {
+    if counts[key] % 2 == 1 {
+      unique = unique + [key]
+    }
+  }
+  if len(unique) != 4 { return false }
+
+  var needed: map<string,bool> = {}
+  needed[str(minX)+":"+str(minY)] = true
+  needed[str(minX)+":"+str(maxY)] = true
+  needed[str(maxX)+":"+str(minY)] = true
+  needed[str(maxX)+":"+str(maxY)] = true
+
+  for c in unique {
+    var ok = false
+    if c in needed { ok = needed[c] }
+    if !ok { return false }
+  }
+  return true
+}
+
+// Test cases from LeetCode examples
+
+test "example 1" {
+  expect isRectangleCover([[1,1,3,3],[3,1,4,2],[3,2,4,4],[1,3,2,4],[2,3,3,4]]) == true
+}
+
+test "example 2" {
+  expect isRectangleCover([[1,1,2,3],[1,3,2,4],[3,1,4,2],[3,2,4,4]]) == false
+}
+
+test "example 3" {
+  expect isRectangleCover([[1,1,3,3],[3,1,4,2],[1,3,2,4],[3,2,4,4]]) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to convert coordinates to strings when using them as map keys:
+   counts[[x,y]] = 1       // ❌ invalid key type
+   counts[str(x)+":"+str(y)] = 1 // ✅ convert to string
+2. Reassigning a value declared with 'let':
+   let area = 0
+   area = area + 1         // ❌ cannot modify 'let'
+   var area = 0            // ✅ use 'var' for mutable values
+3. Using '=' instead of '==' when comparing the final area or counts:
+   if area = expectArea { }   // ❌ assignment
+   if area == expectArea { }  // ✅ comparison
+*/
