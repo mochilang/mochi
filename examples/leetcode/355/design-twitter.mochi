@@ -1,0 +1,146 @@
+// Solution for LeetCode problem 355 - Design Twitter
+//
+// This implementation models each user with a list of tweets and a set of
+// followees. The Twitter struct keeps a global timestamp so that tweets can be
+// ordered by recency.
+
+// Each tweet stores its id and the time it was posted
+// so we can sort by time later.
+type Tweet {
+  id: int
+  time: int
+}
+
+// The main Twitter state holds per-user tweets and follow relationships.
+// - tweets: map from user id to list of Tweet
+// - follows: map from follower id to a set (implemented as map) of followee ids
+// - time: monotonically increasing timestamp
+// This avoids union types and `match` by relying only on basic maps and lists.
+type Twitter {
+  tweets: map<int, list<Tweet>>
+  follows: map<int, map<int, bool>>
+  time: int
+}
+
+fun newTwitter(): Twitter {
+  return Twitter {
+    tweets: {} as map<int, list<Tweet>>,
+    follows: {} as map<int, map<int, bool>>,
+    time: 0
+  }
+}
+
+// Record a new tweet for the given user. New tweets are stored at the
+// front of the user's list for easy access to the most recent posts.
+fun postTweet(t: Twitter, userId: int, tweetId: int): Twitter {
+  var tweets = t.tweets
+  var list: list<Tweet> = []
+  if userId in tweets {
+    list = tweets[userId]
+  }
+  let time = t.time + 1
+  list = [Tweet { id: tweetId, time: time }] + list
+  tweets[userId] = list
+  return Twitter { tweets: tweets, follows: t.follows, time: time }
+}
+
+// Return up to 10 most recent tweet ids in the user's news feed.
+fun getNewsFeed(t: Twitter, userId: int): list<int> {
+  var all: list<Tweet> = []
+  if userId in t.tweets {
+    all = all + t.tweets[userId]
+  }
+  if userId in t.follows {
+    for f in t.follows[userId] {
+      if f in t.tweets {
+        all = all + t.tweets[f]
+      }
+    }
+  }
+  let sorted = from tw in all sort by -tw.time select tw
+  var feed: list<int> = []
+  var i = 0
+  while i < len(sorted) && i < 10 {
+    let t = sorted[i]
+    feed = feed + [t.id]
+    i = i + 1
+  }
+  return feed
+}
+
+// Make followerId follow followeeId. The follow set is stored as a map of
+// followee -> true.
+fun follow(t: Twitter, followerId: int, followeeId: int): Twitter {
+  var follows = t.follows
+  var set: map<int, bool> = {}
+  if followerId in follows {
+    set = follows[followerId]
+  }
+  set[followeeId] = true
+  follows[followerId] = set
+  return Twitter { tweets: t.tweets, follows: follows, time: t.time }
+}
+
+// Unfollow removes followeeId from followerId's set if present.
+fun unfollow(t: Twitter, followerId: int, followeeId: int): Twitter {
+  var follows = t.follows
+  if followerId in follows {
+    var set = follows[followerId]
+    if followeeId in set {
+      set = removeKey(set, followeeId)
+      follows[followerId] = set
+    }
+  }
+  return Twitter { tweets: t.tweets, follows: follows, time: t.time }
+}
+
+// Helper to remove a key from a map and return the updated map.
+fun removeKey(m: map<int, bool>, k: int): map<int, bool> {
+  var out: map<int, bool> = {}
+  for key in m {
+    if key != k {
+      out[key] = m[key]
+    }
+  }
+  return out
+}
+
+// Basic tests from the LeetCode problem statement
+
+test "example" {
+  var tw = newTwitter()
+  tw = postTweet(tw, 1, 5)
+  expect getNewsFeed(tw, 1) == [5]
+  tw = follow(tw, 1, 2)
+  tw = postTweet(tw, 2, 6)
+  expect getNewsFeed(tw, 1)[0:2] == [6,5]
+  tw = unfollow(tw, 1, 2)
+  expect getNewsFeed(tw, 1) == [5]
+}
+
+// Additional edge cases
+
+test "empty feed" {
+  let tw = newTwitter()
+  expect getNewsFeed(tw, 1) == []
+}
+
+test "multiple tweets" {
+  var tw = newTwitter()
+  tw = postTweet(tw, 1, 101)
+  tw = postTweet(tw, 1, 102)
+  expect getNewsFeed(tw, 1) == [102,101]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare a mutable variable with `var` before assignment.
+   let tweets = {} as map<int, list<Tweet>>
+   tweets[1] = []     // ❌ cannot assign
+   var tweets: map<int, list<Tweet>> = {}  // ✅
+2. Using '=' instead of '==' when comparing values.
+   if userId = 1 { }  // ❌ assignment
+   if userId == 1 { } // ✅ comparison
+3. Trying to use Python set syntax like `set.add(x)` or `set.remove(x)`.
+   Sets are implemented as maps in Mochi. Use `m[k] = true` and `delete(m, k)`.
+*/
