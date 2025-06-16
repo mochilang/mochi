@@ -1,0 +1,53 @@
+fun intersection(nums1: list<int>, nums2: list<int>): list<int> {
+  // Use maps as sets to record unique numbers from nums1
+  var set1: map<int, bool> = {}
+  for n in nums1 {
+    set1[n] = true
+  }
+  // Track numbers we've already added to the result
+  var seen: map<int, bool> = {}
+  var result: list<int> = []
+  for n in nums2 {
+    if n in set1 {
+      if !(n in seen) {
+        result = result + [n]
+        seen[n] = true
+      }
+    }
+  }
+  return result
+}
+
+// Examples from LeetCode
+
+test "example 1" {
+  let out = intersection([1,2,2,1], [2,2])
+  let sorted = from x in out sort by x select x
+  expect sorted == [2]
+}
+
+test "example 2" {
+  let out = intersection([4,9,5], [9,4,9,8,4])
+  let sorted = from x in out sort by x select x
+  expect sorted == [4,9]
+}
+
+// Additional edge cases
+
+test "empty first" {
+  expect intersection([], [1,2]) == []
+}
+
+test "empty second" {
+  expect intersection([1,2,3], []) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to declare variable types for empty collections:
+     var s = []              // ERROR: type cannot be inferred
+   Provide element type:
+     var s: list<int> = []
+2. Using '=' instead of '==' in conditions.
+3. Reassigning a value declared with 'let'. Use 'var' when mutation is needed.
+*/
