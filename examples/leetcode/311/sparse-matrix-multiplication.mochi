@@ -1,0 +1,77 @@
+// Solution for LeetCode problem 311 - Sparse Matrix Multiplication
+
+fun multiply(A: list<list<int>>, B: list<list<int>>): list<list<int>> {
+  let m = len(A)
+  if m == 0 {
+    return []
+  }
+  let k = len(A[0])
+  let n = len(B[0])
+
+  // initialize result matrix with zeros
+  var result: list<list<int>> = []
+  var i = 0
+  while i < m {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = row + [0]
+      j = j + 1
+    }
+    result = result + [row]
+    i = i + 1
+  }
+
+  // multiply only non-zero values
+  i = 0
+  while i < m {
+    var j = 0
+    while j < k {
+      let a = A[i][j]
+      if a != 0 {
+        var col = 0
+        while col < n {
+          let b = B[j][col]
+          if b != 0 {
+            result[i][col] = result[i][col] + a * b
+          }
+          col = col + 1
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Tests from LeetCode
+
+test "example" {
+  expect multiply([[1,0,0],[-1,0,3]], [[7,0,0],[0,0,0],[0,0,1]]) == [[7,0,0],[-7,0,3]]
+}
+
+test "single" {
+  expect multiply([[2]], [[3]]) == [[6]]
+}
+
+test "zero" {
+  expect multiply([[0]], [[1]]) == [[0]]
+}
+
+test "2x2" {
+  expect multiply([[1,2],[3,4]], [[5,6],[7,8]]) == [[19,22],[43,50]]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning an immutable variable:
+   let i = 0
+   i = i + 1        // ❌ cannot modify 'let'
+   var j = 0        // ✅ declare mutable with 'var'
+2. Using '=' instead of '==' in a comparison:
+   if a = 0 { }     // ❌ assignment
+   if a == 0 { }    // ✅ equality check
+3. Attempting Python-style list methods like row.append(x). Use:
+   row = row + [x]  // ✅ concatenate lists
+*/
