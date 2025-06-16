@@ -18,4 +18,3 @@ function _avg(v: any): number {
 }
 
 main()
-
