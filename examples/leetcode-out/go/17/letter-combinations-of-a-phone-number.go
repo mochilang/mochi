@@ -1,0 +1,90 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func letterCombinations(digits string) []string {
+	if (len(digits) == 0) {
+		return _cast[[]string]([]any{})
+	}
+	var mapping map[string][]string = map[string][]string{"2": []string{"a", "b", "c"}, "3": []string{"d", "e", "f"}, "4": []string{"g", "h", "i"}, "5": []string{"j", "k", "l"}, "6": []string{"m", "n", "o"}, "7": []string{"p", "q", "r", "s"}, "8": []string{"t", "u", "v"}, "9": []string{"w", "x", "y", "z"}}
+	var result []string = []string{""}
+	for _, r := range []rune(digits) {
+		d := string(r)
+		_tmp0 := d
+		_tmp1 := mapping
+		_, _tmp2 := _tmp1[_tmp0]
+		if !(_tmp2) {
+			continue
+		}
+		var letters []string = mapping[d]
+		_ = letters
+		var next []string = func() []string {
+	_res := []string{}
+	for _, p := range result {
+		for _, ch := range letters {
+			_res = append(_res, p + ch)
+		}
+	}
+	return _res
+}()
+		result = next
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(letterCombinations("23"), []string{"ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"}))
+}
+
+func example_2() {
+	expect(_equal(letterCombinations(""), []any{}))
+}
+
+func example_3() {
+	expect(_equal(letterCombinations("2"), []string{"a", "b", "c"}))
+}
+
+func single_seven() {
+	expect(_equal(letterCombinations("7"), []string{"p", "q", "r", "s"}))
+}
+
+func mix() {
+	expect(_equal(letterCombinations("79"), []string{"pw", "px", "py", "pz", "qw", "qx", "qy", "qz", "rw", "rx", "ry", "rz", "sw", "sx", "sy", "sz"}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+	single_seven()
+	mix()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

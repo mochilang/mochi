@@ -1,0 +1,78 @@
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func summaryRanges(nums []int) []string {
+	var result []string = []string{}
+	if (len(nums) == 0) {
+		return result
+	}
+	var start int = nums[0]
+	var prev int = nums[0]
+	var i int = 1
+	for (i < len(nums)) {
+		var n int = nums[i]
+		if (n == (prev + 1)) {
+			prev = n
+		} else {
+			if (start == prev) {
+				result = append(append([]string{}, result...), []string{fmt.Sprint(start)}...)
+			} else {
+				result = append(append([]string{}, result...), []string{fmt.Sprint(start) + "->" + fmt.Sprint(prev)}...)
+			}
+			start = n
+			prev = n
+		}
+		i = (i + 1)
+	}
+	if (start == prev) {
+		result = append(append([]string{}, result...), []string{fmt.Sprint(start)}...)
+	} else {
+		result = append(append([]string{}, result...), []string{fmt.Sprint(start) + "->" + fmt.Sprint(prev)}...)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(summaryRanges([]int{0, 1, 2, 4, 5, 7}), []string{"0->2", "4->5", "7"}))
+}
+
+func example_2() {
+	expect(_equal(summaryRanges([]int{0, 2, 3, 4, 6, 8, 9}), []string{"0", "2->4", "6", "8->9"}))
+}
+
+func single_element() {
+	expect(_equal(summaryRanges([]int{5}), []string{"5"}))
+}
+
+func empty() {
+	expect(_equal(summaryRanges([]int{}), []any{}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_element()
+	empty()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

@@ -1,0 +1,57 @@
+package main
+
+import (
+	"encoding/json"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type NumArray struct {
+	Prefix []int `json:"prefix"`
+}
+
+func newNumArray(nums []int) NumArray {
+	var p []int = []int{0}
+	var sum int = 0
+	var n int = len(nums)
+	for i := 0; i < n; i++ {
+		sum = (sum + nums[i])
+		p = append(append([]int{}, p...), []int{sum}...)
+	}
+	return NumArray{Prefix: p}
+}
+
+func sumRange(arr NumArray, left int, right int) int {
+	var p []int = arr.Prefix
+	return (p[(right + 1)] - p[left])
+}
+
+func example() {
+	var arr NumArray = newNumArray([]int{-2, 0, 3, -5, 2, -1})
+	_ = arr
+	expect((sumRange(arr, 0, 2) == 1))
+	expect((sumRange(arr, 2, 5) == (-1)))
+	expect((sumRange(arr, 0, 5) == (-3)))
+}
+
+func single() {
+	var arr NumArray = newNumArray([]int{5})
+	_ = arr
+	expect((sumRange(arr, 0, 0) == 5))
+}
+
+func main() {
+	example()
+	single()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+

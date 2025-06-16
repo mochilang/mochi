@@ -1,0 +1,127 @@
+package main
+
+import (
+	"encoding/json"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type RandomizedCollection struct {
+	Values []int `json:"values"`
+	Pos map[int][]int `json:"pos"`
+	Seed int `json:"seed"`
+}
+
+type OpResult struct {
+	Ok bool `json:"ok"`
+	Col RandomizedCollection `json:"col"`
+}
+
+type RandResult struct {
+	Val int `json:"val"`
+	Col RandomizedCollection `json:"col"`
+}
+
+func newCollection() RandomizedCollection {
+	return RandomizedCollection{Values: _cast[[]int]([]any{}), Pos: _cast[map[int][]int](map[any]any{}), Seed: 1}
+}
+
+func nextSeed(x int) int {
+	return ((((x * 1103515245) + 12345)) % 2147483648)
+}
+
+func insert(col RandomizedCollection, val int) OpResult {
+	var values []int = col.Values
+	var posMap map[int][]int = col.Pos
+	var existed bool = false
+	var idxs []int = []int{}
+	_tmp0 := val
+	_tmp1 := posMap
+	_, _tmp2 := _tmp1[_tmp0]
+	if _tmp2 {
+		existed = (len(posMap[val]) > 0)
+		idxs = posMap[val]
+	}
+	idxs = append(append([]int{}, idxs...), []int{len(values)}...)
+	posMap[val] = idxs
+	values = append(append([]int{}, values...), []int{val}...)
+	return OpResult{Ok: !existed, Col: RandomizedCollection{Values: values, Pos: posMap, Seed: col.Seed}}
+}
+
+func remove(col RandomizedCollection, val int) OpResult {
+	var values []int = col.Values
+	var posMap map[int][]int = col.Pos
+	_tmp3 := val
+	_tmp4 := posMap
+	_, _tmp5 := _tmp4[_tmp3]
+	if (!(_tmp5) || (len(posMap[val]) == 0)) {
+		return OpResult{Ok: false, Col: col}
+	}
+	var idxs []int = posMap[val]
+	var removeIdx int = idxs[(len(idxs) - 1)]
+	idxs = idxs[0:(len(idxs) - 1)]
+	posMap[val] = idxs
+	var lastIdx int = (len(values) - 1)
+	var lastVal int = values[lastIdx]
+	values[removeIdx] = lastVal
+	values = values[0:lastIdx]
+	var lastList []int = posMap[lastVal]
+	var i int = 0
+	for (i < len(lastList)) {
+		if (lastList[i] == lastIdx) {
+			lastList[i] = removeIdx
+			break
+		}
+		i = (i + 1)
+	}
+	posMap[lastVal] = lastList
+	return OpResult{Ok: true, Col: RandomizedCollection{Values: values, Pos: posMap, Seed: col.Seed}}
+}
+
+func getRandom(col RandomizedCollection) RandResult {
+	var seed int = nextSeed(col.Seed)
+	var idx int = (seed % len(col.Values))
+	return RandResult{Val: col.Values[idx], Col: RandomizedCollection{Values: col.Values, Pos: col.Pos, Seed: seed}}
+}
+
+func example_operations() {
+	var c RandomizedCollection = newCollection()
+	var r1 OpResult = insert(c, 1)
+	_ = r1
+	expect((r1.Ok == true))
+	c = r1.Col
+	var r2 OpResult = insert(c, 1)
+	_ = r2
+	expect((r2.Ok == false))
+	c = r2.Col
+	var r3 OpResult = insert(c, 2)
+	_ = r3
+	expect((r3.Ok == true))
+	c = r3.Col
+	var g1 RandResult = getRandom(c)
+	_ = g1
+	expect(((g1.Val == 1) || (g1.Val == 2)))
+	c = g1.Col
+	var r4 OpResult = remove(c, 1)
+	_ = r4
+	expect((r4.Ok == true))
+	c = r4.Col
+	var g2 RandResult = getRandom(c)
+	_ = g2
+	expect(((g2.Val == 1) || (g2.Val == 2)))
+}
+
+func main() {
+	example_operations()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+

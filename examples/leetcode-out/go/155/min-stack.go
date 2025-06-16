@@ -1,0 +1,94 @@
+package main
+
+import (
+	"encoding/json"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type MinStack struct {
+	Items []int `json:"items"`
+	Mins []int `json:"mins"`
+}
+
+func newStack() MinStack {
+	return MinStack{Items: _cast[[]int]([]any{}), Mins: _cast[[]int]([]any{})}
+}
+
+func push(s MinStack, x int) MinStack {
+	var items []int = append(append([]int{}, s.Items...), []int{x}...)
+	var mins []int = s.Mins
+	if (len(mins) == 0) {
+		mins = []int{x}
+	} else {
+		var m int = mins[(len(mins) - 1)]
+		if (x <= m) {
+			mins = append(append([]int{}, mins...), []int{x}...)
+		}
+	}
+	return MinStack{Items: items, Mins: mins}
+}
+
+func pop(s MinStack) MinStack {
+	var items []int = s.Items
+	var mins []int = s.Mins
+	var val int = items[(len(items) - 1)]
+	items = items[0:(len(items) - 1)]
+	if (val == mins[(len(mins) - 1)]) {
+		mins = mins[0:(len(mins) - 1)]
+	}
+	return MinStack{Items: items, Mins: mins}
+}
+
+func top(s MinStack) int {
+	return s.Items[(len(s.Items) - 1)]
+}
+
+func getMin(s MinStack) int {
+	return s.Mins[(len(s.Mins) - 1)]
+}
+
+func example() {
+	var s MinStack = newStack()
+	s = push(s, -2)
+	s = push(s, 0)
+	s = push(s, -3)
+	expect((getMin(s) == (-3)))
+	s = pop(s)
+	expect((top(s) == 0))
+	expect((getMin(s) == (-2)))
+}
+
+func single_element() {
+	var s MinStack = newStack()
+	s = push(s, 4)
+	expect((top(s) == 4))
+	expect((getMin(s) == 4))
+}
+
+func increasing() {
+	var s MinStack = newStack()
+	s = push(s, 1)
+	s = push(s, 2)
+	s = push(s, 3)
+	expect((getMin(s) == 1))
+	s = pop(s)
+	expect((getMin(s) == 1))
+}
+
+func main() {
+	example()
+	single_element()
+	increasing()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+

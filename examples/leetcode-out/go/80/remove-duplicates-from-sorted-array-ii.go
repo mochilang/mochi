@@ -1,0 +1,61 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func removeDuplicates(nums []int) int {
+	var n int = len(nums)
+	if (n <= 2) {
+		return n
+	}
+	var write int = 2
+	var read int = 2
+	for (read < n) {
+		if (nums[read] != nums[(write - 2)]) {
+			nums[write] = nums[read]
+			write = (write + 1)
+		}
+		read = (read + 1)
+	}
+	return write
+}
+
+func example_1() {
+	var nums []int = []int{1, 1, 1, 2, 2, 3}
+	var k int = removeDuplicates(nums)
+	_ = k
+	expect((k == 5))
+	expect(_equal(nums[0:k], []int{1, 1, 2, 2, 3}))
+}
+
+func example_2() {
+	var nums []int = []int{0, 0, 1, 1, 1, 1, 2, 3, 3}
+	var k int = removeDuplicates(nums)
+	_ = k
+	expect((k == 7))
+	expect(_equal(nums[0:k], []int{0, 0, 1, 1, 2, 3, 3}))
+}
+
+func main() {
+	example_1()
+	example_2()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

@@ -1,0 +1,136 @@
+package main
+
+import (
+	"fmt"
+	"reflect"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func wordBreak(s string, wordDict []string) []string {
+	var dict map[string]bool = map[string]bool{}
+	for _, w := range wordDict {
+		dict[w] = true
+	}
+	var n int = len(s)
+	var memo map[int][]string = map[int][]string{}
+	var dfs func(int) []string
+	dfs = func(start int) []string {
+		_tmp0 := start
+		_tmp1 := memo
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			return memo[start]
+		}
+		if (start == n) {
+			return []string{""}
+		}
+		var res []string = []string{}
+		var end int = (start + 1)
+		for (end <= n) {
+			var word string = string([]rune(s)[start:end])
+			var exists bool = false
+			_tmp3 := word
+			_tmp4 := dict
+			_, _tmp5 := _tmp4[_tmp3]
+			if _tmp5 {
+				exists = dict[word]
+			}
+			if exists {
+				var subs []string = dfs(end)
+				for _, sub := range subs {
+					if (len(sub) == 0) {
+						res = append(append([]string{}, res...), []string{word}...)
+					} else {
+						res = append(append([]string{}, res...), []string{word + " " + sub}...)
+					}
+				}
+			}
+			end = (end + 1)
+		}
+		memo[start] = res
+		return res
+}
+	var ans []string = dfs(0)
+	var sorted []string = func() []string {
+	items := []string{}
+	for _, x := range ans {
+		items = append(items, x)
+	}
+	type pair struct { item string; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		x := it
+		pairs[idx] = pair{item: it, key: x}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []string{}
+	for _, x := range items {
+		_res = append(_res, x)
+	}
+	return _res
+}()
+	return sorted
+}
+
+func example_1() {
+	expect(_equal(wordBreak("catsanddog", dict1), []string{"cat sand dog", "cats and dog"}))
+}
+
+func example_2() {
+	expect(_equal(wordBreak("pineapplepenapple", dict2), []string{"pine apple pen apple", "pine applepen apple", "pineapple pen apple"}))
+}
+
+func example_3() {
+	expect(_equal(wordBreak("catsandog", dict1), []any{}))
+}
+
+var dict1 []string = []string{"cat", "cats", "and", "sand", "dog"}
+var dict2 []string = []string{"apple", "pen", "applepen", "pine", "pineapple"}
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

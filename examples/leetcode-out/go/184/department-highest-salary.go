@@ -1,0 +1,80 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type Department struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+}
+
+type Employee struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+	Salary int `json:"salary"`
+	DepartmentId int `json:"departmentId"`
+}
+
+type Result struct {
+	Department string `json:"Department"`
+	Employee string `json:"Employee"`
+	Salary int `json:"Salary"`
+}
+
+func departmentHighestSalary(employees []Employee, departments []Department) []Result {
+	var maxSalary map[int]int = map[int]int{}
+	for _, e := range employees {
+		var current int = 0
+		_tmp0 := e.DepartmentId
+		_tmp1 := maxSalary
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			current = maxSalary[e.DepartmentId]
+		}
+		if (e.Salary > current) {
+			maxSalary[e.DepartmentId] = e.Salary
+		}
+	}
+	var results []Result = []Result{}
+	for _, d := range departments {
+		_tmp3 := d.Id
+		_tmp4 := maxSalary
+		_, _tmp5 := _tmp4[_tmp3]
+		if _tmp5 {
+			var highest int = maxSalary[d.Id]
+			for _, e := range employees {
+				if ((e.DepartmentId == d.Id) && (e.Salary == highest)) {
+					results = append(append([]Result{}, results...), []Result{Result{Department: d.Name, Employee: e.Name, Salary: e.Salary}}...)
+				}
+			}
+		}
+	}
+	return results
+}
+
+func highest_salary() {
+	var expected []Result = []Result{Result{Department: "IT", Employee: "Max", Salary: 90000}, Result{Department: "Sales", Employee: "Henry", Salary: 80000}}
+	_ = expected
+	expect((fmt.Sprint(departmentHighestSalary(employees, departments)) == fmt.Sprint(expected)))
+}
+
+var departments []Department = []Department{Department{Id: 1, Name: "IT"}, Department{Id: 2, Name: "Sales"}}
+var employees []Employee = []Employee{Employee{Id: 1, Name: "Joe", Salary: 70000, DepartmentId: 1}, Employee{Id: 2, Name: "Henry", Salary: 80000, DepartmentId: 2}, Employee{Id: 3, Name: "Sam", Salary: 60000, DepartmentId: 2}, Employee{Id: 4, Name: "Max", Salary: 90000, DepartmentId: 1}}
+func main() {
+	highest_salary()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+

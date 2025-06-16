@@ -1,0 +1,91 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func sortTransformedArray(nums []int, a int, b int, c int) []int {
+	var n int = len(nums)
+	var result []int = []int{}
+	var i int = 0
+	for (i < n) {
+		result = append(append([]int{}, result...), []int{0}...)
+		i = (i + 1)
+	}
+	var transform = func(x int) int {
+		return ((((a * x) * x) + (b * x)) + c)
+}
+	var left int = 0
+	var right int = (n - 1)
+	if (a >= 0) {
+		var idx int = (n - 1)
+		for (left <= right) {
+			var lv int = transform(nums[left])
+			var rv int = transform(nums[right])
+			if (lv > rv) {
+				result[idx] = lv
+				left = (left + 1)
+			} else {
+				result[idx] = rv
+				right = (right - 1)
+			}
+			idx = (idx - 1)
+		}
+	} else {
+		var idx int = 0
+		for (left <= right) {
+			var lv int = transform(nums[left])
+			var rv int = transform(nums[right])
+			if (lv < rv) {
+				result[idx] = lv
+				left = (left + 1)
+			} else {
+				result[idx] = rv
+				right = (right - 1)
+			}
+			idx = (idx + 1)
+		}
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(sortTransformedArray([]int{-4, -2, 2, 4}, 1, 3, 5), []int{3, 9, 15, 33}))
+}
+
+func example_2() {
+	expect(_equal(sortTransformedArray([]int{-4, -2, 2, 4}, -1, 3, 5), []int{-23, -5, 1, 7}))
+}
+
+func a_zero() {
+	expect(_equal(sortTransformedArray([]int{0, 1, 2, 3}, 0, 2, 1), []int{1, 3, 5, 7}))
+}
+
+func single_element() {
+	expect(_equal(sortTransformedArray([]int{2}, 2, -3, 1), []int{3}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	a_zero()
+	single_element()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

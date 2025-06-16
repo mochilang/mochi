@@ -1,0 +1,80 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func mergeSorted(a []int, b []int) []int {
+	var i int = 0
+	var j int = 0
+	var result []int = []int{}
+	for ((i < len(a)) && (j < len(b))) {
+		if (a[i] <= b[j]) {
+			result = append(append([]int{}, result...), []int{a[i]}...)
+			i = (i + 1)
+		} else {
+			result = append(append([]int{}, result...), []int{b[j]}...)
+			j = (j + 1)
+		}
+	}
+	for (i < len(a)) {
+		result = append(append([]int{}, result...), []int{a[i]}...)
+		i = (i + 1)
+	}
+	for (j < len(b)) {
+		result = append(append([]int{}, result...), []int{b[j]}...)
+		j = (j + 1)
+	}
+	return result
+}
+
+func sortList(nums []int) []int {
+	if (len(nums) <= 1) {
+		return nums
+	}
+	var mid int = (len(nums) / 2)
+	var left []int = sortList(nums[0:mid])
+	var right []int = sortList(nums[mid:len(nums)])
+	return mergeSorted(left, right)
+}
+
+func example_1() {
+	expect(_equal(sortList([]int{4, 2, 1, 3}), []int{1, 2, 3, 4}))
+}
+
+func example_2() {
+	expect(_equal(sortList([]int{-1, 5, 3, 4, 0}), []int{-1, 0, 3, 4, 5}))
+}
+
+func single() {
+	expect(_equal(sortList([]int{1}), []int{1}))
+}
+
+func empty() {
+	expect(_equal(sortList([]int{}), []any{}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single()
+	empty()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

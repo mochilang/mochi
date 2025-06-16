@@ -1,0 +1,112 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func spiralOrder(matrix [][]int) []int {
+	var rows int = len(matrix)
+	if (rows == 0) {
+		return _cast[[]int]([]any{})
+	}
+	var cols int = len(matrix[0])
+	var top int = 0
+	var bottom int = (rows - 1)
+	var left int = 0
+	var right int = (cols - 1)
+	var result []int = []int{}
+	for ((top <= bottom) && (left <= right)) {
+		var j int = left
+		for (j <= right) {
+			result = append(append([]int{}, result...), []int{matrix[top][j]}...)
+			j = (j + 1)
+		}
+		top = (top + 1)
+		j = top
+		for (j <= bottom) {
+			result = append(append([]int{}, result...), []int{matrix[j][right]}...)
+			j = (j + 1)
+		}
+		right = (right - 1)
+		if (top <= bottom) {
+			j = right
+			for (j >= left) {
+				result = append(append([]int{}, result...), []int{matrix[bottom][j]}...)
+				j = (j - 1)
+			}
+			bottom = (bottom - 1)
+		}
+		if (left <= right) {
+			j = bottom
+			for (j >= top) {
+				result = append(append([]int{}, result...), []int{matrix[j][left]}...)
+				j = (j - 1)
+			}
+			left = (left + 1)
+		}
+	}
+	return result
+}
+
+func example_1() {
+	var m [][]int = [][]int{[]int{1, 2, 3}, []int{4, 5, 6}, []int{7, 8, 9}}
+	_ = m
+	expect(_equal(spiralOrder(m), []int{1, 2, 3, 6, 9, 8, 7, 4, 5}))
+}
+
+func example_2() {
+	var m [][]int = [][]int{[]int{1, 2, 3, 4}, []int{5, 6, 7, 8}, []int{9, 10, 11, 12}}
+	_ = m
+	expect(_equal(spiralOrder(m), []int{1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7}))
+}
+
+func single_row() {
+	var m [][]int = [][]int{[]int{1, 2, 3}}
+	_ = m
+	expect(_equal(spiralOrder(m), []int{1, 2, 3}))
+}
+
+func single_column() {
+	var m [][]int = [][]int{[]int{1}, []int{2}, []int{3}}
+	_ = m
+	expect(_equal(spiralOrder(m), []int{1, 2, 3}))
+}
+
+func empty() {
+	expect(_equal(spiralOrder([][]int{}), []any{}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_row()
+	single_column()
+	empty()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

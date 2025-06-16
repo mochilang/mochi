@@ -1,0 +1,127 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func connect(lefts []int, rights []int, root int) []int {
+	var nexts []int = []int{}
+	var i int = 0
+	for (i < len(lefts)) {
+		nexts = append(append([]int{}, nexts...), []int{(-1)}...)
+		i = (i + 1)
+	}
+	var queue []int = []int{}
+	if (root != (-1)) {
+		queue = []int{root}
+	}
+	for (len(queue) > 0) {
+		var next []int = []int{}
+		var prev int = (-1)
+		for _, idx := range queue {
+			if (prev != (-1)) {
+				nexts[prev] = idx
+			}
+			prev = idx
+			if (lefts[idx] != (-1)) {
+				next = append(append([]int{}, next...), []int{lefts[idx]}...)
+			}
+			if (rights[idx] != (-1)) {
+				next = append(append([]int{}, next...), []int{rights[idx]}...)
+			}
+		}
+		queue = next
+	}
+	return nexts
+}
+
+func levels(lefts []int, rights []int, values []int, root int) [][]int {
+	var result [][]int = [][]int{}
+	var queue []int = []int{}
+	if (root != (-1)) {
+		queue = []int{root}
+	}
+	for (len(queue) > 0) {
+		var vals []int = []int{}
+		var next []int = []int{}
+		for _, idx := range queue {
+			vals = append(append([]int{}, vals...), []int{values[idx]}...)
+			if (lefts[idx] != (-1)) {
+				next = append(append([]int{}, next...), []int{lefts[idx]}...)
+			}
+			if (rights[idx] != (-1)) {
+				next = append(append([]int{}, next...), []int{rights[idx]}...)
+			}
+		}
+		result = append(append([][]int{}, result...), [][]int{vals}...)
+		queue = next
+	}
+	return result
+}
+
+func example() {
+	var ns []int = connect(exLefts, exRights, exRoot)
+	_ = ns
+	expect(_equal(levels(exLefts, exRights, exValues, exRoot), [][]int{[]int{1}, []int{2, 3}, []int{4, 5, 6, 7}}))
+	expect(_equal(ns, []int{(-1), 2, (-1), 4, 5, 6, (-1)}))
+}
+
+func single_node() {
+	var lefts []int = []int{(-1)}
+	var rights []int = []int{(-1)}
+	var values []int = []int{1}
+	_ = values
+	var root int = 0
+	var ns []int = connect(lefts, rights, root)
+	_ = ns
+	expect(_equal(levels(lefts, rights, values, root), [][]int{[]int{1}}))
+	expect(_equal(ns, []int{(-1)}))
+}
+
+func empty() {
+	var lefts []int = []int{}
+	var rights []int = []int{}
+	var values []int = []int{}
+	_ = values
+	var ns []int = connect(lefts, rights, (-1))
+	_ = ns
+	expect(_equal(levels(lefts, rights, values, (-1)), []any{}))
+	expect(_equal(ns, []any{}))
+}
+
+var exLefts []int = []int{1, 3, 5, (-1), (-1), (-1), (-1)}
+var exRights []int = []int{2, 4, 6, (-1), (-1), (-1), (-1)}
+var exValues []int = []int{1, 2, 3, 4, 5, 6, 7}
+var exRoot int = 0
+func main() {
+	example()
+	single_node()
+	empty()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

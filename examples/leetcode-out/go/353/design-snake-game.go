@@ -1,0 +1,106 @@
+package main
+
+import (
+	"fmt"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+type SnakeGame struct {
+	Width int `json:"width"`
+	Height int `json:"height"`
+	Food [][]int `json:"food"`
+	Index int `json:"index"`
+	Body [][]int `json:"body"`
+	Occupied map[string]bool `json:"occupied"`
+}
+
+type MoveResult struct {
+	Game SnakeGame `json:"game"`
+	Score int `json:"score"`
+}
+
+func newSnakeGame(width int, height int, food [][]int) SnakeGame {
+	var start []int = []int{0, 0}
+	return SnakeGame{Width: width, Height: height, Food: food, Index: 0, Body: [][]int{start}, Occupied: map[string]bool{fmt.Sprint(start[0]) + "," + fmt.Sprint(start[1]): true}}
+}
+
+func move(game SnakeGame, dir string) MoveResult {
+	var head []int = game.Body[(len(game.Body) - 1)]
+	var r int = head[0]
+	var c int = head[1]
+	if (dir == "U") {
+		r = (r - 1)
+	} else 	if (dir == "D") {
+		r = (r + 1)
+	} else 	if (dir == "L") {
+		c = (c - 1)
+	} else 	if (dir == "R") {
+		c = (c + 1)
+	} else {
+		return MoveResult{Game: game, Score: -1}
+	}
+	if ((((r < 0) || (r >= game.Height)) || (c < 0)) || (c >= game.Width)) {
+		return MoveResult{Game: game, Score: -1}
+	}
+	var newBody [][]int = game.Body
+	var newOcc map[string]bool = game.Occupied
+	var newIndex int = game.Index
+	var eat bool = (((newIndex < len(game.Food)) && (game.Food[newIndex][0] == r)) && (game.Food[newIndex][1] == c))
+	if !eat {
+		var tail []int = newBody[0]
+		var tk string = fmt.Sprint(tail[0]) + "," + fmt.Sprint(tail[1])
+		newBody = newBody[1:len(newBody)]
+		newOcc[tk] = false
+	} else {
+		newIndex = (newIndex + 1)
+	}
+	var key string = fmt.Sprint(r) + "," + fmt.Sprint(c)
+	_tmp0 := key
+	_tmp1 := newOcc
+	_, _tmp2 := _tmp1[_tmp0]
+	if _tmp2 {
+		if (newOcc[key] == true) {
+			return MoveResult{Game: game, Score: -1}
+		}
+	}
+	newBody = append(append([][]int{}, newBody...), [][]int{[]int{r, c}}...)
+	newOcc[key] = true
+	var newGame SnakeGame = SnakeGame{Width: game.Width, Height: game.Height, Food: game.Food, Index: newIndex, Body: newBody, Occupied: newOcc}
+	return MoveResult{Game: newGame, Score: newIndex}
+}
+
+func example() {
+	var g SnakeGame = newSnakeGame(3, 2, [][]int{[]int{1, 2}, []int{0, 1}})
+	var r1 MoveResult = move(g, "R")
+	_ = r1
+	g = r1.Game
+	expect((r1.Score == 0))
+	var r2 MoveResult = move(g, "D")
+	_ = r2
+	g = r2.Game
+	expect((r2.Score == 0))
+	var r3 MoveResult = move(g, "R")
+	_ = r3
+	g = r3.Game
+	expect((r3.Score == 1))
+	var r4 MoveResult = move(g, "U")
+	_ = r4
+	g = r4.Game
+	expect((r4.Score == 1))
+	var r5 MoveResult = move(g, "L")
+	_ = r5
+	g = r5.Game
+	expect((r5.Score == 2))
+	var r6 MoveResult = move(g, "U")
+	_ = r6
+	g = r6.Game
+	expect((r6.Score == ((0 - 1))))
+}
+
+func main() {
+	example()
+}
+

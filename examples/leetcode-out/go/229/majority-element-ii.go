@@ -1,0 +1,97 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func majorityElement(nums []int) []int {
+	var n int = len(nums)
+	if (n == 0) {
+		return _cast[[]int]([]any{})
+	}
+	var candidate1 int = 0
+	var candidate2 int = 0
+	var count1 int = 0
+	var count2 int = 0
+	for _, num := range nums {
+		if (num == candidate1) {
+			count1 = (count1 + 1)
+		} else 		if (num == candidate2) {
+			count2 = (count2 + 1)
+		} else 		if (count1 == 0) {
+			candidate1 = num
+			count1 = 1
+		} else 		if (count2 == 0) {
+			candidate2 = num
+			count2 = 1
+		} else {
+			count1 = (count1 - 1)
+			count2 = (count2 - 1)
+		}
+	}
+	var res []int = []int{}
+	var c1 int = 0
+	var c2 int = 0
+	for _, num := range nums {
+		if (num == candidate1) {
+			c1 = (c1 + 1)
+		}
+		if (num == candidate2) {
+			c2 = (c2 + 1)
+		}
+	}
+	if (c1 > (n / 3)) {
+		res = append(append([]int{}, res...), []int{candidate1}...)
+	}
+	if (candidate2 != candidate1) {
+		if (c2 > (n / 3)) {
+			res = append(append([]int{}, res...), []int{candidate2}...)
+		}
+	}
+	return res
+}
+
+func example_1() {
+	expect(_equal(majorityElement([]int{3, 2, 3}), []int{3}))
+}
+
+func example_2() {
+	expect(_equal(majorityElement([]int{1}), []int{1}))
+}
+
+func example_3() {
+	expect(_equal(majorityElement([]int{1, 2}), []int{1, 2}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

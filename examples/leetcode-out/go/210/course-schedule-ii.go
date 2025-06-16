@@ -1,0 +1,115 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func findOrder(numCourses int, prerequisites [][]int) []int {
+	var graph map[int][]int = map[int][]int{}
+	var indegree map[int]int = map[int]int{}
+	var i int = 0
+	for (i < numCourses) {
+		graph[i] = []any{}
+		indegree[i] = 0
+		i = (i + 1)
+	}
+	for _, pair := range prerequisites {
+		var dest int = pair[0]
+		var src int = pair[1]
+		graph[src] = append(append([]int{}, graph[src]...), []int{dest}...)
+		indegree[dest] = (indegree[dest] + 1)
+	}
+	var queue []int = []int{}
+	var j int = 0
+	for (j < numCourses) {
+		if (indegree[j] == 0) {
+			queue = append(append([]int{}, queue...), []int{j}...)
+		}
+		j = (j + 1)
+	}
+	var order []int = []int{}
+	for (len(queue) > 0) {
+		var next []int = []int{}
+		for _, course := range queue {
+			order = append(append([]int{}, order...), []int{course}...)
+			for _, neighbor := range graph[course] {
+				indegree[neighbor] = (indegree[neighbor] - 1)
+				if (indegree[neighbor] == 0) {
+					next = append(append([]int{}, next...), []int{neighbor}...)
+				}
+			}
+		}
+		queue = next
+	}
+	if (len(order) == numCourses) {
+		return order
+	}
+	return _cast[[]int]([]any{})
+}
+
+func example_1() {
+	expect(_equal(findOrder(2, [][]int{[]int{1, 0}}), []int{0, 1}))
+}
+
+func example_2() {
+	var order []int = findOrder(4, [][]int{[]int{1, 0}, []int{2, 0}, []int{3, 1}, []int{3, 2}})
+	var valid bool = true
+	_ = valid
+	if (len(order) == 4) {
+		var idx map[int]int = map[int]int{}
+		var k int = 0
+		for (k < len(order)) {
+			idx[order[k]] = k
+			k = (k + 1)
+		}
+		if ((idx[0] > idx[1]) && (idx[0] > idx[2])) {
+			valid = false
+		}
+		if (idx[1] > idx[3]) {
+			valid = false
+		}
+		if (idx[2] > idx[3]) {
+			valid = false
+		}
+	} else {
+		valid = false
+	}
+	expect((valid == true))
+}
+
+func cycle() {
+	expect(_equal(findOrder(2, [][]int{[]int{0, 1}, []int{1, 0}}), []any{}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	cycle()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

@@ -1,0 +1,91 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func maxSlidingWindow(nums []int, k int) []int {
+	var n int = len(nums)
+	if (n == 0) {
+		return _cast[[]int]([]any{})
+	}
+	var result []int = []int{}
+	var deque []int = []int{}
+	var i int = 0
+	for (i < n) {
+		for (len(deque) > 0) {
+			var last int = deque[(len(deque) - 1)]
+			if (nums[last] < nums[i]) {
+				deque = deque[0:(len(deque) - 1)]
+			} else {
+				break
+			}
+		}
+		deque = append(append([]int{}, deque...), []int{i}...)
+		if (len(deque) > 0) {
+			if (deque[0] <= (i - k)) {
+				deque = deque[1:len(deque)]
+			}
+		}
+		if ((i + 1) >= k) {
+			result = append(append([]int{}, result...), []int{nums[deque[0]]}...)
+		}
+		i = (i + 1)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(maxSlidingWindow([]int{1, 3, -1, -3, 5, 3, 6, 7}, 3), []int{3, 3, 5, 5, 6, 7}))
+}
+
+func example_2() {
+	expect(_equal(maxSlidingWindow([]int{1}, 1), []int{1}))
+}
+
+func k_equals_array_length() {
+	expect(_equal(maxSlidingWindow([]int{2, 1}, 2), []int{2}))
+}
+
+func all_decreasing() {
+	expect(_equal(maxSlidingWindow([]int{9, 8, 7, 6, 5}, 2), []int{9, 8, 7, 6}))
+}
+
+func window_size_1() {
+	expect(_equal(maxSlidingWindow([]int{4, 2}, 1), []int{4, 2}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	k_equals_array_length()
+	all_decreasing()
+	window_size_1()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+
