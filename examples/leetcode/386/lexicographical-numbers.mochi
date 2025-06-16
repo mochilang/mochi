@@ -1,0 +1,63 @@
+// Solution for LeetCode problem 386 - Lexicographical Numbers
+
+fun lexicalOrder(n: int): list<int> {
+  var result: list<int> = []
+  var curr = 1
+  var i = 0
+  // i iterates n times generating numbers in lexicographical order
+  while i < n {
+    result = result + [curr]
+    if curr * 10 <= n {
+      curr = curr * 10
+    } else {
+      if curr >= n {
+        curr = curr / 10
+      }
+      curr = curr + 1
+      while curr % 10 == 0 {
+        curr = curr / 10
+      }
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect lexicalOrder(13) == [1,10,11,12,13,2,3,4,5,6,7,8,9]
+}
+
+test "example 2" {
+  expect lexicalOrder(2) == [1,2]
+}
+
+test "example 3" {
+  expect lexicalOrder(1) == [1]
+}
+
+// Additional edge case
+
+test "hundred" {
+  // just check start and end of the list
+  let out = lexicalOrder(20)
+  expect len(out) == 20
+  expect out[0] == 1
+  expect out[len(out)-1] == 9
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using `let` for a variable that is reassigned:
+   let curr = 1
+   curr = curr + 1         // ❌ cannot reassign
+   var curr = 1            // ✅ declare with `var` if it will change
+2. Forgetting to initialize a list before appending:
+   var result: list<int>
+   result = result + [1]   // ❌ result is undefined
+   var result: list<int> = [] // ✅ start with an empty list
+3. Off-by-one errors in loops:
+   while i <= n { }        // ❌ runs one time too many
+   while i < n { }         // ✅ loop exactly n times
+*/
