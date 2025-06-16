@@ -1,0 +1,47 @@
+fun lastRemaining(n: int): int {
+  var head = 1
+  var step = 1
+  var remaining = n
+  var left = true
+  while remaining > 1 {
+    if left || remaining % 2 == 1 {
+      head = head + step
+    }
+    remaining = remaining / 2
+    step = step * 2
+    left = !left
+  }
+  return head
+}
+
+// Tests from LeetCode examples
+
+test "example 1" {
+  expect lastRemaining(9) == 6
+}
+
+test "example 2" {
+  expect lastRemaining(1) == 1
+}
+
+// Additional edge cases
+
+test "even n" {
+  expect lastRemaining(2) == 2
+}
+
+test "larger n" {
+  expect lastRemaining(1000000) == 481110
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to use 'var' for variables that change:
+     let head = 1
+     head = head + step // error: cannot assign to immutable binding
+   Use 'var' when a variable's value will be updated.
+2. Using '/' which performs integer division in Mochi when a float is expected.
+   If you need floating point division use 'as float' to cast or work with floats.
+3. Off-by-one mistakes in loops, e.g. while remaining >= 1 leading to infinite loop.
+   Ensure loop conditions eventually become false.
+*/
