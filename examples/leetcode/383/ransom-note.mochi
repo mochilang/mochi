@@ -1,0 +1,67 @@
+// Solution for LeetCode problem 383 - Ransom Note
+
+fun canConstruct(ransomNote: string, magazine: string): bool {
+  var counts: map<string, int> = {}
+  var i = 0
+  while i < len(magazine) {
+    let ch = magazine[i]
+    if ch in counts {
+      counts[ch] = counts[ch] + 1
+    } else {
+      counts[ch] = 1
+    }
+    i = i + 1
+  }
+  i = 0
+  while i < len(ransomNote) {
+    let ch = ransomNote[i]
+    if ch in counts {
+      counts[ch] = counts[ch] - 1
+      if counts[ch] < 0 {
+        return false
+      }
+    } else {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect canConstruct("a", "b") == false
+}
+
+test "example 2" {
+  expect canConstruct("aa", "ab") == false
+}
+
+test "example 3" {
+  expect canConstruct("aa", "aab") == true
+}
+
+// Additional edge cases
+
+test "empty ransom" {
+  expect canConstruct("", "abc") == true
+}
+
+test "not enough letters" {
+  expect canConstruct("abc", "ab") == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting the map type when creating an empty map.
+   var counts = {}                     // ❌ type cannot be inferred
+   var counts: map<string, int> = {}   // ✅ specify key and value types
+2. Using '=' instead of '==' for comparisons.
+   if counts[ch] = 0 { }               // ❌ assignment instead of comparison
+   if counts[ch] == 0 { }              // ✅ use '==' to compare values
+3. Trying Python-style for loops like 'for ch in ransomNote'.
+   for ch in ransomNote { }            // ❌ unsupported in Mochi
+   var i = 0                           // ✅ use index-based loop
+   while i < len(ransomNote) { ... }
+*/
