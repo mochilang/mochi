@@ -2547,6 +2547,25 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	buf.WriteString("func() " + retType + " {\n")
 	buf.WriteString("\t_t := " + target + "\n")
 	for _, cse := range m.Cases {
+		caseEnv := types.NewEnv(c.env)
+		var variantSt types.StructType
+		if call, ok := callPattern(cse.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				variantSt = ut.Variants[call.Func]
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						caseEnv.SetVar(id, variantSt.Fields[variantSt.Order[idx]], true)
+					}
+				}
+			}
+		}
+		origEnv := c.env
+		c.env = caseEnv
+		res, err := c.compileExpr(cse.Result)
+		c.env = origEnv
+		if err != nil {
+			return "", err
+		}
 		if isUnderscoreExpr(cse.Pattern) {
 			res, err := c.compileExpr(cse.Result)
 			if err != nil {

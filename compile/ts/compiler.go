@@ -844,6 +844,22 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			if f, ok := t.(types.FuncType); ok {
 				ft = f
 			}
+		} else {
+			// Function not in env (e.g. nested function). Build type from declaration.
+			params := make([]types.Type, len(fun.Params))
+			for i, p := range fun.Params {
+				if p.Type != nil {
+					params[i] = resolveTypeRef(p.Type)
+				} else {
+					params[i] = types.AnyType{}
+				}
+			}
+			var ret types.Type = types.VoidType{}
+			if fun.Return != nil {
+				ret = resolveTypeRef(fun.Return)
+			}
+			ft = types.FuncType{Params: params, Return: ret}
+			c.env.SetVar(fun.Name, ft, false)
 		}
 	}
 	for i, p := range fun.Params {
