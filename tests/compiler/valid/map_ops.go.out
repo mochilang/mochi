@@ -1,0 +1,19 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var m map[int]int = map[int]int{}
+	_ = m
+	m[1] = 10
+	m[2] = 20
+	_tmp0 := 1
+	_tmp1 := m
+	_, _tmp2 := _tmp1[_tmp0]
+	if _tmp2 {
+		fmt.Println(m[1])
+	}
+	fmt.Println(m[2])
+}
