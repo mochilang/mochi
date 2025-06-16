@@ -55,15 +55,16 @@ func New(env *types.Env) *Compiler {
 
 // Compile returns Go source code implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	c.writeln("package main")
-	c.writeln("")
-
+	// Scan source for import statements first.
 	for _, stmt := range prog.Statements {
 		c.scanImports(stmt)
 	}
 
-	c.writeImports()
-	c.writeExpectFunc(prog)
+	// Compile the program body into a temporary buffer so we can
+	// output the import section after all helpers have been detected.
+	var body bytes.Buffer
+	origBuf := c.buf
+	c.buf = body
 
 	if err := c.compileTypeDecls(prog); err != nil {
 		return nil, err
@@ -80,6 +81,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("")
 	c.emitRuntime()
+
+	// Restore original buffer and write the final file.
+	bodyBytes := c.buf.Bytes()
+	c.buf = origBuf
+	c.buf.Reset()
+
+	c.writeln("package main")
+	c.writeln("")
+	c.writeImports()
+	c.writeExpectFunc(prog)
+	c.buf.Write(bodyBytes)
 
 	return c.buf.Bytes(), nil
 }
@@ -2534,7 +2546,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			child.SetVar(p.Name, resolveTypeRef(p.Type), true)
 		}
 	}
-       sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
+	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
 	sub.indent = 1
 	if fn.Return != nil {
 		sub.returnType = resolveTypeRef(fn.Return)
