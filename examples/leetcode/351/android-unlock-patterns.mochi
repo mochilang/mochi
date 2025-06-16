@@ -1,0 +1,98 @@
+// LeetCode Problem 351: Android Unlock Patterns
+// Backtracking solution without using union types or match statements.
+
+fun numberOfPatterns(m: int, n: int): int {
+  // build a 10x10 matrix of required intermediate keys
+  var jump: list<list<int>> = []
+  var i = 0
+  while i < 10 {
+    var row: list<int> = []
+    var j = 0
+    while j < 10 {
+      row = row + [0]
+      j = j + 1
+    }
+    jump = jump + [row]
+    i = i + 1
+  }
+
+  jump[1][3] = 2
+  jump[3][1] = 2
+  jump[1][7] = 4
+  jump[7][1] = 4
+  jump[3][9] = 6
+  jump[9][3] = 6
+  jump[7][9] = 8
+  jump[9][7] = 8
+  jump[1][9] = 5
+  jump[9][1] = 5
+  jump[3][7] = 5
+  jump[7][3] = 5
+  jump[4][6] = 5
+  jump[6][4] = 5
+  jump[2][8] = 5
+  jump[8][2] = 5
+
+  var visited: list<bool> = []
+  i = 0
+  while i < 10 {
+    visited = visited + [false]
+    i = i + 1
+  }
+
+  fun dfs(num: int, remain: int): int {
+    if remain == 0 {
+      return 1
+    }
+    visited[num] = true
+    var count = 0
+    for next in 1..10 {
+      if !visited[next] {
+        let mid = jump[num][next]
+        if mid == 0 || visited[mid] {
+          count = count + dfs(next, remain - 1)
+        }
+      }
+    }
+    visited[num] = false
+    return count
+  }
+
+  var total = 0
+  var len = m
+  while len <= n {
+    for start in 1..10 {
+      total = total + dfs(start, len - 1)
+    }
+    len = len + 1
+  }
+  return total
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect numberOfPatterns(1, 1) == 9
+}
+
+test "example 2" {
+  expect numberOfPatterns(1, 2) == 65
+}
+
+test "example 3" {
+  expect numberOfPatterns(2, 2) == 56
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Confusing '=' assignment with '==' comparison inside conditions.
+   if x = 1 { ... }  // ❌ assigns instead of compares
+   if x == 1 { ... } // ✅ use '==' for comparison
+2. Forgetting to declare mutable variables with 'var'.
+   let count = 0
+   count = count + 1        // ❌ cannot assign to immutable binding
+   var count = 0            // ✅ declare with 'var' when value changes
+3. Off-by-one mistakes when iterating ranges.
+   for i in 0..n { }        // ✅ iterates n times (0..n-1)
+   for i in 1..n { }        // ❌ skips index 0 and runs only n-1 times
+*/
