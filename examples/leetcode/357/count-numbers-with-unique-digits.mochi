@@ -1,0 +1,59 @@
+// Solution for LeetCode problem 357 - Count Numbers with Unique Digits
+
+fun countNumbersWithUniqueDigits(n: int): int {
+  if n == 0 {
+    return 1
+  }
+  if n > 10 {
+    n = 10
+  }
+  var result = 10
+  var unique = 9
+  var available = 9
+  var i = 2
+  while i <= n {
+    unique = unique * available
+    result = result + unique
+    available = available - 1
+    i = i + 1
+  }
+  return result
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect countNumbersWithUniqueDigits(2) == 91
+}
+
+test "example 2" {
+  expect countNumbersWithUniqueDigits(0) == 1
+}
+
+// Additional tests
+
+test "three digits" {
+  expect countNumbersWithUniqueDigits(3) == 739
+}
+
+test "up to ten digits" {
+  expect countNumbersWithUniqueDigits(10) == 8877691
+}
+
+test "more than ten" {
+  expect countNumbersWithUniqueDigits(11) == 8877691
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' when comparing values:
+   if n = 0 { } // ❌ assignment
+   if n == 0 { } // ✅ comparison
+2. Forgetting to declare mutable variables with 'var' when they will change:
+   let result = 10
+   result = result + 1 // ❌ cannot reassign immutable binding
+   var result = 10     // ✅ use 'var' for mutation
+3. Leaving off type annotations for empty collections can lead to type errors:
+   var nums = []          // ❌ type unknown
+   var nums: list<int> = [] // ✅ specify element type
+*/
