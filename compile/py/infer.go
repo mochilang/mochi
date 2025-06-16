@@ -99,7 +99,7 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 				t = types.AnyType{}
 			}
 		} else if op.Cast != nil {
-			t = resolveTypeRef(op.Cast.Type)
+			t = c.resolveTypeRef(op.Cast.Type)
 		}
 	}
 	return t

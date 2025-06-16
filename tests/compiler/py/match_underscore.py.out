@@ -14,9 +14,9 @@ class Leaf(Tree):
 	pass
 @dataclasses.dataclass
 class Node(Tree):
-	left: typing.Any
+	left: Tree
 	value: int
-	right: typing.Any
+	right: Tree
 
 def main():
 	print(value_of_root(Node(left=Leaf(), value=5, right=Leaf())))
