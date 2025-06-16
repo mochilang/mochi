@@ -1,0 +1,143 @@
+fun shortestDistance(grid: list<list<int>>): int {
+  let rows = len(grid)
+  if rows == 0 { return -1 }
+  let cols = len(grid[0])
+
+  var dist: list<list<int>> = []
+  var reach: list<list<int>> = []
+  var r = 0
+  while r < rows {
+    var distRow: list<int> = []
+    var reachRow: list<int> = []
+    var c = 0
+    while c < cols {
+      distRow = distRow + [0]
+      reachRow = reachRow + [0]
+      c = c + 1
+    }
+    dist = dist + [distRow]
+    reach = reach + [reachRow]
+    r = r + 1
+  }
+
+  let dirs = [[1,0], [-1,0], [0,1], [0,-1]]
+  var total = 0
+
+  r = 0
+  while r < rows {
+    var c = 0
+    while c < cols {
+      if grid[r][c] == 1 {
+        total = total + 1
+        var queue: list<list<int>> = [[r, c]]
+        var visited: list<list<bool>> = []
+        var vr = 0
+        while vr < rows {
+          var row: list<bool> = []
+          var vc = 0
+          while vc < cols {
+            row = row + [false]
+            vc = vc + 1
+          }
+          visited = visited + [row]
+          vr = vr + 1
+        }
+        visited[r][c] = true
+        var idx = 0
+        var level = 0
+        while idx < len(queue) {
+          var size = len(queue) - idx
+          var i = 0
+          while i < size {
+            let pos = queue[idx]
+            idx = idx + 1
+            let pr = pos[0]
+            let pc = pos[1]
+            dist[pr][pc] = dist[pr][pc] + level
+            reach[pr][pc] = reach[pr][pc] + 1
+            var d = 0
+            while d < len(dirs) {
+              let nr = pr + dirs[d][0]
+              let nc = pc + dirs[d][1]
+              if nr >= 0 && nr < rows && nc >= 0 && nc < cols {
+                if grid[nr][nc] == 0 {
+                  if !(visited[nr][nc]) {
+                    visited[nr][nc] = true
+                    queue = queue + [[nr, nc]]
+                  }
+                }
+              }
+              d = d + 1
+            }
+            i = i + 1
+          }
+          level = level + 1
+        }
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+
+  var best = 2147483647
+  r = 0
+  while r < rows {
+    var c = 0
+    while c < cols {
+      if grid[r][c] == 0 {
+        if reach[r][c] == total {
+          if dist[r][c] < best {
+            best = dist[r][c]
+          }
+        }
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  if best == 2147483647 { return -1 }
+  return best
+}
+
+// Test cases from the LeetCode problem statement
+
+let grid1 = [
+  [1,0,2,0,1],
+  [0,0,0,0,0],
+  [0,0,1,0,0],
+]
+
+let grid2 = [
+  [1,0],
+  [0,0],
+]
+
+let grid3 = [
+]
+
+test "example 1" {
+  expect shortestDistance(grid1) == 7
+}
+
+test "simple" {
+  expect shortestDistance(grid2) == 1
+}
+
+test "empty" {
+  expect shortestDistance(grid3) == (-1)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons:
+   if grid[r][c] = 1 { }  // ❌ assignment
+   if grid[r][c] == 1 { } // ✅ comparison
+2. Mutating an immutable variable:
+   let rows = len(grid)
+   rows = rows + 1          // ❌ cannot assign to 'rows'
+   var count = 0
+   count = count + 1        // ✅ declare mutable variables with 'var'
+3. Forgetting to specify a type for an empty list:
+   var queue = []           // ❌ type cannot be inferred
+   var queue: list<list<int>> = [] // ✅ specify the element type
+*/
