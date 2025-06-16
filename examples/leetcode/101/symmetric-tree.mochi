@@ -1,26 +1,30 @@
 // LeetCode 101 - Symmetric Tree
 
-// Definition of a binary tree
-// Leaf represents an empty tree
-// Node has left, value, and right subtrees
+// Definition of a binary tree without using union types or pattern matching.
+// A Leaf node is represented as {"__name": "Leaf"} and a regular node as
+// {"__name": "Node", "left": left, "value": value, "right": right}.
 
-type Tree =
-  Leaf
-  | Node(left: Tree, value: int, right: Tree)
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool { return t["__name"] == "Leaf" }
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
 
 // Determine if a binary tree is a mirror of itself.
-fun isSymmetric(root: Tree): bool {
-  fun isMirror(t1: Tree, t2: Tree): bool {
-    return match t1 {
-      Leaf => match t2 {
-        Leaf => true
-        _ => false
-      }
-      Node(l1, v1, r1) => match t2 {
-        Node(l2, v2, r2) => v1 == v2 && isMirror(l1, r2) && isMirror(r1, l2)
-        _ => false
-      }
-    }
+fun isSymmetric(root: map<string, any>): bool {
+  fun isMirror(t1: map<string, any>, t2: map<string, any>): bool {
+    if isLeaf(t1) && isLeaf(t2) { return true }
+    if isLeaf(t1) || isLeaf(t2) { return false }
+    return value(t1) == value(t2) &&
+      isMirror(left(t1), right(t2)) &&
+      isMirror(right(t1), left(t2))
   }
   return isMirror(root, root)
 }
@@ -28,76 +32,61 @@ fun isSymmetric(root: Tree): bool {
 // Test cases from LeetCode
 
 test "example 1" {
-  let tree = Node {
-    left: Node {
-      left: Node { left: Leaf {}, value: 3, right: Leaf {} },
-      value: 2,
-      right: Node { left: Leaf {}, value: 4, right: Leaf {} }
-    },
-    value: 1,
-    right: Node {
-      left: Node { left: Leaf {}, value: 4, right: Leaf {} },
-      value: 2,
-      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
-    }
-  }
+  let tree = Node(
+    Node(
+      Node(Leaf(), 3, Leaf()),
+      2,
+      Node(Leaf(), 4, Leaf())
+    ),
+    1,
+    Node(
+      Node(Leaf(), 4, Leaf()),
+      2,
+      Node(Leaf(), 3, Leaf())
+    )
+  )
   expect isSymmetric(tree) == true
 }
 
 test "example 2" {
-  let tree = Node {
-    left: Node {
-      left: Leaf {},
-      value: 2,
-      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
-    },
-    value: 1,
-    right: Node {
-      left: Leaf {},
-      value: 2,
-      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
-    }
-  }
+  let tree = Node(
+    Node(
+      Leaf(),
+      2,
+      Node(Leaf(), 3, Leaf())
+    ),
+    1,
+    Node(
+      Leaf(),
+      2,
+      Node(Leaf(), 3, Leaf())
+    )
+  )
   expect isSymmetric(tree) == false
 }
 
 test "single node" {
-  expect isSymmetric(Node { left: Leaf {}, value: 1, right: Leaf {} }) == true
+  expect isSymmetric(Node(Leaf(), 1, Leaf())) == true
 }
 
 test "empty" {
-  expect isSymmetric(Leaf {}) == true
+  expect isSymmetric(Leaf()) == true
 }
 
 /*
-Common language errors and how to fix them:
-1. Forgetting to break out of `match` branches with `return`:
-   fun foo(x: int): int {
-     match x {
-       1 => 1
-       2 => 2
-     }
-   }
-   // error: missing return. Fix by using `return` or an else branch.
-
-2. Reassigning a `let` binding:
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+   if isLeaf(node) = true { }   // ❌ assignment
+   if isLeaf(node) == true { }  // ✅ comparison
+2. Reassigning an immutable binding:
    let x = 1
-   x = 2  // error[E004]: cannot reassign immutable binding
- // Fix: declare with `var x = 1` if it needs to change.
-
-  3. Using `null` instead of the `Leaf` constructor:
-     let t = null  // error[I001]: undefined value null
-     // Fix: use `Leaf` to represent an empty subtree.
-
-  4. Confusing assignment with equality:
-     if x = 1 { }
-     // error[P000]: '=' is assignment, not comparison
-     // Fix: use '==' for comparisons.
-
-  5. Off-by-one mistakes in ranges:
-     for i in 0..len(nums) {
-       print(nums[i])
-     }
-     // error[I003]: index out of bounds when i == len(nums)
-     // Fix: use 0..len(nums) for < n or 0..=len(nums)-1 if inclusive.
+   x = 2                  // ❌ cannot assign
+   var x = 1
+   x = 2                  // ✅ use 'var' if mutation is needed
+3. Accessing a field on a Leaf node without checking:
+   value(Leaf())          // ❌ runtime error
+   if !isLeaf(node) { value(node) } // ✅ ensure the node is not a Leaf
+4. Using 'null' instead of the Leaf constructor:
+   let t = null           // ❌ undefined value
+   let t = Leaf()         // ✅ represents an empty subtree
 */
