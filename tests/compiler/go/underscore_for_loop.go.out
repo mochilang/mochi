@@ -1,0 +1,23 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var c int = 0
+	for _tmp0 := 0; _tmp0 < 2; _tmp0++ {
+		c = (c + 1)
+	}
+	for range []int{1, 2} {
+		c = (c + 1)
+	}
+	for range []rune("ab") {
+		c = (c + 1)
+	}
+	var m map[string]int = map[string]int{"x": 1, "y": 2}
+	for range m {
+		c = (c + 1)
+	}
+	fmt.Println(c)
+}

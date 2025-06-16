@@ -1284,6 +1284,7 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	name := sanitizeName(stmt.Name)
+	useVar := name != "_"
 	if stmt.RangeEnd != nil {
 		start, err := c.compileExpr(stmt.Source)
 		if err != nil {
@@ -1293,9 +1294,13 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
+		loopVar := name
+		if !useVar {
+			loopVar = c.newVar()
+		}
 		c.writeIndent()
-		c.buf.WriteString(fmt.Sprintf("for %s := %s; %s < %s; %s++ {\n", name, start, name, end, name))
-		if c.env != nil {
+		c.buf.WriteString(fmt.Sprintf("for %s := %s; %s < %s; %s++ {\n", loopVar, start, loopVar, end, loopVar))
+		if useVar && c.env != nil {
 			c.env.SetVar(stmt.Name, types.IntType{}, true)
 		}
 		c.indent++
@@ -1319,22 +1324,34 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	switch tt := t.(type) {
 	case types.ListType:
 		c.writeIndent()
-		c.buf.WriteString(fmt.Sprintf("for _, %s := range %s {\n", name, src))
-		if c.env != nil {
-			c.env.SetVar(stmt.Name, tt.Elem, true)
+		if useVar {
+			c.buf.WriteString(fmt.Sprintf("for _, %s := range %s {\n", name, src))
+			if c.env != nil {
+				c.env.SetVar(stmt.Name, tt.Elem, true)
+			}
+		} else {
+			c.buf.WriteString(fmt.Sprintf("for range %s {\n", src))
 		}
 	case types.StringType:
 		c.writeIndent()
-		c.buf.WriteString(fmt.Sprintf("for _, r := range []rune(%s) {\n", src))
-		if c.env != nil {
-			c.env.SetVar(stmt.Name, types.StringType{}, true)
+		if useVar {
+			c.buf.WriteString(fmt.Sprintf("for _, r := range []rune(%s) {\n", src))
+			if c.env != nil {
+				c.env.SetVar(stmt.Name, types.StringType{}, true)
+			}
+			preBody = fmt.Sprintf("%s := string(r)\n", name)
+		} else {
+			c.buf.WriteString(fmt.Sprintf("for range []rune(%s) {\n", src))
 		}
-		preBody = fmt.Sprintf("%s := string(r)\n", name)
 	case types.MapType:
 		c.writeIndent()
-		c.buf.WriteString(fmt.Sprintf("for %s := range %s {\n", name, src))
-		if c.env != nil {
-			c.env.SetVar(stmt.Name, tt.Key, true)
+		if useVar {
+			c.buf.WriteString(fmt.Sprintf("for %s := range %s {\n", name, src))
+			if c.env != nil {
+				c.env.SetVar(stmt.Name, tt.Key, true)
+			}
+		} else {
+			c.buf.WriteString(fmt.Sprintf("for range %s {\n", src))
 		}
 	default:
 		return fmt.Errorf("cannot iterate over type %s", t)
