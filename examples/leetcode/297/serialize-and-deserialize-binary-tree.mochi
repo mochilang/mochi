@@ -1,6 +1,60 @@
 // LeetCode 297 - Serialize and Deserialize Binary Tree
 // Tree helpers implemented without using union types or pattern matching.
 
+// Utility to convert a string of digits to an int
+fun parseInt(s: string): int {
+  var result = 0
+  var i = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(s) {
+    result = result * 10 + digits[s[i]]
+    i = i + 1
+  }
+  return result
+}
+
+// Split a string by comma without relying on a built-in
+fun splitComma(s: string): list<string> {
+  var parts: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c == "," {
+      parts = parts + [current]
+      current = ""
+    } else {
+      current = current + c
+    }
+    i = i + 1
+  }
+  parts = parts + [current]
+  return parts
+}
+
+// Join a list of strings with a separator
+fun join(parts: list<string>, sep: string): string {
+  var result = ""
+  var i = 0
+  while i < len(parts) {
+    if i > 0 { result = result + sep }
+    result = result + parts[i]
+    i = i + 1
+  }
+  return result
+}
+
 fun Leaf(): map<string, any> {
   return {"__name": "Leaf"}
 }
@@ -45,33 +99,18 @@ fun serialize(root: map<string, any>): string {
 // Reconstruct the tree from a serialized string
 fun deserialize(data: string): map<string, any> {
   if data == "" { return Leaf() }
-  let vals = split(data, ",")
-  let root = Node(Leaf(), int(vals[0]), Leaf())
-  var queue: list<map<string, any>> = [root]
-  var idx = 1
-  while idx < len(vals) && len(queue) > 0 {
-    var node = queue[0]
-    queue = queue[1:len(queue)]
-    if idx < len(vals) {
-      let v = vals[idx]
-      idx = idx + 1
-      if v != "null" {
-        let leftNode = Node(Leaf(), int(v), Leaf())
-        node["left"] = leftNode
-        queue = queue + [leftNode]
-      }
-    }
-    if idx < len(vals) {
-      let v2 = vals[idx]
-      idx = idx + 1
-      if v2 != "null" {
-        let rightNode = Node(Leaf(), int(v2), Leaf())
-        node["right"] = rightNode
-        queue = queue + [rightNode]
-      }
-    }
+  let vals = splitComma(data)
+
+  fun build(i: int): map<string, any> {
+    if i >= len(vals) { return Leaf() }
+    let v = vals[i]
+    if v == "null" { return Leaf() }
+    let leftNode = build(2 * i + 1)
+    let rightNode = build(2 * i + 2)
+    return Node(leftNode, parseInt(v), rightNode)
   }
-  return root
+
+  return build(0)
 }
 
 // Example tree: [1,2,3,null,null,4,5]
@@ -109,5 +148,8 @@ Common Mochi language errors and how to fix them:
 3. Declaring a variable with 'let' and then reassigning it.
    Use 'var' for mutable values like queues or indices.
 4. Trying Python-style methods like parts.join(",").
-   Use the built-in join(parts, ",") function.
+   Use the join(parts, ",") helper defined above.
+5. Forgetting to parse strings to ints with parseInt when reconstructing nodes.
+   `Node(Leaf(), v, Leaf())`  // ❌ v is a string
+   Use `Node(Leaf(), parseInt(v), Leaf())`.
 */
