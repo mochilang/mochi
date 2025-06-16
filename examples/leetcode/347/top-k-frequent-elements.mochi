@@ -1,0 +1,48 @@
+fun topKFrequent(nums: list<int>, k: int): list<int> {
+  var counts: map<int,int> = {}
+  for n in nums {
+    var c = 0
+    if n in counts {
+      c = counts[n]
+    }
+    counts[n] = c + 1
+  }
+
+  var pairs: list<list<int>> = []
+  for key in counts {
+    pairs = pairs + [[key, counts[key]]]
+  }
+  let sorted = from p in pairs sort by -p[1] select p
+
+  var result: list<int> = []
+  var i = 0
+  while i < len(sorted) && i < k {
+    result = result + [sorted[i][0]]
+    i = i + 1
+  }
+  return result
+}
+
+// Basic tests from LeetCode examples
+
+test "example 1" {
+  expect topKFrequent([1,1,1,2,2,3], 2) == [1,2]
+}
+
+test "example 2" {
+  expect topKFrequent([1], 1) == [1]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying Python-style 'append' on lists:
+     result.append(x)            // ❌ not available
+   Use 'result = result + [x]' instead.
+2. Reassigning a 'let' binding:
+     let count = 0
+     count = count + 1           // ❌ cannot assign
+   Declare with 'var' when mutation is needed.
+3. Accessing a map key without a check:
+     let v = counts[n]           // ❌ may fail if n not in counts
+   Use 'if n in counts { v = counts[n] }' before reading.
+*/
