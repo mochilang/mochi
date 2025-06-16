@@ -667,7 +667,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	var t types.Type = types.AnyType{}
 	if c.env != nil {
 		if s.Type != nil {
-			t = resolveTypeRef(s.Type)
+			t = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
 			t = c.inferExprType(s.Value)
 		} else if old, err := c.env.GetVar(s.Name); err == nil {
@@ -709,7 +709,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
 		if s.Type != nil {
-			typ = resolveTypeRef(s.Type)
+			typ = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
 			typ = c.inferExprType(s.Value)
 		} else if t, err := c.env.GetVar(s.Name); err == nil {
@@ -1099,7 +1099,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			c.indent++
 			for _, f := range v.Fields {
 				fieldName := exportName(sanitizeName(f.Name))
-				typ := goType(resolveTypeRef(f.Type))
+				typ := goType(c.resolveTypeRef(f.Type))
 				c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, f.Name))
 			}
 			c.indent--
@@ -1113,7 +1113,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	for _, m := range t.Members {
 		if m.Field != nil {
 			fieldName := exportName(sanitizeName(m.Field.Name))
-			typ := goType(resolveTypeRef(m.Field.Type))
+			typ := goType(c.resolveTypeRef(m.Field.Type))
 			c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, typ, m.Field.Name))
 		}
 	}
@@ -1267,12 +1267,12 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		ft.Params = make([]types.Type, len(fun.Params))
 		for i, p := range fun.Params {
 			if p.Type != nil {
-				ft.Params[i] = resolveTypeRef(p.Type)
+				ft.Params[i] = c.resolveTypeRef(p.Type)
 			}
 		}
 	}
 	if ft.Return == nil && fun.Return != nil {
-		ft.Return = resolveTypeRef(fun.Return)
+		ft.Return = c.resolveTypeRef(fun.Return)
 	}
 	if ft.Return == nil {
 		ft.Return = types.VoidType{}
@@ -1786,7 +1786,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		case op.Cast != nil:
-			t := resolveTypeRef(op.Cast.Type)
+			t := c.resolveTypeRef(op.Cast.Type)
 			c.use("_cast")
 			c.imports["encoding/json"] = true
 			val = fmt.Sprintf("_cast[%s](%s)", goType(t), val)
@@ -2024,7 +2024,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	c.imports["os"] = true
 	c.use("_load")
 	if l.Type != nil {
-		t := resolveTypeRef(l.Type)
+		t := c.resolveTypeRef(l.Type)
 		if st, ok := c.env.GetStruct(*l.Type.Simple); t == (types.AnyType{}) && ok {
 			t = st
 		}
@@ -2501,26 +2501,54 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	var buf bytes.Buffer
 	buf.WriteString("func() " + retType + " {\n")
 	buf.WriteString("\t_t := " + target + "\n")
-	buf.WriteString("\tswitch _t {\n")
 	for _, cse := range m.Cases {
-		if isUnderscoreExpr(cse.Pattern) {
-			buf.WriteString("\tdefault:\n")
-		} else {
-			pat, err := c.compileExpr(cse.Pattern)
-			if err != nil {
-				return "", err
-			}
-			buf.WriteString("\tcase " + pat + ":\n")
-		}
 		res, err := c.compileExpr(cse.Result)
 		if err != nil {
 			return "", err
 		}
+		if isUnderscoreExpr(cse.Pattern) {
+			buf.WriteString("\treturn " + res + "\n")
+			buf.WriteString("}()")
+			return buf.String(), nil
+		}
+		if call, ok := callPattern(cse.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				buf.WriteString(fmt.Sprintf("\tif _v, ok := _t.(%s); ok {\n", sanitizeName(call.Func)))
+				for idx, arg := range call.Args {
+					if name, ok := identName(arg); ok {
+						field := exportName(sanitizeName(st.Order[idx]))
+						buf.WriteString(fmt.Sprintf("\t\t%s := _v.%s\n", sanitizeName(name), field))
+					}
+				}
+				buf.WriteString("\t\treturn " + res + "\n")
+				buf.WriteString("\t}\n")
+				continue
+			}
+		}
+		if ident, ok := identName(cse.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				buf.WriteString(fmt.Sprintf("\tif _, ok := _t.(%s); ok {\n", sanitizeName(ident)))
+				buf.WriteString("\t\treturn " + res + "\n")
+				buf.WriteString("\t}\n")
+				continue
+			}
+		}
+		pat, err := c.compileExpr(cse.Pattern)
+		if err != nil {
+			return "", err
+		}
+		c.use("_equal")
+		c.imports["reflect"] = true
+		buf.WriteString(fmt.Sprintf("\tif _equal(_t, %s) {\n", pat))
 		buf.WriteString("\t\treturn " + res + "\n")
+		buf.WriteString("\t}\n")
 	}
-	buf.WriteString("\t}\n")
 	if retType == "any" {
 		buf.WriteString("\treturn nil\n")
+	} else {
+		buf.WriteString("\tvar _zero " + retType + "\n")
+		buf.WriteString("\treturn _zero\n")
 	}
 	buf.WriteString("}()")
 	return buf.String(), nil
@@ -2783,20 +2811,20 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	for i, p := range fn.Params {
 		typ := "any"
 		if p.Type != nil {
-			typ = goType(resolveTypeRef(p.Type))
+			typ = goType(c.resolveTypeRef(p.Type))
 		}
 		params[i] = sanitizeName(p.Name) + " " + typ
 	}
 	child := types.NewEnv(c.env)
 	for _, p := range fn.Params {
 		if p.Type != nil {
-			child.SetVar(p.Name, resolveTypeRef(p.Type), true)
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
 		}
 	}
 	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
 	sub.indent = 1
 	if fn.Return != nil {
-		sub.returnType = resolveTypeRef(fn.Return)
+		sub.returnType = c.resolveTypeRef(fn.Return)
 	}
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody)
@@ -2812,7 +2840,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	body := indentBlock(sub.buf.String(), 1)
 	retType := ""
 	if fn.Return != nil {
-		retType = goType(resolveTypeRef(fn.Return))
+		retType = goType(c.resolveTypeRef(fn.Return))
 	}
 	if retType == "" {
 		return "func(" + strings.Join(params, ", ") + ") {\n" + body + "}", nil

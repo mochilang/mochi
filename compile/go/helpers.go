@@ -79,6 +79,8 @@ func goType(t types.Type) string {
 		return fmt.Sprintf("map[%s]%s", goType(tt.Key), goType(tt.Value))
 	case types.StructType:
 		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
@@ -171,18 +173,18 @@ func contains(ops []string, op string) bool {
 	return false
 }
 
-func resolveTypeRef(t *parser.TypeRef) types.Type {
+func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	if t == nil {
 		return types.AnyType{}
 	}
 	if t.Fun != nil {
 		params := make([]types.Type, len(t.Fun.Params))
 		for i, p := range t.Fun.Params {
-			params[i] = resolveTypeRef(p)
+			params[i] = c.resolveTypeRef(p)
 		}
 		var ret types.Type = types.VoidType{}
 		if t.Fun.Return != nil {
-			ret = resolveTypeRef(t.Fun.Return)
+			ret = c.resolveTypeRef(t.Fun.Return)
 		}
 		return types.FuncType{Params: params, Return: ret}
 	}
@@ -192,11 +194,11 @@ func resolveTypeRef(t *parser.TypeRef) types.Type {
 		switch name {
 		case "list":
 			if len(args) == 1 {
-				return types.ListType{Elem: resolveTypeRef(args[0])}
+				return types.ListType{Elem: c.resolveTypeRef(args[0])}
 			}
 		case "map":
 			if len(args) == 2 {
-				return types.MapType{Key: resolveTypeRef(args[0]), Value: resolveTypeRef(args[1])}
+				return types.MapType{Key: c.resolveTypeRef(args[0]), Value: c.resolveTypeRef(args[1])}
 			}
 		}
 		return types.AnyType{}
@@ -212,6 +214,12 @@ func resolveTypeRef(t *parser.TypeRef) types.Type {
 		case "bool":
 			return types.BoolType{}
 		default:
+			if st, ok := c.env.GetStruct(*t.Simple); ok {
+				return st
+			}
+			if ut, ok := c.env.GetUnion(*t.Simple); ok {
+				return ut
+			}
 			return types.AnyType{}
 		}
 	}

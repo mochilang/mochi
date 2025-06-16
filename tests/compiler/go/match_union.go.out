@@ -1,0 +1,54 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Tree interface{ isTree() }
+type Leaf struct {
+}
+
+func (Leaf) isTree() {}
+
+type Node struct {
+	Left  any `json:"left"`
+	Value int `json:"value"`
+	Right any `json:"right"`
+}
+
+func (Node) isTree() {}
+
+func sum(t Tree) int {
+	return func() int {
+		_t := t
+		if _, ok := _t.(Leaf); ok {
+			return 0
+		}
+		if _v, ok := _t.(Node); ok {
+			l := _v.Left
+			v := _v.Value
+			r := _v.Right
+			return ((sum(l) + _cast[int](v)) + sum(r))
+		}
+		var _zero int
+		return _zero
+	}()
+}
+
+func main() {
+	var tree Node = Node{Left: Leaf{}, Value: 1, Right: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}}
+	fmt.Println(sum(tree))
+}
+
+func _cast[T any](v any) T {
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	var out T
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}

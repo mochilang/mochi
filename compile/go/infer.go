@@ -118,7 +118,7 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 				t = types.AnyType{}
 			}
 		} else if op.Cast != nil {
-			t = resolveTypeRef(op.Cast.Type)
+			t = c.resolveTypeRef(op.Cast.Type)
 		}
 	}
 	return t
@@ -183,14 +183,14 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		params := make([]types.Type, len(p.FunExpr.Params))
 		for i, par := range p.FunExpr.Params {
 			if par.Type != nil {
-				params[i] = resolveTypeRef(par.Type)
+				params[i] = c.resolveTypeRef(par.Type)
 			} else {
 				params[i] = types.AnyType{}
 			}
 		}
 		var ret types.Type = types.VoidType{}
 		if p.FunExpr.Return != nil {
-			ret = resolveTypeRef(p.FunExpr.Return)
+			ret = c.resolveTypeRef(p.FunExpr.Return)
 		} else if p.FunExpr.ExprBody != nil {
 			ret = c.inferExprType(p.FunExpr.ExprBody)
 		} else {
@@ -251,7 +251,7 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 	case p.Load != nil:
 		var elem types.Type = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
 		if p.Load.Type != nil {
-			elem = resolveTypeRef(p.Load.Type)
+			elem = c.resolveTypeRef(p.Load.Type)
 			if st, ok := c.env.GetStruct(*p.Load.Type.Simple); elem == (types.AnyType{}) && ok {
 				elem = st
 			}

@@ -2,22 +2,37 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 func main() {
 	var x int = 2
 	var label string = func() string {
 	_t := x
-	switch _t {
-	case 1:
+	if _equal(_t, 1) {
 		return "one"
-	case 2:
-		return "two"
-	case 3:
-		return "three"
-	default:
-		return "unknown"
 	}
+	if _equal(_t, 2) {
+		return "two"
+	}
+	if _equal(_t, 3) {
+		return "three"
+	}
+	return "unknown"
 }()
 	fmt.Println(label)
 }
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+        if av.Len() != bv.Len() { return false }
+        for i := 0; i < av.Len(); i++ {
+            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }
+        }
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

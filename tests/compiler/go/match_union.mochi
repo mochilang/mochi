@@ -1,0 +1,13 @@
+type Tree =
+  Leaf {}
+  | Node(left: Tree, value: int, right: Tree)
+
+fun sum(t: Tree): int {
+  return match t {
+    Leaf => 0
+    Node(l, v, r) => sum(l) + v + sum(r)
+  }
+}
+
+let tree = Node { left: Leaf {}, value: 1, right: Node { left: Leaf {}, value: 2, right: Leaf {} } }
+print(sum(tree))
