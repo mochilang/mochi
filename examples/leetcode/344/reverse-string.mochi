@@ -1,0 +1,65 @@
+fun toList(s: string): list<string> {
+  var out: list<string> = []
+  for i in 0..len(s) {
+    out = out + [s[i]]
+  }
+  return out
+}
+
+fun fromList(arr: list<string>): string {
+  var out = ""
+  for ch in arr {
+    out = out + ch
+  }
+  return out
+}
+
+fun reverseString(chars: list<string>): list<string> {
+  var arr = chars
+  var left = 0
+  var right = len(arr) - 1
+  while left < right {
+    let temp = arr[left]
+    arr[left] = arr[right]
+    arr[right] = temp
+    left = left + 1
+    right = right - 1
+  }
+  return arr
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let input = toList("hello")
+  let result = reverseString(input)
+  expect fromList(result) == "olleh"
+}
+
+test "example 2" {
+  let input = toList("Hannah")
+  let result = reverseString(input)
+  expect fromList(result) == "hannaH"
+}
+
+// Additional edge case
+
+test "empty" {
+  let input: list<string> = []
+  let result = reverseString(input)
+  expect len(result) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+   if left = right { }
+   // ❌ assignment. Use '==' for equality.
+2. Forgetting 'var' for mutable variables:
+   let i = 0
+   i = i + 1 // ❌ cannot assign to immutable binding
+   // Fix: use 'var i = 0' when you need mutation.
+3. Off-by-one loop errors:
+   for i in 0..len(s)-1 { }
+   // ❌ last index never processed. Use '0..len(s)' or while loops.
+*/
