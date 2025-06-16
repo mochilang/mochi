@@ -1,0 +1,102 @@
+// Solution for LeetCode problem 363 - Max Sum of Rectangle No Larger Than K
+//
+// The algorithm considers every pair of column boundaries. For each pair,
+// it compresses rows into a 1D array of sums and finds the best subarray
+// no larger than k. This direct approach mirrors other examples under
+// `examples/leetcode` and avoids advanced features like union types or
+// pattern matching.
+
+fun maxSumSubmatrix(matrix: list<list<int>>, k: int): int {
+  if len(matrix) == 0 || len(matrix[0]) == 0 {
+    return 0
+  }
+
+  let rows = len(matrix)
+  let cols = len(matrix[0])
+  var best = -2147483648
+
+  var left = 0
+  while left < cols {
+    var rowSums: list<int> = []
+    var r = 0
+    while r < rows {
+      rowSums = rowSums + [0]
+      r = r + 1
+    }
+
+    var right = left
+    while right < cols {
+      var i = 0
+      while i < rows {
+        rowSums[i] = rowSums[i] + matrix[i][right]
+        i = i + 1
+      }
+
+      // Find the maximum subarray sum in rowSums no larger than k
+      var prefixList: list<int> = [0]
+      var prefix = 0
+      var idx = 0
+      while idx < rows {
+        prefix = prefix + rowSums[idx]
+        var j = 0
+        var localBest = -2147483648
+        while j < len(prefixList) {
+          let cand = prefix - prefixList[j]
+          if cand <= k && cand > localBest {
+            localBest = cand
+          }
+          j = j + 1
+        }
+        if localBest > best {
+          best = localBest
+        }
+        prefixList = prefixList + [prefix]
+        idx = idx + 1
+      }
+
+      right = right + 1
+    }
+    left = left + 1
+  }
+
+  return best
+}
+
+// Basic test cases from LeetCode
+
+test "example 1" {
+  let matrix = [[1,0,1],[0,-2,3]]
+  expect maxSumSubmatrix(matrix, 2) == 2
+}
+
+test "example 2" {
+  let matrix = [[2,2,-1]]
+  expect maxSumSubmatrix(matrix, 3) == 3
+}
+
+// Additional tests
+
+test "single element" {
+  expect maxSumSubmatrix([[5]], 5) == 5
+}
+
+test "negative numbers" {
+  let matrix = [[-1,-2],[-3,-4]]
+  expect maxSumSubmatrix(matrix, (-2)) == (-2)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons.
+   if value = 5 { }      // ❌ assignment
+   if value == 5 { }     // ✅ comparison
+2. Reassigning a 'let' binding when mutation is required.
+   let sum = 0
+   sum = sum + 1        // ❌ cannot assign
+   var sum = 0          // ✅ declare with 'var'
+3. Off-by-one mistakes when iterating through rows or columns.
+   while i <= rows { }  // ❌ may access out of bounds
+   while i < rows { }   // ✅ proper condition
+4. Introducing union types or 'match' unnecessarily. Simple loops and
+   conditionals are clearer for this problem.
+*/
