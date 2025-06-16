@@ -4,6 +4,7 @@ from __future__ import annotations
 vec = None
 
 def main():
+	global vec
 	vec = _gen_embed("hi", None, None)
 	print(len(vec))
 

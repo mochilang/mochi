@@ -4,6 +4,7 @@ from __future__ import annotations
 poem = None
 
 def main():
+	global poem
 	poem = _gen_text("echo hello", None, None)
 	print(poem)
 

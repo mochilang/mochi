@@ -5,7 +5,9 @@ x = 2
 label = None
 
 def main():
+	global x
 	x = 2
+	global label
 	label = (lambda _t=x: "one" if _t == 1 else "two" if _t == 2 else "three" if _t == 3 else "unknown")()
 	print(label)
 

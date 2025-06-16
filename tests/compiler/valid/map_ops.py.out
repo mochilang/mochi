@@ -6,6 +6,7 @@ import typing
 m = {}
 
 def main():
+	global m
 	m = typing.cast(dict[int, int], {})
 	m[1] = 10
 	m[2] = 20

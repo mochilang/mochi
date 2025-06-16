@@ -5,7 +5,9 @@ a = 10
 b = 20
 
 def main():
+	global a
 	a = 10
+	global b
 	b = 20
 	print((a + b))
 

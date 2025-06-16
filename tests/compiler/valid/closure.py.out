@@ -6,9 +6,10 @@ import typing
 def makeAdder(n: int) -> typing.Callable:
 	return (lambda x: (x + n))
 
-add10 = makeAdder(10)
+add10 = None
 
 def main():
+	global add10
 	add10 = makeAdder(10)
 	print(add10(7))
 

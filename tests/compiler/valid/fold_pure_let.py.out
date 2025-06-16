@@ -9,6 +9,7 @@ def sum(n: int) -> int:
 n = 10
 
 def main():
+	global n
 	n = 10
 	print(sum(n))
 	print(n)

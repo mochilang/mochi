@@ -4,6 +4,7 @@ from __future__ import annotations
 scores = {"Alice": 10, "Bob": 15}
 
 def main():
+	global scores
 	scores = {"Alice": 10, "Bob": 15}
 	print(scores["Bob"])
 

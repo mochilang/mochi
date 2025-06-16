@@ -4,6 +4,7 @@ from __future__ import annotations
 value = (((1 + 2)) * 3)
 
 def main():
+	global value
 	value = (((1 + 2)) * 3)
 	print(value)
 

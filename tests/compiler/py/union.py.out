@@ -18,6 +18,7 @@ class Node(Tree):
 t = Node(left=Leaf(), value=42, right=Leaf())
 
 def main():
+	global t
 	t = Node(left=Leaf(), value=42, right=Leaf())
 	print(t.value)
 

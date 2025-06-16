@@ -4,6 +4,7 @@ from __future__ import annotations
 x = 1
 
 def main():
+	global x
 	x = 1
 	x = 2
 	print(x)

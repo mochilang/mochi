@@ -4,6 +4,7 @@ from __future__ import annotations
 x = 5
 
 def main():
+	global x
 	x = 5
 	if (x > 3):
 		print("big")

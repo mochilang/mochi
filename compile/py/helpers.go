@@ -313,12 +313,17 @@ func isPurePrimary(p *parser.Primary) bool {
 	case p.Generate != nil || p.Fetch != nil || p.Load != nil || p.Save != nil || p.Query != nil || p.LogicQuery != nil:
 		return false
 	case p.Call != nil:
-		for _, a := range p.Call.Args {
-			if !isPureExpr(a) {
-				return false
+		switch p.Call.Func {
+		case "len", "str", "int", "float", "bool":
+			for _, a := range p.Call.Args {
+				if !isPureExpr(a) {
+					return false
+				}
 			}
+			return true
+		default:
+			return false
 		}
-		return true
 	case p.Group != nil:
 		return isPureExpr(p.Group)
 	case p.List != nil:

@@ -25,6 +25,7 @@ type Compiler struct {
 	agents       map[string]bool
 	handlerCount int
 	models       bool
+	globals      map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -35,6 +36,7 @@ func New(env *types.Env) *Compiler {
 		structs: make(map[string]bool),
 		agents:  make(map[string]bool),
 		models:  false,
+		globals: make(map[string]bool),
 	}
 }
 
@@ -120,12 +122,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Placeholder globals for variables used in tests
 	wrotePlaceholder := false
 	for _, s := range prog.Statements {
-		if s.Test != nil {
-			break
-		}
 		switch {
 		case s.Let != nil:
 			name := sanitizeName(s.Let.Name)
+			c.globals[name] = true
 			if isLiteralExpr(s.Let.Value) || isPureExpr(s.Let.Value) {
 				expr, err := c.compileExpr(s.Let.Value)
 				if err != nil {
@@ -138,6 +138,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			wrotePlaceholder = true
 		case s.Var != nil:
 			name := sanitizeName(s.Var.Name)
+			c.globals[name] = true
 			if isLiteralExpr(s.Var.Value) || isPureExpr(s.Var.Value) {
 				expr, err := c.compileExpr(s.Var.Value)
 				if err != nil {
@@ -183,7 +184,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	for _, s := range prog.Statements {
 		if s.Test != nil {
-			name := sanitizeName(s.Test.Name)
+			name := "test_" + sanitizeName(s.Test.Name)
 			c.writeln(fmt.Sprintf("%s()", name))
 			mainEmpty = false
 		}
@@ -343,6 +344,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			c.env.SetVar(s.Name, t, false)
 		}
 	}
+	if c.indent == 1 && c.globals[name] {
+		c.writeln(fmt.Sprintf("global %s", name))
+	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	return nil
 }
@@ -379,6 +383,9 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			}
 			c.env.SetVar(s.Name, t, true)
 		}
+	}
+	if c.indent == 1 && c.globals[name] {
+		c.writeln(fmt.Sprintf("global %s", name))
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	return nil
@@ -842,7 +849,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
-	name := sanitizeName(t.Name)
+	name := "test_" + sanitizeName(t.Name)
 	c.writeIndent()
 	c.buf.WriteString("def " + name + "():\n")
 	c.indent++

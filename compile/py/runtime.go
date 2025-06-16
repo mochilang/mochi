@@ -174,6 +174,9 @@ var helperSave = "def _save(rows, path, opts):\n" +
 var helperToAnyMap = "def _to_any_map(m):\n" +
 	"    return dict(m) if isinstance(m, dict) else dict(m)\n"
 
+var helperSlice = "def _slice(seq, start, end):\n" +
+	"    return list(seq)[start:end]\n"
+
 var helperUnionAll = "def _union_all(a, b):\n" +
 	"    return list(a) + list(b)\n"
 
@@ -324,6 +327,7 @@ var helperMap = map[string]string{
 	"_load":       helperLoad,
 	"_save":       helperSave,
 	"_to_any_map": helperToAnyMap,
+	"_slice":      helperSlice,
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,

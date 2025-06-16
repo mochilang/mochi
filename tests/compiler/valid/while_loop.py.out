@@ -4,6 +4,7 @@ from __future__ import annotations
 i = 0
 
 def main():
+	global i
 	i = 0
 	while (i < 3):
 		print(i)

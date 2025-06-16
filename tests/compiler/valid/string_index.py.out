@@ -4,6 +4,7 @@ from __future__ import annotations
 text = "hello"
 
 def main():
+	global text
 	text = "hello"
 	print(text[1])
 
