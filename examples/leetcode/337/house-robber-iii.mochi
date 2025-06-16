@@ -1,0 +1,88 @@
+// Solution for LeetCode problem 337 - House Robber III
+// This version avoids union types and `match` by representing tree
+// nodes as maps. A Leaf node is {"__name": "Leaf"} and a Node is
+// {"__name": "Node", "left": left, "value": value, "right": right}.
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool { return t["__name"] == "Leaf" }
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// Helper returning two values:
+//  - rob: max money when robbing this node
+//  - skip: max money when skipping this node
+fun dfs(node: map<string, any>): map<string, int> {
+  if isLeaf(node) {
+    return {"rob": 0, "skip": 0}
+  }
+  let l = dfs(left(node))
+  let r = dfs(right(node))
+  let take = value(node) + l["skip"] + r["skip"]
+  var notake = l["rob"]
+  if l["skip"] > notake { notake = l["skip"] }
+  var rr = r["rob"]
+  if r["skip"] > rr { rr = r["skip"] }
+  let notake2 = notake + rr
+  return {"rob": take, "skip": notake2}
+}
+
+fun rob(root: map<string, any>): int {
+  let res = dfs(root)
+  var m = res["rob"]
+  if res["skip"] > m { m = res["skip"] }
+  return m
+}
+
+// Example 1: [3,2,3,null,3,null,1] -> 7
+let example1 = Node(
+  Node(Leaf(), 2, Node(Leaf(), 3, Leaf())),
+  3,
+  Node(Leaf(), 3, Node(Leaf(), 1, Leaf()))
+)
+
+test "example 1" {
+  expect rob(example1) == 7
+}
+
+// Example 2: [3,4,5,1,3,null,1] -> 9
+let example2 = Node(
+  Node(Node(Leaf(), 1, Leaf()), 4, Node(Leaf(), 3, Leaf())),
+  3,
+  Node(Leaf(), 5, Node(Leaf(), 1, Leaf()))
+)
+
+test "example 2" {
+  expect rob(example2) == 9
+}
+
+// Additional edge cases
+
+test "single node" {
+  expect rob(Node(Leaf(), 4, Leaf())) == 4
+}
+
+test "empty" {
+  expect rob(Leaf()) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing numbers.
+   if m = 0 { }          // ❌ assignment
+   if m == 0 { }         // ✅ comparison
+2. Reassigning a variable declared with 'let'.
+   let x = 1
+   x = 2                 // ❌ cannot assign
+   var x = 1             // ✅ use 'var' for mutation
+3. Accessing fields of Leaf without checking first.
+   value(Leaf())         // ❌ runtime error
+   if !isLeaf(node) { value(node) } // ✅ ensure node is not Leaf
+*/
