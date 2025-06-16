@@ -1,0 +1,64 @@
+// Solution for LeetCode problem 372 - Super Pow
+//
+// Computes a^b mod 1337 where b is given as a list of digits.
+// We use fast exponentiation and process the digits one by one.
+
+let MOD = 1337
+
+fun powMod(x: int, k: int): int {
+  var base = x % MOD
+  var exp = k
+  var result = 1
+  while exp > 0 {
+    if exp % 2 == 1 {
+      result = (result * base) % MOD
+    }
+    base = (base * base) % MOD
+    exp = exp / 2
+  }
+  return result
+}
+
+fun superPow(a: int, b: list<int>): int {
+  var result = 1
+  for digit in b {
+    result = powMod(result, 10)
+    let part = powMod(a, digit)
+    result = (result * part) % MOD
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect superPow(2, [3]) == 8
+}
+
+test "example 2" {
+  expect superPow(2, [1,0]) == 1024
+}
+
+test "example 3" {
+  expect superPow(1, [4,3,3,8,5,2]) == 1
+}
+
+// Additional edge cases
+
+test "large numbers" {
+  expect superPow(2147483647, [2,0,0]) == 1198
+}
+
+test "zero exponent" {
+  expect superPow(5, []) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using the '^' operator for exponentiation. In Mochi '^' is bitwise XOR;
+   use a helper like powMod instead.
+2. Forgetting to take the result modulo 1337 after each multiplication,
+   which leads to overflow and wrong answers.
+3. Declaring mutable variables with 'let' instead of 'var'. Use 'var'
+   when the value will change inside a loop.
+*/
