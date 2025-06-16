@@ -1,0 +1,49 @@
+// Solution for LeetCode problem 326 - Power of Three
+//
+// Determines if a given integer is a power of three by repeatedly
+// dividing by 3 while the number is divisible by 3.
+
+fun isPowerOfThree(n: int): bool {
+  if n <= 0 { return false }
+  var value = n
+  while value % 3 == 0 {
+    value = value / 3
+  }
+  return value == 1
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isPowerOfThree(27) == true
+}
+
+test "example 2" {
+  expect isPowerOfThree(0) == false
+}
+
+test "example 3" {
+  expect isPowerOfThree(9) == true
+}
+
+// Additional edge cases
+
+test "one is power" {
+  expect isPowerOfThree(1) == true
+}
+
+test "negative" {
+  expect isPowerOfThree(-3) == false
+}
+
+test "not power" {
+  expect isPowerOfThree(45) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+2. Forgetting to declare mutable variables with 'var' when reassignment is needed.
+3. Calling 'match' or using union types unnecessarily; simple loops and conditionals are enough.
+4. Neglecting to handle non-positive inputs which should return false.
+*/
