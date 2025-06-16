@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import math
 
+r = 3.000000
+area = (math.pi * math.pow(r, 2.000000))
+
 def main():
 	r = 3.000000
 	area = (math.pi * math.pow(r, 2.000000))

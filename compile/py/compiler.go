@@ -116,6 +116,43 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Placeholder globals for variables used in tests
+	wrotePlaceholder := false
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			break
+		}
+		switch {
+		case s.Let != nil:
+			name := sanitizeName(s.Let.Name)
+			if isLiteralExpr(s.Let.Value) || isPureExpr(s.Let.Value) {
+				expr, err := c.compileExpr(s.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				c.writeln(fmt.Sprintf("%s = %s", name, expr))
+			} else {
+				c.writeln(fmt.Sprintf("%s = None", name))
+			}
+			wrotePlaceholder = true
+		case s.Var != nil:
+			name := sanitizeName(s.Var.Name)
+			if isLiteralExpr(s.Var.Value) || isPureExpr(s.Var.Value) {
+				expr, err := c.compileExpr(s.Var.Value)
+				if err != nil {
+					return nil, err
+				}
+				c.writeln(fmt.Sprintf("%s = %s", name, expr))
+			} else {
+				c.writeln(fmt.Sprintf("%s = None", name))
+			}
+			wrotePlaceholder = true
+		}
+	}
+	if wrotePlaceholder {
+		c.writeln("")
+	}
+
 	// Test blocks
 	for _, s := range prog.Statements {
 		if s.Test != nil {
@@ -133,6 +170,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("def main():")
 	}
 	c.indent++
+	mainEmpty := true
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil || s.Type != nil {
 			continue
@@ -140,12 +178,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
+		mainEmpty = false
 	}
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			name := sanitizeName(s.Test.Name)
 			c.writeln(fmt.Sprintf("%s()", name))
+			mainEmpty = false
 		}
+	}
+	if mainEmpty {
+		c.writeln("pass")
 	}
 	c.indent--
 	c.writeln("")
@@ -724,6 +767,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			}
 		}
 	}
+	paramTypes := make([]types.Type, len(fun.Params))
 	for i, p := range fun.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
@@ -737,7 +781,10 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		}
 		if typ != nil {
 			c.buf.WriteString(": " + pyType(typ))
+		} else {
+			typ = types.AnyType{}
 		}
+		paramTypes[i] = typ
 	}
 	retType := "None"
 	if ft.Return != nil {
@@ -748,8 +795,8 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	c.buf.WriteString(") -> " + retType + ":\n")
 	child := types.NewEnv(c.env)
 	for i, p := range fun.Params {
-		if i < len(ft.Params) {
-			child.SetVar(p.Name, ft.Params[i], true)
+		if i < len(paramTypes) {
+			child.SetVar(p.Name, paramTypes[i], true)
 		}
 	}
 	locals := map[string]bool{}
@@ -931,7 +978,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 
 			switch op {
 			case "/":
-				if isInt(lType) && isInt(rType) {
+				if (isInt(lType) && isInt(rType)) ||
+					(isInt(lType) && isAny(rType)) ||
+					(isAny(lType) && isInt(rType)) {
 					expr = fmt.Sprintf("(%s // %s)", lExpr, rExpr)
 					t = types.IntType{}
 				} else {
