@@ -35,4 +35,3 @@ func _equal(a, b any) bool {
     }
     return reflect.DeepEqual(a, b)
 }
-

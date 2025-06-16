@@ -190,10 +190,26 @@ const (
 		"}\n"
 
 	helperCast = "func _cast[T any](v any) T {\n" +
+		"    if m, ok := v.(map[any]any); ok {\n" +
+		"        v = _convertMapAny(m)\n" +
+		"    }\n" +
 		"    data, err := json.Marshal(v)\n" +
 		"    if err != nil { panic(err) }\n" +
 		"    var out T\n" +
 		"    if err := json.Unmarshal(data, &out); err != nil { panic(err) }\n" +
+		"    return out\n" +
+		"}\n"
+
+	helperConvertMapAny = "func _convertMapAny(m map[any]any) map[string]any {\n" +
+		"    out := make(map[string]any, len(m))\n" +
+		"    for k, v := range m {\n" +
+		"        key := fmt.Sprint(k)\n" +
+		"        if sub, ok := v.(map[any]any); ok {\n" +
+		"            out[key] = _convertMapAny(sub)\n" +
+		"        } else {\n" +
+		"            out[key] = v\n" +
+		"        }\n" +
+		"    }\n" +
 		"    return out\n" +
 		"}\n"
 
@@ -363,28 +379,31 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_indexString": helperIndexString,
-	"_count":       helperCount,
-	"_avg":         helperAvg,
-	"_genText":     helperGenText,
-	"_genEmbed":    helperGenEmbed,
-	"_genStruct":   helperGenStruct,
-	"_fetch":       helperFetch,
-	"_toAnyMap":    helperToAnyMap,
-	"_toAnySlice":  helperToAnySlice,
-	"_convSlice":   helperConvSlice,
-	"_cast":        helperCast,
-	"_equal":       helperEqual,
-	"_query":       helperQuery,
-	"_load":        helperLoad,
-	"_save":        helperSave,
-	"_toMapSlice":  helperToMapSlice,
+	"_indexString":   helperIndexString,
+	"_count":         helperCount,
+	"_avg":           helperAvg,
+	"_genText":       helperGenText,
+	"_genEmbed":      helperGenEmbed,
+	"_genStruct":     helperGenStruct,
+	"_fetch":         helperFetch,
+	"_toAnyMap":      helperToAnyMap,
+	"_toAnySlice":    helperToAnySlice,
+	"_convSlice":     helperConvSlice,
+	"_cast":          helperCast,
+	"_convertMapAny": helperConvertMapAny,
+	"_equal":         helperEqual,
+	"_query":         helperQuery,
+	"_load":          helperLoad,
+	"_save":          helperSave,
+	"_toMapSlice":    helperToMapSlice,
 }
 
 func (c *Compiler) use(name string) {
 	c.helpers[name] = true
 	if name == "_cast" {
 		c.imports["encoding/json"] = true
+		c.imports["fmt"] = true
+		c.helpers["_convertMapAny"] = true
 	}
 }
 
