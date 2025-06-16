@@ -809,6 +809,24 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	lhs := sanitizeName(s.Name)
+	var destType types.Type
+	if c.env != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			destType = t
+			for range s.Index {
+				switch dt := destType.(type) {
+				case types.ListType:
+					destType = dt.Elem
+				case types.MapType:
+					destType = dt.Value
+				case types.StringType:
+					destType = types.StringType{}
+				default:
+					destType = types.AnyType{}
+				}
+			}
+		}
+	}
 	for _, idx := range s.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
@@ -817,33 +835,20 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
 	}
 	value := ""
-	if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
-		if c.env != nil {
-			if t, err := c.env.GetVar(s.Name); err == nil {
-				if mt, ok := t.(types.MapType); ok {
-					value = fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value))
-				}
-			}
+	if ll := s.Value.Binary.Left.Value.Target.List; ll != nil && len(ll.Elems) == 0 {
+		if lt, ok := destType.(types.ListType); ok {
+			value = fmt.Sprintf("[]%s{}", goType(lt.Elem))
 		}
-	} else if ll := s.Value.Binary.Left.Value.Target.List; ll != nil && len(ll.Elems) == 0 {
-		if c.env != nil {
-			if t, err := c.env.GetVar(s.Name); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					value = fmt.Sprintf("[]%s{}", goType(lt.Elem))
-				}
-			}
+	} else if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
+		if mt, ok := destType.(types.MapType); ok {
+			value = fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value))
 		}
 	}
 	if value == "" {
 		var err error
-		var typ types.Type
-		if c.env != nil {
-			if t, err2 := c.env.GetVar(s.Name); err2 == nil {
-				typ = t
-				value, err = c.compileExprHint(s.Value, t)
-			} else {
-				value, err = c.compileExpr(s.Value)
-			}
+		typ := destType
+		if typ != nil {
+			value, err = c.compileExprHint(s.Value, typ)
 		} else {
 			value, err = c.compileExpr(s.Value)
 		}

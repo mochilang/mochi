@@ -1,0 +1,12 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var graph map[int][]int = map[int][]int{}
+	graph[0] = []int{}
+	fmt.Println(len(graph[0]))
+}
+
