@@ -1,4 +1,25 @@
 # 📦 CHANGELOG.md
+## [0.7.5] – 2025-06-17
+
+### Added
+
+* Union list and slice assignment in the Go compiler
+* Map literals with type hints
+* Python and TypeScript output for LeetCode 128
+* Palindrome golden test
+
+### Changed
+
+* LeetCode outputs reorganized under language folders
+* Makefile builds run in parallel with extra commands
+
+### Fixed
+
+* Reserved keyword handling in the Go compiler
+* Empty container literals in let statements
+* Pattern match casts, list concatenation and while loops
+
+
 ## [0.7.4] – 2025-06-16
 
 ### Added
