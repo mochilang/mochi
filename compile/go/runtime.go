@@ -367,6 +367,9 @@ var helperMap = map[string]string{
 
 func (c *Compiler) use(name string) {
 	c.helpers[name] = true
+	if name == "_cast" {
+		c.imports["encoding/json"] = true
+	}
 }
 
 func (c *Compiler) emitRuntime() {
