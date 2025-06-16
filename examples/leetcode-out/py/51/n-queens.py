@@ -9,8 +9,8 @@ def solveNQueens(n: int) -> list[list[str]]:
 	diag1 = {}
 	diag2 = {}
 	def backtrack(row: int, board: list[str]) -> None:
-		nonlocal results
 		nonlocal cols
+		nonlocal results
 		nonlocal diag1
 		nonlocal diag2
 		if (row == n):
