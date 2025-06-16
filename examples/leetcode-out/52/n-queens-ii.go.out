@@ -1,0 +1,74 @@
+package main
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func totalNQueens(n int) int {
+	var cols []bool = []bool{}
+	_ = cols
+	var i int = 0
+	_ = i
+	for (i < n) {
+		cols = append(append([]bool{}, cols...), []bool{false}...)
+		i = (i + 1)
+	}
+	var diag1 []bool = []bool{}
+	_ = diag1
+	i = 0
+	for (i < ((2 * n))) {
+		diag1 = append(append([]bool{}, diag1...), []bool{false}...)
+		i = (i + 1)
+	}
+	var diag2 []bool = []bool{}
+	_ = diag2
+	i = 0
+	for (i < ((2 * n))) {
+		diag2 = append(append([]bool{}, diag2...), []bool{false}...)
+		i = (i + 1)
+	}
+	var count int = 0
+	_ = count
+	var backtrack func(int)
+	backtrack = func(row int) {
+		if (row == n) {
+			count = (count + 1)
+		} else {
+			for col := 0; col < n; col++ {
+				var d1 int = ((row - col) + n)
+				var d2 int = (row + col)
+				if ((cols[col] || diag1[d1]) || diag2[d2]) {
+					continue
+				}
+				cols[col] = true
+				diag1[d1] = true
+				diag2[d2] = true
+				backtrack((row + 1))
+				cols[col] = false
+				diag1[d1] = false
+				diag2[d2] = false
+			}
+		}
+}
+	backtrack(0)
+	return count
+}
+
+func example_1() {
+	expect((totalNQueens(1) == 1))
+}
+
+func example_2() {
+	expect((totalNQueens(4) == 2))
+}
+
+func example_3() {
+	expect((totalNQueens(5) == 10))
+}
+
+func main() {
+	example_1()
+	example_2()
+	example_3()
+}
+
