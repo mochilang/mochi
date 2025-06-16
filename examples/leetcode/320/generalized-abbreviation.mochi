@@ -1,0 +1,55 @@
+fun generateAbbreviations(word: string): list<string> {
+  var result: list<string> = []
+
+  fun backtrack(pos: int, cur: string, count: int) {
+    if pos == len(word) {
+      var tmp = cur
+      if count > 0 {
+        tmp = tmp + str(count)
+      }
+      result = result + [tmp]
+    } else {
+      backtrack(pos + 1, cur, count + 1)
+
+      var next = cur
+      if count > 0 {
+        next = next + str(count)
+      }
+      next = next + word[pos]
+      backtrack(pos + 1, next, 0)
+    }
+  }
+
+  backtrack(0, "", 0)
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect generateAbbreviations("word") == [
+    "4", "3d", "2r1", "2rd",
+    "1o2", "1o1d", "1or1", "1ord",
+    "w3", "w2d", "w1r1", "w1rd",
+    "wo2", "wo1d", "wor1", "word"
+  ]
+}
+
+// Additional tests
+
+test "empty string" {
+  expect generateAbbreviations("") == [""]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying to mutate an immutable variable:
+     let s = ""; s = "x"  // ❌
+   Use 'var' for variables you plan to change:
+     var s = ""; s = "x"
+2. Using '==' to compare strings is correct; avoid '=' which assigns:
+     if s == "" { ... }  // ✅
+3. Lists have no push/pop methods. Use concatenation and slicing:
+     result = result + [value]
+     lst = lst[0:len(lst)-1]
+*/
