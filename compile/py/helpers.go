@@ -293,16 +293,11 @@ func isPureExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil {
 		return false
 	}
-	if len(e.Binary.Right) != 0 || len(e.Binary.Left.Ops) != 0 {
-		if len(e.Binary.Right) > 0 {
-			for _, op := range e.Binary.Right {
-				if !isPurePostfixExpr(op.Right) {
-					return false
-				}
+	if len(e.Binary.Right) != 0 {
+		for _, op := range e.Binary.Right {
+			if !isPurePostfixExpr(op.Right) {
+				return false
 			}
-		}
-		if len(e.Binary.Left.Ops) != 0 {
-			return false
 		}
 	}
 	return isPurePostfix(e.Binary.Left)
@@ -311,9 +306,6 @@ func isPureExpr(e *parser.Expr) bool {
 func isPurePostfix(u *parser.Unary) bool {
 	if u == nil {
 		return true
-	}
-	if len(u.Ops) > 0 {
-		return false
 	}
 	return isPurePostfixExpr(u.Value)
 }
@@ -338,7 +330,7 @@ func isPurePostfixExpr(p *parser.PostfixExpr) bool {
 				}
 			}
 			if op.Cast != nil {
-				return false
+				continue
 			}
 		}
 	}
