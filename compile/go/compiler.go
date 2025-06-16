@@ -616,8 +616,46 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		if c.returnType != nil && !equalTypes(c.returnType, c.inferExprType(s.Return.Value)) {
-			c.use("_cast")
-			expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+			rt := c.inferExprType(s.Return.Value)
+			if rlist, ok := c.returnType.(types.ListType); ok {
+				if rUElem, ok := rlist.Elem.(types.UnionType); ok {
+					if elist, ok := rt.(types.ListType); ok {
+						if st, ok := elist.Elem.(types.StructType); ok {
+							if ut, ok := c.env.FindUnionByVariant(st.Name); ok && ut.Name == rUElem.Name {
+								c.use("_convSlice")
+								expr = fmt.Sprintf("_convSlice[%s, %s](%s)", goType(st), goType(rUElem), expr)
+							} else {
+								c.use("_cast")
+								expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+							}
+						} else {
+							c.use("_cast")
+							expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+						}
+					} else {
+						c.use("_cast")
+						expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+					}
+				} else {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+				}
+			} else if rU, ok := c.returnType.(types.UnionType); ok {
+				if st, ok := rt.(types.StructType); ok {
+					if ut, ok := c.env.FindUnionByVariant(st.Name); ok && ut.Name == rU.Name {
+						expr = fmt.Sprintf("%s(%s)", goType(c.returnType), expr)
+					} else {
+						c.use("_cast")
+						expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+					}
+				} else {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+				}
+			} else {
+				c.use("_cast")
+				expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+			}
 		}
 		c.writeln("return " + expr)
 		return nil
@@ -1304,12 +1342,8 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		if err != nil {
 			return err
 		}
-		if exprUsesVarFun(&parser.FunExpr{Params: fun.Params, Return: fun.Return, BlockBody: fun.Body}, fun.Name) {
-			c.writeln(fmt.Sprintf("var %s %s", name, goType(ft)))
-			c.writeln(fmt.Sprintf("%s = %s", name, expr))
-		} else {
-			c.writeln("var " + name + " = " + expr)
-		}
+		c.writeln(fmt.Sprintf("var %s %s", name, goType(ft)))
+		c.writeln(fmt.Sprintf("%s = %s", name, expr))
 		return nil
 	}
 
@@ -1504,6 +1538,28 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		case op == "+" && isList(leftType) && isList(rightType):
 			lt := leftType.(types.ListType)
 			rt := rightType.(types.ListType)
+			if lut, ok := lt.Elem.(types.UnionType); ok {
+				if st, ok := rt.Elem.(types.StructType); ok {
+					if ut, ok := c.env.FindUnionByVariant(st.Name); ok && ut.Name == lut.Name {
+						c.use("_convSlice")
+						right = fmt.Sprintf("_convSlice[%s, %s](%s)", goType(rt.Elem), goType(lt.Elem), right)
+						expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
+						next = leftType
+						break
+					}
+				}
+			}
+			if rut, ok := rt.Elem.(types.UnionType); ok {
+				if st, ok := lt.Elem.(types.StructType); ok {
+					if ut, ok := c.env.FindUnionByVariant(st.Name); ok && ut.Name == rut.Name {
+						c.use("_convSlice")
+						left = fmt.Sprintf("_convSlice[%s, %s](%s)", goType(lt.Elem), goType(rt.Elem), left)
+						expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(rt.Elem), left, right)
+						next = rightType
+						break
+					}
+				}
+			}
 			if _, ok := lt.Elem.(types.AnyType); ok && !isAny(rt.Elem) {
 				c.use("_toAnySlice")
 				right = fmt.Sprintf("_toAnySlice(%s)", right)
@@ -2551,6 +2607,34 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	buf.WriteString("func() " + retType + " {\n")
 	buf.WriteString("\t_t := " + target + "\n")
 	for _, cse := range m.Cases {
+		origEnv := c.env
+		var prelude bytes.Buffer
+		if call, ok := callPattern(cse.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				varName := c.newVar()
+				cond := fmt.Sprintf("%s, ok := _t.(%s); ok", varName, sanitizeName(call.Func))
+				prelude.WriteString("\tif " + cond + " {\n")
+				child := types.NewEnv(origEnv)
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						field := exportName(sanitizeName(st.Order[idx]))
+						prelude.WriteString(fmt.Sprintf("\t\t%s := %s.%s\n", sanitizeName(id), varName, field))
+						child.SetVar(id, st.Fields[st.Order[idx]], false)
+					}
+				}
+				c.env = child
+				res, err := c.compileExpr(cse.Result)
+				c.env = origEnv
+				if err != nil {
+					return "", err
+				}
+				prelude.WriteString("\t\treturn " + res + "\n")
+				prelude.WriteString("\t}\n")
+				buf.Write(prelude.Bytes())
+				continue
+			}
+		}
 		res, err := c.compileExpr(cse.Result)
 		if err != nil {
 			return "", err
