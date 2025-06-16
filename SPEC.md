@@ -556,7 +556,7 @@ fun makeCounter(): fun(): int {
 
 Mochi provides a small set of built-ins available in all scopes. The most common is `print`, which writes its arguments to standard output and returns `null`.
 
-Other built-ins include `len` for obtaining the length of strings, lists, or maps; `now` which returns the current time as an integer; and `json` for printing values in JSON format.
+Other built-ins include `len` for obtaining the length of strings, lists, or maps; `now` which returns the current time as an integer; `json` for printing values in JSON format; and `scan` for reading a line of input from standard input.
 
 ## 8. Runtime Semantics
 
