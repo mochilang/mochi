@@ -1,0 +1,70 @@
+// LeetCode Problem 330: Patching Array
+// Given a sorted list of positive integers and a target n,
+// return the minimum number of patches required so that every
+// number in the range [1,n] can be formed as the sum of elements
+// from the list.
+
+fun minPatches(nums: list<int>, n: int): int {
+  var miss = 1
+  var i = 0
+  var patches = 0
+  while miss <= n {
+    if i < len(nums) {
+      if nums[i] <= miss {
+        miss = miss + nums[i]
+        i = i + 1
+      } else {
+        miss = miss + miss
+        patches = patches + 1
+      }
+    } else {
+      miss = miss + miss
+      patches = patches + 1
+    }
+  }
+  return patches
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect minPatches([1,3], 6) == 1
+}
+
+test "example 2" {
+  expect minPatches([1,5,10], 20) == 2
+}
+
+test "example 3" {
+  expect minPatches([1,2,2], 5) == 0
+}
+
+// Additional edge cases
+
+test "no patches needed" {
+  expect minPatches([1,2,4,13,43], 100) == 2
+}
+
+test "large n" {
+  expect minPatches([], 7) == 3
+}
+
+test "single element" {
+  expect minPatches([1], 1) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if patches = 1 { }  // ❌ assignment
+   if patches == 1 { } // ✅ comparison
+2. Trying to mutate a 'let' variable.
+   let miss = 1
+   miss = miss + 1     // ❌ cannot reassign
+   var miss = 1        // ✅ use 'var' for mutable variables
+3. Using Python style loops.
+   for i in range(len(nums)) { } // ❌ invalid
+   for i in 0..len(nums) { }     // ✅ Mochi range syntax
+4. Mochi supports union types and 'match', but this solution keeps
+   things simple and does not rely on those features.
+*/
