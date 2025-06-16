@@ -6,7 +6,6 @@ import (
 
 func main() {
 	var m map[int]int = map[int]int{}
-	_ = m
 	m[1] = 10
 	m[2] = 20
 	_tmp0 := 1
