@@ -1,0 +1,32 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left any `json:"left"`
+	Value int `json:"value"`
+	Right any `json:"right"`
+}
+func (Node) isTree() {}
+
+func isLeaf(t any) bool {
+	return func() bool {
+	_t := t
+	if _, ok := _t.(Leaf); ok {
+		return true
+	}
+	return false
+}()
+}
+
+func main() {
+	fmt.Println(isLeaf(Leaf{}))
+	fmt.Println(isLeaf(Node{Left: Leaf{}, Value: 1, Right: Leaf{}}))
+}
+
