@@ -9,6 +9,7 @@
 * Slice concatenation support
 * Nested functions and globals in the TypeScript compiler
 * Go compiler arithmetic with `any` and empty literal assignments
+* `scan` builtin for reading interactive input
 
 ### Fixed
 

@@ -3020,6 +3020,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["mochi/runtime/data"] = true
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "scan":
+		c.imports["bufio"] = true
+		c.imports["os"] = true
+		c.imports["strings"] = true
+		return "func(){r:=bufio.NewReader(os.Stdin);line,_:=r.ReadString('\n');return strings.TrimRight(line, \"\r\n\") }()", nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":

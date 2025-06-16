@@ -1,8 +1,11 @@
 package interpreter
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 	"strings"
 	"time"
 
@@ -181,6 +184,18 @@ func builtinAvg(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return sum / float64(len(list)), nil
 }
 
+func builtinScan(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 0 {
+		return nil, fmt.Errorf("scan() takes no arguments")
+	}
+	reader := bufio.NewReader(os.Stdin)
+	line, err := reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		return nil, err
+	}
+	return strings.TrimRight(line, "\r\n"), nil
+}
+
 func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
 	return map[string]func(*Interpreter, *parser.CallExpr) (any, error){
 		"print": builtinPrint,
@@ -190,6 +205,7 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"str":   builtinStr,
 		"count": builtinCount,
 		"avg":   builtinAvg,
+		"scan":  builtinScan,
 		"eval":  builtinEval,
 	}
 }
