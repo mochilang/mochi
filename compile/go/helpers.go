@@ -185,6 +185,27 @@ func isList(t types.Type) bool {
 	return ok
 }
 
+func isListOfAny(t types.Type) bool {
+	if lt, ok := t.(types.ListType); ok {
+		if _, ok := lt.Elem.(types.AnyType); ok {
+			return true
+		}
+	}
+	return false
+}
+
+func containsAny(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.AnyType:
+		return true
+	case types.ListType:
+		return containsAny(tt.Elem)
+	case types.MapType:
+		return containsAny(tt.Key) || containsAny(tt.Value)
+	}
+	return false
+}
+
 func isMap(t types.Type) bool {
 	_, ok := t.(types.MapType)
 	return ok

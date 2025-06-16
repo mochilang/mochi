@@ -756,6 +756,13 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			if err != nil {
 				return err
 			}
+			exprT := c.inferExprType(s.Value)
+			if lt, ok := typ.(types.ListType); ok {
+				if et, ok := exprT.(types.ListType); ok && !containsAny(et.Elem) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
+					c.use("_convSlice")
+					v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
+				}
+			}
 			value = v
 		}
 	}
@@ -801,8 +808,10 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	}
 	if value == "" {
 		var err error
+		var typ types.Type
 		if c.env != nil {
 			if t, err2 := c.env.GetVar(s.Name); err2 == nil {
+				typ = t
 				value, err = c.compileExprHint(s.Value, t)
 			} else {
 				value, err = c.compileExpr(s.Value)
@@ -812,6 +821,15 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		}
 		if err != nil {
 			return err
+		}
+		if typ != nil {
+			exprT := c.inferExprType(s.Value)
+			if lt, ok := typ.(types.ListType); ok {
+				if et, ok := exprT.(types.ListType); ok && !containsAny(et.Elem) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
+					c.use("_convSlice")
+					value = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), value)
+				}
+			}
 		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", lhs, value))
@@ -2911,6 +2929,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			v, err := c.compileExprHint(a, paramTypes[i])
 			if err != nil {
 				return "", err
+			}
+			at := paramTypes[i]
+			if lt, ok := paramTypes[i].(types.ListType); ok {
+				if et, ok := at.(types.ListType); ok && !isListOfAny(et) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
+					c.use("_convSlice")
+					v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
+				}
 			}
 			args[i] = v
 			continue
