@@ -1,0 +1,97 @@
+// LeetCode 116 - Populating Next Right Pointers in Each Node
+// This solution avoids union types and pattern matching by storing the tree
+// as parallel arrays of left and right child indices. A value of (-1) means
+// no child or no next pointer.
+
+fun connect(lefts: list<int>, rights: list<int>, root: int): list<int> {
+  var nexts: list<int> = []
+  var i = 0
+  while i < len(lefts) {
+    nexts = nexts + [(-1)]
+    i = i + 1
+  }
+
+  var queue: list<int> = []
+  if root != (-1) { queue = [root] }
+
+  while len(queue) > 0 {
+    var next: list<int> = []
+    var prev = (-1)
+    for idx in queue {
+      if prev != (-1) { nexts[prev] = idx }
+      prev = idx
+      if lefts[idx] != (-1) { next = next + [lefts[idx]] }
+      if rights[idx] != (-1) { next = next + [rights[idx]] }
+    }
+    queue = next
+  }
+
+  return nexts
+}
+
+fun levels(lefts: list<int>, rights: list<int>, values: list<int>, root: int): list<list<int>> {
+  var result: list<list<int>> = []
+  var queue: list<int> = []
+  if root != (-1) { queue = [root] }
+
+  while len(queue) > 0 {
+    var vals: list<int> = []
+    var next: list<int> = []
+    for idx in queue {
+      vals = vals + [values[idx]]
+      if lefts[idx] != (-1) { next = next + [lefts[idx]] }
+      if rights[idx] != (-1) { next = next + [rights[idx]] }
+    }
+    result = result + [vals]
+    queue = next
+  }
+
+  return result
+}
+
+// Example perfect binary tree [1,2,3,4,5,6,7]
+let exLefts  = [1,3,5,(-1),(-1),(-1),(-1)] as list<int>
+let exRights = [2,4,6,(-1),(-1),(-1),(-1)] as list<int>
+let exValues = [1,2,3,4,5,6,7] as list<int>
+let exRoot = 0
+
+// Basic tests
+
+test "example" {
+  let ns = connect(exLefts, exRights, exRoot)
+  expect levels(exLefts, exRights, exValues, exRoot) == [[1],[2,3],[4,5,6,7]]
+  expect ns == [(-1),2,(-1),4,5,6,(-1)]
+}
+
+test "single node" {
+  let lefts = [(-1)] as list<int>
+  let rights = [(-1)] as list<int>
+  let values = [1] as list<int>
+  let root = 0
+  let ns = connect(lefts, rights, root)
+  expect levels(lefts, rights, values, root) == [[1]]
+  expect ns == [(-1)]
+}
+
+test "empty" {
+  let lefts = [] as list<int>
+  let rights = [] as list<int>
+  let values = [] as list<int>
+  let ns = connect(lefts, rights, (-1))
+  expect levels(lefts, rights, values, (-1)) == []
+  expect ns == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+     if root = (-1) { ... }   // ❌ assignment
+     if root == (-1) { ... }  // ✅ comparison
+2. Attempting to modify a value declared with 'let':
+     let q = []
+     q = [1]                  // ❌ cannot reassign
+     var q = []               // ✅ use 'var' when mutation is needed
+3. Forgetting element types when creating an empty list:
+     var nodes = []           // ❌ type unknown
+     var nodes: list<int> = [] // ✅ specify the element type
+*/
