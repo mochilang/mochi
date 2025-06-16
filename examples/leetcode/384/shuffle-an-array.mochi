@@ -1,0 +1,89 @@
+// Solution for LeetCode problem 384 - Shuffle an Array
+// Implements a simple shuffler struct without using union types or pattern matching.
+
+// Shuffler keeps the original array, a working copy, and a pseudo-random seed.
+type Shuffler {
+  original: list<int>
+  nums: list<int>
+  seed: int
+}
+
+type RandResult {
+  sh: Shuffler
+  value: int
+}
+
+fun copyList(xs: list<int>): list<int> {
+  var out: list<int> = []
+  for x in xs {
+    out = out + [x]
+  }
+  return out
+}
+
+// Linear congruential generator for deterministic pseudo-random numbers
+fun nextRand(s: Shuffler): RandResult {
+  let newSeed = (s.seed * 1103515245 + 12345) % 2147483648
+  let newSh = Shuffler { original: s.original, nums: s.nums, seed: newSeed }
+  return RandResult { sh: newSh, value: newSeed }
+}
+
+fun newShuffler(nums: list<int>): Shuffler {
+  return Shuffler { original: nums, nums: copyList(nums), seed: 1 }
+}
+
+fun reset(sh: Shuffler): Shuffler {
+  return Shuffler { original: sh.original, nums: copyList(sh.original), seed: sh.seed }
+}
+
+fun shuffle(sh: Shuffler): Shuffler {
+  var arr = copyList(sh.nums)
+  var state = sh
+  var i = len(arr) - 1
+  while i > 0 {
+    let r = nextRand(state)
+    state = r.sh
+    let j = r.value % (i + 1)
+    let tmp = arr[i]
+    arr[i] = arr[j]
+    arr[j] = tmp
+    i = i - 1
+  }
+  return Shuffler { original: state.original, nums: arr, seed: state.seed }
+}
+
+// Test based on the LeetCode example
+
+test "example" {
+  var s = newShuffler([1,2,3])
+  s = shuffle(s)
+  let _first = s.nums
+  s = reset(s)
+  expect s.nums == [1,2,3]
+  s = shuffle(s)
+  let sorted = from x in s.nums sort by x select x
+  expect sorted == [1,2,3]
+}
+
+test "empty" {
+  var s = newShuffler([])
+  s = shuffle(s)
+  expect s.nums == []
+  s = reset(s)
+  expect s.nums == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting element types for empty lists:
+     var xs = []
+   // ❌ type cannot be inferred
+   Declare with a type:
+     var xs: list<int> = []
+2. Trying to mutate struct fields directly:
+     s.nums = []
+   // ❌ structs are immutable; return a new struct instead.
+3. Using '=' instead of '==' in comparisons:
+     if len(xs) = 0 { }
+   // ❌ this assigns; use '==' to compare.
+*/
