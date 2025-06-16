@@ -1510,10 +1510,16 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 				next = leftType
 			} else if !isAny(lt.Elem) && isAny(rt.Elem) {
-				c.use("_toAnySlice")
-				left = fmt.Sprintf("_toAnySlice(%s)", left)
-				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(rt.Elem), left, right)
-				next = types.ListType{Elem: types.AnyType{}}
+				if strings.HasPrefix(right, "[]any{") && strings.HasSuffix(right, "}") {
+					right = "[]" + goType(lt.Elem) + right[len("[]any"):]
+					expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
+					next = leftType
+				} else {
+					c.use("_cast")
+					right = fmt.Sprintf("_cast[%s](%s)", goType(leftType), right)
+					expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
+					next = leftType
+				}
 			} else if equalTypes(lt.Elem, rt.Elem) {
 				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 				next = leftType
