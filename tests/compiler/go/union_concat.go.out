@@ -1,0 +1,33 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Tree interface{ isTree() }
+type Leaf struct {
+}
+
+func (Leaf) isTree() {}
+
+type Node struct {
+	Left  Tree `json:"left"`
+	Val   int  `json:"val"`
+	Right Tree `json:"right"`
+}
+
+func (Node) isTree() {}
+
+func main() {
+	var xs []Tree = []Tree{}
+	xs = append(append([]Tree{}, xs...), _toSlice[Node, Tree]([]Node{Node{Left: Leaf{}, Val: 1, Right: Leaf{}}})...)
+	fmt.Println(len(xs))
+}
+
+func _toSlice[T any, U any](s []T) []U {
+	out := make([]U, len(s))
+	for i, v := range s {
+		out[i] = any(v).(U)
+	}
+	return out
+}
