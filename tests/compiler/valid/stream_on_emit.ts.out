@@ -12,7 +12,7 @@ async function main(): Promise<void> {
 		console.log(s.id, s.temperature)
 	}
 	sensorStream.register(_handler_0)
-	sensorStream.append({id: "sensor-1", temperature: 22.500000})
+	sensorStream.append({id: "sensor-1", temperature: 22.5})
 }
 class Stream {
   name: string;
@@ -41,3 +41,4 @@ async function _waitAll(): Promise<void> {
 
 await main()
 await _waitAll()
+
