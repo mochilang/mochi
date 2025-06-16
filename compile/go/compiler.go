@@ -565,16 +565,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
-		var err error
-		typ, err = c.env.GetVar(s.Name)
-		if err != nil {
-			if s.Type != nil {
-				typ = resolveTypeRef(s.Type)
-			} else if s.Value != nil {
-				typ = c.inferExprType(s.Value)
-			}
-			c.env.SetVar(s.Name, typ, true)
+		if s.Type != nil {
+			typ = resolveTypeRef(s.Type)
+		} else if s.Value != nil {
+			typ = c.inferExprType(s.Value)
+		} else if t, err := c.env.GetVar(s.Name); err == nil {
+			typ = t
 		}
+		c.env.SetVar(s.Name, typ, true)
 	}
 	typStr := goType(typ)
 
@@ -2534,7 +2532,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			child.SetVar(p.Name, resolveTypeRef(p.Type), true)
 		}
 	}
-       sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
+	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
 	sub.indent = 1
 	if fn.Return != nil {
 		sub.returnType = resolveTypeRef(fn.Return)
