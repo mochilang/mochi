@@ -635,6 +635,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					c.use("_cast")
 					expr = fmt.Sprintf("_cast[%s](%s)", goType(retT), expr)
 				}
+			} else if mt, ok := retT.(types.MapType); ok {
+				if goType(mt) != goType(exprT) {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast[%s](%s)", goType(retT), expr)
+				}
 			} else if !equalTypes(retT, exprT) || isAny(exprT) {
 				c.use("_cast")
 				expr = fmt.Sprintf("_cast[%s](%s)", goType(retT), expr)
@@ -2851,7 +2856,7 @@ func (c *Compiler) foldCall(call *parser.CallExpr) (*parser.Literal, bool) {
 // for nested lists.
 func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
 	if lt, ok := hint.(types.ListType); ok {
-		if ll := e.Binary.Left.Value.Target.List; ll != nil {
+		if ll := e.Binary.Left.Value.Target.List; ll != nil && len(e.Binary.Right) == 0 {
 			elems := make([]string, len(ll.Elems))
 			for i, el := range ll.Elems {
 				ev, err := c.compileExprHint(el, lt.Elem)
