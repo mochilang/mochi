@@ -194,7 +194,11 @@ const (
 	helperEqual = "func _equal(a, b any) bool {\n" +
 		"    av := reflect.ValueOf(a)\n" +
 		"    bv := reflect.ValueOf(b)\n" +
-		"    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {\n" +
+		"    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {\n" +
+		"        if av.Len() != bv.Len() { return false }\n" +
+		"        for i := 0; i < av.Len(); i++ {\n" +
+		"            if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) { return false }\n" +
+		"        }\n" +
 		"        return true\n" +
 		"    }\n" +
 		"    return reflect.DeepEqual(a, b)\n" +

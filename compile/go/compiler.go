@@ -664,10 +664,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
+	var t types.Type = types.AnyType{}
+	if c.env != nil {
+		if s.Type != nil {
+			t = resolveTypeRef(s.Type)
+		} else if s.Value != nil {
+			t = c.inferExprType(s.Value)
+		} else if old, err := c.env.GetVar(s.Name); err == nil {
+			t = old
+		}
+		c.env.SetVar(s.Name, t, false)
+	}
+	typStr := goType(t)
 	value := "nil"
 	var lit *parser.Literal
 	if s.Value != nil {
-		v, err := c.compileExpr(s.Value)
+		v, err := c.compileExprHint(s.Value, t)
 		if err != nil {
 			return err
 		}
@@ -675,21 +687,6 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		if l, ok := c.evalConstExpr(s.Value); ok {
 			lit = l
 		}
-	}
-	typStr := "any"
-	if c.env != nil {
-		var t types.Type
-		if s.Type != nil {
-			t = resolveTypeRef(s.Type)
-		} else if s.Value != nil {
-			t = c.inferExprType(s.Value)
-		} else if old, err := c.env.GetVar(s.Name); err == nil {
-			t = old
-		} else {
-			t = types.AnyType{}
-		}
-		c.env.SetVar(s.Name, t, false)
-		typStr = goType(t)
 	}
 	if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
 		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
@@ -734,7 +731,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			}
 		}
 		if value == "nil" {
-			v, err := c.compileExpr(s.Value)
+			v, err := c.compileExprHint(s.Value, typ)
 			if err != nil {
 				return err
 			}
@@ -783,7 +780,15 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	}
 	if value == "" {
 		var err error
-		value, err = c.compileExpr(s.Value)
+		if c.env != nil {
+			if t, err2 := c.env.GetVar(s.Name); err2 == nil {
+				value, err = c.compileExprHint(s.Value, t)
+			} else {
+				value, err = c.compileExpr(s.Value)
+			}
+		} else {
+			value, err = c.compileExpr(s.Value)
+		}
 		if err != nil {
 			return err
 		}
