@@ -1,0 +1,140 @@
+// Solution for LeetCode problem 358 - Rearrange String k Distance Apart
+// Greedy approach using a cooldown map and character counts.
+
+fun rearrangeString(s: string, k: int): string {
+  if k <= 1 {
+    return s
+  }
+
+  // count frequency of each character
+  var counts: map<string,int> = {}
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch in counts {
+      counts[ch] = counts[ch] + 1
+    } else {
+      counts[ch] = 1
+    }
+    i = i + 1
+  }
+
+  var cooldown: map<string,int> = {}
+  var result = ""
+  var step = 0
+  let n = len(s)
+
+  while len(result) < n {
+    var bestChar = ""
+    var bestCount = -1
+    for ch in counts {
+      let remaining = counts[ch]
+      var next = 0
+      if ch in cooldown {
+        next = cooldown[ch]
+      }
+      if remaining > 0 && next <= step {
+        if remaining > bestCount {
+          bestCount = remaining
+          bestChar = ch
+        }
+      }
+    }
+    if bestCount == (-1) {
+      return ""
+    }
+    result = result + bestChar
+    counts[bestChar] = counts[bestChar] - 1
+    cooldown[bestChar] = step + k
+    step = step + 1
+  }
+
+  return result
+}
+
+fun sortString(t: string): string {
+  var chars: list<string> = []
+  var i = 0
+  while i < len(t) {
+    chars = chars + [t[i]]
+    i = i + 1
+  }
+  let sorted = from c in chars sort by c select c
+  var out = ""
+  for c in sorted {
+    out = out + c
+  }
+  return out
+}
+
+fun isValid(result: string, original: string, k: int): bool {
+  if result == "" {
+    return true // caller checks emptiness separately
+  }
+  if sortString(result) != sortString(original) {
+    return false
+  }
+  var pos: map<string,int> = {}
+  var i = 0
+  while i < len(result) {
+    let ch = result[i]
+    if ch in pos {
+      if i - pos[ch] < k {
+        return false
+      }
+    }
+    pos[ch] = i
+    i = i + 1
+  }
+  return true
+}
+
+
+// Test cases derived from the problem statement
+
+test "example 1" {
+  let res = rearrangeString("aabbcc", 3)
+  expect isValid(res, "aabbcc", 3)
+}
+
+test "example 2" {
+  expect rearrangeString("aaabc", 3) == ""
+}
+
+test "example 3" {
+  let res = rearrangeString("aaadbbcc", 2)
+  expect isValid(res, "aaadbbcc", 2)
+}
+
+// Additional edge cases
+
+test "k one" {
+  let res = rearrangeString("aab", 1)
+  expect res == "aab"
+}
+
+test "single char" {
+  expect rearrangeString("a", 2) == "a"
+}
+
+test "impossible" {
+  expect rearrangeString("aaa", 2) == ""
+}
+
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+   if count = 0 { }      // ❌ assignment
+   if count == 0 { }     // ✅ comparison
+2. Reassigning a variable declared with 'let':
+   let x = 1
+   x = 2                 // ❌ cannot modify immutable binding
+   var y = 1
+   y = 2                 // ✅ use var for mutable values
+3. Forgetting to initialize a map before use:
+   var m: map<string,int>
+   // m["a"] = 1          // ❌ runtime error (nil map)
+   var m: map<string,int> = {}
+   m["a"] = 1             // ✅ properly initialized
+*/
