@@ -1,0 +1,120 @@
+// Solution for LeetCode problem 262 - Trips and Users
+
+// Record types for the input tables and the result
+
+// User holds an id, whether the user is banned and the role
+// No union types or match statements are used
+
+type User {
+  id: int
+  banned: bool
+  role: string
+}
+
+// Trip references a client and driver by id
+
+type Trip {
+  id: int
+  clientId: int
+  driverId: int
+  cityId: int
+  status: string
+  requestAt: string
+}
+
+// Result returned for each day
+
+type Result {
+  day: string
+  cancellationRate: float
+}
+
+// Helper to check if a user id is not banned
+fun isUnbanned(id: int, users: list<User>): bool {
+  for u in users {
+    if u.id == id {
+      return !u.banned
+    }
+  }
+  return false
+}
+
+// Round to two decimal places
+fun round2(x: float): float {
+  let scaled = x * 100.0 + 0.5
+  let i = scaled as int
+  return i as float / 100.0
+}
+
+// Compute cancellation rate for each day between 2013-10-01 and 2013-10-03
+fun cancellationRates(trips: list<Trip>, users: list<User>): list<Result> {
+  let days = ["2013-10-01", "2013-10-02", "2013-10-03"]
+  var results: list<Result> = []
+  for d in days {
+    var total = 0
+    var cancelled = 0
+    for t in trips {
+      if t.requestAt == d && isUnbanned(t.clientId, users) && isUnbanned(t.driverId, users) {
+        total = total + 1
+        if t.status != "completed" {
+          cancelled = cancelled + 1
+        }
+      }
+    }
+    if total > 0 {
+      let rate = (cancelled as float) / (total as float)
+      results = results + [Result { day: d, cancellationRate: round2(rate) }]
+    }
+  }
+  return results
+}
+
+// Example data
+let users: list<User> = [
+  User { id: 1, banned: false, role: "client" },
+  User { id: 2, banned: true, role: "client" },
+  User { id: 3, banned: false, role: "client" },
+  User { id: 4, banned: false, role: "client" },
+  User { id: 5, banned: false, role: "driver" },
+  User { id: 6, banned: false, role: "driver" },
+  User { id: 7, banned: true, role: "driver" }
+]
+
+let trips: list<Trip> = [
+  Trip { id: 1, clientId: 1, driverId: 5, cityId: 1, status: "completed", requestAt: "2013-10-01" },
+  Trip { id: 2, clientId: 3, driverId: 5, cityId: 1, status: "cancelled_by_driver", requestAt: "2013-10-01" },
+  Trip { id: 3, clientId: 4, driverId: 6, cityId: 1, status: "completed", requestAt: "2013-10-01" },
+  Trip { id: 4, clientId: 1, driverId: 5, cityId: 1, status: "cancelled_by_client", requestAt: "2013-10-02" },
+  Trip { id: 5, clientId: 3, driverId: 6, cityId: 1, status: "completed", requestAt: "2013-10-02" },
+  Trip { id: 6, clientId: 1, driverId: 5, cityId: 1, status: "completed", requestAt: "2013-10-03" },
+  Trip { id: 7, clientId: 2, driverId: 7, cityId: 1, status: "cancelled_by_driver", requestAt: "2013-10-03" },
+  Trip { id: 8, clientId: 3, driverId: 6, cityId: 1, status: "completed", requestAt: "2013-10-03" },
+  Trip { id: 9, clientId: 4, driverId: 5, cityId: 1, status: "cancelled_by_driver", requestAt: "2013-10-03" }
+]
+
+// Expected cancellation rates for the example data
+let expected: list<Result> = [
+  Result { day: "2013-10-01", cancellationRate: 0.33 },
+  Result { day: "2013-10-02", cancellationRate: 0.5 },
+  Result { day: "2013-10-03", cancellationRate: 0.33 }
+]
+
+test "sample data" {
+  expect str(cancellationRates(trips, users)) == str(expected)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if t.status = "completed" { ... }  // ❌ assignment
+     if t.status == "completed" { ... } // ✅ comparison
+2. Reassigning a value declared with 'let':
+     let cnt = 0
+     cnt = cnt + 1              // ❌ cannot reassign immutable binding
+     var cnt = 0                // ✅ declare with 'var' when mutation is needed
+3. Omitting the element type for an empty list:
+var res = []               // ❌ type cannot be inferred
+     var res: list<Result> = [] // ✅ specify the list element type
+*/
+
+print("ok")

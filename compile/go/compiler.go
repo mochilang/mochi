@@ -1927,9 +1927,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Cast != nil:
 			t := c.resolveTypeRef(op.Cast.Type)
-			c.use("_cast")
-			c.imports["encoding/json"] = true
-			val = fmt.Sprintf("_cast[%s](%s)", goType(t), val)
+			if (isInt(typ) || isInt64(typ) || isFloat(typ)) &&
+				(isInt(t) || isInt64(t) || isFloat(t)) {
+				val = fmt.Sprintf("%s(%s)", goType(t), val)
+			} else {
+				c.use("_cast")
+				c.imports["encoding/json"] = true
+				val = fmt.Sprintf("_cast[%s](%s)", goType(t), val)
+			}
 			typ = t
 		}
 	}
@@ -3316,19 +3321,49 @@ func (c *Compiler) scanPostfixImports(p *parser.PostfixExpr) {
 		return
 	}
 	c.scanPrimaryImports(p.Target)
+	typ := c.inferPrimaryType(p.Target)
 	for _, op := range p.Ops {
 		switch {
 		case op.Call != nil:
 			for _, a := range op.Call.Args {
 				c.scanExprImports(a)
 			}
+			if ft, ok := typ.(types.FuncType); ok {
+				typ = ft.Return
+			} else {
+				typ = types.AnyType{}
+			}
 		case op.Index != nil:
 			idx := op.Index
 			c.scanExprImports(idx.Start)
 			c.scanExprImports(idx.End)
+			if op.Index.Colon == nil {
+				switch tt := typ.(type) {
+				case types.ListType:
+					typ = tt.Elem
+				case types.MapType:
+					typ = tt.Value
+				case types.StringType:
+					typ = types.StringType{}
+				default:
+					typ = types.AnyType{}
+				}
+			} else {
+				switch tt := typ.(type) {
+				case types.ListType:
+					typ = tt
+				case types.StringType:
+					typ = types.StringType{}
+				default:
+					typ = types.AnyType{}
+				}
+			}
 		case op.Cast != nil:
-			c.imports["encoding/json"] = true
-			c.use("_cast")
+			t := c.resolveTypeRef(op.Cast.Type)
+			// Casts are handled during compilation based on
+			// actual types, so scanning does not add any helpers
+			// unless the compiled code requests them.
+			typ = t
 		}
 	}
 }
