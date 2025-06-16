@@ -123,7 +123,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	wrotePlaceholder := false
 	for _, s := range prog.Statements {
 		if s.Test != nil {
-			break
+			continue
 		}
 		switch {
 		case s.Let != nil:
@@ -337,7 +337,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	if c.env != nil {
 		t, err := c.env.GetVar(s.Name)
 		if err != nil {
-			if s.Value != nil {
+			if s.Type != nil {
+				t = c.resolveTypeRef(s.Type)
+			} else if s.Value != nil {
 				t = c.inferExprType(s.Value)
 			} else {
 				t = types.AnyType{}
@@ -374,7 +376,9 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	if c.env != nil {
 		t, err := c.env.GetVar(s.Name)
 		if err != nil {
-			if s.Value != nil {
+			if s.Type != nil {
+				t = c.resolveTypeRef(s.Type)
+			} else if s.Value != nil {
 				t = c.inferExprType(s.Value)
 			} else {
 				t = types.AnyType{}
@@ -992,7 +996,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if (isInt(lType) && isInt(rType)) ||
 					(isInt(lType) && isAny(rType)) ||
 					(isAny(lType) && isInt(rType)) {
-					expr = fmt.Sprintf("(%s // %s)", lExpr, rExpr)
+					expr = fmt.Sprintf("int(%s / %s)", lExpr, rExpr)
 					t = types.IntType{}
 				} else {
 					expr = fmt.Sprintf("(%s / %s)", lExpr, rExpr)
