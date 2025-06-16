@@ -167,9 +167,15 @@ func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (V
 		if right.Tag == TagInt {
 			return applyIntBinaryValue(pos, left.Int, op, right.Int)
 		}
+		if right.Tag == TagFloat {
+			return applyFloatBinaryValue(pos, float64(left.Int), op, right.Float)
+		}
 	case TagFloat:
 		if right.Tag == TagFloat {
 			return applyFloatBinaryValue(pos, left.Float, op, right.Float)
+		}
+		if right.Tag == TagInt {
+			return applyFloatBinaryValue(pos, left.Float, op, float64(right.Int))
 		}
 	case TagStr:
 		if right.Tag == TagStr {

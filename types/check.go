@@ -995,6 +995,9 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 		}
 	case "==", "!=", "<", "<=", ">", ">=":
 		if !unify(left, right, nil) {
+			if isNumeric(left) && isNumeric(right) {
+				return BoolType{}, nil
+			}
 			return nil, errIncompatibleComparison(pos)
 		}
 		return BoolType{}, nil
@@ -1791,6 +1794,15 @@ func stringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+func isNumeric(t Type) bool {
+	switch t.(type) {
+	case IntType, Int64Type, FloatType:
+		return true
+	default:
+		return false
+	}
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
