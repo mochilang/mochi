@@ -1,0 +1,96 @@
+// LeetCode 346 - Moving Average from Data Stream
+
+// Struct holding the window size, current numbers and their sum
+// so that the moving average can be updated efficiently.
+type MovingAverage {
+  size: int
+  nums: list<int>
+  total: int
+}
+
+fun newMovingAverage(size: int): MovingAverage {
+  return MovingAverage { size: size, nums: [] as list<int>, total: 0 }
+}
+
+// Result returned from 'next' containing the updated structure and
+// the computed average for the latest window.
+type NextResult {
+  ma: MovingAverage
+  average: float
+}
+
+fun next(ma: MovingAverage, val: int): NextResult {
+  var nums = ma.nums
+  var total = ma.total
+  if len(nums) == ma.size {
+    total = total - nums[0]
+    nums = nums[1:len(nums)]
+  }
+  nums = nums + [val]
+  total = total + val
+  let updated = MovingAverage { size: ma.size, nums: nums, total: total }
+  let avg = (total as float) / (len(nums) as float)
+  return NextResult { ma: updated, average: avg }
+}
+
+// Basic example from the LeetCode description
+
+test "example" {
+  var ma = newMovingAverage(3)
+  let r1 = next(ma, 1)
+  ma = r1.ma
+  expect r1.average == 1.0
+  let r2 = next(ma, 10)
+  ma = r2.ma
+  expect r2.average == 5.5
+  let r3 = next(ma, 3)
+  ma = r3.ma
+  expect r3.average == 14.0 / 3.0
+  let r4 = next(ma, 5)
+  ma = r4.ma
+  expect r4.average == 6.0
+}
+
+// Additional edge cases
+
+test "single element window" {
+  var ma = newMovingAverage(1)
+  let r = next(ma, 4)
+  ma = r.ma
+  expect r.average == 4.0
+  let r2 = next(ma, 7)
+  ma = r2.ma
+  expect r2.average == 7.0
+}
+
+test "window smaller than inputs" {
+  var ma = newMovingAverage(2)
+  let a = next(ma, 3)
+  ma = a.ma
+  expect a.average == 3.0
+  let b = next(ma, 5)
+  ma = b.ma
+  expect b.average == 4.0
+  let c = next(ma, 7)
+  ma = c.ma
+  expect c.average == 6.0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in a condition:
+     if len(nums) = size { }
+   Use '==' for equality comparisons.
+2. Reassigning a variable declared with 'let':
+     let total = 0
+     total = total + val  // ERROR
+   Declare it with 'var' when mutation is required.
+3. Creating an empty list without specifying its element type:
+     var nums = []
+   Provide the type:
+     var nums: list<int> = []
+4. Trying Python list methods like 'nums.append(val)':
+     nums.append(val)
+   Instead build a new list:
+     nums = nums + [val]
+*/
