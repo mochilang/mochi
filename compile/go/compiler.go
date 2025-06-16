@@ -700,11 +700,22 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	value := "nil"
 	var lit *parser.Literal
 	if s.Value != nil {
-		v, err := c.compileExprHint(s.Value, t)
-		if err != nil {
-			return err
+		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
+			if mt, ok := t.(types.MapType); ok {
+				value = fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value))
+			}
+		} else if ll := s.Value.Binary.Left.Value.Target.List; ll != nil && len(ll.Elems) == 0 {
+			if lt, ok := t.(types.ListType); ok {
+				value = fmt.Sprintf("[]%s{}", goType(lt.Elem))
+			}
 		}
-		value = v
+		if value == "nil" {
+			v, err := c.compileExprHint(s.Value, t)
+			if err != nil {
+				return err
+			}
+			value = v
+		}
 		if l, ok := c.evalConstExpr(s.Value); ok {
 			lit = l
 		}
