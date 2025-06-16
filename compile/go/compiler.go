@@ -1822,6 +1822,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 	}
 
+	if len(p.Ops) == 1 && p.Ops[0].Cast != nil {
+		if ml := p.Target.Map; ml != nil && len(ml.Items) == 0 {
+			if mt, ok := c.resolveTypeRef(p.Ops[0].Cast.Type).(types.MapType); ok {
+				return fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value)), nil
+			}
+		}
+		if ll := p.Target.List; ll != nil && len(ll.Elems) == 0 {
+			if lt, ok := c.resolveTypeRef(p.Ops[0].Cast.Type).(types.ListType); ok {
+				return fmt.Sprintf("[]%s{}", goType(lt.Elem)), nil
+			}
+		}
+	}
+
 	val, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err

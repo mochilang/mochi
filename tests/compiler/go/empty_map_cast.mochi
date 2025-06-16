@@ -1,0 +1,4 @@
+fun empty(): map<string, any> {
+  return {} as map<string, any>
+}
+print(empty())

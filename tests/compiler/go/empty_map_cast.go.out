@@ -1,0 +1,13 @@
+package main
+
+import (
+	"fmt"
+)
+
+func empty() map[string]any {
+	return map[string]any{}
+}
+
+func main() {
+	fmt.Println(empty())
+}

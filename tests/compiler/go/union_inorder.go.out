@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
@@ -20,7 +19,7 @@ func inorder(t Tree) []int {
 	return func() []int {
 	_t := t
 	if _, ok := _t.(Leaf); ok {
-		return _cast[[]int]([]any{})
+		return []int{}
 	}
 	if _tmp0, ok := _t.(Node); ok {
 		l := _tmp0.Left
@@ -35,13 +34,5 @@ func inorder(t Tree) []int {
 
 func main() {
 	fmt.Println(inorder(Node{Left: Leaf{}, Value: 1, Right: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}}))
-}
-
-func _cast[T any](v any) T {
-    data, err := json.Marshal(v)
-    if err != nil { panic(err) }
-    var out T
-    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
-    return out
 }
 
