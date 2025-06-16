@@ -12,7 +12,8 @@ func searchMatrix(matrix [][]int, target int) bool {
 	var n int = len(matrix[0])
 	var left int = 0
 	var right int = ((m * n) - 1)
-	for (left <= right) {
+	for {
+		if !((left <= right)) { break }
 		var mid int = (left + (((right - left)) / 2))
 		var row int = (mid / n)
 		var col int = (mid % n)
