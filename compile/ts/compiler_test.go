@@ -131,15 +131,15 @@ func TestTSCompiler_LeetCodeExamples(t *testing.T) {
 	if err := bench.EnsureDeno(); err != nil {
 		t.Skipf("deno not installed: %v", err)
 	}
-	for i := 1; i <= 103; i++ {
+	for i := 1; i <= 113; i++ {
 		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
 		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 		if err != nil {
 			t.Fatalf("glob error: %v", err)
 		}
 		for _, f := range files {
-                        name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
-                        t.Run(name, func(t *testing.T) {
+			name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
+			t.Run(name, func(t *testing.T) {
 				prog, err := parser.Parse(f)
 				if err != nil {
 					t.Fatalf("parse error: %v", err)
