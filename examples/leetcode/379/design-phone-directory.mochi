@@ -1,0 +1,119 @@
+// Solution for LeetCode problem 379 - Design Phone Directory
+// The directory hands out numbers from 0..maxNumbers-1. We maintain
+// a list of available numbers and a map tracking numbers currently in use.
+// No union types or pattern matching are used.
+
+// Directory state
+ type PhoneDirectory {
+  available: list<int>
+  used: map<int, bool>
+ }
+
+// Result of calling get()
+ type GetResult {
+  directory: PhoneDirectory
+  number: int
+ }
+
+// Initialize the directory with `maxNumbers` numbers
+fun newPhoneDirectory(maxNumbers: int): PhoneDirectory {
+  var nums: list<int> = []
+  var i = 0
+  while i < maxNumbers {
+    nums = nums + [i]
+    i = i + 1
+  }
+  return PhoneDirectory { available: nums, used: {} as map<int,bool> }
+}
+
+// Provide an available number or -1 if none remain
+fun get(dir: PhoneDirectory): GetResult {
+  var avail = dir.available
+  if len(avail) == 0 {
+    return GetResult { directory: dir, number: (-1) }
+  }
+  let n = avail[0]
+  avail = avail[1:len(avail)]
+  var used = dir.used
+  used[n] = true
+  let newDir = PhoneDirectory { available: avail, used: used }
+  return GetResult { directory: newDir, number: n }
+}
+
+// Check if a number is available
+fun check(dir: PhoneDirectory, number: int): bool {
+  if number in dir.used {
+    return !dir.used[number]
+  }
+  return true
+}
+
+// Release a number back into the pool
+fun release(dir: PhoneDirectory, number: int): PhoneDirectory {
+  var used = dir.used
+  if number in used {
+    if used[number] {
+      used[number] = false
+      var avail = dir.available
+      avail = avail + [number]
+      return PhoneDirectory { available: avail, used: used }
+    }
+  }
+  return dir
+}
+
+// Tests based on the LeetCode example
+
+test "example" {
+  var dir = newPhoneDirectory(3)
+  let r1 = get(dir)
+  dir = r1.directory
+  expect r1.number == 0
+  let r2 = get(dir)
+  dir = r2.directory
+  expect r2.number == 1
+  expect check(dir, 2) == true
+  let r3 = get(dir)
+  dir = r3.directory
+  expect r3.number == 2
+  expect check(dir, 2) == false
+  dir = release(dir, 2)
+  expect check(dir, 2) == true
+}
+
+// Additional edge cases
+
+test "release twice" {
+  var dir = newPhoneDirectory(1)
+  let r1 = get(dir)
+  dir = r1.directory
+  expect r1.number == 0
+  dir = release(dir, 0)
+  dir = release(dir, 0)
+  let r2 = get(dir)
+  dir = r2.directory
+  expect r2.number == 0
+}
+
+test "get empty" {
+  var dir = newPhoneDirectory(0)
+  let r = get(dir)
+  expect r.number == (-1)
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if check(dir, 0) = true { }
+   // ❌ assignment; use '==' for comparison.
+2. Attempting to mutate struct fields directly:
+     dir.available = []
+   // ❌ fields are immutable; build a new struct instead.
+3. Declaring a variable with 'let' that you later reassign:
+     let dir = newPhoneDirectory(1)
+     dir = release(dir, 0)
+   // ❌ cannot reassign immutable binding; use 'var dir' when mutation is needed.
+4. Forgetting to specify element types for empty collections:
+     var m = {}
+   // ❌ type cannot be inferred. Use: var m: map<int,bool> = {}
+*/
