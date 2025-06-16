@@ -622,7 +622,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		if c.returnType != nil && !equalTypes(c.returnType, c.inferExprType(s.Return.Value)) {
+		exprType := c.inferExprType(s.Return.Value)
+		if c.returnType != nil && (isAny(exprType) || !equalTypes(c.returnType, exprType)) {
 			c.use("_cast")
 			expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
 		}

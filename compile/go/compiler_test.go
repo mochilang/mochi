@@ -112,8 +112,9 @@ func TestGoCompiler_LeetCodeExamples(t *testing.T) {
 	for i := 1; i <= 94; i++ {
 		runExample(t, i)
 	}
-	runExample(t, 99)
-	runExample(t, 102)
+	for _, i := range []int{99, 102, 109} {
+		runExample(t, i)
+	}
 }
 
 func runExample(t *testing.T, i int) {
