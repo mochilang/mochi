@@ -79,26 +79,30 @@ run-go: mochi ## Compile and run Go output. Usage: make run-go ID=<problem numbe
 test: mochi ## Run all tests in *.mochi files
 	@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
 
-compile: mochi ## Compile all .mochi files to Go and save to ../leetcode-out
+compile: mochi ## Compile all .mochi files to Go, Python, and TypeScript
 	@mkdir -p ../leetcode-out
-	@for f in $$(find $(shell seq -s " " 1 400) -name '*.mochi'); do \
+	@for f in $$(find $(shell seq -s " " 361 400) -name '*.mochi'); do \
 		start=$$(date +%s%N); \
 		dir=$$(dirname "$$f"); \
 		rel=$${dir#./}; \
 		mkdir -p ../leetcode-out/"$$rel"; \
 		base=$$(basename "$$f" .mochi); \
-		out=../leetcode-out/"$$rel"/"$$base.go.out"; \
-		if ./bin/mochi build "$$f" -o "$$out" --target go > /dev/null 2>&1; then \
-			end=$$(date +%s%N); \
-			dur_ms=$$(( (end - start)/1000000 )); \
-			printf "✅ Compiled \033[1m%s\033[0m → %s in %d ms\n" "$$f" "$$out" "$$dur_ms"; \
-		else \
-			echo "❌ Failed to compile: $$f" >&2; \
+		success=true; \
+		for target in go py ts; do \
+			out=../leetcode-out/"$$rel"/"$$base.$$target.out"; \
+			if ./bin/mochi build "$$f" -o "$$out" --target "$$target" > /dev/null 2>&1; then \
+				: ; \
+			else \
+				echo "❌ Failed to compile: $$f → $$target" >&2; \
+				success=false; \
+			fi; \
+		done; \
+		end=$$(date +%s%N); \
+		dur_ms=$$(( (end - start)/1000000 )); \
+		if $$success; then \
+			printf "✅ Compiled \033[1m%s\033[0m → go/py/ts in %d ms\n" "$$f" "$$dur_ms"; \
 		fi; \
 	done
-
-
-
 
 clean: ## Remove Mochi binaries and build outputs
 	@rm -rf bin
