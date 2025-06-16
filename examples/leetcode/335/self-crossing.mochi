@@ -1,0 +1,67 @@
+// LeetCode Problem 335 - Self Crossing
+
+fun isSelfCrossing(distance: list<int>): bool {
+  let n = len(distance)
+  if n < 4 {
+    return false
+  }
+  var i = 3
+  while i < n {
+    // Case 1: current line crosses the line 3 steps ahead
+    if distance[i] >= distance[i - 2] && distance[i - 1] <= distance[i - 3] {
+      return true
+    }
+    // Case 2: current line meets the line 4 steps ahead
+    if i >= 4 && distance[i - 1] == distance[i - 3] && distance[i] + distance[i - 4] >= distance[i - 2] {
+      return true
+    }
+    // Case 3: current line crosses the line 5 steps ahead
+    if i >= 5 && distance[i - 2] >= distance[i - 4] && distance[i - 1] <= distance[i - 3] && distance[i] + distance[i - 4] >= distance[i - 2] && distance[i - 1] + distance[i - 5] >= distance[i - 3] {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect isSelfCrossing([2,1,1,2]) == true
+}
+
+test "example 2" {
+  expect isSelfCrossing([1,2,3,4]) == false
+}
+
+test "example 3" {
+  expect isSelfCrossing([1,1,1,2,1]) == true
+}
+
+// Additional edge cases
+
+test "short" {
+  expect isSelfCrossing([1,2,1]) == false
+}
+
+test "no crossing" {
+  expect isSelfCrossing([3,3,4,2,2]) == false
+}
+
+test "cross late" {
+  expect isSelfCrossing([1,1,2,1,1]) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==':
+   if n = 3 { }        // ERROR: assignment instead of comparison
+   // Fix: use '==' when comparing values.
+2. Forgetting to declare a mutable variable with 'var':
+   let i = 0
+   i = i + 1            // ERROR[E004]: cannot reassign immutable binding
+   // Fix: use 'var i = 0' if the value will change.
+3. Omitting element types when initializing an empty list:
+   var nums = []        // ERROR: type cannot be inferred
+   // Fix: specify the type, e.g., 'var nums: list<int> = []'.
+*/
