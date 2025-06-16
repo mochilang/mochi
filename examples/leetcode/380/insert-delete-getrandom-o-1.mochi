@@ -1,0 +1,111 @@
+// Solution for LeetCode problem 380 - Insert Delete GetRandom O(1)
+// The set stores values in a list for O(1) random access and
+// tracks each value's index in a map for O(1) inserts/removals.
+//
+// Common Mochi language errors and how to fix them:
+// 1. Declaring an empty map or list without a type.
+//    var m = {}            // ❌ type cannot be inferred
+//    var m: map<int,int> = {} // ✅ specify the key and value types
+// 2. Using '=' instead of '==' in conditions.
+//    if val = 1 { }        // ❌ assignment
+//    if val == 1 { }       // ✅ comparison
+// 3. Attempting to mutate a 'let' binding.
+//    let nums = [] as list<int>
+//    nums = [1]           // ❌ cannot reassign immutable value
+//    var nums = [] as list<int> // ✅ use 'var' for mutable data
+
+
+type RandomizedSet {
+  nums: list<int>
+  idx: map<int, int>
+}
+
+type InsertResult {
+  rs: RandomizedSet
+  ok: bool
+}
+
+type RemoveResult {
+  rs: RandomizedSet
+  ok: bool
+}
+
+fun newSet(): RandomizedSet {
+  return RandomizedSet { nums: [] as list<int>, idx: {} as map<int,int> }
+}
+
+fun copyMap(src: map<int,int>): map<int,int> {
+  var out: map<int,int> = {}
+  for k in src {
+    out[k] = src[k]
+  }
+  return out
+}
+
+// Insert val if not present.
+fun insert(rs: RandomizedSet, val: int): InsertResult {
+  if val in rs.idx {
+    return InsertResult { rs: rs, ok: false }
+  }
+  let nums = rs.nums + [val]
+  var idxMap = copyMap(rs.idx)
+  idxMap[val] = len(nums) - 1
+  return InsertResult { rs: RandomizedSet { nums: nums, idx: idxMap }, ok: true }
+}
+
+// Remove val if present.
+fun remove(rs: RandomizedSet, val: int): RemoveResult {
+  if !(val in rs.idx) {
+    return RemoveResult { rs: rs, ok: false }
+  }
+  let idx = rs.idx[val]
+  var nums = rs.nums
+  let lastVal = nums[len(nums)-1]
+  nums[idx] = lastVal
+  nums = nums[0:len(nums)-1]
+  var idxMap = copyMap(rs.idx)
+  idxMap[lastVal] = idx
+  var newMap: map<int,int> = {}
+  for k in idxMap {
+    if k != val {
+      newMap[k] = idxMap[k]
+    }
+  }
+  return RemoveResult { rs: RandomizedSet { nums: nums, idx: newMap }, ok: true }
+}
+
+// Return a random element from the set.
+fun getRandom(rs: RandomizedSet): int {
+  let i = now() % len(rs.nums)
+  return rs.nums[i]
+}
+
+// Basic tests based on the LeetCode description
+
+test "example" {
+  var rs = newSet()
+  let a = insert(rs, 1)
+  rs = a.rs
+  expect a.ok == true
+
+  let b = remove(rs, 2)
+  rs = b.rs
+  expect b.ok == false
+
+  let c = insert(rs, 2)
+  rs = c.rs
+  expect c.ok == true
+
+  let r = getRandom(rs)
+  expect (r == 1 || r == 2) == true
+
+  let d = remove(rs, 1)
+  rs = d.rs
+  expect d.ok == true
+
+  let e = insert(rs, 2)
+  rs = e.rs
+  expect e.ok == false
+
+  expect getRandom(rs) == 2
+}
