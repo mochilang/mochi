@@ -8,10 +8,10 @@ func main() {
 	var m map[int]int = map[int]int{}
 	m[1] = 10
 	m[2] = 20
-	_tmp0 := 1
-	_tmp1 := m
-	_, _tmp2 := _tmp1[_tmp0]
-	if _tmp2 {
+	key0 := 1
+	_map1 := m
+	_, ok2 := _map1[key0]
+	if ok2 {
 		fmt.Println(m[1])
 	}
 	fmt.Println(m[2])

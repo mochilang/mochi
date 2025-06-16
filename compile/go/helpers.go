@@ -314,8 +314,12 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
-func (c *Compiler) newVar() string {
-	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+func (c *Compiler) newVar(prefix ...string) string {
+	name := "_tmp"
+	if len(prefix) > 0 && prefix[0] != "" {
+		name = sanitizeName(prefix[0])
+	}
+	name = fmt.Sprintf("%s%d", name, c.tempVarCount)
 	c.tempVarCount++
 	return name
 }

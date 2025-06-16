@@ -1644,22 +1644,22 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	case "in":
 		switch rightType.(type) {
 		case types.MapType:
-			keyTemp := c.newVar()
-			mapTemp := c.newVar()
+			keyTemp := c.newVar("key")
+			mapTemp := c.newVar("map")
 			c.writeln(fmt.Sprintf("%s := %s", keyTemp, left))
 			c.writeln(fmt.Sprintf("%s := %s", mapTemp, right))
-			okVar := c.newVar()
+			okVar := c.newVar("ok")
 			c.writeln(fmt.Sprintf("_, %s := %s[%s]", okVar, mapTemp, keyTemp))
 			expr = okVar
 			next = types.BoolType{}
 		case types.ListType:
-			itemVar := c.newVar()
-			listVar := c.newVar()
+			itemVar := c.newVar("item")
+			listVar := c.newVar("list")
 			c.writeln(fmt.Sprintf("%s := %s", itemVar, left))
 			c.writeln(fmt.Sprintf("%s := %s", listVar, right))
-			resultVar := c.newVar()
+			resultVar := c.newVar("found")
 			c.writeln(fmt.Sprintf("%s := false", resultVar))
-			iterVar := c.newVar()
+			iterVar := c.newVar("it")
 			c.writeln(fmt.Sprintf("for _, %s := range %s {", iterVar, listVar))
 			c.indent++
 			c.writeln(fmt.Sprintf("if %s == %s { %s = true; break }", iterVar, itemVar, resultVar))
@@ -2656,7 +2656,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if call, ok := callPattern(cse.Pattern); ok {
 			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
-				varName := c.newVar()
+				varName := c.newVar("variant")
 				cond := fmt.Sprintf("%s, ok := _t.(%s); ok", varName, sanitizeName(call.Func))
 				buf.WriteString("\tif " + cond + " {\n")
 				for idx, arg := range call.Args {
