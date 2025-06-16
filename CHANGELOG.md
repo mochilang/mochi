@@ -1,4 +1,20 @@
 # 📦 CHANGELOG.md
+## [0.7.4] – 2025-06-16
+
+### Added
+
+* LeetCode solutions 241–400 with Python and TypeScript outputs
+* Go versions compiled for problems 361–400
+* Numeric comparisons across integers and floats
+* Slice concatenation support
+* Nested functions and globals in the TypeScript compiler
+* Go compiler arithmetic with `any` and empty literal assignments
+
+### Fixed
+
+* Stable float formatting in the Python compiler
+* Random Pick Index and LeetCode 321 examples
+
 ## [0.7.3] – 2025-06-15
 
 ### Added
