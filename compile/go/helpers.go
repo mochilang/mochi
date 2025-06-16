@@ -33,6 +33,14 @@ func indentBlock(s string, depth int) string {
 	return strings.Join(lines, "\n") + "\n"
 }
 
+var goReserved = map[string]bool{
+	"break": true, "default": true, "func": true, "interface": true, "select": true,
+	"case": true, "defer": true, "go": true, "map": true, "struct": true,
+	"chan": true, "else": true, "goto": true, "package": true, "switch": true,
+	"const": true, "fallthrough": true, "if": true, "range": true, "type": true,
+	"continue": true, "for": true, "import": true, "return": true, "var": true,
+}
+
 func sanitizeName(name string) string {
 	var b strings.Builder
 	for i, r := range name {
@@ -44,10 +52,14 @@ func sanitizeName(name string) string {
 			b.WriteRune('_')
 		}
 	}
-	if b.Len() == 0 || !((b.String()[0] >= 'A' && b.String()[0] <= 'Z') || (b.String()[0] >= 'a' && b.String()[0] <= 'z') || b.String()[0] == '_') {
-		return "_" + b.String()
+	sanitized := b.String()
+	if sanitized == "" || !((sanitized[0] >= 'A' && sanitized[0] <= 'Z') || (sanitized[0] >= 'a' && sanitized[0] <= 'z') || sanitized[0] == '_') {
+		sanitized = "_" + sanitized
 	}
-	return b.String()
+	if goReserved[sanitized] {
+		sanitized = "_" + sanitized
+	}
+	return sanitized
 }
 
 func exportName(name string) string {
