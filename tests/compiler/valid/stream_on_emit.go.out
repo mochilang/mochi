@@ -20,7 +20,7 @@ func main() {
 		close(_done0)
 		return nil
 	})
-	_, _ = sensorStream.Emit(context.Background(), Sensor{Id: "sensor-1", Temperature: 22.500000})
+	_, _ = sensorStream.Emit(context.Background(), Sensor{Id: "sensor-1", Temperature: 22.5})
 	<-_done0
 	sensorStream.Close()
 }

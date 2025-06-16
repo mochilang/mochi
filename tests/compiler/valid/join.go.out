@@ -25,14 +25,14 @@ func main() {
 	var customers []Customer = []Customer{Customer{Id: 1, Name: "Alice"}, Customer{Id: 2, Name: "Bob"}, Customer{Id: 3, Name: "Charlie"}}
 	var orders []Order = []Order{Order{Id: 100, CustomerId: 1, Total: 250}, Order{Id: 101, CustomerId: 2, Total: 125}, Order{Id: 102, CustomerId: 1, Total: 300}, Order{Id: 103, CustomerId: 4, Total: 80}}
 	var result []PairInfo = func() []PairInfo {
-	res := []PairInfo{}
+	_res := []PairInfo{}
 	for _, o := range orders {
 		for _, c := range customers {
 			if !((o.CustomerId == c.Id)) { continue }
-			res = append(res, PairInfo{OrderId: o.Id, CustomerName: c.Name, Total: o.Total})
+			_res = append(_res, PairInfo{OrderId: o.Id, CustomerName: c.Name, Total: o.Total})
 		}
 	}
-	return res
+	return _res
 }()
 	fmt.Println("--- Orders with customer info ---")
 	for _, entry := range result {

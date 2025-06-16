@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"mochi/interpreter"
@@ -2183,7 +2184,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
 	if simple {
-		buf.WriteString(fmt.Sprintf("\tres := []%s{}\n", retElem))
+		buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
 	} else {
 		buf.WriteString(fmt.Sprintf("\titems := []%s{}\n", elemGo))
 	}
@@ -2233,7 +2234,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if cond != "" {
 			if simple {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
-				buf.WriteString(fmt.Sprintf(indent+"\tres = append(res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"\t_res = append(_res, %s)\n", sel))
 				buf.WriteString(indent + "}\n")
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
@@ -2242,7 +2243,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		} else {
 			if simple {
-				buf.WriteString(fmt.Sprintf(indent+"res = append(res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"_res = append(_res, %s)\n", sel))
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
 			}
@@ -2255,7 +2256,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if cond != "" {
 			if simple {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
-				buf.WriteString(fmt.Sprintf(indent+"\tres = append(res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"\t_res = append(_res, %s)\n", sel))
 				buf.WriteString(indent + "}\n")
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
@@ -2264,7 +2265,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		} else {
 			if simple {
-				buf.WriteString(fmt.Sprintf(indent+"res = append(res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"_res = append(_res, %s)\n", sel))
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
 			}
@@ -2275,7 +2276,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if cond != "" {
 			if simple {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
-				buf.WriteString(fmt.Sprintf(indent+"\tres = append(res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"\t_res = append(_res, %s)\n", sel))
 				buf.WriteString(indent + "}\n")
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
@@ -2284,7 +2285,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		} else {
 			if simple {
-				buf.WriteString(fmt.Sprintf(indent+"res = append(res, %s)\n", sel))
+				buf.WriteString(fmt.Sprintf(indent+"_res = append(_res, %s)\n", sel))
 			} else {
 				buf.WriteString(fmt.Sprintf(indent+"items = append(items, %s)\n", sanitizeName(q.Var)))
 			}
@@ -2303,7 +2304,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	buf.WriteString(indent + "}\n")
 
 	if simple {
-		buf.WriteString("\treturn res\n")
+		buf.WriteString("\treturn _res\n")
 		buf.WriteString("}()")
 		return buf.String(), nil
 	}
@@ -2359,11 +2360,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("\t}\n")
 	}
 
-	buf.WriteString(fmt.Sprintf("\tres := []%s{}\n", retElem))
+	buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
 	buf.WriteString(fmt.Sprintf("\tfor _, %s := range items {\n", sanitizeName(q.Var)))
-	buf.WriteString(fmt.Sprintf("\t\tres = append(res, %s)\n", sel))
+	buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", sel))
 	buf.WriteString("\t}\n")
-	buf.WriteString("\treturn res\n")
+	buf.WriteString("\treturn _res\n")
 	buf.WriteString("}()")
 	return buf.String(), nil
 }
@@ -2411,7 +2412,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int), nil
 	case l.Float != nil:
-		return fmt.Sprintf("%f", *l.Float), nil
+		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str), nil
 	case l.Bool != nil:

@@ -12,13 +12,13 @@ type Person struct {
 func main() {
 	var people []Person = []Person{Person{Name: "Alice", Age: 30}, Person{Name: "Bob", Age: 15}, Person{Name: "Charlie", Age: 65}}
 	var names []string = func() []string {
-	res := []string{}
+	_res := []string{}
 	for _, p := range people {
 		if (p.Age >= 18) {
-			res = append(res, p.Name)
+			_res = append(_res, p.Name)
 		}
 	}
-	return res
+	return _res
 }()
 	for _, n := range names {
 		fmt.Println(n)
