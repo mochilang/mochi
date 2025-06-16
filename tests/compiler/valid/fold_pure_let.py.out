@@ -4,7 +4,7 @@ from __future__ import annotations
 import typing
 
 def sum(n: int) -> int:
-	return ((n * ((n + 1))) // 2)
+	return int((n * ((n + 1))) / 2)
 
 n = 10
 
