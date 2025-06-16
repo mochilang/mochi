@@ -25,4 +25,3 @@ func _cast[T any](v any) T {
     if err := json.Unmarshal(data, &out); err != nil { panic(err) }
     return out
 }
-

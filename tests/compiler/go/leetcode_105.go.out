@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -60,7 +61,17 @@ func main() {
 
 func _convSlice[T any, U any](s []T) []U {
     out := make([]U, len(s))
-    for i, v := range s { out[i] = any(v).(U) }
+    for i, v := range s {
+        if cv, ok := any(v).(U); ok {
+            out[i] = cv
+        } else {
+            data, err := json.Marshal(v)
+            if err != nil { panic(err) }
+            var u U
+            if err := json.Unmarshal(data, &u); err != nil { panic(err) }
+            out[i] = u
+        }
+    }
     return out
 }
 
@@ -69,4 +80,3 @@ func _toAnySlice[T any](s []T) []any {
     for i, v := range s { out[i] = v }
     return out
 }
-

@@ -1,0 +1,87 @@
+package main
+
+import (
+	"encoding/json"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func canFinish(numCourses int, prerequisites [][]int) bool {
+	var graph [][]int = [][]int{}
+	var indegree []int = []int{}
+	for _tmp0 := 0; _tmp0 < numCourses; _tmp0++ {
+		_ = _tmp0
+		graph = append(append([][]int{}, graph...), _convSlice[[]any,[]int]([][]any{[]any{}})...)
+		indegree = append(append([]int{}, indegree...), []int{0}...)
+	}
+	for _, pair := range prerequisites {
+		var a int = pair[0]
+		var b int = pair[1]
+		graph[b] = append(append([]int{}, graph[b]...), []int{a}...)
+		indegree[a] = (indegree[a] + 1)
+	}
+	var queue []int = []int{}
+	for i := 0; i < numCourses; i++ {
+		if (indegree[i] == 0) {
+			queue = append(append([]int{}, queue...), []int{i}...)
+		}
+	}
+	var visited int = 0
+	var idx int = 0
+	for {
+		if !((idx < len(queue))) {
+			break
+		}
+		var course int = queue[idx]
+		idx = (idx + 1)
+		visited = (visited + 1)
+		for _, next := range graph[course] {
+			indegree[next] = (indegree[next] - 1)
+			if (indegree[next] == 0) {
+				queue = append(append([]int{}, queue...), []int{next}...)
+			}
+		}
+	}
+	return (visited == numCourses)
+}
+
+func simple_acyclic() {
+	expect((canFinish(2, [][]int{[]int{1, 0}}) == true))
+}
+
+func simple_cycle() {
+	expect((canFinish(2, [][]int{[]int{1, 0}, []int{0, 1}}) == false))
+}
+
+func long_chain() {
+	expect((canFinish(4, [][]int{[]int{1, 0}, []int{2, 1}, []int{3, 2}}) == true))
+}
+
+func cycle_with_more_courses() {
+	expect((canFinish(3, [][]int{[]int{0, 1}, []int{1, 2}, []int{2, 0}}) == false))
+}
+
+func main() {
+	simple_acyclic()
+	simple_cycle()
+	long_chain()
+	cycle_with_more_courses()
+}
+
+func _convSlice[T any, U any](s []T) []U {
+    out := make([]U, len(s))
+    for i, v := range s {
+        if cv, ok := any(v).(U); ok {
+            out[i] = cv
+        } else {
+            data, err := json.Marshal(v)
+            if err != nil { panic(err) }
+            var u U
+            if err := json.Unmarshal(data, &u); err != nil { panic(err) }
+            out[i] = u
+        }
+    }
+    return out
+}
