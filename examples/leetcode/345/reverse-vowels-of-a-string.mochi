@@ -1,0 +1,68 @@
+// LeetCode #345: Reverse Vowels of a String
+// Below are some common Mochi language errors and how to fix them.
+//
+// Error 1: Using '=' instead of '==' when comparing characters.
+// if ch = "a" { }
+// Fix: if ch == "a" { }
+//
+// Error 2: Attempting to mutate a string directly.
+// s[0] = "a"           // ❌ strings are immutable
+// Fix: convert to a list of characters and rebuild the string.
+//
+// Error 3: Trying Python-style methods like s.reverse().
+// Fix: use a loop and swap elements manually.
+
+fun reverseVowels(s: string): string {
+  let vowels = {
+    "a": true, "e": true, "i": true, "o": true, "u": true,
+    "A": true, "E": true, "I": true, "O": true, "U": true,
+  }
+  var chars: list<string> = []
+  for ch in s {
+    chars = chars + [ch]
+  }
+  var i = 0
+  var j = len(chars) - 1
+  while i < j {
+    while i < j {
+      if chars[i] in vowels { break }
+      i = i + 1
+    }
+    while i < j {
+      if chars[j] in vowels { break }
+      j = j - 1
+    }
+    if i < j {
+      let tmp = chars[i]
+      chars[i] = chars[j]
+      chars[j] = tmp
+      i = i + 1
+      j = j - 1
+    }
+  }
+  var result = ""
+  for ch in chars {
+    result = result + ch
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect reverseVowels("hello") == "holle"
+}
+
+test "example 2" {
+  expect reverseVowels("leetcode") == "leotcede"
+}
+
+// Additional edge cases
+
+test "mixed case" {
+  expect reverseVowels("aA") == "Aa"
+}
+
+test "empty string" {
+  expect reverseVowels("") == ""
+}
