@@ -1,105 +1,98 @@
 // LeetCode 110 - Balanced Binary Tree
+//
+// This version avoids union types and pattern matching by representing
+// the tree as an array of nodes indexed by position. A child index of
+// -1 means there is no child.
 
-// Definition for a binary tree node used across the examples.
-type Tree =
-  Leaf
-  | Node(left: Tree, value: int, right: Tree)
-
-// Helper struct returned from the recursive check function.
-type Info {
-  height: int
-  balanced: bool
+type Node {
+  value: int
+  left: int
+  right: int
 }
 
-// Determine if the tree is height-balanced.  A tree is balanced if
-// the depths of the left and right subtrees of every node never
-// differ by more than one.
 fun max(a: int, b: int): int {
-  if a > b { return a } else { return b }
+  if a > b {
+    return a
+  } else {
+    return b
+  }
 }
 
 fun abs(x: int): int {
   if x < 0 { return -x } else { return x }
 }
 
-fun height(t: Tree): int {
-  return match t {
-    Leaf => 0
-    Node(l, _, r) => max(height(l), height(r)) + 1
+fun height(tree: list<Node>, idx: int): int {
+  if idx == (-1) {
+    return 0
   }
+  let node = tree[idx]
+  return max(height(tree, node.left), height(tree, node.right)) + 1
 }
 
-fun balanced(t: Tree): bool {
-  return match t {
-    Leaf => true
-    Node(l, _, r) =>
-      balanced(l) && balanced(r) &&
-      abs(height(l) - height(r)) <= 1
+fun balanced(tree: list<Node>, idx: int): bool {
+  if idx == (-1) {
+    return true
   }
+  let node = tree[idx]
+  let lh = height(tree, node.left)
+  let rh = height(tree, node.right)
+  return balanced(tree, node.left) && balanced(tree, node.right) && abs(lh - rh) <= 1
 }
 
-fun isBalanced(root: Tree): bool {
-  return balanced(root)
+fun isBalanced(tree: list<Node>, root: int): bool {
+  return balanced(tree, root)
 }
 
 // Test cases from the LeetCode problem statement
 
 test "example 1" {
-  let tree = Node {
-    left: Node { left: Leaf {}, value: 9, right: Leaf {} },
-    value: 3,
-    right: Node {
-      left: Node { left: Leaf {}, value: 15, right: Leaf {} },
-      value: 20,
-      right: Node { left: Leaf {}, value: 7, right: Leaf {} }
-    }
-  }
-  expect isBalanced(tree) == true
+  let tree: list<Node> = [
+    Node { value: 3, left: 1, right: 2 }, // 0
+    Node { value: 9, left: -1, right: -1 }, // 1
+    Node { value: 20, left: 3, right: 4 }, // 2
+    Node { value: 15, left: -1, right: -1 }, // 3
+    Node { value: 7, left: -1, right: -1 }  // 4
+  ]
+  expect isBalanced(tree, 0) == true
 }
 
 test "example 2" {
-  let tree = Node {
-    left: Node {
-      left: Node {
-        left: Node { left: Leaf {}, value: 4, right: Leaf {} },
-        value: 3,
-        right: Node { left: Leaf {}, value: 4, right: Leaf {} }
-      },
-      value: 2,
-      right: Node { left: Leaf {}, value: 3, right: Leaf {} }
-    },
-    value: 1,
-    right: Node { left: Leaf {}, value: 2, right: Leaf {} }
-  }
-  expect isBalanced(tree) == false
+  let tree: list<Node> = [
+    Node { value: 1, left: 1, right: 2 }, // 0
+    Node { value: 2, left: 3, right: 4 }, // 1
+    Node { value: 2, left: -1, right: -1 }, // 2
+    Node { value: 3, left: 5, right: 6 }, // 3
+    Node { value: 3, left: -1, right: -1 }, // 4
+    Node { value: 4, left: -1, right: -1 }, // 5
+    Node { value: 4, left: -1, right: -1 }  // 6
+  ]
+  expect isBalanced(tree, 0) == false
 }
 
 test "single node" {
-  expect isBalanced(Node { left: Leaf {}, value: 1, right: Leaf {} }) == true
+  let tree = [Node { value: 1, left: -1, right: -1 }]
+  expect isBalanced(tree, 0) == true
 }
 
 test "empty" {
-  expect isBalanced(Leaf {}) == true
+  let empty: list<Node> = []
+  expect isBalanced(empty, -1) == true
 }
 
 /*
 Common Mochi language errors and how to fix them:
-1. Using '=' instead of '==' in a condition:
-     if diff = 1 { }
+1. Using '=' instead of '==' in a comparison:
+     if lh = rh { }
    // Use '==' when comparing values.
 2. Reassigning a value bound with 'let':
      let h = 0
      h = 1        // error[E004]
    // Use 'var' when the value needs to change.
-3. Forgetting the Leaf branch in a match expression:
-     match tree {
-       Node(l, v, r) => ...
-     }
-   // Always provide a case for 'Leaf' to handle empty trees.
-4. Calling methods like Python lists:
-     stack.append(x)
-   // Instead build a new list: stack = stack + [x].
-5. Omitting braces when creating Leaf:
-     let t = Leaf
-   // The correct form is 'Leaf {}'.
+3. Creating an empty list without specifying its element type:
+     var nodes = []             // error[E027]
+   // Provide the type: var nodes: list<Node> = []
+4. Accessing a child index that is -1:
+     let n = tree[node.left]
+   // Check the index is not -1 before indexing.
 */
