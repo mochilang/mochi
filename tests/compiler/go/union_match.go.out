@@ -9,13 +9,13 @@ type Leaf struct {
 }
 func (Leaf) isTree() {}
 type Node struct {
-	Left any `json:"left"`
+	Left Tree `json:"left"`
 	Value int `json:"value"`
-	Right any `json:"right"`
+	Right Tree `json:"right"`
 }
 func (Node) isTree() {}
 
-func isLeaf(t any) bool {
+func isLeaf(t Tree) bool {
 	return func() bool {
 	_t := t
 	if _, ok := _t.(Leaf); ok {
@@ -29,4 +29,3 @@ func main() {
 	fmt.Println(isLeaf(Leaf{}))
 	fmt.Println(isLeaf(Node{Left: Leaf{}, Value: 1, Right: Leaf{}}))
 }
-
