@@ -50,18 +50,29 @@ run: mochi ## Run a .mochi file. Usage: make run ID=<problem number>
 	fi
 	@$(MOCHI_BIN) run $(ID)/*.mochi
 
-run-go: mochi ## Run compiled Go output. Usage: make run-go ID=<problem number>
+run-go: mochi ## Compile and run Go output. Usage: make run-go ID=<problem number>
 	@if [ -z "$(ID)" ]; then \
 		echo "❌ Usage: make run-go ID=<problem number>"; \
 		exit 1; \
 	fi
-	@out_file=$(ls ../leetcode-out/$(ID)/*.go.out 2>/dev/null | head -n 1); \
-	if [ -z "$$out_file" ]; then \
-		echo "❌ No compiled Go output for problem $(ID)."; \
+	@dir=$(ID); \
+	file=$$(ls "$$dir"/*.mochi 2>/dev/null | head -n 1); \
+	if [ -z "$$file" ]; then \
+		echo "❌ No .mochi file found in '$$dir'"; \
 		exit 1; \
 	fi; \
-	tmp=$$(mktemp /tmp/leetcode-$(ID)-XXXX.go); \
-	cp "$$out_file" "$$tmp"; \
+	base=$$(basename "$$file" .mochi); \
+	outdir=../leetcode-out/$$dir; \
+	out=$$outdir/$$base.go.out; \
+	mkdir -p "$$outdir"; \
+	echo "🔧 Compiling $$file to $$out..."; \
+	if ! $(MOCHI_BIN) build "$$file" -o "$$out" --target go; then \
+		echo "❌ Compilation failed."; \
+		exit 1; \
+	fi; \
+	echo "🚀 Running Go program..."; \
+	tmp=$$(mktemp /tmp/mochi-$$base-XXXX.go); \
+	cp "$$out" "$$tmp"; \
 	go run "$$tmp"; \
 	rm "$$tmp"
 
