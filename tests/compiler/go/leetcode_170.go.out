@@ -51,7 +51,7 @@ func find(ts TwoSum, value int) bool {
 	return false
 }
 
-func example() {
+func test_example() {
 	var ts TwoSum = newTwoSum()
 	ts = add(ts, 1)
 	ts = add(ts, 3)
@@ -60,7 +60,7 @@ func example() {
 	expect((find(ts, 7) == false))
 }
 
-func duplicate_numbers() {
+func test_duplicate_numbers() {
 	var ts TwoSum = newTwoSum()
 	ts = add(ts, 2)
 	ts = add(ts, 2)
@@ -70,6 +70,7 @@ func duplicate_numbers() {
 
 func main() {
 	fmt.Println("ok")
-	example()
-	duplicate_numbers()
+	test_example()
+	test_duplicate_numbers()
 }
+

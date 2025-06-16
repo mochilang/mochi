@@ -93,23 +93,23 @@ func alienOrder(words []string) string {
 	return order
 }
 
-func example_1() {
+func test_example_1() {
 	expect((alienOrder([]string{"wrt", "wrf", "er", "ett", "rftt"}) == "wertf"))
 }
 
-func example_2() {
+func test_example_2() {
 	expect((alienOrder([]string{"z", "x"}) == "zx"))
 }
 
-func invalid_order() {
+func test_invalid_order() {
 	expect((alienOrder([]string{"z", "x", "z"}) == ""))
 }
 
 func main() {
 	fmt.Println(alienOrder([]string{"wrt", "wrf", "er", "ett", "rftt"}))
-	example_1()
-	example_2()
-	invalid_order()
+	test_example_1()
+	test_example_2()
+	test_invalid_order()
 }
 
 func _indexString(s string, i int) string {

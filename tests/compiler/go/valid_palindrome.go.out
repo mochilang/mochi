@@ -49,21 +49,22 @@ func isPalindrome(s string) bool {
 	return true
 }
 
-func example_1() {
+func test_example_1() {
 	expect((isPalindrome("A man, a plan, a canal: Panama") == true))
 }
 
-func example_2() {
+func test_example_2() {
 	expect((isPalindrome("race a car") == false))
 }
 
-func example_3() {
+func test_example_3() {
 	expect((isPalindrome(" ") == true))
 }
 
 func main() {
 	fmt.Println(isPalindrome("A man, a plan, a canal: Panama"))
-	example_1()
-	example_2()
-	example_3()
+	test_example_1()
+	test_example_2()
+	test_example_3()
 }
+

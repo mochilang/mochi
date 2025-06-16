@@ -73,25 +73,25 @@ func startsWith(trie map[string]any, prefix string) bool {
 	return true
 }
 
-func search_apple() {
+func test_search_apple() {
 	var t map[string]any = Node()
 	insert(t, "apple")
 	expect((search(t, "apple") == true))
 }
 
-func search_app() {
+func test_search_app() {
 	var t map[string]any = Node()
 	insert(t, "apple")
 	expect((search(t, "app") == false))
 }
 
-func startsWith_app() {
+func test_startsWith_app() {
 	var t map[string]any = Node()
 	insert(t, "apple")
 	expect((startsWith(t, "app") == true))
 }
 
-func search_app_after_insert() {
+func test_search_app_after_insert() {
 	var t map[string]any = Node()
 	insert(t, "apple")
 	insert(t, "app")
@@ -100,10 +100,10 @@ func search_app_after_insert() {
 
 func main() {
 	fmt.Println("ok")
-	search_apple()
-	search_app()
-	startsWith_app()
-	search_app_after_insert()
+	test_search_apple()
+	test_search_app()
+	test_startsWith_app()
+	test_search_app_after_insert()
 }
 
 func _cast[T any](v any) T {
@@ -140,3 +140,4 @@ func _indexString(s string, i int) string {
     }
     return string(runes[i])
 }
+

@@ -1,0 +1,70 @@
+// Solution for LeetCode problem 272 - Closest Binary Search Tree Value II
+
+// Basic helpers for binary trees without using union types or match
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// In-order traversal collects the BST values in sorted order
+fun inorder(root: map<string, any>): list<int> {
+  if isLeaf(root) {
+    return []
+  }
+  return inorder(left(root)) + [value(root)] + inorder(right(root))
+}
+
+fun absFloat(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+// Return the k values closest to target in the BST
+fun closestKValues(root: map<string, any>, target: float, k: int): list<int> {
+  let vals = inorder(root)
+  let sorted = from v in vals sort by absFloat((v as float) - target) select v
+  return sorted[0:k]
+}
+
+// Example tree: [4,2,5,1,3]
+let example = Node(
+  Node(Node(Leaf(), 1, Leaf()), 2, Node(Leaf(), 3, Leaf())),
+  4,
+  Node(Leaf(), 5, Leaf())
+)
+
+test "example" {
+  expect closestKValues(example, 3.714286, 2) == [4,3]
+}
+
+test "single node" {
+  expect closestKValues(Node(Leaf(), 1, Leaf()), 0.0, 1) == [1]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values in conditions.
+   if x = 1 { ... }   // ❌ assignment
+   if x == 1 { ... }  // ✅ comparison
+2. Declaring a list with 'let' and then trying to mutate it.
+   let vals = []
+   vals = vals + [1]  // ❌ cannot assign
+   var vals: list<int> = [] // ✅ use 'var' for mutable lists
+3. Attempting Python-style list methods like append.
+   vals.append(1)      // ❌ not supported
+   vals = vals + [1]   // ✅ build a new list instead
+4. Using negative indices like vals[-1].
+   vals[-1]            // ❌ invalid index
+   vals[len(vals)-1]   // ✅ last element
+*/
+print(closestKValues(example, 3.714286, 2))
