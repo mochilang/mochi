@@ -18,18 +18,18 @@ let result: Array<PairInfo> = (() => {
 
 function main(): void {
 	type Customer = {
-		id: any;
-		name: any;
+		id: number;
+		name: string;
 	}
 	type Order = {
-		id: any;
-		customerId: any;
-		total: any;
+		id: number;
+		customerId: number;
+		total: number;
 	}
 	type PairInfo = {
-		orderId: any;
-		customerName: any;
-		total: any;
+		orderId: number;
+		customerName: string;
+		total: number;
 	}
 	console.log("--- Orders with customer info ---")
 	for (const entry of result) {

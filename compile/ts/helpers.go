@@ -79,6 +79,13 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	c.writeln(fmt.Sprintf("type %s = {", name))
 	c.indent++
 	for _, fn := range st.Order {
+		if typ, ok := st.Fields[fn]; ok {
+			ts := tsType(typ)
+			if ts != "" {
+				c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(fn), ts))
+				continue
+			}
+		}
 		c.writeln(fmt.Sprintf("%s: any;", sanitizeName(fn)))
 	}
 	c.indent--

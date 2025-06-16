@@ -357,15 +357,15 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		value = v
 	}
-       var typ types.Type = types.AnyType{}
-       if c.env != nil {
-               if s.Type != nil {
-                       typ = resolveTypeRef(s.Type)
-               } else if s.Value != nil {
-                       typ = c.inferExprType(s.Value)
-               }
-               c.env.SetVar(s.Name, typ, false)
-       }
+	var typ types.Type = types.AnyType{}
+	if c.env != nil {
+		if s.Type != nil {
+			typ = resolveTypeRef(s.Type)
+		} else if s.Value != nil {
+			typ = c.inferExprType(s.Value)
+		}
+		c.env.SetVar(s.Name, typ, false)
+	}
 	typStr := tsType(typ)
 	if typStr != "" {
 		c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
@@ -396,15 +396,15 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			value = v
 		}
 	}
-       var typ types.Type = types.AnyType{}
-       if c.env != nil {
-               if s.Type != nil {
-                       typ = resolveTypeRef(s.Type)
-               } else if s.Value != nil {
-                       typ = c.inferExprType(s.Value)
-               }
-               c.env.SetVar(s.Name, typ, true)
-       }
+	var typ types.Type = types.AnyType{}
+	if c.env != nil {
+		if s.Type != nil {
+			typ = resolveTypeRef(s.Type)
+		} else if s.Value != nil {
+			typ = c.inferExprType(s.Value)
+		}
+		c.env.SetVar(s.Name, typ, true)
+	}
 	typStr := tsType(typ)
 	if typStr != "" {
 		c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
@@ -524,6 +524,13 @@ func (c *Compiler) compileAgentDecl(a *parser.AgentDecl) error {
 	c.indent++
 	c.writeln("Agent: Agent")
 	for _, fn := range st.Order {
+		if typ, ok := st.Fields[fn]; ok {
+			ts := tsType(typ)
+			if ts != "" {
+				c.writeln(fmt.Sprintf("%s: %s", sanitizeName(fn), ts))
+				continue
+			}
+		}
 		c.writeln(fmt.Sprintf("%s: any", sanitizeName(fn)))
 	}
 	c.writeln("constructor() {")
@@ -670,7 +677,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			c.indent++
 			c.writeln(fmt.Sprintf("__name: \"%s\";", v.Name))
 			for _, f := range v.Fields {
-				c.writeln(fmt.Sprintf("%s: any;", sanitizeName(f.Name)))
+				ts := tsType(resolveTypeRef(f.Type))
+				if ts != "" {
+					c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(f.Name), ts))
+				} else {
+					c.writeln(fmt.Sprintf("%s: any;", sanitizeName(f.Name)))
+				}
 			}
 			c.indent--
 			c.writeln("}")
@@ -683,7 +695,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	c.indent++
 	for _, m := range t.Members {
 		if m.Field != nil {
-			c.writeln(fmt.Sprintf("%s: any;", sanitizeName(m.Field.Name)))
+			ts := tsType(resolveTypeRef(m.Field.Type))
+			if ts != "" {
+				c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(m.Field.Name), ts))
+			} else {
+				c.writeln(fmt.Sprintf("%s: any;", sanitizeName(m.Field.Name)))
+			}
 		}
 	}
 	c.indent--
@@ -1235,6 +1252,24 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	if fn.Return != nil {
 		if ts := tsType(resolveTypeRef(fn.Return)); ts != "" {
 			retType = ts
+		}
+	} else if fn.ExprBody != nil {
+		t := c.inferExprType(fn.ExprBody)
+		if ts := tsType(t); ts != "" {
+			retType = ts
+		}
+	} else if n := len(fn.BlockBody); n > 0 {
+		last := fn.BlockBody[n-1]
+		if last.Return != nil {
+			t := c.inferExprType(last.Return.Value)
+			if ts := tsType(t); ts != "" {
+				retType = ts
+			}
+		} else if last.Expr != nil {
+			t := c.inferExprType(last.Expr.Expr)
+			if ts := tsType(t); ts != "" {
+				retType = ts
+			}
 		}
 	}
 	sub := &Compiler{helpers: c.helpers, imports: c.imports}

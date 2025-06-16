@@ -2,8 +2,8 @@
 
 async function main(): Promise<void> {
 	type Sensor = {
-		id: any;
-		temperature: any;
+		id: string;
+		temperature: number;
 	}
 	
 	const sensorStream = new Stream("Sensor")
@@ -41,4 +41,3 @@ async function _waitAll(): Promise<void> {
 
 await main()
 await _waitAll()
-
