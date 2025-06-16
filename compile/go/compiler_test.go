@@ -109,10 +109,7 @@ func TestGoCompiler_GoldenOutput(t *testing.T) {
 }
 
 func TestGoCompiler_LeetCodeExamples(t *testing.T) {
-	for i := 1; i <= 10; i++ {
-		if i == 4 {
-			continue // TODO: typing issues
-		}
+       for i := 1; i <= 10; i++ {
 		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
 		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 		if err != nil {
