@@ -94,14 +94,19 @@ build-one: mochi ## Compile one .mochi to a language. Usage: make build-one ID=1
 	$(call build_one_lang,$$file,$(LANG))
 
 build-all: mochi ## Compile all problems from FROM to TO (default: 1–400). Usage: make build-all [FROM=1] [TO=400]
-	@FROM=${FROM:-1}; TO=${TO:-400}; \
-	for id in $$(seq $$FROM $$TO); do \
-		for file in $$(find $$id -name '*.mochi' 2>/dev/null); do \
-			for lang in go py ts; do \
-				$(call build_one_lang,$$file,$$lang); \
+	@FROM=$${FROM:-1}; TO=$${TO:-400}; \
+	i=$$FROM; \
+	while [ $$i -le $$TO ]; do \
+		if [ -d "$$i" ]; then \
+			for file in $$(find "$$i" -name '*.mochi' 2>/dev/null); do \
+				for lang in go py ts; do \
+					$(call build_one_lang,$$file,$$lang); \
+				done; \
 			done; \
-		done; \
+		fi; \
+		i=$$((i + 1)); \
 	done
+
 
 test: mochi ## Run all tests
 	@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
