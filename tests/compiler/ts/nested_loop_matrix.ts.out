@@ -18,4 +18,3 @@ function main(): void {
 	console.log(matrix[1][1])
 }
 main()
-

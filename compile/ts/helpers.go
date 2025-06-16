@@ -20,6 +20,8 @@ var tsReserved = map[string]struct{}{
 	"yield": {}, "let": {}, "interface": {}, "package": {}, "private": {},
 	"protected": {}, "public": {}, "static": {}, "await": {}, "implements": {},
 	"arguments": {}, "eval": {},
+	// Avoid collision with DOM types
+	"Node": {},
 }
 
 func (c *Compiler) writeln(s string) {

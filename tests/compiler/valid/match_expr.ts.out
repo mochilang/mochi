@@ -29,4 +29,3 @@ function _equal(a: any, b: any): boolean {
 }
 
 main()
-
