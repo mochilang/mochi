@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	pycode "mochi/compile/py"
@@ -38,6 +39,9 @@ func TestPyCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("python3", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ python run error: %w\n%s", err, out)
@@ -65,6 +69,9 @@ func TestPyCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("python3", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ python run error: %w\n%s", err, out)
@@ -144,6 +151,9 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 					t.Fatalf("write error: %v", err)
 				}
 				cmd := exec.Command("python3", file)
+				if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+					cmd.Stdin = bytes.NewReader(data)
+				}
 				out, err := cmd.CombinedOutput()
 				if err != nil {
 					t.Fatalf("python run error: %v\n%s", err, out)

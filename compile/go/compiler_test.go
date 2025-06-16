@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	gocode "mochi/compile/go"
@@ -36,6 +37,9 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		}
 		cmd := exec.Command("go", "run", file)
 		cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)
@@ -68,6 +72,9 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		}
 		cmd := exec.Command("go", "run", file)
 		cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)
@@ -150,6 +157,9 @@ func runExample(t *testing.T, i int) {
 			}
 			cmd := exec.Command("go", "run", file)
 			cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
 			out, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("go run error: %v\n%s", err, out)

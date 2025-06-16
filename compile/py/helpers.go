@@ -342,6 +342,9 @@ func isPurePrimary(p *parser.Primary) bool {
 	case p.Generate != nil || p.Fetch != nil || p.Load != nil || p.Save != nil || p.Query != nil || p.LogicQuery != nil:
 		return false
 	case p.Call != nil:
+		if p.Call.Func == "input" {
+			return false
+		}
 		for _, a := range p.Call.Args {
 			if !isPureExpr(a) {
 				return false

@@ -3072,6 +3072,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "str":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil
+	case "input":
+		c.imports["fmt"] = true
+		c.use("_input")
+		return "_input()", nil
 	case "count":
 		c.imports["mochi/runtime/data"] = true
 		c.use("_count")

@@ -1,0 +1,19 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("Enter first input:")
+	var input1 string = _input()
+	fmt.Println("Enter second input:")
+	var input2 string = _input()
+	fmt.Println("You entered:", input1, ",", input2)
+}
+
+func _input() string {
+    var s string
+    fmt.Scanln(&s)
+    return s
+}
