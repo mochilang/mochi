@@ -622,9 +622,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		if c.returnType != nil && !equalTypes(c.returnType, c.inferExprType(s.Return.Value)) {
-			c.use("_cast")
-			expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+		if c.returnType != nil {
+			exprType := c.inferExprType(s.Return.Value)
+			if _, ok := exprType.(types.AnyType); (ok && !isAny(c.returnType)) || !ok && !equalTypes(c.returnType, exprType) {
+				c.use("_cast")
+				expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+			}
 		}
 		c.writeln("return " + expr)
 		return nil
@@ -2810,7 +2813,7 @@ func (c *Compiler) foldCall(call *parser.CallExpr) (*parser.Literal, bool) {
 // for nested lists.
 func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
 	if lt, ok := hint.(types.ListType); ok {
-		if ll := e.Binary.Left.Value.Target.List; ll != nil {
+		if ll := e.Binary.Left.Value.Target.List; ll != nil && len(e.Binary.Right) == 0 {
 			elems := make([]string, len(ll.Elems))
 			for i, el := range ll.Elems {
 				ev, err := c.compileExprHint(el, lt.Elem)

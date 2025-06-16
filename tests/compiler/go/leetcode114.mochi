@@ -1,0 +1,23 @@
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+fun reverse(xs: list<int>): list<int> {
+  var result: list<int> = []
+  for x in xs {
+    result = [x] + result
+  }
+  return result
+}
+
+let example = Node(Node(Leaf(), 1, Leaf()), 2, Leaf())
+
+print(reverse([1,2,3]))
+print(value(left(example)))

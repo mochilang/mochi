@@ -1,0 +1,44 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func Leaf() map[string]any {
+	return _cast[map[string]any](map[string]string{"__name": "Leaf"})
+}
+
+func Node(left map[string]any, value int, right map[string]any) map[string]any {
+	return map[string]any{"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+func left(t map[string]any) map[string]any {
+	return _cast[map[string]any](t["left"])
+}
+
+func value(t map[string]any) int {
+	return _cast[int](t["value"])
+}
+
+func reverse(xs []int) []int {
+	var result []int = []int{}
+	for _, x := range xs {
+		result = append(append([]int{}, []int{x}...), result...)
+	}
+	return result
+}
+
+func main() {
+	var example map[string]any = Node(Node(Leaf(), 1, Leaf()), 2, Leaf())
+	fmt.Println(reverse([]int{1, 2, 3}))
+	fmt.Println(value(left(example)))
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
