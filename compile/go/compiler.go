@@ -1304,12 +1304,8 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		if err != nil {
 			return err
 		}
-		if exprUsesVarFun(&parser.FunExpr{Params: fun.Params, Return: fun.Return, BlockBody: fun.Body}, fun.Name) {
-			c.writeln(fmt.Sprintf("var %s %s", name, goType(ft)))
-			c.writeln(fmt.Sprintf("%s = %s", name, expr))
-		} else {
-			c.writeln("var " + name + " = " + expr)
-		}
+		c.writeln(fmt.Sprintf("var %s %s", name, goType(ft)))
+		c.writeln(fmt.Sprintf("%s = %s", name, expr))
 		return nil
 	}
 
@@ -2551,18 +2547,18 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	buf.WriteString("func() " + retType + " {\n")
 	buf.WriteString("\t_t := " + target + "\n")
 	for _, cse := range m.Cases {
-		res, err := c.compileExpr(cse.Result)
-		if err != nil {
-			return "", err
-		}
-
 		if isUnderscoreExpr(cse.Pattern) {
+			res, err := c.compileExpr(cse.Result)
+			if err != nil {
+				return "", err
+			}
 			buf.WriteString("\treturn " + res + "\n")
 			buf.WriteString("}()")
 			return buf.String(), nil
 		}
 
-		// Union variant pattern
+		child := types.NewEnv(c.env)
+
 		if call, ok := callPattern(cse.Pattern); ok {
 			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
@@ -2573,7 +2569,15 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 					if id, ok := identName(arg); ok && id != "_" {
 						field := exportName(sanitizeName(st.Order[idx]))
 						buf.WriteString(fmt.Sprintf("\t\t%s := %s.%s\n", sanitizeName(id), varName, field))
+						child.SetVar(sanitizeName(id), st.Fields[st.Order[idx]], false)
 					}
+				}
+				orig := c.env
+				c.env = child
+				res, err := c.compileExpr(cse.Result)
+				c.env = orig
+				if err != nil {
+					return "", err
 				}
 				buf.WriteString("\t\treturn " + res + "\n")
 				buf.WriteString("\t}\n")
@@ -2585,6 +2589,13 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			if _, ok := c.env.FindUnionByVariant(ident); ok {
 				cond := fmt.Sprintf("_, ok := _t.(%s); ok", sanitizeName(ident))
 				buf.WriteString("\tif " + cond + " {\n")
+				orig := c.env
+				c.env = child
+				res, err := c.compileExpr(cse.Result)
+				c.env = orig
+				if err != nil {
+					return "", err
+				}
 				buf.WriteString("\t\treturn " + res + "\n")
 				buf.WriteString("\t}\n")
 				continue
@@ -2598,6 +2609,13 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		c.use("_equal")
 		c.imports["reflect"] = true
 		buf.WriteString(fmt.Sprintf("\tif _equal(_t, %s) {\n", pat))
+		orig := c.env
+		c.env = child
+		res, err := c.compileExpr(cse.Result)
+		c.env = orig
+		if err != nil {
+			return "", err
+		}
 		buf.WriteString("\t\treturn " + res + "\n")
 		buf.WriteString("\t}\n")
 	}

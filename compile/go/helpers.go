@@ -116,6 +116,20 @@ func equalTypes(a, b types.Type) bool {
 	if isInt(a) && isInt(b) {
 		return true
 	}
+	if ua, ok := a.(types.UnionType); ok {
+		if sb, ok := b.(types.StructType); ok {
+			if _, ok := ua.Variants[sb.Name]; ok {
+				return true
+			}
+		}
+	}
+	if ub, ok := b.(types.UnionType); ok {
+		if sa, ok := a.(types.StructType); ok {
+			if _, ok := ub.Variants[sa.Name]; ok {
+				return true
+			}
+		}
+	}
 	return reflect.DeepEqual(a, b)
 }
 
