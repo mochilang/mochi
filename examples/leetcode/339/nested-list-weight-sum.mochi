@@ -1,0 +1,76 @@
+// Solution for LeetCode problem 339 - Nested List Weight Sum
+// This solution avoids union types and match statements by
+// representing each element as a map with "__name" and either
+// a "value" field for integers or an "items" field for nested lists.
+
+fun Int(val: int): map<string, any> {
+  return {"__name": "Int", "value": val}
+}
+
+fun List(items: list<map<string, any>>): map<string, any> {
+  return {"__name": "List", "items": items}
+}
+
+fun isInt(node: map<string, any>): bool {
+  return node["__name"] == "Int"
+}
+
+fun value(node: map<string, any>): int {
+  return node["value"] as int
+}
+
+fun items(node: map<string, any>): list<map<string, any>> {
+  return node["items"] as list<map<string, any>>
+}
+
+fun depthSum(nested: list<map<string, any>>): int {
+  fun helper(lst: list<map<string, any>>, depth: int): int {
+    var sum = 0
+    for node in lst {
+      if isInt(node) {
+        sum = sum + value(node) * depth
+      } else {
+        sum = sum + helper(items(node), depth + 1)
+      }
+    }
+    return sum
+  }
+  return helper(nested, 1)
+}
+
+let example1 = [
+  List([Int(1), Int(1)]),
+  Int(2),
+  List([Int(1), Int(1)])
+]
+
+test "example 1" {
+  expect depthSum(example1) == 10
+}
+
+let example2 = [
+  Int(1),
+  List([Int(4), List([Int(6)])])
+]
+
+test "example 2" {
+  expect depthSum(example2) == 27
+}
+
+test "empty" {
+  expect depthSum([]) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing strings:
+   if node["__name"] = "Int" { }  // ❌ assignment
+   if node["__name"] == "Int" { } // ✅ comparison
+2. Declaring a variable with 'let' and then trying to modify it:
+   let total = 0
+   total = total + 1            // ❌ immutable binding
+   var total = 0                // ✅ use 'var' when mutation is needed
+3. Forgetting to reassign when adding to a list:
+   items + [Int(5)]             // ❌ does nothing
+   items = items + [Int(5)]     // ✅ assign the new list back
+*/
