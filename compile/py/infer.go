@@ -1,6 +1,8 @@
 package pycode
 
 import (
+	"strings"
+
 	"mochi/parser"
 	"mochi/types"
 )
@@ -42,6 +44,12 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 				}
 			}
 			if op.Op == "+" {
+				if llist, ok := t.(types.ListType); ok {
+					if rlist, ok := rt.(types.ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
+						t = llist
+						continue
+					}
+				}
 				if _, ok := t.(types.StringType); ok {
 					if _, ok := rt.(types.StringType); ok {
 						t = types.StringType{}
@@ -52,6 +60,19 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 			t = types.AnyType{}
 		case "==", "!=", "<", "<=", ">", ">=":
 			t = types.BoolType{}
+		case "&&", "||":
+			if isBool(t) && isBool(rt) {
+				t = types.BoolType{}
+			} else {
+				t = types.AnyType{}
+			}
+		case "in":
+			switch rt.(type) {
+			case types.MapType, types.ListType, types.StringType:
+				t = types.BoolType{}
+			default:
+				t = types.AnyType{}
+			}
 		default:
 			t = types.AnyType{}
 		}
@@ -123,6 +144,12 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		}
 	case p.Selector != nil:
 		if c.env != nil {
+			if len(p.Selector.Tail) > 0 {
+				full := p.Selector.Root + "." + strings.Join(p.Selector.Tail, ".")
+				if t, err := c.env.GetVar(full); err == nil {
+					return t
+				}
+			}
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 				if len(p.Selector.Tail) == 0 {
 					return t
@@ -144,6 +171,34 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 						}
 					}
 				}
+				if ut, ok := t.(types.UnionType); ok {
+					variant := ""
+					var cur types.Type
+					for name, sv := range ut.Variants {
+						if ft, ok := sv.Fields[p.Selector.Tail[0]]; ok {
+							if variant != "" {
+								variant = ""
+								break
+							}
+							variant = name
+							cur = ft
+						}
+					}
+					if variant != "" {
+						for _, field := range p.Selector.Tail[1:] {
+							st, ok := cur.(types.StructType)
+							if !ok {
+								return types.AnyType{}
+							}
+							ft, ok := st.Fields[field]
+							if !ok {
+								return types.AnyType{}
+							}
+							cur = ft
+						}
+						return cur
+					}
+				}
 			}
 		}
 		return types.AnyType{}
@@ -154,10 +209,48 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 		return types.AnyType{}
+	case p.FunExpr != nil:
+		params := make([]types.Type, len(p.FunExpr.Params))
+		for i, par := range p.FunExpr.Params {
+			if par.Type != nil {
+				params[i] = c.resolveTypeRef(par.Type)
+			} else {
+				params[i] = types.AnyType{}
+			}
+		}
+		var ret types.Type = types.VoidType{}
+		if p.FunExpr.Return != nil {
+			ret = c.resolveTypeRef(p.FunExpr.Return)
+		} else if p.FunExpr.ExprBody != nil {
+			ret = c.inferExprType(p.FunExpr.ExprBody)
+		} else {
+			ret = types.AnyType{}
+		}
+		return types.FuncType{Params: params, Return: ret}
+	case p.Generate != nil:
+		switch p.Generate.Target {
+		case "text":
+			return types.StringType{}
+		case "embedding":
+			return types.ListType{Elem: types.FloatType{}}
+		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(p.Generate.Target); ok {
+					return st
+				}
+			}
+			return types.AnyType{}
+		}
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "len":
 			return types.IntType{}
+		case "str":
+			return types.StringType{}
+		case "count":
+			return types.IntType{}
+		case "avg":
+			return types.FloatType{}
 		case "now":
 			return types.Int64Type{}
 		default:
@@ -185,14 +278,63 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 		return types.ListType{Elem: elemType}
+	case p.Load != nil:
+		var elem types.Type = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+		if p.Load.Type != nil {
+			elem = c.resolveTypeRef(p.Load.Type)
+			if st, ok := c.env.GetStruct(*p.Load.Type.Simple); elem == (types.AnyType{}) && ok {
+				elem = st
+			}
+		}
+		return types.ListType{Elem: elem}
+	case p.Save != nil:
+		return types.VoidType{}
+	case p.Query != nil:
+		srcType := c.inferExprType(p.Query.Source)
+		var elemType types.Type = types.AnyType{}
+		if lt, ok := srcType.(types.ListType); ok {
+			elemType = lt.Elem
+		}
+		child := types.NewEnv(c.env)
+		child.SetVar(p.Query.Var, elemType, true)
+		for _, f := range p.Query.Froms {
+			ft := c.inferExprType(f.Src)
+			var fe types.Type = types.AnyType{}
+			if lt, ok := ft.(types.ListType); ok {
+				fe = lt.Elem
+			}
+			child.SetVar(f.Var, fe, true)
+		}
+		for _, j := range p.Query.Joins {
+			jt := c.inferExprType(j.Src)
+			var je types.Type = types.AnyType{}
+			if lt, ok := jt.(types.ListType); ok {
+				je = lt.Elem
+			}
+			child.SetVar(j.Var, je, true)
+		}
+		orig := c.env
+		c.env = child
+		elem := c.inferExprType(p.Query.Select)
+		c.env = orig
+		return types.ListType{Elem: elem}
 	case p.Map != nil:
 		var keyType types.Type = types.AnyType{}
 		var valType types.Type = types.AnyType{}
 		if len(p.Map.Items) > 0 {
-			keyType = c.inferExprType(p.Map.Items[0].Key)
+			if _, ok := simpleStringKey(p.Map.Items[0].Key); ok {
+				keyType = types.StringType{}
+			} else {
+				keyType = c.inferExprType(p.Map.Items[0].Key)
+			}
 			valType = c.inferExprType(p.Map.Items[0].Value)
 			for _, it := range p.Map.Items[1:] {
-				kt := c.inferExprType(it.Key)
+				var kt types.Type
+				if _, ok := simpleStringKey(it.Key); ok {
+					kt = types.StringType{}
+				} else {
+					kt = c.inferExprType(it.Key)
+				}
 				vt := c.inferExprType(it.Value)
 				if !equalTypes(keyType, kt) {
 					keyType = types.AnyType{}
