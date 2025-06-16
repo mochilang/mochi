@@ -1,0 +1,91 @@
+// Solution for LeetCode problem 362 - Design Hit Counter
+
+// We store hits as a list of (timestamp, count) pairs. Older entries
+// beyond 5 minutes are trimmed on each operation.
+
+type Entry {
+  ts: int
+  cnt: int
+}
+
+type HitCounter {
+  data: list<Entry>
+}
+
+fun newCounter(): HitCounter {
+  return HitCounter { data: [] as list<Entry> }
+}
+
+// Remove timestamps older than 300 seconds from the current time.
+fun clean(c: HitCounter, timestamp: int): HitCounter {
+  var d = c.data
+  var i = 0
+  while i < len(d) {
+    let ent = d[i]
+    if timestamp - ent.ts >= 300 {
+      i = i + 1
+    } else {
+      break
+    }
+  }
+  d = d[i:len(d)]
+  return HitCounter { data: d }
+}
+
+fun hit(c: HitCounter, timestamp: int): HitCounter {
+  var counter = clean(c, timestamp)
+  var d = counter.data
+  if len(d) > 0 {
+    let last = d[len(d)-1]
+    if last.ts == timestamp {
+      d = d[0:len(d)-1] + [Entry { ts: last.ts, cnt: last.cnt + 1 }]
+    } else {
+      d = d + [Entry { ts: timestamp, cnt: 1 }]
+    }
+  } else {
+    d = d + [Entry { ts: timestamp, cnt: 1 }]
+  }
+  return HitCounter { data: d }
+}
+
+fun getHits(c: HitCounter, timestamp: int): int {
+  let counter = clean(c, timestamp)
+  var sum = 0
+  for e in counter.data {
+    sum = sum + e.cnt
+  }
+  return sum
+}
+
+// Tests based on LeetCode examples
+
+test "example" {
+  var c = newCounter()
+  c = hit(c, 1)
+  c = hit(c, 2)
+  c = hit(c, 3)
+  expect getHits(c, 4) == 3
+  c = hit(c, 300)
+  expect getHits(c, 300) == 4
+  expect getHits(c, 301) == 3
+}
+
+// Additional edge case: hits older than 5 minutes drop off
+test "expire" {
+  var c = newCounter()
+  c = hit(c, 1)
+  c = hit(c, 10)
+  c = hit(c, 300)
+  expect getHits(c, 300) == 3
+  c = hit(c, 601)
+  expect getHits(c, 601) == 1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using Python-style methods like list.append(x).
+   Use list concatenation instead: xs = xs + [x]
+2. Reassigning a variable declared with `let`.
+   Use `var` if the value will change.
+3. Mixing assignment `=` with comparison `==` in conditions.
+*/
