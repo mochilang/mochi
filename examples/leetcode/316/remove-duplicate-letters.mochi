@@ -1,0 +1,93 @@
+// LeetCode 316 - Remove Duplicate Letters
+//
+// Given a string s, remove duplicate letters so that every letter appears
+// once and only once. The result must be the smallest in lexicographical
+// order among all possible answers.
+//
+// This implementation uses a stack and maps to track the last occurrence of
+// each character. It avoids union types and `match`.
+
+fun removeDuplicateLetters(s: string): string {
+  // record last index of each character
+  var last: map<string, int> = {}
+  var i = 0
+  while i < len(s) {
+    last[s[i]] = i
+    i = i + 1
+  }
+
+  var stack: list<string> = []
+  var seen: map<string, bool> = {}
+
+  i = 0
+  while i < len(s) {
+    let c = s[i]
+    var present = false
+    if c in seen {
+      present = seen[c]
+    }
+    if !present {
+      while len(stack) > 0 {
+        let top = stack[len(stack)-1]
+        if top > c && last[top] > i {
+          stack = stack[0:len(stack)-1]
+          seen[top] = false
+        } else {
+          break
+        }
+      }
+      stack = stack + [c]
+      seen[c] = true
+    }
+    i = i + 1
+  }
+
+  var result = ""
+  for ch in stack {
+    result = result + ch
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect removeDuplicateLetters("bcabc") == "abc"
+}
+
+test "example 2" {
+  expect removeDuplicateLetters("cbacdcbc") == "acdb"
+}
+
+// Additional edge cases
+
+test "repeated letters" {
+  expect removeDuplicateLetters("aaaa") == "a"
+}
+
+test "leetcode" {
+  expect removeDuplicateLetters("leetcode") == "letcod"
+}
+
+test "mixed order" {
+  expect removeDuplicateLetters("ecbacba") == "eacb"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons:
+   if len(stack) = 0 { }
+   // ❌ assignment
+   if len(stack) == 0 { }
+   // ✅ comparison
+2. Forgetting to declare mutable variables with 'var':
+   let stack = []
+   stack = stack + [c]  // ❌ cannot assign to 'let'
+   var stack: list<string> = []
+   // ✅ use 'var' when mutation is required
+3. Missing types for empty collections:
+   var last = {}
+   // ❌ type cannot be inferred
+   var last: map<string, int> = {}
+   // ✅ specify key and value types
+*/
