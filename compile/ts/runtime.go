@@ -26,6 +26,11 @@ const (
 		"  return sum / list.length;\n" +
 		"}\n"
 
+	helperInput = "function _input(): string {\n" +
+		"  const v = prompt('')\n" +
+		"  return v === null ? '' : v;\n" +
+		"}\n"
+
 	helperIter = "function _iter(v: any): any {\n" +
 		"  if (v && typeof v === 'object' && !Array.isArray(v) && !(Symbol.iterator in v)) {\n" +
 		"    return Object.keys(v);\n" +
@@ -304,6 +309,7 @@ const (
 var helperMap = map[string]string{
 	"_count":      helperCount,
 	"_avg":        helperAvg,
+	"_input":      helperInput,
 	"_iter":       helperIter,
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,

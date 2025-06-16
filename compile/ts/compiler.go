@@ -1253,6 +1253,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "avg":
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "input":
+		c.use("_input")
+		return "_input()", nil
 	case "now":
 		// performance.now() returns milliseconds as a float. Multiply
 		// by 1e6 so that `now()` is consistent with Go's UnixNano()

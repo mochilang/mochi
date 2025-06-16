@@ -1235,6 +1235,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "avg":
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "input":
+		c.use("_input")
+		return "_input()", nil
 	case "eval":
 		return fmt.Sprintf("eval(%s)", argStr), nil
 	default:

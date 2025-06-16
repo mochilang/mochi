@@ -40,6 +40,9 @@ var helperAvg = "def _avg(v):\n" +
 	"            raise Exception('avg() expects numbers')\n" +
 	"    return s / len(v)\n"
 
+var helperInput = "def _input():\n" +
+	"    return input()\n"
+
 var helperFetch = "def _fetch(url, opts):\n" +
 	"    import urllib.request, urllib.parse, json\n" +
 	"    method = 'GET'\n" +
@@ -316,6 +319,7 @@ var helperMap = map[string]string{
 	"_gen_struct": helperGenStruct,
 	"_count":      helperCount,
 	"_avg":        helperAvg,
+	"_input":      helperInput,
 	"_union_all":  helperUnionAll,
 	"_union":      helperUnion,
 	"_except":     helperExcept,

@@ -1,8 +1,10 @@
 package interpreter
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -82,6 +84,18 @@ func builtinStr(i *Interpreter, c *parser.CallExpr) (any, error) {
 		return nil, err
 	}
 	return fmt.Sprint(val), nil
+}
+
+func builtinInput(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 0 {
+		return nil, fmt.Errorf("input() takes no arguments")
+	}
+	reader := bufio.NewReader(i.env.Reader())
+	line, err := reader.ReadString('\n')
+	if err != nil && err != io.EOF {
+		return nil, err
+	}
+	return strings.TrimRight(line, "\r\n"), nil
 }
 
 // builtinEval implements eval(code).
@@ -188,6 +202,7 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"now":   builtinNow,
 		"json":  builtinJSON,
 		"str":   builtinStr,
+		"input": builtinInput,
 		"count": builtinCount,
 		"avg":   builtinAvg,
 		"eval":  builtinEval,

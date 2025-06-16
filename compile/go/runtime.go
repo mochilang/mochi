@@ -71,6 +71,12 @@ const (
 		"    return sum / float64(len(items))\n" +
 		"}\n"
 
+	helperInput = "func _input() string {\n" +
+		"    r := bufio.NewReader(os.Stdin)\n" +
+		"    s, _ := r.ReadString('\\n')\n" +
+		"    return strings.TrimRight(s, \"\r\n\")\n" +
+		"}\n"
+
 	helperGenText = "func _genText(prompt string, model string, params map[string]any) string {\n" +
 		"    opts := []llm.Option{}\n" +
 		"    if model != \"\" { opts = append(opts, llm.WithModel(model)) }\n" +
@@ -366,6 +372,7 @@ var helperMap = map[string]string{
 	"_indexString": helperIndexString,
 	"_count":       helperCount,
 	"_avg":         helperAvg,
+	"_input":       helperInput,
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
