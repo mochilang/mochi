@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"mochi/interpreter"
@@ -956,8 +957,12 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, right string, rightType types.Type) (string, types.Type, error) {
 	switch op {
 	case "+", "-", "*", "/", "%":
-		if op == "+" && isList(leftType) && isList(rightType) {
-			return fmt.Sprintf("%s.concat(%s)", left, right), leftType, nil
+		if op == "+" {
+			if (isList(leftType) && isList(rightType)) ||
+				(isList(leftType) && isAny(rightType)) ||
+				(isAny(leftType) && isList(rightType)) {
+				return fmt.Sprintf("%s.concat(%s)", left, right), leftType, nil
+			}
 		}
 		if op == "+" && isString(leftType) && isString(rightType) {
 			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
@@ -1744,7 +1749,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int), nil
 	case l.Float != nil:
-		return fmt.Sprintf("%f", *l.Float), nil
+		return strconv.FormatFloat(*l.Float, 'g', -1, 64), nil
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str), nil
 	case l.Bool != nil:
