@@ -1,0 +1,87 @@
+// LeetCode 360 - Sort Transformed Array
+// This solution computes f(x) = a*x*x + b*x + c for each element of
+// the sorted input list and returns the values in ascending order.
+// It avoids union types and pattern matching by using simple loops
+// and conditionals.
+
+fun sortTransformedArray(nums: list<int>, a: int, b: int, c: int): list<int> {
+  let n = len(nums)
+  var result: list<int> = []
+  var i = 0
+  while i < n {
+    result = result + [0]
+    i = i + 1
+  }
+
+  fun transform(x: int): int {
+    return a * x * x + b * x + c
+  }
+
+  var left = 0
+  var right = n - 1
+  if a >= 0 {
+    var idx = n - 1
+    while left <= right {
+      let lv = transform(nums[left])
+      let rv = transform(nums[right])
+      if lv > rv {
+        result[idx] = lv
+        left = left + 1
+      } else {
+        result[idx] = rv
+        right = right - 1
+      }
+      idx = idx - 1
+    }
+  } else {
+    var idx = 0
+    while left <= right {
+      let lv = transform(nums[left])
+      let rv = transform(nums[right])
+      if lv < rv {
+        result[idx] = lv
+        left = left + 1
+      } else {
+        result[idx] = rv
+        right = right - 1
+      }
+      idx = idx + 1
+    }
+  }
+
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect sortTransformedArray([-4,-2,2,4], 1, 3, 5) == [3,9,15,33]
+}
+
+test "example 2" {
+  expect sortTransformedArray([-4,-2,2,4], -1, 3, 5) == [-23,-5,1,7]
+}
+
+// Additional tests
+
+test "a zero" {
+  expect sortTransformedArray([0,1,2,3], 0, 2, 1) == [1,3,5,7]
+}
+
+test "single element" {
+  expect sortTransformedArray([2], 2, -3, 1) == [3]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+     if a = 0 { }  // ❌ assignment, not comparison
+     if a == 0 { } // ✅ use '==' for equality checks
+2. Reassigning an immutable value declared with 'let':
+     let n = len(nums)
+     n = n + 1          // ❌ cannot reassign
+     var n = len(nums)  // ✅ use 'var' for mutable variables
+3. Forgetting list element types for empty lists:
+     var res = []            // ❌ type unknown
+     var res: list<int> = [] // ✅ specify element type
+*/
