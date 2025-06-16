@@ -1,0 +1,70 @@
+// LeetCode 356 - Line Reflection
+// Determine if a set of points has a vertical line of reflection.
+
+fun isReflected(points: list<list<int>>): bool {
+  if len(points) == 0 {
+    return true
+  }
+  var pointSet: map<string, bool> = {}
+  var minX = points[0][0]
+  var maxX = points[0][0]
+  for p in points {
+    let x = p[0]
+    let y = p[1]
+    let key = str(x) + "," + str(y)
+    pointSet[key] = true
+    if x < minX {
+      minX = x
+    }
+    if x > maxX {
+      maxX = x
+    }
+  }
+  let sum = minX + maxX
+  for p in points {
+    let x = p[0]
+    let y = p[1]
+    let rx = sum - x
+    let key = str(rx) + "," + str(y)
+    if !(key in pointSet) {
+      return false
+    }
+  }
+  return true
+}
+
+// Test cases
+
+test "example true" {
+  expect isReflected([[1,1],[-1,1]]) == true
+}
+
+test "example false" {
+  expect isReflected([[1,1],[-1,-1]]) == false
+}
+
+test "three points" {
+  expect isReflected([[1,1],[0,1],[-1,1]]) == true
+}
+
+test "duplicates" {
+  expect isReflected([[0,0],[0,0]]) == true
+}
+
+test "empty" {
+  let pts: list<list<int>> = []
+  expect isReflected(pts) == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons:
+     if key = otherKey { }
+   Use '==' when checking equality.
+2. Declaring a variable with 'let' when it needs to change:
+     let minX = points[0][0]
+     minX = x                // error
+   Use 'var' for mutable values.
+3. Attempting to use union types or pattern matching:
+     // Not supported in Mochi yet, so use maps and if-else statements instead.
+*/
