@@ -1,0 +1,75 @@
+// Solution for LeetCode problem 359 - Logger Rate Limiter
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' in a condition.
+//    if timestamp = 0 { }   // ❌ assignment
+//    if timestamp == 0 { }  // ✅ comparison
+// 2. Trying to modify a value declared with 'let'.
+//    let seen = {} as map<string,int>
+//    seen["msg"] = 1        // ❌ cannot mutate 'let'
+//    var seen = {} as map<string,int> // ✅ use 'var' for mutability
+// 3. Accessing a map key without checking existence.
+//    let t = log["msg"]        // ❌ may fail if key missing
+//    if "msg" in log { let t = log["msg"] } // ✅ safe access
+// 4. Forgetting to specify the type for an empty map.
+//    var log = {}              // ❌ type cannot be inferred
+//    var log: map<string,int> = {} // ✅ specify key and value types
+
+// Logger stores the last printed timestamp for each message
+type Logger {
+  log: map<string, int>
+}
+
+// Create a new empty logger
+fun newLogger(): Logger {
+  return Logger { log: {} as map<string,int> }
+}
+
+// Result of calling shouldPrintMessage
+// 'ok' indicates if the message should be printed
+// 'logger' is the updated logger state
+type PrintResult {
+  ok: bool
+  logger: Logger
+}
+
+// Determine if a message should be printed and update the logger
+fun shouldPrintMessage(logger: Logger, timestamp: int, message: string): PrintResult {
+  var log = logger.log
+  if message in log {
+    let last = log[message]
+    if timestamp - last < 10 {
+      return PrintResult { ok: false, logger: Logger { log: log } }
+    }
+  }
+  log[message] = timestamp
+  return PrintResult { ok: true, logger: Logger { log: log } }
+}
+
+// Basic tests derived from the LeetCode examples
+
+test "example" {
+  var l = newLogger()
+  let r1 = shouldPrintMessage(l, 1, "foo")
+  expect r1.ok == true
+  l = r1.logger
+
+  let r2 = shouldPrintMessage(l, 2, "bar")
+  expect r2.ok == true
+  l = r2.logger
+
+  let r3 = shouldPrintMessage(l, 3, "foo")
+  expect r3.ok == false
+  l = r3.logger
+
+  let r4 = shouldPrintMessage(l, 8, "bar")
+  expect r4.ok == false
+  l = r4.logger
+
+  let r5 = shouldPrintMessage(l, 10, "foo")
+  expect r5.ok == false
+  l = r5.logger
+
+  let r6 = shouldPrintMessage(l, 11, "foo")
+  expect r6.ok == true
+}
