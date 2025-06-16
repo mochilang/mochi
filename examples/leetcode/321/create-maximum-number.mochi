@@ -9,9 +9,15 @@ fun pickMax(nums: list<int>, k: int): list<int> {
   var toDrop = drop
   while i < len(nums) {
     let num = nums[i]
-    while toDrop > 0 && len(stack) > 0 && stack[len(stack)-1] < num {
-      stack = stack[0:len(stack)-1]
-      toDrop = toDrop - 1
+    // Mochi's '&&' does not short-circuit, so we must check length
+    // before accessing the last element of the stack.
+    while toDrop > 0 && len(stack) > 0 {
+      if stack[len(stack)-1] < num {
+        stack = stack[0:len(stack)-1]
+        toDrop = toDrop - 1
+      } else {
+        break
+      }
     }
     stack = stack + [num]
     i = i + 1
