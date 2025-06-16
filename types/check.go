@@ -1159,6 +1159,15 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				if !unify(at, ft.Params[i], nil) {
 					return nil, errArgTypeMismatch(call.Pos, i, ft.Params[i], at)
 				}
+				if name, ok := simpleVarName(call.Args[i]); ok {
+					vtype, err := env.GetVar(name)
+					if err == nil {
+						if isAnyType(vtype) || isListOfAnyType(vtype) {
+							mut, _ := env.IsMutable(name)
+							env.SetVar(name, ft.Params[i], mut)
+						}
+					}
+				}
 			}
 			if argCount == paramCount {
 				typ = ft.Return
@@ -1821,4 +1830,38 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 		return nil, false
 	}
 	return p.Target.Call, true
+}
+
+func simpleVarName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func isAnyType(t Type) bool {
+	_, ok := t.(AnyType)
+	return ok
+}
+
+func isListOfAnyType(t Type) bool {
+	if lt, ok := t.(ListType); ok {
+		_, ok := lt.Elem.(AnyType)
+		return ok
+	}
+	return false
 }
