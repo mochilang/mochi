@@ -16,9 +16,11 @@ const mathutils = (() => {
 	}
 })()
 
+let sum: any = mathutils.add(3, 5)
+
+let sq: any = mathutils.square(4)
+
 function main(): void {
-	let sum: any = mathutils.add(3, 5)
-	let sq: any = mathutils.square(4)
 	console.log("3 + 5 =", sum)
 	console.log("4 squared =", sq)
 }
