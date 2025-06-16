@@ -1,0 +1,35 @@
+fun getSum(a: int, b: int): int {
+  return a + b
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect getSum(1, 2) == 3
+}
+
+test "example 2" {
+  expect getSum(2, 3) == 5
+}
+
+test "negative" {
+  expect getSum(-2, 3) == 1
+}
+
+test "zero" {
+  expect getSum(0, 0) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in comparisons.
+   expect getSum(1, 2) = 3  // ❌ assignment
+   expect getSum(1, 2) == 3 // ✅ comparison
+2. Reassigning a value declared with 'let'.
+   let x = 1
+   x = 2                  // ❌ cannot reassign
+   Use 'var x = 1' if the value must change.
+3. Mixing number and string types without conversion.
+   print("sum: " + 5)       // ❌ type error
+   Use str(5) when concatenating with strings.
+*/
