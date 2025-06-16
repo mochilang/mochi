@@ -29,7 +29,7 @@ MOCHI_URL := https://github.com/mochilang/mochi/releases/latest/download/$(MOCHI
 # ────────────────────────────────────────────────────────────────
 # 💡 Shared shell function for compiling one .mochi file
 define build_one_lang
-	start_compile=$$(date +%s%N); \
+	start=$$(date +%s%N); \
 	dir=$$(dirname "$1"); \
 	base=$$(basename "$1" .mochi); \
 	out_dir=../leetcode-out/$2/$$dir; \
@@ -37,28 +37,23 @@ define build_one_lang
 	mkdir -p "$$out_dir"; \
 	success=true; \
 	if $(MOCHI_BIN) build "$1" -o "$$out_file" --target $2 > /dev/null 2>&1; then \
-		end_compile=$$(date +%s%N); \
-		start_run=$$(date +%s%N); \
 		case "$2" in \
 			go) go run "$$out_file" > /dev/null 2>&1 || success=false ;; \
 			py) python3 "$$out_file" > /dev/null 2>&1 || success=false ;; \
 			ts) deno run --allow-all "$$out_file" > /dev/null 2>&1 || success=false ;; \
 		esac; \
-		end_run=$$(date +%s%N); \
-		comp_ms=$$(( (end_compile - start_compile)/1000000 )); \
-		run_ms=$$(( (end_run - start_run)/1000000 )); \
 	else \
+		echo "❌ Compile failed: $1 → $2" >&2; \
 		success=false; \
-		comp_ms="failed"; \
-		run_ms="–"; \
 	fi; \
+	end=$$(date +%s%N); \
+	dur_ms=$$(( (end - start)/1000000 )); \
 	if $$success; then \
-		printf "✅ \033[1m%-30s\033[0m → %-2s | 🛠️ %4sms | 🚀 %4sms\n" "$1" "$2" "$$comp_ms" "$$run_ms"; \
+		printf "✅ \033[1m%s\033[0m → $2 compiled & ran in %d ms\n" "$1" "$$dur_ms"; \
 	else \
-		printf "❌ \033[1m%-30s\033[0m → %-2s | 🛠️ %4s  | 🚀 %4s\n" "$1" "$2" "$$comp_ms" "$$run_ms"; \
+		printf "❌ \033[1m%s\033[0m → $2 failed\n" "$1"; \
 	fi
 endef
-
 
 # ────────────────────────────────────────────────────────────────
 mochi: ## Build or download the Mochi binary
