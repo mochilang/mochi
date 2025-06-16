@@ -508,6 +508,13 @@ func primaryUsesVar(p *parser.Primary, name string) bool {
 	if p.FunExpr != nil {
 		return exprUsesVarFun(p.FunExpr, name)
 	}
+	if p.Struct != nil {
+		for _, f := range p.Struct.Fields {
+			if exprUsesVar(f.Value, name) {
+				return true
+			}
+		}
+	}
 	if p.Call != nil {
 		if p.Call.Func == name {
 			return true

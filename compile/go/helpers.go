@@ -107,6 +107,20 @@ func equalTypes(a, b types.Type) bool {
 	if _, ok := b.(types.AnyType); ok {
 		return true
 	}
+	if ua, ok := a.(types.UnionType); ok {
+		if sb, ok := b.(types.StructType); ok {
+			if _, ok := ua.Variants[sb.Name]; ok {
+				return true
+			}
+		}
+	}
+	if ub, ok := b.(types.UnionType); ok {
+		if sa, ok := a.(types.StructType); ok {
+			if _, ok := ub.Variants[sa.Name]; ok {
+				return true
+			}
+		}
+	}
 	if isInt64(a) && (isInt64(b) || isInt(b)) {
 		return true
 	}
