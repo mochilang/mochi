@@ -1,0 +1,29 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Foo interface { isFoo() }
+type Empty struct {
+}
+func (Empty) isFoo() {}
+type Node struct {
+	Child Foo `json:"child"`
+}
+func (Node) isFoo() {}
+
+func listit() []Foo {
+	return _convSlice[Empty,Foo]([]Empty{Empty{}})
+}
+
+func main() {
+	fmt.Println(len(listit()))
+}
+
+func _convSlice[T any, U any](s []T) []U {
+    out := make([]U, len(s))
+    for i, v := range s { out[i] = any(v).(U) }
+    return out
+}
+

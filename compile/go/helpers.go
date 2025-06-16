@@ -107,6 +107,16 @@ func equalTypes(a, b types.Type) bool {
 	if _, ok := b.(types.AnyType); ok {
 		return true
 	}
+	if la, ok := a.(types.ListType); ok {
+		if lb, ok := b.(types.ListType); ok {
+			return equalTypes(la.Elem, lb.Elem)
+		}
+	}
+	if ma, ok := a.(types.MapType); ok {
+		if mb, ok := b.(types.MapType); ok {
+			return equalTypes(ma.Key, mb.Key) && equalTypes(ma.Value, mb.Value)
+		}
+	}
 	if ua, ok := a.(types.UnionType); ok {
 		if sb, ok := b.(types.StructType); ok {
 			if _, ok := ua.Variants[sb.Name]; ok {
