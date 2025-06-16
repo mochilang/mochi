@@ -1198,20 +1198,41 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	// Special case: constant true condition compiles to an infinite loop.
+	if lit, ok := c.evalConstExpr(stmt.Cond); ok && lit.Bool != nil && bool(*lit.Bool) {
+		c.writeIndent()
+		c.buf.WriteString("for {\n")
+		c.indent++
+		if err := c.compileStmtList(stmt.Body); err != nil {
+			return err
+		}
+		c.indent--
+		c.writeIndent()
+		c.buf.WriteString("}\n")
+		return nil
+	}
+
+	c.writeIndent()
+	c.buf.WriteString("for {\n")
+	c.indent++
+
+	// Evaluate the loop condition at the start of each iteration.
 	cond, err := c.compileExpr(stmt.Cond)
 	if err != nil {
 		return err
 	}
 	c.writeIndent()
-	if lit, ok := c.evalConstExpr(stmt.Cond); ok && lit.Bool != nil && bool(*lit.Bool) {
-		c.buf.WriteString("for {\n")
-	} else {
-		c.buf.WriteString("for " + cond + " {\n")
-	}
+	c.buf.WriteString("if !(" + cond + ") {\n")
 	c.indent++
+	c.writeln("break")
+	c.indent--
+	c.writeIndent()
+	c.buf.WriteString("}\n")
+
 	if err := c.compileStmtList(stmt.Body); err != nil {
 		return err
 	}
+
 	c.indent--
 	c.writeIndent()
 	c.buf.WriteString("}\n")
@@ -2857,16 +2878,18 @@ func (c *Compiler) foldCall(call *parser.CallExpr) (*parser.Literal, bool) {
 // literals. The hint is applied recursively for nested structures.
 func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
 	if lt, ok := hint.(types.ListType); ok {
-		if ll := e.Binary.Left.Value.Target.List; ll != nil {
-			elems := make([]string, len(ll.Elems))
-			for i, el := range ll.Elems {
-				ev, err := c.compileExprHint(el, lt.Elem)
-				if err != nil {
-					return "", err
+		if e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ll := e.Binary.Left.Value.Target.List; ll != nil {
+				elems := make([]string, len(ll.Elems))
+				for i, el := range ll.Elems {
+					ev, err := c.compileExprHint(el, lt.Elem)
+					if err != nil {
+						return "", err
+					}
+					elems[i] = ev
 				}
-				elems[i] = ev
+				return "[]" + goType(lt.Elem) + "{" + strings.Join(elems, ", ") + "}", nil
 			}
-			return "[]" + goType(lt.Elem) + "{" + strings.Join(elems, ", ") + "}", nil
 		}
 	}
 
