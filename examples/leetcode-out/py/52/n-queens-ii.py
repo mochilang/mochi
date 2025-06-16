@@ -21,10 +21,10 @@ def totalNQueens(n: int) -> int:
 		i = (i + 1)
 	count = 0
 	def backtrack(row: int) -> None:
+		nonlocal count
 		nonlocal cols
 		nonlocal diag1
 		nonlocal diag2
-		nonlocal count
 		if (row == n):
 			count = (count + 1)
 		else:

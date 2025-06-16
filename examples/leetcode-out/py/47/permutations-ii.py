@@ -9,8 +9,8 @@ def permuteUnique(nums: list[int]) -> list[list[int]]:
 	result = []
 	used = {}
 	def backtrack(path: list[int]) -> None:
-		nonlocal used
 		nonlocal result
+		nonlocal used
 		if (len(path) == n):
 			result = (result + [path])
 		else:
