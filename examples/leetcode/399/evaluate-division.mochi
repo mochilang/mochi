@@ -1,0 +1,103 @@
+// Solution for LeetCode problem 399 - Evaluate Division
+//
+// Build a graph where each equation A / B = k becomes two edges:
+// A -> B with weight k and B -> A with weight 1/k.
+// Queries are answered with a BFS that accumulates the product of
+// weights along the path. This file avoids union types and `match`.
+
+fun calcEquation(eqs: list<list<string>>, vals: list<float>, queries: list<list<string>>): list<float> {
+  // adjacency map from variable to list of [neighbor, ratio]
+  var graph: map<string, list<list<any>>> = {}
+  var i = 0
+  while i < len(eqs) {
+    let a = eqs[i][0]
+    let b = eqs[i][1]
+    let v = vals[i]
+    var listA: list<list<any>> = []
+    if a in graph { listA = graph[a] }
+    listA = listA + [[b, v]]
+    graph[a] = listA
+
+    var listB: list<list<any>> = []
+    if b in graph { listB = graph[b] }
+    listB = listB + [[a, 1.0 / v]]
+    graph[b] = listB
+
+    i = i + 1
+  }
+
+  var results: list<float> = []
+  for q in queries {
+    let start = q[0]
+    let end = q[1]
+    if (!(start in graph)) || (!(end in graph)) {
+      results = results + [-1.0]
+      continue
+    }
+    var visited: map<string,bool> = { start: true }
+    var queue: list<list<any>> = [[start, 1.0]]
+    var idx = 0
+    var found = false
+    var ans = -1.0
+    while idx < len(queue) {
+      let pair = queue[idx]
+      let node = pair[0]
+      let val = pair[1] as float
+      if node == end {
+        ans = val
+        found = true
+        break
+      }
+      let neighbors = graph[node]
+      for nb in neighbors {
+        let nxt = nb[0]
+        let ratio = nb[1] as float
+        var seen = false
+        if nxt in visited { seen = visited[nxt] }
+        if !seen {
+          visited[nxt] = true
+          queue = queue + [[nxt, val * ratio]]
+        }
+      }
+      idx = idx + 1
+    }
+    if found {
+      results = results + [ans]
+    } else {
+      results = results + [-1.0]
+    }
+  }
+  return results
+}
+
+// Test cases from LeetCode examples
+
+test "example 1" {
+  let eq = [["a","b"],["b","c"]]
+  let val = [2.0,3.0]
+  let queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+  expect calcEquation(eq, val, queries) == [6.0,0.5,-1.0,1.0,-1.0]
+}
+
+// Additional edge case
+
+test "disconnected" {
+  let eq = [["a","b"],["c","d"]]
+  let val = [1.5,2.5]
+  let queries = [["a","d"],["c","a"]]
+  expect calcEquation(eq, val, queries) == [-1.0,-1.0]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a variable declared with `let`.
+   let idx = 0
+   idx = 1               // ❌ cannot reassign immutable value
+   var idx = 0           // ✅ use `var` for mutable variables
+2. Using '=' instead of '==' in conditionals.
+   if node = end { }     // ❌ assignment
+   if node == end { }    // ✅ comparison
+3. Creating an empty list or map without a type.
+   var q = []            // ❌ type cannot be inferred
+   var q: list<list<any>> = [] // ✅ specify the element type
+*/
