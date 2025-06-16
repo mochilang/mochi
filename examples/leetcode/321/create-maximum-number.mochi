@@ -1,0 +1,108 @@
+// Solution for LeetCode problem 321 - Create Maximum Number
+// The task is to create the largest possible number of length k
+// by selecting digits from two arrays while preserving their order.
+
+fun pickMax(nums: list<int>, k: int): list<int> {
+  let drop = len(nums) - k
+  var stack: list<int> = []
+  var i = 0
+  var toDrop = drop
+  while i < len(nums) {
+    let num = nums[i]
+    while toDrop > 0 && len(stack) > 0 && stack[len(stack)-1] < num {
+      stack = stack[0:len(stack)-1]
+      toDrop = toDrop - 1
+    }
+    stack = stack + [num]
+    i = i + 1
+  }
+  return stack[0:k]
+}
+
+fun greaterSeq(a: list<int>, i: int, b: list<int>, j: int): bool {
+  var x = i
+  var y = j
+  while x < len(a) && y < len(b) {
+    if a[x] > b[y] {
+      return true
+    }
+    if a[x] < b[y] {
+      return false
+    }
+    x = x + 1
+    y = y + 1
+  }
+  return x != len(a)
+}
+
+fun maxNumber(nums1: list<int>, nums2: list<int>, k: int): list<int> {
+  var best: list<int> = []
+  var i = 0
+  while i <= k {
+    if i <= len(nums1) && k - i <= len(nums2) {
+      let part1 = pickMax(nums1, i)
+      let part2 = pickMax(nums2, k - i)
+      var merged: list<int> = []
+      var a = 0
+      var b = 0
+      while a < len(part1) || b < len(part2) {
+        var use1 = false
+        if b == len(part2) {
+          use1 = true
+        } else if a == len(part1) {
+          use1 = false
+        } else {
+          if greaterSeq(part1, a, part2, b) {
+            use1 = true
+          }
+        }
+        if use1 {
+          merged = merged + [part1[a]]
+          a = a + 1
+        } else {
+          merged = merged + [part2[b]]
+          b = b + 1
+        }
+      }
+      if len(best) == 0 || greaterSeq(merged, 0, best, 0) {
+        best = merged
+      }
+    }
+    i = i + 1
+  }
+  return best
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect maxNumber([3,4,6,5], [9,1,2,5,8,3], 5) == [9,8,6,5,3]
+}
+
+test "example 2" {
+  expect maxNumber([6,7], [6,0,4], 5) == [6,7,6,0,4]
+}
+
+test "example 3" {
+  expect maxNumber([3,9], [8,9], 3) == [9,8,9]
+}
+
+// Additional edge case
+
+test "all from one" {
+  expect maxNumber([5,9,1], [], 2) == [9,1]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Attempting to append to a list with incorrect syntax:
+   nums += [x]            // ❌ invalid operator
+   nums = nums + [x]      // ✅ use '+' to concatenate
+2. Using '=' instead of '==' for comparison in conditions:
+   if a = b { ... }       // ❌ assignment, not comparison
+   if a == b { ... }      // ✅ correct comparison
+3. Forgetting 'var' when a variable needs to change:
+   let best = []
+   best = merged          // ❌ cannot reassign immutable binding
+   var best = []          // ✅ use 'var' for mutable variables
+*/
