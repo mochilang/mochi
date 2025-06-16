@@ -307,16 +307,16 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeName(s.Name)
 	value := "None"
 	if s.Value != nil {
-               if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
-                       if c.env != nil {
-                               if t, err := c.env.GetVar(s.Name); err == nil {
-                                       if mt, ok := t.(types.MapType); ok {
-                                               c.imports["typing"] = "typing"
-                                               value = fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value))
-                                       }
-                               }
-                       }
-               }
+		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
+			if c.env != nil {
+				if t, err := c.env.GetVar(s.Name); err == nil {
+					if mt, ok := t.(types.MapType); ok {
+						c.imports["typing"] = "typing"
+						value = fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value))
+					}
+				}
+			}
+		}
 		if value == "None" {
 			v, err := c.compileExpr(s.Value)
 			if err != nil {
@@ -1134,7 +1134,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return c.compileLiteral(lit)
 	}
 	args := make([]string, len(call.Args))
+	var paramTypes []types.Type
+	if t, err := c.env.GetVar(call.Func); err == nil {
+		if ft, ok := t.(types.FuncType); ok {
+			paramTypes = ft.Params
+		}
+	}
 	for i, a := range call.Args {
+		if len(paramTypes) > i {
+			v, err := c.compileExprHint(a, paramTypes[i])
+			if err != nil {
+				return "", err
+			}
+			args[i] = v
+			continue
+		}
 		v, err := c.compileExpr(a)
 		if err != nil {
 			return "", err
@@ -1166,6 +1180,27 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	default:
 		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 	}
+}
+
+// compileExprHint compiles an expression using a type hint when dealing with
+// literals that would otherwise default to `any`, such as empty list literals.
+// The hint is currently only used for list literals and is applied recursively
+// for nested lists.
+func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
+	if lt, ok := hint.(types.ListType); ok {
+		if ll := e.Binary.Left.Value.Target.List; ll != nil {
+			elems := make([]string, len(ll.Elems))
+			for i, el := range ll.Elems {
+				ev, err := c.compileExprHint(el, lt.Elem)
+				if err != nil {
+					return "", err
+				}
+				elems[i] = ev
+			}
+			return "[" + strings.Join(elems, ", ") + "]", nil
+		}
+	}
+	return c.compileExpr(e)
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
