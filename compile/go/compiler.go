@@ -262,7 +262,7 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	}
 	for _, s := range prog.Statements {
 		if s.Test != nil {
-			name := sanitizeName(s.Test.Name)
+			name := testFuncName(s.Test.Name)
 			c.writeln(fmt.Sprintf("%s()", name))
 		}
 	}
@@ -1443,8 +1443,12 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	return nil
 }
 
+func testFuncName(name string) string {
+	return "test_" + sanitizeName(name)
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
-	name := sanitizeName(t.Name)
+	name := testFuncName(t.Name)
 	c.writeIndent()
 	c.buf.WriteString("func " + name + "() {\n")
 	c.indent++

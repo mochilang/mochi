@@ -40,7 +40,11 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)
 		}
-		return bytes.TrimSpace(out), nil
+		out = bytes.TrimSpace(out)
+		if out == nil {
+			out = []byte{}
+		}
+		return out, nil
 	})
 
 	golden.Run(t, "tests/compiler/go", ".mochi", ".out", func(src string) ([]byte, error) {
@@ -68,7 +72,11 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)
 		}
-		return bytes.TrimSpace(out), nil
+		out = bytes.TrimSpace(out)
+		if out == nil {
+			out = []byte{}
+		}
+		return out, nil
 	})
 }
 
