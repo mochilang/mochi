@@ -29,10 +29,8 @@ type Result struct {
 
 func departmentHighestSalary(employees []Employee, departments []Department) []Result {
 	var maxSalary map[int]int = map[int]int{}
-	_ = maxSalary
 	for _, e := range employees {
 		var current int = 0
-		_ = current
 		_tmp0 := e.DepartmentId
 		_tmp1 := maxSalary
 		_, _tmp2 := _tmp1[_tmp0]
@@ -44,7 +42,6 @@ func departmentHighestSalary(employees []Employee, departments []Department) []R
 		}
 	}
 	var results []any = []any{}
-	_ = results
 	for _, d := range departments {
 		_tmp3 := d.Id
 		_tmp4 := maxSalary
@@ -63,11 +60,12 @@ func departmentHighestSalary(employees []Employee, departments []Department) []R
 
 func highest_salary() {
 	var expected []Result = []Result{Result{Department: "IT", Employee: "Max", Salary: 90000}, Result{Department: "Sales", Employee: "Henry", Salary: 80000}}
+	_ = expected
 	expect((fmt.Sprint(departmentHighestSalary(employees, departments)) == fmt.Sprint(expected)))
 }
 
-var departments []Department = []Department{Department{Id: 1, Name: "IT"}, Department{Id: 2, Name: "Sales"}}
-var employees []Employee = []Employee{Employee{Id: 1, Name: "Joe", Salary: 70000, DepartmentId: 1}, Employee{Id: 2, Name: "Henry", Salary: 80000, DepartmentId: 2}, Employee{Id: 3, Name: "Sam", Salary: 60000, DepartmentId: 2}, Employee{Id: 4, Name: "Max", Salary: 90000, DepartmentId: 1}}
+var departments []any = []Department{Department{Id: 1, Name: "IT"}, Department{Id: 2, Name: "Sales"}}
+var employees []any = []Employee{Employee{Id: 1, Name: "Joe", Salary: 70000, DepartmentId: 1}, Employee{Id: 2, Name: "Henry", Salary: 80000, DepartmentId: 2}, Employee{Id: 3, Name: "Sam", Salary: 60000, DepartmentId: 2}, Employee{Id: 4, Name: "Max", Salary: 90000, DepartmentId: 1}}
 func main() {
 	highest_salary()
 }

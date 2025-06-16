@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"sort"
 )
@@ -16,16 +17,12 @@ type WordCount struct {
 
 func wordFrequency(lines []string) []WordCount {
 	var counts map[string]int = map[string]int{}
-	_ = counts
 	for _, line := range lines {
 		var i int = 0
-		_ = i
 		var word string = ""
-		_ = word
 		var n int = len(line)
 		for (i <= n) {
 			var ch string = ""
-			_ = ch
 			if (i < n) {
 				ch = _indexString(line, i)
 			} else {
@@ -34,7 +31,6 @@ func wordFrequency(lines []string) []WordCount {
 			if (ch == " ") {
 				if (word != "") {
 					var c int = 0
-					_ = c
 					_tmp0 := word
 					_tmp1 := counts
 					_, _tmp2 := _tmp1[_tmp0]
@@ -51,7 +47,6 @@ func wordFrequency(lines []string) []WordCount {
 		}
 	}
 	var result []any = []any{}
-	_ = result
 	for w := range counts {
 		result = append(append([]any{}, result...), _toAnySlice([]WordCount{WordCount{Word: w, Count: counts[w]}})...)
 	}
@@ -92,11 +87,11 @@ func wordFrequency(lines []string) []WordCount {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []any{}
+	_res := []any{}
 	for _, wc := range items {
-		res = append(res, wc)
+		_res = append(_res, wc)
 	}
-	return res
+	return _res
 }()
 	var sorted []any = func() []any {
 	items := []any{}
@@ -135,11 +130,11 @@ func wordFrequency(lines []string) []WordCount {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []any{}
+	_res := []any{}
 	for _, wc := range items {
-		res = append(res, wc)
+		_res = append(_res, wc)
 	}
-	return res
+	return _res
 }()
 	return _cast[[]WordCount](sorted)
 }
@@ -148,15 +143,19 @@ func example() {
 	var lines []string = []string{"the day is sunny the the the sunny is is"}
 	var res []WordCount = wordFrequency(lines)
 	var e0 WordCount = res[0]
+	_ = e0
 	expect((e0.Word == "the"))
 	expect((e0.Count == 4))
 	var e1 WordCount = res[1]
+	_ = e1
 	expect((e1.Word == "is"))
 	expect((e1.Count == 3))
 	var e2 WordCount = res[2]
+	_ = e2
 	expect((e2.Word == "sunny"))
 	expect((e2.Count == 2))
 	var e3 WordCount = res[3]
+	_ = e3
 	expect((e3.Word == "day"))
 	expect((e3.Count == 1))
 }
@@ -165,12 +164,15 @@ func multiple_lines() {
 	var lines []string = []string{"hello world", "hello mochi world"}
 	var res []WordCount = wordFrequency(lines)
 	var a0 WordCount = res[0]
+	_ = a0
 	expect((a0.Word == "hello"))
 	expect((a0.Count == 2))
 	var a1 WordCount = res[1]
+	_ = a1
 	expect((a1.Word == "world"))
 	expect((a1.Count == 2))
 	var a2 WordCount = res[2]
+	_ = a2
 	expect((a2.Word == "mochi"))
 	expect((a2.Count == 1))
 }

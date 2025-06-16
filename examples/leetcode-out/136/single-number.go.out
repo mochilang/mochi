@@ -6,7 +6,6 @@ func expect(cond bool) {
 
 func singleNumber(nums []int) int {
 	var counts map[int]int = map[int]int{}
-	_ = counts
 	for _, n := range nums {
 		_tmp0 := n
 		_tmp1 := counts

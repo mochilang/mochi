@@ -10,13 +10,9 @@ func expect(cond bool) {
 
 func insert(intervals [][]int, newInterval []int) [][]int {
 	var result [][]int = [][]int{}
-	_ = result
 	var inserted bool = false
-	_ = inserted
 	var start int = newInterval[0]
-	_ = start
 	var end int = newInterval[1]
-	_ = end
 	for _, interval := range intervals {
 		var currStart int = interval[0]
 		var currEnd int = interval[1]
@@ -67,6 +63,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

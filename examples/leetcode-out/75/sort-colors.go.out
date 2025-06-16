@@ -1,5 +1,9 @@
 package main
 
+import (
+	"reflect"
+)
+
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
@@ -28,23 +32,23 @@ func sortColors(nums []int) []int {
 }
 
 func example_1() {
-	expect((sortColors([]int{2, 0, 2, 1, 1, 0}) == []int{0, 0, 1, 1, 2, 2}))
+	expect(_equal(sortColors([]int{2, 0, 2, 1, 1, 0}), []int{0, 0, 1, 1, 2, 2}))
 }
 
 func example_2() {
-	expect((sortColors([]int{2, 0, 1}) == []int{0, 1, 2}))
+	expect(_equal(sortColors([]int{2, 0, 1}), []int{0, 1, 2}))
 }
 
 func single_zero() {
-	expect((sortColors([]int{0}) == []int{0}))
+	expect(_equal(sortColors([]int{0}), []int{0}))
 }
 
 func single_one() {
-	expect((sortColors([]int{1}) == []int{1}))
+	expect(_equal(sortColors([]int{1}), []int{1}))
 }
 
 func single_two() {
-	expect((sortColors([]int{2}) == []int{2}))
+	expect(_equal(sortColors([]int{2}), []int{2}))
 }
 
 func main() {
@@ -53,5 +57,14 @@ func main() {
 	single_zero()
 	single_one()
 	single_two()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
 }
 

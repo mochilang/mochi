@@ -1,0 +1,92 @@
+package main
+
+import (
+	"encoding/json"
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func multiply(A [][]int, B [][]int) [][]int {
+	var m int = len(A)
+	if (m == 0) {
+		return _cast[[][]int]([]any{})
+	}
+	var k int = len(A[0])
+	var n int = len(B[0])
+	var result [][]int = [][]int{}
+	var i int = 0
+	for (i < m) {
+		var row []int = []int{}
+		var j int = 0
+		for (j < n) {
+			row = append(append([]int{}, row...), []int{0}...)
+			j = (j + 1)
+		}
+		result = append(append([][]int{}, result...), [][]int{row}...)
+		i = (i + 1)
+	}
+	i = 0
+	for (i < m) {
+		var j int = 0
+		for (j < k) {
+			var a int = A[i][j]
+			if (a != 0) {
+				var col int = 0
+				for (col < n) {
+					var b int = B[j][col]
+					if (b != 0) {
+						result[i][col] = (result[i][col] + (a * b))
+					}
+					col = (col + 1)
+				}
+			}
+			j = (j + 1)
+		}
+		i = (i + 1)
+	}
+	return result
+}
+
+func example() {
+	expect(_equal(multiply([][]int{[]int{1, 0, 0}, []int{-1, 0, 3}}, [][]int{[]int{7, 0, 0}, []int{0, 0, 0}, []int{0, 0, 1}}), [][]int{[]int{7, 0, 0}, []int{-7, 0, 3}}))
+}
+
+func single() {
+	expect(_equal(multiply([][]int{[]int{2}}, [][]int{[]int{3}}), [][]int{[]int{6}}))
+}
+
+func zero() {
+	expect(_equal(multiply([][]int{[]int{0}}, [][]int{[]int{1}}), [][]int{[]int{0}}))
+}
+
+func _x2() {
+	expect(_equal(multiply([][]int{[]int{1, 2}, []int{3, 4}}, [][]int{[]int{5, 6}, []int{7, 8}}), [][]int{[]int{19, 22}, []int{43, 50}}))
+}
+
+func main() {
+	example()
+	single()
+	zero()
+	_x2()
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

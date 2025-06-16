@@ -20,25 +20,28 @@ func firstBadVersion(n int, isBadVersion func(int) bool) int {
 
 func example_1() {
 	var first int = 4
-	var bad any = func(v int) bool {
+	var bad func(int) bool = func(v int) bool {
 		return (v >= first)
 }
+	_ = bad
 	expect((firstBadVersion(5, bad) == 4))
 }
 
 func example_2() {
 	var first int = 1
-	var bad any = func(v int) bool {
+	var bad func(int) bool = func(v int) bool {
 		return (v >= first)
 }
+	_ = bad
 	expect((firstBadVersion(1, bad) == 1))
 }
 
 func larger_n() {
 	var first int = 123
-	var bad any = func(v int) bool {
+	var bad func(int) bool = func(v int) bool {
 		return (v >= first)
 }
+	_ = bad
 	expect((firstBadVersion(200, bad) == 123))
 }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 )
 
@@ -10,7 +11,7 @@ func expect(cond bool) {
 }
 
 func subsetsWithDup(nums []int) [][]int {
-	var arr []any = func() []int {
+	var arr []int = func() []int {
 	items := []int{}
 	for _, x := range nums {
 		items = append(items, x)
@@ -47,28 +48,60 @@ func subsetsWithDup(nums []int) [][]int {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
 	var n int = len(arr)
-	var result []any = []any{}
-	backtrack(0, []any{})
+	var result [][]int = [][]int{}
+	var backtrack func(int, []int)
+	backtrack = func(start int, path []int) {
+		var once int = 0
+		for (once < 1) {
+			result = append(append([][]int{}, result...), [][]int{path}...)
+			once = (once + 1)
+		}
+		var i int = start
+		for (i < n) {
+			if ((i > start) && (arr[i] == arr[(i - 1)])) {
+				i = (i + 1)
+				continue
+			}
+			var newPath []int = path
+			var t int = 0
+			for (t < 1) {
+				newPath = append(append([]int{}, newPath...), []int{arr[i]}...)
+				t = (t + 1)
+			}
+			backtrack((i + 1), newPath)
+			i = (i + 1)
+		}
+}
+	backtrack(0, []int{})
 	return result
 }
 
 func example_1() {
-	expect((subsetsWithDup([]int{1, 2, 2}) == []any{[]any{}, []int{1}, []int{1, 2}, []int{1, 2, 2}, []int{2}, []int{2, 2}}))
+	expect(_equal(subsetsWithDup([]int{1, 2, 2}), []any{[]any{}, []int{1}, []int{1, 2}, []int{1, 2, 2}, []int{2}, []int{2, 2}}))
 }
 
 func example_2() {
-	expect((subsetsWithDup([]int{0}) == []any{[]any{}, []int{0}}))
+	expect(_equal(subsetsWithDup([]int{0}), []any{[]any{}, []int{0}}))
 }
 
 func main() {
 	example_1()
 	example_2()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
 }
 

@@ -7,18 +7,14 @@ func expect(cond bool) {
 func largestRectangleArea(heights []int) int {
 	var n int = len(heights)
 	var stack []int = []int{}
-	_ = stack
 	var maxArea int = 0
-	_ = maxArea
 	var i int = 0
-	_ = i
 	for (i < n) {
 		for (len(stack) > 0) {
 			if (heights[i] < heights[stack[(len(stack) - 1)]]) {
 				var h int = heights[stack[(len(stack) - 1)]]
 				stack = stack[0:(len(stack) - 1)]
 				var width int = i
-				_ = width
 				if (len(stack) > 0) {
 					width = ((i - stack[(len(stack) - 1)]) - 1)
 				}
@@ -37,7 +33,6 @@ func largestRectangleArea(heights []int) int {
 		var h int = heights[stack[(len(stack) - 1)]]
 		stack = stack[0:(len(stack) - 1)]
 		var width int = n
-		_ = width
 		if (len(stack) > 0) {
 			width = ((n - stack[(len(stack) - 1)]) - 1)
 		}

@@ -14,14 +14,13 @@ func secondHighestSalary(employees []Employee) int {
 		return 0
 	}
 	var firstEmp Employee = employees[0]
+	_ = firstEmp
 	var first int = firstEmp.Salary
-	_ = first
 	var second int = first
-	_ = second
 	var i int = 1
-	_ = i
 	for (i < len(employees)) {
 		var emp Employee = employees[i]
+		_ = emp
 		var s int = emp.Salary
 		if (s > first) {
 			second = first
@@ -46,11 +45,12 @@ func no_second_salary() {
 }
 
 func duplicates() {
-	var list []Employee = []Employee{Employee{Id: 1, Salary: 100}, Employee{Id: 2, Salary: 100}, Employee{Id: 3, Salary: 100}}
+	var list []any = []Employee{Employee{Id: 1, Salary: 100}, Employee{Id: 2, Salary: 100}, Employee{Id: 3, Salary: 100}}
+	_ = list
 	expect((secondHighestSalary(list) == 0))
 }
 
-var employees []Employee = []Employee{Employee{Id: 1, Salary: 100}, Employee{Id: 2, Salary: 200}, Employee{Id: 3, Salary: 300}, Employee{Id: 4, Salary: 200}}
+var employees []any = []Employee{Employee{Id: 1, Salary: 100}, Employee{Id: 2, Salary: 200}, Employee{Id: 3, Salary: 300}, Employee{Id: 4, Salary: 200}}
 func main() {
 	example()
 	no_second_salary()

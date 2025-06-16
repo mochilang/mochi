@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"sort"
@@ -51,14 +52,13 @@ func merge(intervals [][]int) [][]int {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := [][]int{}
+	_res := [][]int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
 	var result [][]int = [][]int{}
-	_ = result
 	for _, inter := range sorted {
 		if (len(result) == 0) {
 			result = append(append([][]int{}, result...), [][]int{inter}...)
@@ -103,6 +103,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

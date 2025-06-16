@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -16,7 +17,6 @@ type Node struct {
 
 func copyRandomList(nodes []Node) []Node {
 	var result []any = []any{}
-	_ = result
 	for _, n := range nodes {
 		result = append(append([]any{}, result...), _toAnySlice([]Node{Node{Val: n.Val, Next: n.Next, Random: n.Random}})...)
 	}
@@ -25,11 +25,10 @@ func copyRandomList(nodes []Node) []Node {
 
 func serialize(nodes []Node) [][]int {
 	var out [][]int = [][]int{}
-	_ = out
 	var i int = 0
-	_ = i
 	for (i < len(nodes)) {
 		var n Node = nodes[i]
+		_ = n
 		out = append(append([][]int{}, out...), [][]int{[]int{n.Val, n.Random}}...)
 		i = (i + 1)
 	}
@@ -39,6 +38,7 @@ func serialize(nodes []Node) [][]int {
 func copy_list() {
 	var original []Node = []Node{Node{Val: 7, Next: 1, Random: -1}, Node{Val: 13, Next: 2, Random: 0}, Node{Val: 11, Next: 3, Random: 4}, Node{Val: 10, Next: 4, Random: 2}, Node{Val: 1, Next: -1, Random: 0}}
 	var copied []Node = copyRandomList(original)
+	_ = copied
 	expect(_equal(serialize(copied), serialize(original)))
 }
 
@@ -55,6 +55,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

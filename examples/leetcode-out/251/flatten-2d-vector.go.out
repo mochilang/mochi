@@ -36,12 +36,15 @@ func advance(vec Vector2D) Vector2D {
 
 func hasNext(vec Vector2D) bool {
 	var v Vector2D = advance(vec)
+	_ = v
 	return (v.Row < len(v.Data))
 }
 
 func next(vec Vector2D) NextResult {
 	var v Vector2D = advance(vec)
+	_ = v
 	var value int = v.Data[v.Row][v.Col]
+	_ = value
 	v = Vector2D{Data: v.Data, Row: v.Row, Col: (v.Col + 1)}
 	return NextResult{Vec: v, Val: value}
 }
@@ -49,33 +52,40 @@ func next(vec Vector2D) NextResult {
 func example() {
 	var it Vector2D = newVector2D([][]int{[]int{1, 2}, []int{3}, []int{4}})
 	var r1 NextResult = next(it)
+	_ = r1
 	it = r1.Vec
 	expect((r1.Val == 1))
 	expect((hasNext(it) == true))
 	var r2 NextResult = next(it)
+	_ = r2
 	it = r2.Vec
 	expect((r2.Val == 2))
 	expect((hasNext(it) == true))
 	var r3 NextResult = next(it)
+	_ = r3
 	it = r3.Vec
 	expect((r3.Val == 3))
 	expect((hasNext(it) == true))
 	var r4 NextResult = next(it)
+	_ = r4
 	it = r4.Vec
 	expect((r4.Val == 4))
 	expect((hasNext(it) == false))
 }
 
 func empty_inner_lists() {
-	var it Vector2D = newVector2D([]any{[]any{}, []int{1}, []any{}, []int{2, 3}})
+	var it Vector2D = newVector2D([][]int{[]int{}, []int{1}, []int{}, []int{2, 3}})
 	expect((hasNext(it) == true))
 	var r1 NextResult = next(it)
+	_ = r1
 	it = r1.Vec
 	expect((r1.Val == 1))
 	var r2 NextResult = next(it)
+	_ = r2
 	it = r2.Vec
 	expect((r2.Val == 2))
 	var r3 NextResult = next(it)
+	_ = r3
 	it = r3.Vec
 	expect((r3.Val == 3))
 	expect((hasNext(it) == false))

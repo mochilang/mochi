@@ -1,5 +1,9 @@
 package main
 
+import (
+	"encoding/json"
+)
+
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
@@ -20,16 +24,13 @@ func newQueue() MyQueue {
 
 func push(q MyQueue, x int) MyQueue {
 	var s []int = q.Ins
-	_ = s
 	s = append(append([]int{}, s...), []int{x}...)
 	return MyQueue{Ins: s, Outs: q.Outs}
 }
 
 func ensureOut(q MyQueue) MyQueue {
 	var inStack []int = q.Ins
-	_ = inStack
 	var outStack []int = q.Outs
-	_ = outStack
 	if (len(outStack) == 0) {
 		for (len(inStack) > 0) {
 			var v int = inStack[(len(inStack) - 1)]
@@ -42,16 +43,19 @@ func ensureOut(q MyQueue) MyQueue {
 
 func pop(q MyQueue) PopResult {
 	var shifted MyQueue = ensureOut(q)
+	_ = shifted
 	var outStack []int = shifted.Outs
-	_ = outStack
 	var v int = outStack[(len(outStack) - 1)]
+	_ = v
 	outStack = outStack[0:(len(outStack) - 1)]
 	var newQ MyQueue = MyQueue{Ins: shifted.Ins, Outs: outStack}
+	_ = newQ
 	return PopResult{Queue: newQ, Val: v}
 }
 
 func peek(q MyQueue) int {
 	var shifted MyQueue = ensureOut(q)
+	_ = shifted
 	return shifted.Outs[(len(shifted.Outs) - 1)]
 }
 
@@ -61,11 +65,11 @@ func empty(q MyQueue) bool {
 
 func example() {
 	var q MyQueue = newQueue()
-	_ = q
 	q = push(q, 1)
 	q = push(q, 2)
 	expect((peek(q) == 1))
 	var r1 PopResult = pop(q)
+	_ = r1
 	q = r1.Queue
 	expect((r1.Val == 1))
 	expect((empty(q) == false))
@@ -73,18 +77,20 @@ func example() {
 
 func multiple_operations() {
 	var q MyQueue = newQueue()
-	_ = q
 	q = push(q, 3)
 	q = push(q, 4)
 	var r1 PopResult = pop(q)
+	_ = r1
 	q = r1.Queue
 	expect((r1.Val == 3))
 	q = push(q, 5)
 	expect((peek(q) == 4))
 	var r2 PopResult = pop(q)
+	_ = r2
 	q = r2.Queue
 	expect((r2.Val == 4))
 	var r3 PopResult = pop(q)
+	_ = r3
 	q = r3.Queue
 	expect((r3.Val == 5))
 	expect((empty(q) == true))

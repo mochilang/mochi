@@ -1,0 +1,102 @@
+package main
+
+import (
+	"fmt"
+	"reflect"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func topKFrequent(nums []int, k int) []int {
+	var counts map[int]int = map[int]int{}
+	for _, n := range nums {
+		var c int = 0
+		_tmp0 := n
+		_tmp1 := counts
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			c = counts[n]
+		}
+		counts[n] = (c + 1)
+	}
+	var pairs [][]int = [][]int{}
+	for key := range counts {
+		pairs = append(append([][]int{}, pairs...), [][]int{[]int{key, counts[key]}}...)
+	}
+	var sorted [][]int = func() [][]int {
+	items := [][]int{}
+	for _, p := range pairs {
+		items = append(items, p)
+	}
+	type pair struct { item []int; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		p := it
+		pairs[idx] = pair{item: it, key: -p[1]}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := [][]int{}
+	for _, p := range items {
+		_res = append(_res, p)
+	}
+	return _res
+}()
+	var result []int = []int{}
+	var i int = 0
+	for ((i < len(sorted)) && (i < k)) {
+		result = append(append([]int{}, result...), []int{sorted[i][0]}...)
+		i = (i + 1)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(topKFrequent([]int{1, 1, 1, 2, 2, 3}, 2), []int{1, 2}))
+}
+
+func example_2() {
+	expect(_equal(topKFrequent([]int{1}, 1), []int{1}))
+}
+
+func main() {
+	example_1()
+	example_2()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

@@ -16,11 +16,8 @@ func reverseBetween(nums []int, left int, right int) []int {
 		return nums
 	}
 	var result []int = nums
-	_ = result
 	var i int = (left - 1)
-	_ = i
 	var j int = (right - 1)
-	_ = j
 	for (i < j) {
 		var temp int = result[i]
 		result[i] = result[j]
@@ -45,6 +42,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

@@ -6,29 +6,24 @@ func expect(cond bool) {
 
 func totalNQueens(n int) int {
 	var cols []bool = []bool{}
-	_ = cols
 	var i int = 0
-	_ = i
 	for (i < n) {
 		cols = append(append([]bool{}, cols...), []bool{false}...)
 		i = (i + 1)
 	}
 	var diag1 []bool = []bool{}
-	_ = diag1
 	i = 0
 	for (i < ((2 * n))) {
 		diag1 = append(append([]bool{}, diag1...), []bool{false}...)
 		i = (i + 1)
 	}
 	var diag2 []bool = []bool{}
-	_ = diag2
 	i = 0
 	for (i < ((2 * n))) {
 		diag2 = append(append([]bool{}, diag2...), []bool{false}...)
 		i = (i + 1)
 	}
 	var count int = 0
-	_ = count
 	var backtrack func(int)
 	backtrack = func(row int) {
 		if (row == n) {

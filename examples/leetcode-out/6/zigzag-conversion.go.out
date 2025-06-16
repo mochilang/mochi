@@ -13,17 +13,13 @@ func convert(s string, numRows int) string {
 		return s
 	}
 	var rows []any = []any{}
-	_ = rows
 	var i int = 0
-	_ = i
 	for (i < numRows) {
 		rows = append(append([]any{}, rows...), _toAnySlice([]string{""})...)
 		i = (i + 1)
 	}
 	var curr int = 0
-	_ = curr
 	var step int = 1
-	_ = step
 	for _, r := range []rune(s) {
 		ch := string(r)
 		rows[curr] = fmt.Sprint(rows[curr]) + ch
@@ -35,7 +31,6 @@ func convert(s string, numRows int) string {
 		curr = (curr + step)
 	}
 	var result string = ""
-	_ = result
 	for _, row := range rows {
 		result = result + fmt.Sprint(row)
 	}

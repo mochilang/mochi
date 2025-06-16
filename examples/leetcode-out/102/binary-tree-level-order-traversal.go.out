@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -32,14 +33,10 @@ func levelOrder(root any) [][]int {
 		return _cast[[][]int]([]any{})
 	}
 	var result [][]int = [][]int{}
-	_ = result
 	var queue []any = []any{root}
-	_ = queue
 	for (len(queue) > 0) {
 		var level []int = []int{}
-		_ = level
 		var next []any = []any{}
-		_ = next
 		for _, node := range queue {
 			if func() bool {
 	_t := node
@@ -83,6 +80,7 @@ func levelOrder(root any) [][]int {
 
 func example_1() {
 	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 9, Right: Leaf{}}, Value: 3, Right: Node{Left: Node{Left: Leaf{}, Value: 15, Right: Leaf{}}, Value: 20, Right: Node{Left: Leaf{}, Value: 7, Right: Leaf{}}}}
+	_ = tree
 	expect(_equal(levelOrder(tree), [][]int{[]int{3}, []int{9, 20}, []int{15, 7}}))
 }
 
@@ -109,6 +107,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

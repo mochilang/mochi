@@ -10,14 +10,10 @@ func expect(cond bool) {
 
 func insertionSortList(nums []int) []int {
 	var arr []int = nums
-	_ = arr
 	var i int = 1
-	_ = i
 	for (i < len(arr)) {
 		var key int = arr[i]
-		_ = key
 		var j int = (i - 1)
-		_ = j
 		for ((j >= 0) && (arr[j] > key)) {
 			arr[(j + 1)] = arr[j]
 			j = (j - 1)
@@ -57,6 +53,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

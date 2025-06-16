@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -20,7 +21,6 @@ func build(start int, end int) []any {
 		return _cast[[]any]([]Empty{Empty{}})
 	}
 	var result []any = []any{}
-	_ = result
 	for i := start; i < (end + 1); i++ {
 		var leftTrees []any = build(start, (i - 1))
 		var rightTrees []any = build((i + 1), end)

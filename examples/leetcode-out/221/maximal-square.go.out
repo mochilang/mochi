@@ -11,14 +11,10 @@ func maximalSquare(matrix [][]string) int {
 	}
 	var cols int = len(matrix[0])
 	var dp [][]int = [][]int{}
-	_ = dp
 	var r int = 0
-	_ = r
 	for (r < rows) {
 		var row []int = []int{}
-		_ = row
 		var c int = 0
-		_ = c
 		for (c < cols) {
 			row = append(append([]int{}, row...), []int{0}...)
 			c = (c + 1)
@@ -27,11 +23,9 @@ func maximalSquare(matrix [][]string) int {
 		r = (r + 1)
 	}
 	var maxSide int = 0
-	_ = maxSide
 	r = 0
 	for (r < rows) {
 		var c int = 0
-		_ = c
 		for (c < cols) {
 			if (matrix[r][c] == "1") {
 				if ((r == 0) || (c == 0)) {
@@ -41,7 +35,6 @@ func maximalSquare(matrix [][]string) int {
 					var left int = dp[r][(c - 1)]
 					var diag int = dp[(r - 1)][(c - 1)]
 					var small int = top
-					_ = small
 					if (left < small) {
 						small = left
 					}

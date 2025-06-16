@@ -6,6 +6,9 @@ func expect(cond bool) {
 
 func findCelebrity(mat [][]bool) int {
 	var n int = len(mat)
+	var knows = func(a int, b int) bool {
+		return mat[a][b]
+}
 	var candidate int = 0
 	var i int = 1
 	for (i < n) {
@@ -31,16 +34,19 @@ func findCelebrity(mat [][]bool) int {
 
 func example_1() {
 	var mat [][]bool = [][]bool{[]bool{false, true}, []bool{false, false}}
+	_ = mat
 	expect((findCelebrity(mat) == 1))
 }
 
 func example_2() {
 	var mat [][]bool = [][]bool{[]bool{false, true, false}, []bool{false, false, false}, []bool{true, true, false}}
+	_ = mat
 	expect((findCelebrity(mat) == 1))
 }
 
 func no_celebrity() {
 	var mat [][]bool = [][]bool{[]bool{false, true}, []bool{true, false}}
+	_ = mat
 	expect((findCelebrity(mat) == (-1)))
 }
 

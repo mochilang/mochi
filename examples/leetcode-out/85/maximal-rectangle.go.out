@@ -11,26 +11,19 @@ func maximalRectangle(matrix [][]string) int {
 	var rows int = len(matrix)
 	var cols int = len(matrix[0])
 	var heights []int = []int{}
-	_ = heights
 	var init int = 0
-	_ = init
 	for (init < cols) {
 		heights = append(append([]int{}, heights...), []int{0}...)
 		init = (init + 1)
 	}
 	var best int = 0
-	_ = best
 	var largestRectangleArea = func(hs []int) int {
 		var stack []int = []int{}
-		_ = stack
 		var i int = 0
-		_ = i
 		var n int = len(hs)
 		var maxArea int = 0
-		_ = maxArea
 		for (i <= n) {
 			var curr int = 0
-			_ = curr
 			if (i < n) {
 				curr = hs[i]
 			}
@@ -39,7 +32,6 @@ func maximalRectangle(matrix [][]string) int {
 					var h int = hs[stack[(len(stack) - 1)]]
 					stack = stack[0:(len(stack) - 1)]
 					var width int = i
-					_ = width
 					if (len(stack) > 0) {
 						width = ((i - stack[(len(stack) - 1)]) - 1)
 					}
@@ -57,10 +49,8 @@ func maximalRectangle(matrix [][]string) int {
 		return maxArea
 }
 	var r int = 0
-	_ = r
 	for (r < rows) {
 		var c int = 0
-		_ = c
 		for (c < cols) {
 			if (matrix[r][c] == "1") {
 				heights[c] = (heights[c] + 1)

@@ -17,14 +17,10 @@ func exist(board [][]string, word string) bool {
 	}
 	var n int = len(board[0])
 	var visited [][]bool = [][]bool{}
-	_ = visited
 	var r int = 0
-	_ = r
 	for (r < m) {
 		var row []bool = []bool{}
-		_ = row
 		var c int = 0
-		_ = c
 		for (c < n) {
 			row = append(append([]bool{}, row...), []bool{false}...)
 			c = (c + 1)
@@ -66,7 +62,6 @@ func exist(board [][]string, word string) bool {
 
 func findWords(board [][]string, words []string) []string {
 	var found []string = []string{}
-	_ = found
 	for _, w := range words {
 		if exist(board, w) {
 			found = append(append([]string{}, found...), []string{w}...)
@@ -76,7 +71,7 @@ func findWords(board [][]string, words []string) []string {
 }
 
 func example() {
-	var result []any = func() []string {
+	var result []string = func() []string {
 	items := []string{}
 	for _, w := range findWords(board, words) {
 		items = append(items, w)
@@ -113,12 +108,13 @@ func example() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []string{}
+	_res := []string{}
 	for _, w := range items {
-		res = append(res, w)
+		_res = append(_res, w)
 	}
-	return res
+	return _res
 }()
+	_ = result
 	expect(_equal(result, []string{"eat", "oath"}))
 }
 
@@ -129,6 +125,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

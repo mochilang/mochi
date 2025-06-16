@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func isHappy(n int) bool {
 	var seen map[int]bool = map[int]bool{}
-	_ = seen
 	var current int = n
-	_ = current
 	for (current != 1) {
 		_tmp0 := current
 		_tmp1 := seen
@@ -18,9 +16,7 @@ func isHappy(n int) bool {
 		}
 		seen[current] = true
 		var sum int = 0
-		_ = sum
 		var x int = current
-		_ = x
 		for (x > 0) {
 			var digit int = (x % 10)
 			sum = (sum + (digit * digit))

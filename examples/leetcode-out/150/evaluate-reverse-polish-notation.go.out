@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func parseInt(s string) int {
 	var i int = 0
-	_ = i
 	var sign int = 1
-	_ = sign
 	if ((len(s) > 0) && (((_indexString(s, 0) == "-") || (_indexString(s, 0) == "+")))) {
 		if (_indexString(s, 0) == "-") {
 			sign = -1
@@ -17,7 +15,6 @@ func parseInt(s string) int {
 	}
 	var digits map[string]int = map[string]int{"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
 	var result int = 0
-	_ = result
 	for (i < len(s)) {
 		var ch string = _indexString(s, i)
 		result = ((result * 10) + digits[ch])
@@ -28,7 +25,6 @@ func parseInt(s string) int {
 
 func evalRPN(tokens []string) int {
 	var stack []int = []int{}
-	_ = stack
 	for _, tok := range tokens {
 		if ((((tok == "+") || (tok == "-")) || (tok == "*")) || (tok == "/")) {
 			var b int = stack[(len(stack) - 1)]

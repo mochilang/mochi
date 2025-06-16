@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -14,18 +15,14 @@ func productExceptSelf(nums []int) []int {
 		return _cast[[]int]([]any{})
 	}
 	var result []int = []int{}
-	_ = result
 	var prefix int = 1
-	_ = prefix
 	var i int = 0
-	_ = i
 	for (i < n) {
 		result = append(append([]int{}, result...), []int{prefix}...)
 		prefix = (prefix * nums[i])
 		i = (i + 1)
 	}
 	var suffix int = 1
-	_ = suffix
 	i = (n - 1)
 	for (i >= 0) {
 		result[i] = (result[i] * suffix)
@@ -72,6 +69,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

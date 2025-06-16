@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 )
 
@@ -21,14 +22,39 @@ func parseInt(s string) int {
 }
 
 func addOperators(num string, target int) []string {
-	var result []any = []any{}
+	var result []string = []string{}
+	var backtrack func(int, string, int, int)
+	backtrack = func(pos int, expr string, value int, prev int) {
+		if (pos == len(num)) {
+			if (value == target) {
+				result = append(append([]string{}, result...), []string{expr}...)
+			}
+		} else {
+			var i int = pos
+			for (i < len(num)) {
+				if ((i != pos) && (_indexString(num, pos) == "0")) {
+					break
+				}
+				var part string = string([]rune(num)[pos:(i + 1)])
+				var cur int = parseInt(part)
+				if (pos == 0) {
+					backtrack((i + 1), part, cur, cur)
+				} else {
+					backtrack((i + 1), expr + "+" + part, (value + cur), cur)
+					backtrack((i + 1), expr + "-" + part, (value - cur), -cur)
+					backtrack((i + 1), expr + "*" + part, ((value - prev) + (prev * cur)), (prev * cur))
+				}
+				i = (i + 1)
+			}
+		}
+}
 	backtrack(0, "", 0, 0)
 	return result
 }
 
 func example_1() {
 	var res []string = addOperators("123", 6)
-	var sorted []any = func() []string {
+	var sorted []string = func() []string {
 	items := []string{}
 	for _, x := range res {
 		items = append(items, x)
@@ -65,18 +91,19 @@ func example_1() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []string{}
+	_res := []string{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
-	expect((sorted == []string{"1*2*3", "1+2+3"}))
+	_ = sorted
+	expect(_equal(sorted, []string{"1*2*3", "1+2+3"}))
 }
 
 func example_2() {
 	var res []string = addOperators("232", 8)
-	var sorted []any = func() []string {
+	var sorted []string = func() []string {
 	items := []string{}
 	for _, x := range res {
 		items = append(items, x)
@@ -113,18 +140,19 @@ func example_2() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []string{}
+	_res := []string{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
-	expect((sorted == []string{"2*3+2", "2+3*2"}))
+	_ = sorted
+	expect(_equal(sorted, []string{"2*3+2", "2+3*2"}))
 }
 
 func example_3() {
 	var res []string = addOperators("105", 5)
-	var sorted []any = func() []string {
+	var sorted []string = func() []string {
 	items := []string{}
 	for _, x := range res {
 		items = append(items, x)
@@ -161,18 +189,19 @@ func example_3() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []string{}
+	_res := []string{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
-	expect((sorted == []string{"1*0+5", "10-5"}))
+	_ = sorted
+	expect(_equal(sorted, []string{"1*0+5", "10-5"}))
 }
 
 func example_4() {
 	var res []string = addOperators("00", 0)
-	var sorted []any = func() []string {
+	var sorted []string = func() []string {
 	items := []string{}
 	for _, x := range res {
 		items = append(items, x)
@@ -209,21 +238,22 @@ func example_4() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []string{}
+	_res := []string{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
-	expect((sorted == []string{"0*0", "0+0", "0-0"}))
+	_ = sorted
+	expect(_equal(sorted, []string{"0*0", "0+0", "0-0"}))
 }
 
 func example_5() {
-	expect((addOperators("3456237490", 9191) == []any{}))
+	expect(_equal(addOperators("3456237490", 9191), []any{}))
 }
 
 func single_number() {
-	expect((addOperators("5", 5) == []string{"5"}))
+	expect(_equal(addOperators("5", 5), []string{"5"}))
 }
 
 func main() {
@@ -233,6 +263,15 @@ func main() {
 	example_4()
 	example_5()
 	single_number()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
 }
 
 func _indexString(s string, i int) string {

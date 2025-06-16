@@ -1,0 +1,62 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func generatePossibleNextMoves(s string) []string {
+	var result []string = []string{}
+	var i int = 0
+	var n int = len(s)
+	for ((i + 1) < n) {
+		if ((_indexString(s, i) == "+") && (_indexString(s, (i + 1)) == "+")) {
+			var next string = string([]rune(s)[0:i]) + "--" + string([]rune(s)[(i + 2):n])
+			result = append(append([]string{}, result...), []string{next}...)
+		}
+		i = (i + 1)
+	}
+	return result
+}
+
+func example_1() {
+	expect(_equal(generatePossibleNextMoves("++++"), []string{"--++", "+--+", "++--"}))
+}
+
+func no_moves() {
+	expect(_equal(generatePossibleNextMoves("+-"), []any{}))
+}
+
+func three_plus() {
+	expect(_equal(generatePossibleNextMoves("+++"), []string{"--+", "+--"}))
+}
+
+func main() {
+	example_1()
+	no_moves()
+	three_plus()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+
+func _indexString(s string, i int) string {
+    runes := []rune(s)
+    if i < 0 {
+        i += len(runes)
+    }
+    if i < 0 || i >= len(runes) {
+        panic("index out of range")
+    }
+    return string(runes[i])
+}
+

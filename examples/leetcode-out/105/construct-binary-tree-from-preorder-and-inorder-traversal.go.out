@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -22,12 +23,10 @@ func (Node) isTree() {}
 func buildTree(preorder []int, inorder []int) any {
 	var n int = len(preorder)
 	var idxMap map[int]int = map[int]int{}
-	_ = idxMap
 	for i := 0; i < n; i++ {
 		idxMap[inorder[i]] = i
 	}
 	var preIdx int = 0
-	_ = preIdx
 	var helper = func(lo int, hi int) any {
 		if (lo >= hi) {
 			return Leaf{}
@@ -35,6 +34,7 @@ func buildTree(preorder []int, inorder []int) any {
 		var val int = preorder[preIdx]
 		preIdx = (preIdx + 1)
 		var mid int = idxMap[val]
+		_ = mid
 		return Node{Left: helper(lo, mid), Value: val, Right: helper((mid + 1), hi)}
 }
 	return helper(0, n)
@@ -81,6 +81,7 @@ func example_1() {
 	var preorder []int = []int{3, 9, 20, 15, 7}
 	var inorder []int = []int{9, 3, 15, 20, 7}
 	var tree any = buildTree(preorder, inorder)
+	_ = tree
 	expect(_equal(preorderTraversal(tree), preorder))
 	expect(_equal(inorderTraversal(tree), inorder))
 }
@@ -89,6 +90,7 @@ func single_node() {
 	var preorder []int = []int{1}
 	var inorder []int = []int{1}
 	var tree any = buildTree(preorder, inorder)
+	_ = tree
 	expect(_equal(preorderTraversal(tree), preorder))
 	expect(_equal(inorderTraversal(tree), inorder))
 }
@@ -112,6 +114,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

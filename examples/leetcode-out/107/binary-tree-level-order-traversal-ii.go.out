@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -32,14 +33,10 @@ func levelOrderBottom(root any) [][]int {
 		return _cast[[][]int]([]any{})
 	}
 	var result [][]int = [][]int{}
-	_ = result
 	var queue []any = []any{root}
-	_ = queue
 	for (len(queue) > 0) {
 		var level []int = []int{}
-		_ = level
 		var next []any = []any{}
-		_ = next
 		for _, node := range queue {
 			if func() bool {
 	_t := node
@@ -109,6 +106,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

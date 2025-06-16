@@ -11,14 +11,10 @@ func isInterleave(s1 string, s2 string, s3 string) bool {
 		return false
 	}
 	var dp [][]bool = [][]bool{}
-	_ = dp
 	var i int = 0
-	_ = i
 	for (i <= m) {
 		var row []bool = []bool{}
-		_ = row
 		var j int = 0
-		_ = j
 		for (j <= n) {
 			row = append(append([]bool{}, row...), []bool{false}...)
 			j = (j + 1)
@@ -30,7 +26,6 @@ func isInterleave(s1 string, s2 string, s3 string) bool {
 	i = 0
 	for (i <= m) {
 		var j int = 0
-		_ = j
 		for (j <= n) {
 			if (i > 0) {
 				if (dp[(i - 1)][j] && (_indexString(s1, (i - 1)) == _indexString(s3, ((i + j) - 1)))) {

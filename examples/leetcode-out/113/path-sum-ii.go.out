@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -67,17 +68,21 @@ func pathSum(root any, targetSum int) [][]int {
 
 func example_1() {
 	var rootLeft Node = Node{Left: Node{Left: Leaf{}, Value: 7, Right: Leaf{}}, Value: 11, Right: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}}
+	_ = rootLeft
 	var tree Node = Node{Left: Node{Left: rootLeft, Value: 4, Right: Leaf{}}, Value: 5, Right: Node{Left: Node{Left: Leaf{}, Value: 13, Right: Leaf{}}, Value: 8, Right: Node{Left: Node{Left: Leaf{}, Value: 5, Right: Leaf{}}, Value: 4, Right: Node{Left: Leaf{}, Value: 1, Right: Leaf{}}}}}
+	_ = tree
 	expect(_equal(pathSum(tree, 22), [][]int{[]int{5, 4, 11, 2}, []int{5, 8, 4, 5}}))
 }
 
 func example_2() {
 	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}, Value: 1, Right: Node{Left: Leaf{}, Value: 3, Right: Leaf{}}}
+	_ = tree
 	expect(_equal(pathSum(tree, 5), []any{}))
 }
 
 func example_3() {
 	var tree Node = Node{Left: Node{Left: Leaf{}, Value: 2, Right: Leaf{}}, Value: 1, Right: Leaf{}}
+	_ = tree
 	expect(_equal(pathSum(tree, 0), []any{}))
 }
 
@@ -96,6 +101,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

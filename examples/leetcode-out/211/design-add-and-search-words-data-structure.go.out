@@ -14,13 +14,10 @@ func Node() map[string]any {
 
 func addWord(root map[string]any, word string) {
 	var node map[string]any = root
-	_ = node
 	for i := 0; i < len(word); i++ {
 		var ch string = _indexString(word, i)
 		var nextMap map[string]any = _cast[map[string]any](node["next"])
-		_ = nextMap
 		var child map[string]any = nil
-		_ = child
 		_tmp0 := ch
 		_tmp1 := nextMap
 		_, _tmp2 := _tmp1[_tmp0]
@@ -44,7 +41,6 @@ func searchHelper(node map[string]any, word string, index int) bool {
 	}
 	var ch string = _indexString(word, index)
 	var children map[string]any = _cast[map[string]any](node["next"])
-	_ = children
 	if (ch == ".") {
 		for key := range children {
 			var child map[string]any = _cast[map[string]any](children[key])

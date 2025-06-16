@@ -6,15 +6,10 @@ func expect(cond bool) {
 
 func lengthOfLongestSubstringTwoDistinct(s string) int {
 	var left int = 0
-	_ = left
 	var best int = 0
-	_ = best
 	var counts map[string]int = map[string]int{}
-	_ = counts
 	var distinct int = 0
-	_ = distinct
 	var right int = 0
-	_ = right
 	for (right < len(s)) {
 		var ch string = _indexString(s, right)
 		_tmp0 := ch

@@ -12,7 +12,6 @@ func expect(cond bool) {
 
 func singleNumber(nums []int) []int {
 	var counts map[int]int = map[int]int{}
-	_ = counts
 	for _, n := range nums {
 		_tmp0 := n
 		_tmp1 := counts
@@ -24,7 +23,6 @@ func singleNumber(nums []int) []int {
 		}
 	}
 	var result []int = []int{}
-	_ = result
 	for _, n := range nums {
 		if (counts[n] == 1) {
 			result = append(append([]int{}, result...), []int{n}...)
@@ -37,7 +35,7 @@ func singleNumber(nums []int) []int {
 }
 
 func example_1() {
-	var out []any = func() []int {
+	var out []int = func() []int {
 	items := []int{}
 	for _, x := range singleNumber([]int{1, 2, 1, 3, 2, 5}) {
 		items = append(items, x)
@@ -74,17 +72,18 @@ func example_1() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
+	_ = out
 	expect(_equal(out, []int{3, 5}))
 }
 
 func negatives() {
-	var out []any = func() []int {
+	var out []int = func() []int {
 	items := []int{}
 	for _, x := range singleNumber([]int{-1, 0}) {
 		items = append(items, x)
@@ -121,17 +120,18 @@ func negatives() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
+	_ = out
 	expect(_equal(out, []int{-1, 0}))
 }
 
 func simple() {
-	var out []any = func() []int {
+	var out []int = func() []int {
 	items := []int{}
 	for _, x := range singleNumber([]int{0, 1}) {
 		items = append(items, x)
@@ -168,17 +168,18 @@ func simple() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
+	_ = out
 	expect(_equal(out, []int{0, 1}))
 }
 
 func mixed_order() {
-	var out []any = func() []int {
+	var out []int = func() []int {
 	items := []int{}
 	for _, x := range singleNumber([]int{1, 2, 3, 2, 4, 1}) {
 		items = append(items, x)
@@ -215,12 +216,13 @@ func mixed_order() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
+	_ = out
 	expect(_equal(out, []int{3, 4}))
 }
 
@@ -232,6 +234,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

@@ -11,11 +11,8 @@ func expect(cond bool) {
 func reorderList(nums []int) []int {
 	var n int = len(nums)
 	var result []int = []int{}
-	_ = result
 	var i int = 0
-	_ = i
 	var j int = (n - 1)
-	_ = j
 	for (i <= j) {
 		if (i == j) {
 			result = append(append([]int{}, result...), []int{nums[i]}...)
@@ -47,6 +44,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

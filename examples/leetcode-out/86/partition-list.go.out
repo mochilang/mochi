@@ -10,11 +10,8 @@ func expect(cond bool) {
 
 func partition(head []int, x int) []int {
 	var less []int = []int{}
-	_ = less
 	var greater []int = []int{}
-	_ = greater
 	var idx int = 0
-	_ = idx
 	for (idx < len(head)) {
 		var val int = head[idx]
 		if (val < x) {
@@ -25,7 +22,6 @@ func partition(head []int, x int) []int {
 		idx = (idx + 1)
 	}
 	var j int = 0
-	_ = j
 	for (j < len(greater)) {
 		var val int = greater[j]
 		less = append(append([]int{}, less...), []int{val}...)
@@ -53,6 +49,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

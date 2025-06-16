@@ -16,10 +16,8 @@ type Employee struct {
 
 func nthHighestSalary(employees []Employee, n int) int {
 	var uniqList []int = []int{}
-	_ = uniqList
 	for _, e := range employees {
 		var seen bool = false
-		_ = seen
 		for _, s := range uniqList {
 			if (s == e.Salary) {
 				seen = true
@@ -30,7 +28,7 @@ func nthHighestSalary(employees []Employee, n int) int {
 			uniqList = append(append([]int{}, uniqList...), []int{e.Salary}...)
 		}
 	}
-	var sorted []any = func() []int {
+	var sorted []int = func() []int {
 	items := []int{}
 	for _, v := range uniqList {
 		items = append(items, v)
@@ -67,11 +65,11 @@ func nthHighestSalary(employees []Employee, n int) int {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, v := range items {
-		res = append(res, v)
+		_res = append(_res, v)
 	}
-	return res
+	return _res
 }()
 	if (n <= len(sorted)) {
 		return sorted[(n - 1)]
@@ -91,7 +89,7 @@ func too_high() {
 	expect((nthHighestSalary(employees, 5) == 0))
 }
 
-var employees []Employee = []Employee{Employee{Id: 1, Salary: 100}, Employee{Id: 2, Salary: 200}, Employee{Id: 3, Salary: 300}, Employee{Id: 4, Salary: 300}}
+var employees []any = []Employee{Employee{Id: 1, Salary: 100}, Employee{Id: 2, Salary: 200}, Employee{Id: 3, Salary: 300}, Employee{Id: 4, Salary: 300}}
 func main() {
 	first_highest()
 	second_highest()

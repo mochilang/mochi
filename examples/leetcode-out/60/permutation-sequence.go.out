@@ -10,22 +10,17 @@ func expect(cond bool) {
 
 func getPermutation(n int, k int) string {
 	var factVal int = 1
-	_ = factVal
 	for i := 1; i < (n + 1); i++ {
 		factVal = (factVal * i)
 	}
 	var nums []int = []int{}
-	_ = nums
 	var i int = 1
-	_ = i
 	for (i <= n) {
 		nums = append(append([]int{}, nums...), []int{i}...)
 		i = (i + 1)
 	}
 	var k0 int = (k - 1)
-	_ = k0
 	var result string = ""
-	_ = result
 	i = 0
 	for (i < n) {
 		factVal = (factVal / ((n - i)))

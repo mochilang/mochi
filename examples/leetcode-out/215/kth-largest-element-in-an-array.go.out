@@ -10,7 +10,7 @@ func expect(cond bool) {
 }
 
 func findKthLargest(nums []int, k int) int {
-	var sorted []any = func() []int {
+	var sorted []int = func() []int {
 	items := []int{}
 	for _, x := range nums {
 		items = append(items, x)
@@ -47,11 +47,11 @@ func findKthLargest(nums []int, k int) int {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []int{}
+	_res := []int{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
 	return sorted[(k - 1)]
 }

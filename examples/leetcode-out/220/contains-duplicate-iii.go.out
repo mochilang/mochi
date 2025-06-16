@@ -17,12 +17,9 @@ func containsNearbyAlmostDuplicate(nums []int, indexDiff int, valueDiff int) boo
 		return false
 	}
 	var i int = 0
-	_ = i
 	for (i < len(nums)) {
 		var j int = (i - 1)
-		_ = j
 		var left int = 0
-		_ = left
 		if ((i - indexDiff) > 0) {
 			left = (i - indexDiff)
 		}

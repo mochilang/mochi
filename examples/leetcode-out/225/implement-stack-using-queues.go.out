@@ -14,10 +14,8 @@ func NewStack() map[string]any {
 
 func push(stack map[string]any, x int) {
 	var q []int = _cast[[]int](stack["q"])
-	_ = q
 	q = append(append([]int{}, q...), []int{x}...)
 	var i int = 0
-	_ = i
 	for (i < (len(q) - 1)) {
 		q = append(append([]int{}, q[1:len(q)]...), []int{q[0]}...)
 		i = (i + 1)
@@ -27,7 +25,6 @@ func push(stack map[string]any, x int) {
 
 func pop(stack map[string]any) int {
 	var q []int = _cast[[]int](stack["q"])
-	_ = q
 	var v int = q[0]
 	q = q[1:len(q)]
 	stack["q"] = q

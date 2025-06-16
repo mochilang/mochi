@@ -7,11 +7,8 @@ func expect(cond bool) {
 func jump(nums []int) int {
 	var n int = len(nums)
 	var jumps int = 0
-	_ = jumps
 	var end int = 0
-	_ = end
 	var farthest int = 0
-	_ = farthest
 	for i := 0; i < n; i++ {
 		if (i > farthest) {
 			return -1

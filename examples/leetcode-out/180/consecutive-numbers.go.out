@@ -11,9 +11,7 @@ func expect(cond bool) {
 func findConsecutive(nums []int) []int {
 	var n int = len(nums)
 	var result []int = []int{}
-	_ = result
 	var i int = 0
-	_ = i
 	for ((i + 2) < n) {
 		if ((nums[i] == nums[(i + 1)]) && (nums[(i + 1)] == nums[(i + 2)])) {
 			if (len(result) == 0) {

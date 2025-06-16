@@ -1,0 +1,117 @@
+package main
+
+import (
+	"fmt"
+	"reflect"
+	"sort"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func findItinerary(tickets [][]string) []string {
+	var graph map[string][]string = map[string][]string{}
+	for _, t := range tickets {
+		var from string = t[0]
+		var to string = t[1]
+		var list []string = []string{}
+		_tmp0 := from
+		_tmp1 := graph
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			list = graph[from]
+		}
+		list = append(append([]string{}, list...), []string{to}...)
+		graph[from] = list
+	}
+	for k := range graph {
+		graph[k] = func() []string {
+	items := []string{}
+	for _, x := range graph[k] {
+		items = append(items, x)
+	}
+	type pair struct { item string; key any }
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		x := it
+		pairs[idx] = pair{item: it, key: x}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []string{}
+	for _, x := range items {
+		_res = append(_res, x)
+	}
+	return _res
+}()
+	}
+	var route []string = []string{}
+	var visit func(string)
+	visit = func(airport string) {
+		_tmp0 := airport
+		_tmp1 := graph
+		_, _tmp2 := _tmp1[_tmp0]
+		if _tmp2 {
+			for (len(graph[airport]) > 0) {
+				var next string = graph[airport][0]
+				graph[airport] = graph[airport][1:len(graph[airport])]
+				visit(next)
+			}
+		}
+		route = append(append([]string{}, []string{airport}...), route...)
+}
+	visit("JFK")
+	return route
+}
+
+func example_1() {
+	var tickets [][]string = [][]string{[]string{"MUC", "LHR"}, []string{"JFK", "MUC"}, []string{"SFO", "SJC"}, []string{"LHR", "SFO"}}
+	_ = tickets
+	expect(_equal(findItinerary(tickets), []string{"JFK", "MUC", "LHR", "SFO", "SJC"}))
+}
+
+func example_2() {
+	var tickets [][]string = [][]string{[]string{"JFK", "SFO"}, []string{"JFK", "ATL"}, []string{"SFO", "ATL"}, []string{"ATL", "JFK"}, []string{"ATL", "SFO"}}
+	_ = tickets
+	expect(_equal(findItinerary(tickets), []string{"JFK", "ATL", "JFK", "SFO", "ATL", "SFO"}))
+}
+
+func main() {
+	example_1()
+	example_2()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+

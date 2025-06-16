@@ -28,20 +28,25 @@ func peek(it PeekingIterator) int {
 
 func next(it PeekingIterator) NextResult {
 	var v int = it.Nums[it.Index]
+	_ = v
 	var newIt PeekingIterator = PeekingIterator{Nums: it.Nums, Index: (it.Index + 1)}
+	_ = newIt
 	return NextResult{Iter: newIt, Val: v}
 }
 
 func example() {
 	var it PeekingIterator = newPeekingIterator([]int{1, 2, 3})
 	var r1 NextResult = next(it)
+	_ = r1
 	it = r1.Iter
 	expect((r1.Val == 1))
 	expect((peek(it) == 2))
 	var r2 NextResult = next(it)
+	_ = r2
 	it = r2.Iter
 	expect((r2.Val == 2))
 	var r3 NextResult = next(it)
+	_ = r3
 	it = r3.Iter
 	expect((r3.Val == 3))
 	expect((hasNext(it) == false))
@@ -51,13 +56,15 @@ func single_element() {
 	var it PeekingIterator = newPeekingIterator([]int{5})
 	expect((peek(it) == 5))
 	var r NextResult = next(it)
+	_ = r
 	it = r.Iter
 	expect((r.Val == 5))
 	expect((hasNext(it) == false))
 }
 
 func empty() {
-	var it PeekingIterator = newPeekingIterator([]any{})
+	var it PeekingIterator = newPeekingIterator([]int{})
+	_ = it
 	expect((hasNext(it) == false))
 }
 

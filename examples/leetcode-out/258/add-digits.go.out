@@ -9,7 +9,7 @@ func addDigits(num int) int {
 	for (n >= 10) {
 		var sum int = 0
 		for (n > 0) {
-			sum = ((sum + n) % 10)
+			sum = (sum + (n % 10))
 			n = (n / 10)
 		}
 		n = sum

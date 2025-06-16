@@ -12,13 +12,11 @@ func expect(cond bool) {
 
 func wordBreak(s string, wordDict []string) []string {
 	var dict map[string]bool = map[string]bool{}
-	_ = dict
 	for _, w := range wordDict {
 		dict[w] = true
 	}
 	var n int = len(s)
 	var memo map[int][]string = map[int][]string{}
-	_ = memo
 	var dfs func(int) []string
 	dfs = func(start int) []string {
 		_tmp0 := start
@@ -31,13 +29,10 @@ func wordBreak(s string, wordDict []string) []string {
 			return []string{""}
 		}
 		var res []string = []string{}
-		_ = res
 		var end int = (start + 1)
-		_ = end
 		for (end <= n) {
 			var word string = string([]rune(s)[start:end])
 			var exists bool = false
-			_ = exists
 			_tmp3 := word
 			_tmp4 := dict
 			_, _tmp5 := _tmp4[_tmp3]
@@ -60,7 +55,7 @@ func wordBreak(s string, wordDict []string) []string {
 		return res
 }
 	var ans []string = dfs(0)
-	var sorted []any = func() []string {
+	var sorted []string = func() []string {
 	items := []string{}
 	for _, x := range ans {
 		items = append(items, x)
@@ -97,13 +92,13 @@ func wordBreak(s string, wordDict []string) []string {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	res := []string{}
+	_res := []string{}
 	for _, x := range items {
-		res = append(res, x)
+		_res = append(_res, x)
 	}
-	return res
+	return _res
 }()
-	return _cast[[]string](sorted)
+	return sorted
 }
 
 func example_1() {
@@ -126,15 +121,12 @@ func main() {
 	example_3()
 }
 
-func _cast[T any](v any) T {
-    data, err := json.Marshal(v)
-    if err != nil { panic(err) }
-    var out T
-    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
-    return out
-}
-
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

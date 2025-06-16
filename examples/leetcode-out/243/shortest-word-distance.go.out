@@ -14,13 +14,9 @@ func abs(x int) int {
 
 func shortestDistance(words []string, word1 string, word2 string) int {
 	var index1 int = -1
-	_ = index1
 	var index2 int = -1
-	_ = index2
 	var result int = len(words)
-	_ = result
 	var i int = 0
-	_ = i
 	for (i < len(words)) {
 		if (words[i] == word1) {
 			index1 = i
@@ -41,16 +37,19 @@ func shortestDistance(words []string, word1 string, word2 string) int {
 
 func example_1() {
 	var words []string = []string{"practice", "makes", "perfect", "coding", "makes"}
+	_ = words
 	expect((shortestDistance(words, "coding", "practice") == 3))
 }
 
 func example_2() {
 	var words []string = []string{"practice", "makes", "perfect", "coding", "makes"}
+	_ = words
 	expect((shortestDistance(words, "makes", "coding") == 1))
 }
 
 func same_adjacent() {
 	var words []string = []string{"a", "b", "a"}
+	_ = words
 	expect((shortestDistance(words, "a", "b") == 1))
 }
 

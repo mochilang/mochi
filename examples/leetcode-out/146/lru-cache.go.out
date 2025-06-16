@@ -1,5 +1,9 @@
 package main
 
+import (
+	"encoding/json"
+)
+
 func expect(cond bool) {
 	if !cond { panic("expect failed") }
 }
@@ -25,9 +29,9 @@ func newCache(cap int) LRUCache {
 
 func find(items []Entry, k int) int {
 	var i int = 0
-	_ = i
 	for (i < len(items)) {
 		var e Entry = items[i]
+		_ = e
 		if (e.Key == k) {
 			return i
 		}
@@ -49,7 +53,6 @@ func get(cache LRUCache, key int) LookupResult {
 
 func put(cache LRUCache, key int, value int) LRUCache {
 	var items []Entry = cache.Items
-	_ = items
 	var idx int = find(items, key)
 	if (idx != (0 - 1)) {
 		items = append(append([]Entry{}, items[0:idx]...), items[(idx + 1):len(items)]...)
@@ -63,27 +66,32 @@ func put(cache LRUCache, key int, value int) LRUCache {
 
 func example() {
 	var c LRUCache = newCache(2)
-	_ = c
 	var r1 LookupResult = get(c, 1)
+	_ = r1
 	expect((r1.Val == (0 - 1)))
 	c = r1.Cache
 	c = put(c, 1, 1)
 	c = put(c, 2, 2)
 	var r2 LookupResult = get(c, 1)
+	_ = r2
 	expect((r2.Val == 1))
 	c = r2.Cache
 	c = put(c, 3, 3)
 	var r3 LookupResult = get(c, 2)
+	_ = r3
 	expect((r3.Val == (0 - 1)))
 	c = r3.Cache
 	c = put(c, 4, 4)
 	var r4 LookupResult = get(c, 1)
+	_ = r4
 	expect((r4.Val == (0 - 1)))
 	c = r4.Cache
 	var r5 LookupResult = get(c, 3)
+	_ = r5
 	expect((r5.Val == 3))
 	c = r5.Cache
 	var r6 LookupResult = get(c, 4)
+	_ = r6
 	expect((r6.Val == 4))
 }
 

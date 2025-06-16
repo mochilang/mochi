@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -30,10 +31,8 @@ type Result struct {
 
 func combineTables(persons []Person, addresses []Address) []Result {
 	var results []any = []any{}
-	_ = results
 	for _, p := range persons {
 		var found bool = false
-		_ = found
 		for _, a := range addresses {
 			if (a.PersonId == p.PersonId) {
 				results = append(append([]any{}, results...), _toAnySlice([]Result{Result{FirstName: p.FirstName, LastName: p.LastName, City: a.City, State: a.State}})...)
@@ -50,11 +49,12 @@ func combineTables(persons []Person, addresses []Address) []Result {
 
 func combine_tables() {
 	var expected []Result = []Result{Result{FirstName: "Wang", LastName: "Allen", City: "", State: ""}, Result{FirstName: "Alice", LastName: "Bob", City: "New York City", State: "New York"}, Result{FirstName: "Bob", LastName: "Brown", City: "Leetcode", State: "California"}}
+	_ = expected
 	expect((fmt.Sprint(combineTables(person, address)) == fmt.Sprint(expected)))
 }
 
-var person []Person = []Person{Person{PersonId: 1, FirstName: "Wang", LastName: "Allen"}, Person{PersonId: 2, FirstName: "Alice", LastName: "Bob"}, Person{PersonId: 3, FirstName: "Bob", LastName: "Brown"}}
-var address []Address = []Address{Address{AddressId: 1, PersonId: 2, City: "New York City", State: "New York"}, Address{AddressId: 2, PersonId: 3, City: "Leetcode", State: "California"}}
+var person []any = []Person{Person{PersonId: 1, FirstName: "Wang", LastName: "Allen"}, Person{PersonId: 2, FirstName: "Alice", LastName: "Bob"}, Person{PersonId: 3, FirstName: "Bob", LastName: "Brown"}}
+var address []any = []Address{Address{AddressId: 1, PersonId: 2, City: "New York City", State: "New York"}, Address{AddressId: 2, PersonId: 3, City: "Leetcode", State: "California"}}
 func main() {
 	combine_tables()
 }

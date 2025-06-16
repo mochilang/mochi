@@ -15,7 +15,6 @@ func solve(board [][]string) [][]string {
 	}
 	var cols int = len(board[0])
 	var queue [][]int = [][]int{}
-	_ = queue
 	for r := 0; r < rows; r++ {
 		if (board[r][0] == "O") {
 			queue = append(append([][]int{}, queue...), [][]int{[]int{r, 0}}...)
@@ -33,7 +32,6 @@ func solve(board [][]string) [][]string {
 		}
 	}
 	var i int = 0
-	_ = i
 	for (i < len(queue)) {
 		var pos []int = queue[i]
 		var r int = pos[0]
@@ -77,12 +75,15 @@ func solve(board [][]string) [][]string {
 
 func example_1() {
 	var board [][]string = [][]string{[]string{"X", "X", "X", "X"}, []string{"X", "O", "O", "X"}, []string{"X", "X", "O", "X"}, []string{"X", "O", "X", "X"}}
+	_ = board
 	var expected [][]string = [][]string{[]string{"X", "X", "X", "X"}, []string{"X", "X", "X", "X"}, []string{"X", "X", "X", "X"}, []string{"X", "O", "X", "X"}}
+	_ = expected
 	expect(_equal(solve(board), expected))
 }
 
 func no_change() {
 	var board [][]string = [][]string{[]string{"X", "X"}, []string{"X", "X"}}
+	_ = board
 	expect(_equal(solve(board), board))
 }
 
@@ -92,6 +93,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

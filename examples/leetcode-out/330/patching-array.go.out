@@ -42,7 +42,7 @@ func no_patches_needed() {
 }
 
 func large_n() {
-	expect((minPatches([]any{}, 7) == 3))
+	expect((minPatches([]int{}, 7) == 3))
 }
 
 func single_element() {

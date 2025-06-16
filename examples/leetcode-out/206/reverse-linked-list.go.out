@@ -10,9 +10,7 @@ func expect(cond bool) {
 
 func reverseList(nums []int) []int {
 	var result []int = []int{}
-	_ = result
 	var i int = (len(nums) - 1)
-	_ = i
 	for (i >= 0) {
 		result = append(append([]int{}, result...), []int{nums[i]}...)
 		i = (i - 1)
@@ -44,6 +42,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

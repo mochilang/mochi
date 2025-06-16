@@ -1,0 +1,109 @@
+package main
+
+import (
+	"reflect"
+)
+
+func expect(cond bool) {
+	if !cond { panic("expect failed") }
+}
+
+func findMinHeightTrees(n int, edges [][]int) []int {
+	if (n <= 2) {
+		var result []int = []int{}
+		var i int = 0
+		for (i < n) {
+			result = append(append([]int{}, result...), []int{i}...)
+			i = (i + 1)
+		}
+		return result
+	}
+	var graph [][]int = [][]int{}
+	var degree []int = []int{}
+	var i int = 0
+	for (i < n) {
+		graph = append(append([]any{}, _toAnySlice(graph)...), _toAnySlice([][]any{[]any{}})...)
+		degree = append(append([]int{}, degree...), []int{0}...)
+		i = (i + 1)
+	}
+	for _, e := range edges {
+		var a int = e[0]
+		var b int = e[1]
+		graph[a] = append(append([]int{}, graph[a]...), []int{b}...)
+		graph[b] = append(append([]int{}, graph[b]...), []int{a}...)
+		degree[a] = (degree[a] + 1)
+		degree[b] = (degree[b] + 1)
+	}
+	var leaves []int = []int{}
+	var j int = 0
+	for (j < n) {
+		if (degree[j] == 1) {
+			leaves = append(append([]int{}, leaves...), []int{j}...)
+		}
+		j = (j + 1)
+	}
+	var remaining int = n
+	for (remaining > 2) {
+		var newLeaves []int = []int{}
+		for _, leaf := range leaves {
+			remaining = (remaining - 1)
+			for _, neighbor := range graph[leaf] {
+				degree[neighbor] = (degree[neighbor] - 1)
+				if (degree[neighbor] == 1) {
+					newLeaves = append(append([]int{}, newLeaves...), []int{neighbor}...)
+				}
+			}
+		}
+		leaves = newLeaves
+	}
+	return leaves
+}
+
+func example_1() {
+	expect(_equal(findMinHeightTrees(4, [][]int{[]int{1, 0}, []int{1, 2}, []int{1, 3}}), []int{1}))
+}
+
+func example_2() {
+	var res []int = findMinHeightTrees(6, [][]int{[]int{3, 0}, []int{3, 1}, []int{3, 2}, []int{3, 4}, []int{5, 4}})
+	var ok bool = false
+	_ = ok
+	if (len(res) == 2) {
+		var a int = res[0]
+		var b int = res[1]
+		if ((((a == 3) && (b == 4))) || (((a == 4) && (b == 3)))) {
+			ok = true
+		}
+	}
+	expect((ok == true))
+}
+
+func single_node() {
+	expect(_equal(findMinHeightTrees(1, [][]int{}), []int{0}))
+}
+
+func line() {
+	expect(_equal(findMinHeightTrees(2, [][]int{[]int{0, 1}}), []int{0, 1}))
+}
+
+func main() {
+	example_1()
+	example_2()
+	single_node()
+	line()
+}
+
+func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
+    return reflect.DeepEqual(a, b)
+}
+
+func _toAnySlice[T any](s []T) []any {
+    out := make([]any, len(s))
+    for i, v := range s { out[i] = v }
+    return out
+}
+

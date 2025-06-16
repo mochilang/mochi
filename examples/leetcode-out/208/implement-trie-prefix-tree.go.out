@@ -14,15 +14,11 @@ func Node() map[string]any {
 
 func insert(trie map[string]any, word string) {
 	var node map[string]any = trie
-	_ = node
 	var i int = 0
-	_ = i
 	for (i < len(word)) {
 		var ch string = _indexString(word, i)
 		var kids map[string]map[string]any = _cast[map[string]map[string]any](node["children"])
-		_ = kids
 		var child map[string]any = map[string]any{}
-		_ = child
 		_tmp0 := ch
 		_tmp1 := kids
 		_, _tmp2 := _tmp1[_tmp0]
@@ -43,7 +39,6 @@ func insert(trie map[string]any, word string) {
 
 func search(trie map[string]any, word string) bool {
 	var node map[string]any = trie
-	_ = node
 	for _, r := range []rune(word) {
 		ch := string(r)
 		var kids map[string]map[string]any = _cast[map[string]map[string]any](node["children"])
@@ -60,7 +55,6 @@ func search(trie map[string]any, word string) bool {
 
 func startsWith(trie map[string]any, prefix string) bool {
 	var node map[string]any = trie
-	_ = node
 	for _, r := range []rune(prefix) {
 		ch := string(r)
 		var kids map[string]map[string]any = _cast[map[string]map[string]any](node["children"])
@@ -77,28 +71,24 @@ func startsWith(trie map[string]any, prefix string) bool {
 
 func search_apple() {
 	var t map[string]any = Node()
-	_ = t
 	insert(t, "apple")
 	expect((search(t, "apple") == true))
 }
 
 func search_app() {
 	var t map[string]any = Node()
-	_ = t
 	insert(t, "apple")
 	expect((search(t, "app") == false))
 }
 
 func startsWith_app() {
 	var t map[string]any = Node()
-	_ = t
 	insert(t, "apple")
 	expect((startsWith(t, "app") == true))
 }
 
 func search_app_after_insert() {
 	var t map[string]any = Node()
-	_ = t
 	insert(t, "apple")
 	insert(t, "app")
 	expect((search(t, "app") == true))

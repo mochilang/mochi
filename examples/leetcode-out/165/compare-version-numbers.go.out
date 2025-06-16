@@ -6,10 +6,8 @@ func expect(cond bool) {
 
 func parseInt(s string) int {
 	var result int = 0
-	_ = result
 	var digits map[string]int = map[string]int{"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
 	var i int = 0
-	_ = i
 	for (i < len(s)) {
 		var ch string = _indexString(s, i)
 		result = ((result * 10) + digits[ch])
@@ -20,11 +18,8 @@ func parseInt(s string) int {
 
 func parseVersion(v string) []int {
 	var parts []int = []int{}
-	_ = parts
 	var start int = 0
-	_ = start
 	var i int = 0
-	_ = i
 	for (i < len(v)) {
 		if (_indexString(v, i) == ".") {
 			var segment string = string([]rune(v)[start:i])
@@ -42,18 +37,14 @@ func compareVersion(v1 string, v2 string) int {
 	var a1 []int = parseVersion(v1)
 	var a2 []int = parseVersion(v2)
 	var i int = 0
-	_ = i
 	var j int = 0
-	_ = j
 	for ((i < len(a1)) || (j < len(a2))) {
 		var n1 int = 0
-		_ = n1
 		if (i < len(a1)) {
 			n1 = a1[i]
 			i = (i + 1)
 		}
 		var n2 int = 0
-		_ = n2
 		if (j < len(a2)) {
 			n2 = a2[j]
 			j = (j + 1)

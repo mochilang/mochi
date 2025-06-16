@@ -6,9 +6,7 @@ func expect(cond bool) {
 
 func verifyPreorder(preorder []int) bool {
 	var stack []int = []int{}
-	_ = stack
 	var lower int = -2147483648
-	_ = lower
 	for _, value := range preorder {
 		if (value < lower) {
 			return false

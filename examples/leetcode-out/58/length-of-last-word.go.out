@@ -6,12 +6,10 @@ func expect(cond bool) {
 
 func lengthOfLastWord(s string) int {
 	var i int = (len(s) - 1)
-	_ = i
 	for ((i >= 0) && (_indexString(s, i) == " ")) {
 		i = (i - 1)
 	}
 	var length int = 0
-	_ = length
 	for ((i >= 0) && (_indexString(s, i) != " ")) {
 		length = (length + 1)
 		i = (i - 1)

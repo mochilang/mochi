@@ -7,9 +7,7 @@ func expect(cond bool) {
 func isStrobogrammatic(num string) bool {
 	var pairs map[string]string = map[string]string{"0": "0", "1": "1", "6": "9", "8": "8", "9": "6"}
 	var left int = 0
-	_ = left
 	var right int = (len(num) - 1)
-	_ = right
 	for (left <= right) {
 		var a string = _indexString(num, left)
 		var b string = _indexString(num, right)

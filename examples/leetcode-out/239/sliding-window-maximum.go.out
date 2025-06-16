@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 )
 
@@ -14,11 +15,8 @@ func maxSlidingWindow(nums []int, k int) []int {
 		return _cast[[]int]([]any{})
 	}
 	var result []int = []int{}
-	_ = result
 	var deque []int = []int{}
-	_ = deque
 	var i int = 0
-	_ = i
 	for (i < n) {
 		for (len(deque) > 0) {
 			var last int = deque[(len(deque) - 1)]
@@ -79,6 +77,11 @@ func _cast[T any](v any) T {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

@@ -10,14 +10,10 @@ func expect(cond bool) {
 
 func grayCode(n int) []int {
 	var result []int = []int{0}
-	_ = result
 	var power int = 1
-	_ = power
 	var i int = 0
-	_ = i
 	for (i < n) {
 		var j int = (len(result) - 1)
-		_ = j
 		for (j >= 0) {
 			result = append(append([]int{}, result...), []int{(result[j] + power)}...)
 			j = (j - 1)
@@ -52,6 +48,11 @@ func main() {
 }
 
 func _equal(a, b any) bool {
+    av := reflect.ValueOf(a)
+    bv := reflect.ValueOf(b)
+    if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice && av.Len() == 0 && bv.Len() == 0 {
+        return true
+    }
     return reflect.DeepEqual(a, b)
 }
 

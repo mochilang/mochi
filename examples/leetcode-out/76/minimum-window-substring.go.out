@@ -9,7 +9,6 @@ func minWindow(s string, t string) string {
 		return ""
 	}
 	var need map[string]int = map[string]int{}
-	_ = need
 	for _, r := range []rune(t) {
 		ch := string(r)
 		_tmp0 := ch
@@ -23,17 +22,11 @@ func minWindow(s string, t string) string {
 	}
 	var required int = len(need)
 	var have map[string]int = map[string]int{}
-	_ = have
 	var formed int = 0
-	_ = formed
 	var left int = 0
-	_ = left
 	var bestStart int = 0
-	_ = bestStart
 	var bestLen int = (len(s) + 1)
-	_ = bestLen
 	var right int = 0
-	_ = right
 	for (right < len(s)) {
 		var ch string = _indexString(s, right)
 		_tmp3 := ch

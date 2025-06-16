@@ -24,7 +24,6 @@ func computeArea(ax1 int, ay1 int, ax2 int, ay2 int, bx1 int, by1 int, bx2 int, 
 	var overlapWidth int = (min(ax2, bx2) - max(ax1, bx1))
 	var overlapHeight int = (min(ay2, by2) - max(ay1, by1))
 	var overlap int = 0
-	_ = overlap
 	if ((overlapWidth > 0) && (overlapHeight > 0)) {
 		overlap = (overlapWidth * overlapHeight)
 	}

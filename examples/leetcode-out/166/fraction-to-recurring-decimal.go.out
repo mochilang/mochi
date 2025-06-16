@@ -16,10 +16,8 @@ func fractionToDecimal(numerator int, denominator int) string {
 		return "0"
 	}
 	var result string = ""
-	_ = result
 	var minus string = _indexString(fmt.Sprint(-1), 0)
 	var negative bool = false
-	_ = negative
 	if ((((numerator < 0) && (denominator > 0))) || (((numerator > 0) && (denominator < 0)))) {
 		negative = true
 	}
@@ -32,7 +30,6 @@ func fractionToDecimal(numerator int, denominator int) string {
 	var integerPart int = (numerator / denominator)
 	result = fmt.Sprint(integerPart)
 	var remainder int = (numerator % denominator)
-	_ = remainder
 	if (remainder == 0) {
 		if negative {
 			return minus + result
@@ -41,9 +38,7 @@ func fractionToDecimal(numerator int, denominator int) string {
 	}
 	result = result + "."
 	var mapIndex map[int]int = map[int]int{}
-	_ = mapIndex
 	var decimal string = ""
-	_ = decimal
 	for (remainder != 0) {
 		_tmp0 := remainder
 		_tmp1 := mapIndex

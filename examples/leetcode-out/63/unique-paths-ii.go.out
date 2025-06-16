@@ -11,14 +11,10 @@ func uniquePathsWithObstacles(grid [][]int) int {
 	}
 	var n int = len(grid[0])
 	var dp [][]int = [][]int{}
-	_ = dp
 	var i int = 0
-	_ = i
 	for (i < m) {
 		var row []int = []int{}
-		_ = row
 		var j int = 0
-		_ = j
 		for (j < n) {
 			row = append(append([]int{}, row...), []int{0}...)
 			j = (j + 1)
@@ -33,7 +29,6 @@ func uniquePathsWithObstacles(grid [][]int) int {
 	i = 0
 	for (i < m) {
 		var j int = 0
-		_ = j
 		for (j < n) {
 			if (grid[i][j] == 1) {
 				dp[i][j] = 0
