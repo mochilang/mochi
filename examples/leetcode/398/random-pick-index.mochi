@@ -1,0 +1,66 @@
+// Solution for LeetCode problem 398 - Random Pick Index
+//
+// This implementation stores the input numbers and selects
+// an index matching the target using a time-based pseudo random
+// technique. It avoids union types and pattern matching by
+// using only lists and integers.
+
+type RandomPicker {
+  nums: list<int>
+}
+
+fun newPicker(nums: list<int>): RandomPicker {
+  return RandomPicker { nums: nums }
+}
+
+fun pick(p: RandomPicker, target: int): int {
+  // collect all matching indices
+  var matches: list<int> = []
+  var i = 0
+  while i < len(p.nums) {
+    if p.nums[i] == target {
+      matches = matches + [i]
+    }
+    i = i + 1
+  }
+  if len(matches) == 0 {
+    return -1
+  }
+  let ts = now()
+  let idx = int(ts % len(matches))
+  return matches[idx]
+}
+
+// Basic tests based on the LeetCode description
+
+test "example" {
+  let p = newPicker([1,2,3,3,3])
+  let idx = pick(p, 3)
+  expect idx == 2 || idx == 3 || idx == 4
+}
+
+test "single match" {
+  let p = newPicker([2,5,7])
+  expect pick(p, 5) == 1
+}
+
+test "no match" {
+  let p = newPicker([1,2])
+  expect pick(p, 3) == -1
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Attempting to mutate list elements directly:
+     matches[0] = 1            // ❌ lists are immutable
+   Build a new list instead: matches = [1] + matches[1:len(matches)]
+2. Declaring with 'let' and then reassigning:
+     let i = 0
+     i = i + 1                 // ❌ cannot reassign
+   Use 'var' when mutation is needed.
+3. Using '=' instead of '==' for comparisons:
+     if target = 3 { ... }     // ❌ assignment
+   Use '==' to compare values.
+4. Expecting Python's random() function to exist. Mochi does not
+   include such a builtin, so we use now() % n for simple randomness.
+*/
