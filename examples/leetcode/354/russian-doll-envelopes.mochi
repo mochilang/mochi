@@ -1,0 +1,66 @@
+fun maxEnvelopes(envelopes: list<list<int>>): int {
+  let n = len(envelopes)
+  if n == 0 {
+    return 0
+  }
+  // sort by width ascending and height descending
+  let byH = from e in envelopes sort by -e[1] select e
+  let sorted = from e in byH sort by e[0] select e
+
+  // tails[i] will be the smallest possible tail of an increasing sequence of length i+1
+  var tails: list<int> = []
+  var fill = 0
+  while fill < n {
+    tails = tails + [0]
+    fill = fill + 1
+  }
+  var size = 0
+  var i = 0
+  while i < n {
+    let height = sorted[i][1]
+    var lo = 0
+    var hi = size
+    while lo < hi {
+      let mid = (lo + hi) / 2
+      if tails[mid] < height {
+        lo = mid + 1
+      } else {
+        hi = mid
+      }
+    }
+    tails[lo] = height
+    if lo == size {
+      size = size + 1
+    }
+    i = i + 1
+  }
+  return size
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect maxEnvelopes([[5,4],[6,4],[6,7],[2,3]]) == 3
+}
+
+test "example 2" {
+  expect maxEnvelopes([[1,1],[1,1],[1,1]]) == 1
+}
+
+// Additional edge cases
+
+test "empty" {
+  expect maxEnvelopes([]) == 0
+}
+
+test "increasing" {
+  expect maxEnvelopes([[1,1],[2,2],[3,3],[4,4]]) == 4
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditions.
+2. Declaring a variable with 'let' and then attempting to modify it. Use 'var' for mutable values.
+3. Trying to append to a list with a method like 'push'. Use '+' to concatenate lists instead.
+4. Introducing union types or 'match' expressions when simple loops and comparisons are sufficient.
+*/
