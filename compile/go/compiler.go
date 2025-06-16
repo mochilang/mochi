@@ -34,6 +34,8 @@ type Compiler struct {
 	tempVarCount int
 
 	returnType types.Type
+
+	varUsage map[any]bool
 }
 
 // New creates a new Go compiler instance.
@@ -133,6 +135,56 @@ func (c *Compiler) writeExpectFunc(prog *parser.Program) {
 	c.writeln("")
 }
 
+func analyzeVarUsage(stmts []*parser.Statement) map[any]bool {
+	usage := make(map[any]bool)
+	for i, s := range stmts {
+		var name string
+		var key any
+		switch {
+		case s.Let != nil:
+			name = s.Let.Name
+			key = s.Let
+		case s.Var != nil:
+			name = s.Var.Name
+			key = s.Var
+		}
+		if key != nil {
+			used := false
+			for j := i + 1; j < len(stmts); j++ {
+				if stmtReadsVar(stmts[j], name) {
+					used = true
+					break
+				}
+			}
+			usage[key] = used
+		}
+	}
+	return usage
+}
+
+func (c *Compiler) compileStmtList(stmts []*parser.Statement) error {
+	old := c.varUsage
+	c.varUsage = analyzeVarUsage(stmts)
+	for _, s := range stmts {
+		if err := c.compileStmt(s); err != nil {
+			c.varUsage = old
+			return err
+		}
+	}
+	c.varUsage = old
+	return nil
+}
+
+func (c *Compiler) varUsed(stmt any) bool {
+	if c.varUsage == nil {
+		return true
+	}
+	if u, ok := c.varUsage[stmt]; ok {
+		return u
+	}
+	return true
+}
+
 func (c *Compiler) compileTypeDecls(prog *parser.Program) error {
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -195,6 +247,7 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 			c.writeln(fmt.Sprintf("if _, ok := extern.Get(%q); !ok { panic(\"extern object not registered: %s\") }", name, name))
 		}
 	}
+	body := []*parser.Statement{}
 	for i, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil {
 			continue
@@ -202,9 +255,10 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 		if (s.Let != nil || s.Var != nil) && hasLaterTest(prog, i) {
 			continue
 		}
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
+		body = append(body, s)
+	}
+	if err := c.compileStmtList(body); err != nil {
+		return err
 	}
 	for _, s := range prog.Statements {
 		if s.Test != nil {
@@ -313,6 +367,79 @@ func stmtUsesVar(s *parser.Statement, name string) bool {
 	case s.Fun != nil:
 		for _, t := range s.Fun.Body {
 			if stmtUsesVar(t, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func stmtReadsVar(s *parser.Statement, name string) bool {
+	switch {
+	case s.Let != nil:
+		return exprUsesVar(s.Let.Value, name)
+	case s.Var != nil:
+		return exprUsesVar(s.Var.Value, name)
+	case s.Assign != nil:
+		if exprUsesVar(s.Assign.Value, name) {
+			return true
+		}
+		for _, idx := range s.Assign.Index {
+			if exprUsesVar(idx.Start, name) || exprUsesVar(idx.End, name) {
+				return true
+			}
+		}
+		return false
+	case s.Expr != nil:
+		return exprUsesVar(s.Expr.Expr, name)
+	case s.Return != nil:
+		return exprUsesVar(s.Return.Value, name)
+	case s.If != nil:
+		if exprUsesVar(s.If.Cond, name) {
+			return true
+		}
+		for _, t := range s.If.Then {
+			if stmtReadsVar(t, name) {
+				return true
+			}
+		}
+		if s.If.ElseIf != nil {
+			if stmtReadsVar(&parser.Statement{If: s.If.ElseIf}, name) {
+				return true
+			}
+		}
+		for _, t := range s.If.Else {
+			if stmtReadsVar(t, name) {
+				return true
+			}
+		}
+	case s.For != nil:
+		if exprUsesVar(s.For.Source, name) || exprUsesVar(s.For.RangeEnd, name) {
+			return true
+		}
+		for _, t := range s.For.Body {
+			if stmtReadsVar(t, name) {
+				return true
+			}
+		}
+	case s.While != nil:
+		if exprUsesVar(s.While.Cond, name) {
+			return true
+		}
+		for _, t := range s.While.Body {
+			if stmtReadsVar(t, name) {
+				return true
+			}
+		}
+	case s.Test != nil:
+		for _, t := range s.Test.Body {
+			if stmtReadsVar(t, name) {
+				return true
+			}
+		}
+	case s.Fun != nil:
+		for _, t := range s.Fun.Body {
+			if stmtReadsVar(t, name) {
 				return true
 			}
 		}
@@ -570,6 +697,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	}
+	if !c.varUsed(s) {
+		c.writeln(fmt.Sprintf("_ = %s", name))
+	}
 	if lit != nil && c.env != nil {
 		c.env.SetValue(s.Name, literalValue(lit), false)
 	}
@@ -618,7 +748,9 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	}
-	c.writeln(fmt.Sprintf("_ = %s", name))
+	if !c.varUsed(s) {
+		c.writeln(fmt.Sprintf("_ = %s", name))
+	}
 	return nil
 }
 
@@ -692,11 +824,9 @@ func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
 	child.SetVar(h.Alias, st, true)
 	orig := c.env
 	c.env = child
-	for _, stmt := range h.Body {
-		if err := c.compileStmt(stmt); err != nil {
-			c.env = orig
-			return err
-		}
+	if err := c.compileStmtList(h.Body); err != nil {
+		c.env = orig
+		return err
 	}
 	c.env = orig
 	c.writeln(fmt.Sprintf("close(%s)", doneVar))
@@ -879,11 +1009,9 @@ func (c *Compiler) compileAgentIntent(agentName string, env *types.Env, in *pars
 	orig := c.env
 	c.env = child
 	c.indent++
-	for _, s := range in.Body {
-		if err := c.compileStmt(s); err != nil {
-			c.env = orig
-			return "", err
-		}
+	if err := c.compileStmtList(in.Body); err != nil {
+		c.env = orig
+		return "", err
 	}
 	c.indent--
 	c.env = orig
@@ -907,11 +1035,9 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 	child.SetVar(h.Alias, st, true)
 	orig := c.env
 	c.env = child
-	for _, stmt := range h.Body {
-		if err := c.compileStmt(stmt); err != nil {
-			c.env = orig
-			return "", err
-		}
+	if err := c.compileStmtList(h.Body); err != nil {
+		c.env = orig
+		return "", err
 	}
 	c.env = orig
 	c.indent--
@@ -1000,10 +1126,8 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	c.buf.WriteString("if " + cond + " {")
 	c.buf.WriteByte('\n')
 	c.indent++
-	for _, s := range stmt.Then {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
+	if err := c.compileStmtList(stmt.Then); err != nil {
+		return err
 	}
 	c.indent--
 	c.writeIndent()
@@ -1016,10 +1140,8 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		c.buf.WriteString(" else {")
 		c.buf.WriteByte('\n')
 		c.indent++
-		for _, s := range stmt.Else {
-			if err := c.compileStmt(s); err != nil {
-				return err
-			}
+		if err := c.compileStmtList(stmt.Else); err != nil {
+			return err
 		}
 		c.indent--
 		c.writeIndent()
@@ -1041,10 +1163,8 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 		c.buf.WriteString("for " + cond + " {\n")
 	}
 	c.indent++
-	for _, s := range stmt.Body {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
+	if err := c.compileStmtList(stmt.Body); err != nil {
+		return err
 	}
 	c.indent--
 	c.writeIndent()
@@ -1114,10 +1234,8 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		c.writeIndent()
 		c.buf.WriteString(preBody)
 	}
-	for _, s := range stmt.Body {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
+	if err := c.compileStmtList(stmt.Body); err != nil {
+		return err
 	}
 	c.indent--
 	c.writeIndent()
@@ -1202,12 +1320,10 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	c.returnType = ft.Return
 	c.env = child
 	c.indent++
-	for _, s := range fun.Body {
-		if err := c.compileStmt(s); err != nil {
-			c.env = originalEnv
-			c.returnType = origRet
-			return err
-		}
+	if err := c.compileStmtList(fun.Body); err != nil {
+		c.env = originalEnv
+		c.returnType = origRet
+		return err
 	}
 	c.indent--
 	c.env = originalEnv
@@ -1222,10 +1338,8 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.writeIndent()
 	c.buf.WriteString("func " + name + "() {\n")
 	c.indent++
-	for _, s := range t.Body {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
+	if err := c.compileStmtList(t.Body); err != nil {
+		return err
 	}
 	c.indent--
 	c.writeIndent()
@@ -2686,10 +2800,8 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		sub.writeln("return " + expr)
 	} else {
-		for _, s := range fn.BlockBody {
-			if err := sub.compileStmt(s); err != nil {
-				return "", err
-			}
+		if err := sub.compileStmtList(fn.BlockBody); err != nil {
+			return "", err
 		}
 	}
 	body := indentBlock(sub.buf.String(), 1)

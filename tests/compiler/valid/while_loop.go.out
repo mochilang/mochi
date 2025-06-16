@@ -6,7 +6,6 @@ import (
 
 func main() {
 	var i int = 0
-	_ = i
 	for (i < 3) {
 		fmt.Println(i)
 		i = (i + 1)
