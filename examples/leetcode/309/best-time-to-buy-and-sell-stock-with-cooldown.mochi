@@ -1,0 +1,84 @@
+// Solution for LeetCode problem 309 - Best Time to Buy and Sell Stock with Cooldown
+// Below are some common Mochi language errors and how to fix them.
+//
+// Error 1: Using '=' instead of '==' in conditions
+// if n = 0 { return 0 }
+// Fix:
+// if n == 0 { return 0 }
+//
+// Error 2: Reassigning a variable declared with 'let'
+// let profit = 0
+// profit = 1  // ❌ cannot assign to immutable variable
+// Fix:
+// var profit = 0
+// profit = 1
+//
+// Error 3: Trying to use Python style for-loops
+// for price in prices { }
+// Fix:
+// var i = 0
+// while i < len(prices) { i = i + 1 }
+
+fun maxProfit(prices: list<int>): int {
+  let n = len(prices)
+  if n == 0 {
+    return 0
+  }
+
+  var hold = -prices[0]   // max profit when holding a stock
+  var sold = 0            // profit from selling stock today
+  var rest = 0            // profit when in cooldown or doing nothing
+
+  var i = 1
+  while i < n {
+    let prevHold = hold
+    let prevSold = sold
+    let prevRest = rest
+
+    // Either keep holding or buy today after resting
+    let buy = prevRest - prices[i]
+    if buy > prevHold {
+      hold = buy
+    } else {
+      hold = prevHold
+    }
+
+    // Sell the stock we were holding
+    sold = prevHold + prices[i]
+
+    // Decide to stay at rest or enter cooldown after selling
+    if prevSold > prevRest {
+      rest = prevSold
+    } else {
+      rest = prevRest
+    }
+
+    i = i + 1
+  }
+
+  if sold > rest {
+    return sold
+  }
+  return rest
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect maxProfit([1,2,3,0,2]) == 3
+}
+
+test "cooldown" {
+  expect maxProfit([2,1,4]) == 3
+}
+
+test "single day" {
+  expect maxProfit([5]) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing numbers.
+2. Reassigning an immutable 'let' variable. Use 'var' when mutation is required.
+3. Writing Python style loops like 'for p in prices'. Use a 'while' loop with an index instead.
+*/
