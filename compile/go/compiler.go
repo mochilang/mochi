@@ -618,7 +618,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln(expr)
 		return nil
 	case s.Return != nil:
-		expr, err := c.compileExpr(s.Return.Value)
+		var expr string
+		var err error
+		if c.returnType != nil {
+			expr, err = c.compileExprHint(s.Return.Value, c.returnType)
+		} else {
+			expr, err = c.compileExpr(s.Return.Value)
+		}
 		if err != nil {
 			return err
 		}
@@ -1528,6 +1534,13 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 					next = leftType
 				}
 			} else if equalTypes(lt.Elem, rt.Elem) {
+				if isUnion(lt.Elem) && isStruct(rt.Elem) {
+					c.use("_toSlice")
+					right = fmt.Sprintf("_toSlice[%s, %s](%s)", goType(rt.Elem), goType(lt.Elem), right)
+				} else if isStruct(lt.Elem) && isUnion(rt.Elem) {
+					c.use("_toSlice")
+					left = fmt.Sprintf("_toSlice[%s, %s](%s)", goType(lt.Elem), goType(rt.Elem), left)
+				}
 				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 				next = leftType
 			} else {

@@ -1,0 +1,7 @@
+type Tree =
+  Leaf
+  | Node(left: Tree, val: int, right: Tree)
+
+var xs: list<Tree> = []
+xs = xs + [Node { left: Leaf {}, val: 1, right: Leaf {} }]
+print(len(xs))

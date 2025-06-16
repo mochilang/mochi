@@ -121,6 +121,16 @@ func equalTypes(a, b types.Type) bool {
 			}
 		}
 	}
+	if al, ok := a.(types.ListType); ok {
+		if bl, ok := b.(types.ListType); ok {
+			return equalTypes(al.Elem, bl.Elem)
+		}
+	}
+	if am, ok := a.(types.MapType); ok {
+		if bm, ok := b.(types.MapType); ok {
+			return equalTypes(am.Key, bm.Key) && equalTypes(am.Value, bm.Value)
+		}
+	}
 	if isInt64(a) && (isInt64(b) || isInt(b)) {
 		return true
 	}
