@@ -192,8 +192,12 @@ func isMap(t types.Type) bool {
 }
 
 func isStruct(t types.Type) bool {
-	_, ok := t.(types.StructType)
-	return ok
+	switch t.(type) {
+	case types.StructType, types.UnionType:
+		return true
+	default:
+		return false
+	}
 }
 
 func tsType(t types.Type) string {
@@ -209,6 +213,8 @@ func tsType(t types.Type) string {
 	case types.MapType:
 		return "Record<" + tsType(tt.Key) + ", " + tsType(tt.Value) + ">"
 	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
 		return sanitizeName(tt.Name)
 	case types.FuncType:
 		return "any"
