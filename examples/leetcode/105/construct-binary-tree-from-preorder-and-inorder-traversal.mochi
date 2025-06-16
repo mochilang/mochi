@@ -1,58 +1,74 @@
 // LeetCode 105 - Construct Binary Tree from Preorder and Inorder Traversal
 
-// Binary tree type
-// Leaf represents an empty subtree
-// Node holds left child, value and right child
-
- type Tree =
-   Leaf {}
-   | Node(left: Tree, value: int, right: Tree)
+// Binary tree represented by parallel arrays.
+// Each node is an index into these arrays. A value of -1 means "no child".
+type BinaryTree {
+  lefts: list<int>
+  rights: list<int>
+  values: list<int>
+  root: int
+}
 
 // Build the tree using preorder and inorder sequences
-fun buildTree(preorder: list<int>, inorder: list<int>): Tree {
+fun buildTree(preorder: list<int>, inorder: list<int>): BinaryTree {
   let n = len(preorder)
   // Map values to their index in inorder for fast lookup
   var idxMap: map<int, int> = {}
   for i in 0..n {
     idxMap[inorder[i]] = i
   }
-  var preIdx = 0
 
-  fun helper(lo: int, hi: int): Tree {
+  var preIdx = 0
+  var lefts: list<int> = []
+  var rights: list<int> = []
+  var values: list<int> = []
+
+  fun helper(lo: int, hi: int): int {
     if lo >= hi {
-      return Leaf {}
+      return (-1)
     }
     let val = preorder[preIdx]
     preIdx = preIdx + 1
     let mid = idxMap[val]
-    return Node {
-      left: helper(lo, mid),
-      value: val,
-      right: helper(mid + 1, hi)
+
+    let idx = len(values)
+    values = values + [val]
+    lefts = lefts + [(-1)]
+    rights = rights + [(-1)]
+
+    let l = helper(lo, mid)
+    let r = helper(mid + 1, hi)
+    lefts[idx] = l
+    rights[idx] = r
+    return idx
+  }
+
+  let rootIdx = helper(0, n)
+  return BinaryTree { lefts: lefts, rights: rights, values: values, root: rootIdx }
+}
+
+fun preorderTraversal(t: BinaryTree): list<int> {
+  fun dfs(i: int): list<int> {
+    if i == (-1) {
+      return [] as list<int>
     }
+    return [t.values[i]] + dfs(t.lefts[i]) + dfs(t.rights[i])
   }
-  return helper(0, n)
+  return dfs(t.root)
 }
 
-fun preorderTraversal(t: Tree): list<int> {
-  return match t {
-    Leaf => []
-    Node(l, v, r) => [v] + preorderTraversal(l) + preorderTraversal(r)
+fun inorderTraversal(t: BinaryTree): list<int> {
+  fun dfs(i: int): list<int> {
+    if i == (-1) {
+      return [] as list<int>
+    }
+    return dfs(t.lefts[i]) + [t.values[i]] + dfs(t.rights[i])
   }
+  return dfs(t.root)
 }
 
-fun inorderTraversal(t: Tree): list<int> {
-  return match t {
-    Leaf => []
-    Node(l, v, r) => inorderTraversal(l) + [v] + inorderTraversal(r)
-  }
-}
-
-fun isLeaf(t: Tree): bool {
-  return match t {
-    Leaf => true
-    _ => false
-  }
+fun isEmpty(t: BinaryTree): bool {
+  return t.root == (-1)
 }
 
 // Test cases from LeetCode
@@ -74,7 +90,7 @@ test "single node" {
 }
 
 test "empty" {
-  expect isLeaf(buildTree([], [])) == true
+  expect isEmpty(buildTree([], [])) == true
 }
 
 /*
@@ -86,7 +102,7 @@ Common Mochi language errors and how to fix them:
    let i = 0
    i = i + 1        // ❌ cannot reassign 'let' binding
    var i = 0        // ✅ use 'var' when mutation is needed
-3. Comparing complex values with '==':
-   expect tree == Leaf      // ❌ type error
-   expect isLeaf(tree) == true // ✅ pattern match to check variant
+3. Forgetting to specify a list's element type:
+   var xs = []            // ❌ type cannot be inferred
+   var xs: list<int> = [] // ✅ element type provided
 */
