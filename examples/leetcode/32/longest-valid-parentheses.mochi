@@ -1,6 +1,6 @@
 fun longestValidParentheses(s: string): int {
   let n = len(s)
-  var stack = []
+  var stack: list<int> = []
   var best = 0
   var last = -1
   for i in 0..n {

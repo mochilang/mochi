@@ -166,6 +166,38 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 		return types.AnyType{}
+	case p.FunExpr != nil:
+		params := make([]types.Type, len(p.FunExpr.Params))
+		for i, par := range p.FunExpr.Params {
+			if par.Type != nil {
+				params[i] = resolveTypeRef(par.Type)
+			} else {
+				params[i] = types.AnyType{}
+			}
+		}
+		var ret types.Type = types.VoidType{}
+		if p.FunExpr.Return != nil {
+			ret = resolveTypeRef(p.FunExpr.Return)
+		} else if p.FunExpr.ExprBody != nil {
+			ret = c.inferExprType(p.FunExpr.ExprBody)
+		} else {
+			ret = types.AnyType{}
+		}
+		return types.FuncType{Params: params, Return: ret}
+	case p.Generate != nil:
+		switch p.Generate.Target {
+		case "text":
+			return types.StringType{}
+		case "embedding":
+			return types.ListType{Elem: types.FloatType{}}
+		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(p.Generate.Target); ok {
+					return st
+				}
+			}
+			return types.AnyType{}
+		}
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "len":

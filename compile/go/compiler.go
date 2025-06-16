@@ -550,15 +550,17 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	}
 	typStr := "any"
 	if c.env != nil {
-		t, err := c.env.GetVar(s.Name)
-		if err != nil {
-			if s.Value != nil {
-				t = c.inferExprType(s.Value)
-			} else {
-				t = types.AnyType{}
-			}
-			c.env.SetVar(s.Name, t, false)
+		var t types.Type
+		if s.Type != nil {
+			t = resolveTypeRef(s.Type)
+		} else if s.Value != nil {
+			t = c.inferExprType(s.Value)
+		} else if old, err := c.env.GetVar(s.Name); err == nil {
+			t = old
+		} else {
+			t = types.AnyType{}
 		}
+		c.env.SetVar(s.Name, t, false)
 		typStr = goType(t)
 	}
 	if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
