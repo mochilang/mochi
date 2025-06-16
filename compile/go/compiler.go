@@ -1302,7 +1302,34 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	switch op {
 	case "+", "-", "*", "/", "%":
 		if op != "+" && (isAny(leftType) || isAny(rightType)) {
-			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+			switch {
+			case isInt(leftType) && isAny(rightType):
+				c.use("_cast")
+				right = fmt.Sprintf("_cast[int](%s)", right)
+				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+				next = types.IntType{}
+				return expr, next, nil
+			case isAny(leftType) && isInt(rightType):
+				c.use("_cast")
+				left = fmt.Sprintf("_cast[int](%s)", left)
+				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+				next = types.IntType{}
+				return expr, next, nil
+			case isFloat(leftType) && isAny(rightType):
+				c.use("_cast")
+				right = fmt.Sprintf("_cast[float64](%s)", right)
+				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+				next = types.FloatType{}
+				return expr, next, nil
+			case isAny(leftType) && isFloat(rightType):
+				c.use("_cast")
+				left = fmt.Sprintf("_cast[float64](%s)", left)
+				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+				next = types.FloatType{}
+				return expr, next, nil
+			default:
+				return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+			}
 		}
 		switch {
 		case (isInt64(leftType) && (isInt64(rightType) || isInt(rightType))) ||
@@ -1365,6 +1392,26 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		case op == "+" && isString(leftType) && isString(rightType):
 			expr = fmt.Sprintf("%s + %s", left, right)
 			next = types.StringType{}
+		case op == "+" && isInt(leftType) && isAny(rightType):
+			c.use("_cast")
+			right = fmt.Sprintf("_cast[int](%s)", right)
+			expr = fmt.Sprintf("(%s + %s)", left, right)
+			next = types.IntType{}
+		case op == "+" && isAny(leftType) && isInt(rightType):
+			c.use("_cast")
+			left = fmt.Sprintf("_cast[int](%s)", left)
+			expr = fmt.Sprintf("(%s + %s)", left, right)
+			next = types.IntType{}
+		case op == "+" && isFloat(leftType) && isAny(rightType):
+			c.use("_cast")
+			right = fmt.Sprintf("_cast[float64](%s)", right)
+			expr = fmt.Sprintf("(%s + %s)", left, right)
+			next = types.FloatType{}
+		case op == "+" && isAny(leftType) && isFloat(rightType):
+			c.use("_cast")
+			left = fmt.Sprintf("_cast[float64](%s)", left)
+			expr = fmt.Sprintf("(%s + %s)", left, right)
+			next = types.FloatType{}
 		case op == "+" && isAny(leftType) && isAny(rightType):
 			c.use("_cast")
 			left = fmt.Sprintf("_cast[[]any](%s)", left)
