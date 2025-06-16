@@ -1,0 +1,58 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left Tree `json:"left"`
+	Value int `json:"value"`
+	Right Tree `json:"right"`
+}
+func (Node) isTree() {}
+
+func sortedListToBST(nums []int) Tree {
+	var build func(int, int) Tree
+	build = func(lo int, hi int) Tree {
+		if (lo >= hi) {
+			return Leaf{}
+		}
+		var mid int = (((lo + hi)) / 2)
+		return Node{Left: build(lo, mid), Value: nums[mid], Right: build((mid + 1), hi)}
+}
+	return build(0, len(nums))
+}
+
+func inorder(t Tree) []int {
+	return func() []int {
+	_t := t
+	if _, ok := _t.(Leaf); ok {
+		return _cast[[]int]([]any{})
+	}
+	if _tmp0, ok := _t.(Node); ok {
+		l := _tmp0.Left
+		v := _tmp0.Value
+		r := _tmp0.Right
+		return append(append([]int{}, append(append([]int{}, inorder(l)...), []int{v}...)...), inorder(r)...)
+	}
+	var _zero []int
+	return _zero
+}()
+}
+
+func main() {
+	fmt.Println(inorder(sortedListToBST([]int{-10, -3, 0, 5, 9})))
+}
+
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
