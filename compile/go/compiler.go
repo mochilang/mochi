@@ -809,6 +809,22 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	lhs := sanitizeName(s.Name)
+	var t types.Type
+	if c.env != nil {
+		if v, err := c.env.GetVar(s.Name); err == nil {
+			t = v
+			for range s.Index {
+				switch tt := t.(type) {
+				case types.ListType:
+					t = tt.Elem
+				case types.MapType:
+					t = tt.Value
+				default:
+					t = types.AnyType{}
+				}
+			}
+		}
+	}
 	for _, idx := range s.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
@@ -818,20 +834,12 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	}
 	value := ""
 	if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
-		if c.env != nil {
-			if t, err := c.env.GetVar(s.Name); err == nil {
-				if mt, ok := t.(types.MapType); ok {
-					value = fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value))
-				}
-			}
+		if mt, ok := t.(types.MapType); ok {
+			value = fmt.Sprintf("map[%s]%s{}", goType(mt.Key), goType(mt.Value))
 		}
 	} else if ll := s.Value.Binary.Left.Value.Target.List; ll != nil && len(ll.Elems) == 0 {
-		if c.env != nil {
-			if t, err := c.env.GetVar(s.Name); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					value = fmt.Sprintf("[]%s{}", goType(lt.Elem))
-				}
-			}
+		if lt, ok := t.(types.ListType); ok {
+			value = fmt.Sprintf("[]%s{}", goType(lt.Elem))
 		}
 	}
 	if value == "" {
