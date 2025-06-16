@@ -4,7 +4,6 @@ SHELL := /bin/bash
 MOCHI_BIN := $(CURDIR)/bin/mochi
 MOCHI_ROOT := $(abspath $(CURDIR)/../..)
 
-# OS/ARCH detection
 OS  := $(shell uname -s)
 ARCH := $(shell uname -m)
 
@@ -25,8 +24,38 @@ endif
 MOCHI_TAR := mochi_$(OS)_$(ARCH).tar.gz
 MOCHI_URL := https://github.com/mochilang/mochi/releases/latest/download/$(MOCHI_TAR)
 
-.PHONY: mochi run run-go test compile clean help
+.PHONY: mochi run run-go test compile build-one build-all clean help
 
+# ────────────────────────────────────────────────────────────────
+# 💡 Shared shell function for compiling one .mochi file
+define build_one_lang
+	start=$$(date +%s%N); \
+	dir=$$(dirname "$1"); \
+	base=$$(basename "$1" .mochi); \
+	out_dir=../leetcode-out/$2/$$dir; \
+	out_file=$$out_dir/$$base.$2; \
+	mkdir -p "$$out_dir"; \
+	success=true; \
+	if $(MOCHI_BIN) build "$1" -o "$$out_file" --target $2 > /dev/null 2>&1; then \
+		case "$2" in \
+			go) go run "$$out_file" > /dev/null 2>&1 || success=false ;; \
+			py) python3 "$$out_file" > /dev/null 2>&1 || success=false ;; \
+			ts) deno run --allow-all "$$out_file" > /dev/null 2>&1 || success=false ;; \
+		esac; \
+	else \
+		echo "❌ Compile failed: $1 → $2" >&2; \
+		success=false; \
+	fi; \
+	end=$$(date +%s%N); \
+	dur_ms=$$(( (end - start)/1000000 )); \
+	if $$success; then \
+		printf "✅ \033[1m%s\033[0m → $2 compiled & ran in %d ms\n" "$1" "$$dur_ms"; \
+	else \
+		printf "❌ \033[1m%s\033[0m → $2 failed\n" "$1"; \
+	fi
+endef
+
+# ────────────────────────────────────────────────────────────────
 mochi: ## Build or download the Mochi binary
 	@mkdir -p bin
 	@if [ ! -f $(MOCHI_BIN) ]; then \
@@ -43,75 +72,50 @@ mochi: ## Build or download the Mochi binary
 		echo "Using $(MOCHI_BIN)"; \
 	fi
 
-run: mochi ## Run a .mochi file. Usage: make run ID=<problem number>
-	@if [ -z "$(ID)" ]; then \
-		echo "❌ Usage: make run ID=<problem number>"; \
-		exit 1; \
-	fi
+run: mochi ## Run a .mochi file. Usage: make run ID=<problem>
+	@if [ -z "$(ID)" ]; then echo "❌ Usage: make run ID=<problem>"; exit 1; fi
 	@$(MOCHI_BIN) run $(ID)/*.mochi
 
-run-go: mochi ## Compile and run Go output. Usage: make run-go ID=<problem number>
-	@if [ -z "$(ID)" ]; then \
-		echo "❌ Usage: make run-go ID=<problem number>"; \
-		exit 1; \
-	fi
-	@dir=$(ID); \
-	file=$$(ls "$$dir"/*.mochi 2>/dev/null | head -n 1); \
-	if [ -z "$$file" ]; then \
-		echo "❌ No .mochi file found in '$$dir'"; \
-		exit 1; \
-	fi; \
+run-go: mochi ## Compile and run Go version of problem. Usage: make run-go ID=<problem>
+	@if [ -z "$(ID)" ]; then echo "❌ Usage: make run-go ID=<problem>"; exit 1; fi
+	@file=$$(ls $(ID)/*.mochi | head -n 1); \
 	base=$$(basename "$$file" .mochi); \
-	outdir=../leetcode-out/$$dir; \
-	out=$$outdir/$$base.go.out; \
-	mkdir -p "$$outdir"; \
+	out=../leetcode-out/$(ID)/$$base.go.out; \
+	mkdir -p ../leetcode-out/$(ID); \
 	echo "🔧 Compiling $$file to $$out..."; \
 	if ! $(MOCHI_BIN) build "$$file" -o "$$out" --target go; then \
-		echo "❌ Compilation failed."; \
-		exit 1; \
-	fi; \
-	echo "🚀 Running Go program..."; \
-	tmp=$$(mktemp /tmp/mochi-$$base-XXXX.go); \
-	cp "$$out" "$$tmp"; \
-	go run "$$tmp"; \
-	rm "$$tmp"
+		echo "❌ Compilation failed."; exit 1; fi; \
+	go run "$$out"
 
-test: mochi ## Run all tests in *.mochi files
-	@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
+build-one: mochi ## Compile one .mochi to a language. Usage: make build-one ID=123 LANG=go|py|ts
+	@if [ -z "$(ID)" ] || [ -z "$(LANG)" ]; then \
+		echo "❌ Usage: make build-one ID=123 LANG=go|py|ts"; exit 1; fi
+	@file=$$(ls $(ID)/*.mochi | head -n 1); \
+	$(call build_one_lang,$$file,$(LANG))
 
-compile: mochi ## Compile all .mochi files to Go, Python, and TypeScript
-	@mkdir -p ../leetcode-out
-	@for f in $$(find $(shell seq -s " " 361 400) -name '*.mochi'); do \
-		start=$$(date +%s%N); \
-		dir=$$(dirname "$$f"); \
-		rel=$${dir#./}; \
-		mkdir -p ../leetcode-out/"$$rel"; \
-		base=$$(basename "$$f" .mochi); \
-		success=true; \
-		for target in go py ts; do \
-			out=../leetcode-out/"$$rel"/"$$base.$$target.out"; \
-			if ./bin/mochi build "$$f" -o "$$out" --target "$$target" > /dev/null 2>&1; then \
-				: ; \
-			else \
-				echo "❌ Failed to compile: $$f → $$target" >&2; \
-				success=false; \
-			fi; \
+build-all: mochi ## Compile all problems from FROM to TO (default: 1–400). Usage: make build-all [FROM=1] [TO=400]
+	@FROM=${FROM:-1}; TO=${TO:-400}; \
+	for id in $$(seq $$FROM $$TO); do \
+		for file in $$(find $$id -name '*.mochi' 2>/dev/null); do \
+			for lang in go py ts; do \
+				$(call build_one_lang,$$file,$$lang); \
+			done; \
 		done; \
-		end=$$(date +%s%N); \
-		dur_ms=$$(( (end - start)/1000000 )); \
-		if $$success; then \
-			printf "✅ Compiled \033[1m%s\033[0m → go/py/ts in %d ms\n" "$$f" "$$dur_ms"; \
-		fi; \
 	done
 
-clean: ## Remove Mochi binaries and build outputs
-	@rm -rf bin
-	@echo "🧹 Cleaned bin/"
+test: mochi ## Run all tests
+	@find . -name '*.mochi' -print0 | xargs -0 -n1 $(MOCHI_BIN) test
+
+compile: build-all ## (Alias) Compile all problems
+
+clean: ## Remove binaries and build outputs
+	@rm -rf bin ../leetcode-out
+	@echo "🧹 Cleaned bin/ and ../leetcode-out/"
 
 help: ## Show help message
 	@echo ""
 	@echo "📦 \033[1mMochi LeetCode Makefile\033[0m"
-	@echo "Usage: make [target] [ID=n] (optional)"
+	@echo "Usage: make [target] [VAR=val]"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-18s\033[0m %s\n", $$1, $$2}'
