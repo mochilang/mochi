@@ -1,0 +1,137 @@
+// Solution for LeetCode problem 341 - Flatten Nested List Iterator
+//
+// This implementation avoids union types and pattern matching by using
+// maps to represent either an integer or a list of nested items.
+//
+// Common Mochi language errors and how to fix them:
+// 1. Using '=' instead of '==' when comparing values.
+//    if nestedHasNext(it) = true { }  // ❌ assignment
+//    if nestedHasNext(it) == true { } // ✅ comparison
+// 2. Attempting to modify a field of a struct directly.
+//    it.index = 1 // ❌ structs are immutable
+//    it = NestedIterator { data: it.data, index: 1 } // ✅ create a new struct
+// 3. Forgetting to check bounds before indexing a list.
+//    val = it.data[it.index] // ensure index < len(it.data) first
+//
+// Constructors for nested integers
+fun IntItem(v: int): map<string, any> {
+  return {"kind": "int", "value": v}
+}
+
+fun ListItem(items: list<map<string, any>>): map<string, any> {
+  return {"kind": "list", "value": items}
+}
+
+fun isInt(item: map<string, any>): bool {
+  return item["kind"] == "int"
+}
+
+fun itemValue(item: map<string, any>): int {
+  return item["value"] as int
+}
+
+fun itemList(item: map<string, any>): list<map<string, any>> {
+  return item["value"] as list<map<string, any>>
+}
+
+// Recursively flatten the nested list into a simple list of ints
+fun flatten(items: list<map<string, any>>): list<int> {
+  var result: list<int> = []
+  var i = 0
+  while i < len(items) {
+    let it = items[i]
+    if isInt(it) {
+      result = result + [itemValue(it)]
+    } else {
+      result = result + flatten(itemList(it))
+    }
+    i = i + 1
+  }
+  return result
+}
+
+// Iterator structure over the flattened list
+ type NestedIterator {
+  data: list<int>
+  index: int
+}
+
+fun newNestedIterator(nested: list<map<string, any>>): NestedIterator {
+  return NestedIterator { data: flatten(nested), index: 0 }
+}
+
+fun nestedHasNext(it: NestedIterator): bool {
+  return it.index < len(it.data)
+}
+
+type NextResult {
+  it: NestedIterator
+  val: int
+}
+
+fun nestedNext(it: NestedIterator): NextResult {
+  let value = it.data[it.index]
+  return NextResult {
+    it: NestedIterator { data: it.data, index: it.index + 1 },
+    val: value
+  }
+}
+
+// Test cases based on LeetCode examples
+
+test "example 1" {
+  let nested = [
+    ListItem([IntItem(1), IntItem(1)]),
+    IntItem(2),
+    ListItem([IntItem(1), IntItem(1)])
+  ]
+  var it = newNestedIterator(nested)
+  let r1 = nestedNext(it)
+  it = r1.it
+  expect r1.val == 1
+  let r2 = nestedNext(it)
+  it = r2.it
+  expect r2.val == 1
+  let r3 = nestedNext(it)
+  it = r3.it
+  expect r3.val == 2
+  let r4 = nestedNext(it)
+  it = r4.it
+  expect r4.val == 1
+  let r5 = nestedNext(it)
+  it = r5.it
+  expect r5.val == 1
+  expect nestedHasNext(it) == false
+}
+
+test "example 2" {
+  let nested = [
+    IntItem(1),
+    ListItem([IntItem(4), ListItem([IntItem(6)])])
+  ]
+  var it = newNestedIterator(nested)
+  let r1 = nestedNext(it)
+  it = r1.it
+  expect r1.val == 1
+  let r2 = nestedNext(it)
+  it = r2.it
+  expect r2.val == 4
+  let r3 = nestedNext(it)
+  it = r3.it
+  expect r3.val == 6
+  expect nestedHasNext(it) == false
+}
+
+test "empty list" {
+  var it = newNestedIterator([])
+  expect nestedHasNext(it) == false
+}
+
+test "empty inner lists" {
+  let nested = [ListItem([]), IntItem(3), ListItem([])]
+  var it = newNestedIterator(nested)
+  let r = nestedNext(it)
+  it = r.it
+  expect r.val == 3
+  expect nestedHasNext(it) == false
+}
