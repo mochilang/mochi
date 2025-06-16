@@ -1,0 +1,112 @@
+// Solution for LeetCode problem 352 - Data Stream as Disjoint Intervals
+// The structure maintains a sorted list of closed intervals.
+// When a new number is added we merge it with existing intervals if needed.
+
+type SummaryRanges {
+  intervals: list<list<int>>
+}
+
+fun newSummaryRanges(): SummaryRanges {
+  return SummaryRanges { intervals: [] }
+}
+
+fun addNum(sr: SummaryRanges, val: int): SummaryRanges {
+  var intervals = sr.intervals
+  var i = 0
+  let n = len(intervals)
+  var result: list<list<int>> = []
+
+  // Add intervals strictly before 'val'
+  while i < n {
+    if intervals[i][1] < val - 1 {
+      result = result + [intervals[i]]
+      i = i + 1
+    } else {
+      break
+    }
+  }
+
+  var start = val
+  var end = val
+
+  // Merge with overlapping interval on the left/right
+  if i < n {
+    if intervals[i][0] <= val + 1 {
+      if intervals[i][0] < start {
+        start = intervals[i][0]
+      }
+      if intervals[i][1] > end {
+        end = intervals[i][1]
+      }
+      i = i + 1
+      while i < n {
+        if intervals[i][0] <= end + 1 {
+          if intervals[i][1] > end {
+            end = intervals[i][1]
+          }
+          i = i + 1
+        } else {
+          break
+        }
+      }
+    }
+  }
+
+  result = result + [[start, end]]
+
+  while i < n {
+    result = result + [intervals[i]]
+    i = i + 1
+  }
+
+  return SummaryRanges { intervals: result }
+}
+
+fun getIntervals(sr: SummaryRanges): list<list<int>> {
+  return sr.intervals
+}
+
+// Basic tests from LeetCode examples
+
+test "example" {
+  var sr = newSummaryRanges()
+  sr = addNum(sr, 1)
+  expect getIntervals(sr) == [[1,1]]
+  sr = addNum(sr, 3)
+  expect getIntervals(sr) == [[1,1],[3,3]]
+  sr = addNum(sr, 7)
+  sr = addNum(sr, 2)
+  sr = addNum(sr, 6)
+  expect getIntervals(sr) == [[1,3],[6,7]]
+}
+
+// Additional edge cases
+
+test "duplicate" {
+  var sr = newSummaryRanges()
+  sr = addNum(sr, 5)
+  sr = addNum(sr, 5)
+  expect getIntervals(sr) == [[5,5]]
+}
+
+test "merge all" {
+  var sr = newSummaryRanges()
+  sr = addNum(sr, 1)
+  sr = addNum(sr, 2)
+  sr = addNum(sr, 3)
+  expect getIntervals(sr) == [[1,3]]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying to update a value declared with 'let'.
+   let x = 0
+   x = x + 1         // ❌ cannot assign to immutable binding
+   var y = 0         // ✅ declare with 'var' when mutation is needed
+2. Using '=' instead of '==' when comparing numbers.
+   if val = 1 { }    // ❌ assignment
+   if val == 1 { }   // ✅ equality check
+3. Accessing list indices out of range.
+   intervals[len(intervals)]      // ❌ invalid index
+   // Fix: ensure index < len(intervals) before accessing
+*/
