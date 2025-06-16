@@ -1985,8 +1985,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("New%s()", sanitizeName(p.Struct.Name)), nil
 		}
 		parts := make([]string, len(p.Struct.Fields))
+		var st types.StructType
+		var ok bool
+		if c.env != nil {
+			if s, found := c.env.GetStruct(p.Struct.Name); found {
+				st = s
+				ok = true
+			}
+		}
 		for i, f := range p.Struct.Fields {
-			v, err := c.compileExpr(f.Value)
+			var v string
+			var err error
+			if ok {
+				if ft, ok2 := st.Fields[f.Name]; ok2 {
+					v, err = c.compileExprHint(f.Value, ft)
+				} else {
+					v, err = c.compileExpr(f.Value)
+				}
+			} else {
+				v, err = c.compileExpr(f.Value)
+			}
 			if err != nil {
 				return "", err
 			}
