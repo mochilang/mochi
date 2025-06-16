@@ -1,0 +1,64 @@
+fun validUtf8(data: list<int>): bool {
+  var i = 0
+  let n = len(data)
+  while i < n {
+    let b = data[i]
+    var count = 0
+    if b < 128 {
+      count = 1
+    } else if b >= 192 && b < 224 {
+      count = 2
+    } else if b >= 224 && b < 240 {
+      count = 3
+    } else if b >= 240 && b < 248 {
+      count = 4
+    } else {
+      return false
+    }
+    if i + count > n {
+      return false
+    }
+    var j = 1
+    while j < count {
+      let c = data[i + j]
+      if c < 128 || c >= 192 {
+        return false
+      }
+      j = j + 1
+    }
+    i = i + count
+  }
+  return true
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect validUtf8([197,130,1]) == true
+}
+
+test "example 2" {
+  expect validUtf8([235,140,4]) == false
+}
+
+// Additional edge cases
+
+test "single byte" {
+  expect validUtf8([0]) == true
+}
+
+test "invalid length" {
+  expect validUtf8([237]) == false
+}
+
+test "starts with continuation" {
+  expect validUtf8([145]) == false
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a variable declared with 'let'. Use 'var' for mutable variables.
+2. Using '=' instead of '==' in comparisons.
+3. Mochi lacks bit shift operators like '<<' and '>>'. Use arithmetic comparisons instead.
+4. Accidentally defining a union type or using 'match'. Stick to simple 'if' conditions here.
+*/
