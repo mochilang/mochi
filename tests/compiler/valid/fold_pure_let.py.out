@@ -6,6 +6,8 @@ import typing
 def sum(n: int) -> int:
 	return ((n * ((n + 1))) // 2)
 
+n = 10
+
 def main():
 	n = 10
 	print(sum(n))

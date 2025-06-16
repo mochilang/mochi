@@ -108,8 +108,12 @@ func isInt64(t types.Type) bool {
 }
 
 func isInt(t types.Type) bool {
-	_, ok := t.(types.IntType)
-	return ok
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return true
+	default:
+		return false
+	}
 }
 
 func isFloat(t types.Type) bool {
@@ -123,6 +127,9 @@ func isString(t types.Type) bool {
 }
 
 func isAny(t types.Type) bool {
+	if t == nil {
+		return true
+	}
 	_, ok := t.(types.AnyType)
 	return ok
 }
@@ -201,6 +208,145 @@ func resolveTypeRef(t *parser.TypeRef) types.Type {
 		}
 	}
 	return types.AnyType{}
+}
+
+func isLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 || len(e.Binary.Left.Ops) != 0 {
+		return false
+	}
+	return isLiteralPrimary(e.Binary.Left.Value.Target)
+}
+
+func isLiteralPrimary(p *parser.Primary) bool {
+	switch {
+	case p.Lit != nil:
+		return true
+	case p.List != nil:
+		for _, el := range p.List.Elems {
+			if !isLiteralExpr(el) {
+				return false
+			}
+		}
+		return true
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			if !isLiteralExpr(it.Key) || !isLiteralExpr(it.Value) {
+				return false
+			}
+		}
+		return true
+	case p.Struct != nil:
+		for _, f := range p.Struct.Fields {
+			if !isLiteralExpr(f.Value) {
+				return false
+			}
+		}
+		return true
+	case p.Group != nil:
+		return isLiteralExpr(p.Group)
+	default:
+		return false
+	}
+}
+
+func isPureExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 || len(e.Binary.Left.Ops) != 0 {
+		if len(e.Binary.Right) > 0 {
+			for _, op := range e.Binary.Right {
+				if !isPurePostfixExpr(op.Right) {
+					return false
+				}
+			}
+		}
+		if len(e.Binary.Left.Ops) != 0 {
+			return false
+		}
+	}
+	return isPurePostfix(e.Binary.Left)
+}
+
+func isPurePostfix(u *parser.Unary) bool {
+	if u == nil {
+		return true
+	}
+	if len(u.Ops) > 0 {
+		return false
+	}
+	return isPurePostfixExpr(u.Value)
+}
+
+func isPurePostfixExpr(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return true
+	}
+	if len(p.Ops) > 0 {
+		for _, op := range p.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					if !isPureExpr(a) {
+						return false
+					}
+				}
+			}
+			if op.Index != nil {
+				if (op.Index.Start != nil && !isPureExpr(op.Index.Start)) ||
+					(op.Index.End != nil && !isPureExpr(op.Index.End)) {
+					return false
+				}
+			}
+			if op.Cast != nil {
+				return false
+			}
+		}
+	}
+	return isPurePrimary(p.Target)
+}
+
+func isPurePrimary(p *parser.Primary) bool {
+	switch {
+	case p.Generate != nil || p.Fetch != nil || p.Load != nil || p.Save != nil || p.Query != nil || p.LogicQuery != nil:
+		return false
+	case p.Call != nil:
+		for _, a := range p.Call.Args {
+			if !isPureExpr(a) {
+				return false
+			}
+		}
+		return true
+	case p.Group != nil:
+		return isPureExpr(p.Group)
+	case p.List != nil:
+		for _, el := range p.List.Elems {
+			if !isPureExpr(el) {
+				return false
+			}
+		}
+		return true
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			if !isPureExpr(it.Key) || !isPureExpr(it.Value) {
+				return false
+			}
+		}
+		return true
+	case p.Struct != nil:
+		for _, f := range p.Struct.Fields {
+			if !isPureExpr(f.Value) {
+				return false
+			}
+		}
+		return true
+	case p.Lit != nil, p.Selector != nil:
+		return true
+	default:
+		return false
+	}
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
