@@ -1,0 +1,54 @@
+fun maxRotateFunction(nums: list<int>): int {
+  let n = len(nums)
+  if n == 0 {
+    return 0
+  }
+  var total = 0
+  var f = 0
+  var i = 0
+  while i < n {
+    let val = nums[i]
+    total = total + val
+    f = f + i * val
+    i = i + 1
+  }
+  var best = f
+  var k = 1
+  while k < n {
+    f = f + total - n * nums[n - k]
+    if f > best {
+      best = f
+    }
+    k = k + 1
+  }
+  return best
+}
+
+// Tests based on LeetCode examples
+
+test "example" {
+  expect maxRotateFunction([4,3,2,6]) == 26
+}
+
+test "single" {
+  expect maxRotateFunction([100]) == 0
+}
+
+test "negatives" {
+  expect maxRotateFunction([-1,-2,-3,-4]) == (-12)
+}
+
+/*
+Common Mochi language errors and fixes:
+1. Using '=' instead of '==' for comparisons.
+   if n = 0 { ... }   // ❌ assignment, not comparison
+   if n == 0 { ... }  // ✅
+2. Reassigning a variable declared with 'let'.
+   let sum = 0
+   sum = sum + 1       // ❌ cannot reassign immutable binding
+   var sum = 0
+   sum = sum + 1       // ✅ use 'var' for mutable values
+3. Omitting a type annotation when creating an empty list.
+   var res = []        // ❌ type cannot be inferred
+   var res: list<int> = [] // ✅ specify the element type
+*/
