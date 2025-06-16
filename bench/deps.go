@@ -95,3 +95,9 @@ func ensureDeno() error {
 	}
 	return fmt.Errorf("failed to install deno")
 }
+
+// EnsureDeno verifies that the Deno binary is installed and attempts to
+// install it if missing. It is safe to call from tests.
+func EnsureDeno() error {
+	return ensureDeno()
+}

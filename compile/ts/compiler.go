@@ -299,6 +299,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
 		// extern declarations have no runtime effect when compiling to TypeScript
 		return nil
+	case s.Fun != nil:
+		return c.compileFunStmt(s.Fun)
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
@@ -943,6 +947,9 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		}
 		if op == "+" && isString(leftType) && isString(rightType) {
 			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
+		}
+		if op == "/" && (isInt(leftType) || isInt64(leftType)) && (isInt(rightType) || isInt64(rightType)) {
+			return fmt.Sprintf("Math.trunc(%s / %s)", left, right), leftType, nil
 		}
 		return fmt.Sprintf("(%s %s %s)", left, op, right), leftType, nil
 	case "==", "!=":
