@@ -1,0 +1,44 @@
+// simplified leetcode 102 example
+
+// union tree
+ type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+fun levelOrder(root: Tree): list<list<int>> {
+  if match root { Leaf => true _ => false } {
+    return []
+  }
+  var res: list<list<int>> = []
+  var q: list<Tree> = [root]
+  while len(q) > 0 {
+    var level: list<int> = []
+    var next: list<Tree> = []
+    for node in q {
+      if match node { Leaf => false _ => true } {
+        level = level + [node.value]
+        if match node.left { Leaf => false _ => true } {
+          next = next + [node.left]
+        }
+        if match node.right { Leaf => false _ => true } {
+          next = next + [node.right]
+        }
+      }
+    }
+    res = res + [level]
+    q = next
+  }
+  return res
+}
+
+let tree = Node {
+  left: Node { left: Leaf {}, value: 9, right: Leaf {} },
+  value: 3,
+  right: Node {
+    left: Node { left: Leaf {}, value: 15, right: Leaf {} },
+    value: 20,
+    right: Node { left: Leaf {}, value: 7, right: Leaf {} }
+  }
+}
+
+print(levelOrder(tree))
