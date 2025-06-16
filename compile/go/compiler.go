@@ -2501,26 +2501,60 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	var buf bytes.Buffer
 	buf.WriteString("func() " + retType + " {\n")
 	buf.WriteString("\t_t := " + target + "\n")
-	buf.WriteString("\tswitch _t {\n")
 	for _, cse := range m.Cases {
-		if isUnderscoreExpr(cse.Pattern) {
-			buf.WriteString("\tdefault:\n")
-		} else {
-			pat, err := c.compileExpr(cse.Pattern)
-			if err != nil {
-				return "", err
-			}
-			buf.WriteString("\tcase " + pat + ":\n")
-		}
 		res, err := c.compileExpr(cse.Result)
 		if err != nil {
 			return "", err
 		}
+
+		if isUnderscoreExpr(cse.Pattern) {
+			buf.WriteString("\treturn " + res + "\n")
+			buf.WriteString("}()")
+			return buf.String(), nil
+		}
+
+		// Union variant pattern
+		if call, ok := callPattern(cse.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond := fmt.Sprintf("v, ok := _t.(%s); ok", sanitizeName(call.Func))
+				buf.WriteString("\tif " + cond + " {\n")
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						field := exportName(sanitizeName(st.Order[idx]))
+						buf.WriteString(fmt.Sprintf("\t\t%s := v.%s\n", sanitizeName(id), field))
+					}
+				}
+				buf.WriteString("\t\treturn " + res + "\n")
+				buf.WriteString("\t}\n")
+				continue
+			}
+		}
+
+		if ident, ok := identName(cse.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond := fmt.Sprintf("_, ok := _t.(%s); ok", sanitizeName(ident))
+				buf.WriteString("\tif " + cond + " {\n")
+				buf.WriteString("\t\treturn " + res + "\n")
+				buf.WriteString("\t}\n")
+				continue
+			}
+		}
+
+		pat, err := c.compileExpr(cse.Pattern)
+		if err != nil {
+			return "", err
+		}
+		c.use("_equal")
+		c.imports["reflect"] = true
+		buf.WriteString(fmt.Sprintf("\tif _equal(_t, %s) {\n", pat))
 		buf.WriteString("\t\treturn " + res + "\n")
+		buf.WriteString("\t}\n")
 	}
-	buf.WriteString("\t}\n")
 	if retType == "any" {
 		buf.WriteString("\treturn nil\n")
+	} else {
+		buf.WriteString(fmt.Sprintf("\tvar _zero %s\n\treturn _zero\n", retType))
 	}
 	buf.WriteString("}()")
 	return buf.String(), nil
