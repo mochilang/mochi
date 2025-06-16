@@ -1,0 +1,32 @@
+// minimal version of leetcode 95
+
+// binary tree type
+
+type Tree =
+  Empty
+  | Node(left: Tree, val: int, right: Tree)
+
+fun build(start: int, end: int): list<Tree> {
+  if start > end {
+    return [Empty {}]
+  }
+  var result: list<Tree> = []
+  for i in start..end + 1 {
+    let lefts = build(start, i - 1)
+    let rights = build(i + 1, end)
+    for l in lefts {
+      for r in rights {
+        result = result + [Node { left: l, val: i, right: r }]
+      }
+    }
+  }
+  return result
+}
+
+fun generateTrees(n: int): list<Tree> {
+  if n == 0 { return [] }
+  return build(1, n)
+}
+
+let ts = generateTrees(3)
+print(len(ts))

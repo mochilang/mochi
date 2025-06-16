@@ -1,0 +1,51 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Tree interface { isTree() }
+type Empty struct {
+}
+func (Empty) isTree() {}
+type Node struct {
+	Left Tree `json:"left"`
+	Val int `json:"val"`
+	Right Tree `json:"right"`
+}
+func (Node) isTree() {}
+
+func build(start int, end int) []Tree {
+	if (start > end) {
+		return _toSlice[Empty,Tree]([]Empty{Empty{}})
+	}
+	var result []Tree = []Tree{}
+	for i := start; i < (end + 1); i++ {
+		var lefts []Tree = build(start, (i - 1))
+		var rights []Tree = build((i + 1), end)
+		for _, l := range lefts {
+			for _, r := range rights {
+				result = append(append([]Tree{}, result...), _toSlice[Node,Tree]([]Node{Node{Left: l, Val: i, Right: r}})...)
+			}
+		}
+	}
+	return result
+}
+
+func generateTrees(n int) []Tree {
+	if (n == 0) {
+		return _toSlice[any,Tree]([]any{})
+	}
+	return build(1, n)
+}
+
+func main() {
+	var ts []Tree = generateTrees(3)
+	fmt.Println(len(ts))
+}
+
+func _toSlice[T any, U any](s []T) []U {
+    out := make([]U, len(s))
+    for i, v := range s { out[i] = any(v).(U) }
+    return out
+}

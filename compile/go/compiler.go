@@ -3,6 +3,7 @@ package gocode
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -615,9 +616,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		if c.returnType != nil && !equalTypes(c.returnType, c.inferExprType(s.Return.Value)) {
+		exprType := c.inferExprType(s.Return.Value)
+		if c.returnType != nil && !equalTypes(c.returnType, exprType) {
 			c.use("_cast")
 			expr = fmt.Sprintf("_cast[%s](%s)", goType(c.returnType), expr)
+		} else if lt, ok := c.returnType.(types.ListType); ok {
+			if rt, ok := exprType.(types.ListType); ok {
+				if equalTypes(lt.Elem, rt.Elem) && !reflect.DeepEqual(lt.Elem, rt.Elem) {
+					c.use("_toSlice")
+					expr = fmt.Sprintf("_toSlice[%s,%s](%s)", goType(rt.Elem), goType(lt.Elem), expr)
+				}
+			}
 		}
 		c.writeln("return " + expr)
 		return nil
@@ -1510,11 +1519,15 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 				next = leftType
 			} else if !isAny(lt.Elem) && isAny(rt.Elem) {
-				c.use("_toAnySlice")
-				left = fmt.Sprintf("_toAnySlice(%s)", left)
-				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(rt.Elem), left, right)
-				next = types.ListType{Elem: types.AnyType{}}
+				c.use("_toSlice")
+				right = fmt.Sprintf("_toSlice[%s,%s](%s)", goType(rt.Elem), goType(lt.Elem), right)
+				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
+				next = leftType
 			} else if equalTypes(lt.Elem, rt.Elem) {
+				if !reflect.DeepEqual(lt.Elem, rt.Elem) {
+					c.use("_toSlice")
+					right = fmt.Sprintf("_toSlice[%s,%s](%s)", goType(rt.Elem), goType(lt.Elem), right)
+				}
 				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 				next = leftType
 			} else {
@@ -1897,17 +1910,33 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("%s{%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
+		typ := c.inferPrimaryType(p)
+		elemType := "any"
+		if lt, ok := typ.(types.ListType); ok {
+			elemType = goType(lt.Elem)
+		}
 		for i, e := range p.List.Elems {
 			v, err := c.compileExpr(e)
 			if err != nil {
 				return "", err
 			}
+			if elemType == "any" {
+				et := c.inferExprType(e)
+				switch {
+				case isList(et):
+					c.use("_toAnySlice")
+					v = fmt.Sprintf("_toAnySlice(%s)", v)
+				case isMap(et):
+					c.use("_toAnyMap")
+					v = fmt.Sprintf("_toAnyMap(%s)", v)
+				default:
+					v = fmt.Sprintf("any(%s)", v)
+				}
+			} else if elemType == "[]any" {
+				c.use("_toAnySlice")
+				v = fmt.Sprintf("_toAnySlice(%s)", v)
+			}
 			elems[i] = v
-		}
-		typ := c.inferPrimaryType(p)
-		elemType := "any"
-		if lt, ok := typ.(types.ListType); ok {
-			elemType = goType(lt.Elem)
 		}
 		return "[]" + elemType + "{" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
