@@ -1354,20 +1354,25 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
 		}
 	case "==", "!=", "<", "<=", ">", ">=":
-		if _, ok := leftType.(types.AnyType); ok || isAny(rightType) {
-			return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
-		}
-		if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
-			c.use("_equal")
-			c.imports["reflect"] = true
-			if op == "==" {
-				expr = fmt.Sprintf("_equal(%s, %s)", left, right)
-			} else if op == "!=" {
-				expr = fmt.Sprintf("!_equal(%s, %s)", left, right)
+		if op == "==" || op == "!=" {
+			if isAny(leftType) || isAny(rightType) || isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
+				c.use("_equal")
+				c.imports["reflect"] = true
+				if op == "==" {
+					expr = fmt.Sprintf("_equal(%s, %s)", left, right)
+				} else {
+					expr = fmt.Sprintf("!_equal(%s, %s)", left, right)
+				}
 			} else {
-				return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 			}
 		} else {
+			if isAny(leftType) || isAny(rightType) {
+				return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
+			}
+			if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
+				return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+			}
 			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 		}
 		next = types.BoolType{}
