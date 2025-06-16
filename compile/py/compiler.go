@@ -615,7 +615,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				c.writeln("pass")
 			} else {
 				for _, f := range v.Fields {
-					typStr := pyType(resolveTypeRef(f.Type))
+					typStr := pyType(c.resolveTypeRef(f.Type))
 					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f.Name), typStr))
 				}
 			}
@@ -637,7 +637,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		} else {
 			for _, m := range t.Members {
 				if m.Field != nil {
-					typStr := pyType(resolveTypeRef(m.Field.Type))
+					typStr := pyType(c.resolveTypeRef(m.Field.Type))
 					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typStr))
 				}
 			}
@@ -788,7 +788,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		if i < len(ft.Params) {
 			typ = ft.Params[i]
 		} else if p.Type != nil {
-			typ = resolveTypeRef(p.Type)
+			typ = c.resolveTypeRef(p.Type)
 		}
 		if typ != nil {
 			c.buf.WriteString(": " + pyType(typ))
@@ -801,7 +801,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	if ft.Return != nil {
 		retType = pyType(ft.Return)
 	} else if fun.Return != nil {
-		retType = pyType(resolveTypeRef(fun.Return))
+		retType = pyType(c.resolveTypeRef(fun.Return))
 	}
 	c.buf.WriteString(") -> " + retType + ":\n")
 	child := types.NewEnv(c.env)
@@ -1120,7 +1120,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			continue
 		}
 		if op.Cast != nil {
-			typ = resolveTypeRef(op.Cast.Type)
+			typ = c.resolveTypeRef(op.Cast.Type)
 			// Casts are ignored in Python code generation
 			continue
 		}
