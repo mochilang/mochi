@@ -1,0 +1,62 @@
+fun findTheDifference(s: string, t: string): string {
+  var counts: map<string, int> = {}
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch in counts {
+      counts[ch] = counts[ch] + 1
+    } else {
+      counts[ch] = 1
+    }
+    i = i + 1
+  }
+  i = 0
+  while i < len(t) {
+    let ch = t[i]
+    if ch in counts {
+      counts[ch] = counts[ch] - 1
+    } else {
+      counts[ch] = -1
+    }
+    i = i + 1
+  }
+  for key in counts {
+    if counts[key] != 0 {
+      return key
+    }
+  }
+  return ""
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect findTheDifference("abcd", "abcde") == "e"
+}
+
+test "example 2" {
+  expect findTheDifference("", "y") == "y"
+}
+
+// Additional edge cases
+
+test "extra repeated" {
+  expect findTheDifference("aabb", "aabbb") == "b"
+}
+
+test "extra at beginning" {
+  expect findTheDifference("ae", "aea") == "a"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to specify the map type when initializing:
+   var counts = {}                     // ❌ type cannot be inferred
+   var counts: map<string, int> = {}   // ✅ specify key and value types
+2. Using '=' instead of '==' for comparison:
+   if counts[key] = 0 { }              // ❌ assignment
+   if counts[key] == 0 { }             // ✅ equality check
+3. Trying Python-style for loops:
+   for i in range(len(s)) { ... }      // ❌ not valid Mochi
+   for i in 0..len(s) { ... }          // ✅ use Mochi range syntax
+*/
