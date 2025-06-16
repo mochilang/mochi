@@ -1,0 +1,80 @@
+// Solution for LeetCode problem 211 - Design Add and Search Words Data Structure
+// This implementation avoids union types by representing trie nodes as maps.
+// Each node has an "end" flag and a "next" map of children.
+
+fun Node(): map<string, any> {
+  return {"end": false, "next": {} as map<string, any>}
+}
+
+fun addWord(root: map<string, any>, word: string) {
+  var node = root
+  for i in 0..len(word) {
+    let ch = word[i]
+    var nextMap: map<string, any> = node["next"] as map<string, any>
+    var child: map<string, any>
+    if ch in nextMap {
+      child = nextMap[ch] as map<string, any>
+    } else {
+      child = Node()
+    }
+    if i == len(word) - 1 {
+      child["end"] = true
+    }
+    nextMap[ch] = child
+    node["next"] = nextMap
+    node = child
+  }
+}
+
+fun searchHelper(node: map<string, any>, word: string, index: int): bool {
+  if index == len(word) {
+    return node["end"] as bool
+  }
+  let ch = word[index]
+  var children: map<string, any> = node["next"] as map<string, any>
+  if ch == "." {
+    for key in children {
+      let child = children[key] as map<string, any>
+      if searchHelper(child, word, index + 1) {
+        return true
+      }
+    }
+    return false
+  }
+  if ch in children {
+    return searchHelper(children[ch] as map<string, any>, word, index + 1)
+  }
+  return false
+}
+
+fun search(root: map<string, any>, word: string): bool {
+  return searchHelper(root, word, 0)
+}
+
+// Basic tests from the LeetCode description
+
+test "example 1" {
+  let wd = Node()
+  addWord(wd, "bad")
+  addWord(wd, "dad")
+  addWord(wd, "mad")
+  expect search(wd, "pad") == false
+  expect search(wd, "bad") == true
+  expect search(wd, ".ad") == true
+  expect search(wd, "b..") == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' in conditionals.
+   if ch = '.' { }        // ❌ assignment
+   if ch == '.' { }       // ✅ comparison
+2. Attempting to mutate a value declared with 'let'.
+   let node = Node()
+   node["end"] = true      // ❌ cannot modify immutable value
+   var node = Node()       // ✅ declare with 'var' when mutation is needed
+3. Forgetting to initialize maps before use.
+   var children: map<string, any>
+   children["a"] = Node()   // ❌ children is nil
+   var children: map<string, any> = {} // ✅ start with an empty map
+*/
