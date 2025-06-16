@@ -1,0 +1,113 @@
+// Solution for LeetCode problem 333 - Largest BST Subtree
+//
+// This implementation avoids union types and pattern matching by
+// representing tree nodes as maps. A Leaf node is {"__name": "Leaf"}
+// and a Node is {"__name": "Node", "left": left, "value": value, "right": right}.
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+fun minInt(a: int, b: int): int { if a < b { return a } return b }
+fun maxInt(a: int, b: int): int { if a > b { return a } return b }
+
+// Helper returns information about the subtree rooted at `node`:
+// min and max values, total size, size of the largest BST, and
+// whether the subtree itself is a BST.
+fun helper(node: map<string, any>): map<string, any> {
+  if isLeaf(node) {
+    return {"min": 2147483647, "max": -2147483648, "size": 0, "largest": 0, "bst": true}
+  }
+
+  let l = helper(left(node))
+  let r = helper(right(node))
+
+  var minVal = value(node)
+  var maxVal = value(node)
+
+  if !isLeaf(left(node)) {
+    minVal = minInt(minVal, l["min"] as int)
+    maxVal = maxInt(maxVal, l["max"] as int)
+  }
+
+  if !isLeaf(right(node)) {
+    minVal = minInt(minVal, r["min"] as int)
+    maxVal = maxInt(maxVal, r["max"] as int)
+  }
+
+  let size = (l["size"] as int) + (r["size"] as int) + 1
+
+  var bst = false
+  if (l["bst"] as bool) && (r["bst"] as bool) &&
+     value(node) > (l["max"] as int) &&
+     value(node) < (r["min"] as int) {
+    bst = true
+  }
+
+  var largest = size
+  if !bst {
+    let ll = l["largest"] as int
+    let rl = r["largest"] as int
+    largest = maxInt(ll, rl)
+  }
+
+  return {"min": minVal, "max": maxVal, "size": size, "largest": largest, "bst": bst}
+}
+
+fun largestBSTSubtree(root: map<string, any>): int {
+  let info = helper(root)
+  return info["largest"] as int
+}
+
+// Example tree: [10,5,15,1,8,nil,7]
+let example1 = Node(
+  Node(Node(Leaf(), 1, Leaf()), 5, Node(Leaf(), 8, Leaf())),
+  10,
+  Node(Leaf(), 15, Node(Leaf(), 7, Leaf()))
+)
+
+test "example 1" {
+  expect largestBSTSubtree(example1) == 3
+}
+
+test "single node" {
+  expect largestBSTSubtree(Node(Leaf(), 1, Leaf())) == 1
+}
+
+test "already bst" {
+  let tree = Node(Node(Leaf(), 2, Leaf()), 3, Node(Leaf(), 4, Node(Leaf(), 5, Leaf())))
+  expect largestBSTSubtree(tree) == 4
+}
+
+test "empty" {
+  expect largestBSTSubtree(Leaf()) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values.
+   if value(node) = 5 { }      // ❌ assignment
+   if value(node) == 5 { }     // ✅ comparison
+2. Reassigning a variable declared with 'let'.
+   let n = 0
+   n = 1                       // ❌ cannot assign
+   var n = 0                   // ✅ use 'var' for mutation
+3. Accessing fields of a Leaf without checking.
+   left(Leaf())                // ❌ runtime error
+   if !isLeaf(node) { left(node) } // ✅ safe
+4. Forgetting parentheses when creating nodes.
+   Node(Leaf, 1, Leaf)         // ❌ not a call
+   Node(Leaf(), 1, Leaf())     // ✅
+*/
