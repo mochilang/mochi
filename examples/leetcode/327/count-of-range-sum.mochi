@@ -1,0 +1,68 @@
+// Solution for LeetCode problem 327 - Count of Range Sum
+//
+// The algorithm computes prefix sums for the array and then
+// checks all pairs of prefix indices. The difference between
+// two prefix sums gives a range sum. If that value falls within
+// the inclusive bounds [lower, upper], we increment the count.
+// This approach is O(n^2) but is easy to implement and read.
+
+fun countRangeSum(nums: list<int>, lower: int, upper: int): int {
+  let n = len(nums)
+  var prefix: list<int> = [0]
+  var i = 0
+  var running = 0
+  while i < n {
+    running = running + nums[i]
+    prefix = prefix + [running]
+    i = i + 1
+  }
+
+  var count = 0
+  i = 0
+  while i < len(prefix) {
+    var j = i + 1
+    while j < len(prefix) {
+      let sum = prefix[j] - prefix[i]
+      if sum >= lower && sum <= upper {
+        count = count + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect countRangeSum([-2,5,-1], -2, 2) == 3
+}
+
+test "example 2" {
+  expect countRangeSum([0], 0, 0) == 1
+}
+
+// Additional edge cases
+
+test "empty" {
+  expect countRangeSum([], 0, 0) == 0
+}
+
+test "single outside" {
+  expect countRangeSum([3], -1, 1) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Accidentally using '=' instead of '==' when comparing values:
+   if sum = lower { }    // ❌ assignment
+   if sum == lower { }   // ✅ comparison
+2. Attempting to mutate a 'let' binding:
+   let count = 0
+   count = count + 1     // ❌ cannot reassign
+   var count = 0         // ✅ use 'var' when mutation is needed
+3. Trying to call Python-style methods such as 'append':
+   prefix.append(running)    // ❌ invalid in Mochi
+   prefix = prefix + [running] // ✅ use '+' to add to a list
+*/
