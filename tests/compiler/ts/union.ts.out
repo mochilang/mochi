@@ -25,7 +25,7 @@ function main(): void {
 	type Node = {
 		__name: "Node";
 		left: any;
-		value: any;
+		value: number;
 		right: any;
 	}
 	
@@ -48,4 +48,3 @@ function _equal(a: any, b: any): boolean {
 }
 
 main()
-

@@ -27,8 +27,8 @@ let expensive: Array<any> = (() => {
 
 function main(): void {
 	type Product = {
-		name: any;
-		price: any;
+		name: string;
+		price: number;
 	}
 	console.log("--- Top products (excluding most expensive) ---")
 	for (const item of expensive) {
@@ -36,4 +36,3 @@ function main(): void {
 	}
 }
 main()
-

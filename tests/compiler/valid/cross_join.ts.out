@@ -17,19 +17,19 @@ let result: Array<PairInfo> = (() => {
 
 function main(): void {
 	type Customer = {
-		id: any;
-		name: any;
+		id: number;
+		name: string;
 	}
 	type Order = {
-		id: any;
-		customerId: any;
-		total: any;
+		id: number;
+		customerId: number;
+		total: number;
 	}
 	type PairInfo = {
-		orderId: any;
-		orderCustomerId: any;
-		pairedCustomerName: any;
-		orderTotal: any;
+		orderId: number;
+		orderCustomerId: number;
+		pairedCustomerName: string;
+		orderTotal: number;
 	}
 	console.log("--- Cross Join: All order-customer pairs ---")
 	for (const entry of result) {
