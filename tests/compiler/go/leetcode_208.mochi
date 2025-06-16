@@ -1,0 +1,98 @@
+// Solution for LeetCode problem 208 - Implement Trie (Prefix Tree)
+// This version avoids union types and `match` by representing
+// each node as a map with mutable fields.
+
+fun Node(): map<string, any> {
+  return {"children": {} as map<string, map<string, any>>, "end": false}
+}
+
+// Insert a word into the trie by mutating nodes along the path.
+fun insert(trie: map<string, any>, word: string) {
+  var node = trie
+  var i = 0
+  while i < len(word) {
+    let ch = word[i]
+    var kids = node["children"] as map<string, map<string, any>>
+    var child: map<string, any> = {}
+    if ch in kids {
+      child = kids[ch] as map<string, any>
+    } else {
+      child = Node()
+    }
+    if i == len(word) - 1 {
+      child["end"] = true
+    }
+    kids[ch] = child
+    node["children"] = kids
+    node = child
+    i = i + 1
+  }
+}
+
+// Return true if the exact word exists in the trie.
+fun search(trie: map<string, any>, word: string): bool {
+  var node = trie
+  for ch in word {
+    let kids = node["children"] as map<string, map<string, any>>
+    if !(ch in kids) {
+      return false
+    }
+    node = kids[ch]
+  }
+  return node["end"] as bool
+}
+
+// Return true if there is any word starting with the given prefix.
+fun startsWith(trie: map<string, any>, prefix: string): bool {
+  var node = trie
+  for ch in prefix {
+    let kids = node["children"] as map<string, map<string, any>>
+    if !(ch in kids) {
+      return false
+    }
+    node = kids[ch]
+  }
+  return true
+}
+
+// Basic tests from the LeetCode description
+test "search apple" {
+  var t = Node()
+  insert(t, "apple")
+  expect search(t, "apple") == true
+}
+
+test "search app" {
+  var t = Node()
+  insert(t, "apple")
+  expect search(t, "app") == false
+}
+
+test "startsWith app" {
+  var t = Node()
+  insert(t, "apple")
+  expect startsWith(t, "app") == true
+}
+
+test "search app after insert" {
+  var t = Node()
+  insert(t, "apple")
+  insert(t, "app")
+  expect search(t, "app") == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Mixing '=' with '==' in conditions.
+   if ch = "a" { }   // ❌ assignment
+   if ch == "a" { }  // ✅ comparison
+2. Forgetting to declare mutable maps with 'var'.
+   let kids: map<string, map<string, any>> = {}
+   kids["a"] = Node()     // ❌ cannot assign
+   var kids: map<string, map<string, any>> = {} // ✅
+3. Creating an empty map without type information.
+   var t = {}            // ❌ type cannot be inferred
+   var t: map<string, any> = {} // ✅ specify the key/value types
+*/
+
+print("ok")
