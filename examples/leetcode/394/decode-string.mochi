@@ -1,0 +1,91 @@
+// LeetCode 394 - Decode String
+// This solution uses explicit stacks and simple loops.
+fun decodeString(s: string): string {
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+
+  var counts: list<int> = []
+  var strs: list<string> = []
+  var curr = ""
+  var num = 0
+  var i = 0
+  let n = len(s)
+
+  while i < n {
+    let c = s[i]
+    if c >= "0" && c <= "9" {
+      num = num * 10 + digits[c]
+    } else if c == "[" {
+      counts = counts + [num]
+      strs = strs + [curr]
+      curr = ""
+      num = 0
+    } else if c == "]" {
+      let repeat = counts[len(counts)-1]
+      counts = counts[0:len(counts)-1]
+      let prev = strs[len(strs)-1]
+      strs = strs[0:len(strs)-1]
+      var repeated = ""
+      var j = 0
+      while j < repeat {
+        repeated = repeated + curr
+        j = j + 1
+      }
+      curr = prev + repeated
+    } else {
+      curr = curr + c
+    }
+    i = i + 1
+  }
+  return curr
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect decodeString("3[a]2[bc]") == "aaabcbc"
+}
+
+test "example 2" {
+  expect decodeString("3[a2[c]]") == "accaccacc"
+}
+
+test "example 3" {
+  expect decodeString("2[abc]3[cd]ef") == "abcabccdcdcdef"
+}
+
+// Additional edge cases
+
+test "plain text with brackets" {
+  expect decodeString("abc3[cd]xyz") == "abccdcdcdxyz"
+}
+
+test "multi-digit number" {
+  expect decodeString("10[a]") == "aaaaaaaaaa"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' for comparisons:
+     if c = "[" { }
+   Use '==' when checking characters.
+2. Trying Python-style list methods like stack.pop():
+     stack.pop()
+   Instead slice the list:
+     let x = stack[len(stack)-1]
+     stack = stack[0:len(stack)-1]
+3. Declaring a value with 'let' and then modifying it:
+     let num = 0
+     num = num + 1  // ❌ cannot modify
+   Use 'var num = 0' when the variable must change.
+*/
