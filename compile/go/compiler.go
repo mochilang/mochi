@@ -624,9 +624,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		retT := c.returnType
 		exprT := c.inferExprType(s.Return.Value)
-		if retT != nil && (!equalTypes(retT, exprT) || isAny(exprT)) {
-			c.use("_cast")
-			expr = fmt.Sprintf("_cast[%s](%s)", goType(retT), expr)
+		if retT != nil {
+			if rl, ok := retT.(types.ListType); ok {
+				if el, ok := exprT.(types.ListType); ok && equalTypes(rl.Elem, el.Elem) {
+					if goType(rl.Elem) != goType(el.Elem) {
+						c.use("_convSlice")
+						expr = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(el.Elem), goType(rl.Elem), expr)
+					}
+				} else if !equalTypes(retT, exprT) || isAny(exprT) {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast[%s](%s)", goType(retT), expr)
+				}
+			} else if !equalTypes(retT, exprT) || isAny(exprT) {
+				c.use("_cast")
+				expr = fmt.Sprintf("_cast[%s](%s)", goType(retT), expr)
+			}
 		}
 		c.writeln("return " + expr)
 		return nil
@@ -1530,6 +1542,10 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 					next = leftType
 				}
 			} else if equalTypes(lt.Elem, rt.Elem) {
+				if goType(lt.Elem) != goType(rt.Elem) {
+					c.use("_convSlice")
+					right = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(rt.Elem), goType(lt.Elem), right)
+				}
 				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 				next = leftType
 			} else {
@@ -1912,17 +1928,29 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("%s{%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
+		typ := c.inferPrimaryType(p)
+		elemType := "any"
+		var elemT types.Type = types.AnyType{}
+		if lt, ok := typ.(types.ListType); ok {
+			elemType = goType(lt.Elem)
+			elemT = lt.Elem
+		}
 		for i, e := range p.List.Elems {
 			v, err := c.compileExpr(e)
 			if err != nil {
 				return "", err
 			}
+			et := c.inferExprType(e)
+			if _, ok := elemT.(types.AnyType); ok && isList(et) && !isAny(et.(types.ListType).Elem) {
+				c.use("_toAnySlice")
+				v = fmt.Sprintf("_toAnySlice(%s)", v)
+			} else if elt, ok := elemT.(types.ListType); ok {
+				if etl, ok := et.(types.ListType); ok && equalTypes(elt.Elem, etl.Elem) && goType(elt.Elem) != goType(etl.Elem) {
+					c.use("_convSlice")
+					v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(etl.Elem), goType(elt.Elem), v)
+				}
+			}
 			elems[i] = v
-		}
-		typ := c.inferPrimaryType(p)
-		elemType := "any"
-		if lt, ok := typ.(types.ListType); ok {
-			elemType = goType(lt.Elem)
 		}
 		return "[]" + elemType + "{" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
@@ -2590,6 +2618,11 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if retType != "any" && !equalTypes(retT, resType) {
 			c.use("_cast")
 			res = fmt.Sprintf("_cast[%s](%s)", retType, res)
+		} else if retType == "[]any" {
+			if lt, ok := resType.(types.ListType); ok && !isAny(lt.Elem) {
+				c.use("_toAnySlice")
+				res = fmt.Sprintf("_toAnySlice(%s)", res)
+			}
 		}
 
 		if isUnderscoreExpr(cse.Pattern) {
