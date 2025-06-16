@@ -1,0 +1,60 @@
+fun firstUniqChar(s: string): int {
+  var counts: map<string, int> = {}
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch in counts {
+      counts[ch] = counts[ch] + 1
+    } else {
+      counts[ch] = 1
+    }
+    i = i + 1
+  }
+  i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if counts[ch] == 1 {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect firstUniqChar("leetcode") == 0
+}
+
+test "example 2" {
+  expect firstUniqChar("loveleetcode") == 2
+}
+
+test "example 3" {
+  expect firstUniqChar("aabb") == (-1)
+}
+
+// Additional edge cases
+
+test "empty string" {
+  expect firstUniqChar("") == (-1)
+}
+
+test "single char" {
+  expect firstUniqChar("z") == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Creating an empty map without a type.
+   var counts = {}                   // ❌ type cannot be inferred
+   var counts: map<string, int> = {} // ✅ specify key and value types
+2. Using '=' instead of '==' in a condition.
+   if counts[ch] = 1 { }             // ❌ assignment
+   if counts[ch] == 1 { }            // ✅ comparison
+3. Reassigning a variable declared with 'let'.
+   let i = 0
+   i = i + 1                         // ❌ cannot reassign
+   var i = 0                         // ✅ use 'var' for mutable values
+*/
