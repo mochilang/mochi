@@ -1,0 +1,72 @@
+// Solution for LeetCode problem 129 - Sum Root to Leaf Numbers
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+fun sumNumbers(root: map<string, any>): int {
+  var total = 0
+
+  fun dfs(node: map<string, any>, current: int) {
+    if !isLeaf(node) {
+      let next = current * 10 + value(node)
+      let l = left(node)
+      let r = right(node)
+      if isLeaf(l) && isLeaf(r) {
+        total = total + next
+      } else {
+        dfs(l, next)
+        dfs(r, next)
+      }
+    }
+  }
+
+  dfs(root, 0)
+  return total
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tree = Node(Node(Leaf(), 2, Leaf()), 1, Node(Leaf(), 3, Leaf()))
+  expect sumNumbers(tree) == 25
+}
+
+test "example 2" {
+  let tree = Node(
+    Node(Node(Leaf(), 5, Leaf()), 9, Node(Leaf(), 1, Leaf())),
+    4,
+    Node(Leaf(), 0, Leaf())
+  )
+  expect sumNumbers(tree) == 1026
+}
+
+test "single zero" {
+  expect sumNumbers(Node(Leaf(), 0, Leaf())) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing numbers.
+   if x = 1 { }      // ❌ assignment
+   if x == 1 { }     // ✅ comparison
+2. Reassigning a value bound with 'let'.
+   let n = 0
+   n = 1            // ❌ cannot reassign
+   var n = 0        // ✅ use 'var' if mutation is needed
+3. Forgetting to multiply the current value by 10 when building numbers.
+   let next = current + value(node)  // ❌ wrong path value
+   let next = current * 10 + value(node) // ✅ correct update
+*/
