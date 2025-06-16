@@ -669,6 +669,23 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
+	if len(t.Variants) > 0 {
+		variants := make([]string, 0, len(t.Variants))
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			c.writeln(fmt.Sprintf("type %s = {", vname))
+			c.indent++
+			c.writeln(fmt.Sprintf("__name: \"%s\";", v.Name))
+			for _, f := range v.Fields {
+				c.writeln(fmt.Sprintf("%s: any;", sanitizeName(f.Name)))
+			}
+			c.indent--
+			c.writeln("}")
+			variants = append(variants, vname)
+		}
+		c.writeln(fmt.Sprintf("type %s = %s;", name, strings.Join(variants, " | ")))
+		return nil
+	}
 	c.writeln(fmt.Sprintf("type %s = {", name))
 	c.indent++
 	for _, m := range t.Members {
@@ -1134,13 +1151,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("New%s()", sanitizeName(p.Struct.Name)), nil
 			}
 		}
-		parts := make([]string, len(p.Struct.Fields))
-		for i, f := range p.Struct.Fields {
+		parts := make([]string, 0, len(p.Struct.Fields)+1)
+		if c.env != nil {
+			if _, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
+				parts = append(parts, fmt.Sprintf("__name: \"%s\"", p.Struct.Name))
+			}
+		}
+		for _, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)
 			if err != nil {
 				return "", err
 			}
-			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
+			parts = append(parts, fmt.Sprintf("%s: %s", sanitizeName(f.Name), v))
 		}
 		return "{" + strings.Join(parts, ", ") + "}", nil
 	case p.FunExpr != nil:
@@ -1721,24 +1743,62 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("(() => {\n")
 	b.WriteString("\tconst _t = " + target + ";\n")
-	b.WriteString("\tswitch (_t) {\n")
 	for _, cs := range m.Cases {
 		if isUnderscoreExpr(cs.Pattern) {
-			b.WriteString("\tdefault:\n")
-		} else {
-			p, err := c.compileExpr(cs.Pattern)
+			r, err := c.compileExpr(cs.Result)
 			if err != nil {
 				return "", err
 			}
-			b.WriteString("\tcase " + p + ":\n")
+			b.WriteString("\treturn " + r + ";\n")
+			b.WriteString("})()")
+			return b.String(), nil
+		}
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				b.WriteString(fmt.Sprintf("\tif (_t.__name === %q) {\n", call.Func))
+				for idx, arg := range call.Args {
+					if isUnderscoreExpr(arg) {
+						continue
+					}
+					if id, ok := identName(arg); ok {
+						field := sanitizeName(st.Order[idx])
+						b.WriteString(fmt.Sprintf("\t\tconst %s = _t.%s;\n", sanitizeName(id), field))
+					}
+				}
+				r, err := c.compileExpr(cs.Result)
+				if err != nil {
+					return "", err
+				}
+				b.WriteString("\t\treturn " + r + ";\n")
+				b.WriteString("\t}\n")
+				continue
+			}
+		}
+		if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				b.WriteString(fmt.Sprintf("\tif (_t.__name === %q) {\n", ident))
+				r, err := c.compileExpr(cs.Result)
+				if err != nil {
+					return "", err
+				}
+				b.WriteString("\t\treturn " + r + ";\n")
+				b.WriteString("\t}\n")
+				continue
+			}
+		}
+		p, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
 		}
 		r, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
+		b.WriteString("\tif (_t === " + p + ") {\n")
 		b.WriteString("\t\treturn " + r + ";\n")
+		b.WriteString("\t}\n")
 	}
-	b.WriteString("\t}\n")
 	b.WriteString("\treturn undefined;\n")
 	b.WriteString("})()")
 	return b.String(), nil

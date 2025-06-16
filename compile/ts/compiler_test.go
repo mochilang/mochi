@@ -131,7 +131,7 @@ func TestTSCompiler_LeetCodeExamples(t *testing.T) {
 	if err := bench.EnsureDeno(); err != nil {
 		t.Skipf("deno not installed: %v", err)
 	}
-	for i := 1; i <= 60; i++ {
+	for i := 1; i <= 400; i++ {
 		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
 		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 		if err != nil {

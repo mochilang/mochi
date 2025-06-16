@@ -4,20 +4,20 @@ let x: number = 2
 
 let label: string = (() => {
 	const _t = x;
-	switch (_t) {
-	case 1:
+	if (_t === 1) {
 		return "one";
-	case 2:
-		return "two";
-	case 3:
-		return "three";
-	default:
-		return "unknown";
 	}
-	return undefined;
+	if (_t === 2) {
+		return "two";
+	}
+	if (_t === 3) {
+		return "three";
+	}
+	return "unknown";
 })()
 
 function main(): void {
 	console.log(label)
 }
 main()
+

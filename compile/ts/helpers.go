@@ -9,6 +9,17 @@ import (
 	"mochi/types"
 )
 
+var tsReserved = map[string]struct{}{
+	"break": {}, "case": {}, "catch": {}, "class": {}, "const": {}, "continue": {},
+	"debugger": {}, "default": {}, "delete": {}, "do": {}, "else": {}, "enum": {},
+	"export": {}, "extends": {}, "false": {}, "finally": {}, "for": {}, "function": {},
+	"if": {}, "import": {}, "in": {}, "instanceof": {}, "new": {}, "null": {},
+	"return": {}, "super": {}, "switch": {}, "this": {}, "throw": {}, "true": {},
+	"try": {}, "typeof": {}, "var": {}, "void": {}, "while": {}, "with": {},
+	"yield": {}, "let": {}, "static": {}, "interface": {}, "package": {}, "private": {},
+	"protected": {}, "public": {},
+}
+
 func (c *Compiler) writeln(s string) {
 	c.writeIndent()
 	c.buf.WriteString(s)
@@ -101,7 +112,11 @@ func sanitizeName(name string) string {
 	if b.Len() == 0 || !((b.String()[0] >= 'A' && b.String()[0] <= 'Z') || (b.String()[0] >= 'a' && b.String()[0] <= 'z') || b.String()[0] == '_') {
 		return "_" + b.String()
 	}
-	return b.String()
+	res := b.String()
+	if _, ok := tsReserved[res]; ok {
+		return "_" + res
+	}
+	return res
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
@@ -216,6 +231,42 @@ func contains(sl []string, s string) bool {
 		}
 	}
 	return false
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil || len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
 }
 
 func resolveTypeRef(t *parser.TypeRef) types.Type {
