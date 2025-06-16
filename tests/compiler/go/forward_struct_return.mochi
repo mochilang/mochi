@@ -1,0 +1,10 @@
+fun makePoint(x: int, y: int): Point {
+  return Point { x: x, y: y }
+}
+
+type Point {
+  x: int
+  y: int
+}
+
+print(makePoint(1, 2))

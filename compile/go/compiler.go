@@ -3031,11 +3031,36 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			at := paramTypes[i]
-			if lt, ok := paramTypes[i].(types.ListType); ok {
-				if et, ok := at.(types.ListType); ok && !isListOfAny(et) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
-					c.use("_convSlice")
-					v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
+			expected := paramTypes[i]
+			actual := c.inferExprType(a)
+			if _, ok := expected.(types.AnyType); ok {
+				args[i] = v
+				continue
+			}
+			if lt, ok := expected.(types.ListType); ok {
+				if et, ok := actual.(types.ListType); ok && equalTypes(lt.Elem, et.Elem) {
+					if goType(lt.Elem) != goType(et.Elem) {
+						c.use("_convSlice")
+						v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
+					}
+				} else if goType(expected) != goType(actual) || !equalTypes(expected, actual) || isAny(actual) {
+					c.use("_cast")
+					v = fmt.Sprintf("_cast[%s](%s)", goType(expected), v)
+				}
+			} else if goType(expected) != goType(actual) || !equalTypes(expected, actual) || isAny(actual) {
+				if ut, ok := expected.(types.UnionType); ok {
+					if st, ok := actual.(types.StructType); ok {
+						if _, ok := ut.Variants[st.Name]; !ok {
+							c.use("_cast")
+							v = fmt.Sprintf("_cast[%s](%s)", goType(expected), v)
+						}
+					} else {
+						c.use("_cast")
+						v = fmt.Sprintf("_cast[%s](%s)", goType(expected), v)
+					}
+				} else {
+					c.use("_cast")
+					v = fmt.Sprintf("_cast[%s](%s)", goType(expected), v)
 				}
 			}
 			args[i] = v

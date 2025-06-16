@@ -1,0 +1,43 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Point struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+}
+
+func makePoint(x int, y int) any {
+	return _cast[any](Point{X: x, Y: y})
+}
+
+func main() {
+	fmt.Println(makePoint(1, 2))
+}
+
+func _cast[T any](v any) T {
+    if m, ok := v.(map[any]any); ok {
+        v = _convertMapAny(m)
+    }
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+    out := make(map[string]any, len(m))
+    for k, v := range m {
+        key := fmt.Sprint(k)
+        if sub, ok := v.(map[any]any); ok {
+            out[key] = _convertMapAny(sub)
+        } else {
+            out[key] = v
+        }
+    }
+    return out
+}
