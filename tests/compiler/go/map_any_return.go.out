@@ -1,0 +1,13 @@
+package main
+
+import (
+	"fmt"
+)
+
+func leaf() map[string]any {
+	return map[string]any{"x": "y"}
+}
+
+func main() {
+	fmt.Println(leaf()["x"])
+}

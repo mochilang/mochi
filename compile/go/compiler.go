@@ -618,12 +618,25 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln(expr)
 		return nil
 	case s.Return != nil:
-		expr, err := c.compileExpr(s.Return.Value)
+		expr, err := c.compileExprHint(s.Return.Value, c.returnType)
 		if err != nil {
 			return err
 		}
 		retT := c.returnType
 		exprT := c.inferExprType(s.Return.Value)
+		if rl, ok := retT.(types.ListType); ok {
+			if s.Return.Value != nil && s.Return.Value.Binary != nil && len(s.Return.Value.Binary.Right) == 0 {
+				if s.Return.Value.Binary.Left.Value.Target.List != nil {
+					exprT = rl
+				}
+			}
+		} else if rm, ok := retT.(types.MapType); ok {
+			if s.Return.Value != nil && s.Return.Value.Binary != nil && len(s.Return.Value.Binary.Right) == 0 {
+				if s.Return.Value.Binary.Left.Value.Target.Map != nil {
+					exprT = rm
+				}
+			}
+		}
 		if retT != nil {
 			if rl, ok := retT.(types.ListType); ok {
 				if el, ok := exprT.(types.ListType); ok && equalTypes(rl.Elem, el.Elem) {
@@ -2867,9 +2880,8 @@ func (c *Compiler) foldCall(call *parser.CallExpr) (*parser.Literal, bool) {
 }
 
 // compileExprHint compiles an expression using a type hint when dealing with
-// literals that would otherwise default to `any`, such as empty list literals.
-// The hint is currently only used for list literals and is applied recursively
-// for nested lists.
+// literals that would otherwise default to `any`, such as empty list or map
+// literals. The hint is applied recursively for nested collections.
 func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
 	if lt, ok := hint.(types.ListType); ok {
 		if e.Binary != nil && len(e.Binary.Right) == 0 {
@@ -2883,6 +2895,37 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					elems[i] = ev
 				}
 				return "[]" + goType(lt.Elem) + "{" + strings.Join(elems, ", ") + "}", nil
+			}
+		}
+	}
+	if mt, ok := hint.(types.MapType); ok {
+		if e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+				parts := make([]string, len(ml.Items))
+				for i, it := range ml.Items {
+					var k string
+					if s, ok := simpleStringKey(it.Key); ok {
+						k = fmt.Sprintf("\"%s\"", s)
+					} else {
+						kk, err := c.compileExpr(it.Key)
+						if err != nil {
+							return "", err
+						}
+						k = fmt.Sprintf("%s", kk)
+						if !(strings.HasPrefix(k, "\"") && strings.HasSuffix(k, "\"")) {
+							k = fmt.Sprintf("%s", kk)
+						}
+					}
+					v, err := c.compileExprHint(it.Value, mt.Value)
+					if err != nil {
+						return "", err
+					}
+					if goType(mt.Value) == "int64" && goType(c.inferExprType(it.Value)) == "int" {
+						v = fmt.Sprintf("int64(%s)", v)
+					}
+					parts[i] = fmt.Sprintf("%s: %s", k, v)
+				}
+				return fmt.Sprintf("map[%s]%s{%s}", goType(mt.Key), goType(mt.Value), strings.Join(parts, ", ")), nil
 			}
 		}
 	}

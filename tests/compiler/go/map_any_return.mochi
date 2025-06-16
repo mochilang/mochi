@@ -1,0 +1,5 @@
+fun leaf(): map<string, any> {
+  return {"x": "y"}
+}
+
+print(leaf()["x"])
