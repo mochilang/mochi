@@ -652,22 +652,30 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt, kw string) error {
 	c.writeIndent()
 	c.buf.WriteString(fmt.Sprintf("%s %s:\n", kw, cond))
 	c.indent++
-	for _, s := range stmt.Then {
-		if err := c.compileStmt(s); err != nil {
-			return err
+	if len(stmt.Then) == 0 {
+		c.writeln("pass")
+	} else {
+		for _, s := range stmt.Then {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
 		}
 	}
 	c.indent--
 	if stmt.ElseIf != nil {
 		return c.compileIf(stmt.ElseIf, "elif")
 	}
-	if len(stmt.Else) > 0 {
+	if stmt.Else != nil {
 		c.writeIndent()
 		c.buf.WriteString("else:\n")
 		c.indent++
-		for _, s := range stmt.Else {
-			if err := c.compileStmt(s); err != nil {
-				return err
+		if len(stmt.Else) == 0 {
+			c.writeln("pass")
+		} else {
+			for _, s := range stmt.Else {
+				if err := c.compileStmt(s); err != nil {
+					return err
+				}
 			}
 		}
 		c.indent--
