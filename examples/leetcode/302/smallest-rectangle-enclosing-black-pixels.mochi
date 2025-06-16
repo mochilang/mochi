@@ -1,0 +1,89 @@
+// Solution for LeetCode problem 302 - Smallest Rectangle Enclosing Black Pixels
+//
+// Starting from the given black pixel, perform DFS to visit all black pixels
+// and track the min/max row and column indices. The area is then the product
+// of width and height defined by those extremes.
+
+fun minArea(image: list<list<string>>, x: int, y: int): int {
+  let rows = len(image)
+  let cols = len(image[0])
+
+  // matrix of visited flags
+  var visited: list<list<bool>> = []
+  var r = 0
+  while r < rows {
+    var row: list<bool> = []
+    var c = 0
+    while c < cols {
+      row = row + [false]
+      c = c + 1
+    }
+    visited = visited + [row]
+    r = r + 1
+  }
+
+  var minRow = x
+  var maxRow = x
+  var minCol = y
+  var maxCol = y
+
+  fun dfs(i: int, j: int): int {
+    if i < 0 || i >= rows || j < 0 || j >= cols {
+      return 0
+    }
+    if visited[i][j] {
+      return 0
+    }
+    if image[i][j] != "1" {
+      return 0
+    }
+    visited[i][j] = true
+    if i < minRow { minRow = i }
+    if i > maxRow { maxRow = i }
+    if j < minCol { minCol = j }
+    if j > maxCol { maxCol = j }
+    dfs(i+1, j)
+    dfs(i-1, j)
+    dfs(i, j+1)
+    dfs(i, j-1)
+    return 0
+  }
+
+  dfs(x, y)
+  let height = maxRow - minRow + 1
+  let width = maxCol - minCol + 1
+  return height * width
+}
+
+// Test cases from LeetCode
+let example: list<list<string>> = [
+  ["0","0","1","0"],
+  ["0","1","1","0"],
+  ["0","1","0","0"],
+]
+
+test "example" {
+  expect minArea(example, 0, 2) == 6
+}
+
+test "single pixel" {
+  expect minArea([["1"]], 0, 0) == 1
+}
+
+test "all ones" {
+  expect minArea([["1","1"],["1","1"]], 1, 1) == 4
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' to compare values.
+   if image[i][j] = "1" { }    // ❌ assignment
+   if image[i][j] == "1" { }   // ✅ comparison
+2. Declaring immutable variables with 'let' and attempting to mutate them.
+   let minRow = x
+   minRow = minRow - 1         // ❌ cannot assign to 'let'
+   var minRow = x              // ✅ use 'var' for mutable values
+3. Forgetting the '+ 1' when computing rectangle size.
+   return (maxRow - minRow) * (maxCol - minCol)   // ❌ off by one
+   return (maxRow - minRow + 1) * (maxCol - minCol + 1) // ✅ correct
+*/
