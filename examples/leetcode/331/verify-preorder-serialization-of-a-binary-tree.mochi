@@ -1,0 +1,74 @@
+// Solution for LeetCode problem 331 - Verify Preorder Serialization of a Binary Tree
+//
+// The preorder serialization is valid if we can consume exactly one "slot" for
+// each node and generate two new slots for non-null nodes. Starting with one
+// slot for the root, every value reduces the available slots by one. Non-#
+// values add two slots. The serialization is correct only if all slots are
+// filled at the end and we never go negative.
+
+fun splitComma(s: string): list<string> {
+  var parts: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c == "," {
+      parts = parts + [current]
+      current = ""
+    } else {
+      current = current + c
+    }
+    i = i + 1
+  }
+  parts = parts + [current]
+  return parts
+}
+
+fun isValidSerialization(preorder: string): bool {
+  let nodes = splitComma(preorder)
+  var slots = 1
+  var i = 0
+  while i < len(nodes) {
+    slots = slots - 1
+    if slots < 0 { return false }
+    if nodes[i] != "#" {
+      slots = slots + 2
+    }
+    i = i + 1
+  }
+  return slots == 0
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect isValidSerialization("9,3,4,#,#,1,#,#,2,#,6,#,#") == true
+}
+
+test "example 2" {
+  expect isValidSerialization("1,#") == false
+}
+
+test "example 3" {
+  expect isValidSerialization("9,#,#,1") == false
+}
+
+// Additional edge cases
+
+test "empty tree" {
+  expect isValidSerialization("#") == true
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning an immutable variable declared with 'let':
+     let x = 1
+     x = 2  // ❌ cannot assign
+   Use 'var x = 1' for mutable values like 'slots'.
+2. Using '=' instead of '==' in comparisons:
+     if nodes[i] = "#" { }  // ❌ assignment
+   Use '==' to compare strings.
+3. Accessing an index without bounds checking:
+     let v = nodes[len(nodes)]  // ❌ out of bounds
+   Ensure indexes are within 0..len(list)-1.
+*/
