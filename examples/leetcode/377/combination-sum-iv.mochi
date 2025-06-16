@@ -1,0 +1,39 @@
+fun combinationSum4(nums: list<int>, target: int): int {
+  var dp: list<int> = [1]
+  var t = 1
+  while t <= target {
+    var count = 0
+    for num in nums {
+      if num <= t {
+        count = count + dp[t - num]
+      }
+    }
+    dp = dp + [count]
+    t = t + 1
+  }
+  return dp[target]
+}
+
+// Tests from LeetCode examples
+
+test "example 1" {
+  expect combinationSum4([1,2,3], 4) == 7
+}
+
+test "example 2" {
+  expect combinationSum4([9], 3) == 0
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to initialize the dp list with a starting value.
+   var dp: list<int> = []      // ❌ dp[0] would be undefined
+   var dp: list<int> = [1]     // ✅ base case for target 0
+2. Using `==` for assignment.
+   count == count + 1          // ❌ comparison instead of assignment
+   count = count + 1           // ✅ use `=` for assignment
+3. Reassigning a `let` variable.
+   let t = 0
+   t = t + 1                   // ❌ cannot assign to `let`
+   var t = 0                   // ✅ use `var` if it needs to change
+*/
