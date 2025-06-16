@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -44,9 +45,22 @@ func main() {
 	fmt.Println(len(trees))
 }
 
-func _convSlice[T any, U any](s []T) []U {
-    out := make([]U, len(s))
-    for i, v := range s { out[i] = any(v).(U) }
+func _cast[T any](v any) T {
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
     return out
 }
 
+func _convSlice[T any, U any](s []T) []U {
+    out := make([]U, len(s))
+    for i, v := range s {
+        if vv, ok := any(v).(U); ok {
+            out[i] = vv
+        } else {
+            out[i] = _cast[U](v)
+        }
+    }
+    return out
+}

@@ -185,7 +185,13 @@ const (
 
 	helperConvSlice = "func _convSlice[T any, U any](s []T) []U {\n" +
 		"    out := make([]U, len(s))\n" +
-		"    for i, v := range s { out[i] = any(v).(U) }\n" +
+		"    for i, v := range s {\n" +
+		"        if vv, ok := any(v).(U); ok {\n" +
+		"            out[i] = vv\n" +
+		"        } else {\n" +
+		"            out[i] = _cast[U](v)\n" +
+		"        }\n" +
+		"    }\n" +
 		"    return out\n" +
 		"}\n"
 
@@ -384,6 +390,10 @@ var helperMap = map[string]string{
 func (c *Compiler) use(name string) {
 	c.helpers[name] = true
 	if name == "_cast" {
+		c.imports["encoding/json"] = true
+	}
+	if name == "_convSlice" {
+		c.helpers["_cast"] = true
 		c.imports["encoding/json"] = true
 	}
 }
