@@ -1,0 +1,74 @@
+// Solution for LeetCode 332 - Reconstruct Itinerary
+
+fun findItinerary(tickets: list<list<string>>): list<string> {
+  // Build adjacency map from each airport to its destinations
+  var graph: map<string, list<string>> = {}
+  for t in tickets {
+    let from = t[0]
+    let to = t[1]
+    var list: list<string> = []
+    if from in graph {
+      list = graph[from]
+    }
+    list = list + [to]
+    graph[from] = list
+  }
+
+  // Sort destinations for lexical order
+  for k in graph {
+    graph[k] = from x in graph[k] sort by x select x
+  }
+
+  var route: list<string> = []
+
+  fun visit(airport: string) {
+    if airport in graph {
+      while len(graph[airport]) > 0 {
+        let next = graph[airport][0]
+        graph[airport] = graph[airport][1:len(graph[airport])]
+        visit(next)
+      }
+    }
+    route = [airport] + route
+  }
+
+  visit("JFK")
+  return route
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  let tickets = [
+    ["MUC","LHR"],
+    ["JFK","MUC"],
+    ["SFO","SJC"],
+    ["LHR","SFO"],
+  ]
+  expect findItinerary(tickets) == ["JFK","MUC","LHR","SFO","SJC"]
+}
+
+test "example 2" {
+  let tickets = [
+    ["JFK","SFO"],
+    ["JFK","ATL"],
+    ["SFO","ATL"],
+    ["ATL","JFK"],
+    ["ATL","SFO"],
+  ]
+  expect findItinerary(tickets) == ["JFK","ATL","JFK","SFO","ATL","SFO"]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to initialize a variable as mutable:
+     let route = []
+     route = route + ["JFK"]   // ❌ cannot reassign
+   Declare it with 'var route: list<string> = []'.
+2. Using '=' for comparisons:
+     if from = "JFK" { }
+   Replace with '=='.
+3. Trying to call a function before it is defined when using forward references.
+   In Mochi it's fine to define helper functions before or after as long as they're
+   in the same scope.
+*/
