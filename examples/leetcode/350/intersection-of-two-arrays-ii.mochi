@@ -1,0 +1,56 @@
+fun intersect(nums1: list<int>, nums2: list<int>): list<int> {
+  var counts: map<int,int> = {}
+  for n in nums1 {
+    if n in counts {
+      counts[n] = counts[n] + 1
+    } else {
+      counts[n] = 1
+    }
+  }
+  var result: list<int> = []
+  for n in nums2 {
+    if n in counts {
+      var c = counts[n]
+      if c > 0 {
+        result = result + [n]
+        counts[n] = c - 1
+      }
+    }
+  }
+  return result
+}
+
+// Tests from LeetCode examples
+
+test "example 1" {
+  expect intersect([1,2,2,1], [2,2]) == [2,2]
+}
+
+test "example 2" {
+  let res = intersect([4,9,5], [9,4,9,8,4])
+  // Intersection can be in any order, sort for comparison
+  let sorted = from x in res sort by x select x
+  expect sorted == [4,9]
+}
+
+// Additional edge cases
+
+test "disjoint" {
+  expect intersect([1,2,3], [4,5]) == []
+}
+
+test "one empty" {
+  expect intersect([], [1,2]) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Trying to use Python-style list methods like result.append(x).
+   Use list concatenation instead: result = result + [x].
+2. Forgetting to initialize an empty map with type information:
+     var counts = {}
+   Specify the key/value types: var counts: map<int,int> = {}
+3. Using '=' instead of '==' in comparisons:
+     if n = 1 { }
+   Use '==' for equality checks.
+*/
