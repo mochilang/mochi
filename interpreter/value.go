@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -118,12 +119,27 @@ func anyToValue(v any) Value {
 			m[fmt.Sprint(k)] = anyToValue(x)
 		}
 		return Value{Tag: TagMap, Map: m}
+	default:
+		rv := reflect.ValueOf(v)
+		switch rv.Kind() {
+		case reflect.Slice, reflect.Array:
+			list := make([]Value, rv.Len())
+			for i := 0; i < rv.Len(); i++ {
+				list[i] = anyToValue(rv.Index(i).Interface())
+			}
+			return Value{Tag: TagList, List: list}
+		case reflect.Map:
+			m := make(map[string]Value, rv.Len())
+			for _, key := range rv.MapKeys() {
+				m[fmt.Sprint(key.Interface())] = anyToValue(rv.MapIndex(key).Interface())
+			}
+			return Value{Tag: TagMap, Map: m}
+		}
+		return Value{Tag: TagNull}
 	case closure:
 		return Value{Tag: TagFunc, Func: &val}
 	case *closure:
 		return Value{Tag: TagFunc, Func: val}
-	default:
-		return Value{Tag: TagNull}
 	}
 }
 
