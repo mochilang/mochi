@@ -1,0 +1,155 @@
+// Solution for LeetCode problem 385 - Mini Parser
+//
+// This implementation represents each nested integer as a map
+// with either {"kind": "int", "value": v} or
+// {"kind": "list", "items": [...]}. It avoids union types and
+// the 'match' expression.
+
+fun IntItem(v: int): map<string, any> {
+  return {"kind": "int", "value": v}
+}
+
+fun ListItem(items: list<map<string, any>>): map<string, any> {
+  return {"kind": "list", "items": items}
+}
+
+fun isInt(item: map<string, any>): bool {
+  return item["kind"] == "int"
+}
+
+fun itemValue(item: map<string, any>): int {
+  return item["value"] as int
+}
+
+fun itemList(item: map<string, any>): list<map<string, any>> {
+  return item["items"] as list<map<string, any>>
+}
+
+
+// Simple parseInt helper supporting optional leading '-'
+fun parseInt(s: string): int {
+  var i = 0
+  var sign = 1
+  if len(s) > 0 && (s[0] == "-" || s[0] == "+") {
+    if s[0] == "-" {
+      sign = -1
+    }
+    i = 1
+  }
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  var result = 0
+  while i < len(s) {
+    result = result * 10 + digits[s[i]]
+    i = i + 1
+  }
+  return result * sign
+}
+
+type ParseRes {
+  val: map<string, any>
+  idx: int
+}
+
+fun parseFrom(s: string, i: int): ParseRes {
+  if s[i] == "[" {
+    var items: list<map<string, any>> = []
+    var j = i + 1
+    while j < len(s) && s[j] != "]" {
+      let res = parseFrom(s, j)
+      items = items + [res.val]
+      j = res.idx
+      if j < len(s) && s[j] == "," {
+        j = j + 1
+      }
+    }
+    return ParseRes { val: ListItem(items), idx: j + 1 }
+  } else {
+    var j = i
+    var numStr = ""
+    if s[j] == "-" {
+      numStr = numStr + "-"
+      j = j + 1
+    }
+    while j < len(s) {
+      let ch = s[j]
+      if ch >= "0" && ch <= "9" {
+        numStr = numStr + ch
+        j = j + 1
+      } else {
+        break
+      }
+    }
+    return ParseRes { val: IntItem(parseInt(numStr)), idx: j }
+  }
+}
+
+fun deserialize(s: string): map<string, any> {
+  if len(s) == 0 { return ListItem([]) }
+  let res = parseFrom(s, 0)
+  return res.val
+}
+
+fun serialize(node: map<string, any>): string {
+  if isInt(node) {
+    return str(itemValue(node))
+  } else {
+    var parts: list<string> = []
+    let items = itemList(node)
+    var i = 0
+    while i < len(items) {
+      parts = parts + [serialize(items[i])]
+      i = i + 1
+    }
+    var body = ""
+    var j = 0
+    while j < len(parts) {
+      if j > 0 { body = body + "," }
+      body = body + parts[j]
+      j = j + 1
+    }
+    return "[" + body + "]"
+  }
+}
+
+// Tests based on the LeetCode examples
+
+test "single integer" {
+  let parsed = deserialize("324")
+  expect serialize(parsed) == "324"
+}
+
+test "nested list" {
+  let parsed = deserialize("[123,[456,[789]]]")
+  expect serialize(parsed) == "[123,[456,[789]]]"
+}
+
+test "negative" {
+  let parsed = deserialize("[-1]")
+  expect serialize(parsed) == "[-1]"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Forgetting to update the index after recursion:
+   let res = parseFrom(s, j)
+   // j = res.idx         // ✅ remember to assign back
+2. Using '=' instead of '==' in conditions:
+   if s[i] = "[" { }       // ❌ assignment
+   if s[i] == "[" { }      // ✅ comparison
+3. Trying to mutate an immutable 'let' variable:
+   let parts: list<string> = []
+   parts = parts + ["a"]    // ❌ cannot reassign
+   var parts: list<string> = []
+   parts = parts + ["a"]    // ✅ use 'var' for mutation
+*/
