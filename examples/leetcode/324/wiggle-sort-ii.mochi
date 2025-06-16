@@ -1,0 +1,55 @@
+// Solution for LeetCode problem 324 - Wiggle Sort II
+//
+// Reorders the array so that nums[0] < nums[1] > nums[2] < nums[3] ...
+// We sort the numbers and then interleave the smaller and larger halves
+// starting from the end of each half.
+
+fun wiggleSort(nums: list<int>): list<int> {
+  let n = len(nums)
+  if n <= 1 { return nums }
+
+  let sorted = from x in nums sort by x select x
+  var left = (n + 1) / 2 - 1
+  var right = n - 1
+  var result: list<int> = []
+
+  while len(result) < n {
+    if left >= 0 {
+      result = result + [sorted[left]]
+      left = left - 1
+    }
+    if len(result) < n && right >= (n + 1) / 2 {
+      result = result + [sorted[right]]
+      right = right - 1
+    }
+  }
+  return result
+}
+
+// Test cases from the LeetCode problem statement
+
+test "example 1" {
+  expect wiggleSort([1,5,1,1,6,4]) == [1,6,1,5,1,4]
+}
+
+test "example 2" {
+  expect wiggleSort([1,3,2,2,3,1]) == [2,3,1,3,1,2]
+}
+
+// Additional edge cases
+
+test "single element" {
+  expect wiggleSort([1]) == [1]
+}
+
+test "already wiggle" {
+  expect wiggleSort([2,5,1,6]) == [2,6,1,5]
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values in conditions.
+2. Forgetting to declare mutable variables with 'var' before assigning to them.
+3. Attempting to append using a method like 'push' - use '+' to concatenate lists.
+4. Introducing union types and 'match' when simple loops and indexing suffice.
+*/
