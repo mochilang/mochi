@@ -2851,16 +2851,18 @@ func (c *Compiler) foldCall(call *parser.CallExpr) (*parser.Literal, bool) {
 // for nested lists.
 func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
 	if lt, ok := hint.(types.ListType); ok {
-		if ll := e.Binary.Left.Value.Target.List; ll != nil {
-			elems := make([]string, len(ll.Elems))
-			for i, el := range ll.Elems {
-				ev, err := c.compileExprHint(el, lt.Elem)
-				if err != nil {
-					return "", err
+		if e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ll := e.Binary.Left.Value.Target.List; ll != nil {
+				elems := make([]string, len(ll.Elems))
+				for i, el := range ll.Elems {
+					ev, err := c.compileExprHint(el, lt.Elem)
+					if err != nil {
+						return "", err
+					}
+					elems[i] = ev
 				}
-				elems[i] = ev
+				return "[]" + goType(lt.Elem) + "{" + strings.Join(elems, ", ") + "}", nil
 			}
-			return "[]" + goType(lt.Elem) + "{" + strings.Join(elems, ", ") + "}", nil
 		}
 	}
 	return c.compileExpr(e)
