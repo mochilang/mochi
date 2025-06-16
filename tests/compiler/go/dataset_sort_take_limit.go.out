@@ -70,3 +70,4 @@ func main() {
 		fmt.Println(item.Name, "costs $", item.Price)
 	}
 }
+

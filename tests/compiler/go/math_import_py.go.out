@@ -10,3 +10,4 @@ func main() {
 	var area float64 = (func() float64 { v, _ := python.Attr("math", "pi"); return v.(float64) }() * func() float64 { v, _ := python.Attr("math", "pow", r, 2); return v.(float64) }())
 	fmt.Println("Area:", area)
 }
+

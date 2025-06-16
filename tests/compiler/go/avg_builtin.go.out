@@ -50,3 +50,4 @@ func _avg(v any) float64 {
     }
     return sum / float64(len(items))
 }
+

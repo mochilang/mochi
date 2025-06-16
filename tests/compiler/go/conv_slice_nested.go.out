@@ -5,21 +5,14 @@ import (
 	"fmt"
 )
 
-type Foo interface { isFoo() }
-type Empty struct {
-}
-func (Empty) isFoo() {}
-type Node struct {
-	Child Foo `json:"child"`
-}
-func (Node) isFoo() {}
-
-func listit() []Foo {
-	return _convSlice[Empty,Foo]([]Empty{Empty{}})
+func build() [][]int {
+	var g [][]int = [][]int{}
+	g = append(append([][]int{}, g...), _convSlice[[]any,[]int]([][]any{[]any{}})...)
+	return g
 }
 
 func main() {
-	fmt.Println(len(listit()))
+	fmt.Println(build())
 }
 
 func _cast[T any](v any) T {

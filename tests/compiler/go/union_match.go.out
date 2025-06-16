@@ -29,3 +29,4 @@ func main() {
 	fmt.Println(isLeaf(Leaf{}))
 	fmt.Println(isLeaf(Node{Left: Leaf{}, Value: 1, Right: Leaf{}}))
 }
+

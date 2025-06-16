@@ -1,0 +1,7 @@
+fun build(): list<list<int>> {
+  var g: list<list<int>> = []
+  g = g + [[]]
+  return g
+}
+
+print(build())

@@ -8,3 +8,4 @@ func main() {
 	var _map map[string]int = map[string]int{"a": 1}
 	fmt.Println(_map["a"])
 }
+
