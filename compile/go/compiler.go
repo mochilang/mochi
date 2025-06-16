@@ -1195,20 +1195,41 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	// Special case: constant true condition compiles to an infinite loop.
+	if lit, ok := c.evalConstExpr(stmt.Cond); ok && lit.Bool != nil && bool(*lit.Bool) {
+		c.writeIndent()
+		c.buf.WriteString("for {\n")
+		c.indent++
+		if err := c.compileStmtList(stmt.Body); err != nil {
+			return err
+		}
+		c.indent--
+		c.writeIndent()
+		c.buf.WriteString("}\n")
+		return nil
+	}
+
+	c.writeIndent()
+	c.buf.WriteString("for {\n")
+	c.indent++
+
+	// Evaluate the loop condition at the start of each iteration.
 	cond, err := c.compileExpr(stmt.Cond)
 	if err != nil {
 		return err
 	}
 	c.writeIndent()
-	if lit, ok := c.evalConstExpr(stmt.Cond); ok && lit.Bool != nil && bool(*lit.Bool) {
-		c.buf.WriteString("for {\n")
-	} else {
-		c.buf.WriteString("for " + cond + " {\n")
-	}
+	c.buf.WriteString("if !(" + cond + ") {\n")
 	c.indent++
+	c.writeln("break")
+	c.indent--
+	c.writeIndent()
+	c.buf.WriteString("}\n")
+
 	if err := c.compileStmtList(stmt.Body); err != nil {
 		return err
 	}
+
 	c.indent--
 	c.writeIndent()
 	c.buf.WriteString("}\n")
