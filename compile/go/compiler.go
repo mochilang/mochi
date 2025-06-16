@@ -36,6 +36,9 @@ type Compiler struct {
 	returnType types.Type
 
 	varUsage map[any]bool
+
+	usedNames map[string]bool
+	testNames map[string]string
 }
 
 // New creates a new Go compiler instance.
@@ -53,6 +56,9 @@ func New(env *types.Env) *Compiler {
 		tsModules:     map[string]string{},
 		externObjects: map[string]bool{},
 		tempVarCount:  0,
+
+		usedNames: map[string]bool{},
+		testNames: map[string]string{},
 	}
 }
 
@@ -66,6 +72,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	for _, stmt := range prog.Statements {
 		c.scanImports(stmt)
+		c.scanNames(stmt)
 	}
 
 	// Generate program body.
@@ -263,6 +270,9 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			name := sanitizeName(s.Test.Name)
+			if n, ok := c.testNames[name]; ok {
+				name = n
+			}
 			c.writeln(fmt.Sprintf("%s()", name))
 		}
 	}
@@ -749,6 +759,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	if lit != nil && c.env != nil {
 		c.env.SetValue(s.Name, literalValue(lit), false)
 	}
+	c.usedNames[name] = true
 	return nil
 }
 
@@ -804,6 +815,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	if !c.varUsed(s) {
 		c.writeln(fmt.Sprintf("_ = %s", name))
 	}
+	c.usedNames[name] = true
 	return nil
 }
 
@@ -1465,11 +1477,23 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	c.returnType = origRet
 	c.writeIndent()
 	c.buf.WriteString("}\n")
+	c.usedNames[name] = true
 	return nil
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := sanitizeName(t.Name)
+	if c.usedNames[name] {
+		orig := name
+		name = "test_" + name
+		for c.usedNames[name] {
+			name = "_" + name
+		}
+		c.testNames[orig] = name
+	} else {
+		c.testNames[name] = name
+	}
+	c.usedNames[name] = true
 	c.writeIndent()
 	c.buf.WriteString("func " + name + "() {\n")
 	c.indent++
@@ -3095,7 +3119,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
 		}
 	}
-	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
+	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}, usedNames: c.usedNames, testNames: c.testNames}
 	sub.indent = 1
 	if fn.Return != nil {
 		sub.returnType = c.resolveTypeRef(fn.Return)
@@ -3277,6 +3301,118 @@ func (c *Compiler) scanImports(s *parser.Statement) {
 	}
 	if s.Import != nil {
 		c.addImport(s.Import)
+	}
+}
+
+func (c *Compiler) scanNames(s *parser.Statement) {
+	switch {
+	case s.Let != nil:
+		c.usedNames[sanitizeName(s.Let.Name)] = true
+		if s.Let.Value != nil {
+			c.scanExprNames(s.Let.Value)
+		}
+	case s.Var != nil:
+		c.usedNames[sanitizeName(s.Var.Name)] = true
+		if s.Var.Value != nil {
+			c.scanExprNames(s.Var.Value)
+		}
+	case s.Fun != nil:
+		c.usedNames[sanitizeName(s.Fun.Name)] = true
+		for _, t := range s.Fun.Body {
+			c.scanNames(t)
+		}
+	case s.Test != nil:
+		for _, t := range s.Test.Body {
+			c.scanNames(t)
+		}
+	case s.If != nil:
+		for _, t := range s.If.Then {
+			c.scanNames(t)
+		}
+		if s.If.ElseIf != nil {
+			c.scanNames(&parser.Statement{If: s.If.ElseIf})
+		}
+		for _, t := range s.If.Else {
+			c.scanNames(t)
+		}
+	case s.For != nil:
+		for _, t := range s.For.Body {
+			c.scanNames(t)
+		}
+	case s.While != nil:
+		for _, t := range s.While.Body {
+			c.scanNames(t)
+		}
+	case s.Agent != nil:
+		c.usedNames[sanitizeName(s.Agent.Name)] = true
+		for _, blk := range s.Agent.Body {
+			switch {
+			case blk.Let != nil:
+				c.usedNames[sanitizeName(blk.Let.Name)] = true
+				if blk.Let.Value != nil {
+					c.scanExprNames(blk.Let.Value)
+				}
+			case blk.Var != nil:
+				c.usedNames[sanitizeName(blk.Var.Name)] = true
+				if blk.Var.Value != nil {
+					c.scanExprNames(blk.Var.Value)
+				}
+			case blk.On != nil:
+				for _, t := range blk.On.Body {
+					c.scanNames(t)
+				}
+			case blk.Intent != nil:
+				for _, t := range blk.Intent.Body {
+					c.scanNames(t)
+				}
+			}
+		}
+	}
+}
+
+func (c *Compiler) scanExprNames(e *parser.Expr) {
+	if e == nil {
+		return
+	}
+	c.scanUnaryNames(e.Binary.Left)
+	for _, op := range e.Binary.Right {
+		c.scanPostfixNames(op.Right)
+	}
+}
+
+func (c *Compiler) scanUnaryNames(u *parser.Unary) {
+	if u == nil {
+		return
+	}
+	c.scanPostfixNames(u.Value)
+}
+
+func (c *Compiler) scanPostfixNames(p *parser.PostfixExpr) {
+	if p == nil {
+		return
+	}
+	c.scanPrimaryNames(p.Target)
+	for _, op := range p.Ops {
+		if op.Index != nil {
+			c.scanExprNames(op.Index.Start)
+			c.scanExprNames(op.Index.End)
+		}
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				c.scanExprNames(a)
+			}
+		}
+	}
+}
+
+func (c *Compiler) scanPrimaryNames(p *parser.Primary) {
+	if p == nil {
+		return
+	}
+	if p.FunExpr != nil {
+		for _, s := range p.FunExpr.BlockBody {
+			c.scanNames(s)
+		}
 	}
 }
 
