@@ -25,6 +25,7 @@ type Compiler struct {
 	agents       map[string]bool
 	handlerCount int
 	tmpCount     int
+	blockParams  []string
 	models       bool
 }
 
@@ -1268,6 +1269,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	for i, p := range fn.Params {
 		params[i] = sanitizeName(p.Name)
 	}
+	if len(fn.Params) == 0 && len(c.blockParams) > 0 {
+		params = append([]string(nil), c.blockParams...)
+	}
 	if fn.ExprBody != nil {
 		expr, err := c.compileExpr(fn.ExprBody)
 		if err != nil {
@@ -1275,7 +1279,50 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("(lambda %s: %s)", strings.Join(params, ", "), expr), nil
 	}
-	return "None", fmt.Errorf("block function expressions not supported")
+
+	name := fmt.Sprintf("_blk%d", c.tmpCount)
+	c.tmpCount++
+	c.writeIndent()
+	c.buf.WriteString("def " + name + "(")
+	c.buf.WriteString(strings.Join(params, ", "))
+	c.buf.WriteString("):\n")
+
+	origEnv := c.env
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		for _, p := range fn.Params {
+			var t types.Type = types.AnyType{}
+			if p.Type != nil {
+				t = c.resolveTypeRef(p.Type)
+			}
+			child.SetVar(p.Name, t, true)
+		}
+		c.env = child
+	}
+
+	c.indent++
+	for i, s := range fn.BlockBody {
+		if i == len(fn.BlockBody)-1 && s.Expr != nil && s.Return == nil {
+			expr, err := c.compileExpr(s.Expr.Expr)
+			if err != nil {
+				c.env = origEnv
+				return "", err
+			}
+			c.writeln("return " + expr)
+			continue
+		}
+		if err := c.compileStmt(s); err != nil {
+			c.env = origEnv
+			return "", err
+		}
+	}
+	if len(fn.BlockBody) == 0 {
+		c.writeln("pass")
+	}
+	c.indent--
+	c.env = origEnv
+
+	return fmt.Sprintf("%s(%s)", name, strings.Join(params, ", ")), nil
 }
 
 func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
@@ -1678,7 +1725,24 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	c.tmpCount++
 	var expr string
 	for i, cs := range m.Cases {
-		res, err := c.compileExpr(cs.Result)
+		c.blockParams = nil
+		res, err := func() (string, error) {
+			if call, ok := callPattern(cs.Pattern); ok {
+				if _, ok := c.env.FindUnionByVariant(call.Func); ok {
+					names := []string{}
+					for _, arg := range call.Args {
+						if id, ok := identName(arg); ok && id != "_" {
+							names = append(names, sanitizeName(id))
+						}
+					}
+					if len(names) > 0 {
+						c.blockParams = names
+					}
+				}
+			}
+			return c.compileExpr(cs.Result)
+		}()
+		c.blockParams = nil
 		if err != nil {
 			return "", err
 		}
@@ -1688,8 +1752,8 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		}
 		cond := ""
 		if call, ok := callPattern(cs.Pattern); ok {
-			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
-				st := ut.Variants[call.Func]
+			if utype, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := utype.Variants[call.Func]
 				cond = fmt.Sprintf("isinstance(%s, %s)", tmp, sanitizeName(call.Func))
 				names := []string{}
 				values := []string{}
@@ -1704,7 +1768,12 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 					}
 				}
 				if len(names) > 0 {
-					res = fmt.Sprintf("(lambda %s: %s)(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
+					if strings.HasPrefix(res, "_blk") {
+						args := strings.Join(values, ", ")
+						res = fmt.Sprintf("%s(%s)", strings.SplitN(res, "(", 2)[0], args)
+					} else {
+						res = fmt.Sprintf("(lambda %s: %s)(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
+					}
 				}
 			}
 		} else if ident, ok := identName(cs.Pattern); ok {

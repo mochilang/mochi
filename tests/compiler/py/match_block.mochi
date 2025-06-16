@@ -1,0 +1,15 @@
+type Node =
+  Nil
+  | N(val: int)
+
+fun foo(n: Node): int {
+  return match n {
+    Nil => 0
+    N(v) => {
+      let x = v + 1
+      x
+    }
+  }
+}
+
+print(foo(N { val: 3 }))
