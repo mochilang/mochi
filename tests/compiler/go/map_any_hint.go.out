@@ -19,10 +19,30 @@ func main() {
 }
 
 func _cast[T any](v any) T {
+    var zero T
+    switch any(zero).(type) {
+    case int:
+        switch n := v.(type) {
+        case int: return any(n).(T)
+        case int64: return any(int(n)).(T)
+        case float64: return any(int(n)).(T)
+        }
+    case int64:
+        switch n := v.(type) {
+        case int: return any(int64(n)).(T)
+        case int64: return any(n).(T)
+        case float64: return any(int64(n)).(T)
+        }
+    case float64:
+        switch n := v.(type) {
+        case int: return any(float64(n)).(T)
+        case int64: return any(float64(n)).(T)
+        case float64: return any(n).(T)
+        }
+    }
     data, err := json.Marshal(v)
     if err != nil { panic(err) }
     var out T
     if err := json.Unmarshal(data, &out); err != nil { panic(err) }
     return out
 }
-

@@ -190,6 +190,27 @@ const (
 		"}\n"
 
 	helperCast = "func _cast[T any](v any) T {\n" +
+		"    var zero T\n" +
+		"    switch any(zero).(type) {\n" +
+		"    case int:\n" +
+		"        switch n := v.(type) {\n" +
+		"        case int: return any(n).(T)\n" +
+		"        case int64: return any(int(n)).(T)\n" +
+		"        case float64: return any(int(n)).(T)\n" +
+		"        }\n" +
+		"    case int64:\n" +
+		"        switch n := v.(type) {\n" +
+		"        case int: return any(int64(n)).(T)\n" +
+		"        case int64: return any(n).(T)\n" +
+		"        case float64: return any(int64(n)).(T)\n" +
+		"        }\n" +
+		"    case float64:\n" +
+		"        switch n := v.(type) {\n" +
+		"        case int: return any(float64(n)).(T)\n" +
+		"        case int64: return any(float64(n)).(T)\n" +
+		"        case float64: return any(n).(T)\n" +
+		"        }\n" +
+		"    }\n" +
 		"    data, err := json.Marshal(v)\n" +
 		"    if err != nil { panic(err) }\n" +
 		"    var out T\n" +

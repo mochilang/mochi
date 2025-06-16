@@ -40,6 +40,9 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)
 		}
+		if out == nil {
+			out = []byte{}
+		}
 		return bytes.TrimSpace(out), nil
 	})
 
@@ -67,6 +70,9 @@ func TestGoCompiler_SubsetPrograms(t *testing.T) {
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ go run error: %w\n%s", err, out)
+		}
+		if out == nil {
+			out = []byte{}
 		}
 		return bytes.TrimSpace(out), nil
 	})
