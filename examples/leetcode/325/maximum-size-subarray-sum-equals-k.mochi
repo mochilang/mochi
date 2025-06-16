@@ -1,0 +1,55 @@
+fun maxSubArrayLen(nums: list<int>, k: int): int {
+  var prefix = 0
+  var firstIndex: map<int, int> = {}
+  firstIndex[0] = -1
+  var best = 0
+  var i = 0
+  while i < len(nums) {
+    prefix = prefix + nums[i]
+    let target = prefix - k
+    if target in firstIndex {
+      let start = firstIndex[target]
+      let length = i - start
+      if length > best {
+        best = length
+      }
+    }
+    if !(prefix in firstIndex) {
+      firstIndex[prefix] = i
+    }
+    i = i + 1
+  }
+  return best
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect maxSubArrayLen([1,-1,5,-2,3], 3) == 4
+}
+
+test "example 2" {
+  expect maxSubArrayLen([-2,-1,2,1], 1) == 2
+}
+
+// Additional edge cases
+
+test "no subarray" {
+  expect maxSubArrayLen([1,2,3], 7) == 0
+}
+
+test "entire array" {
+  expect maxSubArrayLen([1,2,3], 6) == 3
+}
+
+test "single negative" {
+  expect maxSubArrayLen([-1], -1) == 1
+}
+
+/*
+Common Mochi language errors and fixes:
+1. Using '=' instead of '==' when comparing values.
+2. Accessing map keys without checking membership using 'in'.
+3. Declaring a variable with 'let' and then trying to modify it.
+4. Running a loop with a condition like 'i <= len(nums)' which may access out of bounds.
+*/
