@@ -14,9 +14,9 @@ class Leaf(Tree):
 	pass
 @dataclasses.dataclass
 class Node(Tree):
-	left: typing.Any
+	left: Tree
 	value: int
-	right: typing.Any
+	right: Tree
 
 example1 = Node(left=Leaf(), value=1, right=Node(left=Node(left=Leaf(), value=3, right=Leaf()), value=2, right=Leaf()))
 

@@ -5,7 +5,7 @@ import dataclasses
 import typing
 
 def isSameTree(p: Tree, q: Tree) -> bool:
-	return (lambda _t=p: (lambda _t=q: True if isinstance(_t, Leaf) else False)() if isinstance(_t, Leaf) else (lambda pl, pv, pr: (lambda _t=q: (lambda ql, qv, qr: (((pv == qv) and isSameTree(pl, ql)) and isSameTree(pr, qr)))(_t.left, _t.value, _t.right) if isinstance(_t, Node) else False)())(_t.left, _t.value, _t.right) if isinstance(_t, Node) else None)()
+	return (lambda _t=p: (lambda _t1=q: True if isinstance(_t1, Leaf) else False)() if isinstance(_t, Leaf) else (lambda pl, pv, pr: (lambda _t2=q: (lambda ql, qv, qr: (((pv == qv) and isSameTree(pl, ql)) and isSameTree(pr, qr)))(_t2.left, _t2.value, _t2.right) if isinstance(_t2, Node) else False)())(_t.left, _t.value, _t.right) if isinstance(_t, Node) else None)()
 
 class Tree:
 	pass
@@ -14,9 +14,9 @@ class Leaf(Tree):
 	pass
 @dataclasses.dataclass
 class Node(Tree):
-	left: typing.Any
+	left: Tree
 	value: int
-	right: typing.Any
+	right: Tree
 
 def example_1():
 	p = Node(left=Node(left=Leaf(), value=2, right=Leaf()), value=1, right=Node(left=Leaf(), value=3, right=Leaf()))

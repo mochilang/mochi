@@ -28,9 +28,9 @@ class Empty(Tree):
 	pass
 @dataclasses.dataclass
 class Node(Tree):
-	left: typing.Any
+	left: Tree
 	val: int
-	right: typing.Any
+	right: Tree
 
 trees = generateTrees(3)
 

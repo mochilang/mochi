@@ -10,7 +10,7 @@ def inorder(t: Tree) -> list[int]:
 def recoverTree(t: Tree) -> Tree:
 	vals = inorder(t)
 	sortedVals = [ x for x in sorted([ x for x in vals ], key=lambda x: x) ]
-	def build(lo: int, hi: int) -> typing.Any:
+	def build(lo: int, hi: int) -> Tree:
 		if (lo >= hi):
 			return Leaf()
 		mid = (((lo + hi)) // 2)
@@ -24,9 +24,9 @@ class Leaf(Tree):
 	pass
 @dataclasses.dataclass
 class Node(Tree):
-	left: typing.Any
+	left: Tree
 	value: int
-	right: typing.Any
+	right: Tree
 
 ex = Node(left=Node(left=Leaf(), value=3, right=Leaf()), value=1, right=Node(left=Leaf(), value=4, right=Leaf()))
 fixed = recoverTree(ex)

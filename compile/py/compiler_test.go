@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	pycode "mochi/compile/py"
@@ -147,6 +148,46 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 				}
 				// Older examples may print results; just ensure the
 				// program executes without error.
+			})
+		}
+	}
+}
+
+func TestPyCompiler_LeetCodeGoldenOutput(t *testing.T) {
+	for i := 1; i <= 100; i++ {
+		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
+		outDir := filepath.Join("..", "..", "examples", "leetcode-out", fmt.Sprint(i))
+		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+		if err != nil {
+			t.Fatalf("glob error: %v", err)
+		}
+		for _, f := range files {
+			name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
+			t.Run(name, func(t *testing.T) {
+				prog, err := parser.Parse(f)
+				if err != nil {
+					t.Fatalf("parse error: %v", err)
+				}
+				env := types.NewEnv(nil)
+				if errs := types.Check(prog, env); len(errs) > 0 {
+					t.Fatalf("type error: %v", errs[0])
+				}
+				c := pycode.New(env)
+				code, err := c.Compile(prog)
+				if err != nil {
+					t.Fatalf("compile error: %v", err)
+				}
+				got := bytes.TrimSpace(code)
+				base := strings.TrimSuffix(filepath.Base(f), ".mochi")
+				wantPath := filepath.Join(outDir, base+".py.out")
+				want, err := os.ReadFile(wantPath)
+				if err != nil {
+					t.Fatalf("read golden: %v", err)
+				}
+				want = bytes.TrimSpace(want)
+				if !bytes.Equal(got, want) {
+					t.Errorf("golden mismatch for %s\n--- got ---\n%s\n--- want ---\n%s", wantPath, got, want)
+				}
 			})
 		}
 	}

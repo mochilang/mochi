@@ -829,8 +829,11 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	origEnv := c.env
 	c.env = child
 	c.indent++
-	for _, n := range nonlocals {
-		c.writeln("nonlocal " + n)
+	if len(nonlocals) > 0 {
+		sort.Strings(nonlocals)
+		for _, n := range nonlocals {
+			c.writeln("nonlocal " + n)
+		}
 	}
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -1674,7 +1677,10 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tmp := fmt.Sprintf("_t%d", c.tmpCount)
+	tmp := "_t"
+	if c.tmpCount > 0 {
+		tmp = fmt.Sprintf("_t%d", c.tmpCount)
+	}
 	c.tmpCount++
 	var expr string
 	for i, cs := range m.Cases {
