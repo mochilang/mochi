@@ -1,0 +1,115 @@
+// Solution for LeetCode problem 314 - Binary Tree Vertical Order Traversal
+// This implementation avoids union types and `match` by representing
+// each tree node as a map. A leaf node is {"__name": "Leaf"} and a regular
+// node is {"__name": "Node", "left": left, "value": value, "right": right}.
+
+fun Leaf(): map<string, any> {
+  return {"__name": "Leaf"}
+}
+
+fun Node(left: map<string, any>, value: int, right: map<string, any>): map<string, any> {
+  return {"__name": "Node", "left": left, "value": value, "right": right}
+}
+
+fun isLeaf(t: map<string, any>): bool {
+  return t["__name"] == "Leaf"
+}
+
+fun left(t: map<string, any>): map<string, any> { return t["left"] }
+fun right(t: map<string, any>): map<string, any> { return t["right"] }
+fun value(t: map<string, any>): int { return t["value"] as int }
+
+// Perform a vertical order traversal from left to right.
+fun verticalOrder(root: map<string, any>): list<list<int>> {
+  if isLeaf(root) {
+    return []
+  }
+
+  var queue: list<map<string, any>> = [root]
+  var cols: list<int> = [0]
+  var table: map<int, list<int>> = {}
+  var minCol = 0
+  var maxCol = 0
+
+  var i = 0
+  while i < len(queue) {
+    let node = queue[i]
+    let col = cols[i]
+    if col in table {
+      table[col] = table[col] + [value(node)]
+    } else {
+      table[col] = [value(node)]
+    }
+
+    let l = left(node)
+    let r = right(node)
+    if !isLeaf(l) {
+      queue = queue + [l]
+      cols = cols + [col - 1]
+    }
+    if !isLeaf(r) {
+      queue = queue + [r]
+      cols = cols + [col + 1]
+    }
+    if col < minCol { minCol = col }
+    if col > maxCol { maxCol = col }
+    i = i + 1
+  }
+
+  var result: list<list<int>> = []
+  var c = minCol
+  while c <= maxCol {
+    if c in table {
+      result = result + [table[c]]
+    }
+    c = c + 1
+  }
+  return result
+}
+
+// Example tree from LeetCode: [3,9,20,null,null,15,7]
+let example1 = Node(
+  Node(Leaf(), 9, Leaf()),
+  3,
+  Node(Node(Leaf(), 15, Leaf()), 20, Node(Leaf(), 7, Leaf()))
+)
+
+// Another tree: [1,2,3,4,5,6,7]
+let example2 = Node(
+  Node(Node(Leaf(), 4, Leaf()), 2, Node(Leaf(), 5, Leaf())),
+  1,
+  Node(Node(Leaf(), 6, Leaf()), 3, Node(Leaf(), 7, Leaf()))
+)
+
+// Test cases based on LeetCode examples
+
+test "example 1" {
+  expect verticalOrder(example1) == [[9], [3,15], [20], [7]]
+}
+
+test "example 2" {
+  expect verticalOrder(example2) == [[4], [2], [1,5,6], [3], [7]]
+}
+
+test "single node" {
+  expect verticalOrder(Node(Leaf(), 1, Leaf())) == [[1]]
+}
+
+test "empty" {
+  expect verticalOrder(Leaf()) == []
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Using '=' instead of '==' when comparing values:
+     if col = 0 { }   // ❌ assignment
+     if col == 0 { }  // ✅ comparison
+2. Reassigning a value declared with 'let':
+     let q = []
+     q = [1]          // ❌ cannot reassign
+     var q: list<int> = []
+     q = [1]          // ✅ use 'var' for mutable variables
+3. Accessing fields of a Leaf node without checking:
+     value(Leaf())    // ❌ runtime error
+     if !isLeaf(node) { value(node) } // ✅ ensure node is not a Leaf
+*/
