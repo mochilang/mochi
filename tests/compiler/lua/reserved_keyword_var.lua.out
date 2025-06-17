@@ -1,0 +1,2 @@
+local map = {["a"]=1}
+print(map["a"])

@@ -18,14 +18,18 @@ type Compiler struct {
 
 	loopLabels []string
 	labelCount int
+
+	helpers map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, helpers: make(map[string]bool)}
 }
 
 // Compile returns Lua source implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	c.buf.Reset()
+
 	c.buf.Reset()
 
 	// Emit function declarations first.
@@ -47,6 +51,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
+
+	bodyBytes := c.buf.Bytes()
+	c.buf.Reset()
+	c.emitHelpers()
+	c.buf.Write(bodyBytes)
 
 	return c.buf.Bytes(), nil
 }
@@ -254,6 +263,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			opstr = "and"
 		case "||":
 			opstr = "or"
+		case "in":
+			c.helpers["contains"] = true
+			expr = fmt.Sprintf("__contains(%s, %s)", right, expr)
+			continue
 		}
 		expr = fmt.Sprintf("(%s %s %s)", expr, opstr, right)
 	}
@@ -287,7 +300,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("%s[(%s)+1]", expr, idx)
+			if isStringLiteral(op.Index.Start) {
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
+			} else {
+				expr = fmt.Sprintf("%s[(%s)+1]", expr, idx)
+			}
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -317,6 +334,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "{" + strings.Join(elems, ", ") + "}", nil
+	case p.Map != nil:
+		pairs := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			pairs[i] = fmt.Sprintf("[%s]=%s", k, v)
+		}
+		return "{" + strings.Join(pairs, ", ") + "}", nil
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -357,6 +388,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch name {
 	case "print":
 		return fmt.Sprintf("print(%s)", argStr), nil
+	case "str":
+		if len(args) == 1 {
+			return fmt.Sprintf("tostring(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("tostring(%s)", argStr), nil
 	default:
 		return fmt.Sprintf("%s(%s)", name, argStr), nil
 	}
@@ -377,6 +413,24 @@ func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 		return "false", nil
 	}
 	return "nil", fmt.Errorf("unknown literal")
+}
+
+func isStringLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil {
+		return false
+	}
+	p := u.Value.Target
+	if p == nil || p.Lit == nil || p.Lit.Str == nil {
+		return false
+	}
+	return true
 }
 
 func (c *Compiler) pushLoopLabel() string {
@@ -408,4 +462,40 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.indent--
 	c.writeln("end")
 	return nil
+}
+
+func (c *Compiler) emitHelpers() {
+	if c.helpers["contains"] {
+		c.writeln("function __contains(container, item)")
+		c.indent++
+		c.writeln("if type(container) == 'table' then")
+		c.indent++
+		c.writeln("if container[1] ~= nil or #container > 0 then")
+		c.indent++
+		c.writeln("for _, v in ipairs(container) do")
+		c.indent++
+		c.writeln("if v == item then return true end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("return false")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("return container[item] ~= nil")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("elseif type(container) == 'string' then")
+		c.indent++
+		c.writeln("return string.find(container, item, 1, true) ~= nil")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("return false")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
 }
