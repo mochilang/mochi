@@ -4,18 +4,18 @@ from __future__ import annotations
 a = 1
 b = 2
 
-def first():
+def test_first():
 	assert (a == 1)
 
-def second():
+def test_second():
 	assert (b == 2)
 
 def main():
 	a = 1
 	b = 2
 	print("done")
-	first()
-	second()
+	test_first()
+	test_second()
 
 if __name__ == "__main__":
 	main()
