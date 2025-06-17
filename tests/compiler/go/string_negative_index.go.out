@@ -1,0 +1,21 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var text string = "hello"
+	fmt.Println(_indexString(text, -1))
+}
+
+func _indexString(s string, i int) string {
+	runes := []rune(s)
+	if i < 0 {
+		i += len(runes)
+	}
+	if i < 0 || i >= len(runes) {
+		panic("index out of range")
+	}
+	return string(runes[i])
+}
