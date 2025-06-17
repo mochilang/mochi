@@ -82,6 +82,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Fun != nil:
+		return c.compileLocalFunStmt(s.Fun)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
 	case s.Break != nil:
@@ -182,6 +184,23 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileLocalFunStmt(fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	c.writeln(fmt.Sprintf("%s = ->(%s){", sanitizeName(fn.Name), strings.Join(params, ", ")))
+	c.indent++
+	for _, s := range fn.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
