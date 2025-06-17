@@ -229,20 +229,20 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
-        value, err := c.compileExpr(stmt.Value)
-        if err != nil {
-                return err
-        }
-       if len(stmt.Index) > 0 {
-               idx, err := c.compileExpr(stmt.Index[0].Start)
-               if err != nil {
-                       return err
-               }
-               c.writeln(fmt.Sprintf("%s = Map.put(%s, %s, %s)", stmt.Name, stmt.Name, idx, value))
-               return nil
-       }
-        c.writeln(fmt.Sprintf("%s = %s", stmt.Name, value))
-        return nil
+	value, err := c.compileExpr(stmt.Value)
+	if err != nil {
+		return err
+	}
+	if len(stmt.Index) > 0 {
+		idx, err := c.compileExpr(stmt.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s = Map.put(%s, %s, %s)", stmt.Name, stmt.Name, idx, value))
+		return nil
+	}
+	c.writeln(fmt.Sprintf("%s = %s", stmt.Name, value))
+	return nil
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -253,26 +253,46 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	left, err := c.compileUnary(b.Left)
+	leftStr, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	out := left
+	out := leftStr
+	leftIsList := isListUnary(b.Left)
 	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+		rightStr, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-               switch op.Op {
-               case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=":
-                       out = fmt.Sprintf("(%s %s %s)", out, op.Op, right)
-               case "in":
-                       out = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", right, right, out, right, out)
-               default:
-                       return "", fmt.Errorf("unsupported operator %s", op.Op)
-               }
+		rightIsList := isListPostfix(op.Right)
+		switch op.Op {
+		case "+":
+			if leftIsList || rightIsList {
+				out = fmt.Sprintf("%s ++ %s", out, rightStr)
+				leftIsList = true
+			} else {
+				out = fmt.Sprintf("(%s + %s)", out, rightStr)
+				leftIsList = false
+			}
+		case "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=":
+			out = fmt.Sprintf("(%s %s %s)", out, op.Op, rightStr)
+			leftIsList = false
+		case "in":
+			out = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", rightStr, rightStr, out, rightStr, out)
+			leftIsList = false
+		default:
+			return "", fmt.Errorf("unsupported operator %s", op.Op)
+		}
 	}
 	return out, nil
+}
+
+func isListPostfix(p *parser.PostfixExpr) bool {
+	return len(p.Ops) == 0 && p.Target != nil && p.Target.List != nil
+}
+
+func isListUnary(u *parser.Unary) bool {
+	return len(u.Ops) == 0 && isListPostfix(u.Value)
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -336,43 +356,43 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
-       case p.Lit != nil:
-               if p.Lit.Int != nil {
-                       return strconv.Itoa(*p.Lit.Int), nil
-               }
-               if p.Lit.Str != nil {
-                       return strconv.Quote(*p.Lit.Str), nil
-               }
-               if p.Lit.Bool != nil {
-                       if bool(*p.Lit.Bool) {
-                               return "true", nil
-                       }
-                       return "false", nil
-               }
-       case p.List != nil:
-               elems := make([]string, len(p.List.Elems))
-               for i, e := range p.List.Elems {
-                       v, err := c.compileExpr(e)
-                       if err != nil {
-                               return "", err
-                       }
-                       elems[i] = v
-               }
-               return "[" + strings.Join(elems, ", ") + "]", nil
-       case p.Map != nil:
-               items := make([]string, len(p.Map.Items))
-               for i, it := range p.Map.Items {
-                       k, err := c.compileExpr(it.Key)
-                       if err != nil {
-                               return "", err
-                       }
-                       v, err := c.compileExpr(it.Value)
-                       if err != nil {
-                               return "", err
-                       }
-                       items[i] = fmt.Sprintf("%s => %s", k, v)
-               }
-               return "%{" + strings.Join(items, ", ") + "}", nil
+	case p.Lit != nil:
+		if p.Lit.Int != nil {
+			return strconv.Itoa(*p.Lit.Int), nil
+		}
+		if p.Lit.Str != nil {
+			return strconv.Quote(*p.Lit.Str), nil
+		}
+		if p.Lit.Bool != nil {
+			if bool(*p.Lit.Bool) {
+				return "true", nil
+			}
+			return "false", nil
+		}
+	case p.List != nil:
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			v, err := c.compileExpr(e)
+			if err != nil {
+				return "", err
+			}
+			elems[i] = v
+		}
+		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s => %s", k, v)
+		}
+		return "%{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
 		name := p.Selector.Root
 		if len(p.Selector.Tail) > 0 {
