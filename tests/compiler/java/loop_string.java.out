@@ -1,0 +1,10 @@
+public class Main {
+	public static void main(String[] args) {
+		int c = 0;
+		for (var ch : "ab".toCharArray()) {
+			c = (c + 1);
+		}
+		System.out.println(c);
+	}
+}
+
