@@ -35,7 +35,7 @@ type Compiler struct {
 
 	returnType types.Type
 
-	varUsage map[any]bool
+	varUsage *usageMaps
 }
 
 // New creates a new Go compiler instance.
@@ -135,20 +135,21 @@ func (c *Compiler) writeExpectFunc(prog *parser.Program) {
 	c.writeln("")
 }
 
-func analyzeVarUsage(stmts []*parser.Statement) map[any]bool {
-	usage := make(map[any]bool)
+type usageMaps struct {
+	lets map[*parser.LetStmt]bool
+	vars map[*parser.VarStmt]bool
+}
+
+func analyzeVarUsage(stmts []*parser.Statement) *usageMaps {
+	usage := &usageMaps{
+		lets: map[*parser.LetStmt]bool{},
+		vars: map[*parser.VarStmt]bool{},
+	}
 	for i, s := range stmts {
 		var name string
-		var key any
 		switch {
 		case s.Let != nil:
 			name = s.Let.Name
-			key = s.Let
-		case s.Var != nil:
-			name = s.Var.Name
-			key = s.Var
-		}
-		if key != nil {
 			used := false
 			for j := i + 1; j < len(stmts); j++ {
 				if stmtReadsVar(stmts[j], name) {
@@ -156,7 +157,17 @@ func analyzeVarUsage(stmts []*parser.Statement) map[any]bool {
 					break
 				}
 			}
-			usage[key] = used
+			usage.lets[s.Let] = used
+		case s.Var != nil:
+			name = s.Var.Name
+			used := false
+			for j := i + 1; j < len(stmts); j++ {
+				if stmtReadsVar(stmts[j], name) {
+					used = true
+					break
+				}
+			}
+			usage.vars[s.Var] = used
 		}
 	}
 	return usage
@@ -179,8 +190,15 @@ func (c *Compiler) varUsed(stmt any) bool {
 	if c.varUsage == nil {
 		return true
 	}
-	if u, ok := c.varUsage[stmt]; ok {
-		return u
+	switch s := stmt.(type) {
+	case *parser.LetStmt:
+		if u, ok := c.varUsage.lets[s]; ok {
+			return u
+		}
+	case *parser.VarStmt:
+		if u, ok := c.varUsage.vars[s]; ok {
+			return u
+		}
 	}
 	return true
 }
@@ -617,21 +635,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(expr)
 		return nil
-       case s.Return != nil:
-               retT := c.returnType
-               var (
-                       expr string
-                       err  error
-               )
-               if retT != nil && (isEmptyListLiteral(s.Return.Value) || isEmptyMapLiteral(s.Return.Value)) {
-                       expr, err = c.compileExprHint(s.Return.Value, retT)
-               } else {
-                       expr, err = c.compileExpr(s.Return.Value)
-               }
-               if err != nil {
-                       return err
-               }
-               exprT := c.inferExprTypeHint(s.Return.Value, retT)
+	case s.Return != nil:
+		retT := c.returnType
+		var (
+			expr string
+			err  error
+		)
+		if retT != nil && (isEmptyListLiteral(s.Return.Value) || isEmptyMapLiteral(s.Return.Value)) {
+			expr, err = c.compileExprHint(s.Return.Value, retT)
+		} else {
+			expr, err = c.compileExpr(s.Return.Value)
+		}
+		if err != nil {
+			return err
+		}
+		exprT := c.inferExprTypeHint(s.Return.Value, retT)
 		if retT != nil {
 			retGo := goType(retT)
 			exprGo := goType(exprT)
@@ -2206,8 +2224,12 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.use("_toAnyMap")
-		withStr = fmt.Sprintf("_toAnyMap(%s)", w)
+		if mt, ok := c.inferExprType(f.With).(types.MapType); ok && goType(mt.Key) == "string" && goType(mt.Value) == "any" {
+			withStr = w
+		} else {
+			c.use("_toAnyMap")
+			withStr = fmt.Sprintf("_toAnyMap(%s)", w)
+		}
 	} else {
 		withStr = "nil"
 	}
@@ -2292,8 +2314,12 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.use("_toAnyMap")
-		opts = fmt.Sprintf("_toAnyMap(%s)", v)
+		if mt, ok := c.inferExprType(l.With).(types.MapType); ok && goType(mt.Key) == "string" && goType(mt.Value) == "any" {
+			opts = v
+		} else {
+			c.use("_toAnyMap")
+			opts = fmt.Sprintf("_toAnyMap(%s)", v)
+		}
 	}
 	c.imports["mochi/runtime/data"] = true
 	c.imports["os"] = true
@@ -2344,8 +2370,12 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.use("_toAnyMap")
-		opts = fmt.Sprintf("_toAnyMap(%s)", v)
+		if mt, ok := c.inferExprType(s.With).(types.MapType); ok && goType(mt.Key) == "string" && goType(mt.Value) == "any" {
+			opts = v
+		} else {
+			c.use("_toAnyMap")
+			opts = fmt.Sprintf("_toAnyMap(%s)", v)
+		}
 	}
 	c.imports["mochi/runtime/data"] = true
 	c.imports["os"] = true
@@ -3035,23 +3065,23 @@ func literalValue(l *parser.Literal) any {
 }
 
 func isEmptyListLiteral(e *parser.Expr) bool {
-       if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
-               return false
-       }
-       if ll := e.Binary.Left.Value.Target.List; ll != nil {
-               return len(ll.Elems) == 0
-       }
-       return false
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ll := e.Binary.Left.Value.Target.List; ll != nil {
+		return len(ll.Elems) == 0
+	}
+	return false
 }
 
 func isEmptyMapLiteral(e *parser.Expr) bool {
-       if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
-               return false
-       }
-       if ml := e.Binary.Left.Value.Target.Map; ml != nil {
-               return len(ml.Items) == 0
-       }
-       return false
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+		return len(ml.Items) == 0
+	}
+	return false
 }
 
 func (c *Compiler) callKey(call *parser.CallExpr) string {
