@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	elixir "mochi/compile/elixir"
 	excode "mochi/compile/ex"
 	"mochi/golden"
 	"mochi/parser"
@@ -16,7 +15,7 @@ import (
 )
 
 func TestExCompiler_SubsetPrograms(t *testing.T) {
-	if err := elixir.EnsureElixir(); err != nil {
+	if err := excode.EnsureElixir(); err != nil {
 		t.Skipf("elixir not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/ex", ".mochi", ".out", func(src string) ([]byte, error) {
