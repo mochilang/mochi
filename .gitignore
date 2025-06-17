@@ -288,3 +288,4 @@ bin/
 tools/libmochi/typescript/mochi.wasm.gz
 **/*.egg-info/
 **/__pycache__/
+*.class
