@@ -19,11 +19,13 @@ type Compiler struct {
 	loopLabels []string
 	labelCount int
 
+	tmpCount int
+
 	helpers map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), tmpCount: 0}
 }
 
 // Compile returns Lua source implementing prog.
@@ -363,6 +365,32 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}
 		return name, nil
+	case p.Struct != nil:
+		if c.env != nil {
+			if _, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
+				parts := make([]string, 0, len(p.Struct.Fields)+1)
+				parts = append(parts, fmt.Sprintf("__name=%q", p.Struct.Name))
+				for _, f := range p.Struct.Fields {
+					v, err := c.compileExpr(f.Value)
+					if err != nil {
+						return "", err
+					}
+					parts = append(parts, fmt.Sprintf("%s=%s", sanitizeName(f.Name), v))
+				}
+				return "{" + strings.Join(parts, ", ") + "}", nil
+			}
+		}
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s=%s", sanitizeName(f.Name), v)
+		}
+		return "{" + strings.Join(parts, ", ") + "}", nil
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	default:
@@ -408,6 +436,63 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	default:
 		return fmt.Sprintf("%s(%s)", name, argStr), nil
 	}
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	tmp := fmt.Sprintf("_t%d", c.tmpCount)
+	c.tmpCount++
+	var b strings.Builder
+	b.WriteString("(function()\n")
+	b.WriteString("\tlocal " + tmp + " = " + target + "\n")
+	for _, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			b.WriteString("\treturn " + res + "\n")
+			b.WriteString("end)()")
+			return b.String(), nil
+		}
+		cond := ""
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond = fmt.Sprintf("%s.__name == \"%s\"", tmp, call.Func)
+				names := []string{}
+				values := []string{}
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						names = append(names, sanitizeName(id))
+						field := sanitizeName(st.Order[idx])
+						values = append(values, fmt.Sprintf("%s.%s", tmp, field))
+					}
+				}
+				if len(names) > 0 {
+					res = fmt.Sprintf("(function(%s) return %s end)(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
+				}
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond = fmt.Sprintf("%s.__name == \"%s\"", tmp, ident)
+			}
+		}
+		if cond == "" {
+			pat, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			cond = fmt.Sprintf("%s == %s", tmp, pat)
+		}
+		b.WriteString(fmt.Sprintf("\tif %s then return %s end\n", cond, res))
+	}
+	b.WriteString("\treturn nil\n")
+	b.WriteString("end)()")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
