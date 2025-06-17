@@ -51,6 +51,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	c.writeln("")
 	return c.buf.Bytes(), nil
 }
 
@@ -261,22 +262,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var buf bytes.Buffer
 	buf.WriteString("run {\n")
-	buf.WriteString("\tvar res = " + src + "\n")
+	buf.WriteString("                var res = " + src + "\n")
 	if where != "" {
-		buf.WriteString(fmt.Sprintf("\tres = res.filter { %s -> %s }\n", varName, where))
+		buf.WriteString(fmt.Sprintf("                res = res.filter { %s -> %s }\n", varName, where))
 	}
 	if sortKey != "" {
-		buf.WriteString(fmt.Sprintf("\tres = res.sortedBy { %s -> %s }\n", varName, sortKey))
+		buf.WriteString(fmt.Sprintf("                res = res.sortedBy { %s -> %s }\n", varName, sortKey))
 	}
 	if skip != "" {
-		buf.WriteString("\tres = res.drop(" + skip + ")\n")
+		buf.WriteString("                res = res.drop(" + skip + ")\n")
 	}
 	if take != "" {
-		buf.WriteString("\tres = res.take(" + take + ")\n")
+		buf.WriteString("                res = res.take(" + take + ")\n")
 	}
-	buf.WriteString(fmt.Sprintf("\tres = res.map { %s -> %s }\n", varName, sel))
-	buf.WriteString("\tres\n")
-	buf.WriteString("}")
+	buf.WriteString(fmt.Sprintf("                res = res.map { %s -> %s }\n", varName, sel))
+	buf.WriteString("                res\n")
+	buf.WriteString("        }")
 	return buf.String(), nil
 }
 
@@ -532,7 +533,7 @@ func (c *Compiler) writeln(s string) {
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
-		c.buf.WriteByte('\t')
+		c.buf.WriteString("        ")
 	}
 }
 
