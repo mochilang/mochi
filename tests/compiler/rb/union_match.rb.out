@@ -1,0 +1,21 @@
+module Tree; end
+Leaf = Struct.new(keyword_init: true) do
+	include Tree
+end
+Node = Struct.new(:left, :value, :right, keyword_init: true) do
+	include Tree
+end
+
+def isLeaf(t)
+	return (begin
+	_t0 = t
+	if _t0.is_a?(Leaf)
+		true
+	else
+		false
+	end
+end)
+end
+
+puts([isLeaf(Leaf.new())].join(" "))
+puts([isLeaf(Node.new(left: Leaf.new(), value: 1, right: Leaf.new()))].join(" "))

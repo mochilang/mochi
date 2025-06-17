@@ -12,13 +12,16 @@ import (
 
 // Compiler translates a Mochi AST into Ruby source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf      bytes.Buffer
+	indent   int
+	env      *types.Env
+	tmpCount int
 }
 
 // New creates a new Ruby compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env}
+}
 
 // Compile generates Ruby code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -119,8 +122,26 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	name := sanitizeName(t.Name)
 	if len(t.Variants) > 0 {
-		return fmt.Errorf("union types not supported")
+		c.writeln(fmt.Sprintf("module %s; end", name))
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			fields := []string{}
+			for _, f := range v.Fields {
+				fields = append(fields, ":"+sanitizeName(f.Name))
+			}
+			fieldList := strings.Join(fields, ", ")
+			if fieldList != "" {
+				fieldList += ", "
+			}
+			c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true) do", vname, fieldList))
+			c.indent++
+			c.writeln(fmt.Sprintf("include %s", name))
+			c.indent--
+			c.writeln("end")
+		}
+		return nil
 	}
 	fields := []string{}
 	for _, m := range t.Members {
@@ -128,7 +149,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			fields = append(fields, ":"+sanitizeName(m.Field.Name))
 		}
 	}
-	c.writeln(fmt.Sprintf("%s = Struct.new(%s, keyword_init: true)", sanitizeName(t.Name), strings.Join(fields, ", ")))
+	fieldList := strings.Join(fields, ", ")
+	if fieldList != "" {
+		fieldList += ", "
+	}
+	c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true)", name, fieldList))
 	return nil
 }
 
@@ -411,6 +436,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Struct != nil:
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
@@ -514,4 +541,71 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	default:
 		return "", fmt.Errorf("unknown literal")
 	}
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	tmp := fmt.Sprintf("_t%d", c.tmpCount)
+	c.tmpCount++
+	var b strings.Builder
+	b.WriteString("(begin\n")
+	b.WriteString(fmt.Sprintf("\t%s = %s\n", tmp, target))
+	for i, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			if i == 0 {
+				b.WriteString("\t" + res + "\n")
+				b.WriteString("end)")
+				return b.String(), nil
+			}
+			b.WriteString("\telse\n")
+			b.WriteString("\t\t" + res + "\n")
+			b.WriteString("\tend\nend)")
+			return b.String(), nil
+		}
+		cond := ""
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond = fmt.Sprintf("%s.is_a?(%s)", tmp, sanitizeName(call.Func))
+				names := []string{}
+				values := []string{}
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						names = append(names, sanitizeName(id))
+						field := sanitizeName(st.Order[idx])
+						values = append(values, fmt.Sprintf("%s.%s", tmp, field))
+					}
+				}
+				if len(names) > 0 {
+					res = fmt.Sprintf("(->(%s){ %s }).call(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
+				}
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond = fmt.Sprintf("%s.is_a?(%s)", tmp, sanitizeName(ident))
+			}
+		}
+		if cond == "" {
+			pat, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			cond = fmt.Sprintf("%s == %s", tmp, pat)
+		}
+		if i == 0 {
+			b.WriteString("\tif " + cond + "\n")
+		} else {
+			b.WriteString("\telsif " + cond + "\n")
+		}
+		b.WriteString("\t\t" + res + "\n")
+	}
+	b.WriteString("\telse\n\t\tnil\n\tend\nend)")
+	return b.String(), nil
 }
