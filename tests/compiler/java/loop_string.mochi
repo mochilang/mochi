@@ -1,0 +1,5 @@
+var c = 0
+for ch in "ab" {
+  c = c + 1
+}
+print(c)

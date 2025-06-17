@@ -159,6 +159,10 @@ func (c *Compiler) compileReturn(stmt *parser.ReturnStmt) error {
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	name := sanitizeName(stmt.Name)
+	outName := name
+	if name == "_" {
+		outName = "__"
+	}
 	if stmt.RangeEnd != nil {
 		start, err := c.compileExpr(stmt.Source)
 		if err != nil {
@@ -183,7 +187,28 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("for (var %s : %s) {", name, src))
+	asString := false
+	if stmt.Source != nil && c.env != nil {
+		if ident := stmt.Source.Binary.Left; ident != nil && len(ident.Ops) == 0 {
+			p := ident.Value
+			if p.Target != nil {
+				if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+					asString = true
+				}
+				if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+					if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+						if _, ok := t.(types.StringType); ok {
+							asString = true
+						}
+					}
+				}
+			}
+		}
+	}
+	if asString {
+		src += ".toCharArray()"
+	}
+	c.writeln(fmt.Sprintf("for (var %s : %s) {", outName, src))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
