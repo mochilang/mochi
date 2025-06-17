@@ -56,6 +56,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	ret := c.compileType(fn.Return)
 	c.writeln(fmt.Sprintf("func %s(%s) -> %s {", fn.Name, strings.Join(params, ", "), ret))
 	c.indent++
+	for _, p := range fn.Params {
+		c.writeln(fmt.Sprintf("var %s = %s", p.Name, p.Name))
+	}
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
@@ -128,8 +131,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("return %s", expr))
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Expr != nil:
@@ -162,6 +169,40 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("while %s {", cond))
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	target := a.Name
+	for _, idx := range a.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		target = fmt.Sprintf("%s[%s]", target, iexpr)
+	}
+	value, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s", target, value))
 	return nil
 }
 
@@ -278,7 +319,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return fmt.Sprintf("%s.count", args[0]), nil
 		}
-		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
+		if p.Call.Func == "str" {
+			if len(args) != 1 {
+				return "", fmt.Errorf("str expects 1 arg")
+			}
+			return fmt.Sprintf("String(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ",")), nil
 	}
 	return "", fmt.Errorf("unsupported expression")
 }

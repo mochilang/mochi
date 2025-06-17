@@ -1,0 +1,13 @@
+import Foundation
+
+func prepend(_ level: [Int], _ result: [[Int]]) -> [[Int]] {
+	var level = level
+	var result = result
+	result = [level] + result
+	return result
+}
+
+func main() {
+	print(prepend([1, 2],[[3], [4]]))
+}
+main()
