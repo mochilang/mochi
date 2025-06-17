@@ -12,9 +12,10 @@ import (
 
 // Compiler translates a Mochi AST into C# source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	tempVarCount int
 }
 
 // New creates a new C# compiler.
@@ -111,6 +112,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln("return " + expr + ";")
+	case s.Assign != nil:
+		if err := c.compileAssign(s.Assign); err != nil {
+			return err
+		}
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -129,6 +134,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	name := sanitizeName(f.Name)
+	useVar := name != "_"
 	if f.RangeEnd != nil {
 		start, err := c.compileExpr(f.Source)
 		if err != nil {
@@ -138,7 +144,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", name, start, name, end, name))
+		loopVar := name
+		if !useVar {
+			loopVar = c.newVar()
+		}
+		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", loopVar, start, loopVar, end, loopVar))
 		c.indent++
 		for _, s := range f.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -153,7 +163,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("foreach (var %s in %s) {", name, src))
+	loopVar := name
+	if !useVar {
+		loopVar = c.newVar()
+	}
+	c.writeln(fmt.Sprintf("foreach (var %s in %s) {", loopVar, src))
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -162,6 +176,23 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	lhs := sanitizeName(a.Name)
+	for _, idx := range a.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+	}
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
 	return nil
 }
 
@@ -394,4 +425,10 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	return s
+}
+
+func (c *Compiler) newVar() string {
+	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+	c.tempVarCount++
+	return name
 }
