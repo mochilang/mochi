@@ -5,7 +5,7 @@ let vec: any = _gen_embed("hi", null, null)
 function main(): void {
 	console.log((Array.isArray(vec) || typeof vec === 'string' ? (vec as any).length : (vec && typeof vec === 'object' ? Object.keys(vec).length : 0)))
 }
-function _gen_embed(text: string, model: string | null, params: any | null): number[] {
+function _gen_embed(text: string, model: string | null, params: Record<string, unknown> | null): number[] {
   // TODO: integrate with your preferred embedding model
   return Array.from(text).map(c => c.charCodeAt(0));
 }

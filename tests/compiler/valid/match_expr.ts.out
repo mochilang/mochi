@@ -13,7 +13,7 @@ let label: string = (() => {
 function main(): void {
 	console.log(label)
 }
-function _equal(a: any, b: any): boolean {
+function _equal(a: unknown, b: unknown): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
     for (let i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }

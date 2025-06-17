@@ -5,7 +5,7 @@ let poem: any = _gen_text("echo hello", null, null)
 function main(): void {
 	console.log(poem)
 }
-function _gen_text(prompt: string, model: string | null, params: any | null): string {
+function _gen_text(prompt: string, model: string | null, params: Record<string, unknown> | null): string {
   // TODO: integrate with your preferred LLM
   return prompt;
 }

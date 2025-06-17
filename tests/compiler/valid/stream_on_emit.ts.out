@@ -16,12 +16,12 @@ async function main(): Promise<void> {
 }
 class Stream {
   name: string;
-  handlers: Array<(data: any) => any | Promise<any>> = [];
+  handlers: Array<(data: unknown) => unknown | Promise<unknown>> = [];
   constructor(name: string) {
     this.name = name;
   }
-  append(data: any): Promise<any> {
-    const tasks: Promise<any>[] = [];
+  append(data: unknown): Promise<unknown> {
+    const tasks: Promise<unknown>[] = [];
     for (const h of [...this.handlers]) {
       tasks.push(Promise.resolve(h(data)));
     }
@@ -29,12 +29,12 @@ class Stream {
     _pending.push(p);
     return p;
   }
-  register(handler: (data: any) => any | Promise<any>): void {
+  register(handler: (data: unknown) => unknown | Promise<unknown>): void {
     this.handlers.push(handler);
   }
 }
 
-const _pending: Promise<any>[] = [];
+const _pending: Promise<unknown>[] = [];
 async function _waitAll(): Promise<void> {
   await Promise.all(_pending);
 }

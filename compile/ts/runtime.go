@@ -4,7 +4,7 @@ import "sort"
 
 // Runtime helper functions injected into generated programs.
 const (
-	helperCount = "function _count(v: any): number {\n" +
+	helperCount = "function _count(v: unknown): number {\n" +
 		"  if (Array.isArray(v)) return v.length;\n" +
 		"  if (v && typeof v === 'object') {\n" +
 		"    if (Array.isArray((v as any).items)) return (v as any).items.length;\n" +
@@ -13,8 +13,8 @@ const (
 		"  return 0;\n" +
 		"}\n"
 
-	helperAvg = "function _avg(v: any): number {\n" +
-		"  let list: any[] | null = null;\n" +
+	helperAvg = "function _avg(v: unknown): number {\n" +
+		"  let list: unknown[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
 		"  else if (v && typeof v === 'object') {\n" +
 		"    if (Array.isArray((v as any).items)) list = (v as any).items;\n" +
@@ -31,29 +31,29 @@ const (
 		"  return v === null ? '' : v;\n" +
 		"}\n"
 
-	helperIter = "function _iter(v: any): any {\n" +
+	helperIter = "function _iter(v: unknown): unknown {\n" +
 		"  if (v && typeof v === 'object' && !Array.isArray(v) && !(Symbol.iterator in v)) {\n" +
 		"    return Object.keys(v);\n" +
 		"  }\n" +
 		"  return v;\n" +
 		"}\n"
 
-	helperGenText = "function _gen_text(prompt: string, model: string | null, params: any | null): string {\n" +
+	helperGenText = "function _gen_text(prompt: string, model: string | null, params: Record<string, unknown> | null): string {\n" +
 		"  // TODO: integrate with your preferred LLM\n" +
 		"  return prompt;\n" +
 		"}\n"
 
-	helperGenEmbed = "function _gen_embed(text: string, model: string | null, params: any | null): number[] {\n" +
+	helperGenEmbed = "function _gen_embed(text: string, model: string | null, params: Record<string, unknown> | null): number[] {\n" +
 		"  // TODO: integrate with your preferred embedding model\n" +
 		"  return Array.from(text).map(c => c.charCodeAt(0));\n" +
 		"}\n"
 
-	helperGenStruct = "function _gen_struct<T>(prompt: string, model: string | null, params: any | null): T {\n" +
+	helperGenStruct = "function _gen_struct<T>(prompt: string, model: string | null, params: Record<string, unknown> | null): T {\n" +
 		"  // TODO: integrate with your preferred LLM and parse JSON\n" +
 		"  return JSON.parse(prompt) as T;\n" +
 		"}\n"
 
-	helperEqual = "function _equal(a: any, b: any): boolean {\n" +
+	helperEqual = "function _equal(a: unknown, b: unknown): boolean {\n" +
 		"  if (Array.isArray(a) && Array.isArray(b)) {\n" +
 		"    if (a.length !== b.length) return false;\n" +
 		"    for (let i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }\n" +
@@ -68,7 +68,7 @@ const (
 		"  return a === b;\n" +
 		"}\n"
 
-	helperFetch = "function _fetch(url: string, opts: any): any {\n" +
+	helperFetch = "function _fetch(url: string, opts: Record<string, unknown>): unknown {\n" +
 		"  const args: string[] = ['-s'];\n" +
 		"  const method = opts?.method ?? 'GET';\n" +
 		"  args.push('-X', method);\n" +
@@ -96,18 +96,18 @@ const (
 		"  return JSON.parse(new TextDecoder().decode(stdout));\n" +
 		"}\n"
 
-	helperToAnyMap = "function _toAnyMap(m: any): Record<string, any> {\n" +
-		"  return m as Record<string, any>;\n" +
+	helperToAnyMap = "function _toAnyMap(m: unknown): Record<string, unknown> {\n" +
+		"  return m as Record<string, unknown>;\n" +
 		"}\n"
 
 	helperStream = "class Stream {\n" +
 		"  name: string;\n" +
-		"  handlers: Array<(data: any) => any | Promise<any>> = [];\n" +
+		"  handlers: Array<(data: unknown) => unknown | Promise<unknown>> = [];\n" +
 		"  constructor(name: string) {\n" +
 		"    this.name = name;\n" +
 		"  }\n" +
-		"  append(data: any): Promise<any> {\n" +
-		"    const tasks: Promise<any>[] = [];\n" +
+		"  append(data: unknown): Promise<unknown> {\n" +
+		"    const tasks: Promise<unknown>[] = [];\n" +
 		"    for (const h of [...this.handlers]) {\n" +
 		"      tasks.push(Promise.resolve(h(data)));\n" +
 		"    }\n" +
@@ -115,46 +115,46 @@ const (
 		"    _pending.push(p);\n" +
 		"    return p;\n" +
 		"  }\n" +
-		"  register(handler: (data: any) => any | Promise<any>): void {\n" +
+		"  register(handler: (data: unknown) => unknown | Promise<unknown>): void {\n" +
 		"    this.handlers.push(handler);\n" +
 		"  }\n" +
 		"}\n"
 
-	helperWaitAll = "const _pending: Promise<any>[] = [];\n" +
+	helperWaitAll = "const _pending: Promise<unknown>[] = [];\n" +
 		"async function _waitAll(): Promise<void> {\n" +
 		"  await Promise.all(_pending);\n" +
 		"}\n"
 
 	helperAgent = "class Agent {\n" +
 		"  name: string;\n" +
-		"  handlers: Record<string, (ev: any) => any | Promise<any>> = {};\n" +
-		"  intents: Record<string, (...args: any[]) => any> = {};\n" +
-		"  state: Record<string, any> = {};\n" +
+		"  handlers: Record<string, (ev: unknown) => unknown | Promise<unknown>> = {};\n" +
+		"  intents: Record<string, (...args: unknown[]) => unknown> = {};\n" +
+		"  state: Record<string, unknown> = {};\n" +
 		"  constructor(name: string) {\n" +
 		"    this.name = name;\n" +
 		"  }\n" +
 		"  start(): void {}\n" +
-		"  on(stream: Stream, handler: (ev: any) => any | Promise<any>): void {\n" +
+		"  on(stream: Stream, handler: (ev: unknown) => unknown | Promise<unknown>): void {\n" +
 		"    stream.register(handler);\n" +
 		"  }\n" +
-		"  registerIntent(name: string, handler: (...args: any[]) => any): void {\n" +
+		"  registerIntent(name: string, handler: (...args: unknown[]) => unknown): void {\n" +
 		"    this.intents[name] = handler;\n" +
 		"  }\n" +
-		"  async call(name: string, ...args: any[]): Promise<any> {\n" +
+		"  async call(name: string, ...args: unknown[]): Promise<unknown> {\n" +
 		"    const fn = this.intents[name];\n" +
 		"    if (!fn) throw new Error('unknown intent: ' + name);\n" +
 		"    let res = fn(...args);\n" +
 		"    if (res instanceof Promise) res = await res;\n" +
 		"    return res;\n" +
 		"  }\n" +
-		"  set(name: string, value: any): void { this.state[name] = value; }\n" +
-		"  get(name: string): any { return this.state[name]; }\n" +
+		"  set(name: string, value: unknown): void { this.state[name] = value; }\n" +
+		"  get(name: string): unknown { return this.state[name]; }\n" +
 		"}\n"
 
-	helperQuery = "function _query(src: any[], joins: any[], opts: any): any {\n" +
+	helperQuery = "function _query(src: unknown[], joins: any[], opts: any): unknown[] {\n" +
 		"  let items = src.map(v => [v]);\n" +
 		"  for (const j of joins) {\n" +
-		"    const joined: any[] = [];\n" +
+		"    const joined: unknown[] = [];\n" +
 		"    if (j.right && j.left) {\n" +
 		"      const matched: boolean[] = new Array(j.items.length).fill(false);\n" +
 		"      for (const left of items) {\n" +
@@ -238,17 +238,17 @@ const (
 		"    Deno.writeFileSync(path, data);\n" +
 		"  }\n" +
 		"}\n" +
-		"function _parseCSV(text: string, header: boolean, delim: string): any[] {\n" +
+		"function _parseCSV(text: string, header: boolean, delim: string): unknown[] {\n" +
 		"  const lines = text.trim().split(/\\r?\\n/);\n" +
 		"  if (lines.length === 0) return [];\n" +
 		"  let headers: string[] = [];\n" +
 		"  let start = 0;\n" +
 		"  if (header) { headers = lines[0].split(delim); start = 1; } else { headers = lines[0].split(delim).map((_,i)=>`c${i}`); }\n" +
-		"  const out: any[] = [];\n" +
+		"  const out: unknown[] = [];\n" +
 		"  for (let i=start; i<lines.length; i++) {\n" +
 		"    if (!lines[i]) continue;\n" +
 		"    const parts = lines[i].split(delim);\n" +
-		"    const m: Record<string, any> = {};\n" +
+		"    const m: Record<string, unknown> = {};\n" +
 		"    for (let j=0; j<headers.length; j++) {\n" +
 		"      const val = parts[j] ?? '';\n" +
 		"      if (/^-?\\d+$/.test(val)) m[headers[j]] = parseInt(val,10);\n" +
@@ -259,7 +259,7 @@ const (
 		"  }\n" +
 		"  return out;\n" +
 		"}\n" +
-		"function _load(path: string | null, opts: any): any[] {\n" +
+		"function _load(path: string | null, opts: any): unknown[] {\n" +
 		"  const format = opts?.format ?? 'csv';\n" +
 		"  const header = opts?.header ?? true;\n" +
 		"  let delim = (opts?.delimiter ?? ',')[0];\n" +
@@ -278,7 +278,7 @@ const (
 		"      return _parseCSV(text, header, delim);\n" +
 		"  }\n" +
 		"}\n" +
-		"function _save(rows: any[], path: string | null, opts: any): void {\n" +
+		"function _save(rows: unknown[], path: string | null, opts: any): void {\n" +
 		"  const format = opts?.format ?? 'csv';\n" +
 		"  const header = opts?.header ?? false;\n" +
 		"  let delim = (opts?.delimiter ?? ',')[0];\n" +

@@ -5,8 +5,8 @@ let xs: Array<number> = [1, 2, 3]
 function main(): void {
 	console.log(_avg(xs))
 }
-function _avg(v: any): number {
-  let list: any[] | null = null;
+function _avg(v: unknown): number {
+  let list: unknown[] | null = null;
   if (Array.isArray(v)) list = v;
   else if (v && typeof v === 'object') {
     if (Array.isArray((v as any).items)) list = (v as any).items;

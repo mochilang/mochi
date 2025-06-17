@@ -226,7 +226,11 @@ func tsType(t types.Type) string {
 	case types.UnionType:
 		return sanitizeName(tt.Name)
 	case types.FuncType:
-		return "any"
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = tsType(p)
+		}
+		return "(" + strings.Join(params, ", ") + ") => " + tsType(tt.Return)
 	case types.VoidType:
 		return "void"
 	case types.AnyType:
