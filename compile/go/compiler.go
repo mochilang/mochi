@@ -845,10 +845,8 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	}
 	if value == "" {
 		var err error
-		var typ types.Type
 		if c.env != nil {
-			if t, err2 := c.env.GetVar(s.Name); err2 == nil {
-				typ = t
+			if _, err2 := c.env.GetVar(s.Name); err2 == nil {
 				value, err = c.compileExprHint(s.Value, t)
 			} else {
 				value, err = c.compileExpr(s.Value)
@@ -859,9 +857,9 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		if typ != nil {
+		if c.env != nil {
 			exprT := c.inferExprType(s.Value)
-			if lt, ok := typ.(types.ListType); ok {
+			if lt, ok := t.(types.ListType); ok {
 				if et, ok := exprT.(types.ListType); ok && !containsAny(et.Elem) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
 					c.use("_convSlice")
 					value = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), value)
@@ -3032,7 +3030,31 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 			}
 		}
 	}
-	return c.compileExpr(e)
+	expr, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	if c.env != nil {
+		exprT := c.inferExprType(e)
+		if _, ok := hint.(types.AnyType); !ok {
+			// Convert slice element types when they differ only in Go representation.
+			if lt, ok := hint.(types.ListType); ok {
+				if et, ok2 := exprT.(types.ListType); ok2 {
+					if equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) && !containsAny(et.Elem) {
+						c.use("_convSlice")
+						expr = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), expr)
+						exprT = hint
+					}
+				}
+			}
+			if goType(exprT) != goType(hint) || !equalTypes(exprT, hint) || isAny(exprT) {
+				c.use("_cast")
+				c.imports["encoding/json"] = true
+				expr = fmt.Sprintf("_cast[%s](%s)", goType(hint), expr)
+			}
+		}
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compilePostfixHint(p *parser.PostfixExpr, hint types.Type) (string, error) {
