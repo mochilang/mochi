@@ -3137,6 +3137,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return "", err
 			}
 			at := c.inferExprType(a)
+			if a.Binary.Left.Value.Target.List != nil {
+				at = paramTypes[i]
+			}
 			if lt, ok := paramTypes[i].(types.ListType); ok {
 				if et, ok := at.(types.ListType); ok {
 					if isListOfAny(et) && !isListOfAny(lt) {
