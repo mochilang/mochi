@@ -4,11 +4,22 @@ Mochi can translate programs to multiple targets. Each backend lives in `compile
 
 Current directories:
 
-- `go`  – native Go code generation
-- `py`  – Python source emitter
-- `ts`  – TypeScript/Deno output
-- `wasm` – WebAssembly using the Go backend
-- `swift` – minimal Swift output
+- `c`       – ANSI C code generation
+- `cs`      – C# source emitter
+- `dart`    – Dart source emitter
+- `elixir`  – Elixir helpers
+- `erlang`  – Erlang source emitter
+- `ex`      – Elixir source emitter
+- `go`      – native Go code generation
+- `jvm`     – JVM bytecode output
+- `kt`      – Kotlin source emitter
+- `lua`     – Lua source emitter
+- `py`      – Python source emitter
+- `rb`      – Ruby source emitter
+- `rust`    – Rust source emitter
+- `swift`   – minimal Swift output
+- `ts`      – TypeScript/Deno output
+- `wasm`    – WebAssembly using the Go backend
 
 This guide shows how to implement another backend.
 
