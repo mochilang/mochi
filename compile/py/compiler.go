@@ -1343,8 +1343,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.use("_to_any_map")
-		withStr = fmt.Sprintf("_to_any_map(%s)", w)
+		withStr = fmt.Sprintf("dict(%s)", w)
 	} else {
 		withStr = "None"
 	}
@@ -1367,8 +1366,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.use("_to_any_map")
-		optsStr = fmt.Sprintf("_to_any_map(%s)", w)
+		optsStr = fmt.Sprintf("dict(%s)", w)
 	}
 	c.use("_load")
 	expr := fmt.Sprintf("_load(%s, %s)", pathStr, optsStr)
@@ -1396,8 +1394,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.use("_to_any_map")
-		optsStr = fmt.Sprintf("_to_any_map(%s)", w)
+		optsStr = fmt.Sprintf("dict(%s)", w)
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, pathStr, optsStr), nil
