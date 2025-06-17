@@ -286,3 +286,5 @@ dist/
 node_modules/
 bin/
 tools/libmochi/typescript/mochi.wasm.gz
+**/*.egg-info/
+**/__pycache__/
