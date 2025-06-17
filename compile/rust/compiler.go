@@ -11,14 +11,15 @@ import (
 
 // Compiler translates a Mochi AST into Rust source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	helpers map[string]bool
 }
 
 // New creates a new Rust compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, helpers: make(map[string]bool)}
 }
 
 func (c *Compiler) writeIndent() {
@@ -54,6 +55,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
+	c.writeln("")
+	c.emitRuntime()
 	return c.buf.Bytes(), nil
 }
 
@@ -306,30 +309,40 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		args[i] = v
 	}
 	argStr := strings.Join(args, ", ")
-       switch call.Func {
-       case "print":
-               if len(args) == 1 {
-                       return fmt.Sprintf("println!(\"{}\", %s)", argStr), nil
-               }
-               fmtParts := make([]string, len(args))
-               for i := range args {
-                       fmtParts[i] = "{}"
-               }
-               fmtStr := strings.Join(fmtParts, " ")
-               return fmt.Sprintf("println!(\"%s\", %s)", fmtStr, argStr), nil
-       case "str":
-               if len(args) == 1 {
-                       return fmt.Sprintf("format!(\"{}\", %s)", argStr), nil
-               }
-               fmtParts := make([]string, len(args))
-               for i := range args {
-                       fmtParts[i] = "{}"
-               }
-               fmtStr := strings.Join(fmtParts, " ")
-               return fmt.Sprintf("format!(\"%s\", %s)", fmtStr, argStr), nil
-       case "len":
+	switch call.Func {
+	case "print":
+		if len(args) == 1 {
+			return fmt.Sprintf("println!(\"{}\", %s)", argStr), nil
+		}
+		fmtParts := make([]string, len(args))
+		for i := range args {
+			fmtParts[i] = "{}"
+		}
+		fmtStr := strings.Join(fmtParts, " ")
+		return fmt.Sprintf("println!(\"%s\", %s)", fmtStr, argStr), nil
+	case "str":
+		if len(args) == 1 {
+			return fmt.Sprintf("format!(\"{}\", %s)", argStr), nil
+		}
+		fmtParts := make([]string, len(args))
+		for i := range args {
+			fmtParts[i] = "{}"
+		}
+		fmtStr := strings.Join(fmtParts, " ")
+		return fmt.Sprintf("format!(\"%s\", %s)", fmtStr, argStr), nil
+	case "len":
 		if len(args) == 1 {
 			return fmt.Sprintf("%s.len() as i32", args[0]), nil
+		}
+	case "count":
+		if len(args) == 1 {
+			c.use("_count")
+			return fmt.Sprintf("_count(&%s)", args[0]), nil
+		}
+	case "avg":
+		if len(args) == 1 {
+			c.use("_avg")
+			return fmt.Sprintf("_avg(&%s)", args[0]), nil
 		}
 	}
 	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
