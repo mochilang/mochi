@@ -12,9 +12,10 @@ import (
 
 // Compiler translates a Mochi AST into Dart source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	tempVarCount int
 }
 
 // New creates a new Dart compiler instance.
@@ -143,6 +144,10 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 
 func (c *Compiler) compileFor(s *parser.ForStmt) error {
 	name := sanitizeName(s.Name)
+	loopVar := name
+	if s.Name == "_" {
+		loopVar = c.newVar()
+	}
 	if s.RangeEnd != nil {
 		start, err := c.compileExpr(s.Source)
 		if err != nil {
@@ -152,13 +157,26 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", name, start, name, end, name))
+		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", loopVar, start, loopVar, end, loopVar))
 	} else {
 		src, err := c.compileExpr(s.Source)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (var %s in %s) {", name, src))
+		iterVar := src
+		needTemp := isMapExpr(c, s.Source) || isStringExpr(c, s.Source)
+		if needTemp {
+			tmp := c.newVar()
+			c.writeln(fmt.Sprintf("var %s = %s;", tmp, src))
+			iterVar = tmp
+		}
+		if isMapExpr(c, s.Source) {
+			c.writeln(fmt.Sprintf("for (var %s in %s.values) {", loopVar, iterVar))
+		} else if isStringExpr(c, s.Source) {
+			c.writeln(fmt.Sprintf("for (var %s in %s.runes) {", loopVar, iterVar))
+		} else {
+			c.writeln(fmt.Sprintf("for (var %s in %s) {", loopVar, iterVar))
+		}
 	}
 	c.indent++
 	for _, st := range s.Body {
@@ -242,7 +260,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+		if op.Op == "in" {
+			if isMapPostfix(c, op.Right) {
+				expr = fmt.Sprintf("(%s.containsKey(%s))", right, expr)
+			} else {
+				expr = fmt.Sprintf("(%s.contains(%s))", right, expr)
+			}
+		} else {
+			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+		}
 	}
 	return expr, nil
 }
@@ -321,6 +347,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s: %s", k, v)
+		}
+		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -398,4 +438,68 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func isMapExpr(c *Compiler, e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			if u.Value.Target.Map != nil {
+				return true
+			}
+			if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+				if c.env != nil {
+					if t, err := c.env.GetVar(sel.Root); err == nil {
+						if _, ok := t.(types.MapType); ok {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isStringExpr(c *Compiler, e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			if lit := u.Value.Target.Lit; lit != nil && lit.Str != nil {
+				return true
+			}
+			if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+				if c.env != nil {
+					if t, err := c.env.GetVar(sel.Root); err == nil {
+						if _, ok := t.(types.StringType); ok {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isMapPostfix(c *Compiler, p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}
+	return isMapExpr(c, e)
+}
+
+func isStringPostfix(c *Compiler, p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}
+	return isStringExpr(c, e)
 }

@@ -1,6 +1,7 @@
 package dartcode
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -37,4 +38,10 @@ func sanitizeName(name string) string {
 		return "_" + res
 	}
 	return res
+}
+
+func (c *Compiler) newVar() string {
+	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+	c.tempVarCount++
+	return name
 }
