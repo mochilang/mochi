@@ -1,0 +1,7 @@
+Person = Struct.new(:name, :age, keyword_init: true)
+
+people = [Person.new(name: "Alice", age: 30), Person.new(name: "Bob", age: 15), Person.new(name: "Charlie", age: 65)]
+names = (((people)).select { |p| (p.age >= 18) }).map { |p| p.name }
+for n in names
+	puts([n].join(" "))
+end

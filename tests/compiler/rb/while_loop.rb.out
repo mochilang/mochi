@@ -1,0 +1,5 @@
+i = 0
+while (i < 3)
+	puts([i].join(" "))
+	i = (i + 1)
+end

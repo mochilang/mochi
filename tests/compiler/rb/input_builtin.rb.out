@@ -1,0 +1,5 @@
+puts(["Enter first input:"].join(" "))
+input1 = STDIN.gets.to_s.strip
+puts(["Enter second input:"].join(" "))
+input2 = STDIN.gets.to_s.strip
+puts(["You entered:", input1, ",", input2].join(" "))
