@@ -1,0 +1,28 @@
+#!/usr/bin/env escript
+-module(main).
+-export([main/1]).
+
+main(_) ->
+	ok,
+	people = [#{name => "Alice", age => 30}, #{name => "Bob", age => 15}, #{name => "Charlie", age => 65}],
+	names = [maps:get(name, p) || p <- people, (maps:get(age, p) >= 18)],
+	lists:foreach(fun(n) ->
+		mochi_print([n])
+	end, names).
+
+mochi_print(Args) ->
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
+
+mochi_format(X) when is_integer(X) -> integer_to_list(X);
+mochi_format(X) when is_float(X) -> float_to_list(X);
+mochi_format(X) when is_list(X) -> X;
+mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
+
+mochi_while(Cond, Body) ->
+	case Cond() of
+		true ->
+			Body(),
+			mochi_while(Cond, Body);
+		_ -> ok
+	end.
