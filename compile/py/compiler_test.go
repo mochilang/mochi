@@ -168,6 +168,8 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 		runDir(i)
 	}
 
+	// Additional examples that triggered compiler bugs previously.
+	runDir(267)
 	// Example 378 previously failed due to name clashes between tests and
 	// global variables.
 	runDir(378)

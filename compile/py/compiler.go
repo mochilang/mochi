@@ -1184,8 +1184,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + expr + ")", nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
+		var typ types.Type
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
 		for _, s := range p.Selector.Tail {
-			expr += "." + sanitizeName(s)
+			name := sanitizeName(s)
+			if mt, ok := typ.(types.MapType); ok {
+				expr += fmt.Sprintf("[%q]", name)
+				typ = mt.Value
+			} else {
+				expr += "." + name
+				if st, ok := typ.(types.StructType); ok {
+					typ = st.Fields[s]
+				} else {
+					typ = nil
+				}
+			}
 		}
 		return expr, nil
 	case p.Struct != nil:
@@ -1319,9 +1336,15 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if s, ok := simpleStringKey(it.Key); ok {
+			k = fmt.Sprintf("%q", s)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
@@ -1405,10 +1428,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		return "", err
-	}
 	hasSide := false
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -1441,6 +1460,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	orig := c.env
 	c.env = child
+
+	var groupKey string
+	if q.Group != nil {
+		var err error
+		groupKey, err = c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		child.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+	}
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+
+	// Simple group-by without joins or filters
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		alias := sanitizeName(q.Group.Name)
+		c.use("_group_by")
+		expr := fmt.Sprintf("_group_by(%s, lambda %s: (%s), lambda %s: (%s))", src, sanitizeName(q.Var), groupKey, alias, sel)
+		c.env = orig
+		return expr, nil
+	}
 
 	if !hasSide {
 		loops := []string{fmt.Sprintf("%s in %s", sanitizeName(q.Var), src)}
@@ -1608,34 +1653,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if sortExpr != "" {
 		sortFn = fmt.Sprintf("lambda %s: (%s)", allParams, sortExpr)
 	}
-	var b strings.Builder
-	b.WriteString("(lambda:\n")
-	b.WriteString("\t_src = " + src + "\n")
-	b.WriteString("\treturn _query(_src, [\n")
+	parts := make([]string, len(joins))
 	for i, j := range joins {
-		b.WriteString("\t\t" + j)
-		if i != len(joins)-1 {
-			b.WriteString(",")
-		}
-		b.WriteString("\n")
+		parts[i] = j
 	}
-	b.WriteString("\t], { 'select': " + selectFn)
+	opts := "{ 'select': " + selectFn
 	if whereFn != "" {
-		b.WriteString(", 'where': " + whereFn)
+		opts += ", 'where': " + whereFn
 	}
 	if sortFn != "" {
-		b.WriteString(", 'sortKey': " + sortFn)
+		opts += ", 'sortKey': " + sortFn
 	}
 	if skipExpr != "" {
-		b.WriteString(", 'skip': " + skipExpr)
+		opts += ", 'skip': " + skipExpr
 	}
 	if takeExpr != "" {
-		b.WriteString(", 'take': " + takeExpr)
+		opts += ", 'take': " + takeExpr
 	}
-	b.WriteString(" })\n")
-	b.WriteString(")()")
+	opts += " }"
 	c.use("_query")
-	return b.String(), nil
+	return fmt.Sprintf("_query(list(%s), [%s], %s)", src, strings.Join(parts, ", "), opts), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {

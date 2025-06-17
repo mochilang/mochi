@@ -307,6 +307,29 @@ var helperQuery = "def _query(src, joins, opts):\n" +
 	"        res.append(opts['select'](*r))\n" +
 	"    return res\n"
 
+var helperGroupBy = "class _Group:\n" +
+	"    def __init__(self, key):\n" +
+	"        self.key = key\n" +
+	"        self.Items = []\n" +
+	"\n" +
+	"def _group_by(src, key_fn, sel_fn):\n" +
+	"    groups = {}\n" +
+	"    order = []\n" +
+	"    for it in src:\n" +
+	"        key = key_fn(it)\n" +
+	"        ks = str(key)\n" +
+	"        g = groups.get(ks)\n" +
+	"        if not g:\n" +
+	"            g = _Group(key)\n" +
+	"            groups[ks] = g\n" +
+	"            order.append(ks)\n" +
+	"        g.Items.append(it)\n" +
+	"    res = []\n" +
+	"    for ks in order:\n" +
+	"        g = groups[ks]\n" +
+	"        res.append(sel_fn(g))\n" +
+	"    return res\n"
+
 var helperMap = map[string]string{
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
@@ -324,6 +347,7 @@ var helperMap = map[string]string{
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,
 	"_query":      helperQuery,
+	"_group_by":   helperGroupBy,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }

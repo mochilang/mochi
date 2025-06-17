@@ -313,6 +313,9 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 			child.SetVar(j.Var, je, true)
 		}
+		if p.Query.Group != nil {
+			child.SetVar(p.Query.Group.Name, types.GroupType{Elem: elemType}, true)
+		}
 		orig := c.env
 		c.env = child
 		elem := c.inferExprType(p.Query.Select)
