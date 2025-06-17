@@ -623,7 +623,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		retT := c.returnType
-		exprT := c.inferExprType(s.Return.Value)
+		exprT := c.inferExprTypeHint(s.Return.Value, retT)
 		if retT != nil {
 			retGo := goType(retT)
 			exprGo := goType(exprT)
@@ -760,7 +760,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		if s.Type != nil {
 			typ = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
-			typ = c.inferExprType(s.Value)
+			typ = c.inferExprTypeHint(s.Value, typ)
 		} else if t, err := c.env.GetVar(s.Name); err == nil {
 			typ = t
 		}
@@ -784,7 +784,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			if err != nil {
 				return err
 			}
-			exprT := c.inferExprType(s.Value)
+			exprT := c.inferExprTypeHint(s.Value, typ)
 			if lt, ok := typ.(types.ListType); ok {
 				if et, ok := exprT.(types.ListType); ok && !containsAny(et.Elem) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
 					c.use("_convSlice")
@@ -861,7 +861,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			return err
 		}
 		if typ != nil {
-			exprT := c.inferExprType(s.Value)
+			exprT := c.inferExprTypeHint(s.Value, typ)
 			if lt, ok := typ.(types.ListType); ok {
 				if et, ok := exprT.(types.ListType); ok && !containsAny(et.Elem) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
 					c.use("_convSlice")
@@ -879,7 +879,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		typ = targetType
 	}
 	finalTyp := targetType
-	exprT := c.inferExprType(s.Value)
+	exprT := c.inferExprTypeHint(s.Value, finalTyp)
 	if finalTyp != nil {
 		exprGo := goType(exprT)
 		typGo := goType(finalTyp)
@@ -3148,7 +3148,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			at := c.inferExprType(a)
+			at := c.inferExprTypeHint(a, paramTypes[i])
 			if lt, ok := paramTypes[i].(types.ListType); ok {
 				if et, ok := at.(types.ListType); ok {
 					if isListOfAny(et) && !isListOfAny(lt) {
