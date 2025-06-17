@@ -140,7 +140,7 @@ pull-src: ## Pull latest source code from GitHub repo
 
 release: ## Release new version. Usage: make release VERSION=X.Y.Z
 ifndef VERSION
-	$(error ❌ VERSION not set. Usage: make release VERSION=X.Y.Z)
+$(error ❌ VERSION not set. Usage: make release VERSION=X.Y.Z)
 endif
 	@echo "✏️  Preparing Mochi v$(VERSION)..."
 
