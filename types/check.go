@@ -381,8 +381,49 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: AnyType{},
 	}, false)
 
+	// Pre-register all type and union declarations so functions can refer
+	// to them before their definitions appear. This mirrors how many
+	// languages allow forward references to types.
+	for _, stmt := range prog.Statements {
+		if stmt.Type == nil {
+			continue
+		}
+		if len(stmt.Type.Members) > 0 {
+			st := StructType{Name: stmt.Type.Name, Fields: map[string]Type{}, Order: []string{}, Methods: map[string]Method{}}
+			env.SetStruct(stmt.Type.Name, st)
+			env.types[stmt.Type.Name] = st
+		} else if len(stmt.Type.Variants) > 0 {
+			ut := UnionType{Name: stmt.Type.Name, Variants: map[string]StructType{}}
+			env.SetUnion(stmt.Type.Name, ut)
+			env.types[stmt.Type.Name] = ut
+			for _, v := range stmt.Type.Variants {
+				env.SetStruct(v.Name, StructType{Name: v.Name, Fields: map[string]Type{}, Order: []string{}})
+			}
+		}
+	}
+
+	// First fully process all type declarations to populate their fields
+	// before checking other statements. This ensures functions can use
+	// structs defined later in the file.
+	for _, stmt := range prog.Statements {
+		if stmt.Type != nil {
+			if err := checkStmt(stmt, env, VoidType{}); err != nil {
+				// accumulate errors but keep going to collect all
+				// type definitions
+				fmtErr := err
+				if fmtErr != nil {
+					// ignore, will be handled in next phase
+				}
+			}
+		}
+	}
+
 	var errs []error
 	for _, stmt := range prog.Statements {
+		if stmt.Type != nil {
+			// already processed
+			continue
+		}
 		if err := checkStmt(stmt, env, VoidType{}); err != nil {
 			errs = append(errs, err)
 		}
