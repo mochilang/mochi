@@ -16,11 +16,12 @@ type Compiler struct {
 	indent       int
 	env          *types.Env
 	tempVarCount int
+	helpers      map[string]bool
 }
 
 // New creates a new C# compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, helpers: make(map[string]bool)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -64,6 +65,44 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
+	if len(c.helpers) > 0 {
+		for name := range c.helpers {
+			switch name {
+			case "_count":
+				c.writeln("static int _count(dynamic v) {")
+				c.indent++
+				c.writeln("if (v is string) {")
+				c.indent++
+				c.writeln("return ((string)v).Length;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("if (v is System.Collections.ICollection c) {")
+				c.indent++
+				c.writeln("return c.Count;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("throw new Exception(\"count() expects list or string\");")
+				c.indent--
+				c.writeln("}")
+			case "_avg":
+				c.writeln("static double _avg(dynamic v) {")
+				c.indent++
+				c.writeln("if (v == null) return 0.0;")
+				c.writeln("int _n = 0;")
+				c.writeln("double _sum = 0;")
+				c.writeln("foreach (var it in v) {")
+				c.indent++
+				c.writeln("_sum += Convert.ToDouble(it);")
+				c.writeln("_n++;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return _n == 0 ? 0.0 : _sum / _n;")
+				c.indent--
+				c.writeln("}")
+			}
+			c.writeln("")
+		}
+	}
 	c.indent--
 	c.writeln("}")
 
@@ -372,6 +411,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		return fmt.Sprintf("Console.WriteLine(%s)", argStr), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count() expects 1 arg")
+		}
+		c.use("_count")
+		return fmt.Sprintf("_count(%s)", argStr), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg() expects 1 arg")
+		}
+		c.use("_avg")
+		return fmt.Sprintf("_avg(%s)", argStr), nil
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len() expects 1 arg")
@@ -456,4 +507,11 @@ func (c *Compiler) newVar() string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
 	return name
+}
+
+func (c *Compiler) use(name string) {
+	if c.helpers == nil {
+		c.helpers = make(map[string]bool)
+	}
+	c.helpers[name] = true
 }
