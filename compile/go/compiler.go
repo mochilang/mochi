@@ -3067,11 +3067,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			at := paramTypes[i]
+			at := c.inferExprType(a)
 			if lt, ok := paramTypes[i].(types.ListType); ok {
-				if et, ok := at.(types.ListType); ok && !isListOfAny(et) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
-					c.use("_convSlice")
-					v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
+				if et, ok := at.(types.ListType); ok {
+					if isListOfAny(et) && !isListOfAny(lt) {
+						c.use("_convSlice")
+						v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
+					} else if !isListOfAny(et) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
+						c.use("_convSlice")
+						v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
+					}
 				}
 			}
 			args[i] = v
