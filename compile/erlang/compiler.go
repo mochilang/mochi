@@ -281,6 +281,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				erlOp = "/="
 			}
 			out = fmt.Sprintf("(%s %s %s)", out, erlOp, right)
+		case "in":
+			out = fmt.Sprintf("maps:is_key(%s, %s)", out, right)
 		default:
 			return "", fmt.Errorf("unsupported operator %s", op.Op)
 		}
@@ -331,6 +333,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				res = fmt.Sprintf("mochi_print([%s])", argStr)
 			case "len":
 				res = fmt.Sprintf("length(%s)", argStr)
+			case "str":
+				res = fmt.Sprintf("mochi_format(%s)", argStr)
 			default:
 				res = fmt.Sprintf("%s(%s)", res, argStr)
 			}
@@ -394,6 +398,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("mochi_print([%s])", argStr), nil
 		case "len":
 			return fmt.Sprintf("length(%s)", argStr), nil
+		case "str":
+			return fmt.Sprintf("mochi_format(%s)", argStr), nil
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
 		}
