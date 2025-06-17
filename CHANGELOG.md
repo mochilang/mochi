@@ -1,4 +1,28 @@
 # 📦 CHANGELOG.md
+## [0.7.6] – 2025-06-18
+
+### Added
+
+* Primitive casts in Go and Python compilers
+* Typed empty list assignment and concatenation in Go
+* Map key casts and typed struct field hints
+* Basic group-by in Go and TypeScript
+* `input` builtin for reading lines
+* LeetCode 401 example
+
+### Changed
+
+* Go compiler infers empty literal types in equality
+* Benchmarks regenerated with updated results
+
+### Fixed
+
+* Argument count validation for builtins
+* Forward type declarations in the type checker
+* Float literal handling and return hints in the Go compiler
+* Name conflicts in Python and Go tests
+
+
 ## [0.7.5] – 2025-06-17
 
 ### Added
