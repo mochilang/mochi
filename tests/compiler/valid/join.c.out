@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct { int len; int *data; } list_int;
+
+static list_int list_int_create(int len) {
+	list_int l;
+	l.len = len;
+	l.data = (int*)malloc(sizeof(int)*len);
+	return l;
+}
+
+static int _count(list_int v) {
+	return v.len;
+}
+
+static int _avg(list_int v) {
+	if (v.len == 0) return 0;
+	int sum = 0;
+	for (int i = 0; i < v.len; i++) {
+		sum += v.data[i];
+	}
+	return sum / v.len;
+}
+
+int main() {
+	list_int _t1 = list_int_create(3);
+	_t1.data[0] = 0;
+	_t1.data[1] = 0;
+	_t1.data[2] = 0;
+	int customers = _t1;
+	list_int _t2 = list_int_create(4);
+	_t2.data[0] = 0;
+	_t2.data[1] = 0;
+	_t2.data[2] = 0;
+	_t2.data[3] = 0;
+	int orders = _t2;
+	int result = 0;
+	printf("%s\n", "--- Orders with customer info ---");
+	for (int _t3 = 0; _t3 < result.len; _t3++) {
+		int entry = result.data[_t3];
+		printf("%s\n", "Order");
+	}
+	return 0;
+}
