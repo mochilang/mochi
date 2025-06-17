@@ -1,4 +1,4 @@
-package bench
+package rscode
 
 import (
 	"fmt"
@@ -6,8 +6,9 @@ import (
 	"os/exec"
 )
 
-// ensureRust checks for the rust toolchain and installs it via rustup if missing.
-func ensureRust() error {
+// EnsureRust verifies that the Rust toolchain is installed and attempts to
+// install it via rustup if missing.
+func EnsureRust() error {
 	if _, err := exec.LookPath("rustc"); err == nil {
 		return nil
 	}
@@ -16,10 +17,4 @@ func ensureRust() error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
-}
-
-// EnsureRust verifies that the Rust toolchain is installed and attempts to
-// install it if missing. It is safe to call from tests.
-func EnsureRust() error {
-	return ensureRust()
 }

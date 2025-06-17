@@ -1,4 +1,4 @@
-package bench
+package cscode
 
 import (
 	"fmt"
@@ -8,12 +8,8 @@ import (
 )
 
 // EnsureDotnet verifies that the dotnet CLI is installed and attempts to
-// install it if missing. It is safe to call from tests.
+// install it if missing.
 func EnsureDotnet() error {
-	return ensureDotnet()
-}
-
-func ensureDotnet() error {
 	if _, err := exec.LookPath("dotnet"); err == nil {
 		return nil
 	}

@@ -9,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	bench "mochi/bench"
 	ccode "mochi/compile/c"
 	"mochi/golden"
 	"mochi/parser"
@@ -18,7 +17,7 @@ import (
 
 // TestCCompiler_TwoSum compiles the LeetCode example to C and runs it.
 func TestCCompiler_TwoSum(t *testing.T) {
-	cc, err := bench.EnsureCC()
+	cc, err := ccode.EnsureCC()
 	if err != nil {
 		t.Skipf("C compiler not installed: %v", err)
 	}
@@ -67,7 +66,7 @@ func TestCCompiler_TwoSum(t *testing.T) {
 }
 
 func TestCCompiler_SubsetPrograms(t *testing.T) {
-	cc, err := bench.EnsureCC()
+	cc, err := ccode.EnsureCC()
 	if err != nil {
 		t.Skipf("C compiler not installed: %v", err)
 	}
@@ -103,7 +102,7 @@ func TestCCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestCCompiler_GoldenOutput(t *testing.T) {
-	if _, err := bench.EnsureCC(); err != nil {
+	if _, err := ccode.EnsureCC(); err != nil {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/c", ".mochi", ".c.out", func(src string) ([]byte, error) {
