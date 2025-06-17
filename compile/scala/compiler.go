@@ -189,7 +189,8 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("if (" + cond + ") {")
+	c.writeIndent()
+	c.buf.WriteString("if (" + cond + ") {\n")
 	c.indent++
 	for _, s := range st.Then {
 		if err := c.compileStmt(s); err != nil {
@@ -197,7 +198,25 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 		}
 	}
 	c.indent--
-	c.writeln("}")
+	c.writeIndent()
+	c.buf.WriteString("}")
+	if st.ElseIf != nil {
+		c.buf.WriteString(" else ")
+		return c.compileIf(st.ElseIf)
+	}
+	if len(st.Else) > 0 {
+		c.buf.WriteString(" else {\n")
+		c.indent++
+		for _, s := range st.Else {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeIndent()
+		c.buf.WriteString("}")
+	}
+	c.buf.WriteByte('\n')
 	return nil
 }
 
@@ -313,26 +332,26 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 	switch call.Func {
 	case "print":
 		return fmt.Sprintf("println(%s)", argStr), nil
-       case "len":
-               if len(args) != 1 {
-                       return "", fmt.Errorf("len expects 1 arg")
-               }
-               return fmt.Sprintf("%s.length", args[0]), nil
-       case "count":
-               if len(args) != 1 {
-                       return "", fmt.Errorf("count expects 1 arg")
-               }
-               return fmt.Sprintf("%s.size", args[0]), nil
-       case "avg":
-               if len(args) != 1 {
-                       return "", fmt.Errorf("avg expects 1 arg")
-               }
-               a := args[0]
-               return fmt.Sprintf("(%s.sum / %s.size)", a, a), nil
-       case "str":
-               if len(args) == 1 {
-                       return args[0] + ".toString()", nil
-               }
+	case "len":
+		if len(args) != 1 {
+			return "", fmt.Errorf("len expects 1 arg")
+		}
+		return fmt.Sprintf("%s.length", args[0]), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		return fmt.Sprintf("%s.size", args[0]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		a := args[0]
+		return fmt.Sprintf("(%s.sum / %s.size)", a, a), nil
+	case "str":
+		if len(args) == 1 {
+			return args[0] + ".toString()", nil
+		}
 	}
 	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 }
