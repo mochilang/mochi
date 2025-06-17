@@ -1,0 +1,8 @@
+1. error[T039]: function json expects 1 arguments, got 0
+  --> tests/types/errors/json_missing_arg.mochi:1:1
+
+  1 | json()
+    | ^
+
+help:
+  Pass exactly 1 arguments to `json`.

@@ -1,0 +1,8 @@
+1. error[T039]: function len expects 1 arguments, got 0
+  --> tests/types/errors/len_missing_arg.mochi:1:7
+
+  1 | print(len())
+    |       ^
+
+help:
+  Pass exactly 1 arguments to `len`.

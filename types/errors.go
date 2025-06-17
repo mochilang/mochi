@@ -57,6 +57,7 @@ var Errors = map[string]diagnostic.Template{
 	"T036": {Code: "T036", Message: "cannot take length of type %s", Help: "Use `len(...)` only on lists, strings, or maps."},
 	"T037": {Code: "T037", Message: "count() expects list or group, got %s", Help: "Pass a list or group to count()."},
 	"T038": {Code: "T038", Message: "avg() expects numeric list or group, got %s", Help: "Ensure the list or group contains numbers."},
+	"T039": {Code: "T039", Message: "function %s expects %d arguments, got %d", Help: "Pass exactly %d arguments to `%s`."},
 }
 
 // --- Wrapper Functions ---
@@ -217,4 +218,11 @@ func errCountOperand(pos lexer.Position, typ Type) error {
 
 func errAvgOperand(pos lexer.Position, typ Type) error {
 	return Errors["T038"].New(pos, typ)
+}
+
+func errArgCount(pos lexer.Position, name string, expected, actual int) error {
+	tmpl := Errors["T039"]
+	msg := fmt.Sprintf(tmpl.Message, name, expected, actual)
+	help := fmt.Sprintf(tmpl.Help, expected, name)
+	return diagnostic.New(tmpl.Code, pos, msg, help)
 }
