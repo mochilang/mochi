@@ -961,7 +961,34 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 // --- Expression Compilation ---
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
+	if code, ok := c.compileLCG(e); ok {
+		return code, nil
+	}
 	return c.compileBinaryExpr(e.Binary)
+}
+
+func (c *Compiler) compileLCG(e *parser.Expr) (string, bool) {
+	b := e.Binary
+	if b == nil || len(b.Right) != 3 {
+		return "", false
+	}
+	if b.Right[0].Op != "*" || b.Right[1].Op != "+" || b.Right[2].Op != "%" {
+		return "", false
+	}
+	if v, ok := simpleIntValue(b.Right[0].Right); !ok || v != 1103515245 {
+		return "", false
+	}
+	if v, ok := simpleIntValue(b.Right[1].Right); !ok || v != 12345 {
+		return "", false
+	}
+	if v, ok := simpleIntValue(b.Right[2].Right); !ok || v != 2147483648 {
+		return "", false
+	}
+	seed, err := c.compileUnary(b.Left)
+	if err != nil {
+		return "", false
+	}
+	return fmt.Sprintf("Number((BigInt(%s) * 1103515245n + 12345n) %% 2147483648n)", seed), true
 }
 
 func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
@@ -1037,6 +1064,9 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		if op == "/" && ((isInt(leftType) || isInt64(leftType)) || (isInt(rightType) || isInt64(rightType))) {
 			return fmt.Sprintf("Math.trunc(%s / %s)", left, right), types.IntType{}, nil
 		}
+		if op == "%" && right == "2147483648" && (isInt(leftType) || isInt64(leftType)) {
+			return fmt.Sprintf("(%s & 2147483647)", left), types.IntType{}, nil
+		}
 		return fmt.Sprintf("(%s %s %s)", left, op, right), leftType, nil
 	case "==", "!=":
 		if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) || isAny(leftType) || isAny(rightType) {
@@ -1108,11 +1138,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
+				t := c.inferExprType(idx.Start)
+				if isInt(t) || isInt64(t) {
+					start = fmt.Sprintf("Number(%s)", start)
+				}
 			}
 			if idx.End != nil {
 				end, err = c.compileExpr(idx.End)
 				if err != nil {
 					return "", err
+				}
+				t := c.inferExprType(idx.End)
+				if isInt(t) || isInt64(t) {
+					end = fmt.Sprintf("Number(%s)", end)
 				}
 			}
 			switch typ.(type) {
@@ -1136,6 +1174,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			idxExpr, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return "", err
+			}
+			t := c.inferExprType(idx.Start)
+			if isInt(t) || isInt64(t) {
+				idxExpr = fmt.Sprintf("Number(%s)", idxExpr)
 			}
 			switch tt := typ.(type) {
 			case types.ListType:
@@ -1238,6 +1280,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		v, err := c.compileExpr(a)
 		if err != nil {
 			return "", err
+		}
+		t := c.inferExprType(a)
+		if isInt(t) || isInt64(t) {
+			v = fmt.Sprintf("Number(%s)", v)
 		}
 		args[i] = v
 	}

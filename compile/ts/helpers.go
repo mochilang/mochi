@@ -72,6 +72,20 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func simpleIntValue(e *parser.PostfixExpr) (int64, bool) {
+	if e == nil {
+		return 0, false
+	}
+	if len(e.Ops) != 0 {
+		return 0, false
+	}
+	p := e.Target
+	if p.Lit != nil && p.Lit.Int != nil {
+		return int64(*p.Lit.Int), true
+	}
+	return 0, false
+}
+
 func (c *Compiler) compileStructType(st types.StructType) {
 	name := sanitizeName(st.Name)
 	if c.structs[name] {
