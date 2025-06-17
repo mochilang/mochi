@@ -499,6 +499,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "len" && len(args) == 1 {
 			return args[0] + ".size", nil
 		}
+		if name == "count" && len(args) == 1 {
+			return args[0] + ".size", nil
+		}
+		if name == "avg" && len(args) == 1 {
+			return args[0] + ".average()", nil
+		}
 		if name == "str" && len(args) == 1 {
 			return args[0] + ".toString()", nil
 		}
