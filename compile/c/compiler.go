@@ -10,6 +10,38 @@ import (
 	"mochi/types"
 )
 
+var cReserved = map[string]bool{
+	"auto": true, "break": true, "case": true, "char": true, "const": true,
+	"continue": true, "default": true, "do": true, "double": true, "else": true,
+	"enum": true, "extern": true, "float": true, "for": true, "goto": true,
+	"if": true, "int": true, "long": true, "register": true, "return": true,
+	"short": true, "signed": true, "sizeof": true, "static": true, "struct": true,
+	"switch": true, "typedef": true, "union": true, "unsigned": true, "void": true,
+	"volatile": true, "while": true,
+}
+
+func sanitizeName(name string) string {
+	if name == "" {
+		return ""
+	}
+	var b strings.Builder
+	for i, r := range name {
+		if r == '_' || ('0' <= r && r <= '9' && i > 0) || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') {
+			b.WriteRune(r)
+		} else {
+			b.WriteRune('_')
+		}
+	}
+	s := b.String()
+	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
+		s = "_" + s
+	}
+	if cReserved[s] {
+		s = "_" + s
+	}
+	return s
+}
+
 type Compiler struct {
 	buf                    bytes.Buffer
 	indent                 int
@@ -234,7 +266,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	ret := c.cType(fun.Return)
 	c.buf.WriteString(ret + " ")
-	c.buf.WriteString(fun.Name)
+	c.buf.WriteString(sanitizeName(fun.Name))
 	c.buf.WriteByte('(')
 	for i, p := range fun.Params {
 		if i > 0 {
@@ -242,7 +274,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		}
 		c.buf.WriteString(c.cType(p.Type))
 		c.buf.WriteByte(' ')
-		c.buf.WriteString(p.Name)
+		c.buf.WriteString(sanitizeName(p.Name))
 	}
 	c.buf.WriteString("){\n")
 	c.indent++
@@ -271,12 +303,12 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		name := s.Let.Name
+		name := sanitizeName(s.Let.Name)
 		typ := "int"
 		if s.Let.Type != nil {
 			typ = c.cType(s.Let.Type)
 		} else if c.env != nil {
-			if t, err := c.env.GetVar(name); err == nil {
+			if t, err := c.env.GetVar(s.Let.Name); err == nil {
 				switch tt := t.(type) {
 				case types.ListType:
 					if _, ok := tt.Elem.(types.IntType); ok {
@@ -298,12 +330,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
 		}
 	case s.Var != nil:
-		name := s.Var.Name
+		name := sanitizeName(s.Var.Name)
 		typ := "int"
 		if s.Var.Type != nil {
 			typ = c.cType(s.Var.Type)
 		} else if c.env != nil {
-			if t, err := c.env.GetVar(name); err == nil {
+			if t, err := c.env.GetVar(s.Var.Name); err == nil {
 				switch tt := t.(type) {
 				case types.ListType:
 					if _, ok := tt.Elem.(types.IntType); ok {
@@ -325,7 +357,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
 		}
 	case s.Assign != nil:
-		lhs := s.Assign.Name
+		lhs := sanitizeName(s.Assign.Name)
 		if len(s.Assign.Index) > 0 {
 			idx := c.compileExpr(s.Assign.Index[0].Start)
 			val := c.compileExpr(s.Assign.Value)
@@ -359,12 +391,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
-	name := f.Name
+	name := sanitizeName(f.Name)
+	useVar := f.Name != "_"
 	if f.RangeEnd != nil {
 		start := c.compileExpr(f.Source)
 		end := c.compileExpr(f.RangeEnd)
-		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", name, start, name, end, name))
-		c.indent++
+		loopVar := name
+		if !useVar {
+			loopVar = c.newTemp()
+		}
+		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", loopVar, start, loopVar, end, loopVar))
+		if useVar && loopVar != name {
+			c.indent++
+			c.writeln(fmt.Sprintf("int %s = %s;", name, loopVar))
+		} else {
+			c.indent++
+		}
 	} else {
 		src := c.compileExpr(f.Source)
 		idx := c.newTemp()
@@ -372,21 +414,27 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if isStr {
 			c.writeln(fmt.Sprintf("for (int %s = 0; %s[%s] != '\\0'; %s++) {", idx, src, idx, idx))
 			c.indent++
-			c.writeln(fmt.Sprintf("char %s[2];", name))
-			c.writeln(fmt.Sprintf("%s[0] = %s[%s];", name, src, idx))
-			c.writeln(fmt.Sprintf("%s[1] = '\\0';", name))
+			if useVar {
+				c.writeln(fmt.Sprintf("char %s[2];", name))
+				c.writeln(fmt.Sprintf("%s[0] = %s[%s];", name, src, idx))
+				c.writeln(fmt.Sprintf("%s[1] = '\\0';", name))
+			}
 		} else {
 			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
 			c.indent++
-			c.writeln(fmt.Sprintf("int %s = %s.data[%s];", name, src, idx))
+			if useVar {
+				c.writeln(fmt.Sprintf("int %s = %s.data[%s];", name, src, idx))
+			}
 		}
 		oldEnv := c.env
 		if c.env != nil {
 			c.env = types.NewEnv(c.env)
-			if isStr {
-				c.env.SetVar(name, types.StringType{}, true)
-			} else {
-				c.env.SetVar(name, types.IntType{}, true)
+			if useVar {
+				if isStr {
+					c.env.SetVar(f.Name, types.StringType{}, true)
+				} else {
+					c.env.SetVar(f.Name, types.IntType{}, true)
+				}
 			}
 		}
 		for _, st := range f.Body {
@@ -404,7 +452,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	oldEnv := c.env
 	if c.env != nil {
 		c.env = types.NewEnv(c.env)
-		c.env.SetVar(name, types.IntType{}, true)
+		if useVar {
+			c.env.SetVar(f.Name, types.IntType{}, true)
+		}
 	}
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -616,7 +666,7 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
-	return s.Root
+	return sanitizeName(s.Root)
 }
 
 func isStringArg(e *parser.Expr, env *types.Env) bool {
