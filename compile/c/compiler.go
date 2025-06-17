@@ -149,11 +149,43 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
 		}
+	case s.Var != nil:
+		name := s.Var.Name
+		typ := "int"
+		if s.Var.Type != nil {
+			typ = c.cType(s.Var.Type)
+		} else if c.env != nil {
+			if t, err := c.env.GetVar(name); err == nil {
+				if lt, ok := t.(types.ListType); ok {
+					if _, ok := lt.Elem.(types.IntType); ok {
+						typ = "list_int"
+					}
+				}
+			}
+		}
+		if s.Var.Value != nil {
+			val := c.compileExpr(s.Var.Value)
+			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+		} else {
+			c.writeln(fmt.Sprintf("%s %s;", typ, name))
+		}
+	case s.Assign != nil:
+		lhs := s.Assign.Name
+		if len(s.Assign.Index) > 0 {
+			idx := c.compileExpr(s.Assign.Index[0].Start)
+			val := c.compileExpr(s.Assign.Value)
+			c.writeln(fmt.Sprintf("%s.data[%s] = %s;", lhs, idx, val))
+		} else {
+			val := c.compileExpr(s.Assign.Value)
+			c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
+		}
 	case s.Return != nil:
 		val := c.compileExpr(s.Return.Value)
 		c.writeln(fmt.Sprintf("return %s;", val))
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		cond := c.compileExpr(s.If.Cond)
 		c.writeln(fmt.Sprintf("if (%s) {", cond))
@@ -170,6 +202,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if expr != "" {
 			c.writeln(fmt.Sprintf("%s;", expr))
 		}
+	case s.Break != nil:
+		c.writeln("break;")
+	case s.Continue != nil:
+		c.writeln("continue;")
 	default:
 		// unsupported
 	}
@@ -183,6 +219,20 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", name, start, name, end, name))
 	c.indent++
 	for _, st := range f.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond := c.compileExpr(w.Cond)
+	c.writeln(fmt.Sprintf("while (%s) {", cond))
+	c.indent++
+	for _, st := range w.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
