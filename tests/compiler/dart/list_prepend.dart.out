@@ -1,4 +1,4 @@
-List<int> prepend(level, result) {
+prepend(level, result) {
 	result = ([level] + result);
 	return result;
 }

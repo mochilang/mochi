@@ -3,6 +3,8 @@ package dartcode
 import (
 	"fmt"
 	"strings"
+
+	"mochi/parser"
 )
 
 func (c *Compiler) writeln(s string) {
@@ -44,4 +46,34 @@ func (c *Compiler) newVar() string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
 	return name
+}
+
+func dartType(t *parser.TypeRef) string {
+	if t == nil {
+		return ""
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "int"
+		case "float":
+			return "double"
+		case "bool":
+			return "bool"
+		case "string":
+			return "String"
+		default:
+			return sanitizeName(*t.Simple)
+		}
+	}
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			elem := dartType(t.Generic.Args[0])
+			if elem == "int" || elem == "double" || elem == "bool" || elem == "String" {
+				return "List<" + elem + ">"
+			}
+		}
+		return ""
+	}
+	return ""
 }

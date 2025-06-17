@@ -1,4 +1,4 @@
-List<int> searchMatrix(matrix, target) {
+bool searchMatrix(matrix, target) {
 	var m = matrix.length;
 	if ((m == 0)) {
 		return false;

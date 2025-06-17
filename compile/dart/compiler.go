@@ -12,32 +12,32 @@ import (
 
 // Compiler translates a Mochi AST into Dart source code.
 type Compiler struct {
-        buf          bytes.Buffer
-        indent       int
-        env          *types.Env
-        tempVarCount int
-       imports      map[string]bool
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	tempVarCount int
+	imports      map[string]bool
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-       return &Compiler{env: env, imports: make(map[string]bool)}
+	return &Compiler{env: env, imports: make(map[string]bool)}
 }
 
 // Compile returns Dart source implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-       c.buf.Reset()
-       c.imports = make(map[string]bool)
+	c.buf.Reset()
+	c.imports = make(map[string]bool)
 
-       var body bytes.Buffer
-       oldBuf := c.buf
-       c.buf = body
+	var body bytes.Buffer
+	oldBuf := c.buf
+	c.buf = body
 
-       // Emit function declarations first.
-       for _, s := range prog.Statements {
-               if s.Fun != nil {
-                       if err := c.compileFun(s.Fun); err != nil {
-                               return nil, err
+	// Emit function declarations first.
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
 			}
 			c.writeln("")
 		}
@@ -55,19 +55,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	c.indent--
-       c.writeln("}")
-       bodyBytes := c.buf.Bytes()
+	c.writeln("}")
+	bodyBytes := c.buf.Bytes()
 
-       c.buf = oldBuf
-       if len(c.imports) > 0 {
-               for imp := range c.imports {
-                       c.writeln(fmt.Sprintf("import '%s';", imp))
-               }
-               c.writeln("")
-       }
-       c.buf.Write(bodyBytes)
+	c.buf = oldBuf
+	if len(c.imports) > 0 {
+		for imp := range c.imports {
+			c.writeln(fmt.Sprintf("import '%s';", imp))
+		}
+		c.writeln("")
+	}
+	c.buf.Write(bodyBytes)
 
-       return c.buf.Bytes(), nil
+	return c.buf.Bytes(), nil
 }
 
 // --- Statements ---
@@ -418,24 +418,24 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("%s.length", arg), nil
 	}
-       // handle avg()
-       if name == "avg" && len(call.Args) == 1 {
-               arg, err := c.compileExpr(call.Args[0])
-               if err != nil {
-                       return "", err
-               }
-               return fmt.Sprintf("((){var _l=%s;var _s=0;for(var _x in _l){_s+=_x;}return _l.isEmpty?0:_s/_l.length;})()", arg), nil
-       }
-       // handle input()
-       if name == "input" && len(call.Args) == 0 {
-               c.imports["dart:io"] = true
-               return "stdin.readLineSync() ?? ''", nil
-       }
-       // handle print with multiple arguments
-       if name == "print" && len(call.Args) > 1 {
-               parts := make([]string, len(call.Args))
-               for i, a := range call.Args {
-                       v, err := c.compileExpr(a)
+	// handle avg()
+	if name == "avg" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("((){var _l=%s;var _s=0;for(var _x in _l){_s+=_x;}return _l.isEmpty?0:_s/_l.length;})()", arg), nil
+	}
+	// handle input()
+	if name == "input" && len(call.Args) == 0 {
+		c.imports["dart:io"] = true
+		return "stdin.readLineSync() ?? ''", nil
+	}
+	// handle print with multiple arguments
+	if name == "print" && len(call.Args) > 1 {
+		parts := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			v, err := c.compileExpr(a)
 			if err != nil {
 				return "", err
 			}
@@ -477,7 +477,12 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	for i, p := range fun.Params {
 		params[i] = sanitizeName(p.Name)
 	}
-	c.writeln(fmt.Sprintf("List<int> %s(%s) {", name, strings.Join(params, ", ")))
+	ret := dartType(fun.Return)
+	if ret == "" {
+		c.writeln(fmt.Sprintf("%s(%s) {", name, strings.Join(params, ", ")))
+	} else {
+		c.writeln(fmt.Sprintf("%s %s(%s) {", ret, name, strings.Join(params, ", ")))
+	}
 	c.indent++
 	for _, st := range fun.Body {
 		if err := c.compileStmt(st); err != nil {
