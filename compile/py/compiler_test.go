@@ -83,7 +83,7 @@ func TestPyCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestPyCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/valid", ".mochi", ".py.out", func(src string) ([]byte, error) {
+	compileFn := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -98,24 +98,33 @@ func TestPyCompiler_GoldenOutput(t *testing.T) {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
 		return bytes.TrimSpace(code), nil
-	})
+	}
 
-	golden.Run(t, "tests/compiler/py", ".mochi", ".py.out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
-		if err != nil {
-			return nil, fmt.Errorf("❌ parse error: %w", err)
-		}
-		typeEnv := types.NewEnv(nil)
-		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
-			return nil, fmt.Errorf("❌ type error: %v", errs[0])
-		}
-		c := pycode.New(typeEnv)
-		code, err := c.Compile(prog)
-		if err != nil {
-			return nil, fmt.Errorf("❌ compile error: %w", err)
-		}
-		return bytes.TrimSpace(code), nil
-	})
+	dirs := []string{
+		"tests/compiler/c",
+		"tests/compiler/cs",
+		"tests/compiler/dart",
+		"tests/compiler/erl",
+		"tests/compiler/erl_simple",
+		"tests/compiler/ex",
+		"tests/compiler/fs",
+		"tests/compiler/go",
+		"tests/compiler/hs",
+		"tests/compiler/java",
+		"tests/compiler/kt",
+		"tests/compiler/lua",
+		"tests/compiler/php",
+		"tests/compiler/rb",
+		"tests/compiler/rust",
+		"tests/compiler/scala",
+		"tests/compiler/swift",
+		"tests/compiler/valid",
+		"tests/compiler/py",
+	}
+
+	for _, dir := range dirs {
+		golden.Run(t, dir, ".mochi", ".py.out", compileFn)
+	}
 }
 
 func TestPyCompiler_LeetCodeExamples(t *testing.T) {
