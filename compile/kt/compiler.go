@@ -78,7 +78,12 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("val %s = %s", sanitizeName(stmt.Name), expr))
+	if stmt.Type != nil {
+		typ := ktType(c.resolveTypeRef(stmt.Type))
+		c.writeln(fmt.Sprintf("val %s: %s = %s", sanitizeName(stmt.Name), typ, expr))
+	} else {
+		c.writeln(fmt.Sprintf("val %s = %s", sanitizeName(stmt.Name), expr))
+	}
 	return nil
 }
 
@@ -91,7 +96,12 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		}
 		value = v
 	}
-	c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(stmt.Name), value))
+	if stmt.Type != nil {
+		typ := ktType(c.resolveTypeRef(stmt.Type))
+		c.writeln(fmt.Sprintf("var %s: %s = %s", sanitizeName(stmt.Name), typ, value))
+	} else {
+		c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(stmt.Name), value))
+	}
 	return nil
 }
 
@@ -324,6 +334,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems = append(elems, ce)
 		}
 		return "listOf(" + joinArgs(elems) + ")", nil
+	case p.Map != nil:
+		items := []string{}
+		for _, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items = append(items, fmt.Sprintf("%s to %s", k, v))
+		}
+		if len(items) == 0 {
+			return "mutableMapOf()", nil
+		}
+		return "mutableMapOf(" + joinArgs(items) + ")", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
@@ -372,6 +399,9 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			return types.ListType{Elem: c.resolveTypeRef(t.Generic.Args[0])}
 		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return types.MapType{Key: c.resolveTypeRef(t.Generic.Args[0]), Value: c.resolveTypeRef(t.Generic.Args[1])}
+		}
 	}
 	return types.AnyType{}
 }
@@ -388,6 +418,8 @@ func ktType(t types.Type) string {
 		return "String"
 	case types.ListType:
 		return "List<" + ktType(tt.Elem) + ">"
+	case types.MapType:
+		return "MutableMap<" + ktType(tt.Key) + ", " + ktType(tt.Value) + ">"
 	default:
 		return "Any"
 	}
