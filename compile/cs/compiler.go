@@ -126,6 +126,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.Break != nil:
+		c.writeln("break;")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue;")
+		return nil
 	default:
 		// ignore other statements in minimal compiler
 	}
@@ -219,6 +227,23 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		}
 		c.indent--
 	}
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while (" + cond + ") {")
+	c.indent++
+	for _, s := range w.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
 	c.writeln("}")
 	return nil
 }
