@@ -11,12 +11,13 @@ import (
 )
 
 type Compiler struct {
-	buf        bytes.Buffer
-	indent     int
-	tmp        int
-	env        *types.Env
-	needsStr   bool
-	needsInput bool
+	buf              bytes.Buffer
+	indent           int
+	tmp              int
+	env              *types.Env
+	needsStr         bool
+	needsInput       bool
+	needsListListInt bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -64,6 +65,9 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 			if elem == "int" {
 				return "list_int"
 			}
+			if elem == "list_int" {
+				return "list_list_int"
+			}
 		}
 	}
 	return "int"
@@ -104,6 +108,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln("")
 	c.writeln("typedef struct { int len; int *data; } list_int;")
+	if c.needsListListInt {
+		c.writeln("typedef struct { int len; list_int *data; } list_list_int;")
+	}
 	c.writeln("")
 	c.writeln("static list_int list_int_create(int len) {")
 	c.indent++
@@ -113,6 +120,17 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("return l;")
 	c.indent--
 	c.writeln("}")
+	if c.needsListListInt {
+		c.writeln("")
+		c.writeln("static list_list_int list_list_int_create(int len) {")
+		c.indent++
+		c.writeln("list_list_int l;")
+		c.writeln("l.len = len;")
+		c.writeln("l.data = (list_int*)malloc(sizeof(list_int)*len);")
+		c.writeln("return l;")
+		c.indent--
+		c.writeln("}")
+	}
 	c.writeln("")
 	// helper functions for builtins
 	c.writeln("static int _count(list_int v) {")
@@ -203,6 +221,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				case types.ListType:
 					if _, ok := tt.Elem.(types.IntType); ok {
 						typ = "list_int"
+					} else if lt, ok2 := tt.Elem.(types.ListType); ok2 {
+						if _, ok3 := lt.Elem.(types.IntType); ok3 {
+							typ = "list_list_int"
+						}
 					}
 				case types.StringType:
 					typ = "char*"
@@ -226,6 +248,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				case types.ListType:
 					if _, ok := tt.Elem.(types.IntType); ok {
 						typ = "list_int"
+					} else if lt, ok2 := tt.Elem.(types.ListType); ok2 {
+						if _, ok3 := lt.Elem.(types.IntType); ok3 {
+							typ = "list_list_int"
+						}
 					}
 				case types.StringType:
 					typ = "char*"
@@ -427,10 +453,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileSelector(p.Selector)
 	case p.List != nil:
 		name := c.newTemp()
-		c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
-		for i, el := range p.List.Elems {
-			v := c.compileExpr(el)
-			c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+		nested := false
+		if len(p.List.Elems) > 0 && isListLiteral(p.List.Elems[0]) {
+			nested = true
+		}
+		if nested {
+			c.needsListListInt = true
+			c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(%d);", name, len(p.List.Elems)))
+			for i, el := range p.List.Elems {
+				v := c.compileExpr(el)
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
+		} else {
+			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
+			for i, el := range p.List.Elems {
+				v := c.compileExpr(el)
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
 		}
 		return name
 	case p.Call != nil:
@@ -547,4 +586,29 @@ func isStringPrimary(p *parser.Primary, env *types.Env) bool {
 		}
 	}
 	return false
+}
+
+func isListLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isListLiteralUnary(e.Binary.Left)
+}
+
+func isListLiteralUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return isListLiteralPostfix(u.Value)
+}
+
+func isListLiteralPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return isListLiteralPrimary(p.Target)
+}
+
+func isListLiteralPrimary(p *parser.Primary) bool {
+	return p != nil && p.List != nil
 }
