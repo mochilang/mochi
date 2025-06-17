@@ -54,6 +54,9 @@ var Errors = map[string]diagnostic.Template{
 	"T033": {Code: "T033", Message: "`where` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
 	"T034": {Code: "T034", Message: "join source must be a list", Help: "Use a list value after `in`."},
 	"T035": {Code: "T035", Message: "`on` condition must be boolean", Help: "Ensure the condition evaluates to true or false."},
+	"T036": {Code: "T036", Message: "cannot take length of type %s", Help: "Use `len(...)` only on lists, strings, or maps."},
+	"T037": {Code: "T037", Message: "count() expects list or group, got %s", Help: "Pass a list or group to count()."},
+	"T038": {Code: "T038", Message: "avg() expects numeric list or group, got %s", Help: "Ensure the list or group contains numbers."},
 }
 
 // --- Wrapper Functions ---
@@ -202,4 +205,16 @@ func errJoinSourceList(pos lexer.Position) error {
 
 func errJoinOnBoolean(pos lexer.Position) error {
 	return Errors["T035"].New(pos)
+}
+
+func errLenOperand(pos lexer.Position, typ Type) error {
+	return Errors["T036"].New(pos, typ)
+}
+
+func errCountOperand(pos lexer.Position, typ Type) error {
+	return Errors["T037"].New(pos, typ)
+}
+
+func errAvgOperand(pos lexer.Position, typ Type) error {
+	return Errors["T038"].New(pos, typ)
 }

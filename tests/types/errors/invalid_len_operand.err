@@ -1,0 +1,8 @@
+1. error[T036]: cannot take length of type int
+  --> tests/types/errors/invalid_len_operand.mochi:2:7
+
+  2 | print(len(x))
+    |       ^
+
+help:
+  Use `len(...)` only on lists, strings, or maps.

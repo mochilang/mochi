@@ -1,0 +1,8 @@
+1. error[T038]: avg() expects numeric list or group, got string
+  --> tests/types/errors/avg_non_numeric.mochi:1:7
+
+  1 | print(avg(["a"]))
+    |       ^
+
+help:
+  Ensure the list or group contains numbers.

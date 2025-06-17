@@ -1277,13 +1277,15 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			fixed = paramCount - 1
 		}
 
+		argTypes := make([]Type, argCount)
 		for i := 0; i < argCount && i < fixed; i++ {
-			argType, err := checkExprWithExpected(p.Call.Args[i], env, ft.Params[i])
+			at, err := checkExprWithExpected(p.Call.Args[i], env, ft.Params[i])
 			if err != nil {
 				return nil, err
 			}
-			if !unify(argType, ft.Params[i], nil) {
-				return nil, errArgTypeMismatch(p.Pos, i, ft.Params[i], argType)
+			argTypes[i] = at
+			if !unify(at, ft.Params[i], nil) {
+				return nil, errArgTypeMismatch(p.Pos, i, ft.Params[i], at)
 			}
 		}
 
@@ -1295,17 +1297,23 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				variadicType = ft.Params[paramCount-1]
 			}
 			for i := fixed; i < argCount; i++ {
-				argType, err := checkExprWithExpected(p.Call.Args[i], env, variadicType)
+				at, err := checkExprWithExpected(p.Call.Args[i], env, variadicType)
 				if err != nil {
 					return nil, err
 				}
-				if !unify(argType, variadicType, nil) {
-					return nil, errArgTypeMismatch(p.Pos, i, variadicType, argType)
+				argTypes[i] = at
+				if !unify(at, variadicType, nil) {
+					return nil, errArgTypeMismatch(p.Pos, i, variadicType, at)
 				}
+			}
+			if err := checkBuiltinCall(p.Call.Func, argTypes, p.Pos); err != nil {
+				return nil, err
 			}
 			return ft.Return, nil
 		}
-
+		if err := checkBuiltinCall(p.Call.Func, argTypes, p.Pos); err != nil {
+			return nil, err
+		}
 		if argCount == paramCount {
 			return ft.Return, nil
 		}
@@ -1820,6 +1828,46 @@ func isNumeric(t Type) bool {
 	default:
 		return false
 	}
+}
+
+func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
+	if len(args) == 0 {
+		return nil
+	}
+	switch name {
+	case "len":
+		switch args[0].(type) {
+		case ListType, MapType, StringType, AnyType:
+			return nil
+		default:
+			return errLenOperand(pos, args[0])
+		}
+	case "count":
+		switch args[0].(type) {
+		case ListType, GroupType, AnyType:
+			return nil
+		default:
+			return errCountOperand(pos, args[0])
+		}
+	case "avg":
+		switch a := args[0].(type) {
+		case ListType:
+			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
+				return nil
+			}
+			return errAvgOperand(pos, a.Elem)
+		case GroupType:
+			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
+				return nil
+			}
+			return errAvgOperand(pos, a.Elem)
+		case AnyType:
+			return nil
+		default:
+			return errAvgOperand(pos, a)
+		}
+	}
+	return nil
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {

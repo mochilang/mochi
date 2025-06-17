@@ -1,0 +1,8 @@
+1. error[T037]: count() expects list or group, got int
+  --> tests/types/errors/count_invalid_type.mochi:2:7
+
+  2 | print(count(x))
+    |       ^
+
+help:
+  Pass a list or group to count().
