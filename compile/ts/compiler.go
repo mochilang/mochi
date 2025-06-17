@@ -961,17 +961,29 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 // --- Expression Compilation ---
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
-	return c.compileBinaryExpr(e.Binary)
+	expr, typ, err := c.compileBinaryExpr(e.Binary)
+	if err != nil {
+		return "", err
+	}
+	if isInt(typ) && strings.Contains(expr, "BigInt") {
+		expr = fmt.Sprintf("Number(%s)", expr)
+	}
+	return expr, nil
 }
 
-func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
+func (c *Compiler) compileExprNoWrap(e *parser.Expr) (string, error) {
+	expr, _, err := c.compileBinaryExpr(e.Binary)
+	return expr, err
+}
+
+func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, types.Type, error) {
 	if b == nil {
-		return "", fmt.Errorf("nil binary expression")
+		return "", types.AnyType{}, fmt.Errorf("nil binary expression")
 	}
 
 	first, err := c.compileUnary(b.Left)
 	if err != nil {
-		return "", err
+		return "", types.AnyType{}, err
 	}
 	operands := []string{first}
 	typesList := []types.Type{c.inferUnaryType(b.Left)}
@@ -980,7 +992,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
-			return "", err
+			return "", types.AnyType{}, err
 		}
 		operands = append(operands, r)
 		typesList = append(typesList, c.inferPostfixType(part.Right))
@@ -1002,7 +1014,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			if contains(lvl, ops[i]) {
 				expr, typ, err := c.compileBinaryOp(operands[i], typesList[i], ops[i], operands[i+1], typesList[i+1])
 				if err != nil {
-					return "", err
+					return "", types.AnyType{}, err
 				}
 				operands[i] = expr
 				typesList[i] = typ
@@ -1016,9 +1028,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	}
 
 	if len(operands) != 1 {
-		return "", fmt.Errorf("unexpected state after binary compilation")
+		return "", types.AnyType{}, fmt.Errorf("unexpected state after binary compilation")
 	}
-	return operands[0], nil
+	return operands[0], typesList[0], nil
 }
 
 func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, right string, rightType types.Type) (string, types.Type, error) {
@@ -1033,6 +1045,24 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		}
 		if op == "+" && isString(leftType) && isString(rightType) {
 			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
+		}
+		if (isInt(leftType) || isInt64(leftType)) && (isInt(rightType) || isInt64(rightType)) {
+			a := left
+			if !strings.Contains(left, "BigInt") {
+				a = fmt.Sprintf("BigInt(%s)", left)
+			}
+			b := right
+			if !strings.Contains(right, "BigInt") {
+				b = fmt.Sprintf("BigInt(%s)", right)
+			}
+			expr := fmt.Sprintf("%s %s %s", a, op, b)
+			if op == "/" {
+				expr = fmt.Sprintf("%s / %s", a, b)
+			}
+			if isInt64(leftType) || isInt64(rightType) {
+				return expr, types.Int64Type{}, nil
+			}
+			return expr, types.IntType{}, nil
 		}
 		if op == "/" && ((isInt(leftType) || isInt64(leftType)) || (isInt(rightType) || isInt64(rightType))) {
 			return fmt.Sprintf("Math.trunc(%s / %s)", left, right), types.IntType{}, nil
@@ -1181,7 +1211,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.Group != nil:
-		expr, err := c.compileExpr(p.Group)
+		expr, err := c.compileExprNoWrap(p.Group)
 		if err != nil {
 			return "", err
 		}
