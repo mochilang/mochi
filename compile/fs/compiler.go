@@ -390,6 +390,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	argStr := strings.Join(args, " ")
 	switch call.Func {
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("(string %s)", args[0]), nil
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
