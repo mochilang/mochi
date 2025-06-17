@@ -14,6 +14,36 @@ func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
 	return c.inferBinaryType(e.Binary)
 }
 
+// inferExprTypeHint infers the type of an expression using a hint.
+// This is primarily used for literals that would otherwise default to
+// `any`, such as empty list literals. The hint is applied recursively
+// for nested lists.
+func (c *Compiler) inferExprTypeHint(e *parser.Expr, hint types.Type) types.Type {
+	if e == nil {
+		return types.AnyType{}
+	}
+	if lt, ok := hint.(types.ListType); ok {
+		if e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ll := e.Binary.Left.Value.Target.List; ll != nil {
+				// If the list literal is empty, use the hint directly.
+				if len(ll.Elems) == 0 {
+					return types.ListType{Elem: lt.Elem}
+				}
+				elem := c.inferExprTypeHint(ll.Elems[0], lt.Elem)
+				for _, el := range ll.Elems[1:] {
+					t := c.inferExprTypeHint(el, lt.Elem)
+					if !equalTypes(elem, t) {
+						elem = types.AnyType{}
+						break
+					}
+				}
+				return types.ListType{Elem: elem}
+			}
+		}
+	}
+	return c.inferExprType(e)
+}
+
 func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 	if b == nil {
 		return types.AnyType{}
