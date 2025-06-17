@@ -245,6 +245,46 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.env = orig
+	var b strings.Builder
+	b.WriteString("for ")
+	b.WriteString(q.Var)
+	b.WriteString(" <- ")
+	b.WriteString(src)
+	if cond != "" {
+		b.WriteString(", ")
+		b.WriteString(cond)
+	}
+	b.WriteString(", do: ")
+	b.WriteString(sel)
+	return b.String(), nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "", fmt.Errorf("nil expr")
@@ -399,6 +439,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}
 		return name, nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s: %s", f.Name, v)
+		}
+		return "%{" + strings.Join(parts, ", ") + "}", nil
 	case p.Call != nil:
 		args := []string{}
 		for _, a := range p.Call.Args {
@@ -425,6 +475,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
 		}
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
