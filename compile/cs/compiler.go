@@ -815,6 +815,8 @@ func csType(t *parser.TypeRef) string {
 			return "string"
 		case "bool":
 			return "bool"
+		case "any":
+			return "dynamic"
 		case "void":
 			return "void"
 		default:
