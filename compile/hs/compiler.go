@@ -287,7 +287,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
 		}
 		if p.Call.Func == "print" {
-			return fmt.Sprintf("print %s", strings.Join(args, " ")), nil
+			joined := strings.Join(args, " ")
+			if len(args) != 1 || strings.ContainsAny(joined, " ") {
+				return fmt.Sprintf("print (%s)", joined), nil
+			}
+			return fmt.Sprintf("print %s", joined), nil
 		}
 		return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
 	case p.Selector != nil:
