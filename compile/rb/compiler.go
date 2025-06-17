@@ -24,6 +24,14 @@ func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFunStmt(s.Fun); err != nil {
 				return nil, err
@@ -401,6 +409,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
+		}
+		return fmt.Sprintf("%s.new(%s)", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Group != nil:
 		v, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -410,6 +430,122 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	c.env = child
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	varName := sanitizeName(q.Var)
+	c.env = orig
+
+	simple := sortExpr == "" && skipExpr == "" && takeExpr == ""
+
+	var b strings.Builder
+	b.WriteString("(begin\n")
+	b.WriteString("\t_src = " + src + "\n")
+	if simple {
+		b.WriteString("\t_res = []\n")
+	} else {
+		b.WriteString("\t_items = []\n")
+	}
+	b.WriteString("\t_src.each do |" + varName + "|\n")
+	if cond != "" {
+		b.WriteString("\t\tnext unless (" + cond + ")\n")
+	}
+	if simple {
+		b.WriteString("\t\t_res << (" + sel + ")\n")
+	} else {
+		b.WriteString("\t\t_items << " + varName + "\n")
+	}
+	b.WriteString("\tend\n")
+	if !simple {
+		if sortExpr != "" {
+			b.WriteString("\t_items = _items.sort_by { |" + varName + "| " + sortExpr + " }\n")
+		}
+		if skipExpr != "" {
+			b.WriteString("\t_items = _items.drop(" + skipExpr + ")\n")
+		}
+		if takeExpr != "" {
+			b.WriteString("\t_items = _items.take(" + takeExpr + ")\n")
+		}
+		b.WriteString("\t_res = []\n")
+		b.WriteString("\t_items.each do |" + varName + "|\n")
+		b.WriteString("\t\t_res << (" + sel + ")\n")
+		b.WriteString("\tend\n")
+	} else {
+		if sortExpr != "" {
+			b.WriteString("\t_res = _res.sort_by { |" + varName + "| " + sortExpr + " }\n")
+		}
+		if skipExpr != "" {
+			b.WriteString("\t_res = _res.drop(" + skipExpr + ")\n")
+		}
+		if takeExpr != "" {
+			b.WriteString("\t_res = _res.take(" + takeExpr + ")\n")
+		}
+	}
+	b.WriteString("\t_res\n")
+	b.WriteString("end)")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	fields := make([]string, 0, len(t.Members))
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fields = append(fields, ":"+sanitizeName(m.Field.Name))
+		}
+	}
+	c.writeln(fmt.Sprintf("%s = Struct.new(%s, keyword_init: true)", sanitizeName(t.Name), strings.Join(fields, ", ")))
+	return nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
