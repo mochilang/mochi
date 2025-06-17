@@ -126,6 +126,7 @@ func TestGoCompiler_GoldenOutput(t *testing.T) {
 func TestGoCompiler_LeetCodeExamples(t *testing.T) {
 	runExample(t, 201)
 	runExample(t, 207)
+	runExample(t, 346)
 	runExample(t, 378)
 }
 
