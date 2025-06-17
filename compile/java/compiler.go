@@ -15,11 +15,12 @@ type Compiler struct {
 	indent    int
 	env       *types.Env
 	mainStmts []*parser.Statement
+	helpers   map[string]bool
 }
 
 // New creates a new Java compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, helpers: make(map[string]bool)}
 }
 
 // Compile generates Java code for prog.
@@ -50,6 +51,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+
+	c.emitRuntime()
 
 	c.indent--
 	c.writeln("}")
@@ -457,6 +460,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "str" && len(args) == 1 {
 			return "String.valueOf(" + args[0] + ")", nil
 		}
+		if name == "count" && len(args) == 1 {
+			c.helpers["_count"] = true
+			return "_count(" + joinArgs(args) + ")", nil
+		}
+		if name == "avg" && len(args) == 1 {
+			c.helpers["_avg"] = true
+			return "_avg(" + joinArgs(args) + ")", nil
+		}
 		return name + "(" + joinArgs(args) + ")", nil
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
@@ -515,6 +526,32 @@ func (c *Compiler) writeln(s string) {
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteByte('\t')
+	}
+}
+
+func (c *Compiler) emitRuntime() {
+	if c.helpers["_count"] {
+		c.writeln("")
+		c.writeln("static int _count(int[] arr) {")
+		c.indent++
+		c.writeln("return arr.length;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_avg"] {
+		c.writeln("")
+		c.writeln("static int _avg(int[] arr) {")
+		c.indent++
+		c.writeln("if (arr.length == 0) return 0;")
+		c.writeln("int sum = 0;")
+		c.writeln("for (int v : arr) {")
+		c.indent++
+		c.writeln("sum += v;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return sum / arr.length;")
+		c.indent--
+		c.writeln("}")
 	}
 }
 
