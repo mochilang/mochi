@@ -1,0 +1,6 @@
+void main() {
+	var _tmp0 = "hi";
+	for (var ch in _tmp0.runes) {
+		print(ch);
+	}
+}
