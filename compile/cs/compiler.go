@@ -14,6 +14,7 @@ import (
 type Compiler struct {
 	buf          bytes.Buffer
 	indent       int
+	inFun        int
 	env          *types.Env
 	tempVarCount int
 	helpers      map[string]bool
@@ -23,7 +24,7 @@ type Compiler struct {
 
 // New creates a new C# compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string)}
+	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string), inFun: 0}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -115,6 +116,32 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				c.writeln("return _n == 0 ? 0.0 : _sum / _n;")
 				c.indent--
 				c.writeln("}")
+			case "_in":
+				c.writeln("static bool _in(dynamic item, dynamic col) {")
+				c.indent++
+				c.writeln("if (col is string s && item is string sub) {")
+				c.indent++
+				c.writeln("return s.Contains(sub);")
+				c.indent--
+				c.writeln("}")
+				c.writeln("if (col is System.Collections.IDictionary d) {")
+				c.indent++
+				c.writeln("return d.Contains(item);")
+				c.indent--
+				c.writeln("}")
+				c.writeln("if (col is System.Collections.IEnumerable e) {")
+				c.indent++
+				c.writeln("foreach (var it in e) {")
+				c.indent++
+				c.writeln("if (Equals(it, item)) return true;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return false;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return false;")
+				c.indent--
+				c.writeln("}")
 			}
 			c.writeln("")
 		}
@@ -139,13 +166,19 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	if ret == "" {
 		ret = "void"
 	}
-	c.writeln(fmt.Sprintf("static %s %s(%s) {", ret, sanitizeName(fn.Name), strings.Join(params, ", ")))
+	prefix := "static "
+	if c.inFun > 0 {
+		prefix = ""
+	}
+	c.writeln(fmt.Sprintf("%s%s %s(%s) {", prefix, ret, sanitizeName(fn.Name), strings.Join(params, ", ")))
 	c.indent++
+	c.inFun++
 	for _, stmt := range fn.Body {
 		if err := c.compileStmt(stmt); err != nil {
 			return err
 		}
 	}
+	c.inFun--
 	c.indent--
 	c.writeln("}")
 	c.varTypes = origVars
@@ -410,6 +443,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			leftIsList = leftIsList && rightIsList
 		case "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||":
 			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+		case "in":
+			c.use("_in")
+			expr = fmt.Sprintf("_in(%s, %s)", expr, right)
 		default:
 			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
 		}
@@ -559,6 +595,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "new [] { " + strings.Join(elems, ", ") + " }", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("{ %s, %s }", k, v)
+		}
+		return "new Dictionary<dynamic, dynamic> { " + strings.Join(items, ", ") + " }", nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
 		for _, s := range p.Selector.Tail {
@@ -666,6 +716,9 @@ func csType(t *parser.TypeRef) string {
 	if t.Generic != nil {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			return csType(t.Generic.Args[0]) + "[]"
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return fmt.Sprintf("Dictionary<%s, %s>", csType(t.Generic.Args[0]), csType(t.Generic.Args[1]))
 		}
 		args := make([]string, len(t.Generic.Args))
 		for i, a := range t.Generic.Args {
