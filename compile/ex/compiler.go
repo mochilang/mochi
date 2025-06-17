@@ -229,12 +229,20 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
-	value, err := c.compileExpr(stmt.Value)
-	if err != nil {
-		return err
-	}
-	c.writeln(fmt.Sprintf("%s = %s", stmt.Name, value))
-	return nil
+        value, err := c.compileExpr(stmt.Value)
+        if err != nil {
+                return err
+        }
+       if len(stmt.Index) > 0 {
+               idx, err := c.compileExpr(stmt.Index[0].Start)
+               if err != nil {
+                       return err
+               }
+               c.writeln(fmt.Sprintf("%s = Map.put(%s, %s, %s)", stmt.Name, stmt.Name, idx, value))
+               return nil
+       }
+        c.writeln(fmt.Sprintf("%s = %s", stmt.Name, value))
+        return nil
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
