@@ -1,0 +1,77 @@
+// Solution for LeetCode problem 401 - Binary Watch
+// Generate all valid times where the number of LEDs turned on equals `turnedOn`.
+// This implementation avoids union types and pattern matching.
+
+fun countBits(n: int): int {
+  var bits = 0
+  var x = n
+  while x > 0 {
+    if x % 2 == 1 {
+      bits = bits + 1
+    }
+    x = x / 2
+  }
+  return bits
+}
+
+fun readBinaryWatch(turnedOn: int): list<string> {
+  var out: list<string> = []
+  var h = 0
+  while h < 12 {
+    var m = 0
+    while m < 60 {
+      let total = countBits(h) + countBits(m)
+      if total == turnedOn {
+        var time = str(h) + ":"
+        if m < 10 {
+          time = time + "0" + str(m)
+        } else {
+          time = time + str(m)
+        }
+        out = out + [time]
+      }
+      m = m + 1
+    }
+    h = h + 1
+  }
+  return out
+}
+
+// Test cases based on LeetCode examples
+
+test "example 1" {
+  let result = readBinaryWatch(1)
+  // Order doesn't matter, sort for comparison
+  let sorted = from t in result sort by t select t
+  expect sorted == ["0:01","0:02","0:04","0:08","0:16","0:32",
+                    "1:00","2:00","4:00","8:00"]
+}
+
+test "example 2" {
+  let result = readBinaryWatch(9)
+  expect result == []
+}
+
+// Additional edge cases
+
+test "zero leds" {
+  expect readBinaryWatch(0) == ["0:00"]
+}
+
+test "three leds" {
+  let out = readBinaryWatch(3)
+  // Just check count of possibilities to keep test short
+  expect len(out) == 112
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Missing the `var` keyword when a variable changes value:
+     h = h + 1          // ❌ if `h` was declared with `let`
+   Declare with `var` so mutation is allowed.
+2. Using '=' instead of '==' when comparing numbers:
+     if total = turnedOn { ... } // ❌ assignment
+     if total == turnedOn { ... } // ✅ equality check
+3. Forgetting to append to a list with '+ [value]':
+     out = out + [time]  // ✅ appends string to list
+*/
