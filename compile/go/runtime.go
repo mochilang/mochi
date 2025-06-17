@@ -202,14 +202,29 @@ const (
 		"        switch vv := v.(type) {\n" +
 		"        case int:\n" +
 		"            return any(vv).(T)\n" +
+		"        case int64:\n" +
+		"            return any(int(vv)).(T)\n" +
 		"        case float64:\n" +
 		"            return any(int(vv)).(T)\n" +
 		"        case float32:\n" +
 		"            return any(int(vv)).(T)\n" +
 		"        }\n" +
+		"    case int64:\n" +
+		"        switch vv := v.(type) {\n" +
+		"        case int:\n" +
+		"            return any(int64(vv)).(T)\n" +
+		"        case int64:\n" +
+		"            return any(vv).(T)\n" +
+		"        case float64:\n" +
+		"            return any(int64(vv)).(T)\n" +
+		"        case float32:\n" +
+		"            return any(int64(vv)).(T)\n" +
+		"        }\n" +
 		"    case float64:\n" +
 		"        switch vv := v.(type) {\n" +
 		"        case int:\n" +
+		"            return any(float64(vv)).(T)\n" +
+		"        case int64:\n" +
 		"            return any(float64(vv)).(T)\n" +
 		"        case float64:\n" +
 		"            return any(vv).(T)\n" +
@@ -219,6 +234,8 @@ const (
 		"    case float32:\n" +
 		"        switch vv := v.(type) {\n" +
 		"        case int:\n" +
+		"            return any(float32(vv)).(T)\n" +
+		"        case int64:\n" +
 		"            return any(float32(vv)).(T)\n" +
 		"        case float64:\n" +
 		"            return any(float32(vv)).(T)\n" +
