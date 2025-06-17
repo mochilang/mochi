@@ -1,4 +1,4 @@
-package elixir
+package excode
 
 import (
 	"fmt"
