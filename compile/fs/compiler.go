@@ -219,11 +219,19 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileIf(ifst *parser.IfStmt) error {
+	return c.compileIfChain(ifst, true)
+}
+
+func (c *Compiler) compileIfChain(ifst *parser.IfStmt, first bool) error {
 	cond, err := c.compileExpr(ifst.Cond)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("if %s then", cond))
+	kw := "if"
+	if !first {
+		kw = "elif"
+	}
+	c.writeln(fmt.Sprintf("%s %s then", kw, cond))
 	c.indent++
 	for _, st := range ifst.Then {
 		if err := c.compileStmt(st); err != nil {
@@ -231,6 +239,9 @@ func (c *Compiler) compileIf(ifst *parser.IfStmt) error {
 		}
 	}
 	c.indent--
+	if ifst.ElseIf != nil {
+		return c.compileIfChain(ifst.ElseIf, false)
+	}
 	if len(ifst.Else) > 0 {
 		c.writeln("else")
 		c.indent++
