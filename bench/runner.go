@@ -15,6 +15,7 @@ import (
 
 	"github.com/fatih/color"
 
+	ccode "mochi/compile/c"
 	cscode "mochi/compile/cs"
 	gocode "mochi/compile/go"
 	pycode "mochi/compile/py"
@@ -84,6 +85,7 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		templates := []Template{
 			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run", "--aot"}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
 			{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}},
 		}
@@ -132,6 +134,14 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 					panic(err)
 				}
 				out = compiled
+			} else if t.Lang == "mochi_c" {
+				compiled := strings.TrimSuffix(out, ".mochi") + ".c"
+				bin := strings.TrimSuffix(out, ".mochi")
+				if err := compileToC(out, compiled, bin); err != nil {
+					fmt.Fprintf(os.Stderr, "⚠️ skipping %s due to C compile error: %v\n", fileName, err)
+					continue
+				}
+				out = bin
 			} else if t.Lang == "mochi_py" {
 				compiled := strings.TrimSuffix(out, ".mochi") + ".py"
 				if err := compileToPy(out, compiled); err != nil {
@@ -184,6 +194,9 @@ func Run() {
 		panic(err)
 	}
 	if err := cscode.EnsureDotnet(); err != nil {
+		panic(err)
+	}
+	if _, err := ccode.EnsureCC(); err != nil {
 		panic(err)
 	}
 	benches := Benchmarks(tempDir, mochiBin)
@@ -303,6 +316,8 @@ func report(results []Result) {
 				langName = "Mochi (interp)"
 			case "mochi_go":
 				langName = "Mochi"
+			case "mochi_c":
+				langName = "C"
 			case "mochi_py":
 				langName = "Python"
 			case "mochi_ts":
@@ -393,6 +408,36 @@ func compileToTs(mochiFile, tsFile string) error {
 	return os.WriteFile(tsFile, code, 0644)
 }
 
+func compileToC(mochiFile, cFile, binFile string) error {
+	prog, err := parser.Parse(mochiFile)
+	if err != nil {
+		return err
+	}
+	typeEnv := types.NewEnv(nil)
+	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+		return fmt.Errorf("type error: %v", errs[0])
+	}
+	c := ccode.New(typeEnv)
+	code, err := c.Compile(prog)
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(cFile, code, 0644); err != nil {
+		return err
+	}
+	if binFile != "" {
+		cc, err := ccode.EnsureCC()
+		if err != nil {
+			return err
+		}
+		cmd := exec.Command(cc, "-x", "c", cFile, "-o", binFile)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			return fmt.Errorf("cc error: %w\n%s", err, out)
+		}
+	}
+	return nil
+}
+
 func timeNowUs() float64 {
 	return float64(time.Now().UnixNano()) / 1e3
 }
@@ -441,6 +486,8 @@ func exportMarkdown(results []Result) error {
 				langName = "mochi (interp)"
 			case "mochi_go":
 				langName = "Mochi"
+			case "mochi_c":
+				langName = "C"
 			case "mochi_py":
 				langName = "Python"
 			case "mochi_ts":
@@ -491,6 +538,11 @@ func GenerateOutputs(outDir string) error {
 			goOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.go.out", category, name, n))
 			if err := compileToGo(tmp, goOut); err != nil {
 				return err
+			}
+
+			cOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.out", category, name, n))
+			if err := compileToC(tmp, cOut, ""); err != nil {
+				fmt.Fprintf(os.Stderr, "⚠️ failed to generate C output for %s_%s_%d: %v\n", category, name, n, err)
 			}
 
 			pyOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.py.out", category, name, n))

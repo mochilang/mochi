@@ -98,6 +98,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
+	c.writeln("#include <time.h>")
 	c.writeln("")
 	c.writeln("typedef struct { int len; int *data; } list_int;")
 	c.writeln("")
@@ -139,6 +140,20 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	c.writeln("")
+	c.writeln("static int _now() {")
+	c.indent++
+	c.writeln("struct timespec ts;")
+	c.writeln("clock_gettime(CLOCK_MONOTONIC, &ts);")
+	c.writeln("return (int)((long long)ts.tv_sec * 1000000000LL + ts.tv_nsec);")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	c.writeln("static void _json(int duration, int output) {")
+	c.indent++
+	c.writeln("printf(\"{\\\"duration_us\\\": %lld, \\\"output\\\": %lld}\\n\", duration, output);")
+	c.indent--
+	c.writeln("}")
 	c.writeln("")
 
 	c.buf.WriteString(body)
@@ -435,6 +450,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			c.needsStr = true
 			c.writeln(fmt.Sprintf("char* %s = _str(%s);", name, arg))
 			return name
+		} else if p.Call.Func == "now" {
+			return "_now()"
+		} else if p.Call.Func == "json" {
+			if len(p.Call.Args) == 1 {
+				arg := p.Call.Args[0]
+				if arg.Binary != nil && arg.Binary.Left != nil {
+					u := arg.Binary.Left
+					if u.Value != nil && len(u.Value.Ops) == 0 {
+						t := u.Value.Target
+						if t != nil && t.Map != nil && len(t.Map.Items) == 2 {
+							a := c.compileExpr(t.Map.Items[0].Value)
+							b := c.compileExpr(t.Map.Items[1].Value)
+							c.writeln(fmt.Sprintf("_json(%s, %s);", a, b))
+							return ""
+						}
+					}
+				}
+			}
+			// fallback: unsupported
+			return ""
 		}
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {

@@ -9,8 +9,7 @@ let start = now()
 let result = fib(n)
 let duration = (now() - start) / 1000
 
-let output = {
+json({
     "duration_us": duration,
     "output": result,
-}
-json(output)
+})
