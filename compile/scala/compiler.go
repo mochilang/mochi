@@ -383,6 +383,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		}
 		a := args[0]
 		return fmt.Sprintf("(%s.sum / %s.size)", a, a), nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input expects no args")
+		}
+		return "scala.io.StdIn.readLine()", nil
 	case "str":
 		if len(args) == 1 {
 			return args[0] + ".toString()", nil
