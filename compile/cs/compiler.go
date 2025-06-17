@@ -423,6 +423,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input() expects no args")
+		}
+		return "Console.ReadLine()", nil
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len() expects 1 arg")
