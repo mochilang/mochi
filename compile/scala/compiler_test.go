@@ -47,6 +47,8 @@ func TestScalaCompiler_SubsetPrograms(t *testing.T) {
 		if _, err := exec.LookPath("scala-cli"); err == nil {
 			scalaCmd = "scala-cli"
 			args = []string{"run", file}
+		} else if out, err := exec.Command("scala", "-version").CombinedOutput(); err == nil && bytes.Contains(out, []byte("Scala CLI")) {
+			args = []string{"run", file}
 		}
 		out, err := exec.Command(scalaCmd, args...).CombinedOutput()
 		if err != nil {
