@@ -53,7 +53,7 @@ func TestErlangCompiler_SubsetPrograms(t *testing.T) {
 	if _, err := exec.LookPath("escript"); err != nil {
 		t.Skip("escript not installed")
 	}
-	golden.Run(t, "tests/compiler/erl", ".mochi", ".out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/compiler/erl_simple", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -89,7 +89,7 @@ func TestErlangCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestErlangCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/erl", ".mochi", ".erl.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/compiler/erl_simple", ".mochi", ".erl.out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
