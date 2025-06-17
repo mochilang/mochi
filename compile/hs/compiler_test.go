@@ -87,3 +87,21 @@ func TestHSCompiler_GoldenSubset(t *testing.T) {
 		return res, nil
 	})
 }
+
+func TestHSCompiler_GoldenOutput(t *testing.T) {
+	golden.Run(t, "tests/compiler/hs", ".mochi", ".hs.out", func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+		}
+		code, err := hscode.New(env).Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+		return bytes.TrimSpace(code), nil
+	})
+}
