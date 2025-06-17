@@ -56,7 +56,7 @@ func sumRegion(nm NumMatrix, row1 int, col1 int, row2 int, col2 int) int {
 	return (((s[(row2 + 1)][(col2 + 1)] - s[row1][(col2 + 1)]) - s[(row2 + 1)][col1]) + s[row1][col1])
 }
 
-func example() {
+func test_example() {
 	var nm NumMatrix = newNumMatrix([][]int{[]int{3, 0, 1, 4, 2}, []int{5, 6, 3, 2, 1}, []int{1, 2, 0, 1, 5}, []int{4, 1, 0, 1, 7}, []int{1, 0, 3, 0, 5}})
 	_ = nm
 	expect((sumRegion(nm, 2, 1, 4, 3) == 8))
@@ -65,6 +65,5 @@ func example() {
 }
 
 func main() {
-	example()
+	test_example()
 }
-
