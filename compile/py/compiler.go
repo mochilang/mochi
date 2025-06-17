@@ -1306,17 +1306,39 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	if len(m.Items) == 0 {
+		return "{}", nil
+	}
 	items := make([]string, len(m.Items))
+	allSimple := true
+	simpleNames := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if s, ok := simpleStringKey(it.Key); ok {
+			k = fmt.Sprintf("\"%s\"", s)
+			simpleNames[i] = sanitizeName(s)
+		} else {
+			allSimple = false
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			k = fmt.Sprintf("%s", k)
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
 			return "", err
 		}
 		items[i] = fmt.Sprintf("%s: %s", k, v)
+	}
+	if allSimple {
+		c.imports["types"] = "types"
+		parts := make([]string, len(items))
+		for i, name := range simpleNames {
+			parts[i] = fmt.Sprintf("%s=%s", name, strings.Split(items[i], ": ")[1])
+		}
+		return "types.SimpleNamespace(" + strings.Join(parts, ", ") + ")", nil
 	}
 	return "{" + strings.Join(items, ", ") + "}", nil
 }
@@ -1474,6 +1496,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if len(condParts) > 0 {
 			cond = " if " + strings.Join(condParts, " and ")
 		}
+
+		if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			keyExpr, err := c.compileExpr(q.Group.Expr)
+			if err != nil {
+				return "", err
+			}
+			genv := types.NewEnv(child)
+			genv.SetVar(q.Group.Name, types.AnyType{}, true)
+			c.env = genv
+			val, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			c.env = orig
+			c.imports["itertools"] = "itertools"
+			c.imports["types"] = "types"
+			vname := sanitizeName(q.Var)
+			gname := sanitizeName(q.Group.Name)
+			items := fmt.Sprintf("sorted([ %s for %s in %s ], key=lambda %s: %s)", vname, vname, src, vname, keyExpr)
+			expr := fmt.Sprintf("[ (lambda %s=types.SimpleNamespace(key=k, Items=list(g)): %s)() for k, g in itertools.groupby(%s, key=lambda %s: %s) ]", gname, val, items, vname, keyExpr)
+			return expr, nil
+		}
+
 		if q.Sort == nil && q.Skip == nil && q.Take == nil {
 			return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
 		}
