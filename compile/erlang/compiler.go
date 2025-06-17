@@ -422,46 +422,108 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
-		return "", fmt.Errorf("unsupported query expression")
-	}
-	src, err := c.compileExpr(q.Source)
-	if err != nil {
-		return "", err
-	}
+        if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+                return "", fmt.Errorf("unsupported query expression")
+        }
+        src, err := c.compileExpr(q.Source)
+        if err != nil {
+                return "", err
+        }
 
-	orig := c.env
-	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
-	c.env = child
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		c.env = orig
-		return "", err
-	}
-	var cond string
-	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
-	}
-	c.env = orig
+        orig := c.env
+        child := types.NewEnv(c.env)
+        child.SetVar(q.Var, types.AnyType{}, true)
+        c.env = child
+        sel, err := c.compileExpr(q.Select)
+        if err != nil {
+                c.env = orig
+                return "", err
+        }
+        var cond, sortExpr, skipExpr, takeExpr string
+        if q.Where != nil {
+                cond, err = c.compileExpr(q.Where)
+                if err != nil {
+                        c.env = orig
+                        return "", err
+                }
+        }
+        if q.Sort != nil {
+                sortExpr, err = c.compileExpr(q.Sort)
+                if err != nil {
+                        c.env = orig
+                        return "", err
+                }
+        }
+        if q.Skip != nil {
+                skipExpr, err = c.compileExpr(q.Skip)
+                if err != nil {
+                        c.env = orig
+                        return "", err
+                }
+        }
+        if q.Take != nil {
+                takeExpr, err = c.compileExpr(q.Take)
+                if err != nil {
+                        c.env = orig
+                        return "", err
+                }
+        }
+        c.env = orig
 
-	var b strings.Builder
-	b.WriteString("[")
-	b.WriteString(sel)
-	b.WriteString(" || ")
-	b.WriteString(q.Var)
-	b.WriteString(" <- ")
-	b.WriteString(src)
-	if cond != "" {
-		b.WriteString(", ")
-		b.WriteString(cond)
-	}
-	b.WriteString("]")
-	return b.String(), nil
+        if sortExpr == "" && skipExpr == "" && takeExpr == "" {
+                var b strings.Builder
+                b.WriteString("[")
+                b.WriteString(sel)
+                b.WriteString(" || ")
+                b.WriteString(q.Var)
+                b.WriteString(" <- ")
+                b.WriteString(src)
+                if cond != "" {
+                        b.WriteString(", ")
+                        b.WriteString(cond)
+                }
+                b.WriteString("]")
+                return b.String(), nil
+        }
+
+        var b strings.Builder
+        b.WriteString("(fun() ->\n")
+        b.WriteString("\tItems = [" + q.Var + " || " + q.Var + " <- " + src)
+        if cond != "" {
+                b.WriteString(", " + cond)
+        }
+        b.WriteString("],\n")
+        b.WriteString("\tSorted = ")
+        if sortExpr != "" {
+                b.WriteString("begin\n")
+                b.WriteString("\t\tPairs = [{" + sortExpr + ", " + q.Var + "} || " + q.Var + " <- Items],\n")
+                b.WriteString("\t\tSPairs = lists:sort(fun({A,_},{B,_}) -> A =< B end, Pairs),\n")
+                b.WriteString("\t\t[ V || {_, V} <- SPairs ]\n")
+                b.WriteString("\tend")
+        } else {
+                b.WriteString("Items")
+        }
+        b.WriteString(",\n")
+        b.WriteString("\tSkipped = ")
+        if skipExpr != "" {
+                b.WriteString("(case " + skipExpr + " of\n")
+                b.WriteString("\t\tN when N > 0 -> lists:nthtail(N, Sorted);\n")
+                b.WriteString("\t\t_ -> Sorted\n")
+                b.WriteString("\tend)" )
+        } else {
+                b.WriteString("Sorted")
+        }
+        b.WriteString(",\n")
+        b.WriteString("\tTaken = ")
+        if takeExpr != "" {
+                b.WriteString("lists:sublist(Skipped, " + takeExpr + ")")
+        } else {
+                b.WriteString("Skipped")
+        }
+        b.WriteString(",\n")
+        b.WriteString("\t[" + sel + " || " + q.Var + " <- Taken]\n")
+        b.WriteString("end)()")
+        return b.String(), nil
 }
 
 func (c *Compiler) emitRuntime() {
