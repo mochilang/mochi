@@ -833,6 +833,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		}
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
 	}
+	typ := t
 	value := ""
 	if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 		if mt, ok := t.(types.MapType); ok {
@@ -845,14 +846,10 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	}
 	if value == "" {
 		var err error
-		var typ types.Type
-		if c.env != nil {
-			if t, err2 := c.env.GetVar(s.Name); err2 == nil {
-				typ = t
-				value, err = c.compileExprHint(s.Value, t)
-			} else {
-				value, err = c.compileExpr(s.Value)
-			}
+		if typ != nil {
+			value, err = c.compileExprHint(s.Value, typ)
+		} else if c.env != nil {
+			value, err = c.compileExpr(s.Value)
 		} else {
 			value, err = c.compileExpr(s.Value)
 		}
@@ -866,6 +863,10 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 					c.use("_convSlice")
 					value = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), value)
 				}
+			}
+			if tg, eg := goType(typ), goType(exprT); (tg != eg || !equalTypes(typ, exprT)) && tg != "" && tg != "any" {
+				c.use("_cast")
+				value = fmt.Sprintf("_cast[%s](%s)", tg, value)
 			}
 		}
 	}
@@ -2313,6 +2314,67 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
+	// Simple grouping without joins or extras
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		srcType := c.inferExprType(q.Source)
+		var elemType types.Type = types.AnyType{}
+		if lt, ok := srcType.(types.ListType); ok {
+			elemType = lt.Elem
+		}
+
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, elemType, true)
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+		c.env = genv
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		retElem := goType(c.inferExprType(q.Select))
+		if retElem == "" {
+			retElem = "any"
+		}
+		c.env = orig
+
+		c.imports["fmt"] = true
+		c.imports["mochi/runtime/data"] = true
+
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
+		buf.WriteString("\tgroups := map[string]*data.Group{}\n")
+		buf.WriteString("\torder := []string{}\n")
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", sanitizeName(q.Var), src))
+		buf.WriteString(fmt.Sprintf("\t\tkey := %s\n", keyExpr))
+		buf.WriteString("\t\tks := fmt.Sprint(key)\n")
+		buf.WriteString("\t\tg, ok := groups[ks]\n")
+		buf.WriteString("\t\tif !ok {\n")
+		buf.WriteString("\t\t\tg = &data.Group{Key: key}\n")
+		buf.WriteString("\t\t\tgroups[ks] = g\n")
+		buf.WriteString("\t\t\torder = append(order, ks)\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString(fmt.Sprintf("\t\tg.Items = append(g.Items, %s)\n", sanitizeName(q.Var)))
+		buf.WriteString("\t}\n")
+		buf.WriteString("\tgrpSlice := make([]*data.Group, 0, len(order))\n")
+		buf.WriteString("\tfor _, k := range order { grpSlice = append(grpSlice, groups[k]) }\n")
+		buf.WriteString(fmt.Sprintf("\tout := []%s{}\n", retElem))
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range grpSlice {\n", sanitizeName(q.Group.Name)))
+		buf.WriteString(fmt.Sprintf("\t\tout = append(out, %s)\n", sel))
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn out\n")
+		buf.WriteString("}()")
+		return buf.String(), nil
+	}
+
 	needsHelper := false
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -3036,7 +3098,18 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 			}
 		}
 	}
-	return c.compileExpr(e)
+	expr, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	exprT := c.inferExprType(e)
+	if hg := goType(hint); hg != "" && hg != "any" {
+		if _, ok := exprT.(types.AnyType); ok {
+			c.use("_cast")
+			expr = fmt.Sprintf("_cast[%s](%s)", hg, expr)
+		}
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compilePostfixHint(p *parser.PostfixExpr, hint types.Type) (string, error) {
