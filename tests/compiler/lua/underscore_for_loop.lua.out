@@ -22,14 +22,22 @@ function __iter(obj)
 	end
 end
 
-local numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9}
-for _, n in __iter(numbers) do
-	if ((n % 2) == 0) then
-		goto __continue0
-	end
-	if (n > 7) then
-		break
-	end
-	print("odd number:", n)
+local c = 0
+for _ = 0, (2)-1 do
+	c = (c + 1)
 	::__continue0::
 end
+for _, _ in __iter({1, 2}) do
+	c = (c + 1)
+	::__continue1::
+end
+for _, _ in __iter("ab") do
+	c = (c + 1)
+	::__continue2::
+end
+local m = {["x"]=1, ["y"]=2}
+for _, _ in __iter(m) do
+	c = (c + 1)
+	::__continue3::
+end
+print(c)
