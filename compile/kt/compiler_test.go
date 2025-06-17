@@ -15,6 +15,9 @@ import (
 )
 
 func TestKTCompiler_SubsetPrograms(t *testing.T) {
+	if _, err := exec.LookPath("kotlinc"); err != nil {
+		t.Skip("kotlin not installed")
+	}
 	if err := ktcode.EnsureKotlin(); err != nil {
 		t.Skipf("kotlin not installed: %v", err)
 	}
@@ -53,6 +56,9 @@ func TestKTCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestKTCompiler_GoldenOutput(t *testing.T) {
+	if _, err := exec.LookPath("kotlinc"); err != nil {
+		t.Skip("kotlin not installed")
+	}
 	golden.Run(t, "tests/compiler/kt", ".mochi", ".kt.out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {

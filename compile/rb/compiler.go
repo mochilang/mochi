@@ -65,6 +65,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.Break != nil:
+		c.writeln("break")
+		return nil
+	case s.Continue != nil:
+		c.writeln("next")
+		return nil
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	default:
@@ -95,6 +105,23 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		val = e
 	}
 	c.writeln(fmt.Sprintf("%s = %s", sanitizeName(v.Name), val))
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	lhs := sanitizeName(a.Name)
+	for _, idx := range a.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+	}
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s", lhs, val))
 	return nil
 }
 
@@ -183,6 +210,23 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while " + cond)
+	c.indent++
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end")
+	return nil
+}
+
 // --- Expressions ---
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) { return c.compileBinaryExpr(e.Binary) }
 
@@ -244,7 +288,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			argStr := strings.Join(args, ", ")
 			switch expr {
 			case "print":
-				expr = fmt.Sprintf("puts(%s)", argStr)
+				expr = fmt.Sprintf("puts([%s].join(' '))", argStr)
 			case "len":
 				if len(args) != 1 {
 					return "", fmt.Errorf("len expects 1 arg")
@@ -290,7 +334,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		argStr := strings.Join(args, ", ")
 		switch p.Call.Func {
 		case "print":
-			return fmt.Sprintf("puts(%s)", argStr), nil
+			return fmt.Sprintf("puts([%s].join(' '))", argStr), nil
 		case "len":
 			if len(args) != 1 {
 				return "", fmt.Errorf("len expects 1 arg")
