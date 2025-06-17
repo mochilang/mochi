@@ -1,0 +1,11 @@
+var set: map<int, bool> = {}
+for n in [1,2,3] {
+  set[n] = true
+}
+var i = 1
+var count = 0
+while i in set {
+  i = i + 1
+  count = count + 1
+}
+print(count)

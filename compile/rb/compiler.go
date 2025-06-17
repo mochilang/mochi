@@ -356,12 +356,14 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-			res = fmt.Sprintf("(%s %s %s)", res, op.Op, right)
-		default:
-			return "", fmt.Errorf("unsupported operator %s", op.Op)
-		}
+               switch op.Op {
+               case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+                       res = fmt.Sprintf("(%s %s %s)", res, op.Op, right)
+               case "in":
+                       res = fmt.Sprintf("(%s.include?(%s))", right, res)
+               default:
+                       return "", fmt.Errorf("unsupported operator %s", op.Op)
+               }
 	}
 	return res, nil
 }
@@ -456,16 +458,30 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return q, nil
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
-	case p.List != nil:
-		elems := make([]string, len(p.List.Elems))
-		for i, e := range p.List.Elems {
-			v, err := c.compileExpr(e)
-			if err != nil {
-				return "", err
-			}
-			elems[i] = v
-		}
-		return "[" + strings.Join(elems, ", ") + "]", nil
+       case p.List != nil:
+               elems := make([]string, len(p.List.Elems))
+               for i, e := range p.List.Elems {
+                       v, err := c.compileExpr(e)
+                       if err != nil {
+                               return "", err
+                       }
+                       elems[i] = v
+               }
+               return "[" + strings.Join(elems, ", ") + "]", nil
+       case p.Map != nil:
+               items := make([]string, len(p.Map.Items))
+               for i, it := range p.Map.Items {
+                       k, err := c.compileExpr(it.Key)
+                       if err != nil {
+                               return "", err
+                       }
+                       v, err := c.compileExpr(it.Value)
+                       if err != nil {
+                               return "", err
+                       }
+                       items[i] = fmt.Sprintf("%s => %s", k, v)
+               }
+               return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
 		for _, t := range p.Selector.Tail {
