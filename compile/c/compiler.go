@@ -11,11 +11,12 @@ import (
 )
 
 type Compiler struct {
-	buf      bytes.Buffer
-	indent   int
-	tmp      int
-	env      *types.Env
-	needsStr bool
+	buf        bytes.Buffer
+	indent     int
+	tmp        int
+	env        *types.Env
+	needsStr   bool
+	needsInput bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -98,6 +99,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
+	if c.needsInput {
+		c.writeln("#include <string.h>")
+	}
 	c.writeln("")
 	c.writeln("typedef struct { int len; int *data; } list_int;")
 	c.writeln("")
@@ -129,6 +133,18 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("return sum / v.len;")
 	c.indent--
 	c.writeln("}")
+	if c.needsInput {
+		c.writeln("")
+		c.writeln("static char* _input() {")
+		c.indent++
+		c.writeln("char buf[1024];")
+		c.writeln("if (!fgets(buf, sizeof(buf), stdin)) return strdup(\"\");")
+		c.writeln("size_t len = strlen(buf);")
+		c.writeln("if (len > 0 && buf[len-1] == '\\n') buf[len-1] = '\\0';")
+		c.writeln("return strdup(buf);")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.needsStr {
 		c.writeln("")
 		c.writeln("static char* _str(int v) {")
@@ -183,10 +199,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			typ = c.cType(s.Let.Type)
 		} else if c.env != nil {
 			if t, err := c.env.GetVar(name); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					if _, ok := lt.Elem.(types.IntType); ok {
+				switch tt := t.(type) {
+				case types.ListType:
+					if _, ok := tt.Elem.(types.IntType); ok {
 						typ = "list_int"
 					}
+				case types.StringType:
+					typ = "char*"
 				}
 			}
 		}
@@ -203,10 +222,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			typ = c.cType(s.Var.Type)
 		} else if c.env != nil {
 			if t, err := c.env.GetVar(name); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					if _, ok := lt.Elem.(types.IntType); ok {
+				switch tt := t.(type) {
+				case types.ListType:
+					if _, ok := tt.Elem.(types.IntType); ok {
 						typ = "list_int"
 					}
+				case types.StringType:
+					typ = "char*"
 				}
 			}
 		}
@@ -416,12 +438,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			arg := c.compileExpr(p.Call.Args[0])
 			return fmt.Sprintf("%s.len", arg)
 		} else if p.Call.Func == "print" {
-			argExpr := c.compileExpr(p.Call.Args[0])
-			fmtStr := "%d"
-			if isStringArg(p.Call.Args[0], c.env) {
-				fmtStr = "%s"
+			for i, a := range p.Call.Args {
+				argExpr := c.compileExpr(a)
+				fmtStr := "%d"
+				if isStringArg(a, c.env) {
+					fmtStr = "%s"
+				}
+				end := " "
+				if i == len(p.Call.Args)-1 {
+					end = "\\n"
+				}
+				c.writeln(fmt.Sprintf("printf(\"%s%s\", %s);", fmtStr, end, argExpr))
 			}
-			c.writeln(fmt.Sprintf("printf(\"%s\\n\", %s);", fmtStr, argExpr))
 			return ""
 		} else if p.Call.Func == "count" {
 			arg := c.compileExpr(p.Call.Args[0])
@@ -435,6 +463,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			c.needsStr = true
 			c.writeln(fmt.Sprintf("char* %s = _str(%s);", name, arg))
 			return name
+		} else if p.Call.Func == "input" {
+			c.needsInput = true
+			return "_input()"
 		}
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
