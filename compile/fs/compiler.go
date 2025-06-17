@@ -129,6 +129,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln(expr)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	default:
@@ -192,6 +194,22 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	c.writeln(fmt.Sprintf("for %s in %s do", loopVar, src))
 	c.indent++
 	for _, st := range f.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while " + cond + " do")
+	c.indent++
+	for _, st := range w.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
