@@ -1,0 +1,80 @@
+// Solution for LeetCode problem 402 - Remove K Digits
+// Return the smallest possible number after removing k digits.
+
+fun removeKdigits(num: string, k: int): string {
+  var stack: list<string> = []
+  var rem = k
+  let n = len(num)
+  var i = 0
+  while i < n {
+    let c = num[i]
+    while rem > 0 && len(stack) > 0 {
+      if stack[len(stack)-1] > c {
+        stack = stack[0:len(stack)-1]
+        rem = rem - 1
+      } else {
+        break
+      }
+    }
+    stack = stack + [c]
+    i = i + 1
+  }
+
+  // remove any remaining digits from the end
+  while rem > 0 && len(stack) > 0 {
+    stack = stack[0:len(stack)-1]
+    rem = rem - 1
+  }
+
+  // build the final string without leading zeros
+  var result = ""
+  var started = false
+  for ch in stack {
+    if ch == "0" && started == false {
+      continue
+    }
+    started = true
+    result = result + ch
+  }
+  if result == "" {
+    return "0"
+  }
+  return result
+}
+
+// Test cases from LeetCode
+
+test "example 1" {
+  expect removeKdigits("1432219", 3) == "1219"
+}
+
+test "example 2" {
+  expect removeKdigits("10200", 1) == "200"
+}
+
+test "example 3" {
+  expect removeKdigits("10", 2) == "0"
+}
+
+// Additional edge cases
+
+test "no removal" {
+  expect removeKdigits("9", 0) == "9"
+}
+
+test "remove all" {
+  expect removeKdigits("123", 3) == "0"
+}
+
+/*
+Common Mochi language errors and how to fix them:
+1. Reassigning a value declared with `let`:
+     let rem = k
+     rem = rem - 1     // ❌ cannot assign to let
+   Use `var` when the value needs to change.
+2. Using '=' instead of '==' in conditions:
+     if result = "" { ... }
+   Use '==' to compare values.
+3. Forgetting to append with '+ [value]' when building a list:
+     stack = stack + [c]  // ✅ appends element
+*/
