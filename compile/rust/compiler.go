@@ -308,7 +308,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("%s[%s as usize]", expr, idx)
+			if isStringLiteral(op.Index.Start) {
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
+			} else {
+				expr = fmt.Sprintf("%s[%s as usize]", expr, idx)
+			}
 		}
 	}
 	return expr, nil
@@ -328,6 +332,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return fmt.Sprintf("vec![%s]", strings.Join(elems, ", ")), nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("(%s.to_string(), %s)", k, v)
+		}
+		return fmt.Sprintf("std::collections::HashMap::from([%s])", strings.Join(items, ", ")), nil
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
