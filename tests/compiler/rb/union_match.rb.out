@@ -1,6 +1,6 @@
 module Tree; end
-Leaf = Struct.new(keyword_init: true) do
-	include Tree
+class Leaf
+        include Tree
 end
 Node = Struct.new(:left, :value, :right, keyword_init: true) do
 	include Tree

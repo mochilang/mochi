@@ -1,0 +1,15 @@
+c = 0
+for _ in 0...2
+	c = (c + 1)
+end
+for _ in [1, 2]
+	c = (c + 1)
+end
+for _ in "ab"
+	c = (c + 1)
+end
+m = {"x" => 1, "y" => 2}
+for _ in m
+	c = (c + 1)
+end
+puts([c].join(" "))

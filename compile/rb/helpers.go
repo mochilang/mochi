@@ -96,3 +96,21 @@ func identName(e *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+func isStringLiteral(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Str != nil
+}
