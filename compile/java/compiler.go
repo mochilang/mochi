@@ -200,6 +200,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		return err
 	}
 	asString := false
+	asMap := false
 	if stmt.Source != nil && c.env != nil {
 		if ident := stmt.Source.Binary.Left; ident != nil && len(ident.Ops) == 0 {
 			p := ident.Value
@@ -209,8 +210,11 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 				}
 				if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 					if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
-						if _, ok := t.(types.StringType); ok {
+						switch t.(type) {
+						case types.StringType:
 							asString = true
+						case types.MapType:
+							asMap = true
 						}
 					}
 				}
@@ -219,6 +223,9 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 	if asString {
 		src += ".toCharArray()"
+	}
+	if asMap {
+		src += ".keySet()"
 	}
 	c.writeln(fmt.Sprintf("for (var %s : %s) {", outName, src))
 	c.indent++
@@ -437,6 +444,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "new int[][]{" + joinArgs(elems) + "}", nil
 		}
 		return "new int[]{" + joinArgs(elems) + "}", nil
+	case p.Map != nil:
+		items := []string{}
+		for _, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items = append(items, k+", "+v)
+		}
+		return "java.util.Map.of(" + joinArgs(items) + ")", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
@@ -523,8 +544,27 @@ func (c *Compiler) javaType(t types.Type) string {
 	case types.ListType:
 		// only support list<int> -> int[] for now
 		return c.javaType(tt.Elem) + "[]"
+	case types.MapType:
+		key := c.javaType(tt.Key)
+		val := c.javaType(tt.Value)
+		key = boxedType(key)
+		val = boxedType(val)
+		return "java.util.Map<" + key + ", " + val + ">"
 	default:
 		return "Object"
+	}
+}
+
+func boxedType(typ string) string {
+	switch typ {
+	case "int":
+		return "Integer"
+	case "double":
+		return "Double"
+	case "boolean":
+		return "Boolean"
+	default:
+		return typ
 	}
 }
 
