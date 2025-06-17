@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	excode "mochi/compile/ex"
@@ -39,6 +40,9 @@ func TestExCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("elixir", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		var buf bytes.Buffer
 		cmd.Stdout = &buf
 		cmd.Stderr = &buf

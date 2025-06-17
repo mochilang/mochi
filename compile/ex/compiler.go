@@ -284,21 +284,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			argStr := strings.Join(args, ", ")
-                        switch res {
-                        case "print":
-                                res = fmt.Sprintf("IO.puts(%s)", argStr)
-                        case "len":
-                                res = fmt.Sprintf("length(%s)", argStr)
-                        case "count":
-                                res = fmt.Sprintf("Enum.count(%s)", argStr)
-                        case "avg":
-                                res = fmt.Sprintf("if Enum.count(%[1]s) == 0, do: 0, else: Enum.sum(%[1]s) / Enum.count(%[1]s)", argStr)
-                        default:
-                                res = fmt.Sprintf("%s(%s)", res, argStr)
-                        }
-                }
-        }
-        return res, nil
+			switch res {
+			case "print":
+				res = fmt.Sprintf("IO.puts(%s)", argStr)
+			case "len":
+				res = fmt.Sprintf("length(%s)", argStr)
+			case "count":
+				res = fmt.Sprintf("Enum.count(%s)", argStr)
+			case "avg":
+				res = fmt.Sprintf("if Enum.count(%[1]s) == 0, do: 0, else: Enum.sum(%[1]s) / Enum.count(%[1]s)", argStr)
+			case "str":
+				res = fmt.Sprintf("to_string(%s)", argStr)
+			case "input":
+				res = "String.trim(IO.gets(\"\"))"
+			default:
+				res = fmt.Sprintf("%s(%s)", res, argStr)
+			}
+		}
+	}
+	return res, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -336,18 +340,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, v)
 		}
 		argStr := strings.Join(args, ", ")
-                switch p.Call.Func {
-                case "print":
-                        return fmt.Sprintf("IO.puts(%s)", argStr), nil
-                case "len":
-                        return fmt.Sprintf("length(%s)", argStr), nil
-                case "count":
-                        return fmt.Sprintf("Enum.count(%s)", argStr), nil
-                case "avg":
-                        return fmt.Sprintf("if Enum.count(%[1]s) == 0, do: 0, else: Enum.sum(%[1]s) / Enum.count(%[1]s)", argStr), nil
-                default:
-                        return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
-                }
-        }
-        return "", fmt.Errorf("unsupported expression")
+		switch p.Call.Func {
+		case "print":
+			return fmt.Sprintf("IO.puts(%s)", argStr), nil
+		case "len":
+			return fmt.Sprintf("length(%s)", argStr), nil
+		case "count":
+			return fmt.Sprintf("Enum.count(%s)", argStr), nil
+		case "avg":
+			return fmt.Sprintf("if Enum.count(%[1]s) == 0, do: 0, else: Enum.sum(%[1]s) / Enum.count(%[1]s)", argStr), nil
+		case "str":
+			return fmt.Sprintf("to_string(%s)", argStr), nil
+		case "input":
+			return "String.trim(IO.gets(\"\"))", nil
+		default:
+			return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
+		}
+	}
+	return "", fmt.Errorf("unsupported expression")
 }
