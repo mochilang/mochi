@@ -1,0 +1,8 @@
+1. error[T039]: function now expects 0 arguments, got 1
+  --> tests/types/errors/now_too_many_args.mochi:1:7
+
+  1 | print(now(1))
+    |       ^
+
+help:
+  Pass exactly 0 arguments to `now`.

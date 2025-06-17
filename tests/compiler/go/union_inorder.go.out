@@ -38,6 +38,7 @@ func main() {
 }
 
 func _cast[T any](v any) T {
+    if tv, ok := v.(T); ok { return tv }
     var out T
     switch any(out).(type) {
     case int:

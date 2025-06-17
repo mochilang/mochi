@@ -1267,6 +1267,12 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		argCount := len(p.Call.Args)
 		paramCount := len(ft.Params)
 
+		if exp, ok := builtinArity[p.Call.Func]; ok && !ft.Variadic {
+			if argCount != exp {
+				return nil, errArgCount(p.Pos, p.Call.Func, exp, argCount)
+			}
+		}
+
 		if !ft.Variadic && argCount > paramCount {
 			return nil, errTooManyArgs(p.Pos, paramCount, argCount)
 		}
@@ -1830,12 +1836,38 @@ func isNumeric(t Type) bool {
 	}
 }
 
+var builtinArity = map[string]int{
+	"now":   0,
+	"input": 0,
+	"json":  1,
+	"str":   1,
+	"eval":  1,
+	"len":   1,
+	"count": 1,
+	"avg":   1,
+}
+
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
-	if len(args) == 0 {
-		return nil
-	}
 	switch name {
+	case "now", "input":
+		if len(args) != 0 {
+			return errArgCount(pos, name, 0, len(args))
+		}
+		return nil
+	case "json", "str", "eval":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		if name == "eval" {
+			if _, ok := args[0].(StringType); !ok {
+				return errArgTypeMismatch(pos, 0, StringType{}, args[0])
+			}
+		}
+		return nil
 	case "len":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
 		switch args[0].(type) {
 		case ListType, MapType, StringType, AnyType:
 			return nil
@@ -1843,6 +1875,9 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errLenOperand(pos, args[0])
 		}
 	case "count":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
 		switch args[0].(type) {
 		case ListType, GroupType, AnyType:
 			return nil
@@ -1850,6 +1885,9 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errCountOperand(pos, args[0])
 		}
 	case "avg":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
 		switch a := args[0].(type) {
 		case ListType:
 			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
