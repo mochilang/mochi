@@ -30,6 +30,12 @@ func (c *Compiler) writeln(s string) {
 	c.buf.WriteByte('\n')
 }
 
+func (c *Compiler) writeIndent() {
+	for i := 0; i < c.indent; i++ {
+		c.buf.WriteByte('\t')
+	}
+}
+
 func (c *Compiler) newTemp() string {
 	c.tmp++
 	return fmt.Sprintf("_t%d", c.tmp)
@@ -228,16 +234,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.While != nil:
 		return c.compileWhile(s.While)
 	case s.If != nil:
-		cond := c.compileExpr(s.If.Cond)
-		c.writeln(fmt.Sprintf("if (%s) {", cond))
-		c.indent++
-		for _, st := range s.If.Then {
-			if err := c.compileStmt(st); err != nil {
-				return err
-			}
-		}
-		c.indent--
-		c.writeln("}")
+		return c.compileIf(s.If)
 	case s.Expr != nil:
 		expr := c.compileExpr(s.Expr.Expr)
 		if expr != "" {
@@ -310,6 +307,37 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		c.env = oldEnv
 	}
 	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
+	cond := c.compileExpr(stmt.Cond)
+	c.writeln(fmt.Sprintf("if (%s) {", cond))
+	c.indent++
+	for _, st := range stmt.Then {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	if stmt.ElseIf != nil {
+		c.writeIndent()
+		c.buf.WriteString("} else ")
+		return c.compileIf(stmt.ElseIf)
+	}
+	if len(stmt.Else) > 0 {
+		c.writeln("} else {")
+		c.indent++
+		for _, st := range stmt.Else {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
+	}
 	c.writeln("}")
 	return nil
 }
