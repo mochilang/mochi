@@ -35,7 +35,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Emit function declarations first.
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
-			if err := c.compileFun(s.Fun); err != nil {
+			if err := c.compileFun(s.Fun, false); err != nil {
 				return nil, err
 			}
 			c.writeln("")
@@ -83,6 +83,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun, true)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -456,13 +458,17 @@ func (c *Compiler) popLoopLabel() {
 	}
 }
 
-func (c *Compiler) compileFun(fun *parser.FunStmt) error {
+func (c *Compiler) compileFun(fun *parser.FunStmt, local bool) error {
 	name := sanitizeName(fun.Name)
 	params := make([]string, len(fun.Params))
 	for i, p := range fun.Params {
 		params[i] = sanitizeName(p.Name)
 	}
-	c.writeln(fmt.Sprintf("function %s(%s)", name, strings.Join(params, ", ")))
+	prefix := ""
+	if local {
+		prefix = "local "
+	}
+	c.writeln(fmt.Sprintf("%sfunction %s(%s)", prefix, name, strings.Join(params, ", ")))
 	c.indent++
 	for _, st := range fun.Body {
 		if err := c.compileStmt(st); err != nil {
