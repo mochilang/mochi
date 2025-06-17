@@ -64,6 +64,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Return != nil:
@@ -198,6 +200,23 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while (" + cond + ") {")
+	c.indent++
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
 	c.writeIndent()
@@ -250,7 +269,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=":
+		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "in", "&&", "||":
 			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, rhs)
 		default:
 			return "", fmt.Errorf("unsupported op %s", op.Op)
@@ -323,6 +342,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if p.Lit.Str != nil {
 			return fmt.Sprintf("\"%s\"", *p.Lit.Str), nil
+		}
+		if p.Lit.Bool != nil {
+			if *p.Lit.Bool {
+				return "true", nil
+			}
+			return "false", nil
 		}
 	case p.List != nil:
 		elems := []string{}
