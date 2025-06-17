@@ -1134,7 +1134,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 		if op.Cast != nil {
 			typ = c.resolveTypeRef(op.Cast.Type)
-			// Casts are ignored in Python code generation
+			expr = c.compileCast(expr, typ)
 			continue
 		}
 	}
@@ -1852,4 +1852,20 @@ func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
 	c.writeln(fmt.Sprintf("%s = _import_%s()", alias, alias))
 	c.writeln("")
 	return nil
+}
+
+func (c *Compiler) compileCast(expr string, t types.Type) string {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return fmt.Sprintf("int(%s)", expr)
+	case types.FloatType:
+		return fmt.Sprintf("float(%s)", expr)
+	case types.StringType:
+		return fmt.Sprintf("str(%s)", expr)
+	case types.BoolType:
+		return fmt.Sprintf("bool(%s)", expr)
+	default:
+		c.imports["typing"] = "typing"
+		return fmt.Sprintf("typing.cast(%s, %s)", pyType(t), expr)
+	}
 }
