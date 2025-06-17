@@ -1,0 +1,15 @@
+data class Person(val name: String, val age: Int)
+
+fun main() {
+        val people = listOf(Person(name = "Alice", age = 30), Person(name = "Bob", age = 15), Person(name = "Charlie", age = 65))
+        val names = run {
+                var res = people
+                res = res.filter { p -> (p.age >= 18) }
+                res = res.map { p -> p.name }
+                res
+        }
+        for (n in names) {
+                println(n)
+        }
+}
+
