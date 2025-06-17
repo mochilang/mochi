@@ -5,11 +5,46 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+
+	javacode "mochi/compile/java"
 )
 
 // EnsureKotlin verifies that the Kotlin compiler is installed. If missing,
 // it attempts a best-effort installation using Homebrew on macOS or apt-get on Linux.
 func EnsureKotlin() error {
+	if _, err := exec.LookPath("java"); err != nil {
+		switch runtime.GOOS {
+		case "darwin":
+			if _, err := exec.LookPath("brew"); err == nil {
+				cmd := exec.Command("brew", "install", "openjdk")
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				if err := cmd.Run(); err != nil {
+					return err
+				}
+			}
+		case "linux":
+			if _, err := exec.LookPath("apt-get"); err == nil {
+				cmd := exec.Command("apt-get", "update")
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				if err := cmd.Run(); err != nil {
+					return err
+				}
+				cmd = exec.Command("apt-get", "install", "-y", "openjdk-17-jdk")
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				if err := cmd.Run(); err != nil {
+					return err
+				}
+			}
+		}
+		if _, err := exec.LookPath("java"); err != nil {
+			if err := javacode.EnsureJavac(); err != nil {
+				return err
+			}
+		}
+	}
 	if _, err := exec.LookPath("kotlinc"); err == nil {
 		return nil
 	}
