@@ -335,6 +335,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				res = fmt.Sprintf("length(%s)", argStr)
 			case "str":
 				res = fmt.Sprintf("mochi_format(%s)", argStr)
+			case "count":
+				res = fmt.Sprintf("mochi_count(%s)", argStr)
+			case "avg":
+				res = fmt.Sprintf("mochi_avg(%s)", argStr)
 			default:
 				res = fmt.Sprintf("%s(%s)", res, argStr)
 			}
@@ -400,6 +404,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("length(%s)", argStr), nil
 		case "str":
 			return fmt.Sprintf("mochi_format(%s)", argStr), nil
+		case "count":
+			return fmt.Sprintf("mochi_count(%s)", argStr), nil
+		case "avg":
+			return fmt.Sprintf("mochi_avg(%s)", argStr), nil
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
 		}
@@ -464,6 +472,31 @@ func (c *Compiler) emitRuntime() {
 	c.writeln("mochi_format(X) when is_float(X) -> float_to_list(X);")
 	c.writeln("mochi_format(X) when is_list(X) -> X;")
 	c.writeln("mochi_format(X) -> lists:flatten(io_lib:format(\"~p\", [X])).")
+
+	c.writeln("")
+	c.writeln("mochi_count(X) when is_list(X) -> length(X);")
+	c.writeln("mochi_count(X) when is_map(X) -> maps:size(X);")
+	c.writeln("mochi_count(X) when is_binary(X) -> byte_size(X);")
+	c.writeln("mochi_count(_) -> erlang:error(badarg).")
+
+	c.writeln("")
+	c.writeln("mochi_avg([]) -> 0;")
+	c.writeln("mochi_avg(L) when is_list(L) ->")
+	c.indent++
+	c.writeln("Sum = lists:foldl(fun(X, Acc) ->")
+	c.indent++
+	c.writeln("case X of")
+	c.indent++
+	c.writeln("I when is_integer(I) -> Acc + I;")
+	c.writeln("F when is_float(F) -> Acc + F;")
+	c.writeln("_ -> erlang:error(badarg) end")
+	c.indent--
+	c.writeln("end, 0, L),")
+	c.writeln("Sum / length(L)")
+	c.indent--
+	c.writeln(".")
+	c.indent--
+	c.writeln("mochi_avg(_) -> erlang:error(badarg).")
 
 	c.writeln("")
 	c.writeln("mochi_while(Cond, Body) ->")

@@ -31,6 +31,23 @@ mochi_format(X) when is_float(X) -> float_to_list(X);
 mochi_format(X) when is_list(X) -> X;
 mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
 
+mochi_count(X) when is_list(X) -> length(X);
+mochi_count(X) when is_map(X) -> maps:size(X);
+mochi_count(X) when is_binary(X) -> byte_size(X);
+mochi_count(_) -> erlang:error(badarg).
+
+mochi_avg([]) -> 0;
+mochi_avg(L) when is_list(L) ->
+	Sum = lists:foldl(fun(X, Acc) ->
+		case X of
+			I when is_integer(I) -> Acc + I;
+			F when is_float(F) -> Acc + F;
+			_ -> erlang:error(badarg) end
+		end, 0, L),
+		Sum / length(L)
+	.
+mochi_avg(_) -> erlang:error(badarg).
+
 mochi_while(Cond, Body) ->
 	case Cond() of
 		true ->
