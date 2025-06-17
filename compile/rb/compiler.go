@@ -65,8 +65,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Break != nil:
+		c.writeln("break")
+		return nil
+	case s.Continue != nil:
+		c.writeln("next")
+		return nil
 	default:
 		return nil
 	}
@@ -181,6 +189,38 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	c.indent--
 	c.writeln("end")
 	return nil
+}
+
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while " + cond)
+	c.indent++
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("->(%s){ %s }", strings.Join(params, ", "), expr), nil
+	}
+	return "", fmt.Errorf("block function expressions not supported")
 }
 
 // --- Expressions ---
@@ -299,6 +339,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		default:
 			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 		}
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Group != nil:
 		v, err := c.compileExpr(p.Group)
 		if err != nil {
