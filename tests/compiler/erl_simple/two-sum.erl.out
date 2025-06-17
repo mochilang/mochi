@@ -1,0 +1,32 @@
+#!/usr/bin/env escript
+-module(main).
+-export([main/1, twoSum/2]).
+
+twoSum(nums, target) ->
+	try
+		n = length(nums),
+		lists:foreach(fun(i) ->
+			lists:foreach(fun(j) ->
+				if ((lists:nth(i + 1, nums) + lists:nth(j + 1, nums)) == target) ->
+					throw({return, [i, j]})
+				end
+			end, lists:seq((i + 1), (n)-1))
+		end, lists:seq(0, (n)-1)),
+		throw({return, [-1, -1]})
+	catch
+		throw:{return, V} -> V
+	end.
+
+main(_) ->
+	result = twoSum([2, 7, 11, 15], 9),
+	mochi_print([lists:nth(0 + 1, result)]),
+	mochi_print([lists:nth(1 + 1, result)]).
+
+mochi_print(Args) ->
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
+
+mochi_format(X) when is_integer(X) -> integer_to_list(X);
+mochi_format(X) when is_float(X) -> float_to_list(X);
+mochi_format(X) when is_list(X) -> X;
+mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
