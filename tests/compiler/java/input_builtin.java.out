@@ -1,0 +1,14 @@
+public class Main {
+	public static void main(String[] args) {
+		System.out.println("Enter first input:");
+		String input1 = _input();
+		System.out.println("Enter second input:");
+		String input2 = _input();
+		System.out.println("You entered:" + " " + input1 + " " + "," + " " + input2);
+	}
+	
+	static java.util.Scanner _scanner = new java.util.Scanner(System.in);
+	static String _input() {
+		return _scanner.nextLine();
+	}
+}
