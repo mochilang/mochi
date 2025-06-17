@@ -306,18 +306,28 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		args[i] = v
 	}
 	argStr := strings.Join(args, ", ")
-	switch call.Func {
-	case "print":
-		if len(args) == 1 {
-			return fmt.Sprintf("println!(\"{}\", %s)", argStr), nil
-		}
-		fmtParts := make([]string, len(args))
-		for i := range args {
-			fmtParts[i] = "{}"
-		}
-		fmtStr := strings.Join(fmtParts, " ")
-		return fmt.Sprintf("println!(\"%s\", %s)", fmtStr, argStr), nil
-	case "len":
+       switch call.Func {
+       case "print":
+               if len(args) == 1 {
+                       return fmt.Sprintf("println!(\"{}\", %s)", argStr), nil
+               }
+               fmtParts := make([]string, len(args))
+               for i := range args {
+                       fmtParts[i] = "{}"
+               }
+               fmtStr := strings.Join(fmtParts, " ")
+               return fmt.Sprintf("println!(\"%s\", %s)", fmtStr, argStr), nil
+       case "str":
+               if len(args) == 1 {
+                       return fmt.Sprintf("format!(\"{}\", %s)", argStr), nil
+               }
+               fmtParts := make([]string, len(args))
+               for i := range args {
+                       fmtParts[i] = "{}"
+               }
+               fmtStr := strings.Join(fmtParts, " ")
+               return fmt.Sprintf("format!(\"%s\", %s)", fmtStr, argStr), nil
+       case "len":
 		if len(args) == 1 {
 			return fmt.Sprintf("%s.len() as i32", args[0]), nil
 		}
