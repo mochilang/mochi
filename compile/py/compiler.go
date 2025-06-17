@@ -1184,8 +1184,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + expr + ")", nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
 		for _, s := range p.Selector.Tail {
-			expr += "." + sanitizeName(s)
+			if mt, ok := typ.(types.MapType); ok {
+				expr += fmt.Sprintf("[%q]", s)
+				typ = mt.Value
+			} else {
+				expr += "." + sanitizeName(s)
+				if st, ok := typ.(types.StructType); ok {
+					typ = st.Fields[s]
+				} else {
+					typ = types.AnyType{}
+				}
+			}
 		}
 		return expr, nil
 	case p.Struct != nil:
@@ -1319,9 +1335,16 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if s, ok := simpleStringKey(it.Key); ok {
+			k = fmt.Sprintf("\"%s\"", s)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			k = fmt.Sprintf("[%s]", k)
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
@@ -1482,7 +1505,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if len(condParts) > 0 {
 			cond = " if " + strings.Join(condParts, " and ")
 		}
-		if q.Sort == nil && q.Skip == nil && q.Take == nil {
+		if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			c.env = child
+			keyExpr, err := c.compileExpr(q.Group.Expr)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			genv := types.NewEnv(child)
+			genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+			c.env = genv
+			valExpr, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			c.env = orig
+			c.use("Group")
+			c.use("_group_by")
+			return fmt.Sprintf("[ %s for %s in _group_by(%s, lambda %s: %s) ]", valExpr, sanitizeName(q.Group.Name), src, sanitizeName(q.Var), keyExpr), nil
+		}
+		if q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil {
 			return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
 		}
 

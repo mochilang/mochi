@@ -40,6 +40,25 @@ var helperAvg = "def _avg(v):\n" +
 	"            raise Exception('avg() expects numbers')\n" +
 	"    return s / len(v)\n"
 
+var helperGroup = "class Group:\n" +
+	"    def __init__(self, key):\n" +
+	"        self.key = key\n" +
+	"        self.Items = []\n"
+
+var helperGroupBy = "def _group_by(src, key_fn):\n" +
+	"    groups = {}\n" +
+	"    order = []\n" +
+	"    for v in src:\n" +
+	"        k = key_fn(v)\n" +
+	"        ks = str(k)\n" +
+	"        g = groups.get(ks)\n" +
+	"        if g is None:\n" +
+	"            g = Group(k)\n" +
+	"            groups[ks] = g\n" +
+	"            order.append(ks)\n" +
+	"        g.Items.append(v)\n" +
+	"    return [groups[ks] for ks in order]\n"
+
 var helperFetch = "def _fetch(url, opts):\n" +
 	"    import urllib.request, urllib.parse, json\n" +
 	"    method = 'GET'\n" +
@@ -311,8 +330,10 @@ var helperMap = map[string]string{
 	"_gen_text":   helperGenText,
 	"_gen_embed":  helperGenEmbed,
 	"_gen_struct": helperGenStruct,
+	"Group":       helperGroup,
 	"_count":      helperCount,
 	"_avg":        helperAvg,
+	"_group_by":   helperGroupBy,
 	"_union_all":  helperUnionAll,
 	"_union":      helperUnion,
 	"_except":     helperExcept,
