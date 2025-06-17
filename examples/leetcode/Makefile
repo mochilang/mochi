@@ -80,11 +80,11 @@ run-go: mochi ## Compile and run Go version of problem. Usage: make run-go ID=<p
 	@if [ -z "$(ID)" ]; then echo "❌ Usage: make run-go ID=<problem>"; exit 1; fi
 	@file=$$(ls $(ID)/*.mochi | head -n 1); \
 	base=$$(basename "$$file" .mochi); \
-	out=../leetcode-out/$(ID)/$$base.go.out; \
-	mkdir -p ../leetcode-out/$(ID); \
-	echo "🔧 Compiling $$file to $$out..."; \
-	if ! $(MOCHI_BIN) build "$$file" -o "$$out" --target go; then \
-		echo "❌ Compilation failed."; exit 1; fi; \
+       out=../leetcode-out/$(ID)/$$base.go; \
+       mkdir -p ../leetcode-out/$(ID); \
+       echo "🔧 Compiling $$file to $$out..."; \
+       if ! $(MOCHI_BIN) build "$$file" -o "$$out" --target go; then \
+               echo "❌ Compilation failed."; exit 1; fi; \
 	go run "$$out"
 
 build-one: mochi ## Compile one .mochi to a language. Usage: make build-one ID=123 LANG=go|py|ts
