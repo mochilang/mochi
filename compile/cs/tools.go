@@ -1,4 +1,4 @@
-package bench
+package cscode
 
 import (
 	"fmt"

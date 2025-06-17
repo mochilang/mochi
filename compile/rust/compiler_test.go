@@ -9,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/bench"
 	rscode "mochi/compile/rust"
 	"mochi/golden"
 	"mochi/parser"
@@ -17,7 +16,7 @@ import (
 )
 
 func TestRustCompiler_SubsetPrograms(t *testing.T) {
-	if err := bench.EnsureRust(); err != nil {
+	if err := rscode.EnsureRust(); err != nil {
 		t.Skipf("rust not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/rust", ".mochi", ".out", func(src string) ([]byte, error) {
