@@ -39,7 +39,12 @@ int main() {
 	printf("%s\n", "--- Orders with customer info ---");
 	for (int _t3 = 0; _t3 < result.len; _t3++) {
 		int entry = result.data[_t3];
-		printf("%s\n", "Order");
+		printf("%s ", "Order");
+		printf("%d ", entry);
+		printf("%s ", "by");
+		printf("%d ", entry);
+		printf("%s ", "- $");
+		printf("%d\n", entry);
 	}
 	return 0;
 }

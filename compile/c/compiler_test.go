@@ -57,7 +57,11 @@ func TestCCompiler_TwoSum(t *testing.T) {
 	if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
 		t.Fatalf("cc error: %v\n%s", err, out)
 	}
-	out, err := exec.Command(bin).CombinedOutput()
+                cmd := exec.Command(bin)
+                if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+                        cmd.Stdin = bytes.NewReader(data)
+                }
+                out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("run error: %v\n%s", err, out)
 	}
@@ -96,12 +100,16 @@ func TestCCompiler_SubsetPrograms(t *testing.T) {
 		if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("\u274c cc error: %w\n%s", err, out)
 		}
-		out, err := exec.Command(bin).CombinedOutput()
-		if err != nil {
-			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
-		}
-		return bytes.TrimSpace(out), nil
-	})
+                cmd := exec.Command(bin)
+                if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+                        cmd.Stdin = bytes.NewReader(data)
+                }
+                out, err := cmd.CombinedOutput()
+                if err != nil {
+                        return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
+                }
+                return bytes.TrimSpace(out), nil
+        })
 }
 
 func TestCCompiler_GoldenOutput(t *testing.T) {

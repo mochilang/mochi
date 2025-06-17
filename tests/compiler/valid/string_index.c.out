@@ -24,7 +24,7 @@ static int _avg(list_int v) {
 }
 
 int main() {
-	int text = "hello";
+	char* text = "hello";
 	printf("%d\n", text.data[1]);
 	return 0;
 }

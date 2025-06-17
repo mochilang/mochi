@@ -24,7 +24,7 @@ static int _avg(list_int v) {
 }
 
 int main() {
-	int poem = 0;
+	char* poem = 0;
 	printf("%s\n", poem);
 	return 0;
 }

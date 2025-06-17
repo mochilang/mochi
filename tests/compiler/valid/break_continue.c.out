@@ -43,7 +43,8 @@ int main() {
 		if ((n > 7)) {
 			break;
 		}
-		printf("%s\n", "odd number:");
+		printf("%s ", "odd number:");
+		printf("%d\n", n);
 	}
 	return 0;
 }

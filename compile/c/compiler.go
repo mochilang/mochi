@@ -15,7 +15,8 @@ type Compiler struct {
 	indent   int
 	tmp      int
 	env      *types.Env
-	needsStr bool
+        needsStr   bool
+        needsInput bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -96,8 +97,11 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	body := c.buf.String()
 	c.buf = oldBuf
 
-	c.writeln("#include <stdio.h>")
-	c.writeln("#include <stdlib.h>")
+        c.writeln("#include <stdio.h>")
+        c.writeln("#include <stdlib.h>")
+        if c.needsInput {
+                c.writeln("#include <string.h>")
+        }
 	c.writeln("")
 	c.writeln("typedef struct { int len; int *data; } list_int;")
 	c.writeln("")
@@ -117,7 +121,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	c.writeln("")
-	c.writeln("static int _avg(list_int v) {")
+        c.writeln("static int _avg(list_int v) {")
 	c.indent++
 	c.writeln("if (v.len == 0) return 0;")
 	c.writeln("int sum = 0;")
@@ -126,14 +130,26 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("sum += v.data[i];")
 	c.indent--
 	c.writeln("}")
-	c.writeln("return sum / v.len;")
-	c.indent--
-	c.writeln("}")
-	if c.needsStr {
-		c.writeln("")
-		c.writeln("static char* _str(int v) {")
-		c.indent++
-		c.writeln("char* buf = (char*)malloc(32);")
+        c.writeln("return sum / v.len;")
+        c.indent--
+        c.writeln("}")
+        if c.needsInput {
+                c.writeln("")
+                c.writeln("static char* _input() {")
+                c.indent++
+                c.writeln("char buf[1024];")
+                c.writeln("if (!fgets(buf, sizeof(buf), stdin)) return strdup(\"\");")
+                c.writeln(`size_t len = strlen(buf);`)
+                c.writeln(`if (len > 0 && buf[len-1] == '\n') buf[len-1] = '\0';`)
+                c.writeln("return strdup(buf);")
+                c.indent--
+                c.writeln("}")
+        }
+        if c.needsStr {
+                c.writeln("")
+                c.writeln("static char* _str(int v) {")
+                c.indent++
+                c.writeln("char* buf = (char*)malloc(32);")
 		c.writeln("sprintf(buf, \"%d\", v);")
 		c.writeln("return buf;")
 		c.indent--
@@ -179,17 +195,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Let != nil:
 		name := s.Let.Name
 		typ := "int"
-		if s.Let.Type != nil {
-			typ = c.cType(s.Let.Type)
-		} else if c.env != nil {
-			if t, err := c.env.GetVar(name); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					if _, ok := lt.Elem.(types.IntType); ok {
-						typ = "list_int"
-					}
-				}
-			}
-		}
+                if s.Let.Type != nil {
+                        typ = c.cType(s.Let.Type)
+                } else if c.env != nil {
+                        if t, err := c.env.GetVar(name); err == nil {
+                                switch tt := t.(type) {
+                                case types.ListType:
+                                        if _, ok := tt.Elem.(types.IntType); ok {
+                                                typ = "list_int"
+                                        }
+                                case types.StringType:
+                                        typ = "char*"
+                                }
+                        }
+                }
 		if s.Let.Value != nil {
 			val := c.compileExpr(s.Let.Value)
 			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -199,17 +218,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Var != nil:
 		name := s.Var.Name
 		typ := "int"
-		if s.Var.Type != nil {
-			typ = c.cType(s.Var.Type)
-		} else if c.env != nil {
-			if t, err := c.env.GetVar(name); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					if _, ok := lt.Elem.(types.IntType); ok {
-						typ = "list_int"
-					}
-				}
-			}
-		}
+                if s.Var.Type != nil {
+                        typ = c.cType(s.Var.Type)
+                } else if c.env != nil {
+                        if t, err := c.env.GetVar(name); err == nil {
+                                switch tt := t.(type) {
+                                case types.ListType:
+                                        if _, ok := tt.Elem.(types.IntType); ok {
+                                                typ = "list_int"
+                                        }
+                                case types.StringType:
+                                        typ = "char*"
+                                }
+                        }
+                }
 		if s.Var.Value != nil {
 			val := c.compileExpr(s.Var.Value)
 			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -415,27 +437,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		if p.Call.Func == "len" {
 			arg := c.compileExpr(p.Call.Args[0])
 			return fmt.Sprintf("%s.len", arg)
-		} else if p.Call.Func == "print" {
-			argExpr := c.compileExpr(p.Call.Args[0])
-			fmtStr := "%d"
-			if isStringArg(p.Call.Args[0], c.env) {
-				fmtStr = "%s"
-			}
-			c.writeln(fmt.Sprintf("printf(\"%s\\n\", %s);", fmtStr, argExpr))
-			return ""
+                } else if p.Call.Func == "print" {
+                        for i, a := range p.Call.Args {
+                                argExpr := c.compileExpr(a)
+                                fmtStr := "%d"
+                                if isStringArg(a, c.env) {
+                                        fmtStr = "%s"
+                                }
+                                end := " "
+                                if i == len(p.Call.Args)-1 {
+                                        end = "\\n"
+                                }
+                                c.writeln(fmt.Sprintf("printf(\"%s%s\", %s);", fmtStr, end, argExpr))
+                        }
+                        return ""
 		} else if p.Call.Func == "count" {
 			arg := c.compileExpr(p.Call.Args[0])
 			return fmt.Sprintf("_count(%s)", arg)
 		} else if p.Call.Func == "avg" {
 			arg := c.compileExpr(p.Call.Args[0])
 			return fmt.Sprintf("_avg(%s)", arg)
-		} else if p.Call.Func == "str" {
-			arg := c.compileExpr(p.Call.Args[0])
-			name := c.newTemp()
-			c.needsStr = true
-			c.writeln(fmt.Sprintf("char* %s = _str(%s);", name, arg))
-			return name
-		}
+                } else if p.Call.Func == "str" {
+                        arg := c.compileExpr(p.Call.Args[0])
+                        name := c.newTemp()
+                        c.needsStr = true
+                        c.writeln(fmt.Sprintf("char* %s = _str(%s);", name, arg))
+                        return name
+                } else if p.Call.Func == "input" {
+                        c.needsInput = true
+                        return "_input()"
+                }
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
 			args[i] = c.compileExpr(a)
