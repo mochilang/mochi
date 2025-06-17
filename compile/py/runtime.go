@@ -40,6 +40,17 @@ var helperAvg = "def _avg(v):\n" +
 	"            raise Exception('avg() expects numbers')\n" +
 	"    return s / len(v)\n"
 
+var helperGroup = "class Group:\n" +
+	"    def __init__(self, key):\n" +
+	"        self.Key = key\n" +
+	"        self.Items = []\n" +
+	"    @property\n" +
+	"    def key(self):\n" +
+	"        return self.Key\n" +
+	"    @property\n" +
+	"    def values(self):\n" +
+	"        return self.Items\n"
+
 var helperFetch = "def _fetch(url, opts):\n" +
 	"    import urllib.request, urllib.parse, json\n" +
 	"    method = 'GET'\n" +
@@ -316,6 +327,7 @@ var helperMap = map[string]string{
 	"_gen_struct": helperGenStruct,
 	"_count":      helperCount,
 	"_avg":        helperAvg,
+	"_group":      helperGroup,
 	"_union_all":  helperUnionAll,
 	"_union":      helperUnion,
 	"_except":     helperExcept,

@@ -1397,10 +1397,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		return "", err
-	}
+	var sel string
 	hasSide := false
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -1433,6 +1430,56 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	orig := c.env
 	c.env = child
+
+	var groupKey string
+	if q.Group != nil {
+		gtype := types.GroupType{Elem: elemType}
+		keyEnv := child
+		c.env = keyEnv
+		var err error
+		groupKey, err = c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		child.SetVar(q.Group.Name, gtype, true)
+		c.env = child
+	}
+
+	sel, err = c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		alias := sanitizeName(q.Group.Name)
+		var b strings.Builder
+		b.WriteString("(lambda:\n")
+		b.WriteString("\t_groups = {}\n")
+		b.WriteString("\t_order = []\n")
+		b.WriteString(fmt.Sprintf("\tfor %s in %s:\n", sanitizeName(q.Var), src))
+		b.WriteString(fmt.Sprintf("\t\tkey = %s\n", groupKey))
+		b.WriteString("\t\tks = str(key)\n")
+		b.WriteString("\t\tg = _groups.get(ks)\n")
+		b.WriteString("\t\tif g is None:\n")
+		b.WriteString("\t\t\tg = Group(key)\n")
+		b.WriteString("\t\t\t_groups[ks] = g\n")
+		b.WriteString("\t\t\t_order.append(ks)\n")
+		b.WriteString(fmt.Sprintf("\t\tg.Items.append(%s)\n", sanitizeName(q.Var)))
+		b.WriteString("\t_res = []\n")
+		b.WriteString("\tfor ks in _order:\n")
+		b.WriteString("\t\tg = _groups[ks]\n")
+		if alias != "g" {
+			b.WriteString(fmt.Sprintf("\t\t%s = g\n", alias))
+		}
+		b.WriteString(fmt.Sprintf("\t\t_res.append(%s)\n", sel))
+		b.WriteString("\treturn _res\n")
+		b.WriteString(")()")
+		c.env = orig
+		c.use("_group")
+		return b.String(), nil
+	}
 
 	if !hasSide {
 		loops := []string{fmt.Sprintf("%s in %s", sanitizeName(q.Var), src)}
