@@ -76,6 +76,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Break != nil:
+		c.writeln("break;")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue;")
+		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -335,6 +341,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("%s.length", arg), nil
+	}
+	// handle print with multiple arguments
+	if name == "print" && len(call.Args) > 1 {
+		parts := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			v, err := c.compileExpr(a)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s.toString()", v)
+		}
+		return fmt.Sprintf("print([%s].join(' '))", strings.Join(parts, ", ")), nil
 	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
