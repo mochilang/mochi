@@ -313,15 +313,26 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 	switch call.Func {
 	case "print":
 		return fmt.Sprintf("println(%s)", argStr), nil
-	case "len":
-		if len(args) != 1 {
-			return "", fmt.Errorf("len expects 1 arg")
-		}
-		return fmt.Sprintf("%s.length", args[0]), nil
-	case "str":
-		if len(args) == 1 {
-			return args[0] + ".toString()", nil
-		}
+       case "len":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("len expects 1 arg")
+               }
+               return fmt.Sprintf("%s.length", args[0]), nil
+       case "count":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("count expects 1 arg")
+               }
+               return fmt.Sprintf("%s.size", args[0]), nil
+       case "avg":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("avg expects 1 arg")
+               }
+               a := args[0]
+               return fmt.Sprintf("(%s.sum / %s.size)", a, a), nil
+       case "str":
+               if len(args) == 1 {
+                       return args[0] + ".toString()", nil
+               }
 	}
 	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 }
