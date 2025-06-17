@@ -1,0 +1,11 @@
+set = {}
+for n in [1, 2, 3]
+	set[n] = true
+end
+i = 1
+count = 0
+while (set.include?(i))
+	i = (i + 1)
+	count = (count + 1)
+end
+puts([count].join(" "))
