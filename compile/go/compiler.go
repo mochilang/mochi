@@ -843,13 +843,14 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			value = fmt.Sprintf("[]%s{}", goType(lt.Elem))
 		}
 	}
+	targetType := t
 	if value == "" {
 		var err error
 		var typ types.Type
 		if c.env != nil {
-			if t, err2 := c.env.GetVar(s.Name); err2 == nil {
-				typ = t
-				value, err = c.compileExprHint(s.Value, t)
+			if _, err2 := c.env.GetVar(s.Name); err2 == nil {
+				typ = targetType
+				value, err = c.compileExprHint(s.Value, targetType)
 			} else {
 				value, err = c.compileExpr(s.Value)
 			}
@@ -866,6 +867,27 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 					c.use("_convSlice")
 					value = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), value)
 				}
+			}
+			exprGo := goType(exprT)
+			typGo := goType(typ)
+			if typGo != "" && typGo != exprGo && (isAny(exprT) || !equalTypes(typ, exprT)) {
+				c.use("_cast")
+				c.imports["encoding/json"] = true
+				value = fmt.Sprintf("_cast[%s](%s)", typGo, value)
+			}
+		}
+		typ = targetType
+	}
+	finalTyp := targetType
+	exprT := c.inferExprType(s.Value)
+	if finalTyp != nil {
+		exprGo := goType(exprT)
+		typGo := goType(finalTyp)
+		if typGo != "" && typGo != exprGo && (isAny(exprT) || !equalTypes(finalTyp, exprT)) {
+			if !strings.HasPrefix(value, fmt.Sprintf("_cast[%s](", typGo)) {
+				c.use("_cast")
+				c.imports["encoding/json"] = true
+				value = fmt.Sprintf("_cast[%s](%s)", typGo, value)
 			}
 		}
 	}
@@ -2329,6 +2351,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		elemType = lt.Elem
 		directRange = true
 	}
+	original := c.env
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elemType, true)
 	// Add cross join variables to environment
@@ -2349,7 +2372,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		child.SetVar(j.Var, jelem, true)
 	}
-	original := c.env
+
+	var groupKey string
+	if q.Group != nil {
+		gtype := types.GroupType{Elem: elemType}
+		keyEnv := child
+		c.env = keyEnv
+		var err error
+		groupKey, err = c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = original
+			return "", err
+		}
+		child.SetVar(q.Group.Name, gtype, true)
+	}
 	c.env = child
 
 	// compile cross join sources
@@ -2442,6 +2478,39 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	retElem := goType(c.inferExprType(q.Select))
 	if retElem == "" {
 		retElem = "any"
+	}
+
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		c.env = original
+		c.imports["fmt"] = true
+		c.imports["mochi/runtime/data"] = true
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
+		buf.WriteString("\tgroups := map[string]*data.Group{}\n")
+		buf.WriteString("\torder := []string{}\n")
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", sanitizeName(q.Var), src))
+		buf.WriteString(fmt.Sprintf("\t\tkey := %s\n", groupKey))
+		buf.WriteString("\t\tks := fmt.Sprint(key)\n")
+		buf.WriteString("\t\tg, ok := groups[ks]\n")
+		buf.WriteString("\t\tif !ok {\n")
+		buf.WriteString("\t\t\tg = &data.Group{Key: key}\n")
+		buf.WriteString("\t\t\tgroups[ks] = g\n")
+		buf.WriteString("\t\t\torder = append(order, ks)\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString(fmt.Sprintf("\t\tg.Items = append(g.Items, %s)\n", sanitizeName(q.Var)))
+		buf.WriteString("\t}\n")
+		buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
+		alias := sanitizeName(q.Group.Name)
+		buf.WriteString("\tfor _, ks := range order {\n")
+		buf.WriteString("\t\tg := groups[ks]\n")
+		if alias != "g" {
+			buf.WriteString(fmt.Sprintf("\t\t%s := g\n", alias))
+		}
+		buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", sel))
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn _res\n")
+		buf.WriteString("}()")
+		return buf.String(), nil
 	}
 
 	c.env = original
