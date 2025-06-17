@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"mochi/bench"
 	ktcode "mochi/compile/kt"
 	"mochi/golden"
 	"mochi/parser"
@@ -16,7 +15,7 @@ import (
 )
 
 func TestKTCompiler_SubsetPrograms(t *testing.T) {
-	if err := bench.EnsureKotlin(); err != nil {
+	if err := ktcode.EnsureKotlin(); err != nil {
 		t.Skipf("kotlin not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/kt", ".mochi", ".out", func(src string) ([]byte, error) {

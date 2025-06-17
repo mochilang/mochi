@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"mochi/bench"
 	swiftcode "mochi/compile/swift"
 	"mochi/golden"
 	"mochi/parser"
@@ -16,7 +15,7 @@ import (
 )
 
 func TestSwiftCompiler_SubsetPrograms(t *testing.T) {
-	if err := bench.EnsureSwift(); err != nil {
+	if err := swiftcode.EnsureSwift(); err != nil {
 		t.Skipf("swift not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/swift", ".mochi", ".out", func(src string) ([]byte, error) {

@@ -9,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/bench"
 	tscode "mochi/compile/ts"
 	"mochi/golden"
 	"mochi/parser"
@@ -18,7 +17,7 @@ import (
 )
 
 func TestTSCompiler_SubsetPrograms(t *testing.T) {
-	if err := bench.EnsureDeno(); err != nil {
+	if err := tscode.EnsureDeno(); err != nil {
 		t.Skipf("deno not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/valid", ".mochi", ".out", func(src string) ([]byte, error) {
@@ -135,7 +134,7 @@ func TestTSCompiler_GoldenOutput(t *testing.T) {
 }
 
 func TestTSCompiler_LeetCodeExamples(t *testing.T) {
-	if err := bench.EnsureDeno(); err != nil {
+	if err := tscode.EnsureDeno(); err != nil {
 		t.Skipf("deno not installed: %v", err)
 	}
 	for i := 1; i <= 133; i++ {

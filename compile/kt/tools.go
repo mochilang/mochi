@@ -1,4 +1,4 @@
-package bench
+package ktcode
 
 import (
 	"fmt"
@@ -37,7 +37,6 @@ func EnsureKotlin() error {
 				return nil
 			}
 		}
-		// fallback: try sdkman installer
 		cmd := exec.Command("bash", "-c", "curl -sS https://get.sdkman.io | bash && source $HOME/.sdkman/bin/sdkman-init.sh && sdk install kotlin")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

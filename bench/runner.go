@@ -15,8 +15,10 @@ import (
 
 	"github.com/fatih/color"
 
+	cscode "mochi/compile/cs"
 	gocode "mochi/compile/go"
 	pycode "mochi/compile/py"
+	rscode "mochi/compile/rust"
 	tscode "mochi/compile/ts"
 	"mochi/parser"
 	"mochi/types"
@@ -168,8 +170,20 @@ func Run() {
 		fmt.Println("🔎 Temp files kept at:", tempDir)
 	}
 
-	mochiBin, err := EnsureDeps()
+	mochiBin, err := gocode.EnsureMochi()
 	if err != nil {
+		panic(err)
+	}
+	if err := pycode.EnsurePython(); err != nil {
+		panic(err)
+	}
+	if err := rscode.EnsureRust(); err != nil {
+		panic(err)
+	}
+	if err := tscode.EnsureDeno(); err != nil {
+		panic(err)
+	}
+	if err := cscode.EnsureDotnet(); err != nil {
 		panic(err)
 	}
 	benches := Benchmarks(tempDir, mochiBin)

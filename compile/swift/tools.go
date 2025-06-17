@@ -1,4 +1,4 @@
-package bench
+package swiftcode
 
 import (
 	"fmt"
@@ -8,8 +8,7 @@ import (
 )
 
 // EnsureSwift verifies that the Swift toolchain is installed. If missing,
-// it attempts a best-effort installation using Homebrew on macOS or apt-get on
-// Linux.
+// it attempts a best-effort installation using Homebrew on macOS or apt-get on Linux.
 func EnsureSwift() error {
 	if _, err := exec.LookPath("swiftc"); err == nil {
 		return nil
@@ -38,7 +37,6 @@ func EnsureSwift() error {
 				return nil
 			}
 		}
-		// fallback: try official installer script
 		cmd := exec.Command("bash", "-c", "curl -sSL https://swift.org/install.sh | bash")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

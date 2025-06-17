@@ -9,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"mochi/bench"
 	dartcode "mochi/compile/dart"
 	"mochi/golden"
 	"mochi/parser"
@@ -17,7 +16,7 @@ import (
 )
 
 func TestDartCompiler_LeetCodeExample1(t *testing.T) {
-	if err := bench.EnsureDart(); err != nil {
+	if err := dartcode.EnsureDart(); err != nil {
 		t.Skipf("dart not installed: %v", err)
 	}
 	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
@@ -51,7 +50,7 @@ func TestDartCompiler_LeetCodeExample1(t *testing.T) {
 }
 
 func TestDartCompiler_SubsetPrograms(t *testing.T) {
-	if err := bench.EnsureDart(); err != nil {
+	if err := dartcode.EnsureDart(); err != nil {
 		t.Skipf("dart not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/dart", ".mochi", ".out", func(src string) ([]byte, error) {
@@ -90,7 +89,7 @@ func TestDartCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestDartCompiler_GoldenOutput(t *testing.T) {
-	if err := bench.EnsureDart(); err != nil {
+	if err := dartcode.EnsureDart(); err != nil {
 		t.Skipf("dart not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/dart", ".mochi", ".dart.out", func(src string) ([]byte, error) {
