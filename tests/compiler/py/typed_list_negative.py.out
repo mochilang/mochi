@@ -3,7 +3,7 @@ from __future__ import annotations
 
 xs = [((-1)), 0, 1]
 
-def values():
+def test_values():
 	assert (xs[0] == ((-1)))
 	assert (xs[1] == 0)
 	assert (xs[2] == 1)
@@ -11,7 +11,7 @@ def values():
 
 def main():
 	xs = [((-1)), 0, 1]
-	values()
+	test_values()
 
 if __name__ == "__main__":
 	main()
