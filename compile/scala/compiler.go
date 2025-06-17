@@ -86,6 +86,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileReturn(s.Return)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Expr != nil:
@@ -151,6 +153,23 @@ func (c *Compiler) compileReturn(st *parser.ReturnStmt) error {
 		return err
 	}
 	c.writeln("return " + expr)
+	return nil
+}
+
+func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
+	cond, err := c.compileExpr(st.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("while (%s) {", cond))
+	c.indent++
+	for _, s := range st.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -241,7 +260,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, rhs)
+		if op.Op == "in" {
+			expr = fmt.Sprintf("%s.contains(%s)", rhs, expr)
+		} else {
+			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, rhs)
+		}
 	}
 	return expr, nil
 }
@@ -293,6 +316,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Int != nil {
 			return strconv.Itoa(*p.Lit.Int), nil
 		}
+		if p.Lit.Bool != nil {
+			if bool(*p.Lit.Bool) {
+				return "true", nil
+			}
+			return "false", nil
+		}
 		if p.Lit.Str != nil {
 			return strconv.Quote(*p.Lit.Str), nil
 		}
@@ -310,6 +339,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
 		}
+	case p.Group != nil:
+		expr, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + expr + ")", nil
 	case p.Call != nil:
 		return c.compileCall(p.Call, "")
 	}
