@@ -129,6 +129,9 @@ func (c *Compiler) compileType(t *parser.TypeRef) string {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			return "[" + c.compileType(t.Generic.Args[0]) + "]"
 		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return "[" + c.compileType(t.Generic.Args[0]) + ": " + c.compileType(t.Generic.Args[1]) + "]"
+		}
 	}
 	return "Any"
 }
@@ -378,6 +381,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, item := range p.Map.Items {
+			k, err := c.compileExpr(item.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(item.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s: %s", k, v)
+		}
+		return "[" + strings.Join(items, ", ") + "]", nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
