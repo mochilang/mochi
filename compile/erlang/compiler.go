@@ -156,15 +156,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.buf.WriteString(expr)
-        case s.For != nil:
-                return c.compileFor(s.For)
-       case s.While != nil:
-               return c.compileWhile(s.While)
-        case s.If != nil:
-                return c.compileIf(s.If)
-        default:
-                c.buf.WriteString("ok")
-        }
+	case s.For != nil:
+		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.If != nil:
+		return c.compileIf(s.If)
+	default:
+		c.buf.WriteString("ok")
+	}
 	return nil
 }
 
@@ -226,25 +226,25 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		return err
 	}
 	c.indent--
-        c.writeIndent()
-        c.buf.WriteString(fmt.Sprintf("end, %s)", list))
-        return nil
+	c.writeIndent()
+	c.buf.WriteString(fmt.Sprintf("end, %s)", list))
+	return nil
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
-        cond, err := c.compileExpr(stmt.Cond)
-        if err != nil {
-                return err
-        }
-        c.buf.WriteString("mochi_while(fun() -> " + cond + " end, fun() ->\n")
-        c.indent++
-        if err := c.compileBlock(stmt.Body, false, nil); err != nil {
-                return err
-        }
-        c.indent--
-        c.writeIndent()
-        c.buf.WriteString("end)")
-        return nil
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.buf.WriteString("mochi_while(fun() -> " + cond + " end, fun() ->\n")
+	c.indent++
+	if err := c.compileBlock(stmt.Body, false, nil); err != nil {
+		return err
+	}
+	c.indent--
+	c.writeIndent()
+	c.buf.WriteString("end)")
+	return nil
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -397,8 +397,53 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
 		}
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.env = orig
+
+	var b strings.Builder
+	b.WriteString("[")
+	b.WriteString(sel)
+	b.WriteString(" || ")
+	b.WriteString(q.Var)
+	b.WriteString(" <- ")
+	b.WriteString(src)
+	if cond != "" {
+		b.WriteString(", ")
+		b.WriteString(cond)
+	}
+	b.WriteString("]")
+	return b.String(), nil
 }
 
 func (c *Compiler) emitRuntime() {
@@ -411,9 +456,8 @@ func (c *Compiler) emitRuntime() {
 
 	c.writeln("mochi_format(X) when is_integer(X) -> integer_to_list(X);")
 	c.writeln("mochi_format(X) when is_float(X) -> float_to_list(X);")
-        c.writeln("mochi_format(X) when is_list(X) -> X;")
-        c.writeln("mochi_format(X) -> lists:flatten(io_lib:format(\"~p\", [X])).")
-
+	c.writeln("mochi_format(X) when is_list(X) -> X;")
+	c.writeln("mochi_format(X) -> lists:flatten(io_lib:format(\"~p\", [X])).")
 
 	c.writeln("")
 	c.writeln("mochi_while(Cond, Body) ->")
