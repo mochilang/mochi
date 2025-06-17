@@ -407,6 +407,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			c.use("_avg")
 			return fmt.Sprintf("_avg(&%s)", args[0]), nil
 		}
+	case "input":
+		if len(args) == 0 {
+			c.use("_input")
+			return "_input()", nil
+		}
 	}
 	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 }

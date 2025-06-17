@@ -17,12 +17,20 @@ const (
 	helperInMap = "fn _in_map<K: std::cmp::Eq + std::hash::Hash, V>(m: &std::collections::HashMap<K, V>, k: &K) -> bool {\n" +
 		"    m.contains_key(k)\n" +
 		"}\n"
+
+	helperInput = "fn _input() -> String {\n" +
+		"    use std::io::Read;\n" +
+		"    let mut s = String::new();\n" +
+		"    std::io::stdin().read_line(&mut s).unwrap();\n" +
+		"    s.trim().to_string()\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
 	"_count":  helperCount,
 	"_avg":    helperAvg,
 	"_in_map": helperInMap,
+	"_input":  helperInput,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
