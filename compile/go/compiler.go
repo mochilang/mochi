@@ -813,22 +813,23 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	if c.env != nil {
 		if v, err := c.env.GetVar(s.Name); err == nil {
 			t = v
-			for range s.Index {
-				switch tt := t.(type) {
-				case types.ListType:
-					t = tt.Elem
-				case types.MapType:
-					t = tt.Value
-				default:
-					t = types.AnyType{}
-				}
-			}
 		}
 	}
 	for _, idx := range s.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
 			return err
+		}
+		if mt, ok := t.(types.MapType); ok {
+			keyT := c.inferExprType(idx.Start)
+			if !equalTypes(keyT, mt.Key) || isAny(keyT) {
+				c.use("_cast")
+				c.imports["encoding/json"] = true
+				iexpr = fmt.Sprintf("_cast[%s](%s)", goType(mt.Key), iexpr)
+			}
+			t = mt.Value
+		} else if lt, ok := t.(types.ListType); ok {
+			t = lt.Elem
 		}
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
 	}
@@ -1727,12 +1728,19 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	case "in":
 		switch rightType.(type) {
 		case types.MapType:
+			mt := rightType.(types.MapType)
 			keyTemp := c.newVar()
 			mapTemp := c.newVar()
 			c.writeln(fmt.Sprintf("%s := %s", keyTemp, left))
 			c.writeln(fmt.Sprintf("%s := %s", mapTemp, right))
+			keyExpr := keyTemp
+			if !equalTypes(leftType, mt.Key) || isAny(leftType) {
+				c.use("_cast")
+				c.imports["encoding/json"] = true
+				keyExpr = fmt.Sprintf("_cast[%s](%s)", goType(mt.Key), keyTemp)
+			}
 			okVar := c.newVar()
-			c.writeln(fmt.Sprintf("_, %s := %s[%s]", okVar, mapTemp, keyTemp))
+			c.writeln(fmt.Sprintf("_, %s := %s[%s]", okVar, mapTemp, keyExpr))
 			expr = okVar
 			next = types.BoolType{}
 		case types.ListType:
@@ -1893,7 +1901,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("%s[%s]", val, key)
 					typ = tt.Elem
 				case types.MapType:
-					val = fmt.Sprintf("%s[%s]", val, key)
+					keyT := c.inferExprType(idx.Start)
+					keyExpr := key
+					if !equalTypes(keyT, tt.Key) || isAny(keyT) {
+						c.use("_cast")
+						c.imports["encoding/json"] = true
+						keyExpr = fmt.Sprintf("_cast[%s](%s)", goType(tt.Key), key)
+					}
+					val = fmt.Sprintf("%s[%s]", val, keyExpr)
 					typ = tt.Value
 				case types.StringType:
 					c.use("_indexString")
