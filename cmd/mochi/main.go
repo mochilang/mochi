@@ -82,7 +82,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (go|py|ts|wasm)"`
+	Target        string `arg:"--target" help:"Output language (c|cs|dart|elixir|erlang|ex|go|jvm|kt|lua|py|rb|rust|swift|ts|wasm)"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
