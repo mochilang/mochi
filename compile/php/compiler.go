@@ -62,6 +62,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Break != nil:
@@ -144,6 +146,23 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while (" + cond + ") {")
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileIf(s *parser.IfStmt) error {
 	cond, err := c.compileExpr(s.Cond)
 	if err != nil {
@@ -200,7 +219,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+		if op.Op == "in" {
+			expr = fmt.Sprintf("(is_array(%[2]s) ? (array_key_exists(%[1]s, %[2]s) || in_array(%[1]s, %[2]s, true)) : (is_string(%[2]s) ? strpos(%[2]s, strval(%[1]s)) !== false : false))", expr, right)
+		} else {
+			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+		}
 	}
 	return expr, nil
 }
