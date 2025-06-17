@@ -91,6 +91,12 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	ret := c.compileType(fn.Return)
 	c.writeln(fmt.Sprintf("func %s(%s) -> %s {", fn.Name, strings.Join(params, ", "), ret))
 	c.indent++
+	for _, p := range fn.Params {
+		c.writeln(fmt.Sprintf("var %s = %s", p.Name, p.Name))
+	}
+	if len(fn.Params) > 0 {
+		c.writeln("")
+	}
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
