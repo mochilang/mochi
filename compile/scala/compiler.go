@@ -23,6 +23,15 @@ func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 
 // Compile generates Scala code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	c.writeln("object Main {")
 	c.indent++
 	for _, s := range prog.Statements {
@@ -31,7 +40,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
-		} else {
+		} else if s.Type == nil {
 			c.mainStmts = append(c.mainStmts, s)
 		}
 	}
@@ -346,6 +355,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s = %s", sanitizeName(f.Name), v)
+		}
+		return fmt.Sprintf("%s(%s)", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return strconv.Itoa(*p.Lit.Int), nil
@@ -395,6 +414,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + expr + ")", nil
 	case p.Call != nil:
 		return c.compileCall(p.Call, "")
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
@@ -533,4 +554,74 @@ func joinArgs(args []string) string {
 		res += ", " + args[i]
 	}
 	return res
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	name := sanitizeName(t.Name)
+	if len(t.Variants) > 0 {
+		c.writeln("sealed trait " + name)
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			fields := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				typ := scalaType(c.resolveTypeRef(f.Type))
+				fields[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), typ)
+			}
+			params := strings.Join(fields, ", ")
+			c.writeln(fmt.Sprintf("case class %s(%s) extends %s", vname, params, name))
+		}
+		return nil
+	}
+	fields := []string{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			typ := scalaType(c.resolveTypeRef(m.Field.Type))
+			fields = append(fields, fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typ))
+		}
+	}
+	c.writeln(fmt.Sprintf("case class %s(%s)", name, strings.Join(fields, ", ")))
+	return nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(" + target + " match {\n")
+	for _, cs := range m.Cases {
+		pat, err := c.compileMatchPattern(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString("\tcase " + pat + " => " + res + "\n")
+	}
+	b.WriteString("})")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileMatchPattern(pat *parser.Expr) (string, error) {
+	if isUnderscoreExpr(pat) {
+		return "_", nil
+	}
+	if call, ok := callPattern(pat); ok {
+		args := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			if name, ok := identName(a); ok {
+				args[i] = sanitizeName(name)
+			} else {
+				return "", fmt.Errorf("invalid pattern")
+			}
+		}
+		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), strings.Join(args, ", ")), nil
+	}
+	if id, ok := identName(pat); ok {
+		return sanitizeName(id), nil
+	}
+	return c.compileExpr(pat)
 }

@@ -1,0 +1,17 @@
+sealed trait Tree
+case class Leaf() extends Tree
+case class Node(left: Any, value: Int, right: Any) extends Tree
+
+object Main {
+	def isLeaf(t: Any): Boolean = {
+		return (t match {
+	case Leaf => true
+	case _ => false
+})
+	}
+	
+	def main(args: Array[String]): Unit = {
+		println(isLeaf(Leaf()))
+		println(isLeaf(Node(left = Leaf(), value = 1, right = Leaf())))
+	}
+}
