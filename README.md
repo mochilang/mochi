@@ -202,6 +202,12 @@ mochi infer go fmt
 mochi cheatsheet
 ```
 
+### Build Targets
+
+`mochi build` can emit code for many languages. Use `--target` with one of:
+`c`, `cs`, `dart`, `ex` (Elixir), `erlang`, `go`, `jvm`, `kt` (Kotlin), `lua`,
+`py`, `rb`, `rust`, `swift`, `ts`, or `wasm`.
+
 ## Try It
 
 Send this to Claude or run it in your shell:

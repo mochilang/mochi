@@ -31,8 +31,19 @@ import (
 	python "mochi/runtime/ffi/python"
 
 	"mochi/ast"
+	"mochi/compile/c"
+	"mochi/compile/cs"
+	"mochi/compile/dart"
+	"mochi/compile/erlang"
+	"mochi/compile/ex"
 	"mochi/compile/go"
+	"mochi/compile/jvm"
+	"mochi/compile/kt"
+	"mochi/compile/lua"
 	"mochi/compile/py"
+	"mochi/compile/rb"
+	"mochi/compile/rust"
+	"mochi/compile/swift"
 	"mochi/compile/ts"
 	"mochi/compile/wasm"
 	"mochi/interpreter"
@@ -82,7 +93,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (go|py|ts|wasm)"`
+	Target        string `arg:"--target" help:"Output language (c|cs|dart|ex|erlang|go|jvm|kt|lua|py|rb|rust|swift|ts|wasm)"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
@@ -500,6 +511,138 @@ func build(cmd *BuildCmd) error {
 		data, err := wasm.New(env, wasm.WithToolchain(tc)).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, data, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "c":
+		if out == "" {
+			out = base + ".c"
+		}
+		code, err := ccode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "cs", "csharp":
+		if out == "" {
+			out = base + ".cs"
+		}
+		code, err := cscode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "dart":
+		if out == "" {
+			out = base + ".dart"
+		}
+		code, err := dartcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "ex", "elixir":
+		if out == "" {
+			out = base + ".exs"
+		}
+		code, err := excode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "erlang", "erl":
+		if out == "" {
+			out = base + ".erl"
+		}
+		code, err := erlcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "jvm":
+		if out == "" {
+			out = base + ".jar"
+		}
+		data, err := jvm.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, data, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "kt", "kotlin":
+		if out == "" {
+			out = base + ".kt"
+		}
+		code, err := ktcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "lua":
+		if out == "" {
+			out = base + ".lua"
+		}
+		code, err := luacode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "rb", "ruby":
+		if out == "" {
+			out = base + ".rb"
+		}
+		code, err := rbcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "rust", "rs":
+		if out == "" {
+			out = base + ".rs"
+		}
+		code, err := rscode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "swift":
+		if out == "" {
+			out = base + ".swift"
+		}
+		code, err := swiftcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
 		}
 		if err != nil {
 			status = "error"
