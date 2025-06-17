@@ -1,0 +1,6 @@
+<?php
+echo "Enter first input:", PHP_EOL;
+$input1 = trim(fgets(STDIN));
+echo "Enter second input:", PHP_EOL;
+$input2 = trim(fgets(STDIN));
+echo "You entered:" . " " . $input1 . " " . "," . " " . $input2, PHP_EOL;

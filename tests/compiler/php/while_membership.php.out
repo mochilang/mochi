@@ -1,0 +1,6 @@
+<?php
+foreach ((is_string([1, 2, 3]) ? str_split([1, 2, 3]) : [1, 2, 3]) as $n) {
+}
+while ((is_array($set) ? (array_key_exists($i, $set) || in_array($i, $set, true)) : (is_string($set) ? strpos($set, strval($i)) !== false : false))) {
+}
+echo $count, PHP_EOL;

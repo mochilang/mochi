@@ -56,10 +56,10 @@ func TestPHPCompiler_LeetCodeExample1(t *testing.T) {
 }
 
 func TestPHPCompiler_SubsetPrograms(t *testing.T) {
-	if err := phpcode.EnsurePHP(); err != nil {
-		t.Skipf("php not installed: %v", err)
-	}
-	golden.Run(t, "tests/compiler/php", ".mochi", ".out", func(src string) ([]byte, error) {
+        if err := phpcode.EnsurePHP(); err != nil {
+                t.Skipf("php not installed: %v", err)
+        }
+        golden.Run(t, "tests/compiler/php", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -86,7 +86,25 @@ func TestPHPCompiler_SubsetPrograms(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ php run error: %w\n%s", err, out)
 		}
-		res := strings.ReplaceAll(string(out), "\r\n", "\n")
-		return []byte(strings.TrimSpace(res)), nil
-	})
+                res := strings.ReplaceAll(string(out), "\r\n", "\n")
+                return []byte(strings.TrimSpace(res)), nil
+        })
+}
+
+func TestPHPCompiler_GoldenOutput(t *testing.T) {
+        golden.Run(t, "tests/compiler/php", ".mochi", ".php.out", func(src string) ([]byte, error) {
+                prog, err := parser.Parse(src)
+                if err != nil {
+                        return nil, fmt.Errorf("❌ parse error: %w", err)
+                }
+                env := types.NewEnv(nil)
+                if errs := types.Check(prog, env); len(errs) > 0 {
+                        return nil, fmt.Errorf("❌ type error: %v", errs[0])
+                }
+                code, err := phpcode.New(env).Compile(prog)
+                if err != nil {
+                        return nil, fmt.Errorf("❌ compile error: %w", err)
+                }
+                return bytes.TrimSpace(code), nil
+        })
 }
