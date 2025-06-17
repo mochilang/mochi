@@ -1,0 +1,7 @@
+import Foundation
+
+func main() {
+	let value = (1 + 2) * 3
+	print(value)
+}
+main()
