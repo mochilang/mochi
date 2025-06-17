@@ -26,6 +26,10 @@ const (
 		"  return sum / list.length;\n" +
 		"}\n"
 
+	helperImul = "function _imul(a: number, b: number): number {\n" +
+		"  return Math.imul(a, b) >>> 0;\n" +
+		"}\n"
+
 	helperInput = "function _input(): string {\n" +
 		"  const v = prompt('');\n" +
 		"  return v === null ? '' : v;\n" +
@@ -309,6 +313,7 @@ const (
 var helperMap = map[string]string{
 	"_count":      helperCount,
 	"_avg":        helperAvg,
+	"_imul":       helperImul,
 	"_input":      helperInput,
 	"_iter":       helperIter,
 	"_gen_text":   helperGenText,
