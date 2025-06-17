@@ -306,6 +306,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 			continue
 		}
+		if op.Cast != nil {
+			typ := scalaType(c.resolveTypeRef(op.Cast.Type))
+			expr = fmt.Sprintf("%s.asInstanceOf[%s]", expr, typ)
+			continue
+		}
 	}
 	return expr, nil
 }
