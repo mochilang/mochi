@@ -25,8 +25,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.writeln("module Main where")
 	c.writeln("")
-	c.writeln("import Data.Maybe (fromMaybe)")
-	c.writeln("")
+        c.writeln("import Data.Maybe (fromMaybe)")
+        c.writeln("import Data.List (unwords)")
+        c.writeln("")
 	c.writeln(runtime)
 	c.writeln("")
 
@@ -55,13 +56,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileMainStmt(s *parser.Statement) error {
-	switch {
-	case s.Let != nil:
-		val, err := c.compileExpr(s.Let.Value)
-		if err != nil {
-			return err
-		}
-		c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Let.Name), val))
+        switch {
+        case s.Let != nil:
+                val, err := c.compileExpr(s.Let.Value)
+                if err != nil {
+                        return err
+                }
+                if isInputCall(s.Let.Value) {
+                        c.writeln(fmt.Sprintf("%s <- %s", sanitizeName(s.Let.Name), val))
+                } else {
+                        c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Let.Name), val))
+                }
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -283,13 +288,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			args[i] = v
 		}
-		if p.Call.Func == "len" {
-			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
-		}
-		if p.Call.Func == "print" {
-			return fmt.Sprintf("print %s", strings.Join(args, " ")), nil
-		}
-		return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
+                if p.Call.Func == "len" {
+                        return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
+                }
+                if p.Call.Func == "print" {
+                        if len(args) == 1 {
+                                if isStringLiteral(p.Call.Args[0]) {
+                                        return fmt.Sprintf("putStrLn %s", args[0]), nil
+                                }
+                                return fmt.Sprintf("print %s", args[0]), nil
+                        }
+                        parts := make([]string, len(args))
+                        for i, a := range args {
+                                parts[i] = fmt.Sprintf("showArg (%s)", a)
+                        }
+                        return fmt.Sprintf("putStrLn (unwords [%s])", strings.Join(parts, ", ")), nil
+                }
+                if p.Call.Func == "input" {
+                        return "input", nil
+                }
+                return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
@@ -323,5 +341,44 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		}
 		return "False", nil
 	}
-	return "0", nil
+        return "0", nil
+}
+
+func isInputCall(e *parser.Expr) bool {
+        if e == nil || e.Binary == nil {
+                return false
+        }
+        if len(e.Binary.Right) != 0 {
+                return false
+        }
+        u := e.Binary.Left
+        if u == nil || len(u.Ops) != 0 {
+                return false
+        }
+        p := u.Value
+        if p == nil || len(p.Ops) != 0 {
+                return false
+        }
+        if p.Target != nil && p.Target.Call != nil && p.Target.Call.Func == "input" && len(p.Target.Call.Args) == 0 {
+                return true
+        }
+        return false
+}
+
+func isStringLiteral(e *parser.Expr) bool {
+        if e == nil || e.Binary == nil {
+                return false
+        }
+        if len(e.Binary.Right) != 0 {
+                return false
+        }
+        u := e.Binary.Left
+        if u == nil || len(u.Ops) != 0 {
+                return false
+        }
+        p := u.Value
+        if p == nil || len(p.Ops) != 0 {
+                return false
+        }
+        return p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Str != nil
 }

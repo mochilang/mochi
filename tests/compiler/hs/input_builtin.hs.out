@@ -1,6 +1,9 @@
-package hscode
+module Main where
 
-const runtime = `
+import Data.Maybe (fromMaybe)
+import Data.List (unwords)
+
+
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
 forLoop start end f = go start
   where
@@ -19,4 +22,12 @@ showArg x =
   in if length s >= 2 && head s == '"' && last s == '"'
         then init (tail s)
         else s
-`
+
+
+main :: IO ()
+main = do
+    putStrLn "Enter first input:"
+    input1 <- input
+    putStrLn "Enter second input:"
+    input2 <- input
+    putStrLn (unwords [showArg ("You entered:"), showArg (input1), showArg (","), showArg (input2)])
