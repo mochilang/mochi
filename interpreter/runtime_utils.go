@@ -17,7 +17,11 @@ import (
 func applyBinary(pos lexer.Position, left any, op string, right any) (any, error) {
 	lv := anyToValue(left)
 	rv := anyToValue(right)
-	res, err := applyBinaryValue(pos, lv, op, rv)
+	fn, ok := binaryTable[op]
+	if !ok {
+		return nil, errInvalidOperator(pos, op, lv.Tag.String(), rv.Tag.String())
+	}
+	res, err := fn(pos, lv, rv)
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +329,11 @@ func applyFloatBinaryValue(pos lexer.Position, l float64, op string, r float64) 
 // applyUnary applies a unary operator on a generic value.
 func applyUnary(pos lexer.Position, op string, val any) (any, error) {
 	v := anyToValue(val)
-	res, err := applyUnaryValue(pos, op, v)
+	fn, ok := unaryTable[op]
+	if !ok {
+		return nil, errUnknownUnaryOperator(pos, op)
+	}
+	res, err := fn(pos, v)
 	if err != nil {
 		return nil, err
 	}
