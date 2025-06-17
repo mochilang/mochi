@@ -2,9 +2,7 @@ package interpreter
 
 import (
 	"fmt"
-	"reflect"
 	"strconv"
-	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
 
@@ -26,198 +24,8 @@ func applyBinary(pos lexer.Position, left any, op string, right any) (any, error
 
 // applyBinaryValue applies a binary operator on two Value operands.
 func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (Value, error) {
-	if op == "in" {
-		switch right.Tag {
-		case TagList:
-			for _, item := range right.List {
-				eq, err := applyBinaryValue(pos, left, "==", item)
-				if err == nil && eq.Tag == TagBool && eq.Bool {
-					return Value{Tag: TagBool, Bool: true}, nil
-				}
-				if err != nil && reflect.DeepEqual(valueToAny(left), valueToAny(item)) {
-					return Value{Tag: TagBool, Bool: true}, nil
-				}
-			}
-			return Value{Tag: TagBool, Bool: false}, nil
-		case TagMap:
-			key := fmt.Sprint(valueToAny(left))
-			_, ok := right.Map[key]
-			return Value{Tag: TagBool, Bool: ok}, nil
-		}
-	}
-
-	if left.Tag == TagList && right.Tag == TagList {
-		switch op {
-		case "+":
-			return Value{Tag: TagList, List: append(append([]Value{}, left.List...), right.List...)}, nil
-		case "union_all":
-			return Value{Tag: TagList, List: append(append([]Value{}, left.List...), right.List...)}, nil
-		case "union":
-			merged := append([]Value{}, left.List...)
-			for _, rv := range right.List {
-				found := false
-				for _, lv := range merged {
-					eq, err := applyBinaryValue(pos, lv, "==", rv)
-					if err == nil && eq.Tag == TagBool && eq.Bool {
-						found = true
-						break
-					}
-					if err != nil && reflect.DeepEqual(valueToAny(lv), valueToAny(rv)) {
-						found = true
-						break
-					}
-				}
-				if !found {
-					merged = append(merged, rv)
-				}
-			}
-			return Value{Tag: TagList, List: merged}, nil
-		case "except":
-			diff := []Value{}
-			for _, lv := range left.List {
-				found := false
-				for _, rv := range right.List {
-					eq, err := applyBinaryValue(pos, lv, "==", rv)
-					if err == nil && eq.Tag == TagBool && eq.Bool {
-						found = true
-						break
-					}
-					if err != nil && reflect.DeepEqual(valueToAny(lv), valueToAny(rv)) {
-						found = true
-						break
-					}
-				}
-				if !found {
-					diff = append(diff, lv)
-				}
-			}
-			return Value{Tag: TagList, List: diff}, nil
-		case "intersect":
-			inter := []Value{}
-			for _, lv := range left.List {
-				match := false
-				for _, rv := range right.List {
-					eq, err := applyBinaryValue(pos, lv, "==", rv)
-					if err == nil && eq.Tag == TagBool && eq.Bool {
-						match = true
-						break
-					}
-					if err != nil && reflect.DeepEqual(valueToAny(lv), valueToAny(rv)) {
-						match = true
-						break
-					}
-				}
-				if match {
-					exists := false
-					for _, iv := range inter {
-						eq, err := applyBinaryValue(pos, iv, "==", lv)
-						if err == nil && eq.Tag == TagBool && eq.Bool {
-							exists = true
-							break
-						}
-						if err != nil && reflect.DeepEqual(valueToAny(iv), valueToAny(lv)) {
-							exists = true
-							break
-						}
-					}
-					if !exists {
-						inter = append(inter, lv)
-					}
-				}
-			}
-			return Value{Tag: TagList, List: inter}, nil
-		case "==":
-			if len(left.List) != len(right.List) {
-				return Value{Tag: TagBool, Bool: false}, nil
-			}
-			for i := range left.List {
-				eq, err := applyBinaryValue(pos, left.List[i], "==", right.List[i])
-				if err != nil {
-					return Value{}, err
-				}
-				if !eq.Bool {
-					return Value{Tag: TagBool, Bool: false}, nil
-				}
-			}
-			return Value{Tag: TagBool, Bool: true}, nil
-		case "!=":
-			eq, err := applyBinaryValue(pos, left, "==", right)
-			if err != nil {
-				return Value{}, err
-			}
-			return Value{Tag: TagBool, Bool: !eq.Bool}, nil
-		}
-	}
-
-	switch left.Tag {
-	case TagBool:
-		if right.Tag == TagBool {
-			switch op {
-			case "==":
-				return Value{Tag: TagBool, Bool: left.Bool == right.Bool}, nil
-			case "!=":
-				return Value{Tag: TagBool, Bool: left.Bool != right.Bool}, nil
-			case "&&":
-				return Value{Tag: TagBool, Bool: left.Bool && right.Bool}, nil
-			case "||":
-				return Value{Tag: TagBool, Bool: left.Bool || right.Bool}, nil
-			}
-		}
-	case TagInt:
-		if right.Tag == TagInt {
-			return applyIntBinaryValue(pos, left.Int, op, right.Int)
-		}
-		if right.Tag == TagFloat {
-			return applyFloatBinaryValue(pos, float64(left.Int), op, right.Float)
-		}
-	case TagFloat:
-		if right.Tag == TagFloat {
-			return applyFloatBinaryValue(pos, left.Float, op, right.Float)
-		}
-		if right.Tag == TagInt {
-			return applyFloatBinaryValue(pos, left.Float, op, float64(right.Int))
-		}
-	case TagStr:
-		if right.Tag == TagStr {
-			switch op {
-			case "+":
-				return Value{Tag: TagStr, Str: left.Str + right.Str}, nil
-			case "==":
-				return Value{Tag: TagBool, Bool: left.Str == right.Str}, nil
-			case "!=":
-				return Value{Tag: TagBool, Bool: left.Str != right.Str}, nil
-			case "<":
-				return Value{Tag: TagBool, Bool: left.Str < right.Str}, nil
-			case "<=":
-				return Value{Tag: TagBool, Bool: left.Str <= right.Str}, nil
-			case ">":
-				return Value{Tag: TagBool, Bool: left.Str > right.Str}, nil
-			case ">=":
-				return Value{Tag: TagBool, Bool: left.Str >= right.Str}, nil
-			case "in":
-				return Value{Tag: TagBool, Bool: strings.Contains(right.Str, left.Str)}, nil
-			}
-		}
-	case TagList:
-		if op == "in" {
-			for _, item := range right.List {
-				eq, err := applyBinaryValue(pos, left, "==", item)
-				if err == nil && eq.Tag == TagBool && eq.Bool {
-					return Value{Tag: TagBool, Bool: true}, nil
-				}
-				if err != nil && reflect.DeepEqual(valueToAny(left), valueToAny(item)) {
-					return Value{Tag: TagBool, Bool: true}, nil
-				}
-			}
-			return Value{Tag: TagBool, Bool: false}, nil
-		}
-	case TagMap:
-		if op == "in" {
-			key := valueToAny(left)
-			k := fmt.Sprint(key)
-			_, ok := right.Map[k]
-			return Value{Tag: TagBool, Bool: ok}, nil
-		}
+	if fn, ok := binaryOps[op]; ok {
+		return fn(pos, left, right)
 	}
 	return Value{}, errInvalidOperator(pos, op, left.Tag.String(), right.Tag.String())
 }
@@ -334,24 +142,10 @@ func applyUnary(pos lexer.Position, op string, val any) (any, error) {
 
 // applyUnaryValue applies a unary operator on a Value.
 func applyUnaryValue(pos lexer.Position, op string, val Value) (Value, error) {
-	switch op {
-	case "-":
-		switch val.Tag {
-		case TagInt:
-			return Value{Tag: TagInt, Int: -val.Int}, nil
-		case TagFloat:
-			return Value{Tag: TagFloat, Float: -val.Float}, nil
-		default:
-			return Value{}, errInvalidUnaryOperator(pos, op, val.Tag.String())
-		}
-	case "!":
-		if val.Tag == TagBool {
-			return Value{Tag: TagBool, Bool: !val.Bool}, nil
-		}
-		return Value{}, errInvalidUnaryOperator(pos, op, val.Tag.String())
-	default:
-		return Value{}, errUnknownUnaryOperator(pos, op)
+	if fn, ok := unaryOps[op]; ok {
+		return fn(pos, val)
 	}
+	return Value{}, errUnknownUnaryOperator(pos, op)
 }
 
 func truthy(val any) bool {
