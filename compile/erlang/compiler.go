@@ -11,9 +11,10 @@ import (
 
 // Compiler translates a Mochi AST into Erlang source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	needGet bool
 }
 
 // New returns a new Compiler.
@@ -255,46 +256,46 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-        leftAst := b.Left
-        left, err := c.compileUnary(leftAst)
-        if err != nil {
-                return "", err
-        }
-        out := left
-        for _, op := range b.Right {
-                rightAst := op.Right
-                right, err := c.compilePostfix(rightAst)
-                if err != nil {
-                        return "", err
-                }
-                switch op.Op {
-                case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-                        erlOp := op.Op
-                        if erlOp == "&&" {
-                                erlOp = "and"
-                        }
-                        if erlOp == "||" {
-                                erlOp = "or"
-                        }
-                        if erlOp == "==" {
-                                erlOp = "=="
-                        }
-                        if erlOp == "!=" {
-                                erlOp = "/="
-                        }
-                        if erlOp == "+" && (isListUnary(leftAst) || isListPostfix(rightAst)) {
-                                out = fmt.Sprintf("lists:append(%s, %s)", out, right)
-                        } else {
-                                out = fmt.Sprintf("(%s %s %s)", out, erlOp, right)
-                        }
-                case "in":
-                        out = fmt.Sprintf("maps:is_key(%s, %s)", out, right)
-                default:
-                        return "", fmt.Errorf("unsupported operator %s", op.Op)
-                }
-                leftAst = &parser.Unary{Value: rightAst}
-        }
-        return out, nil
+	leftAst := b.Left
+	left, err := c.compileUnary(leftAst)
+	if err != nil {
+		return "", err
+	}
+	out := left
+	for _, op := range b.Right {
+		rightAst := op.Right
+		right, err := c.compilePostfix(rightAst)
+		if err != nil {
+			return "", err
+		}
+		switch op.Op {
+		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			erlOp := op.Op
+			if erlOp == "&&" {
+				erlOp = "and"
+			}
+			if erlOp == "||" {
+				erlOp = "or"
+			}
+			if erlOp == "==" {
+				erlOp = "=="
+			}
+			if erlOp == "!=" {
+				erlOp = "/="
+			}
+			if erlOp == "+" && (isListUnary(leftAst) || isListPostfix(rightAst)) {
+				out = fmt.Sprintf("lists:append(%s, %s)", out, right)
+			} else {
+				out = fmt.Sprintf("(%s %s %s)", out, erlOp, right)
+			}
+		case "in":
+			out = fmt.Sprintf("maps:is_key(%s, %s)", out, right)
+		default:
+			return "", fmt.Errorf("unsupported operator %s", op.Op)
+		}
+		leftAst = &parser.Unary{Value: rightAst}
+	}
+	return out, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -324,7 +325,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+			if isStringExpr(op.Index.Start) {
+				c.needGet = true
+				res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
+			} else {
+				res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+			}
 		} else if op.Call != nil {
 			args := []string{}
 			for _, a := range op.Call.Args {
@@ -335,22 +341,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			argStr := strings.Join(args, ", ")
-                    switch res {
-                    case "print":
-                            res = fmt.Sprintf("mochi_print([%s])", argStr)
-                    case "len":
-                            res = fmt.Sprintf("length(%s)", argStr)
-                    case "str":
-                            res = fmt.Sprintf("mochi_format(%s)", argStr)
-                    case "count":
-                            res = fmt.Sprintf("mochi_count(%s)", argStr)
-                    case "avg":
-                            res = fmt.Sprintf("mochi_avg(%s)", argStr)
-                    case "input":
-                            res = "mochi_input()"
-                    default:
-                            res = fmt.Sprintf("%s(%s)", res, argStr)
-                    }
+			switch res {
+			case "print":
+				res = fmt.Sprintf("mochi_print([%s])", argStr)
+			case "len":
+				res = fmt.Sprintf("length(%s)", argStr)
+			case "str":
+				res = fmt.Sprintf("mochi_format(%s)", argStr)
+			case "count":
+				res = fmt.Sprintf("mochi_count(%s)", argStr)
+			case "avg":
+				res = fmt.Sprintf("mochi_avg(%s)", argStr)
+			case "input":
+				res = "mochi_input()"
+			default:
+				res = fmt.Sprintf("%s(%s)", res, argStr)
+			}
 		} else if op.Cast != nil {
 			// ignore type casts
 		}
@@ -377,6 +383,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s => %s", k, v)
+		}
+		return "#{" + strings.Join(items, ", ") + "}", nil
 	case p.Struct != nil:
 		fields := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
@@ -387,6 +407,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			fields[i] = fmt.Sprintf("%s => %s", f.Name, v)
 		}
 		return "#{" + strings.Join(fields, ", ") + "}", nil
+	case p.Group != nil:
+		return c.compileExpr(p.Group)
 	case p.Selector != nil:
 		name := p.Selector.Root
 		if len(p.Selector.Tail) > 0 {
@@ -406,22 +428,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, v)
 		}
 		argStr := strings.Join(args, ", ")
-                switch p.Call.Func {
-                case "print":
-                        return fmt.Sprintf("mochi_print([%s])", argStr), nil
-                case "len":
-                        return fmt.Sprintf("length(%s)", argStr), nil
-                case "str":
-                        return fmt.Sprintf("mochi_format(%s)", argStr), nil
-                case "count":
-                        return fmt.Sprintf("mochi_count(%s)", argStr), nil
-                case "avg":
-                        return fmt.Sprintf("mochi_avg(%s)", argStr), nil
-                case "input":
-                        return "mochi_input()", nil
-                default:
-                        return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
-                }
+		switch p.Call.Func {
+		case "print":
+			return fmt.Sprintf("mochi_print([%s])", argStr), nil
+		case "len":
+			return fmt.Sprintf("length(%s)", argStr), nil
+		case "str":
+			return fmt.Sprintf("mochi_format(%s)", argStr), nil
+		case "count":
+			return fmt.Sprintf("mochi_count(%s)", argStr), nil
+		case "avg":
+			return fmt.Sprintf("mochi_avg(%s)", argStr), nil
+		case "input":
+			return "mochi_input()", nil
+		default:
+			return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
+		}
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	}
@@ -429,125 +451,140 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-        if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
-                return "", fmt.Errorf("unsupported query expression")
-        }
-        src, err := c.compileExpr(q.Source)
-        if err != nil {
-                return "", err
-        }
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
 
-        orig := c.env
-        child := types.NewEnv(c.env)
-        child.SetVar(q.Var, types.AnyType{}, true)
-        c.env = child
-        sel, err := c.compileExpr(q.Select)
-        if err != nil {
-                c.env = orig
-                return "", err
-        }
-        var cond, sortExpr, skipExpr, takeExpr string
-        if q.Where != nil {
-                cond, err = c.compileExpr(q.Where)
-                if err != nil {
-                        c.env = orig
-                        return "", err
-                }
-        }
-        if q.Sort != nil {
-                sortExpr, err = c.compileExpr(q.Sort)
-                if err != nil {
-                        c.env = orig
-                        return "", err
-                }
-        }
-        if q.Skip != nil {
-                skipExpr, err = c.compileExpr(q.Skip)
-                if err != nil {
-                        c.env = orig
-                        return "", err
-                }
-        }
-        if q.Take != nil {
-                takeExpr, err = c.compileExpr(q.Take)
-                if err != nil {
-                        c.env = orig
-                        return "", err
-                }
-        }
-        c.env = orig
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.env = orig
 
-        if sortExpr == "" && skipExpr == "" && takeExpr == "" {
-                var b strings.Builder
-                b.WriteString("[")
-                b.WriteString(sel)
-                b.WriteString(" || ")
-                b.WriteString(q.Var)
-                b.WriteString(" <- ")
-                b.WriteString(src)
-                if cond != "" {
-                        b.WriteString(", ")
-                        b.WriteString(cond)
-                }
-                b.WriteString("]")
-                return b.String(), nil
-        }
+	if sortExpr == "" && skipExpr == "" && takeExpr == "" {
+		var b strings.Builder
+		b.WriteString("[")
+		b.WriteString(sel)
+		b.WriteString(" || ")
+		b.WriteString(q.Var)
+		b.WriteString(" <- ")
+		b.WriteString(src)
+		if cond != "" {
+			b.WriteString(", ")
+			b.WriteString(cond)
+		}
+		b.WriteString("]")
+		return b.String(), nil
+	}
 
-        var b strings.Builder
-        b.WriteString("(fun() ->\n")
-        b.WriteString("\tItems = [" + q.Var + " || " + q.Var + " <- " + src)
-        if cond != "" {
-                b.WriteString(", " + cond)
-        }
-        b.WriteString("],\n")
-        b.WriteString("\tSorted = ")
-        if sortExpr != "" {
-                b.WriteString("begin\n")
-                b.WriteString("\t\tPairs = [{" + sortExpr + ", " + q.Var + "} || " + q.Var + " <- Items],\n")
-                b.WriteString("\t\tSPairs = lists:sort(fun({A,_},{B,_}) -> A =< B end, Pairs),\n")
-                b.WriteString("\t\t[ V || {_, V} <- SPairs ]\n")
-                b.WriteString("\tend")
-        } else {
-                b.WriteString("Items")
-        }
-        b.WriteString(",\n")
-        b.WriteString("\tSkipped = ")
-        if skipExpr != "" {
-                b.WriteString("(case " + skipExpr + " of\n")
-                b.WriteString("\t\tN when N > 0 -> lists:nthtail(N, Sorted);\n")
-                b.WriteString("\t\t_ -> Sorted\n")
-                b.WriteString("\tend)" )
-        } else {
-                b.WriteString("Sorted")
-        }
-        b.WriteString(",\n")
-        b.WriteString("\tTaken = ")
-        if takeExpr != "" {
-                b.WriteString("lists:sublist(Skipped, " + takeExpr + ")")
-        } else {
-                b.WriteString("Skipped")
-        }
-        b.WriteString(",\n")
-        b.WriteString("\t[" + sel + " || " + q.Var + " <- Taken]\n")
-        b.WriteString("end)()")
-        return b.String(), nil
+	var b strings.Builder
+	b.WriteString("(fun() ->\n")
+	b.WriteString("\tItems = [" + q.Var + " || " + q.Var + " <- " + src)
+	if cond != "" {
+		b.WriteString(", " + cond)
+	}
+	b.WriteString("],\n")
+	b.WriteString("\tSorted = ")
+	if sortExpr != "" {
+		b.WriteString("begin\n")
+		b.WriteString("\t\tPairs = [{" + sortExpr + ", " + q.Var + "} || " + q.Var + " <- Items],\n")
+		b.WriteString("\t\tSPairs = lists:sort(fun({A,_},{B,_}) -> A =< B end, Pairs),\n")
+		b.WriteString("\t\t[ V || {_, V} <- SPairs ]\n")
+		b.WriteString("\tend")
+	} else {
+		b.WriteString("Items")
+	}
+	b.WriteString(",\n")
+	b.WriteString("\tSkipped = ")
+	if skipExpr != "" {
+		b.WriteString("(case " + skipExpr + " of\n")
+		b.WriteString("\t\tN when N > 0 -> lists:nthtail(N, Sorted);\n")
+		b.WriteString("\t\t_ -> Sorted\n")
+		b.WriteString("\tend)")
+	} else {
+		b.WriteString("Sorted")
+	}
+	b.WriteString(",\n")
+	b.WriteString("\tTaken = ")
+	if takeExpr != "" {
+		b.WriteString("lists:sublist(Skipped, " + takeExpr + ")")
+	} else {
+		b.WriteString("Skipped")
+	}
+	b.WriteString(",\n")
+	b.WriteString("\t[" + sel + " || " + q.Var + " <- Taken]\n")
+	b.WriteString("end)()")
+	return b.String(), nil
 }
 
 func isListUnary(u *parser.Unary) bool {
-        if u == nil || len(u.Ops) > 0 {
-                return false
-        }
-        return isListPostfix(u.Value)
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return isListPostfix(u.Value)
 }
 
 func isListPostfix(p *parser.PostfixExpr) bool {
-        if p == nil || len(p.Ops) > 0 {
-                return false
-        }
-        if p.Target != nil && p.Target.List != nil {
-                return true
-        }
-        return false
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if p.Target != nil && p.Target.List != nil {
+		return true
+	}
+	return false
+}
+
+func isStringExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil {
+		return false
+	}
+	return true
 }
 
 func (c *Compiler) emitRuntime() {
@@ -566,22 +603,22 @@ func (c *Compiler) emitRuntime() {
 	c.writeln("")
 	c.writeln("mochi_count(X) when is_list(X) -> length(X);")
 	c.writeln("mochi_count(X) when is_map(X) -> maps:size(X);")
-        c.writeln("mochi_count(X) when is_binary(X) -> byte_size(X);")
-        c.writeln("mochi_count(_) -> erlang:error(badarg).")
+	c.writeln("mochi_count(X) when is_binary(X) -> byte_size(X);")
+	c.writeln("mochi_count(_) -> erlang:error(badarg).")
 
-        c.writeln("")
-        c.writeln("mochi_input() ->")
-        c.indent++
-        c.writeln("case io:get_line(\"\") of")
-        c.indent++
-        c.writeln("eof -> \"\";")
-        c.writeln("Line -> string:trim(Line)")
-        c.indent--
-        c.writeln("end.")
-        c.indent--
+	c.writeln("")
+	c.writeln("mochi_input() ->")
+	c.indent++
+	c.writeln("case io:get_line(\"\") of")
+	c.indent++
+	c.writeln("eof -> \"\";")
+	c.writeln("Line -> string:trim(Line)")
+	c.indent--
+	c.writeln("end.")
+	c.indent--
 
-        c.writeln("")
-        c.writeln("mochi_avg([]) -> 0;")
+	c.writeln("")
+	c.writeln("mochi_avg([]) -> 0;")
 	c.writeln("mochi_avg(L) when is_list(L) ->")
 	c.indent++
 	c.writeln("Sum = lists:foldl(fun(X, Acc) ->")
@@ -598,6 +635,13 @@ func (c *Compiler) emitRuntime() {
 	c.writeln(".")
 	c.indent--
 	c.writeln("mochi_avg(_) -> erlang:error(badarg).")
+
+	if c.needGet {
+		c.writeln("")
+		c.writeln("mochi_get(M, K) when is_list(M), is_integer(K) -> lists:nth(K + 1, M);")
+		c.writeln("mochi_get(M, K) when is_map(M) -> maps:get(K, M);")
+		c.writeln("mochi_get(_, _) -> erlang:error(badarg).")
+	}
 
 	c.writeln("")
 	c.writeln("mochi_while(Cond, Body) ->")
