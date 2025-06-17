@@ -31,6 +31,7 @@ import (
 	python "mochi/runtime/ffi/python"
 
 	"mochi/ast"
+	"mochi/compile/ex"
 	"mochi/compile/go"
 	"mochi/compile/py"
 	"mochi/compile/ts"
@@ -82,7 +83,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (go|py|ts|wasm)"`
+	Target        string `arg:"--target" help:"Output language (go|py|ts|wasm|ex)"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
@@ -429,6 +430,8 @@ func build(cmd *BuildCmd) error {
 			target = "ts"
 		case ".wasm":
 			target = "wasm"
+		case ".ex":
+			target = "ex"
 		}
 	}
 
@@ -480,6 +483,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".ts"
 		}
 		code, err := tscode.New(env, modRoot).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "ex":
+		if out == "" {
+			out = base + ".ex"
+		}
+		code, err := excode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
