@@ -1,0 +1,23 @@
+module Main where
+
+import Data.Maybe (fromMaybe)
+
+
+forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
+forLoop start end f = go start
+  where
+    go i | i < end =
+            case f i of
+              Just v -> Just v
+              Nothing -> go (i + 1)
+         | otherwise = Nothing
+
+
+foo n = fromMaybe (()) $
+    if (n < 0) then Just ((-1)) else if (n == 0) then Just (0) else Just (1)
+
+main :: IO ()
+main = do
+    print (foo (-2))
+    print (foo 0)
+    print (foo 3)

@@ -177,20 +177,11 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement) (string, error) {
 			}
 			expr = fmt.Sprintf("Just (%s)", val)
 		case s.If != nil:
-			thenExpr, err := c.compileStmtExpr(s.If.Then)
+			ifExpr, err := c.compileIfExpr(s.If)
 			if err != nil {
 				return "", err
 			}
-			elseExpr, err := c.compileStmtExpr(s.If.Else)
-			if err != nil {
-				return "", err
-			}
-			cond, err := c.compileExpr(s.If.Cond)
-			if err != nil {
-				return "", err
-			}
-			e := fmt.Sprintf("if %s then %s else %s", cond, thenExpr, elseExpr)
-			expr = chainMaybe(e, expr)
+			expr = chainMaybe(ifExpr, expr)
 		case s.For != nil:
 			bodyExpr, err := c.compileStmtExpr(s.For.Body)
 			if err != nil {
@@ -228,6 +219,30 @@ func chainMaybe(a, b string) string {
 		return a
 	}
 	return fmt.Sprintf("case %s of Just v -> Just v; Nothing -> %s", a, b)
+}
+
+func (c *Compiler) compileIfExpr(stmt *parser.IfStmt) (string, error) {
+	thenExpr, err := c.compileStmtExpr(stmt.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if stmt.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(stmt.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr, err = c.compileStmtExpr(stmt.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("if %s then %s else %s", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
