@@ -408,6 +408,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("println(%s)", joinArgs(args))
 			} else if expr == "len" {
 				expr = fmt.Sprintf("%s.size", args[0])
+			} else if expr == "count" {
+				expr = fmt.Sprintf("%s.size", args[0])
+			} else if expr == "avg" {
+				expr = fmt.Sprintf("%s.average()", args[0])
+			} else if expr == "str" {
+				expr = fmt.Sprintf("%s.toString()", args[0])
+			} else if expr == "input" {
+				expr = "readLine()!!"
 			} else {
 				expr = fmt.Sprintf("%s(%s)", expr, joinArgs(args))
 			}
@@ -499,8 +507,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "len" && len(args) == 1 {
 			return args[0] + ".size", nil
 		}
+		if name == "count" && len(args) == 1 {
+			return args[0] + ".size", nil
+		}
+		if name == "avg" && len(args) == 1 {
+			return args[0] + ".average()", nil
+		}
 		if name == "str" && len(args) == 1 {
 			return args[0] + ".toString()", nil
+		}
+		if name == "input" && len(args) == 0 {
+			return "readLine()!!", nil
 		}
 		return name + "(" + joinArgs(args) + ")", nil
 	}
