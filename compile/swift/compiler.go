@@ -15,13 +15,19 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	env    *types.Env
+	useAvg bool
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	c.writeln("import Foundation")
-	c.writeln("")
+	c.useAvg = false
+
+	var body bytes.Buffer
+	oldBuf := c.buf
+	c.buf = body
+	c.indent = 0
+
 	// function declarations first
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -45,6 +51,35 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	c.writeln("main()")
+
+	bodyBytes := c.buf.Bytes()
+
+	c.buf = oldBuf
+	c.indent = 0
+
+	c.writeln("import Foundation")
+	c.writeln("")
+	if c.useAvg {
+		c.writeln("func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {")
+		c.indent++
+		c.writeln("if arr.isEmpty { return 0 }")
+		c.writeln("var sum = 0.0")
+		c.writeln("for v in arr { sum += Double(v) }")
+		c.writeln("return sum / Double(arr.count)")
+		c.indent--
+		c.writeln("}")
+		c.writeln("func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {")
+		c.indent++
+		c.writeln("if arr.isEmpty { return 0 }")
+		c.writeln("var sum = 0.0")
+		c.writeln("for v in arr { sum += Double(v) }")
+		c.writeln("return sum / Double(arr.count)")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+
+	c.buf.Write(bodyBytes)
 	return c.buf.Bytes(), nil
 }
 
@@ -343,13 +378,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			args[i] = v
 		}
-		if p.Call.Func == "len" {
+		switch p.Call.Func {
+		case "len":
 			if len(args) != 1 {
 				return "", fmt.Errorf("len expects 1 arg")
 			}
 			return fmt.Sprintf("%s.count", args[0]), nil
+		case "count":
+			if len(args) != 1 {
+				return "", fmt.Errorf("count expects 1 arg")
+			}
+			return fmt.Sprintf("%s.count", args[0]), nil
+		case "avg":
+			if len(args) != 1 {
+				return "", fmt.Errorf("avg expects 1 arg")
+			}
+			c.useAvg = true
+			return fmt.Sprintf("_avg(%s.map { Double($0) })", args[0]), nil
+		default:
+			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}
-		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 	}
 	return "", fmt.Errorf("unsupported expression")
 }

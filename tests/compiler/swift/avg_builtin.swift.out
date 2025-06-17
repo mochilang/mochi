@@ -1,0 +1,19 @@
+import Foundation
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+	if arr.isEmpty { return 0 }
+	var sum = 0.0
+	for v in arr { sum += Double(v) }
+	return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+	if arr.isEmpty { return 0 }
+	var sum = 0.0
+	for v in arr { sum += Double(v) }
+	return sum / Double(arr.count)
+}
+
+func main() {
+	print(_avg([1, 2, 3].map { Double($0) }))
+}
+main()

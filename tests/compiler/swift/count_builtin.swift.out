@@ -1,0 +1,6 @@
+import Foundation
+
+func main() {
+	print([1, 2, 3].count)
+}
+main()
