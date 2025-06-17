@@ -84,7 +84,7 @@ func isLeaf(t Tree) bool {
 }()
 }
 
-func example_1() {
+func test_example_1() {
 	var preorder []int = []int{3, 9, 20, 15, 7}
 	var inorder []int = []int{9, 3, 15, 20, 7}
 	var tree Tree = buildTree(preorder, inorder)
@@ -93,7 +93,7 @@ func example_1() {
 	expect(_equal(inorderTraversal(tree), inorder))
 }
 
-func single_node() {
+func test_single_node() {
 	var preorder []int = []int{1}
 	var inorder []int = []int{1}
 	var tree Tree = buildTree(preorder, inorder)
@@ -102,15 +102,15 @@ func single_node() {
 	expect(_equal(inorderTraversal(tree), inorder))
 }
 
-func empty() {
+func test_empty() {
 	expect((isLeaf(buildTree([]int{}, []int{})) == true))
 }
 
 func main() {
 	fmt.Println(preorderTraversal(buildTree([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7})))
-	example_1()
-	single_node()
-	empty()
+	test_example_1()
+	test_single_node()
+	test_empty()
 }
 
 func _convSlice[T any, U any](s []T) []U {
