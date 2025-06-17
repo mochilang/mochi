@@ -1,0 +1,4 @@
+open System
+
+for ch in "hi" do
+    printfn "%A" ch
