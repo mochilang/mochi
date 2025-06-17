@@ -1,0 +1,37 @@
+package rscode
+
+import "sort"
+
+const (
+	helperCount = "fn _count<T>(v: &[T]) -> i32 {\n" +
+		"    v.len() as i32\n" +
+		"}\n"
+
+	helperAvg = "fn _avg<T: Into<f64> + Copy>(v: &[T]) -> f64 {\n" +
+		"    if v.is_empty() { return 0.0 }\n" +
+		"    let mut sum = 0.0;\n" +
+		"    for &it in v { sum += it.into(); }\n" +
+		"    sum / v.len() as f64\n" +
+		"}\n"
+)
+
+var helperMap = map[string]string{
+	"_count": helperCount,
+	"_avg":   helperAvg,
+}
+
+func (c *Compiler) use(name string) { c.helpers[name] = true }
+
+func (c *Compiler) emitRuntime() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.buf.WriteString(helperMap[n])
+	}
+}
