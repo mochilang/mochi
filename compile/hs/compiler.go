@@ -11,9 +11,10 @@ import (
 
 // Compiler translates Mochi AST to Haskell source code for a limited subset.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	usesMap bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -23,12 +24,7 @@ func New(env *types.Env) *Compiler {
 // Compile generates Haskell code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
-	c.writeln("module Main where")
-	c.writeln("")
-	c.writeln("import Data.Maybe (fromMaybe)")
-	c.writeln("")
-	c.writeln(runtime)
-	c.writeln("")
+	c.usesMap = false
 
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -51,7 +47,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 
-	return c.buf.Bytes(), nil
+	var header bytes.Buffer
+	header.WriteString("module Main where\n\n")
+	header.WriteString("import Data.Maybe (fromMaybe)\n")
+	if c.usesMap {
+		header.WriteString("import qualified Data.Map as Map\n")
+	}
+	header.WriteString("\n")
+	header.WriteString(runtime)
+	header.WriteString("\n\n")
+
+	return append(header.Bytes(), c.buf.Bytes()...), nil
 }
 
 func (c *Compiler) compileMainStmt(s *parser.Statement) error {
@@ -336,7 +342,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("(%s !! %s)", expr, idx)
+			if c.isMapExpr(p.Target) {
+				c.usesMap = true
+				expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", idx, expr)
+			} else {
+				expr = fmt.Sprintf("(%s !! %s)", expr, idx)
+			}
 		}
 	}
 	return expr, nil
@@ -356,6 +367,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return fmt.Sprintf("[%s]", strings.Join(elems, ", ")), nil
+	case p.Map != nil:
+		c.usesMap = true
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("(%s, %s)", k, v)
+		}
+		return fmt.Sprintf("Map.fromList [%s]", strings.Join(items, ", ")), nil
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -425,4 +451,20 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "False", nil
 	}
 	return "0", nil
+}
+
+func (c *Compiler) isMapExpr(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
