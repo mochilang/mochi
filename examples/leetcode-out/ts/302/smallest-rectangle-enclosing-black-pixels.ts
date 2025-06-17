@@ -56,22 +56,22 @@ function minArea(image: Array<Array<string>>, x: number, y: number) : number {
 	return (height * width)
 }
 
-function example(): void {
+function test_example(): void {
 	if (!((minArea(example, 0, 2) == 6))) { throw new Error('expect failed') }
 }
 
-function single_pixel(): void {
+function test_single_pixel(): void {
 	if (!((minArea([["1"]], 0, 0) == 1))) { throw new Error('expect failed') }
 }
 
-function all_ones(): void {
+function test_all_ones(): void {
 	if (!((minArea([["1", "1"], ["1", "1"]], 1, 1) == 4))) { throw new Error('expect failed') }
 }
 
 function main(): void {
-	example()
-	single_pixel()
-	all_ones()
+	test_example()
+	test_single_pixel()
+	test_all_ones()
 }
 main()
 
