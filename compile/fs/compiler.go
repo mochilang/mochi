@@ -256,19 +256,28 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	leftList := c.isListUnary(b.Left)
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rightList := c.isListPostfix(op.Right)
 		symbol := op.Op
 		switch op.Op {
 		case "==":
 			symbol = "="
 		case "!=":
 			symbol = "<>"
+		case "+":
+			if leftList && rightList {
+				expr = fmt.Sprintf("Array.append %s %s", expr, right)
+				leftList = true
+				continue
+			}
 		}
 		expr = fmt.Sprintf("(%s %s %s)", expr, symbol, right)
+		leftList = false
 	}
 	return expr, nil
 }
@@ -445,4 +454,76 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	return s
+}
+
+// --- helpers ---
+
+func (c *Compiler) isListExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	return c.isListBinary(e.Binary)
+}
+
+func (c *Compiler) isListBinary(b *parser.BinaryExpr) bool {
+	if b == nil {
+		return false
+	}
+	if len(b.Right) == 0 {
+		return c.isListUnary(b.Left)
+	}
+	// only handle simple a + b case
+	if len(b.Right) == 1 && b.Right[0].Op == "+" {
+		return c.isListUnary(b.Left) && c.isListPostfix(b.Right[0].Right)
+	}
+	return false
+}
+
+func (c *Compiler) isListUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isListPostfix(u.Value)
+}
+
+func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	res := c.isListPrimary(p.Target)
+	for _, op := range p.Ops {
+		if op.Index != nil || op.Call != nil {
+			res = false
+		}
+		if op.Cast != nil {
+			typ := op.Cast.Type
+			if typ.Generic != nil && typ.Generic.Name == "list" && len(typ.Generic.Args) == 1 {
+				res = true
+			} else {
+				res = false
+			}
+		}
+	}
+	return res
+}
+
+func (c *Compiler) isListPrimary(p *parser.Primary) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.List != nil:
+		return true
+	case p.Group != nil:
+		return c.isListExpr(p.Group)
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		typ, err := c.env.GetVar(p.Selector.Root)
+		if err == nil {
+			if _, ok := typ.(types.ListType); ok {
+				return true
+			}
+		}
+		return false
+	default:
+		return false
+	}
 }
