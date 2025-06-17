@@ -3,28 +3,30 @@
 -export([main/1]).
 
 main(_) ->
-        ok,
-        products = [#{name => "Laptop", price => 1500}, #{name => "Smartphone", price => 900}, #{name => "Tablet", price => 600}, #{name => "Monitor", price => 300}, #{name => "Keyboard", price => 100}, #{name => "Mouse", price => 50}, #{name => "Headphones", price => 200}],
-        expensive = (fun() ->
-                Items = [p || p <- products],
-                Pairs = [{-maps:get(price, p), p} || p <- Items],
-                SPairs = lists:sort(fun({A,_},{B,_}) -> A =< B end, Pairs),
-                Sorted = [ V || {_, V} <- SPairs ],
-                Skipped = (case 1 of
-                        N when N > 0 -> lists:nthtail(N, Sorted);
-                        _ -> Sorted
-                end),
-                Taken = lists:sublist(Skipped, 3),
-                [p || p <- Taken]
-        end)(),
-        mochi_print(["--- Top products (excluding most expensive) ---"]),
-        lists:foreach(fun(item) ->
-                mochi_print([maps:get(name, item), "costs $", maps:get(price, item)])
-        end, expensive).
+	ok,
+	products = [#{name => "Laptop", price => 1500}, #{name => "Smartphone", price => 900}, #{name => "Tablet", price => 600}, #{name => "Monitor", price => 300}, #{name => "Keyboard", price => 100}, #{name => "Mouse", price => 50}, #{name => "Headphones", price => 200}],
+	expensive = (fun() ->
+	Items = [p || p <- products],
+	Sorted = begin
+		Pairs = [{-maps:get(price, p), p} || p <- Items],
+		SPairs = lists:sort(fun({A,_},{B,_}) -> A =< B end, Pairs),
+		[ V || {_, V} <- SPairs ]
+	end,
+	Skipped = (case 1 of
+		N when N > 0 -> lists:nthtail(N, Sorted);
+		_ -> Sorted
+	end),
+	Taken = lists:sublist(Skipped, 3),
+	[p || p <- Taken]
+end)(),
+	mochi_print(["--- Top products (excluding most expensive) ---"]),
+	lists:foreach(fun(item) ->
+		mochi_print([maps:get(name, item), "costs $", maps:get(price, item)])
+	end, expensive).
 
 mochi_print(Args) ->
-        Strs = [ mochi_format(A) || A <- Args ],
-        io:format("~s~n", [lists:flatten(Strs)]).
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
 
 mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);
@@ -36,22 +38,28 @@ mochi_count(X) when is_map(X) -> maps:size(X);
 mochi_count(X) when is_binary(X) -> byte_size(X);
 mochi_count(_) -> erlang:error(badarg).
 
+mochi_input() ->
+	case io:get_line("") of
+		eof -> "";
+		Line -> string:trim(Line)
+	end.
+
 mochi_avg([]) -> 0;
 mochi_avg(L) when is_list(L) ->
-        Sum = lists:foldl(fun(X, Acc) ->
-                case X of
-                        I when is_integer(I) -> Acc + I;
-                        F when is_float(F) -> Acc + F;
-                        _ -> erlang:error(badarg) end
-                end, 0, L),
-                Sum / length(L)
-        .
+	Sum = lists:foldl(fun(X, Acc) ->
+		case X of
+			I when is_integer(I) -> Acc + I;
+			F when is_float(F) -> Acc + F;
+			_ -> erlang:error(badarg) end
+		end, 0, L),
+		Sum / length(L)
+	.
 mochi_avg(_) -> erlang:error(badarg).
 
 mochi_while(Cond, Body) ->
-        case Cond() of
-                true ->
-                        Body(),
-                        mochi_while(Cond, Body);
-                _ -> ok
-        end.
+	case Cond() of
+		true ->
+			Body(),
+			mochi_while(Cond, Body);
+		_ -> ok
+	end.
