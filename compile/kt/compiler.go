@@ -228,13 +228,32 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		}
 	}
 	c.indent--
-	if len(stmt.Else) == 0 {
+	cur := stmt
+	for cur.ElseIf != nil {
+		next := cur.ElseIf
+		cond, err := c.compileExpr(next.Cond)
+		if err != nil {
+			return err
+		}
+		c.writeIndent()
+		c.buf.WriteString("} else if (" + cond + ") {\n")
+		c.indent++
+		for _, s := range next.Then {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		cur = next
+	}
+	if len(cur.Else) == 0 {
 		c.writeln("}")
 		return nil
 	}
-	c.writeln("} else {")
+	c.writeIndent()
+	c.buf.WriteString("} else {\n")
 	c.indent++
-	for _, s := range stmt.Else {
+	for _, s := range cur.Else {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
@@ -435,6 +454,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Str != nil {
 			return fmt.Sprintf("\"%s\"", *p.Lit.Str), nil
 		}
+	case p.Group != nil:
+		expr, err := c.compileExpr(p.Group)
+		if err != nil {
+			return "", err
+		}
+		return "(" + expr + ")", nil
 	case p.List != nil:
 		elems := []string{}
 		for _, e := range p.List.Elems {
