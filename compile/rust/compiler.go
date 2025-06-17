@@ -64,6 +64,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
+	case s.Var != nil:
+		return c.compileVar(s.Var)
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -73,6 +75,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -88,6 +92,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("%s;", expr))
 		return nil
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -104,6 +110,37 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	}
 	name := sanitizeName(stmt.Name)
 	c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
+	return nil
+}
+
+func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
+	val := "Default::default()"
+	if stmt.Value != nil {
+		v, err := c.compileExpr(stmt.Value)
+		if err != nil {
+			return err
+		}
+		val = v
+	}
+	name := sanitizeName(stmt.Name)
+	c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
+	return nil
+}
+
+func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
+	lhs := sanitizeName(stmt.Name)
+	for _, idx := range stmt.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s as usize]", lhs, iexpr)
+	}
+	val, err := c.compileExpr(stmt.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
 	return nil
 }
 
@@ -140,6 +177,23 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("while %s {", cond))
+	c.indent++
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	cond, err := c.compileExpr(stmt.Cond)
 	if err != nil {
@@ -153,6 +207,10 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		}
 	}
 	c.indent--
+	if stmt.ElseIf != nil {
+		c.writeln("} else ")
+		return c.compileIf(stmt.ElseIf)
+	}
 	if len(stmt.Else) > 0 {
 		c.writeln("} else {")
 		c.indent++
@@ -207,7 +265,12 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
+		if op.Op == "in" {
+			c.use("_in_map")
+			expr = fmt.Sprintf("_in_map(&%s, &%s)", r, expr)
+		} else {
+			expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
+		}
 	}
 	return expr, nil
 }

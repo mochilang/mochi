@@ -13,11 +13,16 @@ const (
 		"    for &it in v { sum += it.into(); }\n" +
 		"    sum / v.len() as f64\n" +
 		"}\n"
+
+	helperInMap = "fn _in_map<K: std::cmp::Eq + std::hash::Hash, V>(m: &std::collections::HashMap<K, V>, k: &K) -> bool {\n" +
+		"    m.contains_key(k)\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
-	"_count": helperCount,
-	"_avg":   helperAvg,
+	"_count":  helperCount,
+	"_avg":    helperAvg,
+	"_in_map": helperInMap,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
