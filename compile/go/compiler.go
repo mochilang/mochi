@@ -1537,6 +1537,22 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				return "", err
 			}
 			rightType = lt
+		} else if (part.Op == "==" || part.Op == "!=") && len(part.Right.Ops) == 0 {
+			if ll := part.Right.Target.List; ll != nil && len(ll.Elems) == 0 && isList(leftType) {
+				lt := leftType.(types.ListType)
+				right, err = c.compilePostfixHint(part.Right, leftType)
+				if err != nil {
+					return "", err
+				}
+				rightType = lt
+			} else if ml := part.Right.Target.Map; ml != nil && len(ml.Items) == 0 && isMap(leftType) {
+				mt := leftType.(types.MapType)
+				right, err = c.compilePostfixHint(part.Right, leftType)
+				if err != nil {
+					return "", err
+				}
+				rightType = mt
+			}
 		}
 		if right == "" {
 			right, err = c.compilePostfix(part.Right)
