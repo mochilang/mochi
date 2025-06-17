@@ -127,6 +127,7 @@ func TestGoCompiler_LeetCodeExamples(t *testing.T) {
 	runExample(t, 201)
 	runExample(t, 207)
 	runExample(t, 378)
+	runExample(t, 346)
 }
 
 func runExample(t *testing.T, i int) {
