@@ -12,10 +12,12 @@ import (
 // EnsureKotlin verifies that the Kotlin compiler is installed. If missing,
 // it attempts a best-effort installation using Homebrew on macOS or apt-get on Linux.
 func EnsureKotlin() error {
-	if _, err := exec.LookPath("java"); err != nil {
-		if err := javacode.EnsureJavac(); err != nil {
-			return err
-		}
+	// Ensure the Java runtime is available since Kotlin relies on it for
+	// execution. On macOS the `java` binary may exist but fail to run if a
+	// JRE is not installed, so we use javacode.EnsureJava which performs a
+	// sanity check and installs a JDK if needed.
+	if err := javacode.EnsureJava(); err != nil {
+		return err
 	}
 	if _, err := exec.LookPath("kotlinc"); err == nil {
 		return nil

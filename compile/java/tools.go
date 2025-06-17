@@ -44,3 +44,22 @@ func EnsureJavac() error {
 	}
 	return fmt.Errorf("javac not found")
 }
+
+// EnsureJava verifies that the Java runtime can actually execute. Some
+// systems, notably macOS, may provide a placeholder `java` binary that exits
+// with an error if no JRE is installed. This function attempts to run
+// `java -version` and falls back to EnsureJavac if it fails. It returns an
+// error if the runtime remains unavailable.
+func EnsureJava() error {
+	cmd := exec.Command("java", "-version")
+	if err := cmd.Run(); err == nil {
+		return nil
+	}
+	if err := EnsureJavac(); err != nil {
+		return err
+	}
+	if err := exec.Command("java", "-version").Run(); err != nil {
+		return fmt.Errorf("java runtime not found")
+	}
+	return nil
+}
