@@ -382,6 +382,34 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("%s.length", arg), nil
 	}
+	// handle str()
+	if name == "str" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s.toString()", arg), nil
+	}
+	// handle count()
+	if name == "count" && len(call.Args) == 1 {
+		argExpr := call.Args[0]
+		arg, err := c.compileExpr(argExpr)
+		if err != nil {
+			return "", err
+		}
+		if isStringExpr(c, argExpr) {
+			return fmt.Sprintf("%s.runes.length", arg), nil
+		}
+		return fmt.Sprintf("%s.length", arg), nil
+	}
+	// handle avg()
+	if name == "avg" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("((){var _l=%s;var _s=0;for(var _x in _l){_s+=_x;}return _l.isEmpty?0:_s/_l.length;})()", arg), nil
+	}
 	// handle print with multiple arguments
 	if name == "print" && len(call.Args) > 1 {
 		parts := make([]string, len(call.Args))
