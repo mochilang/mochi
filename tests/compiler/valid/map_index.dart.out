@@ -1,0 +1,4 @@
+void main() {
+	var scores = {"Alice": 10, "Bob": 15};
+	print(scores["Bob"]);
+}

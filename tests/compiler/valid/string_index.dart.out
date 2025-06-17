@@ -1,0 +1,4 @@
+void main() {
+	var text = "hello";
+	print(text[1]);
+}
