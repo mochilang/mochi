@@ -1034,8 +1034,8 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		if op == "+" && isString(leftType) && isString(rightType) {
 			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
 		}
-		if op == "/" && (isInt(leftType) || isInt64(leftType)) && (isInt(rightType) || isInt64(rightType)) {
-			return fmt.Sprintf("Math.trunc(%s / %s)", left, right), leftType, nil
+		if op == "/" && ((isInt(leftType) || isInt64(leftType)) || (isInt(rightType) || isInt64(rightType))) {
+			return fmt.Sprintf("Math.trunc(%s / %s)", left, right), types.IntType{}, nil
 		}
 		return fmt.Sprintf("(%s %s %s)", left, op, right), leftType, nil
 	case "==", "!=":
@@ -1521,14 +1521,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if !needsHelper {
 		simple := q.Sort == nil && q.Skip == nil && q.Take == nil
+		group := q.Group != nil
 
 		var b strings.Builder
 		b.WriteString("(() => {\n")
 		b.WriteString("\tconst _src = " + src + ";\n")
-		if simple {
+		if group {
+			b.WriteString("\tconst _map = new Map<string, any>();\n")
+			b.WriteString("\tconst _order: string[] = [];\n")
+		}
+		if simple && !group {
 			b.WriteString("\tconst _res = [];\n")
 		} else {
-			b.WriteString("\tlet _items = [];\n")
+			b.WriteString("\tlet _items = [];")
+			b.WriteString("\n")
 		}
 		b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _src) {\n")
 		child := types.NewEnv(c.env)
@@ -1580,10 +1586,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			joinOns[i] = on
 		}
-		val, err := c.compileExpr(q.Select)
-		if err != nil {
-			c.env = orig
-			return "", err
+		var keyExpr string
+		var val string
+		if group {
+			keyExpr, err = c.compileExpr(q.Group.Expr)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			genv := types.NewEnv(child)
+			genv.SetVar(q.Group.Name, types.AnyType{}, true)
+			c.env = genv
+			val, err = c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			c.env = child
+		} else {
+			val, err = c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
 		}
 		indent := "\t\t"
 		for i := range q.Froms {
@@ -1605,7 +1630,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			b.WriteString(indent + "if (!(" + cond + ")) { continue }\n")
 		}
-		if simple {
+		if group {
+			b.WriteString(indent + "const _key = " + keyExpr + ";\n")
+			b.WriteString(indent + "const _ks = String(_key);\n")
+			b.WriteString(indent + "let _g = _map.get(_ks);\n")
+			b.WriteString(indent + "if (!_g) { _g = { key: _key, items: [] }; _map.set(_ks, _g); _order.push(_ks); }\n")
+			b.WriteString(indent + "_g.items.push(" + sanitizeName(q.Var) + ");\n")
+		} else if simple {
 			b.WriteString(indent + "_res.push(" + val + ")\n")
 		} else {
 			b.WriteString(indent + "_items.push(" + sanitizeName(q.Var) + ");\n")
@@ -1620,7 +1651,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString("\t}\n")
 
-		if simple {
+		if group {
+			b.WriteString("\tlet _groups = _order.map(k => _map.get(k)!);\n")
+			if simple {
+				b.WriteString("\tconst _res = [];\n")
+				b.WriteString("\tfor (const " + sanitizeName(q.Group.Name) + " of _groups) {\n")
+				b.WriteString("\t\t_res.push(" + val + ")\n")
+				b.WriteString("\t}\n")
+				b.WriteString("\treturn _res;\n")
+				b.WriteString("})()")
+				c.env = orig
+				return b.String(), nil
+			}
+			b.WriteString("\tlet _items = _groups;\n")
+		} else if simple {
 			b.WriteString("\treturn _res;\n")
 			b.WriteString("})()")
 			c.env = orig
@@ -1629,12 +1673,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		var sortExpr string
 		if q.Sort != nil {
+			if group {
+				genv := types.NewEnv(child)
+				genv.SetVar(q.Group.Name, types.AnyType{}, true)
+				c.env = genv
+			}
 			sortExpr, err = c.compileExpr(q.Sort)
 			if err != nil {
 				c.env = orig
 				return "", err
 			}
-			b.WriteString("\tlet _pairs = _items.map(it => { const " + sanitizeName(q.Var) + " = it; return {item: it, key: " + sortExpr + "}; });\n")
+			var sv string
+			if group {
+				sv = sanitizeName(q.Group.Name)
+			} else {
+				sv = sanitizeName(q.Var)
+			}
+			b.WriteString("\tlet _pairs = _items.map(it => { const " + sv + " = it; return {item: it, key: " + sortExpr + "}; });\n")
 			b.WriteString("\t_pairs.sort((a, b) => {\n")
 			b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
 			b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
@@ -1664,7 +1719,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		c.env = orig
 		b.WriteString("\tconst _res = [];\n")
-		b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _items) {\n")
+		var rv string
+		if group {
+			rv = sanitizeName(q.Group.Name)
+		} else {
+			rv = sanitizeName(q.Var)
+		}
+		b.WriteString("\tfor (const " + rv + " of _items) {\n")
 		b.WriteString("\t\t_res.push(" + val + ")\n")
 		b.WriteString("\t}\n")
 		b.WriteString("\treturn _res;\n")
