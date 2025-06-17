@@ -128,6 +128,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("return %s", expr))
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
 	case s.If != nil:
@@ -212,6 +216,40 @@ func (c *Compiler) compileIf(ifst *parser.IfStmt) error {
 		c.buf.WriteString("}")
 	}
 	c.buf.WriteByte('\n')
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("while %s {", cond))
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	name := a.Name
+	for _, idx := range a.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		name = fmt.Sprintf("%s[%s]", name, iexpr)
+	}
+	value, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	return nil
 }
 
