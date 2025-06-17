@@ -328,20 +328,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			argStr := strings.Join(args, ", ")
-			switch res {
-			case "print":
-				res = fmt.Sprintf("mochi_print([%s])", argStr)
-			case "len":
-				res = fmt.Sprintf("length(%s)", argStr)
-			case "str":
-				res = fmt.Sprintf("mochi_format(%s)", argStr)
-			case "count":
-				res = fmt.Sprintf("mochi_count(%s)", argStr)
-			case "avg":
-				res = fmt.Sprintf("mochi_avg(%s)", argStr)
-			default:
-				res = fmt.Sprintf("%s(%s)", res, argStr)
-			}
+                    switch res {
+                    case "print":
+                            res = fmt.Sprintf("mochi_print([%s])", argStr)
+                    case "len":
+                            res = fmt.Sprintf("length(%s)", argStr)
+                    case "str":
+                            res = fmt.Sprintf("mochi_format(%s)", argStr)
+                    case "count":
+                            res = fmt.Sprintf("mochi_count(%s)", argStr)
+                    case "avg":
+                            res = fmt.Sprintf("mochi_avg(%s)", argStr)
+                    case "input":
+                            res = "mochi_input()"
+                    default:
+                            res = fmt.Sprintf("%s(%s)", res, argStr)
+                    }
 		} else if op.Cast != nil {
 			// ignore type casts
 		}
@@ -397,20 +399,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, v)
 		}
 		argStr := strings.Join(args, ", ")
-		switch p.Call.Func {
-		case "print":
-			return fmt.Sprintf("mochi_print([%s])", argStr), nil
-		case "len":
-			return fmt.Sprintf("length(%s)", argStr), nil
-		case "str":
-			return fmt.Sprintf("mochi_format(%s)", argStr), nil
-		case "count":
-			return fmt.Sprintf("mochi_count(%s)", argStr), nil
-		case "avg":
-			return fmt.Sprintf("mochi_avg(%s)", argStr), nil
-		default:
-			return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
-		}
+                switch p.Call.Func {
+                case "print":
+                        return fmt.Sprintf("mochi_print([%s])", argStr), nil
+                case "len":
+                        return fmt.Sprintf("length(%s)", argStr), nil
+                case "str":
+                        return fmt.Sprintf("mochi_format(%s)", argStr), nil
+                case "count":
+                        return fmt.Sprintf("mochi_count(%s)", argStr), nil
+                case "avg":
+                        return fmt.Sprintf("mochi_avg(%s)", argStr), nil
+                case "input":
+                        return "mochi_input()", nil
+                default:
+                        return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
+                }
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	}
@@ -476,11 +480,22 @@ func (c *Compiler) emitRuntime() {
 	c.writeln("")
 	c.writeln("mochi_count(X) when is_list(X) -> length(X);")
 	c.writeln("mochi_count(X) when is_map(X) -> maps:size(X);")
-	c.writeln("mochi_count(X) when is_binary(X) -> byte_size(X);")
-	c.writeln("mochi_count(_) -> erlang:error(badarg).")
+        c.writeln("mochi_count(X) when is_binary(X) -> byte_size(X);")
+        c.writeln("mochi_count(_) -> erlang:error(badarg).")
 
-	c.writeln("")
-	c.writeln("mochi_avg([]) -> 0;")
+        c.writeln("")
+        c.writeln("mochi_input() ->")
+        c.indent++
+        c.writeln("case io:get_line(\"\") of")
+        c.indent++
+        c.writeln("eof -> \"\";")
+        c.writeln("Line -> string:trim(Line)")
+        c.indent--
+        c.writeln("end.")
+        c.indent--
+
+        c.writeln("")
+        c.writeln("mochi_avg([]) -> 0;")
 	c.writeln("mochi_avg(L) when is_list(L) ->")
 	c.indent++
 	c.writeln("Sum = lists:foldl(fun(X, Acc) ->")
