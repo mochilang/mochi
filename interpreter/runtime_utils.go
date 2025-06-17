@@ -26,6 +26,9 @@ func applyBinary(pos lexer.Position, left any, op string, right any) (any, error
 
 // applyBinaryValue applies a binary operator on two Value operands.
 func applyBinaryValue(pos lexer.Position, left Value, op string, right Value) (Value, error) {
+	if fn, ok := binaryOpTable[op]; ok {
+		return fn(pos, left, right)
+	}
 	if op == "in" {
 		switch right.Tag {
 		case TagList:
@@ -334,24 +337,10 @@ func applyUnary(pos lexer.Position, op string, val any) (any, error) {
 
 // applyUnaryValue applies a unary operator on a Value.
 func applyUnaryValue(pos lexer.Position, op string, val Value) (Value, error) {
-	switch op {
-	case "-":
-		switch val.Tag {
-		case TagInt:
-			return Value{Tag: TagInt, Int: -val.Int}, nil
-		case TagFloat:
-			return Value{Tag: TagFloat, Float: -val.Float}, nil
-		default:
-			return Value{}, errInvalidUnaryOperator(pos, op, val.Tag.String())
-		}
-	case "!":
-		if val.Tag == TagBool {
-			return Value{Tag: TagBool, Bool: !val.Bool}, nil
-		}
-		return Value{}, errInvalidUnaryOperator(pos, op, val.Tag.String())
-	default:
-		return Value{}, errUnknownUnaryOperator(pos, op)
+	if fn, ok := unaryOpTable[op]; ok {
+		return fn(pos, val)
 	}
+	return Value{}, errUnknownUnaryOperator(pos, op)
 }
 
 func truthy(val any) bool {
