@@ -335,6 +335,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "List(" + strings.Join(elems, ", ") + ")", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s -> %s", k, v)
+		}
+		return "scala.collection.mutable.Map(" + strings.Join(items, ", ") + ")", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
@@ -411,6 +425,9 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			return types.ListType{Elem: c.resolveTypeRef(t.Generic.Args[0])}
 		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return types.MapType{Key: c.resolveTypeRef(t.Generic.Args[0]), Value: c.resolveTypeRef(t.Generic.Args[1])}
+		}
 	}
 	return types.AnyType{}
 }
@@ -427,6 +444,8 @@ func scalaType(t types.Type) string {
 		return "String"
 	case types.ListType:
 		return "List[" + scalaType(tt.Elem) + "]"
+	case types.MapType:
+		return "scala.collection.mutable.Map[" + scalaType(tt.Key) + ", " + scalaType(tt.Value) + "]"
 	default:
 		return "Any"
 	}
