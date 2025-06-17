@@ -356,6 +356,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Int != nil {
 			return strconv.Itoa(*p.Lit.Int), nil
 		}
+		if p.Lit.Float != nil {
+			return strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64), nil
+		}
+		if p.Lit.Bool != nil {
+			if bool(*p.Lit.Bool) {
+				return "true", nil
+			}
+			return "false", nil
+		}
 		if p.Lit.Str != nil {
 			return strconv.Quote(*p.Lit.Str), nil
 		}
@@ -401,6 +410,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			c.useAvg = true
 			return fmt.Sprintf("_avg(%s.map { Double($0) })", args[0]), nil
+		case "input":
+			if len(args) != 0 {
+				return "", fmt.Errorf("input expects 0 args")
+			}
+			return "readLine() ?? \"\"", nil
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}
