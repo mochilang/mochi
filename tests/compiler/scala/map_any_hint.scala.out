@@ -1,0 +1,14 @@
+object Main {
+	def Leaf(): scala.collection.mutable.Map[String, Any] = {
+		return scala.collection.mutable.Map("__name" -> "Leaf")
+	}
+	
+	def Node(left: scala.collection.mutable.Map[String, Any], value: Int, right: scala.collection.mutable.Map[String, Any]): scala.collection.mutable.Map[String, Any] = {
+		return scala.collection.mutable.Map("__name" -> "Node", "left" -> left, "value" -> value, "right" -> right)
+	}
+	
+	def main(args: Array[String]): Unit = {
+		var tree = Node(Leaf(), 1, Leaf())
+		println((tree("left").asInstanceOf[scala.collection.mutable.Map[String, Any]])("__name"))
+	}
+}
