@@ -64,6 +64,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.buf.WriteString(" = {\n")
 	c.indent++
+	for _, p := range fn.Params {
+		if paramMutated(fn.Body, p.Name) {
+			c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(p.Name), sanitizeName(p.Name)))
+		}
+	}
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
@@ -72,6 +77,30 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func paramMutated(body []*parser.Statement, name string) bool {
+	for _, st := range body {
+		if st.Assign != nil && st.Assign.Name == name && len(st.Assign.Index) == 0 {
+			return true
+		}
+		if st.If != nil {
+			if paramMutated(st.If.Then, name) || paramMutated(st.If.Else, name) || (st.If.ElseIf != nil && paramMutated([]*parser.Statement{&parser.Statement{If: st.If.ElseIf}}, name)) {
+				return true
+			}
+		}
+		if st.For != nil {
+			if paramMutated(st.For.Body, name) {
+				return true
+			}
+		}
+		if st.While != nil {
+			if paramMutated(st.While.Body, name) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {

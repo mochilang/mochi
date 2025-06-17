@@ -1,0 +1,11 @@
+object Main {
+	def prepend(level: List[Int], result: List[List[Int]]): List[List[Int]] = {
+		var result = result
+		result = (List(level) + result)
+		return result
+	}
+	
+	def main(args: Array[String]): Unit = {
+		println(prepend(List(1, 2), List(List(3), List(4))))
+	}
+}
