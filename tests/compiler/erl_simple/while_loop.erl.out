@@ -1,0 +1,27 @@
+#!/usr/bin/env escript
+-module(main).
+-export([main/1]).
+
+main(_) ->
+	i = 0,
+	mochi_while(fun() -> (i < 3) end, fun() ->
+		mochi_print([i]),
+		ok
+	end).
+
+mochi_print(Args) ->
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
+
+mochi_format(X) when is_integer(X) -> integer_to_list(X);
+mochi_format(X) when is_float(X) -> float_to_list(X);
+mochi_format(X) when is_list(X) -> X;
+mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
+
+mochi_while(Cond, Body) ->
+	case Cond() of
+		true ->
+			Body(),
+			mochi_while(Cond, Body);
+		_ -> ok
+	end.

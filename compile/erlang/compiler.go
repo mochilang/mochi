@@ -156,13 +156,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.buf.WriteString(expr)
-	case s.For != nil:
-		return c.compileFor(s.For)
-	case s.If != nil:
-		return c.compileIf(s.If)
-	default:
-		c.buf.WriteString("ok")
-	}
+        case s.For != nil:
+                return c.compileFor(s.For)
+       case s.While != nil:
+               return c.compileWhile(s.While)
+        case s.If != nil:
+                return c.compileIf(s.If)
+        default:
+                c.buf.WriteString("ok")
+        }
 	return nil
 }
 
@@ -224,9 +226,25 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		return err
 	}
 	c.indent--
-	c.writeIndent()
-	c.buf.WriteString(fmt.Sprintf("end, %s)", list))
-	return nil
+        c.writeIndent()
+        c.buf.WriteString(fmt.Sprintf("end, %s)", list))
+        return nil
+}
+
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+        cond, err := c.compileExpr(stmt.Cond)
+        if err != nil {
+                return err
+        }
+        c.buf.WriteString("mochi_while(fun() -> " + cond + " end, fun() ->\n")
+        c.indent++
+        if err := c.compileBlock(stmt.Body, false, nil); err != nil {
+                return err
+        }
+        c.indent--
+        c.writeIndent()
+        c.buf.WriteString("end)")
+        return nil
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -393,6 +411,22 @@ func (c *Compiler) emitRuntime() {
 
 	c.writeln("mochi_format(X) when is_integer(X) -> integer_to_list(X);")
 	c.writeln("mochi_format(X) when is_float(X) -> float_to_list(X);")
-	c.writeln("mochi_format(X) when is_list(X) -> X;")
-	c.writeln("mochi_format(X) -> lists:flatten(io_lib:format(\"~p\", [X])).")
+        c.writeln("mochi_format(X) when is_list(X) -> X;")
+        c.writeln("mochi_format(X) -> lists:flatten(io_lib:format(\"~p\", [X])).")
+
+
+	c.writeln("")
+	c.writeln("mochi_while(Cond, Body) ->")
+	c.indent++
+	c.writeln("case Cond() of")
+	c.indent++
+	c.writeln("true ->")
+	c.indent++
+	c.writeln("Body(),")
+	c.writeln("mochi_while(Cond, Body);")
+	c.indent--
+	c.writeln("_ -> ok")
+	c.indent--
+	c.writeln("end.")
+	c.indent--
 }
