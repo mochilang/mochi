@@ -1,0 +1,14 @@
+import Foundation
+
+func sum(_ n: Int) -> Int {
+	var n = n
+	
+	return n * (n + 1) / 2
+}
+
+func main() {
+	let n = 10
+	print(sum(n))
+	print(n)
+}
+main()
