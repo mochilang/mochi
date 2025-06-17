@@ -3,6 +3,7 @@
 package phpcode_test
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -40,6 +41,9 @@ func TestPHPCompiler_LeetCodeExample1(t *testing.T) {
 		t.Fatalf("write error: %v", err)
 	}
 	cmd := exec.Command("php", file)
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		cmd.Stdin = bytes.NewReader(data)
+	}
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("php run error: %v\n%s", err, out)
@@ -74,6 +78,9 @@ func TestPHPCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("php", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ php run error: %w\n%s", err, out)

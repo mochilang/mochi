@@ -293,10 +293,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch name {
 	case "print":
-		if len(args) != 1 {
-			return "", fmt.Errorf("print expects 1 arg")
+		if len(args) == 0 {
+			return "", fmt.Errorf("print expects at least 1 arg")
 		}
-		return fmt.Sprintf("echo %s, PHP_EOL", args[0]), nil
+		joined := strings.Join(args, " . \" \" . ")
+		return fmt.Sprintf("echo %s, PHP_EOL", joined), nil
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
@@ -307,6 +308,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("str expects 1 arg")
 		}
 		return fmt.Sprintf("strval(%s)", args[0]), nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input expects no args")
+		}
+		return "trim(fgets(STDIN))", nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
