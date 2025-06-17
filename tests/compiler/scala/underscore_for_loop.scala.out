@@ -1,0 +1,15 @@
+object Main {
+	def main(args: Array[String]): Unit = {
+		var c = 0
+		for (_ <- 0 until 2) {
+			c = (c + 1)
+		}
+		for (_ <- List(1, 2)) {
+			c = (c + 1)
+		}
+		for (_ <- "ab") {
+			c = (c + 1)
+		}
+		println(c)
+	}
+}
