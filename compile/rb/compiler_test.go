@@ -16,8 +16,8 @@ import (
 )
 
 func TestRBCompiler_TwoSum(t *testing.T) {
-	if _, err := exec.LookPath("ruby"); err != nil {
-		t.Skip("ruby not installed")
+	if err := rbcode.EnsureRuby(); err != nil {
+		t.Skipf("ruby not installed: %v", err)
 	}
 	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
@@ -49,8 +49,8 @@ func TestRBCompiler_TwoSum(t *testing.T) {
 }
 
 func TestRBCompiler_SubsetPrograms(t *testing.T) {
-	if _, err := exec.LookPath("ruby"); err != nil {
-		t.Skip("ruby not installed")
+	if err := rbcode.EnsureRuby(); err != nil {
+		t.Skipf("ruby not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/rb", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
