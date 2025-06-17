@@ -1,0 +1,98 @@
+package litebase
+
+/// StorageWriteResponse returned after mutating operations.
+type StorageWriteResponse {
+  tx: int
+}
+
+/// Record returned by batch read.
+type StorageRecord {
+  key: string,
+  value: any
+}
+
+/// StorageReadResponse containing multiple records.
+type StorageReadResponse {
+  records: list<StorageRecord>
+}
+
+/// Storage client bound to a specific namespace and base URL.
+type Storage {
+  base_url: string,
+  name: string,
+  headers: map<string, string>
+}
+
+/// Create a storage client for the given namespace.
+fun storage(name: string, base_url: string = "https://api.litebase.io", headers: map<string,string> = {}): Storage {
+  return Storage { base_url: base_url, name: name, headers: headers }
+}
+
+/// Internal helper to construct endpoint URL.
+fun Storage.url(s: Storage, path: string): string {
+  return s.base_url + "/v4/storage/" + s.name + path
+}
+
+/// Retrieve the value of a key.
+fun Storage.get(s: Storage, key: string, tx: int? = null): any {
+  var q = { key: key }
+  if tx != null {
+    q = q + { tx: tx }
+  }
+  return fetch s.url("/key") with { query: q, headers: s.headers }
+}
+
+/// Check if a key exists.
+fun Storage.head(s: Storage, key: string, tx: int? = null): bool {
+  var q = { key: key }
+  if tx != null {
+    q = q + { tx: tx }
+  }
+  try {
+    fetch s.url("/key") with { method: "HEAD", query: q, headers: s.headers }
+    return true
+  } catch err {
+    return false
+  }
+}
+
+/// Set or overwrite a key with a value.
+fun Storage.set(s: Storage, key: string, value: any): StorageWriteResponse {
+  return fetch s.url("/key") with {
+    method: "POST",
+    query: { key: key },
+    headers: s.headers,
+    body: value
+  } as StorageWriteResponse
+}
+
+/// Delete a key.
+fun Storage.delete(s: Storage, key: string): StorageWriteResponse {
+  return fetch s.url("/key") with {
+    method: "DELETE",
+    query: { key: key },
+    headers: s.headers
+  } as StorageWriteResponse
+}
+
+/// Batch read multiple keys.
+fun Storage.read(s: Storage, keys: list<string>, tx: int? = null): StorageReadResponse {
+  var payload: map<string, any> = { keys: keys }
+  if tx != null {
+    payload = payload + { tx: tx }
+  }
+  return fetch s.url("/read") with {
+    method: "POST",
+    headers: s.headers,
+    body: payload
+  } as StorageReadResponse
+}
+
+/// Batch write multiple records.
+fun Storage.write(s: Storage, records: list<StorageRecord>): StorageWriteResponse {
+  return fetch s.url("/write") with {
+    method: "POST",
+    headers: s.headers,
+    body: records
+  } as StorageWriteResponse
+}
