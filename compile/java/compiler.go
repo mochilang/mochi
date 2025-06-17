@@ -3,6 +3,7 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"mochi/parser"
 	"mochi/types"
@@ -74,10 +75,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Return != nil:
 		return c.compileReturn(s.Return)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Break != nil:
+		c.writeln("break;")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue;")
+		return nil
 	default:
 		return nil
 	}
@@ -233,13 +242,37 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		}
 	}
 	c.indent--
-	if len(stmt.Else) == 0 {
+	c.writeIndent()
+	c.buf.WriteString("}")
+	if stmt.ElseIf != nil {
+		c.buf.WriteString(" else ")
+		return c.compileIf(stmt.ElseIf)
+	}
+	if len(stmt.Else) > 0 {
+		c.buf.WriteString(" else {")
+		c.buf.WriteByte('\n')
+		c.indent++
+		for _, s := range stmt.Else {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
 		c.writeln("}")
 		return nil
 	}
-	c.writeln("} else {")
+	c.buf.WriteByte('\n')
+	return nil
+}
+
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while (" + cond + ") {")
 	c.indent++
-	for _, s := range stmt.Else {
+	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
@@ -375,17 +408,30 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
 		}
+		if p.Lit.Bool != nil {
+			if *p.Lit.Bool {
+				return "true", nil
+			}
+			return "false", nil
+		}
 		if p.Lit.Str != nil {
 			return fmt.Sprintf("\"%s\"", *p.Lit.Str), nil
 		}
 	case p.List != nil:
 		elems := []string{}
+		nested := false
 		for _, e := range p.List.Elems {
 			ce, err := c.compileExpr(e)
 			if err != nil {
 				return "", err
 			}
+			if strings.HasPrefix(ce, "new int[") {
+				nested = true
+			}
 			elems = append(elems, ce)
+		}
+		if nested {
+			return "new int[][]{" + joinArgs(elems) + "}", nil
 		}
 		return "new int[]{" + joinArgs(elems) + "}", nil
 	case p.Selector != nil:
@@ -412,6 +458,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "String.valueOf(" + args[0] + ")", nil
 		}
 		return name + "(" + joinArgs(args) + ")", nil
+	case p.Group != nil:
+		return c.compileExpr(p.Group)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
