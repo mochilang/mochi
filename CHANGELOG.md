@@ -1,4 +1,27 @@
 # 📦 CHANGELOG.md
+## [0.8.0] – 2025-06-19
+
+### Added
+
+* Experimental compiler backends for C, C#, Dart, Erlang, F#, Haskell, Java, Lua, PHP, Ruby, Scala, Swift and Rust
+* Support for variable assignment, while loops, break and continue across the new backends
+* Builtin functions `str`, `input`, `avg` and `count`
+* Map and string iteration in Dart, Java and Rust
+* Basic query operations in Kotlin and Erlang
+* Litebase storage client for the runtime
+* Golden tests for the new compilers
+* LeetCode 402 example
+
+### Changed
+
+* Heavy compiler tests are skipped by default
+* Documentation lists all compile targets
+
+### Fixed
+
+* Kotlin golden tests and F# indentation issues
+
+
 ## [0.7.6] – 2025-06-18
 
 ### Added
