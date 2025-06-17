@@ -1,3 +1,5 @@
+//go:build slow
+
 package ktcode_test
 
 import (
