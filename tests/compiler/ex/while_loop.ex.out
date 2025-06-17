@@ -2,9 +2,10 @@
 defmodule Main do
 	def main do
 		i = 0
-		while i < 3 do
+		_ = i
+		while (i < 3) do
 			IO.puts(i)
-			i = i + 1
+			i = (i + 1)
 		end
 	end
 	end
