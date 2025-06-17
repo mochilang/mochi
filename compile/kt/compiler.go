@@ -51,6 +51,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
+	case s.Var != nil:
+		return c.compileVar(s.Var)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -75,6 +79,36 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("val %s = %s", sanitizeName(stmt.Name), expr))
+	return nil
+}
+
+func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
+	value := "null"
+	if stmt.Value != nil {
+		v, err := c.compileExpr(stmt.Value)
+		if err != nil {
+			return err
+		}
+		value = v
+	}
+	c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(stmt.Name), value))
+	return nil
+}
+
+func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
+	lhs := sanitizeName(stmt.Name)
+	for _, idx := range stmt.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+	}
+	rhs, err := c.compileExpr(stmt.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s", lhs, rhs))
 	return nil
 }
 
@@ -109,7 +143,20 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		c.writeln("}")
 		return nil
 	}
-	return fmt.Errorf("only range for supported")
+	src, err := c.compileExpr(stmt.Source)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("for (%s in %s) {", name, src))
+	c.indent++
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
@@ -296,6 +343,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if name == "len" && len(args) == 1 {
 			return args[0] + ".size", nil
+		}
+		if name == "str" && len(args) == 1 {
+			return args[0] + ".toString()", nil
 		}
 		return name + "(" + joinArgs(args) + ")", nil
 	}
