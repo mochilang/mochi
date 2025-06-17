@@ -233,11 +233,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
-	start := c.compileExpr(f.Source)
-	end := c.compileExpr(f.RangeEnd)
 	name := f.Name
-	c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", name, start, name, end, name))
-	c.indent++
+	if f.RangeEnd != nil {
+		start := c.compileExpr(f.Source)
+		end := c.compileExpr(f.RangeEnd)
+		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", name, start, name, end, name))
+		c.indent++
+	} else {
+		src := c.compileExpr(f.Source)
+		idx := c.newTemp()
+		c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
+		c.indent++
+		c.writeln(fmt.Sprintf("int %s = %s.data[%s];", name, src, idx))
+	}
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
