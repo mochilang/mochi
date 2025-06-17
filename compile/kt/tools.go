@@ -5,11 +5,18 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+
+	javacode "mochi/compile/java"
 )
 
 // EnsureKotlin verifies that the Kotlin compiler is installed. If missing,
 // it attempts a best-effort installation using Homebrew on macOS or apt-get on Linux.
 func EnsureKotlin() error {
+	if _, err := exec.LookPath("java"); err != nil {
+		if err := javacode.EnsureJavac(); err != nil {
+			return err
+		}
+	}
 	if _, err := exec.LookPath("kotlinc"); err == nil {
 		return nil
 	}
