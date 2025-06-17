@@ -51,10 +51,10 @@ var helperFetch = "def _fetch(url, opts):\n" +
 	"        if 'body' in opts:\n" +
 	"            data = json.dumps(opts['body']).encode()\n" +
 	"        if 'headers' in opts:\n" +
-	"            for k, v in _to_any_map(opts['headers']).items():\n" +
+	"            for k, v in dict(opts['headers']).items():\n" +
 	"                headers[k] = str(v)\n" +
 	"        if 'query' in opts:\n" +
-	"            q = urllib.parse.urlencode({k: str(v) for k, v in _to_any_map(opts['query']).items()})\n" +
+	"            q = urllib.parse.urlencode({k: str(v) for k, v in dict(opts['query']).items()})\n" +
 	"            sep = '&' if '?' in url else '?'\n" +
 	"            url = url + sep + q\n" +
 	"        timeout = opts.get('timeout', None)\n" +
@@ -170,9 +170,6 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"    finally:\n" +
 	"        if path is not None:\n" +
 	"            f.close()\n"
-
-var helperToAnyMap = "def _to_any_map(m):\n" +
-	"    return dict(m) if isinstance(m, dict) else dict(m)\n"
 
 var helperUnionAll = "def _union_all(a, b):\n" +
 	"    return list(a) + list(b)\n"
@@ -323,7 +320,6 @@ var helperMap = map[string]string{
 	"_fetch":      helperFetch,
 	"_load":       helperLoad,
 	"_save":       helperSave,
-	"_to_any_map": helperToAnyMap,
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,
