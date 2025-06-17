@@ -89,6 +89,8 @@ func goType(t types.Type) string {
 		return "[]" + goType(tt.Elem)
 	case types.MapType:
 		return fmt.Sprintf("map[%s]%s", goType(tt.Key), goType(tt.Value))
+	case types.GroupType:
+		return "*data.Group"
 	case types.StructType:
 		return sanitizeName(tt.Name)
 	case types.UnionType:
