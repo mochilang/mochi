@@ -98,6 +98,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("%s = %s", s.Let.Name, val))
+	case s.Var != nil:
+		return c.compileVar(s.Var)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -188,6 +192,29 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 	c.indent--
 	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
+	value := "nil"
+	if stmt.Value != nil {
+		v, err := c.compileExpr(stmt.Value)
+		if err != nil {
+			return err
+		}
+		value = v
+	}
+	c.writeln(fmt.Sprintf("%s = %s", stmt.Name, value))
+	c.writeln(fmt.Sprintf("_ = %s", stmt.Name))
+	return nil
+}
+
+func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
+	value, err := c.compileExpr(stmt.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s", stmt.Name, value))
 	return nil
 }
 
