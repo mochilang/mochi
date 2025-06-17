@@ -314,30 +314,39 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
-	cond, err := c.compileExpr(stmt.Cond)
-	if err != nil {
-		return err
-	}
-	c.writeln("if (" + cond + ") {")
-	c.indent++
-	for _, s := range stmt.Then {
-		if err := c.compileStmt(s); err != nil {
+	var rec func(s *parser.IfStmt, prefix string) error
+	rec = func(s *parser.IfStmt, prefix string) error {
+		cond, err := c.compileExpr(s.Cond)
+		if err != nil {
 			return err
 		}
-	}
-	c.indent--
-	if len(stmt.Else) > 0 {
-		c.writeln("} else {")
+		c.writeln(prefix + "if (" + cond + ") {")
 		c.indent++
-		for _, s := range stmt.Else {
-			if err := c.compileStmt(s); err != nil {
+		for _, st := range s.Then {
+			if err := c.compileStmt(st); err != nil {
 				return err
 			}
 		}
 		c.indent--
+		if s.ElseIf != nil {
+			return rec(s.ElseIf, "} else ")
+		}
+		if len(s.Else) > 0 {
+			c.writeln("} else {")
+			c.indent++
+			for _, st := range s.Else {
+				if err := c.compileStmt(st); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("}")
+		} else {
+			c.writeln("}")
+		}
+		return nil
 	}
-	c.writeln("}")
-	return nil
+	return rec(stmt, "")
 }
 
 func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
