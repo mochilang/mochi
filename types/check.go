@@ -381,10 +381,34 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: AnyType{},
 	}, false)
 
-	var errs []error
+	// Pre-register struct type names so they can be referenced before their
+	// definitions. This allows functions to return or use struct types that
+	// are declared later in the source file.
 	for _, stmt := range prog.Statements {
-		if err := checkStmt(stmt, env, VoidType{}); err != nil {
-			errs = append(errs, err)
+		if stmt.Type != nil {
+			if len(stmt.Type.Members) > 0 {
+				st := StructType{Name: stmt.Type.Name, Fields: map[string]Type{}, Order: []string{}, Methods: map[string]Method{}}
+				env.SetStruct(stmt.Type.Name, st)
+				env.types[stmt.Type.Name] = st
+			}
+		}
+	}
+
+	var errs []error
+	// First process all type declarations so their fields are available.
+	for _, stmt := range prog.Statements {
+		if stmt.Type != nil {
+			if err := checkStmt(stmt, env, VoidType{}); err != nil {
+				errs = append(errs, err)
+			}
+		}
+	}
+	// Then process the remaining statements.
+	for _, stmt := range prog.Statements {
+		if stmt.Type == nil {
+			if err := checkStmt(stmt, env, VoidType{}); err != nil {
+				errs = append(errs, err)
+			}
 		}
 	}
 	return errs
