@@ -1,0 +1,17 @@
+open System
+
+exception Return_foo of int
+let foo (n: int) : int =
+    try
+        if (n < 0) then
+            raise (Return_foo (-1))
+        elif (n = 0) then
+            raise (Return_foo (0))
+        else
+            raise (Return_foo (1))
+        failwith "unreachable"
+    with Return_foo v -> v
+
+printfn "%A" foo -2
+printfn "%A" foo 0
+printfn "%A" foo 3
