@@ -186,18 +186,35 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	name := sanitizeName(t.Name)
-	c.writeln(fmt.Sprintf("public class %s {", name))
-	c.indent++
-	for _, m := range t.Members {
-		if m.Field != nil {
-			typ := csType(m.Field.Type)
-			c.writeln(fmt.Sprintf("public %s %s;", typ, sanitizeName(m.Field.Name)))
-		}
-	}
-	c.indent--
-	c.writeln("}")
-	return nil
+        name := sanitizeName(t.Name)
+        if len(t.Variants) > 0 {
+                iface := fmt.Sprintf("public interface %s { void is%s(); }", name, name)
+                c.writeln(iface)
+                for _, v := range t.Variants {
+                        vname := sanitizeName(v.Name)
+                        c.writeln(fmt.Sprintf("public class %s : %s {", vname, name))
+                        c.indent++
+                        for _, f := range v.Fields {
+                                typ := csType(f.Type)
+                                c.writeln(fmt.Sprintf("public %s %s;", typ, sanitizeName(f.Name)))
+                        }
+                        c.writeln(fmt.Sprintf("public void is%s() {}", name))
+                        c.indent--
+                        c.writeln("}")
+                }
+                return nil
+        }
+        c.writeln(fmt.Sprintf("public class %s {", name))
+        c.indent++
+        for _, m := range t.Members {
+                if m.Field != nil {
+                        typ := csType(m.Field.Type)
+                        c.writeln(fmt.Sprintf("public %s %s;", typ, sanitizeName(m.Field.Name)))
+                }
+        }
+        c.indent--
+        c.writeln("}")
+        return nil
 }
 
 func (c *Compiler) scanProgram(prog *parser.Program) {
@@ -567,9 +584,56 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if takeExpr != "" {
 		parts = append(parts, fmt.Sprintf("Take(%s)", takeExpr))
 	}
-	parts = append(parts, fmt.Sprintf("Select(%s => %s)", v, sel))
-	return "new List<dynamic>(" + strings.Join(parts, ".") + ")", nil
+        parts = append(parts, fmt.Sprintf("Select(%s => %s)", v, sel))
+        return "new List<dynamic>(" + strings.Join(parts, ".") + ")", nil
 }
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+        target, err := c.compileExpr(m.Target)
+        if err != nil {
+                return "", err
+        }
+        var buf strings.Builder
+        buf.WriteString("new Func<dynamic>(() => {\n")
+        buf.WriteString("\t\tvar _t = " + target + ";\n")
+        for i, cs := range m.Cases {
+                if ident, ok := identName(cs.Pattern); ok {
+                        if _, ok := c.env.FindUnionByVariant(ident); ok {
+                                res, err := c.compileExpr(cs.Result)
+                                if err != nil { return "", err }
+                                buf.WriteString(fmt.Sprintf("\t\tif (_t is %s) return %s;\n", sanitizeName(ident), res))
+                                continue
+                        }
+                }
+                if i == len(m.Cases)-1 { // default case
+                        res, err := c.compileExpr(cs.Result)
+                        if err != nil { return "", err }
+                        buf.WriteString("\t\treturn " + res + ";\n")
+                }
+        }
+        buf.WriteString("\t\treturn null;\n")
+        buf.WriteString("\t})()")
+        return buf.String(), nil
+}
+
+func identName(e *parser.Expr) (string, bool) {
+        if e == nil || len(e.Binary.Right) != 0 {
+                return "", false
+        }
+        u := e.Binary.Left
+        if len(u.Ops) != 0 {
+                return "", false
+        }
+        p := u.Value
+        if len(p.Ops) != 0 {
+                return "", false
+        }
+        if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+                return p.Target.Selector.Root, true
+        }
+        return "", false
+}
+
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
@@ -617,13 +681,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return expr, nil
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
-	case p.Query != nil:
-		return c.compileQueryExpr(p.Query)
-	case p.Group != nil:
-		e, err := c.compileExpr(p.Group)
-		if err != nil {
-			return "", err
-		}
+        case p.Query != nil:
+                return c.compileQueryExpr(p.Query)
+        case p.Match != nil:
+                return c.compileMatchExpr(p.Match)
+        case p.Group != nil:
+                e, err := c.compileExpr(p.Group)
+                if err != nil {
+                        return "", err
+                }
 		return "(" + e + ")", nil
 	default:
 		return "", fmt.Errorf("unsupported primary expression")
