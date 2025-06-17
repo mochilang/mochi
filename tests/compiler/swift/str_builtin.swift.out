@@ -1,0 +1,6 @@
+import Foundation
+
+func main() {
+	print(String(123))
+}
+main()
