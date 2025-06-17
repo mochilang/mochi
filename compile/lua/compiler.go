@@ -52,7 +52,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	bodyBytes := c.buf.Bytes()
+	bodyBytes := append([]byte(nil), c.buf.Bytes()...)
 	c.buf.Reset()
 	c.emitHelpers()
 	c.buf.Write(bodyBytes)
@@ -393,6 +393,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("tostring(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("tostring(%s)", argStr), nil
+	case "input":
+		c.helpers["input"] = true
+		return "__input()", nil
+	case "count":
+		c.helpers["count"] = true
+		return fmt.Sprintf("__count(%s)", argStr), nil
+	case "avg":
+		c.helpers["avg"] = true
+		return fmt.Sprintf("__avg(%s)", argStr), nil
 	default:
 		return fmt.Sprintf("%s(%s)", name, argStr), nil
 	}
@@ -494,6 +503,68 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("return false")
 		c.indent--
 		c.writeln("end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["input"] {
+		c.writeln("function __input()")
+		c.indent++
+		c.writeln("local line = io.read('*l')")
+		c.writeln("if line == nil then return '' end")
+		c.writeln("return line")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["count"] {
+		c.writeln("function __count(v)")
+		c.indent++
+		c.writeln("if type(v) == 'table' then")
+		c.indent++
+		c.writeln("if v.items ~= nil then return #v.items end")
+		c.writeln("if v[1] ~= nil or #v > 0 then return #v end")
+		c.writeln("local n = 0")
+		c.writeln("for _ in pairs(v) do n = n + 1 end")
+		c.writeln("return n")
+		c.indent--
+		c.writeln("elseif type(v) == 'string' then")
+		c.indent++
+		c.writeln("return #v")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("error('count() expects list or group')")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["avg"] {
+		c.writeln("function __avg(v)")
+		c.indent++
+		c.writeln("local items")
+		c.writeln("if type(v) == 'table' and v.items ~= nil then")
+		c.indent++
+		c.writeln("items = v.items")
+		c.indent--
+		c.writeln("elseif type(v) == 'table' then")
+		c.indent++
+		c.writeln("items = v")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("error('avg() expects list or group')")
+		c.indent--
+		c.writeln("end")
+		c.writeln("if #items == 0 then return 0 end")
+		c.writeln("local sum = 0")
+		c.writeln("for _, it in ipairs(items) do sum = sum + it end")
+		c.writeln("return sum / #items")
 		c.indent--
 		c.writeln("end")
 		c.writeln("")

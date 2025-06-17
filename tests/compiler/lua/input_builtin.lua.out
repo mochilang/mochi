@@ -1,0 +1,11 @@
+function __input()
+	local line = io.read('*l')
+	if line == nil then return '' end
+	return line
+end
+
+print("Enter first input:")
+local input1 = __input()
+print("Enter second input:")
+local input2 = __input()
+print("You entered:", input1, ",", input2)
