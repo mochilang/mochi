@@ -120,10 +120,7 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
 	}
-	for i := 1; i <= 150; i++ {
-		if i == 133 { // uses block function expressions not yet supported
-			continue
-		}
+	runDir := func(i int) {
 		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
 		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 		if err != nil {
@@ -163,4 +160,15 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 			})
 		}
 	}
+
+	for i := 1; i <= 150; i++ {
+		if i == 133 { // uses block function expressions not yet supported
+			continue
+		}
+		runDir(i)
+	}
+
+	// Example 378 previously failed due to name clashes between tests and
+	// global variables.
+	runDir(378)
 }
