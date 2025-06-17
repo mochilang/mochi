@@ -15,9 +15,14 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	env    *types.Env
+
+	loopLabels []string
+	labelCount int
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env}
+}
 
 // Compile returns Lua source implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -67,6 +72,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	case s.Break != nil:
+		c.writeln("break")
+		return nil
+	case s.Continue != nil:
+		if len(c.loopLabels) == 0 {
+			return fmt.Errorf("continue outside loop")
+		}
+		label := c.loopLabels[len(c.loopLabels)-1]
+		c.writeln("goto " + label)
+		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -159,6 +176,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileFor(s *parser.ForStmt) error {
+	label := c.pushLoopLabel()
 	name := sanitizeName(s.Name)
 	if s.RangeEnd != nil {
 		start, err := c.compileExpr(s.Source)
@@ -183,8 +201,30 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 			return err
 		}
 	}
+	c.writeln("::" + label + "::")
 	c.indent--
 	c.writeln("end")
+	c.popLoopLabel()
+	return nil
+}
+
+func (c *Compiler) compileWhile(s *parser.WhileStmt) error {
+	label := c.pushLoopLabel()
+	cond, err := c.compileExpr(s.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while " + cond + " do")
+	c.indent++
+	for _, st := range s.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.writeln("::" + label + "::")
+	c.indent--
+	c.writeln("end")
+	c.popLoopLabel()
 	return nil
 }
 
@@ -337,6 +377,19 @@ func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 		return "false", nil
 	}
 	return "nil", fmt.Errorf("unknown literal")
+}
+
+func (c *Compiler) pushLoopLabel() string {
+	label := fmt.Sprintf("__continue%d", c.labelCount)
+	c.labelCount++
+	c.loopLabels = append(c.loopLabels, label)
+	return label
+}
+
+func (c *Compiler) popLoopLabel() {
+	if len(c.loopLabels) > 0 {
+		c.loopLabels = c.loopLabels[:len(c.loopLabels)-1]
+	}
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
