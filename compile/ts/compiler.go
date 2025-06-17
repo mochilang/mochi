@@ -274,7 +274,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	for _, s := range prog.Statements {
 		if s.Test != nil {
-			name := sanitizeName(s.Test.Name)
+			name := "test_" + sanitizeName(s.Test.Name)
 			c.writeln(fmt.Sprintf("%s()", name))
 		}
 	}
@@ -943,7 +943,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
-	name := sanitizeName(t.Name)
+	name := "test_" + sanitizeName(t.Name)
 	c.writeIndent()
 	c.buf.WriteString("function " + name + "(): void {\n")
 	c.indent++

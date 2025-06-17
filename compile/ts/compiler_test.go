@@ -139,43 +139,48 @@ func TestTSCompiler_LeetCodeExamples(t *testing.T) {
 		t.Skipf("deno not installed: %v", err)
 	}
 	for i := 1; i <= 133; i++ {
-		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
-		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
-		if err != nil {
-			t.Fatalf("glob error: %v", err)
-		}
-		for _, f := range files {
-			name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
-			t.Run(name, func(t *testing.T) {
-				prog, err := parser.Parse(f)
-				if err != nil {
-					t.Fatalf("parse error: %v", err)
-				}
-				typeEnv := types.NewEnv(nil)
-				if errs := types.Check(prog, typeEnv); len(errs) > 0 {
-					t.Fatalf("type error: %v", errs[0])
-				}
-				c := tscode.New(typeEnv, "")
-				code, err := c.Compile(prog)
-				if err != nil {
-					t.Fatalf("compile error: %v", err)
-				}
-				tmp := t.TempDir()
-				file := filepath.Join(tmp, "main.ts")
-				if err := os.WriteFile(file, code, 0644); err != nil {
-					t.Fatalf("write error: %v", err)
-				}
-				cmd := exec.Command("deno", "run", "--quiet", file)
-				cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
-				if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
-					cmd.Stdin = bytes.NewReader(data)
-				}
-				out, err := cmd.CombinedOutput()
-				if err != nil {
-					t.Fatalf("deno run error: %v\n%s", err, out)
-				}
-				_ = out
-			})
-		}
+		runExample(t, i)
+	}
+	runExample(t, 272)
+}
+
+func runExample(t *testing.T, i int) {
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			typeEnv := types.NewEnv(nil)
+			if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			c := tscode.New(typeEnv, "")
+			code, err := c.Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.ts")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("deno", "run", "--quiet", file)
+			cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("deno run error: %v\n%s", err, out)
+			}
+			_ = out
+		})
 	}
 }
