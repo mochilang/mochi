@@ -68,10 +68,40 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(expr)
+	case s.For != nil:
+		body, err := c.simpleBodyExpr(s.For.Body)
+		if err != nil {
+			return err
+		}
+		name := sanitizeName(s.For.Name)
+		src, err := c.compileExpr(s.For.Source)
+		if err != nil {
+			return err
+		}
+		if s.For.RangeEnd != nil {
+			end, err := c.compileExpr(s.For.RangeEnd)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("let _ = forLoop %s %s (\\%s -> Nothing <$ (%s)) in return ()", src, end, name, body))
+		} else {
+			c.writeln(fmt.Sprintf("mapM_ (\\%s -> %s) %s", name, body, src))
+		}
 	default:
 		return fmt.Errorf("unsupported statement in main")
 	}
 	return nil
+}
+
+func (c *Compiler) simpleBodyExpr(stmts []*parser.Statement) (string, error) {
+	if len(stmts) != 1 {
+		return "", fmt.Errorf("unsupported loop body")
+	}
+	s := stmts[0]
+	if s.Expr != nil {
+		return c.compileExpr(s.Expr.Expr)
+	}
+	return "", fmt.Errorf("unsupported loop body")
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
@@ -166,16 +196,22 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			start, err := c.compileExpr(s.For.Source)
+			name := sanitizeName(s.For.Name)
+			src, err := c.compileExpr(s.For.Source)
 			if err != nil {
 				return "", err
 			}
-			end, err := c.compileExpr(s.For.RangeEnd)
-			if err != nil {
-				return "", err
+			if s.For.RangeEnd != nil {
+				end, err := c.compileExpr(s.For.RangeEnd)
+				if err != nil {
+					return "", err
+				}
+				loop := fmt.Sprintf("forLoop %s %s (\\%s -> %s)", src, end, name, bodyExpr)
+				expr = chainMaybe(loop, expr)
+			} else {
+				loop := fmt.Sprintf("foldr (\\%s acc -> case %s of Just v -> Just v; Nothing -> acc) Nothing %s", name, bodyExpr, src)
+				expr = chainMaybe(loop, expr)
 			}
-			loop := fmt.Sprintf("forLoop %s %s (\\%s -> %s)", start, end, sanitizeName(s.For.Name), bodyExpr)
-			expr = chainMaybe(loop, expr)
 		case s.Expr != nil:
 			val, err := c.compileExpr(s.Expr.Expr)
 			if err != nil {
@@ -283,28 +319,28 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			args[i] = v
 		}
-                if p.Call.Func == "len" {
-                        return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
-                }
-                if p.Call.Func == "count" {
-                        return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
-                }
-                if p.Call.Func == "str" {
-                        return fmt.Sprintf("show %s", strings.Join(args, " ")), nil
-                }
-                if p.Call.Func == "print" {
-                        joined := strings.Join(args, " ")
-                        if len(args) == 1 {
-                                arg := args[0]
-                                if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") {
-                                        return fmt.Sprintf("putStrLn (%s)", arg), nil
-                                }
-                        }
-                        if len(args) != 1 || strings.ContainsAny(joined, " ") {
-                                return fmt.Sprintf("print (%s)", joined), nil
-                        }
-                        return fmt.Sprintf("print %s", joined), nil
-                }
+		if p.Call.Func == "len" {
+			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
+		}
+		if p.Call.Func == "count" {
+			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
+		}
+		if p.Call.Func == "str" {
+			return fmt.Sprintf("show %s", strings.Join(args, " ")), nil
+		}
+		if p.Call.Func == "print" {
+			joined := strings.Join(args, " ")
+			if len(args) == 1 {
+				arg := args[0]
+				if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") {
+					return fmt.Sprintf("putStrLn (%s)", arg), nil
+				}
+			}
+			if len(args) != 1 || strings.ContainsAny(joined, " ") {
+				return fmt.Sprintf("print (%s)", joined), nil
+			}
+			return fmt.Sprintf("print %s", joined), nil
+		}
 		return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
