@@ -1,0 +1,12 @@
+List<int> Leaf() {
+	return {"__name": "Leaf"};
+}
+
+List<int> Node(left, value, right) {
+	return {"__name": "Node", "left": left, "value": value, "right": right};
+}
+
+void main() {
+	var tree = Node(Leaf(), 1, Leaf());
+	print((tree["left"])["__name"]);
+}
