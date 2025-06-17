@@ -1,0 +1,8 @@
+<?php
+function sum($n) {
+	return (($n * (($n + 1))) / 2);
+}
+
+$n = 10;
+echo sum($n), PHP_EOL;
+echo $n, PHP_EOL;
