@@ -18,11 +18,12 @@ type Compiler struct {
 	tempVarCount int
 	helpers      map[string]bool
 	useLinq      bool
+	varTypes     map[string]string
 }
 
 // New creates a new C# compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -126,9 +127,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
+	origVars := c.varTypes
+	c.varTypes = make(map[string]string)
 	for i, p := range fn.Params {
 		pType := csType(p.Type)
-		params[i] = fmt.Sprintf("%s %s", pType, sanitizeName(p.Name))
+		name := sanitizeName(p.Name)
+		c.varTypes[name] = pType
+		params[i] = fmt.Sprintf("%s %s", pType, name)
 	}
 	ret := csType(fn.Return)
 	if ret == "" {
@@ -143,6 +148,7 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.varTypes = origVars
 	return nil
 }
 
@@ -208,13 +214,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("var %s = %s;", sanitizeName(s.Let.Name), expr))
+		name := sanitizeName(s.Let.Name)
+		if s.Let.Type != nil {
+			c.varTypes[name] = csType(s.Let.Type)
+		}
+		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
 	case s.Var != nil:
 		expr, err := c.compileExpr(s.Var.Value)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("var %s = %s;", sanitizeName(s.Var.Name), expr))
+		name := sanitizeName(s.Var.Name)
+		if s.Var.Type != nil {
+			c.varTypes[name] = csType(s.Var.Type)
+		}
+		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -374,17 +388,27 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
 		return "", fmt.Errorf("nil binary expr")
 	}
+	leftIsList := c.isListUnary(b.Left)
 	expr, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
 	for _, op := range b.Right {
+		rightIsList := c.isListPostfix(op.Right)
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
 		switch op.Op {
-		case "+", "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||":
+		case "+":
+			if leftIsList && rightIsList {
+				c.useLinq = true
+				expr = fmt.Sprintf("%s.Concat(%s).ToArray()", expr, right)
+			} else {
+				expr = fmt.Sprintf("(%s + %s)", expr, right)
+			}
+			leftIsList = leftIsList && rightIsList
+		case "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||":
 			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
 		default:
 			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
@@ -669,6 +693,34 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	return s
+}
+
+func (c *Compiler) varIsList(name string) bool {
+	typ, ok := c.varTypes[name]
+	return ok && strings.HasSuffix(typ, "[]")
+}
+
+func (c *Compiler) isListUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	return c.isListPostfix(u.Value)
+}
+
+func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.List != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		name := sanitizeName(p.Target.Selector.Root)
+		if c.varIsList(name) {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) newVar() string {
