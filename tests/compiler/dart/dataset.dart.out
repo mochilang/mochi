@@ -1,0 +1,22 @@
+class Person {
+	dynamic name;
+	dynamic age;
+	Person({this.name, this.age});
+}
+
+void main() {
+	var people = [Person(name: "Alice", age: 30), Person(name: "Bob", age: 15), Person(name: "Charlie", age: 65)];
+	var names = (() {
+	var _res = [];
+	for (var p in people) {
+		if (!((p.age >= 18))) {
+			continue;
+		}
+		_res.add(p.name);
+	}
+	return _res;
+})();
+	for (var n in names) {
+		print(n);
+	}
+}
