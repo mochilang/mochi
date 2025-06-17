@@ -1,0 +1,11 @@
+open System
+
+exception Return_prepend of int[][]
+let prepend (level: int[]) (result: int[][]) : int[][] =
+    try
+        result <- ([|level|] + result)
+        raise (Return_prepend (result))
+        failwith "unreachable"
+    with Return_prepend v -> v
+
+printfn "%A" prepend [|1; 2|] [|[|3|]; [|4|]|]
