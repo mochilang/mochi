@@ -24,6 +24,13 @@ func New(env *types.Env) *Compiler {
 // Compile generates Kotlin code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+			continue
+		}
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
 				return nil, err
@@ -49,6 +56,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Let != nil:
 		return c.compileLet(s.Let)
 	case s.Var != nil:
@@ -121,6 +130,23 @@ func (c *Compiler) compileReturn(stmt *parser.ReturnStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	name := sanitizeName(t.Name)
+	fields := []string{}
+	for _, m := range t.Members {
+		if m.Field == nil {
+			continue
+		}
+		typ := ktType(c.resolveTypeRef(m.Field.Type))
+		fields = append(fields, fmt.Sprintf("val %s: %s", sanitizeName(m.Field.Name), typ))
+	}
+	c.writeln(fmt.Sprintf("data class %s(%s)", name, joinArgs(fields)))
+	return nil
+}
+
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	name := sanitizeName(stmt.Name)
 	if stmt.RangeEnd != nil {
@@ -186,6 +212,62 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	varName := sanitizeName(q.Var)
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var where, sortKey, skip, take string
+	if q.Where != nil {
+		where, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortKey, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skip, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		take, err = c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+	}
+	var buf bytes.Buffer
+	buf.WriteString("run {\n")
+	buf.WriteString("\tvar res = " + src + "\n")
+	if where != "" {
+		buf.WriteString(fmt.Sprintf("\tres = res.filter { %s -> %s }\n", varName, where))
+	}
+	if sortKey != "" {
+		buf.WriteString(fmt.Sprintf("\tres = res.sortedBy { %s -> %s }\n", varName, sortKey))
+	}
+	if skip != "" {
+		buf.WriteString("\tres = res.drop(" + skip + ")\n")
+	}
+	if take != "" {
+		buf.WriteString("\tres = res.take(" + take + ")\n")
+	}
+	buf.WriteString(fmt.Sprintf("\tres = res.map { %s -> %s }\n", varName, sel))
+	buf.WriteString("\tres\n")
+	buf.WriteString("}")
+	return buf.String(), nil
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
@@ -260,7 +342,7 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
 		if op == "-" || op == "!" {
-			expr = fmt.Sprintf("(%s%s)", op, expr)
+			expr = fmt.Sprintf("%s%s", op, expr)
 		}
 	}
 	return expr, nil
@@ -325,9 +407,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "listOf(" + joinArgs(elems) + ")", nil
 	case p.Selector != nil:
+		expr := sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) == 0 {
-			return sanitizeName(p.Selector.Root), nil
+			return expr, nil
 		}
+		for _, f := range p.Selector.Tail {
+			expr += "." + sanitizeName(f)
+		}
+		return expr, nil
+	case p.Struct != nil:
+		args := []string{}
+		for _, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			args = append(args, fmt.Sprintf("%s = %s", sanitizeName(f.Name), v))
+		}
+		return sanitizeName(p.Struct.Name) + "(" + joinArgs(args) + ")", nil
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Call != nil:
 		args := []string{}
 		for _, a := range p.Call.Args {
