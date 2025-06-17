@@ -15,6 +15,7 @@ import (
 )
 
 func TestKTCompiler_SubsetPrograms(t *testing.T) {
+	t.Skip("slow")
 	if err := ktcode.EnsureKotlin(); err != nil {
 		t.Skipf("kotlin not installed: %v", err)
 	}

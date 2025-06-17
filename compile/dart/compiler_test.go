@@ -1,3 +1,5 @@
+//go:build slow
+
 package dartcode_test
 
 import (

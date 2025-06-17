@@ -1,3 +1,5 @@
+//go:build slow
+
 package rscode_test
 
 import (

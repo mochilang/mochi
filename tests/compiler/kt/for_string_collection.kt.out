@@ -1,5 +1,6 @@
 fun main() {
-	for (ch in "hi") {
-		println(ch)
-	}
+        for (ch in "hi") {
+                println(ch)
+        }
 }
+
