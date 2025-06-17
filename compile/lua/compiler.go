@@ -250,30 +250,56 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	left, err := c.compileUnary(b.Left)
-	if err != nil {
-		return "", err
-	}
-	expr := left
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
-		if err != nil {
-			return "", err
-		}
-		opstr := op.Op
-		switch opstr {
-		case "&&":
-			opstr = "and"
-		case "||":
-			opstr = "or"
-		case "in":
-			c.helpers["contains"] = true
-			expr = fmt.Sprintf("__contains(%s, %s)", right, expr)
-			continue
-		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, opstr, right)
-	}
-	return expr, nil
+       left, err := c.compileUnary(b.Left)
+       if err != nil {
+               return "", err
+       }
+
+       operands := []string{left}
+       ops := []string{}
+       for _, part := range b.Right {
+               right, err := c.compilePostfix(part.Right)
+               if err != nil {
+                       return "", err
+               }
+               ops = append(ops, part.Op)
+               operands = append(operands, right)
+       }
+
+       prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
+       for _, level := range prec {
+               for i := 0; i < len(ops); {
+                       if contains(level, ops[i]) {
+                               l := operands[i]
+                               r := operands[i+1]
+                               opstr := ops[i]
+                               var expr string
+                               switch opstr {
+                               case "&&":
+                                       expr = fmt.Sprintf("(%s and %s)", l, r)
+                               case "||":
+                                       expr = fmt.Sprintf("(%s or %s)", l, r)
+                               case "in":
+                                       c.helpers["contains"] = true
+                                       expr = fmt.Sprintf("__contains(%s, %s)", r, l)
+                               case "/":
+                                       c.helpers["div"] = true
+                                       expr = fmt.Sprintf("__div(%s, %s)", l, r)
+                               default:
+                                       expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
+                               }
+                               operands[i] = expr
+                               operands = append(operands[:i+1], operands[i+2:]...)
+                               ops = append(ops[:i], ops[i+1:]...)
+                       } else {
+                               i++
+                       }
+               }
+       }
+       if len(operands) != 1 {
+               return "", fmt.Errorf("invalid expression")
+       }
+       return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -481,8 +507,8 @@ func (c *Compiler) compileFun(fun *parser.FunStmt, local bool) error {
 }
 
 func (c *Compiler) emitHelpers() {
-	if c.helpers["iter"] {
-		c.writeln("function __iter(obj)")
+       if c.helpers["iter"] {
+               c.writeln("function __iter(obj)")
 		c.indent++
 		c.writeln("if type(obj) == 'table' then")
 		c.indent++
@@ -521,9 +547,22 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("end")
 		c.indent--
 		c.writeln("end")
-		c.writeln("")
-	}
-	if c.helpers["contains"] {
+               c.writeln("")
+       }
+       if c.helpers["div"] {
+               c.writeln("function __div(a, b)")
+               c.indent++
+               c.writeln("if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then")
+               c.indent++
+               c.writeln("return a // b")
+               c.indent--
+               c.writeln("end")
+               c.writeln("return a / b")
+               c.indent--
+               c.writeln("end")
+               c.writeln("")
+       }
+       if c.helpers["contains"] {
 		c.writeln("function __contains(container, item)")
 		c.indent++
 		c.writeln("if type(container) == 'table' then")
@@ -593,8 +632,8 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("")
 	}
 
-	if c.helpers["avg"] {
-		c.writeln("function __avg(v)")
+        if c.helpers["avg"] {
+                c.writeln("function __avg(v)")
 		c.indent++
 		c.writeln("local items")
 		c.writeln("if type(v) == 'table' and v.items ~= nil then")
@@ -616,6 +655,15 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("return sum / #items")
 		c.indent--
 		c.writeln("end")
-		c.writeln("")
-	}
+                c.writeln("")
+        }
+}
+
+func contains(list []string, s string) bool {
+       for _, v := range list {
+               if v == s {
+                       return true
+               }
+       }
+       return false
 }
