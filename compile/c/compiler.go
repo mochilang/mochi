@@ -11,17 +11,20 @@ import (
 )
 
 type Compiler struct {
-	buf              bytes.Buffer
-	indent           int
-	tmp              int
-	env              *types.Env
-	needsStr         bool
-	needsInput       bool
-	needsListListInt bool
+	buf                 bytes.Buffer
+	indent              int
+	tmp                 int
+	env                 *types.Env
+	needsStr            bool
+	needsInput          bool
+	needsListListInt    bool
+	needsConcatListInt  bool
+	needsConcatListList bool
+	varTypes            map[string]string
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, varTypes: make(map[string]string)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -151,6 +154,29 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("return sum / v.len;")
 	c.indent--
 	c.writeln("}")
+
+	if c.needsConcatListInt {
+		c.writeln("")
+		c.writeln("static list_int concat_list_int(list_int a, list_int b) {")
+		c.indent++
+		c.writeln("list_int r = list_int_create(a.len + b.len);")
+		c.writeln("for (int i = 0; i < a.len; i++) r.data[i] = a.data[i];")
+		c.writeln("for (int i = 0; i < b.len; i++) r.data[a.len + i] = b.data[i];")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsConcatListList {
+		c.writeln("")
+		c.writeln("static list_list_int concat_list_list_int(list_list_int a, list_list_int b) {")
+		c.indent++
+		c.writeln("list_list_int r = list_list_int_create(a.len + b.len);")
+		c.writeln("for (int i = 0; i < a.len; i++) r.data[i] = a.data[i];")
+		c.writeln("for (int i = 0; i < b.len; i++) r.data[a.len + i] = b.data[i];")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.needsInput {
 		c.writeln("")
 		c.writeln("static char* _input() {")
@@ -185,6 +211,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	ret := c.cType(fun.Return)
+	oldVars := c.varTypes
+	c.varTypes = make(map[string]string)
 	c.buf.WriteString(ret + " ")
 	c.buf.WriteString(fun.Name)
 	c.buf.WriteByte('(')
@@ -195,6 +223,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		c.buf.WriteString(c.cType(p.Type))
 		c.buf.WriteByte(' ')
 		c.buf.WriteString(p.Name)
+		c.varTypes[p.Name] = c.cType(p.Type)
 	}
 	c.buf.WriteString("){\n")
 	c.indent++
@@ -205,6 +234,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.varTypes = oldVars
 	return nil
 }
 
@@ -231,6 +261,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 		}
+		c.varTypes[name] = typ
 		if s.Let.Value != nil {
 			val := c.compileExpr(s.Let.Value)
 			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -258,6 +289,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 		}
+		c.varTypes[name] = typ
 		if s.Var.Value != nil {
 			val := c.compileExpr(s.Var.Value)
 			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -413,12 +445,34 @@ func (c *Compiler) compileExpr(e *parser.Expr) string {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
-	left := c.compileUnary(b.Left)
-	for _, op := range b.Right {
-		right := c.compilePostfix(op.Right)
-		left = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
+	leftExpr := c.compileUnary(b.Left)
+	leftType := listTypeUnary(b.Left, c.env, c)
+	if t, ok := c.varTypes[leftExpr]; ok {
+		leftType = t
 	}
-	return left
+	for _, op := range b.Right {
+		rightType := listTypePostfix(op.Right, c.env, c)
+		rightExpr := c.compilePostfix(op.Right)
+		if t, ok := c.varTypes[rightExpr]; ok {
+			rightType = t
+		}
+		if op.Op == "+" && leftType != "" && leftType == rightType {
+			switch leftType {
+			case "list_int":
+				c.needsConcatListInt = true
+				leftExpr = fmt.Sprintf("concat_list_int(%s, %s)", leftExpr, rightExpr)
+			case "list_list_int":
+				c.needsConcatListList = true
+				leftExpr = fmt.Sprintf("concat_list_list_int(%s, %s)", leftExpr, rightExpr)
+			default:
+				leftExpr = fmt.Sprintf("(%s + %s)", leftExpr, rightExpr)
+			}
+			continue
+		}
+		leftExpr = fmt.Sprintf("(%s %s %s)", leftExpr, op.Op, rightExpr)
+		leftType = ""
+	}
+	return leftExpr
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) string {
@@ -454,17 +508,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 	case p.List != nil:
 		name := c.newTemp()
 		nested := false
-		if len(p.List.Elems) > 0 && isListLiteral(p.List.Elems[0]) {
-			nested = true
+		if len(p.List.Elems) > 0 {
+			t := listType(p.List.Elems[0], c.env, c)
+			if t == "list_int" || t == "list_list_int" {
+				nested = true
+			}
 		}
 		if nested {
 			c.needsListListInt = true
+			c.varTypes[name] = "list_list_int"
 			c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(%d);", name, len(p.List.Elems)))
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
 			}
 		} else {
+			c.varTypes[name] = "list_int"
 			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
@@ -611,4 +670,61 @@ func isListLiteralPostfix(p *parser.PostfixExpr) bool {
 
 func isListLiteralPrimary(p *parser.Primary) bool {
 	return p != nil && p.List != nil
+}
+
+// listType returns "list_int" or "list_list_int" if the expression has that type.
+func listType(e *parser.Expr, env *types.Env, c *Compiler) string {
+	if e == nil || e.Binary == nil {
+		return ""
+	}
+	return listTypeUnary(e.Binary.Left, env, c)
+}
+
+func listTypeUnary(u *parser.Unary, env *types.Env, c *Compiler) string {
+	if u == nil {
+		return ""
+	}
+	return listTypePostfix(u.Value, env, c)
+}
+
+func listTypePostfix(p *parser.PostfixExpr, env *types.Env, c *Compiler) string {
+	if p == nil || len(p.Ops) > 0 {
+		return ""
+	}
+	return listTypePrimary(p.Target, env, c)
+}
+
+func listTypePrimary(p *parser.Primary, env *types.Env, c *Compiler) string {
+	if p == nil {
+		return ""
+	}
+	if p.List != nil {
+		if len(p.List.Elems) > 0 {
+			t := listType(p.List.Elems[0], env, c)
+			if t == "list_int" || t == "list_list_int" {
+				return "list_list_int"
+			}
+		}
+		return "list_int"
+	}
+	if p.Selector != nil {
+		if t, ok := c.varTypes[p.Selector.Root]; ok {
+			return t
+		}
+		if env != nil {
+			if tt, err := env.GetVar(p.Selector.Root); err == nil {
+				if lt, ok := tt.(types.ListType); ok {
+					if _, ok := lt.Elem.(types.IntType); ok {
+						return "list_int"
+					}
+					if lt2, ok2 := lt.Elem.(types.ListType); ok2 {
+						if _, ok3 := lt2.Elem.(types.IntType); ok3 {
+							return "list_list_int"
+						}
+					}
+				}
+			}
+		}
+	}
+	return ""
 }
