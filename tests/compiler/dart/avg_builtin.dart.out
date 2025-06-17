@@ -1,0 +1,3 @@
+void main() {
+	print(((){var _l=[1, 2, 3];var _s=0;for(var _x in _l){_s+=_x;}return _l.isEmpty?0:_s/_l.length;})());
+}
