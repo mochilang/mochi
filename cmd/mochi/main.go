@@ -31,6 +31,7 @@ import (
 	python "mochi/runtime/ffi/python"
 
 	"mochi/ast"
+	"mochi/compile/c"
 	"mochi/compile/go"
 	"mochi/compile/py"
 	"mochi/compile/ts"
@@ -82,7 +83,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (go|py|ts|wasm)"`
+	Target        string `arg:"--target" help:"Output language (go|py|ts|wasm|c)"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
@@ -456,6 +457,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".go"
 		}
 		code, err := gocode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "c":
+		if out == "" {
+			out = base + ".c"
+		}
+		code, err := ccode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}

@@ -8,6 +8,7 @@ Current directories:
 - `py`  – Python source emitter
 - `ts`  – TypeScript/Deno output
 - `wasm` – WebAssembly using the Go backend
+- `c`   – experimental C output
 
 This guide shows how to implement another backend.
 
