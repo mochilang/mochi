@@ -1134,7 +1134,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 		if op.Cast != nil {
 			typ = c.resolveTypeRef(op.Cast.Type)
-			// Casts are ignored in Python code generation
+			switch typ.(type) {
+			case types.IntType, types.Int64Type:
+				expr = fmt.Sprintf("int(%s)", expr)
+			case types.FloatType:
+				expr = fmt.Sprintf("float(%s)", expr)
+			case types.StringType:
+				expr = fmt.Sprintf("str(%s)", expr)
+			case types.BoolType:
+				expr = fmt.Sprintf("bool(%s)", expr)
+			default:
+				// For complex types just ignore the cast at runtime
+			}
 			continue
 		}
 	}
