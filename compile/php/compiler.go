@@ -302,6 +302,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
 		return fmt.Sprintf("count(%s)", args[0]), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("strval(%s)", args[0]), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		return fmt.Sprintf("(is_array(%[1]s) ? count(%[1]s) : strlen(%[1]s))", args[0]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		return fmt.Sprintf("(count(%[1]s) ? array_sum(%[1]s) / count(%[1]s) : 0)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
