@@ -3105,7 +3105,19 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 			}
 		}
 	}
-	return c.compileExpr(e)
+	expr, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	exprT := c.inferExprType(e)
+	hintGo := goType(hint)
+	exprGo := goType(exprT)
+	if hintGo != "" && hintGo != exprGo && (isAny(exprT) || !equalTypes(hint, exprT)) {
+		c.use("_cast")
+		c.imports["encoding/json"] = true
+		expr = fmt.Sprintf("_cast[%s](%s)", hintGo, expr)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compilePostfixHint(p *parser.PostfixExpr, hint types.Type) (string, error) {
