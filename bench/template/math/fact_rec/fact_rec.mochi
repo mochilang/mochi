@@ -1,8 +1,8 @@
-fun fact(n: int): int {
+fun fact_rec(n: int): int {
   if n == 0 {
     return 1
   }
-  return n * fact(n - 1)
+  return n * fact_rec(n - 1)
 }
 
 // let n = 4
@@ -12,7 +12,7 @@ var last = 0
 
 let start = now()
 for i in 0..repeat {
-  last = fact(n)
+  last = fact_rec(n)
 }
 let duration = (now() - start) / 1000
 
