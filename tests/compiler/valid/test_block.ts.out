@@ -10,4 +10,3 @@ function main(): void {
 	test_addition_works()
 }
 main()
-
