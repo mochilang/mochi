@@ -1,3 +1,5 @@
+//go:build slow
+
 package wasm_test
 
 import (

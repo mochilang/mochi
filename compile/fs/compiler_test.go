@@ -1,3 +1,5 @@
+//go:build slow
+
 package fscode_test
 
 import (
