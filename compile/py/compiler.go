@@ -1319,9 +1319,15 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if s, ok := simpleStringKey(it.Key); ok {
+			k = fmt.Sprintf("%q", s)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
@@ -1405,10 +1411,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		return "", err
-	}
 	hasSide := false
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -1441,8 +1443,35 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	orig := c.env
 	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
 
 	if !hasSide {
+		if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			keyExpr, err := c.compileExpr(q.Group.Expr)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			genv := types.NewEnv(child)
+			genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+			c.env = genv
+			val, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			c.env = orig
+			c.imports["types"] = "types"
+			expr := fmt.Sprintf("[ types.SimpleNamespace(**%s) for %s in _group_by(%s, lambda %s: %s) ]", val, sanitizeName(q.Group.Name), src, sanitizeName(q.Var), keyExpr)
+			c.use("_group_by")
+			c.use("_group")
+			return expr, nil
+		}
+
 		loops := []string{fmt.Sprintf("%s in %s", sanitizeName(q.Var), src)}
 		for _, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
