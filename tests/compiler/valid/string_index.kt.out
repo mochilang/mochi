@@ -1,0 +1,5 @@
+fun main() {
+        val text = "hello"
+        println(text[1])
+}
+
