@@ -283,16 +283,28 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			args[i] = v
 		}
-		if p.Call.Func == "len" {
-			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
-		}
-		if p.Call.Func == "print" {
-			joined := strings.Join(args, " ")
-			if len(args) != 1 || strings.ContainsAny(joined, " ") {
-				return fmt.Sprintf("print (%s)", joined), nil
-			}
-			return fmt.Sprintf("print %s", joined), nil
-		}
+                if p.Call.Func == "len" {
+                        return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
+                }
+                if p.Call.Func == "count" {
+                        return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
+                }
+                if p.Call.Func == "str" {
+                        return fmt.Sprintf("show %s", strings.Join(args, " ")), nil
+                }
+                if p.Call.Func == "print" {
+                        joined := strings.Join(args, " ")
+                        if len(args) == 1 {
+                                arg := args[0]
+                                if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") {
+                                        return fmt.Sprintf("putStrLn (%s)", arg), nil
+                                }
+                        }
+                        if len(args) != 1 || strings.ContainsAny(joined, " ") {
+                                return fmt.Sprintf("print (%s)", joined), nil
+                        }
+                        return fmt.Sprintf("print %s", joined), nil
+                }
 		return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
