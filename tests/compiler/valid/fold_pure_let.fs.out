@@ -1,0 +1,12 @@
+open System
+
+exception Return_sum of int
+let sum (n: int) : int =
+    try
+        raise (Return_sum (((n * ((n + 1))) / 2)))
+        failwith "unreachable"
+    with Return_sum v -> v
+
+let n = 10
+printfn "%A" sum n
+printfn "%A" n

@@ -1,0 +1,7 @@
+open System
+
+let numbers = [|1; 2; 3; 4; 5; 6; 7; 8; 9|]
+for n in numbers do
+    if ((n % 2) = 0) then
+    if (n > 7) then
+    printfn "%A" ("odd number:" n)

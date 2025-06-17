@@ -4,10 +4,12 @@ package fscode_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	fscode "mochi/compile/fs"
@@ -51,7 +53,7 @@ func TestFSCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestFSCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/fs", ".mochi", ".fs.out", func(src string) ([]byte, error) {
+	compile := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -65,5 +67,86 @@ func TestFSCompiler_GoldenOutput(t *testing.T) {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
 		return bytes.TrimSpace(code), nil
-	})
+	}
+
+	runGoldenSkip(t, "tests/compiler/valid", ".mochi", ".fs.out", compile)
+	golden.Run(t, "tests/compiler/fs", ".mochi", ".fs.out", compile)
+}
+
+func runGoldenSkip(t *testing.T, dir, srcExt, goldenExt string, fn func(string) ([]byte, error)) {
+	rootDir := findRepoRoot(t)
+	pattern := filepath.Join(rootDir, dir, "*"+srcExt)
+
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("failed to list %s files in %s: %v", srcExt, dir, err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no test files found: %s", pattern)
+	}
+
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), srcExt)
+		wantPath := filepath.Join(rootDir, dir, name+goldenExt)
+
+		t.Run(name, func(t *testing.T) {
+
+			got, err := fn(src)
+			if err != nil {
+				t.Skipf("skipping unsupported file: %v", err)
+				return
+			}
+			if got == nil {
+				t.Fatal("got nil output")
+			}
+			got = normalizeOutput(rootDir, got)
+
+			if flag.Lookup("update") != nil && flag.Lookup("update").Value.String() == "true" {
+				if err := os.WriteFile(wantPath, got, 0644); err != nil {
+					t.Fatalf("failed to write golden: %v", err)
+				}
+				t.Logf("updated: %s", wantPath)
+				return
+			}
+
+			want, err := os.ReadFile(wantPath)
+			if err != nil {
+				t.Fatalf("failed to read golden: %v", err)
+			}
+			want = bytes.TrimSpace(want)
+
+			if !bytes.Equal(got, want) {
+				t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name+goldenExt, got, want)
+				return
+			}
+		})
+	}
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found (not in Go module)")
+	return ""
+}
+
+func normalizeOutput(root string, b []byte) []byte {
+	out := string(b)
+	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	return []byte(strings.TrimSpace(out))
 }
