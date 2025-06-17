@@ -3,6 +3,7 @@ package ccode
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -10,10 +11,11 @@ import (
 )
 
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	tmp    int
-	env    *types.Env
+	buf      bytes.Buffer
+	indent   int
+	tmp      int
+	env      *types.Env
+	needsStr bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -45,6 +47,8 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 			return "double"
 		case "bool":
 			return "int"
+		case "string":
+			return "char*"
 		}
 	}
 	if t.Generic != nil && t.Generic.Name == "list" {
@@ -59,6 +63,33 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 }
 
 func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
+	// compile body first to know which helpers are needed
+	oldBuf := c.buf
+	c.buf = bytes.Buffer{}
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+	// main function
+	c.writeln("int main() {")
+	c.indent++
+	for _, s := range prog.Statements {
+		if s.Fun == nil {
+			if err := c.compileStmt(s); err != nil {
+				return nil, err
+			}
+		}
+	}
+	c.writeln("return 0;")
+	c.indent--
+	c.writeln("}")
+	body := c.buf.String()
+	c.buf = oldBuf
+
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
 	c.writeln("")
@@ -92,29 +123,19 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("return sum / v.len;")
 	c.indent--
 	c.writeln("}")
+	if c.needsStr {
+		c.writeln("")
+		c.writeln("static char* _str(int v) {")
+		c.indent++
+		c.writeln("char* buf = (char*)malloc(32);")
+		c.writeln("sprintf(buf, \"%d\", v);")
+		c.writeln("return buf;")
+		c.indent--
+		c.writeln("}")
+	}
 	c.writeln("")
-	// functions first
-	for _, s := range prog.Statements {
-		if s.Fun != nil {
-			if err := c.compileFun(s.Fun); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
-	}
-	// main function
-	c.writeln("int main() {")
-	c.indent++
-	for _, s := range prog.Statements {
-		if s.Fun == nil {
-			if err := c.compileStmt(s); err != nil {
-				return nil, err
-			}
-		}
-	}
-	c.writeln("return 0;")
-	c.indent--
-	c.writeln("}")
+
+	c.buf.WriteString(body)
 	return c.buf.Bytes(), nil
 }
 
@@ -330,8 +351,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			arg := c.compileExpr(p.Call.Args[0])
 			return fmt.Sprintf("%s.len", arg)
 		} else if p.Call.Func == "print" {
-			arg := c.compileExpr(p.Call.Args[0])
-			c.writeln(fmt.Sprintf("printf(\"%s\\n\", %s);", "%d", arg))
+			argExpr := c.compileExpr(p.Call.Args[0])
+			fmtStr := "%d"
+			if isStringArg(p.Call.Args[0], c.env) {
+				fmtStr = "%s"
+			}
+			c.writeln(fmt.Sprintf("printf(\"%s\\n\", %s);", fmtStr, argExpr))
 			return ""
 		} else if p.Call.Func == "count" {
 			arg := c.compileExpr(p.Call.Args[0])
@@ -339,6 +364,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if p.Call.Func == "avg" {
 			arg := c.compileExpr(p.Call.Args[0])
 			return fmt.Sprintf("_avg(%s)", arg)
+		} else if p.Call.Func == "str" {
+			arg := c.compileExpr(p.Call.Args[0])
+			name := c.newTemp()
+			c.needsStr = true
+			c.writeln(fmt.Sprintf("char* %s = _str(%s);", name, arg))
+			return name
 		}
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -362,10 +393,55 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 		} else {
 			return "0"
 		}
+	case l.Str != nil:
+		return strconv.Quote(*l.Str)
 	}
 	return "0"
 }
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 	return s.Root
+}
+
+func isStringArg(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isStringUnary(e.Binary.Left, env)
+}
+
+func isStringUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isStringPostfix(u.Value, env)
+}
+
+func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) > 0 {
+		// conservatively assume non-string if operations present
+		return false
+	}
+	return isStringPrimary(p.Target, env)
+}
+
+func isStringPrimary(p *parser.Primary, env *types.Env) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.Lit != nil && p.Lit.Str != nil:
+		return true
+	case p.Call != nil && p.Call.Func == "str":
+		return true
+	case p.Selector != nil && env != nil:
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
 }
