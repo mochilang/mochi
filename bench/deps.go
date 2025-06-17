@@ -19,6 +19,9 @@ func EnsureDeps() (string, error) {
 	if err := ensurePython(); err != nil {
 		return "", err
 	}
+	if err := ensureRust(); err != nil {
+		return "", err
+	}
 	if err := ensureDeno(); err != nil {
 		return "", err
 	}
