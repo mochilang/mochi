@@ -25,6 +25,9 @@ func EnsureDeps() (string, error) {
 	if err := ensureDeno(); err != nil {
 		return "", err
 	}
+	if err := ensureDotnet(); err != nil {
+		return "", err
+	}
 	return mochiBin, nil
 }
 
