@@ -1,0 +1,8 @@
+List<int> prepend(level, result) {
+	result = ([level] + result);
+	return result;
+}
+
+void main() {
+	print(prepend([1, 2], [[3], [4]]));
+}
