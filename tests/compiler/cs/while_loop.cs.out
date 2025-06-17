@@ -5,5 +5,9 @@ using System.Collections.Generic;
 public class Program {
 	public static void Main() {
 		var i = 0;
+		while ((i < 3)) {
+			Console.WriteLine(i);
+			i = (i + 1);
+		}
 	}
 }
