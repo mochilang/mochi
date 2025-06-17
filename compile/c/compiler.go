@@ -73,6 +73,26 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	c.writeln("")
+	// helper functions for builtins
+	c.writeln("static int _count(list_int v) {")
+	c.indent++
+	c.writeln("return v.len;")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	c.writeln("static int _avg(list_int v) {")
+	c.indent++
+	c.writeln("if (v.len == 0) return 0;")
+	c.writeln("int sum = 0;")
+	c.writeln("for (int i = 0; i < v.len; i++) {")
+	c.indent++
+	c.writeln("sum += v.data[i];")
+	c.indent--
+	c.writeln("}")
+	c.writeln("return sum / v.len;")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
 	// functions first
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -305,6 +325,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			arg := c.compileExpr(p.Call.Args[0])
 			c.writeln(fmt.Sprintf("printf(\"%s\\n\", %s);", "%d", arg))
 			return ""
+		} else if p.Call.Func == "count" {
+			arg := c.compileExpr(p.Call.Args[0])
+			return fmt.Sprintf("_count(%s)", arg)
+		} else if p.Call.Func == "avg" {
+			arg := c.compileExpr(p.Call.Args[0])
+			return fmt.Sprintf("_avg(%s)", arg)
 		}
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
