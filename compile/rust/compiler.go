@@ -70,6 +70,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Break != nil:
+		c.writeln("break;")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue;")
+		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Expr != nil:
@@ -114,7 +120,11 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if stmt.RangeEnd != nil {
 		c.writeln(fmt.Sprintf("for %s in %s..%s {", name, start, end))
 	} else {
-		c.writeln(fmt.Sprintf("for %s in %s {", name, start))
+		if isStringLiteral(stmt.Source) {
+			c.writeln(fmt.Sprintf("for %s in %s.chars() {", name, start))
+		} else {
+			c.writeln(fmt.Sprintf("for %s in %s {", name, start))
+		}
 	}
 	c.indent++
 	for _, s := range stmt.Body {
@@ -257,7 +267,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
 		}
 		if p.Lit.Str != nil {
-			return fmt.Sprintf("%s", *p.Lit.Str), nil
+			return fmt.Sprintf("%q", *p.Lit.Str), nil
 		}
 		if p.Lit.Bool != nil {
 			if bool(*p.Lit.Bool) {
@@ -298,7 +308,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch call.Func {
 	case "print":
-		return fmt.Sprintf("println!(\"{}\", %s)", argStr), nil
+		if len(args) == 1 {
+			return fmt.Sprintf("println!(\"{}\", %s)", argStr), nil
+		}
+		fmtParts := make([]string, len(args))
+		for i := range args {
+			fmtParts[i] = "{}"
+		}
+		fmtStr := strings.Join(fmtParts, " ")
+		return fmt.Sprintf("println!(\"%s\", %s)", fmtStr, argStr), nil
 	case "len":
 		if len(args) == 1 {
 			return fmt.Sprintf("%s.len() as i32", args[0]), nil
@@ -334,6 +352,24 @@ func rustType(t *parser.TypeRef) string {
 		return "()" // not handled
 	}
 	return "()"
+}
+
+func isStringLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 {
+		return false
+	}
+	if p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil {
+		return false
+	}
+	return true
 }
 
 func sanitizeName(name string) string {
