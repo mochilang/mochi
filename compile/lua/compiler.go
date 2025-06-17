@@ -252,56 +252,56 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-       left, err := c.compileUnary(b.Left)
-       if err != nil {
-               return "", err
-       }
+	left, err := c.compileUnary(b.Left)
+	if err != nil {
+		return "", err
+	}
 
-       operands := []string{left}
-       ops := []string{}
-       for _, part := range b.Right {
-               right, err := c.compilePostfix(part.Right)
-               if err != nil {
-                       return "", err
-               }
-               ops = append(ops, part.Op)
-               operands = append(operands, right)
-       }
+	operands := []string{left}
+	ops := []string{}
+	for _, part := range b.Right {
+		right, err := c.compilePostfix(part.Right)
+		if err != nil {
+			return "", err
+		}
+		ops = append(ops, part.Op)
+		operands = append(operands, right)
+	}
 
-       prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
-       for _, level := range prec {
-               for i := 0; i < len(ops); {
-                       if contains(level, ops[i]) {
-                               l := operands[i]
-                               r := operands[i+1]
-                               opstr := ops[i]
-                               var expr string
-                               switch opstr {
-                               case "&&":
-                                       expr = fmt.Sprintf("(%s and %s)", l, r)
-                               case "||":
-                                       expr = fmt.Sprintf("(%s or %s)", l, r)
-                               case "in":
-                                       c.helpers["contains"] = true
-                                       expr = fmt.Sprintf("__contains(%s, %s)", r, l)
-                               case "/":
-                                       c.helpers["div"] = true
-                                       expr = fmt.Sprintf("__div(%s, %s)", l, r)
-                               default:
-                                       expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
-                               }
-                               operands[i] = expr
-                               operands = append(operands[:i+1], operands[i+2:]...)
-                               ops = append(ops[:i], ops[i+1:]...)
-                       } else {
-                               i++
-                       }
-               }
-       }
-       if len(operands) != 1 {
-               return "", fmt.Errorf("invalid expression")
-       }
-       return operands[0], nil
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
+	for _, level := range prec {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				l := operands[i]
+				r := operands[i+1]
+				opstr := ops[i]
+				var expr string
+				switch opstr {
+				case "&&":
+					expr = fmt.Sprintf("(%s and %s)", l, r)
+				case "||":
+					expr = fmt.Sprintf("(%s or %s)", l, r)
+				case "in":
+					c.helpers["contains"] = true
+					expr = fmt.Sprintf("__contains(%s, %s)", r, l)
+				case "/":
+					c.helpers["div"] = true
+					expr = fmt.Sprintf("__div(%s, %s)", l, r)
+				default:
+					expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
+				}
+				operands[i] = expr
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+	if len(operands) != 1 {
+		return "", fmt.Errorf("invalid expression")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -415,6 +415,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i] = fmt.Sprintf("%s=%s", sanitizeName(f.Name), v)
 		}
 		return "{" + strings.Join(parts, ", ") + "}", nil
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.Call != nil:
@@ -462,6 +464,87 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	default:
 		return fmt.Sprintf("%s(%s)", name, argStr), nil
 	}
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+		return "", fmt.Errorf("advanced query clauses not supported")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	iter := sanitizeName(q.Var)
+	var whereCond, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		whereCond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+
+	var b strings.Builder
+	b.WriteString("(function()\n")
+	b.WriteString("\tlocal items = {}\n")
+	b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
+	if whereCond != "" {
+		b.WriteString(fmt.Sprintf("\t\tif %s then\n", whereCond))
+		b.WriteString(fmt.Sprintf("\t\t\ttable.insert(items, %s)\n", iter))
+		b.WriteString("\t\tend\n")
+	} else {
+		b.WriteString(fmt.Sprintf("\t\ttable.insert(items, %s)\n", iter))
+	}
+	b.WriteString("\tend\n")
+	if sortExpr != "" {
+		b.WriteString("\ttable.sort(items, function(a, b)\n")
+		b.WriteString(fmt.Sprintf("\t\tlocal %s = a\n", iter))
+		b.WriteString(fmt.Sprintf("\t\tlocal _ka = %s\n", sortExpr))
+		b.WriteString(fmt.Sprintf("\t\t%s = b\n", iter))
+		b.WriteString(fmt.Sprintf("\t\tlocal _kb = %s\n", sortExpr))
+		b.WriteString("\t\treturn (_ka) < (_kb)\n")
+		b.WriteString("\tend)\n")
+	}
+	if skipExpr != "" {
+		b.WriteString(fmt.Sprintf("\tif %s < #items then\n", skipExpr))
+		b.WriteString(fmt.Sprintf("\t\titems = {table.unpack(items, (%s)+1)}\n", skipExpr))
+		b.WriteString("\telse\n")
+		b.WriteString("\t\titems = {}\n")
+		b.WriteString("\tend\n")
+	}
+	if takeExpr != "" {
+		b.WriteString(fmt.Sprintf("\tif %s < #items then\n", takeExpr))
+		b.WriteString(fmt.Sprintf("\t\titems = {table.unpack(items, 1, %s)}\n", takeExpr))
+		b.WriteString("\tend\n")
+	}
+	b.WriteString("\tlocal _res = {}\n")
+	b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(items) do\n", iter))
+	b.WriteString(fmt.Sprintf("\t\ttable.insert(_res, %s)\n", sel))
+	b.WriteString("\tend\n")
+	b.WriteString("\treturn _res\n")
+	b.WriteString("end)()")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
@@ -592,8 +675,8 @@ func (c *Compiler) compileFun(fun *parser.FunStmt, local bool) error {
 }
 
 func (c *Compiler) emitHelpers() {
-       if c.helpers["iter"] {
-               c.writeln("function __iter(obj)")
+	if c.helpers["iter"] {
+		c.writeln("function __iter(obj)")
 		c.indent++
 		c.writeln("if type(obj) == 'table' then")
 		c.indent++
@@ -632,22 +715,22 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("end")
 		c.indent--
 		c.writeln("end")
-               c.writeln("")
-       }
-       if c.helpers["div"] {
-               c.writeln("function __div(a, b)")
-               c.indent++
-               c.writeln("if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then")
-               c.indent++
-               c.writeln("return a // b")
-               c.indent--
-               c.writeln("end")
-               c.writeln("return a / b")
-               c.indent--
-               c.writeln("end")
-               c.writeln("")
-       }
-       if c.helpers["contains"] {
+		c.writeln("")
+	}
+	if c.helpers["div"] {
+		c.writeln("function __div(a, b)")
+		c.indent++
+		c.writeln("if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then")
+		c.indent++
+		c.writeln("return a // b")
+		c.indent--
+		c.writeln("end")
+		c.writeln("return a / b")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+	if c.helpers["contains"] {
 		c.writeln("function __contains(container, item)")
 		c.indent++
 		c.writeln("if type(container) == 'table' then")
@@ -717,8 +800,8 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("")
 	}
 
-        if c.helpers["avg"] {
-                c.writeln("function __avg(v)")
+	if c.helpers["avg"] {
+		c.writeln("function __avg(v)")
 		c.indent++
 		c.writeln("local items")
 		c.writeln("if type(v) == 'table' and v.items ~= nil then")
@@ -740,15 +823,15 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("return sum / #items")
 		c.indent--
 		c.writeln("end")
-                c.writeln("")
-        }
+		c.writeln("")
+	}
 }
 
 func contains(list []string, s string) bool {
-       for _, v := range list {
-               if v == s {
-                       return true
-               }
-       }
-       return false
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }

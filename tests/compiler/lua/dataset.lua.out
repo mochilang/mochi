@@ -1,0 +1,42 @@
+function __iter(obj)
+	if type(obj) == 'table' then
+		if obj[1] ~= nil or #obj > 0 then
+			local i = 0
+			local n = #obj
+			return function()
+				i = i + 1
+				if i <= n then return i, obj[i] end
+			end
+		else
+			return pairs(obj)
+		end
+	elseif type(obj) == 'string' then
+		local i = 0
+		local n = #obj
+		return function()
+			i = i + 1
+			if i <= n then return i, string.sub(obj, i, i) end
+		end
+	else
+		return function() return nil end
+	end
+end
+
+local people = {{name="Alice", age=30}, {name="Bob", age=15}, {name="Charlie", age=65}}
+local names = (function()
+	local items = {}
+	for _, p in ipairs(people) do
+		if (p.age >= 18) then
+			table.insert(items, p)
+		end
+	end
+	local _res = {}
+	for _, p in ipairs(items) do
+		table.insert(_res, p.name)
+	end
+	return _res
+end)()
+for _, n in __iter(names) do
+	print(n)
+	::__continue0::
+end
