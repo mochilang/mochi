@@ -19,5 +19,4 @@ avg xs | null xs = 0
 
 main :: IO ()
 main = do
-    let value = (((1 + 2)) * 3)
-    print value
+    print (avg [1, 2, 3])

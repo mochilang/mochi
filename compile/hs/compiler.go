@@ -110,7 +110,21 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	for i, p := range fun.Params {
 		params[i] = sanitizeName(p.Name)
 	}
-	c.writeln(name + " " + strings.Join(params, " ") + " = fromMaybe (" + c.defaultReturn(fun.Body) + ") $")
+	var ft types.FuncType
+	if c.env != nil {
+		if t, err := c.env.GetVar(fun.Name); err == nil {
+			if f, ok := t.(types.FuncType); ok {
+				ft = f
+			}
+		}
+	}
+	if ft.Return == nil && fun.Return != nil {
+		ft.Return = types.AnyType{}
+	}
+	if ft.Return == nil {
+		ft.Return = types.VoidType{}
+	}
+	c.writeln(name + " " + strings.Join(params, " ") + " = fromMaybe (" + c.defaultReturn(fun.Body, ft.Return) + ") $")
 	bodyStmts := fun.Body
 	if len(bodyStmts) > 0 {
 		if bodyStmts[len(bodyStmts)-1].Return != nil {
@@ -137,15 +151,32 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	return nil
 }
 
-func (c *Compiler) defaultReturn(stmts []*parser.Statement) string {
-	if len(stmts) == 0 {
+func zeroValue(t types.Type) string {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return "0"
+	case types.FloatType:
+		return "0.0"
+	case types.StringType:
+		return "\"\""
+	case types.BoolType:
+		return "False"
+	case types.ListType:
+		return "[]"
+	default:
 		return "()"
+	}
+}
+
+func (c *Compiler) defaultReturn(stmts []*parser.Statement, retType types.Type) string {
+	if len(stmts) == 0 {
+		return zeroValue(retType)
 	}
 	if ret := stmts[len(stmts)-1].Return; ret != nil {
 		v, _ := c.compileExpr(ret.Value)
 		return v
 	}
-	return "()"
+	return zeroValue(retType)
 }
 
 func (c *Compiler) collectLets(stmts []*parser.Statement) []string {
@@ -339,6 +370,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if p.Call.Func == "count" {
 			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
+		}
+		if p.Call.Func == "avg" {
+			return fmt.Sprintf("avg %s", strings.Join(args, " ")), nil
 		}
 		if p.Call.Func == "str" {
 			return fmt.Sprintf("show %s", strings.Join(args, " ")), nil

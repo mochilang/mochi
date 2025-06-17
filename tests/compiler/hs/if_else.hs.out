@@ -12,8 +12,12 @@ forLoop start end f = go start
               Nothing -> go (i + 1)
          | otherwise = Nothing
 
+avg :: Real a => [a] -> Double
+avg xs | null xs = 0
+       | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
 
-foo n = fromMaybe (()) $
+
+foo n = fromMaybe (0) $
     if (n < 0) then Just ((-1)) else if (n == 0) then Just (0) else Just (1)
 
 main :: IO ()

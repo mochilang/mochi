@@ -9,4 +9,8 @@ forLoop start end f = go start
               Just v -> Just v
               Nothing -> go (i + 1)
          | otherwise = Nothing
+
+avg :: Real a => [a] -> Double
+avg xs | null xs = 0
+       | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
 `
