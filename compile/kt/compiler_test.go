@@ -44,7 +44,11 @@ func TestKTCompiler_SubsetPrograms(t *testing.T) {
 		if out, err := exec.Command("kotlinc", file, "-include-runtime", "-d", jar).CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("❌ kotlinc error: %w\n%s", err, out)
 		}
-		out, err := exec.Command("java", "-jar", jar).CombinedOutput()
+		cmd := exec.Command("java", "-jar", jar)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ java run error: %w\n%s", err, out)
 		}

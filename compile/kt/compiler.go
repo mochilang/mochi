@@ -508,6 +508,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "str" && len(args) == 1 {
 			return args[0] + ".toString()", nil
 		}
+		if name == "input" && len(args) == 0 {
+			return "readln()", nil
+		}
 		return name + "(" + joinArgs(args) + ")", nil
 	}
 	return "", fmt.Errorf("unsupported expression")

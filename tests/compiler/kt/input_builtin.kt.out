@@ -1,0 +1,7 @@
+fun main() {
+        println("Enter first input:")
+        val input1 = readln()
+        println("Enter second input:")
+        val input2 = readln()
+        println("You entered:", input1, ",", input2)
+}
