@@ -63,6 +63,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(expr)
 		return nil
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.For != nil:
 		return c.compileFor(s.For)
 	case s.While != nil:
@@ -107,6 +109,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
+	if c.env != nil {
+		c.env.SetFunc(fn.Name, fn)
+	}
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = sanitizeName(p.Name)
@@ -208,6 +213,23 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
+	lhs := sanitizeName(s.Name)
+	for _, idx := range s.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+	}
+	val, err := c.compileExpr(s.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s", lhs, val))
+	return nil
+}
+
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
@@ -284,14 +306,33 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			argStr := strings.Join(args, ", ")
 			switch expr {
 			case "print":
-				expr = fmt.Sprintf("puts(%s)", argStr)
-			case "len":
+				expr = fmt.Sprintf("puts([%s].join(\" \"))", argStr)
+			case "len", "count":
 				if len(args) != 1 {
-					return "", fmt.Errorf("len expects 1 arg")
+					return "", fmt.Errorf("%s expects 1 arg", expr)
 				}
 				expr = fmt.Sprintf("(%s).length", args[0])
+			case "str":
+				if len(args) != 1 {
+					return "", fmt.Errorf("str expects 1 arg")
+				}
+				expr = fmt.Sprintf("(%s).to_s", args[0])
+			case "avg":
+				if len(args) != 1 {
+					return "", fmt.Errorf("avg expects 1 arg")
+				}
+				expr = fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", args[0])
+			case "input":
+				if len(args) != 0 {
+					return "", fmt.Errorf("input expects no args")
+				}
+				expr = "STDIN.gets.to_s.strip"
 			default:
-				expr = fmt.Sprintf("%s(%s)", expr, argStr)
+				if _, ok := c.env.GetFunc(expr); ok {
+					expr = fmt.Sprintf("%s(%s)", expr, argStr)
+				} else {
+					expr = fmt.Sprintf("%s.call(%s)", expr, argStr)
+				}
 			}
 		}
 	}
@@ -328,16 +369,35 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args[i] = v
 		}
 		argStr := strings.Join(args, ", ")
-		switch p.Call.Func {
+		name := sanitizeName(p.Call.Func)
+		switch name {
 		case "print":
-			return fmt.Sprintf("puts(%s)", argStr), nil
-		case "len":
+			return fmt.Sprintf("puts([%s].join(\" \"))", argStr), nil
+		case "len", "count":
 			if len(args) != 1 {
-				return "", fmt.Errorf("len expects 1 arg")
+				return "", fmt.Errorf("%s expects 1 arg", name)
 			}
 			return fmt.Sprintf("(%s).length", args[0]), nil
+		case "str":
+			if len(args) != 1 {
+				return "", fmt.Errorf("str expects 1 arg")
+			}
+			return fmt.Sprintf("(%s).to_s", args[0]), nil
+		case "avg":
+			if len(args) != 1 {
+				return "", fmt.Errorf("avg expects 1 arg")
+			}
+			return fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", args[0]), nil
+		case "input":
+			if len(args) != 0 {
+				return "", fmt.Errorf("input expects no args")
+			}
+			return "STDIN.gets.to_s.strip", nil
 		default:
-			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
+			if _, ok := c.env.GetFunc(name); ok {
+				return fmt.Sprintf("%s(%s)", name, argStr), nil
+			}
+			return fmt.Sprintf("%s.call(%s)", name, argStr), nil
 		}
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)

@@ -41,6 +41,9 @@ func TestRBCompiler_TwoSum(t *testing.T) {
 		t.Fatalf("write error: %v", err)
 	}
 	cmd := exec.Command("ruby", file)
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		cmd.Stdin = bytes.NewReader(data)
+	}
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("ruby run error: %v\n%s", err, out)
@@ -74,6 +77,9 @@ func TestRBCompiler_SubsetPrograms(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("ruby", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("ruby run error: %w\n%s", err, out)
