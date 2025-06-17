@@ -52,7 +52,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	bodyBytes := c.buf.Bytes()
+	bodyBytes := append([]byte(nil), c.buf.Bytes()...)
 	c.buf.Reset()
 	c.emitHelpers()
 	c.buf.Write(bodyBytes)
@@ -202,7 +202,8 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for _, %s in ipairs(%s) do", name, src))
+		c.helpers["iter"] = true
+		c.writeln(fmt.Sprintf("for _, %s in __iter(%s) do", name, src))
 	}
 	c.indent++
 	for _, st := range s.Body {
@@ -465,6 +466,48 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 }
 
 func (c *Compiler) emitHelpers() {
+	if c.helpers["iter"] {
+		c.writeln("function __iter(obj)")
+		c.indent++
+		c.writeln("if type(obj) == 'table' then")
+		c.indent++
+		c.writeln("if obj[1] ~= nil or #obj > 0 then")
+		c.indent++
+		c.writeln("local i = 0")
+		c.writeln("local n = #obj")
+		c.writeln("return function()")
+		c.indent++
+		c.writeln("i = i + 1")
+		c.writeln("if i <= n then return i, obj[i] end")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("return pairs(obj)")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("elseif type(obj) == 'string' then")
+		c.indent++
+		c.writeln("local i = 0")
+		c.writeln("local n = #obj")
+		c.writeln("return function()")
+		c.indent++
+		c.writeln("i = i + 1")
+		c.writeln("if i <= n then return i, string.sub(obj, i, i) end")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("return function() return nil end")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
 	if c.helpers["contains"] {
 		c.writeln("function __contains(container, item)")
 		c.indent++
