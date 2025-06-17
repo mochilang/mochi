@@ -41,7 +41,14 @@ func TestScalaCompiler_SubsetPrograms(t *testing.T) {
 		if out, err := exec.Command("scalac", file).CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("❌ scalac error: %w\n%s", err, out)
 		}
-		out, err := exec.Command("scala", "Main").CombinedOutput()
+
+		scalaCmd := "scala"
+		args := []string{"Main"}
+		if _, err := exec.LookPath("scala-cli"); err == nil {
+			scalaCmd = "scala-cli"
+			args = []string{"run", file}
+		}
+		out, err := exec.Command(scalaCmd, args...).CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ scala run error: %w\n%s", err, out)
 		}
