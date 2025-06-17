@@ -145,6 +145,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			val = v
 		}
 		c.buf.WriteString(fmt.Sprintf("%s = %s", s.Var.Name, val))
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.Return != nil:
 		v, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -245,6 +247,18 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	c.indent--
 	c.writeIndent()
 	c.buf.WriteString("end)")
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	if len(a.Index) > 0 {
+		return fmt.Errorf("index assignment not supported")
+	}
+	expr, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.buf.WriteString(fmt.Sprintf("%s = %s", a.Name, expr))
 	return nil
 }
 

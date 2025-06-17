@@ -3,11 +3,21 @@
 -export([main/1]).
 
 main(_) ->
-	i = 0,
-	mochi_while(fun() -> (i < 3) end, fun() ->
-		mochi_print([i]),
-		i = (i + 1)
-	end).
+	c = 0,
+	lists:foreach(fun(_) ->
+		c = (c + 1)
+	end, lists:seq(0, (2)-1)),
+	lists:foreach(fun(_) ->
+		c = (c + 1)
+	end, [1, 2]),
+	lists:foreach(fun(_) ->
+		c = (c + 1)
+	end, "ab"),
+	m = #{"x" => 1, "y" => 2},
+	lists:foreach(fun(_) ->
+		c = (c + 1)
+	end, m),
+	mochi_print([c]).
 
 mochi_print(Args) ->
 	Strs = [ mochi_format(A) || A <- Args ],
