@@ -452,13 +452,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		name := sanitizeName(p.Call.Func)
 		if name == "print" {
-			return "System.out.println(" + joinArgs(args) + ")", nil
+			if len(args) == 1 {
+				return "System.out.println(" + args[0] + ")", nil
+			}
+			expr := args[0]
+			for i := 1; i < len(args); i++ {
+				expr += " + \" \" + " + args[i]
+			}
+			return "System.out.println(" + expr + ")", nil
 		}
 		if name == "len" && len(args) == 1 {
 			return args[0] + ".length", nil
 		}
 		if name == "str" && len(args) == 1 {
 			return "String.valueOf(" + args[0] + ")", nil
+		}
+		if name == "input" && len(args) == 0 {
+			c.helpers["_input"] = true
+			return "_input()", nil
 		}
 		if name == "count" && len(args) == 1 {
 			c.helpers["_count"] = true
@@ -530,6 +541,15 @@ func (c *Compiler) writeIndent() {
 }
 
 func (c *Compiler) emitRuntime() {
+	if c.helpers["_input"] {
+		c.writeln("")
+		c.writeln("static java.util.Scanner _scanner = new java.util.Scanner(System.in);")
+		c.writeln("static String _input() {")
+		c.indent++
+		c.writeln("return _scanner.nextLine();")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_count"] {
 		c.writeln("")
 		c.writeln("static int _count(int[] arr) {")
