@@ -3,12 +3,7 @@
 -export([main/1]).
 
 main(_) ->
-	ok,
-	people = [#{name => "Alice", age => 30}, #{name => "Bob", age => 15}, #{name => "Charlie", age => 65}],
-	names = [maps:get(name, p) || p <- people, (maps:get(age, p) >= 18)],
-	lists:foreach(fun(n) ->
-		mochi_print([n])
-	end, names).
+	mochi_print([mochi_count([1, 2, 3])]).
 
 mochi_print(Args) ->
 	Strs = [ mochi_format(A) || A <- Args ],
