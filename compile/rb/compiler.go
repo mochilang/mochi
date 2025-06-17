@@ -24,6 +24,14 @@ func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFunStmt(s.Fun); err != nil {
 				return nil, err
@@ -32,7 +40,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -71,6 +79,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -105,6 +115,20 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		val = e
 	}
 	c.writeln(fmt.Sprintf("%s = %s", sanitizeName(v.Name), val))
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	fields := []string{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fields = append(fields, ":"+sanitizeName(m.Field.Name))
+		}
+	}
+	c.writeln(fmt.Sprintf("%s = Struct.new(%s, keyword_init: true)", sanitizeName(t.Name), strings.Join(fields, ", ")))
 	return nil
 }
 
@@ -245,6 +269,52 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	return "", fmt.Errorf("block function expressions not supported")
 }
 
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+		return "", fmt.Errorf("advanced query clauses not supported")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	iter := sanitizeName(q.Var)
+	expr := fmt.Sprintf("(%s)", src)
+	if q.Where != nil {
+		cond, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("(%s).select { |%s| %s }", expr, iter, cond)
+	}
+	if q.Sort != nil {
+		val, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("(%s).sort_by { |%s| %s }", expr, iter, val)
+	}
+	if q.Skip != nil {
+		val, err := c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("(%s).drop(%s)", expr, val)
+	}
+	if q.Take != nil {
+		val, err := c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("(%s).take(%s)", expr, val)
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	expr = fmt.Sprintf("(%s).map { |%s| %s }", expr, iter, sel)
+	return expr, nil
+}
+
 // --- Expressions ---
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) { return c.compileBinaryExpr(e.Binary) }
 
@@ -341,6 +411,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
+		}
+		return fmt.Sprintf("%s.new(%s)", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+	case p.Query != nil:
+		q, err := c.compileQueryExpr(p.Query)
+		if err != nil {
+			return "", err
+		}
+		return q, nil
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.List != nil:
