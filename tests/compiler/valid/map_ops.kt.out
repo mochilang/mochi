@@ -1,0 +1,10 @@
+fun main() {
+        var m: MutableMap<Int, Int> = mutableMapOf()
+        m[1] = 10
+        m[2] = 20
+        if ((1 in m)) {
+                println(m[1])
+        }
+        println(m[2])
+}
+
