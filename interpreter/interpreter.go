@@ -1719,47 +1719,29 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 			}, nil
 		}
 
-		var pure bool
-		var key string
-		if t, err := i.types.GetVar(c.Func); err == nil {
-			if ft, ok := t.(types.FuncType); ok && ft.Pure {
-				pure = true
-				key = argsKey(argVals)
-				if i.memoize {
+		if i.memoize {
+			if t, err := i.types.GetVar(c.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok && ft.Pure {
+					key := argsKey(argVals)
 					if fnCache, ok := i.memo[c.Func]; ok {
 						if res, ok := fnCache[key]; ok {
 							return res, nil
 						}
 					}
+					ret, err := i.invokeFunction(fn, argVals)
+					if err != nil {
+						return nil, err
+					}
+					if _, ok := i.memo[c.Func]; !ok {
+						i.memo[c.Func] = map[string]any{}
+					}
+					i.memo[c.Func][key] = ret
+					return ret, nil
 				}
 			}
 		}
 
-		child := types.NewEnv(i.env)
-		for idx, param := range fn.Params {
-			child.SetValue(param.Name, argVals[idx], true)
-		}
-		old := i.env
-		i.env = child
-		defer func() { i.env = old }()
-		var ret any
-		for _, stmt := range fn.Body {
-			if err := i.evalStmt(stmt); err != nil {
-				if r, ok := err.(returnSignal); ok {
-					ret = r.value
-					err = nil
-					break
-				}
-				return nil, err
-			}
-		}
-		if pure && i.memoize {
-			if _, ok := i.memo[c.Func]; !ok {
-				i.memo[c.Func] = map[string]any{}
-			}
-			i.memo[c.Func][key] = ret
-		}
-		return ret, nil
+		return i.invokeFunction(fn, argVals)
 	}
 
 	val, err := i.env.GetValue(c.Func)
@@ -1836,6 +1818,28 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 	}
 
 	return nil, errUndefinedFunctionOrClosure(c.Pos, c.Func)
+}
+
+func (i *Interpreter) invokeFunction(fn *parser.FunStmt, args []any) (any, error) {
+	child := types.NewEnv(i.env)
+	for idx, param := range fn.Params {
+		child.SetValue(param.Name, args[idx], true)
+	}
+	old := i.env
+	i.env = child
+	defer func() { i.env = old }()
+	var ret any
+	for _, stmt := range fn.Body {
+		if err := i.evalStmt(stmt); err != nil {
+			if r, ok := err.(returnSignal); ok {
+				ret = r.value
+				err = nil
+				break
+			}
+			return nil, err
+		}
+	}
+	return ret, nil
 }
 
 // --- Return ---
