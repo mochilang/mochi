@@ -263,14 +263,51 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	} else {
 		src := c.compileExpr(f.Source)
 		idx := c.newTemp()
-		c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
-		c.indent++
-		c.writeln(fmt.Sprintf("int %s = %s.data[%s];", name, src, idx))
+		isStr := isStringExpr(f.Source, c.env)
+		if isStr {
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s[%s] != '\\0'; %s++) {", idx, src, idx, idx))
+			c.indent++
+			c.writeln(fmt.Sprintf("char %s[2];", name))
+			c.writeln(fmt.Sprintf("%s[0] = %s[%s];", name, src, idx))
+			c.writeln(fmt.Sprintf("%s[1] = '\\0';", name))
+		} else {
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
+			c.indent++
+			c.writeln(fmt.Sprintf("int %s = %s.data[%s];", name, src, idx))
+		}
+		oldEnv := c.env
+		if c.env != nil {
+			c.env = types.NewEnv(c.env)
+			if isStr {
+				c.env.SetVar(name, types.StringType{}, true)
+			} else {
+				c.env.SetVar(name, types.IntType{}, true)
+			}
+		}
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		if c.env != nil {
+			c.env = oldEnv
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
+	}
+	oldEnv := c.env
+	if c.env != nil {
+		c.env = types.NewEnv(c.env)
+		c.env.SetVar(name, types.IntType{}, true)
 	}
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
+	}
+	if c.env != nil {
+		c.env = oldEnv
 	}
 	c.indent--
 	c.writeln("}")
@@ -404,6 +441,13 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 }
 
 func isStringArg(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isStringUnary(e.Binary.Left, env)
+}
+
+func isStringExpr(e *parser.Expr, env *types.Env) bool {
 	if e == nil || e.Binary == nil {
 		return false
 	}
