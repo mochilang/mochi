@@ -443,6 +443,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("%s.call(%s)", expr, argStr)
 				}
 			}
+		} else if op.Cast != nil {
+			// Ruby is dynamically typed so casts are no-ops.
+			// The type information is ignored at compile time.
+			continue
 		}
 	}
 	return expr, nil
