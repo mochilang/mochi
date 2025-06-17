@@ -108,6 +108,23 @@ func TestCCompiler_GoldenOutput(t *testing.T) {
 	if _, err := ccode.EnsureCC(); err != nil {
 		t.Skipf("C compiler not installed: %v", err)
 	}
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".c.out", func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+		}
+		c := ccode.New(env)
+		code, err := c.Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+		return bytes.TrimSpace(code), nil
+	})
+
 	golden.Run(t, "tests/compiler/c", ".mochi", ".c.out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
