@@ -255,39 +255,46 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	left, err := c.compileUnary(b.Left)
-	if err != nil {
-		return "", err
-	}
-	out := left
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
-		if err != nil {
-			return "", err
-		}
-		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-			erlOp := op.Op
-			if erlOp == "&&" {
-				erlOp = "and"
-			}
-			if erlOp == "||" {
-				erlOp = "or"
-			}
-			if erlOp == "==" {
-				erlOp = "=="
-			}
-			if erlOp == "!=" {
-				erlOp = "/="
-			}
-			out = fmt.Sprintf("(%s %s %s)", out, erlOp, right)
-		case "in":
-			out = fmt.Sprintf("maps:is_key(%s, %s)", out, right)
-		default:
-			return "", fmt.Errorf("unsupported operator %s", op.Op)
-		}
-	}
-	return out, nil
+        leftAst := b.Left
+        left, err := c.compileUnary(leftAst)
+        if err != nil {
+                return "", err
+        }
+        out := left
+        for _, op := range b.Right {
+                rightAst := op.Right
+                right, err := c.compilePostfix(rightAst)
+                if err != nil {
+                        return "", err
+                }
+                switch op.Op {
+                case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+                        erlOp := op.Op
+                        if erlOp == "&&" {
+                                erlOp = "and"
+                        }
+                        if erlOp == "||" {
+                                erlOp = "or"
+                        }
+                        if erlOp == "==" {
+                                erlOp = "=="
+                        }
+                        if erlOp == "!=" {
+                                erlOp = "/="
+                        }
+                        if erlOp == "+" && (isListUnary(leftAst) || isListPostfix(rightAst)) {
+                                out = fmt.Sprintf("lists:append(%s, %s)", out, right)
+                        } else {
+                                out = fmt.Sprintf("(%s %s %s)", out, erlOp, right)
+                        }
+                case "in":
+                        out = fmt.Sprintf("maps:is_key(%s, %s)", out, right)
+                default:
+                        return "", fmt.Errorf("unsupported operator %s", op.Op)
+                }
+                leftAst = &parser.Unary{Value: rightAst}
+        }
+        return out, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -524,6 +531,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
         b.WriteString("\t[" + sel + " || " + q.Var + " <- Taken]\n")
         b.WriteString("end)()")
         return b.String(), nil
+}
+
+func isListUnary(u *parser.Unary) bool {
+        if u == nil || len(u.Ops) > 0 {
+                return false
+        }
+        return isListPostfix(u.Value)
+}
+
+func isListPostfix(p *parser.PostfixExpr) bool {
+        if p == nil || len(p.Ops) > 0 {
+                return false
+        }
+        if p.Target != nil && p.Target.List != nil {
+                return true
+        }
+        return false
 }
 
 func (c *Compiler) emitRuntime() {
