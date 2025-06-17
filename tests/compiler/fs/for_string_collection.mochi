@@ -1,0 +1,3 @@
+for ch in "hi" {
+  print(ch)
+}
