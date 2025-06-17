@@ -196,6 +196,7 @@ const (
 		"}\n"
 
 	helperCast = "func _cast[T any](v any) T {\n" +
+		"    if tv, ok := v.(T); ok { return tv }\n" +
 		"    var out T\n" +
 		"    switch any(out).(type) {\n" +
 		"    case int:\n" +
