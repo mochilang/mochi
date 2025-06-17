@@ -132,6 +132,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Break != nil:
+		c.writeln("break")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue")
+		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -145,15 +151,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
-	start, err := c.compileExpr(f.Source)
-	if err != nil {
-		return err
+	if f.RangeEnd != nil {
+		start, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for %s in %s..<%s {", f.Name, start, end))
+	} else {
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for %s in %s {", f.Name, src))
 	}
-	end, err := c.compileExpr(f.RangeEnd)
-	if err != nil {
-		return err
-	}
-	c.writeln(fmt.Sprintf("for %s in %s..<%s {", f.Name, start, end))
 	c.indent++
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -178,7 +192,26 @@ func (c *Compiler) compileIf(ifst *parser.IfStmt) error {
 		}
 	}
 	c.indent--
-	c.writeln("}")
+	c.writeIndent()
+	c.buf.WriteString("}")
+	if ifst.ElseIf != nil {
+		c.buf.WriteString(" else ")
+		return c.compileIf(ifst.ElseIf)
+	}
+	if len(ifst.Else) > 0 {
+		c.buf.WriteString(" else {")
+		c.buf.WriteByte('\n')
+		c.indent++
+		for _, st := range ifst.Else {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeIndent()
+		c.buf.WriteString("}")
+	}
+	c.buf.WriteByte('\n')
 	return nil
 }
 
