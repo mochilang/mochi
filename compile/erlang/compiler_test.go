@@ -92,7 +92,7 @@ func TestErlangCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestErlangCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/erl_simple", ".mochi", ".erl.out", func(src string) ([]byte, error) {
+	run := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -107,5 +107,7 @@ func TestErlangCompiler_GoldenOutput(t *testing.T) {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
 		return bytes.TrimSpace(code), nil
-	})
+	}
+
+	golden.Run(t, "tests/compiler/erl_simple", ".mochi", ".erl.out", run)
 }
