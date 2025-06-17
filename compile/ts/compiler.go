@@ -1034,6 +1034,12 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		if op == "+" && isString(leftType) && isString(rightType) {
 			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
 		}
+		if op == "*" && (isInt(leftType) || isInt64(leftType)) && (isInt(rightType) || isInt64(rightType)) {
+			return fmt.Sprintf("Math.imul(%s, %s)", left, right), types.IntType{}, nil
+		}
+		if op == "%" && (isInt(leftType) || isInt64(leftType)) && (isInt(rightType) || isInt64(rightType)) {
+			return fmt.Sprintf("((%s >>> 0) %% %s)", left, right), types.IntType{}, nil
+		}
 		if op == "/" && ((isInt(leftType) || isInt64(leftType)) || (isInt(rightType) || isInt64(rightType))) {
 			return fmt.Sprintf("Math.trunc(%s / %s)", left, right), types.IntType{}, nil
 		}
