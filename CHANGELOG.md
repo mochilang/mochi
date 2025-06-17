@@ -6,8 +6,10 @@
 * Experimental compiler backends for C, C#, Dart, Erlang, F#, Haskell, Java, Lua, PHP, Ruby, Scala, Swift and Rust
 * Support for variable assignment, while loops, break and continue across the new backends
 * Builtin functions `str`, `input`, `avg` and `count`
-* Map and string iteration in Dart, Java and Rust
-* Basic query operations in Kotlin and Erlang
+* Map and string iteration in C, Dart, Java and Rust
+* Basic query operations in Kotlin and Erlang with dataset queries in C# and Ruby
+* Struct support in Ruby, nested functions in Lua and parameter mutation in Swift
+* Membership checks in Elixir and PHP loops
 * Litebase storage client for the runtime
 * Golden tests for the new compilers
 * LeetCode 402 example
