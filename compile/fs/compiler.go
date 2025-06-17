@@ -384,6 +384,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
 		return fmt.Sprintf("%s.Length", args[0]), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		return fmt.Sprintf("%s.Length", args[0]), nil
 	case "print":
 		if len(args) == 1 {
 			return fmt.Sprintf("printfn \"%%A\" %s", args[0]), nil
