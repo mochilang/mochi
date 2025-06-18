@@ -53,6 +53,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
+	case s.Var != nil:
+		return c.compileVar(s.Var)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -113,6 +117,37 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		val = v
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
+	return nil
+}
+
+func (c *Compiler) compileVar(v *parser.VarStmt) error {
+	name := "$" + sanitizeName(v.Name)
+	val := "null"
+	if v.Value != nil {
+		valExpr, err := c.compileExpr(v.Value)
+		if err != nil {
+			return err
+		}
+		val = valExpr
+	}
+	c.writeln(fmt.Sprintf("%s = %s;", name, val))
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	lhs := "$" + sanitizeName(a.Name)
+	for _, idx := range a.Index {
+		iexpr, err := c.compileExpr(idx.Start)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+	}
+	rhs, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s;", lhs, rhs))
 	return nil
 }
 
