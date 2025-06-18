@@ -232,6 +232,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.writeln("implicit none")
 	if fn.Return != nil && fn.Return.Generic != nil && fn.Return.Generic.Name == "list" {
 		c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", resVar))
+	} else if fn.Return != nil && fn.Return.Simple != nil && *fn.Return.Simple == "float" {
+		c.writeln(fmt.Sprintf("real :: %s", resVar))
 	} else {
 		c.writeln(fmt.Sprintf("integer :: %s", resVar))
 	}
@@ -242,6 +244,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		} else if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
 			c.writeln(fmt.Sprintf("character(len=*), intent(in) :: %s", name))
 			c.stringVars[name] = true
+		} else if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "float" {
+			c.writeln(fmt.Sprintf("real, intent(in) :: %s", name))
 		} else {
 			c.writeln(fmt.Sprintf("integer, intent(in) :: %s", name))
 		}
@@ -583,15 +587,53 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		root = sanitizeName(p.Target.Selector.Root)
 	}
 	for _, op := range p.Ops {
-		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if c.stringVars[root] {
-				expr = fmt.Sprintf("%s(%s + 1:%s + 1)", expr, idx, idx)
+		switch {
+		case op.Index != nil:
+			idx := op.Index
+			if idx.Colon != nil || idx.End != nil {
+				start := "0"
+				if idx.Start != nil {
+					v, err := c.compileExpr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+					start = v
+				}
+				end := ""
+				if idx.End != nil {
+					v, err := c.compileExpr(idx.End)
+					if err != nil {
+						return "", err
+					}
+					end = v
+				} else {
+					if c.stringVars[root] {
+						end = fmt.Sprintf("len(%s)", expr)
+					} else {
+						end = fmt.Sprintf("size(%s)", expr)
+					}
+				}
+				if c.stringVars[root] {
+					expr = fmt.Sprintf("%s(%s + 1:%s)", expr, start, end)
+				} else {
+					expr = fmt.Sprintf("%s(%s + 1:%s)", expr, start, end)
+				}
 			} else {
-				expr = fmt.Sprintf("%s(%s + 1)", expr, idx)
+				v, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return "", err
+				}
+				if c.stringVars[root] {
+					expr = fmt.Sprintf("%s(%s + 1:%s + 1)", expr, v, v)
+				} else {
+					expr = fmt.Sprintf("%s(%s + 1)", expr, v)
+				}
+			}
+		case op.Cast != nil:
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "float" {
+				expr = fmt.Sprintf("real(%s)", expr)
+			} else {
+				return "", fmt.Errorf("unsupported cast")
 			}
 		}
 	}
@@ -603,6 +645,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			return fmt.Sprintf("%g", *p.Lit.Float), nil
 		}
 		if p.Lit.Str != nil {
 			s := strings.ReplaceAll(*p.Lit.Str, "'", "''")
