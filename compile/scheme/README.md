@@ -170,6 +170,22 @@ Produces Scheme code like:
 )
 ```
 
+Iteration over lists or strings uses `for-each`:
+
+```mochi
+for ch in "abc" {
+  print(ch)
+}
+```
+
+Produces Scheme code like:
+
+```scheme
+(for-each (lambda (ch)
+        (begin (display ch) (newline)))
+        (string->list "abc"))
+```
+
 Compiling a while loop:
 ```mochi
 var i = 0

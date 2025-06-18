@@ -166,18 +166,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		lhs := sanitizeName(s.Assign.Name)
-		for _, idx := range s.Assign.Index {
-			ie, err := c.compileExpr(idx.Start)
-			if err != nil {
-				return err
-			}
-			if c.vars[s.Assign.Name] == "string" {
-				lhs = fmt.Sprintf("(string-ref %s %s)", lhs, ie)
-			} else {
-				lhs = fmt.Sprintf("(list-ref %s %s)", lhs, ie)
-			}
+		if len(s.Assign.Index) == 0 {
+			c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
+			return nil
 		}
-		c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
+
+		idx, err := c.compileExpr(s.Assign.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		if c.vars[s.Assign.Name] == "string" {
+			c.writeln(fmt.Sprintf("(string-set! %s %s %s)", lhs, idx, rhs))
+			return nil
+		}
+		c.writeln(fmt.Sprintf("(set-car! (list-tail %s %s) %s)", lhs, idx, rhs))
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -204,32 +206,64 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	name := sanitizeName(st.Name)
-	start, err := c.compileExpr(st.Source)
+	if st.RangeEnd != nil {
+		start, err := c.compileExpr(st.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(st.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+		c.indent++
+		c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
+		c.indent++
+		c.writeln("(begin")
+		c.indent++
+		for _, s := range st.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln("'())")
+		c.indent--
+		c.writeln(")")
+		return nil
+	}
+
+	src, err := c.compileExpr(st.Source)
 	if err != nil {
 		return err
 	}
-	end, err := c.compileExpr(st.RangeEnd)
-	if err != nil {
-		return err
+	param := name
+	convert := false
+	if c.exprIsString(st.Source) {
+		param = name + "_ch"
+		convert = true
+		c.vars[st.Name] = "string"
 	}
-	c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+	c.writeln(fmt.Sprintf("(for-each (lambda (%s)", param))
 	c.indent++
-	c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
-	c.indent++
-	c.writeln("(begin")
-	c.indent++
+	if convert {
+		c.writeln(fmt.Sprintf("(let ((%s (string %s)))", name, param))
+		c.indent++
+	}
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
-	c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+	if convert {
+		c.indent--
+		c.writeln(")")
+	}
 	c.indent--
-	c.writeln(")")
-	c.indent--
-	c.writeln("'())")
-	c.indent--
-	c.writeln(")")
+	c.writeln(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))", src, src, src))
 	return nil
 }
 
@@ -317,6 +351,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "+":
 			if isListUnary(leftAst) || isListPostfix(rightAst) {
 				expr = fmt.Sprintf("(append %s %s)", expr, right)
+			} else if c.isStringUnary(leftAst) || c.isStringPostfix(rightAst) {
+				expr = fmt.Sprintf("(string-append %s %s)", expr, right)
 			} else {
 				expr = fmt.Sprintf("(+ %s %s)", expr, right)
 			}
@@ -421,6 +457,42 @@ func isListPostfix(p *parser.PostfixExpr) bool {
 		return false
 	}
 	return p.Target != nil && p.Target.List != nil
+}
+
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return c.isStringPostfix(u.Value)
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isStringPrimary(p.Target)
+}
+
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if c.vars[p.Selector.Root] == "string" {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Compiler) exprIsString(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	return c.isStringUnary(e.Binary.Left)
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
