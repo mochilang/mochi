@@ -418,18 +418,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "_input", nil
 		}
 		if p.Call.Func == "print" {
-			if len(args) == 1 {
-				arg := args[0]
-				if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "_indexString") {
-					return fmt.Sprintf("putStrLn (%s)", arg), nil
-				}
-				return fmt.Sprintf("print %s", arg), nil
-			}
-			showArgs := make([]string, len(args))
-			for i, a := range args {
-				showArgs[i] = fmt.Sprintf("show %s", a)
-			}
-			return fmt.Sprintf("putStrLn (unwords [%s])", strings.Join(showArgs, ", ")), nil
+			return c.compilePrint(callArgs{args: args, exprs: p.Call.Args})
 		}
 		return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
 	case p.Selector != nil:
@@ -472,6 +461,57 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "False", nil
 	}
 	return "0", nil
+}
+
+type callArgs struct {
+	args  []string
+	exprs []*parser.Expr
+}
+
+func (c *Compiler) compilePrint(ca callArgs) (string, error) {
+	if len(ca.args) == 1 {
+		arg := ca.args[0]
+		if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "_indexString") || c.exprIsString(ca.exprs[0]) {
+			return fmt.Sprintf("putStrLn (%s)", arg), nil
+		}
+		return fmt.Sprintf("print (%s)", arg), nil
+	}
+	parts := make([]string, len(ca.args))
+	for i, a := range ca.args {
+		if strings.HasPrefix(a, "\"") || strings.HasPrefix(a, "_indexString") || c.exprIsString(ca.exprs[i]) {
+			parts[i] = a
+		} else {
+			parts[i] = fmt.Sprintf("show %s", a)
+		}
+	}
+	return fmt.Sprintf("putStrLn (unwords [%s])", strings.Join(parts, ", ")), nil
+}
+
+func (c *Compiler) exprIsString(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value.Target
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) isMapExpr(p *parser.Primary) bool {

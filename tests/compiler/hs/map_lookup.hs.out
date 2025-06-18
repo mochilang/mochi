@@ -1,6 +1,7 @@
 module Main where
 
 import Data.Maybe (fromMaybe)
+import qualified Data.Map as Map
 
 
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
@@ -29,4 +30,6 @@ _input = getLine
 
 main :: IO ()
 main = do
-    print (length [1, 2, 3])
+    let m = Map.fromList [("a", 1), ("b", 2)]
+    print (fromMaybe (error "missing") (Map.lookup "a" m))
+    print (fromMaybe (error "missing") (Map.lookup "b" m))
