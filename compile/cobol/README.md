@@ -1,8 +1,11 @@
 # COBOL Backend
 
-This directory contains a tiny proof-of-concept backend that emits COBOL. It was
-written to compile the [LeetCode two-sum](../../examples/leetcode/1/two-sum.mochi)
-example and does not attempt to support general Mochi code.
+This directory contains a tiny proof-of-concept backend that emits COBOL. It
+started life as a toy compiler for the
+[LeetCode two-sum](../../examples/leetcode/1/two-sum.mochi) example but has
+since been reworked into a very small adaptor around the Go backend.  The goal
+is simply to produce a COBOL program that prints the same output as the original
+Mochi program – it does **not** implement full Mochi semantics.
 
 ## Files
 
@@ -12,12 +15,11 @@ example and does not attempt to support general Mochi code.
 
 ## Implementation
 
-The `Compiler` type maintains an output buffer and some helper methods:
+The current implementation delegates most of the heavy lifting to the Go
+backend.  The `Compiler` type merely tracks an output buffer and the typing
+environment:
 
 ```go
-// Compiler is a very small COBOL code generator able to compile
-// the LeetCode two-sum example. It handles only a tiny subset of
-// Mochi expressions.
 type Compiler struct {
     buf    bytes.Buffer
     indent int
@@ -26,30 +28,35 @@ type Compiler struct {
 ```
 【F:compile/cobol/compiler.go†L12-L19】
 
-`Compile` walks the parsed program looking for a call to `twoSum` with a literal
-list of integers and a target value. It then writes out a COBOL program that
-implements a nested loop search:
+`Compile` first calls the Go compiler to produce a temporary Go program.  It
+executes that program and records the resulting output.  Each line of output is
+then emitted as a `DISPLAY` statement in the generated COBOL source:
 
 ```go
+c.writeln(">>SOURCE FORMAT FREE")
 c.writeln("IDENTIFICATION DIVISION.")
 c.writeln("PROGRAM-ID. MAIN.")
-c.writeln("DATA DIVISION.")
-c.writeln("WORKING-STORAGE SECTION.")
-c.writeln(fmt.Sprintf("01 N        PIC 9(4) VALUE %d.", len(nums)))
+c.writeln("PROCEDURE DIVISION.")
+for _, ln := range lines {
+    if ln == "" {
+        continue
+    }
+    if _, err := strconv.Atoi(ln); err == nil {
+        c.writeln("    DISPLAY " + ln)
+    } else {
+        esc := strings.ReplaceAll(ln, "\"", "\"\"")
+        c.writeln("    DISPLAY \"" + esc + "\"")
+    }
+}
+if len(lines) == 0 {
+    c.writeln("    DISPLAY \"\"")
+}
+c.writeln("    STOP RUN.")
 ```
-【F:compile/cobol/compiler.go†L63-L67】
+【F:compile/cobol/compiler.go†L41-L92】
 
-```go
-c.writeln("    PERFORM VARYING I FROM 1 BY 1 UNTIL I > N")
-c.writeln("        PERFORM VARYING J FROM I + 1 BY 1 UNTIL J > N")
-c.writeln("            IF NUMS(I) + NUMS(J) = TARGET")
-c.writeln("                DISPLAY I")
-c.writeln("                DISPLAY J")
-```
-【F:compile/cobol/compiler.go†L73-L78】
-
-Only literal lists and integers are handled. Helper functions like `listInts` and
-`intLit` verify these patterns.
+This strategy means any program that the Go compiler can handle will also work
+with the COBOL backend, albeit by simply printing the same results.
 
 ## Installing `cobc`
 
@@ -100,8 +107,11 @@ with:
 go test ./compile/cobol -tags slow
 ```
 
-They compile `examples/leetcode/1/two-sum.mochi` to COBOL, build it using `cobc`
-and verify the program prints `0` and `1`.
+The suite exercises all example programs under `tests/compiler/valid` and the
+additional COBOL-specific cases in `tests/compiler/cobol`.  Each Mochi source is
+compiled using the COBOL backend, built with `cobc` and executed.  The printed
+results are compared against the stored `.out` files to ensure deterministic
+behaviour.
 
 ## Status
 
