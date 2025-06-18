@@ -9,7 +9,7 @@ defmodule Main do
 		for _ <- [1, 2] do
 			c = (c + 1)
 		end
-		for _ <- "ab" do
+		for _ <- String.graphemes("ab") do
 			c = (c + 1)
 		end
 		m = %{"x" => 1, "y" => 2}
