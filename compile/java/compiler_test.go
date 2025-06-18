@@ -133,3 +133,10 @@ func TestJavaCompiler_LeetCodeExample1(t *testing.T) {
 	}
 	runLeetExample(t, 1)
 }
+
+func TestJavaCompiler_LeetCodeExample2(t *testing.T) {
+	if err := javacode.EnsureJavac(); err != nil {
+		t.Skipf("javac not installed: %v", err)
+	}
+	runLeetExample(t, 2)
+}
