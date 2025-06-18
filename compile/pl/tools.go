@@ -11,6 +11,11 @@ import (
 // it attempts a best-effort installation using apt-get on Linux or Homebrew on
 // macOS.
 func EnsureSWIPL() error {
+	if bin := os.Getenv("SWIPL_BIN"); bin != "" {
+		if _, err := os.Stat(bin); err == nil {
+			return nil
+		}
+	}
 	if _, err := exec.LookPath("swipl"); err == nil {
 		return nil
 	}
