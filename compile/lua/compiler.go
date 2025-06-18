@@ -943,8 +943,15 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("for i = 1, #b do out[#out+1] = b[i] end")
 		c.writeln("return out")
 		c.indent--
-		c.writeln("end")
+		c.writeln("elseif type(a) == 'string' or type(b) == 'string' then")
+		c.indent++
+		c.writeln("return tostring(a) .. tostring(b)")
+		c.indent--
+		c.writeln("else")
+		c.indent++
 		c.writeln("return a + b")
+		c.indent--
+		c.writeln("end")
 		c.indent--
 		c.writeln("end")
 		c.writeln("")
