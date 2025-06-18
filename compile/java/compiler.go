@@ -411,25 +411,78 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(b.Right) == 0 {
-		return left, nil
-	}
-	expr := left
-	for _, op := range b.Right {
-		rhs, err := c.compilePostfix(op.Right)
+	operands := []string{left}
+	lists := []bool{c.isListExpr(b.Left.Value)}
+	ops := []string{}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, rhs)
-		case "in":
-			expr = fmt.Sprintf("%s.containsKey(%s)", rhs, expr)
-		default:
-			return "", fmt.Errorf("unsupported op %s", op.Op)
+		operands = append(operands, r)
+		lists = append(lists, c.isListExpr(part.Right))
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+			op := ops[i]
+			l := operands[i]
+			r := operands[i+1]
+			llist := lists[i]
+			rlist := lists[i+1]
+
+			var expr string
+			var isList bool
+			switch op {
+			case "+":
+				if llist || rlist {
+					c.helpers["_concat"] = true
+					expr = fmt.Sprintf("_concat(%s, %s)", l, r)
+					isList = true
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", l, r)
+				}
+			case "in":
+				expr = fmt.Sprintf("%s.containsKey(%s)", r, l)
+			default:
+				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+			}
+
+			operands[i] = expr
+			lists[i] = isList
+			operands = append(operands[:i+1], operands[i+2:]...)
+			lists = append(lists[:i+1], lists[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected binary expression state")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -538,6 +591,27 @@ func (c *Compiler) isMapExprByExpr(e *parser.Expr) bool {
 		return false
 	}
 	return c.isMapExpr(e.Binary.Left.Value)
+}
+
+func (c *Compiler) isListExpr(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil {
+		return false
+	}
+	if p.Target.List != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+				if lt, ok := t.(types.ListType); ok {
+					if _, ok := lt.Elem.(types.IntType); ok {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -778,6 +852,17 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 		c.writeln("return sum / arr.length;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_concat"] {
+		c.writeln("")
+		c.writeln("static int[] _concat(int[] a, int[] b) {")
+		c.indent++
+		c.writeln("int[] res = new int[a.length + b.length];")
+		c.writeln("System.arraycopy(a, 0, res, 0, a.length);")
+		c.writeln("System.arraycopy(b, 0, res, a.length, b.length);")
+		c.writeln("return res;")
 		c.indent--
 		c.writeln("}")
 	}
