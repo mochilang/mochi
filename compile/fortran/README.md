@@ -136,13 +136,22 @@ If `gfortran` is still not found, an error is returned.
 
 ## Building
 
-This backend is not enabled via `mochi build` by default.  Tests compile Mochi
-programs to `.f90` files and invoke `gfortran` manually.  The same approach can
-be used by hand:
+The Fortran backend can be used via `mochi build` by selecting the `fortran`
+target (or by giving the output file a `.f90` extension).  This will emit a
+Fortran 90 source file that can be compiled with `gfortran`:
 ```bash
-mochi run source.mochi > program.f90
+mochi build --target fortran source.mochi -o program.f90
 gfortran program.f90 -o program
 ./program
+```
+As a quick test you can build and run the LeetCode *two sum* example included
+in the repository:
+```bash
+mochi build --target fortran examples/leetcode/1/two-sum.mochi -o two-sum.f90
+gfortran two-sum.f90 -o two-sum
+./two-sum
+# 0
+# 1
 ```
 The tests show the full workflow, including a check for `gfortran` availability
 and execution of the resulting binary:
