@@ -56,6 +56,7 @@ type Compiler struct {
 	needsListListInt       bool
 	needsConcatListListInt bool
 	needsConcatListInt     bool
+	needsConcatString      bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -141,7 +142,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	if c.needsInput || c.needsIndexString || c.needsStrLen || c.needsSliceString {
+	if c.needsInput || c.needsIndexString || c.needsStrLen || c.needsSliceString || c.needsConcatString {
 		c.writeln("#include <string.h>")
 	}
 	c.writeln("")
@@ -276,6 +277,20 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.writeln("char* buf = (char*)malloc(end - start + 1);")
 		c.writeln("memcpy(buf, s + start, end - start);")
 		c.writeln("buf[end - start] = '\\0';")
+		c.writeln("return buf;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsConcatString {
+		c.writeln("")
+		c.writeln("static char* concat_string(char* a, char* b) {")
+		c.indent++
+		c.writeln("size_t len1 = strlen(a);")
+		c.writeln("size_t len2 = strlen(b);")
+		c.writeln("char* buf = (char*)malloc(len1 + len2 + 1);")
+		c.writeln("memcpy(buf, a, len1);")
+		c.writeln("memcpy(buf + len1, b, len2);")
+		c.writeln("buf[len1 + len2] = '\\0';")
 		c.writeln("return buf;")
 		c.indent--
 		c.writeln("}")
@@ -658,6 +673,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	left := c.compileUnary(b.Left)
 	leftList := isListListUnary(b.Left, c.env)
 	leftListInt := isListIntUnary(b.Left, c.env)
+	leftString := isStringUnary(b.Left, c.env)
 	for _, op := range b.Right {
 		right := c.compilePostfix(op.Right)
 		if op.Op == "+" && leftList && isListListPostfix(op.Right, c.env) {
@@ -668,6 +684,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			left = name
 			leftList = true
 			leftListInt = false
+			leftString = false
 			continue
 		}
 		if op.Op == "+" && leftListInt && isListIntPostfix(op.Right, c.env) {
@@ -677,11 +694,23 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			left = name
 			leftListInt = true
 			leftList = false
+			leftString = false
+			continue
+		}
+		if op.Op == "+" && leftString && isStringPostfixOrIndex(op.Right, c.env) {
+			c.needsConcatString = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("char* %s = concat_string(%s, %s);", name, left, right))
+			left = name
+			leftString = true
+			leftList = false
+			leftListInt = false
 			continue
 		}
 		left = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
 		leftList = false
 		leftListInt = false
+		leftString = false
 	}
 	return left
 }
