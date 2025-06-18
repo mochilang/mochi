@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int expand(string s, int left, int right){
+	auto l = left;
+	auto r = right;
+	auto n = s.size();
+	while (l >= 0 && r < n) {
+		if (s[l] != s[r]) {
+			break;
+		}
+		l = l - 1;
+		r = r + 1;
+	}
+	return r - l - 1;
+}
+
+string longestPalindrome(string s){
+	if (s.size() <= 1) {
+		return s;
+	}
+	auto start = 0;
+	auto end = 0;
+	auto n = s.size();
+	for (int i = 0; i < n; i++) {
+		auto len1 = expand(s, i, i);
+		auto len2 = expand(s, i, i + 1);
+		auto l = len1;
+		if (len2 > len1) {
+			l = len2;
+		}
+		if (l > end - start) {
+			start = i - (l - 1) / 2;
+			end = i + l / 2;
+		}
+	}
+	return s.substr(start, end + 1 - start);
+}
+
+int main() {
+	return 0;
+}
