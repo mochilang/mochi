@@ -1,0 +1,36 @@
+program main;
+{$mode objfpc}
+uses SysUtils;
+
+type TIntArray = array of integer;
+
+function twoSum(nums: TIntArray; target: integer): TIntArray;
+var
+	i: integer;
+	j: integer;
+	n: integer;
+begin
+	n := Length(nums);
+	for i := 0 to n - 1 do
+	begin
+		for j := i + 1 to n - 1 do
+		begin
+			if nums[i] + nums[j] = target then
+			begin
+				result := [i, j];
+				exit;
+			end;
+		end;
+	end;
+	result := [-1, -1];
+	exit;
+end;
+
+var
+	result: TIntArray;
+
+begin
+	result := twoSum([2, 7, 11, 15], 9);
+	writeln(result[0]);
+	writeln(result[1]);
+end.
