@@ -3,7 +3,7 @@ class Main {
 		var i = 0;
 		var j = 0;
 		var carry = 0;
-		var result = new int[]{};
+		int[] result = new int[]{};
 		while ((((i < l1.length) || (j < l2.length)) || (carry > 0))) {
 			var x = 0;
 			if ((i < l1.length)) {

@@ -1,7 +1,7 @@
 class Main {
 	public static void main(String[] args) {
 		int c = 0;
-		for (int _ = 0; _ < 2; _++) {
+		for (int __ = 0; __ < 2; __++) {
 			c = (c + 1);
 		}
 		for (var __ : new int[]{1, 2}) {
