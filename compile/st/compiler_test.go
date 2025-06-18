@@ -18,12 +18,10 @@ import (
 )
 
 func TestSTCompiler_LeetCodeExample1(t *testing.T) {
-	t.Skip("disabled in current environment")
 	runExample(t, 1)
 }
 
 func TestSTCompiler_LeetCodeExamples(t *testing.T) {
-	t.Skip("disabled in current environment")
 	runExample(t, 1)
 	runExample(t, 2)
 }
@@ -91,6 +89,9 @@ func runExample(t *testing.T, i int) {
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob error: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no examples found in %s", dir)
 	}
 	for _, f := range files {
 		name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
