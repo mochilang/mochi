@@ -23,6 +23,12 @@ func TestScalaCompiler_LeetCodeExample1(t *testing.T) {
 	runLeetExample(t, 1)
 }
 
+// TestScalaCompiler_LeetCodeExample2 compiles the add-two-numbers example and
+// verifies the generated Scala program runs without errors.
+func TestScalaCompiler_LeetCodeExample2(t *testing.T) {
+	runLeetExample(t, 2)
+}
+
 func TestScalaCompiler_SubsetPrograms(t *testing.T) {
 	if err := scalacode.EnsureScala(); err != nil {
 		t.Skipf("scala not installed: %v", err)
