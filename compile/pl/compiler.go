@@ -10,13 +10,15 @@ import (
 )
 
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	tmp    int
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	tmp     int
+	vars    map[string]string
+	currFun string
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, vars: make(map[string]string)} }
 
 // Compile translates a Mochi AST into Prolog source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -66,6 +68,14 @@ func (c *Compiler) newVar() string {
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	name := sanitizeAtom(fn.Name)
+	oldVars := c.vars
+	oldFun := c.currFun
+	c.vars = make(map[string]string)
+	c.currFun = name
+	defer func() {
+		c.vars = oldVars
+		c.currFun = oldFun
+	}()
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = sanitizeVar(p.Name)
@@ -147,6 +157,12 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 			c.writeln(line)
 		}
 		c.writeln(fmt.Sprintf("%s = %s,", name, val.val))
+	case s.Var != nil:
+		return c.compileVar(s.Var)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
+	case s.While != nil:
+		return c.compileWhile(s.While, ret)
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -257,6 +273,78 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt, ret string, trailing bool) err
 	return nil
 }
 
+func (c *Compiler) compileVar(v *parser.VarStmt) error {
+	name := sanitizeAtom(c.currFun + "_" + v.Name)
+	c.vars[v.Name] = name
+	if v.Value != nil {
+		val, err := c.compileExpr(v.Value)
+		if err != nil {
+			return err
+		}
+		for _, line := range val.code {
+			c.writeln(line)
+		}
+		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, val.val))
+	} else {
+		c.writeln(fmt.Sprintf("nb_setval(%s, 0),", name))
+	}
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	name, ok := c.vars[a.Name]
+	if !ok {
+		return fmt.Errorf("unknown variable %s", a.Name)
+	}
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	for _, line := range val.code {
+		c.writeln(line)
+	}
+	c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, val.val))
+	return nil
+}
+
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt, ret string) error {
+	c.writeln("repeat,")
+	c.indent++
+	cond, err := c.compileExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	for _, line := range cond.code {
+		c.writeln(line)
+	}
+	c.writeln(fmt.Sprintf("(%s ->", cond.val))
+	c.indent++
+	for _, s := range stmt.Body {
+		if err := c.compileStmt(s, ret); err != nil {
+			return err
+		}
+	}
+	c.writeln("fail")
+	c.indent--
+	c.writeln("; true),")
+	c.indent--
+	return nil
+}
+
+func isListExpr(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return isListPostfix(u.Value)
+}
+
+func isListPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return p.Target != nil && p.Target.List != nil
+}
+
 // --- Expressions ---
 
 type exprRes struct {
@@ -276,6 +364,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 	if err != nil {
 		return exprRes{}, err
 	}
+	leftAst := b.Left
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
@@ -284,12 +373,30 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 		res.code = append(res.code, right.code...)
 		switch op.Op {
 		case "+":
-			tmp := c.newVar()
-			res.code = append(res.code, fmt.Sprintf("%s is %s + %s,", tmp, res.val, right.val))
-			res.val = tmp
+			if isListExpr(leftAst) || isListPostfix(op.Right) {
+				tmp := c.newVar()
+				res.code = append(res.code, fmt.Sprintf("append(%s, %s, %s)", res.val, right.val, tmp)+",")
+				res.val = tmp
+			} else {
+				tmp := c.newVar()
+				res.code = append(res.code, fmt.Sprintf("%s is %s + %s,", tmp, res.val, right.val))
+				res.val = tmp
+			}
 		case "-":
 			tmp := c.newVar()
 			res.code = append(res.code, fmt.Sprintf("%s is %s - %s,", tmp, res.val, right.val))
+			res.val = tmp
+		case "*":
+			tmp := c.newVar()
+			res.code = append(res.code, fmt.Sprintf("%s is %s * %s,", tmp, res.val, right.val))
+			res.val = tmp
+		case "/":
+			tmp := c.newVar()
+			res.code = append(res.code, fmt.Sprintf("%s is %s // %s,", tmp, res.val, right.val))
+			res.val = tmp
+		case "%":
+			tmp := c.newVar()
+			res.code = append(res.code, fmt.Sprintf("%s is %s mod %s,", tmp, res.val, right.val))
 			res.val = tmp
 		case "==":
 			res.val = fmt.Sprintf("%s =:= %s", res.val, right.val)
@@ -303,6 +410,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 			res.val = fmt.Sprintf("%s > %s", res.val, right.val)
 		case ">=":
 			res.val = fmt.Sprintf("%s >= %s", res.val, right.val)
+		case "&&":
+			res.val = fmt.Sprintf("(%s, %s)", res.val, right.val)
+		case "||":
+			res.val = fmt.Sprintf("(%s ; %s)", res.val, right.val)
 		default:
 			return exprRes{}, fmt.Errorf("unsupported operator %s", op.Op)
 		}
@@ -355,6 +466,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 	case p.Selector != nil:
 		if len(p.Selector.Tail) != 0 {
 			return exprRes{}, fmt.Errorf("selectors not supported")
+		}
+		if name, ok := c.vars[p.Selector.Root]; ok {
+			tmp := c.newVar()
+			line := fmt.Sprintf("nb_getval(%s, %s)", name, tmp)
+			return exprRes{code: []string{line + ","}, val: tmp}, nil
 		}
 		return exprRes{val: sanitizeVar(p.Selector.Root)}, nil
 	case p.Lit != nil:
