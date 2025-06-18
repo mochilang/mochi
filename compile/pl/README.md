@@ -147,8 +147,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 ```
 
 Loops rely on `forall/2` combined with `between/3` while `if` uses `->` with a
-fallback `true` branch. Expressions handle numeric operators, equality checks,
-list indexing via `nth0/3`, literals, lists and function calls such as `len`.
+fallback `true` branch. Expressions handle numeric operators such as addition
+and subtraction, equality checks, list indexing via `nth0/3`, literals, lists
+and function calls like `len`.
 
 ## Helpers
 

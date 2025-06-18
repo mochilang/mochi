@@ -1,0 +1,6 @@
+:- style_check(-singleton).
+	main :-
+	_V0 is 5 - 2,
+	writeln(_V0)
+	.
+:- initialization(main, main).
