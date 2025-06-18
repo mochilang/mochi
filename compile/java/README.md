@@ -225,8 +225,9 @@ java Main
 
 ## Tests
 
-Golden tests compile and run each program under `tests/compiler/java`. They are
-marked with the `slow` build tag as they invoke `javac` and `java`:
+Golden tests compile and run programs under both `tests/compiler/java` and
+`tests/compiler/valid`. They are marked with the `slow` build tag as they invoke
+`javac` and `java`:
 
 ```bash
 go test ./compile/java -tags slow
