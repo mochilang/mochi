@@ -1,4 +1,29 @@
 # 📦 CHANGELOG.md
+## [0.8.3] – 2025-06-18
+
+### Added
+
+* CLI exposes all compiler targets and accepts `python` alias
+* Basic Zig backend with golden tests
+* READMEs for every experimental compiler backend
+* Cross-platform installation helpers for many languages
+* Union types, match expressions and closures across backends
+* Golden tests expanded for C, COBOL, Pascal, Prolog, Fortran and more
+
+### Changed
+
+* Python golden outputs removed from other compilers
+* C++ backend gains range loop support
+* Improved dotnet and Rust setup on macOS and Linux
+
+### Fixed
+
+* C compiler average function and list concatenation
+* Assignment handling in Clojure backend
+* Erlang boolean literals
+* Ruby query printing
+* Smalltalk backend compilation
+
 ## [0.8.2] – 2025-06-18
 
 ### Added
