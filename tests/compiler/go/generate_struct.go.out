@@ -1,11 +1,11 @@
 package main
 
 import (
+	_ "mochi/runtime/llm/provider/echo"
 	"context"
 	"encoding/json"
 	"fmt"
 	"mochi/runtime/llm"
-	_ "mochi/runtime/llm/provider/echo"
 )
 
 type Info struct {
@@ -19,20 +19,12 @@ func main() {
 }
 
 func _genStruct[T any](prompt string, model string, params map[string]any) T {
-	opts := []llm.Option{}
-	if model != "" {
-		opts = append(opts, llm.WithModel(model))
-	}
-	for k, v := range params {
-		opts = append(opts, llm.WithParam(k, v))
-	}
-	resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
-	if err != nil {
-		panic(err)
-	}
-	var out T
-	if err := json.Unmarshal([]byte(resp.Message.Content), &out); err != nil {
-		panic(err)
-	}
-	return out
+    opts := []llm.Option{}
+    if model != "" { opts = append(opts, llm.WithModel(model)) }
+    for k, v := range params { opts = append(opts, llm.WithParam(k, v)) }
+    resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
+    if err != nil { panic(err) }
+    var out T
+    if err := json.Unmarshal([]byte(resp.Message.Content), &out); err != nil { panic(err) }
+    return out
 }

@@ -24,7 +24,7 @@ int main() {
 	auto result;
 	std::cout << "--- Orders with customer info ---" << std::endl;
 	for (PairInfo entry : result) {
-		std::cout << "Order"std::cout << " " << entry.orderIdstd::cout << " " << "by"std::cout << " " << entry.customerNamestd::cout << " " << "- $"std::cout << " " << entry.total << std::endl;
+		std::cout << "Order" << " " << entry.orderId << " " << "by" << " " << entry.customerName << " " << "- $" << " " << entry.total << std::endl;
 	}
 	return 0;
 }
