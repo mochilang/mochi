@@ -51,6 +51,47 @@ func TestPrologCompiler_LeetCode1(t *testing.T) {
 	}
 }
 
+// runLeetExample compiles the Mochi solution for the given LeetCode ID to
+// Prolog and executes the generated program. The test fails if compilation or
+// execution returns an error.
+func runLeetExample(t *testing.T, id int) {
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			c := plcode.New(env)
+			code, err := c.Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.pl")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("swipl", "-q", file)
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			if out, err := cmd.CombinedOutput(); err != nil {
+				t.Fatalf("swipl error: %v\n%s", err, out)
+			}
+		})
+	}
+}
+
 func TestPrologCompiler_SubsetPrograms(t *testing.T) {
 	if err := plcode.EnsureSWIPL(); err != nil {
 		t.Skipf("swipl not installed: %v", err)
@@ -81,6 +122,14 @@ func TestPrologCompiler_SubsetPrograms(t *testing.T) {
 		}
 		return bytes.TrimSpace(out), nil
 	})
+}
+
+func TestPrologCompiler_LeetCodeExamples(t *testing.T) {
+	t.Skip("disabled in current environment")
+	if err := plcode.EnsureSWIPL(); err != nil {
+		t.Skipf("swipl not installed: %v", err)
+	}
+	runLeetExample(t, 1)
 }
 
 func TestPrologCompiler_GoldenOutput(t *testing.T) {
