@@ -49,6 +49,7 @@ type Compiler struct {
 	env                    *types.Env
 	needsStr               bool
 	needsInput             bool
+	needsIndexString       bool
 	needsListListInt       bool
 	needsConcatListListInt bool
 }
@@ -136,7 +137,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	if c.needsInput {
+	if c.needsInput || c.needsIndexString {
 		c.writeln("#include <string.h>")
 	}
 	c.writeln("")
@@ -221,6 +222,20 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent++
 		c.writeln("char* buf = (char*)malloc(32);")
 		c.writeln("sprintf(buf, \"%d\", v);")
+		c.writeln("return buf;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsIndexString {
+		c.writeln("")
+		c.writeln("static char* _index_string(char* s, int i) {")
+		c.indent++
+		c.writeln("int len = strlen(s);")
+		c.writeln("if (i < 0) i += len;")
+		c.writeln("if (i < 0 || i >= len) { fprintf(stderr, \"index out of range\\n\"); exit(1); }")
+		c.writeln("char* buf = (char*)malloc(2);")
+		c.writeln("buf[0] = s[i];")
+		c.writeln("buf[1] = '\\0';")
 		c.writeln("return buf;")
 		c.indent--
 		c.writeln("}")
@@ -557,10 +572,23 @@ func (c *Compiler) compileUnary(u *parser.Unary) string {
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 	expr := c.compilePrimary(p.Target)
+	isStr := isStringPrimary(p.Target, c.env)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			idx := c.compileExpr(op.Index.Start)
-			expr = fmt.Sprintf("%s.data[%s]", expr, idx)
+			if isStr && op.Index.Colon == nil && op.Index.End == nil {
+				name := c.newTemp()
+				c.needsIndexString = true
+				c.writeln(fmt.Sprintf("char* %s = _index_string(%s, %s);", name, expr, idx))
+				if c.env != nil {
+					c.env.SetVar(name, types.StringType{}, true)
+				}
+				expr = name
+				isStr = true
+			} else {
+				expr = fmt.Sprintf("%s.data[%s]", expr, idx)
+				isStr = false
+			}
 		}
 	}
 	return expr
@@ -673,7 +701,7 @@ func isStringArg(e *parser.Expr, env *types.Env) bool {
 	if e == nil || e.Binary == nil {
 		return false
 	}
-	return isStringUnary(e.Binary.Left, env)
+	return isStringUnaryOrIndex(e.Binary.Left, env)
 }
 
 func isStringExpr(e *parser.Expr, env *types.Env) bool {
@@ -683,6 +711,13 @@ func isStringExpr(e *parser.Expr, env *types.Env) bool {
 	return isStringUnary(e.Binary.Left, env)
 }
 
+func isStringUnaryOrIndex(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isStringPostfixOrIndex(u.Value, env)
+}
+
 func isStringUnary(u *parser.Unary, env *types.Env) bool {
 	if u == nil {
 		return false
@@ -690,12 +725,21 @@ func isStringUnary(u *parser.Unary, env *types.Env) bool {
 	return isStringPostfix(u.Value, env)
 }
 
-func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+func isStringPostfixOrIndex(p *parser.PostfixExpr, env *types.Env) bool {
 	if p == nil {
 		return false
 	}
 	if len(p.Ops) > 0 {
-		// conservatively assume non-string if operations present
+		if p.Ops[0].Index != nil && p.Ops[0].Index.Colon == nil && isStringPrimary(p.Target, env) {
+			return true
+		}
+		return false
+	}
+	return isStringPrimary(p.Target, env)
+}
+
+func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil || len(p.Ops) > 0 {
 		return false
 	}
 	return isStringPrimary(p.Target, env)
