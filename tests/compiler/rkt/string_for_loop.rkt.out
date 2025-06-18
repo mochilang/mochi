@@ -1,4 +1,8 @@
 #lang racket
+(require racket/list)
+
+(define (idx x i) (if (string? x) (string-ref x i) (list-ref x i)))
+(define (slice x s e) (if (string? x) (substring x s e) (take (drop x s) (- e s))))
 
 (for ([ch "cat"])
 	(displayln ch)
