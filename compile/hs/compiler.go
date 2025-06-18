@@ -252,6 +252,16 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement) (string, error) {
 				val = v
 			}
 			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Var.Name), val, expr)
+		case s.Let != nil:
+			val := "()"
+			if s.Let.Value != nil {
+				v, err := c.compileExpr(s.Let.Value)
+				if err != nil {
+					return "", err
+				}
+				val = v
+			}
+			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Let.Name), val, expr)
 		case s.Assign != nil:
 			val, err := c.compileExpr(s.Assign.Value)
 			if err != nil {
@@ -320,7 +330,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, r)
+		if op.Op == "%" {
+			expr = fmt.Sprintf("(%s `mod` %s)", expr, r)
+		} else if op.Op == "/" && c.postfixIsInt(op.Right) {
+			expr = fmt.Sprintf("(div %s %s)", expr, r)
+		} else {
+			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, r)
+		}
 	}
 	return expr, nil
 }
@@ -538,6 +554,48 @@ func (c *Compiler) exprIsString(e *parser.Expr) bool {
 		if c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) exprIsInt(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	return c.unaryIsInt(u)
+}
+
+func (c *Compiler) unaryIsInt(u *parser.Unary) bool {
+	if u == nil || u.Value == nil {
+		return false
+	}
+	return c.postfixIsInt(u.Value)
+}
+
+func (c *Compiler) postfixIsInt(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) != 0 {
+		return false
+	}
+	return c.primaryIsInt(p.Target)
+}
+
+func (c *Compiler) primaryIsInt(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Int != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				switch t.(type) {
+				case types.IntType, types.Int64Type:
 					return true
 				}
 			}
