@@ -169,7 +169,8 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 ```
 【F:compile/st/compiler.go†L148-L232】
 
-Expressions recurse through binary, unary and postfix helpers. Indexing lists produces `at:` calls with 1-based offsets:
+【F:compile/st/compiler.go†L298-L333】
+Expressions recurse through binary, unary and postfix helpers. Indexing lists produces `at:` calls with 1-based offsets while slice expressions use `copyFrom:to:`:
 
 ```go
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
@@ -179,17 +180,36 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
         }
         for _, op := range p.Ops {
                 if op.Index != nil {
-                        idx, err := c.compileExpr(op.Index.Start)
-                        if err != nil {
-                                return "", err
+                        if op.Index.Colon != nil {
+                                start := "1"
+                                if op.Index.Start != nil {
+                                        s, err := c.compileExpr(op.Index.Start)
+                                        if err != nil {
+                                                return "", err
+                                        }
+                                        start = fmt.Sprintf("(%s + 1)", s)
+                                }
+                                end := fmt.Sprintf("%s size", expr)
+                                if op.Index.End != nil {
+                                        e, err := c.compileExpr(op.Index.End)
+                                        if err != nil {
+                                                return "", err
+                                        }
+                                        end = e
+                                }
+                                expr = fmt.Sprintf("(%s copyFrom: %s to: %s)", expr, start, end)
+                        } else {
+                                idx, err := c.compileExpr(op.Index.Start)
+                                if err != nil {
+                                        return "", err
+                                }
+                                expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
                         }
-                        expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
                 }
         }
         return expr, nil
 }
 ```
-【F:compile/st/compiler.go†L242-L256】
 
 Calls to `print` and `len` are recognised as built‑ins and converted to `Transcript` output or `size` messages respectively. Other calls dispatch to class methods on `Main`:
 
@@ -258,7 +278,10 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 
 ## Tools
 
-`EnsureSmalltalk` checks for the `gst` executable and attempts installation via `apt-get` or Homebrew when running on Linux or macOS:
+`EnsureSmalltalk` checks for the `gst` executable. On Linux it first tries
+`apt-get` and if that fails downloads the GNU Smalltalk 3.2.5 sources from
+GitHub and builds them. The download URL can be overridden via the
+`SMALLTALK_TARBALL` environment variable. On macOS it uses Homebrew:
 
 ```go
 func EnsureSmalltalk() error {
@@ -269,28 +292,26 @@ func EnsureSmalltalk() error {
         case "linux":
                 if _, err := exec.LookPath("apt-get"); err == nil {
                         fmt.Println("🔧 Installing GNU Smalltalk via apt-get...")
-                        cmd := exec.Command("apt-get", "update")
-                        cmd.Stdout = os.Stdout
-                        cmd.Stderr = os.Stderr
-                        if err := cmd.Run(); err != nil {
-                                return err
+                        if err := run(exec.Command("apt-get", "update")); err == nil {
+                                if err := run(exec.Command("apt-get", "install", "-y", "gnu-smalltalk")); err == nil {
+                                        if _, err := exec.LookPath("gst"); err == nil {
+                                                return nil
+                                        }
+                                        fmt.Println("⚠️ apt-get install failed, falling back to build from source")
+                                }
                         }
-                        cmd = exec.Command("apt-get", "install", "-y", "gnu-smalltalk")
-                        cmd.Stdout = os.Stdout
-                        cmd.Stderr = os.Stderr
-                        if err := cmd.Run(); err != nil {
-                                return err
-                        }
+                }
+                if err := buildSmalltalkFromSource(); err != nil {
+                        return err
                 }
         case "darwin":
                 if _, err := exec.LookPath("brew"); err == nil {
                         fmt.Println("🍺 Installing GNU Smalltalk via Homebrew...")
-                        cmd := exec.Command("brew", "install", "gnu-smalltalk")
-                        cmd.Stdout = os.Stdout
-                        cmd.Stderr = os.Stderr
-                        if err := cmd.Run(); err != nil {
+                        if err := run(exec.Command("brew", "install", "gnu-smalltalk")); err != nil {
                                 return err
                         }
+                } else {
+                        return fmt.Errorf("brew not found")
                 }
         default:
                 return fmt.Errorf("unsupported OS: %s", runtime.GOOS)
@@ -301,7 +322,7 @@ func EnsureSmalltalk() error {
         return fmt.Errorf("gst not found")
 }
 ```
-【F:compile/st/tools.go†L10-L48】
+【F:compile/st/tools.go†L10-L52】
 
 ## Building
 
