@@ -11,7 +11,7 @@ import (
 	"mochi/types"
 )
 
-// Compiler uses the C backend and zig cc to build a native binary.
+// Compiler uses the C backend to generate Zig source code via `zig translate-c`.
 type Compiler struct {
 	env *types.Env
 }
@@ -19,7 +19,7 @@ type Compiler struct {
 // New creates a new zig compiler instance.
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 
-// Compile returns a native binary that executes prog using zig cc.
+// Compile returns Zig source code that implements prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	zig, err := EnsureZig()
 	if err != nil {
@@ -39,10 +39,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if err := os.WriteFile(cfile, csrc, 0644); err != nil {
 		return nil, err
 	}
-	bin := filepath.Join(dir, "prog")
-	cmd := exec.Command(zig, "cc", cfile, "-O3", "-o", bin)
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return nil, fmt.Errorf("zig cc error: %w\n%s", err, out)
+	zfile := filepath.Join(dir, "prog.zig")
+	cmd := exec.Command(zig, "translate-c", cfile)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("zig translate-c error: %w\n%s", err, out)
 	}
-	return os.ReadFile(bin)
+	if err := os.WriteFile(zfile, out, 0644); err != nil {
+		return nil, err
+	}
+	return out, nil
 }

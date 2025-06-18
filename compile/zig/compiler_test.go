@@ -14,7 +14,7 @@ import (
 	"mochi/types"
 )
 
-// TestZigCompiler_TwoSum compiles the LeetCode example using zig cc and runs it.
+// TestZigCompiler_TwoSum compiles the LeetCode example to Zig source and runs it.
 func TestZigCompiler_TwoSum(t *testing.T) {
 	zig, err := zigcode.EnsureZig()
 	if err != nil {
@@ -29,14 +29,19 @@ func TestZigCompiler_TwoSum(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	binBytes, err := zigcode.New(env).Compile(prog)
+	zigSrc, err := zigcode.New(env).Compile(prog)
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
 	dir := t.TempDir()
+	srcFile := filepath.Join(dir, "prog.zig")
+	if err := os.WriteFile(srcFile, zigSrc, 0644); err != nil {
+		t.Fatalf("write zig source: %v", err)
+	}
 	bin := filepath.Join(dir, "prog")
-	if err := os.WriteFile(bin, binBytes, 0755); err != nil {
-		t.Fatalf("write binary: %v", err)
+	buildCmd := exec.Command(zig, "build-exe", srcFile, "-O", "ReleaseFast", "-femit-bin="+bin)
+	if out, err := buildCmd.CombinedOutput(); err != nil {
+		t.Fatalf("zig build-exe error: %v\n%s", err, out)
 	}
 	cmd := exec.Command(bin)
 	out, err := cmd.CombinedOutput()
