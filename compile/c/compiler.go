@@ -335,6 +335,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					}
 				case types.StringType:
 					typ = "char*"
+				case types.FloatType:
+					typ = "double"
 				}
 			}
 		}
@@ -362,6 +364,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					}
 				case types.StringType:
 					typ = "char*"
+				case types.FloatType:
+					typ = "double"
 				}
 			}
 		}
@@ -640,6 +644,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					fmtStr := "%d"
 					if isStringArg(a, c.env) {
 						fmtStr = "%s"
+					} else if isFloatArg(a, c.env) {
+						fmtStr = "%f"
 					}
 					end := " "
 					if i == len(p.Call.Args)-1 {
@@ -681,6 +687,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	switch {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int)
+	case l.Float != nil:
+		return strconv.FormatFloat(*l.Float, 'f', -1, 64)
 	case l.Bool != nil:
 		if *l.Bool {
 			return "1"
@@ -757,6 +765,51 @@ func isStringPrimary(p *parser.Primary, env *types.Env) bool {
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
 				return true
+			}
+		}
+	}
+	return false
+}
+
+func isFloatArg(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isFloatUnary(e.Binary.Left, env)
+}
+
+func isFloatUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isFloatPostfix(u.Value, env)
+}
+
+func isFloatPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return isFloatPrimary(p.Target, env)
+}
+
+func isFloatPrimary(p *parser.Primary, env *types.Env) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.Lit != nil && p.Lit.Float != nil:
+		return true
+	case p.Selector != nil && env != nil:
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.FloatType); ok {
+				return true
+			}
+		}
+	case p.Call != nil && env != nil:
+		if t, err := env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if _, ok2 := ft.Return.(types.FloatType); ok2 {
+					return true
+				}
 			}
 		}
 	}
