@@ -471,6 +471,26 @@ func isListUnary(u *parser.Unary) bool {
 	return len(u.Ops) == 0 && isListPostfix(u.Value)
 }
 
+func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
+	if p == nil {
+		return types.AnyType{}
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				return t
+			}
+		}
+	}
+	if p.List != nil {
+		return types.ListType{Elem: types.AnyType{}}
+	}
+	if p.Map != nil {
+		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+	}
+	return types.AnyType{}
+}
+
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	expr, err := c.compilePostfix(u.Value)
 	if err != nil {
@@ -492,13 +512,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	typ := c.inferPrimaryType(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			idx, err := c.compileExpr(op.Index.Start)
 			if err != nil {
 				return "", err
 			}
-			res = fmt.Sprintf("Enum.at(%s, %s)", res, idx)
+			switch tt := typ.(type) {
+			case types.MapType:
+				res = fmt.Sprintf("Map.get(%s, %s)", res, idx)
+				typ = tt.Value
+			default:
+				res = fmt.Sprintf("Enum.at(%s, %s)", res, idx)
+				if lt, ok := tt.(types.ListType); ok {
+					typ = lt.Elem
+				}
+			}
 		} else if op.Call != nil {
 			args := []string{}
 			for _, a := range op.Call.Args {
