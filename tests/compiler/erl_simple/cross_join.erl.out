@@ -1,0 +1,55 @@
+#!/usr/bin/env escript
+-module(main).
+-export([main/1]).
+
+main(_) ->
+	ok,
+	ok,
+	ok,
+	customers = [#{id => 1, name => "Alice"}, #{id => 2, name => "Bob"}, #{id => 3, name => "Charlie"}],
+	orders = [#{id => 100, customerId => 1, total => 250}, #{id => 101, customerId => 2, total => 125}, #{id => 102, customerId => 1, total => 300}],
+	result = [#{orderId => maps:get(id, o), orderCustomerId => maps:get(customerId, o), pairedCustomerName => maps:get(name, c), orderTotal => maps:get(total, o)} || o <- orders, c <- customers],
+	mochi_print(["--- Cross Join: All order-customer pairs ---"]),
+	lists:foreach(fun(entry) ->
+		mochi_print(["Order", maps:get(orderId, entry), "(customerId:", maps:get(orderCustomerId, entry), ", total: $", maps:get(orderTotal, entry), ") paired with", maps:get(pairedCustomerName, entry)])
+	end, result).
+
+mochi_print(Args) ->
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
+
+mochi_format(X) when is_integer(X) -> integer_to_list(X);
+mochi_format(X) when is_float(X) -> float_to_list(X);
+mochi_format(X) when is_list(X) -> X;
+mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
+
+mochi_count(X) when is_list(X) -> length(X);
+mochi_count(X) when is_map(X) -> maps:size(X);
+mochi_count(X) when is_binary(X) -> byte_size(X);
+mochi_count(_) -> erlang:error(badarg).
+
+mochi_input() ->
+	case io:get_line("") of
+		eof -> "";
+		Line -> string:trim(Line)
+	end.
+
+mochi_avg([]) -> 0;
+mochi_avg(L) when is_list(L) ->
+	Sum = lists:foldl(fun(X, Acc) ->
+		case X of
+			I when is_integer(I) -> Acc + I;
+			F when is_float(F) -> Acc + F;
+			_ -> erlang:error(badarg) end
+		end, 0, L),
+		Sum / length(L)
+	.
+mochi_avg(_) -> erlang:error(badarg).
+
+mochi_while(Cond, Body) ->
+	case Cond() of
+		true ->
+			Body(),
+			mochi_while(Cond, Body);
+		_ -> ok
+	end.
