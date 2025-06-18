@@ -16,6 +16,7 @@ type Compiler struct {
 	indent      int
 	env         *types.Env
 	tmp         int
+	loopTmp     int
 	currentFunc string
 	loops       []loopCtx
 }
@@ -40,6 +41,20 @@ func hasLoopCtrl(stmts []*parser.Statement) bool {
 			}
 		case s.If != nil:
 			if hasLoopCtrl(s.If.Then) || hasLoopCtrlIf(s.If.ElseIf) || hasLoopCtrl(s.If.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func programHasLoopCtrl(stmts []*parser.Statement) bool {
+	if hasLoopCtrl(stmts) {
+		return true
+	}
+	for _, s := range stmts {
+		if s.Fun != nil {
+			if hasLoopCtrl(s.Fun.Body) {
 				return true
 			}
 		}
@@ -73,10 +88,20 @@ func (c *Compiler) newTmp() string {
 	return name
 }
 
+func (c *Compiler) newLoopID() string {
+	id := fmt.Sprintf("%d", c.loopTmp)
+	c.loopTmp++
+	return id
+}
+
 // Compile converts prog into F# source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.writeln("open System")
+	if programHasLoopCtrl(prog.Statements) {
+		c.writeln("exception BreakException of int")
+		c.writeln("exception ContinueException of int")
+	}
 	c.writeln("")
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -220,12 +245,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if len(c.loops) == 0 {
 			return fmt.Errorf("break not in loop")
 		}
-		c.writeln(fmt.Sprintf("raise %s", c.loops[len(c.loops)-1].brk))
+		c.writeln(fmt.Sprintf("raise (%s)", c.loops[len(c.loops)-1].brk))
 	case s.Continue != nil:
 		if len(c.loops) == 0 {
 			return fmt.Errorf("continue not in loop")
 		}
-		c.writeln(fmt.Sprintf("raise %s", c.loops[len(c.loops)-1].cont))
+		c.writeln(fmt.Sprintf("raise (%s)", c.loops[len(c.loops)-1].cont))
 	default:
 		// ignore
 	}
@@ -265,11 +290,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	useVar := name != "_"
 	ctrl := hasLoopCtrl(f.Body)
 	var brk, cont string
+	var id string
 	if ctrl {
-		brk = "Break_" + c.newTmp()
-		cont = "Continue_" + c.newTmp()
-		c.writeln(fmt.Sprintf("exception %s", brk))
-		c.writeln(fmt.Sprintf("exception %s", cont))
+		id = c.newLoopID()
+		brk = fmt.Sprintf("BreakException %s", id)
+		cont = fmt.Sprintf("ContinueException %s", id)
 		c.writeln("try")
 		c.indent++
 	}
@@ -300,13 +325,13 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 		if ctrl {
 			c.indent--
-			c.writeln(fmt.Sprintf("with %s -> ()", cont))
+			c.writeln(fmt.Sprintf("with ContinueException n when n = %s -> ()", id))
 			c.popLoop()
 		}
 		c.indent--
 		if ctrl {
 			c.indent--
-			c.writeln(fmt.Sprintf("with %s -> ()", brk))
+			c.writeln(fmt.Sprintf("with BreakException n when n = %s -> ()", id))
 		}
 		return nil
 	}
@@ -332,13 +357,13 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	}
 	if ctrl {
 		c.indent--
-		c.writeln(fmt.Sprintf("with %s -> ()", cont))
+		c.writeln(fmt.Sprintf("with ContinueException n when n = %s -> ()", id))
 		c.popLoop()
 	}
 	c.indent--
 	if ctrl {
 		c.indent--
-		c.writeln(fmt.Sprintf("with %s -> ()", brk))
+		c.writeln(fmt.Sprintf("with BreakException n when n = %s -> ()", id))
 	}
 	return nil
 }
@@ -350,11 +375,11 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	}
 	ctrl := hasLoopCtrl(w.Body)
 	var brk, cont string
+	var id string
 	if ctrl {
-		brk = "Break_" + c.newTmp()
-		cont = "Continue_" + c.newTmp()
-		c.writeln(fmt.Sprintf("exception %s", brk))
-		c.writeln(fmt.Sprintf("exception %s", cont))
+		id = c.newLoopID()
+		brk = fmt.Sprintf("BreakException %s", id)
+		cont = fmt.Sprintf("ContinueException %s", id)
 		c.writeln("try")
 		c.indent++
 	}
@@ -372,13 +397,13 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	}
 	if ctrl {
 		c.indent--
-		c.writeln(fmt.Sprintf("with %s -> ()", cont))
+		c.writeln(fmt.Sprintf("with ContinueException n when n = %s -> ()", id))
 		c.popLoop()
 	}
 	c.indent--
 	if ctrl {
 		c.indent--
-		c.writeln(fmt.Sprintf("with %s -> ()", brk))
+		c.writeln(fmt.Sprintf("with BreakException n when n = %s -> ()", id))
 	}
 	return nil
 }
@@ -474,34 +499,72 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
 		return "", fmt.Errorf("nil binary expr")
 	}
-	expr, err := c.compileUnary(b.Left)
+
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	leftList := c.isListUnary(b.Left)
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+
+	operands := []string{first}
+	lists := []bool{c.isListUnary(b.Left)}
+	ops := []string{}
+
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rightList := c.isListPostfix(op.Right)
-		symbol := op.Op
-		switch op.Op {
-		case "==":
-			symbol = "="
-		case "!=":
-			symbol = "<>"
-		case "+":
-			if leftList && rightList {
-				expr = fmt.Sprintf("Array.append %s %s", expr, right)
-				leftList = true
-				continue
+		operands = append(operands, r)
+		lists = append(lists, c.isListPostfix(part.Right))
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!="},
+		{"&&"},
+		{"||"},
+		{"union", "except", "intersect"},
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			if contains(lvl, ops[i]) {
+				left := operands[i]
+				right := operands[i+1]
+				op := ops[i]
+
+				symbol := op
+				switch op {
+				case "==":
+					symbol = "="
+				case "!=":
+					symbol = "<>"
+				}
+
+				if op == "+" && (lists[i] || lists[i+1]) {
+					operands[i] = fmt.Sprintf("Array.append %s %s", left, right)
+					lists[i] = true
+				} else {
+					operands[i] = fmt.Sprintf("(%s %s %s)", left, symbol, right)
+					lists[i] = false
+				}
+
+				operands = append(operands[:i+1], operands[i+2:]...)
+				lists = append(lists[:i+1], lists[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
 			}
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, symbol, right)
-		leftList = false
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -984,4 +1047,13 @@ func extractLiteral(e *parser.Expr) *parser.Literal {
 		return p.Target.Lit
 	}
 	return nil
+}
+
+func contains(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }
