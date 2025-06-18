@@ -1,0 +1,4 @@
+open System
+
+let text = "hello"
+printfn "%A" text.[(if (-1) < 0 then text.Length + (-1) else (-1))]
