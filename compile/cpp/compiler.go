@@ -411,14 +411,14 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		args[i] = c.compileExpr(a)
 	}
 	c.writeIndent()
+	c.buf.WriteString("std::cout")
 	for i, a := range args {
-		if i > 0 {
-			c.buf.WriteString("std::cout << \" \" << ")
-			c.buf.WriteString(a)
+		if i == 0 {
+			c.buf.WriteString(" << ")
 		} else {
-			c.buf.WriteString("std::cout << ")
-			c.buf.WriteString(a)
+			c.buf.WriteString(" << \" \" << ")
 		}
+		c.buf.WriteString(a)
 	}
 	c.buf.WriteString(" << std::endl;\n")
 	return nil
@@ -440,7 +440,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 		}
 		c.buf = oldBuf
 	}
-	return "[&](" + strings.Join(params, ", ") + ") { " + body.String() + " }"
+	return "[=](" + strings.Join(params, ", ") + ") { " + body.String() + " }"
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
