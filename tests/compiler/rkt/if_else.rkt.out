@@ -1,7 +1,10 @@
 #lang racket
 (require racket/list)
 
-(define (idx x i) (if (string? x) (string-ref x i) (list-ref x i)))
+(define (idx x i)
+  (cond [(string? x) (string-ref x i)]
+        [(hash? x) (hash-ref x i)]
+        [else (list-ref x i)]))
 (define (slice x s e) (if (string? x) (substring x s e) (take (drop x s) (- e s))))
 
 (define x 2)

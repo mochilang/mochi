@@ -74,7 +74,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("(require racket/list)")
 	c.writeln("")
 	// helpers for indexing and slicing
-	c.writeln("(define (idx x i) (if (string? x) (string-ref x i) (list-ref x i)))")
+	c.writeln("(define (idx x i)")
+	c.writeln("  (cond [(string? x) (string-ref x i)]")
+	c.writeln("        [(hash? x) (hash-ref x i)]")
+	c.writeln("        [else (list-ref x i)]))")
 	c.writeln("(define (slice x s e) (if (string? x) (substring x s e) (take (drop x s) (- e s))))")
 	c.writeln("")
 	// function declarations first
@@ -153,6 +156,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(expr)
 		return nil
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -185,15 +190,24 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 {
-		return fmt.Errorf("indexed assignment unsupported")
-	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("(set! %s %s)", sanitizeName(a.Name), val))
-	return nil
+	name := sanitizeName(a.Name)
+	if len(a.Index) == 0 {
+		c.writeln(fmt.Sprintf("(set! %s %s)", name, val))
+		return nil
+	}
+	if len(a.Index) == 1 && a.Index[0].Colon == nil {
+		idx, err := c.compileExpr(a.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("(set! %s (if (hash? %s) (hash-set %s %s %s) (list-set %s %s %s)))", name, name, name, idx, val, name, idx, val))
+		return nil
+	}
+	return fmt.Errorf("indexed assignment unsupported")
 }
 
 func (c *Compiler) compileBreak(b *parser.BreakStmt) error {
@@ -383,7 +397,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		ops = append(ops, part.Op)
 	}
 
-	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}}
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">=", "in"}, {"==", "!="}, {"&&"}, {"||"}}
 
 	contains := func(list []string, s string) bool {
 		for _, v := range list {
@@ -425,6 +439,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("(and %s %s)", l, r)
 			case "||":
 				expr = fmt.Sprintf("(or %s %s)", l, r)
+			case "in":
+				expr = fmt.Sprintf("(hash-has-key? %s %s)", r, l)
 			default:
 				return "", fmt.Errorf("unsupported op %s", op)
 			}
@@ -521,6 +537,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "(list " + strings.Join(elems, " ") + ")", nil
+	case p.Map != nil:
+		pairs := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			pairs[i] = fmt.Sprintf("(cons %s %s)", k, v)
+		}
+		return "(make-hash (list " + strings.Join(pairs, " ") + "))", nil
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Selector != nil:
@@ -543,6 +573,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		name = "length"
 	case "print":
 		name = "displayln"
+	case "str":
+		name = "format"
 	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
@@ -551,6 +583,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = v
+	}
+	if call.Func == "str" {
+		args = append([]string{"\"~a\""}, args...)
 	}
 	return fmt.Sprintf("(%s %s)", name, strings.Join(args, " ")), nil
 }

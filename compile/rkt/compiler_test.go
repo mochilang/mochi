@@ -113,11 +113,9 @@ func TestRacketCompiler_LeetCodeExamples(t *testing.T) {
 	if err := rktcode.EnsureRacket(); err != nil {
 		t.Skipf("racket not installed: %v", err)
 	}
-	runRacketLeetExample(t, 1)
-	runRacketLeetExample(t, 2)
-	runRacketLeetExample(t, 3)
-	runRacketLeetExample(t, 4)
-	runRacketLeetExample(t, 5)
+	for i := 1; i <= 10; i++ {
+		runRacketLeetExample(t, i)
+	}
 }
 
 func runRacketLeetExample(t *testing.T, id int) {
