@@ -108,7 +108,7 @@ The produced code is standard C# and can be executed with `dotnet run` or compil
 
 ## Tests
 
-Golden tests verify that the emitted code matches the expected `.cs.out` files. They are tagged `slow` and can be run with:
+Golden tests verify that the emitted code matches the expected `.cs.out` files. The suite also compiles and executes the programs in `tests/compiler/cs` using `dotnet run` to ensure they behave correctly. All tests are tagged `slow` because they invoke the .NET toolchain. Run them with:
 
 ```bash
 go test ./compile/cs -tags slow
