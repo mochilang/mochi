@@ -41,7 +41,7 @@ func TestSchemeCompiler_TwoSum(t *testing.T) {
 	if err := os.WriteFile(file, code, 0644); err != nil {
 		t.Fatalf("write error: %v", err)
 	}
-	cmd := exec.Command("chibi-scheme", file)
+	cmd := exec.Command("chibi-scheme", "-m", "chibi", file)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("scheme run error: %v\n%s", err, out)
@@ -75,7 +75,7 @@ func TestSchemeCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.WriteFile(file, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
-		cmd := exec.Command("chibi-scheme", file)
+		cmd := exec.Command("chibi-scheme", "-m", "chibi", file)
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}

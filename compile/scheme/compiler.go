@@ -312,7 +312,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return "(" + expr + ")", nil
+		return expr, nil
 	case p.Call != nil:
 		return c.compileCall(p.Call, "")
 	}
