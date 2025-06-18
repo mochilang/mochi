@@ -146,11 +146,6 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.writeln(name + " " + strings.Join(params, " ") + " = fromMaybe (" + c.defaultReturn(fun.Body, ft.Return) + ") $")
 	bodyStmts := fun.Body
-	if len(bodyStmts) > 0 {
-		if bodyStmts[len(bodyStmts)-1].Return != nil {
-			bodyStmts = bodyStmts[:len(bodyStmts)-1]
-		}
-	}
 	c.indent++
 	expr, err := c.compileStmtExpr(bodyStmts)
 	if err != nil {
@@ -189,13 +184,6 @@ func zeroValue(t types.Type) string {
 }
 
 func (c *Compiler) defaultReturn(stmts []*parser.Statement, retType types.Type) string {
-	if len(stmts) == 0 {
-		return zeroValue(retType)
-	}
-	if ret := stmts[len(stmts)-1].Return; ret != nil {
-		v, _ := c.compileExpr(ret.Value)
-		return v
-	}
 	return zeroValue(retType)
 }
 
@@ -254,6 +242,25 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement) (string, error) {
 				loop := fmt.Sprintf("foldr (\\%s acc -> case %s of Just v -> Just v; Nothing -> acc) Nothing %s", name, bodyExpr, src)
 				expr = chainMaybe(loop, expr)
 			}
+		case s.Var != nil:
+			val := "()"
+			if s.Var.Value != nil {
+				v, err := c.compileExpr(s.Var.Value)
+				if err != nil {
+					return "", err
+				}
+				val = v
+			}
+			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Var.Name), val, expr)
+		case s.Assign != nil:
+			val, err := c.compileExpr(s.Assign.Value)
+			if err != nil {
+				return "", err
+			}
+			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Assign.Name), val, expr)
+		case s.While != nil:
+			// while loops are ignored in the Haskell backend for now
+			continue
 		case s.Expr != nil:
 			val, err := c.compileExpr(s.Expr.Expr)
 			if err != nil {
