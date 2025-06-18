@@ -39,6 +39,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = body
 	c.indent = 0
 
+	// type declarations
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -118,6 +128,23 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return nil // unions not supported
+	}
+	c.writeln(fmt.Sprintf("struct %s {", t.Name))
+	c.indent++
+	for _, m := range t.Members {
+		if m.Field != nil {
+			typ := c.cppType(m.Field.Type)
+			c.writeln(fmt.Sprintf("%s %s;", typ, m.Field.Name))
+		}
+	}
+	c.indent--
+	c.writeln("};")
 	return nil
 }
 
@@ -295,6 +322,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		if p.Lit.Str != nil {
 			return strconv.Quote(*p.Lit.Str)
 		}
+	case p.Struct != nil:
+		fields := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			fields[i] = c.compileExpr(f.Value)
+		}
+		return fmt.Sprintf("%s{%s}", p.Struct.Name, strings.Join(fields, ", "))
 	case p.Selector != nil:
 		name := p.Selector.Root
 		if len(p.Selector.Tail) > 0 {
@@ -306,7 +339,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		for i, e := range p.List.Elems {
 			elems[i] = c.compileExpr(e)
 		}
-		return "vector<int>{" + strings.Join(elems, ", ") + "}"
+		elemType := "int"
+		if len(p.List.Elems) > 0 {
+			if t := c.guessExprType(p.List.Elems[0]); t != "" {
+				elemType = t
+			}
+		}
+		return fmt.Sprintf("vector<%s>{%s}", elemType, strings.Join(elems, ", "))
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
+	case p.Query != nil:
+		q, _ := c.compileQuery(p.Query)
+		return q
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -359,4 +403,127 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 	}
 	c.buf.WriteString(" << std::endl;\n")
 	return nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
+	var params []string
+	for _, p := range fn.Params {
+		params = append(params, c.cppType(p.Type)+" "+p.Name)
+	}
+	var body bytes.Buffer
+	if fn.ExprBody != nil {
+		body.WriteString("return " + c.compileExpr(fn.ExprBody) + ";")
+	} else {
+		oldBuf := c.buf
+		c.buf = body
+		for _, st := range fn.BlockBody {
+			c.compileStmt(st)
+		}
+		c.buf = oldBuf
+	}
+	return "[&](" + strings.Join(params, ", ") + ") { " + body.String() + " }"
+}
+
+func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	if q.Where != nil || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) != 0 {
+		return "", fmt.Errorf("query not supported")
+	}
+	src := c.compileExpr(q.Source)
+	vars := []string{q.Var}
+	srcs := []string{src}
+	for _, f := range q.Froms {
+		vars = append(vars, f.Var)
+		srcs = append(srcs, c.compileExpr(f.Src))
+	}
+	sel := c.compileExpr(q.Select)
+	resType := c.guessExprType(q.Select)
+	if resType == "" {
+		resType = "auto"
+	}
+	var buf bytes.Buffer
+	buf.WriteString("([&]() -> vector<" + resType + "> {\n")
+	buf.WriteString("\tvector<" + resType + "> _res;\n")
+	indent := "\t"
+	for i, v := range vars {
+		buf.WriteString(indent + "for (auto& " + v + " : " + srcs[i] + ") {\n")
+		indent += "\t"
+	}
+	buf.WriteString(indent + "_res.push_back(" + sel + ");\n")
+	for range vars {
+		indent = indent[:len(indent)-1]
+		buf.WriteString(indent + "}\n")
+	}
+	buf.WriteString("\treturn _res;\n")
+	buf.WriteString("})()")
+	return buf.String(), nil
+}
+
+func (c *Compiler) guessExprType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil {
+		return ""
+	}
+	return c.guessUnaryType(e.Binary.Left)
+}
+
+func (c *Compiler) guessUnaryType(u *parser.Unary) string {
+	return c.guessPostfixType(u.Value)
+}
+
+func (c *Compiler) guessPostfixType(p *parser.PostfixExpr) string {
+	return c.guessPrimaryType(p.Target)
+}
+
+func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
+	switch {
+	case p.Lit != nil:
+		if p.Lit.Int != nil {
+			return "int"
+		}
+		if p.Lit.Float != nil {
+			return "double"
+		}
+		if p.Lit.Bool != nil {
+			return "bool"
+		}
+		if p.Lit.Str != nil {
+			return "string"
+		}
+	case p.Struct != nil:
+		return p.Struct.Name
+	case p.List != nil:
+		if len(p.List.Elems) > 0 {
+			t := c.guessExprType(p.List.Elems[0])
+			if t != "" {
+				return "vector<" + t + ">"
+			}
+		}
+		return "vector<int>"
+	case p.Selector != nil:
+		if typ, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if st, ok := typ.(types.StructType); ok {
+				ft := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]
+				return c.cppTypeRef(ft)
+			}
+			return c.cppTypeRef(typ)
+		}
+	}
+	return ""
+}
+
+func (c *Compiler) cppTypeRef(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "double"
+	case types.BoolType:
+		return "bool"
+	case types.StringType:
+		return "string"
+	case types.ListType:
+		return "vector<" + c.cppTypeRef(tt.Elem) + ">"
+	case types.StructType:
+		return tt.Name
+	}
+	return "auto"
 }

@@ -2,7 +2,7 @@
 using namespace std;
 
 auto makeAdder(int n){
-	return ;
+	return [&](int x) { return x + n; };
 }
 
 int main() {
