@@ -131,6 +131,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
+	c.env.SetFunc(fn.Name, fn)
 	c.pushFunc(fn.Name)
 	defer c.popFunc()
 	exc := fmt.Sprintf("Return_%s", sanitizeName(fn.Name))
@@ -636,10 +637,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				if isStr {
 					if v, ok := intLiteral(op.Index.Start); ok && v >= 0 {
-						expr = fmt.Sprintf("%s.[%d]", expr, v)
+						expr = fmt.Sprintf("(string %s.[%d])", expr, v)
 					} else {
 						idxExpr := fmt.Sprintf("(if %s < 0 then %s.Length + %s else %s)", idx, expr, idx, idx)
-						expr = fmt.Sprintf("%s.[%s]", expr, idxExpr)
+						expr = fmt.Sprintf("(string %s.[%s])", expr, idxExpr)
 					}
 					isStr = true
 				} else {
@@ -1043,6 +1044,13 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 		if err == nil {
 			if _, ok := typ.(types.StringType); ok {
 				return true
+			}
+		}
+		if fn, ok := c.env.GetFunc(c.currentFunc); ok {
+			for _, param := range fn.Params {
+				if param.Name == p.Selector.Root && param.Type != nil && param.Type.Simple != nil && *param.Type.Simple == "string" {
+					return true
+				}
 			}
 		}
 		return false

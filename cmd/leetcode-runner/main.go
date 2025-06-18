@@ -179,6 +179,9 @@ func buildOne(src, lang string, run bool) error {
 	if lang == "ocaml" {
 		ext = ".ml"
 	}
+	if lang == "fs" {
+		ext = ".fsx"
+	}
 	outFile := filepath.Join(outDir, base+ext)
 	var data []byte
 	switch lang {
