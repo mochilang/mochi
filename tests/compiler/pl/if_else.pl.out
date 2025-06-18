@@ -1,24 +1,33 @@
 :- style_check(-singleton).
-	foo(N, Res) :-
-	(N < 0 ->
-		_V0 is -(1),
-		Res = _V0, !
-	;
-		(N =:= 0 ->
-			Res = 0, !
+		foo(N, Res) :-
+			catch(
+				(
+		(N < 0 ->
+			_V0 is -(1),
+			throw(return(_V0))
 		;
-			Res = 1, !
+			(N =:= 0 ->
+				throw(return(0))
+			;
+				throw(return(1))
+			)
 		)
-	)
-	.
+					,
+					true
+				)
+				, return(_V1),
+					Res = _V1
+				)
+			.
 
 	main :-
-	_V1 is -(2),
-	foo(_V1, _V2),
-	writeln(_V2),
-	foo(0, _V3),
+	_V2 is -(2),
+	foo(_V2, _V3),
 	writeln(_V3),
-	foo(3, _V4),
-	writeln(_V4)
+	foo(0, _V4),
+	writeln(_V4),
+	foo(3, _V5),
+	writeln(_V5)
 	.
 :- initialization(main, main).
+

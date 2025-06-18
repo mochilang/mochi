@@ -58,8 +58,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 ```
 
 Functions are compiled as predicates returning their result via an extra
-argument. If the final statement is a `return`, a fallback clause is emitted for
-that value.
+argument. Each body is wrapped in `catch/3` so that `return` statements can
+throw a `return(Value)` term which is intercepted and assigned to the result.
+If the final statement is a `return`, a fallback clause is emitted for that
+value.
 
 Statements support variable bindings, explicit returns, the `print` builtin,
 range `for` loops and simple `if` statements:
@@ -76,15 +78,15 @@ range `for` loops and simple `if` statements:
 			c.writeln(line)
 		}
 		c.writeln(fmt.Sprintf("%s = %s,", name, val.val))
-	case s.Return != nil:
-		val, err := c.compileExpr(s.Return.Value)
-		if err != nil {
-			return err
-		}
-		for _, line := range val.code {
-			c.writeln(line)
-		}
-		c.writeln(fmt.Sprintf("%s = %s, !", ret, val.val))
+       case s.Return != nil:
+               val, err := c.compileExpr(s.Return.Value)
+               if err != nil {
+                       return err
+               }
+               for _, line := range val.code {
+                       c.writeln(line)
+               }
+               c.writeln(fmt.Sprintf("throw(return(%s))", val.val))
 	case s.Expr != nil:
 		if call := s.Expr.Expr.Binary.Left.Value.Target.Call; call != nil && call.Func == "print" {
 			if len(call.Args) != 1 {
