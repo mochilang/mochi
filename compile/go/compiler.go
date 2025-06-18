@@ -3229,6 +3229,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["mochi/runtime/data"] = true
 		c.imports["reflect"] = true
 		c.use("_count")
+		if len(call.Args) == 1 {
+			at := c.inferExprType(call.Args[0])
+			if lt, ok := at.(types.ListType); ok && !isAny(lt.Elem) {
+				c.use("_toAnySlice")
+				argStr = fmt.Sprintf("_toAnySlice(%s)", args[0])
+			}
+		}
 		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "avg":
 		c.imports["mochi/runtime/data"] = true

@@ -21,7 +21,7 @@ func main() {
 	}
 	return out
 }()
-	fmt.Println(_count(people))
+	fmt.Println(_count(_toAnySlice(people)))
 }
 
 func _cast[T any](v any) T {
@@ -133,4 +133,10 @@ func _toAnyMap(m any) map[string]any {
     default:
         return nil
     }
+}
+
+func _toAnySlice[T any](s []T) []any {
+    out := make([]any, len(s))
+    for i, v := range s { out[i] = v }
+    return out
 }
