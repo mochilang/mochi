@@ -127,8 +127,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("^ " + val)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -163,6 +167,36 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	c.indent--
 	c.writeln("]")
 	c.writeln(".")
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("[" + cond + "] whileTrue: [")
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("]")
+	c.writeln(".")
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	if len(a.Index) > 0 {
+		return fmt.Errorf("index assignment not supported")
+	}
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s := %s.", a.Name, val))
 	return nil
 }
 

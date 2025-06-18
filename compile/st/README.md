@@ -108,7 +108,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 ```
 【F:compile/st/compiler.go†L114-L142】
 
-`for` loops over ranges become numeric loops using `to:do:` while `if` expressions map directly to `ifTrue:ifFalse:`:
+`for` loops over ranges become numeric loops using `to:do:`. `while` loops use `whileTrue:` and `if` expressions map directly to `ifTrue:ifFalse:`:
 
 ```go
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
@@ -167,7 +167,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
         return nil
 }
 ```
-【F:compile/st/compiler.go†L144-L198】
+【F:compile/st/compiler.go†L148-L232】
 
 Expressions recurse through binary, unary and postfix helpers. Indexing lists produces `at:` calls with 1-based offsets:
 
