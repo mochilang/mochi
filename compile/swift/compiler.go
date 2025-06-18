@@ -15,6 +15,7 @@ type Compiler struct {
 	buf         bytes.Buffer
 	indent      int
 	env         *types.Env
+	locals      map[string]types.Type
 	useAvg      bool
 	useIndexStr bool
 	useSlice    bool
@@ -22,7 +23,7 @@ type Compiler struct {
 	funcRet     types.Type
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[string]types.Type{}} }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useAvg = false
@@ -145,12 +146,16 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.indent++
 	oldEnv := c.env
 	oldRet := c.funcRet
+	oldLocals := c.locals
+	c.locals = map[string]types.Type{}
 	c.funcRet = resolveTypeRef(fn.Return, oldEnv)
 	if c.env != nil {
 		c.env = types.NewEnv(c.env)
 		for _, p := range fn.Params {
 			if p.Type != nil {
-				c.env.SetVar(p.Name, resolveTypeRef(p.Type, oldEnv), true)
+				t := resolveTypeRef(p.Type, oldEnv)
+				c.env.SetVar(p.Name, t, true)
+				c.locals[p.Name] = t
 			}
 		}
 	}
@@ -172,6 +177,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	if c.env != nil {
 		c.env = oldEnv
 	}
+	c.locals = oldLocals
 	c.funcRet = oldRet
 	c.indent--
 	c.writeln("}")
@@ -307,10 +313,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		typ := ""
+		var t types.Type = types.AnyType{}
 		if s.Let.Type != nil {
 			typ = ": " + c.compileType(s.Let.Type)
+			t = resolveTypeRef(s.Let.Type, c.env)
 		} else if c.env != nil {
-			if t, err := c.env.GetVar(s.Let.Name); err == nil {
+			if t2, err := c.env.GetVar(s.Let.Name); err == nil {
+				typ = ": " + swiftType(t2)
+				t = t2
+			}
+		}
+		if t == (types.AnyType{}) {
+			t = c.inferExprType(s.Let.Value)
+			if typ == "" && !containsAny(t) {
 				typ = ": " + swiftType(t)
 			}
 		}
@@ -319,31 +334,48 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("let %s%s = %s", s.Let.Name, typ, expr))
 		}
+		if c.env != nil {
+			c.env.SetVar(s.Let.Name, t, true)
+		}
+		c.locals[s.Let.Name] = t
 	case s.Var != nil:
 		expr, err := c.compileExpr(s.Var.Value)
 		if err != nil {
 			return err
 		}
 		typ := ""
+		var t types.Type = types.AnyType{}
 		if s.Var.Type != nil {
 			typ = ": " + c.compileType(s.Var.Type)
+			t = resolveTypeRef(s.Var.Type, c.env)
 		} else if c.env != nil {
-			if t, err := c.env.GetVar(s.Var.Name); err == nil {
+			if t2, err := c.env.GetVar(s.Var.Name); err == nil {
+				typ = ": " + swiftType(t2)
+				t = t2
+			}
+		}
+		if t == (types.AnyType{}) {
+			t = c.inferExprType(s.Var.Value)
+			if typ == "" && !containsAny(t) {
 				typ = ": " + swiftType(t)
 			}
 		}
 		if typ == "" && expr == "[]" {
 			if lt, ok := c.funcRet.(types.ListType); ok {
 				typ = ": [" + swiftType(lt.Elem) + "]"
+				t = types.ListType{Elem: lt.Elem}
 			} else {
 				typ = ": [Any]"
+				t = types.ListType{Elem: types.AnyType{}}
 			}
 		}
 		if typ == "" && expr == "[:]" {
 			if mt, ok := c.funcRet.(types.MapType); ok {
 				typ = ": [" + swiftType(mt.Key) + ": " + swiftType(mt.Value) + "]"
+				t = types.MapType{Key: mt.Key, Value: mt.Value}
 			} else {
 				typ = ": [AnyHashable: Any]"
+				t = types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
 			}
 		}
 		if expr == "" {
@@ -351,6 +383,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("var %s%s = %s", s.Var.Name, typ, expr))
 		}
+		if c.env != nil {
+			c.env.SetVar(s.Var.Name, t, true)
+		}
+		c.locals[s.Var.Name] = t
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -377,6 +413,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(expr)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	default:
 		// ignore unsupported statements
 	}
@@ -394,21 +432,71 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("for %s in %s..<%s {", f.Name, start, end))
+		if c.env != nil {
+			c.env.SetVar(f.Name, types.IntType{}, true)
+		}
+		c.locals[f.Name] = types.IntType{}
+		c.indent++
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
 	} else {
 		src, err := c.compileExpr(f.Source)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for %s in %s {", f.Name, src))
-	}
-	c.indent++
-	for _, st := range f.Body {
-		if err := c.compileStmt(st); err != nil {
-			return err
+		srcType := c.inferExprType(f.Source)
+		if _, ok := srcType.(types.StringType); ok {
+			tmp := f.Name + "_ch"
+			c.writeln(fmt.Sprintf("for %s in %s {", tmp, src))
+			c.indent++
+			c.writeln(fmt.Sprintf("let %s = String(%s)", f.Name, tmp))
+			if c.env != nil {
+				c.env.SetVar(f.Name, types.StringType{}, true)
+			}
+			c.locals[f.Name] = types.StringType{}
+			for _, st := range f.Body {
+				if err := c.compileStmt(st); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("}")
+			return nil
+		} else {
+			c.writeln(fmt.Sprintf("for %s in %s {", f.Name, src))
+			if lt, ok := srcType.(types.ListType); ok {
+				if c.env != nil {
+					c.env.SetVar(f.Name, lt.Elem, true)
+				}
+				c.locals[f.Name] = lt.Elem
+			} else if mt, ok := srcType.(types.MapType); ok {
+				if c.env != nil {
+					c.env.SetVar(f.Name, mt.Key, true)
+				}
+				c.locals[f.Name] = mt.Key
+			} else {
+				if c.env != nil {
+					c.env.SetVar(f.Name, types.AnyType{}, true)
+				}
+				c.locals[f.Name] = types.AnyType{}
+			}
+			c.indent++
+			for _, st := range f.Body {
+				if err := c.compileStmt(st); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("}")
+			return nil
 		}
 	}
-	c.indent--
-	c.writeln("}")
 	return nil
 }
 
@@ -741,6 +829,11 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}
+		if t, ok := c.locals[name]; ok {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
 		if c.env != nil {
 			if t, err := c.env.GetVar(name); err == nil {
 				if _, ok := t.(types.StringType); ok {
@@ -789,6 +882,11 @@ func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
 		name := p.Selector.Root
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
+		}
+		if t, ok := c.locals[name]; ok {
+			if _, ok := t.(types.MapType); ok {
+				return true
+			}
 		}
 		if c.env != nil {
 			if t, err := c.env.GetVar(name); err == nil {
@@ -856,6 +954,35 @@ func stmtAssignsVar(s *parser.Statement, name string) bool {
 		if len(s.If.Else) > 0 {
 			return paramAssigned(s.If.Else, name)
 		}
+	}
+	return false
+}
+
+func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
+	if e == nil {
+		return types.AnyType{}
+	}
+	prog := &parser.Program{Statements: []*parser.Statement{{Let: &parser.LetStmt{Name: "_tmp", Value: e}}}}
+	env := types.NewEnv(c.env)
+	for name, t := range c.locals {
+		env.SetVar(name, t, true)
+	}
+	if errs := types.Check(prog, env); len(errs) == 0 {
+		if t, err := env.GetVar("_tmp"); err == nil {
+			return t
+		}
+	}
+	return types.AnyType{}
+}
+
+func containsAny(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.AnyType:
+		return true
+	case types.ListType:
+		return containsAny(tt.Elem)
+	case types.MapType:
+		return containsAny(tt.Key) || containsAny(tt.Value)
 	}
 	return false
 }
