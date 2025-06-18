@@ -37,9 +37,9 @@ test "example 2" {
 // additional tests
 
 test "empty first" {
-  expect findMedianSortedArrays([], [1]) == 1.0
+  expect findMedianSortedArrays([] as list<int>, [1]) == 1.0
 }
 
 test "empty second" {
-  expect findMedianSortedArrays([2], []) == 2.0
+  expect findMedianSortedArrays([2], [] as list<int>) == 2.0
 }

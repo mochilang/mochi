@@ -31,7 +31,13 @@ export fun longestPalindrome(s: string): string {
       end = i + (l / 2)
     }
   }
-  return s[start:end+1]
+  var res = ""
+  var k = start
+  while k <= end {
+    res = res + s[k]
+    k = k + 1
+  }
+  return res
 }
 
 test "example 1" {

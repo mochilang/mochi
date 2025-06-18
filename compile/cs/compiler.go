@@ -233,6 +233,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("}")
 
 	code := c.buf.Bytes()
+	if c.useLinq && !bytes.Contains(code, []byte("using System.Linq;")) {
+		code = bytes.Replace(code, []byte("using System.Collections.Generic;\n"), []byte("using System.Collections.Generic;\nusing System.Linq;\n"), 1)
+	}
 	if _, ok := c.helpers["_cast"]; !ok {
 		code = bytes.Replace(code, []byte("using System.Text.Json;\n"), nil, 1)
 	}
@@ -377,6 +380,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		name := sanitizeName(s.Let.Name)
 		if s.Let.Type != nil {
 			c.varTypes[name] = csType(s.Let.Type)
+			if isEmptyListLiteral(s.Let.Value) {
+				expr = fmt.Sprintf("new %s { }", c.varTypes[name])
+			}
+		} else if isListLiteral(s.Let.Value) {
+			elem := listElemType(s.Let.Value)
+			typ := "dynamic[]"
+			if elem != "" {
+				typ = elem + "[]"
+			}
+			c.varTypes[name] = typ
 		}
 		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
 	case s.Var != nil:
@@ -387,6 +400,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		name := sanitizeName(s.Var.Name)
 		if s.Var.Type != nil {
 			c.varTypes[name] = csType(s.Var.Type)
+			if isEmptyListLiteral(s.Var.Value) {
+				expr = fmt.Sprintf("new %s { }", c.varTypes[name])
+			}
+		} else if isListLiteral(s.Var.Value) {
+			elem := listElemType(s.Var.Value)
+			typ := "dynamic[]"
+			if elem != "" {
+				typ = elem + "[]"
+			}
+			c.varTypes[name] = typ
 		}
 		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
 	case s.Return != nil:
@@ -488,6 +511,17 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
+	}
+	if isListLiteral(a.Value) {
+		elem := listElemType(a.Value)
+		typ := "dynamic[]"
+		if elem != "" {
+			typ = elem + "[]"
+		}
+		cur, ok := c.varTypes[sanitizeName(a.Name)]
+		if !ok || cur == "dynamic[]" {
+			c.varTypes[sanitizeName(a.Name)] = typ
+		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
 	return nil
@@ -616,6 +650,17 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 					expr = fmt.Sprintf("(%s + %s)", left, right)
 				}
 				leftList = leftList && rightList
+			case "==", "!=":
+				if leftList && rightList {
+					c.use("_equal")
+					if op == "==" {
+						expr = fmt.Sprintf("_equal(%s, %s)", left, right)
+					} else {
+						expr = fmt.Sprintf("!_equal(%s, %s)", left, right)
+					}
+				} else {
+					expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+				}
 			case "in":
 				c.use("_in")
 				expr = fmt.Sprintf("_in(%s, %s)", left, right)
@@ -954,6 +999,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.List != nil:
+		if len(p.List.Elems) == 0 {
+			return "new dynamic[] { }", nil
+		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			v, err := c.compileExpr(e)
@@ -1122,7 +1170,10 @@ func sanitizeName(name string) string {
 
 func (c *Compiler) varIsList(name string) bool {
 	typ, ok := c.varTypes[name]
-	return ok && strings.HasSuffix(typ, "[]")
+	if !ok {
+		return false
+	}
+	return strings.HasSuffix(typ, "[]") || strings.HasPrefix(typ, "List<")
 }
 
 func (c *Compiler) varIsString(name string) bool {
@@ -1148,6 +1199,15 @@ func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
 		name := sanitizeName(p.Target.Selector.Root)
 		if c.varIsList(name) {
 			return true
+		}
+	}
+	if p.Target.Call != nil {
+		if t, err := c.env.GetVar(p.Target.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if isListType(ft.Return) {
+					return true
+				}
+			}
 		}
 	}
 	return false
@@ -1187,4 +1247,82 @@ func (c *Compiler) use(name string) {
 		c.helpers = make(map[string]bool)
 	}
 	c.helpers[name] = true
+}
+
+// isListLiteral reports whether the expression is a direct list literal.
+func isListLiteral(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target != nil && p.Target.List != nil
+}
+
+func isEmptyListLiteral(e *parser.Expr) bool {
+	if !isListLiteral(e) {
+		return false
+	}
+	u := e.Binary.Left
+	p := u.Value
+	return len(p.Target.List.Elems) == 0
+}
+
+// listElemType attempts to infer the element type of a list literal.
+// It returns an empty string if the type can't be determined.
+func listElemType(e *parser.Expr) string {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.List == nil {
+		return ""
+	}
+	list := p.Target.List
+	if len(list.Elems) == 0 {
+		return ""
+	}
+	first := list.Elems[0]
+	if first == nil || len(first.Binary.Right) != 0 {
+		return ""
+	}
+	pu := first.Binary.Left
+	if pu == nil || len(pu.Ops) != 0 {
+		return ""
+	}
+	pv := pu.Value
+	if pv == nil || len(pv.Ops) != 0 || pv.Target == nil || pv.Target.Lit == nil {
+		return ""
+	}
+	lit := pv.Target.Lit
+	switch {
+	case lit.Int != nil:
+		return "int"
+	case lit.Float != nil:
+		return "double"
+	case lit.Str != nil:
+		return "string"
+	case lit.Bool != nil:
+		return "bool"
+	default:
+		return ""
+	}
+}
+
+func isListType(t types.Type) bool {
+	switch t.(type) {
+	case types.ListType:
+		return true
+	}
+	return false
 }
