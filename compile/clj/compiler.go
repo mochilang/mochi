@@ -380,7 +380,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			case "%":
 				opName = "mod"
 			case "/":
-				opName = "quot"
+				if strings.Contains(l, ".") || strings.Contains(r, ".") || strings.Contains(l, "(double") || strings.Contains(r, "(double") {
+					opName = "/"
+				} else {
+					opName = "quot"
+				}
 			case "&&":
 				opName = "and"
 			case "||":
@@ -456,6 +460,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			continue
 		}
+		if op.Cast != nil {
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "float" {
+				expr = fmt.Sprintf("(double %s)", expr)
+			} else if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
+				expr = fmt.Sprintf("(int %s)", expr)
+			} else {
+				return "", fmt.Errorf("unsupported cast")
+			}
+			continue
+		}
 	}
 	return expr, nil
 }
@@ -465,6 +479,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return strconv.Itoa(*p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			s := strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64)
+			if !strings.Contains(s, ".") {
+				s += ".0"
+			}
+			return s, nil
 		}
 		if p.Lit.Bool != nil {
 			if *p.Lit.Bool {
