@@ -1,0 +1,12 @@
+import Foundation
+
+func main() {
+	var m: [Int: Int] = [:]
+	m[1] = 10
+	m[2] = 20
+	if m[1] != nil {
+		print(m[1]!)
+	}
+	print(m[2]!)
+}
+main()
