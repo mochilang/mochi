@@ -12,9 +12,10 @@ import (
 
 // Compiler translates a Mochi AST into Pascal source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	tempVarCount int
 }
 
 // New creates a new Pascal compiler instance.
@@ -133,18 +134,40 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
-	start, err := c.compileExpr(f.Source)
-	if err != nil {
-		return err
-	}
-	end, err := c.compileExpr(f.RangeEnd)
-	if err != nil {
-		return err
-	}
 	name := sanitizeName(f.Name)
-	c.writeln(fmt.Sprintf("for %s := %s to %s - 1 do", name, start, end))
+	if f.RangeEnd != nil {
+		start, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for %s := %s to %s - 1 do", name, start, end))
+		c.writeln("begin")
+		c.indent++
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("end;")
+		return nil
+	}
+
+	src, err := c.compileExpr(f.Source)
+	if err != nil {
+		return err
+	}
+	idx := c.newVar()
+	c.writeln(fmt.Sprintf("for %s := 0 to Length(%s) - 1 do", idx, src))
 	c.writeln("begin")
 	c.indent++
+	if f.Name != "_" {
+		c.writeln(fmt.Sprintf("%s := %s[%s];", name, src, idx))
+	}
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
@@ -347,8 +370,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		switch op.Op {
 		case "+", "-", "*", "/", "<", "<=", ">", ">=":
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
+		case "%":
+			expr = fmt.Sprintf("%s mod %s", expr, r)
 		case "==":
 			expr = fmt.Sprintf("%s = %s", expr, r)
+		case "!=":
+			expr = fmt.Sprintf("%s <> %s", expr, r)
 		default:
 			return "", fmt.Errorf("unsupported op %s", op.Op)
 		}
