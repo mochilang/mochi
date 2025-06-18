@@ -22,9 +22,9 @@ func TestSTCompiler_LeetCodeExample1(t *testing.T) {
 }
 
 func TestSTCompiler_LeetCodeExamples(t *testing.T) {
-        for i := 1; i <= 5; i++ {
-                runExample(t, i)
-        }
+       for i := 1; i <= 10; i++ {
+               runExample(t, i)
+       }
 }
 
 func TestSTCompiler_SubsetPrograms(t *testing.T) {
