@@ -5,7 +5,7 @@ vector<int> addTwoNumbers(vector<int> l1, vector<int> l2){
 	auto i = 0;
 	auto j = 0;
 	auto carry = 0;
-	auto result = vector<int>{};
+	vector<int> result = vector<int>{};
 	while (i < l1.size() || j < l2.size() || carry > 0) {
 		auto x = 0;
 		if (i < l1.size()) {
