@@ -54,7 +54,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Write(b)
 	c.writeln(".")
 	c.indent = oldIndent
-	c.writeln(":- initialization(main).")
+	c.writeln(":- initialization(main, main).")
 	return c.buf.Bytes(), nil
 }
 
@@ -183,12 +183,17 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 		c.writeln(line)
 	}
 	c.writeln(fmt.Sprintf("%s is %s - 1,", tempEnd, end.val))
-	c.writeln(fmt.Sprintf("between(%s, %s, %s),", start.val, tempEnd, sanitizeVar(f.Name)))
+	loopVar := sanitizeVar(f.Name)
+	c.writeln(fmt.Sprintf("forall(between(%s, %s, %s), (", start.val, tempEnd, loopVar))
+	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s, ret); err != nil {
 			return err
 		}
 	}
+	c.writeln("true")
+	c.indent--
+	c.writeln(")),")
 	return nil
 }
 
