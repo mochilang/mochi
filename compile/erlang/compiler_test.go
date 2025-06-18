@@ -19,8 +19,8 @@ import (
 
 func TestErlangCompiler_LeetCode1(t *testing.T) {
 	t.Skip("disabled in current environment")
-	if _, err := exec.LookPath("escript"); err != nil {
-		t.Skip("escript not installed")
+	if err := erlcode.EnsureErlang(); err != nil {
+		t.Skipf("erlang not installed: %v", err)
 	}
 	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
@@ -53,8 +53,8 @@ func TestErlangCompiler_LeetCode1(t *testing.T) {
 }
 
 func TestErlangCompiler_SubsetPrograms(t *testing.T) {
-	if _, err := exec.LookPath("escript"); err != nil {
-		t.Skip("escript not installed")
+	if err := erlcode.EnsureErlang(); err != nil {
+		t.Skipf("erlang not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/erl_simple", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
