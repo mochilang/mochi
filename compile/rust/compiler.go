@@ -162,7 +162,46 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.structs[name] = true
 	if len(t.Variants) > 0 {
-		return fmt.Errorf("union types not supported")
+		c.writeln("#[derive(Clone, Debug)]")
+		c.writeln(fmt.Sprintf("enum %s {", name))
+		c.indent++
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			if len(v.Fields) == 0 {
+				c.writeln(fmt.Sprintf("%s,", vname))
+			} else {
+				c.writeln(fmt.Sprintf("%s {", vname))
+				c.indent++
+				for _, f := range v.Fields {
+					typ := rustType(f.Type)
+					if f.Type != nil && f.Type.Simple != nil && *f.Type.Simple == t.Name {
+						typ = fmt.Sprintf("Box<%s>", typ)
+					}
+					c.writeln(fmt.Sprintf("%s: %s,", sanitizeName(f.Name), typ))
+					if c.env != nil {
+						st, ok := c.env.GetStruct(v.Name)
+						if !ok {
+							st = types.StructType{Name: v.Name, Fields: map[string]types.Type{}, Order: []string{}, Methods: map[string]types.Method{}}
+						}
+						st.Fields[f.Name] = c.resolveTypeRef(f.Type)
+						st.Order = append(st.Order, f.Name)
+						c.env.SetStruct(v.Name, st)
+
+						ut, ok := c.env.GetUnion(t.Name)
+						if !ok {
+							ut = types.UnionType{Name: t.Name, Variants: map[string]types.StructType{}}
+						}
+						ut.Variants[v.Name] = st
+						c.env.SetUnion(t.Name, ut)
+					}
+				}
+				c.indent--
+				c.writeln("},")
+			}
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
 	}
 	c.writeln("#[derive(Clone, Debug)]")
 	c.writeln(fmt.Sprintf("struct %s {", name))
@@ -352,6 +391,44 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(|| {\n")
+	b.WriteString("    match " + target + " {\n")
+	for _, cs := range m.Cases {
+		pat, err := c.compileMatchPattern(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		caseEnv := types.NewEnv(c.env)
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						caseEnv.SetVar(id, st.Fields[st.Order[idx]], true)
+					}
+				}
+			}
+		}
+		orig := c.env
+		c.env = caseEnv
+		res, err := c.compileExpr(cs.Result)
+		c.env = orig
+		if err != nil {
+			return "", err
+		}
+		b.WriteString("        " + pat + " => { " + res + " },\n")
+	}
+	b.WriteString("    }\n")
+	b.WriteString("})()")
+	return b.String(), nil
+}
+
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	if t == nil {
 		return types.AnyType{}
@@ -405,6 +482,43 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 		}
 	}
 	return types.AnyType{}
+}
+
+func (c *Compiler) compileMatchPattern(pat *parser.Expr) (string, error) {
+	if isUnderscoreExpr(pat) {
+		return "_", nil
+	}
+	if call, ok := callPattern(pat); ok {
+		if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+			st := ut.Variants[call.Func]
+			parts := make([]string, 0, len(call.Args))
+			for idx, a := range call.Args {
+				if name, ok := identName(a); ok {
+					if name == "_" {
+						continue
+					}
+					field := sanitizeName(st.Order[idx])
+					parts = append(parts, fmt.Sprintf("%s: %s", field, sanitizeName(name)))
+				} else {
+					return "", fmt.Errorf("invalid pattern")
+				}
+			}
+			if len(parts) > 0 {
+				return fmt.Sprintf("%s::%s { %s }", sanitizeName(ut.Name), sanitizeName(call.Func), strings.Join(parts, ", ")), nil
+			}
+			if len(st.Fields) == 0 {
+				return fmt.Sprintf("%s::%s", sanitizeName(ut.Name), sanitizeName(call.Func)), nil
+			}
+			return fmt.Sprintf("%s::%s { .. }", sanitizeName(ut.Name), sanitizeName(call.Func)), nil
+		}
+	}
+	if id, ok := identName(pat); ok {
+		if ut, ok := c.env.FindUnionByVariant(id); ok {
+			return fmt.Sprintf("%s::%s", sanitizeName(ut.Name), sanitizeName(id)), nil
+		}
+		return sanitizeName(id), nil
+	}
+	return c.compileExpr(pat)
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -461,6 +575,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if c.env != nil {
 			st, ok = c.env.GetStruct(p.Struct.Name)
 		}
+		var unionName string
+		var isVariant bool
+		if ut, ok2 := c.env.FindUnionByVariant(p.Struct.Name); ok2 {
+			unionName = ut.Name
+			isVariant = true
+		}
 		for i, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)
 			if err != nil {
@@ -471,13 +591,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					if _, isString := ft.(types.StringType); isString && isStringLiteral(f.Value) {
 						v = fmt.Sprintf("%s.to_string()", v)
 					}
+					if ut, ok3 := ft.(types.UnionType); ok3 {
+						if isVariant && ut.Name == unionName {
+							v = fmt.Sprintf("Box::new(%s)", v)
+						}
+					}
 				}
 			}
 			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
 		}
+		if isVariant {
+			return fmt.Sprintf("%s::%s { %s }", sanitizeName(unionName), sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+		}
+		return fmt.Sprintf("%s { %s }", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 		return fmt.Sprintf("%s { %s }", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -631,7 +762,7 @@ func rustType(t *parser.TypeRef) string {
 		case "bool":
 			return "bool"
 		default:
-			return *t.Simple
+			return sanitizeName(*t.Simple)
 		}
 	}
        if t.Generic != nil {
