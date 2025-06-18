@@ -586,6 +586,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		fromSrcs[i] = fs
 	}
 
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		joinOns[i] = on
+	}
+
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
@@ -626,12 +641,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf(indent+"for (var %s in %s) {\n", sanitizeName(q.Froms[i].Var), fs))
 		indent += "\t"
 	}
+	for i, js := range joinSrcs {
+		b.WriteString(fmt.Sprintf(indent+"for (var %s in %s) {\n", sanitizeName(q.Joins[i].Var), js))
+		indent += "\t"
+		b.WriteString(fmt.Sprintf(indent+"if (!(%s)) {\n", joinOns[i]))
+		b.WriteString(indent + "\tcontinue;\n")
+		b.WriteString(indent + "}\n")
+	}
 	if where != "" {
 		b.WriteString(indent + "if (!(" + where + ")) {\n")
 		b.WriteString(indent + "\tcontinue;\n")
 		b.WriteString(indent + "}\n")
 	}
 	b.WriteString(fmt.Sprintf(indent+"_res.add(%s);\n", sel))
+	for range joinSrcs {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
 	for range fromSrcs {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
