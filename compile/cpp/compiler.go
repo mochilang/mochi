@@ -220,7 +220,26 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		c.writeln("}")
 		return nil
 	}
-	// unsupported
+	src := c.compileExpr(f.Source)
+	elemType := "auto"
+	if t := c.guessExprType(f.Source); strings.HasPrefix(t, "vector<") {
+		elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
+	} else if t == "string" {
+		elemType = "char"
+	}
+	name := f.Name
+	if name == "_" {
+		name = "_"
+	}
+	c.writeln(fmt.Sprintf("for (%s %s : %s) {", elemType, name, src))
+	c.indent++
+	for _, st := range f.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
