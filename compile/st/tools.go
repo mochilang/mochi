@@ -15,6 +15,7 @@ func EnsureSmalltalk() error {
 	switch runtime.GOOS {
 	case "linux":
 		if _, err := exec.LookPath("apt-get"); err == nil {
+			fmt.Println("🔧 Installing GNU Smalltalk via apt-get...")
 			cmd := exec.Command("apt-get", "update")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -24,15 +25,22 @@ func EnsureSmalltalk() error {
 			cmd = exec.Command("apt-get", "install", "-y", "gnu-smalltalk")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
-			_ = cmd.Run()
+			if err := cmd.Run(); err != nil {
+				return err
+			}
 		}
 	case "darwin":
 		if _, err := exec.LookPath("brew"); err == nil {
+			fmt.Println("🍺 Installing GNU Smalltalk via Homebrew...")
 			cmd := exec.Command("brew", "install", "gnu-smalltalk")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
-			_ = cmd.Run()
+			if err := cmd.Run(); err != nil {
+				return err
+			}
 		}
+	default:
+		return fmt.Errorf("unsupported OS: %s", runtime.GOOS)
 	}
 	if _, err := exec.LookPath("gst"); err == nil {
 		return nil
