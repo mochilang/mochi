@@ -95,9 +95,9 @@ func TestRustCompiler_ValidPrograms(t *testing.T) {
 		})
 	}
 
-	// Also ensure the bundled LeetCode example still compiles and runs.
+	// Also ensure some of the bundled LeetCode examples still compile and run.
 	t.Run("leetcode_1", func(t *testing.T) {
-		runRustLeetExample(t)
+		runRustLeet(t, 1)
 	})
 }
 
@@ -146,12 +146,39 @@ func runRustProgram(t *testing.T, src string) {
 	}
 }
 
-// runRustLeetExample compiles and runs the LeetCode two-sum example to ensure
-// real-world samples keep working.
-func runRustLeetExample(t *testing.T) {
+// runRustLeet compiles and runs all Mochi files in examples/leetcode/<id>.
+// If an <file>.out file exists beside the source it is used as the expected
+// output. Otherwise the program is just executed to ensure it runs.
+func runRustLeet(t *testing.T, id int) {
 	root := findRoot(t)
-	path := filepath.Join(root, "examples", "leetcode", "1", "two-sum.mochi")
-	prog, err := parser.Parse(path)
+	dir := filepath.Join(root, "examples", "leetcode", fmt.Sprintf("%d", id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	for _, src := range files {
+		name := filepath.Base(src)
+		t.Run(name, func(t *testing.T) {
+			got := compileAndRunRust(t, src)
+			wantPath := strings.TrimSuffix(src, ".mochi") + ".out"
+			if data, err := os.ReadFile(wantPath); err == nil {
+				want := strings.TrimSpace(string(data))
+				if got != want {
+					t.Fatalf("unexpected output: %q", got)
+				}
+			} else if id == 1 && name == "two-sum.mochi" {
+				if got != "0\n1" {
+					t.Fatalf("unexpected output: %q", got)
+				}
+			}
+		})
+	}
+}
+
+// compileAndRunRust compiles the given Mochi source file to Rust, executes the
+// resulting binary and returns its trimmed stdout.
+func compileAndRunRust(t *testing.T, src string) string {
+	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
 	}
@@ -177,10 +204,7 @@ func runRustLeetExample(t *testing.T) {
 	if err != nil {
 		t.Fatalf("run error: %v\n%s", err, out)
 	}
-	got := strings.TrimSpace(string(out))
-	if got != "0\n1" {
-		t.Fatalf("unexpected output: %q", got)
-	}
+	return strings.TrimSpace(string(out))
 }
 
 func findRoot(t *testing.T) string {
