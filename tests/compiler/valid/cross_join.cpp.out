@@ -33,7 +33,7 @@ int main() {
 })();
 	std::cout << "--- Cross Join: All order-customer pairs ---" << std::endl;
 	for (PairInfo entry : result) {
-		std::cout << "Order"std::cout << " " << entry.orderIdstd::cout << " " << "(customerId:"std::cout << " " << entry.orderCustomerIdstd::cout << " " << ", total: $"std::cout << " " << entry.orderTotalstd::cout << " " << ") paired with"std::cout << " " << entry.pairedCustomerName << std::endl;
+		std::cout << "Order" << " " << entry.orderId << " " << "(customerId:" << " " << entry.orderCustomerId << " " << ", total: $" << " " << entry.orderTotal << " " << ") paired with" << " " << entry.pairedCustomerName << std::endl;
 	}
 	return 0;
 }

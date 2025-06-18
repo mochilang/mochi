@@ -5,21 +5,21 @@ import (
 )
 
 type Customer struct {
-	Id   int    `json:"id"`
+	Id int `json:"id"`
 	Name string `json:"name"`
 }
 
 type Order struct {
-	Id         int `json:"id"`
+	Id int `json:"id"`
 	CustomerId int `json:"customerId"`
-	Total      int `json:"total"`
+	Total int `json:"total"`
 }
 
 type PairInfo struct {
-	OrderId            int    `json:"orderId"`
-	OrderCustomerId    int    `json:"orderCustomerId"`
+	OrderId int `json:"orderId"`
+	OrderCustomerId int `json:"orderCustomerId"`
 	PairedCustomerName string `json:"pairedCustomerName"`
-	OrderTotal         int    `json:"orderTotal"`
+	OrderTotal int `json:"orderTotal"`
 }
 
 func main() {
@@ -27,14 +27,14 @@ func main() {
 	_ = customers
 	var orders []Order = []Order{Order{Id: 100, CustomerId: 1, Total: 250}, Order{Id: 101, CustomerId: 2, Total: 125}, Order{Id: 102, CustomerId: 1, Total: 300}}
 	var result []PairInfo = func() []PairInfo {
-		_res := []PairInfo{}
-		for _, o := range orders {
-			for _, c := range customers {
-				_res = append(_res, PairInfo{OrderId: o.Id, OrderCustomerId: o.CustomerId, PairedCustomerName: c.Name, OrderTotal: o.Total})
-			}
+	_res := []PairInfo{}
+	for _, o := range orders {
+		for _, c := range customers {
+			_res = append(_res, PairInfo{OrderId: o.Id, OrderCustomerId: o.CustomerId, PairedCustomerName: c.Name, OrderTotal: o.Total})
 		}
-		return _res
-	}()
+	}
+	return _res
+}()
 	fmt.Println("--- Cross Join: All order-customer pairs ---")
 	for _, entry := range result {
 		fmt.Println("Order", entry.OrderId, "(customerId:", entry.OrderCustomerId, ", total: $", entry.OrderTotal, ") paired with", entry.PairedCustomerName)

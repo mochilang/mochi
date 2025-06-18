@@ -10,7 +10,7 @@ int main() {
 		if (n > 7) {
 			break;
 		}
-		std::cout << "odd number:"std::cout << " " << n << std::endl;
+		std::cout << "odd number:" << " " << n << std::endl;
 	}
 	return 0;
 }
