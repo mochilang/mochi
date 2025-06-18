@@ -171,6 +171,10 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		c.writeln("}")
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Break != nil:
+		c.writeln("break;")
+	case s.Continue != nil:
+		c.writeln("continue;")
 	case s.Expr != nil:
 		v, err := c.compileExpr(s.Expr.Expr, false)
 		if err != nil {
