@@ -1,0 +1,26 @@
+program main;
+{$mode objfpc}
+uses SysUtils;
+
+type TIntArray = array of integer;
+
+var
+	n: integer;
+	numbers: TIntArray;
+
+begin
+	numbers := [1, 2, 3, 4, 5, 6, 7, 8, 9];
+	for _tmp0 := 0 to Length(numbers) - 1 do
+	begin
+		n := numbers[_tmp0];
+		if n mod 2 = 0 then
+		begin
+			continue;
+		end;
+		if n > 7 then
+		begin
+			break;
+		end;
+		writeln("odd number:", n);
+	end;
+end.

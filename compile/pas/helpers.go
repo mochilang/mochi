@@ -1,6 +1,9 @@
 package pascode
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func (c *Compiler) writeln(s string) {
 	c.writeIndent()
@@ -40,4 +43,10 @@ func sanitizeName(name string) string {
 		return "_" + res
 	}
 	return res
+}
+
+func (c *Compiler) newVar() string {
+	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+	c.tempVarCount++
+	return name
 }
