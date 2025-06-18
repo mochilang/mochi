@@ -17,6 +17,42 @@ import (
 	"mochi/types"
 )
 
+func TestKTCompiler_TwoSum(t *testing.T) {
+	if err := ktcode.EnsureKotlin(); err != nil {
+		t.Skipf("kotlin not installed: %v", err)
+	}
+	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	code, err := ktcode.New(env).Compile(prog)
+	if err != nil {
+		t.Fatalf("compile error: %v", err)
+	}
+	dir := t.TempDir()
+	file := filepath.Join(dir, "Main.kt")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	jar := filepath.Join(dir, "main.jar")
+	if out, err := exec.Command("kotlinc", file, "-include-runtime", "-d", jar).CombinedOutput(); err != nil {
+		t.Fatalf("kotlinc error: %v\n%s", err, out)
+	}
+	out, err := exec.Command("java", "-jar", jar).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run error: %v\n%s", err, out)
+	}
+	got := bytes.TrimSpace(out)
+	if string(got) != "0\n1" {
+		t.Fatalf("unexpected output: %s", got)
+	}
+}
+
 func TestKTCompiler_SubsetPrograms(t *testing.T) {
 	t.Skip("slow")
 	if err := ktcode.EnsureKotlin(); err != nil {
