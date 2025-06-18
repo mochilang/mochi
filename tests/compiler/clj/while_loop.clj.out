@@ -1,0 +1,5 @@
+(def i 0)
+(while (< i 3)
+  (println i)
+  (set! i (+ i 1))
+)

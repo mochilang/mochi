@@ -86,6 +86,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileReturn(s.Return)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Expr != nil:
@@ -180,6 +182,23 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("(doseq [%s %s]", name, src))
+	c.indent++
+	for _, s := range st.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
+	cond, err := c.compileExpr(st.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("(while " + cond)
 	c.indent++
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
