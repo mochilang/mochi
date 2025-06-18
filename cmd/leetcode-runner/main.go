@@ -175,7 +175,11 @@ func buildOne(src, lang string, run bool) error {
 	if err := os.MkdirAll(outDir, 0755); err != nil {
 		return err
 	}
-	outFile := filepath.Join(outDir, base+"."+lang)
+	ext := lang
+	if lang == "scheme" {
+		ext = "scm"
+	}
+	outFile := filepath.Join(outDir, base+"."+ext)
 	var data []byte
 	switch lang {
 	case "go":
@@ -355,6 +359,15 @@ func runOutput(file, lang string) error {
 			return fmt.Errorf("swiftc: %v\n%s", err, string(out))
 		}
 		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "scheme":
+		path, err := schemecode.EnsureScheme()
+		if err != nil {
+			return err
+		}
+		cmd := exec.Command(path, "-m", "chibi", file)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
