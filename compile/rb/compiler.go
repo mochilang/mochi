@@ -12,10 +12,11 @@ import (
 
 // Compiler translates a Mochi AST into Ruby source code.
 type Compiler struct {
-	buf      bytes.Buffer
-	indent   int
-	env      *types.Env
-	tmpCount int
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	tmpCount      int
+	useOpenStruct bool
 }
 
 // New creates a new Ruby compiler instance.
@@ -50,6 +51,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
+	body := append([]byte(nil), c.buf.Bytes()...)
+	c.buf.Reset()
+	if c.useOpenStruct {
+		c.writeln("require 'ostruct'")
+		c.writeln("")
+	}
+	c.buf.Write(body)
 	return c.buf.Bytes(), nil
 }
 
@@ -407,7 +415,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString("\tend\n")
 	b.WriteString("\t_res\n")
-	b.WriteString("end")
+	b.WriteString("end)")
 	return b.String(), nil
 }
 
@@ -565,21 +573,59 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
 	case p.Map != nil:
+		if len(p.Map.Items) == 0 {
+			return "{}", nil
+		}
 		items := make([]string, len(p.Map.Items))
+		identOnly := true
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
+			var k string
+			if id, ok := identName(it.Key); ok {
+				k = sanitizeName(id)
+			} else {
+				identOnly = false
+				var err error
+				k, err = c.compileExpr(it.Key)
+				if err != nil {
+					return "", err
+				}
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
 			}
-			items[i] = fmt.Sprintf("%s => %s", k, v)
+			if identOnly {
+				items[i] = fmt.Sprintf("%s: %s", k, v)
+			} else {
+				if id, ok := identName(it.Key); ok {
+					k = strconv.Quote(sanitizeName(id))
+				}
+				items[i] = fmt.Sprintf("%s => %s", k, v)
+			}
+		}
+		if identOnly {
+			c.useOpenStruct = true
+			return "OpenStruct.new(" + strings.Join(items, ", ") + ")", nil
 		}
 		return "{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		var typ types.Type
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
+		if _, ok := typ.(types.MapType); ok {
+			for i, t := range p.Selector.Tail {
+				if i == 0 {
+					name += fmt.Sprintf("[%q]", t)
+				} else {
+					name += fmt.Sprintf("[%q]", t)
+				}
+			}
+			return name, nil
+		}
 		for _, t := range p.Selector.Tail {
 			name += "." + sanitizeName(t)
 		}

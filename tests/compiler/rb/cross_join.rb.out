@@ -14,7 +14,7 @@ result = (begin
 		end
 	end
 	_res
-end
+end)
 puts(["--- Cross Join: All order-customer pairs ---"].join(" "))
 for entry in result
 	puts(["Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName].join(" "))
