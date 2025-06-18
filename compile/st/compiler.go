@@ -3,6 +3,7 @@ package stcode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -106,6 +107,7 @@ func collectVars(stmts []*parser.Statement) []string {
 	for v := range set {
 		vars = append(vars, v)
 	}
+	sort.Strings(vars)
 	return vars
 }
 
