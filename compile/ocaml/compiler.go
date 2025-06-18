@@ -157,7 +157,24 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 
 func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 	if f.RangeEnd == nil {
-		return fmt.Errorf("unsupported for range")
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		iter := "List.iter"
+		if isStringExpr(f.Source, c.env) {
+			iter = "String.iter"
+		}
+		c.writeln(fmt.Sprintf("%s (fun %s ->", iter, sanitizeName(f.Name)))
+		c.indent++
+		for _, st := range f.Body {
+			if err := c.compileStmt(st, ex); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln(fmt.Sprintf(") %s;", src))
+		return nil
 	}
 	start, err := c.compileExpr(f.Source)
 	if err != nil {
@@ -412,6 +429,27 @@ func ocamlType(t *parser.TypeRef) string {
 		}
 	}
 	return ""
+}
+
+func isStringExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	p := e.Binary.Left.Value.Target
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil {
+		if typ, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func sanitizeName(name string) string {
