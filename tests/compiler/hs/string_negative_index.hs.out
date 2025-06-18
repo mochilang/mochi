@@ -1,6 +1,8 @@
-package hscode
+module Main where
 
-const runtime = `
+import Data.Maybe (fromMaybe)
+
+
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
 forLoop start end f = go start
   where
@@ -20,4 +22,9 @@ _indexString s i =
   in if idx < 0 || idx >= length s
        then error "index out of range"
        else [s !! idx]
-`
+
+
+main :: IO ()
+main = do
+    let text = "hello"
+    putStrLn (_indexString text (-1))

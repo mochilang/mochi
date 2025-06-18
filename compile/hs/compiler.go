@@ -345,6 +345,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if c.isMapExpr(p.Target) {
 				c.usesMap = true
 				expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", idx, expr)
+			} else if c.isStringExpr(p.Target) {
+				expr = fmt.Sprintf("_indexString %s %s", expr, idx)
 			} else {
 				expr = fmt.Sprintf("(%s !! %s)", expr, idx)
 			}
@@ -407,7 +409,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			joined := strings.Join(args, " ")
 			if len(args) == 1 {
 				arg := args[0]
-				if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") {
+				if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "_indexString") {
 					return fmt.Sprintf("putStrLn (%s)", arg), nil
 				}
 			}
@@ -461,6 +463,25 @@ func (c *Compiler) isMapExpr(p *parser.Primary) bool {
 		if c.env != nil {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 				if _, ok := t.(types.MapType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isStringExpr(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := t.(types.StringType); ok {
 					return true
 				}
 			}
