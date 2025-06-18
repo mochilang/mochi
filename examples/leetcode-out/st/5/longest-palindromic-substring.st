@@ -17,7 +17,7 @@ expand: s left: left right: right | l n r |
 !
 
 !Main class methodsFor: 'mochi'!
-longestPalindrome: s | end i l len1 len2 n start |
+longestPalindrome: s | end i k l len1 len2 n res start |
 	((s size <= 1)) ifTrue: [
 		^ s
 	]
@@ -33,14 +33,21 @@ longestPalindrome: s | end i l len1 len2 n start |
 			l := len2.
 		]
 		.
-		(((l > end) - start)) ifTrue: [
-			start := ((i - ((l - 1))) / 2).
-			end := ((i + l) / 2).
+		((l > ((end - start)))) ifTrue: [
+			start := (i - ((((l - 1)) / 2))).
+			end := (i + ((l / 2))).
 		]
 		.
 	]
 	.
-	^ (s copyFrom: (start + 1) to: (end + 1))
+	res := ''.
+	k := start.
+	[(k <= end)] whileTrue: [
+		res := (res + (s at: k + 1)).
+		k := (k + 1).
+	]
+	.
+	^ res
 !
 
 !!
