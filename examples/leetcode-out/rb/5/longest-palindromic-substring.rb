@@ -26,11 +26,17 @@ def longestPalindrome(s)
 		if (len2 > len1)
 			l = len2
 		end
-		if (l > (_end - start))
-			start = (i - (((l - 1)) / 2))
-			_end = (i + (l / 2))
+		if (l > ((_end - start)))
+			start = (i - ((((l - 1)) / 2)))
+			_end = (i + ((l / 2)))
 		end
 	end
-	return s[start...(_end + 1)]
+	res = ""
+	k = start
+	while (k <= _end)
+		res = (res + s[k])
+		k = (k + 1)
+	end
+	return res
 end
 
