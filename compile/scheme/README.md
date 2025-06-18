@@ -255,6 +255,16 @@ func TestSchemeCompiler_LeetCode2(t *testing.T) {
 func TestSchemeCompiler_LeetCode3(t *testing.T) {
         runLeetExample(t, 3)
 }
+
+// TestSchemeCompiler_LeetCode4 runs the median-of-two-sorted-arrays example.
+func TestSchemeCompiler_LeetCode4(t *testing.T) {
+        runLeetExample(t, 4)
+}
+
+// TestSchemeCompiler_LeetCode5 runs the longest-palindromic-substring example.
+func TestSchemeCompiler_LeetCode5(t *testing.T) {
+        runLeetExample(t, 5)
+}
 ```
 
 Execute them with the `slow` tag as they invoke an external interpreter:
