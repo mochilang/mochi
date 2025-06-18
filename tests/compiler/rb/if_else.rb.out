@@ -1,0 +1,13 @@
+def foo(n)
+	if (n < 0)
+		return (-1)
+	elsif (n == 0)
+		return 0
+	else
+		return 1
+	end
+end
+
+puts([foo((-2))].join(" "))
+puts([foo(0)].join(" "))
+puts([foo(3)].join(" "))

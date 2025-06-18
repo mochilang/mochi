@@ -213,38 +213,40 @@ func (c *Compiler) compileLocalFunStmt(fn *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
-	cond, err := c.compileExpr(stmt.Cond)
-	if err != nil {
-		return err
-	}
-	c.writeln("if " + cond)
-	c.indent++
-	for _, s := range stmt.Then {
-		if err := c.compileStmt(s); err != nil {
+	first := true
+	for stmt != nil {
+		cond, err := c.compileExpr(stmt.Cond)
+		if err != nil {
 			return err
 		}
-	}
-	c.indent--
-	if stmt.ElseIf != nil {
-		cond2, _ := c.compileExpr(stmt.ElseIf.Cond)
-		c.writeln("elsif " + cond2)
+		if first {
+			c.writeln("if " + cond)
+			first = false
+		} else {
+			c.writeln("elsif " + cond)
+		}
 		c.indent++
-		for _, s := range stmt.ElseIf.Then {
+		for _, s := range stmt.Then {
 			if err := c.compileStmt(s); err != nil {
 				return err
 			}
 		}
 		c.indent--
-	}
-	if len(stmt.Else) > 0 {
-		c.writeln("else")
-		c.indent++
-		for _, s := range stmt.Else {
-			if err := c.compileStmt(s); err != nil {
-				return err
-			}
+		if stmt.ElseIf != nil {
+			stmt = stmt.ElseIf
+			continue
 		}
-		c.indent--
+		if len(stmt.Else) > 0 {
+			c.writeln("else")
+			c.indent++
+			for _, s := range stmt.Else {
+				if err := c.compileStmt(s); err != nil {
+					return err
+				}
+			}
+			c.indent--
+		}
+		break
 	}
 	c.writeln("end")
 	return nil
