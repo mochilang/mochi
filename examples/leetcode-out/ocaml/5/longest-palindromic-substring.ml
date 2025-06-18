@@ -34,12 +34,6 @@ let rec longestPalindrome s =
         _end := i + (!l / 2);
       end;
     done;
-    let res = ref "" in
-    let k = ref !start in
-    while !k <= !_end do
-      res := !res ^ (String.make 1 (String.get s !k));
-      k := !k + 1;
-    done;
-    raise (Return_1 (!res))
+    raise (Return_1 ((String.sub s !start (!_end + 1 - !start))))
   with Return_1 v -> v
 

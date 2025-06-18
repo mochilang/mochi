@@ -12,15 +12,19 @@ import (
 
 // Compiler translates a Mochi AST into OCaml source code (very limited subset).
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	tmp    int
-	vars   map[string]bool
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	tmp     int
+	vars    map[string]bool
+	mapVars map[string]bool
+	setNth  bool
 }
 
 // New creates a new OCaml compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env, vars: map[string]bool{}} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, vars: map[string]bool{}, mapVars: map[string]bool{}}
+}
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
@@ -51,7 +55,29 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
+	if c.setNth {
+		c.writeln("")
+	}
 	return c.buf.Bytes(), nil
+}
+
+func (c *Compiler) ensureSetNth() {
+	if c.setNth {
+		return
+	}
+	c.setNth = true
+	c.writeln("let rec _set_nth lst i v =")
+	c.indent++
+	c.writeln("match lst with")
+	c.indent++
+	c.writeln("| [] -> []")
+	c.writeln("| x::xs ->")
+	c.indent++
+	c.writeln("if i = 0 then v :: xs else x :: _set_nth xs (i - 1) v")
+	c.indent--
+	c.indent--
+	c.writeln("")
+	c.indent--
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -130,6 +156,17 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 			c.vars = map[string]bool{}
 		}
 		c.vars[name] = true
+		if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" {
+			if c.mapVars == nil {
+				c.mapVars = map[string]bool{}
+			}
+			c.mapVars[name] = true
+		} else if s.Var.Value != nil && s.Var.Value.Binary != nil && s.Var.Value.Binary.Left != nil && s.Var.Value.Binary.Left.Value != nil && s.Var.Value.Binary.Left.Value.Target != nil && s.Var.Value.Binary.Left.Value.Target.Map != nil {
+			if c.mapVars == nil {
+				c.mapVars = map[string]bool{}
+			}
+			c.mapVars[name] = true
+		}
 		if ex == "" {
 			c.writeln(fmt.Sprintf("let %s = ref %s;;", name, val))
 		} else {
@@ -141,10 +178,45 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 			return err
 		}
 		name := sanitizeName(s.Assign.Name)
+		target := name
+		if c.vars[name] {
+			target = "!" + name
+		}
+		if len(s.Assign.Index) > 0 {
+			idx, err := c.compileExpr(s.Assign.Index[0].Start)
+			if err != nil {
+				return err
+			}
+			if c.mapVars[name] {
+				if ex == "" {
+					c.writeln(fmt.Sprintf("Hashtbl.replace %s %s %s;;", target, idx, val))
+				} else {
+					c.writeln(fmt.Sprintf("Hashtbl.replace %s %s %s;", target, idx, val))
+				}
+				return nil
+			} else if c.vars[name] {
+				c.ensureSetNth()
+				if ex == "" {
+					c.writeln(fmt.Sprintf("%s := _set_nth %s %s %s;;", name, target, idx, val))
+				} else {
+					c.writeln(fmt.Sprintf("%s := _set_nth %s %s %s;", name, target, idx, val))
+				}
+				return nil
+			}
+		}
 		if ex == "" {
 			c.writeln(fmt.Sprintf("%s := %s;;", name, val))
 		} else {
 			c.writeln(fmt.Sprintf("%s := %s;", name, val))
+		}
+	case s.Fun != nil:
+		if err := c.compileFun(s.Fun); err != nil {
+			return err
+		}
+		if ex != "" {
+			c.writeln("in")
+		} else {
+			c.writeln("")
 		}
 	case s.While != nil:
 		return c.compileWhile(s.While, ex)
@@ -339,6 +411,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if isFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || isFloatExpr(&parser.Expr{Binary: b}, c.env) {
 				oper = "/."
 			}
+		} else if oper == "in" {
+			expr = fmt.Sprintf("Hashtbl.mem %s %s", r, expr)
+			continue
 		}
 		expr = fmt.Sprintf("%s %s %s", expr, oper, r)
 	}
@@ -397,6 +472,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				if isStringPrimary(p.Target, c.env) {
 					expr = fmt.Sprintf("(String.get %s %s)", expr, start)
+				} else if isMapPrimary(p.Target, c.env) {
+					expr = fmt.Sprintf("(Hashtbl.find %s %s)", expr, start)
 				} else {
 					expr = fmt.Sprintf("(List.nth %s %s)", expr, start)
 				}
@@ -446,6 +523,31 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "[" + strings.Join(elems, "; ") + "]", nil
+	case p.Map != nil:
+		var b strings.Builder
+		b.WriteString("(let tbl = Hashtbl.create ")
+		b.WriteString(strconv.Itoa(len(p.Map.Items)))
+		b.WriteString(" in ")
+		for i, it := range p.Map.Items {
+			if i > 0 {
+				b.WriteString(";")
+			}
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString("Hashtbl.add tbl ")
+			b.WriteString(k)
+			b.WriteString(" ")
+			b.WriteString(v)
+			b.WriteString(";")
+		}
+		b.WriteString(" tbl)")
+		return b.String(), nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
 		if c.vars[name] {
@@ -509,6 +611,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 			return fmt.Sprintf("print_endline (string_of_int (%s))", args[0]), nil
 		}
+	case "str":
+		if len(args) == 1 {
+			if isStringExpr(call.Args[0], c.env) {
+				return args[0], nil
+			}
+			if isFloatExpr(call.Args[0], c.env) {
+				return fmt.Sprintf("string_of_float %s", args[0]), nil
+			}
+			return fmt.Sprintf("string_of_int %s", args[0]), nil
+		}
 	}
 	return fmt.Sprintf("%s %s", sanitizeName(call.Func), strings.Join(args, " ")), nil
 }
@@ -536,6 +648,17 @@ func ocamlType(t *parser.TypeRef) string {
 				elem = "unit"
 			}
 			return fmt.Sprintf("%s list", elem)
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			key := ocamlType(t.Generic.Args[0])
+			if key == "" {
+				key = "unit"
+			}
+			val := ocamlType(t.Generic.Args[1])
+			if val == "" {
+				val = "unit"
+			}
+			return fmt.Sprintf("(%s, %s) Hashtbl.t", key, val)
 		}
 	}
 	return ""
@@ -597,6 +720,44 @@ func isFloatExpr(e *parser.Expr, env *types.Env) bool {
 	if p.Selector != nil {
 		if typ, err := env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := typ.(types.FloatType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isMapExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	p := e.Binary.Left.Value.Target
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil {
+		if typ, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isMapPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil {
+		if typ, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.MapType); ok {
 				return true
 			}
 		}
