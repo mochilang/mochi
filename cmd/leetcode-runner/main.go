@@ -358,6 +358,14 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "erlang":
+		if err := erlcode.EnsureErlang(); err != nil {
+			return err
+		}
+		cmd := exec.Command("escript", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
