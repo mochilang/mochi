@@ -28,6 +28,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("public class Main {")
 	c.indent++
 
+	// type declarations
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// collect function declarations and main statements
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -308,6 +318,56 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return nil // unions not supported
+	}
+
+	name := sanitizeName(t.Name)
+	fields := []struct{ name, typ string }{}
+	if c.env != nil {
+		st := types.StructType{Name: t.Name, Fields: map[string]types.Type{}, Order: []string{}}
+		for _, m := range t.Members {
+			if m.Field != nil {
+				ft := c.resolveTypeRef(m.Field.Type)
+				st.Fields[m.Field.Name] = ft
+				st.Order = append(st.Order, m.Field.Name)
+				fields = append(fields, struct{ name, typ string }{sanitizeName(m.Field.Name), c.javaType(ft)})
+			}
+		}
+		c.env.SetStruct(t.Name, st)
+	} else {
+		for _, m := range t.Members {
+			if m.Field != nil {
+				fields = append(fields, struct{ name, typ string }{sanitizeName(m.Field.Name), c.javaType(c.resolveTypeRef(m.Field.Type))})
+			}
+		}
+	}
+
+	c.writeln(fmt.Sprintf("static class %s {", name))
+	c.indent++
+	for _, f := range fields {
+		c.writeln(fmt.Sprintf("%s %s;", f.typ, f.name))
+	}
+	if len(fields) > 0 {
+		params := make([]string, len(fields))
+		for i, f := range fields {
+			params[i] = f.typ + " " + f.name
+		}
+		c.writeln("")
+		c.writeln(fmt.Sprintf("%s(%s) {", name, strings.Join(params, ", ")))
+		c.indent++
+		for _, f := range fields {
+			c.writeln(fmt.Sprintf("this.%s = %s;", f.name, f.name))
+		}
+		c.indent--
+		c.writeln("}")
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
 	c.writeIndent()
@@ -503,10 +563,39 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "new java.util.HashMap<>()", nil
 		}
 		return "java.util.Map.of(" + joinArgs(items) + ")", nil
-	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 {
-			return sanitizeName(p.Selector.Root), nil
+	case p.Struct != nil:
+		args := []string{}
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+				m := map[string]string{}
+				for _, f := range p.Struct.Fields {
+					v, err := c.compileExpr(f.Value)
+					if err != nil {
+						return "", err
+					}
+					m[f.Name] = v
+				}
+				for _, fn := range st.Order {
+					args = append(args, m[fn])
+				}
+			}
 		}
+		if len(args) == 0 {
+			for _, f := range p.Struct.Fields {
+				v, err := c.compileExpr(f.Value)
+				if err != nil {
+					return "", err
+				}
+				args = append(args, v)
+			}
+		}
+		return fmt.Sprintf("new %s(%s)", sanitizeName(p.Struct.Name), joinArgs(args)), nil
+	case p.Selector != nil:
+		expr := sanitizeName(p.Selector.Root)
+		for _, f := range p.Selector.Tail {
+			expr += "." + sanitizeName(f)
+		}
+		return expr, nil
 	case p.Call != nil:
 		args := []string{}
 		for _, a := range p.Call.Args {
@@ -598,6 +687,8 @@ func (c *Compiler) javaType(t types.Type) string {
 		key = boxedType(key)
 		val = boxedType(val)
 		return "java.util.Map<" + key + ", " + val + ">"
+	case types.StructType:
+		return sanitizeName(tt.Name)
 	default:
 		return "Object"
 	}
