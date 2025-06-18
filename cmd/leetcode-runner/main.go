@@ -181,6 +181,9 @@ func buildOne(src, lang string, run bool) error {
 	} else if lang == "fortran" {
 		ext = ".f90"
 	}
+	if lang == "fs" {
+		ext = ".fsx"
+	}
 	outFile := filepath.Join(outDir, base+ext)
 	var data []byte
 	switch lang {
