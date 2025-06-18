@@ -1,0 +1,5 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+xs := Array with: 10 with: 20 with: 30.
+Transcript show: ((xs at: 1 + 1)) printString; cr

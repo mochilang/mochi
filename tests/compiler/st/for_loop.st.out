@@ -1,0 +1,7 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+1 to: 4 - 1 do: [:i |
+	Transcript show: (i) printString; cr
+]
+.
