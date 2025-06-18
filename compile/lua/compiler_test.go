@@ -57,52 +57,64 @@ func TestLuaCompiler_SubsetPrograms(t *testing.T) {
 	if _, err := exec.LookPath("lua"); err != nil {
 		t.Skip("lua not installed")
 	}
-	golden.Run(t, "tests/compiler/lua", ".mochi", ".out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
-		if err != nil {
-			return nil, fmt.Errorf("❌ parse error: %w", err)
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			return nil, fmt.Errorf("❌ type error: %v", errs[0])
-		}
-		c := luacode.New(env)
-		code, err := c.Compile(prog)
-		if err != nil {
-			return nil, fmt.Errorf("❌ compile error: %w", err)
-		}
-		dir := t.TempDir()
-		file := filepath.Join(dir, "main.lua")
-		if err := os.WriteFile(file, code, 0644); err != nil {
-			return nil, fmt.Errorf("write error: %w", err)
-		}
-		cmd := exec.Command("lua", file)
-		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-			cmd.Stdin = bytes.NewReader(data)
-		}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			return nil, fmt.Errorf("❌ lua run error: %w\n%s", err, out)
-		}
-		return bytes.TrimSpace(out), nil
-	})
+	dirs := []string{
+		"tests/compiler/valid",
+		"tests/compiler/lua",
+	}
+	for _, dir := range dirs {
+		golden.Run(t, dir, ".mochi", ".out", func(src string) ([]byte, error) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				return nil, fmt.Errorf("❌ parse error: %w", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				return nil, fmt.Errorf("❌ type error: %v", errs[0])
+			}
+			c := luacode.New(env)
+			code, err := c.Compile(prog)
+			if err != nil {
+				return nil, fmt.Errorf("❌ compile error: %w", err)
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.lua")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				return nil, fmt.Errorf("write error: %w", err)
+			}
+			cmd := exec.Command("lua", file)
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				return nil, fmt.Errorf("❌ lua run error: %w\n%s", err, out)
+			}
+			return bytes.TrimSpace(out), nil
+		})
+	}
 }
 
 func TestLuaCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/lua", ".mochi", ".lua.out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
-		if err != nil {
-			return nil, fmt.Errorf("❌ parse error: %w", err)
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			return nil, fmt.Errorf("❌ type error: %v", errs[0])
-		}
-		c := luacode.New(env)
-		code, err := c.Compile(prog)
-		if err != nil {
-			return nil, fmt.Errorf("❌ compile error: %w", err)
-		}
-		return bytes.TrimSpace(code), nil
-	})
+	dirs := []string{
+		"tests/compiler/valid",
+		"tests/compiler/lua",
+	}
+	for _, dir := range dirs {
+		golden.Run(t, dir, ".mochi", ".lua.out", func(src string) ([]byte, error) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				return nil, fmt.Errorf("❌ parse error: %w", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				return nil, fmt.Errorf("❌ type error: %v", errs[0])
+			}
+			c := luacode.New(env)
+			code, err := c.Compile(prog)
+			if err != nil {
+				return nil, fmt.Errorf("❌ compile error: %w", err)
+			}
+			return bytes.TrimSpace(code), nil
+		})
+	}
 }
