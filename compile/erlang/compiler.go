@@ -15,22 +15,8 @@ type Compiler struct {
 	indent  int
 	env     *types.Env
 	needGet bool
-}
-
-func erlVar(env *types.Env, name string) string {
-	if name == "_" {
-		return name
-	}
-	if _, err := env.GetVar(name); err == nil {
-		if len(name) > 0 {
-			b := []byte(name)
-			if b[0] >= 'a' && b[0] <= 'z' {
-				b[0] = b[0] - 'a' + 'A'
-			}
-			return string(b)
-		}
-	}
-	return name
+	vars    map[string]string
+	counts  map[string]int
 }
 
 func capitalize(name string) string {
@@ -47,8 +33,30 @@ func capitalize(name string) string {
 	return name
 }
 
+func (c *Compiler) current(name string) string {
+	if v, ok := c.vars[name]; ok {
+		return v
+	}
+	v := capitalize(name)
+	c.vars[name] = v
+	return v
+}
+
+func (c *Compiler) newName(name string) string {
+	n := c.counts[name]
+	varName := capitalize(name)
+	if n > 0 {
+		varName = fmt.Sprintf("%s_%d", varName, n)
+	}
+	c.counts[name] = n + 1
+	c.vars[name] = varName
+	return varName
+}
+
 // New returns a new Compiler.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}}
+}
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
@@ -102,8 +110,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	params := []string{}
+	savedVars := c.vars
+	savedCounts := c.counts
+	c.vars = map[string]string{}
+	// preserve counts across functions
+	if c.counts == nil {
+		c.counts = map[string]int{}
+	}
 	for _, p := range fun.Params {
-		params = append(params, capitalize(p.Name))
+		params = append(params, c.newName(p.Name))
 	}
 	c.writeln(fmt.Sprintf("%s(%s) ->", fun.Name, strings.Join(params, ", ")))
 	child := types.NewEnv(c.env)
@@ -127,6 +142,8 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.writeln("end.")
 	c.indent--
 	c.env = origEnv
+	c.vars = savedVars
+	c.counts = savedCounts
 	return nil
 }
 
@@ -172,7 +189,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			val = v
 		}
-		c.buf.WriteString(fmt.Sprintf("%s = %s", capitalize(s.Let.Name), val))
+		name := c.newName(s.Let.Name)
+		c.buf.WriteString(fmt.Sprintf("%s = %s", name, val))
 		if c.env != nil {
 			c.env.SetVar(s.Let.Name, types.AnyType{}, false)
 		}
@@ -185,7 +203,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			val = v
 		}
-		c.buf.WriteString(fmt.Sprintf("%s = %s", capitalize(s.Var.Name), val))
+		name := c.newName(s.Var.Name)
+		c.buf.WriteString(fmt.Sprintf("%s = %s", name, val))
 		if c.env != nil {
 			c.env.SetVar(s.Var.Name, types.AnyType{}, true)
 		}
@@ -281,7 +300,9 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 		list = src
 	}
-	c.buf.WriteString(fmt.Sprintf("mochi_foreach(fun(%s) ->\n", capitalize(stmt.Name)))
+	prevName, hasPrev := c.vars[stmt.Name]
+	iter := c.newName(stmt.Name)
+	c.buf.WriteString(fmt.Sprintf("mochi_foreach(fun(%s) ->\n", iter))
 	child := types.NewEnv(c.env)
 	child.SetVar(stmt.Name, types.AnyType{}, true)
 	orig := c.env
@@ -293,6 +314,11 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 	c.indent--
 	c.env = orig
+	if hasPrev {
+		c.vars[stmt.Name] = prevName
+	} else {
+		delete(c.vars, stmt.Name)
+	}
 	c.writeIndent()
 	c.buf.WriteString(fmt.Sprintf("end, %s)", list))
 	return nil
@@ -319,7 +345,8 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	c.buf.WriteString(fmt.Sprintf("%s = %s", erlVar(c.env, a.Name), val))
+	name := c.newName(a.Name)
+	c.buf.WriteString(fmt.Sprintf("%s = %s", name, val))
 	return nil
 }
 
@@ -331,46 +358,102 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	leftAst := b.Left
-	left, err := c.compileUnary(leftAst)
+	type operand struct {
+		expr   string
+		isList bool
+	}
+
+	if b == nil {
+		return "", fmt.Errorf("nil binary expression")
+	}
+
+	ops := []string{}
+	operands := []operand{}
+
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	out := left
-	for _, op := range b.Right {
-		rightAst := op.Right
-		right, err := c.compilePostfix(rightAst)
+	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left)})
+
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-			erlOp := op.Op
-			if erlOp == "&&" {
-				erlOp = "and"
-			}
-			if erlOp == "||" {
-				erlOp = "or"
-			}
-			if erlOp == "==" {
-				erlOp = "=="
-			}
-			if erlOp == "!=" {
-				erlOp = "/="
-			}
-			if erlOp == "+" && (isListUnary(leftAst) || isListPostfix(rightAst)) {
-				out = fmt.Sprintf("lists:append(%s, %s)", out, right)
-			} else {
-				out = fmt.Sprintf("(%s %s %s)", out, erlOp, right)
-			}
-		case "in":
-			out = fmt.Sprintf("maps:is_key(%s, %s)", out, right)
-		default:
-			return "", fmt.Errorf("unsupported operator %s", op.Op)
-		}
-		leftAst = &parser.Unary{Value: rightAst}
+		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right)})
+		ops = append(ops, part.Op)
 	}
-	return out, nil
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+
+			op := ops[i]
+			l := operands[i]
+			r := operands[i+1]
+
+			var expr string
+			var isList bool
+
+			switch op {
+			case "+":
+				if l.isList || r.isList {
+					expr = fmt.Sprintf("lists:append(%s, %s)", l.expr, r.expr)
+					isList = true
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", l.expr, r.expr)
+				}
+			case "-", "*", "/", "%", "<", "<=", ">", ">=":
+				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
+			case "==", "!=":
+				erlOp := op
+				if op == "!=" {
+					erlOp = "/="
+				}
+				expr = fmt.Sprintf("(%s %s %s)", l.expr, erlOp, r.expr)
+			case "&&":
+				expr = fmt.Sprintf("(%s and %s)", l.expr, r.expr)
+			case "||":
+				expr = fmt.Sprintf("(%s or %s)", l.expr, r.expr)
+			case "in":
+				expr = fmt.Sprintf("maps:is_key(%s, %s)", l.expr, r.expr)
+			default:
+				return "", fmt.Errorf("unsupported operator %s", op)
+			}
+
+			operands[i] = operand{expr: expr, isList: isList}
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
+		}
+	}
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state in binary expression")
+	}
+
+	return operands[0].expr, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -505,7 +588,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.Selector != nil:
-		name := erlVar(c.env, p.Selector.Root)
+		name := c.current(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
 			for _, t := range p.Selector.Tail {
 				name = fmt.Sprintf("maps:get(%s, %s)", t, name)
