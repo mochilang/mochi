@@ -1,0 +1,18 @@
+sealed interface Tree
+data class Leaf() : Tree
+data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
+
+fun isLeaf(t: Tree) : Boolean {
+        return run {
+                val _t = t
+                when {
+                        _t is Leaf -> true
+                        else -> false
+                }
+        }
+}
+
+fun main() {
+        println(isLeaf(Leaf()))
+        println(isLeaf(Node(left = Leaf(), value = 1, right = Leaf())))
+}
