@@ -282,6 +282,24 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "ocaml":
+		if err := mlcode.EnsureOCaml(); err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, filepath.Ext(file))
+		args := []string{"-o", exe}
+		if filepath.Ext(file) != ".ml" {
+			args = append([]string{"-impl", file}, args...)
+		} else {
+			args = append([]string{file}, args...)
+		}
+		if out, err := exec.Command("ocamlc", args...).CombinedOutput(); err != nil {
+			return fmt.Errorf("ocamlc: %v\n%s", err, string(out))
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
