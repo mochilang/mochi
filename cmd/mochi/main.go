@@ -32,10 +32,14 @@ import (
 
 	"mochi/ast"
 	ccode "mochi/compile/c"
+	cljcode "mochi/compile/clj"
+	cobolcode "mochi/compile/cobol"
+	cppcode "mochi/compile/cpp"
 	cscode "mochi/compile/cs"
 	dartcode "mochi/compile/dart"
 	erlcode "mochi/compile/erlang"
 	excode "mochi/compile/ex"
+	fortrancode "mochi/compile/fortran"
 	fscode "mochi/compile/fs"
 	gocode "mochi/compile/go"
 	hscode "mochi/compile/hs"
@@ -43,15 +47,21 @@ import (
 	jvmcode "mochi/compile/jvm"
 	ktcode "mochi/compile/kt"
 	luacode "mochi/compile/lua"
+	ocamlcode "mochi/compile/ocaml"
+	pascode "mochi/compile/pas"
 	phpcode "mochi/compile/php"
+	plcode "mochi/compile/pl"
 	pycode "mochi/compile/py"
 	rbcode "mochi/compile/rb"
+	rktcode "mochi/compile/rkt"
 	rscode "mochi/compile/rust"
 	scalacode "mochi/compile/scala"
+	schemecode "mochi/compile/scheme"
 	stcode "mochi/compile/st"
 	swiftcode "mochi/compile/swift"
 	tscode "mochi/compile/ts"
 	"mochi/compile/wasm"
+	zigcode "mochi/compile/zig"
 	"mochi/interpreter"
 	"mochi/mcp"
 	"mochi/parser"
@@ -99,7 +109,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (c|cs|dart|erlang|ex|fs|go|hs|java|jvm|kt|lua|php|py|python|rb|rust|scala|swift|ts|wasm|st)"`
+	Target        string `arg:"--target" help:"Output language (c|clj|cobol|cpp|cs|dart|erlang|ex|fortran|fs|go|hs|java|jvm|kt|lua|ocaml|pas|php|pl|py|python|rb|rkt|rust|scala|scheme|st|swift|ts|wasm|zig)"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
@@ -438,14 +448,68 @@ func build(cmd *BuildCmd) error {
 	target := strings.ToLower(cmd.Target)
 	if target == "" && cmd.Out != "" {
 		switch strings.ToLower(filepath.Ext(cmd.Out)) {
+		case ".c":
+			target = "c"
+		case ".clj":
+			target = "clj"
+		case ".cob":
+			target = "cobol"
+		case ".cpp":
+			target = "cpp"
+		case ".cs":
+			target = "cs"
+		case ".dart":
+			target = "dart"
+		case ".erl":
+			target = "erlang"
+		case ".ex":
+			target = "ex"
+		case ".f90":
+			target = "fortran"
+		case ".fs":
+			target = "fs"
 		case ".go":
 			target = "go"
+		case ".hs":
+			target = "hs"
+		case ".java":
+			target = "java"
+		case ".jar":
+			target = "jvm"
+		case ".kt":
+			target = "kt"
+		case ".lua":
+			target = "lua"
+		case ".ml":
+			target = "ocaml"
+		case ".pas":
+			target = "pas"
+		case ".php":
+			target = "php"
+		case ".pl":
+			target = "pl"
 		case ".py":
 			target = "py"
+		case ".rb":
+			target = "rb"
+		case ".rkt":
+			target = "rkt"
+		case ".rs":
+			target = "rust"
+		case ".scala":
+			target = "scala"
+		case ".scm":
+			target = "scheme"
+		case ".st":
+			target = "st"
+		case ".swift":
+			target = "swift"
 		case ".ts":
 			target = "ts"
 		case ".wasm":
 			target = "wasm"
+		case ".zig":
+			target = "zig"
 		}
 	}
 
@@ -473,6 +537,42 @@ func build(cmd *BuildCmd) error {
 			out = base + ".c"
 		}
 		code, err := ccode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "clj":
+		if out == "" {
+			out = base + ".clj"
+		}
+		code, err := cljcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "cobol":
+		if out == "" {
+			out = base + ".cob"
+		}
+		code, err := cobolcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "cpp":
+		if out == "" {
+			out = base + ".cpp"
+		}
+		code, err := cppcode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
@@ -521,6 +621,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".ex"
 		}
 		code, err := excode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "fortran":
+		if out == "" {
+			out = base + ".f90"
+		}
+		code, err := fortrancode.New().Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
@@ -612,6 +724,30 @@ func build(cmd *BuildCmd) error {
 			status = "error"
 			msg = err.Error()
 		}
+	case "ocaml":
+		if out == "" {
+			out = base + ".ml"
+		}
+		code, err := ocamlcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "pas":
+		if out == "" {
+			out = base + ".pas"
+		}
+		code, err := pascode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
 	case "st":
 		if out == "" {
 			out = base + ".st"
@@ -629,6 +765,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".php"
 		}
 		code, err := phpcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "pl":
+		if out == "" {
+			out = base + ".pl"
+		}
+		code, err := plcode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
@@ -660,6 +808,18 @@ func build(cmd *BuildCmd) error {
 			status = "error"
 			msg = err.Error()
 		}
+	case "rkt":
+		if out == "" {
+			out = base + ".rkt"
+		}
+		code, err := rktcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
 	case "rust":
 		if out == "" {
 			out = base + ".rs"
@@ -677,6 +837,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".scala"
 		}
 		code, err := scalacode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "scheme":
+		if out == "" {
+			out = base + ".scm"
+		}
+		code, err := schemecode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
@@ -721,6 +893,18 @@ func build(cmd *BuildCmd) error {
 		data, err := wasm.New(env, wasm.WithToolchain(tc)).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, data, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "zig":
+		if out == "" {
+			out = base + ".zig"
+		}
+		code, err := zigcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
 		}
 		if err != nil {
 			status = "error"
