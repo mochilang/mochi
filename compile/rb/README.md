@@ -80,6 +80,22 @@ mochi build --target rb main.mochi -o main.rb
 ruby main.rb
 ```
 
+### Example: LeetCode Two Sum
+
+To compile and run the `two-sum` example located in `examples/leetcode/1`, use:
+
+```bash
+mochi build --target rb examples/leetcode/1/two-sum.mochi -o two-sum.rb
+ruby two-sum.rb
+```
+
+The program prints the indices of the elements that sum to the target:
+
+```
+0
+1
+```
+
 `tools.go` provides `EnsureRuby` which attempts to install Ruby on Linux or macOS if it is missing:
 
 ```go

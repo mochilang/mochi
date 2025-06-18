@@ -18,7 +18,6 @@ import (
 )
 
 func TestRBCompiler_TwoSum(t *testing.T) {
-	t.Skip("disabled in current environment")
 	if err := rbcode.EnsureRuby(); err != nil {
 		t.Skipf("ruby not installed: %v", err)
 	}
