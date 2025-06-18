@@ -278,7 +278,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	for _, op := range p.Ops {
-		if op.Index != nil {
+		if op.Call != nil {
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
+			}
+			expr = fmt.Sprintf("(%s %s)", expr, strings.Join(args, " "))
+		} else if op.Index != nil {
 			idx, err := c.compileExpr(op.Index.Start)
 			if err != nil {
 				return "", err
@@ -324,6 +334,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}
 		return name, nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
 	case p.Group != nil:
@@ -335,6 +347,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	if fn.ExprBody != nil {
+		body, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("fun %s -> %s", strings.Join(params, " "), body), nil
+	}
+	return "", fmt.Errorf("unsupported function expression")
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
@@ -353,7 +380,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "print":
 		if len(args) == 1 {
-			return fmt.Sprintf("print_endline (string_of_int %s)", args[0]), nil
+			return fmt.Sprintf("print_endline (string_of_int (%s))", args[0]), nil
 		}
 	}
 	return fmt.Sprintf("%s %s", sanitizeName(call.Func), strings.Join(args, " ")), nil
