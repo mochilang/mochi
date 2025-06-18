@@ -126,6 +126,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLet(s.Let)
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Return != nil:
@@ -183,6 +185,9 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	if typ == "" && st.Value != nil && emptyListExpr(st.Value) {
 		if lt, ok := c.retType.(types.ListType); ok {
 			typ = ": " + scalaType(lt)
+		} else {
+			typ = ": scala.collection.mutable.ArrayBuffer[String]"
+			value = " = scala.collection.mutable.ArrayBuffer()"
 		}
 	}
 	c.writeln(fmt.Sprintf("var %s%s%s", sanitizeName(st.Name), typ, value))
@@ -486,6 +491,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
+			}
+			if lit := it.Key.Binary.Left.Value.Target.Lit; lit != nil && lit.Str != nil && len(*lit.Str) == 1 {
+				ch := strings.ReplaceAll(*lit.Str, "'", "\\'")
+				k = "'" + ch + "'"
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
