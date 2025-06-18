@@ -363,6 +363,8 @@ func mapOp(op string) string {
 		return "="
 	case "!=":
 		return "~="
+	case "%":
+		return "\\"
 	}
 	return op
 }
