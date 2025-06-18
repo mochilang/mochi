@@ -265,6 +265,12 @@ php add-two-numbers.php
 
 mochi build --target php ../../examples/leetcode/3/longest-substring-without-repeating-characters.mochi -o longest-substring.php
 php longest-substring.php
+
+mochi build --target php ../../examples/leetcode/4/median-of-two-sorted-arrays.mochi -o median.php
+php median.php
+
+mochi build --target php ../../examples/leetcode/5/longest-palindromic-substring.mochi -o palindrome.php
+php palindrome.php
 ```
 
 ## Tests
