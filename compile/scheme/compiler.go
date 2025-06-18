@@ -3,6 +3,7 @@ package schemecode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -15,6 +16,7 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	env    *types.Env
+	inFun  bool
 }
 
 // New creates a new Scheme compiler instance.
@@ -67,16 +69,50 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.indent++
 	c.writeln("(call/cc (lambda (return)")
 	c.indent++
+
+	vars := map[string]bool{}
+	collectVars(fn.Body, vars)
+	names := make([]string, 0, len(vars))
+	for v := range vars {
+		names = append(names, sanitizeName(v))
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.writeln(fmt.Sprintf("(define %s '())", n))
+	}
+
+	prev := c.inFun
+	c.inFun = true
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
+	c.inFun = prev
 	c.indent--
 	c.writeln("))")
 	c.indent--
 	c.writeln(")")
 	return nil
+}
+
+func collectVars(stmts []*parser.Statement, vars map[string]bool) {
+	for _, s := range stmts {
+		switch {
+		case s.Var != nil:
+			vars[s.Var.Name] = true
+		case s.For != nil:
+			collectVars(s.For.Body, vars)
+		case s.If != nil:
+			collectVars(s.If.Then, vars)
+			if s.If.ElseIf != nil {
+				collectVars([]*parser.Statement{{If: s.If.ElseIf}}, vars)
+			}
+			collectVars(s.If.Else, vars)
+		case s.While != nil:
+			collectVars(s.While.Body, vars)
+		}
+	}
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -96,7 +132,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			expr = v
 		}
-		c.writeln(fmt.Sprintf("(define %s %s)", sanitizeName(s.Var.Name), expr))
+		name := sanitizeName(s.Var.Name)
+		if c.inFun {
+			c.writeln(fmt.Sprintf("(set! %s %s)", name, expr))
+		} else {
+			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
+		}
 	case s.Assign != nil:
 		rhs, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
@@ -234,19 +275,29 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	left, err := c.compileUnary(b.Left)
+	leftAst := b.Left
+	left, err := c.compileUnary(leftAst)
 	if err != nil {
 		return "", err
 	}
 	expr := left
 	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+		rightAst := op.Right
+		right, err := c.compilePostfix(rightAst)
 		if err != nil {
 			return "", err
 		}
 		switch op.Op {
-		case "+", "-", "*", "/":
+		case "+":
+			if isListUnary(leftAst) || isListPostfix(rightAst) {
+				expr = fmt.Sprintf("(append %s %s)", expr, right)
+			} else {
+				expr = fmt.Sprintf("(+ %s %s)", expr, right)
+			}
+		case "-", "*", "/":
 			expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
+		case "%":
+			expr = fmt.Sprintf("(modulo %s %s)", expr, right)
 		case "==":
 			expr = fmt.Sprintf("(= %s %s)", expr, right)
 		case "!=":
@@ -256,6 +307,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		default:
 			expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
 		}
+		leftAst = &parser.Unary{Value: rightAst}
 	}
 	return expr, nil
 }
@@ -304,6 +356,20 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 	}
 	return expr, nil
+}
+
+func isListUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return isListPostfix(u.Value)
+}
+
+func isListPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return p.Target != nil && p.Target.List != nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {

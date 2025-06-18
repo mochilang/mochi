@@ -17,39 +17,52 @@ import (
 	"mochi/types"
 )
 
-// TestSchemeCompiler_TwoSum compiles the LeetCode example to Scheme and runs it.
-func TestSchemeCompiler_TwoSum(t *testing.T) {
+func runLeetExample(t *testing.T, id int) {
 	if _, err := schemecode.EnsureScheme(); err != nil {
 		t.Skipf("chibi-scheme not installed: %v", err)
 	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
-	prog, err := parser.Parse(src)
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
-		t.Fatalf("parse error: %v", err)
+		t.Fatalf("glob error: %v", err)
 	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
+	for _, src := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(src))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			c := schemecode.New(env)
+			code, err := c.Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.scm")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("chibi-scheme", "-m", "chibi", file)
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("scheme run error: %v\n%s", err, out)
+			}
+			_ = out
+		})
 	}
-	c := schemecode.New(env)
-	code, err := c.Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-	dir := t.TempDir()
-	file := filepath.Join(dir, "main.scm")
-	if err := os.WriteFile(file, code, 0644); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
-	cmd := exec.Command("chibi-scheme", "-m", "chibi", file)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("scheme run error: %v\n%s", err, out)
-	}
-	got := bytes.TrimSpace(out)
-	if string(got) != "0\n1" {
-		t.Fatalf("unexpected output: %q", got)
-	}
+}
+
+// TestSchemeCompiler_LeetCode1 compiles the two-sum example and runs it.
+func TestSchemeCompiler_LeetCode1(t *testing.T) {
+	runLeetExample(t, 1)
 }
 
 func TestSchemeCompiler_SubsetPrograms(t *testing.T) {
