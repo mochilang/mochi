@@ -68,7 +68,7 @@ cobc -free -x two-sum.cob -o two-sum
 ./two-sum    # prints "0" and then "1"
 ```
 
-The compiler tests include a helper that compiles and executes the first two
+The compiler tests include a helper that compiles and executes the first three
 LeetCode examples using the COBOL backend. Run the tests with the `slow` build
 tag to try it out:
 

@@ -216,4 +216,5 @@ func TestCobolCompiler_LeetCodeExamples(t *testing.T) {
 
 	runExample(1)
 	runExample(2)
+	runExample(3)
 }
