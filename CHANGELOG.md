@@ -1,4 +1,26 @@
 # 📦 CHANGELOG.md
+## [0.8.4] – 2025-06-18
+
+### Added
+
+* Two Sum example tests across many compilers
+* Prolog early return support and if-else
+* Pascal boolean literals and reserved keyword tests
+* Scheme multi-argument print and Racket else clauses
+* F# function expressions
+* Zig backend auto-installs when missing
+
+### Changed
+
+* Swift uses `let` for immutable parameters
+* Go `count` builtin improved
+* Golden tests refreshed for several languages
+
+### Fixed
+
+* Smalltalk and Elixir compiler issues
+* Erlang variable naming corrections
+
 ## [0.8.3] – 2025-06-18
 
 ### Added
