@@ -1,0 +1,2 @@
+(define value (* (+ 1 2) 3))
+(begin (display value) (newline))
