@@ -1,3 +1,12 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 function isLeaf(t)
 	return (function()
 	local _t0 = t
@@ -6,5 +15,5 @@ function isLeaf(t)
 end)()
 end
 
-print(isLeaf({__name="Leaf"}))
-print(isLeaf({__name="Node", left={__name="Leaf"}, value=1, right={__name="Leaf"}}))
+__print(isLeaf({__name="Leaf"}))
+__print(isLeaf({__name="Node", left={__name="Leaf"}, value=1, right={__name="Leaf"}}))

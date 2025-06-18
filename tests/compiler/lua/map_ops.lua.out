@@ -1,3 +1,12 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 function __contains(container, item)
 	if type(container) == 'table' then
 		if container[1] ~= nil or #container > 0 then
@@ -40,6 +49,6 @@ local m = {}
 m[(1)+1] = 10
 m[(2)+1] = 20
 if __contains(m, 1) then
-	print(__index(m, 1))
+	__print(__index(m, 1))
 end
-print(__index(m, 2))
+__print(__index(m, 2))

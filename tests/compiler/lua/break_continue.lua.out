@@ -1,3 +1,12 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 function __iter(obj)
 	if type(obj) == 'table' then
 		if obj[1] ~= nil or #obj > 0 then
@@ -30,6 +39,6 @@ for _, n in __iter(numbers) do
 	if (n > 7) then
 		break
 	end
-	print("odd number:", n)
+	__print("odd number:", n)
 	::__continue0::
 end

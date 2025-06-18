@@ -1,3 +1,12 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 function __avg(v)
 	local items
 	if type(v) == 'table' and v.items ~= nil then
@@ -13,4 +22,4 @@ function __avg(v)
 	return sum / #items
 end
 
-print(__avg({1, 2, 3}))
+__print(__avg({1, 2, 3}))

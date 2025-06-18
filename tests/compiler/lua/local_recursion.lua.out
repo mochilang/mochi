@@ -1,3 +1,12 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 function __div(a, b)
 	if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
 		return a // b
@@ -46,4 +55,4 @@ function inorder(t)
 end)()
 end
 
-print(inorder(fromList({-10, -3, 0, 5, 9})))
+__print(inorder(fromList({-10, -3, 0, 5, 9})))
