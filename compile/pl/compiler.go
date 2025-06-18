@@ -52,9 +52,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		b = append(b, '\n')
 	}
 	c.buf = oldBuf
-	c.writeln("main :-")
-	c.buf.Write(b)
-	c.writeln(".")
+	if len(b) == 0 {
+		c.writeln("main :- true.")
+	} else {
+		c.writeln("main :-")
+		c.buf.Write(b)
+		c.writeln(".")
+	}
 	c.indent = oldIndent
 	c.writeln(":- initialization(main, main).")
 	return c.buf.Bytes(), nil
@@ -64,6 +68,31 @@ func (c *Compiler) newVar() string {
 	v := fmt.Sprintf("_V%d", c.tmp)
 	c.tmp++
 	return v
+}
+
+// compileBlock compiles a sequence of statements at one indentation level and
+// trims the trailing comma if present. The current indentation is preserved and
+// the generated code is returned.
+func (c *Compiler) compileBlock(stmts []*parser.Statement, ret string) ([]byte, error) {
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = oldIndent + 1
+	for _, s := range stmts {
+		if err := c.compileStmt(s, ret); err != nil {
+			c.buf = oldBuf
+			c.indent = oldIndent
+			return nil, err
+		}
+	}
+	b := c.buf.Bytes()
+	if bytes.HasSuffix(b, []byte(",\n")) {
+		b = b[:len(b)-2]
+		b = append(b, '\n')
+	}
+	c.buf = oldBuf
+	c.indent = oldIndent
+	return b, nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -190,6 +219,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 		}
 	case s.For != nil:
 		return c.compileFor(s.For, ret)
+	case s.Break != nil:
+		c.writeln("throw(break)")
+		return nil
 	case s.If != nil:
 		return c.compileIf(s.If, ret, true)
 	default:
@@ -241,30 +273,30 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt, ret string, trailing bool) err
 		c.writeln(line)
 	}
 	c.writeln(fmt.Sprintf("(%s ->", cond.val))
-	c.indent++
-	for _, s := range stmt.Then {
-		if err := c.compileStmt(s, ret); err != nil {
-			return err
-		}
+
+	thenBlock, err := c.compileBlock(stmt.Then, ret)
+	if err != nil {
+		return err
 	}
-	c.indent--
+	c.buf.Write(thenBlock)
+
 	c.writeln(";")
-	c.indent++
+
 	switch {
 	case stmt.ElseIf != nil:
 		if err := c.compileIf(stmt.ElseIf, ret, false); err != nil {
 			return err
 		}
 	case len(stmt.Else) > 0:
-		for _, s := range stmt.Else {
-			if err := c.compileStmt(s, ret); err != nil {
-				return err
-			}
+		elseBlock, err := c.compileBlock(stmt.Else, ret)
+		if err != nil {
+			return err
 		}
+		c.buf.Write(elseBlock)
 	default:
 		c.writeln("true")
 	}
-	c.indent--
+
 	if trailing {
 		c.writeln("),")
 	} else {
@@ -308,6 +340,10 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt, ret string) error {
+	c.writeln("catch(")
+	c.indent++
+	c.writeln("(")
+	c.indent++
 	c.writeln("repeat,")
 	c.indent++
 	cond, err := c.compileExpr(stmt.Cond)
@@ -326,7 +362,11 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt, ret string) error {
 	}
 	c.writeln("fail")
 	c.indent--
-	c.writeln("; true),")
+	c.writeln("; true)")
+	c.indent--
+	c.indent--
+	c.writeln(")")
+	c.writeln(", break, true),")
 	c.indent--
 	return nil
 }
