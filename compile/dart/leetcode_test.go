@@ -89,3 +89,23 @@ func TestLeetCode3(t *testing.T) {
 		t.Fatalf("unexpected output: %q", got)
 	}
 }
+
+func TestLeetCode4(t *testing.T) {
+	if err := dartcode.EnsureDart(); err != nil {
+		t.Skipf("dart not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "4"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
+
+func TestLeetCode5(t *testing.T) {
+	if err := dartcode.EnsureDart(); err != nil {
+		t.Skipf("dart not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "5"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
