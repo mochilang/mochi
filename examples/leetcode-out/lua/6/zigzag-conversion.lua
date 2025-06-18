@@ -1,8 +1,25 @@
-function __div(a, b)
-	if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
-		return a // b
+function __iter(obj)
+	if type(obj) == 'table' then
+		if obj[1] ~= nil or #obj > 0 then
+			local i = 0
+			local n = #obj
+			return function()
+				i = i + 1
+				if i <= n then return i, obj[i] end
+			end
+		else
+			return pairs(obj)
+		end
+	elseif type(obj) == 'string' then
+		local i = 0
+		local n = #obj
+		return function()
+			i = i + 1
+			if i <= n then return i, string.sub(obj, i, i) end
+		end
+	else
+		return function() return nil end
 	end
-	return a / b
 end
 
 function __add(a, b)
@@ -56,52 +73,49 @@ function __indexString(s, i)
 	return string.sub(s, i, i)
 end
 
-function findMedianSortedArrays(nums1, nums2)
-	local merged = {}
+function convert(s, numRows)
+	if ((numRows <= 1) or (numRows >= #s)) then
+		return s
+	end
+	local rows = {}
 	local i = 0
-	local j = 0
-	while ((i < #nums1) or (j < #nums2)) do
-		if (j >= #nums2) then
-			merged = __add(merged, {__index(nums1, i)})
-			i = __add(i, 1)
-		elseif (i >= #nums1) then
-			merged = __add(merged, {__index(nums2, j)})
-			j = __add(j, 1)
-		elseif (__index(nums1, i) <= __index(nums2, j)) then
-			merged = __add(merged, {__index(nums1, i)})
-			i = __add(i, 1)
-		else
-			merged = __add(merged, {__index(nums2, j)})
-			j = __add(j, 1)
-		end
+	while (i < numRows) do
+		rows = __add(rows, {""})
+		i = __add(i, 1)
 		::__continue0::
 	end
-	local total = #merged
-	if __eq((total % 2), 1) then
-		return __index(merged, __div(total, 2))
+	local curr = 0
+	local step = 1
+	for _, ch in __iter(s) do
+		rows[(curr)+1] = __add(__index(rows, curr), ch)
+		if __eq(curr, 0) then
+			step = 1
+		elseif __eq(curr, (numRows - 1)) then
+			step = -1
+		end
+		curr = __add(curr, step)
+		::__continue1::
 	end
-	local mid1 = __index(merged, (__div(total, 2) - 1))
-	local mid2 = __index(merged, __div(total, 2))
-	return __div((__add(mid1, mid2)), 2.0)
+	local result = ""
+	for _, row in __iter(rows) do
+		result = __add(result, row)
+		::__continue2::
+	end
+	return result
 end
 
 function test_example_1()
-	if not (__eq(findMedianSortedArrays({1, 3}, {2}), 2.0)) then error('expect failed') end
+	if not (__eq(convert("PAYPALISHIRING", 3), "PAHNAPLSIIGYIR")) then error('expect failed') end
 end
 
 function test_example_2()
-	if not (__eq(findMedianSortedArrays({1, 2}, {3, 4}), 2.5)) then error('expect failed') end
+	if not (__eq(convert("PAYPALISHIRING", 4), "PINALSIGYAHRPI")) then error('expect failed') end
 end
 
-function test_empty_first()
-	if not (__eq(findMedianSortedArrays({}, {1}), 1.0)) then error('expect failed') end
-end
-
-function test_empty_second()
-	if not (__eq(findMedianSortedArrays({2}, {}), 2.0)) then error('expect failed') end
+function test_single_row()
+	if not (__eq(convert("A", 1), "A")) then error('expect failed') end
 end
 
 test_example_1()
 test_example_2()
-test_empty_first()
-test_empty_second()
+test_single_row()

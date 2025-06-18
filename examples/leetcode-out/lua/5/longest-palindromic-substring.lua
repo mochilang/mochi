@@ -35,7 +35,11 @@ function __index(obj, i)
 	if type(obj) == 'string' then
 		return __indexString(obj, i)
 	elseif type(obj) == 'table' then
-		return obj[(i)+1]
+		if obj[1] ~= nil or #obj > 0 then
+			return obj[(i)+1]
+		else
+			return obj[i]
+		end
 	else
 		error('cannot index')
 	end
@@ -50,6 +54,33 @@ function __indexString(s, i)
 	end
 	if i < 1 or i > len then error('index out of range') end
 	return string.sub(s, i, i)
+end
+
+function __slice(obj, i, j)
+	if i == nil then i = 0 end
+	if type(obj) == 'string' then
+		local len = #obj
+		if j == nil then j = len end
+		if i < 0 then i = len + i end
+		if j < 0 then j = len + j end
+		if i < 0 then i = 0 end
+		if j > len then j = len end
+		return string.sub(obj, i+1, j)
+	elseif type(obj) == 'table' then
+		local len = #obj
+		if j == nil then j = len end
+		if i < 0 then i = len + i end
+		if j < 0 then j = len + j end
+		if i < 0 then i = 0 end
+		if j > len then j = len end
+		local out = {}
+		for k = i+1, j do
+			out[#out+1] = obj[k]
+		end
+		return out
+	else
+		return {}
+	end
 end
 
 function expand(s, left, right)
@@ -87,14 +118,7 @@ function longestPalindrome(s)
 		end
 		::__continue1::
 	end
-	local res = ""
-	local k = start
-	while (k <= _end) do
-		res = __add(res, __index(s, k))
-		k = __add(k, 1)
-		::__continue2::
-	end
-	return res
+	return __slice(s, start, __add(_end, 1))
 end
 
 function test_example_1()

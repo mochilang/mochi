@@ -1081,7 +1081,15 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writeln("elseif type(obj) == 'table' then")
 		c.indent++
+		c.writeln("if obj[1] ~= nil or #obj > 0 then")
+		c.indent++
 		c.writeln("return obj[(i)+1]")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("return obj[i]")
+		c.indent--
+		c.writeln("end")
 		c.indent--
 		c.writeln("else")
 		c.indent++

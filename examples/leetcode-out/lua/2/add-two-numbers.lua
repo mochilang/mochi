@@ -35,7 +35,11 @@ function __index(obj, i)
 	if type(obj) == 'string' then
 		return __indexString(obj, i)
 	elseif type(obj) == 'table' then
-		return obj[(i)+1]
+		if obj[1] ~= nil or #obj > 0 then
+			return obj[(i)+1]
+		else
+			return obj[i]
+		end
 	else
 		error('cannot index')
 	end
