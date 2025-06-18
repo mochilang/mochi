@@ -196,11 +196,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				c.indent--
 				c.writeln("}")
 			case "_indexString":
-				c.writeln("static string _indexString(string s, int i) {")
+				c.writeln("static string _indexString(string s, long i) {")
 				c.indent++
 				c.writeln("if (i < 0) i += s.Length;")
 				c.writeln("if (i < 0 || i >= s.Length) throw new Exception(\"index out of range\");")
-				c.writeln("return s[i].ToString();")
+				c.writeln("return s[(int)i].ToString();")
+				c.indent--
+				c.writeln("}")
+			case "_sliceString":
+				c.writeln("static string _sliceString(string s, long i, long j) {")
+				c.indent++
+				c.writeln("var start = i;")
+				c.writeln("var end = j;")
+				c.writeln("var n = s.Length;")
+				c.writeln("if (start < 0) start += n;")
+				c.writeln("if (end < 0) end += n;")
+				c.writeln("if (start < 0) start = 0;")
+				c.writeln("if (end > n) end = n;")
+				c.writeln("if (end < start) end = start;")
+				c.writeln("return s.Substring((int)start, (int)(end - start));")
 				c.indent--
 				c.writeln("}")
 			case "_equal":
@@ -246,6 +260,9 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
 	origVars := c.varTypes
 	c.varTypes = make(map[string]string)
+	for k, v := range origVars {
+		c.varTypes[k] = v
+	}
 	for i, p := range fn.Params {
 		pType := csType(p.Type)
 		name := sanitizeName(p.Name)
@@ -390,6 +407,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				typ = elem + "[]"
 			}
 			c.varTypes[name] = typ
+		} else if isStringExpr(s.Let.Value) {
+			c.varTypes[name] = "string"
 		}
 		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
 	case s.Var != nil:
@@ -410,6 +429,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				typ = elem + "[]"
 			}
 			c.varTypes[name] = typ
+		} else if isStringExpr(s.Var.Value) {
+			c.varTypes[name] = "string"
 		}
 		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
 	case s.Return != nil:
@@ -723,15 +744,37 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			continue
 		}
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
+			start := "0"
+			if op.Index.Start != nil {
+				v, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				start = v
 			}
-			if isStr {
-				c.use("_indexString")
-				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+			if op.Index.Colon != nil {
+				end := fmt.Sprintf("%s.Length", expr)
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				if isStr {
+					c.use("_sliceString")
+					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+				} else {
+					expr = fmt.Sprintf("((%s).GetRange((int)(%s), (int)(%s-%s)))", expr, start, end, start)
+				}
 			} else {
-				expr = fmt.Sprintf("%s[%s]", expr, idx)
+				idx := start
+				if isStr {
+					c.use("_indexString")
+					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				}
 			}
 			isStr = false
 			continue
@@ -1096,7 +1139,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
-		return fmt.Sprintf("%d", *l.Int), nil
+		return fmt.Sprintf("%dL", *l.Int), nil
 	case l.Float != nil:
 		return fmt.Sprintf("%f", *l.Float), nil
 	case l.Bool != nil:
@@ -1118,7 +1161,7 @@ func csType(t *parser.TypeRef) string {
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
-			return "int"
+			return "long"
 		case "float":
 			return "double"
 		case "string":
@@ -1221,7 +1264,7 @@ func (c *Compiler) isStringUnary(u *parser.Unary) bool {
 }
 
 func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
-	if p == nil || len(p.Ops) != 0 {
+	if p == nil {
 		return false
 	}
 	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
@@ -1231,6 +1274,11 @@ func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
 		name := sanitizeName(p.Target.Selector.Root)
 		if c.varIsString(name) {
 			return true
+		}
+		if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
 		}
 	}
 	return false
@@ -1274,6 +1322,29 @@ func isEmptyListLiteral(e *parser.Expr) bool {
 	return len(p.Target.List.Elems) == 0
 }
 
+// isStringExpr reports whether the expression is a simple string literal or
+// a call to the built-in str() conversion.
+func isStringExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return true
+	}
+	if p.Target.Call != nil && p.Target.Call.Func == "str" {
+		return true
+	}
+	return false
+}
+
 // listElemType attempts to infer the element type of a list literal.
 // It returns an empty string if the type can't be determined.
 func listElemType(e *parser.Expr) string {
@@ -1307,7 +1378,7 @@ func listElemType(e *parser.Expr) string {
 	lit := pv.Target.Lit
 	switch {
 	case lit.Int != nil:
-		return "int"
+		return "long"
 	case lit.Float != nil:
 		return "double"
 	case lit.Str != nil:

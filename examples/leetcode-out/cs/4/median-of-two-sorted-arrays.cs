@@ -5,48 +5,48 @@ using System.Linq;
 using System.Text.Json;
 
 public class Program {
-	static double findMedianSortedArrays(int[] nums1, int[] nums2) {
-		var merged = new int[] { };
-		var i = 0;
-		var j = 0;
+	static double findMedianSortedArrays(long[] nums1, long[] nums2) {
+		var merged = new long[] { };
+		var i = 0L;
+		var j = 0L;
 		while (((i < nums1.Length) || (j < nums2.Length))) {
 			if ((j >= nums2.Length)) {
 				merged = merged.Concat(new [] { nums1[i] }).ToArray();
-				i = (i + 1);
+				i = (i + 1L);
 			} else if ((i >= nums1.Length)) {
 				merged = merged.Concat(new [] { nums2[j] }).ToArray();
-				j = (j + 1);
+				j = (j + 1L);
 			} else if ((nums1[i] <= nums2[j])) {
 				merged = merged.Concat(new [] { nums1[i] }).ToArray();
-				i = (i + 1);
+				i = (i + 1L);
 			} else {
 				merged = merged.Concat(new [] { nums2[j] }).ToArray();
-				j = (j + 1);
+				j = (j + 1L);
 			}
 		}
 		var total = merged.Length;
-		if (((total % 2) == 1)) {
-			return _cast<double>(merged[(total / 2)]);
+		if (((total % 2L) == 1L)) {
+			return _cast<double>(merged[(total / 2L)]);
 		}
-		var mid1 = merged[((total / 2) - 1)];
-		var mid2 = merged[(total / 2)];
+		var mid1 = merged[((total / 2L) - 1L)];
+		var mid2 = merged[(total / 2L)];
 		return (_cast<double>(((mid1 + mid2))) / 2.000000);
 	}
 	
 	static void test_example_1() {
-		if (!((findMedianSortedArrays(new [] { 1, 3 }, new [] { 2 }) == 2.000000))) throw new Exception("expect failed");
+		if (!((findMedianSortedArrays(new [] { 1L, 3L }, new [] { 2L }) == 2.000000))) throw new Exception("expect failed");
 	}
 	
 	static void test_example_2() {
-		if (!((findMedianSortedArrays(new [] { 1, 2 }, new [] { 3, 4 }) == 2.500000))) throw new Exception("expect failed");
+		if (!((findMedianSortedArrays(new [] { 1L, 2L }, new [] { 3L, 4L }) == 2.500000))) throw new Exception("expect failed");
 	}
 	
 	static void test_empty_first() {
-		if (!((findMedianSortedArrays(_cast<int[]>(new dynamic[] { }), new [] { 1 }) == 1.000000))) throw new Exception("expect failed");
+		if (!((findMedianSortedArrays(_cast<long[]>(new dynamic[] { }), new [] { 1L }) == 1.000000))) throw new Exception("expect failed");
 	}
 	
 	static void test_empty_second() {
-		if (!((findMedianSortedArrays(new [] { 2 }, _cast<int[]>(new dynamic[] { })) == 2.000000))) throw new Exception("expect failed");
+		if (!((findMedianSortedArrays(new [] { 2L }, _cast<long[]>(new dynamic[] { })) == 2.000000))) throw new Exception("expect failed");
 	}
 	
 	public static void Main() {
