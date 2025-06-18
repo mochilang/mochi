@@ -39,12 +39,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("main :: IO ()")
 	c.writeln("main = do")
 	c.indent++
+	mainStmts := 0
 	for _, s := range prog.Statements {
 		if s.Fun == nil && s.Type == nil && s.Test == nil {
 			if err := c.compileMainStmt(s); err != nil {
 				return nil, err
 			}
+			mainStmts++
 		}
+	}
+	if mainStmts == 0 {
+		c.writeln("return ()")
 	}
 	c.indent--
 
