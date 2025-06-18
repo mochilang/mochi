@@ -176,16 +176,15 @@ func buildOne(src, lang string, run bool) error {
 		return err
 	}
 	ext := "." + lang
-	if lang == "ocaml" {
+	switch lang {
+	case "ocaml":
 		ext = ".ml"
-	} else if lang == "fortran" {
+	case "fortran":
 		ext = ".f90"
-	}
-	if lang == "fs" {
+	case "fs":
 		ext = ".fsx"
-	}
-	if lang == "fs" {
-		ext = ".fsx"
+	case "scheme":
+		ext = ".scm"
 	}
 	outFile := filepath.Join(outDir, base+ext)
 	var data []byte
