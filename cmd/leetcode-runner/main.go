@@ -336,6 +336,14 @@ func runOutput(file, lang string) error {
 		runCmd.Stdout = os.Stdout
 		runCmd.Stderr = os.Stderr
 		return runCmd.Run()
+	case "lua":
+		if err := luacode.EnsureLua(); err != nil {
+			return err
+		}
+		cmd := exec.Command("lua", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	case "fortran":
 		gfortran, err := ftncode.EnsureFortran()
 		if err != nil {

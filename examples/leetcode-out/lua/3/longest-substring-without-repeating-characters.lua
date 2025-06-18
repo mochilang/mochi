@@ -1,0 +1,87 @@
+function __add(a, b)
+	if type(a) == 'table' and type(b) == 'table' then
+		local out = {}
+		for i = 1, #a do out[#out+1] = a[i] end
+		for i = 1, #b do out[#out+1] = b[i] end
+		return out
+	end
+	return a + b
+end
+
+function __eq(a, b)
+	if type(a) == 'table' and type(b) == 'table' then
+		if #a ~= #b then return false end
+		for i = 1, #a do
+			if not __eq(a[i], b[i]) then return false end
+		end
+		return true
+	end
+	return a == b
+end
+
+function __index(obj, i)
+	if type(obj) == 'string' then
+		return __indexString(obj, i)
+	elseif type(obj) == 'table' then
+		return obj[(i)+1]
+	else
+		error('cannot index')
+	end
+end
+
+function __indexString(s, i)
+	local len = #s
+	if i < 0 then
+		i = len + i + 1
+	else
+		i = i + 1
+	end
+	if i < 1 or i > len then error('index out of range') end
+	return string.sub(s, i, i)
+end
+
+function lengthOfLongestSubstring(s)
+	local n = #s
+	local start = 0
+	local best = 0
+	local i = 0
+	while (i < n) do
+		local j = start
+		while (j < i) do
+			if __eq(__index(s, j), __index(s, i)) then
+				start = __add(j, 1)
+				break
+			end
+			j = __add(j, 1)
+			::__continue1::
+		end
+		local length = __add((i - start), 1)
+		if (length > best) then
+			best = length
+		end
+		i = __add(i, 1)
+		::__continue0::
+	end
+	return best
+end
+
+function test_example_1()
+	if not (__eq(lengthOfLongestSubstring("abcabcbb"), 3)) then error('expect failed') end
+end
+
+function test_example_2()
+	if not (__eq(lengthOfLongestSubstring("bbbbb"), 1)) then error('expect failed') end
+end
+
+function test_example_3()
+	if not (__eq(lengthOfLongestSubstring("pwwkew"), 3)) then error('expect failed') end
+end
+
+function test_empty_string()
+	if not (__eq(lengthOfLongestSubstring(""), 0)) then error('expect failed') end
+end
+
+test_example_1()
+test_example_2()
+test_example_3()
+test_empty_string()
