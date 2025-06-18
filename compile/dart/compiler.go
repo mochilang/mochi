@@ -17,11 +17,12 @@ type Compiler struct {
 	env          *types.Env
 	tempVarCount int
 	imports      map[string]bool
+	useIndexStr  bool
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, imports: make(map[string]bool)}
+	return &Compiler{env: env, imports: make(map[string]bool), useIndexStr: false}
 }
 
 // Compile returns Dart source implementing prog.
@@ -76,6 +77,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 	c.buf.Write(bodyBytes)
+	c.emitRuntime()
 
 	return c.buf.Bytes(), nil
 }
@@ -327,7 +329,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
+			if isStringPrimary(c, p.Target) {
+				c.useIndexStr = true
+				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+			} else {
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
+			}
 		} else if op.Call != nil {
 			call, err := c.compileCallOp(expr, op.Call)
 			if err != nil {
@@ -647,4 +654,35 @@ func isStringPostfix(c *Compiler, p *parser.PostfixExpr) bool {
 	}
 	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}
 	return isStringExpr(c, e)
+}
+
+func isStringPrimary(c *Compiler, p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p}}}}
+	return isStringExpr(c, e)
+}
+
+func (c *Compiler) emitRuntime() {
+	if !c.useIndexStr {
+		return
+	}
+	c.writeln("")
+	c.writeln("String _indexString(String s, int i) {")
+	c.indent++
+	c.writeln("var runes = s.runes.toList();")
+	c.writeln("if (i < 0) {")
+	c.indent++
+	c.writeln("i += runes.length;")
+	c.indent--
+	c.writeln("}")
+	c.writeln("if (i < 0 || i >= runes.length) {")
+	c.indent++
+	c.writeln("throw RangeError('index out of range');")
+	c.indent--
+	c.writeln("}")
+	c.writeln("return String.fromCharCode(runes[i]);")
+	c.indent--
+	c.writeln("}")
 }
