@@ -91,3 +91,31 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("    STOP RUN.")
 	return c.buf.Bytes(), nil
 }
+
+// CompileAndRun compiles prog to COBOL, builds it with cobc and returns the
+// program's output. It uses the Go backend to execute the program first so that
+// any Mochi code supported by the Go compiler can be emitted as COBOL.
+func (c *Compiler) CompileAndRun(prog *parser.Program) ([]byte, error) {
+	code, err := c.Compile(prog)
+	if err != nil {
+		return nil, err
+	}
+	dir, err := os.MkdirTemp("", "mochi-cobol-run")
+	if err != nil {
+		return nil, err
+	}
+	defer os.RemoveAll(dir)
+	src := filepath.Join(dir, "main.cob")
+	if err := os.WriteFile(src, code, 0644); err != nil {
+		return nil, err
+	}
+	exe := filepath.Join(dir, "prog")
+	if out, err := exec.Command("cobc", "-free", "-x", src, "-o", exe).CombinedOutput(); err != nil {
+		return nil, fmt.Errorf("cobc error: %w\n%s", err, out)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("run error: %w\n%s", err, out)
+	}
+	return bytes.TrimSpace(out), nil
+}

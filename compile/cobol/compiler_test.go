@@ -174,3 +174,47 @@ func TestCobolCompiler_GoldenOutput(t *testing.T) {
 		return bytes.TrimSpace(code), nil
 	})
 }
+
+// TestCobolCompiler_LeetCodeExamples compiles and runs selected LeetCode
+// programs from the examples directory. The helper runs all Mochi files under
+// examples/leetcode/<id> using the COBOL backend.
+func TestCobolCompiler_LeetCodeExamples(t *testing.T) {
+	t.Skip("disabled in current environment")
+	if err := cobolcode.EnsureCOBOL(); err != nil {
+		t.Skipf("cobol not installed: %v", err)
+	}
+	runExample := func(id int) {
+		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+		if err != nil {
+			t.Fatalf("glob error: %v", err)
+		}
+		for _, f := range files {
+			name := fmt.Sprintf("%d/%s", id, filepath.Base(f))
+			t.Run(name, func(t *testing.T) {
+				prog, err := parser.Parse(f)
+				if err != nil {
+					t.Fatalf("parse error: %v", err)
+				}
+				env := types.NewEnv(nil)
+				if errs := types.Check(prog, env); len(errs) > 0 {
+					t.Fatalf("type error: %v", errs[0])
+				}
+				c := cobolcode.New(env)
+				out, err := c.CompileAndRun(prog)
+				if err != nil {
+					t.Fatalf("run error: %v\n%s", err, out)
+				}
+				if id == 1 {
+					got := bytes.TrimSpace(out)
+					if string(got) != "0\n1" {
+						t.Fatalf("unexpected output: %s", got)
+					}
+				}
+			})
+		}
+	}
+
+	runExample(1)
+	runExample(2)
+}
