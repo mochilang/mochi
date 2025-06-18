@@ -30,7 +30,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.tempVars = make(map[string]bool)
 	c.writeln("program main;")
 	c.writeln("{$mode objfpc}")
-	c.writeln("uses SysUtils;")
+	c.writeln("uses SysUtils, fgl;")
 	c.writeln("")
 	c.writeln("type TIntArray = array of integer;")
 	c.writeln("")
@@ -109,12 +109,32 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("exit;")
 	case s.Assign != nil:
 		name := sanitizeName(s.Assign.Name)
-		for _, idx := range s.Assign.Index {
-			iv, err := c.compileExpr(idx.Start)
+		if len(s.Assign.Index) == 1 {
+			iv, err := c.compileExpr(s.Assign.Index[0].Start)
 			if err != nil {
 				return err
 			}
-			name = fmt.Sprintf("%s[%s]", name, iv)
+			if c.env != nil {
+				if t, err := c.env.GetVar(s.Assign.Name); err == nil {
+					if _, ok := t.(types.MapType); ok {
+						name = fmt.Sprintf("%s.KeyData[%s]", name, iv)
+					} else {
+						name = fmt.Sprintf("%s[%s]", name, iv)
+					}
+				} else {
+					name = fmt.Sprintf("%s[%s]", name, iv)
+				}
+			} else {
+				name = fmt.Sprintf("%s[%s]", name, iv)
+			}
+		} else {
+			for _, idx := range s.Assign.Index {
+				iv, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return err
+				}
+				name = fmt.Sprintf("%s[%s]", name, iv)
+			}
 		}
 		val, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
@@ -131,6 +151,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -322,6 +344,11 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 		if t.Generic.Name == "list" {
 			return "TIntArray"
 		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			keyT := c.typeRef(t.Generic.Args[0])
+			valT := c.typeRef(t.Generic.Args[1])
+			return fmt.Sprintf("specialize TFPGMap<%s, %s>", keyT, valT)
+		}
 	}
 	return "integer"
 }
@@ -339,6 +366,9 @@ func typeString(t types.Type) string {
 		return "boolean"
 	case types.ListType:
 		return "TIntArray"
+	case types.MapType:
+		mt := tt
+		return fmt.Sprintf("specialize TFPGMap<%s, %s>", typeString(mt.Key), typeString(mt.Value))
 	default:
 		return "integer"
 	}
@@ -397,6 +427,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands := []string{}
 	lists := []bool{}
+	maps := []bool{}
 
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
@@ -404,6 +435,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 	operands = append(operands, left)
 	lists = append(lists, c.isListUnary(b.Left))
+	maps = append(maps, c.isMapUnary(b.Left))
 	operators := []string{}
 
 	for _, part := range b.Right {
@@ -413,6 +445,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		}
 		operands = append(operands, r)
 		lists = append(lists, c.isListPostfix(part.Right))
+		maps = append(maps, c.isMapPostfix(part.Right))
 		operators = append(operators, part.Op)
 	}
 
@@ -455,7 +488,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "!=":
 					res = fmt.Sprintf("(%s <> %s)", l, r)
 				case "in":
-					res = fmt.Sprintf("(%s in %s)", l, r)
+					if maps[i+1] {
+						res = fmt.Sprintf("(%s.IndexOf(%s) >= 0)", r, l)
+					} else {
+						res = fmt.Sprintf("(%s in %s)", l, r)
+					}
 				case "&&":
 					res = fmt.Sprintf("(%s and %s)", l, r)
 				case "||":
@@ -505,7 +542,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
+			if c.isMapPostfix(&parser.PostfixExpr{Target: p.Target}) {
+				expr = fmt.Sprintf("%s.KeyData[%s]", expr, idx)
+			} else {
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
+			}
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -579,6 +620,34 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "TIntArray([" + strings.Join(elems, ", ") + "])", nil
+	case p.Map != nil:
+		// infer key/value types from first element if available
+		keyType := "string"
+		valType := "integer"
+		if len(p.Map.Items) > 0 {
+			if c.env != nil {
+				// no direct info; use defaults
+			}
+		}
+		pairs := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			pairs[i] = fmt.Sprintf("m.AddOrSetData(%s, %s);", k, v)
+		}
+		tmp := c.newVar()
+		c.writeln(fmt.Sprintf("var %s: specialize TFPGMap<%s, %s>;", tmp, keyType, valType))
+		c.writeln(fmt.Sprintf("%s := specialize TFPGMap<%s, %s>.Create;", tmp, keyType, valType))
+		for _, p := range pairs {
+			c.writeln(strings.ReplaceAll(p, "m", tmp))
+		}
+		return tmp, nil
 	}
 	return "", fmt.Errorf("unsupported expression")
 }

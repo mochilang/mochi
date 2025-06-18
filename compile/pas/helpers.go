@@ -71,6 +71,17 @@ func isListLiteral(e *parser.Expr) bool {
 	return u.Value.Target.List != nil
 }
 
+func isMapLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	return u.Value.Target.Map != nil
+}
+
 func isStringLiteral(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return false
@@ -90,6 +101,48 @@ func (c *Compiler) isListExpr(e *parser.Expr) bool {
 		return false
 	}
 	return c.isListUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isMapExpr(e *parser.Expr) bool {
+	if isMapLiteral(e) {
+		return true
+	}
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	return c.isMapUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isMapUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return c.isMapPostfix(u.Value)
+}
+
+func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isMapPrimary(p.Target)
+}
+
+func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.Map != nil:
+		return true
+	case p.Selector != nil:
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) isListUnary(u *parser.Unary) bool {
