@@ -155,6 +155,8 @@ func TestLuaCompiler_LeetCodeExamples(t *testing.T) {
 	runLeetCode(t, 1, "0\n1")
 	runLeetCode(t, 2, "")
 	runLeetCode(t, 3, "")
+	runLeetCode(t, 4, "")
+	runLeetCode(t, 5, "")
 }
 
 func runLeetCode(t *testing.T, id int, want string) {

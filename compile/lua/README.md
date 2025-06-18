@@ -45,6 +45,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
                         c.writeln("")
                 }
         }
+
+        // Emit test block declarations.
+        for _, s := range prog.Statements {
+                if s.Test != nil {
+                        if err := c.compileTestBlock(s.Test); err != nil {
+                                return nil, err
+                        }
+                        c.writeln("")
+                }
+        }
+
         // Emit main body.
         for _, s := range prog.Statements {
                 if s.Fun != nil || s.Type != nil || s.Test != nil {
@@ -54,6 +65,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
                         return nil, err
                 }
         }
+
+        // Invoke test blocks.
+        for _, s := range prog.Statements {
+                if s.Test != nil {
+                        name := "test_" + sanitizeName(s.Test.Name)
+                        c.writeln(name + "()")
+                }
+        }
+
         bodyBytes := append([]byte(nil), c.buf.Bytes()...)
         c.buf.Reset()
         c.emitHelpers()
@@ -61,7 +81,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
         return c.buf.Bytes(), nil
 }
 ```
-【F:compile/lua/compiler.go†L30-L68】
+【F:compile/lua/compiler.go†L31-L80】
 
 ## Statements and Expressions
 
@@ -256,6 +276,9 @@ lua main.lua
 
 The generated source relies only on the standard Lua library plus the small helpers embedded during compilation.
 
+Test blocks within a Mochi file are compiled into Lua functions and automatically
+invoked after the main body.
+
 ## Tests
 
 The golden tests compile programs in `tests/compiler/lua` and execute them with `lua`. They are tagged `slow` because the Lua toolchain must be present. Run them with:
@@ -264,7 +287,7 @@ The golden tests compile programs in `tests/compiler/lua` and execute them with 
 go test ./compile/lua -tags slow
 ```
 
-The `LeetCodeExamples` test additionally compiles and runs the first three
+The `LeetCodeExamples` test additionally compiles and runs the first five
 solutions under `examples/leetcode` to verify basic program execution.
 
 ## Notes
