@@ -52,6 +52,7 @@ type Compiler struct {
 	needsIndexString       bool
 	needsStrLen            bool
 	needsSliceListInt      bool
+	needsSliceString       bool
 	needsListListInt       bool
 	needsConcatListListInt bool
 	needsConcatListInt     bool
@@ -140,7 +141,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	if c.needsInput || c.needsIndexString || c.needsStrLen {
+	if c.needsInput || c.needsIndexString || c.needsStrLen || c.needsSliceString {
 		c.writeln("#include <string.h>")
 	}
 	c.writeln("")
@@ -258,6 +259,23 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.writeln("char* buf = (char*)malloc(2);")
 		c.writeln("buf[0] = s[i];")
 		c.writeln("buf[1] = '\\0';")
+		c.writeln("return buf;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsSliceString {
+		c.writeln("")
+		c.writeln("static char* slice_string(char* s, int start, int end) {")
+		c.indent++
+		c.writeln("int len = strlen(s);")
+		c.writeln("if (start < 0) start += len;")
+		c.writeln("if (end < 0) end += len;")
+		c.writeln("if (start < 0) start = 0;")
+		c.writeln("if (end > len) end = len;")
+		c.writeln("if (start > end) start = end;")
+		c.writeln("char* buf = (char*)malloc(end - start + 1);")
+		c.writeln("memcpy(buf, s + start, end - start);")
+		c.writeln("buf[end - start] = '\\0';")
 		c.writeln("return buf;")
 		c.indent--
 		c.writeln("}")
@@ -711,13 +729,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					end = c.compileExpr(op.Index.End)
 				}
 				name := c.newTemp()
-				c.needsSliceListInt = true
-				c.writeln(fmt.Sprintf("list_int %s = slice_list_int(%s, %s, %s);", name, expr, start, end))
-				if c.env != nil {
-					c.env.SetVar(name, types.ListType{Elem: types.IntType{}}, true)
+				if isStr {
+					c.needsSliceString = true
+					c.writeln(fmt.Sprintf("char* %s = slice_string(%s, %s, %s);", name, expr, start, end))
+					if c.env != nil {
+						c.env.SetVar(name, types.StringType{}, true)
+					}
+					expr = name
+					isStr = true
+				} else {
+					c.needsSliceListInt = true
+					c.writeln(fmt.Sprintf("list_int %s = slice_list_int(%s, %s, %s);", name, expr, start, end))
+					if c.env != nil {
+						c.env.SetVar(name, types.ListType{Elem: types.IntType{}}, true)
+					}
+					expr = name
+					isStr = false
 				}
-				expr = name
-				isStr = false
 			}
 		}
 	}
