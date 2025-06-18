@@ -3,6 +3,7 @@ package erlcode
 import (
 	"bytes"
 	"fmt"
+	"slices"
 	"strings"
 
 	"mochi/parser"
@@ -17,6 +18,51 @@ type Compiler struct {
 	needGet bool
 	vars    map[string]string
 	counts  map[string]int
+}
+
+func copyMap[K comparable, V any](m map[K]V) map[K]V {
+	if m == nil {
+		return nil
+	}
+	cp := make(map[K]V, len(m))
+	for k, v := range m {
+		cp[k] = v
+	}
+	return cp
+}
+
+func gatherAssigned(stmts []*parser.Statement, scope map[string]string, out map[string]bool) {
+	for _, s := range stmts {
+		switch {
+		case s.Assign != nil:
+			if _, ok := scope[s.Assign.Name]; ok {
+				out[s.Assign.Name] = true
+			}
+		case s.For != nil:
+			nscope := copyMap(scope)
+			nscope[s.For.Name] = s.For.Name
+			gatherAssigned(s.For.Body, nscope, out)
+		case s.While != nil:
+			gatherAssigned(s.While.Body, scope, out)
+		case s.If != nil:
+			gatherAssigned(s.If.Then, scope, out)
+			if s.If.ElseIf != nil {
+				gatherAssignedIf(s.If.ElseIf, scope, out)
+			}
+			gatherAssigned(s.If.Else, scope, out)
+		}
+	}
+}
+
+func gatherAssignedIf(ifst *parser.IfStmt, scope map[string]string, out map[string]bool) {
+	if ifst == nil {
+		return
+	}
+	gatherAssigned(ifst.Then, scope, out)
+	if ifst.ElseIf != nil {
+		gatherAssignedIf(ifst.ElseIf, scope, out)
+	}
+	gatherAssigned(ifst.Else, scope, out)
 }
 
 func capitalize(name string) string {
@@ -335,14 +381,82 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
-	c.buf.WriteString("mochi_while(fun() -> " + cond + " end, fun() ->\n")
+
+	// Determine which variables are assigned inside the loop
+	assigned := map[string]bool{}
+	gatherAssigned(stmt.Body, c.vars, assigned)
+	if len(assigned) == 0 {
+		// fall back to simple helper-based loop
+		c.buf.WriteString("mochi_while(fun() -> " + cond + " end, fun() ->\n")
+		c.indent++
+		if err := c.compileBlock(stmt.Body, false, nil); err != nil {
+			return err
+		}
+		c.indent--
+		c.writeIndent()
+		c.buf.WriteString("end)")
+		return nil
+	}
+
+	names := make([]string, 0, len(assigned))
+	for n := range assigned {
+		names = append(names, n)
+	}
+	slices.Sort(names)
+
+	params := make([]string, len(names))
+	for i, n := range names {
+		params[i] = c.current(n)
+	}
+
+	loopVar := c.newName("loop")
+	c.buf.WriteString(loopVar + " = fun " + capitalize("loop") + "(" + strings.Join(params, ", ") + ") ->\n")
 	c.indent++
+	c.writeln("case " + cond + " of")
+	c.indent++
+	c.writeln("true ->")
+	c.indent++
+	c.writeln("try")
+	c.indent++
+
+	// save env before compiling body
+	savedVars := copyMap(c.vars)
+	savedCounts := copyMap(c.counts)
+
 	if err := c.compileBlock(stmt.Body, false, nil); err != nil {
 		return err
 	}
+
+	newNames := make([]string, len(names))
+	for i, n := range names {
+		newNames[i] = c.current(n)
+	}
+
+	c.writeln(capitalize("loop") + "(" + strings.Join(newNames, ", ") + ")")
 	c.indent--
-	c.writeIndent()
-	c.buf.WriteString("end)")
+	c.writeln("catch")
+	c.indent++
+	c.writeln("throw:mochi_continue -> " + capitalize("loop") + "(" + strings.Join(newNames, ", ") + ");")
+	c.writeln("throw:mochi_break -> {" + strings.Join(newNames, ", ") + "}")
+	c.indent--
+	c.writeln("end;")
+	c.indent--
+	c.writeln("_ -> {" + strings.Join(params, ", ") + "}")
+	c.indent--
+	c.writeln("end")
+	c.indent--
+	c.writeln("end,")
+
+	// restore environment
+	c.vars = savedVars
+	c.counts = savedCounts
+
+	resultNames := make([]string, len(names))
+	for i, n := range names {
+		resultNames[i] = c.newName(n)
+	}
+
+	c.writeln("{" + strings.Join(resultNames, ", ") + "} = " + loopVar + "(" + strings.Join(params, ", ") + ")")
 	return nil
 }
 
