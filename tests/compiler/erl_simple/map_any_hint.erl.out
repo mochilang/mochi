@@ -1,24 +1,25 @@
 #!/usr/bin/env escript
 -module(main).
+-compile(nowarn_unused_function).
 -export([main/1, Leaf/0, Node/3]).
 
-Leaf() ->
+leaf() ->
 	try
 		throw({return, #{"__name" => "Leaf"}})
 	catch
 		throw:{return, V} -> V
 	end.
 
-Node(left, value, right) ->
+node(left, value, right) ->
 	try
-		throw({return, #{"__name" => "Node", "left" => left, "value" => value, "right" => right}})
+		throw({return, #{"__name" => "Node", "left" => Left, "value" => Value, "right" => Right}})
 	catch
 		throw:{return, V} -> V
 	end.
 
 main(_) ->
-	tree = Node(Leaf(), 1, Leaf()),
-	mochi_print([mochi_get(mochi_get(tree, "left"), "__name")]).
+	Tree = Node(Leaf(), 1, Leaf()),
+	mochi_print([mochi_get(mochi_get(Tree, "left"), "__name")]).
 
 mochi_print(Args) ->
 	Strs = [ mochi_format(A) || A <- Args ],
@@ -48,32 +49,31 @@ mochi_avg(L) when is_list(L) ->
 			F when is_float(F) -> Acc + F;
 			_ -> erlang:error(badarg) end
 		end, 0, L),
-		Sum / length(L)
-	.
-mochi_avg(_) -> erlang:error(badarg).
-
-mochi_foreach(F, L) ->
-	try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
-
-mochi_foreach_loop(_, []) -> ok;
-mochi_foreach_loop(F, [H|T]) ->
-	try F(H) catch
-		throw:mochi_continue -> ok;
-		throw:mochi_break -> throw(mochi_break)
-	end,
-	mochi_foreach_loop(F, T).
-
-mochi_get(M, K) when is_list(M), is_integer(K) -> lists:nth(K + 1, M);
-mochi_get(M, K) when is_map(M) -> maps:get(K, M);
-mochi_get(_, _) -> erlang:error(badarg).
-
-mochi_while(Cond, Body) ->
-	case Cond() of
-		true ->
-			try Body() catch
-				throw:mochi_continue -> ok;
-				throw:mochi_break -> ok
-			end,
-			mochi_while(Cond, Body);
-		_ -> ok
-	end.
+		Sum / length(L);
+	mochi_avg(_) -> erlang:error(badarg).
+	
+	mochi_foreach(F, L) ->
+		try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
+	
+	mochi_foreach_loop(_, []) -> ok;
+	mochi_foreach_loop(F, [H|T]) ->
+		try F(H) catch
+			throw:mochi_continue -> ok;
+			throw:mochi_break -> throw(mochi_break)
+		end,
+		mochi_foreach_loop(F, T).
+	
+	mochi_get(M, K) when is_list(M), is_integer(K) -> lists:nth(K + 1, M);
+	mochi_get(M, K) when is_map(M) -> maps:get(K, M);
+	mochi_get(_, _) -> erlang:error(badarg).
+	
+	mochi_while(Cond, Body) ->
+		case Cond() of
+			true ->
+				try Body() catch
+					throw:mochi_continue -> ok;
+					throw:mochi_break -> ok
+				end,
+				mochi_while(Cond, Body);
+			_ -> ok
+		end.

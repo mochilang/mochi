@@ -1,18 +1,19 @@
 #!/usr/bin/env escript
 -module(main).
+-compile(nowarn_unused_function).
 -export([main/1]).
 
 main(_) ->
 	ok,
 	ok,
 	ok,
-	customers = [#{id => 1, name => "Alice"}, #{id => 2, name => "Bob"}, #{id => 3, name => "Charlie"}],
-	orders = [#{id => 100, customerId => 1, total => 250}, #{id => 101, customerId => 2, total => 125}, #{id => 102, customerId => 1, total => 300}],
-	result = [#{orderId => maps:get(id, o), orderCustomerId => maps:get(customerId, o), pairedCustomerName => maps:get(name, c), orderTotal => maps:get(total, o)} || o <- orders, c <- customers],
+	Customers = [#{id => 1, name => "Alice"}, #{id => 2, name => "Bob"}, #{id => 3, name => "Charlie"}],
+	Orders = [#{id => 100, customerId => 1, total => 250}, #{id => 101, customerId => 2, total => 125}, #{id => 102, customerId => 1, total => 300}],
+	Result = [#{orderId => maps:get(id, O), orderCustomerId => maps:get(customerId, O), pairedCustomerName => maps:get(name, C), orderTotal => maps:get(total, O)} || O <- Orders, C <- Customers],
 	mochi_print(["--- Cross Join: All order-customer pairs ---"]),
-	mochi_foreach(fun(entry) ->
-		mochi_print(["Order", maps:get(orderId, entry), "(customerId:", maps:get(orderCustomerId, entry), ", total: $", maps:get(orderTotal, entry), ") paired with", maps:get(pairedCustomerName, entry)])
-	end, result).
+	mochi_foreach(fun(Entry) ->
+		mochi_print(["Order", " ", maps:get(orderId, Entry), " ", "(customerId:", " ", maps:get(orderCustomerId, Entry), " ", ", total: $", " ", maps:get(orderTotal, Entry), " ", ") paired with", " ", maps:get(pairedCustomerName, Entry)])
+	end, Result).
 
 mochi_print(Args) ->
 	Strs = [ mochi_format(A) || A <- Args ],
@@ -42,28 +43,27 @@ mochi_avg(L) when is_list(L) ->
 			F when is_float(F) -> Acc + F;
 			_ -> erlang:error(badarg) end
 		end, 0, L),
-		Sum / length(L)
-	.
-mochi_avg(_) -> erlang:error(badarg).
-
-mochi_foreach(F, L) ->
-	try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
-
-mochi_foreach_loop(_, []) -> ok;
-mochi_foreach_loop(F, [H|T]) ->
-	try F(H) catch
-		throw:mochi_continue -> ok;
-		throw:mochi_break -> throw(mochi_break)
-	end,
-	mochi_foreach_loop(F, T).
-
-mochi_while(Cond, Body) ->
-	case Cond() of
-		true ->
-			try Body() catch
-				throw:mochi_continue -> ok;
-				throw:mochi_break -> ok
-			end,
-			mochi_while(Cond, Body);
-		_ -> ok
-	end.
+		Sum / length(L);
+	mochi_avg(_) -> erlang:error(badarg).
+	
+	mochi_foreach(F, L) ->
+		try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
+	
+	mochi_foreach_loop(_, []) -> ok;
+	mochi_foreach_loop(F, [H|T]) ->
+		try F(H) catch
+			throw:mochi_continue -> ok;
+			throw:mochi_break -> throw(mochi_break)
+		end,
+		mochi_foreach_loop(F, T).
+	
+	mochi_while(Cond, Body) ->
+		case Cond() of
+			true ->
+				try Body() catch
+					throw:mochi_continue -> ok;
+					throw:mochi_break -> ok
+				end,
+				mochi_while(Cond, Body);
+			_ -> ok
+		end.
