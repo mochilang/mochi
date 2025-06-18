@@ -273,17 +273,24 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 	expr := left
 	for _, op := range b.Right {
-               rhs, err := c.compilePostfix(op.Right)
-               if err != nil {
-                       return "", err
-               }
-                opName := op.Op
-                if opName == "%" {
-                        opName = "mod"
-                }
-                expr = fmt.Sprintf("(%s %s %s)", opName, expr, rhs)
-       }
-       return expr, nil
+		rhs, err := c.compilePostfix(op.Right)
+		if err != nil {
+			return "", err
+		}
+		opName := op.Op
+		switch opName {
+		case "%":
+			opName = "mod"
+		case "&&":
+			opName = "and"
+		case "||":
+			opName = "or"
+		case "!=":
+			opName = "not="
+		}
+		expr = fmt.Sprintf("(%s %s %s)", opName, expr, rhs)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -293,7 +300,11 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		expr = fmt.Sprintf("(%s %s)", op, expr)
+		name := op
+		if name == "!" {
+			name = "not"
+		}
+		expr = fmt.Sprintf("(%s %s)", name, expr)
 	}
 	return expr, nil
 }
