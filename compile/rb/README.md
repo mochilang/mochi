@@ -107,6 +107,17 @@ ruby add-two-numbers.rb
 
 This prints the resulting list digits on separate lines.
 
+### Example: LeetCode Longest Substring Without Repeating Characters
+
+To compile and run the `longest-substring-without-repeating-characters` example located in `examples/leetcode/3`, use:
+
+```bash
+mochi build --target rb examples/leetcode/3/longest-substring-without-repeating-characters.mochi -o longest.rb
+ruby longest.rb
+```
+
+The program defines the function and unit tests but running the compiled Ruby simply evaluates without output.
+
 `tools.go` provides `EnsureRuby` which attempts to install Ruby on Linux or macOS if it is missing:
 
 ```go
