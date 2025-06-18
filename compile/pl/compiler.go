@@ -247,6 +247,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 			tmp := c.newVar()
 			res.code = append(res.code, fmt.Sprintf("%s is %s + %s,", tmp, res.val, right.val))
 			res.val = tmp
+		case "-":
+			tmp := c.newVar()
+			res.code = append(res.code, fmt.Sprintf("%s is %s - %s,", tmp, res.val, right.val))
+			res.val = tmp
 		case "==":
 			res.val = fmt.Sprintf("%s =:= %s", res.val, right.val)
 		default:
