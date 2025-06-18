@@ -1,0 +1,6 @@
+:- style_check(-singleton).
+	main :-
+	length([1, 2, 3], _V0),
+	writeln(_V0)
+	.
+:- initialization(main, main).
