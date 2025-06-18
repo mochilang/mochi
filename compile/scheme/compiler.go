@@ -13,11 +13,13 @@ import (
 
 // Compiler translates a Mochi AST into Scheme source code (minimal subset).
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	inFun  bool
-	vars   map[string]string // local variable types within a function
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	inFun         bool
+	vars          map[string]string // local variable types within a function
+	needListSet   bool
+	needStringSet bool
 }
 
 // New creates a new Scheme compiler instance.
@@ -38,7 +40,8 @@ func (c *Compiler) writeln(s string) {
 // Compile converts the given program to Scheme source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
-
+	c.needListSet = false
+	c.needStringSet = false
 	// Function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -58,7 +61,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	if c.needListSet || c.needStringSet {
+		var pre bytes.Buffer
+		if c.needListSet {
+			pre.WriteString("(define (list-set lst idx val)\n")
+			pre.WriteString("    (let loop ((i idx) (l lst))\n")
+			pre.WriteString("        (if (null? l)\n")
+			pre.WriteString("            '()\n")
+			pre.WriteString("            (if (= i 0)\n")
+			pre.WriteString("                (cons val (cdr l))\n")
+			pre.WriteString("                (cons (car l) (loop (- i 1) (cdr l))))))\n")
+			pre.WriteString(")\n")
+		}
+		if c.needStringSet {
+			pre.WriteString("(define (string-set str idx ch)\n")
+			pre.WriteString("    (list->string (list-set (string->list str) idx ch))\n")
+			pre.WriteString(")\n")
+		}
+		pre.Write(code)
+		code = pre.Bytes()
+	}
+	return code, nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -166,18 +190,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		lhs := sanitizeName(s.Assign.Name)
-		for _, idx := range s.Assign.Index {
-			ie, err := c.compileExpr(idx.Start)
-			if err != nil {
-				return err
-			}
-			if c.vars[s.Assign.Name] == "string" {
-				lhs = fmt.Sprintf("(string-ref %s %s)", lhs, ie)
-			} else {
-				lhs = fmt.Sprintf("(list-ref %s %s)", lhs, ie)
-			}
+		if len(s.Assign.Index) == 0 {
+			c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
+			break
 		}
-		c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
+		ie, err := c.compileExpr(s.Assign.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		if c.vars[s.Assign.Name] == "string" {
+			c.needStringSet = true
+			c.writeln(fmt.Sprintf("(set! %s (string-set %s %s %s))", lhs, lhs, ie, rhs))
+		} else {
+			c.needListSet = true
+			c.writeln(fmt.Sprintf("(set! %s (list-set %s %s %s))", lhs, lhs, ie, rhs))
+		}
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -204,26 +231,73 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	name := sanitizeName(st.Name)
-	start, err := c.compileExpr(st.Source)
+	if st.RangeEnd != nil {
+		start, err := c.compileExpr(st.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(st.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+		c.indent++
+		c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
+		c.indent++
+		c.writeln("(begin")
+		c.indent++
+		for _, s := range st.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln("'())")
+		c.indent--
+		c.writeln(")")
+		return nil
+	}
+
+	src, err := c.compileExpr(st.Source)
 	if err != nil {
 		return err
 	}
-	end, err := c.compileExpr(st.RangeEnd)
-	if err != nil {
-		return err
+	root := rootNameExpr(st.Source)
+	isStr := c.vars[root] == "string"
+	idx := sanitizeName(name + "_idx")
+	lenExpr := fmt.Sprintf("(length %s)", src)
+	elemExpr := fmt.Sprintf("(list-ref %s %s)", src, idx)
+	if isStr {
+		lenExpr = fmt.Sprintf("(string-length %s)", src)
+		elemExpr = fmt.Sprintf("(string-ref %s %s)", src, idx)
 	}
-	c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+	c.writeln(fmt.Sprintf("(let loop ((%s 0))", idx))
 	c.indent++
-	c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
+	c.writeln(fmt.Sprintf("(if (< %s %s)", idx, lenExpr))
 	c.indent++
 	c.writeln("(begin")
 	c.indent++
-	for _, s := range st.Body {
-		if err := c.compileStmt(s); err != nil {
-			return err
+	if st.Name != "_" {
+		c.writeln(fmt.Sprintf("(let ((%s %s))", name, elemExpr))
+		c.indent++
+		for _, s := range st.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln(")")
+	} else {
+		for _, s := range st.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
 		}
 	}
-	c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+	c.writeln(fmt.Sprintf("(loop (+ %s 1))", idx))
 	c.indent--
 	c.writeln(")")
 	c.indent--
@@ -231,6 +305,30 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	c.indent--
 	c.writeln(")")
 	return nil
+}
+
+func rootNameExpr(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return ""
+	}
+	return rootNameUnary(e.Binary.Left)
+}
+
+func rootNameUnary(u *parser.Unary) string {
+	if u == nil {
+		return ""
+	}
+	return rootNamePostfix(u.Value)
+}
+
+func rootNamePostfix(p *parser.PostfixExpr) string {
+	if p == nil {
+		return ""
+	}
+	if p.Target != nil && p.Target.Selector != nil {
+		return p.Target.Selector.Root
+	}
+	return ""
 }
 
 func (c *Compiler) compileSimpleIf(st *parser.IfStmt) error {
