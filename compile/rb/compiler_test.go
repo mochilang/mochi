@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -17,40 +18,72 @@ import (
 	"mochi/types"
 )
 
-func TestRBCompiler_TwoSum(t *testing.T) {
-	if err := rbcode.EnsureRuby(); err != nil {
-		t.Skipf("ruby not installed: %v", err)
-	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+// compileAndRun compiles src to Ruby and executes the generated program.
+// The program's trimmed combined output is returned.
+func compileAndRun(t *testing.T, src string) (string, error) {
 	prog, err := parser.Parse(src)
 	if err != nil {
-		t.Fatalf("parse error: %v", err)
+		return "", fmt.Errorf("parse error: %w", err)
 	}
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
+		return "", fmt.Errorf("type error: %v", errs[0])
 	}
 	code, err := rbcode.New(env).Compile(prog)
 	if err != nil {
-		t.Fatalf("compile error: %v", err)
+		return "", fmt.Errorf("compile error: %w", err)
 	}
 	dir := t.TempDir()
 	file := filepath.Join(dir, "main.rb")
 	if err := os.WriteFile(file, code, 0644); err != nil {
-		t.Fatalf("write error: %v", err)
+		return "", err
 	}
 	cmd := exec.Command("ruby", file)
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
 	out, err := cmd.CombinedOutput()
+	return strings.TrimSpace(string(out)), err
+}
+
+// runLeetExample compiles and executes all Mochi files under examples/leetcode/<id>.
+func runLeetExample(t *testing.T, id int) {
+	dir := filepath.Join("..", "..", "examples", "leetcode", strconv.Itoa(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
-		t.Fatalf("ruby run error: %v\n%s", err, out)
+		t.Fatalf("glob error: %v", err)
 	}
-	got := strings.TrimSpace(string(out))
+	for _, src := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(src))
+		t.Run(name, func(t *testing.T) {
+			out, err := compileAndRun(t, src)
+			if err != nil {
+				t.Fatalf("ruby run error: %v\n%s", err, out)
+			}
+		})
+	}
+}
+
+func TestRBCompiler_TwoSum(t *testing.T) {
+	if err := rbcode.EnsureRuby(); err != nil {
+		t.Skipf("ruby not installed: %v", err)
+	}
+	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+	got, err := compileAndRun(t, src)
+	if err != nil {
+		t.Fatalf("ruby run error: %v\n%s", err, got)
+	}
 	if got != "0\n1" {
 		t.Fatalf("unexpected output: %q", got)
 	}
+}
+
+func TestRBCompiler_LeetCodeExamples(t *testing.T) {
+	if err := rbcode.EnsureRuby(); err != nil {
+		t.Skipf("ruby not installed: %v", err)
+	}
+	runLeetExample(t, 1)
+	runLeetExample(t, 2)
 }
 
 func TestRBCompiler_SubsetPrograms(t *testing.T) {

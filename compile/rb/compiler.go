@@ -428,25 +428,69 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
 		return "", fmt.Errorf("nil binary expr")
 	}
-	res, err := c.compileUnary(b.Left)
+
+	operands := []string{}
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+	operands = append(operands, first)
+
+	ops := []string{}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
-			res = fmt.Sprintf("(%s %s %s)", res, op.Op, right)
-		case "in":
-			res = fmt.Sprintf("(%s.include?(%s))", right, res)
-		default:
-			return "", fmt.Errorf("unsupported operator %s", op.Op)
+		operands = append(operands, r)
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+			op := ops[i]
+			l := operands[i]
+			r := operands[i+1]
+
+			var expr string
+			if op == "in" {
+				expr = fmt.Sprintf("(%s.include?(%s))", r, l)
+			} else {
+				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+			}
+
+			operands[i] = expr
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return res, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
