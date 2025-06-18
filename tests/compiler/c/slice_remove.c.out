@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct { int len; int *data; } list_int;
+typedef struct { int len; list_int *data; } list_list_int;
+
+static list_int list_int_create(int len) {
+	list_int l;
+	l.len = len;
+	l.data = (int*)malloc(sizeof(int)*len);
+	return l;
+}
+
+static list_int concat_list_int(list_int a, list_int b) {
+	list_int r = list_int_create(a.len + b.len);
+	for (int i = 0; i < a.len; i++) {
+		r.data[i] = a.data[i];
+	}
+	for (int i = 0; i < b.len; i++) {
+		r.data[a.len + i] = b.data[i];
+	}
+	return r;
+}
+
+static list_list_int list_list_int_create(int len) {
+	list_list_int l;
+	l.len = len;
+	l.data = (list_int*)malloc(sizeof(list_int)*len);
+	return l;
+}
+
+static int _count(list_int v) {
+	return v.len;
+}
+
+static int _avg(list_int v) {
+	if (v.len == 0) return 0;
+	int sum = 0;
+	for (int i = 0; i < v.len; i++) {
+		sum += v.data[i];
+	}
+	return sum / v.len;
+}
+
+static list_int slice_list_int(list_int v, int start, int end) {
+	if (start < 0) start += v.len;
+	if (end < 0) end += v.len;
+	if (start < 0) start = 0;
+	if (end > v.len) end = v.len;
+	if (start > end) start = end;
+	list_int r = list_int_create(end - start);
+	for (int i = 0; i < r.len; i++) {
+		r.data[i] = v.data[start + i];
+	}
+	return r;
+}
+
+static void _print_list_int(list_int v) {
+	printf("[");
+	for (int i = 0; i < v.len; i++) {
+		if (i > 0) printf(" ");
+		printf("%d", v.data[i]);
+	}
+	printf("]");
+}
+
+static void _print_list_list_int(list_list_int v) {
+	printf("[");
+	for (int i = 0; i < v.len; i++) {
+		if (i > 0) printf(" ");
+		_print_list_int(v.data[i]);
+	}
+	printf("]");
+}
+
+list_int remove(list_int nums, int i){
+	list_int _t1 = slice_list_int(nums, 0, i);
+	list_int _t2 = slice_list_int(nums, (i + 1), nums.len);
+	list_int _t3 = concat_list_int(_t1, _t2);
+	return _t3;
+}
+
+int main() {
+	list_int _t4 = list_int_create(4);
+	_t4.data[0] = 1;
+	_t4.data[1] = 2;
+	_t4.data[2] = 3;
+	_t4.data[3] = 4;
+	_print_list_int(remove(_t4, 1));
+	printf("\n");
+	return 0;
+}
