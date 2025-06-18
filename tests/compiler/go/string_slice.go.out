@@ -1,0 +1,10 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println(string([]rune("hello")[1:4]))
+}
+
