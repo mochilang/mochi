@@ -20,6 +20,17 @@ type Compiler struct {
 	tmp    int
 }
 
+var exReserved = map[string]bool{
+	"end": true,
+}
+
+func sanitizeName(name string) string {
+	if exReserved[name] {
+		return name + "_"
+	}
+	return name
+}
+
 func assignedVars(stmts []*parser.Statement) []string {
 	set := map[string]struct{}{}
 	decl := map[string]struct{}{}
@@ -126,12 +137,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	c.writeIndent()
-	c.buf.WriteString("def " + fun.Name + "(")
+	c.buf.WriteString("def " + sanitizeName(fun.Name) + "(")
 	for i, p := range fun.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
 		}
-		c.buf.WriteString(p.Name)
+		c.buf.WriteString(sanitizeName(p.Name))
 	}
 	c.buf.WriteString(") do\n")
 	c.indent++
@@ -229,6 +240,9 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	}
 
 	vars := assignedVars(stmt.Body)
+	for i, v := range vars {
+		vars[i] = sanitizeName(v)
+	}
 	loop := c.newTemp()
 
 	if len(vars) == 0 {
@@ -284,8 +298,11 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
-	name := stmt.Name
+	name := sanitizeName(stmt.Name)
 	mutated := assignedVars(stmt.Body)
+	for i, v := range mutated {
+		mutated[i] = sanitizeName(v)
+	}
 
 	srcExpr, err := c.compileExpr(stmt.Source)
 	if err != nil {
@@ -332,6 +349,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
+	name := sanitizeName(stmt.Name)
 	value := "nil"
 	if stmt.Value != nil {
 		v, err := c.compileExpr(stmt.Value)
@@ -340,12 +358,13 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		}
 		value = v
 	}
-	c.writeln(fmt.Sprintf("%s = %s", stmt.Name, value))
-	c.writeln(fmt.Sprintf("_ = %s", stmt.Name))
+	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	c.writeln(fmt.Sprintf("_ = %s", name))
 	return nil
 }
 
 func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
+	name := sanitizeName(stmt.Name)
 	value, err := c.compileExpr(stmt.Value)
 	if err != nil {
 		return err
@@ -355,10 +374,10 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s = Map.put(%s, %s, %s)", stmt.Name, stmt.Name, idx, value))
+		c.writeln(fmt.Sprintf("%s = Map.put(%s, %s, %s)", name, name, idx, value))
 		return nil
 	}
-	c.writeln(fmt.Sprintf("%s = %s", stmt.Name, value))
+	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	return nil
 }
 
@@ -720,11 +739,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "%{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
-		name := p.Selector.Root
+		name := sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}
 		return name, nil
+	case p.Group != nil:
+		return c.compileExpr(p.Group)
 	case p.Struct != nil:
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
@@ -764,7 +785,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "input":
 			return "String.trim(IO.gets(\"\"))", nil
 		default:
-			return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
+			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 		}
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
