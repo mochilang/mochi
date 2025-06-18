@@ -2,7 +2,7 @@ fun addTwoNumbers(l1: list<int>, l2: list<int>): list<int> {
   var i = 0
   var j = 0
   var carry = 0
-  var result = []
+  var result: list<int> = []
   while i < len(l1) || j < len(l2) || carry > 0 {
     var x = 0
     if i < len(l1) {
