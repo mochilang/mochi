@@ -105,6 +105,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileAssign(s.Assign)
 	case s.Type != nil:
 		return nil
+	case s.Test != nil:
+		// Test blocks are ignored when compiling to Rust.
+		return nil
+	case s.Expect != nil:
+		// Expect statements are used only inside tests, so skip them.
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -323,13 +329,23 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		c.buf.WriteString(" -> " + rustType(fun.Return))
 	}
 	c.buf.WriteString(" {\n")
+	origEnv := c.env
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		for _, p := range fun.Params {
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		}
+		c.env = child
+	}
 	c.indent++
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
 	c.indent--
+	c.env = origEnv
 	c.writeln("}")
 	return nil
 }
@@ -343,16 +359,30 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	leftList := c.isListExpr(b.Left.Value)
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "in" {
+		rightList := c.isListExpr(op.Right)
+		switch op.Op {
+		case "+":
+			if leftList || rightList {
+				c.use("_concat")
+				expr = fmt.Sprintf("_concat(&%s, &%s)", expr, r)
+				leftList = true
+			} else {
+				expr = fmt.Sprintf("%s + %s", expr, r)
+				leftList = false
+			}
+		case "in":
 			c.use("_in_map")
 			expr = fmt.Sprintf("_in_map(&%s, &%s)", r, expr)
-		} else {
+			leftList = false
+		default:
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
+			leftList = false
 		}
 	}
 	return expr, nil
@@ -579,7 +609,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if isStringLiteral(op.Index.Start) {
+			if c.isStringExpr(p) {
+				expr = fmt.Sprintf("%s.chars().nth(%s as usize).unwrap()", expr, idx)
+			} else if isStringLiteral(op.Index.Start) {
 				expr = fmt.Sprintf("%s[%s]", expr, idx)
 			} else {
 				expr = fmt.Sprintf("%s[%s as usize]", expr, idx)
@@ -824,6 +856,44 @@ func isStringLiteral(e *parser.Expr) bool {
 		return false
 	}
 	return true
+}
+
+func (c *Compiler) isListExpr(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if p.Target.List != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isStringExpr(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil {
+		return false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func sanitizeName(name string) string {
