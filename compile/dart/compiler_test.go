@@ -139,6 +139,10 @@ func TestDartCompiler_ValidGoldenOutput(t *testing.T) {
 		"two_sum",
 		"var_assignment",
 		"while_loop",
+		"local_recursion",
+		"union_inorder",
+		"union_match",
+		"union_slice",
 	}
 	for _, name := range files {
 		src := filepath.Join("tests", "compiler", "valid", name+".mochi")

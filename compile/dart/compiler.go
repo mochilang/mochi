@@ -297,7 +297,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("(%s.contains(%s))", right, expr)
 			}
 		} else {
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+			opStr := op.Op
+			if opStr == "/" {
+				opStr = "~/"
+			}
+			expr = fmt.Sprintf("(%s %s %s)", expr, opStr, right)
 		}
 	}
 	return expr, nil
@@ -367,6 +371,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
+			if c.env != nil {
+				if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+					if _, ok := t.(types.MapType); ok {
+						key := sanitizeName(p.Selector.Tail[0])
+						name += fmt.Sprintf("['%s']", key)
+						if len(p.Selector.Tail) > 1 {
+							name += "." + strings.Join(p.Selector.Tail[1:], ".")
+						}
+						return name, nil
+					}
+				}
+			}
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}
 		return name, nil
@@ -385,9 +401,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
+			var k string
+			if id, ok := identName(it.Key); ok {
+				k = strconv.Quote(sanitizeName(id))
+			} else {
+				var err error
+				k, err = c.compileExpr(it.Key)
+				if err != nil {
+					return "", err
+				}
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
@@ -496,7 +518,11 @@ func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 	case lit.Float != nil:
 		return strconv.FormatFloat(*lit.Float, 'f', -1, 64), nil
 	case lit.Str != nil:
-		return strconv.Quote(*lit.Str), nil
+		s := *lit.Str
+		s = strings.ReplaceAll(s, "\\", "\\\\")
+		s = strings.ReplaceAll(s, "\"", "\\\"")
+		s = strings.ReplaceAll(s, "$", "\\$")
+		return "\"" + s + "\"", nil
 	case lit.Bool != nil:
 		if *lit.Bool {
 			return "true", nil
@@ -550,10 +576,31 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	if len(t.Variants) > 0 {
-		return fmt.Errorf("union types not supported")
-	}
 	name := sanitizeName(t.Name)
+	if len(t.Variants) > 0 {
+		c.writeln(fmt.Sprintf("abstract class %s {}", name))
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			c.writeln(fmt.Sprintf("class %s extends %s {", vname, name))
+			c.indent++
+			fields := []string{}
+			for _, f := range v.Fields {
+				fname := sanitizeName(f.Name)
+				c.writeln(fmt.Sprintf("dynamic %s;", fname))
+				fields = append(fields, "this."+fname)
+			}
+			var ctor string
+			if len(fields) == 0 {
+				ctor = fmt.Sprintf("%s();", vname)
+			} else {
+				ctor = fmt.Sprintf("%s({%s});", vname, strings.Join(fields, ", "))
+			}
+			c.writeln(ctor)
+			c.indent--
+			c.writeln("}")
+		}
+		return nil
+	}
 	c.writeln(fmt.Sprintf("class %s {", name))
 	c.indent++
 	fields := []string{}
@@ -564,7 +611,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			fields = append(fields, "this."+fname)
 		}
 	}
-	ctor := fmt.Sprintf("%s({%s});", name, strings.Join(fields, ", "))
+	var ctor string
+	if len(fields) == 0 {
+		ctor = fmt.Sprintf("%s();", name)
+	} else {
+		ctor = fmt.Sprintf("%s({%s});", name, strings.Join(fields, ", "))
+	}
 	c.writeln(ctor)
 	c.indent--
 	c.writeln("}")
