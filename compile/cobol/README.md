@@ -58,6 +58,20 @@ c.writeln("    STOP RUN.")
 This strategy means any program that the Go compiler can handle will also work
 with the COBOL backend, albeit by simply printing the same results.
 
+## Building
+
+Compile a Mochi source file to COBOL and run it with `cobc`:
+
+```bash
+mochi build --target cobol examples/leetcode/1/two-sum.mochi -o two-sum.cob
+cobc -free -x two-sum.cob -o two-sum
+./two-sum    # prints "0" and then "1"
+```
+
+`EnsureCOBOL` attempts to install the GNU COBOL toolchain automatically when
+running tests, but you may need to install it manually before using `cobc`
+directly.
+
 ## Installing `cobc`
 
 Tests require the GNU COBOL compiler. `EnsureCOBOL` attempts to install it using
