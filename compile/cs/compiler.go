@@ -187,6 +187,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				c.writeln("return s[i].ToString();")
 				c.indent--
 				c.writeln("}")
+			case "_equal":
+				c.writeln("static bool _equal(dynamic a, dynamic b) {")
+				c.indent++
+				c.writeln("if (a is System.Collections.IEnumerable ae && b is System.Collections.IEnumerable be && a is not string && b is not string) {")
+				c.indent++
+				c.writeln("var ea = ae.GetEnumerator();")
+				c.writeln("var eb = be.GetEnumerator();")
+				c.writeln("while (true) {")
+				c.indent++
+				c.writeln("bool ha = ea.MoveNext();")
+				c.writeln("bool hb = eb.MoveNext();")
+				c.writeln("if (ha != hb) return false;")
+				c.writeln("if (!ha) break;")
+				c.writeln("if (!_equal(ea.Current, eb.Current)) return false;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return true;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return Equals(a, b);")
+				c.indent--
+				c.writeln("}")
 			}
 			c.writeln("")
 		}
@@ -718,7 +740,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	var buf strings.Builder
 	buf.WriteString("new Func<dynamic>(() => {\n")
 	buf.WriteString("\t\tvar _t = " + target + ";\n")
-	for i, cs := range m.Cases {
+	for _, cs := range m.Cases {
 		if call, ok := callPattern(cs.Pattern); ok {
 			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
@@ -749,13 +771,25 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 				continue
 			}
 		}
-		if i == len(m.Cases)-1 { // default case
+		if isUnderscoreExpr(cs.Pattern) {
 			res, err := c.compileExpr(cs.Result)
 			if err != nil {
 				return "", err
 			}
 			buf.WriteString("\t\treturn " + res + ";\n")
+			buf.WriteString("\t})()")
+			return buf.String(), nil
 		}
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		c.use("_equal")
+		buf.WriteString(fmt.Sprintf("\t\tif (_equal(_t, %s)) return %s;\n", pat, res))
 	}
 	buf.WriteString("\t\treturn null;\n")
 	buf.WriteString("\t})()")
@@ -778,6 +812,24 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {

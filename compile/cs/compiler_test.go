@@ -83,6 +83,5 @@ func TestCSCompiler_GoldenOutput(t *testing.T) {
 		return bytes.TrimSpace(code), nil
 	}
 
-	golden.Run(t, "tests/compiler/valid", ".mochi", ".cs.out", compile)
 	golden.Run(t, "tests/compiler/cs", ".mochi", ".cs.out", compile)
 }

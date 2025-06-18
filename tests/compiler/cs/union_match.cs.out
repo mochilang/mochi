@@ -19,7 +19,6 @@ public class Program {
 		var _t = t;
 		if (_t is Leaf) return true;
 		return false;
-		return null;
 	})();
 	}
 	
