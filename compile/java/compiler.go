@@ -145,6 +145,22 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 	lhs := sanitizeName(stmt.Name)
+	if c.env != nil {
+		if t, err := c.env.GetVar(stmt.Name); err == nil {
+			if _, ok := t.(types.MapType); ok && len(stmt.Index) == 1 {
+				key, err := c.compileExpr(stmt.Index[0].Start)
+				if err != nil {
+					return err
+				}
+				val, err := c.compileExpr(stmt.Value)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s.put(%s, %s);", lhs, key, val))
+				return nil
+			}
+		}
+	}
 	for _, idx := range stmt.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
@@ -345,8 +361,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=":
+		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, rhs)
+		case "in":
+			expr = fmt.Sprintf("%s.containsKey(%s)", rhs, expr)
 		default:
 			return "", fmt.Errorf("unsupported op %s", op.Op)
 		}
@@ -457,6 +475,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			items = append(items, k+", "+v)
 		}
+		if len(items) == 0 {
+			return "new java.util.HashMap<>()", nil
+		}
 		return "java.util.Map.of(" + joinArgs(items) + ")", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
@@ -526,6 +547,9 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	if t.Generic != nil {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			return types.ListType{Elem: c.resolveTypeRef(t.Generic.Args[0])}
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return types.MapType{Key: c.resolveTypeRef(t.Generic.Args[0]), Value: c.resolveTypeRef(t.Generic.Args[1])}
 		}
 	}
 	return types.AnyType{}
