@@ -625,6 +625,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Group != nil:
 		e, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -674,6 +676,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	default:
 		return fmt.Sprintf("%s %s", sanitizeName(call.Func), argStr), nil
 	}
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), fsType(p.Type))
+	}
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(fun %s -> %s)", strings.Join(params, " "), expr), nil
+	}
+	return "", fmt.Errorf("block function expressions not supported")
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
