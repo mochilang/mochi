@@ -1,16 +1,4 @@
 :- style_check(-singleton).
-slice(Str, I, J, Out) :-
-    string(Str), !,
-    Len is J - I,
-    sub_string(Str, I, Len, _, Out).
-slice(List, I, J, Out) :-
-    length(Prefix, I),
-    append(Prefix, Rest, List),
-    Len is J - I,
-    length(Out, Len),
-    append(Out, _, Rest).
-
-
 		expand(S, Left, Right, Res) :-
 			catch(
 				(
@@ -101,20 +89,38 @@ slice(List, I, J, Out) :-
 			true
 			),
 			true
-		))
+		)),
+		nb_setval(longestpalindrome_res, ""),
+		nb_getval(longestpalindrome_start, _V33),
+		nb_setval(longestpalindrome_k, _V33),
+		catch(
+			(
+				repeat,
+					nb_getval(longestpalindrome_k, _V34),
+					nb_getval(longestpalindrome_end, _V35),
+					(_V34 =< _V35 ->
+						nb_getval(longestpalindrome_res, _V36),
+						nb_getval(longestpalindrome_k, _V37),
+						nth0(_V37, S, _V38),
+						_V39 is _V36 + _V38,
+						nb_setval(longestpalindrome_res, _V39),
+						nb_getval(longestpalindrome_k, _V40),
+						_V41 is _V40 + 1,
+						nb_setval(longestpalindrome_k, _V41),
+						fail
+					; true)
+			)
+			, break, true)
 					,
 					true
 				)
-				, return(_V33),
-					Res = _V33
+				, return(_V42),
+					Res = _V42
 				)
 			.
 			longestpalindrome(S, Res) :-
-			nb_getval(longestpalindrome_start, _V34),
-			nb_getval(longestpalindrome_end, _V35),
-			_V36 is _V35 + 1,
-			slice(S, _V34, _V36, _V37),
-			Res = _V37.
+			nb_getval(longestpalindrome_res, _V43),
+			Res = _V43.
 
 	main :- true.
 :- initialization(main, main).
