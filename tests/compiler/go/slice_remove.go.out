@@ -5,7 +5,7 @@ import (
 )
 
 func remove(nums []int, i int) []int {
-	return append(append([]int{}, nums[0:i]...), nums[(i+1):len(nums)]...)
+	return append(append([]int{}, nums[0:i]...), nums[(i + 1):len(nums)]...)
 }
 
 func main() {

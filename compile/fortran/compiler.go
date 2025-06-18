@@ -363,6 +363,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
 		}
+		if p.Lit.Str != nil {
+			s := strings.ReplaceAll(*p.Lit.Str, "'", "''")
+			return "'" + s + "'", nil
+		}
 		return "", fmt.Errorf("unknown literal")
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))

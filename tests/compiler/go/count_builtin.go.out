@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(_count([]int{1, 2, 3}))
+	fmt.Println(_count(_toAnySlice([]int{1, 2, 3})))
 }
 
 func _count(v any) int {
@@ -21,4 +21,10 @@ func _count(v any) int {
     case string: return len([]rune(s))
     default: panic("count() expects list or group")
     }
+}
+
+func _toAnySlice[T any](s []T) []any {
+    out := make([]any, len(s))
+    for i, v := range s { out[i] = v }
+    return out
 }
