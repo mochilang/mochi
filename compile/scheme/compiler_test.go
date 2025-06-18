@@ -65,6 +65,11 @@ func TestSchemeCompiler_LeetCode1(t *testing.T) {
 	runLeetExample(t, 1)
 }
 
+// TestSchemeCompiler_LeetCode2 compiles the add-two-numbers example and runs it.
+func TestSchemeCompiler_LeetCode2(t *testing.T) {
+	runLeetExample(t, 2)
+}
+
 func TestSchemeCompiler_SubsetPrograms(t *testing.T) {
 	if _, err := schemecode.EnsureScheme(); err != nil {
 		t.Skipf("chibi-scheme not installed: %v", err)
