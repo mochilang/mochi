@@ -29,6 +29,12 @@ func TestScalaCompiler_LeetCodeExample2(t *testing.T) {
 	runLeetExample(t, 2)
 }
 
+// TestScalaCompiler_LeetCodeExample3 compiles the longest-substring example
+// and ensures the generated Scala code runs correctly.
+func TestScalaCompiler_LeetCodeExample3(t *testing.T) {
+	runLeetExample(t, 3)
+}
+
 func TestScalaCompiler_SubsetPrograms(t *testing.T) {
 	if err := scalacode.EnsureScala(); err != nil {
 		t.Skipf("scala not installed: %v", err)

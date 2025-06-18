@@ -74,3 +74,14 @@ func indentBlock(s string, depth int) string {
 	}
 	return strings.Join(lines, "\n") + "\n"
 }
+
+func emptyListExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	p := e.Binary.Left.Value
+	return len(p.Ops) == 0 && p.Target.List != nil && len(p.Target.List.Elems) == 0
+}
