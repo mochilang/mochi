@@ -104,3 +104,11 @@ mochi build --target fs program.mochi -o program.fs
 
 The emitted code is intended to be executed with `dotnet fsi` or included in larger F# projects.
 
+## Running LeetCode Examples
+
+To compile and execute the sample LeetCode solutions for problems 1-3 in F#, use `leetcode-runner`:
+
+```bash
+go run ./cmd/leetcode-runner --from 1 --to 3 -l fs --run
+```
+
