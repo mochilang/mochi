@@ -5,6 +5,8 @@ function searchMatrix($matrix, $target) {
 		return false;
 	}
 	$n = count($matrix[0]);
+	$left = 0;
+	$right = (($m * $n) - 1);
 	while (($left <= $right)) {
 		$mid = (($left + (($right - $left))) / 2);
 		$row = ($mid / $n);
@@ -14,7 +16,9 @@ function searchMatrix($matrix, $target) {
 			return true;
 		} else 
 		if (($value < $target)) {
+			$left = ($mid + 1);
 		} else {
+			$right = ($mid - 1);
 		}
 	}
 	return false;
