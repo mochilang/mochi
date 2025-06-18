@@ -358,6 +358,19 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "zig":
+		zigc, err := zigcode.EnsureZig()
+		if err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, ".zig")
+		if out, err := exec.Command(zigc, "build-exe", file, "-O", "ReleaseSafe", "-femit-bin="+exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("zig build: %v\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
