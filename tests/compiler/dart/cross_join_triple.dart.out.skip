@@ -18,4 +18,3 @@ void main() {
 		print([c.n.toString(), c.l.toString(), c.b.toString()].join(' '));
 	}
 }
-

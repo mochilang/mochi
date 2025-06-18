@@ -1,0 +1,23 @@
+abstract class Tree {}
+class Leaf extends Tree {
+	Leaf();
+}
+class Node extends Tree {
+	dynamic left;
+	dynamic value;
+	dynamic right;
+	Node({this.left, this.value, this.right});
+}
+
+dynamic isLeaf(t) {
+	return (() {
+	var _t = t;
+	if (_t is Leaf) { return true; }
+	return false;
+})();
+}
+
+void main() {
+	print(isLeaf(Leaf()));
+	print(isLeaf(Node(left: Leaf(), value: 1, right: Leaf())));
+}
