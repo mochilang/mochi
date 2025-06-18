@@ -1,4 +1,4 @@
-public class Main {
+class Main {
 	public static void main(String[] args) {
 		String text = "hello";
 		System.out.println(_indexString(text, (-1)));

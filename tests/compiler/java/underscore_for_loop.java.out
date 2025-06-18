@@ -1,4 +1,4 @@
-public class Main {
+class Main {
 	public static void main(String[] args) {
 		int c = 0;
 		for (int _ = 0; _ < 2; _++) {

@@ -75,3 +75,61 @@ func TestJavaCompiler_GoldenOutput(t *testing.T) {
 		return bytes.TrimSpace(code), nil
 	})
 }
+
+// runLeetExample compiles and runs the Mochi LeetCode example with the given id.
+func runLeetExample(t *testing.T, id int) {
+	t.Helper()
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := javacode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "Main.java")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			if out, err := exec.Command("javac", file).CombinedOutput(); err != nil {
+				t.Fatalf("javac error: %v\n%s", err, out)
+			}
+			cmd := exec.Command("java", "-cp", tmp, "Main")
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("java run error: %v\n%s", err, out)
+			}
+			// For two-sum we verify the output.
+			if id == 1 {
+				got := strings.TrimSpace(string(out))
+				if got != "0\n1" {
+					t.Fatalf("unexpected output: %q", got)
+				}
+			}
+		})
+	}
+}
+
+// TestJavaCompiler_LeetCodeExample1 ensures the two-sum sample compiles and runs.
+func TestJavaCompiler_LeetCodeExample1(t *testing.T) {
+	if err := javacode.EnsureJavac(); err != nil {
+		t.Skipf("javac not installed: %v", err)
+	}
+	runLeetExample(t, 1)
+}
