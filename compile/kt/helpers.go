@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 func sanitizeName(name string) string {
@@ -26,6 +27,54 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	return s
+}
+
+func contains(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
+}
+
+func isStringPrimary(p *parser.Primary, env *types.Env) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.Lit != nil && p.Lit.Str != nil:
+		return true
+	case p.Call != nil && p.Call.Func == "str":
+		return true
+	case p.Selector != nil && env != nil:
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return isStringPrimary(p.Target, env)
+}
+
+func isStringUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isStringPostfix(u.Value, env)
+}
+
+func isStringExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isStringUnary(e.Binary.Left, env)
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {

@@ -431,13 +431,16 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
 	c.writeIndent()
 	c.buf.WriteString("fun " + name + "(")
+	child := types.NewEnv(c.env)
 	for i, p := range fun.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
 		}
 		c.buf.WriteString(sanitizeName(p.Name))
 		if p.Type != nil {
-			c.buf.WriteString(": " + ktType(c.resolveTypeRef(p.Type)))
+			typ := c.resolveTypeRef(p.Type)
+			c.buf.WriteString(": " + ktType(typ))
+			child.SetVar(p.Name, typ, true)
 		}
 	}
 	ret := "Unit"
@@ -446,13 +449,13 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.buf.WriteString(") : " + ret + " {")
 	c.buf.WriteByte('\n')
-	c.indent++
+	sub := &Compiler{env: child, indent: c.indent + 1}
 	for _, s := range fun.Body {
-		if err := c.compileStmt(s); err != nil {
+		if err := sub.compileStmt(s); err != nil {
 			return err
 		}
 	}
-	c.indent--
+	c.buf.Write(sub.buf.Bytes())
 	c.writeln("}")
 	return nil
 }
@@ -469,23 +472,46 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(b.Right) == 0 {
-		return left, nil
-	}
-	expr := left
-	for _, op := range b.Right {
-		rhs, err := c.compilePostfix(op.Right)
+
+	operands := []string{left}
+	ops := []string{}
+	for _, part := range b.Right {
+		rhs, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, rhs)
-		default:
-			return "", fmt.Errorf("unsupported op %s", op.Op)
+		ops = append(ops, part.Op)
+		operands = append(operands, rhs)
+	}
+
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
+
+	for _, level := range prec {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				l := operands[i]
+				r := operands[i+1]
+				op := ops[i]
+				var expr string
+				if op == "in" {
+					expr = fmt.Sprintf("%s.contains(%s)", r, l)
+				} else {
+					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+				}
+				operands[i] = expr
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("invalid expression")
+	}
+
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -534,7 +560,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if expr == "print" {
 				expr = fmt.Sprintf("println(%s)", joinArgs(args))
 			} else if expr == "len" {
-				expr = fmt.Sprintf("%s.size", args[0])
+				if len(op.Call.Args) == 1 && isStringExpr(op.Call.Args[0], c.env) {
+					expr = fmt.Sprintf("%s.length", args[0])
+				} else {
+					expr = fmt.Sprintf("%s.size", args[0])
+				}
 			} else {
 				expr = fmt.Sprintf("%s(%s)", expr, joinArgs(args))
 			}
@@ -578,7 +608,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems = append(elems, ce)
 		}
 		if len(elems) == 0 {
-			return "mutableListOf()", nil
+			return "listOf<Int>()", nil
 		}
 		return "listOf(" + joinArgs(elems) + ")", nil
 	case p.Map != nil:
@@ -595,7 +625,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			items = append(items, fmt.Sprintf("%s to %s", k, v))
 		}
 		if len(items) == 0 {
-			return "mutableMapOf()", nil
+			return "mutableMapOf<Any, Any>()", nil
 		}
 		return "mutableMapOf(" + joinArgs(items) + ")", nil
 	case p.Selector != nil:
