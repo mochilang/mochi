@@ -293,6 +293,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 			res.val = tmp
 		case "==":
 			res.val = fmt.Sprintf("%s =:= %s", res.val, right.val)
+		case "!=":
+			res.val = fmt.Sprintf("%s =\\= %s", res.val, right.val)
 		case "<":
 			res.val = fmt.Sprintf("%s < %s", res.val, right.val)
 		case "<=":
