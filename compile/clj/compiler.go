@@ -125,6 +125,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Break != nil:
+		c.writeln("(throw (ex-info \"break\" {}))")
+		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Expect != nil:
@@ -250,13 +253,28 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("(while " + cond)
+	c.writeln("(try")
+	c.indent++
+	c.writeln("(loop []")
+	c.indent++
+	c.writeln("(when " + cond)
 	c.indent++
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
+	c.writeln("(recur)")
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln("(catch clojure.lang.ExceptionInfo e")
+	c.indent++
+	c.writeln("(when-not (= (.getMessage e) \"break\") (throw e))")
+	c.indent--
+	c.writeln(")")
 	c.indent--
 	c.writeln(")")
 	return nil
