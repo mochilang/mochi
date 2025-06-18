@@ -358,6 +358,31 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "cobol":
+		if err := cobolcode.EnsureCOBOL(); err != nil {
+			return err
+		}
+		dir, err := os.MkdirTemp("", "mochi-cobol-run")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(dir)
+		src := filepath.Join(dir, "main.cob")
+		if data, err := os.ReadFile(file); err == nil {
+			if err := os.WriteFile(src, data, 0644); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+		exe := filepath.Join(dir, "prog")
+		if out, err := exec.Command("cobc", "-free", "-x", src, "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("cobc: %v\n%s", err, string(out))
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
