@@ -1,0 +1,36 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Tree interface { isTree() }
+type Leaf struct {
+}
+func (Leaf) isTree() {}
+type Node struct {
+	Left Tree `json:"left"`
+	Value int `json:"value"`
+	Right Tree `json:"right"`
+}
+func (Node) isTree() {}
+
+func depth(t Tree) int {
+	return func() int {
+	_t := t
+	if _, ok := _t.(Leaf); ok {
+		return 0
+	}
+	if _tmp0, ok := _t.(Node); ok {
+		l := _tmp0.Left
+		r := _tmp0.Right
+		return ((depth(l) + depth(r)) + 1)
+	}
+	var _zero int
+	return _zero
+}()
+}
+
+func main() {
+	fmt.Println(depth(Node{Left: Leaf{}, Value: 0, Right: Leaf{}}))
+}
