@@ -264,6 +264,9 @@ The golden tests compile programs in `tests/compiler/lua` and execute them with 
 go test ./compile/lua -tags slow
 ```
 
+The `LeetCodeExamples` test additionally compiles and runs the first three
+solutions under `examples/leetcode` to verify basic program execution.
+
 ## Notes
 
 The Lua backend supports most core language features but skips advanced LLM helpers and external objects. Query expressions handle simple joins and common clauses. The emphasis is on readability and portability of the emitted Lua code.
