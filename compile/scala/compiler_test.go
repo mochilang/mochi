@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	scalacode "mochi/compile/scala"
@@ -50,7 +51,11 @@ func TestScalaCompiler_SubsetPrograms(t *testing.T) {
 		} else if out, err := exec.Command("scala", "-version").CombinedOutput(); err == nil && bytes.Contains(out, []byte("Scala CLI")) {
 			args = []string{"run", file}
 		}
-		out, err := exec.Command(scalaCmd, args...).CombinedOutput()
+		cmd := exec.Command(scalaCmd, args...)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ scala run error: %w\n%s", err, out)
 		}
