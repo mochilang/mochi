@@ -1,0 +1,7 @@
+fun main() {
+        val square = fun(x: Int) : Int {
+                return (x * x)
+}
+        println(square(6))
+}
+

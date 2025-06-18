@@ -1,0 +1,14 @@
+fun main() {
+        val x = 2
+        val label = run {
+                val _t = x
+                when {
+                        _t == 1 -> "one"
+                        _t == 2 -> "two"
+                        _t == 3 -> "three"
+                        else -> "unknown"
+                }
+        }
+        println(label)
+}
+

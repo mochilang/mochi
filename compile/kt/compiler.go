@@ -392,6 +392,41 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return buf.String(), nil
 }
 
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	child := types.NewEnv(c.env)
+	for i, p := range fn.Params {
+		param := sanitizeName(p.Name)
+		if p.Type != nil {
+			typ := ktType(c.resolveTypeRef(p.Type))
+			param += ": " + typ
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		}
+		params[i] = param
+	}
+	sub := &Compiler{env: child}
+	sub.indent = 1
+	if fn.ExprBody != nil {
+		expr, err := sub.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		sub.writeln("return " + expr)
+	} else {
+		for _, s := range fn.BlockBody {
+			if err := sub.compileStmt(s); err != nil {
+				return "", err
+			}
+		}
+	}
+	body := indentBlock(sub.buf.String(), 1)
+	ret := "Unit"
+	if fn.Return != nil {
+		ret = ktType(c.resolveTypeRef(fn.Return))
+	}
+	return "fun(" + joinArgs(params) + ") : " + ret + " {\n" + body + "}", nil
+}
+
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
 	c.writeIndent()
@@ -579,6 +614,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, fmt.Sprintf("%s = %s", sanitizeName(f.Name), v))
 		}
 		return sanitizeName(p.Struct.Name) + "(" + joinArgs(args) + ")", nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
