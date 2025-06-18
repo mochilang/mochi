@@ -109,7 +109,8 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (c|clj|cobol|cpp|cs|dart|erlang|ex|fortran|fs|go|hs|java|jvm|kt|lua|ocaml|pas|php|pl|py|python|rb|rkt|rust|scala|scheme|st|swift|ts|wasm|zig)"`
+	Target        string `arg:"--target" help:"Output language (c|clj|cobol|cpp|cs|dart|erlang|ex|fortran|fs|go|hs|java|jvm|kt|lua|ocaml|pas|php|pl|py|python|rb|rkt|rust|scala|scheme|st|swift|ts|wasm|zig|all)"`
+	All           bool   `arg:"--all" help:"Compile to all supported targets"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
@@ -133,9 +134,15 @@ type ServeCmd struct{}
 type CheatsheetCmd struct{}
 
 var (
-	cError = color.New(color.FgRed, color.Bold).SprintFunc()
-	cTitle = color.New(color.FgCyan, color.Bold).SprintFunc()
-	cFile  = color.New(color.FgHiBlue, color.Bold).SprintFunc()
+	cError     = color.New(color.FgRed, color.Bold).SprintFunc()
+	cTitle     = color.New(color.FgCyan, color.Bold).SprintFunc()
+	cFile      = color.New(color.FgHiBlue, color.Bold).SprintFunc()
+	allTargets = []string{
+		"c", "clj", "cobol", "cpp", "cs", "dart", "erlang", "ex",
+		"fortran", "fs", "go", "hs", "java", "jvm", "kt", "lua",
+		"ocaml", "pas", "php", "pl", "py", "rb", "rkt", "rust",
+		"scala", "scheme", "st", "swift", "ts", "wasm", "zig",
+	}
 )
 
 func main() {
@@ -437,6 +444,20 @@ func parseOrPrintError(path string) (*parser.Program, error) {
 }
 
 func build(cmd *BuildCmd) error {
+	if strings.ToLower(cmd.Target) == "all" || cmd.All {
+		var firstErr error
+		for _, t := range allTargets {
+			c := *cmd
+			c.Target = t
+			c.All = false
+			c.Out = ""
+			if err := build(&c); err != nil && firstErr == nil {
+				firstErr = err
+			}
+		}
+		return firstErr
+	}
+
 	start := time.Now()
 	source, _ := os.ReadFile(cmd.File)
 
