@@ -541,11 +541,49 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
+			if op.Index.Colon == nil {
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
+				continue
 			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
+			start := "0"
+			if op.Index.Start != nil {
+				s, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				start = s
+			}
+			end := fmt.Sprintf("%s.length", expr)
+			if op.Index.End != nil {
+				e, err := c.compileExpr(op.Index.End)
+				if err != nil {
+					return "", err
+				}
+				end = e
+			}
+			if isStringPrimary(p.Target, c.env) {
+				expr = fmt.Sprintf("%s.substring(%s, %s)", expr, start, end)
+			} else {
+				expr = fmt.Sprintf("%s.subList(%s, %s)", expr, start, end)
+			}
+			continue
+		}
+		if op.Cast != nil {
+			t := c.resolveTypeRef(op.Cast.Type)
+			switch t.(type) {
+			case types.FloatType:
+				expr = fmt.Sprintf("(%s).toDouble()", expr)
+			case types.IntType:
+				expr = fmt.Sprintf("(%s).toInt()", expr)
+			case types.StringType:
+				expr = fmt.Sprintf("(%s).toString()", expr)
+			default:
+				expr = fmt.Sprintf("(%s) as %s", expr, ktType(t))
+			}
 			continue
 		}
 		if op.Call != nil {
@@ -667,6 +705,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "println(" + joinArgs(args) + ")", nil
 		}
 		if name == "len" && len(args) == 1 {
+			if isStringExpr(p.Call.Args[0], c.env) {
+				return args[0] + ".length", nil
+			}
 			return args[0] + ".size", nil
 		}
 		if name == "count" && len(args) == 1 {
