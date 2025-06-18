@@ -1,0 +1,12 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+auto makeAdder(int n){
+	return ;
+}
+
+int main() {
+	auto add10 = makeAdder(10);
+	std::cout << add10(7) << std::endl;
+	return 0;
+}

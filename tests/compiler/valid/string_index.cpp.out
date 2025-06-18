@@ -1,0 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	auto text = "hello";
+	std::cout << text[1] << std::endl;
+	return 0;
+}

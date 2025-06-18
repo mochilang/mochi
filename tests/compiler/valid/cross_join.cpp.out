@@ -1,0 +1,10 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	auto customers = vector<int>{, , };
+	auto orders = vector<int>{, , };
+	auto result;
+	std::cout << "--- Cross Join: All order-customer pairs ---" << std::endl;
+	return 0;
+}

@@ -1,0 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	auto square;
+	std::cout << square(6) << std::endl;
+	return 0;
+}

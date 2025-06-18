@@ -1,0 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	auto vec;
+	std::cout << vec.size() << std::endl;
+	return 0;
+}
