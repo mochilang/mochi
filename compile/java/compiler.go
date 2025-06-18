@@ -403,6 +403,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if op.Index.Colon == nil && c.isStringExpr(p) {
+				c.helpers["_indexString"] = true
+				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				continue
+			}
 			expr = fmt.Sprintf("%s[%s]", expr, idx)
 			continue
 		}
@@ -428,6 +433,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 	}
 	return expr, nil
+}
+
+func (c *Compiler) isStringExpr(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil {
+		return false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -634,6 +658,17 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 		c.writeln("return sum / arr.length;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_indexString"] {
+		c.writeln("")
+		c.writeln("static String _indexString(String s, int i) {")
+		c.indent++
+		c.writeln("char[] runes = s.toCharArray();")
+		c.writeln("if (i < 0) i += runes.length;")
+		c.writeln("if (i < 0 || i >= runes.length) throw new RuntimeException(\"index out of range\");")
+		c.writeln("return String.valueOf(runes[i]);")
 		c.indent--
 		c.writeln("}")
 	}
