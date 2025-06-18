@@ -526,7 +526,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (exprRes, error) {
 				res.code = append(res.code, end.code...)
 				tmp := c.newVar()
 				c.use("slice")
-				res.code = append(res.code, fmt.Sprintf("slice(%s, %s, %s, %s)", res.val, start.val, end.val, tmp))
+				res.code = append(res.code, fmt.Sprintf("slice(%s, %s, %s, %s),", res.val, start.val, end.val, tmp))
 				res.val = tmp
 			} else {
 				idx, err := c.compileExpr(op.Index.Start)
@@ -535,9 +535,24 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (exprRes, error) {
 				}
 				res.code = append(res.code, idx.code...)
 				tmp := c.newVar()
-				res.code = append(res.code, fmt.Sprintf("nth0(%s, %s, %s)", idx.val, res.val, tmp))
+				res.code = append(res.code, fmt.Sprintf("nth0(%s, %s, %s),", idx.val, res.val, tmp))
 				res.val = tmp
 			}
+		} else if op.Call != nil {
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				ar, err := c.compileExpr(a)
+				if err != nil {
+					return exprRes{}, err
+				}
+				res.code = append(res.code, ar.code...)
+				args[i] = ar.val
+			}
+			tmp := c.newVar()
+			res.code = append(res.code, fmt.Sprintf("%s(%s, %s),", sanitizeAtom(res.val), strings.Join(args, ", "), tmp))
+			res.val = tmp
+		} else if op.Cast != nil {
+			continue
 		} else {
 			return exprRes{}, fmt.Errorf("unsupported postfix op")
 		}
@@ -561,6 +576,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 		if p.Lit.Int != nil {
 			return exprRes{val: fmt.Sprintf("%d", *p.Lit.Int)}, nil
 		}
+		if p.Lit.Float != nil {
+			return exprRes{val: fmt.Sprintf("%g", *p.Lit.Float)}, nil
+		}
+		if p.Lit.Bool != nil {
+			if *p.Lit.Bool {
+				return exprRes{val: "true"}, nil
+			}
+			return exprRes{val: "false"}, nil
+		}
 		if p.Lit.Str != nil {
 			return exprRes{val: fmt.Sprintf("%q", *p.Lit.Str)}, nil
 		}
@@ -576,6 +600,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 			elems = append(elems, er.val)
 		}
 		return exprRes{code: code, val: "[" + strings.Join(elems, ", ") + "]"}, nil
+	case p.Group != nil:
+		return c.compileExpr(p.Group)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	}
