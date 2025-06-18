@@ -67,6 +67,28 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	for i, p := range fn.Params {
 		params[i] = sanitizeName(p.Name)
 	}
+	// local environment with parameter types
+	origEnv := c.env
+	c.env = types.NewEnv(origEnv)
+	for _, p := range fn.Params {
+		if p.Type != nil && p.Type.Simple != nil {
+			var t types.Type
+			switch *p.Type.Simple {
+			case "int":
+				t = types.IntType{}
+			case "float":
+				t = types.FloatType{}
+			case "string":
+				t = types.StringType{}
+			case "bool":
+				t = types.BoolType{}
+			}
+			if t != nil {
+				c.env.SetVar(p.Name, t, false)
+			}
+		}
+	}
+	defer func() { c.env = origEnv }()
 	c.writeln(fmt.Sprintf("let rec %s %s =", sanitizeName(fn.Name), strings.Join(params, " ")))
 	c.indent++
 	c.writeln("try")
@@ -134,7 +156,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("raise (%s %s)", ex, val))
+		c.writeln(fmt.Sprintf("raise (%s (%s))", ex, val))
 	case s.For != nil:
 		return c.compileFor(s.For, ex)
 	case s.If != nil:
@@ -242,7 +264,19 @@ func (c *Compiler) compileIf(ifst *parser.IfStmt, ex string) error {
 		}
 	}
 	c.indent--
-	if len(ifst.Else) > 0 {
+	if ifst.ElseIf != nil {
+		c.writeln("end else begin")
+		c.indent++
+		if err := c.compileIf(ifst.ElseIf, ex); err != nil {
+			return err
+		}
+		c.indent--
+		if ex == "" {
+			c.writeln("end")
+		} else {
+			c.writeln("end;")
+		}
+	} else if len(ifst.Else) > 0 {
 		c.writeln("end else begin")
 		c.indent++
 		for _, st := range ifst.Else {
@@ -297,6 +331,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			} else if isStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
 				oper = "^"
 			}
+		} else if oper == "/" {
+			if isFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || isFloatExpr(&parser.Expr{Binary: b}, c.env) {
+				oper = "/."
+			}
 		}
 		expr = fmt.Sprintf("%s %s %s", expr, oper, r)
 	}
@@ -331,11 +369,41 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			expr = fmt.Sprintf("(%s %s)", expr, strings.Join(args, " "))
 		} else if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
+			start, err := c.compileExpr(op.Index.Start)
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("(List.nth %s %s)", expr, idx)
+			if op.Index.Colon != nil {
+				end := ""
+				if op.Index.End != nil {
+					end, err = c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+				}
+				if isStringPrimary(p.Target, c.env) {
+					if end == "" {
+						expr = fmt.Sprintf("(String.sub %s %s (String.length %s - %s))", expr, start, expr, start)
+					} else {
+						expr = fmt.Sprintf("(String.sub %s %s (%s - %s))", expr, start, end, start)
+					}
+				} else {
+					expr = fmt.Sprintf("(List.nth %s %s) (* slice unsupported *)", expr, start)
+				}
+			} else {
+				if isStringPrimary(p.Target, c.env) {
+					expr = fmt.Sprintf("(String.get %s %s)", expr, start)
+				} else {
+					expr = fmt.Sprintf("(List.nth %s %s)", expr, start)
+				}
+			}
+		} else if op.Cast != nil {
+			typ := ocamlType(op.Cast.Type)
+			if typ == "float" {
+				expr = fmt.Sprintf("(float_of_int %s)", expr)
+			} else if typ != "" {
+				expr = fmt.Sprintf("(%s : %s)", expr, typ)
+			}
 		}
 	}
 	return expr, nil
@@ -346,6 +414,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return strconv.Itoa(*p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			s := strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64)
+			if !strings.ContainsAny(s, ".eE") {
+				s += "."
+			}
+			return s, nil
 		}
 		if p.Lit.Str != nil {
 			return strconv.Quote(*p.Lit.Str), nil
@@ -418,10 +493,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "len":
 		if len(args) == 1 {
+			if isStringExpr(call.Args[0], c.env) {
+				return fmt.Sprintf("String.length %s", args[0]), nil
+			}
 			return fmt.Sprintf("List.length %s", args[0]), nil
 		}
 	case "print":
 		if len(args) == 1 {
+			if isStringExpr(call.Args[0], c.env) {
+				return fmt.Sprintf("print_endline %s", args[0]), nil
+			}
 			return fmt.Sprintf("print_endline (string_of_int (%s))", args[0]), nil
 		}
 	}
@@ -498,6 +579,44 @@ func isListExpr(e *parser.Expr, env *types.Env) bool {
 	return false
 }
 
+func isFloatExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	p := e.Binary.Left.Value.Target
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Float != nil {
+		return true
+	}
+	if p.Selector != nil {
+		if typ, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.FloatType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isStringPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil {
+		if typ, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func sanitizeName(name string) string {
 	var b strings.Builder
 	for i, r := range name {
@@ -509,6 +628,10 @@ func sanitizeName(name string) string {
 	}
 	res := b.String()
 	if res == "" || !((res[0] >= 'A' && res[0] <= 'Z') || (res[0] >= 'a' && res[0] <= 'z') || res[0] == '_') {
+		res = "_" + res
+	}
+	switch res {
+	case "end", "type", "module", "let", "in", "match", "with", "and", "or":
 		res = "_" + res
 	}
 	return res
