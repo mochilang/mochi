@@ -19,6 +19,7 @@ type Compiler struct {
 	loopTmp     int
 	currentFunc string
 	loops       []loopCtx
+	locals      map[string]bool
 }
 
 type loopCtx struct {
@@ -72,7 +73,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 	return hasLoopCtrlIf(ifst.ElseIf)
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: make(map[string]bool)} }
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -203,6 +204,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		name := sanitizeName(s.Let.Name)
 		c.writeln(fmt.Sprintf("let %s = %s", name, expr))
+		if c.isMapExpr(s.Let.Value) {
+			c.locals[name] = true
+		}
 	case s.Var != nil:
 		expr, err := c.compileExpr(s.Var.Value)
 		if err != nil {
@@ -210,6 +214,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		name := sanitizeName(s.Var.Name)
 		c.writeln(fmt.Sprintf("let mutable %s = %s", name, expr))
+		if c.isMapExpr(s.Var.Value) {
+			c.locals[name] = true
+		}
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -263,6 +270,7 @@ var funcStack []string
 func (c *Compiler) pushFunc(name string) {
 	funcStack = append(funcStack, name)
 	c.currentFunc = name
+	c.locals = make(map[string]bool)
 }
 
 func (c *Compiler) pushLoop(brk, cont string) {
@@ -346,6 +354,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	}
 	c.writeln(fmt.Sprintf("for %s in %s do", loopVar, src))
 	c.indent++
+	if c.isStringExpr(f.Source) && useVar {
+		c.writeln(fmt.Sprintf("let %s = string %s", loopVar, loopVar))
+	}
 	if ctrl {
 		c.pushLoop(brk, cont)
 		c.writeln("try")
@@ -508,6 +519,8 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 
 	operands := []string{first}
 	lists := []bool{c.isListUnary(b.Left)}
+	maps := []bool{c.isMapUnary(b.Left)}
+	strs := []bool{c.isStringUnary(b.Left)}
 	ops := []string{}
 
 	for _, part := range b.Right {
@@ -517,6 +530,8 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		}
 		operands = append(operands, r)
 		lists = append(lists, c.isListPostfix(part.Right))
+		maps = append(maps, c.isMapPostfix(part.Right))
+		strs = append(strs, c.isStringPostfix(part.Right))
 		ops = append(ops, part.Op)
 	}
 
@@ -524,7 +539,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		{"*", "/", "%"},
 		{"+", "-"},
 		{"<", "<=", ">", ">="},
-		{"==", "!="},
+		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
 		{"union", "except", "intersect"},
@@ -548,13 +563,39 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if op == "+" && (lists[i] || lists[i+1]) {
 					operands[i] = fmt.Sprintf("Array.append %s %s", left, right)
 					lists[i] = true
+					maps[i] = false
+					strs[i] = false
+				} else if op == "+" && (strs[i] || strs[i+1]) {
+					if !strs[i] {
+						left = fmt.Sprintf("(string %s)", left)
+					}
+					if !strs[i+1] {
+						right = fmt.Sprintf("(string %s)", right)
+					}
+					operands[i] = fmt.Sprintf("(%s + %s)", left, right)
+					strs[i] = true
+					lists[i] = false
+					maps[i] = false
+				} else if op == "in" {
+					if maps[i+1] {
+						operands[i] = fmt.Sprintf("Map.containsKey %s %s", left, right)
+					} else {
+						operands[i] = fmt.Sprintf("Array.contains %s %s", left, right)
+					}
+					lists[i] = false
+					maps[i] = false
+					strs[i] = false
 				} else {
 					operands[i] = fmt.Sprintf("(%s %s %s)", left, symbol, right)
 					lists[i] = false
+					maps[i] = false
+					strs[i] = false
 				}
 
 				operands = append(operands[:i+1], operands[i+2:]...)
 				lists = append(lists[:i+1], lists[i+2:]...)
+				maps = append(maps[:i+1], maps[i+2:]...)
+				strs = append(strs[:i+1], strs[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
 				i++
@@ -574,7 +615,12 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		return "", err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		val = fmt.Sprintf("(%s%s)", u.Ops[i], val)
+		op := u.Ops[i]
+		if op == "!" {
+			val = fmt.Sprintf("(not %s)", val)
+		} else {
+			val = fmt.Sprintf("(%s%s)", op, val)
+		}
 	}
 	return val, nil
 }
@@ -689,6 +735,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "[|" + strings.Join(elems, "; ") + "|]", nil
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
 		for _, s := range p.Selector.Tail {
@@ -795,6 +843,22 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("(fun %s -> %s)", strings.Join(params, " "), expr), nil
 	}
 	return "", fmt.Errorf("block function expressions not supported")
+}
+
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	items := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("(%s, %s)", k, v)
+	}
+	return "Map.ofList [" + strings.Join(items, "; ") + "]", nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -1051,6 +1115,75 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 				if param.Name == p.Selector.Root && param.Type != nil && param.Type.Simple != nil && *param.Type.Simple == "string" {
 					return true
 				}
+			}
+		}
+		return false
+	default:
+		return false
+	}
+}
+
+func (c *Compiler) isMapExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	return c.isMapBinary(e.Binary)
+}
+
+func (c *Compiler) isMapBinary(b *parser.BinaryExpr) bool {
+	if b == nil {
+		return false
+	}
+	if len(b.Right) == 0 {
+		return c.isMapUnary(b.Left)
+	}
+	return false
+}
+
+func (c *Compiler) isMapUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isMapPostfix(u.Value)
+}
+
+func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	res := c.isMapPrimary(p.Target)
+	for _, op := range p.Ops {
+		if op.Index != nil || op.Call != nil {
+			res = false
+		}
+		if op.Cast != nil {
+			typ := op.Cast.Type
+			if typ.Generic != nil && typ.Generic.Name == "map" && len(typ.Generic.Args) == 2 {
+				res = true
+			} else {
+				res = false
+			}
+		}
+	}
+	return res
+}
+
+func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.Map != nil:
+		return true
+	case p.Group != nil:
+		return c.isMapExpr(p.Group)
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if c.locals[p.Selector.Root] {
+			return true
+		}
+		typ, err := c.env.GetVar(p.Selector.Root)
+		if err == nil {
+			if _, ok := typ.(types.MapType); ok {
+				return true
 			}
 		}
 		return false
