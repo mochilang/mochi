@@ -282,6 +282,18 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "swift":
+		if err := swiftcode.EnsureSwift(); err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, ".swift")
+		if out, err := exec.Command("swiftc", file, "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("swiftc: %v\n%s", err, string(out))
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}

@@ -38,6 +38,17 @@ or directly with the CLI:
 mochi run 1/two-sum.mochi
 ```
 
+## Running Problems in Swift
+
+You can compile and run a range of problems using a different target
+language. For example, to build and execute the first three problems in
+Swift:
+
+```bash
+make range FROM=1 TO=3 LANG=swift
+```
+
+
 ## Running Tests
 
 Some solutions include `test` blocks. Execute all tests with:
