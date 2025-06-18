@@ -17,6 +17,7 @@ Current directories:
 - `py`      – Python source emitter
 - `rb`      – Ruby source emitter
 - `rust`    – Rust source emitter
+- `st`      – GNU Smalltalk output
 - `swift`   – minimal Swift output
 - `ts`      – TypeScript/Deno output
 - `wasm`    – WebAssembly using the Go backend
