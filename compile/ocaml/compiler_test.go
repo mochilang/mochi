@@ -117,3 +117,53 @@ func TestOCamlCompiler_GoldenOutput(t *testing.T) {
 		return bytes.TrimSpace(code), nil
 	})
 }
+
+func TestOCamlCompiler_LeetCodeExamples(t *testing.T) {
+	runExample(t, 1)
+}
+
+func runExample(t *testing.T, i int) {
+	if err := mlcode.EnsureOCaml(); err != nil {
+		t.Skipf("ocamlc not installed: %v", err)
+	}
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := mlcode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			mlfile := filepath.Join(tmp, "prog.ml")
+			if err := os.WriteFile(mlfile, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			exe := filepath.Join(tmp, "prog")
+			if out, err := exec.Command("ocamlc", mlfile, "-o", exe).CombinedOutput(); err != nil {
+				t.Fatalf("ocamlc error: %v\n%s", err, out)
+			}
+			cmd := exec.Command(exe)
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("run error: %v\n%s", err, out)
+			}
+			_ = out
+		})
+	}
+}

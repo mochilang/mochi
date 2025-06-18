@@ -173,7 +173,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 			}
 		}
 		c.indent--
-		c.writeln(fmt.Sprintf(") %s;", src))
+		if ex == "" {
+			c.writeln(fmt.Sprintf(") %s;;", src))
+		} else {
+			c.writeln(fmt.Sprintf(") %s;", src))
+		}
 		return nil
 	}
 	start, err := c.compileExpr(f.Source)
@@ -192,7 +196,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 		}
 	}
 	c.indent--
-	c.writeln("done;")
+	if ex == "" {
+		c.writeln("done;;")
+	} else {
+		c.writeln("done;")
+	}
 	return nil
 }
 
