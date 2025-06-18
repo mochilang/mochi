@@ -251,6 +251,14 @@ mochi build --target php main.mochi -o main.php
 php main.php
 ```
 
+For example, to run the [two-sum](../../examples/leetcode/1/two-sum.mochi)
+LeetCode solution you can compile and execute it directly:
+
+```bash
+mochi build --target php ../../examples/leetcode/1/two-sum.mochi -o two-sum.php
+php two-sum.php
+```
+
 ## Tests
 
 Golden tests under `tests/compiler/php` compile and run each program using the
