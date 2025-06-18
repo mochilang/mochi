@@ -514,6 +514,32 @@ func (c *Compiler) isStringExpr(p *parser.PostfixExpr) bool {
 	return false
 }
 
+func (c *Compiler) isMapExpr(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil {
+		return false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isMapExprByExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	if e.Binary.Left.Value == nil {
+		return false
+	}
+	return c.isMapExpr(e.Binary.Left.Value)
+}
+
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
@@ -617,6 +643,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "System.out.println(" + expr + ")", nil
 		}
 		if name == "len" && len(args) == 1 {
+			if c.isMapExprByExpr(p.Call.Args[0]) {
+				return args[0] + ".size()", nil
+			}
 			return args[0] + ".length", nil
 		}
 		if name == "str" && len(args) == 1 {
