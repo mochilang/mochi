@@ -83,6 +83,13 @@ func TestSwiftCompiler_LeetCodeExample2(t *testing.T) {
 	runLeetExample(t, 2, "")
 }
 
+func TestSwiftCompiler_LeetCodeExample3(t *testing.T) {
+	if err := swiftcode.EnsureSwift(); err != nil {
+		t.Skipf("swift not installed: %v", err)
+	}
+	runLeetExample(t, 3, "")
+}
+
 func runLeetExample(t *testing.T, id int, want string) {
 	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
