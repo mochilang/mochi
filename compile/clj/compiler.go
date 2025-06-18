@@ -80,6 +80,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
+	case s.Var != nil:
+		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Return != nil:
@@ -108,6 +110,19 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	expr, err := c.compileExpr(st.Value)
 	if err != nil {
 		return err
+	}
+	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
+	return nil
+}
+
+func (c *Compiler) compileVar(st *parser.VarStmt) error {
+	expr := "nil"
+	if st.Value != nil {
+		v, err := c.compileExpr(st.Value)
+		if err != nil {
+			return err
+		}
+		expr = v
 	}
 	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
 	return nil
