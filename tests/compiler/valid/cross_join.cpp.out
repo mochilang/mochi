@@ -1,10 +1,36 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+struct Customer {
+	int id;
+	string name;
+};
+
+struct Order {
+	int id;
+	int customerId;
+	int total;
+};
+
+struct PairInfo {
+	int orderId;
+	int orderCustomerId;
+	string pairedCustomerName;
+	int orderTotal;
+};
+
 int main() {
-	auto customers = vector<int>{, , };
-	auto orders = vector<int>{, , };
-	auto result;
+	auto customers = vector<Customer>{Customer{1, "Alice"}, Customer{2, "Bob"}, Customer{3, "Charlie"}};
+	auto orders = vector<Order>{Order{100, 1, 250}, Order{101, 2, 125}, Order{102, 1, 300}};
+	auto result = ([&]() -> vector<PairInfo> {
+	vector<PairInfo> _res;
+	for (auto& o : orders) {
+		for (auto& c : customers) {
+			_res.push_back(PairInfo{o.id, o.customerId, c.name, o.total});
+		}
+	}
+	return _res;
+})();
 	std::cout << "--- Cross Join: All order-customer pairs ---" << std::endl;
 	return 0;
 }
