@@ -214,10 +214,10 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	c.writeln("")
-        c.writeln("static double _avg(list_int v) {")
-        c.indent++
-        c.writeln("if (v.len == 0) return 0;")
-        c.writeln("double sum = 0;")
+	c.writeln("static double _avg(list_int v) {")
+	c.indent++
+	c.writeln("if (v.len == 0) return 0;")
+	c.writeln("double sum = 0;")
 	c.writeln("for (int i = 0; i < v.len; i++) {")
 	c.indent++
 	c.writeln("sum += v.data[i];")
@@ -387,6 +387,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
 		}
+		if c.env != nil {
+			var t types.Type
+			if s.Let.Type != nil {
+				t = resolveTypeRef(s.Let.Type, c.env)
+			} else if isListListExpr(s.Let.Value, c.env) {
+				t = types.ListType{Elem: types.ListType{Elem: types.IntType{}}}
+			} else if isListIntExpr(s.Let.Value, c.env) {
+				t = types.ListType{Elem: types.IntType{}}
+			} else if isStringExpr(s.Let.Value, c.env) {
+				t = types.StringType{}
+			} else if isFloatArg(s.Let.Value, c.env) {
+				t = types.FloatType{}
+			} else {
+				t = types.IntType{}
+			}
+			c.env.SetVar(s.Let.Name, t, false)
+		}
 	case s.Var != nil:
 		name := sanitizeName(s.Var.Name)
 		typ := "int"
@@ -415,6 +432,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 		} else {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
+		}
+		if c.env != nil {
+			var t types.Type
+			if s.Var.Type != nil {
+				t = resolveTypeRef(s.Var.Type, c.env)
+			} else if isListListExpr(s.Var.Value, c.env) {
+				t = types.ListType{Elem: types.ListType{Elem: types.IntType{}}}
+			} else if isListIntExpr(s.Var.Value, c.env) {
+				t = types.ListType{Elem: types.IntType{}}
+			} else if isStringExpr(s.Var.Value, c.env) {
+				t = types.StringType{}
+			} else if isFloatArg(s.Var.Value, c.env) {
+				t = types.FloatType{}
+			} else {
+				t = types.IntType{}
+			}
+			c.env.SetVar(s.Var.Name, t, true)
 		}
 	case s.Assign != nil:
 		lhs := sanitizeName(s.Assign.Name)
@@ -678,12 +712,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileSelector(p.Selector)
 	case p.List != nil:
 		name := c.newTemp()
-                nested := false
-                if len(p.List.Elems) > 0 {
-                        if isListLiteral(p.List.Elems[0]) || isListIntExpr(p.List.Elems[0], c.env) {
-                                nested = true
-                        }
-                }
+		nested := false
+		if len(p.List.Elems) > 0 {
+			if isListLiteral(p.List.Elems[0]) || isListIntExpr(p.List.Elems[0], c.env) {
+				nested = true
+			}
+		}
 		if nested {
 			c.needsListListInt = true
 			c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(%d);", name, len(p.List.Elems)))
@@ -731,8 +765,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					fmtStr := "%d"
 					if isStringArg(a, c.env) {
 						fmtStr = "%s"
-                                        } else if isFloatArg(a, c.env) {
-                                                fmtStr = "%g"
+					} else if isFloatArg(a, c.env) {
+						fmtStr = "%g"
 					}
 					end := " "
 					if i == len(p.Call.Args)-1 {
