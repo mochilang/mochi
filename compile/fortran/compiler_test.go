@@ -17,7 +17,7 @@ import (
 )
 
 func TestFortranCompiler_LeetExamples(t *testing.T) {
-	for i := 1; i <= 3; i++ {
+	for i := 1; i <= 5; i++ {
 		runFortranLeetExample(t, fmt.Sprint(i))
 	}
 }
