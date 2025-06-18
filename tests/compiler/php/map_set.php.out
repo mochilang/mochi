@@ -1,0 +1,4 @@
+<?php
+$scores = ["a" => 1];
+$scores["b"] = 2;
+echo $scores["b"], PHP_EOL;

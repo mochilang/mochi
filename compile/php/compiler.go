@@ -334,6 +334,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -390,6 +392,28 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	default:
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
+}
+
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	items := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		var k string
+		if s, ok := simpleStringKey(it.Key); ok {
+			k = fmt.Sprintf("%q", s)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("%s => %s", k, v)
+	}
+	return "[" + strings.Join(items, ", ") + "]", nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
