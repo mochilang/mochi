@@ -326,7 +326,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("advanced query clauses not supported")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -334,41 +334,81 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	iter := sanitizeName(q.Var)
-	expr := fmt.Sprintf("(%s)", src)
-	if q.Where != nil {
-		cond, err := c.compileExpr(q.Where)
+
+	// handle simple case without cross joins
+	if len(q.Froms) == 0 {
+		expr := fmt.Sprintf("(%s)", src)
+		if q.Where != nil {
+			cond, err := c.compileExpr(q.Where)
+			if err != nil {
+				return "", err
+			}
+			expr = fmt.Sprintf("(%s).select { |%s| %s }", expr, iter, cond)
+		}
+		if q.Sort != nil {
+			val, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			expr = fmt.Sprintf("(%s).sort_by { |%s| %s }", expr, iter, val)
+		}
+		if q.Skip != nil {
+			val, err := c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			expr = fmt.Sprintf("(%s).drop(%s)", expr, val)
+		}
+		if q.Take != nil {
+			val, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			expr = fmt.Sprintf("(%s).take(%s)", expr, val)
+		}
+		sel, err := c.compileExpr(q.Select)
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s).select { |%s| %s }", expr, iter, cond)
+		expr = fmt.Sprintf("(%s).map { |%s| %s }", expr, iter, sel)
+		return expr, nil
 	}
-	if q.Sort != nil {
-		val, err := c.compileExpr(q.Sort)
-		if err != nil {
-			return "", err
-		}
-		expr = fmt.Sprintf("(%s).sort_by { |%s| %s }", expr, iter, val)
+
+	// advanced features not yet supported for cross joins
+	if q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("advanced query clauses not supported")
 	}
-	if q.Skip != nil {
-		val, err := c.compileExpr(q.Skip)
+
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s).drop(%s)", expr, val)
-	}
-	if q.Take != nil {
-		val, err := c.compileExpr(q.Take)
-		if err != nil {
-			return "", err
-		}
-		expr = fmt.Sprintf("(%s).take(%s)", expr, val)
+		fromSrcs[i] = fs
 	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
 	}
-	expr = fmt.Sprintf("(%s).map { |%s| %s }", expr, iter, sel)
-	return expr, nil
+	var b strings.Builder
+	b.WriteString("(begin\n")
+	b.WriteString("\t_res = []\n")
+	b.WriteString(fmt.Sprintf("\tfor %s in %s\n", iter, src))
+	indent := "\t\t"
+	for i, f := range q.Froms {
+		b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(f.Var), fromSrcs[i]))
+		indent += "\t"
+	}
+	b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+	for range q.Froms {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+	}
+	b.WriteString("\tend\n")
+	b.WriteString("\t_res\n")
+	b.WriteString("end")
+	return b.String(), nil
 }
 
 // --- Expressions ---
