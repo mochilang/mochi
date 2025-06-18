@@ -191,11 +191,12 @@ func TestPrologCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestPrologCompiler_LeetCodeExamples(t *testing.T) {
-	t.Skip("disabled in current environment")
 	if err := plcode.EnsureSWIPL(); err != nil {
 		t.Skipf("swipl not installed: %v", err)
 	}
-	runLeetExample(t, 1)
+	for i := 1; i <= 5; i++ {
+		runLeetExample(t, i)
+	}
 }
 
 func TestPrologCompiler_GoldenOutput(t *testing.T) {

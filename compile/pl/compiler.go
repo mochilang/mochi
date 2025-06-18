@@ -16,14 +16,21 @@ type Compiler struct {
 	tmp     int
 	vars    map[string]string
 	currFun string
+	helpers map[string]bool
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env, vars: make(map[string]string)} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, vars: make(map[string]string), helpers: make(map[string]bool)}
+}
 
 // Compile translates a Mochi AST into Prolog source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
-	c.writeln(":- style_check(-singleton).")
+
+	var body bytes.Buffer
+	origBuf := c.buf
+	c.buf = body
+
 	// function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -33,16 +40,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
-	oldBuf := c.buf
-	oldIndent := c.indent
+
+	tmpBuf := c.buf
+	tmpIndent := c.indent
 	c.buf = bytes.Buffer{}
-	c.indent = oldIndent + 1
+	c.indent = tmpIndent + 1
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Type != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s, "_"); err != nil {
-			c.buf = oldBuf
+			c.buf = origBuf
 			return nil, err
 		}
 	}
@@ -51,7 +59,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		b = b[:len(b)-2]
 		b = append(b, '\n')
 	}
-	c.buf = oldBuf
+	c.buf = tmpBuf
 	if len(b) == 0 {
 		c.writeln("main :- true.")
 	} else {
@@ -59,8 +67,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.buf.Write(b)
 		c.writeln(".")
 	}
-	c.indent = oldIndent
+	c.indent = tmpIndent
 	c.writeln(":- initialization(main, main).")
+
+	bodyBytes := append([]byte(nil), c.buf.Bytes()...)
+	c.buf = origBuf
+	c.indent = 0
+	c.writeln(":- style_check(-singleton).")
+	c.emitHelpers()
+	c.buf.Write(bodyBytes)
+
 	return c.buf.Bytes(), nil
 }
 
@@ -68,6 +84,17 @@ func (c *Compiler) newVar() string {
 	v := fmt.Sprintf("_V%d", c.tmp)
 	c.tmp++
 	return v
+}
+
+func (c *Compiler) use(name string) { c.helpers[name] = true }
+
+func (c *Compiler) emitHelpers() {
+	if c.helpers["slice"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperSlice, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 }
 
 // compileBlock compiles a sequence of statements at one indentation level and
@@ -486,14 +513,31 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (exprRes, error) {
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return exprRes{}, err
+			if op.Index.Colon != nil {
+				start, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return exprRes{}, err
+				}
+				end, err := c.compileExpr(op.Index.End)
+				if err != nil {
+					return exprRes{}, err
+				}
+				res.code = append(res.code, start.code...)
+				res.code = append(res.code, end.code...)
+				tmp := c.newVar()
+				c.use("slice")
+				res.code = append(res.code, fmt.Sprintf("slice(%s, %s, %s, %s)", res.val, start.val, end.val, tmp))
+				res.val = tmp
+			} else {
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return exprRes{}, err
+				}
+				res.code = append(res.code, idx.code...)
+				tmp := c.newVar()
+				res.code = append(res.code, fmt.Sprintf("nth0(%s, %s, %s)", idx.val, res.val, tmp))
+				res.val = tmp
 			}
-			res.code = append(res.code, idx.code...)
-			tmp := c.newVar()
-			res.code = append(res.code, fmt.Sprintf("nth0(%s, %s, %s),", idx.val, res.val, tmp))
-			res.val = tmp
 		} else {
 			return exprRes{}, fmt.Errorf("unsupported postfix op")
 		}
