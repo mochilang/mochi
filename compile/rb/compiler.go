@@ -417,11 +417,32 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
+			idx := op.Index
+			if idx.Colon == nil {
+				key, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("%s[%s]", expr, key)
+			} else {
+				start := "0"
+				if idx.Start != nil {
+					s, err := c.compileExpr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				if idx.End != nil {
+					e, err := c.compileExpr(idx.End)
+					if err != nil {
+						return "", err
+					}
+					expr = fmt.Sprintf("%s[%s...%s]", expr, start, e)
+				} else {
+					expr = fmt.Sprintf("%s[%s..-1]", expr, start)
+				}
 			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
