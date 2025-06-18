@@ -160,6 +160,7 @@ func EnsureRacket() error {
 
 ## Notes
 
-The Racket backend is intentionally minimal. Conditionals do not yet support
-`else` branches and complex expressions may be rejected. The generated code aims
+The Racket backend is intentionally minimal. Conditionals now support simple
+`else` and `else if` branches, but complex expressions may still be rejected.
+The generated code aims
 for readability over performance and mirrors Mochi constructs closely.

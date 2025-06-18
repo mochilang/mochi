@@ -1,0 +1,17 @@
+#lang racket
+
+(define x 2)
+(if (= x 1)
+	(begin
+		(displayln 1)
+	)
+	(if (= x 2)
+		(begin
+			(displayln 2)
+		)
+		(begin
+			(displayln 3)
+		)
+	)
+)
+
