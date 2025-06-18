@@ -3,6 +3,7 @@ package hscode
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -444,6 +445,12 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int), nil
+	case l.Float != nil:
+		s := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.ContainsAny(s, ".eE") {
+			s += ".0"
+		}
+		return s, nil
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str), nil
 	case l.Bool != nil:
