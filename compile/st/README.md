@@ -258,7 +258,10 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 
 ## Tools
 
-`EnsureSmalltalk` checks for the `gst` executable and attempts installation via `apt-get` or Homebrew when running on Linux or macOS:
+`EnsureSmalltalk` checks for the `gst` executable and attempts installation via
+`apt-get` or Homebrew when running on Linux or macOS. If installation fails
+(for example if the `gnu-smalltalk` package is unavailable) a warning is printed
+and the tool simply reports that `gst` is missing:
 
 ```go
 func EnsureSmalltalk() error {

@@ -26,7 +26,7 @@ func EnsureSmalltalk() error {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
-				return err
+				fmt.Println("⚠️  apt-get could not install gnu-smalltalk")
 			}
 		}
 	case "darwin":
