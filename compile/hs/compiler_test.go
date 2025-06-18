@@ -18,7 +18,6 @@ import (
 )
 
 func TestHSCompiler_LeetCodeExample1(t *testing.T) {
-	t.Skip("disabled in current environment")
 	if err := hscode.EnsureHaskell(); err != nil {
 		t.Skipf("haskell not installed: %v", err)
 	}
