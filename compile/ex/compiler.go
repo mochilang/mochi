@@ -428,7 +428,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			res = fmt.Sprintf("Enum.at(%s, %s)", res, idx)
+			res = fmt.Sprintf("if is_map(%[1]s), do: Map.get(%[1]s, %[2]s), else: Enum.at(%[1]s, %[2]s)", res, idx)
 		} else if op.Call != nil {
 			args := []string{}
 			for _, a := range op.Call.Args {
