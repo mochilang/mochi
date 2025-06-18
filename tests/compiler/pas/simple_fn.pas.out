@@ -1,0 +1,15 @@
+program main;
+{$mode objfpc}
+uses SysUtils;
+
+type TIntArray = array of integer;
+
+function id(x: integer): integer;
+begin
+	result := x;
+	exit;
+end;
+
+begin
+	writeln(id(123));
+end.

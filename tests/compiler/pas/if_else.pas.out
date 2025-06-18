@@ -1,0 +1,28 @@
+program main;
+{$mode objfpc}
+uses SysUtils;
+
+type TIntArray = array of integer;
+
+function foo(n: integer): integer;
+begin
+	if n < 0 then
+	begin
+		result := -1;
+		exit;
+	end else if n = 0 then
+	begin
+		result := 0;
+		exit;
+	end else
+	begin
+		result := 1;
+		exit;
+	end;
+end;
+
+begin
+	writeln(foo(-2));
+	writeln(foo(0));
+	writeln(foo(3));
+end.
