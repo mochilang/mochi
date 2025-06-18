@@ -629,7 +629,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("%s::%s { %s }", sanitizeName(unionName), sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 		}
 		return fmt.Sprintf("%s { %s }", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
-		return fmt.Sprintf("%s { %s }", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Match != nil:
