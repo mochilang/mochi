@@ -118,6 +118,28 @@ ruby longest.rb
 
 The program defines the function and unit tests but running the compiled Ruby simply evaluates without output.
 
+### Example: LeetCode Median of Two Sorted Arrays
+
+To compile and run the `median-of-two-sorted-arrays` example located in `examples/leetcode/4`, use:
+
+```bash
+mochi build --target rb examples/leetcode/4/median-of-two-sorted-arrays.mochi -o median.rb
+ruby median.rb
+```
+
+This file only contains unit tests so there is no output when the program runs.
+
+### Example: LeetCode Longest Palindromic Substring
+
+To compile and run the `longest-palindromic-substring` example located in `examples/leetcode/5`, use:
+
+```bash
+mochi build --target rb examples/leetcode/5/longest-palindromic-substring.mochi -o palindrome.rb
+ruby palindrome.rb
+```
+
+Like the previous example this program just evaluates the test cases.
+
 `tools.go` provides `EnsureRuby` which attempts to install Ruby on Linux or macOS if it is missing:
 
 ```go
