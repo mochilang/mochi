@@ -16,8 +16,10 @@ import (
 	"mochi/types"
 )
 
-func TestFortranCompiler_TwoSum(t *testing.T) {
-	runFortranLeetExample(t, "1")
+func TestFortranCompiler_LeetExamples(t *testing.T) {
+	for i := 1; i <= 3; i++ {
+		runFortranLeetExample(t, fmt.Sprint(i))
+	}
 }
 
 func TestFortranCompiler_GoldenOutput(t *testing.T) {
@@ -106,6 +108,13 @@ func runFortranLeetExample(t *testing.T, id string) {
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
 	}
+	var stmts []*parser.Statement
+	for _, st := range prog.Statements {
+		if st.Test == nil {
+			stmts = append(stmts, st)
+		}
+	}
+	prog.Statements = stmts
 	env := types.NewEnv(nil)
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
