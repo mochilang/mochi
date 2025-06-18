@@ -39,6 +39,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
         return c.buf.Bytes(), nil
 }
 ```
+
 【F:compile/rkt/compiler.go†L24-L44】
 
 Functions are implemented using `define` and a `let/ec` block to mimic early
@@ -60,6 +61,7 @@ c.writeln(")")
 c.indent--
 c.writeln(")")
 ```
+
 【F:compile/rkt/compiler.go†L47-L68】
 
 Loops are lowered to Racket's `for` form. When iterating over a numeric range the
@@ -76,6 +78,7 @@ if f.RangeEnd != nil {
         c.writeln(fmt.Sprintf("(for ([%s %s])", name, src))
 }
 ```
+
 【F:compile/rkt/compiler.go†L111-L129】
 
 Only a small set of binary operators is recognised. They map directly to
@@ -97,6 +100,7 @@ case "!=":
         val = fmt.Sprintf("(not (= %s %s))", val, rhs)
 }
 ```
+
 【F:compile/rkt/compiler.go†L183-L196】
 
 Builtin functions `len` and `print` are rewritten to `length` and `displayln` in
@@ -111,6 +115,7 @@ case "print":
         name = "displayln"
 }
 ```
+
 【F:compile/rkt/compiler.go†L277-L284】
 
 ## Building
@@ -156,6 +161,7 @@ func EnsureRacket() error {
         return fmt.Errorf("racket not found")
 }
 ```
+
 【F:compile/rkt/tools.go†L10-L45】
 
 ## Notes
@@ -164,3 +170,4 @@ The Racket backend is intentionally minimal. Conditionals now support simple
 `else` and `else if` branches, but complex expressions may still be rejected.
 The generated code aims
 for readability over performance and mirrors Mochi constructs closely.
+Loops support `break` and `continue` using `let/ec` and named `let` constructs.

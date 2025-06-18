@@ -15,6 +15,54 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	env    *types.Env
+	loops  []loopCtx
+}
+
+type loopCtx struct {
+	brk  string
+	cont string
+}
+
+func (c *Compiler) pushLoop(brk, cont string) {
+	c.loops = append(c.loops, loopCtx{brk: brk, cont: cont})
+}
+
+func (c *Compiler) popLoop() {
+	if len(c.loops) > 0 {
+		c.loops = c.loops[:len(c.loops)-1]
+	}
+}
+
+func hasLoopCtrl(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		switch {
+		case s.Break != nil || s.Continue != nil:
+			return true
+		case s.For != nil:
+			if hasLoopCtrl(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if hasLoopCtrl(s.While.Body) {
+				return true
+			}
+		case s.If != nil:
+			if hasLoopCtrl(s.If.Then) || hasLoopCtrlIf(s.If.ElseIf) || hasLoopCtrl(s.If.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
+	if ifst == nil {
+		return false
+	}
+	if hasLoopCtrl(ifst.Then) || hasLoopCtrl(ifst.Else) {
+		return true
+	}
+	return hasLoopCtrlIf(ifst.ElseIf)
 }
 
 func New(env *types.Env) *Compiler {
@@ -87,6 +135,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Break != nil:
+		return c.compileBreak(s.Break)
+	case s.Continue != nil:
+		return c.compileContinue(s.Continue)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Expr != nil:
@@ -139,8 +191,36 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileBreak(b *parser.BreakStmt) error {
+	if len(c.loops) == 0 {
+		return fmt.Errorf("break not in loop")
+	}
+	lbl := c.loops[len(c.loops)-1].brk
+	c.writeln("(" + lbl + " (void))")
+	return nil
+}
+
+func (c *Compiler) compileContinue(cs *parser.ContinueStmt) error {
+	if len(c.loops) == 0 {
+		return fmt.Errorf("continue not in loop")
+	}
+	lbl := c.loops[len(c.loops)-1].cont
+	if lbl == "" {
+		return fmt.Errorf("continue unsupported in this loop")
+	}
+	c.writeln("(" + lbl + ")")
+	return nil
+}
+
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	name := sanitizeName(f.Name)
+	ctrl := hasLoopCtrl(f.Body)
+	var brk string
+	if ctrl {
+		brk = fmt.Sprintf("brk%d", len(c.loops))
+		c.writeln("(let/ec " + brk)
+		c.indent++
+	}
 	if f.RangeEnd != nil {
 		start, err := c.compileExpr(f.Source)
 		if err != nil {
@@ -159,13 +239,26 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		c.writeln(fmt.Sprintf("(for ([%s %s])", name, src))
 	}
 	c.indent++
+	if ctrl {
+		c.pushLoop(brk, "")
+	}
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
+			if ctrl {
+				c.popLoop()
+			}
 			return err
 		}
 	}
+	if ctrl {
+		c.popLoop()
+	}
 	c.indent--
 	c.writeln(")")
+	if ctrl {
+		c.indent--
+		c.writeln(")")
+	}
 	return nil
 }
 
@@ -173,6 +266,31 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	cond, err := c.compileExpr(w.Cond)
 	if err != nil {
 		return err
+	}
+	ctrl := hasLoopCtrl(w.Body)
+	if ctrl {
+		brk := fmt.Sprintf("brk%d", len(c.loops))
+		loop := fmt.Sprintf("loop%d", len(c.loops))
+		c.writeln("(let/ec " + brk)
+		c.indent++
+		c.writeln("(let " + loop + " ()")
+		c.indent++
+		c.writeln(fmt.Sprintf("(when %s", cond))
+		c.indent++
+		c.pushLoop(brk, loop)
+		for _, st := range w.Body {
+			if err := c.compileStmt(st); err != nil {
+				c.popLoop()
+				return err
+			}
+		}
+		c.writeln("(" + loop + "))")
+		c.popLoop()
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln(")")
+		return nil
 	}
 	c.writeln("(let loop ()")
 	c.indent++
