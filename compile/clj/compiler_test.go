@@ -157,4 +157,5 @@ func TestClojureCompiler_LeetCodeExamples(t *testing.T) {
 		t.Skipf("clojure not installed: %v", err)
 	}
 	runLeetExample(t, 1)
+	runLeetExample(t, 2)
 }

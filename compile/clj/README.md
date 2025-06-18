@@ -82,6 +82,8 @@ if name == "print" {
 ```
 【F:compile/clj/compiler.go†L286-L291】
 
+Test blocks are compiled to functions named `test_<name>` and executed after the main program. Inside these functions `expect` statements become simple assertions via Clojure's `assert` form.
+
 ## Tooling
 
 Tests require the Clojure CLI tool. `EnsureClojure` tries to install it using `apt-get` or Homebrew if missing:
@@ -111,6 +113,10 @@ go test ./compile/clj -tags slow
 ```
 
 They compare the execution output of generated programs in `tests/compiler/clj` with predefined golden files.
+
+The test suite also compiles and runs the example LeetCode solutions in
+`examples/leetcode/1` and `examples/leetcode/2` to verify that these programs
+execute correctly using the Clojure backend.
 
 ## Status
 
