@@ -251,13 +251,19 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	c.indent++
 	c.writeln("true ->")
 	c.indent++
+	start := c.buf.Len()
 	if err := c.compileBlock(stmt.Then, false, nil); err != nil {
 		return err
 	}
+	b := c.buf.Bytes()
+	if n := c.buf.Len(); n > start && b[n-1] == '\n' {
+		c.buf.Truncate(n - 1)
+	}
+	c.buf.WriteString(";\n")
 	c.indent--
 	if stmt.ElseIf != nil {
 		c.writeIndent()
-		c.writeln("; _ ->")
+		c.writeln("_ ->")
 		c.indent++
 		if err := c.compileIf(stmt.ElseIf); err != nil {
 			return err
@@ -265,7 +271,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		c.indent--
 	} else if len(stmt.Else) > 0 {
 		c.writeIndent()
-		c.writeln("; _ ->")
+		c.writeln("_ ->")
 		c.indent++
 		if err := c.compileBlock(stmt.Else, false, nil); err != nil {
 			return err
@@ -273,7 +279,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		c.indent--
 	} else {
 		c.writeIndent()
-		c.writeln("; _ -> ok")
+		c.writeln("_ -> ok")
 	}
 	c.indent--
 	c.writeIndent()
