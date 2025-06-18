@@ -175,7 +175,11 @@ func buildOne(src, lang string, run bool) error {
 	if err := os.MkdirAll(outDir, 0755); err != nil {
 		return err
 	}
-	outFile := filepath.Join(outDir, base+"."+lang)
+	ext := "." + lang
+	if lang == "ocaml" {
+		ext = ".ml"
+	}
+	outFile := filepath.Join(outDir, base+ext)
 	var data []byte
 	switch lang {
 	case "go":
@@ -304,6 +308,18 @@ func runOutput(file, lang string) error {
 		runCmd.Stdout = os.Stdout
 		runCmd.Stderr = os.Stderr
 		return runCmd.Run()
+	case "ocaml":
+		if err := mlcode.EnsureOCaml(); err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, filepath.Ext(file))
+		if out, err := exec.Command("ocamlc", file, "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("ocamlc: %v\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	case "java":
 		if err := javacode.EnsureJavac(); err != nil {
 			return err
