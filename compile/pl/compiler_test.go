@@ -15,8 +15,8 @@ import (
 )
 
 func TestPrologCompiler_LeetCode1(t *testing.T) {
-	if _, err := exec.LookPath("swipl"); err != nil {
-		t.Skip("swipl not installed")
+	if err := plcode.EnsureSWIPL(); err != nil {
+		t.Skipf("swipl not installed: %v", err)
 	}
 	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
