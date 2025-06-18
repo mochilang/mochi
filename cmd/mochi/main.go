@@ -48,6 +48,7 @@ import (
 	rbcode "mochi/compile/rb"
 	rscode "mochi/compile/rust"
 	scalacode "mochi/compile/scala"
+	schemecode "mochi/compile/scheme"
 	stcode "mochi/compile/st"
 	swiftcode "mochi/compile/swift"
 	tscode "mochi/compile/ts"
@@ -99,7 +100,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (c|cs|dart|erlang|ex|fs|go|hs|java|jvm|kt|lua|php|py|rb|rust|scala|swift|ts|wasm|st)"`
+	Target        string `arg:"--target" help:"Output language (c|cs|dart|erlang|ex|fs|go|hs|java|jvm|kt|lua|php|py|rb|rust|scala|scheme|swift|ts|wasm|st)"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
@@ -677,6 +678,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".scala"
 		}
 		code, err := scalacode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "scheme":
+		if out == "" {
+			out = base + ".scm"
+		}
+		code, err := schemecode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}

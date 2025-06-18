@@ -135,32 +135,50 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	name := sanitizeName(st.Name)
-	start, err := c.compileExpr(st.Source)
+
+	if st.RangeEnd != nil {
+		start, err := c.compileExpr(st.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(st.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+		c.indent++
+		c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
+		c.indent++
+		c.writeln("(begin")
+		c.indent++
+		for _, s := range st.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln("'())")
+		c.indent--
+		c.writeln(")")
+		return nil
+	}
+
+	src, err := c.compileExpr(st.Source)
 	if err != nil {
 		return err
 	}
-	end, err := c.compileExpr(st.RangeEnd)
-	if err != nil {
-		return err
-	}
-	c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
-	c.indent++
-	c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
-	c.indent++
-	c.writeln("(begin")
+	c.writeln(fmt.Sprintf("(for-each (lambda (%s)", name))
 	c.indent++
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
-	c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
 	c.indent--
-	c.writeln(")")
-	c.indent--
-	c.writeln("'())")
-	c.indent--
-	c.writeln(")")
+	c.writeln(fmt.Sprintf(") %s)", src))
 	return nil
 }
 
