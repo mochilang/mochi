@@ -1,4 +1,26 @@
 # 📦 CHANGELOG.md
+## [0.8.2] – 2025-06-18
+
+### Added
+
+* Minimal compilers for Clojure, COBOL, Fortran, OCaml, Pascal, Prolog, Scheme, Racket and Zig
+* Cross join and sort/skip/take queries in C#, Dart, Elixir and Erlang
+* Negative string indexing and slicing in Java, Swift and Lua
+* Map literals and membership checks in Java, Scala and Swift
+* `str`, `input`, `count` and `avg` builtins across more backends
+* Build command handles every compiler target
+* Benchmarks compile C output
+* Golden tests for all compilers
+
+### Changed
+
+* CLI no longer references the removed Clojure integration
+
+### Fixed
+
+* Scala test runner detection
+* Lua integer division uses `//` when possible
+
 ## [0.8.0] – 2025-06-19
 
 ### Added
