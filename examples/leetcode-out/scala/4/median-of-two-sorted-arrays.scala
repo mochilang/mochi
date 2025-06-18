@@ -1,20 +1,20 @@
 object Main {
-	def findMedianSortedArrays(nums1: List[Int], nums2: List[Int]): Double = {
-		var merged: List[Int] = List()
+	def findMedianSortedArrays(nums1: scala.collection.mutable.ArrayBuffer[Int], nums2: scala.collection.mutable.ArrayBuffer[Int]): Double = {
+		var merged: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer()
 		var i = 0
 		var j = 0
 		while (((i < nums1.length) || (j < nums2.length))) {
 			if ((j >= nums2.length)) {
-				merged = (merged ++ List(nums1(i)))
+				merged = (merged ++ scala.collection.mutable.ArrayBuffer(nums1(i)))
 				i = (i + 1)
 			} else 			if ((i >= nums1.length)) {
-				merged = (merged ++ List(nums2(j)))
+				merged = (merged ++ scala.collection.mutable.ArrayBuffer(nums2(j)))
 				j = (j + 1)
 			} else 			if ((nums1(i) <= nums2(j))) {
-				merged = (merged ++ List(nums1(i)))
+				merged = (merged ++ scala.collection.mutable.ArrayBuffer(nums1(i)))
 				i = (i + 1)
 			} else {
-				merged = (merged ++ List(nums2(j)))
+				merged = (merged ++ scala.collection.mutable.ArrayBuffer(nums2(j)))
 				j = (j + 1)
 			}
 		}

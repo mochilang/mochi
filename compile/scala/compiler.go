@@ -470,16 +470,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Str != nil {
 			return strconv.Quote(*p.Lit.Str), nil
 		}
-	case p.List != nil:
-		elems := make([]string, len(p.List.Elems))
-		for i, e := range p.List.Elems {
-			v, err := c.compileExpr(e)
-			if err != nil {
-				return "", err
-			}
-			elems[i] = v
-		}
-		return "List(" + strings.Join(elems, ", ") + ")", nil
+       case p.List != nil:
+               elems := make([]string, len(p.List.Elems))
+               for i, e := range p.List.Elems {
+                       v, err := c.compileExpr(e)
+                       if err != nil {
+                               return "", err
+                       }
+                       elems[i] = v
+               }
+               return "scala.collection.mutable.ArrayBuffer(" + strings.Join(elems, ", ") + ")", nil
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -654,8 +654,8 @@ func scalaType(t types.Type) string {
 		return "Boolean"
 	case types.StringType:
 		return "String"
-	case types.ListType:
-		return "List[" + scalaType(tt.Elem) + "]"
+       case types.ListType:
+               return "scala.collection.mutable.ArrayBuffer[" + scalaType(tt.Elem) + "]"
 	case types.MapType:
 		return "scala.collection.mutable.Map[" + scalaType(tt.Key) + ", " + scalaType(tt.Value) + "]"
 	case types.FuncType:
