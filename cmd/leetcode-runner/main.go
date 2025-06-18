@@ -296,6 +296,22 @@ func runOutput(file, lang string) error {
 		runCmd.Stdout = os.Stdout
 		runCmd.Stderr = os.Stderr
 		return runCmd.Run()
+	case "java":
+		if err := javacode.EnsureJavac(); err != nil {
+			return err
+		}
+		dir := filepath.Dir(file)
+		cmd := exec.Command("javac", filepath.Base(file))
+		cmd.Dir = dir
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+		runCmd := exec.Command("java", "-cp", dir, "Main")
+		runCmd.Stdout = os.Stdout
+		runCmd.Stderr = os.Stderr
+		return runCmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
