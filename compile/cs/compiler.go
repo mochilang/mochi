@@ -527,7 +527,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.useLinq = true
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -573,6 +573,62 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	v := sanitizeName(q.Var)
+
+	// handle cross join using nested loops when q.Froms are present
+	if len(q.Froms) > 0 {
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			fromSrcs[i] = fs
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+		c.env = child
+		if q.Where != nil {
+			cond, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		sel, err = c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+
+		var buf strings.Builder
+		buf.WriteString("new Func<List<dynamic>>(() => {\n")
+		buf.WriteString("\tvar _res = new List<dynamic>();\n")
+		buf.WriteString(fmt.Sprintf("\tforeach (var %s in %s) {\n", v, src))
+		indent := "\t\t"
+		for i, f := range q.Froms {
+			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
+			indent += "\t"
+		}
+		if cond != "" {
+			buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
+			indent += "\t"
+		}
+		buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
+		if cond != "" {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		for i := len(q.Froms) - 1; i >= 0; i-- {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn _res;\n")
+		buf.WriteString("})()")
+		return buf.String(), nil
+	}
+
 	c.env = orig
 
 	parts := []string{src}
