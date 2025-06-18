@@ -58,9 +58,11 @@ func TestPHPCompiler_LeetCodeExamples(t *testing.T) {
 	if err := phpcode.EnsurePHP(); err != nil {
 		t.Skipf("php not installed: %v", err)
 	}
-	runExample(t, 1)
-	runExample(t, 2)
-	runExample(t, 3)
+       runExample(t, 1)
+       runExample(t, 2)
+       runExample(t, 3)
+       runExample(t, 4)
+       runExample(t, 5)
 }
 
 func runExample(t *testing.T, i int) {
