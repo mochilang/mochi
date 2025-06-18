@@ -282,6 +282,30 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "cs":
+		if err := cscode.EnsureDotnet(); err != nil {
+			return err
+		}
+		tmp, err := os.MkdirTemp("", "mochi-cs")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(tmp)
+		csproj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>`
+		if err := os.WriteFile(filepath.Join(tmp, "app.csproj"), []byte(csproj), 0644); err != nil {
+			return err
+		}
+		data, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+		if err := os.WriteFile(filepath.Join(tmp, "Program.cs"), data, 0644); err != nil {
+			return err
+		}
+		cmd := exec.Command("dotnet", "run", "--project", tmp)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
