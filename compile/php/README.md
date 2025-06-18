@@ -200,7 +200,7 @@ func sanitizeName(name string) string {
 ## PHP installation helper
 
 `tools.go` offers `EnsurePHP` which attempts to install the PHP CLI via
-`apt-get` on Linux or Homebrew on macOS when missing:
+`apt-get`, `apk`, or Homebrew when missing:
 
 ```go
 // EnsurePHP ensures the php command is available, attempting installation if missing.
@@ -240,7 +240,7 @@ func EnsurePHP() error {
         return fmt.Errorf("php not installed")
 }
 ```
-【F:compile/php/tools.go†L10-L44】
+【F:compile/php/tools.go†L10-L52】
 
 ## Building
 
@@ -251,8 +251,9 @@ mochi build --target php main.mochi -o main.php
 php main.php
 ```
 
-For example, to run the [two-sum](../../examples/leetcode/1/two-sum.mochi)
-or [add-two-numbers](../../examples/leetcode/2/add-two-numbers.mochi)
+For example, to run the [two-sum](../../examples/leetcode/1/two-sum.mochi),
+[add-two-numbers](../../examples/leetcode/2/add-two-numbers.mochi),
+or [longest-substring-without-repeating-characters](../../examples/leetcode/3/longest-substring-without-repeating-characters.mochi)
 LeetCode solutions you can compile and execute them directly:
 
 ```bash
@@ -261,6 +262,9 @@ php two-sum.php
 
 mochi build --target php ../../examples/leetcode/2/add-two-numbers.mochi -o add-two-numbers.php
 php add-two-numbers.php
+
+mochi build --target php ../../examples/leetcode/3/longest-substring-without-repeating-characters.mochi -o longest-substring.php
+php longest-substring.php
 ```
 
 ## Tests
