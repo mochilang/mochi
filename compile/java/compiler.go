@@ -197,21 +197,21 @@ func (c *Compiler) compileReturn(stmt *parser.ReturnStmt) error {
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
-	name := sanitizeName(stmt.Name)
-	outName := name
-	if name == "_" {
-		outName = "__"
-	}
-	if stmt.RangeEnd != nil {
-		start, err := c.compileExpr(stmt.Source)
-		if err != nil {
-			return err
-		}
-		end, err := c.compileExpr(stmt.RangeEnd)
-		if err != nil {
-			return err
-		}
-		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", name, start, name, end, name))
+       name := sanitizeName(stmt.Name)
+       outName := name
+       if name == "_" {
+               outName = "__"
+       }
+       if stmt.RangeEnd != nil {
+               start, err := c.compileExpr(stmt.Source)
+               if err != nil {
+                       return err
+               }
+               end, err := c.compileExpr(stmt.RangeEnd)
+               if err != nil {
+                       return err
+               }
+               c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", outName, start, outName, end, outName))
 		c.indent++
 		for _, s := range stmt.Body {
 			if err := c.compileStmt(s); err != nil {

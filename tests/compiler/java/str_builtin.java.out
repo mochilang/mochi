@@ -3,4 +3,3 @@ class Main {
 		System.out.println(String.valueOf(123));
 	}
 }
-

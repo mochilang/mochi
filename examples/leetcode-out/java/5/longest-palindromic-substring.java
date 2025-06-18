@@ -32,7 +32,13 @@ class Main {
 				end = (i + (l / 2));
 			}
 		}
-		return s.substring(start, (end + 1));
+		var res = "";
+		var k = start;
+		while ((k <= end)) {
+			res = (res + _indexString(s, k));
+			k = (k + 1);
+		}
+		return res;
 	}
 	
 	public static void main(String[] args) {
