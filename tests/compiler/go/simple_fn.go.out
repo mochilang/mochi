@@ -1,0 +1,13 @@
+package main
+
+import (
+	"fmt"
+)
+
+func id(x int) int {
+	return x
+}
+
+func main() {
+	fmt.Println(123)
+}
