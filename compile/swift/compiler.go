@@ -125,6 +125,14 @@ func (c *Compiler) compileType(t *parser.TypeRef) string {
 	if t == nil {
 		return "Void"
 	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.compileType(p)
+		}
+		ret := c.compileType(t.Fun.Return)
+		return "(" + strings.Join(params, ", ") + ") -> " + ret
+	}
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
@@ -319,26 +327,26 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-        expr, err := c.compileUnary(b.Left)
-        if err != nil {
-                return "", err
-        }
-        for _, op := range b.Right {
-                rhs, err := c.compilePostfix(op.Right)
-                if err != nil {
-                        return "", err
-                }
-                if op.Op == "in" {
-                        if c.isMapPostfix(op.Right) {
-                                expr = fmt.Sprintf("%s[%s] != nil", rhs, expr)
-                        } else {
-                                expr = fmt.Sprintf("%s.contains(%s)", rhs, expr)
-                        }
-                } else {
-                        expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
-                }
-        }
-        return expr, nil
+	expr, err := c.compileUnary(b.Left)
+	if err != nil {
+		return "", err
+	}
+	for _, op := range b.Right {
+		rhs, err := c.compilePostfix(op.Right)
+		if err != nil {
+			return "", err
+		}
+		if op.Op == "in" {
+			if c.isMapPostfix(op.Right) {
+				expr = fmt.Sprintf("%s[%s] != nil", rhs, expr)
+			} else {
+				expr = fmt.Sprintf("%s.contains(%s)", rhs, expr)
+			}
+		} else {
+			expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
+		}
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -358,21 +366,33 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	for _, op := range p.Ops {
-               if op.Index != nil {
-                       idx, err := c.compileExpr(op.Index.Start)
-                       if err != nil {
-                               return "", err
-                       }
-                       if c.isStringPrimary(p.Target) {
-                               c.useIndexStr = true
-                               expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
-                       } else {
-                               expr = fmt.Sprintf("%s[%s]", expr, idx)
-                               if c.isMapPrimary(p.Target) {
-                                       expr += "!"
-                               }
-                       }
-               }
+		if op.Call != nil {
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
+			}
+			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+		} else if op.Index != nil {
+			idx, err := c.compileExpr(op.Index.Start)
+			if err != nil {
+				return "", err
+			}
+			if c.isStringPrimary(p.Target) {
+				c.useIndexStr = true
+				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+			} else {
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
+				if c.isMapPrimary(p.Target) {
+					expr += "!"
+				}
+			}
+		} else if op.Cast != nil {
+			expr = fmt.Sprintf("%s as! %s", expr, c.compileType(op.Cast.Type))
+		}
 	}
 	return expr, nil
 }
@@ -411,29 +431,31 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
-       case p.Map != nil:
-               items := make([]string, len(p.Map.Items))
-               for i, item := range p.Map.Items {
-                       k, err := c.compileExpr(item.Key)
-                       if err != nil {
-                               return "", err
-                       }
-                       v, err := c.compileExpr(item.Value)
-                       if err != nil {
-                               return "", err
-                       }
-                       items[i] = fmt.Sprintf("%s: %s", k, v)
-               }
-               if len(items) == 0 {
-                       return "[:]", nil
-               }
-               return "[" + strings.Join(items, ", ") + "]", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, item := range p.Map.Items {
+			k, err := c.compileExpr(item.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(item.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("%s: %s", k, v)
+		}
+		if len(items) == 0 {
+			return "[:]", nil
+		}
+		return "[" + strings.Join(items, ", ") + "]", nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
 			return "", err
 		}
 		return "(" + expr + ")", nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -475,6 +497,47 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		paramType := "Any"
+		if p.Type != nil {
+			paramType = c.compileType(p.Type)
+		}
+		params[i] = fmt.Sprintf("%s: %s", p.Name, paramType)
+	}
+	ret := "Void"
+	if fn.Return != nil {
+		ret = c.compileType(fn.Return)
+	}
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = 1
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			c.buf = oldBuf
+			c.indent = oldIndent
+			return "", err
+		}
+		c.writeln("return " + expr)
+	} else {
+		for _, st := range fn.BlockBody {
+			if err := c.compileStmt(st); err != nil {
+				c.buf = oldBuf
+				c.indent = oldIndent
+				return "", err
+			}
+		}
+	}
+	bodyStr := c.buf.String()
+	c.buf = oldBuf
+	c.indent = oldIndent
+	result := fmt.Sprintf("{ (%s) -> %s in\n%s}", strings.Join(params, ", "), ret, indentBlock(bodyStr, 1))
+	return result, nil
 }
 
 func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
@@ -520,57 +583,57 @@ func (c *Compiler) isStringUnary(u *parser.Unary) bool {
 }
 
 func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
-        if p == nil {
-                return false
-        }
-        return c.isStringPrimary(p.Target)
+	if p == nil {
+		return false
+	}
+	return c.isStringPrimary(p.Target)
 }
 
 func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
-        if p == nil {
-                return false
-        }
-        switch {
-        case p.Map != nil:
-                return true
-        case p.Selector != nil:
-                name := p.Selector.Root
-                if len(p.Selector.Tail) > 0 {
-                        name += "." + strings.Join(p.Selector.Tail, ".")
-                }
-                if c.env != nil {
-                        if t, err := c.env.GetVar(name); err == nil {
-                                if _, ok := t.(types.MapType); ok {
-                                        return true
-                                }
-                        }
-                }
-        case p.Group != nil:
-                return c.isMapExpr(p.Group)
-        }
-        return false
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Map != nil:
+		return true
+	case p.Selector != nil:
+		name := p.Selector.Root
+		if len(p.Selector.Tail) > 0 {
+			name += "." + strings.Join(p.Selector.Tail, ".")
+		}
+		if c.env != nil {
+			if t, err := c.env.GetVar(name); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					return true
+				}
+			}
+		}
+	case p.Group != nil:
+		return c.isMapExpr(p.Group)
+	}
+	return false
 }
 
 func (c *Compiler) isMapExpr(e *parser.Expr) bool {
-        if e == nil || e.Binary == nil {
-                return false
-        }
-        if len(e.Binary.Right) != 0 {
-                return false
-        }
-        return c.isMapUnary(e.Binary.Left)
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	return c.isMapUnary(e.Binary.Left)
 }
 
 func (c *Compiler) isMapUnary(u *parser.Unary) bool {
-        if u == nil {
-                return false
-        }
-        return c.isMapPostfix(u.Value)
+	if u == nil {
+		return false
+	}
+	return c.isMapPostfix(u.Value)
 }
 
 func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
-        if p == nil {
-                return false
-        }
-        return c.isMapPrimary(p.Target)
+	if p == nil {
+		return false
+	}
+	return c.isMapPrimary(p.Target)
 }
