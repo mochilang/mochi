@@ -1,7 +1,10 @@
 #lang racket
 (require racket/list)
 
-(define (idx x i) (if (string? x) (string-ref x i) (list-ref x i)))
+(define (idx x i)
+  (cond [(string? x) (string-ref x i)]
+        [(hash? x) (hash-ref x i)]
+        [else (list-ref x i)]))
 (define (slice x s e) (if (string? x) (substring x s e) (take (drop x s) (- e s))))
 
 (define (expand s left right)
@@ -57,15 +60,7 @@
 					(void)
 				)
 			)
-			(define res "")
-			(define k start)
-			(let loop ()
-				(when (<= k end)
-					(set! res (+ res (idx s k)))
-					(set! k (+ k 1))
-					(loop))
-			)
-			(return res)
+			(return (slice s start (+ end 1)))
 			(return (void))
 		)
 	)
