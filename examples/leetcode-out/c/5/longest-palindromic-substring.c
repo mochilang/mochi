@@ -34,16 +34,13 @@ static char* _index_string(char* s, int i) {
 	return buf;
 }
 
-static char* slice_string(char* s, int start, int end) {
-	int len = strlen(s);
-	if (start < 0) start += len;
-	if (end < 0) end += len;
-	if (start < 0) start = 0;
-	if (end > len) end = len;
-	if (start > end) start = end;
-	char* buf = (char*)malloc(end - start + 1);
-	memcpy(buf, s + start, end - start);
-	buf[end - start] = '\0';
+static char* concat_string(char* a, char* b) {
+	size_t len1 = strlen(a);
+	size_t len2 = strlen(b);
+	char* buf = (char*)malloc(len1 + len2 + 1);
+	memcpy(buf, a, len1);
+	memcpy(buf + len1, b, len2);
+	buf[len1 + len2] = '\0';
 	return buf;
 }
 
@@ -77,13 +74,20 @@ char* longestPalindrome(char* s){
 		if ((len2 > len1)) {
 			l = len2;
 		}
-		if (((l > end) - start)) {
-			start = ((i - ((l - 1))) / 2);
-			end = ((i + l) / 2);
+		if ((l > ((end - start)))) {
+			start = (i - ((((l - 1)) / 2)));
+			end = (i + ((l / 2)));
 		}
 	}
-	char* _t3 = slice_string(s, start, (end + 1));
-	return _t3;
+	char* res = "";
+	int k = start;
+	while ((k <= end)) {
+		char* _t3 = _index_string(s, k);
+		char* _t4 = concat_string(res, _t3);
+		res = _t4;
+		k = (k + 1);
+	}
+	return res;
 }
 
 int main() {
