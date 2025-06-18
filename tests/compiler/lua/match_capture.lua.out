@@ -1,0 +1,10 @@
+function depth(t)
+	return (function()
+	local _t0 = t
+	if _t0.__name == "Leaf" then return 0 end
+	if _t0.__name == "Node" then return (function(l, r) return ((depth(l) + depth(r)) + 1) end)(_t0.left, _t0.right) end
+	return nil
+end)()
+end
+
+print(depth({__name="Node", left={__name="Leaf"}, value=0, right={__name="Leaf"}}))

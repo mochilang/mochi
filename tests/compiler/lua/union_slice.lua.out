@@ -1,0 +1,5 @@
+function listit()
+	return {{__name="Empty"}}
+end
+
+print(#listit())

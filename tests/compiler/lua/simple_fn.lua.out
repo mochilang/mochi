@@ -1,0 +1,5 @@
+function id(x)
+	return x
+end
+
+print(id(123))

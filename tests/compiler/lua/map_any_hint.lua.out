@@ -1,0 +1,10 @@
+function Leaf()
+	return {["__name"]="Leaf"}
+end
+
+function Node(left, value, right)
+	return {["__name"]="Node", ["left"]=left, ["value"]=value, ["right"]=right}
+end
+
+local tree = Node(Leaf(), 1, Leaf())
+print((tree["left"])["__name"])
