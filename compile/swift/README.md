@@ -200,6 +200,22 @@ swiftc main.swift -o main
 
 `EnsureSwift` can be used by tests or scripts to install the toolchain automatically.
 
+To experiment, try compiling the first three [LeetCode](../../examples/leetcode) examples:
+
+```bash
+mochi build --target swift ../../examples/leetcode/1/two-sum.mochi -o two-sum.swift
+swiftc two-sum.swift -o two-sum
+./two-sum
+
+mochi build --target swift ../../examples/leetcode/2/add-two-numbers.mochi -o add-two-numbers.swift
+swiftc add-two-numbers.swift -o add-two-numbers
+./add-two-numbers
+
+mochi build --target swift ../../examples/leetcode/3/longest-substring-without-repeating-characters.mochi -o longest.swift
+swiftc longest.swift -o longest
+./longest
+```
+
 ## Tests
 
 The golden tests are tagged `slow` because they compile and run the generated Swift code:

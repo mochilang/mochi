@@ -17,6 +17,7 @@ type Compiler struct {
 	env         *types.Env
 	useAvg      bool
 	useIndexStr bool
+	funcRet     types.Type
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
@@ -105,6 +106,17 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	ret := c.compileType(fn.Return)
 	c.writeln(fmt.Sprintf("func %s(%s) -> %s {", fn.Name, strings.Join(params, ", "), ret))
 	c.indent++
+	oldEnv := c.env
+	oldRet := c.funcRet
+	c.funcRet = resolveTypeRef(fn.Return, oldEnv)
+	if c.env != nil {
+		c.env = types.NewEnv(c.env)
+		for _, p := range fn.Params {
+			if p.Type != nil {
+				c.env.SetVar(p.Name, resolveTypeRef(p.Type, oldEnv), true)
+			}
+		}
+	}
 	for _, p := range fn.Params {
 		decl := "var"
 		if !paramAssigned(fn.Body, p.Name) {
@@ -120,6 +132,10 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			return err
 		}
 	}
+	if c.env != nil {
+		c.env = oldEnv
+	}
+	c.funcRet = oldRet
 	c.indent--
 	c.writeln("}")
 	return nil
@@ -162,6 +178,90 @@ func (c *Compiler) compileType(t *parser.TypeRef) string {
 	return "Any"
 }
 
+func swiftType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "Int"
+	case types.FloatType:
+		return "Double"
+	case types.BoolType:
+		return "Bool"
+	case types.StringType:
+		return "String"
+	case types.ListType:
+		return "[" + swiftType(tt.Elem) + "]"
+	case types.MapType:
+		return "[" + swiftType(tt.Key) + ": " + swiftType(tt.Value) + "]"
+	case types.StructType:
+		return tt.Name
+	case types.UnionType:
+		return tt.Name
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = swiftType(p)
+		}
+		ret := swiftType(tt.Return)
+		return "(" + strings.Join(params, ", ") + ") -> " + ret
+	case types.VoidType:
+		return "Void"
+	default:
+		return "Any"
+	}
+}
+
+func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = resolveTypeRef(p, env)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = resolveTypeRef(t.Fun.Return, env)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				return types.ListType{Elem: resolveTypeRef(t.Generic.Args[0], env)}
+			}
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				return types.MapType{Key: resolveTypeRef(t.Generic.Args[0], env), Value: resolveTypeRef(t.Generic.Args[1], env)}
+			}
+		}
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			if env != nil {
+				if st, ok := env.GetStruct(*t.Simple); ok {
+					return st
+				}
+				if ut, ok := env.GetUnion(*t.Simple); ok {
+					return ut
+				}
+			}
+		}
+	}
+	return types.AnyType{}
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
@@ -172,6 +272,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := ""
 		if s.Let.Type != nil {
 			typ = ": " + c.compileType(s.Let.Type)
+		} else if c.env != nil {
+			if t, err := c.env.GetVar(s.Let.Name); err == nil {
+				typ = ": " + swiftType(t)
+			}
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("let %s%s", s.Let.Name, typ))
@@ -186,6 +290,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := ""
 		if s.Var.Type != nil {
 			typ = ": " + c.compileType(s.Var.Type)
+		} else if c.env != nil {
+			if t, err := c.env.GetVar(s.Var.Name); err == nil {
+				typ = ": " + swiftType(t)
+			}
+		}
+		if typ == "" && expr == "[]" {
+			if lt, ok := c.funcRet.(types.ListType); ok {
+				typ = ": [" + swiftType(lt.Elem) + "]"
+			} else {
+				typ = ": [Any]"
+			}
+		}
+		if typ == "" && expr == "[:]" {
+			if mt, ok := c.funcRet.(types.MapType); ok {
+				typ = ": [" + swiftType(mt.Key) + ": " + swiftType(mt.Value) + "]"
+			} else {
+				typ = ": [AnyHashable: Any]"
+			}
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("var %s%s", s.Var.Name, typ))
