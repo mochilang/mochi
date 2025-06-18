@@ -1,0 +1,33 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl;
+
+type TIntArray = array of integer;
+
+function isPalindrome(x: integer): boolean;
+var
+	i: integer;
+	n: integer;
+	s: integer;
+begin
+	if (x < 0) then
+	begin
+		result := False;
+		exit;
+	end;
+	s := str(x);
+	n := Length(s);
+	for i := 0 to n div 2 - 1 do
+	begin
+		if (s[i] <> s[n - 1 - i]) then
+		begin
+			result := False;
+			exit;
+		end;
+	end;
+	result := True;
+	exit;
+end;
+
+begin
+end.

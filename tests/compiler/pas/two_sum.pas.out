@@ -1,6 +1,6 @@
 program main;
 {$mode objfpc}
-uses SysUtils;
+uses SysUtils, fgl;
 
 type TIntArray = array of integer;
 
