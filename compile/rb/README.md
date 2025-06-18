@@ -96,6 +96,17 @@ The program prints the indices of the elements that sum to the target:
 1
 ```
 
+### Example: LeetCode Add Two Numbers
+
+To compile and run the `add-two-numbers` example located in `examples/leetcode/2`, use:
+
+```bash
+mochi build --target rb examples/leetcode/2/add-two-numbers.mochi -o add-two-numbers.rb
+ruby add-two-numbers.rb
+```
+
+This prints the resulting list digits on separate lines.
+
 `tools.go` provides `EnsureRuby` which attempts to install Ruby on Linux or macOS if it is missing:
 
 ```go
