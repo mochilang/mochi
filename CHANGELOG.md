@@ -404,7 +404,7 @@
 
 ### Added
 
-* Python compiler via `mochi build --target py` or `.py` output
+* Python compiler via `mochi build --target python` (or `py`) or `.py` output
 * Build command auto-detects target language from extension
 * Benchmarks auto-install Mochi, Deno and Python
 
