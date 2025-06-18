@@ -66,7 +66,7 @@ func runLeet(t *testing.T, id int) {
 }
 
 func TestCCompiler_LeetCodeExamples(t *testing.T) {
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		runLeet(t, i)
 	}
 }
