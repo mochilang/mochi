@@ -1,0 +1,4 @@
+(doseq [ch "cat"]
+  (println ch)
+)
+
