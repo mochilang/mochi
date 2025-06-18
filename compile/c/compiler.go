@@ -425,6 +425,26 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				case types.FloatType:
 					typ = "double"
 				}
+			} else {
+				if isListListExpr(s.Var.Value, c.env) {
+					typ = "list_list_int"
+				} else if isListIntExpr(s.Var.Value, c.env) {
+					typ = "list_int"
+				} else if isStringExpr(s.Var.Value, c.env) {
+					typ = "char*"
+				} else if isFloatArg(s.Var.Value, c.env) {
+					typ = "double"
+				}
+			}
+		} else {
+			if isListListExpr(s.Var.Value, nil) {
+				typ = "list_list_int"
+			} else if isListIntExpr(s.Var.Value, nil) {
+				typ = "list_int"
+			} else if isStringExpr(s.Var.Value, nil) {
+				typ = "char*"
+			} else if isFloatArg(s.Var.Value, nil) {
+				typ = "double"
 			}
 		}
 		if s.Var.Value != nil {
@@ -1093,6 +1113,9 @@ func isListIntPrimary(p *parser.Primary, env *types.Env) bool {
 						if _, ok := lt.Elem.(types.IntType); ok {
 							return true
 						}
+					}
+					if _, ok := t.(types.IntType); ok {
+						return true
 					}
 				}
 			}
