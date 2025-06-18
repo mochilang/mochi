@@ -16,10 +16,11 @@ type Compiler struct {
 	indent int
 	env    *types.Env
 	tmp    int
+	vars   map[string]bool
 }
 
 // New creates a new OCaml compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, vars: map[string]bool{}} }
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
@@ -93,6 +94,38 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 		} else {
 			c.writeln(fmt.Sprintf("let %s = %s in", sanitizeName(s.Let.Name), val))
 		}
+	case s.Var != nil:
+		val := "()"
+		if s.Var.Value != nil {
+			var err error
+			val, err = c.compileExpr(s.Var.Value)
+			if err != nil {
+				return err
+			}
+		}
+		name := sanitizeName(s.Var.Name)
+		if c.vars == nil {
+			c.vars = map[string]bool{}
+		}
+		c.vars[name] = true
+		if ex == "" {
+			c.writeln(fmt.Sprintf("let %s = ref %s;;", name, val))
+		} else {
+			c.writeln(fmt.Sprintf("let %s = ref %s in", name, val))
+		}
+	case s.Assign != nil:
+		val, err := c.compileExpr(s.Assign.Value)
+		if err != nil {
+			return err
+		}
+		name := sanitizeName(s.Assign.Name)
+		if ex == "" {
+			c.writeln(fmt.Sprintf("%s := %s;;", name, val))
+		} else {
+			c.writeln(fmt.Sprintf("%s := %s;", name, val))
+		}
+	case s.While != nil:
+		return c.compileWhile(s.While, ex)
 	case s.Return != nil:
 		if ex == "" {
 			return fmt.Errorf("return outside function")
@@ -143,6 +176,31 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 	}
 	c.indent--
 	c.writeln("done;")
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt, ex string) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("while %s do", cond))
+	c.indent++
+	bodyEx := ex
+	if bodyEx == "" {
+		bodyEx = "loop"
+	}
+	for _, st := range w.Body {
+		if err := c.compileStmt(st, bodyEx); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	if ex == "" {
+		c.writeln("done;;")
+	} else {
+		c.writeln("done;")
+	}
 	return nil
 }
 
@@ -259,6 +317,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "[" + strings.Join(elems, "; ") + "]", nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		if c.vars[name] {
+			name = "!" + name
+		}
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}

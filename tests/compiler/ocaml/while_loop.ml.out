@@ -1,0 +1,5 @@
+let i = ref 0;;
+while !i < 3 do
+  print_endline (string_of_int !i);
+  i := !i + 1;
+done;;
