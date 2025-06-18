@@ -1,0 +1,9 @@
+>>SOURCE FORMAT FREE
+IDENTIFICATION DIVISION.
+PROGRAM-ID. MAIN.
+PROCEDURE DIVISION.
+    DISPLAY "--- Orders with customer info ---"
+    DISPLAY "Order 100 by Alice - $ 250"
+    DISPLAY "Order 101 by Bob - $ 125"
+    DISPLAY "Order 102 by Alice - $ 300"
+    STOP RUN.
