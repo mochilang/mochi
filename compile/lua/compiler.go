@@ -468,7 +468,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("advanced query clauses not supported")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -508,6 +508,40 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var b strings.Builder
 	b.WriteString("(function()\n")
+
+	// handle simple cross join without sort/skip/take
+	if len(q.Froms) > 0 && sortExpr == "" && skipExpr == "" && takeExpr == "" {
+		b.WriteString("\tlocal _res = {}\n")
+		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
+		indent := "\t\t"
+		for _, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(f.Var), fs))
+			indent += "\t"
+		}
+		if whereCond != "" {
+			b.WriteString(fmt.Sprintf(indent+"if %s then\n", whereCond))
+			indent += "\t"
+		}
+		b.WriteString(fmt.Sprintf(indent+"table.insert(_res, %s)\n", sel))
+		if whereCond != "" {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+		}
+		for range q.Froms {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+		}
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+		b.WriteString("\treturn _res\n")
+		b.WriteString("end)()")
+		return b.String(), nil
+	}
+
 	b.WriteString("\tlocal items = {}\n")
 	b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
 	if whereCond != "" {
