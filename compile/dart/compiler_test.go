@@ -18,7 +18,6 @@ import (
 )
 
 func TestDartCompiler_LeetCodeExample1(t *testing.T) {
-	t.Skip("disabled in current environment")
 	if err := dartcode.EnsureDart(); err != nil {
 		t.Skipf("dart not installed: %v", err)
 	}
