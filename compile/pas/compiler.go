@@ -81,6 +81,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Let.Name), val))
+	case s.Var != nil:
+		if s.Var.Value != nil {
+			val, err := c.compileExpr(s.Var.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Var.Name), val))
+		}
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -88,10 +96,30 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("result := %s;", val))
 		c.writeln("exit;")
+	case s.Assign != nil:
+		name := sanitizeName(s.Assign.Name)
+		for _, idx := range s.Assign.Index {
+			iv, err := c.compileExpr(idx.Start)
+			if err != nil {
+				return err
+			}
+			name = fmt.Sprintf("%s[%s]", name, iv)
+		}
+		val, err := c.compileExpr(s.Assign.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s := %s;", name, val))
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Break != nil:
+		c.writeln("break;")
+	case s.Continue != nil:
+		c.writeln("continue;")
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -118,6 +146,24 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	c.writeln("begin")
 	c.indent++
 	for _, st := range f.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end;")
+	return nil
+}
+
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("while " + cond + " do")
+	c.writeln("begin")
+	c.indent++
+	for _, st := range w.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
@@ -256,6 +302,14 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				}
 			}
 			vars[s.Let.Name] = typ
+		case s.Var != nil:
+			typ := "integer"
+			if env != nil {
+				if t, err := env.GetVar(s.Var.Name); err == nil {
+					typ = typeString(t)
+				}
+			}
+			vars[s.Var.Name] = typ
 		case s.For != nil:
 			if s.For.Name != "_" {
 				vars[s.For.Name] = "integer"
@@ -291,7 +345,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		switch op.Op {
-		case "+", "-", "*", "/":
+		case "+", "-", "*", "/", "<", "<=", ">", ">=":
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
 		case "==":
 			expr = fmt.Sprintf("%s = %s", expr, r)
