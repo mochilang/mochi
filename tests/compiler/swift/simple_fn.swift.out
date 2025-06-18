@@ -1,0 +1,12 @@
+import Foundation
+
+func id(_ x: Int) -> Int {
+	var x = x
+	
+	return x
+}
+
+func main() {
+	print(id(123))
+}
+main()

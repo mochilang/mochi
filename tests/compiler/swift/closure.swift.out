@@ -1,0 +1,15 @@
+import Foundation
+
+func makeAdder(_ n: Int) -> (Int) -> Int {
+	var n = n
+	
+	return { (x: Int) -> Int in
+		return x + n
+}
+}
+
+func main() {
+	let add10 = makeAdder(10)
+	print(add10(7))
+}
+main()
