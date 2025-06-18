@@ -85,7 +85,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	oldBuf := c.buf
 	oldIndent := c.indent
 	c.buf = bytes.Buffer{}
-	c.indent = oldIndent + 1
+	c.indent = oldIndent + 2
 	for _, s := range stmts {
 		if err := c.compileStmt(s, ret); err != nil {
 			c.buf = oldBuf
@@ -93,13 +93,32 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		}
 	}
 	b := c.buf.Bytes()
+	hasBody := len(b) > 0
 	if bytes.HasSuffix(b, []byte(",\n")) {
 		b = b[:len(b)-2]
 		b = append(b, '\n')
 	}
 	c.buf = oldBuf
 	c.writeln(fmt.Sprintf("%s(%s, %s) :-", name, strings.Join(params, ", "), ret))
+	c.indent++
+	c.writeln("catch(")
+	c.indent++
+	c.writeln("(")
+	c.indent++
 	c.buf.Write(b)
+	if hasBody {
+		c.writeln(",")
+	}
+	c.writeln("true")
+	c.indent--
+	c.writeln(")")
+	handler := c.newVar()
+	c.writeln(fmt.Sprintf(", return(%s),", handler))
+	c.indent++
+	c.writeln(fmt.Sprintf("%s = %s", ret, handler))
+	c.indent--
+	c.writeln(")")
+	c.indent--
 	c.writeln(".")
 	if fallback != nil {
 		val, err := c.compileExpr(fallback.Return.Value)
@@ -136,7 +155,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 		for _, line := range val.code {
 			c.writeln(line)
 		}
-		c.writeln(fmt.Sprintf("%s = %s, !", ret, val.val))
+		c.writeln(fmt.Sprintf("throw(return(%s))", val.val))
 	case s.Expr != nil:
 		if call := s.Expr.Expr.Binary.Left.Value.Target.Call; call != nil && call.Func == "print" {
 			if len(call.Args) != 1 {
