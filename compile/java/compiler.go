@@ -369,6 +369,15 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
+	// create a new scope for parameters so helper functions can infer types
+	oldEnv := c.env
+	if c.env != nil {
+		c.env = types.NewEnv(c.env)
+		for _, p := range fun.Params {
+			c.env.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		}
+	}
+
 	name := sanitizeName(fun.Name)
 	c.writeIndent()
 	ret := "void"
@@ -396,6 +405,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.env = oldEnv
 	return nil
 }
 
@@ -536,7 +546,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if expr == "print" {
 				expr = fmt.Sprintf("System.out.println(%s)", joinArgs(args))
 			} else if expr == "len" {
-				expr = fmt.Sprintf("%s.length", args[0])
+				if c.isMapExprByExpr(op.Call.Args[0]) {
+					expr = fmt.Sprintf("%s.size()", args[0])
+				} else if c.isStringExprByExpr(op.Call.Args[0]) {
+					expr = fmt.Sprintf("%s.length()", args[0])
+				} else {
+					expr = fmt.Sprintf("%s.length", args[0])
+				}
 			} else if expr == "str" {
 				expr = fmt.Sprintf("String.valueOf(%s)", joinArgs(args))
 			} else {
@@ -593,9 +609,24 @@ func (c *Compiler) isMapExprByExpr(e *parser.Expr) bool {
 	return c.isMapExpr(e.Binary.Left.Value)
 }
 
+func (c *Compiler) isStringExprByExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	if e.Binary.Left.Value == nil {
+		return false
+	}
+	return c.isStringExpr(e.Binary.Left.Value)
+}
+
 func (c *Compiler) isListExpr(p *parser.PostfixExpr) bool {
 	if p == nil || p.Target == nil {
 		return false
+	}
+	if len(p.Ops) > 0 {
+		if p.Ops[0].Index != nil && p.Ops[0].Index.Colon == nil {
+			return false
+		}
 	}
 	if p.Target.List != nil {
 		return true
@@ -719,6 +750,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "len" && len(args) == 1 {
 			if c.isMapExprByExpr(p.Call.Args[0]) {
 				return args[0] + ".size()", nil
+			}
+			if c.isStringExprByExpr(p.Call.Args[0]) {
+				return args[0] + ".length()", nil
 			}
 			return args[0] + ".length", nil
 		}
