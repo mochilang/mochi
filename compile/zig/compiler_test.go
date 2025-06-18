@@ -16,7 +16,7 @@ import (
 	"mochi/types"
 )
 
-func TestZigCompiler_LeetCode1to5(t *testing.T) {
+func TestZigCompiler_LeetCode1to10(t *testing.T) {
 	out, err := runExample(t, 1)
 	if err != nil {
 		t.Fatalf("run error: %v", err)
@@ -43,6 +43,31 @@ func TestZigCompiler_LeetCode1to5(t *testing.T) {
 	}
 
 	_, err = runExample(t, 5)
+	if err != nil {
+		t.Fatalf("run error: %v", err)
+	}
+
+	_, err = runExample(t, 6)
+	if err != nil {
+		t.Fatalf("run error: %v", err)
+	}
+
+	_, err = runExample(t, 7)
+	if err != nil {
+		t.Fatalf("run error: %v", err)
+	}
+
+	_, err = runExample(t, 8)
+	if err != nil {
+		t.Fatalf("run error: %v", err)
+	}
+
+	_, err = runExample(t, 9)
+	if err != nil {
+		t.Fatalf("run error: %v", err)
+	}
+
+	_, err = runExample(t, 10)
 	if err != nil {
 		t.Fatalf("run error: %v", err)
 	}
