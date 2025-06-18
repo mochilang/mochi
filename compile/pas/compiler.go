@@ -83,6 +83,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Test != nil, s.Expect != nil:
+		// test blocks are ignored when compiling to Pascal
+		return nil
 	case s.Let != nil:
 		val, err := c.compileExpr(s.Let.Value)
 		if err != nil {
@@ -307,6 +310,8 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 		switch *t.Simple {
 		case "int":
 			return "integer"
+		case "float":
+			return "double"
 		case "string":
 			return "string"
 		case "bool":
@@ -326,6 +331,8 @@ func typeString(t types.Type) string {
 	case types.IntType, types.Int64Type:
 		_ = tt
 		return "integer"
+	case types.FloatType:
+		return "double"
 	case types.StringType:
 		return "string"
 	case types.BoolType:
@@ -357,6 +364,8 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 			}
 			if typ == "integer" && isListLiteral(s.Var.Value) {
 				typ = "TIntArray"
+			} else if typ == "integer" && isStringLiteral(s.Var.Value) {
+				typ = "string"
 			}
 			vars[s.Var.Name] = typ
 		case s.For != nil:
@@ -432,7 +441,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "*":
 					res = fmt.Sprintf("%s * %s", l, r)
 				case "/":
-					res = fmt.Sprintf("%s div %s", l, r)
+					if strings.Contains(l, ".") || strings.Contains(r, ".") || strings.Contains(l, "Double(") || strings.Contains(r, "Double(") {
+						res = fmt.Sprintf("%s / %s", l, r)
+					} else {
+						res = fmt.Sprintf("%s div %s", l, r)
+					}
 				case "%":
 					res = fmt.Sprintf("%s mod %s", l, r)
 				case "<", "<=", ">", ">=":
@@ -503,6 +516,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args[i] = v
 			}
 			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+		} else if op.Cast != nil {
+			typ := c.typeRef(op.Cast.Type)
+			if typ == "double" {
+				expr = fmt.Sprintf("Double(%s)", expr)
+			} else {
+				expr = fmt.Sprintf("Trunc(%s)", expr)
+			}
 		}
 	}
 	return expr, nil
@@ -513,6 +533,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			return fmt.Sprintf("%g", *p.Lit.Float), nil
 		}
 		if p.Lit.Bool != nil {
 			if bool(*p.Lit.Bool) {
@@ -544,6 +567,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		default:
 			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 		}
+	case p.Group != nil:
+		return c.compileExpr(p.Group)
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {

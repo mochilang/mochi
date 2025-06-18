@@ -71,6 +71,17 @@ func isListLiteral(e *parser.Expr) bool {
 	return u.Value.Target.List != nil
 }
 
+func isStringLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil
+}
+
 func (c *Compiler) isListExpr(e *parser.Expr) bool {
 	if isListLiteral(e) {
 		return true
