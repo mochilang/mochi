@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 )
 
 // EnsureDotnet verifies that the dotnet CLI is installed and attempts to
@@ -15,7 +16,39 @@ func ensureDotnet() error {
 	if _, err := exec.LookPath("dotnet"); err == nil {
 		return nil
 	}
-	fmt.Println("🔧 Installing dotnet...")
+
+	switch runtime.GOOS {
+	case "darwin":
+		if _, err := exec.LookPath("brew"); err == nil {
+			fmt.Println("🔧 Installing dotnet via Homebrew...")
+			cmd := exec.Command("brew", "install", "--cask", "dotnet-sdk")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err == nil {
+				if _, err := exec.LookPath("dotnet"); err == nil {
+					return nil
+				}
+			}
+		}
+	case "linux":
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			fmt.Println("🔧 Installing dotnet via apt-get...")
+			cmd := exec.Command("apt-get", "update")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err == nil {
+				cmd = exec.Command("apt-get", "install", "-y", "dotnet-sdk-7.0")
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				_ = cmd.Run()
+				if _, err := exec.LookPath("dotnet"); err == nil {
+					return nil
+				}
+			}
+		}
+	}
+
+	fmt.Println("🔧 Installing dotnet using official script...")
 	home := os.Getenv("HOME")
 	if home == "" {
 		home = "/tmp"
@@ -27,6 +60,7 @@ func ensureDotnet() error {
 	if err := cmd.Run(); err != nil {
 		return err
 	}
+
 	dotnetSrc := filepath.Join(installDir, "dotnet")
 	if _, err := os.Stat(dotnetSrc); err == nil {
 		if err := exec.Command("install", "-m", "755", dotnetSrc, "/usr/local/bin/dotnet").Run(); err == nil {
