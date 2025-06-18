@@ -297,9 +297,23 @@ func (c *Compiler) compileExpr(e *parser.Expr) string {
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	expr := c.compileUnary(b.Left)
+	typ := c.guessUnaryType(b.Left)
 	for _, op := range b.Right {
 		rhs := c.compilePostfix(op.Right)
+		rtyp := c.guessPostfixType(op.Right)
+		if op.Op == "+" && (strings.HasPrefix(typ, "vector<") || strings.HasPrefix(rtyp, "vector<")) {
+			elem := "int"
+			if strings.HasPrefix(typ, "vector<") {
+				elem = strings.TrimSuffix(strings.TrimPrefix(typ, "vector<"), ">")
+			} else if strings.HasPrefix(rtyp, "vector<") {
+				elem = strings.TrimSuffix(strings.TrimPrefix(rtyp, "vector<"), ">")
+			}
+			expr = fmt.Sprintf("([&](vector<%s> a, vector<%s> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(%s, %s)", elem, elem, expr, rhs)
+			typ = "vector<" + elem + ">"
+			continue
+		}
 		expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
+		typ = ""
 	}
 	return expr
 }
