@@ -99,7 +99,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (c|cs|dart|erlang|ex|fs|go|hs|java|jvm|kt|lua|php|py|rb|rust|scala|swift|ts|wasm|st)"`
+	Target        string `arg:"--target" help:"Output language (c|cs|dart|erlang|ex|fs|go|hs|java|jvm|kt|lua|php|py|python|rb|rust|scala|swift|ts|wasm|st)"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
@@ -636,7 +636,7 @@ func build(cmd *BuildCmd) error {
 			status = "error"
 			msg = err.Error()
 		}
-	case "py":
+	case "python", "py":
 		if out == "" {
 			out = base + ".py"
 		}

@@ -194,7 +194,7 @@ mochi run examples/hello.mochi
 mochi test examples/math.mochi
 mochi test examples/leetcode/...
 mochi build examples/hello.mochi -o hello
-mochi build --target py examples/hello.mochi -o hello.py
+mochi build --target python examples/hello.mochi -o hello.py
 mochi init mymodule
 mochi get
 mochi llm "hello"
