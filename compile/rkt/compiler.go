@@ -183,7 +183,7 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 			return err
 		}
 	}
-	c.writeln("(loop)))")
+	c.writeln("(loop))")
 	c.indent--
 	c.indent--
 	c.writeln(")")
@@ -243,35 +243,78 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
 		return "", nil
 	}
-	val, err := c.compileUnary(b.Left)
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	for _, op := range b.Right {
-		rhs, err := c.compilePostfix(op.Right)
+
+	operands := []string{first}
+	ops := []string{}
+
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+":
-			val = fmt.Sprintf("(+ %s %s)", val, rhs)
-		case "-":
-			val = fmt.Sprintf("(- %s %s)", val, rhs)
-		case "*":
-			val = fmt.Sprintf("(* %s %s)", val, rhs)
-		case "%":
-			val = fmt.Sprintf("(modulo %s %s)", val, rhs)
-		case "/":
-			val = fmt.Sprintf("(/ %s %s)", val, rhs)
-		case "==":
-			val = fmt.Sprintf("(= %s %s)", val, rhs)
-		case "!=":
-			val = fmt.Sprintf("(not (= %s %s))", val, rhs)
-		default:
-			return "", fmt.Errorf("unsupported op %s", op.Op)
+		operands = append(operands, r)
+		ops = append(ops, part.Op)
+	}
+
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!="}, {"&&"}, {"||"}}
+
+	contains := func(list []string, s string) bool {
+		for _, v := range list {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range prec {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+			l := operands[i]
+			r := operands[i+1]
+			op := ops[i]
+			var expr string
+			switch op {
+			case "+":
+				expr = fmt.Sprintf("(+ %s %s)", l, r)
+			case "-":
+				expr = fmt.Sprintf("(- %s %s)", l, r)
+			case "*":
+				expr = fmt.Sprintf("(* %s %s)", l, r)
+			case "%":
+				expr = fmt.Sprintf("(modulo %s %s)", l, r)
+			case "/":
+				expr = fmt.Sprintf("(/ %s %s)", l, r)
+			case "==":
+				expr = fmt.Sprintf("(= %s %s)", l, r)
+			case "!=":
+				expr = fmt.Sprintf("(not (= %s %s))", l, r)
+			case "<", "<=", ">", ">=":
+				expr = fmt.Sprintf("(%s %s %s)", op, l, r)
+			case "&&":
+				expr = fmt.Sprintf("(and %s %s)", l, r)
+			case "||":
+				expr = fmt.Sprintf("(or %s %s)", l, r)
+			default:
+				return "", fmt.Errorf("unsupported op %s", op)
+			}
+			operands[i] = expr
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return val, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("invalid expression")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
