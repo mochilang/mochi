@@ -71,6 +71,11 @@ func New(env *types.Env) *Compiler {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("#lang racket")
+	c.writeln("(require racket/list)")
+	c.writeln("")
+	// helpers for indexing and slicing
+	c.writeln("(define (idx x i) (if (string? x) (string-ref x i) (list-ref x i)))")
+	c.writeln("(define (slice x s e) (if (string? x) (substring x s e) (take (drop x s) (- e s))))")
 	c.writeln("")
 	// function declarations first
 	for _, s := range prog.Statements {
@@ -470,11 +475,33 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			val = fmt.Sprintf("(%s %s)", val, strings.Join(args, " "))
 		} else if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
+			if op.Index.Colon == nil {
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("(idx %s %s)", val, idx)
+			} else {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := fmt.Sprintf("(if (string? %s) (string-length %s) (length %s))", val, val, val)
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				val = fmt.Sprintf("(slice %s %s %s)", val, start, end)
 			}
-			val = fmt.Sprintf("(list-ref %s %s)", val, idx)
+		} else if op.Cast != nil {
+			// Racket is dynamically typed; casts are no-ops
 		}
 	}
 	return val, nil

@@ -116,6 +116,8 @@ func TestRacketCompiler_LeetCodeExamples(t *testing.T) {
 	runRacketLeetExample(t, 1)
 	runRacketLeetExample(t, 2)
 	runRacketLeetExample(t, 3)
+	runRacketLeetExample(t, 4)
+	runRacketLeetExample(t, 5)
 }
 
 func runRacketLeetExample(t *testing.T, id int) {
