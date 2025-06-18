@@ -355,12 +355,17 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 					typ = typeString(t)
 				}
 			}
+			if typ == "integer" && isListLiteral(s.Var.Value) {
+				typ = "TIntArray"
+			}
 			vars[s.Var.Name] = typ
 		case s.For != nil:
 			if s.For.Name != "_" {
 				vars[s.For.Name] = "integer"
 			}
 			collectVars(s.For.Body, env, vars)
+		case s.While != nil:
+			collectVars(s.While.Body, env, vars)
 		case s.If != nil:
 			collectVars(s.If.Then, env, vars)
 			if s.If.ElseIf != nil {

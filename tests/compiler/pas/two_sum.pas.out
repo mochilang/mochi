@@ -27,10 +27,10 @@ begin
 end;
 
 var
-	result: TIntArray;
+	_result: TIntArray;
 
 begin
-	result := twoSum([2, 7, 11, 15], 9);
-	writeln(result[0]);
-	writeln(result[1]);
+	_result := twoSum([2, 7, 11, 15], 9);
+	writeln(_result[0]);
+	writeln(_result[1]);
 end.
