@@ -4,6 +4,12 @@ import "sort"
 
 // Runtime helper functions injected into generated programs.
 const (
+	helperIndexString = "function _indexString(s: string, i: number): string {\n" +
+		"  const runes = Array.from(s);\n" +
+		"  if (i < 0) { i += runes.length }\n" +
+		"  if (i < 0 || i >= runes.length) throw new Error('index out of range');\n" +
+		"  return runes[i];\n" +
+		"}\n"
 	helperCount = "function _count(v: any): number {\n" +
 		"  if (Array.isArray(v)) return v.length;\n" +
 		"  if (v && typeof v === 'object') {\n" +
@@ -307,21 +313,22 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_count":      helperCount,
-	"_avg":        helperAvg,
-	"_input":      helperInput,
-	"_iter":       helperIter,
-	"_gen_text":   helperGenText,
-	"_gen_embed":  helperGenEmbed,
-	"_gen_struct": helperGenStruct,
-	"_equal":      helperEqual,
-	"_fetch":      helperFetch,
-	"_toAnyMap":   helperToAnyMap,
-	"_stream":     helperStream,
-	"_waitAll":    helperWaitAll,
-	"_agent":      helperAgent,
-	"_query":      helperQuery,
-	"_dataset":    helperDataset,
+	"_indexString": helperIndexString,
+	"_count":       helperCount,
+	"_avg":         helperAvg,
+	"_input":       helperInput,
+	"_iter":        helperIter,
+	"_gen_text":    helperGenText,
+	"_gen_embed":   helperGenEmbed,
+	"_gen_struct":  helperGenStruct,
+	"_equal":       helperEqual,
+	"_fetch":       helperFetch,
+	"_toAnyMap":    helperToAnyMap,
+	"_stream":      helperStream,
+	"_waitAll":     helperWaitAll,
+	"_agent":       helperAgent,
+	"_query":       helperQuery,
+	"_dataset":     helperDataset,
 }
 
 func (c *Compiler) use(name string) {
