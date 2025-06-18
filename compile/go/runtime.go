@@ -23,10 +23,13 @@ const (
 		"    case []float64: return len(s)\n" +
 		"    case []string: return len(s)\n" +
 		"    case []bool: return len(s)\n" +
+		"    case []map[string]any: return len(s)\n" +
 		"    case map[string]any: return len(s)\n" +
 		"    case string: return len([]rune(s))\n" +
-		"    default: panic(\"count() expects list or group\")\n" +
 		"    }\n" +
+		"    rv := reflect.ValueOf(v)\n" +
+		"    if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array { return rv.Len() }\n" +
+		"    panic(\"count() expects list or group\")\n" +
 		"}\n"
 
 	helperAvg = "func _avg(v any) float64 {\n" +
