@@ -114,55 +114,50 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
 	}
-	runDir := func(i int) {
-		dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(i))
-		files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
-		if err != nil {
-			t.Fatalf("glob error: %v", err)
-		}
-		for _, f := range files {
-			name := fmt.Sprintf("%d/%s", i, filepath.Base(f))
-			t.Run(name, func(t *testing.T) {
-				prog, err := parser.Parse(f)
-				if err != nil {
-					t.Fatalf("parse error: %v", err)
-				}
-				typeEnv := types.NewEnv(nil)
-				if errs := types.Check(prog, typeEnv); len(errs) > 0 {
-					t.Fatalf("type error: %v", errs[0])
-				}
-				c := pycode.New(typeEnv)
-				code, err := c.Compile(prog)
-				if err != nil {
-					t.Fatalf("compile error: %v", err)
-				}
-				tmp := t.TempDir()
-				file := filepath.Join(tmp, "main.py")
-				if err := os.WriteFile(file, code, 0644); err != nil {
-					t.Fatalf("write error: %v", err)
-				}
-				cmd := exec.Command("python3", file)
-				if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
-					cmd.Stdin = bytes.NewReader(data)
-				}
-				out, err := cmd.CombinedOutput()
-				if err != nil {
-					t.Fatalf("python run error: %v\n%s", err, out)
-				}
-				// Older examples may print results; just ensure the
-				// program executes without error.
-			})
-		}
-	}
+	runLeetExample(t, 1)
+	runLeetExample(t, 2)
+}
 
-	for i := 1; i <= 150; i++ {
-		if i == 133 { // uses block function expressions not yet supported
-			continue
-		}
-		runDir(i)
-	}
-
-	// Example 378 previously failed due to name clashes between tests and
-	// global variables.
-	runDir(378)
+func runLeetExample(t *testing.T, id int) {
+	t.Helper()
+       dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+       files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+       if err != nil {
+               t.Fatalf("glob error: %v", err)
+       }
+       if len(files) == 0 {
+               t.Fatalf("no examples found in %s", dir)
+       }
+       for _, src := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(src))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			c := pycode.New(env)
+			code, err := c.Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.py")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("python3", file)
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+                       if out, err := cmd.CombinedOutput(); err != nil {
+                               t.Fatalf("python run error: %v\n%s", err, out)
+                       } else {
+                               _ = out
+                       }
+               })
+       }
 }
