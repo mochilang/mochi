@@ -12,16 +12,18 @@ import (
 
 // Compiler translates a Mochi AST into Swift source code (very limited subset).
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	useAvg bool
+	buf         bytes.Buffer
+	indent      int
+	env         *types.Env
+	useAvg      bool
+	useIndexStr bool
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useAvg = false
+	c.useIndexStr = false
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -74,6 +76,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("var sum = 0.0")
 		c.writeln("for v in arr { sum += Double(v) }")
 		c.writeln("return sum / Double(arr.count)")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.useIndexStr {
+		c.writeln("func _indexString(_ s: String, _ i: Int) -> String {")
+		c.indent++
+		c.writeln("var idx = i")
+		c.writeln("let chars = Array(s)")
+		c.writeln("if idx < 0 { idx += chars.count }")
+		c.writeln("if idx < 0 || idx >= chars.count { fatalError(\"index out of range\") }")
+		c.writeln("return String(chars[idx])")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -341,7 +355,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
+			if c.isStringPrimary(p.Target) {
+				c.useIndexStr = true
+				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+			} else {
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
+			}
 		}
 	}
 	return expr, nil
@@ -442,4 +461,53 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Lit != nil && p.Lit.Str != nil:
+		return true
+	case p.Selector != nil:
+		name := p.Selector.Root
+		if len(p.Selector.Tail) > 0 {
+			name += "." + strings.Join(p.Selector.Tail, ".")
+		}
+		if c.env != nil {
+			if t, err := c.env.GetVar(name); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	case p.Group != nil:
+		return c.isStringExpr(p.Group)
+	}
+	return false
+}
+
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	return c.isStringUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isStringPostfix(u.Value)
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	return c.isStringPrimary(p.Target)
 }
