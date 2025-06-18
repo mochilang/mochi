@@ -9,8 +9,9 @@ defmodule Main do
 			if (n > 7) do
 				break
 			end
-			IO.puts("odd number:", n)
+			IO.puts(Enum.join(Enum.map(["odd number:", n], &to_string(&1)), " "))
 		end
 	end
 	end
 Main.main()
+

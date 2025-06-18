@@ -5,7 +5,8 @@ defmodule Main do
 		input1 = String.trim(IO.gets(""))
 		IO.puts("Enter second input:")
 		input2 = String.trim(IO.gets(""))
-		IO.puts("You entered:", input1, ",", input2)
+		IO.puts(Enum.join(Enum.map(["You entered:", input1, ",", input2], &to_string(&1)), " "))
 	end
 	end
 Main.main()
+
