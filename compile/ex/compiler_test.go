@@ -117,3 +117,10 @@ func TestExCompiler_LeetCode1(t *testing.T) {
 	}
 	runExample(t, 1)
 }
+
+func TestExCompiler_LeetCode2(t *testing.T) {
+	if err := excode.EnsureElixir(); err != nil {
+		t.Skipf("elixir not installed: %v", err)
+	}
+	runExample(t, 2)
+}
