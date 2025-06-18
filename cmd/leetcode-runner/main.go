@@ -312,6 +312,22 @@ func runOutput(file, lang string) error {
 		runCmd.Stdout = os.Stdout
 		runCmd.Stderr = os.Stderr
 		return runCmd.Run()
+	case "kt":
+		if err := ktcode.EnsureKotlin(); err != nil {
+			return err
+		}
+		dir := filepath.Dir(file)
+		jar := filepath.Join(dir, strings.TrimSuffix(filepath.Base(file), ".kt")+".jar")
+		cmd := exec.Command("kotlinc", file, "-include-runtime", "-d", jar)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+		runCmd := exec.Command("java", "-jar", jar)
+		runCmd.Stdout = os.Stdout
+		runCmd.Stderr = os.Stderr
+		return runCmd.Run()
 	case "fortran":
 		gfortran, err := ftncode.EnsureFortran()
 		if err != nil {
