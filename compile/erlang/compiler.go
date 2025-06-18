@@ -389,6 +389,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
 		}
+		if p.Lit.Float != nil {
+			return fmt.Sprintf("%g", *p.Lit.Float), nil
+		}
+		if p.Lit.Bool != nil {
+			if bool(*p.Lit.Bool) {
+				return "true", nil
+			}
+			return "false", nil
+		}
 		if p.Lit.Str != nil {
 			return fmt.Sprintf("\"%s\"", strings.ReplaceAll(*p.Lit.Str, "\"", "\\\"")), nil
 		}
