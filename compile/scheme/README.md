@@ -239,41 +239,17 @@ func EnsureScheme() (string, error) {
 
 ## Tests
 
-`compiler_test.go` runs the generated Scheme for each file under `tests/compiler/scheme`:
+`compiler_test.go` executes the LeetCode examples using the generated Scheme code:
 ```go
-// TestSchemeCompiler_TwoSum compiles the LeetCode example to Scheme and runs it.
-func TestSchemeCompiler_TwoSum(t *testing.T) {
-	if _, err := schemecode.EnsureScheme(); err != nil {
-		t.Skipf("chibi-scheme not installed: %v", err)
-	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
-	}
-	c := schemecode.New(env)
-	code, err := c.Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-	dir := t.TempDir()
-	file := filepath.Join(dir, "main.scm")
-	if err := os.WriteFile(file, code, 0644); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
-	cmd := exec.Command("chibi-scheme", "-m", "chibi", file)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("scheme run error: %v\n%s", err, out)
-	}
-	got := bytes.TrimSpace(out)
-	if string(got) != "0\n1" {
-		t.Fatalf("unexpected output: %q", got)
-	}
+// TestSchemeCompiler_LeetCode1 runs the two-sum example.
+func TestSchemeCompiler_LeetCode1(t *testing.T) {
+        runLeetExample(t, 1)
+}
+
+// TestSchemeCompiler_LeetCode2 runs the add-two-numbers example.
+func TestSchemeCompiler_LeetCode2(t *testing.T) {
+        runLeetExample(t, 2)
+}
 ```
 
 Execute them with the `slow` tag as they invoke an external interpreter:
