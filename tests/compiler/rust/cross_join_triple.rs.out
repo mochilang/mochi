@@ -1,0 +1,28 @@
+#[derive(Clone, Debug)]
+struct Combo {
+    n: i32,
+    l: String,
+    b: bool,
+}
+
+fn main() {
+    let mut nums = vec![1, 2];
+    let mut letters = vec!["A", "B"];
+    let mut bools = vec![true, false];
+    let mut combos = {
+    let mut _res = Vec::new();
+    for n in nums.clone() {
+        for l in letters.clone() {
+            for b in bools.clone() {
+                _res.push(Combo { n: n, l: format!("{}", l), b: b });
+            }
+        }
+    }
+    _res
+};
+    println!("{}", "--- Cross Join of three lists ---");
+    for c in combos {
+        println!("{} {} {}", c.n, c.l, c.b);
+    }
+}
+
