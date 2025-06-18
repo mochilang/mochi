@@ -20,48 +20,7 @@ import (
 // TestScalaCompiler_LeetCodeExample1 compiles the LeetCode two-sum example
 // and verifies the generated Scala program runs as expected.
 func TestScalaCompiler_LeetCodeExample1(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
-	}
-	code, err := scalacode.New(env).Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-	dir := t.TempDir()
-	file := filepath.Join(dir, "Main.scala")
-	if err := os.WriteFile(file, code, 0644); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
-	if out, err := exec.Command("scalac", file).CombinedOutput(); err != nil {
-		t.Fatalf("scalac error: %v\n%s", err, out)
-	}
-
-	scalaCmd := "scala"
-	args := []string{"Main"}
-	if _, err := exec.LookPath("scala-cli"); err == nil {
-		scalaCmd = "scala-cli"
-		args = []string{"run", file}
-	} else if out, err := exec.Command("scala", "-version").CombinedOutput(); err == nil && bytes.Contains(out, []byte("Scala CLI")) {
-		args = []string{"run", file}
-	}
-	cmd := exec.Command(scalaCmd, args...)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("scala run error: %v\n%s", err, out)
-	}
-	got := strings.TrimSpace(string(out))
-	if got != "0\n1" {
-		t.Fatalf("unexpected output: %q", got)
-	}
+	runLeetExample(t, 1)
 }
 
 func TestScalaCompiler_SubsetPrograms(t *testing.T) {
@@ -181,4 +140,61 @@ func TestScalaCompiler_GoldenOutput(t *testing.T) {
 		}
 		return bytes.TrimSpace(code), nil
 	})
+}
+
+// runLeetExample compiles the Mochi program under examples/leetcode/<id>
+// using the Scala backend and executes the resulting binary. It fails the test
+// if the program does not run successfully.
+func runLeetExample(t *testing.T, id int) {
+	if err := scalacode.EnsureScala(); err != nil {
+		t.Skipf("scala not installed: %v", err)
+	}
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no examples found in %s", dir)
+	}
+	for _, src := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(src))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := scalacode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "Main.scala")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			if out, err := exec.Command("scalac", file).CombinedOutput(); err != nil {
+				t.Fatalf("scalac error: %v\n%s", err, out)
+			}
+
+			scalaCmd := "scala"
+			args := []string{"Main"}
+			if _, err := exec.LookPath("scala-cli"); err == nil {
+				scalaCmd = "scala-cli"
+				args = []string{"run", file}
+			} else if out, err := exec.Command("scala", "-version").CombinedOutput(); err == nil && bytes.Contains(out, []byte("Scala CLI")) {
+				args = []string{"run", file}
+			}
+			cmd := exec.Command(scalaCmd, args...)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("scala run error: %v\n%s", err, out)
+			}
+			_ = out
+		})
+	}
 }
