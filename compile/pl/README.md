@@ -200,16 +200,22 @@ function names to lowercase atoms.
 ## Tools
 
 `EnsureSWIPL` verifies that `swipl` exists and attempts installation via
-`apt-get` on Linux or Homebrew on macOS if missing:
+`apt-get` on Linux or Homebrew on macOS if missing. The optional `SWIPL_BIN`
+environment variable can be used to point to a custom interpreter path:
 
 ```go
 // EnsureSWIPL verifies that the SWI-Prolog interpreter is installed. If missing,
 // it attempts a best-effort installation using apt-get on Linux or Homebrew on
 // macOS.
 func EnsureSWIPL() error {
-	if _, err := exec.LookPath("swipl"); err == nil {
-		return nil
-	}
+        if bin := os.Getenv("SWIPL_BIN"); bin != "" {
+                if _, err := os.Stat(bin); err == nil {
+                        return nil
+                }
+        }
+        if _, err := exec.LookPath("swipl"); err == nil {
+                return nil
+        }
 	switch runtime.GOOS {
 	case "linux":
 		if _, err := exec.LookPath("apt-get"); err == nil {
