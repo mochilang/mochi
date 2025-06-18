@@ -163,6 +163,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 	case s.Var != nil:
 		expr := c.compileExpr(s.Var.Value)
+		if s.Var.Type != nil && s.Var.Value != nil {
+			if lit := getEmptyListLiteral(s.Var.Value); lit != nil {
+				if s.Var.Type.Generic != nil && len(s.Var.Type.Generic.Args) == 1 {
+					elem := c.cppType(s.Var.Type.Generic.Args[0])
+					expr = fmt.Sprintf("vector<%s>{}", elem)
+				}
+			}
+		}
 		typ := "auto"
 		if s.Var.Type != nil {
 			typ = c.cppType(s.Var.Type)
@@ -572,4 +580,22 @@ func (c *Compiler) cppTypeRef(t types.Type) string {
 		return tt.Name
 	}
 	return "auto"
+}
+
+func getEmptyListLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	post := u.Value
+	if post == nil || post.Target == nil {
+		return nil
+	}
+	if post.Target.List != nil && len(post.Target.List.Elems) == 0 {
+		return post.Target.List
+	}
+	return nil
 }
