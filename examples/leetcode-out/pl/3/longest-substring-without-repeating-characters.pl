@@ -1,4 +1,11 @@
 :- style_check(-singleton).
+get_item(Container, Key, Val) :-
+    is_dict(Container), !, get_dict(Key, Container, Val).
+get_item(Container, Index, Val) :-
+    string(Container), !, string_chars(Container, Chars), nth0(Index, Chars, Val).
+get_item(List, Index, Val) :- nth0(Index, List, Val).
+
+
 		lengthoflongestsubstring(S, Res) :-
 			catch(
 				(
@@ -21,9 +28,9 @@
 									nb_getval(lengthoflongestsubstring_i, _V4),
 									(_V3 < _V4 ->
 										nb_getval(lengthoflongestsubstring_j, _V5),
-										nth0(_V5, S, _V6),
+										get_item(S, _V5, _V6),
 										nb_getval(lengthoflongestsubstring_i, _V7),
-										nth0(_V7, S, _V8),
+										get_item(S, _V7, _V8),
 										(_V6 =:= _V8 ->
 											nb_getval(lengthoflongestsubstring_j, _V9),
 											_V10 is _V9 + 1,
