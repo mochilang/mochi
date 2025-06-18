@@ -13,6 +13,7 @@ import (
 // Compiler translates a Mochi AST into F# source code (subset used for LeetCode examples).
 type Compiler struct {
 	buf         bytes.Buffer
+	preamble    bytes.Buffer
 	indent      int
 	env         *types.Env
 	tmp         int
@@ -20,6 +21,7 @@ type Compiler struct {
 	currentFunc string
 	loops       []loopCtx
 	locals      map[string]bool
+	localsStack []map[string]bool
 }
 
 type loopCtx struct {
@@ -73,7 +75,9 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 	return hasLoopCtrlIf(ifst.ElseIf)
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: make(map[string]bool)} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, locals: make(map[string]bool)}
+}
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -98,12 +102,14 @@ func (c *Compiler) newLoopID() string {
 // Compile converts prog into F# source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
-	c.writeln("open System")
+	c.preamble.Reset()
+	var header bytes.Buffer
+	header.WriteString("open System\n")
 	if programHasLoopCtrl(prog.Statements) {
-		c.writeln("exception BreakException of int")
-		c.writeln("exception ContinueException of int")
+		header.WriteString("exception BreakException of int\n")
+		header.WriteString("exception ContinueException of int\n")
 	}
-	c.writeln("")
+	header.WriteByte('\n')
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			if err := c.compileTypeDecl(s.Type); err != nil {
@@ -128,21 +134,37 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
-	return c.buf.Bytes(), nil
+	out := header.Bytes()
+	if c.preamble.Len() > 0 {
+		out = append(out, c.preamble.Bytes()...)
+		out = append(out, '\n')
+	}
+	out = append(out, c.buf.Bytes()...)
+	return out, nil
 }
 
 func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	c.env.SetFunc(fn.Name, fn)
+	nested := len(funcStack) > 0
 	c.pushFunc(fn.Name)
 	defer c.popFunc()
 	exc := fmt.Sprintf("Return_%s", sanitizeName(fn.Name))
 	ret := fsType(fn.Return)
-	c.writeln(fmt.Sprintf("exception %s of %s", exc, ret))
+	line := fmt.Sprintf("exception %s of %s", exc, ret)
+	if nested {
+		c.preamble.WriteString(line + "\n")
+	} else {
+		c.writeln(line)
+	}
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), fsType(p.Type))
 	}
-	c.writeln(fmt.Sprintf("let %s %s : %s =", sanitizeName(fn.Name), strings.Join(params, " "), ret))
+	kw := "let"
+	if nested {
+		kw = "let rec"
+	}
+	c.writeln(fmt.Sprintf("%s %s %s : %s =", kw, sanitizeName(fn.Name), strings.Join(params, " "), ret))
 	c.indent++
 	c.writeln("try")
 	c.indent++
@@ -217,6 +239,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if c.isMapExpr(s.Var.Value) {
 			c.locals[name] = true
 		}
+	case s.Fun != nil:
+		return c.compileFunStmt(s.Fun)
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -224,19 +248,28 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("raise (Return_%s (%s))", sanitizeName(c.currentFunc), expr))
 	case s.Assign != nil:
-		lhs := sanitizeName(s.Assign.Name)
+		base := sanitizeName(s.Assign.Name)
+		idxParts := []string{}
 		for _, idx := range s.Assign.Index {
 			iexpr, err := c.compileExpr(idx.Start)
 			if err != nil {
 				return err
 			}
-			lhs = fmt.Sprintf("%s.[%s]", lhs, iexpr)
+			idxParts = append(idxParts, iexpr)
 		}
 		val, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s <- %s", lhs, val))
+		if c.locals[base] && len(idxParts) == 1 {
+			c.writeln(fmt.Sprintf("%s <- Map.add %s %s %s", base, idxParts[0], val, base))
+		} else {
+			lhs := base
+			for _, p := range idxParts {
+				lhs = fmt.Sprintf("%s.[%s]", lhs, p)
+			}
+			c.writeln(fmt.Sprintf("%s <- %s", lhs, val))
+		}
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -270,7 +303,12 @@ var funcStack []string
 func (c *Compiler) pushFunc(name string) {
 	funcStack = append(funcStack, name)
 	c.currentFunc = name
-	c.locals = make(map[string]bool)
+	c.localsStack = append(c.localsStack, c.locals)
+	newLocals := make(map[string]bool)
+	for k, v := range c.locals {
+		newLocals[k] = v
+	}
+	c.locals = newLocals
 }
 
 func (c *Compiler) pushLoop(brk, cont string) {
@@ -286,6 +324,10 @@ func (c *Compiler) popLoop() {
 func (c *Compiler) popFunc() {
 	if len(funcStack) > 0 {
 		funcStack = funcStack[:len(funcStack)-1]
+		if len(c.localsStack) > 0 {
+			c.locals = c.localsStack[len(c.localsStack)-1]
+			c.localsStack = c.localsStack[:len(c.localsStack)-1]
+		}
 		if len(funcStack) > 0 {
 			c.currentFunc = funcStack[len(funcStack)-1]
 		} else {
@@ -1080,8 +1122,20 @@ func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
 	}
 	res := c.isStringPrimary(p.Target)
 	for _, op := range p.Ops {
-		if op.Index != nil || op.Call != nil {
+		if op.Call != nil {
 			res = false
+		} else if op.Index != nil {
+			if op.Index.Colon != nil {
+				// slicing preserves string-ness
+				res = res
+			} else {
+				// indexing a string yields a string
+				if res {
+					res = true
+				} else {
+					res = false
+				}
+			}
 		}
 		if op.Cast != nil {
 			typ := op.Cast.Type
@@ -1110,10 +1164,12 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 				return true
 			}
 		}
-		if fn, ok := c.env.GetFunc(c.currentFunc); ok {
-			for _, param := range fn.Params {
-				if param.Name == p.Selector.Root && param.Type != nil && param.Type.Simple != nil && *param.Type.Simple == "string" {
-					return true
+		for i := len(funcStack) - 1; i >= 0; i-- {
+			if fn, ok := c.env.GetFunc(funcStack[i]); ok {
+				for _, param := range fn.Params {
+					if param.Name == p.Selector.Root && param.Type != nil && param.Type.Simple != nil && *param.Type.Simple == "string" {
+						return true
+					}
 				}
 			}
 		}
