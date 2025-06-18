@@ -4,6 +4,7 @@ package excode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -16,6 +17,28 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	env    *types.Env
+	tmp    int
+}
+
+func assignedVars(stmts []*parser.Statement) []string {
+	set := map[string]struct{}{}
+	for _, s := range stmts {
+		if s.Assign != nil {
+			set[s.Assign.Name] = struct{}{}
+		}
+		if s.Var != nil {
+			set[s.Var.Name] = struct{}{}
+		}
+		if s.Let != nil {
+			set[s.Let.Name] = struct{}{}
+		}
+	}
+	vars := make([]string, 0, len(set))
+	for v := range set {
+		vars = append(vars, v)
+	}
+	sort.Strings(vars)
+	return vars
 }
 
 func New(env *types.Env) *Compiler {
@@ -34,6 +57,11 @@ func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteByte('\t')
 	}
+}
+
+func (c *Compiler) newTemp() string {
+	c.tmp++
+	return fmt.Sprintf("t%d", c.tmp)
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -168,30 +196,70 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("while %s do", cond))
+
+	vars := assignedVars(stmt.Body)
+	loop := c.newTemp()
+
+	if len(vars) == 0 {
+		c.writeln(fmt.Sprintf("%s = fn %s ->", loop, loop))
+	} else {
+		params := append([]string{loop}, vars...)
+		c.writeln(fmt.Sprintf("%s = fn %s ->", loop, strings.Join(params, ", ")))
+	}
+	c.indent++
+	c.writeln(fmt.Sprintf("if %s do", cond))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
+	callArgs := append([]string{loop}, vars...)
+	c.writeln(fmt.Sprintf("%s.(%s)", loop, strings.Join(callArgs, ", ")))
+	c.indent--
+	c.writeln("else")
+	c.indent++
+	if len(vars) == 0 {
+		c.writeln(":ok")
+	} else {
+		c.writeln(fmt.Sprintf("{:ok, %s}", strings.Join(vars, ", ")))
+	}
 	c.indent--
 	c.writeln("end")
+	c.indent--
+	c.writeln("end")
+	if len(vars) == 0 {
+		c.writeln(fmt.Sprintf("%s.(%s)", loop, loop))
+	} else {
+		callArgs := append([]string{loop}, vars...)
+		c.writeln(fmt.Sprintf("{_, %s} = %s.(%s)", strings.Join(vars, ", "), loop, strings.Join(callArgs, ", ")))
+		for _, v := range vars {
+			c.writeln(fmt.Sprintf("_ = %s", v))
+		}
+	}
 	return nil
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	name := stmt.Name
+	mutated := assignedVars(stmt.Body)
+
+	srcExpr, err := c.compileExpr(stmt.Source)
+	if err != nil {
+		return err
+	}
 	if stmt.RangeEnd != nil {
-		start, err := c.compileExpr(stmt.Source)
-		if err != nil {
-			return err
-		}
 		end, err := c.compileExpr(stmt.RangeEnd)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for %s <- %s..(%s - 1) do", name, start, end))
+		srcExpr = fmt.Sprintf("%s..(%s - 1)", srcExpr, end)
+	} else if strings.HasPrefix(srcExpr, "\"") && strings.HasSuffix(srcExpr, "\"") {
+		srcExpr = fmt.Sprintf("String.graphemes(%s)", srcExpr)
+	}
+
+	if len(mutated) == 0 {
+		c.writeln(fmt.Sprintf("for %s <- %s do", name, srcExpr))
 		c.indent++
 		for _, s := range stmt.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -202,22 +270,21 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		c.writeln("end")
 		return nil
 	}
-	src, err := c.compileExpr(stmt.Source)
-	if err != nil {
-		return err
-	}
-	if strings.HasPrefix(src, "\"") && strings.HasSuffix(src, "\"") {
-		src = fmt.Sprintf("String.graphemes(%s)", src)
-	}
-	c.writeln(fmt.Sprintf("for %s <- %s do", name, src))
+
+	tuple := strings.Join(mutated, ", ")
+	c.writeln(fmt.Sprintf("{%s} = Enum.reduce(%s, {%s}, fn %s, {%s} ->", tuple, srcExpr, tuple, name, tuple))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
+	c.writeln(fmt.Sprintf("{%s}", tuple))
 	c.indent--
-	c.writeln("end")
+	c.writeln("end)")
+	for _, v := range mutated {
+		c.writeln(fmt.Sprintf("_ = %s", v))
+	}
 	return nil
 }
 
