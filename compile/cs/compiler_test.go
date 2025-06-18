@@ -96,6 +96,16 @@ func TestCSCompiler_LeetCodeExample1(t *testing.T) {
 	runLeetCode(t, 1, "0\n1")
 }
 
+func TestCSCompiler_LeetCodeExample2(t *testing.T) {
+	if err := cscode.EnsureDotnet(); err != nil {
+		t.Skipf("dotnet not installed: %v", err)
+	}
+	if err := exec.Command("dotnet", "--version").Run(); err != nil {
+		t.Skipf("dotnet not runnable: %v", err)
+	}
+	runLeetCode(t, 2, "")
+}
+
 func runLeetCode(t *testing.T, id int, want string) {
 	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))

@@ -70,15 +70,31 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Test block declarations
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// Main method
 	c.writeln("public static void Main() {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Test != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(name + "();")
 		}
 	}
 	c.indent--
@@ -256,6 +272,29 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("static void %s() {", name))
+	c.indent++
+	for _, s := range t.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("if (!(%s)) throw new Exception(\"expect failed\");", expr))
+	return nil
+}
+
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
 	if len(t.Variants) > 0 {
@@ -360,6 +399,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err := c.compileAssign(s.Assign); err != nil {
 			return err
 		}
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
