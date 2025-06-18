@@ -1,4 +1,22 @@
 # 📦 CHANGELOG.md
+## [0.8.5] – 2025-06-18
+
+### Added
+
+* LeetCode example tests for problems 1–3 across all compilers
+* Build command supports all targets at once
+* Improved .NET and PHP installation scripts
+
+### Changed
+
+* Compilers gain variable assignment, while loops and break/continue support
+* List and string operations expanded in Rust, Scheme, Java and others
+
+### Fixed
+
+* Fortran and Pascal compiler issues
+* Prolog if-block handling and C# golden outputs
+
 ## [0.8.4] – 2025-06-18
 
 ### Added
