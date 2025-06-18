@@ -1,0 +1,252 @@
+# Scheme Backend
+
+The Scheme backend translates a subset of Mochi programs to plain Scheme source code targeting the [chibi-scheme](https://github.com/ashinn/chibi-scheme) interpreter.
+
+## Files
+
+- `compiler.go` – walks the AST and generates Scheme code
+- `compiler_test.go` – golden tests that execute the generated Scheme
+- `tools.go` – helper that locates or installs `chibi-scheme`
+
+## Implementation details
+
+Functions use `call/cc` to implement early returns:
+```scheme
+func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	c.writeln(fmt.Sprintf("(define (%s %s)", sanitizeName(fn.Name), strings.Join(params, " ")))
+	c.indent++
+	c.writeln("(call/cc (lambda (return)")
+	c.indent++
+	for _, st := range fn.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("))")
+	c.indent--
+	c.writeln(")")
+	return nil
+```
+
+`for` loops translate to a recursive `let loop` form:
+```scheme
+func (c *Compiler) compileFor(st *parser.ForStmt) error {
+	name := sanitizeName(st.Name)
+	start, err := c.compileExpr(st.Source)
+	if err != nil {
+		return err
+	}
+	end, err := c.compileExpr(st.RangeEnd)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+	c.indent++
+	c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
+	c.indent++
+	c.writeln("(begin")
+	c.indent++
+	for _, s := range st.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln("'())")
+	c.indent--
+	c.writeln(")")
+	return nil
+```
+
+`if` statements emit normal Scheme `if` expressions with optional else blocks:
+```scheme
+func (c *Compiler) compileSimpleIf(st *parser.IfStmt) error {
+	cond, err := c.compileExpr(st.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(if %s", cond))
+	c.indent++
+	c.writeln("(begin")
+	c.indent++
+	for _, s := range st.Then {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln(")")
+	if len(st.Else) > 0 {
+		c.writeln("(begin")
+		c.indent++
+		for _, s := range st.Else {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln(")")
+	} else {
+		c.writeln("'()")
+	}
+	c.indent--
+	c.writeln(")")
+```
+
+The compiler only recognises two builtin functions. `len` maps to `(length)` and `print` emits `(display ...)` with a newline:
+```scheme
+	case "len":
+		if len(args) != 1 {
+			return "", fmt.Errorf("len expects 1 arg")
+		}
+		return fmt.Sprintf("(length %s)", args[0]), nil
+	case "print":
+		if len(args) != 1 {
+			return "", fmt.Errorf("print expects 1 arg")
+		}
+		return fmt.Sprintf("(begin (display %s) (newline))", args[0]), nil
+	}
+```
+
+Identifiers are sanitised to valid Scheme identifiers:
+```scheme
+
+func sanitizeName(name string) string {
+	if name == "" {
+		return ""
+	}
+	var b strings.Builder
+	for i, r := range name {
+		if r == '_' || ('a' <= r && r <= 'z') || ('A' <= r && r <= 'Z') || ('0' <= r && r <= '9' && i > 0) {
+			b.WriteRune(r)
+		} else {
+			b.WriteRune('_')
+		}
+	}
+	s := b.String()
+	if s == "" {
+		return "_"
+	}
+	if !(s[0] >= 'a' && s[0] <= 'z' || s[0] >= 'A' && s[0] <= 'Z' || s[0] == '_') {
+		s = "_" + s
+	}
+	return s
+```
+
+## Example
+
+Compiling a simple loop:
+```mochi
+for i in 1..4 {
+  print(i)
+}
+```
+
+Produces Scheme code like:
+```scheme
+(let loop ((i 1))
+	(if (< i 4)
+		(begin
+			(begin (display i) (newline))
+			(loop (+ i 1))
+		)
+	'())
+)
+```
+
+## Building
+
+Run the Mochi CLI to generate Scheme and execute it with chibi-scheme:
+```bash
+mochi build --target scheme main.mochi -o main.scm
+chibi-scheme -m chibi main.scm
+```
+
+`EnsureScheme()` attempts to install chibi-scheme when missing:
+```go
+// EnsureScheme verifies that chibi-scheme is installed. On Linux it attempts a
+// best-effort installation using apt-get, while on macOS it tries Homebrew.
+func EnsureScheme() (string, error) {
+	if path, err := exec.LookPath("chibi-scheme"); err == nil {
+		return path, nil
+	}
+	switch runtime.GOOS {
+	case "darwin":
+		if _, err := exec.LookPath("brew"); err == nil {
+			cmd := exec.Command("brew", "install", "chibi-scheme")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	case "linux":
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			cmd := exec.Command("apt-get", "update")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				return "", err
+			}
+			cmd = exec.Command("apt-get", "install", "-y", "chibi-scheme")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	}
+	if path, err := exec.LookPath("chibi-scheme"); err == nil {
+		return path, nil
+	}
+	return "", fmt.Errorf("chibi-scheme not found")
+```
+
+## Tests
+
+`compiler_test.go` runs the generated Scheme for each file under `tests/compiler/scheme`:
+```go
+// TestSchemeCompiler_TwoSum compiles the LeetCode example to Scheme and runs it.
+func TestSchemeCompiler_TwoSum(t *testing.T) {
+	if _, err := schemecode.EnsureScheme(); err != nil {
+		t.Skipf("chibi-scheme not installed: %v", err)
+	}
+	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	c := schemecode.New(env)
+	code, err := c.Compile(prog)
+	if err != nil {
+		t.Fatalf("compile error: %v", err)
+	}
+	dir := t.TempDir()
+	file := filepath.Join(dir, "main.scm")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	cmd := exec.Command("chibi-scheme", "-m", "chibi", file)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("scheme run error: %v\n%s", err, out)
+	}
+	got := bytes.TrimSpace(out)
+	if string(got) != "0\n1" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+```
+
+Execute them with the `slow` tag as they invoke an external interpreter:
+```bash
+go test ./compile/scheme -tags slow
+```
+
