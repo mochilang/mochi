@@ -251,9 +251,17 @@ func (c *Compiler) compileIf(ifst *parser.IfStmt, ex string) error {
 			}
 		}
 		c.indent--
-		c.writeln("end")
+		if ex == "" {
+			c.writeln("end")
+		} else {
+			c.writeln("end;")
+		}
 	} else {
-		c.writeln("end")
+		if ex == "" {
+			c.writeln("end")
+		} else {
+			c.writeln("end;")
+		}
 	}
 	return nil
 }
@@ -280,6 +288,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			oper = "="
 		} else if oper == "!=" {
 			oper = "<>"
+		} else if oper == "%" {
+			oper = "mod"
+		} else if oper == "+" {
+			// use list concatenation or string concat if operand is list or string
+			if isListExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
+				oper = "@"
+			} else if isStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
+				oper = "^"
+			}
 		}
 		expr = fmt.Sprintf("%s %s %s", expr, oper, r)
 	}
@@ -453,6 +470,27 @@ func isStringExpr(e *parser.Expr, env *types.Env) bool {
 	if p.Selector != nil {
 		if typ, err := env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := typ.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isListExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	p := e.Binary.Left.Value.Target
+	if p == nil {
+		return false
+	}
+	if p.List != nil {
+		return true
+	}
+	if p.Selector != nil {
+		if typ, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.ListType); ok {
 				return true
 			}
 		}
