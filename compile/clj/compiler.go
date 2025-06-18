@@ -135,7 +135,7 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		return err
 	}
 	if len(st.Index) == 0 {
-		c.writeln(fmt.Sprintf("(set! %s %s)", name, rhs))
+		c.writeln(fmt.Sprintf("(def %s %s)", name, rhs))
 		return nil
 	}
 	idxs := make([]string, len(st.Index))
@@ -147,9 +147,9 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		idxs[i] = v
 	}
 	if len(idxs) == 1 {
-		c.writeln(fmt.Sprintf("(set! %s (assoc %s %s %s))", name, name, idxs[0], rhs))
+		c.writeln(fmt.Sprintf("(def %s (assoc %s %s %s))", name, name, idxs[0], rhs))
 	} else {
-		c.writeln(fmt.Sprintf("(set! %s (assoc-in %s [%s] %s))", name, name, strings.Join(idxs, " "), rhs))
+		c.writeln(fmt.Sprintf("(def %s (assoc-in %s [%s] %s))", name, name, strings.Join(idxs, " "), rhs))
 	}
 	return nil
 }
