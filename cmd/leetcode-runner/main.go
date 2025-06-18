@@ -282,6 +282,14 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "dart":
+		if err := dartcode.EnsureDart(); err != nil {
+			return err
+		}
+		cmd := exec.Command("dart", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	case "scala":
 		dir := filepath.Dir(file)
 		cmd := exec.Command("scalac", filepath.Base(file))

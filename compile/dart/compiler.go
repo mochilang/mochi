@@ -135,7 +135,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		val = expr
 	}
-	c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+	c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
 	return nil
 }
 
@@ -229,7 +229,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		val = expr
 	}
-	c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+	c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
 	return nil
 }
 
@@ -379,15 +379,39 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if isStringPrimary(c, p.Target) {
-				c.useIndexStr = true
-				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+			if op.Index.Colon != nil {
+				start := "0"
+				end := fmt.Sprintf("%s.length", expr)
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				if isStringPrimary(c, p.Target) {
+					expr = fmt.Sprintf("%s.substring(%s, %s)", expr, start, end)
+				} else {
+					expr = fmt.Sprintf("%s.sublist(%s, %s)", expr, start, end)
+				}
 			} else {
-				expr = fmt.Sprintf("%s[%s]", expr, idx)
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if isStringPrimary(c, p.Target) {
+					c.useIndexStr = true
+					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				}
 			}
 		} else if op.Call != nil {
 			call, err := c.compileCallOp(expr, op.Call)
