@@ -303,6 +303,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "(list " + strings.Join(elems, " ") + ")", nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
@@ -344,6 +346,22 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		return fmt.Sprintf("(%s %s %s)", recv, call.Func, strings.Join(args, " ")), nil
 	}
 	return fmt.Sprintf("(%s %s)", sanitizeName(call.Func), strings.Join(args, " ")), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	if fn.ExprBody != nil {
+		body, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(lambda (%s) %s)", strings.Join(params, " "), body), nil
+	}
+	// block bodies are not yet supported
+	return "", fmt.Errorf("block function literals not supported")
 }
 
 func sanitizeName(name string) string {

@@ -1,0 +1,2 @@
+(define square (lambda (x) (* x x)))
+(begin (display (square 6)) (newline))
