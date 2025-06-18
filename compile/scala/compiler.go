@@ -458,6 +458,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Int != nil {
 			return strconv.Itoa(*p.Lit.Int), nil
 		}
+		if p.Lit.Float != nil {
+			return strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64), nil
+		}
 		if p.Lit.Bool != nil {
 			if bool(*p.Lit.Bool) {
 				return "true", nil
