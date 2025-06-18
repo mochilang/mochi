@@ -1,0 +1,10 @@
+object Main {
+    def makeAdder(n: Int): (Int => Int) = {
+        (x: Int) => (x + n)
+    }
+
+    def main(args: Array[String]): Unit = {
+        val add10: Int => Int = makeAdder(10)
+        println(add10(7))
+    }
+}
