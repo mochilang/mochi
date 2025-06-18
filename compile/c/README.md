@@ -53,6 +53,6 @@ go test ./compile/c -tags slow
 
 They compile example programs from `tests/compiler/c` and compare the results.【F:compile/c/compiler_test.go†L71-L108】
 
-The separate `leetcode_test.go` file compiles and executes the first three
-LeetCode solutions under `examples/leetcode/1`, `examples/leetcode/2` and
-`examples/leetcode/3` using the C backend.
+The separate `leetcode_test.go` file compiles and executes the first five
+LeetCode solutions under `examples/leetcode/1` through `examples/leetcode/5`
+using the C backend.
