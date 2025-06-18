@@ -11,11 +11,11 @@ import (
 
 // Compiler translates a Mochi AST into Rust source code.
 type Compiler struct {
-        buf     bytes.Buffer
-        indent  int
-        env     *types.Env
-        helpers map[string]bool
-        structs map[string]bool
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	helpers map[string]bool
+	structs map[string]bool
 }
 
 // New creates a new Rust compiler instance.
@@ -363,6 +363,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
@@ -377,13 +385,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("{\n")
 	b.WriteString("    let mut _res = Vec::new();\n")
-	b.WriteString(fmt.Sprintf("    for %s in %s {\n", sanitizeName(q.Var), src))
+	loopSrc := src
+	if len(fromSrcs) > 0 {
+		loopSrc += ".clone()"
+	}
+	b.WriteString(fmt.Sprintf("    for %s in %s {\n", sanitizeName(q.Var), loopSrc))
+	indent := "        "
+	for i, fs := range fromSrcs {
+		fvar := sanitizeName(q.Froms[i].Var)
+		srcPart := fs + ".clone()"
+		b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", fvar, srcPart))
+		indent += "    "
+	}
 	if cond != "" {
-		b.WriteString(fmt.Sprintf("        if %s {\n", cond))
-		b.WriteString(fmt.Sprintf("            _res.push(%s);\n", sel))
-		b.WriteString("        }\n")
+		b.WriteString(indent + fmt.Sprintf("if %s {\n", cond))
+		indent += "    "
+		b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		indent = indent[:len(indent)-4]
+		b.WriteString(indent + "}\n")
 	} else {
-		b.WriteString(fmt.Sprintf("        _res.push(%s);\n", sel))
+		b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+	}
+	for range fromSrcs {
+		indent = indent[:len(indent)-4]
+		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("    }\n")
 	b.WriteString("    _res\n")
@@ -619,26 +644,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return fmt.Sprintf("vec![%s]", strings.Join(elems, ", ")), nil
-       case p.Map != nil:
-               items := make([]string, len(p.Map.Items))
-               for i, it := range p.Map.Items {
-                       k, err := c.compileExpr(it.Key)
-                       if err != nil {
-                               return "", err
-                       }
-                       v, err := c.compileExpr(it.Value)
-                       if err != nil {
-                               return "", err
-                       }
-                       items[i] = fmt.Sprintf("(%s.to_string(), %s)", k, v)
-               }
-               return fmt.Sprintf("std::collections::HashMap::from([%s])", strings.Join(items, ", ")), nil
-       case p.FunExpr != nil:
-               return c.compileFunExpr(p.FunExpr)
-       case p.Lit != nil:
-               if p.Lit.Int != nil {
-                       return fmt.Sprintf("%d", *p.Lit.Int), nil
-               }
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("(%s.to_string(), %s)", k, v)
+		}
+		return fmt.Sprintf("std::collections::HashMap::from([%s])", strings.Join(items, ", ")), nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
+	case p.Lit != nil:
+		if p.Lit.Int != nil {
+			return fmt.Sprintf("%d", *p.Lit.Int), nil
+		}
 		if p.Lit.Str != nil {
 			return fmt.Sprintf("%q", *p.Lit.Str), nil
 		}
@@ -720,31 +745,31 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "_input()", nil
 		}
 	}
-        return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
+	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
-       params := make([]string, len(fn.Params))
-       for i, p := range fn.Params {
-               typ := rustType(p.Type)
-               params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ)
-       }
-       if fn.ExprBody != nil {
-               expr, err := c.compileExpr(fn.ExprBody)
-               if err != nil {
-                       return "", err
-               }
-               return fmt.Sprintf("Box::new(move |%s| %s)", strings.Join(params, ", "), expr), nil
-       }
-       sub := &Compiler{env: c.env, helpers: c.helpers, structs: c.structs}
-       sub.indent = 1
-       for _, s := range fn.BlockBody {
-               if err := sub.compileStmt(s); err != nil {
-                       return "", err
-               }
-       }
-       body := indentBlock(sub.buf.String(), 1)
-       return fmt.Sprintf("Box::new(move |%s| {\n%s})", strings.Join(params, ", "), body), nil
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		typ := rustType(p.Type)
+		params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ)
+	}
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("Box::new(move |%s| %s)", strings.Join(params, ", "), expr), nil
+	}
+	sub := &Compiler{env: c.env, helpers: c.helpers, structs: c.structs}
+	sub.indent = 1
+	for _, s := range fn.BlockBody {
+		if err := sub.compileStmt(s); err != nil {
+			return "", err
+		}
+	}
+	body := indentBlock(sub.buf.String(), 1)
+	return fmt.Sprintf("Box::new(move |%s| {\n%s})", strings.Join(params, ", "), body), nil
 }
 
 func rustType(t *parser.TypeRef) string {
@@ -765,23 +790,23 @@ func rustType(t *parser.TypeRef) string {
 			return sanitizeName(*t.Simple)
 		}
 	}
-       if t.Generic != nil {
-               if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
-                       return fmt.Sprintf("Vec<%s>", rustType(t.Generic.Args[0]))
-               }
-       }
-       if t.Fun != nil {
-               params := make([]string, len(t.Fun.Params))
-               for i, p := range t.Fun.Params {
-                       params[i] = rustType(p)
-               }
-               ret := "()"
-               if t.Fun.Return != nil {
-                       ret = rustType(t.Fun.Return)
-               }
-               return fmt.Sprintf("Box<dyn Fn(%s) -> %s>", strings.Join(params, ", "), ret)
-       }
-       return "()"
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			return fmt.Sprintf("Vec<%s>", rustType(t.Generic.Args[0]))
+		}
+	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = rustType(p)
+		}
+		ret := "()"
+		if t.Fun.Return != nil {
+			ret = rustType(t.Fun.Return)
+		}
+		return fmt.Sprintf("Box<dyn Fn(%s) -> %s>", strings.Join(params, ", "), ret)
+	}
+	return "()"
 }
 
 func isStringLiteral(e *parser.Expr) bool {
@@ -811,21 +836,21 @@ func sanitizeName(name string) string {
 			b.WriteRune('_')
 		}
 	}
-        res := b.String()
-        if res == "" || !((res[0] >= 'A' && res[0] <= 'Z') || (res[0] >= 'a' && res[0] <= 'z') || res[0] == '_') {
-                res = "_" + res
-        }
-        return res
+	res := b.String()
+	if res == "" || !((res[0] >= 'A' && res[0] <= 'Z') || (res[0] >= 'a' && res[0] <= 'z') || res[0] == '_') {
+		res = "_" + res
+	}
+	return res
 }
 
 func indentBlock(s string, depth int) string {
-       if s == "" {
-               return s
-       }
-       prefix := strings.Repeat("    ", depth)
-       lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
-       for i, line := range lines {
-               lines[i] = prefix + line
-       }
-       return strings.Join(lines, "\n") + "\n"
+	if s == "" {
+		return s
+	}
+	prefix := strings.Repeat("    ", depth)
+	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
+	for i, line := range lines {
+		lines[i] = prefix + line
+	}
+	return strings.Join(lines, "\n") + "\n"
 }

@@ -72,6 +72,7 @@ func TestRustCompiler_ValidPrograms(t *testing.T) {
 		"for_loop",
 		"for_string_collection",
 		"fun_call",
+		"cross_join",
 		"fun_expr_in_let",
 		"grouped_expr",
 		"if_else",
