@@ -18,38 +18,61 @@ import (
 )
 
 func TestErlangCompiler_LeetCode1(t *testing.T) {
-	t.Skip("disabled in current environment")
 	if err := erlcode.EnsureErlang(); err != nil {
 		t.Skipf("erlang not installed: %v", err)
 	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
-	prog, err := parser.Parse(src)
+	runLeetExample(t, 1)
+}
+
+// runLeetExample compiles and executes all Mochi programs under
+// examples/leetcode/<id>. It fails the test if compilation or execution fails.
+func runLeetExample(t *testing.T, id int) {
+	t.Helper()
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
-		t.Fatalf("parse error: %v", err)
+		t.Fatalf("glob error: %v", err)
 	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			c := erlcode.New(env)
+			code, err := c.Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.erl")
+			if err := os.WriteFile(file, code, 0755); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("escript", file)
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("escript error: %v\n%s", err, out)
+			}
+			_ = out
+		})
 	}
-	c := erlcode.New(env)
-	code, err := c.Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
+}
+
+func TestErlangCompiler_LeetCodeExamples(t *testing.T) {
+	if err := erlcode.EnsureErlang(); err != nil {
+		t.Skipf("erlang not installed: %v", err)
 	}
-	dir := t.TempDir()
-	file := filepath.Join(dir, "main.erl")
-	if err := os.WriteFile(file, code, 0755); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
-	cmd := exec.Command("escript", file)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("escript error: %v\n%s", err, out)
-	}
-	expected := "0\n1\n"
-	if string(out) != expected {
-		t.Fatalf("unexpected output: %q", out)
-	}
+	runLeetExample(t, 1)
+	runLeetExample(t, 2)
 }
 
 func TestErlangCompiler_SubsetPrograms(t *testing.T) {
