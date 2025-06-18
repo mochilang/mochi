@@ -460,6 +460,9 @@ func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
 	if id, ok := identName(e); ok {
 		return sanitizeName(id), nil
 	}
+	if lit := extractLiteral(e); lit != nil {
+		return c.compileLiteral(lit)
+	}
 	return "", fmt.Errorf("unsupported pattern")
 }
 
@@ -946,4 +949,22 @@ func intLiteral(e *parser.Expr) (int, bool) {
 		v = -v
 	}
 	return v, true
+}
+
+func extractLiteral(e *parser.Expr) *parser.Literal {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	if p.Target != nil {
+		return p.Target.Lit
+	}
+	return nil
 }
