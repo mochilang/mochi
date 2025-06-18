@@ -262,27 +262,81 @@ func buildOne(src, lang string, run bool) error {
 
 func runOutput(file, lang string) error {
 	switch lang {
-	case "go":
-		cmd := exec.Command("go", "run", file)
+	case "c":
+		cc, err := ccode.EnsureCC()
+		if err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, ".c")
+		if out, err := exec.Command(cc, file, "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("cc: %v\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
-	case "py":
-		cmd := exec.Command("python3", file)
+	case "clj":
+		if err := cljcode.EnsureClojure(); err != nil {
+			return err
+		}
+		runner := "clojure"
+		if _, err := exec.LookPath(runner); err != nil {
+			runner = "clj"
+		}
+		cmd := exec.Command(runner, file)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
-	case "ts":
-		cmd := exec.Command("deno", "run", "--allow-all", file)
+	case "cobol":
+		if err := cobolcode.EnsureCOBOL(); err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, ".cob")
+		if out, err := exec.Command("cobc", "-free", "-x", file, "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("cobc: %v\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
 	case "cpp":
+		cpp, err := cppcode.EnsureCPP()
+		if err != nil {
+			return err
+		}
 		exe := strings.TrimSuffix(file, ".cpp")
-		if out, err := exec.Command("g++", file, "-std=c++17", "-o", exe).CombinedOutput(); err != nil {
-			return fmt.Errorf("g++: %v\n%s", err, string(out))
+		if out, err := exec.Command(cpp, file, "-std=c++17", "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("%s: %v\n%s", cpp, err, out)
 		}
 		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "cs":
+		if err := cscode.EnsureDotnet(); err != nil {
+			return err
+		}
+		tmp, err := os.MkdirTemp("", "mochi-cs")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(tmp)
+		projDir := filepath.Join(tmp, "app")
+		if err := os.MkdirAll(projDir, 0755); err != nil {
+			return err
+		}
+		csproj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>`
+		if err := os.WriteFile(filepath.Join(projDir, "app.csproj"), []byte(csproj), 0644); err != nil {
+			return err
+		}
+		data, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+		if err := os.WriteFile(filepath.Join(projDir, "Program.cs"), data, 0644); err != nil {
+			return err
+		}
+		cmd := exec.Command("dotnet", "run", "--project", projDir)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
@@ -302,29 +356,32 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
-	case "scala":
-		dir := filepath.Dir(file)
-		cmd := exec.Command("scalac", filepath.Base(file))
-		cmd.Dir = dir
+	case "ex":
+		if err := excode.EnsureElixir(); err != nil {
+			return err
+		}
+		cmd := exec.Command("elixir", file)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
+		return cmd.Run()
+	case "fs":
+		if err := fscode.EnsureDotnet(); err != nil {
 			return err
 		}
-		runCmd := exec.Command("scala", "Main")
-		runCmd.Dir = dir
-		runCmd.Stdout = os.Stdout
-		runCmd.Stderr = os.Stderr
-		return runCmd.Run()
-	case "ocaml":
-		if err := mlcode.EnsureOCaml(); err != nil {
+		cmd := exec.Command("dotnet", "fsi", "--quiet", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "go":
+		cmd := exec.Command("go", "run", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "hs":
+		if err := hscode.EnsureHaskell(); err != nil {
 			return err
 		}
-		exe := strings.TrimSuffix(file, filepath.Ext(file))
-		if out, err := exec.Command("ocamlc", file, "-o", exe).CombinedOutput(); err != nil {
-			return fmt.Errorf("ocamlc: %v\n%s", err, out)
-		}
-		cmd := exec.Command(exe)
+		cmd := exec.Command("runhaskell", file)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
@@ -360,6 +417,71 @@ func runOutput(file, lang string) error {
 		runCmd.Stdout = os.Stdout
 		runCmd.Stderr = os.Stderr
 		return runCmd.Run()
+	case "lua":
+		if err := luacode.EnsureLua(); err != nil {
+			return err
+		}
+		cmd := exec.Command("lua", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "ocaml":
+		if err := mlcode.EnsureOCaml(); err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, filepath.Ext(file))
+		if out, err := exec.Command("ocamlc", file, "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("ocamlc: %v\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "pas":
+		fpc, err := pascode.EnsureFPC()
+		if err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, ".pas")
+		if out, err := exec.Command(fpc, file).CombinedOutput(); err != nil {
+			return fmt.Errorf("fpc: %v\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "php":
+		if err := phpcode.EnsurePHP(); err != nil {
+			return err
+		}
+		cmd := exec.Command("php", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "pl":
+		if err := plcode.EnsureSWIPL(); err != nil {
+			return err
+		}
+		cmd := exec.Command("swipl", "-q", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "py":
+		if err := pycode.EnsurePython(); err != nil {
+			return err
+		}
+		cmd := exec.Command("python3", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "rb":
+		if err := rbcode.EnsureRuby(); err != nil {
+			return err
+		}
+		cmd := exec.Command("ruby", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	case "rkt":
 		if err := rktcode.EnsureRacket(); err != nil {
 			return err
@@ -368,20 +490,56 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
-	case "fortran":
-		gfortran, err := ftncode.EnsureFortran()
-		if err != nil {
+	case "rust":
+		if err := rscode.EnsureRust(); err != nil {
 			return err
 		}
-		exe := strings.TrimSuffix(file, ".f90")
-		if out, err := exec.Command(gfortran, file, "-o", exe).CombinedOutput(); err != nil {
-			return fmt.Errorf("gfortran: %v\n%s", err, string(out))
+		exe := strings.TrimSuffix(file, ".rs")
+		if out, err := exec.Command("rustc", file, "-O", "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("rustc: %v\n%s", err, out)
 		}
 		cmd := exec.Command(exe)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "scala":
+		if err := scalacode.EnsureScala(); err != nil {
+			return err
+		}
+		dir := filepath.Dir(file)
+		cmd := exec.Command("scalac", filepath.Base(file))
+		cmd.Dir = dir
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+		runCmd := exec.Command("scala", "Main")
+		runCmd.Dir = dir
+		runCmd.Stdout = os.Stdout
+		runCmd.Stderr = os.Stderr
+		return runCmd.Run()
+	case "scheme":
+		bin, err := schemecode.EnsureScheme()
+		if err != nil {
+			return err
+		}
+		cmd := exec.Command(bin, "-m", "chibi", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "st":
+		if err := stcode.EnsureSmalltalk(); err != nil {
+			return err
+		}
+		cmd := exec.Command("gst", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	case "swift":
+		if err := swiftcode.EnsureSwift(); err != nil {
+			return err
+		}
 		exe := strings.TrimSuffix(file, ".swift")
 		if out, err := exec.Command("swiftc", file, "-o", exe).CombinedOutput(); err != nil {
 			return fmt.Errorf("swiftc: %v\n%s", err, string(out))
@@ -390,11 +548,24 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
-	case "erlang":
-		if err := erlcode.EnsureErlang(); err != nil {
+	case "ts":
+		if err := tscode.EnsureDeno(); err != nil {
 			return err
 		}
-		cmd := exec.Command("escript", file)
+		cmd := exec.Command("deno", "run", "--allow-all", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "zig":
+		zigc, err := zigcode.EnsureZig()
+		if err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, ".zig")
+		if out, err := exec.Command(zigc, "build-exe", file, "-O", "ReleaseSafe", "-femit-bin="+exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("zig: %v\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
