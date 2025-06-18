@@ -128,7 +128,13 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		if err != nil {
 			return err
 		}
+		if (stmt.Type != nil && stmt.Type.Simple != nil && *stmt.Type.Simple == "string") ||
+			isStringLiteral(stmt.Value) || c.isStringExpr(stmt.Value.Binary.Left.Value) {
+			v = fmt.Sprintf("%s.to_string()", v)
+		}
 		val = v
+	} else if stmt.Type != nil && stmt.Type.Simple != nil && *stmt.Type.Simple == "string" {
+		val = "String::new()"
 	}
 	name := sanitizeName(stmt.Name)
 	c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
@@ -142,7 +148,13 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		if err != nil {
 			return err
 		}
+		if (stmt.Type != nil && stmt.Type.Simple != nil && *stmt.Type.Simple == "string") ||
+			isStringLiteral(stmt.Value) || c.isStringExpr(stmt.Value.Binary.Left.Value) {
+			v = fmt.Sprintf("%s.to_string()", v)
+		}
 		val = v
+	} else if stmt.Type != nil && stmt.Type.Simple != nil && *stmt.Type.Simple == "string" {
+		val = "String::new()"
 	}
 	name := sanitizeName(stmt.Name)
 	c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
@@ -374,29 +386,39 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	leftList := c.isListExpr(b.Left.Value)
+	leftStr := c.isStringExpr(b.Left.Value)
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
 		rightList := c.isListExpr(op.Right)
+		rightStr := c.isStringExpr(op.Right)
 		switch op.Op {
 		case "+":
 			if leftList || rightList {
 				c.use("_concat")
 				expr = fmt.Sprintf("_concat(&%s, &%s)", expr, r)
 				leftList = true
+				leftStr = false
+			} else if leftStr || rightStr {
+				expr = fmt.Sprintf("format!(\"{}{}\", %s, %s)", expr, r)
+				leftStr = true
+				leftList = false
 			} else {
 				expr = fmt.Sprintf("%s + %s", expr, r)
 				leftList = false
+				leftStr = false
 			}
 		case "in":
 			c.use("_in_map")
 			expr = fmt.Sprintf("_in_map(&%s, &%s)", r, expr)
 			leftList = false
+			leftStr = false
 		default:
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
 			leftList = false
+			leftStr = false
 		}
 	}
 	return expr, nil

@@ -178,6 +178,8 @@ func buildOne(src, lang string, run bool) error {
 	ext := "." + lang
 	if lang == "ocaml" {
 		ext = ".ml"
+	} else if lang == "rust" {
+		ext = ".rs"
 	}
 	outFile := filepath.Join(outDir, base+ext)
 	var data []byte
@@ -494,7 +496,7 @@ func runOutput(file, lang string) error {
 		if err := rscode.EnsureRust(); err != nil {
 			return err
 		}
-		exe := strings.TrimSuffix(file, ".rs")
+		exe := strings.TrimSuffix(file, filepath.Ext(file))
 		if out, err := exec.Command("rustc", file, "-O", "-o", exe).CombinedOutput(); err != nil {
 			return fmt.Errorf("rustc: %v\n%s", err, out)
 		}
