@@ -397,6 +397,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	isStr := c.isStringPrimary(p.Target)
 	for _, op := range p.Ops {
 		if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
@@ -421,6 +422,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return fmt.Sprintf("%s.Length", args[0]), nil
 			}
 			expr = fmt.Sprintf("%s %s", expr, argStr)
+			isStr = false
 			continue
 		}
 		if op.Index != nil {
@@ -428,7 +430,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("%s.[%s]", expr, idx)
+			if isStr {
+				idxExpr := fmt.Sprintf("(if %s < 0 then %s.Length + %s else %s)", idx, expr, idx, idx)
+				expr = fmt.Sprintf("%s.[%s]", expr, idxExpr)
+				isStr = true
+			} else {
+				expr = fmt.Sprintf("%s.[%s]", expr, idx)
+				isStr = false
+			}
 			continue
 		}
 	}
@@ -720,4 +729,73 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	return c.isStringBinary(e.Binary)
+}
+
+func (c *Compiler) isStringBinary(b *parser.BinaryExpr) bool {
+	if b == nil {
+		return false
+	}
+	if len(b.Right) == 0 {
+		return c.isStringUnary(b.Left)
+	}
+	if len(b.Right) == 1 && b.Right[0].Op == "+" {
+		return c.isStringUnary(b.Left) && c.isStringPostfix(b.Right[0].Right)
+	}
+	return false
+}
+
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isStringPostfix(u.Value)
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	res := c.isStringPrimary(p.Target)
+	for _, op := range p.Ops {
+		if op.Index != nil || op.Call != nil {
+			res = false
+		}
+		if op.Cast != nil {
+			typ := op.Cast.Type
+			if typ.Simple != nil && *typ.Simple == "string" {
+				res = true
+			} else {
+				res = false
+			}
+		}
+	}
+	return res
+}
+
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.Lit != nil && p.Lit.Str != nil:
+		return true
+	case p.Group != nil:
+		return c.isStringExpr(p.Group)
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		typ, err := c.env.GetVar(p.Selector.Root)
+		if err == nil {
+			if _, ok := typ.(types.StringType); ok {
+				return true
+			}
+		}
+		return false
+	default:
+		return false
+	}
 }
