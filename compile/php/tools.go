@@ -28,6 +28,14 @@ func EnsurePHP() error {
 				break
 			}
 		}
+		if _, err := exec.LookPath("apk"); err == nil {
+			cmd := exec.Command("apk", "add", "--no-cache", "php-cli")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err == nil {
+				break
+			}
+		}
 	case "darwin":
 		if _, err := exec.LookPath("brew"); err == nil {
 			cmd := exec.Command("brew", "install", "php")
