@@ -1,0 +1,38 @@
+function __index(obj, i)
+	if type(obj) == 'string' then
+		return __indexString(obj, i)
+	elseif type(obj) == 'table' then
+		return obj[(i)+1]
+	else
+		error('cannot index')
+	end
+end
+
+function __indexString(s, i)
+	local len = #s
+	if i < 0 then
+		i = len + i + 1
+	else
+		i = i + 1
+	end
+	if i < 1 or i > len then error('index out of range') end
+	return string.sub(s, i, i)
+end
+
+function twoSum(nums, target)
+	local n = #nums
+	for i = 0, (n)-1 do
+		for j = (i + 1), (n)-1 do
+			if ((__index(nums, i) + __index(nums, j)) == target) then
+				return {i, j}
+			end
+			::__continue1::
+		end
+		::__continue0::
+	end
+	return {-1, -1}
+end
+
+local result = twoSum({2, 7, 11, 15}, 9)
+print(__index(result, 0))
+print(__index(result, 1))
