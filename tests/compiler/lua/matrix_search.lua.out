@@ -5,19 +5,40 @@ function __div(a, b)
 	return a / b
 end
 
+function __index(obj, i)
+	if type(obj) == 'string' then
+		return __indexString(obj, i)
+	elseif type(obj) == 'table' then
+		return obj[(i)+1]
+	else
+		error('cannot index')
+	end
+end
+
+function __indexString(s, i)
+	local len = #s
+	if i < 0 then
+		i = len + i + 1
+	else
+		i = i + 1
+	end
+	if i < 1 or i > len then error('index out of range') end
+	return string.sub(s, i, i)
+end
+
 function searchMatrix(matrix, target)
 	local m = #matrix
 	if (m == 0) then
 		return false
 	end
-	local n = #matrix[(0)+1]
+	local n = #__index(matrix, 0)
 	local left = 0
 	local right = ((m * n) - 1)
 	while (left <= right) do
 		local mid = (left + __div(((right - left)), 2))
 		local row = __div(mid, n)
 		local col = (mid % n)
-		local value = matrix[(row)+1][(col)+1]
+		local value = __index(__index(matrix, row), col)
 		if (value == target) then
 			return true
 		elseif (value < target) then

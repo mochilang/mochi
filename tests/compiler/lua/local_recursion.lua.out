@@ -5,13 +5,34 @@ function __div(a, b)
 	return a / b
 end
 
+function __index(obj, i)
+	if type(obj) == 'string' then
+		return __indexString(obj, i)
+	elseif type(obj) == 'table' then
+		return obj[(i)+1]
+	else
+		error('cannot index')
+	end
+end
+
+function __indexString(s, i)
+	local len = #s
+	if i < 0 then
+		i = len + i + 1
+	else
+		i = i + 1
+	end
+	if i < 1 or i > len then error('index out of range') end
+	return string.sub(s, i, i)
+end
+
 function fromList(nums)
 	local function helper(lo, hi)
 		if (lo >= hi) then
 			return {__name="Leaf"}
 		end
 		local mid = __div(((lo + hi)), 2)
-		return {__name="Node", left=helper(lo, mid), value=nums[(mid)+1], right=helper((mid + 1), hi)}
+		return {__name="Node", left=helper(lo, mid), value=__index(nums, mid), right=helper((mid + 1), hi)}
 	end
 	return helper(0, #nums)
 end

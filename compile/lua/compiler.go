@@ -420,6 +420,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileQueryExpr(p.Query)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	default:
@@ -637,6 +639,25 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	b.WriteString("\treturn nil\n")
 	b.WriteString("end)()")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	if fn.ExprBody == nil {
+		return "", fmt.Errorf("block function expressions not supported")
+	}
+	sub := &Compiler{env: c.env, helpers: c.helpers}
+	sub.indent = 1
+	expr, err := sub.compileExpr(fn.ExprBody)
+	if err != nil {
+		return "", err
+	}
+	sub.writeln("return " + expr)
+	body := indentBlock(sub.buf.String(), 1)
+	return "function(" + strings.Join(params, ", ") + ")\n" + body + "end", nil
 }
 
 func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
