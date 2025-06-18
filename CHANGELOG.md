@@ -1,4 +1,21 @@
 # 📦 CHANGELOG.md
+## [0.8.6] – 2025-06-18
+
+### Added
+
+* Float and slice support across many compilers
+* Dart, Kotlin, Racket and Erlang runners
+* Compiled LeetCode examples for problems 1–5
+* Improved Smalltalk installer
+
+### Changed
+
+* Combined Scala tests and ensure tools before running
+
+### Fixed
+
+* Lua compiler errors and Elixir group expressions
+* Float literal handling and unused variables
 ## [0.8.5] – 2025-06-18
 
 ### Added
