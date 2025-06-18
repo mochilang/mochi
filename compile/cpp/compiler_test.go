@@ -26,6 +26,10 @@ func TestCPPCompiler_AddTwoNumbers(t *testing.T) {
 	runCPPLeetExample(t, 2)
 }
 
+func TestCPPCompiler_LeetCodeExamples(t *testing.T) {
+	runCPPLeetRange(t, 1, 2)
+}
+
 func TestCPPCompiler_SubsetPrograms(t *testing.T) {
 	cpp, err := cppcode.EnsureCPP()
 	if err != nil {
@@ -151,5 +155,12 @@ func runCPPLeetExample(t *testing.T, id int) {
 				_ = out
 			}
 		})
+	}
+}
+
+// runCPPLeetRange executes all LeetCode example directories from start to end.
+func runCPPLeetRange(t *testing.T, start, end int) {
+	for i := start; i <= end; i++ {
+		runCPPLeetExample(t, i)
 	}
 }
