@@ -28,12 +28,18 @@ fn longestPalindrome(s: []const u8) [2]i32 {
 		if ((len2 > len1)) {
 			l = len2;
 		}
-		if (((l > end) - start)) {
-			start = ((i - ((l - 1))) / 2);
-			end = ((i + l) / 2);
+		if ((l > ((end - start)))) {
+			start = (i - ((((l - 1)) / 2)));
+			end = (i + ((l / 2)));
 		}
 	}
-	return s[start];
+	var res = "";
+	var k = start;
+	while ((k <= end)) {
+		res = (res + s[k]);
+		k = (k + 1);
+	}
+	return res;
 }
 
 pub fn main() void {
