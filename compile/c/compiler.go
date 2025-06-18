@@ -214,10 +214,10 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	c.writeln("")
-	c.writeln("static int _avg(list_int v) {")
-	c.indent++
-	c.writeln("if (v.len == 0) return 0;")
-	c.writeln("int sum = 0;")
+        c.writeln("static double _avg(list_int v) {")
+        c.indent++
+        c.writeln("if (v.len == 0) return 0;")
+        c.writeln("double sum = 0;")
 	c.writeln("for (int i = 0; i < v.len; i++) {")
 	c.indent++
 	c.writeln("sum += v.data[i];")
@@ -678,10 +678,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileSelector(p.Selector)
 	case p.List != nil:
 		name := c.newTemp()
-		nested := false
-		if len(p.List.Elems) > 0 && isListLiteral(p.List.Elems[0]) {
-			nested = true
-		}
+                nested := false
+                if len(p.List.Elems) > 0 {
+                        if isListLiteral(p.List.Elems[0]) || isListIntExpr(p.List.Elems[0], c.env) {
+                                nested = true
+                        }
+                }
 		if nested {
 			c.needsListListInt = true
 			c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(%d);", name, len(p.List.Elems)))
@@ -729,8 +731,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					fmtStr := "%d"
 					if isStringArg(a, c.env) {
 						fmtStr = "%s"
-					} else if isFloatArg(a, c.env) {
-						fmtStr = "%f"
+                                        } else if isFloatArg(a, c.env) {
+                                                fmtStr = "%g"
 					}
 					end := " "
 					if i == len(p.Call.Args)-1 {
