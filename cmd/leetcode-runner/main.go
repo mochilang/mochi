@@ -291,8 +291,21 @@ func runOutput(file, lang string) error {
 		if err := cobolcode.EnsureCOBOL(); err != nil {
 			return err
 		}
-		exe := strings.TrimSuffix(file, ".cob")
-		if out, err := exec.Command("cobc", "-free", "-x", file, "-o", exe).CombinedOutput(); err != nil {
+		tmpDir, err := os.MkdirTemp("", "mochi-cobol")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(tmpDir)
+		src := filepath.Join(tmpDir, "prog.cob")
+		data, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+		if err := os.WriteFile(src, data, 0644); err != nil {
+			return err
+		}
+		exe := filepath.Join(tmpDir, "prog")
+		if out, err := exec.Command("cobc", "-free", "-x", src, "-o", exe).CombinedOutput(); err != nil {
 			return fmt.Errorf("cobc: %v\n%s", err, out)
 		}
 		cmd := exec.Command(exe)
