@@ -309,6 +309,8 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 			return "integer"
 		case "string":
 			return "string"
+		case "bool":
+			return "boolean"
 		}
 	}
 	if t.Generic != nil {
@@ -326,6 +328,8 @@ func typeString(t types.Type) string {
 		return "integer"
 	case types.StringType:
 		return "string"
+	case types.BoolType:
+		return "boolean"
 	case types.ListType:
 		return "TIntArray"
 	default:
@@ -395,6 +399,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			expr = fmt.Sprintf("%s = %s", expr, r)
 		case "!=":
 			expr = fmt.Sprintf("%s <> %s", expr, r)
+		case "&&":
+			expr = fmt.Sprintf("%s and %s", expr, r)
+		case "||":
+			expr = fmt.Sprintf("%s or %s", expr, r)
 		default:
 			return "", fmt.Errorf("unsupported op %s", op.Op)
 		}
@@ -450,6 +458,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
+		}
+		if p.Lit.Bool != nil {
+			if bool(*p.Lit.Bool) {
+				return "True", nil
+			}
+			return "False", nil
 		}
 		if p.Lit.Str != nil {
 			s := strings.ReplaceAll(*p.Lit.Str, "'", "''")
