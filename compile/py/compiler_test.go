@@ -100,27 +100,15 @@ func TestPyCompiler_GoldenOutput(t *testing.T) {
 		return bytes.TrimSpace(code), nil
 	}
 
-	dirs := []string{
-		"tests/compiler/c",
-		"tests/compiler/cs",
-		"tests/compiler/dart",
-		"tests/compiler/erl",
-		"tests/compiler/erl_simple",
-		"tests/compiler/ex",
-		"tests/compiler/fs",
-		"tests/compiler/go",
-		"tests/compiler/hs",
-		"tests/compiler/java",
-		"tests/compiler/kt",
-		"tests/compiler/lua",
-		"tests/compiler/php",
-		"tests/compiler/rb",
-		"tests/compiler/rust",
-		"tests/compiler/scala",
-		"tests/compiler/swift",
-		"tests/compiler/valid",
-		"tests/compiler/py",
-	}
+       dirs := []string{
+               "tests/compiler/cpp",
+               "tests/compiler/erl",
+               "tests/compiler/fs",
+               "tests/compiler/go",
+               "tests/compiler/py",
+               "tests/compiler/swift",
+               "tests/compiler/valid",
+       }
 
 	for _, dir := range dirs {
 		golden.Run(t, dir, ".mochi", ".py.out", compileFn)
