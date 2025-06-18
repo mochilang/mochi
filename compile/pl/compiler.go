@@ -95,6 +95,30 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["tolist"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperToList, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["getitem"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperGetItem, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["setitem"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperSetItem, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["contains"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperContains, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 }
 
 // compileBlock compiles a sequence of statements at one indentation level and
@@ -126,7 +150,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	name := sanitizeAtom(fn.Name)
 	oldVars := c.vars
 	oldFun := c.currFun
-	c.vars = make(map[string]string)
+	newVars := make(map[string]string)
+	for k, v := range c.vars {
+		newVars[k] = v
+	}
+	c.vars = newVars
 	c.currFun = name
 	defer func() {
 		c.vars = oldVars
@@ -244,6 +272,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 		} else {
 			return fmt.Errorf("unsupported expression statement")
 		}
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.For != nil:
 		return c.compileFor(s.For, ret)
 	case s.Break != nil:
@@ -259,7 +289,28 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 
 func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 	if f.RangeEnd == nil {
-		return fmt.Errorf("only range for supported")
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		listVar := c.newVar()
+		for _, line := range src.code {
+			c.writeln(line)
+		}
+		c.use("tolist")
+		c.writeln(fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
+		loopVar := sanitizeVar(f.Name)
+		c.writeln(fmt.Sprintf("forall(member(%s, %s), (", loopVar, listVar))
+		c.indent++
+		for _, s := range f.Body {
+			if err := c.compileStmt(s, ret); err != nil {
+				return err
+			}
+		}
+		c.writeln("true")
+		c.indent--
+		c.writeln(")),")
+		return nil
 	}
 	start, err := c.compileExpr(f.Source)
 	if err != nil {
@@ -355,15 +406,41 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if !ok {
 		return fmt.Errorf("unknown variable %s", a.Name)
 	}
-	val, err := c.compileExpr(a.Value)
-	if err != nil {
-		return err
+	if len(a.Index) == 0 {
+		val, err := c.compileExpr(a.Value)
+		if err != nil {
+			return err
+		}
+		for _, line := range val.code {
+			c.writeln(line)
+		}
+		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, val.val))
+		return nil
 	}
-	for _, line := range val.code {
-		c.writeln(line)
+	if len(a.Index) == 1 && a.Index[0].Colon == nil {
+		idx, err := c.compileExpr(a.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		val, err := c.compileExpr(a.Value)
+		if err != nil {
+			return err
+		}
+		tmpCur := c.newVar()
+		c.writeln(fmt.Sprintf("nb_getval(%s, %s),", name, tmpCur))
+		for _, line := range idx.code {
+			c.writeln(line)
+		}
+		for _, line := range val.code {
+			c.writeln(line)
+		}
+		tmpNew := c.newVar()
+		c.use("setitem")
+		c.writeln(fmt.Sprintf("set_item(%s, %s, %s, %s),", tmpCur, idx.val, val.val, tmpNew))
+		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, tmpNew))
+		return nil
 	}
-	c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, val.val))
-	return nil
+	return fmt.Errorf("unsupported assignment")
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt, ret string) error {
@@ -481,6 +558,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 			res.val = fmt.Sprintf("(%s, %s)", res.val, right.val)
 		case "||":
 			res.val = fmt.Sprintf("(%s ; %s)", res.val, right.val)
+		case "in":
+			tmp := c.newVar()
+			c.use("contains")
+			res.code = append(res.code, fmt.Sprintf("contains(%s, %s, %s),", right.val, res.val, tmp))
+			res.val = tmp
 		default:
 			return exprRes{}, fmt.Errorf("unsupported operator %s", op.Op)
 		}
@@ -498,6 +580,10 @@ func (c *Compiler) compileUnary(u *parser.Unary) (exprRes, error) {
 		case "-":
 			tmp := c.newVar()
 			res.code = append(res.code, fmt.Sprintf("%s is -(%s),", tmp, res.val))
+			res.val = tmp
+		case "!":
+			tmp := c.newVar()
+			res.code = append(res.code, fmt.Sprintf("(\\+ %s -> %s = true ; %s = false),", res.val, tmp, tmp))
 			res.val = tmp
 		default:
 			return exprRes{}, fmt.Errorf("unsupported unary op")
@@ -535,7 +621,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (exprRes, error) {
 				}
 				res.code = append(res.code, idx.code...)
 				tmp := c.newVar()
-				res.code = append(res.code, fmt.Sprintf("nth0(%s, %s, %s),", idx.val, res.val, tmp))
+				c.use("getitem")
+				res.code = append(res.code, fmt.Sprintf("get_item(%s, %s, %s),", res.val, idx.val, tmp))
 				res.val = tmp
 			}
 		} else if op.Call != nil {
@@ -600,6 +687,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 			elems = append(elems, er.val)
 		}
 		return exprRes{code: code, val: "[" + strings.Join(elems, ", ") + "]"}, nil
+	case p.Map != nil:
+		items := []string{}
+		code := []string{}
+		for _, it := range p.Map.Items {
+			kr, err := c.compileExpr(it.Key)
+			if err != nil {
+				return exprRes{}, err
+			}
+			if len(kr.code) != 0 {
+				return exprRes{}, fmt.Errorf("unsupported map key")
+			}
+			vr, err := c.compileExpr(it.Value)
+			if err != nil {
+				return exprRes{}, err
+			}
+			code = append(code, vr.code...)
+			items = append(items, fmt.Sprintf("%s:%s", kr.val, vr.val))
+		}
+		return exprRes{code: code, val: "_{" + strings.Join(items, ", ") + "}"}, nil
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.Call != nil:

@@ -1,4 +1,11 @@
 :- style_check(-singleton).
+get_item(Container, Key, Val) :-
+    is_dict(Container), !, get_dict(Key, Container, Val).
+get_item(Container, Index, Val) :-
+    string(Container), !, string_chars(Container, Chars), nth0(Index, Chars, Val).
+get_item(List, Index, Val) :- nth0(Index, List, Val).
+
+
 		findmediansortedarrays(Nums1, Nums2, Res) :-
 			catch(
 				(
@@ -18,7 +25,7 @@
 						(_V4 >= _V5 ->
 							nb_getval(findmediansortedarrays_merged, _V6),
 							nb_getval(findmediansortedarrays_i, _V7),
-							nth0(_V7, Nums1, _V8),
+							get_item(Nums1, _V7, _V8),
 							append(_V6, [_V8], _V9),
 							nb_setval(findmediansortedarrays_merged, _V9),
 							nb_getval(findmediansortedarrays_i, _V10),
@@ -30,7 +37,7 @@
 						(_V12 >= _V13 ->
 							nb_getval(findmediansortedarrays_merged, _V14),
 							nb_getval(findmediansortedarrays_j, _V15),
-							nth0(_V15, Nums2, _V16),
+							get_item(Nums2, _V15, _V16),
 							append(_V14, [_V16], _V17),
 							nb_setval(findmediansortedarrays_merged, _V17),
 							nb_getval(findmediansortedarrays_j, _V18),
@@ -38,13 +45,13 @@
 							nb_setval(findmediansortedarrays_j, _V19)
 						;
 						nb_getval(findmediansortedarrays_i, _V20),
-						nth0(_V20, Nums1, _V21),
+						get_item(Nums1, _V20, _V21),
 						nb_getval(findmediansortedarrays_j, _V22),
-						nth0(_V22, Nums2, _V23),
+						get_item(Nums2, _V22, _V23),
 						(_V21 =< _V23 ->
 							nb_getval(findmediansortedarrays_merged, _V24),
 							nb_getval(findmediansortedarrays_i, _V25),
-							nth0(_V25, Nums1, _V26),
+							get_item(Nums1, _V25, _V26),
 							append(_V24, [_V26], _V27),
 							nb_setval(findmediansortedarrays_merged, _V27),
 							nb_getval(findmediansortedarrays_i, _V28),
@@ -53,7 +60,7 @@
 						;
 							nb_getval(findmediansortedarrays_merged, _V30),
 							nb_getval(findmediansortedarrays_j, _V31),
-							nth0(_V31, Nums2, _V32),
+							get_item(Nums2, _V31, _V32),
 							append(_V30, [_V32], _V33),
 							nb_setval(findmediansortedarrays_merged, _V33),
 							nb_getval(findmediansortedarrays_j, _V34),
@@ -73,7 +80,7 @@
 		(_V38 =:= 1 ->
 			nb_getval(findmediansortedarrays_merged, _V39),
 			_V40 is Total // 2,
-			nth0(_V40, _V39, _V41),
+			get_item(_V39, _V40, _V41),
 			throw(return(_V41))
 		;
 		true
@@ -81,11 +88,11 @@
 		nb_getval(findmediansortedarrays_merged, _V42),
 		_V43 is Total // 2,
 		_V44 is _V43 - 1,
-		nth0(_V44, _V42, _V45),
+		get_item(_V42, _V44, _V45),
 		Mid1 = _V45,
 		nb_getval(findmediansortedarrays_merged, _V46),
 		_V47 is Total // 2,
-		nth0(_V47, _V46, _V48),
+		get_item(_V46, _V47, _V48),
 		Mid2 = _V48
 					,
 					true

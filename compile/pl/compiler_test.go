@@ -194,7 +194,7 @@ func TestPrologCompiler_LeetCodeExamples(t *testing.T) {
 	if err := plcode.EnsureSWIPL(); err != nil {
 		t.Skipf("swipl not installed: %v", err)
 	}
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		runLeetExample(t, i)
 	}
 }

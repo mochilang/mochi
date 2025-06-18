@@ -1,4 +1,11 @@
 :- style_check(-singleton).
+get_item(Container, Key, Val) :-
+    is_dict(Container), !, get_dict(Key, Container, Val).
+get_item(Container, Index, Val) :-
+    string(Container), !, string_chars(Container, Chars), nth0(Index, Chars, Val).
+get_item(List, Index, Val) :- nth0(Index, List, Val).
+
+
 		addtwonumbers(L1, L2, Res) :-
 			catch(
 				(
@@ -20,7 +27,7 @@
 						length(L1, _V6),
 						(_V5 < _V6 ->
 							nb_getval(addtwonumbers_i, _V7),
-							nth0(_V7, L1, _V8),
+							get_item(L1, _V7, _V8),
 							nb_setval(addtwonumbers_x, _V8),
 							nb_getval(addtwonumbers_i, _V9),
 							_V10 is _V9 + 1,
@@ -33,7 +40,7 @@
 						length(L2, _V12),
 						(_V11 < _V12 ->
 							nb_getval(addtwonumbers_j, _V13),
-							nth0(_V13, L2, _V14),
+							get_item(L2, _V13, _V14),
 							nb_setval(addtwonumbers_y, _V14),
 							nb_getval(addtwonumbers_j, _V15),
 							_V16 is _V15 + 1,
