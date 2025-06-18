@@ -309,6 +309,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "/":
 					c.helpers["div"] = true
 					expr = fmt.Sprintf("__div(%s, %s)", l, r)
+				case "+":
+					c.helpers["add"] = true
+					expr = fmt.Sprintf("__add(%s, %s)", l, r)
+				case "==":
+					c.helpers["eq"] = true
+					expr = fmt.Sprintf("__eq(%s, %s)", l, r)
+				case "!=":
+					c.helpers["eq"] = true
+					expr = fmt.Sprintf("not __eq(%s, %s)", l, r)
 				default:
 					expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
 				}
@@ -761,7 +770,11 @@ func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 	case lit.Int != nil:
 		return strconv.Itoa(*lit.Int), nil
 	case lit.Float != nil:
-		return strconv.FormatFloat(*lit.Float, 'f', -1, 64), nil
+		s := strconv.FormatFloat(*lit.Float, 'f', -1, 64)
+		if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
+			s += ".0"
+		}
+		return s, nil
 	case lit.Str != nil:
 		return strconv.Quote(*lit.Str), nil
 	case lit.Bool != nil:
@@ -916,6 +929,41 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writeln("end")
 		c.writeln("return a / b")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+	if c.helpers["add"] {
+		c.writeln("function __add(a, b)")
+		c.indent++
+		c.writeln("if type(a) == 'table' and type(b) == 'table' then")
+		c.indent++
+		c.writeln("local out = {}")
+		c.writeln("for i = 1, #a do out[#out+1] = a[i] end")
+		c.writeln("for i = 1, #b do out[#out+1] = b[i] end")
+		c.writeln("return out")
+		c.indent--
+		c.writeln("end")
+		c.writeln("return a + b")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+	if c.helpers["eq"] {
+		c.writeln("function __eq(a, b)")
+		c.indent++
+		c.writeln("if type(a) ~= type(b) then return false end")
+		c.writeln("if type(a) ~= 'table' then return a == b end")
+		c.writeln("if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then")
+		c.indent++
+		c.writeln("if #a ~= #b then return false end")
+		c.writeln("for i = 1, #a do if not __eq(a[i], b[i]) then return false end end")
+		c.writeln("return true")
+		c.indent--
+		c.writeln("end")
+		c.writeln("for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end")
+		c.writeln("for k, _ in pairs(b) do if a[k] == nil then return false end end")
+		c.writeln("return true")
 		c.indent--
 		c.writeln("end")
 		c.writeln("")
