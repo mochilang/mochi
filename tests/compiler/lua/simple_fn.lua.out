@@ -1,5 +1,14 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 function id(x)
 	return x
 end
 
-print(id(123))
+__print(id(123))

@@ -1,6 +1,15 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 function prepend(level, result)
 	result = ({level} + result)
 	return result
 end
 
-print(prepend({1, 2}, {{3}, {4}}))
+__print(prepend({1, 2}, {{3}, {4}}))

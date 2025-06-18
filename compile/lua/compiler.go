@@ -441,6 +441,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileQueryExpr(p.Query)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -470,7 +472,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch name {
 	case "print":
-		return fmt.Sprintf("print(%s)", argStr), nil
+		c.helpers["print"] = true
+		return fmt.Sprintf("__print(%s)", argStr), nil
 	case "str":
 		if len(args) == 1 {
 			return fmt.Sprintf("tostring(%s)", args[0]), nil
@@ -662,6 +665,56 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var (
+		prompt string
+		text   string
+		model  string
+		params []string
+	)
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("%q=%s", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramStr := "nil"
+	if len(params) > 0 {
+		paramStr = "{" + strings.Join(params, ", ") + "}"
+	}
+	if model == "" {
+		model = "nil"
+	}
+	if g.Target == "embedding" {
+		c.helpers["gen_embed"] = true
+		return fmt.Sprintf("__gen_embed(%s, %s, %s)", text, model, paramStr), nil
+	}
+	if c.env != nil {
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.helpers["gen_struct"] = true
+			return fmt.Sprintf("__gen_struct(%s, %s, %s)", prompt, model, paramStr), nil
+		}
+	}
+	c.helpers["gen_text"] = true
+	return fmt.Sprintf("__gen_text(%s, %s, %s)", prompt, model, paramStr), nil
+}
+
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
@@ -752,6 +805,21 @@ func (c *Compiler) compileFun(fun *parser.FunStmt, local bool) error {
 }
 
 func (c *Compiler) emitHelpers() {
+	if c.helpers["print"] {
+		c.writeln("function __print(...)")
+		c.indent++
+		c.writeln("local args = {...}")
+		c.writeln("for i, a in ipairs(args) do")
+		c.indent++
+		c.writeln("if i > 1 then io.write(' ') end")
+		c.writeln("io.write(tostring(a))")
+		c.indent--
+		c.writeln("end")
+		c.writeln("io.write('\\n')")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
 	if c.helpers["iter"] {
 		c.writeln("function __iter(obj)")
 		c.indent++
@@ -980,6 +1048,46 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("return {}")
 		c.indent--
 		c.writeln("end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["gen_text"] {
+		c.writeln("function __gen_text(prompt, model, params)")
+		c.indent++
+		c.writeln("return prompt")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["gen_embed"] {
+		c.writeln("function __gen_embed(text, model, params)")
+		c.indent++
+		c.writeln("local out = {}")
+		c.writeln("for i = 1, #text do")
+		c.indent++
+		c.writeln("out[#out+1] = string.byte(text, i)")
+		c.indent--
+		c.writeln("end")
+		c.writeln("return out")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["gen_struct"] {
+		c.writeln("function __gen_struct(prompt, model, params)")
+		c.indent++
+		c.writeln(`local f = load('return ' .. prompt:gsub('"(%w+)"%s*:', '%1='))`)
+		c.writeln("if f then")
+		c.indent++
+		c.writeln("local ok, res = pcall(f)")
+		c.writeln("if ok and type(res) == 'table' then return res end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("return {}")
 		c.indent--
 		c.writeln("end")
 		c.writeln("")

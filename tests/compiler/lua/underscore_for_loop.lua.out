@@ -1,3 +1,12 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 function __iter(obj)
 	if type(obj) == 'table' then
 		if obj[1] ~= nil or #obj > 0 then
@@ -40,4 +49,4 @@ for _, _ in __iter(m) do
 	c = (c + 1)
 	::__continue3::
 end
-print(c)
+__print(c)

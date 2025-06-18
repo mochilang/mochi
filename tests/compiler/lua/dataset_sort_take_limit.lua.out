@@ -1,3 +1,12 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 function __iter(obj)
 	if type(obj) == 'table' then
 		if obj[1] ~= nil or #obj > 0 then
@@ -49,8 +58,8 @@ local expensive = (function()
 	end
 	return _res
 end)()
-print("--- Top products (excluding most expensive) ---")
+__print("--- Top products (excluding most expensive) ---")
 for _, item in __iter(expensive) do
-	print(item.name, "costs $", item.price)
+	__print(item.name, "costs $", item.price)
 	::__continue0::
 end

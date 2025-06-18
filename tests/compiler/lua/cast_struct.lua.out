@@ -1,2 +1,11 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
 local todo = {["title"]="hi"}
-print(todo.title)
+__print(todo.title)
