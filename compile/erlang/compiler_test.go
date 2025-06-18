@@ -114,6 +114,7 @@ func TestErlangCompiler_LeetCodeExamples(t *testing.T) {
 	}
 	runLeetExample(t, 1)
 	runLeetExample(t, 2)
+	runLeetExample(t, 3)
 }
 
 func TestErlangCompiler_SubsetPrograms(t *testing.T) {
