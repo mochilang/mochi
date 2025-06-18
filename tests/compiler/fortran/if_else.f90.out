@@ -1,0 +1,23 @@
+program main
+  implicit none
+  print *, foo((-2))
+  print *, foo(0)
+  print *, foo(3)
+contains
+  function foo(n) result(res)
+    implicit none
+    integer, intent(in) :: n
+    integer :: res
+    if ((n < 0)) then
+      res = (-1)
+      return
+    else if ((n == 0)) then
+      res = 0
+      return
+    else
+      res = 1
+      return
+    end if
+  end function foo
+  
+end program main
