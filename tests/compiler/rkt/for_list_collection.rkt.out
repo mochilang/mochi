@@ -1,0 +1,6 @@
+#lang racket
+
+(for ([n (list 1 2 3)])
+	(displayln n)
+)
+
