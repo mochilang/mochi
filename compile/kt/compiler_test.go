@@ -54,10 +54,11 @@ func TestKTCompiler_TwoSum(t *testing.T) {
 }
 
 func TestKTCompiler_LeetCodeExamples(t *testing.T) {
-	if err := ktcode.EnsureKotlin(); err != nil {
-		t.Skipf("kotlin not installed: %v", err)
-	}
+        if err := ktcode.EnsureKotlin(); err != nil {
+                t.Skipf("kotlin not installed: %v", err)
+        }
 	runKTLeetExample(t, 1)
+	runKTLeetExample(t, 2)
 }
 
 func TestKTCompiler_SubsetPrograms(t *testing.T) {
