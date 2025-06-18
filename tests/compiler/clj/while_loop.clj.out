@@ -1,5 +1,13 @@
 (def i 0)
-(while (< i 3)
-  (println i)
-  (def i (+ i 1))
+(try
+  (loop []
+    (when (< i 3)
+      (println i)
+      (def i (+ i 1))
+      (recur)
+    )
+  )
+(catch clojure.lang.ExceptionInfo e
+  (when-not (= (.getMessage e) "break") (throw e))
+)
 )
