@@ -3,46 +3,40 @@ using System;
 using System.Collections.Generic;
 
 public class Program {
-	static int expand(string s, int left, int right) {
+	static long expand(string s, long left, long right) {
 		var l = left;
 		var r = right;
 		var n = s.Length;
-		while (((l >= 0) && (r < n))) {
-			if ((s[l] != s[r])) {
+		while (((l >= 0L) && (r < n))) {
+			if ((_indexString(s, l) != _indexString(s, r))) {
 				break;
 			}
-			l = (l - 1);
-			r = (r + 1);
+			l = (l - 1L);
+			r = (r + 1L);
 		}
-		return ((r - l) - 1);
+		return ((r - l) - 1L);
 	}
 	
 	static string longestPalindrome(string s) {
-		if ((s.Length <= 1)) {
+		if ((s.Length <= 1L)) {
 			return s;
 		}
-		var start = 0;
-		var end = 0;
+		var start = 0L;
+		var end = 0L;
 		var n = s.Length;
-		for (var i = 0; i < n; i++) {
+		for (var i = 0L; i < n; i++) {
 			var len1 = expand(s, i, i);
-			var len2 = expand(s, i, (i + 1));
+			var len2 = expand(s, i, (i + 1L));
 			var l = len1;
 			if ((len2 > len1)) {
 				l = len2;
 			}
 			if ((l > ((end - start)))) {
-				start = (i - ((((l - 1)) / 2)));
-				end = (i + ((l / 2)));
+				start = (i - ((((l - 1L)) / 2L)));
+				end = (i + ((l / 2L)));
 			}
 		}
-		var res = "";
-		var k = start;
-		while ((k <= end)) {
-			res = (res + s[k]);
-			k = (k + 1);
-		}
-		return res;
+		return _sliceString(s, start, (end + 1L));
 	}
 	
 	static void test_example_1() {
@@ -69,4 +63,22 @@ public class Program {
 		test_single_char();
 		test_two_chars();
 	}
+	static string _indexString(string s, long i) {
+		if (i < 0) i += s.Length;
+		if (i < 0 || i >= s.Length) throw new Exception("index out of range");
+		return s[(int)i].ToString();
+	}
+	
+	static string _sliceString(string s, long i, long j) {
+		var start = i;
+		var end = j;
+		var n = s.Length;
+		if (start < 0) start += n;
+		if (end < 0) end += n;
+		if (start < 0) start = 0;
+		if (end > n) end = n;
+		if (end < start) end = start;
+		return s.Substring((int)start, (int)(end - start));
+	}
+	
 }

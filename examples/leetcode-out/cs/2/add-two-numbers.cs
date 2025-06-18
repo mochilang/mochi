@@ -4,40 +4,40 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class Program {
-	static int[] addTwoNumbers(int[] l1, int[] l2) {
-		var i = 0;
-		var j = 0;
-		var carry = 0;
-		var result = new int[] { };
-		while ((((i < l1.Length) || (j < l2.Length)) || (carry > 0))) {
-			var x = 0;
+	static long[] addTwoNumbers(long[] l1, long[] l2) {
+		var i = 0L;
+		var j = 0L;
+		var carry = 0L;
+		var result = new long[] { };
+		while ((((i < l1.Length) || (j < l2.Length)) || (carry > 0L))) {
+			var x = 0L;
 			if ((i < l1.Length)) {
 				x = l1[i];
-				i = (i + 1);
+				i = (i + 1L);
 			}
-			var y = 0;
+			var y = 0L;
 			if ((j < l2.Length)) {
 				y = l2[j];
-				j = (j + 1);
+				j = (j + 1L);
 			}
 			var sum = ((x + y) + carry);
-			var digit = (sum % 10);
-			carry = (sum / 10);
+			var digit = (sum % 10L);
+			carry = (sum / 10L);
 			result = result.Concat(new [] { digit }).ToArray();
 		}
 		return result;
 	}
 	
 	static void test_example_1() {
-		if (!(_equal(addTwoNumbers(new [] { 2, 4, 3 }, new [] { 5, 6, 4 }), new [] { 7, 0, 8 }))) throw new Exception("expect failed");
+		if (!(_equal(addTwoNumbers(new [] { 2L, 4L, 3L }, new [] { 5L, 6L, 4L }), new [] { 7L, 0L, 8L }))) throw new Exception("expect failed");
 	}
 	
 	static void test_example_2() {
-		if (!(_equal(addTwoNumbers(new [] { 0 }, new [] { 0 }), new [] { 0 }))) throw new Exception("expect failed");
+		if (!(_equal(addTwoNumbers(new [] { 0L }, new [] { 0L }), new [] { 0L }))) throw new Exception("expect failed");
 	}
 	
 	static void test_example_3() {
-		if (!(_equal(addTwoNumbers(new [] { 9, 9, 9, 9, 9, 9, 9 }, new [] { 9, 9, 9, 9 }), new [] { 8, 9, 9, 9, 0, 0, 0, 1 }))) throw new Exception("expect failed");
+		if (!(_equal(addTwoNumbers(new [] { 9L, 9L, 9L, 9L, 9L, 9L, 9L }, new [] { 9L, 9L, 9L, 9L }), new [] { 8L, 9L, 9L, 9L, 0L, 0L, 0L, 1L }))) throw new Exception("expect failed");
 	}
 	
 	public static void Main() {

@@ -3,43 +3,43 @@ using System;
 using System.Collections.Generic;
 
 public class Program {
-	static int lengthOfLongestSubstring(string s) {
+	static long lengthOfLongestSubstring(string s) {
 		var n = s.Length;
-		var start = 0;
-		var best = 0;
-		var i = 0;
+		var start = 0L;
+		var best = 0L;
+		var i = 0L;
 		while ((i < n)) {
 			var j = start;
 			while ((j < i)) {
-				if ((s[j] == s[i])) {
-					start = (j + 1);
+				if ((_indexString(s, j) == _indexString(s, i))) {
+					start = (j + 1L);
 					break;
 				}
-				j = (j + 1);
+				j = (j + 1L);
 			}
-			var length = ((i - start) + 1);
+			var length = ((i - start) + 1L);
 			if ((length > best)) {
 				best = length;
 			}
-			i = (i + 1);
+			i = (i + 1L);
 		}
 		return best;
 	}
 	
 	static void test_example_1() {
-		if (!((lengthOfLongestSubstring("abcabcbb") == 3))) throw new Exception("expect failed");
+		if (!((lengthOfLongestSubstring("abcabcbb") == 3L))) throw new Exception("expect failed");
 	}
 	
 	static void test_example_2() {
-		if (!((lengthOfLongestSubstring("bbbbb") == 1))) throw new Exception("expect failed");
+		if (!((lengthOfLongestSubstring("bbbbb") == 1L))) throw new Exception("expect failed");
 	}
 	
 	static void test_example_3() {
-		if (!((lengthOfLongestSubstring("pwwkew") == 3))) throw new Exception("expect failed");
+		if (!((lengthOfLongestSubstring("pwwkew") == 3L))) throw new Exception("expect failed");
 	}
 	
 	static void test_empty_string() {
-		if (!((lengthOfLongestSubstring("") == 0))) throw new Exception("expect failed");
+		if (!((lengthOfLongestSubstring("") == 0L))) throw new Exception("expect failed");
 	}
 	
 	public static void Main() {
@@ -48,4 +48,10 @@ public class Program {
 		test_example_3();
 		test_empty_string();
 	}
+	static string _indexString(string s, long i) {
+		if (i < 0) i += s.Length;
+		if (i < 0 || i >= s.Length) throw new Exception("index out of range");
+		return s[(int)i].ToString();
+	}
+	
 }

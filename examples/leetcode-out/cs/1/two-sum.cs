@@ -3,21 +3,21 @@ using System;
 using System.Collections.Generic;
 
 public class Program {
-	static int[] twoSum(int[] nums, int target) {
+	static long[] twoSum(long[] nums, long target) {
 		var n = nums.Length;
-		for (var i = 0; i < n; i++) {
-			for (var j = (i + 1); j < n; j++) {
+		for (var i = 0L; i < n; i++) {
+			for (var j = (i + 1L); j < n; j++) {
 				if (((nums[i] + nums[j]) == target)) {
 					return new [] { i, j };
 				}
 			}
 		}
-		return new [] { (-1), (-1) };
+		return new [] { (-1L), (-1L) };
 	}
 	
 	public static void Main() {
-		var result = twoSum(new [] { 2, 7, 11, 15 }, 9);
-		Console.WriteLine(result[0]);
-		Console.WriteLine(result[1]);
+		var result = twoSum(new [] { 2L, 7L, 11L, 15L }, 9L);
+		Console.WriteLine(result[0L]);
+		Console.WriteLine(result[1L]);
 	}
 }
