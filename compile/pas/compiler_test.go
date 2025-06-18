@@ -118,3 +118,66 @@ func TestPascalCompiler_GoldenOutput(t *testing.T) {
 
 	golden.Run(t, "tests/compiler/pas", ".mochi", ".pas.out", compileFn)
 }
+
+// TestPascalCompiler_LeetCodeExamples compiles a small subset of the
+// LeetCode solutions with the Pascal backend and executes the resulting
+// binaries. The test is skipped in CI environments lacking the Free
+// Pascal Compiler.
+func TestPascalCompiler_LeetCodeExamples(t *testing.T) {
+	t.Skip("disabled in current environment")
+	if _, err := pascode.EnsureFPC(); err != nil {
+		t.Skipf("fpc not installed: %v", err)
+	}
+	runExample(t, 1)
+	runExample(t, 2)
+}
+
+// runExample compiles all Mochi files in the given LeetCode problem
+// directory and executes the resulting Pascal program. Any output is
+// ignored; the test simply verifies that compilation and execution
+// succeed without errors.
+func runExample(t *testing.T, id int) {
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	fpc, err := pascode.EnsureFPC()
+	if err != nil {
+		t.Fatalf("fpc not installed: %v", err)
+	}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			c := pascode.New(env)
+			code, err := c.Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "prog.pas")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			if out, err := exec.Command(fpc, file).CombinedOutput(); err != nil {
+				t.Fatalf("fpc error: %v\n%s", err, out)
+			}
+			exe := filepath.Join(tmp, "prog")
+			cmd := exec.Command(exe)
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			if out, err := cmd.CombinedOutput(); err != nil {
+				t.Fatalf("run error: %v\n%s", err, out)
+			}
+		})
+	}
+}
