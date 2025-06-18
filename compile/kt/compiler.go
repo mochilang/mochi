@@ -577,6 +577,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems = append(elems, ce)
 		}
+		if len(elems) == 0 {
+			return "mutableListOf()", nil
+		}
 		return "listOf(" + joinArgs(elems) + ")", nil
 	case p.Map != nil:
 		items := []string{}

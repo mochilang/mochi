@@ -53,6 +53,13 @@ func TestKTCompiler_TwoSum(t *testing.T) {
 	}
 }
 
+func TestKTCompiler_LeetCodeExamples(t *testing.T) {
+	if err := ktcode.EnsureKotlin(); err != nil {
+		t.Skipf("kotlin not installed: %v", err)
+	}
+	runKTLeetExample(t, 1)
+}
+
 func TestKTCompiler_SubsetPrograms(t *testing.T) {
 	t.Skip("slow")
 	if err := ktcode.EnsureKotlin(); err != nil {
@@ -131,6 +138,63 @@ func repoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found")
 	return ""
+}
+
+func runKTProgram(t *testing.T, src string) []byte {
+	t.Helper()
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	code, err := ktcode.New(env).Compile(prog)
+	if err != nil {
+		t.Fatalf("compile error: %v", err)
+	}
+	dir := t.TempDir()
+	file := filepath.Join(dir, "Main.kt")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	jar := filepath.Join(dir, "main.jar")
+	if out, err := exec.Command("kotlinc", file, "-include-runtime", "-d", jar).CombinedOutput(); err != nil {
+		t.Fatalf("kotlinc error: %v\n%s", err, out)
+	}
+	cmd := exec.Command("java", "-jar", jar)
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		cmd.Stdin = bytes.NewReader(data)
+	}
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("run error: %v\n%s", err, out)
+	}
+	return bytes.TrimSpace(out)
+}
+
+func runKTLeetExample(t *testing.T, id int) {
+	root := repoRoot(t)
+	dir := filepath.Join(root, "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no example files for id %d", id)
+	}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			out := runKTProgram(t, f)
+			if id == 1 {
+				if string(out) != "0\n1" {
+					t.Fatalf("unexpected output: %s", out)
+				}
+			}
+		})
+	}
 }
 
 func TestKTCompiler_GoldenOutput_Valid(t *testing.T) {
