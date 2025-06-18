@@ -70,6 +70,11 @@ func TestSchemeCompiler_LeetCode2(t *testing.T) {
 	runLeetExample(t, 2)
 }
 
+// TestSchemeCompiler_LeetCode3 compiles the longest-substring example and runs it.
+func TestSchemeCompiler_LeetCode3(t *testing.T) {
+	runLeetExample(t, 3)
+}
+
 func TestSchemeCompiler_SubsetPrograms(t *testing.T) {
 	if _, err := schemecode.EnsureScheme(); err != nil {
 		t.Skipf("chibi-scheme not installed: %v", err)
