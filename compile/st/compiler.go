@@ -153,8 +153,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if f.RangeEnd == nil {
-		return fmt.Errorf("collection loops not supported")
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s do: [:%s |", src, f.Name))
+		c.indent++
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("]")
+		c.writeln(".")
+		return nil
 	}
+
 	start, err := c.compileExpr(f.Source)
 	if err != nil {
 		return err
@@ -196,6 +211,18 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if len(a.Index) > 0 {
+		if len(a.Index) == 1 && a.Index[0].Colon == nil {
+			idx, err := c.compileExpr(a.Index[0].Start)
+			if err != nil {
+				return err
+			}
+			val, err := c.compileExpr(a.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s at: %s + 1 put: %s.", a.Name, idx, val))
+			return nil
+		}
 		return fmt.Errorf("index assignment not supported")
 	}
 	val, err := c.compileExpr(a.Value)
@@ -258,42 +285,109 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	left, err := c.compileUnary(b.Left)
+	operands := []string{}
+	lists := []bool{}
+	strs := []bool{}
+
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	expr := left
-	leftList := isListUnary(b.Left, c.env)
-	leftStr := isStringUnary(b.Left, c.env)
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+	operands = append(operands, first)
+	lists = append(lists, isListUnary(b.Left, c.env))
+	strs = append(strs, isStringUnary(b.Left, c.env))
+
+	ops := []string{}
+	maps := []bool{}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rlist := isListPostfix(op.Right, c.env)
-		rstr := isStringPostfix(op.Right, c.env)
-		switch op.Op {
-		case "+":
-			if leftList || rlist {
-				expr = fmt.Sprintf("(%s , %s)", expr, right)
-				leftList = true
-				leftStr = false
-			} else if leftStr || rstr {
-				expr = fmt.Sprintf("(%s , %s)", expr, right)
-				leftStr = true
-				leftList = false
-			} else {
-				expr = fmt.Sprintf("(%s + %s)", expr, right)
-				leftList = false
-				leftStr = false
+		operands = append(operands, r)
+		lists = append(lists, isListPostfix(part.Right, c.env))
+		strs = append(strs, isStringPostfix(part.Right, c.env))
+		maps = append(maps, isMapPostfix(part.Right, c.env))
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
 			}
-		default:
-			expr = fmt.Sprintf("(%s %s %s)", expr, mapOp(op.Op), right)
-			leftList = false
-			leftStr = false
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+			op := ops[i]
+			l := operands[i]
+			r := operands[i+1]
+			llist := lists[i]
+			rlist := lists[i+1]
+			lstr := strs[i]
+			rstr := strs[i+1]
+
+			var expr string
+			switch op {
+			case "+":
+				if llist || rlist {
+					expr = fmt.Sprintf("(%s , %s)", l, r)
+					llist = true
+					lstr = false
+				} else if lstr || rstr {
+					expr = fmt.Sprintf("(%s , %s)", l, r)
+					lstr = true
+					llist = false
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", l, r)
+					llist = false
+					lstr = false
+				}
+			case "in":
+				if maps[i] {
+					expr = fmt.Sprintf("(%s includesKey: %s)", r, l)
+				} else {
+					expr = fmt.Sprintf("(%s includes: %s)", r, l)
+				}
+				llist = false
+				lstr = false
+			default:
+				expr = fmt.Sprintf("(%s %s %s)", l, mapOp(op), r)
+				llist = false
+				lstr = false
+			}
+
+			operands[i] = expr
+			lists[i] = llist
+			strs[i] = lstr
+			operands = append(operands[:i+1], operands[i+2:]...)
+			lists = append(lists[:i+1], lists[i+2:]...)
+			strs = append(strs[:i+1], strs[i+2:]...)
+			maps = append(maps[:i], maps[i+1:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -308,6 +402,8 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		switch u.Ops[i] {
 		case "!":
 			val = fmt.Sprintf("(%s) not", val)
+		case "-":
+			val = fmt.Sprintf("(0 - %s)", val)
 		default:
 			val = fmt.Sprintf("%s%s", u.Ops[i], val)
 		}
@@ -345,7 +441,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
+				if isMapPrimary(p.Target, c.env) {
+					expr = fmt.Sprintf("(%s at: %s)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
+				}
 			}
 		}
 	}
@@ -369,6 +469,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "Array with: " + strings.Join(elems, " with: "), nil
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Group != nil:
@@ -421,6 +523,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return strings.Join(parts, " "), nil
 	}
+}
+
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	if len(m.Items) == 0 {
+		return "Dictionary new", nil
+	}
+	pairs := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		pairs[i] = fmt.Sprintf("%s -> %s", k, v)
+	}
+	return "Dictionary newFrom: { " + strings.Join(pairs, " . ") + " }", nil
 }
 
 func mapOp(op string) string {
@@ -498,6 +619,37 @@ func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
 		if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isMapUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	return isMapPostfix(u.Value, env)
+}
+
+func isMapPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil || len(p.Ops) != 0 {
+		return false
+	}
+	return isMapPrimary(p.Target, env)
+}
+
+func isMapPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.MapType); ok {
 				return true
 			}
 		}
