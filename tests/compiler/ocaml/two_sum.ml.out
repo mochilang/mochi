@@ -13,5 +13,5 @@ let rec twoSum nums target =
   with Return_0 v -> v
 
 let result = twoSum [2; 7; 11; 15] 9;;
-print_endline (string_of_int (List.nth result 0));;
-print_endline (string_of_int (List.nth result 1));;
+print_endline (string_of_int ((List.nth result 0)));;
+print_endline (string_of_int ((List.nth result 1)));;
