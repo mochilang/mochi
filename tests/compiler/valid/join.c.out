@@ -14,9 +14,9 @@ static int _count(list_int v) {
 	return v.len;
 }
 
-static int _avg(list_int v) {
+static double _avg(list_int v) {
 	if (v.len == 0) return 0;
-	int sum = 0;
+	double sum = 0;
 	for (int i = 0; i < v.len; i++) {
 		sum += v.data[i];
 	}
@@ -39,7 +39,12 @@ int main() {
 	printf("%s\n", "--- Orders with customer info ---");
 	for (int _t3 = 0; _t3 < result.len; _t3++) {
 		int entry = result.data[_t3];
-		printf("%s\n", "Order");
+		printf("%s ", "Order");
+		printf("%d ", entry);
+		printf("%s ", "by");
+		printf("%d ", entry);
+		printf("%s ", "- $");
+		printf("%d\n", entry);
 	}
 	return 0;
 }

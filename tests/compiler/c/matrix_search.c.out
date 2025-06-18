@@ -22,13 +22,31 @@ static int _count(list_int v) {
 	return v.len;
 }
 
-static int _avg(list_int v) {
+static double _avg(list_int v) {
 	if (v.len == 0) return 0;
-	int sum = 0;
+	double sum = 0;
 	for (int i = 0; i < v.len; i++) {
 		sum += v.data[i];
 	}
 	return sum / v.len;
+}
+
+static void _print_list_int(list_int v) {
+	printf("[");
+	for (int i = 0; i < v.len; i++) {
+		if (i > 0) printf(" ");
+		printf("%d", v.data[i]);
+	}
+	printf("]");
+}
+
+static void _print_list_list_int(list_list_int v) {
+	printf("[");
+	for (int i = 0; i < v.len; i++) {
+		if (i > 0) printf(" ");
+		_print_list_int(v.data[i]);
+	}
+	printf("]");
 }
 
 int searchMatrix(list_list_int matrix, int target){
