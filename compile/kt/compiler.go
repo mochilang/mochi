@@ -150,10 +150,24 @@ func (c *Compiler) compileReturn(stmt *parser.ReturnStmt) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	if len(t.Variants) > 0 {
-		return fmt.Errorf("union types not supported")
-	}
 	name := sanitizeName(t.Name)
+	if len(t.Variants) > 0 {
+		c.writeln(fmt.Sprintf("sealed interface %s", name))
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			fields := []string{}
+			for _, f := range v.Fields {
+				typ := ktType(c.resolveTypeRef(f.Type))
+				fields = append(fields, fmt.Sprintf("val %s: %s", sanitizeName(f.Name), typ))
+			}
+			if len(fields) == 0 {
+				c.writeln(fmt.Sprintf("data class %s() : %s", vname, name))
+			} else {
+				c.writeln(fmt.Sprintf("data class %s(%s) : %s", vname, joinArgs(fields), name))
+			}
+		}
+		return nil
+	}
 	fields := []string{}
 	for _, m := range t.Members {
 		if m.Field == nil {
@@ -321,6 +335,59 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	buf.WriteString(fmt.Sprintf("                res = res.map { %s -> %s }\n", varName, sel))
 	buf.WriteString("                res\n")
+	buf.WriteString("        }")
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var buf bytes.Buffer
+	buf.WriteString("run {\n")
+	buf.WriteString("                val _t = " + target + "\n")
+	buf.WriteString("                when {\n")
+	for i, cse := range m.Cases {
+		res, err := c.compileExpr(cse.Result)
+		if err != nil {
+			return "", err
+		}
+		if call, ok := callPattern(cse.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				buf.WriteString("                        _t is " + sanitizeName(call.Func) + " -> {\n")
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						field := sanitizeName(st.Order[idx])
+						buf.WriteString(fmt.Sprintf("                                val %s = _t.%s\n", sanitizeName(id), field))
+					}
+				}
+				buf.WriteString("                                " + res + "\n")
+				buf.WriteString("                        }\n")
+				continue
+			}
+		}
+		if ident, ok := identName(cse.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				buf.WriteString("                        _t is " + sanitizeName(ident) + " -> " + res + "\n")
+				continue
+			}
+		}
+		if isUnderscoreExpr(cse.Pattern) {
+			buf.WriteString("                        else -> " + res + "\n")
+			continue
+		}
+		pat, err := c.compileExpr(cse.Pattern)
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString("                        _t == " + pat + " -> " + res + "\n")
+		if i == len(m.Cases)-1 {
+			buf.WriteString("                        else -> null\n")
+		}
+	}
+	buf.WriteString("                }\n")
 	buf.WriteString("        }")
 	return buf.String(), nil
 }
@@ -512,6 +579,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, fmt.Sprintf("%s = %s", sanitizeName(f.Name), v))
 		}
 		return sanitizeName(p.Struct.Name) + "(" + joinArgs(args) + ")", nil
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Call != nil:
@@ -561,6 +630,15 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 			return types.BoolType{}
 		case "string":
 			return types.StringType{}
+		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(*t.Simple); ok {
+					return st
+				}
+				if ut, ok := c.env.GetUnion(*t.Simple); ok {
+					return ut
+				}
+			}
 		}
 	}
 	if t.Generic != nil {
@@ -588,6 +666,10 @@ func ktType(t types.Type) string {
 		return "List<" + ktType(tt.Elem) + ">"
 	case types.MapType:
 		return "MutableMap<" + ktType(tt.Key) + ", " + ktType(tt.Value) + ">"
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
 	default:
 		return "Any"
 	}

@@ -1,0 +1,22 @@
+sealed interface Tree
+data class Leaf() : Tree
+data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
+
+fun inorder(t: Tree) : List<Int> {
+        return run {
+                val _t = t
+                when {
+                        _t is Leaf -> listOf()
+                        _t is Node -> {
+                                val l = _t.left
+                                val v = _t.value
+                                val r = _t.right
+                                ((inorder(l) + listOf(v)) + inorder(r))
+                        }
+                }
+        }
+}
+
+fun main() {
+        println(inorder(Node(left = Leaf(), value = 1, right = Node(left = Leaf(), value = 2, right = Leaf()))))
+}
