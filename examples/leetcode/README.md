@@ -65,9 +65,10 @@ mochi run download.mochi
 - `make mochi` – download the latest Mochi binary into `./bin`
 - `make run ID=<n>` – run problem `n`
 - `make run-go ID=<n>` – execute the compiled Go solution for problem `n`
+- `make run-c ID=<n>` – execute the compiled C solution for problem `n`
 - `make run-cpp ID=<n>` – execute the compiled C++ solution for problem `n`
 - `make run-java ID=<n>` – execute the compiled Java solution for problem `n`
-- `make compile` – generate Go, Python, TypeScript and C++ files into `../leetcode-out`
+- `make compile` – generate Go, Python, TypeScript, C and C++ files into `../leetcode-out`
 - `make range FROM=1 TO=10 LANG=scala` – build problems in a range using the Scala backend
 - `make test` – run all tests
 - `make clean` – remove the downloaded binary
