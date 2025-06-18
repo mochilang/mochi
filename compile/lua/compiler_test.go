@@ -21,8 +21,8 @@ import (
 
 func TestLuaCompiler_LeetCodeExample1(t *testing.T) {
 	t.Skip("disabled in current environment")
-	if _, err := exec.LookPath("lua"); err != nil {
-		t.Skip("lua not installed")
+	if err := luacode.EnsureLua(); err != nil {
+		t.Skipf("lua not installed: %v", err)
 	}
 	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
@@ -55,8 +55,8 @@ func TestLuaCompiler_LeetCodeExample1(t *testing.T) {
 }
 
 func TestLuaCompiler_SubsetPrograms(t *testing.T) {
-	if _, err := exec.LookPath("lua"); err != nil {
-		t.Skip("lua not installed")
+	if err := luacode.EnsureLua(); err != nil {
+		t.Skipf("lua not installed: %v", err)
 	}
 	skip := map[string]bool{
 		"list_prepend.mochi":        true,
@@ -123,6 +123,9 @@ func TestLuaCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestLuaCompiler_GoldenOutput(t *testing.T) {
+	if err := luacode.EnsureLua(); err != nil {
+		t.Skipf("lua not installed: %v", err)
+	}
 	dirs := []string{
 		"tests/compiler/lua",
 	}
