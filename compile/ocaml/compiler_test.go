@@ -119,7 +119,7 @@ func TestOCamlCompiler_GoldenOutput(t *testing.T) {
 }
 
 func TestOCamlCompiler_LeetCodeExamples(t *testing.T) {
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 6; i++ {
 		runExample(t, i)
 	}
 }

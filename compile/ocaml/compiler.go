@@ -12,15 +12,18 @@ import (
 
 // Compiler translates a Mochi AST into OCaml source code (very limited subset).
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	tmp    int
-	vars   map[string]bool
+	buf      bytes.Buffer
+	indent   int
+	env      *types.Env
+	tmp      int
+	vars     map[string]bool
+	charVars map[string]int
 }
 
 // New creates a new OCaml compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env, vars: map[string]bool{}} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, vars: map[string]bool{}, charVars: map[string]int{}}
+}
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
@@ -130,6 +133,17 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 			c.vars = map[string]bool{}
 		}
 		c.vars[name] = true
+		if c.env != nil {
+			var t types.Type
+			if s.Var.Type != nil {
+				t = resolveTypeRef(s.Var.Type, c.env)
+			} else if isStringExpr(s.Var.Value, c.env) {
+				t = types.StringType{}
+			}
+			if t != nil {
+				c.env.SetVar(s.Var.Name, t, true)
+			}
+		}
 		if ex == "" {
 			c.writeln(fmt.Sprintf("let %s = ref %s;;", name, val))
 		} else {
@@ -141,10 +155,26 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 			return err
 		}
 		name := sanitizeName(s.Assign.Name)
-		if ex == "" {
-			c.writeln(fmt.Sprintf("%s := %s;;", name, val))
+		if len(s.Assign.Index) == 0 {
+			if ex == "" {
+				c.writeln(fmt.Sprintf("%s := %s;;", name, val))
+			} else {
+				c.writeln(fmt.Sprintf("%s := %s;", name, val))
+			}
 		} else {
-			c.writeln(fmt.Sprintf("%s := %s;", name, val))
+			idx, err := c.compileExpr(s.Assign.Index[0].Start)
+			if err != nil {
+				return err
+			}
+			tmp := fmt.Sprintf("tmp_%d", c.tmp)
+			c.tmp++
+			c.writeln(fmt.Sprintf("let %s = Array.of_list !%s in", tmp, name))
+			c.writeln(fmt.Sprintf("%s.(%s) <- %s;", tmp, idx, val))
+			if ex == "" {
+				c.writeln(fmt.Sprintf("%s := Array.to_list %s;;", name, tmp))
+			} else {
+				c.writeln(fmt.Sprintf("%s := Array.to_list %s;", name, tmp))
+			}
 		}
 	case s.While != nil:
 		return c.compileWhile(s.While, ex)
@@ -184,17 +214,34 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 			return err
 		}
 		iter := "List.iter"
+		var elem types.Type
 		if isStringExpr(f.Source, c.env) {
 			iter = "String.iter"
+			elem = types.StringType{}
+		}
+		origEnv := c.env
+		if elem != nil {
+			c.env = types.NewEnv(origEnv)
+			c.env.SetVar(f.Name, elem, false)
+			c.charVars[sanitizeName(f.Name)]++
 		}
 		c.writeln(fmt.Sprintf("%s (fun %s ->", iter, sanitizeName(f.Name)))
 		c.indent++
 		for _, st := range f.Body {
 			if err := c.compileStmt(st, ex); err != nil {
+				if elem != nil {
+					c.env = origEnv
+					if c.charVars[sanitizeName(f.Name)] > 0 {
+						c.charVars[sanitizeName(f.Name)]--
+					}
+				}
 				return err
 			}
 		}
 		c.indent--
+		if elem != nil {
+			c.env = origEnv
+		}
 		if ex == "" {
 			c.writeln(fmt.Sprintf(") %s;;", src))
 		} else {
@@ -326,12 +373,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			oper = "mod"
 		} else if oper == "+" {
 			// use list concatenation or string concat if operand is list or string
+			leftIsStr := isStringExpr(&parser.Expr{Binary: b}, c.env)
+			rightIsStr := isStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env)
 			if isListExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
 				oper = "@"
-			} else if isStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
+			} else if leftIsStr || rightIsStr {
 				oper = "^"
-				// convert char from String.get to string for concatenation
-				if strings.HasPrefix(r, "(String.get ") {
+				// convert char from String.get or loop variable to string for concatenation
+				if strings.HasPrefix(r, "(String.get ") || c.charVars[r] > 0 {
 					r = fmt.Sprintf("(String.make 1 %s)", r)
 				}
 			}
@@ -619,6 +668,28 @@ func isStringPrimary(p *parser.Primary, env *types.Env) bool {
 		}
 	}
 	return false
+}
+
+func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
+	if t == nil {
+		return types.IntType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		}
+	}
+	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+		return types.ListType{Elem: resolveTypeRef(t.Generic.Args[0], env)}
+	}
+	return types.AnyType{}
 }
 
 func sanitizeName(name string) string {
