@@ -404,8 +404,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				opName = "not="
 			}
 			expr := ""
-			if op == "+" && (strings.HasPrefix(l, "[") || strings.HasPrefix(r, "[")) {
-				expr = fmt.Sprintf("(vec (concat %s %s))", l, r)
+			if op == "+" {
+				if strings.HasPrefix(l, "[") || strings.HasPrefix(r, "[") {
+					expr = fmt.Sprintf("(vec (concat %s %s))", l, r)
+				} else if c.isStringExpr(l) || c.isStringExpr(r) {
+					expr = fmt.Sprintf("(str %s %s)", l, r)
+				} else {
+					expr = fmt.Sprintf("(+ %s %s)", l, r)
+				}
 			} else {
 				expr = fmt.Sprintf("(%s %s %s)", opName, l, r)
 			}
@@ -478,12 +484,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			continue
 		}
 		if op.Cast != nil {
-			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "float" {
-				expr = fmt.Sprintf("(double %s)", expr)
-			} else if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
-				expr = fmt.Sprintf("(int %s)", expr)
-			} else {
-				return "", fmt.Errorf("unsupported cast")
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				switch *op.Cast.Type.Simple {
+				case "float":
+					expr = fmt.Sprintf("(double %s)", expr)
+				case "int":
+					expr = fmt.Sprintf("(int %s)", expr)
+				default:
+					// ignore other casts as they have no runtime effect
+				}
 			}
 			continue
 		}
@@ -552,6 +561,42 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + name + " " + strings.Join(args, " ") + ")", nil
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) isStringExpr(expr string) bool {
+	expr = strings.TrimSpace(expr)
+	if len(expr) >= 2 && strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\"") {
+		return true
+	}
+	if strings.HasPrefix(expr, "(nth ") {
+		v := strings.Fields(expr[5:])
+		if len(v) > 0 {
+			if t, err := c.env.GetVar(v[0]); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	if strings.HasPrefix(expr, "(subs ") {
+		v := strings.Fields(expr[6:])
+		if len(v) > 0 {
+			if t, err := c.env.GetVar(v[0]); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	if strings.HasPrefix(expr, "(str ") {
+		return true
+	}
+	if t, err := c.env.GetVar(expr); err == nil {
+		if _, ok := t.(types.StringType); ok {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) writeln(s string) {
