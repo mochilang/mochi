@@ -4,11 +4,15 @@ SHELL := /bin/bash
 MOCHI_ROOT := $(abspath ../..)
 RUNNER := $(MOCHI_ROOT)/cmd/leetcode-runner
 
-.PHONY: run build range test clean help
+.PHONY: run build range test clean help run-ex
 
 run: ## Run a problem. Usage: make run ID=<n>
 @if [ -z "$(ID)" ]; then echo "❌ Usage: make run ID=<n>"; exit 1; fi
 @go run $(RUNNER) run $(ID)
+
+run-ex: ## Build and run problem in Elixir. Usage: make run-ex ID=<n>
+@if [ -z "$(ID)" ]; then echo "❌ Usage: make run-ex ID=<n>"; exit 1; fi
+@go run $(RUNNER) build --id $(ID) --lang ex --run
 
 build: ## Build and run one problem in language. Usage: make build ID=<n> LANG=go
 @if [ -z "$(ID)" ]; then echo "❌ Usage: make build ID=<n> LANG=<lang>"; exit 1; fi

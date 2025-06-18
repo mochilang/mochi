@@ -282,6 +282,14 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "ex":
+		if err := excode.EnsureElixir(); err != nil {
+			return fmt.Errorf("elixir not available: %v", err)
+		}
+		cmd := exec.Command("elixir", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
