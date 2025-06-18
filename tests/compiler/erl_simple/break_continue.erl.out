@@ -1,0 +1,74 @@
+#!/usr/bin/env escript
+-module(main).
+-export([main/1]).
+
+main(_) ->
+	numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9],
+	mochi_for(numbers, fun(n) ->
+		if ((n % 2) == 0) ->
+			mochi_continue()
+		end,
+		if (n > 7) ->
+			mochi_break()
+		end,
+		mochi_print(["odd number:", n])
+	end).
+
+mochi_print(Args) ->
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
+
+mochi_format(X) when is_integer(X) -> integer_to_list(X);
+mochi_format(X) when is_float(X) -> float_to_list(X);
+mochi_format(X) when is_list(X) -> X;
+mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
+
+mochi_count(X) when is_list(X) -> length(X);
+mochi_count(X) when is_map(X) -> maps:size(X);
+mochi_count(X) when is_binary(X) -> byte_size(X);
+mochi_count(_) -> erlang:error(badarg).
+
+mochi_input() ->
+	case io:get_line("") of
+		eof -> "";
+		Line -> string:trim(Line)
+	end.
+
+mochi_avg([]) -> 0;
+mochi_avg(L) when is_list(L) ->
+	Sum = lists:foldl(fun(X, Acc) ->
+		case X of
+			I when is_integer(I) -> Acc + I;
+			F when is_float(F) -> Acc + F;
+			_ -> erlang:error(badarg) end
+		end, 0, L),
+		Sum / length(L)
+	.
+mochi_avg(_) -> erlang:error(badarg).
+
+mochi_break() -> throw(break).
+mochi_continue() -> throw(continue).
+
+mochi_for(List, Fun) ->
+	try lists:foreach(fun(Elem) ->
+		try Fun(Elem) catch
+			throw:continue -> ok;
+			throw:break -> throw(break)
+		end
+	end, List) catch
+		throw:break -> ok
+	end.
+
+mochi_while(Cond, Body) ->
+	try mochi_while_loop(Cond, Body) catch throw:break -> ok end.
+
+mochi_while_loop(Cond, Body) ->
+	case Cond() of
+		true ->
+			try Body() catch
+				throw:continue -> ok;
+				throw:break -> throw(break)
+			end,
+			mochi_while_loop(Cond, Body);
+		_ -> ok
+	end.

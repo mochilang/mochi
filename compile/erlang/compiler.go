@@ -163,6 +163,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.buf.WriteString(expr)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Break != nil:
+		c.buf.WriteString("mochi_break()")
+		return nil
+	case s.Continue != nil:
+		c.buf.WriteString("mochi_continue()")
+		return nil
 	case s.While != nil:
 		return c.compileWhile(s.While)
 	case s.If != nil:
@@ -225,14 +231,14 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 		list = src
 	}
-	c.buf.WriteString(fmt.Sprintf("lists:foreach(fun(%s) ->\n", stmt.Name))
+	c.buf.WriteString(fmt.Sprintf("mochi_for(%s, fun(%s) ->\n", list, stmt.Name))
 	c.indent++
 	if err := c.compileBlock(stmt.Body, false, nil); err != nil {
 		return err
 	}
 	c.indent--
 	c.writeIndent()
-	c.buf.WriteString(fmt.Sprintf("end, %s)", list))
+	c.buf.WriteString("end)")
 	return nil
 }
 
@@ -680,14 +686,48 @@ func (c *Compiler) emitRuntime() {
 	}
 
 	c.writeln("")
+	c.writeln("mochi_break() -> throw(break).")
+	c.writeln("mochi_continue() -> throw(continue).")
+
+	c.writeln("")
+	c.writeln("mochi_for(List, Fun) ->")
+	c.indent++
+	c.writeln("try lists:foreach(fun(Elem) ->")
+	c.indent++
+	c.writeln("try Fun(Elem) catch")
+	c.indent++
+	c.writeln("throw:continue -> ok;")
+	c.writeln("throw:break -> throw(break)")
+	c.indent--
+	c.writeln("end")
+	c.indent--
+	c.writeln("end, List) catch")
+	c.indent++
+	c.writeln("throw:break -> ok")
+	c.indent--
+	c.writeln("end.")
+	c.indent--
+
+	c.writeln("")
 	c.writeln("mochi_while(Cond, Body) ->")
+	c.indent++
+	c.writeln("try mochi_while_loop(Cond, Body) catch throw:break -> ok end.")
+	c.indent--
+
+	c.writeln("")
+	c.writeln("mochi_while_loop(Cond, Body) ->")
 	c.indent++
 	c.writeln("case Cond() of")
 	c.indent++
 	c.writeln("true ->")
 	c.indent++
-	c.writeln("Body(),")
-	c.writeln("mochi_while(Cond, Body);")
+	c.writeln("try Body() catch")
+	c.indent++
+	c.writeln("throw:continue -> ok;")
+	c.writeln("throw:break -> throw(break)")
+	c.indent--
+	c.writeln("end,")
+	c.writeln("mochi_while_loop(Cond, Body);")
 	c.indent--
 	c.writeln("_ -> ok")
 	c.indent--
