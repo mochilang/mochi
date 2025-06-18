@@ -616,18 +616,58 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if isStr {
-				if v, ok := intLiteral(op.Index.Start); ok && v >= 0 {
-					expr = fmt.Sprintf("%s.[%d]", expr, v)
-				} else {
-					idxExpr := fmt.Sprintf("(if %s < 0 then %s.Length + %s else %s)", idx, expr, idx, idx)
-					expr = fmt.Sprintf("%s.[%s]", expr, idxExpr)
+			if op.Index.Colon != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					start, err = c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
 				}
-				isStr = true
+				end := fmt.Sprintf("%s.Length", expr)
+				if op.Index.End != nil {
+					end, err = c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+				}
+				expr = fmt.Sprintf("%s.[%s .. (%s - 1)]", expr, start, end)
+				isStr = isStr
 			} else {
-				expr = fmt.Sprintf("%s.[%s]", expr, idx)
-				isStr = false
+				if isStr {
+					if v, ok := intLiteral(op.Index.Start); ok && v >= 0 {
+						expr = fmt.Sprintf("%s.[%d]", expr, v)
+					} else {
+						idxExpr := fmt.Sprintf("(if %s < 0 then %s.Length + %s else %s)", idx, expr, idx, idx)
+						expr = fmt.Sprintf("%s.[%s]", expr, idxExpr)
+					}
+					isStr = true
+				} else {
+					expr = fmt.Sprintf("%s.[%s]", expr, idx)
+					isStr = false
+				}
 			}
+			continue
+		}
+		if op.Cast != nil {
+			typ := op.Cast.Type
+			if typ.Simple != nil {
+				switch *typ.Simple {
+				case "int":
+					expr = fmt.Sprintf("(int %s)", expr)
+				case "float":
+					expr = fmt.Sprintf("(float %s)", expr)
+				case "bool":
+					expr = fmt.Sprintf("(bool %s)", expr)
+				case "string":
+					expr = fmt.Sprintf("(string %s)", expr)
+				default:
+					expr = fmt.Sprintf("(%s : %s)", expr, fsType(typ))
+				}
+			} else {
+				expr = fmt.Sprintf("(%s : %s)", expr, fsType(typ))
+			}
+			isStr = typ.Simple != nil && *typ.Simple == "string"
 			continue
 		}
 	}
@@ -813,6 +853,10 @@ func sanitizeName(name string) string {
 	}
 	s := b.String()
 	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
+		s = "_" + s
+	}
+	switch s {
+	case "end":
 		s = "_" + s
 	}
 	return s
