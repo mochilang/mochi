@@ -617,21 +617,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(expr)
 		return nil
-       case s.Return != nil:
-               retT := c.returnType
-               var (
-                       expr string
-                       err  error
-               )
-               if retT != nil && (isEmptyListLiteral(s.Return.Value) || isEmptyMapLiteral(s.Return.Value)) {
-                       expr, err = c.compileExprHint(s.Return.Value, retT)
-               } else {
-                       expr, err = c.compileExpr(s.Return.Value)
-               }
-               if err != nil {
-                       return err
-               }
-               exprT := c.inferExprTypeHint(s.Return.Value, retT)
+	case s.Return != nil:
+		retT := c.returnType
+		var (
+			expr string
+			err  error
+		)
+		if retT != nil && (isEmptyListLiteral(s.Return.Value) || isEmptyMapLiteral(s.Return.Value)) {
+			expr, err = c.compileExprHint(s.Return.Value, retT)
+		} else {
+			expr, err = c.compileExpr(s.Return.Value)
+		}
+		if err != nil {
+			return err
+		}
+		exprT := c.inferExprTypeHint(s.Return.Value, retT)
 		if retT != nil {
 			retGo := goType(retT)
 			exprGo := goType(exprT)
@@ -3035,23 +3035,23 @@ func literalValue(l *parser.Literal) any {
 }
 
 func isEmptyListLiteral(e *parser.Expr) bool {
-       if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
-               return false
-       }
-       if ll := e.Binary.Left.Value.Target.List; ll != nil {
-               return len(ll.Elems) == 0
-       }
-       return false
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ll := e.Binary.Left.Value.Target.List; ll != nil {
+		return len(ll.Elems) == 0
+	}
+	return false
 }
 
 func isEmptyMapLiteral(e *parser.Expr) bool {
-       if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
-               return false
-       }
-       if ml := e.Binary.Left.Value.Target.Map; ml != nil {
-               return len(ml.Items) == 0
-       }
-       return false
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+		return len(ml.Items) == 0
+	}
+	return false
 }
 
 func (c *Compiler) callKey(call *parser.CallExpr) string {
@@ -3227,6 +3227,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return "_input()", nil
 	case "count":
 		c.imports["mochi/runtime/data"] = true
+		c.imports["reflect"] = true
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "avg":
