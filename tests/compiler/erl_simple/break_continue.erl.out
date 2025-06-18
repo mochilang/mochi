@@ -1,17 +1,18 @@
 #!/usr/bin/env escript
 -module(main).
--export([main/1, prepend/2]).
-
-prepend(level, result) ->
-	try
-		result = lists:append([level], result),
-		throw({return, result})
-	catch
-		throw:{return, V} -> V
-	end.
+-export([main/1]).
 
 main(_) ->
-	mochi_print([prepend([1, 2], [[3], [4]])]).
+	numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9],
+	mochi_foreach(fun(n) ->
+		if ((n % 2) == 0) ->
+			throw(mochi_continue)
+		end,
+		if (n > 7) ->
+			throw(mochi_break)
+		end,
+		mochi_print(["odd number:", n])
+	end, numbers).
 
 mochi_print(Args) ->
 	Strs = [ mochi_format(A) || A <- Args ],

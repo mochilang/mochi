@@ -165,6 +165,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Break != nil:
+		c.buf.WriteString("throw(mochi_break)")
+		return nil
+	case s.Continue != nil:
+		c.buf.WriteString("throw(mochi_continue)")
+		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
 	default:
@@ -225,7 +231,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 		list = src
 	}
-	c.buf.WriteString(fmt.Sprintf("lists:foreach(fun(%s) ->\n", stmt.Name))
+	c.buf.WriteString(fmt.Sprintf("mochi_foreach(fun(%s) ->\n", stmt.Name))
 	c.indent++
 	if err := c.compileBlock(stmt.Body, false, nil); err != nil {
 		return err
@@ -672,6 +678,25 @@ func (c *Compiler) emitRuntime() {
 	c.indent--
 	c.writeln("mochi_avg(_) -> erlang:error(badarg).")
 
+	c.writeln("")
+	c.writeln("mochi_foreach(F, L) ->")
+	c.indent++
+	c.writeln("try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.")
+	c.indent--
+
+	c.writeln("")
+	c.writeln("mochi_foreach_loop(_, []) -> ok;")
+	c.writeln("mochi_foreach_loop(F, [H|T]) ->")
+	c.indent++
+	c.writeln("try F(H) catch")
+	c.indent++
+	c.writeln("throw:mochi_continue -> ok;")
+	c.writeln("throw:mochi_break -> throw(mochi_break)")
+	c.indent--
+	c.writeln("end,")
+	c.writeln("mochi_foreach_loop(F, T).")
+	c.indent--
+
 	if c.needGet {
 		c.writeln("")
 		c.writeln("mochi_get(M, K) when is_list(M), is_integer(K) -> lists:nth(K + 1, M);")
@@ -686,7 +711,12 @@ func (c *Compiler) emitRuntime() {
 	c.indent++
 	c.writeln("true ->")
 	c.indent++
-	c.writeln("Body(),")
+	c.writeln("try Body() catch")
+	c.indent++
+	c.writeln("throw:mochi_continue -> ok;")
+	c.writeln("throw:mochi_break -> ok")
+	c.indent--
+	c.writeln("end,")
 	c.writeln("mochi_while(Cond, Body);")
 	c.indent--
 	c.writeln("_ -> ok")
