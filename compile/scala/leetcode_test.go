@@ -117,6 +117,16 @@ func TestLeetCode5(t *testing.T) {
 	}
 }
 
+func TestLeetCode6(t *testing.T) {
+	if err := scalacode.EnsureScala(); err != nil {
+		t.Skipf("scala not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "6"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
+
 func findRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {

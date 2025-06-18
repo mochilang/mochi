@@ -181,8 +181,12 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 	}
 	if typ == "" && st.Value != nil && emptyListExpr(st.Value) {
-		if lt, ok := c.retType.(types.ListType); ok {
-			typ = ": " + scalaType(lt)
+		if c.env != nil {
+			if t, err := c.env.GetVar(st.Name); err == nil {
+				if lt, ok := t.(types.ListType); ok {
+					typ = ": " + scalaType(lt)
+				}
+			}
 		}
 	}
 	c.writeln(fmt.Sprintf("var %s%s%s", sanitizeName(st.Name), typ, value))
@@ -479,7 +483,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
-		return "List(" + strings.Join(elems, ", ") + ")", nil
+		return "scala.collection.mutable.ArrayBuffer(" + strings.Join(elems, ", ") + ")", nil
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -655,7 +659,7 @@ func scalaType(t types.Type) string {
 	case types.StringType:
 		return "String"
 	case types.ListType:
-		return "List[" + scalaType(tt.Elem) + "]"
+		return "scala.collection.mutable.ArrayBuffer[" + scalaType(tt.Elem) + "]"
 	case types.MapType:
 		return "scala.collection.mutable.Map[" + scalaType(tt.Key) + ", " + scalaType(tt.Value) + "]"
 	case types.FuncType:

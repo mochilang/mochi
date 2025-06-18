@@ -3,7 +3,7 @@ fun convert(s: string, numRows: int): string {
     return s
   }
 
-  var rows = []
+  var rows: list<string> = []
   var i = 0
   while i < numRows {
     rows = rows + [""]

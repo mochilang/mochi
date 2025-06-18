@@ -31,13 +31,7 @@ object Main {
 				end = (i + ((l / 2)))
 			}
 		}
-		var res = ""
-		var k = start
-		while ((k <= end)) {
-			res = (res + s(k))
-			k = (k + 1)
-		}
-		return res
+		return s.slice(start, (end + 1))
 	}
 	
 	def main(args: Array[String]): Unit = {
