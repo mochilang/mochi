@@ -1,0 +1,101 @@
+# Ruby Backend
+
+The Ruby backend translates Mochi programs into plain Ruby source. It is useful for running Mochi code in environments where Ruby is available or for experimenting with the language on other platforms.
+
+## Files
+
+- `compiler.go` – walks the AST and emits Ruby code
+- `compiler_test.go` – golden tests that compile and execute the generated Ruby
+- `helpers.go` – utilities for indentation and name sanitisation
+- `tools.go` – helper to locate or install the `ruby` binary
+
+## Built‑in functions
+
+When compiling call expressions the generator maps several Mochi built‑ins to their Ruby equivalents:
+
+```go
+switch expr {
+case "print":
+    expr = fmt.Sprintf("puts([%s].join(\" \"))", argStr)
+case "len", "count":
+    expr = fmt.Sprintf("(%s).length", args[0])
+case "str":
+    expr = fmt.Sprintf("(%s).to_s", args[0])
+case "avg":
+    expr = fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", args[0])
+case "input":
+    expr = "STDIN.gets.to_s.strip"
+}
+```
+【F:compile/rb/compiler.go†L503-L526】
+
+## Query expressions
+
+`compileQueryExpr` handles simple dataset queries including filtering, sorting and pagination. More advanced clauses and cross joins are not yet implemented:
+
+```go
+if len(q.Joins) > 0 || q.Group != nil {
+    return "", fmt.Errorf("advanced query clauses not supported")
+}
+...
+expr = fmt.Sprintf("(%s).map { |%s| %s }", expr, iter, sel)
+```
+【F:compile/rb/compiler.go†L336-L382】
+
+## Pattern matching
+
+Match expressions are translated using a temporary variable and a chain of Ruby `if`/`elsif` checks:
+
+```go
+b.WriteString(fmt.Sprintf("\t%s = %s\n", tmp, target))
+...
+b.WriteString("\telse\n\t\tnil\n\tend\nend)")
+```
+【F:compile/rb/compiler.go†L708-L768】
+
+When all map keys are identifiers the backend emits `OpenStruct` objects and inserts the required `require 'ostruct'` header:
+
+```go
+if c.useOpenStruct {
+    c.writeln("require 'ostruct'")
+    c.writeln("")
+}
+```
+【F:compile/rb/compiler.go†L56-L58】
+
+```go
+if identOnly {
+    c.useOpenStruct = true
+    return "OpenStruct.new(" + strings.Join(items, ", ") + ")", nil
+}
+```
+【F:compile/rb/compiler.go†L598-L608】
+
+## Building
+
+Use the `mochi` CLI to compile a program to Ruby:
+
+```bash
+mochi build --target rb main.mochi -o main.rb
+ruby main.rb
+```
+
+`tools.go` provides `EnsureRuby` which attempts to install Ruby on Linux or macOS if it is missing:
+
+```go
+// EnsureRuby verifies that the ruby binary is installed. If missing, it
+// attempts a best-effort installation using apt-get on Linux or Homebrew on
+// macOS.
+```
+【F:compile/rb/tools.go†L10-L46】
+
+## Tests
+
+The golden tests exercise the backend by compiling example programs in `tests/compiler/rb` and running them with Ruby:
+
+```bash
+go test ./compile/rb -tags slow
+```
+
+The first test is skipped when Ruby is not available and the suite falls back to comparing generated code.
+
