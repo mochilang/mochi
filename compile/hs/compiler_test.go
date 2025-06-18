@@ -159,5 +159,7 @@ func TestHSCompiler_LeetCodeExamples(t *testing.T) {
 	if err := hscode.EnsureHaskell(); err != nil {
 		t.Skipf("haskell not installed: %v", err)
 	}
-	runExample(t, 1)
+	for i := 1; i <= 2; i++ {
+		runExample(t, i)
+	}
 }
