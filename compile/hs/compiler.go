@@ -147,7 +147,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.writeln(name + " " + strings.Join(params, " ") + " = fromMaybe (" + c.defaultReturn(fun.Body, ft.Return) + ") $")
 	bodyStmts := fun.Body
 	c.indent++
-	expr, err := c.compileStmtExpr(bodyStmts)
+	expr, err := c.compileStmtExpr(bodyStmts, true)
 	if err != nil {
 		return err
 	}
@@ -184,6 +184,12 @@ func zeroValue(t types.Type) string {
 }
 
 func (c *Compiler) defaultReturn(stmts []*parser.Statement, retType types.Type) string {
+	if len(stmts) == 1 && stmts[0].Return != nil {
+		v, err := c.compileExpr(stmts[0].Return.Value)
+		if err == nil {
+			return v
+		}
+	}
 	return zeroValue(retType)
 }
 
@@ -201,8 +207,11 @@ func (c *Compiler) collectLets(stmts []*parser.Statement) []string {
 }
 
 // compileStmtExpr compiles statements to a Maybe-returning expression.
-func (c *Compiler) compileStmtExpr(stmts []*parser.Statement) (string, error) {
+func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string, error) {
 	if len(stmts) == 0 {
+		return "Nothing", nil
+	}
+	if top && len(stmts) == 1 && stmts[0].Return != nil {
 		return "Nothing", nil
 	}
 	expr := "Nothing"
@@ -222,7 +231,7 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement) (string, error) {
 			}
 			expr = chainMaybe(ifExpr, expr)
 		case s.For != nil:
-			bodyExpr, err := c.compileStmtExpr(s.For.Body)
+			bodyExpr, err := c.compileStmtExpr(s.For.Body, false)
 			if err != nil {
 				return "", err
 			}
@@ -290,7 +299,7 @@ func chainMaybe(a, b string) string {
 }
 
 func (c *Compiler) compileIfExpr(stmt *parser.IfStmt) (string, error) {
-	thenExpr, err := c.compileStmtExpr(stmt.Then)
+	thenExpr, err := c.compileStmtExpr(stmt.Then, false)
 	if err != nil {
 		return "", err
 	}
@@ -301,7 +310,7 @@ func (c *Compiler) compileIfExpr(stmt *parser.IfStmt) (string, error) {
 			return "", err
 		}
 	} else {
-		elseExpr, err = c.compileStmtExpr(stmt.Else)
+		elseExpr, err = c.compileStmtExpr(stmt.Else, false)
 		if err != nil {
 			return "", err
 		}
