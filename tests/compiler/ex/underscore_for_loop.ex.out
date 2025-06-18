@@ -12,7 +12,7 @@ defmodule Main do
 		for _ <- String.graphemes("ab") do
 			c = (c + 1)
 		end
-		m = %{"x" => 1, "y" => 2}
+		m = %{x: 1, y: 2}
 		_ = m
 		for _ <- m do
 			c = (c + 1)
@@ -21,3 +21,4 @@ defmodule Main do
 	end
 	end
 Main.main()
+

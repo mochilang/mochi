@@ -444,7 +444,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			argStr := strings.Join(args, ", ")
 			switch res {
 			case "print":
-				res = fmt.Sprintf("IO.puts(%s)", argStr)
+				if len(args) == 1 {
+					res = fmt.Sprintf("IO.puts(%s)", argStr)
+				} else {
+					res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr)
+				}
 			case "len":
 				res = fmt.Sprintf("length(%s)", argStr)
 			case "count":
@@ -458,6 +462,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			default:
 				res = fmt.Sprintf("%s(%s)", res, argStr)
 			}
+		} else if op.Cast != nil {
+			// Casts are ignored in the Elixir backend as types do not affect runtime.
+			// Simply continue with the current expression value.
+			continue
 		}
 	}
 	return res, nil
@@ -468,6 +476,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return strconv.Itoa(*p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			return strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64), nil
 		}
 		if p.Lit.Str != nil {
 			return strconv.Quote(*p.Lit.Str), nil
@@ -491,6 +502,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
+			if s, ok := simpleAtomKey(it.Key); ok {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				items[i] = fmt.Sprintf("%s: %s", s, v)
+				continue
+			}
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
@@ -532,7 +551,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		argStr := strings.Join(args, ", ")
 		switch p.Call.Func {
 		case "print":
-			return fmt.Sprintf("IO.puts(%s)", argStr), nil
+			if len(args) == 1 {
+				return fmt.Sprintf("IO.puts(%s)", argStr), nil
+			}
+			return fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr), nil
 		case "len":
 			return fmt.Sprintf("length(%s)", argStr), nil
 		case "count":
@@ -565,4 +587,29 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("fn %s -> %s end", strings.Join(params, ", "), expr), nil
 	}
 	return "", fmt.Errorf("block function expressions not supported")
+}
+
+// simpleAtomKey checks if e is a bare identifier or string literal and returns
+// its value for use as a map key. This mirrors simpleStringKey in the Go
+// backend so that expressions like `{n: 1}` produce `%{n: 1}` rather than using
+// the variable value as the key.
+func simpleAtomKey(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
 }
