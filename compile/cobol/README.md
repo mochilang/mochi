@@ -68,6 +68,14 @@ cobc -free -x two-sum.cob -o two-sum
 ./two-sum    # prints "0" and then "1"
 ```
 
+The compiler tests include a helper that compiles and executes the first two
+LeetCode examples using the COBOL backend. Run the tests with the `slow` build
+tag to try it out:
+
+```bash
+go test ./compile/cobol -tags slow -run LeetCode
+```
+
 `EnsureCOBOL` attempts to install the GNU COBOL toolchain automatically when
 running tests, but you may need to install it manually before using `cobc`
 directly.

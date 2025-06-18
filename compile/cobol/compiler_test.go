@@ -179,7 +179,6 @@ func TestCobolCompiler_GoldenOutput(t *testing.T) {
 // programs from the examples directory. The helper runs all Mochi files under
 // examples/leetcode/<id> using the COBOL backend.
 func TestCobolCompiler_LeetCodeExamples(t *testing.T) {
-	t.Skip("disabled in current environment")
 	if err := cobolcode.EnsureCOBOL(); err != nil {
 		t.Skipf("cobol not installed: %v", err)
 	}
