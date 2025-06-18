@@ -50,6 +50,7 @@ type Compiler struct {
 	needsStr               bool
 	needsInput             bool
 	needsIndexString       bool
+	needsStrLen            bool
 	needsSliceListInt      bool
 	needsListListInt       bool
 	needsConcatListListInt bool
@@ -139,7 +140,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	if c.needsInput || c.needsIndexString {
+	if c.needsInput || c.needsIndexString || c.needsStrLen {
 		c.writeln("#include <string.h>")
 	}
 	c.writeln("")
@@ -698,7 +699,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return name
 	case p.Call != nil:
 		if p.Call.Func == "len" {
+			isStr := isStringArg(p.Call.Args[0], c.env)
 			arg := c.compileExpr(p.Call.Args[0])
+			if isStr {
+				c.needsStrLen = true
+				return fmt.Sprintf("strlen(%s)", arg)
+			}
 			return fmt.Sprintf("%s.len", arg)
 		} else if p.Call.Func == "print" {
 			for i, a := range p.Call.Args {
