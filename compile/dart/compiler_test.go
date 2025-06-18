@@ -17,38 +17,12 @@ import (
 	"mochi/types"
 )
 
-func TestDartCompiler_LeetCodeExample1(t *testing.T) {
+func TestDartCompiler_LeetCodeExamples(t *testing.T) {
 	if err := dartcode.EnsureDart(); err != nil {
 		t.Skipf("dart not installed: %v", err)
 	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
-	}
-	c := dartcode.New(env)
-	code, err := c.Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-	dir := t.TempDir()
-	file := filepath.Join(dir, "main.dart")
-	if err := os.WriteFile(file, code, 0644); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
-	cmd := exec.Command("dart", file)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("dart run error: %v\n%s", err, out)
-	}
-	got := strings.ReplaceAll(string(out), "\r\n", "\n")
-	if strings.TrimSpace(got) != "0\n1" {
-		t.Fatalf("unexpected output: %q", got)
-	}
+	runLeetExample(t, 1, "0\n1")
+	runLeetExample(t, 2, "")
 }
 
 func TestDartCompiler_SubsetPrograms(t *testing.T) {
@@ -177,6 +151,50 @@ func runDartGolden(t *testing.T, src, goldenExt string) {
 	want = bytes.TrimSpace(want)
 	if !bytes.Equal(got, want) {
 		t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name+goldenExt, got, want)
+	}
+}
+
+// runLeetExample compiles the Mochi LeetCode solution for the given ID and runs
+// the generated Dart code. If want is non-empty, the program output must match.
+func runLeetExample(t *testing.T, id int, want string) {
+	t.Helper()
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil || len(files) == 0 {
+		t.Fatalf("no source for problem %d", id)
+	}
+	src := files[0]
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	code, err := dartcode.New(env).Compile(prog)
+	if err != nil {
+		t.Fatalf("compile error: %v", err)
+	}
+	tmp := t.TempDir()
+	file := filepath.Join(tmp, "main.dart")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	cmd := exec.Command("dart", file)
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		cmd.Stdin = bytes.NewReader(data)
+	}
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("dart run error: %v\n%s", err, out)
+	}
+	if want == "" {
+		return
+	}
+	got := strings.ReplaceAll(string(out), "\r\n", "\n")
+	if strings.TrimSpace(got) != want {
+		t.Fatalf("unexpected output\nwant:\n%s\n got:\n%s", want, got)
 	}
 }
 
