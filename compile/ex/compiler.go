@@ -511,6 +511,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i] = fmt.Sprintf("%s: %s", f.Name, v)
 		}
 		return "%{" + strings.Join(parts, ", ") + "}", nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
 		args := []string{}
 		for _, a := range p.Call.Args {
@@ -541,4 +543,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileQueryExpr(p.Query)
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = p.Name
+	}
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("fn %s -> %s end", strings.Join(params, ", "), expr), nil
+	}
+	return "", fmt.Errorf("block function expressions not supported")
 }
