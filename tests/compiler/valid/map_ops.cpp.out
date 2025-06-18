@@ -1,0 +1,13 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	auto m;
+	m[1] = 10;
+	m[2] = 20;
+	if (1 in m) {
+		std::cout << m[1] << std::endl;
+	}
+	std::cout << m[2] << std::endl;
+	return 0;
+}

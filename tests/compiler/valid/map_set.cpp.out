@@ -1,0 +1,9 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	auto scores;
+	scores["b"] = 2;
+	std::cout << scores["b"] << std::endl;
+	return 0;
+}
