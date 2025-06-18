@@ -34,6 +34,6 @@ void main() {
 })();
 	print("--- Top products (excluding most expensive) ---");
 	for (var item in expensive) {
-		print([item.name.toString(), "costs $".toString(), item.price.toString()].join(' '));
+		print([item.name.toString(), "costs \$".toString(), item.price.toString()].join(' '));
 	}
 }

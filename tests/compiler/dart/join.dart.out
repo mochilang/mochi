@@ -35,6 +35,6 @@ void main() {
 })();
 	print("--- Orders with customer info ---");
 	for (var entry in result) {
-		print(["Order".toString(), entry.orderId.toString(), "by".toString(), entry.customerName.toString(), "- $".toString(), entry.total.toString()].join(' '));
+		print(["Order".toString(), entry.orderId.toString(), "by".toString(), entry.customerName.toString(), "- \$".toString(), entry.total.toString()].join(' '));
 	}
 }

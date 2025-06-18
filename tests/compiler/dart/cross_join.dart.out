@@ -33,7 +33,6 @@ void main() {
 })();
 	print("--- Cross Join: All order-customer pairs ---");
 	for (var entry in result) {
-		print(["Order".toString(), entry.orderId.toString(), "(customerId:".toString(), entry.orderCustomerId.toString(), ", total: $".toString(), entry.orderTotal.toString(), ") paired with".toString(), entry.pairedCustomerName.toString()].join(' '));
+		print(["Order".toString(), entry.orderId.toString(), "(customerId:".toString(), entry.orderCustomerId.toString(), ", total: \$".toString(), entry.orderTotal.toString(), ") paired with".toString(), entry.pairedCustomerName.toString()].join(' '));
 	}
 }
-

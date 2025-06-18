@@ -1,4 +1,4 @@
-List<int> searchMatrix(matrix, target) {
+dynamic searchMatrix(matrix, target) {
 	var m = matrix.length;
 	if ((m == 0)) {
 		return false;
@@ -7,8 +7,8 @@ List<int> searchMatrix(matrix, target) {
 	var left = 0;
 	var right = ((m * n) - 1);
 	while ((left <= right)) {
-		var mid = ((left + ((right - left))) / 2);
-		var row = (mid / n);
+		var mid = ((left + ((right - left))) ~/ 2);
+		var row = (mid ~/ n);
 		var col = (mid % n);
 		var value = matrix[row][col];
 		if ((value == target)) {

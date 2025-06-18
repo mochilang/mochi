@@ -1,0 +1,7 @@
+dynamic remove(nums, i) {
+	return (nums[0] + nums[(i + 1)]);
+}
+
+void main() {
+	print(remove([1, 2, 3, 4], 1));
+}

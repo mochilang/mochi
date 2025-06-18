@@ -7,7 +7,7 @@ void main() {
 	for (var n in nums) {
 		for (var l in letters) {
 			for (var b in bools) {
-				_res.add({n: n, l: l, b: b});
+				_res.add({"n": n, "l": l, "b": b});
 			}
 		}
 	}
