@@ -17,22 +17,12 @@ import (
 	"mochi/types"
 )
 
-// TestScalaCompiler_LeetCodeExample1 compiles the LeetCode two-sum example
-// and verifies the generated Scala program runs as expected.
-func TestScalaCompiler_LeetCodeExample1(t *testing.T) {
-	runLeetExample(t, 1)
-}
-
-// TestScalaCompiler_LeetCodeExample2 compiles the add-two-numbers example and
-// verifies the generated Scala program runs without errors.
-func TestScalaCompiler_LeetCodeExample2(t *testing.T) {
-	runLeetExample(t, 2)
-}
-
-// TestScalaCompiler_LeetCodeExample3 compiles the longest-substring example
-// and ensures the generated Scala code runs correctly.
-func TestScalaCompiler_LeetCodeExample3(t *testing.T) {
-	runLeetExample(t, 3)
+// TestScalaCompiler_LeetCodeExamples compiles and runs the first five LeetCode
+// examples using the Scala backend.
+func TestScalaCompiler_LeetCodeExamples(t *testing.T) {
+	for i := 1; i <= 5; i++ {
+		runLeetExample(t, i)
+	}
 }
 
 func TestScalaCompiler_SubsetPrograms(t *testing.T) {
