@@ -1,0 +1,10 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'mochi'!
+id: x
+	^ x
+!
+
+!!
+Transcript show: (Main id: (123)) printString; cr
+
