@@ -48,5 +48,9 @@ func sanitizeName(name string) string {
 func (c *Compiler) newVar() string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
+	if c.tempVars == nil {
+		c.tempVars = make(map[string]bool)
+	}
+	c.tempVars[name] = true
 	return name
 }

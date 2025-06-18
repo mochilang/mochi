@@ -16,14 +16,18 @@ type Compiler struct {
 	indent       int
 	env          *types.Env
 	tempVarCount int
+	tempVars     map[string]bool
 }
 
 // New creates a new Pascal compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, tempVars: make(map[string]bool)}
+}
 
 // Compile returns Pascal source implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.tempVars = make(map[string]bool)
 	c.writeln("program main;")
 	c.writeln("{$mode objfpc}")
 	c.writeln("uses SysUtils;")
@@ -44,6 +48,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Collect global vars.
 	vars := map[string]string{}
 	collectVars(prog.Statements, c.env, vars)
+	for n := range c.tempVars {
+		vars[n] = "integer"
+	}
 	if len(vars) > 0 {
 		c.writeln("var")
 		c.indent++
@@ -161,13 +168,14 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	idx := c.newVar()
-	c.writeln(fmt.Sprintf("for %s := 0 to Length(%s) - 1 do", idx, src))
+	loopVar := name
+	if f.Name == "_" {
+		loopVar = c.newVar()
+	}
+	c.writeln(fmt.Sprintf("for %s in %s do", loopVar, src))
 	c.writeln("begin")
 	c.indent++
-	if f.Name != "_" {
-		c.writeln(fmt.Sprintf("%s := %s[%s];", name, src, idx))
-	}
+	// value is assigned automatically in for..in loop
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
@@ -244,6 +252,10 @@ func (c *Compiler) mustExpr(e *parser.Expr) string {
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
+	// Use a fresh temp var set for each function
+	prevTemps := c.tempVars
+	c.tempVars = make(map[string]bool)
+
 	name := sanitizeName(fun.Name)
 	params := make([]string, len(fun.Params))
 	for i, p := range fun.Params {
@@ -255,6 +267,10 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 
 	vars := map[string]string{}
 	collectVars(fun.Body, c.env, vars)
+	// include generated temporaries
+	for n := range c.tempVars {
+		vars[n] = "integer"
+	}
 	if len(vars) > 0 {
 		c.writeln("var")
 		c.indent++
@@ -277,6 +293,9 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("end;")
+
+	// restore temp vars for outer scope
+	c.tempVars = prevTemps
 	return nil
 }
 
@@ -433,7 +452,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
 		}
 		if p.Lit.Str != nil {
-			return fmt.Sprintf("%q", *p.Lit.Str), nil
+			s := strings.ReplaceAll(*p.Lit.Str, "'", "''")
+			return fmt.Sprintf("'%s'", s), nil
 		}
 	case p.Selector != nil:
 		return sanitizeName(p.Selector.Root), nil
