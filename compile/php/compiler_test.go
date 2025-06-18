@@ -55,7 +55,6 @@ func TestPHPCompiler_LeetCodeExample1(t *testing.T) {
 }
 
 func TestPHPCompiler_LeetCodeExamples(t *testing.T) {
-	t.Skip("disabled in current environment")
 	if err := phpcode.EnsurePHP(); err != nil {
 		t.Skipf("php not installed: %v", err)
 	}

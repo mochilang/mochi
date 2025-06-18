@@ -252,11 +252,15 @@ php main.php
 ```
 
 For example, to run the [two-sum](../../examples/leetcode/1/two-sum.mochi)
-LeetCode solution you can compile and execute it directly:
+or [add-two-numbers](../../examples/leetcode/2/add-two-numbers.mochi)
+LeetCode solutions you can compile and execute them directly:
 
 ```bash
 mochi build --target php ../../examples/leetcode/1/two-sum.mochi -o two-sum.php
 php two-sum.php
+
+mochi build --target php ../../examples/leetcode/2/add-two-numbers.mochi -o add-two-numbers.php
+php add-two-numbers.php
 ```
 
 ## Tests
