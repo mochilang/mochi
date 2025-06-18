@@ -27,11 +27,17 @@ function longestPalindrome($s) {
 		if (($len2 > $len1)) {
 			$l = $len2;
 		}
-		if ((($l > $end) - $start)) {
-			$start = (($i - (($l - 1))) / 2);
-			$end = (((is_array($i) && is_array($l)) ? array_merge($i, $l) : ((is_string($i) || is_string($l)) ? ($i . $l) : ($i + $l))) / 2);
+		if (($l > (($end - $start)))) {
+			$start = ($i - (((($l - 1)) / 2)));
+			$end = ((is_array($i) && is_array((($l / 2)))) ? array_merge($i, (($l / 2))) : ((is_string($i) || is_string((($l / 2)))) ? ($i . (($l / 2))) : ($i + (($l / 2)))));
 		}
 	}
-	return $s[$start];
+	$res = "";
+	$k = $start;
+	while (($k <= $end)) {
+		$res = ((is_array($res) && is_array($s[$k])) ? array_merge($res, $s[$k]) : ((is_string($res) || is_string($s[$k])) ? ($res . $s[$k]) : ($res + $s[$k])));
+		$k = ((is_array($k) && is_array(1)) ? array_merge($k, 1) : ((is_string($k) || is_string(1)) ? ($k . 1) : ($k + 1)));
+	}
+	return $res;
 }
 
