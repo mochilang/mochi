@@ -90,6 +90,26 @@ func TestLeetCode3(t *testing.T) {
 	}
 }
 
+func TestLeetCode4(t *testing.T) {
+	if err := excode.EnsureElixir(); err != nil {
+		t.Skipf("elixir not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "4"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
+
+func TestLeetCode5(t *testing.T) {
+	if err := excode.EnsureElixir(); err != nil {
+		t.Skipf("elixir not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "5"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
+
 func findRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {

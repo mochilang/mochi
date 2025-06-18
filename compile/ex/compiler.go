@@ -22,16 +22,47 @@ type Compiler struct {
 
 func assignedVars(stmts []*parser.Statement) []string {
 	set := map[string]struct{}{}
-	for _, s := range stmts {
-		if s.Assign != nil {
-			set[s.Assign.Name] = struct{}{}
+	decl := map[string]struct{}{}
+
+	var walkIf func(*parser.IfStmt)
+	var walk func([]*parser.Statement)
+
+	walkIf = func(ifst *parser.IfStmt) {
+		if ifst == nil {
+			return
 		}
-		if s.Var != nil {
-			set[s.Var.Name] = struct{}{}
+		walk(ifst.Then)
+		walk(ifst.Else)
+		walkIf(ifst.ElseIf)
+	}
+
+	walk = func(st []*parser.Statement) {
+		for _, s := range st {
+			if s.Assign != nil {
+				set[s.Assign.Name] = struct{}{}
+			}
+			if s.Var != nil {
+				decl[s.Var.Name] = struct{}{}
+			}
+			if s.Let != nil {
+				decl[s.Let.Name] = struct{}{}
+			}
+			if s.For != nil {
+				walk(s.For.Body)
+			}
+			if s.While != nil {
+				walk(s.While.Body)
+			}
+			if s.If != nil {
+				walkIf(s.If)
+			}
 		}
-		if s.Let != nil {
-			set[s.Let.Name] = struct{}{}
-		}
+	}
+
+	walk(stmts)
+
+	for v := range decl {
+		delete(set, v)
 	}
 	vars := make([]string, 0, len(set))
 	for v := range set {
@@ -149,9 +180,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Break != nil:
-		c.writeln("break")
+		c.writeln("throw :break")
 	case s.Continue != nil:
-		c.writeln("continue")
+		c.writeln("throw :continue")
 	default:
 		// ignore
 	}
@@ -207,6 +238,8 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 		c.writeln(fmt.Sprintf("%s = fn %s ->", loop, strings.Join(params, ", ")))
 	}
 	c.indent++
+	c.writeln("try do")
+	c.indent++
 	c.writeln(fmt.Sprintf("if %s do", cond))
 	c.indent++
 	for _, s := range stmt.Body {
@@ -218,6 +251,16 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	c.writeln(fmt.Sprintf("%s.(%s)", loop, strings.Join(callArgs, ", ")))
 	c.indent--
 	c.writeln("else")
+	c.indent++
+	if len(vars) == 0 {
+		c.writeln(":ok")
+	} else {
+		c.writeln(fmt.Sprintf("{:ok, %s}", strings.Join(vars, ", ")))
+	}
+	c.indent--
+	c.writeln("end")
+	c.indent--
+	c.writeln("catch :break ->")
 	c.indent++
 	if len(vars) == 0 {
 		c.writeln(":ok")
@@ -429,38 +472,96 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	leftStr, err := c.compileUnary(b.Left)
+	type operand struct {
+		expr   string
+		isList bool
+	}
+
+	if b == nil {
+		return "", fmt.Errorf("nil binary expression")
+	}
+
+	ops := []string{}
+	operands := []operand{}
+
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	out := leftStr
-	leftIsList := isListUnary(b.Left)
-	for _, op := range b.Right {
-		rightStr, err := c.compilePostfix(op.Right)
+	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left)})
+
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rightIsList := isListPostfix(op.Right)
-		switch op.Op {
-		case "+":
-			if leftIsList || rightIsList {
-				out = fmt.Sprintf("%s ++ %s", out, rightStr)
-				leftIsList = true
-			} else {
-				out = fmt.Sprintf("(%s + %s)", out, rightStr)
-				leftIsList = false
+		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right)})
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
 			}
-		case "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=":
-			out = fmt.Sprintf("(%s %s %s)", out, op.Op, rightStr)
-			leftIsList = false
-		case "in":
-			out = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", rightStr, rightStr, out, rightStr, out)
-			leftIsList = false
-		default:
-			return "", fmt.Errorf("unsupported operator %s", op.Op)
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+
+			op := ops[i]
+			l := operands[i]
+			r := operands[i+1]
+
+			var expr string
+			var isList bool
+
+			switch op {
+			case "+":
+				if l.isList || r.isList {
+					expr = fmt.Sprintf("%s ++ %s", l.expr, r.expr)
+					isList = true
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", l.expr, r.expr)
+				}
+			case "-", "*", "/", "<", "<=", ">", ">=", "&&", "||":
+				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
+			case "%":
+				expr = fmt.Sprintf("rem(%s, %s)", l.expr, r.expr)
+			case "==", "!=":
+				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
+			case "in":
+				expr = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", r.expr, r.expr, l.expr, r.expr, l.expr)
+			default:
+				return "", fmt.Errorf("unsupported operator %s", op)
+			}
+
+			operands[i] = operand{expr: expr, isList: isList}
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return out, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state in binary expression")
+	}
+
+	return operands[0].expr, nil
 }
 
 func isListPostfix(p *parser.PostfixExpr) bool {
