@@ -33,4 +33,4 @@ main = do
     input1 <- _input
     putStrLn ("Enter second input:")
     input2 <- _input
-    putStrLn (unwords [show "You entered:", show input1, show ",", show input2])
+    putStrLn (unwords ["You entered:", input1, ",", input2])

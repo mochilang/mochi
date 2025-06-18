@@ -42,6 +42,9 @@ func TestHSCompiler_LeetCodeExample1(t *testing.T) {
 		t.Fatalf("write error: %v", err)
 	}
 	cmd := exec.Command("runhaskell", file)
+	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+		cmd.Stdin = bytes.NewReader(data)
+	}
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("runhaskell error: %v\n%s", err, out)
@@ -76,6 +79,9 @@ func TestHSCompiler_GoldenSubset(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("runhaskell", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("runhaskell error: %w\n%s", err, out)

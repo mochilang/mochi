@@ -23,6 +23,9 @@ _indexString s i =
        then error "index out of range"
        else [s !! idx]
 
+_input :: IO String
+_input = getLine
+
 
 main :: IO ()
 main = do

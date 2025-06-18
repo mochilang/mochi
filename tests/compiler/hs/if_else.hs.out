@@ -14,7 +14,17 @@ forLoop start end f = go start
 
 avg :: Real a => [a] -> Double
 avg xs | null xs = 0
-       | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
+      | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
+
+_indexString :: String -> Int -> String
+_indexString s i =
+  let idx = if i < 0 then i + length s else i
+  in if idx < 0 || idx >= length s
+       then error "index out of range"
+       else [s !! idx]
+
+_input :: IO String
+_input = getLine
 
 
 foo n = fromMaybe (0) $
