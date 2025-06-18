@@ -464,7 +464,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	if len(q.Froms) > 0 && (q.Sort != nil || q.Skip != nil || q.Take != nil) {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -475,6 +478,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	orig := c.env
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -520,6 +526,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(q.Var)
 		b.WriteString(" <- ")
 		b.WriteString(src)
+		for _, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(", ")
+			b.WriteString(f.Var)
+			b.WriteString(" <- ")
+			b.WriteString(fs)
+		}
 		if cond != "" {
 			b.WriteString(", ")
 			b.WriteString(cond)
@@ -531,6 +547,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("(fun() ->\n")
 	b.WriteString("\tItems = [" + q.Var + " || " + q.Var + " <- " + src)
+	for _, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(", " + f.Var + " <- " + fs)
+	}
 	if cond != "" {
 		b.WriteString(", " + cond)
 	}
