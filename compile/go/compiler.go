@@ -70,6 +70,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	// Generate program body.
 	c.writeExpectFunc(prog)
+	c.writeTestHelpers(prog)
 
 	if err := c.compileTypeDecls(prog); err != nil {
 		return nil, err
@@ -130,6 +131,59 @@ func (c *Compiler) writeExpectFunc(prog *parser.Program) {
 	c.writeln("func expect(cond bool) {")
 	c.indent++
 	c.writeln("if !cond { panic(\"expect failed\") }")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+}
+
+func (c *Compiler) writeTestHelpers(prog *parser.Program) {
+	if !hasTest(prog) {
+		return
+	}
+	c.imports["fmt"] = true
+	c.imports["time"] = true
+	c.writeln("func formatDuration(d time.Duration) string {")
+	c.indent++
+	c.writeln("switch {")
+	c.indent++
+	c.writeln("case d < time.Microsecond:")
+	c.indent++
+	c.writeln("return fmt.Sprintf(\"%dns\", d.Nanoseconds())")
+	c.indent--
+	c.writeln("case d < time.Millisecond:")
+	c.indent++
+	c.writeln("return fmt.Sprintf(\"%.1fµs\", float64(d.Microseconds()))")
+	c.indent--
+	c.writeln("case d < time.Second:")
+	c.indent++
+	c.writeln("return fmt.Sprintf(\"%.1fms\", float64(d.Milliseconds()))")
+	c.indent--
+	c.writeln("default:")
+	c.indent++
+	c.writeln("return fmt.Sprintf(\"%.2fs\", d.Seconds())")
+	c.indent--
+	c.writeln("}")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+
+	c.writeln("func printTestStart(name string) {")
+	c.indent++
+	c.writeln("fmt.Printf(\"   test %-30s ...\", name)")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+
+	c.writeln("func printTestPass(d time.Duration) {")
+	c.indent++
+	c.writeln("fmt.Printf(\" ok (%s)\\n\", formatDuration(d))")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+
+	c.writeln("func printTestFail(err error, d time.Duration) {")
+	c.indent++
+	c.writeln("fmt.Printf(\" fail %v (%s)\\n\", err, formatDuration(d))")
 	c.indent--
 	c.writeln("}")
 	c.writeln("")
@@ -222,6 +276,7 @@ func (c *Compiler) compileTestBlocks(prog *parser.Program) error {
 }
 
 func (c *Compiler) compileMainFunc(prog *parser.Program) error {
+	hasTests := hasTest(prog)
 	// Emit global variables for statements that appear before any test block.
 	for i, s := range prog.Statements {
 		if s.Let == nil && s.Var == nil {
@@ -236,6 +291,9 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 
 	c.writeln("func main() {")
 	c.indent++
+	if hasTests {
+		c.writeln("failures := 0")
+	}
 	if len(c.externObjects) > 0 {
 		c.imports["mochi/runtime/ffi/extern"] = true
 		names := make([]string, 0, len(c.externObjects))
@@ -263,8 +321,41 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(fmt.Sprintf("%s()", name))
+			if hasTests {
+				c.writeln("{")
+				c.indent++
+				c.writeln(fmt.Sprintf("printTestStart(%q)", s.Test.Name))
+				c.writeln("start := time.Now()")
+				c.writeln("var failed error")
+				c.writeln("func() {")
+				c.indent++
+				c.writeln("defer func() { if r := recover(); r != nil { failed = fmt.Errorf(\"%v\", r) } }()")
+				c.writeln(fmt.Sprintf("%s()", name))
+				c.indent--
+				c.writeln("}()")
+				c.writeln("if failed != nil {")
+				c.indent++
+				c.writeln("failures++")
+				c.writeln("printTestFail(failed, time.Since(start))")
+				c.indent--
+				c.writeln("} else {")
+				c.indent++
+				c.writeln("printTestPass(time.Since(start))")
+				c.indent--
+				c.writeln("}")
+				c.indent--
+				c.writeln("}")
+			} else {
+				c.writeln(fmt.Sprintf("%s()", name))
+			}
 		}
+	}
+	if hasTests {
+		c.writeln("if failures > 0 {")
+		c.indent++
+		c.writeln("fmt.Printf(\"\\n[FAIL] %d test(s) failed.\\n\", failures)")
+		c.indent--
+		c.writeln("}")
 	}
 	if c.usesHandlers {
 		for _, dn := range c.handlerDones {
@@ -3303,6 +3394,15 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 func hasExpect(p *parser.Program) bool {
 	for _, s := range p.Statements {
 		if containsExpect(s) {
+			return true
+		}
+	}
+	return false
+}
+
+func hasTest(p *parser.Program) bool {
+	for _, s := range p.Statements {
+		if s.Test != nil {
 			return true
 		}
 	}
