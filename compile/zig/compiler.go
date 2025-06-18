@@ -124,6 +124,10 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			val = v
 		}
 		c.writeln(fmt.Sprintf("const %s = %s;", sanitizeName(s.Let.Name), val))
+	case s.Var != nil:
+		return c.compileVar(s.Var)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.Return != nil:
 		if isListLiteralExpr(s.Return.Value) {
 			ll := s.Return.Value.Binary.Left.Value.Target.List
@@ -165,6 +169,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		}
 		c.indent--
 		c.writeln("}")
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.Expr != nil:
 		v, err := c.compileExpr(s.Expr.Expr, false)
 		if err != nil {
@@ -173,6 +179,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		c.writeln(v + ";")
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Test != nil, s.Expect != nil:
+		// tests are ignored when compiling to Zig
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -210,6 +219,73 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		return nil
 	}
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	cond, err := c.compileExpr(stmt.Cond, false)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("while (%s) {", cond))
+	c.indent++
+	for _, st := range stmt.Body {
+		if err := c.compileStmt(st, true); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileVar(st *parser.VarStmt) error {
+	name := sanitizeName(st.Name)
+	// special case: empty list initialization becomes ArrayList
+	if st.Value != nil && isEmptyListExpr(st.Value) {
+		c.writeln(fmt.Sprintf("var %s = std.ArrayList(i32).init(std.heap.page_allocator);", name))
+		return nil
+	}
+	val := "0"
+	if st.Value != nil {
+		v, err := c.compileExpr(st.Value, false)
+		if err != nil {
+			return err
+		}
+		val = v
+	}
+	if st.Type != nil {
+		c.writeln(fmt.Sprintf("var %s: %s = %s;", name, c.zigType(st.Type), val))
+	} else {
+		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+	}
+	return nil
+}
+
+func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
+	name := sanitizeName(st.Name)
+	// check for append pattern: x = x + [val]
+	if elem, ok := isSelfAppend(st); ok {
+		v, err := c.compileExpr(elem, false)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("try %s.append(@as(i32,@intCast(%s)));", name, v))
+		return nil
+	}
+	lhs := name
+	for _, idx := range st.Index {
+		ie, err := c.compileExpr(idx.Start, false)
+		if err != nil {
+			return err
+		}
+		lhs = fmt.Sprintf("%s[%s]", lhs, ie)
+	}
+	rhs, err := c.compileExpr(st.Value, false)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s = %s;", lhs, rhs))
 	return nil
 }
 
@@ -289,6 +365,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		name := sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
+		} else if asReturn && c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if m, _ := c.env.IsMutable(p.Selector.Root); m {
+					if _, ok := t.(types.ListType); ok {
+						name += ".items"
+					}
+				}
+			}
 		}
 		return name, nil
 	case p.List != nil:
@@ -388,6 +472,42 @@ func isListLiteralPostfix(p *parser.PostfixExpr) bool {
 
 func isListLiteralPrimary(p *parser.Primary) bool {
 	return p != nil && p.List != nil
+}
+
+func isEmptyListExpr(e *parser.Expr) bool {
+	if !isListLiteralExpr(e) {
+		return false
+	}
+	ll := e.Binary.Left.Value.Target.List
+	return len(ll.Elems) == 0
+}
+
+func isSelfAppend(st *parser.AssignStmt) (*parser.Expr, bool) {
+	if st == nil || st.Value == nil || st.Value.Binary == nil {
+		return nil, false
+	}
+	b := st.Value.Binary
+	if len(b.Right) != 1 || b.Right[0].Op != "+" {
+		return nil, false
+	}
+	left := b.Left
+	if left == nil || left.Value == nil || left.Value.Target == nil {
+		return nil, false
+	}
+	if left.Value.Target.Selector == nil || left.Value.Target.Selector.Root != st.Name {
+		return nil, false
+	}
+	if len(left.Value.Ops) > 0 {
+		return nil, false
+	}
+	r := b.Right[0].Right
+	if r == nil || r.Target == nil || r.Target.List == nil || len(r.Ops) > 0 {
+		return nil, false
+	}
+	if len(r.Target.List.Elems) != 1 {
+		return nil, false
+	}
+	return r.Target.List.Elems[0], true
 }
 
 var zigReserved = map[string]bool{

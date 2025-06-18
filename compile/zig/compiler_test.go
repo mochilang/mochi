@@ -16,7 +16,7 @@ import (
 	"mochi/types"
 )
 
-func TestZigCompiler_TwoSum(t *testing.T) {
+func TestZigCompiler_LeetCode1to2(t *testing.T) {
 	out, err := runExample(t, 1)
 	if err != nil {
 		t.Fatalf("run error: %v", err)
@@ -25,6 +25,11 @@ func TestZigCompiler_TwoSum(t *testing.T) {
 	want := "0\n1"
 	if got != want {
 		t.Fatalf("unexpected output\nwant:\n%s\n got:\n%s", want, got)
+	}
+
+	_, err = runExample(t, 2)
+	if err != nil {
+		t.Fatalf("run error: %v", err)
 	}
 }
 
