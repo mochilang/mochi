@@ -1,6 +1,7 @@
 (define (twoSum nums target)
 	(call/cc (lambda (return)
-		(define n (length nums))
+		(define n '())
+		(set! n (length nums))
 		(let loop ((i 0))
 			(if (< i n)
 				(begin
