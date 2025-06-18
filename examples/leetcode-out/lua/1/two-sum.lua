@@ -13,8 +13,11 @@ function __add(a, b)
 		for i = 1, #a do out[#out+1] = a[i] end
 		for i = 1, #b do out[#out+1] = b[i] end
 		return out
+	elseif type(a) == 'string' or type(b) == 'string' then
+		return tostring(a) .. tostring(b)
+	else
+		return a + b
 	end
-	return a + b
 end
 
 function __eq(a, b)
