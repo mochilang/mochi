@@ -17,6 +17,7 @@ type Compiler struct {
 	env         *types.Env
 	useAvg      bool
 	useIndexStr bool
+	useSliceStr bool
 	funcRet     types.Type
 }
 
@@ -25,6 +26,7 @@ func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useAvg = false
 	c.useIndexStr = false
+	c.useSliceStr = false
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -89,6 +91,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("if idx < 0 { idx += chars.count }")
 		c.writeln("if idx < 0 || idx >= chars.count { fatalError(\"index out of range\") }")
 		c.writeln("return String(chars[idx])")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.useSliceStr {
+		c.writeln("func _sliceString(_ s: String, _ i: Int, _ j: Int) -> String {")
+		c.indent++
+		c.writeln("var start = i")
+		c.writeln("var end = j")
+		c.writeln("let chars = Array(s)")
+		c.writeln("let n = chars.count")
+		c.writeln("if start < 0 { start += n }")
+		c.writeln("if end < 0 { end += n }")
+		c.writeln("if start < 0 { start = 0 }")
+		c.writeln("if end > n { end = n }")
+		c.writeln("if end < start { end = start }")
+		c.writeln("return String(chars[start..<end])")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -503,17 +522,42 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 		} else if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if c.isStringPrimary(p.Target) {
-				c.useIndexStr = true
-				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+			if op.Index.Colon != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := fmt.Sprintf("%s.count", expr)
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				if c.isStringPrimary(p.Target) {
+					c.useSliceStr = true
+					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+				} else {
+					expr = fmt.Sprintf("Array(%s[%s..<%s])", expr, start, end)
+				}
 			} else {
-				expr = fmt.Sprintf("%s[%s]", expr, idx)
-				if c.isMapPrimary(p.Target) {
-					expr += "!"
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if c.isStringPrimary(p.Target) {
+					c.useIndexStr = true
+					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+					if c.isMapPrimary(p.Target) {
+						expr += "!"
+					}
 				}
 			}
 		} else if op.Cast != nil {
