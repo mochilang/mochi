@@ -73,6 +73,39 @@ func TestCCompiler_SubsetPrograms(t *testing.T) {
 	if err != nil {
 		t.Skipf("C compiler not installed: %v", err)
 	}
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+		}
+		c := ccode.New(env)
+		code, err := c.Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+		dir := t.TempDir()
+		cfile := filepath.Join(dir, "prog.c")
+		if err := os.WriteFile(cfile, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		bin := filepath.Join(dir, "prog")
+		if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("\u274c cc error: %w\n%s", err, out)
+		}
+		cmd := exec.Command(bin)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
+		}
+		return bytes.TrimSpace(out), nil
+	})
 	golden.Run(t, "tests/compiler/c", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
