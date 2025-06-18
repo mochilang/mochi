@@ -31,9 +31,9 @@ public class Program {
 			if ((len2 > len1)) {
 				l = len2;
 			}
-			if ((l > (end - start))) {
-				start = (i - (((l - 1)) / 2));
-				end = (i + (l / 2));
+			if ((l > ((end - start)))) {
+				start = (i - ((((l - 1)) / 2)));
+				end = (i + ((l / 2)));
 			}
 		}
 		var res = "";
