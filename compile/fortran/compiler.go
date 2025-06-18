@@ -128,11 +128,15 @@ func isEmptyListLiteral(e *parser.Expr) bool {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	var funs []*parser.FunStmt
+	var tests []*parser.TestBlock
 	var mainStmts []*parser.Statement
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		switch {
+		case s.Fun != nil:
 			funs = append(funs, s.Fun)
-		} else {
+		case s.Test != nil:
+			tests = append(tests, s.Test)
+		default:
 			mainStmts = append(mainStmts, s)
 		}
 	}
@@ -176,12 +180,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
+	for _, t := range tests {
+		c.writeln(fmt.Sprintf("call test_%s()", sanitizeName(t.Name)))
+	}
 	c.indent--
-	if len(funs) > 0 {
+	if len(funs)+len(tests) > 0 {
 		c.writeln("contains")
 		c.indent++
 		for _, f := range funs {
 			if err := c.compileFun(f); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+		for _, t := range tests {
+			if err := c.compileTestBlock(t); err != nil {
 				return nil, err
 			}
 			c.writeln("")
@@ -291,6 +304,10 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 	switch {
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Let != nil:
 		if !isEmptyListLiteral(s.Let.Value) {
 			val, err := c.compileExpr(s.Let.Value)
@@ -456,6 +473,49 @@ func (c *Compiler) compileIf(ifStmt *parser.IfStmt, retVar string) error {
 		c.indent--
 	}
 
+	c.writeln("end if")
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("subroutine %s()", name))
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st, ""); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end subroutine " + name)
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	// If the expectation compares arrays with '==', use all() to
+	// produce a logical scalar condition.
+	if e.Value != nil && len(e.Value.Binary.Right) == 1 && e.Value.Binary.Right[0].Op == "==" {
+		left, err := c.compileUnary(e.Value.Binary.Left)
+		if err != nil {
+			return err
+		}
+		right, err := c.compilePostfix(e.Value.Binary.Right[0].Right)
+		if err != nil {
+			return err
+		}
+		expr := fmt.Sprintf("all(%s == %s)", left, right)
+		c.writeln(fmt.Sprintf("if (.not. (%s)) then", expr))
+	} else {
+		expr, err := c.compileExpr(e.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (.not. (%s)) then", expr))
+	}
+	c.indent++
+	c.writeln("print *, 'expect failed'")
+	c.writeln("stop 1")
+	c.indent--
 	c.writeln("end if")
 	return nil
 }
