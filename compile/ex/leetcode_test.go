@@ -110,6 +110,56 @@ func TestLeetCode5(t *testing.T) {
 	}
 }
 
+func TestLeetCode6(t *testing.T) {
+	if err := excode.EnsureElixir(); err != nil {
+		t.Skipf("elixir not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "6"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
+
+func TestLeetCode7(t *testing.T) {
+	if err := excode.EnsureElixir(); err != nil {
+		t.Skipf("elixir not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "7"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
+
+func TestLeetCode8(t *testing.T) {
+	if err := excode.EnsureElixir(); err != nil {
+		t.Skipf("elixir not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "8"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
+
+func TestLeetCode9(t *testing.T) {
+	if err := excode.EnsureElixir(); err != nil {
+		t.Skipf("elixir not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "9"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
+
+func TestLeetCode10(t *testing.T) {
+	if err := excode.EnsureElixir(); err != nil {
+		t.Skipf("elixir not installed: %v", err)
+	}
+	got := strings.TrimSpace(compileAndRunLeetCode(t, "10"))
+	if got != "" {
+		t.Fatalf("unexpected output: %q", got)
+	}
+}
+
 func findRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {

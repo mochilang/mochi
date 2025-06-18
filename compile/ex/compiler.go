@@ -4,6 +4,7 @@ package excode
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -19,6 +20,8 @@ type Compiler struct {
 	env    *types.Env
 	tmp    int
 }
+
+var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
 
 var exReserved = map[string]bool{
 	"end": true,
@@ -136,6 +139,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
+	if c.indent > 0 {
+		if c.env != nil {
+			c.env.SetVar(fun.Name, types.FuncType{}, false)
+		}
+		expr, err := c.compileFunExpr(&parser.FunExpr{Params: fun.Params, BlockBody: fun.Body})
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s = %s", sanitizeName(fun.Name), expr))
+		return nil
+	}
+
 	c.writeIndent()
 	c.buf.WriteString("def " + sanitizeName(fun.Name) + "(")
 	for i, p := range fun.Params {
@@ -785,6 +800,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "input":
 			return "String.trim(IO.gets(\"\"))", nil
 		default:
+			if c.env != nil {
+				if t, err := c.env.GetVar(p.Call.Func); err == nil {
+					if _, ok := t.(types.FuncType); ok {
+						return fmt.Sprintf("%s.(%s)", sanitizeName(p.Call.Func), argStr), nil
+					}
+				}
+			}
 			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 		}
 	case p.Query != nil:
@@ -804,6 +826,23 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("fn %s -> %s end", strings.Join(params, ", "), expr), nil
+	}
+	if len(fn.BlockBody) > 0 {
+		sub := &Compiler{env: c.env, indent: c.indent + 1}
+		for _, s := range fn.BlockBody {
+			if err := sub.compileStmt(s); err != nil {
+				return "", err
+			}
+		}
+		body := sub.buf.String()
+		var b strings.Builder
+		b.WriteString("fn " + strings.Join(params, ", ") + " ->\n")
+		b.WriteString(body)
+		for i := 0; i < c.indent; i++ {
+			b.WriteByte('\t')
+		}
+		b.WriteString("end")
+		return b.String(), nil
 	}
 	return "", fmt.Errorf("block function expressions not supported")
 }
@@ -828,7 +867,14 @@ func simpleAtomKey(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
-		return *p.Target.Lit.Str, true
+		s := *p.Target.Lit.Str
+		if isValidAtom(s) {
+			return s, true
+		}
 	}
 	return "", false
+}
+
+func isValidAtom(s string) bool {
+	return atomIdent.MatchString(s)
 }
