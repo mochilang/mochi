@@ -236,6 +236,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if _, ok := c.helpers["_cast"]; !ok {
 		code = bytes.Replace(code, []byte("using System.Text.Json;\n"), nil, 1)
 	}
+	if c.useLinq && !bytes.Contains(code, []byte("using System.Linq;")) {
+		idx := bytes.Index(code, []byte("using System.Collections.Generic;\n"))
+		if idx >= 0 {
+			insert := []byte("using System.Linq;\n")
+			code = append(code[:idx+len("using System.Collections.Generic;\n")], append(insert, code[idx+len("using System.Collections.Generic;\n"):]...)...)
+		} else {
+			code = append([]byte("using System.Linq;\n"), code...)
+		}
+	}
 	return code, nil
 }
 
@@ -375,20 +384,40 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		name := sanitizeName(s.Let.Name)
+		typ := ""
 		if s.Let.Type != nil {
-			c.varTypes[name] = csType(s.Let.Type)
+			typ = csType(s.Let.Type)
+			c.varTypes[name] = typ
+			if isEmptyListLiteral(s.Let.Value) && strings.HasSuffix(typ, "[]") {
+				elem := strings.TrimSuffix(typ, "[]")
+				expr = fmt.Sprintf("Array.Empty<%s>()", elem)
+			}
 		}
-		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
+		if typ != "" {
+			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, expr))
+		} else {
+			c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
+		}
 	case s.Var != nil:
 		expr, err := c.compileExpr(s.Var.Value)
 		if err != nil {
 			return err
 		}
 		name := sanitizeName(s.Var.Name)
+		typ := ""
 		if s.Var.Type != nil {
-			c.varTypes[name] = csType(s.Var.Type)
+			typ = csType(s.Var.Type)
+			c.varTypes[name] = typ
+			if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
+				elem := strings.TrimSuffix(typ, "[]")
+				expr = fmt.Sprintf("Array.Empty<%s>()", elem)
+			}
 		}
-		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
+		if typ != "" {
+			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, expr))
+		} else {
+			c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
+		}
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -962,6 +991,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
+		if len(elems) == 0 {
+			return "new dynamic[] { }", nil
+		}
 		return "new [] { " + strings.Join(elems, ", ") + " }", nil
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
@@ -1008,6 +1040,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = v
+	}
+	if t, err := c.env.GetVar(call.Func); err == nil {
+		if ft, ok := t.(types.FuncType); ok {
+			for i, a := range call.Args {
+				if i >= len(ft.Params) {
+					break
+				}
+				if isEmptyListLiteral(a) {
+					if lt, ok := ft.Params[i].(types.ListType); ok {
+						elem := csTypeFromType(lt.Elem)
+						args[i] = fmt.Sprintf("Array.Empty<%s>()", elem)
+					}
+				}
+			}
+		}
 	}
 	argStr := strings.Join(args, ", ")
 	switch call.Func {
@@ -1180,6 +1227,46 @@ func (c *Compiler) newVar() string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
 	return name
+}
+
+func csTypeFromType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType:
+		return "int"
+	case types.Int64Type:
+		return "long"
+	case types.FloatType:
+		return "double"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		return csTypeFromType(tt.Elem) + "[]"
+	case types.MapType:
+		return fmt.Sprintf("Dictionary<%s, %s>", csTypeFromType(tt.Key), csTypeFromType(tt.Value))
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
+	default:
+		return "dynamic"
+	}
+}
+
+func isEmptyListLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.List == nil {
+		return false
+	}
+	return len(p.Target.List.Elems) == 0
 }
 
 func (c *Compiler) use(name string) {

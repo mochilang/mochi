@@ -106,6 +106,36 @@ func TestCSCompiler_LeetCodeExample2(t *testing.T) {
 	runLeetCode(t, 2, "")
 }
 
+func TestCSCompiler_LeetCodeExample3(t *testing.T) {
+	if err := cscode.EnsureDotnet(); err != nil {
+		t.Skipf("dotnet not installed: %v", err)
+	}
+	if err := exec.Command("dotnet", "--version").Run(); err != nil {
+		t.Skipf("dotnet not runnable: %v", err)
+	}
+	runLeetCode(t, 3, "")
+}
+
+func TestCSCompiler_LeetCodeExample4(t *testing.T) {
+	if err := cscode.EnsureDotnet(); err != nil {
+		t.Skipf("dotnet not installed: %v", err)
+	}
+	if err := exec.Command("dotnet", "--version").Run(); err != nil {
+		t.Skipf("dotnet not runnable: %v", err)
+	}
+	runLeetCode(t, 4, "")
+}
+
+func TestCSCompiler_LeetCodeExample5(t *testing.T) {
+	if err := cscode.EnsureDotnet(); err != nil {
+		t.Skipf("dotnet not installed: %v", err)
+	}
+	if err := exec.Command("dotnet", "--version").Run(); err != nil {
+		t.Skipf("dotnet not runnable: %v", err)
+	}
+	runLeetCode(t, 5, "")
+}
+
 func runLeetCode(t *testing.T, id int, want string) {
 	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))

@@ -4,7 +4,7 @@ SHELL := /bin/bash
 MOCHI_ROOT := $(abspath ../..)
 RUNNER := $(MOCHI_ROOT)/cmd/leetcode-runner
 
-.PHONY: run build range test clean help
+.PHONY: run build range test clean help run-cs run-java
 
 run: ## Run a problem. Usage: make run ID=<n>
 @if [ -z "$(ID)" ]; then echo "❌ Usage: make run ID=<n>"; exit 1; fi
@@ -17,6 +17,10 @@ build: ## Build and run one problem in language. Usage: make build ID=<n> LANG=g
 run-java: ## Execute the compiled Java solution for problem n. Usage: make run-java ID=<n>
 @if [ -z "$(ID)" ]; then echo "❌ Usage: make run-java ID=<n>"; exit 1; fi
 @go run $(RUNNER) build --id $(ID) --lang java --run
+
+run-cs: ## Execute the compiled C# solution for problem n. Usage: make run-cs ID=<n>
+@if [ -z "$(ID)" ]; then echo "❌ Usage: make run-cs ID=<n>"; exit 1; fi
+@go run $(RUNNER) build --id $(ID) --lang cs --run
 
 range: ## Build problems in range. Usage: make range FROM=1 TO=100 LANG=go
 @go run $(RUNNER) build --from $(FROM) --to $(TO) $(if $(LANG),--lang $(LANG)) --run

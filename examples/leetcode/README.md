@@ -38,6 +38,14 @@ or directly with the CLI:
 mochi run 1/two-sum.mochi
 ```
 
+### C# Compilation
+
+To compile and execute the first five problems using the C# backend run:
+
+```bash
+go run ../../cmd/leetcode-runner build --from 1 --to 5 --lang cs --run
+```
+
 ## Running Tests
 
 Some solutions include `test` blocks. Execute all tests with:
@@ -67,6 +75,7 @@ mochi run download.mochi
 - `make run-go ID=<n>` – execute the compiled Go solution for problem `n`
 - `make run-cpp ID=<n>` – execute the compiled C++ solution for problem `n`
 - `make run-java ID=<n>` – execute the compiled Java solution for problem `n`
+- `make run-cs ID=<n>` – execute the compiled C# solution for problem `n`
 - `make compile` – generate Go, Python, TypeScript and C++ files into `../leetcode-out`
 - `make range FROM=1 TO=10 LANG=scala` – build problems in a range using the Scala backend
 - `make test` – run all tests
