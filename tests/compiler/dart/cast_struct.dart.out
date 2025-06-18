@@ -1,0 +1,9 @@
+class Todo {
+	dynamic title;
+	Todo({this.title});
+}
+
+void main() {
+	var todo = {"title": "hi"};
+	print(todo.title);
+}

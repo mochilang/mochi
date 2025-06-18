@@ -1,4 +1,4 @@
-List<int> prepend(level, result) {
+dynamic prepend(level, result) {
 	result = ([level] + result);
 	return result;
 }
