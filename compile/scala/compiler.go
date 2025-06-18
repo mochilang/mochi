@@ -16,6 +16,7 @@ type Compiler struct {
 	indent    int
 	env       *types.Env
 	mainStmts []*parser.Statement
+	retType   types.Type
 }
 
 // New creates a new Scala compiler instance.
@@ -59,6 +60,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	origRet := c.retType
+	if fn.Return != nil {
+		c.retType = c.resolveTypeRef(fn.Return)
+	} else {
+		c.retType = types.VoidType{}
+	}
 	c.writeIndent()
 	c.buf.WriteString("def " + sanitizeName(fn.Name) + "(")
 	for i, p := range fn.Params {
@@ -85,6 +92,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.retType = origRet
 	return nil
 }
 
@@ -164,7 +172,20 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 		value = " = " + v
 	}
-	c.writeln(fmt.Sprintf("var %s%s", sanitizeName(st.Name), value))
+	typ := ""
+	if st.Type != nil {
+		typ = ": " + scalaType(c.resolveTypeRef(st.Type))
+	} else if c.env != nil {
+		if t, err := c.env.GetVar(st.Name); err == nil {
+			typ = ": " + scalaType(t)
+		}
+	}
+	if typ == "" && st.Value != nil && emptyListExpr(st.Value) {
+		if lt, ok := c.retType.(types.ListType); ok {
+			typ = ": " + scalaType(lt)
+		}
+	}
+	c.writeln(fmt.Sprintf("var %s%s%s", sanitizeName(st.Name), typ, value))
 	return nil
 }
 
@@ -289,22 +310,70 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(b.Right) == 0 {
-		return left, nil
-	}
-	expr := left
-	for _, op := range b.Right {
-		rhs, err := c.compilePostfix(op.Right)
+
+	ops := []string{}
+	operands := []string{left}
+	nodes := []*parser.PostfixExpr{b.Left.Value}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "in" {
-			expr = fmt.Sprintf("%s.contains(%s)", rhs, expr)
-		} else {
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, rhs)
+		operands = append(operands, r)
+		nodes = append(nodes, part.Right)
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+
+			l := operands[i]
+			r := operands[i+1]
+			op := ops[i]
+
+			var expr string
+			if op == "in" {
+				expr = fmt.Sprintf("%s.contains(%s)", r, l)
+			} else if op == "+" && nodes[i+1].Target.List != nil {
+				expr = fmt.Sprintf("(%s ++ %s)", l, r)
+			} else {
+				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+			}
+
+			operands[i] = expr
+			operands = append(operands[:i+1], operands[i+2:]...)
+			nodes = append(nodes[:i+1], nodes[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {

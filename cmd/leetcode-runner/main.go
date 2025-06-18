@@ -282,6 +282,20 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "scala":
+		dir := filepath.Dir(file)
+		cmd := exec.Command("scalac", filepath.Base(file))
+		cmd.Dir = dir
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+		runCmd := exec.Command("scala", "Main")
+		runCmd.Dir = dir
+		runCmd.Stdout = os.Stdout
+		runCmd.Stderr = os.Stderr
+		return runCmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
