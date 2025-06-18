@@ -1,0 +1,13 @@
+program main;
+{$mode objfpc}
+uses SysUtils;
+
+type TIntArray = array of integer;
+
+var
+	_record: integer;
+
+begin
+	_record := 1;
+	writeln(_record);
+end.
