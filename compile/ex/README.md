@@ -72,6 +72,10 @@ if len(stmt.Index) > 0 {
 }
 ```
 
+`compileFor` detects string literals and iterates over their graphemes so that
+`for ch in "cat"` becomes `for ch <- String.graphemes("cat") do`.
+
+
 【F:compile/ex/compiler.go†L231-L245】
 
 Query expressions become list comprehensions with optional sorting, skipping and taking:

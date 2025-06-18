@@ -206,6 +206,9 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	if strings.HasPrefix(src, "\"") && strings.HasSuffix(src, "\"") {
+		src = fmt.Sprintf("String.graphemes(%s)", src)
+	}
 	c.writeln(fmt.Sprintf("for %s <- %s do", name, src))
 	c.indent++
 	for _, s := range stmt.Body {
