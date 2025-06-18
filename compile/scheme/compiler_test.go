@@ -75,6 +75,16 @@ func TestSchemeCompiler_LeetCode3(t *testing.T) {
 	runLeetExample(t, 3)
 }
 
+// TestSchemeCompiler_LeetCode4 compiles the median-of-two-sorted-arrays example and runs it.
+func TestSchemeCompiler_LeetCode4(t *testing.T) {
+	runLeetExample(t, 4)
+}
+
+// TestSchemeCompiler_LeetCode5 compiles the longest-palindromic-substring example and runs it.
+func TestSchemeCompiler_LeetCode5(t *testing.T) {
+	runLeetExample(t, 5)
+}
+
 func TestSchemeCompiler_SubsetPrograms(t *testing.T) {
 	if _, err := schemecode.EnsureScheme(); err != nil {
 		t.Skipf("chibi-scheme not installed: %v", err)

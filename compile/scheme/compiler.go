@@ -108,6 +108,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 func collectVars(stmts []*parser.Statement, vars map[string]bool) {
 	for _, s := range stmts {
 		switch {
+		case s.Let != nil:
+			vars[s.Let.Name] = true
 		case s.Var != nil:
 			vars[s.Var.Name] = true
 		case s.For != nil:
@@ -131,7 +133,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("(define %s %s)", sanitizeName(s.Let.Name), expr))
+		name := sanitizeName(s.Let.Name)
+		if c.inFun {
+			c.writeln(fmt.Sprintf("(set! %s %s)", name, expr))
+		} else {
+			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
+		}
 		if s.Let.Type != nil && s.Let.Type.Simple != nil && *s.Let.Type.Simple == "string" {
 			c.vars[s.Let.Name] = "string"
 		}
@@ -381,6 +388,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			expr = fmt.Sprintf("(%s %s)", expr, strings.Join(args, " "))
 			continue
 		}
+		if op.Cast != nil {
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				switch *op.Cast.Type.Simple {
+				case "float":
+					expr = fmt.Sprintf("(exact->inexact %s)", expr)
+				case "int":
+					expr = fmt.Sprintf("(inexact->exact %s)", expr)
+				case "string":
+					expr = fmt.Sprintf("(number->string %s)", expr)
+				}
+			}
+			continue
+		}
 	}
 	return expr, nil
 }
@@ -404,6 +424,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return strconv.Itoa(*p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			s := strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64)
+			if !strings.ContainsAny(s, ".eE") {
+				s += ".0"
+			}
+			return s, nil
 		}
 		if p.Lit.Bool != nil {
 			if *p.Lit.Bool {
