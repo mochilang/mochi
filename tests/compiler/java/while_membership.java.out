@@ -1,0 +1,15 @@
+public class Main {
+	public static void main(String[] args) {
+		java.util.Map<Integer, Boolean> set = new java.util.HashMap<>();
+		for (var n : new int[]{1, 2, 3}) {
+			set.put(n, true);
+		}
+		int i = 1;
+		int count = 0;
+		while (set.containsKey(i)) {
+			i = (i + 1);
+			count = (count + 1);
+		}
+		System.out.println(count);
+	}
+}
