@@ -44,6 +44,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Emit test block declarations.
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// Emit main body.
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Type != nil || s.Test != nil {
@@ -51,6 +61,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+
+	// Invoke test blocks.
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(name + "()")
 		}
 	}
 
@@ -87,6 +105,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.Fun != nil:
 		return c.compileFun(s.Fun, true)
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -801,6 +823,29 @@ func (c *Compiler) compileFun(fun *parser.FunStmt, local bool) error {
 	}
 	c.indent--
 	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("function %s()", name))
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("if not (%s) then error('expect failed') end", expr))
 	return nil
 }
 
