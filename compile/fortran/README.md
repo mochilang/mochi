@@ -34,7 +34,7 @@ func sanitizeName(name string) string {
     return s
 }
 ```
-【F:compile/fortran/compiler.go†L28-L40】
+【F:compile/fortran/compiler.go†L28-L41】
 
 The `Compile` method writes a `program main` wrapper, declares variables for
 `let` statements and emits function definitions when present:
@@ -50,7 +50,10 @@ if len(funs) > 0 {
 }
 c.writeln("end program main")
 ```
-【F:compile/fortran/compiler.go†L53-L87】
+【F:compile/fortran/compiler.go†L64-L117】
+
+Loop variable names discovered in the main body are declared automatically so
+the generated program remains valid with `implicit none`.
 
 Functions are written using `compileFun`, which declares parameters and local
 variables then walks the body:
@@ -62,7 +65,7 @@ for _, st := range fn.Body {
     if err := c.compileStmt(st, resVar); err != nil { ... }
 }
 ```
-【F:compile/fortran/compiler.go†L90-L108】
+【F:compile/fortran/compiler.go†L120-L170】
 
 `compileStmt` handles the small set of supported statements (`let`, `return`,
 `if`, `for` and expression statements).  Loop bodies become `do` blocks and a
@@ -83,7 +86,7 @@ case s.Expr != nil:
         c.writeln(expr)
     }
 ```
-【F:compile/fortran/compiler.go†L143-L179】
+【F:compile/fortran/compiler.go†L173-L233】
 
 Binary expressions only recognise a few operators. Unsupported ones result in an
 error:
@@ -95,7 +98,7 @@ default:
     return "", fmt.Errorf("unsupported op %s", op.Op)
 }
 ```
-【F:compile/fortran/compiler.go†L218-L223】
+【F:compile/fortran/compiler.go†L317-L323】
 
 `compileCallExpr` maps the built‑in `len()` function to Fortran’s `size()` and
 otherwise sanitises function names:
@@ -106,7 +109,7 @@ case "len":
     }
     return fmt.Sprintf("size(%s)", args[0]), nil
 ```
-【F:compile/fortran/compiler.go†L300-L305】
+【F:compile/fortran/compiler.go†L401-L411】
 
 ## gfortran helper
 

@@ -41,6 +41,26 @@ func sanitizeName(name string) string {
 	return s
 }
 
+func collectLoopVars(stmts []*parser.Statement, vars map[string]bool) {
+	for _, s := range stmts {
+		switch {
+		case s.For != nil:
+			vars[sanitizeName(s.For.Name)] = true
+			collectLoopVars(s.For.Body, vars)
+		case s.If != nil:
+			collectLoopVars(s.If.Then, vars)
+			cur := s.If
+			for cur.ElseIf != nil {
+				cur = cur.ElseIf
+				collectLoopVars(cur.Then, vars)
+			}
+			if len(cur.Else) > 0 {
+				collectLoopVars(cur.Else, vars)
+			}
+		}
+	}
+}
+
 // Compile converts prog into simple Fortran source.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -57,13 +77,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent++
 	c.writeln("implicit none")
 	// crude variable declarations for lets in main
+	declared := map[string]bool{}
 	for _, s := range mainStmts {
 		if s.Let != nil {
-			if s.Let.Name == "result" {
+			name := sanitizeName(s.Let.Name)
+			if name == "result" {
 				c.writeln("integer :: result(2)")
 			} else {
-				c.writeln("integer :: " + sanitizeName(s.Let.Name))
+				c.writeln("integer :: " + name)
 			}
+			declared[name] = true
+		}
+	}
+	loopVars := map[string]bool{}
+	collectLoopVars(mainStmts, loopVars)
+	for name := range loopVars {
+		if !declared[name] {
+			c.writeln("integer :: " + name)
 		}
 	}
 	for _, s := range mainStmts {
@@ -123,6 +153,13 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.writeln(fmt.Sprintf("integer, intent(in) :: %s", sanitizeName(p.Name)))
 	}
 	c.writeln(fmt.Sprintf("integer :: %s", resVar))
+	loopVars := map[string]bool{}
+	collectLoopVars(fn.Body, loopVars)
+	for name := range loopVars {
+		if name != resVar {
+			c.writeln("integer :: " + name)
+		}
+	}
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st, resVar); err != nil {
 			return err
