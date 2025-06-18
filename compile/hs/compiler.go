@@ -366,6 +366,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.List != nil:
@@ -485,6 +487,24 @@ func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 		}
 	}
 	return fmt.Sprintf("putStrLn (unwords [%s])", strings.Join(parts, ", ")), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	if fn.ExprBody != nil {
+		body, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(\\%s -> %s)", strings.Join(params, " "), body), nil
+	}
+	if len(fn.BlockBody) == 0 {
+		return fmt.Sprintf("(\\%s -> ())", strings.Join(params, " ")), nil
+	}
+	return "", fmt.Errorf("unsupported function expression")
 }
 
 func (c *Compiler) exprIsString(e *parser.Expr) bool {
