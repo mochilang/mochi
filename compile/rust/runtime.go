@@ -18,6 +18,13 @@ const (
 		"    m.contains_key(k)\n" +
 		"}\n"
 
+	helperConcat = "fn _concat<T: Clone>(a: &[T], b: &[T]) -> Vec<T> {\n" +
+		"    let mut res = Vec::with_capacity(a.len() + b.len());\n" +
+		"    res.extend_from_slice(a);\n" +
+		"    res.extend_from_slice(b);\n" +
+		"    res\n" +
+		"}\n"
+
 	helperInput = "fn _input() -> String {\n" +
 		"    use std::io::Read;\n" +
 		"    let mut s = String::new();\n" +
@@ -31,6 +38,7 @@ var helperMap = map[string]string{
 	"_avg":    helperAvg,
 	"_in_map": helperInMap,
 	"_input":  helperInput,
+	"_concat": helperConcat,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
