@@ -250,6 +250,11 @@ func TestSchemeCompiler_LeetCode1(t *testing.T) {
 func TestSchemeCompiler_LeetCode2(t *testing.T) {
         runLeetExample(t, 2)
 }
+
+// TestSchemeCompiler_LeetCode3 runs the longest-substring example.
+func TestSchemeCompiler_LeetCode3(t *testing.T) {
+        runLeetExample(t, 3)
+}
 ```
 
 Execute them with the `slow` tag as they invoke an external interpreter:

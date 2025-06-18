@@ -17,10 +17,11 @@ type Compiler struct {
 	indent int
 	env    *types.Env
 	inFun  bool
+	vars   map[string]string // local variable types within a function
 }
 
 // New creates a new Scheme compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, vars: map[string]string{}} }
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
@@ -65,6 +66,13 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	for i, p := range fn.Params {
 		params[i] = sanitizeName(p.Name)
 	}
+	prevVars := c.vars
+	c.vars = map[string]string{}
+	for _, p := range fn.Params {
+		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
+			c.vars[p.Name] = "string"
+		}
+	}
 	c.writeln(fmt.Sprintf("(define (%s %s)", sanitizeName(fn.Name), strings.Join(params, " ")))
 	c.indent++
 	c.writeln("(call/cc (lambda (return)")
@@ -89,6 +97,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		}
 	}
 	c.inFun = prev
+	c.vars = prevVars
 	c.indent--
 	c.writeln("))")
 	c.indent--
@@ -123,6 +132,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("(define %s %s)", sanitizeName(s.Let.Name), expr))
+		if s.Let.Type != nil && s.Let.Type.Simple != nil && *s.Let.Type.Simple == "string" {
+			c.vars[s.Let.Name] = "string"
+		}
 	case s.Var != nil:
 		expr := "()"
 		if s.Var.Value != nil {
@@ -138,6 +150,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 		}
+		if s.Var.Type != nil && s.Var.Type.Simple != nil && *s.Var.Type.Simple == "string" {
+			c.vars[s.Var.Name] = "string"
+		}
 	case s.Assign != nil:
 		rhs, err := c.compileExpr(s.Assign.Value)
 		if err != nil {
@@ -149,7 +164,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if err != nil {
 				return err
 			}
-			lhs = fmt.Sprintf("(list-ref %s %s)", lhs, ie)
+			if c.vars[s.Assign.Name] == "string" {
+				lhs = fmt.Sprintf("(string-ref %s %s)", lhs, ie)
+			} else {
+				lhs = fmt.Sprintf("(list-ref %s %s)", lhs, ie)
+			}
 		}
 		c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
 	case s.Return != nil:
@@ -339,7 +358,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("(list-ref %s %s)", expr, idx)
+			targetName := ""
+			if p.Target != nil && p.Target.Selector != nil {
+				targetName = p.Target.Selector.Root
+			}
+			if c.vars[targetName] == "string" {
+				expr = fmt.Sprintf("(string-ref %s %s)", expr, idx)
+			} else {
+				expr = fmt.Sprintf("(list-ref %s %s)", expr, idx)
+			}
 			continue
 		}
 		if op.Call != nil {
