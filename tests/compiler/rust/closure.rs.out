@@ -1,0 +1,8 @@
+fn makeAdder(n: i32) -> Box<dyn Fn(i32) -> i32> {
+    return Box::new(move |x: i32| x + n);
+}
+
+fn main() {
+    let mut add10 = makeAdder(10);
+    println!("{}", add10(7));
+}
