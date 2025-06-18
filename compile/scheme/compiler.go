@@ -123,13 +123,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(expr)
-	case s.For != nil:
-		return c.compileFor(s.For)
-	case s.If != nil:
-		return c.compileSimpleIf(s.If)
-	default:
-		// ignore unsupported statements
-	}
+       case s.For != nil:
+               return c.compileFor(s.For)
+       case s.If != nil:
+               return c.compileSimpleIf(s.If)
+       case s.While != nil:
+               return c.compileWhile(s.While)
+       default:
+               // ignore unsupported statements
+       }
 	return nil
 }
 
@@ -196,6 +198,32 @@ func (c *Compiler) compileSimpleIf(st *parser.IfStmt) error {
 	c.indent--
 	c.writeln(")")
 	return nil
+}
+
+func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
+       cond, err := c.compileExpr(st.Cond)
+       if err != nil {
+               return err
+       }
+       c.writeln("(let loop ()")
+       c.indent++
+       c.writeln(fmt.Sprintf("(if %s", cond))
+       c.indent++
+       c.writeln("(begin")
+       c.indent++
+       for _, s := range st.Body {
+               if err := c.compileStmt(s); err != nil {
+                       return err
+               }
+       }
+       c.writeln("(loop)")
+       c.indent--
+       c.writeln(")")
+       c.indent--
+       c.writeln("'())")
+       c.indent--
+       c.writeln(")")
+       return nil
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
