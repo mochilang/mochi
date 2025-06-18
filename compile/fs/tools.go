@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 )
 
 // EnsureDotnet verifies that the dotnet CLI is installed and attempts to
@@ -14,6 +15,32 @@ func EnsureDotnet() error { return ensureDotnet() }
 func ensureDotnet() error {
 	if _, err := exec.LookPath("dotnet"); err == nil {
 		return nil
+	}
+	switch runtime.GOOS {
+	case "darwin":
+		if _, err := exec.LookPath("brew"); err == nil {
+			cmd := exec.Command("brew", "install", "--cask", "dotnet-sdk")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("dotnet"); err == nil {
+				return nil
+			}
+		}
+	case "linux":
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			cmd := exec.Command("apt-get", "update")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			cmd = exec.Command("apt-get", "install", "-y", "dotnet-sdk-7.0")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("dotnet"); err == nil {
+				return nil
+			}
+		}
 	}
 	fmt.Println("🔧 Installing dotnet...")
 	home := os.Getenv("HOME")
