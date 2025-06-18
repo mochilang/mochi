@@ -3,6 +3,7 @@ package phpcode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -15,10 +16,11 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	env    *types.Env
+	locals map[string]bool
 }
 
 // New creates a new PHP compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[string]bool{}} }
 
 // Compile generates PHP code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -117,6 +119,7 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		val = v
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
+	c.locals[l.Name] = true
 	return nil
 }
 
@@ -131,6 +134,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		val = valExpr
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
+	c.locals[v.Name] = true
 	return nil
 }
 
@@ -322,6 +326,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			name += "->" + strings.Join(p.Selector.Tail, "->")
 		}
 		return name, nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.List != nil:
@@ -390,6 +396,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("(count(%[1]s) ? array_sum(%[1]s) / count(%[1]s) : 0)", args[0]), nil
 	default:
+		if c.locals[name] {
+			return fmt.Sprintf("$%s(%s)", sanitizeName(name), strings.Join(args, ", ")), nil
+		}
+		if c.env != nil {
+			if _, ok := c.env.GetFunc(name); ok {
+				return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
+			}
+		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
 }
@@ -431,4 +445,176 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return strconv.Quote(*l.Str), nil
 	}
 	return "", fmt.Errorf("unknown literal")
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = "$" + sanitizeName(p.Name)
+	}
+	sub := &Compiler{env: types.NewEnv(c.env)}
+	var body bytes.Buffer
+	sub.buf = body
+	if fn.ExprBody != nil {
+		expr, err := sub.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		sub.writeln("return " + expr + ";")
+	} else {
+		for _, st := range fn.BlockBody {
+			if err := sub.compileStmt(st); err != nil {
+				return "", err
+			}
+		}
+	}
+	captured := freeVars(fn, params)
+	use := ""
+	if len(captured) > 0 {
+		use = " use (" + strings.Join(captured, ", ") + ")"
+	}
+	bodyStr := indentBlock(sub.buf.String(), 1)
+	return fmt.Sprintf("function (%s)%s {\n%s}", strings.Join(params, ", "), use, bodyStr), nil
+}
+
+func indentBlock(s string, indent int) string {
+	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
+	pref := strings.Repeat("\t", indent)
+	for i, l := range lines {
+		lines[i] = pref + l
+	}
+	return strings.Join(lines, "\n") + "\n"
+}
+
+func freeVars(fn *parser.FunExpr, params []string) []string {
+	vars := map[string]struct{}{}
+	scanExpr(fn.ExprBody, vars)
+	for _, st := range fn.BlockBody {
+		scanStmt(st, vars)
+	}
+	m := make(map[string]struct{})
+	for v := range vars {
+		skip := false
+		for _, p := range params {
+			if p == "$"+sanitizeName(v) {
+				skip = true
+				break
+			}
+		}
+		if !skip {
+			m["$"+sanitizeName(v)] = struct{}{}
+		}
+	}
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
+}
+
+func scanStmt(s *parser.Statement, vars map[string]struct{}) {
+	switch {
+	case s.Let != nil:
+		scanExpr(s.Let.Value, vars)
+	case s.Var != nil:
+		scanExpr(s.Var.Value, vars)
+	case s.Assign != nil:
+		scanExpr(s.Assign.Value, vars)
+	case s.Return != nil:
+		scanExpr(s.Return.Value, vars)
+	case s.Expr != nil:
+		scanExpr(s.Expr.Expr, vars)
+	case s.For != nil:
+		scanExpr(s.For.Source, vars)
+		scanExpr(s.For.RangeEnd, vars)
+		for _, st := range s.For.Body {
+			scanStmt(st, vars)
+		}
+	case s.While != nil:
+		scanExpr(s.While.Cond, vars)
+		for _, st := range s.While.Body {
+			scanStmt(st, vars)
+		}
+	case s.If != nil:
+		scanExpr(s.If.Cond, vars)
+		for _, st := range s.If.Then {
+			scanStmt(st, vars)
+		}
+		if s.If.ElseIf != nil {
+			scanStmt(&parser.Statement{If: s.If.ElseIf}, vars)
+		}
+		for _, st := range s.If.Else {
+			scanStmt(st, vars)
+		}
+	}
+}
+
+func scanExpr(e *parser.Expr, vars map[string]struct{}) {
+	if e == nil {
+		return
+	}
+	scanUnary(e.Binary.Left, vars)
+	for _, op := range e.Binary.Right {
+		scanPostfix(op.Right, vars)
+	}
+}
+
+func scanUnary(u *parser.Unary, vars map[string]struct{}) {
+	if u == nil {
+		return
+	}
+	scanPostfix(u.Value, vars)
+}
+
+func scanPostfix(p *parser.PostfixExpr, vars map[string]struct{}) {
+	if p == nil {
+		return
+	}
+	scanPrimary(p.Target, vars)
+	for _, op := range p.Ops {
+		if op.Index != nil {
+			scanExpr(op.Index.Start, vars)
+			scanExpr(op.Index.End, vars)
+		}
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				scanExpr(a, vars)
+			}
+		}
+	}
+}
+
+func scanPrimary(p *parser.Primary, vars map[string]struct{}) {
+	if p == nil {
+		return
+	}
+	if p.Selector != nil {
+		vars[p.Selector.Root] = struct{}{}
+	}
+	if p.Group != nil {
+		scanExpr(p.Group, vars)
+	}
+	if p.FunExpr != nil {
+		scanExpr(p.FunExpr.ExprBody, vars)
+		for _, st := range p.FunExpr.BlockBody {
+			scanStmt(st, vars)
+		}
+	}
+	if p.List != nil {
+		for _, e := range p.List.Elems {
+			scanExpr(e, vars)
+		}
+	}
+	if p.Map != nil {
+		for _, it := range p.Map.Items {
+			scanExpr(it.Key, vars)
+			scanExpr(it.Value, vars)
+		}
+	}
+	if p.Call != nil {
+		for _, a := range p.Call.Args {
+			scanExpr(a, vars)
+		}
+	}
 }

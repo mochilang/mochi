@@ -1,0 +1,4 @@
+<?php
+foreach ((is_string("cat") ? str_split("cat") : "cat") as $ch) {
+	echo $ch, PHP_EOL;
+}

@@ -1,0 +1,11 @@
+<?php
+function Leaf() {
+	return ["__name" => "Leaf"];
+}
+
+function Node($left, $value, $right) {
+	return ["__name" => "Node", "left" => $left, "value" => $value, "right" => $right];
+}
+
+$tree = Node(Leaf(), 1, Leaf());
+echo ($tree["left"])["__name"], PHP_EOL;

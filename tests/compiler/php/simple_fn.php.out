@@ -1,0 +1,6 @@
+<?php
+function id($x) {
+	return $x;
+}
+
+echo id(123), PHP_EOL;
