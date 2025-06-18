@@ -254,7 +254,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if stmt.RangeEnd != nil {
 		c.writeln(fmt.Sprintf("for %s in %s..%s {", name, start, end))
 	} else {
-		if isStringLiteral(stmt.Source) {
+		if isStringLiteral(stmt.Source) || c.isStringExpr(stmt.Source.Binary.Left.Value) {
 			c.writeln(fmt.Sprintf("for %s in %s.chars() {", name, start))
 		} else {
 			c.writeln(fmt.Sprintf("for %s in %s {", name, start))
@@ -386,6 +386,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				c.use("_concat")
 				expr = fmt.Sprintf("_concat(&%s, &%s)", expr, r)
 				leftList = true
+			} else if c.isStringExpr(b.Left.Value) || c.isStringExpr(op.Right) {
+				expr = fmt.Sprintf("format!(\"{}{}\", %s, %s)", expr, r)
+				leftList = false
 			} else {
 				expr = fmt.Sprintf("%s + %s", expr, r)
 				leftList = false

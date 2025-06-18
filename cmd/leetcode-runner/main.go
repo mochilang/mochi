@@ -180,9 +180,8 @@ func buildOne(src, lang string, run bool) error {
 		ext = ".ml"
 	} else if lang == "fortran" {
 		ext = ".f90"
-	}
-	if lang == "fs" {
-		ext = ".fsx"
+	} else if lang == "rust" {
+		ext = ".rs"
 	}
 	if lang == "fs" {
 		ext = ".fsx"
