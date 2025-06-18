@@ -105,6 +105,12 @@ func TestRustCompiler_ValidPrograms(t *testing.T) {
 	t.Run("leetcode_3", func(t *testing.T) {
 		runRustLeet(t, 3)
 	})
+	t.Run("leetcode_4", func(t *testing.T) {
+		runRustLeet(t, 4)
+	})
+	t.Run("leetcode_5", func(t *testing.T) {
+		runRustLeet(t, 5)
+	})
 }
 
 func runRustProgram(t *testing.T, src string) {

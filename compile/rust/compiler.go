@@ -3,6 +3,7 @@ package rscode
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -16,6 +17,7 @@ type Compiler struct {
 	env     *types.Env
 	helpers map[string]bool
 	structs map[string]bool
+	retType string
 }
 
 // New creates a new Rust compiler instance.
@@ -79,6 +81,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
 			return err
+		}
+		if c.retType == "String" && c.isStringExpr(s.Return.Value.Binary.Left.Value) {
+			val = fmt.Sprintf("%s.to_string()", val)
 		}
 		c.writeln(fmt.Sprintf("return %s;", val))
 		return nil
@@ -151,7 +156,7 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		lhs = fmt.Sprintf("%s[%s as usize]", lhs, iexpr)
+		lhs = fmt.Sprintf("%s[(%s) as usize]", lhs, iexpr)
 	}
 	val, err := c.compileExpr(stmt.Value)
 	if err != nil {
@@ -322,14 +327,22 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		if i > 0 {
 			c.buf.WriteString(", ")
 		}
-		c.buf.WriteString(fmt.Sprintf("%s: %s", sanitizeName(p.Name), rustType(p.Type)))
+		typ := rustType(p.Type)
+		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
+			typ = "&str"
+		}
+		c.buf.WriteString(fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ))
 	}
 	c.buf.WriteString(")")
+	ret := ""
 	if fun.Return != nil {
-		c.buf.WriteString(" -> " + rustType(fun.Return))
+		ret = rustType(fun.Return)
+		c.buf.WriteString(" -> " + ret)
 	}
 	c.buf.WriteString(" {\n")
 	origEnv := c.env
+	origRet := c.retType
+	c.retType = ret
 	if c.env != nil {
 		child := types.NewEnv(c.env)
 		for _, p := range fun.Params {
@@ -346,6 +359,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.indent--
 	c.env = origEnv
+	c.retType = origRet
 	c.writeln("}")
 	return nil
 }
@@ -605,17 +619,47 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 		} else if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if c.isStringExpr(p) {
-				expr = fmt.Sprintf("%s.chars().nth(%s as usize).unwrap()", expr, idx)
-			} else if isStringLiteral(op.Index.Start) {
-				expr = fmt.Sprintf("%s[%s]", expr, idx)
+			idx := op.Index
+			if idx.Colon == nil {
+				iexpr, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return "", err
+				}
+				if c.isStringExpr(p) {
+					expr = fmt.Sprintf("%s.chars().nth((%s) as usize).unwrap()", expr, iexpr)
+				} else if isStringLiteral(idx.Start) {
+					expr = fmt.Sprintf("%s[%s]", expr, iexpr)
+				} else {
+					expr = fmt.Sprintf("%s[(%s) as usize]", expr, iexpr)
+				}
 			} else {
-				expr = fmt.Sprintf("%s[%s as usize]", expr, idx)
+				start := "0"
+				if idx.Start != nil {
+					s, err := c.compileExpr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := ""
+				if idx.End != nil {
+					e, err := c.compileExpr(idx.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				} else {
+					end = fmt.Sprintf("%s.len()", expr)
+				}
+				if c.isStringExpr(p) {
+					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_string()", expr, start, end)
+				} else {
+					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_vec()", expr, start, end)
+				}
 			}
+		} else if op.Cast != nil {
+			typ := rustType(op.Cast.Type)
+			expr = fmt.Sprintf("(%s as %s)", expr, typ)
 		}
 	}
 	return expr, nil
@@ -694,6 +738,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			s := strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64)
+			if !strings.ContainsAny(s, ".eE") && !strings.Contains(s, ".") {
+				s += ".0"
+			}
+			return s, nil
 		}
 		if p.Lit.Str != nil {
 			return fmt.Sprintf("%q", *p.Lit.Str), nil
