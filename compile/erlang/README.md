@@ -60,6 +60,9 @@ Run them with:
 go test ./compile/erlang -tags slow
 ```
 
+Golden files live under `tests/compiler/erl_simple` and `tests/compiler/erl`.
+Updating them can be done with `go test -tags slow -update ./compile/erlang`.
+
 `EnsureErlang` attempts to install Erlang via `apt-get` or Homebrew when tests are
 executed:
 
