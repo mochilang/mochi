@@ -67,6 +67,15 @@ toolchain. Run them with:
 go test ./compile/hs -tags slow
 ```
 
+## LeetCode Examples
+
+The `leetcode-runner` command can build and execute the first few
+LeetCode solutions using the Haskell backend:
+
+```bash
+go run ./cmd/leetcode-runner build --from 1 --to 5 --lang hs --run
+```
+
 ## Notes
 
 The Haskell backend currently supports a limited subset of Mochi: function

@@ -178,6 +178,8 @@ func zeroValue(t types.Type) string {
 		return "False"
 	case types.ListType:
 		return "[]"
+	case types.FuncType, types.AnyType:
+		return "undefined"
 	default:
 		return "()"
 	}

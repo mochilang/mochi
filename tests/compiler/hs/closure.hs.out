@@ -27,8 +27,8 @@ _input :: IO String
 _input = getLine
 
 
-makeAdder n = fromMaybe ((\x -> (x + n))) $
-    Nothing
+makeAdder n = fromMaybe (undefined) $
+    Just ((\x -> (x + n)))
 
 main :: IO ()
 main = do
