@@ -153,12 +153,35 @@ for i in 1..4 {
 Produces Scheme code like:
 ```scheme
 (let loop ((i 1))
-	(if (< i 4)
-		(begin
-			(begin (display i) (newline))
-			(loop (+ i 1))
-		)
-	'())
+        (if (< i 4)
+                (begin
+                        (begin (display i) (newline))
+                        (loop (+ i 1))
+                )
+        '())
+)
+```
+
+Compiling a while loop:
+```mochi
+var i = 0
+while i < 3 {
+  print(i)
+  i = i + 1
+}
+```
+
+Produces Scheme code like:
+```scheme
+(define i 0)
+(let loop ()
+        (if (< i 3)
+                (begin
+                        (begin (display i) (newline))
+                        (set! i (+ i 1))
+                        (loop)
+                )
+        '())
 )
 ```
 
