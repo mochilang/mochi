@@ -56,7 +56,27 @@ defmodule Main do
 			end)
 			_ = end_
 			_ = start
-			throw {:return, Enum.at(s, start)}
+			res = ""
+			_ = res
+			k = start
+			_ = k
+			t2 = fn t2, k, res ->
+				try do
+					if (k <= end_) do
+						res = (res + Enum.at(s, k))
+						k = (k + 1)
+						t2.(t2, k, res)
+					else
+						{:ok, k, res}
+					end
+				catch :break ->
+					{:ok, k, res}
+				end
+			end
+			{_, k, res} = t2.(t2, k, res)
+			_ = k
+			_ = res
+			throw {:return, res}
 		catch {:return, v} -> v end
 	end
 	
