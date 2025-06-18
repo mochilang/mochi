@@ -1,0 +1,8 @@
+object Main {
+	def main(args: Array[String]): Unit = {
+		var scores = scala.collection.mutable.Map("a" -> 1)
+		scores("b") = 2
+		println(scores("b"))
+	}
+}
+

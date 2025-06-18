@@ -1,0 +1,7 @@
+object Main {
+	def main(args: Array[String]): Unit = {
+		val value = (((1 + 2)) * 3)
+		println(value)
+	}
+}
+

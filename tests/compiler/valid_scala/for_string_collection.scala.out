@@ -1,0 +1,8 @@
+object Main {
+	def main(args: Array[String]): Unit = {
+		for (ch <- "hi") {
+			println(ch)
+		}
+	}
+}
+
