@@ -1,0 +1,12 @@
+(defn id [x]
+  (try
+    (throw (ex-info "return" {:value x}))
+  (catch clojure.lang.ExceptionInfo e
+    (if (= (.getMessage e) "return")
+      (:value (ex-data e))
+    (throw e)))
+  )
+)
+
+(println (id 123))
+
