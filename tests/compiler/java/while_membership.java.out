@@ -1,4 +1,4 @@
-public class Main {
+class Main {
 	public static void main(String[] args) {
 		java.util.Map<Integer, Boolean> set = new java.util.HashMap<>();
 		for (var n : new int[]{1, 2, 3}) {
