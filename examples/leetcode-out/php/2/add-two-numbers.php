@@ -23,3 +23,24 @@ function addTwoNumbers($l1, $l2) {
 	return $result;
 }
 
+function test_example_1() {
+        assert(addTwoNumbers([2, 4, 3], [5, 6, 4]) == [7, 0, 8]);
+}
+
+function test_example_2() {
+        assert(addTwoNumbers([0], [0]) == [0]);
+}
+
+function test_example_3() {
+        assert(addTwoNumbers([9, 9, 9, 9, 9, 9, 9], [9, 9, 9, 9]) == [8, 9, 9, 9, 0, 0, 0, 1]);
+}
+
+function main() {
+        assert_options(ASSERT_ACTIVE, 1);
+        assert_options(ASSERT_WARNING, 1);
+        test_example_1();
+        test_example_2();
+        test_example_3();
+}
+
+main();

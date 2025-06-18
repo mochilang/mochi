@@ -37,7 +37,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// main body
+	// test blocks
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
+	// main function
+	c.writeln("function main() {")
+	c.indent++
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Type != nil || s.Test != nil {
 			continue
@@ -46,6 +58,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(name + "();")
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	c.writeln("main();")
 	return c.buf.Bytes(), nil
 }
 
@@ -99,6 +121,20 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.writeln(fmt.Sprintf("function %s(%s) {", sanitizeName(fn.Name), strings.Join(params, ", ")))
 	c.indent++
 	for _, st := range fn.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("function %s() {", name))
+	c.indent++
+	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
@@ -376,7 +412,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		return fmt.Sprintf("count(%s)", args[0]), nil
+		return fmt.Sprintf("(is_array(%[1]s) ? count(%[1]s) : strlen(%[1]s))", args[0]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")

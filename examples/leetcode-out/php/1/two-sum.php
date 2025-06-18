@@ -11,6 +11,10 @@ function twoSum($nums, $target) {
 	return [-1, -1];
 }
 
-$result = twoSum([2, 7, 11, 15], 9);
-echo $result[0], PHP_EOL;
-echo $result[1], PHP_EOL;
+function main() {
+	$result = twoSum([2, 7, 11, 15], 9);
+	echo $result[0], PHP_EOL;
+	echo $result[1], PHP_EOL;
+}
+
+main();
