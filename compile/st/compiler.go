@@ -63,6 +63,31 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.funParams[fn.Name] = names
 	vars := collectVars(fn.Body)
+	if c.indent > 0 {
+		vars = append(vars, fn.Name)
+	}
+
+	if c.indent > 0 {
+		blockHeader := "[:" + fn.Params[0].Name
+		for _, p := range fn.Params[1:] {
+			blockHeader += " :" + p.Name
+		}
+		blockHeader += " |"
+		if len(vars) > 0 {
+			blockHeader += " | " + strings.Join(vars, " ") + " |"
+		}
+		c.writeln(fmt.Sprintf("%s := %s", fn.Name, blockHeader))
+		c.indent++
+		for _, st := range fn.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("].")
+		return nil
+	}
+
 	c.writeln("!Main class methodsFor: 'mochi'!")
 	if len(vars) > 0 {
 		c.writeln(header + " | " + strings.Join(vars, " ") + " |")
@@ -101,6 +126,9 @@ func collectVars(stmts []*parser.Statement) []string {
 					visit(s.If.ElseIf.Then)
 				}
 				visit(s.If.Else)
+			case s.Fun != nil:
+				set[s.Fun.Name] = true
+				visit(s.Fun.Body)
 			}
 		}
 	}
@@ -139,6 +167,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -153,7 +183,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if f.RangeEnd == nil {
-		return fmt.Errorf("collection loops not supported")
+		src, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s do: [:%s |", src, f.Name))
+		c.indent++
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("]")
+		c.writeln(".")
+		return nil
 	}
 	start, err := c.compileExpr(f.Source)
 	if err != nil {
@@ -195,12 +239,23 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
-	if len(a.Index) > 0 {
-		return fmt.Errorf("index assignment not supported")
-	}
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
+	}
+	if len(a.Index) > 0 {
+		idx, err := c.compileExpr(a.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		if t, err := c.env.GetVar(a.Name); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				c.writeln(fmt.Sprintf("%s at: %s put: %s.", a.Name, idx, val))
+				return nil
+			}
+		}
+		c.writeln(fmt.Sprintf("%s at: %s + 1 put: %s.", a.Name, idx, val))
+		return nil
 	}
 	c.writeln(fmt.Sprintf("%s := %s.", a.Name, val))
 	return nil
@@ -287,6 +342,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				leftList = false
 				leftStr = false
 			}
+		case "in":
+			if rlist || rstr {
+				expr = fmt.Sprintf("(%s includes: %s)", right, left)
+			} else if isMapPostfix(op.Right, c.env) {
+				expr = fmt.Sprintf("(%s includesKey: %s)", right, left)
+			} else {
+				expr = fmt.Sprintf("(%s includes: %s)", right, left)
+			}
+			leftList = false
+			leftStr = false
 		default:
 			expr = fmt.Sprintf("(%s %s %s)", expr, mapOp(op.Op), right)
 			leftList = false
@@ -308,6 +373,8 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		switch u.Ops[i] {
 		case "!":
 			val = fmt.Sprintf("(%s) not", val)
+		case "-":
+			val = fmt.Sprintf("(%s negated)", val)
 		default:
 			val = fmt.Sprintf("%s%s", u.Ops[i], val)
 		}
@@ -345,7 +412,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
+				if isMapPostfix(p, c.env) {
+					expr = fmt.Sprintf("(%s at: %s)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
+				}
 			}
 		}
 	}
@@ -369,6 +440,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "Array with: " + strings.Join(elems, " with: "), nil
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Group != nil:
@@ -405,10 +478,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
 		return fmt.Sprintf("%s size", args[0]), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("(%s printString)", args[0]), nil
 	default:
 		params, ok := c.funParams[name]
 		if !ok {
-			return "", fmt.Errorf("unsupported call %s", name)
+			call := name
+			for _, a := range args {
+				call += " value: " + a
+			}
+			return call, nil
 		}
 		parts := []string{"Main", name + ":"}
 		for i, p := range params {
@@ -457,6 +539,25 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	return "", fmt.Errorf("unknown literal")
 }
 
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	if len(m.Items) == 0 {
+		return "Dictionary new", nil
+	}
+	pairs := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		pairs[i] = fmt.Sprintf("%s -> %s", k, v)
+	}
+	return "Dictionary from: {" + strings.Join(pairs, ". ") + "}", nil
+}
+
 func isListUnary(u *parser.Unary, env *types.Env) bool {
 	if u == nil || len(u.Ops) != 0 {
 		return false
@@ -498,6 +599,30 @@ func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
 		if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isMapUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	return isMapPostfix(u.Value, env)
+}
+
+func isMapPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil || len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.Map != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+		if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+			if _, ok := t.(types.MapType); ok {
 				return true
 			}
 		}

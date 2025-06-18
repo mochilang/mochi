@@ -13,7 +13,7 @@ twoSum: nums target: target | i j n |
 		.
 	]
 	.
-	^ Array with: -1 with: -1
+	^ Array with: (1 negated) with: (1 negated)
 !
 
 !!
