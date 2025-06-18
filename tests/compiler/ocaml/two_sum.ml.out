@@ -6,7 +6,7 @@ let rec twoSum nums target =
       for j = i + 1 to n - 1 do
         if (List.nth nums i) + (List.nth nums j) = target then begin
           raise (Return_0 [i; j])
-        end
+        end;
       done;
     done;
     raise (Return_0 [-1; -1])
