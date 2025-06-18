@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	javacode "mochi/compile/java"
@@ -41,7 +42,11 @@ func TestJavaCompiler_SubsetPrograms(t *testing.T) {
 		if out, err := exec.Command("javac", file).CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("❌ javac error: %w\n%s", err, out)
 		}
-		out, err := exec.Command("java", "-cp", dir, "Main").CombinedOutput()
+		cmd := exec.Command("java", "-cp", dir, "Main")
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("❌ java run error: %w\n%s", err, out)
 		}
