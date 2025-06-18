@@ -312,6 +312,19 @@ func runOutput(file, lang string) error {
 		runCmd.Stdout = os.Stdout
 		runCmd.Stderr = os.Stderr
 		return runCmd.Run()
+	case "fortran":
+		gfortran, err := ftncode.EnsureFortran()
+		if err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, ".f90")
+		if out, err := exec.Command(gfortran, file, "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("gfortran: %v\n%s", err, string(out))
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
