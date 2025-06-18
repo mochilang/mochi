@@ -108,3 +108,71 @@ func TestRacketCompiler_GoldenOutput(t *testing.T) {
 		return bytes.TrimSpace(code), nil
 	})
 }
+
+func TestRacketCompiler_LeetCodeExamples(t *testing.T) {
+	if err := rktcode.EnsureRacket(); err != nil {
+		t.Skipf("racket not installed: %v", err)
+	}
+	runRacketLeetExample(t, 1)
+}
+
+func runRacketLeetExample(t *testing.T, id int) {
+	t.Helper()
+	root := findRoot(t)
+	dir := filepath.Join(root, "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			c := rktcode.New(env)
+			code, err := c.Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.rkt")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("racket", file)
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("racket run error: %v\n%s", err, out)
+			}
+			_ = out
+		})
+	}
+}
+
+func findRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found")
+	return ""
+}
