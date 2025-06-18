@@ -94,6 +94,11 @@ func TestRustCompiler_ValidPrograms(t *testing.T) {
 			runRustProgram(t, src)
 		})
 	}
+
+	// Also ensure the bundled LeetCode example still compiles and runs.
+	t.Run("leetcode_1", func(t *testing.T) {
+		runRustLeetExample(t)
+	})
 }
 
 func runRustProgram(t *testing.T, src string) {
@@ -138,6 +143,43 @@ func runRustProgram(t *testing.T, src string) {
 	want = bytes.TrimSpace(want)
 	if !bytes.Equal(got, want) {
 		t.Errorf("unexpected output for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", path, got, want)
+	}
+}
+
+// runRustLeetExample compiles and runs the LeetCode two-sum example to ensure
+// real-world samples keep working.
+func runRustLeetExample(t *testing.T) {
+	root := findRoot(t)
+	path := filepath.Join(root, "examples", "leetcode", "1", "two-sum.mochi")
+	prog, err := parser.Parse(path)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	c := rscode.New(env)
+	code, err := c.Compile(prog)
+	if err != nil {
+		t.Fatalf("compile error: %v", err)
+	}
+	dir := t.TempDir()
+	file := filepath.Join(dir, "main.rs")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	exe := filepath.Join(dir, "main")
+	if out, err := exec.Command("rustc", file, "-O", "-o", exe).CombinedOutput(); err != nil {
+		t.Fatalf("rustc error: %v\n%s", err, out)
+	}
+	out, err := exec.Command(exe).CombinedOutput()
+	if err != nil {
+		t.Fatalf("run error: %v\n%s", err, out)
+	}
+	got := strings.TrimSpace(string(out))
+	if got != "0\n1" {
+		t.Fatalf("unexpected output: %q", got)
 	}
 }
 
