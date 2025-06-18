@@ -409,6 +409,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			// If the key is a simple selector like `n`, treat it as
+			// an atom instead of a variable name.
+			if sel := it.Key.Binary; sel != nil && sel.Left != nil && len(sel.Right) == 0 {
+				u := sel.Left
+				if len(u.Ops) == 0 && u.Value != nil {
+					p := u.Value
+					if len(p.Ops) == 0 && p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+						k = p.Target.Selector.Root
+					}
+				}
+			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
