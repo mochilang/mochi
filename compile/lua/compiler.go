@@ -327,15 +327,36 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if isStringLiteral(op.Index.Start) {
-				expr = fmt.Sprintf("%s[%s]", expr, idx)
+			if op.Index.Colon != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := "nil"
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				c.helpers["slice"] = true
+				expr = fmt.Sprintf("__slice(%s, %s, %s)", expr, start, end)
 			} else {
-				c.helpers["index"] = true
-				expr = fmt.Sprintf("__index(%s, %s)", expr, idx)
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if isStringLiteral(op.Index.Start) {
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				} else {
+					c.helpers["index"] = true
+					expr = fmt.Sprintf("__index(%s, %s)", expr, idx)
+				}
 			}
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
@@ -898,6 +919,46 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("end")
 		c.writeln("if i < 1 or i > len then error('index out of range') end")
 		c.writeln("return string.sub(s, i, i)")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["slice"] {
+		c.writeln("function __slice(obj, i, j)")
+		c.indent++
+		c.writeln("if i == nil then i = 0 end")
+		c.writeln("if type(obj) == 'string' then")
+		c.indent++
+		c.writeln("local len = #obj")
+		c.writeln("if j == nil then j = len end")
+		c.writeln("if i < 0 then i = len + i end")
+		c.writeln("if j < 0 then j = len + j end")
+		c.writeln("if i < 0 then i = 0 end")
+		c.writeln("if j > len then j = len end")
+		c.writeln("return string.sub(obj, i+1, j)")
+		c.indent--
+		c.writeln("elseif type(obj) == 'table' then")
+		c.indent++
+		c.writeln("local len = #obj")
+		c.writeln("if j == nil then j = len end")
+		c.writeln("if i < 0 then i = len + i end")
+		c.writeln("if j < 0 then j = len + j end")
+		c.writeln("if i < 0 then i = 0 end")
+		c.writeln("if j > len then j = len end")
+		c.writeln("local out = {}")
+		c.writeln("for k = i+1, j do")
+		c.indent++
+		c.writeln("out[#out+1] = obj[k]")
+		c.indent--
+		c.writeln("end")
+		c.writeln("return out")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("return {}")
+		c.indent--
+		c.writeln("end")
 		c.indent--
 		c.writeln("end")
 		c.writeln("")
