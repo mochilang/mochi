@@ -238,13 +238,16 @@ scala Main
 
 ## Tests
 
-Golden tests under `compile/scala` are tagged `slow` as they invoke the Scala toolchain. They compile each program in `tests/compiler/scala`, run the resulting binary and compare its output:
+Golden tests under `compile/scala` are tagged `slow` as they invoke the Scala toolchain. They compile programs in `tests/compiler/scala` as well as a subset under `tests/compiler/valid_scala`, run the resulting binaries and compare their output:
 
 ```go
 func TestScalaCompiler_SubsetPrograms(t *testing.T) {
         if err := scalacode.EnsureScala(); err != nil {
                 t.Skipf("scala not installed: %v", err)
         }
+        golden.Run(t, "tests/compiler/valid_scala", ".mochi", ".out", func(src string) ([]byte, error) {
+                ...
+        })
         golden.Run(t, "tests/compiler/scala", ".mochi", ".out", func(src string) ([]byte, error) {
                 ...
         })

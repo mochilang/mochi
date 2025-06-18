@@ -414,6 +414,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + expr + ")", nil
 	case p.Call != nil:
 		return c.compileCall(p.Call, "")
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	}
@@ -465,6 +467,53 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 }
 
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		typ := scalaType(c.resolveTypeRef(p.Type))
+		params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ)
+	}
+
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	for _, p := range fn.Params {
+		if p.Type != nil {
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		}
+	}
+	c.env = child
+
+	var body string
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+		body = expr
+	} else {
+		var buf bytes.Buffer
+		savedBuf := c.buf
+		savedIndent := c.indent
+		c.buf = buf
+		c.indent = 0
+		for _, st := range fn.BlockBody {
+			if err := c.compileStmt(st); err != nil {
+				c.env = origEnv
+				c.buf = savedBuf
+				c.indent = savedIndent
+				return "", err
+			}
+		}
+		body = "{\n" + indentBlock(c.buf.String(), 1) + "}"
+		c.buf = savedBuf
+		c.indent = savedIndent
+	}
+	c.env = origEnv
+
+	return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), body), nil
+}
+
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	if t == nil {
 		return types.AnyType{}
@@ -489,6 +538,17 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 			return types.MapType{Key: c.resolveTypeRef(t.Generic.Args[0]), Value: c.resolveTypeRef(t.Generic.Args[1])}
 		}
 	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.resolveTypeRef(p)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = c.resolveTypeRef(t.Fun.Return)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
 	return types.AnyType{}
 }
 
@@ -506,6 +566,19 @@ func scalaType(t types.Type) string {
 		return "List[" + scalaType(tt.Elem) + "]"
 	case types.MapType:
 		return "scala.collection.mutable.Map[" + scalaType(tt.Key) + ", " + scalaType(tt.Value) + "]"
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = scalaType(p)
+		}
+		ret := "Unit"
+		if tt.Return != nil {
+			ret = scalaType(tt.Return)
+		}
+		if len(params) == 1 {
+			return fmt.Sprintf("(%s => %s)", params[0], ret)
+		}
+		return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), ret)
 	default:
 		return "Any"
 	}

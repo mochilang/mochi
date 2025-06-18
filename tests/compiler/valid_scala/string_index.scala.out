@@ -1,0 +1,7 @@
+object Main {
+	def main(args: Array[String]): Unit = {
+		val text = "hello"
+		println(text(1))
+	}
+}
+
