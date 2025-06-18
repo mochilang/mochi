@@ -26,18 +26,29 @@ func New(env *types.Env) *Compiler {
 // Compile generates Clojure code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		switch {
+		case s.Fun != nil:
 			if err := c.compileFun(s.Fun); err != nil {
 				return nil, err
 			}
 			c.writeln("")
-		} else {
+		case s.Test != nil:
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		default:
 			c.mainStmts = append(c.mainStmts, s)
 		}
 	}
 	for _, s := range c.mainStmts {
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			c.writeln("(" + "test_" + sanitizeName(s.Test.Name) + ")")
 		}
 	}
 	return c.buf.Bytes(), nil
@@ -76,6 +87,30 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeIndent()
+	c.buf.WriteString("(defn " + name + " []\n")
+	c.indent++
+	for _, s := range t.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(assert %s)", expr))
+	return nil
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
@@ -92,6 +127,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -230,28 +267,42 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("(if " + cond)
-	c.indent++
-	for _, s := range st.Then {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
-	}
-	if len(st.Else) > 0 {
-		c.indent--
-		c.writeIndent()
-		c.buf.WriteString("\n")
-		c.writeln("(do")
+	if len(st.Else) == 0 {
+		c.writeln("(when " + cond)
 		c.indent++
-		for _, s := range st.Else {
+		for _, s := range st.Then {
 			if err := c.compileStmt(s); err != nil {
 				return err
 			}
 		}
 		c.indent--
 		c.writeln(")")
+		return nil
+	}
+
+	c.writeln("(if " + cond)
+	c.indent++
+	c.writeln("(do")
+	c.indent++
+	for _, s := range st.Then {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
 	}
 	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeIndent()
+	c.buf.WriteString("\n")
+	c.writeln("(do")
+	c.indent++
+	for _, s := range st.Else {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln(")")
 	c.writeln(")")
 	return nil
 }
@@ -268,29 +319,74 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(b.Right) == 0 {
-		return left, nil
-	}
-	expr := left
-	for _, op := range b.Right {
-		rhs, err := c.compilePostfix(op.Right)
+	operands := []string{left}
+	ops := []string{}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		opName := op.Op
-		switch opName {
-		case "%":
-			opName = "mod"
-		case "&&":
-			opName = "and"
-		case "||":
-			opName = "or"
-		case "!=":
-			opName = "not="
-		}
-		expr = fmt.Sprintf("(%s %s %s)", opName, expr, rhs)
+		operands = append(operands, r)
+		ops = append(ops, part.Op)
 	}
-	return expr, nil
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!="},
+		{"&&"},
+		{"||"},
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(lvl, ops[i]) {
+				i++
+				continue
+			}
+			op := ops[i]
+			l := operands[i]
+			r := operands[i+1]
+			opName := op
+			switch opName {
+			case "%":
+				opName = "mod"
+			case "/":
+				opName = "quot"
+			case "&&":
+				opName = "and"
+			case "||":
+				opName = "or"
+			case "==":
+				opName = "="
+			case "!=":
+				opName = "not="
+			}
+			expr := ""
+			if op == "+" && (strings.HasPrefix(l, "[") || strings.HasPrefix(r, "[")) {
+				expr = fmt.Sprintf("(vec (concat %s %s))", l, r)
+			} else {
+				expr = fmt.Sprintf("(%s %s %s)", opName, l, r)
+			}
+			operands[i] = expr
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
+		}
+	}
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected binary expr")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
