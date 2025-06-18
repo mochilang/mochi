@@ -334,7 +334,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if isStringLiteral(op.Index.Start) {
 				expr = fmt.Sprintf("%s[%s]", expr, idx)
 			} else {
-				expr = fmt.Sprintf("%s[(%s)+1]", expr, idx)
+				c.helpers["index"] = true
+				expr = fmt.Sprintf("__index(%s, %s)", expr, idx)
 			}
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
@@ -821,6 +822,48 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("local sum = 0")
 		c.writeln("for _, it in ipairs(items) do sum = sum + it end")
 		c.writeln("return sum / #items")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["index"] {
+		c.writeln("function __index(obj, i)")
+		c.indent++
+		c.writeln("if type(obj) == 'string' then")
+		c.indent++
+		c.helpers["indexString"] = true
+		c.writeln("return __indexString(obj, i)")
+		c.indent--
+		c.writeln("elseif type(obj) == 'table' then")
+		c.indent++
+		c.writeln("return obj[(i)+1]")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("error('cannot index')")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["indexString"] {
+		c.writeln("function __indexString(s, i)")
+		c.indent++
+		c.writeln("local len = #s")
+		c.writeln("if i < 0 then")
+		c.indent++
+		c.writeln("i = len + i + 1")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("i = i + 1")
+		c.indent--
+		c.writeln("end")
+		c.writeln("if i < 1 or i > len then error('index out of range') end")
+		c.writeln("return string.sub(s, i, i)")
 		c.indent--
 		c.writeln("end")
 		c.writeln("")
