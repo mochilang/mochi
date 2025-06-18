@@ -328,6 +328,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			expr = fmt.Sprintf("(= %s %s)", expr, right)
 		case "!=":
 			expr = fmt.Sprintf("(not (= %s %s))", expr, right)
+		case "&&":
+			expr = fmt.Sprintf("(and %s %s)", expr, right)
+		case "||":
+			expr = fmt.Sprintf("(or %s %s)", expr, right)
 		case "<", "<=", ">", ">=":
 			expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
 		default:
