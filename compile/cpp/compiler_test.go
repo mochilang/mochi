@@ -27,7 +27,7 @@ func TestCPPCompiler_AddTwoNumbers(t *testing.T) {
 }
 
 func TestCPPCompiler_LeetCodeExamples(t *testing.T) {
-	runCPPLeetRange(t, 1, 3)
+	runCPPLeetRange(t, 1, 5)
 }
 
 func TestCPPCompiler_SubsetPrograms(t *testing.T) {

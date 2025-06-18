@@ -330,8 +330,21 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 	expr := c.compilePrimary(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx := c.compileExpr(op.Index.Start)
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
+			// Handle simple index or slice
+			if op.Index.Colon == nil {
+				idx := c.compileExpr(op.Index.Start)
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
+			} else {
+				start := "0"
+				if op.Index.Start != nil {
+					start = c.compileExpr(op.Index.Start)
+				}
+				end := fmt.Sprintf("%s.size()", expr)
+				if op.Index.End != nil {
+					end = c.compileExpr(op.Index.End)
+				}
+				expr = fmt.Sprintf("%s.substr(%s, %s - %s)", expr, start, end, start)
+			}
 		}
 	}
 	return expr
