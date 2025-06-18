@@ -72,6 +72,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
+	case s.Var != nil:
+		return c.compileVar(s.Var)
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -79,8 +81,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		c.writeln(fmt.Sprintf("(return %s)", val))
 		return nil
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.While != nil:
+		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Expr != nil:
@@ -105,6 +111,31 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		val = expr
 	}
 	c.writeln(fmt.Sprintf("(define %s %s)", sanitizeName(l.Name), val))
+	return nil
+}
+
+func (c *Compiler) compileVar(v *parser.VarStmt) error {
+	val := "(void)"
+	if v.Value != nil {
+		expr, err := c.compileExpr(v.Value)
+		if err != nil {
+			return err
+		}
+		val = expr
+	}
+	c.writeln(fmt.Sprintf("(define %s %s)", sanitizeName(v.Name), val))
+	return nil
+}
+
+func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	if len(a.Index) > 0 {
+		return fmt.Errorf("indexed assignment unsupported")
+	}
+	val, err := c.compileExpr(a.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(set! %s %s)", sanitizeName(a.Name), val))
 	return nil
 }
 
@@ -138,44 +169,65 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	cond, err := c.compileExpr(w.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("(let loop ()")
+	c.indent++
+	c.writeln(fmt.Sprintf("(when %s", cond))
+	c.indent++
+	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.writeln("(loop)))")
+	c.indent--
+	c.indent--
+	c.writeln(")")
+	return nil
+}
+
 func (c *Compiler) compileIf(s *parser.IfStmt) error {
-        cond, err := c.compileExpr(s.Cond)
-        if err != nil {
-                return err
-        }
-        c.writeln(fmt.Sprintf("(if %s", cond))
-        c.indent++
-        // then branch
-        c.writeln("(begin")
-        c.indent++
-        for _, st := range s.Then {
-                if err := c.compileStmt(st); err != nil {
-                        return err
-                }
-        }
-        c.indent--
-        c.writeln(")")
-        // else branch
-        if s.ElseIf != nil {
-                if err := c.compileIf(s.ElseIf); err != nil {
-                        return err
-                }
-        } else if len(s.Else) > 0 {
-                c.writeln("(begin")
-                c.indent++
-                for _, st := range s.Else {
-                        if err := c.compileStmt(st); err != nil {
-                                return err
-                        }
-                }
-                c.indent--
-                c.writeln(")")
-        } else {
-                c.writeln("(void)")
-        }
-        c.indent--
-        c.writeln(")")
-        return nil
+	cond, err := c.compileExpr(s.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(if %s", cond))
+	c.indent++
+	// then branch
+	c.writeln("(begin")
+	c.indent++
+	for _, st := range s.Then {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln(")")
+	// else branch
+	if s.ElseIf != nil {
+		if err := c.compileIf(s.ElseIf); err != nil {
+			return err
+		}
+	} else if len(s.Else) > 0 {
+		c.writeln("(begin")
+		c.indent++
+		for _, st := range s.Else {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln(")")
+	} else {
+		c.writeln("(void)")
+	}
+	c.indent--
+	c.writeln(")")
+	return nil
 }
 
 // --- Expressions ---
@@ -207,6 +259,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			val = fmt.Sprintf("(- %s %s)", val, rhs)
 		case "*":
 			val = fmt.Sprintf("(* %s %s)", val, rhs)
+		case "%":
+			val = fmt.Sprintf("(modulo %s %s)", val, rhs)
 		case "/":
 			val = fmt.Sprintf("(/ %s %s)", val, rhs)
 		case "==":
