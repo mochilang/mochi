@@ -209,6 +209,14 @@ func TestCobolCompiler_LeetCodeExamples(t *testing.T) {
 					if string(got) != "0\n1" {
 						t.Fatalf("unexpected output: %s", got)
 					}
+				} else {
+					str := string(out)
+					if !strings.Contains(str, "ok") {
+						t.Fatalf("no test output: %s", str)
+					}
+					if strings.Contains(str, "fail") {
+						t.Fatalf("test failed: %s", str)
+					}
 				}
 			})
 		}
@@ -217,4 +225,6 @@ func TestCobolCompiler_LeetCodeExamples(t *testing.T) {
 	runExample(1)
 	runExample(2)
 	runExample(3)
+	runExample(4)
+	runExample(5)
 }
