@@ -351,6 +351,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 			if err != nil {
 				return "", err
 			}
+		} else if op.Cast != nil {
+			typ := c.zigType(op.Cast.Type)
+			expr = fmt.Sprintf("@as(%s, %s)", typ, expr)
 		}
 	}
 	return expr, nil
