@@ -78,6 +78,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Break != nil:
+		c.writeln("break")
+		return nil
+	case s.Continue != nil:
+		c.writeln("continue")
+		return nil
 	case s.Return != nil:
 		return c.compileReturn(s.Return)
 	default:
