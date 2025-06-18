@@ -103,6 +103,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Break != nil:
@@ -404,6 +406,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
 		}
 		return fmt.Sprintf("%s(%s)", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Group != nil:
@@ -506,7 +512,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	for i, p := range fun.Params {
 		params[i] = sanitizeName(p.Name)
 	}
-	c.writeln(fmt.Sprintf("List<int> %s(%s) {", name, strings.Join(params, ", ")))
+	c.writeln(fmt.Sprintf("dynamic %s(%s) {", name, strings.Join(params, ", ")))
 	c.indent++
 	for _, st := range fun.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -516,6 +522,31 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), expr), nil
+	}
+	sub := &Compiler{env: types.NewEnv(c.env), imports: c.imports}
+	for _, p := range fn.Params {
+		sub.env.SetVar(p.Name, types.AnyType{}, true)
+	}
+	for _, s := range fn.BlockBody {
+		if err := sub.compileStmt(s); err != nil {
+			return "", err
+		}
+	}
+	body := indentBlock(sub.buf.String(), 1)
+	return fmt.Sprintf("(%s) {\n%s}", strings.Join(params, ", "), body), nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -635,6 +666,61 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\t_res = items;\n")
 	}
 	b.WriteString("\treturn _res;\n")
+	b.WriteString("})()")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(() {\n")
+	b.WriteString("\tvar _t = " + target + ";\n")
+	for _, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			b.WriteString("\treturn " + res + ";\n")
+			b.WriteString("})()")
+			return b.String(), nil
+		}
+		cond := ""
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond = fmt.Sprintf("_t is %s", sanitizeName(call.Func))
+				names := []string{}
+				vals := []string{}
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						names = append(names, sanitizeName(id))
+						field := sanitizeName(st.Order[idx])
+						vals = append(vals, fmt.Sprintf("(_t as %s).%s", sanitizeName(call.Func), field))
+					}
+				}
+				if len(names) > 0 {
+					res = fmt.Sprintf("((%s) { return %s; })(%s)", strings.Join(names, ", "), res, strings.Join(vals, ", "))
+				}
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond = fmt.Sprintf("_t is %s", sanitizeName(ident))
+			}
+		}
+		if cond == "" {
+			pat, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			cond = fmt.Sprintf("_t == %s", pat)
+		}
+		b.WriteString(fmt.Sprintf("\tif (%s) { return %s; }\n", cond, res))
+	}
+	b.WriteString("\treturn null;\n")
 	b.WriteString("})()")
 	return b.String(), nil
 }

@@ -1,0 +1,7 @@
+dynamic id(x) {
+	return x;
+}
+
+void main() {
+	print(id(123));
+}
