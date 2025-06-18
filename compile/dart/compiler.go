@@ -280,31 +280,79 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
 		return "", nil
 	}
+
+	operands := []string{}
+	operators := []string{}
+	posts := []*parser.PostfixExpr{}
+
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	expr := left
+	operands = append(operands, left)
+
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "in" {
-			if isMapPostfix(c, op.Right) {
-				expr = fmt.Sprintf("(%s.containsKey(%s))", right, expr)
+		operands = append(operands, right)
+		operators = append(operators, op.Op)
+		posts = append(posts, op.Right)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(operators); {
+			if containsOp(lvl, operators[i]) {
+				l := operands[i]
+				r := operands[i+1]
+				op := operators[i]
+				var expr string
+				if op == "/" {
+					op = "~/"
+				}
+				if op == "in" {
+					if isMapPostfix(c, posts[i]) {
+						expr = fmt.Sprintf("(%s.containsKey(%s))", r, l)
+					} else {
+						expr = fmt.Sprintf("(%s.contains(%s))", r, l)
+					}
+				} else {
+					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+				}
+				operands[i] = expr
+				operands = append(operands[:i+1], operands[i+2:]...)
+				operators = append(operators[:i], operators[i+1:]...)
+				posts = append(posts[:i], posts[i+1:]...)
 			} else {
-				expr = fmt.Sprintf("(%s.contains(%s))", right, expr)
+				i++
 			}
-		} else {
-			opStr := op.Op
-			if opStr == "/" {
-				opStr = "~/"
-			}
-			expr = fmt.Sprintf("(%s %s %s)", expr, opStr, right)
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected binary expression")
+	}
+	return operands[0], nil
+}
+
+func containsOp(list []string, op string) bool {
+	for _, o := range list {
+		if o == op {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
