@@ -19,7 +19,6 @@ import (
 
 // TestCCompiler_TwoSum compiles the LeetCode example to C and runs it.
 func TestCCompiler_TwoSum(t *testing.T) {
-	t.Skip("disabled in current environment")
 	cc, err := ccode.EnsureCC()
 	if err != nil {
 		t.Skipf("C compiler not installed: %v", err)
