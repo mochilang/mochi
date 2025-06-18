@@ -2,4 +2,4 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !!
 xs := Array with: 10 with: 20 with: 30.
-Transcript show: ((xs at: 1 + 1)) printString; cr
+(xs at: 1 + 1) displayOn: Transcript. Transcript cr.

@@ -2,7 +2,7 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !Main class methodsFor: 'mochi'!
 twoSum: nums target: target | i j n |
-	n := (nums) size.
+	n := nums size.
 	0 to: n - 1 do: [:i |
 		(i + 1) to: n - 1 do: [:j |
 			((((nums at: i + 1) + (nums at: j + 1)) = target)) ifTrue: [
@@ -18,5 +18,5 @@ twoSum: nums target: target | i j n |
 
 !!
 result := Main twoSum: (Array with: 2 with: 7 with: 11 with: 15) target: (9).
-Transcript show: ((result at: 0 + 1)) printString; cr
-Transcript show: ((result at: 1 + 1)) printString; cr
+(result at: 0 + 1) displayOn: Transcript. Transcript cr.
+(result at: 1 + 1) displayOn: Transcript. Transcript cr.
