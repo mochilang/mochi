@@ -1,0 +1,7 @@
+(loop [i 1]
+  (when (< i 5)
+    (if (== (mod i 2) 0)
+      (println i)
+    )
+    (recur (inc i)))
+)
