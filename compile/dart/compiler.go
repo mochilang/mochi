@@ -566,6 +566,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	var sortExpr, skipExpr, takeExpr string
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+	}
 
 	var b strings.Builder
 	b.WriteString("(() {\n")
@@ -587,6 +606,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("\t}\n")
+	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
+		b.WriteString("\tvar items = List.from(_res);\n")
+		if sortExpr != "" {
+			v := sanitizeName(q.Var)
+			b.WriteString(fmt.Sprintf("\titems.sort((%sA, %sB) {\n", v, v))
+			b.WriteString(fmt.Sprintf("\t\tvar %s = %sA;\n", v, v))
+			b.WriteString(fmt.Sprintf("\t\tvar keyA = %s;\n", sortExpr))
+			b.WriteString(fmt.Sprintf("\t\t%s = %sB;\n", v, v))
+			b.WriteString(fmt.Sprintf("\t\tvar keyB = %s;\n", sortExpr))
+			b.WriteString("\t\treturn Comparable.compare(keyA, keyB);\n")
+			b.WriteString("\t});\n")
+		}
+		if skipExpr != "" {
+			b.WriteString(fmt.Sprintf("\tvar skip = %s;\n", skipExpr))
+			b.WriteString("\tif (skip < items.length) {\n")
+			b.WriteString("\t\titems = items.sublist(skip);\n")
+			b.WriteString("\t} else {\n")
+			b.WriteString("\t\titems = [];\n")
+			b.WriteString("\t}\n")
+		}
+		if takeExpr != "" {
+			b.WriteString(fmt.Sprintf("\tvar take = %s;\n", takeExpr))
+			b.WriteString("\tif (take < items.length) {\n")
+			b.WriteString("\t\titems = items.sublist(0, take);\n")
+			b.WriteString("\t}\n")
+		}
+		b.WriteString("\t_res = items;\n")
+	}
 	b.WriteString("\treturn _res;\n")
 	b.WriteString("})()")
 	return b.String(), nil
