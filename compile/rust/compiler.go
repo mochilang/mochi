@@ -15,11 +15,12 @@ type Compiler struct {
 	indent  int
 	env     *types.Env
 	helpers map[string]bool
+	structs map[string]bool
 }
 
 // New creates a new Rust compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool)}
 }
 
 func (c *Compiler) writeIndent() {
@@ -36,6 +37,14 @@ func (c *Compiler) writeln(s string) {
 
 // Compile returns Rust source code implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	for _, stmt := range prog.Statements {
+		if stmt.Type != nil {
+			if err := c.compileTypeDecl(stmt.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 	for _, stmt := range prog.Statements {
 		if stmt.Fun != nil {
 			if err := c.compileFun(stmt.Fun); err != nil {
@@ -94,6 +103,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Type != nil:
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -141,6 +152,39 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	name := sanitizeName(t.Name)
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	c.writeln("#[derive(Clone, Debug)]")
+	c.writeln(fmt.Sprintf("struct %s {", name))
+	c.indent++
+	for _, m := range t.Members {
+		if m.Field != nil {
+			field := sanitizeName(m.Field.Name)
+			typ := rustType(m.Field.Type)
+			c.writeln(fmt.Sprintf("%s: %s,", field, typ))
+			if c.env != nil {
+				st, ok := c.env.GetStruct(t.Name)
+				if !ok {
+					st = types.StructType{Name: t.Name, Fields: map[string]types.Type{}, Order: []string{}, Methods: map[string]types.Method{}}
+				}
+				st.Fields[m.Field.Name] = c.resolveTypeRef(m.Field.Type)
+				st.Order = append(st.Order, m.Field.Name)
+				c.env.SetStruct(t.Name, st)
+			}
+		}
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -275,6 +319,94 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	return expr, nil
 }
 
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	var b strings.Builder
+	b.WriteString("{\n")
+	b.WriteString("    let mut _res = Vec::new();\n")
+	b.WriteString(fmt.Sprintf("    for %s in %s {\n", sanitizeName(q.Var), src))
+	if cond != "" {
+		b.WriteString(fmt.Sprintf("        if %s {\n", cond))
+		b.WriteString(fmt.Sprintf("            _res.push(%s);\n", sel))
+		b.WriteString("        }\n")
+	} else {
+		b.WriteString(fmt.Sprintf("        _res.push(%s);\n", sel))
+	}
+	b.WriteString("    }\n")
+	b.WriteString("    _res\n")
+	b.WriteString("}")
+	return b.String(), nil
+}
+
+func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.resolveTypeRef(p)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = c.resolveTypeRef(t.Fun.Return)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		args := t.Generic.Args
+		switch name {
+		case "list":
+			if len(args) == 1 {
+				return types.ListType{Elem: c.resolveTypeRef(args[0])}
+			}
+		case "map":
+			if len(args) == 2 {
+				return types.MapType{Key: c.resolveTypeRef(args[0]), Value: c.resolveTypeRef(args[1])}
+			}
+		}
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(*t.Simple); ok {
+					return st
+				}
+				if ut, ok := c.env.GetUnion(*t.Simple); ok {
+					return ut
+				}
+			}
+			return types.AnyType{}
+		}
+	}
+	return types.AnyType{}
+}
+
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	val, err := c.compilePostfix(u.Value)
 	if err != nil {
@@ -322,6 +454,30 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		var st types.StructType
+		var ok bool
+		if c.env != nil {
+			st, ok = c.env.GetStruct(p.Struct.Name)
+		}
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			if ok {
+				if ft, ok2 := st.Fields[f.Name]; ok2 {
+					if _, isString := ft.(types.StringType); isString && isStringLiteral(f.Value) {
+						v = fmt.Sprintf("%s.to_string()", v)
+					}
+				}
+			}
+			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
+		}
+		return fmt.Sprintf("%s { %s }", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
