@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var text = "hello";
-		Console.WriteLine(text[(-1)]);
+		var scores = new Dictionary<dynamic, dynamic> { { "a", 1 } };
+		scores["b"] = 2;
+		Console.WriteLine(scores["b"]);
 	}
 }
