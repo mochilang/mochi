@@ -20,7 +20,6 @@ import (
 )
 
 func TestLuaCompiler_LeetCodeExample1(t *testing.T) {
-	t.Skip("disabled in current environment")
 	if err := luacode.EnsureLua(); err != nil {
 		t.Skipf("lua not installed: %v", err)
 	}
