@@ -29,11 +29,17 @@ let rec longestPalindrome s =
       if len2 > len1 then begin
         l := len2;
       end;
-      if !l > !_end - !start then begin
-        start := i - (!l - 1) / 2;
-        _end := i + !l / 2;
+      if !l > (!_end - !start) then begin
+        start := i - ((!l - 1) / 2);
+        _end := i + (!l / 2);
       end;
     done;
-    raise (Return_1 ((String.sub s !start (!_end + 1 - !start))))
+    let res = ref "" in
+    let k = ref !start in
+    while !k <= !_end do
+      res := !res ^ (String.make 1 (String.get s !k));
+      k := !k + 1;
+    done;
+    raise (Return_1 (!res))
   with Return_1 v -> v
 

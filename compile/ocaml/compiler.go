@@ -330,6 +330,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				oper = "@"
 			} else if isStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
 				oper = "^"
+				// convert char from String.get to string for concatenation
+				if strings.HasPrefix(r, "(String.get ") {
+					r = fmt.Sprintf("(String.make 1 %s)", r)
+				}
 			}
 		} else if oper == "/" {
 			if isFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || isFloatExpr(&parser.Expr{Binary: b}, c.env) {
