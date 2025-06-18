@@ -386,33 +386,83 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	expr, err := c.compileUnary(b.Left)
+	operands := []string{}
+	lists := []bool{}
+
+	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	for _, op := range b.Right {
-		r, err := c.compilePostfix(op.Right)
+	operands = append(operands, left)
+	lists = append(lists, c.isListUnary(b.Left))
+	operators := []string{}
+
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+", "-", "*", "/", "<", "<=", ">", ">=":
-			expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
-		case "%":
-			expr = fmt.Sprintf("%s mod %s", expr, r)
-		case "==":
-			expr = fmt.Sprintf("%s = %s", expr, r)
-		case "!=":
-			expr = fmt.Sprintf("%s <> %s", expr, r)
-		case "&&":
-			expr = fmt.Sprintf("%s and %s", expr, r)
-		case "||":
-			expr = fmt.Sprintf("%s or %s", expr, r)
-		default:
-			return "", fmt.Errorf("unsupported op %s", op.Op)
+		operands = append(operands, r)
+		lists = append(lists, c.isListPostfix(part.Right))
+		operators = append(operators, part.Op)
+	}
+
+	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
+
+	for _, level := range levels {
+		for i := 0; i < len(operators); {
+			op := operators[i]
+			if contains(level, op) {
+				l := operands[i]
+				r := operands[i+1]
+				llist := lists[i]
+				rlist := lists[i+1]
+				var res string
+				var isList bool
+				switch op {
+				case "+":
+					if llist || rlist {
+						res = fmt.Sprintf("Concat(%s, %s)", l, r)
+						isList = true
+					} else {
+						res = fmt.Sprintf("%s + %s", l, r)
+					}
+				case "-":
+					res = fmt.Sprintf("%s - %s", l, r)
+				case "*":
+					res = fmt.Sprintf("%s * %s", l, r)
+				case "/":
+					res = fmt.Sprintf("%s div %s", l, r)
+				case "%":
+					res = fmt.Sprintf("%s mod %s", l, r)
+				case "<", "<=", ">", ">=":
+					res = fmt.Sprintf("(%s %s %s)", l, op, r)
+				case "==":
+					res = fmt.Sprintf("(%s = %s)", l, r)
+				case "!=":
+					res = fmt.Sprintf("(%s <> %s)", l, r)
+				case "in":
+					res = fmt.Sprintf("(%s in %s)", l, r)
+				case "&&":
+					res = fmt.Sprintf("(%s and %s)", l, r)
+				case "||":
+					res = fmt.Sprintf("(%s or %s)", l, r)
+				}
+				operands[i] = res
+				lists[i] = isList
+				operands = append(operands[:i+1], operands[i+2:]...)
+				lists = append(lists[:i+1], lists[i+2:]...)
+				operators = append(operators[:i], operators[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected expression state")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -503,7 +553,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
-		return "[" + strings.Join(elems, ", ") + "]", nil
+		return "TIntArray([" + strings.Join(elems, ", ") + "])", nil
 	}
 	return "", fmt.Errorf("unsupported expression")
 }

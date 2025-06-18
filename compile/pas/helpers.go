@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 func (c *Compiler) writeln(s string) {
@@ -27,6 +28,7 @@ var pasReserved = map[string]struct{}{
 	"program": {}, "record": {}, "repeat": {}, "set": {}, "then": {}, "to": {},
 	"type": {}, "until": {}, "var": {}, "while": {}, "with": {},
 	"result": {},
+	"length": {},
 }
 
 func sanitizeName(name string) string {
@@ -67,4 +69,55 @@ func isListLiteral(e *parser.Expr) bool {
 		return false
 	}
 	return u.Value.Target.List != nil
+}
+
+func (c *Compiler) isListExpr(e *parser.Expr) bool {
+	if isListLiteral(e) {
+		return true
+	}
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	return c.isListUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isListUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return c.isListPostfix(u.Value)
+}
+
+func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isListPrimary(p.Target)
+}
+
+func (c *Compiler) isListPrimary(p *parser.Primary) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.List != nil:
+		return true
+	case p.Selector != nil:
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func contains(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }

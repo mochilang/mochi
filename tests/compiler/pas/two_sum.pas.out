@@ -15,14 +15,14 @@ begin
 	begin
 		for j := i + 1 to n - 1 do
 		begin
-			if nums[i] + nums[j] = target then
+			if (nums[i] + nums[j] = target) then
 			begin
-				result := [i, j];
+				result := TIntArray([i, j]);
 				exit;
 			end;
 		end;
 	end;
-	result := [-1, -1];
+	result := TIntArray([-1, -1]);
 	exit;
 end;
 
@@ -30,7 +30,7 @@ var
 	_result: TIntArray;
 
 begin
-	_result := twoSum([2, 7, 11, 15], 9);
+	_result := twoSum(TIntArray([2, 7, 11, 15]), 9);
 	writeln(_result[0]);
 	writeln(_result[1]);
 end.

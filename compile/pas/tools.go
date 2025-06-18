@@ -22,7 +22,10 @@ func EnsureFPC() (string, error) {
 			if err := cmd.Run(); err != nil {
 				return "", err
 			}
-			cmd = exec.Command("apt-get", "install", "-y", "fp-compiler")
+			// Install the full Free Pascal suite which provides the
+			// compiler and required runtime units. Using the "fpc"
+			// meta-package ensures a consistent setup across systems.
+			cmd = exec.Command("apt-get", "install", "-y", "fpc")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
