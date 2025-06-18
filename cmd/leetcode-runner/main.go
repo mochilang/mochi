@@ -358,6 +358,15 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "rust":
+		exe := strings.TrimSuffix(file, ".rust")
+		if out, err := exec.Command("rustc", file, "-O", "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("rustc: %v\n%s", err, string(out))
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	default:
 		return fmt.Errorf("no runner for %s", lang)
 	}
