@@ -1,0 +1,4 @@
+<?php
+$r = 3;
+$area = ($math->pi * $math->pow($r, 2));
+echo "Area:" . " " . $area, PHP_EOL;

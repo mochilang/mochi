@@ -1,0 +1,7 @@
+<?php
+function prepend($level, $result) {
+	$result = ([$level] + $result);
+	return $result;
+}
+
+echo prepend([1, 2], [[3], [4]]), PHP_EOL;

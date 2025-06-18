@@ -1,0 +1,16 @@
+<?php
+$c = 0;
+for ($_ = 0; $_ < 2; $_++) {
+	$c = ($c + 1);
+}
+foreach ((is_string([1, 2]) ? str_split([1, 2]) : [1, 2]) as $_) {
+	$c = ($c + 1);
+}
+foreach ((is_string("ab") ? str_split("ab") : "ab") as $_) {
+	$c = ($c + 1);
+}
+$m = ["x" => 1, "y" => 2];
+foreach ((is_string($m) ? str_split($m) : $m) as $_) {
+	$c = ($c + 1);
+}
+echo $c, PHP_EOL;
