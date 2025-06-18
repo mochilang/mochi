@@ -311,7 +311,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 		if err != nil {
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+		opStr := op.Op
+		switch opStr {
+		case "&&":
+			opStr = "and"
+		case "||":
+			opStr = "or"
+		}
+		expr = fmt.Sprintf("(%s %s %s)", expr, opStr, right)
 	}
 	return expr, nil
 }
