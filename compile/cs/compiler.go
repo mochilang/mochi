@@ -513,36 +513,87 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
 		return "", fmt.Errorf("nil binary expr")
 	}
-	leftIsList := c.isListUnary(b.Left)
-	expr, err := c.compileUnary(b.Left)
+
+	operands := []string{}
+	lists := []bool{}
+
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	for _, op := range b.Right {
-		rightIsList := c.isListPostfix(op.Right)
-		right, err := c.compilePostfix(op.Right)
+	operands = append(operands, first)
+	lists = append(lists, c.isListUnary(b.Left))
+
+	ops := []string{}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "+":
-			if leftIsList && rightIsList {
-				c.useLinq = true
-				expr = fmt.Sprintf("%s.Concat(%s).ToArray()", expr, right)
-			} else {
-				expr = fmt.Sprintf("(%s + %s)", expr, right)
+		operands = append(operands, r)
+		lists = append(lists, c.isListPostfix(part.Right))
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
 			}
-			leftIsList = leftIsList && rightIsList
-		case "-", "*", "/", "%", "<", "<=", ">", ">=", "==", "!=", "&&", "||":
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
-		case "in":
-			c.use("_in")
-			expr = fmt.Sprintf("_in(%s, %s)", expr, right)
-		default:
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+		}
+		return false
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(lvl, ops[i]) {
+				i++
+				continue
+			}
+			op := ops[i]
+			left := operands[i]
+			right := operands[i+1]
+			leftList := lists[i]
+			rightList := lists[i+1]
+
+			var expr string
+			switch op {
+			case "+":
+				if leftList && rightList {
+					c.useLinq = true
+					expr = fmt.Sprintf("%s.Concat(%s).ToArray()", left, right)
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", left, right)
+				}
+				leftList = leftList && rightList
+			case "in":
+				c.use("_in")
+				expr = fmt.Sprintf("_in(%s, %s)", left, right)
+			default:
+				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			}
+
+			operands[i] = expr
+			lists[i] = leftList
+			operands = append(operands[:i+1], operands[i+2:]...)
+			lists = append(lists[:i+1], lists[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state in binary expr")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
