@@ -3,8 +3,8 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 !!
 x := 5.
 ((x > 3)) ifTrue: [
-	Transcript show: ("big") printString; cr
+	'big' displayOn: Transcript. Transcript cr.
 ] ifFalse: [
-	Transcript show: ("small") printString; cr
+	'small' displayOn: Transcript. Transcript cr.
 ]
 .

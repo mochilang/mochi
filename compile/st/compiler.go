@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -139,7 +138,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		if expr != "" {
-			c.writeln(expr)
+			c.writeln(expr + ".")
 		}
 	}
 	return nil
@@ -327,14 +326,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		args[i] = "(" + v + ")"
+		args[i] = v
 	}
 	switch name {
 	case "print":
 		if len(args) != 1 {
 			return "", fmt.Errorf("print expects 1 arg")
 		}
-		return fmt.Sprintf("Transcript show: %s printString; cr", args[0]), nil
+		return fmt.Sprintf("%s displayOn: Transcript. Transcript cr", args[0]), nil
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
@@ -347,10 +346,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		parts := []string{"Main", name + ":"}
 		for i, p := range params {
+			arg := fmt.Sprintf("(%s)", args[i])
 			if i == 0 {
-				parts = append(parts, args[0])
+				parts = append(parts, arg)
 			} else {
-				parts = append(parts, fmt.Sprintf("%s: %s", p, args[i]))
+				parts = append(parts, fmt.Sprintf("%s: %s", p, arg))
 			}
 		}
 		return strings.Join(parts, " "), nil
@@ -379,7 +379,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		}
 		return "false", nil
 	case l.Str != nil:
-		return strconv.Quote(*l.Str), nil
+		s := strings.ReplaceAll(*l.Str, "'", "''")
+		return "'" + s + "'", nil
 	}
 	return "", fmt.Errorf("unknown literal")
 }
