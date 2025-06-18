@@ -149,14 +149,14 @@ func TestLuaCompiler_GoldenOutput(t *testing.T) {
 }
 
 func TestLuaCompiler_LeetCodeExamples(t *testing.T) {
-	if err := luacode.EnsureLua(); err != nil {
-		t.Skipf("lua not installed: %v", err)
-	}
-	runLeetCode(t, 1)
-	runLeetCode(t, 2)
+        if err := luacode.EnsureLua(); err != nil {
+                t.Skipf("lua not installed: %v", err)
+        }
+        runLeetCode(t, 1, "0\n1")
+        runLeetCode(t, 2, "")
 }
 
-func runLeetCode(t *testing.T, id int) {
+func runLeetCode(t *testing.T, id int, want string) {
 	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
@@ -187,11 +187,16 @@ func runLeetCode(t *testing.T, id int) {
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
-			out, err := cmd.CombinedOutput()
-			if err != nil {
-				t.Fatalf("lua run error: %v\n%s", err, out)
-			}
-			_ = out
-		})
-	}
+                        out, err := cmd.CombinedOutput()
+                        if err != nil {
+                                t.Fatalf("lua run error: %v\n%s", err, out)
+                        }
+                        if want != "" {
+                                got := strings.TrimSpace(string(out))
+                                if got != want {
+                                        t.Fatalf("unexpected output\nwant:\n%s\n got:\n%s", want, got)
+                                }
+                        }
+                })
+        }
 }
