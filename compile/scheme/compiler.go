@@ -123,15 +123,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(expr)
-       case s.For != nil:
-               return c.compileFor(s.For)
-       case s.If != nil:
-               return c.compileSimpleIf(s.If)
-       case s.While != nil:
-               return c.compileWhile(s.While)
-       default:
-               // ignore unsupported statements
-       }
+	case s.For != nil:
+		return c.compileFor(s.For)
+	case s.If != nil:
+		return c.compileSimpleIf(s.If)
+	case s.While != nil:
+		return c.compileWhile(s.While)
+	default:
+		// ignore unsupported statements
+	}
 	return nil
 }
 
@@ -201,29 +201,29 @@ func (c *Compiler) compileSimpleIf(st *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
-       cond, err := c.compileExpr(st.Cond)
-       if err != nil {
-               return err
-       }
-       c.writeln("(let loop ()")
-       c.indent++
-       c.writeln(fmt.Sprintf("(if %s", cond))
-       c.indent++
-       c.writeln("(begin")
-       c.indent++
-       for _, s := range st.Body {
-               if err := c.compileStmt(s); err != nil {
-                       return err
-               }
-       }
-       c.writeln("(loop)")
-       c.indent--
-       c.writeln(")")
-       c.indent--
-       c.writeln("'())")
-       c.indent--
-       c.writeln(")")
-       return nil
+	cond, err := c.compileExpr(st.Cond)
+	if err != nil {
+		return err
+	}
+	c.writeln("(let loop ()")
+	c.indent++
+	c.writeln(fmt.Sprintf("(if %s", cond))
+	c.indent++
+	c.writeln("(begin")
+	c.indent++
+	for _, s := range st.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.writeln("(loop)")
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln("'())")
+	c.indent--
+	c.writeln(")")
+	return nil
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -363,10 +363,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		}
 		return fmt.Sprintf("(length %s)", args[0]), nil
 	case "print":
-		if len(args) != 1 {
-			return "", fmt.Errorf("print expects 1 arg")
+		if len(args) == 0 {
+			return "", fmt.Errorf("print expects at least 1 arg")
 		}
-		return fmt.Sprintf("(begin (display %s) (newline))", args[0]), nil
+		parts := make([]string, 0, len(args)*2+1)
+		for i, a := range args {
+			if i > 0 {
+				parts = append(parts, "(display \" \")")
+			}
+			parts = append(parts, fmt.Sprintf("(display %s)", a))
+		}
+		parts = append(parts, "(newline)")
+		return "(begin " + strings.Join(parts, " ") + ")", nil
 	}
 	if recv != "" {
 		return fmt.Sprintf("(%s %s %s)", recv, call.Func, strings.Join(args, " ")), nil

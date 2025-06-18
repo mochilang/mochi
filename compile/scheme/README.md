@@ -108,12 +108,20 @@ The compiler only recognises two builtin functions. `len` maps to `(length)` and
 			return "", fmt.Errorf("len expects 1 arg")
 		}
 		return fmt.Sprintf("(length %s)", args[0]), nil
-	case "print":
-		if len(args) != 1 {
-			return "", fmt.Errorf("print expects 1 arg")
-		}
-		return fmt.Sprintf("(begin (display %s) (newline))", args[0]), nil
-	}
+        case "print":
+                if len(args) == 0 {
+                        return "", fmt.Errorf("print expects at least 1 arg")
+                }
+                parts := make([]string, 0, len(args)*2+1)
+                for i, a := range args {
+                        if i > 0 {
+                                parts = append(parts, "(display \" \" )")
+                        }
+                        parts = append(parts, fmt.Sprintf("(display %s)", a))
+                }
+                parts = append(parts, "(newline)")
+                return "(begin " + strings.Join(parts, " ") + ")", nil
+        }
 ```
 
 Identifiers are sanitised to valid Scheme identifiers:
