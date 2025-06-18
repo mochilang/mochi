@@ -1,14 +1,8 @@
-function __add(a, b)
-	if type(a) == 'table' and type(b) == 'table' then
-		local out = {}
-		for i = 1, #a do out[#out+1] = a[i] end
-		for i = 1, #b do out[#out+1] = b[i] end
-		return out
-	elseif type(a) == 'string' or type(b) == 'string' then
-		return tostring(a) .. tostring(b)
-	else
-		return a + b
+function __div(a, b)
+	if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+		return a // b
 	end
+	return a / b
 end
 
 function __eq(a, b)
@@ -49,48 +43,38 @@ function __indexString(s, i)
 	return string.sub(s, i, i)
 end
 
-function lengthOfLongestSubstring(s)
+function isPalindrome(x)
+	if (x < 0) then
+		return false
+	end
+	local s = tostring(x)
 	local n = #s
-	local start = 0
-	local best = 0
-	local i = 0
-	while (i < n) do
-		local j = start
-		while (j < i) do
-			if __eq(__index(s, j), __index(s, i)) then
-				start = __add(j, 1)
-				break
-			end
-			j = __add(j, 1)
-			::__continue1::
+	for i = 0, (__div(n, 2))-1 do
+		if not __eq(__index(s, i), __index(s, ((n - 1) - i))) then
+			return false
 		end
-		local length = __add((i - start), 1)
-		if (length > best) then
-			best = length
-		end
-		i = __add(i, 1)
 		::__continue0::
 	end
-	return best
+	return true
 end
 
 function test_example_1()
-	if not (__eq(lengthOfLongestSubstring("abcabcbb"), 3)) then error('expect failed') end
+	if not (__eq(isPalindrome(121), true)) then error('expect failed') end
 end
 
 function test_example_2()
-	if not (__eq(lengthOfLongestSubstring("bbbbb"), 1)) then error('expect failed') end
+	if not (__eq(isPalindrome(-121), false)) then error('expect failed') end
 end
 
 function test_example_3()
-	if not (__eq(lengthOfLongestSubstring("pwwkew"), 3)) then error('expect failed') end
+	if not (__eq(isPalindrome(10), false)) then error('expect failed') end
 end
 
-function test_empty_string()
-	if not (__eq(lengthOfLongestSubstring(""), 0)) then error('expect failed') end
+function test_zero()
+	if not (__eq(isPalindrome(0), true)) then error('expect failed') end
 end
 
 test_example_1()
 test_example_2()
 test_example_3()
-test_empty_string()
+test_zero()

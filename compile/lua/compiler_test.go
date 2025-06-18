@@ -153,10 +153,9 @@ func TestLuaCompiler_LeetCodeExamples(t *testing.T) {
 		t.Skipf("lua not installed: %v", err)
 	}
 	runLeetCode(t, 1, "0\n1")
-	runLeetCode(t, 2, "")
-	runLeetCode(t, 3, "")
-	runLeetCode(t, 4, "")
-	runLeetCode(t, 5, "")
+	for i := 2; i <= 10; i++ {
+		runLeetCode(t, i, "")
+	}
 }
 
 func runLeetCode(t *testing.T, id int, want string) {
