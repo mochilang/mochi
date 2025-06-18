@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -311,6 +312,8 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 			return "string"
 		case "bool":
 			return "boolean"
+		case "float":
+			return "double"
 		}
 	}
 	if t.Generic != nil {
@@ -332,6 +335,8 @@ func typeString(t types.Type) string {
 		return "boolean"
 	case types.ListType:
 		return "TIntArray"
+	case types.FloatType:
+		return "double"
 	default:
 		return "integer"
 	}
@@ -388,6 +393,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands := []string{}
 	lists := []bool{}
+	floats := []bool{}
 
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
@@ -395,6 +401,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 	operands = append(operands, left)
 	lists = append(lists, c.isListUnary(b.Left))
+	floats = append(floats, c.isFloatUnary(b.Left))
 	operators := []string{}
 
 	for _, part := range b.Right {
@@ -404,6 +411,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		}
 		operands = append(operands, r)
 		lists = append(lists, c.isListPostfix(part.Right))
+		floats = append(floats, c.isFloatPostfix(part.Right))
 		operators = append(operators, part.Op)
 	}
 
@@ -419,6 +427,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				rlist := lists[i+1]
 				var res string
 				var isList bool
+				var isFloat bool
 				switch op {
 				case "+":
 					if llist || rlist {
@@ -426,13 +435,27 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						isList = true
 					} else {
 						res = fmt.Sprintf("%s + %s", l, r)
+						if floats[i] || floats[i+1] {
+							isFloat = true
+						}
 					}
 				case "-":
 					res = fmt.Sprintf("%s - %s", l, r)
+					if floats[i] || floats[i+1] {
+						isFloat = true
+					}
 				case "*":
 					res = fmt.Sprintf("%s * %s", l, r)
+					if floats[i] || floats[i+1] {
+						isFloat = true
+					}
 				case "/":
-					res = fmt.Sprintf("%s div %s", l, r)
+					if floats[i] || floats[i+1] {
+						res = fmt.Sprintf("%s / %s", l, r)
+						isFloat = true
+					} else {
+						res = fmt.Sprintf("%s div %s", l, r)
+					}
 				case "%":
 					res = fmt.Sprintf("%s mod %s", l, r)
 				case "<", "<=", ">", ">=":
@@ -450,8 +473,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				}
 				operands[i] = res
 				lists[i] = isList
+				floats[i] = isFloat
 				operands = append(operands[:i+1], operands[i+2:]...)
 				lists = append(lists[:i+1], lists[i+2:]...)
+				floats = append(floats[:i+1], floats[i+2:]...)
 				operators = append(operators[:i], operators[i+1:]...)
 			} else {
 				i++
@@ -503,6 +528,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args[i] = v
 			}
 			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+		} else if op.Cast != nil {
+			exprType := c.typeRef(op.Cast.Type)
+			expr = fmt.Sprintf("%s(%s)", exprType, expr)
 		}
 	}
 	return expr, nil
@@ -513,6 +541,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			return strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64), nil
 		}
 		if p.Lit.Bool != nil {
 			if bool(*p.Lit.Bool) {

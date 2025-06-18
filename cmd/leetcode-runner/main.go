@@ -168,6 +168,15 @@ func buildOne(src, lang string, run bool) error {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		return fmt.Errorf("%s: %v", src, errs[0])
 	}
+	if lang == "pas" {
+		filtered := prog.Statements[:0]
+		for _, s := range prog.Statements {
+			if s.Test == nil {
+				filtered = append(filtered, s)
+			}
+		}
+		prog.Statements = filtered
+	}
 	modRoot, _ := mod.FindRoot(filepath.Dir(src))
 
 	base := strings.TrimSuffix(filepath.Base(src), ".mochi")
@@ -320,6 +329,19 @@ func runOutput(file, lang string) error {
 		exe := strings.TrimSuffix(file, ".f90")
 		if out, err := exec.Command(gfortran, file, "-o", exe).CombinedOutput(); err != nil {
 			return fmt.Errorf("gfortran: %v\n%s", err, string(out))
+		}
+		cmd := exec.Command(exe)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "pas":
+		fpc, err := pascode.EnsureFPC()
+		if err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, ".pas")
+		if out, err := exec.Command(fpc, "-o"+exe, file).CombinedOutput(); err != nil {
+			return fmt.Errorf("fpc: %v\n%s", err, string(out))
 		}
 		cmd := exec.Command(exe)
 		cmd.Stdout = os.Stdout

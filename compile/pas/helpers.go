@@ -121,3 +121,56 @@ func contains(list []string, s string) bool {
 	}
 	return false
 }
+
+func (c *Compiler) isFloatExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if c.isFloatUnary(e.Binary.Left) {
+		return true
+	}
+	for _, part := range e.Binary.Right {
+		if c.isFloatPostfix(part.Right) {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isFloatUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isFloatPostfix(u.Value)
+}
+
+func (c *Compiler) isFloatPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) > 0 {
+		last := p.Ops[len(p.Ops)-1]
+		if last.Cast != nil && last.Cast.Type != nil && last.Cast.Type.Simple != nil && *last.Cast.Type.Simple == "float" {
+			return true
+		}
+	}
+	return c.isFloatPrimary(p.Target)
+}
+
+func (c *Compiler) isFloatPrimary(p *parser.Primary) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.Lit != nil && p.Lit.Float != nil:
+		return true
+	case p.Selector != nil:
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := t.(types.FloatType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
