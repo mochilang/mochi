@@ -1,4 +1,24 @@
 # 📦 CHANGELOG.md
+## [0.8.6] – 2025-06-19
+
+### Added
+
+* LeetCode examples 1–5 compile across all experimental compilers
+* New runners for Kotlin, Swift, Dart, Racket and Erlang
+* String slicing and concatenation in C, C++, Fortran, F#, Lua and more
+* Float and cast support in Scheme, Clojure, Fortran and others
+
+### Changed
+
+* Golden outputs refreshed and output naming unified
+* `leetcode-runner` validates toolchains and allows custom SWI-Prolog path
+
+### Fixed
+
+* F# string indexing and Clojure concatenation issues
+* Java underscore handling and COBOL generation bugs
+* Erlang branch formatting and assorted compiler errors
+
 ## [0.8.5] – 2025-06-18
 
 ### Added
