@@ -1,6 +1,8 @@
-package hscode
+module Main where
 
-const runtime = `
+import Data.Maybe (fromMaybe)
+
+
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
 forLoop start end f = go start
   where
@@ -23,4 +25,12 @@ _indexString s i =
 
 _input :: IO String
 _input = getLine
-`
+
+
+main :: IO ()
+main = do
+    putStrLn ("Enter first input:")
+    input1 <- _input
+    putStrLn ("Enter second input:")
+    input2 <- _input
+    putStrLn (unwords [show "You entered:", show input1, show ",", show input2])

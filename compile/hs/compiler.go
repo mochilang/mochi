@@ -64,11 +64,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		val, err := c.compileExpr(s.Let.Value)
-		if err != nil {
-			return err
+		if isInputCall(s.Let.Value) {
+			val, err := c.compileExpr(s.Let.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s <- %s", sanitizeName(s.Let.Name), val))
+		} else {
+			val, err := c.compileExpr(s.Let.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Let.Name), val))
 		}
-		c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Let.Name), val))
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -406,18 +414,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "str" {
 			return fmt.Sprintf("show %s", strings.Join(args, " ")), nil
 		}
+		if p.Call.Func == "input" {
+			return "_input", nil
+		}
 		if p.Call.Func == "print" {
-			joined := strings.Join(args, " ")
 			if len(args) == 1 {
 				arg := args[0]
 				if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "_indexString") {
 					return fmt.Sprintf("putStrLn (%s)", arg), nil
 				}
+				return fmt.Sprintf("print %s", arg), nil
 			}
-			if len(args) != 1 || strings.ContainsAny(joined, " ") {
-				return fmt.Sprintf("print (%s)", joined), nil
+			showArgs := make([]string, len(args))
+			for i, a := range args {
+				showArgs[i] = fmt.Sprintf("show %s", a)
 			}
-			return fmt.Sprintf("print %s", joined), nil
+			return fmt.Sprintf("putStrLn (unwords [%s])", strings.Join(showArgs, ", ")), nil
 		}
 		return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
 	case p.Selector != nil:
@@ -495,4 +507,19 @@ func (c *Compiler) isStringExpr(p *parser.Primary) bool {
 		}
 	}
 	return false
+}
+
+func isInputCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value.Target
+	if p == nil || p.Call == nil {
+		return false
+	}
+	return p.Call.Func == "input" && len(p.Call.Args) == 0
 }
