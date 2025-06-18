@@ -3,6 +3,8 @@ package pascode
 import (
 	"fmt"
 	"strings"
+
+	"mochi/parser"
 )
 
 func (c *Compiler) writeln(s string) {
@@ -24,6 +26,7 @@ var pasReserved = map[string]struct{}{
 	"nil": {}, "not": {}, "of": {}, "or": {}, "packed": {}, "procedure": {},
 	"program": {}, "record": {}, "repeat": {}, "set": {}, "then": {}, "to": {},
 	"type": {}, "until": {}, "var": {}, "while": {}, "with": {},
+	"result": {},
 }
 
 func sanitizeName(name string) string {
@@ -53,4 +56,15 @@ func (c *Compiler) newVar() string {
 	}
 	c.tempVars[name] = true
 	return name
+}
+
+func isListLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	return u.Value.Target.List != nil
 }
