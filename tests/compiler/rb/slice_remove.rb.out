@@ -1,0 +1,5 @@
+def remove(nums, i)
+	return (nums[0...i] + nums[(i + 1)...(nums).length])
+end
+
+puts([remove([1, 2, 3, 4], 1)].join(" "))
