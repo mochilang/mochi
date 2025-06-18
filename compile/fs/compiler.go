@@ -431,8 +431,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", err
 			}
 			if isStr {
-				idxExpr := fmt.Sprintf("(if %s < 0 then %s.Length + %s else %s)", idx, expr, idx, idx)
-				expr = fmt.Sprintf("%s.[%s]", expr, idxExpr)
+				if v, ok := intLiteral(op.Index.Start); ok && v >= 0 {
+					expr = fmt.Sprintf("%s.[%d]", expr, v)
+				} else {
+					idxExpr := fmt.Sprintf("(if %s < 0 then %s.Length + %s else %s)", idx, expr, idx, idx)
+					expr = fmt.Sprintf("%s.[%s]", expr, idxExpr)
+				}
 				isStr = true
 			} else {
 				expr = fmt.Sprintf("%s.[%s]", expr, idx)
@@ -798,4 +802,28 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	default:
 		return false
 	}
+}
+
+func intLiteral(e *parser.Expr) (int, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return 0, false
+	}
+	u := e.Binary.Left
+	negate := false
+	if len(u.Ops) > 0 {
+		if len(u.Ops) == 1 && u.Ops[0] == "-" {
+			negate = true
+		} else {
+			return 0, false
+		}
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Lit == nil || p.Target.Lit.Int == nil {
+		return 0, false
+	}
+	v := *p.Target.Lit.Int
+	if negate {
+		v = -v
+	}
+	return v, true
 }
