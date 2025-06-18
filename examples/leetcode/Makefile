@@ -18,6 +18,10 @@ run-java: ## Execute the compiled Java solution for problem n. Usage: make run-j
 @if [ -z "$(ID)" ]; then echo "❌ Usage: make run-java ID=<n>"; exit 1; fi
 @go run $(RUNNER) build --id $(ID) --lang java --run
 
+run-php: ## Execute the compiled PHP solution for problem n. Usage: make run-php ID=<n>
+@if [ -z "$(ID)" ]; then echo "❌ Usage: make run-php ID=<n>"; exit 1; fi
+@go run $(RUNNER) build --id $(ID) --lang php --run
+
 range: ## Build problems in range. Usage: make range FROM=1 TO=100 LANG=go
 @go run $(RUNNER) build --from $(FROM) --to $(TO) $(if $(LANG),--lang $(LANG)) --run
 

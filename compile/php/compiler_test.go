@@ -61,6 +61,8 @@ func TestPHPCompiler_LeetCodeExamples(t *testing.T) {
 	runExample(t, 1)
 	runExample(t, 2)
 	runExample(t, 3)
+	runExample(t, 4)
+	runExample(t, 5)
 }
 
 func runExample(t *testing.T, i int) {

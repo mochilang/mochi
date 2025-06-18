@@ -67,8 +67,17 @@ mochi run download.mochi
 - `make run-go ID=<n>` – execute the compiled Go solution for problem `n`
 - `make run-cpp ID=<n>` – execute the compiled C++ solution for problem `n`
 - `make run-java ID=<n>` – execute the compiled Java solution for problem `n`
+- `make run-php ID=<n>` – execute the compiled PHP solution for problem `n`
 - `make compile` – generate Go, Python, TypeScript and C++ files into `../leetcode-out`
 - `make range FROM=1 TO=10 LANG=scala` – build problems in a range using the Scala backend
 - `make test` – run all tests
 - `make clean` – remove the downloaded binary
+
+### Run First Five Problems in PHP
+
+Compile and execute problems 1 through 5 using the PHP backend:
+
+```bash
+make range FROM=1 TO=5 LANG=php
+```
 
