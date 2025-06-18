@@ -238,19 +238,42 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	left, err := c.compileUnary(b.Left)
-	if err != nil {
-		return "", err
-	}
-	expr := left
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
-		if err != nil {
-			return "", err
-		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, mapOp(op.Op), right)
-	}
-	return expr, nil
+        left, err := c.compileUnary(b.Left)
+        if err != nil {
+                return "", err
+        }
+        expr := left
+        leftList := isListUnary(b.Left, c.env)
+        leftStr := isStringUnary(b.Left, c.env)
+        for _, op := range b.Right {
+                right, err := c.compilePostfix(op.Right)
+                if err != nil {
+                        return "", err
+                }
+                rlist := isListPostfix(op.Right, c.env)
+                rstr := isStringPostfix(op.Right, c.env)
+                switch op.Op {
+                case "+":
+                        if leftList || rlist {
+                                expr = fmt.Sprintf("(%s , %s)", expr, right)
+                                leftList = true
+                                leftStr = false
+                        } else if leftStr || rstr {
+                                expr = fmt.Sprintf("(%s , %s)", expr, right)
+                                leftStr = true
+                                leftList = false
+                        } else {
+                                expr = fmt.Sprintf("(%s + %s)", expr, right)
+                                leftList = false
+                                leftStr = false
+                        }
+                default:
+                        expr = fmt.Sprintf("(%s %s %s)", expr, mapOp(op.Op), right)
+                        leftList = false
+                        leftStr = false
+                }
+        }
+        return expr, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -273,20 +296,40 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
-	expr, err := c.compilePrimary(p.Target)
-	if err != nil {
-		return "", err
-	}
-	for _, op := range p.Ops {
-		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
-		}
-	}
-	return expr, nil
+        expr, err := c.compilePrimary(p.Target)
+        if err != nil {
+                return "", err
+        }
+        for _, op := range p.Ops {
+                if op.Index != nil {
+                        if op.Index.Colon != nil {
+                                start := "1"
+                                if op.Index.Start != nil {
+                                        s, err := c.compileExpr(op.Index.Start)
+                                        if err != nil {
+                                                return "", err
+                                        }
+                                        start = fmt.Sprintf("(%s + 1)", s)
+                                }
+                                end := fmt.Sprintf("%s size", expr)
+                                if op.Index.End != nil {
+                                        e, err := c.compileExpr(op.Index.End)
+                                        if err != nil {
+                                                return "", err
+                                        }
+                                        end = e
+                                }
+                                expr = fmt.Sprintf("(%s copyFrom: %s to: %s)", expr, start, end)
+                        } else {
+                                idx, err := c.compileExpr(op.Index.Start)
+                                if err != nil {
+                                        return "", err
+                                }
+                                expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
+                        }
+                }
+        }
+        return expr, nil
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
@@ -358,15 +401,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 
 func mapOp(op string) string {
-	switch op {
-	case "==":
-		return "="
-	case "!=":
-		return "~="
-	case "%":
-		return "\\"
-	}
-	return op
+        switch op {
+        case "==":
+                return "="
+        case "!=":
+                return "~="
+        case "%":
+                return "\\"
+        case "&&":
+                return "&"
+        case "||":
+                return "|"
+        }
+        return op
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -384,5 +431,53 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		s := strings.ReplaceAll(*l.Str, "'", "''")
 		return "'" + s + "'", nil
 	}
-	return "", fmt.Errorf("unknown literal")
+        return "", fmt.Errorf("unknown literal")
+}
+
+func isListUnary(u *parser.Unary, env *types.Env) bool {
+        if u == nil || len(u.Ops) != 0 {
+                return false
+        }
+        return isListPostfix(u.Value, env)
+}
+
+func isListPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+        if p == nil || len(p.Ops) != 0 {
+                return false
+        }
+        if p.Target.List != nil {
+                return true
+        }
+        if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+                if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+                        if _, ok := t.(types.ListType); ok {
+                                return true
+                        }
+                }
+        }
+        return false
+}
+
+func isStringUnary(u *parser.Unary, env *types.Env) bool {
+        if u == nil || len(u.Ops) != 0 {
+                return false
+        }
+        return isStringPostfix(u.Value, env)
+}
+
+func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+        if p == nil || len(p.Ops) != 0 {
+                return false
+        }
+        if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+                return true
+        }
+        if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+                if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+                        if _, ok := t.(types.StringType); ok {
+                                return true
+                        }
+                }
+        }
+        return false
 }
