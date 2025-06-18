@@ -17,6 +17,17 @@ type Compiler struct {
 	needGet bool
 }
 
+func erlVar(name string) string {
+	if name == "" {
+		return name
+	}
+	r := []rune(name)
+	if r[0] >= 'a' && r[0] <= 'z' {
+		r[0] = r[0] - 'a' + 'A'
+	}
+	return string(r)
+}
+
 // New returns a new Compiler.
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
 
@@ -134,7 +145,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			val = v
 		}
-		c.buf.WriteString(fmt.Sprintf("%s = %s", s.Let.Name, val))
+		c.buf.WriteString(fmt.Sprintf("%s = %s", erlVar(s.Let.Name), val))
 	case s.Var != nil:
 		val := "undefined"
 		if s.Var.Value != nil {
@@ -144,7 +155,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			val = v
 		}
-		c.buf.WriteString(fmt.Sprintf("%s = %s", s.Var.Name, val))
+		c.buf.WriteString(fmt.Sprintf("%s = %s", erlVar(s.Var.Name), val))
 	case s.Assign != nil:
 		if err := c.compileAssign(s.Assign); err != nil {
 			return err
@@ -231,12 +242,18 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 		list = src
 	}
-	c.buf.WriteString(fmt.Sprintf("mochi_foreach(fun(%s) ->\n", stmt.Name))
+	c.buf.WriteString(fmt.Sprintf("mochi_foreach(fun(%s) ->\n", erlVar(stmt.Name)))
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(stmt.Name, types.AnyType{}, true)
+	c.env = child
 	c.indent++
 	if err := c.compileBlock(stmt.Body, false, nil); err != nil {
+		c.env = origEnv
 		return err
 	}
 	c.indent--
+	c.env = origEnv
 	c.writeIndent()
 	c.buf.WriteString(fmt.Sprintf("end, %s)", list))
 	return nil
@@ -263,7 +280,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	c.buf.WriteString(fmt.Sprintf("%s = %s", a.Name, val))
+	c.buf.WriteString(fmt.Sprintf("%s = %s", erlVar(a.Name), val))
 	return nil
 }
 
@@ -362,7 +379,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			argStr := strings.Join(args, ", ")
 			switch res {
 			case "print":
-				res = fmt.Sprintf("mochi_print([%s])", argStr)
+				argsSep := make([]string, 0, len(args)*2-1)
+				for i, a := range args {
+					if i > 0 {
+						argsSep = append(argsSep, "\" \"")
+					}
+					argsSep = append(argsSep, a)
+				}
+				res = fmt.Sprintf("mochi_print([%s])", strings.Join(argsSep, ", "))
 			case "len":
 				res = fmt.Sprintf("length(%s)", argStr)
 			case "str":
@@ -388,6 +412,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
+		}
+		if p.Lit.Bool != nil {
+			if bool(*p.Lit.Bool) {
+				return "true", nil
+			}
+			return "false", nil
 		}
 		if p.Lit.Str != nil {
 			return fmt.Sprintf("\"%s\"", strings.ReplaceAll(*p.Lit.Str, "\"", "\\\"")), nil
@@ -441,6 +471,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileExpr(p.Group)
 	case p.Selector != nil:
 		name := p.Selector.Root
+		if _, err := c.env.GetVar(name); err == nil {
+			name = erlVar(name)
+		}
 		if len(p.Selector.Tail) > 0 {
 			for _, t := range p.Selector.Tail {
 				name = fmt.Sprintf("maps:get(%s, %s)", t, name)
@@ -540,7 +573,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("[")
 		b.WriteString(sel)
 		b.WriteString(" || ")
-		b.WriteString(q.Var)
+		b.WriteString(erlVar(q.Var))
 		b.WriteString(" <- ")
 		b.WriteString(src)
 		for _, f := range q.Froms {
@@ -549,7 +582,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			b.WriteString(", ")
-			b.WriteString(f.Var)
+			b.WriteString(erlVar(f.Var))
 			b.WriteString(" <- ")
 			b.WriteString(fs)
 		}
@@ -563,13 +596,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var b strings.Builder
 	b.WriteString("(fun() ->\n")
-	b.WriteString("\tItems = [" + q.Var + " || " + q.Var + " <- " + src)
+	b.WriteString("\tItems = [" + erlVar(q.Var) + " || " + erlVar(q.Var) + " <- " + src)
 	for _, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
 		if err != nil {
 			return "", err
 		}
-		b.WriteString(", " + f.Var + " <- " + fs)
+		b.WriteString(", " + erlVar(f.Var) + " <- " + fs)
 	}
 	if cond != "" {
 		b.WriteString(", " + cond)
@@ -578,7 +611,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("\tSorted = ")
 	if sortExpr != "" {
 		b.WriteString("begin\n")
-		b.WriteString("\t\tPairs = [{" + sortExpr + ", " + q.Var + "} || " + q.Var + " <- Items],\n")
+		b.WriteString("\t\tPairs = [{" + sortExpr + ", " + erlVar(q.Var) + "} || " + erlVar(q.Var) + " <- Items],\n")
 		b.WriteString("\t\tSPairs = lists:sort(fun({A,_},{B,_}) -> A =< B end, Pairs),\n")
 		b.WriteString("\t\t[ V || {_, V} <- SPairs ]\n")
 		b.WriteString("\tend")
@@ -603,7 +636,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("Skipped")
 	}
 	b.WriteString(",\n")
-	b.WriteString("\t[" + sel + " || " + q.Var + " <- Taken]\n")
+	b.WriteString("\t[" + sel + " || " + erlVar(q.Var) + " <- Taken]\n")
 	b.WriteString("end)()")
 	return b.String(), nil
 }
@@ -683,9 +716,7 @@ func (c *Compiler) emitRuntime() {
 	c.writeln("_ -> erlang:error(badarg) end")
 	c.indent--
 	c.writeln("end, 0, L),")
-	c.writeln("Sum / length(L)")
-	c.indent--
-	c.writeln(".")
+	c.writeln("Sum / length(L);")
 	c.indent--
 	c.writeln("mochi_avg(_) -> erlang:error(badarg).")
 
