@@ -214,7 +214,7 @@ zig build-exe main.zig -O ReleaseSafe -femit-bin=main
 `compiler_test.go` runs a golden test using the real Zig compiler. It compiles several LeetCode examples and compares the output:
 
 ```go
-func TestZigCompiler_LeetCode1to5(t *testing.T) {
+func TestZigCompiler_LeetCode1to10(t *testing.T) {
         zigc, err := zigcode.EnsureZig()
         if err != nil {
                 t.Skipf("zig compiler not installed: %v", err)
