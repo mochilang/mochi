@@ -154,12 +154,12 @@ func runExample(t *testing.T, id int) {
 }
 
 // TestHSCompiler_LeetCodeExamples uses runExample to compile and execute
-// selected LeetCode solutions.
+// first three LeetCode solutions.
 func TestHSCompiler_LeetCodeExamples(t *testing.T) {
 	if err := hscode.EnsureHaskell(); err != nil {
 		t.Skipf("haskell not installed: %v", err)
 	}
-	for i := 1; i <= 2; i++ {
+	for i := 1; i <= 3; i++ {
 		runExample(t, i)
 	}
 }
