@@ -1,0 +1,21 @@
+#lang racket
+
+(define (twoSum nums target)
+	(let/ec return
+		(define n (length nums))
+		(for ([i (in-range 0 n)])
+			(for ([j (in-range (+ i 1) n)])
+				(when (= (+ (list-ref nums i) (list-ref nums j)) target)
+					(return (list i j))
+				)
+			)
+		)
+		(return (list (- 1) (- 1)))
+		(return (void))
+	)
+)
+
+(define result (twoSum (list 2 7 11 15) 9))
+(displayln (list-ref result 0))
+(displayln (list-ref result 1))
+
