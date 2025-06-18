@@ -294,6 +294,14 @@ func runOutput(file, lang string) error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "rb":
+		if err := rbcode.EnsureRuby(); err != nil {
+			return err
+		}
+		cmd := exec.Command("ruby", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	case "scala":
 		dir := filepath.Dir(file)
 		cmd := exec.Command("scalac", filepath.Base(file))
