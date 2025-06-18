@@ -183,6 +183,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 
 ### Helpers
 
+Variable declarations with `var` are now supported. Empty list values create a
+`std.ArrayList` for dynamic appends. Assignments of the form `list = list + [x]`
+translate to `list.append(x)`, and `while` statements map directly to Zig's
+`while` syntax.
+
 List literals are emitted as fixed-size arrays or references when used in return
 expressions. Reserved words are prefixed with `_` by `sanitizeName`:
 
