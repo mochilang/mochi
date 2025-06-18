@@ -70,6 +70,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
 
+	c.writeln(">>SOURCE FORMAT FREE")
 	c.writeln("IDENTIFICATION DIVISION.")
 	c.writeln("PROGRAM-ID. MAIN.")
 	c.writeln("PROCEDURE DIVISION.")
