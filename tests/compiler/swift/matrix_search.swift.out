@@ -1,8 +1,8 @@
 import Foundation
 
 func searchMatrix(_ matrix: [[Int]], _ target: Int) -> Bool {
-	var matrix = matrix
-	var target = target
+	let matrix = matrix
+	let target = target
 	
 	let m = matrix.count
 	if m == 0 {

@@ -106,7 +106,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.writeln(fmt.Sprintf("func %s(%s) -> %s {", fn.Name, strings.Join(params, ", "), ret))
 	c.indent++
 	for _, p := range fn.Params {
-		c.writeln(fmt.Sprintf("var %s = %s", p.Name, p.Name))
+		decl := "var"
+		if !paramAssigned(fn.Body, p.Name) {
+			decl = "let"
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s", decl, p.Name, p.Name))
 	}
 	if len(fn.Params) > 0 {
 		c.writeln("")
@@ -636,4 +640,37 @@ func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 		return false
 	}
 	return c.isMapPrimary(p.Target)
+}
+
+// paramAssigned reports whether a function parameter is assigned within the
+// given body. Only direct assignments are considered.
+func paramAssigned(body []*parser.Statement, name string) bool {
+	for _, st := range body {
+		if stmtAssignsVar(st, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtAssignsVar(s *parser.Statement, name string) bool {
+	switch {
+	case s.Assign != nil:
+		return s.Assign.Name == name && len(s.Assign.Index) == 0
+	case s.For != nil:
+		return paramAssigned(s.For.Body, name)
+	case s.While != nil:
+		return paramAssigned(s.While.Body, name)
+	case s.If != nil:
+		if paramAssigned(s.If.Then, name) {
+			return true
+		}
+		if s.If.ElseIf != nil && stmtAssignsVar(&parser.Statement{If: s.If.ElseIf}, name) {
+			return true
+		}
+		if len(s.If.Else) > 0 {
+			return paramAssigned(s.If.Else, name)
+		}
+	}
+	return false
 }

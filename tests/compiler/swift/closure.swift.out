@@ -1,7 +1,7 @@
 import Foundation
 
 func makeAdder(_ n: Int) -> (Int) -> Int {
-	var n = n
+	let n = n
 	
 	return { (x: Int) -> Int in
 		return x + n

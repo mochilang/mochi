@@ -1,7 +1,7 @@
 import Foundation
 
 func id(_ x: Int) -> Int {
-	var x = x
+	let x = x
 	
 	return x
 }
