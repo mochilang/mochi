@@ -285,7 +285,9 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
-	if len(st.Else) == 0 {
+
+	// No else or else-if branches -> use when
+	if st.ElseIf == nil && len(st.Else) == 0 {
 		c.writeln("(when " + cond)
 		c.indent++
 		for _, s := range st.Then {
@@ -298,6 +300,7 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 		return nil
 	}
 
+	// if with else or else-if
 	c.writeln("(if " + cond)
 	c.indent++
 	c.writeln("(do")
@@ -311,16 +314,22 @@ func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	c.writeln(")")
 	c.indent--
 	c.writeIndent()
-	c.buf.WriteString("\n")
-	c.writeln("(do")
-	c.indent++
-	for _, s := range st.Else {
-		if err := c.compileStmt(s); err != nil {
+	c.buf.WriteByte('\n')
+	if st.ElseIf != nil {
+		if err := c.compileIf(st.ElseIf); err != nil {
 			return err
 		}
+	} else {
+		c.writeln("(do")
+		c.indent++
+		for _, s := range st.Else {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln(")")
 	}
-	c.indent--
-	c.writeln(")")
 	c.writeln(")")
 	return nil
 }
@@ -434,11 +443,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
+			start, err := c.compileExpr(op.Index.Start)
 			if err != nil {
 				return "", err
 			}
-			expr = fmt.Sprintf("(nth %s %s)", expr, idx)
+			if op.Index.Colon != nil {
+				end, err := c.compileExpr(op.Index.End)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("(subs %s %s %s)", expr, start, end)
+			} else {
+				expr = fmt.Sprintf("(nth %s %s)", expr, start)
+			}
 			continue
 		}
 		if op.Call != nil {
@@ -515,7 +532,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return "(" + expr + ")", nil
+		return expr, nil
 	case p.Call != nil:
 		args := []string{}
 		for _, a := range p.Call.Args {
