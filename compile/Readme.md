@@ -15,6 +15,7 @@ Current directories:
 - `kt`      – Kotlin source emitter
 - `lua`     – Lua source emitter
 - `py`      – Python source emitter
+- `rkt`     – Racket source emitter
 - `rb`      – Ruby source emitter
 - `rust`    – Rust source emitter
 - `st`      – GNU Smalltalk output

@@ -46,6 +46,7 @@ import (
 	phpcode "mochi/compile/php"
 	pycode "mochi/compile/py"
 	rbcode "mochi/compile/rb"
+	rktcode "mochi/compile/rkt"
 	rscode "mochi/compile/rust"
 	scalacode "mochi/compile/scala"
 	stcode "mochi/compile/st"
@@ -99,7 +100,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (c|cs|dart|erlang|ex|fs|go|hs|java|jvm|kt|lua|php|py|rb|rust|scala|swift|ts|wasm|st)"`
+	Target        string `arg:"--target" help:"Output language (c|cs|dart|erlang|ex|fs|go|hs|java|jvm|kt|lua|php|py|rkt|rb|rust|scala|swift|ts|wasm|st)"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
 
@@ -442,6 +443,8 @@ func build(cmd *BuildCmd) error {
 			target = "go"
 		case ".py":
 			target = "py"
+		case ".rkt":
+			target = "rkt"
 		case ".ts":
 			target = "ts"
 		case ".wasm":
@@ -641,6 +644,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".py"
 		}
 		code, err := pycode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "rkt":
+		if out == "" {
+			out = base + ".rkt"
+		}
+		code, err := rktcode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
