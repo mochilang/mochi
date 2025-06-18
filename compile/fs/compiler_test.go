@@ -150,3 +150,72 @@ func normalizeOutput(root string, b []byte) []byte {
 	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
 	return []byte(strings.TrimSpace(out))
 }
+
+// runLeetExample compiles the Mochi solution for the given LeetCode ID to F#
+// and executes the generated program. The test fails if compilation or
+// execution returns an error. For problem 1 (two-sum) the output is verified.
+func runLeetExample(t *testing.T, id int) {
+	t.Helper()
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := fscode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.fsx")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("dotnet", "fsi", "--quiet", file)
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("fsi error: %v\n%s", err, out)
+			}
+			if id == 1 {
+				got := strings.TrimSpace(string(out))
+				if got != "0\n1" {
+					t.Fatalf("unexpected output: %q", got)
+				}
+			}
+		})
+	}
+}
+
+func TestFSCompiler_LeetCode1(t *testing.T) {
+	if err := fscode.EnsureDotnet(); err != nil {
+		t.Skipf("dotnet not installed: %v", err)
+	}
+	if err := exec.Command("dotnet", "fsi", "--help").Run(); err != nil {
+		t.Skipf("dotnet fsi not runnable: %v", err)
+	}
+	runLeetExample(t, 1)
+}
+
+func TestFSCompiler_LeetCodeExamples(t *testing.T) {
+	if err := fscode.EnsureDotnet(); err != nil {
+		t.Skipf("dotnet not installed: %v", err)
+	}
+	if err := exec.Command("dotnet", "fsi", "--help").Run(); err != nil {
+		t.Skipf("dotnet fsi not runnable: %v", err)
+	}
+	runLeetExample(t, 1)
+	runLeetExample(t, 2)
+}

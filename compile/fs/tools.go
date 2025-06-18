@@ -33,12 +33,14 @@ func ensureDotnet() error {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
-			cmd = exec.Command("apt-get", "install", "-y", "dotnet-sdk-7.0")
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			_ = cmd.Run()
-			if _, err := exec.LookPath("dotnet"); err == nil {
-				return nil
+			for _, pkg := range []string{"dotnet-sdk-8.0", "dotnet-sdk-7.0", "dotnet-sdk-6.0"} {
+				cmd = exec.Command("apt-get", "install", "-y", pkg)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				_ = cmd.Run()
+				if _, err := exec.LookPath("dotnet"); err == nil {
+					return nil
+				}
 			}
 		}
 	}
