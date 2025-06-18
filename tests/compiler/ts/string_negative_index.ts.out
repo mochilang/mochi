@@ -3,7 +3,7 @@
 let text: string = "hello"
 
 function main(): void {
-	console.log(_indexString(text, 1))
+	console.log(_indexString(text, (-1)))
 }
 function _indexString(s: string, i: number): string {
   const runes = Array.from(s);

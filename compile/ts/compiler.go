@@ -1145,7 +1145,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 				typ = tt.Value
 			case types.StringType:
-				expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
+				c.use("_indexString")
+				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idxExpr)
 				typ = types.StringType{}
 			default:
 				expr = fmt.Sprintf("(%s as any)[%s]", expr, idxExpr)
