@@ -12,7 +12,7 @@ public class Program {
 		var left = 0;
 		var right = ((m * n) - 1);
 		while ((left <= right)) {
-			var mid = ((left + ((right - left))) / 2);
+			var mid = (left + (((right - left)) / 2));
 			var row = (mid / n);
 			var col = (mid % n);
 			var value = matrix[row][col];

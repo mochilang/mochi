@@ -3,7 +3,13 @@ using System;
 using System.Collections.Generic;
 
 public class Program {
+	static void test_addition_works() {
+		var x = (1 + 2);
+		if (!((x == 3))) throw new Exception("expect failed");
+	}
+	
 	public static void Main() {
 		Console.WriteLine("ok");
+		test_addition_works();
 	}
 }

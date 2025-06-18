@@ -4,8 +4,16 @@ using System.Collections.Generic;
 using System.Text.Json;
 
 public class Program {
+	static void test_values() {
+		if (!((xs[0] == ((-1))))) throw new Exception("expect failed");
+		if (!((xs[1] == 0))) throw new Exception("expect failed");
+		if (!((xs[2] == 1))) throw new Exception("expect failed");
+		Console.WriteLine("done");
+	}
+	
 	public static void Main() {
 		var xs = _cast<int[]>(new [] { ((-1)), 0, 1 });
+		test_values();
 	}
 	static T _cast<T>(dynamic v) {
 		if (v is T tv) return tv;
