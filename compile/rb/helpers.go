@@ -6,6 +6,17 @@ import (
 	"mochi/parser"
 )
 
+var rbReserved = map[string]struct{}{
+	// Ruby keywords
+	"BEGIN": {}, "END": {}, "alias": {}, "and": {}, "begin": {}, "break": {},
+	"case": {}, "class": {}, "def": {}, "defined?": {}, "do": {}, "else": {},
+	"elsif": {}, "end": {}, "ensure": {}, "false": {}, "for": {}, "if": {},
+	"in": {}, "module": {}, "next": {}, "nil": {}, "not": {}, "or": {},
+	"redo": {}, "rescue": {}, "retry": {}, "return": {}, "self": {},
+	"super": {}, "then": {}, "true": {}, "undef": {}, "unless": {},
+	"until": {}, "when": {}, "while": {}, "yield": {},
+}
+
 func (c *Compiler) writeln(s string) {
 	c.writeIndent()
 	c.buf.WriteString(s)
@@ -33,6 +44,9 @@ func sanitizeName(name string) string {
 	s := b.String()
 	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
 		s = "_" + s
+	}
+	if _, ok := rbReserved[s]; ok {
+		return "_" + s
 	}
 	return s
 }
