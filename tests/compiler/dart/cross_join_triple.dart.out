@@ -1,0 +1,21 @@
+void main() {
+	var nums = [1, 2];
+	var letters = ["A", "B"];
+	var bools = [true, false];
+	var combos = (() {
+	var _res = [];
+	for (var n in nums) {
+		for (var l in letters) {
+			for (var b in bools) {
+				_res.add({n: n, l: l, b: b});
+			}
+		}
+	}
+	return _res;
+})();
+	print("--- Cross Join of three lists ---");
+	for (var c in combos) {
+		print([c.n.toString(), c.l.toString(), c.b.toString()].join(' '));
+	}
+}
+
