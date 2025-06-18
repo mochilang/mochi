@@ -3,6 +3,7 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -529,16 +530,46 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if op.Index.Colon == nil && c.isStringExpr(p) {
-				c.helpers["_indexString"] = true
-				expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+			if op.Index.Colon == nil {
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if c.isStringExpr(p) {
+					c.helpers["_indexString"] = true
+					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				}
 				continue
 			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
+			start := "0"
+			if op.Index.Start != nil {
+				s, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				start = s
+			}
+			end := fmt.Sprintf("%s.length", expr)
+			if op.Index.End != nil {
+				e, err := c.compileExpr(op.Index.End)
+				if err != nil {
+					return "", err
+				}
+				end = e
+			}
+			if c.isStringExpr(p) {
+				expr = fmt.Sprintf("%s.substring(%s, %s)", expr, start, end)
+			} else {
+				c.helpers["_slice"] = true
+				expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
+			}
+			continue
+		}
+		if op.Cast != nil {
+			t := c.resolveTypeRef(op.Cast.Type)
+			expr = fmt.Sprintf("(%s)(%s)", c.javaType(t), expr)
 			continue
 		}
 		if op.Call != nil {
@@ -657,6 +688,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return fmt.Sprintf("%d", *p.Lit.Int), nil
+		}
+		if p.Lit.Float != nil {
+			return strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64), nil
 		}
 		if p.Lit.Bool != nil {
 			if *p.Lit.Bool {
@@ -903,6 +937,21 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("int[] res = new int[a.length + b.length];")
 		c.writeln("System.arraycopy(a, 0, res, 0, a.length);")
 		c.writeln("System.arraycopy(b, 0, res, a.length, b.length);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_slice"] {
+		c.writeln("")
+		c.writeln("static int[] _slice(int[] arr, int i, int j) {")
+		c.indent++
+		c.writeln("if (i < 0) i += arr.length;")
+		c.writeln("if (j < 0) j += arr.length;")
+		c.writeln("if (i < 0) i = 0;")
+		c.writeln("if (j > arr.length) j = arr.length;")
+		c.writeln("if (j < i) j = i;")
+		c.writeln("int[] res = new int[j - i];")
+		c.writeln("System.arraycopy(arr, i, res, 0, j - i);")
 		c.writeln("return res;")
 		c.indent--
 		c.writeln("}")
