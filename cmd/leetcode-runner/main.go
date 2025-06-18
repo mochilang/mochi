@@ -178,6 +178,8 @@ func buildOne(src, lang string, run bool) error {
 	ext := "." + lang
 	if lang == "ocaml" {
 		ext = ".ml"
+	} else if lang == "fortran" {
+		ext = ".f90"
 	}
 	outFile := filepath.Join(outDir, base+ext)
 	var data []byte
@@ -361,6 +363,19 @@ func runOutput(file, lang string) error {
 			return err
 		}
 		cmd := exec.Command("elixir", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "fortran":
+		gfortran, err := ftncode.EnsureFortran()
+		if err != nil {
+			return err
+		}
+		exe := strings.TrimSuffix(file, filepath.Ext(file))
+		if out, err := exec.Command(gfortran, file, "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("gfortran: %v\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
