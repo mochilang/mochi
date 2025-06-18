@@ -304,6 +304,14 @@ func runOutput(file, lang string) error {
 		runCmd.Stdout = os.Stdout
 		runCmd.Stderr = os.Stderr
 		return runCmd.Run()
+	case "rb":
+		if err := rbcode.EnsureRuby(); err != nil {
+			return err
+		}
+		cmd := exec.Command("ruby", file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
 	case "java":
 		if err := javacode.EnsureJavac(); err != nil {
 			return err
