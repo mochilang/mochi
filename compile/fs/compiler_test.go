@@ -221,4 +221,7 @@ func TestFSCompiler_LeetCodeExamples(t *testing.T) {
 	runLeetExample(t, 3)
 	runLeetExample(t, 4)
 	runLeetExample(t, 5)
+	runLeetExample(t, 6)
+	runLeetExample(t, 7)
+	runLeetExample(t, 8)
 }
