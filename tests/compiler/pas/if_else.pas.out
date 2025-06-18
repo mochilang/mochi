@@ -6,11 +6,11 @@ type TIntArray = array of integer;
 
 function foo(n: integer): integer;
 begin
-	if n < 0 then
+	if (n < 0) then
 	begin
 		result := -1;
 		exit;
-	end else if n = 0 then
+	end else if (n = 0) then
 	begin
 		result := 0;
 		exit;

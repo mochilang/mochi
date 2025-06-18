@@ -129,6 +129,7 @@ func TestPascalCompiler_LeetCodeExamples(t *testing.T) {
 	}
 	runExample(t, 1)
 	runExample(t, 2)
+	runExample(t, 3)
 }
 
 // runExample compiles all Mochi files in the given LeetCode problem
