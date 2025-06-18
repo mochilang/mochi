@@ -1,7 +1,7 @@
 import Foundation
 
 func prepend(_ level: [Int], _ result: [[Int]]) -> [[Int]] {
-	var level = level
+	let level = level
 	var result = result
 	
 	result = [level] + result
