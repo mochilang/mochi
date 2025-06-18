@@ -139,23 +139,43 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileIf(s *parser.IfStmt) error {
-	if s.ElseIf != nil || len(s.Else) > 0 {
-		return fmt.Errorf("else not supported")
-	}
-	cond, err := c.compileExpr(s.Cond)
-	if err != nil {
-		return err
-	}
-	c.writeln(fmt.Sprintf("(when %s", cond))
-	c.indent++
-	for _, st := range s.Then {
-		if err := c.compileStmt(st); err != nil {
-			return err
-		}
-	}
-	c.indent--
-	c.writeln(")")
-	return nil
+        cond, err := c.compileExpr(s.Cond)
+        if err != nil {
+                return err
+        }
+        c.writeln(fmt.Sprintf("(if %s", cond))
+        c.indent++
+        // then branch
+        c.writeln("(begin")
+        c.indent++
+        for _, st := range s.Then {
+                if err := c.compileStmt(st); err != nil {
+                        return err
+                }
+        }
+        c.indent--
+        c.writeln(")")
+        // else branch
+        if s.ElseIf != nil {
+                if err := c.compileIf(s.ElseIf); err != nil {
+                        return err
+                }
+        } else if len(s.Else) > 0 {
+                c.writeln("(begin")
+                c.indent++
+                for _, st := range s.Else {
+                        if err := c.compileStmt(st); err != nil {
+                                return err
+                        }
+                }
+                c.indent--
+                c.writeln(")")
+        } else {
+                c.writeln("(void)")
+        }
+        c.indent--
+        c.writeln(")")
+        return nil
 }
 
 // --- Expressions ---
