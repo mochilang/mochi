@@ -14,6 +14,7 @@ Current directories:
 - `jvm`     – JVM bytecode output
 - `kt`      – Kotlin source emitter
 - `lua`     – Lua source emitter
+- `pl`      – Prolog source emitter
 - `py`      – Python source emitter
 - `rb`      – Ruby source emitter
 - `rust`    – Rust source emitter

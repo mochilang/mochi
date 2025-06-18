@@ -156,7 +156,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 	case s.For != nil:
 		return c.compileFor(s.For, ret)
 	case s.If != nil:
-		return c.compileIf(s.If, ret)
+		return c.compileIf(s.If, ret, true)
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -197,7 +197,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 	return nil
 }
 
-func (c *Compiler) compileIf(stmt *parser.IfStmt, ret string) error {
+func (c *Compiler) compileIf(stmt *parser.IfStmt, ret string, trailing bool) error {
 	cond, err := c.compileExpr(stmt.Cond)
 	if err != nil {
 		return err
@@ -213,7 +213,28 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt, ret string) error {
 		}
 	}
 	c.indent--
-	c.writeln("; true),")
+	c.writeln(";")
+	c.indent++
+	switch {
+	case stmt.ElseIf != nil:
+		if err := c.compileIf(stmt.ElseIf, ret, false); err != nil {
+			return err
+		}
+	case len(stmt.Else) > 0:
+		for _, s := range stmt.Else {
+			if err := c.compileStmt(s, ret); err != nil {
+				return err
+			}
+		}
+	default:
+		c.writeln("true")
+	}
+	c.indent--
+	if trailing {
+		c.writeln("),")
+	} else {
+		c.writeln(")")
+	}
 	return nil
 }
 
@@ -253,6 +274,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 			res.val = tmp
 		case "==":
 			res.val = fmt.Sprintf("%s =:= %s", res.val, right.val)
+		case "<":
+			res.val = fmt.Sprintf("%s < %s", res.val, right.val)
+		case "<=":
+			res.val = fmt.Sprintf("%s =< %s", res.val, right.val)
+		case ">":
+			res.val = fmt.Sprintf("%s > %s", res.val, right.val)
+		case ">=":
+			res.val = fmt.Sprintf("%s >= %s", res.val, right.val)
 		default:
 			return exprRes{}, fmt.Errorf("unsupported operator %s", op.Op)
 		}
