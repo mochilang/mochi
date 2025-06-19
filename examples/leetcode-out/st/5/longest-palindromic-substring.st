@@ -26,8 +26,8 @@ longestPalindrome: s | end i l len1 len2 n start |
 	end := 0.
 	n := s size.
 	0 to: n - 1 do: [:i |
-		len1 := Main expand: (s) left: (i) right: (i).
-		len2 := Main expand: (s) left: (i) right: ((i + 1)).
+		len1 := (Main expand: (s) left: (i) right: (i)).
+		len2 := (Main expand: (s) left: (i) right: ((i + 1))).
 		l := len1.
 		((len2 > len1)) ifTrue: [
 			l := len2.

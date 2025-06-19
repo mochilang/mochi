@@ -65,7 +65,7 @@ myAtoi: s | ch d i n result sign |
 	result := 0.
 	[(i < n)] whileTrue: [
 		ch := (s copyFrom: (i + 1) to: (i + 1)).
-		d := Main digit: (ch).
+		d := (Main digit: (ch)).
 		((d < 0)) ifTrue: [
 		]
 		.

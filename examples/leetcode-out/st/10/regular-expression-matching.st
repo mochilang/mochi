@@ -1,7 +1,7 @@
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
 !Main class methodsFor: 'mochi'!
-isMatch: s p: p | dp first i i2 j j2 m n row |
+isMatch: s p: p | dp first i i2 j j2 m n row star |
 	m := s size.
 	n := p size.
 	dp := Array new.
@@ -10,11 +10,11 @@ isMatch: s p: p | dp first i i2 j j2 m n row |
 		row := Array new.
 		j := 0.
 		[(j <= n)] whileTrue: [
-			row := (row , Array with: false).
+			row := ((row) , (Array with: false)).
 			j := (j + 1).
 		]
 		.
-		dp := (dp , Array with: row).
+		dp := ((dp) , (Array with: row)).
 		i := (i + 1).
 	]
 	.
@@ -31,7 +31,15 @@ isMatch: s p: p | dp first i i2 j j2 m n row |
 				.
 			]
 			.
-			(((((j2 + 1) < n) and: [(p at: (j2 + 1) + 1)]) = '*')) ifTrue: [
+			star := false.
+			(((j2 + 1) < n)) ifTrue: [
+				(((p at: (j2 + 1) + 1) = '*')) ifTrue: [
+					star := true.
+				]
+				.
+			]
+			.
+			(star) ifTrue: [
 				((((dp at: i2 + 1) at: (j2 + 2) + 1) or: [((first and: [((dp at: (i2 + 1) + 1) at: j2 + 1)]))])) ifTrue: [
 					dp at: i2 + 1 put: true.
 				] ifFalse: [

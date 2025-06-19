@@ -17,6 +17,6 @@ twoSum: nums target: target | i j n |
 !
 
 !!
-result := Main twoSum: (Array with: 2 with: 7 with: 11 with: 15) target: (9).
-(result at: 0 + 1) displayOn: Transcript. Transcript cr.
-(result at: 1 + 1) displayOn: Transcript. Transcript cr.
+result := (Main twoSum: (Array with: 2 with: 7 with: 11 with: 15) target: (9)).
+((result at: 0 + 1)) displayOn: Transcript. Transcript cr.
+((result at: 1 + 1)) displayOn: Transcript. Transcript cr.
