@@ -1,0 +1,8 @@
+import Foundation
+
+func main() {
+	print(true && false)
+	print(true || false)
+	print(!false)
+}
+main()
