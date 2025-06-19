@@ -140,9 +140,11 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
 	}
 	if c.env != nil {
-		var typ types.Type = types.AnyType{}
+		var typ types.Type
 		if stmt.Type != nil {
 			typ = c.resolveTypeRef(stmt.Type)
+		} else {
+			typ = c.inferExprType(stmt.Value)
 		}
 		c.env.SetVar(stmt.Name, typ, false)
 	}
@@ -168,9 +170,11 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
 	}
 	if c.env != nil {
-		var typ types.Type = types.AnyType{}
+		var typ types.Type
 		if stmt.Type != nil {
 			typ = c.resolveTypeRef(stmt.Type)
+		} else {
+			typ = c.inferExprType(stmt.Value)
 		}
 		c.env.SetVar(stmt.Name, typ, true)
 	}
