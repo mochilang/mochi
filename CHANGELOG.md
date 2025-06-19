@@ -1,4 +1,24 @@
 # 📦 CHANGELOG.md
+## [0.8.7] – 2025-06-19
+
+### Added
+
+* Break and continue support in the Scala compiler
+* COBOL loops with grouped ranges, negative counts and modulo operations
+* Struct casts and new examples in the Ruby backend
+* Dart trailing newline emission and map/list helpers
+* 64-bit literal support for Fortran
+* Smalltalk golden tests and parenthesized expressions
+* Expanded Rust factorial and fibonacci tests
+
+### Changed
+
+* Clojure only includes runtime helpers when needed
+* LeetCode solutions refreshed for Fortran
+
+### Fixed
+
+* Improved printing and loop handling across compilers
 ## [0.8.6] – 2025-06-19
 
 ### Added
