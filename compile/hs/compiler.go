@@ -402,7 +402,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		} else if op.Op == "/" && c.postfixIsInt(op.Right) {
 			expr = fmt.Sprintf("(div %s %s)", expr, r)
 		} else {
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, r)
+			opSym := op.Op
+			if opSym == "!=" {
+				opSym = "/="
+			}
+			expr = fmt.Sprintf("(%s %s %s)", expr, opSym, r)
 		}
 	}
 	return expr, nil
