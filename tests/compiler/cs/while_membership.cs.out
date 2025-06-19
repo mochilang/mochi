@@ -5,14 +5,14 @@ using System.Collections.Generic;
 public class Program {
 	public static void Main() {
 		var set = new Dictionary<dynamic, dynamic> {  };
-		foreach (var n in new [] { 1, 2, 3 }) {
+		foreach (var n in new [] { 1L, 2L, 3L }) {
 			set[n] = true;
 		}
-		var i = 1;
-		var count = 0;
+		var i = 1L;
+		var count = 0L;
 		while (_in(i, set)) {
-			i = (i + 1);
-			count = (count + 1);
+			i = (i + 1L);
+			count = (count + 1L);
 		}
 		Console.WriteLine(count);
 	}

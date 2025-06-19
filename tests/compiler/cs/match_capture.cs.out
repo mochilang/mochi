@@ -8,26 +8,26 @@ public class Leaf : Tree {
 }
 public class Node : Tree {
 	public Tree left;
-	public int value;
+	public long value;
 	public Tree right;
 	public void isTree() {}
 }
 
 public class Program {
-	static int depth(Tree t) {
+	static long depth(Tree t) {
 		return new Func<dynamic>(() => {
 		var _t = t;
-		if (_t is Leaf) return 0;
+		if (_t is Leaf) return 0L;
 		if (_t is Node _tmp0) {
 			var l = _tmp0.left;
 			var r = _tmp0.right;
-			return ((depth(l) + depth(r)) + 1);
+			return ((depth(l) + depth(r)) + 1L);
 		}
 		return null;
 	})();
 	}
 	
 	public static void Main() {
-		Console.WriteLine(depth(new Node { left = new Leaf {  }, value = 0, right = new Leaf {  } }));
+		Console.WriteLine(depth(new Node { left = new Leaf {  }, value = 0L, right = new Leaf {  } }));
 	}
 }

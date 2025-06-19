@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 
 public class Program {
-	static int sum(int n) {
-		return ((n * ((n + 1))) / 2);
+	static long sum(long n) {
+		return ((n * ((n + 1L))) / 2L);
 	}
 	
 	public static void Main() {
-		var n = 10;
+		var n = 10L;
 		Console.WriteLine(sum(n));
 		Console.WriteLine(n);
 	}

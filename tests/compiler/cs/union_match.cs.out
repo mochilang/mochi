@@ -8,7 +8,7 @@ public class Leaf : Tree {
 }
 public class Node : Tree {
 	public Tree left;
-	public int value;
+	public long value;
 	public Tree right;
 	public void isTree() {}
 }
@@ -24,6 +24,6 @@ public class Program {
 	
 	public static void Main() {
 		Console.WriteLine(isLeaf(new Leaf {  }));
-		Console.WriteLine(isLeaf(new Node { left = new Leaf {  }, value = 1, right = new Leaf {  } }));
+		Console.WriteLine(isLeaf(new Node { left = new Leaf {  }, value = 1L, right = new Leaf {  } }));
 	}
 }

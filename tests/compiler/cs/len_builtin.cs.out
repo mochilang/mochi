@@ -4,6 +4,6 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		Console.WriteLine(new [] { 1, 2, 3 }.Length);
+		Console.WriteLine(new [] { 1L, 2L, 3L }.Length);
 	}
 }

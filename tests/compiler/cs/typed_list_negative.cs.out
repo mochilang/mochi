@@ -5,14 +5,14 @@ using System.Text.Json;
 
 public class Program {
 	static void test_values() {
-		if (!((xs[0] == ((-1))))) throw new Exception("expect failed");
-		if (!((xs[1] == 0))) throw new Exception("expect failed");
-		if (!((xs[2] == 1))) throw new Exception("expect failed");
+		if (!((xs[0L] == ((-1L))))) throw new Exception("expect failed");
+		if (!((xs[1L] == 0L))) throw new Exception("expect failed");
+		if (!((xs[2L] == 1L))) throw new Exception("expect failed");
 		Console.WriteLine("done");
 	}
 	
 	public static void Main() {
-		var xs = _cast<int[]>(new [] { ((-1)), 0, 1 });
+		var xs = _cast<long[]>(new [] { ((-1L)), 0L, 1L });
 		test_values();
 	}
 	static T _cast<T>(dynamic v) {

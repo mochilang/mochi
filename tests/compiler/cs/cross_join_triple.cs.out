@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Program {
 	public static void Main() {
-		var nums = new [] { 1, 2 };
+		var nums = new [] { 1L, 2L };
 		var letters = new [] { "A", "B" };
 		var bools = new [] { true, false };
 		var combos = new Func<List<dynamic>>(() => {

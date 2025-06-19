@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var c = 0;
-		for (var _tmp0 = 0; _tmp0 < 2; _tmp0++) {
-			c = (c + 1);
+		var c = 0L;
+		for (var _tmp0 = 0L; _tmp0 < 2L; _tmp0++) {
+			c = (c + 1L);
 		}
-		foreach (var _tmp1 in new [] { 1, 2 }) {
-			c = (c + 1);
+		foreach (var _tmp1 in new [] { 1L, 2L }) {
+			c = (c + 1L);
 		}
 		foreach (var _tmp2 in "ab") {
-			c = (c + 1);
+			c = (c + 1L);
 		}
 		Console.WriteLine(c);
 	}

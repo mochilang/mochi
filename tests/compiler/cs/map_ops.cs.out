@@ -5,12 +5,12 @@ using System.Collections.Generic;
 public class Program {
 	public static void Main() {
 		var m = new Dictionary<dynamic, dynamic> {  };
-		m[1] = 10;
-		m[2] = 20;
-		if (_in(1, m)) {
-			Console.WriteLine(m[1]);
+		m[1L] = 10L;
+		m[2L] = 20L;
+		if (_in(1L, m)) {
+			Console.WriteLine(m[1L]);
 		}
-		Console.WriteLine(m[2]);
+		Console.WriteLine(m[2L]);
 	}
 	static bool _in(dynamic item, dynamic col) {
 		if (col is string s && item is string sub) {

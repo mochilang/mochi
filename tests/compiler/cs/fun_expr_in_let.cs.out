@@ -3,11 +3,10 @@ using System;
 using System.Collections.Generic;
 
 public class Program {
-	static long id(long x) {
-		return x;
-	}
-	
 	public static void Main() {
-		Console.WriteLine(id(123L));
+		var square = new Func<long, long>(delegate(long x) {
+	return (x * x);
+});
+		Console.WriteLine(square(6L));
 	}
 }

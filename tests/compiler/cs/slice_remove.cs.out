@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 
 public class Program {
-	static int[] remove(int[] nums, int i) {
-		return (nums[0] + nums[(i + 1)]);
+	static long[] remove(long[] nums, long i) {
+		return (((nums).GetRange((int)(0L), (int)(i-0L))) + ((nums).GetRange((int)((i + 1L)), (int)(nums.Length-(i + 1L)))));
 	}
 	
 	public static void Main() {
-		Console.WriteLine(remove(new [] { 1, 2, 3, 4 }, 1));
+		Console.WriteLine(remove(new [] { 1L, 2L, 3L, 4L }, 1L));
 	}
 }

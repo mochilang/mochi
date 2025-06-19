@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		foreach (var n in new [] { 1, 2, 3 }) {
+		foreach (var n in new [] { 1L, 2L, 3L }) {
 			Console.WriteLine(n);
 		}
 	}

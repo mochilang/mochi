@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var map = new Dictionary<dynamic, dynamic> { { "a", 1 } };
+		var map = new Dictionary<dynamic, dynamic> { { "a", 1L } };
 		Console.WriteLine(map["a"]);
 	}
 }
