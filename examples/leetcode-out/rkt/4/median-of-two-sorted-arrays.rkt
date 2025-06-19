@@ -6,6 +6,14 @@
         [(hash? x) (hash-ref x i)]
         [else (list-ref x i)]))
 (define (slice x s e) (if (string? x) (substring x s e) (take (drop x s) (- e s))))
+(define (count x)
+  (cond [(string? x) (string-length x)]
+        [(hash? x) (hash-count x)]
+        [else (length x)]))
+(define (avg x)
+  (let ([n (count x)])
+    (if (= n 0) 0
+        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
 
 (define (findMedianSortedArrays nums1 nums2)
 	(let/ec return
