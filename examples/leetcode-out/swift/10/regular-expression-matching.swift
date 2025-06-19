@@ -12,48 +12,49 @@ func isMatch(_ s: String, _ p: String) -> Bool {
 	let s = s
 	let p = p
 	
-	let m: Int = s.count
-	let n: Int = p.count
-	var memo: [Int: Bool] = [:]
-	func dfs(_ i: Int, _ j: Int) -> Bool {
-		let i = i
-		let j = j
-		
-		let key: Int = i * (n + 1) + j
-		if memo[key] != nil {
-			return memo[key]!
+	let m = s.count
+	let n = p.count
+	var dp: [[Bool]] = []
+	var i = 0
+	while i <= m {
+		var row: [Bool] = []
+		var j = 0
+		while j <= n {
+			row = row + [false]
+			j = j + 1
 		}
-		if j == n {
-			return i == m
-		}
-		var first: Bool = false
-		if i < m {
-			if (_indexString(p, j) == _indexString(s, i)) || (_indexString(p, j) == ".") {
-				first = true
+		dp = dp + [row]
+		i = i + 1
+	}
+	dp[m][n] = true
+	var i2 = m
+	while i2 >= 0 {
+		var j2 = n - 1
+		while j2 >= 0 {
+			var first = false
+			if i2 < m {
+				if (_indexString(p, j2) == _indexString(s, i2)) || (_indexString(p, j2) == ".") {
+					first = true
+				}
 			}
-		}
-		var ans: Bool = false
-		if j + 1 < n {
-			if _indexString(p, j + 1) == "*" {
-				if dfs(i, j + 2) {
-					ans = true
-				} else 				if first && dfs(i + 1, j) {
-					ans = true
+			if j2 + 1 < n && _indexString(p, j2 + 1) == "*" {
+				if dp[i2][j2 + 2] || (first && dp[i2 + 1][j2]) {
+					dp[i2][j2] = true
+				} else {
+					dp[i2][j2] = false
 				}
 			} else {
-				if first && dfs(i + 1, j + 1) {
-					ans = true
+				if first && dp[i2 + 1][j2 + 1] {
+					dp[i2][j2] = true
+				} else {
+					dp[i2][j2] = false
 				}
 			}
-		} else {
-			if first && dfs(i + 1, j + 1) {
-				ans = true
-			}
+			j2 = j2 - 1
 		}
-		memo[key] = ans
-		return ans
+		i2 = i2 - 1
 	}
-	return dfs(0, 0)
+	return dp[0][0]
 }
 
 func main() {
