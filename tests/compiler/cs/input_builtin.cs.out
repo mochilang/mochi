@@ -5,9 +5,9 @@ using System.Collections.Generic;
 public class Program {
 	public static void Main() {
 		Console.WriteLine("Enter first input:");
-		var input1 = Console.ReadLine();
+		string input1 = Console.ReadLine();
 		Console.WriteLine("Enter second input:");
-		var input2 = Console.ReadLine();
-		Console.WriteLine("You entered:", input1, ",", input2);
+		string input2 = Console.ReadLine();
+		Console.WriteLine(string.Join(" ", new [] { Convert.ToString("You entered:"), Convert.ToString(input1), Convert.ToString(","), Convert.ToString(input2) }));
 	}
 }

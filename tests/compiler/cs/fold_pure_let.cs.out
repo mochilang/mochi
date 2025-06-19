@@ -8,7 +8,7 @@ public class Program {
 	}
 	
 	public static void Main() {
-		var n = 10L;
+		long n = 10L;
 		Console.WriteLine(sum(n));
 		Console.WriteLine(n);
 	}

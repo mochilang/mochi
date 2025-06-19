@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		long[] xs = new [] { 10L, 20L, 30L };
-		Console.WriteLine(xs[1L]);
+		Console.WriteLine((true && false));
+		Console.WriteLine((true || false));
+		Console.WriteLine((!false));
 	}
 }

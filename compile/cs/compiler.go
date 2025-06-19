@@ -1161,7 +1161,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch call.Func {
 	case "print":
-		return fmt.Sprintf("Console.WriteLine(%s)", argStr), nil
+		if len(args) == 1 {
+			return fmt.Sprintf("Console.WriteLine(%s)", args[0]), nil
+		}
+		parts := make([]string, len(args))
+		for i, a := range args {
+			parts[i] = fmt.Sprintf("Convert.ToString(%s)", a)
+		}
+		joined := "string.Join(\" \", new [] { " + strings.Join(parts, ", ") + " })"
+		return fmt.Sprintf("Console.WriteLine(%s)", joined), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count() expects 1 arg")

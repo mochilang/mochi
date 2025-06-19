@@ -10,8 +10,8 @@ public class Person {
 
 public class Program {
 	public static void Main() {
-		var people = new [] { new Person { name = "Alice", age = 30L }, new Person { name = "Bob", age = 15L }, new Person { name = "Charlie", age = 65L } };
-		var names = new List<dynamic>(people.Where(p => (p.age >= 18L)).Select(p => p.name));
+		Person[] people = new [] { new Person { name = "Alice", age = 30L }, new Person { name = "Bob", age = 15L }, new Person { name = "Charlie", age = 65L } };
+		string[] names = new List<dynamic>(people.Where(p => (p.age >= 18L)).Select(p => p.name));
 		foreach (var n in names) {
 			Console.WriteLine(n);
 		}

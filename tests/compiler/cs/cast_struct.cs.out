@@ -9,7 +9,7 @@ public class Todo {
 
 public class Program {
 	public static void Main() {
-		var todo = _cast<Todo>(new Dictionary<dynamic, dynamic> { { "title", "hi" } });
+		Todo todo = _cast<Todo>(new Dictionary<dynamic, dynamic> { { "title", "hi" } });
 		Console.WriteLine(todo.title);
 	}
 	static T _cast<T>(dynamic v) {

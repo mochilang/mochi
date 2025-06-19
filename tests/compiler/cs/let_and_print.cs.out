@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var a = 10L;
-		var b = 20L;
+		long a = 10L;
+		long b = 20L;
 		Console.WriteLine((a + b));
 	}
 }

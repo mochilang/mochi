@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var set = new Dictionary<dynamic, dynamic> {  };
+		Dictionary<long, bool> set = new Dictionary<dynamic, dynamic> {  };
 		foreach (var n in new [] { 1L, 2L, 3L }) {
 			set[n] = true;
 		}
-		var i = 1L;
-		var count = 0L;
+		long i = 1L;
+		long count = 0L;
 		while (_in(i, set)) {
 			i = (i + 1L);
 			count = (count + 1L);

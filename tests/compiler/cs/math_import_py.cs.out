@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var r = 3.000000;
-		var area = (math.pi * math.pow(r, 2.000000));
-		Console.WriteLine("Area:", area);
+		double r = 3.000000;
+		double area = (math.pi * math.pow(r, 2.000000));
+		Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Area:"), Convert.ToString(area) }));
 	}
 }
