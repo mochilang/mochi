@@ -15,10 +15,11 @@ import (
 
 // Compiler translates a Mochi AST into Elixir source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	tmp    int
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	tmp     int
+	helpers map[string]bool
 }
 
 var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
@@ -87,7 +88,7 @@ func assignedVars(stmts []*parser.Statement) []string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, helpers: make(map[string]bool)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -132,6 +133,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("end")
+	c.emitRuntime()
 	c.writeln("end")
 	c.indent--
 	c.writeln("Main.main()")
@@ -712,13 +714,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "len":
 				res = fmt.Sprintf("length(%s)", argStr)
 			case "count":
-				res = fmt.Sprintf("Enum.count(%s)", argStr)
+				c.use("_count")
+				res = fmt.Sprintf("_count(%s)", argStr)
 			case "avg":
-				res = fmt.Sprintf("if Enum.count(%[1]s) == 0, do: 0, else: Enum.sum(%[1]s) / Enum.count(%[1]s)", argStr)
+				c.use("_avg")
+				res = fmt.Sprintf("_avg(%s)", argStr)
 			case "str":
 				res = fmt.Sprintf("to_string(%s)", argStr)
 			case "input":
-				res = "String.trim(IO.gets(\"\"))"
+				c.use("_input")
+				res = "_input()"
 			default:
 				if _, ok := typ.(types.FuncType); ok {
 					res = fmt.Sprintf("%s.(%s)", res, argStr)
@@ -829,13 +834,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "len":
 			return fmt.Sprintf("length(%s)", argStr), nil
 		case "count":
-			return fmt.Sprintf("Enum.count(%s)", argStr), nil
+			c.use("_count")
+			return fmt.Sprintf("_count(%s)", argStr), nil
 		case "avg":
-			return fmt.Sprintf("if Enum.count(%[1]s) == 0, do: 0, else: Enum.sum(%[1]s) / Enum.count(%[1]s)", argStr), nil
+			c.use("_avg")
+			return fmt.Sprintf("_avg(%s)", argStr), nil
 		case "str":
 			return fmt.Sprintf("to_string(%s)", argStr), nil
 		case "input":
-			return "String.trim(IO.gets(\"\"))", nil
+			c.use("_input")
+			return "_input()", nil
 		default:
 			if c.env != nil {
 				if t, err := c.env.GetVar(p.Call.Func); err == nil {
@@ -975,4 +983,20 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 		}
 	}
 	return types.AnyType{}
+}
+
+func (c *Compiler) use(name string) { c.helpers[name] = true }
+
+func (c *Compiler) emitRuntime() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.writeln(helperMap[n])
+	}
 }
