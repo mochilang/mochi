@@ -1,0 +1,9 @@
+import Foundation
+
+func main() {
+	for ch_ch in "cat" {
+		let ch = String(ch_ch)
+		print(ch)
+	}
+}
+main()

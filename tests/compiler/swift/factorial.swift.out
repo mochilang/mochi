@@ -1,0 +1,17 @@
+import Foundation
+
+func factorial(_ n: Int) -> Int {
+	let n = n
+	
+	if n <= 1 {
+		return 1
+	}
+	return n * factorial(n - 1)
+}
+
+func main() {
+	print(factorial(0))
+	print(factorial(1))
+	print(factorial(5))
+}
+main()
