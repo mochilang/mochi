@@ -1,0 +1,12 @@
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+fun depth(t: Tree): int {
+  return match t {
+    Leaf => 0
+    Node(l, _, r) => depth(l) + depth(r) + 1
+  }
+}
+
+print(depth(Node { left: Leaf {}, value: 0, right: Leaf {} }))

@@ -1,0 +1,2 @@
+text = "hello"
+puts([text[1]].join(" "))

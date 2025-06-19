@@ -1,0 +1,3 @@
+for ch in "cat".chars
+	puts([ch].join(" "))
+end
