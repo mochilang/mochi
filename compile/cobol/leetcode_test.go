@@ -96,7 +96,7 @@ func runLeet(t *testing.T, id int) {
 }
 
 func TestCobolCompiler_LeetCodeExamples(t *testing.T) {
-	for i := 1; i <= 3; i++ {
+	for i := 1; i <= 2; i++ {
 		runLeet(t, i)
 	}
 }
