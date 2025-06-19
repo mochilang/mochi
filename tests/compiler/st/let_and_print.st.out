@@ -3,4 +3,4 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 !!
 a := 10.
 b := 20.
-(a + b) displayOn: Transcript. Transcript cr.
+((a + b)) displayOn: Transcript. Transcript cr.
