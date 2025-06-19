@@ -1,0 +1,8 @@
+(ns main)
+
+(defn -main []
+  (def text "hello")
+  (println (subs text 1 (inc 1)))
+)
+
+(-main)
