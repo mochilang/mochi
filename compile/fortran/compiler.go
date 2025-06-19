@@ -11,20 +11,24 @@ import (
 // Compiler emits very small Fortran 90 code for a limited subset of Mochi.
 // It only supports constructs needed for the leetcode two-sum example.
 type Compiler struct {
-	buf           bytes.Buffer
-	indent        int
-	stringVars    map[string]bool
-	listVars      map[string]bool
-	funReturnStr  map[string]bool
-	funReturnList map[string]bool
+	buf            bytes.Buffer
+	indent         int
+	stringVars     map[string]bool
+	listVars       map[string]bool
+	floatVars      map[string]bool
+	funReturnStr   map[string]bool
+	funReturnList  map[string]bool
+	funReturnFloat map[string]bool
 }
 
 func New() *Compiler {
 	return &Compiler{
-		stringVars:    map[string]bool{},
-		listVars:      map[string]bool{},
-		funReturnStr:  map[string]bool{},
-		funReturnList: map[string]bool{},
+		stringVars:     map[string]bool{},
+		listVars:       map[string]bool{},
+		floatVars:      map[string]bool{},
+		funReturnStr:   map[string]bool{},
+		funReturnList:  map[string]bool{},
+		funReturnFloat: map[string]bool{},
 	}
 }
 
@@ -74,7 +78,7 @@ func collectLoopVars(stmts []*parser.Statement, vars map[string]bool) {
 	}
 }
 
-func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, funStr map[string]bool) {
+func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, floatVars map[string]bool, funStr map[string]bool, funFloat map[string]bool) {
 	for _, s := range stmts {
 		switch {
 		case s.Var != nil:
@@ -86,6 +90,9 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 			if isStringExpr(s.Var.Value, stringVars, funStr) {
 				stringVars[name] = true
 			}
+			if isFloatExpr(s.Var.Value, floatVars, funFloat) || (s.Var.Type != nil && s.Var.Type.Simple != nil && *s.Var.Type.Simple == "float") {
+				floatVars[name] = true
+			}
 		case s.Let != nil:
 			name := sanitizeName(s.Let.Name)
 			vars[name] = true
@@ -95,19 +102,22 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 			if isStringExpr(s.Let.Value, stringVars, funStr) {
 				stringVars[name] = true
 			}
+			if isFloatExpr(s.Let.Value, floatVars, funFloat) || (s.Let.Type != nil && s.Let.Type.Simple != nil && *s.Let.Type.Simple == "float") {
+				floatVars[name] = true
+			}
 		case s.For != nil:
-			collectVars(s.For.Body, vars, listVars, stringVars, funStr)
+			collectVars(s.For.Body, vars, listVars, stringVars, floatVars, funStr, funFloat)
 		case s.While != nil:
-			collectVars(s.While.Body, vars, listVars, stringVars, funStr)
+			collectVars(s.While.Body, vars, listVars, stringVars, floatVars, funStr, funFloat)
 		case s.If != nil:
-			collectVars(s.If.Then, vars, listVars, stringVars, funStr)
+			collectVars(s.If.Then, vars, listVars, stringVars, floatVars, funStr, funFloat)
 			cur := s.If
 			for cur.ElseIf != nil {
 				cur = cur.ElseIf
-				collectVars(cur.Then, vars, listVars, stringVars, funStr)
+				collectVars(cur.Then, vars, listVars, stringVars, floatVars, funStr, funFloat)
 			}
 			if len(cur.Else) > 0 {
-				collectVars(cur.Else, vars, listVars, stringVars, funStr)
+				collectVars(cur.Else, vars, listVars, stringVars, floatVars, funStr, funFloat)
 			}
 		}
 	}
@@ -203,6 +213,92 @@ func isStringExpr(e *parser.Expr, stringVars map[string]bool, funStr map[string]
 	return false
 }
 
+func isFloatExpr(e *parser.Expr, floatVars map[string]bool, funFloat map[string]bool) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if isFloatUnary(e.Binary.Left, floatVars, funFloat) {
+		return true
+	}
+	for _, part := range e.Binary.Right {
+		if isFloatPostfix(part.Right, floatVars, funFloat) {
+			return true
+		}
+	}
+	return false
+}
+
+func isFloatUnary(u *parser.Unary, floatVars map[string]bool, funFloat map[string]bool) bool {
+	if u == nil {
+		return false
+	}
+	if isFloatPostfix(u.Value, floatVars, funFloat) {
+		return true
+	}
+	return false
+}
+
+func isFloatPostfix(p *parser.PostfixExpr, floatVars map[string]bool, funFloat map[string]bool) bool {
+	if p == nil {
+		return false
+	}
+	if isFloatPrimary(p.Target, floatVars, funFloat) {
+		return true
+	}
+	for _, op := range p.Ops {
+		if op.Call != nil {
+			if p.Target.Call != nil {
+				name := sanitizeName(p.Target.Call.Func)
+				if funFloat[name] {
+					return true
+				}
+			} else if p.Target.Selector != nil {
+				name := sanitizeName(p.Target.Selector.Root)
+				if funFloat[name] {
+					return true
+				}
+			}
+		}
+		if op.Cast != nil {
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "float" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isFloatPrimary(p *parser.Primary, floatVars map[string]bool, funFloat map[string]bool) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Lit != nil:
+		if p.Lit.Float != nil {
+			return true
+		}
+	case p.Selector != nil:
+		name := sanitizeName(p.Selector.Root)
+		if floatVars[name] {
+			return true
+		}
+	case p.Call != nil:
+		name := sanitizeName(p.Call.Func)
+		if funFloat[name] {
+			return true
+		}
+	case p.Group != nil:
+		return isFloatExpr(p.Group, floatVars, funFloat)
+	case p.List != nil:
+		for _, e := range p.List.Elems {
+			if isFloatExpr(e, floatVars, funFloat) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // Compile converts prog into simple Fortran source.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -221,11 +317,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.funReturnStr = map[string]bool{}
 	c.funReturnList = map[string]bool{}
+	c.funReturnFloat = map[string]bool{}
 	for _, f := range funs {
 		if f.Return != nil && f.Return.Simple != nil && *f.Return.Simple == "string" {
 			c.funReturnStr[sanitizeName(f.Name)] = true
 		} else if f.Return != nil && f.Return.Generic != nil && f.Return.Generic.Name == "list" {
 			c.funReturnList[sanitizeName(f.Name)] = true
+		} else if f.Return != nil && f.Return.Simple != nil && *f.Return.Simple == "float" {
+			c.funReturnFloat[sanitizeName(f.Name)] = true
 		}
 	}
 	c.writeln("program main")
@@ -235,9 +334,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	declared := map[string]bool{}
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
-	collectVars(mainStmts, declared, listVars, stringVars, c.funReturnStr)
+	floatVars := map[string]bool{}
+	collectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat)
 	c.listVars = listVars
 	c.stringVars = stringVars
+	c.floatVars = floatVars
 	allocs := []string{}
 	for name, isList := range listVars {
 		if isList {
@@ -251,6 +352,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if stringVars[name] {
 			c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
+		} else if floatVars[name] {
+			c.writeln(fmt.Sprintf("real :: %s", name))
 		} else if name == "result" {
 			c.writeln("integer :: result(2)")
 		} else {
@@ -299,9 +402,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.stringVars = map[string]bool{}
+	c.floatVars = map[string]bool{}
 	for _, p := range fn.Params {
-		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
-			c.stringVars[sanitizeName(p.Name)] = true
+		if p.Type != nil && p.Type.Simple != nil {
+			if *p.Type.Simple == "string" {
+				c.stringVars[sanitizeName(p.Name)] = true
+			} else if *p.Type.Simple == "float" {
+				c.floatVars[sanitizeName(p.Name)] = true
+			}
 		}
 	}
 	// Special-case the twoSum example that returns a pair of indices.
@@ -361,10 +469,14 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	vars := map[string]bool{}
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
-	collectVars(fn.Body, vars, listVars, stringVars, c.funReturnStr)
+	floatVars := map[string]bool{}
+	collectVars(fn.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat)
 	c.listVars = listVars
 	for name := range stringVars {
 		c.stringVars[name] = true
+	}
+	for name := range floatVars {
+		c.floatVars[name] = true
 	}
 	loopVars := map[string]bool{}
 	collectLoopVars(fn.Body, loopVars)
@@ -388,6 +500,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		}
 		if stringVars[name] {
 			c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
+		} else if floatVars[name] {
+			c.writeln(fmt.Sprintf("real :: %s", name))
 		} else {
 			c.writeln("integer :: " + name)
 		}
@@ -588,9 +702,11 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	vars := map[string]bool{}
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
-	collectVars(t.Body, vars, listVars, stringVars, c.funReturnStr)
+	floatVars := map[string]bool{}
+	collectVars(t.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat)
 	c.listVars = listVars
 	c.stringVars = stringVars
+	c.floatVars = floatVars
 	loopVars := map[string]bool{}
 	collectLoopVars(t.Body, loopVars)
 	for name := range loopVars {
@@ -610,6 +726,8 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 		}
 		if stringVars[name] {
 			c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
+		} else if floatVars[name] {
+			c.writeln(fmt.Sprintf("real :: %s", name))
 		} else {
 			c.writeln("integer :: " + name)
 		}
