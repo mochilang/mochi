@@ -24,7 +24,8 @@ func TestCSCompiler_SubsetPrograms(t *testing.T) {
 	if err := exec.Command("dotnet", "--version").Run(); err != nil {
 		t.Skipf("dotnet not runnable: %v", err)
 	}
-	golden.Run(t, "tests/compiler/cs", ".mochi", ".out", func(src string) ([]byte, error) {
+
+	run := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -63,7 +64,10 @@ func TestCSCompiler_SubsetPrograms(t *testing.T) {
 			res = []byte{}
 		}
 		return res, nil
-	})
+	}
+
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".out", run)
+	golden.Run(t, "tests/compiler/cs", ".mochi", ".out", run)
 }
 
 func TestCSCompiler_GoldenOutput(t *testing.T) {
@@ -83,7 +87,7 @@ func TestCSCompiler_GoldenOutput(t *testing.T) {
 		return bytes.TrimSpace(code), nil
 	}
 
-	golden.Run(t, "tests/compiler/cs", ".mochi", ".cs.out", compile)
+        golden.Run(t, "tests/compiler/cs", ".mochi", ".cs.out", compile)
 }
 
 func TestCSCompiler_LeetCodeExamples(t *testing.T) {
