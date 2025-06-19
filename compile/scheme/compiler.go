@@ -79,6 +79,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			pre.WriteString("    (list->string (list-set (string->list str) idx ch))\n")
 			pre.WriteString(")\n")
 		}
+		if pre.Len() > 0 {
+			pre.WriteByte('\n')
+		}
 		pre.Write(code)
 		code = pre.Bytes()
 	}
