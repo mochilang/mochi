@@ -1,38 +1,39 @@
 program main;
 {$mode objfpc}
-uses SysUtils;
+uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
 
-function findMedianSortedArrays(nums1: TIntArray; nums2: TIntArray): double;
+function findMedianSortedArrays(nums1: specialize TArray<integer>; nums2: specialize TArray<integer>): double;
 var
 	i: integer;
 	j: integer;
-	merged: TIntArray;
+	merged: specialize TArray<integer>;
 	mid1: integer;
 	mid2: integer;
 	total: integer;
 begin
-	merged := TIntArray([]);
+	merged := specialize TArray<integer>([]);
 	i := 0;
 	j := 0;
 	while ((i < Length(nums1)) or (j < Length(nums2))) do
 	begin
 		if (j >= Length(nums2)) then
 		begin
-			merged := Concat(merged, TIntArray([nums1[i]]));
+			merged := Concat(merged, specialize TArray<integer>([nums1[i]]));
 			i := i + 1;
 		end else if (i >= Length(nums1)) then
 		begin
-			merged := Concat(merged, TIntArray([nums2[j]]));
+			merged := Concat(merged, specialize TArray<integer>([nums2[j]]));
 			j := j + 1;
 		end else if (nums1[i] <= nums2[j]) then
 		begin
-			merged := Concat(merged, TIntArray([nums1[i]]));
+			merged := Concat(merged, specialize TArray<integer>([nums1[i]]));
 			i := i + 1;
 		end else
 		begin
-			merged := Concat(merged, TIntArray([nums2[j]]));
+			merged := Concat(merged, specialize TArray<integer>([nums2[j]]));
 			j := j + 1;
 		end;
 	end;

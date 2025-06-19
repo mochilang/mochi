@@ -1,8 +1,9 @@
 program main;
 {$mode objfpc}
-uses SysUtils;
+uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
 
 function expand(s: string; left: integer; right: integer): integer;
 var
@@ -30,12 +31,10 @@ function longestPalindrome(s: string): string;
 var
 	_end: integer;
 	i: integer;
-	k: integer;
 	l: integer;
 	len1: integer;
 	len2: integer;
 	n: integer;
-	res: string;
 	start: integer;
 begin
 	if (Length(s) <= 1) then
@@ -61,14 +60,7 @@ begin
 			_end := i + l div 2;
 		end;
 	end;
-	res := '';
-	k := start;
-	while (k <= _end) do
-	begin
-		res := res + s[k];
-		k := k + 1;
-	end;
-	result := res;
+	result := s[start];
 	exit;
 end;
 

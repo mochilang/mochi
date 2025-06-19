@@ -2,7 +2,8 @@ program main;
 {$mode objfpc}
 uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
 
 function isPalindrome(x: integer): boolean;
 var
@@ -15,7 +16,7 @@ begin
 		result := False;
 		exit;
 	end;
-	s := str(x);
+	s := IntToStr(x);
 	n := Length(s);
 	for i := 0 to n div 2 - 1 do
 	begin

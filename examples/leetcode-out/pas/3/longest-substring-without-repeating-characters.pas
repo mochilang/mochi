@@ -1,8 +1,9 @@
 program main;
 {$mode objfpc}
-uses SysUtils;
+uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
 
 function lengthOfLongestSubstring(s: string): integer;
 var

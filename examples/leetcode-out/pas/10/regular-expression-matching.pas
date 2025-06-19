@@ -2,75 +2,76 @@ program main;
 {$mode objfpc}
 uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
 
 function isMatch(s: string; p: string): boolean;
 var
+	dp: specialize TArray<specialize TArray<boolean>>;
+	first: integer;
+	i: integer;
+	i2: integer;
+	j: integer;
+	j2: integer;
 	m: integer;
-	memo: integer;
 	n: integer;
+	row: specialize TArray<boolean>;
 begin
 	m := Length(s);
 	n := Length(p);
-	var _tmp0: specialize TFPGMap<string, integer>;
-	_tmp0 := specialize TFPGMap<string, integer>.Create;
-	memo := _tmp0;
-	function dfs(i: integer; j: integer): boolean;
-	var
-		ans: integer;
-		first: integer;
-		key: integer;
+	dp := specialize TArray<specialize TArray<boolean>>([]);
+	i := 0;
+	while (i <= m) do
 	begin
-		key := i * n + 1 + j;
-		if (key in memo) then
+		row := specialize TArray<boolean>([]);
+		j := 0;
+		while (j <= n) do
 		begin
-			result := memo[key];
-			exit;
+			row := Concat(row, specialize TArray<boolean>([False]));
+			j := j + 1;
 		end;
-		if (j = n) then
+		dp := Concat(dp, specialize TArray<specialize TArray<boolean>>([row]));
+		i := i + 1;
+	end;
+	dp[m][n] := True;
+	i2 := m;
+	while (i2 >= 0) do
+	begin
+		j2 := n - 1;
+		while (j2 >= 0) do
 		begin
-			result := (i = m);
-			exit;
-		end;
-		first := False;
-		if (i < m) then
-		begin
-			if ((p[j] = s[i]) or (p[j] = '.')) then
+			first := False;
+			if (i2 < m) then
 			begin
-				first := True;
+				if ((p[j2] = s[i2]) or (p[j2] = '.')) then
+				begin
+					first := True;
+				end;
 			end;
-		end;
-		ans := False;
-		if (j + 1 < n) then
-		begin
-			if (p[j + 1] = '*') then
+			if ((j2 + 1 < n) and (p[j2 + 1] = '*')) then
 			begin
-				if dfs(i, j + 2) then
+				if (dp[i2][j2 + 2] or (first and dp[i2 + 1][j2])) then
 				begin
-					ans := True;
-				end else if (first and dfs(i + 1, j)) then
+					dp[i2][j2] := True;
+				end else
 				begin
-					ans := True;
+					dp[i2][j2] := False;
 				end;
 			end else
 			begin
-				if (first and dfs(i + 1, j + 1)) then
+				if (first and dp[i2 + 1][j2 + 1]) then
 				begin
-					ans := True;
+					dp[i2][j2] := True;
+				end else
+				begin
+					dp[i2][j2] := False;
 				end;
 			end;
-		end else
-		begin
-			if (first and dfs(i + 1, j + 1)) then
-			begin
-				ans := True;
-			end;
+			j2 := j2 - 1;
 		end;
-		memo[key] := ans;
-		result := ans;
-		exit;
+		i2 := i2 - 1;
 	end;
-	result := dfs(0, 0);
+	result := dp[0][0];
 	exit;
 end;
 
