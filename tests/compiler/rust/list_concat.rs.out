@@ -1,5 +1,5 @@
 fn main() {
-    println!("{}", _concat(&vec![1, 2], &vec![3, 4]));
+    println!("[{}]", _concat(&vec![1, 2], &vec![3, 4]).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "));
 }
 
 fn _concat<T: Clone>(a: &[T], b: &[T]) -> Vec<T> {
