@@ -80,3 +80,25 @@ func (c *Compiler) isStringRoot(p *parser.PostfixExpr) bool {
 	}
 	return false
 }
+
+// isStringBase reports whether the target of a postfix expression is a string
+// literal or string variable without any indexing applied.
+func (c *Compiler) isStringBase(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil {
+		return false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return true
+	}
+	sel := p.Target.Selector
+	if sel != nil && len(sel.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(sel.Root); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
