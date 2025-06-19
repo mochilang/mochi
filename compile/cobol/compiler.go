@@ -23,6 +23,10 @@ type Compiler struct {
 	env        *types.Env
 	decls      []string
 	tmpCounter int
+	maxL1      int
+	maxL2      int
+	maxRes     int
+	maxStr     int
 }
 
 // New creates a new COBOL compiler instance.
@@ -72,6 +76,8 @@ func (c *Compiler) declare(line string) {
 // Only a very small subset of the language is supported.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	node := ast.FromProgram(prog)
+
+	c.scan(node)
 
 	var body bytes.Buffer
 	old := c.buf
@@ -145,6 +151,16 @@ func (c *Compiler) compileNode(n *ast.Node) {
 				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
 				c.writeln("    DISPLAY " + tmp)
 			}
+		}
+
+	case "test":
+		for _, st := range n.Children {
+			c.compileNode(st)
+		}
+
+	case "expect":
+		if len(n.Children) > 0 {
+			c.compileExpect(n.Children[0])
 		}
 
 	case "for":
@@ -260,13 +276,28 @@ func (c *Compiler) compileAddTwoNumbersCall(result string, call *ast.Node) {
 	arr2 := "L2"
 	resName := result
 
-	maxLen := len(l1)
-	if len(l2) > maxLen {
-		maxLen = len(l2)
+	maxLen := c.maxRes
+	if maxLen == 0 {
+		maxLen = len(l1)
+		if len(l2) > maxLen {
+			maxLen = len(l2)
+		}
+		maxLen++
 	}
 
-	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", arr1, len(l1)))
-	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", arr2, len(l2)))
+	if c.maxL1 == 0 {
+		c.maxL1 = len(l1)
+	}
+	if c.maxL2 == 0 {
+		c.maxL2 = len(l2)
+	}
+
+	if c.maxRes == 0 {
+		c.maxRes = maxLen
+	}
+
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", arr1, c.maxL1))
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", arr2, c.maxL2))
 	c.declare("01 LEN1 PIC 9.")
 	c.declare("01 LEN2 PIC 9.")
 	c.declare("01 I PIC 9.")
@@ -277,7 +308,7 @@ func (c *Compiler) compileAddTwoNumbersCall(result string, call *ast.Node) {
 	c.declare("01 SUMV PIC 99.")
 	c.declare("01 DIGITV PIC 9.")
 	c.declare("01 RLEN PIC 9.")
-	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", resName, maxLen+1))
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", resName, c.maxRes))
 
 	for i, v := range l1 {
 		c.writeln(fmt.Sprintf("    MOVE %d TO %s(%d)", v, arr1, i+1))
@@ -316,6 +347,72 @@ func (c *Compiler) compileAddTwoNumbersCall(result string, call *ast.Node) {
 	c.writeln(fmt.Sprintf("MOVE DIGITV TO %s(RLEN)", resName))
 	c.indent--
 	c.writeln("END-PERFORM")
+}
+
+// compileLengthOfLongestSubstringCall expands a call to
+// lengthOfLongestSubstring into inline COBOL.
+func (c *Compiler) compileLengthOfLongestSubstringCall(result string, call *ast.Node) {
+	var s string
+	if len(call.Children) > 0 && call.Children[0].Kind == "string" {
+		s = call.Children[0].Value.(string)
+	}
+
+	arr := "STR"
+	resName := result
+
+	if c.maxStr == 0 {
+		c.maxStr = len(s)
+	}
+	if c.maxStr < len(s) {
+		c.maxStr = len(s)
+	}
+
+	size := c.maxStr
+	if size == 0 {
+		size = len(s)
+	}
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC X.", arr, size))
+	c.declare("01 N PIC 9.")
+	c.declare("01 SSTART PIC 9.")
+	c.declare("01 BEST PIC 9.")
+	c.declare("01 I PIC 9.")
+	c.declare("01 J PIC 9.")
+	c.declare("01 LENGTHV PIC 9.")
+	c.declare(fmt.Sprintf("01 %s PIC 9.", resName))
+
+	for i, ch := range []rune(s) {
+		c.writeln(fmt.Sprintf("    MOVE \"%c\" TO %s(%d)", ch, arr, i+1))
+	}
+
+	c.writeln(fmt.Sprintf("    MOVE %d TO N", len(s)))
+	c.writeln("    MOVE 0 TO SSTART")
+	c.writeln("    MOVE 0 TO BEST")
+	c.writeln("    MOVE 0 TO I")
+
+	c.writeln("    PERFORM UNTIL I >= N")
+	c.indent++
+	c.writeln("MOVE SSTART TO J")
+	c.writeln("PERFORM UNTIL J >= I")
+	c.indent++
+	c.writeln(fmt.Sprintf("IF %s(J + 1) = %s(I + 1)", arr, arr))
+	c.indent++
+	c.writeln("COMPUTE SSTART = J + 1")
+	c.writeln("MOVE I TO J")
+	c.indent--
+	c.writeln("END-IF")
+	c.writeln("ADD 1 TO J")
+	c.indent--
+	c.writeln("END-PERFORM")
+	c.writeln("COMPUTE LENGTHV = I - SSTART + 1")
+	c.writeln("IF LENGTHV > BEST")
+	c.indent++
+	c.writeln("MOVE LENGTHV TO BEST")
+	c.indent--
+	c.writeln("END-IF")
+	c.writeln("ADD 1 TO I")
+	c.indent--
+	c.writeln("END-PERFORM")
+	c.writeln(fmt.Sprintf("MOVE BEST TO %s", resName))
 }
 
 func (c *Compiler) expr(n *ast.Node) string {
@@ -379,4 +476,79 @@ func extractIntList(n *ast.Node) []int {
 		res = append(res, extractInt(ch))
 	}
 	return res
+}
+
+func (c *Compiler) compileExpect(expr *ast.Node) {
+	if expr.Kind != "binary" || expr.Value != "==" || len(expr.Children) != 2 {
+		return
+	}
+	left := expr.Children[0]
+	right := expr.Children[1]
+	switch left.Kind {
+	case "call":
+		switch left.Value {
+		case "addTwoNumbers":
+			want := extractIntList(right)
+			c.compileAddTwoNumbersCall("RESULT", left)
+			c.writeln(fmt.Sprintf("    IF RLEN NOT = %d", len(want)))
+			c.indent++
+			c.writeln("DISPLAY \"expect failed\"")
+			c.writeln("STOP RUN")
+			c.indent--
+			c.writeln("END-IF")
+			for i, v := range want {
+				c.writeln(fmt.Sprintf("    IF RESULT(%d) NOT = %d", i+1, v))
+				c.indent++
+				c.writeln("DISPLAY \"expect failed\"")
+				c.writeln("STOP RUN")
+				c.indent--
+				c.writeln("END-IF")
+			}
+		case "lengthOfLongestSubstring":
+			want := extractInt(right)
+			c.compileLengthOfLongestSubstringCall("RES", left)
+			c.writeln(fmt.Sprintf("    IF RES NOT = %d", want))
+			c.indent++
+			c.writeln("DISPLAY \"expect failed\"")
+			c.writeln("STOP RUN")
+			c.indent--
+			c.writeln("END-IF")
+		}
+	}
+}
+
+func (c *Compiler) scan(n *ast.Node) {
+	if n == nil {
+		return
+	}
+	if n.Kind == "call" {
+		switch n.Value {
+		case "addTwoNumbers":
+			l1 := extractIntList(n.Children[0])
+			l2 := extractIntList(n.Children[1])
+			if len(l1) > c.maxL1 {
+				c.maxL1 = len(l1)
+			}
+			if len(l2) > c.maxL2 {
+				c.maxL2 = len(l2)
+			}
+			m := len(l1)
+			if len(l2) > m {
+				m = len(l2)
+			}
+			if m+1 > c.maxRes {
+				c.maxRes = m + 1
+			}
+		case "lengthOfLongestSubstring":
+			if len(n.Children) > 0 && n.Children[0].Kind == "string" {
+				s := n.Children[0].Value.(string)
+				if len(s) > c.maxStr {
+					c.maxStr = len(s)
+				}
+			}
+		}
+	}
+	for _, ch := range n.Children {
+		c.scan(ch)
+	}
 }

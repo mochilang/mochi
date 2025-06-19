@@ -1,9 +1,130 @@
 >>SOURCE FORMAT FREE
 IDENTIFICATION DIVISION.
 PROGRAM-ID. MAIN.
+DATA DIVISION.
+WORKING-STORAGE SECTION.
+01 STR OCCURS 8 TIMES PIC X.
+01 N PIC 9.
+01 SSTART PIC 9.
+01 BEST PIC 9.
+01 I PIC 9.
+01 J PIC 9.
+01 LENGTHV PIC 9.
+01 RES PIC 9.
 PROCEDURE DIVISION.
-    DISPLAY "test example 1                      ... ok (1.0µs)"
-    DISPLAY "   test example 2                      ... ok (605ns)"
-    DISPLAY "   test example 3                      ... ok (964ns)"
-    DISPLAY "   test empty string                   ... ok (233ns)"
+    MOVE "a" TO STR(1)
+    MOVE "b" TO STR(2)
+    MOVE "c" TO STR(3)
+    MOVE "a" TO STR(4)
+    MOVE "b" TO STR(5)
+    MOVE "c" TO STR(6)
+    MOVE "b" TO STR(7)
+    MOVE "b" TO STR(8)
+    MOVE 8 TO N
+    MOVE 0 TO SSTART
+    MOVE 0 TO BEST
+    MOVE 0 TO I
+    PERFORM UNTIL I >= N
+    MOVE SSTART TO J
+    PERFORM UNTIL J >= I
+        IF STR(J + 1) = STR(I + 1)
+            COMPUTE SSTART = J + 1
+            MOVE I TO J
+        END-IF
+        ADD 1 TO J
+    END-PERFORM
+    COMPUTE LENGTHV = I - SSTART + 1
+    IF LENGTHV > BEST
+        MOVE LENGTHV TO BEST
+    END-IF
+    ADD 1 TO I
+END-PERFORM
+MOVE BEST TO RES
+    IF RES NOT = 3
+    DISPLAY "expect failed"
+    STOP RUN
+END-IF
+    MOVE "b" TO STR(1)
+    MOVE "b" TO STR(2)
+    MOVE "b" TO STR(3)
+    MOVE "b" TO STR(4)
+    MOVE "b" TO STR(5)
+    MOVE 5 TO N
+    MOVE 0 TO SSTART
+    MOVE 0 TO BEST
+    MOVE 0 TO I
+    PERFORM UNTIL I >= N
+    MOVE SSTART TO J
+    PERFORM UNTIL J >= I
+        IF STR(J + 1) = STR(I + 1)
+            COMPUTE SSTART = J + 1
+            MOVE I TO J
+        END-IF
+        ADD 1 TO J
+    END-PERFORM
+    COMPUTE LENGTHV = I - SSTART + 1
+    IF LENGTHV > BEST
+        MOVE LENGTHV TO BEST
+    END-IF
+    ADD 1 TO I
+END-PERFORM
+MOVE BEST TO RES
+    IF RES NOT = 1
+    DISPLAY "expect failed"
+    STOP RUN
+END-IF
+    MOVE "p" TO STR(1)
+    MOVE "w" TO STR(2)
+    MOVE "w" TO STR(3)
+    MOVE "k" TO STR(4)
+    MOVE "e" TO STR(5)
+    MOVE "w" TO STR(6)
+    MOVE 6 TO N
+    MOVE 0 TO SSTART
+    MOVE 0 TO BEST
+    MOVE 0 TO I
+    PERFORM UNTIL I >= N
+    MOVE SSTART TO J
+    PERFORM UNTIL J >= I
+        IF STR(J + 1) = STR(I + 1)
+            COMPUTE SSTART = J + 1
+            MOVE I TO J
+        END-IF
+        ADD 1 TO J
+    END-PERFORM
+    COMPUTE LENGTHV = I - SSTART + 1
+    IF LENGTHV > BEST
+        MOVE LENGTHV TO BEST
+    END-IF
+    ADD 1 TO I
+END-PERFORM
+MOVE BEST TO RES
+    IF RES NOT = 3
+    DISPLAY "expect failed"
+    STOP RUN
+END-IF
+    MOVE 0 TO N
+    MOVE 0 TO SSTART
+    MOVE 0 TO BEST
+    MOVE 0 TO I
+    PERFORM UNTIL I >= N
+    MOVE SSTART TO J
+    PERFORM UNTIL J >= I
+        IF STR(J + 1) = STR(I + 1)
+            COMPUTE SSTART = J + 1
+            MOVE I TO J
+        END-IF
+        ADD 1 TO J
+    END-PERFORM
+    COMPUTE LENGTHV = I - SSTART + 1
+    IF LENGTHV > BEST
+        MOVE LENGTHV TO BEST
+    END-IF
+    ADD 1 TO I
+END-PERFORM
+MOVE BEST TO RES
+    IF RES NOT = 0
+    DISPLAY "expect failed"
+    STOP RUN
+END-IF
     STOP RUN.
