@@ -12,12 +12,13 @@ import (
 
 // Compiler translates a Mochi AST into minimal C++ source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	helpers map[string]bool
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler { return &Compiler{env: env, helpers: map[string]bool{}} }
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -78,6 +79,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("#include <bits/stdc++.h>")
 	c.writeln("using namespace std;")
 	c.writeln("")
+	c.writeHelpers()
 	c.buf.Write(bodyBytes)
 	return c.buf.Bytes(), nil
 }
@@ -341,7 +343,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 			// Handle simple index or slice
 			if op.Index.Colon == nil {
 				idx := c.compileExpr(op.Index.Start)
-				expr = fmt.Sprintf("%s[%s]", expr, idx)
+				typ := c.guessPrimaryType(p.Target)
+				if typ == "string" {
+					c.helpers["indexString"] = true
+					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				}
 			} else {
 				start := "0"
 				if op.Index.Start != nil {
@@ -351,7 +359,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				if op.Index.End != nil {
 					end = c.compileExpr(op.Index.End)
 				}
-				expr = fmt.Sprintf("%s.substr(%s, %s - %s)", expr, start, end, start)
+				typ := c.guessPrimaryType(p.Target)
+				if strings.HasPrefix(typ, "vector<") {
+					c.helpers["sliceVec"] = true
+					expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
+				} else if typ == "string" {
+					c.helpers["sliceStr"] = true
+					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+				} else {
+					expr = fmt.Sprintf("%s.substr(%s, %s - %s)", expr, start, end, start)
+				}
 			}
 		}
 	}
@@ -476,6 +493,42 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 		c.buf = oldBuf
 	}
 	return "[=](" + strings.Join(params, ", ") + ") { " + body.String() + " }"
+}
+
+func (c *Compiler) writeHelpers() {
+	if c.helpers["indexString"] {
+		c.writeln("char _indexString(const string& s, int i) {")
+		c.writeln("\tint n = s.size();")
+		c.writeln("\tif (i < 0) i += n;")
+		c.writeln("\tif (i < 0 || i >= n) throw std::out_of_range(\"index out of range\");")
+		c.writeln("\treturn s[i];")
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.helpers["sliceVec"] {
+		c.writeln("template<typename T> vector<T> _slice(const vector<T>& v, int start, int end) {")
+		c.writeln("\tint n = v.size();")
+		c.writeln("\tif (start < 0) start += n;")
+		c.writeln("\tif (end < 0) end += n;")
+		c.writeln("\tif (start < 0) start = 0;")
+		c.writeln("\tif (end > n) end = n;")
+		c.writeln("\tif (end < start) end = start;")
+		c.writeln("\treturn vector<T>(v.begin() + start, v.begin() + end);")
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.helpers["sliceStr"] {
+		c.writeln("string _sliceString(const string& s, int start, int end) {")
+		c.writeln("\tint n = s.size();")
+		c.writeln("\tif (start < 0) start += n;")
+		c.writeln("\tif (end < 0) end += n;")
+		c.writeln("\tif (start < 0) start = 0;")
+		c.writeln("\tif (end > n) end = n;")
+		c.writeln("\tif (end < start) end = start;")
+		c.writeln("\treturn s.substr(start, end - start);")
+		c.writeln("}")
+		c.writeln("")
+	}
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
