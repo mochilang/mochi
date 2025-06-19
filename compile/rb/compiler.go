@@ -579,8 +579,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		} else if op.Cast != nil {
-			// Ruby is dynamically typed so casts are no-ops.
-			// The type information is ignored at compile time.
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && c.env != nil {
+				if _, ok := c.env.GetStruct(*op.Cast.Type.Simple); ok {
+					expr = fmt.Sprintf("%s.new(**(%s.to_h.transform_keys(&:to_sym)))", sanitizeName(*op.Cast.Type.Simple), expr)
+					continue
+				}
+			}
+			// Ruby is dynamically typed so other casts are no-ops.
 			continue
 		}
 	}
