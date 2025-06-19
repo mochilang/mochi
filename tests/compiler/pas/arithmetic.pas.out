@@ -1,0 +1,13 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl;
+
+type TIntArray = array of integer;
+
+begin
+	writeln(1 + 2);
+	writeln(5 - 3);
+	writeln(4 * 2);
+	writeln(8 div 2);
+	writeln(7 mod 3);
+end.
