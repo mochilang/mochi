@@ -11,13 +11,22 @@ import (
 // Compiler emits very small Fortran 90 code for a limited subset of Mochi.
 // It only supports constructs needed for the leetcode two-sum example.
 type Compiler struct {
-	buf        bytes.Buffer
-	indent     int
-	stringVars map[string]bool
-	listVars   map[string]bool
+	buf           bytes.Buffer
+	indent        int
+	stringVars    map[string]bool
+	listVars      map[string]bool
+	funReturnStr  map[string]bool
+	funReturnList map[string]bool
 }
 
-func New() *Compiler { return &Compiler{stringVars: map[string]bool{}, listVars: map[string]bool{}} }
+func New() *Compiler {
+	return &Compiler{
+		stringVars:    map[string]bool{},
+		listVars:      map[string]bool{},
+		funReturnStr:  map[string]bool{},
+		funReturnList: map[string]bool{},
+	}
+}
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -65,7 +74,7 @@ func collectLoopVars(stmts []*parser.Statement, vars map[string]bool) {
 	}
 }
 
-func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool) {
+func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, funStr map[string]bool) {
 	for _, s := range stmts {
 		switch {
 		case s.Var != nil:
@@ -74,25 +83,31 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 			if isListLiteral(s.Var.Value) {
 				listVars[name] = true
 			}
+			if isStringExpr(s.Var.Value, stringVars, funStr) {
+				stringVars[name] = true
+			}
 		case s.Let != nil:
 			name := sanitizeName(s.Let.Name)
 			vars[name] = true
 			if isListLiteral(s.Let.Value) {
 				listVars[name] = true
 			}
+			if isStringExpr(s.Let.Value, stringVars, funStr) {
+				stringVars[name] = true
+			}
 		case s.For != nil:
-			collectVars(s.For.Body, vars, listVars)
+			collectVars(s.For.Body, vars, listVars, stringVars, funStr)
 		case s.While != nil:
-			collectVars(s.While.Body, vars, listVars)
+			collectVars(s.While.Body, vars, listVars, stringVars, funStr)
 		case s.If != nil:
-			collectVars(s.If.Then, vars, listVars)
+			collectVars(s.If.Then, vars, listVars, stringVars, funStr)
 			cur := s.If
 			for cur.ElseIf != nil {
 				cur = cur.ElseIf
-				collectVars(cur.Then, vars, listVars)
+				collectVars(cur.Then, vars, listVars, stringVars, funStr)
 			}
 			if len(cur.Else) > 0 {
-				collectVars(cur.Else, vars, listVars)
+				collectVars(cur.Else, vars, listVars, stringVars, funStr)
 			}
 		}
 	}
@@ -124,6 +139,70 @@ func isEmptyListLiteral(e *parser.Expr) bool {
 	return false
 }
 
+func isListExpr(e *parser.Expr, listVars map[string]bool, funList map[string]bool) bool {
+	if e == nil {
+		return false
+	}
+	if isListLiteral(e) || isEmptyListLiteral(e) {
+		return true
+	}
+	if len(e.Binary.Right) == 0 && e.Binary.Left != nil {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
+			if u.Value.Target != nil {
+				if u.Value.Target.Selector != nil {
+					name := sanitizeName(u.Value.Target.Selector.Root)
+					if listVars[name] {
+						return true
+					}
+				}
+				if u.Value.Target.Call != nil {
+					name := sanitizeName(u.Value.Target.Call.Func)
+					if funList[name] {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isStringExpr(e *parser.Expr, stringVars map[string]bool, funStr map[string]bool) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) == 0 && e.Binary.Left != nil {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			v := u.Value
+			if v == nil {
+				return false
+			}
+			if len(v.Ops) == 0 {
+				if v.Target != nil && v.Target.Lit != nil && v.Target.Lit.Str != nil {
+					return true
+				}
+				if v.Target != nil {
+					if v.Target.Selector != nil {
+						name := sanitizeName(v.Target.Selector.Root)
+						if stringVars[name] {
+							return true
+						}
+					}
+					if v.Target.Call != nil {
+						name := sanitizeName(v.Target.Call.Func)
+						if funStr[name] {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
 // Compile converts prog into simple Fortran source.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -140,14 +219,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			mainStmts = append(mainStmts, s)
 		}
 	}
+	c.funReturnStr = map[string]bool{}
+	c.funReturnList = map[string]bool{}
+	for _, f := range funs {
+		if f.Return != nil && f.Return.Simple != nil && *f.Return.Simple == "string" {
+			c.funReturnStr[sanitizeName(f.Name)] = true
+		} else if f.Return != nil && f.Return.Generic != nil && f.Return.Generic.Name == "list" {
+			c.funReturnList[sanitizeName(f.Name)] = true
+		}
+	}
 	c.writeln("program main")
 	c.indent++
 	c.writeln("implicit none")
 	// crude variable declarations for lets/vars in main
 	declared := map[string]bool{}
 	listVars := map[string]bool{}
-	collectVars(mainStmts, declared, listVars)
+	stringVars := map[string]bool{}
+	collectVars(mainStmts, declared, listVars, stringVars, c.funReturnStr)
 	c.listVars = listVars
+	c.stringVars = stringVars
 	allocs := []string{}
 	for name, isList := range listVars {
 		if isList {
@@ -159,7 +249,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if listVars[name] {
 			continue
 		}
-		if name == "result" {
+		if stringVars[name] {
+			c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
+		} else if name == "result" {
 			c.writeln("integer :: result(2)")
 		} else {
 			c.writeln("integer :: " + name)
@@ -247,6 +339,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", resVar))
 	} else if fn.Return != nil && fn.Return.Simple != nil && *fn.Return.Simple == "float" {
 		c.writeln(fmt.Sprintf("real :: %s", resVar))
+	} else if fn.Return != nil && fn.Return.Simple != nil && *fn.Return.Simple == "string" {
+		c.writeln(fmt.Sprintf("character(:), allocatable :: %s", resVar))
+		c.stringVars[resVar] = true
 	} else {
 		c.writeln(fmt.Sprintf("integer :: %s", resVar))
 	}
@@ -265,8 +360,12 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	vars := map[string]bool{}
 	listVars := map[string]bool{}
-	collectVars(fn.Body, vars, listVars)
+	stringVars := map[string]bool{}
+	collectVars(fn.Body, vars, listVars, stringVars, c.funReturnStr)
 	c.listVars = listVars
+	for name := range stringVars {
+		c.stringVars[name] = true
+	}
 	loopVars := map[string]bool{}
 	collectLoopVars(fn.Body, loopVars)
 	for name := range loopVars {
@@ -287,7 +386,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		if name == resVar || listVars[name] {
 			continue
 		}
-		c.writeln("integer :: " + name)
+		if stringVars[name] {
+			c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
+		} else {
+			c.writeln("integer :: " + name)
+		}
 	}
 	for _, a := range allocs {
 		c.writeln(a)
@@ -346,7 +449,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 					if err != nil {
 						return err
 					}
-					c.writeln(fmt.Sprintf("%s = (/ %s, %s /)", name, name, strings.Trim(elem, "()/")))
+					c.writeln(fmt.Sprintf("%s = (/ %s, %s /)", name, name, elem))
 					break
 				}
 			}
@@ -481,6 +584,39 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("subroutine %s()", name))
 	c.indent++
+	c.writeln("implicit none")
+	vars := map[string]bool{}
+	listVars := map[string]bool{}
+	stringVars := map[string]bool{}
+	collectVars(t.Body, vars, listVars, stringVars, c.funReturnStr)
+	c.listVars = listVars
+	c.stringVars = stringVars
+	loopVars := map[string]bool{}
+	collectLoopVars(t.Body, loopVars)
+	for name := range loopVars {
+		if !vars[name] {
+			vars[name] = true
+		}
+	}
+	allocs := []string{}
+	for name := range listVars {
+		c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
+		allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
+		vars[name] = true
+	}
+	for name := range vars {
+		if listVars[name] {
+			continue
+		}
+		if stringVars[name] {
+			c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
+		} else {
+			c.writeln("integer :: " + name)
+		}
+	}
+	for _, a := range allocs {
+		c.writeln(a)
+	}
 	for _, st := range t.Body {
 		if err := c.compileStmt(st, ""); err != nil {
 			return err
@@ -492,18 +628,53 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
-	// If the expectation compares arrays with '==', use all() to
-	// produce a logical scalar condition.
 	if e.Value != nil && len(e.Value.Binary.Right) == 1 && e.Value.Binary.Right[0].Op == "==" {
-		left, err := c.compileUnary(e.Value.Binary.Left)
+		leftExpr := e.Value.Binary.Left
+		rightExpr := e.Value.Binary.Right[0].Right
+		useAll := false
+		if len(leftExpr.Ops) == 0 && leftExpr.Value != nil {
+			if leftExpr.Value.Target != nil {
+				if leftExpr.Value.Target.Selector != nil {
+					name := sanitizeName(leftExpr.Value.Target.Selector.Root)
+					if c.listVars[name] {
+						useAll = true
+					}
+				}
+				if leftExpr.Value.Target.Call != nil {
+					name := sanitizeName(leftExpr.Value.Target.Call.Func)
+					if c.funReturnList[name] {
+						useAll = true
+					}
+				}
+			}
+		}
+		if !useAll && rightExpr.Target != nil {
+			if rightExpr.Target.List != nil {
+				useAll = true
+			} else if rightExpr.Target.Selector != nil {
+				name := sanitizeName(rightExpr.Target.Selector.Root)
+				if c.listVars[name] {
+					useAll = true
+				}
+			} else if rightExpr.Target.Call != nil {
+				name := sanitizeName(rightExpr.Target.Call.Func)
+				if c.funReturnList[name] {
+					useAll = true
+				}
+			}
+		}
+		left, err := c.compileUnary(leftExpr)
 		if err != nil {
 			return err
 		}
-		right, err := c.compilePostfix(e.Value.Binary.Right[0].Right)
+		right, err := c.compilePostfix(rightExpr)
 		if err != nil {
 			return err
 		}
-		expr := fmt.Sprintf("all(%s == %s)", left, right)
+		expr := fmt.Sprintf("%s == %s", left, right)
+		if useAll {
+			expr = fmt.Sprintf("all(%s)", expr)
+		}
 		c.writeln(fmt.Sprintf("if (.not. (%s)) then", expr))
 	} else {
 		expr, err := c.compileExpr(e.Value)
@@ -690,8 +861,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		case op.Cast != nil:
-			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "float" {
-				expr = fmt.Sprintf("real(%s)", expr)
+			if op.Cast.Type != nil {
+				if op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "float" {
+					expr = fmt.Sprintf("real(%s)", expr)
+				} else if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" {
+					// no-op for list casts
+					expr = expr
+				} else {
+					return "", fmt.Errorf("unsupported cast")
+				}
 			} else {
 				return "", fmt.Errorf("unsupported cast")
 			}
@@ -715,6 +893,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "", fmt.Errorf("unknown literal")
 	case p.List != nil:
+		if len(p.List.Elems) == 0 {
+			return "reshape([0], [0])", nil
+		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			v, err := c.compileExpr(e)
