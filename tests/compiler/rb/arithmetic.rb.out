@@ -1,0 +1,5 @@
+puts([(1 + 2)].join(" "))
+puts([(5 - 3)].join(" "))
+puts([(4 * 2)].join(" "))
+puts([(8 / 2)].join(" "))
+puts([(7 % 3)].join(" "))
