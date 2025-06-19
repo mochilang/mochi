@@ -15,7 +15,7 @@ vector<int> twoSum(vector<int> nums, int target){
 
 int main() {
 	auto result = twoSum(vector<int>{2, 7, 11, 15}, 9);
-	std::cout << result[0] << std::endl;
-	std::cout << result[1] << std::endl;
+	std::cout << (result[0]) << std::endl;
+	std::cout << (result[1]) << std::endl;
 	return 0;
 }

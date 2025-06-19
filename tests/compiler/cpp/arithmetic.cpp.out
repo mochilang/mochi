@@ -1,0 +1,11 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	std::cout << (1 + 2) << std::endl;
+	std::cout << (5 - 3) << std::endl;
+	std::cout << (4 * 2) << std::endl;
+	std::cout << (8 / 2) << std::endl;
+	std::cout << (7 % 3) << std::endl;
+	return 0;
+}

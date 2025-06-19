@@ -1,0 +1,9 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	std::cout << (true && false) << std::endl;
+	std::cout << (true || false) << std::endl;
+	std::cout << (!false) << std::endl;
+	return 0;
+}

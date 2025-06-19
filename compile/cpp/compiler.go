@@ -190,8 +190,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Let.Type != nil {
 			typ = c.cppType(s.Let.Type)
-		} else if t := c.guessExprType(s.Let.Value); t != "" {
-			typ = t
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Let.Name))
@@ -212,8 +210,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Var.Type != nil {
 			typ = c.cppType(s.Var.Type)
-		} else if t := c.guessExprType(s.Var.Value); t != "" {
-			typ = t
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Var.Name))
@@ -445,7 +441,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return strconv.Itoa(*p.Lit.Int)
 		}
 		if p.Lit.Float != nil {
-			return strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64)
+			v := strconv.FormatFloat(*p.Lit.Float, 'f', -1, 64)
+			if !strings.ContainsAny(v, ".eE") {
+				if !strings.Contains(v, ".") {
+					v += ".0"
+				}
+			}
+			return v
 		}
 		if p.Lit.Bool != nil {
 			if bool(*p.Lit.Bool) {
@@ -541,7 +543,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		} else {
 			c.buf.WriteString(" << \" \" << ")
 		}
-		c.buf.WriteString(a)
+		c.buf.WriteString("(" + a + ")")
 	}
 	c.buf.WriteString(" << std::endl;\n")
 	return nil

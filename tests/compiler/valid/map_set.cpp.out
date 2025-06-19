@@ -3,7 +3,7 @@ using namespace std;
 
 int main() {
 	auto scores;
-	scores["b"] = 2;
-	std::cout << scores["b"] << std::endl;
+	scores[string("b")] = 2;
+	std::cout << (scores[string("b")]) << std::endl;
 	return 0;
 }

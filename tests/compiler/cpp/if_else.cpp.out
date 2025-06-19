@@ -12,8 +12,8 @@ int foo(int n){
 }
 
 int main() {
-	std::cout << foo(-2) << std::endl;
-	std::cout << foo(0) << std::endl;
-	std::cout << foo(3) << std::endl;
+	std::cout << (foo(-2)) << std::endl;
+	std::cout << (foo(0)) << std::endl;
+	std::cout << (foo(3)) << std::endl;
 	return 0;
 }

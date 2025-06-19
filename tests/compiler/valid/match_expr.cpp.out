@@ -4,6 +4,6 @@ using namespace std;
 int main() {
 	auto x = 2;
 	auto label;
-	std::cout << label << std::endl;
+	std::cout << (label) << std::endl;
 	return 0;
 }

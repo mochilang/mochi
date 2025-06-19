@@ -7,7 +7,7 @@ int sum(int n){
 
 int main() {
 	auto n = 10;
-	std::cout << sum(n) << std::endl;
-	std::cout << n << std::endl;
+	std::cout << (sum(n)) << std::endl;
+	std::cout << (n) << std::endl;
 	return 0;
 }

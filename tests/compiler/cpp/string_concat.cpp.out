@@ -2,6 +2,6 @@
 using namespace std;
 
 int main() {
-	std::cout << string("hello ") + string("world") << std::endl;
+	std::cout << (string("hello ") + string("world")) << std::endl;
 	return 0;
 }

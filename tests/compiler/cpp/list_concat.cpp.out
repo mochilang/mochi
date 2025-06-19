@@ -13,6 +13,6 @@ template<typename T> string _fmtVec(const vector<T>& v) {
 }
 
 int main() {
-	std::cout << _fmtVec(([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(vector<int>{1, 2}, vector<int>{3, 4})) << std::endl;
+	std::cout << (_fmtVec(([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(vector<int>{1, 2}, vector<int>{3, 4}))) << std::endl;
 	return 0;
 }
