@@ -16,9 +16,12 @@ The Pascal backend translates Mochi source into Object Pascal code compatible wi
 ```go
 c.writeln("program main;")
 c.writeln("{$mode objfpc}")
-c.writeln("uses SysUtils;")
+c.writeln("uses SysUtils, fgl;")
 c.writeln("")
-c.writeln("type TIntArray = array of integer;")
+c.writeln("type")
+c.indent++
+c.writeln("generic TArray<T> = array of T;")
+c.indent--
 ```
 【F:compile/pas/compiler.go†L24-L32】
 

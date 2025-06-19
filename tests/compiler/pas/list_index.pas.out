@@ -6,11 +6,9 @@ type
 	generic TArray<T> = array of T;
 
 var
-	i: integer;
+	xs: specialize TArray<integer>;
 
 begin
-	for i := 1 to 4 - 1 do
-	begin
-		writeln(i);
-	end;
+	xs := specialize TArray<integer>([10, 20, 30]);
+	writeln(xs[1]);
 end.

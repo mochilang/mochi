@@ -5,12 +5,6 @@ uses SysUtils, fgl;
 type
 	generic TArray<T> = array of T;
 
-var
-	i: integer;
-
 begin
-	for i := 1 to 4 - 1 do
-	begin
-		writeln(i);
-	end;
+	writeln('hello ' + 'world');
 end.

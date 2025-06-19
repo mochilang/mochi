@@ -191,6 +191,45 @@ func (c *Compiler) isListPrimary(p *parser.Primary) bool {
 	return false
 }
 
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return c.isStringPostfix(u.Value)
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isStringPrimary(p.Target)
+}
+
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
+	switch {
+	case p == nil:
+		return false
+	case p.Lit != nil && p.Lit.Str != nil:
+		return true
+	case p.Selector != nil:
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+		if c.varTypes != nil {
+			if vt, ok := c.varTypes[p.Selector.Root]; ok {
+				if vt == "string" {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func contains(list []string, s string) bool {
 	for _, v := range list {
 		if v == s {

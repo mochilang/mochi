@@ -730,6 +730,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if c.isMapPostfix(&parser.PostfixExpr{Target: p.Target}) {
 				expr = fmt.Sprintf("%s.KeyData[%s]", expr, idx)
 			} else {
+				if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
+					idx = fmt.Sprintf("%s + 1", idx)
+				}
 				expr = fmt.Sprintf("%s[%s]", expr, idx)
 			}
 		} else if op.Call != nil {

@@ -2,13 +2,14 @@ program main;
 {$mode objfpc}
 uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
 
 var
-	a: TIntArray;
+	a: specialize TArray<integer>;
 
 begin
-	a := Concat(TIntArray([1, 2]), TIntArray([3, 4]));
+	a := Concat(specialize TArray<integer>([1, 2]), specialize TArray<integer>([3, 4]));
 	writeln(a[0]);
 	writeln(a[1]);
 	writeln(a[2]);
