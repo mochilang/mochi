@@ -37,7 +37,13 @@ func isMatch(_ s: String, _ p: String) -> Bool {
 					first = true
 				}
 			}
-			if j2 + 1 < n && _indexString(p, j2 + 1) == "*" {
+			var star = false
+			if j2 + 1 < n {
+				if _indexString(p, j2 + 1) == "*" {
+					star = true
+				}
+			}
+			if star {
 				if dp[i2][j2 + 2] || (first && dp[i2 + 1][j2]) {
 					dp[i2][j2] = true
 				} else {

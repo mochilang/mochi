@@ -90,6 +90,22 @@ func TestSwiftCompiler_LeetCodeExample3(t *testing.T) {
 	runLeetExample(t, 3, "")
 }
 
+// TestSwiftCompiler_LeetCodeRange compiles and runs the first ten LeetCode
+// examples using the Swift backend. Only the first problem prints output, so
+// we verify its expected result and ensure the others run without errors.
+func TestSwiftCompiler_LeetCodeRange(t *testing.T) {
+	if err := swiftcode.EnsureSwift(); err != nil {
+		t.Skipf("swift not installed: %v", err)
+	}
+	for i := 1; i <= 10; i++ {
+		want := ""
+		if i == 1 {
+			want = "0\n1"
+		}
+		runLeetExample(t, i, want)
+	}
+}
+
 func runLeetExample(t *testing.T, id int, want string) {
 	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
