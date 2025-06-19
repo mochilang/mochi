@@ -1,0 +1,15 @@
+import Foundation
+
+func _indexString(_ s: String, _ i: Int) -> String {
+	var idx = i
+	let chars = Array(s)
+	if idx < 0 { idx += chars.count }
+	if idx < 0 || idx >= chars.count { fatalError("index out of range") }
+	return String(chars[idx])
+}
+
+func main() {
+	let text = "hello"
+	print(_indexString(text, 1))
+}
+main()
