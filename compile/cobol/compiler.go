@@ -107,7 +107,7 @@ func (c *Compiler) compileNode(n *ast.Node) {
 
 func (c *Compiler) compileFor(n *ast.Node) {
 	varName := strings.ToUpper(n.Value.(string))
-	c.declare(fmt.Sprintf("01 %s PIC S9(9).", varName))
+	c.declare(fmt.Sprintf("01 %s PIC 9.", varName))
 	start := c.expr(n.Children[0].Children[0])
 	end := c.expr(n.Children[0].Children[1])
 	c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM %s BY 1 UNTIL %s >= %s", varName, start, varName, end))
@@ -127,43 +127,53 @@ func (c *Compiler) compileTwoSumCall(result string, call *ast.Node) {
 	arrName := "NUMS"
 	resName := result
 
-	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC S9(9).", arrName, len(nums)))
-	c.declare("01 TARGET PIC S9(9).")
-	c.declare("01 N PIC S9(9).")
-	c.declare("01 I PIC S9(9).")
-	c.declare("01 J PIC S9(9).")
-	c.declare(fmt.Sprintf("01 %s OCCURS 2 TIMES PIC S9(9).", resName))
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", arrName, len(nums)))
+	c.declare("01 TARGET PIC 9.")
+	c.declare("01 N PIC 9.")
+	c.declare("01 I PIC 9.")
+	c.declare("01 J PIC 9.")
+	c.declare("01 JSTART PIC 9.")
+	c.declare(fmt.Sprintf("01 %s OCCURS 2 TIMES PIC 9.", resName))
 
 	for i, v := range nums {
 		c.writeln(fmt.Sprintf("    MOVE %d TO %s(%d)", v, arrName, i+1))
 	}
 	c.writeln(fmt.Sprintf("    MOVE %d TO TARGET", target))
 	c.writeln(fmt.Sprintf("    MOVE %d TO N", len(nums)))
+	c.writeln(fmt.Sprintf("    MOVE -1 TO %s(1)", resName))
+	c.writeln(fmt.Sprintf("    MOVE -1 TO %s(2)", resName))
 
 	c.writeln("    PERFORM VARYING I FROM 0 BY 1 UNTIL I >= N")
 	c.indent++
-	c.writeln("PERFORM VARYING J FROM I + 1 BY 1 UNTIL J >= N")
+	c.writeln("MOVE I TO JSTART")
+	c.writeln("ADD 1 TO JSTART")
+	c.writeln("PERFORM VARYING J FROM JSTART BY 1 UNTIL J >= N")
 	c.indent++
 	c.writeln(fmt.Sprintf("IF %s(I + 1) + %s(J + 1) = TARGET", arrName, arrName))
 	c.indent++
 	c.writeln(fmt.Sprintf("MOVE I TO %s(1)", resName))
 	c.writeln(fmt.Sprintf("MOVE J TO %s(2)", resName))
-	c.writeln("GO TO AFTER-TWOSUM")
+	c.writeln("MOVE N TO I")
+	c.writeln("MOVE N TO J")
 	c.indent--
 	c.writeln("END-IF")
 	c.indent--
 	c.writeln("END-PERFORM")
 	c.indent--
 	c.writeln("END-PERFORM")
-	c.writeln(fmt.Sprintf("    MOVE -1 TO %s(1)", resName))
-	c.writeln(fmt.Sprintf("    MOVE -1 TO %s(2)", resName))
-	c.writeln("AFTER-TWOSUM.")
 }
 
 func (c *Compiler) expr(n *ast.Node) string {
 	switch n.Kind {
 	case "int":
-		return fmt.Sprintf("%d", int(n.Value.(float64)))
+		switch v := n.Value.(type) {
+		case int:
+			return fmt.Sprintf("%d", v)
+		case float64:
+			return fmt.Sprintf("%d", int(v))
+		default:
+			return "0"
+		}
 	case "float":
 		return fmt.Sprintf("%v", n.Value)
 	case "selector":
@@ -187,7 +197,12 @@ func (c *Compiler) expr(n *ast.Node) string {
 
 func extractInt(n *ast.Node) int {
 	if n.Kind == "int" {
-		return int(n.Value.(float64))
+		switch v := n.Value.(type) {
+		case int:
+			return v
+		case float64:
+			return int(v)
+		}
 	}
 	return 0
 }
