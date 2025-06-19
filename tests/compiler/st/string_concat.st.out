@@ -1,0 +1,4 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+((('hello ') , ('world'))) displayOn: Transcript. Transcript cr.
