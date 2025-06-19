@@ -185,23 +185,30 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
-	case s.Let != nil:
-		expr := c.compileExpr(s.Let.Value)
-		typ := "auto"
-		if s.Let.Type != nil {
-			typ = c.cppType(s.Let.Type)
-		} else if t := c.guessExprType(s.Let.Value); t != "" {
-			typ = t
-		}
-		if expr == "" {
-			c.writeln(fmt.Sprintf("%s %s;", typ, s.Let.Name))
-		} else {
-			c.writeln(fmt.Sprintf("%s %s = %s;", typ, s.Let.Name, expr))
-		}
-		c.setVar(s.Let.Name, typ)
-	case s.Var != nil:
-		expr := c.compileExpr(s.Var.Value)
-		if s.Var.Type != nil && s.Var.Value != nil {
+       case s.Let != nil:
+               expr := c.compileExpr(s.Let.Value)
+               typ := "auto"
+               if s.Let.Type != nil {
+                       typ = c.cppType(s.Let.Type)
+               } else if t := c.guessExprType(s.Let.Value); t != "" {
+                       typ = t
+               } else if s.Let.Value == nil {
+                       if t, err := c.env.GetVar(s.Let.Name); err == nil {
+                               typ = c.cppTypeRef(t)
+                       }
+               }
+               if expr == "" {
+                       if typ == "auto" {
+                               typ = "int"
+                       }
+                       c.writeln(fmt.Sprintf("%s %s;", typ, s.Let.Name))
+               } else {
+                       c.writeln(fmt.Sprintf("%s %s = %s;", typ, s.Let.Name, expr))
+               }
+               c.setVar(s.Let.Name, typ)
+       case s.Var != nil:
+               expr := c.compileExpr(s.Var.Value)
+               if s.Var.Type != nil && s.Var.Value != nil {
 			if lit := getEmptyListLiteral(s.Var.Value); lit != nil {
 				if s.Var.Type.Generic != nil && len(s.Var.Type.Generic.Args) == 1 {
 					elem := c.cppType(s.Var.Type.Generic.Args[0])
@@ -209,18 +216,25 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 		}
-		typ := "auto"
-		if s.Var.Type != nil {
-			typ = c.cppType(s.Var.Type)
-		} else if t := c.guessExprType(s.Var.Value); t != "" {
-			typ = t
-		}
-		if expr == "" {
-			c.writeln(fmt.Sprintf("%s %s;", typ, s.Var.Name))
-		} else {
-			c.writeln(fmt.Sprintf("%s %s = %s;", typ, s.Var.Name, expr))
-		}
-		c.setVar(s.Var.Name, typ)
+               typ := "auto"
+               if s.Var.Type != nil {
+                       typ = c.cppType(s.Var.Type)
+               } else if t := c.guessExprType(s.Var.Value); t != "" {
+                       typ = t
+               } else if s.Var.Value == nil {
+                       if t, err := c.env.GetVar(s.Var.Name); err == nil {
+                               typ = c.cppTypeRef(t)
+                       }
+               }
+               if expr == "" {
+                       if typ == "auto" {
+                               typ = "int"
+                       }
+                       c.writeln(fmt.Sprintf("%s %s;", typ, s.Var.Name))
+               } else {
+                       c.writeln(fmt.Sprintf("%s %s = %s;", typ, s.Var.Name, expr))
+               }
+               c.setVar(s.Var.Name, typ)
 	case s.Assign != nil:
 		name := s.Assign.Name
 		for _, idx := range s.Assign.Index {
@@ -535,14 +549,16 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 	}
 	c.writeIndent()
 	c.buf.WriteString("std::cout")
-	for i, a := range args {
-		if i == 0 {
-			c.buf.WriteString(" << ")
-		} else {
-			c.buf.WriteString(" << \" \" << ")
-		}
-		c.buf.WriteString(a)
-	}
+       for i, a := range args {
+               if i == 0 {
+                       c.buf.WriteString(" << ")
+               } else {
+                       c.buf.WriteString(" << \" \" << ")
+               }
+               c.buf.WriteString("(")
+               c.buf.WriteString(a)
+               c.buf.WriteString(")")
+       }
 	c.buf.WriteString(" << std::endl;\n")
 	return nil
 }
