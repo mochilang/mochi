@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -739,6 +740,9 @@ func build(cmd *BuildCmd) error {
 		}
 		code, err := luacode.New(env).Compile(prog)
 		if err == nil {
+			if !bytes.HasPrefix(code, []byte("#!/usr/bin/env lua\n")) {
+				code = append([]byte("#!/usr/bin/env lua\n"), code...)
+			}
 			err = os.WriteFile(out, code, 0644)
 		}
 		if err != nil {

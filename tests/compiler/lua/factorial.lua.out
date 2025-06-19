@@ -1,0 +1,19 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
+function factorial(n)
+	if (n <= 1) then
+		return 1
+	end
+	return (n * factorial((n - 1)))
+end
+
+__print(factorial(0))
+__print(factorial(1))
+__print(factorial(5))
