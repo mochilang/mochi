@@ -1,0 +1,8 @@
+var n = 2
+if n == 1 {
+  print("one")
+} else if n == 2 {
+  print("two")
+} else {
+  print("other")
+}
