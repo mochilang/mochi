@@ -16,9 +16,36 @@ type Compiler struct {
 	indent  int
 	env     *types.Env
 	helpers map[string]bool
+	vars    []map[string]string
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env, helpers: map[string]bool{}} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{
+		env:     env,
+		helpers: map[string]bool{},
+		vars:    []map[string]string{{}},
+	}
+}
+
+func (c *Compiler) pushScope() { c.vars = append(c.vars, map[string]string{}) }
+func (c *Compiler) popScope()  { c.vars = c.vars[:len(c.vars)-1] }
+func (c *Compiler) setVar(name, typ string) {
+	if len(c.vars) == 0 {
+		c.vars = append(c.vars, map[string]string{})
+	}
+	c.vars[len(c.vars)-1][name] = typ
+}
+func (c *Compiler) getVar(name string) (string, bool) {
+	for i := len(c.vars) - 1; i >= 0; i-- {
+		if t, ok := c.vars[i][name]; ok {
+			return t, true
+		}
+	}
+	if typ, err := c.env.GetVar(name); err == nil {
+		return c.cppTypeRef(typ), true
+	}
+	return "", false
+}
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -113,6 +140,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.buf.WriteString(ret + " ")
 	c.buf.WriteString(fn.Name)
 	c.buf.WriteByte('(')
+	c.pushScope()
 	for i, p := range fn.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
@@ -120,6 +148,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.buf.WriteString(c.cppType(p.Type))
 		c.buf.WriteByte(' ')
 		c.buf.WriteString(p.Name)
+		c.setVar(p.Name, c.cppType(p.Type))
 	}
 	c.buf.WriteString("){\n")
 	c.indent++
@@ -130,6 +159,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.popScope()
 	return nil
 }
 
@@ -165,6 +195,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("%s %s = %s;", typ, s.Let.Name, expr))
 		}
+		c.setVar(s.Let.Name, typ)
 	case s.Var != nil:
 		expr := c.compileExpr(s.Var.Value)
 		if s.Var.Type != nil && s.Var.Value != nil {
@@ -186,6 +217,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("%s %s = %s;", typ, s.Var.Name, expr))
 		}
+		c.setVar(s.Var.Name, typ)
 	case s.Assign != nil:
 		name := s.Assign.Name
 		for _, idx := range s.Assign.Index {
@@ -224,6 +256,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		start := c.compileExpr(f.Source)
 		end := c.compileExpr(f.RangeEnd)
 		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", f.Name, start, f.Name, end, f.Name))
+		c.setVar(f.Name, "int")
 		c.indent++
 		for _, st := range f.Body {
 			if err := c.compileStmt(st); err != nil {
@@ -249,6 +282,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		name = "_"
 	}
 	c.writeln(fmt.Sprintf("for (%s %s : %s) {", elemType, name, src))
+	c.setVar(f.Name, strings.TrimPrefix(elemType, "const "))
 	c.indent++
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -437,6 +471,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		switch p.Call.Func {
 		case "len":
 			return fmt.Sprintf("%s.size()", args[0])
+		case "str":
+			return fmt.Sprintf("to_string(%s)", args[0])
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", "))
 		}
@@ -504,11 +540,11 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 
 func (c *Compiler) writeHelpers() {
 	if c.helpers["indexString"] {
-		c.writeln("char _indexString(const string& s, int i) {")
+		c.writeln("string _indexString(const string& s, int i) {")
 		c.writeln("\tint n = s.size();")
 		c.writeln("\tif (i < 0) i += n;")
 		c.writeln("\tif (i < 0 || i >= n) throw std::out_of_range(\"index out of range\");")
-		c.writeln("\treturn s[i];")
+		c.writeln("\treturn string(1, s[i]);")
 		c.writeln("}")
 		c.writeln("")
 	}
@@ -584,7 +620,17 @@ func (c *Compiler) guessUnaryType(u *parser.Unary) string {
 }
 
 func (c *Compiler) guessPostfixType(p *parser.PostfixExpr) string {
-	return c.guessPrimaryType(p.Target)
+	typ := c.guessPrimaryType(p.Target)
+	for _, op := range p.Ops {
+		if op.Index != nil && op.Index.Colon == nil {
+			if strings.HasPrefix(typ, "vector<") {
+				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "vector<"), ">")
+			} else if typ == "string" {
+				typ = "char"
+			}
+		}
+	}
+	return typ
 }
 
 func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
@@ -613,6 +659,9 @@ func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
 		}
 		return "vector<int>"
 	case p.Selector != nil:
+		if t, ok := c.getVar(p.Selector.Root); ok {
+			return t
+		}
 		if typ, err := c.env.GetVar(p.Selector.Root); err == nil {
 			if st, ok := typ.(types.StructType); ok {
 				ft := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]

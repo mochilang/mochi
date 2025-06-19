@@ -6,14 +6,14 @@ string convert(string s, int numRows){
 		return s;
 	}
 	vector<string> rows = vector<string>{};
-	auto i = 0;
+	int i = 0;
 	while (i < numRows) {
 		rows = ([&](vector<string> a, vector<string> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(rows, vector<string>{""});
 		i = i + 1;
 	}
-	auto curr = 0;
-	auto step = 1;
-	for (auto ch : s) {
+	int curr = 0;
+	int step = 1;
+	for (char ch : s) {
 		rows[curr] = rows[curr] + ch;
 		if (curr == 0) {
 			step = 1;
@@ -23,7 +23,7 @@ string convert(string s, int numRows){
 		curr = curr + step;
 	}
 	string result = "";
-	for (auto row : rows) {
+	for (const string& row : rows) {
 		result = result + row;
 	}
 	return result;
