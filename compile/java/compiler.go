@@ -952,6 +952,25 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("return res;")
 		c.indent--
 		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static boolean[] _concat(boolean[] a, boolean[] b) {")
+		c.indent++
+		c.writeln("boolean[] res = new boolean[a.length + b.length];")
+		c.writeln("System.arraycopy(a, 0, res, 0, a.length);")
+		c.writeln("System.arraycopy(b, 0, res, a.length, b.length);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static <T> T[] _concat(T[] a, T[] b) {")
+		c.indent++
+		c.writeln("T[] res = java.util.Arrays.copyOf(a, a.length + b.length);")
+		c.writeln("System.arraycopy(b, 0, res, a.length, b.length);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
 	}
 	if c.helpers["_slice"] {
 		c.writeln("")
