@@ -4,11 +4,11 @@
 
 main(_) ->
 	ok,
-	products = [#{name => "Laptop", price => 1500}, #{name => "Smartphone", price => 900}, #{name => "Tablet", price => 600}, #{name => "Monitor", price => 300}, #{name => "Keyboard", price => 100}, #{name => "Mouse", price => 50}, #{name => "Headphones", price => 200}],
-	expensive = (fun() ->
-	Items = [p || p <- products],
+	Products = [#{name => "Laptop", price => 1500}, #{name => "Smartphone", price => 900}, #{name => "Tablet", price => 600}, #{name => "Monitor", price => 300}, #{name => "Keyboard", price => 100}, #{name => "Mouse", price => 50}, #{name => "Headphones", price => 200}],
+	Expensive = (fun() ->
+	Items = [P || P <- Products],
 	Sorted = begin
-		Pairs = [{-maps:get(price, p), p} || p <- Items],
+		Pairs = [{-maps:get(price, P), P} || P <- Items],
 		SPairs = lists:sort(fun({A,_},{B,_}) -> A =< B end, Pairs),
 		[ V || {_, V} <- SPairs ]
 	end,
@@ -17,12 +17,12 @@ main(_) ->
 		_ -> Sorted
 	end),
 	Taken = lists:sublist(Skipped, 3),
-	[p || p <- Taken]
+	[P || P <- Taken]
 end)(),
 	mochi_print(["--- Top products (excluding most expensive) ---"]),
-	mochi_foreach(fun(item) ->
-		mochi_print([maps:get(name, item), "costs $", maps:get(price, item)])
-	end, expensive).
+	mochi_foreach(fun(Item) ->
+		mochi_print([maps:get(name, Item), "costs $", maps:get(price, Item)])
+	end, Expensive).
 
 mochi_print(Args) ->
 	Strs = [ mochi_format(A) || A <- Args ],
@@ -52,28 +52,27 @@ mochi_avg(L) when is_list(L) ->
 			F when is_float(F) -> Acc + F;
 			_ -> erlang:error(badarg) end
 		end, 0, L),
-		Sum / length(L)
-	.
-mochi_avg(_) -> erlang:error(badarg).
-
-mochi_foreach(F, L) ->
-	try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
-
-mochi_foreach_loop(_, []) -> ok;
-mochi_foreach_loop(F, [H|T]) ->
-	try F(H) catch
-		throw:mochi_continue -> ok;
-		throw:mochi_break -> throw(mochi_break)
-	end,
-	mochi_foreach_loop(F, T).
-
-mochi_while(Cond, Body) ->
-	case Cond() of
-		true ->
-			try Body() catch
-				throw:mochi_continue -> ok;
-				throw:mochi_break -> ok
-			end,
-			mochi_while(Cond, Body);
-		_ -> ok
-	end.
+		Sum / length(L);
+	mochi_avg(_) -> erlang:error(badarg).
+	
+	mochi_foreach(F, L) ->
+		try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
+	
+	mochi_foreach_loop(_, []) -> ok;
+	mochi_foreach_loop(F, [H|T]) ->
+		try F(H) catch
+			throw:mochi_continue -> ok;
+			throw:mochi_break -> throw(mochi_break)
+		end,
+		mochi_foreach_loop(F, T).
+	
+	mochi_while(Cond, Body) ->
+		case Cond() of
+			true ->
+				try Body() catch
+					throw:mochi_continue -> ok;
+					throw:mochi_break -> ok
+				end,
+				mochi_while(Cond, Body);
+			_ -> ok
+		end.

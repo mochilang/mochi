@@ -1,6 +1,7 @@
 package erlcode
 
 import (
+	"fmt"
 	"reflect"
 
 	"mochi/parser"
@@ -114,6 +115,27 @@ func isAny(t types.Type) bool {
 	}
 	_, ok := t.(types.AnyType)
 	return ok
+}
+
+// atomName returns a valid Erlang atom representing name. If name contains
+// uppercase letters or other characters that are not allowed in unquoted atoms,
+// it is returned quoted.
+func atomName(name string) string {
+	if name == "" {
+		return name
+	}
+	for i, r := range name {
+		if i == 0 {
+			if r < 'a' || r > 'z' {
+				return fmt.Sprintf("'%s'", name)
+			}
+		} else {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '_' {
+				return fmt.Sprintf("'%s'", name)
+			}
+		}
+	}
+	return name
 }
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {

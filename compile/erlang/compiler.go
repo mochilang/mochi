@@ -126,7 +126,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	exports := []string{"main/1"}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
-			exports = append(exports, fmt.Sprintf("%s/%d", s.Fun.Name, len(s.Fun.Params)))
+			exports = append(exports, fmt.Sprintf("%s/%d", atomName(s.Fun.Name), len(s.Fun.Params)))
 		}
 	}
 	c.writeln("-export([" + strings.Join(exports, ", ") + "]).")
@@ -166,7 +166,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	for _, p := range fun.Params {
 		params = append(params, c.newName(p.Name))
 	}
-	c.writeln(fmt.Sprintf("%s(%s) ->", fun.Name, strings.Join(params, ", ")))
+	c.writeln(fmt.Sprintf("%s(%s) ->", atomName(fun.Name), strings.Join(params, ", ")))
 	child := types.NewEnv(c.env)
 	for _, p := range fun.Params {
 		child.SetVar(p.Name, types.AnyType{}, true)
@@ -775,7 +775,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "input":
 			return "mochi_input()", nil
 		default:
-			return fmt.Sprintf("%s(%s)", p.Call.Func, argStr), nil
+			return fmt.Sprintf("%s(%s)", atomName(p.Call.Func), argStr), nil
 		}
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
