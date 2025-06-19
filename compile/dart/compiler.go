@@ -791,7 +791,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 					typ = "dynamic"
 				}
 				c.writeln(fmt.Sprintf("%s %s;", typ, fname))
-				fields = append(fields, "this."+fname)
+				param := "this." + fname
+				if typ != "dynamic" {
+					param = "required " + param
+				}
+				fields = append(fields, param)
 			}
 			var ctor string
 			if len(fields) == 0 {
@@ -816,7 +820,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				typ = "dynamic"
 			}
 			c.writeln(fmt.Sprintf("%s %s;", typ, fname))
-			fields = append(fields, "this."+fname)
+			param := "this." + fname
+			if typ != "dynamic" {
+				param = "required " + param
+			}
+			fields = append(fields, param)
 		}
 	}
 	var ctor string
