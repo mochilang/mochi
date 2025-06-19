@@ -352,6 +352,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			}
 			leftList = false
 			leftStr = false
+		case "&&":
+			expr = fmt.Sprintf("(%s and: [%s])", expr, right)
+			leftList = false
+			leftStr = false
+		case "||":
+			expr = fmt.Sprintf("(%s or: [%s])", expr, right)
+			leftList = false
+			leftStr = false
 		default:
 			expr = fmt.Sprintf("(%s %s %s)", expr, mapOp(op.Op), right)
 			leftList = false
@@ -513,10 +521,6 @@ func mapOp(op string) string {
 		return "~="
 	case "%":
 		return "\\"
-	case "&&":
-		return "&"
-	case "||":
-		return "|"
 	}
 	return op
 }
