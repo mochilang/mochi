@@ -162,7 +162,8 @@ func TestClojureCompiler_LeetCodeExamples(t *testing.T) {
 	runLeetExample(t, 4)
 	runLeetExample(t, 5)
 	runLeetExample(t, 6)
-        runLeetExample(t, 7)
-        runLeetExample(t, 8)
-        runLeetExample(t, 9)
+	runLeetExample(t, 7)
+	runLeetExample(t, 8)
+	runLeetExample(t, 9)
+	runLeetExample(t, 10)
 }

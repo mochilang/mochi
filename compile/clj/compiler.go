@@ -314,7 +314,7 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	c.indent++
 	c.writeln(fmt.Sprintf("(when %s", seqVar))
 	c.indent++
-	c.writeln(fmt.Sprintf("(let [%s (first %s)]", name, seqVar))
+	c.writeln(fmt.Sprintf("(let [%s (clojure.core/first %s)]", name, seqVar))
 	c.indent++
 	c.writeln("(let [r (try")
 	c.indent++
@@ -572,6 +572,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	t := c.inferPrimaryType(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			start, err := c.compileExpr(op.Index.Start)
@@ -584,8 +585,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				expr = fmt.Sprintf("(subs %s %s %s)", expr, start, end)
+				if _, ok := t.(types.StringType); ok {
+					t = types.StringType{}
+				} else if lt, ok := t.(types.ListType); ok {
+					t = lt
+				} else {
+					t = types.AnyType{}
+				}
 			} else {
-				expr = fmt.Sprintf("(nth %s %s)", expr, start)
+				if _, ok := t.(types.StringType); ok {
+					expr = fmt.Sprintf("(subs %s %s (inc %s))", expr, start, start)
+					t = types.StringType{}
+				} else {
+					expr = fmt.Sprintf("(nth %s %s)", expr, start)
+					if lt, ok := t.(types.ListType); ok {
+						t = lt.Elem
+					} else {
+						t = types.AnyType{}
+					}
+				}
 			}
 			continue
 		}
