@@ -334,28 +334,30 @@ func (c *Compiler) expr(n *ast.Node) string {
 	case "string":
 		s := strings.ReplaceAll(n.Value.(string), "\"", "\"\"")
 		return fmt.Sprintf("\"%s\"", s)
-	case "bool":
-		if n.Value.(bool) {
-			return "\"true\""
-		}
-		return "\"false\""
+       case "bool":
+               if n.Value.(bool) {
+                       return "1"
+               }
+               return "0"
 	case "selector":
 		return strings.ToUpper(n.Value.(string))
 	case "binary":
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
 		op := n.Value.(string)
-		switch op {
-		case "&&":
-			op = "AND"
-		case "||":
-			op = "OR"
-		case "==":
-			op = "="
-		case "!=":
-			op = "<>"
-		}
-		return fmt.Sprintf("%s %s %s", left, op, right)
+               switch op {
+               case "&&":
+                       op = "AND"
+               case "||":
+                       op = "OR"
+               case "==":
+                       op = "="
+               case "!=":
+                       op = "<>"
+               case "%":
+                       return fmt.Sprintf("FUNCTION MOD(%s,%s)", left, right)
+               }
+               return fmt.Sprintf("%s %s %s", left, op, right)
 	case "index":
 		arr := c.expr(n.Children[0])
 		idx := c.expr(n.Children[1])
