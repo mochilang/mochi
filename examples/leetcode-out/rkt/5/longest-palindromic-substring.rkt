@@ -19,7 +19,7 @@
 	(let/ec return
 		(define l left)
 		(define r right)
-		(define n (length s))
+		(define n (count s))
 		(let/ec brk0
 			(let loop0 ()
 				(when (and (>= l 0) (< r n))
@@ -41,7 +41,7 @@
 	
 	(define (longestPalindrome s)
 		(let/ec return
-			(if (<= (length s) 1)
+			(if (<= (count s) 1)
 				(begin
 					(return s)
 				)
@@ -49,7 +49,7 @@
 			)
 			(define start 0)
 			(define end 0)
-			(define n (length s))
+			(define n (count s))
 			(for ([i (in-range 0 n)])
 				(define len1 (expand s i i))
 				(define len2 (expand s i (+ i 1)))

@@ -17,8 +17,8 @@
 
 (define (isMatch s p)
 	(let/ec return
-		(define m (length s))
-		(define n (length p))
+		(define m (count s))
+		(define n (count p))
 		(define dp (list ))
 		(define i 0)
 		(let loop ()
@@ -54,26 +54,55 @@
 							)
 							(void)
 						)
-						(if (and (< (+ j2 1) n) (= (idx p (+ j2 1)) "*"))
+						(define star false)
+						(if (< (+ j2 1) n)
 							(begin
-								(if (or (idx (idx dp i2) (+ j2 2)) ((and first (idx (idx dp (+ i2 1)) j2))))
+								(if (= (idx p (+ j2 1)) "*")
 									(begin
-										(set! dp (list-set dp i2 (list-set (idx dp i2) j2 true)))
+										(set! star true)
 									)
-									(begin
-										(set! dp (list-set dp i2 (list-set (idx dp i2) j2 false)))
-									)
+									(void)
 								)
 							)
+							(void)
+						)
+						(if star
 							(begin
-								(if (and first (idx (idx dp (+ i2 1)) (+ j2 1)))
+								(define ok false)
+								(if (idx (idx dp i2) (+ j2 2))
 									(begin
-										(set! dp (list-set dp i2 (list-set (idx dp i2) j2 true)))
+										(set! ok true)
 									)
 									(begin
-										(set! dp (list-set dp i2 (list-set (idx dp i2) j2 false)))
+										(if first
+											(begin
+												(if (idx (idx dp (+ i2 1)) j2)
+													(begin
+														(set! ok true)
+													)
+													(void)
+												)
+											)
+											(void)
+										)
 									)
 								)
+								(set! dp (list-set dp i2 (list-set (idx dp i2) j2 ok)))
+							)
+							(begin
+								(define ok false)
+								(if first
+									(begin
+										(if (idx (idx dp (+ i2 1)) (+ j2 1))
+											(begin
+												(set! ok true)
+											)
+											(void)
+										)
+									)
+									(void)
+								)
+								(set! dp (list-set dp i2 (list-set (idx dp i2) j2 ok)))
 							)
 						)
 						(set! j2 (- j2 1))

@@ -21,13 +21,13 @@
 		(define i 0)
 		(define j 0)
 		(let loop ()
-			(when (or (< i (length nums1)) (< j (length nums2)))
-				(if (>= j (length nums2))
+			(when (or (< i (count nums1)) (< j (count nums2)))
+				(if (>= j (count nums2))
 					(begin
 						(set! merged (+ merged (list (idx nums1 i))))
 						(set! i (+ i 1))
 					)
-					(if (>= i (length nums1))
+					(if (>= i (count nums1))
 						(begin
 							(set! merged (+ merged (list (idx nums2 j))))
 							(set! j (+ j 1))
@@ -46,7 +46,7 @@
 				)
 				(loop))
 		)
-		(define total (length merged))
+		(define total (count merged))
 		(if (= (modulo total 2) 1)
 			(begin
 				(return (idx merged (/ total 2)))

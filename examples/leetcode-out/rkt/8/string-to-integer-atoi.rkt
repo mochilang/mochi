@@ -85,7 +85,7 @@
 (define (myAtoi s)
 	(let/ec return
 		(define i 0)
-		(define n (length s))
+		(define n (count s))
 		(let loop ()
 			(when (and (< i n) (= (idx s i) (idx " " 0)))
 				(set! i (+ i 1))

@@ -17,7 +17,7 @@
 
 (define (lengthOfLongestSubstring s)
 	(let/ec return
-		(define n (length s))
+		(define n (count s))
 		(define start 0)
 		(define best 0)
 		(define i 0)
