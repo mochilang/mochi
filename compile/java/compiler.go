@@ -107,63 +107,71 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
-	typ := ""
+	typStr := ""
+	var t types.Type
 	if stmt.Type != nil {
-		typ = c.javaType(c.resolveTypeRef(stmt.Type))
+		t = c.resolveTypeRef(stmt.Type)
+		typStr = c.javaType(t)
 	} else if c.env != nil {
-		if t, err := c.env.GetVar(stmt.Name); err == nil {
-			typ = c.javaType(t)
+		if tv, err := c.env.GetVar(stmt.Name); err == nil {
+			t = tv
+			typStr = c.javaType(tv)
 		}
 	}
-	if typ == "" {
-		typ = "var"
+	if typStr == "" {
+		typStr = "var"
 	}
 	expr := ""
 	if stmt.Value != nil {
-		v, err := c.compileExpr(stmt.Value)
+		v, err := c.compileExprHint(stmt.Value, t)
 		if err != nil {
 			return err
 		}
 		expr = " = " + v
 	}
-	c.writeln(fmt.Sprintf("%s %s%s;", typ, sanitizeName(stmt.Name), expr))
+	c.writeln(fmt.Sprintf("%s %s%s;", typStr, sanitizeName(stmt.Name), expr))
 	return nil
 }
 
 func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
-	typ := ""
+	typStr := ""
+	var t types.Type
 	if stmt.Type != nil {
-		typ = c.javaType(c.resolveTypeRef(stmt.Type))
+		t = c.resolveTypeRef(stmt.Type)
+		typStr = c.javaType(t)
 	} else if c.env != nil {
-		if t, err := c.env.GetVar(stmt.Name); err == nil {
-			typ = c.javaType(t)
+		if tv, err := c.env.GetVar(stmt.Name); err == nil {
+			t = tv
+			typStr = c.javaType(tv)
 		}
 	}
-	if typ == "" {
-		typ = "var"
+	if typStr == "" {
+		typStr = "var"
 	}
 	expr := ""
 	if stmt.Value != nil {
-		v, err := c.compileExpr(stmt.Value)
+		v, err := c.compileExprHint(stmt.Value, t)
 		if err != nil {
 			return err
 		}
 		expr = " = " + v
 	}
-	c.writeln(fmt.Sprintf("%s %s%s;", typ, sanitizeName(stmt.Name), expr))
+	c.writeln(fmt.Sprintf("%s %s%s;", typStr, sanitizeName(stmt.Name), expr))
 	return nil
 }
 
 func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 	lhs := sanitizeName(stmt.Name)
+	var t types.Type
 	if c.env != nil {
-		if t, err := c.env.GetVar(stmt.Name); err == nil {
-			if _, ok := t.(types.MapType); ok && len(stmt.Index) == 1 {
+		if tv, err := c.env.GetVar(stmt.Name); err == nil {
+			t = tv
+			if mt, ok := tv.(types.MapType); ok && len(stmt.Index) == 1 {
 				key, err := c.compileExpr(stmt.Index[0].Start)
 				if err != nil {
 					return err
 				}
-				val, err := c.compileExpr(stmt.Value)
+				val, err := c.compileExprHint(stmt.Value, mt.Value)
 				if err != nil {
 					return err
 				}
@@ -179,7 +187,7 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		}
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
 	}
-	rhs, err := c.compileExpr(stmt.Value)
+	rhs, err := c.compileExprHint(stmt.Value, t)
 	if err != nil {
 		return err
 	}
@@ -197,21 +205,21 @@ func (c *Compiler) compileReturn(stmt *parser.ReturnStmt) error {
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
-       name := sanitizeName(stmt.Name)
-       outName := name
-       if name == "_" {
-               outName = "__"
-       }
-       if stmt.RangeEnd != nil {
-               start, err := c.compileExpr(stmt.Source)
-               if err != nil {
-                       return err
-               }
-               end, err := c.compileExpr(stmt.RangeEnd)
-               if err != nil {
-                       return err
-               }
-               c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", outName, start, outName, end, outName))
+	name := sanitizeName(stmt.Name)
+	outName := name
+	if name == "_" {
+		outName = "__"
+	}
+	if stmt.RangeEnd != nil {
+		start, err := c.compileExpr(stmt.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(stmt.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", outName, start, outName, end, outName))
 		c.indent++
 		for _, s := range stmt.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -702,22 +710,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("\"%s\"", *p.Lit.Str), nil
 		}
 	case p.List != nil:
-		elems := []string{}
-		nested := false
-		for _, e := range p.List.Elems {
+		elems := make([]string, len(p.List.Elems))
+		for i, e := range p.List.Elems {
 			ce, err := c.compileExpr(e)
 			if err != nil {
 				return "", err
 			}
-			if strings.HasPrefix(ce, "new int[") {
-				nested = true
+			elems[i] = ce
+		}
+		var elemType types.Type = types.AnyType{}
+		if len(p.List.Elems) > 0 {
+			elemType = c.inferExprType(p.List.Elems[0])
+			for _, el := range p.List.Elems[1:] {
+				t := c.inferExprType(el)
+				if !equalTypes(elemType, t) {
+					elemType = types.AnyType{}
+					break
+				}
 			}
-			elems = append(elems, ce)
 		}
-		if nested {
-			return "new int[][]{" + joinArgs(elems) + "}", nil
-		}
-		return "new int[]{" + joinArgs(elems) + "}", nil
+		return fmt.Sprintf("new %s[]{%s}", c.javaType(elemType), joinArgs(elems)), nil
 	case p.Map != nil:
 		items := []string{}
 		for _, it := range p.Map.Items {
@@ -967,6 +979,27 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+}
+
+// compileExprHint compiles an expression using a type hint. The hint is used
+// for list literals that would otherwise default to any.
+func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
+	if lt, ok := hint.(types.ListType); ok {
+		if e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ll := e.Binary.Left.Value.Target.List; ll != nil {
+				elems := make([]string, len(ll.Elems))
+				for i, el := range ll.Elems {
+					ev, err := c.compileExprHint(el, lt.Elem)
+					if err != nil {
+						return "", err
+					}
+					elems[i] = ev
+				}
+				return fmt.Sprintf("new %s[]{%s}", c.javaType(lt.Elem), joinArgs(elems)), nil
+			}
+		}
+	}
+	return c.compileExpr(e)
 }
 
 func joinArgs(args []string) string {
