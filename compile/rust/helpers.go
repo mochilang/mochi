@@ -1,6 +1,9 @@
 package rscode
 
-import "mochi/parser"
+import (
+	"mochi/parser"
+	"mochi/types"
+)
 
 func isUnderscoreExpr(e *parser.Expr) bool {
 	if e == nil {
@@ -57,4 +60,23 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+// isStringRoot reports whether the base identifier of a postfix expression is a
+// string variable in the current environment.
+func (c *Compiler) isStringRoot(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil {
+		return false
+	}
+	sel := p.Target.Selector
+	if sel != nil {
+		if c.env != nil {
+			if t, err := c.env.GetVar(sel.Root); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
