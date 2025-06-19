@@ -573,55 +573,35 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) guessExprType(e *parser.Expr) string {
-	if e == nil || e.Binary == nil {
+	t := c.inferExprType(e)
+	if _, ok := t.(types.AnyType); ok {
 		return ""
 	}
-	return c.guessUnaryType(e.Binary.Left)
+	return c.cppTypeRef(t)
 }
 
 func (c *Compiler) guessUnaryType(u *parser.Unary) string {
-	return c.guessPostfixType(u.Value)
+	t := c.inferUnaryType(u)
+	if _, ok := t.(types.AnyType); ok {
+		return ""
+	}
+	return c.cppTypeRef(t)
 }
 
 func (c *Compiler) guessPostfixType(p *parser.PostfixExpr) string {
-	return c.guessPrimaryType(p.Target)
+	t := c.inferPostfixType(p)
+	if _, ok := t.(types.AnyType); ok {
+		return ""
+	}
+	return c.cppTypeRef(t)
 }
 
 func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
-	switch {
-	case p.Lit != nil:
-		if p.Lit.Int != nil {
-			return "int"
-		}
-		if p.Lit.Float != nil {
-			return "double"
-		}
-		if p.Lit.Bool != nil {
-			return "bool"
-		}
-		if p.Lit.Str != nil {
-			return "string"
-		}
-	case p.Struct != nil:
-		return p.Struct.Name
-	case p.List != nil:
-		if len(p.List.Elems) > 0 {
-			t := c.guessExprType(p.List.Elems[0])
-			if t != "" {
-				return "vector<" + t + ">"
-			}
-		}
-		return "vector<int>"
-	case p.Selector != nil:
-		if typ, err := c.env.GetVar(p.Selector.Root); err == nil {
-			if st, ok := typ.(types.StructType); ok {
-				ft := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]
-				return c.cppTypeRef(ft)
-			}
-			return c.cppTypeRef(typ)
-		}
+	t := c.inferPrimaryType(p)
+	if _, ok := t.(types.AnyType); ok {
+		return ""
 	}
-	return ""
+	return c.cppTypeRef(t)
 }
 
 func (c *Compiler) cppTypeRef(t types.Type) string {
