@@ -112,6 +112,21 @@ func (c *Compiler) compileNode(n *ast.Node) {
 			return
 		}
 
+	case "var":
+		name := strings.ToUpper(n.Value.(string))
+		c.declare(fmt.Sprintf("01 %s PIC 9.", name))
+		if len(n.Children) == 1 {
+			expr := c.expr(n.Children[0])
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+		}
+
+	case "assign":
+		name := strings.ToUpper(n.Value.(string))
+		if len(n.Children) == 1 {
+			expr := c.expr(n.Children[0])
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+		}
+
 	case "call":
 		if n.Value == "print" {
 			arg := n.Children[0]
