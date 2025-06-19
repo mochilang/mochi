@@ -33,6 +33,7 @@ import (
 	"mochi/ast"
 	ccode "mochi/compile/c"
 	cljcode "mochi/compile/clj"
+	cobolcode "mochi/compile/cobol"
 	cppcode "mochi/compile/cpp"
 	cscode "mochi/compile/cs"
 	dartcode "mochi/compile/dart"
@@ -108,7 +109,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (c|clj|cpp|cs|dart|erlang|ex|fortran|fs|go|hs|java|jvm|kt|lua|ocaml|pas|php|pl|py|python|rb|rkt|rust|scala|scheme|st|swift|ts|wasm|zig|all)"`
+	Target        string `arg:"--target" help:"Output language (c|clj|cobol|cpp|cs|dart|erlang|ex|fortran|fs|go|hs|java|jvm|kt|lua|ocaml|pas|php|pl|py|python|rb|rkt|rust|scala|scheme|st|swift|ts|wasm|zig|all)"`
 	All           bool   `arg:"--all" help:"Compile to all supported targets"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
@@ -137,7 +138,7 @@ var (
 	cTitle     = color.New(color.FgCyan, color.Bold).SprintFunc()
 	cFile      = color.New(color.FgHiBlue, color.Bold).SprintFunc()
 	allTargets = []string{
-		"c", "clj", "cpp", "cs", "dart", "erlang", "ex",
+		"c", "clj", "cobol", "cpp", "cs", "dart", "erlang", "ex",
 		"fortran", "fs", "go", "hs", "java", "jvm", "kt", "lua",
 		"ocaml", "pas", "php", "pl", "py", "rb", "rkt", "rust",
 		"scala", "scheme", "st", "swift", "ts", "wasm", "zig",
@@ -472,6 +473,8 @@ func build(cmd *BuildCmd) error {
 			target = "c"
 		case ".clj":
 			target = "clj"
+		case ".cob":
+			target = "cobol"
 		case ".cpp":
 			target = "cpp"
 		case ".cs":
@@ -567,6 +570,18 @@ func build(cmd *BuildCmd) error {
 			out = base + ".clj"
 		}
 		code, err := cljcode.New(env).Compile(prog)
+		if err == nil {
+			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "cobol":
+		if out == "" {
+			out = base + ".cob"
+		}
+		code, err := cobolcode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}
