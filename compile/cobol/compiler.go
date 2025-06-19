@@ -23,10 +23,18 @@ type Compiler struct {
 	env        *types.Env
 	decls      []string
 	tmpCounter int
+	funcs      map[string]int
+	funcDecls  []string
+	currentFun string
 }
 
 // New creates a new COBOL compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{
+		env:   env,
+		funcs: map[string]int{},
+	}
+}
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
@@ -96,6 +104,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln("PROCEDURE DIVISION.")
 	c.buf.Write(bodyBytes)
+	for _, fn := range c.funcDecls {
+		c.buf.WriteString(fn)
+	}
 	c.writeln("    STOP RUN.")
 	return c.buf.Bytes(), nil
 }
@@ -104,7 +115,11 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	switch n.Kind {
 	case "program":
 		for _, ch := range n.Children {
-			c.compileNode(ch)
+			if ch.Kind == "fun" {
+				c.compileFun(ch)
+			} else {
+				c.compileNode(ch)
+			}
 		}
 
 	case "let":
@@ -138,15 +153,35 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	case "call":
 		if n.Value == "print" {
 			arg := n.Children[0]
-			expr := c.expr(arg)
-			if isSimpleExpr(arg) {
-				c.writeln("    DISPLAY " + expr)
+			if arg.Kind == "call" {
+				res := c.compileCallExpr(arg)
+				c.writeln("    DISPLAY " + res)
 			} else {
+				expr := c.expr(arg)
+				if isSimpleExpr(arg) {
+					c.writeln("    DISPLAY " + expr)
+				} else {
+					tmp := c.newTemp()
+					c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+					c.writeln("    DISPLAY " + tmp)
+				}
+			}
+		} else {
+			c.compileCallExpr(n)
+		}
+
+	case "return":
+		if len(n.Children) == 1 {
+			expr := c.expr(n.Children[0])
+			if !isSimpleExpr(n.Children[0]) {
 				tmp := c.newTemp()
 				c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
 				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
-				c.writeln("    DISPLAY " + tmp)
+				expr = tmp
 			}
+			c.writeln(fmt.Sprintf("    COMPUTE %s_RES = %s", c.currentFun, expr))
+			c.writeln("    EXIT")
 		}
 
 	case "for":
@@ -223,6 +258,65 @@ func (c *Compiler) compileWhile(n *ast.Node) {
 	}
 	c.indent--
 	c.writeln("    END-PERFORM")
+}
+
+func (c *Compiler) compileFun(n *ast.Node) {
+	name := strings.ToUpper(n.Value.(string))
+	params := []string{}
+	idx := 0
+	for idx < len(n.Children) && n.Children[idx].Kind == "param" {
+		params = append(params, strings.ToUpper(n.Children[idx].Value.(string)))
+		idx++
+	}
+	if idx < len(n.Children) && n.Children[idx].Kind == "type" {
+		idx++
+	}
+	body := n.Children[idx:]
+	for i := range params {
+		c.declare(fmt.Sprintf("01 %s_P%d PIC 9.", name, i))
+	}
+	c.declare(fmt.Sprintf("01 %s_RES PIC 9.", name))
+	var buf bytes.Buffer
+	oldBuf := c.buf
+	oldIndent := c.indent
+	oldFun := c.currentFun
+	c.buf = buf
+	c.indent = 0
+	c.currentFun = name
+	c.writeln(name + " SECTION.")
+	c.indent++
+	for _, st := range body {
+		c.compileNode(st)
+	}
+	c.indent--
+	c.writeln("EXIT.")
+	c.currentFun = oldFun
+	c.buf = oldBuf
+	c.indent = oldIndent
+	c.funcs[name] = len(params)
+	c.funcDecls = append(c.funcDecls, buf.String())
+}
+
+func (c *Compiler) compileCallExpr(n *ast.Node) string {
+	name := strings.ToUpper(n.Value.(string))
+	count, ok := c.funcs[name]
+	if !ok {
+		return "0"
+	}
+	for i, arg := range n.Children {
+		expr := c.expr(arg)
+		if !isSimpleExpr(arg) {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+			expr = tmp
+		}
+		if i < count {
+			c.writeln(fmt.Sprintf("    COMPUTE %s_P%d = %s", name, i, expr))
+		}
+	}
+	c.writeln(fmt.Sprintf("    PERFORM %s", name))
+	return fmt.Sprintf("%s_RES", name)
 }
 
 // compileTwoSumCall expands a call to twoSum into inline COBOL implementing the algorithm.
