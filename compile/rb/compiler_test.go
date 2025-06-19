@@ -82,7 +82,7 @@ func TestRBCompiler_LeetCodeExamples(t *testing.T) {
 	if err := rbcode.EnsureRuby(); err != nil {
 		t.Skipf("ruby not installed: %v", err)
 	}
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		runLeetExample(t, i)
 	}
 }
