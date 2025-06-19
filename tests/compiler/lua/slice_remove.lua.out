@@ -7,6 +7,19 @@ function __print(...)
 	io.write('\n')
 end
 
+function __add(a, b)
+	if type(a) == 'table' and type(b) == 'table' then
+		local out = {}
+		for i = 1, #a do out[#out+1] = a[i] end
+		for i = 1, #b do out[#out+1] = b[i] end
+		return out
+	elseif type(a) == 'string' or type(b) == 'string' then
+		return tostring(a) .. tostring(b)
+	else
+		return a + b
+	end
+end
+
 function __slice(obj, i, j)
 	if i == nil then i = 0 end
 	if type(obj) == 'string' then
@@ -35,7 +48,7 @@ function __slice(obj, i, j)
 end
 
 function remove(nums, i)
-	return (__slice(nums, 0, i) + __slice(nums, (i + 1), #nums))
+	return __add(__slice(nums, 0, i), __slice(nums, __add(i, 1), #nums))
 end
 
 __print(remove({1, 2, 3, 4}, 1))

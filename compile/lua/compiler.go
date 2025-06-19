@@ -223,15 +223,53 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("for %s = %s, (%s)-1 do", name, start, end))
+		c.indent++
 	} else {
 		src, err := c.compileExpr(s.Source)
 		if err != nil {
 			return err
 		}
-		c.helpers["iter"] = true
-		c.writeln(fmt.Sprintf("for _, %s in __iter(%s) do", name, src))
+		useVar := name != "_"
+		t := c.inferExprType(s.Source)
+		pre := ""
+		switch {
+		case isList(t):
+			if useVar {
+				c.writeln(fmt.Sprintf("for _, %s in ipairs(%s) do", name, src))
+			} else {
+				c.writeln(fmt.Sprintf("for _ in ipairs(%s) do", src))
+			}
+			c.indent++
+		case isMap(t):
+			if useVar {
+				c.writeln(fmt.Sprintf("for %s in pairs(%s) do", name, src))
+			} else {
+				c.writeln(fmt.Sprintf("for _ in pairs(%s) do", src))
+			}
+			c.indent++
+		case isString(t):
+			tmp := fmt.Sprintf("_s%d", c.tmpCount)
+			idx := fmt.Sprintf("_i%d", c.tmpCount)
+			c.tmpCount++
+			c.writeln(fmt.Sprintf("local %s = %s", tmp, src))
+			c.writeln(fmt.Sprintf("for %s = 1, #%s do", idx, tmp))
+			c.indent++
+			if useVar {
+				pre = fmt.Sprintf("local %s = string.sub(%s, %s, %s)", name, tmp, idx, idx)
+			}
+		default:
+			c.helpers["iter"] = true
+			if useVar {
+				c.writeln(fmt.Sprintf("for _, %s in __iter(%s) do", name, src))
+			} else {
+				c.writeln(fmt.Sprintf("for _ in __iter(%s) do", src))
+			}
+			c.indent++
+		}
+		if pre != "" {
+			c.writeln(pre)
+		}
 	}
-	c.indent++
 	for _, st := range s.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
