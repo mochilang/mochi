@@ -2,8 +2,8 @@ program main
   implicit none
   integer :: result(2)
   result = twoSum((/2, 7, 11, 15/), 9)
-  print *, result(0 + 1)
-  print *, result(1 + 1)
+  print *, result(modulo(0, size(result)) + 1)
+  print *, result(modulo(1, size(result)) + 1)
 contains
   function twoSum(nums, target) result(res)
     implicit none
@@ -16,7 +16,7 @@ contains
     n = size(nums)
     do i = 0, n - 1
       do j = (i + 1), n - 1
-        if (((nums(i + 1) + nums(j + 1)) == target)) then
+        if (((nums(modulo(i, size(nums)) + 1) + nums(modulo(j, size(nums)) + 1)) == target)) then
           res = (/i, j/)
           return
         end if

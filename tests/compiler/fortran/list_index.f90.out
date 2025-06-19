@@ -1,0 +1,7 @@
+program main
+  implicit none
+  integer, allocatable :: xs(:)
+  allocate(xs(0))
+  xs = (/10, 20, 30/)
+  print *, xs(modulo(1, size(xs)) + 1)
+end program main

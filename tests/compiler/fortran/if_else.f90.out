@@ -6,8 +6,8 @@ program main
 contains
   function foo(n) result(res)
     implicit none
-    integer, intent(in) :: n
     integer :: res
+    integer, intent(in) :: n
     if ((n < 0)) then
       res = (-1)
       return
