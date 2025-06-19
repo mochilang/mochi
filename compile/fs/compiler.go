@@ -721,7 +721,6 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 				}
 				expr = fmt.Sprintf("%s.[%s .. (%s - 1)]", expr, start, end)
-				isStr = isStr
 			} else {
 				if isStr {
 					if v, ok := intLiteral(op.Index.Start); ok && v >= 0 {
@@ -978,73 +977,28 @@ func sanitizeName(name string) string {
 // --- helpers ---
 
 func (c *Compiler) isListExpr(e *parser.Expr) bool {
-	if e == nil {
-		return false
-	}
-	return c.isListBinary(e.Binary)
+	_, ok := c.inferExprType(e).(types.ListType)
+	return ok
 }
 
 func (c *Compiler) isListBinary(b *parser.BinaryExpr) bool {
-	if b == nil {
-		return false
-	}
-	if len(b.Right) == 0 {
-		return c.isListUnary(b.Left)
-	}
-	// only handle simple a + b case
-	if len(b.Right) == 1 && b.Right[0].Op == "+" {
-		return c.isListUnary(b.Left) && c.isListPostfix(b.Right[0].Right)
-	}
-	return false
+	_, ok := c.inferBinaryType(b).(types.ListType)
+	return ok
 }
 
 func (c *Compiler) isListUnary(u *parser.Unary) bool {
-	if u == nil {
-		return false
-	}
-	return c.isListPostfix(u.Value)
+	_, ok := c.inferUnaryType(u).(types.ListType)
+	return ok
 }
 
 func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
-	if p == nil {
-		return false
-	}
-	res := c.isListPrimary(p.Target)
-	for _, op := range p.Ops {
-		if op.Index != nil || op.Call != nil {
-			res = false
-		}
-		if op.Cast != nil {
-			typ := op.Cast.Type
-			if typ.Generic != nil && typ.Generic.Name == "list" && len(typ.Generic.Args) == 1 {
-				res = true
-			} else {
-				res = false
-			}
-		}
-	}
-	return res
+	_, ok := c.inferPostfixType(p).(types.ListType)
+	return ok
 }
 
 func (c *Compiler) isListPrimary(p *parser.Primary) bool {
-	switch {
-	case p == nil:
-		return false
-	case p.List != nil:
-		return true
-	case p.Group != nil:
-		return c.isListExpr(p.Group)
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		typ, err := c.env.GetVar(p.Selector.Root)
-		if err == nil {
-			if _, ok := typ.(types.ListType); ok {
-				return true
-			}
-		}
-		return false
-	default:
-		return false
-	}
+	_, ok := c.inferPrimaryType(p).(types.ListType)
+	return ok
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
@@ -1096,162 +1050,53 @@ func identName(e *parser.Expr) (string, bool) {
 }
 
 func (c *Compiler) isStringExpr(e *parser.Expr) bool {
-	if e == nil {
-		return false
-	}
-	return c.isStringBinary(e.Binary)
+	_, ok := c.inferExprType(e).(types.StringType)
+	return ok
 }
 
 func (c *Compiler) isStringBinary(b *parser.BinaryExpr) bool {
-	if b == nil {
-		return false
-	}
-	if len(b.Right) == 0 {
-		return c.isStringUnary(b.Left)
-	}
-	if len(b.Right) == 1 && b.Right[0].Op == "+" {
-		return c.isStringUnary(b.Left) && c.isStringPostfix(b.Right[0].Right)
-	}
-	return false
+	_, ok := c.inferBinaryType(b).(types.StringType)
+	return ok
 }
 
 func (c *Compiler) isStringUnary(u *parser.Unary) bool {
-	if u == nil {
-		return false
-	}
-	return c.isStringPostfix(u.Value)
+	_, ok := c.inferUnaryType(u).(types.StringType)
+	return ok
 }
 
 func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
-	if p == nil {
-		return false
-	}
-	res := c.isStringPrimary(p.Target)
-	for _, op := range p.Ops {
-		if op.Call != nil {
-			res = false
-		} else if op.Index != nil {
-			if op.Index.Colon != nil {
-				// slicing preserves string-ness
-				res = res
-			} else {
-				// indexing a string yields a string
-				if res {
-					res = true
-				} else {
-					res = false
-				}
-			}
-		}
-		if op.Cast != nil {
-			typ := op.Cast.Type
-			if typ.Simple != nil && *typ.Simple == "string" {
-				res = true
-			} else {
-				res = false
-			}
-		}
-	}
-	return res
+	_, ok := c.inferPostfixType(p).(types.StringType)
+	return ok
 }
 
 func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
-	switch {
-	case p == nil:
-		return false
-	case p.Lit != nil && p.Lit.Str != nil:
-		return true
-	case p.Group != nil:
-		return c.isStringExpr(p.Group)
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		typ, err := c.env.GetVar(p.Selector.Root)
-		if err == nil {
-			if _, ok := typ.(types.StringType); ok {
-				return true
-			}
-		}
-		for i := len(funcStack) - 1; i >= 0; i-- {
-			if fn, ok := c.env.GetFunc(funcStack[i]); ok {
-				for _, param := range fn.Params {
-					if param.Name == p.Selector.Root && param.Type != nil && param.Type.Simple != nil && *param.Type.Simple == "string" {
-						return true
-					}
-				}
-			}
-		}
-		return false
-	default:
-		return false
-	}
+	_, ok := c.inferPrimaryType(p).(types.StringType)
+	return ok
 }
 
 func (c *Compiler) isMapExpr(e *parser.Expr) bool {
-	if e == nil {
-		return false
-	}
-	return c.isMapBinary(e.Binary)
+	_, ok := c.inferExprType(e).(types.MapType)
+	return ok
 }
 
 func (c *Compiler) isMapBinary(b *parser.BinaryExpr) bool {
-	if b == nil {
-		return false
-	}
-	if len(b.Right) == 0 {
-		return c.isMapUnary(b.Left)
-	}
-	return false
+	_, ok := c.inferBinaryType(b).(types.MapType)
+	return ok
 }
 
 func (c *Compiler) isMapUnary(u *parser.Unary) bool {
-	if u == nil {
-		return false
-	}
-	return c.isMapPostfix(u.Value)
+	_, ok := c.inferUnaryType(u).(types.MapType)
+	return ok
 }
 
 func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
-	if p == nil {
-		return false
-	}
-	res := c.isMapPrimary(p.Target)
-	for _, op := range p.Ops {
-		if op.Index != nil || op.Call != nil {
-			res = false
-		}
-		if op.Cast != nil {
-			typ := op.Cast.Type
-			if typ.Generic != nil && typ.Generic.Name == "map" && len(typ.Generic.Args) == 2 {
-				res = true
-			} else {
-				res = false
-			}
-		}
-	}
-	return res
+	_, ok := c.inferPostfixType(p).(types.MapType)
+	return ok
 }
 
 func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
-	switch {
-	case p == nil:
-		return false
-	case p.Map != nil:
-		return true
-	case p.Group != nil:
-		return c.isMapExpr(p.Group)
-	case p.Selector != nil && len(p.Selector.Tail) == 0:
-		if c.locals[p.Selector.Root] {
-			return true
-		}
-		typ, err := c.env.GetVar(p.Selector.Root)
-		if err == nil {
-			if _, ok := typ.(types.MapType); ok {
-				return true
-			}
-		}
-		return false
-	default:
-		return false
-	}
+	_, ok := c.inferPrimaryType(p).(types.MapType)
+	return ok
 }
 
 func intLiteral(e *parser.Expr) (int, bool) {
