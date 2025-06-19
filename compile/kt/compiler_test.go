@@ -62,6 +62,8 @@ func TestKTCompiler_LeetCodeExamples(t *testing.T) {
 	runKTLeetExample(t, 3)
 	runKTLeetExample(t, 4)
 	runKTLeetExample(t, 5)
+	runKTLeetExample(t, 6)
+	runKTLeetExample(t, 7)
 }
 
 func TestKTCompiler_SubsetPrograms(t *testing.T) {
