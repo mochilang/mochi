@@ -179,12 +179,34 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 	lhs := sanitizeName(stmt.Name)
+
+	// Handle simple map assignments like m[k] = v
+	if len(stmt.Index) == 1 && (c.isMapVar(stmt.Name) || isStringLiteral(stmt.Index[0].Start)) {
+		keyExpr, err := c.compileExpr(stmt.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		if isStringLiteral(stmt.Index[0].Start) {
+			keyExpr = fmt.Sprintf("%s.to_string()", keyExpr)
+		}
+		val, err := c.compileExpr(stmt.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s.insert(%s, %s);", lhs, keyExpr, val))
+		return nil
+	}
+
 	for _, idx := range stmt.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
 			return err
 		}
-		lhs = fmt.Sprintf("%s[(%s) as usize]", lhs, iexpr)
+		if id, ok := identName(idx.Start); ok {
+			lhs = fmt.Sprintf("%s[%s as usize]", lhs, id)
+		} else {
+			lhs = fmt.Sprintf("%s[(%s) as usize]", lhs, iexpr)
+		}
 	}
 	val, err := c.compileExpr(stmt.Value)
 	if err != nil {
@@ -688,8 +710,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				if c.isStringBase(p) {
 					expr = fmt.Sprintf("%s.chars().nth((%s) as usize).unwrap()", expr, iexpr)
+				} else if c.isMapExpr(p) {
+					expr = fmt.Sprintf("*%s.get(&%s).unwrap()", expr, iexpr)
 				} else if isStringLiteral(idx.Start) {
 					expr = fmt.Sprintf("%s[%s]", expr, iexpr)
+				} else if id, ok := identName(idx.Start); ok {
+					expr = fmt.Sprintf("%s[%s as usize]", expr, id)
 				} else {
 					expr = fmt.Sprintf("%s[(%s) as usize]", expr, iexpr)
 				}
@@ -712,10 +738,34 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else {
 					end = fmt.Sprintf("%s.len()", expr)
 				}
+				simpleStart := idx.Start != nil
+				if simpleStart {
+					_, simpleStart = identName(idx.Start)
+				}
+				simpleEnd := idx.End != nil
+				if simpleEnd {
+					_, simpleEnd = identName(idx.End)
+				}
 				if c.isStringBase(p) {
-					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_string()", expr, start, end)
+					if simpleStart && simpleEnd {
+						expr = fmt.Sprintf("%s[%s as usize..%s as usize].to_string()", expr, start, end)
+					} else if simpleStart {
+						expr = fmt.Sprintf("%s[%s as usize..(%s) as usize].to_string()", expr, start, end)
+					} else if simpleEnd {
+						expr = fmt.Sprintf("%s[(%s) as usize..%s as usize].to_string()", expr, start, end)
+					} else {
+						expr = fmt.Sprintf("%s[(%s) as usize..(%s) as usize].to_string()", expr, start, end)
+					}
 				} else {
-					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_vec()", expr, start, end)
+					if simpleStart && simpleEnd {
+						expr = fmt.Sprintf("%s[%s as usize..%s as usize].to_vec()", expr, start, end)
+					} else if simpleStart {
+						expr = fmt.Sprintf("%s[%s as usize..(%s) as usize].to_vec()", expr, start, end)
+					} else if simpleEnd {
+						expr = fmt.Sprintf("%s[(%s) as usize..%s as usize].to_vec()", expr, start, end)
+					} else {
+						expr = fmt.Sprintf("%s[(%s) as usize..(%s) as usize].to_vec()", expr, start, end)
+					}
 				}
 			}
 		} else if op.Cast != nil {
@@ -1007,6 +1057,25 @@ func (c *Compiler) isListExpr(p *parser.PostfixExpr) bool {
 	return false
 }
 
+func (c *Compiler) isMapExpr(p *parser.PostfixExpr) bool {
+	if p == nil || p.Target == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if p.Target.Map != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.MapType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func (c *Compiler) isStringExpr(p *parser.PostfixExpr) bool {
 	if p == nil || p.Target == nil {
 		return false
@@ -1026,6 +1095,18 @@ func (c *Compiler) isStringExpr(p *parser.PostfixExpr) bool {
 					}
 				}
 			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isMapVar(name string) bool {
+	if c.env == nil {
+		return false
+	}
+	if t, err := c.env.GetVar(name); err == nil {
+		if _, ok := t.(types.MapType); ok {
+			return true
 		}
 	}
 	return false

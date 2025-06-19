@@ -3,7 +3,7 @@ fn searchMatrix(matrix: Vec<Vec<i32>>, target: i32) -> bool {
     if m == 0 {
         return false;
     }
-    let mut n = matrix[0 as usize].len() as i32;
+    let mut n = matrix[(0) as usize].len() as i32;
     let mut left = 0;
     let mut right = m * n - 1;
     while left <= right {
