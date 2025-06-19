@@ -2,7 +2,7 @@ fun isPalindrome(x: int): bool {
   if x < 0 {
     return false
   }
-  let s = str(x)
+  let s: string = str(x)
   let n = len(s)
   for i in 0..n/2 {
     if s[i] != s[n-1-i] {
