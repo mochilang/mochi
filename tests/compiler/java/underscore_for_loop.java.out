@@ -10,7 +10,7 @@ class Main {
 		for (var __ : "ab".toCharArray()) {
 			c = (c + 1);
 		}
-		java.util.Map<String, Integer> m = java.util.Map.of("x", 1, "y", 2);
+		java.util.Map<String, Integer> m = new java.util.HashMap<>(java.util.Map.of("x", 1, "y", 2));
 		for (var __ : m.keySet()) {
 			c = (c + 1);
 		}

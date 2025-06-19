@@ -614,7 +614,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if c.isStringExpr(p) {
+				if c.isMapExpr(p) {
+					expr = fmt.Sprintf("%s.get(%s)", expr, idx)
+				} else if c.isStringExpr(p) {
 					c.helpers["_indexString"] = true
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 				} else {
@@ -703,6 +705,9 @@ func (c *Compiler) isStringExpr(p *parser.PostfixExpr) bool {
 func (c *Compiler) isMapExpr(p *parser.PostfixExpr) bool {
 	if p == nil || p.Target == nil {
 		return false
+	}
+	if p.Target.Map != nil {
+		return true
 	}
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 		if c.env != nil {
@@ -817,7 +822,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(items) == 0 {
 			return "new java.util.HashMap<>()", nil
 		}
-		return "java.util.Map.of(" + joinArgs(items) + ")", nil
+		return "new java.util.HashMap<>(java.util.Map.of(" + joinArgs(items) + "))", nil
 	case p.Struct != nil:
 		args := []string{}
 		if c.env != nil {
