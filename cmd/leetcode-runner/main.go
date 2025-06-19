@@ -187,6 +187,8 @@ func buildOne(src, lang string, run bool) error {
 		ext = ".scm"
 	case "rust":
 		ext = ".rs"
+	case "cobol":
+		ext = ".cob"
 	}
 	outFile := filepath.Join(outDir, base+ext)
 	var data []byte
