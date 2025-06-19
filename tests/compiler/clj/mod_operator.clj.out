@@ -1,7 +1,15 @@
 (loop [i 1]
   (when (< i 5)
-    (when (= (mod i 2) 0)
-      (println i)
+    (try
+      (when (= (mod i 2) 0)
+        (println i)
+      )
+      (recur (inc i))
+    (catch clojure.lang.ExceptionInfo e
+      (cond
+        (= (.getMessage e) "continue") (recur (inc i))
+        (= (.getMessage e) "break") nil
+        :else (throw e))
+      )
     )
-    (recur (inc i)))
-)
+  )

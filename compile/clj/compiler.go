@@ -12,15 +12,16 @@ import (
 
 // Compiler translates a Mochi AST into Clojure source code (limited subset).
 type Compiler struct {
-	buf       bytes.Buffer
-	indent    int
-	env       *types.Env
-	mainStmts []*parser.Statement
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	mainStmts    []*parser.Statement
+	tempVarCount int
 }
 
 // New creates a new Clojure compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, tempVarCount: 0}
 }
 
 // Compile generates Clojure code for prog.
@@ -128,6 +129,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Break != nil:
 		c.writeln("(throw (ex-info \"break\" {}))")
 		return nil
+	case s.Continue != nil:
+		c.writeln("(throw (ex-info \"continue\" {}))")
+		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Expect != nil:
@@ -221,13 +225,26 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		c.indent++
 		c.writeln(fmt.Sprintf("(when (< %s %s)", name, end))
 		c.indent++
+		c.writeln("(try")
+		c.indent++
 		for _, s := range st.Body {
 			if err := c.compileStmt(s); err != nil {
 				return err
 			}
 		}
-		c.writeln(fmt.Sprintf("(recur (inc %s)))", name))
+		c.writeln(fmt.Sprintf("(recur (inc %s))", name))
 		c.indent--
+		c.writeln("(catch clojure.lang.ExceptionInfo e")
+		c.indent++
+		c.writeln("(cond")
+		c.indent++
+		c.writeln(fmt.Sprintf("(= (.getMessage e) \"continue\") (recur (inc %s))", name))
+		c.writeln("(= (.getMessage e) \"break\") nil")
+		c.writeln(":else (throw e))")
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln(")")
 		c.indent--
 		c.writeln(")")
 		return nil
@@ -236,13 +253,35 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("(doseq [%s %s]", name, src))
+	seqVar := c.newTemp()
+	c.writeln(fmt.Sprintf("(loop [%s (seq %s)]", seqVar, src))
+	c.indent++
+	c.writeln(fmt.Sprintf("(when %s", seqVar))
+	c.indent++
+	c.writeln(fmt.Sprintf("(let [%s (first %s)]", name, seqVar))
+	c.indent++
+	c.writeln("(try")
 	c.indent++
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
+	c.writeln(fmt.Sprintf("(recur (next %s))", seqVar))
+	c.indent--
+	c.writeln("(catch clojure.lang.ExceptionInfo e")
+	c.indent++
+	c.writeln("(cond")
+	c.indent++
+	c.writeln(fmt.Sprintf("(= (.getMessage e) \"continue\") (recur (next %s))", seqVar))
+	c.writeln("(= (.getMessage e) \"break\") nil")
+	c.writeln(":else (throw e))")
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln(")")
 	c.indent--
 	c.writeln(")")
 	return nil
@@ -253,11 +292,11 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("(try")
-	c.indent++
 	c.writeln("(loop []")
 	c.indent++
 	c.writeln("(when " + cond)
+	c.indent++
+	c.writeln("(try")
 	c.indent++
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -266,13 +305,17 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 	}
 	c.writeln("(recur)")
 	c.indent--
-	c.writeln(")")
-	c.indent--
-	c.writeln(")")
-	c.indent--
 	c.writeln("(catch clojure.lang.ExceptionInfo e")
 	c.indent++
-	c.writeln("(when-not (= (.getMessage e) \"break\") (throw e))")
+	c.writeln("(cond")
+	c.indent++
+	c.writeln("(= (.getMessage e) \"continue\") (recur)")
+	c.writeln("(= (.getMessage e) \"break\") nil")
+	c.writeln(":else (throw e))")
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln(")")
 	c.indent--
 	c.writeln(")")
 	c.indent--
@@ -609,4 +652,10 @@ func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("  ")
 	}
+}
+
+func (c *Compiler) newTemp() string {
+	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+	c.tempVarCount++
+	return name
 }
