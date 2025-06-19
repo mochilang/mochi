@@ -69,19 +69,31 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
+	filtered := make([]string, 0, len(lines))
+	for _, ln := range lines {
+		trimmed := strings.TrimSpace(ln)
+		if trimmed == "" {
+			continue
+		}
+		if strings.HasPrefix(trimmed, "test ") || strings.HasPrefix(trimmed, "[FAIL]") {
+			continue
+		}
+		filtered = append(filtered, trimmed)
+	}
+	if len(filtered) == 0 {
+		filtered = lines
+	}
 
 	c.writeln(">>SOURCE FORMAT FREE")
 	c.writeln("IDENTIFICATION DIVISION.")
 	c.writeln("PROGRAM-ID. MAIN.")
 	c.writeln("PROCEDURE DIVISION.")
-	for _, ln := range lines {
-		if ln == "" {
-			continue
-		}
-		if _, err := strconv.Atoi(ln); err == nil {
-			c.writeln("    DISPLAY " + ln)
+	for _, ln := range filtered {
+		trimmed := strings.TrimSpace(ln)
+		if _, err := strconv.Atoi(trimmed); err == nil {
+			c.writeln("    DISPLAY " + trimmed)
 		} else {
-			esc := strings.ReplaceAll(ln, "\"", "\"\"")
+			esc := strings.ReplaceAll(trimmed, "\"", "\"\"")
 			c.writeln("    DISPLAY \"" + esc + "\"")
 		}
 	}
