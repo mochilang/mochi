@@ -6,11 +6,11 @@
 			_V0 is -(1),
 			throw(return(_V0))
 		;
-			(N =:= 0 ->
-				throw(return(0))
-			;
-				throw(return(1))
-			)
+		(N =:= 0 ->
+			throw(return(0))
+		;
+			throw(return(1))
+		)
 		)
 					,
 					true
@@ -30,4 +30,3 @@
 	writeln(_V5)
 	.
 :- initialization(main, main).
-
