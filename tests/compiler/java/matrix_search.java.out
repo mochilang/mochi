@@ -1,4 +1,4 @@
-class Main {
+public class Main {
 	static boolean searchMatrix(int[][] matrix, int target) {
 		int m = matrix.length;
 		if ((m == 0)) {

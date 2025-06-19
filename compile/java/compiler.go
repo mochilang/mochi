@@ -27,7 +27,7 @@ func New(env *types.Env) *Compiler {
 
 // Compile generates Java code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	c.writeln("class Main {")
+	c.writeln("public class Main {")
 	c.indent++
 
 	// type declarations
