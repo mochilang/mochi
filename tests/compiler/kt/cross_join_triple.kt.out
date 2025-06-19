@@ -1,0 +1,21 @@
+fun main() {
+        val nums = listOf(1, 2)
+        val letters = listOf("A", "B")
+        val bools = listOf(true, false)
+        val combos = run {
+                val _src = nums
+                val _res = mutableListOf<Map<String, Any>>()
+                for (n in _src) {
+                        for (l in letters) {
+                                for (b in bools) {
+                                        _res.add(mapOf("n" to n, "l" to l, "b" to b))
+                                }
+                        }
+                }
+                _res
+        }
+        println("--- Cross Join of three lists ---")
+        for (c in combos) {
+                println(c["n"], c["l"], c["b"])
+        }
+}
