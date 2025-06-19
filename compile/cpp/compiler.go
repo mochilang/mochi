@@ -368,10 +368,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		}
 		if op.Op == "+" && (typ == "string" || rtyp == "string") {
 			if typ != "string" {
-				expr = fmt.Sprintf("string(%s)", expr)
+				if typ == "char" {
+					expr = fmt.Sprintf("string(1, %s)", expr)
+				} else {
+					expr = fmt.Sprintf("string(%s)", expr)
+				}
 			}
 			if rtyp != "string" {
-				rhs = fmt.Sprintf("string(%s)", rhs)
+				if rtyp == "char" {
+					rhs = fmt.Sprintf("string(1, %s)", rhs)
+				} else {
+					rhs = fmt.Sprintf("string(%s)", rhs)
+				}
 			}
 			expr = fmt.Sprintf("%s + %s", expr, rhs)
 			typ = "string"

@@ -19,34 +19,34 @@ string _sliceString(const string& s, int start, int end) {
 }
 
 int digit(string ch){
-	if (ch == "0") {
+	if (ch == string("0")) {
 		return 0;
 	}
-	if (ch == "1") {
+	if (ch == string("1")) {
 		return 1;
 	}
-	if (ch == "2") {
+	if (ch == string("2")) {
 		return 2;
 	}
-	if (ch == "3") {
+	if (ch == string("3")) {
 		return 3;
 	}
-	if (ch == "4") {
+	if (ch == string("4")) {
 		return 4;
 	}
-	if (ch == "5") {
+	if (ch == string("5")) {
 		return 5;
 	}
-	if (ch == "6") {
+	if (ch == string("6")) {
 		return 6;
 	}
-	if (ch == "7") {
+	if (ch == string("7")) {
 		return 7;
 	}
-	if (ch == "8") {
+	if (ch == string("8")) {
 		return 8;
 	}
-	if (ch == "9") {
+	if (ch == string("9")) {
 		return 9;
 	}
 	return -1;
@@ -55,12 +55,12 @@ int digit(string ch){
 int myAtoi(string s){
 	int i = 0;
 	auto n = s.size();
-	while (i < n && _indexString(s, i) == _indexString(" ", 0)) {
+	while (i < n && _indexString(s, i) == _indexString(string(" "), 0)) {
 		i = i + 1;
 	}
 	int sign = 1;
-	if (i < n && (_indexString(s, i) == _indexString("+", 0) || _indexString(s, i) == _indexString("-", 0))) {
-		if (_indexString(s, i) == _indexString("-", 0)) {
+	if (i < n && (_indexString(s, i) == _indexString(string("+"), 0) || _indexString(s, i) == _indexString(string("-"), 0))) {
+		if (_indexString(s, i) == _indexString(string("-"), 0)) {
 			sign = -1;
 		}
 		i = i + 1;
