@@ -12,11 +12,12 @@ import (
 
 // Compiler translates a Mochi AST into Java source code.
 type Compiler struct {
-	buf       bytes.Buffer
-	indent    int
-	env       *types.Env
-	mainStmts []*parser.Statement
-	helpers   map[string]bool
+	buf        bytes.Buffer
+	indent     int
+	env        *types.Env
+	mainStmts  []*parser.Statement
+	helpers    map[string]bool
+	returnType types.Type
 }
 
 // New creates a new Java compiler instance.
@@ -107,17 +108,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
-	typStr := ""
-	var t types.Type
+	var t types.Type = types.AnyType{}
 	if stmt.Type != nil {
 		t = c.resolveTypeRef(stmt.Type)
-		typStr = c.javaType(t)
+	} else if stmt.Value != nil {
+		t = c.inferExprType(stmt.Value)
 	} else if c.env != nil {
 		if tv, err := c.env.GetVar(stmt.Name); err == nil {
 			t = tv
-			typStr = c.javaType(tv)
 		}
 	}
+	if c.env != nil {
+		c.env.SetVar(stmt.Name, t, false)
+	}
+
+	typStr := c.javaType(t)
 	if typStr == "" {
 		typStr = "var"
 	}
@@ -134,17 +139,21 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
-	typStr := ""
-	var t types.Type
+	var t types.Type = types.AnyType{}
 	if stmt.Type != nil {
 		t = c.resolveTypeRef(stmt.Type)
-		typStr = c.javaType(t)
+	} else if stmt.Value != nil {
+		t = c.inferExprTypeHint(stmt.Value, t)
 	} else if c.env != nil {
 		if tv, err := c.env.GetVar(stmt.Name); err == nil {
 			t = tv
-			typStr = c.javaType(tv)
 		}
 	}
+	if c.env != nil {
+		c.env.SetVar(stmt.Name, t, true)
+	}
+
+	typStr := c.javaType(t)
 	if typStr == "" {
 		typStr = "var"
 	}
@@ -196,7 +205,7 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 }
 
 func (c *Compiler) compileReturn(stmt *parser.ReturnStmt) error {
-	expr, err := c.compileExpr(stmt.Value)
+	expr, err := c.compileExprHint(stmt.Value, c.returnType)
 	if err != nil {
 		return err
 	}
@@ -220,6 +229,9 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", outName, start, outName, end, outName))
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, types.IntType{}, true)
+		}
 		c.indent++
 		for _, s := range stmt.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -261,6 +273,19 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 	if asMap {
 		src += ".keySet()"
+	}
+	if c.env != nil {
+		t := c.inferExprType(stmt.Source)
+		switch tt := t.(type) {
+		case types.ListType:
+			c.env.SetVar(stmt.Name, tt.Elem, true)
+		case types.MapType:
+			c.env.SetVar(stmt.Name, tt.Key, true)
+		case types.StringType:
+			c.env.SetVar(stmt.Name, types.StringType{}, true)
+		default:
+			c.env.SetVar(stmt.Name, types.AnyType{}, true)
+		}
 	}
 	c.writeln(fmt.Sprintf("for (var %s : %s) {", outName, src))
 	c.indent++
@@ -379,17 +404,54 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
+	if c.env != nil {
+		c.env.SetFunc(fun.Name, fun)
+	}
+
+	var ft types.FuncType
+	if c.env != nil {
+		if t, err := c.env.GetVar(fun.Name); err == nil {
+			if f, ok := t.(types.FuncType); ok {
+				ft = f
+			}
+		}
+	}
+	if ft.Params == nil {
+		ft.Params = make([]types.Type, len(fun.Params))
+		for i, p := range fun.Params {
+			if p.Type != nil {
+				ft.Params[i] = c.resolveTypeRef(p.Type)
+			} else {
+				ft.Params[i] = types.AnyType{}
+			}
+		}
+	}
+	if ft.Return == nil && fun.Return != nil {
+		ft.Return = c.resolveTypeRef(fun.Return)
+	}
+	if ft.Return == nil {
+		ft.Return = types.VoidType{}
+	}
+	if c.env != nil {
+		c.env.SetVar(fun.Name, ft, false)
+	}
+
 	c.writeIndent()
-	ret := "void"
-	if fun.Return != nil {
-		ret = c.javaType(c.resolveTypeRef(fun.Return))
+	ret := c.javaType(ft.Return)
+	if ret == "" {
+		ret = "void"
 	}
 	c.buf.WriteString("static " + ret + " " + name + "(")
 	for i, p := range fun.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
 		}
-		ptype := c.javaType(c.resolveTypeRef(p.Type))
+		ptype := "var"
+		if i < len(ft.Params) {
+			ptype = c.javaType(ft.Params[i])
+		} else if p.Type != nil {
+			ptype = c.javaType(c.resolveTypeRef(p.Type))
+		}
 		if ptype == "" {
 			ptype = "var"
 		}
@@ -402,21 +464,30 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	prevEnv := c.env
 	if prevEnv != nil {
 		child := types.NewEnv(prevEnv)
-		for _, p := range fun.Params {
-			if p.Type != nil {
-				child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		for i, p := range fun.Params {
+			var t types.Type = types.AnyType{}
+			if i < len(ft.Params) {
+				t = ft.Params[i]
+			} else if p.Type != nil {
+				t = c.resolveTypeRef(p.Type)
 			}
+			child.SetVar(p.Name, t, true)
 		}
 		c.env = child
 	}
 
+	prevRet := c.returnType
+	c.returnType = ft.Return
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
-			c.env = prevEnv
+			if prevEnv != nil {
+				c.env = prevEnv
+			}
+			c.returnType = prevRet
 			return err
 		}
 	}
-
+	c.returnType = prevRet
 	if prevEnv != nil {
 		c.env = prevEnv
 	}
