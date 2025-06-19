@@ -18,10 +18,13 @@ type Compiler struct {
 	env    *types.Env
 	inFun  bool
 	vars   map[string]string // local variable types within a function
+	tmp    int
 }
 
 // New creates a new Scheme compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env, vars: map[string]string{}} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, vars: map[string]string{}, tmp: 0}
+}
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
@@ -69,8 +72,13 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	prevVars := c.vars
 	c.vars = map[string]string{}
 	for _, p := range fn.Params {
-		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
-			c.vars[p.Name] = "string"
+		if p.Type != nil {
+			if p.Type.Simple != nil && *p.Type.Simple == "string" {
+				c.vars[p.Name] = "string"
+			}
+			if p.Type.Generic != nil && p.Type.Generic.Name == "map" {
+				c.vars[p.Name] = "map"
+			}
 		}
 	}
 	c.writeln(fmt.Sprintf("(define (%s %s)", sanitizeName(fn.Name), strings.Join(params, " ")))
@@ -139,8 +147,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 		}
-		if s.Let.Type != nil && s.Let.Type.Simple != nil && *s.Let.Type.Simple == "string" {
-			c.vars[s.Let.Name] = "string"
+		if s.Let.Type != nil {
+			if s.Let.Type.Simple != nil && *s.Let.Type.Simple == "string" {
+				c.vars[s.Let.Name] = "string"
+			}
+			if s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" {
+				c.vars[s.Let.Name] = "map"
+			}
+		} else if s.Let.Value != nil && s.Let.Value.Binary != nil && s.Let.Value.Binary.Left != nil {
+			if isStringLiteralUnary(s.Let.Value.Binary.Left) {
+				c.vars[s.Let.Name] = "string"
+			} else if isMapLiteralUnary(s.Let.Value.Binary.Left) {
+				c.vars[s.Let.Name] = "map"
+			}
 		}
 	case s.Var != nil:
 		expr := "()"
@@ -157,8 +176,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 		}
-		if s.Var.Type != nil && s.Var.Type.Simple != nil && *s.Var.Type.Simple == "string" {
-			c.vars[s.Var.Name] = "string"
+		if s.Var.Type != nil {
+			if s.Var.Type.Simple != nil && *s.Var.Type.Simple == "string" {
+				c.vars[s.Var.Name] = "string"
+			}
+			if s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" {
+				c.vars[s.Var.Name] = "map"
+			}
+		} else if s.Var.Value != nil && s.Var.Value.Binary != nil && s.Var.Value.Binary.Left != nil {
+			if isStringLiteralUnary(s.Var.Value.Binary.Left) {
+				c.vars[s.Var.Name] = "string"
+			} else if isMapLiteralUnary(s.Var.Value.Binary.Left) {
+				c.vars[s.Var.Name] = "map"
+			}
 		}
 	case s.Assign != nil:
 		rhs, err := c.compileExpr(s.Assign.Value)
@@ -166,18 +196,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		lhs := sanitizeName(s.Assign.Name)
-		for _, idx := range s.Assign.Index {
-			ie, err := c.compileExpr(idx.Start)
-			if err != nil {
-				return err
-			}
-			if c.vars[s.Assign.Name] == "string" {
-				lhs = fmt.Sprintf("(string-ref %s %s)", lhs, ie)
-			} else {
-				lhs = fmt.Sprintf("(list-ref %s %s)", lhs, ie)
-			}
+		if len(s.Assign.Index) == 0 {
+			c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
+			break
 		}
-		c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
+		ie, err := c.compileExpr(s.Assign.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		if c.vars[s.Assign.Name] == "string" {
+			c.writeln(fmt.Sprintf("(string-set! %s %s %s)", lhs, ie, rhs))
+		} else {
+			c.writeln(fmt.Sprintf("(list-set! %s %s %s)", lhs, ie, rhs))
+		}
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -204,30 +235,121 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	name := sanitizeName(st.Name)
-	start, err := c.compileExpr(st.Source)
+	if st.RangeEnd != nil {
+		start, err := c.compileExpr(st.Source)
+		if err != nil {
+			return err
+		}
+		end, err := c.compileExpr(st.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+		c.indent++
+		c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
+		c.indent++
+		c.writeln("(begin")
+		c.indent++
+		prev := c.vars[st.Name]
+		c.vars[st.Name] = ""
+		for _, s := range st.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		if prev != "" {
+			c.vars[st.Name] = prev
+		} else {
+			delete(c.vars, st.Name)
+		}
+		c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln("'())")
+		c.indent--
+		c.writeln(")")
+		return nil
+	}
+
+	src, err := c.compileExpr(st.Source)
 	if err != nil {
 		return err
 	}
-	end, err := c.compileExpr(st.RangeEnd)
-	if err != nil {
-		return err
+	t := c.inferType(st.Source)
+	if _, ok := t.(types.StringType); ok {
+		tmp := fmt.Sprintf("_str%d", c.tmp)
+		c.tmp++
+		c.writeln(fmt.Sprintf("(let ((%s %s))", tmp, src))
+		c.indent++
+		c.writeln("(let loop ((i 0))")
+		c.indent++
+		c.writeln(fmt.Sprintf("(if (< i (string-length %s))", tmp))
+		c.indent++
+		c.writeln("(begin")
+		c.indent++
+		c.writeln(fmt.Sprintf("(let ((%s (string-ref %s i)))", name, tmp))
+		c.indent++
+		prev := c.vars[st.Name]
+		c.vars[st.Name] = "string"
+		for _, s := range st.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		if prev != "" {
+			c.vars[st.Name] = prev
+		} else {
+			delete(c.vars, st.Name)
+		}
+		c.indent--
+		c.writeln(")")
+		c.writeln(fmt.Sprintf("(loop (+ i 1)))"))
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln("'())")
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln(")")
+		return nil
 	}
-	c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+
+	// assume list
+	tmp := fmt.Sprintf("_lst%d", c.tmp)
+	c.tmp++
+	c.writeln(fmt.Sprintf("(let ((%s %s))", tmp, src))
 	c.indent++
-	c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
+	c.writeln(fmt.Sprintf("(let loop ((l %s))", tmp))
+	c.indent++
+	c.writeln("(if (pair? l)")
 	c.indent++
 	c.writeln("(begin")
 	c.indent++
+	c.writeln(fmt.Sprintf("(let ((%s (car l)))", name))
+	c.indent++
+	prev := c.vars[st.Name]
+	c.vars[st.Name] = ""
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
-	c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+	if prev != "" {
+		c.vars[st.Name] = prev
+	} else {
+		delete(c.vars, st.Name)
+	}
+	c.indent--
+	c.writeln(")")
+	c.writeln("(loop (cdr l))")
 	c.indent--
 	c.writeln(")")
 	c.indent--
 	c.writeln("'())")
+	c.indent--
+	c.writeln(")")
 	c.indent--
 	c.writeln(")")
 	return nil
@@ -317,6 +439,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "+":
 			if isListUnary(leftAst) || isListPostfix(rightAst) {
 				expr = fmt.Sprintf("(append %s %s)", expr, right)
+			} else if c.isStringUnary(leftAst) || c.isStringPostfix(rightAst) {
+				expr = fmt.Sprintf("(string-append %s %s)", expr, right)
 			} else {
 				expr = fmt.Sprintf("(+ %s %s)", expr, right)
 			}
@@ -332,6 +456,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			expr = fmt.Sprintf("(and %s %s)", expr, right)
 		case "||":
 			expr = fmt.Sprintf("(or %s %s)", expr, right)
+		case "in":
+			rightName := ""
+			if rightAst != nil && rightAst.Target != nil && rightAst.Target.Selector != nil {
+				rightName = rightAst.Target.Selector.Root
+			}
+			if c.vars[rightName] == "map" {
+				expr = fmt.Sprintf("(if (assoc %s %s) #t #f)", left, right)
+			} else {
+				expr = fmt.Sprintf("(member %s %s)", left, right)
+			}
 		case "<", "<=", ">", ">=":
 			expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
 		default:
@@ -375,6 +509,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			if c.vars[targetName] == "string" {
 				expr = fmt.Sprintf("(string-ref %s %s)", expr, idx)
+			} else if c.vars[targetName] == "map" {
+				expr = fmt.Sprintf("(cdr (assoc %s %s))", idx, expr)
 			} else {
 				expr = fmt.Sprintf("(list-ref %s %s)", expr, idx)
 			}
@@ -423,6 +559,57 @@ func isListPostfix(p *parser.PostfixExpr) bool {
 	return p.Target != nil && p.Target.List != nil
 }
 
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return c.isStringPostfix(u.Value)
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if c.vars[p.Target.Selector.Root] == "string" {
+			return true
+		}
+	}
+	return isStringLiteralPrimary(p.Target)
+}
+
+func isStringLiteralUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return isStringLiteralPostfix(u.Value)
+}
+
+func isStringLiteralPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return isStringLiteralPrimary(p.Target)
+}
+
+func isStringLiteralPrimary(p *parser.Primary) bool {
+	return p != nil && p.Lit != nil && p.Lit.Str != nil
+}
+
+func isMapLiteralUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return isMapLiteralPostfix(u.Value)
+}
+
+func isMapLiteralPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return p.Target != nil && p.Target.Map != nil
+}
+
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
@@ -455,6 +642,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "(list " + strings.Join(elems, " ") + ")", nil
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			items[i] = fmt.Sprintf("(cons %s %s)", k, v)
+		}
+		if len(items) == 0 {
+			return "'()", nil
+		}
+		return "(list " + strings.Join(items, " ") + ")", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
@@ -468,7 +672,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Call != nil:
 		return c.compileCall(p.Call, "")
 	}
-	return sanitizeName(p.Selector.Root), nil
+	return "", fmt.Errorf("unsupported expression")
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, error) {
@@ -526,4 +730,52 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	return s
+}
+
+func (c *Compiler) inferType(e *parser.Expr) types.Type {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return types.AnyType{}
+	}
+	return c.inferUnaryType(e.Binary.Left)
+}
+
+func (c *Compiler) inferUnaryType(u *parser.Unary) types.Type {
+	if u == nil {
+		return types.AnyType{}
+	}
+	return c.inferPostfixType(u.Value)
+}
+
+func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
+	if p == nil {
+		return types.AnyType{}
+	}
+	if len(p.Ops) > 0 {
+		return types.AnyType{}
+	}
+	return c.inferPrimaryType(p.Target)
+}
+
+func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
+	if p == nil {
+		return types.AnyType{}
+	}
+	switch {
+	case p.Lit != nil:
+		if p.Lit.Str != nil {
+			return types.StringType{}
+		}
+		if p.Lit.Int != nil {
+			return types.IntType{}
+		}
+	case p.List != nil:
+		return types.ListType{Elem: types.AnyType{}}
+	case p.Map != nil:
+		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+	case p.Selector != nil && len(p.Selector.Tail) == 0:
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			return t
+		}
+	}
+	return types.AnyType{}
 }

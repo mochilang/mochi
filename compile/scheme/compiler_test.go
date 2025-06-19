@@ -85,6 +85,21 @@ func TestSchemeCompiler_LeetCode5(t *testing.T) {
 	runLeetExample(t, 5)
 }
 
+// TestSchemeCompiler_LeetCode6 compiles the zigzag-conversion example and runs it.
+func TestSchemeCompiler_LeetCode6(t *testing.T) {
+	runLeetExample(t, 6)
+}
+
+// TestSchemeCompiler_LeetCode7 compiles the reverse-integer example and runs it.
+func TestSchemeCompiler_LeetCode7(t *testing.T) {
+	runLeetExample(t, 7)
+}
+
+// TestSchemeCompiler_LeetCode8 compiles the string-to-integer example and runs it.
+func TestSchemeCompiler_LeetCode8(t *testing.T) {
+	runLeetExample(t, 8)
+}
+
 func TestSchemeCompiler_SubsetPrograms(t *testing.T) {
 	if _, err := schemecode.EnsureScheme(); err != nil {
 		t.Skipf("chibi-scheme not installed: %v", err)
