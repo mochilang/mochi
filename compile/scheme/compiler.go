@@ -587,6 +587,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return expr, nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
 		return c.compileCall(p.Call, "")
 	}
@@ -630,6 +632,60 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		return fmt.Sprintf("(%s %s %s)", recv, call.Func, strings.Join(args, " ")), nil
 	}
 	return fmt.Sprintf("(%s %s)", sanitizeName(call.Func), strings.Join(args, " ")), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	sub := &Compiler{env: c.env, vars: map[string]string{}, inFun: true}
+	for _, p := range fn.Params {
+		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
+			sub.vars[p.Name] = "string"
+		}
+	}
+	sub.indent = 2
+
+	vars := map[string]bool{}
+	collectVars(fn.BlockBody, vars)
+	names := make([]string, 0, len(vars))
+	for v := range vars {
+		names = append(names, sanitizeName(v))
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		sub.writeln(fmt.Sprintf("(define %s '())", n))
+	}
+	if fn.ExprBody != nil {
+		expr, err := sub.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		sub.writeln(fmt.Sprintf("(return %s)", expr))
+	} else {
+		for _, st := range fn.BlockBody {
+			if err := sub.compileStmt(st); err != nil {
+				return "", err
+			}
+		}
+	}
+
+	body := sub.buf.String()
+	if sub.needListSet {
+		c.needListSet = true
+	}
+	if sub.needStringSet {
+		c.needStringSet = true
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString("(lambda (" + strings.Join(params, " ") + ")\n")
+	buf.WriteString("\t(call/cc (lambda (return)\n")
+	buf.WriteString(body)
+	buf.WriteString("\t))\n")
+	buf.WriteString(")")
+	return buf.String(), nil
 }
 
 func sanitizeName(name string) string {
