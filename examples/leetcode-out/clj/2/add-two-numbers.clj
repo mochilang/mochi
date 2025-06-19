@@ -4,9 +4,9 @@
     (def j 0)
     (def carry 0)
     (def result [])
-    (try
-      (loop []
-        (when (or (or (< i (count l1)) (< j (count l2))) (> carry 0))
+    (loop []
+      (when (or (or (< i (count l1)) (< j (count l2))) (> carry 0))
+        (let [r (try
           (def x 0)
           (when (< i (count l1))
             (def x (nth l1 i))
@@ -21,18 +21,26 @@
           (def digit (mod sum 10))
           (def carry (quot sum 10))
           (def result (vec (concat result [digit])))
-          (recur)
-        )
+          :next
+        (catch clojure.lang.ExceptionInfo e
+          (cond
+            (= (.getMessage e) "continue") :next
+            (= (.getMessage e) "break") :break
+            :else (throw e))
+          )
+        )]
+      (cond
+        (= r :break) nil
+        (= r :next) (recur)
       )
-    (catch clojure.lang.ExceptionInfo e
-      (when-not (= (.getMessage e) "break") (throw e))
     )
   )
-  (throw (ex-info "return" {:value result}))
+)
+(throw (ex-info "return" {:value result}))
 (catch clojure.lang.ExceptionInfo e
-  (if (= (.getMessage e) "return")
-    (:value (ex-data e))
-  (throw e)))
+(if (= (.getMessage e) "return")
+  (:value (ex-data e))
+(throw e)))
 )
 )
 

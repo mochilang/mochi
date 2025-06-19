@@ -4,41 +4,57 @@
     (def start 0)
     (def best 0)
     (def i 0)
-    (try
-      (loop []
-        (when (< i n)
+    (loop []
+      (when (< i n)
+        (let [r (try
           (def j start)
-          (try
-            (loop []
-              (when (< j i)
+          (loop []
+            (when (< j i)
+              (let [r (try
                 (when (= (nth s j) (nth s i))
                   (def start (+ j 1))
                   (throw (ex-info "break" {}))
                 )
                 (def j (+ j 1))
-                (recur)
-              )
+                :next
+              (catch clojure.lang.ExceptionInfo e
+                (cond
+                  (= (.getMessage e) "continue") :next
+                  (= (.getMessage e) "break") :break
+                  :else (throw e))
+                )
+              )]
+            (cond
+              (= r :break) nil
+              (= r :next) (recur)
             )
-          (catch clojure.lang.ExceptionInfo e
-            (when-not (= (.getMessage e) "break") (throw e))
           )
         )
-        (def length (+ (- i start) 1))
-        (when (> length best)
-          (def best length)
-        )
-        (def i (+ i 1))
-        (recur)
       )
-    )
-  (catch clojure.lang.ExceptionInfo e
-    (when-not (= (.getMessage e) "break") (throw e))
+      (def length (+ (- i start) 1))
+      (when (> length best)
+        (def best length)
+      )
+      (def i (+ i 1))
+      :next
+    (catch clojure.lang.ExceptionInfo e
+      (cond
+        (= (.getMessage e) "continue") :next
+        (= (.getMessage e) "break") :break
+        :else (throw e))
+      )
+    )]
+  (cond
+    (= r :break) nil
+    (= r :next) (recur)
   )
+)
+)
 )
 (throw (ex-info "return" {:value best}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
-  (:value (ex-data e))
+(:value (ex-data e))
 (throw e)))
 )
 )
