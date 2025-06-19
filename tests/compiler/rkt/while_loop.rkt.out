@@ -15,6 +15,10 @@
     (if (= n 0) 0
         (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
 
-(for ([n (list 1 2 3)])
-	(displayln n)
+(define i 0)
+(let loop ()
+	(when (< i 3)
+		(displayln i)
+		(set! i (+ i 1))
+		(loop))
 )

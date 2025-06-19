@@ -15,6 +15,4 @@
     (if (= n 0) 0
         (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
 
-(for ([n (list 1 2 3)])
-	(displayln n)
-)
+(displayln (avg (list 1 2 3)))
