@@ -1,0 +1,11 @@
+program main
+  implicit none
+  real :: x
+  real :: y
+  x = 1.5
+  y = 2.5
+  print *, (x + y)
+  print *, (y - x)
+  print *, (x * y)
+  print *, (y / x)
+end program main
