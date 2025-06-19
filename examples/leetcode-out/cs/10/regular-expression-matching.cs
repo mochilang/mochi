@@ -30,7 +30,13 @@ public class Program {
 						first = true;
 					}
 				}
-				if ((((j2 + 1L) < n) && (_indexString(p, (j2 + 1L)) == "*"))) {
+				bool star = false;
+				if (((j2 + 1L) < n)) {
+					if ((_indexString(p, (j2 + 1L)) == "*")) {
+						star = true;
+					}
+				}
+				if (star) {
 					if ((dp[i2][(j2 + 2L)] || ((first && dp[(i2 + 1L)][j2])))) {
 						dp[i2][j2] = true;
 					} else {
