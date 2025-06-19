@@ -1,0 +1,9 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'mochi'!
+add: a b: b
+	^ (a + b)
+!
+
+!!
+((Main add: (2) b: (3))) displayOn: Transcript. Transcript cr.
