@@ -401,14 +401,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if isEmptyListLiteral(s.Let.Value) {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
-		} else if isListLiteral(s.Let.Value) {
-			elem := listElemType(s.Let.Value)
-			typ = "dynamic[]"
-			if elem != "" {
-				typ = elem + "[]"
+		} else {
+			inferred := csTypeOf(c.inferExprType(s.Let.Value))
+			typ = inferred
+			if isEmptyListLiteral(s.Let.Value) && strings.HasSuffix(typ, "[]") {
+				expr = fmt.Sprintf("new %s { }", typ)
 			}
-		} else if isStringExpr(s.Let.Value) {
-			typ = "string"
 		}
 		c.varTypes[name] = typ
 		decl := "var"
@@ -428,14 +426,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if isEmptyListLiteral(s.Var.Value) {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
-		} else if isListLiteral(s.Var.Value) {
-			elem := listElemType(s.Var.Value)
-			typ = "dynamic[]"
-			if elem != "" {
-				typ = elem + "[]"
+		} else {
+			inferred := csTypeOf(c.inferExprType(s.Var.Value))
+			typ = inferred
+			if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
+				expr = fmt.Sprintf("new %s { }", typ)
 			}
-		} else if isStringExpr(s.Var.Value) {
-			typ = "string"
 		}
 		c.varTypes[name] = typ
 		decl := "var"
@@ -543,16 +539,10 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	if isListLiteral(a.Value) {
-		elem := listElemType(a.Value)
-		typ := "dynamic[]"
-		if elem != "" {
-			typ = elem + "[]"
-		}
-		cur, ok := c.varTypes[sanitizeName(a.Name)]
-		if !ok || cur == "dynamic[]" {
-			c.varTypes[sanitizeName(a.Name)] = typ
-		}
+	inferred := csTypeOf(c.inferExprType(a.Value))
+	cur, ok := c.varTypes[sanitizeName(a.Name)]
+	if !ok || cur == "dynamic" || cur == "dynamic[]" {
+		c.varTypes[sanitizeName(a.Name)] = inferred
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
 	return nil
