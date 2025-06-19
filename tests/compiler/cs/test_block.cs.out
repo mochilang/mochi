@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	static void test_addition_works() {
-		var x = (1L + 2L);
+		long x = (1L + 2L);
 		if (!((x == 3L))) throw new Exception("expect failed");
 	}
 	

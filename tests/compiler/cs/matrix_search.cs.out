@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 public class Program {
 	static bool searchMatrix(long[][] matrix, long target) {
-		var m = matrix.Length;
+		long m = matrix.Length;
 		if ((m == 0L)) {
 			return false;
 		}
-		var n = matrix[0L].Length;
-		var left = 0L;
+		long n = matrix[0L].Length;
+		long left = 0L;
 		var right = ((m * n) - 1L);
 		while ((left <= right)) {
 			var mid = (left + (((right - left)) / 2L));

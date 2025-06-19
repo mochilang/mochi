@@ -10,11 +10,11 @@ public class Product {
 
 public class Program {
 	public static void Main() {
-		var products = new [] { new Product { name = "Laptop", price = 1500L }, new Product { name = "Smartphone", price = 900L }, new Product { name = "Tablet", price = 600L }, new Product { name = "Monitor", price = 300L }, new Product { name = "Keyboard", price = 100L }, new Product { name = "Mouse", price = 50L }, new Product { name = "Headphones", price = 200L } };
-		var expensive = new List<dynamic>(products.OrderBy(p => (-p.price)).Skip(1L).Take(3L).Select(p => p));
+		Product[] products = new [] { new Product { name = "Laptop", price = 1500L }, new Product { name = "Smartphone", price = 900L }, new Product { name = "Tablet", price = 600L }, new Product { name = "Monitor", price = 300L }, new Product { name = "Keyboard", price = 100L }, new Product { name = "Mouse", price = 50L }, new Product { name = "Headphones", price = 200L } };
+		Product[] expensive = new List<dynamic>(products.OrderBy(p => (-p.price)).Skip(1L).Take(3L).Select(p => p));
 		Console.WriteLine("--- Top products (excluding most expensive) ---");
 		foreach (var item in expensive) {
-			Console.WriteLine(item.name, "costs $", item.price);
+			Console.WriteLine(string.Join(" ", new [] { Convert.ToString(item.name), Convert.ToString("costs $"), Convert.ToString(item.price) }));
 		}
 	}
 }

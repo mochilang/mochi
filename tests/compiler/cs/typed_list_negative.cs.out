@@ -12,7 +12,7 @@ public class Program {
 	}
 	
 	public static void Main() {
-		var xs = _cast<long[]>(new [] { ((-1L)), 0L, 1L });
+		long[] xs = _cast<long[]>(new [] { ((-1L)), 0L, 1L });
 		test_values();
 	}
 	static T _cast<T>(dynamic v) {

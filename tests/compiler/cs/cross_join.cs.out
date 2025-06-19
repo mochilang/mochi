@@ -23,9 +23,9 @@ public class PairInfo {
 
 public class Program {
 	public static void Main() {
-		var customers = new [] { new Customer { id = 1L, name = "Alice" }, new Customer { id = 2L, name = "Bob" }, new Customer { id = 3L, name = "Charlie" } };
-		var orders = new [] { new Order { id = 100L, customerId = 1L, total = 250L }, new Order { id = 101L, customerId = 2L, total = 125L }, new Order { id = 102L, customerId = 1L, total = 300L } };
-		var result = new Func<List<dynamic>>(() => {
+		Customer[] customers = new [] { new Customer { id = 1L, name = "Alice" }, new Customer { id = 2L, name = "Bob" }, new Customer { id = 3L, name = "Charlie" } };
+		Order[] orders = new [] { new Order { id = 100L, customerId = 1L, total = 250L }, new Order { id = 101L, customerId = 2L, total = 125L }, new Order { id = 102L, customerId = 1L, total = 300L } };
+		PairInfo[] result = new Func<List<dynamic>>(() => {
 	var _res = new List<dynamic>();
 	foreach (var o in orders) {
 		foreach (var c in customers) {
@@ -36,7 +36,7 @@ public class Program {
 })();
 		Console.WriteLine("--- Cross Join: All order-customer pairs ---");
 		foreach (var entry in result) {
-			Console.WriteLine("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName);
+			Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Order"), Convert.ToString(entry.orderId), Convert.ToString("(customerId:"), Convert.ToString(entry.orderCustomerId), Convert.ToString(", total: $"), Convert.ToString(entry.orderTotal), Convert.ToString(") paired with"), Convert.ToString(entry.pairedCustomerName) }));
 		}
 	}
 }

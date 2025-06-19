@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var c = 0L;
+		long c = 0L;
 		for (var _tmp0 = 0L; _tmp0 < 2L; _tmp0++) {
 			c = (c + 1L);
 		}

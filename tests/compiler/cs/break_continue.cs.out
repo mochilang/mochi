@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var numbers = new [] { 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L };
+		long[] numbers = new [] { 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L };
 		foreach (var n in numbers) {
 			if (((n % 2L) == 0L)) {
 				continue;
@@ -12,7 +12,7 @@ public class Program {
 			if ((n > 7L)) {
 				break;
 			}
-			Console.WriteLine("odd number:", n);
+			Console.WriteLine(string.Join(" ", new [] { Convert.ToString("odd number:"), Convert.ToString(n) }));
 		}
 	}
 }

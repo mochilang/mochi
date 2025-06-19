@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var x = 5L;
+		long x = 5L;
 		if ((x > 3L)) {
 			Console.WriteLine("big");
 		} else {

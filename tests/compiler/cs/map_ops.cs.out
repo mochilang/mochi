@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var m = new Dictionary<dynamic, dynamic> {  };
+		Dictionary<long, long> m = new Dictionary<dynamic, dynamic> {  };
 		m[1L] = 10L;
 		m[2L] = 20L;
 		if (_in(1L, m)) {
