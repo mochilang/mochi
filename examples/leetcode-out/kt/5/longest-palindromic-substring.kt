@@ -31,13 +31,7 @@ fun longestPalindrome(s: String) : String {
                         end = (i + ((l / 2)))
                 }
         }
-        var res = ""
-        var k = start
-        while ((k <= end)) {
-                res = (res + s[k])
-                k = (k + 1)
-        }
-        return res
+        return s.substring(start, (end + 1))
 }
 
 fun main() {
