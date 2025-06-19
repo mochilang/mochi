@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println(string([]rune("hello")[1:4]))
+	fmt.Println("Hello, world")
 }
