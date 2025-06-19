@@ -12,6 +12,7 @@ import (
 
 // Compiler translates a Mochi AST into OCaml source code (very limited subset).
 type Compiler struct {
+	pre     bytes.Buffer
 	buf     bytes.Buffer
 	indent  int
 	env     *types.Env
@@ -58,7 +59,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.setNth {
 		c.writeln("")
 	}
-	return c.buf.Bytes(), nil
+	var out bytes.Buffer
+	out.Write(c.pre.Bytes())
+	out.Write(c.buf.Bytes())
+	return out.Bytes(), nil
 }
 
 func (c *Compiler) ensureSetNth() {
@@ -66,18 +70,12 @@ func (c *Compiler) ensureSetNth() {
 		return
 	}
 	c.setNth = true
-	c.writeln("let rec _set_nth lst i v =")
-	c.indent++
-	c.writeln("match lst with")
-	c.indent++
-	c.writeln("| [] -> []")
-	c.writeln("| x::xs ->")
-	c.indent++
-	c.writeln("if i = 0 then v :: xs else x :: _set_nth xs (i - 1) v")
-	c.indent--
-	c.indent--
-	c.writeln("")
-	c.indent--
+	b := &c.pre
+	b.WriteString("let rec _set_nth lst i v =\n")
+	b.WriteString("  match lst with\n")
+	b.WriteString("  | [] -> []\n")
+	b.WriteString("  | x::xs ->\n")
+	b.WriteString("      if i = 0 then v :: xs else x :: _set_nth xs (i - 1) v\n\n")
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -197,9 +195,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 			} else if c.vars[name] {
 				c.ensureSetNth()
 				if ex == "" {
-					c.writeln(fmt.Sprintf("%s := _set_nth %s %s %s;;", name, target, idx, val))
+					c.writeln(fmt.Sprintf("%s := _set_nth %s %s (%s);;", name, target, idx, val))
 				} else {
-					c.writeln(fmt.Sprintf("%s := _set_nth %s %s %s;", name, target, idx, val))
+					c.writeln(fmt.Sprintf("%s := _set_nth %s %s (%s);", name, target, idx, val))
 				}
 				return nil
 			}
@@ -250,6 +248,25 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
+	// create scoped environment with loop variable type for proper codegen
+	origEnv := c.env
+	if origEnv != nil {
+		child := types.NewEnv(origEnv)
+		if f.RangeEnd != nil {
+			// numeric range loops yield ints
+			child.SetVar(f.Name, types.IntType{}, true)
+		} else if isStringExpr(f.Source, origEnv) {
+			child.SetVar(f.Name, types.StringType{}, true)
+		} else if isListExpr(f.Source, origEnv) {
+			child.SetVar(f.Name, types.AnyType{}, true)
+		} else if isMapExpr(f.Source, origEnv) {
+			child.SetVar(f.Name, types.AnyType{}, true)
+		} else {
+			child.SetVar(f.Name, types.AnyType{}, true)
+		}
+		c.env = child
+		defer func() { c.env = origEnv }()
+	}
 	if f.RangeEnd == nil {
 		src, err := c.compileExpr(f.Source)
 		if err != nil {
@@ -426,7 +443,12 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		return "", err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		expr = fmt.Sprintf("%s%s", u.Ops[i], expr)
+		op := u.Ops[i]
+		if op == "-" && strings.HasPrefix(expr, "!") {
+			expr = fmt.Sprintf("-(%s)", expr)
+		} else {
+			expr = fmt.Sprintf("%s%s", op, expr)
+		}
 	}
 	return expr, nil
 }
