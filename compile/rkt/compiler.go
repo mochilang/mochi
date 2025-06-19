@@ -19,12 +19,13 @@ type Compiler struct {
 }
 
 type loopCtx struct {
-	brk  string
-	cont string
+	brk     string
+	cont    string
+	contArg string
 }
 
-func (c *Compiler) pushLoop(brk, cont string) {
-	c.loops = append(c.loops, loopCtx{brk: brk, cont: cont})
+func (c *Compiler) pushLoop(brk, cont, arg string) {
+	c.loops = append(c.loops, loopCtx{brk: brk, cont: cont, contArg: arg})
 }
 
 func (c *Compiler) popLoop() {
@@ -243,23 +244,58 @@ func (c *Compiler) compileContinue(cs *parser.ContinueStmt) error {
 	if len(c.loops) == 0 {
 		return fmt.Errorf("continue not in loop")
 	}
-	lbl := c.loops[len(c.loops)-1].cont
-	if lbl == "" {
+	ctx := c.loops[len(c.loops)-1]
+	if ctx.cont == "" {
 		return fmt.Errorf("continue unsupported in this loop")
 	}
-	c.writeln("(" + lbl + ")")
+	if ctx.contArg != "" {
+		c.writeln(fmt.Sprintf("(%s %s)", ctx.cont, ctx.contArg))
+	} else {
+		c.writeln("(" + ctx.cont + ")")
+	}
 	return nil
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	name := sanitizeName(f.Name)
 	ctrl := hasLoopCtrl(f.Body)
-	var brk string
-	if ctrl {
-		brk = fmt.Sprintf("brk%d", len(c.loops))
-		c.writeln("(let/ec " + brk)
+
+	// Optimised path when no break/continue statements are present.
+	if !ctrl {
+		if f.RangeEnd != nil {
+			start, err := c.compileExpr(f.Source)
+			if err != nil {
+				return err
+			}
+			end, err := c.compileExpr(f.RangeEnd)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("(for ([%s (in-range %s %s)])", name, start, end))
+		} else {
+			src, err := c.compileExpr(f.Source)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("(for ([%s %s])", name, src))
+		}
 		c.indent++
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln(")")
+		return nil
 	}
+
+	// Fallback using explicit recursion to support break and continue.
+	brk := fmt.Sprintf("brk%d", len(c.loops))
+	loop := fmt.Sprintf("loop%d", len(c.loops))
+	c.writeln("(let/ec " + brk)
+	c.indent++
+
 	if f.RangeEnd != nil {
 		start, err := c.compileExpr(f.Source)
 		if err != nil {
@@ -269,32 +305,45 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("(for ([%s (in-range %s %s)])", name, start, end))
+		c.writeln("(let " + loop + " ([i " + start + "])")
+		c.indent++
+		c.writeln("(when (< i " + end + ")")
+		c.indent++
+		c.writeln(fmt.Sprintf("(define %s i)", name))
+		c.pushLoop(brk, loop, "(+ i 1)")
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				c.popLoop()
+				return err
+			}
+		}
+		c.writeln("(" + loop + " (+ i 1)))")
+		c.popLoop()
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln(")")
 	} else {
 		src, err := c.compileExpr(f.Source)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("(for ([%s %s])", name, src))
-	}
-	c.indent++
-	if ctrl {
-		c.pushLoop(brk, "")
-	}
-	for _, st := range f.Body {
-		if err := c.compileStmt(st); err != nil {
-			if ctrl {
+		c.writeln("(let " + loop + " ([it " + src + "])")
+		c.indent++
+		c.writeln("(when (pair? it)")
+		c.indent++
+		c.writeln(fmt.Sprintf("(define %s (car it))", name))
+		c.pushLoop(brk, loop, "(cdr it)")
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
 				c.popLoop()
+				return err
 			}
-			return err
 		}
-	}
-	if ctrl {
+		c.writeln("(" + loop + " (cdr it)))")
 		c.popLoop()
-	}
-	c.indent--
-	c.writeln(")")
-	if ctrl {
+		c.indent--
+		c.writeln(")")
 		c.indent--
 		c.writeln(")")
 	}
@@ -316,7 +365,7 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 		c.indent++
 		c.writeln(fmt.Sprintf("(when %s", cond))
 		c.indent++
-		c.pushLoop(brk, loop)
+		c.pushLoop(brk, loop, "")
 		for _, st := range w.Body {
 			if err := c.compileStmt(st); err != nil {
 				c.popLoop()
@@ -568,9 +617,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			pairs[i] = fmt.Sprintf("(cons %s %s)", k, v)
+			pairs[i] = fmt.Sprintf("(%s . %s)", k, v)
 		}
-		return "(make-hash (list " + strings.Join(pairs, " ") + "))", nil
+		return "'#hash(" + strings.Join(pairs, " ") + ")", nil
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Selector != nil:
@@ -590,7 +639,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	name := sanitizeName(call.Func)
 	switch call.Func {
 	case "len":
-		name = "length"
+		name = "count"
 	case "print":
 		name = "displayln"
 	case "str":
@@ -609,6 +658,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = v
+	}
+	if call.Func == "print" && len(args) > 1 {
+		fmtStr := strings.TrimSpace(strings.Repeat("~a ", len(args)))
+		return fmt.Sprintf("(displayln (format \"%s\" %s))", fmtStr, strings.Join(args, " ")), nil
 	}
 	if call.Func == "str" {
 		args = append([]string{"\"~a\""}, args...)

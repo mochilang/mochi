@@ -15,24 +15,24 @@
     (if (= n 0) 0
         (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
 
-(define (twoSum nums target)
-	(let/ec return
-		(define n (count nums))
-		(for ([i (in-range 0 n)])
-			(for ([j (in-range (+ i 1) n)])
-				(if (= (+ (idx nums i) (idx nums j)) target)
-					(begin
-						(return (list i j))
-					)
-					(void)
+(define numbers (list 1 2 3 4 5 6 7 8 9))
+(let/ec brk0
+	(let loop0 ([it numbers])
+		(when (pair? it)
+			(define n (car it))
+			(if (= (modulo n 2) 0)
+				(begin
+					(loop0 (cdr it))
 				)
+				(void)
 			)
+			(if (> n 7)
+				(begin
+					(brk0 (void))
+				)
+				(void)
+			)
+			(displayln (format "~a ~a" "odd number:" n))
+			(loop0 (cdr it)))
 		)
-		(return (list (- 1) (- 1)))
-		(return (void))
 	)
-)
-
-(define result (twoSum (list 2 7 11 15) 9))
-(displayln (idx result 0))
-(displayln (idx result 1))
