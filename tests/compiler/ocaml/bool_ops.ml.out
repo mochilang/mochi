@@ -1,0 +1,3 @@
+print_endline (string_of_bool (true && false));;
+print_endline (string_of_bool (true || false));;
+print_endline (string_of_bool (not false));;

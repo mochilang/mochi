@@ -226,7 +226,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("raise (%s (%s))", ex, val))
+		c.writeln(fmt.Sprintf("raise (%s %s)", ex, val))
 	case s.For != nil:
 		return c.compileFor(s.For, ex)
 	case s.If != nil:
@@ -444,7 +444,9 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		if op == "-" && strings.HasPrefix(expr, "!") {
+		if op == "!" {
+			expr = fmt.Sprintf("not %s", expr)
+		} else if op == "-" && (strings.HasPrefix(expr, "!") || strings.HasPrefix(expr, "not ")) {
 			expr = fmt.Sprintf("-(%s)", expr)
 		} else {
 			expr = fmt.Sprintf("%s%s", op, expr)
@@ -631,6 +633,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			if isStringExpr(call.Args[0], c.env) {
 				return fmt.Sprintf("print_endline %s", args[0]), nil
 			}
+			if isBoolExpr(call.Args[0], c.env) {
+				return fmt.Sprintf("print_endline (string_of_bool (%s))", args[0]), nil
+			}
+			if isFloatExpr(call.Args[0], c.env) {
+				return fmt.Sprintf("print_endline (string_of_float (%s))", args[0]), nil
+			}
 			return fmt.Sprintf("print_endline (string_of_int (%s))", args[0]), nil
 		}
 	case "str":
@@ -639,9 +647,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				return args[0], nil
 			}
 			if isFloatExpr(call.Args[0], c.env) {
-				return fmt.Sprintf("string_of_float %s", args[0]), nil
+				return fmt.Sprintf("string_of_float (%s)", args[0]), nil
 			}
-			return fmt.Sprintf("string_of_int %s", args[0]), nil
+			return fmt.Sprintf("string_of_int (%s)", args[0]), nil
 		}
 	}
 	return fmt.Sprintf("%s %s", sanitizeName(call.Func), strings.Join(args, " ")), nil
@@ -742,6 +750,27 @@ func isFloatExpr(e *parser.Expr, env *types.Env) bool {
 	if p.Selector != nil {
 		if typ, err := env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := typ.(types.FloatType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isBoolExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
+		return false
+	}
+	p := e.Binary.Left.Value.Target
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Bool != nil {
+		return true
+	}
+	if p.Selector != nil {
+		if typ, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := typ.(types.BoolType); ok {
 				return true
 			}
 		}
