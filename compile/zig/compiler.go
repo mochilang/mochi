@@ -86,7 +86,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		typ := c.zigType(p.Type)
 		params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ)
 	}
-	c.writeln(fmt.Sprintf("fn %s(%s) [2]i32 {", name, strings.Join(params, ", ")))
+	ret := "void"
+	if fn.Return != nil {
+		ret = c.zigType(fn.Return)
+	}
+	c.writeln(fmt.Sprintf("fn %s(%s) %s {", name, strings.Join(params, ", "), ret))
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st, true); err != nil {
@@ -341,7 +345,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 		case "||":
 			opStr = "or"
 		}
-		expr = fmt.Sprintf("(%s %s %s)", expr, opStr, right)
+		if opStr == "%" {
+			expr = fmt.Sprintf("@mod(%s, %s)", expr, right)
+		} else {
+			expr = fmt.Sprintf("(%s %s %s)", expr, opStr, right)
+		}
 		leftIsStr = false
 	}
 	return expr, nil
@@ -481,12 +489,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{%s}) catch unreachable", arg), nil
 	}
-	if name == "print" && len(call.Args) == 1 {
-		arg, err := c.compileExpr(call.Args[0], false)
-		if err != nil {
-			return "", err
+	if name == "print" {
+		args := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			v, err := c.compileExpr(a, false)
+			if err != nil {
+				return "", err
+			}
+			args[i] = v
 		}
-		return fmt.Sprintf("std.debug.print(\"{d}\\n\", .{%s})", arg), nil
+		fmtParts := make([]string, len(args))
+		for i := range args {
+			if c.isStringExpr(call.Args[i]) {
+				fmtParts[i] = "{s}"
+			} else {
+				fmtParts[i] = "{any}"
+			}
+		}
+		format := strings.Join(fmtParts, " ") + "\\n"
+		return fmt.Sprintf("std.debug.print(\"%s\", .{%s})", format, strings.Join(args, ", ")), nil
 	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
@@ -502,7 +523,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
-		return strconv.Itoa(*l.Int), nil
+		return fmt.Sprintf("@as(i32,@intCast(%d))", *l.Int), nil
 	case l.Float != nil:
 		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
 	case l.Str != nil:
@@ -523,7 +544,7 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 		if err != nil {
 			return "", err
 		}
-		elems[i] = fmt.Sprintf("@as(i32,@intCast(%s))", v)
+		elems[i] = v
 	}
 	if asRef {
 		return fmt.Sprintf("&[_]i32{%s}", strings.Join(elems, ", ")), nil
@@ -597,6 +618,13 @@ func (c *Compiler) isStringUnary(u *parser.Unary) bool {
 		return false
 	}
 	return c.isStringPostfix(u.Value)
+}
+
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return c.isStringUnary(e.Binary.Left)
 }
 
 func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {

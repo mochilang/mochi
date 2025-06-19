@@ -1,0 +1,9 @@
+const std = @import("std");
+
+pub fn main() void {
+	var i = @as(i32,@intCast(0));
+	while ((i < @as(i32,@intCast(3)))) {
+		std.debug.print("{any}\n", .{i});
+		i = (i + @as(i32,@intCast(1)));
+	}
+}

@@ -1,0 +1,7 @@
+const std = @import("std");
+
+pub fn main() void {
+	std.debug.print("{any}\n", .{(true and false)});
+	std.debug.print("{any}\n", .{(true or false)});
+	std.debug.print("{any}\n", .{!false});
+}
