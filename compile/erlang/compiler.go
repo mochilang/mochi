@@ -479,8 +479,8 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	type operand struct {
-		expr   string
-		isList bool
+		expr string
+		typ  types.Type
 	}
 
 	if b == nil {
@@ -494,14 +494,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left, c.env)})
+	operands = append(operands, operand{expr: first, typ: c.inferUnaryType(b.Left)})
 
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env)})
+		operands = append(operands, operand{expr: r, typ: c.inferPostfixType(part.Right)})
 		ops = append(ops, part.Op)
 	}
 
@@ -535,35 +535,47 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			r := operands[i+1]
 
 			var expr string
-			var isList bool
+			var typ types.Type
 
 			switch op {
 			case "+":
-				if l.isList || r.isList {
+				if _, ok := l.typ.(types.ListType); ok || isList(r.typ) {
 					expr = fmt.Sprintf("lists:append(%s, %s)", l.expr, r.expr)
-					isList = true
+					if lt, ok := l.typ.(types.ListType); ok {
+						typ = lt
+					} else if rt, ok := r.typ.(types.ListType); ok {
+						typ = rt
+					} else {
+						typ = types.ListType{Elem: types.AnyType{}}
+					}
 				} else {
 					expr = fmt.Sprintf("(%s + %s)", l.expr, r.expr)
+					typ = resultType(op, l.typ, r.typ)
 				}
 			case "-", "*", "/", "%", "<", "<=", ">", ">=":
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
+				typ = resultType(op, l.typ, r.typ)
 			case "==", "!=":
 				erlOp := op
 				if op == "!=" {
 					erlOp = "/="
 				}
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, erlOp, r.expr)
+				typ = resultType(op, l.typ, r.typ)
 			case "&&":
 				expr = fmt.Sprintf("(%s and %s)", l.expr, r.expr)
+				typ = types.BoolType{}
 			case "||":
 				expr = fmt.Sprintf("(%s or %s)", l.expr, r.expr)
+				typ = types.BoolType{}
 			case "in":
 				expr = fmt.Sprintf("maps:is_key(%s, %s)", l.expr, r.expr)
+				typ = types.BoolType{}
 			default:
 				return "", fmt.Errorf("unsupported operator %s", op)
 			}
 
-			operands[i] = operand{expr: expr, isList: isList}
+			operands[i] = operand{expr: expr, typ: typ}
 			operands = append(operands[:i+1], operands[i+2:]...)
 			ops = append(ops[:i], ops[i+1:]...)
 		}
@@ -597,33 +609,34 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	typ := c.inferPrimaryType(p.Target)
+
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			idx, err := c.compileExpr(op.Index.Start)
 			if err != nil {
 				return "", err
 			}
-			if t, ok := c.staticTypeOfPostfix(p); ok {
-				switch t.(type) {
-				case types.MapType:
-					res = fmt.Sprintf("maps:get(%s, %s)", idx, res)
-				case types.ListType:
-					res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
-				default:
-					if isStringExpr(op.Index.Start, c.env) {
-						c.needGet = true
-						res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
-					} else {
-						res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
-					}
-				}
-			} else {
+
+			switch tt := typ.(type) {
+			case types.MapType:
+				res = fmt.Sprintf("maps:get(%s, %s)", idx, res)
+				typ = tt.Value
+			case types.ListType:
+				res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+				typ = tt.Elem
+			case types.StringType:
+				res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+				typ = types.StringType{}
+			default:
 				if isStringExpr(op.Index.Start, c.env) {
 					c.needGet = true
 					res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
 				} else {
 					res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
 				}
+				typ = types.AnyType{}
 			}
 		} else if op.Call != nil {
 			args := []string{}
@@ -651,8 +664,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			default:
 				res = fmt.Sprintf("%s(%s)", res, argStr)
 			}
+			if ft, ok := typ.(types.FuncType); ok {
+				typ = ft.Return
+			} else {
+				typ = types.AnyType{}
+			}
 		} else if op.Cast != nil {
 			// ignore type casts
+			typ = c.resolveTypeRef(op.Cast.Type)
 		}
 	}
 	return res, nil
