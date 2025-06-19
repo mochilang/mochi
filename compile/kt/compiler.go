@@ -95,8 +95,10 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		return err
 	}
 	if stmt.Type != nil {
-		typ := ktType(c.resolveTypeRef(stmt.Type))
+		t := c.resolveTypeRef(stmt.Type)
+		typ := ktType(t)
 		c.writeln(fmt.Sprintf("val %s: %s = %s", sanitizeName(stmt.Name), typ, expr))
+		c.env.SetVar(stmt.Name, t, false)
 	} else {
 		c.writeln(fmt.Sprintf("val %s = %s", sanitizeName(stmt.Name), expr))
 	}
