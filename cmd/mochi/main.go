@@ -631,7 +631,7 @@ func build(cmd *BuildCmd) error {
 		}
 		code, err := erlcode.New(env).Compile(prog)
 		if err == nil {
-			err = os.WriteFile(out, code, 0644)
+			err = os.WriteFile(out, code, 0755)
 		}
 		if err != nil {
 			status = "error"
