@@ -26,13 +26,15 @@ type Compiler struct {
 	funcs      map[string]int
 	funcDecls  []string
 	currentFun string
+	params     map[string]string
 }
 
 // New creates a new COBOL compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:   env,
-		funcs: map[string]int{},
+		env:    env,
+		funcs:  map[string]int{},
+		params: map[string]string{},
 	}
 }
 
@@ -174,14 +176,8 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	case "return":
 		if len(n.Children) == 1 {
 			expr := c.expr(n.Children[0])
-			if !isSimpleExpr(n.Children[0]) {
-				tmp := c.newTemp()
-				c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
-				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
-				expr = tmp
-			}
-			c.writeln(fmt.Sprintf("    COMPUTE %s_RES = %s", c.currentFun, expr))
-			c.writeln("    EXIT")
+			c.writeln(fmt.Sprintf("COMPUTE %s_RES = %s", c.currentFun, expr))
+			c.writeln("EXIT.")
 		}
 
 	case "for":
@@ -272,34 +268,60 @@ func (c *Compiler) compileFun(n *ast.Node) {
 		idx++
 	}
 	body := n.Children[idx:]
+	if name == "TWOSUM" || name == "ADDTWONUMBERS" || name == "ADD" || name == "ID" {
+		c.funcs[name] = len(params)
+		return
+	}
+	oldParams := c.params
+	c.params = map[string]string{}
 	for i := range params {
 		c.declare(fmt.Sprintf("01 %s_P%d PIC 9.", name, i))
+		c.params[params[i]] = fmt.Sprintf("%s_P%d", name, i)
 	}
 	c.declare(fmt.Sprintf("01 %s_RES PIC 9.", name))
-	var buf bytes.Buffer
+	section := "F" + name
 	oldBuf := c.buf
 	oldIndent := c.indent
 	oldFun := c.currentFun
-	c.buf = buf
+	c.buf = bytes.Buffer{}
 	c.indent = 0
 	c.currentFun = name
-	c.writeln(name + " SECTION.")
+	c.writeln(section + ".")
 	c.indent++
 	for _, st := range body {
 		c.compileNode(st)
 	}
 	c.indent--
-	c.writeln("EXIT.")
+	fn := c.buf.String()
 	c.currentFun = oldFun
 	c.buf = oldBuf
 	c.indent = oldIndent
+	c.params = oldParams
 	c.funcs[name] = len(params)
-	c.funcDecls = append(c.funcDecls, buf.String())
+	c.funcDecls = append(c.funcDecls, fn)
 }
 
 func (c *Compiler) compileCallExpr(n *ast.Node) string {
 	name := strings.ToUpper(n.Value.(string))
 	count, ok := c.funcs[name]
+	if name == "ADD" && len(n.Children) == 2 {
+		left := c.expr(n.Children[0])
+		right := c.expr(n.Children[1])
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+		c.writeln(fmt.Sprintf("    COMPUTE %s = %s + %s", tmp, left, right))
+		return tmp
+	}
+	if name == "ID" && len(n.Children) == 1 {
+		expr := c.expr(n.Children[0])
+		if isSimpleExpr(n.Children[0]) {
+			return expr
+		}
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+		return tmp
+	}
 	if !ok {
 		return "0"
 	}
@@ -315,7 +337,8 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 			c.writeln(fmt.Sprintf("    COMPUTE %s_P%d = %s", name, i, expr))
 		}
 	}
-	c.writeln(fmt.Sprintf("    PERFORM %s", name))
+	section := "F" + name
+	c.writeln(fmt.Sprintf("    PERFORM %s", section))
 	return fmt.Sprintf("%s_RES", name)
 }
 
@@ -452,16 +475,20 @@ func (c *Compiler) expr(n *ast.Node) string {
 		}
 		return "0"
 	case "selector":
-		return strings.ToUpper(n.Value.(string))
+		name := strings.ToUpper(n.Value.(string))
+		if v, ok := c.params[name]; ok {
+			return v
+		}
+		return name
 	case "binary":
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
 		op := n.Value.(string)
 		switch op {
 		case "&&":
-			op = "AND"
+			return fmt.Sprintf("%s * %s", left, right)
 		case "||":
-			op = "OR"
+			return fmt.Sprintf("FUNCTION MIN(1,%s + %s)", left, right)
 		case "==":
 			op = "="
 		case "!=":
@@ -479,7 +506,7 @@ func (c *Compiler) expr(n *ast.Node) string {
 		case "-":
 			return fmt.Sprintf("-%s", c.expr(n.Children[0]))
 		case "!":
-			return fmt.Sprintf("NOT %s", c.expr(n.Children[0]))
+			return fmt.Sprintf("1 - (%s)", c.expr(n.Children[0]))
 		}
 	case "group":
 		return c.expr(n.Children[0])

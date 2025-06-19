@@ -1,0 +1,28 @@
+fun addTwoNumbers(l1: list<int>, l2: list<int>): list<int> {
+  var i = 0
+  var j = 0
+  var carry = 0
+  var result: list<int> = []
+  while i < len(l1) || j < len(l2) || carry > 0 {
+    var x = 0
+    if i < len(l1) {
+      x = l1[i]
+      i = i + 1
+    }
+    var y = 0
+    if j < len(l2) {
+      y = l2[j]
+      j = j + 1
+    }
+    let sum = x + y + carry
+    let digit = sum % 10
+    carry = sum / 10
+    result = result + [digit]
+  }
+  return result
+}
+
+let res = addTwoNumbers([2,4,3], [5,6,4])
+print(res[0])
+print(res[1])
+print(res[2])
