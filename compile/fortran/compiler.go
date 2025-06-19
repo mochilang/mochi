@@ -1066,7 +1066,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					start = v
+					if c.stringVars[root] || c.listVars[root] {
+						start = fmt.Sprintf("modulo(%s, %s)", v, c.lengthFunc(root))
+					} else {
+						start = v
+					}
 				}
 				end := ""
 				if idx.End != nil {
@@ -1074,12 +1078,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					end = v
+					if c.stringVars[root] || c.listVars[root] {
+						end = fmt.Sprintf("modulo(%s, %s)", v, c.lengthFunc(root))
+					} else {
+						end = v
+					}
 				} else {
 					if c.stringVars[root] {
-						end = fmt.Sprintf("len(%s)", expr)
+						end = fmt.Sprintf("len(%s)", root)
 					} else {
-						end = fmt.Sprintf("size(%s)", expr)
+						end = fmt.Sprintf("size(%s)", root)
 					}
 				}
 				expr = fmt.Sprintf("%s(%s + 1:%s)", expr, start, end)
@@ -1089,7 +1097,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if c.stringVars[root] {
-					expr = fmt.Sprintf("%s(%s + 1:%s + 1)", expr, v, v)
+					expr = fmt.Sprintf("%s(modulo(%s, len(%s)) + 1:modulo(%s, len(%s)) + 1)", expr, v, root, v, root)
+				} else if c.listVars[root] {
+					expr = fmt.Sprintf("%s(modulo(%s, size(%s)) + 1)", expr, v, root)
 				} else {
 					expr = fmt.Sprintf("%s(%s + 1)", expr, v)
 				}
@@ -1178,4 +1188,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
+}
+
+func (c *Compiler) lengthFunc(name string) string {
+	if c.stringVars[name] {
+		return fmt.Sprintf("len(%s)", name)
+	}
+	return fmt.Sprintf("size(%s)", name)
 }
