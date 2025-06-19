@@ -139,6 +139,24 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
 	}
+	if c.env != nil {
+		var typ types.Type
+		if stmt.Type != nil {
+			t := c.resolveTypeRef(stmt.Type)
+			if _, ok := t.(types.StringType); ok {
+				typ = t
+			}
+		} else if stmt.Value != nil && isStringLiteral(stmt.Value) {
+			typ = types.StringType{}
+		} else if stmt.Value != nil {
+			if call := stmt.Value.Binary.Left.Value.Target.Call; call != nil && call.Func == "str" {
+				typ = types.StringType{}
+			}
+		}
+		if typ != nil {
+			c.env.SetVar(stmt.Name, typ, false)
+		}
+	}
 	return nil
 }
 
@@ -159,6 +177,24 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", name, rustType(stmt.Type), val))
 	} else {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
+	}
+	if c.env != nil {
+		var typ types.Type
+		if stmt.Type != nil {
+			t := c.resolveTypeRef(stmt.Type)
+			if _, ok := t.(types.StringType); ok {
+				typ = t
+			}
+		} else if stmt.Value != nil && isStringLiteral(stmt.Value) {
+			typ = types.StringType{}
+		} else if stmt.Value != nil {
+			if call := stmt.Value.Binary.Left.Value.Target.Call; call != nil && call.Func == "str" {
+				typ = types.StringType{}
+			}
+		}
+		if typ != nil {
+			c.env.SetVar(stmt.Name, typ, true)
+		}
 	}
 	return nil
 }
@@ -813,6 +849,22 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = v
+	}
+	if c.env != nil {
+		if t, err := c.env.GetVar(call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				for i, p := range ft.Params {
+					if st, ok := p.(types.StringType); ok {
+						_ = st
+					}
+					if _, ok := p.(types.StringType); ok {
+						if !strings.HasPrefix(args[i], "&") && !strings.HasPrefix(args[i], "\"") {
+							args[i] = "&" + args[i]
+						}
+					}
+				}
+			}
+		}
 	}
 	argStr := strings.Join(args, ", ")
 	switch call.Func {

@@ -23,11 +23,11 @@ fun isMatch(s: string, p: string): bool {
     while j2 >= 0 {
       var first = false
       if i2 < m {
-        if (p[j2] == s[i2]) || (p[j2] == ".") {
+        if (p[j2] == s[i2]) || (p[j2] == "."[0]) {
           first = true
         }
       }
-      if j2 + 1 < n && p[j2+1] == "*" {
+      if j2 + 1 < n && p[j2+1] == "*"[0] {
         if dp[i2][j2+2] || (first && dp[i2+1][j2]) {
           dp[i2][j2] = true
         } else {
