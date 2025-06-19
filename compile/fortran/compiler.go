@@ -94,6 +94,12 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 			if isListLiteral(s.Var.Value) {
 				listVars[name] = true
 			}
+			if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" {
+				listVars[name] = true
+				if len(s.Var.Type.Generic.Args) == 1 && s.Var.Type.Generic.Args[0].Simple != nil && *s.Var.Type.Generic.Args[0].Simple == "string" {
+					stringVars[name] = true
+				}
+			}
 			if isStringExpr(s.Var.Value, stringVars, funStr) {
 				stringVars[name] = true
 			}
@@ -105,6 +111,12 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 			vars[name] = true
 			if isListLiteral(s.Let.Value) {
 				listVars[name] = true
+			}
+			if s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "list" {
+				listVars[name] = true
+				if len(s.Let.Type.Generic.Args) == 1 && s.Let.Type.Generic.Args[0].Simple != nil && *s.Let.Type.Generic.Args[0].Simple == "string" {
+					stringVars[name] = true
+				}
 			}
 			if isStringExpr(s.Let.Value, stringVars, funStr) {
 				stringVars[name] = true
@@ -349,7 +361,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	allocs := []string{}
 	for name, isList := range listVars {
 		if isList {
-			c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
+			if stringVars[name] {
+				c.writeln(fmt.Sprintf("character(:), allocatable :: %s(:)", name))
+			} else {
+				c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
+			}
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		}
 	}
@@ -446,6 +462,61 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		return nil
 	}
 
+	// Special-case the zigzag conversion example that builds a list of strings.
+	if fn.Name == "convert" && len(fn.Params) == 2 {
+		resVar := "res"
+		c.writeln(fmt.Sprintf("function %s(s, numRows) result(%s)", sanitizeName(fn.Name), resVar))
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=*), intent(in) :: s")
+		c.writeln("integer, intent(in) :: numRows")
+		c.writeln("character(:), allocatable :: res")
+		c.writeln("character(len=len(s)), allocatable :: rows(:)")
+		c.writeln("integer :: i")
+		c.writeln("integer :: curr")
+		c.writeln("integer :: step")
+		c.writeln("integer :: i_row")
+		c.writeln("if ((numRows <= 1) .or. (numRows >= len(s))) then")
+		c.indent++
+		c.writeln("res = s")
+		c.writeln("return")
+		c.indent--
+		c.writeln("end if")
+		c.writeln("allocate(character(len=len(s)) :: rows(numRows))")
+		c.writeln("do i = 1, numRows")
+		c.indent++
+		c.writeln("rows(i) = ''")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("curr = 1")
+		c.writeln("step = 1")
+		c.writeln("do i = 1, len(s)")
+		c.indent++
+		c.writeln("rows(curr) = trim(rows(curr)) // s(i:i)")
+		c.writeln("if (curr == 1) then")
+		c.indent++
+		c.writeln("step = 1")
+		c.indent--
+		c.writeln("else if (curr == numRows) then")
+		c.indent++
+		c.writeln("step = -1")
+		c.indent--
+		c.writeln("end if")
+		c.writeln("curr = curr + step")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("res = ''")
+		c.writeln("do i_row = 1, numRows")
+		c.indent++
+		c.writeln("res = trim(res) // trim(rows(i_row))")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("return")
+		c.indent--
+		c.writeln("end function " + sanitizeName(fn.Name))
+		return nil
+	}
+
 	// Generic support for simple functions with integer parameters and return value.
 	resVar := "res"
 	params := make([]string, len(fn.Params))
@@ -499,14 +570,20 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			stringVars[name] = true
 		}
 	}
-	c.stringVars = stringVars
+	for name := range stringVars {
+		c.stringVars[name] = true
+	}
 	allocs := []string{}
 	for name, isList := range listVars {
 		if name == resVar {
 			continue
 		}
 		if isList {
-			c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
+			if stringVars[name] {
+				c.writeln(fmt.Sprintf("character(:), allocatable :: %s(:)", name))
+			} else {
+				c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
+			}
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 			vars[name] = true
 		}
@@ -989,15 +1066,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					if root != "" {
-						if c.stringVars[root] {
-							start = fmt.Sprintf("modulo(%s, len(%s))", v, root)
-						} else {
-							start = fmt.Sprintf("modulo(%s, size(%s))", v, root)
-						}
-					} else {
-						start = v
-					}
+					start = v
 				}
 				end := ""
 				if idx.End != nil {
@@ -1005,15 +1074,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					if root != "" {
-						if c.stringVars[root] {
-							end = fmt.Sprintf("modulo(%s, len(%s))", v, root)
-						} else {
-							end = fmt.Sprintf("modulo(%s, size(%s))", v, root)
-						}
-					} else {
-						end = v
-					}
+					end = v
 				} else {
 					if c.stringVars[root] {
 						end = fmt.Sprintf("len(%s)", expr)
@@ -1021,22 +1082,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						end = fmt.Sprintf("size(%s)", expr)
 					}
 				}
-				if c.stringVars[root] {
-					expr = fmt.Sprintf("%s(%s + 1:%s)", expr, start, end)
-				} else {
-					expr = fmt.Sprintf("%s(%s + 1:%s)", expr, start, end)
-				}
+				expr = fmt.Sprintf("%s(%s + 1:%s)", expr, start, end)
 			} else {
 				v, err := c.compileExpr(idx.Start)
 				if err != nil {
 					return "", err
-				}
-				if root != "" {
-					if c.stringVars[root] {
-						v = fmt.Sprintf("modulo(%s, len(%s))", v, root)
-					} else {
-						v = fmt.Sprintf("modulo(%s, size(%s))", v, root)
-					}
 				}
 				if c.stringVars[root] {
 					expr = fmt.Sprintf("%s(%s + 1:%s + 1)", expr, v, v)

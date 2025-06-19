@@ -11,11 +11,11 @@ contains
     integer, intent(in) :: nums1(:)
     integer, intent(in) :: nums2(:)
     integer, allocatable :: merged(:)
+    integer :: i
+    integer :: j
     integer :: total
     integer :: mid1
     integer :: mid2
-    integer :: i
-    integer :: j
     allocate(merged(0))
     i = 0
     j = 0

@@ -10,13 +10,13 @@ contains
     integer, intent(in) :: l1(:)
     integer, intent(in) :: l2(:)
     integer, allocatable :: result(:)
+    integer :: carry
+    integer :: digit
+    integer :: i
     integer :: j
     integer :: x
     integer :: y
     integer :: sum
-    integer :: digit
-    integer :: i
-    integer :: carry
     allocate(result(0))
     i = 0
     j = 0
@@ -35,13 +35,14 @@ contains
       sum = ((x + y) + carry)
       digit = mod(sum, 10)
       carry = (sum / 10)
-      result = (/ result, digit /)
+      result = (/ result, (/digit/) /)
     end do
     res = result
     return
   end function addTwoNumbers
   
   subroutine test_example_1()
+    implicit none
     if (.not. (all(addTwoNumbers((/2, 4, 3/), (/5, 6, 4/)) == (/7, 0, 8/)))) then
       print *, 'expect failed'
       stop 1
@@ -49,6 +50,7 @@ contains
   end subroutine test_example_1
   
   subroutine test_example_2()
+    implicit none
     if (.not. (all(addTwoNumbers((/0/), (/0/)) == (/0/)))) then
       print *, 'expect failed'
       stop 1
@@ -56,6 +58,7 @@ contains
   end subroutine test_example_2
   
   subroutine test_example_3()
+    implicit none
     if (.not. (all(addTwoNumbers((/9, 9, 9, 9, 9, 9, 9/), (/9, 9, 9, 9/)) == (/8, 9, 9, 9, 0, 0, 0, 1/)))) then
       print *, 'expect failed'
       stop 1
