@@ -1,0 +1,3 @@
+puts([(true && false)].join(" "))
+puts([(true || false)].join(" "))
+puts([(!false)].join(" "))
