@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public class Program {
 	static long reverse(long x) {
-		var sign = 1L;
+		long sign = 1L;
 		var n = x;
 		if ((n < 0L)) {
 			sign = (-1L);
 			n = (-n);
 		}
-		var rev = 0L;
+		long rev = 0L;
 		while ((n != 0L)) {
 			var digit = (n % 10L);
 			rev = ((rev * 10L) + digit);

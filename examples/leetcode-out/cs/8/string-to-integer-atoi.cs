@@ -3,27 +3,60 @@ using System;
 using System.Collections.Generic;
 
 public class Program {
+	static long digit(string ch) {
+		if ((ch == "0")) {
+			return 0L;
+		}
+		if ((ch == "1")) {
+			return 1L;
+		}
+		if ((ch == "2")) {
+			return 2L;
+		}
+		if ((ch == "3")) {
+			return 3L;
+		}
+		if ((ch == "4")) {
+			return 4L;
+		}
+		if ((ch == "5")) {
+			return 5L;
+		}
+		if ((ch == "6")) {
+			return 6L;
+		}
+		if ((ch == "7")) {
+			return 7L;
+		}
+		if ((ch == "8")) {
+			return 8L;
+		}
+		if ((ch == "9")) {
+			return 9L;
+		}
+		return (-1L);
+	}
+	
 	static long myAtoi(string s) {
-		var i = 0L;
-		var n = s.Length;
-		while (((i < n) && (_indexString(s, i) == " "))) {
+		long i = 0L;
+		long n = s.Length;
+		while (((i < n) && (_indexString(s, i) == _indexString(" ", 0L)))) {
 			i = (i + 1L);
 		}
-		var sign = 1L;
-		if (((i < n) && (((_indexString(s, i) == "+") || (_indexString(s, i) == "-"))))) {
-			if ((_indexString(s, i) == "-")) {
+		long sign = 1L;
+		if (((i < n) && (((_indexString(s, i) == _indexString("+", 0L)) || (_indexString(s, i) == _indexString("-", 0L)))))) {
+			if ((_indexString(s, i) == _indexString("-", 0L))) {
 				sign = (-1L);
 			}
 			i = (i + 1L);
 		}
-		var digits = new Dictionary<dynamic, dynamic> { { "0", 0L }, { "1", 1L }, { "2", 2L }, { "3", 3L }, { "4", 4L }, { "5", 5L }, { "6", 6L }, { "7", 7L }, { "8", 8L }, { "9", 9L } };
-		var result = 0L;
+		long result = 0L;
 		while ((i < n)) {
-			var ch = _indexString(s, i);
-			if ((!(_in(ch, digits)))) {
+			var ch = _sliceString(s, i, (i + 1L));
+			long d = digit(ch);
+			if ((d < 0L)) {
 				break;
 			}
-			var d = digits[ch];
 			result = ((result * 10L) + d);
 			i = (i + 1L);
 		}
@@ -70,20 +103,16 @@ public class Program {
 		return s[(int)i].ToString();
 	}
 	
-	static bool _in(dynamic item, dynamic col) {
-		if (col is string s && item is string sub) {
-			return s.Contains(sub);
-		}
-		if (col is System.Collections.IDictionary d) {
-			return d.Contains(item);
-		}
-		if (col is System.Collections.IEnumerable e) {
-			foreach (var it in e) {
-				if (Equals(it, item)) return true;
-			}
-			return false;
-		}
-		return false;
+	static string _sliceString(string s, long i, long j) {
+		var start = i;
+		var end = j;
+		var n = s.Length;
+		if (start < 0) start += n;
+		if (end < 0) end += n;
+		if (start < 0) start = 0;
+		if (end > n) end = n;
+		if (end < start) end = start;
+		return s.Substring((int)start, (int)(end - start));
 	}
 	
 }

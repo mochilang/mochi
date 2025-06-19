@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 public class Program {
 	static long lengthOfLongestSubstring(string s) {
-		var n = s.Length;
-		var start = 0L;
-		var best = 0L;
-		var i = 0L;
+		long n = s.Length;
+		long start = 0L;
+		long best = 0L;
+		long i = 0L;
 		while ((i < n)) {
 			var j = start;
 			while ((j < i)) {

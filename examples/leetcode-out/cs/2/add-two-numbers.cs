@@ -5,17 +5,17 @@ using System.Linq;
 
 public class Program {
 	static long[] addTwoNumbers(long[] l1, long[] l2) {
-		var i = 0L;
-		var j = 0L;
-		var carry = 0L;
-		var result = new long[] { };
+		long i = 0L;
+		long j = 0L;
+		long carry = 0L;
+		long[] result = new long[] { };
 		while ((((i < l1.Length) || (j < l2.Length)) || (carry > 0L))) {
-			var x = 0L;
+			long x = 0L;
 			if ((i < l1.Length)) {
 				x = l1[i];
 				i = (i + 1L);
 			}
-			var y = 0L;
+			long y = 0L;
 			if ((j < l2.Length)) {
 				y = l2[j];
 				j = (j + 1L);
