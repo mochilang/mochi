@@ -733,6 +733,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if len(args) != 1 {
 					return "", fmt.Errorf("len expects 1 arg")
 				}
+				if c.isMapExpr(op.Call.Args[0]) {
+					return fmt.Sprintf("Map.count (%s)", args[0]), nil
+				}
 				return fmt.Sprintf("%s.Length", args[0]), nil
 			}
 			expr = fmt.Sprintf("%s %s", expr, argStr)
@@ -888,6 +891,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
+		}
+		if c.isMapExpr(call.Args[0]) {
+			return fmt.Sprintf("Map.count (%s)", args[0]), nil
 		}
 		return fmt.Sprintf("%s.Length", args[0]), nil
 	case "count":
