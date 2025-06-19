@@ -1,5 +1,5 @@
 void main() {
-	var c = 0;
+	dynamic c = 0;
 	for (var _tmp0 = 0; _tmp0 < 2; _tmp0++) {
 		c = (c + 1);
 	}
@@ -10,7 +10,7 @@ void main() {
 	for (var _tmp2 in _tmp3.runes) {
 		c = (c + 1);
 	}
-	var m = {"x": 1, "y": 2};
+	dynamic m = {"x": 1, "y": 2};
 	var _tmp5 = m;
 	for (var _tmp4 in _tmp5.values) {
 		c = (c + 1);

@@ -14,7 +14,7 @@ dynamic fromList(nums) {
 		if ((lo >= hi)) {
 			return Leaf();
 		}
-		var mid = (((lo + hi)) ~/ 2);
+		dynamic mid = (((lo + hi)) ~/ 2);
 		return Node(left: helper(lo, mid), value: nums[mid], right: helper((mid + 1), hi));
 	}
 	return helper(0, nums.length);

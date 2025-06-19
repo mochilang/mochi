@@ -5,8 +5,8 @@ class Product {
 }
 
 void main() {
-	var products = [Product(name: "Laptop", price: 1500), Product(name: "Smartphone", price: 900), Product(name: "Tablet", price: 600), Product(name: "Monitor", price: 300), Product(name: "Keyboard", price: 100), Product(name: "Mouse", price: 50), Product(name: "Headphones", price: 200)];
-	var expensive = (() {
+	dynamic products = [Product(name: "Laptop", price: 1500), Product(name: "Smartphone", price: 900), Product(name: "Tablet", price: 600), Product(name: "Monitor", price: 300), Product(name: "Keyboard", price: 100), Product(name: "Mouse", price: 50), Product(name: "Headphones", price: 200)];
+	dynamic expensive = (() {
 	var _res = [];
 	for (var p in products) {
 		_res.add(p);

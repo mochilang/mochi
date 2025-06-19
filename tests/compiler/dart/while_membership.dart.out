@@ -1,10 +1,10 @@
 void main() {
-	var set = {};
+	dynamic set = {};
 	for (var n in [1, 2, 3]) {
 		set[n] = true;
 	}
-	var i = 1;
-	var count = 0;
+	dynamic i = 1;
+	dynamic count = 0;
 	while ((set.containsKey(i))) {
 		i = (i + 1);
 		count = (count + 1);

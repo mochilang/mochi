@@ -5,8 +5,8 @@ class Person {
 }
 
 void main() {
-	var people = [Person(name: "Alice", age: 30), Person(name: "Bob", age: 15), Person(name: "Charlie", age: 65)];
-	var names = (() {
+	dynamic people = [Person(name: "Alice", age: 30), Person(name: "Bob", age: 15), Person(name: "Charlie", age: 65)];
+	dynamic names = (() {
 	var _res = [];
 	for (var p in people) {
 		if (!((p.age >= 18))) {

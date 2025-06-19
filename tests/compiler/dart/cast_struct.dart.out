@@ -4,6 +4,6 @@ class Todo {
 }
 
 void main() {
-	var todo = {"title": "hi"};
+	dynamic todo = {"title": "hi"};
 	print(todo.title);
 }
