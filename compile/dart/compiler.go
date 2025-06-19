@@ -78,7 +78,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.buf.Write(bodyBytes)
 	c.emitRuntime()
-
+	c.buf.WriteByte('\n')
 	return c.buf.Bytes(), nil
 }
 
