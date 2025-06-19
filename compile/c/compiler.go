@@ -936,8 +936,11 @@ func isStringPostfixOrIndex(p *parser.PostfixExpr, env *types.Env) bool {
 		return false
 	}
 	if len(p.Ops) > 0 {
-		if p.Ops[0].Index != nil && p.Ops[0].Index.Colon == nil && isStringPrimary(p.Target, env) {
-			return true
+		if p.Ops[0].Index != nil {
+			if isStringPrimary(p.Target, env) {
+				return true
+			}
+			return false
 		}
 		return false
 	}
@@ -1145,6 +1148,9 @@ func isListIntPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 		return isListIntPrimary(p.Target, env)
 	}
 	if p.Ops[0].Index != nil && p.Ops[0].Index.Colon != nil {
+		if isStringPrimary(p.Target, env) {
+			return false
+		}
 		return true
 	}
 	return false
