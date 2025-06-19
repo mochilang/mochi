@@ -47,13 +47,16 @@ case "print":
 case "len":
     return fmt.Sprintf("length(%s)", argStr), nil
 case "count":
-    return fmt.Sprintf("Enum.count(%s)", argStr), nil
+    c.use("_count")
+    return fmt.Sprintf("_count(%s)", argStr), nil
 case "avg":
-    return fmt.Sprintf("if Enum.count(%[1]s) == 0, do: 0, else: Enum.sum(%[1]s) / Enum.count(%[1]s)", argStr), nil
+    c.use("_avg")
+    return fmt.Sprintf("_avg(%s)", argStr), nil
 case "str":
     return fmt.Sprintf("to_string(%s)", argStr), nil
 case "input":
-    return "String.trim(IO.gets(\"\"))", nil
+    c.use("_input")
+    return "_input()", nil
 }
 ```
 
