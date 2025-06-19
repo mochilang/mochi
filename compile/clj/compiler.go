@@ -390,6 +390,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	operands := []string{left}
+	typesList := []types.Type{c.inferUnaryType(b.Left)}
 	ops := []string{}
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
@@ -397,16 +398,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		operands = append(operands, r)
+		typesList = append(typesList, c.inferPostfixType(part.Right))
 		ops = append(ops, part.Op)
-	}
-
-	contains := func(sl []string, s string) bool {
-		for _, v := range sl {
-			if v == s {
-				return true
-			}
-		}
-		return false
 	}
 
 	levels := [][]string{
@@ -420,53 +413,66 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 
 	for _, lvl := range levels {
 		for i := 0; i < len(ops); {
-			if !contains(lvl, ops[i]) {
-				i++
-				continue
-			}
-			op := ops[i]
-			l := operands[i]
-			r := operands[i+1]
-			opName := op
-			switch opName {
-			case "%":
-				opName = "mod"
-			case "/":
-				if strings.Contains(l, ".") || strings.Contains(r, ".") || strings.Contains(l, "(double") || strings.Contains(r, "(double") {
-					opName = "/"
-				} else {
-					opName = "quot"
-				}
-			case "&&":
-				opName = "and"
-			case "||":
-				opName = "or"
-			case "==":
-				opName = "="
-			case "!=":
-				opName = "not="
-			}
-			expr := ""
-			if op == "+" {
-				if strings.HasPrefix(l, "[") || strings.HasPrefix(r, "[") {
-					expr = fmt.Sprintf("(vec (concat %s %s))", l, r)
-				} else if c.isStringExpr(l) || c.isStringExpr(r) {
-					expr = fmt.Sprintf("(str %s %s)", l, r)
-				} else {
-					expr = fmt.Sprintf("(+ %s %s)", l, r)
-				}
+			if contains(lvl, ops[i]) {
+				expr, typ := c.compileBinaryOp(operands[i], typesList[i], ops[i], operands[i+1], typesList[i+1])
+				operands[i] = expr
+				typesList[i] = typ
+				operands = append(operands[:i+1], operands[i+2:]...)
+				typesList = append(typesList[:i+1], typesList[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
 			} else {
-				expr = fmt.Sprintf("(%s %s %s)", opName, l, r)
+				i++
 			}
-			operands[i] = expr
-			operands = append(operands[:i+1], operands[i+2:]...)
-			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
+
 	if len(operands) != 1 {
 		return "", fmt.Errorf("unexpected binary expr")
 	}
 	return operands[0], nil
+}
+
+func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, right string, rightType types.Type) (string, types.Type) {
+	opName := op
+	switch opName {
+	case "%":
+		opName = "mod"
+	case "/":
+		if isInt(leftType) && isInt(rightType) {
+			opName = "quot"
+		}
+	case "&&":
+		opName = "and"
+	case "||":
+		opName = "or"
+	case "==":
+		opName = "="
+	case "!=":
+		opName = "not="
+	}
+
+	switch op {
+	case "+":
+		if isList(leftType) && isList(rightType) {
+			return fmt.Sprintf("(vec (concat %s %s))", left, right), leftType
+		}
+		if isString(leftType) || isString(rightType) {
+			return fmt.Sprintf("(str %s %s)", left, right), types.StringType{}
+		}
+		return fmt.Sprintf("(+ %s %s)", left, right), leftType
+	case "-", "*":
+		return fmt.Sprintf("(%s %s %s)", opName, left, right), leftType
+	case "/":
+		return fmt.Sprintf("(%s %s %s)", opName, left, right), leftType
+	case "%":
+		return fmt.Sprintf("(%s %s %s)", opName, left, right), leftType
+	case "==", "!=", "<", "<=", ">", ">=":
+		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.BoolType{}
+	case "&&", "||":
+		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.BoolType{}
+	default:
+		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.AnyType{}
+	}
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
