@@ -153,6 +153,12 @@ gfortran two-sum.f90 -o two-sum
 # 0
 # 1
 ```
+You can also compile and run the second LeetCode example, *add two numbers*:
+```bash
+mochi build --target fortran examples/leetcode/2/add-two-numbers.mochi -o add-two-numbers.f90
+gfortran -ffree-line-length-none add-two-numbers.f90 -o add-two-numbers
+./add-two-numbers
+```
 The tests show the full workflow, including a check for `gfortran` availability
 and execution of the resulting binary:
 ```go
