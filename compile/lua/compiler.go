@@ -3,6 +3,8 @@ package luacode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -81,7 +83,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.emitHelpers()
 	c.buf.Write(bodyBytes)
 
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	if err := checkLuaSyntax(code); err != nil {
+		return nil, err
+	}
+
+	return code, nil
 }
 
 // --- Statements ---
@@ -1251,4 +1258,25 @@ func contains(list []string, s string) bool {
 		}
 	}
 	return false
+}
+
+func checkLuaSyntax(code []byte) error {
+	if _, err := exec.LookPath("luac"); err != nil {
+		return nil
+	}
+	tmp, err := os.CreateTemp("", "mochi_*.lua")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmp.Name())
+	if _, err := tmp.Write(code); err != nil {
+		tmp.Close()
+		return err
+	}
+	tmp.Close()
+	cmd := exec.Command("luac", "-p", tmp.Name())
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("luac error: %v\n%s", err, out)
+	}
+	return nil
 }
