@@ -395,44 +395,54 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		name := sanitizeName(s.Let.Name)
+		var typ string
 		if s.Let.Type != nil {
-			c.varTypes[name] = csType(s.Let.Type)
+			typ = csType(s.Let.Type)
 			if isEmptyListLiteral(s.Let.Value) {
-				expr = fmt.Sprintf("new %s { }", c.varTypes[name])
+				expr = fmt.Sprintf("new %s { }", typ)
 			}
 		} else if isListLiteral(s.Let.Value) {
 			elem := listElemType(s.Let.Value)
-			typ := "dynamic[]"
+			typ = "dynamic[]"
 			if elem != "" {
 				typ = elem + "[]"
 			}
-			c.varTypes[name] = typ
 		} else if isStringExpr(s.Let.Value) {
-			c.varTypes[name] = "string"
+			typ = "string"
 		}
-		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
+		c.varTypes[name] = typ
+		decl := "var"
+		if typ != "" && !strings.Contains(typ, "dynamic") {
+			decl = typ
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s;", decl, name, expr))
 	case s.Var != nil:
 		expr, err := c.compileExpr(s.Var.Value)
 		if err != nil {
 			return err
 		}
 		name := sanitizeName(s.Var.Name)
+		var typ string
 		if s.Var.Type != nil {
-			c.varTypes[name] = csType(s.Var.Type)
+			typ = csType(s.Var.Type)
 			if isEmptyListLiteral(s.Var.Value) {
-				expr = fmt.Sprintf("new %s { }", c.varTypes[name])
+				expr = fmt.Sprintf("new %s { }", typ)
 			}
 		} else if isListLiteral(s.Var.Value) {
 			elem := listElemType(s.Var.Value)
-			typ := "dynamic[]"
+			typ = "dynamic[]"
 			if elem != "" {
 				typ = elem + "[]"
 			}
-			c.varTypes[name] = typ
 		} else if isStringExpr(s.Var.Value) {
-			c.varTypes[name] = "string"
+			typ = "string"
 		}
-		c.writeln(fmt.Sprintf("var %s = %s;", name, expr))
+		c.varTypes[name] = typ
+		decl := "var"
+		if typ != "" && !strings.Contains(typ, "dynamic") {
+			decl = typ
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s;", decl, name, expr))
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -1426,7 +1436,13 @@ func listElemType(e *parser.Expr) string {
 		return ""
 	}
 	pu := first.Binary.Left
-	if pu == nil || len(pu.Ops) != 0 {
+	if pu == nil {
+		return ""
+	}
+	if len(pu.Ops) > 1 {
+		return ""
+	}
+	if len(pu.Ops) == 1 && pu.Ops[0] != "-" && pu.Ops[0] != "+" {
 		return ""
 	}
 	pv := pu.Value
