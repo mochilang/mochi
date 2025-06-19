@@ -56,6 +56,8 @@ type Compiler struct {
 	needsListListInt       bool
 	needsConcatListListInt bool
 	needsConcatListInt     bool
+	needsListString        bool
+	needsConcatListString  bool
 	needsConcatString      bool
 	needsCount             bool
 	needsAvg               bool
@@ -106,6 +108,9 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 			if elem == "int" {
 				return "list_int"
 			}
+			if elem == "char*" {
+				return "list_string"
+			}
 			if elem == "list_int" {
 				return "list_list_int"
 			}
@@ -152,6 +157,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	if c.needsListListInt {
 		c.writeln("typedef struct { int len; list_int *data; } list_list_int;")
 	}
+	if c.needsListString {
+		c.writeln("typedef struct { int len; char** data; } list_string;")
+	}
 	c.writeln("")
 	c.writeln("static list_int list_int_create(int len) {")
 	c.indent++
@@ -161,11 +169,41 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("return l;")
 	c.indent--
 	c.writeln("}")
+	if c.needsListString {
+		c.writeln("")
+		c.writeln("static list_string list_string_create(int len) {")
+		c.indent++
+		c.writeln("list_string l;")
+		c.writeln("l.len = len;")
+		c.writeln("l.data = (char**)malloc(sizeof(char*)*len);")
+		c.writeln("return l;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.needsConcatListInt {
 		c.writeln("")
 		c.writeln("static list_int concat_list_int(list_int a, list_int b) {")
 		c.indent++
 		c.writeln("list_int r = list_int_create(a.len + b.len);")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("r.data[i] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("for (int i = 0; i < b.len; i++) {")
+		c.indent++
+		c.writeln("r.data[a.len + i] = b.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsConcatListString {
+		c.writeln("")
+		c.writeln("static list_string concat_list_string(list_string a, list_string b) {")
+		c.indent++
+		c.writeln("list_string r = list_string_create(a.len + b.len);")
 		c.writeln("for (int i = 0; i < a.len; i++) {")
 		c.indent++
 		c.writeln("r.data[i] = a.data[i];")
@@ -410,8 +448,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		typ := cTypeFromType(t)
 		if s.Let.Value != nil {
-			val := c.compileExpr(s.Let.Value)
-			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			if isEmptyListLiteral(s.Let.Value) && isListStringType(t) {
+				c.needsListString = true
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else {
+				val := c.compileExpr(s.Let.Value)
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			}
 		} else {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
 		}
@@ -431,8 +476,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		typ := cTypeFromType(t)
 		if s.Var.Value != nil {
-			val := c.compileExpr(s.Var.Value)
-			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			if isEmptyListLiteral(s.Var.Value) {
+				if isListStringType(t) {
+					c.needsListString = true
+					val := c.newTemp()
+					c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
+					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				} else {
+					val := c.compileExpr(s.Var.Value)
+					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				}
+			} else {
+				val := c.compileExpr(s.Var.Value)
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			}
 		} else {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
 		}
@@ -494,6 +551,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		src := c.compileExpr(f.Source)
 		idx := c.newTemp()
 		isStr := isStringExpr(f.Source, c.env)
+		isListStr := isListStringExpr(f.Source, c.env)
 		if isStr {
 			c.writeln(fmt.Sprintf("for (int %s = 0; %s[%s] != '\\0'; %s++) {", idx, src, idx, idx))
 			c.indent++
@@ -501,6 +559,12 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 				c.writeln(fmt.Sprintf("char %s[2];", name))
 				c.writeln(fmt.Sprintf("%s[0] = %s[%s];", name, src, idx))
 				c.writeln(fmt.Sprintf("%s[1] = '\\0';", name))
+			}
+		} else if isListStr {
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
+			c.indent++
+			if useVar {
+				c.writeln(fmt.Sprintf("char* %s = %s.data[%s];", name, src, idx))
 			}
 		} else {
 			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
@@ -514,6 +578,8 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			c.env = types.NewEnv(c.env)
 			if useVar {
 				if isStr {
+					c.env.SetVar(f.Name, types.StringType{}, true)
+				} else if isListStr {
 					c.env.SetVar(f.Name, types.StringType{}, true)
 				} else {
 					c.env.SetVar(f.Name, types.IntType{}, true)
@@ -609,6 +675,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	left := c.compileUnary(b.Left)
 	leftList := isListListUnary(b.Left, c.env)
 	leftListInt := isListIntUnary(b.Left, c.env)
+	leftListString := isListStringUnary(b.Left, c.env)
 	leftString := isStringUnary(b.Left, c.env)
 	for _, op := range b.Right {
 		right := c.compilePostfix(op.Right)
@@ -620,6 +687,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			left = name
 			leftList = true
 			leftListInt = false
+			leftListString = false
 			leftString = false
 			continue
 		}
@@ -630,6 +698,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			left = name
 			leftListInt = true
 			leftList = false
+			leftListString = false
+			leftString = false
+			continue
+		}
+		if op.Op == "+" && leftListString && isListStringPostfix(op.Right, c.env) {
+			c.needsConcatListString = true
+			c.needsListString = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_string %s = concat_list_string(%s, %s);", name, left, right))
+			left = name
+			leftListString = true
+			leftList = false
+			leftListInt = false
 			leftString = false
 			continue
 		}
@@ -641,11 +722,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = true
 			leftList = false
 			leftListInt = false
+			leftListString = false
 			continue
 		}
 		left = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
 		leftList = false
 		leftListInt = false
+		leftListString = false
 		leftString = false
 	}
 	return left
@@ -734,6 +817,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		if nested {
 			c.needsListListInt = true
 			c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(%d);", name, len(p.List.Elems)))
+			for i, el := range p.List.Elems {
+				v := c.compileExpr(el)
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
+		} else if len(p.List.Elems) > 0 && isStringExpr(p.List.Elems[0], c.env) {
+			c.needsListString = true
+			c.writeln(fmt.Sprintf("list_string %s = list_string_create(%d);", name, len(p.List.Elems)))
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
@@ -875,7 +965,7 @@ func isStringPostfixOrIndex(p *parser.PostfixExpr, env *types.Env) bool {
 	}
 	if len(p.Ops) > 0 {
 		if p.Ops[0].Index != nil {
-			if isStringPrimary(p.Target, env) {
+			if isStringPrimary(p.Target, env) || isListStringPrimary(p.Target, env) {
 				return true
 			}
 			return false
@@ -886,7 +976,13 @@ func isStringPostfixOrIndex(p *parser.PostfixExpr, env *types.Env) bool {
 }
 
 func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
-	if p == nil || len(p.Ops) > 0 {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) > 0 {
+		if p.Ops[0].Index != nil && isListStringPrimary(p.Target, env) {
+			return true
+		}
 		return false
 	}
 	return isStringPrimary(p.Target, env)
@@ -982,12 +1078,31 @@ func isListLiteralPrimary(p *parser.Primary) bool {
 	return p != nil && p.List != nil
 }
 
+func isEmptyListLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return false
+	}
+	if e.Binary.Left.Value.Target.List != nil {
+		return len(e.Binary.Left.Value.Target.List.Elems) == 0
+	}
+	return false
+}
+
 func isListListIntType(t types.Type) bool {
 	if lt, ok := t.(types.ListType); ok {
 		if inner, ok2 := lt.Elem.(types.ListType); ok2 {
 			if _, ok3 := inner.Elem.(types.IntType); ok3 {
 				return true
 			}
+		}
+	}
+	return false
+}
+
+func isListStringType(t types.Type) bool {
+	if lt, ok := t.(types.ListType); ok {
+		if _, ok2 := lt.Elem.(types.StringType); ok2 {
+			return true
 		}
 	}
 	return false
@@ -1138,6 +1253,86 @@ func isListIntPrimary(p *parser.Primary, env *types.Env) bool {
 			if ft, ok := t.(types.FuncType); ok {
 				if lt, ok2 := ft.Return.(types.ListType); ok2 {
 					if _, ok3 := lt.Elem.(types.IntType); ok3 {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isListStringExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isListStringUnary(e.Binary.Left, env)
+}
+
+func isListStringUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isListStringPostfix(u.Value, env)
+}
+
+func isListStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) == 0 {
+		return isListStringPrimary(p.Target, env)
+	}
+	if p.Ops[0].Index != nil && p.Ops[0].Index.Colon != nil {
+		if isStringPrimary(p.Target, env) {
+			return false
+		}
+		return true
+	}
+	return false
+}
+
+func isListStringPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.List != nil {
+		if len(p.List.Elems) == 0 {
+			return true
+		}
+		el := p.List.Elems[0]
+		if el.Binary != nil && el.Binary.Left != nil && el.Binary.Left.Value != nil && el.Binary.Left.Value.Target != nil {
+			if lit := el.Binary.Left.Value.Target.Lit; lit != nil && lit.Str != nil {
+				return true
+			}
+			if sel := el.Binary.Left.Value.Target.Selector; sel != nil && env != nil {
+				if t, err := env.GetVar(sel.Root); err == nil {
+					if _, ok := t.(types.StringType); ok {
+						return true
+					}
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok2 := lt.Elem.(types.StringType); ok2 {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	if p.Selector != nil && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	if p.Call != nil && env != nil {
+		if t, err := env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if lt, ok2 := ft.Return.(types.ListType); ok2 {
+					if _, ok3 := lt.Elem.(types.StringType); ok3 {
 						return true
 					}
 				}

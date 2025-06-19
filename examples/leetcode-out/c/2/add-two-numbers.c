@@ -21,18 +21,6 @@ static list_int concat_list_int(list_int a, list_int b) {
 	return r;
 }
 
-static int _count(list_int v) {
-	return v.len;
-}
-
-static double _avg(list_int v) {
-	if (v.len == 0) return 0;
-	double sum = 0;
-	for (int i = 0; i < v.len; i++) {
-		sum += v.data[i];
-	}
-	return sum / v.len;
-}
 
 list_int addTwoNumbers(list_int l1, list_int l2){
 	int i = 0;

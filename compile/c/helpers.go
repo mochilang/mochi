@@ -56,6 +56,9 @@ func cTypeFromType(t types.Type) string {
 		if elem == "int" {
 			return "list_int"
 		}
+		if elem == "char*" {
+			return "list_string"
+		}
 		if elem == "list_int" {
 			return "list_list_int"
 		}

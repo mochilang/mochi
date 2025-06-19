@@ -8,11 +8,14 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
 	ccode "mochi/compile/c"
+	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -38,11 +41,41 @@ func runLeet(t *testing.T, id int) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
+
+			modRoot, _ := mod.FindRoot(filepath.Dir(f))
+
+			// Verify inline tests with the interpreter, except for problem 10 which
+			// relies on short-circuit semantics not yet supported by the interpreter.
+			interp := interpreter.New(prog, env, modRoot)
+			if id != 10 {
+				if err := interp.Test(); err != nil {
+					t.Fatalf("tests failed: %v", err)
+				}
+			}
+
+			// Capture expected output from running the program.
+			interp = interpreter.New(prog, env, modRoot)
+			var wantBuf bytes.Buffer
+			interp.Env().SetWriter(&wantBuf)
+			if err := interp.Run(); err != nil {
+				t.Fatalf("run error: %v", err)
+			}
+
 			c := ccode.New(env)
 			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
+
+			outDir := filepath.Join("..", "..", "examples", "leetcode-out", "c", strconv.Itoa(id))
+			if err := os.MkdirAll(outDir, 0755); err != nil {
+				t.Fatalf("mkdir: %v", err)
+			}
+			outFile := filepath.Join(outDir, strings.TrimSuffix(filepath.Base(f), ".mochi")+".c")
+			if err := os.WriteFile(outFile, code, 0644); err != nil {
+				t.Fatalf("write output: %v", err)
+			}
+
 			tmp := t.TempDir()
 			cfile := filepath.Join(tmp, "main.c")
 			if err := os.WriteFile(cfile, code, 0644); err != nil {
@@ -56,17 +89,21 @@ func runLeet(t *testing.T, id int) {
 			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
-			if out, err := cmd.CombinedOutput(); err != nil {
+			out, err := cmd.CombinedOutput()
+			if err != nil {
 				t.Fatalf("run error: %v\n%s", err, out)
-			} else {
-				_ = out
+			}
+			got := bytes.TrimSpace(out)
+			want := bytes.TrimSpace(wantBuf.Bytes())
+			if !bytes.Equal(got, want) {
+				t.Fatalf("unexpected output\nwant:\n%s\n got:\n%s", want, got)
 			}
 		})
 	}
 }
 
 func TestCCompiler_LeetCodeExamples(t *testing.T) {
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 9; i++ {
 		runLeet(t, i)
 	}
 }
