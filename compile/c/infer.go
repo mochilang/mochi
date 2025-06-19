@@ -21,17 +21,13 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 		rt := c.inferPostfixType(op.Right)
 		switch op.Op {
 		case "+", "-", "*", "/", "%":
-			if isInt(t) {
-				if isInt(rt) {
-					t = types.IntType{}
-					continue
-				}
-			}
-			if isFloat(t) {
-				if isFloat(rt) {
+			if isNumber(t) && isNumber(rt) {
+				if isFloat(t) || isFloat(rt) {
 					t = types.FloatType{}
-					continue
+				} else {
+					t = types.IntType{}
 				}
+				continue
 			}
 			if op.Op == "+" {
 				if llist, ok := t.(types.ListType); ok {

@@ -903,10 +903,12 @@ func isStringPrimary(p *parser.Primary, env *types.Env) bool {
 }
 
 func isFloatArg(e *parser.Expr, env *types.Env) bool {
-	if e == nil || e.Binary == nil {
+	if e == nil {
 		return false
 	}
-	return isFloatUnary(e.Binary.Left, env)
+	c := New(env)
+	_, ok := c.inferExprType(e).(types.FloatType)
+	return ok
 }
 
 func isFloatUnary(u *parser.Unary, env *types.Env) bool {

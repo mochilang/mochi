@@ -994,17 +994,14 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 	switch op {
 	case "+", "-", "*", "/", "%":
 		switch {
-		case (unify(left, IntType{}, nil) || unify(left, Int64Type{}, nil)) &&
-			(unify(right, IntType{}, nil) || unify(right, Int64Type{}, nil)):
-			if _, ok := left.(Int64Type); ok {
-				return Int64Type{}, nil
+		case isNumeric(left) && isNumeric(right):
+			if unify(left, FloatType{}, nil) || unify(right, FloatType{}, nil) {
+				return FloatType{}, nil
 			}
-			if _, ok := right.(Int64Type); ok {
+			if unify(left, Int64Type{}, nil) || unify(right, Int64Type{}, nil) {
 				return Int64Type{}, nil
 			}
 			return IntType{}, nil
-		case unify(left, FloatType{}, nil) && unify(right, FloatType{}, nil):
-			return FloatType{}, nil
 		case op == "+" && unify(left, StringType{}, nil) && unify(right, StringType{}, nil):
 			return StringType{}, nil
 		default:
