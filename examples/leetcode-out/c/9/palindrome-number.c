@@ -11,18 +11,6 @@ static list_int list_int_create(int len) {
 	return l;
 }
 
-static int _count(list_int v) {
-	return v.len;
-}
-
-static double _avg(list_int v) {
-	if (v.len == 0) return 0;
-	double sum = 0;
-	for (int i = 0; i < v.len; i++) {
-		sum += v.data[i];
-	}
-	return sum / v.len;
-}
 
 static char* _str(int v) {
 	char* buf = (char*)malloc(32);
@@ -45,7 +33,7 @@ int isPalindrome(int x){
 		return 0;
 	}
 	char* _t1 = _str(x);
-	int s = _t1;
+	char* s = _t1;
 	int n = strlen(s);
 	for (int i = 0; i < (n / 2); i++) {
 		char* _t2 = _index_string(s, i);
