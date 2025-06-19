@@ -12,9 +12,10 @@ import (
 
 // Compiler translates a Mochi AST into Zig source code (very small subset).
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
+	buf      bytes.Buffer
+	indent   int
+	env      *types.Env
+	needsAvg bool
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
@@ -63,6 +64,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.writeln("const std = @import(\"std\");")
 	c.writeln("")
+	if c.needsAvg {
+		c.writeln("fn _avg(v: []const i32) f64 {")
+		c.indent++
+		c.writeln("if (v.len == 0) return 0;")
+		c.writeln("var sum: f64 = 0;")
+		c.writeln("for (v) |it| { sum += @floatFromInt(it); }")
+		c.writeln("return sum / @as(f64, @floatFromInt(v.len));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	c.buf.WriteString(body)
 	return c.buf.Bytes(), nil
 }
@@ -411,14 +423,29 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return arg + ".len", nil
+		return fmt.Sprintf("(%s).len", arg), nil
+	}
+	if name == "count" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s).len", arg), nil
+	}
+	if name == "avg" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		c.needsAvg = true
+		return fmt.Sprintf("_avg(%s)", arg), nil
 	}
 	if name == "print" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("std.debug.print(\"{}\\n\", .{%s})", arg), nil
+		return fmt.Sprintf("std.debug.print(\"{d}\\n\", .{%s})", arg), nil
 	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {

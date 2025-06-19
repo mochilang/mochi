@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	zigcode "mochi/compile/zig"
+	"mochi/golden"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -71,6 +72,62 @@ func TestZigCompiler_LeetCode1to10(t *testing.T) {
 	if err != nil {
 		t.Fatalf("run error: %v", err)
 	}
+}
+
+func TestZigCompiler_SubsetPrograms(t *testing.T) {
+	zigc, err := zigcode.EnsureZig()
+	if err != nil {
+		t.Skipf("zig compiler not installed: %v", err)
+	}
+
+	run := func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+		}
+		c := zigcode.New(env)
+		code, err := c.Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+		tmp := t.TempDir()
+		file := filepath.Join(tmp, "prog.zig")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		exe := filepath.Join(tmp, "prog")
+		if out, err := exec.Command(zigc, "build-exe", file, "-O", "ReleaseSafe", "-femit-bin="+exe).CombinedOutput(); err != nil {
+			return nil, fmt.Errorf("\u274c zig build error: %w\n%s", err, out)
+		}
+		out, err := exec.Command(exe).CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
+		}
+		return bytes.TrimSpace(out), nil
+	}
+
+	golden.Run(t, "tests/compiler/zig", ".mochi", ".out", run)
+
+	golden.Run(t, "tests/compiler/zig", ".mochi", ".zig.out", func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+		}
+		c := zigcode.New(env)
+		code, err := c.Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+		return bytes.TrimSpace(code), nil
+	})
 }
 
 func runExample(t *testing.T, id int) ([]byte, error) {
