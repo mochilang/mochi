@@ -56,27 +56,31 @@ func sanitizeName(name string) string {
 	return s
 }
 
-func collectLoopVars(stmts []*parser.Statement, vars map[string]bool) {
+func collectLoopVars(stmts []*parser.Statement, vars, str map[string]bool) {
 	for _, s := range stmts {
 		switch {
 		case s.For != nil:
-			vars[sanitizeName(s.For.Name)] = true
+			name := sanitizeName(s.For.Name)
+			vars[name] = true
 			if s.For.RangeEnd == nil {
-				vars["i_"+sanitizeName(s.For.Name)] = true
+				vars["i_"+name] = true
 			}
-			collectLoopVars(s.For.Body, vars)
+			if isStringExpr(s.For.Source, str, nil) {
+				str[name] = true
+			}
+			collectLoopVars(s.For.Body, vars, str)
 		case s.If != nil:
-			collectLoopVars(s.If.Then, vars)
+			collectLoopVars(s.If.Then, vars, str)
 			cur := s.If
 			for cur.ElseIf != nil {
 				cur = cur.ElseIf
-				collectLoopVars(cur.Then, vars)
+				collectLoopVars(cur.Then, vars, str)
 			}
 			if len(cur.Else) > 0 {
-				collectLoopVars(cur.Else, vars)
+				collectLoopVars(cur.Else, vars, str)
 			}
 		case s.While != nil:
-			collectLoopVars(s.While.Body, vars)
+			collectLoopVars(s.While.Body, vars, str)
 		}
 	}
 }
@@ -364,10 +368,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	loopVars := map[string]bool{}
-	collectLoopVars(mainStmts, loopVars)
+	loopStrVars := map[string]bool{}
+	collectLoopVars(mainStmts, loopVars, loopStrVars)
 	for name := range loopVars {
 		if !declared[name] {
-			c.writeln("integer :: " + name)
+			if loopStrVars[name] {
+				c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
+			} else {
+				c.writeln("integer :: " + name)
+			}
 		}
 	}
 	for _, a := range allocs {
@@ -482,10 +491,15 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.floatVars[name] = true
 	}
 	loopVars := map[string]bool{}
-	collectLoopVars(fn.Body, loopVars)
+	loopStrVars := map[string]bool{}
+	collectLoopVars(fn.Body, loopVars, loopStrVars)
 	for name := range loopVars {
 		vars[name] = true
+		if loopStrVars[name] {
+			stringVars[name] = true
+		}
 	}
+	c.stringVars = stringVars
 	allocs := []string{}
 	for name, isList := range listVars {
 		if name == resVar {
@@ -612,7 +626,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 			c.writeln("end do")
 		} else {
 			idx := "i_" + name
-			if c.stringVars[src] {
+			isStr := c.stringVars[src] || isStringExpr(s.For.Source, c.stringVars, c.funReturnStr)
+			if isStr {
 				c.writeln(fmt.Sprintf("do %s = 0, len(%s) - 1", idx, src))
 				c.indent++
 				c.writeln(fmt.Sprintf("%s = %s(modulo(%s, len(%s)) + 1:modulo(%s, len(%s)) + 1)", name, src, idx, src, idx, src))
@@ -731,12 +746,17 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.stringVars = stringVars
 	c.floatVars = floatVars
 	loopVars := map[string]bool{}
-	collectLoopVars(t.Body, loopVars)
+	loopStrVars := map[string]bool{}
+	collectLoopVars(t.Body, loopVars, loopStrVars)
 	for name := range loopVars {
 		if !vars[name] {
 			vars[name] = true
 		}
+		if loopStrVars[name] {
+			stringVars[name] = true
+		}
 	}
+	c.stringVars = stringVars
 	allocs := []string{}
 	for name := range listVars {
 		c.writeln(fmt.Sprintf("integer, allocatable :: %s(:)", name))
@@ -1097,7 +1117,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		if c.stringVars[args[0]] {
+		if c.stringVars[args[0]] || strings.HasPrefix(args[0], "'") {
 			return fmt.Sprintf("len(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("size(%s)", args[0]), nil
