@@ -115,8 +115,10 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		value = v
 	}
 	if stmt.Type != nil {
-		typ := ktType(c.resolveTypeRef(stmt.Type))
+		t := c.resolveTypeRef(stmt.Type)
+		typ := ktType(t)
 		c.writeln(fmt.Sprintf("var %s: %s = %s", sanitizeName(stmt.Name), typ, value))
+		c.env.SetVar(stmt.Name, t, true)
 	} else {
 		c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(stmt.Name), value))
 	}
@@ -125,16 +127,33 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 	lhs := sanitizeName(stmt.Name)
+	idxStrs := make([]string, 0, len(stmt.Index))
 	for _, idx := range stmt.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
 			return err
 		}
+		idxStrs = append(idxStrs, iexpr)
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
 	}
 	rhs, err := c.compileExpr(stmt.Value)
 	if err != nil {
 		return err
+	}
+	if len(stmt.Index) > 0 {
+		if t, err := c.env.GetVar(stmt.Name); err == nil {
+			if _, ok := t.(types.ListType); ok {
+				idx := idxStrs[len(idxStrs)-1]
+				c.writeln("run {")
+				c.indent++
+				c.writeln(fmt.Sprintf("val _tmp = %s.toMutableList()", sanitizeName(stmt.Name)))
+				c.writeln(fmt.Sprintf("_tmp[%s] = %s", idx, rhs))
+				c.writeln(fmt.Sprintf("%s = _tmp", sanitizeName(stmt.Name)))
+				c.indent--
+				c.writeln("}")
+				return nil
+			}
+		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", lhs, rhs))
 	return nil
@@ -710,7 +729,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems = append(elems, ce)
 		}
 		if len(elems) == 0 {
-			return "listOf<Int>()", nil
+			return "listOf()", nil
 		}
 		return "listOf(" + joinArgs(elems) + ")", nil
 	case p.Map != nil:

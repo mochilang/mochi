@@ -2,7 +2,7 @@ fun addTwoNumbers(l1: List<Int>, l2: List<Int>) : List<Int> {
         var i = 0
         var j = 0
         var carry = 0
-        var result: List<Int> = listOf<Int>()
+        var result: List<Int> = listOf()
         while ((((i < l1.size) || (j < l2.size)) || (carry > 0))) {
                 var x = 0
                 if ((i < l1.size)) {
