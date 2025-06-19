@@ -17,6 +17,8 @@ type Compiler struct {
 	env          *types.Env
 	tempVarCount int
 	tempVars     map[string]bool
+	expected     types.Type
+	varTypes     map[string]string
 }
 
 // New creates a new Pascal compiler instance.
@@ -32,7 +34,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("{$mode objfpc}")
 	c.writeln("uses SysUtils, fgl;")
 	c.writeln("")
-	c.writeln("type TIntArray = array of integer;")
+	c.writeln("type")
+	c.indent++
+	c.writeln("generic TArray<T> = array of T;")
+	c.indent--
 	c.writeln("")
 
 	// Emit function declarations first.
@@ -87,14 +92,46 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		// test blocks are ignored when compiling to Pascal
 		return nil
 	case s.Let != nil:
-		val, err := c.compileExpr(s.Let.Value)
+		var t types.Type
+		if c.env != nil {
+			if tt, err := c.env.GetVar(s.Let.Name); err == nil {
+				t = tt
+			}
+		}
+		if t == nil {
+			if c.varTypes != nil {
+				if sType, ok := c.varTypes[s.Let.Name]; ok {
+					t = parsePasType(sType)
+				}
+			}
+		}
+		if t == nil {
+			t = resolveSimpleTypeRef(s.Let.Type)
+		}
+		val, err := c.compileExprWith(t, s.Let.Value)
 		if err != nil {
 			return err
 		}
 		c.writeln(fmt.Sprintf("%s := %s;", sanitizeName(s.Let.Name), val))
 	case s.Var != nil:
 		if s.Var.Value != nil {
-			val, err := c.compileExpr(s.Var.Value)
+			var t types.Type
+			if c.env != nil {
+				if tt, err := c.env.GetVar(s.Var.Name); err == nil {
+					t = tt
+				}
+			}
+			if t == nil {
+				if c.varTypes != nil {
+					if sType, ok := c.varTypes[s.Var.Name]; ok {
+						t = parsePasType(sType)
+					}
+				}
+			}
+			if t == nil {
+				t = resolveSimpleTypeRef(s.Var.Type)
+			}
+			val, err := c.compileExprWith(t, s.Var.Value)
 			if err != nil {
 				return err
 			}
@@ -136,7 +173,23 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				name = fmt.Sprintf("%s[%s]", name, iv)
 			}
 		}
-		val, err := c.compileExpr(s.Assign.Value)
+		var t types.Type
+		if c.env != nil {
+			if tt, err := c.env.GetVar(s.Assign.Name); err == nil {
+				t = tt
+			}
+		}
+		if t == nil {
+			if c.varTypes != nil {
+				if sType, ok := c.varTypes[s.Assign.Name]; ok {
+					t = parsePasType(sType)
+				}
+			}
+		}
+		if t == nil {
+			t = resolveSimpleTypeRef(nil)
+		}
+		val, err := c.compileExprWith(t, s.Assign.Value)
 		if err != nil {
 			return err
 		}
@@ -283,18 +336,30 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 
 	name := sanitizeName(fun.Name)
 	params := make([]string, len(fun.Params))
+	c.varTypes = map[string]string{}
 	for i, p := range fun.Params {
 		pt := c.typeRef(p.Type)
 		params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), pt)
+		c.varTypes[p.Name] = pt
 	}
 	retType := c.typeRef(fun.Return)
 	c.writeln(fmt.Sprintf("function %s(%s): %s;", name, strings.Join(params, "; "), retType))
-
 	vars := map[string]string{}
-	collectVars(fun.Body, c.env, vars)
+	paramMap := map[string]string{}
+	for k, v := range c.varTypes {
+		paramMap[k] = v
+	}
+	collectVars(fun.Body, c.env, paramMap)
+	for k, v := range paramMap {
+		if _, ok := c.varTypes[k]; !ok { // exclude parameters
+			vars[k] = v
+		}
+		c.varTypes[k] = v
+	}
 	// include generated temporaries
 	for n := range c.tempVars {
 		vars[n] = "integer"
+		c.varTypes[n] = "integer"
 	}
 	if len(vars) > 0 {
 		c.writeln("var")
@@ -321,6 +386,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 
 	// restore temp vars for outer scope
 	c.tempVars = prevTemps
+	c.varTypes = nil
 	return nil
 }
 
@@ -341,8 +407,9 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 		}
 	}
 	if t.Generic != nil {
-		if t.Generic.Name == "list" {
-			return "TIntArray"
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			elem := c.typeRef(t.Generic.Args[0])
+			return fmt.Sprintf("specialize TArray<%s>", elem)
 		}
 		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
 			keyT := c.typeRef(t.Generic.Args[0])
@@ -365,7 +432,8 @@ func typeString(t types.Type) string {
 	case types.BoolType:
 		return "boolean"
 	case types.ListType:
-		return "TIntArray"
+		lt := tt
+		return fmt.Sprintf("specialize TArray<%s>", typeString(lt.Elem))
 	case types.MapType:
 		mt := tt
 		return fmt.Sprintf("specialize TFPGMap<%s, %s>", typeString(mt.Key), typeString(mt.Value))
@@ -384,6 +452,9 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 					typ = typeString(t)
 				}
 			}
+			if typ == "integer" && s.Let.Type != nil {
+				typ = typeString(resolveSimpleTypeRef(s.Let.Type))
+			}
 			vars[s.Let.Name] = typ
 		case s.Var != nil:
 			typ := "integer"
@@ -392,15 +463,33 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 					typ = typeString(t)
 				}
 			}
+			if typ == "integer" && s.Var.Type != nil {
+				typ = typeString(resolveSimpleTypeRef(s.Var.Type))
+			}
 			if typ == "integer" && isListLiteral(s.Var.Value) {
-				typ = "TIntArray"
+				typ = "specialize TArray<integer>"
 			} else if typ == "integer" && isStringLiteral(s.Var.Value) {
 				typ = "string"
 			}
 			vars[s.Var.Name] = typ
 		case s.For != nil:
 			if s.For.Name != "_" {
-				vars[s.For.Name] = "integer"
+				typ := "integer"
+				if env != nil {
+					if t, err := env.GetVar(s.For.Name); err == nil {
+						typ = typeString(t)
+					}
+				}
+				if typ == "integer" {
+					typ = inferTypeFromExpr(s.For.Source, env, vars)
+				}
+				if strings.HasPrefix(typ, "specialize TArray<") {
+					inner := strings.TrimSuffix(strings.TrimPrefix(typ, "specialize TArray<"), ">")
+					typ = inner
+				} else if typ == "string" {
+					typ = "char"
+				}
+				vars[s.For.Name] = typ
 			}
 			collectVars(s.For.Body, env, vars)
 		case s.While != nil:
@@ -415,6 +504,95 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 			// ignore nested functions
 		}
 	}
+}
+
+func inferTypeFromExpr(e *parser.Expr, env *types.Env, vars map[string]string) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "integer"
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "integer"
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) > 0 {
+		return "integer"
+	}
+	return inferTypeFromPrimary(p.Target, env, vars)
+}
+
+func inferTypeFromPrimary(p *parser.Primary, env *types.Env, vars map[string]string) string {
+	switch {
+	case p == nil:
+		return "integer"
+	case p.Lit != nil:
+		switch {
+		case p.Lit.Str != nil:
+			return "string"
+		case p.Lit.Bool != nil:
+			return "boolean"
+		case p.Lit.Float != nil:
+			return "double"
+		default:
+			return "integer"
+		}
+	case p.Selector != nil:
+		if env != nil {
+			if t, err := env.GetVar(p.Selector.Root); err == nil {
+				return typeString(t)
+			}
+		}
+		if vars != nil {
+			if v, ok := vars[p.Selector.Root]; ok {
+				return v
+			}
+		}
+	case p.List != nil:
+		elem := "integer"
+		if len(p.List.Elems) > 0 {
+			elem = inferTypeFromExpr(p.List.Elems[0], env, vars)
+		}
+		return fmt.Sprintf("specialize TArray<%s>", elem)
+	}
+	return "integer"
+}
+
+func (c *Compiler) compileExprWith(expected types.Type, e *parser.Expr) (string, error) {
+	old := c.expected
+	c.expected = expected
+	res, err := c.compileExpr(e)
+	c.expected = old
+	return res, err
+}
+
+func resolveSimpleTypeRef(t *parser.TypeRef) types.Type {
+	if t == nil {
+		return types.IntType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		}
+	}
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			return types.ListType{Elem: resolveSimpleTypeRef(t.Generic.Args[0])}
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return types.MapType{
+				Key:   resolveSimpleTypeRef(t.Generic.Args[0]),
+				Value: resolveSimpleTypeRef(t.Generic.Args[1]),
+			}
+		}
+	}
+	return types.IntType{}
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -536,8 +714,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	for i, op := range p.Ops {
 		if op.Index != nil {
+			if i == 0 && p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Str != nil {
+				if op.Index.Start != nil && op.Index.Start.Binary != nil && op.Index.Start.Binary.Left != nil && op.Index.Start.Binary.Left.Value != nil && op.Index.Start.Binary.Left.Value.Target != nil && op.Index.Start.Binary.Left.Value.Target.Lit != nil && op.Index.Start.Binary.Left.Value.Target.Lit.Int != nil && *op.Index.Start.Binary.Left.Value.Target.Lit.Int == 0 {
+					s := strings.ReplaceAll(*p.Target.Lit.Str, "'", "''")
+					expr = fmt.Sprintf("'%s'", s)
+					continue
+				}
+			}
 			idx, err := c.compileExpr(op.Index.Start)
 			if err != nil {
 				return "", err
@@ -605,21 +790,38 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("Length(%s)", argStr), nil
 		case "print":
 			return fmt.Sprintf("writeln(%s)", argStr), nil
+		case "str":
+			if len(args) == 1 {
+				t := inferTypeFromExpr(p.Call.Args[0], c.env, c.varTypes)
+				if t == "double" {
+					return fmt.Sprintf("FloatToStr(%s)", args[0]), nil
+				}
+				return fmt.Sprintf("IntToStr(%s)", args[0]), nil
+			}
+			return fmt.Sprintf("IntToStr(%s)", argStr), nil
 		default:
 			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 		}
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.List != nil:
+		elemType := "integer"
+		var elemT types.Type
+		if lt, ok := c.expected.(types.ListType); ok {
+			elemType = typeString(lt.Elem)
+			elemT = lt.Elem
+		} else if len(p.List.Elems) > 0 {
+			elemType = inferTypeFromExpr(p.List.Elems[0], c.env, c.varTypes)
+		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
-			v, err := c.compileExpr(e)
+			v, err := c.compileExprWith(elemT, e)
 			if err != nil {
 				return "", err
 			}
 			elems[i] = v
 		}
-		return "TIntArray([" + strings.Join(elems, ", ") + "])", nil
+		return fmt.Sprintf("specialize TArray<%s>([%s])", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
 		// infer key/value types from first element if available
 		keyType := "string"

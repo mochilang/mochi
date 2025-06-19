@@ -2,7 +2,8 @@ program main;
 {$mode objfpc}
 uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
 
 function reverse(x: integer): integer;
 var

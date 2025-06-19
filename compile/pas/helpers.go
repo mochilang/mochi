@@ -141,6 +141,13 @@ func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
 				}
 			}
 		}
+		if c.varTypes != nil {
+			if vt, ok := c.varTypes[p.Selector.Root]; ok {
+				if strings.HasPrefix(vt, "specialize TFPGMap<") {
+					return true
+				}
+			}
+		}
 	}
 	return false
 }
@@ -173,6 +180,13 @@ func (c *Compiler) isListPrimary(p *parser.Primary) bool {
 				}
 			}
 		}
+		if c.varTypes != nil {
+			if vt, ok := c.varTypes[p.Selector.Root]; ok {
+				if strings.HasPrefix(vt, "specialize TArray<") {
+					return true
+				}
+			}
+		}
 	}
 	return false
 }
@@ -184,4 +198,45 @@ func contains(list []string, s string) bool {
 		}
 	}
 	return false
+}
+
+func parsePasType(s string) types.Type {
+	switch s {
+	case "integer":
+		return types.IntType{}
+	case "double":
+		return types.FloatType{}
+	case "string":
+		return types.StringType{}
+	case "boolean":
+		return types.BoolType{}
+	case "char":
+		return types.StringType{}
+	}
+	if strings.HasPrefix(s, "specialize TArray<") && strings.HasSuffix(s, ">") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(s, "specialize TArray<"), ">")
+		return types.ListType{Elem: parsePasType(strings.TrimSpace(inner))}
+	}
+	if strings.HasPrefix(s, "specialize TFPGMap<") && strings.HasSuffix(s, ">") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(s, "specialize TFPGMap<"), ">")
+		parts := strings.SplitN(inner, ",", 2)
+		if len(parts) == 2 {
+			return types.MapType{Key: parsePasType(strings.TrimSpace(parts[0])), Value: parsePasType(strings.TrimSpace(parts[1]))}
+		}
+	}
+	return types.IntType{}
+}
+
+func (c *Compiler) varType(name string) types.Type {
+	if c.env != nil {
+		if t, err := c.env.GetVar(name); err == nil {
+			return t
+		}
+	}
+	if c.varTypes != nil {
+		if s, ok := c.varTypes[name]; ok {
+			return parsePasType(s)
+		}
+	}
+	return types.IntType{}
 }

@@ -2,16 +2,17 @@ program main;
 {$mode objfpc}
 uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
 
 function convert(s: string; numRows: integer): string;
 var
-	ch: integer;
+	ch: char;
 	curr: integer;
 	i: integer;
 	_result: string;
-	row: integer;
-	rows: TIntArray;
+	row: string;
+	rows: specialize TArray<string>;
 	step: integer;
 begin
 	if ((numRows <= 1) or (numRows >= Length(s))) then
@@ -19,11 +20,11 @@ begin
 		result := s;
 		exit;
 	end;
-	rows := TIntArray([]);
+	rows := specialize TArray<string>([]);
 	i := 0;
 	while (i < numRows) do
 	begin
-		rows := Concat(rows, TIntArray(['']));
+		rows := Concat(rows, specialize TArray<string>(['']));
 		i := i + 1;
 	end;
 	curr := 0;

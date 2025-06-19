@@ -2,13 +2,69 @@ program main;
 {$mode objfpc}
 uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
+
+function digit(ch: string): integer;
+begin
+	if (ch = '0') then
+	begin
+		result := 0;
+		exit;
+	end;
+	if (ch = '1') then
+	begin
+		result := 1;
+		exit;
+	end;
+	if (ch = '2') then
+	begin
+		result := 2;
+		exit;
+	end;
+	if (ch = '3') then
+	begin
+		result := 3;
+		exit;
+	end;
+	if (ch = '4') then
+	begin
+		result := 4;
+		exit;
+	end;
+	if (ch = '5') then
+	begin
+		result := 5;
+		exit;
+	end;
+	if (ch = '6') then
+	begin
+		result := 6;
+		exit;
+	end;
+	if (ch = '7') then
+	begin
+		result := 7;
+		exit;
+	end;
+	if (ch = '8') then
+	begin
+		result := 8;
+		exit;
+	end;
+	if (ch = '9') then
+	begin
+		result := 9;
+		exit;
+	end;
+	result := -1;
+	exit;
+end;
 
 function myAtoi(s: string): integer;
 var
 	ch: integer;
 	d: integer;
-	digits: integer;
 	i: integer;
 	n: integer;
 	_result: integer;
@@ -29,28 +85,15 @@ begin
 		end;
 		i := i + 1;
 	end;
-	var _tmp0: specialize TFPGMap<string, integer>;
-	_tmp0 := specialize TFPGMap<string, integer>.Create;
-	_tmp0.AddOrSetData('0', 0);
-	_tmp0.AddOrSetData('1', 1);
-	_tmp0.AddOrSetData('2', 2);
-	_tmp0.AddOrSetData('3', 3);
-	_tmp0.AddOrSetData('4', 4);
-	_tmp0.AddOrSetData('5', 5);
-	_tmp0.AddOrSetData('6', 6);
-	_tmp0.AddOrSetData('7', 7);
-	_tmp0.AddOrSetData('8', 8);
-	_tmp0.AddOrSetData('9', 9);
-	digits := _tmp0;
 	_result := 0;
 	while (i < n) do
 	begin
 		ch := s[i];
-		if not (ch in digits) then
+		d := digit(ch);
+		if (d < 0) then
 		begin
 			break;
 		end;
-		d := digits[ch];
 		_result := _result * 10 + d;
 		i := i + 1;
 	end;
