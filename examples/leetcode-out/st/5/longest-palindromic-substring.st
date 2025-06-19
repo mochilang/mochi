@@ -5,7 +5,7 @@ expand: s left: left right: right | l n r |
 	l := left.
 	r := right.
 	n := s size.
-	[(((l >= 0) & r) < n)] whileTrue: [
+	[(((l >= 0) and: [r]) < n)] whileTrue: [
 		(((s at: l + 1) ~= (s at: r + 1))) ifTrue: [
 		]
 		.

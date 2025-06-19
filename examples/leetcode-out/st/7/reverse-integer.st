@@ -17,7 +17,7 @@ reverse: x | digit n rev sign |
 	]
 	.
 	rev := (rev * sign).
-	((((rev < (((2147483647 negated) - 1))) | rev) > 2147483647)) ifTrue: [
+	((((rev < (((2147483647 negated) - 1))) or: [rev]) > 2147483647)) ifTrue: [
 		^ 0
 	]
 	.

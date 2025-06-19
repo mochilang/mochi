@@ -6,7 +6,7 @@ addTwoNumbers: l1 l2: l2 | carry digit i j result sum x y |
 	j := 0.
 	carry := 0.
 	result := Array new.
-	[(((((i < l1 size) | j) < l2 size) | carry) > 0)] whileTrue: [
+	[(((((i < l1 size) or: [j]) < l2 size) or: [carry]) > 0)] whileTrue: [
 		x := 0.
 		((i < l1 size)) ifTrue: [
 			x := (l1 at: i + 1).

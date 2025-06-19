@@ -5,7 +5,7 @@ findMedianSortedArrays: nums1 nums2: nums2 | i j merged mid1 mid2 total |
 	merged := Array new.
 	i := 0.
 	j := 0.
-	[(((i < nums1 size) | j) < nums2 size)] whileTrue: [
+	[(((i < nums1 size) or: [j]) < nums2 size)] whileTrue: [
 		((j >= nums2 size)) ifTrue: [
 			merged := (merged , Array with: (nums1 at: i + 1)).
 			i := (i + 1).
