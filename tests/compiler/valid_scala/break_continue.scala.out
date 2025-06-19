@@ -1,13 +1,22 @@
 object Main {
 	def main(args: Array[String]): Unit = {
 		val numbers = List(1, 2, 3, 4, 5, 6, 7, 8, 9)
-		for (n <- numbers) {
-			if (((n % 2) == 0)) {
+		val brk1 = new scala.util.control.Breaks
+		brk1.breakable {
+			val it2 = numbers.iterator
+			while (it2.hasNext) {
+				val n = it2.next()
+				val cont3 = new scala.util.control.Breaks
+				cont3.breakable {
+					if (((n % 2) == 0)) {
+						cont3.break()
+					}
+					if ((n > 7)) {
+						brk1.break()
+					}
+					println("odd number:", n)
+				}
 			}
-			if ((n > 7)) {
-			}
-			println("odd number:", n)
 		}
 	}
 }
-

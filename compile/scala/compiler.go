@@ -17,6 +17,101 @@ type Compiler struct {
 	env       *types.Env
 	mainStmts []*parser.Statement
 	retType   types.Type
+
+	tempVarCount int
+	loopStack    []loopLabels
+}
+
+type loopLabels struct {
+	brk  string
+	cont string
+}
+
+func (c *Compiler) newTemp(prefix string) string {
+	c.tempVarCount++
+	return fmt.Sprintf("%s%d", prefix, c.tempVarCount)
+}
+
+func containsBreak(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		if s.Break != nil {
+			return true
+		}
+		switch {
+		case s.If != nil:
+			if containsBreak(s.If.Then) || containsBreak(s.If.Else) || (s.If.ElseIf != nil && containsBreak([]*parser.Statement{{If: s.If.ElseIf}})) {
+				return true
+			}
+		case s.For != nil:
+			if containsBreak(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if containsBreak(s.While.Body) {
+				return true
+			}
+		case s.Fun != nil:
+			if containsBreak(s.Fun.Body) {
+				return true
+			}
+		case s.Test != nil:
+			if containsBreak(s.Test.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func containsContinue(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		if s.Continue != nil {
+			return true
+		}
+		switch {
+		case s.If != nil:
+			if containsContinue(s.If.Then) || containsContinue(s.If.Else) || (s.If.ElseIf != nil && containsContinue([]*parser.Statement{{If: s.If.ElseIf}})) {
+				return true
+			}
+		case s.For != nil:
+			if containsContinue(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if containsContinue(s.While.Body) {
+				return true
+			}
+		case s.Fun != nil:
+			if containsContinue(s.Fun.Body) {
+				return true
+			}
+		case s.Test != nil:
+			if containsContinue(s.Test.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) compileBreak() {
+	if len(c.loopStack) == 0 {
+		return
+	}
+	lbl := c.loopStack[len(c.loopStack)-1]
+	if lbl.brk != "" {
+		c.writeln(lbl.brk + ".break()")
+	}
+}
+
+func (c *Compiler) compileContinue() {
+	if len(c.loopStack) == 0 {
+		return
+	}
+	lbl := c.loopStack[len(c.loopStack)-1]
+	if lbl.cont != "" {
+		c.writeln(lbl.cont + ".break()")
+	}
 }
 
 // New creates a new Scala compiler instance.
@@ -138,6 +233,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Break != nil:
+		c.compileBreak()
+		return nil
+	case s.Continue != nil:
+		c.compileContinue()
+		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -220,45 +321,114 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
+	needBreak := containsBreak(st.Body)
+	needCont := containsContinue(st.Body)
+	lbl := loopLabels{}
+	if needBreak || needCont {
+		lbl.brk = c.newTemp("brk")
+		c.writeln(fmt.Sprintf("val %s = new scala.util.control.Breaks", lbl.brk))
+		c.writeln(fmt.Sprintf("%s.breakable {", lbl.brk))
+		c.indent++
+	}
+	c.loopStack = append(c.loopStack, lbl)
 	c.writeln(fmt.Sprintf("while (%s) {", cond))
 	c.indent++
+	if needCont {
+		lbl.cont = c.newTemp("cont")
+		c.writeln(fmt.Sprintf("val %s = new scala.util.control.Breaks", lbl.cont))
+		c.writeln(fmt.Sprintf("%s.breakable {", lbl.cont))
+		c.indent++
+		c.loopStack[len(c.loopStack)-1] = lbl
+	}
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.loopStack = c.loopStack[:len(c.loopStack)-1]
 			return err
 		}
 	}
+	if needCont {
+		c.indent--
+		c.writeln("}")
+	}
 	c.indent--
 	c.writeln("}")
+	c.loopStack = c.loopStack[:len(c.loopStack)-1]
+	if needBreak || needCont {
+		c.indent--
+		c.writeln("}")
+	}
 	return nil
 }
 
 func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	name := sanitizeName(st.Name)
+	needBreak := containsBreak(st.Body)
+	needCont := containsContinue(st.Body)
+	lbl := loopLabels{}
+	if needBreak || needCont {
+		lbl.brk = c.newTemp("brk")
+		c.writeln(fmt.Sprintf("val %s = new scala.util.control.Breaks", lbl.brk))
+		c.writeln(fmt.Sprintf("%s.breakable {", lbl.brk))
+		c.indent++
+	}
+
+	c.loopStack = append(c.loopStack, lbl)
 	if st.RangeEnd != nil {
 		start, err := c.compileExpr(st.Source)
 		if err != nil {
+			c.loopStack = c.loopStack[:len(c.loopStack)-1]
 			return err
 		}
 		end, err := c.compileExpr(st.RangeEnd)
 		if err != nil {
+			c.loopStack = c.loopStack[:len(c.loopStack)-1]
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (%s <- %s until %s) {", name, start, end))
+		idx := c.newTemp("i")
+		c.writeln(fmt.Sprintf("var %s = %s", idx, start))
+		c.writeln(fmt.Sprintf("while (%s < %s) {", idx, end))
+		c.indent++
+		c.writeln(fmt.Sprintf("val %s = %s", name, idx))
+		c.writeln(fmt.Sprintf("%s = %s + 1", idx, idx))
 	} else {
 		src, err := c.compileExpr(st.Source)
 		if err != nil {
+			c.loopStack = c.loopStack[:len(c.loopStack)-1]
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (%s <- %s) {", name, src))
+		it := c.newTemp("it")
+		c.writeln(fmt.Sprintf("val %s = %s.iterator", it, src))
+		c.writeln(fmt.Sprintf("while (%s.hasNext) {", it))
+		c.indent++
+		c.writeln(fmt.Sprintf("val %s = %s.next()", name, it))
 	}
-	c.indent++
+
+	if needCont {
+		lbl.cont = c.newTemp("cont")
+		c.writeln(fmt.Sprintf("val %s = new scala.util.control.Breaks", lbl.cont))
+		c.writeln(fmt.Sprintf("%s.breakable {", lbl.cont))
+		c.indent++
+		c.loopStack[len(c.loopStack)-1] = lbl
+	}
+
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.loopStack = c.loopStack[:len(c.loopStack)-1]
 			return err
 		}
+	}
+
+	if needCont {
+		c.indent--
+		c.writeln("}")
 	}
 	c.indent--
 	c.writeln("}")
+	c.loopStack = c.loopStack[:len(c.loopStack)-1]
+	if needBreak || needCont {
+		c.indent--
+		c.writeln("}")
+	}
 	return nil
 }
 
