@@ -2,7 +2,7 @@
 (loop [_tmp0 (seq numbers)]
   (when _tmp0
     (let [n (first _tmp0)]
-      (try
+      (let [r (try
         (when (= (mod n 2) 0)
           (throw (ex-info "continue" {}))
         )
@@ -10,13 +10,19 @@
           (throw (ex-info "break" {}))
         )
         (println "odd number:" n)
-        (recur (next _tmp0))
+        :next
       (catch clojure.lang.ExceptionInfo e
         (cond
-          (= (.getMessage e) "continue") (recur (next _tmp0))
-          (= (.getMessage e) "break") nil
+          (= (.getMessage e) "continue") :next
+          (= (.getMessage e) "break") :break
           :else (throw e))
         )
-      )
+      )]
+    (cond
+      (= r :break) nil
+      :else (recur (next _tmp0))
     )
   )
+)
+)
+)

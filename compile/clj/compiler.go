@@ -56,6 +56,24 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	origEnv := c.env
+	if origEnv != nil {
+		child := types.NewEnv(origEnv)
+		if t, err := origEnv.GetVar(fn.Name); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				for i, p := range fn.Params {
+					if i < len(ft.Params) {
+						child.SetVar(p.Name, ft.Params[i], true)
+					} else {
+						child.SetVar(p.Name, types.AnyType{}, true)
+					}
+				}
+			}
+		}
+		c.env = child
+		defer func() { c.env = origEnv }()
+	}
+
 	c.writeIndent()
 	c.buf.WriteString("(defn " + sanitizeName(fn.Name) + " [")
 	for i, p := range fn.Params {
@@ -156,6 +174,10 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
+	if c.env != nil {
+		typ := c.inferExprType(st.Value)
+		c.env.SetVar(st.Name, typ, true)
+	}
 	return nil
 }
 
@@ -169,6 +191,13 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		expr = v
 	}
 	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
+	if c.env != nil {
+		var typ types.Type = types.AnyType{}
+		if st.Value != nil {
+			typ = c.inferExprType(st.Value)
+		}
+		c.env.SetVar(st.Name, typ, true)
+	}
 	return nil
 }
 
@@ -180,6 +209,10 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	}
 	if len(st.Index) == 0 {
 		c.writeln(fmt.Sprintf("(def %s %s)", name, rhs))
+		if c.env != nil {
+			typ := c.inferExprType(st.Value)
+			c.env.SetVar(st.Name, typ, true)
+		}
 		return nil
 	}
 	idxs := make([]string, len(st.Index))
@@ -194,6 +227,11 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		c.writeln(fmt.Sprintf("(def %s (assoc %s %s %s))", name, name, idxs[0], rhs))
 	} else {
 		c.writeln(fmt.Sprintf("(def %s (assoc-in %s [%s] %s))", name, name, strings.Join(idxs, " "), rhs))
+	}
+	if c.env != nil {
+		if t, err := c.env.GetVar(st.Name); err == nil {
+			c.env.SetVar(st.Name, t, true)
+		}
 	}
 	return nil
 }
@@ -225,22 +263,33 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		c.indent++
 		c.writeln(fmt.Sprintf("(when (< %s %s)", name, end))
 		c.indent++
-		c.writeln("(try")
+		c.writeln("(let [r (try")
 		c.indent++
 		for _, s := range st.Body {
 			if err := c.compileStmt(s); err != nil {
 				return err
 			}
 		}
-		c.writeln(fmt.Sprintf("(recur (inc %s))", name))
+		c.writeln(":next")
 		c.indent--
 		c.writeln("(catch clojure.lang.ExceptionInfo e")
 		c.indent++
 		c.writeln("(cond")
 		c.indent++
-		c.writeln(fmt.Sprintf("(= (.getMessage e) \"continue\") (recur (inc %s))", name))
-		c.writeln("(= (.getMessage e) \"break\") nil")
+		c.writeln("(= (.getMessage e) \"continue\") :next")
+		c.writeln("(= (.getMessage e) \"break\") :break")
 		c.writeln(":else (throw e))")
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln(")]")
+		c.indent--
+		c.writeln("(cond")
+		c.indent++
+		c.writeln("(= r :break) nil")
+		c.writeln(fmt.Sprintf(":else (recur (inc %s))", name))
+		c.indent--
+		c.writeln(")")
 		c.indent--
 		c.writeln(")")
 		c.indent--
@@ -260,22 +309,33 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	c.indent++
 	c.writeln(fmt.Sprintf("(let [%s (first %s)]", name, seqVar))
 	c.indent++
-	c.writeln("(try")
+	c.writeln("(let [r (try")
 	c.indent++
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
-	c.writeln(fmt.Sprintf("(recur (next %s))", seqVar))
+	c.writeln(":next")
 	c.indent--
 	c.writeln("(catch clojure.lang.ExceptionInfo e")
 	c.indent++
 	c.writeln("(cond")
 	c.indent++
-	c.writeln(fmt.Sprintf("(= (.getMessage e) \"continue\") (recur (next %s))", seqVar))
-	c.writeln("(= (.getMessage e) \"break\") nil")
+	c.writeln("(= (.getMessage e) \"continue\") :next")
+	c.writeln("(= (.getMessage e) \"break\") :break")
 	c.writeln(":else (throw e))")
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln(")]")
+	c.indent--
+	c.writeln("(cond")
+	c.indent++
+	c.writeln("(= r :break) nil")
+	c.writeln(fmt.Sprintf(":else (recur (next %s))", seqVar))
+	c.indent--
+	c.writeln(")")
 	c.indent--
 	c.writeln(")")
 	c.indent--
@@ -296,22 +356,31 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 	c.indent++
 	c.writeln("(when " + cond)
 	c.indent++
-	c.writeln("(try")
+	c.writeln("(let [r (try")
 	c.indent++
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
-	c.writeln("(recur)")
+	c.writeln(":next")
 	c.indent--
 	c.writeln("(catch clojure.lang.ExceptionInfo e")
 	c.indent++
 	c.writeln("(cond")
 	c.indent++
-	c.writeln("(= (.getMessage e) \"continue\") (recur)")
-	c.writeln("(= (.getMessage e) \"break\") nil")
+	c.writeln("(= (.getMessage e) \"continue\") :next")
+	c.writeln("(= (.getMessage e) \"break\") :break")
 	c.writeln(":else (throw e))")
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln(")]")
+	c.indent--
+	c.writeln("(cond")
+	c.indent++
+	c.writeln("(= r :break) nil")
+	c.writeln("(= r :next) (recur)")
 	c.indent--
 	c.writeln(")")
 	c.indent--
