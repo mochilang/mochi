@@ -1,0 +1,11 @@
+(let loop ((x_idx 0))
+	(if (< x_idx (length (list 1 2 3)))
+		(begin
+			(let ((x (list-ref (list 1 2 3) x_idx)))
+				(begin (display x) (newline))
+			)
+			(loop (+ x_idx 1))
+		)
+	'())
+)
+

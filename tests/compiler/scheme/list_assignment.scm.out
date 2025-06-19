@@ -1,0 +1,13 @@
+(define (list-set lst idx val)
+    (let loop ((i idx) (l lst))
+        (if (null? l)
+            '()
+            (if (= i 0)
+                (cons val (cdr l))
+                (cons (car l) (loop (- i 1) (cdr l))))))
+)
+
+(define xs (list 1 2 3))
+(set! xs (list-set xs 1 5))
+(begin (display (list-ref xs 1)) (newline))
+
