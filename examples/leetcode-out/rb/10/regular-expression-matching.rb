@@ -1,42 +1,52 @@
 def isMatch(s, p)
 	m = (s).length
 	n = (p).length
-	memo = {}
-	dfs = ->(i, j){
-		key = ((i * ((n + 1))) + j)
-		if (memo.include?(key))
-			return memo[key]
+	dp = []
+	i = 0
+	while (i <= m)
+		row = []
+		j = 0
+		while (j <= n)
+			row = (row + [false])
+			j = (j + 1)
 		end
-		if (j == n)
-			return (i == m)
-		end
-		first = false
-		if (i < m)
-			if (((p[j] == s[i])) || ((p[j] == ".")))
-				first = true
+		dp = (dp + [row])
+		i = (i + 1)
+	end
+	dp[m][n] = true
+	i2 = m
+	while (i2 >= 0)
+		j2 = (n - 1)
+		while (j2 >= 0)
+			first = false
+			if (i2 < m)
+				if (((p[j2] == s[i2])) || ((p[j2] == ".")))
+					first = true
+				end
 			end
-		end
-		ans = false
-		if ((j + 1) < n)
-			if (p[(j + 1)] == "*")
-				if dfs.call(i, (j + 2))
-					ans = true
-				elsif (first && dfs.call((i + 1), j))
-					ans = true
+			star = false
+			if ((j2 + 1) < n)
+				if (p[(j2 + 1)] == "*")
+					star = true
+				end
+			end
+			if star
+				if (dp[i2][(j2 + 2)] || ((first && dp[(i2 + 1)][j2])))
+					dp[i2][j2] = true
+				else
+					dp[i2][j2] = false
 				end
 			else
-				if (first && dfs.call((i + 1), (j + 1)))
-					ans = true
+				if (first && dp[(i2 + 1)][(j2 + 1)])
+					dp[i2][j2] = true
+				else
+					dp[i2][j2] = false
 				end
 			end
-		else
-			if (first && dfs.call((i + 1), (j + 1)))
-				ans = true
-			end
+			j2 = (j2 - 1)
 		end
-		memo[key] = ans
-		return ans
-	}
-	return dfs.call(0, 0)
+		i2 = (i2 - 1)
+	end
+	return dp[0][0]
 end
 

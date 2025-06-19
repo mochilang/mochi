@@ -23,6 +23,6 @@ def findMedianSortedArrays(nums1, nums2)
 	end
 	mid1 = merged[((total / 2) - 1)]
 	mid2 = merged[(total / 2)]
-	return (((mid1 + mid2)) / 2)
+	return (((mid1 + mid2)) / 2.0)
 end
 
