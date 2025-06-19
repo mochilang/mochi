@@ -345,14 +345,27 @@ func (c *Compiler) expr(n *ast.Node) string {
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
 		op := n.Value.(string)
+		switch op {
+		case "&&":
+			op = "AND"
+		case "||":
+			op = "OR"
+		case "==":
+			op = "="
+		case "!=":
+			op = "<>"
+		}
 		return fmt.Sprintf("%s %s %s", left, op, right)
 	case "index":
 		arr := c.expr(n.Children[0])
 		idx := c.expr(n.Children[1])
 		return fmt.Sprintf("%s(%s + 1)", arr, idx)
 	case "unary":
-		if n.Value == "-" {
+		switch n.Value {
+		case "-":
 			return fmt.Sprintf("-%s", c.expr(n.Children[0]))
+		case "!":
+			return fmt.Sprintf("NOT %s", c.expr(n.Children[0]))
 		}
 	}
 	return "0"
