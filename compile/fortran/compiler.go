@@ -969,6 +969,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 
 	vals := []string{}
+	vStr := []bool{}
+	vList := []bool{}
 	ops := []string{}
 
 	first, err := c.compileUnary(b.Left)
@@ -976,6 +978,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	vals = append(vals, first)
+	exprLeft := &parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}
+	vStr = append(vStr, isStringExpr(exprLeft, c.stringVars, c.funReturnStr))
+	vList = append(vList, isListExpr(exprLeft, c.listVars, c.funReturnList))
 	emit := func() error {
 		if len(ops) == 0 {
 			return nil
@@ -987,10 +992,32 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		}
 		right := vals[len(vals)-1]
 		left := vals[len(vals)-2]
+		rStr := vStr[len(vStr)-1]
+		lStr := vStr[len(vStr)-2]
+		rList := vList[len(vList)-1]
+		lList := vList[len(vList)-2]
 		vals = vals[:len(vals)-2]
+		vStr = vStr[:len(vStr)-2]
+		vList = vList[:len(vList)-2]
 		var expr string
 		switch op {
-		case "+", "-", "*", "/", "==", "<", "<=", ">", ">=":
+		case "+":
+			if lList || rList {
+				expr = fmt.Sprintf("(/ %s, %s /)", left, right)
+				vList = append(vList, true)
+				vStr = append(vStr, false)
+				vals = append(vals, expr)
+				return nil
+			}
+			if lStr || rStr {
+				expr = fmt.Sprintf("(trim(%s) // trim(%s))", left, right)
+				vStr = append(vStr, true)
+				vList = append(vList, false)
+				vals = append(vals, expr)
+				return nil
+			}
+			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+		case "-", "*", "/", "==", "<", "<=", ">", ">=":
 			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 		case "!=":
 			expr = fmt.Sprintf("(%s /= %s)", left, right)
@@ -1004,6 +1031,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return fmt.Errorf("unsupported op %s", op)
 		}
 		vals = append(vals, expr)
+		vStr = append(vStr, false)
+		vList = append(vList, false)
 		return nil
 	}
 
@@ -1012,6 +1041,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		exprRight := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}
+		vStr = append(vStr, isStringExpr(exprRight, c.stringVars, c.funReturnStr))
+		vList = append(vList, isListExpr(exprRight, c.listVars, c.funReturnList))
 		for len(ops) > 0 && prec(ops[len(ops)-1]) >= prec(op.Op) {
 			if err := emit(); err != nil {
 				return "", err
@@ -1037,9 +1069,12 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		return "", err
 	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		if u.Ops[i] == "-" {
+		switch u.Ops[i] {
+		case "-":
 			val = fmt.Sprintf("(-%s)", val)
-		} else {
+		case "!":
+			val = fmt.Sprintf("(.not. %s)", val)
+		default:
 			return "", fmt.Errorf("unsupported unary op")
 		}
 	}
@@ -1132,6 +1167,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if p.Lit.Float != nil {
 			return fmt.Sprintf("%g", *p.Lit.Float), nil
+		}
+		if p.Lit.Bool != nil {
+			if bool(*p.Lit.Bool) {
+				return ".true.", nil
+			}
+			return ".false.", nil
 		}
 		if p.Lit.Str != nil {
 			s := strings.ReplaceAll(*p.Lit.Str, "'", "''")
