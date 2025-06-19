@@ -10,18 +10,6 @@ static list_int list_int_create(int len) {
 	return l;
 }
 
-static int _count(list_int v) {
-	return v.len;
-}
-
-static double _avg(list_int v) {
-	if (v.len == 0) return 0;
-	double sum = 0;
-	for (int i = 0; i < v.len; i++) {
-		sum += v.data[i];
-	}
-	return sum / v.len;
-}
 
 int main() {
 	printf("%s\n", "hello");

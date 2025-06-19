@@ -57,6 +57,8 @@ type Compiler struct {
 	needsConcatListListInt bool
 	needsConcatListInt     bool
 	needsConcatString      bool
+	needsCount             bool
+	needsAvg               bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -210,24 +212,28 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln("")
 	// helper functions for builtins
-	c.writeln("static int _count(list_int v) {")
-	c.indent++
-	c.writeln("return v.len;")
-	c.indent--
-	c.writeln("}")
-	c.writeln("")
-	c.writeln("static double _avg(list_int v) {")
-	c.indent++
-	c.writeln("if (v.len == 0) return 0;")
-	c.writeln("double sum = 0;")
-	c.writeln("for (int i = 0; i < v.len; i++) {")
-	c.indent++
-	c.writeln("sum += v.data[i];")
-	c.indent--
-	c.writeln("}")
-	c.writeln("return sum / v.len;")
-	c.indent--
-	c.writeln("}")
+	if c.needsCount {
+		c.writeln("static int _count(list_int v) {")
+		c.indent++
+		c.writeln("return v.len;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsAvg {
+		c.writeln("static double _avg(list_int v) {")
+		c.indent++
+		c.writeln("if (v.len == 0) return 0;")
+		c.writeln("double sum = 0;")
+		c.writeln("for (int i = 0; i < v.len; i++) {")
+		c.indent++
+		c.writeln("sum += v.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return sum / v.len;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.needsInput {
 		c.writeln("")
 		c.writeln("static char* _input() {")
@@ -785,9 +791,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return ""
 		} else if p.Call.Func == "count" {
 			arg := c.compileExpr(p.Call.Args[0])
+			c.needsCount = true
 			return fmt.Sprintf("_count(%s)", arg)
 		} else if p.Call.Func == "avg" {
 			arg := c.compileExpr(p.Call.Args[0])
+			c.needsAvg = true
 			return fmt.Sprintf("_avg(%s)", arg)
 		} else if p.Call.Func == "str" {
 			arg := c.compileExpr(p.Call.Args[0])
