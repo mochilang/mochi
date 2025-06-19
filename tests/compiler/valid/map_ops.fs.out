@@ -1,0 +1,8 @@
+open System
+
+let mutable m = Map.ofList []
+m <- Map.add 1 10 m
+m <- Map.add 2 20 m
+if Map.containsKey 1 m then
+    printfn "%A" m.[1]
+printfn "%A" m.[2]

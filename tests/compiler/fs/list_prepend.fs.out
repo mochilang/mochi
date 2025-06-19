@@ -3,7 +3,7 @@ open System
 exception Return_prepend of int[][]
 let prepend (level: int[]) (result: int[][]) : int[][] =
     try
-        result <- ([|level|] + result)
+        result <- Array.append [|level|] result
         raise (Return_prepend (result))
         failwith "unreachable"
     with Return_prepend v -> v

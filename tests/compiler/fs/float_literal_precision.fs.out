@@ -1,0 +1,3 @@
+open System
+
+printfn "%A" 9.261000000000001
