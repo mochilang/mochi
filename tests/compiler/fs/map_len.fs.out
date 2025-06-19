@@ -1,0 +1,3 @@
+open System
+
+printfn "%A" Map.count (Map.ofList [("a", 1); ("b", 2)])
