@@ -54,8 +54,9 @@ func TestCobolCompiler_TwoSum(t *testing.T) {
 	}
 }
 
-// TestCobolCompiler_GoldenOutput runs the small COBOL specific test suite.
-func TestCobolCompiler_GoldenOutput(t *testing.T) {
+// TestCobolCompiler_SubsetPrograms compiles and executes a subset of programs
+// using the COBOL backend.
+func TestCobolCompiler_SubsetPrograms(t *testing.T) {
 	if err := cobolcode.EnsureCOBOL(); err != nil {
 		t.Skipf("cobol not installed: %v", err)
 	}
@@ -93,3 +94,6 @@ func TestCobolCompiler_GoldenOutput(t *testing.T) {
 		return res, nil
 	})
 }
+
+// TestCobolCompiler_GoldenSource is intentionally omitted because the COBOL
+// backend is a minimal proof of concept and does not produce stable output.
