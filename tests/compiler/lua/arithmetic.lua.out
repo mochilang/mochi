@@ -1,0 +1,34 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
+function __div(a, b)
+	if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+		return a // b
+	end
+	return a / b
+end
+
+function __add(a, b)
+	if type(a) == 'table' and type(b) == 'table' then
+		local out = {}
+		for i = 1, #a do out[#out+1] = a[i] end
+		for i = 1, #b do out[#out+1] = b[i] end
+		return out
+	elseif type(a) == 'string' or type(b) == 'string' then
+		return tostring(a) .. tostring(b)
+	else
+		return a + b
+	end
+end
+
+__print(__add(1, 2))
+__print((5 - 3))
+__print((4 * 2))
+__print(__div(8, 2))
+__print((7 % 3))
