@@ -139,6 +139,13 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
 	}
+	if c.env != nil {
+		var typ types.Type = types.AnyType{}
+		if stmt.Type != nil {
+			typ = c.resolveTypeRef(stmt.Type)
+		}
+		c.env.SetVar(stmt.Name, typ, false)
+	}
 	return nil
 }
 
@@ -159,6 +166,13 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", name, rustType(stmt.Type), val))
 	} else {
 		c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
+	}
+	if c.env != nil {
+		var typ types.Type = types.AnyType{}
+		if stmt.Type != nil {
+			typ = c.resolveTypeRef(stmt.Type)
+		}
+		c.env.SetVar(stmt.Name, typ, true)
 	}
 	return nil
 }
@@ -267,15 +281,36 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	name := sanitizeName(stmt.Name)
 	if stmt.RangeEnd != nil {
 		c.writeln(fmt.Sprintf("for %s in %s..%s {", name, start, end))
+		if c.env != nil {
+			c.env.SetVar(stmt.Name, types.IntType{}, true)
+		}
 		c.indent++
 	} else {
 		if isStringLiteral(stmt.Source) || c.isStringExpr(stmt.Source.Binary.Left.Value) {
 			tmp := name + "_ch"
 			c.writeln(fmt.Sprintf("for %s in %s.chars() {", tmp, start))
+			if c.env != nil {
+				c.env.SetVar(stmt.Name, types.StringType{}, true)
+			}
 			c.indent++
 			c.writeln(fmt.Sprintf("let %s = %s.to_string();", name, tmp))
 		} else {
 			c.writeln(fmt.Sprintf("for %s in %s {", name, start))
+			if c.env != nil {
+				if id, ok := identName(stmt.Source); ok {
+					if t, err := c.env.GetVar(id); err == nil {
+						if lt, ok := t.(types.ListType); ok {
+							c.env.SetVar(stmt.Name, lt.Elem, true)
+						} else {
+							c.env.SetVar(stmt.Name, types.AnyType{}, true)
+						}
+					} else {
+						c.env.SetVar(stmt.Name, types.AnyType{}, true)
+					}
+				} else {
+					c.env.SetVar(stmt.Name, types.AnyType{}, true)
+				}
+			}
 			c.indent++
 		}
 	}
@@ -651,7 +686,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if c.isStringExpr(p) {
+				if c.isStringRoot(p) {
 					expr = fmt.Sprintf("%s.chars().nth((%s) as usize).unwrap()", expr, iexpr)
 				} else if isStringLiteral(idx.Start) {
 					expr = fmt.Sprintf("%s[%s]", expr, iexpr)
@@ -677,7 +712,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else {
 					end = fmt.Sprintf("%s.len()", expr)
 				}
-				if c.isStringExpr(p) {
+				if c.isStringRoot(p) {
 					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_string()", expr, start, end)
 				} else {
 					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_vec()", expr, start, end)
