@@ -318,12 +318,23 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 		return "", err
 	}
 	expr := left
+	leftIsStr := c.isStringUnary(b.Left)
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right, asReturn)
 		if err != nil {
 			return "", err
 		}
 		opStr := op.Op
+		rightIsStr := c.isStringPostfix(op.Right)
+		if (opStr == "==" || opStr == "!=") && (leftIsStr || rightIsStr) {
+			cmp := fmt.Sprintf("std.mem.eql(u8, %s, %s)", expr, right)
+			if opStr == "!=" {
+				cmp = "!" + cmp
+			}
+			expr = cmp
+			leftIsStr = false
+			continue
+		}
 		switch opStr {
 		case "&&":
 			opStr = "and"
@@ -331,6 +342,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 			opStr = "or"
 		}
 		expr = fmt.Sprintf("(%s %s %s)", expr, opStr, right)
+		leftIsStr = false
 	}
 	return expr, nil
 }
@@ -353,11 +365,33 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start, false)
-			if err != nil {
-				return "", err
+			if op.Index.Colon == nil {
+				idx, err := c.compileExpr(op.Index.Start, false)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("%s[%s]", expr, idx)
+			} else {
+				start := "0"
+				end := ""
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start, false)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End, false)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				} else {
+					end = fmt.Sprintf("%s.len", expr)
+				}
+				expr = fmt.Sprintf("%s[%s..%s]", expr, start, end)
 			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
 		} else if op.Call != nil {
 			expr, err = c.compileCallOp(expr, op.Call)
 			if err != nil {
@@ -439,6 +473,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needsAvg = true
 		return fmt.Sprintf("_avg(%s)", arg), nil
+	}
+	if name == "str" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{%s}) catch unreachable", arg), nil
 	}
 	if name == "print" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
@@ -551,6 +592,37 @@ func isSelfAppend(st *parser.AssignStmt) (*parser.Expr, bool) {
 	return r.Target.List.Elems[0], true
 }
 
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isStringPostfix(u.Value)
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isStringPrimary(p.Target)
+}
+
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 var zigReserved = map[string]bool{
 	"fn": true, "var": true, "const": true, "pub": true, "return": true,
 	"for": true, "while": true, "if": true, "else": true,
@@ -572,8 +644,24 @@ func sanitizeName(name string) string {
 	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
 		s = "_" + s
 	}
-	if zigReserved[s] {
+	if zigReserved[s] || isZigTypeName(s) {
 		s = "_" + s
 	}
 	return s
+}
+
+func isZigTypeName(name string) bool {
+	if len(name) < 2 {
+		return false
+	}
+	switch name[0] {
+	case 'i', 'u', 'f':
+		for i := 1; i < len(name); i++ {
+			if name[i] < '0' || name[i] > '9' {
+				return false
+			}
+		}
+		return true
+	}
+	return false
 }
