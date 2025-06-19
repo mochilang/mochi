@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 func (c *Compiler) writeln(s string) {
@@ -118,4 +119,100 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func dartType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "double"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		elem := dartType(tt.Elem)
+		if elem == "dynamic" || elem == "" {
+			return "List"
+		}
+		return "List<" + elem + ">"
+	case types.MapType:
+		key := dartType(tt.Key)
+		val := dartType(tt.Value)
+		if key == "" {
+			key = "dynamic"
+		}
+		if val == "" {
+			val = "dynamic"
+		}
+		return "Map<" + key + ", " + val + ">"
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
+	case types.VoidType:
+		return "void"
+	case types.AnyType:
+		return "dynamic"
+	case types.FuncType:
+		return "dynamic"
+	default:
+		return "dynamic"
+	}
+}
+
+func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.resolveTypeRef(p)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = c.resolveTypeRef(t.Fun.Return)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		args := t.Generic.Args
+		switch name {
+		case "list":
+			if len(args) == 1 {
+				return types.ListType{Elem: c.resolveTypeRef(args[0])}
+			}
+		case "map":
+			if len(args) == 2 {
+				return types.MapType{Key: c.resolveTypeRef(args[0]), Value: c.resolveTypeRef(args[1])}
+			}
+		}
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(*t.Simple); ok {
+					return st
+				}
+				if ut, ok := c.env.GetUnion(*t.Simple); ok {
+					return ut
+				}
+			}
+			return types.AnyType{}
+		}
+	}
+	return types.AnyType{}
 }
