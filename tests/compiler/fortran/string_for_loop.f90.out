@@ -1,0 +1,9 @@
+program main
+  implicit none
+  character(:), allocatable :: ch
+  integer :: i_ch
+  do i_ch = 0, len('cat') - 1
+    ch = 'cat'(modulo(i_ch, len('cat')) + 1:modulo(i_ch, len('cat')) + 1)
+    print *, ch
+  end do
+end program main
