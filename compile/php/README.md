@@ -271,6 +271,21 @@ php median.php
 
 mochi build --target php ../../examples/leetcode/5/longest-palindromic-substring.mochi -o palindrome.php
 php palindrome.php
+
+mochi build --target php ../../examples/leetcode/6/zigzag-conversion.mochi -o zigzag-conversion.php
+php zigzag-conversion.php
+
+mochi build --target php ../../examples/leetcode/7/reverse-integer.mochi -o reverse-integer.php
+php reverse-integer.php
+
+mochi build --target php ../../examples/leetcode/8/string-to-integer-atoi.mochi -o atoi.php
+php atoi.php
+
+mochi build --target php ../../examples/leetcode/9/palindrome-number.mochi -o palindrome-number.php
+php palindrome-number.php
+
+mochi build --target php ../../examples/leetcode/10/regular-expression-matching.mochi -o regular-expression-matching.php
+php regular-expression-matching.php
 ```
 
 ## Tests
