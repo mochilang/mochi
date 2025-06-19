@@ -17,7 +17,7 @@
 
 (define (convert s numRows)
 	(let/ec return
-		(if (or (<= numRows 1) (>= numRows (length s)))
+		(if (or (<= numRows 1) (>= numRows (count s)))
 			(begin
 				(return s)
 			)

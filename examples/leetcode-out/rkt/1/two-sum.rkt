@@ -17,7 +17,7 @@
 
 (define (twoSum nums target)
 	(let/ec return
-		(define n (length nums))
+		(define n (count nums))
 		(for ([i (in-range 0 n)])
 			(for ([j (in-range (+ i 1) n)])
 				(if (= (+ (idx nums i) (idx nums j)) target)

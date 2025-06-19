@@ -22,9 +22,9 @@
 		(define carry 0)
 		(define result (list ))
 		(let loop ()
-			(when (or (or (< i (length l1)) (< j (length l2))) (> carry 0))
+			(when (or (or (< i (count l1)) (< j (count l2))) (> carry 0))
 				(define x 0)
-				(if (< i (length l1))
+				(if (< i (count l1))
 					(begin
 						(set! x (idx l1 i))
 						(set! i (+ i 1))
@@ -32,7 +32,7 @@
 					(void)
 				)
 				(define y 0)
-				(if (< j (length l2))
+				(if (< j (count l2))
 					(begin
 						(set! y (idx l2 j))
 						(set! j (+ j 1))

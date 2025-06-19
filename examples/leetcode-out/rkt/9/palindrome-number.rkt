@@ -24,7 +24,7 @@
 			(void)
 		)
 		(define s (format "~a" x))
-		(define n (length s))
+		(define n (count s))
 		(for ([i (in-range 0 (/ n 2))])
 			(if (not (= (idx s i) (idx s (- (- n 1) i))))
 				(begin
