@@ -18,10 +18,11 @@ import (
 
 // Compiler generates COBOL source code for a restricted set of Mochi programs.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	decls  []string
+	buf        bytes.Buffer
+	indent     int
+	env        *types.Env
+	decls      []string
+	tmpCounter int
 }
 
 // New creates a new COBOL compiler instance.
@@ -37,6 +38,24 @@ func (c *Compiler) writeln(s string) {
 	c.writeIndent()
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func (c *Compiler) newTemp() string {
+	name := fmt.Sprintf("TMP%d", c.tmpCounter)
+	c.tmpCounter++
+	return name
+}
+
+func isSimpleExpr(n *ast.Node) bool {
+	switch n.Kind {
+	case "int", "float", "selector":
+		return true
+	case "unary":
+		if n.Value == "-" {
+			return isSimpleExpr(n.Children[0])
+		}
+	}
+	return false
 }
 
 // declare records a WORKING-STORAGE declaration.
@@ -95,8 +114,16 @@ func (c *Compiler) compileNode(n *ast.Node) {
 
 	case "call":
 		if n.Value == "print" {
-			expr := c.expr(n.Children[0])
-			c.writeln("    DISPLAY " + expr)
+			arg := n.Children[0]
+			expr := c.expr(arg)
+			if isSimpleExpr(arg) {
+				c.writeln("    DISPLAY " + expr)
+			} else {
+				tmp := c.newTemp()
+				c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+				c.writeln("    DISPLAY " + tmp)
+			}
 		}
 
 	case "for":
