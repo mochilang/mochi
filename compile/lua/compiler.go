@@ -30,9 +30,13 @@ func New(env *types.Env) *Compiler {
 
 // Compile returns Lua source implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	// reset state so the compiler can be reused
 	c.buf.Reset()
-
-	c.buf.Reset()
+	c.indent = 0
+	c.loopLabels = nil
+	c.labelCount = 0
+	c.tmpCount = 0
+	c.helpers = make(map[string]bool)
 
 	// Emit function declarations first.
 	for _, s := range prog.Statements {

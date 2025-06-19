@@ -24,23 +24,6 @@ function __eq(a, b)
 	return true
 end
 
-function __contains(container, item)
-	if type(container) == 'table' then
-		if container[1] ~= nil or #container > 0 then
-			for _, v in ipairs(container) do
-				if v == item then return true end
-			end
-			return false
-		else
-			return container[item] ~= nil
-		end
-	elseif type(container) == 'string' then
-		return string.find(container, item, 1, true) ~= nil
-	else
-		return false
-	end
-end
-
 function __index(obj, i)
 	if type(obj) == 'string' then
 		return __indexString(obj, i)
@@ -66,28 +49,88 @@ function __indexString(s, i)
 	return string.sub(s, i, i)
 end
 
+function __slice(obj, i, j)
+	if i == nil then i = 0 end
+	if type(obj) == 'string' then
+		local len = #obj
+		if j == nil then j = len end
+		if i < 0 then i = len + i end
+		if j < 0 then j = len + j end
+		if i < 0 then i = 0 end
+		if j > len then j = len end
+		return string.sub(obj, i+1, j)
+	elseif type(obj) == 'table' then
+		local len = #obj
+		if j == nil then j = len end
+		if i < 0 then i = len + i end
+		if j < 0 then j = len + j end
+		if i < 0 then i = 0 end
+		if j > len then j = len end
+		local out = {}
+		for k = i+1, j do
+			out[#out+1] = obj[k]
+		end
+		return out
+	else
+		return {}
+	end
+end
+
+function digit(ch)
+	if __eq(ch, "0") then
+		return 0
+	end
+	if __eq(ch, "1") then
+		return 1
+	end
+	if __eq(ch, "2") then
+		return 2
+	end
+	if __eq(ch, "3") then
+		return 3
+	end
+	if __eq(ch, "4") then
+		return 4
+	end
+	if __eq(ch, "5") then
+		return 5
+	end
+	if __eq(ch, "6") then
+		return 6
+	end
+	if __eq(ch, "7") then
+		return 7
+	end
+	if __eq(ch, "8") then
+		return 8
+	end
+	if __eq(ch, "9") then
+		return 9
+	end
+	return -1
+end
+
 function myAtoi(s)
 	local i = 0
 	local n = #s
-	while ((i < n) and __eq(__index(s, i), " ")) do
+	while ((i < n) and __eq(__index(s, i), __index(" ", 0))) do
 		i = __add(i, 1)
 		::__continue0::
 	end
 	local sign = 1
-	if ((i < n) and ((__eq(__index(s, i), "+") or __eq(__index(s, i), "-")))) then
-		if __eq(__index(s, i), "-") then
+	if ((i < n) and ((__eq(__index(s, i), __index("+", 0)) or __eq(__index(s, i), __index("-", 0))))) then
+		if __eq(__index(s, i), __index("-", 0)) then
 			sign = -1
 		end
 		i = __add(i, 1)
 	end
-	local digits = {["0"]=0, ["1"]=1, ["2"]=2, ["3"]=3, ["4"]=4, ["5"]=5, ["6"]=6, ["7"]=7, ["8"]=8, ["9"]=9}
 	local result = 0
 	while (i < n) do
-		local ch = __index(s, i)
-		if not (__contains(digits, ch)) then
+		local ch = __slice(s, i, __add(i, 1))
+		local d = digit(ch)
+		if (d < 0) then
 			break
 		end
-		local d = __index(digits, ch)
 		result = __add((result * 10), d)
 		i = __add(i, 1)
 		::__continue1::
