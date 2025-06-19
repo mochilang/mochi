@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct { int len; int *data; } list_int;
+
+static list_int list_int_create(int len) {
+	list_int l;
+	l.len = len;
+	l.data = (int*)malloc(sizeof(int)*len);
+	return l;
+}
+
+
+int factorial(int n){
+	if ((n <= 1)) {
+		return 1;
+	}
+	return (n * factorial((n - 1)));
+}
+
+int main() {
+	printf("%d\n", factorial(0));
+	printf("%d\n", factorial(1));
+	printf("%d\n", factorial(5));
+	return 0;
+}
