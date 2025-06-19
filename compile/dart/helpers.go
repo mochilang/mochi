@@ -280,6 +280,10 @@ func isStruct(t types.Type) bool {
 	}
 }
 
+func isSimpleType(t types.Type) bool {
+	return isInt(t) || isInt64(t) || isFloat(t) || isBool(t) || isString(t) || isStruct(t)
+}
+
 func isAny(t types.Type) bool {
 	_, ok := t.(types.AnyType)
 	return ok
