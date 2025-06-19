@@ -1,0 +1,9 @@
+object Main {
+        def main(args: Array[String]): Unit = {
+                println((1 + 2))
+                println((5 - 3))
+                println((4 * 2))
+                println((8 / 2))
+                println((7 % 3))
+        }
+}

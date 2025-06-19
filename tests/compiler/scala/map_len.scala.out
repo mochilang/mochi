@@ -1,0 +1,5 @@
+object Main {
+        def main(args: Array[String]): Unit = {
+                println(scala.collection.mutable.Map("a" -> 1, "b" -> 2).size)
+        }
+}

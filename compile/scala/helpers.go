@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 func isUnderscoreExpr(e *parser.Expr) bool {
@@ -84,4 +85,30 @@ func emptyListExpr(e *parser.Expr) bool {
 	}
 	p := e.Binary.Left.Value
 	return len(p.Ops) == 0 && p.Target.List != nil && len(p.Target.List.Elems) == 0
+}
+
+// isStringExpr reports whether e is a string literal or an identifier with
+// a string type according to env. It provides a minimal heuristic for built-in
+// functions like len.
+func isStringExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil {
+		return false
+	}
+	if name, ok := identName(e); ok && env != nil {
+		if t, err := env.GetVar(name); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			p := u.Value
+			if len(p.Ops) == 0 && p.Target.Lit != nil && p.Target.Lit.Str != nil {
+				return true
+			}
+		}
+	}
+	return false
 }
