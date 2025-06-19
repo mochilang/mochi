@@ -160,6 +160,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
 		}
 	}
+	if c.env != nil && typ != nil && !isAny(typ) {
+		c.env.SetVar(s.Name, typ, false)
+	}
 	return nil
 }
 
@@ -283,6 +286,9 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		} else {
 			c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
 		}
+	}
+	if c.env != nil && typ != nil && !isAny(typ) {
+		c.env.SetVar(s.Name, typ, true)
 	}
 	return nil
 }
