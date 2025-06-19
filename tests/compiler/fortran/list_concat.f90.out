@@ -1,0 +1,4 @@
+program main
+  implicit none
+  print *, (/ (/1_8, 2_8/), (/3_8, 4_8/) /)
+end program main
