@@ -1,0 +1,10 @@
+(let loop ((ch_idx 0))
+	(if (< ch_idx (string-length "cat"))
+		(begin
+			(let ((ch (string-ref "cat" ch_idx)))
+				(begin (display ch) (newline))
+			)
+			(loop (+ ch_idx 1))
+		)
+	'())
+)

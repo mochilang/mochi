@@ -163,7 +163,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 		}
-		if s.Let.Type != nil && s.Let.Type.Simple != nil && *s.Let.Type.Simple == "string" {
+		if (s.Let.Type != nil && s.Let.Type.Simple != nil && *s.Let.Type.Simple == "string") ||
+			(s.Let.Type == nil && isStringExpr(s.Let.Value, c.vars)) {
 			c.vars[s.Let.Name] = "string"
 		}
 	case s.Var != nil:
@@ -181,7 +182,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 		}
-		if s.Var.Type != nil && s.Var.Type.Simple != nil && *s.Var.Type.Simple == "string" {
+		if (s.Var.Type != nil && s.Var.Type.Simple != nil && *s.Var.Type.Simple == "string") ||
+			(s.Var.Type == nil && isStringExpr(s.Var.Value, c.vars)) {
 			c.vars[s.Var.Name] = "string"
 		}
 	case s.Assign != nil:
@@ -266,7 +268,7 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		return err
 	}
 	root := rootNameExpr(st.Source)
-	isStr := c.vars[root] == "string"
+	isStr := c.vars[root] == "string" || isStringExpr(st.Source, c.vars)
 	idx := sanitizeName(name + "_idx")
 	lenExpr := fmt.Sprintf("(length %s)", src)
 	elemExpr := fmt.Sprintf("(list-ref %s %s)", src, idx)
@@ -471,7 +473,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if p.Target != nil && p.Target.Selector != nil {
 				targetName = p.Target.Selector.Root
 			}
-			if c.vars[targetName] == "string" {
+			if c.vars[targetName] == "string" || isStringPrimary(p.Target) {
 				expr = fmt.Sprintf("(string-ref %s %s)", expr, idx)
 			} else {
 				expr = fmt.Sprintf("(list-ref %s %s)", expr, idx)
@@ -583,6 +585,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
+		root := rootNameExpr(call.Args[0])
+		if c.vars[root] == "string" || isStringExpr(call.Args[0], c.vars) {
+			return fmt.Sprintf("(string-length %s)", args[0]), nil
+		}
 		return fmt.Sprintf("(length %s)", args[0]), nil
 	case "print":
 		if len(args) == 0 {
@@ -624,4 +630,43 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	return s
+}
+
+// isStringExpr reports whether the expression resolves to a string literal or a
+// variable tracked as a string in vars.
+func isStringExpr(e *parser.Expr, vars map[string]string) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	if isStringUnary(e.Binary.Left, vars) {
+		return true
+	}
+	return false
+}
+
+func isStringUnary(u *parser.Unary, vars map[string]string) bool {
+	if u == nil {
+		return false
+	}
+	if isStringPostfix(u.Value, vars) {
+		return true
+	}
+	return false
+}
+
+func isStringPostfix(p *parser.PostfixExpr, vars map[string]string) bool {
+	if p == nil {
+		return false
+	}
+	if isStringPrimary(p.Target) {
+		return true
+	}
+	if p.Target != nil && p.Target.Selector != nil {
+		return vars[p.Target.Selector.Root] == "string"
+	}
+	return false
+}
+
+func isStringPrimary(p *parser.Primary) bool {
+	return p != nil && p.Lit != nil && p.Lit.Str != nil
 }
