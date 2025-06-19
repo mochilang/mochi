@@ -103,8 +103,8 @@ ocamlc main.ml -o main
 
 ## Tests
 
-The golden tests compile programs under `tests/compiler/ocaml` and run them with
-`ocamlc`:
+The golden tests compile programs under `tests/compiler/ocaml` and a curated
+subset in `tests/compiler/valid_ocaml`, then run them with `ocamlc`:
 
 ```go
 if err := mlcode.EnsureOCaml(); err != nil {
