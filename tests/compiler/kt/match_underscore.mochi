@@ -1,0 +1,13 @@
+type Tree =
+  Leaf {}
+  | Node(left: Tree, value: int, right: Tree)
+
+fun value_of_root(t: Tree): int {
+  return match t {
+    Node(_, v, _) => v
+    _ => 0
+  }
+}
+
+print(value_of_root(Node { left: Leaf {}, value: 5, right: Leaf {} }))
+
