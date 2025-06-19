@@ -1,13 +1,19 @@
 (loop [i 1]
   (when (< i 4)
-    (try
+    (let [r (try
       (println i)
-      (recur (inc i))
+      :next
     (catch clojure.lang.ExceptionInfo e
       (cond
-        (= (.getMessage e) "continue") (recur (inc i))
-        (= (.getMessage e) "break") nil
+        (= (.getMessage e) "continue") :next
+        (= (.getMessage e) "break") :break
         :else (throw e))
       )
-    )
+    )]
+  (cond
+    (= r :break) nil
+    :else (recur (inc i))
   )
+)
+)
+)
