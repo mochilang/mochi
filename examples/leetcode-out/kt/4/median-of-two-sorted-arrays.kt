@@ -1,5 +1,5 @@
 fun findMedianSortedArrays(nums1: List<Int>, nums2: List<Int>) : Double {
-        var merged: List<Int> = listOf<Int>()
+        var merged: List<Int> = listOf()
         var i = 0
         var j = 0
         while (((i < nums1.size) || (j < nums2.size))) {
