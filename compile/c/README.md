@@ -41,7 +41,7 @@ cc main.c -o main
 ./main
 ```
 
-`tools.go` provides `EnsureCC` to locate `cc`, `gcc` or `clang` and attempt installation on Linux or macOS if missing.【F:compile/c/tools.go†L10-L56】
+`tools.go` provides `EnsureCC` to locate `cc`, `gcc` or `clang` and attempt installation on Linux or macOS if missing. Set the `CC` environment variable to override the compiler used.【F:compile/c/tools.go†L10-L56】
 
 ## Tests
 
