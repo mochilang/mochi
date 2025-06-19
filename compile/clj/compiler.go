@@ -26,33 +26,41 @@ func New(env *types.Env) *Compiler {
 
 // Compile generates Clojure code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	for _, s := range prog.Statements {
-		switch {
-		case s.Fun != nil:
-			if err := c.compileFun(s.Fun); err != nil {
-				return nil, err
-			}
-			c.writeln("")
+        c.writeln("(ns main)")
+        c.writeln("")
+        for _, s := range prog.Statements {
+                switch {
+                case s.Fun != nil:
+                        if err := c.compileFun(s.Fun); err != nil {
+                                return nil, err
+                        }
+                        c.writeln("")
 		case s.Test != nil:
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
 			c.writeln("")
-		default:
-			c.mainStmts = append(c.mainStmts, s)
-		}
-	}
-	for _, s := range c.mainStmts {
-		if err := c.compileStmt(s); err != nil {
-			return nil, err
-		}
-	}
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			c.writeln("(" + "test_" + sanitizeName(s.Test.Name) + ")")
-		}
-	}
-	return c.buf.Bytes(), nil
+                default:
+                        c.mainStmts = append(c.mainStmts, s)
+                }
+        }
+        c.writeln("(defn -main []")
+        c.indent++
+        for _, s := range c.mainStmts {
+                if err := c.compileStmt(s); err != nil {
+                        return nil, err
+                }
+        }
+        for _, s := range prog.Statements {
+                if s.Test != nil {
+                        c.writeln("(" + "test_" + sanitizeName(s.Test.Name) + ")")
+                }
+        }
+        c.indent--
+        c.writeln(")")
+        c.writeln("")
+        c.writeln("(-main)")
+        return c.buf.Bytes(), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
