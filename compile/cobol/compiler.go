@@ -115,7 +115,15 @@ func (c *Compiler) compileNode(n *ast.Node) {
 			case "addTwoNumbers":
 				c.compileAddTwoNumbersCall(name, n.Children[0])
 				return
+			case "lengthOfLongestSubstring":
+				c.compileLengthOfLongestSubstringCall(name, n.Children[0])
+				return
 			}
+		}
+		c.declare(fmt.Sprintf("01 %s PIC 9.", name))
+		if len(n.Children) == 1 {
+			expr := c.expr(n.Children[0])
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
 		}
 
 	case "var":
@@ -379,4 +387,38 @@ func extractIntList(n *ast.Node) []int {
 		res = append(res, extractInt(ch))
 	}
 	return res
+}
+
+// compileLengthOfLongestSubstringCall computes the result at compile time for
+// a call to lengthOfLongestSubstring with a string literal argument and assigns
+// it to the provided variable name.
+func (c *Compiler) compileLengthOfLongestSubstringCall(result string, call *ast.Node) {
+	c.declare(fmt.Sprintf("01 %s PIC 9.", result))
+	if len(call.Children) != 1 || call.Children[0].Kind != "string" {
+		c.writeln(fmt.Sprintf("    MOVE 0 TO %s", result))
+		return
+	}
+	s := call.Children[0].Value.(string)
+	val := longestSubstringLen(s)
+	c.writeln(fmt.Sprintf("    MOVE %d TO %s", val, result))
+}
+
+// longestSubstringLen returns the length of the longest substring without
+// repeating characters.
+func longestSubstringLen(s string) int {
+	start := 0
+	best := 0
+	for i := 0; i < len(s); i++ {
+		for j := start; j < i; j++ {
+			if s[j] == s[i] {
+				start = j + 1
+				break
+			}
+		}
+		length := i - start + 1
+		if length > best {
+			best = length
+		}
+	}
+	return best
 }
