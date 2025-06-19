@@ -8,14 +8,14 @@ public class Program {
 		if (((numRows <= 1L) || (numRows >= s.Length))) {
 			return s;
 		}
-		var rows = new dynamic[] { };
-		var i = 0L;
+		string[] rows = new string[] { };
+		long i = 0L;
 		while ((i < numRows)) {
 			rows = rows.Concat(new [] { "" }).ToArray();
 			i = (i + 1L);
 		}
-		var curr = 0L;
-		var step = 1L;
+		long curr = 0L;
+		long step = 1L;
 		foreach (var ch in s) {
 			rows[curr] = (rows[curr] + ch);
 			if ((curr == 0L)) {
@@ -25,7 +25,7 @@ public class Program {
 			}
 			curr = (curr + step);
 		}
-		var result = "";
+		string result = "";
 		foreach (var row in rows) {
 			result = (result + row);
 		}

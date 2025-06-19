@@ -8,6 +8,19 @@ func _indexString(_ s: String, _ i: Int) -> String {
 	return String(chars[idx])
 }
 
+func _sliceString(_ s: String, _ i: Int, _ j: Int) -> String {
+	var start = i
+	var end = j
+	let chars = Array(s)
+	let n = chars.count
+	if start < 0 { start += n }
+	if end < 0 { end += n }
+	if start < 0 { start = 0 }
+	if end > n { end = n }
+	if end < start { end = start }
+	return String(chars[start..<end])
+}
+
 func expand(_ s: String, _ left: Int, _ right: Int) -> Int {
 	let s = s
 	let left = left
@@ -47,13 +60,7 @@ func longestPalindrome(_ s: String) -> String {
 			end = i + (l / 2)
 		}
 	}
-	var res = ""
-	var k = start
-	while k <= end {
-		res = res + _indexString(s, k)
-		k = k + 1
-	}
-	return res
+	return _sliceString(s, start, end + 1)
 }
 
 func main() {

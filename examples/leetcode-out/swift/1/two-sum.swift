@@ -16,7 +16,7 @@ func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
 }
 
 func main() {
-	let result: [Int] = twoSum([2, 7, 11, 15], 9)
+	let result = twoSum([2, 7, 11, 15], 9)
 	print(result[0])
 	print(result[1])
 }

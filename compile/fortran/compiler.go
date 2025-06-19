@@ -61,6 +61,9 @@ func collectLoopVars(stmts []*parser.Statement, vars map[string]bool) {
 		switch {
 		case s.For != nil:
 			vars[sanitizeName(s.For.Name)] = true
+			if s.For.RangeEnd == nil {
+				vars["i_"+sanitizeName(s.For.Name)] = true
+			}
 			collectLoopVars(s.For.Body, vars)
 		case s.If != nil:
 			collectLoopVars(s.If.Then, vars)
@@ -588,24 +591,44 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 			return err
 		}
 	case s.For != nil:
-		start, err := c.compileExpr(s.For.Source)
-		if err != nil {
-			return err
-		}
-		end, err := c.compileExpr(s.For.RangeEnd)
+		src, err := c.compileExpr(s.For.Source)
 		if err != nil {
 			return err
 		}
 		name := sanitizeName(s.For.Name)
-		c.writeln(fmt.Sprintf("do %s = %s, %s - 1", name, start, end))
-		c.indent++
-		for _, st := range s.For.Body {
-			if err := c.compileStmt(st, retVar); err != nil {
+		if s.For.RangeEnd != nil {
+			end, err := c.compileExpr(s.For.RangeEnd)
+			if err != nil {
 				return err
 			}
+			c.writeln(fmt.Sprintf("do %s = %s, %s - 1", name, src, end))
+			c.indent++
+			for _, st := range s.For.Body {
+				if err := c.compileStmt(st, retVar); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("end do")
+		} else {
+			idx := "i_" + name
+			if c.stringVars[src] {
+				c.writeln(fmt.Sprintf("do %s = 0, len(%s) - 1", idx, src))
+				c.indent++
+				c.writeln(fmt.Sprintf("%s = %s(modulo(%s, len(%s)) + 1:modulo(%s, len(%s)) + 1)", name, src, idx, src, idx, src))
+			} else {
+				c.writeln(fmt.Sprintf("do %s = 0, size(%s) - 1", idx, src))
+				c.indent++
+				c.writeln(fmt.Sprintf("%s = %s(modulo(%s, size(%s)) + 1)", name, src, idx, src))
+			}
+			for _, st := range s.For.Body {
+				if err := c.compileStmt(st, retVar); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("end do")
 		}
-		c.indent--
-		c.writeln("end do")
 	case s.While != nil:
 		cond, err := c.compileExpr(s.While.Cond)
 		if err != nil {

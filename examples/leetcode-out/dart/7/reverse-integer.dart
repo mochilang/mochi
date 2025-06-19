@@ -1,13 +1,13 @@
-dynamic reverse(x) {
-	dynamic sign = 1;
-	dynamic n = x;
+int reverse(int x) {
+	int sign = 1;
+	int n = x;
 	if ((n < 0)) {
 		sign = -1;
 		n = -n;
 	}
-	dynamic rev = 0;
+	int rev = 0;
 	while ((n != 0)) {
-		dynamic digit = (n % 10);
+		var digit = (n % 10);
 		rev = ((rev * 10) + digit);
 		n = (n ~/ 10);
 	}

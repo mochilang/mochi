@@ -1,7 +1,7 @@
 const std = @import("std");
 
 fn lengthOfLongestSubstring(s: []const u8) [2]i32 {
-	const n = s.len;
+	const n = (s).len;
 	var start = 0;
 	var best = 0;
 	var i = 0;

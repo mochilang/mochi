@@ -417,30 +417,63 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, val.val))
 		return nil
 	}
-	if len(a.Index) == 1 && a.Index[0].Colon == nil {
-		idx, err := c.compileExpr(a.Index[0].Start)
-		if err != nil {
-			return err
+	if len(a.Index) >= 1 && allSimple(a.Index) {
+		idxRes := make([]exprRes, len(a.Index))
+		for i, idx := range a.Index {
+			r, err := c.compileExpr(idx.Start)
+			if err != nil {
+				return err
+			}
+			idxRes[i] = r
 		}
 		val, err := c.compileExpr(a.Value)
 		if err != nil {
 			return err
 		}
-		tmpCur := c.newVar()
-		c.writeln(fmt.Sprintf("nb_getval(%s, %s),", name, tmpCur))
-		for _, line := range idx.code {
+
+		cur := c.newVar()
+		c.writeln(fmt.Sprintf("nb_getval(%s, %s),", name, cur))
+		containers := []string{cur}
+		for _, r := range idxRes[:len(idxRes)-1] {
+			for _, line := range r.code {
+				c.writeln(line)
+			}
+			next := c.newVar()
+			c.use("getitem")
+			c.writeln(fmt.Sprintf("get_item(%s, %s, %s),", cur, r.val, next))
+			cur = next
+			containers = append(containers, cur)
+		}
+		for _, line := range idxRes[len(idxRes)-1].code {
 			c.writeln(line)
 		}
 		for _, line := range val.code {
 			c.writeln(line)
 		}
-		tmpNew := c.newVar()
+
+		newVal := c.newVar()
 		c.use("setitem")
-		c.writeln(fmt.Sprintf("set_item(%s, %s, %s, %s),", tmpCur, idx.val, val.val, tmpNew))
-		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, tmpNew))
+		c.writeln(fmt.Sprintf("set_item(%s, %s, %s, %s),", cur, idxRes[len(idxRes)-1].val, val.val, newVal))
+
+		for i := len(containers) - 2; i >= 0; i-- {
+			tmp := c.newVar()
+			c.use("setitem")
+			c.writeln(fmt.Sprintf("set_item(%s, %s, %s, %s),", containers[i], idxRes[i].val, newVal, tmp))
+			newVal = tmp
+		}
+		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, newVal))
 		return nil
 	}
 	return fmt.Errorf("unsupported assignment")
+}
+
+func allSimple(idxs []*parser.IndexOp) bool {
+	for _, idx := range idxs {
+		if idx.Colon != nil {
+			return false
+		}
+	}
+	return true
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt, ret string) error {
@@ -503,71 +536,136 @@ func (c *Compiler) compileExpr(e *parser.Expr) (exprRes, error) {
 	return c.compileBinary(e.Binary)
 }
 
+type operand struct {
+	expr   exprRes
+	isList bool
+}
+
+func contains[T comparable](sl []T, t T) bool {
+	for _, v := range sl {
+		if v == t {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Compiler) binaryOp(left operand, op string, right operand) (operand, error) {
+	res := exprRes{}
+	res.code = append(res.code, left.expr.code...)
+	res.code = append(res.code, right.expr.code...)
+	switch op {
+	case "+":
+		if left.isList || right.isList {
+			tmp := c.newVar()
+			res.code = append(res.code, fmt.Sprintf("append(%s, %s, %s)", left.expr.val, right.expr.val, tmp)+",")
+			res.val = tmp
+			return operand{expr: res, isList: true}, nil
+		}
+		tmp := c.newVar()
+		res.code = append(res.code, fmt.Sprintf("%s is %s + %s,", tmp, left.expr.val, right.expr.val))
+		res.val = tmp
+		return operand{expr: res}, nil
+	case "-":
+		tmp := c.newVar()
+		res.code = append(res.code, fmt.Sprintf("%s is %s - %s,", tmp, left.expr.val, right.expr.val))
+		res.val = tmp
+		return operand{expr: res}, nil
+	case "*":
+		tmp := c.newVar()
+		res.code = append(res.code, fmt.Sprintf("%s is %s * %s,", tmp, left.expr.val, right.expr.val))
+		res.val = tmp
+		return operand{expr: res}, nil
+	case "/":
+		tmp := c.newVar()
+		res.code = append(res.code, fmt.Sprintf("%s is %s // %s,", tmp, left.expr.val, right.expr.val))
+		res.val = tmp
+		return operand{expr: res}, nil
+	case "%":
+		tmp := c.newVar()
+		res.code = append(res.code, fmt.Sprintf("%s is %s mod %s,", tmp, left.expr.val, right.expr.val))
+		res.val = tmp
+		return operand{expr: res}, nil
+	case "==":
+		res.val = fmt.Sprintf("%s =:= %s", left.expr.val, right.expr.val)
+		return operand{expr: res}, nil
+	case "!=":
+		res.val = fmt.Sprintf("%s =\\= %s", left.expr.val, right.expr.val)
+		return operand{expr: res}, nil
+	case "<":
+		res.val = fmt.Sprintf("%s < %s", left.expr.val, right.expr.val)
+		return operand{expr: res}, nil
+	case "<=":
+		res.val = fmt.Sprintf("%s =< %s", left.expr.val, right.expr.val)
+		return operand{expr: res}, nil
+	case ">":
+		res.val = fmt.Sprintf("%s > %s", left.expr.val, right.expr.val)
+		return operand{expr: res}, nil
+	case ">=":
+		res.val = fmt.Sprintf("%s >= %s", left.expr.val, right.expr.val)
+		return operand{expr: res}, nil
+	case "&&":
+		res.val = fmt.Sprintf("(%s, %s)", left.expr.val, right.expr.val)
+		return operand{expr: res}, nil
+	case "||":
+		res.val = fmt.Sprintf("(%s ; %s)", left.expr.val, right.expr.val)
+		return operand{expr: res}, nil
+	case "in":
+		tmp := c.newVar()
+		c.use("contains")
+		res.code = append(res.code, fmt.Sprintf("contains(%s, %s, %s),", right.expr.val, left.expr.val, tmp))
+		res.val = tmp
+		return operand{expr: res}, nil
+	default:
+		return operand{}, fmt.Errorf("unsupported operator %s", op)
+	}
+}
+
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
-	res, err := c.compileUnary(b.Left)
+	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return exprRes{}, err
 	}
-	leftAst := b.Left
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+	operands := []operand{{expr: first, isList: isListExpr(b.Left)}}
+	ops := []string{}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return exprRes{}, err
 		}
-		res.code = append(res.code, right.code...)
-		switch op.Op {
-		case "+":
-			if isListExpr(leftAst) || isListPostfix(op.Right) {
-				tmp := c.newVar()
-				res.code = append(res.code, fmt.Sprintf("append(%s, %s, %s)", res.val, right.val, tmp)+",")
-				res.val = tmp
-			} else {
-				tmp := c.newVar()
-				res.code = append(res.code, fmt.Sprintf("%s is %s + %s,", tmp, res.val, right.val))
-				res.val = tmp
+		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right)})
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	for _, lvl := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(lvl, ops[i]) {
+				i++
+				continue
 			}
-		case "-":
-			tmp := c.newVar()
-			res.code = append(res.code, fmt.Sprintf("%s is %s - %s,", tmp, res.val, right.val))
-			res.val = tmp
-		case "*":
-			tmp := c.newVar()
-			res.code = append(res.code, fmt.Sprintf("%s is %s * %s,", tmp, res.val, right.val))
-			res.val = tmp
-		case "/":
-			tmp := c.newVar()
-			res.code = append(res.code, fmt.Sprintf("%s is %s // %s,", tmp, res.val, right.val))
-			res.val = tmp
-		case "%":
-			tmp := c.newVar()
-			res.code = append(res.code, fmt.Sprintf("%s is %s mod %s,", tmp, res.val, right.val))
-			res.val = tmp
-		case "==":
-			res.val = fmt.Sprintf("%s =:= %s", res.val, right.val)
-		case "!=":
-			res.val = fmt.Sprintf("%s =\\= %s", res.val, right.val)
-		case "<":
-			res.val = fmt.Sprintf("%s < %s", res.val, right.val)
-		case "<=":
-			res.val = fmt.Sprintf("%s =< %s", res.val, right.val)
-		case ">":
-			res.val = fmt.Sprintf("%s > %s", res.val, right.val)
-		case ">=":
-			res.val = fmt.Sprintf("%s >= %s", res.val, right.val)
-		case "&&":
-			res.val = fmt.Sprintf("(%s, %s)", res.val, right.val)
-		case "||":
-			res.val = fmt.Sprintf("(%s ; %s)", res.val, right.val)
-		case "in":
-			tmp := c.newVar()
-			c.use("contains")
-			res.code = append(res.code, fmt.Sprintf("contains(%s, %s, %s),", right.val, res.val, tmp))
-			res.val = tmp
-		default:
-			return exprRes{}, fmt.Errorf("unsupported operator %s", op.Op)
+			res, err := c.binaryOp(operands[i], ops[i], operands[i+1])
+			if err != nil {
+				return exprRes{}, err
+			}
+			operands[i] = res
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return res, nil
+
+	if len(operands) != 1 {
+		return exprRes{}, fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0].expr, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (exprRes, error) {

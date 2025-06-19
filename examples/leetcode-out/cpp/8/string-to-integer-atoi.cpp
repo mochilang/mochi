@@ -1,6 +1,23 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+string _indexString(const string& s, int i) {
+	int n = s.size();
+	if (i < 0) i += n;
+	if (i < 0 || i >= n) throw std::out_of_range("index out of range");
+	return string(1, s[i]);
+}
+
+string _sliceString(const string& s, int start, int end) {
+	int n = s.size();
+	if (start < 0) start += n;
+	if (end < 0) end += n;
+	if (start < 0) start = 0;
+	if (end > n) end = n;
+	if (end < start) end = start;
+	return s.substr(start, end - start);
+}
+
 int digit(string ch){
 	if (ch == "0") {
 		return 0;
@@ -36,21 +53,21 @@ int digit(string ch){
 }
 
 int myAtoi(string s){
-	auto i = 0;
+	int i = 0;
 	auto n = s.size();
-	while (i < n && s[i] == " "[0]) {
+	while (i < n && _indexString(s, i) == _indexString(" ", 0)) {
 		i = i + 1;
 	}
-	auto sign = 1;
-	if (i < n && (s[i] == "+"[0] || s[i] == "-"[0])) {
-		if (s[i] == "-"[0]) {
+	int sign = 1;
+	if (i < n && (_indexString(s, i) == _indexString("+", 0) || _indexString(s, i) == _indexString("-", 0))) {
+		if (_indexString(s, i) == _indexString("-", 0)) {
 			sign = -1;
 		}
 		i = i + 1;
 	}
-	auto result = 0;
+	int result = 0;
 	while (i < n) {
-		auto ch = s.substr(i, i + 1 - i);
+		string ch = _sliceString(s, i, i + 1);
 		auto d = digit(ch);
 		if (d < 0) {
 			break;

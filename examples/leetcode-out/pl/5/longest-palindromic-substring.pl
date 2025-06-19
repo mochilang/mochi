@@ -30,7 +30,7 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 				repeat,
 					nb_getval(expand_l, _V1),
 					nb_getval(expand_r, _V2),
-					((_V1 >= 0, _V2) < N ->
+					((_V1 >= 0, _V2 < N) ->
 						nb_getval(expand_l, _V3),
 						get_item(S, _V3, _V4),
 						nb_getval(expand_r, _V5),

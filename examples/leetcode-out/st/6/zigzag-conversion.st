@@ -2,7 +2,7 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !Main class methodsFor: 'mochi'!
 convert: s numRows: numRows | ch curr i result row rows step |
-	((((numRows <= 1) | numRows) >= s size)) ifTrue: [
+	((((numRows <= 1) or: [numRows]) >= s size)) ifTrue: [
 		^ s
 	]
 	.

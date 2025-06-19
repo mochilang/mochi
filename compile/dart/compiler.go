@@ -128,7 +128,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
 	var typ types.Type
-	if c.env != nil {
+	if s.Type != nil {
+		typ = c.resolveTypeRef(s.Type)
+	}
+	if c.env != nil && typ == nil {
 		if t, err := c.env.GetVar(s.Name); err == nil {
 			typ = t
 		}
@@ -225,7 +228,13 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 		if isMapExpr(c, s.Source) {
 			c.writeln(fmt.Sprintf("for (var %s in %s.values) {", loopVar, iterVar))
 		} else if isStringExpr(c, s.Source) {
-			c.writeln(fmt.Sprintf("for (var %s in %s.runes) {", loopVar, iterVar))
+			tmp := c.newVar()
+			c.writeln(fmt.Sprintf("for (var %s in %s.runes) {", tmp, iterVar))
+			if s.Name != "_" {
+				c.indent++
+				c.writeln(fmt.Sprintf("var %s = String.fromCharCode(%s);", loopVar, tmp))
+				c.indent--
+			}
 		} else {
 			c.writeln(fmt.Sprintf("for (var %s in %s) {", loopVar, iterVar))
 		}
@@ -244,7 +253,10 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeName(s.Name)
 	var typ types.Type
-	if c.env != nil {
+	if s.Type != nil {
+		typ = c.resolveTypeRef(s.Type)
+	}
+	if c.env != nil && typ == nil {
 		if t, err := c.env.GetVar(s.Name); err == nil {
 			typ = t
 		}
@@ -328,12 +340,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands := []string{}
 	operators := []string{}
 	posts := []*parser.PostfixExpr{}
+	floats := []bool{}
 
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
 	operands = append(operands, left)
+	floats = append(floats, isFloatUnary(c, b.Left))
 
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
@@ -343,6 +357,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operands = append(operands, right)
 		operators = append(operators, op.Op)
 		posts = append(posts, op.Right)
+		floats = append(floats, isFloatPostfix(c, op.Right))
 	}
 
 	levels := [][]string{
@@ -362,8 +377,24 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				r := operands[i+1]
 				op := operators[i]
 				var expr string
+				lf := floats[i]
+				rf := floats[i+1]
 				if op == "/" {
-					op = "~/"
+					if lf || rf {
+						op = "/"
+						floats[i] = true
+					} else {
+						op = "~/"
+						floats[i] = false
+					}
+				} else if op == "*" || op == "+" || op == "-" {
+					if lf || rf {
+						floats[i] = true
+					} else {
+						floats[i] = false
+					}
+				} else {
+					floats[i] = false
 				}
 				if op == "in" {
 					if isMapPostfix(c, posts[i]) {
@@ -378,6 +409,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				operands = append(operands[:i+1], operands[i+2:]...)
 				operators = append(operators[:i], operators[i+1:]...)
 				posts = append(posts[:i], posts[i+1:]...)
+				floats = append(floats[:i+1], floats[i+2:]...)
 			} else {
 				i++
 			}
@@ -463,6 +495,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", err
 			}
 			expr = call
+		} else if op.Cast != nil {
+			t := c.resolveTypeRef(op.Cast.Type)
+			dt := dartType(t)
+			switch dt {
+			case "double":
+				expr = fmt.Sprintf("(%s).toDouble()", expr)
+			case "int":
+				expr = fmt.Sprintf("(%s).toInt()", expr)
+			default:
+				expr = fmt.Sprintf("(%s as %s)", expr, dt)
+			}
 		}
 	}
 	return expr, nil
@@ -1030,6 +1073,57 @@ func isStringPostfix(c *Compiler, p *parser.PostfixExpr) bool {
 	}
 	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}
 	return isStringExpr(c, e)
+}
+
+func isFloatExpr(c *Compiler, e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if e.Binary != nil && len(e.Binary.Right) == 0 {
+		return isFloatUnary(c, e.Binary.Left)
+	}
+	return false
+}
+
+func isFloatUnary(c *Compiler, u *parser.Unary) bool {
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	return isFloatPostfix(c, u.Value)
+}
+
+func isFloatPostfix(c *Compiler, p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) > 0 {
+		if last := p.Ops[len(p.Ops)-1]; last.Cast != nil {
+			t := c.resolveTypeRef(last.Cast.Type)
+			if isFloat(t) {
+				return true
+			}
+		}
+	}
+	return isFloatPrimary(c, p.Target)
+}
+
+func isFloatPrimary(c *Compiler, p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if lit := p.Lit; lit != nil && lit.Float != nil {
+		return true
+	}
+	if sel := p.Selector; sel != nil && len(sel.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(sel.Root); err == nil {
+				if isFloat(t) {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func isStringPrimary(c *Compiler, p *parser.Primary) bool {

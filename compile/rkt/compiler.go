@@ -215,6 +215,18 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		c.writeln(fmt.Sprintf("(set! %s (if (hash? %s) (hash-set %s %s %s) (list-set %s %s %s)))", name, name, name, idx, val, name, idx, val))
 		return nil
 	}
+	if len(a.Index) == 2 && a.Index[0].Colon == nil && a.Index[1].Colon == nil {
+		idx1, err := c.compileExpr(a.Index[0].Start)
+		if err != nil {
+			return err
+		}
+		idx2, err := c.compileExpr(a.Index[1].Start)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("(set! %s (list-set %s %s (list-set (idx %s %s) %s %s)))", name, name, idx1, name, idx1, idx2, val))
+		return nil
+	}
 	return fmt.Errorf("indexed assignment unsupported")
 }
 

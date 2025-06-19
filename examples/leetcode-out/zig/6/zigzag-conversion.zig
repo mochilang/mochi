@@ -1,7 +1,7 @@
 const std = @import("std");
 
 fn convert(s: []const u8, numRows: i32) [2]i32 {
-	if ((((numRows <= 1) or numRows) >= s.len)) {
+	if ((((numRows <= 1) or numRows) >= (s).len)) {
 		return s;
 	}
 	var rows = std.ArrayList(i32).init(std.heap.page_allocator);
@@ -21,7 +21,7 @@ fn convert(s: []const u8, numRows: i32) [2]i32 {
 		}
 		curr = (curr + step);
 	}
-	var result = "";
+	var result: []const u8 = "";
 	for (rows) |row| {
 		result = (result + row);
 	}

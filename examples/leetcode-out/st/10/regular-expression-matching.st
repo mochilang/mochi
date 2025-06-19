@@ -25,21 +25,21 @@ isMatch: s p: p | dp first i i2 j j2 m n row |
 		[(j2 >= 0)] whileTrue: [
 			first := false.
 			((i2 < m)) ifTrue: [
-				(((((p at: j2 + 1) = (s at: i2 + 1))) | (((p at: j2 + 1) = '.')))) ifTrue: [
+				(((((p at: j2 + 1) = (s at: i2 + 1))) or: [(((p at: j2 + 1) = '.'))])) ifTrue: [
 					first := true.
 				]
 				.
 			]
 			.
-			(((((j2 + 1) < n) & (p at: (j2 + 1) + 1)) = '*')) ifTrue: [
-				((((dp at: i2 + 1) at: (j2 + 2) + 1) | ((first & ((dp at: (i2 + 1) + 1) at: j2 + 1))))) ifTrue: [
+			(((((j2 + 1) < n) and: [(p at: (j2 + 1) + 1)]) = '*')) ifTrue: [
+				((((dp at: i2 + 1) at: (j2 + 2) + 1) or: [((first and: [((dp at: (i2 + 1) + 1) at: j2 + 1)]))])) ifTrue: [
 					dp at: i2 + 1 put: true.
 				] ifFalse: [
 					dp at: i2 + 1 put: false.
 				]
 				.
 			] ifFalse: [
-				((first & ((dp at: (i2 + 1) + 1) at: (j2 + 1) + 1))) ifTrue: [
+				((first and: [((dp at: (i2 + 1) + 1) at: (j2 + 1) + 1)])) ifTrue: [
 					dp at: i2 + 1 put: true.
 				] ifFalse: [
 					dp at: i2 + 1 put: false.

@@ -6,9 +6,9 @@ using System.Text.Json;
 
 public class Program {
 	static double findMedianSortedArrays(long[] nums1, long[] nums2) {
-		var merged = new long[] { };
-		var i = 0L;
-		var j = 0L;
+		long[] merged = new long[] { };
+		long i = 0L;
+		long j = 0L;
 		while (((i < nums1.Length) || (j < nums2.Length))) {
 			if ((j >= nums2.Length)) {
 				merged = merged.Concat(new [] { nums1[i] }).ToArray();
@@ -24,7 +24,7 @@ public class Program {
 				j = (j + 1L);
 			}
 		}
-		var total = merged.Length;
+		long total = merged.Length;
 		if (((total % 2L) == 1L)) {
 			return _cast<double>(merged[(total / 2L)]);
 		}

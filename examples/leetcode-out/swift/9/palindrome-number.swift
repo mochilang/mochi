@@ -14,8 +14,8 @@ func isPalindrome(_ x: Int) -> Bool {
 	if x < 0 {
 		return false
 	}
-	let s: String = String(x)
-	let n: Int = s.count
+	let s = String(x)
+	let n = s.count
 	for i in 0..<n / 2 {
 		if _indexString(s, i) != _indexString(s, n - 1 - i) {
 			return false
