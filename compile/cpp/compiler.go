@@ -108,6 +108,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("")
 	c.writeHelpers()
 	c.buf.Write(bodyBytes)
+	if !bytes.HasSuffix(c.buf.Bytes(), []byte("\n")) {
+		c.writeln("")
+	}
 	return c.buf.Bytes(), nil
 }
 
