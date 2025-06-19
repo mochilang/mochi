@@ -80,7 +80,7 @@ The F# tests are tagged `slow` because they invoke the .NET toolchain. Run them 
 go test ./compile/fs -tags slow
 ```
 
-This command compiles the subset programs in `tests/compiler/fs` and also runs the example solutions for LeetCode problems 1–8 to ensure the generated F# code behaves correctly.
+This command compiles the subset programs in `tests/compiler/fs` and also runs the example solutions for LeetCode problems 1–10 to ensure the generated F# code behaves correctly.
 
 
 The tests compile Mochi sources from `tests/compiler/fs` and execute them with `dotnet fsi`:
