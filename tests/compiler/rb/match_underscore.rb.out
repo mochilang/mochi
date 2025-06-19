@@ -1,0 +1,20 @@
+module Tree; end
+class Leaf
+	include Tree
+end
+Node = Struct.new(:left, :value, :right, keyword_init: true) do
+	include Tree
+end
+
+def value_of_root(t)
+	return (begin
+	_t0 = t
+	if _t0.is_a?(Node)
+		(->(v){ v }).call(_t0.value)
+	else
+		0
+	end
+end)
+end
+
+puts([value_of_root(Node.new(left: Leaf.new(), value: 5, right: Leaf.new()))].join(" "))

@@ -1,0 +1,2 @@
+map = {"a" => 1}
+puts([map["a"]].join(" "))

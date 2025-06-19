@@ -1,0 +1,5 @@
+def id(x)
+	return x
+end
+
+puts([id(123)].join(" "))
