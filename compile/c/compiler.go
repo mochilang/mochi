@@ -393,27 +393,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		name := sanitizeName(s.Let.Name)
-		typ := "int"
+		var t types.Type
 		if s.Let.Type != nil {
-			typ = c.cType(s.Let.Type)
-		} else if c.env != nil {
-			if t, err := c.env.GetVar(s.Let.Name); err == nil {
-				switch tt := t.(type) {
-				case types.ListType:
-					if _, ok := tt.Elem.(types.IntType); ok {
-						typ = "list_int"
-					} else if lt, ok2 := tt.Elem.(types.ListType); ok2 {
-						if _, ok3 := lt.Elem.(types.IntType); ok3 {
-							typ = "list_list_int"
-						}
-					}
-				case types.StringType:
-					typ = "char*"
-				case types.FloatType:
-					typ = "double"
-				}
-			}
+			t = resolveTypeRef(s.Let.Type, c.env)
+		} else if s.Let.Value != nil {
+			t = c.inferExprType(s.Let.Value)
 		}
+		if t == nil {
+			t = types.IntType{}
+		}
+		typ := cTypeFromType(t)
 		if s.Let.Value != nil {
 			val := c.compileExpr(s.Let.Value)
 			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -421,65 +410,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
 		}
 		if c.env != nil {
-			var t types.Type
-			if s.Let.Type != nil {
-				t = resolveTypeRef(s.Let.Type, c.env)
-			} else if isListListExpr(s.Let.Value, c.env) {
-				t = types.ListType{Elem: types.ListType{Elem: types.IntType{}}}
-			} else if isListIntExpr(s.Let.Value, c.env) {
-				t = types.ListType{Elem: types.IntType{}}
-			} else if isStringExpr(s.Let.Value, c.env) {
-				t = types.StringType{}
-			} else if isFloatArg(s.Let.Value, c.env) {
-				t = types.FloatType{}
-			} else {
-				t = types.IntType{}
-			}
 			c.env.SetVar(s.Let.Name, t, false)
 		}
 	case s.Var != nil:
 		name := sanitizeName(s.Var.Name)
-		typ := "int"
+		var t types.Type
 		if s.Var.Type != nil {
-			typ = c.cType(s.Var.Type)
-		} else if c.env != nil {
-			if t, err := c.env.GetVar(s.Var.Name); err == nil {
-				switch tt := t.(type) {
-				case types.ListType:
-					if _, ok := tt.Elem.(types.IntType); ok {
-						typ = "list_int"
-					} else if lt, ok2 := tt.Elem.(types.ListType); ok2 {
-						if _, ok3 := lt.Elem.(types.IntType); ok3 {
-							typ = "list_list_int"
-						}
-					}
-				case types.StringType:
-					typ = "char*"
-				case types.FloatType:
-					typ = "double"
-				}
-			} else {
-				if isListListExpr(s.Var.Value, c.env) {
-					typ = "list_list_int"
-				} else if isListIntExpr(s.Var.Value, c.env) {
-					typ = "list_int"
-				} else if isStringExpr(s.Var.Value, c.env) {
-					typ = "char*"
-				} else if isFloatArg(s.Var.Value, c.env) {
-					typ = "double"
-				}
-			}
-		} else {
-			if isListListExpr(s.Var.Value, nil) {
-				typ = "list_list_int"
-			} else if isListIntExpr(s.Var.Value, nil) {
-				typ = "list_int"
-			} else if isStringExpr(s.Var.Value, nil) {
-				typ = "char*"
-			} else if isFloatArg(s.Var.Value, nil) {
-				typ = "double"
-			}
+			t = resolveTypeRef(s.Var.Type, c.env)
+		} else if s.Var.Value != nil {
+			t = c.inferExprType(s.Var.Value)
 		}
+		if t == nil {
+			t = types.IntType{}
+		}
+		typ := cTypeFromType(t)
 		if s.Var.Value != nil {
 			val := c.compileExpr(s.Var.Value)
 			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -487,20 +431,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("%s %s;", typ, name))
 		}
 		if c.env != nil {
-			var t types.Type
-			if s.Var.Type != nil {
-				t = resolveTypeRef(s.Var.Type, c.env)
-			} else if isListListExpr(s.Var.Value, c.env) {
-				t = types.ListType{Elem: types.ListType{Elem: types.IntType{}}}
-			} else if isListIntExpr(s.Var.Value, c.env) {
-				t = types.ListType{Elem: types.IntType{}}
-			} else if isStringExpr(s.Var.Value, c.env) {
-				t = types.StringType{}
-			} else if isFloatArg(s.Var.Value, c.env) {
-				t = types.FloatType{}
-			} else {
-				t = types.IntType{}
-			}
 			c.env.SetVar(s.Var.Name, t, true)
 		}
 	case s.Assign != nil:
