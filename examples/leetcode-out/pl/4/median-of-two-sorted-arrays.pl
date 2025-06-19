@@ -19,7 +19,7 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 					length(Nums1, _V1),
 					nb_getval(findmediansortedarrays_j, _V2),
 					length(Nums2, _V3),
-					((_V0 < _V1 ; _V2) < _V3 ->
+					((_V0 < _V1 ; _V2 < _V3) ->
 						nb_getval(findmediansortedarrays_j, _V4),
 						length(Nums2, _V5),
 						(_V4 >= _V5 ->

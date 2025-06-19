@@ -21,7 +21,7 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 					nb_getval(addtwonumbers_j, _V2),
 					length(L2, _V3),
 					nb_getval(addtwonumbers_carry, _V4),
-					(((_V0 < _V1 ; _V2) < _V3 ; _V4) > 0 ->
+					(((_V0 < _V1 ; _V2 < _V3) ; _V4 > 0) ->
 						nb_setval(addtwonumbers_x, 0),
 						nb_getval(addtwonumbers_i, _V5),
 						length(L1, _V6),
@@ -50,9 +50,9 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 						),
 						nb_getval(addtwonumbers_x, _V17),
 						nb_getval(addtwonumbers_y, _V18),
-						_V19 is _V17 + _V18,
-						nb_getval(addtwonumbers_carry, _V20),
-						_V21 is _V19 + _V20,
+						_V20 is _V17 + _V18,
+						nb_getval(addtwonumbers_carry, _V19),
+						_V21 is _V20 + _V19,
 						Sum = _V21,
 						_V22 is Sum mod 10,
 						Digit = _V22,
