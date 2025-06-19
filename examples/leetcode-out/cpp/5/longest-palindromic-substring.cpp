@@ -1,12 +1,29 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+string _indexString(const string& s, int i) {
+	int n = s.size();
+	if (i < 0) i += n;
+	if (i < 0 || i >= n) throw std::out_of_range("index out of range");
+	return string(1, s[i]);
+}
+
+string _sliceString(const string& s, int start, int end) {
+	int n = s.size();
+	if (start < 0) start += n;
+	if (end < 0) end += n;
+	if (start < 0) start = 0;
+	if (end > n) end = n;
+	if (end < start) end = start;
+	return s.substr(start, end - start);
+}
+
 int expand(string s, int left, int right){
-	auto l = left;
-	auto r = right;
+	int l = left;
+	int r = right;
 	auto n = s.size();
 	while (l >= 0 && r < n) {
-		if (s[l] != s[r]) {
+		if (_indexString(s, l) != _indexString(s, r)) {
 			break;
 		}
 		l = l - 1;
@@ -19,8 +36,8 @@ string longestPalindrome(string s){
 	if (s.size() <= 1) {
 		return s;
 	}
-	auto start = 0;
-	auto end = 0;
+	int start = 0;
+	int end = 0;
 	auto n = s.size();
 	for (int i = 0; i < n; i++) {
 		auto len1 = expand(s, i, i);
@@ -34,13 +51,7 @@ string longestPalindrome(string s){
 			end = i + (l / 2);
 		}
 	}
-	auto res = "";
-	auto k = start;
-	while (k <= end) {
-		res = res + s[k];
-		k = k + 1;
-	}
-	return res;
+	return _sliceString(s, start, end + 1);
 }
 
 int main() {
