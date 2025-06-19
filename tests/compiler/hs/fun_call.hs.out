@@ -27,8 +27,8 @@ _input :: IO String
 _input = getLine
 
 
-add a b = fromMaybe ((a + b)) $
-    Nothing
+add :: Int -> Int -> Int
+add a b = (a + b)
 
 main :: IO ()
 main = do
