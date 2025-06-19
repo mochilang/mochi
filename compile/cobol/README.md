@@ -43,10 +43,18 @@ for _, ln := range lines {
     }
     if _, err := strconv.Atoi(ln); err == nil {
         c.writeln("    DISPLAY " + ln)
-    } else {
-        esc := strings.ReplaceAll(ln, "\"", "\"\"")
-        c.writeln("    DISPLAY \"" + esc + "\"")
+        continue
     }
+    if _, err := strconv.ParseFloat(ln, 64); err == nil {
+        c.writeln("    DISPLAY " + ln)
+        continue
+    }
+    if ln == "true" || ln == "false" {
+        c.writeln("    DISPLAY " + strings.ToUpper(ln))
+        continue
+    }
+    esc := strings.ReplaceAll(ln, "\"", "\"\"")
+    c.writeln("    DISPLAY \"" + esc + "\"")
 }
 if len(lines) == 0 {
     c.writeln("    DISPLAY \"\"")

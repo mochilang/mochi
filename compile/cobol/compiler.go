@@ -92,10 +92,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		trimmed := strings.TrimSpace(ln)
 		if _, err := strconv.Atoi(trimmed); err == nil {
 			c.writeln("    DISPLAY " + trimmed)
-		} else {
-			esc := strings.ReplaceAll(trimmed, "\"", "\"\"")
-			c.writeln("    DISPLAY \"" + esc + "\"")
+			continue
 		}
+		if _, err := strconv.ParseFloat(trimmed, 64); err == nil {
+			c.writeln("    DISPLAY " + trimmed)
+			continue
+		}
+		if trimmed == "true" || trimmed == "false" {
+			c.writeln("    DISPLAY " + strings.ToUpper(trimmed))
+			continue
+		}
+		esc := strings.ReplaceAll(trimmed, "\"", "\"\"")
+		c.writeln("    DISPLAY \"" + esc + "\"")
 	}
 	if len(lines) == 0 {
 		c.writeln("    DISPLAY \"\"")
