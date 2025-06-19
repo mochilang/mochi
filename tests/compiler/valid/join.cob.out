@@ -1,9 +1,15 @@
 >>SOURCE FORMAT FREE
 IDENTIFICATION DIVISION.
 PROGRAM-ID. MAIN.
+DATA DIVISION.
+WORKING-STORAGE SECTION.
+01 STR0 PIC X(33) VALUE "--- Orders with customer info ---".
+01 STR1 PIC X(26) VALUE "Order 100 by Alice - $ 250".
+01 STR2 PIC X(24) VALUE "Order 101 by Bob - $ 125".
+01 STR3 PIC X(26) VALUE "Order 102 by Alice - $ 300".
 PROCEDURE DIVISION.
-    DISPLAY "--- Orders with customer info ---"
-    DISPLAY "Order 100 by Alice - $ 250"
-    DISPLAY "Order 101 by Bob - $ 125"
-    DISPLAY "Order 102 by Alice - $ 300"
+    DISPLAY STR0
+    DISPLAY STR1
+    DISPLAY STR2
+    DISPLAY STR3
     STOP RUN.

@@ -1,15 +1,27 @@
 >>SOURCE FORMAT FREE
 IDENTIFICATION DIVISION.
 PROGRAM-ID. MAIN.
+DATA DIVISION.
+WORKING-STORAGE SECTION.
+01 STR0 PIC X(44) VALUE "--- Cross Join: All order-customer pairs ---".
+01 STR1 PIC X(59) VALUE "Order 100 (customerId: 1 , total: $ 250 ) paired with Alice".
+01 STR2 PIC X(57) VALUE "Order 100 (customerId: 1 , total: $ 250 ) paired with Bob".
+01 STR3 PIC X(61) VALUE "Order 100 (customerId: 1 , total: $ 250 ) paired with Charlie".
+01 STR4 PIC X(59) VALUE "Order 101 (customerId: 2 , total: $ 125 ) paired with Alice".
+01 STR5 PIC X(57) VALUE "Order 101 (customerId: 2 , total: $ 125 ) paired with Bob".
+01 STR6 PIC X(61) VALUE "Order 101 (customerId: 2 , total: $ 125 ) paired with Charlie".
+01 STR7 PIC X(59) VALUE "Order 102 (customerId: 1 , total: $ 300 ) paired with Alice".
+01 STR8 PIC X(57) VALUE "Order 102 (customerId: 1 , total: $ 300 ) paired with Bob".
+01 STR9 PIC X(61) VALUE "Order 102 (customerId: 1 , total: $ 300 ) paired with Charlie".
 PROCEDURE DIVISION.
-    DISPLAY "--- Cross Join: All order-customer pairs ---"
-    DISPLAY "Order 100 (customerId: 1 , total: $ 250 ) paired with Alice"
-    DISPLAY "Order 100 (customerId: 1 , total: $ 250 ) paired with Bob"
-    DISPLAY "Order 100 (customerId: 1 , total: $ 250 ) paired with Charlie"
-    DISPLAY "Order 101 (customerId: 2 , total: $ 125 ) paired with Alice"
-    DISPLAY "Order 101 (customerId: 2 , total: $ 125 ) paired with Bob"
-    DISPLAY "Order 101 (customerId: 2 , total: $ 125 ) paired with Charlie"
-    DISPLAY "Order 102 (customerId: 1 , total: $ 300 ) paired with Alice"
-    DISPLAY "Order 102 (customerId: 1 , total: $ 300 ) paired with Bob"
-    DISPLAY "Order 102 (customerId: 1 , total: $ 300 ) paired with Charlie"
+    DISPLAY STR0
+    DISPLAY STR1
+    DISPLAY STR2
+    DISPLAY STR3
+    DISPLAY STR4
+    DISPLAY STR5
+    DISPLAY STR6
+    DISPLAY STR7
+    DISPLAY STR8
+    DISPLAY STR9
     STOP RUN.
