@@ -127,7 +127,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
-	val := "0"
+	var typStr string
+	if c.env != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			typStr = dartType(t)
+		}
+	}
+	var val string
 	if s.Value != nil {
 		expr, err := c.compileExpr(s.Value)
 		if err != nil {
@@ -135,7 +141,19 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		val = expr
 	}
-	c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
+	if val == "" {
+		if typStr != "" && typStr != "dynamic" {
+			c.writeln(fmt.Sprintf("%s %s;", typStr, name))
+		} else {
+			c.writeln(fmt.Sprintf("var %s;", name))
+		}
+	} else {
+		if typStr != "" && typStr != "dynamic" {
+			c.writeln(fmt.Sprintf("%s %s = %s;", typStr, name, val))
+		} else {
+			c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+		}
+	}
 	return nil
 }
 
@@ -221,7 +239,13 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeName(s.Name)
-	val := "null"
+	var typStr string
+	if c.env != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			typStr = dartType(t)
+		}
+	}
+	var val string
 	if s.Value != nil {
 		expr, err := c.compileExpr(s.Value)
 		if err != nil {
@@ -229,7 +253,19 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		val = expr
 	}
-	c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
+	if val == "" {
+		if typStr != "" && typStr != "dynamic" {
+			c.writeln(fmt.Sprintf("%s %s;", typStr, name))
+		} else {
+			c.writeln(fmt.Sprintf("var %s;", name))
+		}
+	} else {
+		if typStr != "" && typStr != "dynamic" {
+			c.writeln(fmt.Sprintf("%s %s = %s;", typStr, name, val))
+		} else {
+			c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+		}
+	}
 	return nil
 }
 
@@ -606,17 +642,58 @@ func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
+
+	var ft types.FuncType
+	if c.env != nil {
+		if t, err := c.env.GetVar(fun.Name); err == nil {
+			if f, ok := t.(types.FuncType); ok {
+				ft = f
+			}
+		}
+	}
+	if ft.Params == nil {
+		ft.Params = make([]types.Type, len(fun.Params))
+		for i, p := range fun.Params {
+			if p.Type != nil {
+				ft.Params[i] = c.resolveTypeRef(p.Type)
+			} else {
+				ft.Params[i] = types.AnyType{}
+			}
+		}
+	}
+	if ft.Return == nil {
+		if fun.Return != nil {
+			ft.Return = c.resolveTypeRef(fun.Return)
+		} else {
+			ft.Return = types.VoidType{}
+		}
+	}
+
 	params := make([]string, len(fun.Params))
 	for i, p := range fun.Params {
-		params[i] = sanitizeName(p.Name)
+		ptype := dartType(ft.Params[i])
+		if ptype != "" && ptype != "dynamic" {
+			params[i] = fmt.Sprintf("%s %s", ptype, sanitizeName(p.Name))
+		} else {
+			params[i] = sanitizeName(p.Name)
+		}
 	}
-	c.writeln(fmt.Sprintf("dynamic %s(%s) {", name, strings.Join(params, ", ")))
+
+	c.writeln(fmt.Sprintf("%s %s(%s) {", dartType(ft.Return), name, strings.Join(params, ", ")))
 	c.indent++
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	for i, p := range fun.Params {
+		child.SetVar(p.Name, ft.Params[i], true)
+	}
+	c.env = child
 	for _, st := range fun.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
+	c.env = origEnv
 	c.indent--
 	c.writeln("}")
 	return nil
@@ -658,7 +735,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			fields := []string{}
 			for _, f := range v.Fields {
 				fname := sanitizeName(f.Name)
-				c.writeln(fmt.Sprintf("dynamic %s;", fname))
+				typ := dartType(c.resolveTypeRef(f.Type))
+				if typ == "" {
+					typ = "dynamic"
+				}
+				c.writeln(fmt.Sprintf("%s %s;", typ, fname))
 				fields = append(fields, "this."+fname)
 			}
 			var ctor string
@@ -679,7 +760,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	for _, m := range t.Members {
 		if m.Field != nil {
 			fname := sanitizeName(m.Field.Name)
-			c.writeln(fmt.Sprintf("dynamic %s;", fname))
+			typ := dartType(c.resolveTypeRef(m.Field.Type))
+			if typ == "" {
+				typ = "dynamic"
+			}
+			c.writeln(fmt.Sprintf("%s %s;", typ, fname))
 			fields = append(fields, "this."+fname)
 		}
 	}
