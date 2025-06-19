@@ -8,13 +8,13 @@ func convert(_ s: String, _ numRows: Int) -> String {
 		return s
 	}
 	var rows: [String] = []
-	var i: Int = 0
+	var i = 0
 	while i < numRows {
 		rows = rows + [""]
 		i = i + 1
 	}
-	var curr: Int = 0
-	var step: Int = 1
+	var curr = 0
+	var step = 1
 	for ch_ch in s {
 		let ch = String(ch_ch)
 		rows[curr] = rows[curr] + ch
