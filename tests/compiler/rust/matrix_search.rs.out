@@ -3,14 +3,14 @@ fn searchMatrix(matrix: Vec<Vec<i32>>, target: i32) -> bool {
     if m == 0 {
         return false;
     }
-    let mut n = matrix[0 as usize].len() as i32;
+    let mut n = matrix[(0) as usize].len() as i32;
     let mut left = 0;
     let mut right = m * n - 1;
     while left <= right {
         let mut mid = left + (right - left) / 2;
         let mut row = mid / n;
         let mut col = mid % n;
-        let mut value = matrix[row as usize][col as usize];
+        let mut value = matrix[(row) as usize][(col) as usize];
         if value == target {
             return true;
         } else 

@@ -374,6 +374,9 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
+	if c.env != nil {
+		c.env.SetFunc(fun.Name, fun)
+	}
 	c.writeIndent()
 	c.buf.WriteString("fn " + name + "(")
 	for i, p := range fun.Params {
@@ -686,7 +689,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if c.isStringRoot(p) {
+				if c.isStringRoot(p) || (p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Str != nil) {
 					expr = fmt.Sprintf("%s.chars().nth((%s) as usize).unwrap()", expr, iexpr)
 				} else if isStringLiteral(idx.Start) {
 					expr = fmt.Sprintf("%s[%s]", expr, iexpr)
@@ -712,7 +715,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else {
 					end = fmt.Sprintf("%s.len()", expr)
 				}
-				if c.isStringRoot(p) {
+				if c.isStringRoot(p) || c.isStringExpr(p) {
 					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_string()", expr, start, end)
 				} else {
 					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_vec()", expr, start, end)
@@ -848,6 +851,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = v
+	}
+	if fn, ok := c.env.GetFunc(call.Func); ok {
+		for i, p := range fn.Params {
+			if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
+				if !strings.HasPrefix(args[i], "&") {
+					args[i] = "&" + args[i]
+				}
+			}
+		}
 	}
 	argStr := strings.Join(args, ", ")
 	switch call.Func {
