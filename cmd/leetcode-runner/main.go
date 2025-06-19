@@ -14,6 +14,7 @@ import (
 
 	ccode "mochi/compile/c"
 	cljcode "mochi/compile/clj"
+	cobolcode "mochi/compile/cobol"
 	cppcode "mochi/compile/cpp"
 	cscode "mochi/compile/cs"
 	dartcode "mochi/compile/dart"
@@ -202,6 +203,8 @@ func buildOne(src, lang string, run bool) error {
 		data, err = ccode.New(env).Compile(prog)
 	case "clj":
 		data, err = cljcode.New(env).Compile(prog)
+	case "cobol":
+		data, err = cobolcode.New(env).Compile(prog)
 	case "cs":
 		data, err = cscode.New(env).Compile(prog)
 	case "dart":
@@ -290,6 +293,31 @@ func runOutput(file, lang string) error {
 			runner = "clj"
 		}
 		cmd := exec.Command(runner, file)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		return cmd.Run()
+	case "cobol":
+		if err := cobolcode.EnsureCOBOL(); err != nil {
+			return err
+		}
+		tmpDir, err := os.MkdirTemp("", "mochi-cobol")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(tmpDir)
+		src := filepath.Join(tmpDir, "prog.cob")
+		data, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+		if err := os.WriteFile(src, data, 0644); err != nil {
+			return err
+		}
+		exe := filepath.Join(tmpDir, "prog")
+		if out, err := exec.Command("cobc", "-free", "-x", src, "-o", exe).CombinedOutput(); err != nil {
+			return fmt.Errorf("cobc: %v\n%s", err, out)
+		}
+		cmd := exec.Command(exe)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
