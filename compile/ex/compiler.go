@@ -141,7 +141,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
-	if c.indent > 0 {
+        if c.indent > 1 {
 		if c.env != nil {
 			c.env.SetVar(fun.Name, types.FuncType{}, false)
 		}
@@ -508,10 +508,11 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-	type operand struct {
-		expr   string
-		isList bool
-	}
+        type operand struct {
+                expr     string
+                isList   bool
+                isString bool
+        }
 
 	if b == nil {
 		return "", fmt.Errorf("nil binary expression")
@@ -520,18 +521,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	ops := []string{}
 	operands := []operand{}
 
-	first, err := c.compileUnary(b.Left)
-	if err != nil {
-		return "", err
-	}
-	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left, c.env)})
+        first, err := c.compileUnary(b.Left)
+        if err != nil {
+                return "", err
+        }
+        operands = append(operands, operand{expr: first, isList: isListUnary(b.Left, c.env), isString: isStringUnary(b.Left, c.env)})
 
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env)})
+                operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env), isString: isStringPostfix(part.Right, c.env)})
 		ops = append(ops, part.Op)
 	}
 
@@ -564,17 +565,21 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			l := operands[i]
 			r := operands[i+1]
 
-			var expr string
-			var isList bool
+                        var expr string
+                        var isList bool
+                        var isString bool
 
-			switch op {
-			case "+":
-				if l.isList || r.isList {
-					expr = fmt.Sprintf("%s ++ %s", l.expr, r.expr)
-					isList = true
-				} else {
-					expr = fmt.Sprintf("(%s + %s)", l.expr, r.expr)
-				}
+                        switch op {
+                        case "+":
+                                if l.isList || r.isList {
+                                        expr = fmt.Sprintf("%s ++ %s", l.expr, r.expr)
+                                        isList = true
+                                } else if l.isString || r.isString {
+                                        expr = fmt.Sprintf("(%s <> %s)", l.expr, r.expr)
+                                        isString = true
+                                } else {
+                                        expr = fmt.Sprintf("(%s + %s)", l.expr, r.expr)
+                                }
 			case "-", "*", "/", "<", "<=", ">", ">=", "&&", "||":
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
 			case "%":
@@ -587,7 +592,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				return "", fmt.Errorf("unsupported operator %s", op)
 			}
 
-			operands[i] = operand{expr: expr, isList: isList}
+                        operands[i] = operand{expr: expr, isList: isList, isString: isString}
 			operands = append(operands[:i+1], operands[i+2:]...)
 			ops = append(ops[:i], ops[i+1:]...)
 		}
@@ -624,6 +629,32 @@ func isListUnary(u *parser.Unary, env *types.Env) bool {
 		return false
 	}
 	return isListPostfix(u.Value, env)
+}
+
+func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+        if p == nil || len(p.Ops) > 0 {
+                return false
+        }
+        if p.Target != nil {
+                if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+                        return true
+                }
+                if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+                        if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+                                if _, ok := t.(types.StringType); ok {
+                                        return true
+                                }
+                        }
+                }
+        }
+        return false
+}
+
+func isStringUnary(u *parser.Unary, env *types.Env) bool {
+        if u == nil || len(u.Ops) > 0 {
+                return false
+        }
+        return isStringPostfix(u.Value, env)
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
