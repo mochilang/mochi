@@ -157,19 +157,30 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 		c.writeln(line)
 	}
 	params := make([]string, len(fn.Params))
+	paramTypes := make([]types.Type, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), fsType(p.Type))
+		paramTypes[i] = c.resolveTypeRef(p.Type)
 	}
 	kw := "let"
 	if nested {
 		kw = "let rec"
 	}
 	c.writeln(fmt.Sprintf("%s %s %s : %s =", kw, sanitizeName(fn.Name), strings.Join(params, " "), ret))
+
+	child := types.NewEnv(c.env)
+	for i, p := range fn.Params {
+		child.SetVar(p.Name, paramTypes[i], true)
+	}
+	origEnv := c.env
+	c.env = child
+
 	c.indent++
 	c.writeln("try")
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
@@ -177,6 +188,7 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	c.indent--
 	c.writeln(fmt.Sprintf("with %s v -> v", exc))
 	c.indent--
+	c.env = origEnv
 	return nil
 }
 
@@ -229,6 +241,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if c.isMapExpr(s.Let.Value) {
 			c.locals[name] = true
 		}
+		if c.env != nil {
+			typ := c.resolveTypeRef(s.Let.Type)
+			if s.Let.Type == nil {
+				typ = c.inferExprType(s.Let.Value)
+			}
+			c.env.SetVar(s.Let.Name, typ, false)
+		}
 	case s.Var != nil:
 		expr, err := c.compileExpr(s.Var.Value)
 		if err != nil {
@@ -238,6 +257,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln(fmt.Sprintf("let mutable %s = %s", name, expr))
 		if c.isMapExpr(s.Var.Value) {
 			c.locals[name] = true
+		}
+		if c.env != nil {
+			typ := c.resolveTypeRef(s.Var.Type)
+			if s.Var.Type == nil {
+				typ = c.inferExprType(s.Var.Value)
+			}
+			c.env.SetVar(s.Var.Name, typ, true)
 		}
 	case s.Fun != nil:
 		return c.compileFunStmt(s.Fun)
@@ -339,6 +365,19 @@ func (c *Compiler) popFunc() {
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	name := sanitizeName(f.Name)
 	useVar := name != "_"
+	if useVar && c.env != nil {
+		var typ types.Type = types.AnyType{}
+		if f.RangeEnd != nil {
+			typ = types.IntType{}
+		} else if c.isStringExpr(f.Source) {
+			typ = types.StringType{}
+		} else {
+			if lt, ok := c.inferExprType(f.Source).(types.ListType); ok {
+				typ = lt.Elem
+			}
+		}
+		c.env.SetVar(f.Name, typ, true)
+	}
 	ctrl := hasLoopCtrl(f.Body)
 	var brk, cont string
 	var id string
