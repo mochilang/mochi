@@ -7,7 +7,7 @@ struct Combo {
 
 fn main() {
     let mut nums = vec![1, 2];
-    let mut letters = vec!["A", "B"];
+    let mut letters = vec!["A".to_string(), "B".to_string()];
     let mut bools = vec![true, false];
     let mut combos = {
     let mut _res = Vec::new();
@@ -25,4 +25,3 @@ fn main() {
         println!("{} {} {}", c.n, c.l, c.b);
     }
 }
-

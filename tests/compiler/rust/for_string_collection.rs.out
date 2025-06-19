@@ -1,5 +1,6 @@
 fn main() {
-    for ch in "hi".chars() {
+    for ch_ch in "hi".chars() {
+        let ch = ch_ch.to_string();
         println!("{}", ch);
     }
 }
