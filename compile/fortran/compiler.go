@@ -1126,7 +1126,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
-			return fmt.Sprintf("%d", *p.Lit.Int), nil
+			// Emit 64-bit integer literals to match the default
+			// INTEGER(KIND=8) type used throughout the backend.
+			return fmt.Sprintf("%d_8", *p.Lit.Int), nil
 		}
 		if p.Lit.Float != nil {
 			return fmt.Sprintf("%g", *p.Lit.Float), nil

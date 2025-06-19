@@ -76,7 +76,8 @@ func runLeet(t *testing.T, id int) {
 				t.Fatalf("write error: %v", err)
 			}
 			exe := filepath.Join(tmp, "main")
-			if out, err := exec.Command(gfortran, ffile, "-o", exe).CombinedOutput(); err != nil {
+			// Allow long lines in the generated Fortran code.
+			if out, err := exec.Command(gfortran, "-ffree-line-length-none", ffile, "-o", exe).CombinedOutput(); err != nil {
 				t.Fatalf("gfortran error: %v\n%s", err, out)
 			}
 			cmd := exec.Command(exe)
