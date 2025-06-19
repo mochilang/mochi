@@ -3,6 +3,6 @@ using namespace std;
 
 int main() {
 	auto scores;
-	std::cout << scores["Bob"] << std::endl;
+	std::cout << (scores[string("Bob")]) << std::endl;
 	return 0;
 }

@@ -4,9 +4,9 @@ using namespace std;
 int main() {
 	auto x = 5;
 	if (x > 3) {
-		std::cout << "big" << std::endl;
+		std::cout << (string("big")) << std::endl;
 	} else {
-		std::cout << "small" << std::endl;
+		std::cout << (string("small")) << std::endl;
 	}
 	return 0;
 }

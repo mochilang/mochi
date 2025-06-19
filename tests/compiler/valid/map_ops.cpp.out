@@ -6,8 +6,8 @@ int main() {
 	m[1] = 10;
 	m[2] = 20;
 	if (1 in m) {
-		std::cout << m[1] << std::endl;
+		std::cout << (m[1]) << std::endl;
 	}
-	std::cout << m[2] << std::endl;
+	std::cout << (m[2]) << std::endl;
 	return 0;
 }

@@ -3,6 +3,6 @@ using namespace std;
 
 int main() {
 	auto poem;
-	std::cout << poem << std::endl;
+	std::cout << (poem) << std::endl;
 	return 0;
 }

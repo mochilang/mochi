@@ -12,6 +12,6 @@ string _sliceString(const string& s, int start, int end) {
 }
 
 int main() {
-	std::cout << _sliceString("hello", 1, 4) << std::endl;
+	std::cout << (_sliceString(string("hello"), 1, 4)) << std::endl;
 	return 0;
 }

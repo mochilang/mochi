@@ -13,7 +13,7 @@ template<typename T> vector<T> _slice(const vector<T>& v, int start, int end) {
 
 int main() {
 	auto xs = _slice(vector<int>{1, 2, 3, 4}, 1, 3);
-	std::cout << xs[0] << std::endl;
-	std::cout << xs[1] << std::endl;
+	std::cout << (xs[0]) << std::endl;
+	std::cout << (xs[1]) << std::endl;
 	return 0;
 }

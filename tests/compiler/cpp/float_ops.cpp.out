@@ -1,0 +1,8 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	std::cout << (1.2 + 3.4) << std::endl;
+	std::cout << (5.0 / 2.0) << std::endl;
+	return 0;
+}
