@@ -128,10 +128,17 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		if err != nil {
 			return err
 		}
+		if isStringLiteral(stmt.Value) {
+			v = fmt.Sprintf("%s.to_string()", v)
+		}
 		val = v
 	}
 	name := sanitizeName(stmt.Name)
-	c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
+	if stmt.Type != nil {
+		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", name, rustType(stmt.Type), val))
+	} else {
+		c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
+	}
 	return nil
 }
 
@@ -142,10 +149,17 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		if err != nil {
 			return err
 		}
+		if isStringLiteral(stmt.Value) {
+			v = fmt.Sprintf("%s.to_string()", v)
+		}
 		val = v
 	}
 	name := sanitizeName(stmt.Name)
-	c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
+	if stmt.Type != nil {
+		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", name, rustType(stmt.Type), val))
+	} else {
+		c.writeln(fmt.Sprintf("let mut %s = %s;", name, val))
+	}
 	return nil
 }
 
@@ -253,14 +267,18 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	name := sanitizeName(stmt.Name)
 	if stmt.RangeEnd != nil {
 		c.writeln(fmt.Sprintf("for %s in %s..%s {", name, start, end))
+		c.indent++
 	} else {
-		if isStringLiteral(stmt.Source) {
-			c.writeln(fmt.Sprintf("for %s in %s.chars() {", name, start))
+		if isStringLiteral(stmt.Source) || c.isStringExpr(stmt.Source.Binary.Left.Value) {
+			tmp := name + "_ch"
+			c.writeln(fmt.Sprintf("for %s in %s.chars() {", tmp, start))
+			c.indent++
+			c.writeln(fmt.Sprintf("let %s = %s.to_string();", name, tmp))
 		} else {
 			c.writeln(fmt.Sprintf("for %s in %s {", name, start))
+			c.indent++
 		}
 	}
-	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
@@ -374,21 +392,29 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	leftList := c.isListExpr(b.Left.Value)
+	leftString := c.isStringExpr(b.Left.Value)
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
 		rightList := c.isListExpr(op.Right)
+		rightString := c.isStringExpr(op.Right)
 		switch op.Op {
 		case "+":
 			if leftList || rightList {
 				c.use("_concat")
 				expr = fmt.Sprintf("_concat(&%s, &%s)", expr, r)
 				leftList = true
+				leftString = false
+			} else if leftString || rightString {
+				expr = fmt.Sprintf("format!(\"{}{}\", %s, %s)", expr, r)
+				leftString = true
+				leftList = false
 			} else {
 				expr = fmt.Sprintf("%s + %s", expr, r)
 				leftList = false
+				leftString = false
 			}
 		case "in":
 			c.use("_in_map")
@@ -716,6 +742,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if isStringLiteral(e) {
+				v = fmt.Sprintf("%s.to_string()", v)
+			}
 			elems[i] = v
 		}
 		return fmt.Sprintf("vec![%s]", strings.Join(elems, ", ")), nil
@@ -940,6 +969,11 @@ func (c *Compiler) isStringExpr(p *parser.PostfixExpr) bool {
 			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
 				if _, ok := t.(types.StringType); ok {
 					return true
+				}
+				if lt, ok := t.(types.ListType); ok {
+					if _, ok := lt.Elem.(types.StringType); ok && len(p.Ops) > 0 && p.Ops[len(p.Ops)-1].Index != nil {
+						return true
+					}
 				}
 			}
 		}

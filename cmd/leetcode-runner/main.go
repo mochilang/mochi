@@ -185,6 +185,8 @@ func buildOne(src, lang string, run bool) error {
 		ext = ".fsx"
 	case "scheme":
 		ext = ".scm"
+	case "rust":
+		ext = ".rs"
 	}
 	outFile := filepath.Join(outDir, base+ext)
 	var data []byte
