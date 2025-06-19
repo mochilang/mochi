@@ -187,7 +187,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s do: [:%s |", src, f.Name))
+		c.writeln(fmt.Sprintf("(%s) do: [:%s |", src, f.Name))
 		c.indent++
 		for _, st := range f.Body {
 			if err := c.compileStmt(st); err != nil {
@@ -486,7 +486,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		return fmt.Sprintf("%s size", args[0]), nil
+		return fmt.Sprintf("(%s) size", args[0]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
