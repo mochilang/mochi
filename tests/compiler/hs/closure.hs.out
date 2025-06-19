@@ -27,8 +27,8 @@ _input :: IO String
 _input = getLine
 
 
-makeAdder n = fromMaybe ((\x -> (x + n))) $
-    Nothing
+makeAdder :: Int -> (Int -> Int)
+makeAdder n = (\x -> (x + n))
 
 main :: IO ()
 main = do

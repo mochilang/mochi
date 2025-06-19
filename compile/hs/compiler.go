@@ -18,6 +18,43 @@ type Compiler struct {
 	usesMap bool
 }
 
+func (c *Compiler) hsType(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "Int"
+	case types.FloatType:
+		return "Double"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "Bool"
+	case types.ListType:
+		return "[" + c.hsType(tt.Elem) + "]"
+	case types.MapType:
+		c.usesMap = true
+		return "Map.Map " + c.hsType(tt.Key) + " " + c.hsType(tt.Value)
+	case types.VoidType:
+		return "()"
+	case types.FuncType:
+		parts := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			parts[i] = c.hsType(p)
+		}
+		ret := c.hsType(tt.Return)
+		s := strings.Join(parts, " -> ")
+		if s != "" {
+			s += " -> " + ret
+		} else {
+			s = ret
+		}
+		return "(" + s + ")"
+	case types.StructType:
+		return tt.Name
+	default:
+		return "()"
+	}
+}
+
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env}
 }
@@ -127,6 +164,7 @@ func (c *Compiler) simpleBodyExpr(stmts []*parser.Statement) (string, error) {
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
 	params := make([]string, len(fun.Params))
+	paramTypes := make([]string, len(fun.Params))
 	for i, p := range fun.Params {
 		params[i] = sanitizeName(p.Name)
 	}
@@ -144,15 +182,35 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	if ft.Return == nil {
 		ft.Return = types.VoidType{}
 	}
-	c.writeln(name + " " + strings.Join(params, " ") + " = fromMaybe (" + c.defaultReturn(fun.Body, ft.Return) + ") $")
-	bodyStmts := fun.Body
-	c.indent++
-	expr, err := c.compileStmtExpr(bodyStmts, true)
-	if err != nil {
-		return err
+	if len(paramTypes) == len(ft.Params) {
+		for i := range paramTypes {
+			paramTypes[i] = c.hsType(ft.Params[i])
+		}
 	}
-	c.writeln(expr)
-	c.indent--
+	retType := c.hsType(ft.Return)
+	if len(paramTypes) > 0 {
+		c.writeln(fmt.Sprintf("%s :: %s -> %s", name, strings.Join(paramTypes, " -> "), retType))
+	} else {
+		c.writeln(fmt.Sprintf("%s :: %s", name, retType))
+	}
+
+	if len(fun.Body) == 1 && fun.Body[0].Return != nil {
+		val, err := c.compileExpr(fun.Body[0].Return.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s", name, strings.Join(params, " "), val))
+	} else {
+		c.writeln(name + " " + strings.Join(params, " ") + " = fromMaybe (" + c.defaultReturn(fun.Body, ft.Return) + ") $")
+		bodyStmts := fun.Body
+		c.indent++
+		expr, err := c.compileStmtExpr(bodyStmts, true)
+		if err != nil {
+			return err
+		}
+		c.writeln(expr)
+		c.indent--
+	}
 	// Collect let statements for where clause
 	lets := c.collectLets(fun.Body)
 	if len(lets) > 0 {
