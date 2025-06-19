@@ -522,14 +522,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left)})
+	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left, c.env)})
 
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right)})
+		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env)})
 		ops = append(ops, part.Op)
 	}
 
@@ -598,12 +598,30 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	return operands[0].expr, nil
 }
 
-func isListPostfix(p *parser.PostfixExpr) bool {
-	return len(p.Ops) == 0 && p.Target != nil && p.Target.List != nil
+func isListPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if p.Target != nil {
+		if p.Target.List != nil {
+			return true
+		}
+		if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+			if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
-func isListUnary(u *parser.Unary) bool {
-	return len(u.Ops) == 0 && isListPostfix(u.Value)
+func isListUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return isListPostfix(u.Value, env)
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -627,7 +645,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	typ := c.inferPrimaryType(p.Target)
+	var typ types.Type
+	if t, ok := c.staticTypeOfPostfix(p); ok {
+		typ = t
+	} else {
+		typ = c.inferPrimaryType(p.Target)
+	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			idx, err := c.compileExpr(op.Index.Start)
@@ -891,6 +914,31 @@ func simpleAtomKey(e *parser.Expr) (string, bool) {
 
 func isValidAtom(s string) bool {
 	return atomIdent.MatchString(s)
+}
+
+func (c *Compiler) staticTypeOfPostfix(p *parser.PostfixExpr) (types.Type, bool) {
+	if p == nil || len(p.Ops) > 0 {
+		return nil, false
+	}
+	return c.staticTypeOfPrimary(p.Target)
+}
+
+func (c *Compiler) staticTypeOfPrimary(p *parser.Primary) (types.Type, bool) {
+	if p == nil {
+		return nil, false
+	}
+	switch {
+	case p.List != nil:
+		return types.ListType{Elem: types.AnyType{}}, true
+	case p.Map != nil:
+		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}, true
+	case p.Selector != nil && len(p.Selector.Tail) == 0 && c.env != nil:
+		t, err := c.env.GetVar(p.Selector.Root)
+		if err == nil {
+			return t, true
+		}
+	}
+	return nil, false
 }
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
