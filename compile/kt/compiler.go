@@ -288,6 +288,70 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// simple cross join without sort/skip/take/group/join
+	if len(q.Froms) > 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil && len(q.Joins) == 0 {
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		for _, f := range q.Froms {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+		c.env = child
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		var where string
+		if q.Where != nil {
+			where, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			fromSrcs[i] = fs
+		}
+		c.env = orig
+
+		var buf bytes.Buffer
+		buf.WriteString("run {\n")
+		buf.WriteString("                val _src = " + src + "\n")
+		buf.WriteString("                val _res = mutableListOf<Any>()\n")
+		buf.WriteString(fmt.Sprintf("                for (%s in _src) {\n", sanitizeName(q.Var)))
+		indent := "                        "
+		for i, fs := range fromSrcs {
+			buf.WriteString(indent + fmt.Sprintf("for (%s in %s) {\n", sanitizeName(q.Froms[i].Var), fs))
+			indent += "        "
+		}
+		if where != "" {
+			buf.WriteString(indent + "if (" + where + ") {\n")
+			indent += "        "
+		}
+		buf.WriteString(indent + "_res.add(" + sel + ")\n")
+		if where != "" {
+			indent = indent[:len(indent)-8]
+			buf.WriteString(indent + "}\n")
+		}
+		for range fromSrcs {
+			indent = indent[:len(indent)-8]
+			buf.WriteString(indent + "}\n")
+		}
+		indent = indent[:len(indent)-8]
+		buf.WriteString(indent + "}\n")
+		buf.WriteString("                _res\n")
+		buf.WriteString("        }")
+		return buf.String(), nil
+	}
+
 	varName := sanitizeName(q.Var)
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
