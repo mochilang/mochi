@@ -1,0 +1,6 @@
+program main
+  implicit none
+  character(:), allocatable :: text
+  text = 'hello'
+  print *, text(modulo(1, len(text)) + 1:modulo(4, len(text)))
+end program main

@@ -6,6 +6,7 @@ program main
   call test_values()
 contains
   subroutine test_values()
+    implicit none
     if (.not. (all(xs == (/((-1)), 0, 1/)))) then
       print *, 'expect failed'
       stop 1
