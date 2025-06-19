@@ -3,6 +3,6 @@ dynamic makeAdder(n) {
 }
 
 void main() {
-	var add10 = makeAdder(10);
+	dynamic add10 = makeAdder(10);
 	print(add10(7));
 }

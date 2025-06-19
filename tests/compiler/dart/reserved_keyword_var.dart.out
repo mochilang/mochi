@@ -1,4 +1,4 @@
 void main() {
-	var map = {"a": 1};
+	dynamic map = {"a": 1};
 	print(map["a"]);
 }

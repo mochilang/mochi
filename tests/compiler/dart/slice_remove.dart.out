@@ -1,5 +1,5 @@
 dynamic remove(nums, i) {
-	return (nums[0] + nums[(i + 1)]);
+	return (nums.sublist(0, i) + nums.sublist((i + 1), nums.length));
 }
 
 void main() {

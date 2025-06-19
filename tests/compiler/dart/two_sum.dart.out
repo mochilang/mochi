@@ -1,5 +1,5 @@
 dynamic twoSum(nums, target) {
-	var n = nums.length;
+	dynamic n = nums.length;
 	for (var i = 0; i < n; i++) {
 		for (var j = (i + 1); j < n; j++) {
 			if (((nums[i] + nums[j]) == target)) {
@@ -11,7 +11,7 @@ dynamic twoSum(nums, target) {
 }
 
 void main() {
-	var result = twoSum([2, 7, 11, 15], 9);
+	dynamic result = twoSum([2, 7, 11, 15], 9);
 	print(result[0]);
 	print(result[1]);
 }

@@ -1,16 +1,16 @@
 dynamic searchMatrix(matrix, target) {
-	var m = matrix.length;
+	dynamic m = matrix.length;
 	if ((m == 0)) {
 		return false;
 	}
-	var n = matrix[0].length;
-	var left = 0;
-	var right = ((m * n) - 1);
+	dynamic n = matrix[0].length;
+	dynamic left = 0;
+	dynamic right = ((m * n) - 1);
 	while ((left <= right)) {
-		var mid = ((left + ((right - left))) ~/ 2);
-		var row = (mid ~/ n);
-		var col = (mid % n);
-		var value = matrix[row][col];
+		dynamic mid = (left + (((right - left)) ~/ 2));
+		dynamic row = (mid ~/ n);
+		dynamic col = (mid % n);
+		dynamic value = matrix[row][col];
 		if ((value == target)) {
 			return true;
 		} else 

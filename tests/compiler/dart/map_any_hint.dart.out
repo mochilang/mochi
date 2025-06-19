@@ -7,6 +7,6 @@ dynamic Node(left, value, right) {
 }
 
 void main() {
-	var tree = Node(Leaf(), 1, Leaf());
+	dynamic tree = Node(Leaf(), 1, Leaf());
 	print((tree["left"])["__name"]);
 }
