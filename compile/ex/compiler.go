@@ -617,6 +617,9 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return types.StringType{}
+	}
 	if p.List != nil {
 		return types.ListType{Elem: types.AnyType{}}
 	}
@@ -654,14 +657,39 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			switch tt := typ.(type) {
-			case types.MapType:
-				res = fmt.Sprintf("Map.get(%s, %s)", res, idx)
-				typ = tt.Value
-			default:
-				res = fmt.Sprintf("Enum.at(%s, %s)", res, idx)
-				if lt, ok := tt.(types.ListType); ok {
-					typ = lt.Elem
+			if op.Index.Colon == nil {
+				switch tt := typ.(type) {
+				case types.MapType:
+					res = fmt.Sprintf("Map.get(%s, %s)", res, idx)
+					typ = tt.Value
+				case types.StringType:
+					res = fmt.Sprintf("Enum.at(String.graphemes(%s), %s)", res, idx)
+				default:
+					res = fmt.Sprintf("Enum.at(%s, %s)", res, idx)
+					if lt, ok := tt.(types.ListType); ok {
+						typ = lt.Elem
+					}
+				}
+			} else {
+				start := idx
+				end := "nil"
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				switch typ.(type) {
+				case types.StringType:
+					slice := fmt.Sprintf("Enum.slice(String.graphemes(%s), %s, %s == nil and length(String.graphemes(%s)) - %s || (%s - %s))", res, start, end, res, start, end, start)
+					res = fmt.Sprintf("Enum.join(%s)", slice)
+				default:
+					length := fmt.Sprintf("(%s) - %s", end, start)
+					if end == "nil" {
+						length = fmt.Sprintf("length(%s) - %s", res, start)
+					}
+					res = fmt.Sprintf("Enum.slice(%s, %s, %s)", res, start, length)
 				}
 			}
 		} else if op.Call != nil {
@@ -692,12 +720,21 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "input":
 				res = "String.trim(IO.gets(\"\"))"
 			default:
-				res = fmt.Sprintf("%s(%s)", res, argStr)
+				if _, ok := typ.(types.FuncType); ok {
+					res = fmt.Sprintf("%s.(%s)", res, argStr)
+					typ = typ.(types.FuncType).Return
+				} else {
+					res = fmt.Sprintf("%s(%s)", res, argStr)
+				}
 			}
 		} else if op.Cast != nil {
-			// Casts are ignored in the Elixir backend as types do not affect runtime.
-			// Simply continue with the current expression value.
-			continue
+			if op.Cast.Type != nil {
+				t := c.resolveTypeRef(op.Cast.Type)
+				if _, ok := t.(types.StructType); ok {
+					res = fmt.Sprintf("Map.new(%s, fn {k, v} -> {String.to_atom(to_string(k)), v} end)", res)
+				}
+				typ = t
+			}
 		}
 	}
 	return res, nil
@@ -877,4 +914,40 @@ func simpleAtomKey(e *parser.Expr) (string, bool) {
 
 func isValidAtom(s string) bool {
 	return atomIdent.MatchString(s)
+}
+
+func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "bool":
+			return types.BoolType{}
+		case "string":
+			return types.StringType{}
+		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(*t.Simple); ok {
+					return st
+				}
+				if ut, ok := c.env.GetUnion(*t.Simple); ok {
+					return ut
+				}
+			}
+		}
+	}
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			return types.ListType{Elem: c.resolveTypeRef(t.Generic.Args[0])}
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return types.MapType{Key: c.resolveTypeRef(t.Generic.Args[0]), Value: c.resolveTypeRef(t.Generic.Args[1])}
+		}
+	}
+	return types.AnyType{}
 }
