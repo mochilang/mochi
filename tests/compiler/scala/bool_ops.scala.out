@@ -1,7 +1,7 @@
 object Main {
-        def main(args: Array[String]): Unit = {
-                println((true && false))
-                println((true || false))
-                println(!false)
-        }
+	def main(args: Array[String]): Unit = {
+		println((true && false))
+		println((true || false))
+		println((!false))
+	}
 }
