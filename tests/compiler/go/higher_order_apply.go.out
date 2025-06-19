@@ -1,0 +1,20 @@
+package main
+
+import (
+	"fmt"
+)
+
+func inc(x int) int {
+	return (x + 1)
+}
+
+func apply(f func(int) int, x int) int {
+	return f(x)
+}
+
+func main() {
+	fmt.Println(apply(inc, 5))
+	fmt.Println(apply(func(y int) int {
+		return (y * 2)
+}, 7))
+}

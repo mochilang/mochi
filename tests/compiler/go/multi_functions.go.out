@@ -1,0 +1,23 @@
+package main
+
+import (
+	"fmt"
+)
+
+func add(x int, y int) int {
+	return (x + y)
+}
+
+func sub(x int, y int) int {
+	return (x - y)
+}
+
+func mul(x int, y int) int {
+	return (x * y)
+}
+
+func main() {
+	fmt.Println(3)
+	fmt.Println(7)
+	fmt.Println(24)
+}
