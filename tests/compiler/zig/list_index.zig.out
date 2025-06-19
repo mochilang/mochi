@@ -1,0 +1,6 @@
+const std = @import("std");
+
+pub fn main() void {
+	const xs = &[_]i32{@as(i32,@intCast(10)), @as(i32,@intCast(20)), @as(i32,@intCast(30))};
+	std.debug.print("{any}\n", .{xs[@as(i32,@intCast(1))]});
+}
