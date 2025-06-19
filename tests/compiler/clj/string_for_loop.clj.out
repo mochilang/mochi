@@ -3,7 +3,7 @@
 (defn -main []
   (loop [_tmp0 (seq "cat")]
     (when _tmp0
-      (let [ch (first _tmp0)]
+      (let [ch (clojure.core/first _tmp0)]
         (let [r (try
           (println ch)
           :next
