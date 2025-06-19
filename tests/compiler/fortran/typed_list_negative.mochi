@@ -1,0 +1,6 @@
+let xs: list<int> = [(-1), 0, 1]
+
+test "values" {
+  expect xs == [(-1), 0, 1]
+  print("done")
+}

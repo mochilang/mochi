@@ -1,0 +1,13 @@
+program main
+  implicit none
+  integer :: i
+  do i = 0, 10 - 1
+    if ((mod(i, 2) == 0)) then
+      cycle
+    end if
+    if ((i > 5)) then
+      exit
+    end if
+    print *, i
+  end do
+end program main
