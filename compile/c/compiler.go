@@ -448,11 +448,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		typ := cTypeFromType(t)
 		if s.Let.Value != nil {
-			if isEmptyListLiteral(s.Let.Value) && isListStringType(t) {
-				c.needsListString = true
-				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			if isEmptyListLiteral(s.Let.Value) {
+				if isListStringType(t) {
+					c.needsListString = true
+					val := c.newTemp()
+					c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
+					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				} else if isListListIntType(t) {
+					c.needsListListInt = true
+					val := c.newTemp()
+					c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
+					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				} else {
+					val := c.compileExpr(s.Let.Value)
+					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				}
 			} else {
 				val := c.compileExpr(s.Let.Value)
 				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -482,6 +492,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					val := c.newTemp()
 					c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				} else if isListListIntType(t) {
+					c.needsListListInt = true
+					val := c.newTemp()
+					c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
+					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 				} else {
 					val := c.compileExpr(s.Var.Value)
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -498,14 +513,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 	case s.Assign != nil:
 		lhs := sanitizeName(s.Assign.Name)
-		if len(s.Assign.Index) > 0 {
-			idx := c.compileExpr(s.Assign.Index[0].Start)
-			val := c.compileExpr(s.Assign.Value)
-			c.writeln(fmt.Sprintf("%s.data[%s] = %s;", lhs, idx, val))
-		} else {
-			val := c.compileExpr(s.Assign.Value)
-			c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
+		target := lhs
+		for _, idx := range s.Assign.Index {
+			ix := c.compileExpr(idx.Start)
+			target = fmt.Sprintf("%s.data[%s]", target, ix)
 		}
+		val := c.compileExpr(s.Assign.Value)
+		c.writeln(fmt.Sprintf("%s = %s;", target, val))
 	case s.Return != nil:
 		val := c.compileExpr(s.Return.Value)
 		c.writeln(fmt.Sprintf("return %s;", val))
@@ -1091,7 +1105,8 @@ func isEmptyListLiteral(e *parser.Expr) bool {
 func isListListIntType(t types.Type) bool {
 	if lt, ok := t.(types.ListType); ok {
 		if inner, ok2 := lt.Elem.(types.ListType); ok2 {
-			if _, ok3 := inner.Elem.(types.IntType); ok3 {
+			switch inner.Elem.(type) {
+			case types.IntType, types.BoolType:
 				return true
 			}
 		}
@@ -1221,18 +1236,22 @@ func isListIntPrimary(p *parser.Primary, env *types.Env) bool {
 		}
 		el := p.List.Elems[0]
 		if el.Binary != nil && el.Binary.Left != nil && el.Binary.Left.Value != nil && el.Binary.Left.Value.Target != nil {
-			if el.Binary.Left.Value.Target.Lit != nil && el.Binary.Left.Value.Target.Lit.Int != nil {
-				return true
+			if el.Binary.Left.Value.Target.Lit != nil {
+				if el.Binary.Left.Value.Target.Lit.Int != nil || el.Binary.Left.Value.Target.Lit.Bool != nil {
+					return true
+				}
 			}
 			if el.Binary.Left.Value.Target.Selector != nil && env != nil {
 				name := el.Binary.Left.Value.Target.Selector.Root
 				if t, err := env.GetVar(name); err == nil {
 					if lt, ok := t.(types.ListType); ok {
-						if _, ok := lt.Elem.(types.IntType); ok {
+						switch lt.Elem.(type) {
+						case types.IntType, types.BoolType:
 							return true
 						}
 					}
-					if _, ok := t.(types.IntType); ok {
+					switch t.(type) {
+					case types.IntType, types.BoolType:
 						return true
 					}
 				}
@@ -1242,7 +1261,8 @@ func isListIntPrimary(p *parser.Primary, env *types.Env) bool {
 	if p.Selector != nil && env != nil {
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if lt, ok := t.(types.ListType); ok {
-				if _, ok := lt.Elem.(types.IntType); ok {
+				switch lt.Elem.(type) {
+				case types.IntType, types.BoolType:
 					return true
 				}
 			}
@@ -1252,7 +1272,8 @@ func isListIntPrimary(p *parser.Primary, env *types.Env) bool {
 		if t, err := env.GetVar(p.Call.Func); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
 				if lt, ok2 := ft.Return.(types.ListType); ok2 {
-					if _, ok3 := lt.Elem.(types.IntType); ok3 {
+					switch lt.Elem.(type) {
+					case types.IntType, types.BoolType:
 						return true
 					}
 				}
