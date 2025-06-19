@@ -127,12 +127,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
-	var typStr string
+	var typ types.Type
 	if c.env != nil {
 		if t, err := c.env.GetVar(s.Name); err == nil {
-			typStr = dartType(t)
+			typ = t
 		}
 	}
+	if (typ == nil || isAny(typ)) && s.Value != nil {
+		typ = c.inferExprType(s.Value)
+	}
+	typStr := dartType(typ)
 	var val string
 	if s.Value != nil {
 		expr, err := c.compileExpr(s.Value)
@@ -239,12 +243,16 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	name := sanitizeName(s.Name)
-	var typStr string
+	var typ types.Type
 	if c.env != nil {
 		if t, err := c.env.GetVar(s.Name); err == nil {
-			typStr = dartType(t)
+			typ = t
 		}
 	}
+	if (typ == nil || isAny(typ)) && s.Value != nil {
+		typ = c.inferExprType(s.Value)
+	}
+	typStr := dartType(typ)
 	var val string
 	if s.Value != nil {
 		expr, err := c.compileExpr(s.Value)
