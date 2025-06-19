@@ -54,6 +54,8 @@ func isSimpleExpr(n *ast.Node) bool {
 		if n.Value == "-" {
 			return isSimpleExpr(n.Children[0])
 		}
+	case "group":
+		return isSimpleExpr(n.Children[0])
 	}
 	return false
 }
@@ -161,9 +163,25 @@ func (c *Compiler) compileNode(n *ast.Node) {
 
 func (c *Compiler) compileFor(n *ast.Node) {
 	varName := strings.ToUpper(n.Value.(string))
-	c.declare(fmt.Sprintf("01 %s PIC 9.", varName))
-	start := c.expr(n.Children[0].Children[0])
-	end := c.expr(n.Children[0].Children[1])
+	c.declare(fmt.Sprintf("01 %s PIC S9.", varName))
+	startNode := n.Children[0].Children[0]
+	endNode := n.Children[0].Children[1]
+	start := c.expr(startNode)
+	end := c.expr(endNode)
+
+	if !isSimpleExpr(startNode) {
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, start))
+		start = tmp
+	}
+	if !isSimpleExpr(endNode) {
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, end))
+		end = tmp
+	}
+
 	c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM %s BY 1 UNTIL %s >= %s", varName, start, varName, end))
 	c.indent++
 	for _, st := range n.Children[1].Children {
@@ -334,30 +352,30 @@ func (c *Compiler) expr(n *ast.Node) string {
 	case "string":
 		s := strings.ReplaceAll(n.Value.(string), "\"", "\"\"")
 		return fmt.Sprintf("\"%s\"", s)
-       case "bool":
-               if n.Value.(bool) {
-                       return "1"
-               }
-               return "0"
+	case "bool":
+		if n.Value.(bool) {
+			return "1"
+		}
+		return "0"
 	case "selector":
 		return strings.ToUpper(n.Value.(string))
 	case "binary":
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
 		op := n.Value.(string)
-               switch op {
-               case "&&":
-                       op = "AND"
-               case "||":
-                       op = "OR"
-               case "==":
-                       op = "="
-               case "!=":
-                       op = "<>"
-               case "%":
-                       return fmt.Sprintf("FUNCTION MOD(%s,%s)", left, right)
-               }
-               return fmt.Sprintf("%s %s %s", left, op, right)
+		switch op {
+		case "&&":
+			op = "AND"
+		case "||":
+			op = "OR"
+		case "==":
+			op = "="
+		case "!=":
+			op = "<>"
+		case "%":
+			return fmt.Sprintf("FUNCTION MOD(%s,%s)", left, right)
+		}
+		return fmt.Sprintf("%s %s %s", left, op, right)
 	case "index":
 		arr := c.expr(n.Children[0])
 		idx := c.expr(n.Children[1])
@@ -369,6 +387,8 @@ func (c *Compiler) expr(n *ast.Node) string {
 		case "!":
 			return fmt.Sprintf("NOT %s", c.expr(n.Children[0]))
 		}
+	case "group":
+		return c.expr(n.Children[0])
 	}
 	return "0"
 }
