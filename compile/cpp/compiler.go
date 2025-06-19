@@ -363,6 +363,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			typ = "vector<" + elem + ">"
 			continue
 		}
+		if op.Op == "+" && (typ == "string" || rtyp == "string") {
+			if typ != "string" {
+				expr = fmt.Sprintf("string(%s)", expr)
+			}
+			if rtyp != "string" {
+				rhs = fmt.Sprintf("string(%s)", rhs)
+			}
+			expr = fmt.Sprintf("%s + %s", expr, rhs)
+			typ = "string"
+			continue
+		}
 		expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
 		typ = ""
 	}
@@ -432,7 +443,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return "false"
 		}
 		if p.Lit.Str != nil {
-			return strconv.Quote(*p.Lit.Str)
+			return fmt.Sprintf("string(%s)", strconv.Quote(*p.Lit.Str))
 		}
 	case p.Struct != nil:
 		fields := make([]string, len(p.Struct.Fields))
@@ -503,7 +514,13 @@ func getPrintCall(e *parser.Expr) *parser.CallExpr {
 func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
-		args[i] = c.compileExpr(a)
+		expr := c.compileExpr(a)
+		typ := c.guessExprType(a)
+		if strings.HasPrefix(typ, "vector<") {
+			c.helpers["fmtVec"] = true
+			expr = "_fmtVec(" + expr + ")"
+		}
+		args[i] = expr
 	}
 	c.writeIndent()
 	c.buf.WriteString("std::cout")
@@ -569,6 +586,19 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("\tif (end > n) end = n;")
 		c.writeln("\tif (end < start) end = start;")
 		c.writeln("\treturn s.substr(start, end - start);")
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.helpers["fmtVec"] {
+		c.writeln("template<typename T> string _fmtVec(const vector<T>& v) {")
+		c.writeln("\tstringstream ss;")
+		c.writeln("\tss << '[';")
+		c.writeln("\tfor (size_t i = 0; i < v.size(); i++) {")
+		c.writeln("\t\tif (i > 0) ss << ' ';")
+		c.writeln("\t\tss << v[i];")
+		c.writeln("\t}")
+		c.writeln("\tss << ']';")
+		c.writeln("\treturn ss.str();")
 		c.writeln("}")
 		c.writeln("")
 	}

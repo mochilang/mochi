@@ -1,0 +1,18 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+template<typename T> string _fmtVec(const vector<T>& v) {
+	stringstream ss;
+	ss << '[';
+	for (size_t i = 0; i < v.size(); i++) {
+		if (i > 0) ss << ' ';
+		ss << v[i];
+	}
+	ss << ']';
+	return ss.str();
+}
+
+int main() {
+	std::cout << _fmtVec(([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(vector<int>{1, 2}, vector<int>{3, 4})) << std::endl;
+	return 0;
+}
