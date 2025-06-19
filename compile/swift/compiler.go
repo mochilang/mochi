@@ -36,6 +36,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = body
 	c.indent = 0
 
+	// type declarations first
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 	// function declarations first
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -221,6 +230,24 @@ func (c *Compiler) compileType(t *parser.TypeRef) string {
 	return "Any"
 }
 
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		// union types not supported
+		return nil
+	}
+	c.writeln(fmt.Sprintf("struct %s {", t.Name))
+	c.indent++
+	for _, m := range t.Members {
+		if m.Field != nil {
+			typ := c.compileType(m.Field.Type)
+			c.writeln(fmt.Sprintf("var %s: %s", m.Field.Name, typ))
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func swiftType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
@@ -317,17 +344,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if s.Let.Type != nil {
 			typ = ": " + c.compileType(s.Let.Type)
 			t = resolveTypeRef(s.Let.Type, c.env)
-		} else if c.env != nil {
-			if t2, err := c.env.GetVar(s.Let.Name); err == nil {
-				typ = ": " + swiftType(t2)
-				t = t2
-			}
 		}
-		if t == (types.AnyType{}) {
+		if typ == "" {
+			// avoid emitting explicit types unless necessary
 			t = c.inferExprType(s.Let.Value)
-			if typ == "" && !containsAny(t) {
-				typ = ": " + swiftType(t)
-			}
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("let %s%s", s.Let.Name, typ))
@@ -348,17 +368,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if s.Var.Type != nil {
 			typ = ": " + c.compileType(s.Var.Type)
 			t = resolveTypeRef(s.Var.Type, c.env)
-		} else if c.env != nil {
-			if t2, err := c.env.GetVar(s.Var.Name); err == nil {
-				typ = ": " + swiftType(t2)
-				t = t2
-			}
 		}
-		if t == (types.AnyType{}) {
+		if typ == "" {
+			// avoid emitting explicit types unless necessary
 			t = c.inferExprType(s.Var.Value)
-			if typ == "" && !containsAny(t) {
-				typ = ": " + swiftType(t)
-			}
 		}
 		if typ == "" && expr == "[]" {
 			if lt, ok := c.funcRet.(types.ListType); ok {
@@ -452,6 +465,18 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 		srcType := c.inferExprType(f.Source)
 		if _, ok := srcType.(types.StringType); ok {
+			if f.Name == "_" {
+				c.writeln(fmt.Sprintf("for _ in %s {", src))
+				c.indent++
+				for _, st := range f.Body {
+					if err := c.compileStmt(st); err != nil {
+						return err
+					}
+				}
+				c.indent--
+				c.writeln("}")
+				return nil
+			}
 			tmp := f.Name + "_ch"
 			c.writeln(fmt.Sprintf("for %s in %s {", tmp, src))
 			c.indent++
@@ -725,6 +750,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "[:]", nil
 		}
 		return "[" + strings.Join(items, ", ") + "]", nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s: %s", f.Name, v)
+		}
+		return fmt.Sprintf("%s(%s)", p.Struct.Name, strings.Join(parts, ", ")), nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
