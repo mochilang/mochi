@@ -10,6 +10,11 @@ import (
 // EnsureCC verifies that a C compiler is installed. It attempts to
 // install GCC on Linux or LLVM on macOS if missing.
 func EnsureCC() (string, error) {
+	if env := os.Getenv("CC"); env != "" {
+		if path, err := exec.LookPath(env); err == nil {
+			return path, nil
+		}
+	}
 	if path, err := exec.LookPath("cc"); err == nil {
 		return path, nil
 	}
