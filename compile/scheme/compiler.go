@@ -196,17 +196,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
 			break
 		}
-		ie, err := c.compileExpr(s.Assign.Index[0].Start)
+		expr, err := c.compileIndexedSet(lhs, s.Assign.Index, rhs, c.vars[s.Assign.Name] == "string")
 		if err != nil {
 			return err
 		}
-		if c.vars[s.Assign.Name] == "string" {
-			c.needStringSet = true
-			c.writeln(fmt.Sprintf("(set! %s (string-set %s %s %s))", lhs, lhs, ie, rhs))
-		} else {
-			c.needListSet = true
-			c.writeln(fmt.Sprintf("(set! %s (list-set %s %s %s))", lhs, lhs, ie, rhs))
-		}
+		c.writeln(fmt.Sprintf("(set! %s %s)", lhs, expr))
 	case s.Return != nil:
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -229,6 +223,31 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		// ignore unsupported statements
 	}
 	return nil
+}
+
+// compileIndexedSet builds a nested list/string update expression for an indexed assignment.
+func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs string, isString bool) (string, error) {
+	if len(idx) == 0 {
+		return rhs, nil
+	}
+	ie, err := c.compileExpr(idx[0].Start)
+	if err != nil {
+		return "", err
+	}
+	if len(idx) == 1 {
+		if isString {
+			c.needStringSet = true
+			return fmt.Sprintf("(string-set %s %s %s)", name, ie, rhs), nil
+		}
+		c.needListSet = true
+		return fmt.Sprintf("(list-set %s %s %s)", name, ie, rhs), nil
+	}
+	inner, err := c.compileIndexedSet(fmt.Sprintf("(list-ref %s %s)", name, ie), idx[1:], rhs, false)
+	if err != nil {
+		return "", err
+	}
+	c.needListSet = true
+	return fmt.Sprintf("(list-set %s %s %s)", name, ie, inner), nil
 }
 
 func (c *Compiler) compileFor(st *parser.ForStmt) error {
