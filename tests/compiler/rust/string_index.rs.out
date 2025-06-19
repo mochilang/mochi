@@ -1,0 +1,5 @@
+fn main() {
+    let mut text = "hello".to_string();
+    println!("{}", text.chars().nth((1) as usize).unwrap());
+}
+
