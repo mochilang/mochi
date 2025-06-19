@@ -8,11 +8,11 @@ function __print(...)
 end
 
 function Leaf()
-	return {["__name"]="Leaf"}
+	return {__map=true, ["__name"]="Leaf"}
 end
 
 function Node(left, value, right)
-	return {["__name"]="Node", ["left"]=left, ["value"]=value, ["right"]=right}
+	return {__map=true, ["__name"]="Node", ["left"]=left, ["value"]=value, ["right"]=right}
 end
 
 local tree = Node(Leaf(), 1, Leaf())

@@ -34,5 +34,6 @@ function __indexString(s, i)
 	return string.sub(s, i, i)
 end
 
-local xs = {10, 20, 30}
-__print(__index(xs, 1))
+local nums = {1, 2}
+nums[(1)+1] = 3
+__print(__index(nums, 1))

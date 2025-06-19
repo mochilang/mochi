@@ -7,4 +7,3 @@ import (
 func main() {
 	fmt.Println([]int{1, 2, 3, 4}[1:3])
 }
-

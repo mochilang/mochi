@@ -11,7 +11,9 @@ function __index(obj, i)
 	if type(obj) == 'string' then
 		return __indexString(obj, i)
 	elseif type(obj) == 'table' then
-		if obj[1] ~= nil or #obj > 0 then
+		if obj.__map then
+			return obj[i]
+		elseif obj[1] ~= nil or #obj > 0 then
 			return obj[(i)+1]
 		else
 			return obj[i]

@@ -14,11 +14,30 @@ function __div(a, b)
 	return a / b
 end
 
+function __add(a, b)
+	if type(a) == 'table' and type(b) == 'table' then
+		local out = {}
+		for i = 1, #a do out[#out+1] = a[i] end
+		for i = 1, #b do out[#out+1] = b[i] end
+		return out
+	elseif type(a) == 'string' or type(b) == 'string' then
+		return tostring(a) .. tostring(b)
+	else
+		return a + b
+	end
+end
+
 function __index(obj, i)
 	if type(obj) == 'string' then
 		return __indexString(obj, i)
 	elseif type(obj) == 'table' then
-		return obj[(i)+1]
+		if obj.__map then
+			return obj[i]
+		elseif obj[1] ~= nil or #obj > 0 then
+			return obj[(i)+1]
+		else
+			return obj[i]
+		end
 	else
 		error('cannot index')
 	end
@@ -40,8 +59,8 @@ function fromList(nums)
 		if (lo >= hi) then
 			return {__name="Leaf"}
 		end
-		local mid = __div(((lo + hi)), 2)
-		return {__name="Node", left=helper(lo, mid), value=__index(nums, mid), right=helper((mid + 1), hi)}
+		local mid = __div((__add(lo, hi)), 2)
+		return {__name="Node", left=helper(lo, mid), value=__index(nums, mid), right=helper(__add(mid, 1), hi)}
 	end
 	return helper(0, #nums)
 end
@@ -50,7 +69,7 @@ function inorder(t)
 	return (function()
 	local _t0 = t
 	if _t0.__name == "Leaf" then return {} end
-	if _t0.__name == "Node" then return (function(l, v, r) return ((inorder(l) + {v}) + inorder(r)) end)(_t0.left, _t0.value, _t0.right) end
+	if _t0.__name == "Node" then return (function(l, v, r) return __add(__add(inorder(l), {v}), inorder(r)) end)(_t0.left, _t0.value, _t0.right) end
 	return nil
 end)()
 end

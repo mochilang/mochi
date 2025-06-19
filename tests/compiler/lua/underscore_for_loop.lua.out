@@ -31,22 +31,35 @@ function __iter(obj)
 	end
 end
 
+function __add(a, b)
+	if type(a) == 'table' and type(b) == 'table' then
+		local out = {}
+		for i = 1, #a do out[#out+1] = a[i] end
+		for i = 1, #b do out[#out+1] = b[i] end
+		return out
+	elseif type(a) == 'string' or type(b) == 'string' then
+		return tostring(a) .. tostring(b)
+	else
+		return a + b
+	end
+end
+
 local c = 0
 for _ = 0, (2)-1 do
-	c = (c + 1)
+	c = __add(c, 1)
 	::__continue0::
 end
 for _, _ in __iter({1, 2}) do
-	c = (c + 1)
+	c = __add(c, 1)
 	::__continue1::
 end
 for _, _ in __iter("ab") do
-	c = (c + 1)
+	c = __add(c, 1)
 	::__continue2::
 end
-local m = {["x"]=1, ["y"]=2}
+local m = {__map=true, ["x"]=1, ["y"]=2}
 for _, _ in __iter(m) do
-	c = (c + 1)
+	c = __add(c, 1)
 	::__continue3::
 end
 __print(c)

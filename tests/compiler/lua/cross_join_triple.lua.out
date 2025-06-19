@@ -39,7 +39,7 @@ local combos = (function()
 	for _, n in ipairs(nums) do
 		for _, l in ipairs(letters) do
 			for _, b in ipairs(bools) do
-				table.insert(_res, {[n]=n, [l]=l, [b]=b})
+				table.insert(_res, {__map=true, [n]=n, [l]=l, [b]=b})
 			end
 		end
 	end

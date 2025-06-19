@@ -7,5 +7,7 @@ function __print(...)
 	io.write('\n')
 end
 
-local todo = {__map=true, ["title"]="hi"}
-__print(todo.title)
+local square = function(x)
+		return (x * x)
+end
+__print(square(6))

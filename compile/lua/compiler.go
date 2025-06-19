@@ -134,12 +134,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
 	val := "nil"
+	var t types.Type
+	if c.env != nil {
+		if v, err := c.env.GetVar(s.Name); err == nil {
+			t = v
+		}
+	}
 	if s.Value != nil {
 		expr, err := c.compileExpr(s.Value)
 		if err != nil {
 			return err
 		}
 		val = expr
+	} else if _, ok := t.(types.MapType); ok {
+		val = "{__map=true}"
 	}
 	c.writeln(fmt.Sprintf("local %s = %s", name, val))
 	return nil
@@ -152,12 +160,26 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	lhs := sanitizeName(s.Name)
+	var t types.Type
+	if c.env != nil {
+		if v, err := c.env.GetVar(s.Name); err == nil {
+			t = v
+		}
+	}
 	for _, idx := range s.Index {
 		idxExpr, err := c.compileExpr(idx.Start)
 		if err != nil {
 			return err
 		}
-		lhs = fmt.Sprintf("%s[(%s)+1]", lhs, idxExpr)
+		if mt, ok := t.(types.MapType); ok {
+			lhs = fmt.Sprintf("%s[%s]", lhs, idxExpr)
+			t = mt.Value
+		} else {
+			lhs = fmt.Sprintf("%s[(%s)+1]", lhs, idxExpr)
+			if lt, ok := t.(types.ListType); ok {
+				t = lt.Elem
+			}
+		}
 	}
 	val, err := c.compileExpr(s.Value)
 	if err != nil {
@@ -356,6 +378,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	typ := c.inferPrimaryType(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			if op.Index.Colon != nil {
@@ -385,8 +408,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if isStringLiteral(op.Index.Start) {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				} else {
-					c.helpers["index"] = true
-					expr = fmt.Sprintf("__index(%s, %s)", expr, idx)
+					switch tt := typ.(type) {
+					case types.MapType:
+						expr = fmt.Sprintf("%s[%s]", expr, idx)
+						typ = tt.Value
+					case types.ListType:
+						c.helpers["index"] = true
+						expr = fmt.Sprintf("__index(%s, %s)", expr, idx)
+						typ = tt.Elem
+					case types.StringType:
+						c.helpers["index"] = true
+						expr = fmt.Sprintf("__index(%s, %s)", expr, idx)
+						typ = types.StringType{}
+					default:
+						c.helpers["index"] = true
+						expr = fmt.Sprintf("__index(%s, %s)", expr, idx)
+					}
 				}
 			}
 		} else if op.Call != nil {
@@ -419,8 +456,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "{" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
-		pairs := make([]string, len(p.Map.Items))
+		pairs := make([]string, len(p.Map.Items)+1)
+		pairs[0] = "__map=true"
 		for i, it := range p.Map.Items {
+			idx := i + 1
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
@@ -429,7 +468,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			pairs[i] = fmt.Sprintf("[%s]=%s", k, v)
+			pairs[idx] = fmt.Sprintf("[%s]=%s", k, v)
 		}
 		return "{" + strings.Join(pairs, ", ") + "}", nil
 	case p.Group != nil:
@@ -980,7 +1019,11 @@ func (c *Compiler) emitHelpers() {
 		c.indent++
 		c.writeln("if type(container) == 'table' then")
 		c.indent++
-		c.writeln("if container[1] ~= nil or #container > 0 then")
+		c.writeln("if container.__map then")
+		c.indent++
+		c.writeln("return container[item] ~= nil")
+		c.indent--
+		c.writeln("elseif container[1] ~= nil or #container > 0 then")
 		c.indent++
 		c.writeln("for _, v in ipairs(container) do")
 		c.indent++
@@ -1081,7 +1124,11 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writeln("elseif type(obj) == 'table' then")
 		c.indent++
-		c.writeln("if obj[1] ~= nil or #obj > 0 then")
+		c.writeln("if obj.__map then")
+		c.indent++
+		c.writeln("return obj[i]")
+		c.indent--
+		c.writeln("elseif obj[1] ~= nil or #obj > 0 then")
 		c.indent++
 		c.writeln("return obj[(i)+1]")
 		c.indent--

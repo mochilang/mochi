@@ -31,9 +31,24 @@ function __iter(obj)
 	end
 end
 
+function __add(a, b)
+	if type(a) == 'table' and type(b) == 'table' then
+		local out = {}
+		for i = 1, #a do out[#out+1] = a[i] end
+		for i = 1, #b do out[#out+1] = b[i] end
+		return out
+	elseif type(a) == 'string' or type(b) == 'string' then
+		return tostring(a) .. tostring(b)
+	else
+		return a + b
+	end
+end
+
 function __contains(container, item)
 	if type(container) == 'table' then
-		if container[1] ~= nil or #container > 0 then
+		if container.__map then
+			return container[item] ~= nil
+		elseif container[1] ~= nil or #container > 0 then
 			for _, v in ipairs(container) do
 				if v == item then return true end
 			end
@@ -48,16 +63,16 @@ function __contains(container, item)
 	end
 end
 
-local set = {}
+local set = {__map=true}
 for _, n in __iter({1, 2, 3}) do
-	set[(n)+1] = true
+	set[n] = true
 	::__continue0::
 end
 local i = 1
 local count = 0
 while __contains(set, i) do
-	i = (i + 1)
-	count = (count + 1)
+	i = __add(i, 1)
+	count = __add(count, 1)
 	::__continue1::
 end
 __print(count)

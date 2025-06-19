@@ -7,6 +7,13 @@ function __print(...)
 	io.write('\n')
 end
 
+function __div(a, b)
+	if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+		return a // b
+	end
+	return a / b
+end
+
 function __add(a, b)
 	if type(a) == 'table' and type(b) == 'table' then
 		local out = {}
@@ -20,6 +27,10 @@ function __add(a, b)
 	end
 end
 
-local a = 10
-local b = 20
-__print(__add(a, b))
+function sum(n)
+	return __div((n * (__add(n, 1))), 2)
+end
+
+local n = 10
+__print(sum(n))
+__print(n)

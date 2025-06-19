@@ -7,5 +7,5 @@ function __print(...)
 	io.write('\n')
 end
 
-local map = {["a"]=1}
+local map = {__map=true, ["a"]=1}
 __print(map["a"])

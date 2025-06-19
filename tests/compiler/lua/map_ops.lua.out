@@ -9,7 +9,9 @@ end
 
 function __contains(container, item)
 	if type(container) == 'table' then
-		if container[1] ~= nil or #container > 0 then
+		if container.__map then
+			return container[item] ~= nil
+		elseif container[1] ~= nil or #container > 0 then
 			for _, v in ipairs(container) do
 				if v == item then return true end
 			end
@@ -24,31 +26,10 @@ function __contains(container, item)
 	end
 end
 
-function __index(obj, i)
-	if type(obj) == 'string' then
-		return __indexString(obj, i)
-	elseif type(obj) == 'table' then
-		return obj[(i)+1]
-	else
-		error('cannot index')
-	end
-end
-
-function __indexString(s, i)
-	local len = #s
-	if i < 0 then
-		i = len + i + 1
-	else
-		i = i + 1
-	end
-	if i < 1 or i > len then error('index out of range') end
-	return string.sub(s, i, i)
-end
-
-local m = {}
-m[(1)+1] = 10
-m[(2)+1] = 20
+local m = {__map=true}
+m[1] = 10
+m[2] = 20
 if __contains(m, 1) then
-	__print(__index(m, 1))
+	__print(m[1])
 end
-__print(__index(m, 2))
+__print(m[2])

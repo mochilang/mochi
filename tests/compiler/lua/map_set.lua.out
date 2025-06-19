@@ -7,5 +7,6 @@ function __print(...)
 	io.write('\n')
 end
 
-local todo = {__map=true, ["title"]="hi"}
-__print(todo.title)
+local scores = {__map=true, ["a"]=1}
+scores["b"] = 2
+__print(scores["b"])
