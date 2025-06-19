@@ -20,8 +20,8 @@ fn longestPalindrome(s: &str) -> String {
     let mut end = 0;
     let mut n = s.len() as i32;
     for i in 0..n {
-        let mut len1 = expand(s, i, i);
-        let mut len2 = expand(s, i, i + 1);
+        let mut len1 = expand(&s, i, i);
+        let mut len2 = expand(&s, i, i + 1);
         let mut l = len1;
         if len2 > len1 {
             l = len2;
