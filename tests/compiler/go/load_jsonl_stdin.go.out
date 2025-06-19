@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"os"
+	"reflect"
 )
 
 type Person struct {
@@ -86,10 +87,13 @@ func _count(v any) int {
     case []float64: return len(s)
     case []string: return len(s)
     case []bool: return len(s)
+    case []map[string]any: return len(s)
     case map[string]any: return len(s)
     case string: return len([]rune(s))
-    default: panic("count() expects list or group")
     }
+    rv := reflect.ValueOf(v)
+    if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array { return rv.Len() }
+    panic("count() expects list or group")
 }
 
 func _load(path string, opts map[string]any) []map[string]any {

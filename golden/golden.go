@@ -6,6 +6,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -134,9 +135,14 @@ func findRepoRoot(t *testing.T) string {
 // normalizeOutput strips paths for clean diffing.
 func normalizeOutput(root string, b []byte) []byte {
 	out := string(b)
+	// Strip absolute paths for stable diffs.
 	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
 	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
 	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
 	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	// Remove timing information like "(123ns)" or "(1.0µs)" as durations vary
+	// slightly between runs and would cause flakey golden tests.
+	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+	out = durRE.ReplaceAllString(out, "(X)")
 	return []byte(strings.TrimSpace(out))
 }
