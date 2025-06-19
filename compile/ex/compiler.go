@@ -15,11 +15,12 @@ import (
 
 // Compiler translates a Mochi AST into Elixir source code.
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	env     *types.Env
-	tmp     int
-	helpers map[string]bool
+        buf     bytes.Buffer
+        indent  int
+        env     *types.Env
+        tmp     int
+        helpers map[string]bool
+        funcs   map[string]bool
 }
 
 var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
@@ -88,7 +89,7 @@ func assignedVars(stmts []*parser.Statement) []string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool)}
+        return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -142,16 +143,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
         if c.indent > 1 {
-		if c.env != nil {
-			c.env.SetVar(fun.Name, types.FuncType{}, false)
-		}
-		expr, err := c.compileFunExpr(&parser.FunExpr{Params: fun.Params, BlockBody: fun.Body})
-		if err != nil {
-			return err
-		}
-		c.writeln(fmt.Sprintf("%s = %s", sanitizeName(fun.Name), expr))
-		return nil
-	}
+                if c.env != nil {
+                        c.env.SetVar(fun.Name, types.FuncType{}, false)
+                }
+                expr, err := c.compileFunExpr(&parser.FunExpr{Params: fun.Params, BlockBody: fun.Body})
+                if err != nil {
+                        return err
+                }
+                c.writeln(fmt.Sprintf("%s = %s", sanitizeName(fun.Name), expr))
+                return nil
+        }
+
+        // record top-level function name for call handling
+        c.funcs[fun.Name] = true
 
 	c.writeIndent()
 	c.buf.WriteString("def " + sanitizeName(fun.Name) + "(")
@@ -875,16 +879,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "input":
 			c.use("_input")
 			return "_input()", nil
-		default:
-			if c.env != nil {
-				if t, err := c.env.GetVar(p.Call.Func); err == nil {
-					if _, ok := t.(types.FuncType); ok {
-						return fmt.Sprintf("%s.(%s)", sanitizeName(p.Call.Func), argStr), nil
-					}
-				}
-			}
-			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
-		}
+               default:
+                       if c.funcs[p.Call.Func] {
+                               return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
+                       }
+                       if c.env != nil {
+                               if t, err := c.env.GetVar(p.Call.Func); err == nil {
+                                       if _, ok := t.(types.FuncType); ok {
+                                               return fmt.Sprintf("%s.(%s)", sanitizeName(p.Call.Func), argStr), nil
+                                       }
+                               }
+                       }
+                       return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
+               }
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	}
