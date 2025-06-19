@@ -1,0 +1,16 @@
+sealed trait Tree
+case class Leaf() extends Tree
+case class Node(left: Any, value: Int, right: Any) extends Tree
+
+object Main {
+	def inorder(t: Any): List[Int] = {
+		return (t match {
+	case Leaf => List().asInstanceOf[List[Int]]
+	case Node(l, v, r) => ((inorder(l) ++ List(v)) + inorder(r))
+})
+	}
+	
+	def main(args: Array[String]): Unit = {
+		println(inorder(Node(left = Leaf(), value = 1, right = Node(left = Leaf(), value = 2, right = Leaf()))))
+	}
+}

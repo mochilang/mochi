@@ -1,0 +1,13 @@
+sealed trait Foo
+case class Empty() extends Foo
+case class Node(child: Any) extends Foo
+
+object Main {
+	def listit(): List[Any] = {
+		return List(Empty())
+	}
+	
+	def main(args: Array[String]): Unit = {
+		println(listit().length)
+	}
+}
