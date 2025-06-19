@@ -9,7 +9,7 @@ convert: s numRows: numRows | ch curr i result row rows step |
 	rows := Array new.
 	i := 0.
 	[(i < numRows)] whileTrue: [
-		rows := (rows , Array with: '').
+		rows := ((rows) , (Array with: '')).
 		i := (i + 1).
 	]
 	.

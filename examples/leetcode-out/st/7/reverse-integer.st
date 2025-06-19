@@ -11,7 +11,7 @@ reverse: x | digit n rev sign |
 	.
 	rev := 0.
 	[(n ~= 0)] whileTrue: [
-		digit := (n \ 10).
+		digit := (n \\ 10).
 		rev := ((rev * 10) + digit).
 		n := (n / 10).
 	]

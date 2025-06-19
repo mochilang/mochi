@@ -20,9 +20,9 @@ addTwoNumbers: l1 l2: l2 | carry digit i j result sum x y |
 		]
 		.
 		sum := ((x + y) + carry).
-		digit := (sum \ 10).
+		digit := (sum \\ 10).
 		carry := (sum / 10).
-		result := (result , Array with: digit).
+		result := ((result) , (Array with: digit)).
 	]
 	.
 	^ result
