@@ -6,7 +6,7 @@ object Main {
 		var rows: scala.collection.mutable.ArrayBuffer[String] = scala.collection.mutable.ArrayBuffer()
 		var i = 0
 		while ((i < numRows)) {
-			rows = (rows ++ List(""))
+			rows = (rows ++ scala.collection.mutable.ArrayBuffer(""))
 			i = (i + 1)
 		}
 		var curr = 0
@@ -20,7 +20,7 @@ object Main {
 			}
 			curr = (curr + step)
 		}
-		var result = ""
+		var result: String = ""
 		for (row <- rows) {
 			result = (result + row)
 		}
