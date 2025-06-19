@@ -494,14 +494,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left)})
+	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left, c.env)})
 
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right)})
+		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env)})
 		ops = append(ops, part.Op)
 	}
 
@@ -603,11 +603,27 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if isStringExpr(op.Index.Start) {
-				c.needGet = true
-				res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
+			if t, ok := c.staticTypeOfPostfix(p); ok {
+				switch t.(type) {
+				case types.MapType:
+					res = fmt.Sprintf("maps:get(%s, %s)", idx, res)
+				case types.ListType:
+					res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+				default:
+					if isStringExpr(op.Index.Start, c.env) {
+						c.needGet = true
+						res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
+					} else {
+						res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+					}
+				}
 			} else {
-				res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+				if isStringExpr(op.Index.Start, c.env) {
+					c.needGet = true
+					res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
+				} else {
+					res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+				}
 			}
 		} else if op.Call != nil {
 			args := []string{}
@@ -876,24 +892,33 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
-func isListUnary(u *parser.Unary) bool {
+func isListUnary(u *parser.Unary, env *types.Env) bool {
 	if u == nil || len(u.Ops) > 0 {
 		return false
 	}
-	return isListPostfix(u.Value)
+	return isListPostfix(u.Value, env)
 }
 
-func isListPostfix(p *parser.PostfixExpr) bool {
+func isListPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 	if p == nil || len(p.Ops) > 0 {
 		return false
 	}
-	if p.Target != nil && p.Target.List != nil {
-		return true
+	if p.Target != nil {
+		if p.Target.List != nil {
+			return true
+		}
+		if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+			if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
+		}
 	}
 	return false
 }
 
-func isStringExpr(e *parser.Expr) bool {
+func isStringExpr(e *parser.Expr, env *types.Env) bool {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
 		return false
 	}
@@ -902,10 +927,45 @@ func isStringExpr(e *parser.Expr) bool {
 		return false
 	}
 	p := u.Value
-	if len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil {
+	if len(p.Ops) > 0 || p.Target == nil {
 		return false
 	}
-	return true
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+		if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) staticTypeOfPostfix(p *parser.PostfixExpr) (types.Type, bool) {
+	if p == nil || len(p.Ops) > 0 {
+		return nil, false
+	}
+	return c.staticTypeOfPrimary(p.Target)
+}
+
+func (c *Compiler) staticTypeOfPrimary(p *parser.Primary) (types.Type, bool) {
+	if p == nil {
+		return nil, false
+	}
+	switch {
+	case p.List != nil:
+		return types.ListType{Elem: types.AnyType{}}, true
+	case p.Map != nil:
+		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}, true
+	case p.Selector != nil && len(p.Selector.Tail) == 0 && c.env != nil:
+		t, err := c.env.GetVar(p.Selector.Root)
+		if err == nil {
+			return t, true
+		}
+	}
+	return nil, false
 }
 
 func (c *Compiler) emitRuntime() {
