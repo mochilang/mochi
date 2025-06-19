@@ -157,6 +157,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Let.Type != nil {
 			typ = c.cppType(s.Let.Type)
+		} else if t := c.guessExprType(s.Let.Value); t != "" {
+			typ = t
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Let.Name))
@@ -176,6 +178,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Var.Type != nil {
 			typ = c.cppType(s.Var.Type)
+		} else if t := c.guessExprType(s.Var.Value); t != "" {
+			typ = t
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Var.Name))
@@ -234,6 +238,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	elemType := "auto"
 	if t := c.guessExprType(f.Source); strings.HasPrefix(t, "vector<") {
 		elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
+		if !isPrimitive(elemType) {
+			elemType = "const " + elemType + "&"
+		}
 	} else if t == "string" {
 		elemType = "char"
 	}
@@ -633,6 +640,14 @@ func (c *Compiler) cppTypeRef(t types.Type) string {
 		return tt.Name
 	}
 	return "auto"
+}
+
+func isPrimitive(t string) bool {
+	switch t {
+	case "int", "double", "bool", "char":
+		return true
+	}
+	return false
 }
 
 func getEmptyListLiteral(e *parser.Expr) *parser.ListLiteral {
