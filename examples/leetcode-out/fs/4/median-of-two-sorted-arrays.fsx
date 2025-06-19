@@ -24,7 +24,7 @@ let findMedianSortedArrays (nums1: int[]) (nums2: int[]) : float =
             raise (Return_findMedianSortedArrays ((float merged.[(total / 2)])))
         let mid1 = merged.[((total / 2) - 1)]
         let mid2 = merged.[(total / 2)]
-        raise (Return_findMedianSortedArrays (((float ((mid1 + mid2))) / 2.000000)))
+        raise (Return_findMedianSortedArrays (((float ((mid1 + mid2))) / 2.0)))
         failwith "unreachable"
     with Return_findMedianSortedArrays v -> v
 

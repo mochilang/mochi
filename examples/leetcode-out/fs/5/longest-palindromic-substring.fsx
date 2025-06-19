@@ -38,12 +38,7 @@ let longestPalindrome (s: string) : string =
             if (l > ((_end - start))) then
                 start <- (i - ((((l - 1)) / 2)))
                 _end <- (i + ((l / 2)))
-        let mutable res = ""
-        let mutable k = start
-        while (k <= _end) do
-            res <- (res + (string s.[(if k < 0 then s.Length + k else k)]))
-            k <- (k + 1)
-        raise (Return_longestPalindrome (res))
+        raise (Return_longestPalindrome (s.[start .. ((_end + 1) - 1)]))
         failwith "unreachable"
     with Return_longestPalindrome v -> v
 
