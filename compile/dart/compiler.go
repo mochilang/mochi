@@ -139,7 +139,6 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	if (typ == nil || isAny(typ)) && s.Value != nil {
 		typ = c.inferExprType(s.Value)
 	}
-	typStr := dartType(typ)
 	var val string
 	if s.Value != nil {
 		expr, err := c.compileExpr(s.Value)
@@ -149,16 +148,16 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		val = expr
 	}
 	if val == "" {
-		if typStr != "" && typStr != "dynamic" {
-			c.writeln(fmt.Sprintf("%s %s;", typStr, name))
+		if isSimpleType(typ) && typ != nil && !isAny(typ) {
+			c.writeln(fmt.Sprintf("%s %s;", dartType(typ), name))
 		} else {
-			c.writeln(fmt.Sprintf("var %s;", name))
+			c.writeln(fmt.Sprintf("dynamic %s;", name))
 		}
 	} else {
-		if typStr != "" && typStr != "dynamic" {
-			c.writeln(fmt.Sprintf("%s %s = %s;", typStr, name, val))
+		if isSimpleType(typ) && typ != nil && !isAny(typ) {
+			c.writeln(fmt.Sprintf("%s %s = %s;", dartType(typ), name, val))
 		} else {
-			c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+			c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
 		}
 	}
 	return nil
@@ -264,7 +263,6 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	if (typ == nil || isAny(typ)) && s.Value != nil {
 		typ = c.inferExprType(s.Value)
 	}
-	typStr := dartType(typ)
 	var val string
 	if s.Value != nil {
 		expr, err := c.compileExpr(s.Value)
@@ -274,16 +272,16 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		val = expr
 	}
 	if val == "" {
-		if typStr != "" && typStr != "dynamic" {
-			c.writeln(fmt.Sprintf("%s %s;", typStr, name))
+		if isSimpleType(typ) && typ != nil && !isAny(typ) {
+			c.writeln(fmt.Sprintf("%s %s;", dartType(typ), name))
 		} else {
-			c.writeln(fmt.Sprintf("var %s;", name))
+			c.writeln(fmt.Sprintf("dynamic %s;", name))
 		}
 	} else {
-		if typStr != "" && typStr != "dynamic" {
-			c.writeln(fmt.Sprintf("%s %s = %s;", typStr, name, val))
+		if isSimpleType(typ) && typ != nil && !isAny(typ) {
+			c.writeln(fmt.Sprintf("%s %s = %s;", dartType(typ), name, val))
 		} else {
-			c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+			c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
 		}
 	}
 	return nil
@@ -722,15 +720,19 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 
 	params := make([]string, len(fun.Params))
 	for i, p := range fun.Params {
-		ptype := dartType(ft.Params[i])
-		if ptype != "" && ptype != "dynamic" {
-			params[i] = fmt.Sprintf("%s %s", ptype, sanitizeName(p.Name))
+		if isSimpleType(ft.Params[i]) && !isAny(ft.Params[i]) {
+			params[i] = fmt.Sprintf("%s %s", dartType(ft.Params[i]), sanitizeName(p.Name))
 		} else {
 			params[i] = sanitizeName(p.Name)
 		}
 	}
 
-	c.writeln(fmt.Sprintf("%s %s(%s) {", dartType(ft.Return), name, strings.Join(params, ", ")))
+	ret := "dynamic"
+	if isSimpleType(ft.Return) && !isAny(ft.Return) {
+		ret = dartType(ft.Return)
+	}
+
+	c.writeln(fmt.Sprintf("%s %s(%s) {", ret, name, strings.Join(params, ", ")))
 	c.indent++
 	origEnv := c.env
 	child := types.NewEnv(c.env)
