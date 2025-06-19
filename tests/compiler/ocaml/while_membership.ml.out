@@ -1,0 +1,11 @@
+let set = ref (let tbl = Hashtbl.create 0 in  tbl);;
+List.iter (fun n ->
+  Hashtbl.replace !set n true;;
+) [1; 2; 3];;
+let i = ref 1;;
+let count = ref 0;;
+while Hashtbl.mem !set !i do
+  i := !i + 1;
+  count := !count + 1;
+done;;
+print_endline (string_of_int (!count));;
