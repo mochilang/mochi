@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		Console.WriteLine(_avg(new [] { 1, 2, 3 }));
+		Console.WriteLine(_avg(new [] { 1L, 2L, 3L }));
 	}
 	static double _avg(dynamic v) {
 		if (v == null) return 0.0;

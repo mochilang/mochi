@@ -976,6 +976,62 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return buf.String(), nil
 }
 
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	orig := c.varTypes
+	c.varTypes = make(map[string]string)
+	for k, v := range orig {
+		c.varTypes[k] = v
+	}
+
+	paramDecls := make([]string, len(fn.Params))
+	paramTypes := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		typ := csType(p.Type)
+		name := sanitizeName(p.Name)
+		c.varTypes[name] = typ
+		paramDecls[i] = fmt.Sprintf("%s %s", typ, name)
+		paramTypes[i] = typ
+	}
+	ret := csType(fn.Return)
+	if ret == "" {
+		ret = "dynamic"
+	}
+
+	generics := append(append([]string{}, paramTypes...), ret)
+	delegate := fmt.Sprintf("Func<%s>", strings.Join(generics, ", "))
+
+	var body strings.Builder
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			c.varTypes = orig
+			return "", err
+		}
+		body.WriteString("return " + expr + ";")
+	} else {
+		sub := &Compiler{env: c.env, helpers: c.helpers, varTypes: c.varTypes}
+		sub.indent = 1
+		sub.inFun = c.inFun + 1
+		for _, s := range fn.BlockBody {
+			if err := sub.compileStmt(s); err != nil {
+				c.varTypes = orig
+				return "", err
+			}
+		}
+		body.WriteString(strings.TrimSuffix(sub.buf.String(), "\n"))
+	}
+
+	lines := strings.Split(body.String(), "\n")
+	for i, l := range lines {
+		lines[i] = "\t" + l
+	}
+	formatted := strings.Join(lines, "\n")
+
+	result := fmt.Sprintf("new %s(delegate(%s) {\n%s\n})", delegate, strings.Join(paramDecls, ", "), formatted)
+	c.varTypes = orig
+	return result, nil
+}
+
 func identName(e *parser.Expr) (string, bool) {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return "", false
@@ -1078,6 +1134,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.Group != nil:

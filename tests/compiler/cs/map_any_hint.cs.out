@@ -8,12 +8,12 @@ public class Program {
 		return new Dictionary<dynamic, dynamic> { { "__name", "Leaf" } };
 	}
 	
-	static Dictionary<string, dynamic> Node(Dictionary<string, dynamic> left, int value, Dictionary<string, dynamic> right) {
+	static Dictionary<string, dynamic> Node(Dictionary<string, dynamic> left, long value, Dictionary<string, dynamic> right) {
 		return new Dictionary<dynamic, dynamic> { { "__name", "Node" }, { "left", left }, { "value", value }, { "right", right } };
 	}
 	
 	public static void Main() {
-		var tree = Node(Leaf(), 1, Leaf());
+		var tree = Node(Leaf(), 1L, Leaf());
 		Console.WriteLine((_cast<Dictionary<string, dynamic>>(tree["left"]))["__name"]);
 	}
 	static T _cast<T>(dynamic v) {

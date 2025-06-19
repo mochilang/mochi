@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 
 public class Program {
-	static int add(int a, int b) {
+	static long add(long a, long b) {
 		return (a + b);
 	}
 	
 	public static void Main() {
-		Console.WriteLine(add(2, 3));
+		Console.WriteLine(add(2L, 3L));
 	}
 }

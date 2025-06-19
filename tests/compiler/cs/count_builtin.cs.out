@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		Console.WriteLine(_count(new [] { 1, 2, 3 }));
+		Console.WriteLine(_count(new [] { 1L, 2L, 3L }));
 	}
 	static int _count(dynamic v) {
 		if (v is string) {

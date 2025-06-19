@@ -4,6 +4,6 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		Console.WriteLine(Convert.ToString(123));
+		Console.WriteLine(Convert.ToString(123L));
 	}
 }

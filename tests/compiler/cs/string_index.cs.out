@@ -5,6 +5,12 @@ using System.Collections.Generic;
 public class Program {
 	public static void Main() {
 		var text = "hello";
-		Console.WriteLine(text[1]);
+		Console.WriteLine(_indexString(text, 1L));
 	}
+	static string _indexString(string s, long i) {
+		if (i < 0) i += s.Length;
+		if (i < 0 || i >= s.Length) throw new Exception("index out of range");
+		return s[(int)i].ToString();
+	}
+	
 }

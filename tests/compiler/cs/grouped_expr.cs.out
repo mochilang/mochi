@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	public static void Main() {
-		var value = (((1 + 2)) * 3);
+		var value = (((1L + 2L)) * 3L);
 		Console.WriteLine(value);
 	}
 }
