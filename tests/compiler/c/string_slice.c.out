@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct { int len; int *data; } list_int;
+
+static list_int list_int_create(int len) {
+	list_int l;
+	l.len = len;
+	l.data = (int*)malloc(sizeof(int)*len);
+	return l;
+}
+
+static int _count(list_int v) {
+	return v.len;
+}
+
+static double _avg(list_int v) {
+	if (v.len == 0) return 0;
+	double sum = 0;
+	for (int i = 0; i < v.len; i++) {
+		sum += v.data[i];
+	}
+	return sum / v.len;
+}
+
+static char* slice_string(char* s, int start, int end) {
+	int len = strlen(s);
+	if (start < 0) start += len;
+	if (end < 0) end += len;
+	if (start < 0) start = 0;
+	if (end > len) end = len;
+	if (start > end) start = end;
+	char* buf = (char*)malloc(end - start + 1);
+	memcpy(buf, s + start, end - start);
+	buf[end - start] = '\0';
+	return buf;
+}
+
+int main() {
+	char* _t1 = slice_string("hello", 1, 4);
+	printf("%s\n", _t1);
+	return 0;
+}
