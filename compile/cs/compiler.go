@@ -409,6 +409,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 		} else if isStringExpr(s.Let.Value) {
 			typ = "string"
+		} else {
+			typ = literalType(s.Let.Value)
 		}
 		c.varTypes[name] = typ
 		decl := "var"
@@ -436,6 +438,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 		} else if isStringExpr(s.Var.Value) {
 			typ = "string"
+		} else {
+			typ = literalType(s.Var.Value)
 		}
 		c.varTypes[name] = typ
 		decl := "var"
@@ -499,7 +503,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if !useVar {
 			loopVar = c.newVar()
 		}
-		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", loopVar, start, loopVar, end, loopVar))
+		decl := "var"
+		if t := literalType(f.Source); t != "" {
+			decl = t
+		}
+		c.writeln(fmt.Sprintf("for (%s %s = %s; %s < %s; %s++) {", decl, loopVar, start, loopVar, end, loopVar))
 		c.indent++
 		for _, s := range f.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -518,7 +526,17 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if !useVar {
 		loopVar = c.newVar()
 	}
-	c.writeln(fmt.Sprintf("foreach (var %s in %s) {", loopVar, src))
+	decl := "var"
+	if id, ok := identName(f.Source); ok {
+		if t, ok := c.varTypes[sanitizeName(id)]; ok {
+			if strings.HasSuffix(t, "[]") {
+				decl = strings.TrimSuffix(t, "[]")
+			} else if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
+				decl = strings.TrimSuffix(strings.TrimPrefix(t, "List<"), ">")
+			}
+		}
+	}
+	c.writeln(fmt.Sprintf("foreach (%s %s in %s) {", decl, loopVar, src))
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -552,6 +570,14 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		cur, ok := c.varTypes[sanitizeName(a.Name)]
 		if !ok || cur == "dynamic[]" {
 			c.varTypes[sanitizeName(a.Name)] = typ
+		}
+	} else {
+		lit := literalType(a.Value)
+		if lit != "" {
+			cur, ok := c.varTypes[sanitizeName(a.Name)]
+			if !ok || cur == "" || cur == "dynamic" {
+				c.varTypes[sanitizeName(a.Name)] = lit
+			}
 		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
@@ -1133,7 +1159,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			items[i] = fmt.Sprintf("{ %s, %s }", k, v)
 		}
-		return "new Dictionary<dynamic, dynamic> { " + strings.Join(items, ", ") + " }", nil
+		kt, vt := c.mapElemTypes(p.Map)
+		typ := "Dictionary<dynamic, dynamic>"
+		if kt != "" && vt != "" {
+			typ = fmt.Sprintf("Dictionary<%s, %s>", kt, vt)
+		}
+		return fmt.Sprintf("new %s { %s }", typ, strings.Join(items, ", ")), nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
 		for _, s := range p.Selector.Tail {
@@ -1446,7 +1477,13 @@ func listElemType(e *parser.Expr) string {
 		return ""
 	}
 	pv := pu.Value
-	if pv == nil || len(pv.Ops) != 0 || pv.Target == nil || pv.Target.Lit == nil {
+	if pv == nil || len(pv.Ops) != 0 || pv.Target == nil {
+		return ""
+	}
+	if pv.Target.Struct != nil {
+		return sanitizeName(pv.Target.Struct.Name)
+	}
+	if pv.Target.Lit == nil {
 		return ""
 	}
 	lit := pv.Target.Lit
@@ -1470,4 +1507,76 @@ func isListType(t types.Type) bool {
 		return true
 	}
 	return false
+}
+
+// literalType returns the C# type for a simple literal expression if it can be
+// determined. It only handles direct numeric, boolean and string literals with
+// optional unary +/- operators.
+func literalType(e *parser.Expr) string {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil {
+		return ""
+	}
+	if len(u.Ops) > 1 {
+		return ""
+	}
+	if len(u.Ops) == 1 && u.Ops[0] != "-" && u.Ops[0] != "+" {
+		return ""
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil {
+		return ""
+	}
+	lit := p.Target.Lit
+	switch {
+	case lit.Int != nil:
+		return "long"
+	case lit.Float != nil:
+		return "double"
+	case lit.Str != nil:
+		return "string"
+	case lit.Bool != nil:
+		return "bool"
+	default:
+		return ""
+	}
+}
+
+// mapElemTypes inspects a map literal and tries to infer the key and value
+// types based on the first entry. It only handles simple literals and struct
+// literals.
+func (c *Compiler) mapElemTypes(m *parser.MapLiteral) (string, string) {
+	if m == nil || len(m.Items) == 0 {
+		return "", ""
+	}
+	first := m.Items[0]
+	kt := literalType(first.Key)
+	if kt == "" {
+		kt = structName(first.Key)
+	}
+	vt := literalType(first.Value)
+	if vt == "" {
+		vt = structName(first.Value)
+	}
+	return kt, vt
+}
+
+// structName returns the name of a struct literal expression, or empty string
+// if the expression is not a direct struct literal.
+func structName(e *parser.Expr) string {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Struct == nil {
+		return ""
+	}
+	return sanitizeName(p.Target.Struct.Name)
 }
