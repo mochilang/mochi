@@ -32,13 +32,13 @@ contains
     implicit none
     character(:), allocatable :: res
     character(len=*), intent(in) :: s
-    integer :: len2
     integer :: l
     integer :: i
     integer :: start
     integer :: end
     integer :: n
     integer :: len1
+    integer :: len2
     if ((len(s) <= 1)) then
       res = s
       return

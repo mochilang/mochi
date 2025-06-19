@@ -9,12 +9,12 @@ contains
     implicit none
     integer :: res
     character(len=*), intent(in) :: s
+    integer :: best
+    integer :: i
     integer :: j
     integer :: length
     integer :: n
     integer :: start
-    integer :: best
-    integer :: i
     n = len(s)
     start = 0
     best = 0
