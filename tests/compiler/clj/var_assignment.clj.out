@@ -1,3 +1,9 @@
-(def x 1)
-(def x 2)
-(println x)
+(ns main)
+
+(defn -main []
+  (def x 1)
+  (def x 2)
+  (println x)
+)
+
+(-main)

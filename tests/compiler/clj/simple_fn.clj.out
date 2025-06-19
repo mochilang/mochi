@@ -1,3 +1,5 @@
+(ns main)
+
 (defn id [x]
   (try
     (throw (ex-info "return" {:value x}))
@@ -8,4 +10,8 @@
   )
 )
 
-(println (id 123))
+(defn -main []
+  (println (id 123))
+)
+
+(-main)
