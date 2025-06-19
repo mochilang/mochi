@@ -23,7 +23,7 @@ set_item(List, Index, Val, Out) :-
 			catch(
 				(
 		length(S, _V0),
-		((NumRows =< 1 ; NumRows) >= _V0 ->
+		((NumRows =< 1 ; NumRows >= _V0) ->
 			throw(return(S))
 		;
 		true
@@ -62,8 +62,8 @@ set_item(List, Index, Val, Out) :-
 				nb_setval(convert_step, 1)
 			;
 			nb_getval(convert_curr, _V15),
-			_V16 is _V15 =:= NumRows - 1,
-			(_V16 ->
+			_V16 is NumRows - 1,
+			(_V15 =:= _V16 ->
 				_V17 is -(1),
 				nb_setval(convert_step, _V17)
 			;
