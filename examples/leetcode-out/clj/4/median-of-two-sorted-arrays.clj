@@ -3,9 +3,9 @@
     (def merged [])
     (def i 0)
     (def j 0)
-    (try
-      (loop []
-        (when (or (< i (count nums1)) (< j (count nums2)))
+    (loop []
+      (when (or (< i (count nums1)) (< j (count nums2)))
+        (let [r (try
           (if (>= j (count nums2))
             (do
               (def merged (vec (concat merged [(nth nums1 i)])))
@@ -31,24 +31,32 @@
           )
           )
           )
-          (recur)
-        )
+          :next
+        (catch clojure.lang.ExceptionInfo e
+          (cond
+            (= (.getMessage e) "continue") :next
+            (= (.getMessage e) "break") :break
+            :else (throw e))
+          )
+        )]
+      (cond
+        (= r :break) nil
+        (= r :next) (recur)
       )
-    (catch clojure.lang.ExceptionInfo e
-      (when-not (= (.getMessage e) "break") (throw e))
     )
   )
-  (def total (count merged))
-  (when (= (mod total 2) 1)
-    (throw (ex-info "return" {:value (double (nth merged (quot total 2)))}))
-  )
-  (def mid1 (nth merged (- (quot total 2) 1)))
-  (def mid2 (nth merged (quot total 2)))
-  (throw (ex-info "return" {:value (/ (double (+ mid1 mid2)) 2.0)}))
+)
+(def total (count merged))
+(when (= (mod total 2) 1)
+  (throw (ex-info "return" {:value (double (nth merged (quot total 2)))}))
+)
+(def mid1 (nth merged (- (quot total 2) 1)))
+(def mid2 (nth merged (quot total 2)))
+(throw (ex-info "return" {:value (/ (double (+ mid1 mid2)) 2.0)}))
 (catch clojure.lang.ExceptionInfo e
-  (if (= (.getMessage e) "return")
-    (:value (ex-data e))
-  (throw e)))
+(if (= (.getMessage e) "return")
+  (:value (ex-data e))
+(throw e)))
 )
 )
 

@@ -115,7 +115,7 @@ go test ./compile/clj -tags slow
 They compare the execution output of generated programs in `tests/compiler/clj` with predefined golden files.
 
 The test suite also compiles and runs the example LeetCode solutions in
-`examples/leetcode/1` through `examples/leetcode/6` to verify that these programs
+`examples/leetcode/1` through `examples/leetcode/7` to verify that these programs
 execute correctly using the Clojure backend.
 
 ## Status
