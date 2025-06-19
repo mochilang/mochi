@@ -1,0 +1,10 @@
+def fib(n)
+	if (n <= 1)
+		return n
+	end
+	return (fib((n - 1)) + fib((n - 2)))
+end
+
+puts([fib(0)].join(" "))
+puts([fib(1)].join(" "))
+puts([fib(6)].join(" "))

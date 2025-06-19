@@ -3,6 +3,7 @@ package rbcode
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -675,6 +676,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		for _, t := range p.Selector.Tail {
 			name += "." + sanitizeName(t)
 		}
+		if c.env != nil && len(p.Selector.Tail) == 0 {
+			if _, ok := c.env.GetFunc(p.Selector.Root); ok {
+				return fmt.Sprintf("method(:%s)", name), nil
+			}
+		}
 		return name, nil
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
@@ -734,6 +740,9 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	case l.Int != nil:
 		return strconv.Itoa(*l.Int), nil
 	case l.Float != nil:
+		if *l.Float == math.Trunc(*l.Float) {
+			return strconv.FormatFloat(*l.Float, 'f', 1, 64), nil
+		}
 		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
 	case l.Bool != nil:
 		if *l.Bool {
