@@ -144,6 +144,12 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	case "for":
 		c.compileFor(n)
 
+	case "if":
+		c.compileIf(n)
+
+	case "while":
+		c.compileWhile(n)
+
 	}
 }
 
@@ -153,6 +159,40 @@ func (c *Compiler) compileFor(n *ast.Node) {
 	start := c.expr(n.Children[0].Children[0])
 	end := c.expr(n.Children[0].Children[1])
 	c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM %s BY 1 UNTIL %s >= %s", varName, start, varName, end))
+	c.indent++
+	for _, st := range n.Children[1].Children {
+		c.compileNode(st)
+	}
+	c.indent--
+	c.writeln("    END-PERFORM")
+}
+
+func (c *Compiler) compileIf(n *ast.Node) {
+	cond := c.expr(n.Children[0])
+	c.writeln(fmt.Sprintf("    IF %s", cond))
+	c.indent++
+	for _, st := range n.Children[1].Children {
+		c.compileNode(st)
+	}
+	c.indent--
+	if len(n.Children) > 2 {
+		c.writeln("    ELSE")
+		c.indent++
+		if n.Children[2].Kind == "if" {
+			c.compileIf(n.Children[2])
+		} else {
+			for _, st := range n.Children[2].Children {
+				c.compileNode(st)
+			}
+		}
+		c.indent--
+	}
+	c.writeln("    END-IF")
+}
+
+func (c *Compiler) compileWhile(n *ast.Node) {
+	cond := c.expr(n.Children[0])
+	c.writeln(fmt.Sprintf("    PERFORM UNTIL NOT (%s)", cond))
 	c.indent++
 	for _, st := range n.Children[1].Children {
 		c.compileNode(st)
