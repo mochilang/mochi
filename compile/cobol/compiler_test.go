@@ -95,5 +95,28 @@ func TestCobolCompiler_SubsetPrograms(t *testing.T) {
 	})
 }
 
-// TestCobolCompiler_GoldenSource is intentionally omitted because the COBOL
-// backend is a minimal proof of concept and does not produce stable output.
+// TestCobolCompiler_GoldenSource verifies that the COBOL backend emits the
+// expected source for the small suite of example programs.  The generated
+// COBOL is compared against the files in tests/compiler/cobol with the
+// `.cob.out` extension.
+func TestCobolCompiler_GoldenSource(t *testing.T) {
+	if err := cobolcode.EnsureCOBOL(); err != nil {
+		t.Skipf("cobol not installed: %v", err)
+	}
+	golden.Run(t, "tests/compiler/cobol", ".mochi", ".cob.out", func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("\u274c type error: %v", errs[0])
+		}
+		c := cobolcode.New(env)
+		code, err := c.Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+		return bytes.TrimSpace(code), nil
+	})
+}
