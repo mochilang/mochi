@@ -1,0 +1,16 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int factorial(int n){
+	if (n <= 1) {
+		return 1;
+	}
+	return n * factorial(n - 1);
+}
+
+int main() {
+	std::cout << factorial(0) << std::endl;
+	std::cout << factorial(1) << std::endl;
+	std::cout << factorial(5) << std::endl;
+	return 0;
+}
