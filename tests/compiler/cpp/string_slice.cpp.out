@@ -1,0 +1,17 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string _sliceString(const string& s, int start, int end) {
+	int n = s.size();
+	if (start < 0) start += n;
+	if (end < 0) end += n;
+	if (start < 0) start = 0;
+	if (end > n) end = n;
+	if (end < start) end = start;
+	return s.substr(start, end - start);
+}
+
+int main() {
+	std::cout << _sliceString("hello", 1, 4) << std::endl;
+	return 0;
+}
