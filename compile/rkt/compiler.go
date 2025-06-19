@@ -79,6 +79,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("        [(hash? x) (hash-ref x i)]")
 	c.writeln("        [else (list-ref x i)]))")
 	c.writeln("(define (slice x s e) (if (string? x) (substring x s e) (take (drop x s) (- e s))))")
+	c.writeln("(define (count x)")
+	c.writeln("  (cond [(string? x) (string-length x)]")
+	c.writeln("        [(hash? x) (hash-count x)]")
+	c.writeln("        [else (length x)]))")
+	c.writeln("(define (avg x)")
+	c.writeln("  (let ([n (count x)])")
+	c.writeln("    (if (= n 0) 0")
+	c.writeln("        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))")
 	c.writeln("")
 	// function declarations first
 	for _, s := range prog.Statements {
@@ -575,6 +583,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		name = "displayln"
 	case "str":
 		name = "format"
+	case "count":
+		name = "count"
+	case "avg":
+		name = "avg"
+	case "input":
+		name = "read-line"
 	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
