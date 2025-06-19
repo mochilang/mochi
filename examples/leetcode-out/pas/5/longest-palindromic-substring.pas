@@ -16,7 +16,7 @@ begin
 	n := Length(s);
 	while ((l >= 0) and (r < n)) do
 	begin
-		if (s[l] <> s[r]) then
+		if (s[l + 1] <> s[r + 1]) then
 		begin
 			break;
 		end;
@@ -60,7 +60,7 @@ begin
 			_end := i + l div 2;
 		end;
 	end;
-	result := s[start];
+	result := Copy(s, start + 1, (_end + 1 - start));
 	exit;
 end;
 

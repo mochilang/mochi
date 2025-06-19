@@ -23,7 +23,7 @@ begin
 		j := start;
 		while (j < i) do
 		begin
-			if (s[j] = s[i]) then
+			if (s[j + 1] = s[i + 1]) then
 			begin
 				start := j + 1;
 				break;

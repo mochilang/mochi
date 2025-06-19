@@ -9,7 +9,7 @@ function isPalindrome(x: integer): boolean;
 var
 	i: integer;
 	n: integer;
-	s: integer;
+	s: string;
 begin
 	if (x < 0) then
 	begin
@@ -20,7 +20,7 @@ begin
 	n := Length(s);
 	for i := 0 to n div 2 - 1 do
 	begin
-		if (s[i] <> s[n - 1 - i]) then
+		if (s[i + 1] <> s[n - 1 - i + 1]) then
 		begin
 			result := False;
 			exit;

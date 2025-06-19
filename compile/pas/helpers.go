@@ -93,6 +93,54 @@ func isStringLiteral(e *parser.Expr) bool {
 	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil
 }
 
+func isBoolLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Bool != nil
+}
+
+func isStringSliceExpr(e *parser.Expr, env *types.Env, vars map[string]string) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || len(u.Value.Ops) != 1 {
+		return false
+	}
+	idx := u.Value.Ops[0].Index
+	if idx == nil || (idx.Colon == nil && idx.End == nil) {
+		return false
+	}
+	t := u.Value.Target
+	if t == nil {
+		return false
+	}
+	if t.Lit != nil && t.Lit.Str != nil {
+		return true
+	}
+	if t.Selector != nil {
+		name := t.Selector.Root
+		if env != nil {
+			if ty, err := env.GetVar(name); err == nil {
+				if _, ok := ty.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+		if vars != nil {
+			if s, ok := vars[name]; ok && s == "string" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (c *Compiler) isListExpr(e *parser.Expr) bool {
 	if isListLiteral(e) {
 		return true

@@ -63,7 +63,7 @@ end;
 
 function myAtoi(s: string): integer;
 var
-	ch: integer;
+	ch: string;
 	d: integer;
 	i: integer;
 	n: integer;
@@ -72,14 +72,14 @@ var
 begin
 	i := 0;
 	n := Length(s);
-	while ((i < n) and (s[i] = ' ')) do
+	while ((i < n) and (s[i + 1] = ' ')) do
 	begin
 		i := i + 1;
 	end;
 	sign := 1;
-	if ((i < n) and ((s[i] = '+') or (s[i] = '-'))) then
+	if ((i < n) and ((s[i + 1] = '+') or (s[i + 1] = '-'))) then
 	begin
-		if (s[i] = '-') then
+		if (s[i + 1] = '-') then
 		begin
 			sign := -1;
 		end;
@@ -88,7 +88,7 @@ begin
 	_result := 0;
 	while (i < n) do
 	begin
-		ch := s[i];
+		ch := Copy(s, i + 1, (i + 1 - i));
 		d := digit(ch);
 		if (d < 0) then
 		begin

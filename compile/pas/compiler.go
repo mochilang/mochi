@@ -455,6 +455,18 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 			if typ == "integer" && s.Let.Type != nil {
 				typ = typeString(resolveSimpleTypeRef(s.Let.Type))
 			}
+			if typ == "integer" && s.Let.Value != nil {
+				typ = inferTypeFromExpr(s.Let.Value, env, vars)
+				if typ == "integer" && isStringSliceExpr(s.Let.Value, env, vars) {
+					typ = "string"
+				} else if typ == "integer" && isStringLiteral(s.Let.Value) {
+					typ = "string"
+				} else if typ == "integer" && isBoolLiteral(s.Let.Value) {
+					typ = "boolean"
+				} else if typ == "integer" && isListLiteral(s.Let.Value) {
+					typ = "specialize TArray<integer>"
+				}
+			}
 			vars[s.Let.Name] = typ
 		case s.Var != nil:
 			typ := "integer"
@@ -466,10 +478,18 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 			if typ == "integer" && s.Var.Type != nil {
 				typ = typeString(resolveSimpleTypeRef(s.Var.Type))
 			}
+			if typ == "integer" && s.Var.Value != nil {
+				typ = inferTypeFromExpr(s.Var.Value, env, vars)
+				if typ == "integer" && isStringSliceExpr(s.Var.Value, env, vars) {
+					typ = "string"
+				}
+			}
 			if typ == "integer" && isListLiteral(s.Var.Value) {
 				typ = "specialize TArray<integer>"
 			} else if typ == "integer" && isStringLiteral(s.Var.Value) {
 				typ = "string"
+			} else if typ == "integer" && isBoolLiteral(s.Var.Value) {
+				typ = "boolean"
 			}
 			vars[s.Var.Name] = typ
 		case s.For != nil:
@@ -723,17 +743,61 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					continue
 				}
 			}
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if c.isMapPostfix(&parser.PostfixExpr{Target: p.Target}) {
-				expr = fmt.Sprintf("%s.KeyData[%s]", expr, idx)
-			} else {
-				if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
-					idx = fmt.Sprintf("%s + 1", idx)
+			if op.Index.End != nil || op.Index.Colon != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					sidx, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = sidx
 				}
-				expr = fmt.Sprintf("%s[%s]", expr, idx)
+				if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
+					begin := start
+					if begin != "0" {
+						begin = fmt.Sprintf("%s + 1", begin)
+					} else {
+						begin = "1"
+					}
+					length := fmt.Sprintf("Length(%s)", expr)
+					if op.Index.End != nil {
+						eidx, err := c.compileExpr(op.Index.End)
+						if err != nil {
+							return "", err
+						}
+						if op.Index.Start != nil {
+							length = fmt.Sprintf("(%s - %s)", eidx, start)
+						} else {
+							length = eidx
+						}
+					} else if op.Index.Start != nil {
+						length = fmt.Sprintf("Length(%s) - %s", expr, start)
+					}
+					expr = fmt.Sprintf("Copy(%s, %s, %s)", expr, begin, length)
+				} else {
+					// fallback: simple index at start
+					idx, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
+						idx = fmt.Sprintf("%s + 1", idx)
+					}
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				}
+			} else {
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if c.isMapPostfix(&parser.PostfixExpr{Target: p.Target}) {
+					expr = fmt.Sprintf("%s.KeyData[%s]", expr, idx)
+				} else {
+					if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
+						idx = fmt.Sprintf("%s + 1", idx)
+					}
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				}
 			}
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))

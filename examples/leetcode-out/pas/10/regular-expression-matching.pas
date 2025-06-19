@@ -8,7 +8,7 @@ type
 function isMatch(s: string; p: string): boolean;
 var
 	dp: specialize TArray<specialize TArray<boolean>>;
-	first: integer;
+	first: boolean;
 	i: integer;
 	i2: integer;
 	j: integer;
@@ -16,6 +16,7 @@ var
 	m: integer;
 	n: integer;
 	row: specialize TArray<boolean>;
+	star: boolean;
 begin
 	m := Length(s);
 	n := Length(p);
@@ -43,12 +44,20 @@ begin
 			first := False;
 			if (i2 < m) then
 			begin
-				if ((p[j2] = s[i2]) or (p[j2] = '.')) then
+				if ((p[j2 + 1] = s[i2 + 1]) or (p[j2 + 1] = '.')) then
 				begin
 					first := True;
 				end;
 			end;
-			if ((j2 + 1 < n) and (p[j2 + 1] = '*')) then
+			star := False;
+			if (j2 + 1 < n) then
+			begin
+				if (p[j2 + 1 + 1] = '*') then
+				begin
+					star := True;
+				end;
+			end;
+			if star then
 			begin
 				if (dp[i2][j2 + 2] or (first and dp[i2 + 1][j2])) then
 				begin
