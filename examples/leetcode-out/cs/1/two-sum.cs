@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Program {
 	static long[] twoSum(long[] nums, long target) {
-		var n = nums.Length;
+		long n = nums.Length;
 		for (var i = 0L; i < n; i++) {
 			for (var j = (i + 1L); j < n; j++) {
 				if (((nums[i] + nums[j]) == target)) {
@@ -16,7 +16,7 @@ public class Program {
 	}
 	
 	public static void Main() {
-		var result = twoSum(new [] { 2L, 7L, 11L, 15L }, 9L);
+		long[] result = twoSum(new [] { 2L, 7L, 11L, 15L }, 9L);
 		Console.WriteLine(result[0L]);
 		Console.WriteLine(result[1L]);
 	}

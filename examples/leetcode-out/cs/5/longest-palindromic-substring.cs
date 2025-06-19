@@ -6,7 +6,7 @@ public class Program {
 	static long expand(string s, long left, long right) {
 		var l = left;
 		var r = right;
-		var n = s.Length;
+		long n = s.Length;
 		while (((l >= 0L) && (r < n))) {
 			if ((_indexString(s, l) != _indexString(s, r))) {
 				break;
@@ -21,12 +21,12 @@ public class Program {
 		if ((s.Length <= 1L)) {
 			return s;
 		}
-		var start = 0L;
-		var end = 0L;
-		var n = s.Length;
+		long start = 0L;
+		long end = 0L;
+		long n = s.Length;
 		for (var i = 0L; i < n; i++) {
-			var len1 = expand(s, i, i);
-			var len2 = expand(s, i, (i + 1L));
+			long len1 = expand(s, i, i);
+			long len2 = expand(s, i, (i + 1L));
 			var l = len1;
 			if ((len2 > len1)) {
 				l = len2;
@@ -40,7 +40,7 @@ public class Program {
 	}
 	
 	static void test_example_1() {
-		var ans = longestPalindrome("babad");
+		string ans = longestPalindrome("babad");
 		if (!(((ans == "bab") || (ans == "aba")))) throw new Exception("expect failed");
 	}
 	
@@ -53,7 +53,7 @@ public class Program {
 	}
 	
 	static void test_two_chars() {
-		var ans = longestPalindrome("ac");
+		string ans = longestPalindrome("ac");
 		if (!(((ans == "a") || (ans == "c")))) throw new Exception("expect failed");
 	}
 	

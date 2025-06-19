@@ -7,8 +7,8 @@ public class Program {
 		if ((x < 0L)) {
 			return false;
 		}
-		var s = Convert.ToString(x);
-		var n = s.Length;
+		string s = Convert.ToString(x);
+		long n = s.Length;
 		for (var i = 0L; i < (n / 2L); i++) {
 			if ((_indexString(s, i) != _indexString(s, ((n - 1L) - i)))) {
 				return false;

@@ -86,24 +86,21 @@ func TestCSCompiler_GoldenOutput(t *testing.T) {
 	golden.Run(t, "tests/compiler/cs", ".mochi", ".cs.out", compile)
 }
 
-func TestCSCompiler_LeetCodeExample1(t *testing.T) {
+func TestCSCompiler_LeetCodeExamples(t *testing.T) {
 	if err := cscode.EnsureDotnet(); err != nil {
 		t.Skipf("dotnet not installed: %v", err)
 	}
 	if err := exec.Command("dotnet", "--version").Run(); err != nil {
 		t.Skipf("dotnet not runnable: %v", err)
 	}
-	runLeetCode(t, 1, "0\n1")
-}
-
-func TestCSCompiler_LeetCodeExample2(t *testing.T) {
-	if err := cscode.EnsureDotnet(); err != nil {
-		t.Skipf("dotnet not installed: %v", err)
+	wants := map[int]string{1: "0\n1"}
+	for i := 1; i <= 10; i++ {
+		i := i
+		want := wants[i]
+		t.Run(fmt.Sprintf("example_%d", i), func(t *testing.T) {
+			runLeetCode(t, i, want)
+		})
 	}
-	if err := exec.Command("dotnet", "--version").Run(); err != nil {
-		t.Skipf("dotnet not runnable: %v", err)
-	}
-	runLeetCode(t, 2, "")
 }
 
 func runLeetCode(t *testing.T, id int, want string) {
