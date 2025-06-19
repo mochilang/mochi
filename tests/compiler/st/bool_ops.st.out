@@ -1,0 +1,6 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+((true and: [false])) displayOn: Transcript. Transcript cr.
+((true or: [false])) displayOn: Transcript. Transcript cr.
+((false) not) displayOn: Transcript. Transcript cr.

@@ -521,7 +521,7 @@ func mapOp(op string) string {
 	case "!=":
 		return "~="
 	case "%":
-		return "\\"
+		return "\\\\"
 	}
 	return op
 }

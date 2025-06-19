@@ -1,0 +1,8 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+((1 + 2)) displayOn: Transcript. Transcript cr.
+((5 - 3)) displayOn: Transcript. Transcript cr.
+((4 * 2)) displayOn: Transcript. Transcript cr.
+((8 / 2)) displayOn: Transcript. Transcript cr.
+((7 \\ 3)) displayOn: Transcript. Transcript cr.
