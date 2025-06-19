@@ -1,13 +1,16 @@
 (def i 0)
-(try
-  (loop []
-    (when (< i 3)
+(loop []
+  (when (< i 3)
+    (try
       (println i)
       (def i (+ i 1))
       (recur)
+    (catch clojure.lang.ExceptionInfo e
+      (cond
+        (= (.getMessage e) "continue") (recur)
+        (= (.getMessage e) "break") nil
+        :else (throw e))
+      )
     )
   )
-(catch clojure.lang.ExceptionInfo e
-  (when-not (= (.getMessage e) "break") (throw e))
-)
 )

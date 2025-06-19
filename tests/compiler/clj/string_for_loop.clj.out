@@ -1,3 +1,15 @@
-(doseq [ch "cat"]
-  (println ch)
-)
+(loop [_tmp0 (seq "cat")]
+  (when _tmp0
+    (let [ch (first _tmp0)]
+      (try
+        (println ch)
+        (recur (next _tmp0))
+      (catch clojure.lang.ExceptionInfo e
+        (cond
+          (= (.getMessage e) "continue") (recur (next _tmp0))
+          (= (.getMessage e) "break") nil
+          :else (throw e))
+        )
+      )
+    )
+  )
