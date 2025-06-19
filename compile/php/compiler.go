@@ -37,6 +37,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// test blocks
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// main body
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Type != nil || s.Test != nil {
@@ -44,6 +54,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+
+	// run tests
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(name + "();")
 		}
 	}
 	return c.buf.Bytes(), nil
@@ -78,6 +96,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue;")
 		return nil
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -108,6 +128,20 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("function %s() {", name))
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	name := "$" + sanitizeName(l.Name)
 	val := "null"
@@ -120,6 +154,15 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
 	c.locals[l.Name] = true
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("if (!(%s)) { throw new Exception('expect failed'); }", expr))
 	return nil
 }
 
@@ -248,25 +291,71 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
 		return "", nil
 	}
+	operands := []string{}
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	expr := left
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right)
+	operands = append(operands, left)
+	ops := []string{}
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "in" {
-			expr = fmt.Sprintf("(is_array(%[2]s) ? (array_key_exists(%[1]s, %[2]s) || in_array(%[1]s, %[2]s, true)) : (is_string(%[2]s) ? strpos(%[2]s, strval(%[1]s)) !== false : false))", expr, right)
-		} else if op.Op == "+" {
-			expr = fmt.Sprintf("((is_array(%[1]s) && is_array(%[2]s)) ? array_merge(%[1]s, %[2]s) : ((is_string(%[1]s) || is_string(%[2]s)) ? (%[1]s . %[2]s) : (%[1]s + %[2]s)))", expr, right)
-		} else {
-			expr = fmt.Sprintf("(%s %s %s)", expr, op.Op, right)
+		operands = append(operands, r)
+		ops = append(ops, part.Op)
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+			op := ops[i]
+			l := operands[i]
+			r := operands[i+1]
+			var expr string
+			if op == "in" {
+				expr = fmt.Sprintf("(is_array(%[2]s) ? (array_key_exists(%[1]s, %[2]s) || in_array(%[1]s, %[2]s, true)) : (is_string(%[2]s) ? strpos(%[2]s, strval(%[1]s)) !== false : false))", l, r)
+			} else if op == "+" {
+				expr = fmt.Sprintf("((is_array(%[1]s) && is_array(%[2]s)) ? array_merge(%[1]s, %[2]s) : ((is_string(%[1]s) || is_string(%[2]s)) ? (%[1]s . %[2]s) : (%[1]s + %[2]s)))", l, r)
+			} else if op == "/" {
+				expr = fmt.Sprintf("((is_int(%[1]s) && is_int(%[2]s)) ? intdiv(%[1]s, %[2]s) : (%[1]s / %[2]s))", l, r)
+			} else if op == "%" {
+				expr = fmt.Sprintf("((is_int(%[1]s) && is_int(%[2]s)) ? (%[1]s %% %[2]s) : fmod(%[1]s, %[2]s))", l, r)
+			} else {
+				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+			}
+			operands[i] = expr
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return expr, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state in binary expr")
+	}
+	return operands[0], nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -290,11 +379,33 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
+			idx := op.Index
+			if idx.Colon == nil {
+				key, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("%s[%s]", expr, key)
+			} else {
+				start := "0"
+				if idx.Start != nil {
+					s, err := c.compileExpr(idx.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := fmt.Sprintf("(is_array(%s) ? count(%s) : strlen(%s))", expr, expr, expr)
+				if idx.End != nil {
+					e, err := c.compileExpr(idx.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				length := fmt.Sprintf("(%s) - (%s)", end, start)
+				expr = fmt.Sprintf("(is_array(%[1]s) ? array_slice(%[1]s, %[2]s, %[3]s) : substr(%[1]s, %[2]s, %[3]s))", expr, start, length)
 			}
-			expr = fmt.Sprintf("%s[%s]", expr, idx)
 		} else if op.Call != nil {
 			call, err := c.compileCallOp(expr, op.Call)
 			if err != nil {
@@ -376,7 +487,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		return fmt.Sprintf("count(%s)", args[0]), nil
+		return fmt.Sprintf("(is_array(%[1]s) ? count(%[1]s) : strlen(%[1]s))", args[0]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
@@ -437,7 +548,11 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	case l.Int != nil:
 		return strconv.Itoa(*l.Int), nil
 	case l.Float != nil:
-		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
+		f := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.ContainsAny(f, ".eE") {
+			f += ".0"
+		}
+		return f, nil
 	case l.Bool != nil:
 		if *l.Bool {
 			return "true", nil
