@@ -686,7 +686,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if c.isStringRoot(p) {
+				if c.isStringBase(p) {
 					expr = fmt.Sprintf("%s.chars().nth((%s) as usize).unwrap()", expr, iexpr)
 				} else if isStringLiteral(idx.Start) {
 					expr = fmt.Sprintf("%s[%s]", expr, iexpr)
@@ -712,7 +712,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else {
 					end = fmt.Sprintf("%s.len()", expr)
 				}
-				if c.isStringRoot(p) {
+				if c.isStringBase(p) {
 					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_string()", expr, start, end)
 				} else {
 					expr = fmt.Sprintf("%s[((%s) as usize)..((%s) as usize)].to_vec()", expr, start, end)
@@ -842,10 +842,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	args := make([]string, len(call.Args))
+	var paramTypes []types.Type
+	if c.env != nil {
+		if t, err := c.env.GetVar(call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				paramTypes = ft.Params
+			}
+		}
+	}
 	for i, a := range call.Args {
 		v, err := c.compileExpr(a)
 		if err != nil {
 			return "", err
+		}
+		if len(paramTypes) > i {
+			if _, ok := paramTypes[i].(types.StringType); ok {
+				if !isStringLiteral(a) {
+					v = fmt.Sprintf("&%s", v)
+				}
+			}
 		}
 		args[i] = v
 	}
