@@ -33,28 +33,27 @@ mochi_avg(L) when is_list(L) ->
 			F when is_float(F) -> Acc + F;
 			_ -> erlang:error(badarg) end
 		end, 0, L),
-		Sum / length(L)
-	.
-mochi_avg(_) -> erlang:error(badarg).
-
-mochi_foreach(F, L) ->
-	try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
-
-mochi_foreach_loop(_, []) -> ok;
-mochi_foreach_loop(F, [H|T]) ->
-	try F(H) catch
-		throw:mochi_continue -> ok;
-		throw:mochi_break -> throw(mochi_break)
-	end,
-	mochi_foreach_loop(F, T).
-
-mochi_while(Cond, Body) ->
-	case Cond() of
-		true ->
-			try Body() catch
-				throw:mochi_continue -> ok;
-				throw:mochi_break -> ok
-			end,
-			mochi_while(Cond, Body);
-		_ -> ok
-	end.
+		Sum / length(L);
+	mochi_avg(_) -> erlang:error(badarg).
+	
+	mochi_foreach(F, L) ->
+		try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
+	
+	mochi_foreach_loop(_, []) -> ok;
+	mochi_foreach_loop(F, [H|T]) ->
+		try F(H) catch
+			throw:mochi_continue -> ok;
+			throw:mochi_break -> throw(mochi_break)
+		end,
+		mochi_foreach_loop(F, T).
+	
+	mochi_while(Cond, Body) ->
+		case Cond() of
+			true ->
+				try Body() catch
+					throw:mochi_continue -> ok;
+					throw:mochi_break -> ok
+				end,
+				mochi_while(Cond, Body);
+			_ -> ok
+		end.

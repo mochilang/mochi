@@ -3,16 +3,20 @@
 -export([main/1]).
 
 main(_) ->
-	numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9],
-	mochi_foreach(fun(n) ->
-		if ((n % 2) == 0) ->
-			throw(mochi_continue)
+	Numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9],
+	mochi_foreach(fun(N) ->
+				case ((N % 2) == 0) of
+			true ->
+				throw(mochi_continue);
+						_ -> ok
 		end,
-		if (n > 7) ->
-			throw(mochi_break)
+				case (N > 7) of
+			true ->
+				throw(mochi_break);
+						_ -> ok
 		end,
-		mochi_print(["odd number:", n])
-	end, numbers).
+		mochi_print(["odd number:", N])
+	end, Numbers).
 
 mochi_print(Args) ->
 	Strs = [ mochi_format(A) || A <- Args ],
@@ -42,28 +46,27 @@ mochi_avg(L) when is_list(L) ->
 			F when is_float(F) -> Acc + F;
 			_ -> erlang:error(badarg) end
 		end, 0, L),
-		Sum / length(L)
-	.
-mochi_avg(_) -> erlang:error(badarg).
-
-mochi_foreach(F, L) ->
-	try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
-
-mochi_foreach_loop(_, []) -> ok;
-mochi_foreach_loop(F, [H|T]) ->
-	try F(H) catch
-		throw:mochi_continue -> ok;
-		throw:mochi_break -> throw(mochi_break)
-	end,
-	mochi_foreach_loop(F, T).
-
-mochi_while(Cond, Body) ->
-	case Cond() of
-		true ->
-			try Body() catch
-				throw:mochi_continue -> ok;
-				throw:mochi_break -> ok
-			end,
-			mochi_while(Cond, Body);
-		_ -> ok
-	end.
+		Sum / length(L);
+	mochi_avg(_) -> erlang:error(badarg).
+	
+	mochi_foreach(F, L) ->
+		try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
+	
+	mochi_foreach_loop(_, []) -> ok;
+	mochi_foreach_loop(F, [H|T]) ->
+		try F(H) catch
+			throw:mochi_continue -> ok;
+			throw:mochi_break -> throw(mochi_break)
+		end,
+		mochi_foreach_loop(F, T).
+	
+	mochi_while(Cond, Body) ->
+		case Cond() of
+			true ->
+				try Body() catch
+					throw:mochi_continue -> ok;
+					throw:mochi_break -> ok
+				end,
+				mochi_while(Cond, Body);
+			_ -> ok
+		end.
