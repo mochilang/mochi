@@ -12,11 +12,13 @@ import (
 
 // Compiler translates a Mochi AST into Clojure source code (limited subset).
 type Compiler struct {
-	buf          bytes.Buffer
-	indent       int
-	env          *types.Env
-	mainStmts    []*parser.Statement
-	tempVarCount int
+	buf             bytes.Buffer
+	indent          int
+	env             *types.Env
+	mainStmts       []*parser.Statement
+	tempVarCount    int
+	needIndexString bool
+	needIndexList   bool
 }
 
 // New creates a new Clojure compiler instance.
@@ -26,41 +28,52 @@ func New(env *types.Env) *Compiler {
 
 // Compile generates Clojure code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-        c.writeln("(ns main)")
-        c.writeln("")
-        for _, s := range prog.Statements {
-                switch {
-                case s.Fun != nil:
-                        if err := c.compileFun(s.Fun); err != nil {
-                                return nil, err
-                        }
-                        c.writeln("")
+	c.buf.Reset()
+	c.indent = 0
+	c.mainStmts = nil
+	c.tempVarCount = 0
+	c.needIndexString = false
+	c.needIndexList = false
+
+	for _, s := range prog.Statements {
+		switch {
+		case s.Fun != nil:
+			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		case s.Test != nil:
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
 			c.writeln("")
-                default:
-                        c.mainStmts = append(c.mainStmts, s)
-                }
-        }
-        c.writeln("(defn -main []")
-        c.indent++
-        for _, s := range c.mainStmts {
-                if err := c.compileStmt(s); err != nil {
-                        return nil, err
-                }
-        }
-        for _, s := range prog.Statements {
-                if s.Test != nil {
-                        c.writeln("(" + "test_" + sanitizeName(s.Test.Name) + ")")
-                }
-        }
-        c.indent--
-        c.writeln(")")
-        c.writeln("")
-        c.writeln("(-main)")
-        return c.buf.Bytes(), nil
+		default:
+			c.mainStmts = append(c.mainStmts, s)
+		}
+	}
+	c.writeln("(defn -main []")
+	c.indent++
+	for _, s := range c.mainStmts {
+		if err := c.compileStmt(s); err != nil {
+			return nil, err
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			c.writeln("(" + "test_" + sanitizeName(s.Test.Name) + ")")
+		}
+	}
+	c.indent--
+	c.writeln(")")
+	c.writeln("")
+	c.writeln("(-main)")
+
+	finalBuf := bytes.Buffer{}
+	finalBuf.WriteString("(ns main)\n\n")
+	c.writeRuntime(&finalBuf)
+	finalBuf.Write(c.buf.Bytes())
+
+	return finalBuf.Bytes(), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -592,20 +605,24 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				expr = fmt.Sprintf("(subs %s %s %s)", expr, start, end)
 				if _, ok := t.(types.StringType); ok {
+					expr = fmt.Sprintf("(subs %s %s %s)", expr, start, end)
 					t = types.StringType{}
 				} else if lt, ok := t.(types.ListType); ok {
+					expr = fmt.Sprintf("(subvec %s %s %s)", expr, start, end)
 					t = lt
 				} else {
+					expr = fmt.Sprintf("(subs %s %s %s)", expr, start, end)
 					t = types.AnyType{}
 				}
 			} else {
 				if _, ok := t.(types.StringType); ok {
-					expr = fmt.Sprintf("(subs %s %s (inc %s))", expr, start, start)
+					c.needIndexString = true
+					expr = fmt.Sprintf("(_indexString %s %s)", expr, start)
 					t = types.StringType{}
 				} else {
-					expr = fmt.Sprintf("(nth %s %s)", expr, start)
+					c.needIndexList = true
+					expr = fmt.Sprintf("(_indexList %s %s)", expr, start)
 					if lt, ok := t.(types.ListType); ok {
 						t = lt.Elem
 					} else {
@@ -766,4 +783,26 @@ func (c *Compiler) newTemp() string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
 	return name
+}
+
+func (c *Compiler) writeRuntime(buf *bytes.Buffer) {
+	if c.needIndexString {
+		buf.WriteString(`(defn _indexString [s i]
+  (let [r (vec (seq s))
+        i (if (neg? i) (+ i (count r)) i)]
+    (if (or (< i 0) (>= i (count r)))
+      (throw (ex-info "index out of range" {}))
+      (str (nth r i)))))
+
+`)
+	}
+	if c.needIndexList {
+		buf.WriteString(`(defn _indexList [xs i]
+  (let [idx (if (neg? i) (+ i (count xs)) i)]
+    (if (or (< idx 0) (>= idx (count xs)))
+      (throw (ex-info "index out of range" {}))
+      (nth xs idx))))
+
+`)
+	}
 }
