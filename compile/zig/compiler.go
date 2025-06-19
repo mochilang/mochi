@@ -270,11 +270,22 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 		val = v
 	}
+
+	typ := "i32"
 	if st.Type != nil {
-		c.writeln(fmt.Sprintf("var %s: %s = %s;", name, c.zigType(st.Type), val))
-	} else {
-		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
+		typ = c.zigType(st.Type)
+	} else if st.Value != nil {
+		switch {
+		case c.isStringExpr(st.Value):
+			typ = "[]const u8"
+		case c.isBoolExpr(st.Value):
+			typ = "bool"
+		case isListLiteralExpr(st.Value):
+			typ = "[]const i32"
+		}
 	}
+
+	c.writeln(fmt.Sprintf("var %s: %s = %s;", name, typ, val))
 	return nil
 }
 
@@ -616,6 +627,51 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	if p.Selector != nil && c.env != nil {
 		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	return c.isStringUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isBoolExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	return c.isBoolUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isBoolUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isBoolPostfix(u.Value)
+}
+
+func (c *Compiler) isBoolPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isBoolPrimary(p.Target)
+}
+
+func (c *Compiler) isBoolPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Bool != nil {
+		return true
+	}
+	if p.Selector != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.BoolType); ok {
 				return true
 			}
 		}
