@@ -1,6 +1,6 @@
 <?php
 function convert($s, $numRows) {
-	if (((($numRows <= 1) || $numRows) >= count($s))) {
+	if ((($numRows <= 1) || ($numRows >= (is_array($s) ? count($s) : strlen($s))))) {
 		return $s;
 	}
 	$rows = [];
@@ -16,7 +16,7 @@ function convert($s, $numRows) {
 		if (($curr == 0)) {
 			$step = 1;
 		} else 
-		if ((($curr == $numRows) - 1)) {
+		if (($curr == ($numRows - 1))) {
 			$step = -1;
 		}
 		$curr = ((is_array($curr) && is_array($step)) ? array_merge($curr, $step) : ((is_string($curr) || is_string($step)) ? ($curr . $step) : ($curr + $step)));
@@ -28,3 +28,18 @@ function convert($s, $numRows) {
 	return $result;
 }
 
+function test_example_1() {
+	if (!((convert("PAYPALISHIRING", 3) == "PAHNAPLSIIGYIR"))) { throw new Exception('expect failed'); }
+}
+
+function test_example_2() {
+	if (!((convert("PAYPALISHIRING", 4) == "PINALSIGYAHRPI"))) { throw new Exception('expect failed'); }
+}
+
+function test_single_row() {
+	if (!((convert("A", 1) == "A"))) { throw new Exception('expect failed'); }
+}
+
+test_example_1();
+test_example_2();
+test_single_row();
