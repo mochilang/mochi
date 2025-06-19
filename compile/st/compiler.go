@@ -330,11 +330,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		switch op.Op {
 		case "+":
 			if leftList || rlist {
-				expr = fmt.Sprintf("(%s , %s)", expr, right)
+				expr = fmt.Sprintf("((%s) , (%s))", expr, right)
 				leftList = true
 				leftStr = false
 			} else if leftStr || rstr {
-				expr = fmt.Sprintf("(%s , %s)", expr, right)
+				expr = fmt.Sprintf("((%s) , (%s))", expr, right)
 				leftStr = true
 				leftList = false
 			} else {
@@ -420,7 +420,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if isMapPostfix(p, c.env) {
+				targetOnly := &parser.PostfixExpr{Target: p.Target}
+				if isMapPostfix(targetOnly, c.env) {
 					expr = fmt.Sprintf("(%s at: %s)", expr, idx)
 				} else {
 					expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
@@ -480,7 +481,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("print expects 1 arg")
 		}
-		return fmt.Sprintf("%s displayOn: Transcript. Transcript cr", args[0]), nil
+		return fmt.Sprintf("(%s) displayOn: Transcript. Transcript cr", args[0]), nil
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
@@ -509,7 +510,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				parts = append(parts, fmt.Sprintf("%s: %s", p, arg))
 			}
 		}
-		return strings.Join(parts, " "), nil
+		return "(" + strings.Join(parts, " ") + ")", nil
 	}
 }
 

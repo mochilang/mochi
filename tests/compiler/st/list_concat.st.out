@@ -1,7 +1,4 @@
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
 !!
-1 to: 4 - 1 do: [:i |
-	(i) displayOn: Transcript. Transcript cr.
-]
-.
+(((Array with: 1 with: 2) , (Array with: 3 with: 4))) displayOn: Transcript. Transcript cr.

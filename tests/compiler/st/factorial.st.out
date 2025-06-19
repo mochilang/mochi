@@ -1,0 +1,15 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'mochi'!
+factorial: n
+	((n <= 1)) ifTrue: [
+		^ 1
+	]
+	.
+	^ (n * (Main factorial: ((n - 1))))
+!
+
+!!
+((Main factorial: (0))) displayOn: Transcript. Transcript cr.
+((Main factorial: (1))) displayOn: Transcript. Transcript cr.
+((Main factorial: (5))) displayOn: Transcript. Transcript cr.

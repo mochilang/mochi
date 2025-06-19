@@ -3,7 +3,7 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 !!
 i := 0.
 [(i < 3)] whileTrue: [
-	i displayOn: Transcript. Transcript cr.
+	(i) displayOn: Transcript. Transcript cr.
 	i := (i + 1).
 ]
 .
