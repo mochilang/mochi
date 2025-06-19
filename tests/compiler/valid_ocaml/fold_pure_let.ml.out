@@ -1,0 +1,9 @@
+exception Return_0 of int
+let rec sum n =
+  try
+    raise (Return_0 (n * (n + 1) / 2))
+  with Return_0 v -> v
+
+let n = 10;;
+print_endline (string_of_int (sum n));;
+print_endline (string_of_int (n));;

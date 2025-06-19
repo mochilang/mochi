@@ -226,7 +226,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("raise (%s %s)", ex, val))
+		c.writeln(fmt.Sprintf("raise (%s (%s))", ex, val))
 	case s.For != nil:
 		return c.compileFor(s.For, ex)
 	case s.If != nil:
@@ -278,8 +278,12 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 		}
 		c.writeln(fmt.Sprintf("%s (fun %s ->", iter, sanitizeName(f.Name)))
 		c.indent++
+		bodyEx := ex
+		if bodyEx == "" {
+			bodyEx = "loop"
+		}
 		for _, st := range f.Body {
-			if err := c.compileStmt(st, ex); err != nil {
+			if err := c.compileStmt(st, bodyEx); err != nil {
 				return err
 			}
 		}

@@ -5,11 +5,11 @@ let rec twoSum nums target =
     for i = 0 to n - 1 do
       for j = i + 1 to n - 1 do
         if (List.nth nums i) + (List.nth nums j) = target then begin
-          raise (Return_0 [i; j])
+          raise (Return_0 ([i; j]))
         end;
       done;
     done;
-    raise (Return_0 [-1; -1])
+    raise (Return_0 ([-1; -1]))
   with Return_0 v -> v
 
 let result = twoSum [2; 7; 11; 15] 9;;

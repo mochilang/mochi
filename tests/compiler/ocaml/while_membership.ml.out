@@ -1,6 +1,6 @@
 let set = ref (let tbl = Hashtbl.create 0 in  tbl);;
 List.iter (fun n ->
-  Hashtbl.replace !set n true;;
+  Hashtbl.replace !set n true;
 ) [1; 2; 3];;
 let i = ref 1;;
 let count = ref 0;;
