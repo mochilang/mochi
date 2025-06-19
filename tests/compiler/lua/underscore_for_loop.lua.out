@@ -7,46 +7,36 @@ function __print(...)
 	io.write('\n')
 end
 
-function __iter(obj)
-	if type(obj) == 'table' then
-		if obj[1] ~= nil or #obj > 0 then
-			local i = 0
-			local n = #obj
-			return function()
-				i = i + 1
-				if i <= n then return i, obj[i] end
-			end
-		else
-			return pairs(obj)
-		end
-	elseif type(obj) == 'string' then
-		local i = 0
-		local n = #obj
-		return function()
-			i = i + 1
-			if i <= n then return i, string.sub(obj, i, i) end
-		end
+function __add(a, b)
+	if type(a) == 'table' and type(b) == 'table' then
+		local out = {}
+		for i = 1, #a do out[#out+1] = a[i] end
+		for i = 1, #b do out[#out+1] = b[i] end
+		return out
+	elseif type(a) == 'string' or type(b) == 'string' then
+		return tostring(a) .. tostring(b)
 	else
-		return function() return nil end
+		return a + b
 	end
 end
 
 local c = 0
 for _ = 0, (2)-1 do
-	c = (c + 1)
+	c = __add(c, 1)
 	::__continue0::
 end
-for _, _ in __iter({1, 2}) do
-	c = (c + 1)
+for _ in ipairs({1, 2}) do
+	c = __add(c, 1)
 	::__continue1::
 end
-for _, _ in __iter("ab") do
-	c = (c + 1)
+local _s0 = "ab"
+for _i0 = 1, #_s0 do
+	c = __add(c, 1)
 	::__continue2::
 end
 local m = {["x"]=1, ["y"]=2}
-for _, _ in __iter(m) do
-	c = (c + 1)
+for _ in pairs(m) do
+	c = __add(c, 1)
 	::__continue3::
 end
 __print(c)
