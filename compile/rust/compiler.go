@@ -921,8 +921,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch call.Func {
 	case "print":
-		if len(args) == 1 {
-			return fmt.Sprintf("println!(\"{}\", %s)", argStr), nil
+		if len(args) == 1 && c.env != nil {
+			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+				return fmt.Sprintf("println!(\"[{}]\", %s.iter().map(|v| format!(\"{}\", v)).collect::<Vec<_>>().join(\" \"))", args[0]), nil
+			}
 		}
 		fmtParts := make([]string, len(args))
 		for i := range args {
