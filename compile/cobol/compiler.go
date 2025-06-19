@@ -48,7 +48,7 @@ func (c *Compiler) newTemp() string {
 
 func isSimpleExpr(n *ast.Node) bool {
 	switch n.Kind {
-	case "int", "float", "selector":
+	case "int", "float", "selector", "string", "bool":
 		return true
 	case "unary":
 		if n.Value == "-" {
@@ -203,6 +203,14 @@ func (c *Compiler) expr(n *ast.Node) string {
 		}
 	case "float":
 		return fmt.Sprintf("%v", n.Value)
+	case "string":
+		s := strings.ReplaceAll(n.Value.(string), "\"", "\"\"")
+		return fmt.Sprintf("\"%s\"", s)
+	case "bool":
+		if n.Value.(bool) {
+			return "\"true\""
+		}
+		return "\"false\""
 	case "selector":
 		return strings.ToUpper(n.Value.(string))
 	case "binary":
