@@ -30,11 +30,17 @@ bool isMatch(string s, string p){
 		while (j2 >= 0) {
 			bool first = false;
 			if (i2 < m) {
-				if ((_indexString(p, j2) == _indexString(s, i2)) || (_indexString(p, j2) == ".")) {
+				if ((_indexString(p, j2) == _indexString(s, i2)) || (_indexString(p, j2) == string("."))) {
 					first = true;
 				}
 			}
-			if (j2 + 1 < n && _indexString(p, j2 + 1) == "*") {
+			bool star = false;
+			if (j2 + 1 < n) {
+				if (_indexString(p, j2 + 1) == string("*")) {
+					star = true;
+				}
+			}
+			if (star) {
 				if (dp[i2][j2 + 2] || (first && dp[i2 + 1][j2])) {
 					dp[i2][j2] = true;
 				} else {

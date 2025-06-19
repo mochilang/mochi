@@ -8,13 +8,13 @@ string convert(string s, int numRows){
 	vector<string> rows = vector<string>{};
 	int i = 0;
 	while (i < numRows) {
-		rows = ([&](vector<string> a, vector<string> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(rows, vector<string>{""});
+		rows = ([&](vector<string> a, vector<string> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(rows, vector<string>{string("")});
 		i = i + 1;
 	}
 	int curr = 0;
 	int step = 1;
 	for (char ch : s) {
-		rows[curr] = rows[curr] + ch;
+		rows[curr] = rows[curr] + string(1, ch);
 		if (curr == 0) {
 			step = 1;
 		} else 		if (curr == numRows - 1) {
@@ -22,9 +22,9 @@ string convert(string s, int numRows){
 		}
 		curr = curr + step;
 	}
-	string result = "";
+	string result = string("");
 	for (const string& row : rows) {
-		result = result + row;
+		result = result + string(row);
 	}
 	return result;
 }
