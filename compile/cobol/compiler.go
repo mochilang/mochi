@@ -107,9 +107,15 @@ func (c *Compiler) compileNode(n *ast.Node) {
 
 	case "let":
 		name := strings.ToUpper(n.Value.(string))
-		if len(n.Children) == 1 && n.Children[0].Kind == "call" && n.Children[0].Value == "twoSum" {
-			c.compileTwoSumCall(name, n.Children[0])
-			return
+		if len(n.Children) == 1 && n.Children[0].Kind == "call" {
+			switch n.Children[0].Value {
+			case "twoSum":
+				c.compileTwoSumCall(name, n.Children[0])
+				return
+			case "addTwoNumbers":
+				c.compileAddTwoNumbersCall(name, n.Children[0])
+				return
+			}
 		}
 
 	case "var":
@@ -241,6 +247,73 @@ func (c *Compiler) compileTwoSumCall(result string, call *ast.Node) {
 	c.writeln("END-IF")
 	c.indent--
 	c.writeln("END-PERFORM")
+	c.indent--
+	c.writeln("END-PERFORM")
+}
+
+// compileAddTwoNumbersCall expands a call to addTwoNumbers into inline COBOL.
+func (c *Compiler) compileAddTwoNumbersCall(result string, call *ast.Node) {
+	l1 := extractIntList(call.Children[0])
+	l2 := extractIntList(call.Children[1])
+
+	arr1 := "L1"
+	arr2 := "L2"
+	resName := result
+
+	maxLen := len(l1)
+	if len(l2) > maxLen {
+		maxLen = len(l2)
+	}
+
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", arr1, len(l1)))
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", arr2, len(l2)))
+	c.declare("01 LEN1 PIC 9.")
+	c.declare("01 LEN2 PIC 9.")
+	c.declare("01 I PIC 9.")
+	c.declare("01 J PIC 9.")
+	c.declare("01 CARRY PIC 9.")
+	c.declare("01 XVAL PIC 9.")
+	c.declare("01 YVAL PIC 9.")
+	c.declare("01 SUMV PIC 99.")
+	c.declare("01 DIGITV PIC 9.")
+	c.declare("01 RLEN PIC 9.")
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", resName, maxLen+1))
+
+	for i, v := range l1 {
+		c.writeln(fmt.Sprintf("    MOVE %d TO %s(%d)", v, arr1, i+1))
+	}
+	for i, v := range l2 {
+		c.writeln(fmt.Sprintf("    MOVE %d TO %s(%d)", v, arr2, i+1))
+	}
+
+	c.writeln(fmt.Sprintf("    MOVE %d TO LEN1", len(l1)))
+	c.writeln(fmt.Sprintf("    MOVE %d TO LEN2", len(l2)))
+	c.writeln("    MOVE 0 TO I")
+	c.writeln("    MOVE 0 TO J")
+	c.writeln("    MOVE 0 TO CARRY")
+	c.writeln("    MOVE 0 TO RLEN")
+
+	c.writeln("    PERFORM UNTIL I >= LEN1 AND J >= LEN2 AND CARRY = 0")
+	c.indent++
+	c.writeln("MOVE 0 TO XVAL")
+	c.writeln("IF I < LEN1")
+	c.indent++
+	c.writeln(fmt.Sprintf("MOVE %s(I + 1) TO XVAL", arr1))
+	c.writeln("ADD 1 TO I")
+	c.indent--
+	c.writeln("END-IF")
+	c.writeln("MOVE 0 TO YVAL")
+	c.writeln("IF J < LEN2")
+	c.indent++
+	c.writeln(fmt.Sprintf("MOVE %s(J + 1) TO YVAL", arr2))
+	c.writeln("ADD 1 TO J")
+	c.indent--
+	c.writeln("END-IF")
+	c.writeln("COMPUTE SUMV = XVAL + YVAL + CARRY")
+	c.writeln("COMPUTE CARRY = SUMV / 10")
+	c.writeln("COMPUTE DIGITV = SUMV - (CARRY * 10)")
+	c.writeln("ADD 1 TO RLEN")
+	c.writeln(fmt.Sprintf("MOVE DIGITV TO %s(RLEN)", resName))
 	c.indent--
 	c.writeln("END-PERFORM")
 }
