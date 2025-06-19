@@ -1,0 +1,20 @@
+sealed interface Tree
+data class Leaf() : Tree
+data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
+
+fun value_of_root(t: Tree) : Int {
+        return run {
+                val _t = t
+                when {
+                        _t is Node -> {
+                                val v = _t.value
+                                v
+                        }
+                        else -> 0
+                }
+        }
+}
+
+fun main() {
+        println(value_of_root(Node(left = Leaf(), value = 5, right = Leaf())))
+}
