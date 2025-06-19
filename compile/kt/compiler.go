@@ -40,17 +40,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		c.mainStmts = append(c.mainStmts, s)
 	}
-	if len(c.mainStmts) > 0 {
-		c.writeln("fun main() {")
-		c.indent++
-		for _, s := range c.mainStmts {
-			if err := c.compileStmt(s); err != nil {
-				return nil, err
-			}
+	c.writeln("fun main() {")
+	c.indent++
+	for _, s := range c.mainStmts {
+		if err := c.compileStmt(s); err != nil {
+			return nil, err
 		}
-		c.indent--
-		c.writeln("}")
 	}
+	c.indent--
+	c.writeln("}")
 	c.writeln("")
 	return c.buf.Bytes(), nil
 }
