@@ -175,22 +175,15 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		value = " = " + v
 	}
 	typ := ""
-	if st.Type != nil {
-		typ = ": " + scalaType(c.resolveTypeRef(st.Type))
-	} else if c.env != nil {
-		if t, err := c.env.GetVar(st.Name); err == nil {
-			typ = ": " + scalaType(t)
-		}
-	}
 	if st.Value != nil && emptyListExpr(st.Value) {
 		if typ == "" {
 			if lt, ok := c.retType.(types.ListType); ok {
 				typ = ": " + scalaType(lt)
 			} else {
-				typ = ": scala.collection.mutable.ArrayBuffer[String]"
+				typ = ": List[String]"
 			}
 		}
-		value = " = scala.collection.mutable.ArrayBuffer()"
+		value = " = List()"
 	}
 	c.writeln(fmt.Sprintf("var %s%s%s", sanitizeName(st.Name), typ, value))
 	return nil
@@ -486,7 +479,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
-		return "scala.collection.mutable.ArrayBuffer(" + strings.Join(elems, ", ") + ")", nil
+		return "List(" + strings.Join(elems, ", ") + ")", nil
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -494,10 +487,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if lit := it.Key.Binary.Left.Value.Target.Lit; lit != nil && lit.Str != nil && len(*lit.Str) == 1 {
-				ch := strings.ReplaceAll(*lit.Str, "'", "\\'")
-				k = "'" + ch + "'"
-			}
+			// keep keys as regular strings
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
@@ -545,10 +535,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
 		}
-		if isStringExpr(call.Args[0], c.env) {
-			return fmt.Sprintf("%s.length", args[0]), nil
+		if isMapExpr(call.Args[0], c.env) {
+			return fmt.Sprintf("%s.size", args[0]), nil
 		}
-		return fmt.Sprintf("%s.size", args[0]), nil
+		return fmt.Sprintf("%s.length", args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
@@ -669,7 +659,7 @@ func scalaType(t types.Type) string {
 	case types.StringType:
 		return "String"
 	case types.ListType:
-		return "scala.collection.mutable.ArrayBuffer[" + scalaType(tt.Elem) + "]"
+		return "List[" + scalaType(tt.Elem) + "]"
 	case types.MapType:
 		return "scala.collection.mutable.Map[" + scalaType(tt.Key) + ", " + scalaType(tt.Value) + "]"
 	case types.FuncType:

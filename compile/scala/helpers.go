@@ -112,3 +112,29 @@ func isStringExpr(e *parser.Expr, env *types.Env) bool {
 	}
 	return false
 }
+
+// isMapExpr reports whether e is a map literal or an identifier with
+// a map type according to env. It is used to decide between `.length` and
+// `.size` for builtin functions like len().
+func isMapExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil {
+		return false
+	}
+	if name, ok := identName(e); ok && env != nil {
+		if t, err := env.GetVar(name); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			p := u.Value
+			if len(p.Ops) == 0 && p.Target.Map != nil {
+				return true
+			}
+		}
+	}
+	return false
+}
