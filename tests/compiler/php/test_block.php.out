@@ -1,0 +1,46 @@
+<?php
+function formatDuration($d) {
+	if ($d < 1e-6) { return sprintf("%dns", $d * 1e9); }
+	if ($d < 0.001) { return sprintf("%.1fus", $d * 1e6); }
+	if ($d < 1) { return sprintf("%.1fms", $d * 1e3); }
+	return sprintf("%.2fs", $d);
+}
+
+function printTestStart($name) {
+	printf("   test %-30s ...", $name);
+}
+
+function printTestPass($d) {
+	printf(" ok (%s)\n", formatDuration($d));
+}
+
+function printTestFail($err, $d) {
+	printf(" fail %s (%s)\n", $err, formatDuration($d));
+}
+
+function test_addition_works() {
+	$x = ((is_array(1) && is_array(2)) ? array_merge(1, 2) : ((is_string(1) || is_string(2)) ? (1 . 2) : (1 + 2)));
+	if (!(($x == 3))) { throw new Exception('expect failed'); }
+}
+
+echo "ok", PHP_EOL;
+$failures = 0;
+{
+	printTestStart("addition works");
+	$start = microtime(true);
+	$failed = null;
+	try {
+		test_addition_works();
+	} catch (\Throwable $e) {
+		$failed = $e->getMessage();
+	}
+	if ($failed !== null) {
+		$failures++;
+		printTestFail($failed, microtime(true) - $start);
+	} else {
+		printTestPass(microtime(true) - $start);
+	}
+}
+if ($failures > 0) {
+	printf("\n[FAIL] %d test(s) failed.\n", $failures);
+}

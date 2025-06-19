@@ -27,6 +27,47 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.writeln("<?php")
 
+	hasTests := false
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			hasTests = true
+			break
+		}
+	}
+
+	if hasTests {
+		c.writeln("function formatDuration($d) {")
+		c.indent++
+		c.writeln("if ($d < 1e-6) { return sprintf(\"%dns\", $d * 1e9); }")
+		c.writeln("if ($d < 0.001) { return sprintf(\"%.1fus\", $d * 1e6); }")
+		c.writeln("if ($d < 1) { return sprintf(\"%.1fms\", $d * 1e3); }")
+		c.writeln("return sprintf(\"%.2fs\", $d);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+
+		c.writeln("function printTestStart($name) {")
+		c.indent++
+		c.writeln("printf(\"   test %-30s ...\", $name);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+
+		c.writeln("function printTestPass($d) {")
+		c.indent++
+		c.writeln("printf(\" ok (%s)\\n\", formatDuration($d));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+
+		c.writeln("function printTestFail($err, $d) {")
+		c.indent++
+		c.writeln("printf(\" fail %s (%s)\\n\", $err, formatDuration($d));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+
 	// functions first
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -58,11 +99,50 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	// run tests
+	if hasTests {
+		c.writeln("$failures = 0;")
+	}
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(name + "();")
+			if hasTests {
+				c.writeln("{")
+				c.indent++
+				c.writeln(fmt.Sprintf("printTestStart(%q);", s.Test.Name))
+				c.writeln("$start = microtime(true);")
+				c.writeln("$failed = null;")
+				c.writeln("try {")
+				c.indent++
+				c.writeln(name + "();")
+				c.indent--
+				c.writeln("} catch (\\Throwable $e) {")
+				c.indent++
+				c.writeln("$failed = $e->getMessage();")
+				c.indent--
+				c.writeln("}")
+				c.writeln("if ($failed !== null) {")
+				c.indent++
+				c.writeln("$failures++;")
+				c.writeln("printTestFail($failed, microtime(true) - $start);")
+				c.indent--
+				c.writeln("} else {")
+				c.indent++
+				c.writeln("printTestPass(microtime(true) - $start);")
+				c.indent--
+				c.writeln("}")
+				c.indent--
+				c.writeln("}")
+			} else {
+				c.writeln(name + "();")
+			}
 		}
+	}
+	if hasTests {
+		c.writeln("if ($failures > 0) {")
+		c.indent++
+		c.writeln("printf(\"\\n[FAIL] %d test(s) failed.\\n\", $failures);")
+		c.indent--
+		c.writeln("}")
 	}
 	return c.buf.Bytes(), nil
 }
