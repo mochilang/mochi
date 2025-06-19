@@ -928,7 +928,11 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int)
 	case l.Float != nil:
-		return strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		s := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.ContainsAny(s, ".eE") {
+			s += ".0"
+		}
+		return s
 	case l.Bool != nil:
 		if *l.Bool {
 			return "1"
