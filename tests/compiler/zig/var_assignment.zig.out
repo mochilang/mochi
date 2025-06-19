@@ -1,0 +1,7 @@
+const std = @import("std");
+
+pub fn main() void {
+	var x = @as(i32,@intCast(1));
+	x = @as(i32,@intCast(2));
+	std.debug.print("{any}\n", .{x});
+}
