@@ -2,9 +2,10 @@ program main;
 {$mode objfpc}
 uses SysUtils, fgl;
 
-type TIntArray = array of integer;
+type
+	generic TArray<T> = array of T;
 
-function twoSum(nums: TIntArray; target: integer): TIntArray;
+function twoSum(nums: specialize TArray<integer>; target: integer): specialize TArray<integer>;
 var
 	i: integer;
 	j: integer;
@@ -17,20 +18,20 @@ begin
 		begin
 			if (nums[i] + nums[j] = target) then
 			begin
-				result := TIntArray([i, j]);
+				result := specialize TArray<integer>([i, j]);
 				exit;
 			end;
 		end;
 	end;
-	result := TIntArray([-1, -1]);
+	result := specialize TArray<integer>([-1, -1]);
 	exit;
 end;
 
 var
-	_result: TIntArray;
+	_result: specialize TArray<integer>;
 
 begin
-	_result := twoSum(TIntArray([2, 7, 11, 15]), 9);
+	_result := twoSum(specialize TArray<integer>([2, 7, 11, 15]), 9);
 	writeln(_result[0]);
 	writeln(_result[1]);
 end.

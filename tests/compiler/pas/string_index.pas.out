@@ -6,11 +6,9 @@ type
 	generic TArray<T> = array of T;
 
 var
-	i: integer;
+	text: string;
 
 begin
-	for i := 1 to 4 - 1 do
-	begin
-		writeln(i);
-	end;
+	text := 'hello';
+	writeln(text[1 + 1]);
 end.
