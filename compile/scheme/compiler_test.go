@@ -90,6 +90,26 @@ func TestSchemeCompiler_LeetCode6(t *testing.T) {
 	runLeetExample(t, 6)
 }
 
+// TestSchemeCompiler_LeetCode7 compiles the reverse-integer example and runs it.
+func TestSchemeCompiler_LeetCode7(t *testing.T) {
+	runLeetExample(t, 7)
+}
+
+// TestSchemeCompiler_LeetCode8 compiles the string-to-integer example and runs it.
+func TestSchemeCompiler_LeetCode8(t *testing.T) {
+	runLeetExample(t, 8)
+}
+
+// TestSchemeCompiler_LeetCode9 compiles the palindrome-number example and runs it.
+func TestSchemeCompiler_LeetCode9(t *testing.T) {
+	runLeetExample(t, 9)
+}
+
+// TestSchemeCompiler_LeetCode10 compiles the regular-expression-matching example and runs it.
+func TestSchemeCompiler_LeetCode10(t *testing.T) {
+	runLeetExample(t, 10)
+}
+
 func TestSchemeCompiler_SubsetPrograms(t *testing.T) {
 	if _, err := schemecode.EnsureScheme(); err != nil {
 		t.Skipf("chibi-scheme not installed: %v", err)
