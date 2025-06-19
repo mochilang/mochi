@@ -135,6 +135,7 @@ func TestRBCompiler_ValidPrograms(t *testing.T) {
 		"generate_echo":      true,
 		"generate_embedding": true,
 		"join":               true,
+		"test_block":         true,
 		"stream_on_emit":     true,
 	}
 	for _, src := range files {
