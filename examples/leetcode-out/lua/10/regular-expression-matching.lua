@@ -24,23 +24,6 @@ function __eq(a, b)
 	return true
 end
 
-function __contains(container, item)
-	if type(container) == 'table' then
-		if container[1] ~= nil or #container > 0 then
-			for _, v in ipairs(container) do
-				if v == item then return true end
-			end
-			return false
-		else
-			return container[item] ~= nil
-		end
-	elseif type(container) == 'string' then
-		return string.find(container, item, 1, true) ~= nil
-	else
-		return false
-	end
-end
-
 function __index(obj, i)
 	if type(obj) == 'string' then
 		return __indexString(obj, i)
@@ -69,43 +52,51 @@ end
 function isMatch(s, p)
 	local m = #s
 	local n = #p
-	local memo = {}
-	local function dfs(i, j)
-		local key = __add((i * (__add(n, 1))), j)
-		if __contains(memo, key) then
-			return __index(memo, key)
+	local dp = {}
+	local i = 0
+	while (i <= m) do
+		local row = {}
+		local j = 0
+		while (j <= n) do
+			row = __add(row, {false})
+			j = __add(j, 1)
+			::__continue1::
 		end
-		if __eq(j, n) then
-			return __eq(i, m)
-		end
-		local first = false
-		if (i < m) then
-			if ((__eq(__index(p, j), __index(s, i))) or (__eq(__index(p, j), "."))) then
-				first = true
+		dp = __add(dp, {row})
+		i = __add(i, 1)
+		::__continue0::
+	end
+	dp[(m)+1][(n)+1] = true
+	local i2 = m
+	while (i2 >= 0) do
+		local j2 = (n - 1)
+		while (j2 >= 0) do
+			local first = false
+			if (i2 < m) then
+				if ((__eq(__index(p, j2), __index(s, i2))) or (__eq(__index(p, j2), "."))) then
+					first = true
+				end
 			end
-		end
-		local ans = false
-		if (__add(j, 1) < n) then
-			if __eq(__index(p, __add(j, 1)), "*") then
-				if dfs(i, __add(j, 2)) then
-					ans = true
-				elseif (first and dfs(__add(i, 1), j)) then
-					ans = true
+			if ((__add(j2, 1) < n) and __eq(__index(p, __add(j2, 1)), "*")) then
+				if (__index(__index(dp, i2), __add(j2, 2)) or ((first and __index(__index(dp, __add(i2, 1)), j2)))) then
+					dp[(i2)+1][(j2)+1] = true
+				else
+					dp[(i2)+1][(j2)+1] = false
 				end
 			else
-				if (first and dfs(__add(i, 1), __add(j, 1))) then
-					ans = true
+				if (first and __index(__index(dp, __add(i2, 1)), __add(j2, 1))) then
+					dp[(i2)+1][(j2)+1] = true
+				else
+					dp[(i2)+1][(j2)+1] = false
 				end
 			end
-		else
-			if (first and dfs(__add(i, 1), __add(j, 1))) then
-				ans = true
-			end
+			j2 = (j2 - 1)
+			::__continue3::
 		end
-		memo[(key)+1] = ans
-		return ans
+		i2 = (i2 - 1)
+		::__continue2::
 	end
-	return dfs(0, 0)
+	return __index(__index(dp, 0), 0)
 end
 
 function test_example_1()
