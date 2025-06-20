@@ -1,5 +1,5 @@
 <?php
-function addTwoNumbers($l1, $l2) {
+function mochi_addTwoNumbers($l1, $l2) {
 	$i = 0;
 	$j = 0;
 	$carry = 0;
@@ -23,18 +23,18 @@ function addTwoNumbers($l1, $l2) {
 	return $result;
 }
 
-function test_example_1() {
-	if (!((addTwoNumbers([2, 4, 3], [5, 6, 4]) == [7, 0, 8]))) { throw new Exception('expect failed'); }
+function mochi_test_example_1() {
+	if (!((mochi_addTwoNumbers([2, 4, 3], [5, 6, 4]) == [7, 0, 8]))) { throw new Exception('expect failed'); }
 }
 
-function test_example_2() {
-	if (!((addTwoNumbers([0], [0]) == [0]))) { throw new Exception('expect failed'); }
+function mochi_test_example_2() {
+	if (!((mochi_addTwoNumbers([0], [0]) == [0]))) { throw new Exception('expect failed'); }
 }
 
-function test_example_3() {
-	if (!((addTwoNumbers([9, 9, 9, 9, 9, 9, 9], [9, 9, 9, 9]) == [8, 9, 9, 9, 0, 0, 0, 1]))) { throw new Exception('expect failed'); }
+function mochi_test_example_3() {
+	if (!((mochi_addTwoNumbers([9, 9, 9, 9, 9, 9, 9], [9, 9, 9, 9]) == [8, 9, 9, 9, 0, 0, 0, 1]))) { throw new Exception('expect failed'); }
 }
 
-test_example_1();
-test_example_2();
-test_example_3();
+mochi_test_example_1();
+mochi_test_example_2();
+mochi_test_example_3();

@@ -1,5 +1,5 @@
 <?php
-function convert($s, $numRows) {
+function mochi_convert($s, $numRows) {
 	if ((($numRows <= 1) || ($numRows >= (is_array($s) ? count($s) : strlen($s))))) {
 		return $s;
 	}
@@ -28,18 +28,18 @@ function convert($s, $numRows) {
 	return $result;
 }
 
-function test_example_1() {
-	if (!((convert("PAYPALISHIRING", 3) == "PAHNAPLSIIGYIR"))) { throw new Exception('expect failed'); }
+function mochi_test_example_1() {
+	if (!((mochi_convert("PAYPALISHIRING", 3) == "PAHNAPLSIIGYIR"))) { throw new Exception('expect failed'); }
 }
 
-function test_example_2() {
-	if (!((convert("PAYPALISHIRING", 4) == "PINALSIGYAHRPI"))) { throw new Exception('expect failed'); }
+function mochi_test_example_2() {
+	if (!((mochi_convert("PAYPALISHIRING", 4) == "PINALSIGYAHRPI"))) { throw new Exception('expect failed'); }
 }
 
-function test_single_row() {
-	if (!((convert("A", 1) == "A"))) { throw new Exception('expect failed'); }
+function mochi_test_single_row() {
+	if (!((mochi_convert("A", 1) == "A"))) { throw new Exception('expect failed'); }
 }
 
-test_example_1();
-test_example_2();
-test_single_row();
+mochi_test_example_1();
+mochi_test_example_2();
+mochi_test_single_row();

@@ -1,5 +1,5 @@
 <?php
-function lengthOfLongestSubstring($s) {
+function mochi_lengthOfLongestSubstring($s) {
 	$n = (is_array($s) ? count($s) : strlen($s));
 	$start = 0;
 	$best = 0;
@@ -22,23 +22,23 @@ function lengthOfLongestSubstring($s) {
 	return $best;
 }
 
-function test_example_1() {
-	if (!((lengthOfLongestSubstring("abcabcbb") == 3))) { throw new Exception('expect failed'); }
+function mochi_test_example_1() {
+	if (!((mochi_lengthOfLongestSubstring("abcabcbb") == 3))) { throw new Exception('expect failed'); }
 }
 
-function test_example_2() {
-	if (!((lengthOfLongestSubstring("bbbbb") == 1))) { throw new Exception('expect failed'); }
+function mochi_test_example_2() {
+	if (!((mochi_lengthOfLongestSubstring("bbbbb") == 1))) { throw new Exception('expect failed'); }
 }
 
-function test_example_3() {
-	if (!((lengthOfLongestSubstring("pwwkew") == 3))) { throw new Exception('expect failed'); }
+function mochi_test_example_3() {
+	if (!((mochi_lengthOfLongestSubstring("pwwkew") == 3))) { throw new Exception('expect failed'); }
 }
 
-function test_empty_string() {
-	if (!((lengthOfLongestSubstring("") == 0))) { throw new Exception('expect failed'); }
+function mochi_test_empty_string() {
+	if (!((mochi_lengthOfLongestSubstring("") == 0))) { throw new Exception('expect failed'); }
 }
 
-test_example_1();
-test_example_2();
-test_example_3();
-test_empty_string();
+mochi_test_example_1();
+mochi_test_example_2();
+mochi_test_example_3();
+mochi_test_empty_string();

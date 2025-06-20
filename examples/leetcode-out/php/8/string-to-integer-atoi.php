@@ -1,5 +1,5 @@
 <?php
-function digit($ch) {
+function mochi_digit($ch) {
 	if (($ch == "0")) {
 		return 0;
 	}
@@ -33,7 +33,7 @@ function digit($ch) {
 	return -1;
 }
 
-function myAtoi($s) {
+function mochi_myAtoi($s) {
 	$i = 0;
 	$n = (is_array($s) ? count($s) : strlen($s));
 	while ((($i < $n) && ($s[$i] == " "[0]))) {
@@ -49,7 +49,7 @@ function myAtoi($s) {
 	$result = 0;
 	while (($i < $n)) {
 		$ch = (is_array($s) ? array_slice($s, $i, (((is_array($i) && is_array(1)) ? array_merge($i, 1) : ((is_string($i) || is_string(1)) ? ($i . 1) : ($i + 1)))) - ($i)) : substr($s, $i, (((is_array($i) && is_array(1)) ? array_merge($i, 1) : ((is_string($i) || is_string(1)) ? ($i . 1) : ($i + 1)))) - ($i)));
-		$d = digit($ch);
+		$d = mochi_digit($ch);
 		if (($d < 0)) {
 			break;
 		}
@@ -66,28 +66,28 @@ function myAtoi($s) {
 	return $result;
 }
 
-function test_example_1() {
-	if (!((myAtoi("42") == 42))) { throw new Exception('expect failed'); }
+function mochi_test_example_1() {
+	if (!((mochi_myAtoi("42") == 42))) { throw new Exception('expect failed'); }
 }
 
-function test_example_2() {
-	if (!((myAtoi("   -42") == (-42)))) { throw new Exception('expect failed'); }
+function mochi_test_example_2() {
+	if (!((mochi_myAtoi("   -42") == (-42)))) { throw new Exception('expect failed'); }
 }
 
-function test_example_3() {
-	if (!((myAtoi("4193 with words") == 4193))) { throw new Exception('expect failed'); }
+function mochi_test_example_3() {
+	if (!((mochi_myAtoi("4193 with words") == 4193))) { throw new Exception('expect failed'); }
 }
 
-function test_example_4() {
-	if (!((myAtoi("words and 987") == 0))) { throw new Exception('expect failed'); }
+function mochi_test_example_4() {
+	if (!((mochi_myAtoi("words and 987") == 0))) { throw new Exception('expect failed'); }
 }
 
-function test_example_5() {
-	if (!((myAtoi("-91283472332") == (-2147483648)))) { throw new Exception('expect failed'); }
+function mochi_test_example_5() {
+	if (!((mochi_myAtoi("-91283472332") == (-2147483648)))) { throw new Exception('expect failed'); }
 }
 
-test_example_1();
-test_example_2();
-test_example_3();
-test_example_4();
-test_example_5();
+mochi_test_example_1();
+mochi_test_example_2();
+mochi_test_example_3();
+mochi_test_example_4();
+mochi_test_example_5();

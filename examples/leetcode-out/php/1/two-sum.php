@@ -1,5 +1,5 @@
 <?php
-function twoSum($nums, $target) {
+function mochi_twoSum($nums, $target) {
 	$n = (is_array($nums) ? count($nums) : strlen($nums));
 	for ($i = 0; $i < $n; $i++) {
 		for ($j = ((is_array($i) && is_array(1)) ? array_merge($i, 1) : ((is_string($i) || is_string(1)) ? ($i . 1) : ($i + 1))); $j < $n; $j++) {
@@ -11,6 +11,6 @@ function twoSum($nums, $target) {
 	return [-1, -1];
 }
 
-$result = twoSum([2, 7, 11, 15], 9);
+$result = mochi_twoSum([2, 7, 11, 15], 9);
 echo $result[0], PHP_EOL;
 echo $result[1], PHP_EOL;
