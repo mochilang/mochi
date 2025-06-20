@@ -47,8 +47,9 @@ mochi build --target erlang main.mochi -o main.erl
 escript main.erl            # run the program
 ```
 【F:cmd/mochi/main.go†L507-L518】
-The output module is named `main` and exports `main/1` along with any user
-functions defined at the top level.
+The output module is named `main` by default and exports `main/1` along with
+any user functions defined at the top level. When a source file declares a
+`package`, that name is used for the generated module instead of `main`.
 
 ## Tests
 
@@ -83,11 +84,11 @@ features are not yet handled:
 
 - Joins or grouping inside queries
 - Generative AI helpers like `generate` or `fetch`
-- Dataset operations such as `load` and `save`
 - Logic programming constructs and streams
 - Agents and event streams
 - Foreign function imports via `extern`
-- Packages and `import` statements
+- Import statements
+- Test blocks and `expect` statements
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs
 directly.

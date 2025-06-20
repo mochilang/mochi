@@ -122,7 +122,11 @@ func (c *Compiler) writeln(s string) {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.writeln("#!/usr/bin/env escript")
-	c.writeln("-module(main).")
+	mod := "main"
+	if prog.Package != "" {
+		mod = prog.Package
+	}
+	c.writeln(fmt.Sprintf("-module(%s).", mod))
 
 	// collect exported functions
 	exports := []string{"main/1"}
@@ -284,6 +288,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Import != nil:
+		// import statements are ignored
+		return nil
+	case s.Test != nil, s.Expect != nil:
+		// testing constructs are not supported yet
+		return nil
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		// extern declarations are ignored
+		return nil
 	default:
 		c.buf.WriteString("ok")
 	}
