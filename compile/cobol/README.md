@@ -152,7 +152,8 @@ behaviour.
 ## Unsupported features
 
 Only a narrow slice of Mochi is recognised by this backend. Programs using
-unsupported features will fail to compile.
+unsupported features will fail to compile. Recent updates added support for
+looping over string variables, but the backend remains extremely limited.
 
 ## Status
 
@@ -176,7 +177,10 @@ unsupported include:
 - Set literals and set operations
 - `generate` expressions for generative AI
 - Iteration over collections using `for x in items` unless `items` is a simple
-  list or string literal
+  list or a string literal or variable
+- Iteration over lists stored in variables
+- Range loops with step values other than `1`
+- Struct and model declarations
 - Union type declarations and inline methods
 - First-class function values or closures
 - `try`/`catch` error handling blocks
