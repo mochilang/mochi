@@ -191,10 +191,12 @@ features include:
   lists and strings.
 - Query expressions (`from`/`sort by`/`select`).
 - Nested function definitions and struct literals.
-- Set operations such as `union`, `except` and `intersect`.
+- `union`, `except` and `intersect` only work for `list<int>` values.
 - Pattern matching with `match` expressions.
 - Agents, streams and logic programming constructs (`fact`, `rule`, `query`).
 - Foreign imports and dataset helpers like `fetch`, `load` and `save`.
+- Anonymous function literals (`fun` expressions) and `if` used as an expression.
+- Generative `generate` blocks and model declarations.
 
 While limited, this backend demonstrates how Mochi’s AST can be translated into
 another language and may serve as a starting point for more complete Fortran
