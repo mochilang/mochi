@@ -33,3 +33,21 @@ const helperContains = "contains(Container, Item, Res) :-\n" +
 	"contains(List, Item, Res) :-\n" +
 	"    string(List), !, string_chars(List, Chars), (member(Item, Chars) -> Res = true ; Res = false).\n" +
 	"contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).\n\n"
+
+const helperInput = "input(S) :- read_line_to_string(user_input, S).\n\n"
+
+const helperCount = "count(V, R) :-\n" +
+	"    is_dict(V), !, get_dict('Items', V, Items), length(Items, R).\n" +
+	"count(V, R) :-\n" +
+	"    string(V), !, string_chars(V, C), length(C, R).\n" +
+	"count(V, R) :-\n" +
+	"    is_list(V), !, length(V, R).\n" +
+	"count(_, _) :- throw(error('count expects list or group')).\n\n"
+
+const helperAvg = "avg(V, R) :-\n" +
+	"    is_dict(V), !, get_dict('Items', V, Items), avg_list(Items, R).\n" +
+	"avg(V, R) :-\n" +
+	"    is_list(V), !, avg_list(V, R).\n" +
+	"avg(_, _) :- throw(error('avg expects list or group')).\n" +
+	"avg_list([], 0).\n" +
+	"avg_list(L, R) :- sum_list(L, S), length(L, N), N > 0, R is S / N.\n\n"

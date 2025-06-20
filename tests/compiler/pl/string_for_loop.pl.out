@@ -8,7 +8,8 @@ to_list(L, L).
 	main :-
 	to_list("cat", _V0),
 	forall(member(Ch, _V0), (
-		writeln(Ch),
+		write(Ch),
+		nl,
 		true
 	))
 	.

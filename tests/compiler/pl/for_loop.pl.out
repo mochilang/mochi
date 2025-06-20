@@ -2,7 +2,8 @@
 	main :-
 	_V0 is 4 - 1,
 	forall(between(1, _V0, I), (
-		writeln(I),
+		write(I),
+		nl,
 		true
 	))
 	.

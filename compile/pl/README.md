@@ -88,21 +88,27 @@ range `for` loops and simple `if` statements:
                }
                c.writeln(fmt.Sprintf("throw(return(%s))", val.val))
 	case s.Expr != nil:
-		if call := s.Expr.Expr.Binary.Left.Value.Target.Call; call != nil && call.Func == "print" {
-			if len(call.Args) != 1 {
-				return fmt.Errorf("print expects 1 arg")
-			}
-			arg, err := c.compileExpr(call.Args[0])
-			if err != nil {
-				return err
-			}
-			for _, line := range arg.code {
-				c.writeln(line)
-			}
-			c.writeln(fmt.Sprintf("writeln(%s),", arg.val))
-		} else {
-			return fmt.Errorf("unsupported expression statement")
-		}
+                if call := s.Expr.Expr.Binary.Left.Value.Target.Call; call != nil && call.Func == "print" {
+                        if len(call.Args) == 0 {
+                                return fmt.Errorf("print expects at least 1 arg")
+                        }
+                        for i, a := range call.Args {
+                                arg, err := c.compileExpr(a)
+                                if err != nil {
+                                        return err
+                                }
+                                for _, line := range arg.code {
+                                        c.writeln(line)
+                                }
+                                c.writeln(fmt.Sprintf("write(%s),", arg.val))
+                                if i < len(call.Args)-1 {
+                                        c.writeln("write(' '),")
+                                }
+                        }
+                        c.writeln("nl,")
+                } else {
+                        return fmt.Errorf("unsupported expression statement")
+                }
 	case s.For != nil:
 		return c.compileFor(s.For, ret)
 	case s.If != nil:
@@ -266,3 +272,15 @@ the Prolog interpreter is invoked:
 ```bash
 go test ./compile/pl -tags slow
 ```
+
+## Unsupported Features
+
+The Prolog backend focuses on basic control flow and list operations. Several
+Mochi language features are not yet implemented:
+
+- Pattern matching expressions and union types
+- Dataset queries (`from`/`select`, joins and grouping)
+- Structured types such as `struct` and enums
+- Concurrency primitives and external helpers like `_fetch` or `_genText`
+- Expression statements other than `print`
+- Map literals with computed keys

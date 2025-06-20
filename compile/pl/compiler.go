@@ -119,6 +119,24 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["input"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperInput, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["count"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperCount, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["avg"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperAvg, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 }
 
 // compileBlock compiles a sequence of statements at one indentation level and
@@ -258,17 +276,23 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 		c.writeln(fmt.Sprintf("throw(return(%s))", val.val))
 	case s.Expr != nil:
 		if call := s.Expr.Expr.Binary.Left.Value.Target.Call; call != nil && call.Func == "print" {
-			if len(call.Args) != 1 {
-				return fmt.Errorf("print expects 1 arg")
+			if len(call.Args) == 0 {
+				return fmt.Errorf("print expects at least 1 arg")
 			}
-			arg, err := c.compileExpr(call.Args[0])
-			if err != nil {
-				return err
+			for i, a := range call.Args {
+				arg, err := c.compileExpr(a)
+				if err != nil {
+					return err
+				}
+				for _, line := range arg.code {
+					c.writeln(line)
+				}
+				c.writeln(fmt.Sprintf("write(%s),", arg.val))
+				if i < len(call.Args)-1 {
+					c.writeln("write(' '),")
+				}
 			}
-			for _, line := range arg.code {
-				c.writeln(line)
-			}
-			c.writeln(fmt.Sprintf("writeln(%s),", arg.val))
+			c.writeln("nl,")
 		} else {
 			return fmt.Errorf("unsupported expression statement")
 		}
@@ -824,6 +848,49 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 		}
 		tmp := c.newVar()
 		code := append(arg.code, fmt.Sprintf("length(%s, %s),", arg.val, tmp))
+		return exprRes{code: code, val: tmp}, nil
+	case "count":
+		if len(call.Args) != 1 {
+			return exprRes{}, fmt.Errorf("count expects 1 arg")
+		}
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return exprRes{}, err
+		}
+		tmp := c.newVar()
+		c.use("count")
+		code := append(arg.code, fmt.Sprintf("count(%s, %s),", arg.val, tmp))
+		return exprRes{code: code, val: tmp}, nil
+	case "avg":
+		if len(call.Args) != 1 {
+			return exprRes{}, fmt.Errorf("avg expects 1 arg")
+		}
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return exprRes{}, err
+		}
+		tmp := c.newVar()
+		c.use("avg")
+		code := append(arg.code, fmt.Sprintf("avg(%s, %s),", arg.val, tmp))
+		return exprRes{code: code, val: tmp}, nil
+	case "str":
+		if len(call.Args) != 1 {
+			return exprRes{}, fmt.Errorf("str expects 1 arg")
+		}
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return exprRes{}, err
+		}
+		tmp := c.newVar()
+		code := append(arg.code, fmt.Sprintf("term_string(%s, %s),", arg.val, tmp))
+		return exprRes{code: code, val: tmp}, nil
+	case "input":
+		if len(call.Args) != 0 {
+			return exprRes{}, fmt.Errorf("input expects no args")
+		}
+		tmp := c.newVar()
+		c.use("input")
+		code := []string{fmt.Sprintf("input(%s),", tmp)}
 		return exprRes{code: code, val: tmp}, nil
 	default:
 		args := make([]string, len(call.Args))
