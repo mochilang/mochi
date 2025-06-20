@@ -242,8 +242,10 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 
 ### Unsupported features
 
-- Generative AI helpers such as `generate` and `fetch`
-- Data loading and persistence (`load`, `save`)
+- Generative AI helpers such as `generate`
 - Foreign function interface bindings
 - Streams and long‑lived agents
 - Logic programming constructs (`fact`, `rule`, `query`)
+- Package declarations and module imports
+- Methods defined inside `type` declarations
+- Dataset grouping and outer join clauses in queries
