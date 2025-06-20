@@ -302,8 +302,7 @@ fail at runtime:
 - Regular expression helpers beyond simple `match`
 - Mutating lists while iterating (e.g. `insert`, `remove`)
 - Query `group` clauses and joins with `left`, `right` or `outer` sides
-- Local recursive functions
-- HTTP `fetch` expressions
+- Logic programming constructs (`fact`, `rule`, `query`)
 - Logic query expressions
 - Foreign function interface (FFI)
 - Interaction with external objects

@@ -1,0 +1,51 @@
+function __print(...)
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then io.write(' ') end
+		io.write(tostring(a))
+	end
+	io.write('\n')
+end
+
+function __fetch(url, opts)
+	local args = {'-s'}
+	local method = 'GET'
+	if opts and opts['method'] then method = tostring(opts['method']) end
+	table.insert(args, '-X')
+	table.insert(args, method)
+	if opts and opts['headers'] then
+		for k,v in pairs(opts['headers']) do
+			table.insert(args, '-H')
+			table.insert(args, k .. ': ' .. tostring(v))
+		end
+	end
+	if opts and opts['query'] then
+		local qs = {}
+		for k,v in pairs(opts['query']) do
+			table.insert(qs, k .. '=' .. tostring(v))
+		end
+		local sep = string.find(url, '?') and '&' or '?'
+		url = url .. sep .. table.concat(qs, '&')
+	end
+	if opts and opts['body'] ~= nil then
+		local ok, json = pcall(require, 'json')
+		if not ok then error('json library not found') end
+		table.insert(args, '-d')
+		table.insert(args, json.encode(opts['body']))
+	end
+	if opts and opts['timeout'] then
+		table.insert(args, '--max-time')
+		table.insert(args, tostring(opts['timeout']))
+	end
+	table.insert(args, url)
+	local cmd = 'curl ' .. table.concat(args, ' ')
+	local f = assert(io.popen(cmd))
+	local data = f:read('*a')
+	f:close()
+	local ok, json = pcall(require, 'json')
+	if not ok then error('json library not found') end
+	return json.decode(data)
+end
+
+local data = __fetch("file://tests/compiler/lua/fetch_builtin.json", nil)
+__print(data.message)

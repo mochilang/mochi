@@ -553,6 +553,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -1022,6 +1024,23 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	return fmt.Sprintf("__save(%s, %s, %s)", src, path, opts), nil
 }
 
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "nil"
+	if f.With != nil {
+		v, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.helpers["fetch"] = true
+	return fmt.Sprintf("__fetch(%s, %s)", url, opts), nil
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("function %s()", name))
@@ -1379,6 +1398,63 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writeln("end")
 		c.writeln("return {}")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["fetch"] {
+		c.writeln("function __fetch(url, opts)")
+		c.indent++
+		c.writeln("local args = {'-s'}")
+		c.writeln("local method = 'GET'")
+		c.writeln("if opts and opts['method'] then method = tostring(opts['method']) end")
+		c.writeln("table.insert(args, '-X')")
+		c.writeln("table.insert(args, method)")
+		c.writeln("if opts and opts['headers'] then")
+		c.indent++
+		c.writeln("for k,v in pairs(opts['headers']) do")
+		c.indent++
+		c.writeln("table.insert(args, '-H')")
+		c.writeln("table.insert(args, k .. ': ' .. tostring(v))")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("if opts and opts['query'] then")
+		c.indent++
+		c.writeln("local qs = {}")
+		c.writeln("for k,v in pairs(opts['query']) do")
+		c.indent++
+		c.writeln("table.insert(qs, k .. '=' .. tostring(v))")
+		c.indent--
+		c.writeln("end")
+		c.writeln("local sep = string.find(url, '?') and '&' or '?'")
+		c.writeln("url = url .. sep .. table.concat(qs, '&')")
+		c.indent--
+		c.writeln("end")
+		c.writeln("if opts and opts['body'] ~= nil then")
+		c.indent++
+		c.writeln("local ok, json = pcall(require, 'json')")
+		c.writeln("if not ok then error('json library not found') end")
+		c.writeln("table.insert(args, '-d')")
+		c.writeln("table.insert(args, json.encode(opts['body']))")
+		c.indent--
+		c.writeln("end")
+		c.writeln("if opts and opts['timeout'] then")
+		c.indent++
+		c.writeln("table.insert(args, '--max-time')")
+		c.writeln("table.insert(args, tostring(opts['timeout']))")
+		c.indent--
+		c.writeln("end")
+		c.writeln("table.insert(args, url)")
+		c.writeln("local cmd = 'curl ' .. table.concat(args, ' ')")
+		c.writeln("local f = assert(io.popen(cmd))")
+		c.writeln("local data = f:read('*a')")
+		c.writeln("f:close()")
+		c.writeln("local ok, json = pcall(require, 'json')")
+		c.writeln("if not ok then error('json library not found') end")
+		c.writeln("return json.decode(data)")
 		c.indent--
 		c.writeln("end")
 		c.writeln("")
