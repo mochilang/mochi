@@ -156,3 +156,21 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	}
 	return types.AnyType{}
 }
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
