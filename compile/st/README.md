@@ -32,3 +32,6 @@ The following language constructs are not yet handled:
 - Foreign function interface declarations (`extern`)
 - Import and package statements
 - Pattern matching with `match`
+- Union type declarations
+- Set literals and set operations
+- Concurrency primitives like `spawn` and channels
