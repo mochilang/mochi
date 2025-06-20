@@ -1,4 +1,25 @@
 # 📦 CHANGELOG.md
+## [0.8.8] – 2025-06-20
+
+### Added
+
+* Dataset `fetch`, `generate`, `load` and `save` across Ruby, Erlang, Elixir,
+  Java and Scheme
+* Method declarations in Ruby and Dart with type methods for Kotlin
+* Test block support for Scala, Java, F#, Zig, Swift and C
+* Negative list indexing in Swift and Scala
+* `sort by` queries in C++ and `where`/`skip`/`take` in F#
+* JSON helpers and a `now` builtin in Haskell, Kotlin, Zig and F#
+* Pagination added to the Rust compiler
+
+### Changed
+
+* F# runtime moved to the preamble
+* Documentation updated for multiple backends
+
+### Fixed
+
+* Minor README corrections and refreshed C++ examples
 ## [0.8.7] – 2025-06-19
 
 ### Added
