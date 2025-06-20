@@ -17,6 +17,7 @@ type Compiler struct {
 	env      *types.Env
 	usesMap  bool
 	usesTime bool
+	usesJSON bool
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -64,6 +65,7 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.usesMap = false
+	c.usesJSON = false
 
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -99,6 +101,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.usesMap {
 		header.WriteString("import qualified Data.Map as Map\n")
+	}
+	if c.usesJSON {
+		header.WriteString("import qualified Data.Aeson as Aeson\n")
+		header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	}
 	header.WriteString("\n")
 	header.WriteString(runtime)
@@ -547,6 +553,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "now" {
 			c.usesTime = true
 			return "_now", nil
+		}
+		if p.Call.Func == "json" {
+			c.usesJSON = true
+			return fmt.Sprintf("_json %s", strings.Join(args, " ")), nil
 		}
 		if p.Call.Func == "input" {
 			return "_input", nil

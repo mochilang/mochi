@@ -35,4 +35,7 @@ _input = getLine
 
 _now :: IO Int
 _now = fmap round getPOSIXTime
+
+_json :: Aeson.ToJSON a => a -> IO ()
+_json v = BSL.putStrLn (Aeson.encode v)
 `
