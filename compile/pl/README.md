@@ -282,5 +282,5 @@ Mochi language features are not yet implemented:
 - Dataset queries (`from`/`select`, joins and grouping)
 - Structured types such as `struct` and enums
 - Concurrency primitives and external helpers like `_fetch` or `_genText`
-- Expression statements other than `print`
-- Map literals with computed keys
+- Continue statements
+- Import declarations

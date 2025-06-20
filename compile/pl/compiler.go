@@ -294,7 +294,13 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 			}
 			c.writeln("nl,")
 		} else {
-			return fmt.Errorf("unsupported expression statement")
+			val, err := c.compileExpr(s.Expr.Expr)
+			if err != nil {
+				return err
+			}
+			for _, line := range val.code {
+				c.writeln(line)
+			}
 		}
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
@@ -810,24 +816,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 		}
 		return exprRes{code: code, val: "[" + strings.Join(elems, ", ") + "]"}, nil
 	case p.Map != nil:
-		items := []string{}
+		pairs := []string{}
 		code := []string{}
 		for _, it := range p.Map.Items {
 			kr, err := c.compileExpr(it.Key)
 			if err != nil {
 				return exprRes{}, err
 			}
-			if len(kr.code) != 0 {
-				return exprRes{}, fmt.Errorf("unsupported map key")
-			}
 			vr, err := c.compileExpr(it.Value)
 			if err != nil {
 				return exprRes{}, err
 			}
+			code = append(code, kr.code...)
 			code = append(code, vr.code...)
-			items = append(items, fmt.Sprintf("%s:%s", kr.val, vr.val))
+			pairs = append(pairs, fmt.Sprintf("%s-%s", kr.val, vr.val))
 		}
-		return exprRes{code: code, val: "_{" + strings.Join(items, ", ") + "}"}, nil
+		tmp := c.newVar()
+		code = append(code, fmt.Sprintf("dict_create(%s, _, [%s]),", tmp, strings.Join(pairs, ", ")))
+		return exprRes{code: code, val: tmp}, nil
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.Call != nil:
