@@ -39,9 +39,15 @@ const (
     match path with
     | None | Some "" | Some "-" -> System.Console.Out.Write(out)
     | Some p -> System.IO.File.WriteAllText(p, out)`
+
+	helperFetch = `let _fetch (url: string) (opts: Map<string,obj> option) : Map<string,obj> =
+  use client = new System.Net.Http.HttpClient()
+  let text = client.GetStringAsync(url).Result
+  System.Text.Json.JsonSerializer.Deserialize<Map<string,obj>>(text)`
 )
 
 var helperMap = map[string]string{
-	"_load": helperLoad,
-	"_save": helperSave,
+	"_load":  helperLoad,
+	"_save":  helperSave,
+	"_fetch": helperFetch,
 }

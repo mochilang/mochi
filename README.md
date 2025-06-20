@@ -603,6 +603,8 @@ Some language constructs are still experimental or missing in the current implem
 - File and network helpers (`fetch`, `load`, `save`, `generate`).
 - Importing external packages with `import` and calling `extern` functions.
 - `test` and `expect` blocks are ignored when compiling to Rust.
+- Concurrency primitives like `spawn` and channels.
+- Generic types, reflection and macro facilities.
 
 ## Benchmarks
 

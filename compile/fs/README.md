@@ -118,7 +118,7 @@ Mochi features are not yet available.
 The F# generator currently lacks support for several language constructs:
 
 * Package `import` declarations and `extern` functions
-* HTTP helpers like `fetch`
+* HTTP helpers beyond the basic `fetch` helper
 * Built-in `test` blocks (basic `expect` statements are supported)
 * Logic programming constructs (`fact`, `rule`, `query`)
 * Advanced dataset queries such as joins and grouping
