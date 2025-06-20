@@ -1,0 +1,21 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	auto nums = vector<int>{5, 1, 4, 3, 2};
+	auto sorted = ([&]() -> vector<auto> {
+	vector<pair<auto, auto>> _tmp;
+	for (auto& n : nums) {
+		_tmp.push_back({n, n});
+	}
+	std::sort(_tmp.begin(), _tmp.end(), [](const auto& a, const auto& b){ return a.first < b.first; });
+	vector<auto> _res;
+	_res.reserve(_tmp.size());
+	for (auto& _it : _tmp) _res.push_back(_it.second);
+	return _res;
+})();
+	for (auto n : sorted) {
+		std::cout << (n) << std::endl;
+	}
+	return 0;
+}

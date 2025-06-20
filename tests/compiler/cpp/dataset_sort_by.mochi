@@ -1,0 +1,7 @@
+let nums = [5, 1, 4, 3, 2]
+let sorted = from n in nums
+            sort by n
+            select n
+for n in sorted {
+  print(n)
+}
