@@ -1,0 +1,46 @@
+data class Person(val name: String, val age: Int)
+
+fun main() {
+        val people = run {
+        val _rows = _load(null, mutableMapOf("format" to "jsonl"))
+        val _out = mutableListOf<Person>()
+        for (r in _rows) {
+                _out.add(_cast<Person>(r))
+        }
+        _out
+}
+        println(people.size)
+}
+
+inline fun <reified T> _cast(v: Any?): T {
+    return when (T::class) {
+        Int::class -> when (v) { is Number -> v.toInt(); is String -> v.toInt(); else -> 0 } as T
+        Double::class -> when (v) { is Number -> v.toDouble(); is String -> v.toDouble(); else -> 0.0 } as T
+        Boolean::class -> when (v) { is Boolean -> v; is String -> v == "true"; else -> false } as T
+        String::class -> v.toString() as T
+        else -> v as T
+    }
+}
+fun _load(path: String?, opts: Map<String, Any>?): List<Map<String, Any>> {
+    var format = opts?.get("format") as? String ?: "csv"
+    var header = opts?.get("header") as? Boolean ?: true
+    var delim = (opts?.get("delimiter") as? String)?.firstOrNull() ?: ','
+    if (format == "tsv") delim = '\t'
+    val text = if (path == null || path == "-" || path == "") generateSequence(::readLine).joinToString("\n") else java.io.File(path).readText()
+    if (format != "csv") return emptyList()
+    val lines = text.trim().split(Regex("\\r?\\n")).filter { it.isNotEmpty() }
+    if (lines.isEmpty()) return emptyList()
+    val headers = if (header) lines[0].split(delim) else List(lines[0].split(delim).size) { "c$it" }
+    val start = if (header) 1 else 0
+    val out = mutableListOf<Map<String, Any>>()
+    for (i in start until lines.size) {
+        val parts = lines[i].split(delim)
+        val row = mutableMapOf<String, Any>()
+        for (j in headers.indices) {
+            row[headers[j]] = parts.getOrElse(j) { "" }
+        }
+        out.add(row)
+    }
+    return out
+}
+
