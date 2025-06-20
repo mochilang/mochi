@@ -12,10 +12,11 @@ import (
 
 // Compiler translates Mochi AST into Racket source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	loops  []loopCtx
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	loops        []loopCtx
+	needsDataset bool
 }
 
 type loopCtx struct {
@@ -72,7 +73,7 @@ func New(env *types.Env) *Compiler {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("#lang racket")
-	c.writeln("(require racket/list racket/match)")
+	c.writeln(";require-placeholder")
 	c.writeln("")
 	// helpers for indexing and slicing
 	c.writeln("(define (idx x i)")
@@ -104,6 +105,45 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("        (append res (list x))")
 	c.writeln("        res)))")
 	c.writeln("")
+	if c.needsDataset {
+		c.writeln("(define (_fetch url opts)")
+		c.writeln("  (define opts (or opts (hash)))")
+		c.writeln("  (define method (hash-ref opts 'method \"GET\"))")
+		c.writeln("  (define args (list \"curl\" \"-s\" \"-X\" method))")
+		c.writeln("  (when (hash-has-key? opts 'headers)")
+		c.writeln("    (for ([k (hash-keys (hash-ref opts 'headers))])")
+		c.writeln("      (set! args (append args (list \"-H\" (format \"~a: ~a\" k (hash-ref (hash-ref opts 'headers) k)))))))")
+		c.writeln("  (when (hash-has-key? opts 'query)")
+		c.writeln("    (define q (hash-ref opts 'query))")
+		c.writeln("    (define qs (string-join (for/list ([k (hash-keys q)]) (format \"~a=~a\" k (hash-ref q k))) \"&\"))")
+		c.writeln("    (set! url (string-append url (if (regexp-match? #px\"\\?\" url) \"&\" \"?\") qs)))")
+		c.writeln("  (when (hash-has-key? opts 'body)")
+		c.writeln("    (set! args (append args (list \"-d\" (jsexpr->string (hash-ref opts 'body)))))")
+		c.writeln("  (when (hash-has-key? opts 'timeout)")
+		c.writeln("    (set! args (append args (list \"--max-time\" (format \"~a\" (hash-ref opts 'timeout)))))")
+		c.writeln("  (set! args (append args (list url)))")
+		c.writeln("  (define p (open-input-pipe (string-join args \" \")))")
+		c.writeln("  (define txt (port->string p))")
+		c.writeln("  (close-input-port p)")
+		c.writeln("  (string->jsexpr txt))")
+
+		c.writeln("(define (_load path opts)")
+		c.writeln("  (define opts (or opts (hash)))")
+		c.writeln("  (define fmt (hash-ref opts 'format \"json\"))")
+		c.writeln("  (define text (if path (call-with-input-file path port->string) (port->string (current-input-port))))")
+		c.writeln("  (cond [(string=? fmt \"jsonl\") (for/list ([l (in-lines (open-input-string text))] #:unless (string-blank? l)) (string->jsexpr l))]")
+		c.writeln("        [(string=? fmt \"json\") (let ([d (string->jsexpr text)]) (if (list? d) d (list d)))]")
+		c.writeln("        [else '()]))")
+
+		c.writeln("(define (_save rows path opts)")
+		c.writeln("  (define opts (or opts (hash)))")
+		c.writeln("  (define fmt (hash-ref opts 'format \"json\"))")
+		c.writeln("  (define out (if path (open-output-file path #:exists 'replace) (current-output-port)))")
+		c.writeln("  (cond [(string=? fmt \"jsonl\") (for ([r rows]) (fprintf out \"~a\\n\" (jsexpr->string r)))]")
+		c.writeln("        [(string=? fmt \"json\") (fprintf out \"~a\" (jsexpr->string rows))])")
+		c.writeln("  (when path (close-output-port out)))")
+		c.writeln("")
+	}
 	// function declarations first
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -121,7 +161,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	header := "(require racket/list racket/match)"
+	if c.needsDataset {
+		header = "(require racket/list racket/match racket/string json)"
+	}
+	idx := bytes.Index(code, []byte(";require-placeholder"))
+	if idx != -1 {
+		var out bytes.Buffer
+		out.Write(code[:idx])
+		out.WriteString(header)
+		out.Write(code[idx+len(";require-placeholder"):])
+		return out.Bytes(), nil
+	}
+	return code, nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -647,6 +700,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Selector != nil:
 		return sanitizeName(p.Selector.Root), nil
 	case p.Group != nil:
@@ -739,4 +798,59 @@ func (c *Compiler) compileMatchPattern(pat *parser.Expr) (string, error) {
 		return "_", nil
 	}
 	return c.compileExpr(pat)
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	c.needsDataset = true
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "#f"
+	if f.With != nil {
+		o, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	return fmt.Sprintf("(_fetch %s %s)", url, opts), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	c.needsDataset = true
+	path := "#f"
+	if l.Path != nil {
+		path = strconv.Quote(*l.Path)
+	}
+	opts := "#f"
+	if l.With != nil {
+		o, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	return fmt.Sprintf("(_load %s %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	c.needsDataset = true
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "#f"
+	if s.Path != nil {
+		path = strconv.Quote(*s.Path)
+	}
+	opts := "#f"
+	if s.With != nil {
+		o, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
 }
