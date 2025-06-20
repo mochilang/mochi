@@ -1,10 +1,18 @@
 :- style_check(-singleton).
-	main :-
+		main :-
 	_V0 is 4 - 1,
-	forall(between(1, _V0, I), (
-		write(I),
-		nl,
-		true
-	))
-	.
+	catch(
+		(
+			between(1, _V0, I),
+			catch(
+				(
+					write(I),
+					nl,
+					true
+				), continue, true),
+				fail
+			)
+			, break, true),
+			true
+		.
 :- initialization(main, main).

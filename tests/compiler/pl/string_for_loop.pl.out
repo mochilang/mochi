@@ -5,12 +5,20 @@ to_list(Str, L) :-
 to_list(L, L).
 
 
-	main :-
+		main :-
 	to_list("cat", _V0),
-	forall(member(Ch, _V0), (
-		write(Ch),
-		nl,
-		true
-	))
-	.
+	catch(
+		(
+			member(Ch, _V0),
+			catch(
+				(
+					write(Ch),
+					nl,
+					true
+				), continue, true),
+				fail
+			)
+			, break, true),
+			true
+		.
 :- initialization(main, main).

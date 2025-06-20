@@ -51,3 +51,5 @@ const helperAvg = "avg(V, R) :-\n" +
 	"avg(_, _) :- throw(error('avg expects list or group')).\n" +
 	"avg_list([], 0).\n" +
 	"avg_list(L, R) :- sum_list(L, S), length(L, N), N > 0, R is S / N.\n\n"
+
+const helperExpect = "expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).\n\n"

@@ -64,7 +64,7 @@ If the final statement is a `return`, a fallback clause is emitted for that
 value.
 
 Statements support variable bindings, explicit returns, the `print` builtin,
-range `for` loops and simple `if` statements:
+`expect` assertions, `test` blocks, range `for` loops and simple `if` statements:
 
 ```go
 	switch {
@@ -280,6 +280,13 @@ Mochi language features are not yet implemented:
 
 - Pattern matching expressions and union types
 - Dataset queries (`from`/`select`, joins and grouping)
-- Structured types such as `struct` and enums
+- Structured type declarations like `struct` and enums (simple field selectors
+  `a.b` are supported)
 - Concurrency primitives and external helpers like `_fetch` or `_genText`
 - Import declarations
+- Agent and stream features (`agent`, `on`, `emit`)
+- Extern declarations and foreign imports
+- Model declarations
+- Generative AI helpers (`generate`, `model`)
+- Data loading and persistence helpers (`fetch`, `load`, `save`)
+- Package imports and exports
