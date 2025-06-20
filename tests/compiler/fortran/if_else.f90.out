@@ -1,21 +1,21 @@
 program main
   implicit none
-  print *, foo((-2))
-  print *, foo(0)
-  print *, foo(3)
+  print *, foo((-2_8))
+  print *, foo(0_8)
+  print *, foo(3_8)
 contains
   function foo(n) result(res)
     implicit none
-    integer :: res
-    integer, intent(in) :: n
-    if ((n < 0)) then
-      res = (-1)
+    integer(kind=8) :: res
+    integer(kind=8), intent(in) :: n
+    if ((n < 0_8)) then
+      res = (-1_8)
       return
-    else if ((n == 0)) then
-      res = 0
+    else if ((n == 0_8)) then
+      res = 0_8
       return
     else
-      res = 1
+      res = 1_8
       return
     end if
   end function foo

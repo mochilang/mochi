@@ -1,28 +1,28 @@
 program main
   implicit none
-  integer :: result(2)
-  result = twoSum((/2, 7, 11, 15/), 9)
-  print *, result(modulo(0, size(result)) + 1)
-  print *, result(modulo(1, size(result)) + 1)
+  integer(kind=8) :: result(2)
+  result = twoSum((/2_8, 7_8, 11_8, 15_8/), 9_8)
+  print *, result(0_8 + 1)
+  print *, result(1_8 + 1)
 contains
   function twoSum(nums, target) result(res)
     implicit none
-    integer, intent(in) :: nums(:)
-    integer, intent(in) :: target
-    integer :: n
-    integer :: i
-    integer :: j
-    integer :: res(2)
+    integer(kind=8), intent(in) :: nums(:)
+    integer(kind=8), intent(in) :: target
+    integer(kind=8) :: n
+    integer(kind=8) :: i
+    integer(kind=8) :: j
+    integer(kind=8) :: res(2)
     n = size(nums)
-    do i = 0, n - 1
-      do j = (i + 1), n - 1
-        if (((nums(modulo(i, size(nums)) + 1) + nums(modulo(j, size(nums)) + 1)) == target)) then
+    do i = 0_8, n - 1
+      do j = (i + 1_8), n - 1
+        if (((nums(i + 1) + nums(j + 1)) == target)) then
           res = (/i, j/)
           return
         end if
       end do
     end do
-    res = (/(-1), (-1)/)
+    res = (/(-1_8), (-1_8)/)
     return
   end function twoSum
   

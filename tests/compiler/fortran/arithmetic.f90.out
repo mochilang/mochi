@@ -1,8 +1,8 @@
 program main
   implicit none
-  print *, (1 + 2)
-  print *, (5 - 3)
-  print *, (4 * 2)
-  print *, (8 / 2)
-  print *, mod(7, 3)
+  print *, (1_8 + 2_8)
+  print *, (5_8 - 3_8)
+  print *, (4_8 * 2_8)
+  print *, (8_8 / 2_8)
+  print *, mod(7_8, 3_8)
 end program main

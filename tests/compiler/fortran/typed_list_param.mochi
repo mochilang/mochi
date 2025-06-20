@@ -1,0 +1,5 @@
+fun first(xs: list<string>): string {
+  return xs[0]
+}
+
+print(first(["hello", "world"]))

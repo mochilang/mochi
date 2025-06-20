@@ -181,6 +181,16 @@ marked with the `slow` build tag because they invoke `gfortran`:
 go test ./compile/fortran -tags slow
 ```
 
+## Unsupported features
+
+Despite recent additions like detection of `list<string>` and `list<float>`
+parameters and return values, the Fortran backend remains limited. Missing
+features include:
+
+- `map` types and the `in` membership operator
+- query expressions (`from`/`sort by`/`select`)
+- nested function definitions and struct literals
+
 While limited, this backend demonstrates how Mochi’s AST can be translated into
 another language and may serve as a starting point for more complete Fortran
 support.
