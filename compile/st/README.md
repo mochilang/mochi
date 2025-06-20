@@ -13,3 +13,10 @@ Compile a program with `mochi build --target st` and run it using `gst`. To run 
 ```bash
 go test ./compile/st -tags slow
 ```
+
+## Notes
+
+The Smalltalk backend currently supports only a subset of Mochi. Features such
+as `break` and `continue` in loops, agents, dataset queries and generative AI
+blocks are not implemented yet. When the `count()` builtin is used, a helper
+method is emitted automatically.
