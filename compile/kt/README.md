@@ -333,7 +333,7 @@ support:
 - `generate` and `fetch` expressions for LLM and HTTP integration
 - External helpers like `_genText` and concurrency primitives such as `spawn` and channels
 - Import statements
-- Methods declared inside `type` blocks
 - The `eval` builtin function
+- Error handling with `try`/`catch` blocks
 
 
