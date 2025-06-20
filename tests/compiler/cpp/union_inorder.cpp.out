@@ -1,0 +1,20 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Leaf {
+};
+struct Node {
+	Tree left;
+	int value;
+	Tree right;
+};
+using Tree = std::variant<Leaf, Node>;
+
+vector<int> inorder(Tree t){
+	return ([&]() { auto _t0 = t; if (std::holds_alternative<Leaf>(_t0)) return vector<int>{}; if (std::holds_alternative<Node>(_t0)) { auto _v = std::get<Node>(_t0); auto l = _v.left; auto v = _v.value; auto r = _v.right; return ([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(inorder(l), vector<int>{v}), inorder(r)); }return {}; })();
+}
+
+int main() {
+	std::cout << (inorder(Node{Leaf{}, 1, Node{Leaf{}, 2, Leaf{}}})) << std::endl;
+	return 0;
+}
