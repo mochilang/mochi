@@ -249,14 +249,15 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Union types and tagged unions
 - Dataset queries (`from`/`select`, joins, grouping)
 - Dataset loading/saving helpers
-- Concurrency primitives like streams and agents
+- Concurrency primitives like streams, agents, `spawn` and channels
 - Foreign imports and extern functions
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Test blocks and expectations (`test`, `expect`)
 - Import statements
 - LLM helpers (`generate` expressions)
 - HTTP fetch (`fetch`)
-- Anonymous function expressions (`fun` values)
+- Model declarations
+- Reflection or macro facilities
 - Methods declared inside `type` blocks
 - Agent initialization with field values
 

@@ -79,3 +79,15 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+func indentBlock(s string, depth int) string {
+	if s == "" {
+		return s
+	}
+	prefix := strings.Repeat("\t", depth)
+	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
+	for i, line := range lines {
+		lines[i] = prefix + line
+	}
+	return strings.Join(lines, "\n") + "\n"
+}
