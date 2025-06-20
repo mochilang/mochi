@@ -120,7 +120,7 @@ execute correctly using the Clojure backend.
 
 ## Status
 
-The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals, dataset `load` and `save` helpers for CSV files, basic `group by` queries and built-in helpers like `count`, `avg` and `input`. Query expressions handle filtering, cross joins and pagination via `skip`/`take`. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
+The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals, dataset `load` and `save` helpers for CSV files, basic `group by` queries and built-in helpers like `count`, `avg`, `input` and anonymous `fun` expressions. Query expressions handle filtering, cross joins and pagination via `skip`/`take`. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
 
 ### Unsupported Features
 
@@ -134,7 +134,8 @@ in the example programs. In particular:
 - Logic programming facts and rules
 - External declarations and other FFI helpers
 - HTTP fetch and generative AI utilities
-- Anonymous function expressions (`fun` values)
+- Generic types and functions
+- Model declarations and `generate` expressions
 - Set collections and related operations
 - Streams and event-driven agents
 - Concurrency primitives such as `spawn` and channels
