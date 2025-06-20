@@ -258,14 +258,29 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	fields := []string{}
+	var methods []*parser.FunStmt
 	for _, m := range t.Members {
-		if m.Field == nil {
-			continue
+		if m.Field != nil {
+			typ := ktType(c.resolveTypeRef(m.Field.Type))
+			fields = append(fields, fmt.Sprintf("val %s: %s", sanitizeName(m.Field.Name), typ))
+		} else if m.Method != nil {
+			methods = append(methods, m.Method)
 		}
-		typ := ktType(c.resolveTypeRef(m.Field.Type))
-		fields = append(fields, fmt.Sprintf("val %s: %s", sanitizeName(m.Field.Name), typ))
 	}
-	c.writeln(fmt.Sprintf("data class %s(%s)", name, joinArgs(fields)))
+	if len(methods) == 0 {
+		c.writeln(fmt.Sprintf("data class %s(%s)", name, joinArgs(fields)))
+		return nil
+	}
+	c.writeln(fmt.Sprintf("data class %s(%s) {", name, joinArgs(fields)))
+	c.indent++
+	for _, m := range methods {
+		if err := c.compileMethod(name, m); err != nil {
+			return err
+		}
+		c.writeln("")
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -652,6 +667,46 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.writeIndent()
 	c.buf.WriteString("fun " + name + "(")
 	child := types.NewEnv(c.env)
+	for i, p := range fun.Params {
+		if i > 0 {
+			c.buf.WriteString(", ")
+		}
+		c.buf.WriteString(sanitizeName(p.Name))
+		if p.Type != nil {
+			typ := c.resolveTypeRef(p.Type)
+			c.buf.WriteString(": " + ktType(typ))
+			child.SetVar(p.Name, typ, true)
+		}
+	}
+	ret := "Unit"
+	if fun.Return != nil {
+		ret = ktType(c.resolveTypeRef(fun.Return))
+	}
+	c.buf.WriteString(") : " + ret + " {")
+	c.buf.WriteByte('\n')
+	sub := &Compiler{env: child, indent: c.indent + 1}
+	for _, s := range fun.Body {
+		if err := sub.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.buf.Write(sub.buf.Bytes())
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
+	name := sanitizeName(fun.Name)
+	c.writeIndent()
+	c.buf.WriteString("fun " + name + "(")
+	child := types.NewEnv(c.env)
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			for fname, t := range st.Fields {
+				child.SetVar(fname, t, true)
+			}
+		}
+	}
 	for i, p := range fun.Params {
 		if i > 0 {
 			c.buf.WriteString(", ")
