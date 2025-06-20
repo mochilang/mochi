@@ -18,6 +18,7 @@ type Compiler struct {
 	env         *types.Env
 	tmp         int
 	loopTmp     int
+	funTmp      int
 	currentFunc string
 	loops       []loopCtx
 	locals      map[string]bool
@@ -97,6 +98,12 @@ func (c *Compiler) newLoopID() string {
 	id := fmt.Sprintf("%d", c.loopTmp)
 	c.loopTmp++
 	return id
+}
+
+func (c *Compiler) newFunName() string {
+	name := fmt.Sprintf("__anon%d", c.funTmp)
+	c.funTmp++
+	return name
 }
 
 // Compile converts prog into F# source code.
@@ -995,7 +1002,24 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("(fun %s -> %s)", strings.Join(params, " "), expr), nil
 	}
-	return "", fmt.Errorf("block function expressions not supported")
+	name := c.newFunName()
+	sub := New(c.env)
+	sub.tmp = c.tmp
+	sub.loopTmp = c.loopTmp
+	sub.funTmp = c.funTmp
+	fs := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: fn.BlockBody}
+	if err := sub.compileFunStmt(fs); err != nil {
+		return "", err
+	}
+	c.tmp = sub.tmp
+	c.loopTmp = sub.loopTmp
+	c.funTmp = sub.funTmp
+	if sub.preamble.Len() > 0 {
+		c.preamble.Write(sub.preamble.Bytes())
+	}
+	c.preamble.Write(sub.buf.Bytes())
+	c.preamble.WriteByte('\n')
+	return name, nil
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {

@@ -108,3 +108,16 @@ mochi build --target fs program.mochi -o program.fs
 
 The emitted code is intended to be executed with `dotnet fsi` or included in larger F# projects.
 
+## Status
+
+This backend implements the basics needed for algorithmic programs but many advanced
+Mochi features are not yet available.
+
+### Unsupported features
+
+The F# generator currently lacks support for several language constructs:
+
+* Package `import` declarations and `extern` functions
+* HTTP helpers like `fetch` and dataset `load`/`save`
+* Streams, agents and LLM `generate` blocks
+
