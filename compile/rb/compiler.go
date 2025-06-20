@@ -45,11 +45,24 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Fun != nil || s.Type != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(fmt.Sprintf("%s()", name))
 		}
 	}
 	body := append([]byte(nil), c.buf.Bytes()...)
@@ -95,6 +108,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLocalFunStmt(s.Fun)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -906,4 +923,27 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	b.WriteString("\telse\n\t\tnil\n\tend\nend)")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("raise 'expect failed' unless %s", expr))
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("def %s()", name))
+	c.indent++
+	for _, s := range t.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end")
+	return nil
 }

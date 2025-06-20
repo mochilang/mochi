@@ -603,6 +603,8 @@ Some language constructs are still experimental or missing in the current implem
 - File and network helpers (`fetch`, `load`, `save`, `generate`).
 - Importing external packages with `import` and calling `extern` functions.
 - `test` and `expect` blocks are ignored when compiling to Rust.
+- The Ruby backend does not support dataset joins or `group by` queries, and
+  methods declared inside `type` blocks are ignored.
 
 ## Benchmarks
 

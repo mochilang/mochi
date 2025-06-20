@@ -1,0 +1,6 @@
+def test_addition_works()
+	x = (1 + 2)
+	raise 'expect failed' unless (x == 3)
+end
+puts(["ok"].join(" "))
+test_addition_works()

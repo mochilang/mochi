@@ -159,6 +159,8 @@ go test ./compile/rb -tags slow
 
 The first test is skipped when Ruby is not available and the suite falls back to comparing generated code.
 
+Test blocks are compiled to Ruby functions and executed sequentially. `expect` statements become assertions that raise an exception on failure.
+
 ## Unsupported Features
 
 - The Ruby backend does not yet implement every construct in Mochi. Missing
