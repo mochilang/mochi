@@ -12,15 +12,19 @@ import (
 
 // Compiler translates a Mochi AST into Erlang source code.
 type Compiler struct {
-	buf      bytes.Buffer
-	indent   int
-	env      *types.Env
-	needGet  bool
-	needIO   bool
-	vars     map[string]string
-	counts   map[string]int
-	tmpCount int
-	tests    []testInfo
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	needGet       bool
+	needIO        bool
+	needFetch     bool
+	needGenText   bool
+	needGenEmbed  bool
+	needGenStruct bool
+	vars          map[string]string
+	counts        map[string]int
+	tmpCount      int
+	tests         []testInfo
 }
 
 type testInfo struct {
@@ -877,6 +881,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Match != nil:
@@ -1171,6 +1179,71 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	return fmt.Sprintf("mochi_save(%s, %s, %s)", src, path, opts), nil
 }
 
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "undefined"
+	if f.With != nil {
+		o, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.needFetch = true
+	return fmt.Sprintf("mochi_fetch(%s, %s)", url, opts), nil
+}
+
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var prompt, text, model string
+	params := []string{}
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("%s := %s", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramStr := "undefined"
+	if len(params) > 0 {
+		paramStr = "#{" + strings.Join(params, ", ") + "}"
+	}
+	if model == "" {
+		model = "\"\""
+	}
+	switch g.Target {
+	case "embedding":
+		c.needGenEmbed = true
+		return fmt.Sprintf("mochi_gen_embed(%s, %s, %s)", text, model, paramStr), nil
+	default:
+		if c.env != nil {
+			if _, ok := c.env.GetStruct(g.Target); ok {
+				c.needGenStruct = true
+				return fmt.Sprintf("mochi_gen_struct(%s, %s, %s, %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
+			}
+		}
+		c.needGenText = true
+		return fmt.Sprintf("mochi_gen_text(%s, %s, %s)", prompt, model, paramStr), nil
+	}
+}
+
 func isListUnary(u *parser.Unary, env *types.Env) bool {
 	if u == nil || len(u.Ops) > 0 {
 		return false
@@ -1337,6 +1410,26 @@ func (c *Compiler) emitRuntime() {
 		c.indent++
 		c.writeln("ok = file:write_file(Path, term_to_binary(Data)).")
 		c.indent--
+	}
+
+	if c.needFetch {
+		c.writeln("")
+		c.writeln("mochi_fetch(_Url, _Opts) -> [].")
+	}
+
+	if c.needGenText {
+		c.writeln("")
+		c.writeln("mochi_gen_text(Prompt, _Model, _Params) -> Prompt.")
+	}
+
+	if c.needGenEmbed {
+		c.writeln("")
+		c.writeln("mochi_gen_embed(Text, _Model, _Params) -> [ float(C) || <<C>> <= Text ].")
+	}
+
+	if c.needGenStruct {
+		c.writeln("")
+		c.writeln("mochi_gen_struct(_Mod, _Prompt, _Model, _Params) -> #{}.")
 	}
 
 	c.writeln("")
