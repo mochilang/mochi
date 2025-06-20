@@ -198,6 +198,10 @@ func (c *Compiler) compileNode(n *ast.Node) {
 			}
 		}
 
+	case "fun":
+		// Nested function definitions are treated like top-level ones.
+		c.compileFun(n)
+
 	case "let":
 		orig := n.Value.(string)
 		name := strings.ToUpper(orig)
@@ -611,6 +615,8 @@ func (c *Compiler) expr(n *ast.Node) string {
 			return fmt.Sprintf("FUNCTION MOD(%s,%s)", left, right)
 		}
 		return fmt.Sprintf("%s %s %s", left, op, right)
+	case "call":
+		return c.compileCallExpr(n)
 	case "index":
 		arr := c.expr(n.Children[0])
 		idx := c.expr(n.Children[1])

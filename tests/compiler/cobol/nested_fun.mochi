@@ -1,0 +1,6 @@
+fun outer(x: int): int {
+    fun plusOne(y: int): int { return y + 1 }
+    return plusOne(x)
+}
+
+print(outer(3))
