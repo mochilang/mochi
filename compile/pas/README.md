@@ -144,3 +144,6 @@ supported include:
 - Generative model blocks (`generate` and `model`)
 - The foreign function interface (`import`/`extern`)
 - Package imports
+- Dataset helpers (`fetch`, `load`, `save`)
+- Logic programming constructs (`fact`, `rule`, `query`)
+- Package declarations (`package`)
