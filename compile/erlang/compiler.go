@@ -3,7 +3,10 @@ package erlcode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"slices"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -21,9 +24,11 @@ type Compiler struct {
 	needGenText   bool
 	needGenEmbed  bool
 	needGenStruct bool
+	needSetOps    bool
 	vars          map[string]string
 	counts        map[string]int
 	tmpCount      int
+	packages      map[string]bool
 	tests         []testInfo
 }
 
@@ -113,7 +118,7 @@ func (c *Compiler) newName(name string) string {
 
 // New returns a new Compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}, tmpCount: 0, tests: []testInfo{}}
+	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}, packages: map[string]bool{}, tmpCount: 0, tests: []testInfo{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -341,7 +346,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Import != nil:
-		// import statements are ignored for now
+		if s.Import.Lang == nil || *s.Import.Lang == "erlang" {
+			return c.compilePackageImport(s.Import)
+		}
+		// other languages not supported
 		return nil
 	case s.Test != nil:
 		// handled separately
@@ -575,8 +583,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		op := part.Op
+		if part.All {
+			op = op + "_all"
+		}
 		operands = append(operands, operand{expr: r, typ: c.inferPostfixType(part.Right)})
-		ops = append(ops, part.Op)
+		ops = append(ops, op)
 	}
 
 	levels := [][]string{
@@ -586,6 +598,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	}
 
 	contains := func(sl []string, s string) bool {
@@ -645,6 +658,21 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			case "in":
 				expr = fmt.Sprintf("maps:is_key(%s, %s)", l.expr, r.expr)
 				typ = types.BoolType{}
+			case "union_all":
+				expr = fmt.Sprintf("lists:append(%s, %s)", l.expr, r.expr)
+				typ = types.ListType{Elem: types.AnyType{}}
+			case "union":
+				c.needSetOps = true
+				expr = fmt.Sprintf("mochi_union(%s, %s)", l.expr, r.expr)
+				typ = types.ListType{Elem: types.AnyType{}}
+			case "except":
+				c.needSetOps = true
+				expr = fmt.Sprintf("mochi_except(%s, %s)", l.expr, r.expr)
+				typ = types.ListType{Elem: types.AnyType{}}
+			case "intersect":
+				c.needSetOps = true
+				expr = fmt.Sprintf("mochi_intersect(%s, %s)", l.expr, r.expr)
+				typ = types.ListType{Elem: types.AnyType{}}
 			default:
 				return "", fmt.Errorf("unsupported operator %s", op)
 			}
@@ -1320,6 +1348,82 @@ func (c *Compiler) staticTypeOfPrimary(p *parser.Primary) (types.Type, bool) {
 	return nil, false
 }
 
+func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	if c.packages[alias] {
+		return nil
+	}
+	c.packages[alias] = true
+
+	path := strings.Trim(im.Path, "\"")
+	base := ""
+	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
+		base = filepath.Dir(im.Pos.Filename)
+	}
+	target := filepath.Join(base, path)
+	info, err := os.Stat(target)
+	if err != nil {
+		if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
+			if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
+				info = fi
+				target += ".mochi"
+			} else {
+				return fmt.Errorf("import package: %w", err)
+			}
+		} else {
+			return fmt.Errorf("import package: %w", err)
+		}
+	}
+
+	var files []string
+	if info.IsDir() {
+		entries, err := os.ReadDir(target)
+		if err != nil {
+			return fmt.Errorf("import package: %w", err)
+		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+				files = append(files, filepath.Join(target, e.Name()))
+			}
+		}
+		sort.Strings(files)
+	} else {
+		files = []string{target}
+	}
+
+	pkgEnv := types.NewEnv(c.env)
+	origEnv := c.env
+	c.env = pkgEnv
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		if errs := types.Check(prog, pkgEnv); len(errs) > 0 {
+			c.env = origEnv
+			return errs[0]
+		}
+		for _, s := range prog.Statements {
+			if s.Fun != nil && s.Fun.Export {
+				name := s.Fun.Name
+				s.Fun.Name = alias + "_" + name
+				if err := c.compileFun(s.Fun); err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("")
+			}
+		}
+	}
+	c.env = origEnv
+	return nil
+}
+
 func (c *Compiler) emitRuntime() {
 	c.writeln("mochi_print(Args) ->")
 	c.indent++
@@ -1430,6 +1534,15 @@ func (c *Compiler) emitRuntime() {
 	if c.needGenStruct {
 		c.writeln("")
 		c.writeln("mochi_gen_struct(_Mod, _Prompt, _Model, _Params) -> #{}.")
+	}
+
+	if c.needSetOps {
+		c.writeln("")
+		c.writeln("mochi_union(A, B) -> sets:to_list(sets:union(sets:from_list(A), sets:from_list(B))).")
+		c.writeln("")
+		c.writeln("mochi_except(A, B) -> sets:to_list(sets:subtract(sets:from_list(A), sets:from_list(B))).")
+		c.writeln("")
+		c.writeln("mochi_intersect(A, B) -> sets:to_list(sets:intersection(sets:from_list(A), sets:from_list(B))).")
 	}
 
 	c.writeln("")
