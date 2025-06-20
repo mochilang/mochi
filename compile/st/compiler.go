@@ -17,6 +17,8 @@ type Compiler struct {
 	env          *types.Env
 	funParams    map[string][]string
 	needCount    bool
+	needAvg      bool
+	needInput    bool
 	needBreak    bool
 	needContinue bool
 }
@@ -38,6 +40,8 @@ func (c *Compiler) writeIndent() {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.needCount = false
+	c.needAvg = false
+	c.needInput = false
 	c.needBreak = false
 	c.needContinue = false
 
@@ -102,7 +106,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Write(typeCode)
 	c.buf.Write(funCode)
 	c.buf.Write(testCode)
-	if c.needCount || c.needBreak || c.needContinue {
+	if c.needCount || c.needAvg || c.needInput || c.needBreak || c.needContinue {
 		c.emitHelpers()
 	}
 	c.writelnNoIndent("!!")
@@ -673,6 +677,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needCount = true
 		return fmt.Sprintf("(Main __count: %s)", args[0]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		c.needAvg = true
+		return fmt.Sprintf("(Main __avg: %s)", args[0]), nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input expects no args")
+		}
+		c.needInput = true
+		return "(Main __input)", nil
 	default:
 		params, ok := c.funParams[name]
 		if !ok {
@@ -912,6 +928,25 @@ func (c *Compiler) emitHelpers() {
 		c.indent++
 		c.writeln("(v respondsTo: #size) ifTrue: [ ^ v size ]")
 		c.writeln("^ self error: 'count() expects collection'")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needAvg {
+		c.writeln("__avg: v")
+		c.indent++
+		c.writeln("(v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]")
+		c.writeln("v size = 0 ifTrue: [ ^ 0 ]")
+		c.writeln("| sum |")
+		c.writeln("sum := 0.")
+		c.writeln("v do: [:it | sum := sum + it].")
+		c.writeln("^ sum / v size")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needInput {
+		c.writeln("__input")
+		c.indent++
+		c.writeln("^ stdin nextLine")
 		c.indent--
 		c.writelnNoIndent("!")
 	}
