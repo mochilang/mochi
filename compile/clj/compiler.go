@@ -620,14 +620,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					c.needIndexString = true
 					expr = fmt.Sprintf("(_indexString %s %s)", expr, start)
 					t = types.StringType{}
+				} else if lt, ok := t.(types.ListType); ok {
+					c.needIndexList = true
+					expr = fmt.Sprintf("(_indexList %s %s)", expr, start)
+					t = lt.Elem
+				} else if mt, ok := t.(types.MapType); ok {
+					expr = fmt.Sprintf("(get %s %s)", expr, start)
+					t = mt.Value
 				} else {
 					c.needIndexList = true
 					expr = fmt.Sprintf("(_indexList %s %s)", expr, start)
-					if lt, ok := t.(types.ListType); ok {
-						t = lt.Elem
-					} else {
-						t = types.AnyType{}
-					}
+					t = types.AnyType{}
 				}
 			}
 			continue
@@ -700,6 +703,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "[" + strings.Join(elems, " ") + "]", nil
+	case p.Map != nil:
+		parts := make([]string, 0, len(p.Map.Items)*2)
+		for _, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			parts = append(parts, k, v)
+		}
+		return "{" + strings.Join(parts, " ") + "}", nil
+	case p.Query != nil:
+		expr, err := c.compileQuery(p.Query)
+		if err != nil {
+			return "", err
+		}
+		return expr, nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
@@ -729,6 +752,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + name + " " + strings.Join(args, " ") + ")", nil
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) != 0 || len(q.Joins) != 0 || q.Group != nil || q.Where != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	sortExpr, err := c.compileExpr(q.Sort)
+	if err != nil {
+		return "", err
+	}
+	selExpr, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	v := sanitizeName(q.Var)
+	return fmt.Sprintf("(vec (map (fn [%s] %s) (sort-by (fn [%s] %s) %s)))", v, selExpr, v, sortExpr, src), nil
 }
 
 func (c *Compiler) isStringExpr(expr string) bool {
