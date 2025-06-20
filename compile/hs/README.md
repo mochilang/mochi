@@ -83,6 +83,8 @@ full Mochi language. Unsupported features include:
 * `match` expressions and union types
 * Dataset query syntax like `from ... sort by ...`
 * Set literals and related operations
-* `while` loops
 * Generative AI, HTTP fetch and FFI bindings
 * Streams and long-lived agents
+* `break` and `continue` statements
+* Struct and object types
+* Package imports and module system

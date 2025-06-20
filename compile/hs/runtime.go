@@ -10,6 +10,15 @@ forLoop start end f = go start
               Nothing -> go (i + 1)
          | otherwise = Nothing
 
+whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
+whileLoop cond body = go ()
+  where
+    go _ | cond () =
+            case body () of
+              Just v -> Just v
+              Nothing -> go ()
+         | otherwise = Nothing
+
 avg :: Real a => [a] -> Double
 avg xs | null xs = 0
       | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
