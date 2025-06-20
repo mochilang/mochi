@@ -56,3 +56,17 @@ They compile example programs from `tests/compiler/c` and compare the results.ã€
 The separate `leetcode_test.go` file compiles and executes the first ten
 LeetCode solutions under `examples/leetcode/1` through `examples/leetcode/10`
 using the C backend.
+
+## Unsupported features
+
+The current C backend only implements a small subset of Mochi. Several
+constructs required by later LeetCode problems are not yet supported. Missing
+features include:
+
+- `map` types and the `in` membership operator
+- query expressions such as `from`/`sort by`/`select`
+- detection of `list<string>` parameters (the runtime type is only emitted when
+  used inside a function)
+
+Problems relying on these features (for example LeetCode problems 13â€“25 and
+30) fail to compile at the moment.
