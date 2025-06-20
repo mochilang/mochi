@@ -838,6 +838,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i] = fmt.Sprintf("%s: %s", f.Name, v)
 		}
 		return fmt.Sprintf("%s(%s)", p.Struct.Name, strings.Join(parts, ", ")), nil
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1032,6 +1034,60 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString("\t}\n")
 	b.WriteString("\treturn _res\n")
+	b.WriteString("}())")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("({\n")
+	b.WriteString("\tlet _t = " + target + "\n")
+	for _, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			b.WriteString("\treturn " + res + "\n")
+			b.WriteString("}())")
+			return b.String(), nil
+		}
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				b.WriteString("\tif let v = _t as? " + sanitizeName(call.Func) + " {\n")
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						field := sanitizeName(st.Order[idx])
+						b.WriteString(fmt.Sprintf("\t\tlet %s = v.%s\n", sanitizeName(id), field))
+					}
+				}
+				b.WriteString("\t\treturn " + res + "\n")
+				b.WriteString("\t}\n")
+				continue
+			}
+		}
+		if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				b.WriteString("\tif _t is " + sanitizeName(ident) + " {\n")
+				b.WriteString("\t\treturn " + res + "\n")
+				b.WriteString("\t}\n")
+				continue
+			}
+		}
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString("\tif _t == " + pat + " {\n")
+		b.WriteString("\t\treturn " + res + "\n")
+		b.WriteString("\t}\n")
+	}
+	b.WriteString("\treturn nil\n")
 	b.WriteString("}())")
 	return b.String(), nil
 }
