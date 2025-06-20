@@ -593,19 +593,6 @@ Explore the [`examples/`](./examples) directory:
 
 Edit one or start fresh. It’s all yours.
 
-## Unsupported Features
-
-Some language constructs are still experimental or missing in the current implementation:
-
-- Advanced dataset query options like `group`, `sort`, `skip` and `take`.
-- Streams and agents are not yet compiled by the Rust or C# backends.
-- Logic programming keywords (`fact`, `rule`, `query`).
-- File and network helpers (`fetch`, `load`, `save`, `generate`).
-- Importing external packages with `import` and calling `extern` functions.
-- `test` and `expect` blocks are ignored when compiling to Rust.
-- Left, right and outer joins in dataset queries.
-- Model declarations and generic dictionary casts for complex map types are unsupported in the C# backend.
-
 ## Benchmarks
 
 Run:

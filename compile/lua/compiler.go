@@ -604,8 +604,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil {
-		return "", fmt.Errorf("advanced query clauses not supported")
+	if q.Group != nil {
+		return "", fmt.Errorf("group clause not supported")
+	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("join sides not supported")
+		}
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -645,8 +650,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("(function()\n")
 
-	// handle simple cross join without sort/skip/take
-	if len(q.Froms) > 0 && sortExpr == "" && skipExpr == "" && takeExpr == "" {
+	// handle simple joins/cross joins without sort/skip/take
+	if (len(q.Froms) > 0 || len(q.Joins) > 0) && sortExpr == "" && skipExpr == "" && takeExpr == "" {
 		b.WriteString("\tlocal _res = {}\n")
 		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
 		indent := "\t\t"
@@ -658,12 +663,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(f.Var), fs))
 			indent += "\t"
 		}
+		for _, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(j.Var), js))
+			indent += "\t"
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(fmt.Sprintf(indent+"if %s then\n", on))
+			indent += "\t"
+		}
 		if whereCond != "" {
 			b.WriteString(fmt.Sprintf(indent+"if %s then\n", whereCond))
 			indent += "\t"
 		}
 		b.WriteString(fmt.Sprintf(indent+"table.insert(_res, %s)\n", sel))
 		if whereCond != "" {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+		}
+		for i := len(q.Joins) - 1; i >= 0; i-- {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
 			indent = indent[:len(indent)-1]
 			b.WriteString(indent + "end\n")
 		}
@@ -680,14 +705,50 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	b.WriteString("\tlocal items = {}\n")
 	b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
-	if whereCond != "" {
-		b.WriteString(fmt.Sprintf("\t\tif %s then\n", whereCond))
-		b.WriteString(fmt.Sprintf("\t\t\ttable.insert(items, %s)\n", iter))
-		b.WriteString("\t\tend\n")
-	} else {
-		b.WriteString(fmt.Sprintf("\t\ttable.insert(items, %s)\n", iter))
+	indent := "\t\t"
+	for _, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(f.Var), fs))
+		indent += "\t"
 	}
-	b.WriteString("\tend\n")
+	for _, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(j.Var), js))
+		indent += "\t"
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf(indent+"if %s then\n", on))
+		indent += "\t"
+	}
+	if whereCond != "" {
+		b.WriteString(fmt.Sprintf(indent+"if %s then\n", whereCond))
+		indent += "\t"
+	}
+	b.WriteString(fmt.Sprintf(indent+"table.insert(items, %s)\n", iter))
+	if whereCond != "" {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+	}
+	for i := len(q.Joins) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+	}
+	for i := len(q.Froms) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+	}
+	indent = indent[:len(indent)-1]
+	b.WriteString(indent + "end\n")
 	if sortExpr != "" {
 		b.WriteString("\ttable.sort(items, function(a, b)\n")
 		b.WriteString(fmt.Sprintf("\t\tlocal %s = a\n", iter))

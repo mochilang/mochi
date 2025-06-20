@@ -727,7 +727,7 @@ func (c *Compiler) writeHelpers() {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-	if q.Where != nil || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) != 0 {
+	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) != 0 {
 		return "", fmt.Errorf("query not supported")
 	}
 	src := c.compileExpr(q.Source)
@@ -750,7 +750,16 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(indent + "for (auto& " + v + " : " + srcs[i] + ") {\n")
 		indent += "\t"
 	}
+	if q.Where != nil {
+		cond := c.compileExpr(q.Where)
+		buf.WriteString(indent + "if (" + cond + ") {\n")
+		indent += "\t"
+	}
 	buf.WriteString(indent + "_res.push_back(" + sel + ");\n")
+	if q.Where != nil {
+		indent = indent[:len(indent)-1]
+		buf.WriteString(indent + "}\n")
+	}
 	for range vars {
 		indent = indent[:len(indent)-1]
 		buf.WriteString(indent + "}\n")
