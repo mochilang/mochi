@@ -1,0 +1,34 @@
+program main
+  implicit none
+  print *, add(1_8, 2_8)
+  print *, sub(10_8, 3_8)
+  print *, mul(4_8, 6_8)
+contains
+  function add(x, y) result(res)
+    implicit none
+    integer(kind=8) :: res
+    integer(kind=8), intent(in) :: x
+    integer(kind=8), intent(in) :: y
+    res = (x + y)
+    return
+  end function add
+  
+  function sub(x, y) result(res)
+    implicit none
+    integer(kind=8) :: res
+    integer(kind=8), intent(in) :: x
+    integer(kind=8), intent(in) :: y
+    res = (x - y)
+    return
+  end function sub
+  
+  function mul(x, y) result(res)
+    implicit none
+    integer(kind=8) :: res
+    integer(kind=8), intent(in) :: x
+    integer(kind=8), intent(in) :: y
+    res = (x * y)
+    return
+  end function mul
+  
+end program main

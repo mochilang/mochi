@@ -1,0 +1,13 @@
+program main
+  implicit none
+  print *, id(123_8)
+contains
+  function id(x) result(res)
+    implicit none
+    integer(kind=8) :: res
+    integer(kind=8), intent(in) :: x
+    res = x
+    return
+  end function id
+  
+end program main
