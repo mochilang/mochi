@@ -23,6 +23,10 @@ type Compiler struct {
 	needsInListString bool
 	needsSetOps       bool
 	needsJSON         bool
+	needsIndex        bool
+	needsIndexString  bool
+	needsSlice        bool
+	needsSliceString  bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -179,6 +183,63 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("defer buf.deinit();")
 		c.writeln("std.json.stringify(v, .{}, buf.writer()) catch unreachable;")
 		c.writeln("std.debug.print(\"{s}\\n\", .{buf.items});")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsIndex {
+		c.writeln("fn _index_list(comptime T: type, v: []const T, i: i32) T {")
+		c.indent++
+		c.writeln("var idx = i;")
+		c.writeln("const n: i32 = @as(i32, @intCast(v.len));")
+		c.writeln("if (idx < 0) idx += n;")
+		c.writeln("if (idx < 0 or idx >= n) @panic(\"index out of range\");")
+		c.writeln("return v[@as(usize, @intCast(idx))];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsIndexString {
+		c.writeln("fn _index_string(s: []const u8, i: i32) []const u8 {")
+		c.indent++
+		c.writeln("var idx = i;")
+		c.writeln("const n: i32 = @as(i32, @intCast(s.len));")
+		c.writeln("if (idx < 0) idx += n;")
+		c.writeln("if (idx < 0 or idx >= n) @panic(\"index out of range\");")
+		c.writeln("const u = @as(usize, @intCast(idx));")
+		c.writeln("return s[u..u+1];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsSlice {
+		c.writeln("fn _slice_list(comptime T: type, v: []const T, start: i32, end: i32) []const T {")
+		c.indent++
+		c.writeln("var s = start;")
+		c.writeln("var e = end;")
+		c.writeln("const n: i32 = @as(i32, @intCast(v.len));")
+		c.writeln("if (s < 0) s += n;")
+		c.writeln("if (e < 0) e += n;")
+		c.writeln("if (s < 0) s = 0;")
+		c.writeln("if (e > n) e = n;")
+		c.writeln("if (e < s) e = s;")
+		c.writeln("return v[@as(usize, @intCast(s))..@as(usize, @intCast(e))];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsSliceString {
+		c.writeln("fn _slice_string(s: []const u8, start: i32, end: i32) []const u8 {")
+		c.indent++
+		c.writeln("var sidx = start;")
+		c.writeln("var eidx = end;")
+		c.writeln("const n: i32 = @as(i32, @intCast(s.len));")
+		c.writeln("if (sidx < 0) sidx += n;")
+		c.writeln("if (eidx < 0) eidx += n;")
+		c.writeln("if (sidx < 0) sidx = 0;")
+		c.writeln("if (eidx > n) eidx = n;")
+		c.writeln("if (eidx < sidx) eidx = sidx;")
+		c.writeln("return s[@as(usize, @intCast(sidx))..@as(usize, @intCast(eidx))];")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -584,6 +645,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 				}
 				if c.isMapPostfix(p) {
 					expr = fmt.Sprintf("(%s.get(%s) orelse unreachable)", expr, idx)
+				} else if c.isStringPostfix(p) {
+					c.needsIndexString = true
+					expr = fmt.Sprintf("_index_string(%s, %s)", expr, idx)
+				} else if c.isListPostfix(p) {
+					elem := c.listElemTypePostfix(p)
+					c.needsIndex = true
+					expr = fmt.Sprintf("_index_list(%s, %s, %s)", elem, expr, idx)
 				} else {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
@@ -606,7 +674,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 				} else {
 					end = fmt.Sprintf("%s.len", expr)
 				}
-				expr = fmt.Sprintf("%s[%s..%s]", expr, start, end)
+				if c.isStringPostfix(p) {
+					c.needsSliceString = true
+					expr = fmt.Sprintf("_slice_string(%s, %s, %s)", expr, start, end)
+				} else if c.isListPostfix(p) {
+					elem := c.listElemTypePostfix(p)
+					c.needsSlice = true
+					expr = fmt.Sprintf("_slice_list(%s, %s, %s, %s)", elem, expr, start, end)
+				} else {
+					expr = fmt.Sprintf("%s[%s..%s]", expr, start, end)
+				}
 			}
 		} else if op.Call != nil {
 			expr, err = c.compileCallOp(expr, op.Call)
@@ -1112,6 +1189,44 @@ func (c *Compiler) isStringListPrimary(p *parser.Primary) bool {
 				if _, ok := lt.Elem.(types.StringType); ok {
 					return true
 				}
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isListExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return c.isListUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isListUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isListPostfix(u.Value)
+}
+
+func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isListPrimary(p.Target)
+}
+
+func (c *Compiler) isListPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.List != nil {
+		return true
+	}
+	if p.Selector != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.ListType); ok {
+				return true
 			}
 		}
 	}

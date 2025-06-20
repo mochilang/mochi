@@ -263,7 +263,10 @@ LeetCode solutions:
 
 * dataset query expressions (`from ... sort ... select`) used by problems that
   operate over CSV-style input
-* advanced string slicing and indexing
+* advanced string slicing (step values) and indexing on assignment
+* iteration over map key/value pairs
+* functions with multiple return values
+* generic type parameters
 * nested list types beyond one dimension
 * user-defined structs and union types
 * pattern matching with `match` expressions
