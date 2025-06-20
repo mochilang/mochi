@@ -243,6 +243,8 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Union types and tagged unions
 - Dataset queries (`from`/`select`, joins, grouping)
 - Dataset loading/saving helpers
-- External helpers like `_genText`, `_fetch` and concurrency primitives
+- Concurrency primitives like streams and agents
+- Foreign imports and extern functions
+- Logic programming constructs (`fact`, `rule`, `query`)
 
 Simple `from` queries used by the LeetCode examples are now supported.
