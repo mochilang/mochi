@@ -193,6 +193,68 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = fmt.Sprintf("_ %s: %s", p.Name, c.compileType(p.Type))
+	}
+	ret := c.compileType(fn.Return)
+	c.writeln(fmt.Sprintf("func %s(%s) -> %s {", fn.Name, strings.Join(params, ", "), ret))
+	c.indent++
+
+	oldEnv := c.env
+	oldRet := c.funcRet
+	oldLocals := c.locals
+
+	c.locals = map[string]types.Type{}
+	if c.env != nil {
+		methodEnv := types.NewEnv(c.env)
+		if st, ok := c.env.GetStruct(structName); ok {
+			for name, t := range st.Fields {
+				methodEnv.SetVar(name, t, true)
+				c.locals[name] = t
+			}
+		}
+		c.env = methodEnv
+		for _, p := range fn.Params {
+			if p.Type != nil {
+				t := resolveTypeRef(p.Type, oldEnv)
+				c.env.SetVar(p.Name, t, true)
+				c.locals[p.Name] = t
+			}
+		}
+	}
+
+	c.funcRet = resolveTypeRef(fn.Return, oldEnv)
+
+	for _, p := range fn.Params {
+		decl := "var"
+		if !paramAssigned(fn.Body, p.Name) {
+			decl = "let"
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s", decl, p.Name, p.Name))
+	}
+	if len(fn.Params) > 0 {
+		c.writeln("")
+	}
+
+	for _, st := range fn.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+
+	if c.env != nil {
+		c.env = oldEnv
+	}
+	c.locals = oldLocals
+	c.funcRet = oldRet
+
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileType(t *parser.TypeRef) string {
 	if t == nil {
 		return "Void"
@@ -251,6 +313,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		if m.Field != nil {
 			typ := c.compileType(m.Field.Type)
 			c.writeln(fmt.Sprintf("var %s: %s", m.Field.Name, typ))
+		} else if m.Method != nil {
+			if err := c.compileMethod(t.Name, m.Method); err != nil {
+				return err
+			}
 		}
 	}
 	c.indent--
