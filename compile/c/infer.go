@@ -162,6 +162,39 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 			return types.AnyType{}
 		}
+	case p.If != nil:
+		thenType := c.inferExprType(p.If.Then)
+		var elseType types.Type = types.AnyType{}
+		if p.If.ElseIf != nil {
+			elseType = c.inferPrimaryType(&parser.Primary{If: p.If.ElseIf})
+		} else if p.If.Else != nil {
+			elseType = c.inferExprType(p.If.Else)
+		}
+		if equalTypes(thenType, elseType) {
+			return thenType
+		}
+		if isNumber(thenType) && isNumber(elseType) {
+			if isFloat(thenType) || isFloat(elseType) {
+				return types.FloatType{}
+			}
+			return types.IntType{}
+		}
+		if _, ok := thenType.(types.StringType); ok {
+			if _, ok2 := elseType.(types.StringType); ok2 {
+				return types.StringType{}
+			}
+		}
+		if lt1, ok1 := thenType.(types.ListType); ok1 {
+			if lt2, ok2 := elseType.(types.ListType); ok2 && equalTypes(lt1.Elem, lt2.Elem) {
+				return lt1
+			}
+		}
+		if _, ok := thenType.(types.BoolType); ok {
+			if _, ok2 := elseType.(types.BoolType); ok2 {
+				return types.BoolType{}
+			}
+		}
+		return types.AnyType{}
 	case p.Group != nil:
 		return c.inferExprType(p.Group)
 	case p.List != nil:
