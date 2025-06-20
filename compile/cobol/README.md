@@ -17,7 +17,9 @@ tests.
 
 The compiler works by converting the Mochi AST into a simplified tree (using the
 `ast` helpers) and then emitting COBOL statements for a handful of constructs
-(`for` loops, `let` bindings, calls to `print` and the `twoSum` example code).
+(`for` loops, `let`/`var` bindings, calls to `print` and the `twoSum` example
+code).  It now also handles simple floating point variables using a fixed
+`PIC 9(4)V9(4)` declaration.
 
 ```go
 type Compiler struct {

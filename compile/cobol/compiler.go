@@ -91,6 +91,56 @@ func (c *Compiler) isStringExpr(n *ast.Node) bool {
 	return false
 }
 
+// isFloatExpr reports whether the node evaluates to a floating point value.
+func (c *Compiler) isFloatExpr(n *ast.Node) bool {
+	switch n.Kind {
+	case "float":
+		return true
+	case "selector":
+		if c.env != nil {
+			if t, err := c.env.GetVar(n.Value.(string)); err == nil {
+				if _, ok := t.(types.FloatType); ok {
+					return true
+				}
+			}
+		}
+	case "binary":
+		switch n.Value {
+		case "+", "-", "*", "/", "%":
+			return c.isFloatExpr(n.Children[0]) || c.isFloatExpr(n.Children[1])
+		}
+	}
+	return false
+}
+
+// picForVar returns the COBOL picture clause for a variable name based on the
+// static type information in the environment.
+func (c *Compiler) picForVar(name string) string {
+	if c.env != nil {
+		if t, err := c.env.GetVar(name); err == nil {
+			switch t.(type) {
+			case types.StringType:
+				return "PIC X(100)."
+			case types.FloatType:
+				return "PIC 9(4)V9(4)."
+			}
+		}
+	}
+	return "PIC 9."
+}
+
+// picForExpr returns the COBOL picture clause for a temporary value resulting
+// from evaluating n.
+func (c *Compiler) picForExpr(n *ast.Node) string {
+	if c.isStringExpr(n) {
+		return "PIC X(100)."
+	}
+	if c.isFloatExpr(n) {
+		return "PIC 9(4)V9(4)."
+	}
+	return "PIC 9."
+}
+
 // declare records a WORKING-STORAGE declaration.
 func (c *Compiler) declare(line string) {
 	for _, d := range c.decls {
@@ -149,7 +199,8 @@ func (c *Compiler) compileNode(n *ast.Node) {
 		}
 
 	case "let":
-		name := strings.ToUpper(n.Value.(string))
+		orig := n.Value.(string)
+		name := strings.ToUpper(orig)
 		if len(n.Children) == 1 && n.Children[0].Kind == "call" {
 			switch n.Children[0].Value {
 			case "twoSum":
@@ -160,15 +211,16 @@ func (c *Compiler) compileNode(n *ast.Node) {
 				return
 			}
 		}
-		c.declare(fmt.Sprintf("01 %s PIC 9.", name))
+		c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
 		if len(n.Children) == 1 {
 			expr := c.expr(n.Children[0])
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
 		}
 
 	case "var":
-		name := strings.ToUpper(n.Value.(string))
-		c.declare(fmt.Sprintf("01 %s PIC 9.", name))
+		orig := n.Value.(string)
+		name := strings.ToUpper(orig)
+		c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
 		if len(n.Children) == 1 {
 			expr := c.expr(n.Children[0])
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
@@ -193,11 +245,10 @@ func (c *Compiler) compileNode(n *ast.Node) {
 					c.writeln("    DISPLAY " + expr)
 				} else {
 					tmp := c.newTemp()
+					c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(arg)))
 					if c.isStringExpr(arg) {
-						c.declare(fmt.Sprintf("01 %s PIC X(100).", tmp))
 						c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
 					} else {
-						c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
 						c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
 					}
 					c.writeln("    DISPLAY " + tmp)
@@ -342,7 +393,11 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
 		tmp := c.newTemp()
-		c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+		if c.isFloatExpr(n.Children[0]) || c.isFloatExpr(n.Children[1]) {
+			c.declare(fmt.Sprintf("01 %s PIC 9(4)V9(4).", tmp))
+		} else {
+			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+		}
 		c.writeln(fmt.Sprintf("    COMPUTE %s = %s + %s", tmp, left, right))
 		return tmp
 	}
@@ -352,11 +407,10 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 			return expr
 		}
 		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[0])))
 		if c.isStringExpr(n.Children[0]) {
-			c.declare(fmt.Sprintf("01 %s PIC X(100).", tmp))
 			c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
 		} else {
-			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
 		}
 		return tmp
@@ -368,11 +422,10 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		expr := c.expr(arg)
 		if !isSimpleExpr(arg) {
 			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(arg)))
 			if c.isStringExpr(arg) {
-				c.declare(fmt.Sprintf("01 %s PIC X(100).", tmp))
 				c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
 			} else {
-				c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
 				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
 			}
 			expr = tmp
