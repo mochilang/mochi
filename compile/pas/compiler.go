@@ -232,6 +232,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Agent != nil, s.Stream != nil, s.Model != nil, s.On != nil, s.Emit != nil:
+		return fmt.Errorf("agents and streams not supported")
+	case s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
+		return fmt.Errorf("foreign declarations not supported")
+	case s.Fact != nil, s.Rule != nil:
+		return fmt.Errorf("logic programming constructs not supported")
 	case s.Import != nil:
 		if s.Import.Lang == nil {
 			return c.compilePackageImport(s.Import)
@@ -1084,6 +1090,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.writeln(strings.ReplaceAll(p, "m", tmp))
 		}
 		return tmp, nil
+	case p.Query != nil:
+		return "", fmt.Errorf("dataset queries not supported")
+	case p.LogicQuery != nil:
+		return "", fmt.Errorf("logic queries not supported")
+	case p.Generate != nil:
+		return "", fmt.Errorf("generative model expressions not supported")
+	case p.Fetch != nil, p.Load != nil, p.Save != nil:
+		return "", fmt.Errorf("dataset helpers not supported")
+	case p.FunExpr != nil:
+		return "", fmt.Errorf("anonymous functions not supported")
+	case p.If != nil:
+		return "", fmt.Errorf("if expressions not supported")
+	case p.Match != nil:
+		return "", fmt.Errorf("match expressions not supported")
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
