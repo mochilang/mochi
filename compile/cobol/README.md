@@ -149,6 +149,23 @@ compiled using the COBOL backend, built with `cobc` and executed.  The printed
 results are compared against the stored `.out` files to ensure deterministic
 behaviour.
 
+## Supported features
+
+While intentionally tiny, the backend can handle a small selection of language
+constructs:
+
+- Integer, float, string and boolean literals
+- Basic arithmetic and boolean operators
+- `let` and `var` declarations and assignments
+- `if` statements and expressions
+- `for` loops over integer ranges, list literals and fixed list variables
+- `while` loops
+- Function definitions and calls, including nested functions
+- Calls to built-ins `print`, `len`, `add`, `twoSum` and `addTwoNumbers`
+- List concatenation with `+` and indexing (including negative indices)
+- Simple `match` expressions with literal patterns
+- `expect` and `test` blocks
+
 ## Unsupported features
 
 Only a narrow slice of Mochi is recognised by this backend. Programs using
@@ -181,7 +198,8 @@ unsupported include:
   list, a string literal, or a fixed list variable
 - Range loops with step values other than `1`
 - Slicing expressions like `list[start:end]`
-- Calling `len` on list variables
+- Using the `range` helper to generate sequences
+- Dynamic lists whose length is not known at compile time
 - Struct and model declarations
 - Union type declarations and inline methods
 - First-class function values or closures
