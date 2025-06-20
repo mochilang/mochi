@@ -54,11 +54,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
+	// test blocks
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 	// main body
 	c.writeln("func main() {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -76,6 +85,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("import Foundation")
 	c.writeln("")
+	c.writeExpectFunc(prog)
 	if c.useAvg {
 		c.writeln("func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {")
 		c.indent++
@@ -496,6 +506,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue")
 		return nil
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -1260,6 +1272,107 @@ func containsAny(t types.Type) bool {
 		return containsAny(tt.Elem)
 	case types.MapType:
 		return containsAny(tt.Key) || containsAny(tt.Value)
+	}
+	return false
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln("expect(" + expr + ")")
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln("func " + name + "() {")
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) writeExpectFunc(prog *parser.Program) {
+	if !hasExpect(prog) {
+		return
+	}
+	c.writeln("func expect(_ cond: Bool) {")
+	c.indent++
+	c.writeln("if !cond { fatalError(\"expect failed\") }")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+}
+
+func hasTest(p *parser.Program) bool {
+	for _, s := range p.Statements {
+		if s.Test != nil {
+			return true
+		}
+	}
+	return false
+}
+
+func hasExpect(p *parser.Program) bool {
+	for _, s := range p.Statements {
+		if containsExpect(s) {
+			return true
+		}
+	}
+	return false
+}
+
+func containsExpect(s *parser.Statement) bool {
+	switch {
+	case s.Expect != nil:
+		return true
+	case s.If != nil:
+		for _, t := range s.If.Then {
+			if containsExpect(t) {
+				return true
+			}
+		}
+		if s.If.ElseIf != nil {
+			if containsExpect(&parser.Statement{If: s.If.ElseIf}) {
+				return true
+			}
+		}
+		for _, t := range s.If.Else {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.For != nil:
+		for _, t := range s.For.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.While != nil:
+		for _, t := range s.While.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.Test != nil:
+		for _, t := range s.Test.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.Fun != nil:
+		for _, t := range s.Fun.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
 	}
 	return false
 }
