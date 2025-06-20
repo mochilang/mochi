@@ -33,29 +33,29 @@ int digit(String ch) {
 }
 
 int myAtoi(String s) {
-	int i = 0;
-	int n = s.length;
+	dynamic i = 0;
+	dynamic n = s.length;
 	while (((i < n) && (_indexString(s, i) == _indexString(" ", 0)))) {
-		i = (i + 1);
+		i = ((i + 1)).toInt();
 	}
-	int sign = 1;
+	dynamic sign = 1;
 	if (((i < n) && (((_indexString(s, i) == _indexString("+", 0)) || (_indexString(s, i) == _indexString("-", 0)))))) {
 		if ((_indexString(s, i) == _indexString("-", 0))) {
-			sign = -1;
+			sign = (-1).toInt();
 		}
-		i = (i + 1);
+		i = ((i + 1)).toInt();
 	}
-	int result = 0;
+	dynamic result = 0;
 	while ((i < n)) {
-		String ch = s.substring(i, (i + 1));
-		int d = digit(ch);
+		dynamic ch = s.substring(i, (i + 1));
+		dynamic d = digit(ch);
 		if ((d < 0)) {
 			break;
 		}
-		result = ((result * 10) + d);
-		i = (i + 1);
+		result = (((result * 10) + d)).toInt();
+		i = ((i + 1)).toInt();
 	}
-	result = (result * sign);
+	result = ((result * sign)).toInt();
 	if ((result > 2147483647)) {
 		return 2147483647;
 	}
@@ -78,3 +78,4 @@ String _indexString(String s, int i) {
 	}
 	return String.fromCharCode(runes[i]);
 }
+

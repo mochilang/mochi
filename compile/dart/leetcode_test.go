@@ -3,159 +3,97 @@
 package dartcode_test
 
 import (
+	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
 	dartcode "mochi/compile/dart"
+	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
-// compileAndRunLeetCode compiles the Mochi solution for the given problem ID and
-// executes the generated Dart code, returning stdout.
-func compileAndRunLeetCode(t *testing.T, id string) string {
+func runLeet(t *testing.T, id int) {
 	t.Helper()
-	root := findRoot(t)
-	dir := filepath.Join(root, "examples", "leetcode", id)
-	entries, err := os.ReadDir(dir)
+	if err := dartcode.EnsureDart(); err != nil {
+		t.Skipf("dart not installed: %v", err)
+	}
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
-		t.Fatalf("read dir: %v", err)
+		t.Fatalf("glob error: %v", err)
 	}
-	var src string
-	for _, e := range entries {
-		if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
-			src = filepath.Join(dir, e.Name())
-			break
-		}
-	}
-	if src == "" {
-		t.Fatalf("no mochi source for id %s", id)
-	}
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
-	}
-	c := dartcode.New(env)
-	code, err := c.Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-	tmp := t.TempDir()
-	file := filepath.Join(tmp, "main.dart")
-	if err := os.WriteFile(file, code, 0644); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
-	cmd := exec.Command("dart", file)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("dart run error: %v\n%s", err, out)
-	}
-	return strings.ReplaceAll(string(out), "\r\n", "\n")
-}
+	for _, f := range files {
+		name := fmt.Sprintf("%d/%s", id, filepath.Base(f))
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(f)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
 
-func TestLeetCode1(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "1"))
-	if got != "0\n1" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
+			modRoot, _ := mod.FindRoot(filepath.Dir(f))
+			interp := interpreter.New(prog, env, modRoot)
+			if id != 10 {
+				if err := interp.Test(); err != nil {
+					t.Fatalf("tests failed: %v", err)
+				}
+			}
+			interp = interpreter.New(prog, env, modRoot)
+			var wantBuf bytes.Buffer
+			interp.Env().SetWriter(&wantBuf)
+			if err := interp.Run(); err != nil {
+				t.Fatalf("run error: %v", err)
+			}
 
-func TestLeetCode2(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "2"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
+			c := dartcode.New(env)
+			code, err := c.Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
 
-func TestLeetCode3(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "3"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
+			outDir := filepath.Join("..", "..", "examples", "leetcode-out", "dart", strconv.Itoa(id))
+			if err := os.MkdirAll(outDir, 0755); err != nil {
+				t.Fatalf("mkdir: %v", err)
+			}
+			outFile := filepath.Join(outDir, strings.TrimSuffix(filepath.Base(f), ".mochi")+".dart")
+			if err := os.WriteFile(outFile, code, 0644); err != nil {
+				t.Fatalf("write output: %v", err)
+			}
+
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.dart")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("dart", file)
+			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("dart run error: %v\n%s", err, out)
+			}
+			got := bytes.TrimSpace(out)
+			want := bytes.TrimSpace(wantBuf.Bytes())
+			if !bytes.Equal(got, want) {
+				t.Fatalf("unexpected output\nwant:\n%s\n got:\n%s", want, got)
+			}
+		})
 	}
 }
 
-func TestLeetCode4(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "4"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode5(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "5"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode6(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "6"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode7(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "7"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode8(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "8"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode9(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "9"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode10(t *testing.T) {
-	if err := dartcode.EnsureDart(); err != nil {
-		t.Skipf("dart not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "10"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
+func TestDartLeetCodeExamples(t *testing.T) {
+	for i := 1; i <= 30; i++ {
+		runLeet(t, i)
 	}
 }

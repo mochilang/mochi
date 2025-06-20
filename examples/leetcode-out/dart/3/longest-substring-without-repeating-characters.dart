@@ -1,22 +1,22 @@
 int lengthOfLongestSubstring(String s) {
-	int n = s.length;
-	int start = 0;
-	int best = 0;
-	int i = 0;
+	dynamic n = s.length;
+	dynamic start = 0;
+	dynamic best = 0;
+	dynamic i = 0;
 	while ((i < n)) {
-		var j = start;
+		dynamic j = start;
 		while ((j < i)) {
 			if ((_indexString(s, j) == _indexString(s, i))) {
-				start = (j + 1);
+				start = ((j + 1)).toInt();
 				break;
 			}
-			j = (j + 1);
+			j = ((j + 1)).toInt();
 		}
-		var length = ((i - start) + 1);
+		dynamic length = ((i - start) + 1);
 		if ((length > best)) {
 			best = length;
 		}
-		i = (i + 1);
+		i = ((i + 1)).toInt();
 	}
 	return best;
 }
@@ -34,3 +34,4 @@ String _indexString(String s, int i) {
 	}
 	return String.fromCharCode(runes[i]);
 }
+

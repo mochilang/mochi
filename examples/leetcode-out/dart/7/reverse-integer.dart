@@ -1,17 +1,17 @@
 int reverse(int x) {
-	int sign = 1;
-	int n = x;
+	dynamic sign = 1;
+	dynamic n = x;
 	if ((n < 0)) {
-		sign = -1;
-		n = -n;
+		sign = (-1).toInt();
+		n = (-n).toInt();
 	}
-	int rev = 0;
+	dynamic rev = 0;
 	while ((n != 0)) {
-		var digit = (n % 10);
-		rev = ((rev * 10) + digit);
-		n = (n ~/ 10);
+		dynamic digit = (n % 10);
+		rev = (((rev * 10) + digit)).toInt();
+		n = ((n ~/ 10)).toInt();
 	}
-	rev = (rev * sign);
+	rev = ((rev * sign)).toInt();
 	if (((rev < ((-2147483647 - 1))) || (rev > 2147483647))) {
 		return 0;
 	}
@@ -20,3 +20,4 @@ int reverse(int x) {
 
 void main() {
 }
+
