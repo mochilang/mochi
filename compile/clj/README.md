@@ -120,7 +120,7 @@ execute correctly using the Clojure backend.
 
 ## Status
 
-The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals, dataset `load` and `save` helpers for CSV files, basic `group by` queries and built-in helpers like `count`, `avg`, `now`, `input`, `json` and anonymous `fun` expressions. Query expressions handle filtering, cross and inner joins and pagination via `skip`/`take`. List, string and map indexing/slicing work, as do simple `match` expressions on constants and struct literals with field access. Break and `continue` statements are also implemented. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
+The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals, dataset `load` and `save` helpers for CSV files, simple `import` statements for Clojure namespaces, basic `group by` queries and built-in helpers like `count`, `avg`, `now`, `input`, `json` and anonymous `fun` expressions. Query expressions handle filtering, cross and inner joins and pagination via `skip`/`take`. List, string and map indexing/slicing work, as do simple `match` expressions on constants and struct literals with field access. Break and `continue` statements are also implemented. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
 
 ### Unsupported Features
 
@@ -129,7 +129,7 @@ in the example programs. In particular:
 - Union types and pattern matching on variants
 - Left/right/outer joins and grouped aggregations
 - Agent helpers and LLM integration
-- Package imports and module system
+- Foreign imports for other languages and the module system
 - Logic programming facts and rules
 - External declarations and other FFI helpers
 - HTTP fetch and generative AI utilities
@@ -139,6 +139,7 @@ in the example programs. In particular:
 - Streams and event-driven agents
 - Concurrency primitives such as `spawn` and channels
 - Methods declared inside `type` blocks
+- Struct declarations are ignored and union types are not emitted
 - Error handling with `try`/`catch` blocks
 - Reflection or macro facilities
 

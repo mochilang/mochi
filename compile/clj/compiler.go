@@ -3,6 +3,7 @@ package cljcode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -17,6 +18,7 @@ type Compiler struct {
 	env             *types.Env
 	mainStmts       []*parser.Statement
 	tempVarCount    int
+	imports         map[string]string
 	needIndexString bool
 	needIndexList   bool
 	needInput       bool
@@ -31,7 +33,7 @@ type Compiler struct {
 
 // New creates a new Clojure compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, tempVarCount: 0}
+	return &Compiler{env: env, tempVarCount: 0, imports: map[string]string{}}
 }
 
 // Compile generates Clojure code for prog.
@@ -40,6 +42,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.mainStmts = nil
 	c.tempVarCount = 0
+	c.imports = map[string]string{}
 	c.needIndexString = false
 	c.needIndexList = false
 	c.needInput = false
@@ -85,7 +88,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("(-main)")
 
 	finalBuf := bytes.Buffer{}
-	finalBuf.WriteString("(ns main)\n\n")
+	c.writeNamespace(&finalBuf)
 	c.writeRuntime(&finalBuf)
 	finalBuf.Write(c.buf.Bytes())
 
@@ -174,7 +177,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Var != nil:
 		return c.compileVar(s.Var)
 	case s.Import != nil:
-		return nil // imports are ignored by the Clojure backend
+		return c.compileImport(s.Import)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
 	case s.Assign != nil:
@@ -246,6 +249,20 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 		c.env.SetVar(st.Name, typ, true)
 	}
+	return nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang != nil && *im.Lang != "clj" && *im.Lang != "clojure" {
+		return fmt.Errorf("unsupported import language: %s", *im.Lang)
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	path := strings.Trim(im.Path, "\"")
+	c.imports[alias] = path
 	return nil
 }
 
@@ -1189,6 +1206,23 @@ func (c *Compiler) newTemp() string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
 	return name
+}
+
+func (c *Compiler) writeNamespace(buf *bytes.Buffer) {
+	buf.WriteString("(ns main")
+	if len(c.imports) > 0 {
+		buf.WriteString("\n  (:require\n")
+		aliases := make([]string, 0, len(c.imports))
+		for a := range c.imports {
+			aliases = append(aliases, a)
+		}
+		sort.Strings(aliases)
+		for _, a := range aliases {
+			buf.WriteString(fmt.Sprintf("    [%s :as %s]\n", c.imports[a], a))
+		}
+		buf.WriteString("  )")
+	}
+	buf.WriteString(")\n\n")
 }
 
 func (c *Compiler) writeRuntime(buf *bytes.Buffer) {
