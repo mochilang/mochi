@@ -826,16 +826,21 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	for i, p := range fn.Params {
 		params[i] = sanitizeName(p.Name)
 	}
-	if fn.ExprBody == nil {
-		return "", fmt.Errorf("block function expressions not supported")
-	}
 	sub := &Compiler{env: c.env, helpers: c.helpers}
 	sub.indent = 1
-	expr, err := sub.compileExpr(fn.ExprBody)
-	if err != nil {
-		return "", err
+	if fn.ExprBody != nil {
+		expr, err := sub.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		sub.writeln("return " + expr)
+	} else {
+		for _, st := range fn.BlockBody {
+			if err := sub.compileStmt(st); err != nil {
+				return "", err
+			}
+		}
 	}
-	sub.writeln("return " + expr)
 	body := indentBlock(sub.buf.String(), 1)
 	return "function(" + strings.Join(params, ", ") + ")\n" + body + "end", nil
 }

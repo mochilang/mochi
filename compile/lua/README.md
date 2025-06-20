@@ -292,7 +292,7 @@ solutions under `examples/leetcode` to verify basic program execution.
 
 ## Notes
 
-The Lua backend supports most core language features but skips advanced LLM helpers and external objects. Query expressions handle simple joins and common clauses. The emphasis is on readability and portability of the emitted Lua code.
+The Lua backend supports most core language features but skips advanced LLM helpers and external objects. Query expressions handle simple `from` clauses along with `where`, `sort`, `skip` and `take`. The emphasis is on readability and portability of the emitted Lua code.
 
 ### Unsupported Features
 
@@ -301,7 +301,8 @@ fail at runtime:
 
 - Regular expression helpers beyond simple `match`
 - Mutating lists while iterating (e.g. `insert`, `remove`)
-- Query clauses like `join`, `skip`, `take` and `order` 
+- Query clauses like `join` or `group`
+- Loading or saving data with `load`/`save`
 - Interaction with external objects
 
 Problems `6`, `10`, `23` and `27` currently do not run correctly when compiled
