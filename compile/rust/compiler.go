@@ -12,17 +12,18 @@ import (
 
 // Compiler translates a Mochi AST into Rust source code.
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	env     *types.Env
-	helpers map[string]bool
-	structs map[string]bool
-	retType string
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	helpers      map[string]bool
+	structs      map[string]bool
+	retType      string
+	methodFields map[string]bool
 }
 
 // New creates a new Rust compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool), methodFields: nil}
 }
 
 func (c *Compiler) writeIndent() {
@@ -183,6 +184,9 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 	lhs := sanitizeName(stmt.Name)
+	if c.methodFields != nil && c.methodFields[stmt.Name] {
+		lhs = fmt.Sprintf("self.%s", lhs)
+	}
 
 	// Handle simple map assignments like m[k] = v
 	if len(stmt.Index) == 1 && (c.isMapVar(stmt.Name) || isStringLiteral(stmt.Index[0].Start)) {
@@ -289,6 +293,36 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("}")
+
+	// Compile methods defined within the type
+	for _, m := range t.Members {
+		if m.Method != nil {
+			if c.env != nil {
+				st, ok := c.env.GetStruct(t.Name)
+				if !ok {
+					st = types.StructType{Name: t.Name, Fields: map[string]types.Type{}, Order: []string{}, Methods: map[string]types.Method{}}
+				}
+				params := make([]types.Type, len(m.Method.Params))
+				for i, p := range m.Method.Params {
+					params[i] = c.resolveTypeRef(p.Type)
+				}
+				var ret types.Type = types.VoidType{}
+				if m.Method.Return != nil {
+					ret = c.resolveTypeRef(m.Method.Return)
+				}
+				st.Methods[m.Method.Name] = types.Method{Decl: m.Method, Type: types.FuncType{Params: params, Return: ret}}
+				c.env.SetStruct(t.Name, st)
+			}
+			c.writeln(fmt.Sprintf("impl %s {", name))
+			c.indent++
+			if err := c.compileMethod(name, m.Method); err != nil {
+				return err
+			}
+			c.indent--
+			c.writeln("}")
+			c.writeln("")
+		}
+	}
 	return nil
 }
 
@@ -444,6 +478,54 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.indent--
 	c.env = origEnv
 	c.retType = origRet
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
+	name := sanitizeName(fun.Name)
+	c.writeIndent()
+	c.buf.WriteString("fn " + name + "(&mut self")
+	for _, p := range fun.Params {
+		typ := rustType(p.Type)
+		c.buf.WriteString(fmt.Sprintf(", %s: %s", sanitizeName(p.Name), typ))
+	}
+	c.buf.WriteString(")")
+	ret := ""
+	if fun.Return != nil {
+		ret = rustType(fun.Return)
+		c.buf.WriteString(" -> " + ret)
+	}
+	c.buf.WriteString(" {\n")
+	origEnv := c.env
+	origRet := c.retType
+	c.retType = ret
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		if st, ok := c.env.GetStruct(structName); ok {
+			c.methodFields = make(map[string]bool, len(st.Fields))
+			for fname, ft := range st.Fields {
+				child.SetVar(fname, ft, true)
+				c.methodFields[fname] = true
+			}
+		}
+		for _, p := range fun.Params {
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		}
+		c.env = child
+	}
+	c.indent++
+	for _, s := range fun.Body {
+		if err := c.compileStmt(s); err != nil {
+			c.env = origEnv
+			c.methodFields = nil
+			return err
+		}
+	}
+	c.indent--
+	c.env = origEnv
+	c.retType = origRet
+	c.methodFields = nil
 	c.writeln("}")
 	return nil
 }
@@ -883,7 +965,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "0", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
-			return sanitizeName(p.Selector.Root), nil
+			name := sanitizeName(p.Selector.Root)
+			if c.methodFields != nil && c.methodFields[p.Selector.Root] {
+				return fmt.Sprintf("self.%s", name), nil
+			}
+			return name, nil
 		}
 		parts := []string{sanitizeName(p.Selector.Root)}
 		for _, t := range p.Selector.Tail {

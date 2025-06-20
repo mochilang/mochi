@@ -6,8 +6,7 @@ The Rust backend translates Mochi programs to Rust source code. It is used for e
 
 The current implementation lacks support for:
 
-- Methods defined inside `type` declarations are ignored.
-- Generic map types (`map<K, V>`) are not yet handled.
+- Complex dataset queries using grouping, joins or pagination.
 - Agent and stream declarations (`agent`, `on`, `emit`).
 - Logic programming constructs (`fact`, `rule`, `query`).
 - Data fetching and persistence expressions (`fetch`, `load`, `save`, `generate`).
