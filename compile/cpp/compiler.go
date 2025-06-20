@@ -195,9 +195,38 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		expr := c.compileExpr(s.Let.Value)
+		if lit := getEmptyListLiteral(s.Let.Value); lit != nil {
+			var elem string
+			if s.Let.Type != nil && s.Let.Type.Generic != nil && len(s.Let.Type.Generic.Args) == 1 {
+				elem = c.cppType(s.Let.Type.Generic.Args[0])
+			} else if typ, err := c.env.GetVar(s.Let.Name); err == nil {
+				if lt, ok := typ.(types.ListType); ok {
+					elem = c.cppTypeRef(lt.Elem)
+				}
+			}
+			if elem != "" {
+				expr = fmt.Sprintf("vector<%s>{}", elem)
+			}
+		} else if lit := getEmptyMapLiteral(s.Let.Value); lit != nil {
+			var keyT, valT string
+			if s.Let.Type != nil && s.Let.Type.Generic != nil && len(s.Let.Type.Generic.Args) == 2 {
+				keyT = c.cppType(s.Let.Type.Generic.Args[0])
+				valT = c.cppType(s.Let.Type.Generic.Args[1])
+			} else if typ, err := c.env.GetVar(s.Let.Name); err == nil {
+				if mt, ok := typ.(types.MapType); ok {
+					keyT = c.cppTypeRef(mt.Key)
+					valT = c.cppTypeRef(mt.Value)
+				}
+			}
+			if keyT != "" && valT != "" {
+				expr = fmt.Sprintf("unordered_map<%s, %s>{}", keyT, valT)
+			}
+		}
 		typ := "auto"
 		if s.Let.Type != nil {
 			typ = c.cppType(s.Let.Type)
+		} else if t, err := c.env.GetVar(s.Let.Name); err == nil {
+			typ = c.cppTypeRef(t)
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Let.Name))

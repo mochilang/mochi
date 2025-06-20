@@ -195,4 +195,9 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 
 * Dataset queries with clauses like `where`, `group by`, `join`, `skip`, `take`, or `sort by`
 * Union type declarations
-* Inferring element types for empty list and map literals
+* Agents, streams and intents
+* `generate` blocks and model definitions
+* Dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
+* `match` expressions for pattern matching
+* Foreign imports and `extern` declarations
+* Package management, tests and `expect` blocks
