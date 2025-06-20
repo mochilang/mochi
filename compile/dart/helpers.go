@@ -147,6 +147,8 @@ func dartType(t types.Type) string {
 			val = "dynamic"
 		}
 		return "Map<" + key + ", " + val + ">"
+	case types.GroupType:
+		return "_Group"
 	case types.StructType:
 		return sanitizeName(tt.Name)
 	case types.UnionType:
@@ -273,7 +275,7 @@ func isMap(t types.Type) bool {
 
 func isStruct(t types.Type) bool {
 	switch t.(type) {
-	case types.StructType, types.UnionType:
+	case types.StructType, types.UnionType, types.GroupType:
 		return true
 	default:
 		return false

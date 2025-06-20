@@ -28,6 +28,8 @@ type Compiler struct {
 	useGenText   bool
 	useGenEmbed  bool
 	useGenStruct bool
+	useGroup     bool
+	useGroupBy   bool
 }
 
 // New creates a new Dart compiler instance.
@@ -35,7 +37,8 @@ func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, imports: make(map[string]bool), useIndexStr: false,
 		useUnionAll: false, useUnion: false, useExcept: false, useIntersect: false,
 		useFetch: false, useLoad: false, useSave: false,
-		useGenText: false, useGenEmbed: false, useGenStruct: false}
+		useGenText: false, useGenEmbed: false, useGenStruct: false,
+		useGroup: false, useGroupBy: false}
 }
 
 // Compile returns Dart source implementing prog.
@@ -53,6 +56,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useGenText = false
 	c.useGenEmbed = false
 	c.useGenStruct = false
+	c.useGroup = false
+	c.useGroupBy = false
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -948,6 +953,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
+	v := sanitizeName(q.Var)
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			return "", err
+		}
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		c.useGroup = true
+		c.useGroupBy = true
+		expr := fmt.Sprintf("_group_by(%s, (%s) => %s).map((%s) => %s).toList()", src, v, keyExpr, sanitizeName(q.Group.Name), valExpr)
+		return expr, nil
+	}
+
 	var b strings.Builder
 	b.WriteString("(() {\n")
 	b.WriteString("\tvar _res = [];\n")
@@ -1350,7 +1371,7 @@ func isStringPrimary(c *Compiler, p *parser.Primary) bool {
 }
 
 func (c *Compiler) emitRuntime() {
-	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave || c.useGenText || c.useGenEmbed || c.useGenStruct) {
+	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave || c.useGenText || c.useGenEmbed || c.useGenStruct || c.useGroup || c.useGroupBy) {
 		return
 	}
 	c.writeln("")
@@ -1423,6 +1444,39 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useGroup {
+		c.writeln("class _Group {")
+		c.indent++
+		c.writeln("dynamic key;")
+		c.writeln("List<dynamic> Items = [];")
+		c.writeln("_Group(this.key);")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useGroupBy {
+		c.writeln("List<_Group> _group_by(List<dynamic> src, dynamic Function(dynamic) keyfn) {")
+		c.indent++
+		c.writeln("var groups = <String,_Group>{};")
+		c.writeln("var order = <String>[];")
+		c.writeln("for (var it in src) {")
+		c.indent++
+		c.writeln("var key = keyfn(it);")
+		c.writeln("var ks = key.toString();")
+		c.writeln("var g = groups[ks];")
+		c.writeln("if (g == null) {")
+		c.indent++
+		c.writeln("g = _Group(key);")
+		c.writeln("groups[ks] = g;")
+		c.writeln("order.add(ks);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("g.Items.add(it);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return [for (var k in order) groups[k]!];")
 		c.indent--
 		c.writeln("}")
 	}
