@@ -120,6 +120,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	bodyBytes := c.buf.Bytes()
 
 	c.buf = oldBuf
+	if prog.Package != "" {
+		c.writeln("library " + sanitizeName(prog.Package) + ";")
+		c.writeln("")
+	}
 	if len(c.imports) > 0 {
 		for imp := range c.imports {
 			c.writeln(fmt.Sprintf("import '%s';", imp))
