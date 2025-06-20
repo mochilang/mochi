@@ -1,0 +1,12 @@
+case class Info(msg: String)
+
+object Main {
+	def main(args: Array[String]): Unit = {
+		val info = _genStruct[Info]("{\"msg\": \"hello\"}", "", Map[String, Any]())
+		println(info.msg)
+	}
+	def _genStruct[T](prompt: String, model: String, params: Map[String, Any])(implicit ct: scala.reflect.ClassTag[T]): T = {
+		// TODO: integrate with an LLM and parse JSON
+		ct.runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[T]
+	}
+}
