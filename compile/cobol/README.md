@@ -151,23 +151,8 @@ behaviour.
 
 ## Unsupported features
 
-Only a narrow slice of Mochi is recognised by this backend. Missing
-capabilities include:
-
-- Structs, unions and other complex types
-- Map literals and indexing operations
-- Match expressions
-- Query expressions such as `from`/`sort by`/`select`
-- Agents, streams and extern objects
-- Logic programming with facts and rules
-- HTTP helpers such as `fetch`, `load` and `save`
-- Foreign function interface and package imports
-- LLM helpers and other advanced runtime features
-- Set literals and set operations
-- Test blocks and `expect` statements
-- `generate` expressions for generative AI
-
-Programs using these constructs will fail to compile.
+Only a narrow slice of Mochi is recognised by this backend. Programs using
+unsupported features will fail to compile.
 
 ## Status
 
@@ -181,15 +166,14 @@ The COBOL backend implements only a tiny portion of Mochi. Features that remain
 unsupported include:
 
 - Map literals and indexing operations
-- Match expressions
 - Dataset query expressions like `from ... sort by ...`
 - Agents, stream handling, and concurrency primitives
 - Logic programming with facts and rules
 - HTTP helpers such as `fetch`, `load` and `save`
 - Foreign function interface and package imports
+- Package declarations and exports
 - LLM helpers and other advanced runtime features
 - Set literals and set operations
-- Test blocks and `expect` statements
 - `generate` expressions for generative AI
 
 Programs relying on these constructs will fail to compile.

@@ -87,6 +87,12 @@ func (c *Compiler) isStringExpr(n *ast.Node) bool {
 		if n.Value == "+" {
 			return c.isStringExpr(n.Children[0]) || c.isStringExpr(n.Children[1])
 		}
+	case "match":
+		for _, cs := range n.Children[1:] {
+			if c.isStringExpr(cs.Children[1]) {
+				return true
+			}
+		}
 	}
 	return false
 }
@@ -674,6 +680,8 @@ func (c *Compiler) expr(n *ast.Node) string {
 		return "(" + inner + ")"
 	case "if_expr":
 		return c.compileIfExpr(n)
+	case "match":
+		return c.compileMatchExpr(n)
 	}
 	return "0"
 }
@@ -711,6 +719,55 @@ func (c *Compiler) compileIfExpr(n *ast.Node) string {
 	}
 	c.writeln("    END-IF")
 	return tmp
+}
+
+// compileMatchExpr handles simple match expressions using an IF/ELSE chain.
+// Only literal patterns and a trailing '_' wildcard are supported.
+func (c *Compiler) compileMatchExpr(n *ast.Node) string {
+	targetExpr := c.expr(n.Children[0])
+	targetTmp := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s %s", targetTmp, c.picForExpr(n.Children[0])))
+	if c.isStringExpr(n.Children[0]) {
+		c.writeln(fmt.Sprintf("    MOVE %s TO %s", targetExpr, targetTmp))
+	} else {
+		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", targetTmp, targetExpr))
+	}
+
+	resTmp := c.newTemp()
+	if len(n.Children) > 1 {
+		resPic := c.picForExpr(n.Children[1].Children[1])
+		c.declare(fmt.Sprintf("01 %s %s", resTmp, resPic))
+	} else {
+		c.declare(fmt.Sprintf("01 %s PIC 9.", resTmp))
+	}
+
+	first := true
+	for _, cs := range n.Children[1:] {
+		pattern := cs.Children[0]
+		result := cs.Children[1]
+		if pattern.Kind == "_" {
+			c.writeln("    ELSE")
+		} else {
+			cond := fmt.Sprintf("%s = %s", targetTmp, c.expr(pattern))
+			if first {
+				c.writeln(fmt.Sprintf("    IF %s", cond))
+				first = false
+			} else {
+				c.writeln(fmt.Sprintf("    ELSE IF %s", cond))
+			}
+		}
+		c.indent++
+		if c.isStringExpr(result) {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s", c.expr(result), resTmp))
+		} else {
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", resTmp, c.expr(result)))
+		}
+		c.indent--
+	}
+	if !first {
+		c.writeln("    END-IF")
+	}
+	return resTmp
 }
 
 func extractInt(n *ast.Node) int {
