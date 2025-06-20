@@ -1,0 +1,2 @@
+let m = (let tbl = Hashtbl.create 2 in Hashtbl.add tbl "a" 1;Hashtbl.add tbl "b" 2; tbl);;
+print_endline (string_of_int (Hashtbl.length m));;

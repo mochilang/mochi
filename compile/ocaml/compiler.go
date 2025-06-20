@@ -18,9 +18,9 @@ type Compiler struct {
 	env     *types.Env
 	tmp     int
 	vars    map[string]bool
-        mapVars map[string]bool
-        setNth  bool
-        slice   bool
+	mapVars map[string]bool
+	setNth  bool
+	slice   bool
 }
 
 // New creates a new OCaml compiler instance.
@@ -57,9 +57,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-        if c.setNth || c.slice {
-                c.writeln("")
-        }
+	if c.setNth || c.slice {
+		c.writeln("")
+	}
 	var out bytes.Buffer
 	out.Write(c.pre.Bytes())
 	out.Write(c.buf.Bytes())
@@ -80,18 +80,18 @@ func (c *Compiler) ensureSetNth() {
 }
 
 func (c *Compiler) ensureSlice() {
-        if c.slice {
-                return
-        }
-        c.slice = true
-        b := &c.pre
-        b.WriteString("let rec _slice lst i len =\n")
-        b.WriteString("  match lst with\n")
-        b.WriteString("  | [] -> []\n")
-        b.WriteString("  | x::xs ->\n")
-        b.WriteString("      if i > 0 then _slice xs (i - 1) len\n")
-        b.WriteString("      else if len = 0 then []\n")
-        b.WriteString("      else x :: _slice xs 0 (len - 1)\n\n")
+	if c.slice {
+		return
+	}
+	c.slice = true
+	b := &c.pre
+	b.WriteString("let rec _slice lst i len =\n")
+	b.WriteString("  match lst with\n")
+	b.WriteString("  | [] -> []\n")
+	b.WriteString("  | x::xs ->\n")
+	b.WriteString("      if i > 0 then _slice xs (i - 1) len\n")
+	b.WriteString("      else if len = 0 then []\n")
+	b.WriteString("      else x :: _slice xs 0 (len - 1)\n\n")
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -504,23 +504,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 				}
-                                if isStringPrimary(p.Target, c.env) {
-                                        if end == "" {
-                                                expr = fmt.Sprintf("(String.sub %s %s (String.length %s - %s))", expr, start, expr, start)
-                                        } else {
-                                                expr = fmt.Sprintf("(String.sub %s %s (%s - %s))", expr, start, end, start)
-                                        }
-                                } else {
-                                        base := expr
-                                        var length string
-                                        if end == "" {
-                                                length = fmt.Sprintf("(List.length %s - %s)", base, start)
-                                        } else {
-                                                length = fmt.Sprintf("(%s - %s)", end, start)
-                                        }
-                                        c.ensureSlice()
-                                        expr = fmt.Sprintf("(_slice %s %s %s)", base, start, length)
-                                }
+				if isStringPrimary(p.Target, c.env) {
+					if end == "" {
+						expr = fmt.Sprintf("(String.sub %s %s (String.length %s - %s))", expr, start, expr, start)
+					} else {
+						expr = fmt.Sprintf("(String.sub %s %s (%s - %s))", expr, start, end, start)
+					}
+				} else {
+					base := expr
+					var length string
+					if end == "" {
+						length = fmt.Sprintf("(List.length %s - %s)", base, start)
+					} else {
+						length = fmt.Sprintf("(%s - %s)", end, start)
+					}
+					c.ensureSlice()
+					expr = fmt.Sprintf("(_slice %s %s %s)", base, start, length)
+				}
 			} else {
 				if isStringPrimary(p.Target, c.env) {
 					expr = fmt.Sprintf("(String.get %s %s)", expr, start)
@@ -581,9 +581,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		b.WriteString(strconv.Itoa(len(p.Map.Items)))
 		b.WriteString(" in ")
 		for i, it := range p.Map.Items {
-			if i > 0 {
-				b.WriteString(";")
-			}
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
@@ -596,9 +593,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			b.WriteString(k)
 			b.WriteString(" ")
 			b.WriteString(v)
-			b.WriteString(";")
+			if i < len(p.Map.Items)-1 {
+				b.WriteString(";")
+			}
 		}
-		b.WriteString(" tbl)")
+		if len(p.Map.Items) > 0 {
+			b.WriteString("; ")
+		}
+		b.WriteString("tbl)")
 		return b.String(), nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
@@ -653,6 +655,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			if isStringExpr(call.Args[0], c.env) {
 				return fmt.Sprintf("String.length %s", args[0]), nil
+			}
+			if isMapExpr(call.Args[0], c.env) {
+				return fmt.Sprintf("Hashtbl.length %s", args[0]), nil
 			}
 			return fmt.Sprintf("List.length %s", args[0]), nil
 		}
