@@ -928,6 +928,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return name + "(" + joinArgs(args) + ")", nil
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
 	case p.Group != nil:
@@ -1074,6 +1078,44 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	}
 	c.helpers["_fetch"] = true
 	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "null"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "null"
+	if l.With != nil {
+		o, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.helpers["_dataset"] = true
+	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "null"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "null"
+	if s.With != nil {
+		o, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.helpers["_dataset"] = true
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
@@ -1266,6 +1308,101 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("out.put(\"status\", resp.statusCode());")
 		c.writeln("out.put(\"body\", resp.body());")
 		c.writeln("return out;")
+		c.indent--
+		c.writeln("} catch (Exception e) {")
+		c.indent++
+		c.writeln("throw new RuntimeException(e);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_dataset"] {
+		c.writeln("")
+		c.writeln("static java.util.List<java.util.Map<String,Object>> _load(String path, java.util.Map<String,Object> opts) {")
+		c.indent++
+		c.writeln("try {")
+		c.indent++
+		c.writeln("String format = opts != null && opts.get(\"format\") != null ? opts.get(\"format\").toString() : \"csv\";")
+		c.writeln("boolean header = opts == null || !opts.containsKey(\"header\") ? true : Boolean.parseBoolean(opts.get(\"header\").toString());")
+		c.writeln("char delim = ',';")
+		c.writeln("if (opts != null && opts.get(\"delimiter\") != null) { String d = opts.get(\"delimiter\").toString(); if (!d.isEmpty()) delim = d.charAt(0); }")
+		c.writeln("if (\"tsv\".equals(format)) { delim='\t'; format=\"csv\"; }")
+		c.writeln("java.io.BufferedReader r;")
+		c.writeln("if (path == null || path.isEmpty() || path.equals(\"-\")) {")
+		c.indent++
+		c.writeln("r = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("r = java.nio.file.Files.newBufferedReader(java.nio.file.Path.of(path));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("java.util.List<String> lines = new java.util.ArrayList<>();")
+		c.writeln("for (String line; (line = r.readLine()) != null;) { if (!line.isEmpty()) lines.add(line); }")
+		c.writeln("r.close();")
+		c.writeln("java.util.List<java.util.Map<String,Object>> out = new java.util.ArrayList<>();")
+		c.writeln("if (lines.isEmpty()) return out;")
+		c.writeln("String[] headers = lines.get(0).split(Character.toString(delim));")
+		c.writeln("int start = 0;")
+		c.writeln("if (header) { start = 1; } else { for (int i=0;i<headers.length;i++) headers[i]=\"c\"+i; }")
+		c.writeln("for (int i=start;i<lines.size();i++) {")
+		c.indent++
+		c.writeln("String[] parts = lines.get(i).split(Character.toString(delim));")
+		c.writeln("java.util.Map<String,Object> row = new java.util.HashMap<>();")
+		c.writeln("for (int j=0;j<headers.length;j++) {")
+		c.indent++
+		c.writeln("String val = j < parts.length ? parts[j] : \"\";")
+		c.writeln("try { row.put(headers[j], Integer.parseInt(val)); } catch(NumberFormatException _e1) {")
+		c.indent++
+		c.writeln("try { row.put(headers[j], Double.parseDouble(val)); } catch(NumberFormatException _e2) { row.put(headers[j], val); }")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("out.add(row);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("} catch (Exception e) {")
+		c.indent++
+		c.writeln("throw new RuntimeException(e);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static void _save(java.util.List<java.util.Map<String,Object>> rows, String path, java.util.Map<String,Object> opts) {")
+		c.indent++
+		c.writeln("try {")
+		c.indent++
+		c.writeln("boolean header = opts != null && opts.get(\"header\") != null ? Boolean.parseBoolean(opts.get(\"header\").toString()) : false;")
+		c.writeln("char delim = ',';")
+		c.writeln("if (opts != null && opts.get(\"delimiter\") != null) { String d = opts.get(\"delimiter\").toString(); if (!d.isEmpty()) delim = d.charAt(0); }")
+		c.writeln("java.io.BufferedWriter w;")
+		c.writeln("if (path == null || path.isEmpty() || path.equals(\"-\")) {")
+		c.indent++
+		c.writeln("w = new java.io.BufferedWriter(new java.io.OutputStreamWriter(System.out));")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("w = java.nio.file.Files.newBufferedWriter(java.nio.file.Path.of(path));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("java.util.List<String> headers = rows.isEmpty() ? java.util.List.of() : new java.util.ArrayList<>(rows.get(0).keySet());")
+		c.writeln("java.util.Collections.sort(headers);")
+		c.writeln("if (header && !headers.isEmpty()) { w.write(String.join(Character.toString(delim), headers)); w.newLine(); }")
+		c.writeln("for (java.util.Map<String,Object> row : rows) {")
+		c.indent++
+		c.writeln("java.util.List<String> rec = new java.util.ArrayList<>();")
+		c.writeln("for (String h : headers) { Object v = row.get(h); rec.add(v==null?\"\":v.toString()); }")
+		c.writeln("w.write(String.join(Character.toString(delim), rec));")
+		c.writeln("w.newLine();")
+		c.indent--
+		c.writeln("}")
+		c.writeln("w.flush(); if (path != null && !path.isEmpty() && !path.equals(\"-\")) w.close();")
 		c.indent--
 		c.writeln("} catch (Exception e) {")
 		c.indent++
