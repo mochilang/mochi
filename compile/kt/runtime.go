@@ -50,10 +50,25 @@ const (
     val text = lines.joinToString("\n") + "\n"
     if (path == null || path == "-" || path == "") print(text) else java.io.File(path).writeText(text)
 }`
+
+	helperJson = `fun _json(v: Any?) {
+    fun encode(x: Any?): String = when (x) {
+        null -> "null"
+        is String -> \"""${x.replace("\"", "\\\"")}\"""
+        is Int, is Double, is Boolean -> x.toString()
+        is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
+        is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e ->
+            "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
+        }
+        else -> \"""${x.toString().replace("\"", "\\\"")}\"""
+    }
+    println(encode(v))
+}`
 )
 
 var helperMap = map[string]string{
 	"_cast": helperCast,
 	"_load": helperLoad,
 	"_save": helperSave,
+	"_json": helperJson,
 }
