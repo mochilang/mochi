@@ -169,7 +169,6 @@ features include:
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming
   features (`fact`, `rule`, `query`).
 - Packages and foreign function interface declarations (`import`, `extern`).
-- External helpers for data fetching or generation such as `_fetch`,
-  `generate`, `load` and `save`.
+- `model` and `stream` declarations are not compiled.
 - Methods declared inside `type` blocks are ignored.
 
