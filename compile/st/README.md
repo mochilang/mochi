@@ -18,7 +18,8 @@ go test ./compile/st -tags slow
 
 The Smalltalk backend currently supports only a subset of Mochi. When the
 `count()` builtin is used, a helper method is emitted automatically. Loops now
-handle `break` and `continue` using custom signals.
+handle `break` and `continue` using custom signals. Basic `type` declarations are
+compiled to plain dictionaries.
 
 ### Unsupported features
 
@@ -29,7 +30,5 @@ The following language constructs are not yet handled:
 - Generative AI helpers such as `generate`
 - Logic programming (`fact`, `rule`, `query`)
 - Foreign function interface declarations (`extern`)
-- User-defined types declared with `type`
-- Test blocks and `expect` assertions
 - Import and package statements
 - Pattern matching with `match`

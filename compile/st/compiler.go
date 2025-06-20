@@ -43,7 +43,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	orig := c.buf
 
-	// compile functions first
+	// compile type declarations
+	c.buf = bytes.Buffer{}
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+		}
+	}
+	typeCode := append([]byte(nil), c.buf.Bytes()...)
+
+	// compile functions
 	c.buf = bytes.Buffer{}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -88,6 +99,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = orig
 	c.writeln("Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
 	c.writeln("")
+	c.buf.Write(typeCode)
 	c.buf.Write(funCode)
 	c.buf.Write(testCode)
 	if c.needCount || c.needBreak || c.needContinue {
@@ -145,6 +157,38 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			return err
 		}
 	}
+	c.indent--
+	c.writelnNoIndent("!")
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		// union types not yet supported
+		return nil
+	}
+	fields := make([]string, 0, len(t.Members))
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fields = append(fields, m.Field.Name)
+		}
+	}
+	if len(fields) == 0 {
+		return nil
+	}
+
+	c.writeln("!Main class methodsFor: 'types'!")
+	header := "new" + t.Name + ": " + fields[0]
+	for _, f := range fields[1:] {
+		header += " " + f + ": " + f
+	}
+	c.writeln(header + " | dict |")
+	c.indent++
+	c.writeln("dict := Dictionary new.")
+	for _, f := range fields {
+		c.writeln(fmt.Sprintf("dict at: '%s' put: %s.", f, f))
+	}
+	c.writeln("^ dict")
 	c.indent--
 	c.writelnNoIndent("!")
 	return nil
@@ -576,6 +620,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "Array with: " + strings.Join(elems, " with: "), nil
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Group != nil:
@@ -585,7 +631,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(" + inner + ")", nil
 	case p.Selector != nil:
-		return p.Selector.Root, nil
+		expr := p.Selector.Root
+		for _, t := range p.Selector.Tail {
+			expr = fmt.Sprintf("%s at: '%s'", expr, t)
+		}
+		return expr, nil
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
@@ -690,6 +740,22 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 			return "", err
 		}
 		pairs[i] = fmt.Sprintf("%s -> %s", k, v)
+	}
+	return "Dictionary from: {" + strings.Join(pairs, ". ") + "}", nil
+}
+
+func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	if len(s.Fields) == 0 {
+		return "Dictionary new", nil
+	}
+	pairs := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		key := fmt.Sprintf("'%s'", f.Name)
+		pairs[i] = fmt.Sprintf("%s -> %s", key, v)
 	}
 	return "Dictionary from: {" + strings.Join(pairs, ". ") + "}", nil
 }
