@@ -198,6 +198,6 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Agents, streams and intents
 * `generate` blocks and model definitions
 * Dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
-* `match` expressions for pattern matching
+* `logic` queries for Prolog-style reasoning
 * Foreign imports and `extern` declarations
 * Package management, tests and `expect` blocks

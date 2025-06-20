@@ -2,8 +2,8 @@
 using namespace std;
 
 int main() {
-	auto x = 2;
-	auto label;
+	int x = 2;
+	string label = ([&]() { auto _t0 = x; if (_t0 == 1) return string("one"); if (_t0 == 2) return string("two"); if (_t0 == 3) return string("three"); return string("unknown"); })();
 	std::cout << (label) << std::endl;
 	return 0;
 }
