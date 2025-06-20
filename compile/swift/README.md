@@ -239,7 +239,7 @@ The Swift backend still lacks support for a number of language capabilities:
 - Higher-order functions or function values
 - Type inference for empty collections
 - Streams, agents and intent handlers
-- The ``generate`` and ``fetch`` expressions for LLM and HTTP integration
+ - Model declarations and the ``generate``/``fetch`` expressions for LLM and HTTP integration
 - Package declarations and the foreign function interface
 - Set collections and related operations
-- Test blocks using ``test`` and ``expect`` statements
+- Graph datasets and queries

@@ -12,24 +12,30 @@ import (
 
 // Compiler translates a Mochi AST into Swift source code (very limited subset).
 type Compiler struct {
-	buf         bytes.Buffer
-	indent      int
-	env         *types.Env
-	locals      map[string]types.Type
-	useAvg      bool
-	useIndexStr bool
-	useSlice    bool
-	useSliceStr bool
-	funcRet     types.Type
+        buf         bytes.Buffer
+        indent      int
+        env         *types.Env
+        locals      map[string]types.Type
+        useAvg      bool
+        useIndexStr bool
+        useSlice    bool
+        useSliceStr bool
+        funcRet     types.Type
+       useExpect   bool
+       tests       []string
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[string]types.Type{}} }
+func New(env *types.Env) *Compiler {
+       return &Compiler{env: env, locals: map[string]types.Type{}}
+}
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	c.useAvg = false
-	c.useIndexStr = false
-	c.useSlice = false
-	c.useSliceStr = false
+        c.useAvg = false
+        c.useIndexStr = false
+        c.useSlice = false
+        c.useSliceStr = false
+       c.useExpect = false
+       c.tests = nil
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -45,28 +51,40 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
-	// function declarations first
-	for _, s := range prog.Statements {
-		if s.Fun != nil {
-			if err := c.compileFun(s.Fun); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
-	}
-	// main body
+       // function declarations
+       for _, s := range prog.Statements {
+               if s.Fun != nil {
+                       if err := c.compileFun(s.Fun); err != nil {
+                               return nil, err
+                       }
+                       c.writeln("")
+               }
+       }
+       // test blocks
+       for _, s := range prog.Statements {
+               if s.Test != nil {
+                       if err := c.compileTestBlock(s.Test); err != nil {
+                               return nil, err
+                       }
+                       c.writeln("")
+               }
+       }
+       // main body
 	c.writeln("func main() {")
 	c.indent++
-	for _, s := range prog.Statements {
-		if s.Fun != nil {
-			continue
-		}
-		if err := c.compileStmt(s); err != nil {
-			return nil, err
-		}
-	}
-	c.indent--
-	c.writeln("}")
+       for _, s := range prog.Statements {
+               if s.Fun != nil || s.Test != nil {
+                       continue
+               }
+               if err := c.compileStmt(s); err != nil {
+                       return nil, err
+               }
+       }
+       for _, name := range c.tests {
+               c.writeln(fmt.Sprintf("%s()", name))
+       }
+       c.indent--
+       c.writeln("}")
 	c.writeln("main()")
 
 	bodyBytes := c.buf.Bytes()
@@ -123,10 +141,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 		c.writeln("")
 	}
-	if c.useSliceStr {
-		c.writeln("func _sliceString(_ s: String, _ i: Int, _ j: Int) -> String {")
-		c.indent++
-		c.writeln("var start = i")
+        if c.useSliceStr {
+                c.writeln("func _sliceString(_ s: String, _ i: Int, _ j: Int) -> String {")
+                c.indent++
+                c.writeln("var start = i")
 		c.writeln("var end = j")
 		c.writeln("let chars = Array(s)")
 		c.writeln("let n = chars.count")
@@ -137,12 +155,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("if end < start { end = start }")
 		c.writeln("return String(chars[start..<end])")
 		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
+                c.writeln("}")
+                c.writeln("")
+        }
+       if c.useExpect {
+               c.writeln("func expect(_ cond: Bool) {")
+               c.indent++
+               c.writeln("if !cond { fatalError(\"expect failed\") }")
+               c.indent--
+               c.writeln("}")
+               c.writeln("")
+       }
 
-	c.buf.Write(bodyBytes)
-	return c.buf.Bytes(), nil
+        c.buf.Write(bodyBytes)
+        return c.buf.Bytes(), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -490,17 +516,19 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.If != nil:
 		return c.compileIf(s.If)
-	case s.Break != nil:
-		c.writeln("break")
-		return nil
-	case s.Continue != nil:
-		c.writeln("continue")
-		return nil
-	case s.Expr != nil:
-		expr, err := c.compileExpr(s.Expr.Expr)
-		if err != nil {
-			return err
-		}
+       case s.Break != nil:
+               c.writeln("break")
+               return nil
+       case s.Continue != nil:
+               c.writeln("continue")
+               return nil
+       case s.Expect != nil:
+               return c.compileExpect(s.Expect)
+       case s.Expr != nil:
+               expr, err := c.compileExpr(s.Expr.Expr)
+               if err != nil {
+                       return err
+               }
 		c.writeln(expr)
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
@@ -667,8 +695,33 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s", name, value))
-	return nil
+       c.writeln(fmt.Sprintf("%s = %s", name, value))
+       return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+       expr, err := c.compileExpr(e.Value)
+       if err != nil {
+               return err
+       }
+       c.useExpect = true
+       c.writeln(fmt.Sprintf("expect(%s)", expr))
+       return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+       name := "test_" + sanitizeName(t.Name)
+       c.tests = append(c.tests, name)
+       c.writeln(fmt.Sprintf("func %s() {", name))
+       c.indent++
+       for _, st := range t.Body {
+               if err := c.compileStmt(st); err != nil {
+                       return err
+               }
+       }
+       c.indent--
+       c.writeln("}")
+       return nil
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {

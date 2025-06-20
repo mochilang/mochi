@@ -1,0 +1,15 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+	if !cond { fatalError("expect failed") }
+}
+
+func test_basic() {
+	expect(1 + 1 == 2)
+	print("done")
+}
+
+func main() {
+	test_basic()
+}
+main()
