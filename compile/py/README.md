@@ -102,6 +102,14 @@ func EnsurePython() error {
 ```
 【F:compile/py/tools.go†L10-L42】
 
+## Unsupported Features
+
+The Python backend does not yet implement every language feature. Known
+limitations include:
+
+* Initializing agents with field values, e.g. `MyAgent { foo: 1 }`
+* `import` statements targeting a language other than Python
+
 ## Notes
 
 The backend supports streams, agents, dataset queries, LLM helpers and more. When asynchronous stream handlers are present, the compiler wraps execution in `_run()` and waits for all pending tasks before exiting.

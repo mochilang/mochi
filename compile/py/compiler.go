@@ -1301,7 +1301,14 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("(lambda %s: %s)", strings.Join(params, ", "), expr), nil
 	}
-	return "None", fmt.Errorf("block function expressions not supported")
+
+	name := fmt.Sprintf("_fn%d", c.tmpCount)
+	c.tmpCount++
+	stmt := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: fn.BlockBody}
+	if err := c.compileFunStmt(stmt); err != nil {
+		return "", err
+	}
+	return name, nil
 }
 
 func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
