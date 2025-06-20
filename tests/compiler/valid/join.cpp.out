@@ -21,7 +21,16 @@ struct PairInfo {
 int main() {
 	auto customers = vector<Customer>{Customer{1, string("Alice")}, Customer{2, string("Bob")}, Customer{3, string("Charlie")}};
 	auto orders = vector<Order>{Order{100, 1, 250}, Order{101, 2, 125}, Order{102, 1, 300}, Order{103, 4, 80}};
-	auto result;
+	auto result = ([&]() -> vector<PairInfo> {
+	vector<PairInfo> _res;
+	for (auto& o : orders) {
+		for (auto& c : customers) {
+			if (!(o.customerId == c.id)) continue;
+			_res.push_back(PairInfo{o.id, c.name, o.total});
+		}
+	}
+	return _res;
+})();
 	std::cout << (string("--- Orders with customer info ---")) << std::endl;
 	for (auto entry : result) {
 		std::cout << (string("Order")) << " " << (entry.orderId) << " " << (string("by")) << " " << (entry.customerName) << " " << (string("- $")) << " " << (entry.total) << std::endl;
