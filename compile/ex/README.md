@@ -201,5 +201,4 @@ Nested recursive functions are not currently handled when compiling to Elixir.
 Problems relying on them, such as LeetCode 22, fail to run.
 
 Queries using joins or grouping are also unimplemented. Cross join queries now
-support simple `where` filters, but sorting or pagination on a cross join will
-still raise an `unsupported query expression` error.
+support `where` filters as well as `sort`, `skip` and `take` clauses.
