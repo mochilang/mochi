@@ -72,6 +72,7 @@ type Compiler struct {
 	needsDataset bool
 	needsSetOps  bool
 	needsMatch   bool
+	exports      []string
 }
 
 type loopCtx struct {
@@ -161,6 +162,7 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("#lang racket")
 	c.writeln(";require-placeholder")
+	c.writeln(";provide-placeholder")
 	c.writeln("")
 	// helpers for indexing and slicing
 	c.writeln("(define (idx x i)")
@@ -231,6 +233,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		header += " racket/string json"
 	}
 	code = bytes.Replace(code, []byte(";require-placeholder"), []byte(header), 1)
+	if len(c.exports) > 0 {
+		prov := "(provide " + strings.Join(c.exports, " ") + ")"
+		code = bytes.Replace(code, []byte(";provide-placeholder"), []byte(prov), 1)
+	} else {
+		code = bytes.Replace(code, []byte(";provide-placeholder\n"), nil, 1)
+	}
 	if c.needsDataset {
 		code = bytes.Replace(code, []byte(";dataset-placeholder\n"), []byte(datasetHelpers), 1)
 	} else {
@@ -246,6 +254,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	name := sanitizeName(fn.Name)
+	if fn.Export {
+		c.exports = append(c.exports, name)
+	}
 	c.writeIndent()
 	c.buf.WriteString("(define (" + name)
 	for _, p := range fn.Params {
@@ -853,6 +864,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
 	case p.Load != nil:
@@ -1177,4 +1192,45 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString("  _res))")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
+	params := make([]string, len(f.Params))
+	for i, p := range f.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	if f.ExprBody != nil {
+		body, err := c.compileExpr(f.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(lambda (%s) %s)", strings.Join(params, " "), body), nil
+	}
+	return "", fmt.Errorf("function block bodies not supported")
+}
+
+func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(e.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(e.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if e.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(e.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if e.Else != nil {
+		elseExpr, err = c.compileExpr(e.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "(void)"
+	}
+	return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
 }
