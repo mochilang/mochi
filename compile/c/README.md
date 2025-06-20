@@ -66,11 +66,16 @@ features include:
 - `map` types
 - query expressions such as `from`/`sort by`/`select`
 - struct and enum definitions
-- list set operators like `union`, `union all`, `except` and `intersect`
+- list set operators `except` and `intersect`
 - agent-related constructs (`agent`, `stream`, `intent`)
+- generative `generate` blocks and model definitions
+- dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
+- `match` expressions for pattern matching
+- foreign function interface via `import` and package declarations
 
-The backend now supports membership checks in integer and string lists, but map
-membership and other advanced features remain unimplemented.
+The backend now supports membership checks and `union`/`union all` operations
+for integer and string lists, but map membership and other advanced features
+remain unimplemented.
 
 Problems relying on these features (for example LeetCode problems 13–25 and
 30) fail to compile at the moment.
