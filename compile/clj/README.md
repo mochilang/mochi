@@ -121,3 +121,15 @@ execute correctly using the Clojure backend.
 ## Status
 
 The backend only implements a small subset of Mochi and is mainly a proof of concept. More advanced features such as data sets, agents or LLM helpers are not currently supported.
+
+### Unsupported Features
+
+The current compiler lacks support for several language constructs commonly used
+in the example programs. In particular:
+
+- Map literals (`{ "a": 1, "b": 2 }`)
+- Query comprehensions (e.g. `from x in xs sort by x select x`)
+- Data set operations and streaming APIs
+- Agent helpers and LLM integration
+
+Programs relying on these features fail to compile with the Clojure backend.
