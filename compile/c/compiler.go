@@ -61,6 +61,8 @@ type Compiler struct {
 	needsConcatString      bool
 	needsCount             bool
 	needsAvg               bool
+	needsInListInt         bool
+	needsInListString      bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -149,7 +151,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	if c.needsInput || c.needsIndexString || c.needsStrLen || c.needsSliceString || c.needsConcatString {
+	if c.needsInput || c.needsIndexString || c.needsStrLen || c.needsSliceString || c.needsConcatString || c.needsInListString {
 		c.writeln("#include <string.h>")
 	}
 	c.writeln("")
@@ -269,6 +271,32 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 		c.writeln("return sum / v.len;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsInListInt {
+		c.writeln("")
+		c.writeln("static int contains_list_int(list_int v, int item) {")
+		c.indent++
+		c.writeln("for (int i = 0; i < v.len; i++) {")
+		c.indent++
+		c.writeln("if (v.data[i] == item) return 1;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return 0;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsInListString {
+		c.writeln("")
+		c.writeln("static int contains_list_string(list_string v, char* item) {")
+		c.indent++
+		c.writeln("for (int i = 0; i < v.len; i++) {")
+		c.indent++
+		c.writeln("if (strcmp(v.data[i], item) == 0) return 1;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return 0;")
 		c.indent--
 		c.writeln("}")
 	}
@@ -408,6 +436,15 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		c.buf.WriteString(c.cType(p.Type))
 		c.buf.WriteByte(' ')
 		c.buf.WriteString(sanitizeName(p.Name))
+		if p.Type != nil {
+			t := resolveTypeRef(p.Type, c.env)
+			if isListStringType(t) {
+				c.needsListString = true
+			}
+			if isListListIntType(t) {
+				c.needsListListInt = true
+			}
+		}
 	}
 	c.buf.WriteString("){\n")
 	c.indent++
@@ -737,6 +774,25 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftList = false
 			leftListInt = false
 			leftListString = false
+			continue
+		}
+		if op.Op == "in" && isListIntPostfix(op.Right, c.env) {
+			c.needsInListInt = true
+			left = fmt.Sprintf("contains_list_int(%s, %s)", right, left)
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftString = false
+			continue
+		}
+		if op.Op == "in" && isListStringPostfix(op.Right, c.env) {
+			c.needsInListString = true
+			c.needsListString = true
+			left = fmt.Sprintf("contains_list_string(%s, %s)", right, left)
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftString = false
 			continue
 		}
 		left = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
