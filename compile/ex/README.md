@@ -60,6 +60,8 @@ case "input":
 }
 ```
 
+Helpers also implement `fetch` for HTTP requests and `generate` for text or embedding output using stub functions.
+
 【F:compile/ex/compiler.go†L516-L538】
 
 ### Control Flow
@@ -139,6 +141,18 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 
 【F:compile/ex/compiler.go†L908-L937】
 
+### Pattern Matching
+
+`match` expressions compile to an inline `cond` block that checks each pattern sequentially:
+
+```go
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+    ...
+}
+```
+
+【F:compile/ex/compiler.go†L636-L667】
+
 ## Ensuring Elixir
 
 `EnsureElixir` checks for the `elixir` executable and installs it using `apt-get`, `brew` or `asdf` if necessary:
@@ -207,6 +221,6 @@ The Elixir backend implements most core language features but still lacks suppor
 - `load` and `save` currently only handle Erlang term binaries.
 - Foreign imports and `extern` declarations.
 - Concurrency primitives such as `spawn` and channels.
-- Pattern matching with `match` expressions.
+- Pattern matching on union variants is not yet supported.
 
 Cross join queries do support `where` filters as well as `sort`, `skip` and `take` clauses.

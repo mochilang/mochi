@@ -1,6 +1,7 @@
 package excode
 
 import (
+	"mochi/parser"
 	"mochi/types"
 	"reflect"
 )
@@ -47,4 +48,19 @@ func isAny(t types.Type) bool {
 	}
 	_, ok := t.(types.AnyType)
 	return ok
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
 }

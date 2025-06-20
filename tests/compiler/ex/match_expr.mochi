@@ -1,0 +1,9 @@
+let x = 2
+
+let label = match x {
+  1 => "one"
+  2 => "two"
+  _ => "unknown"
+}
+
+print(label)
