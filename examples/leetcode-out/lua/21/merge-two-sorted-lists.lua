@@ -1,27 +1,3 @@
-function __iter(obj)
-	if type(obj) == 'table' then
-		if obj[1] ~= nil or #obj > 0 then
-			local i = 0
-			local n = #obj
-			return function()
-				i = i + 1
-				if i <= n then return i, obj[i] end
-			end
-		else
-			return pairs(obj)
-		end
-	elseif type(obj) == 'string' then
-		local i = 0
-		local n = #obj
-		return function()
-			i = i + 1
-			if i <= n then return i, string.sub(obj, i, i) end
-		end
-	else
-		return function() return nil end
-	end
-end
-
 function __add(a, b)
 	if type(a) == 'table' and type(b) == 'table' then
 		local out = {}
@@ -73,49 +49,55 @@ function __indexString(s, i)
 	return string.sub(s, i, i)
 end
 
-function convert(s, numRows)
-	if ((numRows <= 1) or (numRows >= #s)) then
-		return s
-	end
-	local rows = {}
+function mergeTwoLists(l1, l2)
 	local i = 0
-	while (i < numRows) do
-		rows = __add(rows, {""})
-		i = __add(i, 1)
+	local j = 0
+	local result = {}
+	while ((i < #l1) and (j < #l2)) do
+		if (__index(l1, i) <= __index(l2, j)) then
+			result = __add(result, {__index(l1, i)})
+			i = __add(i, 1)
+		else
+			result = __add(result, {__index(l2, j)})
+			j = __add(j, 1)
+		end
 		::__continue0::
 	end
-	local curr = 0
-	local step = 1
-	for _, ch in __iter(s) do
-		rows[(curr)+1] = __add(__index(rows, curr), ch)
-		if __eq(curr, 0) then
-			step = 1
-		elseif __eq(curr, (numRows - 1)) then
-			step = -1
-		end
-		curr = __add(curr, step)
+	while (i < #l1) do
+		result = __add(result, {__index(l1, i)})
+		i = __add(i, 1)
 		::__continue1::
 	end
-	local result = ""
-	for _, row in __iter(rows) do
-		result = __add(result, row)
+	while (j < #l2) do
+		result = __add(result, {__index(l2, j)})
+		j = __add(j, 1)
 		::__continue2::
 	end
 	return result
 end
 
 function test_example_1()
-	if not (__eq(convert("PAYPALISHIRING", 3), "PAHNAPLSIIGYIR")) then error('expect failed') end
+	if not (__eq(mergeTwoLists({1, 2, 4}, {1, 3, 4}), {1, 1, 2, 3, 4, 4})) then error('expect failed') end
 end
 
 function test_example_2()
-	if not (__eq(convert("PAYPALISHIRING", 4), "PINALSIGYAHRPI")) then error('expect failed') end
+	if not (__eq(mergeTwoLists({}, {}), {})) then error('expect failed') end
 end
 
-function test_single_row()
-	if not (__eq(convert("A", 1), "A")) then error('expect failed') end
+function test_example_3()
+	if not (__eq(mergeTwoLists({}, {0}), {0})) then error('expect failed') end
+end
+
+function test_different_lengths()
+	if not (__eq(mergeTwoLists({1, 5, 7}, {2, 3, 4, 6, 8}), {1, 2, 3, 4, 5, 6, 7, 8})) then error('expect failed') end
+end
+
+function test_one_list_empty()
+	if not (__eq(mergeTwoLists({1, 2, 3}, {}), {1, 2, 3})) then error('expect failed') end
 end
 
 test_example_1()
 test_example_2()
-test_single_row()
+test_example_3()
+test_different_lengths()
+test_one_list_empty()

@@ -163,13 +163,39 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	lhs := sanitizeName(s.Name)
+
+	var t types.Type = types.AnyType{}
+	if c.env != nil {
+		if tt, err := c.env.GetVar(s.Name); err == nil {
+			t = tt
+		}
+	}
+
 	for _, idx := range s.Index {
 		idxExpr, err := c.compileExpr(idx.Start)
 		if err != nil {
 			return err
 		}
-		lhs = fmt.Sprintf("%s[(%s)+1]", lhs, idxExpr)
+		if isList(t) || isString(t) {
+			lhs = fmt.Sprintf("%s[(%s)+1]", lhs, idxExpr)
+			if lt, ok := t.(types.ListType); ok {
+				t = lt.Elem
+			} else {
+				t = types.AnyType{}
+			}
+		} else if isMap(t) {
+			lhs = fmt.Sprintf("%s[%s]", lhs, idxExpr)
+			if mt, ok := t.(types.MapType); ok {
+				t = mt.Value
+			} else {
+				t = types.AnyType{}
+			}
+		} else {
+			lhs = fmt.Sprintf("%s[%s]", lhs, idxExpr)
+			t = types.AnyType{}
+		}
 	}
+
 	val, err := c.compileExpr(s.Value)
 	if err != nil {
 		return err
