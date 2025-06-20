@@ -158,11 +158,13 @@ constructs:
 - Basic arithmetic and boolean operators
 - `let` and `var` declarations and assignments
 - `if` statements and expressions
-- `for` loops over integer ranges, list literals and fixed list variables
+- `for` loops over integer ranges, list literals, fixed list variables and string values
 - `while` loops
+- `break` and `continue` statements
 - Function definitions and calls, including nested functions
 - Calls to built-ins `print`, `len`, `add`, `twoSum` and `addTwoNumbers`
 - List concatenation with `+` and indexing (including negative indices)
+- Basic string slicing with constant start and end indices
 - Simple `match` expressions with literal patterns
 - `expect` and `test` blocks
 
@@ -197,7 +199,7 @@ unsupported include:
 - Iteration over collections using `for x in items` unless `items` is a simple
   list, a string literal, or a fixed list variable
 - Range loops with step values other than `1`
-- Slicing expressions like `list[start:end]`
+ - Slicing lists or using non-constant indices in slice expressions
 - Using the `range` helper to generate sequences
 - Dynamic lists whose length is not known at compile time
 - Struct and model declarations
