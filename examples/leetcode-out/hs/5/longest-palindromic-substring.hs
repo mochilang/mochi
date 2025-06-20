@@ -27,11 +27,13 @@ _input :: IO String
 _input = getLine
 
 
+expand :: String -> Int -> Int -> Int
 expand s left right = fromMaybe (0) $
     (let l = left in (let r = right in (let n = length s in Just (((r - l) - 1)))))
 
+longestPalindrome :: String -> String
 longestPalindrome s = fromMaybe ("") $
-    case if (length s <= 1) then Just (s) else Nothing of Just v -> Just v; Nothing -> (let start = 0 in (let end = 0 in (let n = length s in case forLoop 0 n (\i -> (let len1 = expand s i i in (let len2 = expand s i (i + 1) in (let l = len1 in case if (len2 > len1) then (let l = len2 in Nothing) else Nothing of Just v -> Just v; Nothing -> if ((l > end) - start) then (let start = (div (i - ((l - 1))) 2) in (let end = (div (i + l) 2) in Nothing)) else Nothing)))) of Just v -> Just v; Nothing -> Just ((s !! start)))))
+    case if (length s <= 1) then Just (s) else Nothing of Just v -> Just v; Nothing -> (let start = 0 in (let end = 0 in (let n = length s in case forLoop 0 n (\i -> (let len1 = expand s i i in (let len2 = expand s i (i + 1) in (let l = len1 in case if (len2 > len1) then (let l = len2 in Nothing) else Nothing of Just v -> Just v; Nothing -> if (l > ((end - start))) then (let start = (i - ((div ((l - 1)) 2))) in (let end = (i + ((div l 2))) in Nothing)) else Nothing)))) of Just v -> Just v; Nothing -> Just ((s !! start)))))
 
 main :: IO ()
 main = do

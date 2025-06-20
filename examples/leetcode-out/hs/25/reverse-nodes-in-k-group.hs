@@ -27,12 +27,11 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
+reverseKGroup :: [Int] -> Int -> [Int]
+reverseKGroup nums k = fromMaybe ([]) $
+    (let n = length nums in case if (k <= 1) then Just (nums) else Nothing of Just v -> Just v; Nothing -> (let result = [] in (let i = 0 in Just (result))))
   where
-    m = length s
-    n = length p
+    n = length nums
 
 main :: IO ()
 main = do

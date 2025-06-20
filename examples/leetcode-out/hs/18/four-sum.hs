@@ -27,12 +27,12 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
+fourSum :: [Int] -> Int -> [[Int]]
+fourSum nums target = fromMaybe ([]) $
+    (let sorted = 0 in (let n = length sorted in (let result = [] in case forLoop 0 n (\i -> case if (((i > 0) && (sorted !! i)) == (sorted !! (i - 1))) then Nothing else Nothing of Just v -> Just v; Nothing -> forLoop (i + 1) n (\j -> case if ((((j > i) + 1) && (sorted !! j)) == (sorted !! (j - 1))) then Nothing else Nothing of Just v -> Just v; Nothing -> (let left = (j + 1) in (let right = (n - 1) in Nothing)))) of Just v -> Just v; Nothing -> Just (result))))
   where
-    m = length s
-    n = length p
+    sorted = 0
+    n = length sorted
 
 main :: IO ()
 main = do

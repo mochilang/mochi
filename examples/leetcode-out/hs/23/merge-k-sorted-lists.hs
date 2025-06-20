@@ -27,12 +27,11 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
+mergeKLists :: [[Int]] -> [Int]
+mergeKLists lists = fromMaybe ([]) $
+    (let k = length lists in (let indices = [] in (let i = 0 in (let result = [] in Just (result)))))
   where
-    m = length s
-    n = length p
+    k = length lists
 
 main :: IO ()
 main = do

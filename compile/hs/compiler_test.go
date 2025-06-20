@@ -151,13 +151,13 @@ func runExample(t *testing.T, id int) error {
 	return nil
 }
 
-// TestHSCompiler_LeetCodeExamples compiles and executes the first ten
+// TestHSCompiler_LeetCodeExamples compiles and executes the first thirty
 // LeetCode solutions using the Haskell backend.
 func TestHSCompiler_LeetCodeExamples(t *testing.T) {
 	if err := hscode.EnsureHaskell(); err != nil {
 		t.Skipf("haskell not installed: %v", err)
 	}
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 30; i++ {
 		if err := runExample(t, i); err != nil {
 			t.Skipf("leetcode %d unsupported: %v", i, err)
 		}

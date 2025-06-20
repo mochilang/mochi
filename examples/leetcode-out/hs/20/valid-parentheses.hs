@@ -27,12 +27,9 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
-  where
-    m = length s
-    n = length p
+isValid :: String -> Bool
+isValid s = fromMaybe (False) $
+    (let stack = [] in (let n = length s in case forLoop 0 n (\i -> (let c = (s !! i) in if (c == "(") then (let stack = (stack + [")"]) in Nothing) else if (c == "[") then (let stack = (stack + ["]"]) in Nothing) else if (c == "{") then (let stack = (stack + ["}"]) in Nothing) else case if (length stack == 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let top = (stack !! (length stack - 1)) in case if (top /= c) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let stack = (stack !! 0) in Nothing)))) of Just v -> Just v; Nothing -> Just ((length stack == 0))))
 
 main :: IO ()
 main = do

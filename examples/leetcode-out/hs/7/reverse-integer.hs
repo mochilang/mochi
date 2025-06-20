@@ -27,6 +27,7 @@ _input :: IO String
 _input = getLine
 
 
+reverse :: Int -> Int
 reverse x = fromMaybe (0) $
     (let sign = 1 in (let n = x in case if (n < 0) then (let sign = (-1) in (let n = (-n) in Nothing)) else Nothing of Just v -> Just v; Nothing -> (let rev = 0 in (let rev = (rev * sign) in case if (((rev < (((-2147483647) - 1))) || rev) > 2147483647) then Just (0) else Nothing of Just v -> Just v; Nothing -> Just (rev)))))
 

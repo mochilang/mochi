@@ -27,6 +27,7 @@ _input :: IO String
 _input = getLine
 
 
+addTwoNumbers :: [Int] -> [Int] -> [Int]
 addTwoNumbers l1 l2 = fromMaybe ([]) $
     (let i = 0 in (let j = 0 in (let carry = 0 in (let result = [] in Just (result)))))
 

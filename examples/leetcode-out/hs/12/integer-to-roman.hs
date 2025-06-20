@@ -27,12 +27,12 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
+intToRoman :: Int -> String
+intToRoman num = fromMaybe ("") $
+    (let values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1] in (let symbols = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"] in (let result = "" in (let i = 0 in Just (result)))))
   where
-    m = length s
-    n = length p
+    values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+    symbols = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
 
 main :: IO ()
 main = do

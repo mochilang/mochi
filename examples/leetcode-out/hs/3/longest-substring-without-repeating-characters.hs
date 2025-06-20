@@ -27,6 +27,7 @@ _input :: IO String
 _input = getLine
 
 
+lengthOfLongestSubstring :: String -> Int
 lengthOfLongestSubstring s = fromMaybe (0) $
     (let n = length s in (let start = 0 in (let best = 0 in (let i = 0 in Just (best)))))
   where

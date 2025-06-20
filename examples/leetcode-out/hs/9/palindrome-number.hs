@@ -27,8 +27,9 @@ _input :: IO String
 _input = getLine
 
 
+isPalindrome :: Int -> Bool
 isPalindrome x = fromMaybe (False) $
-    case if (x < 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let s = show x in (let n = length s in case forLoop 0 (div n 2) (\i -> if ((s !! i) != (s !! ((n - 1) - i))) then Just (False) else Nothing) of Just v -> Just v; Nothing -> Just (True)))
+    case if (x < 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let s = show x in (let n = length s in case forLoop 0 (div n 2) (\i -> if ((s !! i) /= (s !! ((n - 1) - i))) then Just (False) else Nothing) of Just v -> Just v; Nothing -> Just (True)))
 
 main :: IO ()
 main = do

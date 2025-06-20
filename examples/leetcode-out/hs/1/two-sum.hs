@@ -27,6 +27,7 @@ _input :: IO String
 _input = getLine
 
 
+twoSum :: [Int] -> Int -> [Int]
 twoSum nums target = fromMaybe ([]) $
     (let n = length nums in case forLoop 0 n (\i -> forLoop (i + 1) n (\j -> if (((nums !! i) + (nums !! j)) == target) then Just ([i, j]) else Nothing)) of Just v -> Just v; Nothing -> Just ([(-1), (-1)]))
   where
