@@ -60,6 +60,32 @@ const (
   let status = resp.StatusCode |> int |> box
   let body = resp.Content.ReadAsStringAsync().Result |> box
   Map.ofList [("status", status); ("body", body)]`
+
+	helperToJson = `let rec _to_json (v: obj) : string =
+  match v with
+  | null -> "null"
+  | :? string as s ->
+      "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
+  | :? bool
+  | :? int
+  | :? int64
+  | :? double -> string v
+  | :? System.Collections.Generic.IDictionary<string,obj> as m ->
+      m
+      |> Seq.map (fun (KeyValue(k,v)) ->
+          "\"" + k.Replace("\"", "\\\"") + "\":" + _to_json v)
+      |> String.concat ","
+      |> fun s -> "{" + s + "}"
+  | :? System.Collections.IEnumerable as e ->
+      e
+      |> Seq.cast<obj>
+      |> Seq.map _to_json
+      |> String.concat ","
+      |> fun s -> "[" + s + "]"
+  | _ -> "\"" + v.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
+
+let _json (v: obj) : unit =
+  printfn "%s" (_to_json v)`
 )
 
 var helperMap = map[string]string{
@@ -68,4 +94,6 @@ var helperMap = map[string]string{
 	"_run_test": helperRunTest,
 	"_input":    helperInput,
 	"_fetch":    helperFetch,
+	"_to_json":  helperToJson,
+	"_json":     helperToJson,
 }
