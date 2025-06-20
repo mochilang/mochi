@@ -195,5 +195,5 @@ Unsupported features currently include:
 * LLM helpers like `_genText`, `_genEmbed` and `_genStruct`
 * Multi-dimensional slice assignment or indexing beyond two levels
 * Methods defined inside `type` blocks
-* Export statements via `export`
 * Extern declarations (`extern var`, `extern fun`, `extern type`, `extern object`)
+* Anonymous function expressions with block bodies
