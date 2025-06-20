@@ -75,8 +75,16 @@ func EnsureErlang() error { return ensureErlang() }
 
 ## Notes
 
-The Erlang backend currently supports a subset of Mochi features. Query
+The Erlang backend still implements only a portion of Mochi. Query
 expressions without joins or grouping are translated to Erlang list
-comprehensions; more complex queries return an error. Indexing strings or maps
-emits the `mochi_get/2` helper only when required. The generated code is designed
-for readability rather than speed, mirroring Mochi constructs closely.
+comprehensions; more complex queries return an error. Pattern matching on
+union values is supported via `case` expressions. The following language
+features are not yet handled:
+
+- Joins or grouping inside queries
+- Generative AI helpers like `generate` or `fetch`
+- Dataset operations such as `load` and `save`
+- Logic programming constructs and streams
+
+Generated Erlang favors clarity over speed, mirroring Mochi constructs
+directly.

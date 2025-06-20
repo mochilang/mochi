@@ -12,12 +12,13 @@ import (
 
 // Compiler translates a Mochi AST into Erlang source code.
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	env     *types.Env
-	needGet bool
-	vars    map[string]string
-	counts  map[string]int
+	buf      bytes.Buffer
+	indent   int
+	env      *types.Env
+	needGet  bool
+	vars     map[string]string
+	counts   map[string]int
+	tmpCount int
 }
 
 func copyMap[K comparable, V any](m map[K]V) map[K]V {
@@ -101,7 +102,7 @@ func (c *Compiler) newName(name string) string {
 
 // New returns a new Compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}}
+	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}, tmpCount: 0}
 }
 
 func (c *Compiler) writeIndent() {
@@ -731,6 +732,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "#{" + strings.Join(items, ", ") + "}", nil
 	case p.Struct != nil:
+		if c.env != nil {
+			if ut, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
+				st := ut.Variants[p.Struct.Name]
+				parts := make([]string, 0, len(p.Struct.Fields)+1)
+				parts = append(parts, fmt.Sprintf("'__name' => %s", atomName(p.Struct.Name)))
+				vals := map[string]string{}
+				for _, f := range p.Struct.Fields {
+					v, err := c.compileExpr(f.Value)
+					if err != nil {
+						return "", err
+					}
+					vals[f.Name] = v
+				}
+				for _, n := range st.Order {
+					if v, ok := vals[n]; ok {
+						parts = append(parts, fmt.Sprintf("%s => %s", n, v))
+					}
+				}
+				return "#{" + strings.Join(parts, ", ") + "}", nil
+			}
+		}
 		fields := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)
@@ -779,6 +801,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
@@ -909,6 +933,68 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("\t[" + sel + " || " + capitalize(q.Var) + " <- Taken]\n")
 	b.WriteString("end)()")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	tmp := fmt.Sprintf("_t%d", c.tmpCount)
+	c.tmpCount++
+	var b strings.Builder
+	b.WriteString("(fun() ->\n")
+	b.WriteString("\t" + tmp + " = " + target + ",\n")
+	b.WriteString("\tcase " + tmp + " of\n")
+	for i, cs := range m.Cases {
+		pat, err := c.compileMatchPattern(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString("\t\t" + pat + " -> " + res)
+		if i != len(m.Cases)-1 {
+			b.WriteString(";\n")
+		} else {
+			b.WriteString("\n")
+		}
+	}
+	b.WriteString("\tend\nend)()")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileMatchPattern(e *parser.Expr) (string, error) {
+	if isUnderscoreExpr(e) {
+		return "_", nil
+	}
+	if call, ok := callPattern(e); ok {
+		if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+			st := ut.Variants[call.Func]
+			parts := []string{fmt.Sprintf("'__name' := %s", atomName(call.Func))}
+			for idx, arg := range call.Args {
+				if id, ok := identName(arg); ok {
+					if id == "_" {
+						parts = append(parts, fmt.Sprintf("%s := _", st.Order[idx]))
+					} else {
+						parts = append(parts, fmt.Sprintf("%s := %s", st.Order[idx], capitalize(id)))
+					}
+				} else {
+					return "", fmt.Errorf("unsupported pattern")
+				}
+			}
+			return "#{" + strings.Join(parts, ", ") + "}", nil
+		}
+	}
+	if ident, ok := identName(e); ok {
+		if _, ok := c.env.FindUnionByVariant(ident); ok {
+			return fmt.Sprintf("#{'__name' := %s}", atomName(ident)), nil
+		}
+		return capitalize(ident), nil
+	}
+	return c.compileExpr(e)
 }
 
 func isListUnary(u *parser.Unary, env *types.Env) bool {
