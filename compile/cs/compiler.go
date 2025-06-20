@@ -1635,6 +1635,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("len() expects 1 arg")
 		}
 		return fmt.Sprintf("%s.Length", args[0]), nil
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now() expects no args")
+		}
+		return "DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1000000", nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json() expects 1 arg")
+		}
+		return fmt.Sprintf("Console.WriteLine(JsonSerializer.Serialize(%s))", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 	}
