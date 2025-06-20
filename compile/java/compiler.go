@@ -900,6 +900,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.helpers["_avg"] = true
 			return "_avg(" + joinArgs(args) + ")", nil
 		}
+		if name == "now" && len(args) == 0 {
+			return "System.nanoTime()", nil
+		}
+		if name == "json" && len(args) == 1 {
+			c.helpers["_json"] = true
+			return "_json(" + args[0] + ")", nil
+		}
 		return name + "(" + joinArgs(args) + ")", nil
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
@@ -1164,6 +1171,78 @@ func (c *Compiler) emitRuntime() {
 		c.indent++
 		c.writeln("// TODO: implement HTTP fetch")
 		c.writeln("return new java.util.HashMap<>();")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_json"] {
+		c.writeln("")
+		c.writeln("static void _json(Object v) {")
+		c.indent++
+		c.writeln("System.out.println(_toJson(v));")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static String _toJson(Object v) {")
+		c.indent++
+		c.writeln("if (v == null) return \"null\";")
+		c.writeln("if (v instanceof String) {")
+		c.indent++
+		c.writeln("String s = (String) v;")
+		c.writeln(`return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";`)
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (v instanceof Number || v instanceof Boolean) return v.toString();")
+		c.writeln("if (v.getClass().isArray()) {")
+		c.indent++
+		c.writeln("int n = java.lang.reflect.Array.getLength(v);")
+		c.writeln("StringBuilder sb = new StringBuilder();")
+		c.writeln("sb.append('[');")
+		c.writeln("for (int i=0;i<n;i++) {")
+		c.indent++
+		c.writeln("if (i>0) sb.append(',');")
+		c.writeln("sb.append(_toJson(java.lang.reflect.Array.get(v,i)));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("sb.append(']');")
+		c.writeln("return sb.toString();")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (v instanceof java.util.List<?>) {")
+		c.indent++
+		c.writeln("java.util.List<?> l=(java.util.List<?>)v;")
+		c.writeln("StringBuilder sb=new StringBuilder();")
+		c.writeln("sb.append('[');")
+		c.writeln("for (int i=0;i<l.size();i++) {")
+		c.indent++
+		c.writeln("if(i>0) sb.append(',');")
+		c.writeln("sb.append(_toJson(l.get(i)));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("sb.append(']');")
+		c.writeln("return sb.toString();")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (v instanceof java.util.Map<?,?>) {")
+		c.indent++
+		c.writeln("java.util.Map<?,?> m=(java.util.Map<?,?>)v;")
+		c.writeln("StringBuilder sb=new StringBuilder();")
+		c.writeln("sb.append('{');")
+		c.writeln("boolean first=true;")
+		c.writeln("for (var e : m.entrySet()) {")
+		c.indent++
+		c.writeln("if(!first) sb.append(',');")
+		c.writeln("first=false;")
+		c.writeln("sb.append(_toJson(String.valueOf(e.getKey())));")
+		c.writeln("sb.append(':');")
+		c.writeln("sb.append(_toJson(e.getValue()));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("sb.append('}');")
+		c.writeln("return sb.toString();")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return _toJson(v.toString());")
 		c.indent--
 		c.writeln("}")
 	}

@@ -51,7 +51,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 ```
 【F:compile/java/compiler.go†L21-L58】
 
-Built-in functions like `print`, `len`, `str`, `input`, `count` and `avg` are
+Built-in functions like `print`, `len`, `str`, `input`, `count`, `avg`, `now` and `json` are
 translated directly inside `compilePrimary`:
 
 ```go
@@ -246,5 +246,7 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Concurrency primitives like streams and agents
 - Foreign imports and extern functions
 - Logic programming constructs (`fact`, `rule`, `query`)
+- Test blocks and expectations (`test`, `expect`)
+- Package declarations at the top of the file
 
 Simple `from` queries used by the LeetCode examples are now supported.
