@@ -113,12 +113,23 @@ The emitted code is intended to be executed with `dotnet fsi` or included in lar
 This backend implements the basics needed for algorithmic programs but many advanced
 Mochi features are not yet available.
 
+### Supported features
+
+* Variable and function definitions with early `return`
+* `for` and `while` loops with `break` and `continue`
+* Pattern matching and conditional statements
+* Lists and maps with indexing and slicing
+* Query expressions with `where`, `sort`, `skip` and `take`
+* Built-in helpers: `len`, `count`, `avg`, `print`, `input`, `json`, `to_json`, `load`, `save`, `fetch`
+* Record and union type declarations
+* Methods declared inside `type` blocks
+* Package imports using `import` and exported functions via `export fun`
+
 ### Unsupported features
 
 The F# generator currently lacks support for several language constructs:
 
-* Package `import` statements, exported functions and any `extern` objects or variables
-* Module exports using `export fun`
+* `extern` objects or variables
 * Foreign function interface (FFI) declarations
 * Extern type declarations
 * Logic programming constructs (`fact`, `rule`, `query`)
@@ -126,6 +137,5 @@ The F# generator currently lacks support for several language constructs:
 * Streams, agents and LLM `generate` blocks
 * Concurrency primitives like `spawn` and channels
 * Generic types, reflection and macro facilities
-* Methods declared inside `type` blocks
 * `model` declarations and agent initialization
 
