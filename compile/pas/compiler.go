@@ -3,6 +3,8 @@ package pascode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -19,11 +21,12 @@ type Compiler struct {
 	tempVars     map[string]string
 	expected     types.Type
 	varTypes     map[string]string
+	packages     map[string]bool
 }
 
 // New creates a new Pascal compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, tempVars: make(map[string]string)}
+	return &Compiler{env: env, tempVars: make(map[string]string), packages: make(map[string]bool)}
 }
 
 // Compile returns Pascal source implementing prog.
@@ -38,6 +41,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent++
 	c.writeln("generic TArray<T> = array of T;")
 	c.indent--
+
+	// Compile package imports first
+	for _, s := range prog.Statements {
+		if s.Import != nil {
+			if s.Import.Lang == nil {
+				if err := c.compilePackageImport(s.Import); err != nil {
+					return nil, err
+				}
+			} else {
+				return nil, fmt.Errorf("foreign imports not supported")
+			}
+		}
+	}
 
 	// Emit user-defined types
 	for _, s := range prog.Statements {
@@ -216,6 +232,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Import != nil:
+		if s.Import.Lang == nil {
+			return c.compilePackageImport(s.Import)
+		}
+		return fmt.Errorf("foreign imports not supported")
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
 	case s.Expr != nil:
@@ -429,6 +450,81 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	// restore temp vars for outer scope
 	c.tempVars = prevTemps
 	c.varTypes = nil
+	return nil
+}
+
+func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	if c.packages[alias] {
+		return nil
+	}
+	c.packages[alias] = true
+
+	path := strings.Trim(im.Path, "\"")
+	base := ""
+	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
+		base = filepath.Dir(im.Pos.Filename)
+	}
+	target := filepath.Join(base, path)
+	info, err := os.Stat(target)
+	if err != nil {
+		if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
+			if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
+				info = fi
+				target += ".mochi"
+			} else {
+				return fmt.Errorf("import package: %w", err)
+			}
+		} else {
+			return fmt.Errorf("import package: %w", err)
+		}
+	}
+	var files []string
+	if info.IsDir() {
+		entries, err := os.ReadDir(target)
+		if err != nil {
+			return fmt.Errorf("import package: %w", err)
+		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+				files = append(files, filepath.Join(target, e.Name()))
+			}
+		}
+		sort.Strings(files)
+	} else {
+		files = []string{target}
+	}
+
+	pkgEnv := types.NewEnv(c.env)
+	origEnv := c.env
+	c.env = pkgEnv
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		if errs := types.Check(prog, pkgEnv); len(errs) > 0 {
+			c.env = origEnv
+			return errs[0]
+		}
+		for _, s := range prog.Statements {
+			if s.Fun != nil && s.Fun.Export {
+				name := s.Fun.Name
+				s.Fun.Name = alias + "_" + name
+				if err := c.compileFun(s.Fun); err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("")
+			}
+		}
+	}
+	c.env = origEnv
 	return nil
 }
 
@@ -888,6 +984,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		if c.packages != nil {
+			if c.packages[name] {
+				parts := make([]string, len(p.Selector.Tail))
+				for i, part := range p.Selector.Tail {
+					parts[i] = sanitizeName(part)
+				}
+				return name + "_" + strings.Join(parts, "_"), nil
+			}
+		}
 		for _, part := range p.Selector.Tail {
 			name += "." + sanitizeName(part)
 		}

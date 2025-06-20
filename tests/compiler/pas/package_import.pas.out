@@ -1,0 +1,16 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl;
+
+type
+	generic TArray<T> = array of T;
+function helper_double(x: integer): integer;
+begin
+	result := x * 2;
+	exit;
+end;
+
+
+begin
+	writeln(helper_double(5));
+end.
