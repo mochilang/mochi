@@ -19,6 +19,11 @@ type Compiler struct {
 	tempVarCount    int
 	needIndexString bool
 	needIndexList   bool
+	needInput       bool
+	needCount       bool
+	needAvg         bool
+	needGroup       bool
+	needGroupBy     bool
 }
 
 // New creates a new Clojure compiler instance.
@@ -34,6 +39,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.tempVarCount = 0
 	c.needIndexString = false
 	c.needIndexList = false
+	c.needInput = false
+	c.needCount = false
+	c.needAvg = false
+	c.needGroup = false
+	c.needGroupBy = false
 
 	for _, s := range prog.Statements {
 		switch {
@@ -645,11 +655,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			name := expr
-			if name == "print" {
+			switch name {
+			case "print":
 				expr = fmt.Sprintf("(println %s)", strings.Join(args, " "))
-			} else if name == "len" {
+			case "len":
 				expr = fmt.Sprintf("(count %s)", args[0])
-			} else {
+			case "count":
+				c.needCount = true
+				expr = fmt.Sprintf("(_count %s)", args[0])
+			case "avg":
+				c.needAvg = true
+				expr = fmt.Sprintf("(_avg %s)", args[0])
+			case "input":
+				c.needInput = true
+				expr = "(_input)"
+			case "str":
+				expr = fmt.Sprintf("(str %s)", strings.Join(args, " "))
+			default:
 				expr = fmt.Sprintf("(%s %s)", name, strings.Join(args, " "))
 			}
 			continue
@@ -710,6 +732,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if name, ok := isIdentExpr(it.Key); ok {
+				k = ":" + sanitizeName(name)
+			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
@@ -762,11 +787,30 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, v)
 		}
 		name := sanitizeName(p.Call.Func)
-		if name == "print" {
+		switch name {
+		case "print":
 			return "(println " + strings.Join(args, " ") + ")", nil
-		}
-		if name == "len" && len(args) == 1 {
-			return "(count " + args[0] + ")", nil
+		case "len":
+			if len(args) == 1 {
+				return "(count " + args[0] + ")", nil
+			}
+		case "count":
+			if len(args) == 1 {
+				c.needCount = true
+				return "(_count " + args[0] + ")", nil
+			}
+		case "avg":
+			if len(args) == 1 {
+				c.needAvg = true
+				return "(_avg " + args[0] + ")", nil
+			}
+		case "input":
+			if len(args) == 0 {
+				c.needInput = true
+				return "(_input)", nil
+			}
+		case "str":
+			return "(str " + strings.Join(args, " ") + ")", nil
 		}
 		return "(" + name + " " + strings.Join(args, " ") + ")", nil
 	}
@@ -774,12 +818,41 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) != 0 || q.Group != nil {
+	if len(q.Joins) != 0 {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
+	}
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	c.env = child
+
+	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+		c.env = origEnv
+		c.needGroup = true
+		c.needGroupBy = true
+		expr := fmt.Sprintf("(map (fn [%s] %s) (_group_by %s (fn [%s] %s)))",
+			sanitizeName(q.Group.Name), valExpr, src, sanitizeName(q.Var), keyExpr)
+		return expr, nil
 	}
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
@@ -840,6 +913,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		b.WriteString(" (take " + takeExpr + ")")
 	}
 	b.WriteString("))")
+	c.env = origEnv
 	return b.String(), nil
 }
 
@@ -950,6 +1024,54 @@ func (c *Compiler) writeRuntime(buf *bytes.Buffer) {
     (if (or (< idx 0) (>= idx (count xs)))
       (throw (ex-info "index out of range" {}))
       (nth xs idx))))
+
+`)
+	}
+	if c.needInput {
+		buf.WriteString(`(defn _input []
+  (clojure.string/trim (read-line)))
+
+`)
+	}
+	if c.needCount {
+		buf.WriteString(`(defn _count [v]
+  (cond
+    (sequential? v) (count v)
+    (and (map? v) (contains? v :Items)) (count (:Items v))
+    :else (throw (ex-info "count() expects list or group" {}))))
+
+`)
+	}
+	if c.needAvg {
+		buf.WriteString(`(defn _avg [v]
+  (let [lst (cond
+              (and (map? v) (contains? v :Items)) (:Items v)
+              (sequential? v) v
+              :else (throw (ex-info "avg() expects list or group" {})))]
+    (if (empty? lst)
+      0
+      (/ (reduce + lst) (double (count lst)))))
+
+`)
+	}
+	if c.needGroup {
+		buf.WriteString(`(defrecord _Group [key Items])
+
+`)
+	}
+	if c.needGroupBy {
+		buf.WriteString(`(defn _group_by [src keyfn]
+  (let [groups (atom {})
+        order (atom [])]
+    (doseq [it src]
+      (let [k (keyfn it)
+            ks (str k)]
+        (when-not (contains? @groups ks)
+          (swap! groups assoc ks (_Group. k []))
+          (swap! order conj ks))
+        (swap! groups update ks (fn [g] (assoc g :Items (conj (:Items g) it)))))
+    )
+    (map (fn [k] (@groups k)) @order)))
 
 `)
 	}
