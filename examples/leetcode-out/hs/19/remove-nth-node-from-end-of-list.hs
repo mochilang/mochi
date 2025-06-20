@@ -27,12 +27,11 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
+removeNthFromEnd :: [Int] -> Int -> [Int]
+removeNthFromEnd nums n = fromMaybe ([]) $
+    (let idx = (length nums - n) in (let result = [] in (let i = 0 in Just (result))))
   where
-    m = length s
-    n = length p
+    idx = (length nums - n)
 
 main :: IO ()
 main = do

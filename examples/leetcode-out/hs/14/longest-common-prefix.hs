@@ -27,12 +27,9 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
-  where
-    m = length s
-    n = length p
+longestCommonPrefix :: [String] -> String
+longestCommonPrefix strs = fromMaybe ("") $
+    case if (length strs == 0) then Just ("") else Nothing of Just v -> Just v; Nothing -> (let prefix = (strs !! 0) in case forLoop 1 length strs (\i -> (let j = 0 in (let current = (strs !! i) in (let prefix = (prefix !! 0) in if (prefix == "") then Nothing else Nothing)))) of Just v -> Just v; Nothing -> Just (prefix))
 
 main :: IO ()
 main = do

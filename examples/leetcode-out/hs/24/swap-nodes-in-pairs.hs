@@ -27,12 +27,9 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
-  where
-    m = length s
-    n = length p
+swapPairs :: [Int] -> [Int]
+swapPairs nums = fromMaybe ([]) $
+    (let i = 0 in (let result = [] in Just (result)))
 
 main :: IO ()
 main = do

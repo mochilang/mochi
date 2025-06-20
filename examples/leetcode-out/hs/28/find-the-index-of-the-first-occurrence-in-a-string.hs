@@ -27,12 +27,12 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
+strStr :: String -> String -> Int
+strStr haystack needle = fromMaybe (0) $
+    (let n = length haystack in (let m = length needle in case if (m == 0) then Just (0) else Nothing of Just v -> Just v; Nothing -> case if (m > n) then Just ((-1)) else Nothing of Just v -> Just v; Nothing -> case forLoop 0 ((n - m) + 1) (\i -> (let j = 0 in if (j == m) then Just (i) else Nothing)) of Just v -> Just v; Nothing -> Just ((-1))))
   where
-    m = length s
-    n = length p
+    n = length haystack
+    m = length needle
 
 main :: IO ()
 main = do

@@ -27,12 +27,12 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
+threeSum :: [Int] -> [[Int]]
+threeSum nums = fromMaybe ([]) $
+    (let sorted = 0 in (let n = length sorted in (let res = [] in (let i = 0 in Just (res)))))
   where
-    m = length s
-    n = length p
+    sorted = 0
+    n = length sorted
 
 main :: IO ()
 main = do

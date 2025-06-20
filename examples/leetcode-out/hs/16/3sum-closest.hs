@@ -27,12 +27,12 @@ _input :: IO String
 _input = getLine
 
 
-isMatch :: String -> String -> Bool
-isMatch s p = fromMaybe (False) $
-    (let m = length s in (let n = length p in (let dp = [] in (let i = 0 in (let dp = True in (let i2 = m in Just (((dp !! 0) !! 0))))))))
+threeSumClosest :: [Int] -> Int -> Int
+threeSumClosest nums target = fromMaybe (0) $
+    (let sorted = 0 in (let n = length sorted in (let best = (((sorted !! 0) + (sorted !! 1)) + (sorted !! 2)) in case forLoop 0 n (\i -> (let left = (i + 1) in (let right = (n - 1) in Nothing))) of Just v -> Just v; Nothing -> Just (best))))
   where
-    m = length s
-    n = length p
+    sorted = 0
+    n = length sorted
 
 main :: IO ()
 main = do
