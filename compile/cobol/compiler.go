@@ -274,6 +274,12 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	case "while":
 		c.compileWhile(n)
 
+	case "break":
+		c.writeln("EXIT PERFORM")
+
+	case "continue":
+		c.writeln("CONTINUE")
+
 	}
 }
 
