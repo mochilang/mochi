@@ -3,6 +3,9 @@ package dartcode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -17,6 +20,7 @@ type Compiler struct {
 	env          *types.Env
 	tempVarCount int
 	imports      map[string]bool
+	packages     map[string]bool
 	useIndexStr  bool
 	useUnionAll  bool
 	useUnion     bool
@@ -34,7 +38,7 @@ type Compiler struct {
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, imports: make(map[string]bool), useIndexStr: false,
+	return &Compiler{env: env, imports: make(map[string]bool), packages: make(map[string]bool), useIndexStr: false,
 		useUnionAll: false, useUnion: false, useExcept: false, useIntersect: false,
 		useFetch: false, useLoad: false, useSave: false,
 		useGenText: false, useGenEmbed: false, useGenStruct: false,
@@ -45,6 +49,7 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.imports = make(map[string]bool)
+	c.packages = make(map[string]bool)
 	c.useIndexStr = false
 	c.useUnionAll = false
 	c.useUnion = false
@@ -162,6 +167,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue;")
 		return nil
+	case s.Import != nil:
+		if s.Import.Lang == nil {
+			return c.compilePackageImport(s.Import)
+		}
+		return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -1237,6 +1247,81 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	c.imports["dart:io"] = true
 	c.useSave = true
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	if c.packages[alias] {
+		return nil
+	}
+	c.packages[alias] = true
+
+	path := strings.Trim(im.Path, "\"")
+	base := ""
+	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
+		base = filepath.Dir(im.Pos.Filename)
+	}
+	target := filepath.Join(base, path)
+	info, err := os.Stat(target)
+	if err != nil {
+		if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
+			if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
+				info = fi
+				target += ".mochi"
+			} else {
+				return fmt.Errorf("import package: %w", err)
+			}
+		} else {
+			return fmt.Errorf("import package: %w", err)
+		}
+	}
+	var files []string
+	if info.IsDir() {
+		entries, err := os.ReadDir(target)
+		if err != nil {
+			return fmt.Errorf("import package: %w", err)
+		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+				files = append(files, filepath.Join(target, e.Name()))
+			}
+		}
+		sort.Strings(files)
+	} else {
+		files = []string{target}
+	}
+
+	pkgEnv := types.NewEnv(c.env)
+	origEnv := c.env
+	c.env = pkgEnv
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		if errs := types.Check(prog, pkgEnv); len(errs) > 0 {
+			c.env = origEnv
+			return errs[0]
+		}
+		for _, s := range prog.Statements {
+			if s.Fun != nil && s.Fun.Export {
+				name := s.Fun.Name
+				s.Fun.Name = alias + "_" + name
+				if err := c.compileFun(s.Fun); err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("")
+			}
+		}
+	}
+	c.env = origEnv
+	return nil
 }
 
 func isMapExpr(c *Compiler, e *parser.Expr) bool {
