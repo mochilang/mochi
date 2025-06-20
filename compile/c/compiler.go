@@ -50,6 +50,10 @@ type Compiler struct {
 	needsStr                 bool
 	needsInput               bool
 	needsIndexString         bool
+	needsIndexListInt        bool
+	needsIndexListFloat      bool
+	needsIndexListString     bool
+	needsIndexListListInt    bool
 	needsStrLen              bool
 	needsSliceListInt        bool
 	needsSliceString         bool
@@ -599,6 +603,46 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.needsIndexListInt {
+		c.writeln("")
+		c.writeln("static int _index_list_int(list_int v, int i) {")
+		c.indent++
+		c.writeln("if (i < 0) i += v.len;")
+		c.writeln("if (i < 0 || i >= v.len) { fprintf(stderr, \"index out of range\\n\"); exit(1); }")
+		c.writeln("return v.data[i];")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsIndexListFloat {
+		c.writeln("")
+		c.writeln("static double _index_list_float(list_float v, int i) {")
+		c.indent++
+		c.writeln("if (i < 0) i += v.len;")
+		c.writeln("if (i < 0 || i >= v.len) { fprintf(stderr, \"index out of range\\n\"); exit(1); }")
+		c.writeln("return v.data[i];")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsIndexListString {
+		c.writeln("")
+		c.writeln("static char* _index_list_string(list_string v, int i) {")
+		c.indent++
+		c.writeln("if (i < 0) i += v.len;")
+		c.writeln("if (i < 0 || i >= v.len) { fprintf(stderr, \"index out of range\\n\"); exit(1); }")
+		c.writeln("return v.data[i];")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsIndexListListInt {
+		c.writeln("")
+		c.writeln("static list_int _index_list_list_int(list_list_int v, int i) {")
+		c.indent++
+		c.writeln("if (i < 0) i += v.len;")
+		c.writeln("if (i < 0 || i >= v.len) { fprintf(stderr, \"index out of range\\n\"); exit(1); }")
+		c.writeln("return v.data[i];")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.needsSliceString {
 		c.writeln("")
 		c.writeln("static char* slice_string(char* s, int start, int end) {")
@@ -861,8 +905,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Assign != nil:
 		lhs := sanitizeName(s.Assign.Name)
 		target := lhs
+		first := true
 		for _, idx := range s.Assign.Index {
 			ix := c.compileExpr(idx.Start)
+			if first {
+				tmp := c.newTemp()
+				c.writeln(fmt.Sprintf("int %s = %s;", tmp, ix))
+				c.writeln(fmt.Sprintf("if (%s < 0) %s += %s.len;", tmp, tmp, target))
+				ix = tmp
+				first = false
+			}
 			target = fmt.Sprintf("%s.data[%s]", target, ix)
 		}
 		val := c.compileExpr(s.Assign.Value)
@@ -1265,6 +1317,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 	expr := c.compilePrimary(p.Target)
 	isStr := isStringPrimary(p.Target, c.env)
 	isFloatList := isListFloatPrimary(p.Target, c.env)
+	isListStr := isListStringPrimary(p.Target, c.env)
+	isListList := isListListPrimary(p.Target, c.env)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			if op.Index.Colon == nil {
@@ -1278,8 +1332,43 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					}
 					expr = name
 					isStr = true
+				} else if isListStr {
+					name := c.newTemp()
+					c.needsIndexListString = true
+					c.writeln(fmt.Sprintf("char* %s = _index_list_string(%s, %s);", name, expr, idx))
+					if c.env != nil {
+						c.env.SetVar(name, types.StringType{}, true)
+					}
+					expr = name
+					isStr = true
+					isListStr = false
+					isFloatList = false
+				} else if isFloatList {
+					name := c.newTemp()
+					c.needsIndexListFloat = true
+					c.writeln(fmt.Sprintf("double %s = _index_list_float(%s, %s);", name, expr, idx))
+					if c.env != nil {
+						c.env.SetVar(name, types.FloatType{}, true)
+					}
+					expr = name
+					isFloatList = false
+				} else if isListList {
+					name := c.newTemp()
+					c.needsIndexListListInt = true
+					c.writeln(fmt.Sprintf("list_int %s = _index_list_list_int(%s, %s);", name, expr, idx))
+					if c.env != nil {
+						c.env.SetVar(name, types.ListType{Elem: types.IntType{}}, true)
+					}
+					expr = name
+					isListList = false
 				} else {
-					expr = fmt.Sprintf("%s.data[%s]", expr, idx)
+					name := c.newTemp()
+					c.needsIndexListInt = true
+					c.writeln(fmt.Sprintf("int %s = _index_list_int(%s, %s);", name, expr, idx))
+					if c.env != nil {
+						c.env.SetVar(name, types.IntType{}, true)
+					}
+					expr = name
 					isStr = false
 					isFloatList = false
 				}

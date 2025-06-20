@@ -24,7 +24,10 @@ Further helpers like `_count`, `_avg`, `_input`, `_str` and `_index_string` are 
 
 The backend supports basic language features including variable declarations, `for`/`while` loops, conditionals and function definitions. Lists of integers, floats and nested lists are handled using the `list_int`, `list_float` and `list_list_int` types. When compiling `for` loops over ranges or collections the generator emits plain C loops.【F:compile/c/compiler.go†L452-L527】
 
+
 Builtin functions such as `print`, `len`, `count`, `avg`, `input` and `str` are translated to the appropriate helper calls or C library functions.【F:compile/c/compiler.go†L629-L757】
+
+Index operations support negative indices for both strings and lists using helpers like `_index_string` and `_index_list_int`.
 
 ## Building
 
