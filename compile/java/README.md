@@ -256,5 +256,8 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Import statements
 - LLM helpers (`generate` expressions)
 - HTTP fetch (`fetch`)
+- Anonymous function expressions (`fun` values)
+- Methods declared inside `type` blocks
+- Agent initialization with field values
 
 Simple `from` queries used by the LeetCode examples are now supported.
