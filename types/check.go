@@ -349,6 +349,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: IntType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("append", FuncType{
+		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
 	env.SetVar("now", FuncType{
 		Params: []Type{},
 		Return: Int64Type{},
@@ -1839,14 +1844,15 @@ func isNumeric(t Type) bool {
 }
 
 var builtinArity = map[string]int{
-	"now":   0,
-	"input": 0,
-	"json":  1,
-	"str":   1,
-	"eval":  1,
-	"len":   1,
-	"count": 1,
-	"avg":   1,
+	"now":    0,
+	"input":  0,
+	"json":   1,
+	"str":    1,
+	"eval":   1,
+	"len":    1,
+	"count":  1,
+	"avg":    1,
+	"append": 2,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
@@ -1906,6 +1912,16 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		default:
 			return errAvgOperand(pos, a)
 		}
+	case "append":
+		if len(args) != 2 {
+			return errArgCount(pos, name, 2, len(args))
+		}
+		if _, ok := args[0].(ListType); !ok {
+			if _, ok := args[0].(AnyType); !ok {
+				return fmt.Errorf("append() expects list, got %v", args[0])
+			}
+		}
+		return nil
 	}
 	return nil
 }

@@ -89,19 +89,24 @@ func collectLoopVars(stmts []*parser.Statement, vars, str map[string]bool) {
 	}
 }
 
-func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, floatVars map[string]bool, funStr map[string]bool, funFloat map[string]bool) {
+func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, floatVars map[string]bool, funStr map[string]bool, funFloat map[string]bool, funList map[string]bool) {
 	for _, s := range stmts {
 		switch {
 		case s.Var != nil:
 			name := sanitizeName(s.Var.Name)
 			vars[name] = true
-			if isListLiteral(s.Var.Value) {
+			if isListLiteral(s.Var.Value) || isListExpr(s.Var.Value, listVars, funList) {
 				listVars[name] = true
 			}
 			if s.Var.Type != nil && s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "list" {
 				listVars[name] = true
-				if len(s.Var.Type.Generic.Args) == 1 && s.Var.Type.Generic.Args[0].Simple != nil && *s.Var.Type.Generic.Args[0].Simple == "string" {
-					stringVars[name] = true
+				if len(s.Var.Type.Generic.Args) == 1 && s.Var.Type.Generic.Args[0].Simple != nil {
+					switch *s.Var.Type.Generic.Args[0].Simple {
+					case "string":
+						stringVars[name] = true
+					case "float":
+						floatVars[name] = true
+					}
 				}
 			}
 			if isStringExpr(s.Var.Value, stringVars, funStr) {
@@ -113,13 +118,18 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 		case s.Let != nil:
 			name := sanitizeName(s.Let.Name)
 			vars[name] = true
-			if isListLiteral(s.Let.Value) {
+			if isListLiteral(s.Let.Value) || isListExpr(s.Let.Value, listVars, funList) {
 				listVars[name] = true
 			}
 			if s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "list" {
 				listVars[name] = true
-				if len(s.Let.Type.Generic.Args) == 1 && s.Let.Type.Generic.Args[0].Simple != nil && *s.Let.Type.Generic.Args[0].Simple == "string" {
-					stringVars[name] = true
+				if len(s.Let.Type.Generic.Args) == 1 && s.Let.Type.Generic.Args[0].Simple != nil {
+					switch *s.Let.Type.Generic.Args[0].Simple {
+					case "string":
+						stringVars[name] = true
+					case "float":
+						floatVars[name] = true
+					}
 				}
 			}
 			if isStringExpr(s.Let.Value, stringVars, funStr) {
@@ -129,18 +139,18 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 				floatVars[name] = true
 			}
 		case s.For != nil:
-			collectVars(s.For.Body, vars, listVars, stringVars, floatVars, funStr, funFloat)
+			collectVars(s.For.Body, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
 		case s.While != nil:
-			collectVars(s.While.Body, vars, listVars, stringVars, floatVars, funStr, funFloat)
+			collectVars(s.While.Body, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
 		case s.If != nil:
-			collectVars(s.If.Then, vars, listVars, stringVars, floatVars, funStr, funFloat)
+			collectVars(s.If.Then, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
 			cur := s.If
 			for cur.ElseIf != nil {
 				cur = cur.ElseIf
-				collectVars(cur.Then, vars, listVars, stringVars, floatVars, funStr, funFloat)
+				collectVars(cur.Then, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
 			}
 			if len(cur.Else) > 0 {
-				collectVars(cur.Else, vars, listVars, stringVars, floatVars, funStr, funFloat)
+				collectVars(cur.Else, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
 			}
 		}
 	}
@@ -191,6 +201,9 @@ func isListExpr(e *parser.Expr, listVars map[string]bool, funList map[string]boo
 				}
 				if u.Value.Target.Call != nil {
 					name := sanitizeName(u.Value.Target.Call.Func)
+					if name == "append" {
+						return true
+					}
 					if funList[name] {
 						return true
 					}
@@ -361,7 +374,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat)
+	collectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
 	c.listVars = listVars
 	c.stringVars = stringVars
 	c.floatVars = floatVars
@@ -370,6 +383,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if isList {
 			if stringVars[name] {
 				c.writeln(fmt.Sprintf("character(:), allocatable :: %s(:)", name))
+			} else if floatVars[name] {
+				c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
 			} else {
 				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
 			}
@@ -589,7 +604,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(fn.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat)
+	collectVars(fn.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
 	c.listVars = listVars
 	for name := range stringVars {
 		c.stringVars[name] = true
@@ -617,6 +632,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		if isList {
 			if stringVars[name] {
 				c.writeln(fmt.Sprintf("character(:), allocatable :: %s(:)", name))
+			} else if floatVars[name] {
+				c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
 			} else {
 				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
 			}
@@ -859,7 +876,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(t.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat)
+	collectVars(t.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
 	c.listVars = listVars
 	c.stringVars = stringVars
 	c.floatVars = floatVars
@@ -877,7 +894,13 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.stringVars = stringVars
 	allocs := []string{}
 	for name := range listVars {
-		c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
+		if stringVars[name] {
+			c.writeln(fmt.Sprintf("character(:), allocatable :: %s(:)", name))
+		} else if floatVars[name] {
+			c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
+		} else {
+			c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
+		}
 		allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		vars[name] = true
 	}
@@ -1315,6 +1338,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 			return fmt.Sprintf("len(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("size(%s)", args[0]), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		return fmt.Sprintf("(/ %s, %s /)", args[0], args[1]), nil
 	default:
 		name := sanitizeName(call.Func)
 		if recv != "" {
