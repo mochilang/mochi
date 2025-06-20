@@ -16,10 +16,13 @@ type Compiler struct {
 	indent    int
 	env       *types.Env
 	funParams map[string][]string
+	needCount bool
 }
 
 // New creates a new Smalltalk compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env, funParams: make(map[string][]string)} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, funParams: make(map[string][]string)}
+}
 
 func (c *Compiler) writeln(s string)         { c.writeIndent(); c.buf.WriteString(s); c.buf.WriteByte('\n') }
 func (c *Compiler) writelnNoIndent(s string) { c.buf.WriteString(s); c.buf.WriteByte('\n') }
@@ -32,8 +35,12 @@ func (c *Compiler) writeIndent() {
 // Compile generates Smalltalk code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
-	c.writeln("Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
-	c.writeln("")
+	c.needCount = false
+
+	orig := c.buf
+
+	// compile functions first
+	c.buf = bytes.Buffer{}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -42,7 +49,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
-	c.writelnNoIndent("!!")
+	funCode := append([]byte(nil), c.buf.Bytes()...)
+
+	// compile main statements
+	c.buf = bytes.Buffer{}
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Type != nil || s.Test != nil {
 			continue
@@ -51,6 +61,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
+	mainCode := append([]byte(nil), c.buf.Bytes()...)
+
+	// assemble
+	c.buf = orig
+	c.writeln("Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
+	c.writeln("")
+	c.buf.Write(funCode)
+	if c.needCount {
+		c.emitHelpers()
+	}
+	c.writelnNoIndent("!!")
+	c.buf.Write(mainCode)
+
 	return c.buf.Bytes(), nil
 }
 
@@ -492,6 +515,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("str expects 1 arg")
 		}
 		return fmt.Sprintf("(%s printString)", args[0]), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		c.needCount = true
+		return fmt.Sprintf("(Main __count: %s)", args[0]), nil
 	default:
 		params, ok := c.funParams[name]
 		if !ok {
@@ -633,4 +662,16 @@ func isMapPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 		}
 	}
 	return false
+}
+
+func (c *Compiler) emitHelpers() {
+	c.writeln("!Main class methodsFor: 'runtime'!")
+	if c.needCount {
+		c.writeln("__count: v")
+		c.indent++
+		c.writeln("(v respondsTo: #size) ifTrue: [ ^ v size ]")
+		c.writeln("^ self error: 'count() expects collection'")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
 }
