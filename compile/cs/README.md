@@ -140,6 +140,8 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign function interface and extern objects
 - Generic dictionary casts for complex map types
-- Import statements
 - YAML dataset loading/saving
+- Package declarations
+- Intent declarations
+- Set operations on lists (`union`, `union_all`, `except`, `intersect`)
 - Full LLM integration for `_genText` and `_genStruct`
