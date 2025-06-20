@@ -253,3 +253,22 @@ func EnsureZig() (string, error) {
 This backend is intentionally minimal. It does not yet support complex types,
 streams or the full Mochi standard library but demonstrates how Mochi can target
 a different runtime using Zig.
+
+### Unsupported Features
+
+The Zig generator currently omits several language constructs needed for later
+LeetCode solutions:
+
+* map types and dictionary literals – required for frequency tables and other
+  associative lookups
+* dataset query expressions (`from ... sort ... select`) used by problems that
+  operate over CSV-style input
+* lists of strings or nested lists beyond `list<int>`
+* advanced string slicing and indexing
+
+These features are not yet implemented, so programs relying on them will fail to
+compile or run correctly.  Most LeetCode tasks after problem 10 depend on at
+least one of these constructs.
+
+Until these are implemented the compiler can only compile the first few
+problems.
