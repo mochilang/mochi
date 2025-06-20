@@ -39,9 +39,19 @@ const (
     match path with
     | None | Some "" | Some "-" -> System.Console.Out.Write(out)
     | Some p -> System.IO.File.WriteAllText(p, out)`
+	helperRunTest = `let _run_test (name: string) (f: unit -> unit) : bool =
+  printf "%s ... " name
+  try
+    f()
+    printfn "PASS"
+    true
+  with e ->
+    printfn "FAIL (%s)" e.Message
+    false`
 )
 
 var helperMap = map[string]string{
-	"_load": helperLoad,
-	"_save": helperSave,
+	"_load":     helperLoad,
+	"_save":     helperSave,
+	"_run_test": helperRunTest,
 }
