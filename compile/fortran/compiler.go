@@ -26,6 +26,8 @@ type Compiler struct {
 	needsExceptFloat    bool
 	needsIntersectInt   bool
 	needsIntersectFloat bool
+	needsAvgInt         bool
+	needsAvgFloat       bool
 }
 
 func New() *Compiler {
@@ -229,10 +231,10 @@ func isStringExpr(e *parser.Expr, stringVars map[string]bool, funStr map[string]
 				return false
 			}
 			if len(v.Ops) == 0 {
-				if v.Target != nil && v.Target.Lit != nil && v.Target.Lit.Str != nil {
-					return true
-				}
 				if v.Target != nil {
+					if v.Target.Lit != nil && v.Target.Lit.Str != nil {
+						return true
+					}
 					if v.Target.Selector != nil {
 						name := sanitizeName(v.Target.Selector.Root)
 						if stringVars[name] {
@@ -245,9 +247,33 @@ func isStringExpr(e *parser.Expr, stringVars map[string]bool, funStr map[string]
 							return true
 						}
 					}
+					if v.Target.If != nil {
+						if isStringIfExpr(v.Target.If, stringVars, funStr) {
+							return true
+						}
+					}
+				}
+				if v.Target != nil && v.Target.Group != nil {
+					return isStringExpr(v.Target.Group, stringVars, funStr)
 				}
 			}
 		}
+	}
+	return false
+}
+
+func isStringIfExpr(ie *parser.IfExpr, stringVars map[string]bool, funStr map[string]bool) bool {
+	if ie == nil {
+		return false
+	}
+	if !isStringExpr(ie.Then, stringVars, funStr) {
+		return false
+	}
+	if ie.ElseIf != nil {
+		return isStringIfExpr(ie.ElseIf, stringVars, funStr)
+	}
+	if ie.Else != nil {
+		return isStringExpr(ie.Else, stringVars, funStr)
 	}
 	return false
 }
@@ -347,6 +373,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needsExceptFloat = false
 	c.needsIntersectInt = false
 	c.needsIntersectFloat = false
+	c.needsAvgInt = false
+	c.needsAvgFloat = false
 	var funs []*parser.FunStmt
 	var tests []*parser.TestBlock
 	var mainStmts []*parser.Statement
@@ -435,7 +463,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(fmt.Sprintf("call test_%s()", sanitizeName(t.Name)))
 	}
 	c.indent--
-	needHelpers := c.needsUnionInt || c.needsUnionFloat || c.needsExceptInt || c.needsExceptFloat || c.needsIntersectInt || c.needsIntersectFloat
+	needHelpers := c.needsUnionInt || c.needsUnionFloat || c.needsExceptInt || c.needsExceptFloat || c.needsIntersectInt || c.needsIntersectFloat || c.needsAvgInt || c.needsAvgFloat
 	if len(funs)+len(tests) > 0 || needHelpers {
 		c.writeln("contains")
 		c.indent++
@@ -1353,6 +1381,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return sanitizeName(p.Selector.Root), nil
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call, "")
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Group != nil:
 		v, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1361,6 +1391,32 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + v + ")", nil
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseVal string
+	if ie.ElseIf != nil {
+		elseVal, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseVal, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		return "", fmt.Errorf("if expression missing else branch")
+	}
+	return fmt.Sprintf("merge(%s, %s, %s)", thenVal, elseVal, cond), nil
 }
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, error) {
@@ -1381,6 +1437,24 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 			return fmt.Sprintf("len(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("size(%s)", args[0]), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		return fmt.Sprintf("size(%s)", args[0]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		if isFloatExpr(call.Args[0], c.floatVars, c.funReturnFloat) {
+			c.needsAvgFloat = true
+			return fmt.Sprintf("avg_float(%s)", args[0]), nil
+		}
+		if isListExpr(call.Args[0], c.listVars, c.funReturnList) {
+			c.needsAvgInt = true
+			return fmt.Sprintf("avg_int(%s)", args[0]), nil
+		}
+		return "0", nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
@@ -1590,5 +1664,53 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = tmp(:n)")
 		c.indent--
 		c.writeln("end function intersect_float")
+	}
+	if c.needsAvgInt {
+		c.writeln("")
+		c.writeln("function avg_int(v) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("integer(kind=8), intent(in) :: v(:)")
+		c.writeln("real :: r")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("if (size(v) == 0) then")
+		c.indent++
+		c.writeln("r = 0.0")
+		c.writeln("return")
+		c.indent--
+		c.writeln("end if")
+		c.writeln("r = 0.0")
+		c.writeln("do i = 1, size(v)")
+		c.indent++
+		c.writeln("r = r + real(v(i))")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("r = r / size(v)")
+		c.indent--
+		c.writeln("end function avg_int")
+	}
+	if c.needsAvgFloat {
+		c.writeln("")
+		c.writeln("function avg_float(v) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("real, intent(in) :: v(:)")
+		c.writeln("real :: r")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("if (size(v) == 0) then")
+		c.indent++
+		c.writeln("r = 0.0")
+		c.writeln("return")
+		c.indent--
+		c.writeln("end if")
+		c.writeln("r = 0.0")
+		c.writeln("do i = 1, size(v)")
+		c.indent++
+		c.writeln("r = r + v(i)")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("r = r / size(v)")
+		c.indent--
+		c.writeln("end function avg_float")
 	}
 }

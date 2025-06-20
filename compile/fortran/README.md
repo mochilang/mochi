@@ -189,6 +189,7 @@ Missing features include:
 
 - Map types and membership tests for maps. The `in` operator only works for
   lists and strings.
+- Map indexing and assignment are not implemented.
 - Query expressions (`from`/`sort by`/`select`).
 - Nested function definitions and struct literals.
 - `union`, `except` and `intersect` only work for `list<int>` and `list<float>` values.
@@ -197,6 +198,7 @@ Missing features include:
 - Agents, streams and logic programming constructs (`fact`, `rule`, `query`).
 - Foreign imports and dataset helpers like `fetch`, `load` and `save`.
 - Anonymous function literals (`fun` expressions) and `if` used as an expression.
+- Only a few built-ins are available (`len`, `append`, `count`, `avg`).
 - Generative `generate` blocks and model declarations.
 
 While limited, this backend demonstrates how Mochi’s AST can be translated into
