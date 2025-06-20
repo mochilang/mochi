@@ -71,7 +71,7 @@ go test ./compile/hs -tags slow
 
 The Haskell backend currently supports a limited subset of Mochi: function
 definitions, if/else expressions, basic loops, lists, maps and a few built-in
-functions (`len`, `count`, `avg`, `str`, `print`). Map access relies on
+functions (`len`, `count`, `avg`, `str`, `print`, `now`, `json`). Map access relies on
 `Data.Map` when needed. Variable names are sanitised to avoid conflicts with
 Haskell keywords.
 
@@ -88,6 +88,8 @@ full Mochi language. Unsupported features include:
 * `break` and `continue` statements
 * Struct and object types
 * Package imports and module system
-* Built-in functions `now` and `json`
 * Dataset `load`/`save` operations
 * `test` blocks and expectations
+* Logic programming (`fact`, `rule`, `query`)
+* `try`/`catch` error handling
+* List and string slicing (e.g. `nums[1:3]`)
