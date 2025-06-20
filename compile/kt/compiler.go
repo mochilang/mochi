@@ -3,7 +3,10 @@ package ktcode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
+	"strings"
 
 	"mochi/parser"
 	"mochi/types"
@@ -16,16 +19,25 @@ type Compiler struct {
 	env       *types.Env
 	mainStmts []*parser.Statement
 	helpers   map[string]bool
+	packages  map[string]bool
 	models    bool
 }
 
 // New creates a new Kotlin compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), models: false}
+	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), models: false}
 }
 
 // Compile generates Kotlin code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	for _, s := range prog.Statements {
+		if s.Import != nil && s.Import.Lang == nil {
+			if err := c.compilePackageImport(s.Import); err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	for _, s := range prog.Statements {
 		if s.Model != nil {
 			c.models = true
@@ -119,6 +131,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileExpect(s.Expect)
 	case s.Model != nil:
 		return c.compileModelDecl(s.Model)
+	case s.Import != nil:
+		if s.Import.Lang == nil {
+			return c.compilePackageImport(s.Import)
+		}
+		return fmt.Errorf("foreign imports not supported")
 	default:
 		return nil
 	}
@@ -440,6 +457,69 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var prompt, text, model string
+	params := []string{}
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("%q to %s", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramMap := "null"
+	if len(params) > 0 {
+		paramMap = "mapOf(" + joinArgs(params) + ")"
+	}
+	if model == "" {
+		model = "null"
+	}
+	if g.Target == "embedding" {
+		c.use("_genEmbed")
+		return fmt.Sprintf("_genEmbed(%s, %s, %s)", text, model, paramMap), nil
+	}
+	if c.env != nil {
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.use("_genStruct")
+			return fmt.Sprintf("_genStruct<%s>(%s, %s, %s)", sanitizeName(g.Target), prompt, model, paramMap), nil
+		}
+	}
+	c.use("_genText")
+	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramMap), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "null"
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = w
+	}
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
+}
+
 func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
 	c.models = true
 	parts := make([]string, len(m.Fields))
@@ -451,6 +531,93 @@ func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
 		parts[i] = fmt.Sprintf("%q to %s", f.Name, v)
 	}
 	c.writeln(fmt.Sprintf("_models[%q] = mapOf(%s)", m.Name, joinArgs(parts)))
+	return nil
+}
+
+func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	if c.packages[alias] {
+		return nil
+	}
+	c.packages[alias] = true
+
+	path := strings.Trim(im.Path, "\"")
+	base := ""
+	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
+		base = filepath.Dir(im.Pos.Filename)
+	}
+	target := filepath.Join(base, path)
+	info, err := os.Stat(target)
+	if err != nil {
+		if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
+			if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
+				info = fi
+				target += ".mochi"
+			} else {
+				return fmt.Errorf("import package: %w", err)
+			}
+		} else {
+			return fmt.Errorf("import package: %w", err)
+		}
+	}
+	var files []string
+	if info.IsDir() {
+		entries, err := os.ReadDir(target)
+		if err != nil {
+			return fmt.Errorf("import package: %w", err)
+		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+				files = append(files, filepath.Join(target, e.Name()))
+			}
+		}
+		sort.Strings(files)
+	} else {
+		files = []string{target}
+	}
+
+	pkgEnv := types.NewEnv(c.env)
+	origEnv := c.env
+	c.env = pkgEnv
+	c.writeln(fmt.Sprintf("object %s {", sanitizeName(alias)))
+	c.indent++
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		if errs := types.Check(prog, pkgEnv); len(errs) > 0 {
+			c.env = origEnv
+			return errs[0]
+		}
+		for _, s := range prog.Statements {
+			if s.Type != nil {
+				if err := c.compileTypeDecl(s.Type); err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("")
+			}
+		}
+		for _, s := range prog.Statements {
+			if s.Fun != nil && s.Fun.Export {
+				if err := c.compileFun(s.Fun); err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("")
+			}
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	c.env = origEnv
 	return nil
 }
 
@@ -976,6 +1143,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.Call != nil:
 		args := []string{}
 		for _, a := range p.Call.Args {
@@ -1013,6 +1184,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if name == "input" && len(args) == 0 {
 			return "readln()", nil
+		}
+		if name == "eval" && len(args) == 1 {
+			c.use("_eval")
+			return fmt.Sprintf("_eval(%s)", args[0]), nil
 		}
 		return name + "(" + joinArgs(args) + ")", nil
 	}
