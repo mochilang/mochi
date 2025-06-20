@@ -21,11 +21,70 @@ type Compiler struct {
 	mapVars map[string]bool
 	setNth  bool
 	slice   bool
+	loopTmp int
+	loops   []loopCtx
+	funTmp  int
+}
+
+type loopCtx struct {
+	brk  string
+	cont string
+}
+
+func hasLoopCtrl(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		switch {
+		case s.Break != nil || s.Continue != nil:
+			return true
+		case s.For != nil:
+			if hasLoopCtrl(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if hasLoopCtrl(s.While.Body) {
+				return true
+			}
+		case s.If != nil:
+			if hasLoopCtrl(s.If.Then) || hasLoopCtrlIf(s.If.ElseIf) || hasLoopCtrl(s.If.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
+	if ifst == nil {
+		return false
+	}
+	if hasLoopCtrl(ifst.Then) || hasLoopCtrl(ifst.Else) {
+		return true
+	}
+	return hasLoopCtrlIf(ifst.ElseIf)
+}
+
+func programHasLoopCtrl(stmts []*parser.Statement) bool {
+	if hasLoopCtrl(stmts) {
+		return true
+	}
+	for _, s := range stmts {
+		if s.Fun != nil {
+			if hasLoopCtrl(s.Fun.Body) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // New creates a new OCaml compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]bool{}, mapVars: map[string]bool{}}
+	return &Compiler{
+		env:     env,
+		vars:    map[string]bool{},
+		mapVars: map[string]bool{},
+		loops:   []loopCtx{},
+	}
 }
 
 func (c *Compiler) writeIndent() {
@@ -40,8 +99,28 @@ func (c *Compiler) writeln(s string) {
 	c.buf.WriteByte('\n')
 }
 
+func (c *Compiler) newLoopID() string {
+	id := fmt.Sprintf("%d", c.loopTmp)
+	c.loopTmp++
+	return id
+}
+
+func (c *Compiler) pushLoop(brk, cont string) {
+	c.loops = append(c.loops, loopCtx{brk: brk, cont: cont})
+}
+
+func (c *Compiler) popLoop() {
+	if len(c.loops) > 0 {
+		c.loops = c.loops[:len(c.loops)-1]
+	}
+}
+
 // Compile returns OCaml source code implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if programHasLoopCtrl(prog.Statements) {
+		c.pre.WriteString("exception BreakException of int\n")
+		c.pre.WriteString("exception ContinueException of int\n\n")
+	}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -247,6 +326,16 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 		return c.compileFor(s.For, ex)
 	case s.If != nil:
 		return c.compileIf(s.If, ex)
+	case s.Break != nil:
+		if len(c.loops) == 0 {
+			return fmt.Errorf("break not in loop")
+		}
+		c.writeln(fmt.Sprintf("raise (%s)", c.loops[len(c.loops)-1].brk))
+	case s.Continue != nil:
+		if len(c.loops) == 0 {
+			return fmt.Errorf("continue not in loop")
+		}
+		c.writeln(fmt.Sprintf("raise (%s)", c.loops[len(c.loops)-1].cont))
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -283,6 +372,16 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 		c.env = child
 		defer func() { c.env = origEnv }()
 	}
+	ctrl := hasLoopCtrl(f.Body)
+	var id string
+	var brk, cont string
+	if ctrl {
+		id = c.newLoopID()
+		brk = fmt.Sprintf("BreakException %s", id)
+		cont = fmt.Sprintf("ContinueException %s", id)
+		c.writeln("try")
+		c.indent++
+	}
 	if f.RangeEnd == nil {
 		src, err := c.compileExpr(f.Source)
 		if err != nil {
@@ -294,6 +393,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 		}
 		c.writeln(fmt.Sprintf("%s (fun %s ->", iter, sanitizeName(f.Name)))
 		c.indent++
+		if ctrl {
+			c.pushLoop(brk, cont)
+			c.writeln("try")
+			c.indent++
+		}
 		bodyEx := ex
 		if bodyEx == "" {
 			bodyEx = "loop"
@@ -303,11 +407,28 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 				return err
 			}
 		}
+		if ctrl {
+			c.indent--
+			c.writeln(fmt.Sprintf("with ContinueException n when n = %s -> ()", id))
+			c.popLoop()
+		}
 		c.indent--
 		if ex == "" {
-			c.writeln(fmt.Sprintf(") %s;;", src))
+			if ctrl {
+				c.writeln(fmt.Sprintf(") %s;", src))
+			} else {
+				c.writeln(fmt.Sprintf(") %s;;", src))
+			}
 		} else {
 			c.writeln(fmt.Sprintf(") %s;", src))
+		}
+		if ctrl {
+			c.indent--
+			if ex == "" {
+				c.writeln(fmt.Sprintf("with BreakException n when n = %s -> ();;", id))
+			} else {
+				c.writeln(fmt.Sprintf("with BreakException n when n = %s -> ()", id))
+			}
 		}
 		return nil
 	}
@@ -321,16 +442,38 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 	}
 	c.writeln(fmt.Sprintf("for %s = %s to %s - 1 do", sanitizeName(f.Name), start, end))
 	c.indent++
+	if ctrl {
+		c.pushLoop(brk, cont)
+		c.writeln("try")
+		c.indent++
+	}
 	for _, st := range f.Body {
 		if err := c.compileStmt(st, ex); err != nil {
 			return err
 		}
 	}
+	if ctrl {
+		c.indent--
+		c.writeln(fmt.Sprintf("with ContinueException n when n = %s -> ()", id))
+		c.popLoop()
+	}
 	c.indent--
 	if ex == "" {
-		c.writeln("done;;")
+		if ctrl {
+			c.writeln("done;")
+		} else {
+			c.writeln("done;;")
+		}
 	} else {
 		c.writeln("done;")
+	}
+	if ctrl {
+		c.indent--
+		if ex == "" {
+			c.writeln(fmt.Sprintf("with BreakException n when n = %s -> ();", id))
+		} else {
+			c.writeln(fmt.Sprintf("with BreakException n when n = %s -> ()", id))
+		}
 	}
 	return nil
 }
@@ -340,22 +483,46 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt, ex string) error {
 	if err != nil {
 		return err
 	}
+	ctrl := hasLoopCtrl(w.Body)
+	var id string
+	var brk, cont string
+	if ctrl {
+		id = c.newLoopID()
+		brk = fmt.Sprintf("BreakException %s", id)
+		cont = fmt.Sprintf("ContinueException %s", id)
+		c.writeln("try")
+		c.indent++
+	}
 	c.writeln(fmt.Sprintf("while %s do", cond))
 	c.indent++
 	bodyEx := ex
 	if bodyEx == "" {
 		bodyEx = "loop"
 	}
+	if ctrl {
+		c.pushLoop(brk, cont)
+		c.writeln("try")
+		c.indent++
+	}
 	for _, st := range w.Body {
 		if err := c.compileStmt(st, bodyEx); err != nil {
 			return err
 		}
+	}
+	if ctrl {
+		c.indent--
+		c.writeln(fmt.Sprintf("with ContinueException n when n = %s -> ()", id))
+		c.popLoop()
 	}
 	c.indent--
 	if ex == "" {
 		c.writeln("done;;")
 	} else {
 		c.writeln("done;")
+	}
+	if ctrl {
+		c.indent--
+		c.writeln(fmt.Sprintf("with BreakException n when n = %s -> ()", id))
 	}
 	return nil
 }
@@ -638,7 +805,14 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("fun %s -> %s", strings.Join(params, " "), body), nil
 	}
-	return "", fmt.Errorf("unsupported function expression")
+	name := fmt.Sprintf("__anon%d", c.funTmp)
+	c.funTmp++
+	stmt := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: fn.BlockBody}
+	if err := c.compileFun(stmt); err != nil {
+		return "", err
+	}
+	c.writeln("")
+	return name, nil
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
@@ -673,6 +847,21 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("print_endline (string_of_float (%s))", args[0]), nil
 			}
 			return fmt.Sprintf("print_endline (string_of_int (%s))", args[0]), nil
+		}
+		if len(args) > 0 {
+			parts := make([]string, len(args))
+			for i, a := range call.Args {
+				if isStringExpr(a, c.env) {
+					parts[i] = args[i]
+				} else if isBoolExpr(a, c.env) {
+					parts[i] = fmt.Sprintf("string_of_bool (%s)", args[i])
+				} else if isFloatExpr(a, c.env) {
+					parts[i] = fmt.Sprintf("string_of_float (%s)", args[i])
+				} else {
+					parts[i] = fmt.Sprintf("string_of_int (%s)", args[i])
+				}
+			}
+			return fmt.Sprintf("print_endline (String.concat \" \" [%s])", strings.Join(parts, "; ")), nil
 		}
 	case "str":
 		if len(args) == 1 {
