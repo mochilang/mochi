@@ -603,6 +603,7 @@ Some language constructs are still experimental or missing in the current implem
 - File and network helpers (`fetch`, `load`, `save`, `generate`).
 - Importing external packages with `import` and calling `extern` functions.
 - `test` and `expect` blocks are ignored when compiling to Rust.
+- Local recursive functions and negative literals in typed lists may fail to compile.
 
 ## Benchmarks
 
