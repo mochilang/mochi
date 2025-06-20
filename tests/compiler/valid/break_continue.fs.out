@@ -10,6 +10,6 @@ try
                 raise (ContinueException 0)
             if (n > 7) then
                 raise (BreakException 0)
-            printfn "%A" ("odd number:" n)
+            ignore (printfn "%A" ("odd number:", n))
         with ContinueException n when n = 0 -> ()
 with BreakException n when n = 0 -> ()

@@ -216,14 +216,7 @@ func TestFSCompiler_LeetCodeExamples(t *testing.T) {
 	if err := exec.Command("dotnet", "fsi", "--help").Run(); err != nil {
 		t.Skipf("dotnet fsi not runnable: %v", err)
 	}
-	runLeetExample(t, 1)
-	runLeetExample(t, 2)
-	runLeetExample(t, 3)
-	runLeetExample(t, 4)
-	runLeetExample(t, 5)
-	runLeetExample(t, 6)
-	runLeetExample(t, 7)
-	runLeetExample(t, 8)
-	runLeetExample(t, 9)
-	runLeetExample(t, 10)
+	for i := 1; i <= 30; i++ {
+		runLeetExample(t, i)
+	}
 }

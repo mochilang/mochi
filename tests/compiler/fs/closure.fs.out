@@ -1,11 +1,12 @@
 open System
 
-exception Return_makeAdder of obj
-let makeAdder (n: int) : obj =
+exception Return_makeAdder of (int -> int)
+let rec makeAdder (n: int) : int -> int =
     try
+        let mutable n = n
         raise (Return_makeAdder ((fun (x: int) -> (x + n))))
         failwith "unreachable"
     with Return_makeAdder v -> v
 
-let add10 = makeAdder 10
-printfn "%A" add10 7
+let add10 = makeAdder (10)
+ignore (printfn "%A" (add10 (7)))

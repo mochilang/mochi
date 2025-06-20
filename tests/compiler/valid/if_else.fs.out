@@ -2,6 +2,6 @@ open System
 
 let x = 5
 if (x > 3) then
-    printfn "%A" "big"
+    ignore (printfn "%A" ("big"))
 else
-    printfn "%A" "small"
+    ignore (printfn "%A" ("small"))

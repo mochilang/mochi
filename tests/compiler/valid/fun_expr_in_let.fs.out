@@ -1,4 +1,4 @@
 open System
 
 let square = (fun (x: int) -> (x * x))
-printfn "%A" square 6
+ignore (printfn "%A" (square (6)))

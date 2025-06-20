@@ -2,4 +2,4 @@ open System
 
 let mutable scores = Map.ofList [("a", 1)]
 scores <- Map.add "b" 2 scores
-printfn "%A" scores.["b"]
+ignore (printfn "%A" (scores.["b"]))

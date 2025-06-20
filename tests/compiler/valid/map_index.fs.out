@@ -1,4 +1,4 @@
 open System
 
 let scores = Map.ofList [("Alice", 10); ("Bob", 15)]
-printfn "%A" scores.["Bob"]
+ignore (printfn "%A" (scores.["Bob"]))

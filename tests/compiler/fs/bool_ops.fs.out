@@ -1,5 +1,5 @@
 open System
 
-printfn "%A" (true && false)
-printfn "%A" (true || false)
-printfn "%A" (not false)
+ignore (printfn "%A" ((true && false)))
+ignore (printfn "%A" ((true || false)))
+ignore (printfn "%A" ((not false)))

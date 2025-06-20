@@ -24,16 +24,25 @@ let isMatch (s: string) (p: string) : bool =
                 if (i2 < m) then
                     if ((((string p.[(if j2 < 0 then p.Length + j2 else j2)]) = (string s.[(if i2 < 0 then s.Length + i2 else i2)]))) || (((string p.[(if j2 < 0 then p.Length + j2 else j2)]) = "."))) then
                         first <- true
-                if (((j2 + 1) < n) && ((string p.[(if (j2 + 1) < 0 then p.Length + (j2 + 1) else (j2 + 1))]) = "*")) then
-                    if (dp.[i2].[(j2 + 2)] || ((first && dp.[(i2 + 1)].[j2]))) then
-                        dp.[i2].[j2] <- true
+                let mutable star = false
+                if ((j2 + 1) < n) then
+                    if ((string p.[(if (j2 + 1) < 0 then p.Length + (j2 + 1) else (j2 + 1))]) = "*") then
+                        star <- true
+                if star then
+                    let mutable ok = false
+                    if dp.[i2].[(j2 + 2)] then
+                        ok <- true
                     else
-                        dp.[i2].[j2] <- false
+                        if first then
+                            if dp.[(i2 + 1)].[j2] then
+                                ok <- true
+                    dp.[i2].[j2] <- ok
                 else
-                    if (first && dp.[(i2 + 1)].[(j2 + 1)]) then
-                        dp.[i2].[j2] <- true
-                    else
-                        dp.[i2].[j2] <- false
+                    let mutable ok = false
+                    if first then
+                        if dp.[(i2 + 1)].[(j2 + 1)] then
+                            ok <- true
+                    dp.[i2].[j2] <- ok
                 j2 <- (j2 - 1)
             i2 <- (i2 - 1)
         raise (Return_isMatch (dp.[0].[0]))

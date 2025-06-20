@@ -2,4 +2,4 @@ open System
 
 for ch in "hi" do
     let ch = string ch
-    printfn "%A" ch
+    ignore (printfn "%A" (ch))
