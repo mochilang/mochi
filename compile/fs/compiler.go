@@ -3,6 +3,7 @@ package fscode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -23,6 +24,7 @@ type Compiler struct {
 	loops       []loopCtx
 	locals      map[string]bool
 	localsStack []map[string]bool
+	helpers     map[string]bool
 }
 
 type loopCtx struct {
@@ -77,7 +79,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, locals: make(map[string]bool)}
+	return &Compiler{env: env, locals: make(map[string]bool), helpers: make(map[string]bool)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -141,6 +143,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
+	c.emitRuntime()
 	out := header.Bytes()
 	if c.preamble.Len() > 0 {
 		out = append(out, c.preamble.Bytes()...)
@@ -928,6 +931,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Query != nil:
@@ -1020,6 +1027,44 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	c.preamble.Write(sub.buf.Bytes())
 	c.preamble.WriteByte('\n')
 	return name, nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "None"
+	if l.Path != nil {
+		path = fmt.Sprintf("Some %q", *l.Path)
+	}
+	opts := "None"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = fmt.Sprintf("Some (%s)", v)
+	}
+	c.use("_load")
+	return fmt.Sprintf("_load %s %s", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "None"
+	if s.Path != nil {
+		path = fmt.Sprintf("Some %q", *s.Path)
+	}
+	opts := "None"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = fmt.Sprintf("Some (%s)", v)
+	}
+	c.use("_save")
+	return fmt.Sprintf("_save %s %s %s", src, path, opts), nil
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
@@ -1313,4 +1358,26 @@ func contains(list []string, s string) bool {
 		}
 	}
 	return false
+}
+
+func (c *Compiler) use(name string) { c.helpers[name] = true }
+
+func (c *Compiler) emitRuntime() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		for _, line := range strings.Split(helperMap[n], "\n") {
+			if line == "" {
+				c.writeln("")
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 }
