@@ -402,8 +402,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
-	// advanced features not yet supported for cross joins
-	if q.Sort != nil || q.Skip != nil || q.Take != nil {
+	// sorting still not implemented for cross joins
+	if q.Sort != nil {
 		return "", fmt.Errorf("advanced query clauses not supported")
 	}
 
@@ -418,6 +418,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
+	}
+	var skipVal, takeVal string
+	if q.Skip != nil {
+		v, err := c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		skipVal = v
+	}
+	if q.Take != nil {
+		v, err := c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		takeVal = v
 	}
 	var b strings.Builder
 	b.WriteString("(begin\n")
@@ -446,6 +461,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "end\n")
 	}
 	b.WriteString("\tend\n")
+	if skipVal != "" {
+		b.WriteString(fmt.Sprintf("\t_res = _res.drop(%s)\n", skipVal))
+	}
+	if takeVal != "" {
+		b.WriteString(fmt.Sprintf("\t_res = _res.take(%s)\n", takeVal))
+	}
 	b.WriteString("\t_res\n")
 	b.WriteString("end)")
 	return b.String(), nil

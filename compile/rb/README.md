@@ -164,11 +164,11 @@ The first test is skipped when Ruby is not available and the suite falls back to
 The Ruby backend does not yet implement every construct in Mochi. Missing
 features include:
 
-- Complex dataset queries using grouping, joins or pagination when compiling
-  with cross joins.
-- Block-bodied anonymous functions like `fun(x: int) { ... }`.
+- Complex dataset queries using grouping or join clauses. Cross joins now
+  support `skip` and `take` but still lack sorting.
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming
   features (`fact`, `rule`, `query`).
-- External helpers for data fetching or generation such as `_fetch`, `_genText`,
-  `load`, `save` and `generate`.
+- Packages and foreign function interface declarations (`import`, `extern`).
+- External helpers for data fetching or generation such as `_fetch`,
+  `generate`, `load` and `save`.
 
