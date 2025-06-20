@@ -946,6 +946,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "avg" && len(args) == 1 {
 			return args[0] + ".average()", nil
 		}
+		if name == "now" && len(args) == 0 {
+			return "(System.currentTimeMillis() * 1000000)", nil
+		}
+		if name == "json" && len(args) == 1 {
+			c.use("_json")
+			return fmt.Sprintf("_json(%s)", args[0]), nil
+		}
 		if name == "str" && len(args) == 1 {
 			return args[0] + ".toString()", nil
 		}

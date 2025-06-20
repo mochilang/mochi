@@ -1,0 +1,4 @@
+fun main() {
+        println((System.currentTimeMillis() * 1000000) > 0)
+}
+
