@@ -478,6 +478,32 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	if ie.ElseIf != nil {
+		elseExpr, err := c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("((%s) ifTrue: [%s] ifFalse: [%s])", cond, thenExpr, elseExpr), nil
+	}
+	if ie.Else != nil {
+		elseExpr, err := c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("((%s) ifTrue: [%s] ifFalse: [%s])", cond, thenExpr, elseExpr), nil
+	}
+	return fmt.Sprintf("((%s) ifTrue: [%s])", cond, thenExpr), nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "", nil
@@ -628,6 +654,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileStructLiteral(p.Struct)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
