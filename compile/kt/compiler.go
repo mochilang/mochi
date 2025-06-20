@@ -16,15 +16,27 @@ type Compiler struct {
 	env       *types.Env
 	mainStmts []*parser.Statement
 	helpers   map[string]bool
+	models    bool
 }
 
 // New creates a new Kotlin compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), models: false}
 }
 
 // Compile generates Kotlin code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	for _, s := range prog.Statements {
+		if s.Model != nil {
+			c.models = true
+			break
+		}
+	}
+	if c.models {
+		c.writeln("var _models = mutableMapOf<String, Map<String, Any>>()")
+		c.writeln("")
+	}
+
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			if err := c.compileTypeDecl(s.Type); err != nil {
@@ -105,6 +117,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileTestBlock(s.Test)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
+	case s.Model != nil:
+		return c.compileModelDecl(s.Model)
 	default:
 		return nil
 	}
@@ -409,6 +423,20 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
+	c.models = true
+	parts := make([]string, len(m.Fields))
+	for i, f := range m.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("%q to %s", f.Name, v)
+	}
+	c.writeln(fmt.Sprintf("_models[%q] = mapOf(%s)", m.Name, joinArgs(parts)))
+	return nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
