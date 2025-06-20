@@ -12,11 +12,13 @@ import (
 
 // Compiler translates a Mochi AST into Zig source code (very small subset).
 type Compiler struct {
-	buf           bytes.Buffer
-	indent        int
-	env           *types.Env
-	needsAvgInt   bool
-	needsAvgFloat bool
+	buf               bytes.Buffer
+	indent            int
+	env               *types.Env
+	needsAvgInt       bool
+	needsAvgFloat     bool
+	needsInListInt    bool
+	needsInListString bool
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
@@ -83,6 +85,24 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("var sum: f64 = 0;")
 		c.writeln("for (v) |it| { sum += it; }")
 		c.writeln("return sum / @as(f64, @floatFromInt(v.len));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsInListInt {
+		c.writeln("fn _contains_list_int(v: []const i32, item: i32) bool {")
+		c.indent++
+		c.writeln("for (v) |it| { if (it == item) return true; }")
+		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsInListString {
+		c.writeln("fn _contains_list_string(v: []const []const u8, item: []const u8) bool {")
+		c.indent++
+		c.writeln("for (v) |it| { if (std.mem.eql(u8, it, item)) return true; }")
+		c.writeln("return false;")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -349,6 +369,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 				cmp = "!" + cmp
 			}
 			expr = cmp
+			leftIsStr = false
+			continue
+		}
+		if opStr == "in" {
+			if c.isStringListPostfix(op.Right) {
+				c.needsInListString = true
+				expr = fmt.Sprintf("_contains_list_string(%s, %s)", right, expr)
+			} else {
+				c.needsInListInt = true
+				expr = fmt.Sprintf("_contains_list_int(%s, %s)", right, expr)
+			}
 			leftIsStr = false
 			continue
 		}
@@ -771,6 +802,32 @@ func (c *Compiler) isBoolPrimary(p *parser.Primary) bool {
 		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.BoolType); ok {
 				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isStringListPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isStringListPrimary(p.Target)
+}
+
+func (c *Compiler) isStringListPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.List != nil && len(p.List.Elems) > 0 {
+		return c.isStringExpr(p.List.Elems[0])
+	}
+	if p.Selector != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.StringType); ok {
+					return true
+				}
 			}
 		}
 	}

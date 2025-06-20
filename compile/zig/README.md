@@ -186,7 +186,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 Variable declarations with `var` are now supported. Empty list values create a
 `std.ArrayList` for dynamic appends. Assignments of the form `list = list + [x]`
 translate to `list.append(x)`, and `while` statements map directly to Zig's
-`while` syntax. `break` and `continue` pass through unchanged.
+`while` syntax. `break` and `continue` pass through unchanged. List membership
+checks using the `in` operator compile to helper functions for integer and
+string lists.
 
 List literals are emitted as fixed-size arrays or references when used in return
 expressions. Reserved words are prefixed with `_` by `sanitizeName`:
@@ -270,6 +272,7 @@ LeetCode solutions:
 * built-in helpers like `fetch`, `load`, `save` and `generate`
 * logic programming constructs (`fact`, `rule`, `query`)
 * concurrency features such as streams or `spawn`
+* list set operations (`union`, `union all`, `except`, `intersect`)
 
 These features are not yet implemented, so programs relying on them will fail to
 compile or run correctly.  Most LeetCode tasks after problem 10 depend on at
