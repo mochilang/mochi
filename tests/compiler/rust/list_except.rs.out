@@ -1,0 +1,11 @@
+fn main() {
+    println!("[{}]", _except(&vec![1, 2, 3], &vec![2]).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "));
+}
+
+fn _except<T: Clone + std::cmp::Eq + std::hash::Hash>(a: &[T], b: &[T]) -> Vec<T> {
+    use std::collections::HashSet;
+    let set: HashSet<T> = b.iter().cloned().collect();
+    let mut res = Vec::new();
+    for it in a { if !set.contains(it) { res.push(it.clone()); } }
+    res
+}

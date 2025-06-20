@@ -1,0 +1,25 @@
+// dataset-group-by.mochi
+
+type Person {
+  name: string
+  city: string
+}
+
+let people = [
+  Person { name: "Alice", city: "Paris" },
+  Person { name: "Bob", city: "Hanoi" },
+  Person { name: "Eve", city: "Paris" }
+]
+
+type Stat {
+  city: string
+  n: int
+}
+
+let stats = from p in people
+            group by p.city into g
+            select Stat { city: g.key, n: count(g) }
+
+for s in stats {
+  print(s.city, s.n)
+}

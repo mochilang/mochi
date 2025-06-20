@@ -568,6 +568,26 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			c.use("_in_map")
 			expr = fmt.Sprintf("_in_map(&%s, &%s)", r, expr)
 			leftList = false
+		case "union":
+			if op.All {
+				c.use("_union_all")
+				expr = fmt.Sprintf("_union_all(&%s, &%s)", expr, r)
+			} else {
+				c.use("_union")
+				expr = fmt.Sprintf("_union(&%s, &%s)", expr, r)
+			}
+			leftList = true
+			leftString = false
+		case "except":
+			c.use("_except")
+			expr = fmt.Sprintf("_except(&%s, &%s)", expr, r)
+			leftList = true
+			leftString = false
+		case "intersect":
+			c.use("_intersect")
+			expr = fmt.Sprintf("_intersect(&%s, &%s)", expr, r)
+			leftList = true
+			leftString = false
 		default:
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
 			leftList = false
@@ -580,6 +600,48 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
+	}
+
+	// simple group-by without joins or filters
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		orig := c.env
+		var elemType types.Type = types.AnyType{}
+		if c.env != nil {
+			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+				elemType = lt.Elem
+			}
+			child := types.NewEnv(c.env)
+			child.SetVar(q.Var, elemType, true)
+			c.env = child
+		}
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		if c.env != nil {
+			gtype := types.GroupType{Elem: elemType}
+			c.env.SetVar(q.Group.Name, gtype, true)
+		}
+		sel, err := c.compileExpr(q.Select)
+		c.env = orig
+		if err != nil {
+			return "", err
+		}
+		gname := sanitizeName(q.Group.Name)
+		sel = strings.ReplaceAll(sel, gname+".key", gname+".key.clone()")
+		c.use("_group_by")
+		c.use("_group")
+		var b strings.Builder
+		b.WriteString("{\n")
+		b.WriteString(fmt.Sprintf("    let _groups = _group_by(&%s, |%s| %s.clone());\n", src, sanitizeName(q.Var), keyExpr))
+		b.WriteString("    let mut _res = Vec::new();\n")
+		b.WriteString(fmt.Sprintf("    for %s in _groups {\n", sanitizeName(q.Group.Name)))
+		b.WriteString(fmt.Sprintf("        _res.push(%s);\n", sel))
+		b.WriteString("    }\n")
+		b.WriteString("    _res\n")
+		b.WriteString("}")
+		return b.String(), nil
 	}
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
@@ -606,6 +668,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
+	}
+	var sortExpr, skipExpr, takeExpr string
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
 	}
 	condParts := make([]string, 0, len(joinOns)+1)
 	for _, on := range joinOns {
@@ -643,11 +724,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if cond != "" {
 		b.WriteString(indent + fmt.Sprintf("if %s {\n", cond))
 		indent += "    "
-		b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		if sortExpr != "" {
+			b.WriteString(indent + fmt.Sprintf("{ let _k = %s; _res.push((%s, _k)); }\n", sortExpr, sel))
+		} else {
+			b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		}
 		indent = indent[:len(indent)-4]
 		b.WriteString(indent + "}\n")
 	} else {
-		b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		if sortExpr != "" {
+			b.WriteString(indent + fmt.Sprintf("{ let _k = %s; _res.push((%s, _k)); }\n", sortExpr, sel))
+		} else {
+			b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		}
 	}
 	for range joinSrcs {
 		indent = indent[:len(indent)-4]
@@ -658,7 +747,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("    }\n")
-	b.WriteString("    _res\n")
+	if sortExpr != "" {
+		b.WriteString("    _res.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());\n")
+	}
+	if skipExpr != "" {
+		b.WriteString(fmt.Sprintf("    let skip = %s as usize;\n", skipExpr))
+		b.WriteString("    if skip < _res.len() {\n")
+		b.WriteString("        _res = _res[skip..].to_vec();\n")
+		b.WriteString("    } else {\n")
+		b.WriteString("        _res = Vec::new();\n")
+		b.WriteString("    }\n")
+	}
+	if takeExpr != "" {
+		b.WriteString(fmt.Sprintf("    let take = %s as usize;\n", takeExpr))
+		b.WriteString("    if take < _res.len() {\n")
+		b.WriteString("        _res.truncate(take);\n")
+		b.WriteString("    }\n")
+	}
+	if sortExpr != "" {
+		b.WriteString("    let mut _tmp = Vec::new();\n")
+		b.WriteString("    for (v, _) in _res {\n")
+		b.WriteString("        _tmp.push(v);\n")
+		b.WriteString("    }\n")
+		b.WriteString("    _tmp\n")
+	} else {
+		b.WriteString("    _res\n")
+	}
 	b.WriteString("}")
 	return b.String(), nil
 }
@@ -1071,6 +1185,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "count":
 		if len(args) == 1 {
 			c.use("_count")
+			c.use("_group")
 			return fmt.Sprintf("_count(&%s)", args[0]), nil
 		}
 	case "avg":

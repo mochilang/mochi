@@ -1,4 +1,3 @@
 fn main() {
     println!("{}", "hello"[(1) as usize..(4) as usize].to_string());
 }
-

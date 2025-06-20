@@ -1,0 +1,57 @@
+#[derive(Clone, Debug)]
+struct Person {
+    name: String,
+    city: String,
+}
+
+#[derive(Clone, Debug)]
+struct Stat {
+    city: String,
+    n: i32,
+}
+
+fn main() {
+    let mut people = vec![Person { name: "Alice".to_string(), city: "Paris".to_string() }, Person { name: "Bob".to_string(), city: "Hanoi".to_string() }, Person { name: "Eve".to_string(), city: "Paris".to_string() }];
+    let mut stats = {
+    let _groups = _group_by(&people, |p| p.city.clone());
+    let mut _res = Vec::new();
+    for g in _groups {
+        _res.push(Stat { city: g.key.clone(), n: _count(&g) });
+    }
+    _res
+};
+    for s in stats {
+        println!("{} {}", s.city, s.n);
+    }
+}
+
+trait _Countable { fn count(&self) -> i32; }
+impl<T> _Countable for &[T] { fn count(&self) -> i32 { self.len() as i32 } }
+impl<T> _Countable for &Vec<T> { fn count(&self) -> i32 { self.len() as i32 } }
+impl<K, T> _Countable for &_Group<K, T> { fn count(&self) -> i32 { self.Items.len() as i32 } }
+fn _count<C: _Countable>(v: C) -> i32 { v.count() }
+#[derive(Clone)]
+struct _Group<K, T> {
+    key: K,
+    Items: Vec<T>,
+}
+fn _group_by<K, T, F>(src: &[T], keyfn: F) -> Vec<_Group<K, T>>
+where
+    K: std::cmp::Eq + std::hash::Hash + Clone,
+    T: Clone,
+    F: Fn(&T) -> K,
+{
+    use std::collections::HashMap;
+    let mut map: HashMap<K, usize> = HashMap::new();
+    let mut groups: Vec<_Group<K, T>> = Vec::new();
+    for it in src {
+        let key = keyfn(it);
+        if let Some(&idx) = map.get(&key) {
+            groups[idx].Items.push(it.clone());
+        } else {
+            map.insert(key.clone(), groups.len());
+            groups.push(_Group { key: key.clone(), Items: vec![it.clone()] });
+        }
+    }
+    groups
+}

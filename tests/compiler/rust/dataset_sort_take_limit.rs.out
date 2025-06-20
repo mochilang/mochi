@@ -1,0 +1,35 @@
+#[derive(Clone, Debug)]
+struct Product {
+    name: String,
+    price: i32,
+}
+
+fn main() {
+    let mut products = vec![Product { name: "Laptop".to_string(), price: 1500 }, Product { name: "Smartphone".to_string(), price: 900 }, Product { name: "Tablet".to_string(), price: 600 }, Product { name: "Monitor".to_string(), price: 300 }, Product { name: "Keyboard".to_string(), price: 100 }, Product { name: "Mouse".to_string(), price: 50 }, Product { name: "Headphones".to_string(), price: 200 }];
+    let mut expensive = {
+    let mut _res = Vec::new();
+    for p in products {
+        { let _k = -p.price; _res.push((p, _k)); }
+    }
+    _res.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+    let skip = 1 as usize;
+    if skip < _res.len() {
+        _res = _res[skip..].to_vec();
+    } else {
+        _res = Vec::new();
+    }
+    let take = 3 as usize;
+    if take < _res.len() {
+        _res.truncate(take);
+    }
+    let mut _tmp = Vec::new();
+    for (v, _) in _res {
+        _tmp.push(v);
+    }
+    _tmp
+};
+    println!("{}", "--- Top products (excluding most expensive) ---");
+    for item in expensive {
+        println!("{} {} {}", item.name, "costs $", item.price);
+    }
+}

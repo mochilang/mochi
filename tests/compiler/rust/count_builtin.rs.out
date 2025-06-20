@@ -2,6 +2,13 @@ fn main() {
     println!("{}", _count(&vec![1, 2, 3]));
 }
 
-fn _count<T>(v: &[T]) -> i32 {
-    v.len() as i32
+trait _Countable { fn count(&self) -> i32; }
+impl<T> _Countable for &[T] { fn count(&self) -> i32 { self.len() as i32 } }
+impl<T> _Countable for &Vec<T> { fn count(&self) -> i32 { self.len() as i32 } }
+impl<K, T> _Countable for &_Group<K, T> { fn count(&self) -> i32 { self.Items.len() as i32 } }
+fn _count<C: _Countable>(v: C) -> i32 { v.count() }
+#[derive(Clone)]
+struct _Group<K, T> {
+    key: K,
+    Items: Vec<T>,
 }

@@ -25,8 +25,9 @@ fn main() {
     let mut _res = Vec::new();
     for o in orders.clone() {
         for c in customers.clone() {
-            if !(o.customerId == c.id) { continue; }
-            _res.push(PairInfo { orderId: o.id, customerName: c.name, total: o.total });
+            if o.customerId == c.id {
+                _res.push(PairInfo { orderId: o.id, customerName: c.name, total: o.total });
+            }
         }
     }
     _res

@@ -597,11 +597,12 @@ Edit one or start fresh. It’s all yours.
 
 Some language constructs are still experimental or missing in the current implementation:
 
-- Advanced dataset query options like `group`, `sort`, `skip` and `take`.
+- Advanced dataset query options like `group` and `sort`.
 - Streams and agents are not yet compiled by the Rust backend.
 - Logic programming keywords (`fact`, `rule`, `query`).
 - File and network helpers (`fetch`, `load`, `save`, `generate`).
 - Importing external packages with `import` and calling `extern` functions.
+- `model` blocks for LLM configuration.
 - `test` and `expect` blocks are ignored when compiling to Rust.
 
 ## Benchmarks

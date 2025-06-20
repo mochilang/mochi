@@ -15,4 +15,3 @@ fn main() {
     println!("{}", c.inc());
     println!("{}", c.inc());
 }
-
