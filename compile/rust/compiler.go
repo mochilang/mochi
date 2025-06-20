@@ -589,22 +589,41 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		fromSrcs[i] = fs
 	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinOns[i] = on
+	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
 	}
-	var cond string
+	condParts := make([]string, 0, len(joinOns)+1)
+	for _, on := range joinOns {
+		condParts = append(condParts, on)
+	}
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		w, err := c.compileExpr(q.Where)
 		if err != nil {
 			return "", err
 		}
+		condParts = append(condParts, w)
 	}
+	cond := strings.Join(condParts, " && ")
 	var b strings.Builder
 	b.WriteString("{\n")
 	b.WriteString("    let mut _res = Vec::new();\n")
 	loopSrc := src
-	if len(fromSrcs) > 0 {
+	if len(fromSrcs) > 0 || len(joinSrcs) > 0 {
 		loopSrc += ".clone()"
 	}
 	b.WriteString(fmt.Sprintf("    for %s in %s {\n", sanitizeName(q.Var), loopSrc))
@@ -615,6 +634,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", fvar, srcPart))
 		indent += "    "
 	}
+	for i, js := range joinSrcs {
+		jvar := sanitizeName(q.Joins[i].Var)
+		srcPart := js + ".clone()"
+		b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", jvar, srcPart))
+		indent += "    "
+	}
 	if cond != "" {
 		b.WriteString(indent + fmt.Sprintf("if %s {\n", cond))
 		indent += "    "
@@ -623,6 +648,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	} else {
 		b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+	}
+	for range joinSrcs {
+		indent = indent[:len(indent)-4]
+		b.WriteString(indent + "}\n")
 	}
 	for range fromSrcs {
 		indent = indent[:len(indent)-4]

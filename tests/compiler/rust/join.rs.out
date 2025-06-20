@@ -1,0 +1,38 @@
+#[derive(Clone, Debug)]
+struct Customer {
+    id: i32,
+    name: String,
+}
+
+#[derive(Clone, Debug)]
+struct Order {
+    id: i32,
+    customerId: i32,
+    total: i32,
+}
+
+#[derive(Clone, Debug)]
+struct PairInfo {
+    orderId: i32,
+    customerName: String,
+    total: i32,
+}
+
+fn main() {
+    let mut customers = vec![Customer { id: 1, name: "Alice".to_string() }, Customer { id: 2, name: "Bob".to_string() }, Customer { id: 3, name: "Charlie".to_string() }];
+    let mut orders = vec![Order { id: 100, customerId: 1, total: 250 }, Order { id: 101, customerId: 2, total: 125 }, Order { id: 102, customerId: 1, total: 300 }, Order { id: 103, customerId: 4, total: 80 }];
+    let mut result = {
+    let mut _res = Vec::new();
+    for o in orders.clone() {
+        for c in customers.clone() {
+            if !(o.customerId == c.id) { continue; }
+            _res.push(PairInfo { orderId: o.id, customerName: c.name, total: o.total });
+        }
+    }
+    _res
+};
+    println!("{}", "--- Orders with customer info ---");
+    for entry in result {
+        println!("{} {} {} {} {} {}", "Order", entry.orderId, "by", entry.customerName, "- $", entry.total);
+    }
+}
