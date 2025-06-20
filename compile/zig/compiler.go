@@ -12,10 +12,11 @@ import (
 
 // Compiler translates a Mochi AST into Zig source code (very small subset).
 type Compiler struct {
-	buf      bytes.Buffer
-	indent   int
-	env      *types.Env
-	needsAvg bool
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	needsAvgInt   bool
+	needsAvgFloat bool
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
@@ -64,12 +65,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.writeln("const std = @import(\"std\");")
 	c.writeln("")
-	if c.needsAvg {
-		c.writeln("fn _avg(v: []const i32) f64 {")
+	if c.needsAvgInt {
+		c.writeln("fn _avg_int(v: []const i32) f64 {")
 		c.indent++
 		c.writeln("if (v.len == 0) return 0;")
 		c.writeln("var sum: f64 = 0;")
 		c.writeln("for (v) |it| { sum += @floatFromInt(it); }")
+		c.writeln("return sum / @as(f64, @floatFromInt(v.len));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsAvgFloat {
+		c.writeln("fn _avg_float(v: []const f64) f64 {")
+		c.indent++
+		c.writeln("if (v.len == 0) return 0;")
+		c.writeln("var sum: f64 = 0;")
+		c.writeln("for (v) |it| { sum += it; }")
 		c.writeln("return sum / @as(f64, @floatFromInt(v.len));")
 		c.indent--
 		c.writeln("}")
@@ -106,8 +118,8 @@ func (c *Compiler) zigType(t *parser.TypeRef) string {
 	if t == nil {
 		return "i32"
 	}
-	if t.Generic != nil && t.Generic.Name == "list" {
-		return "[]const i32"
+	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+		return "[]const " + c.zigType(t.Generic.Args[0])
 	}
 	if t.Simple == nil {
 		return "i32"
@@ -121,9 +133,6 @@ func (c *Compiler) zigType(t *parser.TypeRef) string {
 		return "bool"
 	case "string":
 		return "[]const u8"
-	}
-	if t.Generic != nil && t.Generic.Name == "list" {
-		return "[]const i32"
 	}
 	return "i32"
 }
@@ -263,7 +272,11 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	name := sanitizeName(st.Name)
 	// special case: empty list initialization becomes ArrayList
 	if st.Value != nil && isEmptyListExpr(st.Value) {
-		c.writeln(fmt.Sprintf("var %s = std.ArrayList(i32).init(std.heap.page_allocator);", name))
+		elem := "i32"
+		if st.Type != nil && st.Type.Generic != nil && st.Type.Generic.Name == "list" && len(st.Type.Generic.Args) == 1 {
+			elem = strings.TrimPrefix(c.zigType(st.Type.Generic.Args[0]), "[]const ")
+		}
+		c.writeln(fmt.Sprintf("var %s = std.ArrayList(%s).init(std.heap.page_allocator);", name, elem))
 		return nil
 	}
 	val := "0"
@@ -479,8 +492,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.needsAvg = true
-		return fmt.Sprintf("_avg(%s)", arg), nil
+		if c.isFloatListExpr(call.Args[0]) {
+			c.needsAvgFloat = true
+			return fmt.Sprintf("_avg_float(%s)", arg), nil
+		}
+		c.needsAvgInt = true
+		return fmt.Sprintf("_avg_int(%s)", arg), nil
 	}
 	if name == "str" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
@@ -539,6 +556,16 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 
 func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (string, error) {
 	elems := make([]string, len(list.Elems))
+	elemType := "i32"
+	if len(list.Elems) > 0 {
+		if c.isStringExpr(list.Elems[0]) {
+			elemType = "[]const u8"
+		} else if c.isFloatExpr(list.Elems[0]) {
+			elemType = "f64"
+		} else if c.isBoolExpr(list.Elems[0]) {
+			elemType = "bool"
+		}
+	}
 	for i, e := range list.Elems {
 		v, err := c.compileExpr(e, false)
 		if err != nil {
@@ -547,9 +574,9 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 		elems[i] = v
 	}
 	if asRef {
-		return fmt.Sprintf("&[_]i32{%s}", strings.Join(elems, ", ")), nil
+		return fmt.Sprintf("&[_]%s{%s}", elemType, strings.Join(elems, ", ")), nil
 	}
-	return fmt.Sprintf("[_]i32{%s}", strings.Join(elems, ", ")), nil
+	return fmt.Sprintf("[_]%s{%s}", elemType, strings.Join(elems, ", ")), nil
 }
 
 func isListLiteralExpr(e *parser.Expr) bool {
@@ -644,6 +671,105 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	if p.Selector != nil && c.env != nil {
 		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isFloatExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return c.isFloatUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isFloatUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isFloatPostfix(u.Value)
+}
+
+func (c *Compiler) isFloatPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isFloatPrimary(p.Target)
+}
+
+func (c *Compiler) isFloatPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Float != nil {
+		return true
+	}
+	if p.Selector != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.FloatType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isFloatListExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	p := e.Binary.Left.Value
+	if p == nil {
+		return false
+	}
+	if p.Target != nil && p.Target.List != nil && len(p.Target.List.Elems) > 0 {
+		return c.isFloatExpr(p.Target.List.Elems[0])
+	}
+	if p.Target != nil && p.Target.Selector != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.FloatType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isBoolExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return c.isBoolUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isBoolUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isBoolPostfix(u.Value)
+}
+
+func (c *Compiler) isBoolPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isBoolPrimary(p.Target)
+}
+
+func (c *Compiler) isBoolPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Bool != nil {
+		return true
+	}
+	if p.Selector != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.BoolType); ok {
 				return true
 			}
 		}

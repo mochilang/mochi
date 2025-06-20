@@ -1,0 +1,9 @@
+const std = @import("std");
+
+fn show(xs: []const []const u8) void {
+        std.debug.print("{any}\n", .{(xs).len});
+}
+
+pub fn main() void {
+        show(&[_][]const u8{"a", "b"});
+}

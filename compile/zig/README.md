@@ -263,8 +263,13 @@ LeetCode solutions:
   associative lookups
 * dataset query expressions (`from ... sort ... select`) used by problems that
   operate over CSV-style input
-* lists of strings or nested lists beyond `list<int>`
 * advanced string slicing and indexing
+* nested list types beyond one dimension
+* user-defined structs and union types
+* pattern matching with `match` expressions
+* built-in helpers like `fetch`, `load`, `save` and `generate`
+* logic programming constructs (`fact`, `rule`, `query`)
+* concurrency features such as streams or `spawn`
 
 These features are not yet implemented, so programs relying on them will fail to
 compile or run correctly.  Most LeetCode tasks after problem 10 depend on at
