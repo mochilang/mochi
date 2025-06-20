@@ -175,5 +175,7 @@ unsupported include:
 - LLM helpers and other advanced runtime features
 - Set literals and set operations
 - `generate` expressions for generative AI
+- Iteration over collections using `for x in items` unless `items` is a simple
+  list or string literal
 
 Programs relying on these constructs will fail to compile.

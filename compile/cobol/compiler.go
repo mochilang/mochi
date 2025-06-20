@@ -301,32 +301,83 @@ func (c *Compiler) compileNode(n *ast.Node) {
 
 func (c *Compiler) compileFor(n *ast.Node) {
 	varName := strings.ToUpper(n.Value.(string))
-	c.declare(fmt.Sprintf("01 %s PIC S9.", varName))
-	startNode := n.Children[0].Children[0]
-	endNode := n.Children[0].Children[1]
-	start := c.expr(startNode)
-	end := c.expr(endNode)
 
-	if !isSimpleExpr(startNode) {
-		tmp := c.newTemp()
-		c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
-		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, start))
-		start = tmp
-	}
-	if !isSimpleExpr(endNode) {
-		tmp := c.newTemp()
-		c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
-		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, end))
-		end = tmp
-	}
+	switch n.Children[0].Kind {
+	case "range":
+		c.declare(fmt.Sprintf("01 %s PIC S9.", varName))
+		startNode := n.Children[0].Children[0]
+		endNode := n.Children[0].Children[1]
+		start := c.expr(startNode)
+		end := c.expr(endNode)
 
-	c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM %s BY 1 UNTIL %s >= %s", varName, start, varName, end))
-	c.indent++
-	for _, st := range n.Children[1].Children {
-		c.compileNode(st)
+		if !isSimpleExpr(startNode) {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, start))
+			start = tmp
+		}
+		if !isSimpleExpr(endNode) {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, end))
+			end = tmp
+		}
+
+		c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM %s BY 1 UNTIL %s >= %s", varName, start, varName, end))
+		c.indent++
+		for _, st := range n.Children[1].Children {
+			c.compileNode(st)
+		}
+		c.indent--
+		c.writeln("    END-PERFORM")
+
+	case "in":
+		src := n.Children[0].Children[0]
+		switch src.Kind {
+		case "list":
+			elemPic := "PIC 9."
+			if len(src.Children) > 0 {
+				elemPic = c.picForExpr(src.Children[0])
+			}
+			arr := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", arr, len(src.Children), elemPic))
+			c.declare("01 IDX PIC 9.")
+			c.declare(fmt.Sprintf("01 %s %s", varName, elemPic))
+			for i, ch := range src.Children {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), arr, i+1))
+			}
+			c.writeln("    MOVE 0 TO IDX")
+			c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", len(src.Children)))
+			c.indent++
+			c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", arr, varName))
+			for _, st := range n.Children[1].Children {
+				c.compileNode(st)
+			}
+			c.indent--
+			c.writeln("    END-PERFORM")
+
+		case "string":
+			s := []rune(src.Value.(string))
+			arr := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC X.", arr, len(s)))
+			c.declare("01 IDX PIC 9.")
+			c.declare("01 " + varName + " PIC X.")
+			for i, r := range s {
+				c.writeln(fmt.Sprintf("    MOVE \"%c\" TO %s(%d)", r, arr, i+1))
+			}
+			c.writeln("    MOVE 0 TO IDX")
+			c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", len(s)))
+			c.indent++
+			c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", arr, varName))
+			for _, st := range n.Children[1].Children {
+				c.compileNode(st)
+			}
+			c.indent--
+			c.writeln("    END-PERFORM")
+		default:
+			c.writeln("    *> unsupported for-in loop")
+		}
 	}
-	c.indent--
-	c.writeln("    END-PERFORM")
 }
 
 func (c *Compiler) compileIf(n *ast.Node) {
