@@ -48,10 +48,24 @@ const (
   with e ->
     printfn "FAIL (%s)" e.Message
     false`
+
+	helperInput = `let _input () : string =
+  match System.Console.ReadLine() with
+  | null -> ""
+  | s -> s.Trim()`
+
+	helperFetch = `let _fetch (url: string) (opts: Map<string,obj> option) : Map<string,obj> =
+  use client = new System.Net.Http.HttpClient()
+  let resp = client.GetAsync(url).Result
+  let status = resp.StatusCode |> int |> box
+  let body = resp.Content.ReadAsStringAsync().Result |> box
+  Map.ofList [("status", status); ("body", body)]`
 )
 
 var helperMap = map[string]string{
 	"_load":     helperLoad,
 	"_save":     helperSave,
 	"_run_test": helperRunTest,
+	"_input":    helperInput,
+	"_fetch":    helperFetch,
 }

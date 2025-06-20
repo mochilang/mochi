@@ -1,3 +1,22 @@
 open System
 
+let _run_test (name: string) (f: unit -> unit) : bool =
+  printf "%s ... " name
+  try
+    f()
+    printfn "PASS"
+    true
+  with e ->
+    printfn "FAIL (%s)" e.Message
+    false
+
+let test_addition_works() =
+    let x = (1 + 2)
+    if not ((x = 3)) then failwith "expect failed"
+
 ignore (printfn "%A" ("ok"))
+let mutable failures = 0
+if not (_run_test "addition works" test_addition_works) then failures <- failures + 1
+if failures > 0 then
+    printfn "\n[FAIL] %d test(s) failed." failures
+
