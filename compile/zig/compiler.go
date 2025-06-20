@@ -44,10 +44,15 @@ func (c *Compiler) writeIndent() {
 
 // Compile converts a Mochi program to Zig.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	// compile functions first
+	// compile functions and test blocks first
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		} else if s.Test != nil {
+			if err := c.compileTest(s.Test); err != nil {
 				return nil, err
 			}
 			c.writeln("")
@@ -57,7 +62,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("pub fn main() void {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s, false); err != nil {
@@ -201,6 +206,19 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTest(tb *parser.TestBlock) error {
+	c.writeln(fmt.Sprintf("test \"%s\" {", tb.Name))
+	c.indent++
+	for _, st := range tb.Body {
+		if err := c.compileStmt(st, true); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) zigType(t *parser.TypeRef) string {
 	if t == nil {
 		return "i32"
@@ -309,8 +327,14 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		c.writeln(v + ";")
 	case s.If != nil:
 		return c.compileIf(s.If)
-	case s.Test != nil, s.Expect != nil:
-		// tests are ignored when compiling to Zig
+	case s.Test != nil:
+		return c.compileTest(s.Test)
+	case s.Expect != nil:
+		expr, err := c.compileExpr(s.Expect.Value, false)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("try std.testing.expect(%s);", expr))
 		return nil
 	default:
 		return fmt.Errorf("unsupported statement")
