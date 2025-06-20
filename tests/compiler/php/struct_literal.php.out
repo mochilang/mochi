@@ -1,0 +1,4 @@
+<?php
+$p = (object)["name" => "Bob", "age" => 42];
+echo $p->name, PHP_EOL;
+echo $p->age, PHP_EOL;

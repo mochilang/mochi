@@ -31,6 +31,21 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.writeln("<?php")
+	c.writeln("ini_set('precision', 17);")
+	c.writeln("function mochi_format($x) {")
+	c.writeln("\tif (is_bool($x)) return $x ? 'true' : 'false';")
+	c.writeln("\tif (is_int($x) || is_float($x)) return strval($x);")
+	c.writeln("\tif (is_string($x)) return $x;")
+	c.writeln("\tif (is_array($x)) {")
+	c.writeln("\t\t$parts = array_map('mochi_format', $x);")
+	c.writeln("\t\treturn '[' . implode(' ', $parts) . ']';")
+	c.writeln("\t}")
+	c.writeln("\treturn strval($x);")
+	c.writeln("}")
+	c.writeln("function mochi_print(...$args) {")
+	c.writeln("\t$parts = array_map('mochi_format', $args);")
+	c.writeln("\techo implode(' ', $parts), PHP_EOL;")
+	c.writeln("}")
 
 	c.funcs = map[string]bool{}
 	for _, s := range prog.Statements {
@@ -163,15 +178,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
-	muts := mutatedVars(fn.Body)
 	for i, p := range fn.Params {
-		name := "$" + sanitizeName(p.Name)
-		if muts[p.Name] {
-			if isCompositeParam(p) {
-				name = "&" + name
-			}
-		}
-		params[i] = name
+		params[i] = "$" + sanitizeName(p.Name)
 	}
 	c.writeln(fmt.Sprintf("function %s%s(%s) {", funcPrefix, sanitizeName(fn.Name), strings.Join(params, ", ")))
 	oldLocals := c.locals
@@ -197,7 +205,11 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.writeln(fmt.Sprintf("function %s() {", name))
 	oldLocals := c.locals
 	c.locals = map[string]bool{}
+	captures := freeVars(&parser.FunExpr{BlockBody: t.Body}, nil)
 	c.indent++
+	if len(captures) > 0 {
+		c.writeln("global " + strings.Join(captures, ", ") + ";")
+	}
 	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
 			c.locals = oldLocals
@@ -480,6 +492,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", err
 			}
 			expr = call
+		} else if op.Cast != nil {
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+				if _, ok := c.env.GetStruct(*op.Cast.Type.Simple); ok {
+					expr = fmt.Sprintf("(object)%s", expr)
+				}
+			}
 		}
 	}
 	return expr, nil
@@ -502,6 +520,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.Selector != nil:
+		if p.Selector.Root == "math" && len(p.Selector.Tail) == 1 {
+			switch p.Selector.Tail[0] {
+			case "pi":
+				return "M_PI", nil
+			case "pow":
+				return "pow", nil
+			}
+		}
 		name := "$" + sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
 			name += "->" + strings.Join(p.Selector.Tail, "->")
@@ -523,6 +549,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "[" + strings.Join(elems, ", ") + "]", nil
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -551,8 +579,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) == 0 {
 			return "", fmt.Errorf("print expects at least 1 arg")
 		}
-		joined := strings.Join(args, " . \" \" . ")
-		return fmt.Sprintf("echo %s, PHP_EOL", joined), nil
+		return fmt.Sprintf("mochi_print(%s)", strings.Join(args, ", ")), nil
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
@@ -609,6 +636,21 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		items[i] = fmt.Sprintf("%s => %s", k, v)
 	}
 	return "[" + strings.Join(items, ", ") + "]", nil
+}
+
+func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	if len(s.Fields) == 0 {
+		return "(object)[]", nil
+	}
+	items := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("\"%s\" => %s", f.Name, v)
+	}
+	return "(object)[" + strings.Join(items, ", ") + "]", nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -811,6 +853,8 @@ func scanStmt(s *parser.Statement, vars map[string]struct{}) {
 		scanExpr(s.Assign.Value, vars)
 	case s.Return != nil:
 		scanExpr(s.Return.Value, vars)
+	case s.Expect != nil:
+		scanExpr(s.Expect.Value, vars)
 	case s.Expr != nil:
 		scanExpr(s.Expr.Expr, vars)
 	case s.For != nil:

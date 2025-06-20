@@ -20,6 +20,21 @@ definitions, then emits the body of the program:
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
         c.buf.Reset()
         c.writeln("<?php")
+        c.writeln("ini_set('precision', 17);")
+        c.writeln("function mochi_format($x) {")
+        c.writeln("\tif (is_bool($x)) return $x ? 'true' : 'false';")
+        c.writeln("\tif (is_int($x) || is_float($x)) return strval($x);")
+        c.writeln("\tif (is_string($x)) return $x;")
+        c.writeln("\tif (is_array($x)) {")
+        c.writeln("\t\t$parts = array_map('mochi_format', $x);")
+        c.writeln("\t\treturn '[' . implode(' ', $parts) . ']';")
+        c.writeln("\t}")
+        c.writeln("\treturn strval($x);")
+        c.writeln("}")
+        c.writeln("function mochi_print(...$args) {")
+        c.writeln("\t$parts = array_map('mochi_format', $args);")
+        c.writeln("\techo implode(' ', $parts), PHP_EOL;")
+        c.writeln("}")
         // functions first
         for _, s := range prog.Statements {
                 if s.Fun != nil {
@@ -137,8 +152,7 @@ case "print":
         if len(args) == 0 {
                 return "", fmt.Errorf("print expects at least 1 arg")
         }
-        joined := strings.Join(args, " . \" \" . ")
-        return fmt.Sprintf("echo %s, PHP_EOL", joined), nil
+        return fmt.Sprintf("mochi_print(%s)", strings.Join(args, ", ")), nil
 case "len":
         if len(args) != 1 {
                 return "", fmt.Errorf("len expects 1 arg")
@@ -320,5 +334,7 @@ currently **not supported**:
 - `union`/`union all` and other set operations
 - agent/stream declarations (`agent`, `on`, `emit`)
 - foreign function imports
-- nested functions that capture variables across scopes
+- type and model declarations
+- logic programming constructs (`fact`, `rule`, `query`)
+- package declarations and exports
 
