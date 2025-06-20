@@ -170,5 +170,5 @@ features include:
   features (`fact`, `rule`, `query`).
 - Packages and foreign function interface declarations (`import`, `extern`).
 - `model` and `stream` declarations are not compiled.
-- Test blocks (`test`, `expect`) are ignored.
+- Concurrency primitives such as `spawn` and channels.
 
