@@ -77,6 +77,7 @@ type Compiler struct {
 	needsExceptListString    bool
 	needsIntersectListInt    bool
 	needsIntersectListString bool
+	externs                  []string
 }
 
 func New(env *types.Env) *Compiler {
@@ -142,6 +143,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	// compile body first to know which helpers are needed
 	oldBuf := c.buf
 	c.buf = bytes.Buffer{}
+	c.externs = nil
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -153,6 +155,29 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		} else if s.ExternVar != nil {
+			typ := c.cType(s.ExternVar.Type)
+			name := sanitizeName(s.ExternVar.Name())
+			c.externs = append(c.externs, fmt.Sprintf("extern %s %s;", typ, name))
+			if c.env != nil {
+				c.env.SetVar(s.ExternVar.Name(), resolveTypeRef(s.ExternVar.Type, c.env), true)
+			}
+		} else if s.ExternFun != nil {
+			ret := c.cType(s.ExternFun.Return)
+			params := make([]string, len(s.ExternFun.Params))
+			var ptypes []types.Type
+			for i, p := range s.ExternFun.Params {
+				params[i] = fmt.Sprintf("%s %s", c.cType(p.Type), sanitizeName(p.Name))
+				if c.env != nil {
+					ptypes = append(ptypes, resolveTypeRef(p.Type, c.env))
+				}
+			}
+			fname := sanitizeName(s.ExternFun.Name())
+			c.externs = append(c.externs, fmt.Sprintf("extern %s %s(%s);", ret, fname, strings.Join(params, ", ")))
+			if c.env != nil {
+				ft := types.FuncType{Params: ptypes, Return: resolveTypeRef(s.ExternFun.Return, c.env)}
+				c.env.SetVar(s.ExternFun.Name(), ft, true)
+			}
 		}
 	}
 	// main function
@@ -183,6 +208,12 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.writeln("#include <string.h>")
 	}
 	c.writeln("")
+	for _, ex := range c.externs {
+		c.writeln(ex)
+	}
+	if len(c.externs) > 0 {
+		c.writeln("")
+	}
 	c.writeln("typedef struct { int len; int *data; } list_int;")
 	if c.needsListFloat {
 		c.writeln("typedef struct { int len; double *data; } list_float;")
@@ -1080,6 +1111,18 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileIfExpr(e *parser.IfExpr) string {
+	cond := c.compileExpr(e.Cond)
+	thenVal := c.compileExpr(e.Then)
+	elseVal := "0"
+	if e.ElseIf != nil {
+		elseVal = c.compileIfExpr(e.ElseIf)
+	} else if e.Else != nil {
+		elseVal = c.compileExpr(e.Else)
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal)
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeln("static void " + name + "() {")
@@ -1540,6 +1583,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			args[i] = c.compileExpr(a)
 		}
 		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", "))
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Group != nil:
 		return fmt.Sprintf("(%s)", c.compileExpr(p.Group))
 	default:
