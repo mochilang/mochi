@@ -16,7 +16,16 @@ go test ./compile/st -tags slow
 
 ## Notes
 
-The Smalltalk backend currently supports only a subset of Mochi. Features such
-as `break` and `continue` in loops, agents, dataset queries and generative AI
-blocks are not implemented yet. When the `count()` builtin is used, a helper
-method is emitted automatically.
+The Smalltalk backend currently supports only a subset of Mochi. When the
+`count()` builtin is used, a helper method is emitted automatically. Loops now
+handle `break` and `continue` using custom signals.
+
+### Unsupported features
+
+The following language constructs are not yet handled:
+
+- Agents and stream handlers
+- Dataset queries and data operations (`fetch`, `load`, `save`)
+- Generative AI helpers such as `generate`
+- Logic programming (`fact`, `rule`, `query`)
+- Foreign function interface declarations (`extern`)

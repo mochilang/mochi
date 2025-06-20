@@ -12,11 +12,13 @@ import (
 
 // Compiler translates a Mochi AST into GNU Smalltalk source code.
 type Compiler struct {
-	buf       bytes.Buffer
-	indent    int
-	env       *types.Env
-	funParams map[string][]string
-	needCount bool
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	funParams    map[string][]string
+	needCount    bool
+	needBreak    bool
+	needContinue bool
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -36,6 +38,8 @@ func (c *Compiler) writeIndent() {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.needCount = false
+	c.needBreak = false
+	c.needContinue = false
 
 	orig := c.buf
 
@@ -68,7 +72,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
 	c.writeln("")
 	c.buf.Write(funCode)
-	if c.needCount {
+	if c.needCount || c.needBreak || c.needContinue {
 		c.emitHelpers()
 	}
 	c.writelnNoIndent("!!")
@@ -186,6 +190,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Break != nil:
+		c.needBreak = true
+		c.writeln("BreakSignal signal")
+	case s.Continue != nil:
+		c.needContinue = true
+		c.writeln("ContinueSignal signal")
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Assign != nil:
@@ -205,58 +215,104 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt) error {
+	brk := hasBreak(f.Body)
+	cont := hasContinue(f.Body)
+	if brk {
+		c.needBreak = true
+	}
+	if cont {
+		c.needContinue = true
+	}
+
+	wrap := brk || cont
+	if wrap {
+		c.writeln("[")
+		c.indent++
+	}
+
 	if f.RangeEnd == nil {
 		src, err := c.compileExpr(f.Source)
 		if err != nil {
 			return err
 		}
 		c.writeln(fmt.Sprintf("(%s) do: [:%s |", src, f.Name))
-		c.indent++
-		for _, st := range f.Body {
-			if err := c.compileStmt(st); err != nil {
-				return err
-			}
+	} else {
+		start, err := c.compileExpr(f.Source)
+		if err != nil {
+			return err
 		}
-		c.indent--
-		c.writeln("]")
-		c.writeln(".")
-		return nil
+		end, err := c.compileExpr(f.RangeEnd)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s to: %s - 1 do: [:%s |", start, end, f.Name))
 	}
-	start, err := c.compileExpr(f.Source)
-	if err != nil {
-		return err
-	}
-	end, err := c.compileExpr(f.RangeEnd)
-	if err != nil {
-		return err
-	}
-	c.writeln(fmt.Sprintf("%s to: %s - 1 do: [:%s |", start, end, f.Name))
 	c.indent++
+	if wrap {
+		c.writeln("[")
+		c.indent++
+	}
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
+	if wrap {
+		c.indent--
+		c.writeln("] on: ContinueSignal do: [:ex | ]")
+	}
 	c.indent--
 	c.writeln("]")
+	if wrap {
+		c.indent--
+		c.writeln("] on: BreakSignal do: [:ex | ]")
+	}
 	c.writeln(".")
 	return nil
 }
 
 func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
+	brk := hasBreak(w.Body)
+	cont := hasContinue(w.Body)
+	if brk {
+		c.needBreak = true
+	}
+	if cont {
+		c.needContinue = true
+	}
+
 	cond, err := c.compileExpr(w.Cond)
 	if err != nil {
 		return err
 	}
+
+	wrap := brk || cont
+	if wrap {
+		c.writeln("[")
+		c.indent++
+	}
+
 	c.writeln("[" + cond + "] whileTrue: [")
 	c.indent++
+	if wrap {
+		c.writeln("[")
+		c.indent++
+	}
 	for _, st := range w.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
+	if wrap {
+		c.indent--
+		c.writeln("] on: ContinueSignal do: [:ex | ]")
+	}
 	c.indent--
 	c.writeln("]")
+	if wrap {
+		c.indent--
+		c.writeln("] on: BreakSignal do: [:ex | ]")
+	}
 	c.writeln(".")
 	return nil
 }
@@ -664,7 +720,80 @@ func isMapPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 	return false
 }
 
+func hasBreak(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		switch {
+		case s.Break != nil:
+			return true
+		case s.For != nil:
+			if hasBreak(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if hasBreak(s.While.Body) {
+				return true
+			}
+		case s.If != nil:
+			if hasBreak(s.If.Then) || hasBreakIf(s.If.ElseIf) || hasBreak(s.If.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasBreakIf(ifst *parser.IfStmt) bool {
+	if ifst == nil {
+		return false
+	}
+	if hasBreak(ifst.Then) || hasBreak(ifst.Else) {
+		return true
+	}
+	return hasBreakIf(ifst.ElseIf)
+}
+
+func hasContinue(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		switch {
+		case s.Continue != nil:
+			return true
+		case s.For != nil:
+			if hasContinue(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if hasContinue(s.While.Body) {
+				return true
+			}
+		case s.If != nil:
+			if hasContinue(s.If.Then) || hasContinueIf(s.If.ElseIf) || hasContinue(s.If.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasContinueIf(ifst *parser.IfStmt) bool {
+	if ifst == nil {
+		return false
+	}
+	if hasContinue(ifst.Then) || hasContinue(ifst.Else) {
+		return true
+	}
+	return hasContinueIf(ifst.ElseIf)
+}
+
 func (c *Compiler) emitHelpers() {
+	if c.needBreak {
+		c.writeln("Object subclass: #BreakSignal instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
+	}
+	if c.needContinue {
+		c.writeln("Object subclass: #ContinueSignal instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
+	}
+	if c.needBreak || c.needContinue {
+		c.writeln("")
+	}
 	c.writeln("!Main class methodsFor: 'runtime'!")
 	if c.needCount {
 		c.writeln("__count: v")
