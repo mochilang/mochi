@@ -160,6 +160,11 @@ func (c *Compiler) compileNode(n *ast.Node) {
 				return
 			}
 		}
+		c.declare(fmt.Sprintf("01 %s PIC 9.", name))
+		if len(n.Children) == 1 {
+			expr := c.expr(n.Children[0])
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+		}
 
 	case "var":
 		name := strings.ToUpper(n.Value.(string))
@@ -551,7 +556,11 @@ func (c *Compiler) expr(n *ast.Node) string {
 			return fmt.Sprintf("1 - (%s)", c.expr(n.Children[0]))
 		}
 	case "group":
-		return c.expr(n.Children[0])
+		inner := c.expr(n.Children[0])
+		if isSimpleExpr(n.Children[0]) {
+			return inner
+		}
+		return "(" + inner + ")"
 	}
 	return "0"
 }
