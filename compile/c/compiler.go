@@ -64,6 +64,7 @@ type Compiler struct {
 	needsInListInt           bool
 	needsInListString        bool
 	needsSliceListFloat      bool
+	needsSliceListString     bool
 	needsListFloat           bool
 	needsConcatListFloat     bool
 	needsUnionListFloat      bool
@@ -178,7 +179,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	if c.needsInput || c.needsIndexString || c.needsStrLen || c.needsSliceString || c.needsConcatString || c.needsInListString {
+	if c.needsInput || c.needsIndexString || c.needsStrLen || c.needsSliceString || c.needsSliceListString || c.needsConcatString || c.needsInListString {
 		c.writeln("#include <string.h>")
 	}
 	c.writeln("")
@@ -679,6 +680,25 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.needsSliceListString {
+		c.writeln("")
+		c.writeln("static list_string slice_list_string(list_string v, int start, int end) {")
+		c.indent++
+		c.writeln("if (start < 0) start += v.len;")
+		c.writeln("if (end < 0) end += v.len;")
+		c.writeln("if (start < 0) start = 0;")
+		c.writeln("if (end > v.len) end = v.len;")
+		c.writeln("if (start > end) start = end;")
+		c.writeln("list_string r = list_string_create(end - start);")
+		c.writeln("for (int i = 0; i < r.len; i++) {")
+		c.indent++
+		c.writeln("r.data[i] = v.data[start + i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.needsListListInt {
 		c.writeln("")
 		c.writeln("static void _print_list_int(list_int v) {")
@@ -716,6 +736,21 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent++
 		c.writeln("if (i > 0) printf(\" \");")
 		c.writeln("printf(\"%g\", v.data[i]);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("printf(\"]\");")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsListString {
+		c.writeln("")
+		c.writeln("static void _print_list_string(list_string v) {")
+		c.indent++
+		c.writeln("printf(\"[\");")
+		c.writeln("for (int i = 0; i < v.len; i++) {")
+		c.indent++
+		c.writeln("if (i > 0) printf(\" \");")
+		c.writeln("printf(\"%s\", v.data[i]);")
 		c.indent--
 		c.writeln("}")
 		c.writeln("printf(\"]\");")
@@ -1300,6 +1335,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 	expr := c.compilePrimary(p.Target)
 	isStr := isStringPrimary(p.Target, c.env)
 	isFloatList := isListFloatPrimary(p.Target, c.env)
+	isStringList := isListStringPrimary(p.Target, c.env)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			if op.Index.Colon == nil {
@@ -1315,8 +1351,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isStr = true
 				} else {
 					expr = fmt.Sprintf("%s.data[%s]", expr, idx)
-					isStr = false
+					if isStringList {
+						isStr = true
+					} else {
+						isStr = false
+					}
 					isFloatList = false
+					isStringList = false
 				}
 			} else {
 				start := "0"
@@ -1345,6 +1386,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					expr = name
 					isStr = false
 					isFloatList = false
+					isStringList = false
+				} else if isStringList {
+					c.needsSliceListString = true
+					c.needsListString = true
+					c.writeln(fmt.Sprintf("list_string %s = slice_list_string(%s, %s, %s);", name, expr, start, end))
+					if c.env != nil {
+						c.env.SetVar(name, types.ListType{Elem: types.StringType{}}, true)
+					}
+					expr = name
+					isStr = false
+					isFloatList = false
+					isStringList = false
 				} else {
 					c.needsSliceListInt = true
 					c.writeln(fmt.Sprintf("list_int %s = slice_list_int(%s, %s, %s);", name, expr, start, end))
@@ -1354,6 +1407,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					expr = name
 					isStr = false
 					isFloatList = false
+					isStringList = false
 				}
 			}
 		}
@@ -1435,6 +1489,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				} else if isListFloatExpr(a, c.env) {
 					c.needsListFloat = true
 					c.writeln(fmt.Sprintf("_print_list_float(%s);", argExpr))
+					if i == len(p.Call.Args)-1 {
+						c.writeln("printf(\"\\n\");")
+					} else {
+						c.writeln("printf(\" \");")
+					}
+				} else if isListStringExpr(a, c.env) {
+					c.needsListString = true
+					c.writeln(fmt.Sprintf("_print_list_string(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
 					} else {
