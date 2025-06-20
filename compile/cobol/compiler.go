@@ -286,8 +286,37 @@ func (c *Compiler) compileNode(n *ast.Node) {
 func (c *Compiler) compileFor(n *ast.Node) {
 	varName := strings.ToUpper(n.Value.(string))
 	c.declare(fmt.Sprintf("01 %s PIC S9.", varName))
-	startNode := n.Children[0].Children[0]
-	endNode := n.Children[0].Children[1]
+
+	loop := n.Children[0]
+	if loop.Kind == "in" {
+		src := loop.Children[0]
+		if vals := extractIntList(src); vals != nil {
+			arr := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", arr, len(vals)))
+			lenVar := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC 9.", lenVar))
+			idx := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC 9.", idx))
+			for i, v := range vals {
+				c.writeln(fmt.Sprintf("    MOVE %d TO %s(%d)", v, arr, i+1))
+			}
+			c.writeln(fmt.Sprintf("    MOVE %d TO %s", len(vals), lenVar))
+			c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM 1 BY 1 UNTIL %s > %s", idx, idx, lenVar))
+			c.indent++
+			c.writeln(fmt.Sprintf("MOVE %s(%s) TO %s", arr, idx, varName))
+			for _, st := range n.Children[1].Children {
+				c.compileNode(st)
+			}
+			c.indent--
+			c.writeln("    END-PERFORM")
+			return
+		}
+		// unsupported source expression
+		return
+	}
+
+	startNode := loop.Children[0]
+	endNode := loop.Children[1]
 	start := c.expr(startNode)
 	end := c.expr(endNode)
 

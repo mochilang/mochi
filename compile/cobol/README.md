@@ -155,10 +155,11 @@ Only a narrow slice of Mochi is recognised by this backend. Missing
 capabilities include:
 
 - Nested function definitions
-- `continue` statements in loops
 - Structs, unions and other complex types
 - Query expressions such as `from`/`sort by`/`select`
 - Streams, LLM helpers and extern objects
+- Function expressions and closures
+- Loops over dynamic collections like `for x in list`
 
 Programs using these constructs will fail to compile.
 
@@ -173,7 +174,6 @@ for production use.
 The COBOL backend implements only a tiny portion of Mochi. Features that remain
 unsupported include:
 
-- `break` and `continue` statements in loops
 - Map literals and indexing operations
 - Dataset query expressions like `from ... sort by ...`
 - LLM helpers and concurrency primitives
