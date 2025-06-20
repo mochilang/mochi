@@ -137,6 +137,9 @@ func (c *Compiler) cppType(t *parser.TypeRef) string {
 	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 		return "vector<" + c.cppType(t.Generic.Args[0]) + ">"
 	}
+	if t.Generic != nil && t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+		return "unordered_map<" + c.cppType(t.Generic.Args[0]) + ", " + c.cppType(t.Generic.Args[1]) + ">"
+	}
 	return "auto"
 }
 
@@ -213,6 +216,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			if elem != "" {
 				expr = fmt.Sprintf("vector<%s>{}", elem)
+			}
+		}
+		if lit := getEmptyMapLiteral(s.Var.Value); lit != nil {
+			var key, val string
+			if s.Var.Type != nil && s.Var.Type.Generic != nil && len(s.Var.Type.Generic.Args) == 2 {
+				key = c.cppType(s.Var.Type.Generic.Args[0])
+				val = c.cppType(s.Var.Type.Generic.Args[1])
+			} else if typ, err := c.env.GetVar(s.Var.Name); err == nil {
+				if mt, ok := typ.(types.MapType); ok {
+					key = c.cppTypeRef(mt.Key)
+					val = c.cppTypeRef(mt.Value)
+				}
+			}
+			if key != "" && val != "" {
+				expr = fmt.Sprintf("unordered_map<%s, %s>{}", key, val)
 			}
 		}
 		typ := "auto"
@@ -391,6 +409,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			typ = "string"
 			continue
 		}
+		if op.Op == "in" {
+			if strings.HasPrefix(rtyp, "unordered_map<") {
+				expr = fmt.Sprintf("(%s.count(%s) > 0)", rhs, expr)
+			} else if strings.HasPrefix(rtyp, "vector<") {
+				expr = fmt.Sprintf("(find(%s.begin(), %s.end(), %s) != %s.end())", rhs, rhs, expr, rhs)
+			} else if rtyp == "string" {
+				expr = fmt.Sprintf("(%s.find(%s) != string::npos)", rhs, expr)
+			} else {
+				expr = "false"
+			}
+			typ = "bool"
+			continue
+		}
 		expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
 		typ = ""
 	}
@@ -492,6 +523,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 		}
 		return fmt.Sprintf("vector<%s>{%s}", elemType, strings.Join(elems, ", "))
+	case p.Map != nil:
+		items := make([]string, len(p.Map.Items))
+		keyType := "string"
+		valType := "int"
+		if len(p.Map.Items) > 0 {
+			if kt := c.guessExprType(p.Map.Items[0].Key); kt != "" {
+				keyType = kt
+			}
+			if vt := c.guessExprType(p.Map.Items[0].Value); vt != "" {
+				valType = vt
+			}
+		}
+		for i, it := range p.Map.Items {
+			k := c.compileExpr(it.Key)
+			v := c.compileExpr(it.Value)
+			items[i] = fmt.Sprintf("{%s, %s}", k, v)
+		}
+		return fmt.Sprintf("unordered_map<%s, %s>{%s}", keyType, valType, strings.Join(items, ", "))
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Query != nil:
@@ -678,6 +727,13 @@ func (c *Compiler) guessPostfixType(p *parser.PostfixExpr) string {
 		if op.Index != nil && op.Index.Colon == nil {
 			if strings.HasPrefix(typ, "vector<") {
 				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "vector<"), ">")
+			} else if strings.HasPrefix(typ, "unordered_map<") {
+				t := strings.TrimPrefix(typ, "unordered_map<")
+				if i := strings.Index(t, ","); i >= 0 {
+					typ = strings.TrimSuffix(t[i+1:], ">")
+				} else {
+					typ = "auto"
+				}
 			} else if typ == "string" {
 				typ = "char"
 			}
@@ -711,6 +767,19 @@ func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
 			}
 		}
 		return "vector<int>"
+	case p.Map != nil:
+		if len(p.Map.Items) > 0 {
+			kt := c.guessExprType(p.Map.Items[0].Key)
+			if kt == "" {
+				kt = "string"
+			}
+			vt := c.guessExprType(p.Map.Items[0].Value)
+			if vt == "" {
+				vt = "int"
+			}
+			return "unordered_map<" + kt + ", " + vt + ">"
+		}
+		return "unordered_map<string, int>"
 	case p.Selector != nil:
 		if t, ok := c.getVar(p.Selector.Root); ok {
 			return t
@@ -738,6 +807,8 @@ func (c *Compiler) cppTypeRef(t types.Type) string {
 		return "string"
 	case types.ListType:
 		return "vector<" + c.cppTypeRef(tt.Elem) + ">"
+	case types.MapType:
+		return "unordered_map<" + c.cppTypeRef(tt.Key) + ", " + c.cppTypeRef(tt.Value) + ">"
 	case types.StructType:
 		return tt.Name
 	}
@@ -766,6 +837,24 @@ func getEmptyListLiteral(e *parser.Expr) *parser.ListLiteral {
 	}
 	if post.Target.List != nil && len(post.Target.List.Elems) == 0 {
 		return post.Target.List
+	}
+	return nil
+}
+
+func getEmptyMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	post := u.Value
+	if post == nil || post.Target == nil {
+		return nil
+	}
+	if post.Target.Map != nil && len(post.Target.Map.Items) == 0 {
+		return post.Target.Map
 	}
 	return nil
 }

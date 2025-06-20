@@ -193,6 +193,7 @@ This backend covers only a subset of Mochi's features but is useful as an exampl
 
 Some LeetCode solutions use language constructs that the C++ backend can't yet translate. Unsupported features include:
 
-* Map literals and indexing operations
 * Dataset query syntax like `from ... sort by ...`
 * Inferring element types for empty list literals
+* Union types and methods defined inside `type` blocks
+* Generative AI, HTTP fetch, streams, agents and extern functions
