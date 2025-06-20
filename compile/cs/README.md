@@ -133,8 +133,8 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 
 ### Unsupported features
 
-Several LeetCode problems currently fail to compile due to missing support for
-some collection helpers. Operations like `GetRange`, list concatenation using
-`+`, and generic dictionary casts are not generated correctly. Until these
-helpers are implemented, only the first dozen problems compile and run
-successfully.
+The backend is still incomplete. Notable gaps include:
+
+- Join clauses in dataset queries
+- External helpers like `_fetch`, `_load`, `_save` and text generation
+- Generic dictionary casts for complex map types
