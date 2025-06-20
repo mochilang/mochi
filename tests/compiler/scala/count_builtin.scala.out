@@ -1,5 +1,5 @@
 object Main {
 	def main(args: Array[String]): Unit = {
-		println(List(1, 2, 3).size)
+		println(scala.collection.mutable.ArrayBuffer(1, 2, 3).size)
 	}
 }

@@ -1,8 +1,7 @@
 object Main {
 	def main(args: Array[String]): Unit = {
-		var nums = List(1, 2)
-		nums(1) = 3
+		var nums = scala.collection.mutable.ArrayBuffer(1, 2)
+		nums.update(1, 3)
 		println(nums(1))
 	}
 }
-

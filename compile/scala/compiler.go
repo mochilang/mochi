@@ -175,23 +175,49 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.needFetch {
 		c.writeln("def _fetch(url: String, opts: Map[String, Any]): Any = {")
 		c.indent++
-		c.writeln("// TODO: implement HTTP fetch")
-		c.writeln("null")
+		c.writeln("val src = scala.io.Source.fromURL(url)")
+		c.writeln("try {")
+		c.indent++
+		c.writeln("val data = src.mkString")
+		c.writeln("scala.util.parsing.json.JSON.parseFull(data).getOrElse(data)")
+		c.indent--
+		c.writeln("} finally src.close()")
 		c.indent--
 		c.writeln("}")
 	}
 	if c.needLoad {
 		c.writeln("def _load(path: String, opts: Map[String, Any]): Seq[Any] = {")
 		c.indent++
-		c.writeln("// TODO: implement data loading")
-		c.writeln("Seq.empty")
+		c.writeln("val src = if (path == \"\" || path == \"-\") scala.io.Source.stdin else scala.io.Source.fromFile(path)")
+		c.writeln("try {")
+		c.indent++
+		c.writeln("val data = src.mkString")
+		c.writeln("scala.util.parsing.json.JSON.parseFull(data) match {")
+		c.indent++
+		c.writeln("case Some(xs: List[_]) => xs")
+		c.writeln("case Some(m) => Seq(m)")
+		c.writeln("case _ => data.split('\\n').toSeq")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("} finally src.close()")
 		c.indent--
 		c.writeln("}")
 	}
 	if c.needSave {
 		c.writeln("def _save(src: Any, path: String, opts: Map[String, Any]): Unit = {")
 		c.indent++
-		c.writeln("// TODO: implement data saving")
+		c.writeln("val out = if (path == \"\" || path == \"-\") new java.io.PrintWriter(System.out) else new java.io.PrintWriter(new java.io.File(path))")
+		c.writeln("try {")
+		c.indent++
+		c.writeln("src match {")
+		c.indent++
+		c.writeln("case seq: Seq[_] => seq.foreach(v => out.println(v.toString))")
+		c.writeln("case other => out.println(other.toString)")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("} finally if (path != \"\" && path != \"-\") out.close()")
 		c.indent--
 		c.writeln("}")
 	}

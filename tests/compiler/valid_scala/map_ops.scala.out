@@ -1,12 +1,11 @@
 object Main {
 	def main(args: Array[String]): Unit = {
-		var m = scala.collection.mutable.Map()
-		m(1) = 10
-		m(2) = 20
+		var m: scala.collection.mutable.Map[Int, Int] = scala.collection.mutable.Map()
+		m.update(1, 10)
+		m.update(2, 20)
 		if (m.contains(1)) {
 			println(m(1))
 		}
 		println(m(2))
 	}
 }
-

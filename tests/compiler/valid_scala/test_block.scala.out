@@ -3,4 +3,3 @@ object Main {
 		println("ok")
 	}
 }
-
