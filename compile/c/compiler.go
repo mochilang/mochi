@@ -63,6 +63,13 @@ type Compiler struct {
 	needsAvg                 bool
 	needsInListInt           bool
 	needsInListString        bool
+	needsSliceListFloat      bool
+	needsListFloat           bool
+	needsConcatListFloat     bool
+	needsUnionListFloat      bool
+	needsExceptListFloat     bool
+	needsIntersectListFloat  bool
+	needsInListFloat         bool
 	needsUnionListInt        bool
 	needsUnionListString     bool
 	needsExceptListInt       bool
@@ -116,6 +123,9 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 			if elem == "int" {
 				return "list_int"
 			}
+			if elem == "double" {
+				return "list_float"
+			}
 			if elem == "char*" {
 				return "list_string"
 			}
@@ -162,6 +172,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln("")
 	c.writeln("typedef struct { int len; int *data; } list_int;")
+	if c.needsListFloat {
+		c.writeln("typedef struct { int len; double *data; } list_float;")
+	}
 	if c.needsListListInt {
 		c.writeln("typedef struct { int len; list_int *data; } list_list_int;")
 	}
@@ -177,6 +190,17 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("return l;")
 	c.indent--
 	c.writeln("}")
+	if c.needsListFloat {
+		c.writeln("")
+		c.writeln("static list_float list_float_create(int len) {")
+		c.indent++
+		c.writeln("list_float l;")
+		c.writeln("l.len = len;")
+		c.writeln("l.data = (double*)malloc(sizeof(double)*len);")
+		c.writeln("return l;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.needsListString {
 		c.writeln("")
 		c.writeln("static list_string list_string_create(int len) {")
@@ -193,6 +217,25 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.writeln("static list_int concat_list_int(list_int a, list_int b) {")
 		c.indent++
 		c.writeln("list_int r = list_int_create(a.len + b.len);")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("r.data[i] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("for (int i = 0; i < b.len; i++) {")
+		c.indent++
+		c.writeln("r.data[a.len + i] = b.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsConcatListFloat {
+		c.writeln("")
+		c.writeln("static list_float concat_list_float(list_float a, list_float b) {")
+		c.indent++
+		c.writeln("list_float r = list_float_create(a.len + b.len);")
 		c.writeln("for (int i = 0; i < a.len; i++) {")
 		c.indent++
 		c.writeln("r.data[i] = a.data[i];")
@@ -276,6 +319,31 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.needsUnionListFloat {
+		c.writeln("")
+		c.writeln("static list_float union_list_float(list_float a, list_float b) {")
+		c.indent++
+		c.writeln("list_float r = list_float_create(a.len + b.len);")
+		c.writeln("int idx = 0;")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < idx; j++) if (r.data[j] == a.data[i]) { found = 1; break; }")
+		c.writeln("if (!found) r.data[idx++] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("for (int i = 0; i < b.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < idx; j++) if (r.data[j] == b.data[i]) { found = 1; break; }")
+		c.writeln("if (!found) r.data[idx++] = b.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("r.len = idx;")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.needsExceptListInt {
 		c.writeln("")
 		c.writeln("static list_int except_list_int(list_int a, list_int b) {")
@@ -304,6 +372,24 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent++
 		c.writeln("int found = 0;")
 		c.writeln("for (int j = 0; j < b.len; j++) if (strcmp(a.data[i], b.data[j]) == 0) { found = 1; break; }")
+		c.writeln("if (!found) r.data[idx++] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("r.len = idx;")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsExceptListFloat {
+		c.writeln("")
+		c.writeln("static list_float except_list_float(list_float a, list_float b) {")
+		c.indent++
+		c.writeln("list_float r = list_float_create(a.len);")
+		c.writeln("int idx = 0;")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < b.len; j++) if (a.data[i] == b.data[j]) { found = 1; break; }")
 		c.writeln("if (!found) r.data[idx++] = a.data[i];")
 		c.indent--
 		c.writeln("}")
@@ -350,6 +436,30 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent++
 		c.writeln("int dup = 0;")
 		c.writeln("for (int j = 0; j < idx; j++) if (strcmp(r.data[j], a.data[i]) == 0) { dup = 1; break; }")
+		c.writeln("if (!dup) r.data[idx++] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("r.len = idx;")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsIntersectListFloat {
+		c.writeln("")
+		c.writeln("static list_float intersect_list_float(list_float a, list_float b) {")
+		c.indent++
+		c.writeln("list_float r = list_float_create(a.len);")
+		c.writeln("int idx = 0;")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < b.len; j++) if (a.data[i] == b.data[j]) { found = 1; break; }")
+		c.writeln("if (found) {")
+		c.indent++
+		c.writeln("int dup = 0;")
+		c.writeln("for (int j = 0; j < idx; j++) if (r.data[j] == a.data[i]) { dup = 1; break; }")
 		c.writeln("if (!dup) r.data[idx++] = a.data[i];")
 		c.indent--
 		c.writeln("}")
@@ -417,6 +527,19 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	if c.needsInListInt {
 		c.writeln("")
 		c.writeln("static int contains_list_int(list_int v, int item) {")
+		c.indent++
+		c.writeln("for (int i = 0; i < v.len; i++) {")
+		c.indent++
+		c.writeln("if (v.data[i] == item) return 1;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return 0;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsInListFloat {
+		c.writeln("")
+		c.writeln("static int contains_list_float(list_float v, double item) {")
 		c.indent++
 		c.writeln("for (int i = 0; i < v.len; i++) {")
 		c.indent++
@@ -526,6 +649,25 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.needsSliceListFloat {
+		c.writeln("")
+		c.writeln("static list_float slice_list_float(list_float v, int start, int end) {")
+		c.indent++
+		c.writeln("if (start < 0) start += v.len;")
+		c.writeln("if (end < 0) end += v.len;")
+		c.writeln("if (start < 0) start = 0;")
+		c.writeln("if (end > v.len) end = v.len;")
+		c.writeln("if (start > end) start = end;")
+		c.writeln("list_float r = list_float_create(end - start);")
+		c.writeln("for (int i = 0; i < r.len; i++) {")
+		c.indent++
+		c.writeln("r.data[i] = v.data[start + i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.needsListListInt {
 		c.writeln("")
 		c.writeln("static void _print_list_int(list_int v) {")
@@ -548,6 +690,21 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.indent++
 		c.writeln("if (i > 0) printf(\" \");")
 		c.writeln("_print_list_int(v.data[i]);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("printf(\"]\");")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsListFloat {
+		c.writeln("")
+		c.writeln("static void _print_list_float(list_float v) {")
+		c.indent++
+		c.writeln("printf(\"[\");")
+		c.writeln("for (int i = 0; i < v.len; i++) {")
+		c.indent++
+		c.writeln("if (i > 0) printf(\" \");")
+		c.writeln("printf(\"%g\", v.data[i]);")
 		c.indent--
 		c.writeln("}")
 		c.writeln("printf(\"]\");")
@@ -580,6 +737,9 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 			t := resolveTypeRef(p.Type, c.env)
 			if isListStringType(t) {
 				c.needsListString = true
+			}
+			if isListFloatType(t) {
+				c.needsListFloat = true
 			}
 			if isListListIntType(t) {
 				c.needsListListInt = true
@@ -631,6 +791,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					val := c.newTemp()
 					c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				} else if isListFloatType(t) {
+					c.needsListFloat = true
+					val := c.newTemp()
+					c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
+					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 				} else if isListListIntType(t) {
 					c.needsListListInt = true
 					val := c.newTemp()
@@ -668,6 +833,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					c.needsListString = true
 					val := c.newTemp()
 					c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
+					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				} else if isListFloatType(t) {
+					c.needsListFloat = true
+					val := c.newTemp()
+					c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 				} else if isListListIntType(t) {
 					c.needsListListInt = true
@@ -866,6 +1036,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	left := c.compileUnary(b.Left)
 	leftList := isListListUnary(b.Left, c.env)
 	leftListInt := isListIntUnary(b.Left, c.env)
+	leftListFloat := isListFloatUnary(b.Left, c.env)
 	leftListString := isListStringUnary(b.Left, c.env)
 	leftString := isStringUnary(b.Left, c.env)
 	for _, op := range b.Right {
@@ -889,6 +1060,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			left = name
 			leftListInt = true
 			leftList = false
+			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
+		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftListFloat && isListFloatPostfix(op.Right, c.env) {
+			c.needsConcatListFloat = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_float %s = concat_list_float(%s, %s);", name, left, right))
+			left = name
+			leftListFloat = true
+			leftList = false
+			leftListInt = false
 			leftListString = false
 			leftString = false
 			continue
@@ -924,6 +1108,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftListInt = true
 			leftList = false
 			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
+		if op.Op == "union" && leftListFloat && isListFloatPostfix(op.Right, c.env) {
+			c.needsUnionListFloat = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_float %s = union_list_float(%s, %s);", name, left, right))
+			left = name
+			leftListFloat = true
+			leftList = false
+			leftListInt = false
+			leftListString = false
 			leftString = false
 			continue
 		}
@@ -946,6 +1143,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			left = name
 			leftListInt = true
 			leftList = false
+			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
+		if op.Op == "except" && leftListFloat && isListFloatPostfix(op.Right, c.env) {
+			c.needsExceptListFloat = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_float %s = except_list_float(%s, %s);", name, left, right))
+			left = name
+			leftListFloat = true
+			leftList = false
+			leftListInt = false
 			leftListString = false
 			leftString = false
 			continue
@@ -970,6 +1180,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftListInt = true
 			leftList = false
 			leftListString = false
+			leftListFloat = false
 			leftString = false
 			continue
 		}
@@ -985,12 +1196,25 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
+		if op.Op == "intersect" && leftListFloat && isListFloatPostfix(op.Right, c.env) {
+			c.needsIntersectListFloat = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_float %s = intersect_list_float(%s, %s);", name, left, right))
+			left = name
+			leftListFloat = true
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftString = false
+			continue
+		}
 		if op.Op == "in" && isListIntPostfix(op.Right, c.env) {
 			c.needsInListInt = true
 			left = fmt.Sprintf("contains_list_int(%s, %s)", right, left)
 			leftList = false
 			leftListInt = false
 			leftListString = false
+			leftListFloat = false
 			leftString = false
 			continue
 		}
@@ -1004,10 +1228,21 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
+		if op.Op == "in" && isListFloatPostfix(op.Right, c.env) {
+			c.needsInListFloat = true
+			left = fmt.Sprintf("contains_list_float(%s, %s)", right, left)
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
 		left = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
 		leftList = false
 		leftListInt = false
 		leftListString = false
+		leftListFloat = false
 		leftString = false
 	}
 	return left
@@ -1029,6 +1264,7 @@ func (c *Compiler) compileUnary(u *parser.Unary) string {
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 	expr := c.compilePrimary(p.Target)
 	isStr := isStringPrimary(p.Target, c.env)
+	isFloatList := isListFloatPrimary(p.Target, c.env)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			if op.Index.Colon == nil {
@@ -1045,6 +1281,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				} else {
 					expr = fmt.Sprintf("%s.data[%s]", expr, idx)
 					isStr = false
+					isFloatList = false
 				}
 			} else {
 				start := "0"
@@ -1064,6 +1301,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					}
 					expr = name
 					isStr = true
+				} else if isFloatList {
+					c.needsSliceListFloat = true
+					c.writeln(fmt.Sprintf("list_float %s = slice_list_float(%s, %s, %s);", name, expr, start, end))
+					if c.env != nil {
+						c.env.SetVar(name, types.ListType{Elem: types.FloatType{}}, true)
+					}
+					expr = name
+					isStr = false
+					isFloatList = false
 				} else {
 					c.needsSliceListInt = true
 					c.writeln(fmt.Sprintf("list_int %s = slice_list_int(%s, %s, %s);", name, expr, start, end))
@@ -1072,6 +1318,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					}
 					expr = name
 					isStr = false
+					isFloatList = false
 				}
 			}
 		}
@@ -1107,6 +1354,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				v := c.compileExpr(el)
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
 			}
+		} else if len(p.List.Elems) > 0 && isFloatExpr(p.List.Elems[0], c.env) {
+			c.needsListFloat = true
+			c.writeln(fmt.Sprintf("list_float %s = list_float_create(%d);", name, len(p.List.Elems)))
+			for i, el := range p.List.Elems {
+				v := c.compileExpr(el)
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
 		} else {
 			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
 			for i, el := range p.List.Elems {
@@ -1138,6 +1392,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				} else if isListIntExpr(a, c.env) {
 					c.needsListListInt = true
 					c.writeln(fmt.Sprintf("_print_list_int(%s);", argExpr))
+					if i == len(p.Call.Args)-1 {
+						c.writeln("printf(\"\\n\");")
+					} else {
+						c.writeln("printf(\" \");")
+					}
+				} else if isListFloatExpr(a, c.env) {
+					c.needsListFloat = true
+					c.writeln(fmt.Sprintf("_print_list_float(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
 					} else {
@@ -1298,6 +1560,13 @@ func isFloatArg(e *parser.Expr, env *types.Env) bool {
 	return ok
 }
 
+func isFloatExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isFloatUnary(e.Binary.Left, env)
+}
+
 func isFloatUnary(u *parser.Unary, env *types.Env) bool {
 	if u == nil {
 		return false
@@ -1386,6 +1655,15 @@ func isListListIntType(t types.Type) bool {
 func isListStringType(t types.Type) bool {
 	if lt, ok := t.(types.ListType); ok {
 		if _, ok2 := lt.Elem.(types.StringType); ok2 {
+			return true
+		}
+	}
+	return false
+}
+
+func isListFloatType(t types.Type) bool {
+	if lt, ok := t.(types.ListType); ok {
+		if _, ok2 := lt.Elem.(types.FloatType); ok2 {
 			return true
 		}
 	}
@@ -1623,6 +1901,86 @@ func isListStringPrimary(p *parser.Primary, env *types.Env) bool {
 			if ft, ok := t.(types.FuncType); ok {
 				if lt, ok2 := ft.Return.(types.ListType); ok2 {
 					if _, ok3 := lt.Elem.(types.StringType); ok3 {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isListFloatExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isListFloatUnary(e.Binary.Left, env)
+}
+
+func isListFloatUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isListFloatPostfix(u.Value, env)
+}
+
+func isListFloatPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) == 0 {
+		return isListFloatPrimary(p.Target, env)
+	}
+	if p.Ops[0].Index != nil && p.Ops[0].Index.Colon != nil {
+		if isStringPrimary(p.Target, env) {
+			return false
+		}
+		return true
+	}
+	return false
+}
+
+func isListFloatPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.List != nil {
+		if len(p.List.Elems) == 0 {
+			return true
+		}
+		el := p.List.Elems[0]
+		if el.Binary != nil && el.Binary.Left != nil && el.Binary.Left.Value != nil && el.Binary.Left.Value.Target != nil {
+			if lit := el.Binary.Left.Value.Target.Lit; lit != nil && lit.Float != nil {
+				return true
+			}
+			if sel := el.Binary.Left.Value.Target.Selector; sel != nil && env != nil {
+				if t, err := env.GetVar(sel.Root); err == nil {
+					if _, ok := t.(types.FloatType); ok {
+						return true
+					}
+					if lt, ok := t.(types.ListType); ok {
+						if _, ok2 := lt.Elem.(types.FloatType); ok2 {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	if p.Selector != nil && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.FloatType); ok {
+					return true
+				}
+			}
+		}
+	}
+	if p.Call != nil && env != nil {
+		if t, err := env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if lt, ok2 := ft.Return.(types.ListType); ok2 {
+					if _, ok3 := lt.Elem.(types.FloatType); ok3 {
 						return true
 					}
 				}
