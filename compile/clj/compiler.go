@@ -781,6 +781,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return expr, nil
+	case p.FunExpr != nil:
+		expr, err := c.compileFunExpr(p.FunExpr)
+		if err != nil {
+			return "", err
+		}
+		return expr, nil
 	case p.Call != nil:
 		args := []string{}
 		for _, a := range p.Call.Args {
@@ -955,6 +961,88 @@ func (c *Compiler) compileMatch(m *parser.MatchExpr) (string, error) {
 	}
 	b.WriteString("  ))")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	child := types.NewEnv(c.env)
+	for _, p := range fn.Params {
+		if p.Type != nil {
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		} else {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+	}
+
+	sub := &Compiler{env: child, tempVarCount: c.tempVarCount}
+	sub.indent = 1
+	sub.writeln("(try")
+	sub.indent++
+	if fn.ExprBody != nil {
+		expr, err := sub.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		sub.writeln(fmt.Sprintf("(throw (ex-info \"return\" {:value %s}))", expr))
+	} else {
+		for _, st := range fn.BlockBody {
+			if err := sub.compileStmt(st); err != nil {
+				return "", err
+			}
+		}
+	}
+	sub.indent--
+	sub.writeln("(catch clojure.lang.ExceptionInfo e")
+	sub.indent++
+	sub.writeln("(if (= (.getMessage e) \"return\")")
+	sub.indent++
+	sub.writeln("(:value (ex-data e))")
+	sub.indent--
+	sub.writeln("(throw e)))")
+	sub.indent--
+	sub.writeln(")")
+
+	// propagate helpers
+	if sub.needIndexString {
+		c.needIndexString = true
+	}
+	if sub.needIndexList {
+		c.needIndexList = true
+	}
+	if sub.needInput {
+		c.needInput = true
+	}
+	if sub.needCount {
+		c.needCount = true
+	}
+	if sub.needAvg {
+		c.needAvg = true
+	}
+	if sub.needGroup {
+		c.needGroup = true
+	}
+	if sub.needGroupBy {
+		c.needGroupBy = true
+	}
+	if sub.needLoad {
+		c.needLoad = true
+	}
+	if sub.needSave {
+		c.needSave = true
+	}
+	c.tempVarCount = sub.tempVarCount
+
+	var buf bytes.Buffer
+	buf.WriteString("(fn [")
+	for i, p := range fn.Params {
+		if i > 0 {
+			buf.WriteString(" ")
+		}
+		buf.WriteString(sanitizeName(p.Name))
+	}
+	buf.WriteString("]\n")
+	buf.Write(sub.buf.Bytes())
+	buf.WriteString(")")
+	return buf.String(), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
