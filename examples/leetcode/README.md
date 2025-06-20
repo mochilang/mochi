@@ -69,6 +69,7 @@ mochi run download.mochi
 - `make run-java ID=<n>` – execute the compiled Java solution for problem `n`
 - `make run-rkt ID=<n>` – execute the compiled Racket solution for problem `n`
 - `make run-hs ID=<n>` – execute the compiled Haskell solution for problem `n`
+- `make run-cs ID=<n>` – execute the compiled C# solution for problem `n` (requires the .NET SDK; the runner will install it automatically)
 - `make compile` – generate Go, Python, TypeScript, Dart, C++, Haskell, and Racket files into `../leetcode-out`
 - `make range FROM=1 TO=10 LANG=scala` – build problems in a range using the Scala backend
 - `make test` – run all tests

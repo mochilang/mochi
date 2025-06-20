@@ -37,17 +37,25 @@ public class Program {
 					}
 				}
 				if (star) {
-					if ((dp[i2][(j2 + 2L)] || ((first && dp[(i2 + 1L)][j2])))) {
-						dp[i2][j2] = true;
+					bool ok = false;
+					if (dp[i2][(j2 + 2L)]) {
+						ok = true;
 					} else {
-						dp[i2][j2] = false;
+						if (first) {
+							if (dp[(i2 + 1L)][j2]) {
+								ok = true;
+							}
+						}
 					}
+					dp[i2][j2] = ok;
 				} else {
-					if ((first && dp[(i2 + 1L)][(j2 + 1L)])) {
-						dp[i2][j2] = true;
-					} else {
-						dp[i2][j2] = false;
+					bool ok = false;
+					if (first) {
+						if (dp[(i2 + 1L)][(j2 + 1L)]) {
+							ok = true;
+						}
 					}
+					dp[i2][j2] = ok;
 				}
 				j2 = (j2 - 1L);
 			}
