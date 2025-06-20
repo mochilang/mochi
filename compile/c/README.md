@@ -66,7 +66,6 @@ features include:
 - `map` types
 - query expressions such as `from`/`sort by`/`select`
 - struct and enum definitions
-- list set operators `except` and `intersect`
 - agent-related constructs (`agent`, `stream`, `intent`)
 - generative `generate` blocks and model definitions
 - dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
@@ -77,5 +76,6 @@ The backend now supports membership checks and `union`/`union all` operations
 for integer and string lists, but map membership and other advanced features
 remain unimplemented.
 
-Problems relying on these features (for example LeetCode problems 13–25 and
-30) fail to compile at the moment.
+Additional language features like `try`/`catch` error handling and the planned
+`async` keyword are also unimplemented. Problems relying on these features
+(for example LeetCode problems 13–25 and 30) fail to compile at the moment.
