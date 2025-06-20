@@ -1,0 +1,6 @@
+fun abs_val(n: int): int {
+  return if n < 0 { -n } else { n }
+}
+
+print(abs_val(-2))
+print(abs_val(3))

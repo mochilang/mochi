@@ -363,6 +363,55 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileIfExpr(expr *parser.IfExpr) (string, error) {
+	typ := "integer"
+	if c.expected != nil {
+		typ = typeString(c.expected)
+	}
+	tmp := c.newTypedVar(typ)
+
+	cond, err := c.compileExpr(expr.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.compileExprWith(parsePasType(typ), expr.Then)
+	if err != nil {
+		return "", err
+	}
+
+	c.writeln("if " + cond + " then")
+	c.writeln("begin")
+	c.indent++
+	c.writeln(fmt.Sprintf("%s := %s;", tmp, thenVal))
+	c.indent--
+	cur := expr
+	for cur.ElseIf != nil {
+		c.writeln("end else if " + c.mustExpr(cur.ElseIf.Cond) + " then")
+		c.writeln("begin")
+		c.indent++
+		val, err := c.compileExprWith(parsePasType(typ), cur.ElseIf.Then)
+		if err != nil {
+			return "", err
+		}
+		c.writeln(fmt.Sprintf("%s := %s;", tmp, val))
+		c.indent--
+		cur = cur.ElseIf
+	}
+	if cur.Else != nil {
+		c.writeln("end else")
+		c.writeln("begin")
+		c.indent++
+		val, err := c.compileExprWith(parsePasType(typ), cur.Else)
+		if err != nil {
+			return "", err
+		}
+		c.writeln(fmt.Sprintf("%s := %s;", tmp, val))
+		c.indent--
+	}
+	c.writeln("end;")
+	return tmp, nil
+}
+
 func (c *Compiler) mustExpr(e *parser.Expr) string {
 	s, _ := c.compileExpr(e)
 	return s
@@ -1035,7 +1084,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Struct != nil:
 		typ := sanitizeName(p.Struct.Name)
 		tmp := c.newTypedVar(typ)
-		c.writeln(fmt.Sprintf("var %s: %s;", tmp, typ))
 		for _, f := range p.Struct.Fields {
 			val, err := c.compileExpr(f.Value)
 			if err != nil {
@@ -1084,7 +1132,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			pairs[i] = fmt.Sprintf("m.AddOrSetData(%s, %s);", k, v)
 		}
 		tmp := c.newTypedVar(fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType))
-		c.writeln(fmt.Sprintf("var %s: specialize TFPGMap<%s, %s>;", tmp, keyType, valType))
 		c.writeln(fmt.Sprintf("%s := specialize TFPGMap<%s, %s>.Create;", tmp, keyType, valType))
 		for _, p := range pairs {
 			c.writeln(strings.ReplaceAll(p, "m", tmp))
@@ -1101,7 +1148,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.FunExpr != nil:
 		return "", fmt.Errorf("anonymous functions not supported")
 	case p.If != nil:
-		return "", fmt.Errorf("if expressions not supported")
+		return c.compileIfExpr(p.If)
 	case p.Match != nil:
 		return "", fmt.Errorf("match expressions not supported")
 	}

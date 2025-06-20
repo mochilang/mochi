@@ -1,0 +1,25 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl;
+
+type
+	generic TArray<T> = array of T;
+
+function abs_val(n: integer): integer;
+begin
+	var _tmp0: integer;
+	if (n < 0) then
+	begin
+		_tmp0 := -n;
+	end else
+	begin
+		_tmp0 := n;
+	end;
+	result := _tmp0;
+	exit;
+end;
+
+begin
+	writeln(abs_val(-2));
+	writeln(abs_val(3));
+end.

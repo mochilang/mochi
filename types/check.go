@@ -1528,6 +1528,8 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return st, nil
 
+	case p.If != nil:
+		return checkIfExpr(p.If, env, expected)
 	case p.FunExpr != nil:
 		return checkFunExpr(p.FunExpr, env, expected, p.Pos)
 
@@ -1607,6 +1609,43 @@ func curryFuncType(params []Type, ret Type) Type {
 		Params: []Type{params[0]},
 		Return: curryFuncType(params[1:], ret),
 	}
+}
+
+func checkIfExpr(ie *parser.IfExpr, env *Env, expected Type) (Type, error) {
+	condT, err := checkExpr(ie.Cond, env)
+	if err != nil {
+		return nil, err
+	}
+	if !unify(condT, BoolType{}, nil) {
+		return nil, errIfCondBoolean(ie.Cond.Pos)
+	}
+
+	thenT, err := checkExprWithExpected(ie.Then, env, expected)
+	if err != nil {
+		return nil, err
+	}
+
+	var elseT Type = AnyType{}
+	if ie.ElseIf != nil {
+		elseT, err = checkIfExpr(ie.ElseIf, env, thenT)
+		if err != nil {
+			return nil, err
+		}
+	} else if ie.Else != nil {
+		elseT, err = checkExprWithExpected(ie.Else, env, thenT)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	result := thenT
+	if !unify(result, elseT, nil) {
+		result = AnyType{}
+	}
+	if expected != nil && !unify(result, expected, nil) {
+		return nil, errTypeMismatch(ie.Pos, expected, result)
+	}
+	return result, nil
 }
 
 func checkMatchExpr(m *parser.MatchExpr, env *Env, expected Type) (Type, error) {
