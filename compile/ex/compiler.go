@@ -190,6 +190,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		name := sanitizeName(s.Let.Name)
 		c.writeln(fmt.Sprintf("%s = %s", name, val))
+		c.writeln(fmt.Sprintf("_ = %s", name))
 	case s.Var != nil:
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
@@ -399,14 +400,16 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("%s = Map.put(%s, %s, %s)", name, name, idx, value))
+		c.writeln(fmt.Sprintf("_ = %s", name))
 		return nil
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	c.writeln(fmt.Sprintf("_ = %s", name))
 	return nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil {
+	if len(q.Joins) > 0 {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -419,6 +422,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	for _, f := range q.Froms {
 		child.SetVar(f.Var, types.AnyType{}, true)
 	}
+	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		c.use("_group_by")
+		c.use("_group")
+		expr := fmt.Sprintf("_group_by(%s, fn %s -> %s end)", src, q.Var, keyExpr)
+		return fmt.Sprintf("Enum.map(%s, fn %s -> %s end)", expr, q.Group.Name, valExpr), nil
+	}
+
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -539,9 +564,10 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	type operand struct {
-		expr     string
-		isList   bool
-		isString bool
+		expr      string
+		isList    bool
+		isString  bool
+		boolConst *bool
 	}
 
 	if b == nil {
@@ -555,14 +581,24 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left, c.env), isString: isStringUnary(b.Left, c.env)})
+	var bc *bool
+	if v, ok := boolLiteralUnary(b.Left); ok {
+		vv := v
+		bc = &vv
+	}
+	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left, c.env), isString: isStringUnary(b.Left, c.env), boolConst: bc})
 
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env), isString: isStringPostfix(part.Right, c.env)})
+		var bc *bool
+		if v, ok := boolLiteralPostfix(part.Right); ok {
+			vv := v
+			bc = &vv
+		}
+		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env), isString: isStringPostfix(part.Right, c.env), boolConst: bc})
 		ops = append(ops, part.Op)
 	}
 
@@ -610,8 +646,30 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				} else {
 					expr = fmt.Sprintf("(%s + %s)", l.expr, r.expr)
 				}
-			case "-", "*", "/", "<", "<=", ">", ">=", "&&", "||":
+			case "-", "*", "/", "<", "<=", ">", ">=":
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
+			case "&&":
+				if l.boolConst != nil && r.boolConst != nil {
+					val := *l.boolConst && *r.boolConst
+					expr = strconv.FormatBool(val)
+					bc := val
+					operands[i] = operand{expr: expr, boolConst: &bc, isList: false, isString: false}
+					operands = append(operands[:i+1], operands[i+2:]...)
+					ops = append(ops[:i], ops[i+1:]...)
+					continue
+				}
+				expr = fmt.Sprintf("(%s && %s)", l.expr, r.expr)
+			case "||":
+				if l.boolConst != nil && r.boolConst != nil {
+					val := *l.boolConst || *r.boolConst
+					expr = strconv.FormatBool(val)
+					bc := val
+					operands[i] = operand{expr: expr, boolConst: &bc, isList: false, isString: false}
+					operands = append(operands[:i+1], operands[i+2:]...)
+					ops = append(ops[:i], ops[i+1:]...)
+					continue
+				}
+				expr = fmt.Sprintf("(%s || %s)", l.expr, r.expr)
 			case "%":
 				expr = fmt.Sprintf("rem(%s, %s)", l.expr, r.expr)
 			case "==", "!=":
@@ -622,7 +680,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				return "", fmt.Errorf("unsupported operator %s", op)
 			}
 
-			operands[i] = operand{expr: expr, isList: isList, isString: isString}
+			operands[i] = operand{expr: expr, isList: isList, isString: isString, boolConst: nil}
 			operands = append(operands[:i+1], operands[i+2:]...)
 			ops = append(ops[:i], ops[i+1:]...)
 		}
@@ -685,6 +743,46 @@ func isStringUnary(u *parser.Unary, env *types.Env) bool {
 		return false
 	}
 	return isStringPostfix(u.Value, env)
+}
+
+func boolLiteralPostfix(p *parser.PostfixExpr) (bool, bool) {
+	if p == nil || len(p.Ops) > 0 {
+		return false, false
+	}
+	if p.Target != nil {
+		if p.Target.Lit != nil && p.Target.Lit.Bool != nil {
+			return bool(*p.Target.Lit.Bool), true
+		}
+		if p.Target.Group != nil {
+			return boolLiteralExpr(p.Target.Group)
+		}
+	}
+	return false, false
+}
+
+func boolLiteralUnary(u *parser.Unary) (bool, bool) {
+	if u == nil {
+		return false, false
+	}
+	if len(u.Ops) == 0 {
+		return boolLiteralPostfix(u.Value)
+	}
+	if len(u.Ops) == 1 && u.Ops[0] == "!" {
+		if v, ok := boolLiteralPostfix(u.Value); ok {
+			return !v, true
+		}
+	}
+	return false, false
+}
+
+func boolLiteralExpr(e *parser.Expr) (bool, bool) {
+	if e == nil || e.Binary == nil {
+		return false, false
+	}
+	if len(e.Binary.Right) == 0 {
+		return boolLiteralUnary(e.Binary.Left)
+	}
+	return false, false
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {

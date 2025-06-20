@@ -200,5 +200,10 @@ go test ./compile/ex -tags slow
 Nested recursive functions are not currently handled when compiling to Elixir.
 Problems relying on them, such as LeetCode 22, fail to run.
 
-Queries using joins or grouping are also unimplemented. Cross join queries now
-support `where` filters as well as `sort`, `skip` and `take` clauses.
+Queries involving joins are still unimplemented. Simple `group by` queries are
+now supported in addition to cross joins with `where`, `sort`, `skip` and `take`
+clauses.
+
+Other language features currently missing from the Elixir backend include the
+`fetch` expression for HTTP requests and all `generate` operations for calling
+LLMs.
