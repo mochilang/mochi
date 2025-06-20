@@ -31,16 +31,23 @@ case "input":
 
 ## Query expressions
 
-`compileQueryExpr` handles simple dataset queries including filtering, sorting and pagination. More advanced clauses like grouping or join conditions are not yet implemented. Cross joins are supported:
+`compileQueryExpr` handles dataset queries including filtering, sorting and pagination. Basic `group by` clauses are supported when used alone, while join conditions remain unsupported. Cross joins are supported:
 
 ```go
-if len(q.Joins) > 0 || q.Group != nil {
-    return "", fmt.Errorf("advanced query clauses not supported")
+if len(q.Joins) > 0 {
+    return "", fmt.Errorf("join clauses not supported")
+}
+if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+    keyExpr, _ := c.compileExpr(q.Group.Expr)
+    valExpr, _ := c.compileExpr(q.Select)
+    c.use("_group_by")
+    c.use("_group")
+    return fmt.Sprintf("_group_by(%s, ->(%s){ %s }).map { |%s| %s }", src, iter, keyExpr, sanitizeName(q.Group.Name), valExpr), nil
 }
 ...
 expr = fmt.Sprintf("(%s).map { |%s| %s }", expr, iter, sel)
 ```
-【F:compile/rb/compiler.go†L336-L382】
+【F:compile/rb/compiler.go†L406-L432】
 
 ## Pattern matching
 
@@ -161,14 +168,14 @@ The first test is skipped when Ruby is not available and the suite falls back to
 
 ## Unsupported Features
 
-The Ruby backend does not yet implement every construct in Mochi. Missing
+- The Ruby backend does not yet implement every construct in Mochi. Missing
 features include:
 
-- Complex dataset queries using grouping or join clauses (beyond simple cross
-  joins).
+- Dataset joins (`join`, `left`, `right`, `outer`) beyond simple cross joins.
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming
   features (`fact`, `rule`, `query`).
 - Packages and foreign function interface declarations (`import`, `extern`).
 - `model` and `stream` declarations are not compiled.
 - Concurrency primitives such as `spawn` and channels.
+- Reflection or macro facilities.
 

@@ -1,0 +1,31 @@
+require 'ostruct'
+
+class _Group
+  attr_accessor :key, :Items
+  def initialize(k)
+    @key = k
+    @Items = []
+  end
+end
+def _group_by(src, keyfn)
+  groups = {}
+  order = []
+  src.each do |it|
+    key = keyfn.call(it)
+    ks = key.to_s
+    g = groups[ks]
+    unless g
+      g = _Group.new(key)
+      groups[ks] = g
+      order << ks
+    end
+    g.Items << it
+  end
+  order.map { |k| groups[k] }
+end
+
+xs = [1, 1, 2]
+groups = _group_by(xs, ->(x){ x }).map { |g| OpenStruct.new(k: g.key, c: (g).length) }
+for g in groups
+	puts([g.k, g.c].join(" "))
+end

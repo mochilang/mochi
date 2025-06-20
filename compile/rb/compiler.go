@@ -404,14 +404,29 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil {
-		return "", fmt.Errorf("advanced query clauses not supported")
+	if len(q.Joins) > 0 {
+		return "", fmt.Errorf("join clauses not supported")
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
 	}
 	iter := sanitizeName(q.Var)
+
+	// simple grouping without additional clauses
+	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			return "", err
+		}
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		c.use("_group_by")
+		c.use("_group")
+		return fmt.Sprintf("_group_by(%s, ->(%s){ %s }).map { |%s| %s }", src, iter, keyExpr, sanitizeName(q.Group.Name), valExpr), nil
+	}
 
 	// handle simple case without cross joins
 	if len(q.Froms) == 0 {
