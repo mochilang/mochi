@@ -284,6 +284,12 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	case "continue":
 		c.writeln("CONTINUE")
 
+	case "expect":
+		c.compileExpect(n)
+
+	case "test":
+		c.compileTest(n)
+
 	}
 }
 
@@ -349,6 +355,38 @@ func (c *Compiler) compileWhile(n *ast.Node) {
 	}
 	c.indent--
 	c.writeln("    END-PERFORM")
+}
+
+func (c *Compiler) compileExpect(n *ast.Node) {
+	expr := c.expr(n.Children[0])
+	if !isSimpleExpr(n.Children[0]) {
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[0])))
+		if c.isStringExpr(n.Children[0]) {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
+		} else {
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+		}
+		expr = tmp
+	}
+	c.writeln(fmt.Sprintf("    IF %s = 0", expr))
+	c.indent++
+	c.writeln("DISPLAY \"[FAIL]\"")
+	c.indent--
+	c.writeln("    ELSE")
+	c.indent++
+	c.writeln("DISPLAY \"[PASS]\"")
+	c.indent--
+	c.writeln("    END-IF")
+}
+
+func (c *Compiler) compileTest(n *ast.Node) {
+	name := strings.ReplaceAll(n.Value.(string), "\"", "")
+	c.writeln(fmt.Sprintf("DISPLAY \"-- TEST %s --\"", name))
+	for _, st := range n.Children {
+		c.compileNode(st)
+	}
+	c.writeln(fmt.Sprintf("DISPLAY \"-- END %s --\"", name))
 }
 
 func (c *Compiler) compileFun(n *ast.Node) {
