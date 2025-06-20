@@ -171,6 +171,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLet(s.Let)
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Import != nil:
+		return nil // imports are ignored by the Clojure backend
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Return != nil:
@@ -1043,6 +1047,12 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	buf.Write(sub.buf.Bytes())
 	buf.WriteString(")")
 	return buf.String(), nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	// Struct and union declarations are currently ignored but must not
+	// cause a compile error.
+	return nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
