@@ -1,0 +1,84 @@
+#!/usr/bin/env escript
+-module(main).
+-export([main/1]).
+
+main(_) ->
+	Square = fun(X) ->
+		try
+			throw({return, (X * X)})
+		catch
+			throw:{return, V} -> V
+		end
+end,
+	mochi_print([Square(6)]).
+
+mochi_print(Args) ->
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
+
+mochi_format(X) when is_integer(X) -> integer_to_list(X);
+mochi_format(X) when is_float(X) -> float_to_list(X);
+mochi_format(X) when is_list(X) -> X;
+mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
+
+mochi_count(X) when is_list(X) -> length(X);
+mochi_count(X) when is_map(X) -> maps:size(X);
+mochi_count(X) when is_binary(X) -> byte_size(X);
+mochi_count(_) -> erlang:error(badarg).
+
+mochi_input() ->
+	case io:get_line("") of
+		eof -> "";
+		Line -> string:trim(Line)
+	end.
+
+mochi_avg([]) -> 0;
+mochi_avg(L) when is_list(L) ->
+	Sum = lists:foldl(fun(X, Acc) ->
+		case X of
+			I when is_integer(I) -> Acc + I;
+			F when is_float(F) -> Acc + F;
+			_ -> erlang:error(badarg) end
+		end, 0, L),
+		Sum / length(L);
+	mochi_avg(_) -> erlang:error(badarg).
+	
+	mochi_foreach(F, L) ->
+		try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.
+	
+	mochi_foreach_loop(_, []) -> ok;
+	mochi_foreach_loop(F, [H|T]) ->
+		try F(H) catch
+			throw:mochi_continue -> ok;
+			throw:mochi_break -> throw(mochi_break)
+		end,
+		mochi_foreach_loop(F, T).
+	
+	mochi_while(Cond, Body) ->
+		case Cond() of
+			true ->
+				try Body() catch
+					throw:mochi_continue -> ok;
+					throw:mochi_break -> ok
+				end,
+				mochi_while(Cond, Body);
+			_ -> ok
+		end.
+	
+	mochi_expect(true) -> ok;
+	mochi_expect(_) -> erlang:error(expect_failed).
+	
+	mochi_test_start(Name) -> io:format("   test ~s ...", [Name]).
+	mochi_test_pass(Dur) -> io:format(" ok (~p)~n", [Dur]).
+	mochi_test_fail(Err, Dur) -> io:format(" fail ~p (~p)~n", [Err, Dur]).
+	
+	mochi_run_test(Name, Fun) ->
+		mochi_test_start(Name),
+		Start = erlang:monotonic_time(millisecond),
+		try Fun() of _ ->
+			Duration = erlang:monotonic_time(millisecond) - Start,
+			mochi_test_pass(Duration)
+		catch C:R ->
+			Duration = erlang:monotonic_time(millisecond) - Start,
+			mochi_test_fail({C,R}, Duration)
+		end.

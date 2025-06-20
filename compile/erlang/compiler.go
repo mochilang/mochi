@@ -800,6 +800,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			items[i] = fmt.Sprintf("%s => %s", k, v)
 		}
 		return "#{" + strings.Join(items, ", ") + "}", nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Struct != nil:
 		if c.env != nil {
 			if ut, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
@@ -866,6 +868,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "input":
 			return "mochi_input()", nil
 		default:
+			if v, ok := c.vars[p.Call.Func]; ok {
+				return fmt.Sprintf("%s(%s)", v, argStr), nil
+			}
 			return fmt.Sprintf("%s(%s)", atomName(p.Call.Func), argStr), nil
 		}
 	case p.Load != nil:
@@ -1037,6 +1042,64 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	b.WriteString("\tend\nend)()")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	savedVars := c.vars
+	savedCounts := c.counts
+	c.vars = map[string]string{}
+	if c.counts == nil {
+		c.counts = map[string]int{}
+	}
+	for i, p := range fn.Params {
+		params[i] = c.newName(p.Name)
+	}
+
+	child := types.NewEnv(c.env)
+	for _, p := range fn.Params {
+		child.SetVar(p.Name, types.AnyType{}, true)
+	}
+	origEnv := c.env
+	c.env = child
+
+	savedBuf := c.buf
+	c.buf = bytes.Buffer{}
+	savedIndent := c.indent
+	c.indent = 1
+	c.writeln("try")
+	c.indent++
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			c.env = origEnv
+			c.buf = savedBuf
+			c.indent = savedIndent
+			return "", err
+		}
+		c.writeln("throw({return, " + expr + "})")
+	} else {
+		if err := c.compileBlock(fn.BlockBody, false, nil); err != nil {
+			c.env = origEnv
+			c.buf = savedBuf
+			c.indent = savedIndent
+			return "", err
+		}
+	}
+	c.indent--
+	c.writeln("catch")
+	c.indent++
+	c.writeln("throw:{return, V} -> V")
+	c.indent--
+	c.writeln("end")
+	body := indentBlock(c.buf.String(), 1)
+	c.buf = savedBuf
+	c.indent = savedIndent
+	c.env = origEnv
+	c.vars = savedVars
+	c.counts = savedCounts
+
+	return fmt.Sprintf("fun(%s) ->\n%send", strings.Join(params, ", "), body), nil
 }
 
 func (c *Compiler) compileMatchPattern(e *parser.Expr) (string, error) {
