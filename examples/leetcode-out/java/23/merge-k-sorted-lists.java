@@ -1,24 +1,35 @@
 public class Main {
-	static int[] addTwoNumbers(int[] l1, int[] l2) {
+	static int[] mergeKLists(int[][] lists) {
+		int k = lists.length;
+		int[] indices = new int[]{};
 		int i = 0;
-		int j = 0;
-		int carry = 0;
+		while ((i < k)) {
+			indices = _concat(indices, new int[]{0});
+			i = (i + 1);
+		}
 		int[] result = new int[]{};
-		while ((((i < l1.length) || (j < l2.length)) || (carry > 0))) {
-			int x = 0;
-			if ((i < l1.length)) {
-				x = l1[i];
-				i = (i + 1);
-			}
-			int y = 0;
-			if ((j < l2.length)) {
-				y = l2[j];
+		while (true) {
+			int best = 0;
+			int bestList = (-1);
+			boolean found = false;
+			int j = 0;
+			while ((j < k)) {
+				int idx = indices[j];
+				if ((idx < lists[j].length)) {
+					int val = lists[j][idx];
+					if (((!found) || (val < best))) {
+						best = val;
+						bestList = j;
+						found = true;
+					}
+				}
 				j = (j + 1);
 			}
-			int sum = ((x + y) + carry);
-			int digit = (sum % 10);
-			carry = (sum / 10);
-			result = _concat(result, new int[]{digit});
+			if ((!found)) {
+				break;
+			}
+			result = _concat(result, new int[]{best});
+			indices[bestList] = (indices[bestList] + 1);
 		}
 		return result;
 	}

@@ -234,3 +234,15 @@ go test ./compile/java -tags slow
 ```
 
 The tests automatically skip if no Java compiler is detected.
+
+## Unsupported Features
+
+The Java backend currently lacks several Mochi features supported by other compilers:
+
+- Pattern matching expressions
+- Union types and tagged unions
+- Dataset queries (`from`/`select`, joins, grouping)
+- Dataset loading/saving helpers
+- External helpers like `_genText`, `_fetch` and concurrency primitives
+
+Simple `from` queries used by the LeetCode examples are now supported.

@@ -1,14 +1,14 @@
-class Main {
+public class Main {
 	static int reverse(int x) {
-		var sign = 1;
-		var n = x;
+		int sign = 1;
+		int n = x;
 		if ((n < 0)) {
 			sign = (-1);
 			n = (-n);
 		}
-		var rev = 0;
+		int rev = 0;
 		while ((n != 0)) {
-			var digit = (n % 10);
+			int digit = (n % 10);
 			rev = ((rev * 10) + digit);
 			n = (n / 10);
 		}

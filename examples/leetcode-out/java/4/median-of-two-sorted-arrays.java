@@ -1,8 +1,8 @@
-class Main {
+public class Main {
 	static double findMedianSortedArrays(int[] nums1, int[] nums2) {
 		int[] merged = new int[]{};
-		var i = 0;
-		var j = 0;
+		int i = 0;
+		int j = 0;
 		while (((i < nums1.length) || (j < nums2.length))) {
 			if ((j >= nums2.length)) {
 				merged = _concat(merged, new int[]{nums1[i]});
@@ -18,12 +18,12 @@ class Main {
 				j = (j + 1);
 			}
 		}
-		var total = merged.length;
+		int total = merged.length;
 		if (((total % 2) == 1)) {
 			return (double)(merged[(total / 2)]);
 		}
-		var mid1 = merged[((total / 2) - 1)];
-		var mid2 = merged[(total / 2)];
+		int mid1 = merged[((total / 2) - 1)];
+		int mid2 = merged[(total / 2)];
 		return ((double)((mid1 + mid2)) / 2);
 	}
 	
@@ -33,6 +33,19 @@ class Main {
 	static int[] _concat(int[] a, int[] b) {
 		int[] res = new int[a.length + b.length];
 		System.arraycopy(a, 0, res, 0, a.length);
+		System.arraycopy(b, 0, res, a.length, b.length);
+		return res;
+	}
+	
+	static boolean[] _concat(boolean[] a, boolean[] b) {
+		boolean[] res = new boolean[a.length + b.length];
+		System.arraycopy(a, 0, res, 0, a.length);
+		System.arraycopy(b, 0, res, a.length, b.length);
+		return res;
+	}
+	
+	static <T> T[] _concat(T[] a, T[] b) {
+		T[] res = java.util.Arrays.copyOf(a, a.length + b.length);
 		System.arraycopy(b, 0, res, a.length, b.length);
 		return res;
 	}

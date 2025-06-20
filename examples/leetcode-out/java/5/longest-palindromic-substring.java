@@ -1,8 +1,8 @@
-class Main {
+public class Main {
 	static int expand(String s, int left, int right) {
-		var l = left;
-		var r = right;
-		var n = s.length();
+		int l = left;
+		int r = right;
+		int n = s.length();
 		while (((l >= 0) && (r < n))) {
 			if ((_indexString(s, l) != _indexString(s, r))) {
 				break;
@@ -17,13 +17,13 @@ class Main {
 		if ((s.length() <= 1)) {
 			return s;
 		}
-		var start = 0;
-		var end = 0;
-		var n = s.length();
+		int start = 0;
+		int end = 0;
+		int n = s.length();
 		for (int i = 0; i < n; i++) {
-			var len1 = expand(s, i, i);
-			var len2 = expand(s, i, (i + 1));
-			var l = len1;
+			int len1 = expand(s, i, i);
+			int len2 = expand(s, i, (i + 1));
+			int l = len1;
 			if ((len2 > len1)) {
 				l = len2;
 			}
@@ -32,13 +32,7 @@ class Main {
 				end = (i + (l / 2));
 			}
 		}
-		var res = "";
-		var k = start;
-		while ((k <= end)) {
-			res = (res + _indexString(s, k));
-			k = (k + 1);
-		}
-		return res;
+		return s.substring(start, (end + 1));
 	}
 	
 	public static void main(String[] args) {
