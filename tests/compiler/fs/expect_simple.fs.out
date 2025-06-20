@@ -1,0 +1,5 @@
+open System
+
+let x = (1 + 2)
+if not ((x = 3)) then failwith "expect failed"
+ignore (printfn "%A" ("ok"))
