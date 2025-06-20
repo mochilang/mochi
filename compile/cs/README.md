@@ -16,6 +16,15 @@ Generated code may embed a small set of helper functions depending on which buil
 - `_avg` – averages a numeric collection
 - `_in` – membership test for strings, dictionaries and enumerables
 - `_cast` – generic casting utility implemented via JSON serialisation
+- `_indexString` – safe string indexing with negative offsets
+- `_sliceString` – substring slicing with negative offsets
+- `_equal` – deep equality check for lists
+- `_union_all` – concatenates two lists
+- `_union` – set union for lists
+- `_except` – set difference for lists
+- `_intersect` – set intersection for lists
+- `_group` – simple grouping structure
+- `_group_by` – groups items by a key selector
 - `_fetch` – simple HTTP fetch helper
 - `_load` – loads rows from a file
 - `_save` – saves rows to a file
@@ -39,6 +48,12 @@ if len(c.helpers) > 0 {
     }
 }
 ```
+
+## Built-in Functions
+
+Common built-ins such as `print`, `len`, `count` and `avg` expand to standard C#
+code.  Additional helpers implement `now()` which returns a Unix timestamp in
+nanoseconds and `json(v)` which prints a JSON representation of a value.
 
 If `_cast` is not required the generated file omits the `System.Text.Json` import:
 
@@ -129,7 +144,7 @@ This script attempts platform‑specific installation via Homebrew or `apt-get` 
 
 ## Notes
 
-The C# backend focuses on fundamental features: functions, control flow, structs, unions and query expressions. Recent updates added support for package declarations and set operations on lists. Advanced Mochi capabilities such as streams and extern objects are not yet implemented in this generator.
+The C# backend focuses on fundamental features: functions, control flow, structs, unions and query expressions. Recent updates added support for package declarations, set operations on lists and helper functions for printing JSON or getting the current timestamp. Advanced Mochi capabilities such as streams and extern objects are not yet implemented in this generator.
 
 ### Unsupported features
 
@@ -143,3 +158,5 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - YAML dataset loading/saving
 - Intent declarations
 - Full LLM integration for `_genText` and `_genStruct`
+- Concurrency primitives like `spawn` and channels
+- `try`/`catch` error handling
