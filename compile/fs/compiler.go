@@ -3,6 +3,8 @@ package fscode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -26,6 +28,7 @@ type Compiler struct {
 	localsStack []map[string]bool
 	helpers     map[string]bool
 	tests       []testInfo
+	packages    map[string]bool
 }
 
 type loopCtx struct {
@@ -85,7 +88,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, locals: make(map[string]bool), helpers: make(map[string]bool)}
+	return &Compiler{env: env, locals: make(map[string]bool), helpers: make(map[string]bool), packages: make(map[string]bool)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -126,6 +129,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		header.WriteString("exception ContinueException of int\n")
 	}
 	header.WriteByte('\n')
+	for _, s := range prog.Statements {
+		if s.Import != nil && s.Import.Lang == nil {
+			if err := c.compilePackageImport(s.Import); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			if err := c.compileTypeDecl(s.Type); err != nil {
@@ -265,21 +276,200 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 		c.indent--
 		return nil
 	}
-	// struct record
-	c.writeln(fmt.Sprintf("type %s = {", name))
-	c.indent++
-	for i, m := range td.Members {
-		if m.Field == nil {
-			continue
+	fields := []*parser.TypeField{}
+	methods := []*parser.FunStmt{}
+	for _, m := range td.Members {
+		if m.Field != nil {
+			fields = append(fields, m.Field)
+		} else if m.Method != nil {
+			methods = append(methods, m.Method)
 		}
+	}
+	c.writeln(fmt.Sprintf("type %s =", name))
+	c.indent++
+	c.writeln("{")
+	c.indent++
+	for i, f := range fields {
 		sep := ";"
-		if i == len(td.Members)-1 {
+		if i == len(fields)-1 {
 			sep = ""
 		}
-		c.writeln(fmt.Sprintf("%s: %s%s", sanitizeName(m.Field.Name), fsType(m.Field.Type), sep))
+		c.writeln(fmt.Sprintf("%s: %s%s", sanitizeName(f.Name), fsType(f.Type), sep))
 	}
 	c.indent--
 	c.writeln("}")
+	for _, m := range methods {
+		if err := c.compileMethod(name, m, fields); err != nil {
+			return err
+		}
+		c.writeln("")
+	}
+	c.indent--
+	if c.env != nil {
+		st := types.StructType{Name: td.Name, Fields: map[string]types.Type{}, Order: []string{}, Methods: map[string]types.Method{}}
+		for _, f := range fields {
+			st.Fields[f.Name] = c.resolveTypeRef(f.Type)
+			st.Order = append(st.Order, f.Name)
+		}
+		for _, m := range methods {
+			params := make([]types.Type, len(m.Params))
+			for i, p := range m.Params {
+				params[i] = c.resolveTypeRef(p.Type)
+			}
+			var ret types.Type = types.VoidType{}
+			if m.Return != nil {
+				ret = c.resolveTypeRef(m.Return)
+			}
+			st.Methods[m.Name] = types.Method{Decl: m, Type: types.FuncType{Params: params, Return: ret}}
+		}
+		c.env.SetStruct(td.Name, st)
+	}
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt, fields []*parser.TypeField) error {
+	nested := len(funcStack) > 0
+	name := sanitizeName(fn.Name)
+	c.pushFunc(name)
+	defer c.popFunc()
+	exc := fmt.Sprintf("Return_%s_%s", sanitizeName(structName), name)
+	ret := fsType(fn.Return)
+	excType := ret
+	if strings.ContainsAny(ret, " ->") {
+		excType = "(" + ret + ")"
+	}
+	line := fmt.Sprintf("exception %s of %s", exc, excType)
+	if nested {
+		c.preamble.WriteString(line + "\n")
+	} else {
+		c.writeln(line)
+	}
+	params := make([]string, len(fn.Params))
+	paramTypes := make([]types.Type, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), fsType(p.Type))
+		paramTypes[i] = c.resolveTypeRef(p.Type)
+	}
+	c.writeln(fmt.Sprintf("member this.%s %s : %s =", name, strings.Join(params, " "), ret))
+
+	child := types.NewEnv(c.env)
+	for _, f := range fields {
+		child.SetVar(f.Name, c.resolveTypeRef(f.Type), true)
+	}
+	for i, p := range fn.Params {
+		child.SetVar(p.Name, paramTypes[i], true)
+	}
+	origEnv := c.env
+	c.env = child
+
+	c.indent++
+	c.writeln("try")
+	c.indent++
+	for _, p := range fn.Params {
+		name := sanitizeName(p.Name)
+		c.writeln(fmt.Sprintf("let mutable %s = %s", name, name))
+	}
+	for _, f := range fields {
+		n := sanitizeName(f.Name)
+		c.writeln(fmt.Sprintf("let %s = this.%s", n, n))
+	}
+	for _, st := range fn.Body {
+		if err := c.compileStmt(st); err != nil {
+			c.env = origEnv
+			return err
+		}
+	}
+	c.writeln("failwith \"unreachable\"")
+	c.indent--
+	c.writeln(fmt.Sprintf("with %s v -> v", exc))
+	c.indent--
+	c.env = origEnv
+	return nil
+}
+
+func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	if c.packages[alias] {
+		return nil
+	}
+	c.packages[alias] = true
+
+	path := strings.Trim(im.Path, "\"")
+	base := ""
+	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
+		base = filepath.Dir(im.Pos.Filename)
+	}
+	target := filepath.Join(base, path)
+	info, err := os.Stat(target)
+	if err != nil {
+		if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
+			if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
+				info = fi
+				target += ".mochi"
+			} else {
+				return fmt.Errorf("import package: %w", err)
+			}
+		} else {
+			return fmt.Errorf("import package: %w", err)
+		}
+	}
+	var files []string
+	if info.IsDir() {
+		entries, err := os.ReadDir(target)
+		if err != nil {
+			return fmt.Errorf("import package: %w", err)
+		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+				files = append(files, filepath.Join(target, e.Name()))
+			}
+		}
+		sort.Strings(files)
+	} else {
+		files = []string{target}
+	}
+
+	pkgEnv := types.NewEnv(c.env)
+	origEnv := c.env
+	c.env = pkgEnv
+	c.writeln(fmt.Sprintf("module %s =", alias))
+	c.indent++
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		if errs := types.Check(prog, pkgEnv); len(errs) > 0 {
+			c.env = origEnv
+			return errs[0]
+		}
+		for _, s := range prog.Statements {
+			if s.Type != nil {
+				if err := c.compileTypeDecl(s.Type); err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("")
+			}
+		}
+		for _, s := range prog.Statements {
+			if s.Fun != nil && s.Fun.Export {
+				if err := c.compileFunStmt(s.Fun); err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("")
+			}
+		}
+	}
+	c.indent--
+	c.writeln("")
+	c.env = origEnv
 	return nil
 }
 
@@ -319,6 +509,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			c.env.SetVar(s.Var.Name, typ, true)
 		}
+	case s.Import != nil:
+		// package imports are handled in Compile
+		return nil
 	case s.Fun != nil:
 		return c.compileFunStmt(s.Fun)
 	case s.Return != nil:
