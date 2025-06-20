@@ -74,3 +74,15 @@ definitions, if/else expressions, basic loops, lists, maps and a few built-in
 functions (`len`, `count`, `avg`, `str`, `print`). Map access relies on
 `Data.Map` when needed. Variable names are sanitised to avoid conflicts with
 Haskell keywords.
+
+## Status
+
+While useful for experimentation, the Haskell backend does not yet implement the
+full Mochi language. Unsupported features include:
+
+* `match` expressions and union types
+* Dataset query syntax like `from ... sort by ...`
+* Set literals and related operations
+* `while` loops
+* Generative AI, HTTP fetch and FFI bindings
+* Streams and long-lived agents

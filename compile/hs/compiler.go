@@ -100,13 +100,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString(runtime)
 	header.WriteString("\n\n")
 
-        code := append(header.Bytes(), c.buf.Bytes()...)
-        // Ensure the generated file ends with a trailing newline so tools like
-        // runhaskell do not complain about the last line.
-        if len(code) == 0 || code[len(code)-1] != '\n' {
-                code = append(code, '\n')
-        }
-        return code, nil
+	code := append(header.Bytes(), c.buf.Bytes()...)
+	// Ensure the generated file ends with a trailing newline so tools like
+	// runhaskell do not complain about the last line.
+	if len(code) == 0 || code[len(code)-1] != '\n' {
+		code = append(code, '\n')
+	}
+	return code, nil
 }
 
 func (c *Compiler) compileMainStmt(s *parser.Statement) error {
@@ -609,7 +609,12 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	if len(fn.BlockBody) == 0 {
 		return fmt.Sprintf("(\\%s -> ())", strings.Join(params, " ")), nil
 	}
-	return "", fmt.Errorf("unsupported function expression")
+	expr, err := c.compileStmtExpr(fn.BlockBody, true)
+	if err != nil {
+		return "", err
+	}
+	ret := c.defaultReturn(fn.BlockBody, types.VoidType{})
+	return fmt.Sprintf("(\\%s -> fromMaybe (%s) $ %s)", strings.Join(params, " "), ret, expr), nil
 }
 
 func (c *Compiler) exprIsString(e *parser.Expr) bool {
