@@ -150,6 +150,16 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("mapM_ (\\%s -> %s) %s", name, body, src))
 		}
+	case s.While != nil:
+		body, err := c.simpleBodyExpr(s.While.Body)
+		if err != nil {
+			return err
+		}
+		cond, err := c.compileExpr(s.While.Cond)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("let _ = whileLoop (\\() -> %s) (\\() -> Nothing <$ (%s)) in return ()", cond, body))
 	default:
 		return fmt.Errorf("unsupported statement in main")
 	}
@@ -342,7 +352,16 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 			}
 			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Assign.Name), val, expr)
 		case s.While != nil:
-			// while loops are ignored in the Haskell backend for now
+			bodyExpr, err := c.compileStmtExpr(s.While.Body, false)
+			if err != nil {
+				return "", err
+			}
+			cond, err := c.compileExpr(s.While.Cond)
+			if err != nil {
+				return "", err
+			}
+			loop := fmt.Sprintf("whileLoop (\\() -> %s) (\\() -> %s)", cond, bodyExpr)
+			expr = chainMaybe(loop, expr)
 			continue
 		case s.Expr != nil:
 			val, err := c.compileExpr(s.Expr.Expr)
