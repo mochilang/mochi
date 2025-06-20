@@ -202,7 +202,8 @@ The Elixir backend implements most core language features but still lacks suppor
 - Nested recursive functions inside other functions. Problems relying on them, such as LeetCode 22, fail to run.
 - Dataset queries with join clauses. Simple `group by` queries are now supported but more complex grouping or aggregation is not yet handled.
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming features (`fact`, `rule`, `query`).
-- Data helpers like `fetch`, `load`, `save` and LLM `generate` blocks.
+- Data helpers like `fetch` and LLM `generate` blocks.
+- `load` and `save` currently only handle Erlang term binaries.
 - Foreign imports and `extern` declarations.
 - Concurrency primitives such as `spawn` and channels.
 - Pattern matching with `match` expressions.

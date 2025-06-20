@@ -553,6 +553,44 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "nil"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.use("_load")
+	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "nil"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.use("_save")
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "", fmt.Errorf("nil expr")
@@ -943,6 +981,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
