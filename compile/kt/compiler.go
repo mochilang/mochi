@@ -153,6 +153,17 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 				c.writeln("}")
 				return nil
 			}
+			if _, ok := t.(types.MapType); ok {
+				idx := idxStrs[len(idxStrs)-1]
+				c.writeln("run {")
+				c.indent++
+				c.writeln(fmt.Sprintf("val _tmp = %s.toMutableMap()", sanitizeName(stmt.Name)))
+				c.writeln(fmt.Sprintf("_tmp[%s] = %s", idx, rhs))
+				c.writeln(fmt.Sprintf("%s = _tmp", sanitizeName(stmt.Name)))
+				c.indent--
+				c.writeln("}")
+				return nil
+			}
 		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", lhs, rhs))
