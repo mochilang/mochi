@@ -232,11 +232,13 @@ This backend implements only a subset of Mochi. It handles basic statements, loo
 
 ## Unsupported Features
 
-- The Swift backend does not yet support several language features used by some
-examples:
+The Swift backend still lacks support for a number of language capabilities:
 
-- Complex dataset queries with filtering, grouping, joins or pagination. Only
-  simple ``from ... select`` loops (with optional cross joins) are handled.
-- Structural types such as ``struct`` and enums
+- Advanced dataset queries with grouping, joins, sorting or pagination. Simple
+  ``from ... where ... select`` loops (with optional cross joins) are handled.
+- Structural type declarations with inline methods and enum/union variants
 - Higher-order functions or function values
 - Type inference for empty collections
+- Streams, agents and intent handlers
+- The ``generate`` and ``fetch`` expressions for LLM and HTTP integration
+- Package declarations and the foreign function interface
