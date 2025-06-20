@@ -1,5 +1,6 @@
 fun isValid(s: string): bool {
-  var stack = []
+  // specify stack type to avoid Any in Swift backend
+  var stack: list<string> = []
   let n = len(s)
   for i in 0..n {
     let c = s[i]

@@ -733,7 +733,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "[" + strings.Join(elems, ", ") + "]", nil
-	case p.Map != nil:
+        case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, item := range p.Map.Items {
 			k, err := c.compileExpr(item.Key)
@@ -749,8 +749,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(items) == 0 {
 			return "[:]", nil
 		}
-		return "[" + strings.Join(items, ", ") + "]", nil
-	case p.Struct != nil:
+                return "[" + strings.Join(items, ", ") + "]", nil
+       case p.Query != nil:
+               return c.compileQueryExpr(p.Query)
+        case p.Struct != nil:
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)
@@ -848,8 +850,98 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	bodyStr := c.buf.String()
 	c.buf = oldBuf
 	c.indent = oldIndent
-	result := fmt.Sprintf("{ (%s) -> %s in\n%s}", strings.Join(params, ", "), ret, indentBlock(bodyStr, 1))
-	return result, nil
+        result := fmt.Sprintf("{ (%s) -> %s in\n%s}", strings.Join(params, ", "), ret, indentBlock(bodyStr, 1))
+        return result, nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+       if len(q.Joins) > 0 || q.Group != nil || q.Where != nil || q.Skip != nil || q.Take != nil {
+               return "", fmt.Errorf("advanced query clauses not supported")
+       }
+       src, err := c.compileExpr(q.Source)
+       if err != nil {
+               return "", err
+       }
+
+       // special case: simple sort and select by query variable
+       if len(q.Froms) == 0 && q.Sort != nil {
+               orig := c.env
+               child := types.NewEnv(c.env)
+               elem := c.inferExprType(q.Source)
+               if lt, ok := elem.(types.ListType); ok {
+                       elem = lt.Elem
+               }
+               child.SetVar(q.Var, elem, true)
+               c.env = child
+               sortExpr, err := c.compileExpr(q.Sort)
+               if err != nil {
+                       c.env = orig
+                       return "", err
+               }
+               selExpr, err := c.compileExpr(q.Select)
+               c.env = orig
+               if err != nil {
+                       return "", err
+               }
+               if sortExpr == q.Var && selExpr == q.Var {
+                       return fmt.Sprintf("%s.sorted()", src), nil
+               }
+               return "", fmt.Errorf("advanced query clauses not supported")
+       }
+
+       // simple map with optional cross joins
+       orig := c.env
+       child := types.NewEnv(c.env)
+       elem := c.inferExprType(q.Source)
+       if lt, ok := elem.(types.ListType); ok {
+               elem = lt.Elem
+       }
+       child.SetVar(q.Var, elem, true)
+       fromSrcs := make([]string, len(q.Froms))
+       for i, f := range q.Froms {
+               fs, err := c.compileExpr(f.Src)
+               if err != nil {
+                       return "", err
+               }
+               ft := c.inferExprType(f.Src)
+               var fe types.Type = types.AnyType{}
+               if lt, ok := ft.(types.ListType); ok {
+                       fe = lt.Elem
+               }
+               child.SetVar(f.Var, fe, true)
+               fromSrcs[i] = fs
+       }
+       c.env = child
+       sel, err := c.compileExpr(q.Select)
+       if err != nil {
+               c.env = orig
+               return "", err
+       }
+       elemType := c.inferExprType(q.Select)
+       c.env = orig
+       resType := swiftType(elemType)
+       if resType == "" {
+               resType = "Any"
+       }
+
+       var b strings.Builder
+       b.WriteString("({\n")
+       b.WriteString(fmt.Sprintf("\tvar _res: [%s] = []\n", resType))
+       b.WriteString(fmt.Sprintf("\tfor %s in %s {\n", q.Var, src))
+       indent := "\t\t"
+       for i, f := range q.Froms {
+               b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, f.Var, fromSrcs[i]))
+               indent += "\t"
+       }
+       b.WriteString(fmt.Sprintf("%s_res.append(%s)\n", indent, sel))
+       for range q.Froms {
+               indent = indent[:len(indent)-1]
+               b.WriteString(indent + "}\n")
+       }
+       b.WriteString("\t}\n")
+       b.WriteString("\treturn _res\n")
+       b.WriteString("}())")
+       return b.String(), nil
 }
 
 func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
@@ -974,7 +1066,9 @@ func paramAssigned(body []*parser.Statement, name string) bool {
 func stmtAssignsVar(s *parser.Statement, name string) bool {
 	switch {
 	case s.Assign != nil:
-		return s.Assign.Name == name && len(s.Assign.Index) == 0
+		// treat assignments to a parameter via indexing as modifying
+		// the parameter so it should be mutable
+		return s.Assign.Name == name
 	case s.For != nil:
 		return paramAssigned(s.For.Body, name)
 	case s.While != nil:

@@ -229,3 +229,14 @@ go test ./compile/swift -tags slow
 ## Notes
 
 This backend implements only a subset of Mochi. It handles basic statements, loops, conditionals, lists, maps and the built‑ins listed above. It is suitable for experimentation but not yet a full-featured Swift target.
+
+## Unsupported Features
+
+- The Swift backend does not yet support several language features used by some
+examples:
+
+- Complex dataset queries with filtering, grouping, joins or pagination. Only
+  simple ``from ... select`` loops (with optional cross joins) are handled.
+- Structural types such as ``struct`` and enums
+- Higher-order functions or function values
+- Type inference for empty collections
