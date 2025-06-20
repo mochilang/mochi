@@ -55,6 +55,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln("using System.Text.Json;")
 	c.writeln("")
+	if prog.Package != "" {
+		c.writeln("namespace " + sanitizeName(prog.Package) + " {")
+		c.indent++
+	}
 	// Compile Mochi package imports
 	for _, s := range prog.Statements {
 		if s.Import != nil && s.Import.Lang == nil {
@@ -121,6 +125,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
+	if prog.Package != "" {
+		c.indent--
+		c.writeln("}")
+	}
 	if len(c.helpers) > 0 {
 		for name := range c.helpers {
 			switch name {
@@ -259,6 +267,40 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				c.indent--
 				c.writeln("}")
 				c.writeln("return Equals(a, b);")
+				c.indent--
+				c.writeln("}")
+			case "_union_all":
+				c.writeln("static List<dynamic> _union_all(IEnumerable<dynamic> a, IEnumerable<dynamic> b) {")
+				c.indent++
+				c.writeln("var res = new List<dynamic>();")
+				c.writeln("if (a != null) foreach (var it in a) res.Add(it);")
+				c.writeln("if (b != null) foreach (var it in b) res.Add(it);")
+				c.writeln("return res;")
+				c.indent--
+				c.writeln("}")
+			case "_union":
+				c.writeln("static List<dynamic> _union(IEnumerable<dynamic> a, IEnumerable<dynamic> b) {")
+				c.indent++
+				c.writeln("var res = new List<dynamic>();")
+				c.writeln("if (a != null) foreach (var it in a) if (!_in(it, res)) res.Add(it);")
+				c.writeln("if (b != null) foreach (var it in b) if (!_in(it, res)) res.Add(it);")
+				c.writeln("return res;")
+				c.indent--
+				c.writeln("}")
+			case "_except":
+				c.writeln("static List<dynamic> _except(IEnumerable<dynamic> a, IEnumerable<dynamic> b) {")
+				c.indent++
+				c.writeln("var res = new List<dynamic>();")
+				c.writeln("if (a != null) foreach (var it in a) if (!_in(it, b)) res.Add(it);")
+				c.writeln("return res;")
+				c.indent--
+				c.writeln("}")
+			case "_intersect":
+				c.writeln("static List<dynamic> _intersect(IEnumerable<dynamic> a, IEnumerable<dynamic> b) {")
+				c.indent++
+				c.writeln("var res = new List<dynamic>();")
+				c.writeln("if (a != null) foreach (var it in a) if (_in(it, b) && !_in(it, res)) res.Add(it);")
+				c.writeln("return res;")
 				c.indent--
 				c.writeln("}")
 			case "_group":
@@ -832,7 +874,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		}
 		operands = append(operands, r)
 		lists = append(lists, c.isListPostfix(part.Right))
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.All {
+			op = op + "_all"
+		}
+		ops = append(ops, op)
 	}
 
 	levels := [][]string{
@@ -842,6 +888,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	}
 
 	contains := func(sl []string, s string) bool {
@@ -889,6 +936,25 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			case "in":
 				c.use("_in")
 				expr = fmt.Sprintf("_in(%s, %s)", left, right)
+			case "union_all":
+				c.use("_union_all")
+				expr = fmt.Sprintf("_union_all(%s, %s)", left, right)
+				leftList = true
+			case "union":
+				c.use("_union")
+				c.use("_in")
+				expr = fmt.Sprintf("_union(%s, %s)", left, right)
+				leftList = true
+			case "except":
+				c.use("_except")
+				c.use("_in")
+				expr = fmt.Sprintf("_except(%s, %s)", left, right)
+				leftList = true
+			case "intersect":
+				c.use("_intersect")
+				c.use("_in")
+				expr = fmt.Sprintf("_intersect(%s, %s)", left, right)
+				leftList = true
 			default:
 				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 			}
