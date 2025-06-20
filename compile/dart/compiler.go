@@ -833,6 +833,76 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
+	name := sanitizeName(fun.Name)
+
+	var ft types.FuncType
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			if m, ok := st.Methods[fun.Name]; ok {
+				ft = m.Type
+			}
+		}
+	}
+	if ft.Params == nil {
+		ft.Params = make([]types.Type, len(fun.Params))
+		for i, p := range fun.Params {
+			if p.Type != nil {
+				ft.Params[i] = c.resolveTypeRef(p.Type)
+			} else {
+				ft.Params[i] = types.AnyType{}
+			}
+		}
+	}
+	if ft.Return == nil {
+		if fun.Return != nil {
+			ft.Return = c.resolveTypeRef(fun.Return)
+		} else {
+			ft.Return = types.VoidType{}
+		}
+	}
+
+	params := make([]string, len(fun.Params))
+	for i, p := range fun.Params {
+		if isSimpleType(ft.Params[i]) && !isAny(ft.Params[i]) {
+			params[i] = fmt.Sprintf("%s %s", dartType(ft.Params[i]), sanitizeName(p.Name))
+		} else {
+			params[i] = sanitizeName(p.Name)
+		}
+	}
+
+	ret := "dynamic"
+	if isSimpleType(ft.Return) && !isAny(ft.Return) {
+		ret = dartType(ft.Return)
+	}
+
+	c.writeln(fmt.Sprintf("%s %s(%s) {", ret, name, strings.Join(params, ", ")))
+	c.indent++
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			for fname, t := range st.Fields {
+				child.SetVar(fname, t, true)
+			}
+		}
+	}
+	for i, p := range fun.Params {
+		child.SetVar(p.Name, ft.Params[i], true)
+	}
+	c.env = child
+	for _, st := range fun.Body {
+		if err := c.compileStmt(st); err != nil {
+			c.env = origEnv
+			return err
+		}
+	}
+	c.env = origEnv
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("void %s() {", name))
@@ -918,6 +988,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	c.writeln(fmt.Sprintf("class %s {", name))
 	c.indent++
 	fields := []string{}
+	var methods []*parser.FunStmt
 	for _, m := range t.Members {
 		if m.Field != nil {
 			fname := sanitizeName(m.Field.Name)
@@ -931,6 +1002,8 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				param = "required " + param
 			}
 			fields = append(fields, param)
+		} else if m.Method != nil {
+			methods = append(methods, m.Method)
 		}
 	}
 	var ctor string
@@ -940,6 +1013,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		ctor = fmt.Sprintf("%s({%s});", name, strings.Join(fields, ", "))
 	}
 	c.writeln(ctor)
+	for _, m := range methods {
+		if err := c.compileMethod(name, m); err != nil {
+			return err
+		}
+		c.writeln("")
+	}
 	c.indent--
 	c.writeln("}")
 	return nil
