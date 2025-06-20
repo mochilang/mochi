@@ -24,6 +24,8 @@ type Compiler struct {
 	needAvg         bool
 	needGroup       bool
 	needGroupBy     bool
+	needLoad        bool
+	needSave        bool
 }
 
 // New creates a new Clojure compiler instance.
@@ -44,6 +46,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needAvg = false
 	c.needGroup = false
 	c.needGroupBy = false
+	c.needLoad = false
+	c.needSave = false
 
 	for _, s := range prog.Statements {
 		switch {
@@ -953,6 +957,44 @@ func (c *Compiler) compileMatch(m *parser.MatchExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = strconv.Quote(*l.Path)
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.needLoad = true
+	return fmt.Sprintf("(_load %s %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = strconv.Quote(*s.Path)
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.needSave = true
+	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
+}
+
 func (c *Compiler) isStringExpr(expr string) bool {
 	expr = strings.TrimSpace(expr)
 	if len(expr) >= 2 && strings.HasPrefix(expr, "\"") && strings.HasSuffix(expr, "\"") {
@@ -1072,6 +1114,50 @@ func (c *Compiler) writeRuntime(buf *bytes.Buffer) {
         (swap! groups update ks (fn [g] (assoc g :Items (conj (:Items g) it)))))
     )
     (map (fn [k] (@groups k)) @order)))
+
+`)
+	}
+	if c.needLoad {
+		buf.WriteString(`(defn _parse_csv [text header delim]
+  (let [lines (->> (clojure.string/split-lines text)
+                   (remove clojure.string/blank?))
+        headers (if header
+                    (clojure.string/split (first lines) (re-pattern (str delim)))
+                    (map #(str "c" %) (range (count (clojure.string/split (first lines) (re-pattern (str delim)))))))]
+    (mapv (fn [line]
+            (let [parts (clojure.string/split line (re-pattern (str delim)))]
+              (zipmap headers parts)))
+          (drop (if header 1 0) lines))) )
+
+`)
+		buf.WriteString(`(defn _load [path opts]
+  (let [fmt (get opts :format "csv")
+        header (get opts :header true)
+        delim (first (or (get opts :delimiter ",") ","))
+        text (if (or (nil? path) (= path "") (= path "-"))
+               (slurp *in*)
+               (slurp path))]
+    (cond
+      (= fmt "csv") (_parse_csv text header delim)
+      :else [])) )
+
+`)
+	}
+	if c.needSave {
+		buf.WriteString(`(defn _save [rows path opts]
+  (let [fmt (get opts :format "csv")
+        header (get opts :header false)
+        delim (first (or (get opts :delimiter ",") ","))
+        headers (if (seq rows) (sort (keys (first rows))) [])
+        lines (concat
+                (when header [(clojure.string/join delim headers)])
+                (map (fn [r]
+                       (clojure.string/join delim (map #(str (get r % "")) headers)))
+                     rows))
+        out (str (clojure.string/join "\n" lines) "\n")]
+    (if (or (nil? path) (= path "") (= path "-"))
+      (print out)
+      (spit path out))) )
 
 `)
 	}
