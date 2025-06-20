@@ -63,6 +63,8 @@ type Compiler struct {
 	needsAvg               bool
 	needsInListInt         bool
 	needsInListString      bool
+	needsUnionListInt      bool
+	needsUnionListString   bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -216,6 +218,56 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.writeln("r.data[a.len + i] = b.data[i];")
 		c.indent--
 		c.writeln("}")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsUnionListInt {
+		c.writeln("")
+		c.writeln("static list_int union_list_int(list_int a, list_int b) {")
+		c.indent++
+		c.writeln("list_int r = list_int_create(a.len + b.len);")
+		c.writeln("int idx = 0;")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < idx; j++) if (r.data[j] == a.data[i]) { found = 1; break; }")
+		c.writeln("if (!found) r.data[idx++] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("for (int i = 0; i < b.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < idx; j++) if (r.data[j] == b.data[i]) { found = 1; break; }")
+		c.writeln("if (!found) r.data[idx++] = b.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("r.len = idx;")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsUnionListString {
+		c.writeln("")
+		c.writeln("static list_string union_list_string(list_string a, list_string b) {")
+		c.indent++
+		c.writeln("list_string r = list_string_create(a.len + b.len);")
+		c.writeln("int idx = 0;")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < idx; j++) if (strcmp(r.data[j], a.data[i]) == 0) { found = 1; break; }")
+		c.writeln("if (!found) r.data[idx++] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("for (int i = 0; i < b.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < idx; j++) if (strcmp(r.data[j], b.data[i]) == 0) { found = 1; break; }")
+		c.writeln("if (!found) r.data[idx++] = b.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("r.len = idx;")
 		c.writeln("return r;")
 		c.indent--
 		c.writeln("}")
@@ -730,7 +782,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	leftString := isStringUnary(b.Left, c.env)
 	for _, op := range b.Right {
 		right := c.compilePostfix(op.Right)
-		if op.Op == "+" && leftList && isListListPostfix(op.Right, c.env) {
+		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftList && isListListPostfix(op.Right, c.env) {
 			c.needsConcatListListInt = true
 			c.needsListListInt = true
 			name := c.newTemp()
@@ -742,7 +794,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
-		if op.Op == "+" && leftListInt && isListIntPostfix(op.Right, c.env) {
+		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftListInt && isListIntPostfix(op.Right, c.env) {
 			c.needsConcatListInt = true
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_int %s = concat_list_int(%s, %s);", name, left, right))
@@ -753,7 +805,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
-		if op.Op == "+" && leftListString && isListStringPostfix(op.Right, c.env) {
+		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftListString && isListStringPostfix(op.Right, c.env) {
 			c.needsConcatListString = true
 			c.needsListString = true
 			name := c.newTemp()
@@ -765,7 +817,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
-		if op.Op == "+" && leftString && isStringPostfixOrIndex(op.Right, c.env) {
+		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftString && isStringPostfixOrIndex(op.Right, c.env) {
 			c.needsConcatString = true
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("char* %s = concat_string(%s, %s);", name, left, right))
@@ -774,6 +826,29 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftList = false
 			leftListInt = false
 			leftListString = false
+			continue
+		}
+		if op.Op == "union" && leftListInt && isListIntPostfix(op.Right, c.env) {
+			c.needsUnionListInt = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_int %s = union_list_int(%s, %s);", name, left, right))
+			left = name
+			leftListInt = true
+			leftList = false
+			leftListString = false
+			leftString = false
+			continue
+		}
+		if op.Op == "union" && leftListString && isListStringPostfix(op.Right, c.env) {
+			c.needsUnionListString = true
+			c.needsListString = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_string %s = union_list_string(%s, %s);", name, left, right))
+			left = name
+			leftListString = true
+			leftList = false
+			leftListInt = false
+			leftString = false
 			continue
 		}
 		if op.Op == "in" && isListIntPostfix(op.Right, c.env) {

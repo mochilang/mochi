@@ -939,7 +939,11 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 			return nil, err
 		}
 		operands = append(operands, typ)
-		operators = append(operators, token{part.Pos, part.Op})
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
+		operators = append(operators, token{part.Pos, op})
 	}
 
 	for _, level := range [][]string{
@@ -949,6 +953,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	} {
 		for i := 0; i < len(operators); {
 			op := operators[i].op

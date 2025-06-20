@@ -20,7 +20,7 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 	for _, op := range b.Right {
 		rt := c.inferPostfixType(op.Right)
 		switch op.Op {
-		case "+", "-", "*", "/", "%":
+		case "+", "-", "*", "/", "%", "union", "except", "intersect":
 			if isNumber(t) && isNumber(rt) {
 				if isFloat(t) || isFloat(rt) {
 					t = types.FloatType{}
@@ -29,7 +29,7 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 				}
 				continue
 			}
-			if op.Op == "+" {
+			if op.Op == "+" || op.Op == "union" || op.Op == "except" || op.Op == "intersect" {
 				if llist, ok := t.(types.ListType); ok {
 					if rlist, ok := rt.(types.ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
 						t = llist
