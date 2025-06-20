@@ -1,0 +1,6 @@
+type Result =
+  Ok(value: int)
+  | Err(msg: string)
+
+let r: Result = Ok { value: 7 }
+print(1)
