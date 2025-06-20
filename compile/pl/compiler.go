@@ -309,6 +309,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 	case s.Break != nil:
 		c.writeln("throw(break)")
 		return nil
+	case s.Continue != nil:
+		c.writeln("throw(continue)")
+		return nil
 	case s.If != nil:
 		return c.compileIf(s.If, ret, true)
 	default:
@@ -330,16 +333,27 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 		c.use("tolist")
 		c.writeln(fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
 		loopVar := sanitizeVar(f.Name)
-		c.writeln(fmt.Sprintf("forall(member(%s, %s), (", loopVar, listVar))
+		c.writeln("catch(")
+		c.indent++
+		c.writeln("(")
+		c.indent++
+		c.writeln(fmt.Sprintf("member(%s, %s),", loopVar, listVar))
+		c.writeln("catch(")
+		c.indent++
+		c.writeln("(")
 		c.indent++
 		for _, s := range f.Body {
 			if err := c.compileStmt(s, ret); err != nil {
 				return err
 			}
 		}
-		c.writeln("true")
 		c.indent--
-		c.writeln(")),")
+		c.writeln("), continue, true),")
+		c.writeln("fail")
+		c.indent--
+		c.writeln(")")
+		c.writeln(", break, true),")
+		c.indent--
 		return nil
 	}
 	start, err := c.compileExpr(f.Source)
@@ -359,16 +373,27 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 	}
 	c.writeln(fmt.Sprintf("%s is %s - 1,", tempEnd, end.val))
 	loopVar := sanitizeVar(f.Name)
-	c.writeln(fmt.Sprintf("forall(between(%s, %s, %s), (", start.val, tempEnd, loopVar))
+	c.writeln("catch(")
+	c.indent++
+	c.writeln("(")
+	c.indent++
+	c.writeln(fmt.Sprintf("between(%s, %s, %s),", start.val, tempEnd, loopVar))
+	c.writeln("catch(")
+	c.indent++
+	c.writeln("(")
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s, ret); err != nil {
 			return err
 		}
 	}
-	c.writeln("true")
 	c.indent--
-	c.writeln(")),")
+	c.writeln("), continue, true),")
+	c.writeln("fail")
+	c.indent--
+	c.writeln(")")
+	c.writeln(", break, true),")
+	c.indent--
 	return nil
 }
 
@@ -522,11 +547,17 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt, ret string) error {
 	}
 	c.writeln(fmt.Sprintf("(%s ->", cond.val))
 	c.indent++
+	c.writeln("catch(")
+	c.indent++
+	c.writeln("(")
+	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s, ret); err != nil {
 			return err
 		}
 	}
+	c.indent--
+	c.writeln("), continue, true),")
 	c.writeln("fail")
 	c.indent--
 	c.writeln("; true)")
