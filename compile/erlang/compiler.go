@@ -1503,7 +1503,15 @@ func (c *Compiler) emitRuntime() {
 		c.indent++
 		c.writeln("case file:read_file(Path) of")
 		c.indent++
-		c.writeln("{ok, Bin} -> binary_to_term(Bin);")
+		c.writeln("{ok, Bin} ->")
+		c.indent++
+		c.writeln("Ext = filename:extension(Path),")
+		c.writeln("case Ext of")
+		c.indent++
+		c.writeln("\".txt\" -> binary_to_list(Bin);")
+		c.writeln("_ -> binary_to_term(Bin)")
+		c.indent--
+		c.writeln("end;")
 		c.writeln("_ -> []")
 		c.indent--
 		c.writeln("end.")
@@ -1512,13 +1520,29 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("")
 		c.writeln("mochi_save(Data, Path, _Opts) ->")
 		c.indent++
-		c.writeln("ok = file:write_file(Path, term_to_binary(Data)).")
+		c.writeln("Ext = filename:extension(Path),")
+		c.writeln("Bin = case Ext of")
+		c.indent++
+		c.writeln("\".txt\" -> Data;")
+		c.writeln("_ -> term_to_binary(Data)")
+		c.indent--
+		c.writeln("end,")
+		c.writeln("ok = file:write_file(Path, Bin).")
 		c.indent--
 	}
 
 	if c.needFetch {
 		c.writeln("")
-		c.writeln("mochi_fetch(_Url, _Opts) -> [].")
+		c.writeln("mochi_fetch(Url, _Opts) ->")
+		c.indent++
+		c.writeln("application:ensure_all_started(inets),")
+		c.writeln("case httpc:request(get, {Url, []}, [], []) of")
+		c.indent++
+		c.writeln("{ok, {{_, 200, _}, _H, Body}} -> Body;")
+		c.writeln("_ -> []")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
 	}
 
 	if c.needGenText {

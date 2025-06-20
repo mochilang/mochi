@@ -37,8 +37,21 @@ mochi_count(_) -> erlang:error(badarg).
 Additional helpers implement `mochi_input/0`, `mochi_avg/1`, list iteration
 (`mochi_foreach/2`), optional map/list indexing via `mochi_get/2` and a simple
 `mochi_while/2` loop construct.
-Generative helpers `mochi_gen_text/3`, `mochi_gen_embed/3`, `mochi_gen_struct/4`
-and the HTTP helper `mochi_fetch/2` return stub values for now.
+Generative helpers `mochi_gen_text/3`, `mochi_gen_embed/3` and
+`mochi_gen_struct/4` return placeholder values.  The `mochi_fetch/2` helper now
+performs a real HTTP GET request using Erlang's `httpc` module.
+
+## Features
+
+The backend supports fundamental language constructs:
+
+- `for` and `while` loops with `break`/`continue`
+- pattern matching with `match` and `case`
+- query expressions over a single source with `where`, `sort`, `skip` and `take`
+- list set operations `union`, `except` and `intersect`
+- test blocks and `expect` statements
+- `load` and `save` for Erlang terms or plain text files
+- HTTP `fetch` using `httpc`
 
 ## Building
 
@@ -92,8 +105,8 @@ features are not yet handled:
 - Sorting or pagination on queries with multiple sources
 - Concurrency primitives like `spawn` and channels
 - Struct and union type declarations
-- HTTP `fetch` and `generate` helpers return stub data
-- Dataset `load` and `save` only handle serialized Erlang terms
+- `generate` helpers return placeholder data
+- Reflection or macro facilities
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs
 directly.
