@@ -1,0 +1,50 @@
+(ns main)
+
+(defn _count [v]
+  (cond
+    (sequential? v) (count v)
+    (and (map? v) (contains? v :Items)) (count (:Items v))
+    :else (throw (ex-info "count() expects list or group" {}))))
+
+(defrecord _Group [key Items])
+
+(defn _group_by [src keyfn]
+  (let [groups (atom {})
+        order (atom [])]
+    (doseq [it src]
+      (let [k (keyfn it)
+            ks (str k)]
+        (when-not (contains? @groups ks)
+          (swap! groups assoc ks (_Group. k []))
+          (swap! order conj ks))
+        (swap! groups update ks (fn [g] (assoc g :Items (conj (:Items g) it)))))
+    )
+    (map (fn [k] (@groups k)) @order)))
+
+(defn -main []
+  (def xs [1 1 2])
+  (def groups (map (fn [g] {:k (:key g) :c (_count g)}) (_group_by xs (fn [x] x))))
+  (loop [_tmp0 (seq groups)]
+    (when _tmp0
+      (let [g (clojure.core/first _tmp0)]
+        (let [r (try
+          (println (:k g) (:c g))
+          :next
+        (catch clojure.lang.ExceptionInfo e
+          (cond
+            (= (.getMessage e) "continue") :next
+            (= (.getMessage e) "break") :break
+            :else (throw e))
+          )
+        )]
+      (cond
+        (= r :break) nil
+        :else (recur (next _tmp0))
+      )
+    )
+  )
+)
+)
+)
+
+(-main)
