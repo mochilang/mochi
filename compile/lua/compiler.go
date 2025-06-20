@@ -1415,6 +1415,17 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("if not ok then error('yaml library not found') end")
 		c.writeln("res = yaml.load(data)")
 		c.indent--
+		c.writeln("elseif fmt == 'csv' then")
+		c.indent++
+		c.writeln("res = {}")
+		c.writeln("for line in string.gmatch(data, '[^\\n]+') do")
+		c.indent++
+		c.writeln("local row = {}")
+		c.writeln("for field in string.gmatch(line, '[^,]+') do table.insert(row, field) end")
+		c.writeln("table.insert(res, row)")
+		c.indent--
+		c.writeln("end")
+		c.indent--
 		c.writeln("else")
 		c.indent++
 		c.writeln("error('unsupported format: '..fmt)")
@@ -1446,6 +1457,16 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("if not ok then ok, yaml = pcall(require, 'lyaml') end")
 		c.writeln("if not ok then error('yaml library not found') end")
 		c.writeln("if yaml.dump then data = yaml.dump(rows) else data = yaml.encode(rows) end")
+		c.indent--
+		c.writeln("elseif fmt == 'csv' then")
+		c.indent++
+		c.writeln("local lines = {}")
+		c.writeln("for _, row in ipairs(rows) do")
+		c.indent++
+		c.writeln("table.insert(lines, table.concat(row, ','))")
+		c.indent--
+		c.writeln("end")
+		c.writeln("data = table.concat(lines, '\n')")
 		c.indent--
 		c.writeln("else")
 		c.indent++
