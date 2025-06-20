@@ -612,7 +612,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Skip != nil || q.Take != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -641,8 +641,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	var cond string
+	var skipExpr string
+	var takeExpr string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -687,6 +703,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("\t}\n")
+	if skipExpr != "" {
+		b.WriteString(fmt.Sprintf("\t$res = array_slice($res, %s);\n", skipExpr))
+	}
+	if takeExpr != "" {
+		b.WriteString(fmt.Sprintf("\t$res = array_slice($res, 0, %s);\n", takeExpr))
+	}
 	b.WriteString("\treturn $res;\n")
 	b.WriteString("})()")
 	return b.String(), nil
