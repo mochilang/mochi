@@ -251,3 +251,45 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+// paramMutated reports whether a parameter with the given name is assigned to within the function body.
+func paramMutated(body []*parser.Statement, name string) bool {
+	for _, s := range body {
+		if stmtMutates(s, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtMutates(s *parser.Statement, name string) bool {
+	switch {
+	case s.Assign != nil:
+		return s.Assign.Name == name && len(s.Assign.Index) == 0
+	case s.For != nil:
+		return stmtsMutate(s.For.Body, name)
+	case s.While != nil:
+		return stmtsMutate(s.While.Body, name)
+	case s.If != nil:
+		if stmtsMutate(s.If.Then, name) {
+			return true
+		}
+		if s.If.ElseIf != nil {
+			if stmtMutates(&parser.Statement{If: s.If.ElseIf}, name) {
+				return true
+			}
+		}
+		return stmtsMutate(s.If.Else, name)
+	default:
+		return false
+	}
+}
+
+func stmtsMutate(list []*parser.Statement, name string) bool {
+	for _, st := range list {
+		if stmtMutates(st, name) {
+			return true
+		}
+	}
+	return false
+}
