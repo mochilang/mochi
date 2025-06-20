@@ -1,0 +1,6 @@
+const std = @import("std");
+const mylib = @import("mylib.zig");
+
+pub fn main() void {
+	std.debug.print("{any}\n", .{mylib.add(@as(i32,@intCast(2)), @as(i32,@intCast(3)))});
+}

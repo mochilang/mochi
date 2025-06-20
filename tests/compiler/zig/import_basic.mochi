@@ -1,0 +1,2 @@
+import zig "mylib.zig" as mylib
+print(mylib.add(2, 3))
