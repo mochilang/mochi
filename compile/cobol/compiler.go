@@ -95,6 +95,10 @@ func (c *Compiler) isStringExpr(n *ast.Node) bool {
 				return true
 			}
 		}
+	case "index":
+		if len(n.Children) > 1 && (n.Children[1].Kind == "start" || n.Children[1].Kind == "end" || len(n.Children) > 2) {
+			return c.isStringExpr(n.Children[0])
+		}
 	}
 	return false
 }
@@ -900,6 +904,35 @@ func (c *Compiler) expr(n *ast.Node) string {
 		return c.compileCallExpr(n)
 	case "index":
 		arr := c.expr(n.Children[0])
+		if len(n.Children) > 1 && (n.Children[1].Kind == "start" || n.Children[1].Kind == "end" || len(n.Children) > 2) {
+			if !c.isStringExpr(n.Children[0]) {
+				c.writeln("    *> unsupported slice")
+				return "0"
+			}
+			var startNode, endNode *ast.Node
+			for _, ch := range n.Children[1:] {
+				switch ch.Kind {
+				case "start":
+					startNode = ch.Children[0]
+				case "end":
+					endNode = ch.Children[0]
+				}
+			}
+			if startNode == nil || endNode == nil {
+				c.writeln("    *> unsupported slice")
+				return "0"
+			}
+			if startNode.Kind != "int" || endNode.Kind != "int" {
+				c.writeln("    *> unsupported slice")
+				return "0"
+			}
+			start := extractInt(startNode)
+			end := extractInt(endNode)
+			tmp := c.newTemp()
+			c.declare("01 " + tmp + " PIC X(100).")
+			c.writeln(fmt.Sprintf("    MOVE %s(%d:%d) TO %s", arr, start+1, end-start, tmp))
+			return tmp
+		}
 		idx := c.expr(n.Children[1])
 		l, ok := c.listLens[arr]
 		if !ok {
