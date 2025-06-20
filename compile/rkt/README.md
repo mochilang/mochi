@@ -171,3 +171,14 @@ The Racket backend is intentionally minimal. Conditionals now support simple
 The generated code aims
 for readability over performance and mirrors Mochi constructs closely.
 Loops support `break` and `continue` using `let/ec` and named `let` constructs.
+Binary operators now include `union`, `union_all`, `except` and `intersect` for
+basic list set operations.
+
+Unsupported features currently include:
+
+* Generative `generate` blocks and model definitions
+* Dataset helpers like `fetch`, `load`, `save` and SQL-style query expressions
+* `match` expressions for pattern matching
+* Agents, streams and intents
+* Foreign function interface via `import`
+* Package management and `package` declarations

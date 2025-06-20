@@ -88,6 +88,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("  (let ([n (count x)])")
 	c.writeln("    (if (= n 0) 0")
 	c.writeln("        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))")
+	c.writeln("(define (union-all a b) (append (list->list a) (list->list b)))")
+	c.writeln("(define (union a b)")
+	c.writeln("  (let loop ([res (list->list a)] [xs (list->list b)])")
+	c.writeln("    (if (null? xs) res")
+	c.writeln("        (let ([x (car xs)])")
+	c.writeln("          (if (member x res)")
+	c.writeln("              (loop res (cdr xs))")
+	c.writeln("              (loop (append res (list x)) (cdr xs))))))")
+	c.writeln("(define (except a b)")
+	c.writeln("  (for/list ([x (list->list a)] #:unless (member x (list->list b))) x))")
+	c.writeln("(define (intersect a b)")
+	c.writeln("  (for/fold ([res '()]) ([x (list->list a)])")
+	c.writeln("    (if (and (member x (list->list b)) (not (member x res)))")
+	c.writeln("        (append res (list x))")
+	c.writeln("        res)))")
 	c.writeln("")
 	// function declarations first
 	for _, s := range prog.Statements {
@@ -466,7 +481,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		ops = append(ops, part.Op)
 	}
 
-	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">=", "in"}, {"==", "!="}, {"&&"}, {"||"}}
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">=", "in"}, {"==", "!="}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
 
 	contains := func(list []string, s string) bool {
 		for _, v := range list {
@@ -510,6 +525,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("(or %s %s)", l, r)
 			case "in":
 				expr = fmt.Sprintf("(hash-has-key? %s %s)", r, l)
+			case "union":
+				expr = fmt.Sprintf("(union %s %s)", l, r)
+			case "union_all":
+				expr = fmt.Sprintf("(union-all %s %s)", l, r)
+			case "except":
+				expr = fmt.Sprintf("(except %s %s)", l, r)
+			case "intersect":
+				expr = fmt.Sprintf("(intersect %s %s)", l, r)
 			default:
 				return "", fmt.Errorf("unsupported op %s", op)
 			}
