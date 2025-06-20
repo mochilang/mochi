@@ -293,3 +293,12 @@ solutions under `examples/leetcode` to verify basic program execution.
 ## Notes
 
 The Lua backend supports most core language features but skips advanced LLM helpers and external objects. Query expressions handle simple joins and common clauses. The emphasis is on readability and portability of the emitted Lua code.
+
+## Unsupported Features
+
+Several Mochi constructs remain unimplemented in the Lua backend:
+
+- HTTP requests using `fetch`
+- Dataset loading and saving with `load`/`save`
+- Query joins and grouping clauses
+- Streams and other concurrency helpers

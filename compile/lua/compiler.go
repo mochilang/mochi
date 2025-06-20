@@ -800,16 +800,34 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	for i, p := range fn.Params {
 		params[i] = sanitizeName(p.Name)
 	}
-	if fn.ExprBody == nil {
-		return "", fmt.Errorf("block function expressions not supported")
-	}
+
 	sub := &Compiler{env: c.env, helpers: c.helpers}
 	sub.indent = 1
-	expr, err := sub.compileExpr(fn.ExprBody)
-	if err != nil {
-		return "", err
+
+	if fn.ExprBody != nil {
+		expr, err := sub.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		sub.writeln("return " + expr)
+	} else if len(fn.BlockBody) > 0 {
+		for i, st := range fn.BlockBody {
+			if i == len(fn.BlockBody)-1 && st.Expr != nil {
+				expr, err := sub.compileExpr(st.Expr.Expr)
+				if err != nil {
+					return "", err
+				}
+				sub.writeln("return " + expr)
+				continue
+			}
+			if err := sub.compileStmt(st); err != nil {
+				return "", err
+			}
+		}
+	} else {
+		return "", fmt.Errorf("empty function expression")
 	}
-	sub.writeln("return " + expr)
+
 	body := indentBlock(sub.buf.String(), 1)
 	return "function(" + strings.Join(params, ", ") + ")\n" + body + "end", nil
 }
