@@ -290,6 +290,8 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * union types and methods
 * LLM helper functions like `_genText`
 * packages or the foreign function interface
+* `import` statements for foreign code
+* `model` declarations
 * streams, agents, or tests
 * sets
 * struct type declarations

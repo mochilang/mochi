@@ -11,6 +11,34 @@ import (
 	"mochi/types"
 )
 
+const datasetHelpers = `(define (_load path opts)
+  (let* ((fmt (if (and opts (assq 'format opts)) (cdr (assq 'format opts)) "json"))
+         (in (if (or (not path) (string=? path "") (string=? path "-"))
+                 (current-input-port)
+                 (open-input-file path)))
+         (text (port->string in)))
+    (when (not (eq? in (current-input-port)))
+      (close-input-port in))
+    (cond ((string=? fmt "jsonl")
+           (map string->json
+                (filter (lambda (l) (not (string=? l "")))
+                        (string-split text #\newline))))
+          (else
+           (let ((d (string->json text)))
+             (if (list? d) d (list d))))))
+
+(define (_save rows path opts)
+  (let* ((fmt (if (and opts (assq 'format opts)) (cdr (assq 'format opts)) "json"))
+         (out (if (or (not path) (string=? path "") (string=? path "-"))
+                  (current-output-port)
+                  (open-output-file path))))
+    (cond ((string=? fmt "jsonl")
+           (for-each (lambda (r) (write-string (json->string r) out) (newline out)) rows))
+          (else
+           (write-string (json->string rows) out)))
+    (when (not (eq? out (current-output-port)))
+      (close-output-port out)))`
+
 // Compiler translates a Mochi AST into Scheme source code (minimal subset).
 type Compiler struct {
 	buf            bytes.Buffer
@@ -21,6 +49,7 @@ type Compiler struct {
 	needListSet    bool
 	needStringSet  bool
 	needMapHelpers bool
+	needDataset    bool
 	loops          []loopCtx
 }
 
@@ -74,7 +103,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false}
 }
 
 func (c *Compiler) writeIndent() {
@@ -95,6 +124,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needListSet = false
 	c.needStringSet = false
 	c.needMapHelpers = false
+	c.needDataset = false
 	// Function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -115,7 +145,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet || c.needMapHelpers {
+	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -143,6 +173,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			pre.WriteString("            (begin (set-cdr! p v) m)\n")
 			pre.WriteString("            (cons (cons k v) m))))\n")
 			pre.WriteString(")\n")
+		}
+		if c.needDataset {
+			pre.WriteString(datasetHelpers)
+			pre.WriteByte('\n')
 		}
 		if pre.Len() > 0 {
 			pre.WriteByte('\n')
@@ -841,6 +875,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -1005,6 +1043,44 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	buf.WriteString("))")
 	return buf.String(), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	c.needDataset = true
+	path := "''"
+	if l.Path != nil {
+		path = strconv.Quote(*l.Path)
+	}
+	opts := "'()"
+	if l.With != nil {
+		o, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	return fmt.Sprintf("(_load %s %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	c.needDataset = true
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "''"
+	if s.Path != nil {
+		path = strconv.Quote(*s.Path)
+	}
+	opts := "'()"
+	if s.With != nil {
+		o, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {

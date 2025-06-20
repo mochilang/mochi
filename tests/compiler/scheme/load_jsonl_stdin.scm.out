@@ -1,0 +1,30 @@
+(define (_load path opts)
+  (let* ((fmt (if (and opts (assq 'format opts)) (cdr (assq 'format opts)) "json"))
+         (in (if (or (not path) (string=? path "") (string=? path "-"))
+                 (current-input-port)
+                 (open-input-file path)))
+         (text (port->string in)))
+    (when (not (eq? in (current-input-port)))
+      (close-input-port in))
+    (cond ((string=? fmt "jsonl")
+           (map string->json
+                (filter (lambda (l) (not (string=? l "")))
+                        (string-split text #\newline))))
+          (else
+           (let ((d (string->json text)))
+             (if (list? d) d (list d))))))
+
+(define (_save rows path opts)
+  (let* ((fmt (if (and opts (assq 'format opts)) (cdr (assq 'format opts)) "json"))
+         (out (if (or (not path) (string=? path "") (string=? path "-"))
+                  (current-output-port)
+                  (open-output-file path))))
+    (cond ((string=? fmt "jsonl")
+           (for-each (lambda (r) (write-string (json->string r) out) (newline out)) rows))
+          (else
+           (write-string (json->string rows) out)))
+    (when (not (eq? out (current-output-port)))
+      (close-output-port out)))
+
+(define people (_load '' (list (cons format "jsonl"))))
+(begin (display (count people)) (newline))
