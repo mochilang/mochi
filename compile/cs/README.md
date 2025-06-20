@@ -39,7 +39,6 @@ if len(c.helpers) > 0 {
     }
 }
 ```
-【F:compile/cs/compiler.go†L84-L196】
 
 If `_cast` is not required the generated file omits the `System.Text.Json` import:
 
@@ -49,7 +48,6 @@ if _, ok := c.helpers["_cast"]; !ok {
     code = bytes.Replace(code, []byte("using System.Text.Json;\n"), nil, 1)
 }
 ```
-【F:compile/cs/compiler.go†L189-L195】
 
 ## Type Declarations
 
@@ -69,7 +67,6 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
     }
 }
 ```
-【F:compile/cs/compiler.go†L229-L256】
 
 ## Query Expressions
 
@@ -85,7 +82,6 @@ if c.useLinq {
 }
 c.writeln("using System.Text.Json;")
 ```
-【F:compile/cs/compiler.go†L35-L50】
 
 Cross‑joins are implemented using nested loops and a helper `Func<List<dynamic>>` wrapper. A typical result looks like:
 
@@ -100,7 +96,6 @@ var result = new Func<List<dynamic>>(() => {
     return _res;
 })();
 ```
-【F:tests/compiler/cs/cross_join.cs.out†L23-L35】
 
 ## Building
 
@@ -129,7 +124,6 @@ func EnsureDotnet() error {
     return ensureDotnet()
 }
 ```
-【F:compile/cs/tools.go†L11-L14】
 
 This script attempts platform‑specific installation via Homebrew or `apt-get` before falling back to the official installer.
 
@@ -146,4 +140,6 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign function interface and extern objects
 - Generic dictionary casts for complex map types
-- Helper functions `_fetch`, `_load`, `_save`, `_genText` and `_genStruct`
+- Import statements
+- YAML dataset loading/saving
+- Full LLM integration for `_genText` and `_genStruct`
