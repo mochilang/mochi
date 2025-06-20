@@ -57,6 +57,17 @@ case "str":
 case "input":
     c.use("_input")
     return "_input()", nil
+case "load":
+    c.use("_load")
+    return fmt.Sprintf("_load(%s, nil)", argStr), nil
+case "save":
+    c.use("_save")
+    return fmt.Sprintf("_save(%s, nil, nil)", argStr), nil
+case "fetch":
+    c.use("_fetch")
+    return fmt.Sprintf("_fetch(%s, nil)", argStr), nil
+case "generate":
+    // handled by compileGenerateExpr
 }
 ```
 
@@ -139,6 +150,27 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 
 【F:compile/ex/compiler.go†L908-L937】
 
+## Match Expressions
+
+`match` expressions are compiled into `case` statements that evaluate the target
+once and then compare each pattern:
+
+```go
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+    target, err := c.compileExpr(m.Target)
+    if err != nil {
+        return "", err
+    }
+    tmp := c.newTemp()
+    var b strings.Builder
+    b.WriteString("(fn ->\n")
+    b.WriteString(fmt.Sprintf("\t%s = %s\n", tmp, target))
+    b.WriteString(fmt.Sprintf("\tcase %s do\n", tmp))
+    ...
+```
+
+【F:compile/ex/compiler.go†L684-L705】
+
 ## Ensuring Elixir
 
 `EnsureElixir` checks for the `elixir` executable and installs it using `apt-get`, `brew` or `asdf` if necessary:
@@ -207,6 +239,6 @@ The Elixir backend implements most core language features but still lacks suppor
 - `load` and `save` currently only handle Erlang term binaries.
 - Foreign imports and `extern` declarations.
 - Concurrency primitives such as `spawn` and channels.
-- Pattern matching with `match` expressions.
+- Pattern matching on union variants and variable capture within `match` expressions.
 
 Cross join queries do support `where` filters as well as `sort`, `skip` and `take` clauses.

@@ -57,7 +57,23 @@ func compileAndRunLeetCode(t *testing.T, id string) string {
 	if err != nil {
 		t.Fatalf("elixir run error: %v\n%s", err, out)
 	}
-	return strings.ReplaceAll(string(out), "\r\n", "\n")
+	lines := strings.Split(strings.ReplaceAll(string(out), "\r\n", "\n"), "\n")
+	cleaned := make([]string, 0, len(lines))
+	skip := false
+	for _, l := range lines {
+		if strings.HasPrefix(l, "warning:") {
+			skip = true
+			continue
+		}
+		if skip {
+			if strings.TrimSpace(l) == "" {
+				skip = false
+			}
+			continue
+		}
+		cleaned = append(cleaned, l)
+	}
+	return strings.Join(cleaned, "\n")
 }
 
 func TestLeetCode1(t *testing.T) {

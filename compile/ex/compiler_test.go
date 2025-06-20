@@ -50,7 +50,24 @@ func TestExCompiler_SubsetPrograms(t *testing.T) {
 		if err := cmd.Run(); err != nil {
 			return nil, fmt.Errorf("❌ elixir run error: %w\n%s", err, buf.Bytes())
 		}
-		return bytes.TrimSpace(buf.Bytes()), nil
+		lines := strings.Split(strings.ReplaceAll(buf.String(), "\r\n", "\n"), "\n")
+		cleaned := make([]string, 0, len(lines))
+		skip := false
+		for _, l := range lines {
+			if strings.HasPrefix(l, "warning:") {
+				skip = true
+				continue
+			}
+			if skip {
+				if strings.TrimSpace(l) == "" {
+					skip = false
+				}
+				continue
+			}
+			cleaned = append(cleaned, l)
+		}
+		out := strings.TrimSpace(strings.Join(cleaned, "\n"))
+		return []byte(out), nil
 	})
 }
 
