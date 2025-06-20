@@ -177,5 +177,9 @@ unsupported include:
 - `generate` expressions for generative AI
 - Iteration over collections using `for x in items` unless `items` is a simple
   list or string literal
+- Union type declarations and inline methods
+- First-class function values or closures
+- `try`/`catch` error handling blocks
+- Complex `match` patterns beyond simple literals and `_`
 
 Programs relying on these constructs will fail to compile.

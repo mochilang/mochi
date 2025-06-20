@@ -147,6 +147,17 @@ func (c *Compiler) picForExpr(n *ast.Node) string {
 	return "PIC 9."
 }
 
+// picForType returns a picture clause for the given static type.
+func (c *Compiler) picForType(t types.Type) string {
+	switch t.(type) {
+	case types.StringType:
+		return "PIC X(100)."
+	case types.FloatType:
+		return "PIC 9(4)V9(4)."
+	}
+	return "PIC 9."
+}
+
 // declare records a WORKING-STORAGE declaration.
 func (c *Compiler) declare(line string) {
 	for _, d := range c.decls {
@@ -462,13 +473,29 @@ func (c *Compiler) compileFun(n *ast.Node) {
 		c.funcs[name] = len(params)
 		return
 	}
+	var ft types.FuncType
+	if c.env != nil {
+		if t, err := c.env.GetVar(n.Value.(string)); err == nil {
+			if f, ok := t.(types.FuncType); ok {
+				ft = f
+			}
+		}
+	}
 	oldParams := c.params
 	c.params = map[string]string{}
 	for i := range params {
-		c.declare(fmt.Sprintf("01 %s_P%d PIC 9.", name, i))
+		pic := "PIC 9."
+		if i < len(ft.Params) {
+			pic = c.picForType(ft.Params[i])
+		}
+		c.declare(fmt.Sprintf("01 %s_P%d %s", name, i, pic))
 		c.params[params[i]] = fmt.Sprintf("%s_P%d", name, i)
 	}
-	c.declare(fmt.Sprintf("01 %s_RES PIC 9.", name))
+	retPic := "PIC 9."
+	if ft.Return != nil {
+		retPic = c.picForType(ft.Return)
+	}
+	c.declare(fmt.Sprintf("01 %s_RES %s", name, retPic))
 	section := "F" + name
 	oldBuf := c.buf
 	oldIndent := c.indent
