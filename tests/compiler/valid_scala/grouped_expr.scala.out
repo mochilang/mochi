@@ -4,4 +4,3 @@ object Main {
 		println(value)
 	}
 }
-

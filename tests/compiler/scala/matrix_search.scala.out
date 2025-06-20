@@ -1,5 +1,5 @@
 object Main {
-	def searchMatrix(matrix: List[List[Int]], target: Int): Boolean = {
+	def searchMatrix(matrix: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[Int]], target: Int): Boolean = {
 		val m = matrix.length
 		if ((m == 0)) {
 			return false
@@ -24,8 +24,7 @@ object Main {
 	}
 	
 	def main(args: Array[String]): Unit = {
-		println(searchMatrix(List(List(1, 3, 5, 7), List(10, 11, 16, 20), List(23, 30, 34, 60)), 3))
-		println(searchMatrix(List(List(1, 3, 5, 7), List(10, 11, 16, 20), List(23, 30, 34, 60)), 13))
+		println(searchMatrix(scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(1, 3, 5, 7), scala.collection.mutable.ArrayBuffer(10, 11, 16, 20), scala.collection.mutable.ArrayBuffer(23, 30, 34, 60)), 3))
+		println(searchMatrix(scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(1, 3, 5, 7), scala.collection.mutable.ArrayBuffer(10, 11, 16, 20), scala.collection.mutable.ArrayBuffer(23, 30, 34, 60)), 13))
 	}
 }
-

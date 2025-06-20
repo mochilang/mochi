@@ -1,8 +1,9 @@
 object Main {
 	def main(args: Array[String]): Unit = {
-		for (ch <- "hi") {
+		val it1 = "hi".iterator
+		while (it1.hasNext) {
+			val ch = it1.next()
 			println(ch)
 		}
 	}
 }
-

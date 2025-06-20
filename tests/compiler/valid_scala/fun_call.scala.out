@@ -7,4 +7,3 @@ object Main {
 		println(add(2, 3))
 	}
 }
-

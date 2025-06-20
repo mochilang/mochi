@@ -3,10 +3,10 @@ case class Leaf() extends Tree
 case class Node(left: Any, value: Int, right: Any) extends Tree
 
 object Main {
-	def inorder(t: Any): List[Int] = {
+	def inorder(t: Any): scala.collection.mutable.ArrayBuffer[Int] = {
 		return (t match {
-	case Leaf => List().asInstanceOf[List[Int]]
-	case Node(l, v, r) => ((inorder(l) ++ List(v)) + inorder(r))
+	case Leaf => scala.collection.mutable.ArrayBuffer().asInstanceOf[scala.collection.mutable.ArrayBuffer[Int]]
+	case Node(l, v, r) => ((inorder(l) ++ scala.collection.mutable.ArrayBuffer(v)) + inorder(r))
 })
 	}
 	

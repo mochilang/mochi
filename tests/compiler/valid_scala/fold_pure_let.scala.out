@@ -9,4 +9,3 @@ object Main {
 		println(n)
 	}
 }
-

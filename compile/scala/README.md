@@ -278,4 +278,6 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - streams and agents
 - foreign function interface (`extern` imports)
 - error handling with `try`/`catch`
+- built-in `test` blocks and `expect` statements
+- LLM helpers such as `_genText`, `_genEmbed` and `_genStruct`
 
