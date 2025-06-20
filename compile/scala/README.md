@@ -274,6 +274,8 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - generic types and higher‑order functions
 - advanced dataset queries (joins and grouping)
 - logic queries and AI `generate` blocks
-- data operations like `fetch`, `load` and `save`
 - reflection and macro facilities
+- streams and agents
+- foreign function interface (`extern` imports)
+- error handling with `try`/`catch`
 
