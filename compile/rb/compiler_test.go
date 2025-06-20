@@ -14,7 +14,9 @@ import (
 
 	rbcode "mochi/compile/rb"
 	"mochi/golden"
+	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -56,9 +58,54 @@ func runLeetExample(t *testing.T, id int) {
 	for _, src := range files {
 		name := fmt.Sprintf("%d/%s", id, filepath.Base(src))
 		t.Run(name, func(t *testing.T) {
-			out, err := compileAndRun(t, src)
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+
+			modRoot, _ := mod.FindRoot(filepath.Dir(src))
+			interp := interpreter.New(prog, env, modRoot)
+			var wantBuf bytes.Buffer
+			interp.Env().SetWriter(&wantBuf)
+			if err := interp.Run(); err != nil {
+				t.Fatalf("run error: %v", err)
+			}
+
+			code, err := rbcode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+
+			outDir := filepath.Join("..", "..", "examples", "leetcode-out", "rb", strconv.Itoa(id))
+			if err := os.MkdirAll(outDir, 0755); err != nil {
+				t.Fatalf("mkdir: %v", err)
+			}
+			outFile := filepath.Join(outDir, strings.TrimSuffix(filepath.Base(src), ".mochi")+".rb")
+			if err := os.WriteFile(outFile, code, 0644); err != nil {
+				t.Fatalf("write output: %v", err)
+			}
+
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.rb")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("ruby", file)
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(data)
+			}
+			out, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("ruby run error: %v\n%s", err, out)
+			}
+			got := bytes.TrimSpace(out)
+			want := bytes.TrimSpace(wantBuf.Bytes())
+			if !bytes.Equal(got, want) {
+				t.Fatalf("unexpected output\nwant:\n%s\n got:\n%s", want, got)
 			}
 		})
 	}
@@ -82,7 +129,7 @@ func TestRBCompiler_LeetCodeExamples(t *testing.T) {
 	if err := rbcode.EnsureRuby(); err != nil {
 		t.Skipf("ruby not installed: %v", err)
 	}
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 30; i++ {
 		runLeetExample(t, i)
 	}
 }

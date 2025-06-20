@@ -159,3 +159,15 @@ go test ./compile/rb -tags slow
 
 The first test is skipped when Ruby is not available and the suite falls back to comparing generated code.
 
+### LeetCode examples
+
+Running the slow test suite also compiles the bundled LeetCode solutions and
+executes them with Ruby:
+
+```bash
+go test ./compile/rb -tags slow -run LeetCode
+```
+
+This emits the generated Ruby code under `examples/leetcode-out/rb/<id>` and
+currently verifies problems 1–30.
+
