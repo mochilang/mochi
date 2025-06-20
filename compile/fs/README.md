@@ -119,7 +119,7 @@ The F# generator currently lacks support for several language constructs:
 
 * Package `import` declarations and `extern` functions
 * HTTP helpers like `fetch`
-* Built-in `test` blocks (basic `expect` statements are supported)
+* Foreign function interface (FFI) declarations
 * Logic programming constructs (`fact`, `rule`, `query`)
 * Advanced dataset queries such as joins and grouping
 * Streams, agents and LLM `generate` blocks

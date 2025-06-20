@@ -25,11 +25,17 @@ type Compiler struct {
 	locals      map[string]bool
 	localsStack []map[string]bool
 	helpers     map[string]bool
+	tests       []testInfo
 }
 
 type loopCtx struct {
 	brk  string
 	cont string
+}
+
+type testInfo struct {
+	Func string
+	Name string
 }
 
 func hasLoopCtrl(stmts []*parser.Statement) bool {
@@ -112,6 +118,7 @@ func (c *Compiler) newFunName() string {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.preamble.Reset()
+	c.tests = nil
 	var header bytes.Buffer
 	header.WriteString("open System\n")
 	if programHasLoopCtrl(prog.Statements) {
@@ -133,15 +140,33 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+			continue
+		}
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		}
 	}
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
+	}
+	if len(c.tests) > 0 {
+		c.use("_run_test")
+		c.writeln("let mutable failures = 0")
+		for _, tinfo := range c.tests {
+			c.writeln(fmt.Sprintf("if not (_run_test \"%s\" %s) then failures <- failures + 1", tinfo.Name, tinfo.Func))
+		}
+		c.writeln("if failures > 0 then")
+		c.indent++
+		c.writeln("printfn \"\\n[FAIL] %d test(s) failed.\" failures")
+		c.indent--
 	}
 	c.emitRuntime()
 	out := header.Bytes()
@@ -204,6 +229,20 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	c.writeln(fmt.Sprintf("with %s v -> v", exc))
 	c.indent--
 	c.env = origEnv
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("let %s() =", name))
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.tests = append(c.tests, testInfo{Func: name, Name: t.Name})
 	return nil
 }
 
