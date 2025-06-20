@@ -13,14 +13,15 @@ import (
 
 // Compiler translates a Mochi AST into Scheme source code (minimal subset).
 type Compiler struct {
-	buf           bytes.Buffer
-	indent        int
-	env           *types.Env
-	inFun         bool
-	vars          map[string]string // local variable types within a function
-	needListSet   bool
-	needStringSet bool
-	loops         []loopCtx
+	buf            bytes.Buffer
+	indent         int
+	env            *types.Env
+	inFun          bool
+	vars           map[string]string // local variable types within a function
+	needListSet    bool
+	needStringSet  bool
+	needMapHelpers bool
+	loops          []loopCtx
 }
 
 type loopCtx struct {
@@ -93,6 +94,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.needListSet = false
 	c.needStringSet = false
+	c.needMapHelpers = false
 	// Function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -113,7 +115,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet {
+	if c.needListSet || c.needStringSet || c.needMapHelpers {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -128,6 +130,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if c.needStringSet {
 			pre.WriteString("(define (string-set str idx ch)\n")
 			pre.WriteString("    (list->string (list-set (string->list str) idx ch))\n")
+			pre.WriteString(")\n")
+		}
+		if c.needMapHelpers {
+			pre.WriteString("(define (map-get m k)\n")
+			pre.WriteString("    (let ((p (assoc k m)))\n")
+			pre.WriteString("        (if p (cdr p) '())))\n")
+			pre.WriteString(")\n")
+			pre.WriteString("(define (map-set m k v)\n")
+			pre.WriteString("    (let ((p (assoc k m)))\n")
+			pre.WriteString("        (if p\n")
+			pre.WriteString("            (begin (set-cdr! p v) m)\n")
+			pre.WriteString("            (cons (cons k v) m))))\n")
 			pre.WriteString(")\n")
 		}
 		if pre.Len() > 0 {
@@ -147,8 +161,13 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	prevVars := c.vars
 	c.vars = map[string]string{}
 	for _, p := range fn.Params {
-		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
-			c.vars[p.Name] = "string"
+		if p.Type != nil {
+			if p.Type.Simple != nil && *p.Type.Simple == "string" {
+				c.vars[p.Name] = "string"
+			}
+			if p.Type.Generic != nil && p.Type.Generic.Name == "map" {
+				c.vars[p.Name] = "map"
+			}
 		}
 	}
 	c.writeln(fmt.Sprintf("(define (%s %s)", sanitizeName(fn.Name), strings.Join(params, " ")))
@@ -217,9 +236,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 		}
-		if (s.Let.Type != nil && s.Let.Type.Simple != nil && *s.Let.Type.Simple == "string") ||
-			(s.Let.Type == nil && isStringExpr(s.Let.Value, c.vars)) {
-			c.vars[s.Let.Name] = "string"
+		if s.Let.Type != nil {
+			if s.Let.Type.Simple != nil && *s.Let.Type.Simple == "string" {
+				c.vars[s.Let.Name] = "string"
+			}
+			if s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" {
+				c.vars[s.Let.Name] = "map"
+			}
+		} else {
+			if isStringExpr(s.Let.Value, c.vars) {
+				c.vars[s.Let.Name] = "string"
+			}
+			if isMapExpr(s.Let.Value, c.vars) {
+				c.vars[s.Let.Name] = "map"
+			}
 		}
 	case s.Var != nil:
 		expr := "()"
@@ -236,9 +266,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		} else {
 			c.writeln(fmt.Sprintf("(define %s %s)", name, expr))
 		}
-		if (s.Var.Type != nil && s.Var.Type.Simple != nil && *s.Var.Type.Simple == "string") ||
-			(s.Var.Type == nil && isStringExpr(s.Var.Value, c.vars)) {
-			c.vars[s.Var.Name] = "string"
+		if s.Var.Type != nil {
+			if s.Var.Type.Simple != nil && *s.Var.Type.Simple == "string" {
+				c.vars[s.Var.Name] = "string"
+			}
+			if s.Var.Type.Generic != nil && s.Var.Type.Generic.Name == "map" {
+				c.vars[s.Var.Name] = "map"
+			}
+		} else {
+			if isStringExpr(s.Var.Value, c.vars) {
+				c.vars[s.Var.Name] = "string"
+			}
+			if isMapExpr(s.Var.Value, c.vars) {
+				c.vars[s.Var.Name] = "map"
+			}
 		}
 	case s.Assign != nil:
 		rhs, err := c.compileExpr(s.Assign.Value)
@@ -250,7 +291,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
 			break
 		}
-		expr, err := c.compileIndexedSet(lhs, s.Assign.Index, rhs, c.vars[s.Assign.Name] == "string")
+		expr, err := c.compileIndexedSet(lhs, s.Assign.Index, rhs, c.vars[s.Assign.Name] == "string", c.vars[s.Assign.Name] == "map")
 		if err != nil {
 			return err
 		}
@@ -284,7 +325,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 // compileIndexedSet builds a nested list/string update expression for an indexed assignment.
-func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs string, isString bool) (string, error) {
+func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs string, isString, isMap bool) (string, error) {
 	if len(idx) == 0 {
 		return rhs, nil
 	}
@@ -297,10 +338,14 @@ func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs str
 			c.needStringSet = true
 			return fmt.Sprintf("(string-set %s %s %s)", name, ie, rhs), nil
 		}
+		if isMap {
+			c.needMapHelpers = true
+			return fmt.Sprintf("(map-set %s %s %s)", name, ie, rhs), nil
+		}
 		c.needListSet = true
 		return fmt.Sprintf("(list-set %s %s %s)", name, ie, rhs), nil
 	}
-	inner, err := c.compileIndexedSet(fmt.Sprintf("(list-ref %s %s)", name, ie), idx[1:], rhs, false)
+	inner, err := c.compileIndexedSet(fmt.Sprintf("(list-ref %s %s)", name, ie), idx[1:], rhs, false, false)
 	if err != nil {
 		return "", err
 	}
@@ -669,6 +714,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			if c.vars[targetName] == "string" || isStringPrimary(p.Target) {
 				expr = fmt.Sprintf("(string-ref %s %s)", expr, idx)
+			} else if c.vars[targetName] == "map" || isMapPrimary(p.Target) {
+				c.needMapHelpers = true
+				expr = fmt.Sprintf("(map-get %s %s)", expr, idx)
 			} else {
 				expr = fmt.Sprintf("(list-ref %s %s)", expr, idx)
 			}
@@ -749,6 +797,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "(list " + strings.Join(elems, " ") + ")", nil
+	case p.Map != nil:
+		pairs := make([]string, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			pairs[i] = fmt.Sprintf("(cons %s %s)", k, v)
+		}
+		return "(list " + strings.Join(pairs, " ") + ")", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
@@ -815,8 +877,13 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	sub := &Compiler{env: c.env, vars: map[string]string{}, inFun: true}
 	for _, p := range fn.Params {
-		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
-			sub.vars[p.Name] = "string"
+		if p.Type != nil {
+			if p.Type.Simple != nil && *p.Type.Simple == "string" {
+				sub.vars[p.Name] = "string"
+			}
+			if p.Type.Generic != nil && p.Type.Generic.Name == "map" {
+				sub.vars[p.Name] = "map"
+			}
 		}
 	}
 	sub.indent = 2
@@ -851,6 +918,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	if sub.needStringSet {
 		c.needStringSet = true
+	}
+	if sub.needMapHelpers {
+		c.needMapHelpers = true
 	}
 
 	var buf bytes.Buffer
@@ -947,4 +1017,36 @@ func isStringPostfix(p *parser.PostfixExpr, vars map[string]string) bool {
 
 func isStringPrimary(p *parser.Primary) bool {
 	return p != nil && p.Lit != nil && p.Lit.Str != nil
+}
+
+// isMapExpr reports whether the expression is a map literal or variable tracked as a map.
+func isMapExpr(e *parser.Expr, vars map[string]string) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	return isMapUnary(e.Binary.Left, vars)
+}
+
+func isMapUnary(u *parser.Unary, vars map[string]string) bool {
+	if u == nil {
+		return false
+	}
+	return isMapPostfix(u.Value, vars)
+}
+
+func isMapPostfix(p *parser.PostfixExpr, vars map[string]string) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if isMapPrimary(p.Target) {
+		return true
+	}
+	if p.Target != nil && p.Target.Selector != nil {
+		return vars[p.Target.Selector.Root] == "map"
+	}
+	return false
+}
+
+func isMapPrimary(p *parser.Primary) bool {
+	return p != nil && p.Map != nil
 }
