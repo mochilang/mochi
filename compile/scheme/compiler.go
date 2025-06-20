@@ -839,6 +839,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return expr, nil
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -972,6 +974,55 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 		elseExpr = "'()"
 	}
 	return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var buf bytes.Buffer
+	buf.WriteString("(let ((_t " + target + ")) (cond")
+	hasDefault := false
+	for _, cse := range m.Cases {
+		res, err := c.compileExpr(cse.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cse.Pattern) {
+			buf.WriteString(" (else " + res + ")")
+			hasDefault = true
+			continue
+		}
+		pat, err := c.compileExpr(cse.Pattern)
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString(" ((equal? _t " + pat + ") " + res + ")")
+	}
+	if !hasDefault {
+		buf.WriteString(" (else '())")
+	}
+	buf.WriteString("))")
+	return buf.String(), nil
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target != nil && p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
 }
 
 func sanitizeName(name string) string {
