@@ -1,5 +1,11 @@
 object Main {
+	def test_addition_works(): Unit = {
+		val x = (1 + 2)
+		assert((x == 3))
+	}
+	
 	def main(args: Array[String]): Unit = {
 		println("ok")
+		test_addition_works()
 	}
 }
