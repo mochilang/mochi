@@ -16,6 +16,7 @@ type Compiler struct {
 	indent            int
 	env               *types.Env
 	tmpCount          int
+	imports           map[string]string
 	needsAvgInt       bool
 	needsAvgFloat     bool
 	needsInListInt    bool
@@ -25,7 +26,7 @@ type Compiler struct {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, imports: map[string]string{}}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -76,6 +77,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	body := c.buf.String()
 	c.buf.Reset()
 	c.writeln("const std = @import(\"std\");")
+	for alias, path := range c.imports {
+		c.writeln(fmt.Sprintf("const %s = @import(\"%s\");", alias, path))
+	}
 	c.writeln("")
 	if c.needsAvgInt {
 		c.writeln("fn _avg_int(v: []const i32) f64 {")
@@ -270,6 +274,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		return nil
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Import != nil:
+		return c.addImport(s.Import)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Return != nil:
@@ -427,6 +433,23 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
 	}
+	return nil
+}
+
+func (c *Compiler) addImport(im *parser.ImportStmt) error {
+	if im.Lang != nil && *im.Lang != "zig" {
+		return fmt.Errorf("unsupported import language: %s", *im.Lang)
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	path := strings.Trim(im.Path, "\"")
+	if c.imports == nil {
+		c.imports = map[string]string{}
+	}
+	c.imports[alias] = path
 	return nil
 }
 
