@@ -154,3 +154,15 @@ behaviour.
 This backend is intentionally minimal and currently exists only as a demo. It is
 useful for experimenting with Mochi's compiler architecture but is not intended
 for production use.
+
+### Unsupported Features
+
+The COBOL backend implements only a tiny portion of Mochi. Features that remain
+unsupported include:
+
+- `break` and `continue` statements in loops
+- Map literals and indexing operations
+- Dataset query expressions like `from ... sort by ...`
+- LLM helpers and concurrency primitives
+
+Programs relying on these constructs will fail to compile.
