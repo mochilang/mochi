@@ -976,6 +976,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Query != nil:
@@ -1023,6 +1025,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("((Array.sum %s) / %s.Length)", args[0], args[0]), nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input expects no args")
+		}
+		c.use("_input")
+		return "_input()", nil
 	case "print":
 		if len(args) == 1 {
 			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
@@ -1106,6 +1114,23 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save %s %s %s", src, path, opts), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "None"
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = fmt.Sprintf("Some (%s)", w)
+	}
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch %s %s", url, opts), nil
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
@@ -1423,11 +1448,8 @@ func (c *Compiler) emitRuntime() {
 	sort.Strings(names)
 	for _, n := range names {
 		for _, line := range strings.Split(helperMap[n], "\n") {
-			if line == "" {
-				c.writeln("")
-			} else {
-				c.writeln(line)
-			}
+			c.preamble.WriteString(line)
+			c.preamble.WriteByte('\n')
 		}
 	}
 }
