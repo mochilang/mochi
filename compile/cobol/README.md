@@ -163,6 +163,9 @@ capabilities include:
 - HTTP helpers such as `fetch`, `load` and `save`
 - Foreign function interface and package imports
 - LLM helpers and other advanced runtime features
+- Set literals and set operations
+- Test blocks and `expect` statements
+- `generate` expressions for generative AI
 
 Programs using these constructs will fail to compile.
 
@@ -185,5 +188,8 @@ unsupported include:
 - HTTP helpers such as `fetch`, `load` and `save`
 - Foreign function interface and package imports
 - LLM helpers and other advanced runtime features
+- Set literals and set operations
+- Test blocks and `expect` statements
+- `generate` expressions for generative AI
 
 Programs relying on these constructs will fail to compile.
