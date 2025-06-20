@@ -811,10 +811,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			pairs[i] = fmt.Sprintf("(cons %s %s)", k, v)
 		}
 		return "(list " + strings.Join(pairs, " ") + ")", nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("(cons '%s %s)", sanitizeName(f.Name), v)
+		}
+		return "(list " + strings.Join(parts, " ") + ")", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
 		}
+		expr := sanitizeName(p.Selector.Root)
+		for _, s := range p.Selector.Tail {
+			c.needMapHelpers = true
+			expr = fmt.Sprintf("(map-get %s '%s)", expr, sanitizeName(s))
+		}
+		return expr, nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
