@@ -32,4 +32,7 @@ _indexString s i =
 
 _input :: IO String
 _input = getLine
+
+_now :: IO Int
+_now = fmap round getPOSIXTime
 `
