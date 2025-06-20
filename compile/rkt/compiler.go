@@ -122,6 +122,38 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 	return hasLoopCtrlIf(ifst.ElseIf)
 }
 
+func hasDefine(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		switch {
+		case s.Let != nil || s.Var != nil || s.Fun != nil:
+			return true
+		case s.If != nil:
+			if hasDefine(s.If.Then) || hasDefine(s.If.Else) || hasDefineIf(s.If.ElseIf) {
+				return true
+			}
+		case s.For != nil:
+			if hasDefine(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if hasDefine(s.While.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasDefineIf(ifst *parser.IfStmt) bool {
+	if ifst == nil {
+		return false
+	}
+	if hasDefine(ifst.Then) || hasDefine(ifst.Else) {
+		return true
+	}
+	return hasDefineIf(ifst.ElseIf)
+}
+
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env}
 }
@@ -147,7 +179,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("")
 	c.writeln(";dataset-placeholder")
 	c.writeln(";setops-placeholder")
-	// function declarations first
+	// type declarations first
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+	// function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -275,6 +316,28 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	name := sanitizeName(t.Name)
+	if len(t.Variants) > 0 {
+		for _, v := range t.Variants {
+			fields := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				fields[i] = sanitizeName(f.Name)
+			}
+			c.writeln(fmt.Sprintf("(struct %s (%s) #:transparent)", sanitizeName(v.Name), strings.Join(fields, " ")))
+		}
+		return nil
+	}
+	fields := []string{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fields = append(fields, sanitizeName(m.Field.Name))
+		}
+	}
+	c.writeln(fmt.Sprintf("(struct %s (%s) #:transparent)", name, strings.Join(fields, " ")))
+	return nil
+}
+
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
@@ -291,6 +354,26 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("(set! %s (if (hash? %s) (hash-set %s %s %s) (list-set %s %s %s)))", name, name, name, idx, val, name, idx, val))
+		return nil
+	}
+	if len(a.Index) == 1 && a.Index[0].Colon != nil {
+		start := "0"
+		if a.Index[0].Start != nil {
+			s, err := c.compileExpr(a.Index[0].Start)
+			if err != nil {
+				return err
+			}
+			start = s
+		}
+		end := fmt.Sprintf("(if (string? %s) (string-length %s) (length %s))", name, name, name)
+		if a.Index[0].End != nil {
+			e, err := c.compileExpr(a.Index[0].End)
+			if err != nil {
+				return err
+			}
+			end = e
+		}
+		c.writeln(fmt.Sprintf("(set! %s (if (string? %s) (string-append (substring %s 0 %s) %s (substring %s %s (string-length %s))) (append (take %s %s) %s (drop %s %s))))", name, name, name, start, val, name, end, name, name, start, val, name, end))
 		return nil
 	}
 	if len(a.Index) == 2 && a.Index[0].Colon == nil && a.Index[1].Colon == nil {
@@ -386,7 +469,8 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		c.indent++
 		c.writeln("(when (< i " + end + ")")
 		c.indent++
-		c.writeln(fmt.Sprintf("(define %s i)", name))
+		c.writeln("(let ([" + name + " i])")
+		c.indent++
 		c.pushLoop(brk, loop, "(+ i 1)")
 		for _, st := range f.Body {
 			if err := c.compileStmt(st); err != nil {
@@ -394,6 +478,8 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 				return err
 			}
 		}
+		c.indent--
+		c.writeln(")")
 		c.writeln("(" + loop + " (+ i 1)))")
 		c.popLoop()
 		c.indent--
@@ -409,7 +495,8 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		c.indent++
 		c.writeln("(when (pair? it)")
 		c.indent++
-		c.writeln(fmt.Sprintf("(define %s (car it))", name))
+		c.writeln("(let ([" + name + " (car it)])")
+		c.indent++
 		c.pushLoop(brk, loop, "(cdr it)")
 		for _, st := range f.Body {
 			if err := c.compileStmt(st); err != nil {
@@ -417,6 +504,8 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 				return err
 			}
 		}
+		c.indent--
+		c.writeln(")")
 		c.writeln("(" + loop + " (cdr it)))")
 		c.popLoop()
 		c.indent--
@@ -481,7 +570,11 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 	c.writeln(fmt.Sprintf("(if %s", cond))
 	c.indent++
 	// then branch
-	c.writeln("(begin")
+	if hasDefine(s.Then) {
+		c.writeln("(let ()")
+	} else {
+		c.writeln("(begin")
+	}
 	c.indent++
 	for _, st := range s.Then {
 		if err := c.compileStmt(st); err != nil {
@@ -496,7 +589,11 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 			return err
 		}
 	} else if len(s.Else) > 0 {
-		c.writeln("(begin")
+		if hasDefine(s.Else) {
+			c.writeln("(let ()")
+		} else {
+			c.writeln("(begin")
+		}
 		c.indent++
 		for _, st := range s.Else {
 			if err := c.compileStmt(st); err != nil {
@@ -586,7 +683,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			case "||":
 				expr = fmt.Sprintf("(or %s %s)", l, r)
 			case "in":
-				expr = fmt.Sprintf("(hash-has-key? %s %s)", r, l)
+				expr = fmt.Sprintf("(cond [(hash? %s) (hash-has-key? %s %s)] [(string? %s) (not (false? (string-contains? %s (format \"~a\" %s))))] [else (not (false? (member %s %s)))])", r, r, l, r, r, l, l, r)
 			case "union":
 				c.needsSetOps = true
 				expr = fmt.Sprintf("(union %s %s)", l, r)
@@ -719,6 +816,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
+	case p.Struct != nil:
+		return c.compileStructExpr(p.Struct)
 	case p.Selector != nil:
 		return sanitizeName(p.Selector.Root), nil
 	case p.Group != nil:
@@ -867,4 +968,162 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		opts = o
 	}
 	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileStructExpr(s *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = v
+	}
+	return fmt.Sprintf("(%s %s)", sanitizeName(s.Name), strings.Join(fields, " ")), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil {
+		return "", fmt.Errorf("group clause not supported")
+	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("join sides not supported")
+		}
+	}
+
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+	c.env = child
+
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinSrcs[i] = js
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinOns[i] = on
+	}
+
+	var whereExpr, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+
+	val, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	c.env = orig
+
+	var b strings.Builder
+	b.WriteString("(let ([_res '()])\n")
+	b.WriteString(fmt.Sprintf("  (for ([%s %s])\n", sanitizeName(q.Var), src))
+	indent := "    "
+	for i, f := range q.Froms {
+		b.WriteString(indent + fmt.Sprintf("(for ([%s %s])\n", sanitizeName(f.Var), fromSrcs[i]))
+		indent += "  "
+	}
+	for i, j := range q.Joins {
+		b.WriteString(indent + fmt.Sprintf("(for ([%s %s])\n", sanitizeName(j.Var), joinSrcs[i]))
+		indent += "  "
+		b.WriteString(indent + fmt.Sprintf("(when %s\n", joinOns[i]))
+		indent += "  "
+	}
+	if whereExpr != "" {
+		b.WriteString(indent + fmt.Sprintf("(when %s\n", whereExpr))
+		indent += "  "
+	}
+	if sortExpr != "" {
+		b.WriteString(indent + fmt.Sprintf("(set! _res (append _res (list (cons %s %s))))\n", sortExpr, val))
+	} else {
+		b.WriteString(indent + fmt.Sprintf("(set! _res (append _res (list %s)))\n", val))
+	}
+	if whereExpr != "" {
+		indent = indent[:len(indent)-2]
+		b.WriteString(indent + ")\n")
+	}
+	for range q.Joins {
+		indent = indent[:len(indent)-2]
+		b.WriteString(indent + ")\n")
+		indent = indent[:len(indent)-2]
+		b.WriteString(indent + ")\n")
+	}
+	for range q.Froms {
+		indent = indent[:len(indent)-2]
+		b.WriteString(indent + ")\n")
+	}
+	b.WriteString("  )\n")
+	if sortExpr != "" {
+		b.WriteString("  (set! _res (map cdr (sort _res (lambda (a b)\n" +
+			"    (let ([ak (car a)] [bk (car b)])\n" +
+			"      (cond [(and (number? ak) (number? bk)) (< ak bk)]\n" +
+			"            [(and (string? ak) (string? bk)) (string<? ak bk)]\n" +
+			"            [else (string<? (format \"~a\" ak) (format \"~a\" bk))])))\n" +
+			"    #:key car)))\n")
+	}
+	if skipExpr != "" {
+		b.WriteString(fmt.Sprintf("  (set! _res (drop _res %s))\n", skipExpr))
+	}
+	if takeExpr != "" {
+		b.WriteString(fmt.Sprintf("  (set! _res (take _res %s))\n", takeExpr))
+	}
+	b.WriteString("  _res))")
+	return b.String(), nil
 }

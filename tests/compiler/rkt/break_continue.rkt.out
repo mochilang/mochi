@@ -19,20 +19,21 @@
 (let/ec brk0
 	(let loop0 ([it numbers])
 		(when (pair? it)
-			(define n (car it))
-			(if (= (modulo n 2) 0)
-				(begin
-					(loop0 (cdr it))
+			(let ([n (car it)])
+				(if (= (modulo n 2) 0)
+					(begin
+						(loop0 (cdr it))
+					)
+					(void)
 				)
-				(void)
-			)
-			(if (> n 7)
-				(begin
-					(brk0 (void))
+				(if (> n 7)
+					(begin
+						(brk0 (void))
+					)
+					(void)
 				)
-				(void)
+				(displayln (format "~a ~a" "odd number:" n))
 			)
-			(displayln (format "~a ~a" "odd number:" n))
 			(loop0 (cdr it)))
 		)
 	)

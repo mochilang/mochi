@@ -20,4 +20,3 @@
 (displayln "Enter second input:")
 (define input2 (read-line ))
 (displayln (format "~a ~a ~a ~a" "You entered:" input1 "," input2))
-

@@ -176,15 +176,25 @@ basic list set operations.
 `match` expressions compile directly to Racket's `match` form for simple pattern
 matching.
 Dataset helpers `_fetch`, `_load` and `_save` handle basic JSON data.
+The `in` operator now works with lists and strings, not just maps, and slice
+assignments like `xs[1:3] = sub` are supported.
+Basic dataset queries support `sort`, `skip` and `take` clauses, and simple
+`struct` type declarations emit Racket structs.
 
 Unsupported features currently include:
 
 * Generative `generate` blocks and model definitions
-* SQL-style dataset queries (`from`, `join`, etc.)
+* Dataset query `group` clauses and join side options
 * Error handling with `try`/`catch`
 * Agents, streams and intents
 * Logic programming constructs (`fact`, `rule`, `query`)
 * Concurrency primitives such as `spawn` and channels
 * Foreign function interface via `import`
 * Package management and `package` declarations
-* User-defined type declarations (`struct` and `union`)
+* Union type declarations
+* LLM helpers like `_genText`, `_genEmbed` and `_genStruct`
+* Multi-dimensional slice assignment or indexing beyond two levels
+* Field selectors like `obj.field`
+* Methods defined inside `type` blocks
+* Export statements via `export`
+* Test blocks and expectations (`test` and `expect`)
