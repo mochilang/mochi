@@ -1,6 +1,10 @@
 package rktcode
 
-import "strings"
+import (
+	"strings"
+
+	"mochi/parser"
+)
 
 func (c *Compiler) writeln(s string) {
 	c.writeIndent()
@@ -31,4 +35,22 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	return s
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
 }
