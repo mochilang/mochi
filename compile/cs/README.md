@@ -144,19 +144,18 @@ This script attempts platform‑specific installation via Homebrew or `apt-get` 
 
 ## Notes
 
-The C# backend focuses on fundamental features: functions, control flow, structs, unions and query expressions. Recent updates added support for package declarations, set operations on lists and helper functions for printing JSON or getting the current timestamp. Advanced Mochi capabilities such as streams and extern objects are not yet implemented in this generator.
+The C# backend focuses on fundamental features: functions, control flow, structs, unions and query expressions. Recent updates added support for package declarations, set operations on lists, helper functions for printing JSON or getting the current timestamp, and basic stream handling with `on`/`emit` blocks. Advanced Mochi capabilities such as long‑lived agents and extern objects are not yet implemented in this generator.
 
 ### Unsupported features
 
 - The backend is still incomplete. Notable gaps include:
 - Left/right/outer joins in dataset queries
-- Stream and agent declarations
+- Agent declarations and intent blocks
 - Model declarations
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign function interface and extern objects
 - Generic dictionary casts for complex map types
 - YAML dataset loading/saving
-- Intent declarations
 - Full LLM integration for `_genText` and `_genStruct`
 - Concurrency primitives like `spawn` and channels
 - `try`/`catch` error handling
