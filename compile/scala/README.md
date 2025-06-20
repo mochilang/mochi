@@ -272,6 +272,8 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - concurrent primitives such as `spawn` and channels
 - module system and imports
 - generic types and higher‑order functions
-- advanced dataset queries (joins, grouping, skipping or taking results)
+- advanced dataset queries (joins, grouping)
+- load/save expressions and other I/O features
+- HTTP requests and LLM integrations
 - reflection and macro facilities
 

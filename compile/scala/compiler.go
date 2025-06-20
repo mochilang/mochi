@@ -713,13 +713,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "scala.collection.mutable.Map(" + strings.Join(items, ", ") + ")", nil
 	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 {
-			name := p.Selector.Root
-			if alias, ok := c.paramAlias[name]; ok {
-				return alias, nil
-			}
-			return sanitizeName(name), nil
+		name := p.Selector.Root
+		if alias, ok := c.paramAlias[name]; ok {
+			name = alias
+		} else {
+			name = sanitizeName(name)
 		}
+		for _, part := range p.Selector.Tail {
+			name += "." + sanitizeName(part)
+		}
+		return name, nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -834,7 +837,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Skip != nil || q.Take != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -909,13 +912,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	indent = indent[:len(indent)-1]
 	b.WriteString(indent + "}\n")
+	seq := c.newTemp("seq")
 	if sortExpr != "" {
 		c.needCompare = true
-		b.WriteString(fmt.Sprintf("\tval _sorted = %s.sortBy(_._2)(_anyOrdering)\n", res))
-		b.WriteString("\t_sorted.map(_._1).toSeq\n")
+		b.WriteString(fmt.Sprintf("\tvar %s = %s.sortBy(_._2)(_anyOrdering).map(_._1).toSeq\n", seq, res))
 	} else {
-		b.WriteString(fmt.Sprintf("\t%s.toSeq\n", res))
+		b.WriteString(fmt.Sprintf("\tvar %s = %s.toSeq\n", seq, res))
 	}
+	if q.Skip != nil {
+		skipExpr, err := c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("\t%s = %s.drop(%s)\n", seq, seq, skipExpr))
+	}
+	if q.Take != nil {
+		takeExpr, err := c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("\t%s = %s.take(%s)\n", seq, seq, takeExpr))
+	}
+	b.WriteString(fmt.Sprintf("\t%s\n", seq))
 	b.WriteString("})()")
 	return b.String(), nil
 }

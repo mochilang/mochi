@@ -1,0 +1,31 @@
+case class Product(name: String, price: Int)
+
+object Main {
+	def main(args: Array[String]): Unit = {
+		val products = scala.collection.mutable.ArrayBuffer(Product(name = "Laptop", price = 1500), Product(name = "Smartphone", price = 900), Product(name = "Tablet", price = 600), Product(name = "Monitor", price = 300), Product(name = "Keyboard", price = 100), Product(name = "Mouse", price = 50), Product(name = "Headphones", price = 200))
+		val expensive = (() => {
+	val res1 = scala.collection.mutable.ArrayBuffer[(Any, Any)]()
+	for (p <- products) {
+		res1.append((p, (-p.price)))
+	}
+	var seq2 = res1.sortBy(_._2)(_anyOrdering).map(_._1).toSeq
+	seq2 = seq2.drop(1)
+	seq2 = seq2.take(3)
+	seq2
+})()
+		println("--- Top products (excluding most expensive) ---")
+		val it3 = expensive.iterator
+		while (it3.hasNext) {
+			val item = it3.next()
+			println(item.name, "costs $", item.price)
+		}
+	}
+	
+	def _compare(a: Any, b: Any): Int = (a, b) match {
+		case (x: Int, y: Int) => x.compare(y)
+		case (x: Double, y: Double) => java.lang.Double.compare(x, y)
+		case (x: String, y: String) => x.compareTo(y)
+		case _ => a.toString.compareTo(b.toString)
+	}
+	implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: Any, y: Any): Int = _compare(x, y) }
+}
