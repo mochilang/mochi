@@ -149,6 +149,19 @@ compiled using the COBOL backend, built with `cobc` and executed.  The printed
 results are compared against the stored `.out` files to ensure deterministic
 behaviour.
 
+## Unsupported features
+
+Only a narrow slice of Mochi is recognised by this backend. Missing
+capabilities include:
+
+- Nested function definitions
+- `continue` statements in loops
+- Structs, unions and other complex types
+- Query expressions such as `from`/`sort by`/`select`
+- Streams, LLM helpers and extern objects
+
+Programs using these constructs will fail to compile.
+
 ## Status
 
 This backend is intentionally minimal and currently exists only as a demo. It is
