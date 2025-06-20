@@ -406,23 +406,23 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 {
-		return "", fmt.Errorf("unsupported query expression")
-	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
 	}
 	orig := c.env
 	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
-	for _, f := range q.Froms {
-		child.SetVar(f.Var, types.AnyType{}, true)
-	}
+        child.SetVar(q.Var, types.AnyType{}, true)
+        for _, f := range q.Froms {
+                child.SetVar(f.Var, types.AnyType{}, true)
+        }
+        for _, j := range q.Joins {
+                child.SetVar(j.Var, types.AnyType{}, true)
+        }
 	c.env = child
 
-	// simple group-by without joins or filters
-	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+        // simple group-by without joins or filters
+        if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		keyExpr, err := c.compileExpr(q.Group.Expr)
 		if err != nil {
 			c.env = orig
@@ -479,15 +479,40 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = orig
 
-	if len(q.Froms) > 0 {
-		parts := make([]string, len(q.Froms))
-		for i, f := range q.Froms {
-			fs, err := c.compileExpr(f.Src)
-			if err != nil {
-				return "", err
-			}
-			parts[i] = fmt.Sprintf("%s <- %s", f.Var, fs)
-		}
+        if len(q.Froms) > 0 || len(q.Joins) > 0 {
+                parts := make([]string, 0, len(q.Froms)+len(q.Joins))
+                for _, f := range q.Froms {
+                        fs, err := c.compileExpr(f.Src)
+                        if err != nil {
+                                return "", err
+                        }
+                        parts = append(parts, fmt.Sprintf("%s <- %s", f.Var, fs))
+                }
+                joinConds := []string{}
+                for _, j := range q.Joins {
+                        if j.Side != nil {
+                                return "", fmt.Errorf("unsupported join type")
+                        }
+                        js, err := c.compileExpr(j.Src)
+                        if err != nil {
+                                return "", err
+                        }
+                        parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, js))
+                        onExpr, err := c.compileExpr(j.On)
+                        if err != nil {
+                                return "", err
+                        }
+                        joinConds = append(joinConds, onExpr)
+                }
+
+                if len(joinConds) > 0 {
+                        jc := strings.Join(joinConds, " && ")
+                        if cond != "" {
+                                cond = fmt.Sprintf("(%s) && (%s)", jc, cond)
+                        } else {
+                                cond = jc
+                        }
+                }
 
 		item := sel
 		if sortExpr != "" {
@@ -589,6 +614,71 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+        urlStr, err := c.compileExpr(f.URL)
+        if err != nil {
+                return "", err
+        }
+        withStr := "nil"
+        if f.With != nil {
+                v, err := c.compileExpr(f.With)
+                if err != nil {
+                        return "", err
+                }
+                withStr = v
+        }
+        c.use("_fetch")
+        return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
+}
+
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+        var prompt, text, model string
+        params := []string{}
+        for _, f := range g.Fields {
+                v, err := c.compileExpr(f.Value)
+                if err != nil {
+                        return "", err
+                }
+                switch f.Name {
+                case "prompt":
+                        prompt = v
+                case "text":
+                        text = v
+                case "model":
+                        model = v
+                default:
+                        params = append(params, fmt.Sprintf("%s: %s", f.Name, v))
+                }
+        }
+        if prompt == "" && g.Target != "embedding" {
+                prompt = "\"\""
+        }
+        if text == "" && g.Target == "embedding" {
+                text = "\"\""
+        }
+        paramStr := "nil"
+        if len(params) > 0 {
+                paramStr = "%{" + strings.Join(params, ", ") + "}"
+        }
+        if model == "" {
+                model = "\"\""
+        }
+        switch g.Target {
+        case "embedding":
+                c.use("_gen_embed")
+                return fmt.Sprintf("_gen_embed(%s, %s, %s)", text, model, paramStr), nil
+        default:
+                if c.env != nil {
+                        if _, ok := c.env.GetStruct(g.Target); ok {
+                                c.use("_gen_struct")
+                                return fmt.Sprintf("_gen_struct(%s, %s, %s, %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
+                        }
+                }
+                c.use("_gen_text")
+                return fmt.Sprintf("_gen_text(%s, %s, %s)", prompt, model, paramStr), nil
+        }
 }
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
@@ -979,14 +1069,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 		}
-	case p.Query != nil:
-		return c.compileQueryExpr(p.Query)
-	case p.Load != nil:
-		return c.compileLoadExpr(p.Load)
-	case p.Save != nil:
-		return c.compileSaveExpr(p.Save)
-	}
-	return "", fmt.Errorf("unsupported expression")
+        case p.Query != nil:
+                return c.compileQueryExpr(p.Query)
+        case p.Load != nil:
+                return c.compileLoadExpr(p.Load)
+        case p.Save != nil:
+                return c.compileSaveExpr(p.Save)
+        case p.Fetch != nil:
+                return c.compileFetchExpr(p.Fetch)
+        case p.Generate != nil:
+                return c.compileGenerateExpr(p.Generate)
+        }
+        return "", fmt.Errorf("unsupported expression")
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
