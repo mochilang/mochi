@@ -120,7 +120,7 @@ execute correctly using the Clojure backend.
 
 ## Status
 
-The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals and basic query expressions. More advanced features such as data sets, agents or LLM helpers are not currently supported.
+The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals and query expressions including filtering, cross joins and pagination via `skip`/`take`. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
 
 ### Unsupported Features
 
@@ -128,7 +128,10 @@ The current compiler lacks support for several language constructs commonly used
 in the example programs. In particular:
 - Struct literals and union types
 - Pattern matching on union variants
-- Data set operations and streaming APIs
+- Data set operations beyond simple queries and streaming APIs
 - Agent helpers and LLM integration
+- Logic programming facts and rules
+- External declarations and other FFI helpers
+- HTTP fetch and generative AI utilities
 
 Programs relying on these features fail to compile with the Clojure backend.
