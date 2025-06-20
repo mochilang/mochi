@@ -286,7 +286,6 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * dataset query `group` clauses and join side options
 * generative AI blocks
 * error handling with `try`/`catch`
-* HTTP `fetch`
 * union types and methods
 * LLM helper functions like `_genText`
 * packages or the foreign function interface
@@ -300,6 +299,7 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * concurrency primitives like `spawn`
 * advanced string slicing
 * logic programming predicates
+* dataset set operations like `union` or `intersect`
 
 These features are recognised by the main Mochi interpreter but are ignored by the Scheme compiler.
 

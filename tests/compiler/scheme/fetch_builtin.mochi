@@ -1,0 +1,6 @@
+ type Msg {
+   message: string
+ }
+
+ let data: Msg = fetch "file://tests/compiler/scheme/fetch_builtin.json"
+ print(data.message)

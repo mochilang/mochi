@@ -11,7 +11,28 @@ import (
 	"mochi/types"
 )
 
-const datasetHelpers = `(define (_load path opts)
+const datasetHelpers = `(define (_fetch url opts)
+  (let* ((method (if (and opts (assq 'method opts)) (cdr (assq 'method opts)) "GET"))
+         (args (list "curl" "-s" "-X" method)))
+    (when (and opts (assq 'headers opts))
+      (for-each (lambda (p)
+                  (set! args (append args (list "-H" (format "~a: ~a" (car p) (cdr p))))))
+                (cdr (assq 'headers opts))))
+    (when (and opts (assq 'query opts))
+      (let* ((q (cdr (assq 'query opts)))
+             (qs (string-join (map (lambda (p) (format "~a=~a" (car p) (cdr p))) q) "&")))
+        (set! url (string-append url (if (string-contains url "?") "&" "?") qs))))
+    (when (and opts (assq 'body opts))
+      (set! args (append args (list "-d" (json->string (cdr (assq 'body opts)))))))
+    (when (and opts (assq 'timeout opts))
+      (set! args (append args (list "--max-time" (format "~a" (cdr (assq 'timeout opts)))))))
+    (set! args (append args (list url)))
+    (let* ((p (open-input-pipe (string-join args " ")))
+           (txt (port->string p)))
+      (close-input-port p)
+      (string->json txt)))
+
+(define (_load path opts)
   (let* ((fmt (if (and opts (assq 'format opts)) (cdr (assq 'format opts)) "json"))
          (in (if (or (not path) (string=? path "") (string=? path "-"))
                  (current-input-port)
@@ -875,6 +896,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.Load != nil:
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
@@ -1043,6 +1066,23 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	buf.WriteString("))")
 	return buf.String(), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	c.needDataset = true
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "'()"
+	if f.With != nil {
+		o, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	return fmt.Sprintf("(_fetch %s %s)", url, opts), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
