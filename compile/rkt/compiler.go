@@ -177,6 +177,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("    (if (= n 0) 0")
 	c.writeln("        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))")
 	c.writeln("")
+	c.writeln("(define (expect cond) (unless cond (error \"expect failed\")))")
 	c.writeln(";dataset-placeholder")
 	c.writeln(";setops-placeholder")
 	// type declarations first
@@ -197,12 +198,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
+	// test block declarations
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 	// main body
 	for _, s := range prog.Statements {
 		if s.Fun == nil && s.Type == nil && s.Test == nil {
 			if err := c.compileStmt(s); err != nil {
 				return nil, err
 			}
+		}
+	}
+	// run tests
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln("(" + name + ")")
 		}
 	}
 	code := c.buf.Bytes()
@@ -251,12 +268,29 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeIndent()
+	c.buf.WriteString("(define (" + name + ")\n")
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln(")")
+	return nil
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -413,6 +447,15 @@ func (c *Compiler) compileContinue(cs *parser.ContinueStmt) error {
 	} else {
 		c.writeln("(" + ctx.cont + ")")
 	}
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(unless %s (error \"expect failed\"))", expr))
 	return nil
 }
 
@@ -821,7 +864,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Struct != nil:
 		return c.compileStructExpr(p.Struct)
 	case p.Selector != nil:
-		return sanitizeName(p.Selector.Root), nil
+		return c.compileSelector(p.Selector)
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -980,6 +1023,14 @@ func (c *Compiler) compileStructExpr(s *parser.StructLiteral) (string, error) {
 		fields[i] = v
 	}
 	return fmt.Sprintf("(%s %s)", sanitizeName(s.Name), strings.Join(fields, " ")), nil
+}
+
+func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (string, error) {
+	base := sanitizeName(sel.Root)
+	for _, field := range sel.Tail {
+		base = fmt.Sprintf("(hash-ref %s %q)", base, sanitizeName(field))
+	}
+	return base, nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {

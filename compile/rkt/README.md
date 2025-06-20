@@ -194,7 +194,6 @@ Unsupported features currently include:
 * Union type declarations
 * LLM helpers like `_genText`, `_genEmbed` and `_genStruct`
 * Multi-dimensional slice assignment or indexing beyond two levels
-* Field selectors like `obj.field`
 * Methods defined inside `type` blocks
 * Export statements via `export`
-* Test blocks and expectations (`test` and `expect`)
+* Extern declarations (`extern var`, `extern fun`, `extern type`, `extern object`)
