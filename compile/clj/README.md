@@ -120,7 +120,7 @@ execute correctly using the Clojure backend.
 
 ## Status
 
-The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals, dataset `load` and `save` helpers for CSV files, basic `group by` queries and built-in helpers like `count`, `avg`, `now`, `input` and anonymous `fun` expressions. Query expressions handle filtering, cross and inner joins and pagination via `skip`/`take`. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
+The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals, dataset `load` and `save` helpers for CSV files, basic `group by` queries and built-in helpers like `count`, `avg`, `now`, `input`, `json` and anonymous `fun` expressions. Query expressions handle filtering, cross and inner joins and pagination via `skip`/`take`. List, string and map indexing/slicing work, as do simple `match` expressions on constants and struct literals with field access. Break and `continue` statements are also implemented. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
 
 ### Unsupported Features
 
@@ -141,6 +141,5 @@ in the example programs. In particular:
 - Methods declared inside `type` blocks
 - Error handling with `try`/`catch` blocks
 - Reflection or macro facilities
-- JSON output via the `json` builtin
 
 Programs relying on these features fail to compile with the Clojure backend.
