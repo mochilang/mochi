@@ -327,8 +327,8 @@ The Kotlin backend still lacks several Mochi features that other compilers
 support:
 
 - Advanced dataset queries such as joins and grouping
-- Built-in test blocks using `test` and `expect`
 - Streams, agents and intent handlers
+- Model declarations using the `model` keyword
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Package declarations and the foreign function interface
 - External helpers like `_genText`, `_fetch` and concurrency primitives

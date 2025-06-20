@@ -40,6 +40,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 			continue
 		}
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+			continue
+		}
 		c.mainStmts = append(c.mainStmts, s)
 	}
 	c.writeln("fun main() {")
@@ -47,6 +54,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, s := range c.mainStmts {
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(fmt.Sprintf("%s()", name))
 		}
 	}
 	c.indent--
@@ -88,6 +101,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Return != nil:
 		return c.compileReturn(s.Return)
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	default:
 		return nil
 	}
@@ -180,6 +197,30 @@ func (c *Compiler) compileReturn(stmt *parser.ReturnStmt) error {
 		return err
 	}
 	c.writeln("return " + expr)
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeIndent()
+	c.buf.WriteString("fun " + name + "() {\n")
+	c.indent++
+	for _, s := range t.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("check(%s)", expr))
 	return nil
 }
 
