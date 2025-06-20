@@ -29,6 +29,15 @@ forLoop start end f = go start
               Nothing -> go (i + 1)
          | otherwise = Nothing
 
+whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
+whileLoop cond body = go ()
+  where
+    go _ | cond () =
+            case body () of
+              Just v -> Just v
+              Nothing -> go ()
+         | otherwise = Nothing
+
 avg :: Real a => [a] -> Double
 avg xs | null xs = 0
       | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
@@ -39,8 +48,17 @@ _indexString s i =
   in if idx < 0 || idx >= length s
        then error "index out of range"
        else [s !! idx]
+
+_input :: IO String
+_input = getLine
+
+_now :: IO Int
+_now = fmap round getPOSIXTime
+
+_json :: Aeson.ToJSON a => a -> IO ()
+_json v = BSL.putStrLn (Aeson.encode v)
 ```
-【F:compile/hs/runtime.go†L1-L22】
+【F:compile/hs/runtime.go†L1-L40】
 
 These helpers provide basic looping, averaging and safe string indexing
 functionality.
@@ -70,10 +88,10 @@ go test ./compile/hs -tags slow
 ## Notes
 
 The Haskell backend currently supports a limited subset of Mochi: function
-definitions, if/else expressions, basic loops, lists, maps and a few built-in
-functions (`len`, `count`, `avg`, `str`, `print`). Map access relies on
-`Data.Map` when needed. Variable names are sanitised to avoid conflicts with
-Haskell keywords.
+definitions, if/else expressions, basic loops, lists, maps and a handful of
+built-in functions (`len`, `count`, `avg`, `str`, `print`, `now`, `json`). Map
+access relies on `Data.Map` when needed. Variable names are sanitised to avoid
+conflicts with Haskell keywords.
 
 ## Status
 
@@ -88,6 +106,6 @@ full Mochi language. Unsupported features include:
 * `break` and `continue` statements
 * Struct and object types
 * Package imports and module system
-* Built-in functions `now` and `json`
+* Top-level `var` declarations
 * Dataset `load`/`save` operations
 * `test` blocks and expectations
