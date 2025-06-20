@@ -134,8 +134,13 @@ func (c *Compiler) cppType(t *parser.TypeRef) string {
 		}
 		return *t.Simple
 	}
-	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
-		return "vector<" + c.cppType(t.Generic.Args[0]) + ">"
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			return "vector<" + c.cppType(t.Generic.Args[0]) + ">"
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return "unordered_map<" + c.cppType(t.Generic.Args[0]) + ", " + c.cppType(t.Generic.Args[1]) + ">"
+		}
 	}
 	return "auto"
 }
@@ -213,6 +218,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			if elem != "" {
 				expr = fmt.Sprintf("vector<%s>{}", elem)
+			}
+		} else if lit := getEmptyMapLiteral(s.Var.Value); lit != nil {
+			var keyT, valT string
+			if s.Var.Type != nil && s.Var.Type.Generic != nil && len(s.Var.Type.Generic.Args) == 2 {
+				keyT = c.cppType(s.Var.Type.Generic.Args[0])
+				valT = c.cppType(s.Var.Type.Generic.Args[1])
+			} else if typ, err := c.env.GetVar(s.Var.Name); err == nil {
+				if mt, ok := typ.(types.MapType); ok {
+					keyT = c.cppTypeRef(mt.Key)
+					valT = c.cppTypeRef(mt.Value)
+				}
+			}
+			if keyT != "" && valT != "" {
+				expr = fmt.Sprintf("unordered_map<%s, %s>{}", keyT, valT)
 			}
 		}
 		typ := "auto"
@@ -492,6 +511,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 		}
 		return fmt.Sprintf("vector<%s>{%s}", elemType, strings.Join(elems, ", "))
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Query != nil:
@@ -557,6 +578,26 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 	}
 	c.buf.WriteString(" << std::endl;\n")
 	return nil
+}
+
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
+	items := make([]string, len(m.Items))
+	keyType := "string"
+	valType := "int"
+	if len(m.Items) > 0 {
+		if t := c.guessExprType(m.Items[0].Key); t != "" {
+			keyType = t
+		}
+		if t := c.guessExprType(m.Items[0].Value); t != "" {
+			valType = t
+		}
+	}
+	for i, it := range m.Items {
+		k := c.compileExpr(it.Key)
+		v := c.compileExpr(it.Value)
+		items[i] = fmt.Sprintf("{%s, %s}", k, v)
+	}
+	return fmt.Sprintf("unordered_map<%s, %s>{%s}", keyType, valType, strings.Join(items, ", "))
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
@@ -680,6 +721,13 @@ func (c *Compiler) guessPostfixType(p *parser.PostfixExpr) string {
 				typ = strings.TrimSuffix(strings.TrimPrefix(typ, "vector<"), ">")
 			} else if typ == "string" {
 				typ = "char"
+			} else if strings.HasPrefix(typ, "unordered_map<") {
+				inside := strings.TrimSuffix(strings.TrimPrefix(typ, "unordered_map<"), ">")
+				if parts := strings.SplitN(inside, ",", 2); len(parts) == 2 {
+					typ = strings.TrimSpace(parts[1])
+				} else {
+					typ = "auto"
+				}
 			}
 		}
 	}
@@ -711,6 +759,18 @@ func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
 			}
 		}
 		return "vector<int>"
+	case p.Map != nil:
+		keyType := "string"
+		valType := "int"
+		if len(p.Map.Items) > 0 {
+			if t := c.guessExprType(p.Map.Items[0].Key); t != "" {
+				keyType = t
+			}
+			if t := c.guessExprType(p.Map.Items[0].Value); t != "" {
+				valType = t
+			}
+		}
+		return "unordered_map<" + keyType + ", " + valType + ">"
 	case p.Selector != nil:
 		if t, ok := c.getVar(p.Selector.Root); ok {
 			return t
@@ -738,6 +798,8 @@ func (c *Compiler) cppTypeRef(t types.Type) string {
 		return "string"
 	case types.ListType:
 		return "vector<" + c.cppTypeRef(tt.Elem) + ">"
+	case types.MapType:
+		return "unordered_map<" + c.cppTypeRef(tt.Key) + ", " + c.cppTypeRef(tt.Value) + ">"
 	case types.StructType:
 		return tt.Name
 	}
@@ -766,6 +828,24 @@ func getEmptyListLiteral(e *parser.Expr) *parser.ListLiteral {
 	}
 	if post.Target.List != nil && len(post.Target.List.Elems) == 0 {
 		return post.Target.List
+	}
+	return nil
+}
+
+func getEmptyMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	post := u.Value
+	if post == nil || post.Target == nil {
+		return nil
+	}
+	if post.Target.Map != nil && len(post.Target.Map.Items) == 0 {
+		return post.Target.Map
 	}
 	return nil
 }
