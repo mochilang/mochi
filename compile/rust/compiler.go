@@ -56,13 +56,27 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
+	for _, stmt := range prog.Statements {
+		if stmt.Test != nil {
+			if err := c.compileTestBlock(stmt.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 	c.writeln("fn main() {")
 	c.indent++
 	for _, stmt := range prog.Statements {
-		if stmt.Fun == nil {
+		if stmt.Fun == nil && stmt.Test == nil {
 			if err := c.compileStmt(stmt); err != nil {
 				return nil, err
 			}
+		}
+	}
+	for _, stmt := range prog.Statements {
+		if stmt.Test != nil {
+			name := "test_" + sanitizeName(stmt.Test.Name)
+			c.writeln(fmt.Sprintf("%s();", name))
 		}
 	}
 	c.indent--
@@ -112,11 +126,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Type != nil:
 		return nil
 	case s.Test != nil:
-		// Test blocks are ignored when compiling to Rust.
+		// Test blocks are compiled separately before main.
 		return nil
 	case s.Expect != nil:
-		// Expect statements are used only inside tests, so skip them.
-		return nil
+		return c.compileExpect(s.Expect)
 	default:
 		return fmt.Errorf("unsupported statement")
 	}
@@ -221,6 +234,30 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln("#[test]")
+	c.writeln("fn " + name + "() {")
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("assert!(%s);", expr))
 	return nil
 }
 
