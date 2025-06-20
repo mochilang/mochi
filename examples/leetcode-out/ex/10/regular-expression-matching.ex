@@ -70,17 +70,27 @@ defmodule Main do
 										end
 									end
 									if star do
-										if (Enum.at(Enum.at(dp, i2), (j2 + 2)) || (first && Enum.at(Enum.at(dp, (i2 + 1)), j2))) do
-											dp = Map.put(dp, i2, true)
+										ok = false
+										_ = ok
+										if Enum.at(Enum.at(dp, i2), (j2 + 2)) do
+											ok = true
 										else
-											dp = Map.put(dp, i2, false)
+											if first do
+												if Enum.at(Enum.at(dp, (i2 + 1)), j2) do
+													ok = true
+												end
+											end
 										end
+										dp = Map.put(dp, i2, ok)
 									else
-										if (first && Enum.at(Enum.at(dp, (i2 + 1)), (j2 + 1))) do
-											dp = Map.put(dp, i2, true)
-										else
-											dp = Map.put(dp, i2, false)
+										ok = false
+										_ = ok
+										if first do
+											if Enum.at(Enum.at(dp, (i2 + 1)), (j2 + 1)) do
+												ok = true
+											end
 										end
+										dp = Map.put(dp, i2, ok)
 									end
 									j2 = (j2 - 1)
 									t4.(t4, dp, j2)

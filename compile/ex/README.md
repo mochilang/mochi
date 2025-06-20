@@ -166,3 +166,8 @@ Run them with:
 ```bash
 go test ./compile/ex -tags slow
 ```
+
+## Unsupported Features
+
+Nested recursive functions are not currently handled when compiling to Elixir.
+Problems relying on them, such as LeetCode 22, fail to run.
