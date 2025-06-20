@@ -16,6 +16,7 @@ type Compiler struct {
 	indent   int
 	env      *types.Env
 	needGet  bool
+	needIO   bool
 	vars     map[string]string
 	counts   map[string]int
 	tmpCount int
@@ -799,6 +800,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		default:
 			return fmt.Sprintf("%s(%s)", atomName(p.Call.Func), argStr), nil
 		}
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Match != nil:
@@ -997,6 +1002,44 @@ func (c *Compiler) compileMatchPattern(e *parser.Expr) (string, error) {
 	return c.compileExpr(e)
 }
 
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	c.needIO = true
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "undefined"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	return fmt.Sprintf("mochi_load(%s, %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	c.needIO = true
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "undefined"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	return fmt.Sprintf("mochi_save(%s, %s, %s)", src, path, opts), nil
+}
+
 func isListUnary(u *parser.Unary, env *types.Env) bool {
 	if u == nil || len(u.Ops) > 0 {
 		return false
@@ -1144,6 +1187,25 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("mochi_get(M, K) when is_list(M), is_integer(K) -> lists:nth(K + 1, M);")
 		c.writeln("mochi_get(M, K) when is_map(M) -> maps:get(K, M);")
 		c.writeln("mochi_get(_, _) -> erlang:error(badarg).")
+	}
+
+	if c.needIO {
+		c.writeln("")
+		c.writeln("mochi_load(Path, _Opts) ->")
+		c.indent++
+		c.writeln("case file:read_file(Path) of")
+		c.indent++
+		c.writeln("{ok, Bin} -> binary_to_term(Bin);")
+		c.writeln("_ -> []")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_save(Data, Path, _Opts) ->")
+		c.indent++
+		c.writeln("ok = file:write_file(Path, term_to_binary(Data)).")
+		c.indent--
 	}
 
 	c.writeln("")

@@ -85,6 +85,9 @@ features are not yet handled:
 - Generative AI helpers like `generate` or `fetch`
 - Dataset operations such as `load` and `save`
 - Logic programming constructs and streams
+- Agents and event streams
+- Foreign function imports via `extern`
+- Packages and `import` statements
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs
 directly.
