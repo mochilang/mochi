@@ -18,8 +18,9 @@ type Compiler struct {
 	env     *types.Env
 	tmp     int
 	vars    map[string]bool
-	mapVars map[string]bool
-	setNth  bool
+        mapVars map[string]bool
+        setNth  bool
+        slice   bool
 }
 
 // New creates a new OCaml compiler instance.
@@ -56,9 +57,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	if c.setNth {
-		c.writeln("")
-	}
+        if c.setNth || c.slice {
+                c.writeln("")
+        }
 	var out bytes.Buffer
 	out.Write(c.pre.Bytes())
 	out.Write(c.buf.Bytes())
@@ -76,6 +77,21 @@ func (c *Compiler) ensureSetNth() {
 	b.WriteString("  | [] -> []\n")
 	b.WriteString("  | x::xs ->\n")
 	b.WriteString("      if i = 0 then v :: xs else x :: _set_nth xs (i - 1) v\n\n")
+}
+
+func (c *Compiler) ensureSlice() {
+        if c.slice {
+                return
+        }
+        c.slice = true
+        b := &c.pre
+        b.WriteString("let rec _slice lst i len =\n")
+        b.WriteString("  match lst with\n")
+        b.WriteString("  | [] -> []\n")
+        b.WriteString("  | x::xs ->\n")
+        b.WriteString("      if i > 0 then _slice xs (i - 1) len\n")
+        b.WriteString("      else if len = 0 then []\n")
+        b.WriteString("      else x :: _slice xs 0 (len - 1)\n\n")
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -488,15 +504,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 				}
-				if isStringPrimary(p.Target, c.env) {
-					if end == "" {
-						expr = fmt.Sprintf("(String.sub %s %s (String.length %s - %s))", expr, start, expr, start)
-					} else {
-						expr = fmt.Sprintf("(String.sub %s %s (%s - %s))", expr, start, end, start)
-					}
-				} else {
-					expr = fmt.Sprintf("(List.nth %s %s) (* slice unsupported *)", expr, start)
-				}
+                                if isStringPrimary(p.Target, c.env) {
+                                        if end == "" {
+                                                expr = fmt.Sprintf("(String.sub %s %s (String.length %s - %s))", expr, start, expr, start)
+                                        } else {
+                                                expr = fmt.Sprintf("(String.sub %s %s (%s - %s))", expr, start, end, start)
+                                        }
+                                } else {
+                                        base := expr
+                                        var length string
+                                        if end == "" {
+                                                length = fmt.Sprintf("(List.length %s - %s)", base, start)
+                                        } else {
+                                                length = fmt.Sprintf("(%s - %s)", end, start)
+                                        }
+                                        c.ensureSlice()
+                                        expr = fmt.Sprintf("(_slice %s %s %s)", base, start, length)
+                                }
 			} else {
 				if isStringPrimary(p.Target, c.env) {
 					expr = fmt.Sprintf("(String.get %s %s)", expr, start)
