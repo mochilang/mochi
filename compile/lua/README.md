@@ -302,8 +302,12 @@ fail at runtime:
 - Regular expression helpers beyond simple `match`
 - Mutating lists while iterating (e.g. `insert`, `remove`)
 - Query clauses like `join` or `group`
-- Loading or saving data with `load`/`save`
+- HTTP `fetch` expressions
+- Logic query expressions
+- Foreign function interface (FFI)
 - Interaction with external objects
+
+`load` and `save` currently handle only JSON files.
 
 Problems `6`, `10`, `23` and `27` currently do not run correctly when compiled
 to Lua.
