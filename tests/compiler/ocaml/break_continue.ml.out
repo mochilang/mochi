@@ -1,0 +1,17 @@
+exception BreakException of int
+exception ContinueException of int
+
+let numbers = [1; 2; 3; 4; 5; 6; 7; 8; 9];;
+try
+  List.iter (fun n ->
+    try
+      if n mod 2 = 0 then begin
+        raise (ContinueException 0)
+      end;
+      if n > 7 then begin
+        raise (BreakException 0)
+      end;
+      print_endline (String.concat " " ["odd number:"; string_of_int (n)]);
+    with ContinueException n when n = 0 -> ()
+  ) numbers;
+with BreakException n when n = 0 -> ();;

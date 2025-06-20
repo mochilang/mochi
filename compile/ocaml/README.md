@@ -127,8 +127,9 @@ The OCaml backend covers only a small slice of Mochi. Missing pieces include:
 
 - Query expressions such as `from` / `sort by` / `select`
 - Pattern matching and union types
-- Anonymous functions with block bodies
-- Break and continue statements
 - Modules and `import` declarations
+- Struct and enum type declarations
+- `fetch`, `load` and `generate` expressions
+- Agent and model blocks
 - Concurrency primitives like `spawn` and channels
 - Streams, LLM helpers and the foreign function interface
