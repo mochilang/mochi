@@ -251,12 +251,12 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Concurrency primitives like streams, agents, `spawn` and channels
 - Foreign imports and extern functions
 - Logic programming constructs (`fact`, `rule`, `query`)
-- Test blocks and expectations (`test`, `expect`)
 - Import statements
-- LLM helpers (`generate` expressions)
-- HTTP fetch (`fetch`)
 - Model declarations
 - Reflection or macro facilities
+- Extern variable, type and object declarations
+- Event emission and intent handlers (`emit`, `on`)
+- The `eval` builtin function
 - Methods declared inside `type` blocks
 - Agent initialization with field values
 - List set operations (`union`, `union all`, `intersect`, `except`)

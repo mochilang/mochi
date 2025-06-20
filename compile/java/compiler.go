@@ -16,13 +16,14 @@ type Compiler struct {
 	indent     int
 	env        *types.Env
 	mainStmts  []*parser.Statement
+	tests      []*parser.TestBlock
 	helpers    map[string]bool
 	returnType types.Type
 }
 
 // New creates a new Java compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), tests: []*parser.TestBlock{}}
 }
 
 // Compile generates Java code for prog.
@@ -44,7 +45,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// collect function declarations and main statements
+	// collect function and test declarations, and main statements
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -53,12 +54,24 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 			continue
 		}
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.tests = append(c.tests, s.Test)
+			c.writeln("")
+			continue
+		}
 		c.mainStmts = append(c.mainStmts, s)
 	}
 
-	if len(c.mainStmts) > 0 {
+	if len(c.mainStmts) > 0 || len(c.tests) > 0 {
 		c.writeln("public static void main(String[] args) {")
 		c.indent++
+		for _, t := range c.tests {
+			name := "test_" + sanitizeName(t.Name)
+			c.writeln(name + "();")
+		}
 		for _, s := range c.mainStmts {
 			if err := c.compileStmt(s); err != nil {
 				return nil, err
@@ -100,6 +113,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -336,6 +353,30 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 		return nil
 	}
 	c.buf.WriteByte('\n')
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln("static void " + name + "() {")
+	c.indent++
+	for _, s := range t.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.helpers["_expect"] = true
+	c.writeln(fmt.Sprintf("expect(%s);", expr))
 	return nil
 }
 
@@ -1252,6 +1293,14 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("if (i < 0) i += runes.length;")
 		c.writeln("if (i < 0 || i >= runes.length) throw new RuntimeException(\"index out of range\");")
 		c.writeln("return String.valueOf(runes[i]);")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_expect"] {
+		c.writeln("")
+		c.writeln("static void expect(boolean cond) {")
+		c.indent++
+		c.writeln("if (!cond) throw new RuntimeException(\"expect failed\");")
 		c.indent--
 		c.writeln("}")
 	}
