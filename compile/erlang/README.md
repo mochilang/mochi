@@ -88,9 +88,10 @@ features are not yet handled:
 - Agents and event streams
 - Foreign function imports via `extern`
 - Import statements
-- Anonymous function expressions using `fun`
 - Model declarations and dataset helpers
 - Sorting or pagination on queries with multiple sources
+- Concurrency primitives like `spawn` and channels
+- Struct and union type declarations
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs
 directly.
