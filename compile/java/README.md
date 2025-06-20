@@ -19,6 +19,10 @@ then writes the body for `main`:
 ```go
 // Compile generates Java code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+        if prog.Package != "" {
+                c.writeln("package " + sanitizeName(prog.Package) + ";")
+                c.writeln("")
+        }
         c.writeln("public class Main {")
         c.indent++
         // collect function declarations and main statements
@@ -49,7 +53,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
         return c.buf.Bytes(), nil
 }
 ```
-【F:compile/java/compiler.go†L21-L58】
+【F:compile/java/compiler.go†L28-L76】
 
 Built-in functions like `print`, `len`, `str`, `input`, `count`, `avg`, `now` and `json` are
 translated directly inside `compilePrimary`:
@@ -234,6 +238,8 @@ go test ./compile/java -tags slow
 ```
 
 The tests automatically skip if no Java compiler is detected.
+The `LeetCodeExamples` test attempts to compile the first thirty solutions in
+`examples/leetcode`. Programs using unsupported features are reported as skipped.
 
 ## Unsupported Features
 
@@ -247,6 +253,8 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Foreign imports and extern functions
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Test blocks and expectations (`test`, `expect`)
-- Package declarations at the top of the file
+- Import statements
+- LLM helpers (`generate` expressions)
+- HTTP fetch (`fetch`)
 
 Simple `from` queries used by the LeetCode examples are now supported.
