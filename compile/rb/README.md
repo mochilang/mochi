@@ -159,3 +159,12 @@ go test ./compile/rb -tags slow
 
 The first test is skipped when Ruby is not available and the suite falls back to comparing generated code.
 
+## Unsupported Features
+
+The Ruby backend does not yet implement every construct in Mochi. Missing
+features include:
+
+- Complex dataset queries using grouping, joins or pagination when compiling
+  with cross joins.
+- Block-bodied anonymous functions like `fun(x: int) { ... }`.
+
