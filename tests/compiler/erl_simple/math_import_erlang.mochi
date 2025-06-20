@@ -1,0 +1,9 @@
+import erlang "math" as math
+
+extern fun math.pi(): float
+extern fun math.pow(x: float, y: float): float
+
+let r = 3.0
+let area = math.pi() * math.pow(r, 2.0)
+
+print("Area:", area)

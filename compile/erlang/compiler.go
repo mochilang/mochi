@@ -20,6 +20,7 @@ type Compiler struct {
 	vars     map[string]string
 	counts   map[string]int
 	tmpCount int
+	modules  map[string]string
 }
 
 func copyMap[K comparable, V any](m map[K]V) map[K]V {
@@ -103,7 +104,13 @@ func (c *Compiler) newName(name string) string {
 
 // New returns a new Compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}, tmpCount: 0}
+	return &Compiler{
+		env:      env,
+		vars:     map[string]string{},
+		counts:   map[string]int{},
+		tmpCount: 0,
+		modules:  map[string]string{},
+	}
 }
 
 func (c *Compiler) writeIndent() {
@@ -128,6 +135,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("-module(%s).", mod))
 
+	// collect Erlang imports
+	for _, s := range prog.Statements {
+		if s.Import != nil && s.Import.Lang != nil && *s.Import.Lang == "erlang" {
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			if c.modules == nil {
+				c.modules = map[string]string{}
+			}
+			c.modules[alias] = strings.Trim(s.Import.Path, "\"")
+			if c.env != nil {
+				c.env.SetVar(alias, types.AnyType{}, true)
+			}
+		}
+	}
+
 	// collect exported functions
 	exports := []string{"main/1"}
 	for _, s := range prog.Statements {
@@ -149,7 +173,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("main(_) ->")
 	c.indent++
-	if err := c.compileBlock(prog.Statements, true, func(s *parser.Statement) bool { return s.Fun == nil }); err != nil {
+	if err := c.compileBlock(prog.Statements, true, func(s *parser.Statement) bool {
+		return s.Fun == nil && s.Import == nil && s.ExternFun == nil && s.ExternVar == nil && s.ExternType == nil && s.ExternObject == nil
+	}); err != nil {
 		return nil, err
 	}
 	c.indent--
@@ -289,7 +315,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Import != nil:
-		// import statements are ignored
+		if s.Import.Lang != nil && *s.Import.Lang == "erlang" {
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			mod := strings.Trim(s.Import.Path, "\"")
+			if c.modules == nil {
+				c.modules = map[string]string{}
+			}
+			c.modules[alias] = mod
+			if c.env != nil {
+				c.env.SetVar(alias, types.AnyType{}, true)
+			}
+		}
 		return nil
 	case s.Test != nil, s.Expect != nil:
 		// testing constructs are not supported yet
@@ -620,6 +659,23 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	if sel := p.Target.Selector; sel != nil {
+		if mod, ok := c.modules[sel.Root]; ok {
+			name := strings.Join(sel.Tail, "_")
+			if len(p.Ops) > 0 && p.Ops[0].Call != nil {
+				args := []string{}
+				for _, a := range p.Ops[0].Call.Args {
+					v, err := c.compileExpr(a)
+					if err != nil {
+						return "", err
+					}
+					args = append(args, v)
+				}
+				return fmt.Sprintf("%s:%s(%s)", mod, name, strings.Join(args, ", ")), nil
+			}
+			return fmt.Sprintf("%s:%s()", mod, name), nil
+		}
+	}
 	res, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err

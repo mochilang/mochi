@@ -86,9 +86,8 @@ features are not yet handled:
 - Generative AI helpers like `generate` or `fetch`
 - Logic programming constructs and streams
 - Agents and event streams
-- Foreign function imports via `extern`
-- Import statements
 - Test blocks and `expect` statements
+- Set operations like `union`, `union_all`, `except` and `intersect`
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs
 directly.
