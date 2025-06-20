@@ -19,8 +19,8 @@ string _sliceString(const string& s, int start, int end) {
 }
 
 int expand(string s, int left, int right){
-	int l = left;
-	int r = right;
+	auto l = left;
+	auto r = right;
 	auto n = s.size();
 	while (l >= 0 && r < n) {
 		if (_indexString(s, l) != _indexString(s, r)) {
@@ -36,8 +36,8 @@ string longestPalindrome(string s){
 	if (s.size() <= 1) {
 		return s;
 	}
-	int start = 0;
-	int end = 0;
+	auto start = 0;
+	auto end = 0;
 	auto n = s.size();
 	for (int i = 0; i < n; i++) {
 		auto len1 = expand(s, i, i);

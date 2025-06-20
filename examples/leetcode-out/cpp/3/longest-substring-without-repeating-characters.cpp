@@ -10,11 +10,11 @@ string _indexString(const string& s, int i) {
 
 int lengthOfLongestSubstring(string s){
 	auto n = s.size();
-	int start = 0;
-	int best = 0;
-	int i = 0;
+	auto start = 0;
+	auto best = 0;
+	auto i = 0;
 	while (i < n) {
-		int j = start;
+		auto j = start;
 		while (j < i) {
 			if (_indexString(s, j) == _indexString(s, i)) {
 				start = j + 1;
@@ -22,7 +22,7 @@ int lengthOfLongestSubstring(string s){
 			}
 			j = j + 1;
 		}
-		int length = i - start + 1;
+		auto length = i - start + 1;
 		if (length > best) {
 			best = length;
 		}

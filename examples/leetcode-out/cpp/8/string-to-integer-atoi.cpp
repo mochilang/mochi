@@ -53,21 +53,21 @@ int digit(string ch){
 }
 
 int myAtoi(string s){
-	int i = 0;
+	auto i = 0;
 	auto n = s.size();
 	while (i < n && _indexString(s, i) == _indexString(string(" "), 0)) {
 		i = i + 1;
 	}
-	int sign = 1;
+	auto sign = 1;
 	if (i < n && (_indexString(s, i) == _indexString(string("+"), 0) || _indexString(s, i) == _indexString(string("-"), 0))) {
 		if (_indexString(s, i) == _indexString(string("-"), 0)) {
 			sign = -1;
 		}
 		i = i + 1;
 	}
-	int result = 0;
+	auto result = 0;
 	while (i < n) {
-		string ch = _sliceString(s, i, i + 1);
+		auto ch = _sliceString(s, i, i + 1);
 		auto d = digit(ch);
 		if (d < 0) {
 			break;

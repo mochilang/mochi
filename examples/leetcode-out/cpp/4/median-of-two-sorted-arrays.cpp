@@ -3,8 +3,8 @@ using namespace std;
 
 double findMedianSortedArrays(vector<int> nums1, vector<int> nums2){
 	vector<int> merged = vector<int>{};
-	int i = 0;
-	int j = 0;
+	auto i = 0;
+	auto j = 0;
 	while (i < nums1.size() || j < nums2.size()) {
 		if (j >= nums2.size()) {
 			merged = ([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(merged, vector<int>{nums1[i]});
@@ -24,9 +24,9 @@ double findMedianSortedArrays(vector<int> nums1, vector<int> nums2){
 	if (total % 2 == 1) {
 		return merged[total / 2];
 	}
-	int mid1 = merged[total / 2 - 1];
-	int mid2 = merged[total / 2];
-	return (mid1 + mid2) / 2;
+	auto mid1 = merged[total / 2 - 1];
+	auto mid2 = merged[total / 2];
+	return (mid1 + mid2) / 2.0;
 }
 
 int main() {

@@ -2,15 +2,15 @@
 using namespace std;
 
 int reverse(int x){
-	int sign = 1;
-	int n = x;
+	auto sign = 1;
+	auto n = x;
 	if (n < 0) {
 		sign = -1;
 		n = -n;
 	}
-	int rev = 0;
+	auto rev = 0;
 	while (n != 0) {
-		int digit = n % 10;
+		auto digit = n % 10;
 		rev = rev * 10 + digit;
 		n = n / 10;
 	}
