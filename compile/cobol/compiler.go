@@ -385,6 +385,30 @@ func (c *Compiler) compileFor(n *ast.Node) {
 			}
 			c.indent--
 			c.writeln("    END-PERFORM")
+		case "selector":
+			if c.env != nil {
+				if t, err := c.env.GetVar(src.Value.(string)); err == nil {
+					if _, ok := t.(types.StringType); ok {
+						name := strings.ToUpper(src.Value.(string))
+						lenTmp := c.newTemp()
+						c.declare("01 IDX PIC 9.")
+						c.declare(fmt.Sprintf("01 %s PIC 9.", lenTmp))
+						c.declare("01 " + varName + " PIC X.")
+						c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION LENGTH(%s)", lenTmp, name))
+						c.writeln("    MOVE 0 TO IDX")
+						c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %s", lenTmp))
+						c.indent++
+						c.writeln(fmt.Sprintf("MOVE %s(IDX + 1:1) TO %s", name, varName))
+						for _, st := range n.Children[1].Children {
+							c.compileNode(st)
+						}
+						c.indent--
+						c.writeln("    END-PERFORM")
+						return
+					}
+				}
+			}
+			c.writeln("    *> unsupported for-in loop")
 		default:
 			c.writeln("    *> unsupported for-in loop")
 		}
