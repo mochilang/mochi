@@ -63,10 +63,14 @@ The current C backend only implements a small subset of Mochi. Several
 constructs required by later LeetCode problems are not yet supported. Missing
 features include:
 
-- `map` types and the `in` membership operator
+- `map` types
 - query expressions such as `from`/`sort by`/`select`
-- detection of `list<string>` parameters (the runtime type is only emitted when
-  used inside a function)
+- struct and enum definitions
+- list set operators like `union`, `union all`, `except` and `intersect`
+- agent-related constructs (`agent`, `stream`, `intent`)
+
+The backend now supports membership checks in integer and string lists, but map
+membership and other advanced features remain unimplemented.
 
 Problems relying on these features (for example LeetCode problems 13–25 and
 30) fail to compile at the moment.
