@@ -333,7 +333,24 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("->(%s){ %s }", strings.Join(params, ", "), expr), nil
 	}
-	return "", fmt.Errorf("block function expressions not supported")
+	if len(fn.BlockBody) > 0 {
+		sub := &Compiler{env: c.env, indent: c.indent + 1}
+		for _, s := range fn.BlockBody {
+			if err := sub.compileStmt(s); err != nil {
+				return "", err
+			}
+		}
+		body := sub.buf.String()
+		var b strings.Builder
+		b.WriteString("->(" + strings.Join(params, ", ") + "){\n")
+		b.WriteString(body)
+		for i := 0; i < c.indent; i++ {
+			b.WriteByte('\t')
+		}
+		b.WriteString("}")
+		return b.String(), nil
+	}
+	return "", fmt.Errorf("empty function body")
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -386,7 +403,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	// advanced features not yet supported for cross joins
-	if q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return "", fmt.Errorf("advanced query clauses not supported")
 	}
 
@@ -411,7 +428,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(f.Var), fromSrcs[i]))
 		indent += "\t"
 	}
-	b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+	if q.Where != nil {
+		cond, err := c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("%sif %s\n", indent, cond))
+		indent += "\t"
+		b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+	} else {
+		b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+	}
 	for range q.Froms {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "end\n")
