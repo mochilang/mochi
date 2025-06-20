@@ -766,12 +766,51 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.helpers["groupBy"] {
+		c.writeln("template<typename Src, typename KeyFunc> auto _group_by(const Src& src, KeyFunc keyfn) {")
+		c.writeln("\tusing ElemT = typename std::decay<decltype(*std::begin(src))>::type;")
+		c.writeln("\tusing KeyT = decltype(keyfn(*std::begin(src)));")
+		c.writeln("\tstruct _Group { KeyT Key; vector<ElemT> Items; };")
+		c.writeln("\tunordered_map<KeyT, _Group> groups;")
+		c.writeln("\tvector<KeyT> order;")
+		c.writeln("\tfor (const auto& it : src) {")
+		c.writeln("\t\tKeyT k = keyfn(it);")
+		c.writeln("\t\tif (!groups.count(k)) { groups[k] = _Group{k, {}}; order.push_back(k); }")
+		c.writeln("\t\tgroups[k].Items.push_back(it);")
+		c.writeln("\t}")
+		c.writeln("\tvector<_Group> res;")
+		c.writeln("\tfor (const auto& k : order) res.push_back(groups[k]);")
+		c.writeln("\treturn res;")
+		c.writeln("}")
+		c.writeln("")
+	}
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-       if q.Group != nil || len(q.Joins) != 0 {
-               return "", fmt.Errorf("query not supported")
-       }
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		c.helpers["groupBy"] = true
+		src := c.compileExpr(q.Source)
+		key := c.compileExpr(q.Group.Expr)
+		sel := c.compileExpr(q.Select)
+		resType := c.guessExprType(q.Select)
+		if resType == "" {
+			resType = "auto"
+		}
+		var buf bytes.Buffer
+		buf.WriteString("([&]() -> vector<" + resType + "> {\n")
+		buf.WriteString("\tauto _src = " + src + ";\n")
+		buf.WriteString("\tauto _groups = _group_by(_src, [&](auto& " + q.Var + "){ return " + key + "; });\n")
+		buf.WriteString("\tvector<" + resType + "> _res;\n")
+		buf.WriteString("\tfor (auto& " + q.Group.Name + " : _groups) {\n")
+		buf.WriteString("\t\t_res.push_back(" + sel + ");\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn _res;\n")
+		buf.WriteString("})()")
+		return buf.String(), nil
+	}
+	if q.Group != nil || len(q.Joins) != 0 {
+		return "", fmt.Errorf("query not supported")
+	}
 	src := c.compileExpr(q.Source)
 	vars := []string{q.Var}
 	srcs := []string{src}
@@ -780,14 +819,14 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		srcs = append(srcs, c.compileExpr(f.Src))
 	}
 	sel := c.compileExpr(q.Select)
-       resType := c.guessExprType(q.Select)
-       if resType == "" {
-               resType = "auto"
-       }
-       var sortExpr string
-       if q.Sort != nil {
-               sortExpr = c.compileExpr(q.Sort)
-       }
+	resType := c.guessExprType(q.Select)
+	if resType == "" {
+		resType = "auto"
+	}
+	var sortExpr string
+	if q.Sort != nil {
+		sortExpr = c.compileExpr(q.Sort)
+	}
 	var skipExpr, takeExpr string
 	if q.Skip != nil {
 		skipExpr = c.compileExpr(q.Skip)
@@ -796,12 +835,12 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		takeExpr = c.compileExpr(q.Take)
 	}
 	var buf bytes.Buffer
-       buf.WriteString("([&]() -> vector<" + resType + "> {\n")
-       if q.Sort != nil {
-               buf.WriteString("\tvector<pair<" + resType + ", " + resType + ">> _tmp;\n")
-       } else {
-               buf.WriteString("\tvector<" + resType + "> _res;\n")
-       }
+	buf.WriteString("([&]() -> vector<" + resType + "> {\n")
+	if q.Sort != nil {
+		buf.WriteString("\tvector<pair<" + resType + ", " + resType + ">> _tmp;\n")
+	} else {
+		buf.WriteString("\tvector<" + resType + "> _res;\n")
+	}
 	indent := "\t"
 	for i, v := range vars {
 		buf.WriteString(indent + "for (auto& " + v + " : " + srcs[i] + ") {\n")
@@ -812,29 +851,29 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(indent + "if (" + cond + ") {\n")
 		indent += "\t"
 	}
-       if q.Sort != nil {
-               buf.WriteString(indent + "_tmp.push_back({" + sortExpr + ", " + sel + "});\n")
-       } else {
-               buf.WriteString(indent + "_res.push_back(" + sel + ");\n")
-       }
+	if q.Sort != nil {
+		buf.WriteString(indent + "_tmp.push_back({" + sortExpr + ", " + sel + "});\n")
+	} else {
+		buf.WriteString(indent + "_res.push_back(" + sel + ");\n")
+	}
 	if q.Where != nil {
 		indent = indent[:len(indent)-1]
 		buf.WriteString(indent + "}\n")
 	}
-       for range vars {
-               indent = indent[:len(indent)-1]
-               buf.WriteString(indent + "}\n")
-       }
-       if q.Sort != nil {
-               buf.WriteString("\tstd::sort(_tmp.begin(), _tmp.end(), [](const auto& a, const auto& b){ return a.first < b.first; });\n")
-               buf.WriteString("\tvector<" + resType + "> _res;\n")
-               buf.WriteString("\t_res.reserve(_tmp.size());\n")
-               buf.WriteString("\tfor (auto& _it : _tmp) _res.push_back(_it.second);\n")
-       }
-       if skipExpr != "" {
-               buf.WriteString("\tint _skip = " + skipExpr + ";\n")
-               buf.WriteString("\tif (_skip < (int)_res.size()) _res.erase(_res.begin(), _res.begin() + _skip); else _res.clear();\n")
-       }
+	for range vars {
+		indent = indent[:len(indent)-1]
+		buf.WriteString(indent + "}\n")
+	}
+	if q.Sort != nil {
+		buf.WriteString("\tstd::sort(_tmp.begin(), _tmp.end(), [](const auto& a, const auto& b){ return a.first < b.first; });\n")
+		buf.WriteString("\tvector<" + resType + "> _res;\n")
+		buf.WriteString("\t_res.reserve(_tmp.size());\n")
+		buf.WriteString("\tfor (auto& _it : _tmp) _res.push_back(_it.second);\n")
+	}
+	if skipExpr != "" {
+		buf.WriteString("\tint _skip = " + skipExpr + ";\n")
+		buf.WriteString("\tif (_skip < (int)_res.size()) _res.erase(_res.begin(), _res.begin() + _skip); else _res.clear();\n")
+	}
 	if takeExpr != "" {
 		buf.WriteString("\tint _take = " + takeExpr + ";\n")
 		buf.WriteString("\tif (_take < (int)_res.size()) _res.resize(_take);\n")
