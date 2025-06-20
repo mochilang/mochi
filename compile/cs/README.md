@@ -130,3 +130,11 @@ This script attempts platform‑specific installation via Homebrew or `apt-get` 
 ## Notes
 
 The C# backend focuses on fundamental features: functions, control flow, structs, unions and query expressions. Advanced Mochi capabilities such as streams, LLM helpers and extern objects are not yet implemented in this generator.
+
+### Unsupported features
+
+Several LeetCode problems currently fail to compile due to missing support for
+some collection helpers. Operations like `GetRange`, list concatenation using
+`+`, and generic dictionary casts are not generated correctly. Until these
+helpers are implemented, only the first dozen problems compile and run
+successfully.
