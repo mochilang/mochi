@@ -1,0 +1,11 @@
+let nums = [1, 2, 3]
+let letters = ["A", "B"]
+let combos = from n in nums
+             from l in letters
+             sort by -n
+             skip 1
+             take 3
+             select {n: n, l: l}
+for c in combos {
+  print(c.n, c.l)
+}

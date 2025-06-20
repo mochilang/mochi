@@ -457,9 +457,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.env = orig
 
 	if len(q.Froms) > 0 {
-		if sortExpr != "" || skipExpr != "" || takeExpr != "" {
-			return "", fmt.Errorf("unsupported query expression")
-		}
 		parts := make([]string, len(q.Froms))
 		for i, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
@@ -468,6 +465,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			parts[i] = fmt.Sprintf("%s <- %s", f.Var, fs)
 		}
+
+		item := sel
+		if sortExpr != "" {
+			item = fmt.Sprintf("{%s, %s}", sel, sortExpr)
+		}
+
 		var b strings.Builder
 		b.WriteString("for ")
 		b.WriteString(q.Var)
@@ -482,8 +485,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(cond)
 		}
 		b.WriteString(", do: ")
-		b.WriteString(sel)
-		return b.String(), nil
+		b.WriteString(item)
+
+		expr := b.String()
+
+		if sortExpr != "" {
+			expr = fmt.Sprintf("Enum.sort_by((%s), fn {_, k} -> k end)", expr)
+		}
+		if skipExpr != "" {
+			expr = fmt.Sprintf("Enum.drop(%s, %s)", expr, skipExpr)
+		}
+		if takeExpr != "" {
+			expr = fmt.Sprintf("Enum.take(%s, %s)", expr, takeExpr)
+		}
+		if sortExpr != "" {
+			expr = fmt.Sprintf("Enum.map(%s, fn {v, _} -> v end)", expr)
+		}
+
+		return expr, nil
 	}
 
 	items := src
