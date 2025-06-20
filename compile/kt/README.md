@@ -321,4 +321,13 @@ go test ./compile/kt -tags slow
 
 The tests automatically skip when `kotlinc` is unavailable.
 
+## Unsupported Features
+
+The Kotlin backend still lacks several Mochi features that other compilers
+support:
+
+- Advanced dataset queries such as joins and grouping
+- Helpers for loading and saving datasets
+- External helpers like `_genText`, `_fetch` and concurrency primitives
+
 
