@@ -32,6 +32,43 @@ type Compiler struct {
 	tests         []testInfo
 }
 
+func (c *Compiler) compileTypeDecls(prog *parser.Program) error {
+	found := false
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return err
+			}
+			found = true
+		}
+	}
+	if found {
+		c.writeln("")
+	}
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		for _, v := range t.Variants {
+			fields := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				fields[i] = sanitizeName(f.Name)
+			}
+			c.writeln(fmt.Sprintf("-record(%s, {%s}).", sanitizeName(v.Name), strings.Join(fields, ", ")))
+		}
+		return nil
+	}
+	fields := []string{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fields = append(fields, sanitizeName(m.Field.Name))
+		}
+	}
+	c.writeln(fmt.Sprintf("-record(%s, {%s}).", sanitizeName(t.Name), strings.Join(fields, ", ")))
+	return nil
+}
+
 type testInfo struct {
 	name  string
 	label string
@@ -157,6 +194,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("-export([" + strings.Join(exports, ", ") + "]).")
 	c.writeln("")
 
+	if err := c.compileTypeDecls(prog); err != nil {
+		return nil, err
+	}
+
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -176,7 +217,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent++
 	body := []*parser.Statement{}
 	for _, s := range prog.Statements {
-		if s.Fun == nil && s.Test == nil {
+		if s.Fun == nil && s.Test == nil && s.Type == nil {
 			body = append(body, s)
 		}
 	}
@@ -345,6 +386,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Type != nil:
+		// type declarations are emitted globally
+		return nil
 	case s.Import != nil:
 		if s.Import.Lang == nil || *s.Import.Lang == "erlang" {
 			return c.compilePackageImport(s.Import)
