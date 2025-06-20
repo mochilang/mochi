@@ -854,6 +854,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		}
 		return fmt.Sprintf("new %s(%s)", sanitizeName(p.Struct.Name), joinArgs(args)), nil
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
 		for _, f := range p.Selector.Tail {
@@ -911,6 +913,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.helpers["_json"] = true
 			return "_json(" + args[0] + ")", nil
 		}
+		if c.env != nil {
+			if _, ok := c.env.GetFunc(p.Call.Func); !ok {
+				if t, err := c.env.GetVar(p.Call.Func); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						if len(ft.Params) == 0 {
+							return name + ".get()", nil
+						}
+						return name + ".apply(" + joinArgs(args) + ")", nil
+					}
+				}
+			}
+		}
 		return name + "(" + joinArgs(args) + ")", nil
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
@@ -920,6 +934,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileExpr(p.Group)
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	child := types.NewEnv(c.env)
+	for i, p := range fn.Params {
+		if p.Type != nil {
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		} else {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+		params[i] = sanitizeName(p.Name)
+	}
+	sub := &Compiler{helpers: c.helpers, env: child}
+	sub.indent = 1
+	if fn.ExprBody != nil {
+		expr, err := sub.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		sub.writeln("return " + expr + ";")
+	} else {
+		for _, s := range fn.BlockBody {
+			if err := sub.compileStmt(s); err != nil {
+				return "", err
+			}
+		}
+	}
+	body := indentBlock(sub.buf.String(), 1)
+	return "(" + strings.Join(params, ", ") + ") -> {\n" + body + "}", nil
 }
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
@@ -968,6 +1012,21 @@ func (c *Compiler) javaType(t types.Type) string {
 		key = boxedType(key)
 		val = boxedType(val)
 		return "java.util.Map<" + key + ", " + val + ">"
+	case types.FuncType:
+		ret := boxedType(c.javaType(tt.Return))
+		if len(tt.Params) == 0 {
+			return "java.util.function.Supplier<" + ret + ">"
+		}
+		if len(tt.Params) == 1 {
+			arg := boxedType(c.javaType(tt.Params[0]))
+			return "java.util.function.Function<" + arg + ", " + ret + ">"
+		}
+		if len(tt.Params) == 2 {
+			a := boxedType(c.javaType(tt.Params[0]))
+			b := boxedType(c.javaType(tt.Params[1]))
+			return "java.util.function.BiFunction<" + a + ", " + b + ", " + ret + ">"
+		}
+		return "java.util.function.Function"
 	case types.StructType:
 		return sanitizeName(tt.Name)
 	default:
