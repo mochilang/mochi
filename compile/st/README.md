@@ -29,3 +29,7 @@ The following language constructs are not yet handled:
 - Generative AI helpers such as `generate`
 - Logic programming (`fact`, `rule`, `query`)
 - Foreign function interface declarations (`extern`)
+- User-defined types declared with `type`
+- Test blocks and `expect` assertions
+- Import and package statements
+- Pattern matching with `match`

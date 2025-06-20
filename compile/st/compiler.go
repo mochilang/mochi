@@ -55,6 +55,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	funCode := append([]byte(nil), c.buf.Bytes()...)
 
+	// compile test blocks
+	c.buf = bytes.Buffer{}
+	testNames := []string{}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			testNames = append(testNames, "test_"+sanitizeName(s.Test.Name))
+			c.writeln("")
+		}
+	}
+	testCode := append([]byte(nil), c.buf.Bytes()...)
+
 	// compile main statements
 	c.buf = bytes.Buffer{}
 	for _, s := range prog.Statements {
@@ -65,6 +79,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
+	for _, name := range testNames {
+		c.writeln(fmt.Sprintf("Main %s.", name))
+	}
 	mainCode := append([]byte(nil), c.buf.Bytes()...)
 
 	// assemble
@@ -72,6 +89,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
 	c.writeln("")
 	c.buf.Write(funCode)
+	c.buf.Write(testCode)
 	if c.needCount || c.needBreak || c.needContinue {
 		c.emitHelpers()
 	}
@@ -198,6 +216,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("ContinueSignal signal")
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Fun != nil:
@@ -314,6 +336,30 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 		c.writeln("] on: BreakSignal do: [:ex | ]")
 	}
 	c.writeln(".")
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln("!Main class methodsFor: 'tests'!")
+	c.writeln(name)
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writelnNoIndent("!")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(%s) ifFalse: [ self error: 'expect failed' ]", expr))
 	return nil
 }
 
