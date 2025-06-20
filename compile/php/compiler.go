@@ -11,21 +11,33 @@ import (
 	"mochi/types"
 )
 
+const funcPrefix = "mochi_"
+
 // Compiler translates a Mochi AST into PHP source code.
 type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	env    *types.Env
 	locals map[string]bool
+	funcs  map[string]bool
 }
 
 // New creates a new PHP compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[string]bool{}} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, locals: map[string]bool{}, funcs: map[string]bool{}}
+}
 
 // Compile generates PHP code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.writeln("<?php")
+
+	c.funcs = map[string]bool{}
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			c.funcs[s.Fun.Name] = true
+		}
+	}
 
 	// functions first
 	for _, s := range prog.Statements {
@@ -60,7 +72,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// run tests
 	for _, s := range prog.Statements {
 		if s.Test != nil {
-			name := "test_" + sanitizeName(s.Test.Name)
+			name := funcPrefix + "test_" + sanitizeName(s.Test.Name)
 			c.writeln(name + "();")
 		}
 	}
@@ -71,6 +83,44 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Fun != nil:
+		fn := s.Fun
+		params := make([]string, len(fn.Params))
+		for i, p := range fn.Params {
+			params[i] = "$" + sanitizeName(p.Name)
+		}
+		fe := &parser.FunExpr{Params: fn.Params, BlockBody: fn.Body}
+		captured := freeVars(fe, params)
+		captured = append(captured, "$"+sanitizeName(fn.Name))
+		oldLocals := c.locals
+		c.locals = map[string]bool{}
+		for _, p := range fn.Params {
+			c.locals[p.Name] = true
+		}
+		// allow recursive calls
+		c.locals[fn.Name] = true
+		name := sanitizeName(fn.Name)
+		c.writeln(fmt.Sprintf("$%s = null;", name))
+		use := ""
+		if len(captured) > 0 {
+			for i, v := range captured {
+				captured[i] = "&" + v
+			}
+			use = " use (" + strings.Join(captured, ", ") + ")"
+		}
+		c.writeln(fmt.Sprintf("$%s = function (%s)%s {", name, strings.Join(params, ", "), use))
+		c.indent++
+		for _, st := range fn.Body {
+			if err := c.compileStmt(st); err != nil {
+				c.locals = oldLocals
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("};")
+		c.locals = oldLocals
+		c.locals[fn.Name] = true
+		return nil
 	case s.Let != nil:
 		return c.compileLet(s.Let)
 	case s.Var != nil:
@@ -113,32 +163,50 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
+	muts := mutatedVars(fn.Body)
 	for i, p := range fn.Params {
-		params[i] = "$" + sanitizeName(p.Name)
+		name := "$" + sanitizeName(p.Name)
+		if muts[p.Name] {
+			if isCompositeParam(p) {
+				name = "&" + name
+			}
+		}
+		params[i] = name
 	}
-	c.writeln(fmt.Sprintf("function %s(%s) {", sanitizeName(fn.Name), strings.Join(params, ", ")))
+	c.writeln(fmt.Sprintf("function %s%s(%s) {", funcPrefix, sanitizeName(fn.Name), strings.Join(params, ", ")))
+	oldLocals := c.locals
+	c.locals = map[string]bool{}
+	for _, p := range fn.Params {
+		c.locals[p.Name] = true
+	}
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.locals = oldLocals
 			return err
 		}
 	}
 	c.indent--
 	c.writeln("}")
+	c.locals = oldLocals
 	return nil
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
-	name := "test_" + sanitizeName(t.Name)
+	name := funcPrefix + "test_" + sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("function %s() {", name))
+	oldLocals := c.locals
+	c.locals = map[string]bool{}
 	c.indent++
 	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.locals = oldLocals
 			return err
 		}
 	}
 	c.indent--
 	c.writeln("}")
+	c.locals = oldLocals
 	return nil
 }
 
@@ -461,6 +529,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return "(" + inner + ")", nil
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
@@ -512,10 +582,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if c.locals[name] {
 			return fmt.Sprintf("$%s(%s)", sanitizeName(name), strings.Join(args, ", ")), nil
 		}
-		if c.env != nil {
-			if _, ok := c.env.GetFunc(name); ok {
-				return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
-			}
+		if c.funcs[name] {
+			return fmt.Sprintf("%s%s(%s)", funcPrefix, sanitizeName(name), strings.Join(args, ", ")), nil
 		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
@@ -541,6 +609,87 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		items[i] = fmt.Sprintf("%s => %s", k, v)
 	}
 	return "[" + strings.Join(items, ", ") + "]", nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	// Special-case simple sort by variable with no from/where and select same variable
+	if len(q.Froms) == 0 && q.Where == nil && q.Sort != nil {
+		if sname, ok := identName(q.Sort); ok && sname == q.Var {
+			if selname, ok2 := identName(q.Select); ok2 && selname == q.Var {
+				return fmt.Sprintf("(function($tmp){ sort($tmp); return $tmp; })(%s)", src), nil
+			}
+		}
+	}
+
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	capture := queryFreeVars(q)
+	c.env = orig
+
+	var b strings.Builder
+	use := ""
+	if len(capture) > 0 {
+		use = " use (" + strings.Join(capture, ", ") + ")"
+	}
+	b.WriteString("(function()" + use + " {\n")
+	b.WriteString("\t$res = [];\n")
+	b.WriteString(fmt.Sprintf("\tforeach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", src, sanitizeName(q.Var)))
+	indent := "\t\t"
+	for i, fs := range fromSrcs {
+		b.WriteString(fmt.Sprintf(indent+"foreach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", fs, sanitizeName(q.Froms[i].Var)))
+		indent += "\t"
+	}
+	if cond != "" {
+		b.WriteString(indent + "if (" + cond + ") {\n")
+		indent += "\t"
+	}
+	b.WriteString(indent + "$res[] = " + sel + ";\n")
+	if cond != "" {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	for range fromSrcs {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	b.WriteString("\t}\n")
+	b.WriteString("\treturn $res;\n")
+	b.WriteString("})()")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
@@ -702,6 +851,37 @@ func scanPostfix(p *parser.PostfixExpr, vars map[string]struct{}) {
 	}
 }
 
+func queryFreeVars(q *parser.QueryExpr) []string {
+	vars := map[string]struct{}{}
+	scanExpr(q.Source, vars)
+	for _, f := range q.Froms {
+		scanExpr(f.Src, vars)
+	}
+	for _, j := range q.Joins {
+		scanExpr(j.Src, vars)
+		scanExpr(j.On, vars)
+	}
+	scanExpr(q.Select, vars)
+	scanExpr(q.Where, vars)
+	scanExpr(q.Sort, vars)
+	scanExpr(q.Skip, vars)
+	scanExpr(q.Take, vars)
+	delete(vars, q.Var)
+	for _, f := range q.Froms {
+		delete(vars, f.Var)
+	}
+	outMap := map[string]struct{}{}
+	for k := range vars {
+		outMap["$"+sanitizeName(k)] = struct{}{}
+	}
+	out := make([]string, 0, len(outMap))
+	for k := range outMap {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
+}
+
 func scanPrimary(p *parser.Primary, vars map[string]struct{}) {
 	if p == nil {
 		return
@@ -734,4 +914,59 @@ func scanPrimary(p *parser.Primary, vars map[string]struct{}) {
 			scanExpr(a, vars)
 		}
 	}
+}
+
+func mutatedVars(stmts []*parser.Statement) map[string]bool {
+	vars := map[string]bool{}
+	var walk func(*parser.Statement)
+	walk = func(s *parser.Statement) {
+		switch {
+		case s.Assign != nil:
+			vars[s.Assign.Name] = true
+		case s.For != nil:
+			for _, st := range s.For.Body {
+				walk(st)
+			}
+		case s.While != nil:
+			for _, st := range s.While.Body {
+				walk(st)
+			}
+		case s.If != nil:
+			for _, st := range s.If.Then {
+				walk(st)
+			}
+			if s.If.ElseIf != nil {
+				walk(&parser.Statement{If: s.If.ElseIf})
+			}
+			for _, st := range s.If.Else {
+				walk(st)
+			}
+		}
+	}
+	for _, st := range stmts {
+		walk(st)
+	}
+	return vars
+}
+
+func isComposite(t types.Type) bool {
+	switch t.(type) {
+	case types.ListType, types.MapType, types.StructType, types.UnionType:
+		return true
+	default:
+		return false
+	}
+}
+
+func isCompositeParam(p *parser.Param) bool {
+	if p == nil || p.Type == nil {
+		return false
+	}
+	if p.Type.Generic != nil {
+		switch p.Type.Generic.Name {
+		case "list", "map":
+			return true
+		}
+	}
+	return false
 }

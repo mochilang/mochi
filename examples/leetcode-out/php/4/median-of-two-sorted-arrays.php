@@ -1,5 +1,5 @@
 <?php
-function findMedianSortedArrays($nums1, $nums2) {
+function mochi_findMedianSortedArrays($nums1, $nums2) {
 	$merged = [];
 	$i = 0;
 	$j = 0;
@@ -29,23 +29,23 @@ function findMedianSortedArrays($nums1, $nums2) {
 	return ((is_int((((is_array($mid1) && is_array($mid2)) ? array_merge($mid1, $mid2) : ((is_string($mid1) || is_string($mid2)) ? ($mid1 . $mid2) : ($mid1 + $mid2))))) && is_int(2.0)) ? intdiv((((is_array($mid1) && is_array($mid2)) ? array_merge($mid1, $mid2) : ((is_string($mid1) || is_string($mid2)) ? ($mid1 . $mid2) : ($mid1 + $mid2)))), 2.0) : ((((is_array($mid1) && is_array($mid2)) ? array_merge($mid1, $mid2) : ((is_string($mid1) || is_string($mid2)) ? ($mid1 . $mid2) : ($mid1 + $mid2)))) / 2.0));
 }
 
-function test_example_1() {
-	if (!((findMedianSortedArrays([1, 3], [2]) == 2.0))) { throw new Exception('expect failed'); }
+function mochi_test_example_1() {
+	if (!((mochi_findMedianSortedArrays([1, 3], [2]) == 2.0))) { throw new Exception('expect failed'); }
 }
 
-function test_example_2() {
-	if (!((findMedianSortedArrays([1, 2], [3, 4]) == 2.5))) { throw new Exception('expect failed'); }
+function mochi_test_example_2() {
+	if (!((mochi_findMedianSortedArrays([1, 2], [3, 4]) == 2.5))) { throw new Exception('expect failed'); }
 }
 
-function test_empty_first() {
-	if (!((findMedianSortedArrays([], [1]) == 1.0))) { throw new Exception('expect failed'); }
+function mochi_test_empty_first() {
+	if (!((mochi_findMedianSortedArrays([], [1]) == 1.0))) { throw new Exception('expect failed'); }
 }
 
-function test_empty_second() {
-	if (!((findMedianSortedArrays([2], []) == 2.0))) { throw new Exception('expect failed'); }
+function mochi_test_empty_second() {
+	if (!((mochi_findMedianSortedArrays([2], []) == 2.0))) { throw new Exception('expect failed'); }
 }
 
-test_example_1();
-test_example_2();
-test_empty_first();
-test_empty_second();
+mochi_test_example_1();
+mochi_test_example_2();
+mochi_test_empty_first();
+mochi_test_empty_second();

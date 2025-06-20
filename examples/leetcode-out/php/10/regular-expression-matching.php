@@ -1,5 +1,5 @@
 <?php
-function isMatch($s, $p) {
+function mochi_isMatch($s, $p) {
 	$m = (is_array($s) ? count($s) : strlen($s));
 	$n = (is_array($p) ? count($p) : strlen($p));
 	$dp = [];
@@ -25,18 +25,32 @@ function isMatch($s, $p) {
 					$first = true;
 				}
 			}
-			if (((((is_array($j2) && is_array(1)) ? array_merge($j2, 1) : ((is_string($j2) || is_string(1)) ? ($j2 . 1) : ($j2 + 1))) < $n) && ($p[((is_array($j2) && is_array(1)) ? array_merge($j2, 1) : ((is_string($j2) || is_string(1)) ? ($j2 . 1) : ($j2 + 1)))] == "*"))) {
-				if (($dp[$i2][((is_array($j2) && is_array(2)) ? array_merge($j2, 2) : ((is_string($j2) || is_string(2)) ? ($j2 . 2) : ($j2 + 2)))] || (($first && $dp[((is_array($i2) && is_array(1)) ? array_merge($i2, 1) : ((is_string($i2) || is_string(1)) ? ($i2 . 1) : ($i2 + 1)))][$j2])))) {
-					$dp[$i2][$j2] = true;
-				} else {
-					$dp[$i2][$j2] = false;
+			$star = false;
+			if ((((is_array($j2) && is_array(1)) ? array_merge($j2, 1) : ((is_string($j2) || is_string(1)) ? ($j2 . 1) : ($j2 + 1))) < $n)) {
+				if (($p[((is_array($j2) && is_array(1)) ? array_merge($j2, 1) : ((is_string($j2) || is_string(1)) ? ($j2 . 1) : ($j2 + 1)))] == "*")) {
+					$star = true;
 				}
+			}
+			if ($star) {
+				$ok = false;
+				if ($dp[$i2][((is_array($j2) && is_array(2)) ? array_merge($j2, 2) : ((is_string($j2) || is_string(2)) ? ($j2 . 2) : ($j2 + 2)))]) {
+					$ok = true;
+				} else {
+					if ($first) {
+						if ($dp[((is_array($i2) && is_array(1)) ? array_merge($i2, 1) : ((is_string($i2) || is_string(1)) ? ($i2 . 1) : ($i2 + 1)))][$j2]) {
+							$ok = true;
+						}
+					}
+				}
+				$dp[$i2][$j2] = $ok;
 			} else {
-				if (($first && $dp[((is_array($i2) && is_array(1)) ? array_merge($i2, 1) : ((is_string($i2) || is_string(1)) ? ($i2 . 1) : ($i2 + 1)))][((is_array($j2) && is_array(1)) ? array_merge($j2, 1) : ((is_string($j2) || is_string(1)) ? ($j2 . 1) : ($j2 + 1)))])) {
-					$dp[$i2][$j2] = true;
-				} else {
-					$dp[$i2][$j2] = false;
+				$ok = false;
+				if ($first) {
+					if ($dp[((is_array($i2) && is_array(1)) ? array_merge($i2, 1) : ((is_string($i2) || is_string(1)) ? ($i2 . 1) : ($i2 + 1)))][((is_array($j2) && is_array(1)) ? array_merge($j2, 1) : ((is_string($j2) || is_string(1)) ? ($j2 . 1) : ($j2 + 1)))]) {
+						$ok = true;
+					}
 				}
+				$dp[$i2][$j2] = $ok;
 			}
 			$j2 = ($j2 - 1);
 		}
@@ -45,28 +59,28 @@ function isMatch($s, $p) {
 	return $dp[0][0];
 }
 
-function test_example_1() {
-	if (!((isMatch("aa", "a") == false))) { throw new Exception('expect failed'); }
+function mochi_test_example_1() {
+	if (!((mochi_isMatch("aa", "a") == false))) { throw new Exception('expect failed'); }
 }
 
-function test_example_2() {
-	if (!((isMatch("aa", "a*") == true))) { throw new Exception('expect failed'); }
+function mochi_test_example_2() {
+	if (!((mochi_isMatch("aa", "a*") == true))) { throw new Exception('expect failed'); }
 }
 
-function test_example_3() {
-	if (!((isMatch("ab", ".*") == true))) { throw new Exception('expect failed'); }
+function mochi_test_example_3() {
+	if (!((mochi_isMatch("ab", ".*") == true))) { throw new Exception('expect failed'); }
 }
 
-function test_example_4() {
-	if (!((isMatch("aab", "c*a*b") == true))) { throw new Exception('expect failed'); }
+function mochi_test_example_4() {
+	if (!((mochi_isMatch("aab", "c*a*b") == true))) { throw new Exception('expect failed'); }
 }
 
-function test_example_5() {
-	if (!((isMatch("mississippi", "mis*is*p*.") == false))) { throw new Exception('expect failed'); }
+function mochi_test_example_5() {
+	if (!((mochi_isMatch("mississippi", "mis*is*p*.") == false))) { throw new Exception('expect failed'); }
 }
 
-test_example_1();
-test_example_2();
-test_example_3();
-test_example_4();
-test_example_5();
+mochi_test_example_1();
+mochi_test_example_2();
+mochi_test_example_3();
+mochi_test_example_4();
+mochi_test_example_5();

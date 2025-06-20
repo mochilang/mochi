@@ -1,5 +1,5 @@
 <?php
-function isPalindrome($x) {
+function mochi_isPalindrome($x) {
 	if (($x < 0)) {
 		return false;
 	}
@@ -13,23 +13,23 @@ function isPalindrome($x) {
 	return true;
 }
 
-function test_example_1() {
-	if (!((isPalindrome(121) == true))) { throw new Exception('expect failed'); }
+function mochi_test_example_1() {
+	if (!((mochi_isPalindrome(121) == true))) { throw new Exception('expect failed'); }
 }
 
-function test_example_2() {
-	if (!((isPalindrome(-121) == false))) { throw new Exception('expect failed'); }
+function mochi_test_example_2() {
+	if (!((mochi_isPalindrome(-121) == false))) { throw new Exception('expect failed'); }
 }
 
-function test_example_3() {
-	if (!((isPalindrome(10) == false))) { throw new Exception('expect failed'); }
+function mochi_test_example_3() {
+	if (!((mochi_isPalindrome(10) == false))) { throw new Exception('expect failed'); }
 }
 
-function test_zero() {
-	if (!((isPalindrome(0) == true))) { throw new Exception('expect failed'); }
+function mochi_test_zero() {
+	if (!((mochi_isPalindrome(0) == true))) { throw new Exception('expect failed'); }
 }
 
-test_example_1();
-test_example_2();
-test_example_3();
-test_zero();
+mochi_test_example_1();
+mochi_test_example_2();
+mochi_test_example_3();
+mochi_test_zero();

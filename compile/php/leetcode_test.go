@@ -1,6 +1,7 @@
 package phpcode_test
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -66,93 +67,16 @@ func TestLeetCode1(t *testing.T) {
 	}
 }
 
-func TestLeetCode2(t *testing.T) {
+func TestLeetCodeProblems(t *testing.T) {
 	if err := phpcode.EnsurePHP(); err != nil {
 		t.Skipf("php not installed: %v", err)
 	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "2"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode3(t *testing.T) {
-	if err := phpcode.EnsurePHP(); err != nil {
-		t.Skipf("php not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "3"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode4(t *testing.T) {
-	if err := phpcode.EnsurePHP(); err != nil {
-		t.Skipf("php not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "4"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode5(t *testing.T) {
-	if err := phpcode.EnsurePHP(); err != nil {
-		t.Skipf("php not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "5"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode6(t *testing.T) {
-	if err := phpcode.EnsurePHP(); err != nil {
-		t.Skipf("php not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "6"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode7(t *testing.T) {
-	if err := phpcode.EnsurePHP(); err != nil {
-		t.Skipf("php not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "7"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode8(t *testing.T) {
-	if err := phpcode.EnsurePHP(); err != nil {
-		t.Skipf("php not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "8"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode9(t *testing.T) {
-	if err := phpcode.EnsurePHP(); err != nil {
-		t.Skipf("php not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "9"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode10(t *testing.T) {
-	if err := phpcode.EnsurePHP(); err != nil {
-		t.Skipf("php not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "10"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
+	for i := 2; i <= 30; i++ {
+		id := fmt.Sprint(i)
+		got := strings.TrimSpace(compileAndRunLeetCode(t, id))
+		if got != "" {
+			t.Fatalf("unexpected output for %s: %q", id, got)
+		}
 	}
 }
 

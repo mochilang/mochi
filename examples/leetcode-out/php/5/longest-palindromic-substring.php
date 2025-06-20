@@ -1,5 +1,5 @@
 <?php
-function expand($s, $left, $right) {
+function mochi_expand($s, $left, $right) {
 	$l = $left;
 	$r = $right;
 	$n = (is_array($s) ? count($s) : strlen($s));
@@ -13,7 +13,7 @@ function expand($s, $left, $right) {
 	return (($r - $l) - 1);
 }
 
-function longestPalindrome($s) {
+function mochi_longestPalindrome($s) {
 	if (((is_array($s) ? count($s) : strlen($s)) <= 1)) {
 		return $s;
 	}
@@ -21,8 +21,8 @@ function longestPalindrome($s) {
 	$end = 0;
 	$n = (is_array($s) ? count($s) : strlen($s));
 	for ($i = 0; $i < $n; $i++) {
-		$len1 = expand($s, $i, $i);
-		$len2 = expand($s, $i, ((is_array($i) && is_array(1)) ? array_merge($i, 1) : ((is_string($i) || is_string(1)) ? ($i . 1) : ($i + 1))));
+		$len1 = mochi_expand($s, $i, $i);
+		$len2 = mochi_expand($s, $i, ((is_array($i) && is_array(1)) ? array_merge($i, 1) : ((is_string($i) || is_string(1)) ? ($i . 1) : ($i + 1))));
 		$l = $len1;
 		if (($len2 > $len1)) {
 			$l = $len2;
@@ -35,25 +35,25 @@ function longestPalindrome($s) {
 	return (is_array($s) ? array_slice($s, $start, (((is_array($end) && is_array(1)) ? array_merge($end, 1) : ((is_string($end) || is_string(1)) ? ($end . 1) : ($end + 1)))) - ($start)) : substr($s, $start, (((is_array($end) && is_array(1)) ? array_merge($end, 1) : ((is_string($end) || is_string(1)) ? ($end . 1) : ($end + 1)))) - ($start)));
 }
 
-function test_example_1() {
-	$ans = longestPalindrome("babad");
+function mochi_test_example_1() {
+	$ans = mochi_longestPalindrome("babad");
 	if (!((($ans == "bab") || ($ans == "aba")))) { throw new Exception('expect failed'); }
 }
 
-function test_example_2() {
-	if (!((longestPalindrome("cbbd") == "bb"))) { throw new Exception('expect failed'); }
+function mochi_test_example_2() {
+	if (!((mochi_longestPalindrome("cbbd") == "bb"))) { throw new Exception('expect failed'); }
 }
 
-function test_single_char() {
-	if (!((longestPalindrome("a") == "a"))) { throw new Exception('expect failed'); }
+function mochi_test_single_char() {
+	if (!((mochi_longestPalindrome("a") == "a"))) { throw new Exception('expect failed'); }
 }
 
-function test_two_chars() {
-	$ans = longestPalindrome("ac");
+function mochi_test_two_chars() {
+	$ans = mochi_longestPalindrome("ac");
 	if (!((($ans == "a") || ($ans == "c")))) { throw new Exception('expect failed'); }
 }
 
-test_example_1();
-test_example_2();
-test_single_char();
-test_two_chars();
+mochi_test_example_1();
+mochi_test_example_2();
+mochi_test_single_char();
+mochi_test_two_chars();

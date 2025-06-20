@@ -305,3 +305,16 @@ The tests skip automatically if `php` is not installed and rely on
 The PHP backend currently supports a subset of Mochi's features suitable for
 scripts and simple utilities. Complex type handling and advanced runtime
 support are not yet implemented.
+
+### Unsupported features
+
+The PHP compiler is intentionally lightweight. The following Mochi features are
+currently **not supported**:
+
+- modules or imports
+- concurrency primitives
+- generics and complex type inference
+- advanced dataset queries such as joins or grouping
+- skip/take query clauses
+- nested functions that capture variables across scopes
+

@@ -1,5 +1,5 @@
 <?php
-function reverse($x) {
+function mochi_reverse($x) {
 	$sign = 1;
 	$n = $x;
 	if (($n < 0)) {
@@ -19,23 +19,23 @@ function reverse($x) {
 	return $rev;
 }
 
-function test_example_1() {
-	if (!((reverse(123) == 321))) { throw new Exception('expect failed'); }
+function mochi_test_example_1() {
+	if (!((mochi_reverse(123) == 321))) { throw new Exception('expect failed'); }
 }
 
-function test_example_2() {
-	if (!((reverse(-123) == (-321)))) { throw new Exception('expect failed'); }
+function mochi_test_example_2() {
+	if (!((mochi_reverse(-123) == (-321)))) { throw new Exception('expect failed'); }
 }
 
-function test_example_3() {
-	if (!((reverse(120) == 21))) { throw new Exception('expect failed'); }
+function mochi_test_example_3() {
+	if (!((mochi_reverse(120) == 21))) { throw new Exception('expect failed'); }
 }
 
-function test_overflow() {
-	if (!((reverse(1534236469) == 0))) { throw new Exception('expect failed'); }
+function mochi_test_overflow() {
+	if (!((mochi_reverse(1534236469) == 0))) { throw new Exception('expect failed'); }
 }
 
-test_example_1();
-test_example_2();
-test_example_3();
-test_overflow();
+mochi_test_example_1();
+mochi_test_example_2();
+mochi_test_example_3();
+mochi_test_overflow();
