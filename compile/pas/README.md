@@ -147,4 +147,5 @@ supported include:
 - Dataset helpers (`fetch`, `load`, `save`)
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Package declarations (`package`)
-- Anonymous function literals (`fun` expressions) and `if` expressions
+- Anonymous function literals (`fun` expressions)
+- Methods on types
