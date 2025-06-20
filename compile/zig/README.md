@@ -273,7 +273,9 @@ LeetCode solutions:
 * concurrency features such as streams or `spawn`
 * anonymous function expressions (`fun` values)
 * foreign imports and `extern` declarations
-* test blocks and `expect` statements
+* agent declarations and `on` handlers
+* stream declarations and `emit` statements
+* model declarations
 
 These features are not yet implemented, so programs relying on them will fail to
 compile or run correctly.  Most LeetCode tasks after problem 10 depend on at
