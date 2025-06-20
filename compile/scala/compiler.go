@@ -289,6 +289,57 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileMethod(fn *parser.FunStmt) error {
+	origRet := c.retType
+	if fn.Return != nil {
+		c.retType = c.resolveTypeRef(fn.Return)
+	} else {
+		c.retType = types.VoidType{}
+	}
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	for _, p := range fn.Params {
+		child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+	}
+	c.env = child
+	c.writeIndent()
+	c.buf.WriteString("def " + sanitizeName(fn.Name) + "(")
+	for i, p := range fn.Params {
+		if i > 0 {
+			c.buf.WriteString(", ")
+		}
+		c.buf.WriteString(fmt.Sprintf("%s: %s", sanitizeName(p.Name), scalaType(c.resolveTypeRef(p.Type))))
+	}
+	c.buf.WriteString(")")
+	if fn.Return != nil {
+		c.buf.WriteString(": " + scalaType(c.resolveTypeRef(fn.Return)))
+	}
+	c.buf.WriteString(" = {\n")
+	c.indent++
+	origAlias := c.paramAlias
+	c.paramAlias = make(map[string]string)
+	for _, p := range fn.Params {
+		if paramMutated(fn.Body, p.Name) {
+			alias := sanitizeName(p.Name) + "_var"
+			c.paramAlias[p.Name] = alias
+			typ := scalaType(c.resolveTypeRef(p.Type))
+			c.writeln(fmt.Sprintf("var %s: %s = %s", alias, typ, sanitizeName(p.Name)))
+		}
+	}
+	for _, st := range fn.Body {
+		if err := c.compileStmt(st); err != nil {
+			c.paramAlias = origAlias
+			return err
+		}
+	}
+	c.paramAlias = origAlias
+	c.env = origEnv
+	c.indent--
+	c.writeln("}")
+	c.retType = origRet
+	return nil
+}
+
 func paramMutated(body []*parser.Statement, name string) bool {
 	for _, st := range body {
 		if st.Assign != nil && st.Assign.Name == name && len(st.Assign.Index) == 0 {
@@ -807,13 +858,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "scala.collection.mutable.Map(" + strings.Join(items, ", ") + ")", nil
 	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 {
-			name := p.Selector.Root
-			if alias, ok := c.paramAlias[name]; ok {
-				return alias, nil
-			}
-			return sanitizeName(name), nil
+		parts := make([]string, 0, len(p.Selector.Tail)+1)
+		if alias, ok := c.paramAlias[p.Selector.Root]; ok {
+			parts = append(parts, alias)
+		} else {
+			parts = append(parts, sanitizeName(p.Selector.Root))
 		}
+		for _, t := range p.Selector.Tail {
+			parts = append(parts, sanitizeName(t))
+		}
+		return strings.Join(parts, "."), nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1249,13 +1303,31 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	fields := []string{}
+	var methods []*parser.FunStmt
 	for _, m := range t.Members {
 		if m.Field != nil {
 			typ := scalaType(c.resolveTypeRef(m.Field.Type))
 			fields = append(fields, fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typ))
+		} else if m.Method != nil {
+			methods = append(methods, m.Method)
 		}
 	}
-	c.writeln(fmt.Sprintf("case class %s(%s)", name, strings.Join(fields, ", ")))
+	if len(methods) == 0 {
+		c.writeln(fmt.Sprintf("case class %s(%s)", name, strings.Join(fields, ", ")))
+		return nil
+	}
+	c.writeln(fmt.Sprintf("case class %s(%s) {", name, strings.Join(fields, ", ")))
+	c.indent++
+	for i, m := range methods {
+		if err := c.compileMethod(m); err != nil {
+			return err
+		}
+		if i < len(methods)-1 {
+			c.writeln("")
+		}
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
