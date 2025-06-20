@@ -205,6 +205,4 @@ The Elixir backend implements most core language features but still lacks suppor
 - Data helpers like `fetch`, `load`, `save` and LLM `generate` blocks.
 - Foreign imports and `extern` declarations.
 - Concurrency primitives such as `spawn` and channels.
-- Pattern matching with `match` expressions.
-
 Cross join queries do support `where` filters as well as `sort`, `skip` and `take` clauses.

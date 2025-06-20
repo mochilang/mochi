@@ -553,6 +553,33 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	parts := make([]string, len(m.Cases))
+	for i, cs := range m.Cases {
+		pat, err := c.compilePattern(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		parts[i] = fmt.Sprintf("%s -> %s", pat, res)
+	}
+	return fmt.Sprintf("(case %s do %s end)", target, strings.Join(parts, "; ")), nil
+}
+
+func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
+	if name, ok := identName(e); ok {
+		return sanitizeName(name), nil
+	}
+	return c.compileExpr(e)
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "", fmt.Errorf("nil expr")
@@ -943,6 +970,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
@@ -1009,6 +1038,24 @@ func simpleAtomKey(e *parser.Expr) (string, bool) {
 
 func isValidAtom(s string) bool {
 	return atomIdent.MatchString(s)
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
 
 func (c *Compiler) staticTypeOfPostfix(p *parser.PostfixExpr) (types.Type, bool) {
