@@ -628,8 +628,45 @@ func (c *Compiler) expr(n *ast.Node) string {
 			return inner
 		}
 		return "(" + inner + ")"
+	case "if_expr":
+		return c.compileIfExpr(n)
 	}
 	return "0"
+}
+
+func (c *Compiler) compileIfExpr(n *ast.Node) string {
+	cond := c.expr(n.Children[0])
+	thenExpr := c.expr(n.Children[1])
+	tmp := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[1])))
+	var elseExpr string
+	if len(n.Children) > 2 {
+		if n.Children[2].Kind == "if_expr" {
+			elseExpr = c.compileIfExpr(n.Children[2])
+		} else {
+			elseExpr = c.expr(n.Children[2])
+		}
+	}
+	c.writeln(fmt.Sprintf("    IF %s", cond))
+	c.indent++
+	if c.isStringExpr(n.Children[1]) {
+		c.writeln(fmt.Sprintf("    MOVE %s TO %s", thenExpr, tmp))
+	} else {
+		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, thenExpr))
+	}
+	c.indent--
+	if elseExpr != "" {
+		c.writeln("    ELSE")
+		c.indent++
+		if c.isStringExpr(n.Children[2]) || (n.Children[2].Kind == "if_expr" && c.isStringExpr(n.Children[2])) {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s", elseExpr, tmp))
+		} else {
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, elseExpr))
+		}
+		c.indent--
+	}
+	c.writeln("    END-IF")
+	return tmp
 }
 
 func extractInt(n *ast.Node) int {
