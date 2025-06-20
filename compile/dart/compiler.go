@@ -22,18 +22,30 @@ type Compiler struct {
 	useUnion     bool
 	useExcept    bool
 	useIntersect bool
+	useFetch     bool
+	useLoad      bool
+	useSave      bool
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, imports: make(map[string]bool), useIndexStr: false,
-		useUnionAll: false, useUnion: false, useExcept: false, useIntersect: false}
+		useUnionAll: false, useUnion: false, useExcept: false, useIntersect: false,
+		useFetch: false, useLoad: false, useSave: false}
 }
 
 // Compile returns Dart source implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.imports = make(map[string]bool)
+	c.useIndexStr = false
+	c.useUnionAll = false
+	c.useUnion = false
+	c.useExcept = false
+	c.useIntersect = false
+	c.useFetch = false
+	c.useLoad = false
+	c.useSave = false
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -610,6 +622,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1040,6 +1058,65 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	urlStr, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "null"
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = w
+	}
+	c.imports["dart:io"] = true
+	c.imports["dart:convert"] = true
+	c.useFetch = true
+	return fmt.Sprintf("_fetch(%s, %s)", urlStr, opts), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "null"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "null"
+	if l.With != nil {
+		w, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = w
+	}
+	c.imports["dart:io"] = true
+	c.useLoad = true
+	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "null"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "null"
+	if s.With != nil {
+		w, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = w
+	}
+	c.imports["dart:io"] = true
+	c.useSave = true
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
 func isMapExpr(c *Compiler, e *parser.Expr) bool {
 	if e == nil {
 		return false
@@ -1215,7 +1292,7 @@ func isStringPrimary(c *Compiler, p *parser.Primary) bool {
 }
 
 func (c *Compiler) emitRuntime() {
-	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect) {
+	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave) {
 		return
 	}
 	c.writeln("")
@@ -1288,6 +1365,131 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useFetch {
+		c.writeln("dynamic _fetch(String url, Map<String,dynamic>? opts) {")
+		c.indent++
+		c.writeln("var args = ['-s'];")
+		c.writeln("var method = opts?['method']?.toString() ?? 'GET';")
+		c.writeln("args.addAll(['-X', method]);")
+		c.writeln("if (opts?['headers'] != null) {")
+		c.indent++
+		c.writeln("for (var e in (opts!['headers'] as Map).entries) {")
+		c.indent++
+		c.writeln("args.addAll(['-H', '${e.key}: ${e.value}']);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts?['query'] != null) {")
+		c.indent++
+		c.writeln("var qs = Uri(queryParameters: (opts!['query'] as Map).map((k,v)=>MapEntry(k.toString(), v.toString()))).query;")
+		c.writeln("var sep = url.contains('?') ? '&' : '?';")
+		c.writeln("url = url + sep + qs;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts != null && opts.containsKey('body')) {")
+		c.indent++
+		c.writeln("args.addAll(['-d', jsonEncode(opts['body'])]);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts?['timeout'] != null) {")
+		c.indent++
+		c.writeln("args.addAll(['--max-time', opts!['timeout'].toString()]);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("args.add(url);")
+		c.writeln("var res = Process.runSync('curl', args);")
+		c.writeln("return jsonDecode(res.stdout.toString());")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useLoad {
+		c.writeln("List<Map<String,dynamic>> _load(String? path, Map<String,dynamic>? opts) {")
+		c.indent++
+		c.writeln("var format = (opts?['format'] ?? 'csv').toString();")
+		c.writeln("var header = opts?['header'] ?? true;")
+		c.writeln("var delim = (opts?['delimiter'] ?? ',').toString();")
+		c.writeln("if (delim.isEmpty) delim = ',';")
+		c.writeln("if (format == 'tsv') delim = '\t';")
+		c.writeln("String text;")
+		c.writeln("if (path == null || path == '' || path == '-') {")
+		c.indent++
+		c.writeln("var lines = <String>[];")
+		c.writeln("while (true) {")
+		c.indent++
+		c.writeln("var line = stdin.readLineSync();")
+		c.writeln("if (line == null) break;")
+		c.writeln("lines.add(line);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("text = lines.join('\\n');")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("text = File(path).readAsStringSync();")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (format != 'csv') return [];")
+		c.writeln("var lines = text.trim().split(RegExp('\\r?\\n')).where((l) => l.isNotEmpty).toList();")
+		c.writeln("if (lines.isEmpty) return [];")
+		c.writeln("List<String> headers;")
+		c.writeln("if (header) {")
+		c.indent++
+		c.writeln("headers = lines[0].split(delim);")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("headers = List.generate(lines[0].split(delim).length, (i) => 'c$' + i.toString());")
+		c.indent--
+		c.writeln("}")
+		c.writeln("var start = header ? 1 : 0;")
+		c.writeln("var out = <Map<String,dynamic>>[];")
+		c.writeln("for (var i = start; i < lines.length; i++) {")
+		c.indent++
+		c.writeln("var parts = lines[i].split(delim);")
+		c.writeln("var row = <String,dynamic>{};")
+		c.writeln("for (var j = 0; j < headers.length; j++) {")
+		c.indent++
+		c.writeln("row[headers[j]] = j < parts.length ? parts[j] : '';")
+		c.indent--
+		c.writeln("}")
+		c.writeln("out.add(row);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useSave {
+		c.writeln("void _save(List<Map<String,dynamic>> rows, String? path, Map<String,dynamic>? opts) {")
+		c.indent++
+		c.writeln("var format = (opts?['format'] ?? 'csv').toString();")
+		c.writeln("var header = opts?['header'] ?? false;")
+		c.writeln("var delim = (opts?['delimiter'] ?? ',').toString();")
+		c.writeln("if (delim.isEmpty) delim = ',';")
+		c.writeln("if (format == 'tsv') delim = '\t';")
+		c.writeln("if (format != 'csv') return;")
+		c.writeln("var headers = rows.isNotEmpty ? (rows[0].keys.toList()..sort()) : <String>[];")
+		c.writeln("var lines = <String>[];")
+		c.writeln("if (header) lines.add(headers.join(delim));")
+		c.writeln("for (var row in rows) {")
+		c.indent++
+		c.writeln("lines.add(headers.map((h) => row[h]?.toString() ?? '').join(delim));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("var text = lines.join('\\n') + '\n';")
+		c.writeln("if (path == null || path == '' || path == '-') {")
+		c.indent++
+		c.writeln("stdout.write(text);")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("File(path).writeAsStringSync(text);")
+		c.indent--
+		c.writeln("}")
 		c.indent--
 		c.writeln("}")
 	}
