@@ -19,6 +19,7 @@ type Compiler struct {
 	needsAvgFloat     bool
 	needsInListInt    bool
 	needsInListString bool
+	needsSetOps       bool
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
@@ -103,6 +104,57 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent++
 		c.writeln("for (v) |it| { if (std.mem.eql(u8, it, item)) return true; }")
 		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsSetOps {
+		c.writeln("fn _contains(comptime T: type, v: []const T, item: T) bool {")
+		c.indent++
+		c.writeln("for (v) |it| { if (std.meta.eql(it, item)) return true; }")
+		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+
+		c.writeln("fn _union_all(comptime T: type, a: []const T, b: []const T) []T {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("for (a) |it| { res.append(it) catch unreachable; }")
+		c.writeln("for (b) |it| { res.append(it) catch unreachable; }")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+
+		c.writeln("fn _union(comptime T: type, a: []const T, b: []const T) []T {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("for (a) |it| { res.append(it) catch unreachable; }")
+		c.writeln("for (b) |it| { if (!_contains(T, res.items, it)) res.append(it) catch unreachable; }")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+
+		c.writeln("fn _except(comptime T: type, a: []const T, b: []const T) []T {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("for (a) |it| { if (!_contains(T, b, it)) res.append(it) catch unreachable; }")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+
+		c.writeln("fn _intersect(comptime T: type, a: []const T, b: []const T) []T {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("for (a) |it| { if (_contains(T, b, it) and !_contains(T, res.items, it)) res.append(it) catch unreachable; }")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -380,6 +432,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 				c.needsInListInt = true
 				expr = fmt.Sprintf("_contains_list_int(%s, %s)", right, expr)
 			}
+			leftIsStr = false
+			continue
+		}
+		if opStr == "union" && op.All {
+			opStr = "union_all"
+		}
+		if opStr == "union" || opStr == "union_all" || opStr == "except" || opStr == "intersect" {
+			elem := c.listElemTypeUnary(b.Left)
+			c.needsSetOps = true
+			expr = fmt.Sprintf("_%s(%s, %s, %s)", opStr, elem, expr, right)
 			leftIsStr = false
 			continue
 		}
@@ -832,6 +894,51 @@ func (c *Compiler) isStringListPrimary(p *parser.Primary) bool {
 		}
 	}
 	return false
+}
+
+func (c *Compiler) listElemTypeUnary(u *parser.Unary) string {
+	if u == nil {
+		return "i32"
+	}
+	return c.listElemTypePostfix(u.Value)
+}
+
+func (c *Compiler) listElemTypePostfix(p *parser.PostfixExpr) string {
+	if p == nil {
+		return "i32"
+	}
+	if p.Target != nil {
+		if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
+			first := p.Target.List.Elems[0]
+			switch {
+			case c.isStringExpr(first):
+				return "[]const u8"
+			case c.isFloatExpr(first):
+				return "f64"
+			case c.isBoolExpr(first):
+				return "bool"
+			default:
+				return "i32"
+			}
+		}
+		if p.Target.Selector != nil && c.env != nil {
+			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+				if lt, ok := t.(types.ListType); ok {
+					switch lt.Elem.(type) {
+					case types.StringType:
+						return "[]const u8"
+					case types.FloatType:
+						return "f64"
+					case types.BoolType:
+						return "bool"
+					default:
+						return "i32"
+					}
+				}
+			}
+		}
+	}
+	return "i32"
 }
 
 var zigReserved = map[string]bool{
