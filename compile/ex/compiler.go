@@ -15,12 +15,13 @@ import (
 
 // Compiler translates a Mochi AST into Elixir source code.
 type Compiler struct {
-        buf     bytes.Buffer
-        indent  int
-        env     *types.Env
-        tmp     int
-        helpers map[string]bool
-        funcs   map[string]bool
+	buf        bytes.Buffer
+	indent     int
+	env        *types.Env
+	tmp        int
+	helpers    map[string]bool
+	funcs      map[string]bool
+	localFuncs map[string]bool
 }
 
 var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
@@ -89,7 +90,7 @@ func assignedVars(stmts []*parser.Statement) []string {
 }
 
 func New(env *types.Env) *Compiler {
-        return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool), localFuncs: make(map[string]bool)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -142,20 +143,30 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
-        if c.indent > 1 {
-                if c.env != nil {
-                        c.env.SetVar(fun.Name, types.FuncType{}, false)
-                }
-                expr, err := c.compileFunExpr(&parser.FunExpr{Params: fun.Params, BlockBody: fun.Body})
-                if err != nil {
-                        return err
-                }
-                c.writeln(fmt.Sprintf("%s = %s", sanitizeName(fun.Name), expr))
-                return nil
-        }
+	if c.indent > 1 {
+		if c.env != nil {
+			c.env.SetVar(fun.Name, types.FuncType{}, false)
+		}
+		name := sanitizeName(fun.Name)
+		c.localFuncs[name] = true
+		params := []string{name}
+		for _, p := range fun.Params {
+			params = append(params, sanitizeName(p.Name))
+		}
+		c.writeln(fmt.Sprintf("%s = fn %s ->", name, strings.Join(params, ", ")))
+		c.indent++
+		for _, s := range fun.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("end")
+		return nil
+	}
 
-        // record top-level function name for call handling
-        c.funcs[fun.Name] = true
+	// record top-level function name for call handling
+	c.funcs[fun.Name] = true
 
 	c.writeIndent()
 	c.buf.WriteString("def " + sanitizeName(fun.Name) + "(")
@@ -183,12 +194,14 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Fun != nil:
+		return c.compileFunStmt(s.Fun)
 	case s.Let != nil:
 		val, err := c.compileExpr(s.Let.Value)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s = %s", s.Let.Name, val))
+		c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
 	case s.Var != nil:
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
@@ -512,11 +525,11 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
-        type operand struct {
-                expr     string
-                isList   bool
-                isString bool
-        }
+	type operand struct {
+		expr     string
+		isList   bool
+		isString bool
+	}
 
 	if b == nil {
 		return "", fmt.Errorf("nil binary expression")
@@ -525,18 +538,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	ops := []string{}
 	operands := []operand{}
 
-        first, err := c.compileUnary(b.Left)
-        if err != nil {
-                return "", err
-        }
-        operands = append(operands, operand{expr: first, isList: isListUnary(b.Left, c.env), isString: isStringUnary(b.Left, c.env)})
+	first, err := c.compileUnary(b.Left)
+	if err != nil {
+		return "", err
+	}
+	operands = append(operands, operand{expr: first, isList: isListUnary(b.Left, c.env), isString: isStringUnary(b.Left, c.env)})
 
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-                operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env), isString: isStringPostfix(part.Right, c.env)})
+		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right, c.env), isString: isStringPostfix(part.Right, c.env)})
 		ops = append(ops, part.Op)
 	}
 
@@ -569,21 +582,21 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			l := operands[i]
 			r := operands[i+1]
 
-                        var expr string
-                        var isList bool
-                        var isString bool
+			var expr string
+			var isList bool
+			var isString bool
 
-                        switch op {
-                        case "+":
-                                if l.isList || r.isList {
-                                        expr = fmt.Sprintf("%s ++ %s", l.expr, r.expr)
-                                        isList = true
-                                } else if l.isString || r.isString {
-                                        expr = fmt.Sprintf("(%s <> %s)", l.expr, r.expr)
-                                        isString = true
-                                } else {
-                                        expr = fmt.Sprintf("(%s + %s)", l.expr, r.expr)
-                                }
+			switch op {
+			case "+":
+				if l.isList || r.isList {
+					expr = fmt.Sprintf("%s ++ %s", l.expr, r.expr)
+					isList = true
+				} else if l.isString || r.isString {
+					expr = fmt.Sprintf("(%s <> %s)", l.expr, r.expr)
+					isString = true
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", l.expr, r.expr)
+				}
 			case "-", "*", "/", "<", "<=", ">", ">=", "&&", "||":
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
 			case "%":
@@ -596,7 +609,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				return "", fmt.Errorf("unsupported operator %s", op)
 			}
 
-                        operands[i] = operand{expr: expr, isList: isList, isString: isString}
+			operands[i] = operand{expr: expr, isList: isList, isString: isString}
 			operands = append(operands[:i+1], operands[i+2:]...)
 			ops = append(ops[:i], ops[i+1:]...)
 		}
@@ -636,29 +649,29 @@ func isListUnary(u *parser.Unary, env *types.Env) bool {
 }
 
 func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
-        if p == nil || len(p.Ops) > 0 {
-                return false
-        }
-        if p.Target != nil {
-                if p.Target.Lit != nil && p.Target.Lit.Str != nil {
-                        return true
-                }
-                if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
-                        if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
-                                if _, ok := t.(types.StringType); ok {
-                                        return true
-                                }
-                        }
-                }
-        }
-        return false
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if p.Target != nil {
+		if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+			return true
+		}
+		if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+			if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func isStringUnary(u *parser.Unary, env *types.Env) bool {
-        if u == nil || len(u.Ops) > 0 {
-                return false
-        }
-        return isStringPostfix(u.Value, env)
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return isStringPostfix(u.Value, env)
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -761,7 +774,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				res = "_input()"
 			default:
 				if _, ok := typ.(types.FuncType); ok {
-					res = fmt.Sprintf("%s.(%s)", res, argStr)
+					if c.localFuncs[res] {
+						res = fmt.Sprintf("%s.(%s, %s)", res, res, argStr)
+					} else {
+						res = fmt.Sprintf("%s.(%s)", res, argStr)
+					}
 					typ = typ.(types.FuncType).Return
 				} else {
 					res = fmt.Sprintf("%s(%s)", res, argStr)
@@ -879,19 +896,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "input":
 			c.use("_input")
 			return "_input()", nil
-               default:
-                       if c.funcs[p.Call.Func] {
-                               return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
-                       }
-                       if c.env != nil {
-                               if t, err := c.env.GetVar(p.Call.Func); err == nil {
-                                       if _, ok := t.(types.FuncType); ok {
-                                               return fmt.Sprintf("%s.(%s)", sanitizeName(p.Call.Func), argStr), nil
-                                       }
-                               }
-                       }
-                       return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
-               }
+		default:
+			name := sanitizeName(p.Call.Func)
+			if c.funcs[p.Call.Func] {
+				return fmt.Sprintf("%s(%s)", name, argStr), nil
+			}
+			if c.env != nil {
+				if t, err := c.env.GetVar(p.Call.Func); err == nil {
+					if _, ok := t.(types.FuncType); ok {
+						if c.localFuncs[name] {
+							return fmt.Sprintf("%s.(%s, %s)", name, name, argStr), nil
+						}
+						return fmt.Sprintf("%s.(%s)", name, argStr), nil
+					}
+				}
+			}
+			return fmt.Sprintf("%s(%s)", name, argStr), nil
+		}
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	}

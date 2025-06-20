@@ -100,16 +100,20 @@ b.WriteString(sel)
 
 【F:compile/ex/compiler.go†L324-L347】
 
-Block-style anonymous functions are not yet supported and return an error:
+Block-style anonymous functions are supported and compile into Elixir `fn ... ->`
+blocks:
 
 ```go
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
     ...
-    return "", fmt.Errorf("block function expressions not supported")
+    sub := &Compiler{env: c.env, indent: c.indent + 1}
+    ...
+    b.WriteString("end")
+    return b.String(), nil
 }
 ```
 
-【F:compile/ex/compiler.go†L548-L560】
+【F:compile/ex/compiler.go†L914-L931】
 
 ## Ensuring Elixir
 
@@ -166,3 +170,17 @@ Run them with:
 ```bash
 go test ./compile/ex -tags slow
 ```
+
+## Status
+
+The Elixir backend handles core Mochi features including functions, loops,
+structs and list comprehensions. Several parts of the language remain
+unimplemented:
+
+- query joins and grouping
+- pattern matching in function heads
+- concurrency primitives such as `spawn`
+- macros, generics and some built-in functions
+- operators outside the common arithmetic and comparison set
+
+It is useful for examples but does not yet cover the entire language.
