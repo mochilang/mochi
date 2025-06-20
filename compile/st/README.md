@@ -31,7 +31,9 @@ The following language constructs are not yet handled:
 - Logic programming (`fact`, `rule`, `query`)
 - Foreign function interface declarations (`extern`)
 - Import and package statements
+- Model declarations (`model`) and related LLM helpers
 - Pattern matching with `match`
+- Anonymous function expressions (`fun (...) { ... }` or `fun (...) => expr`)
 - Union type declarations
 - Set literals and set operations
 - Concurrency primitives like `spawn` and channels
