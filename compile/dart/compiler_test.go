@@ -119,6 +119,7 @@ func TestDartCompiler_ValidGoldenOutput(t *testing.T) {
 		"union_inorder",
 		"union_match",
 		"union_slice",
+		"stream_on_emit",
 	}
 	for _, name := range files {
 		src := filepath.Join("tests", "compiler", "valid", name+".mochi")

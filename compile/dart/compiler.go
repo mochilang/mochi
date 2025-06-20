@@ -21,6 +21,8 @@ type Compiler struct {
 	tempVarCount int
 	imports      map[string]bool
 	packages     map[string]bool
+	structs      map[string]bool
+	handlerCount int
 	useIndexStr  bool
 	useUnionAll  bool
 	useUnion     bool
@@ -34,15 +36,17 @@ type Compiler struct {
 	useGenStruct bool
 	useGroup     bool
 	useGroupBy   bool
+	useStream    bool
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, imports: make(map[string]bool), packages: make(map[string]bool), useIndexStr: false,
+	return &Compiler{env: env, imports: make(map[string]bool), packages: make(map[string]bool),
+		structs: make(map[string]bool), useIndexStr: false,
 		useUnionAll: false, useUnion: false, useExcept: false, useIntersect: false,
 		useFetch: false, useLoad: false, useSave: false,
 		useGenText: false, useGenEmbed: false, useGenStruct: false,
-		useGroup: false, useGroupBy: false}
+		useGroup: false, useGroupBy: false, useStream: false}
 }
 
 // Compile returns Dart source implementing prog.
@@ -50,6 +54,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.imports = make(map[string]bool)
 	c.packages = make(map[string]bool)
+	c.structs = make(map[string]bool)
 	c.useIndexStr = false
 	c.useUnionAll = false
 	c.useUnion = false
@@ -63,6 +68,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useGenStruct = false
 	c.useGroup = false
 	c.useGroupBy = false
+	c.useStream = false
+	c.handlerCount = 0
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -171,6 +178,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue;")
 		return nil
+	case s.Stream != nil:
+		return c.compileStreamDecl(s.Stream)
+	case s.On != nil:
+		return c.compileOnHandler(s.On)
+	case s.Emit != nil:
+		return c.compileEmit(s.Emit)
 	case s.Import != nil:
 		if s.Import.Lang == nil {
 			return c.compilePackageImport(s.Import)
@@ -363,6 +376,65 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, rhs))
+	return nil
+}
+
+func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
+	st, ok := c.env.GetStream(s.Name)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", s.Name)
+	}
+	c.compileStructType(st)
+	varName := "_" + sanitizeName(s.Name) + "Stream"
+	c.writeln(fmt.Sprintf("var %s = _Stream<%s>('%s');", varName, sanitizeName(st.Name), s.Name))
+	c.useStream = true
+	return nil
+}
+
+func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
+	st, ok := c.env.GetStream(h.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", h.Stream)
+	}
+	c.compileStructType(st)
+	streamVar := "_" + sanitizeName(h.Stream) + "Stream"
+	handlerName := fmt.Sprintf("_handler_%d", c.handlerCount)
+	c.handlerCount++
+	c.writeln(fmt.Sprintf("void %s(%s ev) {", handlerName, sanitizeName(st.Name)))
+	c.indent++
+	alias := sanitizeName(h.Alias)
+	c.writeln(fmt.Sprintf("var %s = ev;", alias))
+	for _, stmt := range h.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			c.indent--
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln(fmt.Sprintf("%s.register(%s);", streamVar, handlerName))
+	c.useStream = true
+	return nil
+}
+
+func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
+	st, ok := c.env.GetStream(e.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", e.Stream)
+	}
+	c.compileStructType(st)
+	parts := make([]string, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
+	}
+	lit := fmt.Sprintf("%s({%s})", sanitizeName(st.Name), strings.Join(parts, ", "))
+	streamVar := "_" + sanitizeName(e.Stream) + "Stream"
+	c.writeln(fmt.Sprintf("%s.append(%s);", streamVar, lit))
+	c.useStream = true
 	return nil
 }
 
@@ -905,6 +977,45 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("class %s {", name))
+	c.indent++
+	fields := []string{}
+	for _, fn := range st.Order {
+		typ := dartType(st.Fields[fn])
+		if typ == "" {
+			typ = "dynamic"
+		}
+		fname := sanitizeName(fn)
+		c.writeln(fmt.Sprintf("%s %s;", typ, fname))
+		param := "this." + fname
+		if typ != "dynamic" {
+			param = "required " + param
+		}
+		fields = append(fields, param)
+	}
+	var ctor string
+	if len(fields) == 0 {
+		ctor = fmt.Sprintf("%s();", name)
+	} else {
+		ctor = fmt.Sprintf("%s({%s});", name, strings.Join(fields, ", "))
+	}
+	c.writeln(ctor)
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
@@ -1582,7 +1693,7 @@ func isStringPrimary(c *Compiler, p *parser.Primary) bool {
 }
 
 func (c *Compiler) emitRuntime() {
-	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave || c.useGenText || c.useGenEmbed || c.useGenStruct || c.useGroup || c.useGroupBy) {
+	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave || c.useGenText || c.useGenEmbed || c.useGenStruct || c.useGroup || c.useGroupBy || c.useStream) {
 		return
 	}
 	c.writeln("")
@@ -1657,6 +1768,22 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("return res;")
 		c.indent--
 		c.writeln("}")
+	}
+	if c.useStream {
+		c.writeln("class _Stream<T> {")
+		c.indent++
+		c.writeln("String name;")
+		c.writeln("List<void Function(T)> handlers = [];")
+		c.writeln("_Stream(this.name);")
+		c.writeln("void append(T data) {")
+		c.indent++
+		c.writeln("for (var h in List.from(handlers)) { h(data); }")
+		c.indent--
+		c.writeln("}")
+		c.writeln("void register(void Function(T) handler) { handlers.add(handler); }")
+		c.indent--
+		c.writeln("}")
+		c.writeln("void _waitAll() {}")
 	}
 	if c.useGroup {
 		c.writeln("class _Group {")

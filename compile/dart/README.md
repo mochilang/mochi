@@ -240,15 +240,21 @@ go test ./compile/dart -tags slow
 
 The Dart backend currently covers most core Mochi constructs, including union types and basic type inference for function returns. It is still considered experimental and lacks support for several advanced features.
 
+### Supported features
+
+- Struct and union definitions
+- Pattern matching with `match`
+- Dataset queries with `from`, `join`, `where`, `group`, `sort`, `skip` and `take`
+- Built‑ins like `fetch`, `load`, `save` and placeholder `generate`
+- Stream declarations and event handling with `on`/`emit`
+
 ### Unsupported features
 
 - Foreign function interface bindings
-- Streams and long‑lived agents
+- Long‑lived agents with `intent` blocks
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Left/right/outer join clauses in dataset queries
 - Model declarations
-- Agent declarations with `intent` blocks
-- Event handling with `on`/`emit`
 - `generate` expressions return placeholder values (LLM integration pending)
 - Concurrency primitives like `spawn` and channels
 - Reflection or macro facilities
