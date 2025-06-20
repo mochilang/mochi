@@ -27,6 +27,10 @@ func New(env *types.Env) *Compiler {
 
 // Compile generates Java code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if prog.Package != "" {
+		c.writeln("package " + sanitizeName(prog.Package) + ";")
+		c.writeln("")
+	}
 	c.writeln("public class Main {")
 	c.indent++
 
