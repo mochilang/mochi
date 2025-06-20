@@ -3,6 +3,7 @@ package ktcode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"mochi/parser"
 	"mochi/types"
@@ -14,11 +15,12 @@ type Compiler struct {
 	indent    int
 	env       *types.Env
 	mainStmts []*parser.Statement
+	helpers   map[string]bool
 }
 
 // New creates a new Kotlin compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, helpers: make(map[string]bool)}
 }
 
 // Compile generates Kotlin code for prog.
@@ -49,6 +51,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
+	c.writeln("")
+	c.emitRuntime()
 	c.writeln("")
 	return c.buf.Bytes(), nil
 }
@@ -311,6 +315,59 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "null"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "null"
+	if l.With != nil {
+		w, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = w
+	}
+	c.use("_load")
+	if l.Type != nil {
+		t := c.resolveTypeRef(l.Type)
+		typ := ktType(t)
+		c.use("_cast")
+		var buf bytes.Buffer
+		buf.WriteString("run {\n")
+		buf.WriteString(fmt.Sprintf("        val _rows = _load(%s, %s)\n", path, opts))
+		buf.WriteString(fmt.Sprintf("        val _out = mutableListOf<%s>()\n", typ))
+		buf.WriteString("        for (r in _rows) {\n")
+		buf.WriteString(fmt.Sprintf("                _out.add(_cast<%s>(r))\n", typ))
+		buf.WriteString("        }\n")
+		buf.WriteString("        _out\n")
+		buf.WriteString("}")
+		return buf.String(), nil
+	}
+	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "null"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "null"
+	if s.With != nil {
+		w, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = w
+	}
+	c.use("_save")
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -746,9 +803,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		items := []string{}
 		for _, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
+			var k string
+			if s, ok := simpleStringKey(it.Key); ok {
+				k = fmt.Sprintf("\"%s\"", s)
+			} else {
+				var err error
+				k, err = c.compileExpr(it.Key)
+				if err != nil {
+					return "", err
+				}
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
@@ -785,6 +848,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Call != nil:
 		args := []string{}
 		for _, a := range p.Call.Args {
@@ -901,4 +968,22 @@ func joinArgs(args []string) string {
 		res += ", " + args[i]
 	}
 	return res
+}
+
+func (c *Compiler) use(name string) {
+	c.helpers[name] = true
+}
+
+func (c *Compiler) emitRuntime() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.writeln(helperMap[n])
+	}
 }
