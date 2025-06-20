@@ -1,0 +1,9 @@
+fun describe(x: int): string {
+  return match x {
+    0 => "zero"
+    _ => "other"
+  }
+}
+
+print(describe(0))
+print(describe(7))

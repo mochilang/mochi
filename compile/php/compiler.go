@@ -13,10 +13,11 @@ import (
 
 // Compiler translates a Mochi AST into PHP source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	locals map[string]bool
+	buf      bytes.Buffer
+	indent   int
+	env      *types.Env
+	locals   map[string]bool
+	tmpCount int
 }
 
 // New creates a new PHP compiler instance.
@@ -25,6 +26,7 @@ func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[stri
 // Compile generates PHP code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.tmpCount = 0
 	c.writeln("<?php")
 
 	// functions first
@@ -455,6 +457,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "[" + strings.Join(elems, ", ") + "]", nil
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -519,6 +523,66 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	tmp := fmt.Sprintf("$t%d", c.tmpCount)
+	c.tmpCount++
+	var b strings.Builder
+	b.WriteString("(function (" + tmp + ") {\n")
+	for i, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			b.WriteString("\treturn " + res + ";\n")
+			b.WriteString("})(" + target + ")")
+			return b.String(), nil
+		}
+		cond := ""
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				cond = fmt.Sprintf("%s['__name'] === '%s'", tmp, call.Func)
+				names := []string{}
+				values := []string{}
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						names = append(names, "$"+sanitizeName(id))
+						field := sanitizeName(st.Order[idx])
+						values = append(values, fmt.Sprintf("%s['%s']", tmp, field))
+					}
+				}
+				if len(names) > 0 {
+					res = fmt.Sprintf("(function(%s){ return %s; })(%s)", strings.Join(names, ", "), res, strings.Join(values, ", "))
+				}
+			}
+		} else if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond = fmt.Sprintf("%s['__name'] === '%s'", tmp, ident)
+			}
+		}
+		if cond == "" {
+			pat, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			cond = fmt.Sprintf("%s == %s", tmp, pat)
+		}
+		if i == 0 {
+			b.WriteString("\tif (" + cond + ") { return " + res + "; }\n")
+		} else {
+			b.WriteString("\telse if (" + cond + ") { return " + res + "; }\n")
+		}
+	}
+	b.WriteString("\treturn null;\n")
+	b.WriteString("})(" + target + ")")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {

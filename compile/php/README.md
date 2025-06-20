@@ -305,3 +305,14 @@ The tests skip automatically if `php` is not installed and rely on
 The PHP backend currently supports a subset of Mochi's features suitable for
 scripts and simple utilities. Complex type handling and advanced runtime
 support are not yet implemented.
+
+## Unsupported Features
+
+Many language constructs remain unimplemented in the PHP generator. The current
+limitations include:
+
+- Dataset queries using `from`/`select`, joins or grouping
+- LLM helpers such as `generate` or `fetch`
+- Stream and agent declarations
+- User defined struct and union types
+- Concurrency primitives and external objects

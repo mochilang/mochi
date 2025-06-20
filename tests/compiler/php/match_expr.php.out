@@ -1,0 +1,10 @@
+<?php
+function describe($x) {
+	return (function ($t0) {
+	if ($t0 == 0) { return "zero"; }
+	return "other";
+})($x);
+}
+
+echo describe(0), PHP_EOL;
+echo describe(7), PHP_EOL;
