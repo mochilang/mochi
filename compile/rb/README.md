@@ -167,4 +167,8 @@ features include:
 - Complex dataset queries using grouping, joins or pagination when compiling
   with cross joins.
 - Block-bodied anonymous functions like `fun(x: int) { ... }`.
+- Agent and stream constructs (`agent`, `on`, `emit`) and logic programming
+  features (`fact`, `rule`, `query`).
+- External helpers for data fetching or generation such as `_fetch`, `_genText`,
+  `load`, `save` and `generate`.
 

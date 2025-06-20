@@ -949,6 +949,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	} {
 		for i := 0; i < len(operators); {
 			op := operators[i].op

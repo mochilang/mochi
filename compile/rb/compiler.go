@@ -473,7 +473,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		operands = append(operands, r)
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.All {
+			op = op + "_all"
+		}
+		ops = append(ops, op)
 	}
 
 	levels := [][]string{
@@ -483,6 +487,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	}
 
 	contains := func(sl []string, s string) bool {
@@ -505,9 +510,18 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			r := operands[i+1]
 
 			var expr string
-			if op == "in" {
+			switch op {
+			case "in":
 				expr = fmt.Sprintf("(%s.include?(%s))", r, l)
-			} else {
+			case "union":
+				expr = fmt.Sprintf("(%s | %s)", l, r)
+			case "union_all":
+				expr = fmt.Sprintf("(%s + %s)", l, r)
+			case "except":
+				expr = fmt.Sprintf("(%s - %s)", l, r)
+			case "intersect":
+				expr = fmt.Sprintf("(%s & %s)", l, r)
+			default:
 				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 			}
 
