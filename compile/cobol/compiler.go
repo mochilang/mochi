@@ -684,6 +684,29 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION LENGTH(%s)", tmp, expr))
 		return tmp
 	}
+	if name == "RANGE" && (len(n.Children) == 1 || len(n.Children) == 2) {
+		start := 0
+		end := 0
+		if len(n.Children) == 1 {
+			end = extractInt(n.Children[0])
+		} else {
+			start = extractInt(n.Children[0])
+			end = extractInt(n.Children[1])
+		}
+		if end < start {
+			end = start
+		}
+		length := end - start
+		res := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", res, length))
+		c.listLens[res] = length
+		idx := 1
+		for i := start; i < end; i++ {
+			c.writeln(fmt.Sprintf("    MOVE %d TO %s(%d)", i, res, idx))
+			idx++
+		}
+		return res
+	}
 	count, ok := c.funcs[name]
 	if name == "ADD" && len(n.Children) == 2 {
 		left := c.expr(n.Children[0])

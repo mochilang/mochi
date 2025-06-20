@@ -163,6 +163,10 @@ constructs:
 - Function definitions and calls, including nested functions
 - Calls to built-ins `print`, `len`, `add`, `twoSum` and `addTwoNumbers`
 - List concatenation with `+` and indexing (including negative indices)
+- Unary `-` and `!` operators
+- `break` and `continue` within loops
+- `return` statements from functions
+- Generating integer sequences with the `range` helper when bounds are constants
 - Simple `match` expressions with literal patterns
 - `expect` and `test` blocks
 
@@ -198,7 +202,7 @@ unsupported include:
   list, a string literal, or a fixed list variable
 - Range loops with step values other than `1`
 - Slicing expressions like `list[start:end]`
-- Using the `range` helper to generate sequences
+- Using the `range` helper with non-constant bounds
 - Dynamic lists whose length is not known at compile time
 - Struct and model declarations
 - Union type declarations and inline methods
