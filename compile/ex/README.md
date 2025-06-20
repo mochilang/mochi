@@ -100,16 +100,44 @@ b.WriteString(sel)
 
 【F:compile/ex/compiler.go†L324-L347】
 
-Block-style anonymous functions are not yet supported and return an error:
+Block-style anonymous functions are supported by compiling each statement in the
+function body and wrapping the result in `fn` ... `end`:
 
 ```go
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
-    ...
+    params := make([]string, len(fn.Params))
+    for i, p := range fn.Params {
+        params[i] = p.Name
+    }
+    if fn.ExprBody != nil {
+        expr, err := c.compileExpr(fn.ExprBody)
+        if err != nil {
+            return "", err
+        }
+        return fmt.Sprintf("fn %s -> %s end", strings.Join(params, ", "), expr), nil
+    }
+    if len(fn.BlockBody) > 0 {
+        sub := &Compiler{env: c.env, indent: c.indent + 1}
+        for _, s := range fn.BlockBody {
+            if err := sub.compileStmt(s); err != nil {
+                return "", err
+            }
+        }
+        body := sub.buf.String()
+        var b strings.Builder
+        b.WriteString("fn " + strings.Join(params, ", ") + " ->\n")
+        b.WriteString(body)
+        for i := 0; i < c.indent; i++ {
+            b.WriteByte('\t')
+        }
+        b.WriteString("end")
+        return b.String(), nil
+    }
     return "", fmt.Errorf("block function expressions not supported")
 }
 ```
 
-【F:compile/ex/compiler.go†L548-L560】
+【F:compile/ex/compiler.go†L908-L937】
 
 ## Ensuring Elixir
 
@@ -171,3 +199,7 @@ go test ./compile/ex -tags slow
 
 Nested recursive functions are not currently handled when compiling to Elixir.
 Problems relying on them, such as LeetCode 22, fail to run.
+
+Queries using joins or grouping are also unimplemented. Cross join queries now
+support simple `where` filters, but sorting or pagination on a cross join will
+still raise an `unsupported query expression` error.

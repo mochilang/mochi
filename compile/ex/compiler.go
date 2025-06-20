@@ -457,7 +457,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.env = orig
 
 	if len(q.Froms) > 0 {
-		if cond != "" || sortExpr != "" || skipExpr != "" || takeExpr != "" {
+		if sortExpr != "" || skipExpr != "" || takeExpr != "" {
 			return "", fmt.Errorf("unsupported query expression")
 		}
 		parts := make([]string, len(q.Froms))
@@ -476,6 +476,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		for _, p := range parts {
 			b.WriteString(", ")
 			b.WriteString(p)
+		}
+		if cond != "" {
+			b.WriteString(", ")
+			b.WriteString(cond)
 		}
 		b.WriteString(", do: ")
 		b.WriteString(sel)
