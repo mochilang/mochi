@@ -27,6 +27,14 @@ The backend supports basic language features including variable declarations, `f
 Builtin functions such as `print`, `len`, `count`, `avg`, `input` and `str` are translated to the appropriate helper calls or C library functions.【F:compile/c/compiler.go†L629-L757】
 Extern variable and function declarations are emitted verbatim as C `extern` statements and registered in the type environment.
 
+Additional features include:
+
+- list slicing for strings, integer, float and string lists
+- membership checks and `union`, `except` and `intersect` operations on lists
+- test blocks and `expect` statements compiled as helper functions
+- `if` expressions for conditional values
+- anonymous `fun` expressions (without captured variables) compiled to static functions
+
 ## Building
 
 Compile a Mochi program to C using the build command:
@@ -79,8 +87,6 @@ features include:
 - extern object declarations and package exports
 - nested list types other than `list<list<int>>`
 - set literals and set operations
-- anonymous `fun` expressions
-- `if` expressions
 - struct literals
 
 The backend now supports membership checks and `union`/`union all` operations
