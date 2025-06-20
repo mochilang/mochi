@@ -219,7 +219,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.For != nil:
 		return c.compileFor(s.For)
 	case s.If != nil:
-		return c.compileSimpleIf(s.If)
+		return c.compileIf(s.If)
 	case s.While != nil:
 		return c.compileWhile(s.While)
 	default:
@@ -355,7 +355,7 @@ func rootNamePostfix(p *parser.PostfixExpr) string {
 	return ""
 }
 
-func (c *Compiler) compileSimpleIf(st *parser.IfStmt) error {
+func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	cond, err := c.compileExpr(st.Cond)
 	if err != nil {
 		return err
@@ -371,7 +371,11 @@ func (c *Compiler) compileSimpleIf(st *parser.IfStmt) error {
 	}
 	c.indent--
 	c.writeln(")")
-	if len(st.Else) > 0 {
+	if st.ElseIf != nil {
+		if err := c.compileIf(st.ElseIf); err != nil {
+			return err
+		}
+	} else if len(st.Else) > 0 {
 		c.writeln("(begin")
 		c.indent++
 		for _, s := range st.Else {
@@ -587,6 +591,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return expr, nil
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -686,6 +692,32 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	buf.WriteString("\t))\n")
 	buf.WriteString(")")
 	return buf.String(), nil
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "'()"
+	}
+	return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
 }
 
 func sanitizeName(name string) string {
