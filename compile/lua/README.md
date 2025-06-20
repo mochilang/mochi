@@ -301,7 +301,9 @@ fail at runtime:
 
 - Regular expression helpers beyond simple `match`
 - Mutating lists while iterating (e.g. `insert`, `remove`)
-- Query clauses like `join` or `group`
+ - Query `group` clauses and joins with `left`, `right` or `outer` sides
+ - Local recursive functions
+ - Typed lists containing negative literals
 - HTTP `fetch` expressions
 - Logic query expressions
 - Foreign function interface (FFI)
