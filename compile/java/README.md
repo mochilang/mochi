@@ -248,7 +248,6 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Pattern matching expressions
 - Union types and tagged unions
 - Dataset queries (`from`/`select`, joins, grouping)
-- Dataset loading/saving helpers
 - Concurrency primitives like streams, agents, `spawn` and channels
 - Foreign imports and extern functions
 - Logic programming constructs (`fact`, `rule`, `query`)
@@ -260,5 +259,6 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Reflection or macro facilities
 - Methods declared inside `type` blocks
 - Agent initialization with field values
+- List set operations (`union`, `union all`, `intersect`, `except`)
 
 Simple `from` queries used by the LeetCode examples are now supported.
