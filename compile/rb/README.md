@@ -31,7 +31,7 @@ case "input":
 
 ## Query expressions
 
-`compileQueryExpr` handles simple dataset queries including filtering, sorting and pagination. More advanced clauses and cross joins are not yet implemented:
+`compileQueryExpr` handles simple dataset queries including filtering, sorting and pagination. More advanced clauses like grouping or join conditions are not yet implemented. Cross joins are supported:
 
 ```go
 if len(q.Joins) > 0 || q.Group != nil {
@@ -161,14 +161,14 @@ The first test is skipped when Ruby is not available and the suite falls back to
 
 ## Unsupported Features
 
-- The Ruby backend does not yet implement every construct in Mochi. Missing
+The Ruby backend does not yet implement every construct in Mochi. Missing
 features include:
 
-- Complex dataset queries using grouping or join clauses. Cross joins are
-  handled including sorting, `skip` and `take`.
+- Complex dataset queries using grouping or join clauses (beyond simple cross
+  joins).
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming
   features (`fact`, `rule`, `query`).
 - Packages and foreign function interface declarations (`import`, `extern`).
 - `model` and `stream` declarations are not compiled.
-- Methods declared inside `type` blocks are ignored.
+- Test blocks (`test`, `expect`) are ignored.
 

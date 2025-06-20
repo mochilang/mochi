@@ -168,16 +168,32 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	fields := []string{}
+	var methods []*parser.FunStmt
 	for _, m := range t.Members {
 		if m.Field != nil {
 			fields = append(fields, ":"+sanitizeName(m.Field.Name))
+		} else if m.Method != nil {
+			methods = append(methods, m.Method)
 		}
 	}
 	fieldList := strings.Join(fields, ", ")
 	if fieldList != "" {
 		fieldList += ", "
 	}
-	c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true)", name, fieldList))
+	if len(methods) == 0 {
+		c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true)", name, fieldList))
+		return nil
+	}
+	c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true) do", name, fieldList))
+	c.indent++
+	for _, m := range methods {
+		if err := c.compileMethod(m); err != nil {
+			return err
+		}
+		c.writeln("")
+	}
+	c.indent--
+	c.writeln("end")
 	return nil
 }
 
@@ -215,6 +231,23 @@ func (c *Compiler) compileLocalFunStmt(fn *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileMethod(fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params))
+	for i, p := range fn.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	c.writeln(fmt.Sprintf("def %s(%s)", sanitizeName(fn.Name), strings.Join(params, ", ")))
+	c.indent++
+	for _, s := range fn.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end")
 	return nil
 }
 
