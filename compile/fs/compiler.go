@@ -647,9 +647,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	var sortExpr string
+	var whereExpr, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -663,11 +684,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	for i, f := range q.Froms {
 		buf.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(f.Var), fromSrc[i]))
 	}
+	if whereExpr != "" {
+		buf.WriteString(fmt.Sprintf("if %s then ", whereExpr))
+	}
 	if q.Sort != nil {
 		buf.WriteString(fmt.Sprintf("yield (%s, %s) |]", sortExpr, sel))
-		buf.WriteString(fmt.Sprintf(" |> Array.sortBy fst |> Array.map snd"))
+		buf.WriteString(" |> Array.sortBy fst |> Array.map snd")
 	} else {
 		buf.WriteString(fmt.Sprintf("yield %s |]", sel))
+	}
+	if skipExpr != "" {
+		buf.WriteString(fmt.Sprintf(" |> Array.skip %s", skipExpr))
+	}
+	if takeExpr != "" {
+		buf.WriteString(fmt.Sprintf(" |> Array.take %s", takeExpr))
 	}
 	return buf.String(), nil
 }

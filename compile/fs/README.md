@@ -126,4 +126,6 @@ The F# generator currently lacks support for several language constructs:
 * Streams, agents and LLM `generate` blocks
 * Concurrency primitives like `spawn` and channels
 * Generic types, reflection and macro facilities
+* Methods declared inside `type` blocks
+* `model` declarations and agent initialization
 
