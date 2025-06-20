@@ -1,4 +1,4 @@
-class Main {
+public class Main {
 	static int digit(String ch) {
 		if ((ch == "0")) {
 			return 0;
@@ -34,22 +34,22 @@ class Main {
 	}
 	
 	static int myAtoi(String s) {
-		var i = 0;
-		var n = s.length();
+		int i = 0;
+		int n = s.length();
 		while (((i < n) && (_indexString(s, i) == _indexString(" ", 0)))) {
 			i = (i + 1);
 		}
-		var sign = 1;
+		int sign = 1;
 		if (((i < n) && ((_indexString(s, i) == _indexString("+", 0)) || (_indexString(s, i) == _indexString("-", 0))))) {
 			if ((_indexString(s, i) == _indexString("-", 0))) {
 				sign = (-1);
 			}
 			i = (i + 1);
 		}
-		var result = 0;
+		int result = 0;
 		while ((i < n)) {
-			var ch = s.substring(i, (i + 1));
-			var d = digit(ch);
+			String ch = s.substring(i, (i + 1));
+			int d = digit(ch);
 			if ((d < 0)) {
 				break;
 			}

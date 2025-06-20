@@ -425,7 +425,15 @@ func runOutput(file, lang string) error {
 			return err
 		}
 		dir := filepath.Dir(file)
-		cmd := exec.Command("javac", filepath.Base(file))
+		data, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+		mainFile := filepath.Join(dir, "Main.java")
+		if err := os.WriteFile(mainFile, data, 0644); err != nil {
+			return err
+		}
+		cmd := exec.Command("javac", "Main.java")
 		cmd.Dir = dir
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

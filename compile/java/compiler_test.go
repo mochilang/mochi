@@ -8,12 +8,15 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
 	javacode "mochi/compile/java"
 	"mochi/golden"
+	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/mod"
 	"mochi/types"
 )
 
@@ -95,16 +98,40 @@ func runLeetExample(t *testing.T, id int) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
+			modRoot, _ := mod.FindRoot(filepath.Dir(f))
+
+			interp := interpreter.New(prog, env, modRoot)
+			if err := interp.Test(); err != nil {
+				t.Fatalf("tests failed: %v", err)
+			}
+
+			interp = interpreter.New(prog, env, modRoot)
+			var wantBuf bytes.Buffer
+			interp.Env().SetWriter(&wantBuf)
+			if err := interp.Run(); err != nil {
+				t.Fatalf("run error: %v", err)
+			}
+
 			code, err := javacode.New(env).Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
+
+			outDir := filepath.Join("..", "..", "examples", "leetcode-out", "java", strconv.Itoa(id))
+			if err := os.MkdirAll(outDir, 0755); err != nil {
+				t.Fatalf("mkdir: %v", err)
+			}
+			outFile := filepath.Join(outDir, strings.TrimSuffix(filepath.Base(f), ".mochi")+".java")
+			if err := os.WriteFile(outFile, code, 0644); err != nil {
+				t.Fatalf("write output: %v", err)
+			}
+
 			tmp := t.TempDir()
-			file := filepath.Join(tmp, "Main.java")
-			if err := os.WriteFile(file, code, 0644); err != nil {
+			mainFile := filepath.Join(tmp, "Main.java")
+			if err := os.WriteFile(mainFile, code, 0644); err != nil {
 				t.Fatalf("write error: %v", err)
 			}
-			if out, err := exec.Command("javac", file).CombinedOutput(); err != nil {
+			if out, err := exec.Command("javac", mainFile).CombinedOutput(); err != nil {
 				t.Fatalf("javac error: %v\n%s", err, out)
 			}
 			cmd := exec.Command("java", "-cp", tmp, "Main")
@@ -115,12 +142,10 @@ func runLeetExample(t *testing.T, id int) {
 			if err != nil {
 				t.Fatalf("java run error: %v\n%s", err, out)
 			}
-			// For two-sum we verify the output.
-			if id == 1 {
-				got := strings.TrimSpace(string(out))
-				if got != "0\n1" {
-					t.Fatalf("unexpected output: %q", got)
-				}
+			got := bytes.TrimSpace(out)
+			want := bytes.TrimSpace(wantBuf.Bytes())
+			if !bytes.Equal(got, want) {
+				t.Fatalf("unexpected output\nwant:\n%s\n got:\n%s", want, got)
 			}
 		})
 	}
@@ -131,7 +156,7 @@ func TestJavaCompiler_LeetCodeExamples(t *testing.T) {
 	if err := javacode.EnsureJavac(); err != nil {
 		t.Skipf("javac not installed: %v", err)
 	}
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 30; i++ {
 		runLeetExample(t, i)
 	}
 }

@@ -1,16 +1,16 @@
-class Main {
+public class Main {
 	static String convert(String s, int numRows) {
 		if (((numRows <= 1) || (numRows >= s.length()))) {
 			return s;
 		}
 		String[] rows = new String[]{};
-		var i = 0;
+		int i = 0;
 		while ((i < numRows)) {
 			rows = _concat(rows, new String[]{""});
 			i = (i + 1);
 		}
-		var curr = 0;
-		var step = 1;
+		int curr = 0;
+		int step = 1;
 		for (var ch : s.toCharArray()) {
 			rows[curr] = (rows[curr] + ch);
 			if ((curr == 0)) {

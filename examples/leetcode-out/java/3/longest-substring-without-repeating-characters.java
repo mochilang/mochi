@@ -1,11 +1,11 @@
-class Main {
+public class Main {
 	static int lengthOfLongestSubstring(String s) {
-		var n = s.length();
-		var start = 0;
-		var best = 0;
-		var i = 0;
+		int n = s.length();
+		int start = 0;
+		int best = 0;
+		int i = 0;
 		while ((i < n)) {
-			var j = start;
+			int j = start;
 			while ((j < i)) {
 				if ((_indexString(s, j) == _indexString(s, i))) {
 					start = (j + 1);
@@ -13,7 +13,7 @@ class Main {
 				}
 				j = (j + 1);
 			}
-			var length = ((i - start) + 1);
+			int length = ((i - start) + 1);
 			if ((length > best)) {
 				best = length;
 			}
