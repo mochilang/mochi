@@ -2,7 +2,30 @@
 using System;
 using System.Collections.Generic;
 
-public class Program {
-	public static void Main() {
-	}
+public class Sensor {
+        public string id;
+        public double temperature;
 }
+
+public class Program {
+        public static void Main() {
+                var _SensorStream = new _Stream<Sensor>("Sensor");
+                void _handler_0(Sensor ev) {
+                        var s = ev;
+                        Console.WriteLine(string.Join(" ", new [] { Convert.ToString(s.id), Convert.ToString(s.temperature) }));
+                }
+                _SensorStream.Register(_handler_0);
+                _SensorStream.Append(new Sensor { id = "sensor-1", temperature = 22.5 });
+        }
+        class _Stream<T> {
+                public string name;
+                public List<Action<T>> handlers = new List<Action<T>>();
+                public _Stream(string name) { this.name = name; }
+                public void Append(T data) {
+                        foreach (var h in new List<Action<T>>(handlers)) { h(data); }
+                }
+                public void Register(Action<T> handler) { handlers.Add(handler); }
+        }
+        static void _waitAll() {}
+}
+
