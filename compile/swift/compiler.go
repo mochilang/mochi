@@ -232,7 +232,17 @@ func (c *Compiler) compileType(t *parser.TypeRef) string {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		// union types not supported
+		c.writeln(fmt.Sprintf("protocol %s {}", t.Name))
+		for _, v := range t.Variants {
+			c.writeln(fmt.Sprintf("struct %s: %s {", v.Name, t.Name))
+			c.indent++
+			for _, f := range v.Fields {
+				typ := c.compileType(f.Type)
+				c.writeln(fmt.Sprintf("var %s: %s", f.Name, typ))
+			}
+			c.indent--
+			c.writeln("}")
+		}
 		return nil
 	}
 	c.writeln(fmt.Sprintf("struct %s {", t.Name))
