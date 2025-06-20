@@ -26,6 +26,7 @@ type Compiler struct {
 	needGroupBy     bool
 	needLoad        bool
 	needSave        bool
+	needJSON        bool
 }
 
 // New creates a new Clojure compiler instance.
@@ -48,6 +49,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needGroupBy = false
 	c.needLoad = false
 	c.needSave = false
+	c.needJSON = false
 
 	for _, s := range prog.Statements {
 		switch {
@@ -677,6 +679,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "input":
 				c.needInput = true
 				expr = "(_input)"
+			case "json":
+				if len(args) == 1 {
+					c.needJSON = true
+					expr = fmt.Sprintf("(_json %s)", args[0])
+				}
 			case "now":
 				expr = "(System/nanoTime)"
 			case "str":
@@ -828,6 +835,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "now":
 			if len(args) == 0 {
 				return "(System/nanoTime)", nil
+			}
+		case "json":
+			if len(args) == 1 {
+				c.needJSON = true
+				return "(_json " + args[0] + ")", nil
 			}
 		case "str":
 			return "(str " + strings.Join(args, " ") + ")", nil
@@ -1062,6 +1074,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	if sub.needSave {
 		c.needSave = true
 	}
+	if sub.needJSON {
+		c.needJSON = true
+	}
 	c.tempVarCount = sub.tempVarCount
 
 	var buf bytes.Buffer
@@ -1285,6 +1300,28 @@ func (c *Compiler) writeRuntime(buf *bytes.Buffer) {
     (if (or (nil? path) (= path "") (= path "-"))
       (print out)
       (spit path out))) )
+
+`)
+	}
+	if c.needJSON {
+		buf.WriteString(`(defn _escape_json [s]
+  (-> s
+      (clojure.string/replace "\\" "\\\\")
+      (clojure.string/replace "\"" "\\\"")))
+
+(defn _to_json [v]
+  (cond
+    (nil? v) "null"
+    (string? v) (str "\"" (_escape_json v) "\"")
+    (number? v) (str v)
+    (boolean? v) (str v)
+    (sequential? v) (str "[" (clojure.string/join "," (map _to_json v)) "]")
+    (map? v) (str "{" (clojure.string/join "," (map (fn [[k val]]
+                                        (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
+    :else (str "\"" (_escape_json (str v)) "\"")))
+
+(defn _json [v]
+  (println (_to_json v)))
 
 `)
 	}
