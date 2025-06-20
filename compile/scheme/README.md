@@ -289,7 +289,9 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * packages or the foreign function interface
 * streams, agents, or tests
 * sets and `match` expressions
-* struct types or literals
+* struct type declarations
+* concurrency primitives like `spawn`
+* advanced string slicing
 * logic programming predicates
 
 These features are recognised by the main Mochi interpreter but are ignored by the Scheme compiler.
