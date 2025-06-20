@@ -178,7 +178,21 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		return nil // unions not supported
+		names := make([]string, len(t.Variants))
+		for i, v := range t.Variants {
+			cname := v.Name
+			names[i] = cname
+			c.writeln(fmt.Sprintf("struct %s {", cname))
+			c.indent++
+			for _, f := range v.Fields {
+				typ := c.cppType(f.Type)
+				c.writeln(fmt.Sprintf("%s %s;", typ, f.Name))
+			}
+			c.indent--
+			c.writeln("};")
+		}
+		c.writeln(fmt.Sprintf("using %s = std::variant<%s>;", t.Name, strings.Join(names, ", ")))
+		return nil
 	}
 	c.writeln(fmt.Sprintf("struct %s {", t.Name))
 	c.indent++
@@ -644,6 +658,36 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 			def = res
 			continue
 		}
+		if st := getStructLiteral(cs.Pattern); st != nil {
+			b.WriteString(fmt.Sprintf("if (std::holds_alternative<%s>(%s)) { ", st.Name, tmp))
+			b.WriteString(fmt.Sprintf("auto _v = std::get<%s>(%s); ", st.Name, tmp))
+			for _, f := range st.Fields {
+				if name, ok := selectorName(f.Value); ok {
+					b.WriteString(fmt.Sprintf("auto %s = _v.%s; ", name, f.Name))
+				}
+			}
+			b.WriteString("return " + res + "; }")
+			continue
+		}
+		if name, ok := selectorName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(name); ok {
+				b.WriteString(fmt.Sprintf("if (std::holds_alternative<%s>(%s)) return %s; ", name, tmp, res))
+				continue
+			}
+		}
+		if call := getCallExpr(cs.Pattern); call != nil {
+			b.WriteString(fmt.Sprintf("if (std::holds_alternative<%s>(%s)) { ", call.Func, tmp))
+			b.WriteString(fmt.Sprintf("auto _v = std::get<%s>(%s); ", call.Func, tmp))
+			for i, a := range call.Args {
+				if name, ok := selectorName(a); ok {
+					st, _ := c.env.FindUnionByVariant(call.Func)
+					fieldName := st.Variants[call.Func].Order[i]
+					b.WriteString(fmt.Sprintf("auto %s = _v.%s; ", name, fieldName))
+				}
+			}
+			b.WriteString("return " + res + "; }")
+			continue
+		}
 		pat := c.compileExpr(cs.Pattern)
 		b.WriteString(fmt.Sprintf("if (%s == %s) return %s; ", tmp, pat, res))
 	}
@@ -952,4 +996,52 @@ func getEmptyMapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return post.Target.Map
 	}
 	return nil
+}
+
+func getStructLiteral(e *parser.Expr) *parser.StructLiteral {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	post := u.Value
+	if post == nil || post.Target == nil {
+		return nil
+	}
+	return post.Target.Struct
+}
+
+func getCallExpr(e *parser.Expr) *parser.CallExpr {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	post := u.Value
+	if post == nil || post.Target == nil {
+		return nil
+	}
+	return post.Target.Call
+}
+
+func selectorName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	post := u.Value
+	if post == nil || post.Target == nil || post.Target.Selector == nil {
+		return "", false
+	}
+	if len(post.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return post.Target.Selector.Root, true
 }

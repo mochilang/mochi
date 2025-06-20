@@ -57,6 +57,28 @@ func (c *Compiler) cppType(t *parser.TypeRef) string {
 ```
 【F:compile/cpp/compiler.go†L75-L95】
 
+Union type declarations are now translated using `std::variant`. Each variant
+is emitted as a separate struct and the union type becomes a `using` alias. The
+relevant code lives in `compileTypeDecl`:
+
+```go
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+    if len(t.Variants) > 0 {
+        names := make([]string, len(t.Variants))
+        for i, v := range t.Variants {
+            names[i] = v.Name
+            c.writeln(fmt.Sprintf("struct %s {", v.Name))
+            // ... fields ...
+            c.writeln("};")
+        }
+        c.writeln(fmt.Sprintf("using %s = std::variant<%s>;", t.Name, strings.Join(names, ", ")))
+        return nil
+    }
+    // struct declarations
+}
+```
+【F:compile/cpp/compiler.go†L179-L207】
+
 Loops, conditionals and expressions map directly to their C++ equivalents. A
 `for` range becomes a standard loop:
 
@@ -196,7 +218,6 @@ Simple `where` filters in dataset queries are supported, but other clauses remai
 Some LeetCode solutions use language constructs that the C++ backend can't yet translate. Unsupported features include:
 
 * Dataset queries with clauses like `group by`, `join`, or `sort by`
-* Union type declarations
 * Agents, streams and intents
 * `generate` blocks and model definitions
 * Dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
@@ -205,3 +226,6 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Package management, tests and `expect` blocks
 * Set literals and operations
 * HTTP `fetch` requests for JSON data
+* Concurrency primitives like `spawn` and channels
+* Reflection or macro facilities
+* Generic type parameters and methods inside `type` blocks
