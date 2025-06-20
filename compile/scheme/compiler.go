@@ -20,10 +20,61 @@ type Compiler struct {
 	vars          map[string]string // local variable types within a function
 	needListSet   bool
 	needStringSet bool
+	loops         []loopCtx
+}
+
+type loopCtx struct {
+	brk     string
+	cont    string
+	contArg string
+}
+
+func (c *Compiler) pushLoop(brk, cont, arg string) {
+	c.loops = append(c.loops, loopCtx{brk: brk, cont: cont, contArg: arg})
+}
+
+func (c *Compiler) popLoop() {
+	if len(c.loops) > 0 {
+		c.loops = c.loops[:len(c.loops)-1]
+	}
+}
+
+func hasLoopCtrl(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		switch {
+		case s.Break != nil || s.Continue != nil:
+			return true
+		case s.For != nil:
+			if hasLoopCtrl(s.For.Body) {
+				return true
+			}
+		case s.While != nil:
+			if hasLoopCtrl(s.While.Body) {
+				return true
+			}
+		case s.If != nil:
+			if hasLoopCtrl(s.If.Then) || hasLoopCtrlIf(s.If.ElseIf) || hasLoopCtrl(s.If.Else) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
+	if ifst == nil {
+		return false
+	}
+	if hasLoopCtrl(ifst.Then) || hasLoopCtrl(ifst.Else) {
+		return true
+	}
+	return hasLoopCtrlIf(ifst.ElseIf)
 }
 
 // New creates a new Scheme compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env, vars: map[string]string{}} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}}
+}
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
@@ -222,6 +273,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Break != nil:
+		return c.compileBreak()
+	case s.Continue != nil:
+		return c.compileContinue()
 	default:
 		// ignore unsupported statements
 	}
@@ -255,6 +310,7 @@ func (c *Compiler) compileIndexedSet(name string, idx []*parser.IndexOp, rhs str
 
 func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	name := sanitizeName(st.Name)
+	ctrl := hasLoopCtrl(st.Body)
 	if st.RangeEnd != nil {
 		start, err := c.compileExpr(st.Source)
 		if err != nil {
@@ -264,22 +320,48 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+		if !ctrl {
+			c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
+			c.indent++
+			c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
+			c.indent++
+			c.writeln("(begin")
+			c.indent++
+			for _, s := range st.Body {
+				if err := c.compileStmt(s); err != nil {
+					return err
+				}
+			}
+			c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+			c.indent--
+			c.writeln(")")
+			c.indent--
+			c.writeln("'())")
+			c.indent--
+			c.writeln(")")
+			return nil
+		}
+		brk := fmt.Sprintf("brk%d", len(c.loops))
+		loop := fmt.Sprintf("loop%d", len(c.loops))
+		c.writeln("(call/cc (lambda (" + brk + ")")
 		c.indent++
-		c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
+		c.writeln("(let " + loop + " ((" + name + " " + start + "))")
 		c.indent++
-		c.writeln("(begin")
+		c.writeln("(when (< " + name + " " + end + ")")
 		c.indent++
+		c.pushLoop(brk, loop, "(+ "+name+" 1)")
 		for _, s := range st.Body {
 			if err := c.compileStmt(s); err != nil {
+				c.popLoop()
 				return err
 			}
 		}
-		c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
+		c.writeln("(" + loop + " (+ " + name + " 1)))")
+		c.popLoop()
 		c.indent--
 		c.writeln(")")
 		c.indent--
-		c.writeln("'())")
+		c.writeln(")")
 		c.indent--
 		c.writeln(")")
 		return nil
@@ -298,34 +380,68 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		lenExpr = fmt.Sprintf("(string-length %s)", src)
 		elemExpr = fmt.Sprintf("(string-ref %s %s)", src, idx)
 	}
-	c.writeln(fmt.Sprintf("(let loop ((%s 0))", idx))
+	if !ctrl {
+		c.writeln(fmt.Sprintf("(let loop ((%s 0))", idx))
+		c.indent++
+		c.writeln(fmt.Sprintf("(if (< %s %s)", idx, lenExpr))
+		c.indent++
+		c.writeln("(begin")
+		c.indent++
+		if st.Name != "_" {
+			c.writeln(fmt.Sprintf("(let ((%s %s))", name, elemExpr))
+			c.indent++
+			for _, s := range st.Body {
+				if err := c.compileStmt(s); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln(")")
+		} else {
+			for _, s := range st.Body {
+				if err := c.compileStmt(s); err != nil {
+					return err
+				}
+			}
+		}
+		c.writeln(fmt.Sprintf("(loop (+ %s 1))", idx))
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln("'())")
+		c.indent--
+		c.writeln(")")
+		return nil
+	}
+	brk := fmt.Sprintf("brk%d", len(c.loops))
+	loop := fmt.Sprintf("loop%d", len(c.loops))
+	c.writeln("(call/cc (lambda (" + brk + ")")
 	c.indent++
-	c.writeln(fmt.Sprintf("(if (< %s %s)", idx, lenExpr))
+	c.writeln("(let " + loop + " ((" + idx + " 0))")
 	c.indent++
-	c.writeln("(begin")
+	c.writeln("(when (< " + idx + " " + lenExpr + ")")
 	c.indent++
 	if st.Name != "_" {
 		c.writeln(fmt.Sprintf("(let ((%s %s))", name, elemExpr))
 		c.indent++
-		for _, s := range st.Body {
-			if err := c.compileStmt(s); err != nil {
-				return err
-			}
-		}
-		c.indent--
-		c.writeln(")")
-	} else {
-		for _, s := range st.Body {
-			if err := c.compileStmt(s); err != nil {
-				return err
-			}
+	}
+	c.pushLoop(brk, loop, "(+ "+idx+" 1)")
+	for _, s := range st.Body {
+		if err := c.compileStmt(s); err != nil {
+			c.popLoop()
+			return err
 		}
 	}
-	c.writeln(fmt.Sprintf("(loop (+ %s 1))", idx))
+	c.popLoop()
+	if st.Name != "_" {
+		c.indent--
+		c.writeln(")")
+	}
+	c.writeln("(" + loop + " (+ " + idx + " 1)))")
 	c.indent--
 	c.writeln(")")
 	c.indent--
-	c.writeln("'())")
+	c.writeln(")")
 	c.indent--
 	c.writeln(")")
 	return nil
@@ -398,24 +514,76 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("(let loop ()")
+	ctrl := hasLoopCtrl(st.Body)
+	if !ctrl {
+		c.writeln("(let loop ()")
+		c.indent++
+		c.writeln(fmt.Sprintf("(if %s", cond))
+		c.indent++
+		c.writeln("(begin")
+		c.indent++
+		for _, s := range st.Body {
+			if err := c.compileStmt(s); err != nil {
+				return err
+			}
+		}
+		c.writeln("(loop)")
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln("'())")
+		c.indent--
+		c.writeln(")")
+		return nil
+	}
+	brk := fmt.Sprintf("brk%d", len(c.loops))
+	loop := fmt.Sprintf("loop%d", len(c.loops))
+	c.writeln("(call/cc (lambda (" + brk + ")")
 	c.indent++
-	c.writeln(fmt.Sprintf("(if %s", cond))
+	c.writeln("(let " + loop + " ()")
 	c.indent++
-	c.writeln("(begin")
+	c.writeln(fmt.Sprintf("(when %s", cond))
 	c.indent++
+	c.pushLoop(brk, loop, "")
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.popLoop()
 			return err
 		}
 	}
-	c.writeln("(loop)")
+	c.writeln("(" + loop + "))")
+	c.popLoop()
 	c.indent--
 	c.writeln(")")
 	c.indent--
-	c.writeln("'())")
+	c.writeln(")")
 	c.indent--
 	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileBreak() error {
+	if len(c.loops) == 0 {
+		return fmt.Errorf("break not in loop")
+	}
+	lbl := c.loops[len(c.loops)-1].brk
+	c.writeln("(" + lbl + " '())")
+	return nil
+}
+
+func (c *Compiler) compileContinue() error {
+	if len(c.loops) == 0 {
+		return fmt.Errorf("continue not in loop")
+	}
+	ctx := c.loops[len(c.loops)-1]
+	if ctx.cont == "" {
+		return fmt.Errorf("continue unsupported in this loop")
+	}
+	if ctx.contArg != "" {
+		c.writeln(fmt.Sprintf("(%s %s)", ctx.cont, ctx.contArg))
+	} else {
+		c.writeln("(" + ctx.cont + ")")
+	}
 	return nil
 }
 

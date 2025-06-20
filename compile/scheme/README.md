@@ -60,11 +60,13 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	c.indent--
 	c.writeln(")")
 	c.indent--
-	c.writeln("'())")
-	c.indent--
-	c.writeln(")")
-	return nil
+        c.writeln("'())")
+        c.indent--
+        c.writeln(")")
+        return nil
 ```
+When a loop body contains `break` or `continue`, the compiler wraps the loop in
+`call/cc` and jumps using named recursion to implement these controls.
 
 `if` statements emit normal Scheme `if` expressions with optional `else` and `else if` blocks:
 ```scheme
@@ -286,6 +288,7 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * union types and methods
 * packages or the foreign function interface
 * streams, agents, or tests
+* maps, sets, and `match` expressions
 
 These features are recognised by the main Mochi interpreter but are ignored by the Scheme compiler.
 
