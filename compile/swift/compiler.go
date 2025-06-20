@@ -17,6 +17,7 @@ type Compiler struct {
 	env         *types.Env
 	locals      map[string]types.Type
 	useAvg      bool
+	useIndex    bool
 	useIndexStr bool
 	useSlice    bool
 	useSliceStr bool
@@ -27,6 +28,7 @@ func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[stri
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useAvg = false
+	c.useIndex = false
 	c.useIndexStr = false
 	c.useSlice = false
 	c.useSliceStr = false
@@ -113,6 +115,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("if idx < 0 { idx += chars.count }")
 		c.writeln("if idx < 0 || idx >= chars.count { fatalError(\"index out of range\") }")
 		c.writeln("return String(chars[idx])")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.useIndex {
+		c.writeln("func _index<T>(_ arr: [T], _ i: Int) -> T {")
+		c.indent++
+		c.writeln("var idx = i")
+		c.writeln("let n = arr.count")
+		c.writeln("if idx < 0 { idx += n }")
+		c.writeln("if idx < 0 || idx >= n { fatalError(\"index out of range\") }")
+		c.writeln("return arr[idx]")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -774,9 +788,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					c.useIndexStr = true
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 				} else {
-					expr = fmt.Sprintf("%s[%s]", expr, idx)
 					if c.isMapPrimary(p.Target) {
-						expr += "!"
+						expr = fmt.Sprintf("%s[%s]!", expr, idx)
+					} else if c.isListPrimary(p.Target) {
+						c.useIndex = true
+						expr = fmt.Sprintf("_index(%s, %s)", expr, idx)
+					} else {
+						expr = fmt.Sprintf("%s[%s]", expr, idx)
 					}
 				}
 			}
@@ -1210,6 +1228,60 @@ func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 		return false
 	}
 	return c.isMapPrimary(p.Target)
+}
+
+func (c *Compiler) isListPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.List != nil:
+		return true
+	case p.Selector != nil:
+		name := p.Selector.Root
+		if len(p.Selector.Tail) > 0 {
+			name += "." + strings.Join(p.Selector.Tail, ".")
+		}
+		if t, ok := c.locals[name]; ok {
+			if _, ok := t.(types.ListType); ok {
+				return true
+			}
+		}
+		if c.env != nil {
+			if t, err := c.env.GetVar(name); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
+		}
+	case p.Group != nil:
+		return c.isListExpr(p.Group)
+	}
+	return false
+}
+
+func (c *Compiler) isListExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	return c.isListUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isListUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isListPostfix(u.Value)
+}
+
+func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	return c.isListPrimary(p.Target)
 }
 
 // paramAssigned reports whether a function parameter is assigned within the
