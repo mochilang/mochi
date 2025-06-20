@@ -227,8 +227,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Let.Type != nil {
 			typ = c.cppType(s.Let.Type)
-		} else if t, err := c.env.GetVar(s.Let.Name); err == nil {
-			typ = c.cppTypeRef(t)
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Let.Name))
@@ -268,8 +266,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Var.Type != nil {
 			typ = c.cppType(s.Var.Type)
-		} else if t, err := c.env.GetVar(s.Var.Name); err == nil {
-			typ = c.cppTypeRef(t)
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Var.Name))
@@ -328,12 +324,14 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	}
 	src := c.compileExpr(f.Source)
 	elemType := "auto"
-	if t := c.guessExprType(f.Source); strings.HasPrefix(t, "vector<") {
-		elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
-		if !isPrimitive(elemType) {
-			elemType = "const " + elemType + "&"
+	if isListLiteral(f.Source) {
+		if t := c.guessExprType(f.Source); strings.HasPrefix(t, "vector<") {
+			elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
+			if !isPrimitive(elemType) {
+				elemType = "const " + elemType + "&"
+			}
 		}
-	} else if t == "string" {
+	} else if isStringLiteral(f.Source) {
 		elemType = "char"
 	}
 	name := f.Name
@@ -727,7 +725,7 @@ func (c *Compiler) writeHelpers() {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || len(q.Joins) != 0 {
+	if q.Group != nil || q.Sort != nil || len(q.Joins) != 0 {
 		return "", fmt.Errorf("query not supported")
 	}
 	src := c.compileExpr(q.Source)
@@ -741,6 +739,13 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	resType := c.guessExprType(q.Select)
 	if resType == "" {
 		resType = "auto"
+	}
+	var skipExpr, takeExpr string
+	if q.Skip != nil {
+		skipExpr = c.compileExpr(q.Skip)
+	}
+	if q.Take != nil {
+		takeExpr = c.compileExpr(q.Take)
 	}
 	var buf bytes.Buffer
 	buf.WriteString("([&]() -> vector<" + resType + "> {\n")
@@ -763,6 +768,14 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	for range vars {
 		indent = indent[:len(indent)-1]
 		buf.WriteString(indent + "}\n")
+	}
+	if skipExpr != "" {
+		buf.WriteString("\tint _skip = " + skipExpr + ";\n")
+		buf.WriteString("\tif (_skip < (int)_res.size()) _res.erase(_res.begin(), _res.begin() + _skip); else _res.clear();\n")
+	}
+	if takeExpr != "" {
+		buf.WriteString("\tint _take = " + takeExpr + ";\n")
+		buf.WriteString("\tif (_take < (int)_res.size()) _res.resize(_take);\n")
 	}
 	buf.WriteString("\treturn _res;\n")
 	buf.WriteString("})()")
@@ -897,6 +910,30 @@ func getEmptyListLiteral(e *parser.Expr) *parser.ListLiteral {
 		return post.Target.List
 	}
 	return nil
+}
+
+func isListLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	post := u.Value
+	return post != nil && post.Target != nil && post.Target.List != nil
+}
+
+func isStringLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	post := u.Value
+	return post != nil && post.Target != nil && post.Target.Lit != nil && post.Target.Lit.Str != nil
 }
 
 func getEmptyMapLiteral(e *parser.Expr) *parser.MapLiteral {

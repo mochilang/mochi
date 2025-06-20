@@ -1,8 +1,15 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+string _indexString(const string& s, int i) {
+	int n = s.size();
+	if (i < 0) i += n;
+	if (i < 0 || i >= n) throw std::out_of_range("index out of range");
+	return string(1, s[i]);
+}
+
 int main() {
 	auto text = string("hello");
-	std::cout << (text[1]) << std::endl;
+	std::cout << (_indexString(text, 1)) << std::endl;
 	return 0;
 }

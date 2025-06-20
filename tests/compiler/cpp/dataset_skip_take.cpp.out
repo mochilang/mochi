@@ -1,0 +1,21 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	auto nums = vector<int>{1, 2, 3, 4, 5};
+	auto sub = ([&]() -> vector<auto> {
+	vector<auto> _res;
+	for (auto& n : nums) {
+		_res.push_back(n);
+	}
+	int _skip = 1;
+	if (_skip < (int)_res.size()) _res.erase(_res.begin(), _res.begin() + _skip); else _res.clear();
+	int _take = 3;
+	if (_take < (int)_res.size()) _res.resize(_take);
+	return _res;
+})();
+	for (auto n : sub) {
+		std::cout << (n) << std::endl;
+	}
+	return 0;
+}

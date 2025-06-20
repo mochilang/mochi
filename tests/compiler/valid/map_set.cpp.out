@@ -2,7 +2,7 @@
 using namespace std;
 
 int main() {
-	auto scores;
+	auto scores = unordered_map<string, int>{{string("a"), 1}};
 	scores[string("b")] = 2;
 	std::cout << (scores[string("b")]) << std::endl;
 	return 0;
