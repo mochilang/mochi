@@ -29,6 +29,7 @@ func New(env *types.Env) *Compiler {
 // Compile generates Ruby code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	tests := []*parser.TestBlock{}
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			if err := c.compileTypeDecl(s.Type); err != nil {
@@ -43,15 +44,24 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		} else if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+			tests = append(tests, s.Test)
 		}
 	}
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil {
+		if s.Fun != nil || s.Type != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
+	}
+	for _, t := range tests {
+		c.writeln("test_" + sanitizeName(t.Name) + "()")
 	}
 	body := append([]byte(nil), c.buf.Bytes()...)
 	c.buf.Reset()
@@ -106,6 +116,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("next")
 		return nil
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	default:
 		return nil
 	}
@@ -1060,4 +1072,27 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		c.use("_genText")
 		return fmt.Sprintf("_gen_text(%s, %s, %s)", prompt, model, paramStr), nil
 	}
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("def %s()", name))
+	c.indent++
+	for _, s := range t.Body {
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("raise \"expect failed\" unless %s", expr))
+	return nil
 }
