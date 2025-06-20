@@ -43,28 +43,32 @@ func sanitizeName(name string) string {
 }
 
 type Compiler struct {
-	buf                    bytes.Buffer
-	indent                 int
-	tmp                    int
-	env                    *types.Env
-	needsStr               bool
-	needsInput             bool
-	needsIndexString       bool
-	needsStrLen            bool
-	needsSliceListInt      bool
-	needsSliceString       bool
-	needsListListInt       bool
-	needsConcatListListInt bool
-	needsConcatListInt     bool
-	needsListString        bool
-	needsConcatListString  bool
-	needsConcatString      bool
-	needsCount             bool
-	needsAvg               bool
-	needsInListInt         bool
-	needsInListString      bool
-	needsUnionListInt      bool
-	needsUnionListString   bool
+	buf                      bytes.Buffer
+	indent                   int
+	tmp                      int
+	env                      *types.Env
+	needsStr                 bool
+	needsInput               bool
+	needsIndexString         bool
+	needsStrLen              bool
+	needsSliceListInt        bool
+	needsSliceString         bool
+	needsListListInt         bool
+	needsConcatListListInt   bool
+	needsConcatListInt       bool
+	needsListString          bool
+	needsConcatListString    bool
+	needsConcatString        bool
+	needsCount               bool
+	needsAvg                 bool
+	needsInListInt           bool
+	needsInListString        bool
+	needsUnionListInt        bool
+	needsUnionListString     bool
+	needsExceptListInt       bool
+	needsExceptListString    bool
+	needsIntersectListInt    bool
+	needsIntersectListString bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -265,6 +269,90 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.writeln("int found = 0;")
 		c.writeln("for (int j = 0; j < idx; j++) if (strcmp(r.data[j], b.data[i]) == 0) { found = 1; break; }")
 		c.writeln("if (!found) r.data[idx++] = b.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("r.len = idx;")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsExceptListInt {
+		c.writeln("")
+		c.writeln("static list_int except_list_int(list_int a, list_int b) {")
+		c.indent++
+		c.writeln("list_int r = list_int_create(a.len);")
+		c.writeln("int idx = 0;")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < b.len; j++) if (a.data[i] == b.data[j]) { found = 1; break; }")
+		c.writeln("if (!found) r.data[idx++] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("r.len = idx;")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsExceptListString {
+		c.writeln("")
+		c.writeln("static list_string except_list_string(list_string a, list_string b) {")
+		c.indent++
+		c.writeln("list_string r = list_string_create(a.len);")
+		c.writeln("int idx = 0;")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < b.len; j++) if (strcmp(a.data[i], b.data[j]) == 0) { found = 1; break; }")
+		c.writeln("if (!found) r.data[idx++] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("r.len = idx;")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsIntersectListInt {
+		c.writeln("")
+		c.writeln("static list_int intersect_list_int(list_int a, list_int b) {")
+		c.indent++
+		c.writeln("list_int r = list_int_create(a.len);")
+		c.writeln("int idx = 0;")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < b.len; j++) if (a.data[i] == b.data[j]) { found = 1; break; }")
+		c.writeln("if (found) {")
+		c.indent++
+		c.writeln("int dup = 0;")
+		c.writeln("for (int j = 0; j < idx; j++) if (r.data[j] == a.data[i]) { dup = 1; break; }")
+		c.writeln("if (!dup) r.data[idx++] = a.data[i];")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("r.len = idx;")
+		c.writeln("return r;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needsIntersectListString {
+		c.writeln("")
+		c.writeln("static list_string intersect_list_string(list_string a, list_string b) {")
+		c.indent++
+		c.writeln("list_string r = list_string_create(a.len);")
+		c.writeln("int idx = 0;")
+		c.writeln("for (int i = 0; i < a.len; i++) {")
+		c.indent++
+		c.writeln("int found = 0;")
+		c.writeln("for (int j = 0; j < b.len; j++) if (strcmp(a.data[i], b.data[j]) == 0) { found = 1; break; }")
+		c.writeln("if (found) {")
+		c.indent++
+		c.writeln("int dup = 0;")
+		c.writeln("for (int j = 0; j < idx; j++) if (strcmp(r.data[j], a.data[i]) == 0) { dup = 1; break; }")
+		c.writeln("if (!dup) r.data[idx++] = a.data[i];")
+		c.indent--
+		c.writeln("}")
 		c.indent--
 		c.writeln("}")
 		c.writeln("r.len = idx;")
@@ -844,6 +932,52 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			c.needsListString = true
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_string %s = union_list_string(%s, %s);", name, left, right))
+			left = name
+			leftListString = true
+			leftList = false
+			leftListInt = false
+			leftString = false
+			continue
+		}
+		if op.Op == "except" && leftListInt && isListIntPostfix(op.Right, c.env) {
+			c.needsExceptListInt = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_int %s = except_list_int(%s, %s);", name, left, right))
+			left = name
+			leftListInt = true
+			leftList = false
+			leftListString = false
+			leftString = false
+			continue
+		}
+		if op.Op == "except" && leftListString && isListStringPostfix(op.Right, c.env) {
+			c.needsExceptListString = true
+			c.needsListString = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_string %s = except_list_string(%s, %s);", name, left, right))
+			left = name
+			leftListString = true
+			leftList = false
+			leftListInt = false
+			leftString = false
+			continue
+		}
+		if op.Op == "intersect" && leftListInt && isListIntPostfix(op.Right, c.env) {
+			c.needsIntersectListInt = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_int %s = intersect_list_int(%s, %s);", name, left, right))
+			left = name
+			leftListInt = true
+			leftList = false
+			leftListString = false
+			leftString = false
+			continue
+		}
+		if op.Op == "intersect" && leftListString && isListStringPostfix(op.Right, c.env) {
+			c.needsIntersectListString = true
+			c.needsListString = true
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_string %s = intersect_list_string(%s, %s);", name, left, right))
 			left = name
 			leftListString = true
 			leftList = false
