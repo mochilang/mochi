@@ -677,6 +677,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "input":
 				c.needInput = true
 				expr = "(_input)"
+			case "now":
+				expr = "(System/nanoTime)"
 			case "str":
 				expr = fmt.Sprintf("(str %s)", strings.Join(args, " "))
 			default:
@@ -823,6 +825,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				c.needInput = true
 				return "(_input)", nil
 			}
+		case "now":
+			if len(args) == 0 {
+				return "(System/nanoTime)", nil
+			}
 		case "str":
 			return "(str " + strings.Join(args, " ") + ")", nil
 		}
@@ -832,8 +838,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) != 0 {
-		return "", fmt.Errorf("unsupported query expression")
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("unsupported join type")
+		}
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -844,6 +852,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	child.SetVar(q.Var, types.AnyType{}, true)
 	for _, f := range q.Froms {
 		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
 	}
 	c.env = child
 
@@ -875,6 +886,20 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		fromSrcs[i] = fs
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		joinOns[i] = on
 	}
 	var whereExpr string
 	if q.Where != nil {
@@ -912,6 +937,10 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	b.WriteString(" (for [" + v + " " + src)
 	for i, f := range q.Froms {
 		b.WriteString(" " + sanitizeName(f.Var) + " " + fromSrcs[i])
+	}
+	for i := range q.Joins {
+		b.WriteString(" " + sanitizeName(q.Joins[i].Var) + " " + joinSrcs[i])
+		b.WriteString(" :when " + joinOns[i])
 	}
 	if whereExpr != "" {
 		b.WriteString(" :when " + whereExpr)

@@ -120,15 +120,14 @@ execute correctly using the Clojure backend.
 
 ## Status
 
-The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals, dataset `load` and `save` helpers for CSV files, basic `group by` queries and built-in helpers like `count`, `avg`, `input` and anonymous `fun` expressions. Query expressions handle filtering, cross joins and pagination via `skip`/`take`. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
+The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals, dataset `load` and `save` helpers for CSV files, basic `group by` queries and built-in helpers like `count`, `avg`, `now`, `input` and anonymous `fun` expressions. Query expressions handle filtering, cross and inner joins and pagination via `skip`/`take`. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
 
 ### Unsupported Features
 
 The current compiler lacks support for several language constructs commonly used
 in the example programs. In particular:
- - Union types and pattern matching on variants
-- Data set operations beyond simple queries and streaming APIs
-- Advanced `group by` or join queries with aggregation
+- Union types and pattern matching on variants
+- Left/right/outer joins and grouped aggregations
 - Agent helpers and LLM integration
 - Package imports and module system
 - Logic programming facts and rules
@@ -142,5 +141,6 @@ in the example programs. In particular:
 - Methods declared inside `type` blocks
 - Error handling with `try`/`catch` blocks
 - Reflection or macro facilities
+- JSON output via the `json` builtin
 
 Programs relying on these features fail to compile with the Clojure backend.
