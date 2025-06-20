@@ -1025,6 +1025,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("((Array.sum %s) / %s.Length)", args[0], args[0]), nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		c.use("_json")
+		return fmt.Sprintf("_json %s", args[0]), nil
+	case "to_json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("to_json expects 1 arg")
+		}
+		c.use("_to_json")
+		return fmt.Sprintf("_to_json %s", args[0]), nil
 	case "input":
 		if len(args) != 0 {
 			return "", fmt.Errorf("input expects no args")
