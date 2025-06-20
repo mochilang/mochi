@@ -1,0 +1,18 @@
+#[derive(Clone, Debug)]
+struct Counter {
+    value: i32,
+}
+impl Counter {
+    fn inc(&mut self) -> i32 {
+        self.value = self.value + 1;
+        return self.value;
+    }
+}
+
+
+fn main() {
+    let mut c = Counter { value: 0 };
+    println!("{}", c.inc());
+    println!("{}", c.inc());
+}
+
