@@ -70,6 +70,27 @@ func isSimpleExpr(n *ast.Node) bool {
 	return false
 }
 
+// isStringExpr reports whether the node evaluates to a string.
+func (c *Compiler) isStringExpr(n *ast.Node) bool {
+	switch n.Kind {
+	case "string":
+		return true
+	case "selector":
+		if c.env != nil {
+			if t, err := c.env.GetVar(n.Value.(string)); err == nil {
+				if _, ok := t.(types.StringType); ok {
+					return true
+				}
+			}
+		}
+	case "binary":
+		if n.Value == "+" {
+			return c.isStringExpr(n.Children[0]) || c.isStringExpr(n.Children[1])
+		}
+	}
+	return false
+}
+
 // declare records a WORKING-STORAGE declaration.
 func (c *Compiler) declare(line string) {
 	for _, d := range c.decls {
@@ -106,10 +127,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln("PROCEDURE DIVISION.")
 	c.buf.Write(bodyBytes)
+	c.writeln("    STOP RUN.")
+	if len(c.funcDecls) > 0 {
+		c.writeln(".")
+	}
 	for _, fn := range c.funcDecls {
 		c.buf.WriteString(fn)
 	}
-	c.writeln("    STOP RUN.")
 	return c.buf.Bytes(), nil
 }
 
@@ -164,8 +188,13 @@ func (c *Compiler) compileNode(n *ast.Node) {
 					c.writeln("    DISPLAY " + expr)
 				} else {
 					tmp := c.newTemp()
-					c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
-					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+					if c.isStringExpr(arg) {
+						c.declare(fmt.Sprintf("01 %s PIC X(100).", tmp))
+						c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
+					} else {
+						c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+						c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+					}
 					c.writeln("    DISPLAY " + tmp)
 				}
 			}
@@ -318,8 +347,13 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 			return expr
 		}
 		tmp := c.newTemp()
-		c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
-		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+		if c.isStringExpr(n.Children[0]) {
+			c.declare(fmt.Sprintf("01 %s PIC X(100).", tmp))
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
+		} else {
+			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+		}
 		return tmp
 	}
 	if !ok {
@@ -329,8 +363,13 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		expr := c.expr(arg)
 		if !isSimpleExpr(arg) {
 			tmp := c.newTemp()
-			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+			if c.isStringExpr(arg) {
+				c.declare(fmt.Sprintf("01 %s PIC X(100).", tmp))
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
+			} else {
+				c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+			}
 			expr = tmp
 		}
 		if i < count {
@@ -484,6 +523,9 @@ func (c *Compiler) expr(n *ast.Node) string {
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
 		op := n.Value.(string)
+		if op == "+" && (c.isStringExpr(n.Children[0]) || c.isStringExpr(n.Children[1])) {
+			return fmt.Sprintf("%s & %s", left, right)
+		}
 		switch op {
 		case "&&":
 			return fmt.Sprintf("%s * %s", left, right)
