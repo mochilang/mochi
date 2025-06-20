@@ -126,12 +126,13 @@ The backend only implements a small subset of Mochi and is mainly a proof of con
 
 The current compiler lacks support for several language constructs commonly used
 in the example programs. In particular:
-- Struct literals and union types
-- Pattern matching on union variants
+ - Union types and pattern matching on variants
 - Data set operations beyond simple queries and streaming APIs
 - Agent helpers and LLM integration
+- Package imports and module system
 - Logic programming facts and rules
 - External declarations and other FFI helpers
 - HTTP fetch and generative AI utilities
+- Streams and event-driven agents
 
 Programs relying on these features fail to compile with the Clojure backend.

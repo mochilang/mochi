@@ -717,6 +717,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts = append(parts, k, v)
 		}
 		return "{" + strings.Join(parts, " ") + "}", nil
+	case p.Struct != nil:
+		parts := make([]string, 0, len(p.Struct.Fields)+1)
+		parts = append(parts, fmt.Sprintf(":__name \"%s\"", p.Struct.Name))
+		for _, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts = append(parts, fmt.Sprintf(":%s %s", sanitizeName(f.Name), v))
+		}
+		return "{" + strings.Join(parts, " ") + "}", nil
 	case p.Query != nil:
 		expr, err := c.compileQuery(p.Query)
 		if err != nil {
@@ -730,9 +741,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return expr, nil
 	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 {
-			return sanitizeName(p.Selector.Root), nil
+		expr := sanitizeName(p.Selector.Root)
+		for _, s := range p.Selector.Tail {
+			expr = fmt.Sprintf("(:%s %s)", sanitizeName(s), expr)
 		}
+		return expr, nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
