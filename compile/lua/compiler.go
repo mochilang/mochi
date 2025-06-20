@@ -549,6 +549,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -919,6 +923,44 @@ func (c *Compiler) compileFun(fun *parser.FunStmt, local bool) error {
 	return nil
 }
 
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "nil"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.helpers["load"] = true
+	return fmt.Sprintf("__load(%s, %s)", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "nil"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.helpers["save"] = true
+	return fmt.Sprintf("__save(%s, %s, %s)", src, path, opts), nil
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("function %s()", name))
@@ -1276,6 +1318,60 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writeln("end")
 		c.writeln("return {}")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["load"] {
+		c.writeln("function __load(path, opts)")
+		c.indent++
+		c.writeln("local fmt = 'json'")
+		c.writeln("if opts and opts['format'] then fmt = opts['format'] end")
+		c.writeln("local f")
+		c.writeln("if not path or path == '' or path == '-' then")
+		c.indent++
+		c.writeln("f = io.stdin")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("local err; f, err = io.open(path, 'r'); if not f then error(err) end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("local data = f:read('*a')")
+		c.writeln("if f ~= io.stdin then f:close() end")
+		c.writeln("if fmt ~= 'json' then error('unsupported format: '..fmt) end")
+		c.writeln("local ok, json = pcall(require, 'json')")
+		c.writeln("if not ok then error('json library not found') end")
+		c.writeln("local res = json.decode(data)")
+		c.writeln("if type(res) ~= 'table' then return {} end")
+		c.writeln("if res[1] then return res end")
+		c.writeln("return {res}")
+		c.indent--
+		c.writeln("end")
+		c.writeln("")
+	}
+
+	if c.helpers["save"] {
+		c.writeln("function __save(rows, path, opts)")
+		c.indent++
+		c.writeln("local fmt = 'json'")
+		c.writeln("if opts and opts['format'] then fmt = opts['format'] end")
+		c.writeln("if fmt ~= 'json' then error('unsupported format: '..fmt) end")
+		c.writeln("local ok, json = pcall(require, 'json')")
+		c.writeln("if not ok then error('json library not found') end")
+		c.writeln("local f")
+		c.writeln("if not path or path == '' or path == '-' then")
+		c.indent++
+		c.writeln("f = io.stdout")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("local err; f, err = io.open(path, 'w'); if not f then error(err) end")
+		c.indent--
+		c.writeln("end")
+		c.writeln("f:write(json.encode(rows))")
+		c.writeln("if f ~= io.stdout then f:close() end")
 		c.indent--
 		c.writeln("end")
 		c.writeln("")

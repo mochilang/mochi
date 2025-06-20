@@ -1,0 +1,6 @@
+type Item {
+  name: string
+}
+
+let items = load as Item
+print(count(items))
