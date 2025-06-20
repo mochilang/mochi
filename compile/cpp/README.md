@@ -195,7 +195,7 @@ Simple `where` filters in dataset queries are supported, but other clauses remai
 
 Some LeetCode solutions use language constructs that the C++ backend can't yet translate. Unsupported features include:
 
-* Dataset queries with clauses like `group by`, `join`, `skip`, `take`, or `sort by`
+* Dataset queries with clauses like `group by`, `join`, or `sort by`
 * Union type declarations
 * Agents, streams and intents
 * `generate` blocks and model definitions
@@ -203,3 +203,5 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * `logic` queries for Prolog-style reasoning
 * Foreign imports and `extern` declarations
 * Package management, tests and `expect` blocks
+* Set literals and operations
+* HTTP `fetch` requests for JSON data
