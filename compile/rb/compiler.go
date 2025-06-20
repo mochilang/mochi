@@ -18,11 +18,12 @@ type Compiler struct {
 	env           *types.Env
 	tmpCount      int
 	useOpenStruct bool
+	helpers       map[string]bool
 }
 
 // New creates a new Ruby compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, helpers: make(map[string]bool)}
 }
 
 // Compile generates Ruby code for prog.
@@ -56,6 +57,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	if c.useOpenStruct {
 		c.writeln("require 'ostruct'")
+		c.writeln("")
+	}
+	if len(c.helpers) > 0 {
+		c.emitRuntime()
 		c.writeln("")
 	}
 	c.buf.Write(body)
@@ -692,6 +697,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return q, nil
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.List != nil:
@@ -906,4 +919,112 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	b.WriteString("\telse\n\t\tnil\n\tend\nend)")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	urlStr, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	var withStr string
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		withStr = w
+	} else {
+		withStr = "nil"
+	}
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "nil"
+	if l.Path != nil {
+		path = strconv.Quote(*l.Path)
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.use("_load")
+	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		tname := sanitizeName(*l.Type.Simple)
+		expr = fmt.Sprintf("(%s).map { |_it| %s.new(**_it) }", expr, tname)
+	}
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "nil"
+	if s.Path != nil {
+		path = strconv.Quote(*s.Path)
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.use("_save")
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var prompt, text, model string
+	params := []string{}
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("%q => %s", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramStr := "nil"
+	if len(params) > 0 {
+		paramStr = "{" + strings.Join(params, ", ") + "}"
+	}
+	if model == "" {
+		model = "\"\""
+	}
+	switch g.Target {
+	case "embedding":
+		c.use("_genEmbed")
+		return fmt.Sprintf("_gen_embed(%s, %s, %s)", text, model, paramStr), nil
+	default:
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.use("_genStruct")
+			return fmt.Sprintf("_gen_struct(%s, %s, %s, %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
+		}
+		c.use("_genText")
+		return fmt.Sprintf("_gen_text(%s, %s, %s)", prompt, model, paramStr), nil
+	}
 }
