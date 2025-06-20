@@ -12,17 +12,20 @@ import (
 // Compiler emits very small Fortran 90 code for a limited subset of Mochi.
 // It only supports constructs needed for the leetcode two-sum example.
 type Compiler struct {
-	buf               bytes.Buffer
-	indent            int
-	stringVars        map[string]bool
-	listVars          map[string]bool
-	floatVars         map[string]bool
-	funReturnStr      map[string]bool
-	funReturnList     map[string]bool
-	funReturnFloat    map[string]bool
-	needsUnionInt     bool
-	needsExceptInt    bool
-	needsIntersectInt bool
+	buf                 bytes.Buffer
+	indent              int
+	stringVars          map[string]bool
+	listVars            map[string]bool
+	floatVars           map[string]bool
+	funReturnStr        map[string]bool
+	funReturnList       map[string]bool
+	funReturnFloat      map[string]bool
+	needsUnionInt       bool
+	needsUnionFloat     bool
+	needsExceptInt      bool
+	needsExceptFloat    bool
+	needsIntersectInt   bool
+	needsIntersectFloat bool
 }
 
 func New() *Compiler {
@@ -339,8 +342,11 @@ func isFloatPrimary(p *parser.Primary, floatVars map[string]bool, funFloat map[s
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.needsUnionInt = false
+	c.needsUnionFloat = false
 	c.needsExceptInt = false
+	c.needsExceptFloat = false
 	c.needsIntersectInt = false
+	c.needsIntersectFloat = false
 	var funs []*parser.FunStmt
 	var tests []*parser.TestBlock
 	var mainStmts []*parser.Statement
@@ -429,7 +435,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(fmt.Sprintf("call test_%s()", sanitizeName(t.Name)))
 	}
 	c.indent--
-	needHelpers := c.needsUnionInt || c.needsExceptInt || c.needsIntersectInt
+	needHelpers := c.needsUnionInt || c.needsUnionFloat || c.needsExceptInt || c.needsExceptFloat || c.needsIntersectInt || c.needsIntersectFloat
 	if len(funs)+len(tests) > 0 || needHelpers {
 		c.writeln("contains")
 		c.indent++
@@ -1040,6 +1046,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	vals := []string{}
 	vStr := []bool{}
 	vList := []bool{}
+	vFloat := []bool{}
 	ops := []*parser.BinaryOp{}
 
 	first, err := c.compileUnary(b.Left)
@@ -1050,6 +1057,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	exprLeft := &parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}
 	vStr = append(vStr, isStringExpr(exprLeft, c.stringVars, c.funReturnStr))
 	vList = append(vList, isListExpr(exprLeft, c.listVars, c.funReturnList))
+	vFloat = append(vFloat, isFloatExpr(exprLeft, c.floatVars, c.funReturnFloat))
 	emit := func() error {
 		if len(ops) == 0 {
 			return nil
@@ -1065,9 +1073,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		lStr := vStr[len(vStr)-2]
 		rList := vList[len(vList)-1]
 		lList := vList[len(vList)-2]
+		rFloat := vFloat[len(vFloat)-1]
+		lFloat := vFloat[len(vFloat)-2]
 		vals = vals[:len(vals)-2]
 		vStr = vStr[:len(vStr)-2]
 		vList = vList[:len(vList)-2]
+		vFloat = vFloat[:len(vFloat)-2]
 		var expr string
 		switch op.Op {
 		case "+":
@@ -1075,6 +1086,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("(/ %s, %s /)", left, right)
 				vList = append(vList, true)
 				vStr = append(vStr, false)
+				vFloat = append(vFloat, lFloat || rFloat)
 				vals = append(vals, expr)
 				return nil
 			}
@@ -1082,6 +1094,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("(trim(%s) // trim(%s))", left, right)
 				vStr = append(vStr, true)
 				vList = append(vList, false)
+				vFloat = append(vFloat, false)
 				vals = append(vals, expr)
 				return nil
 			}
@@ -1107,9 +1120,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "union":
 			if op.All {
 				expr = fmt.Sprintf("(/ %s, %s /)", left, right)
+				vFloat = append(vFloat, lFloat || rFloat)
 			} else if lList && rList {
-				c.needsUnionInt = true
-				expr = fmt.Sprintf("union_int(%s, %s)", left, right)
+				if lFloat && rFloat {
+					c.needsUnionFloat = true
+					expr = fmt.Sprintf("union_float(%s, %s)", left, right)
+					vFloat = append(vFloat, true)
+				} else if !lStr && !rStr {
+					c.needsUnionInt = true
+					expr = fmt.Sprintf("union_int(%s, %s)", left, right)
+					vFloat = append(vFloat, false)
+				} else {
+					return fmt.Errorf("unsupported op %s", op.Op)
+				}
 			} else {
 				return fmt.Errorf("unsupported op %s", op.Op)
 			}
@@ -1119,8 +1142,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return nil
 		case "except":
 			if lList && rList {
-				c.needsExceptInt = true
-				expr = fmt.Sprintf("except_int(%s, %s)", left, right)
+				if lFloat && rFloat {
+					c.needsExceptFloat = true
+					expr = fmt.Sprintf("except_float(%s, %s)", left, right)
+					vFloat = append(vFloat, true)
+				} else if !lStr && !rStr {
+					c.needsExceptInt = true
+					expr = fmt.Sprintf("except_int(%s, %s)", left, right)
+					vFloat = append(vFloat, false)
+				} else {
+					return fmt.Errorf("unsupported op %s", op.Op)
+				}
 			} else {
 				return fmt.Errorf("unsupported op %s", op.Op)
 			}
@@ -1130,8 +1162,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return nil
 		case "intersect":
 			if lList && rList {
-				c.needsIntersectInt = true
-				expr = fmt.Sprintf("intersect_int(%s, %s)", left, right)
+				if lFloat && rFloat {
+					c.needsIntersectFloat = true
+					expr = fmt.Sprintf("intersect_float(%s, %s)", left, right)
+					vFloat = append(vFloat, true)
+				} else if !lStr && !rStr {
+					c.needsIntersectInt = true
+					expr = fmt.Sprintf("intersect_int(%s, %s)", left, right)
+					vFloat = append(vFloat, false)
+				} else {
+					return fmt.Errorf("unsupported op %s", op.Op)
+				}
 			} else {
 				return fmt.Errorf("unsupported op %s", op.Op)
 			}
@@ -1145,6 +1186,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		vals = append(vals, expr)
 		vStr = append(vStr, false)
 		vList = append(vList, false)
+		vFloat = append(vFloat, lFloat && rFloat)
 		return nil
 	}
 
@@ -1156,6 +1198,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		exprRight := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}
 		vStr = append(vStr, isStringExpr(exprRight, c.stringVars, c.funReturnStr))
 		vList = append(vList, isListExpr(exprRight, c.listVars, c.funReturnList))
+		vFloat = append(vFloat, isFloatExpr(exprRight, c.floatVars, c.funReturnFloat))
 		for len(ops) > 0 && prec(ops[len(ops)-1].Op) >= prec(op.Op) {
 			if err := emit(); err != nil {
 				return "", err
@@ -1394,6 +1437,40 @@ func (c *Compiler) writeHelpers() {
 		c.indent--
 		c.writeln("end function union_int")
 	}
+	if c.needsUnionFloat {
+		c.writeln("")
+		c.writeln("function union_float(a, b) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("real, intent(in) :: a(:)")
+		c.writeln("real, intent(in) :: b(:)")
+		c.writeln("real, allocatable :: r(:)")
+		c.writeln("real, allocatable :: tmp(:)")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer(kind=8) :: n")
+		c.writeln("allocate(tmp(size(a)+size(b)))")
+		c.writeln("n = 0")
+		c.writeln("do i = 1, size(a)")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = a(i)")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("do i = 1, size(b)")
+		c.indent++
+		c.writeln("if (.not. any(tmp(:n) == b(i))) then")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = b(i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("allocate(r(n))")
+		c.writeln("r = tmp(:n)")
+		c.indent--
+		c.writeln("end function union_float")
+	}
 	if c.needsExceptInt {
 		c.writeln("")
 		c.writeln("function except_int(a, b) result(r)")
@@ -1421,6 +1498,34 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = tmp(:n)")
 		c.indent--
 		c.writeln("end function except_int")
+	}
+	if c.needsExceptFloat {
+		c.writeln("")
+		c.writeln("function except_float(a, b) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("real, intent(in) :: a(:)")
+		c.writeln("real, intent(in) :: b(:)")
+		c.writeln("real, allocatable :: r(:)")
+		c.writeln("real, allocatable :: tmp(:)")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer(kind=8) :: n")
+		c.writeln("allocate(tmp(size(a)))")
+		c.writeln("n = 0")
+		c.writeln("do i = 1, size(a)")
+		c.indent++
+		c.writeln("if (.not. any(b == a(i))) then")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = a(i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("allocate(r(n))")
+		c.writeln("r = tmp(:n)")
+		c.indent--
+		c.writeln("end function except_float")
 	}
 	if c.needsIntersectInt {
 		c.writeln("")
@@ -1453,5 +1558,37 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = tmp(:n)")
 		c.indent--
 		c.writeln("end function intersect_int")
+	}
+	if c.needsIntersectFloat {
+		c.writeln("")
+		c.writeln("function intersect_float(a, b) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("real, intent(in) :: a(:)")
+		c.writeln("real, intent(in) :: b(:)")
+		c.writeln("real, allocatable :: r(:)")
+		c.writeln("real, allocatable :: tmp(:)")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer(kind=8) :: n")
+		c.writeln("allocate(tmp(min(size(a),size(b))))")
+		c.writeln("n = 0")
+		c.writeln("do i = 1, size(a)")
+		c.indent++
+		c.writeln("if (any(b == a(i))) then")
+		c.indent++
+		c.writeln("if (.not. any(tmp(:n) == a(i))) then")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = a(i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("allocate(r(n))")
+		c.writeln("r = tmp(:n)")
+		c.indent--
+		c.writeln("end function intersect_float")
 	}
 }

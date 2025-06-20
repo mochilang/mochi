@@ -191,7 +191,7 @@ Missing features include:
   lists and strings.
 - Query expressions (`from`/`sort by`/`select`).
 - Nested function definitions and struct literals.
-- `union`, `except` and `intersect` only work for `list<int>` values.
+- `union`, `except` and `intersect` only work for `list<int>` and `list<float>` values.
 - Slice expressions do not support a step parameter.
 - Pattern matching with `match` expressions.
 - Agents, streams and logic programming constructs (`fact`, `rule`, `query`).
