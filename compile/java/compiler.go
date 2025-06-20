@@ -901,6 +901,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "_avg(" + joinArgs(args) + ")", nil
 		}
 		return name + "(" + joinArgs(args) + ")", nil
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	}
@@ -983,6 +987,63 @@ func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteByte('\t')
 	}
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "null"
+	if f.With != nil {
+		o, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.helpers["_fetch"] = true
+	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
+}
+
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var prompt, text, model string
+	params := []string{}
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("%q, %s", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramMap := "null"
+	if len(params) > 0 {
+		paramMap = "java.util.Map.of(" + joinArgs(params) + ")"
+	}
+	if model == "" {
+		model = "null"
+	}
+	if g.Target == "embedding" {
+		c.helpers["_genEmbed"] = true
+		return fmt.Sprintf("_genEmbed(%s, %s, %s)", text, model, paramMap), nil
+	}
+	c.helpers["_genText"] = true
+	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramMap), nil
 }
 
 func (c *Compiler) emitRuntime() {
@@ -1071,6 +1132,38 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("if (i < 0) i += runes.length;")
 		c.writeln("if (i < 0 || i >= runes.length) throw new RuntimeException(\"index out of range\");")
 		c.writeln("return String.valueOf(runes[i]);")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_genText"] {
+		c.writeln("")
+		c.writeln("static String _genText(String prompt, String model, java.util.Map<String,Object> params) {")
+		c.indent++
+		c.writeln("// TODO: integrate with an LLM")
+		c.writeln("return prompt;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_genEmbed"] {
+		c.writeln("")
+		c.writeln("static double[] _genEmbed(String text, String model, java.util.Map<String,Object> params) {")
+		c.indent++
+		c.writeln("double[] vec = new double[text.length()];")
+		c.writeln("for (int i = 0; i < text.length(); i++) {")
+		c.indent++
+		c.writeln("vec[i] = text.charAt(i);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return vec;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_fetch"] {
+		c.writeln("")
+		c.writeln("static java.util.Map<String,Object> _fetch(String url, java.util.Map<String,Object> opts) {")
+		c.indent++
+		c.writeln("// TODO: implement HTTP fetch")
+		c.writeln("return new java.util.HashMap<>();")
 		c.indent--
 		c.writeln("}")
 	}
