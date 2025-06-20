@@ -148,6 +148,31 @@ end`
   data = JSON.parse(prompt)
   cls.new(**data.transform_keys(&:to_sym))
 end`
+
+	helperGroup = `class _Group
+  attr_accessor :key, :Items
+  def initialize(k)
+    @key = k
+    @Items = []
+  end
+end`
+
+	helperGroupBy = `def _group_by(src, keyfn)
+  groups = {}
+  order = []
+  src.each do |it|
+    key = keyfn.call(it)
+    ks = key.to_s
+    g = groups[ks]
+    unless g
+      g = _Group.new(key)
+      groups[ks] = g
+      order << ks
+    end
+    g.Items << it
+  end
+  order.map { |k| groups[k] }
+end`
 )
 
 var helperMap = map[string]string{
@@ -157,6 +182,8 @@ var helperMap = map[string]string{
 	"_genText":   helperGenText,
 	"_genEmbed":  helperGenEmbed,
 	"_genStruct": helperGenStruct,
+	"_group":     helperGroup,
+	"_group_by":  helperGroupBy,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
