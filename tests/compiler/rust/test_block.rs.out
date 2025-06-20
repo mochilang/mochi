@@ -1,0 +1,11 @@
+#[test]
+fn test_addition_works() {
+    let mut x = 1 + 2;
+    assert!(x == 3);
+}
+
+fn main() {
+    println!("{}", "ok");
+    test_addition_works();
+}
+
