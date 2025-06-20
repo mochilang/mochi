@@ -1401,10 +1401,25 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("end")
 		c.writeln("local data = f:read('*a')")
 		c.writeln("if f ~= io.stdin then f:close() end")
-		c.writeln("if fmt ~= 'json' then error('unsupported format: '..fmt) end")
+		c.writeln("local res")
+		c.writeln("if fmt == 'json' then")
+		c.indent++
 		c.writeln("local ok, json = pcall(require, 'json')")
 		c.writeln("if not ok then error('json library not found') end")
-		c.writeln("local res = json.decode(data)")
+		c.writeln("res = json.decode(data)")
+		c.indent--
+		c.writeln("elseif fmt == 'yaml' then")
+		c.indent++
+		c.writeln("local ok, yaml = pcall(require, 'yaml')")
+		c.writeln("if not ok then ok, yaml = pcall(require, 'lyaml') end")
+		c.writeln("if not ok then error('yaml library not found') end")
+		c.writeln("res = yaml.load(data)")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("error('unsupported format: '..fmt)")
+		c.indent--
+		c.writeln("end")
 		c.writeln("if type(res) ~= 'table' then return {} end")
 		c.writeln("if res[1] then return res end")
 		c.writeln("return {res}")
@@ -1418,9 +1433,25 @@ func (c *Compiler) emitHelpers() {
 		c.indent++
 		c.writeln("local fmt = 'json'")
 		c.writeln("if opts and opts['format'] then fmt = opts['format'] end")
-		c.writeln("if fmt ~= 'json' then error('unsupported format: '..fmt) end")
+		c.writeln("local data")
+		c.writeln("if fmt == 'json' then")
+		c.indent++
 		c.writeln("local ok, json = pcall(require, 'json')")
 		c.writeln("if not ok then error('json library not found') end")
+		c.writeln("data = json.encode(rows)")
+		c.indent--
+		c.writeln("elseif fmt == 'yaml' then")
+		c.indent++
+		c.writeln("local ok, yaml = pcall(require, 'yaml')")
+		c.writeln("if not ok then ok, yaml = pcall(require, 'lyaml') end")
+		c.writeln("if not ok then error('yaml library not found') end")
+		c.writeln("if yaml.dump then data = yaml.dump(rows) else data = yaml.encode(rows) end")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("error('unsupported format: '..fmt)")
+		c.indent--
+		c.writeln("end")
 		c.writeln("local f")
 		c.writeln("if not path or path == '' or path == '-' then")
 		c.indent++
@@ -1431,7 +1462,7 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("local err; f, err = io.open(path, 'w'); if not f then error(err) end")
 		c.indent--
 		c.writeln("end")
-		c.writeln("f:write(json.encode(rows))")
+		c.writeln("f:write(data)")
 		c.writeln("if f ~= io.stdout then f:close() end")
 		c.indent--
 		c.writeln("end")

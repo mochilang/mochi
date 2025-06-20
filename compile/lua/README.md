@@ -303,13 +303,18 @@ fail at runtime:
 - Mutating lists while iterating (e.g. `insert`, `remove`)
  - Query `group` clauses and joins with `left`, `right` or `outer` sides
  - Local recursive functions
- - Typed lists containing negative literals
+- Typed lists containing negative literals
 - HTTP `fetch` expressions
 - Logic query expressions
 - Foreign function interface (FFI)
 - Interaction with external objects
 
-`load` and `save` currently handle only JSON files.
+- Concurrency primitives such as `spawn`, `stream`, `agent` and related features
+  are not available
+- Module imports and package declarations
+
+`load` and `save` currently support only JSON and YAML formats. Other formats
+like CSV or JSONL are not implemented.
 
 Problems `6`, `10`, `23` and `27` currently do not run correctly when compiled
 to Lua.

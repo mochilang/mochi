@@ -1,0 +1,6 @@
+type Item {
+  name: string
+}
+
+let items = load as Item with { format: "yaml" }
+print(count(items))
