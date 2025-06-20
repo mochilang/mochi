@@ -18,11 +18,16 @@ type Compiler struct {
 	tempVarCount int
 	imports      map[string]bool
 	useIndexStr  bool
+	useUnionAll  bool
+	useUnion     bool
+	useExcept    bool
+	useIntersect bool
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, imports: make(map[string]bool), useIndexStr: false}
+	return &Compiler{env: env, imports: make(map[string]bool), useIndexStr: false,
+		useUnionAll: false, useUnion: false, useExcept: false, useIntersect: false}
 }
 
 // Compile returns Dart source implementing prog.
@@ -399,6 +404,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					} else {
 						expr = fmt.Sprintf("(%s.contains(%s))", r, l)
 					}
+				} else if op == "union" {
+					c.useUnion = true
+					expr = fmt.Sprintf("_union(%s, %s)", l, r)
+				} else if op == "union_all" {
+					c.useUnionAll = true
+					expr = fmt.Sprintf("_unionAll(%s, %s)", l, r)
+				} else if op == "except" {
+					c.useExcept = true
+					expr = fmt.Sprintf("_except(%s, %s)", l, r)
+				} else if op == "intersect" {
+					c.useIntersect = true
+					expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
 				} else {
 					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 				}
@@ -1198,24 +1215,80 @@ func isStringPrimary(c *Compiler, p *parser.Primary) bool {
 }
 
 func (c *Compiler) emitRuntime() {
-	if !c.useIndexStr {
+	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect) {
 		return
 	}
 	c.writeln("")
-	c.writeln("String _indexString(String s, int i) {")
-	c.indent++
-	c.writeln("var runes = s.runes.toList();")
-	c.writeln("if (i < 0) {")
-	c.indent++
-	c.writeln("i += runes.length;")
-	c.indent--
-	c.writeln("}")
-	c.writeln("if (i < 0 || i >= runes.length) {")
-	c.indent++
-	c.writeln("throw RangeError('index out of range');")
-	c.indent--
-	c.writeln("}")
-	c.writeln("return String.fromCharCode(runes[i]);")
-	c.indent--
-	c.writeln("}")
+	if c.useIndexStr {
+		c.writeln("String _indexString(String s, int i) {")
+		c.indent++
+		c.writeln("var runes = s.runes.toList();")
+		c.writeln("if (i < 0) {")
+		c.indent++
+		c.writeln("i += runes.length;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (i < 0 || i >= runes.length) {")
+		c.indent++
+		c.writeln("throw RangeError('index out of range');")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return String.fromCharCode(runes[i]);")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useUnionAll {
+		c.writeln("List<dynamic> _unionAll(List<dynamic> a, List<dynamic> b) => [...a, ...b];")
+	}
+	if c.useUnion {
+		c.writeln("List<dynamic> _union(List<dynamic> a, List<dynamic> b) {")
+		c.indent++
+		c.writeln("var res = [...a];")
+		c.writeln("for (var it in b) {")
+		c.indent++
+		c.writeln("if (!res.contains(it)) {")
+		c.indent++
+		c.writeln("res.add(it);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useExcept {
+		c.writeln("List<dynamic> _except(List<dynamic> a, List<dynamic> b) {")
+		c.indent++
+		c.writeln("var res = <dynamic>[];")
+		c.writeln("for (var it in a) {")
+		c.indent++
+		c.writeln("if (!b.contains(it)) {")
+		c.indent++
+		c.writeln("res.add(it);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useIntersect {
+		c.writeln("List<dynamic> _intersect(List<dynamic> a, List<dynamic> b) {")
+		c.indent++
+		c.writeln("var res = <dynamic>[];")
+		c.writeln("for (var it in a) {")
+		c.indent++
+		c.writeln("if (b.contains(it) && !res.contains(it)) {")
+		c.indent++
+		c.writeln("res.add(it);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
 }
