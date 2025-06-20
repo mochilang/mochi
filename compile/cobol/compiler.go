@@ -388,6 +388,14 @@ func (c *Compiler) compileFun(n *ast.Node) {
 
 func (c *Compiler) compileCallExpr(n *ast.Node) string {
 	name := strings.ToUpper(n.Value.(string))
+	// Built-in helpers implemented directly
+	if name == "LEN" && len(n.Children) == 1 {
+		expr := c.expr(n.Children[0])
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+		c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION LENGTH(%s)", tmp, expr))
+		return tmp
+	}
 	count, ok := c.funcs[name]
 	if name == "ADD" && len(n.Children) == 2 {
 		left := c.expr(n.Children[0])
