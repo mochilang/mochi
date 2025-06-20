@@ -315,6 +315,10 @@ currently **not supported**:
 - concurrency primitives
 - generics and complex type inference
 - advanced dataset queries such as joins or grouping
-- skip/take query clauses
+- dataset helpers like `fetch`, `load`, `save` and `generate`
+- pattern matching with `match`
+- `union`/`union all` and other set operations
+- agent/stream declarations (`agent`, `on`, `emit`)
+- foreign function imports
 - nested functions that capture variables across scopes
 

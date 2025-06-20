@@ -1,0 +1,14 @@
+<?php
+$nums = [1, 2, 3, 4, 5];
+$res = (function() use ($nums) {
+	$res = [];
+	foreach ((is_string($nums) ? str_split($nums) : $nums) as $n) {
+		$res[] = $n;
+	}
+	$res = array_slice($res, 1);
+	$res = array_slice($res, 0, 2);
+	return $res;
+})();
+foreach ((is_string($res) ? str_split($res) : $res) as $x) {
+	echo $x, PHP_EOL;
+}

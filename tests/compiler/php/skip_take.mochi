@@ -1,0 +1,8 @@
+let nums = [1, 2, 3, 4, 5]
+let res = from n in nums
+            skip 1
+            take 2
+            select n
+for x in res {
+  print(x)
+}
