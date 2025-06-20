@@ -173,12 +173,16 @@ for readability over performance and mirrors Mochi constructs closely.
 Loops support `break` and `continue` using `let/ec` and named `let` constructs.
 Binary operators now include `union`, `union_all`, `except` and `intersect` for
 basic list set operations.
+`match` expressions compile directly to Racket's `match` form for simple pattern
+matching.
 
 Unsupported features currently include:
 
 * Generative `generate` blocks and model definitions
 * Dataset helpers like `fetch`, `load`, `save` and SQL-style query expressions
-* `match` expressions for pattern matching
 * Agents, streams and intents
+* Logic programming constructs (`fact`, `rule`, `query`)
+* Concurrency primitives such as `spawn` and channels
 * Foreign function interface via `import`
 * Package management and `package` declarations
+* User-defined type declarations (`struct` and `union`)

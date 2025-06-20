@@ -72,7 +72,7 @@ func New(env *types.Env) *Compiler {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("#lang racket")
-	c.writeln("(require racket/list)")
+	c.writeln("(require racket/list racket/match)")
 	c.writeln("")
 	// helpers for indexing and slicing
 	c.writeln("(define (idx x i)")
@@ -645,6 +645,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "'#hash(" + strings.Join(pairs, " ") + ")", nil
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Selector != nil:
 		return sanitizeName(p.Selector.Root), nil
 	case p.Group != nil:
@@ -708,4 +710,33 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	default:
 		return "", fmt.Errorf("empty literal")
 	}
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(match " + target + "\n")
+	for _, cs := range m.Cases {
+		pat, err := c.compileMatchPattern(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString("\t[" + pat + " " + res + "]\n")
+	}
+	b.WriteString(")")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileMatchPattern(pat *parser.Expr) (string, error) {
+	if isUnderscoreExpr(pat) {
+		return "_", nil
+	}
+	return c.compileExpr(pat)
 }
