@@ -31,17 +31,25 @@ def isMatch(s, p)
 				end
 			end
 			if star
-				if (dp[i2][(j2 + 2)] || ((first && dp[(i2 + 1)][j2])))
-					dp[i2][j2] = true
+				ok = false
+				if dp[i2][(j2 + 2)]
+					ok = true
 				else
-					dp[i2][j2] = false
+					if first
+						if dp[(i2 + 1)][j2]
+							ok = true
+						end
+					end
 				end
+				dp[i2][j2] = ok
 			else
-				if (first && dp[(i2 + 1)][(j2 + 1)])
-					dp[i2][j2] = true
-				else
-					dp[i2][j2] = false
+				ok = false
+				if first
+					if dp[(i2 + 1)][(j2 + 1)]
+						ok = true
+					end
 				end
+				dp[i2][j2] = ok
 			end
 			j2 = (j2 - 1)
 		end
