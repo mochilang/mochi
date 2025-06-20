@@ -247,5 +247,5 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Package declarations and module imports
 - Methods defined inside `type` declarations
-- Dataset grouping and outer join clauses in queries
+- Left/right/outer join clauses in dataset queries
 - Model declarations
