@@ -46,6 +46,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("using System.Linq;")
 	}
 	c.writeln("using System.Text.Json;")
+	if _, ok := c.helpers["_fetch"]; ok {
+		c.writeln("using System.Net.Http;")
+	}
+	if _, ok := c.helpers["_load"]; ok {
+		c.writeln("using System.IO;")
+	}
+	if _, ok := c.helpers["_save"]; ok {
+		if _, ok2 := c.helpers["_load"]; !ok2 {
+			c.writeln("using System.IO;")
+		}
+	}
 	c.writeln("")
 	// Type declarations
 	for _, s := range prog.Statements {
@@ -274,21 +285,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			case "_fetch":
 				c.writeln("static dynamic _fetch(string url, Dictionary<string, object> opts) {")
 				c.indent++
-				c.writeln("// TODO: implement HTTP fetch")
-				c.writeln("return null;")
+				c.writeln("using var client = new HttpClient();")
+				c.writeln("var task = client.GetStringAsync(url);")
+				c.writeln("task.Wait();")
+				c.writeln("return task.Result;")
 				c.indent--
 				c.writeln("}")
 			case "_load":
 				c.writeln("static List<dynamic> _load(string path, Dictionary<string, object> opts) {")
 				c.indent++
-				c.writeln("// TODO: implement data loading")
+				c.writeln("if (File.Exists(path)) {")
+				c.indent++
+				c.writeln("var lines = File.ReadAllLines(path);")
+				c.writeln("return new List<dynamic>(lines);")
+				c.indent--
+				c.writeln("}")
 				c.writeln("return new List<dynamic>();")
 				c.indent--
 				c.writeln("}")
 			case "_save":
 				c.writeln("static void _save(dynamic src, string path, Dictionary<string, object> opts) {")
 				c.indent++
-				c.writeln("// TODO: implement data saving")
+				c.writeln("File.WriteAllText(path, Convert.ToString(src));")
 				c.indent--
 				c.writeln("}")
 			case "_genText":
@@ -1005,7 +1023,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
 			indent += "\t"
 		}
-		buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
+		if sortExpr != "" {
+			buf.WriteString(fmt.Sprintf(indent+"_res.Add(new Tuple<dynamic, dynamic>(%s, %s));\n", sortExpr, sel))
+		} else {
+			buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
+		}
 		if cond != "" {
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
@@ -1019,7 +1041,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(indent + "}\n")
 		}
 		buf.WriteString("\t}\n")
-		buf.WriteString("\treturn _res;\n")
+		buf.WriteString("\tvar _tmp = _res")
+		if sortExpr != "" {
+			buf.WriteString(".OrderBy(e => e.Item1)")
+		}
+		if skipExpr != "" {
+			buf.WriteString(fmt.Sprintf(".Skip(%s)", skipExpr))
+		}
+		if takeExpr != "" {
+			buf.WriteString(fmt.Sprintf(".Take(%s)", takeExpr))
+		}
+		if sortExpr != "" {
+			buf.WriteString(".Select(e => e.Item2)")
+		}
+		buf.WriteString(".ToList();\n")
+		buf.WriteString("\treturn _tmp;\n")
 		buf.WriteString("})()")
 		return buf.String(), nil
 	}
