@@ -808,7 +808,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("})()")
 		return buf.String(), nil
 	}
-	if q.Group != nil || len(q.Joins) != 0 {
+	if q.Group != nil {
 		return "", fmt.Errorf("query not supported")
 	}
 	src := c.compileExpr(q.Source)
@@ -817,6 +817,14 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	for _, f := range q.Froms {
 		vars = append(vars, f.Var)
 		srcs = append(srcs, c.compileExpr(f.Src))
+	}
+	joinVars := make([]string, len(q.Joins))
+	joinSrcs := make([]string, len(q.Joins))
+	joinConds := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		joinVars[i] = j.Var
+		joinSrcs[i] = c.compileExpr(j.Src)
+		joinConds[i] = c.compileExpr(j.On)
 	}
 	sel := c.compileExpr(q.Select)
 	resType := c.guessExprType(q.Select)
@@ -846,6 +854,11 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(indent + "for (auto& " + v + " : " + srcs[i] + ") {\n")
 		indent += "\t"
 	}
+	for i, v := range joinVars {
+		buf.WriteString(indent + "for (auto& " + v + " : " + joinSrcs[i] + ") {\n")
+		indent += "\t"
+		buf.WriteString(indent + "if (!(" + joinConds[i] + ")) continue;\n")
+	}
 	if q.Where != nil {
 		cond := c.compileExpr(q.Where)
 		buf.WriteString(indent + "if (" + cond + ") {\n")
@@ -857,6 +870,10 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(indent + "_res.push_back(" + sel + ");\n")
 	}
 	if q.Where != nil {
+		indent = indent[:len(indent)-1]
+		buf.WriteString(indent + "}\n")
+	}
+	for range joinVars {
 		indent = indent[:len(indent)-1]
 		buf.WriteString(indent + "}\n")
 	}
