@@ -142,6 +142,7 @@ default:
 【F:compile/swift/compiler.go†L468-L497】
 
 Negative string indexing is supported via the `_indexString` helper when a string is indexed with a potentially negative value.
+List indexing now handles negative values through the generic `_index` helper.
 
 ## Swift Installation
 
@@ -237,6 +238,7 @@ The Swift backend still lacks support for a number of language capabilities:
 - Advanced dataset queries with grouping, joins, sorting or pagination. Simple
   ``from ... where ... select`` loops (with optional cross joins) are handled.
 - Type inference for empty collections
+- Dataset `load` and `save` operations
 - Streams, agents and intent handlers
 - The ``generate`` and ``fetch`` expressions for LLM and HTTP integration
 - Package declarations and the foreign function interface
