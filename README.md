@@ -604,6 +604,17 @@ make bench
 
 Results are saved in [`BENCHMARK.md`](./BENCHMARK.md).
 
+## Unsupported Features
+
+Mochi is still under heavy development. The following language features are not
+yet implemented in all backends:
+
+* dataset query expressions (`from ... select ...`)
+* agent-related constructs like intents and `on` handlers
+* logic programming (`fact`, `rule`, `query`)
+* concurrency with streams or `spawn`
+* extern object declarations and foreign imports
+
 ## Contributing
 
 Mochi is open source and happy to have your contributions.

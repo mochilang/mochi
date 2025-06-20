@@ -263,7 +263,6 @@ LeetCode solutions:
 
 * dataset query expressions (`from ... sort ... select`) used by problems that
   operate over CSV-style input
-* package imports and module declarations
 * advanced string slicing and indexing
 * nested list types beyond one dimension
 * user-defined structs and union types
@@ -274,6 +273,8 @@ LeetCode solutions:
 * anonymous function expressions (`fun` values)
 * foreign imports and `extern` declarations
 * agent declarations and `on` handlers
+* intent functions within agents
+* extern object declarations
 * stream declarations and `emit` statements
 * model declarations
 
