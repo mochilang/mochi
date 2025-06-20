@@ -47,8 +47,37 @@ const (
     for (row in rows) {
         lines.add(headers.joinToString(delim.toString()) { row[it].toString() })
     }
-    val text = lines.joinToString("\n") + "\n"
-    if (path == null || path == "-" || path == "") print(text) else java.io.File(path).writeText(text)
+        val text = lines.joinToString("\n") + "\n"
+        if (path == null || path == "-" || path == "") print(text) else java.io.File(path).writeText(text)
+}`
+
+	helperEval = `fun _eval(code: String): Any? {
+    val engine = javax.script.ScriptEngineManager().getEngineByExtension("kts")
+        ?: return null
+    return engine.eval(code)
+}`
+
+	helperGenText = `fun _genText(prompt: String, model: String?, params: Map<String, Any>?): String {
+    return prompt
+}`
+
+	helperGenEmbed = `fun _genEmbed(text: String, model: String?, params: Map<String, Any>?): List<Double> {
+    return text.map { it.code.toDouble() }
+}`
+
+	helperGenStruct = `inline fun <reified T : Any> _genStruct(prompt: String, model: String?, params: Map<String, Any>?): T {
+    return T::class.java.getDeclaredConstructor().newInstance()
+}`
+
+	helperFetch = `fun _fetch(url: String, opts: Map<String, Any>?): Map<String, Any> {
+    return try {
+        val client = java.net.http.HttpClient.newHttpClient()
+        val req = java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).build()
+        val resp = client.send(req, java.net.http.HttpResponse.BodyHandlers.ofString())
+        mutableMapOf<String, Any>("status" to resp.statusCode(), "body" to resp.body())
+    } catch (e: Exception) {
+        throw RuntimeException(e)
+    }
 }`
 
 	helperJson = `fun _json(v: Any?) {
@@ -67,8 +96,13 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_cast": helperCast,
-	"_load": helperLoad,
-	"_save": helperSave,
-	"_json": helperJson,
+	"_cast":      helperCast,
+	"_load":      helperLoad,
+	"_save":      helperSave,
+	"_eval":      helperEval,
+	"_genText":   helperGenText,
+	"_genEmbed":  helperGenEmbed,
+	"_genStruct": helperGenStruct,
+	"_fetch":     helperFetch,
+	"_json":      helperJson,
 }

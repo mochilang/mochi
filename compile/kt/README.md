@@ -330,10 +330,9 @@ support:
 - Streams, agents and intent handlers
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Package declarations and the foreign function interface
-- `generate` and `fetch` expressions for LLM and HTTP integration
-- External helpers like `_genText` and concurrency primitives such as `spawn` and channels
-- Import statements
-- The `eval` builtin function
+- Event emission with `emit` statements
+- Extern declarations and foreign imports
+- Concurrency primitives such as `spawn` and channels
 - Error handling with `try`/`catch` blocks
 
 
