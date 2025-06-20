@@ -175,11 +175,13 @@ Binary operators now include `union`, `union_all`, `except` and `intersect` for
 basic list set operations.
 `match` expressions compile directly to Racket's `match` form for simple pattern
 matching.
+Dataset helpers `_fetch`, `_load` and `_save` handle basic JSON data.
 
 Unsupported features currently include:
 
 * Generative `generate` blocks and model definitions
-* Dataset helpers like `fetch`, `load`, `save` and SQL-style query expressions
+* SQL-style dataset queries (`from`, `join`, etc.)
+* Error handling with `try`/`catch`
 * Agents, streams and intents
 * Logic programming constructs (`fact`, `rule`, `query`)
 * Concurrency primitives such as `spawn` and channels
