@@ -16,20 +16,20 @@ type Compiler struct {
 	indent       int
 	env          *types.Env
 	tempVarCount int
-	tempVars     map[string]bool
+	tempVars     map[string]string
 	expected     types.Type
 	varTypes     map[string]string
 }
 
 // New creates a new Pascal compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, tempVars: make(map[string]bool)}
+	return &Compiler{env: env, tempVars: make(map[string]string)}
 }
 
 // Compile returns Pascal source implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
-	c.tempVars = make(map[string]bool)
+	c.tempVars = make(map[string]string)
 	c.writeln("program main;")
 	c.writeln("{$mode objfpc}")
 	c.writeln("uses SysUtils, fgl;")
@@ -38,6 +38,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent++
 	c.writeln("generic TArray<T> = array of T;")
 	c.indent--
+
+	// Emit user-defined types
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+		}
+	}
 	c.writeln("")
 
 	// Emit function declarations first.
@@ -53,8 +62,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Collect global vars.
 	vars := map[string]string{}
 	collectVars(prog.Statements, c.env, vars)
-	for n := range c.tempVars {
-		vars[n] = "integer"
+	for n, t := range c.tempVars {
+		if t == "" {
+			t = "integer"
+		}
+		vars[n] = t
 	}
 	if len(vars) > 0 {
 		c.writeln("var")
@@ -329,10 +341,37 @@ func (c *Compiler) mustExpr(e *parser.Expr) string {
 	return s
 }
 
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	name := sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("type %s = record", name))
+	c.indent++
+	fields := map[string]types.Type{}
+	order := []string{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fname := sanitizeName(m.Field.Name)
+			ft := resolveSimpleTypeRef(m.Field.Type)
+			c.writeln(fmt.Sprintf("%s: %s;", fname, c.typeRef(m.Field.Type)))
+			fields[m.Field.Name] = ft
+			order = append(order, m.Field.Name)
+		}
+	}
+	c.indent--
+	c.writeln("end;")
+	if c.env != nil {
+		st := types.StructType{Name: t.Name, Fields: fields, Order: order}
+		c.env.SetStruct(t.Name, st)
+	}
+	return nil
+}
+
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	// Use a fresh temp var set for each function
 	prevTemps := c.tempVars
-	c.tempVars = make(map[string]bool)
+	c.tempVars = make(map[string]string)
 
 	name := sanitizeName(fun.Name)
 	params := make([]string, len(fun.Params))
@@ -357,9 +396,12 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		c.varTypes[k] = v
 	}
 	// include generated temporaries
-	for n := range c.tempVars {
-		vars[n] = "integer"
-		c.varTypes[n] = "integer"
+	for n, t := range c.tempVars {
+		if t == "" {
+			t = "integer"
+		}
+		vars[n] = t
+		c.varTypes[n] = t
 	}
 	if len(vars) > 0 {
 		c.writeln("var")
@@ -437,6 +479,8 @@ func typeString(t types.Type) string {
 	case types.MapType:
 		mt := tt
 		return fmt.Sprintf("specialize TFPGMap<%s, %s>", typeString(mt.Key), typeString(mt.Value))
+	case types.StructType:
+		return sanitizeName(tt.Name)
 	default:
 		return "integer"
 	}
@@ -567,6 +611,8 @@ func inferTypeFromPrimary(p *parser.Primary, env *types.Env, vars map[string]str
 				return v
 			}
 		}
+	case p.Struct != nil:
+		return p.Struct.Name
 	case p.List != nil:
 		elem := "integer"
 		if len(p.List.Elems) > 0 {
@@ -841,7 +887,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("'%s'", s), nil
 		}
 	case p.Selector != nil:
-		return sanitizeName(p.Selector.Root), nil
+		name := sanitizeName(p.Selector.Root)
+		for _, part := range p.Selector.Tail {
+			name += "." + sanitizeName(part)
+		}
+		return name, nil
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -871,6 +921,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
+	case p.Struct != nil:
+		typ := sanitizeName(p.Struct.Name)
+		tmp := c.newTypedVar(typ)
+		c.writeln(fmt.Sprintf("var %s: %s;", tmp, typ))
+		for _, f := range p.Struct.Fields {
+			val, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			c.writeln(fmt.Sprintf("%s.%s := %s;", tmp, sanitizeName(f.Name), val))
+		}
+		return tmp, nil
 	case p.List != nil:
 		elemType := "integer"
 		var elemT types.Type
@@ -910,7 +972,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			pairs[i] = fmt.Sprintf("m.AddOrSetData(%s, %s);", k, v)
 		}
-		tmp := c.newVar()
+		tmp := c.newTypedVar(fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType))
 		c.writeln(fmt.Sprintf("var %s: specialize TFPGMap<%s, %s>;", tmp, keyType, valType))
 		c.writeln(fmt.Sprintf("%s := specialize TFPGMap<%s, %s>.Create;", tmp, keyType, valType))
 		for _, p := range pairs {

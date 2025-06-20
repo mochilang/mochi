@@ -132,3 +132,15 @@ Run all tests with:
 ```bash
 go test ./compile/pas
 ```
+
+## Unsupported features
+
+The Pascal backend only implements a minimal subset of Mochi. Features not yet
+supported include:
+
+- Union types and `match` expressions
+- Dataset queries (`from`/`where`/`select`)
+- Agents, streams and the `emit` keyword
+- Generative model blocks (`generate` and `model`)
+- The foreign function interface (`import`/`extern`)
+- Package imports

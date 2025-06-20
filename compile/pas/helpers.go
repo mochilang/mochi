@@ -50,14 +50,18 @@ func sanitizeName(name string) string {
 	return res
 }
 
-func (c *Compiler) newVar() string {
+func (c *Compiler) newTypedVar(typ string) string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
 	if c.tempVars == nil {
-		c.tempVars = make(map[string]bool)
+		c.tempVars = make(map[string]string)
 	}
-	c.tempVars[name] = true
+	c.tempVars[name] = typ
 	return name
+}
+
+func (c *Compiler) newVar() string {
+	return c.newTypedVar("integer")
 }
 
 func isListLiteral(e *parser.Expr) bool {
@@ -310,6 +314,9 @@ func parsePasType(s string) types.Type {
 		if len(parts) == 2 {
 			return types.MapType{Key: parsePasType(strings.TrimSpace(parts[0])), Value: parsePasType(strings.TrimSpace(parts[1]))}
 		}
+	}
+	if s != "" {
+		return types.StructType{Name: s}
 	}
 	return types.IntType{}
 }
