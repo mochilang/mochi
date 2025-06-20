@@ -1,0 +1,6 @@
+let a = [1, 2]
+let b = [3]
+let c = a + b
+print(c[0])
+print(c[1])
+print(c[2])

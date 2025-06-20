@@ -18,26 +18,26 @@ import (
 
 // Compiler generates COBOL source code for a restricted set of Mochi programs.
 type Compiler struct {
-        buf        bytes.Buffer
-        indent     int
-        env        *types.Env
-        decls      []string
-        tmpCounter int
-        funcs      map[string]int
-        funcDecls  []string
-        currentFun string
-        params     map[string]string
-        listLens   map[string]int
+	buf        bytes.Buffer
+	indent     int
+	env        *types.Env
+	decls      []string
+	tmpCounter int
+	funcs      map[string]int
+	funcDecls  []string
+	currentFun string
+	params     map[string]string
+	listLens   map[string]int
 }
 
 // New creates a new COBOL compiler instance.
 func New(env *types.Env) *Compiler {
-        return &Compiler{
-                env:    env,
-                funcs:  map[string]int{},
-                params: map[string]string{},
-                listLens: map[string]int{},
-        }
+	return &Compiler{
+		env:      env,
+		funcs:    map[string]int{},
+		params:   map[string]string{},
+		listLens: map[string]int{},
+	}
 }
 
 func (c *Compiler) writeIndent() {
@@ -116,6 +116,30 @@ func (c *Compiler) isFloatExpr(n *ast.Node) bool {
 		switch n.Value {
 		case "+", "-", "*", "/", "%":
 			return c.isFloatExpr(n.Children[0]) || c.isFloatExpr(n.Children[1])
+		}
+	}
+	return false
+}
+
+// isListExpr reports whether the node evaluates to a list.
+func (c *Compiler) isListExpr(n *ast.Node) bool {
+	switch n.Kind {
+	case "list":
+		return true
+	case "selector":
+		if _, ok := c.listLens[n.Value.(string)]; ok {
+			return true
+		}
+		if c.env != nil {
+			if t, err := c.env.GetVar(n.Value.(string)); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
+		}
+	case "binary":
+		if n.Value == "+" {
+			return c.isListExpr(n.Children[0]) && c.isListExpr(n.Children[1])
 		}
 	}
 	return false
@@ -221,65 +245,114 @@ func (c *Compiler) compileNode(n *ast.Node) {
 		// Nested function definitions are treated like top-level ones.
 		c.compileFun(n)
 
-       case "let":
-               orig := n.Value.(string)
-               name := strings.ToUpper(orig)
-               if len(n.Children) == 1 && n.Children[0].Kind == "call" {
-                       switch n.Children[0].Value {
-                       case "twoSum":
-                               c.compileTwoSumCall(name, n.Children[0])
-                               return
-                       case "addTwoNumbers":
-                               c.compileAddTwoNumbersCall(name, n.Children[0])
-                               return
-                       }
-               }
-               if len(n.Children) == 1 && n.Children[0].Kind == "list" {
-                       list := n.Children[0]
-                       elemPic := "PIC 9."
-                       if len(list.Children) > 0 {
-                               elemPic = c.picForExpr(list.Children[0])
-                       }
-                       c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, len(list.Children), elemPic))
-                       c.listLens[orig] = len(list.Children)
-                       for i, ch := range list.Children {
-                               c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), name, i+1))
-                       }
-                       return
-               }
-               c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
-               if len(n.Children) == 1 {
-                       expr := c.expr(n.Children[0])
-                       c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
-               }
+	case "let":
+		orig := n.Value.(string)
+		name := strings.ToUpper(orig)
+		if len(n.Children) == 1 && n.Children[0].Kind == "call" {
+			switch n.Children[0].Value {
+			case "twoSum":
+				c.compileTwoSumCall(name, n.Children[0])
+				return
+			case "addTwoNumbers":
+				c.compileAddTwoNumbersCall(name, n.Children[0])
+				return
+			}
+		}
+		if len(n.Children) == 1 && n.Children[0].Kind == "list" {
+			list := n.Children[0]
+			elemPic := "PIC 9."
+			if len(list.Children) > 0 {
+				elemPic = c.picForExpr(list.Children[0])
+			}
+			c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, len(list.Children), elemPic))
+			c.listLens[orig] = len(list.Children)
+			for i, ch := range list.Children {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), name, i+1))
+			}
+			return
+		}
+		if len(n.Children) == 1 && c.isListExpr(n.Children[0]) {
+			src := c.expr(n.Children[0])
+			if l, ok := c.listLens[src]; ok {
+				pic := c.picForExpr(n.Children[0])
+				c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, l, pic))
+				c.listLens[orig] = l
+				for i := 0; i < l; i++ {
+					c.writeln(fmt.Sprintf("    MOVE %s(%d) TO %s(%d)", src, i+1, name, i+1))
+				}
+				return
+			}
+		}
+		if len(n.Children) == 1 && c.isListExpr(n.Children[0]) {
+			src := c.expr(n.Children[0])
+			if l, ok := c.listLens[src]; ok {
+				pic := c.picForExpr(n.Children[0])
+				c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, l, pic))
+				c.listLens[orig] = l
+				for i := 0; i < l; i++ {
+					c.writeln(fmt.Sprintf("    MOVE %s(%d) TO %s(%d)", src, i+1, name, i+1))
+				}
+				return
+			}
+		}
+		c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
+		if len(n.Children) == 1 {
+			expr := c.expr(n.Children[0])
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+		}
 
-       case "var":
-               orig := n.Value.(string)
-               name := strings.ToUpper(orig)
-               if len(n.Children) == 1 && n.Children[0].Kind == "list" {
-                       list := n.Children[0]
-                       elemPic := "PIC 9."
-                       if len(list.Children) > 0 {
-                               elemPic = c.picForExpr(list.Children[0])
-                       }
-                       c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, len(list.Children), elemPic))
-                       c.listLens[orig] = len(list.Children)
-                       for i, ch := range list.Children {
-                               c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), name, i+1))
-                       }
-                       return
-               }
-               c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
-               if len(n.Children) == 1 {
-                       expr := c.expr(n.Children[0])
-                       c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
-               }
+	case "var":
+		orig := n.Value.(string)
+		name := strings.ToUpper(orig)
+		if len(n.Children) == 1 && n.Children[0].Kind == "list" {
+			list := n.Children[0]
+			elemPic := "PIC 9."
+			if len(list.Children) > 0 {
+				elemPic = c.picForExpr(list.Children[0])
+			}
+			c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, len(list.Children), elemPic))
+			c.listLens[orig] = len(list.Children)
+			for i, ch := range list.Children {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), name, i+1))
+			}
+			return
+		}
+		c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
+		if len(n.Children) == 1 {
+			expr := c.expr(n.Children[0])
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+		}
 
 	case "assign":
 		name := strings.ToUpper(n.Value.(string))
 		if len(n.Children) == 1 {
-			expr := c.expr(n.Children[0])
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+			if c.isListExpr(n.Children[0]) {
+				src := c.expr(n.Children[0])
+				if l, ok := c.listLens[src]; ok {
+					pic := c.picForExpr(n.Children[0])
+					c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, l, pic))
+					c.listLens[n.Value.(string)] = l
+					for i := 0; i < l; i++ {
+						c.writeln(fmt.Sprintf("    MOVE %s(%d) TO %s(%d)", src, i+1, name, i+1))
+					}
+				} else if n.Children[0].Kind == "list" {
+					list := n.Children[0]
+					elemPic := "PIC 9."
+					if len(list.Children) > 0 {
+						elemPic = c.picForExpr(list.Children[0])
+					}
+					c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, len(list.Children), elemPic))
+					c.listLens[n.Value.(string)] = len(list.Children)
+					for i, ch := range list.Children {
+						c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), name, i+1))
+					}
+				} else {
+					c.writeln("    *> unsupported list assignment")
+				}
+			} else {
+				expr := c.expr(n.Children[0])
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+			}
 		}
 
 	case "call":
@@ -413,10 +486,10 @@ func (c *Compiler) compileFor(n *ast.Node) {
 			}
 			c.indent--
 			c.writeln("    END-PERFORM")
-               case "selector":
-                       if c.env != nil {
-                               if t, err := c.env.GetVar(src.Value.(string)); err == nil {
-                                       if _, ok := t.(types.StringType); ok {
+		case "selector":
+			if c.env != nil {
+				if t, err := c.env.GetVar(src.Value.(string)); err == nil {
+					if _, ok := t.(types.StringType); ok {
 						name := strings.ToUpper(src.Value.(string))
 						lenTmp := c.newTemp()
 						c.declare("01 IDX PIC 9.")
@@ -431,32 +504,32 @@ func (c *Compiler) compileFor(n *ast.Node) {
 							c.compileNode(st)
 						}
 						c.indent--
-                                               c.writeln("    END-PERFORM")
-                                               return
-                                       }
-                                       if lt, ok := t.(types.ListType); ok {
-                                               name := strings.ToUpper(src.Value.(string))
-                                               length, ok := c.listLens[src.Value.(string)]
-                                               if !ok {
-                                                       c.writeln("    *> unsupported for-in loop")
-                                                       return
-                                               }
-                                               c.declare("01 IDX PIC 9.")
-                                               c.declare(fmt.Sprintf("01 %s %s", varName, c.picForType(lt.Elem)))
-                                               c.writeln("    MOVE 0 TO IDX")
-                                               c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", length))
-                                               c.indent++
-                                               c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", name, varName))
-                                               for _, st := range n.Children[1].Children {
-                                                       c.compileNode(st)
-                                               }
-                                               c.indent--
-                                               c.writeln("    END-PERFORM")
-                                               return
-                                       }
-                               }
-                       }
-                       c.writeln("    *> unsupported for-in loop")
+						c.writeln("    END-PERFORM")
+						return
+					}
+					if lt, ok := t.(types.ListType); ok {
+						name := strings.ToUpper(src.Value.(string))
+						length, ok := c.listLens[src.Value.(string)]
+						if !ok {
+							c.writeln("    *> unsupported for-in loop")
+							return
+						}
+						c.declare("01 IDX PIC 9.")
+						c.declare(fmt.Sprintf("01 %s %s", varName, c.picForType(lt.Elem)))
+						c.writeln("    MOVE 0 TO IDX")
+						c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", length))
+						c.indent++
+						c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", name, varName))
+						for _, st := range n.Children[1].Children {
+							c.compileNode(st)
+						}
+						c.indent--
+						c.writeln("    END-PERFORM")
+						return
+					}
+				}
+			}
+			c.writeln("    *> unsupported for-in loop")
 		default:
 			c.writeln("    *> unsupported for-in loop")
 		}
@@ -796,6 +869,9 @@ func (c *Compiler) expr(n *ast.Node) string {
 		if op == "+" && (c.isStringExpr(n.Children[0]) || c.isStringExpr(n.Children[1])) {
 			return fmt.Sprintf("%s & %s", left, right)
 		}
+		if op == "+" && c.isListExpr(n.Children[0]) && c.isListExpr(n.Children[1]) {
+			return c.concatLists(n.Children[0], n.Children[1])
+		}
 		switch op {
 		case "&&":
 			return fmt.Sprintf("%s * %s", left, right)
@@ -930,6 +1006,87 @@ func extractInt(n *ast.Node) int {
 		}
 	}
 	return 0
+}
+
+// listInfo extracts information about a list expression. It returns the COBOL
+// variable name if the list is stored in a variable, the list length, the
+// element picture clause and the literal elements if any.
+func (c *Compiler) listInfo(n *ast.Node) (name string, length int, pic string, elems []*ast.Node, ok bool) {
+	switch n.Kind {
+	case "list":
+		length = len(n.Children)
+		if length > 0 {
+			pic = c.picForExpr(n.Children[0])
+		} else {
+			pic = "PIC 9."
+		}
+		elems = n.Children
+		ok = true
+		return
+	case "selector":
+		if l, ok2 := c.listLens[n.Value.(string)]; ok2 {
+			length = l
+			ok = true
+		}
+		if c.env != nil {
+			if t, err := c.env.GetVar(n.Value.(string)); err == nil {
+				if lt, ok2 := t.(types.ListType); ok2 {
+					if pic == "" {
+						pic = c.picForType(lt.Elem)
+					}
+					ok = true
+				}
+			}
+		}
+		name = strings.ToUpper(n.Value.(string))
+		if pic == "" {
+			pic = "PIC 9."
+		}
+		return
+	}
+	return
+}
+
+// concatLists emits COBOL code to concatenate two lists and returns the result
+// variable name.
+func (c *Compiler) concatLists(left, right *ast.Node) string {
+	ln, llen, lpic, lelems, ok1 := c.listInfo(left)
+	rn, rlen, rpic, relems, ok2 := c.listInfo(right)
+	if !ok1 || !ok2 {
+		c.writeln("    *> unsupported list concatenation")
+		return "0"
+	}
+	pic := lpic
+	if pic == "" {
+		pic = rpic
+	}
+	res := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", res, llen+rlen, pic))
+	c.listLens[res] = llen + rlen
+	idx := 1
+	if ln != "" {
+		for i := 0; i < llen; i++ {
+			c.writeln(fmt.Sprintf("    MOVE %s(%d) TO %s(%d)", ln, i+1, res, idx))
+			idx++
+		}
+	} else {
+		for _, ch := range lelems {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), res, idx))
+			idx++
+		}
+	}
+	if rn != "" {
+		for i := 0; i < rlen; i++ {
+			c.writeln(fmt.Sprintf("    MOVE %s(%d) TO %s(%d)", rn, i+1, res, idx))
+			idx++
+		}
+	} else {
+		for _, ch := range relems {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), res, idx))
+			idx++
+		}
+	}
+	return res
 }
 
 func extractIntList(n *ast.Node) []int {
