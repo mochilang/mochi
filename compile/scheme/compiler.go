@@ -839,6 +839,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return expr, nil
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -974,6 +976,37 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
 }
 
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var buf strings.Builder
+	buf.WriteString("(let ((_t " + target + "))\n")
+	buf.WriteString("    (cond\n")
+	for _, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			buf.WriteString("        (else " + res + ")\n")
+			continue
+		}
+		if lit := extractLiteral(cs.Pattern); lit != nil {
+			pat, err := compileLiteral(lit)
+			if err != nil {
+				return "", err
+			}
+			buf.WriteString("        ((equal? _t " + pat + ") " + res + ")\n")
+			continue
+		}
+		return "", fmt.Errorf("unsupported pattern")
+	}
+	buf.WriteString("    ))")
+	return buf.String(), nil
+}
+
 func sanitizeName(name string) string {
 	if name == "" {
 		return ""
@@ -1065,4 +1098,59 @@ func isMapPostfix(p *parser.PostfixExpr, vars map[string]string) bool {
 
 func isMapPrimary(p *parser.Primary) bool {
 	return p != nil && p.Map != nil
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+func extractLiteral(e *parser.Expr) *parser.Literal {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	if p.Target != nil {
+		return p.Target.Lit
+	}
+	return nil
+}
+
+func compileLiteral(l *parser.Literal) (string, error) {
+	switch {
+	case l.Int != nil:
+		return strconv.Itoa(*l.Int), nil
+	case l.Float != nil:
+		s := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.ContainsAny(s, ".eE") {
+			s += ".0"
+		}
+		return s, nil
+	case l.Bool != nil:
+		if *l.Bool {
+			return "#t", nil
+		}
+		return "#f", nil
+	case l.Str != nil:
+		return strconv.Quote(*l.Str), nil
+	default:
+		return "'()", fmt.Errorf("invalid literal")
+	}
 }

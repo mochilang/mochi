@@ -288,8 +288,10 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * union types and methods
 * packages or the foreign function interface
 * streams, agents, or tests
-* sets and `match` expressions
+* sets
 * struct type declarations
+* for-loops over maps
+* slice expressions like `a[1:3]`
 * concurrency primitives like `spawn`
 * advanced string slicing
 * logic programming predicates
