@@ -6,8 +6,9 @@ The Rust backend translates Mochi programs to Rust source code. It is used for e
 
 The current implementation lacks support for:
 
-- Nested function definitions.
 - Automatic detection of mutable parameters.
-- Map and string index helpers for generic collections.
+- Agent and stream declarations (`agent`, `on`, `emit`).
+- Logic programming constructs (`fact`, `rule`, `query`).
+- Data fetching and persistence expressions (`fetch`, `load`, `save`, `generate`).
 
-These limitations cause some LeetCode programs to fail to compile.
+These limitations cause some programs to fail to compile with the Rust backend.

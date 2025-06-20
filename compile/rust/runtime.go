@@ -3,6 +3,18 @@ package rscode
 import "sort"
 
 const (
+	helperIndexString = "fn _index_string(s: &str, i: i32) -> String {\n" +
+		"    let mut idx = i;\n" +
+		"    let chars: Vec<char> = s.chars().collect();\n" +
+		"    if idx < 0 { idx += chars.len() as i32; }\n" +
+		"    if idx < 0 || idx >= chars.len() as i32 { panic(\"index out of range\"); }\n" +
+		"    chars[idx as usize].to_string()\n" +
+		"}\n"
+
+	helperMapGet = "fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {\n" +
+		"    m.get(k).unwrap().clone()\n" +
+		"}\n"
+
 	helperCount = "fn _count<T>(v: &[T]) -> i32 {\n" +
 		"    v.len() as i32\n" +
 		"}\n"
@@ -34,11 +46,13 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_count":  helperCount,
-	"_avg":    helperAvg,
-	"_in_map": helperInMap,
-	"_input":  helperInput,
-	"_concat": helperConcat,
+	"_index_string": helperIndexString,
+	"_map_get":      helperMapGet,
+	"_count":        helperCount,
+	"_avg":          helperAvg,
+	"_in_map":       helperInMap,
+	"_input":        helperInput,
+	"_concat":       helperConcat,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }

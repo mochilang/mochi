@@ -713,9 +713,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if c.isStringBase(p) {
-					expr = fmt.Sprintf("%s.chars().nth((%s) as usize).unwrap()", expr, iexpr)
+					c.use("_index_string")
+					expr = fmt.Sprintf("_index_string(&%s, %s)", expr, iexpr)
 				} else if c.isMapExpr(p) {
-					expr = fmt.Sprintf("*%s.get(&%s).unwrap()", expr, iexpr)
+					c.use("_map_get")
+					expr = fmt.Sprintf("_map_get(&%s, &%s)", expr, iexpr)
 				} else if isStringLiteral(idx.Start) {
 					expr = fmt.Sprintf("%s[%s]", expr, iexpr)
 				} else if id, ok := identName(idx.Start); ok {

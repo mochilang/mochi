@@ -1,6 +1,6 @@
 fn main() {
     let mut text = "hello".to_string();
-    println!("{}", _index_string(&text, 1));
+    println!("{}", _index_string(&text, -1));
 }
 
 fn _index_string(s: &str, i: i32) -> String {
