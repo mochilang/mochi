@@ -1,5 +1,6 @@
 void main() {
-	var a = 10;
-	var b = 20;
+	dynamic a = 10;
+	dynamic b = 20;
 	print((a + b));
 }
+

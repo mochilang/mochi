@@ -1,0 +1,17 @@
+abstract class Foo {}
+class Empty extends Foo {
+	Empty();
+}
+class Node extends Foo {
+	Foo child;
+	Node({required this.child});
+}
+
+dynamic listit() {
+	return [Empty()];
+}
+
+void main() {
+	print(listit().length);
+}
+

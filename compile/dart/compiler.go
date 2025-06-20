@@ -642,6 +642,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("((){var _l=%s;var _s=0;for(var _x in _l){_s+=_x;}return _l.isEmpty?0:_s/_l.length;})()", arg), nil
 	}
+	// handle now()
+	if name == "now" && len(call.Args) == 0 {
+		return "DateTime.now().microsecondsSinceEpoch * 1000", nil
+	}
+	// handle json()
+	if name == "json" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		c.imports["dart:convert"] = true
+		return fmt.Sprintf("print(jsonEncode(%s))", arg), nil
+	}
 	// handle input()
 	if name == "input" && len(call.Args) == 0 {
 		c.imports["dart:io"] = true

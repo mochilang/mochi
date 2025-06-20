@@ -238,4 +238,8 @@ go test ./compile/dart -tags slow
 
 ## Notes
 
-The Dart backend currently covers a subset of Mochi features. Functions are emitted with a placeholder return type (`List<int>`), and union types are not yet supported. The backend is useful for experimentation but not production ready.
+The Dart backend currently covers only a subset of Mochi. It now supports union
+types and common built‑ins like `now` and `json`, but several language features
+remain unimplemented. Event streams, agent declarations and generative
+`generate` expressions are ignored, and dataset queries and embeddings are not
+available. The backend is useful for experimentation but not production ready.

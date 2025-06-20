@@ -1,0 +1,9 @@
+dynamic makeAdder(int n) {
+	return (x) => (x + n);
+}
+
+void main() {
+	dynamic add10 = makeAdder(10);
+	print(add10(7));
+}
+
