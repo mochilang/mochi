@@ -283,13 +283,18 @@ go test ./compile/scheme -tags slow
 The Scheme backend intentionally supports only a small subset of Mochi.  It does **not** handle:
 
 * dataset queries or joins
+* dataset query `group` clauses and join side options
 * generative AI blocks
+* error handling with `try`/`catch`
 * HTTP `fetch`
 * union types and methods
+* LLM helper functions like `_genText`
 * packages or the foreign function interface
 * streams, agents, or tests
-* sets and `match` expressions
+* sets
 * struct type declarations
+* methods inside `type` blocks
+* export statements via `export`
 * concurrency primitives like `spawn`
 * advanced string slicing
 * logic programming predicates
