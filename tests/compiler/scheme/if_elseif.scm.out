@@ -1,0 +1,15 @@
+(define x 5)
+(if (> x 5)
+	(begin
+		(begin (display "big") (newline))
+	)
+	(if (> x 2)
+		(begin
+			(begin (display "medium") (newline))
+		)
+		(begin
+			(begin (display "small") (newline))
+		)
+	)
+)
+

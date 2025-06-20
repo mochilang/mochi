@@ -66,9 +66,9 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	return nil
 ```
 
-`if` statements emit normal Scheme `if` expressions with optional else blocks:
+`if` statements emit normal Scheme `if` expressions with optional `else` and `else if` blocks:
 ```scheme
-func (c *Compiler) compileSimpleIf(st *parser.IfStmt) error {
+func (c *Compiler) compileIf(st *parser.IfStmt) error {
 	cond, err := c.compileExpr(st.Cond)
 	if err != nil {
 		return err
@@ -84,19 +84,23 @@ func (c *Compiler) compileSimpleIf(st *parser.IfStmt) error {
 	}
 	c.indent--
 	c.writeln(")")
-	if len(st.Else) > 0 {
-		c.writeln("(begin")
-		c.indent++
-		for _, s := range st.Else {
-			if err := c.compileStmt(s); err != nil {
-				return err
-			}
-		}
-		c.indent--
-		c.writeln(")")
-	} else {
-		c.writeln("'()")
-	}
+        if st.ElseIf != nil {
+                if err := c.compileIf(st.ElseIf); err != nil {
+                        return err
+                }
+        } else if len(st.Else) > 0 {
+                c.writeln("(begin")
+                c.indent++
+                for _, s := range st.Else {
+                        if err := c.compileStmt(s); err != nil {
+                                return err
+                        }
+                }
+                c.indent--
+                c.writeln(")")
+        } else {
+                c.writeln("'()")
+        }
 	c.indent--
 	c.writeln(")")
 ```
@@ -271,4 +275,17 @@ Execute them with the `slow` tag as they invoke an external interpreter:
 ```bash
 go test ./compile/scheme -tags slow
 ```
+
+## Unsupported Features
+
+The Scheme backend intentionally supports only a small subset of Mochi.  It does **not** handle:
+
+* dataset queries or joins
+* generative AI blocks
+* HTTP `fetch`
+* union types and methods
+* packages or the foreign function interface
+* streams, agents, or tests
+
+These features are recognised by the main Mochi interpreter but are ignored by the Scheme compiler.
 
