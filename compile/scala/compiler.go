@@ -834,7 +834,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Skip != nil || q.Take != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -859,7 +859,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	var cond, sortExpr string
+	var cond, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
 		if err != nil {
@@ -869,6 +869,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -909,13 +923,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	indent = indent[:len(indent)-1]
 	b.WriteString(indent + "}\n")
+	var result string
 	if sortExpr != "" {
 		c.needCompare = true
 		b.WriteString(fmt.Sprintf("\tval _sorted = %s.sortBy(_._2)(_anyOrdering)\n", res))
-		b.WriteString("\t_sorted.map(_._1).toSeq\n")
+		result = "_sorted.map(_._1).toSeq"
 	} else {
-		b.WriteString(fmt.Sprintf("\t%s.toSeq\n", res))
+		result = fmt.Sprintf("%s.toSeq", res)
 	}
+	if skipExpr != "" {
+		result += ".drop(" + skipExpr + ")"
+	}
+	if takeExpr != "" {
+		result += ".take(" + takeExpr + ")"
+	}
+	b.WriteString("\t" + result + "\n")
 	b.WriteString("})()")
 	return b.String(), nil
 }
