@@ -23,10 +23,13 @@
 	main :-
 	_V2 is -(2),
 	foo(_V2, _V3),
-	writeln(_V3),
+	write(_V3),
+	nl,
 	foo(0, _V4),
-	writeln(_V4),
+	write(_V4),
+	nl,
 	foo(3, _V5),
-	writeln(_V5)
+	write(_V5),
+	nl
 	.
 :- initialization(main, main).
