@@ -139,11 +139,11 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 
 ### Unsupported features
 
-The backend is still incomplete. Notable gaps include:
-
-- Join clauses in dataset queries
+- The backend is still incomplete. Notable gaps include:
+- Left/right/outer joins in dataset queries
 - Stream and agent declarations
 - Model declarations
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign function interface and extern objects
 - Generic dictionary casts for complex map types
+- Helper functions `_fetch`, `_load`, `_save`, `_genText` and `_genStruct`

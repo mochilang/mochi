@@ -871,7 +871,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.useLinq = true
-	if len(q.Joins) > 0 {
+	if len(q.Joins) > 0 && (q.Sort != nil || q.Skip != nil || q.Take != nil || q.Group != nil) {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -938,8 +938,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return fmt.Sprintf("_group_by(%s, %s => %s).Select(%s => %s).ToList()", src, v, keyExpr, sanitizeName(q.Group.Name), valExpr), nil
 	}
 
-	// handle cross join using nested loops when q.Froms are present
-	if len(q.Froms) > 0 {
+	// handle cross/join using nested loops when q.Froms or q.Joins are present
+	if len(q.Froms) > 0 || len(q.Joins) > 0 {
 		fromSrcs := make([]string, len(q.Froms))
 		for i, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
@@ -949,6 +949,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			fromSrcs[i] = fs
 			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			if j.Side != nil {
+				c.env = orig
+				return "", fmt.Errorf("unsupported query join side")
+			}
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinSrcs[i] = js
+			child.SetVar(j.Var, types.AnyType{}, true)
+			c.env = child
+			onExpr, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinOns[i] = onExpr
 		}
 		c.env = child
 		if q.Where != nil {
@@ -974,12 +996,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
 			indent += "\t"
 		}
+		for i, j := range q.Joins {
+			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(j.Var), joinSrcs[i]))
+			indent += "\t"
+			buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[i]))
+		}
 		if cond != "" {
 			buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
 			indent += "\t"
 		}
 		buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
 		if cond != "" {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		for i := len(q.Joins) - 1; i >= 0; i-- {
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
 		}
