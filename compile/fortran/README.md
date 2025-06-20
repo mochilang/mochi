@@ -183,15 +183,16 @@ go test ./compile/fortran -tags slow
 
 ## Unsupported features
 
-Despite recent additions like detection of `list<string>` and `list<float>`
-parameters and return values, the Fortran backend remains limited. Missing
-features include:
+Recent updates added support for `list<float>` variables and the `append()`
+builtin. Despite these improvements, the Fortran backend remains limited.
+Missing features include:
 
 - Map types and membership tests for maps. The `in` operator only works for
   lists and strings.
 - Query expressions (`from`/`sort by`/`select`).
 - Nested function definitions and struct literals.
 - `union`, `except` and `intersect` only work for `list<int>` values.
+- Slice expressions do not support a step parameter.
 - Pattern matching with `match` expressions.
 - Agents, streams and logic programming constructs (`fact`, `rule`, `query`).
 - Foreign imports and dataset helpers like `fetch`, `load` and `save`.

@@ -1,0 +1,2 @@
+let xs: list<float> = [1.5, 2.5]
+print(xs[0])

@@ -52,6 +52,26 @@ func builtinLen(i *Interpreter, c *parser.CallExpr) (any, error) {
 	}
 }
 
+func builtinAppend(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 2 {
+		return nil, fmt.Errorf("append(list, x) takes exactly two arguments")
+	}
+	lst, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	elem, err := i.evalExpr(c.Args[1])
+	if err != nil {
+		return nil, err
+	}
+	switch v := lst.(type) {
+	case []any:
+		return append(v, elem), nil
+	default:
+		return nil, fmt.Errorf("append() expects list, got %T", lst)
+	}
+}
+
 func builtinNow(i *Interpreter, c *parser.CallExpr) (any, error) {
 	if len(c.Args) != 0 {
 		return nil, fmt.Errorf("now() takes no arguments")
@@ -202,14 +222,15 @@ func builtinAvg(i *Interpreter, c *parser.CallExpr) (any, error) {
 
 func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
 	return map[string]func(*Interpreter, *parser.CallExpr) (any, error){
-		"print": builtinPrint,
-		"len":   builtinLen,
-		"now":   builtinNow,
-		"json":  builtinJSON,
-		"str":   builtinStr,
-		"input": builtinInput,
-		"count": builtinCount,
-		"avg":   builtinAvg,
-		"eval":  builtinEval,
+		"print":  builtinPrint,
+		"len":    builtinLen,
+		"append": builtinAppend,
+		"now":    builtinNow,
+		"json":   builtinJSON,
+		"str":    builtinStr,
+		"input":  builtinInput,
+		"count":  builtinCount,
+		"avg":    builtinAvg,
+		"eval":   builtinEval,
 	}
 }
