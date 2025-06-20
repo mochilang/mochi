@@ -120,3 +120,12 @@ go test ./compile/ocaml -tags slow
 ```
 
 These tests verify both the generated program output and the emitted `.ml` code.
+
+## Unsupported features
+
+The OCaml backend covers only a small slice of Mochi. Missing pieces include:
+
+- Query expressions such as `from` / `sort by` / `select`
+- Pattern matching and union types
+- Anonymous functions with block bodies
+- Streams, LLM helpers and the foreign function interface

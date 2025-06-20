@@ -1,0 +1,11 @@
+let rec _slice lst i len =
+  match lst with
+  | [] -> []
+  | x::xs ->
+      if i > 0 then _slice xs (i - 1) len
+      else if len = 0 then []
+      else x :: _slice xs 0 (len - 1)
+
+let xs = [1; 2; 3; 4];;
+let sub = (_slice xs 1 (3 - 1));;
+print_endline (string_of_int ((List.nth sub 0)));;
