@@ -1,0 +1,10 @@
+object Main {
+	def main(args: Array[String]): Unit = {
+		val poem = _genText("echo hello", "", Map[String, Any]())
+		println(poem)
+	}
+	def _genText(prompt: String, model: String, params: Map[String, Any]): String = {
+		// TODO: integrate with an LLM
+		prompt
+	}
+}

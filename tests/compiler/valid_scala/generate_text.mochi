@@ -1,0 +1,4 @@
+let poem = generate text {
+  prompt: "echo hello"
+}
+print(poem)

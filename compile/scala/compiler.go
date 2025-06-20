@@ -21,10 +21,16 @@ type Compiler struct {
 	tempVarCount int
 	loopStack    []loopLabels
 
-	needCompare bool
-	needFetch   bool
-	needLoad    bool
-	needSave    bool
+	needCompare   bool
+	needFetch     bool
+	needLoad      bool
+	needSave      bool
+	needIndexStr  bool
+	needSlice     bool
+	needSliceStr  bool
+	needGenText   bool
+	needGenEmbed  bool
+	needGenStruct bool
 
 	paramAlias map[string]string
 }
@@ -230,6 +236,71 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 		c.indent--
 		c.writeln("} finally if (path != \"\" && path != \"-\") out.close()")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needIndexStr {
+		c.writeln("def _indexString(s: String, i: Int): String = {")
+		c.indent++
+		c.writeln("var idx = i")
+		c.writeln("val chars = s.toVector")
+		c.writeln("if (idx < 0) idx += chars.length")
+		c.writeln("if (idx < 0 || idx >= chars.length) throw new RuntimeException(\"index out of range\")")
+		c.writeln("chars(idx).toString")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needSliceStr {
+		c.writeln("def _sliceString(s: String, i: Int, j: Int): String = {")
+		c.indent++
+		c.writeln("var start = i")
+		c.writeln("var end = j")
+		c.writeln("val chars = s.toVector")
+		c.writeln("val n = chars.length")
+		c.writeln("if (start < 0) start += n")
+		c.writeln("if (end < 0) end += n")
+		c.writeln("if (start < 0) start = 0")
+		c.writeln("if (end > n) end = n")
+		c.writeln("if (end < start) end = start")
+		c.writeln("chars.slice(start, end).mkString")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needSlice {
+		c.writeln("def _slice[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int, j: Int): scala.collection.mutable.ArrayBuffer[T] = {")
+		c.indent++
+		c.writeln("var start = i")
+		c.writeln("var end = j")
+		c.writeln("val n = arr.length")
+		c.writeln("if (start < 0) start += n")
+		c.writeln("if (end < 0) end += n")
+		c.writeln("if (start < 0) start = 0")
+		c.writeln("if (end > n) end = n")
+		c.writeln("if (end < start) end = start")
+		c.writeln("arr.slice(start, end)")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needGenText {
+		c.writeln("def _genText(prompt: String, model: String, params: Map[String, Any]): String = {")
+		c.indent++
+		c.writeln("// TODO: integrate with an LLM")
+		c.writeln("prompt")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needGenEmbed {
+		c.writeln("def _genEmbed(text: String, model: String, params: Map[String, Any]): Seq[Double] = {")
+		c.indent++
+		c.writeln("text.map(c => c.toDouble)")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needGenStruct {
+		c.writeln("def _genStruct[T](prompt: String, model: String, params: Map[String, Any])(implicit ct: scala.reflect.ClassTag[T]): T = {")
+		c.indent++
+		c.writeln("// TODO: integrate with an LLM and parse JSON")
+		c.writeln("ct.runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[T]")
 		c.indent--
 		c.writeln("}")
 	}
@@ -773,13 +844,26 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					end = e
 				}
-				expr = fmt.Sprintf("%s.slice(%s, %s)", expr, start, end)
+				if isStringPrimary(p.Target, c.env) {
+					c.needSliceStr = true
+					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+				} else if isListPrimary(p.Target, c.env) {
+					c.needSlice = true
+					expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
+				} else {
+					expr = fmt.Sprintf("%s.slice(%s, %s)", expr, start, end)
+				}
 			} else {
 				idx, err := c.compileExpr(op.Index.Start)
 				if err != nil {
 					return "", err
 				}
-				expr = fmt.Sprintf("%s(%s)", expr, idx)
+				if isStringPrimary(p.Target, c.env) {
+					c.needIndexStr = true
+					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("%s(%s)", expr, idx)
+				}
 			}
 			continue
 		}
@@ -888,6 +972,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
@@ -1156,6 +1242,52 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.needSave = true
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var prompt, text, model string
+	params := []string{}
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("%q -> %s", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramMap := "Map[String, Any]()"
+	if len(params) > 0 {
+		paramMap = "Map(" + strings.Join(params, ", ") + ")"
+	}
+	if model == "" {
+		model = "\"\""
+	}
+	if g.Target == "embedding" {
+		c.needGenEmbed = true
+		return fmt.Sprintf("_genEmbed(%s, %s, %s)", text, model, paramMap), nil
+	}
+	if c.env != nil {
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.needGenStruct = true
+			return fmt.Sprintf("_genStruct[%s](%s, %s, %s)", sanitizeName(g.Target), prompt, model, paramMap), nil
+		}
+	}
+	c.needGenText = true
+	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramMap), nil
 }
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {

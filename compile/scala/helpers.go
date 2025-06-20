@@ -138,3 +138,61 @@ func isMapExpr(e *parser.Expr, env *types.Env) bool {
 	}
 	return false
 }
+
+func isStringPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isListPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.List != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.ListType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// isListExpr reports whether e is a list literal or a variable of list type.
+func isListExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil {
+		return false
+	}
+	if name, ok := identName(e); ok && env != nil {
+		if t, err := env.GetVar(name); err == nil {
+			if _, ok := t.(types.ListType); ok {
+				return true
+			}
+		}
+	}
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			p := u.Value
+			if len(p.Ops) == 0 && p.Target.List != nil {
+				return true
+			}
+		}
+	}
+	return false
+}

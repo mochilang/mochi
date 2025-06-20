@@ -273,11 +273,11 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - module system and imports
 - generic types and higher‑order functions
 - advanced dataset queries (joins and grouping)
-- logic queries and AI `generate` blocks
+- logic queries
 - reflection and macro facilities
 - streams and agents
 - foreign function interface (`extern` imports)
 - error handling with `try`/`catch`
-- LLM helpers such as `_genText`, `_genEmbed` and `_genStruct`
 - logic programming constructs (`fact`, `rule`)
+- negative indexing and slicing for strings and lists
 
