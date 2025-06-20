@@ -187,9 +187,14 @@ Despite recent additions like detection of `list<string>` and `list<float>`
 parameters and return values, the Fortran backend remains limited. Missing
 features include:
 
-- `map` types and the `in` membership operator
-- query expressions (`from`/`sort by`/`select`)
-- nested function definitions and struct literals
+- Map types and membership tests for maps. The `in` operator only works for
+  lists and strings.
+- Query expressions (`from`/`sort by`/`select`).
+- Nested function definitions and struct literals.
+- Set operations such as `union`, `except` and `intersect`.
+- Pattern matching with `match` expressions.
+- Agents, streams and logic programming constructs (`fact`, `rule`, `query`).
+- Foreign imports and dataset helpers like `fetch`, `load` and `save`.
 
 While limited, this backend demonstrates how Mochi’s AST can be translated into
 another language and may serve as a starting point for more complete Fortran

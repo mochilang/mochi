@@ -994,7 +994,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return 1
 		case "&&":
 			return 2
-		case "==", "!=", "<", "<=", ">", ">=":
+		case "==", "!=", "<", "<=", ">", ">=", "in":
 			return 3
 		case "+", "-":
 			return 4
@@ -1057,6 +1057,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 		case "!=":
 			expr = fmt.Sprintf("(%s /= %s)", left, right)
+		case "in":
+			if rList {
+				expr = fmt.Sprintf("any(%s == %s)", right, left)
+			} else if rStr {
+				expr = fmt.Sprintf("index(%s, %s) > 0", right, left)
+			} else {
+				return fmt.Errorf("unsupported op %s", op)
+			}
 		case "%":
 			expr = fmt.Sprintf("mod(%s, %s)", left, right)
 		case "&&":
@@ -1179,6 +1187,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if op.Cast.Type != nil {
 				if op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "float" {
 					expr = fmt.Sprintf("real(%s)", expr)
+				} else if op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "int" {
+					expr = fmt.Sprintf("int(%s)", expr)
 				} else if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" {
 					// no-op for list casts
 					expr = expr
