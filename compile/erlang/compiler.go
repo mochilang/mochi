@@ -20,6 +20,12 @@ type Compiler struct {
 	vars     map[string]string
 	counts   map[string]int
 	tmpCount int
+	tests    []testInfo
+}
+
+type testInfo struct {
+	name  string
+	label string
 }
 
 func copyMap[K comparable, V any](m map[K]V) map[K]V {
@@ -103,7 +109,7 @@ func (c *Compiler) newName(name string) string {
 
 // New returns a new Compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}, tmpCount: 0}
+	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}, tmpCount: 0, tests: []testInfo{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -134,6 +140,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Fun != nil {
 			exports = append(exports, fmt.Sprintf("%s/%d", atomName(s.Fun.Name), len(s.Fun.Params)))
 		}
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			exports = append(exports, fmt.Sprintf("%s/0", atomName(name)))
+		}
 	}
 	c.writeln("-export([" + strings.Join(exports, ", ") + "]).")
 	c.writeln("")
@@ -145,12 +155,38 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			c.writeln("")
 		}
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
 	}
 
 	c.writeln("main(_) ->")
 	c.indent++
-	if err := c.compileBlock(prog.Statements, true, func(s *parser.Statement) bool { return s.Fun == nil }); err != nil {
+	body := []*parser.Statement{}
+	for _, s := range prog.Statements {
+		if s.Fun == nil && s.Test == nil {
+			body = append(body, s)
+		}
+	}
+	if err := c.compileBlock(body, len(c.tests) == 0, nil); err != nil {
 		return nil, err
+	}
+	if len(c.tests) > 0 {
+		if len(body) > 0 {
+			c.buf.WriteString(",\n")
+		}
+		for i, t := range c.tests {
+			c.writeIndent()
+			c.buf.WriteString(fmt.Sprintf("mochi_run_test(\"%s\", fun %s/0)", t.label, atomName(t.name)))
+			if i == len(c.tests)-1 {
+				c.buf.WriteString(".\n")
+			} else {
+				c.buf.WriteString(",\n")
+			}
+		}
 	}
 	c.indent--
 
@@ -196,6 +232,18 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.env = origEnv
 	c.vars = savedVars
 	c.counts = savedCounts
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.tests = append(c.tests, testInfo{name: name, label: t.Name})
+	c.writeln(fmt.Sprintf("%s() ->", name))
+	c.indent++
+	if err := c.compileBlock(t.Body, true, nil); err != nil {
+		return err
+	}
+	c.indent--
 	return nil
 }
 
@@ -289,10 +337,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Import != nil:
-		// import statements are ignored
+		// import statements are ignored for now
 		return nil
-	case s.Test != nil, s.Expect != nil:
-		// testing constructs are not supported yet
+	case s.Test != nil:
+		// handled separately
+		return nil
+	case s.Expect != nil:
+		expr, err := c.compileExpr(s.Expect.Value)
+		if err != nil {
+			return err
+		}
+		c.buf.WriteString("mochi_expect(" + expr + ")")
 		return nil
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
 		// extern declarations are ignored
@@ -1237,6 +1292,33 @@ func (c *Compiler) emitRuntime() {
 	c.writeln("mochi_while(Cond, Body);")
 	c.indent--
 	c.writeln("_ -> ok")
+	c.indent--
+	c.writeln("end.")
+	c.indent--
+
+	c.writeln("")
+	c.writeln("mochi_expect(true) -> ok;")
+	c.writeln("mochi_expect(_) -> erlang:error(expect_failed).")
+
+	c.writeln("")
+	c.writeln("mochi_test_start(Name) -> io:format(\"   test ~s ...\", [Name]).")
+	c.writeln("mochi_test_pass(Dur) -> io:format(\" ok (~p)~n\", [Dur]).")
+	c.writeln("mochi_test_fail(Err, Dur) -> io:format(\" fail ~p (~p)~n\", [Err, Dur]).")
+
+	c.writeln("")
+	c.writeln("mochi_run_test(Name, Fun) ->")
+	c.indent++
+	c.writeln("mochi_test_start(Name),")
+	c.writeln("Start = erlang:monotonic_time(millisecond),")
+	c.writeln("try Fun() of _ ->")
+	c.indent++
+	c.writeln("Duration = erlang:monotonic_time(millisecond) - Start,")
+	c.writeln("mochi_test_pass(Duration)")
+	c.indent--
+	c.writeln("catch C:R ->")
+	c.indent++
+	c.writeln("Duration = erlang:monotonic_time(millisecond) - Start,")
+	c.writeln("mochi_test_fail({C,R}, Duration)")
 	c.indent--
 	c.writeln("end.")
 	c.indent--

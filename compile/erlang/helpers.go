@@ -3,6 +3,7 @@ package erlcode
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"mochi/parser"
 	"mochi/types"
@@ -184,6 +185,29 @@ func atomName(name string) string {
 		}
 	}
 	return name
+}
+
+// sanitizeName converts name to a valid Erlang atom identifier.
+func sanitizeName(name string) string {
+	if name == "" {
+		return "_"
+	}
+	b := strings.Builder{}
+	for i, r := range name {
+		if r >= 'A' && r <= 'Z' {
+			r = r - 'A' + 'a'
+		}
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9' && i > 0) || r == '_' {
+			b.WriteRune(r)
+		} else {
+			b.WriteByte('_')
+		}
+	}
+	res := b.String()
+	if res == "" || !((res[0] >= 'a' && res[0] <= 'z') || res[0] == '_') {
+		res = "_" + res
+	}
+	return res
 }
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
