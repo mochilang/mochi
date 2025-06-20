@@ -69,6 +69,25 @@ c.writeln("    STOP RUN.")
 The backend does not aim to support the full language and is provided merely as
 a demonstration of Mochi's compiler architecture.
 
+## Supported Features
+
+Despite being a toy backend, the COBOL emitter understands a handful of
+constructs:
+
+- `let`/`var` declarations for integers, floats and strings
+- basic arithmetic and boolean operators
+- `print` statements
+- `if`/`else` and `while` loops
+- `for` loops over integer ranges and over list or string values
+- `break` and `continue`
+- list literals, list concatenation with `+` and indexing (including negative
+  indexes)
+- simple function definitions and calls
+- built-in helpers `len` (for strings and lists), `add` and `id`
+- simple `match` expressions using literal patterns and `_`
+- inline implementations of `twoSum` and `addTwoNumbers`
+- capturing output from `test` blocks
+
 ## Building
 
 Compile a Mochi source file to COBOL and run it with `cobc`:
@@ -181,7 +200,6 @@ unsupported include:
   list, a string literal, or a fixed list variable
 - Range loops with step values other than `1`
 - Slicing expressions like `list[start:end]`
-- Calling `len` on list variables
 - Struct and model declarations
 - Union type declarations and inline methods
 - First-class function values or closures
