@@ -88,12 +88,12 @@ features are not yet handled:
 - Logic programming constructs and streams
 - Agents and event streams
 - Foreign function imports via `extern`
-- Import statements
 - Model declarations and dataset helpers
 - Sorting or pagination on queries with multiple sources
 - Concurrency primitives like `spawn` and channels
 - Struct and union type declarations
-- Set operations using `union`, `except` or `intersect`
+- HTTP `fetch` and `generate` helpers return stub data
+- Dataset `load` and `save` only handle serialized Erlang terms
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs
 directly.
