@@ -1,45 +1,59 @@
 bool isMatch(String s, String p) {
-	int m = s.length;
-	int n = p.length;
-	List<List<bool>> dp = [];
-	int i = 0;
+	dynamic m = s.length;
+	dynamic n = p.length;
+	dynamic dp = [];
+	dynamic i = 0;
 	while ((i <= m)) {
-		List<bool> row = [];
-		int j = 0;
+		dynamic row = [];
+		dynamic j = 0;
 		while ((j <= n)) {
 			row = (row + [false]);
-			j = (j + 1);
+			j = ((j + 1)).toInt();
 		}
 		dp = (dp + [row]);
-		i = (i + 1);
+		i = ((i + 1)).toInt();
 	}
 	dp[m][n] = true;
-	var i2 = m;
+	dynamic i2 = m;
 	while ((i2 >= 0)) {
-		var j2 = (n - 1);
+		dynamic j2 = (n - 1);
 		while ((j2 >= 0)) {
-			bool first = false;
+			dynamic first = false;
 			if ((i2 < m)) {
 				if ((((_indexString(p, j2) == _indexString(s, i2))) || ((_indexString(p, j2) == ".")))) {
 					first = true;
 				}
 			}
-			if ((((j2 + 1) < n) && (_indexString(p, (j2 + 1)) == "*"))) {
-				if ((dp[i2][(j2 + 2)] || ((first && dp[(i2 + 1)][j2])))) {
-					dp[i2][j2] = true;
-				} else {
-					dp[i2][j2] = false;
-				}
-			} else {
-				if ((first && dp[(i2 + 1)][(j2 + 1)])) {
-					dp[i2][j2] = true;
-				} else {
-					dp[i2][j2] = false;
+			dynamic star = false;
+			if (((j2 + 1) < n)) {
+				if ((_indexString(p, ((j2 + 1)).toInt()) == "*")) {
+					star = true;
 				}
 			}
-			j2 = (j2 - 1);
+			if (star) {
+				dynamic ok = false;
+				if (dp[i2][(j2 + 2)]) {
+					ok = true;
+				} else {
+					if (first) {
+						if (dp[(i2 + 1)][j2]) {
+							ok = true;
+						}
+					}
+				}
+				dp[i2][j2] = ok;
+			} else {
+				dynamic ok = false;
+				if (first) {
+					if (dp[(i2 + 1)][(j2 + 1)]) {
+						ok = true;
+					}
+				}
+				dp[i2][j2] = ok;
+			}
+			j2 = ((j2 - 1)).toInt();
 		}
-		i2 = (i2 - 1);
+		i2 = ((i2 - 1)).toInt();
 	}
 	return dp[0][0];
 }
@@ -57,3 +71,4 @@ String _indexString(String s, int i) {
 	}
 	return String.fromCharCode(runes[i]);
 }
+

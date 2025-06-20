@@ -2,14 +2,14 @@ String convert(String s, int numRows) {
 	if (((numRows <= 1) || (numRows >= s.length))) {
 		return s;
 	}
-	List<String> rows = [];
-	int i = 0;
+	dynamic rows = [];
+	dynamic i = 0;
 	while ((i < numRows)) {
 		rows = (rows + [""]);
-		i = (i + 1);
+		i = ((i + 1)).toInt();
 	}
-	int curr = 0;
-	int step = 1;
+	dynamic curr = 0;
+	dynamic step = 1;
 	var _tmp0 = s;
 	for (var _tmp1 in _tmp0.runes) {
 		var ch = String.fromCharCode(_tmp1);
@@ -18,11 +18,11 @@ String convert(String s, int numRows) {
 			step = 1;
 		} else 
 		if ((curr == (numRows - 1))) {
-			step = -1;
+			step = (-1).toInt();
 		}
-		curr = (curr + step);
+		curr = ((curr + step)).toInt();
 	}
-	String result = "";
+	dynamic result = "";
 	for (var row in rows) {
 		result = (result + row);
 	}
@@ -31,3 +31,4 @@ String convert(String s, int numRows) {
 
 void main() {
 }
+

@@ -148,17 +148,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		val = expr
 	}
 	if val == "" {
-		if isSimpleType(typ) && typ != nil && !isAny(typ) {
-			c.writeln(fmt.Sprintf("%s %s;", dartType(typ), name))
-		} else {
-			c.writeln(fmt.Sprintf("dynamic %s;", name))
-		}
+		c.writeln(fmt.Sprintf("dynamic %s;", name))
 	} else {
-		if isSimpleType(typ) && typ != nil && !isAny(typ) {
-			c.writeln(fmt.Sprintf("%s %s = %s;", dartType(typ), name, val))
-		} else {
-			c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
-		}
+		c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
 	}
 	if c.env != nil && typ != nil && !isAny(typ) {
 		c.env.SetVar(s.Name, typ, false)
@@ -275,17 +267,9 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		val = expr
 	}
 	if val == "" {
-		if isSimpleType(typ) && typ != nil && !isAny(typ) {
-			c.writeln(fmt.Sprintf("%s %s;", dartType(typ), name))
-		} else {
-			c.writeln(fmt.Sprintf("dynamic %s;", name))
-		}
+		c.writeln(fmt.Sprintf("dynamic %s;", name))
 	} else {
-		if isSimpleType(typ) && typ != nil && !isAny(typ) {
-			c.writeln(fmt.Sprintf("%s %s = %s;", dartType(typ), name, val))
-		} else {
-			c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
-		}
+		c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
 	}
 	if c.env != nil && typ != nil && !isAny(typ) {
 		c.env.SetVar(s.Name, typ, true)
@@ -305,6 +289,15 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	rhs, err := c.compileExpr(s.Value)
 	if err != nil {
 		return err
+	}
+	if c.env != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			if isInt(t) || isInt64(t) {
+				if !isIntExpr(c, s.Value) {
+					rhs = fmt.Sprintf("(%s).toInt()", rhs)
+				}
+			}
+		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, rhs))
 	return nil
@@ -488,6 +481,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				if isStringPrimary(c, p.Target) {
 					c.useIndexStr = true
+					if !isIntExpr(c, op.Index.Start) {
+						idx = fmt.Sprintf("(%s).toInt()", idx)
+					}
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 				} else {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
@@ -1134,6 +1130,57 @@ func isFloatPrimary(c *Compiler, p *parser.Primary) bool {
 		if c.env != nil {
 			if t, err := c.env.GetVar(sel.Root); err == nil {
 				if isFloat(t) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isIntExpr(c *Compiler, e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if e.Binary != nil && len(e.Binary.Right) == 0 {
+		return isIntUnary(c, e.Binary.Left)
+	}
+	return false
+}
+
+func isIntUnary(c *Compiler, u *parser.Unary) bool {
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	return isIntPostfix(c, u.Value)
+}
+
+func isIntPostfix(c *Compiler, p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) > 0 {
+		if last := p.Ops[len(p.Ops)-1]; last.Cast != nil {
+			t := c.resolveTypeRef(last.Cast.Type)
+			if isInt(t) || isInt64(t) {
+				return true
+			}
+		}
+	}
+	return isIntPrimary(c, p.Target)
+}
+
+func isIntPrimary(c *Compiler, p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if lit := p.Lit; lit != nil && lit.Int != nil {
+		return true
+	}
+	if sel := p.Selector; sel != nil && len(sel.Tail) == 0 {
+		if c.env != nil {
+			if t, err := c.env.GetVar(sel.Root); err == nil {
+				if isInt(t) || isInt64(t) {
 					return true
 				}
 			}
