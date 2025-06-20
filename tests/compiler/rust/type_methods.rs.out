@@ -1,9 +1,9 @@
 #[derive(Clone, Debug)]
 struct Counter {
-    value: i32,
+    value: i64,
 }
 impl Counter {
-    fn inc(&mut self) -> i32 {
+    fn inc(&mut self) -> i64 {
         self.value = self.value + 1;
         return self.value;
     }

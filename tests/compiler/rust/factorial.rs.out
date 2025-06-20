@@ -1,4 +1,4 @@
-fn factorial(n: i32) -> i32 {
+fn factorial(n: i64) -> i64 {
     if n <= 1 {
         return 1;
     }
@@ -10,3 +10,4 @@ fn main() {
     println!("{}", factorial(1));
     println!("{}", factorial(5));
 }
+

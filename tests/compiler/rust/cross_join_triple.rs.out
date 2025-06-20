@@ -1,6 +1,6 @@
 #[derive(Clone, Debug)]
 struct Combo {
-    n: i32,
+    n: i64,
     l: String,
     b: bool,
 }
@@ -25,3 +25,4 @@ fn main() {
         println!("{} {} {}", c.n, c.l, c.b);
     }
 }
+

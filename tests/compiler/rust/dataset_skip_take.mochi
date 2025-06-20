@@ -1,0 +1,8 @@
+let nums = [0, 1, 2, 3, 4, 5]
+let sub = from n in nums
+          skip 2
+          take 3
+          select n
+for v in sub {
+  print(v)
+}

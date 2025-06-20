@@ -3,7 +3,7 @@ enum Tree {
     Leaf,
     Node {
         left: Box<Tree>,
-        value: i32,
+        value: i64,
         right: Box<Tree>,
     },
 }
@@ -21,3 +21,4 @@ fn main() {
     println!("{}", isLeaf(Tree::Leaf {  }));
     println!("{}", isLeaf(Tree::Node { left: Box::new(Tree::Leaf {  }), value: 1, right: Box::new(Tree::Leaf {  }) }));
 }
+

@@ -3,3 +3,4 @@ fn main() {
     scores.insert("b".to_string(), 2);
     println!("{}", scores["b"]);
 }
+

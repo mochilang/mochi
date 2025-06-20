@@ -239,7 +239,6 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
-	c.writeln("#[test]")
 	c.writeln("fn " + name + "() {")
 	c.indent++
 	for _, st := range t.Body {
@@ -695,6 +694,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("    }\n")
+	if q.Skip != nil {
+		skip, err := c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("    let mut skip = %s as usize;\n", skip))
+		b.WriteString("    if skip < _res.len() { _res = _res[skip..].to_vec(); } else { _res = Vec::new(); }\n")
+	}
+	if q.Take != nil {
+		take, err := c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf("    let take = %s as usize;\n", take))
+		b.WriteString("    if take < _res.len() { _res.truncate(take); }\n")
+	}
 	b.WriteString("    _res\n")
 	b.WriteString("}")
 	return b.String(), nil
@@ -1103,7 +1118,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("format!(\"%s\", %s)", fmtStr, argStr), nil
 	case "len":
 		if len(args) == 1 {
-			return fmt.Sprintf("%s.len() as i32", args[0]), nil
+			return fmt.Sprintf("%s.len() as i64", args[0]), nil
 		}
 	case "count":
 		if len(args) == 1 {
@@ -1155,7 +1170,7 @@ func rustType(t *parser.TypeRef) string {
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
-			return "i32"
+			return "i64"
 		case "int64":
 			return "i64"
 		case "float":

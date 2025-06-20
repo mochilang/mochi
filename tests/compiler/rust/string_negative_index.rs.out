@@ -3,10 +3,10 @@ fn main() {
     println!("{}", _index_string(&text, -1));
 }
 
-fn _index_string(s: &str, i: i32) -> String {
+fn _index_string(s: &str, i: i64) -> String {
     let mut idx = i;
     let chars: Vec<char> = s.chars().collect();
-    if idx < 0 { idx += chars.len() as i32; }
-    if idx < 0 || idx >= chars.len() as i32 { panic("index out of range"); }
+    if idx < 0 { idx += chars.len() as i64; }
+    if idx < 0 || idx >= chars.len() as i64 { panic!("index out of range"); }
     chars[idx as usize].to_string()
 }
