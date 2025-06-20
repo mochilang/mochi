@@ -12,10 +12,11 @@ import (
 
 // Compiler translates Mochi AST to Haskell source code for a limited subset.
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	env     *types.Env
-	usesMap bool
+	buf      bytes.Buffer
+	indent   int
+	env      *types.Env
+	usesMap  bool
+	usesTime bool
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -93,6 +94,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	var header bytes.Buffer
 	header.WriteString("module Main where\n\n")
 	header.WriteString("import Data.Maybe (fromMaybe)\n")
+	if c.usesTime {
+		header.WriteString("import Data.Time.Clock.POSIX (getPOSIXTime)\n")
+	}
 	if c.usesMap {
 		header.WriteString("import qualified Data.Map as Map\n")
 	}
@@ -539,6 +543,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if p.Call.Func == "str" {
 			return fmt.Sprintf("show %s", strings.Join(args, " ")), nil
+		}
+		if p.Call.Func == "now" {
+			c.usesTime = true
+			return "_now", nil
 		}
 		if p.Call.Func == "input" {
 			return "_input", nil

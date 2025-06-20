@@ -88,3 +88,6 @@ full Mochi language. Unsupported features include:
 * `break` and `continue` statements
 * Struct and object types
 * Package imports and module system
+* Built-in functions `now` and `json`
+* Dataset `load`/`save` operations
+* `test` blocks and expectations
