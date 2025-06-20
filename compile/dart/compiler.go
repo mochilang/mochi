@@ -25,13 +25,17 @@ type Compiler struct {
 	useFetch     bool
 	useLoad      bool
 	useSave      bool
+	useGenText   bool
+	useGenEmbed  bool
+	useGenStruct bool
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, imports: make(map[string]bool), useIndexStr: false,
 		useUnionAll: false, useUnion: false, useExcept: false, useIntersect: false,
-		useFetch: false, useLoad: false, useSave: false}
+		useFetch: false, useLoad: false, useSave: false,
+		useGenText: false, useGenEmbed: false, useGenStruct: false}
 }
 
 // Compile returns Dart source implementing prog.
@@ -46,6 +50,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useFetch = false
 	c.useLoad = false
 	c.useSave = false
+	c.useGenText = false
+	c.useGenEmbed = false
+	c.useGenStruct = false
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -622,6 +629,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
 	case p.Load != nil:
@@ -1058,6 +1067,55 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var (
+		prompt string
+		text   string
+		model  string
+		params []string
+	)
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("%q: %s", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramStr := "null"
+	if len(params) > 0 {
+		paramStr = fmt.Sprintf("{ %s }", strings.Join(params, ", "))
+	}
+	if model == "" {
+		model = "\"\""
+	}
+	c.imports["dart:convert"] = true
+	if g.Target == "embedding" {
+		c.useGenEmbed = true
+		return fmt.Sprintf("_genEmbed(%s, %s, %s)", text, model, paramStr), nil
+	}
+	if _, ok := c.env.GetStruct(g.Target); ok {
+		c.useGenStruct = true
+		return fmt.Sprintf("_genStruct<%s>(%s, %s, %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
+	}
+	c.useGenText = true
+	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramStr), nil
+}
+
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	urlStr, err := c.compileExpr(f.URL)
 	if err != nil {
@@ -1292,7 +1350,7 @@ func isStringPrimary(c *Compiler, p *parser.Primary) bool {
 }
 
 func (c *Compiler) emitRuntime() {
-	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave) {
+	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave || c.useGenText || c.useGenEmbed || c.useGenStruct) {
 		return
 	}
 	c.writeln("")
@@ -1490,6 +1548,29 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("File(path).writeAsStringSync(text);")
 		c.indent--
 		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useGenText {
+		c.writeln("String _genText(String prompt, String model, Map<String,dynamic>? params) {")
+		c.indent++
+		c.writeln("// TODO: integrate with an LLM")
+		c.writeln("return prompt;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useGenEmbed {
+		c.writeln("List<double> _genEmbed(String text, String model, Map<String,dynamic>? params) {")
+		c.indent++
+		c.writeln("return text.codeUnits.map((c) => c.toDouble()).toList();")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useGenStruct {
+		c.writeln("T _genStruct<T>(String prompt, String model, Map<String,dynamic>? params) {")
+		c.indent++
+		c.writeln("// TODO: parse model output into a struct")
+		c.writeln("return null as T;")
 		c.indent--
 		c.writeln("}")
 	}
