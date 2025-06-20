@@ -154,13 +154,15 @@ behaviour.
 Only a narrow slice of Mochi is recognised by this backend. Missing
 capabilities include:
 
-- Nested function definitions
 - Structs, unions and other complex types
 - Map literals and indexing operations
 - Match expressions
 - Query expressions such as `from`/`sort by`/`select`
 - Agents, streams and extern objects
-- LLM helpers, load/save/fetch and other I/O features
+- Logic programming with facts and rules
+- HTTP helpers such as `fetch`, `load` and `save`
+- Foreign function interface and package imports
+- LLM helpers and other advanced runtime features
 
 Programs using these constructs will fail to compile.
 
@@ -179,6 +181,9 @@ unsupported include:
 - Match expressions
 - Dataset query expressions like `from ... sort by ...`
 - Agents, stream handling, and concurrency primitives
+- Logic programming with facts and rules
+- HTTP helpers such as `fetch`, `load` and `save`
+- Foreign function interface and package imports
 - LLM helpers and other advanced runtime features
 
 Programs relying on these constructs will fail to compile.
