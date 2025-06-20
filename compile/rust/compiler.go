@@ -410,7 +410,12 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
 			typ = "&str"
 		}
-		c.buf.WriteString(fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ))
+		name := sanitizeName(p.Name)
+		if paramMutated(fun.Body, p.Name) {
+			c.buf.WriteString(fmt.Sprintf("mut %s: %s", name, typ))
+		} else {
+			c.buf.WriteString(fmt.Sprintf("%s: %s", name, typ))
+		}
 	}
 	c.buf.WriteString(")")
 	ret := ""
@@ -999,6 +1004,8 @@ func rustType(t *parser.TypeRef) string {
 		switch *t.Simple {
 		case "int":
 			return "i32"
+		case "int64":
+			return "i64"
 		case "float":
 			return "f64"
 		case "string":
@@ -1012,6 +1019,11 @@ func rustType(t *parser.TypeRef) string {
 	if t.Generic != nil {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			return fmt.Sprintf("Vec<%s>", rustType(t.Generic.Args[0]))
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			k := rustType(t.Generic.Args[0])
+			v := rustType(t.Generic.Args[1])
+			return fmt.Sprintf("std::collections::HashMap<%s, %s>", k, v)
 		}
 	}
 	if t.Fun != nil {
