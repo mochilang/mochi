@@ -28,6 +28,7 @@ type Compiler struct {
 	needIndexStr  bool
 	needSlice     bool
 	needSliceStr  bool
+	needIndexList bool
 	needGenText   bool
 	needGenEmbed  bool
 	needGenStruct bool
@@ -247,6 +248,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("if (idx < 0) idx += chars.length")
 		c.writeln("if (idx < 0 || idx >= chars.length) throw new RuntimeException(\"index out of range\")")
 		c.writeln("chars(idx).toString")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needIndexList {
+		c.writeln("def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {")
+		c.indent++
+		c.writeln("var idx = i")
+		c.writeln("val n = arr.length")
+		c.writeln("if (idx < 0) idx += n")
+		c.writeln("if (idx < 0 || idx >= n) throw new RuntimeException(\"index out of range\")")
+		c.writeln("arr(idx)")
 		c.indent--
 		c.writeln("}")
 	}
@@ -861,6 +873,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if isStringPrimary(p.Target, c.env) {
 					c.needIndexStr = true
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else if isListPrimary(p.Target, c.env) {
+					c.needIndexList = true
+					expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
 				} else {
 					expr = fmt.Sprintf("%s(%s)", expr, idx)
 				}
