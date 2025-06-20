@@ -279,5 +279,5 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - foreign function interface (`extern` imports)
 - error handling with `try`/`catch`
 - logic programming constructs (`fact`, `rule`)
-- negative indexing and slicing for strings and lists
+- generative AI integration (`generate` blocks)
 
