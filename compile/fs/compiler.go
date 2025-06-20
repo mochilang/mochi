@@ -333,6 +333,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return fmt.Errorf("continue not in loop")
 		}
 		c.writeln(fmt.Sprintf("raise (%s)", c.loops[len(c.loops)-1].cont))
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	default:
 		// ignore
 	}
@@ -1065,6 +1067,15 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save %s %s %s", src, path, opts), nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("if not (%s) then failwith \"expect failed\"", expr))
+	return nil
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
