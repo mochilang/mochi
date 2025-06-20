@@ -18,24 +18,26 @@ import (
 
 // Compiler generates COBOL source code for a restricted set of Mochi programs.
 type Compiler struct {
-	buf        bytes.Buffer
-	indent     int
-	env        *types.Env
-	decls      []string
-	tmpCounter int
-	funcs      map[string]int
-	funcDecls  []string
-	currentFun string
-	params     map[string]string
+        buf        bytes.Buffer
+        indent     int
+        env        *types.Env
+        decls      []string
+        tmpCounter int
+        funcs      map[string]int
+        funcDecls  []string
+        currentFun string
+        params     map[string]string
+        listLens   map[string]int
 }
 
 // New creates a new COBOL compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{
-		env:    env,
-		funcs:  map[string]int{},
-		params: map[string]string{},
-	}
+        return &Compiler{
+                env:    env,
+                funcs:  map[string]int{},
+                params: map[string]string{},
+                listLens: map[string]int{},
+        }
 }
 
 func (c *Compiler) writeIndent() {
@@ -219,33 +221,59 @@ func (c *Compiler) compileNode(n *ast.Node) {
 		// Nested function definitions are treated like top-level ones.
 		c.compileFun(n)
 
-	case "let":
-		orig := n.Value.(string)
-		name := strings.ToUpper(orig)
-		if len(n.Children) == 1 && n.Children[0].Kind == "call" {
-			switch n.Children[0].Value {
-			case "twoSum":
-				c.compileTwoSumCall(name, n.Children[0])
-				return
-			case "addTwoNumbers":
-				c.compileAddTwoNumbersCall(name, n.Children[0])
-				return
-			}
-		}
-		c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
-		if len(n.Children) == 1 {
-			expr := c.expr(n.Children[0])
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
-		}
+       case "let":
+               orig := n.Value.(string)
+               name := strings.ToUpper(orig)
+               if len(n.Children) == 1 && n.Children[0].Kind == "call" {
+                       switch n.Children[0].Value {
+                       case "twoSum":
+                               c.compileTwoSumCall(name, n.Children[0])
+                               return
+                       case "addTwoNumbers":
+                               c.compileAddTwoNumbersCall(name, n.Children[0])
+                               return
+                       }
+               }
+               if len(n.Children) == 1 && n.Children[0].Kind == "list" {
+                       list := n.Children[0]
+                       elemPic := "PIC 9."
+                       if len(list.Children) > 0 {
+                               elemPic = c.picForExpr(list.Children[0])
+                       }
+                       c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, len(list.Children), elemPic))
+                       c.listLens[orig] = len(list.Children)
+                       for i, ch := range list.Children {
+                               c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), name, i+1))
+                       }
+                       return
+               }
+               c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
+               if len(n.Children) == 1 {
+                       expr := c.expr(n.Children[0])
+                       c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+               }
 
-	case "var":
-		orig := n.Value.(string)
-		name := strings.ToUpper(orig)
-		c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
-		if len(n.Children) == 1 {
-			expr := c.expr(n.Children[0])
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
-		}
+       case "var":
+               orig := n.Value.(string)
+               name := strings.ToUpper(orig)
+               if len(n.Children) == 1 && n.Children[0].Kind == "list" {
+                       list := n.Children[0]
+                       elemPic := "PIC 9."
+                       if len(list.Children) > 0 {
+                               elemPic = c.picForExpr(list.Children[0])
+                       }
+                       c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, len(list.Children), elemPic))
+                       c.listLens[orig] = len(list.Children)
+                       for i, ch := range list.Children {
+                               c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), name, i+1))
+                       }
+                       return
+               }
+               c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
+               if len(n.Children) == 1 {
+                       expr := c.expr(n.Children[0])
+                       c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+               }
 
 	case "assign":
 		name := strings.ToUpper(n.Value.(string))
@@ -385,10 +413,10 @@ func (c *Compiler) compileFor(n *ast.Node) {
 			}
 			c.indent--
 			c.writeln("    END-PERFORM")
-		case "selector":
-			if c.env != nil {
-				if t, err := c.env.GetVar(src.Value.(string)); err == nil {
-					if _, ok := t.(types.StringType); ok {
+               case "selector":
+                       if c.env != nil {
+                               if t, err := c.env.GetVar(src.Value.(string)); err == nil {
+                                       if _, ok := t.(types.StringType); ok {
 						name := strings.ToUpper(src.Value.(string))
 						lenTmp := c.newTemp()
 						c.declare("01 IDX PIC 9.")
@@ -403,12 +431,32 @@ func (c *Compiler) compileFor(n *ast.Node) {
 							c.compileNode(st)
 						}
 						c.indent--
-						c.writeln("    END-PERFORM")
-						return
-					}
-				}
-			}
-			c.writeln("    *> unsupported for-in loop")
+                                               c.writeln("    END-PERFORM")
+                                               return
+                                       }
+                                       if lt, ok := t.(types.ListType); ok {
+                                               name := strings.ToUpper(src.Value.(string))
+                                               length, ok := c.listLens[src.Value.(string)]
+                                               if !ok {
+                                                       c.writeln("    *> unsupported for-in loop")
+                                                       return
+                                               }
+                                               c.declare("01 IDX PIC 9.")
+                                               c.declare(fmt.Sprintf("01 %s %s", varName, c.picForType(lt.Elem)))
+                                               c.writeln("    MOVE 0 TO IDX")
+                                               c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", length))
+                                               c.indent++
+                                               c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", name, varName))
+                                               for _, st := range n.Children[1].Children {
+                                                       c.compileNode(st)
+                                               }
+                                               c.indent--
+                                               c.writeln("    END-PERFORM")
+                                               return
+                                       }
+                               }
+                       }
+                       c.writeln("    *> unsupported for-in loop")
 		default:
 			c.writeln("    *> unsupported for-in loop")
 		}
