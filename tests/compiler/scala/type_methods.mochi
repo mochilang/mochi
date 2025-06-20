@@ -1,0 +1,16 @@
+type Circle {
+  radius: float
+
+  fun area(): float {
+    return 3.14 * radius * radius
+  }
+
+  fun scale(f: float): Circle {
+    return Circle { radius: radius * f }
+  }
+}
+
+let c = Circle { radius: 2.0 }
+print(c.area())
+let d = c.scale(2.0)
+print(d.radius)

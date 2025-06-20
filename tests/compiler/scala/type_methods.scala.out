@@ -1,0 +1,18 @@
+case class Circle(radius: Double) {
+	def area(): Double = {
+		return ((3.14 * radius) * radius)
+	}
+	
+	def scale(f: Double): Any = {
+		return Circle(radius = (radius * f))
+	}
+}
+
+object Main {
+	def main(args: Array[String]): Unit = {
+		val c = Circle(radius = 2)
+		println(c.area())
+		val d = c.scale(2)
+		println(d.radius)
+	}
+}

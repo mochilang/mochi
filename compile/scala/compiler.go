@@ -807,13 +807,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "scala.collection.mutable.Map(" + strings.Join(items, ", ") + ")", nil
 	case p.Selector != nil:
-		if len(p.Selector.Tail) == 0 {
-			name := p.Selector.Root
-			if alias, ok := c.paramAlias[name]; ok {
-				return alias, nil
-			}
-			return sanitizeName(name), nil
+		name := p.Selector.Root
+		if alias, ok := c.paramAlias[name]; ok {
+			name = alias
+		} else {
+			name = sanitizeName(name)
 		}
+		if len(p.Selector.Tail) == 0 {
+			return name, nil
+		}
+		parts := make([]string, len(p.Selector.Tail))
+		for i, p := range p.Selector.Tail {
+			parts[i] = sanitizeName(p)
+		}
+		return name + "." + strings.Join(parts, "."), nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1249,13 +1256,41 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	fields := []string{}
+	methods := []*parser.FunStmt{}
 	for _, m := range t.Members {
 		if m.Field != nil {
 			typ := scalaType(c.resolveTypeRef(m.Field.Type))
 			fields = append(fields, fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typ))
+		} else if m.Method != nil {
+			methods = append(methods, m.Method)
 		}
 	}
-	c.writeln(fmt.Sprintf("case class %s(%s)", name, strings.Join(fields, ", ")))
+	if len(methods) == 0 {
+		c.writeln(fmt.Sprintf("case class %s(%s)", name, strings.Join(fields, ", ")))
+		return nil
+	}
+	c.writeln(fmt.Sprintf("case class %s(%s) {", name, strings.Join(fields, ", ")))
+	c.indent++
+	origEnv := c.env
+	env := types.NewEnv(c.env)
+	for _, m := range t.Members {
+		if m.Field != nil {
+			env.SetVar(m.Field.Name, c.resolveTypeRef(m.Field.Type), true)
+		}
+	}
+	c.env = env
+	for i, fn := range methods {
+		if err := c.compileFun(fn); err != nil {
+			c.env = origEnv
+			return err
+		}
+		if i < len(methods)-1 {
+			c.writeln("")
+		}
+	}
+	c.env = origEnv
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
