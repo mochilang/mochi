@@ -326,11 +326,11 @@ The tests automatically skip when `kotlinc` is unavailable.
 The Kotlin backend still lacks several Mochi features that other compilers
 support:
 
-- Advanced dataset queries such as joins and grouping
+- Advanced dataset queries such as joins, grouping and union operations
 - Streams, agents and intent handlers
-- Model declarations using the `model` keyword
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Package declarations and the foreign function interface
-- External helpers like `_genText`, `_fetch` and concurrency primitives
+- `generate` and `fetch` expressions for LLM and HTTP integration
+- External helpers like `_genText` and concurrency primitives such as `spawn` and channels
 
 
