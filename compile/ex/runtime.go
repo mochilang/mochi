@@ -10,6 +10,10 @@ const (
 	helperGroup = "defmodule _Group do\n  defstruct key: nil, Items: []\nend\n"
 
 	helperGroupBy = "defp _group_by(src, keyfn) do\n  {groups, order} = Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->\n    key = keyfn.(it)\n    ks = to_string(key)\n    {groups, order} = if Map.has_key?(groups, ks) do\n      {groups, order}\n    else\n      {Map.put(groups, ks, %_Group{key: key}), order ++ [ks]}\n    end\n    groups = Map.update!(groups, ks, fn g -> %{g | Items: g.Items ++ [it]} end)\n    {groups, order}\n  end)\n  Enum.map(order, fn k -> groups[k] end)\nend\n"
+
+	helperLoad = "defp _load(path, _opts) do\n  bin = case path do\n    nil -> IO.binread(:stdio, :eof)\n    \"\" -> IO.binread(:stdio, :eof)\n    \"-\" -> IO.binread(:stdio, :eof)\n    _ -> File.read!(path)\n  end\n  :erlang.binary_to_term(bin)\nend\n"
+
+	helperSave = "defp _save(data, path, _opts) do\n  bin = :erlang.term_to_binary(data)\n  case path do\n    nil -> IO.binwrite(:stdio, bin)\n    \"\" -> IO.binwrite(:stdio, bin)\n    \"-\" -> IO.binwrite(:stdio, bin)\n    _ -> File.write!(path, bin)\n  end\nend\n"
 )
 
 var helperMap = map[string]string{
@@ -18,4 +22,6 @@ var helperMap = map[string]string{
 	"_avg":      helperAvg,
 	"_group":    helperGroup,
 	"_group_by": helperGroupBy,
+	"_load":     helperLoad,
+	"_save":     helperSave,
 }
