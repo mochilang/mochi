@@ -749,6 +749,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "(list " + strings.Join(elems, " ") + ")", nil
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
@@ -806,6 +808,25 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		return fmt.Sprintf("(%s %s %s)", recv, call.Func, strings.Join(args, " ")), nil
 	}
 	return fmt.Sprintf("(%s %s)", sanitizeName(call.Func), strings.Join(args, " ")), nil
+}
+
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	if len(m.Items) == 0 {
+		return "'()", nil
+	}
+	items := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, err := c.compileExpr(it.Key)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("(cons %s %s)", k, v)
+	}
+	return "(list " + strings.Join(items, " ") + ")", nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
