@@ -12,18 +12,20 @@ import (
 
 // Compiler translates a Mochi AST into minimal C++ source code.
 type Compiler struct {
-	buf     bytes.Buffer
-	indent  int
-	env     *types.Env
-	helpers map[string]bool
-	vars    []map[string]string
+	buf      bytes.Buffer
+	indent   int
+	env      *types.Env
+	helpers  map[string]bool
+	vars     []map[string]string
+	tmpCount int
 }
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:     env,
-		helpers: map[string]bool{},
-		vars:    []map[string]string{{}},
+		env:      env,
+		helpers:  map[string]bool{},
+		vars:     []map[string]string{{}},
+		tmpCount: 0,
 	}
 }
 
@@ -542,6 +544,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return fmt.Sprintf("vector<%s>{%s}", elemType, strings.Join(elems, ", "))
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Query != nil:
@@ -627,6 +631,31 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 		items[i] = fmt.Sprintf("{%s, %s}", k, v)
 	}
 	return fmt.Sprintf("unordered_map<%s, %s>{%s}", keyType, valType, strings.Join(items, ", "))
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
+	target := c.compileExpr(m.Target)
+	tmp := fmt.Sprintf("_t%d", c.tmpCount)
+	c.tmpCount++
+	var b strings.Builder
+	b.WriteString("([&]() { auto " + tmp + " = " + target + "; ")
+	var def string
+	for _, cs := range m.Cases {
+		res := c.compileExpr(cs.Result)
+		if isUnderscoreExpr(cs.Pattern) {
+			def = res
+			continue
+		}
+		pat := c.compileExpr(cs.Pattern)
+		b.WriteString(fmt.Sprintf("if (%s == %s) return %s; ", tmp, pat, res))
+	}
+	if def != "" {
+		b.WriteString("return " + def + ";")
+	} else {
+		b.WriteString("return {};")
+	}
+	b.WriteString(" })()")
+	return b.String()
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
