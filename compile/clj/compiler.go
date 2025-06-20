@@ -723,6 +723,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return expr, nil
+	case p.Match != nil:
+		expr, err := c.compileMatch(p.Match)
+		if err != nil {
+			return "", err
+		}
+		return expr, nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			return sanitizeName(p.Selector.Root), nil
@@ -772,6 +778,42 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	v := sanitizeName(q.Var)
 	return fmt.Sprintf("(vec (map (fn [%s] %s) (sort-by (fn [%s] %s) %s)))", v, selExpr, v, sortExpr, src), nil
+}
+
+func (c *Compiler) compileMatch(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(let [t " + target + "]\n")
+	b.WriteString("  (cond\n")
+	hasDefault := false
+	for _, cs := range m.Cases {
+		if isUnderscoreExpr(cs.Pattern) {
+			res, err := c.compileExpr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString("    :else " + res + "\n")
+			hasDefault = true
+			continue
+		}
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString("    (= t " + pat + ") " + res + "\n")
+	}
+	if !hasDefault {
+		b.WriteString("    :else nil\n")
+	}
+	b.WriteString("  ))")
+	return b.String(), nil
 }
 
 func (c *Compiler) isStringExpr(expr string) bool {
