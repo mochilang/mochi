@@ -279,5 +279,5 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - foreign function interface (`extern` imports)
 - error handling with `try`/`catch`
 - LLM helpers such as `_genText`, `_genEmbed` and `_genStruct`
-- methods defined inside `type` blocks
+- logic programming constructs (`fact`, `rule`)
 
