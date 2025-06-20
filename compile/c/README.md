@@ -75,10 +75,15 @@ features include:
 - union type declarations and generics
 - logic programming constructs (`fact`, `rule`, `query`)
 - reflection or macro facilities
+- extern object declarations and package exports
+- set literals and set operations
 
 The backend now supports membership checks and `union`/`union all` operations
 for integer and string lists, but map membership and other advanced features
 remain unimplemented.
+
+Test blocks and `expect` statements are now compiled to C functions and
+executed from `main`.
 
 Additional language features like `try`/`catch` error handling and the planned
 `async` keyword are also unimplemented. Problems relying on these features
