@@ -12,14 +12,17 @@ import (
 // Compiler emits very small Fortran 90 code for a limited subset of Mochi.
 // It only supports constructs needed for the leetcode two-sum example.
 type Compiler struct {
-	buf            bytes.Buffer
-	indent         int
-	stringVars     map[string]bool
-	listVars       map[string]bool
-	floatVars      map[string]bool
-	funReturnStr   map[string]bool
-	funReturnList  map[string]bool
-	funReturnFloat map[string]bool
+	buf               bytes.Buffer
+	indent            int
+	stringVars        map[string]bool
+	listVars          map[string]bool
+	floatVars         map[string]bool
+	funReturnStr      map[string]bool
+	funReturnList     map[string]bool
+	funReturnFloat    map[string]bool
+	needsUnionInt     bool
+	needsExceptInt    bool
+	needsIntersectInt bool
 }
 
 func New() *Compiler {
@@ -322,6 +325,9 @@ func isFloatPrimary(p *parser.Primary, floatVars map[string]bool, funFloat map[s
 // Compile converts prog into simple Fortran source.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.needsUnionInt = false
+	c.needsExceptInt = false
+	c.needsIntersectInt = false
 	var funs []*parser.FunStmt
 	var tests []*parser.TestBlock
 	var mainStmts []*parser.Statement
@@ -408,7 +414,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(fmt.Sprintf("call test_%s()", sanitizeName(t.Name)))
 	}
 	c.indent--
-	if len(funs)+len(tests) > 0 {
+	needHelpers := c.needsUnionInt || c.needsExceptInt || c.needsIntersectInt
+	if len(funs)+len(tests) > 0 || needHelpers {
 		c.writeln("contains")
 		c.indent++
 		for _, f := range funs {
@@ -422,6 +429,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		}
+		if needHelpers {
+			c.writeHelpers()
 		}
 		c.indent--
 	}
@@ -996,7 +1006,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return 2
 		case "==", "!=", "<", "<=", ">", ">=", "in":
 			return 3
-		case "+", "-":
+		case "+", "-", "union", "except", "intersect":
 			return 4
 		case "*", "/", "%":
 			return 5
@@ -1007,7 +1017,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	vals := []string{}
 	vStr := []bool{}
 	vList := []bool{}
-	ops := []string{}
+	ops := []*parser.BinaryOp{}
 
 	first, err := c.compileUnary(b.Left)
 	if err != nil {
@@ -1036,7 +1046,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		vStr = vStr[:len(vStr)-2]
 		vList = vList[:len(vList)-2]
 		var expr string
-		switch op {
+		switch op.Op {
 		case "+":
 			if lList || rList {
 				expr = fmt.Sprintf("(/ %s, %s /)", left, right)
@@ -1052,9 +1062,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				vals = append(vals, expr)
 				return nil
 			}
-			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			expr = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
 		case "-", "*", "/", "==", "<", "<=", ">", ">=":
-			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			expr = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
 		case "!=":
 			expr = fmt.Sprintf("(%s /= %s)", left, right)
 		case "in":
@@ -1063,7 +1073,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			} else if rStr {
 				expr = fmt.Sprintf("index(%s, %s) > 0", right, left)
 			} else {
-				return fmt.Errorf("unsupported op %s", op)
+				return fmt.Errorf("unsupported op %s", op.Op)
 			}
 		case "%":
 			expr = fmt.Sprintf("mod(%s, %s)", left, right)
@@ -1071,8 +1081,43 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			expr = fmt.Sprintf("(%s .and. %s)", left, right)
 		case "||":
 			expr = fmt.Sprintf("(%s .or. %s)", left, right)
+		case "union":
+			if op.All {
+				expr = fmt.Sprintf("(/ %s, %s /)", left, right)
+			} else if lList && rList {
+				c.needsUnionInt = true
+				expr = fmt.Sprintf("union_int(%s, %s)", left, right)
+			} else {
+				return fmt.Errorf("unsupported op %s", op.Op)
+			}
+			vList = append(vList, true)
+			vStr = append(vStr, false)
+			vals = append(vals, expr)
+			return nil
+		case "except":
+			if lList && rList {
+				c.needsExceptInt = true
+				expr = fmt.Sprintf("except_int(%s, %s)", left, right)
+			} else {
+				return fmt.Errorf("unsupported op %s", op.Op)
+			}
+			vList = append(vList, true)
+			vStr = append(vStr, false)
+			vals = append(vals, expr)
+			return nil
+		case "intersect":
+			if lList && rList {
+				c.needsIntersectInt = true
+				expr = fmt.Sprintf("intersect_int(%s, %s)", left, right)
+			} else {
+				return fmt.Errorf("unsupported op %s", op.Op)
+			}
+			vList = append(vList, true)
+			vStr = append(vStr, false)
+			vals = append(vals, expr)
+			return nil
 		default:
-			return fmt.Errorf("unsupported op %s", op)
+			return fmt.Errorf("unsupported op %s", op.Op)
 		}
 		vals = append(vals, expr)
 		vStr = append(vStr, false)
@@ -1088,13 +1133,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		exprRight := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}
 		vStr = append(vStr, isStringExpr(exprRight, c.stringVars, c.funReturnStr))
 		vList = append(vList, isListExpr(exprRight, c.listVars, c.funReturnList))
-		for len(ops) > 0 && prec(ops[len(ops)-1]) >= prec(op.Op) {
+		for len(ops) > 0 && prec(ops[len(ops)-1].Op) >= prec(op.Op) {
 			if err := emit(); err != nil {
 				return "", err
 			}
 		}
 		vals = append(vals, right)
-		ops = append(ops, op.Op)
+		ops = append(ops, op)
 	}
 	for len(ops) > 0 {
 		if err := emit(); err != nil {
@@ -1284,4 +1329,101 @@ func (c *Compiler) lengthFunc(name string) string {
 		return fmt.Sprintf("len(%s)", name)
 	}
 	return fmt.Sprintf("size(%s)", name)
+}
+
+func (c *Compiler) writeHelpers() {
+	if c.needsUnionInt {
+		c.writeln("")
+		c.writeln("function union_int(a, b) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("integer(kind=8), intent(in) :: a(:)")
+		c.writeln("integer(kind=8), intent(in) :: b(:)")
+		c.writeln("integer(kind=8), allocatable :: r(:)")
+		c.writeln("integer(kind=8), allocatable :: tmp(:)")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer(kind=8) :: n")
+		c.writeln("allocate(tmp(size(a)+size(b)))")
+		c.writeln("n = 0")
+		c.writeln("do i = 1, size(a)")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = a(i)")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("do i = 1, size(b)")
+		c.indent++
+		c.writeln("if (.not. any(tmp(:n) == b(i))) then")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = b(i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("allocate(r(n))")
+		c.writeln("r = tmp(:n)")
+		c.indent--
+		c.writeln("end function union_int")
+	}
+	if c.needsExceptInt {
+		c.writeln("")
+		c.writeln("function except_int(a, b) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("integer(kind=8), intent(in) :: a(:)")
+		c.writeln("integer(kind=8), intent(in) :: b(:)")
+		c.writeln("integer(kind=8), allocatable :: r(:)")
+		c.writeln("integer(kind=8), allocatable :: tmp(:)")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer(kind=8) :: n")
+		c.writeln("allocate(tmp(size(a)))")
+		c.writeln("n = 0")
+		c.writeln("do i = 1, size(a)")
+		c.indent++
+		c.writeln("if (.not. any(b == a(i))) then")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = a(i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("allocate(r(n))")
+		c.writeln("r = tmp(:n)")
+		c.indent--
+		c.writeln("end function except_int")
+	}
+	if c.needsIntersectInt {
+		c.writeln("")
+		c.writeln("function intersect_int(a, b) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("integer(kind=8), intent(in) :: a(:)")
+		c.writeln("integer(kind=8), intent(in) :: b(:)")
+		c.writeln("integer(kind=8), allocatable :: r(:)")
+		c.writeln("integer(kind=8), allocatable :: tmp(:)")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer(kind=8) :: n")
+		c.writeln("allocate(tmp(min(size(a),size(b))))")
+		c.writeln("n = 0")
+		c.writeln("do i = 1, size(a)")
+		c.indent++
+		c.writeln("if (any(b == a(i))) then")
+		c.indent++
+		c.writeln("if (.not. any(tmp(:n) == a(i))) then")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = a(i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("allocate(r(n))")
+		c.writeln("r = tmp(:n)")
+		c.indent--
+		c.writeln("end function intersect_int")
+	}
 }
