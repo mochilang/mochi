@@ -38,7 +38,10 @@ func (c *Compiler) setVar(name, typ string) {
 func (c *Compiler) getVar(name string) (string, bool) {
 	for i := len(c.vars) - 1; i >= 0; i-- {
 		if t, ok := c.vars[i][name]; ok {
-			return t, true
+			if t != "auto" {
+				return t, true
+			}
+			break
 		}
 	}
 	if typ, err := c.env.GetVar(name); err == nil {
@@ -199,17 +202,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.setVar(s.Let.Name, typ)
 	case s.Var != nil:
 		expr := c.compileExpr(s.Var.Value)
-		if s.Var.Type != nil && s.Var.Value != nil {
-			if lit := getEmptyListLiteral(s.Var.Value); lit != nil {
-				if s.Var.Type.Generic != nil && len(s.Var.Type.Generic.Args) == 1 {
-					elem := c.cppType(s.Var.Type.Generic.Args[0])
-					expr = fmt.Sprintf("vector<%s>{}", elem)
+		if lit := getEmptyListLiteral(s.Var.Value); lit != nil {
+			var elem string
+			if s.Var.Type != nil && s.Var.Type.Generic != nil && len(s.Var.Type.Generic.Args) == 1 {
+				elem = c.cppType(s.Var.Type.Generic.Args[0])
+			} else if typ, err := c.env.GetVar(s.Var.Name); err == nil {
+				if lt, ok := typ.(types.ListType); ok {
+					elem = c.cppTypeRef(lt.Elem)
 				}
+			}
+			if elem != "" {
+				expr = fmt.Sprintf("vector<%s>{}", elem)
 			}
 		}
 		typ := "auto"
 		if s.Var.Type != nil {
 			typ = c.cppType(s.Var.Type)
+		} else if t, err := c.env.GetVar(s.Var.Name); err == nil {
+			typ = c.cppTypeRef(t)
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Var.Name))

@@ -188,3 +188,11 @@ from `compiler_test.go`.
 ## Status
 
 This backend covers only a subset of Mochi's features but is useful as an example for implementing other targets.
+
+### Unsupported features
+
+Some LeetCode solutions use language constructs that the C++ backend can't yet translate. Unsupported features include:
+
+* Map literals and indexing operations
+* Dataset query syntax like `from ... sort by ...`
+* Inferring element types for empty list literals
