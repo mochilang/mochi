@@ -47,6 +47,7 @@ type Compiler struct {
 	indent                   int
 	tmp                      int
 	env                      *types.Env
+	lambdas                  []string
 	needsStr                 bool
 	needsInput               bool
 	needsIndexString         bool
@@ -81,7 +82,7 @@ type Compiler struct {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, lambdas: []string{}}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -144,6 +145,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	oldBuf := c.buf
 	c.buf = bytes.Buffer{}
 	c.externs = nil
+	c.lambdas = nil
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -200,6 +202,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	body := c.buf.String()
+	if len(c.lambdas) > 0 {
+		body = strings.Join(c.lambdas, "\n") + "\n" + body
+	}
 	c.buf = oldBuf
 
 	c.writeln("#include <stdio.h>")
@@ -1123,6 +1128,31 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) string {
 	return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal)
 }
 
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
+	name := fmt.Sprintf("_lambda%d", len(c.lambdas))
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = 0
+	var body []*parser.Statement
+	if fn.ExprBody != nil {
+		body = []*parser.Statement{{Return: &parser.ReturnStmt{Value: fn.ExprBody}}}
+	} else {
+		body = fn.BlockBody
+	}
+	fs := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: body}
+	if err := c.compileFun(fs); err != nil {
+		c.buf = oldBuf
+		c.indent = oldIndent
+		return "0"
+	}
+	code := c.buf.String()
+	c.lambdas = append(c.lambdas, code)
+	c.buf = oldBuf
+	c.indent = oldIndent
+	return name
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeln("static void " + name + "() {")
@@ -1585,6 +1615,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", "))
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Group != nil:
 		return fmt.Sprintf("(%s)", c.compileExpr(p.Group))
 	default:
