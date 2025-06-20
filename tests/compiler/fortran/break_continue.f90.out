@@ -1,11 +1,11 @@
 program main
   implicit none
-  integer :: i
-  do i = 0, 10 - 1
-    if ((mod(i, 2) == 0)) then
+  integer(kind=8) :: i
+  do i = 0_8, 10_8 - 1
+    if ((mod(i, 2_8) == 0_8)) then
       cycle
     end if
-    if ((i > 5)) then
+    if ((i > 5_8)) then
       exit
     end if
     print *, i

@@ -2,5 +2,5 @@ program main
   implicit none
   character(:), allocatable :: text
   text = 'hello'
-  print *, text(modulo(1, len(text)) + 1:modulo(1, len(text)) + 1)
+  print *, text(modulo(1_8, len(text)) + 1:modulo(1_8, len(text)) + 1)
 end program main

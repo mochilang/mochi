@@ -3,6 +3,7 @@ package ftncode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -527,7 +528,20 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.indent++
 	c.writeln("implicit none")
 	if fn.Return != nil && fn.Return.Generic != nil && fn.Return.Generic.Name == "list" {
-		c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", resVar))
+		if len(fn.Return.Generic.Args) == 1 && fn.Return.Generic.Args[0].Simple != nil {
+			switch *fn.Return.Generic.Args[0].Simple {
+			case "string":
+				c.writeln(fmt.Sprintf("character(:), allocatable :: %s(:)", resVar))
+				c.stringVars[resVar] = true
+			case "float":
+				c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", resVar))
+				c.floatVars[resVar] = true
+			default:
+				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", resVar))
+			}
+		} else {
+			c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", resVar))
+		}
 	} else if fn.Return != nil && fn.Return.Simple != nil && *fn.Return.Simple == "float" {
 		c.writeln(fmt.Sprintf("real :: %s", resVar))
 	} else if fn.Return != nil && fn.Return.Simple != nil && *fn.Return.Simple == "string" {
@@ -539,7 +553,19 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	for _, p := range fn.Params {
 		name := sanitizeName(p.Name)
 		if p.Type != nil && p.Type.Generic != nil && p.Type.Generic.Name == "list" {
-			c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s(:)", name))
+			if len(p.Type.Generic.Args) == 1 && p.Type.Generic.Args[0].Simple != nil {
+				switch *p.Type.Generic.Args[0].Simple {
+				case "string":
+					c.writeln(fmt.Sprintf("character(len=*), intent(in) :: %s(:)", name))
+					c.stringVars[name] = true
+				case "float":
+					c.writeln(fmt.Sprintf("real, intent(in) :: %s(:)", name))
+				default:
+					c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s(:)", name))
+				}
+			} else {
+				c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s(:)", name))
+			}
 		} else if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
 			c.writeln(fmt.Sprintf("character(len=*), intent(in) :: %s", name))
 			c.stringVars[name] = true
@@ -588,7 +614,12 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			vars[name] = true
 		}
 	}
+	names := make([]string, 0, len(vars))
 	for name := range vars {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
 		if name == resVar || listVars[name] {
 			continue
 		}
@@ -840,7 +871,12 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 		allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		vars[name] = true
 	}
+	names := make([]string, 0, len(vars))
 	for name := range vars {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
 		if listVars[name] {
 			continue
 		}

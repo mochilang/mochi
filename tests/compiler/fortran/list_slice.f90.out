@@ -1,7 +1,7 @@
 program main
   implicit none
-  integer, allocatable :: xs(:)
+  integer(kind=8), allocatable :: xs(:)
   allocate(xs(0))
-  xs = (/1, 2, 3, 4/)
-  print *, xs(modulo(1, size(xs)) + 1:modulo(3, size(xs)))
+  xs = (/1_8, 2_8, 3_8, 4_8/)
+  print *, xs(modulo(1_8, size(xs)) + 1:modulo(3_8, size(xs)))
 end program main

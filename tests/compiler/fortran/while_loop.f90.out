@@ -1,9 +1,9 @@
 program main
   implicit none
-  integer :: i
-  i = 0
-  do while ((i < 3))
+  integer(kind=8) :: i
+  i = 0_8
+  do while ((i < 3_8))
     print *, i
-    i = (i + 1)
+    i = (i + 1_8)
   end do
 end program main
