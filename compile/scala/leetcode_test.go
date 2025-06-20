@@ -3,6 +3,7 @@
 package scalacode_test
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -67,103 +68,22 @@ func compileAndRunLeetCode(t *testing.T, id string) string {
 	return strings.ReplaceAll(string(out), "\r\n", "\n")
 }
 
-func TestLeetCode1(t *testing.T) {
+func TestLeetCodeSuite(t *testing.T) {
 	if err := scalacode.EnsureScala(); err != nil {
 		t.Skipf("scala not installed: %v", err)
 	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "1"))
-	if got != "0\n1" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode2(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "2"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode3(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "3"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode4(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "4"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode5(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "5"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode6(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "6"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode7(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "7"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode8(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "8"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode9(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "9"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
-	}
-}
-
-func TestLeetCode10(t *testing.T) {
-	if err := scalacode.EnsureScala(); err != nil {
-		t.Skipf("scala not installed: %v", err)
-	}
-	got := strings.TrimSpace(compileAndRunLeetCode(t, "10"))
-	if got != "" {
-		t.Fatalf("unexpected output: %q", got)
+	for i := 1; i <= 9; i++ {
+		id := fmt.Sprint(i)
+		t.Run(id, func(t *testing.T) {
+			got := strings.TrimSpace(compileAndRunLeetCode(t, id))
+			if i == 1 {
+				if got != "0\n1" {
+					t.Fatalf("unexpected output: %q", got)
+				}
+			} else if got != "" {
+				t.Fatalf("unexpected output: %q", got)
+			}
+		})
 	}
 }
 

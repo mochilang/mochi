@@ -20,6 +20,10 @@ type Compiler struct {
 
 	tempVarCount int
 	loopStack    []loopLabels
+
+	needCompare bool
+
+	paramAlias map[string]string
 }
 
 type loopLabels struct {
@@ -115,7 +119,9 @@ func (c *Compiler) compileContinue() {
 }
 
 // New creates a new Scala compiler instance.
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env, paramAlias: make(map[string]string)}
+}
 
 // Compile generates Scala code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -149,6 +155,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
+	if c.needCompare {
+		c.writeln("")
+		c.writeln("def _compare(a: Any, b: Any): Int = (a, b) match {")
+		c.indent++
+		c.writeln("case (x: Int, y: Int) => x.compare(y)")
+		c.writeln("case (x: Double, y: Double) => java.lang.Double.compare(x, y)")
+		c.writeln("case (x: String, y: String) => x.compareTo(y)")
+		c.writeln("case _ => a.toString.compareTo(b.toString)")
+		c.indent--
+		c.writeln("}")
+		c.writeln("implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: Any, y: Any): Int = _compare(x, y) }")
+	}
 	c.indent--
 	c.writeln("}")
 	return c.buf.Bytes(), nil
@@ -161,6 +179,12 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	} else {
 		c.retType = types.VoidType{}
 	}
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	for _, p := range fn.Params {
+		child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+	}
+	c.env = child
 	c.writeIndent()
 	c.buf.WriteString("def " + sanitizeName(fn.Name) + "(")
 	for i, p := range fn.Params {
@@ -175,16 +199,24 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.buf.WriteString(" = {\n")
 	c.indent++
+	origAlias := c.paramAlias
+	c.paramAlias = make(map[string]string)
 	for _, p := range fn.Params {
 		if paramMutated(fn.Body, p.Name) {
-			c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(p.Name), sanitizeName(p.Name)))
+			alias := sanitizeName(p.Name) + "_var"
+			c.paramAlias[p.Name] = alias
+			typ := scalaType(c.resolveTypeRef(p.Type))
+			c.writeln(fmt.Sprintf("var %s: %s = %s", alias, typ, sanitizeName(p.Name)))
 		}
 	}
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.paramAlias = origAlias
 			return err
 		}
 	}
+	c.paramAlias = origAlias
+	c.env = origEnv
 	c.indent--
 	c.writeln("}")
 	c.retType = origRet
@@ -275,35 +307,50 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 		value = " = " + v
 	}
+
 	typ := ""
+	if st.Type != nil {
+		typ = ": " + scalaType(c.resolveTypeRef(st.Type))
+	}
+
 	if st.Value != nil && emptyListExpr(st.Value) {
 		if typ == "" {
 			if lt, ok := c.retType.(types.ListType); ok {
 				typ = ": " + scalaType(lt)
 			} else {
-				typ = ": List[String]"
+				typ = ": scala.collection.mutable.ArrayBuffer[Any]"
 			}
 		}
-		value = " = List()"
+		value = " = scala.collection.mutable.ArrayBuffer()"
 	}
+
 	c.writeln(fmt.Sprintf("var %s%s%s", sanitizeName(st.Name), typ, value))
 	return nil
 }
 
 func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	lhs := sanitizeName(st.Name)
-	for _, idx := range st.Index {
-		ie, err := c.compileExpr(idx.Start)
+	if alias, ok := c.paramAlias[st.Name]; ok {
+		lhs = alias
+	}
+	if len(st.Index) == 0 {
+		rhs, err := c.compileExpr(st.Value)
 		if err != nil {
 			return err
 		}
-		lhs = fmt.Sprintf("%s(%s)", lhs, ie)
+		c.writeln(fmt.Sprintf("%s = %s", lhs, rhs))
+		return nil
+	}
+
+	idx, err := c.compileExpr(st.Index[0].Start)
+	if err != nil {
+		return err
 	}
 	rhs, err := c.compileExpr(st.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("%s = %s", lhs, rhs))
+	c.writeln(fmt.Sprintf("%s.update(%s, %s)", lhs, idx, rhs))
 	return nil
 }
 
@@ -649,7 +696,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
-		return "List(" + strings.Join(elems, ", ") + ")", nil
+		return "scala.collection.mutable.ArrayBuffer(" + strings.Join(elems, ", ") + ")", nil
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -667,7 +714,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "scala.collection.mutable.Map(" + strings.Join(items, ", ") + ")", nil
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
-			return sanitizeName(p.Selector.Root), nil
+			name := p.Selector.Root
+			if alias, ok := c.paramAlias[name]; ok {
+				return alias, nil
+			}
+			return sanitizeName(name), nil
 		}
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
@@ -681,6 +732,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
@@ -780,6 +833,93 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), body), nil
 }
 
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond, sortExpr string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.env = orig
+	res := c.newTemp("res")
+	var b strings.Builder
+	b.WriteString("(() => {\n")
+	if sortExpr != "" {
+		b.WriteString("\tval " + res + " = scala.collection.mutable.ArrayBuffer[(Any, Any)]()\n")
+	} else {
+		b.WriteString("\tval " + res + " = scala.collection.mutable.ArrayBuffer[Any]()\n")
+	}
+	indent := "\t"
+	b.WriteString(fmt.Sprintf(indent+"for (%s <- %s) {\n", sanitizeName(q.Var), src))
+	indent += "\t"
+	for i, f := range q.Froms {
+		b.WriteString(fmt.Sprintf(indent+"for (%s <- %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
+		indent += "\t"
+	}
+	if cond != "" {
+		b.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
+		indent += "\t"
+	}
+	if sortExpr != "" {
+		b.WriteString(fmt.Sprintf(indent+"%s.append((%s, %s))\n", res, sel, sortExpr))
+	} else {
+		b.WriteString(fmt.Sprintf(indent+"%s.append(%s)\n", res, sel))
+	}
+	if cond != "" {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	for i := len(q.Froms) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	indent = indent[:len(indent)-1]
+	b.WriteString(indent + "}\n")
+	if sortExpr != "" {
+		c.needCompare = true
+		b.WriteString(fmt.Sprintf("\tval _sorted = %s.sortBy(_._2)(_anyOrdering)\n", res))
+		b.WriteString("\t_sorted.map(_._1).toSeq\n")
+	} else {
+		b.WriteString(fmt.Sprintf("\t%s.toSeq\n", res))
+	}
+	b.WriteString("})()")
+	return b.String(), nil
+}
+
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	if t == nil {
 		return types.AnyType{}
@@ -829,7 +969,7 @@ func scalaType(t types.Type) string {
 	case types.StringType:
 		return "String"
 	case types.ListType:
-		return "List[" + scalaType(tt.Elem) + "]"
+		return "scala.collection.mutable.ArrayBuffer[" + scalaType(tt.Elem) + "]"
 	case types.MapType:
 		return "scala.collection.mutable.Map[" + scalaType(tt.Key) + ", " + scalaType(tt.Value) + "]"
 	case types.FuncType:
@@ -848,6 +988,16 @@ func scalaType(t types.Type) string {
 	default:
 		return "Any"
 	}
+}
+
+var scalaKeywords = map[string]struct{}{
+	"abstract": {}, "case": {}, "catch": {}, "class": {}, "def": {}, "do": {},
+	"else": {}, "extends": {}, "false": {}, "final": {}, "finally": {},
+	"for": {}, "if": {}, "implicit": {}, "import": {}, "lazy": {}, "match": {},
+	"new": {}, "null": {}, "object": {}, "override": {}, "package": {},
+	"private": {}, "protected": {}, "return": {}, "sealed": {}, "super": {},
+	"this": {}, "throw": {}, "trait": {}, "try": {}, "true": {}, "type": {},
+	"val": {}, "var": {}, "while": {}, "with": {}, "yield": {},
 }
 
 func (c *Compiler) writeln(s string) {
@@ -879,6 +1029,9 @@ func sanitizeName(name string) string {
 		return "_"
 	}
 	if !(s[0] >= 'a' && s[0] <= 'z' || s[0] >= 'A' && s[0] <= 'Z' || s[0] == '_') {
+		s = "_" + s
+	}
+	if _, ok := scalaKeywords[s]; ok {
 		s = "_" + s
 	}
 	return s
