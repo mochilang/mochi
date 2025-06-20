@@ -3,6 +3,9 @@ package cscode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -20,11 +23,12 @@ type Compiler struct {
 	helpers      map[string]bool
 	useLinq      bool
 	varTypes     map[string]string
+	packages     map[string]bool
 }
 
 // New creates a new C# compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string), inFun: 0}
+	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string), packages: make(map[string]bool), inFun: 0}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -51,6 +55,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln("using System.Text.Json;")
 	c.writeln("")
+	// Compile Mochi package imports
+	for _, s := range prog.Statements {
+		if s.Import != nil && s.Import.Lang == nil {
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			alias = sanitizeName(alias)
+			if err := c.compilePackageImport(alias, s.Import.Path, s.Pos.Filename); err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	// Type declarations
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -649,6 +667,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue;")
 		return nil
+	case s.Import != nil:
+		if s.Import.Lang == nil {
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			alias = sanitizeName(alias)
+			return c.compilePackageImport(alias, s.Import.Path, s.Pos.Filename)
+		}
+		return fmt.Errorf("foreign imports not supported")
 	default:
 		// ignore other statements in minimal compiler
 	}
@@ -1812,4 +1840,88 @@ func isListType(t types.Type) bool {
 		return true
 	}
 	return false
+}
+
+func (c *Compiler) compilePackageImport(alias, path, filename string) error {
+	if c.packages[alias] {
+		return nil
+	}
+	c.packages[alias] = true
+	p := strings.Trim(path, "\"")
+	base := ""
+	if strings.HasPrefix(p, "./") || strings.HasPrefix(p, "../") {
+		base = filepath.Dir(filename)
+	}
+	target := filepath.Join(base, p)
+
+	info, err := os.Stat(target)
+	if err != nil {
+		if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
+			if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
+				info = fi
+				target += ".mochi"
+			} else {
+				return fmt.Errorf("import package: %w", err)
+			}
+		} else {
+			return fmt.Errorf("import package: %w", err)
+		}
+	}
+
+	var files []string
+	if info.IsDir() {
+		entries, err := os.ReadDir(target)
+		if err != nil {
+			return fmt.Errorf("import package: %w", err)
+		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+				files = append(files, filepath.Join(target, e.Name()))
+			}
+		}
+		sort.Strings(files)
+	} else {
+		files = []string{target}
+	}
+
+	pkgEnv := types.NewEnv(c.env)
+	origEnv := c.env
+	c.env = pkgEnv
+
+	c.writeln(fmt.Sprintf("public static class %s {", sanitizeName(alias)))
+	c.indent++
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		if errs := types.Check(prog, pkgEnv); len(errs) > 0 {
+			c.env = origEnv
+			return errs[0]
+		}
+		for _, s := range prog.Statements {
+			if s.Type != nil {
+				if err := c.compileTypeDecl(s.Type); err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("")
+			}
+		}
+		for _, s := range prog.Statements {
+			if s.Fun != nil && s.Fun.Export {
+				if err := c.compileFunStmt(s.Fun); err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("")
+			}
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	c.env = origEnv
+	return nil
 }
