@@ -245,6 +245,8 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Struct and union definitions
 - Pattern matching with `match`
 - Dataset queries with `from`, `join`, `where`, `group`, `sort`, `skip` and `take`
+- Left/right/outer joins in dataset queries
+- Set operations with `union`, `union all`, `except` and `intersect`
 - Built‑ins like `fetch`, `load`, `save` and placeholder `generate`
 - Stream declarations and event handling with `on`/`emit`
 
@@ -253,7 +255,6 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Foreign function interface bindings
 - Long‑lived agents with `intent` blocks
 - Logic programming constructs (`fact`, `rule`, `query`)
-- Left/right/outer join clauses in dataset queries
 - Model declarations
 - `generate` expressions return placeholder values (LLM integration pending)
 - Concurrency primitives like `spawn` and channels

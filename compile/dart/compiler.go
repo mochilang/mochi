@@ -37,6 +37,7 @@ type Compiler struct {
 	useGroup     bool
 	useGroupBy   bool
 	useStream    bool
+	useQuery     bool
 }
 
 // New creates a new Dart compiler instance.
@@ -46,7 +47,8 @@ func New(env *types.Env) *Compiler {
 		useUnionAll: false, useUnion: false, useExcept: false, useIntersect: false,
 		useFetch: false, useLoad: false, useSave: false,
 		useGenText: false, useGenEmbed: false, useGenStruct: false,
-		useGroup: false, useGroupBy: false, useStream: false}
+		useGroup: false, useGroupBy: false, useStream: false,
+		useQuery: false}
 }
 
 // Compile returns Dart source implementing prog.
@@ -69,6 +71,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useGroup = false
 	c.useGroupBy = false
 	c.useStream = false
+	c.useQuery = false
 	c.handlerCount = 0
 
 	var body bytes.Buffer
@@ -1156,6 +1159,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	needsHelper := false
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -1167,6 +1172,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		joinSrcs[i] = js
 		joinOns[i] = on
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+			needsHelper = true
+		}
 	}
 
 	sel, err := c.compileExpr(q.Select)
@@ -1214,6 +1223,66 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.useGroupBy = true
 		expr := fmt.Sprintf("_group_by(%s, (%s) => %s).map((%s) => %s).toList()", src, v, keyExpr, sanitizeName(q.Group.Name), valExpr)
 		return expr, nil
+	}
+
+	if needsHelper {
+		varNames := []string{sanitizeName(q.Var)}
+		for _, f := range q.Froms {
+			varNames = append(varNames, sanitizeName(f.Var))
+		}
+		params := append([]string(nil), varNames...)
+		joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+		for _, fs := range fromSrcs {
+			joins = append(joins, fmt.Sprintf("{'items': %s}", fs))
+		}
+		for i, js := range joinSrcs {
+			onParams := append(params, sanitizeName(q.Joins[i].Var))
+			onFn := fmt.Sprintf("(%s) => %s", strings.Join(onParams, ", "), joinOns[i])
+			spec := fmt.Sprintf("{'items': %s, 'on': %s", js, onFn)
+			if joinSides[i] == "left" || joinSides[i] == "outer" {
+				spec += ", 'left': true"
+			}
+			if joinSides[i] == "right" || joinSides[i] == "outer" {
+				spec += ", 'right': true"
+			}
+			spec += "}"
+			joins = append(joins, spec)
+			params = append(params, sanitizeName(q.Joins[i].Var))
+		}
+		allParams := strings.Join(params, ", ")
+		selectFn := fmt.Sprintf("(%s) => %s", allParams, sel)
+		var whereFn, sortFn string
+		if where != "" {
+			whereFn = fmt.Sprintf("(%s) => %s", allParams, where)
+		}
+		if sortExpr != "" {
+			sortFn = fmt.Sprintf("(%s) => %s", allParams, sortExpr)
+		}
+		c.useQuery = true
+		var buf strings.Builder
+		buf.WriteString("(() {\n")
+		buf.WriteString(fmt.Sprintf("\tvar src = %s;\n", src))
+		buf.WriteString("\tvar res = _query(src, [\n")
+		for _, j := range joins {
+			buf.WriteString("\t\t" + j + ",\n")
+		}
+		buf.WriteString("\t], { 'select': " + selectFn)
+		if whereFn != "" {
+			buf.WriteString(", 'where': " + whereFn)
+		}
+		if sortFn != "" {
+			buf.WriteString(", 'sortKey': " + sortFn)
+		}
+		if skipExpr != "" {
+			buf.WriteString(", 'skip': " + skipExpr)
+		}
+		if takeExpr != "" {
+			buf.WriteString(", 'take': " + takeExpr)
+		}
+		buf.WriteString(" });\n")
+		buf.WriteString("\treturn res;\n")
+		buf.WriteString("})()")
+		return buf.String(), nil
 	}
 
 	var b strings.Builder
@@ -1693,7 +1762,7 @@ func isStringPrimary(c *Compiler, p *parser.Primary) bool {
 }
 
 func (c *Compiler) emitRuntime() {
-	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave || c.useGenText || c.useGenEmbed || c.useGenStruct || c.useGroup || c.useGroupBy || c.useStream) {
+	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave || c.useGenText || c.useGenEmbed || c.useGenStruct || c.useGroup || c.useGroupBy || c.useStream || c.useQuery) {
 		return
 	}
 	c.writeln("")
@@ -1940,6 +2009,127 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("File(path).writeAsStringSync(text);")
 		c.indent--
 		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.useQuery {
+		c.writeln("List<dynamic> _query(List<dynamic> src, List<Map<String,dynamic>> joins, Map<String,dynamic> opts) {")
+		c.indent++
+		c.writeln("var items = [for (var v in src) [v]];")
+		c.writeln("for (var j in joins) {")
+		c.indent++
+		c.writeln("var joined = <List<dynamic>>[];")
+		c.writeln("var jitems = (j['items'] as List).cast<dynamic>();")
+		c.writeln("var on = j['on'];")
+		c.writeln("var left = j['left'] == true;")
+		c.writeln("var right = j['right'] == true;")
+		c.writeln("if (right && left) {")
+		c.indent++
+		c.writeln("var matched = List<bool>.filled(jitems.length, false);")
+		c.writeln("for (var leftRow in items) {")
+		c.indent++
+		c.writeln("var m = false;")
+		c.writeln("for (var ri = 0; ri < jitems.length; ri++) {")
+		c.indent++
+		c.writeln("var rightRow = jitems[ri];")
+		c.writeln("var keep = true;")
+		c.writeln("if (on != null) keep = Function.apply(on, [...leftRow, rightRow]) as bool;")
+		c.writeln("if (!keep) continue;")
+		c.writeln("m = true; matched[ri] = true;")
+		c.writeln("joined.add([...leftRow, rightRow]);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (!m) joined.add([...leftRow, null]);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("for (var ri = 0; ri < jitems.length; ri++) {")
+		c.indent++
+		c.writeln("if (!matched[ri]) {")
+		c.indent++
+		c.writeln("var undef = items.isNotEmpty ? List<dynamic>.filled(items[0].length, null) : <dynamic>[];")
+		c.writeln("joined.add([...undef, jitems[ri]]);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("} else if (right) {")
+		c.indent++
+		c.writeln("for (var rightRow in jitems) {")
+		c.indent++
+		c.writeln("var m = false;")
+		c.writeln("for (var leftRow in items) {")
+		c.indent++
+		c.writeln("var keep = true;")
+		c.writeln("if (on != null) keep = Function.apply(on, [...leftRow, rightRow]) as bool;")
+		c.writeln("if (!keep) continue;")
+		c.writeln("m = true; joined.add([...leftRow, rightRow]);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (!m) {")
+		c.indent++
+		c.writeln("var undef = items.isNotEmpty ? List<dynamic>.filled(items[0].length, null) : <dynamic>[];")
+		c.writeln("joined.add([...undef, rightRow]);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("for (var leftRow in items) {")
+		c.indent++
+		c.writeln("var m = false;")
+		c.writeln("for (var rightRow in jitems) {")
+		c.indent++
+		c.writeln("var keep = true;")
+		c.writeln("if (on != null) keep = Function.apply(on, [...leftRow, rightRow]) as bool;")
+		c.writeln("if (!keep) continue;")
+		c.writeln("m = true; joined.add([...leftRow, rightRow]);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (left && !m) joined.add([...leftRow, null]);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("items = joined;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts['where'] != null) {")
+		c.indent++
+		c.writeln("items = [for (var r in items) if (Function.apply(opts['where'], r) as bool) r];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts['sortKey'] != null) {")
+		c.indent++
+		c.writeln("var pairs = [for (var it in items) {'item': it, 'key': Function.apply(opts['sortKey'], it)}];")
+		c.writeln("pairs.sort((a,b) {")
+		c.indent++
+		c.writeln("var ak = a['key']; var bk = b['key'];")
+		c.writeln("if (ak is num && bk is num) return ak.compareTo(bk);")
+		c.writeln("if (ak is String && bk is String) return ak.compareTo(bk);")
+		c.writeln("return ak.toString().compareTo(bk.toString());")
+		c.indent--
+		c.writeln("});")
+		c.writeln("items = [for (var p in pairs) p['item'] as List<dynamic>];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts['skip'] != null) {")
+		c.indent++
+		c.writeln("var n = opts['skip'] as int;")
+		c.writeln("items = n < items.length ? items.sublist(n) : <List<dynamic>>[];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts['take'] != null) {")
+		c.indent++
+		c.writeln("var n = opts['take'] as int;")
+		c.writeln("if (n < items.length) items = items.sublist(0, n);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("var res = <dynamic>[];")
+		c.writeln("for (var r in items) { res.add(Function.apply(opts['select'], r)); }")
+		c.writeln("return res;")
 		c.indent--
 		c.writeln("}")
 	}
