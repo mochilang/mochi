@@ -22,6 +22,9 @@ type Compiler struct {
 	loopStack    []loopLabels
 
 	needCompare bool
+	needFetch   bool
+	needLoad    bool
+	needSave    bool
 
 	paramAlias map[string]string
 }
@@ -155,8 +158,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
-	if c.needCompare {
+	if c.needCompare || c.needFetch || c.needLoad || c.needSave {
 		c.writeln("")
+	}
+	if c.needCompare {
 		c.writeln("def _compare(a: Any, b: Any): Int = (a, b) match {")
 		c.indent++
 		c.writeln("case (x: Int, y: Int) => x.compare(y)")
@@ -166,6 +171,29 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 		c.writeln("implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: Any, y: Any): Int = _compare(x, y) }")
+	}
+	if c.needFetch {
+		c.writeln("def _fetch(url: String, opts: Map[String, Any]): Any = {")
+		c.indent++
+		c.writeln("// TODO: implement HTTP fetch")
+		c.writeln("null")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needLoad {
+		c.writeln("def _load(path: String, opts: Map[String, Any]): Seq[Any] = {")
+		c.indent++
+		c.writeln("// TODO: implement data loading")
+		c.writeln("Seq.empty")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needSave {
+		c.writeln("def _save(src: Any, path: String, opts: Map[String, Any]): Unit = {")
+		c.indent++
+		c.writeln("// TODO: implement data saving")
+		c.indent--
+		c.writeln("}")
 	}
 	c.indent--
 	c.writeln("}")
@@ -734,6 +762,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
@@ -940,6 +974,68 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("\t" + result + "\n")
 	b.WriteString("})()")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "Map[String, Any]()"
+	if f.With != nil {
+		o, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.needFetch = true
+	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "Map[String, Any]()"
+	if l.With != nil {
+		o, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.needLoad = true
+	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		typ := scalaType(c.resolveTypeRef(l.Type))
+		if typ != "" {
+			expr = fmt.Sprintf("_load(%s, %s).map(_.asInstanceOf[%s])", path, opts, typ)
+		}
+	}
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "Map[String, Any]()"
+	if s.With != nil {
+		o, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.needSave = true
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
