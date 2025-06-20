@@ -890,6 +890,25 @@ func (c *Compiler) expr(n *ast.Node) string {
 	case "index":
 		arr := c.expr(n.Children[0])
 		idx := c.expr(n.Children[1])
+		l, ok := c.listLens[arr]
+		if !ok {
+			l, ok = c.listLens[strings.ToLower(arr)]
+		}
+		if ok && n.Children[1].Kind == "int" && extractInt(n.Children[1]) < 0 {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC S9.", tmp))
+			if isSimpleExpr(n.Children[1]) {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s", idx, tmp))
+			} else {
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, idx))
+			}
+			c.writeln(fmt.Sprintf("    IF %s < 0", tmp))
+			c.indent++
+			c.writeln(fmt.Sprintf("ADD %d TO %s", l, tmp))
+			c.indent--
+			c.writeln("    END-IF")
+			idx = tmp
+		}
 		return fmt.Sprintf("%s(%s + 1)", arr, idx)
 	case "unary":
 		switch n.Value {
