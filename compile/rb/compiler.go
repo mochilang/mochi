@@ -402,9 +402,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
-	// sorting still not implemented for cross joins
+	var sortVal string
 	if q.Sort != nil {
-		return "", fmt.Errorf("advanced query clauses not supported")
+		v, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		sortVal = v
 	}
 
 	fromSrcs := make([]string, len(q.Froms))
@@ -450,17 +454,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(fmt.Sprintf("%sif %s\n", indent, cond))
 		indent += "\t"
-		b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+		if sortVal != "" {
+			b.WriteString(fmt.Sprintf("%s_res << [%s, %s]\n", indent, sortVal, sel))
+		} else {
+			b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+		}
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "end\n")
 	} else {
-		b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+		if sortVal != "" {
+			b.WriteString(fmt.Sprintf("%s_res << [%s, %s]\n", indent, sortVal, sel))
+		} else {
+			b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+		}
 	}
 	for range q.Froms {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "end\n")
 	}
 	b.WriteString("\tend\n")
+	if sortVal != "" {
+		b.WriteString(fmt.Sprintf("\t_res = _res.sort_by { |e| e[0] }\n"))
+		b.WriteString("\t_res = _res.map { |e| e[1] }\n")
+	}
 	if skipVal != "" {
 		b.WriteString(fmt.Sprintf("\t_res = _res.drop(%s)\n", skipVal))
 	}
