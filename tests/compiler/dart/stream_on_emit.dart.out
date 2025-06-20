@@ -1,0 +1,27 @@
+void main() {
+	class Sensor {
+		String id;
+		double temperature;
+		Sensor({required this.id, required this.temperature});
+	}
+	
+	var _SensorStream = _Stream<Sensor>('Sensor');
+	void _handler_0(Sensor ev) {
+		var s = ev;
+		print([s.id.toString(), s.temperature.toString()].join(' '));
+	}
+	_SensorStream.register(_handler_0);
+	_SensorStream.append(Sensor({id: "sensor-1", temperature: 22.5}));
+}
+
+class _Stream<T> {
+	String name;
+	List<void Function(T)> handlers = [];
+	_Stream(this.name);
+	void append(T data) {
+		for (var h in List.from(handlers)) { h(data); }
+	}
+	void register(void Function(T) handler) { handlers.add(handler); }
+}
+void _waitAll() {}
+
