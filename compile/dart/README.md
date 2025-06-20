@@ -246,8 +246,8 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Streams and long‑lived agents
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Package declarations (`package` keyword)
-- Methods defined inside `type` declarations
 - Left/right/outer join clauses in dataset queries
 - Model declarations
 - Agent declarations with `intent` blocks
 - Event handling with `on`/`emit`
+- `generate` expressions return placeholder values (LLM integration pending)
