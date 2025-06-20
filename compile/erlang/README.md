@@ -47,8 +47,12 @@ The backend supports fundamental language constructs:
 
 - `for` and `while` loops with `break`/`continue`
 - pattern matching with `match` and `case`
-- query expressions over a single source with `where`, `sort`, `skip` and `take`
+- query expressions over one or more sources with `where`; sorting or pagination
+  is supported when querying a single source
 - list set operations `union`, `except` and `intersect`
+- simple cross joins using multiple `from` clauses
+- struct and union type declarations generate Erlang records
+- AI `generate_text`, `generate_embed` and `generate_struct` helpers (placeholders)
 - test blocks and `expect` statements
 - `load` and `save` for Erlang terms or plain text files
 - HTTP `fetch` using `httpc`
@@ -104,8 +108,8 @@ features are not yet handled:
 - Model declarations and dataset helpers
 - Sorting or pagination on queries with multiple sources
 - Concurrency primitives like `spawn` and channels
-- Struct and union type declarations
 - `generate` helpers return placeholder data
+- Imports targeting languages other than Erlang
 - Reflection or macro facilities
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs
