@@ -10,3 +10,4 @@ fn main() {
         println!("{} {}", "odd number:", n);
     }
 }
+

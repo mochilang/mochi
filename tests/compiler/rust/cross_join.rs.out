@@ -1,22 +1,22 @@
 #[derive(Clone, Debug)]
 struct Customer {
-    id: i32,
+    id: i64,
     name: String,
 }
 
 #[derive(Clone, Debug)]
 struct Order {
-    id: i32,
-    customerId: i32,
-    total: i32,
+    id: i64,
+    customerId: i64,
+    total: i64,
 }
 
 #[derive(Clone, Debug)]
 struct PairInfo {
-    orderId: i32,
-    orderCustomerId: i32,
+    orderId: i64,
+    orderCustomerId: i64,
     pairedCustomerName: String,
-    orderTotal: i32,
+    orderTotal: i64,
 }
 
 fn main() {
@@ -36,3 +36,4 @@ fn main() {
         println!("{} {} {} {} {} {} {} {}", "Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName);
     }
 }
+

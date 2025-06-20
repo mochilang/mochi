@@ -1,5 +1,5 @@
-fn twoSum(nums: Vec<i32>, target: i32) -> Vec<i32> {
-    let mut n = nums.len() as i32;
+fn twoSum(nums: Vec<i64>, target: i64) -> Vec<i64> {
+    let mut n = nums.len() as i64;
     for i in 0..n {
         for j in i + 1..n {
             if nums[i as usize] + nums[j as usize] == target {
@@ -15,3 +15,4 @@ fn main() {
     println!("{}", result[(0) as usize]);
     println!("{}", result[(1) as usize]);
 }
+

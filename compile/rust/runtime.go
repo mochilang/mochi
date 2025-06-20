@@ -3,11 +3,11 @@ package rscode
 import "sort"
 
 const (
-	helperIndexString = "fn _index_string(s: &str, i: i32) -> String {\n" +
+	helperIndexString = "fn _index_string(s: &str, i: i64) -> String {\n" +
 		"    let mut idx = i;\n" +
 		"    let chars: Vec<char> = s.chars().collect();\n" +
-		"    if idx < 0 { idx += chars.len() as i32; }\n" +
-		"    if idx < 0 || idx >= chars.len() as i32 { panic(\"index out of range\"); }\n" +
+		"    if idx < 0 { idx += chars.len() as i64; }\n" +
+		"    if idx < 0 || idx >= chars.len() as i64 { panic!(\"index out of range\"); }\n" +
 		"    chars[idx as usize].to_string()\n" +
 		"}\n"
 

@@ -1,7 +1,7 @@
 #[derive(Clone, Debug)]
 struct Person {
     name: String,
-    age: i32,
+    age: i64,
 }
 
 fn main() {
@@ -19,3 +19,4 @@ fn main() {
         println!("{}", n);
     }
 }
+

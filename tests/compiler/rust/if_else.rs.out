@@ -1,4 +1,4 @@
-fn foo(n: i32) -> i32 {
+fn foo(n: i64) -> i64 {
     if n < 0 {
         return -1;
     } else 
@@ -14,3 +14,4 @@ fn main() {
     println!("{}", foo(0));
     println!("{}", foo(3));
 }
+

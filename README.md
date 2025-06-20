@@ -625,6 +625,17 @@ Helpful commands:
 
 PRs and issues welcome!
 
+## Unsupported Features (Rust Backend)
+
+The experimental Rust compiler does not yet implement every Mochi feature. Missing capabilities include:
+
+- Advanced dataset queries such as grouping, sorting, unions and left/right joins.
+- Streams and agents (`agent`, `on`, `emit`).
+- Logic programming constructs (`fact`, `rule`, `query`).
+- HTTP and persistence helpers (`fetch`, `load`, `save`, `generate`).
+- Package imports, extern objects and other FFI constructs (`import`, `extern`).
+- Model blocks (`model`) and associated LLM helpers.
+
 ## License
 
 Mochi is open source under the [MIT License](./LICENSE).
