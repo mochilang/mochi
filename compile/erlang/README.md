@@ -37,6 +37,8 @@ mochi_count(_) -> erlang:error(badarg).
 Additional helpers implement `mochi_input/0`, `mochi_avg/1`, list iteration
 (`mochi_foreach/2`), optional map/list indexing via `mochi_get/2` and a simple
 `mochi_while/2` loop construct.
+Generative helpers `mochi_gen_text/3`, `mochi_gen_embed/3`, `mochi_gen_struct/4`
+and the HTTP helper `mochi_fetch/2` return stub values for now.
 
 ## Building
 
@@ -83,7 +85,6 @@ union values is supported via `case` expressions. The following language
 features are not yet handled:
 
 - Joins or grouping inside queries
-- Generative AI helpers like `generate` or `fetch`
 - Logic programming constructs and streams
 - Agents and event streams
 - Foreign function imports via `extern`
@@ -92,6 +93,7 @@ features are not yet handled:
 - Sorting or pagination on queries with multiple sources
 - Concurrency primitives like `spawn` and channels
 - Struct and union type declarations
+- Set operations using `union`, `except` or `intersect`
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs
 directly.
