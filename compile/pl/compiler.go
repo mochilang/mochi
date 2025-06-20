@@ -17,10 +17,11 @@ type Compiler struct {
 	vars    map[string]string
 	currFun string
 	helpers map[string]bool
+	tests   []string
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: make(map[string]string), helpers: make(map[string]bool)}
+	return &Compiler{env: env, vars: make(map[string]string), helpers: make(map[string]bool), tests: []string{}}
 }
 
 // Compile translates a Mochi AST into Prolog source code.
@@ -31,10 +32,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	origBuf := c.buf
 	c.buf = body
 
-	// function declarations
+	// function declarations and tests
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		} else if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
 			c.writeln("")
@@ -52,6 +58,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if err := c.compileStmt(s, "_"); err != nil {
 			c.buf = origBuf
 			return nil, err
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeAtom(strings.ReplaceAll(s.Test.Name, " ", "_"))
+			c.writeln(fmt.Sprintf("%s,", name))
 		}
 	}
 	b := c.buf.Bytes()
@@ -133,6 +145,12 @@ func (c *Compiler) emitHelpers() {
 	}
 	if c.helpers["avg"] {
 		for _, line := range strings.Split(strings.TrimSuffix(helperAvg, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["expect"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperExpect, "\n"), "\n") {
 			c.writeln(line)
 		}
 		c.writeln("")
@@ -312,6 +330,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 	case s.Continue != nil:
 		c.writeln("throw(continue)")
 		return nil
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.If != nil:
 		return c.compileIf(s.If, ret, true)
 	default:
@@ -347,12 +367,14 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 				return err
 			}
 		}
+		c.writeln("true")
 		c.indent--
 		c.writeln("), continue, true),")
 		c.writeln("fail")
 		c.indent--
 		c.writeln(")")
 		c.writeln(", break, true),")
+		c.writeln("true")
 		c.indent--
 		return nil
 	}
@@ -387,12 +409,14 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 			return err
 		}
 	}
+	c.writeln("true")
 	c.indent--
 	c.writeln("), continue, true),")
 	c.writeln("fail")
 	c.indent--
 	c.writeln(")")
 	c.writeln(", break, true),")
+	c.writeln("true")
 	c.indent--
 	return nil
 }
@@ -565,6 +589,37 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt, ret string) error {
 	c.indent--
 	c.writeln(")")
 	c.writeln(", break, true),")
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	res, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	for _, line := range res.code {
+		c.writeln(line)
+	}
+	c.use("expect")
+	c.writeln(fmt.Sprintf("expect(%s),", res.val))
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeAtom(strings.ReplaceAll(t.Name, " ", "_"))
+	c.tests = append(c.tests, name)
+	body, err := c.compileBlock(t.Body, "_")
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("%s :-", name))
+	c.indent++
+	c.buf.Write(body)
+	if len(body) > 0 {
+		c.writeln(",")
+	}
+	c.writeln("true.")
 	c.indent--
 	return nil
 }
@@ -806,18 +861,28 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (exprRes, error) {
 	return res, nil
 }
 
+func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (exprRes, error) {
+	var res exprRes
+	var cur string
+	if name, ok := c.vars[sel.Root]; ok {
+		cur = c.newVar()
+		res.code = append(res.code, fmt.Sprintf("nb_getval(%s, %s)", name, cur)+",")
+	} else {
+		cur = sanitizeVar(sel.Root)
+	}
+	for _, field := range sel.Tail {
+		tmp := c.newVar()
+		res.code = append(res.code, fmt.Sprintf("get_dict(%s, %s, %s)", sanitizeAtom(field), cur, tmp)+",")
+		cur = tmp
+	}
+	res.val = cur
+	return res, nil
+}
+
 func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 	switch {
 	case p.Selector != nil:
-		if len(p.Selector.Tail) != 0 {
-			return exprRes{}, fmt.Errorf("selectors not supported")
-		}
-		if name, ok := c.vars[p.Selector.Root]; ok {
-			tmp := c.newVar()
-			line := fmt.Sprintf("nb_getval(%s, %s)", name, tmp)
-			return exprRes{code: []string{line + ","}, val: tmp}, nil
-		}
-		return exprRes{val: sanitizeVar(p.Selector.Root)}, nil
+		return c.compileSelector(p.Selector)
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return exprRes{val: fmt.Sprintf("%d", *p.Lit.Int)}, nil
