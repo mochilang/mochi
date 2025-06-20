@@ -598,6 +598,7 @@ Edit one or start fresh. It’s all yours.
 Some language constructs are still experimental or missing in the current implementation:
 
 - Advanced dataset query options like `group`, `sort`, `skip` and `take`.
+- Union type declarations are not yet compiled by the C++ backend.
 - Streams and agents are not yet compiled by the Rust backend.
 - Logic programming keywords (`fact`, `rule`, `query`).
 - File and network helpers (`fetch`, `load`, `save`, `generate`).

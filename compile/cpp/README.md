@@ -189,11 +189,13 @@ from `compiler_test.go`.
 
 This backend covers only a subset of Mochi's features but is useful as an example for implementing other targets.
 
+Simple `where` filters in dataset queries are supported, but other clauses remain unimplemented.
+
 ### Unsupported features
 
 Some LeetCode solutions use language constructs that the C++ backend can't yet translate. Unsupported features include:
 
-* Dataset queries with clauses like `where`, `group by`, `join`, `skip`, `take`, or `sort by`
+* Dataset queries with clauses like `group by`, `join`, `skip`, `take`, or `sort by`
 * Union type declarations
 * Agents, streams and intents
 * `generate` blocks and model definitions
