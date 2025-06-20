@@ -200,9 +200,10 @@ go test ./compile/ex -tags slow
 The Elixir backend implements most core language features but still lacks support for several advanced constructs:
 
 - Nested recursive functions inside other functions. Problems relying on them, such as LeetCode 22, fail to run.
-- Dataset queries with join clauses. Simple `group by` queries are now supported but more complex grouping or aggregation is not yet handled.
+- Dataset queries with outer joins or complex aggregation.
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming features (`fact`, `rule`, `query`).
-- Data helpers like `fetch` and LLM `generate` blocks.
+- Model declarations (`model` blocks).
+- Set operations using `union`, `except` or `intersect` operators.
 - `load` and `save` currently only handle Erlang term binaries.
 - Foreign imports and `extern` declarations.
 - Concurrency primitives such as `spawn` and channels.
