@@ -1,8 +1,9 @@
 open System
 
 exception Return_foo of int
-let foo (n: int) : int =
+let rec foo (n: int) : int =
     try
+        let mutable n = n
         if (n < 0) then
             raise (Return_foo ((-1)))
         elif (n = 0) then
@@ -12,6 +13,6 @@ let foo (n: int) : int =
         failwith "unreachable"
     with Return_foo v -> v
 
-printfn "%A" foo (-2)
-printfn "%A" foo 0
-printfn "%A" foo 3
+ignore (printfn "%A" (foo ((-2))))
+ignore (printfn "%A" (foo (0)))
+ignore (printfn "%A" (foo (3)))

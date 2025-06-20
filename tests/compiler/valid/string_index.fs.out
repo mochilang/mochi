@@ -1,4 +1,4 @@
 open System
 
 let text = "hello"
-printfn "%A" (string text.[1])
+ignore (printfn "%A" ((string text.[1])))

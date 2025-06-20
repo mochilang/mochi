@@ -1,4 +1,4 @@
 open System
 
 let text = "hello"
-printfn "%A" (string text.[(if (-1) < 0 then text.Length + (-1) else (-1))])
+ignore (printfn "%A" ((string text.[(if (-1) < 0 then text.Length + (-1) else (-1))])))

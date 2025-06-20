@@ -1,10 +1,12 @@
 open System
 
 exception Return_add of int
-let add (a: int) (b: int) : int =
+let rec add (a: int) (b: int) : int =
     try
+        let mutable a = a
+        let mutable b = b
         raise (Return_add ((a + b)))
         failwith "unreachable"
     with Return_add v -> v
 
-printfn "%A" add 2 3
+ignore (printfn "%A" (add (2) (3)))

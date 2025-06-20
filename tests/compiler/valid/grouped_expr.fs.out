@@ -1,4 +1,4 @@
 open System
 
 let value = (((1 + 2)) * 3)
-printfn "%A" value
+ignore (printfn "%A" (value))

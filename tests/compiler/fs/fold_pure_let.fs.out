@@ -1,12 +1,13 @@
 open System
 
 exception Return_sum of int
-let sum (n: int) : int =
+let rec sum (n: int) : int =
     try
+        let mutable n = n
         raise (Return_sum (((n * ((n + 1))) / 2)))
         failwith "unreachable"
     with Return_sum v -> v
 
 let n = 10
-printfn "%A" sum n
-printfn "%A" n
+ignore (printfn "%A" (sum n))
+ignore (printfn "%A" (n))

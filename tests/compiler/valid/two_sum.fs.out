@@ -1,8 +1,10 @@
 open System
 
 exception Return_twoSum of int[]
-let twoSum (nums: int[]) (target: int) : int[] =
+let rec twoSum (nums: int[]) (target: int) : int[] =
     try
+        let mutable nums = nums
+        let mutable target = target
         let n = nums.Length
         for i = 0 to n - 1 do
             for j = (i + 1) to n - 1 do
@@ -12,6 +14,6 @@ let twoSum (nums: int[]) (target: int) : int[] =
         failwith "unreachable"
     with Return_twoSum v -> v
 
-let result = twoSum [|2; 7; 11; 15|] 9
-printfn "%A" result.[0]
-printfn "%A" result.[1]
+let result = twoSum ([|2; 7; 11; 15|]) (9)
+ignore (printfn "%A" (result.[0]))
+ignore (printfn "%A" (result.[1]))

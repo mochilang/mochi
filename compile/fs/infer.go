@@ -179,6 +179,27 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 			return types.AnyType{}
 		}
+	case p.Query != nil:
+		srcType := c.inferExprType(p.Query.Source)
+		var elem types.Type = types.AnyType{}
+		if lt, ok := srcType.(types.ListType); ok {
+			elem = lt.Elem
+		}
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(p.Query.Var, elem, true)
+		for _, f := range p.Query.Froms {
+			ft := c.inferExprType(f.Src)
+			var fe types.Type = types.AnyType{}
+			if lt, ok := ft.(types.ListType); ok {
+				fe = lt.Elem
+			}
+			child.SetVar(f.Var, fe, true)
+		}
+		c.env = child
+		ret := c.inferExprType(p.Query.Select)
+		c.env = orig
+		return types.ListType{Elem: ret}
 	case p.Group != nil:
 		return c.inferExprType(p.Group)
 	case p.List != nil:

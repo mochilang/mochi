@@ -2,4 +2,4 @@ open System
 
 let a = 10
 let b = 20
-printfn "%A" (a + b)
+ignore (printfn "%A" ((a + b)))

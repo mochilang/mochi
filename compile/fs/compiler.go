@@ -150,7 +150,11 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	defer c.popFunc()
 	exc := fmt.Sprintf("Return_%s", sanitizeName(fn.Name))
 	ret := fsType(fn.Return)
-	line := fmt.Sprintf("exception %s of %s", exc, ret)
+	excType := ret
+	if strings.ContainsAny(ret, " ->") {
+		excType = "(" + ret + ")"
+	}
+	line := fmt.Sprintf("exception %s of %s", exc, excType)
 	if nested {
 		c.preamble.WriteString(line + "\n")
 	} else {
@@ -162,10 +166,7 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 		params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), fsType(p.Type))
 		paramTypes[i] = c.resolveTypeRef(p.Type)
 	}
-	kw := "let"
-	if nested {
-		kw = "let rec"
-	}
+	kw := "let rec"
 	c.writeln(fmt.Sprintf("%s %s %s : %s =", kw, sanitizeName(fn.Name), strings.Join(params, " "), ret))
 
 	child := types.NewEnv(c.env)
@@ -178,6 +179,10 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	c.indent++
 	c.writeln("try")
 	c.indent++
+	for _, p := range fn.Params {
+		name := sanitizeName(p.Name)
+		c.writeln(fmt.Sprintf("let mutable %s = %s", name, name))
+	}
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
 			c.env = origEnv
@@ -301,7 +306,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(expr)
+		c.writeln(fmt.Sprintf("ignore (%s)", expr))
 	case s.For != nil:
 		return c.compileFor(s.For)
 	case s.While != nil:
@@ -544,7 +549,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		return "", err
 	}
 	var buf strings.Builder
-	buf.WriteString("(match " + target + " with\n")
+	buf.WriteString("(match " + target + " with")
 	for _, cs := range m.Cases {
 		pat, err := c.compilePattern(cs.Pattern)
 		if err != nil {
@@ -554,9 +559,65 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		buf.WriteString(" | " + pat + " -> " + res + "\n")
+		buf.WriteString(" | " + pat + " -> " + res)
 	}
 	buf.WriteString(")")
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	orig := c.env
+	child := types.NewEnv(c.env)
+	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+		child.SetVar(q.Var, lt.Elem, true)
+	} else {
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	fromSrc := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrc[i] = fs
+		if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, true)
+		} else {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+	}
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var sortExpr string
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.env = orig
+
+	var buf strings.Builder
+	buf.WriteString("[|")
+	buf.WriteString(fmt.Sprintf(" for %s in %s do ", sanitizeName(q.Var), src))
+	for i, f := range q.Froms {
+		buf.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(f.Var), fromSrc[i]))
+	}
+	if q.Sort != nil {
+		buf.WriteString(fmt.Sprintf("yield (%s, %s) |]", sortExpr, sel))
+		buf.WriteString(fmt.Sprintf(" |> Array.sortBy fst |> Array.map snd"))
+	} else {
+		buf.WriteString(fmt.Sprintf("yield %s |]", sel))
+	}
 	return buf.String(), nil
 }
 
@@ -862,6 +923,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Group != nil:
 		e, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -881,7 +944,6 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = v
 	}
-	argStr := strings.Join(args, " ")
 	switch call.Func {
 	case "str":
 		if len(args) != 1 {
@@ -908,11 +970,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("((Array.sum %s) / %s.Length)", args[0], args[0]), nil
 	case "print":
 		if len(args) == 1 {
-			return fmt.Sprintf("printfn \"%%A\" %s", args[0]), nil
+			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
 		}
-		return fmt.Sprintf("printfn \"%%A\" (%s)", argStr), nil
+		return fmt.Sprintf("printfn \"%%A\" (%s)", strings.Join(args, ", ")), nil
 	default:
-		return fmt.Sprintf("%s %s", sanitizeName(call.Func), argStr), nil
+		for i, a := range args {
+			if !isSimpleIdent(a) {
+				args[i] = "(" + a + ")"
+			}
+		}
+		return fmt.Sprintf("%s %s", sanitizeName(call.Func), strings.Join(args, " ")), nil
 	}
 }
 
@@ -990,6 +1057,16 @@ func fsType(t *parser.TypeRef) string {
 			return sanitizeName(*t.Simple)
 		}
 	}
+	if t.Fun != nil {
+		ret := "unit"
+		if t.Fun.Return != nil {
+			ret = fsType(t.Fun.Return)
+		}
+		for i := len(t.Fun.Params) - 1; i >= 0; i-- {
+			ret = fmt.Sprintf("%s -> %s", fsType(t.Fun.Params[i]), ret)
+		}
+		return ret
+	}
 	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 		return fsType(t.Generic.Args[0]) + "[]"
 	}
@@ -1013,10 +1090,29 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	switch s {
-	case "end":
+	case "abstract", "and", "as", "assert", "base", "begin", "class", "default",
+		"delegate", "do", "done", "downcast", "downto", "elif", "else", "end",
+		"exception", "extern", "false", "finally", "for", "fun", "function",
+		"if", "in", "inherit", "inline", "interface", "internal", "lazy", "let",
+		"match", "member", "module", "mutable", "namespace", "new", "null", "of",
+		"open", "or", "override", "private", "public", "rec", "return", "sig",
+		"static", "struct", "then", "to", "true", "try", "type", "upcast", "use",
+		"val", "void", "when", "while", "with", "yield":
 		s = "_" + s
 	}
 	return s
+}
+
+func isSimpleIdent(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i, r := range s {
+		if !(r == '_' || ('0' <= r && r <= '9' && i > 0) || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z')) {
+			return false
+		}
+	}
+	return true
 }
 
 // --- helpers ---

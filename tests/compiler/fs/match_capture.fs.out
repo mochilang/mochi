@@ -5,13 +5,11 @@ type Tree =
     | Node of left: Tree * value: int * right: Tree
 
 exception Return_depth of int
-let depth (t: Tree) : int =
+let rec depth (t: Tree) : int =
     try
-        raise (Return_depth ((match t with
- | Leaf -> 0
- | Node(l, _, r) -> ((depth l + depth r) + 1)
-)))
+        let mutable t = t
+        raise (Return_depth ((match t with | Leaf -> 0 | Node(l, _, r) -> ((depth l + depth r) + 1))))
         failwith "unreachable"
     with Return_depth v -> v
 
-printfn "%A" depth Node(Leaf, 0, Leaf)
+ignore (printfn "%A" (depth (Node(Leaf, 0, Leaf))))

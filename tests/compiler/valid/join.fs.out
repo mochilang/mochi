@@ -1,0 +1,25 @@
+open System
+
+type Customer = {
+    id: int;
+    name: string
+}
+
+type Order = {
+    id: int;
+    customerId: int;
+    total: int
+}
+
+type PairInfo = {
+    orderId: int;
+    customerName: string;
+    total: int
+}
+
+let customers = [|{ id = 1; name = "Alice" }; { id = 2; name = "Bob" }; { id = 3; name = "Charlie" }|]
+let orders = [|{ id = 100; customerId = 1; total = 250 }; { id = 101; customerId = 2; total = 125 }; { id = 102; customerId = 1; total = 300 }; { id = 103; customerId = 4; total = 80 }|]
+let result = [| for o in orders do yield { orderId = o.id; customerName = c.name; total = o.total } |]
+ignore (printfn "%A" ("--- Orders with customer info ---"))
+for entry in result do
+    ignore (printfn "%A" ("Order", entry.orderId, "by", entry.customerName, "- $", entry.total))
