@@ -1053,6 +1053,14 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		c.helpers["_genEmbed"] = true
 		return fmt.Sprintf("_genEmbed(%s, %s, %s)", text, model, paramMap), nil
 	}
+
+	if c.env != nil {
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.helpers["_genStruct"] = true
+			return fmt.Sprintf("_genStruct(%s.class, %s, %s, %s)", sanitizeName(g.Target), prompt, model, paramMap), nil
+		}
+	}
+
 	c.helpers["_genText"] = true
 	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramMap), nil
 }
@@ -1169,12 +1177,42 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_genStruct"] {
+		c.writeln("")
+		c.writeln("static <T> T _genStruct(Class<T> cls, String prompt, String model, java.util.Map<String,Object> params) {")
+		c.indent++
+		c.writeln("// TODO: integrate with an LLM and parse JSON")
+		c.writeln("try {")
+		c.indent++
+		c.writeln("return cls.getDeclaredConstructor().newInstance();")
+		c.indent--
+		c.writeln("} catch (Exception e) {")
+		c.indent++
+		c.writeln("throw new RuntimeException(e);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_fetch"] {
 		c.writeln("")
 		c.writeln("static java.util.Map<String,Object> _fetch(String url, java.util.Map<String,Object> opts) {")
 		c.indent++
-		c.writeln("// TODO: implement HTTP fetch")
-		c.writeln("return new java.util.HashMap<>();")
+		c.writeln("try {")
+		c.indent++
+		c.writeln("java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();")
+		c.writeln("java.net.http.HttpRequest req = java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).build();")
+		c.writeln("java.net.http.HttpResponse<String> resp = client.send(req, java.net.http.HttpResponse.BodyHandlers.ofString());")
+		c.writeln("java.util.Map<String,Object> out = new java.util.HashMap<>();")
+		c.writeln("out.put(\"status\", resp.statusCode());")
+		c.writeln("out.put(\"body\", resp.body());")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("} catch (Exception e) {")
+		c.indent++
+		c.writeln("throw new RuntimeException(e);")
+		c.indent--
+		c.writeln("}")
 		c.indent--
 		c.writeln("}")
 	}
