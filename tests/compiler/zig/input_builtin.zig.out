@@ -1,0 +1,23 @@
+const std = @import("std");
+
+fn _input() []const u8 {
+	var stdin = std.io.getStdIn().reader();
+	var list = std.ArrayList(u8).init(std.heap.page_allocator);
+	while (true) {
+		const ch = stdin.readByte() catch |err| {
+			if (err == error.EndOfStream) break;
+			return list.toOwnedSlice();
+		};
+		if (ch == '\n') break;
+		list.append(ch) catch unreachable;
+	}
+	return list.toOwnedSlice();
+}
+
+pub fn main() void {
+	std.debug.print("{s}\n", .{"Enter first input:"});
+	var input1 = _input();
+	std.debug.print("{s}\n", .{"Enter second input:"});
+	var input2 = _input();
+	std.debug.print("{s} {s} {s} {s}\n", .{"You entered:", input1, ",", input2});
+}

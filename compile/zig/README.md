@@ -161,7 +161,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 
 ### Built‑ins
 
-`compileCallExpr` implements simple built‑ins like `len` and `print`:
+`compileCallExpr` implements simple built‑ins like `len`, `input` and `print`:
 
 ```go
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
@@ -179,7 +179,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
         ...
 }
 ```
-【F:compile/zig/compiler.go†L308-L333】
+【F:compile/zig/compiler.go†L484-L547】
 
 ### Helpers
 
@@ -253,3 +253,13 @@ func EnsureZig() (string, error) {
 This backend is intentionally minimal. It does not yet support complex types,
 streams or the full Mochi standard library but demonstrates how Mochi can target
 a different runtime using Zig.
+
+## Unsupported features
+
+The Zig backend currently lacks support for several language constructs:
+
+- `map` types and the `in` membership operator
+- dataset query expressions like `from`/`sort by`/`select`
+- union types and methods defined inside `type` blocks
+- streaming agents and `emit` statements
+- foreign function imports via the `import` keyword

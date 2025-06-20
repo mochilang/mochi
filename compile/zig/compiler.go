@@ -12,10 +12,11 @@ import (
 
 // Compiler translates a Mochi AST into Zig source code (very small subset).
 type Compiler struct {
-	buf      bytes.Buffer
-	indent   int
-	env      *types.Env
-	needsAvg bool
+	buf        bytes.Buffer
+	indent     int
+	env        *types.Env
+	needsAvg   bool
+	needsInput bool
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env} }
@@ -71,6 +72,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("var sum: f64 = 0;")
 		c.writeln("for (v) |it| { sum += @floatFromInt(it); }")
 		c.writeln("return sum / @as(f64, @floatFromInt(v.len));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsInput {
+		c.writeln("fn _input() []const u8 {")
+		c.indent++
+		c.writeln("var stdin = std.io.getStdIn().reader();")
+		c.writeln("var list = std.ArrayList(u8).init(std.heap.page_allocator);")
+		c.writeln("while (true) {")
+		c.indent++
+		c.writeln("const ch = stdin.readByte() catch |err| {")
+		c.indent++
+		c.writeln("if (err == error.EndOfStream) break;")
+		c.writeln("return list.toOwnedSlice();")
+		c.indent--
+		c.writeln("};")
+		c.writeln("if (ch == '\n') break;")
+		c.writeln("list.append(ch) catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return list.toOwnedSlice();")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -488,6 +511,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{%s}) catch unreachable", arg), nil
+	}
+	if name == "input" && len(call.Args) == 0 {
+		c.needsInput = true
+		return "_input()", nil
 	}
 	if name == "print" {
 		args := make([]string, len(call.Args))
