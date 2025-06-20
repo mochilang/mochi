@@ -183,8 +183,9 @@ go test ./compile/fortran -tags slow
 
 ## Unsupported features
 
-Recent updates added support for `list<float>` variables and the `append()`
-builtin. Despite these improvements, the Fortran backend remains limited.
+Recent updates added support for `list<float>` variables, set operations on
+`list<string>` values and the `append()` and `str()` builtins. Despite these
+improvements, the Fortran backend remains limited.
 Missing features include:
 
 - Map types and membership tests for maps. The `in` operator only works for
@@ -192,13 +193,13 @@ Missing features include:
 - Map indexing and assignment are not implemented.
 - Query expressions (`from`/`sort by`/`select`).
 - Nested function definitions and struct literals.
-- `union`, `except` and `intersect` only work for `list<int>` and `list<float>` values.
+- `union`, `except` and `intersect` lack map and set support.
 - Slice expressions do not support a step parameter.
 - Pattern matching with `match` expressions.
 - Agents, streams and logic programming constructs (`fact`, `rule`, `query`).
 - Foreign imports and dataset helpers like `fetch`, `load` and `save`.
 - Anonymous function literals (`fun` expressions) and `if` used as an expression.
-- Only a few built-ins are available (`len`, `append`, `count`, `avg`).
+- Only a few built-ins are available (`len`, `append`, `count`, `avg`, `str`).
 - Generative `generate` blocks and model declarations.
 
 While limited, this backend demonstrates how Mochi’s AST can be translated into

@@ -1,0 +1,27 @@
+program main
+  implicit none
+  print *, str_int(42_8)
+  print *, str_float(3.5)
+  print *, 'hi'
+contains
+
+  function str_int(v) result(r)
+    implicit none
+    integer(kind=8), intent(in) :: v
+    character(:), allocatable :: r
+    character(len=32) :: buf
+    write(buf,'(I0)') v
+    allocate(character(len=len_trim(buf)) :: r)
+    r = trim(buf)
+  end function str_int
+
+  function str_float(v) result(r)
+    implicit none
+    real, intent(in) :: v
+    character(:), allocatable :: r
+    character(len=64) :: buf
+    write(buf,'(G0)') v
+    allocate(character(len=len_trim(buf)) :: r)
+    r = trim(buf)
+  end function str_float
+end program main

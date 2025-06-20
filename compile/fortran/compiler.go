@@ -12,22 +12,27 @@ import (
 // Compiler emits very small Fortran 90 code for a limited subset of Mochi.
 // It only supports constructs needed for the leetcode two-sum example.
 type Compiler struct {
-	buf                 bytes.Buffer
-	indent              int
-	stringVars          map[string]bool
-	listVars            map[string]bool
-	floatVars           map[string]bool
-	funReturnStr        map[string]bool
-	funReturnList       map[string]bool
-	funReturnFloat      map[string]bool
-	needsUnionInt       bool
-	needsUnionFloat     bool
-	needsExceptInt      bool
-	needsExceptFloat    bool
-	needsIntersectInt   bool
-	needsIntersectFloat bool
-	needsAvgInt         bool
-	needsAvgFloat       bool
+	buf                  bytes.Buffer
+	indent               int
+	stringVars           map[string]bool
+	listVars             map[string]bool
+	floatVars            map[string]bool
+	funReturnStr         map[string]bool
+	funReturnList        map[string]bool
+	funReturnFloat       map[string]bool
+	needsUnionInt        bool
+	needsUnionFloat      bool
+	needsUnionString     bool
+	needsExceptInt       bool
+	needsExceptFloat     bool
+	needsExceptString    bool
+	needsIntersectInt    bool
+	needsIntersectFloat  bool
+	needsIntersectString bool
+	needsAvgInt          bool
+	needsAvgFloat        bool
+	needsStrInt          bool
+	needsStrFloat        bool
 }
 
 func New() *Compiler {
@@ -369,12 +374,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.needsUnionInt = false
 	c.needsUnionFloat = false
+	c.needsUnionString = false
 	c.needsExceptInt = false
 	c.needsExceptFloat = false
+	c.needsExceptString = false
 	c.needsIntersectInt = false
 	c.needsIntersectFloat = false
+	c.needsIntersectString = false
 	c.needsAvgInt = false
 	c.needsAvgFloat = false
+	c.needsStrInt = false
+	c.needsStrFloat = false
 	var funs []*parser.FunStmt
 	var tests []*parser.TestBlock
 	var mainStmts []*parser.Statement
@@ -463,7 +473,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(fmt.Sprintf("call test_%s()", sanitizeName(t.Name)))
 	}
 	c.indent--
-	needHelpers := c.needsUnionInt || c.needsUnionFloat || c.needsExceptInt || c.needsExceptFloat || c.needsIntersectInt || c.needsIntersectFloat || c.needsAvgInt || c.needsAvgFloat
+	needHelpers := c.needsUnionInt || c.needsUnionFloat || c.needsUnionString ||
+		c.needsExceptInt || c.needsExceptFloat || c.needsExceptString ||
+		c.needsIntersectInt || c.needsIntersectFloat || c.needsIntersectString ||
+		c.needsAvgInt || c.needsAvgFloat || c.needsStrInt || c.needsStrFloat
 	if len(funs)+len(tests) > 0 || needHelpers {
 		c.writeln("contains")
 		c.indent++
@@ -1154,6 +1167,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					c.needsUnionFloat = true
 					expr = fmt.Sprintf("union_float(%s, %s)", left, right)
 					vFloat = append(vFloat, true)
+				} else if lStr && rStr {
+					c.needsUnionString = true
+					expr = fmt.Sprintf("union_string(%s, %s)", left, right)
+					vFloat = append(vFloat, false)
 				} else if !lStr && !rStr {
 					c.needsUnionInt = true
 					expr = fmt.Sprintf("union_int(%s, %s)", left, right)
@@ -1174,6 +1191,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					c.needsExceptFloat = true
 					expr = fmt.Sprintf("except_float(%s, %s)", left, right)
 					vFloat = append(vFloat, true)
+				} else if lStr && rStr {
+					c.needsExceptString = true
+					expr = fmt.Sprintf("except_string(%s, %s)", left, right)
+					vFloat = append(vFloat, false)
 				} else if !lStr && !rStr {
 					c.needsExceptInt = true
 					expr = fmt.Sprintf("except_int(%s, %s)", left, right)
@@ -1194,6 +1215,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					c.needsIntersectFloat = true
 					expr = fmt.Sprintf("intersect_float(%s, %s)", left, right)
 					vFloat = append(vFloat, true)
+				} else if lStr && rStr {
+					c.needsIntersectString = true
+					expr = fmt.Sprintf("intersect_string(%s, %s)", left, right)
+					vFloat = append(vFloat, false)
 				} else if !lStr && !rStr {
 					c.needsIntersectInt = true
 					expr = fmt.Sprintf("intersect_int(%s, %s)", left, right)
@@ -1442,6 +1467,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 			return "", fmt.Errorf("count expects 1 arg")
 		}
 		return fmt.Sprintf("size(%s)", args[0]), nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		if isStringExpr(call.Args[0], c.stringVars, c.funReturnStr) {
+			return args[0], nil
+		}
+		if isFloatExpr(call.Args[0], c.floatVars, c.funReturnFloat) {
+			c.needsStrFloat = true
+			return fmt.Sprintf("str_float(%s)", args[0]), nil
+		}
+		c.needsStrInt = true
+		return fmt.Sprintf("str_int(%s)", args[0]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
@@ -1545,6 +1583,40 @@ func (c *Compiler) writeHelpers() {
 		c.indent--
 		c.writeln("end function union_float")
 	}
+	if c.needsUnionString {
+		c.writeln("")
+		c.writeln("function union_string(a, b) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=*), intent(in) :: a(:)")
+		c.writeln("character(len=*), intent(in) :: b(:)")
+		c.writeln("character(len=:), allocatable :: r(:)")
+		c.writeln("character(len=:), allocatable :: tmp(:)")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer(kind=8) :: n")
+		c.writeln("allocate(character(len=max(len(a),len(b))) :: tmp(size(a)+size(b)))")
+		c.writeln("n = 0")
+		c.writeln("do i = 1, size(a)")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = a(i)")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("do i = 1, size(b)")
+		c.indent++
+		c.writeln("if (.not. any(tmp(:n) == b(i))) then")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = b(i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("allocate(character(len=len(tmp(1))) :: r(n))")
+		c.writeln("r = tmp(:n)")
+		c.indent--
+		c.writeln("end function union_string")
+	}
 	if c.needsExceptInt {
 		c.writeln("")
 		c.writeln("function except_int(a, b) result(r)")
@@ -1600,6 +1672,34 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = tmp(:n)")
 		c.indent--
 		c.writeln("end function except_float")
+	}
+	if c.needsExceptString {
+		c.writeln("")
+		c.writeln("function except_string(a, b) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=*), intent(in) :: a(:)")
+		c.writeln("character(len=*), intent(in) :: b(:)")
+		c.writeln("character(len=:), allocatable :: r(:)")
+		c.writeln("character(len=:), allocatable :: tmp(:)")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer(kind=8) :: n")
+		c.writeln("allocate(character(len=len(a)) :: tmp(size(a)))")
+		c.writeln("n = 0")
+		c.writeln("do i = 1, size(a)")
+		c.indent++
+		c.writeln("if (.not. any(b == a(i))) then")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = a(i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("allocate(character(len=len(tmp(1))) :: r(n))")
+		c.writeln("r = tmp(:n)")
+		c.indent--
+		c.writeln("end function except_string")
 	}
 	if c.needsIntersectInt {
 		c.writeln("")
@@ -1665,6 +1765,38 @@ func (c *Compiler) writeHelpers() {
 		c.indent--
 		c.writeln("end function intersect_float")
 	}
+	if c.needsIntersectString {
+		c.writeln("")
+		c.writeln("function intersect_string(a, b) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=*), intent(in) :: a(:)")
+		c.writeln("character(len=*), intent(in) :: b(:)")
+		c.writeln("character(len=:), allocatable :: r(:)")
+		c.writeln("character(len=:), allocatable :: tmp(:)")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("integer(kind=8) :: n")
+		c.writeln("allocate(character(len=len(a)) :: tmp(min(size(a),size(b))))")
+		c.writeln("n = 0")
+		c.writeln("do i = 1, size(a)")
+		c.indent++
+		c.writeln("if (any(b == a(i))) then")
+		c.indent++
+		c.writeln("if (.not. any(tmp(:n) == a(i))) then")
+		c.indent++
+		c.writeln("n = n + 1")
+		c.writeln("tmp(n) = a(i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("allocate(character(len=len(tmp(1))) :: r(n))")
+		c.writeln("r = tmp(:n)")
+		c.indent--
+		c.writeln("end function intersect_string")
+	}
 	if c.needsAvgInt {
 		c.writeln("")
 		c.writeln("function avg_int(v) result(r)")
@@ -1712,5 +1844,33 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = r / size(v)")
 		c.indent--
 		c.writeln("end function avg_float")
+	}
+	if c.needsStrInt {
+		c.writeln("")
+		c.writeln("function str_int(v) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("integer(kind=8), intent(in) :: v")
+		c.writeln("character(:), allocatable :: r")
+		c.writeln("character(len=32) :: buf")
+		c.writeln("write(buf,'(I0)') v")
+		c.writeln("allocate(character(len=len_trim(buf)) :: r)")
+		c.writeln("r = trim(buf)")
+		c.indent--
+		c.writeln("end function str_int")
+	}
+	if c.needsStrFloat {
+		c.writeln("")
+		c.writeln("function str_float(v) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("real, intent(in) :: v")
+		c.writeln("character(:), allocatable :: r")
+		c.writeln("character(len=64) :: buf")
+		c.writeln("write(buf,'(G0)') v")
+		c.writeln("allocate(character(len=len_trim(buf)) :: r)")
+		c.writeln("r = trim(buf)")
+		c.indent--
+		c.writeln("end function str_float")
 	}
 }
