@@ -761,23 +761,73 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) != 0 || len(q.Joins) != 0 || q.Group != nil || q.Where != nil || q.Skip != nil || q.Take != nil {
+	if len(q.Joins) != 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
 	}
-	sortExpr, err := c.compileExpr(q.Sort)
-	if err != nil {
-		return "", err
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	var whereExpr string
+	if q.Where != nil {
+		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	var sortExpr, skipExpr, takeExpr string
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
 	}
 	selExpr, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
 	}
 	v := sanitizeName(q.Var)
-	return fmt.Sprintf("(vec (map (fn [%s] %s) (sort-by (fn [%s] %s) %s)))", v, selExpr, v, sortExpr, src), nil
+	var b strings.Builder
+	b.WriteString("(vec (->>")
+	b.WriteString(" (for [" + v + " " + src)
+	for i, f := range q.Froms {
+		b.WriteString(" " + sanitizeName(f.Var) + " " + fromSrcs[i])
+	}
+	if whereExpr != "" {
+		b.WriteString(" :when " + whereExpr)
+	}
+	b.WriteString("] " + selExpr + ")")
+	if sortExpr != "" {
+		b.WriteString(" (sort-by (fn [" + v + "] " + sortExpr + "))")
+	}
+	if skipExpr != "" {
+		b.WriteString(" (drop " + skipExpr + ")")
+	}
+	if takeExpr != "" {
+		b.WriteString(" (take " + takeExpr + ")")
+	}
+	b.WriteString("))")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileMatch(m *parser.MatchExpr) (string, error) {
