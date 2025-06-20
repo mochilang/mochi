@@ -197,8 +197,14 @@ go test ./compile/ex -tags slow
 
 ## Unsupported Features
 
-Nested recursive functions are not currently handled when compiling to Elixir.
-Problems relying on them, such as LeetCode 22, fail to run.
+The Elixir backend implements most core language features but still lacks support for several advanced constructs:
 
-Queries using joins or grouping are also unimplemented. Cross join queries now
-support `where` filters as well as `sort`, `skip` and `take` clauses.
+- Nested recursive functions inside other functions. Problems relying on them, such as LeetCode 22, fail to run.
+- Dataset queries with join clauses. Simple `group by` queries are now supported but more complex grouping or aggregation is not yet handled.
+- Agent and stream constructs (`agent`, `on`, `emit`) and logic programming features (`fact`, `rule`, `query`).
+- Data helpers like `fetch`, `load`, `save` and LLM `generate` blocks.
+- Foreign imports and `extern` declarations.
+- Concurrency primitives such as `spawn` and channels.
+- Pattern matching with `match` expressions.
+
+Cross join queries do support `where` filters as well as `sort`, `skip` and `take` clauses.
