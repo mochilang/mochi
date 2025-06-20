@@ -16,6 +16,12 @@ Generated code may embed a small set of helper functions depending on which buil
 - `_avg` – averages a numeric collection
 - `_in` – membership test for strings, dictionaries and enumerables
 - `_cast` – generic casting utility implemented via JSON serialisation
+- `_fetch` – simple HTTP fetch helper
+- `_load` – loads rows from a file
+- `_save` – saves rows to a file
+- `_genText` – placeholder text generation
+- `_genEmbed` – placeholder embedding generation
+- `_genStruct` – parses JSON text into a struct
 
 The helpers are emitted on demand in `Compile`:
 
@@ -129,12 +135,15 @@ This script attempts platform‑specific installation via Homebrew or `apt-get` 
 
 ## Notes
 
-The C# backend focuses on fundamental features: functions, control flow, structs, unions and query expressions. Advanced Mochi capabilities such as streams, LLM helpers and extern objects are not yet implemented in this generator.
+The C# backend focuses on fundamental features: functions, control flow, structs, unions and query expressions. Advanced Mochi capabilities such as streams and extern objects are not yet implemented in this generator.
 
 ### Unsupported features
 
 The backend is still incomplete. Notable gaps include:
 
 - Join clauses in dataset queries
-- External helpers like `_fetch`, `_load`, `_save` and text generation
+- Stream and agent declarations
+- Model declarations
+- Logic programming constructs (`fact`, `rule`, `query`)
+- Foreign function interface and extern objects
 - Generic dictionary casts for complex map types

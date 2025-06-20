@@ -271,6 +271,52 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				c.writeln("return res;")
 				c.indent--
 				c.writeln("}")
+			case "_fetch":
+				c.writeln("static dynamic _fetch(string url, Dictionary<string, object> opts) {")
+				c.indent++
+				c.writeln("// TODO: implement HTTP fetch")
+				c.writeln("return null;")
+				c.indent--
+				c.writeln("}")
+			case "_load":
+				c.writeln("static List<dynamic> _load(string path, Dictionary<string, object> opts) {")
+				c.indent++
+				c.writeln("// TODO: implement data loading")
+				c.writeln("return new List<dynamic>();")
+				c.indent--
+				c.writeln("}")
+			case "_save":
+				c.writeln("static void _save(dynamic src, string path, Dictionary<string, object> opts) {")
+				c.indent++
+				c.writeln("// TODO: implement data saving")
+				c.indent--
+				c.writeln("}")
+			case "_genText":
+				c.writeln("static string _genText(string prompt, string model, Dictionary<string, object> p) {")
+				c.indent++
+				c.writeln("// TODO: integrate with an LLM")
+				c.writeln("return prompt;")
+				c.indent--
+				c.writeln("}")
+			case "_genEmbed":
+				c.writeln("static double[] _genEmbed(string text, string model, Dictionary<string, object> p) {")
+				c.indent++
+				c.writeln("var vec = new double[text.Length];")
+				c.writeln("for (int i = 0; i < text.Length; i++) {")
+				c.indent++
+				c.writeln("vec[i] = text[i];")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return vec;")
+				c.indent--
+				c.writeln("}")
+			case "_genStruct":
+				c.writeln("static T _genStruct<T>(string prompt, string model, Dictionary<string, object> p) {")
+				c.indent++
+				c.writeln("// TODO: integrate with an LLM and parse JSON")
+				c.writeln("return JsonSerializer.Deserialize<T>(prompt);")
+				c.indent--
+				c.writeln("}")
 			}
 			c.writeln("")
 		}
@@ -283,7 +329,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		code = bytes.Replace(code, []byte("using System.Collections.Generic;\n"), []byte("using System.Collections.Generic;\nusing System.Linq;\n"), 1)
 	}
 	if _, ok := c.helpers["_cast"]; !ok {
-		code = bytes.Replace(code, []byte("using System.Text.Json;\n"), nil, 1)
+		if _, ok := c.helpers["_genStruct"]; !ok {
+			code = bytes.Replace(code, []byte("using System.Text.Json;\n"), nil, 1)
+		}
 	}
 	return code, nil
 }
@@ -1028,6 +1076,115 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return buf.String(), nil
 }
 
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var prompt, text, model string
+	params := []string{}
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("{ \"%s\", %s }", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramStr := "null"
+	if len(params) > 0 {
+		paramStr = "new Dictionary<string, object> { " + strings.Join(params, ", ") + " }"
+	}
+	if model == "" {
+		model = "null"
+	}
+	if g.Target == "embedding" {
+		c.use("_genEmbed")
+		return fmt.Sprintf("_genEmbed(%s, %s, %s)", text, model, paramStr), nil
+	}
+	if c.env != nil {
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.use("_genStruct")
+			return fmt.Sprintf("_genStruct<%s>(%s, %s, %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
+		}
+	}
+	c.use("_genText")
+	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramStr), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	urlStr, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "null"
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = w
+	}
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch(%s, %s)", urlStr, opts), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "null"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.use("_load")
+	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		typ := csType(l.Type)
+		if typ != "" {
+			c.use("_cast")
+			expr = fmt.Sprintf("%s.Select(e => _cast<%s>(e)).ToList()", expr, typ)
+		}
+	}
+	return expr, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "null"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.use("_save")
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	orig := c.varTypes
 	c.varTypes = make(map[string]string)
@@ -1190,6 +1347,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Group != nil:
 		e, err := c.compileExpr(p.Group)
 		if err != nil {
