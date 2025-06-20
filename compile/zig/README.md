@@ -72,16 +72,19 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 ### Type Mapping
 
-`zigType` converts Mochi type references to Zig types.  Lists are currently
-restricted to `[]const i32`:
+`zigType` converts Mochi type references to Zig types. Lists become slices and
+maps use `std.AutoHashMap`:
 
 ```go
 func (c *Compiler) zigType(t *parser.TypeRef) string {
         if t == nil {
                 return "i32"
         }
-        if t.Generic != nil && t.Generic.Name == "list" {
-                return "[]const i32"
+        if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+                return "[]const " + c.zigType(t.Generic.Args[0])
+        }
+        if t.Generic != nil && t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+                return fmt.Sprintf("std.AutoHashMap(%s, %s)", c.zigType(t.Generic.Args[0]), c.zigType(t.Generic.Args[1]))
         }
         if t.Simple == nil {
                 return "i32"
@@ -96,13 +99,10 @@ func (c *Compiler) zigType(t *parser.TypeRef) string {
         case "string":
                 return "[]const u8"
         }
-        if t.Generic != nil && t.Generic.Name == "list" {
-                return "[]const i32"
-        }
         return "i32"
 }
 ```
-【F:compile/zig/compiler.go†L89-L112】
+【F:compile/zig/compiler.go†L204-L228】
 
 ### Statement Handling
 
@@ -136,7 +136,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
         return nil
 }
 ```
-【F:compile/zig/compiler.go†L115-L178】
+【F:compile/zig/compiler.go†L115-L176】
 
 Conditionals are expanded recursively to handle `else if` chains:
 
@@ -179,7 +179,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
         ...
 }
 ```
-【F:compile/zig/compiler.go†L308-L333】
+【F:compile/zig/compiler.go†L624-L698】
 
 ### Helpers
 
@@ -199,7 +199,7 @@ var zigReserved = map[string]bool{
         "for": true, "while": true, "if": true, "else": true,
 }
 ```
-【F:compile/zig/compiler.go†L393-L395】
+【F:compile/zig/compiler.go†L1119-L1121】
 
 ## Building
 
@@ -261,8 +261,6 @@ a different runtime using Zig.
 The Zig generator currently omits several language constructs needed for later
 LeetCode solutions:
 
-* map types and dictionary literals – required for frequency tables and other
-  associative lookups
 * dataset query expressions (`from ... sort ... select`) used by problems that
   operate over CSV-style input
 * package imports and module declarations
@@ -274,6 +272,8 @@ LeetCode solutions:
 * logic programming constructs (`fact`, `rule`, `query`)
 * concurrency features such as streams or `spawn`
 * anonymous function expressions (`fun` values)
+* foreign imports and `extern` declarations
+* test blocks and `expect` statements
 
 These features are not yet implemented, so programs relying on them will fail to
 compile or run correctly.  Most LeetCode tasks after problem 10 depend on at

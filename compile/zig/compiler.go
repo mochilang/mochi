@@ -15,14 +15,18 @@ type Compiler struct {
 	buf               bytes.Buffer
 	indent            int
 	env               *types.Env
+	tmpCount          int
 	needsAvgInt       bool
 	needsAvgFloat     bool
 	needsInListInt    bool
 	needsInListString bool
 	needsSetOps       bool
+	needsJSON         bool
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{env: env}
+}
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
@@ -159,6 +163,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsJSON {
+		c.writeln("fn _json(v: anytype) void {")
+		c.indent++
+		c.writeln("var buf = std.ArrayList(u8).init(std.heap.page_allocator);")
+		c.writeln("defer buf.deinit();")
+		c.writeln("std.json.stringify(v, .{}, buf.writer()) catch unreachable;")
+		c.writeln("std.debug.print(\"{s}\\n\", .{buf.items});")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	c.buf.WriteString(body)
 	return c.buf.Bytes(), nil
 }
@@ -193,6 +208,9 @@ func (c *Compiler) zigType(t *parser.TypeRef) string {
 	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 		return "[]const " + c.zigType(t.Generic.Args[0])
 	}
+	if t.Generic != nil && t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+		return fmt.Sprintf("std.AutoHashMap(%s, %s)", c.zigType(t.Generic.Args[0]), c.zigType(t.Generic.Args[1]))
+	}
 	if t.Simple == nil {
 		return "i32"
 	}
@@ -213,6 +231,16 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 	switch {
 	case s.Let != nil:
 		val := "0"
+		if s.Let.Value != nil && isEmptyMapExpr(s.Let.Value) {
+			keyT := "i32"
+			valT := "i32"
+			if s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" && len(s.Let.Type.Generic.Args) == 2 {
+				keyT = c.zigType(s.Let.Type.Generic.Args[0])
+				valT = c.zigType(s.Let.Type.Generic.Args[1])
+			}
+			c.writeln(fmt.Sprintf("var %s = std.AutoHashMap(%s, %s).init(std.heap.page_allocator);", sanitizeName(s.Let.Name), keyT, valT))
+			return nil
+		}
 		if s.Let.Value != nil {
 			v, err := c.compileExpr(s.Let.Value, false)
 			if err != nil {
@@ -221,6 +249,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			val = v
 		}
 		c.writeln(fmt.Sprintf("const %s = %s;", sanitizeName(s.Let.Name), val))
+		return nil
 	case s.Var != nil:
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
@@ -351,6 +380,16 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		c.writeln(fmt.Sprintf("var %s = std.ArrayList(%s).init(std.heap.page_allocator);", name, elem))
 		return nil
 	}
+	if st.Value != nil && isEmptyMapExpr(st.Value) {
+		keyT := "i32"
+		valT := "i32"
+		if st.Type != nil && st.Type.Generic != nil && st.Type.Generic.Name == "map" && len(st.Type.Generic.Args) == 2 {
+			keyT = c.zigType(st.Type.Generic.Args[0])
+			valT = c.zigType(st.Type.Generic.Args[1])
+		}
+		c.writeln(fmt.Sprintf("var %s = std.AutoHashMap(%s, %s).init(std.heap.page_allocator);", name, keyT, valT))
+		return nil
+	}
 	val := "0"
 	if st.Value != nil {
 		v, err := c.compileExpr(st.Value, false)
@@ -379,6 +418,18 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		return nil
 	}
 	lhs := name
+	if len(st.Index) == 1 && st.Index[0].Colon == nil && c.isMapVar(st.Name) {
+		key, err := c.compileExpr(st.Index[0].Start, false)
+		if err != nil {
+			return err
+		}
+		val, err := c.compileExpr(st.Value, false)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("_ = %s.put(%s, %s) catch unreachable;", lhs, key, val))
+		return nil
+	}
 	for _, idx := range st.Index {
 		ie, err := c.compileExpr(idx.Start, false)
 		if err != nil {
@@ -484,7 +535,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 				if err != nil {
 					return "", err
 				}
-				expr = fmt.Sprintf("%s[%s]", expr, idx)
+				if c.isMapPostfix(p) {
+					expr = fmt.Sprintf("(%s.get(%s) orelse unreachable)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				}
 			} else {
 				start := "0"
 				end := ""
@@ -551,6 +606,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		return name, nil
 	case p.List != nil:
 		return c.compileListLiteral(p.List, !asReturn)
+	case p.Map != nil:
+		return c.compileMapLiteral(p.Map)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Group != nil:
@@ -598,6 +655,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{%s}) catch unreachable", arg), nil
+	}
+	if name == "now" && len(call.Args) == 0 {
+		return "std.time.nanoTimestamp()", nil
+	}
+	if name == "json" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		c.needsJSON = true
+		return fmt.Sprintf("_json(%s)", arg), nil
 	}
 	if name == "print" {
 		args := make([]string, len(call.Args))
@@ -672,6 +740,42 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 	return fmt.Sprintf("[_]%s{%s}", elemType, strings.Join(elems, ", ")), nil
 }
 
+func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	keyType := "i32"
+	valType := "i32"
+	if len(m.Items) > 0 {
+		if c.isStringExpr(m.Items[0].Key) {
+			keyType = "[]const u8"
+		} else if c.isFloatExpr(m.Items[0].Key) {
+			keyType = "f64"
+		} else if c.isBoolExpr(m.Items[0].Key) {
+			keyType = "bool"
+		}
+		if c.isStringExpr(m.Items[0].Value) {
+			valType = "[]const u8"
+		} else if c.isFloatExpr(m.Items[0].Value) {
+			valType = "f64"
+		} else if c.isBoolExpr(m.Items[0].Value) {
+			valType = "bool"
+		}
+	}
+	var b strings.Builder
+	b.WriteString("blk: { var m = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
+	for _, it := range m.Items {
+		k, err := c.compileExpr(it.Key, false)
+		if err != nil {
+			return "", err
+		}
+		v, err := c.compileExpr(it.Value, false)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString("m.put(" + k + ", " + v + ") catch unreachable; ")
+	}
+	b.WriteString("break :blk m; }")
+	return b.String(), nil
+}
+
 func isListLiteralExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return false
@@ -703,6 +807,39 @@ func isEmptyListExpr(e *parser.Expr) bool {
 	}
 	ll := e.Binary.Left.Value.Target.List
 	return len(ll.Elems) == 0
+}
+
+func isMapLiteralExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	return isMapLiteralUnary(e.Binary.Left)
+}
+
+func isMapLiteralUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return isMapLiteralPostfix(u.Value)
+}
+
+func isMapLiteralPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return isMapLiteralPrimary(p.Target)
+}
+
+func isMapLiteralPrimary(p *parser.Primary) bool {
+	return p != nil && p.Map != nil
+}
+
+func isEmptyMapExpr(e *parser.Expr) bool {
+	if !isMapLiteralExpr(e) {
+		return false
+	}
+	ml := e.Binary.Left.Value.Target.Map
+	return len(ml.Items) == 0
 }
 
 func isSelfAppend(st *parser.AssignStmt) (*parser.Expr, bool) {
@@ -764,6 +901,44 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 	if p.Selector != nil && c.env != nil {
 		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isMapExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return c.isMapUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isMapUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isMapPostfix(u.Value)
+}
+
+func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isMapPrimary(p.Target)
+}
+
+func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.MapType); ok {
 				return true
 			}
 		}
@@ -980,6 +1155,18 @@ func isZigTypeName(name string) bool {
 			}
 		}
 		return true
+	}
+	return false
+}
+
+func (c *Compiler) isMapVar(name string) bool {
+	if c.env == nil {
+		return false
+	}
+	if t, err := c.env.GetVar(name); err == nil {
+		if _, ok := t.(types.MapType); ok {
+			return true
+		}
 	}
 	return false
 }
