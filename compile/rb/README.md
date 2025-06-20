@@ -161,14 +161,15 @@ The first test is skipped when Ruby is not available and the suite falls back to
 
 ## Unsupported Features
 
-The Ruby backend does not yet implement every construct in Mochi. Missing
+- The Ruby backend does not yet implement every construct in Mochi. Missing
 features include:
 
-- Complex dataset queries using grouping or join clauses. Cross joins now
-  support `skip` and `take` but still lack sorting.
+- Complex dataset queries using grouping or join clauses. Cross joins are
+  handled including sorting, `skip` and `take`.
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming
   features (`fact`, `rule`, `query`).
 - Packages and foreign function interface declarations (`import`, `extern`).
 - External helpers for data fetching or generation such as `_fetch`,
   `generate`, `load` and `save`.
+- Methods declared inside `type` blocks are ignored.
 
