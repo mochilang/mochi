@@ -139,6 +139,22 @@ const (
 
 	helperIntersect = `(defn _intersect [a b]
   (vec (distinct (filter (set b) a))))`
+
+	helperGenText = `(defn _gen_text [prompt model params]
+  prompt)`
+
+	helperGenEmbed = `(defn _gen_embed [text model params]
+  (mapv double (map int text)))`
+
+	helperGenStruct = `(defn _gen_struct [ctor prompt model params]
+  (let [m (clojure.data.json/read-str prompt :key-fn keyword)
+        fields (first (:arglists (meta ctor)))
+        args (map #(get m %) fields)]
+    (apply ctor args)))`
+
+	helperFetch = `(defn _fetch [url opts]
+  (let [txt (slurp url)]
+    (clojure.data.json/read-str txt :key-fn keyword))`
 )
 
 var helperMap = map[string]string{
@@ -160,6 +176,10 @@ var helperMap = map[string]string{
 	"_union":       helperUnion,
 	"_except":      helperExcept,
 	"_intersect":   helperIntersect,
+	"_gen_text":    helperGenText,
+	"_gen_embed":   helperGenEmbed,
+	"_gen_struct":  helperGenStruct,
+	"_fetch":       helperFetch,
 }
 
 var helperOrder = []string{
@@ -181,6 +201,10 @@ var helperOrder = []string{
 	"_union",
 	"_except",
 	"_intersect",
+	"_gen_text",
+	"_gen_embed",
+	"_gen_struct",
+	"_fetch",
 }
 
 // helperDeps lists transitive helper dependencies.
