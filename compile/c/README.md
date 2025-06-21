@@ -84,12 +84,13 @@ features include:
 - union type declarations and generics
 - logic programming constructs (`fact`, `rule`, `query`)
 - reflection or macro facilities
-- extern object declarations and package exports
+ - package exports (extern objects are now supported)
 - nested list types other than `list<list<int>>`
 - set literals and set operations
  - methods declared inside `type` blocks
  - functions with multiple return values
  - map membership operations
+ - iterating over maps with `for` loops
  - extern type declarations
  - variadic functions
  - closures that capture surrounding variables
