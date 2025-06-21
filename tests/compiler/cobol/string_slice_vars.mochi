@@ -1,0 +1,3 @@
+let start = 1
+let end = 4
+print("hello"[start:end])
