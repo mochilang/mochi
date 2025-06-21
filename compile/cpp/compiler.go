@@ -11,7 +11,7 @@ import (
 )
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "union", "except", "intersect"}
+var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "union", "except", "intersect", "input"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -126,6 +126,13 @@ var helperCode = map[string][]string{
 		"\t\tif (find(b.begin(), b.end(), it) != b.end() && find(res.begin(), res.end(), it) == res.end()) res.push_back(it);",
 		"\t}",
 		"\treturn res;",
+		"}",
+	},
+	"input": {
+		"string _input() {",
+		"\tstring s;",
+		"\tgetline(cin, s);",
+		"\treturn s;",
 		"}",
 	},
 }
@@ -733,6 +740,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return fmt.Sprintf("%s.size()", args[0])
 		case "str":
 			return fmt.Sprintf("to_string(%s)", args[0])
+		case "now":
+			return "(int)time(nullptr)"
+		case "input":
+			c.helpers["input"] = true
+			return "_input()"
 		case "count":
 			c.helpers["count"] = true
 			return fmt.Sprintf("_count(%s)", args[0])
