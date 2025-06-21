@@ -161,6 +161,7 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Package declarations and imports
 - Basic stream handling with `on` and `emit`
 - Placeholder generative helpers `_genText`, `_genEmbed` and `_genStruct`
+- Test blocks with `expect`
 
 ### Unsupported features
 
@@ -174,7 +175,8 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Concurrency primitives like `spawn` and channels
 - `try`/`catch` error handling
 - Agent initialization with field values
-- The `eval` builtin function
 - Reflection or macro facilities
 - Generic type parameters and methods inside `type` blocks
 - Asynchronous `async`/`await` constructs
+- Set collections (`set<T>`) and related operations
+- Destructuring bindings in `let` and `var` statements

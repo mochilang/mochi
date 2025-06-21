@@ -358,6 +358,13 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("}")
 				c.indent--
 				c.writeln("}")
+			case "_eval":
+				c.writeln("static dynamic _eval(string code) {")
+				c.indent++
+				c.writeln("var dt = new System.Data.DataTable();")
+				c.writeln("return dt.Compute(code, string.Empty);")
+				c.indent--
+				c.writeln("}")
 			case "_genText":
 				c.writeln("static string _genText(string prompt, string model, Dictionary<string, object> p) {")
 				c.indent++
