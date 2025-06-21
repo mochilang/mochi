@@ -86,6 +86,20 @@ const (
 
 let _json (v: obj) : unit =
   printfn "%s" (_to_json v)`
+
+	helperExtern = `module Extern =
+  open System.Collections.Generic
+  let registry = Dictionary<string,obj>()
+  let register (name: string) (v: obj) : unit =
+    registry[name] <- v
+  let tryGet (name: string) : obj option =
+    match registry.TryGetValue(name) with
+    | true, v -> Some v
+    | _ -> None
+  let get (name: string) : obj =
+    match tryGet name with
+    | Some v -> v
+    | None -> failwith (sprintf "extern object not registered: %s" name)`
 )
 
 var helperMap = map[string]string{
@@ -95,4 +109,5 @@ var helperMap = map[string]string{
 	"_input":        helperInput,
 	"_fetch":        helperFetch,
 	"_json_helpers": helperToJson,
+	"_extern":       helperExtern,
 }

@@ -507,7 +507,19 @@ func (c *Compiler) compileExternType(et *parser.ExternTypeDecl) error {
 }
 
 func (c *Compiler) compileExternObject(eo *parser.ExternObjectDecl) error {
-	c.writeln("// extern object " + sanitizeName(eo.Name))
+	name := sanitizeName(eo.Name)
+	c.use("_extern")
+	c.writeln(fmt.Sprintf("let %s : obj =", name))
+	c.indent++
+	c.writeln(fmt.Sprintf("match Extern.tryGet %q with", eo.Name))
+	c.indent++
+	c.writeln("| Some v -> v")
+	c.writeln(fmt.Sprintf("| None -> failwith \"extern object not registered: %s\"", eo.Name))
+	c.indent--
+	c.indent--
+	if c.env != nil {
+		c.env.SetVar(eo.Name, types.AnyType{}, true)
+	}
 	return nil
 }
 
