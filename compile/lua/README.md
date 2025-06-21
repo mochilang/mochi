@@ -285,16 +285,18 @@ fail at runtime:
 
 - Regular expression helpers beyond simple `match`
 - Mutating lists while iterating (e.g. `insert`, `remove`)
-- Query `group` clauses and joins with `left`, `right` or `outer` sides
+- Joins with `left`, `right` or `outer` sides
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Logic query expressions
 - Foreign function interface (FFI)
 - Interaction with external objects
 - Error handling with `try`/`catch` blocks
+- Asynchronous functions (`async`/`await`)
 - Set collections (`set<T>`) and related operations
 - Model and stream declarations
 - Methods declared inside `type` blocks
 - Reflection and macro facilities
+- The `eval` builtin function
 
 - Concurrency primitives such as `spawn`, `stream`, `agent` and related features
   are not available
