@@ -1,0 +1,23 @@
+import "../api" as api
+
+// Network describes a Docker network by name.
+type Network {
+  name: string
+}
+
+// network creates a new network reference.
+export fun network(name: string): Network {
+  return Network { name: name }
+}
+
+// create issues `docker network create`.
+export fun create(n: Network) {
+  let res = api.post("/network/create", {"name": n.name})
+  print(res.command)
+}
+
+// remove deletes the network.
+export fun remove(n: Network) {
+  let res = api.post("/network/remove", {"name": n.name})
+  print(res.command)
+}

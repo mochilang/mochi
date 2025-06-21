@@ -1,0 +1,23 @@
+import "../api" as api
+
+// Volume describes a named Docker volume.
+type Volume {
+  name: string
+}
+
+// volume returns a volume reference.
+export fun volume(name: string): Volume {
+  return Volume { name: name }
+}
+
+// create issues `docker volume create`.
+export fun create(v: Volume) {
+  let res = api.post("/volume/create", {"name": v.name})
+  print(res.command)
+}
+
+// remove deletes the volume.
+export fun remove(v: Volume) {
+  let res = api.post("/volume/remove", {"name": v.name})
+  print(res.command)
+}

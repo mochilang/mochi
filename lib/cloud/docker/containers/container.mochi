@@ -1,0 +1,35 @@
+import "../api" as api
+
+// Container represents a Docker container associated with an image.
+type Container {
+  name: string,
+  image: any,
+  args: list<string>,
+}
+
+// container creates a new container configuration.
+export fun container(name, image, args: list<string>): Container {
+  return Container { name: name, image: image, args: args }
+}
+
+// run starts the container via the Docker API.
+export fun run(c: Container) {
+  let res = api.post("/container/run", {
+    "name": c.name,
+    "image": c.image.name,
+    "args": c.args,
+  })
+  print(res.command)
+}
+
+// stop stops the running container.
+export fun stop(c: Container) {
+  let res = api.post("/container/stop", {"name": c.name})
+  print(res.command)
+}
+
+// remove deletes the container.
+export fun remove(c: Container) {
+  let res = api.post("/container/remove", {"name": c.name})
+  print(res.command)
+}
