@@ -473,8 +473,54 @@ func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileExternVar(ev *parser.ExternVarDecl) error {
+	name := sanitizeName(ev.Name())
+	typ := fsType(ev.Type)
+	c.writeln(fmt.Sprintf("let mutable %s: %s = Unchecked.defaultof<%s>", name, typ, typ))
+	if c.env != nil {
+		c.env.SetVar(ev.Name(), c.resolveTypeRef(ev.Type), true)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExternFun(ef *parser.ExternFunDecl) error {
+	params := make([]string, len(ef.Params))
+	paramTypes := make([]types.Type, len(ef.Params))
+	for i, p := range ef.Params {
+		params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), fsType(p.Type))
+		if c.env != nil {
+			paramTypes[i] = c.resolveTypeRef(p.Type)
+		}
+	}
+	ret := fsType(ef.Return)
+	c.writeln(fmt.Sprintf("let %s %s : %s = failwith \"extern\"", sanitizeName(ef.Name()), strings.Join(params, " "), ret))
+	if c.env != nil {
+		ft := types.FuncType{Params: paramTypes, Return: c.resolveTypeRef(ef.Return)}
+		c.env.SetVar(ef.Name(), ft, false)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExternType(et *parser.ExternTypeDecl) error {
+	c.writeln(fmt.Sprintf("type %s = obj", sanitizeName(et.Name)))
+	return nil
+}
+
+func (c *Compiler) compileExternObject(eo *parser.ExternObjectDecl) error {
+	c.writeln("// extern object " + sanitizeName(eo.Name))
+	return nil
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.ExternVar != nil:
+		return c.compileExternVar(s.ExternVar)
+	case s.ExternFun != nil:
+		return c.compileExternFun(s.ExternFun)
+	case s.ExternType != nil:
+		return c.compileExternType(s.ExternType)
+	case s.ExternObject != nil:
+		return c.compileExternObject(s.ExternObject)
 	case s.Let != nil:
 		expr, err := c.compileExpr(s.Let.Value)
 		if err != nil {
