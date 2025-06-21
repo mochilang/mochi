@@ -1,0 +1,27 @@
+resource "function" "hello" {
+  runtime = "python3.11"
+  handler = "main.handler"
+}
+
+resource "bucket" "files" {
+  versioned = true
+}
+
+resource "queue" "tasks" {
+  visibility_timeout = 30
+}
+
+resource "container" "svc" {
+  image = "registry/app:latest"
+  cpu = 512
+  memory = 1024
+}
+
+resource "topic" "events" {
+  subscribers = 5
+}
+
+resource "table" "users" {
+  partition_key = "id"
+  sort_key = "ts"
+}

@@ -1,0 +1,16 @@
+package network
+
+type Queue {
+  name: string
+  visibility_timeout: int
+}
+
+export fun queue(name: string, visibility_timeout: int): Queue {
+  return Queue { name: name, visibility_timeout: visibility_timeout }
+}
+
+export fun to_tf(q: Queue): string {
+  return "resource \"queue\" \"" + q.name + "\" {\n" +
+         "  visibility_timeout = " + str(q.visibility_timeout) + "\n" +
+         "}\n"
+}
