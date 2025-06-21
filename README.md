@@ -707,6 +707,23 @@ The Racket code generator implements a small subset of Mochi. Missing features i
 - Extern declarations (`extern var`, `extern fun`, `extern type`, `extern object`)
 - Destructuring bindings in `let` and `var` statements
 
+## Unsupported Features (Scala Backend)
+
+The Scala backend covers only a subset of Mochi. Missing capabilities include:
+
+- Concurrency primitives like `spawn` and channels
+- Module system and imports (except Python FFI)
+- Generic type parameters and higher-order functions
+- Advanced dataset queries such as joins and grouping
+- Logic queries and logic programming constructs (`fact`, `rule`)
+- Reflection and macro facilities
+- Streams, agents and intent handlers (`emit`, `on`)
+- Error handling with `try`/`catch`
+- Model declarations
+- Extern variable, type and object declarations
+- Package imports and export declarations
+- The `eval` builtin function
+
 ## License
 
 Mochi is open source under the [MIT License](./LICENSE).
