@@ -607,6 +607,10 @@ implemented across all backends:
 * Foreign function interface outside the bundled Go, Python and TypeScript runtimes
 * Package declarations and `export` statements
 * Asynchronous functions (`async`/`await`)
+* Agent declarations and intent blocks with persistent state
+* Agent initialization with field values
+* Right and outer joins in dataset queries
+* Destructuring bindings in `let` and `var` statements
 * YAML dataset loading and saving
 
 ## Benchmarks
