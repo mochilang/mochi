@@ -21,6 +21,7 @@ type Compiler struct {
 	mapVars map[string]bool
 	setNth  bool
 	slice   bool
+	input   bool
 	loopTmp int
 	loops   []loopCtx
 	funTmp  int
@@ -136,7 +137,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	if c.setNth || c.slice {
+	if c.setNth || c.slice || c.input {
 		c.writeln("")
 	}
 	var out bytes.Buffer
@@ -171,6 +172,15 @@ func (c *Compiler) ensureSlice() {
 	b.WriteString("      if i > 0 then _slice xs (i - 1) len\n")
 	b.WriteString("      else if len = 0 then []\n")
 	b.WriteString("      else x :: _slice xs 0 (len - 1)\n\n")
+}
+
+func (c *Compiler) ensureInput() {
+	if c.input {
+		return
+	}
+	c.input = true
+	b := &c.pre
+	b.WriteString("let _input () = read_line ();;\n\n")
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -874,6 +884,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("string_of_float (%s)", args[0]), nil
 			}
 			return fmt.Sprintf("string_of_int (%s)", args[0]), nil
+		}
+	case "input":
+		if len(args) == 0 {
+			c.ensureInput()
+			return "_input ()", nil
 		}
 	}
 	return fmt.Sprintf("%s %s", sanitizeName(call.Func), strings.Join(args, " ")), nil
