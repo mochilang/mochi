@@ -30,6 +30,11 @@ func New(env *types.Env) *Compiler {
 
 // Compile generates Kotlin code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if prog.Package != "" {
+		c.writeln("package " + sanitizeName(prog.Package))
+		c.writeln("")
+	}
+
 	for _, s := range prog.Statements {
 		if s.Import != nil && s.Import.Lang == nil {
 			if err := c.compilePackageImport(s.Import); err != nil {
