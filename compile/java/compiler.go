@@ -952,12 +952,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "_input()", nil
 		}
 		if name == "count" && len(args) == 1 {
-			c.helpers["_count"] = true
-			return "_count(" + joinArgs(args) + ")", nil
+			if c.isMapExprByExpr(p.Call.Args[0]) {
+				return args[0] + ".size()", nil
+			}
+			if c.isStringExprByExpr(p.Call.Args[0]) {
+				return args[0] + ".length()", nil
+			}
+			return args[0] + ".length", nil
 		}
 		if name == "avg" && len(args) == 1 {
-			c.helpers["_avg"] = true
-			return "_avg(" + joinArgs(args) + ")", nil
+			return fmt.Sprintf("(int) java.util.Arrays.stream(%s).average().orElse(0)", args[0]), nil
 		}
 		if name == "now" && len(args) == 0 {
 			return "System.nanoTime()", nil

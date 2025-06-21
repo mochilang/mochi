@@ -1,9 +1,5 @@
 public class Main {
 	public static void main(String[] args) {
-		System.out.println(_count(new int[]{1, 2, 3}));
-	}
-	
-	static int _count(int[] arr) {
-		return arr.length;
+		System.out.println(new int[]{1, 2, 3}.length);
 	}
 }
