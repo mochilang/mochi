@@ -299,9 +299,8 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * concurrency primitives like `spawn`
 * advanced string slicing
 * list slicing and collection methods like `push` or `keys`
-* built-in helpers such as `count`, `avg`, `input` or `str`
 * logic programming predicates
-* dataset set operations like `union` or `intersect`
+* `load` and `save` only support JSON or JSONL formats, not CSV or YAML
 
 These features are recognised by the main Mochi interpreter but are ignored by the Scheme compiler.
 

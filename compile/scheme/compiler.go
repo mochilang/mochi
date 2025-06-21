@@ -997,6 +997,30 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		}
 		parts = append(parts, "(newline)")
 		return "(begin " + strings.Join(parts, " ") + ")", nil
+	case "str":
+		if len(args) != 1 {
+			return "", fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("(format \"~a\" %s)", args[0]), nil
+	case "count":
+		if len(args) != 1 {
+			return "", fmt.Errorf("count expects 1 arg")
+		}
+		root := rootNameExpr(call.Args[0])
+		if c.varType(root) == "string" || c.isStringExpr(call.Args[0]) {
+			return fmt.Sprintf("(string-length %s)", args[0]), nil
+		}
+		return fmt.Sprintf("(length %s)", args[0]), nil
+	case "avg":
+		if len(args) != 1 {
+			return "", fmt.Errorf("avg expects 1 arg")
+		}
+		return fmt.Sprintf("(let ((lst %s)) (if (null? lst) 0 (/ (apply + lst) (length lst))))", args[0]), nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input expects no args")
+		}
+		return "(read-line)", nil
 	}
 	if recv != "" {
 		return fmt.Sprintf("(%s %s %s)", recv, call.Func, strings.Join(args, " ")), nil
