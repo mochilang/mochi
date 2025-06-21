@@ -296,7 +296,7 @@ fail at runtime:
 - Model and stream declarations
 - Methods declared inside `type` blocks
 - Reflection and macro facilities
-- The `eval` builtin function
+- The `json` builtin function
 
 - Concurrency primitives such as `spawn`, `stream`, `agent` and related features
   are not available
