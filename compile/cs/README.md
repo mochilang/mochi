@@ -156,6 +156,7 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Cross joins via multiple `from` clauses
 - Set operations on lists: `union`, `union all`, `except`, `intersect`
 - Built‑ins `print`, `len`, `count`, `avg`, `now` and `json`
+- User input via `input`
 - HTTP requests using `fetch`
 - Dataset helpers `_load` and `_save` supporting CSV, TSV, JSON, JSONL and YAML
 - Package declarations and imports
@@ -178,3 +179,6 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Reflection or macro facilities
 - Generic type parameters and methods inside `type` blocks
 - Asynchronous `async`/`await` constructs
+- Cross-language `import` statements
+- Extern variable, function and type declarations
+- Set collections and the `_waitAll` helper

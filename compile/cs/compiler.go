@@ -492,8 +492,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return c.compilePackageImport(alias, s.Import.Path, s.Pos.Filename)
 		}
 		return fmt.Errorf("foreign imports not supported")
+	case s.Agent != nil:
+		return fmt.Errorf("agent declarations are not supported")
+	case s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
+		return fmt.Errorf("extern declarations are not supported")
+	case s.Fact != nil, s.Rule != nil:
+		return fmt.Errorf("logic programming is not supported")
 	default:
-		// ignore other statements in minimal compiler
+		return fmt.Errorf("unsupported statement")
 	}
 	return nil
 }
