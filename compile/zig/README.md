@@ -302,7 +302,7 @@ LeetCode solutions:
 * asynchronous functions (`async`/`await`)
 * the `eval` builtin function
 * YAML dataset loading and saving
-* map membership checks using `in`
+* range loops using the `range(start, end, step)` helper
 * built-in helpers like `fetch`, `load`, `save` and `generate`
 * logic programming constructs (`fact`, `rule`, `query`)
 * concurrency features such as streams or `spawn`

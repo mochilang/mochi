@@ -757,7 +757,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 			continue
 		}
 		if opStr == "in" {
-			if c.isStringListPostfix(op.Right) {
+			if c.isMapPostfix(op.Right) {
+				expr = fmt.Sprintf("%s.contains(%s)", right, expr)
+			} else if c.isStringListPostfix(op.Right) {
 				c.needsInListString = true
 				expr = fmt.Sprintf("_contains_list_string(%s, %s)", right, expr)
 			} else {
