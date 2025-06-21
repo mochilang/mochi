@@ -439,7 +439,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		}
 	case s.For != nil:
 		name := sanitizeName(s.For.Name)
-		if startExpr, endExpr, ok := c.rangeArgs(s.For.Source); ok {
+		if startExpr, endExpr, stepExpr, ok := c.rangeArgs(s.For.Source); ok {
 			start := "0"
 			if startExpr != nil {
 				v, err := c.compileExpr(startExpr, false)
@@ -452,15 +452,35 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, name))
-			c.indent++
-			for _, st := range s.For.Body {
-				if err := c.compileStmt(st, inFun); err != nil {
+			if stepExpr == nil {
+				c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, name))
+				c.indent++
+				for _, st := range s.For.Body {
+					if err := c.compileStmt(st, inFun); err != nil {
+						return err
+					}
+				}
+				c.indent--
+				c.writeln("}")
+			} else {
+				step, err := c.compileExpr(stepExpr, false)
+				if err != nil {
 					return err
 				}
+				iter := c.newTmp()
+				c.writeln(fmt.Sprintf("var %s = %s;", iter, start))
+				c.writeln(fmt.Sprintf("while (%s < %s) {", iter, end))
+				c.indent++
+				c.writeln(fmt.Sprintf("const %s = %s;", name, iter))
+				for _, st := range s.For.Body {
+					if err := c.compileStmt(st, inFun); err != nil {
+						return err
+					}
+				}
+				c.writeln(fmt.Sprintf("%s += %s;", iter, step))
+				c.indent--
+				c.writeln("}")
 			}
-			c.indent--
-			c.writeln("}")
 			return nil
 		}
 		start, err := c.compileExpr(s.For.Source, false)
@@ -1561,28 +1581,30 @@ func (c *Compiler) isListVar(name string) bool {
 	return false
 }
 
-func (c *Compiler) rangeArgs(e *parser.Expr) (*parser.Expr, *parser.Expr, bool) {
+func (c *Compiler) rangeArgs(e *parser.Expr) (*parser.Expr, *parser.Expr, *parser.Expr, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
-		return nil, nil, false
+		return nil, nil, nil, false
 	}
 	u := e.Binary.Left
 	if u == nil || len(u.Ops) != 0 {
-		return nil, nil, false
+		return nil, nil, nil, false
 	}
 	p := u.Value
 	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
-		return nil, nil, false
+		return nil, nil, nil, false
 	}
 	call := p.Target.Call
 	if call.Func != "range" {
-		return nil, nil, false
+		return nil, nil, nil, false
 	}
 	switch len(call.Args) {
 	case 1:
-		return nil, call.Args[0], true
+		return nil, call.Args[0], nil, true
 	case 2:
-		return call.Args[0], call.Args[1], true
+		return call.Args[0], call.Args[1], nil, true
+	case 3:
+		return call.Args[0], call.Args[1], call.Args[2], true
 	default:
-		return nil, nil, false
+		return nil, nil, nil, false
 	}
 }
