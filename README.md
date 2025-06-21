@@ -655,6 +655,33 @@ The C# code generator also omits several language capabilities:
 - Agent initialization with field values
 - The `eval` builtin function
 
+## Unsupported Features (Zig Backend)
+
+The Zig backend currently supports only a minimal subset of Mochi. Missing features include:
+
+- Dataset query expressions (`from ... sort ... select`)
+- Advanced string slicing and indexing on assignment
+- Iteration over map key/value pairs
+- Functions with multiple return values
+- Generic type parameters
+- Nested list types beyond one dimension
+- User-defined structs and union types
+- Pattern matching with `match` expressions
+- Built-in helpers like `fetch`, `load`, `save` and `generate`
+- Logic programming constructs (`fact`, `rule`, `query`)
+- Concurrency features such as streams or `spawn`
+- Anonymous function expressions (`fun` values)
+- Foreign imports and `extern` declarations
+- Agent declarations and `on` handlers
+- Intent functions within agents
+- Extern object declarations
+- Stream declarations and `emit` statements
+- Model declarations
+- Package declarations and `export` statements
+- Destructuring bindings in `let` and `var` statements
+- Inline `if` expressions
+- Methods declared inside `type` blocks
+
 ## License
 
 Mochi is open source under the [MIT License](./LICENSE).

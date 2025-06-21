@@ -28,6 +28,7 @@ type Compiler struct {
 	needsSlice        bool
 	needsSliceString  bool
 	needsReduce       bool
+	needsEqual        bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -259,6 +260,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsEqual {
+		c.writeln("fn _equal(a: anytype, b: anytype) bool {")
+		c.indent++
+		c.writeln("if (@TypeOf(a) != @TypeOf(b)) return false;")
+		c.writeln("return switch (@typeInfo(@TypeOf(a))) {")
+		c.indent++
+		c.writeln(".Struct, .Union, .Array, .Vector, .Pointer, .Slice => std.meta.eql(a, b),")
+		c.writeln("else => a == b,")
+		c.indent--
+		c.writeln("};")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	c.buf.WriteString(body)
 	return c.buf.Bytes(), nil
 }
@@ -485,6 +500,32 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target, false)
+	if err != nil {
+		return "", err
+	}
+	expr := "0"
+	for i := len(m.Cases) - 1; i >= 0; i-- {
+		cs := m.Cases[i]
+		res, err := c.compileExpr(cs.Result, false)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			expr = res
+			continue
+		}
+		pat, err := c.compileExpr(cs.Pattern, false)
+		if err != nil {
+			return "", err
+		}
+		c.needsEqual = true
+		expr = fmt.Sprintf("if (_equal(%s, %s)) %s else (%s)", target, pat, res, expr)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileVar(st *parser.VarStmt) error {
@@ -769,6 +810,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		return c.compileListLiteral(p.List, !asReturn)
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Group != nil:

@@ -292,6 +292,8 @@ LeetCode solutions:
 * model declarations
 * package declarations and `export` statements
 * destructuring bindings in `let` and `var` statements
+* inline `if` expressions
+* methods declared inside `type` blocks
 
 These features are not yet implemented, so programs relying on them will fail to
 compile or run correctly.  Most LeetCode tasks after problem 10 depend on at
