@@ -635,6 +635,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.List != nil:
 		if len(p.List.Elems) == 0 {
 			return "Array new", nil
@@ -767,6 +769,45 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "'" + s + "'", nil
 	}
 	return "", fmt.Errorf("unknown literal")
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	var b strings.Builder
+	if len(fn.Params) > 0 {
+		b.WriteString("[:" + fn.Params[0].Name)
+		for _, p := range fn.Params[1:] {
+			b.WriteString(" :" + p.Name)
+		}
+		b.WriteString(" |")
+	} else {
+		b.WriteString("[|")
+	}
+	vars := []string{}
+	if len(fn.BlockBody) > 0 {
+		vars = collectVars(fn.BlockBody)
+	}
+	if len(vars) > 0 {
+		b.WriteString(" | " + strings.Join(vars, " ") + " |")
+	}
+	if fn.ExprBody != nil {
+		expr, err := c.compileExpr(fn.ExprBody)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(" " + expr + " ]")
+		return b.String(), nil
+	}
+	b.WriteByte('\n')
+	sub := &Compiler{env: c.env, funParams: c.funParams}
+	sub.indent = 1
+	for _, s := range fn.BlockBody {
+		if err := sub.compileStmt(s); err != nil {
+			return "", err
+		}
+	}
+	b.WriteString(sub.buf.String())
+	b.WriteString("]")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {

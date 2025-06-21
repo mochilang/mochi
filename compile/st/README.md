@@ -33,7 +33,7 @@ The following language constructs are not yet handled:
 - Import and package statements
 - Model declarations (`model`) and related LLM helpers
 - Pattern matching with `match`
-- Anonymous function expressions (`fun (...) { ... }` or `fun (...) => expr`)
 - Union type declarations
 - Set literals and set operations
 - Concurrency primitives like `spawn` and channels
+- Built-in helpers like `append`, `now`, `json`, and `eval`
