@@ -1,0 +1,19 @@
+package topic
+
+export type Topic<T> {
+  subscribers: list<fun(T)>
+}
+
+export fun new<T>(): Topic<T> {
+  return Topic<T> { subscribers: [] }
+}
+
+export fun Topic<T>.subscribe(t: Topic<T>, handler: fun(T)) {
+  t.subscribers = t.subscribers + [handler]
+}
+
+export fun Topic<T>.publish(t: Topic<T>, msg: T) {
+  for h in t.subscribers {
+    h(msg)
+  }
+}

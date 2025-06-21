@@ -1,0 +1,7 @@
+import "./lib/cloud/function" as function
+
+let f = function.new(fun(p: any): string {
+  return "echo " + str(p)
+})
+
+print(function.invoke(f, "hi"))

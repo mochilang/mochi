@@ -1,0 +1,17 @@
+package cloud
+
+export type App {
+  resources: list<any>
+}
+
+export fun new(): App {
+  return App { resources: [] }
+}
+
+export fun App.add(app: App, res: any) {
+  app.resources = app.resources + [res]
+}
+
+export fun App.synth(app: App) {
+  print("Synthesizing", len(app.resources), "resources")
+}

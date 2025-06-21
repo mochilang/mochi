@@ -1,0 +1,5 @@
+import "./lib/cloud/bucket" as bucket
+
+let b = bucket.new("test")
+bucket.put(b, "foo", "bar")
+print(bucket.get(b, "foo"))
