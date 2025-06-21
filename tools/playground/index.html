@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Mochi Playground</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto max-w-2xl py-8">
+  <h1 class="text-2xl font-semibold mb-4">Mochi Playground</h1>
+  <textarea id="code" class="w-full h-48 p-2 border rounded mb-4 font-mono" spellcheck="false">print("hello wasm")</textarea>
+  <button id="run" class="bg-black text-white px-4 py-2 rounded">Run</button>
+  <pre id="output" class="bg-gray-900 text-green-400 p-4 mt-4 rounded"></pre>
+</div>
+<script src="wasm_exec.js"></script>
+<script>
+const go = new Go();
+WebAssembly.instantiateStreaming(fetch("mochi.wasm"), go.importObject).then((res) => {
+    go.run(res.instance);
+    document.getElementById("run").onclick = () => {
+        const src = document.getElementById("code").value;
+        const out = runMochi(src);
+        document.getElementById("output").textContent = out;
+    };
+});
+</script>
+</body>
+</html>
