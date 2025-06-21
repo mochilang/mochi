@@ -280,6 +280,8 @@ LeetCode solutions:
 * extern object declarations
 * stream declarations and `emit` statements
 * model declarations
+* package declarations and `export` statements
+* destructuring bindings in `let` and `var` statements
 
 These features are not yet implemented, so programs relying on them will fail to
 compile or run correctly.  Most LeetCode tasks after problem 10 depend on at
