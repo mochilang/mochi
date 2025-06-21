@@ -24,6 +24,7 @@ statements are present.
 - Dataset helpers `load` and `save`
 - Generative `generate` blocks for text, embeddings and structs
 - Test blocks with `expect`
+- Pattern matching expressions with `match`
 
 ## Building
 
@@ -43,10 +44,8 @@ a selection of LeetCode solutions.
 
 ## Unsupported Features
 
-The Java backend currently lacks many Mochi features supported by other
+- The Java backend currently lacks many Mochi features supported by other
 compilers:
-
-- Pattern matching expressions
 - Union types and tagged unions
 - Dataset queries (`from`/`select`, joins, grouping)
 - Concurrency primitives like streams, agents, `spawn` and channels
@@ -63,5 +62,6 @@ compilers:
 - Error handling with `try`/`catch` blocks
 - YAML dataset loading/saving
 - Destructuring bindings in `let` and `var` statements
+- Conditional expressions using `if`/`else`
 
 Simple `from` queries used by the LeetCode examples are now supported.

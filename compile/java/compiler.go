@@ -12,18 +12,19 @@ import (
 
 // Compiler translates a Mochi AST into Java source code.
 type Compiler struct {
-	buf        bytes.Buffer
-	indent     int
-	env        *types.Env
-	mainStmts  []*parser.Statement
-	tests      []*parser.TestBlock
-	helpers    map[string]bool
-	returnType types.Type
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	mainStmts    []*parser.Statement
+	tests        []*parser.TestBlock
+	helpers      map[string]bool
+	returnType   types.Type
+	tempVarCount int
 }
 
 // New creates a new Java compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), tests: []*parser.TestBlock{}}
+	return &Compiler{env: env, helpers: make(map[string]bool), tests: []*parser.TestBlock{}, tempVarCount: 0}
 }
 
 // Compile generates Java code for prog.
@@ -1005,6 +1006,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileSaveExpr(p.Save)
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	}
@@ -1235,6 +1238,49 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 
 	c.helpers["_genText"] = true
 	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramMap), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: m}}}}}
+	retT := c.inferExprType(expr)
+	retType := c.javaType(retT)
+	if retType == "" {
+		retType = "Object"
+	}
+	retGen := boxedType(retType)
+	var buf bytes.Buffer
+	buf.WriteString("(new java.util.function.Supplier<" + retGen + ">() {\n")
+	buf.WriteString("\tpublic " + retGen + " get() {\n")
+	buf.WriteString("\t\tObject _t = " + target + ";\n")
+	for _, cse := range m.Cases {
+		if isUnderscoreExpr(cse.Pattern) {
+			res, err := c.compileExpr(cse.Result)
+			if err != nil {
+				return "", err
+			}
+			buf.WriteString("\t\treturn " + res + ";\n")
+			buf.WriteString("\t}\n")
+			buf.WriteString("}).get()")
+			return buf.String(), nil
+		}
+		pat, err := c.compileExpr(cse.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cse.Result)
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString("\t\tif (java.util.Objects.equals(_t, " + pat + ")) return " + res + ";\n")
+	}
+	buf.WriteString("\t\treturn " + zeroValue(retType) + ";\n")
+	buf.WriteString("\t}\n")
+	buf.WriteString("}).get()")
+	return buf.String(), nil
 }
 
 func (c *Compiler) emitRuntime() {
