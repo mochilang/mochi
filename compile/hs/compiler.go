@@ -218,6 +218,18 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	if ft.Return == nil {
 		ft.Return = types.VoidType{}
 	}
+	if _, ok := ft.Return.(types.VoidType); ok {
+		inf := c.inferFuncReturn(fun.Body)
+		if _, ok := inf.(types.VoidType); !ok {
+			ft.Return = inf
+		}
+	}
+	if _, ok := ft.Return.(types.AnyType); ok {
+		inf := c.inferFuncReturn(fun.Body)
+		if _, ok := inf.(types.AnyType); !ok {
+			ft.Return = inf
+		}
+	}
 	if len(paramTypes) == len(ft.Params) {
 		for i := range paramTypes {
 			paramTypes[i] = c.hsType(ft.Params[i])
@@ -298,6 +310,15 @@ func (c *Compiler) collectLets(stmts []*parser.Statement) []string {
 		}
 	}
 	return res
+}
+
+func (c *Compiler) inferFuncReturn(body []*parser.Statement) types.Type {
+	for _, s := range body {
+		if s.Return != nil {
+			return c.inferExprType(s.Return.Value)
+		}
+	}
+	return types.VoidType{}
 }
 
 // compileStmtExpr compiles statements to a Maybe-returning expression.
@@ -668,110 +689,6 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	ret := c.defaultReturn(fn.BlockBody, types.VoidType{})
 	return fmt.Sprintf("(\\%s -> fromMaybe (%s) $ %s)", strings.Join(params, " "), ret, expr), nil
-}
-
-func (c *Compiler) exprIsString(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
-		return false
-	}
-	u := e.Binary.Left
-	if u == nil || len(u.Ops) != 0 || u.Value == nil {
-		return false
-	}
-	p := u.Value.Target
-	if p == nil {
-		return false
-	}
-	if p.Lit != nil && p.Lit.Str != nil {
-		return true
-	}
-	if p.Selector != nil && len(p.Selector.Tail) == 0 {
-		if c.env != nil {
-			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-				if _, ok := t.(types.StringType); ok {
-					return true
-				}
-			}
-		}
-	}
-	return false
-}
-
-func (c *Compiler) exprIsInt(e *parser.Expr) bool {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
-		return false
-	}
-	u := e.Binary.Left
-	return c.unaryIsInt(u)
-}
-
-func (c *Compiler) unaryIsInt(u *parser.Unary) bool {
-	if u == nil || u.Value == nil {
-		return false
-	}
-	return c.postfixIsInt(u.Value)
-}
-
-func (c *Compiler) postfixIsInt(p *parser.PostfixExpr) bool {
-	if p == nil || len(p.Ops) != 0 {
-		return false
-	}
-	return c.primaryIsInt(p.Target)
-}
-
-func (c *Compiler) primaryIsInt(p *parser.Primary) bool {
-	if p == nil {
-		return false
-	}
-	if p.Lit != nil && p.Lit.Int != nil {
-		return true
-	}
-	if p.Selector != nil && len(p.Selector.Tail) == 0 {
-		if c.env != nil {
-			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-				switch t.(type) {
-				case types.IntType, types.Int64Type:
-					return true
-				}
-			}
-		}
-	}
-	return false
-}
-
-func (c *Compiler) isMapExpr(p *parser.Primary) bool {
-	if p == nil {
-		return false
-	}
-	if p.Selector != nil && len(p.Selector.Tail) == 0 {
-		if c.env != nil {
-			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-				if _, ok := t.(types.MapType); ok {
-					return true
-				}
-			}
-		}
-	}
-	return false
-}
-
-func (c *Compiler) isStringExpr(p *parser.Primary) bool {
-	if p == nil {
-		return false
-	}
-	if p.Lit != nil && p.Lit.Str != nil {
-		return true
-	}
-	if p.Selector != nil && len(p.Selector.Tail) == 0 {
-		if c.env != nil {
-			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-				if _, ok := t.(types.StringType); ok {
-					return true
-				}
-			}
-		}
-	}
-	return false
 }
 
 func isInputCall(e *parser.Expr) bool {

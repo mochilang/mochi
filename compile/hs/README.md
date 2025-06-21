@@ -5,6 +5,8 @@ useful for experimenting with the language or running Mochi code on systems wher
 GHC is available. The backend only implements a small subset of Mochi features
 but is sufficient for many scripts and simple utilities.
 
+The compiler performs simple type inference to reduce occurrences of the
+unit type in generated code.
 ## Files
 
 - `compiler.go` – walks the Mochi AST and produces Haskell code
