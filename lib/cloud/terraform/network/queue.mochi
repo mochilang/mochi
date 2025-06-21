@@ -1,0 +1,14 @@
+package network
+
+type Queue {
+  name: string
+  visibility_timeout: int
+
+  fun to_map(): map<string, any> {
+    return { kind: "queue", name: name, visibility_timeout: visibility_timeout }
+  }
+}
+
+export fun queue(name: string, visibility_timeout: int): Queue {
+  return Queue { name: name, visibility_timeout: visibility_timeout }
+}

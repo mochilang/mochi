@@ -1,0 +1,14 @@
+package storage
+
+type Bucket {
+  name: string
+  versioned: bool
+
+  fun to_map(): map<string, any> {
+    return { kind: "bucket", name: name, versioned: versioned }
+  }
+}
+
+export fun bucket(name: string, versioned: bool): Bucket {
+  return Bucket { name: name, versioned: versioned }
+}

@@ -1,0 +1,15 @@
+package compute
+
+type Function {
+  name: string
+  runtime: string
+  handler: string
+
+  fun to_map(): map<string, string> {
+    return { kind: "function", name: name, runtime: runtime, handler: handler }
+  }
+}
+
+export fun function(name: string, runtime: string, handler: string): Function {
+  return Function { name: name, runtime: runtime, handler: handler }
+}
