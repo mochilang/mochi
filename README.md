@@ -618,6 +618,7 @@ implemented across all backends:
 * Pattern matching on union variants
 * Nested recursive functions inside other functions
 * Foreign imports and `extern` declarations
+* Dynamic evaluation helpers like `eval`, `json` and `to_json`
 
 ## Benchmarks
 

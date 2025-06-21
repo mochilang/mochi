@@ -638,30 +638,41 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tmp := c.newTemp()
 	var b strings.Builder
 	b.WriteString("(fn ->\n")
-	b.WriteString("\t" + tmp + " = " + target + "\n")
-	b.WriteString("\tcond do\n")
+	b.WriteString("\tcase " + target + " do\n")
 	hasDefault := false
 	for _, cs := range m.Cases {
+		if isUnderscoreExpr(cs.Pattern) {
+			res, err := c.compileExpr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString("\t  _ -> " + res + "\n")
+			hasDefault = true
+			continue
+		}
+		pat, err := c.compilePattern(cs.Pattern)
+		if err == nil {
+			res, err := c.compileExpr(cs.Result)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString("\t  " + pat + " -> " + res + "\n")
+			continue
+		}
+		patExpr, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
-		if isUnderscoreExpr(cs.Pattern) {
-			b.WriteString("\t\ttrue -> " + res + "\n")
-			hasDefault = true
-			break
-		}
-		pat, err := c.compileExpr(cs.Pattern)
-		if err != nil {
-			return "", err
-		}
-		b.WriteString(fmt.Sprintf("\t\t%s == %s -> %s\n", tmp, pat, res))
+		b.WriteString(fmt.Sprintf("\t  v when v == %s -> %s\n", patExpr, res))
 	}
 	if !hasDefault {
-		b.WriteString("\t\ttrue -> nil\n")
+		b.WriteString("\t  _ -> nil\n")
 	}
 	b.WriteString("\tend\nend)()")
 	return b.String(), nil
@@ -1181,6 +1192,59 @@ func simpleAtomKey(e *parser.Expr) (string, bool) {
 
 func isValidAtom(s string) bool {
 	return atomIdent.MatchString(s)
+}
+
+func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
+	switch {
+	case l.Int != nil:
+		return strconv.Itoa(*l.Int), nil
+	case l.Float != nil:
+		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
+	case l.Str != nil:
+		return strconv.Quote(*l.Str), nil
+	case l.Bool != nil:
+		if bool(*l.Bool) {
+			return "true", nil
+		}
+		return "false", nil
+	default:
+		return "nil", fmt.Errorf("invalid literal")
+	}
+}
+
+func (c *Compiler) compilePattern(e *parser.Expr) (string, error) {
+	if isUnderscoreExpr(e) {
+		return "_", nil
+	}
+	if call, ok := callPattern(e); ok {
+		if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+			st := ut.Variants[call.Func]
+			parts := make([]string, 0, len(call.Args))
+			for i, a := range call.Args {
+				id, ok := identName(a)
+				field := st.Order[i]
+				if !ok || id == "_" {
+					parts = append(parts, fmt.Sprintf("%s: _", field))
+				} else {
+					parts = append(parts, fmt.Sprintf("%s: %s", field, sanitizeName(id)))
+				}
+			}
+			if len(parts) == 0 {
+				return fmt.Sprintf("%%%s{}", sanitizeName(call.Func)), nil
+			}
+			return fmt.Sprintf("%%%s{%s}", sanitizeName(call.Func), strings.Join(parts, ", ")), nil
+		}
+	}
+	if ident, ok := identName(e); ok {
+		if _, ok := c.env.FindUnionByVariant(ident); ok {
+			return fmt.Sprintf("%%%s{}", sanitizeName(ident)), nil
+		}
+		return sanitizeName(ident), nil
+	}
+	if lit := extractLiteral(e); lit != nil {
+		return c.compileLiteral(lit)
+	}
+	return "", fmt.Errorf("unsupported pattern")
 }
 
 func (c *Compiler) staticTypeOfPostfix(p *parser.PostfixExpr) (types.Type, bool) {
