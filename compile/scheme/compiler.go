@@ -299,10 +299,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.vars[s.Let.Name] = "map"
 			}
 		} else {
-			if isStringExpr(s.Let.Value, c.vars) {
+			if c.isStringExpr(s.Let.Value) {
 				c.vars[s.Let.Name] = "string"
 			}
-			if isMapExpr(s.Let.Value, c.vars) {
+			if c.isMapExpr(s.Let.Value) {
 				c.vars[s.Let.Name] = "map"
 			}
 		}
@@ -329,10 +329,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.vars[s.Var.Name] = "map"
 			}
 		} else {
-			if isStringExpr(s.Var.Value, c.vars) {
+			if c.isStringExpr(s.Var.Value) {
 				c.vars[s.Var.Name] = "string"
 			}
-			if isMapExpr(s.Var.Value, c.vars) {
+			if c.isMapExpr(s.Var.Value) {
 				c.vars[s.Var.Name] = "map"
 			}
 		}
@@ -346,7 +346,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.writeln(fmt.Sprintf("(set! %s %s)", lhs, rhs))
 			break
 		}
-		expr, err := c.compileIndexedSet(lhs, s.Assign.Index, rhs, c.vars[s.Assign.Name] == "string", c.vars[s.Assign.Name] == "map")
+		expr, err := c.compileIndexedSet(lhs, s.Assign.Index, rhs, c.varType(s.Assign.Name) == "string", c.varType(s.Assign.Name) == "map")
 		if err != nil {
 			return err
 		}
@@ -472,7 +472,7 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		return err
 	}
 	root := rootNameExpr(st.Source)
-	isStr := c.vars[root] == "string" || isStringExpr(st.Source, c.vars)
+	isStr := c.varType(root) == "string" || c.isStringExpr(st.Source)
 	idx := sanitizeName(name + "_idx")
 	lenExpr := fmt.Sprintf("(length %s)", src)
 	elemExpr := fmt.Sprintf("(list-ref %s %s)", src, idx)
@@ -767,9 +767,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if p.Target != nil && p.Target.Selector != nil {
 				targetName = p.Target.Selector.Root
 			}
-			if c.vars[targetName] == "string" || isStringPrimary(p.Target) {
+			if c.varType(targetName) == "string" || c.isStringPrimary(p.Target) {
 				expr = fmt.Sprintf("(string-ref %s %s)", expr, idx)
-			} else if c.vars[targetName] == "map" || isMapPrimary(p.Target) {
+			} else if c.varType(targetName) == "map" || c.isMapPrimary(p.Target) {
 				c.needMapHelpers = true
 				expr = fmt.Sprintf("(map-get %s %s)", expr, idx)
 			} else {
@@ -925,7 +925,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("len expects 1 arg")
 		}
 		root := rootNameExpr(call.Args[0])
-		if c.vars[root] == "string" || isStringExpr(call.Args[0], c.vars) {
+		if c.varType(root) == "string" || c.isStringExpr(call.Args[0]) {
 			return fmt.Sprintf("(string-length %s)", args[0]), nil
 		}
 		return fmt.Sprintf("(length %s)", args[0]), nil
@@ -1161,75 +1161,4 @@ func sanitizeName(name string) string {
 		s = "_" + s
 	}
 	return s
-}
-
-// isStringExpr reports whether the expression resolves to a string literal or a
-// variable tracked as a string in vars.
-func isStringExpr(e *parser.Expr, vars map[string]string) bool {
-	if e == nil || e.Binary == nil || e.Binary.Left == nil {
-		return false
-	}
-	if isStringUnary(e.Binary.Left, vars) {
-		return true
-	}
-	return false
-}
-
-func isStringUnary(u *parser.Unary, vars map[string]string) bool {
-	if u == nil {
-		return false
-	}
-	if isStringPostfix(u.Value, vars) {
-		return true
-	}
-	return false
-}
-
-func isStringPostfix(p *parser.PostfixExpr, vars map[string]string) bool {
-	if p == nil {
-		return false
-	}
-	if isStringPrimary(p.Target) {
-		return true
-	}
-	if p.Target != nil && p.Target.Selector != nil {
-		return vars[p.Target.Selector.Root] == "string"
-	}
-	return false
-}
-
-func isStringPrimary(p *parser.Primary) bool {
-	return p != nil && p.Lit != nil && p.Lit.Str != nil
-}
-
-// isMapExpr reports whether the expression is a map literal or variable tracked as a map.
-func isMapExpr(e *parser.Expr, vars map[string]string) bool {
-	if e == nil || e.Binary == nil || e.Binary.Left == nil {
-		return false
-	}
-	return isMapUnary(e.Binary.Left, vars)
-}
-
-func isMapUnary(u *parser.Unary, vars map[string]string) bool {
-	if u == nil {
-		return false
-	}
-	return isMapPostfix(u.Value, vars)
-}
-
-func isMapPostfix(p *parser.PostfixExpr, vars map[string]string) bool {
-	if p == nil || len(p.Ops) > 0 {
-		return false
-	}
-	if isMapPrimary(p.Target) {
-		return true
-	}
-	if p.Target != nil && p.Target.Selector != nil {
-		return vars[p.Target.Selector.Root] == "map"
-	}
-	return false
-}
-
-func isMapPrimary(p *parser.Primary) bool {
-	return p != nil && p.Map != nil
 }
