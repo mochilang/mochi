@@ -210,8 +210,11 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
 	c.writeln("#include <string.h>")
-	c.writeln("#include \"runtime.h\"")
 	c.writeln("")
+	c.emitRuntime()
+	if c.buf.Len() > 0 && c.buf.Bytes()[c.buf.Len()-1] != '\n' {
+		c.writeln("")
+	}
 	for _, ex := range c.externs {
 		c.writeln(ex)
 	}
