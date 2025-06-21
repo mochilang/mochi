@@ -1,0 +1,18 @@
+(ns main)
+
+(defn _union [a b]
+  (vec (distinct (concat a b))))
+(defn _except [a b]
+  (vec (remove (set b) a)))
+(defn _intersect [a b]
+  (vec (distinct (filter (set b) a))))
+(defn -main []
+  (def a [1 2 3])
+  (def b [3 4])
+  (println (_union a b))
+  (println (_except a b))
+  (println (_intersect a b))
+  (println (_union [1 2] [2 3]))
+)
+
+(-main)

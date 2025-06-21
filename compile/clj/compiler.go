@@ -598,9 +598,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		{"*", "/", "%"},
 		{"+", "-"},
 		{"<", "<=", ">", ">="},
-		{"==", "!="},
+		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	}
 
 	for _, lvl := range levels {
@@ -662,6 +663,21 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.BoolType{}
 	case "&&", "||":
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.BoolType{}
+	case "in":
+		c.use("_in")
+		return fmt.Sprintf("(_in %s %s)", left, right), types.BoolType{}
+	case "union_all":
+		c.use("_union_all")
+		return fmt.Sprintf("(_union_all %s %s)", left, right), leftType
+	case "union":
+		c.use("_union")
+		return fmt.Sprintf("(_union %s %s)", left, right), leftType
+	case "except":
+		c.use("_except")
+		return fmt.Sprintf("(_except %s %s)", left, right), leftType
+	case "intersect":
+		c.use("_intersect")
+		return fmt.Sprintf("(_intersect %s %s)", left, right), leftType
 	default:
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.AnyType{}
 	}
