@@ -1,4 +1,32 @@
 # 📦 CHANGELOG.md
+## [0.8.10] – 2025-06-22
+
+### Added
+
+* Agent support for C# and Dart
+* Right join in Ruby with left/right joins in C# and join helpers in Erlang
+* Query sorting, pagination and advanced join operations in Clojure
+* CSV, JSON and YAML dataset helpers in Elixir, Kotlin and Dart
+* Extern declarations for Kotlin, Rust and the C backend
+* Now and JSON builtins across C, C++, Dart and Swift
+* Eval builtins in Ruby and C#
+* Fetch expression support in Swift and new fetch options in Erlang
+* Step range loops for Zig with constant and descending ranges in COBOL
+* Multi-dimensional slice assignments in Racket and Fortran
+* Open-ended slices, print/call statements and abs builtin for COBOL
+* Map membership and struct support in Zig with map-key iteration in C++
+* Union/extern type support in the C backend and union_all in Java
+* Push/keys builtins in Scheme and generative dataset helpers in F#
+* Logic programming support for Prolog and an input builtin in OCaml
+
+### Changed
+
+* Compiler codebases reorganized with smaller files and runtime helpers
+
+### Fixed
+
+* Average builtin and Pascal temporary variable issues resolved
+* Fortran golden tests corrected
 ## [0.8.9] – 2025-06-21
 
 ### Added
