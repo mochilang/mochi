@@ -318,6 +318,11 @@ LeetCode solutions:
 * destructuring bindings in `let` and `var` statements
 * nested function declarations inside other functions
 * methods declared inside `type` blocks
+* enum type declarations
+* variadic functions
+* closures that capture surrounding variables
+* dataset joins with outer or right side options
+* agent initialization with field values
 
 These features are not yet implemented, so programs relying on them will fail to
 compile or run correctly.  Most LeetCode tasks after problem 10 depend on at

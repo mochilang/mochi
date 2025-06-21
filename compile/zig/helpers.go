@@ -3,6 +3,7 @@ package zigcode
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"mochi/parser"
 	"mochi/types"
@@ -24,6 +25,13 @@ func zigTypeOf(t types.Type) string {
 		return "[]const " + zigTypeOf(tt.Elem)
 	case types.MapType:
 		return fmt.Sprintf("std.AutoHashMap(%s, %s)", zigTypeOf(tt.Key), zigTypeOf(tt.Value))
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = zigTypeOf(p)
+		}
+		ret := zigTypeOf(tt.Return)
+		return fmt.Sprintf("fn(%s) %s", strings.Join(params, ", "), ret)
 	case types.VoidType:
 		return "void"
 	default:
@@ -131,4 +139,16 @@ func (c *Compiler) newTmp() string {
 	name := fmt.Sprintf("_tmp%d", c.tmpCount)
 	c.tmpCount++
 	return name
+}
+
+func indentBlock(s string, depth int) string {
+	if s == "" {
+		return s
+	}
+	prefix := strings.Repeat("\t", depth)
+	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
+	for i, line := range lines {
+		lines[i] = prefix + line
+	}
+	return strings.Join(lines, "\n") + "\n"
 }
