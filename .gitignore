@@ -286,6 +286,8 @@ dist/
 node_modules/
 bin/
 tools/libmochi/typescript/mochi.wasm.gz
+tools/playground/mochi.wasm
+tools/playground/wasm_exec.js
 **/*.egg-info/
 **/__pycache__/
 *.class
