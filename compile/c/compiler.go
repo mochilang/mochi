@@ -78,6 +78,8 @@ type Compiler struct {
 	needsExceptListString    bool
 	needsIntersectListInt    bool
 	needsIntersectListString bool
+	needsNow                 bool
+	needsJSON                bool
 	externs                  []string
 	externObjects            []string
 	structs                  map[string]bool
@@ -1180,6 +1182,31 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if p.Call.Func == "input" {
 			c.needsInput = true
 			return "_input()"
+		} else if p.Call.Func == "now" {
+			c.needsNow = true
+			return "_now()"
+		} else if p.Call.Func == "json" {
+			if len(p.Call.Args) != 1 {
+				return ""
+			}
+			argExpr := c.compileExpr(p.Call.Args[0])
+			c.needsJSON = true
+			if isListListExpr(p.Call.Args[0], c.env) {
+				c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
+			} else if isListIntExpr(p.Call.Args[0], c.env) {
+				c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
+			} else if isListFloatExpr(p.Call.Args[0], c.env) {
+				c.writeln(fmt.Sprintf("_json_list_float(%s);", argExpr))
+			} else if isListStringExpr(p.Call.Args[0], c.env) {
+				c.writeln(fmt.Sprintf("_json_list_string(%s);", argExpr))
+			} else if isFloatArg(p.Call.Args[0], c.env) {
+				c.writeln(fmt.Sprintf("_json_float(%s);", argExpr))
+			} else if isStringArg(p.Call.Args[0], c.env) {
+				c.writeln(fmt.Sprintf("_json_string(%s);", argExpr))
+			} else {
+				c.writeln(fmt.Sprintf("_json_int(%s);", argExpr))
+			}
+			return ""
 		}
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
