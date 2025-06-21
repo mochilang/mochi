@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -23,11 +25,12 @@ type Compiler struct {
 
 	tmpCount int
 
-	helpers map[string]bool
+	helpers  map[string]bool
+	packages map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), tmpCount: 0}
+	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), tmpCount: 0}
 }
 
 // Compile returns Lua source implementing prog.
@@ -39,6 +42,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.labelCount = 0
 	c.tmpCount = 0
 	c.helpers = make(map[string]bool)
+	c.packages = make(map[string]bool)
 
 	// Emit function declarations first.
 	for _, s := range prog.Statements {
@@ -167,6 +171,9 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	if im.Lang != nil && *im.Lang != "lua" {
 		return fmt.Errorf("unsupported import language: %s", *im.Lang)
 	}
+	if im.Lang == nil {
+		return c.compilePackageImport(im)
+	}
 	alias := im.As
 	if alias == "" {
 		alias = parser.AliasFromPath(im.Path)
@@ -174,6 +181,102 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	alias = sanitizeName(alias)
 	path := strings.Trim(im.Path, "\"")
 	c.writeln(fmt.Sprintf("local %s = require(%q)", alias, path))
+	return nil
+}
+
+func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	if c.packages[alias] {
+		return nil
+	}
+	c.packages[alias] = true
+
+	path := strings.Trim(im.Path, "\"")
+	base := ""
+	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
+		base = filepath.Dir(im.Pos.Filename)
+	}
+	target := filepath.Join(base, path)
+	info, err := os.Stat(target)
+	if err != nil {
+		if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
+			if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
+				info = fi
+				target += ".mochi"
+			} else {
+				return fmt.Errorf("import package: %w", err)
+			}
+		} else {
+			return fmt.Errorf("import package: %w", err)
+		}
+	}
+
+	var files []string
+	if info.IsDir() {
+		entries, err := os.ReadDir(target)
+		if err != nil {
+			return fmt.Errorf("import package: %w", err)
+		}
+		for _, e := range entries {
+			if !e.IsDir() && strings.HasSuffix(e.Name(), ".mochi") {
+				files = append(files, filepath.Join(target, e.Name()))
+			}
+		}
+		sort.Strings(files)
+	} else {
+		files = []string{target}
+	}
+
+	pkgEnv := types.NewEnv(c.env)
+	origEnv := c.env
+	c.env = pkgEnv
+
+	c.writeln(fmt.Sprintf("local function _import_%s()", alias))
+	c.indent++
+	c.writeln("local _pkg = {}")
+
+	pkgName := alias
+	for _, f := range files {
+		prog, err := parser.Parse(f)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		if prog.Package != "" {
+			pkgName = prog.Package
+		}
+		if errs := types.Check(prog, pkgEnv); len(errs) > 0 {
+			c.env = origEnv
+			return errs[0]
+		}
+		for _, s := range prog.Statements {
+			if s.Fun != nil && s.Fun.Export {
+				if err := c.compileFun(s.Fun, true); err != nil {
+					c.env = origEnv
+					return err
+				}
+				name := sanitizeName(s.Fun.Name)
+				c.writeln(fmt.Sprintf("_pkg.%s = %s", name, name))
+				c.writeln("")
+			} else {
+				if err := c.compileStmt(s); err != nil {
+					c.env = origEnv
+					return err
+				}
+			}
+		}
+	}
+	c.writeln(fmt.Sprintf("_pkg.__name = %q", pkgName))
+	c.writeln("return _pkg")
+	c.env = origEnv
+	c.indent--
+	c.writeln("end")
+	c.writeln(fmt.Sprintf("local %s = _import_%s()", alias, alias))
+	c.writeln("")
 	return nil
 }
 

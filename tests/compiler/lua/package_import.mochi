@@ -1,0 +1,3 @@
+import "./helper" as helper
+
+print(helper.double(5))

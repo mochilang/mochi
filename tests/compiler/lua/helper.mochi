@@ -1,0 +1,5 @@
+package helper
+
+export fun double(x: int): int {
+  return x * 2
+}

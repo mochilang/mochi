@@ -296,9 +296,8 @@ fail at runtime:
 - Model and stream declarations
 - Methods declared inside `type` blocks
 - Reflection and macro facilities
-- Concurrency primitives such as `spawn`, `stream`, `agent` and related features
-  are not available
-- Package declarations and `export` statements
+- Concurrency primitives such as `spawn`, `stream`, `agent` and related features,
+  including `on`/`emit` handlers and `intent` functions, are not available
 - Module imports were unsupported but are now handled via `require`
 - Generic type parameters for functions and user-defined types are not handled
 
