@@ -561,6 +561,23 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			typ = "string"
 			continue
 		}
+		if op.Op == "in" {
+			if strings.HasPrefix(rtyp, "vector<") {
+				expr = fmt.Sprintf("(find(%s.begin(), %s.end(), %s) != %s.end())", rhs, rhs, expr, rhs)
+				typ = "bool"
+				continue
+			}
+			if strings.HasPrefix(rtyp, "unordered_map<") {
+				expr = fmt.Sprintf("(%s.count(%s) != 0)", rhs, expr)
+				typ = "bool"
+				continue
+			}
+			if rtyp == "string" {
+				expr = fmt.Sprintf("(%s.find(%s) != string::npos)", rhs, expr)
+				typ = "bool"
+				continue
+			}
+		}
 		if op.Op == "union" {
 			c.helpers["union"] = true
 			expr = fmt.Sprintf("_union(%s, %s)", expr, rhs)

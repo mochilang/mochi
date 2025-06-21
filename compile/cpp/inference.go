@@ -267,7 +267,7 @@ func guessBinaryResultType(ltyp, op, rtyp string) string {
 			return "int"
 		}
 		return ltyp
-	case "==", "!=", "<", ">", "<=", ">=", "&&", "||":
+	case "==", "!=", "<", ">", "<=", ">=", "&&", "||", "in":
 		return "bool"
 	}
 	return ltyp
