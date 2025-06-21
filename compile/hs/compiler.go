@@ -212,8 +212,19 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 			}
 		}
 	}
+	if ft.Params == nil {
+		ft.Params = make([]types.Type, len(fun.Params))
+		for i, p := range fun.Params {
+			if p.Type != nil {
+				ft.Params[i] = c.resolveTypeRef(p.Type)
+			}
+		}
+	}
 	if ft.Return == nil && fun.Return != nil {
-		ft.Return = types.AnyType{}
+		ft.Return = c.resolveTypeRef(fun.Return)
+	}
+	if ft.Return == nil {
+		ft.Return = c.inferReturnType(fun.Body)
 	}
 	if ft.Return == nil {
 		ft.Return = types.VoidType{}
