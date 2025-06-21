@@ -149,6 +149,10 @@ end`
   cls.new(**data.transform_keys(&:to_sym))
 end`
 
+	helperEval = `def _eval(code)
+  eval(code)
+end`
+
 	helperGroup = `class _Group
   attr_accessor :key, :Items
   def initialize(k)
@@ -174,6 +178,7 @@ var helperMap = map[string]string{
 	"_genText":   helperGenText,
 	"_genEmbed":  helperGenEmbed,
 	"_genStruct": helperGenStruct,
+	"_eval":      helperEval,
 	"_group":     helperGroup,
 	"_group_by":  helperGroupBy,
 }

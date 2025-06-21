@@ -179,5 +179,12 @@ features include:
 - Error handling with `try`/`catch`.
 - Asynchronous functions (`async`/`await`).
 - Generic type parameters.
-- The `eval` builtin function.
+- Set collections (`set<T>`) and related operations.
+- Export statements on functions or types.
+- Destructuring bindings in `let` and `var` statements.
+- Generic methods inside `type` blocks.
+- Functions with multiple return values.
+- Variadic functions.
+- Map membership checks and iterating over maps in `for` loops.
+- Agent initialization with field values.
 
