@@ -3,6 +3,7 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -14,6 +15,7 @@ import (
 type Compiler struct {
 	buf        bytes.Buffer
 	indent     int
+	imports    map[string]bool
 	env        *types.Env
 	mainStmts  []*parser.Statement
 	tests      []*parser.TestBlock
@@ -23,13 +25,33 @@ type Compiler struct {
 
 // New creates a new Java compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), tests: []*parser.TestBlock{}}
+	return &Compiler{env: env, helpers: make(map[string]bool), tests: []*parser.TestBlock{}, imports: map[string]bool{}}
 }
 
 // Compile generates Java code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if prog.Package != "" {
 		c.writeln("package " + sanitizeName(prog.Package) + ";")
+		c.writeln("")
+	}
+
+	// gather imports first
+	for _, s := range prog.Statements {
+		if s.Import != nil {
+			if err := c.compileImport(s.Import); err != nil {
+				return nil, err
+			}
+		}
+	}
+	if len(c.imports) > 0 {
+		keys := make([]string, 0, len(c.imports))
+		for p := range c.imports {
+			keys = append(keys, p)
+		}
+		sort.Strings(keys)
+		for _, imp := range keys {
+			c.writeln("import " + imp + ";")
+		}
 		c.writeln("")
 	}
 	c.writeln("public class Main {")
@@ -111,6 +133,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Import != nil:
+		return c.compileImport(s.Import)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Test != nil:
@@ -317,6 +341,15 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang != nil && *im.Lang != "java" {
+		return fmt.Errorf("unsupported import language: %s", *im.Lang)
+	}
+	path := strings.Trim(im.Path, "\"")
+	c.imports[path] = true
 	return nil
 }
 

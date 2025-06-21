@@ -251,7 +251,6 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Concurrency primitives like streams, agents, `spawn` and channels
 - Foreign imports and extern functions
 - Logic programming constructs (`fact`, `rule`, `query`)
-- Import statements
 - Model declarations
 - Reflection or macro facilities
 - Extern variable, type and object declarations
@@ -260,5 +259,7 @@ The Java backend currently lacks several Mochi features supported by other compi
 - Methods declared inside `type` blocks
 - Agent initialization with field values
 - List set operations (`union`, `union all`, `intersect`, `except`)
+- Generic types beyond built-in `list` and `map`
 
 Simple `from` queries used by the LeetCode examples are now supported.
+Basic `import` statements for Java packages are also handled.
