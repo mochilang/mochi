@@ -21,7 +21,8 @@ type Compiler struct {
 	useIndexStr bool
 	useSlice    bool
 	useSliceStr bool
-	useDataset  bool
+	useLoad     bool
+	useSave     bool
 	funcRet     types.Type
 }
 
@@ -33,7 +34,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useIndexStr = false
 	c.useSlice = false
 	c.useSliceStr = false
-	c.useDataset = false
+	c.useLoad = false
+	c.useSave = false
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -166,7 +168,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 		c.writeln("")
 	}
-	if c.useDataset {
+	if c.useLoad {
 		c.writeln("func _readInput(_ path: String?) -> String {")
 		c.indent++
 		c.writeln("if let p = path, !p.isEmpty && p != \"-\" {")
@@ -176,19 +178,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 		c.writeln("let data = FileHandle.standardInput.readDataToEndOfFile()")
 		c.writeln("return String(data: data, encoding: .utf8) ?? \"\"")
-		c.indent--
-		c.writeln("}")
-		c.writeln("func _writeOutput(_ path: String?, _ text: String) {")
-		c.indent++
-		c.writeln("if let p = path, !p.isEmpty && p != \"-\" {")
-		c.indent++
-		c.writeln("try? text.write(toFile: p, atomically: true, encoding: .utf8)")
-		c.indent--
-		c.writeln("} else {")
-		c.indent++
-		c.writeln("if let data = text.data(using: .utf8) { FileHandle.standardOutput.write(data) }")
-		c.indent--
-		c.writeln("}")
 		c.indent--
 		c.writeln("}")
 		c.writeln("func _parseCSV(_ text: String, _ header: Bool, _ delim: Character) -> [[String: Any]] {")
@@ -259,6 +248,22 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("default:")
 		c.indent++
 		c.writeln("return _parseCSV(text, header, delim)")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.useSave {
+		c.writeln("func _writeOutput(_ path: String?, _ text: String) {")
+		c.indent++
+		c.writeln("if let p = path, !p.isEmpty && p != \"-\" {")
+		c.indent++
+		c.writeln("try? text.write(toFile: p, atomically: true, encoding: .utf8)")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("if let data = text.data(using: .utf8) { FileHandle.standardOutput.write(data) }")
 		c.indent--
 		c.writeln("}")
 		c.indent--
@@ -1043,7 +1048,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		}
 		opts = v
 	}
-	c.useDataset = true
+	c.useLoad = true
 	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
 }
 
@@ -1064,7 +1069,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		}
 		opts = v
 	}
-	c.useDataset = true
+	c.useSave = true
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
