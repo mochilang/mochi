@@ -653,7 +653,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	cond := strings.Join(condParts, " && ")
 	var b strings.Builder
 	b.WriteString("{\n")
-	b.WriteString("    let mut _res = Vec::new();\n")
+	if q.Sort != nil {
+		b.WriteString("    let mut _pairs = Vec::new();\n")
+	} else {
+		b.WriteString("    let mut _res = Vec::new();\n")
+	}
 	loopSrc := src
 	if len(fromSrcs) > 0 || len(joinSrcs) > 0 {
 		loopSrc += ".clone()"
@@ -675,11 +679,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if cond != "" {
 		b.WriteString(indent + fmt.Sprintf("if %s {\n", cond))
 		indent += "    "
-		b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		if q.Sort != nil {
+			sortKey, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(indent + fmt.Sprintf("_pairs.push((%s, %s));\n", sortKey, sel))
+		} else {
+			b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		}
 		indent = indent[:len(indent)-4]
 		b.WriteString(indent + "}\n")
 	} else {
-		b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		if q.Sort != nil {
+			sortKey, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(indent + fmt.Sprintf("_pairs.push((%s, %s));\n", sortKey, sel))
+		} else {
+			b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		}
 	}
 	for range joinSrcs {
 		indent = indent[:len(indent)-4]
@@ -690,6 +710,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("    }\n")
+	if q.Sort != nil {
+		b.WriteString("    _pairs.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());\n")
+		b.WriteString("    let mut _res = Vec::new();\n")
+		b.WriteString("    for p in _pairs { _res.push(p.1); }\n")
+	}
 	if q.Skip != nil {
 		skip, err := c.compileExpr(q.Skip)
 		if err != nil {
