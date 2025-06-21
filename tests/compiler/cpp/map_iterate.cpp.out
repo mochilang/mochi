@@ -1,0 +1,15 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+        unordered_map<int, bool> m = unordered_map<int, bool>{};
+        int sum = 0;
+        m[1] = true;
+        m[2] = true;
+        for (const auto& _kv : m) {
+                int k = _kv.first;
+                sum = (sum + k);
+        }
+        std::cout << (sum) << std::endl;
+        return 0;
+}
