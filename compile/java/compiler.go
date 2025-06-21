@@ -81,7 +81,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 	}
 
-	c.emitRuntime()
+	if len(c.helpers) > 0 {
+		c.emitRuntime()
+	}
 
 	c.indent--
 	c.writeln("}")
