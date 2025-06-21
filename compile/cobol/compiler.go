@@ -159,6 +159,10 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	case "assign":
 		c.compileAssign(n)
 
+	case "call":
+		// Allow standalone function calls like print("hi")
+		c.expr(n)
+
 	case "return":
 		if len(n.Children) == 1 {
 			expr := c.expr(n.Children[0])
@@ -445,6 +449,22 @@ func (c *Compiler) compileFun(n *ast.Node) {
 func (c *Compiler) compileCallExpr(n *ast.Node) string {
 	name := cobolName(n.Value.(string))
 	// Built-in helpers implemented directly
+	if name == "PRINT" && len(n.Children) == 1 {
+		arg := n.Children[0]
+		expr := c.expr(arg)
+		if !isSimpleExpr(arg) {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(arg)))
+			if c.isStringExpr(arg) {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
+			} else {
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+			}
+			expr = tmp
+		}
+		c.writeln(fmt.Sprintf("DISPLAY %s", expr))
+		return "0"
+	}
 	if name == "LEN" && len(n.Children) == 1 {
 		arg := n.Children[0]
 		tmp := c.newTemp()

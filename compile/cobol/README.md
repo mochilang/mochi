@@ -161,12 +161,13 @@ constructs:
 - `for` loops over integer ranges, list literals, fixed list variables and string values
 - `while` loops
 - `break` and `continue` statements
+- Standalone function calls as statements, including `print`
 - Function definitions and calls, including nested functions
 - Calls to built-ins `print`, `len`, `add`, `twoSum`, `addTwoNumbers` and a
   basic `reduce` over lists using `add`
 - List concatenation with `+` and indexing (including negative indices)
 - Basic string slicing with constant start and end indices
-- List slicing with variable start and end indices
+- List slicing with constant start and end indices
 - String and list slicing with open-ended ranges
 - Simple `match` expressions with literal patterns
 - `expect` and `test` blocks
@@ -204,6 +205,7 @@ unsupported include:
 - Iteration over map key/value pairs
 - Range loops with step values other than `1`
 - Bitwise and exponentiation operators
+- List slicing with variable start or end expressions
 - Negative indices are only supported when specified as integer literals
 - Using the `range` helper to generate sequences
 - Dynamic lists whose length is not known at compile time
