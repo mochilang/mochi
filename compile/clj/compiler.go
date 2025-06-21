@@ -257,6 +257,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
+		if name, arg, ok := isListPushCall(s.Expr.Expr); ok {
+			val, err := c.compileExpr(arg)
+			if err != nil {
+				return err
+			}
+			n := sanitizeName(name)
+			c.writeln(fmt.Sprintf("(def %s (conj %s %s))", n, n, val))
+			if c.env != nil {
+				if t, err := c.env.GetVar(name); err == nil {
+					c.env.SetVar(name, t, true)
+				}
+			}
+			return nil
+		}
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
 			return err
@@ -1190,7 +1204,28 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	if _, ok := c.env.GetStruct(t.Name); ok {
+	if st, ok := c.env.GetStruct(t.Name); ok {
+		if len(st.Fields) > 0 {
+			c.writeIndent()
+			c.buf.WriteString("(defn " + sanitizeName(t.Name) + " [")
+			for i, f := range st.Order {
+				if i > 0 {
+					c.buf.WriteString(" ")
+				}
+				c.buf.WriteString(sanitizeName(f))
+			}
+			c.buf.WriteString("]\n")
+			c.indent++
+			parts := make([]string, 0, len(st.Fields)+1)
+			parts = append(parts, fmt.Sprintf(":__name \"%s\"", st.Name))
+			for _, f := range st.Order {
+				parts = append(parts, fmt.Sprintf(":%s %s", sanitizeName(f), sanitizeName(f)))
+			}
+			c.writeln("{" + strings.Join(parts, " ") + "}")
+			c.indent--
+			c.writeln(")")
+			c.writeln("")
+		}
 		for _, m := range t.Members {
 			if m.Method == nil {
 				continue

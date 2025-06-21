@@ -132,6 +132,7 @@ The current implementation focuses on a minimal subset of Mochi. It supports:
 - Indexing and slicing for lists, strings and maps
 - Simple `match` expressions on constants and struct literals with field access
 - `break` and `continue` statements
+- Struct constructors for user-defined types
 
 ### Unsupported Features
 
@@ -151,7 +152,8 @@ in the example programs. In particular:
 - List collection methods such as `push`
 - Streams and event-driven agents
 - Concurrency primitives such as `spawn` and channels
-- Struct declarations are ignored and union types are not emitted
+- Union types are not emitted
+- Async execution with `async`/`await`
 - Error handling with `try`/`catch` blocks
 - Reflection or macro facilities
 - Package and `export` statements for modules

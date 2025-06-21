@@ -1,5 +1,9 @@
 (ns main)
 
+(defn Circle [radius]
+  {:__name "Circle" :radius radius}
+)
+
 (defn Circle_area [self]
   (let [radius (:radius self)]
     (try
