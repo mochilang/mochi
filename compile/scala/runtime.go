@@ -99,6 +99,21 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
         ct.runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[T]
 }
 `
+	helperPyAttr = `def _pyAttr(module: String, name: String, args: Seq[Any]): Any = {
+        import scala.sys.process._
+        import scala.util.parsing.json.{JSON, JSONArray}
+        val script = "import json, os, importlib, sys, inspect\n" +
+          s"args = json.loads(os.environ.get(\"MOCHI_ARGS\", \"[]\"))\n" +
+          s"mod = importlib.import_module(module)\n" +
+          s"attr = getattr(mod, name)\n" +
+          "res = attr(*args) if inspect.isroutine(attr) else attr\n" +
+          "json.dump(res, sys.stdout)\n"
+        val argsJson = JSONArray(args.toList).toString()
+        val proc = Process(Seq("python3", "-c", script), None, "MOCHI_ARGS" -> argsJson)
+        val out = proc.!!.trim
+        JSON.parseFull(out).getOrElse(out)
+}
+`
 )
 
 var helperMap = map[string]string{
@@ -113,6 +128,7 @@ var helperMap = map[string]string{
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
+	"_pyAttr":      helperPyAttr,
 }
 
 func (c *Compiler) use(name string) {
