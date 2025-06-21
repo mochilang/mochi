@@ -681,10 +681,10 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			typ = types.IntType{}
 		} else if c.isStringExpr(f.Source) {
 			typ = types.StringType{}
-		} else {
-			if lt, ok := c.inferExprType(f.Source).(types.ListType); ok {
-				typ = lt.Elem
-			}
+		} else if mt, ok := c.inferExprType(f.Source).(types.MapType); ok {
+			typ = mt.Key
+		} else if lt, ok := c.inferExprType(f.Source).(types.ListType); ok {
+			typ = lt.Elem
 		}
 		c.env.SetVar(f.Name, typ, true)
 	}
@@ -743,7 +743,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if !useVar {
 		loopVar = c.newTmp()
 	}
-	c.writeln(fmt.Sprintf("for %s in %s do", loopVar, src))
+	if _, ok := c.inferExprType(f.Source).(types.MapType); ok {
+		c.writeln(fmt.Sprintf("for %s in Map.keys %s do", loopVar, src))
+	} else {
+		c.writeln(fmt.Sprintf("for %s in %s do", loopVar, src))
+	}
 	c.indent++
 	if c.isStringExpr(f.Source) && useVar {
 		c.writeln(fmt.Sprintf("let %s = string %s", loopVar, loopVar))
@@ -1060,6 +1064,21 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 						operands[i] = fmt.Sprintf("Array.contains %s %s", left, right)
 					}
 					lists[i] = false
+					maps[i] = false
+					strs[i] = false
+				} else if op == "union" {
+					operands[i] = fmt.Sprintf("(Set.union (Set.ofArray %s) (Set.ofArray %s) |> Set.toArray)", left, right)
+					lists[i] = true
+					maps[i] = false
+					strs[i] = false
+				} else if op == "except" {
+					operands[i] = fmt.Sprintf("(Set.difference (Set.ofArray %s) (Set.ofArray %s) |> Set.toArray)", left, right)
+					lists[i] = true
+					maps[i] = false
+					strs[i] = false
+				} else if op == "intersect" {
+					operands[i] = fmt.Sprintf("(Set.intersect (Set.ofArray %s) (Set.ofArray %s) |> Set.toArray)", left, right)
+					lists[i] = true
 					maps[i] = false
 					strs[i] = false
 				} else {
