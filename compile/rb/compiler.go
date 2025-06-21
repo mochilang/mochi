@@ -29,6 +29,9 @@ func New(env *types.Env) *Compiler {
 // Compile generates Ruby code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	// reset state so helpers from previous compilations aren't leaked
+	c.helpers = map[string]bool{}
+	c.useOpenStruct = false
 	tests := []*parser.TestBlock{}
 	for _, s := range prog.Statements {
 		if s.Type != nil {
