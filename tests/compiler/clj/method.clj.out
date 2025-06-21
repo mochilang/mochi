@@ -1,0 +1,32 @@
+(ns main)
+
+(defn Circle_area []
+  (try
+    (def a (* (* 3.14 radius) radius))
+    (println "Calculating area:" a)
+    (throw (ex-info "return" {:value a}))
+  (catch clojure.lang.ExceptionInfo e
+    (if (= (.getMessage e) "return")
+      (:value (ex-data e))
+    (throw e)))
+  )
+)
+
+(defn Circle_describe []
+  (try
+    (println "Circle with radius" radius)
+  (catch clojure.lang.ExceptionInfo e
+    (if (= (.getMessage e) "return")
+      (:value (ex-data e))
+    (throw e)))
+  )
+)
+
+
+(defn -main []
+  (def c {:__name "Circle" :radius 5.0})
+  (Circle_describe c)
+  (println "Area is" (Circle_area c))
+)
+
+(-main)

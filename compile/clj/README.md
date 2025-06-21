@@ -138,9 +138,11 @@ in the example programs. In particular:
 - Set collections and related operations
 - Streams and event-driven agents
 - Concurrency primitives such as `spawn` and channels
-- Methods declared inside `type` blocks
 - Struct declarations are ignored and union types are not emitted
 - Error handling with `try`/`catch` blocks
 - Reflection or macro facilities
+- Package and `export` statements for modules
+- Membership tests with `in` and list set operations like `union`, `except` and `intersect`
+- `emit` statements for streams
 
 Programs relying on these features fail to compile with the Clojure backend.
