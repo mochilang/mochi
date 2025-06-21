@@ -19,6 +19,7 @@ type Compiler struct {
 	needCount    bool
 	needAvg      bool
 	needInput    bool
+	needReduce   bool
 	needBreak    bool
 	needContinue bool
 }
@@ -42,6 +43,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needCount = false
 	c.needAvg = false
 	c.needInput = false
+	c.needReduce = false
 	c.needBreak = false
 	c.needContinue = false
 
@@ -106,7 +108,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Write(typeCode)
 	c.buf.Write(funCode)
 	c.buf.Write(testCode)
-	if c.needCount || c.needAvg || c.needInput || c.needBreak || c.needContinue {
+	if c.needCount || c.needAvg || c.needInput || c.needReduce || c.needBreak || c.needContinue {
 		c.emitHelpers()
 	}
 	c.writelnNoIndent("!!")
@@ -723,6 +725,22 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needAvg = true
 		return fmt.Sprintf("(Main __avg: %s)", args[0]), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		return fmt.Sprintf("(%s copyWith: %s)", args[0], args[1]), nil
+	case "eval":
+		if len(args) != 1 {
+			return "", fmt.Errorf("eval expects 1 arg")
+		}
+		return fmt.Sprintf("(Compiler evaluate: %s)", args[0]), nil
+	case "reduce":
+		if len(args) != 3 {
+			return "", fmt.Errorf("reduce expects 3 args")
+		}
+		c.needReduce = true
+		return fmt.Sprintf("(Main __reduce: %s fn: %s init: %s)", args[0], args[1], args[2]), nil
 	case "input":
 		if len(args) != 0 {
 			return "", fmt.Errorf("input expects no args")
@@ -1026,6 +1044,16 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("__input")
 		c.indent++
 		c.writeln("^ stdin nextLine")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needReduce {
+		c.writeln("__reduce: v fn: blk init: acc")
+		c.indent++
+		c.writeln("| res |")
+		c.writeln("res := acc.")
+		c.writeln("v do: [:it | res := blk value: res value: it].")
+		c.writeln("^ res")
 		c.indent--
 		c.writelnNoIndent("!")
 	}
