@@ -71,12 +71,22 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	fields := []string{}
+	methods := []*parser.FunStmt{}
 	for _, m := range t.Members {
 		if m.Field != nil {
 			fields = append(fields, sanitizeName(m.Field.Name))
 		}
+		if m.Method != nil {
+			methods = append(methods, m.Method)
+		}
 	}
 	c.writeln(fmt.Sprintf("-record(%s, {%s}).", sanitizeName(t.Name), strings.Join(fields, ", ")))
+	for _, m := range methods {
+		if err := c.compileMethod(t.Name, m); err != nil {
+			return err
+		}
+		c.writeln("")
+	}
 	return nil
 }
 
@@ -271,6 +281,63 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%s(%s) ->", atomName(fun.Name), strings.Join(params, ", ")))
 	child := types.NewEnv(c.env)
+	for _, p := range fun.Params {
+		var typ types.Type = types.AnyType{}
+		if p.Type != nil {
+			typ = c.resolveTypeRef(p.Type)
+		}
+		child.SetVar(p.Name, typ, true)
+	}
+	origEnv := c.env
+	c.env = child
+	c.indent++
+	c.writeln("try")
+	c.indent++
+	if err := c.compileBlock(fun.Body, false, nil); err != nil {
+		c.env = origEnv
+		return err
+	}
+	c.indent--
+	c.writeln("catch")
+	c.indent++
+	c.writeln("throw:{return, V} -> V")
+	c.indent--
+	c.writeln("end.")
+	c.indent--
+	c.env = origEnv
+	c.vars = savedVars
+	c.counts = savedCounts
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
+	params := []string{"Self"}
+	savedVars := c.vars
+	savedCounts := c.counts
+	c.vars = map[string]string{}
+	if c.counts == nil {
+		c.counts = map[string]int{}
+	}
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			for fname := range st.Fields {
+				c.vars[fname] = fmt.Sprintf("Self#%s.%s", sanitizeName(structName), sanitizeName(fname))
+			}
+		}
+	}
+	for _, p := range fun.Params {
+		params = append(params, c.newName(p.Name))
+	}
+	name := sanitizeName(structName) + "_" + sanitizeName(fun.Name)
+	c.writeln(fmt.Sprintf("%s(%s) ->", atomName(name), strings.Join(params, ", ")))
+	child := types.NewEnv(c.env)
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			for fname, t := range st.Fields {
+				child.SetVar(fname, t, true)
+			}
+		}
+	}
 	for _, p := range fun.Params {
 		var typ types.Type = types.AnyType{}
 		if p.Type != nil {
@@ -835,6 +902,21 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			argStr := strings.Join(args, ", ")
+			// method call like obj.foo()
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+				root := p.Target.Selector.Root
+				method := p.Target.Selector.Tail[0]
+				if t, err := c.env.GetVar(root); err == nil {
+					if st, ok := t.(types.StructType); ok {
+						if m, ok := st.Methods[method]; ok {
+							callArgs := append([]string{c.current(root)}, args...)
+							res = fmt.Sprintf("%s_%s(%s)", sanitizeName(st.Name), sanitizeName(method), strings.Join(callArgs, ", "))
+							typ = m.Type.Return
+							continue
+						}
+					}
+				}
+			}
 			switch res {
 			case "print":
 				c.needPrint = true
