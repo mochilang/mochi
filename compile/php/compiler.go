@@ -372,7 +372,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		operands = append(operands, r)
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
+		ops = append(ops, op)
 	}
 
 	levels := [][]string{
@@ -382,6 +386,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	}
 
 	contains := func(sl []string, s string) bool {
@@ -411,6 +416,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("((is_int(%[1]s) && is_int(%[2]s)) ? intdiv(%[1]s, %[2]s) : (%[1]s / %[2]s))", l, r)
 			} else if op == "%" {
 				expr = fmt.Sprintf("((is_int(%[1]s) && is_int(%[2]s)) ? (%[1]s %% %[2]s) : fmod(%[1]s, %[2]s))", l, r)
+			} else if op == "union_all" {
+				expr = fmt.Sprintf("array_merge(%s, %s)", l, r)
+			} else if op == "union" {
+				expr = fmt.Sprintf("array_values(array_unique(array_merge(%s, %s), SORT_REGULAR))", l, r)
+			} else if op == "except" {
+				expr = fmt.Sprintf("array_values(array_diff(%s, %s))", l, r)
+			} else if op == "intersect" {
+				expr = fmt.Sprintf("array_values(array_intersect(%s, %s))", l, r)
 			} else {
 				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 			}
