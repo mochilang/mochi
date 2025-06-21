@@ -1,0 +1,98 @@
+data class Person(val name: String, val age: Int, val email: String)
+
+fun main() {
+        val people = run {
+        val _rows = _load("../tests/interpreter/valid/people.yaml", mutableMapOf("format" to "yaml"))
+        val _out = mutableListOf<Person>()
+        for (r in _rows) {
+                _out.add(_cast<Person>(r))
+        }
+        _out
+}
+        val adults = run {
+                var res = people
+                res = res.filter { p -> (p.age >= 18) }
+                res = res.map { p -> mutableMapOf("name" to p.name, "email" to p.email) }
+                res
+        }
+        for (a in adults) {
+                println(a.name, a.email)
+        }
+}
+
+inline fun <reified T> _cast(v: Any?): T {
+    return when (T::class) {
+        Int::class -> when (v) { is Number -> v.toInt(); is String -> v.toInt(); else -> 0 } as T
+        Double::class -> when (v) { is Number -> v.toDouble(); is String -> v.toDouble(); else -> 0.0 } as T
+        Boolean::class -> when (v) { is Boolean -> v; is String -> v == "true"; else -> false } as T
+        String::class -> v.toString() as T
+        else -> v as T
+    }
+}
+fun _load(path: String?, opts: Map<String, Any>?): List<Map<String, Any>> {
+    var format = opts?.get("format") as? String ?: "csv"
+    var header = opts?.get("header") as? Boolean ?: true
+    var delim = (opts?.get("delimiter") as? String)?.firstOrNull() ?: ','
+    if (format == "tsv") delim = '\t'
+    val text = if (path == null || path == "-" || path == "") generateSequence(::readLine).joinToString("\n") else java.io.File(path).readText()
+    if (format == "jsonl") {
+        val eng = javax.script.ScriptEngineManager().getEngineByName("javascript")
+        val out = mutableListOf<Map<String, Any>>()
+        for (line in text.trim().split(Regex("\\r?\\n"))) {
+            if (line.isBlank()) continue
+            val obj = eng.eval("Java.asJSONCompatible($line)") as java.util.Map<*, *>
+            out.add(obj as Map<String, Any>)
+        }
+        return out
+    }
+    if (format == "json") {
+        val eng = javax.script.ScriptEngineManager().getEngineByName("javascript")
+        val obj = eng.eval("Java.asJSONCompatible($text)")
+        when (obj) {
+            is java.util.Map<*, *> -> return listOf(obj as Map<String, Any>)
+            is java.util.List<*> -> return obj.map { it as Map<String, Any> }
+        }
+        return emptyList()
+    }
+    if (format == "yaml") {
+        val rows = mutableListOf<Map<String, Any>>()
+        var current = mutableMapOf<String, Any>()
+        fun finish() {
+            if (current.isNotEmpty()) { rows.add(current); current = mutableMapOf() }
+        }
+        for (line in text.trim().split(Regex("\\r?\\n"))) {
+            val l = line.trim()
+            if (l.startsWith("- ")) {
+                finish()
+                val idx = l.indexOf(':', 2)
+                if (idx > 0) {
+                    val k = l.substring(2, idx).trim()
+                    val v = l.substring(idx + 1).trim()
+                    current[k] = v.toIntOrNull() ?: v.trim('"')
+                }
+            } else if (l.contains(':')) {
+                val idx = l.indexOf(':')
+                val k = l.substring(0, idx).trim()
+                val v = l.substring(idx + 1).trim()
+                current[k] = v.toIntOrNull() ?: v.trim('"')
+            }
+        }
+        finish()
+        return rows
+    }
+    val lines = text.trim().split(Regex("\\r?\\n")).filter { it.isNotEmpty() }
+    if (lines.isEmpty()) return emptyList()
+    val headers = if (header) lines[0].split(delim) else List(lines[0].split(delim).size) { "c$it" }
+    val start = if (header) 1 else 0
+    val out = mutableListOf<Map<String, Any>>()
+    for (i in start until lines.size) {
+        val parts = lines[i].split(delim)
+        val row = mutableMapOf<String, Any>()
+        for (j in headers.indices) {
+            row[headers[j]] = parts.getOrElse(j) { "" }
+        }
+        out.add(row)
+    }
+    return out
+}
+

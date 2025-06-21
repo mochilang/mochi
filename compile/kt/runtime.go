@@ -36,6 +36,32 @@ const (
         }
         return emptyList()
     }
+    if (format == "yaml") {
+        val rows = mutableListOf<Map<String, Any>>()
+        var current = mutableMapOf<String, Any>()
+        fun finish() {
+            if (current.isNotEmpty()) { rows.add(current); current = mutableMapOf() }
+        }
+        for (line in text.trim().split(Regex("\\r?\\n"))) {
+            val l = line.trim()
+            if (l.startsWith("- ")) {
+                finish()
+                val idx = l.indexOf(':', 2)
+                if (idx > 0) {
+                    val k = l.substring(2, idx).trim()
+                    val v = l.substring(idx + 1).trim()
+                    current[k] = v.toIntOrNull() ?: v.trim('"')
+                }
+            } else if (l.contains(':')) {
+                val idx = l.indexOf(':')
+                val k = l.substring(0, idx).trim()
+                val v = l.substring(idx + 1).trim()
+                current[k] = v.toIntOrNull() ?: v.trim('"')
+            }
+        }
+        finish()
+        return rows
+    }
     val lines = text.trim().split(Regex("\\r?\\n")).filter { it.isNotEmpty() }
     if (lines.isEmpty()) return emptyList()
     val headers = if (header) lines[0].split(delim) else List(lines[0].split(delim).size) { "c$it" }
@@ -69,6 +95,24 @@ const (
     val text = when (format) {
         "jsonl" -> rows.joinToString("") { encode(it) + "\n" }
         "json" -> if (rows.size == 1) encode(rows[0]) + "\n" else rows.joinToString(prefix = "[", postfix = "]\n") { encode(it) }
+        "yaml" -> {
+            val sb = StringBuilder()
+            for (row in rows) {
+                val keys = row.keys.sorted()
+                sb.append("- ")
+                var first = true
+                for (k in keys) {
+                    val v = encode(row[k])
+                    if (first) {
+                        sb.append("$k: $v\n")
+                        first = false
+                    } else {
+                        sb.append("  $k: $v\n")
+                    }
+                }
+            }
+            sb.toString()
+        }
         else -> {
             if (format != "csv") return
             val headers = if (rows.isNotEmpty()) rows[0].keys.sorted() else emptyList()
