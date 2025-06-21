@@ -1,0 +1,32 @@
+package counter
+
+type Counter {
+  inc: fun(int): int
+  dec: fun(int): int
+  get: fun(): int
+  reset: fun()
+}
+
+export fun new(init: int): Counter {
+  var value = init
+
+  fun inc(delta: int): int {
+    value = value + delta
+    return value
+  }
+
+  fun dec(delta: int): int {
+    value = value - delta
+    return value
+  }
+
+  fun get(): int {
+    return value
+  }
+
+  fun reset() {
+    value = 0
+  }
+
+  return Counter { inc, dec, get, reset }
+}
