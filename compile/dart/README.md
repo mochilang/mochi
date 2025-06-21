@@ -130,30 +130,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 
 ## Runtime Helper
 
-String indexing with negative offsets requires an extra helper which is injected only when needed:
+Runtime helpers like `_indexString` are emitted only when referenced via
+`c.use(name)`. `emitRuntime` gathers all requested helpers and appends their
+implementations:
 
 ```go
 func (c *Compiler) emitRuntime() {
-    if !c.useIndexStr {
+    if len(c.helpers) == 0 {
         return
     }
     c.writeln("")
-    c.writeln("String _indexString(String s, int i) {")
-    c.indent++
-    c.writeln("var runes = s.runes.toList();")
-    c.writeln("if (i < 0) {")
-    c.indent++
-    c.writeln("i += runes.length;")
-    c.indent--
-    c.writeln("}")
-    c.writeln("if (i < 0 || i >= runes.length) {")
-    c.indent++
-    c.writeln("throw RangeError('index out of range');")
-    c.indent--
-    c.writeln("}")
-    c.writeln("return String.fromCharCode(runes[i]);")
-    c.indent--
-    c.writeln("}")
+    names := make([]string, 0, len(c.helpers))
+    for n := range c.helpers {
+        names = append(names, n)
+    }
+    sort.Strings(names)
+    for _, n := range names {
+        c.buf.WriteString(helperMap[n])
+        c.buf.WriteByte('\n')
+    }
 }
 ```
 
