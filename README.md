@@ -629,7 +629,7 @@ PRs and issues welcome!
 
 The experimental Rust compiler does not yet implement every Mochi feature. Missing capabilities include:
 
-- Advanced dataset queries such as grouping, sorting, unions and left/right joins.
+- Advanced dataset queries such as grouping, unions and left/right joins.
 - Streams and agents (`agent`, `on`, `emit`).
 - Logic programming constructs (`fact`, `rule`, `query`).
 - HTTP and persistence helpers (`fetch`, `load`, `save`, `generate`).
