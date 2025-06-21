@@ -1019,8 +1019,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 {
-		return "", fmt.Errorf("unsupported query expression")
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("unsupported join side")
+		}
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -1032,6 +1034,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	child.SetVar(q.Var, types.AnyType{}, true)
 	for _, f := range q.Froms {
 		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
 	}
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		c.env = child
@@ -1062,12 +1067,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	var cond, sortExpr, skipExpr, takeExpr string
+	condParts := []string{}
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		w, err := c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
+		condParts = append(condParts, w)
+	}
+	for _, j := range q.Joins {
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		condParts = append(condParts, on)
+	}
+	if len(condParts) > 0 {
+		cond = strings.Join(condParts, ", ")
 	}
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
@@ -1110,6 +1128,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(" <- ")
 			b.WriteString(fs)
 		}
+		for _, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(", ")
+			b.WriteString(capitalize(j.Var))
+			b.WriteString(" <- ")
+			b.WriteString(js)
+		}
 		if cond != "" {
 			b.WriteString(", ")
 			b.WriteString(cond)
@@ -1133,6 +1161,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		b.WriteString(", " + capitalize(f.Var) + " <- " + fs)
+	}
+	for _, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(", " + capitalize(j.Var) + " <- " + js)
 	}
 	if cond != "" {
 		b.WriteString(", " + cond)
