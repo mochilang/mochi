@@ -22,8 +22,9 @@ type Compiler struct {
 	useSlice    bool
 	useSliceStr bool
 	useLoad     bool
-	useSave     bool
-	funcRet     types.Type
+        useSave     bool
+        useJSON     bool
+        funcRet     types.Type
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[string]types.Type{}} }
@@ -33,9 +34,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useIndex = false
 	c.useIndexStr = false
 	c.useSlice = false
-	c.useSliceStr = false
-	c.useLoad = false
-	c.useSave = false
+        c.useSliceStr = false
+        c.useLoad = false
+        c.useSave = false
+        c.useJSON = false
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -254,7 +256,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 		c.writeln("")
 	}
-	if c.useSave {
+        if c.useSave {
 		c.writeln("func _writeOutput(_ path: String?, _ text: String) {")
 		c.indent++
 		c.writeln("if let p = path, !p.isEmpty && p != \"-\" {")
@@ -304,14 +306,26 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("text = lines.joined(separator: \"\\n\") + \"\\n\"")
 		c.indent--
 		c.writeln("}")
-		c.writeln("_writeOutput(path, text)")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
+                c.writeln("_writeOutput(path, text)")
+                c.indent--
+                c.writeln("}")
+                c.writeln("")
+        }
+        if c.useJSON {
+                c.writeln("func _json(_ v: Any) {")
+                c.indent++
+                c.writeln("if let d = try? JSONSerialization.data(withJSONObject: v, options: []), let s = String(data: d, encoding: .utf8) {")
+                c.indent++
+                c.writeln("print(s)")
+                c.indent--
+                c.writeln("}")
+                c.indent--
+                c.writeln("}")
+                c.writeln("")
+        }
 
-	c.buf.Write(bodyBytes)
-	return c.buf.Bytes(), nil
+        c.buf.Write(bodyBytes)
+        return c.buf.Bytes(), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -976,17 +990,28 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("str expects 1 arg")
 			}
 			return fmt.Sprintf("String(%s)", args[0]), nil
-		case "avg":
-			if len(args) != 1 {
-				return "", fmt.Errorf("avg expects 1 arg")
-			}
-			c.useAvg = true
-			return fmt.Sprintf("_avg(%s.map { Double($0) })", args[0]), nil
-		case "input":
-			if len(args) != 0 {
-				return "", fmt.Errorf("input expects 0 args")
-			}
-			return "readLine() ?? \"\"", nil
+                case "avg":
+                        if len(args) != 1 {
+                                return "", fmt.Errorf("avg expects 1 arg")
+                        }
+                        c.useAvg = true
+                        return fmt.Sprintf("_avg(%s.map { Double($0) })", args[0]), nil
+                case "now":
+                        if len(args) != 0 {
+                                return "", fmt.Errorf("now expects 0 args")
+                        }
+                        return "Int64(Date().timeIntervalSince1970 * 1_000_000_000)", nil
+                case "json":
+                        if len(args) != 1 {
+                                return "", fmt.Errorf("json expects 1 arg")
+                        }
+                        c.useJSON = true
+                        return fmt.Sprintf("_json(%s)", args[0]), nil
+                case "input":
+                        if len(args) != 0 {
+                                return "", fmt.Errorf("input expects 0 args")
+                        }
+                        return "readLine() ?? \"\"", nil
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", ")), nil
 		}

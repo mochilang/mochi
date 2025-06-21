@@ -1,0 +1,12 @@
+import Foundation
+
+func _json(_ v: Any) {
+	if let d = try? JSONSerialization.data(withJSONObject: v, options: []), let s = String(data: d, encoding: .utf8) {
+		print(s)
+	}
+}
+
+func main() {
+	_json(["a": 1])
+}
+main()
