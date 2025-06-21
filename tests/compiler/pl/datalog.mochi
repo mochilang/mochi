@@ -1,0 +1,8 @@
+fact parent("Alice", "Bob")
+fact parent("Bob", "Carol")
+
+rule grandparent(x, z):-
+  parent(x, y), parent(y, z)
+
+let g = query grandparent(x, z)
+print(len(g))
