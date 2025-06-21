@@ -785,20 +785,26 @@ func (c *Compiler) expr(n *ast.Node) string {
 						endNode = ch.Children[0]
 					}
 				}
-				if startNode == nil || endNode == nil {
+				if startNode != nil && startNode.Kind != "int" {
 					c.writeln("    *> unsupported slice")
 					return "0"
 				}
-				if startNode.Kind != "int" || endNode.Kind != "int" {
+				if endNode != nil && endNode.Kind != "int" {
 					c.writeln("    *> unsupported slice")
 					return "0"
 				}
-				start := extractInt(startNode)
-				end := extractInt(endNode)
 				name, length, pic, elems, ok := c.listInfo(n.Children[0])
 				if !ok {
 					c.writeln("    *> unsupported slice")
 					return "0"
+				}
+				start := 0
+				if startNode != nil {
+					start = extractInt(startNode)
+				}
+				end := length
+				if endNode != nil {
+					end = extractInt(endNode)
 				}
 				if start < 0 {
 					start = length + start
@@ -836,7 +842,7 @@ func (c *Compiler) expr(n *ast.Node) string {
 		if !ok {
 			l, ok = c.listLens[strings.ToLower(arr)]
 		}
-		if ok && n.Children[1].Kind == "int" && extractInt(n.Children[1]) < 0 {
+		if ok {
 			tmp := c.newTemp()
 			c.declare(fmt.Sprintf("01 %s PIC S9.", tmp))
 			if isSimpleExpr(n.Children[1]) {
