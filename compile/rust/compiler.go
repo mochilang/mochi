@@ -585,8 +585,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		switch op.Op {
 		case "+":
 			if leftList || rightList {
-				c.use("_concat")
-				expr = fmt.Sprintf("_concat(&%s, &%s)", expr, r)
+				expr = fmt.Sprintf("{ let a = &%s; let b = &%s; let mut res = Vec::with_capacity(a.len() + b.len()); res.extend_from_slice(a); res.extend_from_slice(b); res }", expr, r)
 				leftList = true
 				leftString = false
 			} else if leftString || rightString {
@@ -599,8 +598,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				leftString = false
 			}
 		case "in":
-			c.use("_in_map")
-			expr = fmt.Sprintf("_in_map(&%s, &%s)", r, expr)
+			expr = fmt.Sprintf("%s.contains_key(&%s)", r, expr)
 			leftList = false
 		default:
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
@@ -879,11 +877,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if c.isStringBase(p) {
-					c.use("_index_string")
-					expr = fmt.Sprintf("_index_string(&%s, %s)", expr, iexpr)
+					expr = fmt.Sprintf("{ let s = &%s; let mut idx = %s; let chars: Vec<char> = s.chars().collect(); if idx < 0 { idx += chars.len() as i64; } if idx < 0 || idx >= chars.len() as i64 { panic!(\"index out of range\"); } chars[idx as usize].to_string() }", expr, iexpr)
 				} else if c.isMapExpr(p) {
-					c.use("_map_get")
-					expr = fmt.Sprintf("_map_get(&%s, &%s)", expr, iexpr)
+					expr = fmt.Sprintf("%s.get(&%s).unwrap().clone()", expr, iexpr)
 				} else if isStringLiteral(idx.Start) {
 					expr = fmt.Sprintf("%s[%s]", expr, iexpr)
 				} else if id, ok := identName(idx.Start); ok {
@@ -1120,18 +1116,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "count":
 		if len(args) == 1 {
-			c.use("_count")
-			return fmt.Sprintf("_count(&%s)", args[0]), nil
+			return fmt.Sprintf("%s.len() as i32", args[0]), nil
 		}
 	case "avg":
 		if len(args) == 1 {
-			c.use("_avg")
-			return fmt.Sprintf("_avg(&%s)", args[0]), nil
+			return fmt.Sprintf("{ let v = &%s; if v.is_empty() { 0.0 } else { let mut sum = 0.0; for &it in v { sum += it.into(); } sum / v.len() as f64 } }", args[0]), nil
 		}
 	case "input":
 		if len(args) == 0 {
-			c.use("_input")
-			return "_input()", nil
+			return "{ use std::io::Read; let mut s = String::new(); std::io::stdin().read_line(&mut s).unwrap(); s.trim().to_string() }", nil
 		}
 	}
 	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil

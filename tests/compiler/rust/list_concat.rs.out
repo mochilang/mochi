@@ -1,10 +1,4 @@
 fn main() {
-    println!("[{}]", _concat(&vec![1, 2], &vec![3, 4]).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "));
+    println!("[{}]", { let a = &vec![1, 2]; let b = &vec![3, 4]; let mut res = Vec::with_capacity(a.len() + b.len()); res.extend_from_slice(a); res.extend_from_slice(b); res }.iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "));
 }
 
-fn _concat<T: Clone>(a: &[T], b: &[T]) -> Vec<T> {
-    let mut res = Vec::with_capacity(a.len() + b.len());
-    res.extend_from_slice(a);
-    res.extend_from_slice(b);
-    res
-}
