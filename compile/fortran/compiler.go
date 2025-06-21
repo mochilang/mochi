@@ -87,8 +87,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			funs = append(funs, s.Fun)
 		case s.Test != nil:
 			tests = append(tests, s.Test)
-		case s.Import != nil, s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
-			// ignore foreign imports and extern declarations
+		case s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
+			// ignore extern declarations
 		default:
 			mainStmts = append(mainStmts, s)
 		}
@@ -542,8 +542,13 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 		c.writeln("exit")
 	case s.Continue != nil:
 		c.writeln("cycle")
-	case s.Import != nil, s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
-		// ignore import and extern declarations
+	case s.Import != nil:
+		if s.Import.Lang == nil || *s.Import.Lang == "fortran" {
+			path := strings.Trim(s.Import.Path, "\"")
+			c.writeln(fmt.Sprintf("include '%s'", path))
+		}
+	case s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
+		// ignore extern declarations
 	case s.Expr != nil:
 		if call, ok := printCall(s.Expr.Expr); ok {
 			args := make([]string, len(call.Args))

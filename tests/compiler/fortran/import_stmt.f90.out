@@ -1,0 +1,5 @@
+program main
+  implicit none
+  include 'mylib.f90'
+  print *, 42_8
+end program main

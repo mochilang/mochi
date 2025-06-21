@@ -25,6 +25,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - built-ins: `len`, `append`, `count`, `avg`, `str`, `now`
 - printing via `print()`
 - `package` and `export` declarations (ignored during code generation)
+- `import` statements emit Fortran `include` lines
 
 ## Unsupported features
 
@@ -37,7 +38,9 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - agents, streams and logic programming constructs (`fact`, `rule`, `query`)
 - foreign imports and dataset helpers (`fetch`, `load`, `save`)
 - anonymous functions
-- import statements and extern declarations
+- extern declarations
+- slice assignments like `xs[0:1] = sub`
+- range loops with step values other than `1`
 - event handlers (`on`) and `emit` statements
 - type declarations using `type` blocks
 - generative blocks and model declarations
