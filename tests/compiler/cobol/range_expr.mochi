@@ -1,0 +1,5 @@
+let xs = range(0, 5, 2)
+print(len(xs))
+print(xs[0])
+print(xs[1])
+print(xs[2])

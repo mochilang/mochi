@@ -170,6 +170,7 @@ constructs:
 - Basic string slicing with constant start and end indices
 - List slicing with constant start and end indices
 - String and list slicing with open-ended ranges
+- Generating fixed integer sequences with `range` when all arguments are integer literals
 - Simple `match` expressions with literal patterns
 - `expect` and `test` blocks
 
@@ -210,8 +211,9 @@ unsupported include:
 - List slicing with variable start or end expressions
 - Negative indices are only supported when specified as integer literals
 - List slicing with non-constant start or end indices
-- Using the `range` helper to generate sequences
+- Using the `range` helper when bounds or step are not integer literals
 - Dynamic lists whose length is not known at compile time
+- Concatenation of lists produced by slicing or `range` expressions
 - Builtin functions other than `print`, `len`, `add`, `abs`, `twoSum` and `addTwoNumbers`
 - `reduce` with functions other than `add` or with lists of unknown length
 - Struct and model declarations
