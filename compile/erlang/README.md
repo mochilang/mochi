@@ -80,9 +80,8 @@ func EnsureErlang() error { return ensureErlang() }
 
 ## Unsupported Features
 
-The Erlang backend still implements only part of Mochi. Missing features include:
-
-- joins inside queries
+- The Erlang backend still implements only part of Mochi. Missing features include:
+- left/right/outer joins inside queries
 - logic programming constructs and streams
 - agents and event streams
 - intent declarations
@@ -91,6 +90,7 @@ The Erlang backend still implements only part of Mochi. Missing features include
 - concurrency primitives like `spawn` and channels
 - `generate` helpers return placeholder data
 - imports targeting languages other than Erlang
+- methods declared inside type blocks
 - reflection or macro facilities
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs directly.
