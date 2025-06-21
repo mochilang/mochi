@@ -158,7 +158,7 @@ constructs:
 - Basic arithmetic and boolean operators
 - `let` and `var` declarations and assignments
 - `if` statements and expressions
-- `for` loops over integer ranges, list literals, fixed list variables and string values
+- `for` loops over integer ranges, list literals, fixed list variables and string values. Ranges can count up or down
 - `while` loops
 - `break` and `continue` statements
 - Standalone function calls as statements, including `print`
@@ -203,8 +203,9 @@ unsupported include:
 - Iteration over collections using `for x in items` unless `items` is a simple
   list, a string literal, or a fixed list variable
 - Iteration over map key/value pairs
-- Range loops with step values other than `1`
+- Range loops with step values other than `1` or `-1`
 - Bitwise and exponentiation operators
+- Assignment to list or string elements via indexing
 - List slicing with variable start or end expressions
 - Negative indices are only supported when specified as integer literals
 - List slicing with non-constant start or end indices

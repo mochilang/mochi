@@ -218,6 +218,8 @@ func (c *Compiler) compileFor(n *ast.Node) {
 			end = tmp
 		}
 
+		c.writeln(fmt.Sprintf("    IF %s < %s", start, end))
+		c.indent++
 		c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM %s BY 1 UNTIL %s >= %s", varName, start, varName, end))
 		c.indent++
 		for _, st := range n.Children[1].Children {
@@ -225,6 +227,18 @@ func (c *Compiler) compileFor(n *ast.Node) {
 		}
 		c.indent--
 		c.writeln("    END-PERFORM")
+		c.indent--
+		c.writeln("    ELSE")
+		c.indent++
+		c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM %s BY -1 UNTIL %s <= %s", varName, start, varName, end))
+		c.indent++
+		for _, st := range n.Children[1].Children {
+			c.compileNode(st)
+		}
+		c.indent--
+		c.writeln("    END-PERFORM")
+		c.indent--
+		c.writeln("    END-IF")
 
 	case "in":
 		src := n.Children[0].Children[0]
