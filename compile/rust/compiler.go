@@ -1148,6 +1148,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("(%s)", inner), nil
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
@@ -1219,6 +1227,67 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
+}
+
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	prompt := "\"\""
+	text := "\"\""
+	model := "\"\""
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		}
+	}
+	if g.Target == "embedding" {
+		c.use("_gen_embed")
+		return fmt.Sprintf("_gen_embed(%s, %s)", text, model), nil
+	}
+	c.use("_gen_text")
+	return fmt.Sprintf("_gen_text(%s, %s)", prompt, model), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch(%s)", url), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	typ := "std::collections::HashMap<String, String>"
+	if l.Type != nil {
+		typ = rustType(l.Type)
+	}
+	c.use("_load")
+	return fmt.Sprintf("_load::<%s>(%s)", typ, path), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	c.use("_save")
+	return fmt.Sprintf("_save(%s, %s)", src, path), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
