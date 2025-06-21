@@ -1,0 +1,40 @@
+package storage
+
+import ".." as gcloud
+
+/// Storage bucket representation.
+type Bucket { name: string }
+
+/// Create a new bucket in the configured project.
+export fun create(c: gcloud.Client, name: string): Bucket {
+  fetch gcloud.Client.serviceEndpoint(c, "storage", "/storage/v1/b?project=" + c.project) with {
+    method: "POST",
+    headers: gcloud.Client.authHeader(c) + { "Content-Type": "application/json" },
+    body: { name: name }
+  }
+  return Bucket { name: name }
+}
+
+/// Upload an object to a bucket.
+export fun upload(c: gcloud.Client, bucket: string, object: string, data: string) {
+  fetch gcloud.Client.serviceEndpoint(c, "storage", "/upload/storage/v1/b/" + bucket + "/o?uploadType=media&name=" + object) with {
+    method: "POST",
+    headers: gcloud.Client.authHeader(c),
+    body: data
+  }
+}
+
+/// Download an object from a bucket.
+export fun download(c: gcloud.Client, bucket: string, object: string): string {
+  return fetch gcloud.Client.serviceEndpoint(c, "storage", "/storage/v1/b/" + bucket + "/o/" + object + "?alt=media") with {
+    headers: gcloud.Client.authHeader(c)
+  } as string
+}
+
+/// Delete an object from a bucket.
+export fun delete(c: gcloud.Client, bucket: string, object: string) {
+  fetch gcloud.Client.serviceEndpoint(c, "storage", "/storage/v1/b/" + bucket + "/o/" + object) with {
+    method: "DELETE",
+    headers: gcloud.Client.authHeader(c)
+  }
+}

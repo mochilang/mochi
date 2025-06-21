@@ -1,0 +1,4 @@
+import "lib/cloud/gcloud" as gcloud
+
+let c = gcloud.client("demo", "tkn")
+print(gcloud.Client.serviceEndpoint(c, "storage", "/test"))

@@ -1,0 +1,50 @@
+package pubsub
+
+import ".." as gcloud
+
+/// Pub/Sub topic representation.
+type Topic { name: string }
+
+/// Subscription representation.
+type Subscription { name: string }
+
+/// Create a new topic.
+export fun create_topic(c: gcloud.Client, name: string): Topic {
+  fetch gcloud.Client.serviceEndpoint(c, "pubsub", "/v1/projects/" + c.project + "/topics/" + name) with {
+    method: "PUT",
+    headers: gcloud.Client.authHeader(c)
+  }
+  return Topic { name: name }
+}
+
+/// Publish messages to a topic.
+export fun publish(c: gcloud.Client, topic: string, messages: list<map<string,string>>) {
+  fetch gcloud.Client.serviceEndpoint(c, "pubsub", "/v1/projects/" + c.project + "/topics/" + topic + ":publish") with {
+    method: "POST",
+    headers: gcloud.Client.authHeader(c) + { "Content-Type": "application/json" },
+    body: { messages: messages }
+  }
+}
+
+/// Create a subscription for a topic.
+export fun create_subscription(c: gcloud.Client, name: string, topic: string): Subscription {
+  fetch gcloud.Client.serviceEndpoint(c, "pubsub", "/v1/projects/" + c.project + "/subscriptions/" + name) with {
+    method: "PUT",
+    headers: gcloud.Client.authHeader(c) + { "Content-Type": "application/json" },
+    body: { topic: "projects/" + c.project + "/topics/" + topic }
+  }
+  return Subscription { name: name }
+}
+
+/// Pull messages from a subscription.
+export fun pull(c: gcloud.Client, subscription: string, max_messages: int = 1): list<any> {
+  var resp = fetch gcloud.Client.serviceEndpoint(c, "pubsub", "/v1/projects/" + c.project + "/subscriptions/" + subscription + ":pull") with {
+    method: "POST",
+    headers: gcloud.Client.authHeader(c) + { "Content-Type": "application/json" },
+    body: { maxMessages: max_messages }
+  } as map<string, any>
+  if "receivedMessages" in resp {
+    return resp.receivedMessages as list<any>
+  }
+  return []
+}
