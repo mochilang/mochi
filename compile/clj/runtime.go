@@ -120,6 +120,25 @@ const (
 	helperJSON = `(defn _json [v]
   (println (_to_json v)))
 `
+
+	helperIn = `(defn _in [item col]
+  (cond
+    (and (string? col) (string? item)) (clojure.string/includes? col item)
+    (map? col) (contains? col item)
+    (sequential? col) (some #(= item %) col)
+    :else false))`
+
+	helperUnionAll = `(defn _union_all [a b]
+  (vec (concat a b)))`
+
+	helperUnion = `(defn _union [a b]
+  (vec (distinct (concat a b))))`
+
+	helperExcept = `(defn _except [a b]
+  (vec (remove (set b) a)))`
+
+	helperIntersect = `(defn _intersect [a b]
+  (vec (distinct (filter (set b) a))))`
 )
 
 var helperMap = map[string]string{
@@ -136,6 +155,11 @@ var helperMap = map[string]string{
 	"_escape_json": helperEscapeJSON,
 	"_to_json":     helperToJSON,
 	"_json":        helperJSON,
+	"_in":          helperIn,
+	"_union_all":   helperUnionAll,
+	"_union":       helperUnion,
+	"_except":      helperExcept,
+	"_intersect":   helperIntersect,
 }
 
 var helperOrder = []string{
@@ -152,6 +176,11 @@ var helperOrder = []string{
 	"_escape_json",
 	"_to_json",
 	"_json",
+	"_in",
+	"_union_all",
+	"_union",
+	"_except",
+	"_intersect",
 }
 
 // helperDeps lists transitive helper dependencies.

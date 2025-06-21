@@ -1,0 +1,14 @@
+(ns main)
+
+(defn _in [item col]
+  (cond
+    (and (string? col) (string? item)) (clojure.string/includes? col item)
+    (map? col) (contains? col item)
+    (sequential? col) (some #(= item %) col)
+    :else false))
+(defn -main []
+  (println (_in 2 [1 2 3]))
+  (println (_in "b" ["a" "b"]))
+)
+
+(-main)
