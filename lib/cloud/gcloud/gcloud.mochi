@@ -1,0 +1,32 @@
+package gcloud
+
+type Client {
+  project: string,
+  token: string,
+  region: string,
+}
+
+/// Create a new Google Cloud client.
+export fun client(project: string, token: string, region: string = "us-central1"): Client {
+  return Client { project: project, token: token, region: region }
+}
+
+/// Authorization header for requests.
+export fun Client.authHeader(c: Client): map<string,string> {
+  return { "Authorization": "Bearer " + c.token }
+}
+
+/// Construct a service endpoint URL.
+export fun Client.serviceEndpoint(c: Client, service: string, path: string): string {
+  var host = "https://"
+  if service == "storage" {
+    host = host + "storage.googleapis.com"
+  } else if service == "pubsub" {
+    host = host + "pubsub.googleapis.com"
+  } else if service == "functions" {
+    host = host + c.region + "-cloudfunctions.googleapis.com"
+  } else {
+    host = host + service
+  }
+  return host + path
+}

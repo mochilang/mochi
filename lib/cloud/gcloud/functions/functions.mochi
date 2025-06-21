@@ -1,0 +1,12 @@
+package functions
+
+import ".." as gcloud
+
+/// Call a deployed Cloud Function.
+export fun call(c: gcloud.Client, name: string, data: string): any {
+  return fetch gcloud.Client.serviceEndpoint(c, "functions", "/v1/projects/" + c.project + "/locations/" + c.region + "/functions/" + name + ":call") with {
+    method: "POST",
+    headers: gcloud.Client.authHeader(c) + { "Content-Type": "application/json" },
+    body: { data: data }
+  }
+}
