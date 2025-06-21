@@ -348,90 +348,6 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	return nil
 }
 
-func swiftType(t types.Type) string {
-	switch tt := t.(type) {
-	case types.IntType, types.Int64Type:
-		return "Int"
-	case types.FloatType:
-		return "Double"
-	case types.BoolType:
-		return "Bool"
-	case types.StringType:
-		return "String"
-	case types.ListType:
-		return "[" + swiftType(tt.Elem) + "]"
-	case types.MapType:
-		return "[" + swiftType(tt.Key) + ": " + swiftType(tt.Value) + "]"
-	case types.StructType:
-		return tt.Name
-	case types.UnionType:
-		return tt.Name
-	case types.FuncType:
-		params := make([]string, len(tt.Params))
-		for i, p := range tt.Params {
-			params[i] = swiftType(p)
-		}
-		ret := swiftType(tt.Return)
-		return "(" + strings.Join(params, ", ") + ") -> " + ret
-	case types.VoidType:
-		return "Void"
-	default:
-		return "Any"
-	}
-}
-
-func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
-	if t == nil {
-		return types.AnyType{}
-	}
-	if t.Fun != nil {
-		params := make([]types.Type, len(t.Fun.Params))
-		for i, p := range t.Fun.Params {
-			params[i] = resolveTypeRef(p, env)
-		}
-		var ret types.Type = types.VoidType{}
-		if t.Fun.Return != nil {
-			ret = resolveTypeRef(t.Fun.Return, env)
-		}
-		return types.FuncType{Params: params, Return: ret}
-	}
-	if t.Generic != nil {
-		switch t.Generic.Name {
-		case "list":
-			if len(t.Generic.Args) == 1 {
-				return types.ListType{Elem: resolveTypeRef(t.Generic.Args[0], env)}
-			}
-		case "map":
-			if len(t.Generic.Args) == 2 {
-				return types.MapType{Key: resolveTypeRef(t.Generic.Args[0], env), Value: resolveTypeRef(t.Generic.Args[1], env)}
-			}
-		}
-		return types.AnyType{}
-	}
-	if t.Simple != nil {
-		switch *t.Simple {
-		case "int":
-			return types.IntType{}
-		case "float":
-			return types.FloatType{}
-		case "string":
-			return types.StringType{}
-		case "bool":
-			return types.BoolType{}
-		default:
-			if env != nil {
-				if st, ok := env.GetStruct(*t.Simple); ok {
-					return st
-				}
-				if ut, ok := env.GetUnion(*t.Simple); ok {
-					return ut
-				}
-			}
-		}
-	}
-	return types.AnyType{}
-}
-
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
@@ -446,8 +362,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			t = resolveTypeRef(s.Let.Type, c.env)
 		}
 		if typ == "" {
-			// avoid emitting explicit types unless necessary
 			t = c.inferExprType(s.Let.Value)
+			if lt, ok := t.(types.ListType); ok && !containsAny(lt) {
+				typ = ": [" + swiftType(lt.Elem) + "]"
+			} else if mt, ok := t.(types.MapType); ok && !containsAny(mt) {
+				typ = ": [" + swiftType(mt.Key) + ": " + swiftType(mt.Value) + "]"
+			}
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("let %s%s", s.Let.Name, typ))
@@ -470,8 +390,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			t = resolveTypeRef(s.Var.Type, c.env)
 		}
 		if typ == "" {
-			// avoid emitting explicit types unless necessary
 			t = c.inferExprType(s.Var.Value)
+			if lt, ok := t.(types.ListType); ok && !containsAny(lt) {
+				typ = ": [" + swiftType(lt.Elem) + "]"
+			} else if mt, ok := t.(types.MapType); ok && !containsAny(mt) {
+				typ = ": [" + swiftType(mt.Key) + ": " + swiftType(mt.Value) + "]"
+			}
 		}
 		if typ == "" && expr == "[]" {
 			if lt, ok := c.funcRet.(types.ListType); ok {
@@ -1315,35 +1239,6 @@ func stmtAssignsVar(s *parser.Statement, name string) bool {
 		if len(s.If.Else) > 0 {
 			return paramAssigned(s.If.Else, name)
 		}
-	}
-	return false
-}
-
-func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
-	if e == nil {
-		return types.AnyType{}
-	}
-	prog := &parser.Program{Statements: []*parser.Statement{{Let: &parser.LetStmt{Name: "_tmp", Value: e}}}}
-	env := types.NewEnv(c.env)
-	for name, t := range c.locals {
-		env.SetVar(name, t, true)
-	}
-	if errs := types.Check(prog, env); len(errs) == 0 {
-		if t, err := env.GetVar("_tmp"); err == nil {
-			return t
-		}
-	}
-	return types.AnyType{}
-}
-
-func containsAny(t types.Type) bool {
-	switch tt := t.(type) {
-	case types.AnyType:
-		return true
-	case types.ListType:
-		return containsAny(tt.Elem)
-	case types.MapType:
-		return containsAny(tt.Key) || containsAny(tt.Value)
 	}
 	return false
 }
