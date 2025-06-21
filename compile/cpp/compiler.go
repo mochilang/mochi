@@ -509,24 +509,41 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		return nil
 	}
 	src := c.compileExpr(f.Source)
-	elemType := "auto"
-	if isListLiteral(f.Source) {
-		if t := c.guessExprType(f.Source); strings.HasPrefix(t, "vector<") {
-			elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
-			if !isPrimitive(elemType) {
-				elemType = "const " + elemType + "&"
-			}
+	srcType := c.guessExprType(f.Source)
+	if strings.HasPrefix(srcType, "unordered_map<") {
+		inside := strings.TrimSuffix(strings.TrimPrefix(srcType, "unordered_map<"), ">")
+		parts := strings.SplitN(inside, ",", 2)
+		keyType := "auto"
+		if len(parts) == 2 {
+			keyType = strings.TrimSpace(parts[0])
 		}
-	} else if isStringLiteral(f.Source) {
-		elemType = "char"
+		iterVar := "_kv"
+		c.writeln(fmt.Sprintf("for (const auto& %s : %s) {", iterVar, src))
+		c.indent++
+		if f.Name != "_" {
+			c.writeln(fmt.Sprintf("%s %s = %s.first;", keyType, f.Name, iterVar))
+			c.setVar(f.Name, keyType)
+		}
+	} else {
+		elemType := "auto"
+		if isListLiteral(f.Source) {
+			if t := c.guessExprType(f.Source); strings.HasPrefix(t, "vector<") {
+				elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
+				if !isPrimitive(elemType) {
+					elemType = "const " + elemType + "&"
+				}
+			}
+		} else if isStringLiteral(f.Source) {
+			elemType = "char"
+		}
+		name := f.Name
+		if name == "_" {
+			name = "_"
+		}
+		c.writeln(fmt.Sprintf("for (%s %s : %s) {", elemType, name, src))
+		c.setVar(f.Name, strings.TrimPrefix(elemType, "const "))
+		c.indent++
 	}
-	name := f.Name
-	if name == "_" {
-		name = "_"
-	}
-	c.writeln(fmt.Sprintf("for (%s %s : %s) {", elemType, name, src))
-	c.setVar(f.Name, strings.TrimPrefix(elemType, "const "))
-	c.indent++
 	for _, st := range f.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
