@@ -1,0 +1,33 @@
+#!/usr/bin/env escript
+-module(main).
+-export([main/1]).
+
+main(_) ->
+	Body = mochi_fetch("https://example.com", #{method => "GET"}),
+	mochi_print([(length(Body) > 0)]).
+
+mochi_print(Args) ->
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
+
+mochi_format(X) when is_integer(X) -> integer_to_list(X);
+mochi_format(X) when is_float(X) -> float_to_list(X);
+mochi_format(X) when is_list(X) -> X;
+mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
+
+
+mochi_fetch(Url, Opts) when Opts =:= undefined ->
+	mochi_fetch(Url, #{});
+mochi_fetch(Url, Opts) ->
+	application:ensure_all_started(inets),
+	Method0 = maps:get(method, Opts, get),
+	Method = case Method0 of
+		M when is_atom(M) -> M;
+		M when is_list(M) -> list_to_atom(string:lowercase(M));
+		M when is_binary(M) -> list_to_atom(string:lowercase(binary_to_list(M)));
+		_ -> get
+	end,
+	case httpc:request(Method, {Url, []}, [], []) of
+		{ok, {{_, 200, _}, _H, Body}} -> Body;
+		_ -> []
+	end.
