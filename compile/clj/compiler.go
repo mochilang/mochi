@@ -13,27 +13,23 @@ import (
 
 // Compiler translates a Mochi AST into Clojure source code (limited subset).
 type Compiler struct {
-	buf             bytes.Buffer
-	indent          int
-	env             *types.Env
-	mainStmts       []*parser.Statement
-	tempVarCount    int
-	imports         map[string]string
-	needIndexString bool
-	needIndexList   bool
-	needInput       bool
-	needCount       bool
-	needAvg         bool
-	needGroup       bool
-	needGroupBy     bool
-	needLoad        bool
-	needSave        bool
-	needJSON        bool
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	mainStmts    []*parser.Statement
+	tempVarCount int
+	imports      map[string]string
+	helpers      map[string]bool
 }
 
 // New creates a new Clojure compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, tempVarCount: 0, imports: map[string]string{}}
+	return &Compiler{
+		env:          env,
+		tempVarCount: 0,
+		imports:      map[string]string{},
+		helpers:      make(map[string]bool),
+	}
 }
 
 // Compile generates Clojure code for prog.
@@ -43,30 +39,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.mainStmts = nil
 	c.tempVarCount = 0
 	c.imports = map[string]string{}
-	c.needIndexString = false
-	c.needIndexList = false
-	c.needInput = false
-	c.needCount = false
-	c.needAvg = false
-	c.needGroup = false
-	c.needGroupBy = false
-	c.needLoad = false
-	c.needSave = false
-	c.needJSON = false
+	c.helpers = make(map[string]bool)
 
 	for _, s := range prog.Statements {
 		switch {
-               case s.Fun != nil:
-                        if err := c.compileFun(s.Fun); err != nil {
-                                return nil, err
-                        }
-                        c.writeln("")
-               case s.Type != nil:
-                        if err := c.compileTypeDecl(s.Type); err != nil {
-                                return nil, err
-                        }
-                        c.writeln("")
-               case s.Test != nil:
+		case s.Fun != nil:
+			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		case s.Type != nil:
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		case s.Test != nil:
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
@@ -94,7 +81,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	finalBuf := bytes.Buffer{}
 	c.writeNamespace(&finalBuf)
-	c.writeRuntime(&finalBuf)
+	c.emitRuntime(&finalBuf)
 	finalBuf.Write(c.buf.Bytes())
 
 	return finalBuf.Bytes(), nil
@@ -659,66 +646,66 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			} else {
 				if _, ok := t.(types.StringType); ok {
-					c.needIndexString = true
+					c.use("_indexString")
 					expr = fmt.Sprintf("(_indexString %s %s)", expr, start)
 					t = types.StringType{}
 				} else if lt, ok := t.(types.ListType); ok {
-					c.needIndexList = true
+					c.use("_indexList")
 					expr = fmt.Sprintf("(_indexList %s %s)", expr, start)
 					t = lt.Elem
 				} else if mt, ok := t.(types.MapType); ok {
 					expr = fmt.Sprintf("(get %s %s)", expr, start)
 					t = mt.Value
 				} else {
-					c.needIndexList = true
+					c.use("_indexList")
 					expr = fmt.Sprintf("(_indexList %s %s)", expr, start)
 					t = types.AnyType{}
 				}
 			}
 			continue
 		}
-               if op.Call != nil {
-                       args := []string{}
-                       for _, a := range op.Call.Args {
-                               v, err := c.compileExpr(a)
-                               if err != nil {
-                                       return "", err
-                               }
-                               args = append(args, v)
-                       }
-                        name := expr
-                        // method call like obj.foo()
-                        if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
-                                root := p.Target.Selector.Root
-                                method := p.Target.Selector.Tail[0]
-                                if st, err := c.env.GetVar(root); err == nil {
-                                        if stt, ok := st.(types.StructType); ok {
-                                                if m, ok := stt.Methods[method]; ok {
-                                                        callArgs := append([]string{sanitizeName(root)}, args...)
-                                                        expr = fmt.Sprintf("(%s_%s %s)", sanitizeName(stt.Name), sanitizeName(method), strings.Join(callArgs, " "))
-                                                        t = m.Type.Return
-                                                        continue
-                                                }
-                                        }
-                                }
-                        }
-                        switch name {
-                        case "print":
-                                expr = fmt.Sprintf("(println %s)", strings.Join(args, " "))
-                        case "len":
-                                expr = fmt.Sprintf("(count %s)", args[0])
-                        case "count":
-				c.needCount = true
+		if op.Call != nil {
+			args := []string{}
+			for _, a := range op.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args = append(args, v)
+			}
+			name := expr
+			// method call like obj.foo()
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+				root := p.Target.Selector.Root
+				method := p.Target.Selector.Tail[0]
+				if st, err := c.env.GetVar(root); err == nil {
+					if stt, ok := st.(types.StructType); ok {
+						if m, ok := stt.Methods[method]; ok {
+							callArgs := append([]string{sanitizeName(root)}, args...)
+							expr = fmt.Sprintf("(%s_%s %s)", sanitizeName(stt.Name), sanitizeName(method), strings.Join(callArgs, " "))
+							t = m.Type.Return
+							continue
+						}
+					}
+				}
+			}
+			switch name {
+			case "print":
+				expr = fmt.Sprintf("(println %s)", strings.Join(args, " "))
+			case "len":
+				expr = fmt.Sprintf("(count %s)", args[0])
+			case "count":
+				c.use("_count")
 				expr = fmt.Sprintf("(_count %s)", args[0])
 			case "avg":
-				c.needAvg = true
+				c.use("_avg")
 				expr = fmt.Sprintf("(_avg %s)", args[0])
 			case "input":
-				c.needInput = true
+				c.use("_input")
 				expr = "(_input)"
 			case "json":
 				if len(args) == 1 {
-					c.needJSON = true
+					c.use("_json")
 					expr = fmt.Sprintf("(_json %s)", args[0])
 				}
 			case "now":
@@ -856,17 +843,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "count":
 			if len(args) == 1 {
-				c.needCount = true
+				c.use("_count")
 				return "(_count " + args[0] + ")", nil
 			}
 		case "avg":
 			if len(args) == 1 {
-				c.needAvg = true
+				c.use("_avg")
 				return "(_avg " + args[0] + ")", nil
 			}
 		case "input":
 			if len(args) == 0 {
-				c.needInput = true
+				c.use("_input")
 				return "(_input)", nil
 			}
 		case "now":
@@ -875,7 +862,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "json":
 			if len(args) == 1 {
-				c.needJSON = true
+				c.use("_json")
 				return "(_json " + args[0] + ")", nil
 			}
 		case "str":
@@ -922,8 +909,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		c.env = origEnv
-		c.needGroup = true
-		c.needGroupBy = true
+		c.use("_group")
+		c.use("_group_by")
 		expr := fmt.Sprintf("(map (fn [%s] %s) (_group_by %s (fn [%s] %s)))",
 			sanitizeName(q.Group.Name), valExpr, src, sanitizeName(q.Var), keyExpr)
 		return expr, nil
@@ -1055,7 +1042,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 	}
 
-	sub := &Compiler{env: child, tempVarCount: c.tempVarCount}
+	sub := &Compiler{env: child, tempVarCount: c.tempVarCount, helpers: make(map[string]bool)}
 	sub.indent = 1
 	sub.writeln("(try")
 	sub.indent++
@@ -1084,35 +1071,8 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	sub.writeln(")")
 
 	// propagate helpers
-	if sub.needIndexString {
-		c.needIndexString = true
-	}
-	if sub.needIndexList {
-		c.needIndexList = true
-	}
-	if sub.needInput {
-		c.needInput = true
-	}
-	if sub.needCount {
-		c.needCount = true
-	}
-	if sub.needAvg {
-		c.needAvg = true
-	}
-	if sub.needGroup {
-		c.needGroup = true
-	}
-	if sub.needGroupBy {
-		c.needGroupBy = true
-	}
-	if sub.needLoad {
-		c.needLoad = true
-	}
-	if sub.needSave {
-		c.needSave = true
-	}
-	if sub.needJSON {
-		c.needJSON = true
+	for h := range sub.helpers {
+		c.helpers[h] = true
 	}
 	c.tempVarCount = sub.tempVarCount
 
@@ -1131,56 +1091,56 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-        if st, ok := c.env.GetStruct(t.Name); ok {
-                for _, m := range t.Members {
-                        if m.Method == nil {
-                                continue
-                        }
-                        name := sanitizeName(t.Name + "_" + m.Method.Name)
-                        clone := *m.Method
-                        clone.Name = name
-                        origEnv := c.env
-                        child := types.NewEnv(c.env)
-                        for fname, ft := range st.Fields {
-                                child.SetVar(fname, ft, true)
-                        }
-                        if mt, ok := st.Methods[m.Method.Name]; ok {
-                                child.SetVar(name, mt.Type, false)
-                        }
-                        c.env = child
-                        if err := c.compileFun(&clone); err != nil {
-                                c.env = origEnv
-                                return err
-                        }
-                        c.env = origEnv
-                        c.writeln("")
-                }
-                return nil
-        }
-        if len(t.Variants) > 0 {
-                for _, v := range t.Variants {
-                        c.writeIndent()
-                        c.buf.WriteString("(defn " + sanitizeName(v.Name) + " [")
-                        for i, f := range v.Fields {
-                                if i > 0 {
-                                        c.buf.WriteString(" ")
-                                }
-                                c.buf.WriteString(sanitizeName(f.Name))
-                        }
-                        c.buf.WriteString("]\n")
-                        c.indent++
-                        parts := make([]string, 0, len(v.Fields)+1)
-                        parts = append(parts, fmt.Sprintf(":__name \"%s\"", v.Name))
-                        for _, f := range v.Fields {
-                                parts = append(parts, fmt.Sprintf(":%s %s", sanitizeName(f.Name), sanitizeName(f.Name)))
-                        }
-                        c.writeln("{" + strings.Join(parts, " ") + "}")
-                        c.indent--
-                        c.writeln(")")
-                        c.writeln("")
-                }
-        }
-        return nil
+	if st, ok := c.env.GetStruct(t.Name); ok {
+		for _, m := range t.Members {
+			if m.Method == nil {
+				continue
+			}
+			name := sanitizeName(t.Name + "_" + m.Method.Name)
+			clone := *m.Method
+			clone.Name = name
+			origEnv := c.env
+			child := types.NewEnv(c.env)
+			for fname, ft := range st.Fields {
+				child.SetVar(fname, ft, true)
+			}
+			if mt, ok := st.Methods[m.Method.Name]; ok {
+				child.SetVar(name, mt.Type, false)
+			}
+			c.env = child
+			if err := c.compileFun(&clone); err != nil {
+				c.env = origEnv
+				return err
+			}
+			c.env = origEnv
+			c.writeln("")
+		}
+		return nil
+	}
+	if len(t.Variants) > 0 {
+		for _, v := range t.Variants {
+			c.writeIndent()
+			c.buf.WriteString("(defn " + sanitizeName(v.Name) + " [")
+			for i, f := range v.Fields {
+				if i > 0 {
+					c.buf.WriteString(" ")
+				}
+				c.buf.WriteString(sanitizeName(f.Name))
+			}
+			c.buf.WriteString("]\n")
+			c.indent++
+			parts := make([]string, 0, len(v.Fields)+1)
+			parts = append(parts, fmt.Sprintf(":__name \"%s\"", v.Name))
+			for _, f := range v.Fields {
+				parts = append(parts, fmt.Sprintf(":%s %s", sanitizeName(f.Name), sanitizeName(f.Name)))
+			}
+			c.writeln("{" + strings.Join(parts, " ") + "}")
+			c.indent--
+			c.writeln(")")
+			c.writeln("")
+		}
+	}
+	return nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
@@ -1196,7 +1156,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		}
 		opts = v
 	}
-	c.needLoad = true
+	c.use("_load")
 	return fmt.Sprintf("(_load %s %s)", path, opts), nil
 }
 
@@ -1217,7 +1177,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		}
 		opts = v
 	}
-	c.needSave = true
+	c.use("_save")
 	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
 }
 
@@ -1290,140 +1250,4 @@ func (c *Compiler) writeNamespace(buf *bytes.Buffer) {
 		buf.WriteString("  )")
 	}
 	buf.WriteString(")\n\n")
-}
-
-func (c *Compiler) writeRuntime(buf *bytes.Buffer) {
-	if c.needIndexString {
-		buf.WriteString(`(defn _indexString [s i]
-  (let [r (vec (seq s))
-        i (if (neg? i) (+ i (count r)) i)]
-    (if (or (< i 0) (>= i (count r)))
-      (throw (ex-info "index out of range" {}))
-      (str (nth r i)))))
-
-`)
-	}
-	if c.needIndexList {
-		buf.WriteString(`(defn _indexList [xs i]
-  (let [idx (if (neg? i) (+ i (count xs)) i)]
-    (if (or (< idx 0) (>= idx (count xs)))
-      (throw (ex-info "index out of range" {}))
-      (nth xs idx))))
-
-`)
-	}
-	if c.needInput {
-		buf.WriteString(`(defn _input []
-  (clojure.string/trim (read-line)))
-
-`)
-	}
-	if c.needCount {
-		buf.WriteString(`(defn _count [v]
-  (cond
-    (sequential? v) (count v)
-    (and (map? v) (contains? v :Items)) (count (:Items v))
-    :else (throw (ex-info "count() expects list or group" {}))))
-
-`)
-	}
-	if c.needAvg {
-		buf.WriteString(`(defn _avg [v]
-  (let [lst (cond
-              (and (map? v) (contains? v :Items)) (:Items v)
-              (sequential? v) v
-              :else (throw (ex-info "avg() expects list or group" {})))]
-    (if (empty? lst)
-      0
-      (/ (reduce + lst) (double (count lst)))))
-
-`)
-	}
-	if c.needGroup {
-		buf.WriteString(`(defrecord _Group [key Items])
-
-`)
-	}
-	if c.needGroupBy {
-		buf.WriteString(`(defn _group_by [src keyfn]
-  (let [groups (atom {})
-        order (atom [])]
-    (doseq [it src]
-      (let [k (keyfn it)
-            ks (str k)]
-        (when-not (contains? @groups ks)
-          (swap! groups assoc ks (_Group. k []))
-          (swap! order conj ks))
-        (swap! groups update ks (fn [g] (assoc g :Items (conj (:Items g) it)))))
-    )
-    (map (fn [k] (@groups k)) @order)))
-
-`)
-	}
-	if c.needLoad {
-		buf.WriteString(`(defn _parse_csv [text header delim]
-  (let [lines (->> (clojure.string/split-lines text)
-                   (remove clojure.string/blank?))
-        headers (if header
-                    (clojure.string/split (first lines) (re-pattern (str delim)))
-                    (map #(str "c" %) (range (count (clojure.string/split (first lines) (re-pattern (str delim)))))))]
-    (mapv (fn [line]
-            (let [parts (clojure.string/split line (re-pattern (str delim)))]
-              (zipmap headers parts)))
-          (drop (if header 1 0) lines))) )
-
-`)
-		buf.WriteString(`(defn _load [path opts]
-  (let [fmt (get opts :format "csv")
-        header (get opts :header true)
-        delim (first (or (get opts :delimiter ",") ","))
-        text (if (or (nil? path) (= path "") (= path "-"))
-               (slurp *in*)
-               (slurp path))]
-    (cond
-      (= fmt "csv") (_parse_csv text header delim)
-      :else [])) )
-
-`)
-	}
-	if c.needSave {
-		buf.WriteString(`(defn _save [rows path opts]
-  (let [fmt (get opts :format "csv")
-        header (get opts :header false)
-        delim (first (or (get opts :delimiter ",") ","))
-        headers (if (seq rows) (sort (keys (first rows))) [])
-        lines (concat
-                (when header [(clojure.string/join delim headers)])
-                (map (fn [r]
-                       (clojure.string/join delim (map #(str (get r % "")) headers)))
-                     rows))
-        out (str (clojure.string/join "\n" lines) "\n")]
-    (if (or (nil? path) (= path "") (= path "-"))
-      (print out)
-      (spit path out))) )
-
-`)
-	}
-	if c.needJSON {
-		buf.WriteString(`(defn _escape_json [s]
-  (-> s
-      (clojure.string/replace "\\" "\\\\")
-      (clojure.string/replace "\"" "\\\"")))
-
-(defn _to_json [v]
-  (cond
-    (nil? v) "null"
-    (string? v) (str "\"" (_escape_json v) "\"")
-    (number? v) (str v)
-    (boolean? v) (str v)
-    (sequential? v) (str "[" (clojure.string/join "," (map _to_json v)) "]")
-    (map? v) (str "{" (clojure.string/join "," (map (fn [[k val]]
-                                        (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
-    :else (str "\"" (_escape_json (str v)) "\"")))
-
-(defn _json [v]
-  (println (_to_json v)))
-
-`)
-	}
 }

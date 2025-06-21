@@ -231,8 +231,46 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 		return types.MapType{Key: keyType, Value: valType}
+	case p.Load != nil:
+		var elem types.Type = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+		if p.Load.Type != nil {
+			elem = c.resolveTypeRef(p.Load.Type)
+			if st, ok := c.env.GetStruct(*p.Load.Type.Simple); elem == (types.AnyType{}) && ok {
+				elem = st
+			}
+		}
+		return types.ListType{Elem: elem}
+	case p.Save != nil:
+		return types.VoidType{}
 	case p.Query != nil:
-		return types.ListType{Elem: c.inferExprType(p.Query.Select)}
+		srcType := c.inferExprType(p.Query.Source)
+		var elemType types.Type = types.AnyType{}
+		if lt, ok := srcType.(types.ListType); ok {
+			elemType = lt.Elem
+		}
+		child := types.NewEnv(c.env)
+		child.SetVar(p.Query.Var, elemType, true)
+		for _, f := range p.Query.Froms {
+			ft := c.inferExprType(f.Src)
+			var fe types.Type = types.AnyType{}
+			if lt, ok := ft.(types.ListType); ok {
+				fe = lt.Elem
+			}
+			child.SetVar(f.Var, fe, true)
+		}
+		for _, j := range p.Query.Joins {
+			jt := c.inferExprType(j.Src)
+			var je types.Type = types.AnyType{}
+			if lt, ok := jt.(types.ListType); ok {
+				je = lt.Elem
+			}
+			child.SetVar(j.Var, je, true)
+		}
+		orig := c.env
+		c.env = child
+		elem := c.inferExprType(p.Query.Select)
+		c.env = orig
+		return types.ListType{Elem: elem}
 	case p.Match != nil:
 		var rType types.Type
 		for _, cs := range p.Match.Cases {
