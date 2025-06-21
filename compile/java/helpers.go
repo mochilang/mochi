@@ -1,6 +1,7 @@
 package javacode
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -90,4 +91,44 @@ func indentBlock(s string, depth int) string {
 		lines[i] = prefix + line
 	}
 	return strings.Join(lines, "\n") + "\n"
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0 {
+		return true
+	}
+	return false
+}
+
+func (c *Compiler) newVar() string {
+	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+	c.tempVarCount++
+	return name
+}
+
+func zeroValue(typ string) string {
+	switch typ {
+	case "int":
+		return "0"
+	case "double":
+		return "0.0"
+	case "boolean":
+		return "false"
+	default:
+		return "null"
+	}
 }
