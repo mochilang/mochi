@@ -1,6 +1,7 @@
 package cobolcode
 
 import (
+	"fmt"
 	"mochi/ast"
 	"mochi/types"
 )
@@ -135,6 +136,22 @@ func (c *Compiler) picForExpr(n *ast.Node) string {
 		return "PIC X(100)."
 	case types.FloatType:
 		return "PIC 9(4)V9(4)."
+	case types.IntType:
+		if n.Kind == "int" {
+			v := extractInt(n)
+			if v < 0 {
+				v = -v
+			}
+			width := 1
+			for v >= 10 {
+				width++
+				v /= 10
+			}
+			if width > 1 {
+				return fmt.Sprintf("PIC 9(%d).", width)
+			}
+		}
+		return "PIC 9."
 	default:
 		return "PIC 9."
 	}

@@ -165,7 +165,8 @@ constructs:
 - Calls to built-ins `print`, `len`, `add`, `twoSum`, `addTwoNumbers` and a
   basic `reduce` over lists using `add`
 - List concatenation with `+` and indexing (including negative indices)
-- Basic string slicing with constant start and end indices
+- String slicing with variable or constant start and end indices
+- String indexing with positive or negative indices
 - List slicing with variable start and end indices
 - Simple `match` expressions with literal patterns
 - `expect` and `test` blocks
@@ -202,8 +203,7 @@ unsupported include:
   list, a string literal, or a fixed list variable
 - Iteration over map key/value pairs
 - Range loops with step values other than `1`
-- List slicing with open-ended ranges (omitting the start or end index)
-- Negative indices are only supported when specified as integer literals
+- Negative indices for lists are only supported when the list length is known
 - Using the `range` helper to generate sequences
 - Dynamic lists whose length is not known at compile time
 - Builtin functions other than `print`, `len`, `add`, `twoSum` and `addTwoNumbers`
@@ -211,6 +211,7 @@ unsupported include:
 - Union type declarations and inline methods
 - First-class function values or closures
 - `try`/`catch` error handling blocks
+- String interpolation using `${...}` syntax
 - Complex `match` patterns beyond simple literals and `_`
 
 Programs relying on these constructs will fail to compile.

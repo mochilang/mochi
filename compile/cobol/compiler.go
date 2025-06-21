@@ -158,6 +158,10 @@ func (c *Compiler) compileNode(n *ast.Node) {
 		c.compileVar(n)
 	case "assign":
 		c.compileAssign(n)
+	case "call":
+		if n.Value == "print" {
+			c.compilePrintCall(n)
+		}
 
 	case "return":
 		if len(n.Children) == 1 {
@@ -682,6 +686,31 @@ func (c *Compiler) compileReduceCall(list, fn, init *ast.Node) string {
 	return res
 }
 
+// compilePrintCall emits DISPLAY statements for each argument of a print call.
+func (c *Compiler) compilePrintCall(call *ast.Node) {
+	for _, arg := range call.Children {
+		expr := c.expr(arg)
+		if !isSimpleExpr(arg) {
+			pic := c.picForExpr(arg)
+			if arg.Kind == "index" {
+				_, _, lp, _, ok := c.listInfo(arg.Children[0])
+				if ok && lp != "" {
+					pic = lp
+				}
+			}
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s %s", tmp, pic))
+			if c.isStringExpr(arg) {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
+			} else {
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+			}
+			expr = tmp
+		}
+		c.writeln(fmt.Sprintf("    DISPLAY %s", expr))
+	}
+}
+
 func (c *Compiler) expr(n *ast.Node) string {
 	switch n.Kind {
 	case "int":
@@ -735,7 +764,17 @@ func (c *Compiler) expr(n *ast.Node) string {
 	case "call":
 		return c.compileCallExpr(n)
 	case "index":
-		arr := c.expr(n.Children[0])
+		arrNode := n.Children[0]
+		arr := c.expr(arrNode)
+		if len(n.Children) == 2 && arrNode.Kind == "list" && n.Children[1].Kind == "int" {
+			idx := extractInt(n.Children[1])
+			if idx < 0 {
+				idx = len(arrNode.Children) + idx
+			}
+			if idx >= 0 && idx < len(arrNode.Children) {
+				return c.expr(arrNode.Children[idx])
+			}
+		}
 		if len(n.Children) > 1 && (n.Children[1].Kind == "start" || n.Children[1].Kind == "end" || len(n.Children) > 2) {
 			if c.isStringExpr(n.Children[0]) {
 				var startNode, endNode *ast.Node
@@ -747,19 +786,26 @@ func (c *Compiler) expr(n *ast.Node) string {
 						endNode = ch.Children[0]
 					}
 				}
-				if startNode == nil || endNode == nil {
-					c.writeln("    *> unsupported slice")
-					return "0"
+				startExpr := "0"
+				endExpr := ""
+				if startNode != nil {
+					startExpr = c.expr(startNode)
 				}
-				startExpr := c.expr(startNode)
-				endExpr := c.expr(endNode)
-				if !isSimpleExpr(startNode) {
+				if endNode != nil {
+					endExpr = c.expr(endNode)
+				} else {
+					tmp := c.newTemp()
+					c.declare("01 " + tmp + " PIC S9.")
+					c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION LENGTH(%s)", tmp, arr))
+					endExpr = tmp
+				}
+				if startNode != nil && !isSimpleExpr(startNode) {
 					tmp := c.newTemp()
 					c.declare("01 " + tmp + " PIC S9.")
 					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, startExpr))
 					startExpr = tmp
 				}
-				if !isSimpleExpr(endNode) {
+				if endNode != nil && !isSimpleExpr(endNode) {
 					tmp := c.newTemp()
 					c.declare("01 " + tmp + " PIC S9.")
 					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, endExpr))
@@ -837,7 +883,17 @@ func (c *Compiler) expr(n *ast.Node) string {
 			c.writeln("    *> unsupported slice")
 			return "0"
 		}
-		idx := c.expr(n.Children[1])
+		idxNode := n.Children[1]
+		if idxNode.Kind == "int" {
+			val := extractInt(idxNode)
+			if val >= 0 {
+				if c.isStringExpr(n.Children[0]) {
+					return fmt.Sprintf("%s(%d + 1:1)", arr, val)
+				}
+				return fmt.Sprintf("%s(%d + 1)", arr, val)
+			}
+		}
+		idx := c.expr(idxNode)
 		l, ok := c.listLens[arr]
 		if !ok {
 			l, ok = c.listLens[strings.ToLower(arr)]
@@ -845,7 +901,7 @@ func (c *Compiler) expr(n *ast.Node) string {
 		if ok {
 			tmp := c.newTemp()
 			c.declare(fmt.Sprintf("01 %s PIC S9.", tmp))
-			if isSimpleExpr(n.Children[1]) {
+			if isSimpleExpr(idxNode) {
 				c.writeln(fmt.Sprintf("    MOVE %s TO %s", idx, tmp))
 			} else {
 				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, idx))
@@ -856,6 +912,28 @@ func (c *Compiler) expr(n *ast.Node) string {
 			c.indent--
 			c.writeln("    END-IF")
 			idx = tmp
+			if c.isStringExpr(n.Children[0]) {
+				return fmt.Sprintf("%s(%s + 1:1)", arr, idx)
+			}
+			return fmt.Sprintf("%s(%s + 1)", arr, idx)
+		}
+		if c.isStringExpr(n.Children[0]) {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC S9.", tmp))
+			if isSimpleExpr(n.Children[1]) {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s", idx, tmp))
+			} else {
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, idx))
+			}
+			lenTmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC S9.", lenTmp))
+			c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION LENGTH(%s)", lenTmp, arr))
+			c.writeln(fmt.Sprintf("    IF %s < 0", tmp))
+			c.indent++
+			c.writeln(fmt.Sprintf("ADD %s TO %s", lenTmp, tmp))
+			c.indent--
+			c.writeln("    END-IF")
+			return fmt.Sprintf("%s(%s + 1:1)", arr, tmp)
 		}
 		return fmt.Sprintf("%s(%s + 1)", arr, idx)
 	case "unary":
