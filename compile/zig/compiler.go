@@ -915,6 +915,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		return c.compileIfExpr(p.If)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group, asReturn)
 		if err != nil {
@@ -1114,6 +1116,51 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 		fields[i] = fmt.Sprintf(".%s = %s", sanitizeName(f.Name), v)
 	}
 	return fmt.Sprintf("%s{ %s }", sanitizeName(s.Name), strings.Join(fields, ", ")), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	params := make([]string, len(fn.Params))
+	child := types.NewEnv(c.env)
+	for i, p := range fn.Params {
+		typ := c.zigType(p.Type)
+		params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ)
+		if child != nil {
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		}
+	}
+	sub := &Compiler{env: child}
+	sub.indent = 1
+	if fn.ExprBody != nil {
+		expr, err := sub.compileExpr(fn.ExprBody, false)
+		if err != nil {
+			return "", err
+		}
+		sub.writeln("return " + expr + ";")
+	} else {
+		for _, st := range fn.BlockBody {
+			if err := sub.compileStmt(st, true); err != nil {
+				return "", err
+			}
+		}
+	}
+	body := indentBlock(sub.buf.String(), 1)
+	ret := "void"
+	if fn.Return != nil {
+		ret = c.zigType(fn.Return)
+	} else if fn.ExprBody != nil {
+		t := c.inferExprType(fn.ExprBody)
+		ret = zigTypeOf(t)
+	} else if n := len(fn.BlockBody); n > 0 {
+		last := fn.BlockBody[n-1]
+		if last.Return != nil {
+			t := c.inferExprType(last.Return.Value)
+			ret = zigTypeOf(t)
+		} else if last.Expr != nil {
+			t := c.inferExprType(last.Expr.Expr)
+			ret = zigTypeOf(t)
+		}
+	}
+	return fmt.Sprintf("fn (%s) %s {\n%s}", strings.Join(params, ", "), ret, body), nil
 }
 
 func isListLiteralExpr(e *parser.Expr) bool {
