@@ -99,6 +99,20 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
         ct.runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[T]
 }
 `
+	helperEscapeJSON = `def _escape_json(s: String): String =
+  s.replace("\\", "\\\\").replace("\"", "\\\"")`
+	helperToJSON = `def _to_json(v: Any): String = v match {
+  case null => "null"
+  case s: String => "\"" + _escape_json(s) + "\""
+  case i: Int => i.toString
+  case d: Double => d.toString
+  case b: Boolean => b.toString
+  case m: scala.collection.Map[_, _] =>
+    m.map{ case (k, value) => "\"" + _escape_json(k.toString) + "\":" + _to_json(value) }.mkString("{", ",", "}")
+  case seq: Seq[_] => seq.map(_to_json).mkString("[", ",", "]")
+  case other => "\"" + _escape_json(other.toString) + "\""
+}`
+	helperJSON   = `def _json(v: Any): Unit = println(_to_json(v))`
 	helperPyAttr = `def _pyAttr(module: String, name: String, args: Seq[Any]): Any = {
         import scala.sys.process._
         import scala.util.parsing.json.{JSON, JSONArray}
@@ -136,6 +150,9 @@ var helperMap = map[string]string{
 	"_indexList":   helperIndexList,
 	"_sliceString": helperSliceString,
 	"_slice":       helperSlice,
+	"_escape_json": helperEscapeJSON,
+	"_to_json":     helperToJSON,
+	"_json":        helperJSON,
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,

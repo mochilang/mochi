@@ -618,6 +618,10 @@ implemented across all backends:
 * Pattern matching on union variants
 * Nested recursive functions inside other functions
 * Foreign imports and `extern` declarations
+* Import statements for custom modules
+* Built-in helpers like `json`, `to_json`, `now` and `append`
+* Functions with multiple return values
+* Closures capturing surrounding variables
 
 ## Benchmarks
 

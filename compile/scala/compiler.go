@@ -1054,6 +1054,28 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		}
 		a := args[0]
 		return fmt.Sprintf("(%s.sum / %s.size)", a, a), nil
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects 0 args")
+		}
+		return "(System.currentTimeMillis()*1000000L)", nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		c.use("_json")
+		return fmt.Sprintf("_json(%s)", args[0]), nil
+	case "to_json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("to_json expects 1 arg")
+		}
+		c.use("_to_json")
+		return fmt.Sprintf("_to_json(%s)", args[0]), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		return fmt.Sprintf("(%s :+ %s)", args[0], args[1]), nil
 	case "input":
 		if len(args) != 0 {
 			return "", fmt.Errorf("input expects no args")
