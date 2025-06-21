@@ -165,7 +165,8 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 ### Unsupported features
 
 - The backend is still incomplete. Notable gaps include:
-- Left/right/outer joins in dataset queries
+- Right and outer joins in dataset queries
+- Sorting, pagination or grouping when joins are used
 - Agent declarations and intent blocks
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign function interface and extern objects
@@ -177,4 +178,3 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Reflection or macro facilities
 - Generic type parameters and methods inside `type` blocks
 - Asynchronous `async`/`await` constructs
-- Nested function declarations inside other functions

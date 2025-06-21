@@ -916,17 +916,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		joinSrcs := make([]string, len(q.Joins))
 		joinOns := make([]string, len(q.Joins))
+		joinSides := make([]string, len(q.Joins))
 		for i, j := range q.Joins {
-			if j.Side != nil {
-				c.env = orig
-				return "", fmt.Errorf("unsupported query join side")
-			}
 			js, err := c.compileExpr(j.Src)
 			if err != nil {
 				c.env = orig
 				return "", err
 			}
 			joinSrcs[i] = js
+			if j.Side != nil {
+				joinSides[i] = *j.Side
+			}
 			child.SetVar(j.Var, types.AnyType{}, true)
 			c.env = child
 			onExpr, err := c.compileExpr(j.On)
@@ -960,23 +960,57 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
 			indent += "\t"
 		}
-		for i, j := range q.Joins {
-			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(j.Var), joinSrcs[i]))
+		specialLeft := len(q.Joins) == 1 && joinSides[0] == "left"
+		if specialLeft {
+			buf.WriteString(indent + "bool _matched = false;\n")
+			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(q.Joins[0].Var), joinSrcs[0]))
 			indent += "\t"
-			buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[i]))
-		}
-		if cond != "" {
-			buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
-			indent += "\t"
-		}
-		buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
-		if cond != "" {
+			buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[0]))
+			if cond != "" {
+				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
+				indent += "\t"
+			}
+			buf.WriteString(indent + "_matched = true;\n")
+			buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
+			if cond != "" {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
-		}
-		for i := len(q.Joins) - 1; i >= 0; i-- {
+			buf.WriteString(indent + "if (!_matched) {\n")
+			indent += "\t"
+			buf.WriteString(fmt.Sprintf(indent+"dynamic %s = null;\n", sanitizeName(q.Joins[0].Var)))
+			if cond != "" {
+				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
+				indent += "\t"
+			}
+			buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
+			if cond != "" {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
+		} else {
+			for i, j := range q.Joins {
+				buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(j.Var), joinSrcs[i]))
+				indent += "\t"
+				buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[i]))
+			}
+			if cond != "" {
+				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
+				indent += "\t"
+			}
+			buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
+			if cond != "" {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
+			for i := len(q.Joins) - 1; i >= 0; i-- {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
 		}
 		for i := len(q.Froms) - 1; i >= 0; i-- {
 			indent = indent[:len(indent)-1]
