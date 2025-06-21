@@ -1,0 +1,13 @@
+import "../../lib/cloud/k8s/cluster" as cluster
+import "../../lib/cloud/k8s/deployment" as deployment
+import "../../lib/cloud/k8s/service" as service
+import "../../lib/cloud/k8s/configmap" as configmap
+
+let c = cluster.new("demo")
+let d = deployment.new("web", "nginx:latest", 2)
+cluster.add(c, d)
+let s = service.new("web", 80, 80)
+cluster.add(c, s)
+let conf = configmap.new("app-cfg", {"ENV": "prod"})
+cluster.add(c, conf)
+print(cluster.manifest(c))

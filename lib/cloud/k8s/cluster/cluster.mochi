@@ -1,0 +1,31 @@
+package cluster
+
+type Cluster {
+  name: string,
+  resources: list<string>
+}
+
+fun new(name: string): Cluster {
+  return Cluster { name: name, resources: [] }
+}
+
+fun add(c: Cluster, manifest: string): void {
+  c.resources = c.resources + [manifest]
+}
+
+fun manifest(c: Cluster): string {
+  var result = ""
+  var first = true
+  for r in c.resources {
+    if !first {
+      result = result + "\n---\n"
+    }
+    result = result + r
+    first = false
+  }
+  return result
+}
+
+fun apply(c: Cluster) {
+  print(manifest(c))
+}
