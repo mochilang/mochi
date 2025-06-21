@@ -1,0 +1,18 @@
+package compute
+
+type Function {
+  name: string
+  runtime: string
+  handler: string
+}
+
+export fun function(name: string, runtime: string, handler: string): Function {
+  return Function { name: name, runtime: runtime, handler: handler }
+}
+
+export fun to_tf(f: Function): string {
+  return "resource \"function\" \"" + f.name + "\" {\n" +
+         "  runtime = \"" + f.runtime + "\"\n" +
+         "  handler = \"" + f.handler + "\"\n" +
+         "}\n"
+}

@@ -1,0 +1,16 @@
+package storage
+
+type Bucket {
+  name: string
+  versioned: bool
+}
+
+export fun bucket(name: string, versioned: bool): Bucket {
+  return Bucket { name: name, versioned: versioned }
+}
+
+export fun to_tf(b: Bucket): string {
+  return "resource \"bucket\" \"" + b.name + "\" {\n" +
+         "  versioned = " + str(b.versioned) + "\n" +
+         "}\n"
+}
