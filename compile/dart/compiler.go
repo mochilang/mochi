@@ -24,6 +24,7 @@ type Compiler struct {
 	structs      map[string]bool
 	handlerCount int
 	helpers      map[string]bool
+	models       bool
 }
 
 // New creates a new Dart compiler instance.
@@ -40,6 +41,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.structs = make(map[string]bool)
 	c.helpers = make(map[string]bool)
 	c.handlerCount = 0
+	c.models = false
+
+	for _, s := range prog.Statements {
+		if s.Model != nil {
+			c.models = true
+			break
+		}
+	}
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -107,6 +116,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		c.writeln("")
 	}
+	if c.models {
+		c.writeln("var _models = <String, Map<String, dynamic>>{};")
+		c.writeln("")
+	}
 	c.buf.Write(bodyBytes)
 	c.emitRuntime()
 	c.buf.WriteByte('\n')
@@ -150,6 +163,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Stream != nil:
 		return c.compileStreamDecl(s.Stream)
+	case s.Model != nil:
+		return c.compileModelDecl(s.Model)
 	case s.On != nil:
 		return c.compileOnHandler(s.On)
 	case s.Emit != nil:
@@ -159,6 +174,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return c.compilePackageImport(s.Import)
 		}
 		return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
+		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -350,6 +367,20 @@ func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
 	varName := "_" + sanitizeName(s.Name) + "Stream"
 	c.writeln(fmt.Sprintf("var %s = _Stream<%s>('%s');", varName, sanitizeName(st.Name), s.Name))
 	c.use("_Stream")
+	return nil
+}
+
+func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
+	c.models = true
+	parts := make([]string, len(m.Fields))
+	for i, f := range m.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("%q: %s", f.Name, v)
+	}
+	c.writeln(fmt.Sprintf("_models[%q] = {%s};", m.Name, strings.Join(parts, ", ")))
 	return nil
 }
 

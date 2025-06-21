@@ -248,9 +248,11 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 ### Unsupported features
 
 - Foreign function interface bindings
+- Import statements targeting a language other than Dart
 - Long‑lived agents with `intent` blocks
 - Logic programming constructs (`fact`, `rule`, `query`)
-- Model declarations
+- Error handling with `try`/`catch` blocks
+- Asynchronous functions (`async`/`await`)
 - `generate` expressions return placeholder values (LLM integration pending)
 - Concurrency primitives like `spawn` and channels
 - Reflection or macro facilities
