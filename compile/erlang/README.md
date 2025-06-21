@@ -90,7 +90,8 @@ func EnsureErlang() error { return ensureErlang() }
 - concurrency primitives like `spawn` and channels
 - `generate` helpers return placeholder data
 - imports targeting languages other than Erlang
-- methods declared inside type blocks
 - reflection or macro facilities
+- error handling with `try`/`catch`
+- advanced HTTP `fetch` options beyond simple GET
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs directly.
