@@ -49,6 +49,24 @@ const (
 		"    void register(void Function(T) handler) { handlers.add(handler); }\n" +
 		"}\n" +
 		"void _waitAll() {}\n"
+	helperAgent = "class _Agent {\n" +
+		"    String name;\n" +
+		"    Map<String, Function> intents = {};\n" +
+		"    Map<String, dynamic> state = {};\n" +
+		"    _Agent(this.name);\n" +
+		"    void start() {}\n" +
+		"    void on(_Stream<dynamic> s, Function handler) { s.register((ev) { var res = handler(ev); if (res is Future) res.then((_){}); }); }\n" +
+		"    void registerIntent(String name, Function handler) { intents[name] = handler; }\n" +
+		"    Future<dynamic> call(String name, List<dynamic> args) async {\n" +
+		"        var fn = intents[name];\n" +
+		"        if (fn == null) throw Exception('unknown intent: $name');\n" +
+		"        var res = Function.apply(fn, args);\n" +
+		"        if (res is Future) res = await res;\n" +
+		"        return res;\n" +
+		"    }\n" +
+		"    void set(String name, dynamic value) { state[name] = value; }\n" +
+		"    dynamic get(String name) => state[name];\n" +
+		"}\n"
 	helperGroup = "class _Group {\n" +
 		"    dynamic key;\n" +
 		"    List<dynamic> Items = [];\n" +
@@ -254,6 +272,7 @@ var helperMap = map[string]string{
 	"_except":      helperExcept,
 	"_intersect":   helperIntersect,
 	"_Stream":      helperStream,
+	"_Agent":       helperAgent,
 	"_Group":       helperGroup,
 	"_group_by":    helperGroupBy,
 	"_fetch":       helperFetch,
