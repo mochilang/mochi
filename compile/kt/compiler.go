@@ -931,7 +931,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operands = append(operands, rhs)
 	}
 
-	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
 
 	for _, level := range prec {
 		for i := 0; i < len(ops); {
@@ -942,6 +942,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				var expr string
 				if op == "in" {
 					expr = fmt.Sprintf("%s.contains(%s)", r, l)
+				} else if op == "union" {
+					c.use("_union")
+					expr = fmt.Sprintf("_union(%s, %s)", l, r)
+				} else if op == "union_all" {
+					c.use("_unionAll")
+					expr = fmt.Sprintf("_unionAll(%s, %s)", l, r)
+				} else if op == "except" {
+					c.use("_except")
+					expr = fmt.Sprintf("_except(%s, %s)", l, r)
+				} else if op == "intersect" {
+					c.use("_intersect")
+					expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
 				} else {
 					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 				}
