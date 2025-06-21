@@ -248,6 +248,7 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Agent declarations with `intent` blocks
 - Model declarations
 - Cross-language imports for Dart modules with `import dart "..." as name`
+- Waiting for asynchronous stream handlers with `_waitAll`
 
 ### Unsupported features
 
@@ -265,4 +266,5 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Generic type parameters and functions
 - Set collections (`set<T>`) and related operations
 - Destructuring bindings in `let` and `var` statements
-- Waiting for asynchronous stream handlers with `_waitAll`
+- Automatic language imports (`import python "..." auto` and similar)
+- Built-in `eval` and `reduce` functions

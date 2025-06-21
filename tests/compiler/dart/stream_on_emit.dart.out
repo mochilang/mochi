@@ -1,4 +1,4 @@
-void main() {
+Future<void> main() async {
 	class Sensor {
 		String id;
 		double temperature;
@@ -11,18 +11,29 @@ void main() {
 		print([s.id.toString(), s.temperature.toString()].join(' '));
 	}
 	_SensorStream.register(_handler_0);
-	_SensorStream.append(Sensor({id: "sensor-1", temperature: 22.5}));
+        _SensorStream.append(Sensor({id: "sensor-1", temperature: 22.5}));
+        await _waitAll();
 }
 
 class _Stream<T> {
     String name;
     List<void Function(T)> handlers = [];
     _Stream(this.name);
-    void append(T data) {
-        for (var h in List.from(handlers)) { h(data); }
+    Future<T> append(T data) {
+        var tasks = <Future<dynamic>>[];
+        for (var h in List.from(handlers)) {
+            var res = h(data);
+            if (res is Future) tasks.add(res);
+        }
+        var f = Future.wait(tasks).then((_) => data);
+        _pending.add(f);
+        return f;
     }
     void register(void Function(T) handler) { handlers.add(handler); }
 }
-void _waitAll() {}
+List<Future<dynamic>> _pending = [];
+Future<void> _waitAll() async {
+    await Future.wait(_pending);
+}
 
 

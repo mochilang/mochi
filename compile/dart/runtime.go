@@ -43,12 +43,22 @@ const (
 		"    String name;\n" +
 		"    List<void Function(T)> handlers = [];\n" +
 		"    _Stream(this.name);\n" +
-		"    void append(T data) {\n" +
-		"        for (var h in List.from(handlers)) { h(data); }\n" +
+		"    Future<T> append(T data) {\n" +
+		"        var tasks = <Future<dynamic>>[];\n" +
+		"        for (var h in List.from(handlers)) {\n" +
+		"            var res = h(data);\n" +
+		"            if (res is Future) tasks.add(res);\n" +
+		"        }\n" +
+		"        var f = Future.wait(tasks).then((_) => data);\n" +
+		"        _pending.add(f);\n" +
+		"        return f;\n" +
 		"    }\n" +
 		"    void register(void Function(T) handler) { handlers.add(handler); }\n" +
-		"}\n" +
-		"void _waitAll() {}\n"
+		"}\n"
+	helperWaitAll = "List<Future<dynamic>> _pending = [];\n" +
+		"Future<void> _waitAll() async {\n" +
+		"    await Future.wait(_pending);\n" +
+		"}\n"
 	helperAgent = "class _Agent {\n" +
 		"    String name;\n" +
 		"    Map<String, Function> intents = {};\n" +
@@ -302,6 +312,7 @@ var helperMap = map[string]string{
 	"_intersect":   helperIntersect,
 	"_Stream":      helperStream,
 	"_Agent":       helperAgent,
+	"_waitAll":     helperWaitAll,
 	"_Group":       helperGroup,
 	"_group_by":    helperGroupBy,
 	"_fetch":       helperFetch,
