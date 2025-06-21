@@ -527,7 +527,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		name := sanitizeName(s.Let.Name)
-		c.writeln(fmt.Sprintf("let %s = %s", name, expr))
+		if s.Let.Type != nil {
+			typ := fsType(s.Let.Type)
+			c.writeln(fmt.Sprintf("let %s: %s = %s", name, typ, expr))
+		} else {
+			c.writeln(fmt.Sprintf("let %s = %s", name, expr))
+		}
 		if c.isMapExpr(s.Let.Value) {
 			c.locals[name] = true
 		}
@@ -544,7 +549,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		name := sanitizeName(s.Var.Name)
-		c.writeln(fmt.Sprintf("let mutable %s = %s", name, expr))
+		if s.Var.Type != nil {
+			typ := fsType(s.Var.Type)
+			c.writeln(fmt.Sprintf("let mutable %s: %s = %s", name, typ, expr))
+		} else {
+			c.writeln(fmt.Sprintf("let mutable %s = %s", name, expr))
+		}
 		if c.isMapExpr(s.Var.Value) {
 			c.locals[name] = true
 		}
@@ -1424,6 +1434,9 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	if len(m.Items) == 0 {
+		return "Map.empty", nil
+	}
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
 		k, err := c.compileExpr(it.Key)
@@ -1492,8 +1505,13 @@ func fsType(t *parser.TypeRef) string {
 		}
 		return ret
 	}
-	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
-		return fsType(t.Generic.Args[0]) + "[]"
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			return fsType(t.Generic.Args[0]) + "[]"
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return fmt.Sprintf("Map<%s,%s>", fsType(t.Generic.Args[0]), fsType(t.Generic.Args[1]))
+		}
 	}
 	return "obj"
 }
