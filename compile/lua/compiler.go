@@ -480,11 +480,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
+		ops = append(ops, op)
 		operands = append(operands, right)
 	}
 
-	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
+	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
 	for _, level := range prec {
 		for i := 0; i < len(ops); {
 			if contains(level, ops[i]) {
@@ -512,6 +516,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "!=":
 					c.helpers["eq"] = true
 					expr = fmt.Sprintf("not __eq(%s, %s)", l, r)
+				case "union_all":
+					c.helpers["union_all"] = true
+					expr = fmt.Sprintf("__union_all(%s, %s)", l, r)
+				case "union":
+					c.helpers["union"] = true
+					expr = fmt.Sprintf("__union(%s, %s)", l, r)
+				case "except":
+					c.helpers["except"] = true
+					expr = fmt.Sprintf("__except(%s, %s)", l, r)
+				case "intersect":
+					c.helpers["intersect"] = true
+					expr = fmt.Sprintf("__intersect(%s, %s)", l, r)
 				default:
 					expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
 				}

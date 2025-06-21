@@ -186,6 +186,63 @@ const (
 		"    end\n" +
 		"end\n"
 
+	helperUnionAll = "function __union_all(a, b)\n" +
+		"    local res = {}\n" +
+		"    if a then for _, v in ipairs(a) do res[#res+1] = v end end\n" +
+		"    if b then for _, v in ipairs(b) do res[#res+1] = v end end\n" +
+		"    return res\n" +
+		"end\n"
+
+	helperUnion = "function __union(a, b)\n" +
+		"    local res = {}\n" +
+		"    local function add(lst)\n" +
+		"        if lst then\n" +
+		"            for _, v in ipairs(lst) do\n" +
+		"                local dup = false\n" +
+		"                for _, w in ipairs(res) do\n" +
+		"                    if __eq(v, w) then dup = true break end\n" +
+		"                end\n" +
+		"                if not dup then res[#res+1] = v end\n" +
+		"            end\n" +
+		"        end\n" +
+		"    end\n" +
+		"    add(a); add(b);\n" +
+		"    return res\n" +
+		"end\n"
+
+	helperExcept = "function __except(a, b)\n" +
+		"    local res = {}\n" +
+		"    if a then\n" +
+		"        for _, v in ipairs(a) do\n" +
+		"            local found = false\n" +
+		"            if b then\n" +
+		"                for _, w in ipairs(b) do\n" +
+		"                    if __eq(v, w) then found = true break end\n" +
+		"                end\n" +
+		"            end\n" +
+		"            if not found then res[#res+1] = v end\n" +
+		"        end\n" +
+		"    end\n" +
+		"    return res\n" +
+		"end\n"
+
+	helperIntersect = "function __intersect(a, b)\n" +
+		"    local res = {}\n" +
+		"    if a and b then\n" +
+		"        for _, v in ipairs(a) do\n" +
+		"            for _, w in ipairs(b) do\n" +
+		"                if __eq(v, w) then\n" +
+		"                    local dup = false\n" +
+		"                    for _, r in ipairs(res) do if __eq(r, v) then dup = true break end end\n" +
+		"                    if not dup then res[#res+1] = v end\n" +
+		"                    break\n" +
+		"                end\n" +
+		"            end\n" +
+		"        end\n" +
+		"    end\n" +
+		"    return res\n" +
+		"end\n"
+
 	helperGenText = "function __gen_text(prompt, model, params)\n" +
 		"    return prompt\n" +
 		"end\n"
@@ -346,6 +403,10 @@ var helperMap = map[string]string{
 	"index":       helperIndex,
 	"indexString": helperIndexString,
 	"slice":       helperSlice,
+	"union_all":   helperUnionAll,
+	"union":       helperUnion,
+	"except":      helperExcept,
+	"intersect":   helperIntersect,
 	"gen_text":    helperGenText,
 	"gen_embed":   helperGenEmbed,
 	"gen_struct":  helperGenStruct,

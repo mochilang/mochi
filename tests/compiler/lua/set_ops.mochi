@@ -1,0 +1,7 @@
+let a = [1, 2, 3]
+let b = [3, 4]
+print(a union b)
+print(a union all b)
+print(a except b)
+print(a intersect b)
+print([1, 2] union [2, 3])
