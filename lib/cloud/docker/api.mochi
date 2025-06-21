@@ -1,0 +1,18 @@
+// Shared helpers for calling the local Docker API.
+import go "os" as os
+
+extern fun os.Getenv(key: string): string
+
+// base returns the Docker API endpoint from $MOCHI_DOCKER_API or the default.
+fun base(): string {
+  let url = os.Getenv("MOCHI_DOCKER_API")
+  if url == "" {
+    return "http://localhost:23750"
+  }
+  return url
+}
+
+// post sends a POST request with JSON body to the Docker API and returns the JSON response.
+export fun post(path: string, body: any): any {
+  return fetch base() + path with { method: "POST", body: body }
+}

@@ -590,6 +590,7 @@ Explore the [`examples/`](./examples) directory:
 * `v0.3/fetch.mochi`
 * `v0.3/fetch-post.mochi`
 * `v0.4/stream.mochi`
+* `docker/main.mochi`
 
 Edit one or start fresh. It’s all yours.
 

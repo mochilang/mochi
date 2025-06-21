@@ -1,0 +1,30 @@
+import "../api" as api
+
+// Image describes a Docker image with a name and build context.
+type Image {
+  name: string,
+  context: string,
+}
+
+// image creates a new image definition.
+export fun image(name: string, context: string): Image {
+  return Image { name: name, context: context }
+}
+
+// build triggers `docker build` via the Docker API.
+export fun build(img: Image) {
+  let res = api.post("/image/build", {"name": img.name, "context": img.context})
+  print(res.command)
+}
+
+// push triggers `docker push` for the image.
+export fun push(img: Image) {
+  let res = api.post("/image/push", {"name": img.name})
+  print(res.command)
+}
+
+// remove deletes the image from the local registry.
+export fun remove(img: Image) {
+  let res = api.post("/image/remove", {"name": img.name})
+  print(res.command)
+}

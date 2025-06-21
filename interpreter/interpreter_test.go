@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,6 +14,7 @@ import (
 	"mochi/golden"
 	"mochi/interpreter"
 	"mochi/parser"
+	dockersrv "mochi/runtime/cloud/docker"
 	goffi "mochi/runtime/ffi/go"
 	"mochi/runtime/llm"
 	_ "mochi/runtime/llm/provider/echo"
@@ -51,6 +53,8 @@ func TestInterpreter_ValidPrograms(t *testing.T) {
 		goffi.Register("math.Log", math.Log)
 		goffi.Register("strings.ToUpper", stdstrings.ToUpper)
 		goffi.Register("strings.HasPrefix", stdstrings.HasPrefix)
+		goffi.Register("os.Getenv", os.Getenv)
+		goffi.Register("os.Getenv", os.Getenv)
 
 		out := &stdstrings.Builder{}
 		modRoot, _ := mod.FindRoot(filepath.Dir(src))
@@ -98,5 +102,31 @@ func TestInterpreter_RuntimeErrors(t *testing.T) {
 			return nil, fmt.Errorf("❌ expected runtime error, got none")
 		}
 		return []byte(err.Error()), nil
+	})
+}
+
+func TestDockerLibrary(t *testing.T) {
+	srv := httptest.NewServer(dockersrv.Handler())
+	defer srv.Close()
+	os.Setenv("MOCHI_DOCKER_API", srv.URL)
+	defer os.Unsetenv("MOCHI_DOCKER_API")
+	golden.Run(t, "tests/cloud/docker", ".mochi", ".out", func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("❌ parse error: %w", err)
+		}
+		typeEnv := types.NewEnv(nil)
+		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+			return nil, fmt.Errorf("❌ type error: %v", errs[0])
+		}
+		goffi.Register("os.Getenv", os.Getenv)
+		out := &stdstrings.Builder{}
+		modRoot, _ := mod.FindRoot(filepath.Dir(src))
+		interp := interpreter.New(prog, typeEnv, modRoot)
+		interp.Env().SetWriter(out)
+		if err := interp.Run(); err != nil {
+			return nil, fmt.Errorf("❌ runtime error: %w", err)
+		}
+		return []byte(out.String()), nil
 	})
 }
