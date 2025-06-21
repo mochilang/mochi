@@ -36,7 +36,7 @@ mochi build --target ocaml main.mochi -o main.ml
 - map access and membership checks
 - functions with single return value
 - function expressions (`fun`)
-- built-ins `len`, `print`, `str`
+- built-ins `len`, `print`, `str`, `input`
 - simple `match` expressions with constant patterns
 
 
@@ -77,3 +77,7 @@ These tests verify both the generated program output and the emitted `.ml` code.
 - Test blocks and `expect` statements
 - Set literals and set operations
 - Functions with multiple return values
+- List membership operations and list unions
+- Built-in functions `count` and `avg`
+- Logic programming constructs like `fact`, `rule` and `query`
+- Extern type or object declarations and package exports

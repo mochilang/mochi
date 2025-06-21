@@ -1,0 +1,8 @@
+let _input () = read_line ();;
+
+print_endline "Enter first input:";;
+let input1 = _input ();;
+print_endline "Enter second input:";;
+let input2 = _input ();;
+print_endline (String.concat " " ["You entered:"; input1; ","; input2]);;
+
