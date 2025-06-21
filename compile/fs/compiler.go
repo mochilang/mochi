@@ -1745,8 +1745,14 @@ func (c *Compiler) emitRuntime() {
 		names = append(names, n)
 	}
 	sort.Strings(names)
+	seen := map[string]bool{}
 	for _, n := range names {
-		for _, line := range strings.Split(helperMap[n], "\n") {
+		src := helperMap[n]
+		if seen[src] {
+			continue
+		}
+		seen[src] = true
+		for _, line := range strings.Split(src, "\n") {
 			c.preamble.WriteString(line)
 			c.preamble.WriteByte('\n')
 		}
