@@ -243,6 +243,7 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Left/right/outer joins in dataset queries
 - Set operations with `union`, `union all`, `except` and `intersect`
 - Built‑ins like `fetch`, `load`, `save` (CSV/JSON/YAML) and placeholder `generate`
+- `json` printing and `now` timestamp helpers
 - Stream declarations and event handling with `on`/`emit`
 - Agent declarations with `intent` blocks
 - Model declarations
@@ -261,3 +262,7 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Closures capturing surrounding variables
 - Error handling with `try`/`catch` blocks
 - Asynchronous functions (`async`/`await`)
+- Generic type parameters and functions
+- Set collections (`set<T>`) and related operations
+- Destructuring bindings in `let` and `var` statements
+- Waiting for asynchronous stream handlers with `_waitAll`

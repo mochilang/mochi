@@ -289,6 +289,9 @@ const (
 		"    // TODO: parse model output into a struct\n" +
 		"    return null as T;\n" +
 		"}\n"
+	helperJson = "void _json(dynamic v) {\n" +
+		"    print(jsonEncode(v));\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -308,6 +311,7 @@ var helperMap = map[string]string{
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
+	"_json":        helperJson,
 }
 
 func (c *Compiler) use(name string) {
