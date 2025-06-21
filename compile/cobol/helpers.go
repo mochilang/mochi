@@ -1,8 +1,11 @@
 package cobolcode
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 
+	"mochi/ast"
 	"mochi/types"
 )
 
@@ -45,4 +48,93 @@ func isString(t types.Type) bool {
 func isList(t types.Type) bool {
 	_, ok := t.(types.ListType)
 	return ok
+}
+
+// cobolName converts a Mochi identifier to a COBOL-friendly name.
+func cobolName(name string) string {
+	up := strings.ToUpper(name)
+	switch up {
+	case "END", "START":
+		return "V_" + up
+	}
+	return up
+}
+
+// writeIndent writes indentation spaces according to c.indent.
+func (c *Compiler) writeIndent() {
+	for i := 0; i < c.indent; i++ {
+		c.buf.WriteString("    ")
+	}
+}
+
+// writeln writes a line with indentation and a trailing newline.
+func (c *Compiler) writeln(s string) {
+	c.writeIndent()
+	c.buf.WriteString(s)
+	c.buf.WriteByte('\n')
+}
+
+// newTemp returns a new temporary variable name.
+func (c *Compiler) newTemp() string {
+	name := fmt.Sprintf("TMP%d", c.tmpCounter)
+	c.tmpCounter++
+	return name
+}
+
+func isSimpleExpr(n *ast.Node) bool {
+	switch n.Kind {
+	case "int", "float", "selector", "string", "bool":
+		return true
+	case "unary":
+		if n.Value == "-" {
+			return isSimpleExpr(n.Children[0])
+		}
+	case "group":
+		return isSimpleExpr(n.Children[0])
+	}
+	return false
+}
+
+// picForType returns a picture clause for the given static type.
+func (c *Compiler) picForType(t types.Type) string {
+	switch t.(type) {
+	case types.StringType:
+		return "PIC X(100)."
+	case types.FloatType:
+		return "PIC 9(4)V9(4)."
+	}
+	return "PIC 9."
+}
+
+// declare records a WORKING-STORAGE declaration.
+func (c *Compiler) declare(line string) {
+	for _, d := range c.decls {
+		if d == line {
+			return
+		}
+	}
+	c.decls = append(c.decls, line)
+}
+
+func extractInt(n *ast.Node) int {
+	if n.Kind == "int" {
+		switch v := n.Value.(type) {
+		case int:
+			return v
+		case float64:
+			return int(v)
+		}
+	}
+	return 0
+}
+
+func extractIntList(n *ast.Node) []int {
+	if n.Kind != "list" {
+		return nil
+	}
+	res := make([]int, 0, len(n.Children))
+	for _, ch := range n.Children {
+		res = append(res, extractInt(ch))
+	}
+	return res
 }
