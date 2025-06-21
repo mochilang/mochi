@@ -6,9 +6,5 @@ function __print(...)
     end
     io.write('\n')
 end
-local x = 5
-if (x > 3) then
-	__print("big")
-else
-	__print("small")
-end
+local math = require("math")
+__print(math.abs(-3))

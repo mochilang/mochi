@@ -1,12 +1,11 @@
 function __print(...)
-	local args = {...}
-	for i, a in ipairs(args) do
-		if i > 1 then io.write(' ') end
-		io.write(tostring(a))
-	end
-	io.write('\n')
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
 end
-
 local people = {{name="Alice", age=30}, {name="Bob", age=15}, {name="Charlie", age=65}}
 local names = (function()
 	local items = {}

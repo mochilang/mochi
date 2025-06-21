@@ -1,12 +1,11 @@
 function __print(...)
-	local args = {...}
-	for i, a in ipairs(args) do
-		if i > 1 then io.write(' ') end
-		io.write(tostring(a))
-	end
-	io.write('\n')
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
 end
-
 local _s0 = "cat"
 for _i0 = 1, #_s0 do
 	local ch = string.sub(_s0, _i0, _i0)

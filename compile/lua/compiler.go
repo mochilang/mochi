@@ -99,6 +99,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLet(s.Let)
 	case s.Var != nil:
 		return c.compileVar(s.Var)
+	case s.Import != nil:
+		return c.compileImport(s.Import)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Return != nil:
@@ -159,6 +161,20 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	// treat same as let
 	return c.compileLet(&parser.LetStmt{Name: s.Name, Value: s.Value})
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang != nil && *im.Lang != "lua" {
+		return fmt.Errorf("unsupported import language: %s", *im.Lang)
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	path := strings.Trim(im.Path, "\"")
+	c.writeln(fmt.Sprintf("local %s = require(%q)", alias, path))
+	return nil
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
@@ -461,6 +477,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				} else {
 					c.helpers["index"] = true
+					c.helpers["indexString"] = true
 					expr = fmt.Sprintf("__index(%s, %s)", expr, idx)
 				}
 			}

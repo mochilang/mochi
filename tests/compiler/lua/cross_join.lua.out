@@ -1,12 +1,11 @@
 function __print(...)
-	local args = {...}
-	for i, a in ipairs(args) do
-		if i > 1 then io.write(' ') end
-		io.write(tostring(a))
-	end
-	io.write('\n')
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
 end
-
 local customers = {{id=1, name="Alice"}, {id=2, name="Bob"}, {id=3, name="Charlie"}}
 local orders = {{id=100, customerId=1, total=250}, {id=101, customerId=2, total=125}, {id=102, customerId=1, total=300}}
 local result = (function()
