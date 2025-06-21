@@ -22,7 +22,7 @@ const (
 	helperAvg = "fn _avg<T: Into<f64> + Copy>(v: &[T]) -> f64 {\n" +
 		"    if v.is_empty() { return 0.0 }\n" +
 		"    let mut sum = 0.0;\n" +
-		"    for &it in v { sum += it.into(); }\n" +
+		"    for &it in v { sum += Into::<f64>::into(it); }\n" +
 		"    sum / v.len() as f64\n" +
 		"}\n"
 
@@ -34,6 +34,36 @@ const (
 		"    let mut res = Vec::with_capacity(a.len() + b.len());\n" +
 		"    res.extend_from_slice(a);\n" +
 		"    res.extend_from_slice(b);\n" +
+		"    res\n" +
+		"}\n"
+	helperUnionAll = "fn _union_all<T: Clone>(a: &[T], b: &[T]) -> Vec<T> {\n" +
+		"    let mut res = Vec::with_capacity(a.len() + b.len());\n" +
+		"    res.extend_from_slice(a);\n" +
+		"    res.extend_from_slice(b);\n" +
+		"    res\n" +
+		"}\n"
+
+	helperUnion = "fn _union<T: PartialEq + Clone>(a: &[T], b: &[T]) -> Vec<T> {\n" +
+		"    let mut res = a.to_vec();\n" +
+		"    for it in b {\n" +
+		"        if !res.contains(it) { res.push(it.clone()); }\n" +
+		"    }\n" +
+		"    res\n" +
+		"}\n"
+
+	helperExcept = "fn _except<T: PartialEq + Clone>(a: &[T], b: &[T]) -> Vec<T> {\n" +
+		"    let mut res = Vec::new();\n" +
+		"    for it in a {\n" +
+		"        if !b.contains(it) { res.push(it.clone()); }\n" +
+		"    }\n" +
+		"    res\n" +
+		"}\n"
+
+	helperIntersect = "fn _intersect<T: PartialEq + Clone>(a: &[T], b: &[T]) -> Vec<T> {\n" +
+		"    let mut res = Vec::new();\n" +
+		"    for it in a {\n" +
+		"        if b.contains(it) && !res.contains(it) { res.push(it.clone()); }\n" +
+		"    }\n" +
 		"    res\n" +
 		"}\n"
 
@@ -53,6 +83,10 @@ var helperMap = map[string]string{
 	"_in_map":       helperInMap,
 	"_input":        helperInput,
 	"_concat":       helperConcat,
+	"_union_all":    helperUnionAll,
+	"_union":        helperUnion,
+	"_except":       helperExcept,
+	"_intersect":    helperIntersect,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
