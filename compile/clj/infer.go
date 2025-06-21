@@ -12,6 +12,34 @@ func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
 	return c.inferBinaryType(e.Binary)
 }
 
+func (c *Compiler) inferCallType(call *parser.CallExpr) types.Type {
+	switch call.Func {
+	case "len":
+		return types.IntType{}
+	case "str":
+		return types.StringType{}
+	case "count":
+		return types.IntType{}
+	case "avg":
+		return types.FloatType{}
+	case "now":
+		return types.Int64Type{}
+	case "input":
+		return types.StringType{}
+	case "print", "json":
+		return types.VoidType{}
+	default:
+		if c.env != nil {
+			if t, err := c.env.GetVar(call.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					return ft.Return
+				}
+			}
+		}
+		return types.AnyType{}
+	}
+}
+
 func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 	if b == nil {
 		return types.AnyType{}
@@ -177,27 +205,15 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		}
 		return types.FuncType{Params: params, Return: ret}
 	case p.Call != nil:
-		switch p.Call.Func {
-		case "len":
-			return types.IntType{}
-		case "str":
-			return types.StringType{}
-		case "count":
-			return types.IntType{}
-		case "avg":
-			return types.FloatType{}
-		case "now":
-			return types.Int64Type{}
-		default:
-			if c.env != nil {
-				if t, err := c.env.GetVar(p.Call.Func); err == nil {
-					if ft, ok := t.(types.FuncType); ok {
-						return ft.Return
-					}
-				}
-			}
-			return types.AnyType{}
+		return c.inferCallType(p.Call)
+	case p.Load != nil:
+		var elem types.Type = types.MapType{Key: types.StringType{}, Value: types.StringType{}}
+		if p.Load.Type != nil {
+			elem = c.resolveTypeRef(p.Load.Type)
 		}
+		return types.ListType{Elem: elem}
+	case p.Save != nil:
+		return types.VoidType{}
 	case p.Group != nil:
 		return c.inferExprType(p.Group)
 	case p.List != nil:
