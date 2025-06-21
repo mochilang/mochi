@@ -11,7 +11,7 @@ import (
 )
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce"}
+var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "union", "except", "intersect"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -80,6 +80,33 @@ var helperCode = map[string][]string{
 		"\t\tacc = fn(acc, it);",
 		"\t}",
 		"\treturn acc;",
+		"}",
+	},
+	"union": {
+		"template<typename T> vector<T> _union(const vector<T>& a, const vector<T>& b) {",
+		"\tvector<T> res = a;",
+		"\tfor (const auto& it : b) {",
+		"\t\tif (find(res.begin(), res.end(), it) == res.end()) res.push_back(it);",
+		"\t}",
+		"\treturn res;",
+		"}",
+	},
+	"except": {
+		"template<typename T> vector<T> _except(const vector<T>& a, const vector<T>& b) {",
+		"\tvector<T> res;",
+		"\tfor (const auto& it : a) {",
+		"\t\tif (find(b.begin(), b.end(), it) == b.end()) res.push_back(it);",
+		"\t}",
+		"\treturn res;",
+		"}",
+	},
+	"intersect": {
+		"template<typename T> vector<T> _intersect(const vector<T>& a, const vector<T>& b) {",
+		"\tvector<T> res;",
+		"\tfor (const auto& it : a) {",
+		"\t\tif (find(b.begin(), b.end(), it) != b.end() && find(res.begin(), res.end(), it) == res.end()) res.push_back(it);",
+		"\t}",
+		"\treturn res;",
 		"}",
 	},
 }
@@ -532,6 +559,22 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			}
 			expr = fmt.Sprintf("%s + %s", expr, rhs)
 			typ = "string"
+			continue
+		}
+		if op.Op == "union" {
+			c.helpers["union"] = true
+			expr = fmt.Sprintf("_union(%s, %s)", expr, rhs)
+			if !strings.HasPrefix(typ, "vector<") && strings.HasPrefix(rtyp, "vector<") {
+				typ = rtyp
+			}
+			continue
+		}
+		if op.Op == "except" || op.Op == "intersect" {
+			c.helpers[op.Op] = true
+			expr = fmt.Sprintf("_%s(%s, %s)", op.Op, expr, rhs)
+			if !strings.HasPrefix(typ, "vector<") && strings.HasPrefix(rtyp, "vector<") {
+				typ = rtyp
+			}
 			continue
 		}
 		expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)

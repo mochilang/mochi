@@ -222,6 +222,7 @@ Dataset queries support `where`, `skip`, `take`, `sort by` and basic `group by` 
 * List and map literals with indexing and slicing
 * Built‑in functions `print`, `len` and `str`
 * Dataset queries with filtering, sorting, pagination and simple grouping
+* List operators `union`, `except` and `intersect`
 
 ### Unsupported features
 
@@ -239,7 +240,7 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Concurrency primitives like `spawn` and channels
 * Reflection or macro facilities
 * Generic type parameters and methods inside `type` blocks
-* List operators such as `union`, `union all`, `except` and `intersect`
 * Nested function declarations inside other functions
 * Iteration over map key/value pairs
+* Map membership operations using `in`
 * Asynchronous `async`/`await` constructs
