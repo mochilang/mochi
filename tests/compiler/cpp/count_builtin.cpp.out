@@ -1,0 +1,14 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+template<typename T> auto _count(const T& v) -> decltype(v.size(), int{}) {
+	return (int)v.size();
+}
+template<typename T> auto _count(const T& v) -> decltype(v.Items, int{}) {
+	return (int)v.Items.size();
+}
+
+int main() {
+	std::cout << (_count(vector<int>{1, 2, 3})) << std::endl;
+	return 0;
+}

@@ -11,7 +11,7 @@ import (
 )
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "union", "except", "intersect"}
+var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "union", "except", "intersect"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -80,6 +80,25 @@ var helperCode = map[string][]string{
 		"\t\tacc = fn(acc, it);",
 		"\t}",
 		"\treturn acc;",
+		"}",
+	},
+	"count": {
+		"template<typename T> auto _count(const T& v) -> decltype(v.size(), int{}) {",
+		"\treturn (int)v.size();",
+		"}",
+		"template<typename T> auto _count(const T& v) -> decltype(v.Items, int{}) {",
+		"\treturn (int)v.Items.size();",
+		"}",
+	},
+	"avg": {
+		"template<typename T> auto _avg(const T& v) -> decltype(v.size(), double{}) {",
+		"\tif (v.size() == 0) return 0;",
+		"\tdouble sum = 0;",
+		"\tfor (const auto& it : v) sum += it;",
+		"\treturn sum / v.size();",
+		"}",
+		"template<typename T> auto _avg(const T& v) -> decltype(v.Items, double{}) {",
+		"\treturn _avg(v.Items);",
 		"}",
 	},
 	"union": {
@@ -714,6 +733,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return fmt.Sprintf("%s.size()", args[0])
 		case "str":
 			return fmt.Sprintf("to_string(%s)", args[0])
+		case "count":
+			c.helpers["count"] = true
+			return fmt.Sprintf("_count(%s)", args[0])
+		case "avg":
+			c.helpers["avg"] = true
+			return fmt.Sprintf("_avg(%s)", args[0])
 		case "reduce":
 			if len(args) == 3 {
 				c.helpers["reduce"] = true

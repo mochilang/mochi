@@ -1,0 +1,17 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+template<typename T> auto _avg(const T& v) -> decltype(v.size(), double{}) {
+	if (v.size() == 0) return 0;
+	double sum = 0;
+	for (const auto& it : v) sum += it;
+	return sum / v.size();
+}
+template<typename T> auto _avg(const T& v) -> decltype(v.Items, double{}) {
+	return _avg(v.Items);
+}
+
+int main() {
+	std::cout << (_avg(vector<int>{1, 2, 3})) << std::endl;
+	return 0;
+}
