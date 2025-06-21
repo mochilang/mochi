@@ -202,6 +202,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.stringVars = map[string]bool{}
 	c.floatVars = map[string]bool{}
+	c.listVars = map[string]bool{}
 	for _, p := range fn.Params {
 		if p.Type != nil && p.Type.Simple != nil {
 			if *p.Type.Simple == "string" {
@@ -328,13 +329,17 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 				case "string":
 					c.writeln(fmt.Sprintf("character(len=*), intent(in) :: %s(:)", name))
 					c.stringVars[name] = true
+					c.listVars[name] = true
 				case "float":
 					c.writeln(fmt.Sprintf("real, intent(in) :: %s(:)", name))
+					c.listVars[name] = true
 				default:
 					c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s(:)", name))
+					c.listVars[name] = true
 				}
 			} else {
 				c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s(:)", name))
+				c.listVars[name] = true
 			}
 		} else if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "string" {
 			c.writeln(fmt.Sprintf("character(len=*), intent(in) :: %s", name))
@@ -350,6 +355,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
 	collectVars(fn.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	for name := range c.listVars {
+		listVars[name] = true
+	}
 	c.listVars = listVars
 	for name := range stringVars {
 		c.stringVars[name] = true
@@ -371,7 +379,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	allocs := []string{}
 	for name, isList := range listVars {
-		if name == resVar {
+		if name == resVar || !vars[name] {
 			continue
 		}
 		if isList {
@@ -383,7 +391,6 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
 			}
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
-			vars[name] = true
 		}
 	}
 	names := make([]string, 0, len(vars))
@@ -441,15 +448,50 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 	case s.Assign != nil:
 		name := sanitizeName(s.Assign.Name)
 		if len(s.Assign.Index) > 0 {
-			idx, err := c.compileExpr(s.Assign.Index[0].Start)
-			if err != nil {
-				return err
-			}
+			idx := s.Assign.Index[0]
 			val, err := c.compileExpr(s.Assign.Value)
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("%s(%s + 1) = %s", name, idx, val))
+			if idx.Colon != nil || idx.End != nil {
+				start := "0"
+				if idx.Start != nil {
+					v, err := c.compileExpr(idx.Start)
+					if err != nil {
+						return err
+					}
+					if c.stringVars[name] || c.listVars[name] {
+						start = fmt.Sprintf("modulo(%s, %s)", v, c.lengthFunc(name))
+					} else {
+						start = v
+					}
+				}
+				end := ""
+				if idx.End != nil {
+					v, err := c.compileExpr(idx.End)
+					if err != nil {
+						return err
+					}
+					if c.stringVars[name] || c.listVars[name] {
+						end = fmt.Sprintf("modulo(%s, %s)", v, c.lengthFunc(name))
+					} else {
+						end = v
+					}
+				} else {
+					if c.stringVars[name] {
+						end = fmt.Sprintf("len(%s)", name)
+					} else {
+						end = fmt.Sprintf("size(%s)", name)
+					}
+				}
+				c.writeln(fmt.Sprintf("%s(%s + 1:%s) = %s", name, start, end, val))
+			} else {
+				v, err := c.compileExpr(idx.Start)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s(%s + 1) = %s", name, v, val))
+			}
 		} else {
 			// handle simple list append
 			if c.listVars[name] && len(s.Assign.Value.Binary.Right) == 1 && s.Assign.Value.Binary.Right[0].Op == "+" {
@@ -1014,8 +1056,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					if c.stringVars[root] || c.listVars[root] {
-						start = fmt.Sprintf("modulo(%s, %s)", v, c.lengthFunc(root))
+					if c.listVars[root] {
+						start = fmt.Sprintf("max(0_8, min(%s, size(%s)))", v, root)
+					} else if c.stringVars[root] {
+						start = fmt.Sprintf("max(0_8, min(%s, len(%s)))", v, root)
 					} else {
 						start = v
 					}
@@ -1026,16 +1070,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					if c.stringVars[root] || c.listVars[root] {
-						end = fmt.Sprintf("modulo(%s, %s)", v, c.lengthFunc(root))
+					if c.listVars[root] {
+						end = fmt.Sprintf("max(0_8, min(%s, size(%s)))", v, root)
+					} else if c.stringVars[root] {
+						end = fmt.Sprintf("max(0_8, min(%s, len(%s)))", v, root)
 					} else {
 						end = v
 					}
 				} else {
-					if c.stringVars[root] {
-						end = fmt.Sprintf("len(%s)", root)
-					} else {
+					if c.listVars[root] {
 						end = fmt.Sprintf("size(%s)", root)
+					} else {
+						end = fmt.Sprintf("len(%s)", root)
 					}
 				}
 				expr = fmt.Sprintf("%s(%s + 1:%s)", expr, start, end)
@@ -1044,10 +1090,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if c.stringVars[root] {
-					expr = fmt.Sprintf("%s(modulo(%s, len(%s)) + 1:modulo(%s, len(%s)) + 1)", expr, v, root, v, root)
-				} else if c.listVars[root] {
-					expr = fmt.Sprintf("%s(modulo(%s, size(%s)) + 1)", expr, v, root)
+				if c.listVars[root] {
+					expr = fmt.Sprintf("%s(max(0_8, min(%s, size(%s) - 1)) + 1)", expr, v, root)
+				} else if c.stringVars[root] {
+					expr = fmt.Sprintf("%s(max(0_8, min(%s, len(%s) - 1)) + 1:max(0_8, min(%s, len(%s) - 1)) + 1)", expr, v, root, v, root)
 				} else {
 					expr = fmt.Sprintf("%s(%s + 1)", expr, v)
 				}
@@ -1096,7 +1142,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "", fmt.Errorf("unknown literal")
 	case p.List != nil:
 		if len(p.List.Elems) == 0 {
-			return "reshape([0], [0])", nil
+			return "reshape([0_8], [0])", nil
 		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {

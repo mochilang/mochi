@@ -26,6 +26,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - printing via `print()`
 - `package` and `export` declarations (ignored during code generation)
 - `import` statements emit Fortran `include` lines
+- slice assignments like `xs[0:1] = sub`
 
 ## Unsupported features
 
@@ -39,11 +40,13 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - foreign imports and dataset helpers (`fetch`, `load`, `save`)
 - anonymous functions
 - extern declarations
-- slice assignments like `xs[0:1] = sub`
 - range loops with step values other than `1`
 - event handlers (`on`) and `emit` statements
 - type declarations using `type` blocks
 - generative blocks and model declarations
+- asynchronous functions (`async`/`await`)
+- set collections (`set<T>`) and related operations
+- concurrency primitives like `spawn` and channels
 - any other built-ins not listed above
 
 While limited, this backend shows how Mochi's AST can target another language and may serve as a basis for more comprehensive Fortran support.
