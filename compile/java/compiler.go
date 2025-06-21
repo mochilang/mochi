@@ -972,6 +972,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.helpers["_json"] = true
 			return "_json(" + args[0] + ")", nil
 		}
+		if name == "eval" && len(args) == 1 {
+			c.helpers["_eval"] = true
+			return "_eval(" + args[0] + ")", nil
+		}
 		if c.env != nil {
 			if _, ok := c.env.GetFunc(p.Call.Func); !ok {
 				if t, err := c.env.GetVar(p.Call.Func); err == nil {
@@ -1440,6 +1444,23 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("static void expect(boolean cond) {")
 		c.indent++
 		c.writeln("if (!cond) throw new RuntimeException(\"expect failed\");")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_eval"] {
+		c.writeln("")
+		c.writeln("static Object _eval(String code) {")
+		c.indent++
+		c.writeln("try {")
+		c.indent++
+		c.writeln("javax.script.ScriptEngine eng = new javax.script.ScriptEngineManager().getEngineByName(\"javascript\");")
+		c.writeln("return eng.eval(code);")
+		c.indent--
+		c.writeln("} catch (Exception e) {")
+		c.indent++
+		c.writeln("throw new RuntimeException(e);")
+		c.indent--
+		c.writeln("}")
 		c.indent--
 		c.writeln("}")
 	}
