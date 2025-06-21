@@ -39,7 +39,7 @@ end
 
 local set = {}
 for _, n in ipairs({1, 2, 3}) do
-	set[(n)+1] = true
+	set[n] = true
 	::__continue0::
 end
 local i = 1

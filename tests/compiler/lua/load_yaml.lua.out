@@ -42,6 +42,20 @@ function __load(path, opts)
 		if not ok then ok, yaml = pcall(require, 'lyaml') end
 		if not ok then error('yaml library not found') end
 		res = yaml.load(data)
+	elseif fmt == 'jsonl' then
+		local ok, json = pcall(require, 'json')
+		if not ok then error('json library not found') end
+		res = {}
+		for line in string.gmatch(data, '[^\n]+') do
+			if line ~= '' then table.insert(res, json.decode(line)) end
+		end
+	elseif fmt == 'csv' then
+		res = {}
+		for line in string.gmatch(data, '[^\n]+') do
+			local row = {}
+			for field in string.gmatch(line, '[^,]+') do table.insert(row, field) end
+			table.insert(res, row)
+		end
 	else
 		error('unsupported format: '..fmt)
 	end

@@ -64,5 +64,5 @@ function __load(path, opts)
 	return {res}
 end
 
-local items = __load(nil, nil)
-__print(__count(items))
+local people = __load(nil, {[format]="jsonl"})
+__print(__count(people))

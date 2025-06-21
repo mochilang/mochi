@@ -50,8 +50,8 @@ function __indexString(s, i)
 end
 
 local m = {}
-m[(1)+1] = 10
-m[(2)+1] = 20
+m[1] = 10
+m[2] = 20
 if __contains(m, 1) then
 	__print(__index(m, 1))
 end
