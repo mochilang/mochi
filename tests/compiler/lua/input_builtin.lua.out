@@ -1,18 +1,16 @@
-function __print(...)
-	local args = {...}
-	for i, a in ipairs(args) do
-		if i > 1 then io.write(' ') end
-		io.write(tostring(a))
-	end
-	io.write('\n')
-end
-
 function __input()
-	local line = io.read('*l')
-	if line == nil then return '' end
-	return line
+    local line = io.read('*l')
+    if line == nil then return '' end
+    return line
 end
-
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
 __print("Enter first input:")
 local input1 = __input()
 __print("Enter second input:")

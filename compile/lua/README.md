@@ -296,11 +296,10 @@ fail at runtime:
 - Model and stream declarations
 - Methods declared inside `type` blocks
 - Reflection and macro facilities
-- The `json` builtin function
-
 - Concurrency primitives such as `spawn`, `stream`, `agent` and related features
   are not available
-- Module imports and package declarations
+- Package declarations and `export` statements
+- Module imports were unsupported but are now handled via `require`
 - Generic type parameters for functions and user-defined types are not handled
 
 `load` and `save` support JSON, JSONL, YAML and CSV formats.

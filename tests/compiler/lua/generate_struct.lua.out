@@ -1,20 +1,18 @@
-function __print(...)
-	local args = {...}
-	for i, a in ipairs(args) do
-		if i > 1 then io.write(' ') end
-		io.write(tostring(a))
-	end
-	io.write('\n')
-end
-
 function __gen_struct(prompt, model, params)
-	local f = load('return ' .. prompt:gsub('"(%w+)"%s*:', '%1='))
-	if f then
-		local ok, res = pcall(f)
-		if ok and type(res) == 'table' then return res end
-	end
-	return {}
+    local f = load('return ' .. prompt:gsub('"(%w+)"%s*:', '%1='))
+    if f then
+        local ok, res = pcall(f)
+        if ok and type(res) == 'table' then return res end
+    end
+    return {}
 end
-
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
 local info = __gen_struct("{\"msg\": \"hello\"}", nil, nil)
 __print(info.msg)
