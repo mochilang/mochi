@@ -1308,13 +1308,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")
 		}
-		c.use("_json")
+		c.use("_json_helpers")
 		return fmt.Sprintf("_json %s", args[0]), nil
 	case "to_json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("to_json expects 1 arg")
 		}
-		c.use("_to_json")
+		c.use("_json_helpers")
 		return fmt.Sprintf("_to_json %s", args[0]), nil
 	case "input":
 		if len(args) != 0 {
@@ -1734,7 +1734,13 @@ func contains(list []string, s string) bool {
 	return false
 }
 
-func (c *Compiler) use(name string) { c.helpers[name] = true }
+func (c *Compiler) use(name string) {
+	switch name {
+	case "_json", "_to_json":
+		name = "_json_helpers"
+	}
+	c.helpers[name] = true
+}
 
 func (c *Compiler) emitRuntime() {
 	if len(c.helpers) == 0 {
