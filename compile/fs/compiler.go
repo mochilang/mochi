@@ -1019,7 +1019,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
-		{"union", "except", "intersect"},
+		{"union", "union_all", "except", "intersect"},
 	}
 
 	for _, lvl := range levels {
@@ -1060,6 +1060,30 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 						operands[i] = fmt.Sprintf("Array.contains %s %s", left, right)
 					}
 					lists[i] = false
+					maps[i] = false
+					strs[i] = false
+				} else if op == "union_all" {
+					c.use("_union_all")
+					operands[i] = fmt.Sprintf("_union_all %s %s", left, right)
+					lists[i] = true
+					maps[i] = false
+					strs[i] = false
+				} else if op == "union" {
+					c.use("_union")
+					operands[i] = fmt.Sprintf("_union %s %s", left, right)
+					lists[i] = true
+					maps[i] = false
+					strs[i] = false
+				} else if op == "except" {
+					c.use("_except")
+					operands[i] = fmt.Sprintf("_except %s %s", left, right)
+					lists[i] = true
+					maps[i] = false
+					strs[i] = false
+				} else if op == "intersect" {
+					c.use("_intersect")
+					operands[i] = fmt.Sprintf("_intersect %s %s", left, right)
+					lists[i] = true
 					maps[i] = false
 					strs[i] = false
 				} else {

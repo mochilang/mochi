@@ -1,0 +1,17 @@
+open System
+
+let _except (a: 'T[]) (b: 'T[]) : 'T[] =
+  let setB = Set.ofArray b
+  Array.filter (fun x -> not (Set.contains x setB)) a
+let _intersect (a: 'T[]) (b: 'T[]) : 'T[] =
+  let setB = Set.ofArray b
+  Array.filter (fun x -> Set.contains x setB) a |> Array.distinct
+let _union (a: 'T[]) (b: 'T[]) : 'T[] =
+  Array.append a b |> Array.distinct
+
+let a = [|1; 2; 3|]
+let b = [|3; 4|]
+ignore (printfn "%A" (_union a b))
+ignore (printfn "%A" (_except a b))
+ignore (printfn "%A" (_intersect a b))
+ignore (printfn "%A" (_union [|1; 2|] [|2; 3|]))

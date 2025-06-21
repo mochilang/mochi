@@ -126,6 +126,20 @@ const (
   let dt = new System.Data.DataTable()
   dt.Compute(code, "")`
 
+	helperUnionAll = `let _union_all (a: 'T[]) (b: 'T[]) : 'T[] =
+  Array.append a b`
+
+	helperUnion = `let _union (a: 'T[]) (b: 'T[]) : 'T[] =
+  Array.append a b |> Array.distinct`
+
+	helperExcept = `let _except (a: 'T[]) (b: 'T[]) : 'T[] =
+  let setB = Set.ofArray b
+  Array.filter (fun x -> not (Set.contains x setB)) a`
+
+	helperIntersect = `let _intersect (a: 'T[]) (b: 'T[]) : 'T[] =
+  let setB = Set.ofArray b
+  Array.filter (fun x -> Set.contains x setB) a |> Array.distinct`
+
 	helperToJson = `let rec _to_json (v: obj) : string =
   match v with
   | null -> "null"
@@ -172,4 +186,8 @@ var helperMap = map[string]string{
 	"_genStruct":    helperGenStruct,
 	"_json_helpers": helperToJson,
 	"_extern":       helperExtern,
+	"_union_all":    helperUnionAll,
+	"_union":        helperUnion,
+	"_except":       helperExcept,
+	"_intersect":    helperIntersect,
 }

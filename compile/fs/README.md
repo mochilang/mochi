@@ -128,6 +128,7 @@ Mochi features are not yet available.
 * Extern variable and function declarations
 * Extern type aliases
 * Extern object declarations
+* List set operations: `union`, `union all`, `except` and `intersect`
 
 ### Unsupported features
 
@@ -137,7 +138,6 @@ The F# generator still lacks support for several language constructs:
 * YAML dataset support in `_load`/`_save`
 * Logic programming constructs (`fact`, `rule`, `query`)
 * Advanced dataset queries such as joins and grouping
-* Set operations like `union`, `union all`, `except` and `intersect`
 * Streams, agents and LLM `generate` blocks
 * Concurrency primitives like `spawn` and channels
 * Error handling with `try`/`catch`
@@ -148,4 +148,6 @@ The F# generator still lacks support for several language constructs:
 * Destructuring bindings in `let`/`var` statements
 * Iterating over maps with `for` loops
 * Functions with multiple return values
+* Set collections (`set<T>`) and related operations
+* Automatic language imports (`import python "..." auto`)
 
