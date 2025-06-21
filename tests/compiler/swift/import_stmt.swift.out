@@ -1,0 +1,8 @@
+import Foundation
+import Dispatch
+
+
+func main() {
+	print(1)
+}
+main()

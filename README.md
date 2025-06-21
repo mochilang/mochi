@@ -611,7 +611,9 @@ implemented across all backends:
 * Agent initialization with field values
 * Right and outer joins in dataset queries
 * Sorting or pagination when joins are used
+* Advanced dataset queries with grouping operations
 * Destructuring bindings in `let` and `var` statements
+* Type inference for empty collections
 * YAML dataset loading and saving
 * Agent and stream constructs (`agent`, `on`, `emit`)
 * Model declarations (`model` blocks)
@@ -622,6 +624,7 @@ implemented across all backends:
 * Pattern matching on union variants
 * Nested recursive functions inside other functions
 * Foreign imports and `extern` declarations
+* Import statements
 * Functions with multiple return values
 * Variadic functions
 * Methods declared inside `type` blocks

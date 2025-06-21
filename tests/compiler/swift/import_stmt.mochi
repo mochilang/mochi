@@ -1,0 +1,2 @@
+import swift "Dispatch"
+print(1)

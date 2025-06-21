@@ -16,6 +16,7 @@ type Compiler struct {
 	indent      int
 	env         *types.Env
 	locals      map[string]types.Type
+	imports     map[string]bool
 	useAvg      bool
 	useIndex    bool
 	useIndexStr bool
@@ -28,7 +29,13 @@ type Compiler struct {
 	funcRet     types.Type
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[string]types.Type{}} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{
+		env:     env,
+		locals:  map[string]types.Type{},
+		imports: map[string]bool{},
+	}
+}
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useAvg = false
@@ -40,6 +47,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useSave = false
 	c.useFetch = false
 	c.useJSON = false
+	c.imports = map[string]bool{}
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -94,6 +102,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 
 	c.writeln("import Foundation")
+	c.writeImports()
 	c.writeln("")
 	c.writeExpectFunc(prog)
 	if c.useAvg {
@@ -620,6 +629,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue")
 		return nil
+	case s.Import != nil:
+		return c.addImport(s.Import)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
@@ -1512,6 +1523,28 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) addImport(im *parser.ImportStmt) error {
+	lang := "swift"
+	if im.Lang != nil {
+		lang = *im.Lang
+	}
+	if lang != "swift" {
+		return fmt.Errorf("unsupported import language: %s", lang)
+	}
+	mod := strings.Trim(im.Path, "\"")
+	c.imports[mod] = true
+	return nil
+}
+
+func (c *Compiler) writeImports() {
+	for mod := range c.imports {
+		c.writeln("import " + mod)
+	}
+	if len(c.imports) > 0 {
+		c.writeln("")
+	}
 }
 
 func (c *Compiler) writeExpectFunc(prog *parser.Program) {
