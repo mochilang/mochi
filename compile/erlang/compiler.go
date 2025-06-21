@@ -969,9 +969,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
-	if len(q.Froms) > 0 && (q.Sort != nil || q.Skip != nil || q.Take != nil) {
-		return "", fmt.Errorf("unsupported query expression")
-	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -1048,7 +1045,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var b strings.Builder
 	b.WriteString("(fun() ->\n")
-	b.WriteString("\tItems = [" + capitalize(q.Var) + " || " + capitalize(q.Var) + " <- " + src)
+	b.WriteString("\tItems = [")
+	if sortExpr != "" {
+		b.WriteString("{" + sortExpr + ", " + sel + "}")
+	} else {
+		b.WriteString(sel)
+	}
+	b.WriteString(" || " + capitalize(q.Var) + " <- " + src)
 	for _, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
 		if err != nil {
@@ -1063,8 +1066,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("\tSorted = ")
 	if sortExpr != "" {
 		b.WriteString("begin\n")
-		b.WriteString("\t\tPairs = [{" + sortExpr + ", " + capitalize(q.Var) + "} || " + capitalize(q.Var) + " <- Items],\n")
-		b.WriteString("\t\tSPairs = lists:sort(fun({A,_},{B,_}) -> A =< B end, Pairs),\n")
+		b.WriteString("\t\tSPairs = lists:sort(fun({A,_},{B,_}) -> A =< B end, Items),\n")
 		b.WriteString("\t\t[ V || {_, V} <- SPairs ]\n")
 		b.WriteString("\tend")
 	} else {
@@ -1088,7 +1090,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("Skipped")
 	}
 	b.WriteString(",\n")
-	b.WriteString("\t[" + sel + " || " + capitalize(q.Var) + " <- Taken]\n")
+	b.WriteString("\tTaken\n")
 	b.WriteString("end)()")
 	return b.String(), nil
 }

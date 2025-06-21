@@ -47,8 +47,7 @@ The backend supports fundamental language constructs:
 
 - `for` and `while` loops with `break`/`continue`
 - pattern matching with `match` and `case`
-- query expressions over one or more sources with `where`; sorting or pagination
-  is supported when querying a single source
+- query expressions over one or more sources with `where`, `sort`, `skip` and `take`
 - list set operations `union`, `except` and `intersect`
 - simple cross joins using multiple `from` clauses
 - struct and union type declarations generate Erlang records
@@ -105,8 +104,8 @@ features are not yet handled:
 - Logic programming constructs and streams
 - Agents and event streams
 - Foreign function imports via `extern`
+- Extern variables and objects
 - Model declarations and dataset helpers
-- Sorting or pagination on queries with multiple sources
 - Concurrency primitives like `spawn` and channels
 - `generate` helpers return placeholder data
 - Imports targeting languages other than Erlang
