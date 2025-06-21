@@ -125,6 +125,38 @@ const (
     }
     println(encode(v))
 }`
+
+	helperUnionAll = `fun <T> _unionAll(a: List<T>, b: List<T>): List<T> = a + b`
+
+	helperUnion = `fun <T> _union(a: List<T>, b: List<T>): List<T> {
+    val res = a.toMutableList()
+    for (it in b) {
+        if (!res.contains(it)) {
+            res.add(it)
+        }
+    }
+    return res
+}`
+
+	helperExcept = `fun <T> _except(a: List<T>, b: List<T>): List<T> {
+    val res = mutableListOf<T>()
+    for (it in a) {
+        if (!b.contains(it)) {
+            res.add(it)
+        }
+    }
+    return res
+}`
+
+	helperIntersect = `fun <T> _intersect(a: List<T>, b: List<T>): List<T> {
+    val res = mutableListOf<T>()
+    for (it in a) {
+        if (b.contains(it) && !res.contains(it)) {
+            res.add(it)
+        }
+    }
+    return res
+}`
 )
 
 var helperMap = map[string]string{
@@ -137,4 +169,8 @@ var helperMap = map[string]string{
 	"_genStruct": helperGenStruct,
 	"_fetch":     helperFetch,
 	"_json":      helperJson,
+	"_unionAll":  helperUnionAll,
+	"_union":     helperUnion,
+	"_except":    helperExcept,
+	"_intersect": helperIntersect,
 }
