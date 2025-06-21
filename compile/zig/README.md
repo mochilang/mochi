@@ -6,6 +6,7 @@ covers a small subset of the language and is mainly used for experimentation.
 ## Files
 
 - `compiler.go` – main code generator
+- `infer.go` – basic type inference helpers
 - `compiler_test.go` – golden test that compiles the generated Zig code
 - `tools.go` – helper locating the Zig compiler
 
@@ -51,8 +52,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 ```
 【F:compile/zig/compiler.go†L36-L68】
 
-Functions are emitted with typed parameters and currently return `[2]i32` as a
-placeholder:
+Functions are emitted with typed parameters and the return type resolved using `zigType`:
 
 ```go
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -62,7 +62,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
                 typ := c.zigType(p.Type)
                 params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ)
         }
-        c.writeln(fmt.Sprintf("fn %s(%s) [2]i32 {", name, strings.Join(params, ", ")))
+        ret := "void"
+        if fn.Return != nil {
+                ret = c.zigType(fn.Return)
+        }
+        c.writeln(fmt.Sprintf("fn %s(%s) %s {", name, strings.Join(params, ", "), ret))
         ...
 }
 ```
@@ -103,6 +107,12 @@ func (c *Compiler) zigType(t *parser.TypeRef) string {
 }
 ```
 【F:compile/zig/compiler.go†L204-L228】
+
+### Type Inference
+
+`infer.go` analyses expressions to determine their types when a declaration
+lacks an explicit type. This allows the compiler to emit `var` and `const`
+definitions with concrete Zig types instead of relying on `var` inference.
 
 ### Statement Handling
 
