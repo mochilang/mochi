@@ -19,7 +19,7 @@ statements are present.
 - Lists and maps
 - Basic expressions and assignments
 - Built-ins `print`, `len`, `str`, `input`, `count`, `avg`, `now`, `json` and `eval`
-- List operations `concat`, `union`, `except`, `intersect` and `slice`
+- List operations `concat`, `union`, `union_all`, `except`, `intersect` and `slice`
 - HTTP requests via `fetch`
 - Dataset helpers `load` and `save`
 - Generative `generate` blocks for text, embeddings and structs
@@ -59,7 +59,8 @@ compilers:
 - Event emission and intent handlers (`emit`, `on`)
 - Methods declared inside `type` blocks
 - Agent initialization with field values
-- List set operation `union all`
+- Set collections (`set<T>`) and related operations
+- Error handling with `try`/`catch` blocks
 - YAML dataset loading/saving
 - Destructuring bindings in `let` and `var` statements
 
