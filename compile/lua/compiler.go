@@ -600,6 +600,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "avg":
 		c.helpers["avg"] = true
 		return fmt.Sprintf("__avg(%s)", argStr), nil
+	case "now":
+		return "os.time()*1000000000", nil
+	case "json":
+		c.helpers["json"] = true
+		return fmt.Sprintf("__json(%s)", argStr), nil
+	case "eval":
+		c.helpers["eval"] = true
+		if len(args) == 1 {
+			return fmt.Sprintf("__eval(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("__eval(%s)", argStr), nil
 	default:
 		return fmt.Sprintf("%s(%s)", name, argStr), nil
 	}

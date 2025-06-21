@@ -122,6 +122,18 @@ const (
 		"    return sum / #items\n" +
 		"end\n"
 
+	helperJson = "function __json(v)\n" +
+		"    local ok, json = pcall(require, 'json')\n" +
+		"    if not ok then error('json library not found') end\n" +
+		"    print(json.encode(v))\n" +
+		"end\n"
+
+	helperEval = "function __eval(code)\n" +
+		"    local f, err = load(code)\n" +
+		"    if not f then error(err) end\n" +
+		"    return f()\n" +
+		"end\n"
+
 	helperIndex = "function __index(obj, i)\n" +
 		"    if type(obj) == 'string' then\n" +
 		"        return __indexString(obj, i)\n" +
@@ -329,6 +341,8 @@ var helperMap = map[string]string{
 	"input":       helperInput,
 	"count":       helperCount,
 	"avg":         helperAvg,
+	"json":        helperJson,
+	"eval":        helperEval,
 	"index":       helperIndex,
 	"indexString": helperIndexString,
 	"slice":       helperSlice,
