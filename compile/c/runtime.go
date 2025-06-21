@@ -370,118 +370,93 @@ static void _json_list_list_int(list_list_int v) {
 `
 )
 
+// Mapping of helper requirement keys to their C implementations and the order
+// they should be emitted in.
+var helperCode = map[string]string{
+	needListFloat:           helperListFloat,
+	needListString:          helperListString,
+	needListListInt:         helperListListInt,
+	needConcatListInt:       helperConcatListInt,
+	needConcatListFloat:     helperConcatListFloat,
+	needConcatListString:    helperConcatListString,
+	needConcatListListInt:   helperConcatListListInt,
+	needConcatString:        helperConcatString,
+	needUnionListInt:        helperUnionListInt,
+	needUnionListFloat:      helperUnionListFloat,
+	needUnionListString:     helperUnionListString,
+	needExceptListInt:       helperExceptListInt,
+	needExceptListFloat:     helperExceptListFloat,
+	needExceptListString:    helperExceptListString,
+	needIntersectListInt:    helperIntersectListInt,
+	needIntersectListFloat:  helperIntersectListFloat,
+	needIntersectListString: helperIntersectListString,
+	needCount:               helperCount,
+	needAvg:                 helperAvg,
+	needInListInt:           helperContainsListInt,
+	needInListFloat:         helperContainsListFloat,
+	needInListString:        helperContainsListString,
+	needInput:               helperInput,
+	needStr:                 helperStr,
+	needNow:                 helperNow,
+	needJSON:                helperJSON,
+	needIndexString:         helperIndexString,
+	needSliceString:         helperSliceString,
+	needSliceListInt:        helperSliceListInt,
+	needSliceListFloat:      helperSliceListFloat,
+	needSliceListString:     helperSliceListString,
+}
+
+var helperOrder = []string{
+	needListFloat,
+	needListString,
+	needListListInt,
+	needConcatListInt,
+	needConcatListFloat,
+	needConcatListString,
+	needConcatListListInt,
+	needConcatString,
+	needUnionListInt,
+	needUnionListFloat,
+	needUnionListString,
+	needExceptListInt,
+	needExceptListFloat,
+	needExceptListString,
+	needIntersectListInt,
+	needIntersectListFloat,
+	needIntersectListString,
+	needCount,
+	needAvg,
+	needInListInt,
+	needInListFloat,
+	needInListString,
+	needInput,
+	needStr,
+	needNow,
+	needJSON,
+	needIndexString,
+	needSliceString,
+	needSliceListInt,
+	needSliceListFloat,
+	needSliceListString,
+}
+
 func (c *Compiler) emitRuntime() {
 	c.buf.WriteString(helperListInt)
-	if c.needsListFloat {
-		c.buf.WriteString(helperListFloat)
-	}
-	if c.needsListString {
-		c.buf.WriteString(helperListString)
-	}
-	if c.needsListListInt {
-		c.buf.WriteString(helperListListInt)
-	}
-
-	if c.needsConcatListInt {
-		c.buf.WriteString(helperConcatListInt)
-	}
-	if c.needsConcatListFloat {
-		c.buf.WriteString(helperConcatListFloat)
-	}
-	if c.needsConcatListString {
-		c.buf.WriteString(helperConcatListString)
-	}
-	if c.needsConcatListListInt {
-		c.buf.WriteString(helperConcatListListInt)
-	}
-	if c.needsConcatString {
-		c.buf.WriteString(helperConcatString)
-	}
-
-	if c.needsUnionListInt {
-		c.buf.WriteString(helperUnionListInt)
-	}
-	if c.needsUnionListFloat {
-		c.buf.WriteString(helperUnionListFloat)
-	}
-	if c.needsUnionListString {
-		c.buf.WriteString(helperUnionListString)
-	}
-
-	if c.needsExceptListInt {
-		c.buf.WriteString(helperExceptListInt)
-	}
-	if c.needsExceptListFloat {
-		c.buf.WriteString(helperExceptListFloat)
-	}
-	if c.needsExceptListString {
-		c.buf.WriteString(helperExceptListString)
-	}
-
-	if c.needsIntersectListInt {
-		c.buf.WriteString(helperIntersectListInt)
-	}
-	if c.needsIntersectListFloat {
-		c.buf.WriteString(helperIntersectListFloat)
-	}
-	if c.needsIntersectListString {
-		c.buf.WriteString(helperIntersectListString)
-	}
-
-	if c.needsCount {
-		c.buf.WriteString(helperCount)
-	}
-	if c.needsAvg {
-		c.buf.WriteString(helperAvg)
-	}
-
-	if c.needsInListInt {
-		c.buf.WriteString(helperContainsListInt)
-	}
-	if c.needsInListFloat {
-		c.buf.WriteString(helperContainsListFloat)
-	}
-	if c.needsInListString {
-		c.buf.WriteString(helperContainsListString)
-	}
-
-	if c.needsInput {
-		c.buf.WriteString(helperInput)
-	}
-	if c.needsStr {
-		c.buf.WriteString(helperStr)
-	}
-	if c.needsNow {
-		c.buf.WriteString(helperNow)
-	}
-	if c.needsJSON {
-		c.buf.WriteString(helperJSON)
-	}
-	if c.needsIndexString {
-		c.buf.WriteString(helperIndexString)
-	}
-	if c.needsSliceString {
-		c.buf.WriteString(helperSliceString)
-	}
-	if c.needsSliceListInt {
-		c.buf.WriteString(helperSliceListInt)
-	}
-	if c.needsSliceListFloat {
-		c.buf.WriteString(helperSliceListFloat)
-	}
-	if c.needsSliceListString {
-		c.buf.WriteString(helperSliceListString)
+	for _, h := range helperOrder {
+		if c.has(h) {
+			c.buf.WriteString(helperCode[h])
+		}
 	}
 
 	// printing helpers
 	c.buf.WriteString(helperPrintListInt)
-	if c.needsListListInt {
+	if c.has(needListListInt) {
 		c.buf.WriteString(helperPrintListListInt)
 	}
-	if c.needsListFloat {
+	if c.has(needListFloat) {
 		c.buf.WriteString(helperPrintListFloat)
 	}
-	if c.needsListString {
+	if c.has(needListString) {
 		c.buf.WriteString(helperPrintListString)
 	}
 }
