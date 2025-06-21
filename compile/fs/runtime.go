@@ -84,8 +84,15 @@ const (
       |> fun s -> "[" + s + "]"
   | _ -> "\"" + v.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
 
-let _json (v: obj) : unit =
+        let _json (v: obj) : unit =
   printfn "%s" (_to_json v)`
+
+	helperExtern = `let externObjects = System.Collections.Generic.Dictionary<string,obj>()
+let register_extern (name: string) (obj: obj) : unit = externObjects[name] <- obj
+let _extern_get (name: string) : obj =
+  match externObjects.TryGetValue(name) with
+  | true, v -> v
+  | _ -> failwith ("extern object not registered: " + name)`
 )
 
 var helperMap = map[string]string{
@@ -95,4 +102,5 @@ var helperMap = map[string]string{
 	"_input":        helperInput,
 	"_fetch":        helperFetch,
 	"_json_helpers": helperToJson,
+	"_extern":       helperExtern,
 }

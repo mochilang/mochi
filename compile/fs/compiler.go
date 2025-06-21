@@ -507,7 +507,12 @@ func (c *Compiler) compileExternType(et *parser.ExternTypeDecl) error {
 }
 
 func (c *Compiler) compileExternObject(eo *parser.ExternObjectDecl) error {
-	c.writeln("// extern object " + sanitizeName(eo.Name))
+	name := sanitizeName(eo.Name)
+	c.use("_extern")
+	c.writeln(fmt.Sprintf("let %s = _extern_get \"%s\"", name, eo.Name))
+	if c.env != nil {
+		c.env.SetVar(eo.Name, types.AnyType{}, true)
+	}
 	return nil
 }
 
@@ -1304,6 +1309,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("((Array.sum %s) / %s.Length)", args[0], args[0]), nil
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no args")
+		}
+		return "System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1000000L", nil
 	case "json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")

@@ -120,19 +120,22 @@ Mochi features are not yet available.
 * Pattern matching and conditional statements
 * Lists and maps with indexing and slicing
 * Query expressions with `where`, `sort`, `skip` and `take`
-* Built-in helpers: `len`, `count`, `avg`, `print`, `input`, `json`, `to_json`, `load`, `save`, `fetch`
+* Built-in helpers: `len`, `count`, `avg`, `now`, `print`, `input`, `json`, `to_json`, `load`, `save`, `fetch`
 * Record and union type declarations
 * Methods declared inside `type` blocks
 * Package imports using `import` and exported functions via `export fun`
 * Extern variable and function declarations
 * Extern type aliases
+* Extern object declarations
 
 ### Unsupported features
 
 The F# generator still lacks support for several language constructs:
 
-* Extern object declarations
 * Foreign function interface (FFI) calls
+* Generative AI helpers (`_genText`, `_genEmbed`, `_genStruct`)
+* YAML dataset support in `_load`/`_save`
+* `eval` builtin function
 * Logic programming constructs (`fact`, `rule`, `query`)
 * Advanced dataset queries such as joins and grouping
 * Streams, agents and LLM `generate` blocks
