@@ -4,7 +4,8 @@ The Python backend translates Mochi programs into standard Python source code. I
 
 ## Files
 
-- `compiler.go` – walks the AST and emits Python code
+- `compiler.go` – entry point for the Python code generator
+- `statements.go` – compilation of statements and declarations
 - `compiler_test.go` – golden tests that execute the generated code with `python3`
 - `helpers.go` – utilities for indentation, name sanitisation and type inference helpers
 - `infer.go` – local type inference used by the code generator
