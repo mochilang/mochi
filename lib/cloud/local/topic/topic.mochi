@@ -1,0 +1,22 @@
+package topic
+
+type Topic {
+  publish: fun(any)
+  subscribe: fun(fun(any))
+}
+
+export fun new(): Topic {
+  var subs: list<any> = []
+
+  fun publish(msg: any) {
+    for h in subs {
+      h(msg)
+    }
+  }
+
+  fun subscribe(handler: fun(any)) {
+    subs.push(handler)
+  }
+
+  return Topic { publish, subscribe }
+}

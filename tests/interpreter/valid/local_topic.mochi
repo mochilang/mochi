@@ -1,0 +1,7 @@
+import "../../../lib/cloud/local/topic" as topic
+
+let t = topic.new()
+var last = ""
+t.subscribe(fun(msg: string) { last = msg })
+t.publish("hi")
+print(last)
