@@ -345,16 +345,17 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil {
 		return "", fmt.Errorf("nil expr")
 	}
-	return c.compileBinary(e.Binary)
+	return c.compileBinaryExpr(e.Binary)
 }
 
-func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
+func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
 
 	operands := []string{left}
+	typesList := []types.Type{c.inferUnaryType(b.Left)}
 	ops := []string{}
 	for _, part := range b.Right {
 		right, err := c.compilePostfix(part.Right)
@@ -363,41 +364,21 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		}
 		ops = append(ops, part.Op)
 		operands = append(operands, right)
+		typesList = append(typesList, c.inferPostfixType(part.Right))
 	}
 
 	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
 	for _, level := range prec {
 		for i := 0; i < len(ops); {
 			if contains(level, ops[i]) {
-				l := operands[i]
-				r := operands[i+1]
-				opstr := ops[i]
-				var expr string
-				switch opstr {
-				case "&&":
-					expr = fmt.Sprintf("(%s and %s)", l, r)
-				case "||":
-					expr = fmt.Sprintf("(%s or %s)", l, r)
-				case "in":
-					c.helpers["contains"] = true
-					expr = fmt.Sprintf("__contains(%s, %s)", r, l)
-				case "/":
-					c.helpers["div"] = true
-					expr = fmt.Sprintf("__div(%s, %s)", l, r)
-				case "+":
-					c.helpers["add"] = true
-					expr = fmt.Sprintf("__add(%s, %s)", l, r)
-				case "==":
-					c.helpers["eq"] = true
-					expr = fmt.Sprintf("__eq(%s, %s)", l, r)
-				case "!=":
-					c.helpers["eq"] = true
-					expr = fmt.Sprintf("not __eq(%s, %s)", l, r)
-				default:
-					expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
+				expr, typ, err := c.compileBinaryOp(operands[i], typesList[i], ops[i], operands[i+1], typesList[i+1])
+				if err != nil {
+					return "", err
 				}
 				operands[i] = expr
+				typesList[i] = typ
 				operands = append(operands[:i+1], operands[i+2:]...)
+				typesList = append(typesList[:i+1], typesList[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
 				i++
@@ -408,6 +389,52 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", fmt.Errorf("invalid expression")
 	}
 	return operands[0], nil
+}
+
+func (c *Compiler) compileBinaryOp(left string, lt types.Type, op string, right string, rt types.Type) (string, types.Type, error) {
+	switch op {
+	case "&&":
+		return fmt.Sprintf("(%s and %s)", left, right), types.BoolType{}, nil
+	case "||":
+		return fmt.Sprintf("(%s or %s)", left, right), types.BoolType{}, nil
+	case "in":
+		c.helpers["contains"] = true
+		return fmt.Sprintf("__contains(%s, %s)", right, left), types.BoolType{}, nil
+	case "/":
+		if isInt(lt) || isInt64(lt) || isInt(rt) || isInt64(rt) {
+			c.helpers["div"] = true
+			return fmt.Sprintf("__div(%s, %s)", left, right), types.IntType{}, nil
+		}
+		return fmt.Sprintf("(%s / %s)", left, right), types.FloatType{}, nil
+	case "+":
+		if isList(lt) && isList(rt) {
+			c.helpers["add"] = true
+			return fmt.Sprintf("__add(%s, %s)", left, right), lt, nil
+		}
+		if isString(lt) || isString(rt) {
+			c.helpers["add"] = true
+			return fmt.Sprintf("__add(%s, %s)", left, right), types.StringType{}, nil
+		}
+		return fmt.Sprintf("(%s + %s)", left, right), lt, nil
+	case "-", "*", "%":
+		return fmt.Sprintf("(%s %s %s)", left, op, right), lt, nil
+	case "==", "!=":
+		if isList(lt) || isList(rt) || isMap(lt) || isMap(rt) || isStruct(lt) || isStruct(rt) || isAny(lt) || isAny(rt) {
+			c.helpers["eq"] = true
+			if op == "==" {
+				return fmt.Sprintf("__eq(%s, %s)", left, right), types.BoolType{}, nil
+			}
+			return fmt.Sprintf("not __eq(%s, %s)", left, right), types.BoolType{}, nil
+		}
+		if op == "==" {
+			return fmt.Sprintf("(%s == %s)", left, right), types.BoolType{}, nil
+		}
+		return fmt.Sprintf("(%s ~= %s)", left, right), types.BoolType{}, nil
+	case "<", "<=", ">", ">=":
+		return fmt.Sprintf("(%s %s %s)", left, op, right), types.BoolType{}, nil
+	default:
+		return fmt.Sprintf("(%s %s %s)", left, op, right), types.AnyType{}, nil
+	}
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
