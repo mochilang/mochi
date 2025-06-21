@@ -247,3 +247,7 @@ The Swift backend still lacks support for a number of language capabilities:
 - Import statements
 - Concurrency primitives like ``spawn`` and channels
 - The ``eval`` builtin function
+- Error handling with ``try``/``catch``
+- Asynchronous ``async``/``await`` functions
+- Generic type parameters for functions or types
+- Macro or reflection facilities
