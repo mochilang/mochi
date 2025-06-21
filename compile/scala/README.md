@@ -287,6 +287,6 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - event emission and intent handlers (`emit`, `on`)
 - model declarations
 - extern variable, type and object declarations
-- package declarations
+- package imports and export declarations
 - the `eval` builtin function
 
