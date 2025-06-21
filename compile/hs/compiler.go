@@ -18,6 +18,8 @@ type Compiler struct {
 	usesMap  bool
 	usesTime bool
 	usesJSON bool
+	usesLoad bool
+	usesSave bool
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -66,6 +68,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.usesMap = false
 	c.usesJSON = false
+	c.usesLoad = false
+	c.usesSave = false
 
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -101,6 +105,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.usesMap {
 		header.WriteString("import qualified Data.Map as Map\n")
+	}
+	if c.usesLoad || c.usesSave {
+		header.WriteString("import Data.List (intercalate)\n")
 	}
 	if c.usesJSON {
 		header.WriteString("import qualified Data.Aeson as Aeson\n")
@@ -566,6 +573,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			items[i] = fmt.Sprintf("(%s, %s)", k, v)
 		}
 		return fmt.Sprintf("Map.fromList [%s]", strings.Join(items, ", ")), nil
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -689,6 +700,46 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	ret := c.defaultReturn(fn.BlockBody, types.VoidType{})
 	return fmt.Sprintf("(\\%s -> fromMaybe (%s) $ %s)", strings.Join(params, " "), ret, expr), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "Nothing"
+	if l.Path != nil {
+		path = fmt.Sprintf("Just %q", *l.Path)
+	}
+	opts := "Nothing"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = fmt.Sprintf("Just (%s)", v)
+	}
+	c.usesLoad = true
+	c.usesMap = true
+	return fmt.Sprintf("_load %s %s", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "Nothing"
+	if s.Path != nil {
+		path = fmt.Sprintf("Just %q", *s.Path)
+	}
+	opts := "Nothing"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = fmt.Sprintf("Just (%s)", v)
+	}
+	c.usesSave = true
+	c.usesMap = true
+	return fmt.Sprintf("_save %s %s %s", src, path, opts), nil
 }
 
 func isInputCall(e *parser.Expr) bool {
