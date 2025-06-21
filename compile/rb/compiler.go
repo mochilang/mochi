@@ -444,6 +444,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		joinSrcs := make([]string, len(q.Joins))
 		joinOns := make([]string, len(q.Joins))
+		joinSides := make([]string, len(q.Joins))
 		for i, j := range q.Joins {
 			js, err := c.compileExpr(j.Src)
 			if err != nil {
@@ -455,7 +456,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			joinOns[i] = on
+			if j.Side != nil {
+				joinSides[i] = *j.Side
+			}
 		}
+		specialLeft := len(q.Joins) == 1 && joinSides[0] == "left"
 		sel, err := c.compileExpr(q.Select)
 		if err != nil {
 			return "", err
@@ -482,6 +487,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			takeVal = v
 		}
+		var condStr string
+		if q.Where != nil {
+			var err error
+			condStr, err = c.compileExpr(q.Where)
+			if err != nil {
+				return "", err
+			}
+		}
 		var b strings.Builder
 		b.WriteString("(begin\n")
 		b.WriteString("\t_res = []\n")
@@ -491,18 +504,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(f.Var), fromSrcs[i]))
 			indent += "\t"
 		}
-		for i, j := range q.Joins {
-			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(j.Var), joinSrcs[i]))
+		if specialLeft {
+			b.WriteString(fmt.Sprintf("%smatched = false\n", indent))
+			j := q.Joins[0]
+			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(j.Var), joinSrcs[0]))
 			indent += "\t"
-			b.WriteString(fmt.Sprintf("%sif %s\n", indent, joinOns[i]))
+			b.WriteString(fmt.Sprintf("%sif %s\n", indent, joinOns[0]))
 			indent += "\t"
+			b.WriteString(fmt.Sprintf("%smatched = true\n", indent))
+		} else {
+			for i, j := range q.Joins {
+				b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(j.Var), joinSrcs[i]))
+				indent += "\t"
+				b.WriteString(fmt.Sprintf("%sif %s\n", indent, joinOns[i]))
+				indent += "\t"
+			}
 		}
 		if q.Where != nil {
-			cond, err := c.compileExpr(q.Where)
-			if err != nil {
-				return "", err
-			}
-			b.WriteString(fmt.Sprintf("%sif %s\n", indent, cond))
+			b.WriteString(fmt.Sprintf("%sif %s\n", indent, condStr))
 			indent += "\t"
 			if sortVal != "" {
 				b.WriteString(fmt.Sprintf("%s_res << [%s, %s]\n", indent, sortVal, sel))
@@ -518,11 +537,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
 			}
 		}
-		for range q.Joins {
+		if specialLeft {
 			indent = indent[:len(indent)-1]
 			b.WriteString(indent + "end\n")
 			indent = indent[:len(indent)-1]
 			b.WriteString(indent + "end\n")
+			b.WriteString(fmt.Sprintf("%sif !matched\n", indent))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%s%s = nil\n", indent, sanitizeName(q.Joins[0].Var)))
+			if q.Where != nil {
+				b.WriteString(fmt.Sprintf("%sif %s\n", indent, condStr))
+				indent += "\t"
+			}
+			if sortVal != "" {
+				b.WriteString(fmt.Sprintf("%s_res << [%s, %s]\n", indent, sortVal, sel))
+			} else {
+				b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+			}
+			if q.Where != nil {
+				indent = indent[:len(indent)-1]
+				b.WriteString(indent + "end\n")
+			}
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+		} else {
+			for range q.Joins {
+				indent = indent[:len(indent)-1]
+				b.WriteString(indent + "end\n")
+				indent = indent[:len(indent)-1]
+				b.WriteString(indent + "end\n")
+			}
 		}
 		for range q.Froms {
 			indent = indent[:len(indent)-1]

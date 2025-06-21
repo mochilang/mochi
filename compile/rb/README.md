@@ -31,23 +31,7 @@ case "input":
 
 ## Query expressions
 
-`compileQueryExpr` handles dataset queries including filtering, sorting and pagination. Basic `group by` clauses are supported when used alone, while join conditions remain unsupported. Cross joins are supported:
-
-```go
-if len(q.Joins) > 0 {
-    return "", fmt.Errorf("join clauses not supported")
-}
-if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-    keyExpr, _ := c.compileExpr(q.Group.Expr)
-    valExpr, _ := c.compileExpr(q.Select)
-    c.use("_group_by")
-    c.use("_group")
-    return fmt.Sprintf("_group_by(%s, ->(%s){ %s }).map { |%s| %s }", src, iter, keyExpr, sanitizeName(q.Group.Name), valExpr), nil
-}
-...
-expr = fmt.Sprintf("(%s).map { |%s| %s }", expr, iter, sel)
-```
-【F:compile/rb/compiler.go†L406-L432】
+`compileQueryExpr` handles dataset queries including filtering, sorting and pagination. Basic `group by` clauses are supported when used alone. Cross joins and single `join` clauses (including `left join`) are implemented. Unmatched records from a `left join` use `nil` for the join variable.
 
 ## Pattern matching
 
@@ -166,13 +150,26 @@ go test ./compile/rb -tags slow
 
 The first test is skipped when Ruby is not available and the suite falls back to comparing generated code.
 
+## Supported Features
+
+The Ruby backend covers a wide slice of Mochi. Implemented functionality includes:
+
+- Function definitions and calls
+- Control flow with `if`, `for` and `while`
+- Structs, unions and pattern matching with `match`
+- Lists and maps with indexing and slicing
+- Dataset queries with `from`, `join`, `left join`, `where`, `group by`, `sort`, `skip` and `take`
+- Set operations such as `union`, `union all`, `except` and `intersect`
+- Built‑in helpers including `fetch`, `load`, `save` and placeholder LLM generation
+
 ## Unsupported Features
 
 - The Ruby backend does not yet implement every construct in Mochi. Missing
 features include:
 
-- Dataset joins with `join` are supported, but sided joins (`left`, `right`,
-  `outer`) remain unsupported.
+- Dataset joins with `join` and `left join` are supported. `right` and `outer`
+  joins remain unsupported.
+- Package declarations using `package` are ignored.
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming
   features (`fact`, `rule`, `query`).
 - Packages and foreign function interface declarations (`import`, `extern`).
@@ -182,4 +179,5 @@ features include:
 - Error handling with `try`/`catch`.
 - Asynchronous functions (`async`/`await`).
 - Generic type parameters.
+- The `eval` builtin function.
 
