@@ -463,6 +463,17 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION LENGTH(%s)", tmp, expr))
 		return tmp
 	}
+	if name == "ABS" && len(n.Children) == 1 {
+		expr := c.expr(n.Children[0])
+		tmp := c.newTemp()
+		if c.isFloatExpr(n.Children[0]) {
+			c.declare(fmt.Sprintf("01 %s PIC 9(4)V9(4).", tmp))
+		} else {
+			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+		}
+		c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION ABS(%s)", tmp, expr))
+		return tmp
+	}
 	count, ok := c.funcs[name]
 	if name == "ADD" && len(n.Children) == 2 {
 		left := c.expr(n.Children[0])

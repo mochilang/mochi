@@ -162,11 +162,11 @@ constructs:
 - `while` loops
 - `break` and `continue` statements
 - Function definitions and calls, including nested functions
-- Calls to built-ins `print`, `len`, `add`, `twoSum`, `addTwoNumbers` and a
+- Calls to built-ins `print`, `len`, `add`, `abs`, `twoSum`, `addTwoNumbers` and a
   basic `reduce` over lists using `add`
 - List concatenation with `+` and indexing (including negative indices)
 - Basic string slicing with constant start and end indices
-- List slicing with variable start and end indices
+- List slicing with constant start and end indices
 - String and list slicing with open-ended ranges
 - Simple `match` expressions with literal patterns
 - `expect` and `test` blocks
@@ -205,9 +205,11 @@ unsupported include:
 - Range loops with step values other than `1`
 - Bitwise and exponentiation operators
 - Negative indices are only supported when specified as integer literals
+- List slicing with non-constant start or end indices
 - Using the `range` helper to generate sequences
 - Dynamic lists whose length is not known at compile time
-- Builtin functions other than `print`, `len`, `add`, `twoSum` and `addTwoNumbers`
+- Builtin functions other than `print`, `len`, `add`, `abs`, `twoSum` and `addTwoNumbers`
+- `reduce` with functions other than `add` or with lists of unknown length
 - Struct and model declarations
 - Union type declarations and inline methods
 - First-class function values or closures
