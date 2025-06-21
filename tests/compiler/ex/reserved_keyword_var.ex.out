@@ -2,8 +2,7 @@
 defmodule Main do
 	def main do
 		map = %{a: 1}
-		IO.puts(Enum.at(map, "a"))
+		IO.puts(Map.get(map, "a"))
 	end
 	end
 Main.main()
-

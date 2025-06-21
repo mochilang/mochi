@@ -601,6 +601,7 @@ implemented across all backends:
 * Error handling with `try`/`catch`
 * Logic programming constructs (`fact`, `rule`, `query`)
 * Set collections (`set<T>`) and related operations
+* Set operations (`union`, `except`, `intersect`)
 * Generic type parameters for functions and user-defined types
 * Reflection and macro facilities
 * Concurrency primitives such as `spawn` and channels
@@ -613,6 +614,7 @@ implemented across all backends:
 * Sorting or pagination when joins are used
 * Destructuring bindings in `let` and `var` statements
 * YAML dataset loading and saving
+* HTTP fetch and dataset helpers (`fetch`, `load`, `save`)
 * Agent and stream constructs (`agent`, `on`, `emit`)
 * Model declarations (`model` blocks)
 * Full LLM integration for `generate` blocks

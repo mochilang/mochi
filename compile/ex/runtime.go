@@ -27,7 +27,15 @@ const (
 
 	helperGenEmbed = "defp _gen_embed(text, _model, _params) do\n  String.to_charlist(text) |> Enum.map(&(&1 + 0.0))\nend\n"
 
-	helperGenStruct = "defp _gen_struct(mod, prompt, _model, _params) do\n  data = Jason.decode!(prompt)\n  struct(mod, for {k,v} <- data, into: %{}, do: {String.to_atom(k), v})\nend\n"
+        helperGenStruct = "defp _gen_struct(mod, prompt, _model, _params) do\n  data = Jason.decode!(prompt)\n  struct(mod, for {k,v} <- data, into: %{}, do: {String.to_atom(k), v})\nend\n"
+
+        helperUnionAll = "defp _union_all(a, b) do\n  (a || []) ++ (b || [])\nend\n"
+
+        helperUnion = "defp _union(a, b) do\n  res = if a, do: Enum.to_list(a), else: []\n  Enum.reduce(b || [], res, fn it, acc ->\n    if Enum.any?(acc, fn x -> x == it end) do\n      acc\n    else\n      acc ++ [it]\n    end\n  end)\nend\n"
+
+        helperExcept = "defp _except(a, b) do\n  Enum.reduce(a || [], [], fn it, acc ->\n    if Enum.member?(b || [], it) do\n      acc\n    else\n      acc ++ [it]\n    end\n  end)\nend\n"
+
+        helperIntersect = "defp _intersect(a, b) do\n  Enum.reduce(a || [], [], fn it, acc ->\n    if Enum.member?(b || [], it) and not Enum.member?(acc, it) do\n      acc ++ [it]\n    else\n      acc\n    end\n  end)\nend\n"
 )
 
 var helperMap = map[string]string{
@@ -40,9 +48,13 @@ var helperMap = map[string]string{
 	"_to_csv":      helperToCSV,
 	"_to_map_list": helperToMapList,
 	"_load":        helperLoad,
-	"_save":        helperSave,
-	"_fetch":       helperFetch,
-	"_gen_text":    helperGenText,
-	"_gen_embed":   helperGenEmbed,
-	"_gen_struct":  helperGenStruct,
+        "_save":        helperSave,
+        "_fetch":       helperFetch,
+        "_gen_text":    helperGenText,
+        "_gen_embed":   helperGenEmbed,
+        "_gen_struct":  helperGenStruct,
+        "_union_all":   helperUnionAll,
+        "_union":       helperUnion,
+        "_except":      helperExcept,
+        "_intersect":   helperIntersect,
 }

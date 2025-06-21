@@ -8,8 +8,7 @@ defmodule Main do
 	
 	def main do
 		add10 = makeAdder(10)
-		IO.puts(add10(7))
+		IO.puts(add10.(7))
 	end
 	end
 Main.main()
-
