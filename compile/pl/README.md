@@ -273,6 +273,20 @@ the Prolog interpreter is invoked:
 go test ./compile/pl -tags slow
 ```
 
+## Supported Features
+
+The Prolog backend can compile a subset of Mochi focused on core control flow and list processing. Currently implemented features include:
+
+- Function definitions with typed parameters and return values
+- `let` and `var` declarations with assignment
+- Arithmetic and comparison operators
+- Lists and maps with indexing and slicing
+- Built-in functions `len`, `count`, `avg`, `str` and `input`
+- `print` statements
+- `if` statements and expressions
+- Range `for` loops and iteration over lists or strings
+- `while` loops with `break` and `continue`
+- Expect assertions and `test` blocks
 ## Unsupported Features
 
 The Prolog backend focuses on basic control flow and list operations. Several
@@ -283,10 +297,12 @@ Mochi language features are not yet implemented:
 - Structured type declarations like `struct` and enums (simple field selectors
   `a.b` are supported)
 - Concurrency primitives and external helpers like `_fetch` or `_genText`
-- Import declarations
+- Import declarations (currently ignored)
 - Agent and stream features (`agent`, `on`, `emit`)
+- Intent handlers within agents (`intent` blocks)
 - Extern declarations and foreign imports
 - Model declarations
 - Generative AI helpers (`generate`, `model`)
+- Embedding generation with `generate embedding`
 - Data loading and persistence helpers (`fetch`, `load`, `save`)
 - Package imports and exports
