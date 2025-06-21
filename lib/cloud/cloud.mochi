@@ -1,0 +1,5 @@
+package cloud
+
+import "./bucket.mochi" as bucket
+import "./queue.mochi" as queue
+import "./topic.mochi" as topic

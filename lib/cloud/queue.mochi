@@ -1,0 +1,32 @@
+package cloud
+
+/// Queue is an in-memory FIFO queue.
+type Queue {
+  name: string,
+  items: list<any>
+}
+
+/// queue creates a new Queue with the given name.
+fun queue(name: string): Queue {
+  return Queue { name: name, items: [] }
+}
+
+/// push adds a value to the end of the queue.
+fun Queue.push(q: Queue, value: any) {
+  q.items = q.items + [value]
+}
+
+/// pop removes and returns the first value or null if empty.
+fun Queue.pop(q: Queue): any {
+  if len(q.items) == 0 {
+    return null
+  }
+  let value = q.items[0]
+  q.items = q.items[1:len(q.items)]
+  return value
+}
+
+/// len returns the number of pending items.
+fun Queue.len(q: Queue): int {
+  return len(q.items)
+}
