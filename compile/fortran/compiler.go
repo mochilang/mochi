@@ -1488,20 +1488,13 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("implicit none")
 		c.writeln("integer(kind=8), intent(in) :: v(:)")
 		c.writeln("real :: r")
-		c.writeln("integer(kind=8) :: i")
 		c.writeln("if (size(v) == 0) then")
 		c.indent++
 		c.writeln("r = 0.0")
 		c.writeln("return")
 		c.indent--
 		c.writeln("end if")
-		c.writeln("r = 0.0")
-		c.writeln("do i = 1, size(v)")
-		c.indent++
-		c.writeln("r = r + real(v(i))")
-		c.indent--
-		c.writeln("end do")
-		c.writeln("r = r / size(v)")
+		c.writeln("r = sum(real(v)) / size(v)")
 		c.indent--
 		c.writeln("end function avg_int")
 	}
@@ -1512,20 +1505,13 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("implicit none")
 		c.writeln("real, intent(in) :: v(:)")
 		c.writeln("real :: r")
-		c.writeln("integer(kind=8) :: i")
 		c.writeln("if (size(v) == 0) then")
 		c.indent++
 		c.writeln("r = 0.0")
 		c.writeln("return")
 		c.indent--
 		c.writeln("end if")
-		c.writeln("r = 0.0")
-		c.writeln("do i = 1, size(v)")
-		c.indent++
-		c.writeln("r = r + v(i)")
-		c.indent--
-		c.writeln("end do")
-		c.writeln("r = r / size(v)")
+		c.writeln("r = sum(v) / size(v)")
 		c.indent--
 		c.writeln("end function avg_float")
 	}
