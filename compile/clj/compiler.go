@@ -133,6 +133,77 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileMethod(typeName string, m *parser.FunStmt) error {
+	st, ok := c.env.GetStruct(typeName)
+	if !ok {
+		return fmt.Errorf("unknown struct: %s", typeName)
+	}
+	origEnv := c.env
+	child := types.NewEnv(origEnv)
+	for fname, ft := range st.Fields {
+		child.SetVar(fname, ft, true)
+	}
+	if mt, ok := st.Methods[m.Name]; ok {
+		for i, p := range m.Params {
+			if i < len(mt.Type.Params) {
+				child.SetVar(p.Name, mt.Type.Params[i], true)
+			} else {
+				child.SetVar(p.Name, types.AnyType{}, true)
+			}
+		}
+	}
+	c.env = child
+	defer func() { c.env = origEnv }()
+
+	name := sanitizeName(typeName + "_" + m.Name)
+	c.writeIndent()
+	c.buf.WriteString("(defn " + name + " [self")
+	for _, p := range m.Params {
+		c.buf.WriteString(" " + sanitizeName(p.Name))
+	}
+	c.buf.WriteString("]\n")
+	c.indent++
+	if len(st.Fields) > 0 {
+		c.writeIndent()
+		c.buf.WriteString("(let [")
+		i := 0
+		for _, fname := range st.Order {
+			if i > 0 {
+				c.buf.WriteString(" ")
+			}
+			sf := sanitizeName(fname)
+			c.buf.WriteString(fmt.Sprintf("%s (:%s self)", sf, sf))
+			i++
+		}
+		c.buf.WriteString("]\n")
+		c.indent++
+	}
+	c.writeln("(try")
+	c.indent++
+	for _, stmnt := range m.Body {
+		if err := c.compileStmt(stmnt); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("(catch clojure.lang.ExceptionInfo e")
+	c.indent++
+	c.writeln("(if (= (.getMessage e) \"return\")")
+	c.indent++
+	c.writeln("(:value (ex-data e))")
+	c.indent--
+	c.writeln("(throw e)))")
+	c.indent--
+	c.writeln(")")
+	if len(st.Fields) > 0 {
+		c.indent--
+		c.writeln(")")
+	}
+	c.indent--
+	c.writeln(")")
+	return nil
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeIndent()
@@ -1090,28 +1161,14 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	if st, ok := c.env.GetStruct(t.Name); ok {
+	if _, ok := c.env.GetStruct(t.Name); ok {
 		for _, m := range t.Members {
 			if m.Method == nil {
 				continue
 			}
-			name := sanitizeName(t.Name + "_" + m.Method.Name)
-			clone := *m.Method
-			clone.Name = name
-			origEnv := c.env
-			child := types.NewEnv(c.env)
-			for fname, ft := range st.Fields {
-				child.SetVar(fname, ft, true)
-			}
-			if mt, ok := st.Methods[m.Method.Name]; ok {
-				child.SetVar(name, mt.Type, false)
-			}
-			c.env = child
-			if err := c.compileFun(&clone); err != nil {
-				c.env = origEnv
+			if err := c.compileMethod(t.Name, m.Method); err != nil {
 				return err
 			}
-			c.env = origEnv
 			c.writeln("")
 		}
 		return nil
