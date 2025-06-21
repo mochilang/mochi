@@ -363,3 +363,13 @@ func (c *Compiler) isStringExpr(p *parser.Primary) bool {
 	_, ok := c.inferPrimaryType(p).(types.StringType)
 	return ok
 }
+
+func (c *Compiler) exprIsList(e *parser.Expr) bool {
+	_, ok := c.inferExprType(e).(types.ListType)
+	return ok
+}
+
+func (c *Compiler) postfixIsMap(p *parser.PostfixExpr) bool {
+	_, ok := c.inferPostfixType(p).(types.MapType)
+	return ok
+}
