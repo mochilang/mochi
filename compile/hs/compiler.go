@@ -135,6 +135,16 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			}
 			c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Let.Name), val))
 		}
+	case s.Var != nil:
+		val := "()"
+		if s.Var.Value != nil {
+			v, err := c.compileExpr(s.Var.Value)
+			if err != nil {
+				return err
+			}
+			val = v
+		}
+		c.writeln(fmt.Sprintf("let %s = %s", sanitizeName(s.Var.Name), val))
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -345,6 +355,12 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 				val = v
 			}
 			expr = fmt.Sprintf("(let %s = %s in %s)", sanitizeName(s.Var.Name), val, expr)
+		case s.Break != nil:
+			expr = "Just ()"
+			continue
+		case s.Continue != nil:
+			expr = "Nothing"
+			continue
 		case s.Let != nil:
 			val := "()"
 			if s.Let.Value != nil {
