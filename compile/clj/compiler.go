@@ -238,6 +238,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileImport(s.Import)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
 	case s.Return != nil:

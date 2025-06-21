@@ -143,6 +143,7 @@ in the example programs. In particular:
 - Union types and pattern matching on variants
 - Left/right/outer joins and grouped aggregations
 - Agent helpers and LLM integration
+- Intent declarations inside agents
 - Foreign imports for other languages and the module system
 - Logic programming facts and rules
 - External declarations and other FFI helpers
@@ -158,6 +159,5 @@ in the example programs. In particular:
 - Reflection or macro facilities
 - Package and `export` statements for modules
 - `emit` statements for streams
-- Nested function declarations within other functions
 
 Programs relying on these features fail to compile with the Clojure backend.
