@@ -1,0 +1,44 @@
+package cluster
+
+import "lib/cloud/k8s/resource" as k8s
+
+type Cluster {
+  api_server: string,
+  resources: list<k8s.Resource>,
+}
+
+type ClusterProps {
+  api_server: string,
+}
+
+fun new(props: ClusterProps): Cluster {
+  return Cluster { api_server: props.api_server, resources: [] }
+}
+
+fun add(c: Cluster, r: k8s.Resource): void {
+  c.resources = c.resources + [r]
+}
+
+fun manifest(c: Cluster): string {
+  var result = ""
+  var first = true
+  for r in c.resources {
+    if !first {
+      result = result + "\n---\n"
+    }
+    result = result + r.body
+    first = false
+  }
+  return result
+}
+
+fun apply(c: Cluster) {
+  for r in c.resources {
+    let url = c.api_server + r.path
+    let _ = fetch url with {
+      method: "POST",
+      headers: {"Content-Type": "application/yaml"},
+      body: r.body,
+    }
+  }
+}

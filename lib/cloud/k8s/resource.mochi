@@ -1,0 +1,7 @@
+package k8s
+
+type Resource {
+  kind: string,
+  path: string,
+  body: string,
+}

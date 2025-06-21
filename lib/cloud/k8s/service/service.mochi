@@ -1,0 +1,30 @@
+package service
+
+import "lib/cloud/k8s/resource" as k8s
+
+fun manifest(name: string, port: int, target_port: int): string {
+  return "apiVersion: v1\n" +
+         "kind: Service\n" +
+         "metadata:\n" +
+         "  name: " + name + "\n" +
+         "spec:\n" +
+         "  selector:\n" +
+         "    app: " + name + "\n" +
+         "  ports:\n" +
+         "    - port: " + str(port) + "\n" +
+         "      targetPort: " + str(target_port) + "\n"
+}
+
+/// Kubernetes Service resource
+type ServiceProps {
+  name: string,
+  port: int,
+  target_port: int,
+  namespace: string = "default",
+}
+
+fun new(props: ServiceProps): k8s.Resource {
+  let body = manifest(props.name, props.port, props.target_port)
+  let path = "/api/v1/namespaces/" + props.namespace + "/services"
+  return k8s.Resource { kind: "Service", path: path, body: body }
+}
