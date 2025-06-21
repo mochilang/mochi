@@ -33,7 +33,11 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.tempVars = make(map[string]string)
-	c.writeln("program main;")
+	name := "main"
+	if prog.Package != "" {
+		name = sanitizeName(prog.Package)
+	}
+	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
 	c.writeln("uses SysUtils, fgl;")
 	c.writeln("")
@@ -75,15 +79,29 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Compile main body first to gather temporaries
+	var body bytes.Buffer
+	prevBuf := c.buf
+	prevIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = 1
+	for _, s := range prog.Statements {
+		if s.Fun != nil || s.Type != nil {
+			continue
+		}
+		if err := c.compileStmt(s); err != nil {
+			c.buf = prevBuf
+			c.indent = prevIndent
+			return nil, err
+		}
+	}
+	body = c.buf
+	c.buf = prevBuf
+	c.indent = prevIndent
+
 	// Collect global vars.
 	vars := map[string]string{}
 	collectVars(prog.Statements, c.env, vars)
-	for n, t := range c.tempVars {
-		if t == "" {
-			t = "integer"
-		}
-		vars[n] = t
-	}
 	if len(vars) > 0 {
 		c.writeln("var")
 		c.indent++
@@ -101,14 +119,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("begin")
 	c.indent++
-	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil {
-			continue
+	if len(c.tempVars) > 0 {
+		names := make([]string, 0, len(c.tempVars))
+		for n := range c.tempVars {
+			names = append(names, n)
 		}
-		if err := c.compileStmt(s); err != nil {
-			return nil, err
+		sort.Strings(names)
+		for _, n := range names {
+			t := c.tempVars[n]
+			if t == "" {
+				t = "integer"
+			}
+			c.writeln(fmt.Sprintf("var %s: %s;", sanitizeName(n), t))
 		}
 	}
+	c.buf.Write(body.Bytes())
 	c.indent--
 	c.writeln("end.")
 	return c.buf.Bytes(), nil
@@ -458,7 +483,24 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		c.varTypes[p.Name] = pt
 	}
 	retType := c.typeRef(fun.Return)
-	c.writeln(fmt.Sprintf("function %s(%s): %s;", name, strings.Join(params, "; "), retType))
+
+	// Compile body first so that temporaries are collected
+	var body bytes.Buffer
+	prevBuf := c.buf
+	prevIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = prevIndent + 1
+	for _, st := range fun.Body {
+		if err := c.compileStmt(st); err != nil {
+			c.buf = prevBuf
+			c.indent = prevIndent
+			return err
+		}
+	}
+	body = c.buf
+	c.buf = prevBuf
+	c.indent = prevIndent
+
 	vars := map[string]string{}
 	paramMap := map[string]string{}
 	for k, v := range c.varTypes {
@@ -479,26 +521,21 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		vars[n] = t
 		c.varTypes[n] = t
 	}
+
+	c.writeln(fmt.Sprintf("function %s(%s): %s;", name, strings.Join(params, "; "), retType))
+	c.writeln("begin")
+	c.indent++
 	if len(vars) > 0 {
-		c.writeln("var")
-		c.indent++
 		names := make([]string, 0, len(vars))
 		for n := range vars {
 			names = append(names, n)
 		}
 		sort.Strings(names)
 		for _, n := range names {
-			c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(n), vars[n]))
-		}
-		c.indent--
-	}
-	c.writeln("begin")
-	c.indent++
-	for _, st := range fun.Body {
-		if err := c.compileStmt(st); err != nil {
-			return err
+			c.writeln(fmt.Sprintf("var %s: %s;", sanitizeName(n), vars[n]))
 		}
 	}
+	c.buf.Write(body.Bytes())
 	c.indent--
 	c.writeln("end;")
 

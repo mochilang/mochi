@@ -133,6 +133,20 @@ Run all tests with:
 go test ./compile/pas
 ```
 
+## Supported features
+
+Despite its small scope, the Pascal backend can translate a few core language
+constructs:
+
+- Integer, float, string and boolean literals
+- Basic arithmetic and boolean operations
+- `let`/`var` declarations and assignments
+- `if`, `for` and `while` control flow
+- Struct types and simple record literals
+- Function definitions and calls
+- List and map literals with indexing
+- Package declarations and importing of local packages
+
 ## Unsupported features
 
 The Pascal backend only implements a minimal subset of Mochi. Features not yet
@@ -143,9 +157,8 @@ supported include:
 - Agents, streams and the `emit` keyword
 - Generative model blocks (`generate` and `model`)
 - The foreign function interface (`import`/`extern`)
-- Package imports
 - Dataset helpers (`fetch`, `load`, `save`)
 - Logic programming constructs (`fact`, `rule`, `query`)
-- Package declarations (`package`)
 - Anonymous function literals (`fun` expressions)
 - Methods on types
+- Function types and first-class functions
