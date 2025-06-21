@@ -161,15 +161,16 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Dataset helpers `_load` and `_save` supporting CSV, TSV, JSON, JSONL and YAML
 - Package declarations and imports
 - Basic stream handling with `on` and `emit`
+- Agent declarations with `intent` blocks
 - Placeholder generative helpers `_genText`, `_genEmbed` and `_genStruct`
 - Test blocks with `expect`
 
 ### Unsupported features
 
 - The backend is still incomplete. Notable gaps include:
- - Outer joins in dataset queries
- - Agent declarations and intent blocks
+- Outer joins in dataset queries
 - Logic programming constructs (`fact`, `rule`, `query`)
+- Foreign language imports (e.g. `import "foo" from go`)
 - Foreign function interface and extern objects
 - Full LLM integration for `_genText` and `_genStruct`
 - Concurrency primitives like `spawn` and channels

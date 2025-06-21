@@ -485,6 +485,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Stream != nil:
 		return c.compileStreamDecl(s.Stream)
+	case s.Agent != nil:
+		return c.compileAgentDecl(s.Agent)
 	case s.On != nil:
 		return c.compileOnHandler(s.On)
 	case s.Emit != nil:
@@ -1354,6 +1356,167 @@ func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
 	}
 	c.writeln(fmt.Sprintf("_models[%q] = new Dictionary<string, object> { %s };", m.Name, strings.Join(parts, ", ")))
 	return nil
+}
+
+func (c *Compiler) compileAgentDecl(a *parser.AgentDecl) error {
+	st, ok := c.env.GetStruct(a.Name)
+	if !ok {
+		return fmt.Errorf("unknown agent: %s", a.Name)
+	}
+	name := sanitizeName(a.Name)
+	baseEnv := types.NewEnv(c.env)
+	for _, fn := range st.Order {
+		baseEnv.SetVar(fn, st.Fields[fn], true)
+	}
+
+	c.writeln(fmt.Sprintf("class %s {", name))
+	c.indent++
+	c.use("_agent")
+	c.writeln("public _Agent Agent;")
+	for _, fn := range st.Order {
+		typ := csTypeOf(st.Fields[fn])
+		if typ == "" {
+			typ = "dynamic"
+		}
+		c.writeln(fmt.Sprintf("public %s %s;", typ, sanitizeName(fn)))
+	}
+	c.writeln(fmt.Sprintf("public %s() {", name))
+	c.indent++
+	c.writeln(fmt.Sprintf("Agent = new _Agent(%q);", a.Name))
+	orig := c.env
+	c.env = baseEnv
+	for _, blk := range a.Body {
+		switch {
+		case blk.Let != nil:
+			val := "null"
+			if blk.Let.Value != nil {
+				v, err := c.compileExpr(blk.Let.Value)
+				if err != nil {
+					c.env = orig
+					return err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(blk.Let.Name), val))
+		case blk.Var != nil:
+			val := "null"
+			if blk.Var.Value != nil {
+				v, err := c.compileExpr(blk.Var.Value)
+				if err != nil {
+					c.env = orig
+					return err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(blk.Var.Name), val))
+		}
+	}
+	c.env = orig
+	handlerID := 0
+	for _, blk := range a.Body {
+		if blk.On != nil {
+			streamVar := "_" + sanitizeName(blk.On.Stream) + "Stream"
+			c.writeln(fmt.Sprintf("Agent.On(%s, _on%d);", streamVar, handlerID))
+			handlerID++
+		}
+	}
+	for _, blk := range a.Body {
+		if blk.Intent != nil {
+			mname := sanitizeName(blk.Intent.Name)
+			c.writeln(fmt.Sprintf("Agent.RegisterIntent(%q, %s);", blk.Intent.Name, mname))
+		}
+	}
+	c.writeln("Agent.Start();")
+	c.indent--
+	c.writeln("}")
+
+	handlerID = 0
+	for _, blk := range a.Body {
+		switch {
+		case blk.Intent != nil:
+			if err := c.compileAgentIntent(name, baseEnv, blk.Intent); err != nil {
+				return err
+			}
+		case blk.On != nil:
+			if _, err := c.compileAgentOn(name, baseEnv, blk.On, handlerID); err != nil {
+				return err
+			}
+			handlerID++
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	c.writeln(fmt.Sprintf("static %s New%s() {", name, name))
+	c.indent++
+	c.writeln(fmt.Sprintf("return new %s();", name))
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	return nil
+}
+
+func (c *Compiler) compileAgentIntent(agentName string, env *types.Env, in *parser.IntentDecl) error {
+	st, _ := c.env.GetStruct(agentName)
+	ft := st.Methods[in.Name].Type
+	name := sanitizeName(in.Name)
+	params := make([]string, len(in.Params))
+	child := types.NewEnv(env)
+	for i, p := range in.Params {
+		typ := "dynamic"
+		if i < len(ft.Params) {
+			typ = csTypeOf(ft.Params[i])
+		}
+		pname := sanitizeName(p.Name)
+		params[i] = fmt.Sprintf("%s %s", typ, pname)
+		child.SetVar(p.Name, ft.Params[i], true)
+	}
+	ret := "dynamic"
+	if rt := csTypeOf(ft.Return); rt != "" {
+		ret = rt
+	}
+	c.writeln(fmt.Sprintf("public %s %s(%s) {", ret, name, strings.Join(params, ", ")))
+	orig := c.env
+	c.env = child
+	c.indent++
+	for _, s := range in.Body {
+		if err := c.compileStmt(s); err != nil {
+			c.env = orig
+			return err
+		}
+	}
+	c.indent--
+	c.env = orig
+	c.writeln("}")
+	c.writeln("")
+	return nil
+}
+
+func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.OnHandler, id int) (string, error) {
+	st, ok := c.env.GetStream(h.Stream)
+	if !ok {
+		return "", fmt.Errorf("unknown stream: %s", h.Stream)
+	}
+	fname := fmt.Sprintf("_on%d", id)
+	c.writeln(fmt.Sprintf("void %s(%s ev) {", fname, sanitizeName(st.Name)))
+	alias := sanitizeName(h.Alias)
+	child := types.NewEnv(env)
+	child.SetVar(h.Alias, st, true)
+	orig := c.env
+	c.env = child
+	c.indent++
+	c.writeln(fmt.Sprintf("var %s = ev;", alias))
+	for _, stmt := range h.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.indent--
+	c.env = orig
+	c.writeln("}")
+	c.writeln("")
+	return fname, nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
