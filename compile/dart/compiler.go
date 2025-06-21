@@ -1631,6 +1631,8 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		opts = w
 	}
 	c.imports["dart:io"] = true
+	c.imports["dart:convert"] = true
+	c.imports["package:yaml/yaml.dart"] = true
 	c.use("_load")
 	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
 }
@@ -1653,6 +1655,8 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		opts = w
 	}
 	c.imports["dart:io"] = true
+	c.imports["dart:convert"] = true
+	c.imports["package:yaml/yaml.dart"] = true
 	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
