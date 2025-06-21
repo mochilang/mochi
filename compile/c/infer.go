@@ -20,42 +20,62 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 	for _, op := range b.Right {
 		rt := c.inferPostfixType(op.Right)
 		switch op.Op {
-		case "+", "-", "*", "/", "%", "union", "except", "intersect":
-			if isNumber(t) && isNumber(rt) {
-				if isFloat(t) || isFloat(rt) {
-					t = types.FloatType{}
-				} else {
-					t = types.IntType{}
-				}
-				continue
-			}
-			if op.Op == "+" || op.Op == "union" || op.Op == "except" || op.Op == "intersect" {
-				if llist, ok := t.(types.ListType); ok {
-					if rlist, ok := rt.(types.ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
-						t = llist
-						continue
-					}
-				}
-				if isString(t) && isString(rt) {
-					t = types.StringType{}
-					continue
-				}
-			}
-			t = types.AnyType{}
-		case "==", "!=", "<", "<=", ">", ">=":
-			t = types.BoolType{}
-		default:
-			t = types.AnyType{}
-		}
+               case "+", "-", "*", "/", "%", "union", "except", "intersect":
+                        if isNumber(t) && isNumber(rt) {
+                                if isFloat(t) || isFloat(rt) {
+                                        t = types.FloatType{}
+                                } else {
+                                        t = types.IntType{}
+                                }
+                                continue
+                        }
+                        if op.Op == "+" || op.Op == "union" || op.Op == "except" || op.Op == "intersect" {
+                                if llist, ok := t.(types.ListType); ok {
+                                        if rlist, ok := rt.(types.ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
+                                                t = llist
+                                                continue
+                                        }
+                                }
+                                if isString(t) && isString(rt) {
+                                        t = types.StringType{}
+                                        continue
+                                }
+                        }
+                        t = types.AnyType{}
+                case "==", "!=", "<", "<=", ">", ">=":
+                        t = types.BoolType{}
+               case "&&", "||":
+                       if _, ok := t.(types.BoolType); ok {
+                               if _, ok2 := rt.(types.BoolType); ok2 {
+                                       t = types.BoolType{}
+                                       continue
+                               }
+                       }
+                       t = types.AnyType{}
+                default:
+                        t = types.AnyType{}
+                }
 	}
 	return t
 }
 
 func (c *Compiler) inferUnaryType(u *parser.Unary) types.Type {
-	if u == nil {
-		return types.AnyType{}
-	}
-	return c.inferPostfixType(u.Value)
+        if u == nil {
+                return types.AnyType{}
+        }
+        t := c.inferPostfixType(u.Value)
+        for i := len(u.Ops) - 1; i >= 0; i-- {
+                op := u.Ops[i]
+                switch op {
+                case "!":
+                        t = types.BoolType{}
+                case "-":
+                        if !isNumber(t) {
+                                t = types.AnyType{}
+                        }
+                }
+        }
+        return t
 }
 
 func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
