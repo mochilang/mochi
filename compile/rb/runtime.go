@@ -158,20 +158,12 @@ end`
 end`
 
 	helperGroupBy = `def _group_by(src, keyfn)
-  groups = {}
-  order = []
-  src.each do |it|
-    key = keyfn.call(it)
-    ks = key.to_s
-    g = groups[ks]
-    unless g
-      g = _Group.new(key)
-      groups[ks] = g
-      order << ks
-    end
-    g.Items << it
-  end
-  order.map { |k| groups[k] }
+grouped = src.group_by { |it| keyfn.call(it) }
+grouped.map do |k, items|
+g = _Group.new(k)
+g.Items.concat(items)
+g
+end
 end`
 )
 
