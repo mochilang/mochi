@@ -22,6 +22,7 @@ type Compiler struct {
 	imports      map[string]bool
 	packages     map[string]bool
 	structs      map[string]bool
+	agents       map[string]bool
 	handlerCount int
 	helpers      map[string]bool
 }
@@ -29,7 +30,7 @@ type Compiler struct {
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, imports: make(map[string]bool), packages: make(map[string]bool),
-		structs: make(map[string]bool), helpers: make(map[string]bool)}
+		structs: make(map[string]bool), agents: make(map[string]bool), helpers: make(map[string]bool)}
 }
 
 // Compile returns Dart source implementing prog.
@@ -38,6 +39,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.imports = make(map[string]bool)
 	c.packages = make(map[string]bool)
 	c.structs = make(map[string]bool)
+	c.agents = make(map[string]bool)
 	c.helpers = make(map[string]bool)
 	c.handlerCount = 0
 
@@ -154,6 +156,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileOnHandler(s.On)
 	case s.Emit != nil:
 		return c.compileEmit(s.Emit)
+	case s.Agent != nil:
+		return c.compileAgentDecl(s.Agent)
 	case s.Import != nil:
 		if s.Import.Lang == nil {
 			return c.compilePackageImport(s.Import)
@@ -1028,6 +1032,164 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	body := indentBlock(sub.buf.String(), 1)
 	return fmt.Sprintf("(%s) {\n%s}", strings.Join(params, ", "), body), nil
+}
+
+func (c *Compiler) compileAgentDecl(a *parser.AgentDecl) error {
+	st, ok := c.env.GetStruct(a.Name)
+	if !ok {
+		return fmt.Errorf("unknown agent: %s", a.Name)
+	}
+	name := sanitizeName(a.Name)
+	if c.agents[name] {
+		return nil
+	}
+	c.agents[name] = true
+
+	baseEnv := types.NewEnv(c.env)
+	for _, fn := range st.Order {
+		baseEnv.SetVar(fn, st.Fields[fn], true)
+	}
+
+	c.writeln(fmt.Sprintf("class %s {", name))
+	c.indent++
+	c.writeln("_Agent Agent;")
+	for _, fn := range st.Order {
+		typ := dartType(st.Fields[fn])
+		if typ == "" {
+			typ = "dynamic"
+		}
+		c.writeln(fmt.Sprintf("%s %s;", typ, sanitizeName(fn)))
+	}
+	c.writeln(fmt.Sprintf("%s() {", name))
+	c.indent++
+	c.use("_Agent")
+	c.writeln(fmt.Sprintf("Agent = _Agent('%s');", a.Name))
+	orig := c.env
+	c.env = baseEnv
+	for _, blk := range a.Body {
+		switch {
+		case blk.Let != nil:
+			val := "null"
+			if blk.Let.Value != nil {
+				v, err := c.compileExpr(blk.Let.Value)
+				if err != nil {
+					c.env = orig
+					return err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(blk.Let.Name), val))
+		case blk.Var != nil:
+			val := "null"
+			if blk.Var.Value != nil {
+				v, err := c.compileExpr(blk.Var.Value)
+				if err != nil {
+					c.env = orig
+					return err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(blk.Var.Name), val))
+		}
+	}
+	c.env = orig
+	handlerID := 0
+	for _, blk := range a.Body {
+		if blk.On != nil {
+			streamVar := "_" + sanitizeName(blk.On.Stream) + "Stream"
+			c.writeln(fmt.Sprintf("Agent.on(%s, _on%d);", streamVar, handlerID))
+			handlerID++
+		}
+	}
+	for _, blk := range a.Body {
+		if blk.Intent != nil {
+			mname := sanitizeName(blk.Intent.Name)
+			c.writeln(fmt.Sprintf("Agent.registerIntent('%s', %s);", blk.Intent.Name, mname))
+		}
+	}
+	c.writeln("Agent.start();")
+	c.indent--
+	c.writeln("}")
+
+	handlerID = 0
+	for _, blk := range a.Body {
+		switch {
+		case blk.Intent != nil:
+			if err := c.compileAgentIntent(name, baseEnv, blk.Intent); err != nil {
+				return err
+			}
+		case blk.On != nil:
+			if _, err := c.compileAgentOn(name, baseEnv, blk.On, handlerID); err != nil {
+				return err
+			}
+			handlerID++
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	c.writeln(fmt.Sprintf("%s New%s() {", name, name))
+	c.indent++
+	c.writeln(fmt.Sprintf("return %s();", name))
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	return nil
+}
+
+func (c *Compiler) compileAgentIntent(agentName string, env *types.Env, in *parser.IntentDecl) error {
+	name := sanitizeName(in.Name)
+	c.writeln(fmt.Sprintf("dynamic %s(%s) {", name, strings.Join(paramNames(in.Params), ", ")))
+	child := types.NewEnv(env)
+	orig := c.env
+	c.env = child
+	c.indent++
+	for _, s := range in.Body {
+		if err := c.compileStmt(s); err != nil {
+			c.env = orig
+			return err
+		}
+	}
+	c.indent--
+	c.env = orig
+	c.writeln("}")
+	c.writeln("")
+	return nil
+}
+
+func paramNames(params []*parser.Param) []string {
+	names := make([]string, len(params))
+	for i, p := range params {
+		names[i] = sanitizeName(p.Name)
+	}
+	return names
+}
+
+func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.OnHandler, id int) (string, error) {
+	st, ok := c.env.GetStream(h.Stream)
+	if !ok {
+		return "", fmt.Errorf("unknown stream: %s", h.Stream)
+	}
+	fname := fmt.Sprintf("_on%d", id)
+	c.writeln(fmt.Sprintf("void %s(%s ev) {", fname, sanitizeName(st.Name)))
+	alias := sanitizeName(h.Alias)
+	child := types.NewEnv(env)
+	child.SetVar(h.Alias, st, true)
+	orig := c.env
+	c.env = child
+	c.indent++
+	c.writeln(fmt.Sprintf("var %s = ev;", alias))
+	for _, stmt := range h.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.indent--
+	c.env = orig
+	c.writeln("}")
+	c.writeln("")
+	return fname, nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {

@@ -244,13 +244,14 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Set operations with `union`, `union all`, `except` and `intersect`
 - Built‑ins like `fetch`, `load`, `save` and placeholder `generate`
 - Stream declarations and event handling with `on`/`emit`
+- Agent declarations with `intent` blocks
 
 ### Unsupported features
 
 - Foreign function interface bindings
-- Long‑lived agents with `intent` blocks
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Model declarations
 - `generate` expressions return placeholder values (LLM integration pending)
 - Concurrency primitives like `spawn` and channels
 - Reflection or macro facilities
+- Cross-language imports (e.g. `import python "math" as m`)
