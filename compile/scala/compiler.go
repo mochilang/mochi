@@ -742,17 +742,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					expr = fmt.Sprintf("(%s + %s)", l, r)
 				}
 			case "union_all":
-				c.use("_union_all")
-				expr = fmt.Sprintf("_union_all(%s, %s)", l, r)
+				expr = fmt.Sprintf("(%s ++ %s)", l, r)
 			case "union":
-				c.use("_union")
-				expr = fmt.Sprintf("_union(%s, %s)", l, r)
+				expr = fmt.Sprintf("(%s ++ %s).distinct", l, r)
 			case "except":
-				c.use("_except")
-				expr = fmt.Sprintf("_except(%s, %s)", l, r)
+				expr = fmt.Sprintf("%s.filterNot(%s.contains)", l, r)
 			case "intersect":
-				c.use("_intersect")
-				expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
+				expr = fmt.Sprintf("%s.filter(%s.contains).distinct", l, r)
 			default:
 				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 			}

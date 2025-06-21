@@ -99,23 +99,6 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
         ct.runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[T]
 }
 `
-	helperUnionAll = `def _union_all[T](a: Seq[T], b: Seq[T]): Seq[T] = a ++ b
-`
-	helperUnion = `def _union[T](a: Seq[T], b: Seq[T]): Seq[T] = {
-        val res = scala.collection.mutable.ArrayBuffer[T]()
-        res ++= a
-        for (it <- b) { if (!res.contains(it)) res.append(it) }
-        res.toSeq
-}
-`
-	helperExcept = `def _except[T](a: Seq[T], b: Seq[T]): Seq[T] = a.filterNot(b.contains)
-`
-	helperIntersect = `def _intersect[T](a: Seq[T], b: Seq[T]): Seq[T] = {
-        val res = scala.collection.mutable.ArrayBuffer[T]()
-        for (it <- a) { if (b.contains(it) && !res.contains(it)) res.append(it) }
-        res.toSeq
-}
-`
 )
 
 var helperMap = map[string]string{
@@ -130,10 +113,6 @@ var helperMap = map[string]string{
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
-	"_union_all":   helperUnionAll,
-	"_union":       helperUnion,
-	"_except":      helperExcept,
-	"_intersect":   helperIntersect,
 }
 
 func (c *Compiler) use(name string) {
