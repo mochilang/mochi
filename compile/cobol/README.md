@@ -166,6 +166,7 @@ constructs:
   basic `reduce` over lists using `add`
 - List concatenation with `+` and indexing (including negative indices)
 - Basic string slicing with constant start and end indices
+- List slicing with variable start and end indices
 - Simple `match` expressions with literal patterns
 - `expect` and `test` blocks
 
@@ -201,7 +202,8 @@ unsupported include:
   list, a string literal, or a fixed list variable
 - Iteration over map key/value pairs
 - Range loops with step values other than `1`
-- List slicing with constant start and end indices (variable index slices remain unsupported)
+- List slicing with open-ended ranges (omitting the start or end index)
+- Negative indices are only supported when specified as integer literals
 - Using the `range` helper to generate sequences
 - Dynamic lists whose length is not known at compile time
 - Builtin functions other than `print`, `len`, `add`, `twoSum` and `addTwoNumbers`
