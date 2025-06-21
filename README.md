@@ -667,7 +667,8 @@ The Zig backend currently supports only a minimal subset of Mochi. Missing featu
 
 - Dataset query expressions (`from ... sort ... select`)
 - Advanced string slicing and indexing on assignment
-- Iteration over map key/value pairs
+- Iteration over map key/value pairs (only key iteration implemented)
+- Python-style loops like `for i in range(n)`
 - Functions with multiple return values
 - Generic type parameters
 - Nested list types beyond one dimension

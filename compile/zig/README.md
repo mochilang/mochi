@@ -179,7 +179,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
         if name == "len" && len(call.Args) == 1 {
                 arg, err := c.compileExpr(call.Args[0], false)
                 ...
-                return arg + ".len", nil
+                if c.isMapExpr(call.Args[0]) {
+                        return fmt.Sprintf("%s.count()", arg), nil
+                }
+                return fmt.Sprintf("(%s).len", arg), nil
         }
         if name == "print" && len(call.Args) == 1 {
                 arg, err := c.compileExpr(call.Args[0], false)
@@ -189,6 +192,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
         ...
 }
 ```
+When applied to maps, `len` and `count` use the container's `count()` method.
 【F:compile/zig/compiler.go†L624-L698】
 
 ### Helpers
@@ -274,7 +278,8 @@ LeetCode solutions:
 * dataset query expressions (`from ... sort ... select`) used by problems that
   operate over CSV-style input
 * advanced string slicing (step values) and indexing on assignment
-* iteration over map key/value pairs
+* iteration over map key/value pairs (only key iteration is implemented)
+* Python-style loops like `for i in range(n)`
 * functions with multiple return values
 * generic type parameters
 * nested list types beyond one dimension

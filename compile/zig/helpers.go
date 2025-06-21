@@ -126,3 +126,9 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	}
 	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
 }
+
+func (c *Compiler) newTmp() string {
+	name := fmt.Sprintf("_tmp%d", c.tmpCount)
+	c.tmpCount++
+	return name
+}
