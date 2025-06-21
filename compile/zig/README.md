@@ -195,6 +195,20 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 When applied to maps, `len` and `count` use the container's `count()` method.
 【F:compile/zig/compiler.go†L624-L698】
 
+### Struct Types
+
+`compileTypeDecl` emits simple Zig structs for `type` declarations and
+`compileStructLiteral` constructs values using field initializers:
+
+```go
+const Person = struct {
+        name: []const u8,
+        age: i32,
+};
+
+let p = Person{ .name = "Ada", .age = 42 };
+```
+
 ### Helpers
 
 Variable declarations with `var` are now supported. Empty list values create a
@@ -282,8 +296,13 @@ LeetCode solutions:
 * functions with multiple return values
 * generic type parameters
 * nested list types beyond one dimension
-* user-defined structs and union types
-* struct literals
+* union type declarations
+* built-in error handling with `try`/`catch`
+* set collections (`set<T>`) and reflection features
+* asynchronous functions (`async`/`await`)
+* the `eval` builtin function
+* YAML dataset loading and saving
+* map membership checks using `in`
 * built-in helpers like `fetch`, `load`, `save` and `generate`
 * logic programming constructs (`fact`, `rule`, `query`)
 * concurrency features such as streams or `spawn`

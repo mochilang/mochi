@@ -17,6 +17,7 @@ type Compiler struct {
 	env               *types.Env
 	tmpCount          int
 	imports           map[string]string
+	structs           map[string]bool
 	needsAvgInt       bool
 	needsAvgFloat     bool
 	needsInListInt    bool
@@ -32,7 +33,7 @@ type Compiler struct {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, imports: map[string]string{}}
+	return &Compiler{env: env, imports: map[string]string{}, structs: map[string]bool{}}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -51,7 +52,16 @@ func (c *Compiler) writeIndent() {
 
 // Compile converts a Mochi program to Zig.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	// compile functions and test blocks first
+	// compile type declarations first
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+	// compile functions and test blocks next
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -311,6 +321,37 @@ func (c *Compiler) compileTest(tb *parser.TestBlock) error {
 	}
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	name := sanitizeName(t.Name)
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("const %s = struct {", name))
+	c.indent++
+	for _, m := range t.Members {
+		if m.Field != nil {
+			typ := c.zigType(m.Field.Type)
+			c.writeln(fmt.Sprintf("%s: %s,", sanitizeName(m.Field.Name), typ))
+			if c.env != nil {
+				st, ok := c.env.GetStruct(t.Name)
+				if !ok {
+					st = types.StructType{Name: t.Name, Fields: map[string]types.Type{}, Order: []string{}, Methods: map[string]types.Method{}}
+				}
+				st.Fields[m.Field.Name] = c.resolveTypeRef(m.Field.Type)
+				st.Order = append(st.Order, m.Field.Name)
+				c.env.SetStruct(t.Name, st)
+			}
+		}
+	}
+	c.indent--
+	c.writeln("};")
 	return nil
 }
 
@@ -864,6 +905,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		return c.compileListLiteral(p.List, !asReturn)
 	case p.Map != nil:
 		return c.compileMapLiteral(p.Map)
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.If != nil:
@@ -1057,6 +1100,18 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	}
 	b.WriteString("break :blk m; }")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value, false)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf(".%s = %s", sanitizeName(f.Name), v)
+	}
+	return fmt.Sprintf("%s{ %s }", sanitizeName(s.Name), strings.Join(fields, ", ")), nil
 }
 
 func isListLiteralExpr(e *parser.Expr) bool {
