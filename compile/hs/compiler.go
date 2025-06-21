@@ -18,6 +18,7 @@ type Compiler struct {
 	usesMap  bool
 	usesTime bool
 	usesJSON bool
+	usesIO   bool
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -66,6 +67,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.usesMap = false
 	c.usesJSON = false
+	c.usesIO = false
 
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -107,7 +109,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	}
 	header.WriteString("\n")
-	header.WriteString(runtime)
+	header.WriteString(runtimeBase)
+	if c.usesIO {
+		header.WriteString(runtimeIO)
+	}
+	if c.usesTime {
+		header.WriteString(runtimeTime)
+	}
+	if c.usesJSON {
+		header.WriteString(runtimeJSON)
+	}
 	header.WriteString("\n\n")
 
 	code := append(header.Bytes(), c.buf.Bytes()...)
@@ -162,11 +173,12 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			return err
 		}
 		if s.For.RangeEnd != nil {
+			c.usesIO = true
 			end, err := c.compileExpr(s.For.RangeEnd)
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("let _ = forLoop %s %s (\\%s -> Nothing <$ (%s)) in return ()", src, end, name, body))
+			c.writeln(fmt.Sprintf("forLoopIO %s %s (\\%s -> Nothing <$ (%s)) >> return ()", src, end, name, body))
 		} else {
 			c.writeln(fmt.Sprintf("mapM_ (\\%s -> %s) %s", name, body, src))
 		}
@@ -175,11 +187,12 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
+		c.usesIO = true
 		cond, err := c.compileExpr(s.While.Cond)
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("let _ = whileLoop (\\() -> %s) (\\() -> Nothing <$ (%s)) in return ()", cond, body))
+		c.writeln(fmt.Sprintf("whileLoopIO (return (%s)) (Nothing <$ (%s)) >> return ()", cond, body))
 	default:
 		return fmt.Errorf("unsupported statement in main")
 	}

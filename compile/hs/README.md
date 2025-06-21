@@ -87,18 +87,25 @@ toolchain. Run them with:
 go test ./compile/hs -tags slow
 ```
 
-## Notes
+## Supported Features
 
-The Haskell backend currently supports a limited subset of Mochi: function
-definitions, if/else expressions, basic loops, lists, maps and a handful of
-built-in functions (`len`, `count`, `avg`, `str`, `print`, `now`, `json`). Map
-access relies on `Data.Map` when needed. Variable names are sanitised to avoid
-conflicts with Haskell keywords.
+The backend covers a modest portion of the language that is sufficient for
+simple scripts:
 
-## Status
+* Function definitions and calls
+* If/else expressions
+* Range and collection `for` loops
+* `while` loops
+* Lists and maps (using `Data.Map` when needed)
+* Basic built-ins: `len`, `count`, `avg`, `str`, `print`, `input`, `now`, `json`
 
-While useful for experimentation, the Haskell backend does not yet implement the
-full Mochi language. Unsupported features include:
+Runtime helpers such as `_now` and `_json` are only embedded when the program
+uses them. Loops executed in `main` use `forLoopIO`/`whileLoopIO` so side effects
+run correctly.
+
+## Unsupported Features
+
+Most of Mochi is not yet available:
 
 * `match` expressions and union types
 * Dataset query syntax like `from ... sort by ...`
@@ -110,3 +117,7 @@ full Mochi language. Unsupported features include:
 * Package imports and module system
 * Dataset `load`/`save` operations
 * `test` blocks and expectations
+* Concurrency primitives like `spawn` and channels
+* Error handling with `try`/`catch`
+* Asynchronous functions (`async`/`await`)
+* Generic type parameters and reflection features

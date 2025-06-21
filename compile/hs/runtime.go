@@ -1,6 +1,6 @@
 package hscode
 
-const runtime = `
+const runtimeBase = `
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
 forLoop start end f = go start
   where
@@ -8,15 +8,6 @@ forLoop start end f = go start
             case f i of
               Just v -> Just v
               Nothing -> go (i + 1)
-         | otherwise = Nothing
-
-whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
-whileLoop cond body = go ()
-  where
-    go _ | cond () =
-            case body () of
-              Just v -> Just v
-              Nothing -> go ()
          | otherwise = Nothing
 
 avg :: Real a => [a] -> Double
@@ -32,10 +23,47 @@ _indexString s i =
 
 _input :: IO String
 _input = getLine
+`
 
+const runtimeIO = `
+forLoopIO :: Int -> Int -> (Int -> IO (Maybe a)) -> IO (Maybe a)
+forLoopIO start end f = go start
+  where
+    go i | i < end = do
+            r <- f i
+            case r of
+              Just v -> pure (Just v)
+              Nothing -> go (i + 1)
+         | otherwise = pure Nothing
+
+whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
+whileLoop cond body = go ()
+  where
+    go _ | cond () =
+            case body () of
+              Just v -> Just v
+              Nothing -> go ()
+         | otherwise = Nothing
+
+whileLoopIO :: IO Bool -> IO (Maybe a) -> IO (Maybe a)
+whileLoopIO cond body = go
+  where
+    go = do
+      c <- cond
+      if c then do
+            r <- body
+            case r of
+              Just v -> pure (Just v)
+              Nothing -> go
+         else pure Nothing
+`
+
+const runtimeTime = `
 _now :: IO Int
 _now = fmap round getPOSIXTime
+`
 
+const runtimeJSON = `
 _json :: Aeson.ToJSON a => a -> IO ()
 _json v = BSL.putStrLn (Aeson.encode v)
 `

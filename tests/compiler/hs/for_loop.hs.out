@@ -26,7 +26,38 @@ _indexString s i =
 _input :: IO String
 _input = getLine
 
+forLoopIO :: Int -> Int -> (Int -> IO (Maybe a)) -> IO (Maybe a)
+forLoopIO start end f = go start
+  where
+    go i | i < end = do
+            r <- f i
+            case r of
+              Just v -> pure (Just v)
+              Nothing -> go (i + 1)
+         | otherwise = pure Nothing
+
+whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
+whileLoop cond body = go ()
+  where
+    go _ | cond () =
+            case body () of
+              Just v -> Just v
+              Nothing -> go ()
+         | otherwise = Nothing
+
+whileLoopIO :: IO Bool -> IO (Maybe a) -> IO (Maybe a)
+whileLoopIO cond body = go
+  where
+    go = do
+      c <- cond
+      if c then do
+            r <- body
+            case r of
+              Just v -> pure (Just v)
+              Nothing -> go
+         else pure Nothing
+
 
 main :: IO ()
 main = do
-    let _ = forLoop 1 4 (\i -> Nothing <$ (print (i))) in return ()
+    forLoopIO 1 4 (\i -> Nothing <$ (print (i))) >> return ()
