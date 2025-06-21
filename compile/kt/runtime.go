@@ -210,6 +210,13 @@ const (
     fun register(handler: (T) -> Unit) { handlers.add(handler) }
 }`
 
+	helperExtern = `object ExternRegistry {
+    private val externObjects = mutableMapOf<String, Any?>()
+    fun registerExtern(name: String, obj: Any?) { externObjects[name] = obj }
+    fun _externGet(name: String): Any? =
+        externObjects[name] ?: throw RuntimeException("extern object not registered: $name")
+}`
+
 	helperWaitAll = `fun _waitAll() {}`
 )
 
@@ -223,6 +230,7 @@ var helperMap = map[string]string{
 	"_genStruct": helperGenStruct,
 	"_fetch":     helperFetch,
 	"_json":      helperJson,
+	"_extern":    helperExtern,
 	"_unionAll":  helperUnionAll,
 	"_union":     helperUnion,
 	"_except":    helperExcept,
