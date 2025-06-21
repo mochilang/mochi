@@ -337,5 +337,7 @@ support:
 - Generic types and functions
 - Set collections and related operations
 - Reflection or macro facilities
+- YAML dataset loading and saving
+- Full LLM integration for `_genText`, `_genEmbed` and `_genStruct`
 
 

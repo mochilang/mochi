@@ -17,7 +17,25 @@ const (
     var delim = (opts?.get("delimiter") as? String)?.firstOrNull() ?: ','
     if (format == "tsv") delim = '\t'
     val text = if (path == null || path == "-" || path == "") generateSequence(::readLine).joinToString("\n") else java.io.File(path).readText()
-    if (format != "csv") return emptyList()
+    if (format == "jsonl") {
+        val eng = javax.script.ScriptEngineManager().getEngineByName("javascript")
+        val out = mutableListOf<Map<String, Any>>()
+        for (line in text.trim().split(Regex("\\r?\\n"))) {
+            if (line.isBlank()) continue
+            val obj = eng.eval("Java.asJSONCompatible($line)") as java.util.Map<*, *>
+            out.add(obj as Map<String, Any>)
+        }
+        return out
+    }
+    if (format == "json") {
+        val eng = javax.script.ScriptEngineManager().getEngineByName("javascript")
+        val obj = eng.eval("Java.asJSONCompatible($text)")
+        when (obj) {
+            is java.util.Map<*, *> -> return listOf(obj as Map<String, Any>)
+            is java.util.List<*> -> return obj.map { it as Map<String, Any> }
+        }
+        return emptyList()
+    }
     val lines = text.trim().split(Regex("\\r?\\n")).filter { it.isNotEmpty() }
     if (lines.isEmpty()) return emptyList()
     val headers = if (header) lines[0].split(delim) else List(lines[0].split(delim).size) { "c$it" }
@@ -40,15 +58,29 @@ const (
     var header = opts?.get("header") as? Boolean ?: false
     var delim = (opts?.get("delimiter") as? String)?.firstOrNull() ?: ','
     if (format == "tsv") delim = '\t'
-    if (format != "csv") return
-    val headers = if (rows.isNotEmpty()) rows[0].keys.sorted() else emptyList()
-    val lines = mutableListOf<String>()
-    if (header) lines.add(headers.joinToString(delim.toString()))
-    for (row in rows) {
-        lines.add(headers.joinToString(delim.toString()) { row[it].toString() })
+    fun encode(x: Any?): String = when (x) {
+        null -> "null"
+        is String -> \"""${x.replace("\"", "\\\"")}\"""
+        is Int, is Double, is Boolean -> x.toString()
+        is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
+        is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e -> "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value) }
+        else -> \"""${x.toString().replace("\"", "\\\"")}\"""
     }
-        val text = lines.joinToString("\n") + "\n"
-        if (path == null || path == "-" || path == "") print(text) else java.io.File(path).writeText(text)
+    val text = when (format) {
+        "jsonl" -> rows.joinToString("") { encode(it) + "\n" }
+        "json" -> if (rows.size == 1) encode(rows[0]) + "\n" else rows.joinToString(prefix = "[", postfix = "]\n") { encode(it) }
+        else -> {
+            if (format != "csv") return
+            val headers = if (rows.isNotEmpty()) rows[0].keys.sorted() else emptyList()
+            val lines = mutableListOf<String>()
+            if (header) lines.add(headers.joinToString(delim.toString()))
+            for (row in rows) {
+                lines.add(headers.joinToString(delim.toString()) { row[it].toString() })
+            }
+            lines.joinToString("\n") + "\n"
+        }
+    }
+    if (path == null || path == "-" || path == "") print(text) else java.io.File(path).writeText(text)
 }`
 
 	helperEval = `fun _eval(code: String): Any? {
