@@ -1,0 +1,8 @@
+import "./lib/cloud/topic" as topic
+
+let t = topic.new<string>()
+
+topic.subscribe(t, fun(msg: string) { print("sub1", msg) })
+topic.subscribe(t, fun(msg: string) { print("sub2", msg) })
+
+topic.publish(t, "ping")

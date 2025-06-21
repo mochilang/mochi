@@ -1,0 +1,22 @@
+package bucket
+
+export type Bucket {
+  name: string,
+  objects: map<string, string>
+}
+
+export fun new(name: string): Bucket {
+  return Bucket { name: name, objects: {} }
+}
+
+export fun Bucket.put(b: Bucket, key: string, value: string) {
+  b.objects[key] = value
+}
+
+export fun Bucket.get(b: Bucket, key: string): string? {
+  return b.objects[key]
+}
+
+export fun Bucket.delete(b: Bucket, key: string) {
+  delete b.objects[key]
+}

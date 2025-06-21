@@ -1,0 +1,22 @@
+package queue
+
+export type Queue<T> {
+  items: list<T>
+}
+
+export fun new<T>(): Queue<T> {
+  return Queue<T> { items: [] }
+}
+
+export fun Queue<T>.push(q: Queue<T>, item: T) {
+  q.items = q.items + [item]
+}
+
+export fun Queue<T>.pop(q: Queue<T>): T? {
+  if len(q.items) == 0 {
+    return null
+  }
+  let first = q.items[0]
+  q.items = q.items[1:]
+  return first
+}

@@ -1,0 +1,7 @@
+import "./lib/cloud/queue" as queue
+
+let q = queue.new<string>()
+queue.push(q, "hello")
+queue.push(q, "world")
+print(queue.pop(q))
+print(queue.pop(q))

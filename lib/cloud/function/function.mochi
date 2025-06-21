@@ -1,0 +1,13 @@
+package function
+
+export type Function {
+  handler: fun(any): any
+}
+
+export fun new(handler: fun(any): any): Function {
+  return Function { handler: handler }
+}
+
+export fun Function.invoke(f: Function, payload: any): any {
+  return f.handler(payload)
+}
