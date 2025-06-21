@@ -87,6 +87,20 @@ func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, lambdas: []string{}, structs: map[string]bool{}, externObjects: []string{}}
 }
 
+func (c *Compiler) compileExternType(et *parser.ExternTypeDecl) error {
+	name := sanitizeName(et.Name)
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("typedef struct %s %s;", name, name))
+	if c.env != nil {
+		st := types.StructType{Name: et.Name, Fields: map[string]types.Type{}, Order: nil}
+		c.env.SetStruct(et.Name, st)
+	}
+	return nil
+}
+
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteByte('\t')
@@ -160,6 +174,11 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		} else if s.ExternType != nil {
+			if err := c.compileExternType(s.ExternType); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		}
 	}
 	for _, s := range prog.Statements {
@@ -168,7 +187,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			continue
 		}
 		if s.ExternType != nil {
-			// extern type declarations have no effect
+			// extern types have no runtime effect beyond the typedef
 			continue
 		}
 		if s.Fun != nil {
@@ -471,8 +490,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		// imports are ignored at code generation time
 		return nil
 	case s.ExternType != nil:
-		// extern type declarations have no runtime effect
-		return nil
+		return c.compileExternType(s.ExternType)
 	case s.ExternObject != nil:
 		// extern objects have no runtime effect
 		return nil
