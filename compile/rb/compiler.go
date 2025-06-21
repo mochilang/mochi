@@ -461,6 +461,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 		specialLeft := len(q.Joins) == 1 && joinSides[0] == "left"
+		specialRight := len(q.Joins) == 1 && joinSides[0] == "right"
+		specialOuter := len(q.Joins) == 1 && joinSides[0] == "outer"
 		sel, err := c.compileExpr(q.Select)
 		if err != nil {
 			return "", err
@@ -512,6 +514,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("%sif %s\n", indent, joinOns[0]))
 			indent += "\t"
 			b.WriteString(fmt.Sprintf("%smatched = true\n", indent))
+		} else if specialRight {
+			b.WriteString(fmt.Sprintf("%smatched = false\n", indent))
+			j := q.Joins[0]
+			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(j.Var), joinSrcs[0]))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, iter, src))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%sif %s\n", indent, joinOns[0]))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%smatched = true\n", indent))
+		} else if specialOuter {
+			b.WriteString(fmt.Sprintf("%smatched = false\n", indent))
+			j := q.Joins[0]
+			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(j.Var), joinSrcs[0]))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%sif %s\n", indent, joinOns[0]))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%smatched = true\n", indent))
 		} else {
 			for i, j := range q.Joins {
 				b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(j.Var), joinSrcs[i]))
@@ -545,6 +565,83 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("%sif !matched\n", indent))
 			indent += "\t"
 			b.WriteString(fmt.Sprintf("%s%s = nil\n", indent, sanitizeName(q.Joins[0].Var)))
+			if q.Where != nil {
+				b.WriteString(fmt.Sprintf("%sif %s\n", indent, condStr))
+				indent += "\t"
+			}
+			if sortVal != "" {
+				b.WriteString(fmt.Sprintf("%s_res << [%s, %s]\n", indent, sortVal, sel))
+			} else {
+				b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+			}
+			if q.Where != nil {
+				indent = indent[:len(indent)-1]
+				b.WriteString(indent + "end\n")
+			}
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+		} else if specialRight {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+			b.WriteString(fmt.Sprintf("%sif !matched\n", indent))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%s%s = nil\n", indent, iter))
+			if q.Where != nil {
+				b.WriteString(fmt.Sprintf("%sif %s\n", indent, condStr))
+				indent += "\t"
+			}
+			if sortVal != "" {
+				b.WriteString(fmt.Sprintf("%s_res << [%s, %s]\n", indent, sortVal, sel))
+			} else {
+				b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+			}
+			if q.Where != nil {
+				indent = indent[:len(indent)-1]
+				b.WriteString(indent + "end\n")
+			}
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+		} else if specialOuter {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+			b.WriteString(fmt.Sprintf("%sif !matched\n", indent))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%s%s = nil\n", indent, sanitizeName(q.Joins[0].Var)))
+			if q.Where != nil {
+				b.WriteString(fmt.Sprintf("%sif %s\n", indent, condStr))
+				indent += "\t"
+			}
+			if sortVal != "" {
+				b.WriteString(fmt.Sprintf("%s_res << [%s, %s]\n", indent, sortVal, sel))
+			} else {
+				b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+			}
+			if q.Where != nil {
+				indent = indent[:len(indent)-1]
+				b.WriteString(indent + "end\n")
+			}
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+			// unmatched right side
+			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(q.Joins[0].Var), joinSrcs[0]))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%smatched = false\n", indent))
+			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, iter, src))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%sif %s\n", indent, joinOns[0]))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%smatched = true\n", indent))
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+			b.WriteString(fmt.Sprintf("%sif !matched\n", indent))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%s%s = nil\n", indent, iter))
 			if q.Where != nil {
 				b.WriteString(fmt.Sprintf("%sif %s\n", indent, condStr))
 				indent += "\t"
