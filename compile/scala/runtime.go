@@ -99,6 +99,19 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
         ct.runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[T]
 }
 `
+	helperToJSON = `def _to_json(v: Any): String = v match {
+        case null => "null"
+        case s: String => "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+        case b: Boolean => b.toString
+        case i: Int => i.toString
+        case l: Long => l.toString
+        case d: Double => d.toString
+        case m: scala.collection.Map[_, _] =>
+                m.map{ case (k, v2) => "\"" + k.toString.replace("\"", "\\\"") + "\":" + _to_json(v2) }.mkString("{", ",", "}")
+        case seq: Iterable[_] => seq.map(_to_json).mkString("[", ",", "]")
+        case other => "\"" + other.toString.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+}`
+	helperJSON   = `def _json(v: Any): Unit = println(_to_json(v))`
 	helperPyAttr = `def _pyAttr(module: String, name: String, args: Seq[Any]): Any = {
         import scala.sys.process._
         import scala.util.parsing.json.{JSON, JSONArray}
@@ -142,6 +155,8 @@ var helperMap = map[string]string{
 	"_pyAttr":      helperPyAttr,
 	"_extern":      helperExtern,
 	"_eval":        helperEval,
+	"_to_json":     helperToJSON,
+	"_json":        helperJSON,
 }
 
 func (c *Compiler) use(name string) {

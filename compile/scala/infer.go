@@ -152,6 +152,10 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			return types.StringType{}
 		case "avg":
 			return types.FloatType{}
+		case "now":
+			return types.Int64Type{}
+		case "to_json":
+			return types.StringType{}
 		default:
 			if c.env != nil {
 				if t, err := c.env.GetVar(p.Call.Func); err == nil {
