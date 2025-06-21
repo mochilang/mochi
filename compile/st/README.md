@@ -26,7 +26,8 @@ The backend implements a minimal subset of Mochi:
 - Functions with a single return value
 - Lists and maps with indexing and concatenation
 - Basic `type` declarations compiled to dictionaries
-- Built-ins `print`, `len`, `str`, `count`, `avg`, `input`, `now`, and `json`
+- Built-ins `print`, `len`, `str`, `count`, `avg`, `input`, `now`, `json`,
+  `append`, `eval`, and `reduce`
 
 ### Unsupported features
 
@@ -43,7 +44,8 @@ The following language constructs are not yet handled:
 - Union type declarations
 - Set literals and set operations
 - Concurrency primitives like `spawn` and channels
-- Built-in helpers like `append` and `eval`
 - Event emission with `emit`
 - Intent declarations with `intent`
+- Methods declared inside `type` blocks
+- Functions with multiple return values
 
