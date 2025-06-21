@@ -61,6 +61,17 @@ const (
   let body = resp.Content.ReadAsStringAsync().Result |> box
   Map.ofList [("status", status); ("body", body)]`
 
+	helperGenText = `let _genText (prompt: string) (model: string) (params: Map<string,obj> option) : string =
+  // TODO: integrate with an LLM
+  prompt`
+
+	helperGenEmbed = `let _genEmbed (text: string) (model: string) (params: Map<string,obj> option) : double[] =
+  text |> Seq.map double |> Seq.toArray`
+
+	helperGenStruct = `let _genStruct<'T> (prompt: string) (model: string) (params: Map<string,obj> option) : 'T =
+  // TODO: integrate with an LLM and parse JSON
+  System.Text.Json.JsonSerializer.Deserialize<'T>(prompt)`
+
 	helperToJson = `let rec _to_json (v: obj) : string =
   match v with
   | null -> "null"
@@ -101,6 +112,9 @@ var helperMap = map[string]string{
 	"_run_test":     helperRunTest,
 	"_input":        helperInput,
 	"_fetch":        helperFetch,
+	"_genText":      helperGenText,
+	"_genEmbed":     helperGenEmbed,
+	"_genStruct":    helperGenStruct,
 	"_json_helpers": helperToJson,
 	"_extern":       helperExtern,
 }
