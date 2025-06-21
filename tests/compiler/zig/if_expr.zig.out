@@ -1,0 +1,7 @@
+const std = @import("std");
+
+pub fn main() void {
+	const n: i32 = @as(i32,@intCast(5));
+	const label: []const u8 = if ((n > @as(i32,@intCast(3)))) ("big") else ("small");
+	std.debug.print("{s}\n", .{label});
+}

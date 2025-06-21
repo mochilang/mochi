@@ -228,6 +228,22 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			rType = types.AnyType{}
 		}
 		return rType
+	case p.If != nil:
+		return c.inferIfExprType(p.If)
 	}
 	return types.AnyType{}
+}
+
+func (c *Compiler) inferIfExprType(ie *parser.IfExpr) types.Type {
+	t := c.inferExprType(ie.Then)
+	var elseT types.Type
+	if ie.ElseIf != nil {
+		elseT = c.inferIfExprType(ie.ElseIf)
+	} else if ie.Else != nil {
+		elseT = c.inferExprType(ie.Else)
+	}
+	if elseT != nil && !equalTypes(t, elseT) {
+		return types.AnyType{}
+	}
+	return t
 }

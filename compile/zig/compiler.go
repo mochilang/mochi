@@ -528,6 +528,32 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return expr, nil
 }
 
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond, false)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.compileExpr(ie.Then, false)
+	if err != nil {
+		return "", err
+	}
+	elseVal := "void"
+	if ie.ElseIf != nil {
+		v, err := c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		elseVal = v
+	} else if ie.Else != nil {
+		v, err := c.compileExpr(ie.Else, false)
+		if err != nil {
+			return "", err
+		}
+		elseVal = v
+	}
+	return fmt.Sprintf("if (%s) (%s) else (%s)", cond, thenVal, elseVal), nil
+}
+
 func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	name := sanitizeName(st.Name)
 	var typ types.Type = types.AnyType{}
@@ -812,6 +838,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		return c.compileMapLiteral(p.Map)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Group != nil:
