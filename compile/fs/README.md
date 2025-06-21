@@ -8,6 +8,7 @@ The F# backend compiles Mochi programs into F# source code. It currently targets
 - `compiler_test.go` – golden tests that verify generated code using `dotnet fsi`
 - `tools.go` – helper used by the tests to ensure the `dotnet` CLI is available
 - `infer.go` – simplified type inference used by the compiler helpers
+- `util.go` – shared helpers for type conversion and runtime emission
 
 ## Code Generation
 
