@@ -18,7 +18,7 @@ During code generation `compiler.go` injects minimal runtime support when requir
 typedef struct { int len; int *data; } list_int;
 ```
 
-Further helpers like `_count`, `_avg`, `_input`, `_str` and `_index_string` are emitted on demand.【F:compile/c/compiler.go†L140-L260】
+Further helpers like `_count`, `_avg`, `_input`, `_str` and `_index_string` are emitted on demand. The compiler now records required helpers in a map instead of dozens of boolean fields for cleaner code.【F:compile/c/compiler.go†L140-L260】
 
 ## Features
 

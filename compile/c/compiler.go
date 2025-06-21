@@ -43,50 +43,25 @@ func sanitizeName(name string) string {
 }
 
 type Compiler struct {
-	buf                      bytes.Buffer
-	indent                   int
-	tmp                      int
-	env                      *types.Env
-	lambdas                  []string
-	needsStr                 bool
-	needsInput               bool
-	needsIndexString         bool
-	needsStrLen              bool
-	needsSliceListInt        bool
-	needsSliceString         bool
-	needsListListInt         bool
-	needsConcatListListInt   bool
-	needsConcatListInt       bool
-	needsListString          bool
-	needsConcatListString    bool
-	needsConcatString        bool
-	needsCount               bool
-	needsAvg                 bool
-	needsInListInt           bool
-	needsInListString        bool
-	needsSliceListFloat      bool
-	needsSliceListString     bool
-	needsListFloat           bool
-	needsConcatListFloat     bool
-	needsUnionListFloat      bool
-	needsExceptListFloat     bool
-	needsIntersectListFloat  bool
-	needsInListFloat         bool
-	needsUnionListInt        bool
-	needsUnionListString     bool
-	needsExceptListInt       bool
-	needsExceptListString    bool
-	needsIntersectListInt    bool
-	needsIntersectListString bool
-	needsNow                 bool
-	needsJSON                bool
-	externs                  []string
-	externObjects            []string
-	structs                  map[string]bool
+	buf           bytes.Buffer
+	indent        int
+	tmp           int
+	env           *types.Env
+	lambdas       []string
+	needs         map[string]bool
+	externs       []string
+	externObjects []string
+	structs       map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, lambdas: []string{}, structs: map[string]bool{}, externObjects: []string{}}
+	return &Compiler{
+		env:           env,
+		lambdas:       []string{},
+		needs:         map[string]bool{},
+		structs:       map[string]bool{},
+		externObjects: []string{},
+	}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -106,6 +81,17 @@ func (c *Compiler) writeIndent() {
 func (c *Compiler) newTemp() string {
 	c.tmp++
 	return fmt.Sprintf("_t%d", c.tmp)
+}
+
+func (c *Compiler) need(key string) {
+	if c.needs == nil {
+		c.needs = map[string]bool{}
+	}
+	c.needs[key] = true
+}
+
+func (c *Compiler) has(key string) bool {
+	return c.needs[key]
 }
 
 func (c *Compiler) cType(t *parser.TypeRef) string {
@@ -251,6 +237,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
 	c.writeln("#include <string.h>")
+	if c.has(needNow) {
+		c.writeln("#include <time.h>")
+	}
 	c.writeln("")
 	c.emitRuntime()
 	if c.buf.Len() > 0 && c.buf.Bytes()[c.buf.Len()-1] != '\n' {
@@ -362,13 +351,13 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		if p.Type != nil {
 			t := resolveTypeRef(p.Type, c.env)
 			if isListStringType(t) {
-				c.needsListString = true
+				c.need(needListString)
 			}
 			if isListFloatType(t) {
-				c.needsListFloat = true
+				c.need(needListFloat)
 			}
 			if isListListIntType(t) {
-				c.needsListListInt = true
+				c.need(needListListInt)
 			}
 		}
 	}
@@ -413,17 +402,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if s.Let.Value != nil {
 			if isEmptyListLiteral(s.Let.Value) {
 				if isListStringType(t) {
-					c.needsListString = true
+					c.need(needListString)
 					val := c.newTemp()
 					c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 				} else if isListFloatType(t) {
-					c.needsListFloat = true
+					c.need(needListFloat)
 					val := c.newTemp()
 					c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 				} else if isListListIntType(t) {
-					c.needsListListInt = true
+					c.need(needListListInt)
 					val := c.newTemp()
 					c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -456,17 +445,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if s.Var.Value != nil {
 			if isEmptyListLiteral(s.Var.Value) {
 				if isListStringType(t) {
-					c.needsListString = true
+					c.need(needListString)
 					val := c.newTemp()
 					c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 				} else if isListFloatType(t) {
-					c.needsListFloat = true
+					c.need(needListFloat)
 					val := c.newTemp()
 					c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 				} else if isListListIntType(t) {
-					c.needsListListInt = true
+					c.need(needListListInt)
 					val := c.newTemp()
 					c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
 					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -753,8 +742,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	for _, op := range b.Right {
 		right := c.compilePostfix(op.Right)
 		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftList && isListListPostfix(op.Right, c.env) {
-			c.needsConcatListListInt = true
-			c.needsListListInt = true
+			c.need(needConcatListListInt)
+			c.need(needListListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_list_int %s = concat_list_list_int(%s, %s);", name, left, right))
 			left = name
@@ -765,7 +754,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftListInt && isListIntPostfix(op.Right, c.env) {
-			c.needsConcatListInt = true
+			c.need(needConcatListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_int %s = concat_list_int(%s, %s);", name, left, right))
 			left = name
@@ -777,7 +766,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftListFloat && isListFloatPostfix(op.Right, c.env) {
-			c.needsConcatListFloat = true
+			c.need(needConcatListFloat)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_float %s = concat_list_float(%s, %s);", name, left, right))
 			left = name
@@ -789,8 +778,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftListString && isListStringPostfix(op.Right, c.env) {
-			c.needsConcatListString = true
-			c.needsListString = true
+			c.need(needConcatListString)
+			c.need(needListString)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_string %s = concat_list_string(%s, %s);", name, left, right))
 			left = name
@@ -801,7 +790,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if (op.Op == "+" || (op.Op == "union" && op.All)) && leftString && isStringPostfixOrIndex(op.Right, c.env) {
-			c.needsConcatString = true
+			c.need(needConcatString)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("char* %s = concat_string(%s, %s);", name, left, right))
 			left = name
@@ -812,7 +801,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "union" && leftListInt && isListIntPostfix(op.Right, c.env) {
-			c.needsUnionListInt = true
+			c.need(needUnionListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_int %s = union_list_int(%s, %s);", name, left, right))
 			left = name
@@ -824,7 +813,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "union" && leftListFloat && isListFloatPostfix(op.Right, c.env) {
-			c.needsUnionListFloat = true
+			c.need(needUnionListFloat)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_float %s = union_list_float(%s, %s);", name, left, right))
 			left = name
@@ -836,8 +825,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "union" && leftListString && isListStringPostfix(op.Right, c.env) {
-			c.needsUnionListString = true
-			c.needsListString = true
+			c.need(needUnionListString)
+			c.need(needListString)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_string %s = union_list_string(%s, %s);", name, left, right))
 			left = name
@@ -848,7 +837,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "except" && leftListInt && isListIntPostfix(op.Right, c.env) {
-			c.needsExceptListInt = true
+			c.need(needExceptListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_int %s = except_list_int(%s, %s);", name, left, right))
 			left = name
@@ -860,7 +849,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "except" && leftListFloat && isListFloatPostfix(op.Right, c.env) {
-			c.needsExceptListFloat = true
+			c.need(needExceptListFloat)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_float %s = except_list_float(%s, %s);", name, left, right))
 			left = name
@@ -872,8 +861,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "except" && leftListString && isListStringPostfix(op.Right, c.env) {
-			c.needsExceptListString = true
-			c.needsListString = true
+			c.need(needExceptListString)
+			c.need(needListString)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_string %s = except_list_string(%s, %s);", name, left, right))
 			left = name
@@ -884,7 +873,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "intersect" && leftListInt && isListIntPostfix(op.Right, c.env) {
-			c.needsIntersectListInt = true
+			c.need(needIntersectListInt)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_int %s = intersect_list_int(%s, %s);", name, left, right))
 			left = name
@@ -896,8 +885,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "intersect" && leftListString && isListStringPostfix(op.Right, c.env) {
-			c.needsIntersectListString = true
-			c.needsListString = true
+			c.need(needIntersectListString)
+			c.need(needListString)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_string %s = intersect_list_string(%s, %s);", name, left, right))
 			left = name
@@ -908,7 +897,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "intersect" && leftListFloat && isListFloatPostfix(op.Right, c.env) {
-			c.needsIntersectListFloat = true
+			c.need(needIntersectListFloat)
 			name := c.newTemp()
 			c.writeln(fmt.Sprintf("list_float %s = intersect_list_float(%s, %s);", name, left, right))
 			left = name
@@ -920,7 +909,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "in" && isListIntPostfix(op.Right, c.env) {
-			c.needsInListInt = true
+			c.need(needInListInt)
 			left = fmt.Sprintf("contains_list_int(%s, %s)", right, left)
 			leftList = false
 			leftListInt = false
@@ -930,8 +919,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "in" && isListStringPostfix(op.Right, c.env) {
-			c.needsInListString = true
-			c.needsListString = true
+			c.need(needInListString)
+			c.need(needListString)
 			left = fmt.Sprintf("contains_list_string(%s, %s)", right, left)
 			leftList = false
 			leftListInt = false
@@ -940,7 +929,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "in" && isListFloatPostfix(op.Right, c.env) {
-			c.needsInListFloat = true
+			c.need(needInListFloat)
 			left = fmt.Sprintf("contains_list_float(%s, %s)", right, left)
 			leftList = false
 			leftListInt = false
@@ -983,7 +972,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				idx := c.compileExpr(op.Index.Start)
 				if isStr && op.Index.End == nil {
 					name := c.newTemp()
-					c.needsIndexString = true
+					c.need(needIndexString)
 					c.writeln(fmt.Sprintf("char* %s = _index_string(%s, %s);", name, expr, idx))
 					if c.env != nil {
 						c.env.SetVar(name, types.StringType{}, true)
@@ -1011,7 +1000,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				}
 				name := c.newTemp()
 				if isStr {
-					c.needsSliceString = true
+					c.need(needSliceString)
 					c.writeln(fmt.Sprintf("char* %s = slice_string(%s, %s, %s);", name, expr, start, end))
 					if c.env != nil {
 						c.env.SetVar(name, types.StringType{}, true)
@@ -1019,7 +1008,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					expr = name
 					isStr = true
 				} else if isFloatList {
-					c.needsSliceListFloat = true
+					c.need(needSliceListFloat)
 					c.writeln(fmt.Sprintf("list_float %s = slice_list_float(%s, %s, %s);", name, expr, start, end))
 					if c.env != nil {
 						c.env.SetVar(name, types.ListType{Elem: types.FloatType{}}, true)
@@ -1029,8 +1018,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isFloatList = false
 					isStringList = false
 				} else if isStringList {
-					c.needsSliceListString = true
-					c.needsListString = true
+					c.need(needSliceListString)
+					c.need(needListString)
 					c.writeln(fmt.Sprintf("list_string %s = slice_list_string(%s, %s, %s);", name, expr, start, end))
 					if c.env != nil {
 						c.env.SetVar(name, types.ListType{Elem: types.StringType{}}, true)
@@ -1040,7 +1029,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isFloatList = false
 					isStringList = false
 				} else {
-					c.needsSliceListInt = true
+					c.need(needSliceListInt)
 					c.writeln(fmt.Sprintf("list_int %s = slice_list_int(%s, %s, %s);", name, expr, start, end))
 					if c.env != nil {
 						c.env.SetVar(name, types.ListType{Elem: types.IntType{}}, true)
@@ -1078,21 +1067,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 		}
 		if nested {
-			c.needsListListInt = true
+			c.need(needListListInt)
 			c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(%d);", name, len(p.List.Elems)))
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
 			}
 		} else if len(p.List.Elems) > 0 && isStringExpr(p.List.Elems[0], c.env) {
-			c.needsListString = true
+			c.need(needListString)
 			c.writeln(fmt.Sprintf("list_string %s = list_string_create(%d);", name, len(p.List.Elems)))
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
 			}
 		} else if len(p.List.Elems) > 0 && isFloatExpr(p.List.Elems[0], c.env) {
-			c.needsListFloat = true
+			c.need(needListFloat)
 			c.writeln(fmt.Sprintf("list_float %s = list_float_create(%d);", name, len(p.List.Elems)))
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
@@ -1111,7 +1100,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			isStr := isStringArg(p.Call.Args[0], c.env)
 			arg := c.compileExpr(p.Call.Args[0])
 			if isStr {
-				c.needsStrLen = true
 				return fmt.Sprintf("strlen(%s)", arg)
 			}
 			return fmt.Sprintf("%s.len", arg)
@@ -1119,7 +1107,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, a := range p.Call.Args {
 				argExpr := c.compileExpr(a)
 				if isListListExpr(a, c.env) {
-					c.needsListListInt = true
+					c.need(needListListInt)
 					c.writeln(fmt.Sprintf("_print_list_list_int(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
@@ -1127,7 +1115,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln("printf(\" \");")
 					}
 				} else if isListIntExpr(a, c.env) {
-					c.needsListListInt = true
+					c.need(needListListInt)
 					c.writeln(fmt.Sprintf("_print_list_int(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
@@ -1135,7 +1123,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln("printf(\" \");")
 					}
 				} else if isListFloatExpr(a, c.env) {
-					c.needsListFloat = true
+					c.need(needListFloat)
 					c.writeln(fmt.Sprintf("_print_list_float(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
@@ -1143,7 +1131,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln("printf(\" \");")
 					}
 				} else if isListStringExpr(a, c.env) {
-					c.needsListString = true
+					c.need(needListString)
 					c.writeln(fmt.Sprintf("_print_list_string(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
@@ -1167,30 +1155,30 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return ""
 		} else if p.Call.Func == "count" {
 			arg := c.compileExpr(p.Call.Args[0])
-			c.needsCount = true
+			c.need(needCount)
 			return fmt.Sprintf("_count(%s)", arg)
 		} else if p.Call.Func == "avg" {
 			arg := c.compileExpr(p.Call.Args[0])
-			c.needsAvg = true
+			c.need(needAvg)
 			return fmt.Sprintf("_avg(%s)", arg)
 		} else if p.Call.Func == "str" {
 			arg := c.compileExpr(p.Call.Args[0])
 			name := c.newTemp()
-			c.needsStr = true
+			c.need(needStr)
 			c.writeln(fmt.Sprintf("char* %s = _str(%s);", name, arg))
 			return name
 		} else if p.Call.Func == "input" {
-			c.needsInput = true
+			c.need(needInput)
 			return "_input()"
 		} else if p.Call.Func == "now" {
-			c.needsNow = true
+			c.need(needNow)
 			return "_now()"
 		} else if p.Call.Func == "json" {
 			if len(p.Call.Args) != 1 {
 				return ""
 			}
 			argExpr := c.compileExpr(p.Call.Args[0])
-			c.needsJSON = true
+			c.need(needJSON)
 			if isListListExpr(p.Call.Args[0], c.env) {
 				c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
 			} else if isListIntExpr(p.Call.Args[0], c.env) {
