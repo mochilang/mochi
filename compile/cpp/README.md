@@ -219,7 +219,7 @@ Dataset queries support `where`, `skip`, `take`, `sort by`, `join` and basic `gr
 * `if`, `for` and `while` statements
 * Structs, unions and pattern matching with `match`
 * List and map literals with indexing and slicing
-* Built‑in functions `print`, `len` and `str`
+* Built‑in functions `print`, `len`, `str`, `now` and `input`
 * Dataset queries with filtering, sorting, pagination and simple grouping
 * List operators `union`, `except` and `intersect`
 * Membership tests using `in`
@@ -243,4 +243,7 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Nested function declarations inside other functions
 * Iteration over map key/value pairs
 * Asynchronous `async`/`await` constructs
-* Built-in functions `json`, `now` and `input`
+* Built-in function `json`
+* Error handling with `try`/`catch`
+* Package declarations and `export` statements
+* YAML dataset loading and saving
