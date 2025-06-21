@@ -629,6 +629,8 @@ implemented across all backends:
 * Enum and additional union type declarations
 * Map membership checks and iterating over maps in `for` loops
 * Extern type declarations
+* Increment and decrement operators like `++`/`--` and compound assignments such as `+=`
+* Python-style range loops (e.g. `for i in range(n)`)
 
 ## Benchmarks
 
