@@ -397,11 +397,35 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			c.writeln("return " + v + ";")
 		}
 	case s.For != nil:
+		name := sanitizeName(s.For.Name)
+		if startExpr, endExpr, ok := c.rangeArgs(s.For.Source); ok {
+			start := "0"
+			if startExpr != nil {
+				v, err := c.compileExpr(startExpr, false)
+				if err != nil {
+					return err
+				}
+				start = v
+			}
+			end, err := c.compileExpr(endExpr, false)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, name))
+			c.indent++
+			for _, st := range s.For.Body {
+				if err := c.compileStmt(st, inFun); err != nil {
+					return err
+				}
+			}
+			c.indent--
+			c.writeln("}")
+			return nil
+		}
 		start, err := c.compileExpr(s.For.Source, false)
 		if err != nil {
 			return err
 		}
-		name := sanitizeName(s.For.Name)
 		if s.For.RangeEnd != nil {
 			end, err := c.compileExpr(s.For.RangeEnd, false)
 			if err != nil {
@@ -1478,4 +1502,30 @@ func (c *Compiler) isListVar(name string) bool {
 		}
 	}
 	return false
+}
+
+func (c *Compiler) rangeArgs(e *parser.Expr) (*parser.Expr, *parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return nil, nil, false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return nil, nil, false
+	}
+	call := p.Target.Call
+	if call.Func != "range" {
+		return nil, nil, false
+	}
+	switch len(call.Args) {
+	case 1:
+		return nil, call.Args[0], true
+	case 2:
+		return call.Args[0], call.Args[1], true
+	default:
+		return nil, nil, false
+	}
 }
