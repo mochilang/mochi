@@ -12,34 +12,24 @@ import (
 
 // Compiler translates a Mochi AST into Swift source code (very limited subset).
 type Compiler struct {
-	buf         bytes.Buffer
-	indent      int
-	env         *types.Env
-	locals      map[string]types.Type
-	useAvg      bool
-	useIndex    bool
-	useIndexStr bool
-	useSlice    bool
-	useSliceStr bool
-	useLoad     bool
-	useSave     bool
-	useFetch    bool
-	useJSON     bool
-	funcRet     types.Type
+	buf     bytes.Buffer
+	indent  int
+	env     *types.Env
+	locals  map[string]types.Type
+	helpers map[string]bool
+	funcRet types.Type
 }
 
-func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[string]types.Type{}} }
+func New(env *types.Env) *Compiler {
+	return &Compiler{
+		env:     env,
+		locals:  map[string]types.Type{},
+		helpers: map[string]bool{},
+	}
+}
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	c.useAvg = false
-	c.useIndex = false
-	c.useIndexStr = false
-	c.useSlice = false
-	c.useSliceStr = false
-	c.useLoad = false
-	c.useSave = false
-	c.useFetch = false
-	c.useJSON = false
+	c.helpers = map[string]bool{}
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -96,250 +86,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("import Foundation")
 	c.writeln("")
 	c.writeExpectFunc(prog)
-	if c.useAvg {
-		c.writeln("func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {")
-		c.indent++
-		c.writeln("if arr.isEmpty { return 0 }")
-		c.writeln("var sum = 0.0")
-		c.writeln("for v in arr { sum += Double(v) }")
-		c.writeln("return sum / Double(arr.count)")
-		c.indent--
-		c.writeln("}")
-		c.writeln("func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {")
-		c.indent++
-		c.writeln("if arr.isEmpty { return 0 }")
-		c.writeln("var sum = 0.0")
-		c.writeln("for v in arr { sum += Double(v) }")
-		c.writeln("return sum / Double(arr.count)")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.useIndexStr {
-		c.writeln("func _indexString(_ s: String, _ i: Int) -> String {")
-		c.indent++
-		c.writeln("var idx = i")
-		c.writeln("let chars = Array(s)")
-		c.writeln("if idx < 0 { idx += chars.count }")
-		c.writeln("if idx < 0 || idx >= chars.count { fatalError(\"index out of range\") }")
-		c.writeln("return String(chars[idx])")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.useIndex {
-		c.writeln("func _index<T>(_ arr: [T], _ i: Int) -> T {")
-		c.indent++
-		c.writeln("var idx = i")
-		c.writeln("let n = arr.count")
-		c.writeln("if idx < 0 { idx += n }")
-		c.writeln("if idx < 0 || idx >= n { fatalError(\"index out of range\") }")
-		c.writeln("return arr[idx]")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.useSlice {
-		c.writeln("func _slice<T>(_ arr: [T], _ i: Int, _ j: Int) -> [T] {")
-		c.indent++
-		c.writeln("var start = i")
-		c.writeln("var end = j")
-		c.writeln("let n = arr.count")
-		c.writeln("if start < 0 { start += n }")
-		c.writeln("if end < 0 { end += n }")
-		c.writeln("if start < 0 { start = 0 }")
-		c.writeln("if end > n { end = n }")
-		c.writeln("if end < start { end = start }")
-		c.writeln("return Array(arr[start..<end])")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.useSliceStr {
-		c.writeln("func _sliceString(_ s: String, _ i: Int, _ j: Int) -> String {")
-		c.indent++
-		c.writeln("var start = i")
-		c.writeln("var end = j")
-		c.writeln("let chars = Array(s)")
-		c.writeln("let n = chars.count")
-		c.writeln("if start < 0 { start += n }")
-		c.writeln("if end < 0 { end += n }")
-		c.writeln("if start < 0 { start = 0 }")
-		c.writeln("if end > n { end = n }")
-		c.writeln("if end < start { end = start }")
-		c.writeln("return String(chars[start..<end])")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.useLoad {
-		c.writeln("func _readInput(_ path: String?) -> String {")
-		c.indent++
-		c.writeln("if let p = path, !p.isEmpty && p != \"-\" {")
-		c.indent++
-		c.writeln("return (try? String(contentsOfFile: p)) ?? \"\"")
-		c.indent--
-		c.writeln("}")
-		c.writeln("let data = FileHandle.standardInput.readDataToEndOfFile()")
-		c.writeln("return String(data: data, encoding: .utf8) ?? \"\"")
-		c.indent--
-		c.writeln("}")
-		c.writeln("func _parseCSV(_ text: String, _ header: Bool, _ delim: Character) -> [[String: Any]] {")
-		c.indent++
-		c.writeln("let lines = text.split(whereSeparator: { $0 == \"\n\" || $0 == \"\r\" })")
-		c.writeln("if lines.isEmpty { return [] }")
-		c.writeln("var headers: [String] = []")
-		c.writeln("var start = 0")
-		c.writeln("if header {")
-		c.indent++
-		c.writeln("headers = lines[0].split(separator: delim).map { String($0) }")
-		c.writeln("start = 1")
-		c.indent--
-		c.writeln("} else {")
-		c.indent++
-		c.writeln("headers = lines[0].split(separator: delim).enumerated().map { \"c\" + String($0.offset) }")
-		c.indent--
-		c.writeln("}")
-		c.writeln("var out: [[String: Any]] = []")
-		c.writeln("for i in start..<lines.count {")
-		c.indent++
-		c.writeln("let parts = lines[i].split(separator: delim)")
-		c.writeln("var row: [String: Any] = [:]")
-		c.writeln("for j in 0..<headers.count {")
-		c.indent++
-		c.writeln("let val = j < parts.count ? String(parts[j]) : \"\"")
-		c.writeln("if let iv = Int(val) { row[headers[j]] = iv } else if let dv = Double(val) { row[headers[j]] = dv } else { row[headers[j]] = val }")
-		c.indent--
-		c.writeln("}")
-		c.writeln("out.append(row)")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return out")
-		c.indent--
-		c.writeln("}")
-		c.writeln("func _load(_ path: String?, _ opts: [String: Any]?) -> [[String: Any]] {")
-		c.indent++
-		c.writeln("let format = (opts?[\"format\"] as? String) ?? \"csv\"")
-		c.writeln("let header = (opts?[\"header\"] as? Bool) ?? true")
-		c.writeln("var delim: Character = ','")
-		c.writeln("if let d = opts?[\"delimiter\"] as? String, !d.isEmpty { delim = d.first! }")
-		c.writeln("let text = _readInput(path)")
-		c.writeln("switch format {")
-		c.writeln("case \"jsonl\":")
-		c.indent++
-		c.writeln("return text.split(separator: \"\n\").filter { !$0.isEmpty }.compactMap { line in")
-		c.indent++
-		c.writeln("if let data = line.data(using: .utf8), let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { return obj }")
-		c.writeln("return nil")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("case \"json\":")
-		c.indent++
-		c.writeln("if let data = text.data(using: .utf8) {")
-		c.indent++
-		c.writeln("if let arr = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] { return arr }")
-		c.writeln("if let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { return [obj] }")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return []")
-		c.indent--
-		c.writeln("case \"tsv\":")
-		c.indent++
-		c.writeln("delim = '\t'")
-		c.writeln("fallthrough")
-		c.indent--
-		c.writeln("default:")
-		c.indent++
-		c.writeln("return _parseCSV(text, header, delim)")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.useSave {
-		c.writeln("func _writeOutput(_ path: String?, _ text: String) {")
-		c.indent++
-		c.writeln("if let p = path, !p.isEmpty && p != \"-\" {")
-		c.indent++
-		c.writeln("try? text.write(toFile: p, atomically: true, encoding: .utf8)")
-		c.indent--
-		c.writeln("} else {")
-		c.indent++
-		c.writeln("if let data = text.data(using: .utf8) { FileHandle.standardOutput.write(data) }")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.writeln("func _save(_ rows: [[String: Any]], _ path: String?, _ opts: [String: Any]?) {")
-		c.indent++
-		c.writeln("let format = (opts?[\"format\"] as? String) ?? \"csv\"")
-		c.writeln("let header = (opts?[\"header\"] as? Bool) ?? false")
-		c.writeln("var delim: Character = ','")
-		c.writeln("if let d = opts?[\"delimiter\"] as? String, !d.isEmpty { delim = d.first! }")
-		c.writeln("var text = \"\"")
-		c.writeln("switch format {")
-		c.writeln("case \"jsonl\":")
-		c.indent++
-		c.writeln("for r in rows { if let d = try? JSONSerialization.data(withJSONObject: r), let s = String(data: d, encoding: .utf8) { text += s + \"\\n\" } }")
-		c.indent--
-		c.writeln("case \"json\":")
-		c.indent++
-		c.writeln("let obj: Any = rows.count == 1 ? rows[0] : rows")
-		c.writeln("if let d = try? JSONSerialization.data(withJSONObject: obj), let s = String(data: d, encoding: .utf8) { text = s }")
-		c.indent--
-		c.writeln("case \"tsv\":")
-		c.indent++
-		c.writeln("delim = '\t'")
-		c.writeln("fallthrough")
-		c.indent--
-		c.writeln("default:")
-		c.indent++
-		c.writeln("let headers = rows.isEmpty ? [] : rows[0].keys.sorted()")
-		c.writeln("var lines: [String] = []")
-		c.writeln("if header && !headers.isEmpty { lines.append(headers.joined(separator: String(delim))) }")
-		c.writeln("for r in rows {")
-		c.indent++
-		c.writeln("let rec = headers.map { h in String(describing: r[h] ?? \"\") }")
-		c.writeln("lines.append(rec.joined(separator: String(delim)))")
-		c.indent--
-		c.writeln("}")
-		c.writeln("text = lines.joined(separator: \"\\n\") + \"\\n\"")
-		c.indent--
-		c.writeln("}")
-		c.writeln("_writeOutput(path, text)")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.useFetch {
-		c.writeln("func _fetch(_ urlStr: String, _ opts: [String: Any]?) -> Any {")
-		c.indent++
-		c.writeln("guard let url = URL(string: urlStr) else { return [:] }")
-		c.writeln("if let data = try? Data(contentsOf: url) {")
-		c.indent++
-		c.writeln("if let obj = try? JSONSerialization.jsonObject(with: data) { return obj }")
-		c.writeln("return String(data: data, encoding: .utf8) ?? \"\"")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return [:]")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.useJSON {
-		c.writeln("func _json(_ v: Any) {")
-		c.indent++
-		c.writeln("if let d = try? JSONSerialization.data(withJSONObject: v, options: []), let s = String(data: d, encoding: .utf8) {")
-		c.indent++
-		c.writeln("print(s)")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.writeln("")
-	}
+	c.emitRuntime()
 
 	c.buf.Write(bodyBytes)
 	return c.buf.Bytes(), nil
@@ -873,10 +620,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					end = e
 				}
 				if c.isStringPrimary(p.Target) {
-					c.useSliceStr = true
+					c.use("_sliceString")
 					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
 				} else {
-					c.useSlice = true
+					c.use("_slice")
 					expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
 				}
 			} else {
@@ -885,13 +632,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if c.isStringPrimary(p.Target) {
-					c.useIndexStr = true
+					c.use("_indexString")
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 				} else {
 					if c.isMapPrimary(p.Target) {
 						expr = fmt.Sprintf("%s[%s]!", expr, idx)
 					} else if c.isListPrimary(p.Target) {
-						c.useIndex = true
+						c.use("_index")
 						expr = fmt.Sprintf("_index(%s, %s)", expr, idx)
 					} else {
 						expr = fmt.Sprintf("%s[%s]", expr, idx)
@@ -1013,7 +760,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("avg expects 1 arg")
 			}
-			c.useAvg = true
+			c.use("_avg")
 			return fmt.Sprintf("_avg(%s.map { Double($0) })", args[0]), nil
 		case "now":
 			if len(args) != 0 {
@@ -1024,7 +771,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("json expects 1 arg")
 			}
-			c.useJSON = true
+			c.use("_json")
 			return fmt.Sprintf("_json(%s)", args[0]), nil
 		case "input":
 			if len(args) != 0 {
@@ -1092,7 +839,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		}
 		opts = v
 	}
-	c.useLoad = true
+	c.use("_load")
 	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
 }
 
@@ -1113,7 +860,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		}
 		opts = v
 	}
-	c.useSave = true
+	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
@@ -1130,7 +877,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		}
 		opts = v
 	}
-	c.useFetch = true
+	c.use("_fetch")
 	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
 }
 
