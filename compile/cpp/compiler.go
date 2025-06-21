@@ -11,7 +11,7 @@ import (
 )
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "union", "except", "intersect", "input"}
+var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "union", "except", "intersect", "input", "json"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -134,6 +134,9 @@ var helperCode = map[string][]string{
 		"\tgetline(cin, s);",
 		"\treturn s;",
 		"}",
+	},
+	"json": {
+		"template<typename T> void _json(const T& v) { std::cout << v << std::endl; }",
 	},
 }
 
@@ -445,6 +448,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Expr != nil:
 		if call := getPrintCall(s.Expr.Expr); call != nil {
 			return c.compilePrint(call)
+		}
+		if call := getJSONCall(s.Expr.Expr); call != nil {
+			return c.compileJSON(call)
 		}
 		expr := c.compileExpr(s.Expr.Expr)
 		if expr != "" {
@@ -806,6 +812,35 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 		c.buf.WriteString("(" + a + ")")
 	}
 	c.buf.WriteString(" << std::endl;\n")
+	return nil
+}
+
+func getJSONCall(e *parser.Expr) *parser.CallExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	post := u.Value
+	if post == nil || post.Target == nil {
+		return nil
+	}
+	if post.Target.Call != nil && post.Target.Call.Func == "json" {
+		return post.Target.Call
+	}
+	return nil
+}
+
+func (c *Compiler) compileJSON(call *parser.CallExpr) error {
+	if len(call.Args) != 1 {
+		return fmt.Errorf("json() expects one argument")
+	}
+	arg := c.compileExpr(call.Args[0])
+	c.helpers["json"] = true
+	c.writeIndent()
+	c.buf.WriteString("_json(" + arg + ");\n")
 	return nil
 }
 
