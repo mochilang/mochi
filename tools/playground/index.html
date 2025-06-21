@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Mochi Playground</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+  --background: 255 255 255;
+  --foreground: 0 0 0;
+  --primary: 59 130 246;
+  --primary-foreground: 255 255 255;
+  --muted: 243 244 246;
+}
+.bg-background { background-color: rgb(var(--background)); }
+.text-foreground { color: rgb(var(--foreground)); }
+.bg-primary { background-color: rgb(var(--primary)); }
+.text-primary-foreground { color: rgb(var(--primary-foreground)); }
+.bg-muted { background-color: rgb(var(--muted)); }
+</style>
+</head>
+<body class="bg-background text-foreground flex items-center justify-center min-h-screen p-4">
+  <div class="w-full max-w-2xl space-y-4">
+    <textarea id="source" class="w-full h-48 p-2 border rounded-md bg-background text-sm font-mono">print("hello world")</textarea>
+    <div class="flex justify-end">
+      <button id="run" class="px-4 py-2 rounded-md bg-primary text-primary-foreground">Run</button>
+    </div>
+    <pre id="output" class="w-full h-40 p-2 border rounded-md bg-muted"></pre>
+  </div>
+  <script src="wasm_exec.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
