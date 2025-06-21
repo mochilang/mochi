@@ -397,25 +397,39 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			c.writeln("return " + v + ";")
 		}
 	case s.For != nil:
-		start, err := c.compileExpr(s.For.Source, false)
-		if err != nil {
-			return err
-		}
 		name := sanitizeName(s.For.Name)
 		if s.For.RangeEnd != nil {
+			start, err := c.compileExpr(s.For.Source, false)
+			if err != nil {
+				return err
+			}
 			end, err := c.compileExpr(s.For.RangeEnd, false)
 			if err != nil {
 				return err
 			}
 			c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, name))
 			c.indent++
+		} else if rs, re, ok, err := c.rangeArgs(s.For.Source); ok {
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", rs, re, name))
+			c.indent++
 		} else if c.isMapExpr(s.For.Source) {
+			start, err := c.compileExpr(s.For.Source, false)
+			if err != nil {
+				return err
+			}
 			iter := c.newTmp()
 			c.writeln(fmt.Sprintf("var %s = %s.keyIterator();", iter, start))
 			c.writeln(fmt.Sprintf("while (%s.next()) |k_ptr| {", iter))
 			c.indent++
 			c.writeln(fmt.Sprintf("const %s = k_ptr.*;", name))
 		} else {
+			start, err := c.compileExpr(s.For.Source, false)
+			if err != nil {
+				return err
+			}
 			c.writeln(fmt.Sprintf("for (%s) |%s| {", start, name))
 			c.indent++
 		}
@@ -1478,4 +1492,41 @@ func (c *Compiler) isListVar(name string) bool {
 		}
 	}
 	return false
+}
+
+func (c *Compiler) rangeArgs(e *parser.Expr) (string, string, bool, error) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", "", false, nil
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || len(u.Value.Ops) > 0 {
+		return "", "", false, nil
+	}
+	p := u.Value.Target
+	if p == nil || p.Call == nil {
+		return "", "", false, nil
+	}
+	if p.Call.Func != "range" {
+		return "", "", false, nil
+	}
+	switch len(p.Call.Args) {
+	case 1:
+		end, err := c.compileExpr(p.Call.Args[0], false)
+		if err != nil {
+			return "", "", false, err
+		}
+		return "0", end, true, nil
+	case 2:
+		start, err := c.compileExpr(p.Call.Args[0], false)
+		if err != nil {
+			return "", "", false, err
+		}
+		end, err := c.compileExpr(p.Call.Args[1], false)
+		if err != nil {
+			return "", "", false, err
+		}
+		return start, end, true, nil
+	default:
+		return "", "", false, nil
+	}
 }

@@ -279,7 +279,6 @@ LeetCode solutions:
   operate over CSV-style input
 * advanced string slicing (step values) and indexing on assignment
 * iteration over map key/value pairs (only key iteration is implemented)
-* Python-style loops like `for i in range(n)`
 * functions with multiple return values
 * generic type parameters
 * nested list types beyond one dimension

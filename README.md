@@ -605,6 +605,9 @@ implemented across all backends:
 * Reflection and macro facilities
 * Concurrency primitives such as `spawn` and channels
 * Foreign function interface outside the bundled Go, Python and TypeScript runtimes
+* Dataset queries and data helpers (`from`/`join`, `fetch`, `load`, `save`)
+* Agent constructs including `agent`, `on`, `emit` and `intent`
+* Generative AI blocks (`generate` and `model` declarations)
 
 ## Benchmarks
 

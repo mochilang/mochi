@@ -1,0 +1,8 @@
+const std = @import("std");
+
+pub fn main() void {
+        for (0 .. @as(i32,@intCast(3))) |i| {
+                std.debug.print("{any}\n", .{i});
+        }
+}
+
