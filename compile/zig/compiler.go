@@ -313,17 +313,29 @@ func (c *Compiler) zigType(t *parser.TypeRef) string {
 func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 	switch {
 	case s.Let != nil:
-		val := "0"
+		name := sanitizeName(s.Let.Name)
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if s.Let.Type != nil {
+				typ = c.resolveTypeRef(s.Let.Type)
+			} else if s.Let.Value != nil {
+				typ = c.inferExprType(s.Let.Value)
+			} else if old, err := c.env.GetVar(s.Let.Name); err == nil {
+				typ = old
+			}
+			c.env.SetVar(s.Let.Name, typ, false)
+		}
 		if s.Let.Value != nil && isEmptyMapExpr(s.Let.Value) {
 			keyT := "i32"
 			valT := "i32"
-			if s.Let.Type != nil && s.Let.Type.Generic != nil && s.Let.Type.Generic.Name == "map" && len(s.Let.Type.Generic.Args) == 2 {
-				keyT = c.zigType(s.Let.Type.Generic.Args[0])
-				valT = c.zigType(s.Let.Type.Generic.Args[1])
+			if mt, ok := typ.(types.MapType); ok {
+				keyT = zigTypeOf(mt.Key)
+				valT = zigTypeOf(mt.Value)
 			}
-			c.writeln(fmt.Sprintf("var %s = std.AutoHashMap(%s, %s).init(std.heap.page_allocator);", sanitizeName(s.Let.Name), keyT, valT))
+			c.writeln(fmt.Sprintf("var %s = std.AutoHashMap(%s, %s).init(std.heap.page_allocator);", name, keyT, valT))
 			return nil
 		}
+		val := "0"
 		if s.Let.Value != nil {
 			v, err := c.compileExpr(s.Let.Value, false)
 			if err != nil {
@@ -331,7 +343,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			}
 			val = v
 		}
-		c.writeln(fmt.Sprintf("const %s = %s;", sanitizeName(s.Let.Name), val))
+		c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), val))
 		return nil
 	case s.Var != nil:
 		return c.compileVar(s.Var)
@@ -462,11 +474,21 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 
 func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	name := sanitizeName(st.Name)
-	// special case: empty list initialization becomes ArrayList
+	var typ types.Type = types.AnyType{}
+	if c.env != nil {
+		if st.Type != nil {
+			typ = c.resolveTypeRef(st.Type)
+		} else if st.Value != nil {
+			typ = c.inferExprType(st.Value)
+		} else if old, err := c.env.GetVar(st.Name); err == nil {
+			typ = old
+		}
+		c.env.SetVar(st.Name, typ, true)
+	}
 	if st.Value != nil && isEmptyListExpr(st.Value) {
 		elem := "i32"
-		if st.Type != nil && st.Type.Generic != nil && st.Type.Generic.Name == "list" && len(st.Type.Generic.Args) == 1 {
-			elem = strings.TrimPrefix(c.zigType(st.Type.Generic.Args[0]), "[]const ")
+		if lt, ok := typ.(types.ListType); ok {
+			elem = strings.TrimPrefix(zigTypeOf(lt.Elem), "[]const ")
 		}
 		c.writeln(fmt.Sprintf("var %s = std.ArrayList(%s).init(std.heap.page_allocator);", name, elem))
 		return nil
@@ -474,9 +496,9 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	if st.Value != nil && isEmptyMapExpr(st.Value) {
 		keyT := "i32"
 		valT := "i32"
-		if st.Type != nil && st.Type.Generic != nil && st.Type.Generic.Name == "map" && len(st.Type.Generic.Args) == 2 {
-			keyT = c.zigType(st.Type.Generic.Args[0])
-			valT = c.zigType(st.Type.Generic.Args[1])
+		if mt, ok := typ.(types.MapType); ok {
+			keyT = zigTypeOf(mt.Key)
+			valT = zigTypeOf(mt.Value)
 		}
 		c.writeln(fmt.Sprintf("var %s = std.AutoHashMap(%s, %s).init(std.heap.page_allocator);", name, keyT, valT))
 		return nil
@@ -489,11 +511,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 		val = v
 	}
-	if st.Type != nil {
-		c.writeln(fmt.Sprintf("var %s: %s = %s;", name, c.zigType(st.Type), val))
-	} else {
-		c.writeln(fmt.Sprintf("var %s = %s;", name, val))
-	}
+	c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), val))
 	return nil
 }
 
