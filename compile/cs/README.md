@@ -154,6 +154,7 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Lists and maps with indexing, slicing and membership checks
 - Dataset queries with `from`, `where`, `select`, `sort by`, `skip` and `take`
 - Cross joins via multiple `from` clauses
+- Sorting and pagination with joins
 - Set operations on lists: `union`, `union all`, `except`, `intersect`
 - Built‑ins `print`, `len`, `count`, `avg`, `now` and `json`
 - HTTP requests using `fetch`
@@ -167,8 +168,7 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 
 - The backend is still incomplete. Notable gaps include:
  - Outer joins in dataset queries
-- Sorting, pagination or grouping when joins are used
-- Agent declarations and intent blocks
+ - Agent declarations and intent blocks
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign function interface and extern objects
 - Full LLM integration for `_genText` and `_genStruct`
