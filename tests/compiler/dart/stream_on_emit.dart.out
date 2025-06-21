@@ -15,13 +15,14 @@ void main() {
 }
 
 class _Stream<T> {
-	String name;
-	List<void Function(T)> handlers = [];
-	_Stream(this.name);
-	void append(T data) {
-		for (var h in List.from(handlers)) { h(data); }
-	}
-	void register(void Function(T) handler) { handlers.add(handler); }
+    String name;
+    List<void Function(T)> handlers = [];
+    _Stream(this.name);
+    void append(T data) {
+        for (var h in List.from(handlers)) { h(data); }
+    }
+    void register(void Function(T) handler) { handlers.add(handler); }
 }
 void _waitAll() {}
+
 

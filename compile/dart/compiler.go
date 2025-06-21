@@ -23,32 +23,13 @@ type Compiler struct {
 	packages     map[string]bool
 	structs      map[string]bool
 	handlerCount int
-	useIndexStr  bool
-	useUnionAll  bool
-	useUnion     bool
-	useExcept    bool
-	useIntersect bool
-	useFetch     bool
-	useLoad      bool
-	useSave      bool
-	useGenText   bool
-	useGenEmbed  bool
-	useGenStruct bool
-	useGroup     bool
-	useGroupBy   bool
-	useStream    bool
-	useQuery     bool
+	helpers      map[string]bool
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, imports: make(map[string]bool), packages: make(map[string]bool),
-		structs: make(map[string]bool), useIndexStr: false,
-		useUnionAll: false, useUnion: false, useExcept: false, useIntersect: false,
-		useFetch: false, useLoad: false, useSave: false,
-		useGenText: false, useGenEmbed: false, useGenStruct: false,
-		useGroup: false, useGroupBy: false, useStream: false,
-		useQuery: false}
+		structs: make(map[string]bool), helpers: make(map[string]bool)}
 }
 
 // Compile returns Dart source implementing prog.
@@ -57,21 +38,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.imports = make(map[string]bool)
 	c.packages = make(map[string]bool)
 	c.structs = make(map[string]bool)
-	c.useIndexStr = false
-	c.useUnionAll = false
-	c.useUnion = false
-	c.useExcept = false
-	c.useIntersect = false
-	c.useFetch = false
-	c.useLoad = false
-	c.useSave = false
-	c.useGenText = false
-	c.useGenEmbed = false
-	c.useGenStruct = false
-	c.useGroup = false
-	c.useGroupBy = false
-	c.useStream = false
-	c.useQuery = false
+	c.helpers = make(map[string]bool)
 	c.handlerCount = 0
 
 	var body bytes.Buffer
@@ -382,7 +349,7 @@ func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
 	c.compileStructType(st)
 	varName := "_" + sanitizeName(s.Name) + "Stream"
 	c.writeln(fmt.Sprintf("var %s = _Stream<%s>('%s');", varName, sanitizeName(st.Name), s.Name))
-	c.useStream = true
+	c.use("_Stream")
 	return nil
 }
 
@@ -408,7 +375,7 @@ func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
 	c.indent--
 	c.writeln("}")
 	c.writeln(fmt.Sprintf("%s.register(%s);", streamVar, handlerName))
-	c.useStream = true
+	c.use("_Stream")
 	return nil
 }
 
@@ -429,7 +396,7 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	lit := fmt.Sprintf("%s({%s})", sanitizeName(st.Name), strings.Join(parts, ", "))
 	streamVar := "_" + sanitizeName(e.Stream) + "Stream"
 	c.writeln(fmt.Sprintf("%s.append(%s);", streamVar, lit))
-	c.useStream = true
+	c.use("_Stream")
 	return nil
 }
 
@@ -530,16 +497,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						expr = fmt.Sprintf("(%s.contains(%s))", r, l)
 					}
 				} else if op == "union" {
-					c.useUnion = true
+					c.use("_union")
 					expr = fmt.Sprintf("_union(%s, %s)", l, r)
 				} else if op == "union_all" {
-					c.useUnionAll = true
+					c.use("_unionAll")
 					expr = fmt.Sprintf("_unionAll(%s, %s)", l, r)
 				} else if op == "except" {
-					c.useExcept = true
+					c.use("_except")
 					expr = fmt.Sprintf("_except(%s, %s)", l, r)
 				} else if op == "intersect" {
-					c.useIntersect = true
+					c.use("_intersect")
 					expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
 				} else {
 					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
@@ -622,7 +589,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if isStringPrimary(c, p.Target) {
-					c.useIndexStr = true
+					c.use("_indexString")
 					if !isIntExpr(c, op.Index.Start) {
 						idx = fmt.Sprintf("(%s).toInt()", idx)
 					}
@@ -1213,8 +1180,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.useGroup = true
-		c.useGroupBy = true
+		c.use("_Group")
+		c.use("_group_by")
 		expr := fmt.Sprintf("_group_by(%s, (%s) => %s).map((%s) => %s).toList()", src, v, keyExpr, sanitizeName(q.Group.Name), valExpr)
 		return expr, nil
 	}
@@ -1252,7 +1219,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if sortExpr != "" {
 			sortFn = fmt.Sprintf("(%s) => %s", allParams, sortExpr)
 		}
-		c.useQuery = true
+		c.use("_query")
 		var buf strings.Builder
 		buf.WriteString("(() {\n")
 		buf.WriteString(fmt.Sprintf("\tvar src = %s;\n", src))
@@ -1436,14 +1403,14 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 	}
 	c.imports["dart:convert"] = true
 	if g.Target == "embedding" {
-		c.useGenEmbed = true
+		c.use("_genEmbed")
 		return fmt.Sprintf("_genEmbed(%s, %s, %s)", text, model, paramStr), nil
 	}
 	if _, ok := c.env.GetStruct(g.Target); ok {
-		c.useGenStruct = true
+		c.use("_genStruct")
 		return fmt.Sprintf("_genStruct<%s>(%s, %s, %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
 	}
-	c.useGenText = true
+	c.use("_genText")
 	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramStr), nil
 }
 
@@ -1462,7 +1429,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	}
 	c.imports["dart:io"] = true
 	c.imports["dart:convert"] = true
-	c.useFetch = true
+	c.use("_fetch")
 	return fmt.Sprintf("_fetch(%s, %s)", urlStr, opts), nil
 }
 
@@ -1480,7 +1447,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		opts = w
 	}
 	c.imports["dart:io"] = true
-	c.useLoad = true
+	c.use("_load")
 	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
 }
 
@@ -1502,7 +1469,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		opts = w
 	}
 	c.imports["dart:io"] = true
-	c.useSave = true
+	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
@@ -1756,398 +1723,17 @@ func isStringPrimary(c *Compiler, p *parser.Primary) bool {
 }
 
 func (c *Compiler) emitRuntime() {
-	if !(c.useIndexStr || c.useUnionAll || c.useUnion || c.useExcept || c.useIntersect || c.useFetch || c.useLoad || c.useSave || c.useGenText || c.useGenEmbed || c.useGenStruct || c.useGroup || c.useGroupBy || c.useStream || c.useQuery) {
+	if len(c.helpers) == 0 {
 		return
 	}
 	c.writeln("")
-	if c.useIndexStr {
-		c.writeln("String _indexString(String s, int i) {")
-		c.indent++
-		c.writeln("var runes = s.runes.toList();")
-		c.writeln("if (i < 0) {")
-		c.indent++
-		c.writeln("i += runes.length;")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (i < 0 || i >= runes.length) {")
-		c.indent++
-		c.writeln("throw RangeError('index out of range');")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return String.fromCharCode(runes[i]);")
-		c.indent--
-		c.writeln("}")
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
 	}
-	if c.useUnionAll {
-		c.writeln("List<dynamic> _unionAll(List<dynamic> a, List<dynamic> b) => [...a, ...b];")
-	}
-	if c.useUnion {
-		c.writeln("List<dynamic> _union(List<dynamic> a, List<dynamic> b) {")
-		c.indent++
-		c.writeln("var res = [...a];")
-		c.writeln("for (var it in b) {")
-		c.indent++
-		c.writeln("if (!res.contains(it)) {")
-		c.indent++
-		c.writeln("res.add(it);")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return res;")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useExcept {
-		c.writeln("List<dynamic> _except(List<dynamic> a, List<dynamic> b) {")
-		c.indent++
-		c.writeln("var res = <dynamic>[];")
-		c.writeln("for (var it in a) {")
-		c.indent++
-		c.writeln("if (!b.contains(it)) {")
-		c.indent++
-		c.writeln("res.add(it);")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return res;")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useIntersect {
-		c.writeln("List<dynamic> _intersect(List<dynamic> a, List<dynamic> b) {")
-		c.indent++
-		c.writeln("var res = <dynamic>[];")
-		c.writeln("for (var it in a) {")
-		c.indent++
-		c.writeln("if (b.contains(it) && !res.contains(it)) {")
-		c.indent++
-		c.writeln("res.add(it);")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return res;")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useStream {
-		c.writeln("class _Stream<T> {")
-		c.indent++
-		c.writeln("String name;")
-		c.writeln("List<void Function(T)> handlers = [];")
-		c.writeln("_Stream(this.name);")
-		c.writeln("void append(T data) {")
-		c.indent++
-		c.writeln("for (var h in List.from(handlers)) { h(data); }")
-		c.indent--
-		c.writeln("}")
-		c.writeln("void register(void Function(T) handler) { handlers.add(handler); }")
-		c.indent--
-		c.writeln("}")
-		c.writeln("void _waitAll() {}")
-	}
-	if c.useGroup {
-		c.writeln("class _Group {")
-		c.indent++
-		c.writeln("dynamic key;")
-		c.writeln("List<dynamic> Items = [];")
-		c.writeln("_Group(this.key);")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useGroupBy {
-		c.writeln("List<_Group> _group_by(List<dynamic> src, dynamic Function(dynamic) keyfn) {")
-		c.indent++
-		c.writeln("var groups = <String,_Group>{};")
-		c.writeln("var order = <String>[];")
-		c.writeln("for (var it in src) {")
-		c.indent++
-		c.writeln("var key = keyfn(it);")
-		c.writeln("var ks = key.toString();")
-		c.writeln("var g = groups[ks];")
-		c.writeln("if (g == null) {")
-		c.indent++
-		c.writeln("g = _Group(key);")
-		c.writeln("groups[ks] = g;")
-		c.writeln("order.add(ks);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("g.Items.add(it);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return [for (var k in order) groups[k]!];")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useFetch {
-		c.writeln("dynamic _fetch(String url, Map<String,dynamic>? opts) {")
-		c.indent++
-		c.writeln("var args = ['-s'];")
-		c.writeln("var method = opts?['method']?.toString() ?? 'GET';")
-		c.writeln("args.addAll(['-X', method]);")
-		c.writeln("if (opts?['headers'] != null) {")
-		c.indent++
-		c.writeln("for (var e in (opts!['headers'] as Map).entries) {")
-		c.indent++
-		c.writeln("args.addAll(['-H', '${e.key}: ${e.value}']);")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (opts?['query'] != null) {")
-		c.indent++
-		c.writeln("var qs = Uri(queryParameters: (opts!['query'] as Map).map((k,v)=>MapEntry(k.toString(), v.toString()))).query;")
-		c.writeln("var sep = url.contains('?') ? '&' : '?';")
-		c.writeln("url = url + sep + qs;")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (opts != null && opts.containsKey('body')) {")
-		c.indent++
-		c.writeln("args.addAll(['-d', jsonEncode(opts['body'])]);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (opts?['timeout'] != null) {")
-		c.indent++
-		c.writeln("args.addAll(['--max-time', opts!['timeout'].toString()]);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("args.add(url);")
-		c.writeln("var res = Process.runSync('curl', args);")
-		c.writeln("return jsonDecode(res.stdout.toString());")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useLoad {
-		c.writeln("List<Map<String,dynamic>> _load(String? path, Map<String,dynamic>? opts) {")
-		c.indent++
-		c.writeln("var format = (opts?['format'] ?? 'csv').toString();")
-		c.writeln("var header = opts?['header'] ?? true;")
-		c.writeln("var delim = (opts?['delimiter'] ?? ',').toString();")
-		c.writeln("if (delim.isEmpty) delim = ',';")
-		c.writeln("if (format == 'tsv') delim = '\t';")
-		c.writeln("String text;")
-		c.writeln("if (path == null || path == '' || path == '-') {")
-		c.indent++
-		c.writeln("var lines = <String>[];")
-		c.writeln("while (true) {")
-		c.indent++
-		c.writeln("var line = stdin.readLineSync();")
-		c.writeln("if (line == null) break;")
-		c.writeln("lines.add(line);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("text = lines.join('\\n');")
-		c.indent--
-		c.writeln("} else {")
-		c.indent++
-		c.writeln("text = File(path).readAsStringSync();")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (format != 'csv') return [];")
-		c.writeln("var lines = text.trim().split(RegExp('\\r?\\n')).where((l) => l.isNotEmpty).toList();")
-		c.writeln("if (lines.isEmpty) return [];")
-		c.writeln("List<String> headers;")
-		c.writeln("if (header) {")
-		c.indent++
-		c.writeln("headers = lines[0].split(delim);")
-		c.indent--
-		c.writeln("} else {")
-		c.indent++
-		c.writeln("headers = List.generate(lines[0].split(delim).length, (i) => 'c$' + i.toString());")
-		c.indent--
-		c.writeln("}")
-		c.writeln("var start = header ? 1 : 0;")
-		c.writeln("var out = <Map<String,dynamic>>[];")
-		c.writeln("for (var i = start; i < lines.length; i++) {")
-		c.indent++
-		c.writeln("var parts = lines[i].split(delim);")
-		c.writeln("var row = <String,dynamic>{};")
-		c.writeln("for (var j = 0; j < headers.length; j++) {")
-		c.indent++
-		c.writeln("row[headers[j]] = j < parts.length ? parts[j] : '';")
-		c.indent--
-		c.writeln("}")
-		c.writeln("out.add(row);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return out;")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useSave {
-		c.writeln("void _save(List<Map<String,dynamic>> rows, String? path, Map<String,dynamic>? opts) {")
-		c.indent++
-		c.writeln("var format = (opts?['format'] ?? 'csv').toString();")
-		c.writeln("var header = opts?['header'] ?? false;")
-		c.writeln("var delim = (opts?['delimiter'] ?? ',').toString();")
-		c.writeln("if (delim.isEmpty) delim = ',';")
-		c.writeln("if (format == 'tsv') delim = '\t';")
-		c.writeln("if (format != 'csv') return;")
-		c.writeln("var headers = rows.isNotEmpty ? (rows[0].keys.toList()..sort()) : <String>[];")
-		c.writeln("var lines = <String>[];")
-		c.writeln("if (header) lines.add(headers.join(delim));")
-		c.writeln("for (var row in rows) {")
-		c.indent++
-		c.writeln("lines.add(headers.map((h) => row[h]?.toString() ?? '').join(delim));")
-		c.indent--
-		c.writeln("}")
-		c.writeln("var text = lines.join('\\n') + '\n';")
-		c.writeln("if (path == null || path == '' || path == '-') {")
-		c.indent++
-		c.writeln("stdout.write(text);")
-		c.indent--
-		c.writeln("} else {")
-		c.indent++
-		c.writeln("File(path).writeAsStringSync(text);")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useQuery {
-		c.writeln("List<dynamic> _query(List<dynamic> src, List<Map<String,dynamic>> joins, Map<String,dynamic> opts) {")
-		c.indent++
-		c.writeln("var items = [for (var v in src) [v]];")
-		c.writeln("for (var j in joins) {")
-		c.indent++
-		c.writeln("var joined = <List<dynamic>>[];")
-		c.writeln("var jitems = (j['items'] as List).cast<dynamic>();")
-		c.writeln("var on = j['on'];")
-		c.writeln("var left = j['left'] == true;")
-		c.writeln("var right = j['right'] == true;")
-		c.writeln("if (right && left) {")
-		c.indent++
-		c.writeln("var matched = List<bool>.filled(jitems.length, false);")
-		c.writeln("for (var leftRow in items) {")
-		c.indent++
-		c.writeln("var m = false;")
-		c.writeln("for (var ri = 0; ri < jitems.length; ri++) {")
-		c.indent++
-		c.writeln("var rightRow = jitems[ri];")
-		c.writeln("var keep = true;")
-		c.writeln("if (on != null) keep = Function.apply(on, [...leftRow, rightRow]) as bool;")
-		c.writeln("if (!keep) continue;")
-		c.writeln("m = true; matched[ri] = true;")
-		c.writeln("joined.add([...leftRow, rightRow]);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (!m) joined.add([...leftRow, null]);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("for (var ri = 0; ri < jitems.length; ri++) {")
-		c.indent++
-		c.writeln("if (!matched[ri]) {")
-		c.indent++
-		c.writeln("var undef = items.isNotEmpty ? List<dynamic>.filled(items[0].length, null) : <dynamic>[];")
-		c.writeln("joined.add([...undef, jitems[ri]]);")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("} else if (right) {")
-		c.indent++
-		c.writeln("for (var rightRow in jitems) {")
-		c.indent++
-		c.writeln("var m = false;")
-		c.writeln("for (var leftRow in items) {")
-		c.indent++
-		c.writeln("var keep = true;")
-		c.writeln("if (on != null) keep = Function.apply(on, [...leftRow, rightRow]) as bool;")
-		c.writeln("if (!keep) continue;")
-		c.writeln("m = true; joined.add([...leftRow, rightRow]);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (!m) {")
-		c.indent++
-		c.writeln("var undef = items.isNotEmpty ? List<dynamic>.filled(items[0].length, null) : <dynamic>[];")
-		c.writeln("joined.add([...undef, rightRow]);")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("} else {")
-		c.indent++
-		c.writeln("for (var leftRow in items) {")
-		c.indent++
-		c.writeln("var m = false;")
-		c.writeln("for (var rightRow in jitems) {")
-		c.indent++
-		c.writeln("var keep = true;")
-		c.writeln("if (on != null) keep = Function.apply(on, [...leftRow, rightRow]) as bool;")
-		c.writeln("if (!keep) continue;")
-		c.writeln("m = true; joined.add([...leftRow, rightRow]);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (left && !m) joined.add([...leftRow, null]);")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-		c.writeln("items = joined;")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (opts['where'] != null) {")
-		c.indent++
-		c.writeln("items = [for (var r in items) if (Function.apply(opts['where'], r) as bool) r];")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (opts['sortKey'] != null) {")
-		c.indent++
-		c.writeln("var pairs = [for (var it in items) {'item': it, 'key': Function.apply(opts['sortKey'], it)}];")
-		c.writeln("pairs.sort((a,b) {")
-		c.indent++
-		c.writeln("var ak = a['key']; var bk = b['key'];")
-		c.writeln("if (ak is num && bk is num) return ak.compareTo(bk);")
-		c.writeln("if (ak is String && bk is String) return ak.compareTo(bk);")
-		c.writeln("return ak.toString().compareTo(bk.toString());")
-		c.indent--
-		c.writeln("});")
-		c.writeln("items = [for (var p in pairs) p['item'] as List<dynamic>];")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (opts['skip'] != null) {")
-		c.indent++
-		c.writeln("var n = opts['skip'] as int;")
-		c.writeln("items = n < items.length ? items.sublist(n) : <List<dynamic>>[];")
-		c.indent--
-		c.writeln("}")
-		c.writeln("if (opts['take'] != null) {")
-		c.indent++
-		c.writeln("var n = opts['take'] as int;")
-		c.writeln("if (n < items.length) items = items.sublist(0, n);")
-		c.indent--
-		c.writeln("}")
-		c.writeln("var res = <dynamic>[];")
-		c.writeln("for (var r in items) { res.add(Function.apply(opts['select'], r)); }")
-		c.writeln("return res;")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useGenText {
-		c.writeln("String _genText(String prompt, String model, Map<String,dynamic>? params) {")
-		c.indent++
-		c.writeln("// TODO: integrate with an LLM")
-		c.writeln("return prompt;")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useGenEmbed {
-		c.writeln("List<double> _genEmbed(String text, String model, Map<String,dynamic>? params) {")
-		c.indent++
-		c.writeln("return text.codeUnits.map((c) => c.toDouble()).toList();")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.useGenStruct {
-		c.writeln("T _genStruct<T>(String prompt, String model, Map<String,dynamic>? params) {")
-		c.indent++
-		c.writeln("// TODO: parse model output into a struct")
-		c.writeln("return null as T;")
-		c.indent--
-		c.writeln("}")
+	sort.Strings(names)
+	for _, n := range names {
+		c.buf.WriteString(helperMap[n])
+		c.buf.WriteByte('\n')
 	}
 }
