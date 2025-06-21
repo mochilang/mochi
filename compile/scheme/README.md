@@ -297,8 +297,17 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * methods inside `type` blocks
 * export statements via `export`
 * concurrency primitives like `spawn`
+* generic type parameters for functions and user-defined types
+* reflection or macro facilities
+* asynchronous functions (`async`/`await`)
+* agent initialization with field values
+* dataset queries with outer joins or complex aggregation
+* pattern matching on union variants
+* destructuring bindings in `let` and `var` statements
+* nested recursive functions inside other functions
+* foreign imports and `extern` declarations
 * advanced string slicing
-* list slicing and collection methods like `push` or `keys`
+* list slicing and other collection mutators
 * logic programming predicates
 * `load` and `save` only support JSON or JSONL formats, not CSV or YAML
 

@@ -1016,6 +1016,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("(let ((lst %s)) (if (null? lst) 0 (/ (apply + lst) (length lst))))", args[0]), nil
+	case "push":
+		if len(args) != 2 {
+			return "", fmt.Errorf("push expects 2 args")
+		}
+		return fmt.Sprintf("(append %s (list %s))", args[0], args[1]), nil
+	case "keys":
+		if len(args) != 1 {
+			return "", fmt.Errorf("keys expects 1 arg")
+		}
+		return fmt.Sprintf("(map car %s)", args[0]), nil
 	case "input":
 		if len(args) != 0 {
 			return "", fmt.Errorf("input expects no args")
