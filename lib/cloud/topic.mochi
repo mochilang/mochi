@@ -1,0 +1,24 @@
+package cloud
+
+/// Topic implements a simple publish/subscribe channel.
+type Topic {
+  name: string,
+  subscribers: list<fun(any): void>
+}
+
+/// topic creates a new Topic.
+fun topic(name: string): Topic {
+  return Topic { name: name, subscribers: [] }
+}
+
+/// publish sends a value to all subscribers.
+fun Topic.publish(t: Topic, msg: any) {
+  for sub in t.subscribers {
+    sub(msg)
+  }
+}
+
+/// subscribe registers a handler to receive published values.
+fun Topic.subscribe(t: Topic, handler: fun(any): void) {
+  t.subscribers = t.subscribers + [handler]
+}

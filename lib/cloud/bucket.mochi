@@ -1,0 +1,41 @@
+package cloud
+
+/// Bucket is an in-memory object store identified by a name.
+type Bucket {
+  name: string,
+  objects: map<string, any>
+}
+
+/// bucket creates a new Bucket with the given name.
+fun bucket(name: string): Bucket {
+  return Bucket { name: name, objects: {} }
+}
+
+/// Store or overwrite a value under the given key.
+fun Bucket.put(b: Bucket, key: string, value: any) {
+  b.objects[key] = value
+}
+
+/// Retrieve a value by key or null if missing.
+fun Bucket.get(b: Bucket, key: string): any {
+  if key in b.objects {
+    return b.objects[key]
+  }
+  return null
+}
+
+/// Delete a key if present.
+fun Bucket.delete(b: Bucket, key: string) {
+  if key in b.objects {
+    delete(b.objects, key)
+  }
+}
+
+/// List all keys stored in the bucket.
+fun Bucket.list(b: Bucket): list<string> {
+  var keys: list<string> = []
+  for k in b.objects {
+    keys = keys + [k]
+  }
+  return keys
+}
