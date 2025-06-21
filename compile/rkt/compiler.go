@@ -449,9 +449,6 @@ func (c *Compiler) assignNested(base string, idxs []*parser.IndexOp, val string)
 	}
 	idx := idxs[0]
 	if idx.Colon != nil {
-		if len(idxs) > 1 {
-			return "", fmt.Errorf("slice assignment unsupported beyond one level")
-		}
 		start := "0"
 		if idx.Start != nil {
 			s, err := c.compileExpr(idx.Start)
@@ -468,7 +465,12 @@ func (c *Compiler) assignNested(base string, idxs []*parser.IndexOp, val string)
 			}
 			end = e
 		}
-		expr := fmt.Sprintf("(if (string? %s) (string-append (substring %s 0 %s) %s (substring %s %s (string-length %s))) (append (take %s %s) %s (drop %s %s)))", base, base, start, val, base, end, base, base, start, val, base, end)
+		sliceBase := fmt.Sprintf("(slice %s %s %s)", base, start, end)
+		innerVal, err := c.assignNested(sliceBase, idxs[1:], val)
+		if err != nil {
+			return "", err
+		}
+		expr := fmt.Sprintf("(if (string? %s) (string-append (substring %s 0 %s) %s (substring %s %s (string-length %s))) (append (take %s %s) %s (drop %s %s)))", base, base, start, innerVal, base, end, base, base, start, innerVal, base, end)
 		return expr, nil
 	}
 	idxExpr, err := c.compileExpr(idx.Start)

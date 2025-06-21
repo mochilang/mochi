@@ -35,7 +35,7 @@ go test ./compile/rkt -tags slow
 - Dataset helpers `_fetch`, `_load` and `_save` for JSON data
 - Generate expressions via `_genText`, `_genEmbed` and `_genStruct`
 - `in` operator for lists and strings
-- Slice assignments like `xs[1:3] = sub`
+- Slice assignments, including multi-dimensional slices like `xs[0:1][1:2] = sub`
 - Dataset queries with `sort`, `skip` and `take`
 - Simple `struct` type declarations
 
@@ -50,8 +50,8 @@ go test ./compile/rkt -tags slow
 - Package management and `package` declarations
 - Union type declarations
 - Python interop via `_pyAttr`
-- Multi-dimensional slice assignment
 - Methods defined inside `type` blocks
 - Extern declarations (`extern var`, `extern fun`, `extern type`, `extern object`)
 - Destructuring bindings in `let` and `var` statements
 - Iteration over map key/value pairs
+- Built-in functions `now` and `json`
