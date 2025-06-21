@@ -354,6 +354,12 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	env.SetVar("range", FuncType{
+		Params:   []Type{IntType{}},
+		Return:   ListType{Elem: IntType{}},
+		Pure:     true,
+		Variadic: true,
+	}, false)
 	env.SetVar("now", FuncType{
 		Params: []Type{},
 		Return: Int64Type{},
@@ -2027,6 +2033,18 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		if _, ok := args[0].(ListType); !ok {
 			if _, ok := args[0].(AnyType); !ok {
 				return fmt.Errorf("append() expects list, got %v", args[0])
+			}
+		}
+		return nil
+	case "range":
+		if len(args) < 1 || len(args) > 3 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		for i, a := range args {
+			if _, ok := a.(IntType); !ok {
+				if _, ok := a.(AnyType); !ok {
+					return errArgTypeMismatch(pos, i, IntType{}, a)
+				}
 			}
 		}
 		return nil

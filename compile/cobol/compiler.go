@@ -572,6 +572,56 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION ABS(%s)", tmp, expr))
 		return tmp
 	}
+	if name == "RANGE" && len(n.Children) >= 1 && len(n.Children) <= 3 {
+		var start, end, step int
+		if len(n.Children) == 1 {
+			if n.Children[0].Kind != "int" {
+				c.writeln("    *> unsupported range call")
+				return "0"
+			}
+			start = 0
+			end = extractInt(n.Children[0])
+			step = 1
+		} else {
+			if n.Children[0].Kind != "int" || n.Children[1].Kind != "int" {
+				c.writeln("    *> unsupported range call")
+				return "0"
+			}
+			start = extractInt(n.Children[0])
+			end = extractInt(n.Children[1])
+			step = 1
+			if len(n.Children) == 3 {
+				if n.Children[2].Kind != "int" {
+					c.writeln("    *> unsupported range call")
+					return "0"
+				}
+				step = extractInt(n.Children[2])
+				if step == 0 {
+					step = 1
+				}
+			}
+		}
+		length := 0
+		if step > 0 {
+			if end > start {
+				length = (end - start + step - 1) / step
+			}
+		} else if step < 0 {
+			s := -step
+			if end < start {
+				length = (start - end + s - 1) / s
+			}
+		}
+		res := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES PIC 9.", res, length))
+		c.listLens[res] = length
+		val := start
+		for i := 0; i < length; i++ {
+			c.writeln(fmt.Sprintf("    MOVE %d TO %s(%d)", val, res, i+1))
+			val += step
+		}
+		return res
+	}
 	count, ok := c.funcs[name]
 	if name == "ADD" && len(n.Children) == 2 {
 		left := c.expr(n.Children[0])
