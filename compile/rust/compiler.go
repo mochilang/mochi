@@ -234,6 +234,11 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
+	if c.env != nil && len(stmt.Index) == 0 {
+		typ := c.inferExprType(stmt.Value)
+		mut, _ := c.env.IsMutable(stmt.Name)
+		c.env.SetVar(stmt.Name, typ, mut)
+	}
 	return nil
 }
 
@@ -393,16 +398,9 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		} else {
 			c.writeln(fmt.Sprintf("for %s in %s {", name, start))
 			if c.env != nil {
-				if id, ok := identName(stmt.Source); ok {
-					if t, err := c.env.GetVar(id); err == nil {
-						if lt, ok := t.(types.ListType); ok {
-							c.env.SetVar(stmt.Name, lt.Elem, true)
-						} else {
-							c.env.SetVar(stmt.Name, types.AnyType{}, true)
-						}
-					} else {
-						c.env.SetVar(stmt.Name, types.AnyType{}, true)
-					}
+				srcType := c.inferExprType(stmt.Source)
+				if lt, ok := srcType.(types.ListType); ok {
+					c.env.SetVar(stmt.Name, lt.Elem, true)
 				} else {
 					c.env.SetVar(stmt.Name, types.AnyType{}, true)
 				}
