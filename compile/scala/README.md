@@ -236,6 +236,12 @@ scalac Main.scala
 scala Main
 ```
 
+### Python FFI
+
+The backend can call Python libraries through `import python "mod" as m` and
+attribute access. For example `m.sqrt(9)` invokes the function using a Python
+subprocess.
+
 ## Tests
 
 Golden tests under `compile/scala` are tagged `slow` as they invoke the Scala toolchain. They compile programs in `tests/compiler/scala` as well as a subset under `tests/compiler/valid_scala`, run the resulting binaries and compare their output:
@@ -270,18 +276,17 @@ The Scala backend currently covers only basic Mochi features. It supports functi
 The following pieces of Mochi are not yet handled by the Scala backend:
 
 - concurrent primitives such as `spawn` and channels
-- module system and imports
+- module system and imports (except for Python FFI)
 - generic types and higher‑order functions
 - advanced dataset queries (joins and grouping)
 - logic queries
 - reflection and macro facilities
 - streams and agents
-- foreign function interface (`extern` imports)
 - error handling with `try`/`catch`
 - logic programming constructs (`fact`, `rule`)
-- generative AI integration (`generate` blocks)
 - event emission and intent handlers (`emit`, `on`)
 - model declarations
 - extern variable, type and object declarations
+- package declarations
 - the `eval` builtin function
 

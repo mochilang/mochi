@@ -24,6 +24,8 @@ type Compiler struct {
 	helpers map[string]bool
 
 	paramAlias map[string]string
+
+	pyModules map[string]string
 }
 
 type loopLabels struct {
@@ -120,7 +122,7 @@ func (c *Compiler) compileContinue() {
 
 // New creates a new Scala compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), paramAlias: make(map[string]string)}
+	return &Compiler{env: env, helpers: make(map[string]bool), paramAlias: make(map[string]string), pyModules: map[string]string{}}
 }
 
 // Compile generates Scala code for prog.
@@ -327,6 +329,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileTestBlock(s.Test)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
+	case s.Import != nil:
+		return c.addImport(s.Import)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -778,6 +782,28 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	if sel := p.Target.Selector; sel != nil {
+		if mod, ok := c.pyModules[sel.Root]; ok {
+			attr := strings.Join(sel.Tail, ".")
+			if len(p.Ops) == 0 {
+				c.use("_pyAttr")
+				return fmt.Sprintf("_pyAttr(%q, %q, Seq())", mod, attr), nil
+			}
+			if len(p.Ops) == 1 && p.Ops[0].Call != nil {
+				args := make([]string, len(p.Ops[0].Call.Args))
+				for i, a := range p.Ops[0].Call.Args {
+					v, err := c.compileExpr(a)
+					if err != nil {
+						return "", err
+					}
+					args[i] = v
+				}
+				c.use("_pyAttr")
+				return fmt.Sprintf("_pyAttr(%q, %q, Seq(%s))", mod, attr, strings.Join(args, ", ")), nil
+			}
+			return "", fmt.Errorf("unsupported FFI expression")
+		}
+	}
 	expr, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -1475,4 +1501,22 @@ func (c *Compiler) compileMatchPattern(pat *parser.Expr) (string, error) {
 		return sanitizeName(id), nil
 	}
 	return c.compileExpr(pat)
+}
+
+func (c *Compiler) addImport(im *parser.ImportStmt) error {
+	if im.Lang == nil || *im.Lang != "python" {
+		if im.Lang == nil {
+			return fmt.Errorf("unsupported import language: <nil>")
+		}
+		return fmt.Errorf("unsupported import language: %s", *im.Lang)
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	if c.pyModules == nil {
+		c.pyModules = map[string]string{}
+	}
+	c.pyModules[alias] = strings.Trim(im.Path, "\"")
+	return nil
 }
