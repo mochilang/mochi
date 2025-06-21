@@ -103,9 +103,8 @@ full Mochi language. Unsupported features include:
 * Set literals and related operations
 * Generative AI, HTTP fetch and FFI bindings
 * Streams and long-lived agents
-* `break` and `continue` statements
 * Struct and object types
+* Logic programming with `fact`, `rule` and `query` expressions
 * Package imports and module system
-* Top-level `var` declarations
 * Dataset `load`/`save` operations
 * `test` blocks and expectations
