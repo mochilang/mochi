@@ -46,6 +46,29 @@ func New() *Compiler {
 	}
 }
 
+// resetFeatures clears all feature flags for a new compilation unit.
+func (c *Compiler) resetFeatures() {
+	c.needsUnionInt = false
+	c.needsUnionFloat = false
+	c.needsUnionString = false
+	c.needsExceptInt = false
+	c.needsExceptFloat = false
+	c.needsExceptString = false
+	c.needsIntersectInt = false
+	c.needsIntersectFloat = false
+	c.needsIntersectString = false
+	c.needsStrInt = false
+	c.needsStrFloat = false
+	c.needsNow = false
+}
+
+// resetVarScopes initializes variable tracking maps for a new scope.
+func (c *Compiler) resetVarScopes() {
+	c.stringVars = map[string]bool{}
+	c.listVars = map[string]bool{}
+	c.floatVars = map[string]bool{}
+}
+
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("  ")
@@ -66,18 +89,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if prog.Package != "" {
 		c.writeln("! package " + prog.Package)
 	}
-	c.needsUnionInt = false
-	c.needsUnionFloat = false
-	c.needsUnionString = false
-	c.needsExceptInt = false
-	c.needsExceptFloat = false
-	c.needsExceptString = false
-	c.needsIntersectInt = false
-	c.needsIntersectFloat = false
-	c.needsIntersectString = false
-	c.needsStrInt = false
-	c.needsStrFloat = false
-	c.needsNow = false
+	c.resetFeatures()
+	c.resetVarScopes()
 	var funs []*parser.FunStmt
 	var tests []*parser.TestBlock
 	var mainStmts []*parser.Statement
@@ -200,9 +213,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
-	c.stringVars = map[string]bool{}
-	c.floatVars = map[string]bool{}
-	c.listVars = map[string]bool{}
+	c.resetVarScopes()
 	for _, p := range fn.Params {
 		if p.Type != nil && p.Type.Simple != nil {
 			if *p.Type.Simple == "string" {
@@ -666,6 +677,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.writeln(fmt.Sprintf("subroutine %s()", name))
 	c.indent++
 	c.writeln("implicit none")
+	c.resetVarScopes()
 	vars := map[string]bool{}
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
