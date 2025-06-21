@@ -1,0 +1,8 @@
+type Info {
+  msg: string
+}
+
+let info = generate Info {
+  prompt: "{\"msg\": \"hello\"}"
+}
+print(info.msg)

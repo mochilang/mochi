@@ -127,6 +127,8 @@ The current implementation focuses on a minimal subset of Mochi. It supports:
 - Simple `import` statements for Clojure namespaces
 - Basic `group by` queries
 - Built‑in helpers such as `count`, `avg`, `now`, `input`, `json` and `keys`
+- HTTP `fetch` for retrieving JSON
+- `generate` expressions for text, embeddings and structs
 - Anonymous `fun` expressions
 - Query filtering, cross and inner joins and pagination via `skip`/`take`
 - Indexing and slicing for lists, strings and maps
@@ -144,12 +146,10 @@ in the example programs. In particular:
 - Foreign imports for other languages and the module system
 - Logic programming facts and rules
 - External declarations and other FFI helpers
-- HTTP fetch and generative AI utilities
 - Generic types and functions
 - Destructuring bindings in `let` and `var` statements
-- Model declarations and `generate` expressions
+- Model declarations
 - Set collections and related operations
-- List collection methods such as `push`
 - Streams and event-driven agents
 - Concurrency primitives such as `spawn` and channels
 - Union types are not emitted

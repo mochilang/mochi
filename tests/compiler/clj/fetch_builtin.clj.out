@@ -1,0 +1,16 @@
+(ns main)
+
+(defn _fetch [url opts]
+  (let [txt (slurp url)]
+    (clojure.data.json/read-str txt :key-fn keyword))
+(defn Msg [message]
+  {:__name "Msg" :message message}
+)
+
+
+(defn -main []
+  (def data (_fetch "file://tests/compiler/lua/fetch_builtin.json" nil))
+  (println (:message data))
+)
+
+(-main)
