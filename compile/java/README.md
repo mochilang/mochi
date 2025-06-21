@@ -57,10 +57,10 @@ compilers:
 - Reflection or macro facilities
 - Extern variable, type and object declarations
 - Event emission and intent handlers (`emit`, `on`)
-- Methods declared inside `type` blocks
 - Agent initialization with field values
 - Set collections (`set<T>`) and related operations
 - Error handling with `try`/`catch` blocks
+- Asynchronous functions (`async`/`await`)
 - YAML dataset loading/saving
 - Destructuring bindings in `let` and `var` statements
 

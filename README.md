@@ -614,6 +614,7 @@ implemented across all backends:
 * YAML dataset loading and saving
 * Agent and stream constructs (`agent`, `on`, `emit`)
 * Model declarations (`model` blocks)
+* Methods declared inside `type` blocks
 * Dataset queries with outer joins or complex aggregation
 * Pattern matching on union variants
 * Nested recursive functions inside other functions

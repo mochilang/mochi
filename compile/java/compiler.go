@@ -444,6 +444,15 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.indent--
 		c.writeln("}")
 	}
+
+	for _, m := range t.Members {
+		if m.Method != nil {
+			c.writeln("")
+			if err := c.compileMethod(name, m.Method); err != nil {
+				return err
+			}
+		}
+	}
 	c.indent--
 	c.writeln("}")
 	return nil
@@ -511,6 +520,98 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	prevEnv := c.env
 	if prevEnv != nil {
 		child := types.NewEnv(prevEnv)
+		for i, p := range fun.Params {
+			var t types.Type = types.AnyType{}
+			if i < len(ft.Params) {
+				t = ft.Params[i]
+			} else if p.Type != nil {
+				t = c.resolveTypeRef(p.Type)
+			}
+			child.SetVar(p.Name, t, true)
+		}
+		c.env = child
+	}
+
+	prevRet := c.returnType
+	c.returnType = ft.Return
+	for _, s := range fun.Body {
+		if err := c.compileStmt(s); err != nil {
+			if prevEnv != nil {
+				c.env = prevEnv
+			}
+			c.returnType = prevRet
+			return err
+		}
+	}
+	c.returnType = prevRet
+	if prevEnv != nil {
+		c.env = prevEnv
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
+	name := sanitizeName(fun.Name)
+	var ft types.FuncType
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			if m, ok := st.Methods[fun.Name]; ok {
+				ft = m.Type
+			}
+		}
+	}
+	if ft.Params == nil {
+		ft.Params = make([]types.Type, len(fun.Params))
+		for i, p := range fun.Params {
+			if p.Type != nil {
+				ft.Params[i] = c.resolveTypeRef(p.Type)
+			} else {
+				ft.Params[i] = types.AnyType{}
+			}
+		}
+	}
+	if ft.Return == nil && fun.Return != nil {
+		ft.Return = c.resolveTypeRef(fun.Return)
+	}
+	if ft.Return == nil {
+		ft.Return = types.VoidType{}
+	}
+
+	c.writeIndent()
+	ret := c.javaType(ft.Return)
+	if ret == "" {
+		ret = "void"
+	}
+	c.buf.WriteString(ret + " " + name + "(")
+	for i, p := range fun.Params {
+		if i > 0 {
+			c.buf.WriteString(", ")
+		}
+		ptype := "var"
+		if i < len(ft.Params) {
+			ptype = c.javaType(ft.Params[i])
+		} else if p.Type != nil {
+			ptype = c.javaType(c.resolveTypeRef(p.Type))
+		}
+		if ptype == "" {
+			ptype = "var"
+		}
+		c.buf.WriteString(ptype + " " + sanitizeName(p.Name))
+	}
+	c.buf.WriteString(") {")
+	c.buf.WriteByte('\n')
+	c.indent++
+
+	prevEnv := c.env
+	if prevEnv != nil {
+		child := types.NewEnv(prevEnv)
+		if st, ok := prevEnv.GetStruct(structName); ok {
+			for name, t := range st.Fields {
+				child.SetVar(name, t, true)
+			}
+		}
 		for i, p := range fun.Params {
 			var t types.Type = types.AnyType{}
 			if i < len(ft.Params) {
