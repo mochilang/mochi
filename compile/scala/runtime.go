@@ -114,6 +114,17 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
         JSON.parseFull(out).getOrElse(out)
 }
 `
+	helperExtern = `object ExternRegistry {
+        private val externObjects = scala.collection.mutable.Map[String, Any]()
+        def registerExtern(name: String, obj: Any): Unit = externObjects(name) = obj
+        def _externGet(name: String): Any =
+          externObjects.getOrElse(name, throw new RuntimeException("extern object not registered: " + name))
+}`
+	helperEval = `def _eval(code: String): Any = {
+        import scala.tools.reflect.ToolBox
+        val tb = scala.reflect.runtime.currentMirror.mkToolBox()
+        tb.eval(tb.parse(code))
+}`
 )
 
 var helperMap = map[string]string{
@@ -129,6 +140,8 @@ var helperMap = map[string]string{
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
 	"_pyAttr":      helperPyAttr,
+	"_extern":      helperExtern,
+	"_eval":        helperEval,
 }
 
 func (c *Compiler) use(name string) {

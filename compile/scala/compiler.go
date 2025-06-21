@@ -307,6 +307,14 @@ func paramMutated(body []*parser.Statement, name string) bool {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.ExternVar != nil:
+		return c.compileExternVar(s.ExternVar)
+	case s.ExternFun != nil:
+		return c.compileExternFun(s.ExternFun)
+	case s.ExternType != nil:
+		return c.compileExternType(s.ExternType)
+	case s.ExternObject != nil:
+		return c.compileExternObject(s.ExternObject)
 	case s.Let != nil:
 		return c.compileLet(s.Let)
 	case s.Var != nil:
@@ -426,6 +434,49 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	}
 	if c.env != nil {
 		c.env.SetVar(st.Name, t, true)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExternVar(ev *parser.ExternVarDecl) error {
+	name := sanitizeName(ev.Name())
+	typ := scalaType(c.resolveTypeRef(ev.Type))
+	c.writeln(fmt.Sprintf("var %s: %s = null.asInstanceOf[%s]", name, typ, typ))
+	if c.env != nil {
+		c.env.SetVar(ev.Name(), c.resolveTypeRef(ev.Type), true)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExternFun(ef *parser.ExternFunDecl) error {
+	params := make([]string, len(ef.Params))
+	var ptypes []types.Type
+	for i, p := range ef.Params {
+		params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), scalaType(c.resolveTypeRef(p.Type)))
+		if c.env != nil {
+			ptypes = append(ptypes, c.resolveTypeRef(p.Type))
+		}
+	}
+	ret := scalaType(c.resolveTypeRef(ef.Return))
+	c.writeln(fmt.Sprintf("def %s(%s): %s = throw new RuntimeException(\"extern\")", sanitizeName(ef.Name()), strings.Join(params, ", "), ret))
+	if c.env != nil {
+		ft := types.FuncType{Params: ptypes, Return: c.resolveTypeRef(ef.Return)}
+		c.env.SetVar(ef.Name(), ft, false)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExternType(et *parser.ExternTypeDecl) error {
+	c.writeln(fmt.Sprintf("type %s = Any", sanitizeName(et.Name)))
+	return nil
+}
+
+func (c *Compiler) compileExternObject(eo *parser.ExternObjectDecl) error {
+	name := sanitizeName(eo.Name)
+	c.use("_extern")
+	c.writeln(fmt.Sprintf("val %s = ExternRegistry._externGet(\"%s\")", name, eo.Name))
+	if c.env != nil {
+		c.env.SetVar(eo.Name, types.AnyType{}, true)
 	}
 	return nil
 }
@@ -1012,6 +1063,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) == 1 {
 			return args[0] + ".toString()", nil
 		}
+	case "eval":
+		if len(args) != 1 {
+			return "", fmt.Errorf("eval expects 1 arg")
+		}
+		c.use("_eval")
+		return fmt.Sprintf("_eval(%s)", args[0]), nil
 	}
 	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 }
