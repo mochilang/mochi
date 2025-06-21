@@ -18,6 +18,15 @@ type Compiler struct {
 	buf           bytes.Buffer
 	indent        int
 	env           *types.Env
+	needPrint     bool
+	needFormat    bool
+	needCount     bool
+	needInput     bool
+	needAvg       bool
+	needForeach   bool
+	needWhile     bool
+	needExpect    bool
+	needTest      bool
 	needGet       bool
 	needIO        bool
 	needFetch     bool
@@ -292,6 +301,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.tests = append(c.tests, testInfo{name: name, label: t.Name})
+	c.needTest = true
 	c.writeln(fmt.Sprintf("%s() ->", name))
 	c.indent++
 	if err := c.compileBlock(t.Body, true, nil); err != nil {
@@ -419,6 +429,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
+		c.needExpect = true
 		c.buf.WriteString("mochi_expect(" + expr + ")")
 		return nil
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
@@ -496,6 +507,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 	prevName, hasPrev := c.vars[stmt.Name]
 	iter := c.newName(stmt.Name)
+	c.needForeach = true
 	c.buf.WriteString(fmt.Sprintf("mochi_foreach(fun(%s) ->\n", iter))
 	child := types.NewEnv(c.env)
 	child.SetVar(stmt.Name, types.AnyType{}, true)
@@ -529,6 +541,7 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	gatherAssigned(stmt.Body, c.vars, assigned)
 	if len(assigned) == 0 {
 		// fall back to simple helper-based loop
+		c.needWhile = true
 		c.buf.WriteString("mochi_while(fun() -> " + cond + " end, fun() ->\n")
 		c.indent++
 		if err := c.compileBlock(stmt.Body, false, nil); err != nil {
@@ -817,16 +830,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			argStr := strings.Join(args, ", ")
 			switch res {
 			case "print":
+				c.needPrint = true
+				c.needFormat = true
 				res = fmt.Sprintf("mochi_print([%s])", argStr)
 			case "len":
 				res = fmt.Sprintf("length(%s)", argStr)
 			case "str":
+				c.needFormat = true
 				res = fmt.Sprintf("mochi_format(%s)", argStr)
 			case "count":
+				c.needCount = true
 				res = fmt.Sprintf("mochi_count(%s)", argStr)
 			case "avg":
+				c.needAvg = true
 				res = fmt.Sprintf("mochi_avg(%s)", argStr)
 			case "input":
+				c.needInput = true
 				res = "mochi_input()"
 			default:
 				res = fmt.Sprintf("%s(%s)", res, argStr)
@@ -953,16 +972,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		argStr := strings.Join(args, ", ")
 		switch p.Call.Func {
 		case "print":
+			c.needPrint = true
+			c.needFormat = true
 			return fmt.Sprintf("mochi_print([%s])", argStr), nil
 		case "len":
 			return fmt.Sprintf("length(%s)", argStr), nil
 		case "str":
+			c.needFormat = true
 			return fmt.Sprintf("mochi_format(%s)", argStr), nil
 		case "count":
+			c.needCount = true
 			return fmt.Sprintf("mochi_count(%s)", argStr), nil
 		case "avg":
+			c.needAvg = true
 			return fmt.Sprintf("mochi_avg(%s)", argStr), nil
 		case "input":
+			c.needInput = true
 			return "mochi_input()", nil
 		default:
 			if v, ok := c.vars[p.Call.Func]; ok {
@@ -1492,70 +1517,83 @@ func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
 }
 
 func (c *Compiler) emitRuntime() {
-	c.writeln("mochi_print(Args) ->")
-	c.indent++
-	c.writeln("Strs = [ mochi_format(A) || A <- Args ],")
-	c.writeln("io:format(\"~s~n\", [lists:flatten(Strs)]).")
-	c.indent--
-	c.writeln("")
+	if c.needPrint {
+		c.writeln("mochi_print(Args) ->")
+		c.indent++
+		c.writeln("Strs = [ mochi_format(A) || A <- Args ],")
+		c.writeln("io:format(\"~s~n\", [lists:flatten(Strs)]).")
+		c.indent--
+		c.writeln("")
+	}
 
-	c.writeln("mochi_format(X) when is_integer(X) -> integer_to_list(X);")
-	c.writeln("mochi_format(X) when is_float(X) -> float_to_list(X);")
-	c.writeln("mochi_format(X) when is_list(X) -> X;")
-	c.writeln("mochi_format(X) -> lists:flatten(io_lib:format(\"~p\", [X])).")
+	if c.needFormat {
+		c.writeln("mochi_format(X) when is_integer(X) -> integer_to_list(X);")
+		c.writeln("mochi_format(X) when is_float(X) -> float_to_list(X);")
+		c.writeln("mochi_format(X) when is_list(X) -> X;")
+		c.writeln("mochi_format(X) -> lists:flatten(io_lib:format(\"~p\", [X])).")
+		c.writeln("")
+	}
 
-	c.writeln("")
-	c.writeln("mochi_count(X) when is_list(X) -> length(X);")
-	c.writeln("mochi_count(X) when is_map(X) -> maps:size(X);")
-	c.writeln("mochi_count(X) when is_binary(X) -> byte_size(X);")
-	c.writeln("mochi_count(_) -> erlang:error(badarg).")
+	if c.needCount {
+		c.writeln("mochi_count(X) when is_list(X) -> length(X);")
+		c.writeln("mochi_count(X) when is_map(X) -> maps:size(X);")
+		c.writeln("mochi_count(X) when is_binary(X) -> byte_size(X);")
+		c.writeln("mochi_count(_) -> erlang:error(badarg).")
+		c.writeln("")
+	}
 
-	c.writeln("")
-	c.writeln("mochi_input() ->")
-	c.indent++
-	c.writeln("case io:get_line(\"\") of")
-	c.indent++
-	c.writeln("eof -> \"\";")
-	c.writeln("Line -> string:trim(Line)")
-	c.indent--
-	c.writeln("end.")
-	c.indent--
+	if c.needInput {
+		c.writeln("mochi_input() ->")
+		c.indent++
+		c.writeln("case io:get_line(\"\") of")
+		c.indent++
+		c.writeln("eof -> \"\";")
+		c.writeln("Line -> string:trim(Line)")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+		c.writeln("")
+	}
 
-	c.writeln("")
-	c.writeln("mochi_avg([]) -> 0;")
-	c.writeln("mochi_avg(L) when is_list(L) ->")
-	c.indent++
-	c.writeln("Sum = lists:foldl(fun(X, Acc) ->")
-	c.indent++
-	c.writeln("case X of")
-	c.indent++
-	c.writeln("I when is_integer(I) -> Acc + I;")
-	c.writeln("F when is_float(F) -> Acc + F;")
-	c.writeln("_ -> erlang:error(badarg) end")
-	c.indent--
-	c.writeln("end, 0, L),")
-	c.writeln("Sum / length(L);")
-	c.indent--
-	c.writeln("mochi_avg(_) -> erlang:error(badarg).")
+	if c.needAvg {
+		c.writeln("mochi_avg([]) -> 0;")
+		c.writeln("mochi_avg(L) when is_list(L) ->")
+		c.indent++
+		c.writeln("Sum = lists:foldl(fun(X, Acc) ->")
+		c.indent++
+		c.writeln("case X of")
+		c.indent++
+		c.writeln("I when is_integer(I) -> Acc + I;")
+		c.writeln("F when is_float(F) -> Acc + F;")
+		c.writeln("_ -> erlang:error(badarg) end")
+		c.indent--
+		c.writeln("end, 0, L),")
+		c.writeln("Sum / length(L);")
+		c.indent--
+		c.writeln("mochi_avg(_) -> erlang:error(badarg).")
+		c.indent--
+		c.writeln("")
+	}
 
-	c.writeln("")
-	c.writeln("mochi_foreach(F, L) ->")
-	c.indent++
-	c.writeln("try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.")
-	c.indent--
+	if c.needForeach {
+		c.writeln("mochi_foreach(F, L) ->")
+		c.indent++
+		c.writeln("try mochi_foreach_loop(F, L) catch throw:mochi_break -> ok end.")
+		c.indent--
 
-	c.writeln("")
-	c.writeln("mochi_foreach_loop(_, []) -> ok;")
-	c.writeln("mochi_foreach_loop(F, [H|T]) ->")
-	c.indent++
-	c.writeln("try F(H) catch")
-	c.indent++
-	c.writeln("throw:mochi_continue -> ok;")
-	c.writeln("throw:mochi_break -> throw(mochi_break)")
-	c.indent--
-	c.writeln("end,")
-	c.writeln("mochi_foreach_loop(F, T).")
-	c.indent--
+		c.writeln("")
+		c.writeln("mochi_foreach_loop(_, []) -> ok;")
+		c.writeln("mochi_foreach_loop(F, [H|T]) ->")
+		c.indent++
+		c.writeln("try F(H) catch")
+		c.indent++
+		c.writeln("throw:mochi_continue -> ok;")
+		c.writeln("throw:mochi_break -> throw(mochi_break)")
+		c.indent--
+		c.writeln("end,")
+		c.writeln("mochi_foreach_loop(F, T).")
+		c.indent--
+	}
 
 	if c.needGet {
 		c.writeln("")
@@ -1636,50 +1674,56 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("mochi_intersect(A, B) -> sets:to_list(sets:intersection(sets:from_list(A), sets:from_list(B))).")
 	}
 
-	c.writeln("")
-	c.writeln("mochi_while(Cond, Body) ->")
-	c.indent++
-	c.writeln("case Cond() of")
-	c.indent++
-	c.writeln("true ->")
-	c.indent++
-	c.writeln("try Body() catch")
-	c.indent++
-	c.writeln("throw:mochi_continue -> ok;")
-	c.writeln("throw:mochi_break -> ok")
-	c.indent--
-	c.writeln("end,")
-	c.writeln("mochi_while(Cond, Body);")
-	c.indent--
-	c.writeln("_ -> ok")
-	c.indent--
-	c.writeln("end.")
-	c.indent--
+	if c.needWhile {
+		c.writeln("")
+		c.writeln("mochi_while(Cond, Body) ->")
+		c.indent++
+		c.writeln("case Cond() of")
+		c.indent++
+		c.writeln("true ->")
+		c.indent++
+		c.writeln("try Body() catch")
+		c.indent++
+		c.writeln("throw:mochi_continue -> ok;")
+		c.writeln("throw:mochi_break -> ok")
+		c.indent--
+		c.writeln("end,")
+		c.writeln("mochi_while(Cond, Body);")
+		c.indent--
+		c.writeln("_ -> ok")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+	}
 
-	c.writeln("")
-	c.writeln("mochi_expect(true) -> ok;")
-	c.writeln("mochi_expect(_) -> erlang:error(expect_failed).")
+	if c.needExpect {
+		c.writeln("")
+		c.writeln("mochi_expect(true) -> ok;")
+		c.writeln("mochi_expect(_) -> erlang:error(expect_failed).")
+	}
 
-	c.writeln("")
-	c.writeln("mochi_test_start(Name) -> io:format(\"   test ~s ...\", [Name]).")
-	c.writeln("mochi_test_pass(Dur) -> io:format(\" ok (~p)~n\", [Dur]).")
-	c.writeln("mochi_test_fail(Err, Dur) -> io:format(\" fail ~p (~p)~n\", [Err, Dur]).")
+	if c.needTest {
+		c.writeln("")
+		c.writeln("mochi_test_start(Name) -> io:format(\"   test ~s ...\", [Name]).")
+		c.writeln("mochi_test_pass(Dur) -> io:format(\" ok (~p)~n\", [Dur]).")
+		c.writeln("mochi_test_fail(Err, Dur) -> io:format(\" fail ~p (~p)~n\", [Err, Dur]).")
 
-	c.writeln("")
-	c.writeln("mochi_run_test(Name, Fun) ->")
-	c.indent++
-	c.writeln("mochi_test_start(Name),")
-	c.writeln("Start = erlang:monotonic_time(millisecond),")
-	c.writeln("try Fun() of _ ->")
-	c.indent++
-	c.writeln("Duration = erlang:monotonic_time(millisecond) - Start,")
-	c.writeln("mochi_test_pass(Duration)")
-	c.indent--
-	c.writeln("catch C:R ->")
-	c.indent++
-	c.writeln("Duration = erlang:monotonic_time(millisecond) - Start,")
-	c.writeln("mochi_test_fail({C,R}, Duration)")
-	c.indent--
-	c.writeln("end.")
-	c.indent--
+		c.writeln("")
+		c.writeln("mochi_run_test(Name, Fun) ->")
+		c.indent++
+		c.writeln("mochi_test_start(Name),")
+		c.writeln("Start = erlang:monotonic_time(millisecond),")
+		c.writeln("try Fun() of _ ->")
+		c.indent++
+		c.writeln("Duration = erlang:monotonic_time(millisecond) - Start,")
+		c.writeln("mochi_test_pass(Duration)")
+		c.indent--
+		c.writeln("catch C:R ->")
+		c.indent++
+		c.writeln("Duration = erlang:monotonic_time(millisecond) - Start,")
+		c.writeln("mochi_test_fail({C,R}, Duration)")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+	}
 }
