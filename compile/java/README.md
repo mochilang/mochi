@@ -259,6 +259,7 @@ The Java backend currently lacks several Mochi features supported by other compi
 - The `eval` builtin function
 - Methods declared inside `type` blocks
 - Agent initialization with field values
-- List set operations (`union`, `union all`, `intersect`, `except`)
+- List set operation `union all`
+- YAML dataset loading/saving
 
 Simple `from` queries used by the LeetCode examples are now supported.
