@@ -1,9 +1,10 @@
 package ccode
 
 import (
-	"reflect"
+        "reflect"
 
-	"mochi/types"
+        "mochi/parser"
+        "mochi/types"
 )
 
 func equalTypes(a, b types.Type) bool {
@@ -65,6 +66,58 @@ func cTypeFromType(t types.Type) string {
 		if elem == "list_int" {
 			return "list_list_int"
 		}
-	}
-	return "int"
+        }
+        return "int"
+}
+
+func isListListIntType(t types.Type) bool {
+        if lt, ok := t.(types.ListType); ok {
+                if inner, ok2 := lt.Elem.(types.ListType); ok2 {
+                        switch inner.Elem.(type) {
+                        case types.IntType, types.BoolType:
+                                return true
+                        }
+                }
+        }
+        return false
+}
+
+func isListStringType(t types.Type) bool {
+        if lt, ok := t.(types.ListType); ok {
+                if _, ok2 := lt.Elem.(types.StringType); ok2 {
+                        return true
+                }
+        }
+        return false
+}
+
+func isListFloatType(t types.Type) bool {
+        if lt, ok := t.(types.ListType); ok {
+                if _, ok2 := lt.Elem.(types.FloatType); ok2 {
+                        return true
+                }
+        }
+        return false
+}
+
+func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
+        if t == nil {
+                return types.IntType{}
+        }
+        if t.Simple != nil {
+                switch *t.Simple {
+                case "int":
+                        return types.IntType{}
+                case "string":
+                        return types.StringType{}
+                case "bool":
+                        return types.BoolType{}
+                }
+        }
+        if t.Generic != nil && t.Generic.Name == "list" {
+                if len(t.Generic.Args) == 1 {
+                        return types.ListType{Elem: resolveTypeRef(t.Generic.Args[0], env)}
+                }
+        }
+        return types.AnyType{}
 }
