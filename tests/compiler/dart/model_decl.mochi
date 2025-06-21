@@ -1,0 +1,9 @@
+model quick {
+  provider: "openai"
+}
+
+let x = generate text {
+  model: "quick",
+  prompt: "hi"
+}
+print(x)

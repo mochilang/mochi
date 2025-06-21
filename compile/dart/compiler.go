@@ -25,12 +25,13 @@ type Compiler struct {
 	agents       map[string]bool
 	handlerCount int
 	helpers      map[string]bool
+	models       bool
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, imports: make(map[string]bool), packages: make(map[string]bool),
-		structs: make(map[string]bool), agents: make(map[string]bool), helpers: make(map[string]bool)}
+		structs: make(map[string]bool), agents: make(map[string]bool), helpers: make(map[string]bool), models: false}
 }
 
 // Compile returns Dart source implementing prog.
@@ -42,6 +43,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.agents = make(map[string]bool)
 	c.helpers = make(map[string]bool)
 	c.handlerCount = 0
+	c.models = false
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -109,6 +111,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		c.writeln("")
 	}
+	if c.models {
+		c.writeln("Map<String, Map<String, dynamic>> _models = {};")
+		c.writeln("")
+	}
 	c.buf.Write(bodyBytes)
 	c.emitRuntime()
 	c.buf.WriteByte('\n')
@@ -158,6 +164,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileEmit(s.Emit)
 	case s.Agent != nil:
 		return c.compileAgentDecl(s.Agent)
+	case s.Model != nil:
+		return c.compileModelDecl(s.Model)
 	case s.Import != nil:
 		if s.Import.Lang == nil {
 			return c.compilePackageImport(s.Import)
@@ -1006,6 +1014,20 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("if (!(%s)) { throw Exception('expect failed'); }", expr))
+	return nil
+}
+
+func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
+	c.models = true
+	parts := make([]string, len(m.Fields))
+	for i, f := range m.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("%q: %s", f.Name, v)
+	}
+	c.writeln(fmt.Sprintf("_models[%q] = {%s};", m.Name, strings.Join(parts, ", ")))
 	return nil
 }
 

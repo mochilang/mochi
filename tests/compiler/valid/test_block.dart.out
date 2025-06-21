@@ -1,3 +1,10 @@
+void test_addition_works() {
+	int x = (1 + 2);
+	if (!((x == 3))) { throw Exception('expect failed'); }
+}
+
 void main() {
 	print("ok");
+	test_addition_works();
 }
+

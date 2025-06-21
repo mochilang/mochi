@@ -1,0 +1,24 @@
+abstract class Tree {}
+class Leaf extends Tree {
+	Leaf();
+}
+class Node extends Tree {
+	Tree left;
+	int value;
+	Tree right;
+	Node({required this.left, required this.value, required this.right});
+}
+
+List<int> inorder(Tree t) {
+	return (() {
+	var _t = t;
+	if (_t is Leaf) { return ([] as List<int>); }
+	if (_t is Node) { return ((l, v, r) { return ((inorder(l) + [v]) + inorder(r)); })((_t as Node).left, (_t as Node).value, (_t as Node).right); }
+	return null;
+})();
+}
+
+void main() {
+	print(inorder(Node(left: Leaf(), value: 1, right: Node(left: Leaf(), value: 2, right: Leaf()))));
+}
+

@@ -1,0 +1,12 @@
+void main() {
+	int x = 2;
+	String label = (() {
+	var _t = x;
+	if (_t == 1) { return "one"; }
+	if (_t == 2) { return "two"; }
+	if (_t == 3) { return "three"; }
+	return "unknown";
+})();
+	print(label);
+}
+

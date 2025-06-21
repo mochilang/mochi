@@ -1,9 +1,10 @@
-List<int> sum(n) {
-	return ((n * ((n + 1))) / 2);
+int sum(int n) {
+	return ((n * ((n + 1))) ~/ 2);
 }
 
 void main() {
-	var n = 10;
+	int n = 10;
 	print(sum(n));
 	print(n);
 }
+
