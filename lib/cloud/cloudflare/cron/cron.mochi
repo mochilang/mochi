@@ -1,0 +1,12 @@
+// Cron trigger for scheduled invocations
+
+type Trigger {
+  schedule: string
+}
+
+fun every(cronExp: string): Trigger {
+  return Trigger { schedule: cronExp }
+}
+
+export type Trigger
+export fun every
