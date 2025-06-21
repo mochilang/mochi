@@ -162,6 +162,14 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	for _, s := range prog.Statements {
+		if s.Import != nil {
+			// import statements are ignored in the C backend
+			continue
+		}
+		if s.ExternType != nil {
+			// extern type declarations have no effect
+			continue
+		}
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
 				return nil, err
@@ -448,6 +456,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Import != nil:
+		// imports are ignored at code generation time
+		return nil
+	case s.ExternType != nil:
+		// extern type declarations have no runtime effect
+		return nil
+	case s.ExternObject != nil:
+		// extern objects are not supported yet
+		return nil
 	default:
 		// unsupported
 	}

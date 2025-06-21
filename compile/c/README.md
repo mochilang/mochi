@@ -90,6 +90,9 @@ features include:
  - methods declared inside `type` blocks
  - functions with multiple return values
  - map membership operations
+ - extern type declarations
+ - variadic functions
+ - closures that capture surrounding variables
 
 The backend now supports membership checks and `union`/`union all` operations
 for integer, float, and string lists, along with slicing and printing of string
