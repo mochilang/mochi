@@ -606,9 +606,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil {
-		return "", fmt.Errorf("group clause not supported")
-	}
+	group := q.Group != nil
 	for _, j := range q.Joins {
 		if j.Side != nil {
 			return "", fmt.Errorf("join sides not supported")
@@ -620,6 +618,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	iter := sanitizeName(q.Var)
 	var whereCond, sortExpr, skipExpr, takeExpr string
+	var keyExpr string
+	if group {
+		keyExpr, err = c.compileExpr(q.Group.Expr)
+		if err != nil {
+			return "", err
+		}
+	}
 	if q.Where != nil {
 		whereCond, err = c.compileExpr(q.Where)
 		if err != nil {
@@ -653,7 +658,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("(function()\n")
 
 	// handle simple joins/cross joins without sort/skip/take
-	if (len(q.Froms) > 0 || len(q.Joins) > 0) && sortExpr == "" && skipExpr == "" && takeExpr == "" {
+	if !group && (len(q.Froms) > 0 || len(q.Joins) > 0) && sortExpr == "" && skipExpr == "" && takeExpr == "" {
 		b.WriteString("\tlocal _res = {}\n")
 		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
 		indent := "\t\t"
@@ -705,6 +710,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return b.String(), nil
 	}
 
+	if group {
+		b.WriteString("\tlocal _map = {}\n")
+		b.WriteString("\tlocal _order = {}\n")
+	}
 	b.WriteString("\tlocal items = {}\n")
 	b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
 	indent := "\t\t"
@@ -734,7 +743,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf(indent+"if %s then\n", whereCond))
 		indent += "\t"
 	}
-	b.WriteString(fmt.Sprintf(indent+"table.insert(items, %s)\n", iter))
+	if group {
+		b.WriteString(fmt.Sprintf(indent+"local _key = %s\n", keyExpr))
+		b.WriteString(indent + "local _ks = tostring(_key)\n")
+		b.WriteString(indent + "local _g = _map[_ks]\n")
+		b.WriteString(indent + "if not _g then _g = { key=_key, items={} }; _map[_ks] = _g; table.insert(_order, _ks) end\n")
+		b.WriteString(fmt.Sprintf(indent+"table.insert(_g.items, %s)\n", iter))
+	} else {
+		b.WriteString(fmt.Sprintf(indent+"table.insert(items, %s)\n", iter))
+	}
 	if whereCond != "" {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "end\n")
@@ -751,6 +768,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	indent = indent[:len(indent)-1]
 	b.WriteString(indent + "end\n")
+	if group {
+		b.WriteString("\tlocal _groups = {}\n")
+		b.WriteString("\tfor _, _ks in ipairs(_order) do\n")
+		b.WriteString("\t\ttable.insert(_groups, _map[_ks])\n")
+		b.WriteString("\tend\n")
+		b.WriteString("\titems = _groups\n")
+	}
 	if sortExpr != "" {
 		b.WriteString("\ttable.sort(items, function(a, b)\n")
 		b.WriteString(fmt.Sprintf("\t\tlocal %s = a\n", iter))
@@ -773,7 +797,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\tend\n")
 	}
 	b.WriteString("\tlocal _res = {}\n")
-	b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(items) do\n", iter))
+	if group {
+		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(items) do\n", sanitizeName(q.Group.Name)))
+	} else {
+		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(items) do\n", iter))
+	}
 	b.WriteString(fmt.Sprintf("\t\ttable.insert(_res, %s)\n", sel))
 	b.WriteString("\tend\n")
 	b.WriteString("\treturn _res\n")
