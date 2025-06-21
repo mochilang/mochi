@@ -10,6 +10,72 @@ import (
 	"mochi/types"
 )
 
+// ordered helper names ensures deterministic output
+var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy"}
+
+// helperCode contains the C++ source for each optional runtime helper
+var helperCode = map[string][]string{
+	"indexString": {
+		"string _indexString(const string& s, int i) {",
+		"\tint n = s.size();",
+		"\tif (i < 0) i += n;",
+		"\tif (i < 0 || i >= n) throw std::out_of_range(\"index out of range\");",
+		"\treturn string(1, s[i]);",
+		"}",
+	},
+	"sliceVec": {
+		"template<typename T> vector<T> _slice(const vector<T>& v, int start, int end) {",
+		"\tint n = v.size();",
+		"\tif (start < 0) start += n;",
+		"\tif (end < 0) end += n;",
+		"\tif (start < 0) start = 0;",
+		"\tif (end > n) end = n;",
+		"\tif (end < start) end = start;",
+		"\treturn vector<T>(v.begin() + start, v.begin() + end);",
+		"}",
+	},
+	"sliceStr": {
+		"string _sliceString(const string& s, int start, int end) {",
+		"\tint n = s.size();",
+		"\tif (start < 0) start += n;",
+		"\tif (end < 0) end += n;",
+		"\tif (start < 0) start = 0;",
+		"\tif (end > n) end = n;",
+		"\tif (end < start) end = start;",
+		"\treturn s.substr(start, end - start);",
+		"}",
+	},
+	"fmtVec": {
+		"template<typename T> string _fmtVec(const vector<T>& v) {",
+		"\tstringstream ss;",
+		"\tss << '[';",
+		"\tfor (size_t i = 0; i < v.size(); i++) {",
+		"\t\tif (i > 0) ss << ' ';",
+		"\t\tss << v[i];",
+		"\t}",
+		"\tss << ']';",
+		"\treturn ss.str();",
+		"}",
+	},
+	"groupBy": {
+		"template<typename Src, typename KeyFunc> auto _group_by(const Src& src, KeyFunc keyfn) {",
+		"\tusing ElemT = typename std::decay<decltype(*std::begin(src))>::type;",
+		"\tusing KeyT = decltype(keyfn(*std::begin(src)));",
+		"\tstruct _Group { KeyT Key; vector<ElemT> Items; };",
+		"\tunordered_map<KeyT, _Group> groups;",
+		"\tvector<KeyT> order;",
+		"\tfor (const auto& it : src) {",
+		"\t\tKeyT k = keyfn(it);",
+		"\t\tif (!groups.count(k)) { groups[k] = _Group{k, {}}; order.push_back(k); }",
+		"\t\tgroups[k].Items.push_back(it);",
+		"\t}",
+		"\tvector<_Group> res;",
+		"\tfor (const auto& k : order) res.push_back(groups[k]);",
+		"\treturn res;",
+		"}",
+	},
+}
+
 // Compiler translates a Mochi AST into minimal C++ source code.
 type Compiler struct {
 	buf      bytes.Buffer
@@ -67,6 +133,9 @@ func (c *Compiler) writeIndent() {
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	// reset state to avoid leaking helpers between compilations
+	c.helpers = map[string]bool{}
+
 	var body bytes.Buffer
 	oldBuf := c.buf
 	c.buf = body
@@ -724,68 +793,13 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 }
 
 func (c *Compiler) writeHelpers() {
-	if c.helpers["indexString"] {
-		c.writeln("string _indexString(const string& s, int i) {")
-		c.writeln("\tint n = s.size();")
-		c.writeln("\tif (i < 0) i += n;")
-		c.writeln("\tif (i < 0 || i >= n) throw std::out_of_range(\"index out of range\");")
-		c.writeln("\treturn string(1, s[i]);")
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.helpers["sliceVec"] {
-		c.writeln("template<typename T> vector<T> _slice(const vector<T>& v, int start, int end) {")
-		c.writeln("\tint n = v.size();")
-		c.writeln("\tif (start < 0) start += n;")
-		c.writeln("\tif (end < 0) end += n;")
-		c.writeln("\tif (start < 0) start = 0;")
-		c.writeln("\tif (end > n) end = n;")
-		c.writeln("\tif (end < start) end = start;")
-		c.writeln("\treturn vector<T>(v.begin() + start, v.begin() + end);")
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.helpers["sliceStr"] {
-		c.writeln("string _sliceString(const string& s, int start, int end) {")
-		c.writeln("\tint n = s.size();")
-		c.writeln("\tif (start < 0) start += n;")
-		c.writeln("\tif (end < 0) end += n;")
-		c.writeln("\tif (start < 0) start = 0;")
-		c.writeln("\tif (end > n) end = n;")
-		c.writeln("\tif (end < start) end = start;")
-		c.writeln("\treturn s.substr(start, end - start);")
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.helpers["fmtVec"] {
-		c.writeln("template<typename T> string _fmtVec(const vector<T>& v) {")
-		c.writeln("\tstringstream ss;")
-		c.writeln("\tss << '[';")
-		c.writeln("\tfor (size_t i = 0; i < v.size(); i++) {")
-		c.writeln("\t\tif (i > 0) ss << ' ';")
-		c.writeln("\t\tss << v[i];")
-		c.writeln("\t}")
-		c.writeln("\tss << ']';")
-		c.writeln("\treturn ss.str();")
-		c.writeln("}")
-		c.writeln("")
-	}
-	if c.helpers["groupBy"] {
-		c.writeln("template<typename Src, typename KeyFunc> auto _group_by(const Src& src, KeyFunc keyfn) {")
-		c.writeln("\tusing ElemT = typename std::decay<decltype(*std::begin(src))>::type;")
-		c.writeln("\tusing KeyT = decltype(keyfn(*std::begin(src)));")
-		c.writeln("\tstruct _Group { KeyT Key; vector<ElemT> Items; };")
-		c.writeln("\tunordered_map<KeyT, _Group> groups;")
-		c.writeln("\tvector<KeyT> order;")
-		c.writeln("\tfor (const auto& it : src) {")
-		c.writeln("\t\tKeyT k = keyfn(it);")
-		c.writeln("\t\tif (!groups.count(k)) { groups[k] = _Group{k, {}}; order.push_back(k); }")
-		c.writeln("\t\tgroups[k].Items.push_back(it);")
-		c.writeln("\t}")
-		c.writeln("\tvector<_Group> res;")
-		c.writeln("\tfor (const auto& k : order) res.push_back(groups[k]);")
-		c.writeln("\treturn res;")
-		c.writeln("}")
+	for _, name := range helperOrder {
+		if !c.helpers[name] {
+			continue
+		}
+		for _, line := range helperCode[name] {
+			c.writeln(line)
+		}
 		c.writeln("")
 	}
 }
