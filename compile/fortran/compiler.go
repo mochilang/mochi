@@ -54,8 +54,18 @@ func (c *Compiler) writeln(s string) {
 	c.buf.WriteByte('\n')
 }
 
+func (c *Compiler) blank() {
+	ind := c.indent
+	c.indent = 0
+	c.writeln("")
+	c.indent = ind
+}
+
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	if prog.Package != "" {
+		c.writeln("! package " + prog.Package)
+	}
 	c.needsUnionInt = false
 	c.needsUnionFloat = false
 	c.needsUnionString = false
@@ -77,6 +87,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			funs = append(funs, s.Fun)
 		case s.Test != nil:
 			tests = append(tests, s.Test)
+		case s.Import != nil, s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
+			// ignore foreign imports and extern declarations
 		default:
 			mainStmts = append(mainStmts, s)
 		}
@@ -102,6 +114,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
 	collectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	delete(listVars, "result")
 	c.listVars = listVars
 	c.stringVars = stringVars
 	c.floatVars = floatVars
@@ -119,6 +132,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	for name := range declared {
+		if name == "result" {
+			c.writeln("integer(kind=8) :: result(2)")
+			continue
+		}
 		if listVars[name] {
 			continue
 		}
@@ -126,8 +143,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
 		} else if floatVars[name] {
 			c.writeln(fmt.Sprintf("real :: %s", name))
-		} else if name == "result" {
-			c.writeln("integer(kind=8) :: result(2)")
 		} else {
 			c.writeln("integer(kind=8) :: " + name)
 		}
@@ -527,6 +542,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 		c.writeln("exit")
 	case s.Continue != nil:
 		c.writeln("cycle")
+	case s.Import != nil, s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
+		// ignore import and extern declarations
 	case s.Expr != nil:
 		if call, ok := printCall(s.Expr.Expr); ok {
 			args := make([]string, len(call.Args))
@@ -1205,7 +1222,7 @@ func (c *Compiler) lengthFunc(name string) string {
 
 func (c *Compiler) writeHelpers() {
 	if c.needsUnionInt {
-		c.writeln("")
+		c.blank()
 		c.writeln("function union_int(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1239,7 +1256,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function union_int")
 	}
 	if c.needsUnionFloat {
-		c.writeln("")
+		c.blank()
 		c.writeln("function union_float(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1273,7 +1290,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function union_float")
 	}
 	if c.needsUnionString {
-		c.writeln("")
+		c.blank()
 		c.writeln("function union_string(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1307,7 +1324,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function union_string")
 	}
 	if c.needsExceptInt {
-		c.writeln("")
+		c.blank()
 		c.writeln("function except_int(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1335,7 +1352,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function except_int")
 	}
 	if c.needsExceptFloat {
-		c.writeln("")
+		c.blank()
 		c.writeln("function except_float(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1363,7 +1380,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function except_float")
 	}
 	if c.needsExceptString {
-		c.writeln("")
+		c.blank()
 		c.writeln("function except_string(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1391,7 +1408,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function except_string")
 	}
 	if c.needsIntersectInt {
-		c.writeln("")
+		c.blank()
 		c.writeln("function intersect_int(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1423,7 +1440,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function intersect_int")
 	}
 	if c.needsIntersectFloat {
-		c.writeln("")
+		c.blank()
 		c.writeln("function intersect_float(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1455,7 +1472,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function intersect_float")
 	}
 	if c.needsIntersectString {
-		c.writeln("")
+		c.blank()
 		c.writeln("function intersect_string(a, b) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1487,7 +1504,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function intersect_string")
 	}
 	if c.needsStrInt {
-		c.writeln("")
+		c.blank()
 		c.writeln("function str_int(v) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1501,7 +1518,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function str_int")
 	}
 	if c.needsStrFloat {
-		c.writeln("")
+		c.blank()
 		c.writeln("function str_float(v) result(r)")
 		c.indent++
 		c.writeln("implicit none")
@@ -1515,7 +1532,7 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("end function str_float")
 	}
 	if c.needsNow {
-		c.writeln("")
+		c.blank()
 		c.writeln("function mochi_now() result(r)")
 		c.indent++
 		c.writeln("implicit none")
