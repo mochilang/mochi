@@ -1328,6 +1328,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_json_helpers")
 		return fmt.Sprintf("_to_json %s", args[0]), nil
+	case "eval":
+		if len(args) != 1 {
+			return "", fmt.Errorf("eval expects 1 arg")
+		}
+		c.use("_eval")
+		return fmt.Sprintf("_eval %s", args[0]), nil
 	case "input":
 		if len(args) != 0 {
 			return "", fmt.Errorf("input expects no args")
