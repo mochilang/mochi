@@ -29,8 +29,6 @@ type Compiler struct {
 	needsIntersectInt    bool
 	needsIntersectFloat  bool
 	needsIntersectString bool
-	needsAvgInt          bool
-	needsAvgFloat        bool
 	needsStrInt          bool
 	needsStrFloat        bool
 }
@@ -65,8 +63,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needsIntersectInt = false
 	c.needsIntersectFloat = false
 	c.needsIntersectString = false
-	c.needsAvgInt = false
-	c.needsAvgFloat = false
 	c.needsStrInt = false
 	c.needsStrFloat = false
 	var funs []*parser.FunStmt
@@ -160,7 +156,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	needHelpers := c.needsUnionInt || c.needsUnionFloat || c.needsUnionString ||
 		c.needsExceptInt || c.needsExceptFloat || c.needsExceptString ||
 		c.needsIntersectInt || c.needsIntersectFloat || c.needsIntersectString ||
-		c.needsAvgInt || c.needsAvgFloat || c.needsStrInt || c.needsStrFloat
+		c.needsStrInt || c.needsStrFloat
 	if len(funs)+len(tests) > 0 || needHelpers {
 		c.writeln("contains")
 		c.indent++
@@ -1169,12 +1165,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		if isFloatExpr(call.Args[0], c.floatVars, c.funReturnFloat) {
-			c.needsAvgFloat = true
-			return fmt.Sprintf("avg_float(%s)", args[0]), nil
+			v := args[0]
+			return fmt.Sprintf("merge(0.0, sum(%[1]s) / size(%[1]s), size(%[1]s) == 0)", v), nil
 		}
 		if isListExpr(call.Args[0], c.listVars, c.funReturnList) {
-			c.needsAvgInt = true
-			return fmt.Sprintf("avg_int(%s)", args[0]), nil
+			v := args[0]
+			return fmt.Sprintf("merge(0.0, sum(real(%[1]s)) / size(%[1]s), size(%[1]s) == 0)", v), nil
 		}
 		return "0", nil
 	case "append":
@@ -1480,40 +1476,6 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = tmp(:n)")
 		c.indent--
 		c.writeln("end function intersect_string")
-	}
-	if c.needsAvgInt {
-		c.writeln("")
-		c.writeln("function avg_int(v) result(r)")
-		c.indent++
-		c.writeln("implicit none")
-		c.writeln("integer(kind=8), intent(in) :: v(:)")
-		c.writeln("real :: r")
-		c.writeln("if (size(v) == 0) then")
-		c.indent++
-		c.writeln("r = 0.0")
-		c.writeln("return")
-		c.indent--
-		c.writeln("end if")
-		c.writeln("r = sum(real(v)) / size(v)")
-		c.indent--
-		c.writeln("end function avg_int")
-	}
-	if c.needsAvgFloat {
-		c.writeln("")
-		c.writeln("function avg_float(v) result(r)")
-		c.indent++
-		c.writeln("implicit none")
-		c.writeln("real, intent(in) :: v(:)")
-		c.writeln("real :: r")
-		c.writeln("if (size(v) == 0) then")
-		c.indent++
-		c.writeln("r = 0.0")
-		c.writeln("return")
-		c.indent--
-		c.writeln("end if")
-		c.writeln("r = sum(v) / size(v)")
-		c.indent--
-		c.writeln("end function avg_float")
 	}
 	if c.needsStrInt {
 		c.writeln("")
