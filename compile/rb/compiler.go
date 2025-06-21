@@ -969,37 +969,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = v
 			}
-			argStr := strings.Join(args, ", ")
-			switch expr {
-			case "print":
-				expr = fmt.Sprintf("puts([%s].join(\" \"))", argStr)
-			case "len", "count":
-				if len(args) != 1 {
-					return "", fmt.Errorf("%s expects 1 arg", expr)
+			if builtin, ok, err := c.compileBuiltinCall(expr, args); ok {
+				if err != nil {
+					return "", err
 				}
-				expr = fmt.Sprintf("(%s).length", args[0])
-			case "str":
-				if len(args) != 1 {
-					return "", fmt.Errorf("str expects 1 arg")
-				}
-				expr = fmt.Sprintf("(%s).to_s", args[0])
-			case "avg":
-				if len(args) != 1 {
-					return "", fmt.Errorf("avg expects 1 arg")
-				}
-				expr = fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", args[0])
-			case "input":
-				if len(args) != 0 {
-					return "", fmt.Errorf("input expects no args")
-				}
-				expr = "STDIN.gets.to_s.strip"
-			case "eval":
-				if len(args) != 1 {
-					return "", fmt.Errorf("eval expects 1 arg")
-				}
-				c.use("_eval")
-				expr = fmt.Sprintf("_eval(%s)", args[0])
-			default:
+				expr = builtin
+			} else {
+				argStr := strings.Join(args, ", ")
 				if _, ok := c.env.GetFunc(expr); ok {
 					expr = fmt.Sprintf("%s(%s)", expr, argStr)
 				} else {
@@ -1132,43 +1108,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			args[i] = v
 		}
-		argStr := strings.Join(args, ", ")
 		name := sanitizeName(p.Call.Func)
-		switch name {
-		case "print":
-			return fmt.Sprintf("puts([%s].join(\" \"))", argStr), nil
-		case "len", "count":
-			if len(args) != 1 {
-				return "", fmt.Errorf("%s expects 1 arg", name)
+		if builtin, ok, err := c.compileBuiltinCall(name, args); ok {
+			if err != nil {
+				return "", err
 			}
-			return fmt.Sprintf("(%s).length", args[0]), nil
-		case "str":
-			if len(args) != 1 {
-				return "", fmt.Errorf("str expects 1 arg")
-			}
-			return fmt.Sprintf("(%s).to_s", args[0]), nil
-		case "avg":
-			if len(args) != 1 {
-				return "", fmt.Errorf("avg expects 1 arg")
-			}
-			return fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", args[0]), nil
-		case "input":
-			if len(args) != 0 {
-				return "", fmt.Errorf("input expects no args")
-			}
-			return "STDIN.gets.to_s.strip", nil
-		case "eval":
-			if len(args) != 1 {
-				return "", fmt.Errorf("eval expects 1 arg")
-			}
-			c.use("_eval")
-			return fmt.Sprintf("_eval(%s)", args[0]), nil
-		default:
-			if _, ok := c.env.GetFunc(name); ok {
-				return fmt.Sprintf("%s(%s)", name, argStr), nil
-			}
-			return fmt.Sprintf("%s.call(%s)", name, argStr), nil
+			return builtin, nil
 		}
+		argStr := strings.Join(args, ", ")
+		if _, ok := c.env.GetFunc(name); ok {
+			return fmt.Sprintf("%s(%s)", name, argStr), nil
+		}
+		return fmt.Sprintf("%s.call(%s)", name, argStr), nil
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Group != nil:
@@ -1330,6 +1281,41 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileBuiltinCall(name string, args []string) (string, bool, error) {
+	switch name {
+	case "print":
+		return fmt.Sprintf("puts([%s].join(\" \"))", strings.Join(args, ", ")), true, nil
+	case "len", "count":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("%s expects 1 arg", name)
+		}
+		return fmt.Sprintf("(%s).length", args[0]), true, nil
+	case "str":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("str expects 1 arg")
+		}
+		return fmt.Sprintf("(%s).to_s", args[0]), true, nil
+	case "avg":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("avg expects 1 arg")
+		}
+		return fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", args[0]), true, nil
+	case "input":
+		if len(args) != 0 {
+			return "", true, fmt.Errorf("input expects no args")
+		}
+		return "STDIN.gets.to_s.strip", true, nil
+	case "eval":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("eval expects 1 arg")
+		}
+		c.use("_eval")
+		return fmt.Sprintf("_eval(%s)", args[0]), true, nil
+	default:
+		return "", false, nil
+	}
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
