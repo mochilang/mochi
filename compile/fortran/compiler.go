@@ -31,6 +31,7 @@ type Compiler struct {
 	needsIntersectString bool
 	needsStrInt          bool
 	needsStrFloat        bool
+	needsNow             bool
 }
 
 func New() *Compiler {
@@ -41,6 +42,7 @@ func New() *Compiler {
 		funReturnStr:   map[string]bool{},
 		funReturnList:  map[string]bool{},
 		funReturnFloat: map[string]bool{},
+		needsNow:       false,
 	}
 }
 
@@ -65,6 +67,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needsIntersectString = false
 	c.needsStrInt = false
 	c.needsStrFloat = false
+	c.needsNow = false
 	var funs []*parser.FunStmt
 	var tests []*parser.TestBlock
 	var mainStmts []*parser.Statement
@@ -1178,6 +1181,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 			return "", fmt.Errorf("append expects 2 args")
 		}
 		return fmt.Sprintf("(/ %s, %s /)", args[0], args[1]), nil
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects 0 args")
+		}
+		c.needsNow = true
+		return "mochi_now()", nil
 	default:
 		name := sanitizeName(call.Func)
 		if recv != "" {
@@ -1504,5 +1513,18 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = trim(buf)")
 		c.indent--
 		c.writeln("end function str_float")
+	}
+	if c.needsNow {
+		c.writeln("")
+		c.writeln("function mochi_now() result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("integer(kind=8) :: r")
+		c.writeln("integer(kind=8) :: cnt")
+		c.writeln("integer(kind=8) :: rate")
+		c.writeln("call system_clock(cnt, rate)")
+		c.writeln("r = cnt * 1000000000_8 / rate")
+		c.indent--
+		c.writeln("end function mochi_now")
 	}
 }
