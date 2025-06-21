@@ -22,11 +22,17 @@ type Compiler struct {
 	expected     types.Type
 	varTypes     map[string]string
 	packages     map[string]bool
+	helpers      map[string]bool
 }
 
 // New creates a new Pascal compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, tempVars: make(map[string]string), packages: make(map[string]bool)}
+	return &Compiler{
+		env:      env,
+		tempVars: make(map[string]string),
+		packages: make(map[string]bool),
+		helpers:  make(map[string]bool),
+	}
 }
 
 // Compile returns Pascal source implementing prog.
@@ -39,7 +45,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
-	c.writeln("uses SysUtils, fgl;")
+	c.writeln("uses SysUtils, fgl, fphttpclient, Classes;")
 	c.writeln("")
 	c.writeln("type")
 	c.indent++
@@ -116,6 +122,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("")
 	}
+
+	c.emitHelpers()
 
 	c.writeln("begin")
 	c.indent++
@@ -1180,8 +1188,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "", fmt.Errorf("logic queries not supported")
 	case p.Generate != nil:
 		return "", fmt.Errorf("generative model expressions not supported")
-	case p.Fetch != nil, p.Load != nil, p.Save != nil:
-		return "", fmt.Errorf("dataset helpers not supported")
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.FunExpr != nil:
 		return "", fmt.Errorf("anonymous functions not supported")
 	case p.If != nil:
@@ -1190,4 +1202,115 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "", fmt.Errorf("match expressions not supported")
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	urlStr, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch(%s)", urlStr), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	c.use("_load")
+	return fmt.Sprintf("_load(%s)", path), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	c.use("_save")
+	return fmt.Sprintf("_save(%s, %s)", src, path), nil
+}
+
+func (c *Compiler) use(name string) { c.helpers[name] = true }
+
+func (c *Compiler) emitHelpers() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		switch n {
+		case "_fetch":
+			c.writeln("function _fetch(url: string): string;")
+			c.writeln("var client: TFPHTTPClient;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("client := TFPHTTPClient.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("Result := client.Get(url);")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("client.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_load":
+			c.writeln("function _load(path: string): specialize TArray<string>;")
+			c.writeln("var sl: TStringList; i: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("try")
+			c.indent++
+			c.writeln("sl.LoadFromFile(path);")
+			c.writeln("SetLength(Result, sl.Count);")
+			c.writeln("for i := 0 to sl.Count - 1 do")
+			c.indent++
+			c.writeln("Result[i] := sl[i];")
+			c.indent--
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_save":
+			c.writeln("procedure _save(data: specialize TArray<string>; path: string);")
+			c.writeln("var sl: TStringList; i: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("try")
+			c.indent++
+			c.writeln("for i := 0 to High(data) do")
+			c.indent++
+			c.writeln("sl.Add(data[i]);")
+			c.indent--
+			c.writeln("sl.SaveToFile(path);")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		}
+	}
 }
