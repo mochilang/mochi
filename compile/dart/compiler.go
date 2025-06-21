@@ -791,6 +791,20 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["dart:io"] = true
 		return "stdin.readLineSync() ?? ''", nil
 	}
+	// handle now()
+	if name == "now" && len(call.Args) == 0 {
+		return "DateTime.now().microsecondsSinceEpoch * 1000", nil
+	}
+	// handle json()
+	if name == "json" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		c.imports["dart:convert"] = true
+		c.use("_json")
+		return fmt.Sprintf("_json(%s)", arg), nil
+	}
 	// handle print with multiple arguments
 	if name == "print" && len(call.Args) > 1 {
 		parts := make([]string, len(call.Args))
