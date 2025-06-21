@@ -329,10 +329,13 @@ support:
 - Advanced dataset queries such as joins, grouping and union operations
 - Streams, agents and intent handlers
 - Logic programming constructs (`fact`, `rule`, `query`)
-- Package declarations and the foreign function interface
+- Foreign function interface and cross-language imports
 - Event emission with `emit` statements
-- Extern declarations and foreign imports
+- Extern declarations
 - Concurrency primitives such as `spawn` and channels
 - Error handling with `try`/`catch` blocks
+- Generic types and functions
+- Set collections and related operations
+- Reflection or macro facilities
 
 
