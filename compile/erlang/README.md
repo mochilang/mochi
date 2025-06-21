@@ -86,8 +86,7 @@ The Erlang backend still implements only part of Mochi. Missing features include
 - logic programming constructs and streams
 - agents and event streams
 - intent declarations
-- foreign function imports via `extern`
-- extern variables and objects
+- generic type parameters
 - model declarations and dataset helpers
 - concurrency primitives like `spawn` and channels
 - `generate` helpers return placeholder data

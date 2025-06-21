@@ -434,9 +434,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.needExpect = true
 		c.buf.WriteString("mochi_expect(" + expr + ")")
 		return nil
-	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
-		// extern declarations are ignored
-		return nil
+	case s.ExternVar != nil:
+		return c.compileExternVar(s.ExternVar)
+	case s.ExternFun != nil:
+		return c.compileExternFun(s.ExternFun)
+	case s.ExternType != nil:
+		return c.compileExternType(s.ExternType)
+	case s.ExternObject != nil:
+		return c.compileExternObject(s.ExternObject)
 	default:
 		c.buf.WriteString("ok")
 	}
@@ -1537,6 +1542,46 @@ func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
 		}
 	}
 	c.env = origEnv
+	return nil
+}
+
+func (c *Compiler) compileExternVar(ev *parser.ExternVarDecl) error {
+	name := c.newName(ev.Name())
+	c.buf.WriteString(fmt.Sprintf("%s = undefined", name))
+	if c.env != nil {
+		c.env.SetVar(ev.Name(), c.resolveTypeRef(ev.Type), true)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExternFun(ef *parser.ExternFunDecl) error {
+	params := make([]string, len(ef.Params))
+	paramTypes := make([]types.Type, len(ef.Params))
+	for i, p := range ef.Params {
+		params[i] = c.newName(p.Name)
+		if c.env != nil {
+			paramTypes[i] = c.resolveTypeRef(p.Type)
+		}
+	}
+	c.writeln(fmt.Sprintf("%s(%s) -> erlang:error({extern, '%s'}).", atomName(ef.Name()), strings.Join(params, ", "), ef.Name()))
+	if c.env != nil {
+		ft := types.FuncType{Params: paramTypes, Return: c.resolveTypeRef(ef.Return)}
+		c.env.SetVar(ef.Name(), ft, false)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExternType(et *parser.ExternTypeDecl) error {
+	c.writeln(fmt.Sprintf("-type %s() :: any().", sanitizeName(et.Name)))
+	return nil
+}
+
+func (c *Compiler) compileExternObject(eo *parser.ExternObjectDecl) error {
+	name := c.newName(eo.Name)
+	c.buf.WriteString(fmt.Sprintf("%s = undefined", name))
+	if c.env != nil {
+		c.env.SetVar(eo.Name, types.AnyType{}, true)
+	}
 	return nil
 }
 
