@@ -1,0 +1,9 @@
+import "lib/cloud/aws/lambda" as lambda
+
+let base = "http://localhost"
+
+test "lambda invoke" {
+  let fn = lambda.function("greeter", base)
+  let resp = lambda.invoke(fn, {"name": "Bob"})
+  expect resp == "hi Bob"
+}

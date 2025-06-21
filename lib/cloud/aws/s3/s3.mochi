@@ -1,0 +1,32 @@
+package s3
+
+type Bucket {
+  name: string,
+  base_url: string,
+}
+
+export fun bucket(name: string, base_url: string): Bucket {
+  return Bucket { name: name, base_url: base_url }
+}
+
+fun put(b: Bucket, key: string, value: string) {
+  fetch b.base_url + "/s3/object" with {
+    method: "PUT",
+    query: { bucket: b.name, key: key },
+    body: { value: value }
+  }
+}
+
+fun get(b: Bucket, key: string): string {
+  let res = fetch b.base_url + "/s3/object" with {
+    query: { bucket: b.name, key: key }
+  } as map<string, any>
+  return res["value"] as string
+}
+
+fun list_keys(b: Bucket): list<string> {
+  let res = fetch b.base_url + "/s3/keys" with {
+    query: { bucket: b.name }
+  } as map<string, any>
+  return res["keys"] as list<string>
+}
