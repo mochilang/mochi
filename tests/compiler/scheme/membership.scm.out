@@ -1,0 +1,2 @@
+(begin (display (if (member 2 (list 1 2 3)) #t #f)) (newline))
+(begin (display (if (member "b" (list "a" "b")) #t #f)) (newline))
