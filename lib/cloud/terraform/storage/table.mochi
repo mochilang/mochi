@@ -1,0 +1,18 @@
+package storage
+
+type Table {
+  name: string
+  partition_key: string
+  sort_key: string
+}
+
+export fun table(name: string, partition_key: string, sort_key: string): Table {
+  return Table { name: name, partition_key: partition_key, sort_key: sort_key }
+}
+
+export fun to_tf(t: Table): string {
+  return "resource \"table\" \"" + t.name + "\" {\n" +
+         "  partition_key = \"" + t.partition_key + "\"\n" +
+         "  sort_key = \"" + t.sort_key + "\"\n" +
+         "}\n"
+}

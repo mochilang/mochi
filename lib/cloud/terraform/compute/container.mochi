@@ -1,0 +1,20 @@
+package compute
+
+type Container {
+  name: string
+  image: string
+  cpu: int
+  memory: int
+}
+
+export fun container(name: string, image: string, cpu: int, memory: int): Container {
+  return Container { name: name, image: image, cpu: cpu, memory: memory }
+}
+
+export fun to_tf(c: Container): string {
+  return "resource \"container\" \"" + c.name + "\" {\n" +
+         "  image = \"" + c.image + "\"\n" +
+         "  cpu = " + str(c.cpu) + "\n" +
+         "  memory = " + str(c.memory) + "\n" +
+         "}\n"
+}

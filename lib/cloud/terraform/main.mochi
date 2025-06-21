@@ -1,0 +1,66 @@
+package terraform
+
+import "./compute/function" as compute
+import "./compute/container" as compute_container
+import "./storage/bucket" as storage
+import "./storage/table" as storage_table
+import "./network/queue" as network
+import "./network/topic" as network_topic
+
+type Stack {
+  resources: list<string>
+}
+
+export fun new_stack(): Stack {
+  return Stack { resources: [] }
+}
+
+export fun stack(res: list<string>): Stack {
+  return Stack { resources: res }
+}
+
+fun join_strings(items: list<string>, sep: string): string {
+  var out = ""
+  var first = true
+  for it in items {
+    if first {
+      out = it
+      first = false
+    } else {
+      out = out + sep + it
+    }
+  }
+  return out
+}
+
+export fun synthesize(s: Stack): string {
+  return join_strings(s.resources, "\n")
+}
+
+export fun add(s: Stack, cfg: string): Stack {
+  return Stack { resources: s.resources + [cfg] }
+}
+
+export fun function(name: string, runtime: string, handler: string): string {
+  return compute.to_tf(compute.function(name, runtime, handler))
+}
+
+export fun bucket(name: string, versioned: bool): string {
+  return storage.to_tf(storage.bucket(name, versioned))
+}
+
+export fun queue(name: string, visibility_timeout: int): string {
+  return network.to_tf(network.queue(name, visibility_timeout))
+}
+
+export fun container(name: string, image: string, cpu: int, memory: int): string {
+  return compute_container.to_tf(compute_container.container(name, image, cpu, memory))
+}
+
+export fun table(name: string, partition_key: string, sort_key: string): string {
+  return storage_table.to_tf(storage_table.table(name, partition_key, sort_key))
+}
+
+export fun topic(name: string, subscribers: int): string {
+  return network_topic.to_tf(network_topic.topic(name, subscribers))
+}
