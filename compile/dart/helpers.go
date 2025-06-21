@@ -49,6 +49,20 @@ func (c *Compiler) newVar() string {
 	return name
 }
 
+// writeVarDecl emits a typed variable declaration.
+// If typ cannot be resolved to a concrete Dart type, "dynamic" is used.
+func (c *Compiler) writeVarDecl(name string, typ types.Type, val string) {
+	t := dartType(typ)
+	if t == "" {
+		t = "dynamic"
+	}
+	if val == "" {
+		c.writeln(fmt.Sprintf("%s %s;", t, name))
+	} else {
+		c.writeln(fmt.Sprintf("%s %s = %s;", t, name, val))
+	}
+}
+
 func indentBlock(s string, depth int) string {
 	if s == "" {
 		return s
