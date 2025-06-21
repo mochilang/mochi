@@ -1,0 +1,36 @@
+package configmap
+
+import "lib/cloud/k8s/resource" as k8s
+
+fun map_to_yaml(data: map<string,string>, indent: string): string {
+  var result = ""
+  var first = true
+  for k in keys(data) {
+    if !first { result = result + "\n" }
+    result = result + indent + k + ": " + data[k]
+    first = false
+  }
+  return result
+}
+
+fun manifest(name: string, data: map<string,string>): string {
+  return "apiVersion: v1\n" +
+         "kind: ConfigMap\n" +
+         "metadata:\n" +
+         "  name: " + name + "\n" +
+         "data:\n" +
+         map_to_yaml(data, "  ") + "\n"
+}
+
+/// Kubernetes ConfigMap resource
+type ConfigMapProps {
+  name: string,
+  data: map<string,string>,
+  namespace: string = "default",
+}
+
+fun new(props: ConfigMapProps): k8s.Resource {
+  let body = manifest(props.name, props.data)
+  let path = "/api/v1/namespaces/" + props.namespace + "/configmaps"
+  return k8s.Resource { kind: "ConfigMap", path: path, body: body }
+}

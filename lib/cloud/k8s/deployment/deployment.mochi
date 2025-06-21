@@ -1,0 +1,37 @@
+package deployment
+
+import "lib/cloud/k8s/resource" as k8s
+
+fun manifest(name: string, image: string, replicas: int = 1): string {
+  return "apiVersion: apps/v1\n" +
+         "kind: Deployment\n" +
+         "metadata:\n" +
+         "  name: " + name + "\n" +
+         "spec:\n" +
+         "  replicas: " + str(replicas) + "\n" +
+         "  selector:\n" +
+         "    matchLabels:\n" +
+         "      app: " + name + "\n" +
+         "  template:\n" +
+         "    metadata:\n" +
+         "      labels:\n" +
+         "        app: " + name + "\n" +
+         "    spec:\n" +
+         "      containers:\n" +
+         "        - name: " + name + "\n" +
+         "          image: " + image + "\n"
+}
+
+/// Kubernetes Deployment resource
+type DeploymentProps {
+  name: string,
+  image: string,
+  replicas: int = 1,
+  namespace: string = "default",
+}
+
+fun new(props: DeploymentProps): k8s.Resource {
+  let body = manifest(props.name, props.image, props.replicas)
+  let path = "/apis/apps/v1/namespaces/" + props.namespace + "/deployments"
+  return k8s.Resource { kind: "Deployment", path: path, body: body }
+}

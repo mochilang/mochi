@@ -1,0 +1,41 @@
+# Kubernetes Resources
+
+This document tracks core Kubernetes resources planned for implementation in the Mochi library.
+
+- Pod
+- Deployment
+- ReplicaSet
+- StatefulSet
+- DaemonSet
+- Job
+- CronJob
+- Service
+- Endpoints
+- Ingress
+- ConfigMap
+- Secret
+- PersistentVolume
+- PersistentVolumeClaim
+- StorageClass
+- Namespace
+- Node
+- ServiceAccount
+- Role
+- ClusterRole
+- RoleBinding
+- ClusterRoleBinding
+- CustomResourceDefinition
+- HorizontalPodAutoscaler
+- PodDisruptionBudget
+- NetworkPolicy
+- ResourceQuota
+- LimitRange
+- APIService
+- PriorityClass
+- RuntimeClass
+- Lease
+- EndpointSlice
+- PodTemplate
+- ReplicationController
+- SecurityContextConstraints
+- VolumeAttachment

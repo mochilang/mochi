@@ -1,0 +1,24 @@
+import "lib/cloud/k8s/cluster" as cluster
+import "lib/cloud/k8s/deployment" as deployment
+import "lib/cloud/k8s/service" as service
+import "lib/cloud/k8s/configmap" as configmap
+
+let c = cluster.new(cluster.ClusterProps { api_server: "file://tests/cloud/k8s/mock_response.json" })
+let d = deployment.new(deployment.DeploymentProps {
+  name: "web",
+  image: "nginx:latest",
+  replicas: 2,
+})
+cluster.add(c, d)
+let s = service.new(service.ServiceProps {
+  name: "web",
+  port: 80,
+  target_port: 80,
+})
+cluster.add(c, s)
+let conf = configmap.new(configmap.ConfigMapProps {
+  name: "app-cfg",
+  data: {"ENV": "prod"},
+})
+cluster.add(c, conf)
+print(cluster.manifest(c))

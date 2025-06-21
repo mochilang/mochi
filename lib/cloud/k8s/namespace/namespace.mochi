@@ -1,0 +1,21 @@
+package namespace
+
+import "lib/cloud/k8s/resource" as k8s
+
+fun manifest(name: string): string {
+  return "apiVersion: v1\n" +
+         "kind: Namespace\n" +
+         "metadata:\n" +
+         "  name: " + name + "\n"
+}
+
+/// Kubernetes Namespace resource
+type NamespaceProps {
+  name: string,
+}
+
+fun new(props: NamespaceProps): k8s.Resource {
+  let body = manifest(props.name)
+  let path = "/api/v1/namespaces"
+  return k8s.Resource { kind: "Namespace", path: path, body: body }
+}
