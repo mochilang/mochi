@@ -27,11 +27,12 @@ type Compiler struct {
 	structs      map[string]bool
 	handlerCount int
 	useStream    bool
+	models       bool
 }
 
 // New creates a new C# compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string), packages: make(map[string]bool), structs: make(map[string]bool), inFun: 0, useStream: false}
+	return &Compiler{env: env, helpers: make(map[string]bool), varTypes: make(map[string]string), packages: make(map[string]bool), structs: make(map[string]bool), inFun: 0, useStream: false, models: false}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -80,6 +81,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Detect model declarations
+	for _, s := range prog.Statements {
+		if s.Model != nil {
+			c.models = true
+			break
+		}
+	}
+
 	// Type declarations
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -104,6 +113,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("public class Program {")
 	c.indent++
+	if c.models {
+		c.writeln("static Dictionary<string, Dictionary<string, object>> _models = new Dictionary<string, Dictionary<string, object>>();")
+		c.writeln("")
+	}
 
 	// Function declarations
 	for _, s := range prog.Statements {
@@ -772,6 +785,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileOnHandler(s.On)
 	case s.Emit != nil:
 		return c.compileEmit(s.Emit)
+	case s.Model != nil:
+		return c.compileModelDecl(s.Model)
 	case s.Import != nil:
 		if s.Import.Lang == nil {
 			alias := s.Import.As
@@ -1529,6 +1544,20 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	streamVar := "_" + sanitizeName(e.Stream) + "Stream"
 	c.writeln(fmt.Sprintf("%s.Append(%s);", streamVar, lit))
 	c.useStream = true
+	return nil
+}
+
+func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
+	c.models = true
+	parts := make([]string, len(m.Fields))
+	for i, f := range m.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("{ \"%s\", %s }", f.Name, v)
+	}
+	c.writeln(fmt.Sprintf("_models[%q] = new Dictionary<string, object> { %s };", m.Name, strings.Join(parts, ", ")))
 	return nil
 }
 

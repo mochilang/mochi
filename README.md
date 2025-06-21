@@ -636,6 +636,23 @@ The experimental Rust compiler does not yet implement every Mochi feature. Missi
 - Package imports, extern objects and other FFI constructs (`import`, `extern`).
 - Model blocks (`model`) and associated LLM helpers.
 
+## Unsupported Features (C# Backend)
+
+The C# code generator also omits several language capabilities:
+
+- Left/right/outer joins in dataset queries
+- Agent declarations and intent blocks
+- Logic programming constructs (`fact`, `rule`, `query`)
+- Foreign function interface and extern objects
+- Generic dictionary casts for complex map types
+- YAML dataset loading/saving
+- Full LLM integration for `_genText` and `_genStruct`
+- Concurrency primitives like `spawn` and channels
+- `try`/`catch` error handling
+- Methods declared inside `type` blocks
+- Agent initialization with field values
+- The `eval` builtin function
+
 ## License
 
 Mochi is open source under the [MIT License](./LICENSE).

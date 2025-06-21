@@ -151,7 +151,6 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - The backend is still incomplete. Notable gaps include:
 - Left/right/outer joins in dataset queries
 - Agent declarations and intent blocks
-- Model declarations
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign function interface and extern objects
 - Generic dictionary casts for complex map types
@@ -159,3 +158,6 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Full LLM integration for `_genText` and `_genStruct`
 - Concurrency primitives like `spawn` and channels
 - `try`/`catch` error handling
+- Methods declared inside `type` blocks
+- Agent initialization with field values
+- The `eval` builtin function
