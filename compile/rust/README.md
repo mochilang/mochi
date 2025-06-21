@@ -17,9 +17,10 @@ The Rust backend compiles Mochi programs to plain Rust source code. It is a mini
 The current implementation lacks support for:
 
 - Advanced dataset queries such as grouping and left/right joins. Outer joins are also not implemented.
-- Agent and stream declarations (`agent`, `on`, `emit`).
+ - Agent and stream declarations (`agent`, `on`, `emit`).
+ - Intent handlers within agents (`intent` blocks).
 - Logic programming constructs (`fact`, `rule`, `query`).
-- Data fetching and persistence expressions (`fetch`, `load`, `save`, `generate`).
+ - Data fetching and persistence expressions (`fetch`, `load`, `save`, `generate`, `generate embedding`).
 - Package imports, extern objects and the foreign function interface (`import`, `extern`).
 - Model declarations (`model`) and related LLM helpers.
 - Error handling with `try`/`catch`.

@@ -73,6 +73,25 @@ const (
 		"    std::io::stdin().read_line(&mut s).unwrap();\n" +
 		"    s.trim().to_string()\n" +
 		"}\n"
+
+	helperGenText = "fn _gen_text(_prompt: &str, _model: &str) -> String {\n" +
+		"    String::new()\n" +
+		"}\n"
+
+	helperGenEmbed = "fn _gen_embed(_text: &str, _model: &str) -> Vec<f64> {\n" +
+		"    Vec::new()\n" +
+		"}\n"
+
+	helperFetch = "fn _fetch(_url: &str) -> String {\n" +
+		"    String::new()\n" +
+		"}\n"
+
+	helperLoad = "fn _load<T>(_path: &str) -> Vec<T> {\n" +
+		"    Vec::new()\n" +
+		"}\n"
+
+	helperSave = "fn _save<T>(_src: &[T], _path: &str) {\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -87,6 +106,11 @@ var helperMap = map[string]string{
 	"_union":        helperUnion,
 	"_except":       helperExcept,
 	"_intersect":    helperIntersect,
+	"_gen_text":     helperGenText,
+	"_gen_embed":    helperGenEmbed,
+	"_fetch":        helperFetch,
+	"_load":         helperLoad,
+	"_save":         helperSave,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
