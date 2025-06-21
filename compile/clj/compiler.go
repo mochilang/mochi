@@ -48,6 +48,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		case s.Stream != nil:
+			if err := c.compileStreamDecl(s.Stream); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		case s.Model != nil:
+			if err := c.compileModelDecl(s.Model); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		case s.Test != nil:
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
@@ -238,6 +248,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileImport(s.Import)
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
+	case s.Stream != nil:
+		return c.compileStreamDecl(s.Stream)
+	case s.Model != nil:
+		return c.compileModelDecl(s.Model)
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
 	case s.Assign != nil:
@@ -258,6 +272,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
+	case s.Emit != nil:
+		return c.compileEmit(s.Emit)
 	case s.Expr != nil:
 		if name, arg, ok := isListPushCall(s.Expr.Expr); ok {
 			val, err := c.compileExpr(arg)
@@ -1305,6 +1321,46 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save")
 	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
+	varName := unexportName(sanitizeName(s.Name)) + "Stream"
+	c.use("_stream")
+	c.writeln(fmt.Sprintf("(def %s (_stream \"%s\"))", varName, s.Name))
+	return nil
+}
+
+func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
+	if _, ok := c.env.GetStream(e.Stream); !ok {
+		return fmt.Errorf("unknown stream: %s", e.Stream)
+	}
+	parts := make([]string, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf(":%s %s", sanitizeName(f.Name), v)
+	}
+	lit := "{" + strings.Join(parts, " ") + "}"
+	streamVar := unexportName(sanitizeName(e.Stream)) + "Stream"
+	c.use("_stream")
+	c.writeln(fmt.Sprintf("(_stream_append %s %s)", streamVar, lit))
+	return nil
+}
+
+func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
+	parts := make([]string, len(m.Fields))
+	for i, f := range m.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf(":%s %s", sanitizeName(f.Name), v)
+	}
+	c.use("_models")
+	c.writeln(fmt.Sprintf("(swap! _models assoc \"%s\" {%s})", m.Name, strings.Join(parts, " ")))
+	return nil
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {

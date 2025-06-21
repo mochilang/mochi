@@ -79,6 +79,17 @@ func isMap(t types.Type) bool {
 	return ok
 }
 
+func unexportName(name string) string {
+	if name == "" {
+		return ""
+	}
+	r := []rune(name)
+	if r[0] >= 'A' && r[0] <= 'Z' {
+		r[0] = r[0] - 'A' + 'a'
+	}
+	return string(r)
+}
+
 func isStruct(t types.Type) bool {
 	switch t.(type) {
 	case types.StructType, types.UnionType:

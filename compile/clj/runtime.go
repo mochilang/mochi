@@ -195,6 +195,17 @@ const (
 	helperFetch = `(defn _fetch [url opts]
   (let [txt (slurp url)]
     (clojure.data.json/read-str txt :key-fn keyword))`
+
+	helperStream = `(defn _stream [name]
+  {:name name :handlers (atom []) :events (atom [])})
+(defn _stream_append [s data]
+  (swap! (:events s) conj data)
+  (doseq [h @(:handlers s)] (h data))
+  data)
+(defn _stream_register [s handler]
+  (swap! (:handlers s) conj handler))`
+
+	helperModels = `(def ^:dynamic _models (atom {}))`
 )
 
 var helperMap = map[string]string{
@@ -220,6 +231,8 @@ var helperMap = map[string]string{
 	"_gen_embed":   helperGenEmbed,
 	"_gen_struct":  helperGenStruct,
 	"_fetch":       helperFetch,
+	"_stream":      helperStream,
+	"_models":      helperModels,
 }
 
 var helperOrder = []string{
@@ -245,6 +258,8 @@ var helperOrder = []string{
 	"_gen_embed",
 	"_gen_struct",
 	"_fetch",
+	"_stream",
+	"_models",
 }
 
 // helperDeps lists transitive helper dependencies.

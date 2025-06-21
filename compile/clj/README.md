@@ -149,7 +149,6 @@ in the example programs. In particular:
 - External declarations and other FFI helpers
 - Generic types and functions
 - Destructuring bindings in `let` and `var` statements
-- Model declarations
 - Set collections and related operations
 - Streams and event-driven agents
 - Concurrency primitives such as `spawn` and channels
@@ -158,6 +157,6 @@ in the example programs. In particular:
 - Error handling with `try`/`catch` blocks
 - Reflection or macro facilities
 - Package and `export` statements for modules
-- `emit` statements for streams
+- Runtime evaluation with `eval`
 
 Programs relying on these features fail to compile with the Clojure backend.
