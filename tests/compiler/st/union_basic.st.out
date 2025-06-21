@@ -1,0 +1,19 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newLeaf | dict |
+	dict := Dictionary new.
+	dict at: '__name' put: 'Leaf'.
+	^ dict
+!
+newNode: left value: value right: right | dict |
+	dict := Dictionary new.
+	dict at: '__name' put: 'Node'.
+	dict at: 'left' put: left.
+	dict at: 'value' put: value.
+	dict at: 'right' put: right.
+	^ dict
+!
+!!
+t := (Main newNode: (Main newLeaf) value: 5 right: (Main newLeaf)).
+(t at: 'value') displayOn: Transcript. Transcript cr.

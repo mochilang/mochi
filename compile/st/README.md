@@ -26,6 +26,7 @@ The backend implements a minimal subset of Mochi:
 - Functions with a single return value
 - Lists and maps with indexing and concatenation
 - Basic `type` declarations compiled to dictionaries
+- Union type declarations
 - Built-ins `print`, `len`, `str`, `count`, `avg`, `input`, `now`, `json`,
   `append`, `eval`, and `reduce`
 
@@ -41,7 +42,6 @@ The following language constructs are not yet handled:
 - Import and package statements
 - Model declarations (`model`) and related LLM helpers
 - Pattern matching with `match`
-- Union type declarations
 - Set literals and set operations
 - Concurrency primitives like `spawn` and channels
 - Event emission with `emit`

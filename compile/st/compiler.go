@@ -170,7 +170,26 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		// union types not yet supported
+		c.writeln("!Main class methodsFor: 'types'!")
+		for _, v := range t.Variants {
+			header := "new" + v.Name
+			if len(v.Fields) > 0 {
+				header += ": " + v.Fields[0].Name
+				for _, f := range v.Fields[1:] {
+					header += " " + f.Name + ": " + f.Name
+				}
+			}
+			c.writeln(header + " | dict |")
+			c.indent++
+			c.writeln("dict := Dictionary new.")
+			c.writeln(fmt.Sprintf("dict at: '__name' put: '%s'.", v.Name))
+			for _, f := range v.Fields {
+				c.writeln(fmt.Sprintf("dict at: '%s' put: %s.", f.Name, f.Name))
+			}
+			c.writeln("^ dict")
+			c.indent--
+			c.writelnNoIndent("!")
+		}
 		return nil
 	}
 	fields := make([]string, 0, len(t.Members))
@@ -667,6 +686,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(" + inner + ")", nil
 	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			if _, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+				return fmt.Sprintf("(Main new%s)", p.Selector.Root), nil
+			}
+		}
 		expr := p.Selector.Root
 		for _, t := range p.Selector.Tail {
 			expr = fmt.Sprintf("%s at: '%s'", expr, t)
@@ -858,6 +882,26 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	if ut, ok := c.env.FindUnionByVariant(s.Name); ok {
+		args := make([]string, len(s.Fields))
+		for i, f := range s.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			args[i] = v
+		}
+		call := "(Main new" + s.Name
+		if len(args) > 0 {
+			call += ": " + args[0]
+			for i, f := range s.Fields[1:] {
+				call += fmt.Sprintf(" %s: %s", f.Name, args[i+1])
+			}
+		}
+		call += ")"
+		_ = ut // suppress unused
+		return call, nil
+	}
 	if len(s.Fields) == 0 {
 		return "Dictionary new", nil
 	}

@@ -614,9 +614,15 @@ implemented across all backends:
 * YAML dataset loading and saving
 * Agent and stream constructs (`agent`, `on`, `emit`)
 * Model declarations (`model` blocks)
+* Generative AI helpers (`generate` blocks)
 * Dataset queries with outer joins or complex aggregation
+* Dataset I/O helpers (`fetch`, `load`, `save`)
 * Pattern matching on union variants
+* Union type declarations
 * Nested recursive functions inside other functions
+* Import statements
+* Methods declared inside `type` blocks
+* Functions with multiple return values
 * Foreign imports and `extern` declarations
 
 ## Benchmarks
