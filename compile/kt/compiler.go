@@ -1177,6 +1177,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "avg" && len(args) == 1 {
 			return args[0] + ".average()", nil
 		}
+		if name == "reduce" && len(args) == 3 {
+			var buf bytes.Buffer
+			buf.WriteString("run {\n")
+			buf.WriteString("                val _fn = " + args[1] + "\n")
+			buf.WriteString("                " + args[0] + ".fold(" + args[2] + ") { acc, it -> _fn(acc, it) }\n")
+			buf.WriteString("        }")
+			return buf.String(), nil
+		}
 		if name == "now" && len(args) == 0 {
 			return "(System.currentTimeMillis() * 1000000)", nil
 		}
