@@ -70,6 +70,34 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 			continue
 		}
+		if s.ExternVar != nil {
+			if err := c.compileExternVar(s.ExternVar); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+			continue
+		}
+		if s.ExternFun != nil {
+			if err := c.compileExternFun(s.ExternFun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+			continue
+		}
+		if s.ExternType != nil {
+			if err := c.compileExternType(s.ExternType); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+			continue
+		}
+		if s.ExternObject != nil {
+			if err := c.compileExternObject(s.ExternObject); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+			continue
+		}
 		if s.Test != nil {
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
@@ -148,6 +176,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return c.compilePackageImport(s.Import)
 		}
 		return fmt.Errorf("foreign imports not supported")
+	case s.ExternVar != nil:
+		return c.compileExternVar(s.ExternVar)
+	case s.ExternFun != nil:
+		return c.compileExternFun(s.ExternFun)
+	case s.ExternType != nil:
+		return c.compileExternType(s.ExternType)
+	case s.ExternObject != nil:
+		return c.compileExternObject(s.ExternObject)
 	default:
 		return nil
 	}
@@ -980,6 +1016,57 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		return "", nil
 	}
 	return c.compileBinary(e.Binary)
+}
+
+func (c *Compiler) compileExternVar(ev *parser.ExternVarDecl) error {
+	name := sanitizeName(ev.Name())
+	typ := ktType(c.resolveTypeRef(ev.Type))
+	c.writeln(fmt.Sprintf("var %s: %s = TODO(\"extern\")", name, typ))
+	if c.env != nil {
+		c.env.SetVar(ev.Name(), c.resolveTypeRef(ev.Type), true)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExternFun(ef *parser.ExternFunDecl) error {
+	params := make([]string, len(ef.Params))
+	var ptypes []types.Type
+	for i, p := range ef.Params {
+		param := sanitizeName(p.Name)
+		if p.Type != nil {
+			typ := c.resolveTypeRef(p.Type)
+			param += ": " + ktType(typ)
+			if c.env != nil {
+				ptypes = append(ptypes, typ)
+			}
+		}
+		params[i] = param
+	}
+	ret := "Unit"
+	if ef.Return != nil {
+		ret = ktType(c.resolveTypeRef(ef.Return))
+	}
+	c.writeln(fmt.Sprintf("fun %s(%s): %s = TODO(\"extern\")", sanitizeName(ef.Name()), joinArgs(params), ret))
+	if c.env != nil {
+		ft := types.FuncType{Params: ptypes, Return: c.resolveTypeRef(ef.Return)}
+		c.env.SetVar(ef.Name(), ft, false)
+	}
+	return nil
+}
+
+func (c *Compiler) compileExternType(et *parser.ExternTypeDecl) error {
+	c.writeln(fmt.Sprintf("typealias %s = Any", sanitizeName(et.Name)))
+	return nil
+}
+
+func (c *Compiler) compileExternObject(eo *parser.ExternObjectDecl) error {
+	name := sanitizeName(eo.Name)
+	c.use("_extern")
+	c.writeln(fmt.Sprintf("val %s = ExternRegistry._externGet(\"%s\")", name, eo.Name))
+	if c.env != nil {
+		c.env.SetVar(eo.Name, types.AnyType{}, true)
+	}
+	return nil
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {

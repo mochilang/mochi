@@ -13,6 +13,7 @@ The Kotlin backend converts Mochi programs into Kotlin source files so they can 
 - List set operators `union`, `union_all`, `except` and `intersect`
 - Basic stream handling with `stream`, `on` and `emit`
 - YAML dataset loading and saving
+- Extern variables, functions and objects via `ExternRegistry`
 
 ## Unsupported Features
 
@@ -22,11 +23,11 @@ The Kotlin backend still lacks several features available in other compilers:
 - Agents and intent handlers
 - Logic programming (`fact`, `rule`, `query`)
 - Foreign function interface and cross-language imports
-- Extern declarations
 - Concurrency primitives such as `spawn` and channels
 - Error handling with `try`/`catch` blocks
 - Generic types and functions
 - Set collections remain unsupported
+- True 64-bit integers are not supported (`int64` maps to Kotlin `Int`)
 - Reflection or macro facilities
 - Full LLM integration for `_genText`, `_genEmbed` and `_genStruct`
 - Asynchronous functions (`async`/`await`)
