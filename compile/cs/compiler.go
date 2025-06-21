@@ -65,6 +65,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.helpers["_load"] || c.helpers["_save"] {
 		c.writeln("using YamlDotNet.Serialization;")
 	}
+	if c.helpers["_eval"] {
+		c.writeln("using System.Data;")
+	}
 	c.writeln("")
 	if prog.Package != "" {
 		c.writeln("namespace " + sanitizeName(prog.Package) + " {")
@@ -361,12 +364,18 @@ func (c *Compiler) scanProgram(prog *parser.Program) {
 				c.useLinq = true
 				return
 			}
+			if p.Target != nil && p.Target.Call != nil && p.Target.Call.Func == "eval" {
+				c.helpers["_eval"] = true
+			}
 		}
 		for _, r := range e.Binary.Right {
 			if r.Right != nil {
 				if r.Right.Target != nil && r.Right.Target.Query != nil {
 					c.useLinq = true
 					return
+				}
+				if r.Right.Target != nil && r.Right.Target.Call != nil && r.Right.Target.Call.Func == "eval" {
+					c.helpers["_eval"] = true
 				}
 			}
 		}
@@ -1556,6 +1565,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("json() expects 1 arg")
 		}
 		return fmt.Sprintf("Console.WriteLine(JsonSerializer.Serialize(%s))", args[0]), nil
+	case "eval":
+		if len(args) != 1 {
+			return "", fmt.Errorf("eval expects 1 arg")
+		}
+		c.use("_eval")
+		return fmt.Sprintf("_eval(%s)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 	}
