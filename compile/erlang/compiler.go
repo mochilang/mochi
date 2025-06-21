@@ -261,7 +261,11 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	c.writeln(fmt.Sprintf("%s(%s) ->", atomName(fun.Name), strings.Join(params, ", ")))
 	child := types.NewEnv(c.env)
 	for _, p := range fun.Params {
-		child.SetVar(p.Name, types.AnyType{}, true)
+		var typ types.Type = types.AnyType{}
+		if p.Type != nil {
+			typ = c.resolveTypeRef(p.Type)
+		}
+		child.SetVar(p.Name, typ, true)
 	}
 	origEnv := c.env
 	c.env = child
@@ -342,7 +346,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		name := c.newName(s.Let.Name)
 		c.buf.WriteString(fmt.Sprintf("%s = %s", name, val))
 		if c.env != nil {
-			c.env.SetVar(s.Let.Name, types.AnyType{}, false)
+			var t types.Type = types.AnyType{}
+			if s.Let.Type != nil {
+				t = c.resolveTypeRef(s.Let.Type)
+			} else if s.Let.Value != nil {
+				t = c.inferExprType(s.Let.Value)
+			}
+			c.env.SetVar(s.Let.Name, t, false)
 		}
 	case s.Var != nil:
 		val := "undefined"
@@ -356,7 +366,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		name := c.newName(s.Var.Name)
 		c.buf.WriteString(fmt.Sprintf("%s = %s", name, val))
 		if c.env != nil {
-			c.env.SetVar(s.Var.Name, types.AnyType{}, true)
+			var t types.Type = types.AnyType{}
+			if s.Var.Type != nil {
+				t = c.resolveTypeRef(s.Var.Type)
+			} else if s.Var.Value != nil {
+				t = c.inferExprType(s.Var.Value)
+			}
+			c.env.SetVar(s.Var.Name, t, true)
 		}
 	case s.Assign != nil:
 		if err := c.compileAssign(s.Assign); err != nil {
@@ -593,6 +609,11 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	}
 	name := c.newName(a.Name)
 	c.buf.WriteString(fmt.Sprintf("%s = %s", name, val))
+	if c.env != nil {
+		t := c.inferExprType(a.Value)
+		mutable, _ := c.env.IsMutable(a.Name)
+		c.env.SetVar(a.Name, t, mutable)
+	}
 	return nil
 }
 
