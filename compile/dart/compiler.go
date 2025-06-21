@@ -72,9 +72,8 @@ func New(env *types.Env) *Compiler {
 		structs: make(map[string]bool), agents: make(map[string]bool), helpers: make(map[string]bool), models: false}
 }
 
-// Compile returns Dart source implementing prog.
-func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	needsAsync := containsStreamCode(prog.Statements)
+// initState resets compiler state before a compilation run.
+func (c *Compiler) initState() {
 	c.buf.Reset()
 	c.imports = make(map[string]bool)
 	c.dartImports = make(map[string]string)
@@ -84,68 +83,29 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.helpers = make(map[string]bool)
 	c.handlerCount = 0
 	c.models = false
+}
+
+// Compile returns Dart source implementing prog.
+func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	needsAsync := containsStreamCode(prog.Statements)
+	c.initState()
 
 	var body bytes.Buffer
 	oldBuf := c.buf
 	c.buf = body
 
-	// Emit type declarations first.
-	for _, s := range prog.Statements {
-		if s.Type != nil {
-			if err := c.compileTypeDecl(s.Type); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
+	if err := c.compileTypeDecls(prog.Statements); err != nil {
+		return nil, err
 	}
-
-	// Emit function declarations next.
-	for _, s := range prog.Statements {
-		if s.Fun != nil {
-			if err := c.compileFun(s.Fun); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
+	if err := c.compileFunDecls(prog.Statements); err != nil {
+		return nil, err
 	}
-
-	// Emit test block declarations.
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			if err := c.compileTestBlock(s.Test); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
+	if err := c.compileTestBlocks(prog.Statements); err != nil {
+		return nil, err
 	}
-
-	// Emit main function with remaining statements.
-	if needsAsync {
-		c.writeln("Future<void> main() async {")
-	} else {
-		c.writeln("void main() {")
+	if err := c.compileMain(prog.Statements, needsAsync); err != nil {
+		return nil, err
 	}
-	c.indent++
-	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil || s.Test != nil {
-			continue
-		}
-		if err := c.compileStmt(s); err != nil {
-			return nil, err
-		}
-	}
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(fmt.Sprintf("%s();", name))
-		}
-	}
-	if needsAsync {
-		c.use("_waitAll")
-		c.writeln("await _waitAll();")
-	}
-	c.indent--
-	c.writeln("}")
 	bodyBytes := c.buf.Bytes()
 
 	c.buf = oldBuf
@@ -174,6 +134,72 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.emitRuntime()
 	c.buf.WriteByte('\n')
 	return c.buf.Bytes(), nil
+}
+
+func (c *Compiler) compileTypeDecls(stmts []*parser.Statement) error {
+	for _, s := range stmts {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return err
+			}
+			c.writeln("")
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileFunDecls(stmts []*parser.Statement) error {
+	for _, s := range stmts {
+		if s.Fun != nil {
+			if err := c.compileFun(s.Fun); err != nil {
+				return err
+			}
+			c.writeln("")
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileTestBlocks(stmts []*parser.Statement) error {
+	for _, s := range stmts {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return err
+			}
+			c.writeln("")
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileMain(stmts []*parser.Statement, needsAsync bool) error {
+	if needsAsync {
+		c.writeln("Future<void> main() async {")
+	} else {
+		c.writeln("void main() {")
+	}
+	c.indent++
+	for _, s := range stmts {
+		if s.Fun != nil || s.Type != nil || s.Test != nil {
+			continue
+		}
+		if err := c.compileStmt(s); err != nil {
+			return err
+		}
+	}
+	for _, s := range stmts {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(fmt.Sprintf("%s();", name))
+		}
+	}
+	if needsAsync {
+		c.use("_waitAll")
+		c.writeln("await _waitAll();")
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
 }
 
 // --- Statements ---
