@@ -1,0 +1,14 @@
+import "lib/cloud/terraform" as tf
+
+let stack = tf.new_stack()
+let fn = tf.function("hello", "python3.11", "main.handler")
+let bucket = tf.bucket("files", true)
+let queue = tf.queue("tasks", 30)
+
+stack.add(fn.to_map())
+stack.add(bucket.to_map())
+stack.add(queue.to_map())
+
+for r in stack.to_list() {
+  print(r.kind, r.name)
+}

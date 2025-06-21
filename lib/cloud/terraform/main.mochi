@@ -1,0 +1,33 @@
+package terraform
+
+import "./compute/function" as compute
+import "./storage/bucket" as storage
+import "./network/queue" as network
+
+type Stack {
+  resources: list<any>
+
+  fun add(r: any) {
+    resources = resources + [r]
+  }
+
+  fun to_list(): list<any> {
+    return resources
+  }
+}
+
+export fun new_stack(): Stack {
+  return Stack { resources: [] }
+}
+
+export fun function(name: string, runtime: string, handler: string) {
+  return compute.function(name, runtime, handler)
+}
+
+export fun bucket(name: string, versioned: bool) {
+  return storage.bucket(name, versioned)
+}
+
+export fun queue(name: string, visibility_timeout: int) {
+  return network.queue(name, visibility_timeout)
+}
