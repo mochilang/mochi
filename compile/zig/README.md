@@ -214,7 +214,9 @@ let p = Person{ .name = "Ada", .age = 42 };
 Variable declarations with `var` are now supported. Empty list values create a
 `std.ArrayList` for dynamic appends. Assignments of the form `list = list + [x]`
 translate to `list.append(x)`, and `while` statements map directly to Zig's
-`while` syntax. `break` and `continue` pass through unchanged. List membership
+`while` syntax. Numeric loops using `range(start, end, step)` now lower to a
+temporary counter and `while` loop for the step value. `break` and `continue`
+pass through unchanged. List membership
 checks using the `in` operator compile to helper functions for integer and
 string lists.
 
@@ -302,11 +304,11 @@ LeetCode solutions:
 * asynchronous functions (`async`/`await`)
 * the `eval` builtin function
 * YAML dataset loading and saving
-* range loops using the `range(start, end, step)` helper
 * built-in helpers like `fetch`, `load`, `save` and `generate`
 * logic programming constructs (`fact`, `rule`, `query`)
 * concurrency features such as streams or `spawn`
 * anonymous function expressions (`fun` values)
+* arrow function syntax (`fun(x: int): int => x + 1`)
 * foreign imports and `extern` declarations
 * automatic language imports (`import python "..." auto`)
 * agent declarations and `on` handlers
