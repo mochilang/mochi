@@ -1,4 +1,29 @@
 # 📦 CHANGELOG.md
+## [0.8.9] – 2025-06-21
+
+### Added
+
+* Sort builtin for Rust and join queries in Ruby
+* Imports and multi-dimensional indexing in Racket
+* Package declarations and Python FFI imports for Scala
+* Map loops, len and reduce builtin in Zig
+* Python agent initialization with fields
+* Group queries in Lua with struct support for the C backend
+* List slicing and negative indexing in COBOL
+* JSON helpers and reduce builtin for Kotlin
+* Type method support with generic map casting in C#
+* Block-bodied lambdas in Racket and list ops in Scheme
+* Inline avg builtin for Fortran
+* Reduce builtin in C++ and Prolog test blocks
+
+### Changed
+
+* Runtime helpers are deduplicated and inlined across languages
+
+### Fixed
+
+* Method handling corrected in the Clojure compiler
+
 ## [0.8.8] – 2025-06-20
 
 ### Added
