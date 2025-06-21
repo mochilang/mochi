@@ -242,6 +242,70 @@ func (c *Compiler) compileFor(n *ast.Node) {
 
 	case "in":
 		src := n.Children[0].Children[0]
+		if src.Kind == "call" && strings.ToUpper(src.Value.(string)) == "RANGE" {
+			args := src.Children
+			var startNode, endNode, stepNode *ast.Node
+			if len(args) == 1 {
+				startNode = &ast.Node{Kind: "int", Value: 0}
+				endNode = args[0]
+			} else if len(args) >= 2 {
+				startNode = args[0]
+				endNode = args[1]
+				if len(args) >= 3 {
+					stepNode = args[2]
+				}
+			}
+
+			c.declare(fmt.Sprintf("01 %s PIC S9.", varName))
+			start := c.expr(startNode)
+			end := c.expr(endNode)
+			step := "1"
+			if stepNode != nil {
+				step = c.expr(stepNode)
+			}
+
+			if !isSimpleExpr(startNode) {
+				tmp := c.newTemp()
+				c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, start))
+				start = tmp
+			}
+			if !isSimpleExpr(endNode) {
+				tmp := c.newTemp()
+				c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, end))
+				end = tmp
+			}
+			if stepNode != nil && !isSimpleExpr(stepNode) {
+				tmp := c.newTemp()
+				c.declare(fmt.Sprintf("01 %s PIC S9.", tmp))
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, step))
+				step = tmp
+			}
+
+			c.writeln(fmt.Sprintf("    IF %s > 0", step))
+			c.indent++
+			c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM %s BY %s UNTIL %s >= %s", varName, start, step, varName, end))
+			c.indent++
+			for _, st := range n.Children[1].Children {
+				c.compileNode(st)
+			}
+			c.indent--
+			c.writeln("    END-PERFORM")
+			c.indent--
+			c.writeln("    ELSE")
+			c.indent++
+			c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM %s BY %s UNTIL %s <= %s", varName, start, step, varName, end))
+			c.indent++
+			for _, st := range n.Children[1].Children {
+				c.compileNode(st)
+			}
+			c.indent--
+			c.writeln("    END-PERFORM")
+			c.indent--
+			c.writeln("    END-IF")
+			return
+		}
 		switch src.Kind {
 		case "list":
 			elemPic := "PIC 9."

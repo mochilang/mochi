@@ -159,6 +159,7 @@ constructs:
 - `let` and `var` declarations and assignments
 - `if` statements and expressions
 - `for` loops over integer ranges, list literals, fixed list variables and string values. Ranges can count up or down
+- `for` loops using the `range(start, end, step)` helper with custom step values
 - `while` loops
 - `break` and `continue` statements
 - Standalone function calls as statements, including `print`
@@ -218,5 +219,13 @@ unsupported include:
 - First-class function values or closures
 - `try`/`catch` error handling blocks
 - Complex `match` patterns beyond simple literals and `_`
+- Generic type parameters for functions and user-defined types
+- Reflection and macro facilities
+- Asynchronous functions using `async`/`await`
+- Agent initialization with field values
+- YAML dataset loading and saving
+- Pattern matching on union variants
+- Nested recursive functions inside other functions
+- Dataset queries with outer joins or complex aggregation
 
 Programs relying on these constructs will fail to compile.
