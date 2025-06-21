@@ -46,7 +46,7 @@ The backend currently supports:
 - AI `generate_text`, `generate_embed` and `generate_struct` helpers (placeholders)
 - test blocks and `expect` statements
 - `load` and `save` for Erlang terms or plain text files
-- HTTP `fetch` using `httpc`
+- HTTP `fetch` using `httpc` with an optional `method` field
 
 ## Building
 
@@ -92,6 +92,9 @@ func EnsureErlang() error { return ensureErlang() }
 - imports targeting languages other than Erlang
 - reflection or macro facilities
 - error handling with `try`/`catch`
-- advanced HTTP `fetch` options beyond simple GET
+- iteration over maps or sets with `for` loops
+- match patterns for union variants accept only identifiers or `_`
+- `load` and `save` support only text and Erlang term files
+- advanced HTTP `fetch` options like headers or request bodies
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs directly.

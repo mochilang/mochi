@@ -1826,10 +1826,23 @@ func (c *Compiler) emitRuntime() {
 
 	if c.needFetch {
 		c.writeln("")
-		c.writeln("mochi_fetch(Url, _Opts) ->")
+		c.writeln("mochi_fetch(Url, Opts) when Opts =:= undefined ->")
+		c.indent++
+		c.writeln("mochi_fetch(Url, #{});")
+		c.indent--
+		c.writeln("mochi_fetch(Url, Opts) ->")
 		c.indent++
 		c.writeln("application:ensure_all_started(inets),")
-		c.writeln("case httpc:request(get, {Url, []}, [], []) of")
+		c.writeln("Method0 = maps:get(method, Opts, get),")
+		c.writeln("Method = case Method0 of")
+		c.indent++
+		c.writeln("M when is_atom(M) -> M;")
+		c.writeln("M when is_list(M) -> list_to_atom(string:lowercase(M));")
+		c.writeln("M when is_binary(M) -> list_to_atom(string:lowercase(binary_to_list(M)));")
+		c.writeln("_ -> get")
+		c.indent--
+		c.writeln("end,")
+		c.writeln("case httpc:request(Method, {Url, []}, [], []) of")
 		c.indent++
 		c.writeln("{ok, {{_, 200, _}, _H, Body}} -> Body;")
 		c.writeln("_ -> []")
