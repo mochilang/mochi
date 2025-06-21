@@ -543,6 +543,27 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			c.writeln(fmt.Sprintf("%s <- %s", lhs, val))
 		}
+	case s.ExternVar != nil:
+		name := sanitizeName(s.ExternVar.Name())
+		typ := "obj"
+		if s.ExternVar.Type != nil {
+			typ = fsType(s.ExternVar.Type)
+		}
+		c.writeln(fmt.Sprintf("let mutable %s : %s = Unchecked.defaultof<%s>", name, typ, typ))
+	case s.ExternFun != nil:
+		params := make([]string, len(s.ExternFun.Params))
+		for i, p := range s.ExternFun.Params {
+			ptyp := "obj"
+			if p.Type != nil {
+				ptyp = fsType(p.Type)
+			}
+			params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), ptyp)
+		}
+		ret := "obj"
+		if s.ExternFun.Return != nil {
+			ret = fsType(s.ExternFun.Return)
+		}
+		c.writeln(fmt.Sprintf("let %s %s : %s = failwith \"extern\"", sanitizeName(s.ExternFun.Name()), strings.Join(params, " "), ret))
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -999,6 +1020,21 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 						operands[i] = fmt.Sprintf("Array.contains %s %s", left, right)
 					}
 					lists[i] = false
+					maps[i] = false
+					strs[i] = false
+				} else if op == "union" {
+					operands[i] = fmt.Sprintf("Array.append %s %s |> Array.distinct", left, right)
+					lists[i] = true
+					maps[i] = false
+					strs[i] = false
+				} else if op == "except" {
+					operands[i] = fmt.Sprintf("Array.filter (fun x -> not (Array.contains x %s)) %s", right, left)
+					lists[i] = true
+					maps[i] = false
+					strs[i] = false
+				} else if op == "intersect" {
+					operands[i] = fmt.Sprintf("Array.filter (fun x -> Array.contains x %s) %s", right, left)
+					lists[i] = true
 					maps[i] = false
 					strs[i] = false
 				} else {

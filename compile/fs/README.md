@@ -124,12 +124,13 @@ Mochi features are not yet available.
 * Record and union type declarations
 * Methods declared inside `type` blocks
 * Package imports using `import` and exported functions via `export fun`
+* `extern` variable and function declarations
 
 ### Unsupported features
 
 The F# generator currently lacks support for several language constructs:
 
-* `extern` objects or variables
+* `extern` objects
 * Foreign function interface (FFI) declarations
 * Extern type declarations
 * Logic programming constructs (`fact`, `rule`, `query`)
@@ -138,4 +139,6 @@ The F# generator currently lacks support for several language constructs:
 * Concurrency primitives like `spawn` and channels
 * Generic types, reflection and macro facilities
 * `model` declarations and agent initialization
+* Error handling with `try`/`catch` blocks
+* Dataset set operations like `union`, `except` and `intersect` on query results
 
