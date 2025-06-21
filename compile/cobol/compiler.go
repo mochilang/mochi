@@ -737,47 +737,99 @@ func (c *Compiler) expr(n *ast.Node) string {
 	case "index":
 		arr := c.expr(n.Children[0])
 		if len(n.Children) > 1 && (n.Children[1].Kind == "start" || n.Children[1].Kind == "end" || len(n.Children) > 2) {
-			if !c.isStringExpr(n.Children[0]) {
-				c.writeln("    *> unsupported slice")
-				return "0"
-			}
-			var startNode, endNode *ast.Node
-			for _, ch := range n.Children[1:] {
-				switch ch.Kind {
-				case "start":
-					startNode = ch.Children[0]
-				case "end":
-					endNode = ch.Children[0]
+			if c.isStringExpr(n.Children[0]) {
+				var startNode, endNode *ast.Node
+				for _, ch := range n.Children[1:] {
+					switch ch.Kind {
+					case "start":
+						startNode = ch.Children[0]
+					case "end":
+						endNode = ch.Children[0]
+					}
 				}
+				if startNode == nil || endNode == nil {
+					c.writeln("    *> unsupported slice")
+					return "0"
+				}
+				startExpr := c.expr(startNode)
+				endExpr := c.expr(endNode)
+				if !isSimpleExpr(startNode) {
+					tmp := c.newTemp()
+					c.declare("01 " + tmp + " PIC S9.")
+					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, startExpr))
+					startExpr = tmp
+				}
+				if !isSimpleExpr(endNode) {
+					tmp := c.newTemp()
+					c.declare("01 " + tmp + " PIC S9.")
+					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, endExpr))
+					endExpr = tmp
+				}
+				lengthTmp := c.newTemp()
+				c.declare("01 " + lengthTmp + " PIC S9.")
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s - %s", lengthTmp, endExpr, startExpr))
+				startPlus := c.newTemp()
+				c.declare("01 " + startPlus + " PIC S9.")
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s + 1", startPlus, startExpr))
+				resTmp := c.newTemp()
+				c.declare("01 " + resTmp + " PIC X(100).")
+				c.writeln(fmt.Sprintf("    MOVE %s(%s:%s) TO %s", arr, startPlus, lengthTmp, resTmp))
+				return resTmp
+			} else if c.isListExpr(n.Children[0]) {
+				var startNode, endNode *ast.Node
+				for _, ch := range n.Children[1:] {
+					switch ch.Kind {
+					case "start":
+						startNode = ch.Children[0]
+					case "end":
+						endNode = ch.Children[0]
+					}
+				}
+				if startNode == nil || endNode == nil {
+					c.writeln("    *> unsupported slice")
+					return "0"
+				}
+				if startNode.Kind != "int" || endNode.Kind != "int" {
+					c.writeln("    *> unsupported slice")
+					return "0"
+				}
+				start := extractInt(startNode)
+				end := extractInt(endNode)
+				name, length, pic, elems, ok := c.listInfo(n.Children[0])
+				if !ok {
+					c.writeln("    *> unsupported slice")
+					return "0"
+				}
+				if start < 0 {
+					start = length + start
+				}
+				if end < 0 {
+					end = length + end
+				}
+				if start < 0 || end > length || end < start {
+					c.writeln("    *> unsupported slice")
+					return "0"
+				}
+				resLen := end - start
+				res := c.newTemp()
+				c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", res, resLen, pic))
+				c.listLens[res] = resLen
+				idx := 1
+				if name != "" {
+					for i := start; i < end; i++ {
+						c.writeln(fmt.Sprintf("    MOVE %s(%d) TO %s(%d)", name, i+1, res, idx))
+						idx++
+					}
+				} else {
+					for i := start; i < end; i++ {
+						c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(elems[i]), res, idx))
+						idx++
+					}
+				}
+				return res
 			}
-			if startNode == nil || endNode == nil {
-				c.writeln("    *> unsupported slice")
-				return "0"
-			}
-			startExpr := c.expr(startNode)
-			endExpr := c.expr(endNode)
-			if !isSimpleExpr(startNode) {
-				tmp := c.newTemp()
-				c.declare("01 " + tmp + " PIC S9.")
-				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, startExpr))
-				startExpr = tmp
-			}
-			if !isSimpleExpr(endNode) {
-				tmp := c.newTemp()
-				c.declare("01 " + tmp + " PIC S9.")
-				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, endExpr))
-				endExpr = tmp
-			}
-			lengthTmp := c.newTemp()
-			c.declare("01 " + lengthTmp + " PIC S9.")
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s - %s", lengthTmp, endExpr, startExpr))
-			startPlus := c.newTemp()
-			c.declare("01 " + startPlus + " PIC S9.")
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s + 1", startPlus, startExpr))
-			resTmp := c.newTemp()
-			c.declare("01 " + resTmp + " PIC X(100).")
-			c.writeln(fmt.Sprintf("    MOVE %s(%s:%s) TO %s", arr, startPlus, lengthTmp, resTmp))
-			return resTmp
+			c.writeln("    *> unsupported slice")
+			return "0"
 		}
 		idx := c.expr(n.Children[1])
 		l, ok := c.listLens[arr]
