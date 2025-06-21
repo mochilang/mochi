@@ -89,11 +89,10 @@ let _json (v: obj) : unit =
 )
 
 var helperMap = map[string]string{
-	"_load":     helperLoad,
-	"_save":     helperSave,
-	"_run_test": helperRunTest,
-	"_input":    helperInput,
-	"_fetch":    helperFetch,
-	"_to_json":  helperToJson,
-	"_json":     helperToJson,
+	"_load":         helperLoad,
+	"_save":         helperSave,
+	"_run_test":     helperRunTest,
+	"_input":        helperInput,
+	"_fetch":        helperFetch,
+	"_json_helpers": helperToJson,
 }
