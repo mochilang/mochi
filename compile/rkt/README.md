@@ -189,11 +189,11 @@ Unsupported features currently include:
 * Agents, streams and intents
 * Logic programming constructs (`fact`, `rule`, `query`)
 * Concurrency primitives such as `spawn` and channels
-* Foreign function interface via `import`
 * Package management and `package` declarations
 * Union type declarations
 * LLM helpers like `_genText`, `_genEmbed` and `_genStruct`
-* Multi-dimensional slice assignment or indexing beyond two levels
+* Multi-dimensional slice assignment (indexing across multiple levels is supported)
 * Methods defined inside `type` blocks
 * Extern declarations (`extern var`, `extern fun`, `extern type`, `extern object`)
 * Destructuring bindings in `let` and `var` statements
+* Iteration over map key/value pairs
