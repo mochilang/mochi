@@ -1,0 +1,24 @@
+package azure.storage
+
+type Container {
+  name: string
+  resourceGroup: string
+  region: string
+
+  fun upload(path: string, data: string) {
+    print("Uploading", path, "to", name)
+  }
+
+  fun download(path: string): string {
+    print("Downloading", path, "from", name)
+    return "data:" + path
+  }
+}
+
+fun create(name: string, group: string, region: string): Container {
+  print("Creating container", name, "in", region)
+  return Container { name: name, resourceGroup: group, region: region }
+}
+
+export type Container
+export fun create

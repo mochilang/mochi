@@ -1,0 +1,24 @@
+package azure.compute
+
+type VM {
+  name: string
+  image: string
+  size: string
+  region: string
+
+  fun start() {
+    print("Starting VM", name)
+  }
+
+  fun stop() {
+    print("Stopping VM", name)
+  }
+}
+
+fun create(name: string, image: string, size: string, region: string): VM {
+  print("Creating VM", name, "with", image, size, "in", region)
+  return VM { name: name, image: image, size: size, region: region }
+}
+
+export type VM
+export fun create

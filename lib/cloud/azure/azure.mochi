@@ -1,0 +1,9 @@
+package azure
+
+import "./compute/vm" as compute
+import "./storage/container" as storage
+import "./network/vnet" as network
+
+export let compute = compute
+export let storage = storage
+export let network = network
