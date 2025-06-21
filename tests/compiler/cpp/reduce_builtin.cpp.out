@@ -1,0 +1,16 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+template<typename Src, typename Fn, typename Acc> Acc _reduce(const Src& src, Fn fn, Acc acc) {
+	for (const auto& it : src) {
+		acc = fn(acc, it);
+	}
+	return acc;
+}
+
+int main() {
+	vector<int> nums = vector<int>{1, 2, 3, 4};
+	auto sum = _reduce(nums, [=](int acc, int x) { return acc + x; }, 0);
+	std::cout << (sum) << std::endl;
+	return 0;
+}

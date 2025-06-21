@@ -11,7 +11,7 @@ import (
 )
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy"}
+var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -72,6 +72,14 @@ var helperCode = map[string][]string{
 		"\tvector<_Group> res;",
 		"\tfor (const auto& k : order) res.push_back(groups[k]);",
 		"\treturn res;",
+		"}",
+	},
+	"reduce": {
+		"template<typename Src, typename Fn, typename Acc> Acc _reduce(const Src& src, Fn fn, Acc acc) {",
+		"\tfor (const auto& it : src) {",
+		"\t\tacc = fn(acc, it);",
+		"\t}",
+		"\treturn acc;",
 		"}",
 	},
 }
@@ -646,6 +654,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return fmt.Sprintf("%s.size()", args[0])
 		case "str":
 			return fmt.Sprintf("to_string(%s)", args[0])
+		case "reduce":
+			if len(args) == 3 {
+				c.helpers["reduce"] = true
+				return fmt.Sprintf("_reduce(%s, %s, %s)", args[0], args[1], args[2])
+			}
+			return fmt.Sprintf("reduce(%s)", strings.Join(args, ", "))
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", "))
 		}
