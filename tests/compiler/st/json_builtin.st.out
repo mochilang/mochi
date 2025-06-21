@@ -1,0 +1,4 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+(Dictionary from: {'a' -> 1} toJSON) displayOn: Transcript. Transcript cr.
