@@ -287,6 +287,12 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - event emission and intent handlers (`emit`, `on`)
 - model declarations
 - package imports and export declarations
-- reduce built-in function
 - complex Python FFI expressions (chained calls or indexing)
+- asynchronous functions (`async`/`await`)
+- YAML dataset loading and saving
+- set collections (`set<T>`) and related operations
+- agent initialization with field values
+- destructuring bindings in `let` and `var` statements
+- map membership checks and iterating over maps in `for` loops
+- extern type declarations
 

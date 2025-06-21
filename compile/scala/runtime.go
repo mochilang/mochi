@@ -99,6 +99,13 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
         ct.runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[T]
 }
 `
+	helperReduce = `def _reduce[T](src: Iterable[T], fn: (T, T) => T, init: T): T = {
+        var acc = init
+        for (it <- src) {
+                acc = fn(acc, it)
+        }
+        acc
+}`
 	helperToJSON = `def _to_json(v: Any): String = v match {
         case null => "null"
         case s: String => "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
@@ -152,6 +159,7 @@ var helperMap = map[string]string{
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
+	"_reduce":      helperReduce,
 	"_pyAttr":      helperPyAttr,
 	"_extern":      helperExtern,
 	"_eval":        helperEval,
