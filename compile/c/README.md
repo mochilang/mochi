@@ -24,7 +24,7 @@ Further helpers like `_count`, `_avg`, `_input`, `_str` and `_index_string` are 
 
 The backend supports basic language features including variable declarations, `for`/`while` loops, conditionals and function definitions. Lists of integers, floats, strings and nested integer lists are handled using the `list_int`, `list_float`, `list_string` and `list_list_int` types. When compiling `for` loops over ranges or collections the generator emits plain C loops.【F:compile/c/compiler.go†L452-L527】
 
-Builtin functions such as `print`, `len`, `count`, `avg`, `input` and `str` are translated to the appropriate helper calls or C library functions.【F:compile/c/compiler.go†L629-L757】
+Builtin functions such as `print`, `len`, `count`, `avg`, `input`, `str`, `now` and `json` are translated to the appropriate helper calls or C library functions.【F:compile/c/compiler.go†L629-L757】
 Extern variable and function declarations are emitted verbatim as C `extern` statements and registered in the type environment.
 
 Additional features include:
@@ -100,6 +100,8 @@ features include:
 - nested recursive functions inside other functions
 - `export` statements
 - constructing union variant values or matching on them
+- automatic language imports (`import python "..." auto`)
+- extern object declarations
 
 The backend now supports membership checks and `union`/`union all` operations
 for integer, float, and string lists, along with slicing and printing of string

@@ -246,6 +246,36 @@ static list_list_int list_list_int_create(int len) {
     return buf;
 }
 `
+	helperNow = `static long long _now() {
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    return (long long)ts.tv_sec * 1000000000LL + ts.tv_nsec;
+}
+`
+	helperJSON = `static void _json_int(int v) { printf("%d", v); }
+static void _json_float(double v) { printf("%g", v); }
+static void _json_string(char* s) { printf("\"%s\"", s); }
+static void _json_list_int(list_int v) {
+    printf("[");
+    for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_int(v.data[i]); }
+    printf("]");
+}
+static void _json_list_float(list_float v) {
+    printf("[");
+    for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_float(v.data[i]); }
+    printf("]");
+}
+static void _json_list_string(list_string v) {
+    printf("[");
+    for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_string(v.data[i]); }
+    printf("]");
+}
+static void _json_list_list_int(list_list_int v) {
+    printf("[");
+    for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_list_int(v.data[i]); }
+    printf("]");
+}
+`
 	helperIndexString = `static char* _index_string(char* s, int i) {
     int len = strlen(s);
     if (i < 0) i += len;
@@ -420,6 +450,12 @@ func (c *Compiler) emitRuntime() {
 	}
 	if c.needsStr {
 		c.buf.WriteString(helperStr)
+	}
+	if c.needsNow {
+		c.buf.WriteString(helperNow)
+	}
+	if c.needsJSON {
+		c.buf.WriteString(helperJSON)
 	}
 	if c.needsIndexString {
 		c.buf.WriteString(helperIndexString)
