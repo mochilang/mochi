@@ -2,7 +2,6 @@ package cljcode
 
 import (
 	"bytes"
-	"sort"
 )
 
 // Runtime helper functions for the Clojure backend.
@@ -12,8 +11,8 @@ const (
         i (if (neg? i) (+ i (count r)) i)]
     (if (or (< i 0) (>= i (count r)))
       (throw (ex-info "index out of range" {}))
-      (str (nth r i))))
-)`
+      (str (nth r i)))))
+`
 
 	helperIndexList = `(defn _indexList [xs i]
   (let [idx (if (neg? i) (+ i (count xs)) i)]
@@ -139,9 +138,42 @@ var helperMap = map[string]string{
 	"_json":        helperJSON,
 }
 
+var helperOrder = []string{
+	"_indexString",
+	"_indexList",
+	"_input",
+	"_count",
+	"_avg",
+	"_Group",
+	"_group_by",
+	"_parse_csv",
+	"_load",
+	"_save",
+	"_escape_json",
+	"_to_json",
+	"_json",
+}
+
+// helperDeps lists transitive helper dependencies.
+// When a helper is used, its dependencies are also emitted.
+var helperDeps = map[string][]string{
+	"_json":    {"_to_json"},
+	"_to_json": {"_escape_json"},
+	"_load":    {"_parse_csv"},
+}
+
 func (c *Compiler) use(name string) {
-	if c.helpers != nil {
-		c.helpers[name] = true
+	if c.helpers == nil {
+		return
+	}
+	if c.helpers[name] {
+		return
+	}
+	c.helpers[name] = true
+	if deps, ok := helperDeps[name]; ok {
+		for _, d := range deps {
+			c.use(d)
+		}
 	}
 }
 
@@ -149,13 +181,10 @@ func (c *Compiler) emitRuntime(buf *bytes.Buffer) {
 	if len(c.helpers) == 0 {
 		return
 	}
-	names := make([]string, 0, len(c.helpers))
-	for n := range c.helpers {
-		names = append(names, n)
-	}
-	sort.Strings(names)
-	for _, n := range names {
-		buf.WriteString(helperMap[n])
-		buf.WriteByte('\n')
+	for _, name := range helperOrder {
+		if c.helpers[name] {
+			buf.WriteString(helperMap[name])
+			buf.WriteByte('\n')
+		}
 	}
 }
