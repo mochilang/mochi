@@ -1146,6 +1146,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	resultType := csTypeOf(c.inferExprType(q.Select))
 	orig := c.env
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, types.AnyType{}, true)
@@ -1256,8 +1257,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 
 		var buf strings.Builder
-		buf.WriteString("new Func<List<dynamic>>(() => {\n")
-		buf.WriteString("\tvar _res = new List<dynamic>();\n")
+		buf.WriteString(fmt.Sprintf("new Func<List<%s>>(() => {\n", resultType))
+		buf.WriteString(fmt.Sprintf("\tvar _res = new List<%s>();\n", resultType))
 		buf.WriteString(fmt.Sprintf("\tforeach (var %s in %s) {\n", v, src))
 		indent := "\t\t"
 		for i, f := range q.Froms {
@@ -1308,7 +1309,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		parts = append(parts, fmt.Sprintf("Take(%s)", takeExpr))
 	}
 	parts = append(parts, fmt.Sprintf("Select(%s => %s)", v, sel))
-	return "new List<dynamic>(" + strings.Join(parts, ".") + ")", nil
+	return fmt.Sprintf("new List<%s>(%s)", resultType, strings.Join(parts, ".")), nil
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
@@ -1316,8 +1317,9 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	retType := csTypeOf(c.inferPrimaryType(&parser.Primary{Match: m}))
 	var buf strings.Builder
-	buf.WriteString("new Func<dynamic>(() => {\n")
+	buf.WriteString(fmt.Sprintf("new Func<%s>(() => {\n", retType))
 	buf.WriteString("\t\tvar _t = " + target + ";\n")
 	for _, cs := range m.Cases {
 		if call, ok := callPattern(cs.Pattern); ok {
@@ -1370,7 +1372,11 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		c.use("_equal")
 		buf.WriteString(fmt.Sprintf("\t\tif (_equal(_t, %s)) return %s;\n", pat, res))
 	}
-	buf.WriteString("\t\treturn null;\n")
+	if retType == "dynamic" {
+		buf.WriteString("\t\treturn null;\n")
+	} else {
+		buf.WriteString("\t\treturn default;\n")
+	}
 	buf.WriteString("\t})()")
 	return buf.String(), nil
 }
@@ -1579,7 +1585,14 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	ret := csType(fn.Return)
 	if ret == "" {
-		ret = "dynamic"
+		if fn.Return == nil && fn.ExprBody != nil {
+			ret = csTypeOf(c.inferExprType(fn.ExprBody))
+			if ret == "" {
+				ret = "dynamic"
+			}
+		} else {
+			ret = "dynamic"
+		}
 	}
 
 	generics := append(append([]string{}, paramTypes...), ret)
@@ -1683,8 +1696,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.List != nil:
+		t := c.inferPrimaryType(p)
+		elemType := "dynamic"
+		if lt, ok := t.(types.ListType); ok {
+			elemType = csTypeOf(lt.Elem)
+		}
 		if len(p.List.Elems) == 0 {
-			return "new dynamic[] { }", nil
+			return fmt.Sprintf("new %s[] { }", elemType), nil
 		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -1694,8 +1712,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
-		return "new [] { " + strings.Join(elems, ", ") + " }", nil
+		return fmt.Sprintf("new %s[] { %s }", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
+		t := c.inferPrimaryType(p)
+		keyType := "dynamic"
+		valType := "dynamic"
+		if mt, ok := t.(types.MapType); ok {
+			keyType = csTypeOf(mt.Key)
+			valType = csTypeOf(mt.Value)
+		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			k, err := c.compileExpr(it.Key)
@@ -1708,7 +1733,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			items[i] = fmt.Sprintf("{ %s, %s }", k, v)
 		}
-		return "new Dictionary<dynamic, dynamic> { " + strings.Join(items, ", ") + " }", nil
+		return fmt.Sprintf("new Dictionary<%s, %s> { %s }", keyType, valType, strings.Join(items, ", ")), nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
 		for _, s := range p.Selector.Tail {
