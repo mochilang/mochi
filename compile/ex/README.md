@@ -222,5 +222,11 @@ The Elixir backend implements most core language features but still lacks suppor
 - Foreign imports and `extern` declarations.
 - Concurrency primitives such as `spawn` and channels.
 - Pattern matching on union variants is not yet supported.
+- Intent declarations within agents.
+- Package declarations and `export` statements.
+- Methods defined inside `type` blocks.
+- Generic type parameters for functions and user-defined types.
+- `generate` helpers currently return placeholder data.
+- Reflection or macro facilities and error handling with `try`/`catch`.
 
 Cross join queries do support `where` filters as well as `sort`, `skip` and `take` clauses.
