@@ -1,0 +1,29 @@
+import "../compute/vm" as compute
+import "runtime/cloud/azure/azure" as api
+
+package azure.network
+
+type VNet {
+  name: string
+  region: string
+
+  fun attach(vm: compute.VM) {
+    let _ = fetch api.endpoint("/network/vnet/attach") with {
+      method: "POST",
+      body: { net: name, vm: vm.name }
+    }
+    print("Attaching VM", vm.name, "to network", name)
+  }
+}
+
+fun create(name: string, region: string): VNet {
+  let _ = fetch api.endpoint("/network/vnet/create") with {
+    method: "POST",
+    body: { name: name, region: region }
+  }
+  print("Creating network", name, "in", region)
+  return VNet { name: name, region: region }
+}
+
+export type VNet
+export fun create

@@ -1,0 +1,43 @@
+package azure.compute
+
+import "runtime/cloud/azure/azure" as api
+
+type VM {
+  name: string
+  image: string
+  size: string
+  region: string
+
+  fun start() {
+    let _ = fetch api.endpoint("/compute/vm/start") with {
+      method: "POST",
+      body: { name: name }
+    }
+    print("Starting VM", name)
+  }
+
+  fun stop() {
+    let _ = fetch api.endpoint("/compute/vm/stop") with {
+      method: "POST",
+      body: { name: name }
+    }
+    print("Stopping VM", name)
+  }
+}
+
+fun create(name: string, image: string, size: string, region: string): VM {
+  let _ = fetch api.endpoint("/compute/vm/create") with {
+    method: "POST",
+    body: {
+      name: name,
+      image: image,
+      size: size,
+      region: region
+    }
+  }
+  print("Creating VM", name, "with", image, size, "in", region)
+  return VM { name: name, image: image, size: size, region: region }
+}
+
+export type VM
+export fun create

@@ -1,0 +1,9 @@
+Creating VM demo with ubuntu-lts B1s in eastus
+Starting VM demo
+Creating network demo-net in eastus
+Attaching VM demo to network demo-net
+Creating container files in eastus
+Uploading hello.txt to files
+Downloading hello.txt from files
+data:hello.txt
+
