@@ -132,6 +132,15 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		}
 		val = v
 	}
+	if c.env != nil {
+		var typ types.Type = types.AnyType{}
+		if l.Type != nil {
+			typ = c.resolveTypeRef(l.Type)
+		} else if l.Value != nil {
+			typ = c.inferExprType(l.Value)
+		}
+		c.env.SetVar(l.Name, typ, false)
+	}
 	c.writeln(fmt.Sprintf("%s = %s", sanitizeName(l.Name), val))
 	return nil
 }
@@ -144,6 +153,17 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 			return err
 		}
 		val = e
+	}
+	if c.env != nil {
+		var typ types.Type = types.AnyType{}
+		if v.Type != nil {
+			typ = c.resolveTypeRef(v.Type)
+		} else if v.Value != nil {
+			typ = c.inferExprType(v.Value)
+		} else if t, err := c.env.GetVar(v.Name); err == nil {
+			typ = t
+		}
+		c.env.SetVar(v.Name, typ, true)
 	}
 	c.writeln(fmt.Sprintf("%s = %s", sanitizeName(v.Name), val))
 	return nil
