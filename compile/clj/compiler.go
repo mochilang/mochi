@@ -993,10 +993,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	useHelper := false
 	for _, j := range q.Joins {
 		if j.Side != nil {
-			return "", fmt.Errorf("unsupported join type")
+			useHelper = true
 		}
+	}
+	if useHelper {
+		return c.compileQueryHelper(q)
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -1322,6 +1326,133 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	}
 	c.use("_fetch")
 	return fmt.Sprintf("(_fetch %s %s)", url, opts), nil
+}
+
+func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+	c.env = child
+
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		joinOns[i] = on
+	}
+	var whereExpr, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+	}
+	selExpr, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	params := []string{sanitizeName(q.Var)}
+	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+	for i, fs := range fromSrcs {
+		joins = append(joins, fmt.Sprintf("{:items %s}", fs))
+		params = append(params, sanitizeName(q.Froms[i].Var))
+	}
+	paramCopy := append([]string(nil), params...)
+	for i, js := range joinSrcs {
+		onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+		spec := fmt.Sprintf("{:items %s :on (fn [%s] %s)", js, strings.Join(onParams, " "), joinOns[i])
+		if q.Joins[i].Side != nil {
+			side := *q.Joins[i].Side
+			if side == "left" || side == "outer" {
+				spec += " :left true"
+			}
+			if side == "right" || side == "outer" {
+				spec += " :right true"
+			}
+		}
+		spec += "}"
+		joins = append(joins, spec)
+		paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+	}
+	allParams := strings.Join(paramCopy, " ")
+	selectFn := fmt.Sprintf("(fn [%s] %s)", allParams, selExpr)
+	var whereFn, sortFn string
+	if whereExpr != "" {
+		whereFn = fmt.Sprintf("(fn [%s] %s)", allParams, whereExpr)
+	}
+	if sortExpr != "" {
+		sortFn = fmt.Sprintf("(fn [%s] %s)", allParams, sortExpr)
+	}
+	optsParts := []string{":select " + selectFn}
+	if whereFn != "" {
+		optsParts = append(optsParts, ":where "+whereFn)
+	}
+	if sortFn != "" {
+		optsParts = append(optsParts, ":sortKey "+sortFn)
+	}
+	if skipExpr != "" {
+		optsParts = append(optsParts, ":skip "+skipExpr)
+	}
+	if takeExpr != "" {
+		optsParts = append(optsParts, ":take "+takeExpr)
+	}
+	opts := "{ " + strings.Join(optsParts, " ") + " }"
+	var b strings.Builder
+	b.WriteString("(let [_src " + src + "]\n  (_query _src [\n")
+	for i, j := range joins {
+		b.WriteString("    " + j)
+		if i != len(joins)-1 {
+			b.WriteString("\n")
+		}
+	}
+	b.WriteString("\n  ] " + opts + "))")
+	c.env = origEnv
+	c.use("_query")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {

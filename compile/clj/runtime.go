@@ -195,6 +195,64 @@ const (
 	helperFetch = `(defn _fetch [url opts]
   (let [txt (slurp url)]
     (clojure.data.json/read-str txt :key-fn keyword))`
+
+	helperQuery = `(defn _query [src joins opts]
+  (let [items (atom (mapv vector src))]
+    (doseq [j joins]
+      (let [joined (atom [])]
+        (cond
+          (and (:right j) (:left j))
+            (let [matched (boolean-array (count (:items j)))]
+              (doseq [left @items]
+                (let [m (atom false)]
+                  (doseq [[ri right] (map-indexed vector (:items j))]
+                    (let [keep (if-let [f (:on j)]
+                                 (apply f (conj left right))
+                                 true)]
+                      (when keep
+                        (reset! m true)
+                        (aset matched ri true)
+                        (swap! joined conj (conj left right))))
+                  (when-not @m
+                    (swap! joined conj (conj left nil))))
+              (doseq [[ri right] (map-indexed vector (:items j))]
+                (when-not (aget matched ri)
+                  (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
+            (reset! items @joined)
+          (:right j)
+            (do
+              (doseq [right (:items j)]
+                (let [m (atom false)]
+                  (doseq [left @items]
+                    (let [keep (if-let [f (:on j)]
+                                 (apply f (conj left right))
+                                 true)]
+                      (when keep
+                        (reset! m true)
+                        (swap! joined conj (conj left right))))
+                  (when-not @m
+                    (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
+              (reset! items @joined))
+          :else
+            (do
+              (doseq [left @items]
+                (let [m (atom false)]
+                  (doseq [right (:items j)]
+                    (let [keep (if-let [f (:on j)]
+                                 (apply f (conj left right))
+                                 true)]
+                      (when keep
+                        (reset! m true)
+                        (swap! joined conj (conj left right))))
+                  (when (and (:left j) (not @m))
+                    (swap! joined conj (conj left nil))))
+              (reset! items @joined))))
+    (let [it @items
+          it (if-let [w (:where opts)] (vec (filter #(apply w %) it)) it)
+          it (if-let [sk (:sortKey opts)] (vec (sort-by #(apply sk %) it)) it)
+          it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
+          it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
+      (mapv #(apply (:select opts) %) it)))`
 )
 
 var helperMap = map[string]string{
@@ -220,6 +278,7 @@ var helperMap = map[string]string{
 	"_gen_embed":   helperGenEmbed,
 	"_gen_struct":  helperGenStruct,
 	"_fetch":       helperFetch,
+	"_query":       helperQuery,
 }
 
 var helperOrder = []string{
@@ -245,6 +304,7 @@ var helperOrder = []string{
 	"_gen_embed",
 	"_gen_struct",
 	"_fetch",
+	"_query",
 }
 
 // helperDeps lists transitive helper dependencies.

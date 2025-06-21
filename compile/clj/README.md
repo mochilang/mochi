@@ -130,7 +130,7 @@ The current implementation focuses on a minimal subset of Mochi. It supports:
 - HTTP `fetch` for retrieving JSON
 - `generate` expressions for text, embeddings and structs
 - Anonymous `fun` expressions
-- Query filtering, cross and inner joins and pagination via `skip`/`take`
+- Query filtering, cross, inner, left, right and outer joins, and pagination via `skip`/`take`
 - Indexing and slicing for lists, strings and maps
 - Simple `match` expressions on constants and struct literals with field access
 - `break` and `continue` statements
@@ -141,11 +141,12 @@ The current implementation focuses on a minimal subset of Mochi. It supports:
 The current compiler lacks support for several language constructs commonly used
 in the example programs. In particular:
 - Union types and pattern matching on variants
-- Left/right/outer joins and grouped aggregations
+- Grouped aggregations in queries
 - Agent helpers and LLM integration
 - Intent declarations inside agents
 - Foreign imports for other languages and the module system
 - Logic programming facts and rules
+- Logic query expressions using the `query` keyword
 - External declarations and other FFI helpers
 - Generic types and functions
 - Destructuring bindings in `let` and `var` statements
