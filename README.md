@@ -610,11 +610,15 @@ implemented across all backends:
 * Agent declarations and intent blocks with persistent state
 * Agent initialization with field values
 * Right and outer joins in dataset queries
+* Sorting or pagination when joins are used
 * Destructuring bindings in `let` and `var` statements
 * YAML dataset loading and saving
 * Agent and stream constructs (`agent`, `on`, `emit`)
 * Model declarations (`model` blocks)
+* Full LLM integration for `generate` blocks
 * Dataset queries with outer joins or complex aggregation
+* The `eval` builtin function
+* Generic methods inside `type` blocks
 * Pattern matching on union variants
 * Nested recursive functions inside other functions
 * Foreign imports and `extern` declarations

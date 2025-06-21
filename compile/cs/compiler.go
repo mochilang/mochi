@@ -1066,6 +1066,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(indent + "}\n")
 		}
 		buf.WriteString("\t}\n")
+		if sortExpr != "" {
+			buf.WriteString(fmt.Sprintf("\t_res = _res.OrderBy(%s => %s).ToList();\n", v, sortExpr))
+		}
+		if skipExpr != "" {
+			buf.WriteString(fmt.Sprintf("\t_res = _res.Skip(%s).ToList();\n", skipExpr))
+		}
+		if takeExpr != "" {
+			buf.WriteString(fmt.Sprintf("\t_res = _res.Take(%s).ToList();\n", takeExpr))
+		}
 		buf.WriteString("\treturn _res;\n")
 		buf.WriteString("})()")
 		return buf.String(), nil
