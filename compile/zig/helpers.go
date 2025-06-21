@@ -111,3 +111,18 @@ func isBool(t types.Type) bool   { _, ok := t.(types.BoolType); return ok }
 func isString(t types.Type) bool { _, ok := t.(types.StringType); return ok }
 func isList(t types.Type) bool   { _, ok := t.(types.ListType); return ok }
 func isMap(t types.Type) bool    { _, ok := t.(types.MapType); return ok }
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
