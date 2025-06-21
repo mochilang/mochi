@@ -21,21 +21,7 @@ type Compiler struct {
 	tempVarCount int
 	loopStack    []loopLabels
 
-	needCompare   bool
-	needFetch     bool
-	needLoad      bool
-	needSave      bool
-	needIndexStr  bool
-	needSlice     bool
-	needSliceStr  bool
-	needIndexList bool
-	needGenText   bool
-	needGenEmbed  bool
-	needGenStruct bool
-	needUnionAll  bool
-	needUnion     bool
-	needExcept    bool
-	needIntersect bool
+	helpers map[string]bool
 
 	paramAlias map[string]string
 }
@@ -134,7 +120,7 @@ func (c *Compiler) compileContinue() {
 
 // New creates a new Scala compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, paramAlias: make(map[string]string)}
+	return &Compiler{env: env, helpers: make(map[string]bool), paramAlias: make(map[string]string)}
 }
 
 // Compile generates Scala code for prog.
@@ -181,172 +167,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
-	if c.needCompare || c.needFetch || c.needLoad || c.needSave {
-		c.writeln("")
-	}
-	if c.needCompare {
-		c.writeln("def _compare(a: Any, b: Any): Int = (a, b) match {")
-		c.indent++
-		c.writeln("case (x: Int, y: Int) => x.compare(y)")
-		c.writeln("case (x: Double, y: Double) => java.lang.Double.compare(x, y)")
-		c.writeln("case (x: String, y: String) => x.compareTo(y)")
-		c.writeln("case _ => a.toString.compareTo(b.toString)")
-		c.indent--
-		c.writeln("}")
-		c.writeln("implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: Any, y: Any): Int = _compare(x, y) }")
-	}
-	if c.needFetch {
-		c.writeln("def _fetch(url: String, opts: Map[String, Any]): Any = {")
-		c.indent++
-		c.writeln("val src = scala.io.Source.fromURL(url)")
-		c.writeln("try {")
-		c.indent++
-		c.writeln("val data = src.mkString")
-		c.writeln("scala.util.parsing.json.JSON.parseFull(data).getOrElse(data)")
-		c.indent--
-		c.writeln("} finally src.close()")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needLoad {
-		c.writeln("def _load(path: String, opts: Map[String, Any]): Seq[Any] = {")
-		c.indent++
-		c.writeln("val src = if (path == \"\" || path == \"-\") scala.io.Source.stdin else scala.io.Source.fromFile(path)")
-		c.writeln("try {")
-		c.indent++
-		c.writeln("val data = src.mkString")
-		c.writeln("scala.util.parsing.json.JSON.parseFull(data) match {")
-		c.indent++
-		c.writeln("case Some(xs: List[_]) => xs")
-		c.writeln("case Some(m) => Seq(m)")
-		c.writeln("case _ => data.split('\\n').toSeq")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("} finally src.close()")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needSave {
-		c.writeln("def _save(src: Any, path: String, opts: Map[String, Any]): Unit = {")
-		c.indent++
-		c.writeln("val out = if (path == \"\" || path == \"-\") new java.io.PrintWriter(System.out) else new java.io.PrintWriter(new java.io.File(path))")
-		c.writeln("try {")
-		c.indent++
-		c.writeln("src match {")
-		c.indent++
-		c.writeln("case seq: Seq[_] => seq.foreach(v => out.println(v.toString))")
-		c.writeln("case other => out.println(other.toString)")
-		c.indent--
-		c.writeln("}")
-		c.indent--
-		c.writeln("} finally if (path != \"\" && path != \"-\") out.close()")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needIndexStr {
-		c.writeln("def _indexString(s: String, i: Int): String = {")
-		c.indent++
-		c.writeln("var idx = i")
-		c.writeln("val chars = s.toVector")
-		c.writeln("if (idx < 0) idx += chars.length")
-		c.writeln("if (idx < 0 || idx >= chars.length) throw new RuntimeException(\"index out of range\")")
-		c.writeln("chars(idx).toString")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needIndexList {
-		c.writeln("def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {")
-		c.indent++
-		c.writeln("var idx = i")
-		c.writeln("val n = arr.length")
-		c.writeln("if (idx < 0) idx += n")
-		c.writeln("if (idx < 0 || idx >= n) throw new RuntimeException(\"index out of range\")")
-		c.writeln("arr(idx)")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needSliceStr {
-		c.writeln("def _sliceString(s: String, i: Int, j: Int): String = {")
-		c.indent++
-		c.writeln("var start = i")
-		c.writeln("var end = j")
-		c.writeln("val chars = s.toVector")
-		c.writeln("val n = chars.length")
-		c.writeln("if (start < 0) start += n")
-		c.writeln("if (end < 0) end += n")
-		c.writeln("if (start < 0) start = 0")
-		c.writeln("if (end > n) end = n")
-		c.writeln("if (end < start) end = start")
-		c.writeln("chars.slice(start, end).mkString")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needSlice {
-		c.writeln("def _slice[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int, j: Int): scala.collection.mutable.ArrayBuffer[T] = {")
-		c.indent++
-		c.writeln("var start = i")
-		c.writeln("var end = j")
-		c.writeln("val n = arr.length")
-		c.writeln("if (start < 0) start += n")
-		c.writeln("if (end < 0) end += n")
-		c.writeln("if (start < 0) start = 0")
-		c.writeln("if (end > n) end = n")
-		c.writeln("if (end < start) end = start")
-		c.writeln("arr.slice(start, end)")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needGenText {
-		c.writeln("def _genText(prompt: String, model: String, params: Map[String, Any]): String = {")
-		c.indent++
-		c.writeln("// TODO: integrate with an LLM")
-		c.writeln("prompt")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needGenEmbed {
-		c.writeln("def _genEmbed(text: String, model: String, params: Map[String, Any]): Seq[Double] = {")
-		c.indent++
-		c.writeln("text.map(c => c.toDouble)")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needGenStruct {
-		c.writeln("def _genStruct[T](prompt: String, model: String, params: Map[String, Any])(implicit ct: scala.reflect.ClassTag[T]): T = {")
-		c.indent++
-		c.writeln("// TODO: integrate with an LLM and parse JSON")
-		c.writeln("ct.runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[T]")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needUnionAll {
-		c.writeln("def _union_all[T](a: Seq[T], b: Seq[T]): Seq[T] = a ++ b")
-	}
-	if c.needUnion {
-		c.writeln("def _union[T](a: Seq[T], b: Seq[T]): Seq[T] = {")
-		c.indent++
-		c.writeln("val res = scala.collection.mutable.ArrayBuffer[T]()")
-		c.writeln("res ++= a")
-		c.writeln("for (it <- b) { if (!res.contains(it)) res.append(it) }")
-		c.writeln("res.toSeq")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.needExcept {
-		c.writeln("def _except[T](a: Seq[T], b: Seq[T]): Seq[T] = a.filterNot(b.contains)")
-	}
-	if c.needIntersect {
-		c.writeln("def _intersect[T](a: Seq[T], b: Seq[T]): Seq[T] = {")
-		c.indent++
-		c.writeln("val res = scala.collection.mutable.ArrayBuffer[T]()")
-		c.writeln("for (it <- a) { if (b.contains(it) && !res.contains(it)) res.append(it) }")
-		c.writeln("res.toSeq")
-		c.indent--
-		c.writeln("}")
-	}
 	c.indent--
 	c.writeln("}")
+	c.emitRuntime()
 	return c.buf.Bytes(), nil
 }
 
@@ -919,16 +742,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					expr = fmt.Sprintf("(%s + %s)", l, r)
 				}
 			case "union_all":
-				c.needUnionAll = true
+				c.use("_union_all")
 				expr = fmt.Sprintf("_union_all(%s, %s)", l, r)
 			case "union":
-				c.needUnion = true
+				c.use("_union")
 				expr = fmt.Sprintf("_union(%s, %s)", l, r)
 			case "except":
-				c.needExcept = true
+				c.use("_except")
 				expr = fmt.Sprintf("_except(%s, %s)", l, r)
 			case "intersect":
-				c.needIntersect = true
+				c.use("_intersect")
 				expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
 			default:
 				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
@@ -983,10 +806,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					end = e
 				}
 				if isStringPrimary(p.Target, c.env) {
-					c.needSliceStr = true
+					c.use("_sliceString")
 					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
 				} else if isListPrimary(p.Target, c.env) {
-					c.needSlice = true
+					c.use("_slice")
 					expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
 				} else {
 					expr = fmt.Sprintf("%s.slice(%s, %s)", expr, start, end)
@@ -997,10 +820,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if isStringPrimary(p.Target, c.env) {
-					c.needIndexStr = true
+					c.use("_indexString")
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 				} else if isListPrimary(p.Target, c.env) {
-					c.needIndexList = true
+					c.use("_indexList")
 					expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
 				} else {
 					expr = fmt.Sprintf("%s(%s)", expr, idx)
@@ -1317,7 +1140,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString(indent + "}\n")
 	var result string
 	if sortExpr != "" {
-		c.needCompare = true
+		c.use("_compare")
 		b.WriteString(fmt.Sprintf("\tval _sorted = %s.sortBy(_._2)(_anyOrdering)\n", res))
 		result = "_sorted.map(_._1).toSeq"
 	} else {
@@ -1347,7 +1170,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		}
 		opts = o
 	}
-	c.needFetch = true
+	c.use("_fetch")
 	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
 }
 
@@ -1364,7 +1187,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		}
 		opts = o
 	}
-	c.needLoad = true
+	c.use("_load")
 	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
 	if l.Type != nil && l.Type.Simple != nil {
 		typ := scalaType(c.resolveTypeRef(l.Type))
@@ -1392,7 +1215,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		}
 		opts = o
 	}
-	c.needSave = true
+	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
@@ -1429,16 +1252,16 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 		model = "\"\""
 	}
 	if g.Target == "embedding" {
-		c.needGenEmbed = true
+		c.use("_genEmbed")
 		return fmt.Sprintf("_genEmbed(%s, %s, %s)", text, model, paramMap), nil
 	}
 	if c.env != nil {
 		if _, ok := c.env.GetStruct(g.Target); ok {
-			c.needGenStruct = true
+			c.use("_genStruct")
 			return fmt.Sprintf("_genStruct[%s](%s, %s, %s)", sanitizeName(g.Target), prompt, model, paramMap), nil
 		}
 	}
-	c.needGenText = true
+	c.use("_genText")
 	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramMap), nil
 }
 
