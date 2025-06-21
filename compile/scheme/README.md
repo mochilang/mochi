@@ -278,6 +278,9 @@ Execute them with the `slow` tag as they invoke an external interpreter:
 go test ./compile/scheme -tags slow
 ```
 
+The compiler also supports Mochi `test` blocks. Each block is emitted as a
+Scheme function and invoked after the main program.
+
 ## Unsupported Features
 
 The Scheme backend intentionally supports only a small subset of Mochi.  It does **not** handle:
@@ -291,7 +294,7 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * packages or the foreign function interface
 * `import` statements for foreign code
 * `model` declarations
-* streams, agents, or tests
+* streams and agents
 * sets
 * struct type declarations
 * methods inside `type` blocks

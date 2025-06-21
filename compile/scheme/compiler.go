@@ -156,13 +156,30 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Test block declarations
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// Main body
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln("(" + name + ")")
 		}
 	}
 	code := c.buf.Bytes()
@@ -249,6 +266,42 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		}
 	}
 	c.inFun = prev
+	c.vars = prevVars
+	c.indent--
+	c.writeln("))")
+	c.indent--
+	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("(define (%s)", name))
+	c.indent++
+	c.writeln("(call/cc (lambda (return)")
+	c.indent++
+
+	vars := map[string]bool{}
+	collectVars(t.Body, vars)
+	names := make([]string, 0, len(vars))
+	for v := range vars {
+		names = append(names, sanitizeName(v))
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.writeln(fmt.Sprintf("(define %s '())", n))
+	}
+
+	prevFun := c.inFun
+	prevVars := c.vars
+	c.inFun = true
+	c.vars = map[string]string{}
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.inFun = prevFun
 	c.vars = prevVars
 	c.indent--
 	c.writeln("))")
@@ -373,6 +426,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileBreak()
 	case s.Continue != nil:
 		return c.compileContinue()
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	default:
 		// ignore unsupported statements
 	}
@@ -684,6 +739,15 @@ func (c *Compiler) compileContinue() error {
 	} else {
 		c.writeln("(" + ctx.cont + ")")
 	}
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(if (not %s) (error \"expect failed\"))", expr))
 	return nil
 }
 

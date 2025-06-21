@@ -635,6 +635,8 @@ The experimental Rust compiler does not yet implement every Mochi feature. Missi
 - HTTP and persistence helpers (`fetch`, `load`, `save`, `generate`).
 - Package imports, extern objects and other FFI constructs (`import`, `extern`).
 - Model blocks (`model`) and associated LLM helpers.
+- Concurrency primitives like `spawn` and set operations on lists (`union`, `intersect`).
+- Sets and advanced string slicing.
 
 ## License
 
