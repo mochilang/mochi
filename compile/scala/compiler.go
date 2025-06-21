@@ -127,6 +127,11 @@ func New(env *types.Env) *Compiler {
 
 // Compile generates Scala code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if prog.Package != "" {
+		c.writeln("package " + sanitizeName(prog.Package))
+		c.writeln("")
+	}
+
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			if err := c.compileTypeDecl(s.Type); err != nil {

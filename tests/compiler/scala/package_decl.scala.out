@@ -1,0 +1,11 @@
+package demo
+
+object Main {
+        def greet(): Unit = {
+                println("hi")
+        }
+
+        def main(args: Array[String]): Unit = {
+                greet()
+        }
+}
