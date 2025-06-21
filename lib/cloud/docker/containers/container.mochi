@@ -1,0 +1,23 @@
+package cloud/docker/containers
+
+import "../images/image" as images
+
+type Container {
+  name: string,
+  image: images.Image,
+  args: list<string>
+}
+
+/// Create a new container based on an image.
+fun container(name: string, image: images.Image, args: list<string> = []): Container {
+  return Container { name: name, image: image, args: args }
+}
+
+/// Run the container. This just prints the command used.
+fun Container.run(c: Container) {
+  let cmd = "docker run --name " + c.name + " " + c.image.name
+  for arg in c.args {
+    cmd = cmd + " " + arg
+  }
+  print(cmd)
+}

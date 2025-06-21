@@ -1,0 +1,16 @@
+package cloud/docker/images
+
+type Image {
+  name: string,
+  context: string
+}
+
+/// Create a new docker image reference.
+fun image(name: string, context: string = "."): Image {
+  return Image { name: name, context: context }
+}
+
+/// Build the docker image. This just prints the command used.
+fun Image.build(img: Image) {
+  print("docker build -t" , img.name , img.context)
+}

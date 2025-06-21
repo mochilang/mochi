@@ -1,0 +1,7 @@
+import "../../lib/cloud/docker" as docker
+
+let img = docker.image("test", "./app")
+img.build()
+
+let ctr = docker.container("myctr", img, ["-d"])
+ctr.run()

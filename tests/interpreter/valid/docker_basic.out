@@ -1,0 +1,2 @@
+docker build -t test ./app
+docker run --name myctr test -d
