@@ -593,6 +593,19 @@ Explore the [`examples/`](./examples) directory:
 
 Edit one or start fresh. It’s all yours.
 
+## Limitations
+
+Mochi is still under active development. Several language features are not
+implemented across all backends:
+
+* Error handling with `try`/`catch`
+* Logic programming constructs (`fact`, `rule`, `query`)
+* Set collections (`set<T>`) and related operations
+* Generic type parameters for functions and user-defined types
+* Reflection and macro facilities
+* Concurrency primitives such as `spawn` and channels
+* Foreign function interface outside the bundled Go, Python and TypeScript runtimes
+
 ## Benchmarks
 
 Run:
