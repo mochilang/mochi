@@ -226,11 +226,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		val = expr
 	}
-	if val == "" {
-		c.writeln(fmt.Sprintf("dynamic %s;", name))
-	} else {
-		c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
-	}
+	c.writeVarDecl(name, typ, val)
 	if c.env != nil && typ != nil && !isAny(typ) {
 		c.env.SetVar(s.Name, typ, false)
 	}
@@ -345,11 +341,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		val = expr
 	}
-	if val == "" {
-		c.writeln(fmt.Sprintf("dynamic %s;", name))
-	} else {
-		c.writeln(fmt.Sprintf("dynamic %s = %s;", name, val))
-	}
+	c.writeVarDecl(name, typ, val)
 	if c.env != nil && typ != nil && !isAny(typ) {
 		c.env.SetVar(s.Name, typ, true)
 	}
@@ -880,16 +872,17 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 
 	params := make([]string, len(fun.Params))
 	for i, p := range fun.Params {
-		if isSimpleType(ft.Params[i]) && !isAny(ft.Params[i]) {
-			params[i] = fmt.Sprintf("%s %s", dartType(ft.Params[i]), sanitizeName(p.Name))
+		typStr := dartType(ft.Params[i])
+		if typStr != "dynamic" && typStr != "" {
+			params[i] = fmt.Sprintf("%s %s", typStr, sanitizeName(p.Name))
 		} else {
 			params[i] = sanitizeName(p.Name)
 		}
 	}
 
 	ret := "dynamic"
-	if isSimpleType(ft.Return) && !isAny(ft.Return) {
-		ret = dartType(ft.Return)
+	if rt := dartType(ft.Return); rt != "dynamic" && rt != "" {
+		ret = rt
 	}
 
 	c.writeln(fmt.Sprintf("%s %s(%s) {", ret, name, strings.Join(params, ", ")))
@@ -943,16 +936,17 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 
 	params := make([]string, len(fun.Params))
 	for i, p := range fun.Params {
-		if isSimpleType(ft.Params[i]) && !isAny(ft.Params[i]) {
-			params[i] = fmt.Sprintf("%s %s", dartType(ft.Params[i]), sanitizeName(p.Name))
+		typStr := dartType(ft.Params[i])
+		if typStr != "dynamic" && typStr != "" {
+			params[i] = fmt.Sprintf("%s %s", typStr, sanitizeName(p.Name))
 		} else {
 			params[i] = sanitizeName(p.Name)
 		}
 	}
 
 	ret := "dynamic"
-	if isSimpleType(ft.Return) && !isAny(ft.Return) {
-		ret = dartType(ft.Return)
+	if rt := dartType(ft.Return); rt != "dynamic" && rt != "" {
+		ret = rt
 	}
 
 	c.writeln(fmt.Sprintf("%s %s(%s) {", ret, name, strings.Join(params, ", ")))
