@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct { int len; int *data; } list_int;
+
+static list_int list_int_create(int len) {
+	list_int l;
+	l.len = len;
+	l.data = (int*)malloc(sizeof(int)*len);
+	return l;
+}
+
+
+char* label(int x){
+	return (x == 1 ? "one" : (x == 2 ? "two" : "other"));
+}
+
+int main() {
+	printf("%d\n", label(1));
+	printf("%d\n", label(3));
+	return 0;
+}
