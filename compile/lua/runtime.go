@@ -329,6 +329,121 @@ const (
 		"    f:write(data)\n" +
 		"    if f ~= io.stdout then f:close() end\n" +
 		"end\n"
+
+	helperQuery = "function __query(src, joins, opts)\n" +
+		"    local items = {}\n" +
+		"    for _, v in ipairs(src) do\n" +
+		"        table.insert(items, {v})\n" +
+		"    end\n" +
+		"    for _, j in ipairs(joins) do\n" +
+		"        local joined = {}\n" +
+		"        if j.right and j.left then\n" +
+		"            local matched = {}\n" +
+		"            for i=1,#j.items do matched[i] = false end\n" +
+		"            for _, left in ipairs(items) do\n" +
+		"                local m = false\n" +
+		"                for ri, right in ipairs(j.items) do\n" +
+		"                    local keep = true\n" +
+		"                    if j.on then keep = j.on(table.unpack(left), right) end\n" +
+		"                    if keep then\n" +
+		"                        m = true; matched[ri] = true\n" +
+		"                        local row = {table.unpack(left)}\n" +
+		"                        table.insert(row, right)\n" +
+		"                        table.insert(joined, row)\n" +
+		"                    end\n" +
+		"                end\n" +
+		"                if not m then\n" +
+		"                    local row = {table.unpack(left)}\n" +
+		"                    table.insert(row, nil)\n" +
+		"                    table.insert(joined, row)\n" +
+		"                end\n" +
+		"            end\n" +
+		"            for ri, right in ipairs(j.items) do\n" +
+		"                if not matched[ri] then\n" +
+		"                    local undef = {}\n" +
+		"                    if #items > 0 then\n" +
+		"                        for i=1,#items[1] do table.insert(undef, nil) end\n" +
+		"                    end\n" +
+		"                    table.insert(undef, right)\n" +
+		"                    table.insert(joined, undef)\n" +
+		"                end\n" +
+		"            end\n" +
+		"        elseif j.right then\n" +
+		"            for _, right in ipairs(j.items) do\n" +
+		"                local m = false\n" +
+		"                for _, left in ipairs(items) do\n" +
+		"                    local keep = true\n" +
+		"                    if j.on then keep = j.on(table.unpack(left), right) end\n" +
+		"                    if keep then\n" +
+		"                        m = true\n" +
+		"                        local row = {table.unpack(left)}\n" +
+		"                        table.insert(row, right)\n" +
+		"                        table.insert(joined, row)\n" +
+		"                    end\n" +
+		"                end\n" +
+		"                if not m then\n" +
+		"                    local undef = {}\n" +
+		"                    if #items > 0 then\n" +
+		"                        for i=1,#items[1] do table.insert(undef, nil) end\n" +
+		"                    end\n" +
+		"                    table.insert(undef, right)\n" +
+		"                    table.insert(joined, undef)\n" +
+		"                end\n" +
+		"            end\n" +
+		"        else\n" +
+		"            for _, left in ipairs(items) do\n" +
+		"                local m = false\n" +
+		"                for _, right in ipairs(j.items) do\n" +
+		"                    local keep = true\n" +
+		"                    if j.on then keep = j.on(table.unpack(left), right) end\n" +
+		"                    if keep then\n" +
+		"                        m = true\n" +
+		"                        local row = {table.unpack(left)}\n" +
+		"                        table.insert(row, right)\n" +
+		"                        table.insert(joined, row)\n" +
+		"                    end\n" +
+		"                end\n" +
+		"                if j.left and not m then\n" +
+		"                    local row = {table.unpack(left)}\n" +
+		"                    table.insert(row, nil)\n" +
+		"                    table.insert(joined, row)\n" +
+		"                end\n" +
+		"            end\n" +
+		"        end\n" +
+		"        items = joined\n" +
+		"    end\n" +
+		"    if opts.where then\n" +
+		"        local filtered = {}\n" +
+		"        for _, r in ipairs(items) do\n" +
+		"            if opts.where(table.unpack(r)) then table.insert(filtered, r) end\n" +
+		"        end\n" +
+		"        items = filtered\n" +
+		"    end\n" +
+		"    if opts.sortKey then\n" +
+		"        table.sort(items, function(a, b)\n" +
+		"            return opts.sortKey(table.unpack(a)) < opts.sortKey(table.unpack(b))\n" +
+		"        end)\n" +
+		"    end\n" +
+		"    if opts.skip then\n" +
+		"        local n = opts.skip\n" +
+		"        if n < #items then\n" +
+		"            items = {table.unpack(items, n+1)}\n" +
+		"        else\n" +
+		"            items = {}\n" +
+		"        end\n" +
+		"    end\n" +
+		"    if opts.take then\n" +
+		"        local n = opts.take\n" +
+		"        if n < #items then\n" +
+		"            items = {table.unpack(items, 1, n)}\n" +
+		"        end\n" +
+		"    end\n" +
+		"    local res = {}\n" +
+		"    for _, r in ipairs(items) do\n" +
+		"        table.insert(res, opts.select(table.unpack(r)))\n" +
+		"    end\n" +
+		"    return res\n" +
+		"end\n"
 )
 
 var helperMap = map[string]string{
@@ -352,6 +467,7 @@ var helperMap = map[string]string{
 	"fetch":       helperFetch,
 	"load":        helperLoad,
 	"save":        helperSave,
+	"query":       helperQuery,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }

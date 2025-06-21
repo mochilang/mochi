@@ -605,6 +605,11 @@ implemented across all backends:
 * Reflection and macro facilities
 * Concurrency primitives such as `spawn` and channels
 * Foreign function interface outside the bundled Go, Python and TypeScript runtimes
+* Asynchronous functions (`async`/`await`)
+* Model and stream declarations including `agent`, `on`/`emit` and `intent`
+* Methods declared inside `type` blocks
+* Interaction with external objects
+* Regular expression helpers beyond simple `match`
 
 ## Benchmarks
 

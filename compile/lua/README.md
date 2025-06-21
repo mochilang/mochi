@@ -285,7 +285,6 @@ fail at runtime:
 
 - Regular expression helpers beyond simple `match`
 - Mutating lists while iterating (e.g. `insert`, `remove`)
-- Joins with `left`, `right` or `outer` sides
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Logic query expressions
 - Foreign function interface (FFI)

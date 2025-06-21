@@ -740,7 +740,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	group := q.Group != nil
 	for _, j := range q.Joins {
 		if j.Side != nil {
-			return "", fmt.Errorf("join sides not supported")
+			return c.compileQueryExprWithHelper(q)
 		}
 	}
 	src, err := c.compileExpr(q.Source)
