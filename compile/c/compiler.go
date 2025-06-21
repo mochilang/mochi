@@ -388,91 +388,9 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		name := sanitizeName(s.Let.Name)
-		var t types.Type
-		if s.Let.Type != nil {
-			t = resolveTypeRef(s.Let.Type, c.env)
-		} else if s.Let.Value != nil {
-			t = c.inferExprType(s.Let.Value)
-		}
-		if t == nil {
-			t = types.IntType{}
-		}
-		typ := cTypeFromType(t)
-		if s.Let.Value != nil {
-			if isEmptyListLiteral(s.Let.Value) {
-				if isListStringType(t) {
-					c.need(needListString)
-					val := c.newTemp()
-					c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
-					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-				} else if isListFloatType(t) {
-					c.need(needListFloat)
-					val := c.newTemp()
-					c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
-					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-				} else if isListListIntType(t) {
-					c.need(needListListInt)
-					val := c.newTemp()
-					c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
-					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-				} else {
-					val := c.compileExpr(s.Let.Value)
-					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-				}
-			} else {
-				val := c.compileExpr(s.Let.Value)
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-			}
-		} else {
-			c.writeln(fmt.Sprintf("%s %s;", typ, name))
-		}
-		if c.env != nil {
-			c.env.SetVar(s.Let.Name, t, false)
-		}
+		return c.compileLet(s.Let)
 	case s.Var != nil:
-		name := sanitizeName(s.Var.Name)
-		var t types.Type
-		if s.Var.Type != nil {
-			t = resolveTypeRef(s.Var.Type, c.env)
-		} else if s.Var.Value != nil {
-			t = c.inferExprType(s.Var.Value)
-		}
-		if t == nil {
-			t = types.IntType{}
-		}
-		typ := cTypeFromType(t)
-		if s.Var.Value != nil {
-			if isEmptyListLiteral(s.Var.Value) {
-				if isListStringType(t) {
-					c.need(needListString)
-					val := c.newTemp()
-					c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
-					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-				} else if isListFloatType(t) {
-					c.need(needListFloat)
-					val := c.newTemp()
-					c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
-					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-				} else if isListListIntType(t) {
-					c.need(needListListInt)
-					val := c.newTemp()
-					c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
-					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-				} else {
-					val := c.compileExpr(s.Var.Value)
-					c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-				}
-			} else {
-				val := c.compileExpr(s.Var.Value)
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
-			}
-		} else {
-			c.writeln(fmt.Sprintf("%s %s;", typ, name))
-		}
-		if c.env != nil {
-			c.env.SetVar(s.Var.Name, t, true)
-		}
+		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		lhs := sanitizeName(s.Assign.Name)
 		target := lhs
@@ -515,6 +433,98 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	default:
 		// unsupported
+	}
+	return nil
+}
+
+func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
+	name := sanitizeName(stmt.Name)
+	var t types.Type
+	if stmt.Type != nil {
+		t = resolveTypeRef(stmt.Type, c.env)
+	} else if stmt.Value != nil {
+		t = c.inferExprType(stmt.Value)
+	}
+	if t == nil {
+		t = types.IntType{}
+	}
+	typ := cTypeFromType(t)
+	if stmt.Value != nil {
+		if isEmptyListLiteral(stmt.Value) {
+			if isListStringType(t) {
+				c.need(needListString)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else if isListFloatType(t) {
+				c.need(needListFloat)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else if isListListIntType(t) {
+				c.need(needListListInt)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else {
+				val := c.compileExpr(stmt.Value)
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			}
+		} else {
+			val := c.compileExpr(stmt.Value)
+			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+		}
+	} else {
+		c.writeln(fmt.Sprintf("%s %s;", typ, name))
+	}
+	if c.env != nil {
+		c.env.SetVar(stmt.Name, t, false)
+	}
+	return nil
+}
+
+func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
+	name := sanitizeName(stmt.Name)
+	var t types.Type
+	if stmt.Type != nil {
+		t = resolveTypeRef(stmt.Type, c.env)
+	} else if stmt.Value != nil {
+		t = c.inferExprType(stmt.Value)
+	}
+	if t == nil {
+		t = types.IntType{}
+	}
+	typ := cTypeFromType(t)
+	if stmt.Value != nil {
+		if isEmptyListLiteral(stmt.Value) {
+			if isListStringType(t) {
+				c.need(needListString)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else if isListFloatType(t) {
+				c.need(needListFloat)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else if isListListIntType(t) {
+				c.need(needListListInt)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else {
+				val := c.compileExpr(stmt.Value)
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			}
+		} else {
+			val := c.compileExpr(stmt.Value)
+			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+		}
+	} else {
+		c.writeln(fmt.Sprintf("%s %s;", typ, name))
+	}
+	if c.env != nil {
+		c.env.SetVar(stmt.Name, t, true)
 	}
 	return nil
 }
