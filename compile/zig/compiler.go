@@ -538,12 +538,16 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		c.writeln(fmt.Sprintf("_ = %s.put(%s, %s) catch unreachable;", lhs, key, val))
 		return nil
 	}
-	for _, idx := range st.Index {
+	for i, idx := range st.Index {
 		ie, err := c.compileExpr(idx.Start, false)
 		if err != nil {
 			return err
 		}
-		lhs = fmt.Sprintf("%s[%s]", lhs, ie)
+		if i == 0 && idx.Colon == nil && c.isListVar(st.Name) {
+			lhs = fmt.Sprintf("%s.items[%s]", lhs, ie)
+		} else {
+			lhs = fmt.Sprintf("%s[%s]", lhs, ie)
+		}
 	}
 	rhs, err := c.compileExpr(st.Value, false)
 	if err != nil {
@@ -1327,6 +1331,18 @@ func (c *Compiler) isMapVar(name string) bool {
 	}
 	if t, err := c.env.GetVar(name); err == nil {
 		if _, ok := t.(types.MapType); ok {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isListVar(name string) bool {
+	if c.env == nil {
+		return false
+	}
+	if t, err := c.env.GetVar(name); err == nil {
+		if _, ok := t.(types.ListType); ok {
 			return true
 		}
 	}
