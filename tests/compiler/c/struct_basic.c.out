@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct { int len; int *data; } list_int;
+static list_int list_int_create(int len) {
+    list_int l;
+    l.len = len;
+    l.data = (int*)malloc(sizeof(int)*len);
+    return l;
+}
+static void _print_list_int(list_int v) {
+    printf("[");
+    for (int i = 0; i < v.len; i++) {
+        if (i > 0) printf(" ");
+        printf("%d", v.data[i]);
+    }
+    printf("]");
+}
+typedef struct {
+	int x;
+	int y;
+}Pair;
+
+int main() {
+	Pair p = (Pair){.x = 1, .y = 2};
+	printf("%d\n", p.x);
+	printf("%d\n", p.y);
+	return 0;
+}

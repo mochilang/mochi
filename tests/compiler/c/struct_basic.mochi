@@ -1,0 +1,4 @@
+ type Pair { x: int, y: int }
+ let p = Pair{ x: 1, y: 2 }
+ print(p.x)
+ print(p.y)

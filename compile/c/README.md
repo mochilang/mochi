@@ -74,7 +74,7 @@ features include:
 
 - `map` types
 - query expressions such as `from`/`sort by`/`select`
-- struct and enum definitions
+ - enum and union definitions
 - agent-related constructs (`agent`, `stream`, `intent`)
 - generative `generate` blocks and model definitions
 - dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
@@ -87,7 +87,9 @@ features include:
 - extern object declarations and package exports
 - nested list types other than `list<list<int>>`
 - set literals and set operations
-- struct literals
+ - methods declared inside `type` blocks
+ - functions with multiple return values
+ - map membership operations
 
 The backend now supports membership checks and `union`/`union all` operations
 for integer, float, and string lists, along with slicing and printing of string

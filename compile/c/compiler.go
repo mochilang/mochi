@@ -79,10 +79,11 @@ type Compiler struct {
 	needsIntersectListInt    bool
 	needsIntersectListString bool
 	externs                  []string
+	structs                  map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, lambdas: []string{}}
+	return &Compiler{env: env, lambdas: []string{}, structs: map[string]bool{}}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -118,6 +119,12 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 			return "int"
 		case "string":
 			return "char*"
+		default:
+			if c.env != nil {
+				if _, ok := c.env.GetStruct(*t.Simple); ok {
+					return sanitizeName(*t.Simple)
+				}
+			}
 		}
 	}
 	if t.Generic != nil && t.Generic.Name == "list" {
@@ -146,6 +153,14 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.buf = bytes.Buffer{}
 	c.externs = nil
 	c.lambdas = nil
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -227,6 +242,42 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	return c.compileProgram(prog)
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	name := sanitizeName(t.Name)
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
+	c.writeln("typedef struct {")
+	c.indent++
+	var fields map[string]types.Type
+	var order []string
+	if c.env != nil {
+		fields = map[string]types.Type{}
+	}
+	for _, m := range t.Members {
+		if m.Field == nil {
+			continue
+		}
+		typ := c.cType(m.Field.Type)
+		c.writeln(fmt.Sprintf("%s %s;", typ, sanitizeName(m.Field.Name)))
+		if c.env != nil {
+			fields[m.Field.Name] = resolveTypeRef(m.Field.Type, c.env)
+			order = append(order, m.Field.Name)
+		}
+	}
+	c.indent--
+	c.writeln(fmt.Sprintf("}%s;", name))
+	if c.env != nil {
+		st := types.StructType{Name: t.Name, Fields: fields, Order: order}
+		c.env.SetStruct(t.Name, st)
+	}
+	return nil
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
@@ -935,6 +986,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileLiteral(p.Lit)
 	case p.Selector != nil:
 		return c.compileSelector(p.Selector)
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v := c.compileExpr(f.Value)
+			parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(f.Name), v)
+		}
+		return fmt.Sprintf("(%s){%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", "))
 	case p.List != nil:
 		name := c.newTemp()
 		nested := false
@@ -1090,7 +1148,11 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
-	return sanitizeName(s.Root)
+	expr := sanitizeName(s.Root)
+	for _, f := range s.Tail {
+		expr += "." + sanitizeName(f)
+	}
+	return expr
 }
 
 func isStringArg(e *parser.Expr, env *types.Env) bool {
