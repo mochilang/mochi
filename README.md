@@ -655,6 +655,15 @@ The C# code generator also omits several language capabilities:
 - Agent initialization with field values
 - The `eval` builtin function
 
+## Unsupported Features (TypeScript Backend)
+
+While fairly complete, the TypeScript code generator is missing a few advanced capabilities:
+
+- Logic programming constructs (`fact`, `rule`, `query`).
+- Concurrency primitives such as `spawn` and channels.
+- Reflection or macro facilities.
+- `extern` object declarations are ignored.
+
 ## Unsupported Features (Zig Backend)
 
 The Zig backend currently supports only a minimal subset of Mochi. Missing features include:

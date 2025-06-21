@@ -37,3 +37,12 @@ go test ./compile/ts -tags slow
 ```
 
 Deno is automatically installed if missing.
+
+## Unsupported Features
+
+The TypeScript backend covers most of Mochi but still lacks a few advanced features:
+
+- Logic programming constructs (`fact`, `rule`, `query`).
+- Concurrency primitives such as `spawn` and channels.
+- Reflection or macro facilities.
+- `extern` object declarations have no runtime effect.
