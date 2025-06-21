@@ -1206,7 +1206,31 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("(lambda (%s) %s)", strings.Join(params, " "), body), nil
 	}
-	return "", fmt.Errorf("function block bodies not supported")
+	// Block-bodied anonymous functions mirror compileFun but return a
+	// Racket lambda form. We use a temporary compiler to generate the
+	// body with proper indentation.
+	sub := New(c.env)
+	sub.indent = 2
+	sub.writeln("(let/ec return")
+	sub.indent++
+	for _, st := range f.BlockBody {
+		if err := sub.compileStmt(st); err != nil {
+			return "", err
+		}
+	}
+	sub.writeln("(return (void))")
+	sub.indent--
+	sub.writeln(")")
+	code := sub.buf.String()
+
+	var b strings.Builder
+	b.WriteString("(lambda (" + strings.Join(params, " ") + ")\n")
+	// indent the generated body by one tab to nest inside the lambda
+	for _, line := range strings.Split(strings.TrimRight(code, "\n"), "\n") {
+		b.WriteString("\t" + line + "\n")
+	}
+	b.WriteString(")")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
