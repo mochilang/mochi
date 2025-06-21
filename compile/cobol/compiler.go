@@ -476,6 +476,9 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		c.writeln(fmt.Sprintf("    COMPUTE %s = %s + %s", tmp, left, right))
 		return tmp
 	}
+	if name == "REDUCE" && len(n.Children) == 3 {
+		return c.compileReduceCall(n.Children[0], n.Children[1], n.Children[2])
+	}
 	if name == "ID" && len(n.Children) == 1 {
 		expr := c.expr(n.Children[0])
 		if isSimpleExpr(n.Children[0]) {
@@ -623,6 +626,60 @@ func (c *Compiler) compileAddTwoNumbersCall(result string, call *ast.Node) {
 	c.writeln(fmt.Sprintf("MOVE DIGITV TO %s(RLEN)", resName))
 	c.indent--
 	c.writeln("END-PERFORM")
+}
+
+// compileReduceCall expands a call to reduce(list, add, init) using a simple loop.
+func (c *Compiler) compileReduceCall(list, fn, init *ast.Node) string {
+	if fn.Kind != "selector" || strings.ToUpper(fn.Value.(string)) != "ADD" {
+		c.writeln("    *> unsupported reduce")
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(init)))
+		if c.isStringExpr(init) {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s", c.expr(init), tmp))
+		} else {
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, c.expr(init)))
+		}
+		return tmp
+	}
+
+	name, length, pic, elems, ok := c.listInfo(list)
+	if !ok {
+		c.writeln("    *> unsupported reduce")
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(init)))
+		if c.isStringExpr(init) {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s", c.expr(init), tmp))
+		} else {
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, c.expr(init)))
+		}
+		return tmp
+	}
+	arr := name
+	if arr == "" {
+		arr = c.newTemp()
+		c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", arr, length, pic))
+		for i, ch := range elems {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), arr, i+1))
+		}
+		c.listLens[arr] = length
+	}
+
+	res := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s %s", res, c.picForExpr(init)))
+	if c.isStringExpr(init) {
+		c.writeln(fmt.Sprintf("    MOVE %s TO %s", c.expr(init), res))
+	} else {
+		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", res, c.expr(init)))
+	}
+
+	c.declare("01 IDX PIC 9.")
+	c.writeln("    MOVE 0 TO IDX")
+	c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", length))
+	c.indent++
+	c.writeln(fmt.Sprintf("COMPUTE %s = %s + %s(IDX + 1)", res, res, arr))
+	c.indent--
+	c.writeln("    END-PERFORM")
+	return res
 }
 
 func (c *Compiler) expr(n *ast.Node) string {

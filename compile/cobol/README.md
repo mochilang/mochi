@@ -162,7 +162,8 @@ constructs:
 - `while` loops
 - `break` and `continue` statements
 - Function definitions and calls, including nested functions
-- Calls to built-ins `print`, `len`, `add`, `twoSum` and `addTwoNumbers`
+- Calls to built-ins `print`, `len`, `add`, `twoSum`, `addTwoNumbers` and a
+  basic `reduce` over lists using `add`
 - List concatenation with `+` and indexing (including negative indices)
 - Basic string slicing with constant start and end indices
 - Simple `match` expressions with literal patterns
