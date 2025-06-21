@@ -273,6 +273,19 @@ func (c *Compiler) emitRuntime() {
 				c.indent++
 				c.writeln("return JsonSerializer.Deserialize<List<dynamic>>(text);")
 				c.indent--
+				c.writeln("case \"yaml\":")
+				c.indent++
+				c.writeln("var des = new Deserializer();")
+				c.writeln("var obj = des.Deserialize<object>(text);")
+				c.writeln("if (obj is IList<object> arr) {")
+				c.indent++
+				c.writeln("var out = new List<dynamic>();")
+				c.writeln("foreach (var it in arr) out.Add(it);")
+				c.writeln("return out;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return new List<dynamic>{obj};")
+				c.indent--
 				c.writeln("case \"tsv\":")
 				c.indent++
 				c.writeln("delim = '\t'; goto default;")
@@ -317,6 +330,12 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("case \"json\":")
 				c.indent++
 				c.writeln("File.WriteAllText(path, JsonSerializer.Serialize(rows));")
+				c.writeln("break;")
+				c.indent--
+				c.writeln("case \"yaml\":")
+				c.indent++
+				c.writeln("var ser = new Serializer();")
+				c.writeln("using (var w = new StreamWriter(path)) { var list2 = new List<dynamic>(rows); ser.Serialize(w, list2); }")
 				c.writeln("break;")
 				c.indent--
 				c.writeln("case \"tsv\":")
