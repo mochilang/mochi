@@ -56,12 +56,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	for _, s := range prog.Statements {
 		switch {
-		case s.Fun != nil:
-			if err := c.compileFun(s.Fun); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		case s.Test != nil:
+               case s.Fun != nil:
+                        if err := c.compileFun(s.Fun); err != nil {
+                                return nil, err
+                        }
+                        c.writeln("")
+               case s.Type != nil:
+                        if err := c.compileTypeDecl(s.Type); err != nil {
+                                return nil, err
+                        }
+                        c.writeln("")
+               case s.Test != nil:
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
@@ -672,22 +677,37 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			continue
 		}
-		if op.Call != nil {
-			args := []string{}
-			for _, a := range op.Call.Args {
-				v, err := c.compileExpr(a)
-				if err != nil {
-					return "", err
-				}
-				args = append(args, v)
-			}
-			name := expr
-			switch name {
-			case "print":
-				expr = fmt.Sprintf("(println %s)", strings.Join(args, " "))
-			case "len":
-				expr = fmt.Sprintf("(count %s)", args[0])
-			case "count":
+               if op.Call != nil {
+                       args := []string{}
+                       for _, a := range op.Call.Args {
+                               v, err := c.compileExpr(a)
+                               if err != nil {
+                                       return "", err
+                               }
+                               args = append(args, v)
+                       }
+                        name := expr
+                        // method call like obj.foo()
+                        if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+                                root := p.Target.Selector.Root
+                                method := p.Target.Selector.Tail[0]
+                                if st, err := c.env.GetVar(root); err == nil {
+                                        if stt, ok := st.(types.StructType); ok {
+                                                if m, ok := stt.Methods[method]; ok {
+                                                        callArgs := append([]string{sanitizeName(root)}, args...)
+                                                        expr = fmt.Sprintf("(%s_%s %s)", sanitizeName(stt.Name), sanitizeName(method), strings.Join(callArgs, " "))
+                                                        t = m.Type.Return
+                                                        continue
+                                                }
+                                        }
+                                }
+                        }
+                        switch name {
+                        case "print":
+                                expr = fmt.Sprintf("(println %s)", strings.Join(args, " "))
+                        case "len":
+                                expr = fmt.Sprintf("(count %s)", args[0])
+                        case "count":
 				c.needCount = true
 				expr = fmt.Sprintf("(_count %s)", args[0])
 			case "avg":
@@ -1111,9 +1131,56 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	// Struct and union declarations are currently ignored but must not
-	// cause a compile error.
-	return nil
+        if st, ok := c.env.GetStruct(t.Name); ok {
+                for _, m := range t.Members {
+                        if m.Method == nil {
+                                continue
+                        }
+                        name := sanitizeName(t.Name + "_" + m.Method.Name)
+                        clone := *m.Method
+                        clone.Name = name
+                        origEnv := c.env
+                        child := types.NewEnv(c.env)
+                        for fname, ft := range st.Fields {
+                                child.SetVar(fname, ft, true)
+                        }
+                        if mt, ok := st.Methods[m.Method.Name]; ok {
+                                child.SetVar(name, mt.Type, false)
+                        }
+                        c.env = child
+                        if err := c.compileFun(&clone); err != nil {
+                                c.env = origEnv
+                                return err
+                        }
+                        c.env = origEnv
+                        c.writeln("")
+                }
+                return nil
+        }
+        if len(t.Variants) > 0 {
+                for _, v := range t.Variants {
+                        c.writeIndent()
+                        c.buf.WriteString("(defn " + sanitizeName(v.Name) + " [")
+                        for i, f := range v.Fields {
+                                if i > 0 {
+                                        c.buf.WriteString(" ")
+                                }
+                                c.buf.WriteString(sanitizeName(f.Name))
+                        }
+                        c.buf.WriteString("]\n")
+                        c.indent++
+                        parts := make([]string, 0, len(v.Fields)+1)
+                        parts = append(parts, fmt.Sprintf(":__name \"%s\"", v.Name))
+                        for _, f := range v.Fields {
+                                parts = append(parts, fmt.Sprintf(":%s %s", sanitizeName(f.Name), sanitizeName(f.Name)))
+                        }
+                        c.writeln("{" + strings.Join(parts, " ") + "}")
+                        c.indent--
+                        c.writeln(")")
+                        c.writeln("")
+                }
+        }
+        return nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
