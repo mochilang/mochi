@@ -1,0 +1,15 @@
+package service
+
+/// Kubernetes Service resource
+fun new(name: string, port: int, target_port: int): string {
+  return "apiVersion: v1\n" +
+         "kind: Service\n" +
+         "metadata:\n" +
+         "  name: " + name + "\n" +
+         "spec:\n" +
+         "  selector:\n" +
+         "    app: " + name + "\n" +
+         "  ports:\n" +
+         "    - port: " + str(port) + "\n" +
+         "      targetPort: " + str(target_port) + "\n"
+}
