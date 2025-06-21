@@ -1,0 +1,4 @@
+open System
+
+let mutable m: Map<int,int> = Map.empty
+ignore (printfn "%A" (Map.count (m)))

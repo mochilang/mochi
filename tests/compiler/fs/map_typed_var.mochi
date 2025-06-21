@@ -1,0 +1,2 @@
+var m: map<int, int> = {}
+print(len(m))
