@@ -281,6 +281,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Import != nil:
+		// Import declarations are ignored as FFI is not implemented yet
+		return nil
 	case s.While != nil:
 		return c.compileWhile(s.While, ret)
 	case s.Return != nil:
