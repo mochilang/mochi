@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Leaf {
+};
+struct Node {
+    Tree left;
+    int value;
+    Tree right;
+};
+using Tree = std::variant<Leaf, Node>;
+
+int main() {
+    std::function<Tree(int,int)> helper;
+    auto fromList = [&](vector<int> nums) {
+        helper = [&](int lo, int hi) {
+            if (lo >= hi) { return Tree{Leaf{}}; }
+            int mid = (lo + hi) / 2;
+            return Tree{Node{helper(lo, mid), nums[mid], helper(mid + 1, hi)}};
+        };
+        return helper(0, nums.size());
+    };
+    std::function<vector<int>(Tree)> inorder = [&](Tree t) {
+        auto _t = t;
+        if (std::holds_alternative<Leaf>(_t)) return vector<int>{};
+        if (std::holds_alternative<Node>(_t)) {
+            auto _v = std::get<Node>(_t);
+            auto l = _v.left;
+            auto v = _v.value;
+            auto r = _v.right;
+            auto res = inorder(l);
+            res.push_back(v);
+            auto rvec = inorder(r);
+            res.insert(res.end(), rvec.begin(), rvec.end());
+            return res;
+        }
+        return vector<int>{};
+    };
+    cout << _fmtVec(inorder(fromList(vector<int>{-10, -3, 0, 5, 9}))) << endl;
+    return 0;
+}

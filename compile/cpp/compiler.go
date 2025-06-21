@@ -389,6 +389,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Fun != nil:
+		fn := s.Fun
+		var paramTypes []string
+		for _, p := range fn.Params {
+			paramTypes = append(paramTypes, c.cppType(p.Type))
+		}
+		sig := fmt.Sprintf("std::function<%s(%s)>", c.cppType(fn.Return), strings.Join(paramTypes, ", "))
+		c.writeln(fmt.Sprintf("%s %s;", sig, fn.Name))
+		expr := c.compileFunExpr(&parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, "&")
+		c.writeln(fmt.Sprintf("%s = %s;", fn.Name, expr))
+		c.setVar(fn.Name, sig)
 	case s.Expr != nil:
 		if call := getPrintCall(s.Expr.Expr); call != nil {
 			return c.compilePrint(call)
@@ -640,7 +651,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.FunExpr != nil:
-		return c.compileFunExpr(p.FunExpr)
+		return c.compileFunExpr(p.FunExpr, "=")
 	case p.Query != nil:
 		q, _ := c.compileQuery(p.Query)
 		return q
@@ -787,7 +798,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 	return b.String()
 }
 
-func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr, capture string) string {
 	var params []string
 	for _, p := range fn.Params {
 		params = append(params, c.cppType(p.Type)+" "+p.Name)
@@ -803,7 +814,10 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 		}
 		c.buf = oldBuf
 	}
-	return "[=](" + strings.Join(params, ", ") + ") { " + body.String() + " }"
+	if capture == "" {
+		capture = "="
+	}
+	return "[" + capture + "](" + strings.Join(params, ", ") + ") { " + body.String() + " }"
 }
 
 func (c *Compiler) writeHelpers() {
