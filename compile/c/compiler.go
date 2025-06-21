@@ -168,7 +168,12 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			continue
 		}
 		if s.ExternType != nil {
-			// extern type declarations have no effect
+			name := sanitizeName(s.ExternType.Name)
+			c.externs = append(c.externs, fmt.Sprintf("typedef struct %s %s;", name, name))
+			if c.env != nil {
+				st := types.StructType{Name: s.ExternType.Name, Fields: map[string]types.Type{}, Order: []string{}, Methods: map[string]types.Method{}}
+				c.env.SetStruct(s.ExternType.Name, st)
+			}
 			continue
 		}
 		if s.Fun != nil {
@@ -264,14 +269,55 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	if len(t.Variants) > 0 {
-		return fmt.Errorf("union types not supported")
-	}
 	name := sanitizeName(t.Name)
 	if c.structs[name] {
 		return nil
 	}
 	c.structs[name] = true
+	if len(t.Variants) > 0 {
+		// compile variant structs
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			c.writeln("typedef struct {")
+			c.indent++
+			for _, f := range v.Fields {
+				typ := c.cType(f.Type)
+				c.writeln(fmt.Sprintf("%s %s;", typ, sanitizeName(f.Name)))
+			}
+			c.indent--
+			c.writeln(fmt.Sprintf("}%s;", vname))
+		}
+		// union wrapper
+		c.writeln("typedef struct {")
+		c.indent++
+		c.writeln("int tag;")
+		c.writeln("union {")
+		c.indent++
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			c.writeln(fmt.Sprintf("%s %s;", vname, vname))
+		}
+		c.indent--
+		c.writeln("} value;")
+		c.indent--
+		c.writeln(fmt.Sprintf("}%s;", name))
+		if c.env != nil {
+			ut := types.UnionType{Name: t.Name, Variants: map[string]types.StructType{}}
+			for _, v := range t.Variants {
+				fields := map[string]types.Type{}
+				order := []string{}
+				for _, f := range v.Fields {
+					fields[f.Name] = resolveTypeRef(f.Type, c.env)
+					order = append(order, f.Name)
+				}
+				st := types.StructType{Name: v.Name, Fields: fields, Order: order, Methods: map[string]types.Method{}}
+				c.env.SetStruct(v.Name, st)
+				ut.Variants[v.Name] = st
+			}
+			c.env.SetUnion(t.Name, ut)
+		}
+		return nil
+	}
 	c.writeln("typedef struct {")
 	c.indent++
 	var fields map[string]types.Type

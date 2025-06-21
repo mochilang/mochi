@@ -74,26 +74,32 @@ features include:
 
 - `map` types
 - query expressions such as `from`/`sort by`/`select`
- - enum and union definitions
+- enum definitions
 - agent-related constructs (`agent`, `stream`, `intent`)
 - generative `generate` blocks and model definitions
 - dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
- - full pattern matching with `match` (simple constant matches are supported)
+- full pattern matching with `match` (simple constant matches are supported)
 - foreign function interface via `import` and package declarations
 - concurrency primitives like `spawn` and channels
-- union type declarations and generics
+- generics for user-defined types
 - logic programming constructs (`fact`, `rule`, `query`)
 - reflection or macro facilities
- - package exports (extern objects are now supported)
+- package exports (extern objects are now supported)
 - nested list types other than `list<list<int>>`
 - set literals and set operations
- - methods declared inside `type` blocks
- - functions with multiple return values
- - map membership operations
- - iterating over maps with `for` loops
- - extern type declarations
- - variadic functions
- - closures that capture surrounding variables
+- methods declared inside `type` blocks
+- functions with multiple return values
+- map membership operations
+- iterating over maps with `for` loops
+- variadic functions
+- closures that capture surrounding variables
+- destructuring bindings in `let` and `var` statements
+- YAML dataset loading and saving
+- right and outer joins in dataset queries
+- agent initialization with field values
+- nested recursive functions inside other functions
+- `export` statements
+- constructing union variant values or matching on them
 
 The backend now supports membership checks and `union`/`union all` operations
 for integer, float, and string lists, along with slicing and printing of string
