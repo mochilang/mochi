@@ -130,9 +130,24 @@ const (
 		"    } else {\n" +
 		"        text = File(path).readAsStringSync();\n" +
 		"    }\n" +
-		"    if (format != 'csv') return [];\n" +
+		"    if (format == 'json') {\n" +
+		"        var data = jsonDecode(text);\n" +
+		"        if (data is List) return data.map((e) => Map<String,dynamic>.from(e as Map)).toList();\n" +
+		"        if (data is Map) return [Map<String,dynamic>.from(data)];\n" +
+		"        return <Map<String,dynamic>>[];\n" +
+		"    }\n" +
+		"    if (format == 'jsonl') {\n" +
+		"        return text.trim().split(RegExp('\\r?\\n')).where((l) => l.isNotEmpty).map((l) => Map<String,dynamic>.from(jsonDecode(l))).toList();\n" +
+		"    }\n" +
+		"    if (format == 'yaml') {\n" +
+		"        var data = loadYaml(text);\n" +
+		"        if (data is YamlList) return data.map((e) => Map<String,dynamic>.from(e)).toList();\n" +
+		"        if (data is YamlMap) return [Map<String,dynamic>.from(data)];\n" +
+		"        return <Map<String,dynamic>>[];\n" +
+		"    }\n" +
+		"    if (format != 'csv') return <Map<String,dynamic>>[];\n" +
 		"    var lines = text.trim().split(RegExp('\\r?\\n')).where((l) => l.isNotEmpty).toList();\n" +
-		"    if (lines.isEmpty) return [];\n" +
+		"    if (lines.isEmpty) return <Map<String,dynamic>>[];\n" +
 		"    List<String> headers;\n" +
 		"    if (header) {\n" +
 		"        headers = lines[0].split(delim);\n" +
@@ -157,14 +172,25 @@ const (
 		"    var delim = (opts?['delimiter'] ?? ',').toString();\n" +
 		"    if (delim.isEmpty) delim = ',';\n" +
 		"    if (format == 'tsv') delim = '\t';\n" +
-		"    if (format != 'csv') return;\n" +
-		"    var headers = rows.isNotEmpty ? (rows[0].keys.toList()..sort()) : <String>[];\n" +
-		"    var lines = <String>[];\n" +
-		"    if (header) lines.add(headers.join(delim));\n" +
-		"    for (var row in rows) {\n" +
-		"        lines.add(headers.map((h) => row[h]?.toString() ?? '').join(delim));\n" +
+		"    String text;\n" +
+		"    if (format == 'json') {\n" +
+		"        text = jsonEncode(rows);\n" +
+		"    } else if (format == 'jsonl') {\n" +
+		"        text = rows.map((r) => jsonEncode(r)).join('\\n') + '\n';\n" +
+		"    } else if (format == 'yaml') {\n" +
+		"        var enc = YamlEncoder();\n" +
+		"        text = enc.convert(rows.length == 1 ? rows[0] : rows);\n" +
+		"    } else if (format == 'csv') {\n" +
+		"        var headers = rows.isNotEmpty ? (rows[0].keys.toList()..sort()) : <String>[];\n" +
+		"        var lines = <String>[];\n" +
+		"        if (header) lines.add(headers.join(delim));\n" +
+		"        for (var row in rows) {\n" +
+		"            lines.add(headers.map((h) => row[h]?.toString() ?? '').join(delim));\n" +
+		"        }\n" +
+		"        text = lines.join('\\n') + '\n';\n" +
+		"    } else {\n" +
+		"        return;\n" +
 		"    }\n" +
-		"    var text = lines.join('\\n') + '\n';\n" +
 		"    if (path == null || path == '' || path == '-') {\n" +
 		"        stdout.write(text);\n" +
 		"    } else {\n" +

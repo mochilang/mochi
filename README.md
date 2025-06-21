@@ -605,6 +605,9 @@ implemented across all backends:
 * Reflection and macro facilities
 * Concurrency primitives such as `spawn` and channels
 * Foreign function interface outside the bundled Go, Python and TypeScript runtimes
+* Package declarations and `export` statements
+* Asynchronous functions (`async`/`await`)
+* YAML dataset loading and saving
 
 ## Benchmarks
 
