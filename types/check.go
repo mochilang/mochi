@@ -621,6 +621,9 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			for _, idx := range s.Assign.Index {
 				switch lt := lhsType.(type) {
 				case MapType:
+					if idx.Colon != nil {
+						return errInvalidMapSlice(idx.Pos)
+					}
 					keyType, err := checkExpr(idx.Start, env)
 					if err != nil {
 						return err
@@ -630,16 +633,65 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 					}
 					lhsType = lt.Value
 				case ListType:
-					idxType, err := checkExpr(idx.Start, env)
-					if err != nil {
-						return err
+					if idx.Colon != nil {
+						if idx.Start != nil {
+							t, err := checkExpr(idx.Start, env)
+							if err != nil {
+								return err
+							}
+							if !(unify(t, IntType{}, nil) || unify(t, Int64Type{}, nil)) {
+								return errIndexNotInteger(idx.Pos)
+							}
+						}
+						if idx.End != nil {
+							t, err := checkExpr(idx.End, env)
+							if err != nil {
+								return err
+							}
+							if !(unify(t, IntType{}, nil) || unify(t, Int64Type{}, nil)) {
+								return errIndexNotInteger(idx.Pos)
+							}
+						}
+						lhsType = lt
+					} else {
+						idxType, err := checkExpr(idx.Start, env)
+						if err != nil {
+							return err
+						}
+						if _, ok := idxType.(IntType); !ok {
+							if _, ok := idxType.(Int64Type); !ok {
+								return errIndexNotInteger(idx.Pos)
+							}
+						}
+						lhsType = lt.Elem
 					}
-					if _, ok := idxType.(IntType); !ok {
-						if _, ok := idxType.(Int64Type); !ok {
+				case StringType:
+					if idx.Start == nil && idx.Colon == nil {
+						return errMissingIndex(idx.Pos)
+					}
+					if idx.Start != nil {
+						t, err := checkExpr(idx.Start, env)
+						if err != nil {
+							return err
+						}
+						if !(unify(t, IntType{}, nil) || unify(t, Int64Type{}, nil)) {
 							return errIndexNotInteger(idx.Pos)
 						}
 					}
-					lhsType = lt.Elem
+					if idx.End != nil {
+						t, err := checkExpr(idx.End, env)
+						if err != nil {
+							return err
+						}
+						if !(unify(t, IntType{}, nil) || unify(t, Int64Type{}, nil)) {
+							return errIndexNotInteger(idx.Pos)
+						}
+					}
+					if idx.Colon != nil {
+						lhsType = StringType{}
+					} else {
+						lhsType = StringType{}
+					}
 				default:
 					return errNotIndexable(s.Assign.Pos, lhsType)
 				}

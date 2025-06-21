@@ -1,0 +1,21 @@
+#lang racket
+(require racket/list)
+
+(define (idx x i)
+  (cond [(string? x) (string-ref x i)]
+        [(hash? x) (hash-ref x i)]
+        [else (list-ref x i)]))
+(define (slice x s e) (if (string? x) (substring x s e) (take (drop x s) (- e s))))
+(define (count x)
+  (cond [(string? x) (string-length x)]
+        [(hash? x) (hash-count x)]
+        [else (length x)]))
+(define (avg x)
+  (let ([n (count x)])
+    (if (= n 0) 0
+        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
+
+(define (expect cond) (unless cond (error "expect failed")))
+(define xs (list (list 1 2 3) (list 4 5 6)))
+(set! xs (if (string? xs) (string-append (substring xs 0 0) (if (hash? (slice xs 0 1)) (hash-set (slice xs 0 1) 0 (if (string? (idx (slice xs 0 1) 0)) (string-append (substring (idx (slice xs 0 1) 0) 0 1) (list 8) (substring (idx (slice xs 0 1) 0) 2 (string-length (idx (slice xs 0 1) 0)))) (append (take (idx (slice xs 0 1) 0) 1) (list 8) (drop (idx (slice xs 0 1) 0) 2)))) (list-set (slice xs 0 1) 0 (if (string? (idx (slice xs 0 1) 0)) (string-append (substring (idx (slice xs 0 1) 0) 0 1) (list 8) (substring (idx (slice xs 0 1) 0) 2 (string-length (idx (slice xs 0 1) 0)))) (append (take (idx (slice xs 0 1) 0) 1) (list 8) (drop (idx (slice xs 0 1) 0) 2))))) (substring xs 1 (string-length xs))) (append (take xs 0) (if (hash? (slice xs 0 1)) (hash-set (slice xs 0 1) 0 (if (string? (idx (slice xs 0 1) 0)) (string-append (substring (idx (slice xs 0 1) 0) 0 1) (list 8) (substring (idx (slice xs 0 1) 0) 2 (string-length (idx (slice xs 0 1) 0)))) (append (take (idx (slice xs 0 1) 0) 1) (list 8) (drop (idx (slice xs 0 1) 0) 2)))) (list-set (slice xs 0 1) 0 (if (string? (idx (slice xs 0 1) 0)) (string-append (substring (idx (slice xs 0 1) 0) 0 1) (list 8) (substring (idx (slice xs 0 1) 0) 2 (string-length (idx (slice xs 0 1) 0)))) (append (take (idx (slice xs 0 1) 0) 1) (list 8) (drop (idx (slice xs 0 1) 0) 2))))) (drop xs 1))))
+(displayln (idx (idx xs 0) 1))
