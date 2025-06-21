@@ -558,6 +558,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands := []string{left}
 	lists := []bool{c.isListExpr(b.Left.Value)}
 	ops := []string{}
+	alls := []bool{}
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
@@ -566,6 +567,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operands = append(operands, r)
 		lists = append(lists, c.isListExpr(part.Right))
 		ops = append(ops, part.Op)
+		alls = append(alls, part.All)
 	}
 
 	levels := [][]string{
@@ -610,8 +612,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					expr = fmt.Sprintf("(%s + %s)", l, r)
 				}
 			case "union":
-				c.helpers["_union"] = true
-				expr = fmt.Sprintf("_union(%s, %s)", l, r)
+				if alls[i] {
+					c.helpers["_concat"] = true
+					expr = fmt.Sprintf("_concat(%s, %s)", l, r)
+				} else {
+					c.helpers["_union"] = true
+					expr = fmt.Sprintf("_union(%s, %s)", l, r)
+				}
 				isList = true
 			case "except":
 				c.helpers["_except"] = true
@@ -631,6 +638,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			lists[i] = isList
 			operands = append(operands[:i+1], operands[i+2:]...)
 			lists = append(lists[:i+1], lists[i+2:]...)
+			alls = append(alls[:i], alls[i+1:]...)
 			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
