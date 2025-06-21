@@ -1,0 +1,9 @@
+docker build -t test ./app
+docker push test
+docker run --name myctr test -d
+docker stop myctr
+docker rm myctr
+docker network create net
+docker network rm net
+docker volume create vol
+docker volume rm vol

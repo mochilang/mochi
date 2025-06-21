@@ -1,0 +1,60 @@
+import "./images/image" as images
+import "./containers/container" as containers
+import "./networks/network" as networks
+import "./volumes/volume" as volumes
+
+export fun image(name, context): any {
+  return images.image(name, context)
+}
+
+export fun build(img): any {
+  return images.build(img)
+}
+
+export fun push(img): any {
+  return images.push(img)
+}
+
+export fun remove_image(img): any {
+  return images.remove(img)
+}
+
+export fun container(name, img, args: list<string>): any {
+  return containers.container(name, img, args)
+}
+
+export fun run(ctr): any {
+  return containers.run(ctr)
+}
+
+export fun stop(ctr): any {
+  return containers.stop(ctr)
+}
+
+export fun remove_container(ctr): any {
+  return containers.remove(ctr)
+}
+
+export fun network(name): any {
+  return networks.network(name)
+}
+
+export fun create_network(n): any {
+  return networks.create(n)
+}
+
+export fun remove_network(n): any {
+  return networks.remove(n)
+}
+
+export fun volume(name): any {
+  return volumes.volume(name)
+}
+
+export fun create_volume(v): any {
+  return volumes.create(v)
+}
+
+export fun remove_volume(v): any {
+  return volumes.remove(v)
+}

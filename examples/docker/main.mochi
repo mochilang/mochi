@@ -1,0 +1,25 @@
+// docker/main.mochi
+// Demonstrates the docker DSL library with typed resources.
+import "../lib/cloud/docker" as docker
+
+// Build and push an image
+let app = docker.image("demo-app", "./app")
+docker.build(app)
+docker.push(app)
+
+// Run a container from the image
+let ctr = docker.container("demo", app, ["-p", "8080:80"])
+docker.run(ctr)
+
+docker.stop(ctr)
+docker.remove_container(ctr)
+
+// Manage a network and volume
+let net = docker.network("demo-net")
+docker.create_network(net)
+
+docker.remove_network(net)
+
+let vol = docker.volume("demo-data")
+docker.create_volume(vol)
+docker.remove_volume(vol)
