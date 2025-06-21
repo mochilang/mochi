@@ -14,18 +14,19 @@ import (
 
 // Compiler translates a Mochi AST into Kotlin source code.
 type Compiler struct {
-	buf       bytes.Buffer
-	indent    int
-	env       *types.Env
-	mainStmts []*parser.Statement
-	helpers   map[string]bool
-	packages  map[string]bool
-	models    bool
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	mainStmts    []*parser.Statement
+	helpers      map[string]bool
+	packages     map[string]bool
+	models       bool
+	handlerCount int
 }
 
 // New creates a new Kotlin compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), models: false}
+	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), models: false, handlerCount: 0}
 }
 
 // Compile generates Kotlin code for prog.
@@ -109,6 +110,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Stream != nil:
+		return c.compileStreamDecl(s.Stream)
+	case s.On != nil:
+		return c.compileOnHandler(s.On)
+	case s.Emit != nil:
+		return c.compileEmit(s.Emit)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -536,6 +543,67 @@ func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
 		parts[i] = fmt.Sprintf("%q to %s", f.Name, v)
 	}
 	c.writeln(fmt.Sprintf("_models[%q] = mapOf(%s)", m.Name, joinArgs(parts)))
+	return nil
+}
+
+func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
+	st, ok := c.env.GetStream(s.Name)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", s.Name)
+	}
+	varName := "_" + sanitizeName(s.Name) + "Stream"
+	c.writeln(fmt.Sprintf("var %s = _Stream<%s>(%q)", varName, sanitizeName(st.Name), s.Name))
+	c.use("_Stream")
+	return nil
+}
+
+func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
+	st, ok := c.env.GetStream(h.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", h.Stream)
+	}
+	streamVar := "_" + sanitizeName(h.Stream) + "Stream"
+	handlerName := fmt.Sprintf("_handler_%d", c.handlerCount)
+	c.handlerCount++
+	c.writeln(fmt.Sprintf("fun %s(ev: %s) {", handlerName, sanitizeName(st.Name)))
+	c.indent++
+	alias := sanitizeName(h.Alias)
+	c.writeln(fmt.Sprintf("val %s = ev", alias))
+	child := types.NewEnv(c.env)
+	child.SetVar(h.Alias, st, true)
+	orig := c.env
+	c.env = child
+	for _, stmt := range h.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			c.env = orig
+			return err
+		}
+	}
+	c.env = orig
+	c.indent--
+	c.writeln("}")
+	c.writeln(fmt.Sprintf("%s.register(::%s)", streamVar, handlerName))
+	c.use("_Stream")
+	return nil
+}
+
+func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
+	st, ok := c.env.GetStream(e.Stream)
+	if !ok {
+		return fmt.Errorf("unknown stream: %s", e.Stream)
+	}
+	parts := make([]string, len(e.Fields))
+	for i, f := range e.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return err
+		}
+		parts[i] = fmt.Sprintf("%s = %s", sanitizeName(f.Name), v)
+	}
+	lit := fmt.Sprintf("%s(%s)", sanitizeName(st.Name), joinArgs(parts))
+	streamVar := "_" + sanitizeName(e.Stream) + "Stream"
+	c.writeln(fmt.Sprintf("%s.append(%s)", streamVar, lit))
+	c.use("_Stream")
 	return nil
 }
 
