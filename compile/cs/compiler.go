@@ -62,6 +62,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("using System.Linq;")
 	}
 	c.writeln("using System.Text.Json;")
+	if c.helpers["_load"] || c.helpers["_save"] {
+		c.writeln("using YamlDotNet.Serialization;")
+	}
 	c.writeln("")
 	if prog.Package != "" {
 		c.writeln("namespace " + sanitizeName(prog.Package) + " {")
@@ -1150,6 +1153,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		opts = v
 	}
 	c.use("_load")
+	c.useLinq = true
 	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
 	if l.Type != nil && l.Type.Simple != nil {
 		typ := csType(l.Type)
@@ -1179,6 +1183,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		opts = v
 	}
 	c.use("_save")
+	c.useLinq = true
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 

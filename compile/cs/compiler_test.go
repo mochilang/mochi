@@ -43,7 +43,10 @@ func TestCSCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.MkdirAll(projDir, 0755); err != nil {
 			return nil, fmt.Errorf("mkdir: %w", err)
 		}
-		csproj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>`
+		csproj := `<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
+  <ItemGroup><PackageReference Include="YamlDotNet" Version="13.3.1" /></ItemGroup>
+</Project>`
 		if err := os.WriteFile(filepath.Join(projDir, "app.csproj"), []byte(csproj), 0644); err != nil {
 			return nil, fmt.Errorf("write csproj: %w", err)
 		}
@@ -131,7 +134,10 @@ func runLeetCode(t *testing.T, id int, want string) {
 	if err := os.MkdirAll(proj, 0755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
-	csproj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>`
+	csproj := `<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup>
+  <ItemGroup><PackageReference Include="YamlDotNet" Version="13.3.1" /></ItemGroup>
+</Project>`
 	if err := os.WriteFile(filepath.Join(proj, "app.csproj"), []byte(csproj), 0644); err != nil {
 		t.Fatalf("write csproj: %v", err)
 	}
