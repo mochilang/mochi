@@ -1,0 +1,19 @@
+import "lib/cloud/azure/compute/vm" as vm
+import "lib/cloud/azure/network/vnet" as vnet
+import "lib/cloud/azure/storage/container" as storage
+import "runtime/cloud/azure/azure" as azure
+
+// point APO to local mock data
+azure.apo = "file://tests/interpreter/valid/azure_mock"
+
+let machine = vm.create("demo", "ubuntu-lts", "B1s", "eastus")
+machine.start()
+
+let net = vnet.create("demo-net", "eastus")
+net.attach(machine)
+
+let cont = storage.create("files", "rg", "eastus")
+cont.upload("hello.txt", "Hello")
+let msg = cont.download("hello.txt")
+print(msg)
+

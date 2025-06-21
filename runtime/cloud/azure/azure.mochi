@@ -1,0 +1,14 @@
+package azure
+
+// apo is the base URL for Azure API calls. Set this to your apo endpoint.
+var apo = "https://example.com/azure"
+
+fun endpoint(path: string): string {
+  if path.starts_with("/") {
+    return apo + path
+  }
+  return apo + "/" + path
+}
+
+export var apo
+export fun endpoint
