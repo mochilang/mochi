@@ -29,6 +29,43 @@ type Compiler struct {
 	models       bool
 }
 
+func containsStreamCode(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		if stmtHasStream(s) {
+			return true
+		}
+	}
+	return false
+}
+
+func stmtHasStream(s *parser.Statement) bool {
+	switch {
+	case s.Stream != nil, s.Emit != nil, s.On != nil, s.Agent != nil:
+		return true
+	case s.Fun != nil:
+		return containsStreamCode(s.Fun.Body)
+	case s.Test != nil:
+		return containsStreamCode(s.Test.Body)
+	case s.If != nil:
+		if containsStreamCode(s.If.Then) {
+			return true
+		}
+		if s.If.ElseIf != nil {
+			if stmtHasStream(&parser.Statement{If: s.If.ElseIf}) {
+				return true
+			}
+		}
+		return containsStreamCode(s.If.Else)
+	case s.While != nil:
+		return containsStreamCode(s.While.Body)
+	case s.For != nil:
+		return containsStreamCode(s.For.Body)
+	case s.On != nil:
+		return containsStreamCode(s.On.Body)
+	}
+	return false
+}
+
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, imports: make(map[string]bool), dartImports: make(map[string]string), packages: make(map[string]bool),
@@ -37,6 +74,7 @@ func New(env *types.Env) *Compiler {
 
 // Compile returns Dart source implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	needsAsync := containsStreamCode(prog.Statements)
 	c.buf.Reset()
 	c.imports = make(map[string]bool)
 	c.dartImports = make(map[string]string)
@@ -82,7 +120,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	// Emit main function with remaining statements.
-	c.writeln("void main() {")
+	if needsAsync {
+		c.writeln("Future<void> main() async {")
+	} else {
+		c.writeln("void main() {")
+	}
 	c.indent++
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Type != nil || s.Test != nil {
@@ -97,6 +139,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			name := "test_" + sanitizeName(s.Test.Name)
 			c.writeln(fmt.Sprintf("%s();", name))
 		}
+	}
+	if needsAsync {
+		c.use("_waitAll")
+		c.writeln("await _waitAll();")
 	}
 	c.indent--
 	c.writeln("}")
