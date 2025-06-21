@@ -243,7 +243,11 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Nested function declarations inside other functions
 * Iteration over map key/value pairs
 * Asynchronous `async`/`await` constructs
-* Built-in function `json`
 * Error handling with `try`/`catch`
 * Package declarations and `export` statements
 * YAML dataset loading and saving
+* Functions with multiple return values
+* Variadic functions
+* Destructuring bindings in `let` and `var` statements
+* Automatic language imports (`import python "..." auto`)
+* Extern object declarations

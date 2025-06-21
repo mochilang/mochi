@@ -11,7 +11,7 @@ import (
 )
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "union", "except", "intersect", "input"}
+var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "union", "except", "intersect", "json", "input"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -127,6 +127,44 @@ var helperCode = map[string][]string{
 		"\t}",
 		"\treturn res;",
 		"}",
+	},
+	"json": {
+		"static string _escape_json(const string& s) {",
+		"\tstring out;",
+		"\tfor (char c : s) {",
+		"\t\tif (c == '\"' || c == '\\') out += '\\';",
+		"\t\tout += c;",
+		"\t}",
+		"\treturn out;",
+		"}",
+		"template<typename T> string _to_json(const T& v);",
+		"inline string _to_json(const string& s) {",
+		"\tstring out = \"\\\"\";",
+		"\tout += _escape_json(s);",
+		"\tout += \"\\\"\";",
+		"\treturn out;",
+		"}",
+		"inline string _to_json(const char* s) { return _to_json(string(s)); }",
+		"inline string _to_json(int v) { return to_string(v); }",
+		"inline string _to_json(double v) { stringstream ss; ss << v; return ss.str(); }",
+		"inline string _to_json(bool v) { return v ? \"true\" : \"false\"; }",
+		"template<typename T> string _to_json(const vector<T>& v) {",
+		"\tstring out = \"[\";",
+		"\tfor (size_t i=0;i<v.size();i++) { if (i>0) out += ','; out += _to_json(v[i]); }",
+		"\tout += ']';",
+		"\treturn out;",
+		"}",
+		"template<typename K, typename V> string _to_json(const unordered_map<K,V>& m) {",
+		"\tstring out = \"{\"; bool first = true;",
+		"\tfor (const auto& kv : m) {",
+		"\t\tif (!first) out += ','; first = false;",
+		"\t\tout += _to_json(kv.first); out += ':'; out += _to_json(kv.second);",
+		"\t}",
+		"\tout += '}';",
+		"\treturn out;",
+		"}",
+		"template<typename T> string _to_json(const T& v) { stringstream ss; ss << v; return _to_json(ss.str()); }",
+		"template<typename T> void _json(const T& v) { cout << _to_json(v) << endl; }",
 	},
 	"input": {
 		"string _input() {",
@@ -751,6 +789,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		case "avg":
 			c.helpers["avg"] = true
 			return fmt.Sprintf("_avg(%s)", args[0])
+		case "json":
+			c.helpers["json"] = true
+			return fmt.Sprintf("_json(%s)", args[0])
 		case "reduce":
 			if len(args) == 3 {
 				c.helpers["reduce"] = true
