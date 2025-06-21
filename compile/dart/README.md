@@ -246,6 +246,7 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Stream declarations and event handling with `on`/`emit`
 - Agent declarations with `intent` blocks
 - Model declarations
+- Cross-language imports for Dart modules with `import dart "..." as name`
 
 ### Unsupported features
 
@@ -254,7 +255,9 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - `generate` expressions return placeholder values (LLM integration pending)
 - Concurrency primitives like `spawn` and channels
 - Reflection or macro facilities
-- Cross-language imports (e.g. `import python "math" as m`)
-- Extern declarations for FFI
+- Cross-language imports for languages other than Dart
+- Extern declarations compile but FFI integration is pending
+- Package and `export` statements
+- Closures capturing surrounding variables
 - Error handling with `try`/`catch` blocks
 - Asynchronous functions (`async`/`await`)

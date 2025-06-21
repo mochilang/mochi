@@ -20,6 +20,7 @@ type Compiler struct {
 	env          *types.Env
 	tempVarCount int
 	imports      map[string]bool
+	dartImports  map[string]string
 	packages     map[string]bool
 	structs      map[string]bool
 	agents       map[string]bool
@@ -30,7 +31,7 @@ type Compiler struct {
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, imports: make(map[string]bool), packages: make(map[string]bool),
+	return &Compiler{env: env, imports: make(map[string]bool), dartImports: make(map[string]string), packages: make(map[string]bool),
 		structs: make(map[string]bool), agents: make(map[string]bool), helpers: make(map[string]bool), models: false}
 }
 
@@ -38,6 +39,7 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.imports = make(map[string]bool)
+	c.dartImports = make(map[string]string)
 	c.packages = make(map[string]bool)
 	c.structs = make(map[string]bool)
 	c.agents = make(map[string]bool)
@@ -105,9 +107,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("library " + sanitizeName(prog.Package) + ";")
 		c.writeln("")
 	}
-	if len(c.imports) > 0 {
+	if len(c.imports) > 0 || len(c.dartImports) > 0 {
 		for imp := range c.imports {
 			c.writeln(fmt.Sprintf("import '%s';", imp))
+		}
+		for alias, path := range c.dartImports {
+			if alias == path {
+				c.writeln(fmt.Sprintf("import '%s';", path))
+			} else {
+				c.writeln(fmt.Sprintf("import '%s' as %s;", path, alias))
+			}
 		}
 		c.writeln("")
 	}
@@ -170,7 +179,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if s.Import.Lang == nil {
 			return c.compilePackageImport(s.Import)
 		}
+		if *s.Import.Lang == "dart" {
+			return c.compileDartImport(s.Import)
+		}
 		return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		// extern declarations have no runtime effect in Dart
+		return nil
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -1043,7 +1058,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), expr), nil
 	}
-	sub := &Compiler{env: types.NewEnv(c.env), imports: c.imports}
+	sub := &Compiler{env: types.NewEnv(c.env), imports: c.imports, dartImports: c.dartImports}
 	for _, p := range fn.Params {
 		sub.env.SetVar(p.Name, types.AnyType{}, true)
 	}
@@ -1733,6 +1748,25 @@ func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
 		}
 	}
 	c.env = origEnv
+	return nil
+}
+
+func (c *Compiler) compileDartImport(im *parser.ImportStmt) error {
+	alias := ""
+	if im.As != "" {
+		alias = sanitizeName(im.As)
+	}
+	path := strings.Trim(im.Path, "\"")
+	key := alias
+	if key == "" {
+		key = path
+	}
+	if existing, ok := c.dartImports[key]; ok {
+		if existing == path {
+			return nil
+		}
+	}
+	c.dartImports[key] = path
 	return nil
 }
 
