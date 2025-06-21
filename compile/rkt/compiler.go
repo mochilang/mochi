@@ -1206,7 +1206,39 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("(lambda (%s) %s)", strings.Join(params, " "), body), nil
 	}
-	return "", fmt.Errorf("function block bodies not supported")
+	// Fallback for block-bodied anonymous functions. Compile the statements
+	// using a fresh subcompiler so we can reuse the existing helpers for
+	// indentation and loop handling.
+	sub := &Compiler{env: c.env}
+	sub.indent = 1
+	sub.writeln("(let/ec return")
+	sub.indent++
+	for _, st := range f.BlockBody {
+		if err := sub.compileStmt(st); err != nil {
+			return "", err
+		}
+	}
+	sub.writeln("(return (void))")
+	sub.indent--
+	sub.writeln(")")
+
+	// Propagate feature flags from the subcompiler back to the parent.
+	if sub.needsDataset {
+		c.needsDataset = true
+	}
+	if sub.needsSetOps {
+		c.needsSetOps = true
+	}
+	if sub.needsMatch {
+		c.needsMatch = true
+	}
+
+	body := strings.TrimRight(sub.buf.String(), "\n")
+	lines := strings.Split(body, "\n")
+	for i, ln := range lines {
+		lines[i] = "  " + ln
+	}
+	return fmt.Sprintf("(lambda (%s)\n%s\n)", strings.Join(params, " "), strings.Join(lines, "\n")), nil
 }
 
 func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
