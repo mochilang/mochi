@@ -12,20 +12,20 @@ import (
 
 // Compiler translates a Mochi AST into GNU Smalltalk source code.
 type Compiler struct {
-	buf          bytes.Buffer
-	indent       int
-	env          *types.Env
-	funParams    map[string][]string
-	needCount    bool
-	needAvg      bool
-	needInput    bool
-        needReduce   bool
-        needBreak    bool
-        needContinue bool
-       needUnionAll bool
-       needUnion bool
-       needExcept bool
-       needIntersect bool
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	funParams     map[string][]string
+	needCount     bool
+	needAvg       bool
+	needInput     bool
+	needReduce    bool
+	needBreak     bool
+	needContinue  bool
+	needUnionAll  bool
+	needUnion     bool
+	needExcept    bool
+	needIntersect bool
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -41,23 +41,64 @@ func (c *Compiler) writeIndent() {
 	}
 }
 
-// Compile generates Smalltalk code for prog.
-func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+// reset clears the compiler state before a new compilation run.
+func (c *Compiler) reset() {
 	c.buf.Reset()
 	c.needCount = false
-       c.needAvg = false
-       c.needInput = false
-       c.needReduce = false
-       c.needBreak = false
-       c.needContinue = false
-       c.needUnionAll = false
-       c.needUnion = false
-       c.needExcept = false
-       c.needIntersect = false
+	c.needAvg = false
+	c.needInput = false
+	c.needReduce = false
+	c.needBreak = false
+	c.needContinue = false
+	c.needUnionAll = false
+	c.needUnion = false
+	c.needExcept = false
+	c.needIntersect = false
+}
+
+// Compile generates Smalltalk code for prog.
+func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	c.reset()
 
 	orig := c.buf
 
-	// compile type declarations
+	typeCode, err := c.compileTypeDecls(prog)
+	if err != nil {
+		return nil, err
+	}
+
+	funCode, err := c.compileFunctions(prog)
+	if err != nil {
+		return nil, err
+	}
+
+	testCode, testNames, err := c.compileTestBlocks(prog)
+	if err != nil {
+		return nil, err
+	}
+
+	mainCode, err := c.compileMainStmts(prog, testNames)
+	if err != nil {
+		return nil, err
+	}
+
+	// assemble
+	c.buf = orig
+	c.writeln("Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
+	c.writeln("")
+	c.buf.Write(typeCode)
+	c.buf.Write(funCode)
+	c.buf.Write(testCode)
+	if c.needCount || c.needAvg || c.needInput || c.needReduce || c.needBreak || c.needContinue || c.needUnionAll || c.needUnion || c.needExcept || c.needIntersect {
+		c.emitHelpers()
+	}
+	c.writelnNoIndent("!!")
+	c.buf.Write(mainCode)
+
+	return c.buf.Bytes(), nil
+}
+
+func (c *Compiler) compileTypeDecls(prog *parser.Program) ([]byte, error) {
 	c.buf = bytes.Buffer{}
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -66,9 +107,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	typeCode := append([]byte(nil), c.buf.Bytes()...)
+	return append([]byte(nil), c.buf.Bytes()...), nil
+}
 
-	// compile functions
+func (c *Compiler) compileFunctions(prog *parser.Program) ([]byte, error) {
 	c.buf = bytes.Buffer{}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -78,23 +120,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
-	funCode := append([]byte(nil), c.buf.Bytes()...)
+	return append([]byte(nil), c.buf.Bytes()...), nil
+}
 
-	// compile test blocks
+func (c *Compiler) compileTestBlocks(prog *parser.Program) ([]byte, []string, error) {
 	c.buf = bytes.Buffer{}
 	testNames := []string{}
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			if err := c.compileTestBlock(s.Test); err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			testNames = append(testNames, "test_"+sanitizeName(s.Test.Name))
 			c.writeln("")
 		}
 	}
-	testCode := append([]byte(nil), c.buf.Bytes()...)
+	return append([]byte(nil), c.buf.Bytes()...), testNames, nil
+}
 
-	// compile main statements
+func (c *Compiler) compileMainStmts(prog *parser.Program, tests []string) ([]byte, error) {
 	c.buf = bytes.Buffer{}
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Type != nil || s.Test != nil {
@@ -104,25 +148,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
-	for _, name := range testNames {
+	for _, name := range tests {
 		c.writeln(fmt.Sprintf("Main %s.", name))
 	}
-	mainCode := append([]byte(nil), c.buf.Bytes()...)
-
-	// assemble
-	c.buf = orig
-	c.writeln("Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
-	c.writeln("")
-	c.buf.Write(typeCode)
-	c.buf.Write(funCode)
-	c.buf.Write(testCode)
-       if c.needCount || c.needAvg || c.needInput || c.needReduce || c.needBreak || c.needContinue || c.needUnionAll || c.needUnion || c.needExcept || c.needIntersect {
-               c.emitHelpers()
-       }
-	c.writelnNoIndent("!!")
-	c.buf.Write(mainCode)
-
-	return c.buf.Bytes(), nil
+	return append([]byte(nil), c.buf.Bytes()...), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -551,41 +580,41 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				leftList = false
 				leftStr = false
 			}
-               case "in":
-                       if rlist || rstr {
-                               expr = fmt.Sprintf("(%s includes: %s)", right, left)
-                       } else if isMapPostfix(op.Right, c.env) {
-                               expr = fmt.Sprintf("(%s includesKey: %s)", right, left)
-                       } else {
-                               expr = fmt.Sprintf("(%s includes: %s)", right, left)
-                       }
-                       leftList = false
-                       leftStr = false
-               case "union":
-                       if op.All {
-                               c.needUnionAll = true
-                               expr = fmt.Sprintf("(Main __union_all: (%s) with: (%s))", expr, right)
-                       } else {
-                               c.needUnion = true
-                               expr = fmt.Sprintf("(Main __union: (%s) with: (%s))", expr, right)
-                       }
-                       leftList = true
-                       leftStr = false
-               case "except":
-                       c.needExcept = true
-                       expr = fmt.Sprintf("(Main __except: (%s) with: (%s))", expr, right)
-                       leftList = true
-                       leftStr = false
-               case "intersect":
-                       c.needIntersect = true
-                       expr = fmt.Sprintf("(Main __intersect: (%s) with: (%s))", expr, right)
-                       leftList = true
-                       leftStr = false
-               case "&&":
-                       expr = fmt.Sprintf("(%s and: [%s])", expr, right)
-                       leftList = false
-                       leftStr = false
-               case "||":
+		case "in":
+			if rlist || rstr {
+				expr = fmt.Sprintf("(%s includes: %s)", right, left)
+			} else if isMapPostfix(op.Right, c.env) {
+				expr = fmt.Sprintf("(%s includesKey: %s)", right, left)
+			} else {
+				expr = fmt.Sprintf("(%s includes: %s)", right, left)
+			}
+			leftList = false
+			leftStr = false
+		case "union":
+			if op.All {
+				c.needUnionAll = true
+				expr = fmt.Sprintf("(Main __union_all: (%s) with: (%s))", expr, right)
+			} else {
+				c.needUnion = true
+				expr = fmt.Sprintf("(Main __union: (%s) with: (%s))", expr, right)
+			}
+			leftList = true
+			leftStr = false
+		case "except":
+			c.needExcept = true
+			expr = fmt.Sprintf("(Main __except: (%s) with: (%s))", expr, right)
+			leftList = true
+			leftStr = false
+		case "intersect":
+			c.needIntersect = true
+			expr = fmt.Sprintf("(Main __intersect: (%s) with: (%s))", expr, right)
+			leftList = true
+			leftStr = false
+		case "&&":
+			expr = fmt.Sprintf("(%s and: [%s])", expr, right)
+			leftList = false
+			leftStr = false
+		case "||":
 			expr = fmt.Sprintf("(%s or: [%s])", expr, right)
 			leftList = false
 			leftStr = false
@@ -1075,60 +1104,60 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writelnNoIndent("!")
 	}
-        if c.needReduce {
-                c.writeln("__reduce: v fn: blk init: acc")
-                c.indent++
-                c.writeln("| res |")
-                c.writeln("res := acc.")
-                c.writeln("v do: [:it | res := blk value: res value: it].")
-                c.writeln("^ res")
-                c.indent--
-                c.writelnNoIndent("!")
-        }
-       if c.needUnionAll {
-               c.writeln("__union_all: a with: b")
-               c.indent++
-               c.writeln("| out |")
-               c.writeln("out := OrderedCollection new.")
-               c.writeln("a ifNotNil: [ a do: [:v | out add: v ] ].")
-               c.writeln("b ifNotNil: [ b do: [:v | out add: v ] ].")
-               c.writeln("^ out asArray")
-               c.indent--
-               c.writelnNoIndent("!")
-       }
-       if c.needUnion {
-               c.writeln("__union: a with: b")
-               c.indent++
-               c.writeln("| out |")
-               c.writeln("out := OrderedCollection new.")
-               c.writeln("a ifNotNil: [ a do: [:v | (out includes: v) ifFalse: [ out add: v ] ] ].")
-               c.writeln("b ifNotNil: [ b do: [:v | (out includes: v) ifFalse: [ out add: v ] ] ].")
-               c.writeln("^ out asArray")
-               c.indent--
-               c.writelnNoIndent("!")
-       }
-       if c.needExcept {
-               c.writeln("__except: a with: b")
-               c.indent++
-               c.writeln("| out |")
-               c.writeln("out := OrderedCollection new.")
-               c.writeln("a ifNotNil: [ a do: [:v | (b isNil or: [ (b includes: v) not ]) ifTrue: [ out add: v ] ] ].")
-               c.writeln("^ out asArray")
-               c.indent--
-               c.writelnNoIndent("!")
-       }
-       if c.needIntersect {
-               c.writeln("__intersect: a with: b")
-               c.indent++
-               c.writeln("| out |")
-               c.writeln("out := OrderedCollection new.")
-               c.writeln("(a notNil and: [ b notNil ]) ifTrue: [")
-               c.indent++
-               c.writeln("a do: [:v | (b includes: v) ifTrue: [ (out includes: v) ifFalse: [ out add: v ] ] ].")
-               c.indent--
-               c.writeln("]")
-               c.writeln("^ out asArray")
-               c.indent--
-               c.writelnNoIndent("!")
-       }
+	if c.needReduce {
+		c.writeln("__reduce: v fn: blk init: acc")
+		c.indent++
+		c.writeln("| res |")
+		c.writeln("res := acc.")
+		c.writeln("v do: [:it | res := blk value: res value: it].")
+		c.writeln("^ res")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needUnionAll {
+		c.writeln("__union_all: a with: b")
+		c.indent++
+		c.writeln("| out |")
+		c.writeln("out := OrderedCollection new.")
+		c.writeln("a ifNotNil: [ a do: [:v | out add: v ] ].")
+		c.writeln("b ifNotNil: [ b do: [:v | out add: v ] ].")
+		c.writeln("^ out asArray")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needUnion {
+		c.writeln("__union: a with: b")
+		c.indent++
+		c.writeln("| out |")
+		c.writeln("out := OrderedCollection new.")
+		c.writeln("a ifNotNil: [ a do: [:v | (out includes: v) ifFalse: [ out add: v ] ] ].")
+		c.writeln("b ifNotNil: [ b do: [:v | (out includes: v) ifFalse: [ out add: v ] ] ].")
+		c.writeln("^ out asArray")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needExcept {
+		c.writeln("__except: a with: b")
+		c.indent++
+		c.writeln("| out |")
+		c.writeln("out := OrderedCollection new.")
+		c.writeln("a ifNotNil: [ a do: [:v | (b isNil or: [ (b includes: v) not ]) ifTrue: [ out add: v ] ] ].")
+		c.writeln("^ out asArray")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needIntersect {
+		c.writeln("__intersect: a with: b")
+		c.indent++
+		c.writeln("| out |")
+		c.writeln("out := OrderedCollection new.")
+		c.writeln("(a notNil and: [ b notNil ]) ifTrue: [")
+		c.indent++
+		c.writeln("a do: [:v | (b includes: v) ifTrue: [ (out includes: v) ifFalse: [ out add: v ] ] ].")
+		c.indent--
+		c.writeln("]")
+		c.writeln("^ out asArray")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
 }
