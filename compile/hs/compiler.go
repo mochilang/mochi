@@ -16,6 +16,7 @@ type Compiler struct {
 	indent   int
 	env      *types.Env
 	usesMap  bool
+	usesList bool
 	usesTime bool
 	usesJSON bool
 	usesLoad bool
@@ -67,6 +68,7 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.usesMap = false
+	c.usesList = false
 	c.usesJSON = false
 	c.usesLoad = false
 	c.usesSave = false
@@ -108,6 +110,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.usesLoad || c.usesSave {
 		header.WriteString("import Data.List (intercalate)\n")
+	}
+	if c.usesList {
+		header.WriteString("import qualified Data.List as List\n")
 	}
 	if c.usesJSON {
 		header.WriteString("import qualified Data.Aeson as Aeson\n")
@@ -480,6 +485,25 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			expr = fmt.Sprintf("(%s `mod` %s)", expr, r)
 		} else if op.Op == "/" && c.postfixIsInt(op.Right) {
 			expr = fmt.Sprintf("(div %s %s)", expr, r)
+		} else if op.Op == "in" {
+			if c.postfixIsMap(op.Right) {
+				c.usesMap = true
+				expr = fmt.Sprintf("Map.member %s %s", expr, r)
+			} else {
+				expr = fmt.Sprintf("elem %s %s", expr, r)
+			}
+		} else if op.Op == "union" && op.All {
+			c.usesList = true
+			expr = fmt.Sprintf("(%s ++ %s)", expr, r)
+		} else if op.Op == "union" {
+			c.usesList = true
+			expr = fmt.Sprintf("List.union %s %s", expr, r)
+		} else if op.Op == "except" {
+			c.usesList = true
+			expr = fmt.Sprintf("(%s List.\\ %s)", expr, r)
+		} else if op.Op == "intersect" {
+			c.usesList = true
+			expr = fmt.Sprintf("List.intersect %s %s", expr, r)
 		} else {
 			opSym := op.Op
 			if opSym == "!=" {

@@ -48,6 +48,8 @@ Several language constructs remain unimplemented:
 - Functions with multiple return values
 - Map membership operations
 - `test` blocks and expectations
+- Agent declarations, event emission and intent handlers
+- Model declarations and extern variables/types
 
 ## Tests
 
