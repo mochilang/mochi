@@ -1,0 +1,14 @@
+import 'dart:convert';
+
+Map<String, Map<String, dynamic>> _models = {};
+
+void main() {
+	_models["quick"] = {"provider": "openai"};
+	String x = _genText("hi", "quick", null);
+	print(x);
+}
+
+String _genText(String prompt, String model, Map<String,dynamic>? params) {
+    // TODO: integrate with an LLM
+    return prompt;
+}

@@ -1,0 +1,24 @@
+abstract class Tree {}
+class Leaf extends Tree {
+	Leaf();
+}
+class Node extends Tree {
+	Tree left;
+	int value;
+	Tree right;
+	Node({required this.left, required this.value, required this.right});
+}
+
+bool isLeaf(Tree t) {
+	return (() {
+	var _t = t;
+	if (_t is Leaf) { return true; }
+	return false;
+})();
+}
+
+void main() {
+	print(isLeaf(Leaf()));
+	print(isLeaf(Node(left: Leaf(), value: 1, right: Leaf())));
+}
+
