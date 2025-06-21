@@ -993,6 +993,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", fmt.Errorf("input expects no args")
 				}
 				expr = "STDIN.gets.to_s.strip"
+			case "eval":
+				if len(args) != 1 {
+					return "", fmt.Errorf("eval expects 1 arg")
+				}
+				c.use("_eval")
+				expr = fmt.Sprintf("_eval(%s)", args[0])
 			default:
 				if _, ok := c.env.GetFunc(expr); ok {
 					expr = fmt.Sprintf("%s(%s)", expr, argStr)
@@ -1151,6 +1157,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("input expects no args")
 			}
 			return "STDIN.gets.to_s.strip", nil
+		case "eval":
+			if len(args) != 1 {
+				return "", fmt.Errorf("eval expects 1 arg")
+			}
+			c.use("_eval")
+			return fmt.Sprintf("_eval(%s)", args[0]), nil
 		default:
 			if _, ok := c.env.GetFunc(name); ok {
 				return fmt.Sprintf("%s(%s)", name, argStr), nil
