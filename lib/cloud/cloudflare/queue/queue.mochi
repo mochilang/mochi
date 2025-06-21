@@ -1,0 +1,12 @@
+// Cloudflare Queue service
+
+type Queue {
+  name: string
+}
+
+fun new(name: string): Queue {
+  return Queue { name: name }
+}
+
+export type Queue
+export fun new

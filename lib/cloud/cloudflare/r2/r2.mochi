@@ -1,0 +1,12 @@
+// Cloudflare R2 object storage
+
+type Bucket {
+  name: string
+}
+
+fun new(name: string): Bucket {
+  return Bucket { name: name }
+}
+
+export type Bucket
+export fun new

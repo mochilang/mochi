@@ -1,0 +1,26 @@
+import "../../lib/cloud/cloudflare/worker/worker" as worker
+import "../../lib/cloud/cloudflare/kv/kv" as kv
+import "../../lib/cloud/cloudflare/r2/r2" as r2
+import "../../lib/cloud/cloudflare/queue/queue" as queue
+import "../../lib/cloud/cloudflare/d1/d1" as d1
+import "../../lib/cloud/cloudflare/cron/cron" as cron
+
+test "worker bindings" {
+  let w = worker.new("api", "index.js")
+  let store = kv.new("cache")
+  let bucket = r2.new("assets")
+  let q = queue.new("jobs")
+  let db = d1.new("main")
+  let trig = cron.every("0 * * * *")
+
+  var w1 = worker.bindKV(w, store)
+  w1 = worker.bindR2(w1, bucket)
+  w1 = worker.bindQueue(w1, q)
+  w1 = worker.bindD1(w1, db)
+  w1 = worker.onCron(w1, trig)
+  w1 = worker.route(w1, "/api/*")
+
+  expect len(w1.bindings) == 4
+  expect w1.routes[0] == "/api/*"
+  expect w1.crons[0].schedule == "0 * * * *"
+}

@@ -1,0 +1,12 @@
+// Cloudflare KV storage
+
+type KV {
+  name: string
+}
+
+fun new(name: string): KV {
+  return KV { name: name }
+}
+
+export type KV
+export fun new

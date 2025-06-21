@@ -1,0 +1,12 @@
+// Cloudflare D1 database
+
+type Database {
+  name: string
+}
+
+fun new(name: string): Database {
+  return Database { name: name }
+}
+
+export type Database
+export fun new
