@@ -123,7 +123,7 @@ execute correctly using the Clojure backend.
 The current implementation focuses on a minimal subset of Mochi. It supports:
 
 - Map literals
-- Dataset helpers `load` and `save` for CSV files
+- Dataset helpers `load` and `save` for CSV, JSON, JSONL and YAML files
 - Simple `import` statements for Clojure namespaces
 - Basic `group by` queries
 - Built‑in helpers such as `count`, `avg`, `now`, `input`, `json` and `keys`
