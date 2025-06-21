@@ -34,6 +34,8 @@ type Compiler struct {
 	needGenEmbed  bool
 	needGenStruct bool
 	needSetOps    bool
+	needGroup     bool
+	needGroupBy   bool
 	vars          map[string]string
 	counts        map[string]int
 	tmpCount      int
@@ -1012,7 +1014,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil {
+	if len(q.Joins) > 0 {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -1025,6 +1027,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	child.SetVar(q.Var, types.AnyType{}, true)
 	for _, f := range q.Froms {
 		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		val, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		c.needGroup = true
+		c.needGroupBy = true
+		expr := fmt.Sprintf("[%s || %s <- mochi_group_by(%s, fun(%s) -> %s end)]",
+			val, capitalize(q.Group.Name), src, capitalize(q.Var), keyExpr)
+		return expr, nil
 	}
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
@@ -1536,6 +1560,7 @@ func (c *Compiler) emitRuntime() {
 
 	if c.needCount {
 		c.writeln("mochi_count(X) when is_list(X) -> length(X);")
+		c.writeln("mochi_count(X) when is_map(X), maps:is_key('Items', X) -> length(maps:get('Items', X));")
 		c.writeln("mochi_count(X) when is_map(X) -> maps:size(X);")
 		c.writeln("mochi_count(X) when is_binary(X) -> byte_size(X);")
 		c.writeln("mochi_count(_) -> erlang:error(badarg).")
@@ -1557,6 +1582,7 @@ func (c *Compiler) emitRuntime() {
 
 	if c.needAvg {
 		c.writeln("mochi_avg([]) -> 0;")
+		c.writeln("mochi_avg(M) when is_map(M), maps:is_key('Items', M) -> mochi_avg(maps:get('Items', M));")
 		c.writeln("mochi_avg(L) when is_list(L) ->")
 		c.indent++
 		c.writeln("Sum = lists:foldl(fun(X, Acc) ->")
@@ -1663,6 +1689,34 @@ func (c *Compiler) emitRuntime() {
 	if c.needGenStruct {
 		c.writeln("")
 		c.writeln("mochi_gen_struct(_Mod, _Prompt, _Model, _Params) -> #{}.")
+	}
+
+	if c.needGroupBy {
+		c.writeln("")
+		c.writeln("mochi_group_by(Src, KeyFun) ->")
+		c.indent++
+		c.writeln("{Groups, Order} = lists:foldl(fun(It, {G,O}) ->")
+		c.indent++
+		c.writeln("Key = KeyFun(It),")
+		c.writeln("KS = lists:flatten(io_lib:format(\"~p\", [Key])),")
+		c.writeln("case maps:get(KS, G, undefined) of")
+		c.indent++
+		c.writeln("undefined ->")
+		c.indent++
+		c.writeln("Group = #{key => Key, 'Items' => [It]},")
+		c.writeln("{maps:put(KS, Group, G), O ++ [KS]};")
+		c.indent--
+		c.writeln("Group0 ->")
+		c.indent++
+		c.writeln("Items = maps:get('Items', Group0) ++ [It],")
+		c.writeln("Group1 = maps:put('Items', Items, Group0),")
+		c.writeln("{maps:put(KS, Group1, G), O}")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("end, {#{}, []}, Src),")
+		c.writeln("[ maps:get(K, Groups) || K <- Order ].")
+		c.indent--
 	}
 
 	if c.needSetOps {
