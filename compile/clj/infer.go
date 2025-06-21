@@ -28,6 +28,8 @@ func (c *Compiler) inferCallType(call *parser.CallExpr) types.Type {
 		return types.StringType{}
 	case "print", "json":
 		return types.VoidType{}
+	case "keys":
+		return types.ListType{Elem: types.AnyType{}}
 	default:
 		if c.env != nil {
 			if t, err := c.env.GetVar(call.Func); err == nil {
@@ -139,6 +141,14 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 				t = types.AnyType{}
 			}
 		} else if op.Call != nil {
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+				method := p.Target.Selector.Tail[0]
+				switch method {
+				case "keys":
+					t = types.ListType{Elem: types.AnyType{}}
+					continue
+				}
+			}
 			if ft, ok := t.(types.FuncType); ok {
 				t = ft.Return
 			} else {

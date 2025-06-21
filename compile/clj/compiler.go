@@ -770,6 +770,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						}
 					}
 				}
+				// built-in collection helpers
+				switch method {
+				case "keys":
+					if len(args) == 0 {
+						expr = fmt.Sprintf("(vec (keys %s))", sanitizeName(root))
+						t = types.ListType{Elem: types.AnyType{}}
+						continue
+					}
+				}
 			}
 			switch name {
 			case "print":
@@ -946,6 +955,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 1 {
 				c.use("_json")
 				return "(_json " + args[0] + ")", nil
+			}
+		case "keys":
+			if len(args) == 1 {
+				return "(vec (keys " + args[0] + "))", nil
 			}
 		case "str":
 			return "(str " + strings.Join(args, " ") + ")", nil

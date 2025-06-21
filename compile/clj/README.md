@@ -118,9 +118,20 @@ The test suite also compiles and runs the example LeetCode solutions in
 `examples/leetcode/1` through `examples/leetcode/10` to verify that these programs
 execute correctly using the Clojure backend.
 
-## Status
+## Supported Features
 
-The backend only implements a small subset of Mochi and is mainly a proof of concept. It now supports map literals, dataset `load` and `save` helpers for CSV files, simple `import` statements for Clojure namespaces, basic `group by` queries and built-in helpers like `count`, `avg`, `now`, `input`, `json` and anonymous `fun` expressions. Query expressions handle filtering, cross and inner joins and pagination via `skip`/`take`. List, string and map indexing/slicing work, as do simple `match` expressions on constants and struct literals with field access. Break and `continue` statements are also implemented. More advanced features such as streaming data sets, agents or LLM helpers are not currently supported.
+The current implementation focuses on a minimal subset of Mochi. It supports:
+
+- Map literals
+- Dataset helpers `load` and `save` for CSV files
+- Simple `import` statements for Clojure namespaces
+- Basic `group by` queries
+- Built‑in helpers such as `count`, `avg`, `now`, `input`, `json` and `keys`
+- Anonymous `fun` expressions
+- Query filtering, cross and inner joins and pagination via `skip`/`take`
+- Indexing and slicing for lists, strings and maps
+- Simple `match` expressions on constants and struct literals with field access
+- `break` and `continue` statements
 
 ### Unsupported Features
 
@@ -134,9 +145,10 @@ in the example programs. In particular:
 - External declarations and other FFI helpers
 - HTTP fetch and generative AI utilities
 - Generic types and functions
+- Destructuring bindings in `let` and `var` statements
 - Model declarations and `generate` expressions
 - Set collections and related operations
-- List collection methods such as `push` or `keys`
+- List collection methods such as `push`
 - Streams and event-driven agents
 - Concurrency primitives such as `spawn` and channels
 - Struct declarations are ignored and union types are not emitted
@@ -144,5 +156,6 @@ in the example programs. In particular:
 - Reflection or macro facilities
 - Package and `export` statements for modules
 - `emit` statements for streams
+- Nested function declarations within other functions
 
 Programs relying on these features fail to compile with the Clojure backend.
