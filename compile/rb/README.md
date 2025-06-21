@@ -171,11 +171,15 @@ The first test is skipped when Ruby is not available and the suite falls back to
 - The Ruby backend does not yet implement every construct in Mochi. Missing
 features include:
 
-- Dataset joins (`join`, `left`, `right`, `outer`) beyond simple cross joins.
+- Dataset joins with `join` are supported, but sided joins (`left`, `right`,
+  `outer`) remain unsupported.
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming
   features (`fact`, `rule`, `query`).
 - Packages and foreign function interface declarations (`import`, `extern`).
 - `model` and `stream` declarations are not compiled.
 - Concurrency primitives such as `spawn` and channels.
 - Reflection or macro facilities.
+- Error handling with `try`/`catch`.
+- Asynchronous functions (`async`/`await`).
+- Generic type parameters.
 

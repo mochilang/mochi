@@ -82,9 +82,9 @@ func TestRBCompiler_LeetCodeExamples(t *testing.T) {
 	if err := rbcode.EnsureRuby(); err != nil {
 		t.Skipf("ruby not installed: %v", err)
 	}
-       for i := 1; i <= 30; i++ {
-               runLeetExample(t, i)
-       }
+	for i := 1; i <= 30; i++ {
+		runLeetExample(t, i)
+	}
 }
 
 func TestRBCompiler_SubsetPrograms(t *testing.T) {
@@ -134,7 +134,6 @@ func TestRBCompiler_ValidPrograms(t *testing.T) {
 	skip := map[string]bool{
 		"generate_echo":      true,
 		"generate_embedding": true,
-		"join":               true,
 		"test_block":         true,
 		"stream_on_emit":     true,
 	}

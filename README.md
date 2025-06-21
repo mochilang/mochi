@@ -661,6 +661,20 @@ The Python code generator implements most of the language but some features rema
 - Concurrency primitives like `spawn` and channels
 - Foreign function interface such as `extern` declarations
 
+## Unsupported Features (Ruby Backend)
+
+The Ruby code generator now supports inner joins but still lacks several features:
+
+- Left/right/outer joins in dataset queries
+- Agent and stream constructs (`agent`, `on`, `emit`) and logic programming features (`fact`, `rule`, `query`)
+- Package imports and other FFI constructs (`import`, `extern`)
+- `model` and `stream` declarations
+- Concurrency primitives like `spawn` and channels
+- Reflection or macro facilities
+- Error handling with `try`/`catch`
+- Asynchronous functions (`async`/`await`)
+- Generic type parameters
+
 ## Unsupported Features (Zig Backend)
 
 The Zig backend currently supports only a minimal subset of Mochi. Missing features include:
