@@ -612,6 +612,12 @@ implemented across all backends:
 * Right and outer joins in dataset queries
 * Destructuring bindings in `let` and `var` statements
 * YAML dataset loading and saving
+* Agent and stream constructs (`agent`, `on`, `emit`)
+* Model declarations (`model` blocks)
+* Dataset queries with outer joins or complex aggregation
+* Pattern matching on union variants
+* Nested recursive functions inside other functions
+* Foreign imports and `extern` declarations
 
 ## Benchmarks
 

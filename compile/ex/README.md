@@ -218,7 +218,7 @@ The Elixir backend implements most core language features but still lacks suppor
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming features (`fact`, `rule`, `query`).
 - Model declarations (`model` blocks).
 - Set operations using `union`, `except` or `intersect` operators.
-- `load` and `save` currently only handle Erlang term binaries.
+- `load` and `save` now handle CSV and JSON data, but YAML remains unsupported.
 - Foreign imports and `extern` declarations.
 - Concurrency primitives such as `spawn` and channels.
 - Pattern matching on union variants is not yet supported.
