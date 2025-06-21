@@ -81,18 +81,22 @@ if name == "input" && len(args) == 0 {
         return "_input()", nil
 }
 if name == "count" && len(args) == 1 {
-        c.helpers["_count"] = true
-        return "_count(" + joinArgs(args) + ")", nil
+        if c.isMapExprByExpr(p.Call.Args[0]) {
+                return args[0] + ".size()", nil
+        }
+        if c.isStringExprByExpr(p.Call.Args[0]) {
+                return args[0] + ".length()", nil
+        }
+        return args[0] + ".length", nil
 }
 if name == "avg" && len(args) == 1 {
-        c.helpers["_avg"] = true
-        return "_avg(" + joinArgs(args) + ")", nil
+        return fmt.Sprintf("(int) java.util.Arrays.stream(%s).average().orElse(0)", args[0]), nil
 }
 ```
 【F:compile/java/compiler.go†L510-L548】
 
 Runtime helpers are injected only when referenced. The `emitRuntime` method
-defines `_input`, `_count`, `_avg` and `_indexString` as needed:
+currently defines `_input` and `_indexString` when required:
 
 ```go
 func (c *Compiler) emitRuntime() {
@@ -102,29 +106,6 @@ func (c *Compiler) emitRuntime() {
                 c.writeln("static String _input() {")
                 c.indent++
                 c.writeln("return _scanner.nextLine();")
-                c.indent--
-                c.writeln("}")
-        }
-        if c.helpers["_count"] {
-                c.writeln("")
-                c.writeln("static int _count(int[] arr) {")
-                c.indent++
-                c.writeln("return arr.length;")
-                c.indent--
-                c.writeln("}")
-        }
-        if c.helpers["_avg"] {
-                c.writeln("")
-                c.writeln("static int _avg(int[] arr) {")
-                c.indent++
-                c.writeln("if (arr.length == 0) return 0;")
-                c.writeln("int sum = 0;")
-                c.writeln("for (int v : arr) {")
-                c.indent++
-                c.writeln("sum += v;")
-                c.indent--
-                c.writeln("}")
-                c.writeln("return sum / arr.length;")
                 c.indent--
                 c.writeln("}")
         }
