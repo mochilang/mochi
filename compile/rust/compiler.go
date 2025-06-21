@@ -600,6 +600,26 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		case "in":
 			expr = fmt.Sprintf("%s.contains_key(&%s)", r, expr)
 			leftList = false
+		case "union_all":
+			c.use("_union_all")
+			expr = fmt.Sprintf("_union_all(&%s, &%s)", expr, r)
+			leftList = true
+			leftString = false
+		case "union":
+			c.use("_union")
+			expr = fmt.Sprintf("_union(&%s, &%s)", expr, r)
+			leftList = true
+			leftString = false
+		case "except":
+			c.use("_except")
+			expr = fmt.Sprintf("_except(&%s, &%s)", expr, r)
+			leftList = true
+			leftString = false
+		case "intersect":
+			c.use("_intersect")
+			expr = fmt.Sprintf("_intersect(&%s, &%s)", expr, r)
+			leftList = true
+			leftString = false
 		default:
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, r)
 			leftList = false
@@ -1145,7 +1165,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "avg":
 		if len(args) == 1 {
-			return fmt.Sprintf("{ let v = &%s; if v.is_empty() { 0.0 } else { let mut sum = 0.0; for &it in v { sum += it.into(); } sum / v.len() as f64 } }", args[0]), nil
+			return fmt.Sprintf("{ let v = &%s; if v.is_empty() { 0.0 } else { let mut sum = 0.0; for &it in v { sum += Into::<f64>::into(it); } sum / v.len() as f64 } }", args[0]), nil
 		}
 	case "input":
 		if len(args) == 0 {
