@@ -1,0 +1,34 @@
+package cloud
+
+/// Queue client for simple message delivery.
+type Queue {
+  base_url: string,
+  name: string,
+  headers: map<string,string>
+}
+
+/// Create a queue client.
+export fun queue(name: string, base_url: string, headers: map<string,string>): Queue {
+  return Queue { base_url: base_url, name: name, headers: headers }
+}
+
+/// Internal helper for endpoint URLs.
+fun queue_url(q: Queue, path: string): string {
+  return q.base_url + "/v1/queues/" + q.name + path
+}
+
+/// Push a message onto the queue.
+export fun queue_push(q: Queue, msg: any): any {
+  return fetch queue_url(q, "/push") with {
+    method: "POST",
+    headers: q.headers,
+    body: msg
+  }
+}
+
+/// Pop the next message from the queue.
+export fun queue_pop(q: Queue): any {
+  return fetch queue_url(q, "/pop") with {
+    headers: q.headers
+  }
+}

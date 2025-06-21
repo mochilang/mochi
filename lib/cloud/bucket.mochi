@@ -1,0 +1,53 @@
+package cloud
+
+/// Bucket client bound to a specific service endpoint.
+type Bucket {
+  base_url: string,
+  name: string,
+  headers: map<string,string>
+}
+
+/// Create a bucket client for the given name.
+export fun bucket(name: string, base_url: string, headers: map<string,string>): Bucket {
+  return Bucket { base_url: base_url, name: name, headers: headers }
+}
+
+/// Internal helper to build endpoint URLs.
+fun bucket_url(b: Bucket, path: string): string {
+  return b.base_url + "/v1/buckets/" + b.name + path
+}
+
+/// Retrieve an object by key.
+export fun bucket_get(b: Bucket, key: string): any {
+  return fetch bucket_url(b, "/object") with {
+    query: { key: key },
+    headers: b.headers
+  }
+}
+
+/// Store or overwrite an object.
+export fun bucket_put(b: Bucket, key: string, value: any): any {
+  return fetch bucket_url(b, "/object") with {
+    method: "POST",
+    query: { key: key },
+    headers: b.headers,
+    body: value
+  }
+}
+
+/// Delete an object.
+export fun bucket_delete(b: Bucket, key: string): any {
+  return fetch bucket_url(b, "/object") with {
+    method: "DELETE",
+    query: { key: key },
+    headers: b.headers
+  }
+}
+
+/// List objects with optional prefix filtering.
+export fun bucket_list(b: Bucket, prefix: string): list<string> {
+  return fetch bucket_url(b, "/list") with {
+    query: { prefix: prefix },
+    headers: b.headers
+  } as list<string>
+}

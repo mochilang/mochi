@@ -1,0 +1,21 @@
+import "lib/cloud" as cloud
+
+let base = "http://localhost:7777"
+
+// basic round-trip for bucket
+
+test "bucket" {
+  let b = cloud.bucket("test", base, {})
+  cloud.bucket_put(b, "foo", {v: 1})
+  let obj = cloud.bucket_get(b, "foo")
+  expect obj.v == 1
+}
+
+// push and pop for queue
+
+test "queue" {
+  let q = cloud.queue("jobs", base, {})
+  cloud.queue_push(q, {msg: "hi"})
+  let res = cloud.queue_pop(q)
+  expect res.msg == "hi"
+}
