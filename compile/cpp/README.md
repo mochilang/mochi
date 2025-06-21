@@ -25,7 +25,7 @@ c.writeln("#include <bits/stdc++.h>")
 c.writeln("using namespace std;")
 c.writeln("")
 ```
-【F:compile/cpp/compiler.go†L65-L72】
+【F:compile/cpp/compiler.go†L114-L116】
 
 Type translation is straightforward. Integers become `int`, floats `double`,
 booleans `bool`, strings `string`, and lists map to `std::vector` as shown in
@@ -55,7 +55,7 @@ func (c *Compiler) cppType(t *parser.TypeRef) string {
     return "auto"
 }
 ```
-【F:compile/cpp/compiler.go†L75-L95】
+【F:compile/cpp/compiler.go†L125-L149】
 
 Union type declarations are now translated using `std::variant`. Each variant
 is emitted as a separate struct and the union type becomes a `using` alias. The
@@ -77,7 +77,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
     // struct declarations
 }
 ```
-【F:compile/cpp/compiler.go†L179-L207】
+【F:compile/cpp/compiler.go†L182-L210】
 
 Loops, conditionals and expressions map directly to their C++ equivalents. A
 `for` range becomes a standard loop:
@@ -102,7 +102,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
     return nil
 }
 ```
-【F:compile/cpp/compiler.go†L181-L196】
+【F:compile/cpp/compiler.go†L330-L346】
 
 `print()` is detected specially to output using `std::cout` followed by
 `std::endl`:
@@ -127,7 +127,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
     return nil
 }
 ```
-【F:compile/cpp/compiler.go†L345-L361】
+【F:compile/cpp/compiler.go†L680-L702】
 
 ## Tools
 
