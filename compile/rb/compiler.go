@@ -428,7 +428,120 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if len(q.Joins) > 0 {
-		return "", fmt.Errorf("join clauses not supported")
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		iter := sanitizeName(q.Var)
+
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				return "", err
+			}
+			fromSrcs[i] = fs
+		}
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				return "", err
+			}
+			joinSrcs[i] = js
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				return "", err
+			}
+			joinOns[i] = on
+		}
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		var sortVal, skipVal, takeVal string
+		if q.Sort != nil {
+			v, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			sortVal = v
+		}
+		if q.Skip != nil {
+			v, err := c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			skipVal = v
+		}
+		if q.Take != nil {
+			v, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			takeVal = v
+		}
+		var b strings.Builder
+		b.WriteString("(begin\n")
+		b.WriteString("\t_res = []\n")
+		b.WriteString(fmt.Sprintf("\tfor %s in %s\n", iter, src))
+		indent := "\t\t"
+		for i, f := range q.Froms {
+			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(f.Var), fromSrcs[i]))
+			indent += "\t"
+		}
+		for i, j := range q.Joins {
+			b.WriteString(fmt.Sprintf("%sfor %s in %s\n", indent, sanitizeName(j.Var), joinSrcs[i]))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%sif %s\n", indent, joinOns[i]))
+			indent += "\t"
+		}
+		if q.Where != nil {
+			cond, err := c.compileExpr(q.Where)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(fmt.Sprintf("%sif %s\n", indent, cond))
+			indent += "\t"
+			if sortVal != "" {
+				b.WriteString(fmt.Sprintf("%s_res << [%s, %s]\n", indent, sortVal, sel))
+			} else {
+				b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+			}
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+		} else {
+			if sortVal != "" {
+				b.WriteString(fmt.Sprintf("%s_res << [%s, %s]\n", indent, sortVal, sel))
+			} else {
+				b.WriteString(fmt.Sprintf("%s_res << %s\n", indent, sel))
+			}
+		}
+		for range q.Joins {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+		}
+		for range q.Froms {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "end\n")
+		}
+		b.WriteString("\tend\n")
+		if sortVal != "" {
+			b.WriteString(fmt.Sprintf("\t_res = _res.sort_by { |e| e[0] }\n"))
+			b.WriteString("\t_res = _res.map { |e| e[1] }\n")
+		}
+		if skipVal != "" {
+			b.WriteString(fmt.Sprintf("\t_res = _res.drop(%s)\n", skipVal))
+		}
+		if takeVal != "" {
+			b.WriteString(fmt.Sprintf("\t_res = _res.take(%s)\n", takeVal))
+		}
+		b.WriteString("\t_res\n")
+		b.WriteString("end)")
+		return b.String(), nil
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
