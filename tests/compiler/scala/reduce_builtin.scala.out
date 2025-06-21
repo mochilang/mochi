@@ -1,0 +1,17 @@
+object Main {
+        def add(a: Int, b: Int): Int = {
+                return (a + b)
+        }
+
+        def main(args: Array[String]): Unit = {
+                println(_reduce(scala.collection.mutable.ArrayBuffer(1, 2, 3), add, 0))
+        }
+}
+
+def _reduce[T](src: Iterable[T], fn: (T, T) => T, init: T): T = {
+        var acc = init
+        for (it <- src) {
+                acc = fn(acc, it)
+        }
+        acc
+}

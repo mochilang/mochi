@@ -1081,6 +1081,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		}
 		c.use("_to_json")
 		return fmt.Sprintf("_to_json(%s)", args[0]), nil
+	case "reduce":
+		if len(args) != 3 {
+			return "", fmt.Errorf("reduce expects 3 args")
+		}
+		c.use("_reduce")
+		return fmt.Sprintf("_reduce(%s, %s, %s)", args[0], args[1], args[2]), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
