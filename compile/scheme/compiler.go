@@ -100,6 +100,8 @@ type Compiler struct {
 	needDataset    bool
 	needListOps    bool
 	loops          []loopCtx
+	mainStmts      []*parser.Statement
+	tests          []string
 }
 
 type loopCtx struct {
@@ -152,7 +154,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, mainStmts: nil, tests: nil}
 }
 
 func (c *Compiler) writeIndent() {
@@ -175,24 +177,35 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needMapHelpers = false
 	c.needDataset = false
 	c.needListOps = false
-	// Function declarations
+	c.mainStmts = nil
+	c.tests = nil
+	// Declarations and tests
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		switch {
+		case s.Fun != nil:
 			if err := c.compileFun(s.Fun); err != nil {
 				return nil, err
 			}
 			c.writeln("")
+		case s.Test != nil:
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		default:
+			c.mainStmts = append(c.mainStmts, s)
 		}
 	}
 
 	// Main body
-	for _, s := range prog.Statements {
-		if s.Fun != nil {
-			continue
-		}
+	for _, s := range c.mainStmts {
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
+	}
+
+	for _, name := range c.tests {
+		c.writeln("(" + name + ")")
 	}
 	code := c.buf.Bytes()
 	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps {
@@ -311,6 +324,30 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool) {
 	}
 }
 
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.tests = append(c.tests, name)
+	c.writeln(fmt.Sprintf("(define (%s)", name))
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("(when (not %s) (error \"expect failed\"))", expr))
+	return nil
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
@@ -406,6 +443,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileBreak()
 	case s.Continue != nil:
 		return c.compileContinue()
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	default:
 		// ignore unsupported statements
 	}
