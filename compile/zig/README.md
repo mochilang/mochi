@@ -279,7 +279,6 @@ LeetCode solutions:
 * generic type parameters
 * nested list types beyond one dimension
 * user-defined structs and union types
-* pattern matching with `match` expressions
 * built-in helpers like `fetch`, `load`, `save` and `generate`
 * logic programming constructs (`fact`, `rule`, `query`)
 * concurrency features such as streams or `spawn`
@@ -292,7 +291,7 @@ LeetCode solutions:
 * model declarations
 * package declarations and `export` statements
 * destructuring bindings in `let` and `var` statements
-* inline `if` expressions
+* nested function declarations inside other functions
 * methods declared inside `type` blocks
 
 These features are not yet implemented, so programs relying on them will fail to

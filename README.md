@@ -666,7 +666,6 @@ The Zig backend currently supports only a minimal subset of Mochi. Missing featu
 - Generic type parameters
 - Nested list types beyond one dimension
 - User-defined structs and union types
-- Pattern matching with `match` expressions
 - Built-in helpers like `fetch`, `load`, `save` and `generate`
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Concurrency features such as streams or `spawn`
@@ -679,7 +678,7 @@ The Zig backend currently supports only a minimal subset of Mochi. Missing featu
 - Model declarations
 - Package declarations and `export` statements
 - Destructuring bindings in `let` and `var` statements
-- Inline `if` expressions
+- Nested function declarations inside other functions
 - Methods declared inside `type` blocks
 
 ## License
