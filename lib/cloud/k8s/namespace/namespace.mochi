@@ -1,0 +1,9 @@
+package namespace
+
+/// Kubernetes Namespace resource
+fun new(name: string): string {
+  return "apiVersion: v1\n" +
+         "kind: Namespace\n" +
+         "metadata:\n" +
+         "  name: " + name + "\n"
+}

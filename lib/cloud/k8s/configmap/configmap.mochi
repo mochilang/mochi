@@ -1,0 +1,22 @@
+package configmap
+
+fun map_to_yaml(data: map<string,string>, indent: string): string {
+  var result = ""
+  var first = true
+  for k in keys(data) {
+    if !first { result = result + "\n" }
+    result = result + indent + k + ": " + data[k]
+    first = false
+  }
+  return result
+}
+
+/// Kubernetes ConfigMap resource
+fun new(name: string, data: map<string,string>): string {
+  return "apiVersion: v1\n" +
+         "kind: ConfigMap\n" +
+         "metadata:\n" +
+         "  name: " + name + "\n" +
+         "data:\n" +
+         map_to_yaml(data, "  ") + "\n"
+}
