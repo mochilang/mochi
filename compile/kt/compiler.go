@@ -1412,8 +1412,10 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 
 func ktType(t types.Type) string {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type:
+	case types.IntType:
 		return "Int"
+	case types.Int64Type:
+		return "Long"
 	case types.FloatType:
 		return "Double"
 	case types.BoolType:
