@@ -32,10 +32,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	origBuf := c.buf
 	c.buf = body
 
-	// function declarations and tests
+	// function declarations, facts, rules and tests
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		} else if s.Fact != nil {
+			if err := c.compileFact(s.Fact); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		} else if s.Rule != nil {
+			if err := c.compileRule(s.Rule); err != nil {
 				return nil, err
 			}
 			c.writeln("")
@@ -52,7 +62,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = bytes.Buffer{}
 	c.indent = tmpIndent + 1
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil || s.Test != nil {
+		if s.Fun != nil || s.Type != nil || s.Test != nil || s.Fact != nil || s.Rule != nil {
 			continue
 		}
 		if err := c.compileStmt(s, "_"); err != nil {
@@ -295,6 +305,10 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 			c.writeln(line)
 		}
 		c.writeln(fmt.Sprintf("throw(return(%s))", val.val))
+	case s.Fact != nil:
+		return c.compileFact(s.Fact)
+	case s.Rule != nil:
+		return c.compileRule(s.Rule)
 	case s.Expr != nil:
 		if call := s.Expr.Expr.Binary.Left.Value.Target.Call; call != nil && call.Func == "print" {
 			if len(call.Args) == 0 {
@@ -377,7 +391,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 		c.indent--
 		c.writeln(")")
 		c.writeln(", break, true),")
-		c.writeln("true")
+		c.writeln("true,")
 		c.indent--
 		return nil
 	}
@@ -419,7 +433,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 	c.indent--
 	c.writeln(")")
 	c.writeln(", break, true),")
-	c.writeln("true")
+	c.writeln("true,")
 	c.indent--
 	return nil
 }
@@ -937,6 +951,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 		return c.compileExpr(p.Group)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
+	case p.LogicQuery != nil:
+		return c.compileLogicQuery(p.LogicQuery)
 	}
 	return exprRes{}, fmt.Errorf("unsupported expression")
 }
@@ -1013,4 +1029,84 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 		code = append(code, callLine+",")
 		return exprRes{code: code, val: tmp}, nil
 	}
+}
+
+func (c *Compiler) compileLogicQuery(q *parser.LogicQueryExpr) (exprRes, error) {
+	pred, fields, err := c.logicPredicate(q.Pred)
+	if err != nil {
+		return exprRes{}, err
+	}
+	tmp := c.newVar()
+	dict := "_{" + strings.Join(fields, ", ") + "}"
+	code := []string{fmt.Sprintf("findall(%s, %s, %s),", dict, pred, tmp)}
+	return exprRes{code: code, val: tmp}, nil
+}
+
+func (c *Compiler) logicPredicate(p *parser.LogicPredicate) (string, []string, error) {
+	args := make([]string, len(p.Args))
+	fields := []string{}
+	for i, a := range p.Args {
+		arg, field, err := c.logicTerm(a)
+		if err != nil {
+			return "", nil, err
+		}
+		args[i] = arg
+		if field != "" {
+			fields = append(fields, field)
+		}
+	}
+	return fmt.Sprintf("%s(%s)", sanitizeAtom(p.Name), strings.Join(args, ", ")), fields, nil
+}
+
+func (c *Compiler) logicTerm(t *parser.LogicTerm) (string, string, error) {
+	switch {
+	case t.Var != nil:
+		v := sanitizeVar(*t.Var)
+		return v, fmt.Sprintf("%s:%s", *t.Var, v), nil
+	case t.Str != nil:
+		return fmt.Sprintf("%q", *t.Str), "", nil
+	case t.Int != nil:
+		return fmt.Sprintf("%d", *t.Int), "", nil
+	default:
+		return "", "", fmt.Errorf("invalid logic term")
+	}
+}
+
+func (c *Compiler) compileFact(f *parser.FactStmt) error {
+	pred, _, err := c.logicPredicate(f.Pred)
+	if err != nil {
+		return err
+	}
+	c.writeln(pred + ".")
+	return nil
+}
+
+func (c *Compiler) compileRule(r *parser.RuleStmt) error {
+	head, _, err := c.logicPredicate(r.Head)
+	if err != nil {
+		return err
+	}
+	c.writeln(head + " :-")
+	c.indent++
+	for i, cnd := range r.Body {
+		var part string
+		if cnd.Pred != nil {
+			p, _, err := c.logicPredicate(cnd.Pred)
+			if err != nil {
+				return err
+			}
+			part = p
+		} else if cnd.Neq != nil {
+			part = fmt.Sprintf("%s \\= %s", sanitizeVar(cnd.Neq.A), sanitizeVar(cnd.Neq.B))
+		} else {
+			return fmt.Errorf("invalid rule condition")
+		}
+		if i == len(r.Body)-1 {
+			c.writeln(part + ".")
+		} else {
+			c.writeln(part + ",")
+		}
+	}
+	c.indent--
+	return nil
 }
