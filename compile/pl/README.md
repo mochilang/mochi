@@ -6,7 +6,9 @@ top-level statements.
 
 ## Files
 
-- `compiler.go` – walks the AST and emits Prolog code
+- `compiler.go` – entry point and helper tracking
+- `statements.go` – compilation of functions and statements
+- `expressions.go` – expression and predicate compilation helpers
 - `compiler_test.go` – golden tests that compile and run examples with `swipl`
 - `helpers.go` – helper functions for indentation and name sanitisation
 - `tools.go` – `EnsureSWIPL` helper that locates or installs the interpreter
