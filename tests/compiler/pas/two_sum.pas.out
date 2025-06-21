@@ -6,11 +6,10 @@ type
 	generic TArray<T> = array of T;
 
 function twoSum(nums: specialize TArray<integer>; target: integer): specialize TArray<integer>;
-var
-	i: integer;
-	j: integer;
-	n: integer;
 begin
+	var i: integer;
+	var j: integer;
+	var n: integer;
 	n := Length(nums);
 	for i := 0 to n - 1 do
 	begin

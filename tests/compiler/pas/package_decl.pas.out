@@ -1,0 +1,10 @@
+program demo;
+{$mode objfpc}
+uses SysUtils, fgl;
+
+type
+	generic TArray<T> = array of T;
+
+begin
+	writeln(123);
+end.
