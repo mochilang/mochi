@@ -229,6 +229,38 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTypeMethod(fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params))
+	origVars := c.varTypes
+	c.varTypes = make(map[string]string)
+	for k, v := range origVars {
+		c.varTypes[k] = v
+	}
+	for i, p := range fn.Params {
+		pType := csType(p.Type)
+		name := sanitizeName(p.Name)
+		c.varTypes[name] = pType
+		params[i] = fmt.Sprintf("%s %s", pType, name)
+	}
+	ret := csType(fn.Return)
+	if ret == "" {
+		ret = "void"
+	}
+	c.writeln(fmt.Sprintf("public %s %s(%s) {", ret, sanitizeName(fn.Name), strings.Join(params, ", ")))
+	c.indent++
+	c.inFun++
+	for _, stmt := range fn.Body {
+		if err := c.compileStmt(stmt); err != nil {
+			return err
+		}
+	}
+	c.inFun--
+	c.indent--
+	c.writeln("}")
+	c.varTypes = origVars
+	return nil
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("static void %s() {", name))
@@ -277,6 +309,13 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		if m.Field != nil {
 			typ := csType(m.Field.Type)
 			c.writeln(fmt.Sprintf("public %s %s;", typ, sanitizeName(m.Field.Name)))
+		}
+	}
+	for _, m := range t.Members {
+		if m.Method != nil {
+			if err := c.compileTypeMethod(m.Method); err != nil {
+				return err
+			}
 		}
 	}
 	c.indent--
