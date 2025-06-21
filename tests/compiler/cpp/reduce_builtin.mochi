@@ -1,0 +1,3 @@
+let nums = [1, 2, 3, 4]
+let sum = reduce(nums, fun(acc: int, x: int): int => acc + x, 0)
+print(sum)

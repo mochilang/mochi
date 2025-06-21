@@ -381,6 +381,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: FloatType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("reduce", FuncType{
+		Params: []Type{AnyType{}, AnyType{}, AnyType{}},
+		Return: AnyType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("eval", FuncType{
 		Params: []Type{StringType{}},
 		Return: AnyType{},
@@ -1892,6 +1897,7 @@ var builtinArity = map[string]int{
 	"count":  1,
 	"avg":    1,
 	"append": 2,
+	"reduce": 3,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
@@ -1959,6 +1965,11 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			if _, ok := args[0].(AnyType); !ok {
 				return fmt.Errorf("append() expects list, got %v", args[0])
 			}
+		}
+		return nil
+	case "reduce":
+		if len(args) != 3 {
+			return errArgCount(pos, name, 3, len(args))
 		}
 		return nil
 	}
