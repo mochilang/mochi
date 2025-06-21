@@ -523,10 +523,31 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	if err != nil {
 		return err
 	}
+
+	var t types.Type = types.AnyType{}
+	if st.Type != nil {
+		t = c.resolveTypeRef(st.Type)
+	} else if st.Value != nil {
+		t = c.inferExprType(st.Value)
+	}
+
+	typ := scalaType(t)
+	name := sanitizeName(st.Name)
 	if expr == "" {
-		c.writeln(fmt.Sprintf("val %s", sanitizeName(st.Name)))
+		if typ != "Any" {
+			c.writeln(fmt.Sprintf("val %s: %s", name, typ))
+		} else {
+			c.writeln(fmt.Sprintf("val %s", name))
+		}
 	} else {
-		c.writeln(fmt.Sprintf("val %s = %s", sanitizeName(st.Name), expr))
+		if typ != "Any" {
+			c.writeln(fmt.Sprintf("val %s: %s = %s", name, typ, expr))
+		} else {
+			c.writeln(fmt.Sprintf("val %s = %s", name, expr))
+		}
+	}
+	if c.env != nil {
+		c.env.SetVar(st.Name, t, false)
 	}
 	return nil
 }
@@ -541,23 +562,40 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		value = " = " + v
 	}
 
-	typ := ""
+	var t types.Type = types.AnyType{}
 	if st.Type != nil {
-		typ = ": " + scalaType(c.resolveTypeRef(st.Type))
+		t = c.resolveTypeRef(st.Type)
+	} else if st.Value != nil {
+		t = c.inferExprType(st.Value)
 	}
 
+	typ := scalaType(t)
+
 	if st.Value != nil && emptyListExpr(st.Value) {
-		if typ == "" {
+		if typ == "Any" {
 			if lt, ok := c.retType.(types.ListType); ok {
-				typ = ": " + scalaType(lt)
+				typ = scalaType(lt)
+				t = lt
 			} else {
-				typ = ": scala.collection.mutable.ArrayBuffer[Any]"
+				typ = "scala.collection.mutable.ArrayBuffer[Any]"
 			}
 		}
 		value = " = scala.collection.mutable.ArrayBuffer()"
 	}
 
-	c.writeln(fmt.Sprintf("var %s%s%s", sanitizeName(st.Name), typ, value))
+	name := sanitizeName(st.Name)
+	if typ != "Any" && !strings.HasPrefix(typ, "scala.collection.mutable.ArrayBuffer") && !strings.HasPrefix(typ, "scala.collection.mutable.Map") && !strings.HasPrefix(typ, "(") {
+		c.writeln(fmt.Sprintf("var %s: %s%s", name, typ, value))
+	} else {
+		if typ != "Any" && value == "" {
+			c.writeln(fmt.Sprintf("var %s: %s", name, typ))
+		} else {
+			c.writeln(fmt.Sprintf("var %s%s", name, value))
+		}
+	}
+	if c.env != nil {
+		c.env.SetVar(st.Name, t, true)
+	}
 	return nil
 }
 
@@ -669,6 +707,8 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	needBreak := containsBreak(st.Body)
 	needCont := containsContinue(st.Body)
 	lbl := loopLabels{}
+	useVar := st.Name != "_"
+	var elemType types.Type = types.AnyType{}
 	if needBreak || needCont {
 		lbl.brk = c.newTemp("brk")
 		c.writeln(fmt.Sprintf("val %s = new scala.util.control.Breaks", lbl.brk))
@@ -677,6 +717,10 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	}
 
 	c.loopStack = append(c.loopStack, lbl)
+	oldEnv := c.env
+	if c.env != nil {
+		c.env = types.NewEnv(c.env)
+	}
 	if st.RangeEnd != nil {
 		start, err := c.compileExpr(st.Source)
 		if err != nil {
@@ -688,11 +732,24 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 			c.loopStack = c.loopStack[:len(c.loopStack)-1]
 			return err
 		}
+		if _, ok := c.inferExprType(st.Source).(types.Int64Type); ok {
+			elemType = types.Int64Type{}
+		} else {
+			elemType = types.IntType{}
+		}
+		if useVar && c.env != nil {
+			c.env.SetVar(st.Name, elemType, true)
+		}
 		idx := c.newTemp("i")
 		c.writeln(fmt.Sprintf("var %s = %s", idx, start))
 		c.writeln(fmt.Sprintf("while (%s < %s) {", idx, end))
 		c.indent++
-		c.writeln(fmt.Sprintf("val %s = %s", name, idx))
+		typ := scalaType(elemType)
+		if useVar && typ != "Any" {
+			c.writeln(fmt.Sprintf("val %s: %s = %s", name, typ, idx))
+		} else {
+			c.writeln(fmt.Sprintf("val %s = %s", name, idx))
+		}
 		c.writeln(fmt.Sprintf("%s = %s + 1", idx, idx))
 	} else {
 		src, err := c.compileExpr(st.Source)
@@ -700,11 +757,28 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 			c.loopStack = c.loopStack[:len(c.loopStack)-1]
 			return err
 		}
+		srcType := c.inferExprType(st.Source)
+		switch tt := srcType.(type) {
+		case types.ListType:
+			elemType = tt.Elem
+		case types.MapType:
+			elemType = tt.Key
+		case types.StringType:
+			elemType = types.StringType{}
+		}
+		if useVar && c.env != nil {
+			c.env.SetVar(st.Name, elemType, true)
+		}
 		it := c.newTemp("it")
 		c.writeln(fmt.Sprintf("val %s = %s.iterator", it, src))
 		c.writeln(fmt.Sprintf("while (%s.hasNext) {", it))
 		c.indent++
-		c.writeln(fmt.Sprintf("val %s = %s.next()", name, it))
+		typ := scalaType(elemType)
+		if useVar && typ != "Any" {
+			c.writeln(fmt.Sprintf("val %s: %s = %s.next()", name, typ, it))
+		} else {
+			c.writeln(fmt.Sprintf("val %s = %s.next()", name, it))
+		}
 	}
 
 	if needCont {
@@ -718,6 +792,9 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	for _, s := range st.Body {
 		if err := c.compileStmt(s); err != nil {
 			c.loopStack = c.loopStack[:len(c.loopStack)-1]
+			if c.env != nil {
+				c.env = oldEnv
+			}
 			return err
 		}
 	}
@@ -732,6 +809,9 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	if needBreak || needCont {
 		c.indent--
 		c.writeln("}")
+	}
+	if c.env != nil {
+		c.env = oldEnv
 	}
 	return nil
 }
@@ -1160,6 +1240,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
+	selType := c.inferExprType(q.Select)
 	var cond, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
@@ -1193,10 +1274,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	res := c.newTemp("res")
 	var b strings.Builder
 	b.WriteString("(() => {\n")
+	bufType := scalaType(selType)
 	if sortExpr != "" {
-		b.WriteString("\tval " + res + " = scala.collection.mutable.ArrayBuffer[(Any, Any)]()\n")
+		if bufType == "Any" {
+			bufType = "(Any, Any)"
+		} else {
+			bufType = fmt.Sprintf("(%s, Any)", bufType)
+		}
+		b.WriteString(fmt.Sprintf("\tval %s = scala.collection.mutable.ArrayBuffer[%s]()\n", res, bufType))
 	} else {
-		b.WriteString("\tval " + res + " = scala.collection.mutable.ArrayBuffer[Any]()\n")
+		if bufType == "Any" {
+			b.WriteString(fmt.Sprintf("\tval %s = scala.collection.mutable.ArrayBuffer[Any]()\n", res))
+		} else {
+			b.WriteString(fmt.Sprintf("\tval %s = scala.collection.mutable.ArrayBuffer[%s]()\n", res, bufType))
+		}
 	}
 	indent := "\t"
 	b.WriteString(fmt.Sprintf(indent+"for (%s <- %s) {\n", sanitizeName(q.Var), src))
