@@ -1,0 +1,20 @@
+import Foundation
+
+func _fetch(_ urlStr: String, _ opts: [String: Any]?) -> Any {
+	guard let url = URL(string: urlStr) else { return [:] }
+	if let data = try? Data(contentsOf: url) {
+		if let obj = try? JSONSerialization.jsonObject(with: data) { return obj }
+		return String(data: data, encoding: .utf8) ?? ""
+	}
+	return [:]
+}
+
+struct Msg {
+	var message: String
+}
+
+func main() {
+	let data: Msg = _fetch("file://tests/compiler/swift/fetch_builtin.json", nil)
+	print(data.message)
+}
+main()

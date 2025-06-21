@@ -239,7 +239,7 @@ The Swift backend still lacks support for a number of language capabilities:
   ``from ... where ... select`` loops (with optional cross joins) are handled.
 - Type inference for empty collections
 - Streams, agents and intent handlers
-- The ``generate`` and ``fetch`` expressions for LLM and HTTP integration
+ - The ``generate`` expression for LLM integration
 - Package declarations and the foreign function interface
 - Set collections and related operations
 - Model declarations using ``model`` blocks
@@ -249,5 +249,6 @@ The Swift backend still lacks support for a number of language capabilities:
 - The ``eval`` builtin function
 - Error handling with ``try``/``catch``
 - Asynchronous ``async``/``await`` functions
-- Generic type parameters for functions or types
-- Macro or reflection facilities
+ - Generic type parameters for functions or types
+ - Macro or reflection facilities
+ - YAML dataset loading or saving
