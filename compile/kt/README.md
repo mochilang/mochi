@@ -12,6 +12,7 @@ The Kotlin backend converts Mochi programs into Kotlin source files so they can 
 - LLM and runtime helpers such as `_genText`, `_genEmbed`, `_genStruct`, `_fetch` and `_eval`
 - List set operators `union`, `union_all`, `except` and `intersect`
 - Basic stream handling with `stream`, `on` and `emit`
+- YAML dataset loading and saving
 
 ## Unsupported Features
 
@@ -27,10 +28,10 @@ The Kotlin backend still lacks several features available in other compilers:
 - Generic types and functions
 - Set collections remain unsupported
 - Reflection or macro facilities
-- YAML dataset loading and saving
 - Full LLM integration for `_genText`, `_genEmbed` and `_genStruct`
 - Asynchronous functions (`async`/`await`)
 - Waiting for asynchronous stream handlers with `_waitAll`
+- Destructuring bindings in `let` and `var` statements
 
 ## Building
 
