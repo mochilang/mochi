@@ -1206,7 +1206,41 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("(lambda (%s) %s)", strings.Join(params, " "), body), nil
 	}
-	return "", fmt.Errorf("function block bodies not supported")
+	if len(f.BlockBody) > 0 {
+		child := types.NewEnv(c.env)
+		for _, p := range f.Params {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+		sub := &Compiler{env: child}
+		sub.indent = 1
+		sub.writeln("(let/ec return")
+		sub.indent++
+		for _, st := range f.BlockBody {
+			if err := sub.compileStmt(st); err != nil {
+				return "", err
+			}
+		}
+		sub.writeln("(return (void))")
+		sub.indent--
+		sub.writeln(")")
+
+		if sub.needsDataset {
+			c.needsDataset = true
+		}
+		if sub.needsSetOps {
+			c.needsSetOps = true
+		}
+		if sub.needsMatch {
+			c.needsMatch = true
+		}
+
+		var b bytes.Buffer
+		b.WriteString("(lambda (" + strings.Join(params, " ") + ")\n")
+		b.Write(sub.buf.Bytes())
+		b.WriteString(")")
+		return b.String(), nil
+	}
+	return "", fmt.Errorf("empty function body")
 }
 
 func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {

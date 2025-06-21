@@ -196,4 +196,4 @@ Unsupported features currently include:
 * Multi-dimensional slice assignment or indexing beyond two levels
 * Methods defined inside `type` blocks
 * Extern declarations (`extern var`, `extern fun`, `extern type`, `extern object`)
-* Anonymous function expressions with block bodies
+* Event handlers (`on`) and `emit` statements
