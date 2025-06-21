@@ -1117,15 +1117,30 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 }
 
 func (c *Compiler) compileIfExpr(e *parser.IfExpr) string {
-	cond := c.compileExpr(e.Cond)
-	thenVal := c.compileExpr(e.Then)
-	elseVal := "0"
-	if e.ElseIf != nil {
-		elseVal = c.compileIfExpr(e.ElseIf)
-	} else if e.Else != nil {
-		elseVal = c.compileExpr(e.Else)
-	}
-	return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal)
+        cond := c.compileExpr(e.Cond)
+        thenVal := c.compileExpr(e.Then)
+        elseVal := "0"
+        if e.ElseIf != nil {
+                elseVal = c.compileIfExpr(e.ElseIf)
+        } else if e.Else != nil {
+                elseVal = c.compileExpr(e.Else)
+        }
+        return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal)
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
+        target := c.compileExpr(m.Target)
+        expr := "0"
+        for i := len(m.Cases) - 1; i >= 0; i-- {
+                pat := c.compileExpr(m.Cases[i].Pattern)
+                res := c.compileExpr(m.Cases[i].Result)
+                if pat == "_" {
+                        expr = res
+                } else {
+                        expr = fmt.Sprintf("(%s == %s ? %s : %s)", target, pat, res, expr)
+                }
+        }
+        return expr
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
@@ -1613,10 +1628,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			args[i] = c.compileExpr(a)
 		}
 		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", "))
-	case p.If != nil:
-		return c.compileIfExpr(p.If)
-	case p.FunExpr != nil:
-		return c.compileFunExpr(p.FunExpr)
+        case p.If != nil:
+                return c.compileIfExpr(p.If)
+       case p.Match != nil:
+               return c.compileMatchExpr(p.Match)
+        case p.FunExpr != nil:
+                return c.compileFunExpr(p.FunExpr)
 	case p.Group != nil:
 		return fmt.Sprintf("(%s)", c.compileExpr(p.Group))
 	default:

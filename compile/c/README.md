@@ -78,7 +78,7 @@ features include:
 - agent-related constructs (`agent`, `stream`, `intent`)
 - generative `generate` blocks and model definitions
 - dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
-- `match` expressions for pattern matching
+ - full pattern matching with `match` (simple constant matches are supported)
 - foreign function interface via `import` and package declarations
 - concurrency primitives like `spawn` and channels
 - union type declarations and generics
