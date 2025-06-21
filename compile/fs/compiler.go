@@ -1358,6 +1358,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	if err := sub.compileFunStmt(fs); err != nil {
 		return "", err
 	}
+	for h := range sub.helpers {
+		c.helpers[h] = true
+	}
 	c.tmp = sub.tmp
 	c.loopTmp = sub.loopTmp
 	c.funTmp = sub.funTmp
