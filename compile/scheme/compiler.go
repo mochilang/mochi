@@ -60,6 +60,33 @@ const datasetHelpers = `(define (_fetch url opts)
     (when (not (eq? out (current-output-port)))
       (close-output-port out)))`
 
+const listOpHelpers = `(define (_union_all a b)
+  (append a b))
+
+(define (_union a b)
+  (let ((res a))
+    (for-each (lambda (it)
+                (when (not (member it res))
+                  (set! res (append res (list it)))))
+              b)
+    res))
+
+(define (_except a b)
+  (let ((res '()))
+    (for-each (lambda (it)
+                (when (not (member it b))
+                  (set! res (append res (list it)))))
+              a)
+    res))
+
+(define (_intersect a b)
+  (let ((res '()))
+    (for-each (lambda (it)
+                (when (and (member it b) (not (member it res)))
+                  (set! res (append res (list it)))))
+              a)
+    res))`
+
 // Compiler translates a Mochi AST into Scheme source code (minimal subset).
 type Compiler struct {
 	buf            bytes.Buffer
@@ -71,6 +98,7 @@ type Compiler struct {
 	needStringSet  bool
 	needMapHelpers bool
 	needDataset    bool
+	needListOps    bool
 	loops          []loopCtx
 }
 
@@ -124,7 +152,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false}
 }
 
 func (c *Compiler) writeIndent() {
@@ -146,6 +174,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needStringSet = false
 	c.needMapHelpers = false
 	c.needDataset = false
+	c.needListOps = false
 	// Function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -166,7 +195,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset {
+	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -197,6 +226,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if c.needDataset {
 			pre.WriteString(datasetHelpers)
+			pre.WriteByte('\n')
+		}
+		if c.needListOps {
+			pre.WriteString(listOpHelpers)
 			pre.WriteByte('\n')
 		}
 		if pre.Len() > 0 {
@@ -726,6 +759,28 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			expr = fmt.Sprintf("(and %s %s)", expr, right)
 		case "||":
 			expr = fmt.Sprintf("(or %s %s)", expr, right)
+		case "in":
+			root := rootNamePostfix(rightAst)
+			if c.varType(root) == "string" || c.isStringPostfix(rightAst) {
+				expr = fmt.Sprintf("(if (string-contains %s %s) #t #f)", right, expr)
+			} else if c.varType(root) == "map" || c.isMapPostfix(rightAst) {
+				expr = fmt.Sprintf("(if (assoc %s %s) #t #f)", expr, right)
+			} else {
+				expr = fmt.Sprintf("(if (member %s %s) #t #f)", expr, right)
+			}
+		case "union":
+			c.needListOps = true
+			if op.All {
+				expr = fmt.Sprintf("(_union_all %s %s)", expr, right)
+			} else {
+				expr = fmt.Sprintf("(_union %s %s)", expr, right)
+			}
+		case "except":
+			c.needListOps = true
+			expr = fmt.Sprintf("(_except %s %s)", expr, right)
+		case "intersect":
+			c.needListOps = true
+			expr = fmt.Sprintf("(_intersect %s %s)", expr, right)
 		case "<", "<=", ">", ">=":
 			expr = fmt.Sprintf("(%s %s %s)", op.Op, expr, right)
 		default:

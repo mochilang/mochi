@@ -298,6 +298,8 @@ The Scheme backend intentionally supports only a small subset of Mochi.  It does
 * export statements via `export`
 * concurrency primitives like `spawn`
 * advanced string slicing
+* list slicing and collection methods like `push` or `keys`
+* built-in helpers such as `count`, `avg`, `input` or `str`
 * logic programming predicates
 * dataset set operations like `union` or `intersect`
 
