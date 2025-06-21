@@ -86,6 +86,21 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("if (v is float) return (T)v;")
 				c.indent--
 				c.writeln("}")
+				c.writeln("if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Dictionary<,>) && v is System.Collections.IDictionary d) {")
+				c.indent++
+				c.writeln("var args = typeof(T).GetGenericArguments();")
+				c.writeln("var res = (System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(args));")
+				c.writeln("var mCast = typeof(Program).GetMethod(\"_cast\");")
+				c.writeln("foreach (System.Collections.DictionaryEntry kv in d) {")
+				c.indent++
+				c.writeln("var k = mCast.MakeGenericMethod(args[0]).Invoke(null, new object[]{kv.Key});")
+				c.writeln("var val = mCast.MakeGenericMethod(args[1]).Invoke(null, new object[]{kv.Value});")
+				c.writeln("res.Add(k, val);")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return (T)res;")
+				c.indent--
+				c.writeln("}")
 				c.writeln("if (v is System.Collections.Generic.IDictionary<object, object> dm) {")
 				c.indent++
 				c.writeln("var m = new Dictionary<string, object>();")

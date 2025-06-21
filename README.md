@@ -646,12 +646,10 @@ The C# code generator also omits several language capabilities:
 - Agent declarations and intent blocks
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign function interface and extern objects
-- Generic dictionary casts for complex map types
 - YAML dataset loading/saving
 - Full LLM integration for `_genText` and `_genStruct`
 - Concurrency primitives like `spawn` and channels
 - `try`/`catch` error handling
-- Methods declared inside `type` blocks
 - Agent initialization with field values
 - The `eval` builtin function
 
