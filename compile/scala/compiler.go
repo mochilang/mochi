@@ -32,6 +32,10 @@ type Compiler struct {
 	needGenText   bool
 	needGenEmbed  bool
 	needGenStruct bool
+	needUnionAll  bool
+	needUnion     bool
+	needExcept    bool
+	needIntersect bool
 
 	paramAlias map[string]string
 }
@@ -313,6 +317,31 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent++
 		c.writeln("// TODO: integrate with an LLM and parse JSON")
 		c.writeln("ct.runtimeClass.getDeclaredConstructor().newInstance().asInstanceOf[T]")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needUnionAll {
+		c.writeln("def _union_all[T](a: Seq[T], b: Seq[T]): Seq[T] = a ++ b")
+	}
+	if c.needUnion {
+		c.writeln("def _union[T](a: Seq[T], b: Seq[T]): Seq[T] = {")
+		c.indent++
+		c.writeln("val res = scala.collection.mutable.ArrayBuffer[T]()")
+		c.writeln("res ++= a")
+		c.writeln("for (it <- b) { if (!res.contains(it)) res.append(it) }")
+		c.writeln("res.toSeq")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.needExcept {
+		c.writeln("def _except[T](a: Seq[T], b: Seq[T]): Seq[T] = a.filterNot(b.contains)")
+	}
+	if c.needIntersect {
+		c.writeln("def _intersect[T](a: Seq[T], b: Seq[T]): Seq[T] = {")
+		c.indent++
+		c.writeln("val res = scala.collection.mutable.ArrayBuffer[T]()")
+		c.writeln("for (it <- a) { if (b.contains(it) && !res.contains(it)) res.append(it) }")
+		c.writeln("res.toSeq")
 		c.indent--
 		c.writeln("}")
 	}
@@ -800,11 +829,28 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			op := ops[i]
 
 			var expr string
-			if op == "in" {
+			switch op {
+			case "in":
 				expr = fmt.Sprintf("%s.contains(%s)", r, l)
-			} else if op == "+" && nodes[i+1].Target.List != nil {
-				expr = fmt.Sprintf("(%s ++ %s)", l, r)
-			} else {
+			case "+":
+				if nodes[i+1].Target.List != nil {
+					expr = fmt.Sprintf("(%s ++ %s)", l, r)
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", l, r)
+				}
+			case "union_all":
+				c.needUnionAll = true
+				expr = fmt.Sprintf("_union_all(%s, %s)", l, r)
+			case "union":
+				c.needUnion = true
+				expr = fmt.Sprintf("_union(%s, %s)", l, r)
+			case "except":
+				c.needExcept = true
+				expr = fmt.Sprintf("_except(%s, %s)", l, r)
+			case "intersect":
+				c.needIntersect = true
+				expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
+			default:
 				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 			}
 

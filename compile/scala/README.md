@@ -280,4 +280,8 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - error handling with `try`/`catch`
 - logic programming constructs (`fact`, `rule`)
 - generative AI integration (`generate` blocks)
+- event emission and intent handlers (`emit`, `on`)
+- model declarations
+- extern variable, type and object declarations
+- the `eval` builtin function
 
