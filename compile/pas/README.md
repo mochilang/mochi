@@ -145,6 +145,7 @@ constructs:
 - Struct types and simple record literals
 - Function definitions and calls
 - List and map literals with indexing
+- Dataset helpers `fetch`, `load` and `save`
 - Package declarations and importing of local packages
 
 ## Unsupported features
@@ -157,8 +158,9 @@ supported include:
 - Agents, streams and the `emit` keyword
 - Generative model blocks (`generate` and `model`)
 - The foreign function interface (`import`/`extern`)
-- Dataset helpers (`fetch`, `load`, `save`)
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Anonymous function literals (`fun` expressions)
 - Methods on types
 - Function types and first-class functions
+- List slicing with `[start:end]` ranges
+- Set operations (`union`, `except`, `intersect`)
