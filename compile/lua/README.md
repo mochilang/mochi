@@ -7,6 +7,7 @@ The Lua backend translates Mochi programs into portable Lua source. It focuses o
 - `compiler.go` – main code generator
 - `compiler_test.go` – golden tests that execute generated Lua
 - `helpers.go` – utilities for writing indented code and analysing the AST
+- `infer.go` – basic type inference used during compilation
 - `tools.go` – ensures a Lua interpreter is available for tests
 
 ## Overview
@@ -28,6 +29,9 @@ type Compiler struct {
         helpers map[string]bool
 }
 ```
+
+Type inference in `infer.go` identifies common collection and primitive types so the
+generated Lua uses idiomatic loops and avoids unnecessary helper calls.
 【F:compile/lua/compiler.go†L12-L29】
 
 `Compile` walks the program twice: first emitting all function declarations then the main body. After compiling statements it injects any helper functions required by built‑ins and finally returns the complete source:
