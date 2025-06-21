@@ -682,6 +682,25 @@ The Zig backend currently supports only a minimal subset of Mochi. Missing featu
 - Inline `if` expressions
 - Methods declared inside `type` blocks
 
+## Unsupported Features (Racket Backend)
+
+The Racket code generator implements a small subset of Mochi. Missing features include:
+
+- Generative `generate` blocks and model definitions
+- Dataset query `group` clauses and join side options
+- Error handling with `try`/`catch`
+- Agents, streams and intents
+- Logic programming constructs (`fact`, `rule`, `query`)
+- Concurrency primitives such as `spawn` and channels
+- Foreign function interface via `import`
+- Package management and `package` declarations
+- Union type declarations
+- LLM helpers like `_genText`, `_genEmbed` and `_genStruct`
+- Multi-dimensional slice assignment or indexing beyond two levels
+- Methods defined inside `type` blocks
+- Extern declarations (`extern var`, `extern fun`, `extern type`, `extern object`)
+- Destructuring bindings in `let` and `var` statements
+
 ## License
 
 Mochi is open source under the [MIT License](./LICENSE).
