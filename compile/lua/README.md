@@ -203,38 +203,18 @@ if call, ok := callPattern(cs.Pattern); ok {
 
 ## Runtime Helpers
 
-Helpers are emitted only when referenced. `emitHelpers` writes Lua functions such as `__iter`, `__div`, `__contains`, `__input`, `__count`, `__avg`, `__index`, `__indexString` and `__slice`:
+Helpers are emitted only when referenced. `runtime.go` defines helper functions
+in a map that `emitHelpers` iterates over:
 
 ```go
-if c.helpers["iter"] {
-        c.writeln("function __iter(obj)")
-        ...
-        c.writeln("end")
-        c.writeln("")
-}
-if c.helpers["div"] {
-        c.writeln("function __div(a, b)")
-        ...
-        c.writeln("end")
-        c.writeln("")
+var helperMap = map[string]string{
+    "iter":     helperIter,
+    "div":      helperDiv,
+    "contains": helperContains,
+    ...
 }
 ```
-【F:compile/lua/compiler.go†L756-L814】
-
-Additional helpers implement containment checks, input reading, counting, averaging, indexing and slicing:
-
-```go
-if c.helpers["contains"] {
-        c.writeln("function __contains(container, item)")
-        ...
-}
-...
-if c.helpers["slice"] {
-        c.writeln("function __slice(obj, i, j)")
-        ...
-}
-```
-【F:compile/lua/compiler.go†L814-L1018】
+【F:compile/lua/runtime.go†L322-L336】
 
 ## Tooling
 
