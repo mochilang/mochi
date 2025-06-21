@@ -389,6 +389,22 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("return JsonSerializer.Deserialize<T>(prompt);")
 				c.indent--
 				c.writeln("}")
+			case "_agent":
+				c.writeln("class _Agent {")
+				c.indent++
+				c.writeln("public string name;")
+				c.writeln("public Dictionary<string, Func<dynamic[], dynamic>> intents = new Dictionary<string, Func<dynamic[], dynamic>>();")
+				c.writeln("public Dictionary<string, Action<dynamic>> handlers = new Dictionary<string, Action<dynamic>>();")
+				c.writeln("public Dictionary<string, dynamic> state = new Dictionary<string, dynamic>();")
+				c.writeln("public _Agent(string n) { name = n; }")
+				c.writeln("public void On(_Stream<dynamic> s, Action<dynamic> h) { s.Register(h); }")
+				c.writeln("public void RegisterIntent(string n, Func<dynamic[], dynamic> h) { intents[n] = h; }")
+				c.writeln("public dynamic Call(string n, params dynamic[] args) { if (!intents.ContainsKey(n)) throw new Exception(\"unknown intent: \" + n); return intents[n](args); }")
+				c.writeln("public void Start() { }")
+				c.writeln("public void Set(string k, dynamic v) { state[k] = v; }")
+				c.writeln("public dynamic Get(string k) { return state.ContainsKey(k) ? state[k] : null; }")
+				c.indent--
+				c.writeln("}")
 			}
 			c.writeln("")
 		}
