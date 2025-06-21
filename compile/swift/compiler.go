@@ -12,18 +12,22 @@ import (
 
 // Compiler translates a Mochi AST into Swift source code (very limited subset).
 type Compiler struct {
-	buf         bytes.Buffer
-	indent      int
-	env         *types.Env
-	locals      map[string]types.Type
-	useAvg      bool
-	useIndex    bool
-	useIndexStr bool
-	useSlice    bool
-	useSliceStr bool
-	useLoad     bool
-	useSave     bool
-	funcRet     types.Type
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	locals       map[string]types.Type
+	useAvg       bool
+	useIndex     bool
+	useIndexStr  bool
+	useSlice     bool
+	useSliceStr  bool
+	useLoad      bool
+	useSave      bool
+	useUnionAll  bool
+	useUnion     bool
+	useExcept    bool
+	useIntersect bool
+	funcRet      types.Type
 }
 
 func New(env *types.Env) *Compiler { return &Compiler{env: env, locals: map[string]types.Type{}} }
@@ -36,6 +40,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useSliceStr = false
 	c.useLoad = false
 	c.useSave = false
+	c.useUnionAll = false
+	c.useUnion = false
+	c.useExcept = false
+	c.useIntersect = false
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -309,6 +317,44 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.useUnionAll {
+		c.writeln("func _union_all<T>(_ a: [T], _ b: [T]) -> [T] {")
+		c.indent++
+		c.writeln("return a + b")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.useUnion {
+		c.writeln("func _union<T: Equatable>(_ a: [T], _ b: [T]) -> [T] {")
+		c.indent++
+		c.writeln("var res = a")
+		c.writeln("for it in b { if !res.contains(it) { res.append(it) } }")
+		c.writeln("return res")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.useExcept {
+		c.writeln("func _except<T: Equatable>(_ a: [T], _ b: [T]) -> [T] {")
+		c.indent++
+		c.writeln("var res: [T] = []")
+		c.writeln("for it in a { if !b.contains(it) { res.append(it) } }")
+		c.writeln("return res")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.useIntersect {
+		c.writeln("func _intersect<T: Equatable>(_ a: [T], _ b: [T]) -> [T] {")
+		c.indent++
+		c.writeln("var res: [T] = []")
+		c.writeln("for it in a { if b.contains(it) && !res.contains(it) { res.append(it) } }")
+		c.writeln("return res")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 
 	c.buf.Write(bodyBytes)
 	return c.buf.Bytes(), nil
@@ -507,11 +553,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			t = resolveTypeRef(s.Let.Type, c.env)
 		}
 		if typ == "" {
-			t = c.inferExprType(s.Let.Value)
-			if lt, ok := t.(types.ListType); ok && !containsAny(lt) {
-				typ = ": [" + swiftType(lt.Elem) + "]"
-			} else if mt, ok := t.(types.MapType); ok && !containsAny(mt) {
-				typ = ": [" + swiftType(mt.Key) + ": " + swiftType(mt.Value) + "]"
+			inferred := c.inferExprType(s.Let.Value)
+			switch tt := inferred.(type) {
+			case types.MapType:
+				if !containsAny(tt) {
+					t = tt
+				} else {
+					t = types.AnyType{}
+				}
+			case types.StringType:
+				t = types.StringType{}
+			default:
+				t = types.AnyType{}
 			}
 		}
 		if expr == "" {
@@ -535,11 +588,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			t = resolveTypeRef(s.Var.Type, c.env)
 		}
 		if typ == "" {
-			t = c.inferExprType(s.Var.Value)
-			if lt, ok := t.(types.ListType); ok && !containsAny(lt) {
-				typ = ": [" + swiftType(lt.Elem) + "]"
-			} else if mt, ok := t.(types.MapType); ok && !containsAny(mt) {
-				typ = ": [" + swiftType(mt.Key) + ": " + swiftType(mt.Value) + "]"
+			inferred := c.inferExprType(s.Var.Value)
+			switch tt := inferred.(type) {
+			case types.MapType:
+				if !containsAny(tt) {
+					t = tt
+				} else {
+					t = types.AnyType{}
+				}
+			case types.StringType:
+				t = types.StringType{}
+			default:
+				t = types.AnyType{}
 			}
 		}
 		if typ == "" && expr == "[]" {
@@ -783,13 +843,26 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "in" {
+		switch op.Op {
+		case "in":
 			if c.isMapPostfix(op.Right) {
 				expr = fmt.Sprintf("%s[%s] != nil", rhs, expr)
 			} else {
 				expr = fmt.Sprintf("%s.contains(%s)", rhs, expr)
 			}
-		} else {
+		case "union_all", "union", "except", "intersect":
+			switch op.Op {
+			case "union_all":
+				c.useUnionAll = true
+			case "union":
+				c.useUnion = true
+			case "except":
+				c.useExcept = true
+			case "intersect":
+				c.useIntersect = true
+			}
+			expr = fmt.Sprintf("_%s(%s, %s)", op.Op, expr, rhs)
+		default:
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
 		}
 	}
@@ -859,9 +932,6 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else {
 					if c.isMapPrimary(p.Target) {
 						expr = fmt.Sprintf("%s[%s]!", expr, idx)
-					} else if c.isListPrimary(p.Target) {
-						c.useIndex = true
-						expr = fmt.Sprintf("_index(%s, %s)", expr, idx)
 					} else {
 						expr = fmt.Sprintf("%s[%s]", expr, idx)
 					}
