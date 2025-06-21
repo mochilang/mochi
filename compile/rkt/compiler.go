@@ -63,6 +63,19 @@ const setOpsHelpers = `(define (union-all a b) (append (list->list a) (list->lis
         (append res (list x))
         res)))`
 
+const llmHelpers = `(define (_genText prompt model params)
+  ;; TODO: connect to an LLM
+  prompt)
+
+(define (_genEmbed text model params)
+  ;; naive embedding as character codes
+  (for/list ([c (in-string text)]) (exact->inexact (char->integer c))))
+
+(define (_genStruct ctor fields prompt model params)
+  ;; parse JSON and build struct using provided constructor
+  (define data (string->jsexpr prompt))
+  (apply ctor (map (lambda (f) (hash-ref data f)) fields)))`
+
 // Compiler translates Mochi AST into Racket source code.
 type Compiler struct {
 	buf          bytes.Buffer
@@ -72,6 +85,7 @@ type Compiler struct {
 	needsDataset bool
 	needsSetOps  bool
 	needsMatch   bool
+	needsLLM     bool
 	imports      []string
 	exports      []string
 }
@@ -183,6 +197,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("(define (expect cond) (unless cond (error \"expect failed\")))")
 	c.writeln(";dataset-placeholder")
 	c.writeln(";setops-placeholder")
+	c.writeln(";llm-placeholder")
 	// type declarations first
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -232,6 +247,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.needsDataset {
 		header += " racket/string json"
+	} else if c.needsLLM {
+		header += " json"
 	}
 	for _, imp := range c.imports {
 		header += " " + imp
@@ -252,6 +269,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		code = bytes.Replace(code, []byte(";setops-placeholder\n"), []byte(setOpsHelpers), 1)
 	} else {
 		code = bytes.Replace(code, []byte(";setops-placeholder\n"), nil, 1)
+	}
+	if c.needsLLM {
+		code = bytes.Replace(code, []byte(";llm-placeholder\n"), []byte(llmHelpers), 1)
+	} else {
+		code = bytes.Replace(code, []byte(";llm-placeholder\n"), nil, 1)
 	}
 	return code, nil
 }
@@ -896,6 +918,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileIfExpr(p.If)
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
 	case p.Load != nil:
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
@@ -1052,6 +1076,52 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		opts = o
 	}
 	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var prompt, text, model string
+	params := []string{}
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("'%s %s", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramStr := "#f"
+	if len(params) > 0 {
+		paramStr = fmt.Sprintf("(hash %s)", strings.Join(params, " "))
+	}
+	if model == "" {
+		model = "\"\""
+	}
+	c.needsLLM = true
+	if g.Target == "embedding" {
+		return fmt.Sprintf("(_genEmbed %s %s %s)", text, model, paramStr), nil
+	}
+	if st, ok := c.env.GetStruct(g.Target); ok {
+		fields := make([]string, len(st.Order))
+		for i, f := range st.Order {
+			fields[i] = strconv.Quote(f)
+		}
+		return fmt.Sprintf("(_genStruct %s '(%s) %s %s %s)", sanitizeName(g.Target), strings.Join(fields, " "), prompt, model, paramStr), nil
+	}
+	return fmt.Sprintf("(_genText %s %s %s)", prompt, model, paramStr), nil
 }
 
 func (c *Compiler) compileStructExpr(s *parser.StructLiteral) (string, error) {
