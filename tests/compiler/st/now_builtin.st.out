@@ -1,0 +1,4 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+((Time nanosecondClock > 0)) displayOn: Transcript. Transcript cr.

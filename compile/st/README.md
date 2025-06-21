@@ -4,22 +4,29 @@ This backend converts Mochi programs to GNU Smalltalk. The tests under `compile/
 
 ## Installation
 
-The helper `EnsureSmalltalk` installs GNU Smalltalk when needed. On Linux it first tries `apt-get install gnu-smalltalk`. If the package is missing the installer temporarily enables the Ubuntu 22.04 "jammy" repository to fetch it. Should apt still fail, the code downloads version 3.2.5 from `ftpmirror.gnu.org` and builds it. Set the `SMALLTALK_TARBALL` environment variable to override the source URL. On macOS Homebrew is used.
+The helper `EnsureSmalltalk` installs the `gst` interpreter when needed. It relies on common package managers or builds GNU Smalltalk from source as a fall back.
 
 ## Usage
 
-Compile a program with `mochi build --target st` and run it using `gst`. To run the slow Smalltalk tests:
+Compile a program with `mochi build --target st` and run it using `gst`.
+Run the Smalltalk tests with:
 
 ```bash
 go test ./compile/st -tags slow
 ```
 
-## Notes
+## Supported features
 
-The Smalltalk backend currently supports only a subset of Mochi. When the
-`count()` builtin is used, a helper method is emitted automatically. Loops now
-handle `break` and `continue` using custom signals. Basic `type` declarations are
-compiled to plain dictionaries.
+The backend implements a minimal subset of Mochi:
+
+- Variable declarations and assignments
+- Arithmetic and boolean expressions
+- `if`/`else` conditionals
+- `for` and `while` loops with `break` and `continue`
+- Functions with a single return value
+- Lists and maps with indexing and concatenation
+- Basic `type` declarations compiled to dictionaries
+- Built-ins `print`, `len`, `str`, `count`, `avg`, `input`, `now`, and `json`
 
 ### Unsupported features
 
@@ -36,4 +43,7 @@ The following language constructs are not yet handled:
 - Union type declarations
 - Set literals and set operations
 - Concurrency primitives like `spawn` and channels
-- Built-in helpers like `append`, `now`, `json`, and `eval`
+- Built-in helpers like `append` and `eval`
+- Event emission with `emit`
+- Intent declarations with `intent`
+
