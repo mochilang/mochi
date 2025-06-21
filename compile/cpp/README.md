@@ -211,8 +211,7 @@ from `compiler_test.go`.
 
 This backend covers only a subset of Mochi's features but is useful as an example for implementing other targets.
 
-Dataset queries support `where`, `skip`, `take`, `sort by` and basic `group by` clauses.
-`join` clauses remain unimplemented.
+Dataset queries support `where`, `skip`, `take`, `sort by`, `join` and basic `group by` clauses.
 
 ### Supported features
 
@@ -244,4 +243,4 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Nested function declarations inside other functions
 * Iteration over map key/value pairs
 * Asynchronous `async`/`await` constructs
-* Built-in functions `json`, `now`, `count` and `avg`
+* Built-in functions `json`, `now` and `input`
