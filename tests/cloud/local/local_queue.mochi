@@ -1,0 +1,8 @@
+import "../../../lib/cloud/local/queue" as queue
+
+let q = queue.new()
+q.push("first")
+q.push("second")
+print(q.len())
+print(q.pop())
+print(q.len())

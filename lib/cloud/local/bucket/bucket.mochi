@@ -1,0 +1,34 @@
+package bucket
+
+type Bucket {
+  put: fun(string, any)
+  get: fun(string): any
+  delete: fun(string)
+  list: fun(): list<string>
+}
+
+export fun new(): Bucket {
+  var store: map<string, any> = {}
+
+  fun put(key: string, value: any) {
+    store[key] = value
+  }
+
+  fun get(key: string): any {
+    return store[key]
+  }
+
+  fun delete(key: string) {
+    store[key] = nil
+  }
+
+  fun list(): list<string> {
+    var keys: list<string> = []
+    for k in store.keys() {
+      keys.push(k)
+    }
+    return keys
+  }
+
+  return Bucket { put, get, delete, list }
+}

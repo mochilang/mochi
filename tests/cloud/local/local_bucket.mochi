@@ -1,0 +1,9 @@
+import "../../../lib/cloud/local/bucket" as bucket
+
+let b = bucket.new()
+b.put("a", "1")
+b.put("b", "2")
+print(len(b.list()))
+print(b.get("a"))
+b.delete("a")
+print(len(b.list()))

@@ -1,0 +1,30 @@
+package queue
+
+type Queue {
+  push: fun(any)
+  pop: fun(): any
+  len: fun(): int
+}
+
+export fun new(): Queue {
+  var items: list<any> = []
+
+  fun push(value: any) {
+    items.push(value)
+  }
+
+  fun pop(): any {
+    if len(items) == 0 {
+      return nil
+    }
+    let v = items[0]
+    items = items[1:]
+    return v
+  }
+
+  fun length(): int {
+    return len(items)
+  }
+
+  return Queue { push, pop, len: length }
+}

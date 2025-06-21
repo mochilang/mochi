@@ -1,0 +1,9 @@
+import "../../../lib/cloud/local/counter" as counter
+
+let c = counter.new(0)
+print(c.get())
+print(c.inc(1))
+print(c.inc(2))
+print(c.dec(1))
+c.reset()
+print(c.get())
