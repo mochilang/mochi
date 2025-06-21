@@ -72,6 +72,7 @@ type Compiler struct {
 	needsDataset bool
 	needsSetOps  bool
 	needsMatch   bool
+	imports      []string
 	exports      []string
 }
 
@@ -232,6 +233,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.needsDataset {
 		header += " racket/string json"
 	}
+	for _, imp := range c.imports {
+		header += " " + imp
+	}
 	code = bytes.Replace(code, []byte(";require-placeholder"), []byte(header), 1)
 	if len(c.exports) > 0 {
 		prov := "(provide " + strings.Join(c.exports, " ") + ")"
@@ -294,6 +298,20 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	return nil
 }
 
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	path := strings.Trim(im.Path, "\"")
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	req := fmt.Sprintf("(require %s)", strconv.Quote(path))
+	if alias != "" {
+		req = fmt.Sprintf("(require (prefix-in %s: %s))", sanitizeName(alias), strconv.Quote(path))
+	}
+	c.imports = append(c.imports, req)
+	return nil
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
@@ -321,6 +339,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileContinue(s.Continue)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Import != nil:
+		return c.compileImport(s.Import)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -393,47 +413,53 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		c.writeln(fmt.Sprintf("(set! %s %s)", name, val))
 		return nil
 	}
-	if len(a.Index) == 1 && a.Index[0].Colon == nil {
-		idx, err := c.compileExpr(a.Index[0].Start)
-		if err != nil {
-			return err
-		}
-		c.writeln(fmt.Sprintf("(set! %s (if (hash? %s) (hash-set %s %s %s) (list-set %s %s %s)))", name, name, name, idx, val, name, idx, val))
-		return nil
+	expr, err := c.assignNested(name, a.Index, val)
+	if err != nil {
+		return err
 	}
-	if len(a.Index) == 1 && a.Index[0].Colon != nil {
+	c.writeln(fmt.Sprintf("(set! %s %s)", name, expr))
+	return nil
+}
+
+func (c *Compiler) assignNested(base string, idxs []*parser.IndexOp, val string) (string, error) {
+	if len(idxs) == 0 {
+		return val, nil
+	}
+	idx := idxs[0]
+	if idx.Colon != nil {
+		if len(idxs) > 1 {
+			return "", fmt.Errorf("slice assignment unsupported beyond one level")
+		}
 		start := "0"
-		if a.Index[0].Start != nil {
-			s, err := c.compileExpr(a.Index[0].Start)
+		if idx.Start != nil {
+			s, err := c.compileExpr(idx.Start)
 			if err != nil {
-				return err
+				return "", err
 			}
 			start = s
 		}
-		end := fmt.Sprintf("(if (string? %s) (string-length %s) (length %s))", name, name, name)
-		if a.Index[0].End != nil {
-			e, err := c.compileExpr(a.Index[0].End)
+		end := fmt.Sprintf("(if (string? %s) (string-length %s) (length %s))", base, base, base)
+		if idx.End != nil {
+			e, err := c.compileExpr(idx.End)
 			if err != nil {
-				return err
+				return "", err
 			}
 			end = e
 		}
-		c.writeln(fmt.Sprintf("(set! %s (if (string? %s) (string-append (substring %s 0 %s) %s (substring %s %s (string-length %s))) (append (take %s %s) %s (drop %s %s))))", name, name, name, start, val, name, end, name, name, start, val, name, end))
-		return nil
+		expr := fmt.Sprintf("(if (string? %s) (string-append (substring %s 0 %s) %s (substring %s %s (string-length %s))) (append (take %s %s) %s (drop %s %s)))", base, base, start, val, base, end, base, base, start, val, base, end)
+		return expr, nil
 	}
-	if len(a.Index) == 2 && a.Index[0].Colon == nil && a.Index[1].Colon == nil {
-		idx1, err := c.compileExpr(a.Index[0].Start)
-		if err != nil {
-			return err
-		}
-		idx2, err := c.compileExpr(a.Index[1].Start)
-		if err != nil {
-			return err
-		}
-		c.writeln(fmt.Sprintf("(set! %s (list-set %s %s (list-set (idx %s %s) %s %s)))", name, name, idx1, name, idx1, idx2, val))
-		return nil
+	idxExpr, err := c.compileExpr(idx.Start)
+	if err != nil {
+		return "", err
 	}
-	return fmt.Errorf("indexed assignment unsupported")
+	innerBase := fmt.Sprintf("(idx %s %s)", base, idxExpr)
+	innerVal, err := c.assignNested(innerBase, idxs[1:], val)
+	if err != nil {
+		return "", err
+	}
+	expr := fmt.Sprintf("(if (hash? %s) (hash-set %s %s %s) (list-set %s %s %s))", base, base, idxExpr, innerVal, base, idxExpr, innerVal)
+	return expr, nil
 }
 
 func (c *Compiler) compileBreak(b *parser.BreakStmt) error {
