@@ -5,12 +5,13 @@ The Erlang backend compiles Mochi programs to plain Erlang source. The generated
 ## Files
 
 - `compiler.go` – walks the Mochi AST and generates Erlang code
+- `runtime.go` – emits runtime helper functions used by generated code
 - `compiler_test.go` – golden tests that execute the generated code with `escript`
 - `tools.go` – helper that verifies the Erlang toolchain is installed
 
 ## Runtime Helpers
 
-Generated programs embed a small runtime implemented directly inside `compiler.go`. Helper functions handle printing, formatting, counting, input and control flow:
+Generated programs embed a small runtime defined in `runtime.go`. Helper functions handle printing, formatting, counting, input and control flow:
 
 ```erlang
 mochi_print(Args) ->
@@ -28,7 +29,7 @@ mochi_count(X) when is_map(X) -> maps:size(X);
 mochi_count(X) when is_binary(X) -> byte_size(X);
 mochi_count(_) -> erlang:error(badarg).
 ```
-【F:compile/erlang/compiler.go†L1545-L1566】
+【F:compile/erlang/runtime.go†L5-L28】
 
 Additional helpers provide `mochi_input/0`, `mochi_avg/1`, `mochi_foreach/2`, optional indexing via `mochi_get/2`, the `mochi_while/2` loop and placeholders like `mochi_gen_text/3`. HTTP `fetch` requests use Erlang's `httpc` module.
 
