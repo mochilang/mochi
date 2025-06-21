@@ -80,6 +80,23 @@ const (
                (slurp path))]
     (cond
       (= fmt "csv") (_parse_csv text header delim)
+      (= fmt "tsv") (_parse_csv text header "\t")
+      (= fmt "json")
+        (let [data (clojure.data.json/read-str text :key-fn keyword)]
+          (cond
+            (map? data) [data]
+            (sequential? data) (vec data)
+            :else []))
+      (= fmt "jsonl")
+        (->> (clojure.string/split-lines text)
+             (remove clojure.string/blank?)
+             (mapv #(clojure.data.json/read-str % :key-fn keyword)))
+      (= fmt "yaml")
+        (let [y (-> text java.io.StringReader. (org.yaml.snakeyaml.Yaml.) .load)]
+          (cond
+            (instance? java.util.Map y) [(into {} y)]
+            (instance? java.util.List y) (mapv #(into {} %) y)
+            :else []))
       :else [])) )
 `
 
@@ -87,16 +104,39 @@ const (
   (let [fmt (get opts :format "csv")
         header (get opts :header false)
         delim (first (or (get opts :delimiter ",") ","))
-        headers (if (seq rows) (sort (keys (first rows))) [])
-        lines (concat
-                (when header [(clojure.string/join delim headers)])
-                (map (fn [r]
-                       (clojure.string/join delim (map #(str (get r % "")) headers)))
-                     rows))
-        out (str (clojure.string/join "\n" lines) "\n")]
-    (if (or (nil? path) (= path "") (= path "-"))
-      (print out)
-      (spit path out))) )
+        headers (if (seq rows) (sort (keys (first rows))) [])]
+    (cond
+      (= fmt "csv")
+        (let [lines (concat
+                      (when header [(clojure.string/join delim headers)])
+                      (map (fn [r]
+                             (clojure.string/join delim (map #(str (get r % "")) headers)))
+                           rows))
+              out (str (clojure.string/join "\n" lines) "\n")]
+          (if (or (nil? path) (= path "") (= path "-"))
+            (print out)
+            (spit path out)))
+      (= fmt "tsv")
+        (_save rows path (assoc opts :format "csv" :delimiter "\t"))
+      (= fmt "json")
+        (let [out (clojure.data.json/write-str rows)]
+          (if (or (nil? path) (= path "") (= path "-"))
+            (print out)
+            (spit path out)))
+      (= fmt "jsonl")
+        (let [out (clojure.string/join "\n" (map #(clojure.data.json/write-str %) rows))]
+          (if (or (nil? path) (= path "") (= path "-"))
+            (print (str out "\n"))
+            (spit path (str out "\n"))))
+      (= fmt "yaml")
+        (let [yaml (org.yaml.snakeyaml.Yaml.)
+              out (.dump yaml (clojure.walk/keywordize-keys
+                             (if (= 1 (count rows)) (first rows) rows)))]
+          (if (or (nil? path) (= path "") (= path "-"))
+            (print out)
+            (spit path out)))
+      :else
+        nil)) )
 `
 
 	helperEscapeJSON = `(defn _escape_json [s]

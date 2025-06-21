@@ -622,6 +622,13 @@ implemented across all backends:
 * Pattern matching on union variants
 * Nested recursive functions inside other functions
 * Foreign imports and `extern` declarations
+* Functions with multiple return values
+* Variadic functions
+* Methods declared inside `type` blocks
+* Closures capturing surrounding variables
+* Enum and additional union type declarations
+* Map membership checks and iterating over maps in `for` loops
+* Extern type declarations
 
 ## Benchmarks
 
