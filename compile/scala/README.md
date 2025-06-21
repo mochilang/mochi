@@ -286,7 +286,6 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - logic programming constructs (`fact`, `rule`)
 - event emission and intent handlers (`emit`, `on`)
 - model declarations
-- extern variable, type and object declarations
 - package imports and export declarations
-- the `eval` builtin function
+- built-in helpers like `json`, `to_json`, `now` and `append`
 
