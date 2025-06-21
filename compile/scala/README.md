@@ -287,5 +287,6 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - event emission and intent handlers (`emit`, `on`)
 - model declarations
 - package imports and export declarations
-- built-in helpers like `json`, `to_json`, `now` and `append`
+- reduce built-in function
+- complex Python FFI expressions (chained calls or indexing)
 

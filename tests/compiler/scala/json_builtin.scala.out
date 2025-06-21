@@ -1,0 +1,20 @@
+object Main {
+        def main(args: Array[String]): Unit = {
+                _json(scala.collection.mutable.Map("a" -> 1))
+        }
+}
+
+def _to_json(v: Any): String = v match {
+        case null => "null"
+        case s: String => "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+        case b: Boolean => b.toString
+        case i: Int => i.toString
+        case l: Long => l.toString
+        case d: Double => d.toString
+        case m: scala.collection.Map[_, _] =>
+                m.map{ case (k, v2) => "\"" + k.toString.replace("\"", "\\\"") + ":" + _to_json(v2) }.mkString("{", ",", "}")
+        case seq: Iterable[_] => seq.map(_to_json).mkString("[", ",", "]")
+        case other => "\"" + other.toString.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+}
+
+def _json(v: Any): Unit = println(_to_json(v))

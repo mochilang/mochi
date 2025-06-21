@@ -1063,6 +1063,29 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) == 1 {
 			return args[0] + ".toString()", nil
 		}
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no args")
+		}
+		return "System.currentTimeMillis() * 1000000L", nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		c.use("_to_json")
+		c.use("_json")
+		return fmt.Sprintf("_json(%s)", args[0]), nil
+	case "to_json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("to_json expects 1 arg")
+		}
+		c.use("_to_json")
+		return fmt.Sprintf("_to_json(%s)", args[0]), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		return fmt.Sprintf("%s.append(%s)", args[0], args[1]), nil
 	case "eval":
 		if len(args) != 1 {
 			return "", fmt.Errorf("eval expects 1 arg")
