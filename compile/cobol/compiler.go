@@ -58,6 +58,15 @@ func (c *Compiler) newTemp() string {
 	return name
 }
 
+func cobolName(name string) string {
+	up := strings.ToUpper(name)
+	switch up {
+	case "END", "START":
+		return "V_" + up
+	}
+	return up
+}
+
 func isSimpleExpr(n *ast.Node) bool {
 	switch n.Kind {
 	case "int", "float", "selector", "string", "bool":
@@ -251,7 +260,7 @@ func (c *Compiler) compileNode(n *ast.Node) {
 
 	case "let":
 		orig := n.Value.(string)
-		name := strings.ToUpper(orig)
+		name := cobolName(orig)
 		if len(n.Children) == 1 && n.Children[0].Kind == "call" {
 			switch n.Children[0].Value {
 			case "twoSum":
@@ -307,7 +316,7 @@ func (c *Compiler) compileNode(n *ast.Node) {
 
 	case "var":
 		orig := n.Value.(string)
-		name := strings.ToUpper(orig)
+		name := cobolName(orig)
 		if len(n.Children) == 1 && n.Children[0].Kind == "list" {
 			list := n.Children[0]
 			elemPic := "PIC 9."
@@ -328,7 +337,7 @@ func (c *Compiler) compileNode(n *ast.Node) {
 		}
 
 	case "assign":
-		name := strings.ToUpper(n.Value.(string))
+		name := cobolName(n.Value.(string))
 		if len(n.Children) == 1 {
 			if c.isListExpr(n.Children[0]) {
 				src := c.expr(n.Children[0])
@@ -416,7 +425,7 @@ func (c *Compiler) compileNode(n *ast.Node) {
 }
 
 func (c *Compiler) compileFor(n *ast.Node) {
-	varName := strings.ToUpper(n.Value.(string))
+	varName := cobolName(n.Value.(string))
 
 	switch n.Children[0].Kind {
 	case "range":
@@ -494,7 +503,7 @@ func (c *Compiler) compileFor(n *ast.Node) {
 			if c.env != nil {
 				if t, err := c.env.GetVar(src.Value.(string)); err == nil {
 					if _, ok := t.(types.StringType); ok {
-						name := strings.ToUpper(src.Value.(string))
+						name := cobolName(src.Value.(string))
 						lenTmp := c.newTemp()
 						c.declare("01 IDX PIC 9.")
 						c.declare(fmt.Sprintf("01 %s PIC 9.", lenTmp))
@@ -512,7 +521,7 @@ func (c *Compiler) compileFor(n *ast.Node) {
 						return
 					}
 					if lt, ok := t.(types.ListType); ok {
-						name := strings.ToUpper(src.Value.(string))
+						name := cobolName(src.Value.(string))
 						length, ok := c.listLens[src.Value.(string)]
 						if !ok {
 							c.writeln("    *> unsupported for-in loop")
@@ -607,11 +616,11 @@ func (c *Compiler) compileTest(n *ast.Node) {
 }
 
 func (c *Compiler) compileFun(n *ast.Node) {
-	name := strings.ToUpper(n.Value.(string))
+	name := cobolName(n.Value.(string))
 	params := []string{}
 	idx := 0
 	for idx < len(n.Children) && n.Children[idx].Kind == "param" {
-		params = append(params, strings.ToUpper(n.Children[idx].Value.(string)))
+		params = append(params, cobolName(n.Children[idx].Value.(string)))
 		idx++
 	}
 	if idx < len(n.Children) && n.Children[idx].Kind == "type" {
@@ -668,7 +677,7 @@ func (c *Compiler) compileFun(n *ast.Node) {
 }
 
 func (c *Compiler) compileCallExpr(n *ast.Node) string {
-	name := strings.ToUpper(n.Value.(string))
+	name := cobolName(n.Value.(string))
 	// Built-in helpers implemented directly
 	if name == "LEN" && len(n.Children) == 1 {
 		arg := n.Children[0]
@@ -872,7 +881,7 @@ func (c *Compiler) expr(n *ast.Node) string {
 		}
 		return "0"
 	case "selector":
-		name := strings.ToUpper(n.Value.(string))
+		name := cobolName(n.Value.(string))
 		if v, ok := c.params[name]; ok {
 			return v
 		}
@@ -922,16 +931,30 @@ func (c *Compiler) expr(n *ast.Node) string {
 				c.writeln("    *> unsupported slice")
 				return "0"
 			}
-			if startNode.Kind != "int" || endNode.Kind != "int" {
-				c.writeln("    *> unsupported slice")
-				return "0"
+			startExpr := c.expr(startNode)
+			endExpr := c.expr(endNode)
+			if !isSimpleExpr(startNode) {
+				tmp := c.newTemp()
+				c.declare("01 " + tmp + " PIC S9.")
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, startExpr))
+				startExpr = tmp
 			}
-			start := extractInt(startNode)
-			end := extractInt(endNode)
-			tmp := c.newTemp()
-			c.declare("01 " + tmp + " PIC X(100).")
-			c.writeln(fmt.Sprintf("    MOVE %s(%d:%d) TO %s", arr, start+1, end-start, tmp))
-			return tmp
+			if !isSimpleExpr(endNode) {
+				tmp := c.newTemp()
+				c.declare("01 " + tmp + " PIC S9.")
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, endExpr))
+				endExpr = tmp
+			}
+			lengthTmp := c.newTemp()
+			c.declare("01 " + lengthTmp + " PIC S9.")
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s - %s", lengthTmp, endExpr, startExpr))
+			startPlus := c.newTemp()
+			c.declare("01 " + startPlus + " PIC S9.")
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s + 1", startPlus, startExpr))
+			resTmp := c.newTemp()
+			c.declare("01 " + resTmp + " PIC X(100).")
+			c.writeln(fmt.Sprintf("    MOVE %s(%s:%s) TO %s", arr, startPlus, lengthTmp, resTmp))
+			return resTmp
 		}
 		idx := c.expr(n.Children[1])
 		l, ok := c.listLens[arr]
@@ -1101,7 +1124,7 @@ func (c *Compiler) listInfo(n *ast.Node) (name string, length int, pic string, e
 				}
 			}
 		}
-		name = strings.ToUpper(n.Value.(string))
+		name = cobolName(n.Value.(string))
 		if pic == "" {
 			pic = "PIC 9."
 		}

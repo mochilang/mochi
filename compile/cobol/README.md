@@ -199,9 +199,10 @@ unsupported include:
 - Iteration over collections using `for x in items` unless `items` is a simple
   list, a string literal, or a fixed list variable
 - Range loops with step values other than `1`
- - Slicing lists or using non-constant indices in slice expressions
+- Slicing lists (string slices with variable indices are supported)
 - Using the `range` helper to generate sequences
 - Dynamic lists whose length is not known at compile time
+- Builtin functions other than `print`, `len`, `add`, `twoSum` and `addTwoNumbers`
 - Struct and model declarations
 - Union type declarations and inline methods
 - First-class function values or closures
