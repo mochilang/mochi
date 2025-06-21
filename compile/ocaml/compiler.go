@@ -782,6 +782,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
 		return c.compileCall(p.Call)
+	case p.Match != nil:
+		return c.compileMatchExpr(p.Match)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -875,6 +877,30 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("%s %s", sanitizeName(call.Func), strings.Join(args, " ")), nil
+}
+
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	parts := make([]string, len(m.Cases))
+	for i, cs := range m.Cases {
+		pat, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if pat == "_" {
+			parts[i] = fmt.Sprintf("_ -> %s", res)
+		} else {
+			parts[i] = fmt.Sprintf("%s -> %s", pat, res)
+		}
+	}
+	return fmt.Sprintf("(match %s with %s)", target, strings.Join(parts, " | ")), nil
 }
 
 func ocamlType(t *parser.TypeRef) string {

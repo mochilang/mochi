@@ -1,0 +1,3 @@
+let x = 2;;
+let res = (match x with 1 -> "one" | 2 -> "two" | _ -> "other");;
+print_endline res;;
