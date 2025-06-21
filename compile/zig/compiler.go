@@ -401,20 +401,24 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		if err != nil {
 			return err
 		}
-		end := ""
+		name := sanitizeName(s.For.Name)
 		if s.For.RangeEnd != nil {
-			end, err = c.compileExpr(s.For.RangeEnd, false)
+			end, err := c.compileExpr(s.For.RangeEnd, false)
 			if err != nil {
 				return err
 			}
-		}
-		name := sanitizeName(s.For.Name)
-		if s.For.RangeEnd != nil {
 			c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, name))
+			c.indent++
+		} else if c.isMapExpr(s.For.Source) {
+			iter := c.newTmp()
+			c.writeln(fmt.Sprintf("var %s = %s.keyIterator();", iter, start))
+			c.writeln(fmt.Sprintf("while (%s.next()) |k_ptr| {", iter))
+			c.indent++
+			c.writeln(fmt.Sprintf("const %s = k_ptr.*;", name))
 		} else {
 			c.writeln(fmt.Sprintf("for (%s) |%s| {", start, name))
+			c.indent++
 		}
-		c.indent++
 		for _, st := range s.For.Body {
 			if err := c.compileStmt(st, inFun); err != nil {
 				return err
@@ -860,12 +864,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if c.isMapExpr(call.Args[0]) {
+			return fmt.Sprintf("%s.count()", arg), nil
+		}
 		return fmt.Sprintf("(%s).len", arg), nil
 	}
 	if name == "count" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
 			return "", err
+		}
+		if c.isMapExpr(call.Args[0]) {
+			return fmt.Sprintf("%s.count()", arg), nil
 		}
 		return fmt.Sprintf("(%s).len", arg), nil
 	}
