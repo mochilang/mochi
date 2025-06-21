@@ -570,7 +570,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		{"*", "/", "%"},
 		{"+", "-"},
 		{"<", "<=", ">", ">="},
-		{"==", "!=", "in"},
+		{"==", "!=", "in", "union", "except", "intersect"},
 		{"&&"},
 		{"||"},
 	}
@@ -607,6 +607,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				} else {
 					expr = fmt.Sprintf("(%s + %s)", l, r)
 				}
+			case "union":
+				c.helpers["_union"] = true
+				expr = fmt.Sprintf("_union(%s, %s)", l, r)
+				isList = true
+			case "except":
+				c.helpers["_except"] = true
+				expr = fmt.Sprintf("_except(%s, %s)", l, r)
+				isList = true
+			case "intersect":
+				c.helpers["_intersect"] = true
+				expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
+				isList = true
 			case "in":
 				expr = fmt.Sprintf("%s.containsKey(%s)", r, l)
 			default:
@@ -1266,6 +1278,127 @@ func (c *Compiler) emitRuntime() {
 		c.indent++
 		c.writeln("T[] res = java.util.Arrays.copyOf(a, a.length + b.length);")
 		c.writeln("System.arraycopy(b, 0, res, a.length, b.length);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_union"] {
+		c.writeln("")
+		c.writeln("static int[] _union(int[] a, int[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<Integer> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (int v : a) set.add(v);")
+		c.writeln("for (int v : b) set.add(v);")
+		c.writeln("int[] res = new int[set.size()];")
+		c.writeln("int i = 0;")
+		c.writeln("for (int v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static boolean[] _union(boolean[] a, boolean[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<Boolean> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (boolean v : a) set.add(v);")
+		c.writeln("for (boolean v : b) set.add(v);")
+		c.writeln("boolean[] res = new boolean[set.size()];")
+		c.writeln("int i = 0;")
+		c.writeln("for (boolean v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static <T> T[] _union(T[] a, T[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<T> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (T v : a) set.add(v);")
+		c.writeln("for (T v : b) set.add(v);")
+		c.writeln("@SuppressWarnings(\"unchecked\") T[] res = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), set.size());")
+		c.writeln("int i = 0;")
+		c.writeln("for (T v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_except"] {
+		c.writeln("")
+		c.writeln("static int[] _except(int[] a, int[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<Integer> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (int v : a) set.add(v);")
+		c.writeln("for (int v : b) set.remove(v);")
+		c.writeln("int[] res = new int[set.size()];")
+		c.writeln("int i = 0;")
+		c.writeln("for (int v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static boolean[] _except(boolean[] a, boolean[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<Boolean> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (boolean v : a) set.add(v);")
+		c.writeln("for (boolean v : b) set.remove(v);")
+		c.writeln("boolean[] res = new boolean[set.size()];")
+		c.writeln("int i = 0;")
+		c.writeln("for (boolean v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static <T> T[] _except(T[] a, T[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<T> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (T v : a) set.add(v);")
+		c.writeln("for (T v : b) set.remove(v);")
+		c.writeln("@SuppressWarnings(\"unchecked\") T[] res = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), set.size());")
+		c.writeln("int i = 0;")
+		c.writeln("for (T v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_intersect"] {
+		c.writeln("")
+		c.writeln("static int[] _intersect(int[] a, int[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<Integer> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (int v : a) if (java.util.Arrays.binarySearch(b, v) >= 0) set.add(v);")
+		c.writeln("int[] res = new int[set.size()];")
+		c.writeln("int i = 0;")
+		c.writeln("for (int v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static boolean[] _intersect(boolean[] a, boolean[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<Boolean> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (boolean v : a) {")
+		c.indent++
+		c.writeln("for (boolean u : b) { if (u == v) { set.add(v); break; } }")
+		c.indent--
+		c.writeln("}")
+		c.writeln("boolean[] res = new boolean[set.size()];")
+		c.writeln("int i = 0;")
+		c.writeln("for (boolean v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static <T> T[] _intersect(T[] a, T[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<T> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (T v : a) { for (T u : b) { if (java.util.Objects.equals(u, v)) { set.add(v); break; } } }")
+		c.writeln("@SuppressWarnings(\"unchecked\") T[] res = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), set.size());")
+		c.writeln("int i = 0;")
+		c.writeln("for (T v : set) res[i++] = v;")
 		c.writeln("return res;")
 		c.indent--
 		c.writeln("}")
