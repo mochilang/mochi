@@ -747,19 +747,26 @@ func (c *Compiler) expr(n *ast.Node) string {
 						endNode = ch.Children[0]
 					}
 				}
-				if startNode == nil || endNode == nil {
-					c.writeln("    *> unsupported slice")
-					return "0"
+				startExpr := "0"
+				endExpr := ""
+				if startNode != nil {
+					startExpr = c.expr(startNode)
 				}
-				startExpr := c.expr(startNode)
-				endExpr := c.expr(endNode)
-				if !isSimpleExpr(startNode) {
+				if endNode != nil {
+					endExpr = c.expr(endNode)
+				} else {
+					tmp := c.newTemp()
+					c.declare("01 " + tmp + " PIC S9.")
+					c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION LENGTH(%s)", tmp, arr))
+					endExpr = tmp
+				}
+				if startNode != nil && !isSimpleExpr(startNode) {
 					tmp := c.newTemp()
 					c.declare("01 " + tmp + " PIC S9.")
 					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, startExpr))
 					startExpr = tmp
 				}
-				if !isSimpleExpr(endNode) {
+				if endNode != nil && !isSimpleExpr(endNode) {
 					tmp := c.newTemp()
 					c.declare("01 " + tmp + " PIC S9.")
 					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, endExpr))
