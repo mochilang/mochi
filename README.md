@@ -609,12 +609,14 @@ implemented across all backends:
 * Asynchronous functions (`async`/`await`)
 * Agent declarations and intent blocks with persistent state
 * Agent initialization with field values
-* Right and outer joins in dataset queries
+* Full outer joins in dataset queries
 * Destructuring bindings in `let` and `var` statements
 * YAML dataset loading and saving
 * Agent and stream constructs (`agent`, `on`, `emit`)
 * Model declarations (`model` blocks)
 * Dataset queries with outer joins or complex aggregation
+* Sorting, pagination or grouping when joins are used
+* Full LLM integration for `_genText` and `_genStruct`
 * Pattern matching on union variants
 * Nested recursive functions inside other functions
 * Foreign imports and `extern` declarations

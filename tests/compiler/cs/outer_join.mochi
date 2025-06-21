@@ -1,0 +1,18 @@
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+let orders = [
+  { id: 100, customerId: 1, total: 250 },
+  { id: 101, customerId: 3, total: 80 }
+]
+let result = from o in orders
+             outer join c in customers on o.customerId == c.id
+             select {
+               order: o,
+               customer: c
+             }
+print("--- Outer Join ---")
+for entry in result {
+  print("order", entry.order, "customer", entry.customer)
+}

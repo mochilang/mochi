@@ -971,6 +971,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		specialLeft := len(q.Joins) == 1 && joinSides[0] == "left"
 		specialRight := len(q.Joins) == 1 && joinSides[0] == "right" && len(q.Froms) == 0
+		specialOuter := len(q.Joins) == 1 && joinSides[0] == "outer" && len(q.Froms) == 0
 		if specialLeft {
 			buf.WriteString(indent + "bool _matched = false;\n")
 			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(q.Joins[0].Var), joinSrcs[0]))
@@ -1027,6 +1028,64 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(indent + "}\n")
 			buf.WriteString(indent + "if (!_matched) {\n")
 			indent += "\t"
+			buf.WriteString(fmt.Sprintf(indent+"dynamic %s = null;\n", sanitizeName(v)))
+			if cond != "" {
+				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
+				indent += "\t"
+			}
+			buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
+			if cond != "" {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		} else if specialOuter {
+			buf.WriteString(fmt.Sprintf(indent+"var __right = new List<dynamic>(%s);\n", joinSrcs[0]))
+			buf.WriteString(indent + "var __matched = new bool[__right.Count];\n")
+			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", v, src))
+			indent += "\t"
+			buf.WriteString(indent + "bool _m = false;\n")
+			buf.WriteString(indent + "for (int __i = 0; __i < __right.Count; __i++) {\n")
+			indent += "\t"
+			buf.WriteString(fmt.Sprintf(indent+"var %s = __right[__i];\n", sanitizeName(q.Joins[0].Var)))
+			buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[0]))
+			if cond != "" {
+				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
+				indent += "\t"
+			}
+			buf.WriteString(indent + "_m = true;\n")
+			buf.WriteString(indent + "__matched[__i] = true;\n")
+			buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
+			if cond != "" {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+			buf.WriteString(indent + "if (!_m) {\n")
+			indent += "\t"
+			buf.WriteString(fmt.Sprintf(indent+"dynamic %s = null;\n", sanitizeName(q.Joins[0].Var)))
+			if cond != "" {
+				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
+				indent += "\t"
+			}
+			buf.WriteString(fmt.Sprintf(indent+"_res.Add(%s);\n", sel))
+			if cond != "" {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+			buf.WriteString(indent + "for (int __i = 0; __i < __right.Count; __i++) {\n")
+			indent += "\t"
+			buf.WriteString(indent + "if (!__matched[__i]) {\n")
+			indent += "\t"
+			buf.WriteString(fmt.Sprintf(indent+"var %s = __right[__i];\n", sanitizeName(q.Joins[0].Var)))
 			buf.WriteString(fmt.Sprintf(indent+"dynamic %s = null;\n", sanitizeName(v)))
 			if cond != "" {
 				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
