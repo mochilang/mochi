@@ -157,6 +157,16 @@ const (
     }
     return res
 }`
+
+	helperStream = `class _Stream<T>(val name: String) {
+    private val handlers = mutableListOf<(T) -> Unit>()
+    fun append(data: T) {
+        for (h in handlers.toList()) { h(data) }
+    }
+    fun register(handler: (T) -> Unit) { handlers.add(handler) }
+}`
+
+	helperWaitAll = `fun _waitAll() {}`
 )
 
 var helperMap = map[string]string{
@@ -173,4 +183,6 @@ var helperMap = map[string]string{
 	"_union":     helperUnion,
 	"_except":    helperExcept,
 	"_intersect": helperIntersect,
+	"_Stream":    helperStream,
+	"_waitAll":   helperWaitAll,
 }
