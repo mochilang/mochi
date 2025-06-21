@@ -242,6 +242,9 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Reflection or macro facilities
 * Generic type parameters and methods inside `type` blocks
 * Nested function declarations inside other functions
-* Iteration over map key/value pairs
 * Asynchronous `async`/`await` constructs
 * Built-in functions `json`, `now`, `count` and `avg`
+* Error handling with `try`/`catch`
+* Variadic functions
+* Functions with multiple return values
+* Closures that capture surrounding variables

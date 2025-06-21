@@ -456,6 +456,27 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	} else if isStringLiteral(f.Source) {
 		elemType = "char"
 	}
+	if t := c.guessExprType(f.Source); strings.HasPrefix(t, "unordered_map<") {
+		inside := strings.TrimSuffix(strings.TrimPrefix(t, "unordered_map<"), ">")
+		parts := strings.SplitN(inside, ",", 2)
+		keyType := strings.TrimSpace(parts[0])
+		kv := fmt.Sprintf("_kv%d", c.tmpCount)
+		c.tmpCount++
+		c.writeln(fmt.Sprintf("for (auto& %s : %s) {", kv, src))
+		c.indent++
+		if f.Name != "_" {
+			c.writeln(fmt.Sprintf("%s %s = %s.first;", keyType, f.Name, kv))
+			c.setVar(f.Name, keyType)
+		}
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
+	}
 	name := f.Name
 	if name == "_" {
 		name = "_"
