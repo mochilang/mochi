@@ -1,0 +1,16 @@
+package network
+
+type Topic {
+  name: string
+  subscribers: int
+}
+
+export fun topic(name: string, subscribers: int): Topic {
+  return Topic { name: name, subscribers: subscribers }
+}
+
+export fun to_tf(t: Topic): string {
+  return "resource \"topic\" \"" + t.name + "\" {\n" +
+         "  subscribers = " + str(t.subscribers) + "\n" +
+         "}\n"
+}

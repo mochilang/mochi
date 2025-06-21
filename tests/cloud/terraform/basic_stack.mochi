@@ -1,0 +1,12 @@
+import "lib/cloud/terraform" as tf
+
+let stack = tf.stack([
+  tf.function("hello", "python3.11", "main.handler"),
+  tf.bucket("files", true),
+  tf.queue("tasks", 30),
+  tf.container("svc", "registry/app:latest", 512, 1024),
+  tf.topic("events", 5),
+  tf.table("users", "id", "ts"),
+])
+
+print(tf.synthesize(stack))
