@@ -79,11 +79,12 @@ type Compiler struct {
 	needsIntersectListInt    bool
 	needsIntersectListString bool
 	externs                  []string
+	externObjects            []string
 	structs                  map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, lambdas: []string{}, structs: map[string]bool{}}
+	return &Compiler{env: env, lambdas: []string{}, structs: map[string]bool{}, externObjects: []string{}}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -203,11 +204,21 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 				ft := types.FuncType{Params: ptypes, Return: resolveTypeRef(s.ExternFun.Return, c.env)}
 				c.env.SetVar(s.ExternFun.Name(), ft, true)
 			}
+		} else if s.ExternObject != nil {
+			name := sanitizeName(s.ExternObject.Name)
+			c.externs = append(c.externs, fmt.Sprintf("extern void* %s;", name))
+			c.externObjects = append(c.externObjects, name)
+			if c.env != nil {
+				c.env.SetVar(s.ExternObject.Name, types.AnyType{}, true)
+			}
 		}
 	}
 	// main function
 	c.writeln("int main() {")
 	c.indent++
+	for _, name := range c.externObjects {
+		c.writeln(fmt.Sprintf("if (%s == NULL) { fprintf(stderr, \"extern object not registered: %s\\n\"); return 1; }", name, name))
+	}
 	for _, s := range prog.Statements {
 		if s.Fun == nil && s.Test == nil {
 			if err := c.compileStmt(s); err != nil {
@@ -463,7 +474,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		// extern type declarations have no runtime effect
 		return nil
 	case s.ExternObject != nil:
-		// extern objects are not supported yet
+		// extern objects have no runtime effect
 		return nil
 	default:
 		// unsupported
