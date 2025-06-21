@@ -293,3 +293,31 @@ func stmtsMutate(list []*parser.Statement, name string) bool {
 	}
 	return false
 }
+
+// rustTypeFrom converts a semantic type to a Rust type string.
+func rustTypeFrom(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "i64"
+	case types.FloatType:
+		return "f64"
+	case types.StringType:
+		return "String"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		return "Vec<" + rustTypeFrom(tt.Elem) + ">"
+	case types.MapType:
+		return "std::collections::HashMap<" + rustTypeFrom(tt.Key) + ", " + rustTypeFrom(tt.Value) + ">"
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
+	case types.GroupType:
+		return "Group<" + rustTypeFrom(tt.Elem) + ">"
+	case types.AnyType:
+		return "std::boxed::Box<dyn std::any::Any>"
+	default:
+		return "std::boxed::Box<dyn std::any::Any>"
+	}
+}

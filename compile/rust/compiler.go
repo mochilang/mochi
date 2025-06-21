@@ -633,6 +633,52 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// Handle simple grouping without joins or filters
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			return "", err
+		}
+		selExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		var elemType types.Type = types.AnyType{}
+		srcType := c.inferExprType(q.Source)
+		if lt, ok := srcType.(types.ListType); ok {
+			elemType = lt.Elem
+		}
+		keyType := c.inferExprType(q.Group.Expr)
+		retType := c.inferExprType(q.Select)
+		alias := sanitizeName(q.Group.Name)
+		var b strings.Builder
+		b.WriteString("{\n")
+		b.WriteString("    #[derive(Clone, Debug)]\n")
+		b.WriteString(fmt.Sprintf("    struct Group { key: %s, items: Vec<%s> }\n", rustTypeFrom(keyType), rustTypeFrom(elemType)))
+		b.WriteString("    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();\n")
+		b.WriteString("    let mut order: Vec<String> = Vec::new();\n")
+		b.WriteString(fmt.Sprintf("    for %s in %s.clone() {\n", sanitizeName(q.Var), src))
+		b.WriteString(fmt.Sprintf("        let key: %s = %s;\n", rustTypeFrom(keyType), keyExpr))
+		b.WriteString("        let ks = format!(\"{:?}\", key.clone());\n")
+		b.WriteString("        if !groups.contains_key(&ks) {\n")
+		b.WriteString("            groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });\n")
+		b.WriteString("            order.push(ks.clone());\n")
+		b.WriteString("        }\n")
+		b.WriteString(fmt.Sprintf("        groups.get_mut(&ks).unwrap().items.push(%s.clone());\n", sanitizeName(q.Var)))
+		b.WriteString("    }\n")
+		b.WriteString(fmt.Sprintf("    let mut _res: Vec<%s> = Vec::new();\n", rustTypeFrom(retType)))
+		b.WriteString("    for ks in order {\n")
+		b.WriteString("        let g = groups.get(&ks).unwrap().clone();\n")
+		if alias != "g" {
+			b.WriteString(fmt.Sprintf("        let %s = g.clone();\n", alias))
+		}
+		b.WriteString(fmt.Sprintf("        _res.push(%s);\n", selExpr))
+		b.WriteString("    }\n")
+		b.WriteString("    _res\n")
+		b.WriteString("}\n")
+		return b.String(), nil
+	}
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
