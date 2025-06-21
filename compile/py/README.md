@@ -107,8 +107,9 @@ func EnsurePython() error {
 The Python backend does not yet implement every language feature. Known
 limitations include:
 
-* Initializing agents with field values, e.g. `MyAgent { foo: 1 }`
 * `import` statements targeting a language other than Python
+* Error handling with `try`/`catch`
+* Concurrency primitives like `spawn` and channels
 
 ## Notes
 

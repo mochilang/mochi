@@ -1191,10 +1191,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Struct != nil:
 		if c.env != nil {
 			if _, ok := c.env.GetAgent(p.Struct.Name); ok {
-				if len(p.Struct.Fields) > 0 {
-					return "", fmt.Errorf("agent initialization with fields not supported")
+				if len(p.Struct.Fields) == 0 {
+					return fmt.Sprintf("New%s()", sanitizeName(p.Struct.Name)), nil
 				}
-				return fmt.Sprintf("New%s()", sanitizeName(p.Struct.Name)), nil
+				tmp := fmt.Sprintf("_t%d", c.tmpCount)
+				c.tmpCount++
+				var b strings.Builder
+				b.WriteString("(lambda:\n")
+				b.WriteString(fmt.Sprintf("\t%s = New%s()\n", tmp, sanitizeName(p.Struct.Name)))
+				for _, f := range p.Struct.Fields {
+					v, err := c.compileExpr(f.Value)
+					if err != nil {
+						return "", err
+					}
+					b.WriteString(fmt.Sprintf("\t%s.%s = %s\n", tmp, sanitizeName(f.Name), v))
+				}
+				b.WriteString(fmt.Sprintf("\treturn %s\n", tmp))
+				b.WriteString(")()")
+				return b.String(), nil
 			}
 		}
 		parts := make([]string, len(p.Struct.Fields))

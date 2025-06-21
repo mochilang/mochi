@@ -653,6 +653,14 @@ The C# code generator also omits several language capabilities:
 - Agent initialization with field values
 - The `eval` builtin function
 
+## Unsupported Features (Python Backend)
+
+The Python code generator implements most of the language but some features remain missing:
+
+- Error handling with `try`/`catch`
+- Concurrency primitives like `spawn` and channels
+- Foreign function interface such as `extern` declarations
+
 ## Unsupported Features (Zig Backend)
 
 The Zig backend currently supports only a minimal subset of Mochi. Missing features include:
