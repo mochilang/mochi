@@ -146,6 +146,22 @@ This script attempts platform‑specific installation via Homebrew or `apt-get` 
 
 The C# backend focuses on fundamental features: functions, control flow, structs, unions and query expressions. Recent updates added support for package declarations, set operations on lists, helper functions for printing JSON or getting the current timestamp, and basic stream handling with `on`/`emit` blocks. Advanced Mochi capabilities such as long‑lived agents and extern objects are not yet implemented in this generator.
 
+### Supported features
+
+- Variable and function declarations
+- Control flow with `if`, `for`, `while`, `break` and `continue`
+- Struct and union types with pattern matching using `match`
+- Lists and maps with indexing, slicing and membership checks
+- Dataset queries with `from`, `where`, `select`, `sort by`, `skip` and `take`
+- Cross joins via multiple `from` clauses
+- Set operations on lists: `union`, `union all`, `except`, `intersect`
+- Built‑ins `print`, `len`, `count`, `avg`, `now` and `json`
+- HTTP requests using `fetch`
+- Dataset helpers `_load` and `_save` supporting CSV, TSV, JSON, JSONL and YAML
+- Package declarations and imports
+- Basic stream handling with `on` and `emit`
+- Placeholder generative helpers `_genText`, `_genEmbed` and `_genStruct`
+
 ### Unsupported features
 
 - The backend is still incomplete. Notable gaps include:
@@ -153,9 +169,12 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Agent declarations and intent blocks
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign function interface and extern objects
-- YAML dataset loading/saving
 - Full LLM integration for `_genText` and `_genStruct`
 - Concurrency primitives like `spawn` and channels
 - `try`/`catch` error handling
 - Agent initialization with field values
 - The `eval` builtin function
+- Reflection or macro facilities
+- Generic type parameters and methods inside `type` blocks
+- Asynchronous `async`/`await` constructs
+- Nested function declarations inside other functions

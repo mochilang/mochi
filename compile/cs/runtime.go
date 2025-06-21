@@ -273,6 +273,20 @@ func (c *Compiler) emitRuntime() {
 				c.indent++
 				c.writeln("return JsonSerializer.Deserialize<List<dynamic>>(text);")
 				c.indent--
+				c.writeln("case \"yaml\":")
+				c.indent++
+				c.writeln("var deser = new DeserializerBuilder().Build();")
+				c.writeln("var obj = deser.Deserialize<object>(new StringReader(text));")
+				c.writeln("if (obj is IList<object> lst) return lst.Cast<dynamic>().ToList();")
+				c.writeln("if (obj is IDictionary<object, object> m) {")
+				c.indent++
+				c.writeln("var d = new Dictionary<string, object>();")
+				c.writeln("foreach (var kv in m) d[Convert.ToString(kv.Key)] = kv.Value;")
+				c.writeln("return new List<dynamic> { d };")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return new List<dynamic>();")
+				c.indent--
 				c.writeln("case \"tsv\":")
 				c.indent++
 				c.writeln("delim = '\t'; goto default;")
@@ -317,6 +331,14 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("case \"json\":")
 				c.indent++
 				c.writeln("File.WriteAllText(path, JsonSerializer.Serialize(rows));")
+				c.writeln("break;")
+				c.indent--
+				c.writeln("case \"yaml\":")
+				c.indent++
+				c.writeln("var ser = new SerializerBuilder().Build();")
+				c.writeln("var list = rows.ToList();")
+				c.writeln("var data = list.Count == 1 ? list[0] : (object)list;")
+				c.writeln("File.WriteAllText(path, ser.Serialize(data));")
 				c.writeln("break;")
 				c.indent--
 				c.writeln("case \"tsv\":")
