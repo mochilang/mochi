@@ -292,7 +292,8 @@ fail at runtime:
 - Interaction with external objects
 - Error handling with `try`/`catch` blocks
 - Asynchronous functions (`async`/`await`)
-- Set collections (`set<T>`) and related operations
+- Set collections (`set<T>`) are still unsupported, but list set operations
+   such as `union`, `union all`, `except` and `intersect` are handled
 - Model and stream declarations
 - Methods declared inside `type` blocks
 - Reflection and macro facilities
@@ -300,6 +301,7 @@ fail at runtime:
   including `on`/`emit` handlers and `intent` functions, are not available
 - Module imports were unsupported but are now handled via `require`
 - Generic type parameters for functions and user-defined types are not handled
+- Package declarations using `package` are ignored
 
 `load` and `save` support JSON, JSONL, YAML and CSV formats.
 
