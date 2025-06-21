@@ -1,0 +1,12 @@
+import "lib/cloud/aws/s3" as s3
+
+let base = "http://localhost"
+
+test "s3 put and get" {
+  let b = s3.bucket("t", base)
+  s3.put(b, "k", "v")
+  expect s3.get(b, "k") == "v"
+  let keys = s3.list_keys(b) as list<string>
+  expect len(keys) == 1
+  expect keys[0] == "k"
+}

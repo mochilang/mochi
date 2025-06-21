@@ -1,0 +1,13 @@
+import "lib/cloud/aws/dynamo" as dynamo
+
+let base = "http://localhost"
+
+test "dynamo put and get" {
+  let t = dynamo.table("users", base)
+  dynamo.put(t, "1", {"id": "1", "name": "Ana"})
+  let item = dynamo.get(t, "1") as map<string, any>
+  expect item["name"] == "Ana"
+  let keys = dynamo.keys(t) as list<string>
+  expect len(keys) == 1
+  expect keys[0] == "1"
+}

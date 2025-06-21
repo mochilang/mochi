@@ -1,0 +1,19 @@
+package lambda
+
+type Fn {
+  name: string,
+  base_url: string,
+}
+
+export fun function(name: string, base_url: string): Fn {
+  return Fn { name: name, base_url: base_url }
+}
+
+fun invoke(f: Fn, payload: any): any {
+  let res = fetch f.base_url + "/lambda/invoke" with {
+    method: "POST",
+    query: { name: f.name },
+    body: payload
+  }
+  return res["result"]
+}

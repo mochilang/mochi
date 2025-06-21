@@ -1,0 +1,31 @@
+package dynamo
+
+type Table {
+  name: string,
+  base_url: string,
+}
+
+export fun table(name: string, base_url: string): Table {
+  return Table { name: name, base_url: base_url }
+}
+
+fun put(t: Table, key: string, item: map<string, any>) {
+  fetch t.base_url + "/dynamo/item" with {
+    method: "PUT",
+    query: { table: t.name, key: key },
+    body: item
+  }
+}
+
+fun get(t: Table, key: string): map<string, any> {
+  return fetch t.base_url + "/dynamo/item" with {
+    query: { table: t.name, key: key }
+  } as map<string, any>
+}
+
+fun keys(t: Table): list<string> {
+  let res = fetch t.base_url + "/dynamo/keys" with {
+    query: { table: t.name }
+  } as map<string, any>
+  return res["keys"] as list<string>
+}
