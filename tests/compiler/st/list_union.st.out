@@ -1,0 +1,12 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'runtime'!
+__union: a with: b
+	| out |
+	out := OrderedCollection new.
+	a ifNotNil: [ a do: [:v | (out includes: v) ifFalse: [ out add: v ] ] ].
+	b ifNotNil: [ b do: [:v | (out includes: v) ifFalse: [ out add: v ] ] ].
+	^ out asArray
+!
+!!
+((Main __union: (Array with: 1 with: 2) with: (Array with: 2 with: 3))) displayOn: Transcript. Transcript cr.

@@ -19,9 +19,13 @@ type Compiler struct {
 	needCount    bool
 	needAvg      bool
 	needInput    bool
-	needReduce   bool
-	needBreak    bool
-	needContinue bool
+        needReduce   bool
+        needBreak    bool
+        needContinue bool
+       needUnionAll bool
+       needUnion bool
+       needExcept bool
+       needIntersect bool
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -41,11 +45,15 @@ func (c *Compiler) writeIndent() {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.needCount = false
-	c.needAvg = false
-	c.needInput = false
-	c.needReduce = false
-	c.needBreak = false
-	c.needContinue = false
+       c.needAvg = false
+       c.needInput = false
+       c.needReduce = false
+       c.needBreak = false
+       c.needContinue = false
+       c.needUnionAll = false
+       c.needUnion = false
+       c.needExcept = false
+       c.needIntersect = false
 
 	orig := c.buf
 
@@ -108,9 +116,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Write(typeCode)
 	c.buf.Write(funCode)
 	c.buf.Write(testCode)
-	if c.needCount || c.needAvg || c.needInput || c.needReduce || c.needBreak || c.needContinue {
-		c.emitHelpers()
-	}
+       if c.needCount || c.needAvg || c.needInput || c.needReduce || c.needBreak || c.needContinue || c.needUnionAll || c.needUnion || c.needExcept || c.needIntersect {
+               c.emitHelpers()
+       }
 	c.writelnNoIndent("!!")
 	c.buf.Write(mainCode)
 
@@ -543,21 +551,41 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				leftList = false
 				leftStr = false
 			}
-		case "in":
-			if rlist || rstr {
-				expr = fmt.Sprintf("(%s includes: %s)", right, left)
-			} else if isMapPostfix(op.Right, c.env) {
-				expr = fmt.Sprintf("(%s includesKey: %s)", right, left)
-			} else {
-				expr = fmt.Sprintf("(%s includes: %s)", right, left)
-			}
-			leftList = false
-			leftStr = false
-		case "&&":
-			expr = fmt.Sprintf("(%s and: [%s])", expr, right)
-			leftList = false
-			leftStr = false
-		case "||":
+               case "in":
+                       if rlist || rstr {
+                               expr = fmt.Sprintf("(%s includes: %s)", right, left)
+                       } else if isMapPostfix(op.Right, c.env) {
+                               expr = fmt.Sprintf("(%s includesKey: %s)", right, left)
+                       } else {
+                               expr = fmt.Sprintf("(%s includes: %s)", right, left)
+                       }
+                       leftList = false
+                       leftStr = false
+               case "union":
+                       if op.All {
+                               c.needUnionAll = true
+                               expr = fmt.Sprintf("(Main __union_all: (%s) with: (%s))", expr, right)
+                       } else {
+                               c.needUnion = true
+                               expr = fmt.Sprintf("(Main __union: (%s) with: (%s))", expr, right)
+                       }
+                       leftList = true
+                       leftStr = false
+               case "except":
+                       c.needExcept = true
+                       expr = fmt.Sprintf("(Main __except: (%s) with: (%s))", expr, right)
+                       leftList = true
+                       leftStr = false
+               case "intersect":
+                       c.needIntersect = true
+                       expr = fmt.Sprintf("(Main __intersect: (%s) with: (%s))", expr, right)
+                       leftList = true
+                       leftStr = false
+               case "&&":
+                       expr = fmt.Sprintf("(%s and: [%s])", expr, right)
+                       leftList = false
+                       leftStr = false
+               case "||":
 			expr = fmt.Sprintf("(%s or: [%s])", expr, right)
 			leftList = false
 			leftStr = false
@@ -1047,14 +1075,60 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writelnNoIndent("!")
 	}
-	if c.needReduce {
-		c.writeln("__reduce: v fn: blk init: acc")
-		c.indent++
-		c.writeln("| res |")
-		c.writeln("res := acc.")
-		c.writeln("v do: [:it | res := blk value: res value: it].")
-		c.writeln("^ res")
-		c.indent--
-		c.writelnNoIndent("!")
-	}
+        if c.needReduce {
+                c.writeln("__reduce: v fn: blk init: acc")
+                c.indent++
+                c.writeln("| res |")
+                c.writeln("res := acc.")
+                c.writeln("v do: [:it | res := blk value: res value: it].")
+                c.writeln("^ res")
+                c.indent--
+                c.writelnNoIndent("!")
+        }
+       if c.needUnionAll {
+               c.writeln("__union_all: a with: b")
+               c.indent++
+               c.writeln("| out |")
+               c.writeln("out := OrderedCollection new.")
+               c.writeln("a ifNotNil: [ a do: [:v | out add: v ] ].")
+               c.writeln("b ifNotNil: [ b do: [:v | out add: v ] ].")
+               c.writeln("^ out asArray")
+               c.indent--
+               c.writelnNoIndent("!")
+       }
+       if c.needUnion {
+               c.writeln("__union: a with: b")
+               c.indent++
+               c.writeln("| out |")
+               c.writeln("out := OrderedCollection new.")
+               c.writeln("a ifNotNil: [ a do: [:v | (out includes: v) ifFalse: [ out add: v ] ] ].")
+               c.writeln("b ifNotNil: [ b do: [:v | (out includes: v) ifFalse: [ out add: v ] ] ].")
+               c.writeln("^ out asArray")
+               c.indent--
+               c.writelnNoIndent("!")
+       }
+       if c.needExcept {
+               c.writeln("__except: a with: b")
+               c.indent++
+               c.writeln("| out |")
+               c.writeln("out := OrderedCollection new.")
+               c.writeln("a ifNotNil: [ a do: [:v | (b isNil or: [ (b includes: v) not ]) ifTrue: [ out add: v ] ] ].")
+               c.writeln("^ out asArray")
+               c.indent--
+               c.writelnNoIndent("!")
+       }
+       if c.needIntersect {
+               c.writeln("__intersect: a with: b")
+               c.indent++
+               c.writeln("| out |")
+               c.writeln("out := OrderedCollection new.")
+               c.writeln("(a notNil and: [ b notNil ]) ifTrue: [")
+               c.indent++
+               c.writeln("a do: [:v | (b includes: v) ifTrue: [ (out includes: v) ifFalse: [ out add: v ] ] ].")
+               c.indent--
+               c.writeln("]")
+               c.writeln("^ out asArray")
+               c.indent--
+               c.writelnNoIndent("!")
+       }
 }

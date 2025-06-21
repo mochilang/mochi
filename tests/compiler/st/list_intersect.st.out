@@ -1,0 +1,13 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'runtime'!
+__intersect: a with: b
+	| out |
+	out := OrderedCollection new.
+	(a notNil and: [ b notNil ]) ifTrue: [
+		a do: [:v | (b includes: v) ifTrue: [ (out includes: v) ifFalse: [ out add: v ] ] ].
+	]
+	^ out asArray
+!
+!!
+((Main __intersect: (Array with: 1 with: 2 with: 3) with: (Array with: 2 with: 4))) displayOn: Transcript. Transcript cr.
