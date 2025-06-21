@@ -162,6 +162,11 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			return types.IntType{}
 		case "avg":
 			return types.FloatType{}
+		case "reduce":
+			if len(p.Call.Args) == 3 {
+				return c.inferExprType(p.Call.Args[2])
+			}
+			return types.AnyType{}
 		case "now":
 			return types.Int64Type{}
 		default:

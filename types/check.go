@@ -1896,6 +1896,7 @@ var builtinArity = map[string]int{
 	"len":    1,
 	"count":  1,
 	"avg":    1,
+	"reduce": 3,
 	"append": 2,
 	"reduce": 3,
 }
@@ -1957,6 +1958,17 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		default:
 			return errAvgOperand(pos, a)
 		}
+	case "reduce":
+		if len(args) != 3 {
+			return errArgCount(pos, name, 3, len(args))
+		}
+		// first argument should be list
+		if _, ok := args[0].(ListType); !ok {
+			if _, ok := args[0].(AnyType); !ok {
+				return fmt.Errorf("reduce() expects list, got %v", args[0])
+			}
+		}
+		return nil
 	case "append":
 		if len(args) != 2 {
 			return errArgCount(pos, name, 2, len(args))

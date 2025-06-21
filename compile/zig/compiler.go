@@ -27,6 +27,7 @@ type Compiler struct {
 	needsIndexString  bool
 	needsSlice        bool
 	needsSliceString  bool
+	needsReduce       bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -240,6 +241,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("if (eidx > n) eidx = n;")
 		c.writeln("if (eidx < sidx) eidx = sidx;")
 		c.writeln("return s[@as(usize, @intCast(sidx))..@as(usize, @intCast(eidx))];")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsReduce {
+		c.writeln("fn _reduce(comptime T: type, v: []const T, init: T, f: fn (T, T) T) T {")
+		c.indent++
+		c.writeln("var acc: T = init;")
+		c.writeln("for (v) |it| {")
+		c.indent++
+		c.writeln("acc = f(acc, it);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return acc;")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -794,6 +809,23 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needsAvgInt = true
 		return fmt.Sprintf("_avg_int(%s)", arg), nil
+	}
+	if name == "reduce" && len(call.Args) == 3 {
+		listArg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		fnArg, err := c.compileExpr(call.Args[1], false)
+		if err != nil {
+			return "", err
+		}
+		initArg, err := c.compileExpr(call.Args[2], false)
+		if err != nil {
+			return "", err
+		}
+		elem := c.listElemTypeUnary(call.Args[0].Binary.Left)
+		c.needsReduce = true
+		return fmt.Sprintf("_reduce(%s, %s, %s, %s)", elem, listArg, initArg, fnArg), nil
 	}
 	if name == "str" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
