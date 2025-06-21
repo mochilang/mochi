@@ -316,8 +316,7 @@ fail at runtime:
   are not available
 - Module imports and package declarations
 
-`load` and `save` support JSON, YAML and CSV formats. Other formats like JSONL
-are not implemented.
+`load` and `save` support JSON, JSONL, YAML and CSV formats.
 
 Problems `6`, `10`, `23` and `27` currently do not run correctly when compiled
 to Lua.

@@ -636,6 +636,23 @@ The experimental Rust compiler does not yet implement every Mochi feature. Missi
 - Package imports, extern objects and other FFI constructs (`import`, `extern`).
 - Model blocks (`model`) and associated LLM helpers.
 
+## Unsupported Features (Lua Backend)
+
+The Lua compiler focuses on basic code generation and omits several advanced features:
+
+- Regex helpers beyond simple `match`.
+- Modifying lists while iterating (`insert`, `remove`).
+- Query grouping and joins with `left`, `right` or `outer` sides.
+- Logic programming constructs and logic queries.
+- Foreign function interface and interaction with external objects.
+- `try`/`catch` error handling.
+- Set collections (`set<T>`).
+- Model and stream declarations.
+- Methods inside `type` blocks.
+- Reflection and macro facilities.
+- Concurrency primitives such as `spawn`, `stream`, `agent` and related helpers.
+- Module imports and package declarations.
+
 ## License
 
 Mochi is open source under the [MIT License](./LICENSE).
