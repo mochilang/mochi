@@ -1,0 +1,23 @@
+object Main {
+	def main(args: Array[String]): Unit = {
+		val a = scala.collection.mutable.ArrayBuffer(1, 2, 3)
+		val b = scala.collection.mutable.ArrayBuffer(3, 4)
+		println(_union(a, b))
+		println(_except(a, b))
+		println(_intersect(a, b))
+		println(_union(scala.collection.mutable.ArrayBuffer(1, 2), scala.collection.mutable.ArrayBuffer(2, 3)))
+	}
+	def _union[T](a: Seq[T], b: Seq[T]): Seq[T] = {
+		val res = scala.collection.mutable.ArrayBuffer[T]()
+		res ++= a
+		for (it <- b) { if (!res.contains(it)) res.append(it) }
+		res.toSeq
+	}
+	def _except[T](a: Seq[T], b: Seq[T]): Seq[T] = a.filterNot(b.contains)
+	def _intersect[T](a: Seq[T], b: Seq[T]): Seq[T] = {
+		val res = scala.collection.mutable.ArrayBuffer[T]()
+		for (it <- a) { if (b.contains(it) && !res.contains(it)) res.append(it) }
+		res.toSeq
+	}
+}
+
