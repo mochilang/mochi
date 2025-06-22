@@ -1,0 +1,5 @@
+fun show(xs: list<string>) {
+  print(len(xs))
+}
+
+show(["a","b"])

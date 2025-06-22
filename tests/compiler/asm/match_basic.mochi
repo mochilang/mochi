@@ -1,0 +1,10 @@
+fun label(x: int): string {
+  return match x {
+    1 => "one"
+    2 => "two"
+    _ => "other"
+  }
+}
+
+print(label(1))
+print(label(3))

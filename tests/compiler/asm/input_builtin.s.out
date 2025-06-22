@@ -1,0 +1,236 @@
+	.file	"prog.c"
+	.text
+	.type	list_int_create, @function
+list_int_create:
+.LFB6:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	pushq	%rbx
+	subq	$40, %rsp
+	.cfi_offset 3, -24
+	movl	%edi, -36(%rbp)
+	movl	-36(%rbp), %eax
+	movl	%eax, -32(%rbp)
+	movl	-36(%rbp), %eax
+	cltq
+	salq	$2, %rax
+	movq	%rax, %rdi
+	call	malloc@PLT
+	movq	%rax, -24(%rbp)
+	movq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	movq	%rax, %rcx
+	movq	%rdx, %rbx
+	movl	%esi, %eax
+	movq	%rbx, %rdx
+	movq	-8(%rbp), %rbx
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE6:
+	.size	list_int_create, .-list_int_create
+	.section	.rodata
+.LC0:
+	.string	""
+	.text
+	.type	_input, @function
+_input:
+.LFB7:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$1056, %rsp
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
+	xorl	%eax, %eax
+	movq	stdin(%rip), %rdx
+	leaq	-1040(%rbp), %rax
+	movl	$1024, %esi
+	movq	%rax, %rdi
+	call	fgets@PLT
+	testq	%rax, %rax
+	jne	.L4
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	call	strdup@PLT
+	jmp	.L7
+.L4:
+	leaq	-1040(%rbp), %rax
+	movq	%rax, %rdi
+	call	strlen@PLT
+	movq	%rax, -1048(%rbp)
+	cmpq	$0, -1048(%rbp)
+	je	.L6
+	movq	-1048(%rbp), %rax
+	subq	$1, %rax
+	movzbl	-1040(%rbp,%rax), %eax
+	cmpb	$10, %al
+	jne	.L6
+	movq	-1048(%rbp), %rax
+	subq	$1, %rax
+	movb	$0, -1040(%rbp,%rax)
+.L6:
+	leaq	-1040(%rbp), %rax
+	movq	%rax, %rdi
+	call	strdup@PLT
+.L7:
+	movq	-8(%rbp), %rdx
+	subq	%fs:40, %rdx
+	je	.L8
+	call	__stack_chk_fail@PLT
+.L8:
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE7:
+	.size	_input, .-_input
+	.section	.rodata
+.LC1:
+	.string	"%d"
+	.text
+	.type	_print_list_int, @function
+_print_list_int:
+.LFB8:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	movl	%edi, %eax
+	movq	%rsi, %rcx
+	movq	%rcx, %rdx
+	movq	%rax, -32(%rbp)
+	movq	%rdx, -24(%rbp)
+	movl	$91, %edi
+	call	putchar@PLT
+	movl	$0, -4(%rbp)
+	jmp	.L10
+.L12:
+	cmpl	$0, -4(%rbp)
+	jle	.L11
+	movl	$32, %edi
+	call	putchar@PLT
+.L11:
+	movq	-24(%rbp), %rax
+	movl	-4(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$2, %rdx
+	addq	%rdx, %rax
+	movl	(%rax), %eax
+	movl	%eax, %esi
+	leaq	.LC1(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	addl	$1, -4(%rbp)
+.L10:
+	movl	-32(%rbp), %eax
+	cmpl	%eax, -4(%rbp)
+	jl	.L12
+	movl	$93, %edi
+	call	putchar@PLT
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE8:
+	.size	_print_list_int, .-_print_list_int
+	.section	.rodata
+.LC2:
+	.string	"Enter first input:"
+.LC3:
+	.string	"Enter second input:"
+.LC4:
+	.string	"You entered:"
+.LC5:
+	.string	"%s "
+.LC6:
+	.string	","
+	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB9:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	leaq	.LC2(%rip), %rax
+	movq	%rax, %rdi
+	call	puts@PLT
+	movl	$0, %eax
+	call	_input
+	movq	%rax, -16(%rbp)
+	leaq	.LC3(%rip), %rax
+	movq	%rax, %rdi
+	call	puts@PLT
+	movl	$0, %eax
+	call	_input
+	movq	%rax, -8(%rbp)
+	leaq	.LC4(%rip), %rax
+	movq	%rax, %rsi
+	leaq	.LC5(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movq	-16(%rbp), %rax
+	movq	%rax, %rsi
+	leaq	.LC5(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	leaq	.LC6(%rip), %rax
+	movq	%rax, %rsi
+	leaq	.LC5(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movq	-8(%rbp), %rax
+	movq	%rax, %rdi
+	call	puts@PLT
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE9:
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+	.section	.note.GNU-stack,"",@progbits
+	.section	.note.gnu.property,"a"
+	.align 8
+	.long	1f - 0f
+	.long	4f - 1f
+	.long	5
+0:
+	.string	"GNU"
+1:
+	.align 8
+	.long	0xc0000002
+	.long	3f - 2f
+2:
+	.long	0x3
+3:
+	.align 8
+4:
