@@ -1118,7 +1118,6 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("int(%s)", expr)
 				} else if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" {
 					// no-op for list casts
-					expr = expr
 				} else {
 					return "", fmt.Errorf("unsupported cast")
 				}
