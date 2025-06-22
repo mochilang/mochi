@@ -1,4 +1,20 @@
 # 📦 CHANGELOG.md
+## [0.9.0] – 2025-07-01
+
+### Added
+
+* Official `std/` standard library packages (`math`, `strings`, `time`, `list`, `set`, `uuid`, `fmt`, `test`)
+* CLI autoload support and documentation extraction for standard packages
+
+### Changed
+
+* Explicit `export` requirements for library functions
+* Improved package import paths for `std/` modules
+
+### Fixed
+
+* Minor package import bugs and builtin function errors
+
 ## [0.8.10] – 2025-06-22
 
 ### Added
