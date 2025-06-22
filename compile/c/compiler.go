@@ -36,10 +36,15 @@ func sanitizeName(name string) string {
 	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
 		s = "_" + s
 	}
-	if cReserved[s] {
-		s = "_" + s
-	}
-	return s
+        if cReserved[s] {
+                s = "_" + s
+        }
+        // Avoid clashing with standard library functions such as remove()
+        switch s {
+        case "remove":
+                s = "_remove"
+        }
+        return s
 }
 
 type Compiler struct {
@@ -1183,16 +1188,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if p.Call.Func == "now" {
 			c.need(needNow)
 			return "_now()"
-		} else if p.Call.Func == "json" {
-			if len(p.Call.Args) != 1 {
-				return ""
-			}
-			argExpr := c.compileExpr(p.Call.Args[0])
-			c.need(needJSON)
-			if isListListExpr(p.Call.Args[0], c.env) {
-				c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
-			} else if isListIntExpr(p.Call.Args[0], c.env) {
-				c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
+                } else if p.Call.Func == "json" {
+                        if len(p.Call.Args) != 1 {
+                                return ""
+                        }
+                        argExpr := c.compileExpr(p.Call.Args[0])
+                        c.need(needJSON)
+                        // Ensure helper types used by the JSON runtime are emitted
+                        c.need(needListFloat)
+                        c.need(needListString)
+                        c.need(needListListInt)
+                        if isListListExpr(p.Call.Args[0], c.env) {
+                                c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
+                        } else if isListIntExpr(p.Call.Args[0], c.env) {
+                                c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
 			} else if isListFloatExpr(p.Call.Args[0], c.env) {
 				c.writeln(fmt.Sprintf("_json_list_float(%s);", argExpr))
 			} else if isListStringExpr(p.Call.Args[0], c.env) {
@@ -1206,11 +1215,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			return ""
 		}
-		args := make([]string, len(p.Call.Args))
-		for i, a := range p.Call.Args {
-			args[i] = c.compileExpr(a)
-		}
-		return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", "))
+args := make([]string, len(p.Call.Args))
+for i, a := range p.Call.Args {
+args[i] = c.compileExpr(a)
+}
+return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), strings.Join(args, ", "))
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:

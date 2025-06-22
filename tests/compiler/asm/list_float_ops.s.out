@@ -1,0 +1,517 @@
+	.file	"prog.c"
+	.text
+	.type	list_int_create, @function
+list_int_create:
+.LFB6:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	pushq	%rbx
+	subq	$40, %rsp
+	.cfi_offset 3, -24
+	movl	%edi, -36(%rbp)
+	movl	-36(%rbp), %eax
+	movl	%eax, -32(%rbp)
+	movl	-36(%rbp), %eax
+	cltq
+	salq	$2, %rax
+	movq	%rax, %rdi
+	call	malloc@PLT
+	movq	%rax, -24(%rbp)
+	movq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	movq	%rax, %rcx
+	movq	%rdx, %rbx
+	movl	%esi, %eax
+	movq	%rbx, %rdx
+	movq	-8(%rbp), %rbx
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE6:
+	.size	list_int_create, .-list_int_create
+	.type	list_float_create, @function
+list_float_create:
+.LFB7:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	pushq	%rbx
+	subq	$40, %rsp
+	.cfi_offset 3, -24
+	movl	%edi, -36(%rbp)
+	movl	-36(%rbp), %eax
+	movl	%eax, -32(%rbp)
+	movl	-36(%rbp), %eax
+	cltq
+	salq	$3, %rax
+	movq	%rax, %rdi
+	call	malloc@PLT
+	movq	%rax, -24(%rbp)
+	movq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	movq	%rax, %rcx
+	movq	%rdx, %rbx
+	movl	%esi, %eax
+	movq	%rbx, %rdx
+	movq	-8(%rbp), %rbx
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE7:
+	.size	list_float_create, .-list_float_create
+	.type	union_list_float, @function
+union_list_float:
+.LFB8:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	pushq	%rbx
+	subq	$88, %rsp
+	.cfi_offset 3, -24
+	movl	%edi, %eax
+	movq	%rsi, %r8
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	movq	%r8, %rdi
+	movq	%rsi, -80(%rbp)
+	movq	%rdi, -72(%rbp)
+	movl	%edx, %eax
+	movq	%rcx, %rdx
+	movq	%rax, -96(%rbp)
+	movq	%rdx, -88(%rbp)
+	movl	-80(%rbp), %edx
+	movl	-96(%rbp), %eax
+	addl	%edx, %eax
+	movl	%eax, %edi
+	call	list_float_create
+	movl	%eax, %ecx
+	movq	%rdx, %rax
+	movl	%ecx, -32(%rbp)
+	movq	%rax, -24(%rbp)
+	movl	$0, -60(%rbp)
+	movl	$0, -56(%rbp)
+	jmp	.L6
+.L13:
+	movl	$0, -52(%rbp)
+	movl	$0, -48(%rbp)
+	jmp	.L7
+.L11:
+	movq	-24(%rbp), %rax
+	movl	-48(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$3, %rdx
+	addq	%rdx, %rax
+	movsd	(%rax), %xmm0
+	movq	-72(%rbp), %rax
+	movl	-56(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$3, %rdx
+	addq	%rdx, %rax
+	movsd	(%rax), %xmm1
+	ucomisd	%xmm1, %xmm0
+	jp	.L8
+	ucomisd	%xmm1, %xmm0
+	jne	.L8
+	movl	$1, -52(%rbp)
+	jmp	.L10
+.L8:
+	addl	$1, -48(%rbp)
+.L7:
+	movl	-48(%rbp), %eax
+	cmpl	-60(%rbp), %eax
+	jl	.L11
+.L10:
+	cmpl	$0, -52(%rbp)
+	jne	.L12
+	movq	-72(%rbp), %rax
+	movl	-56(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$3, %rdx
+	leaq	(%rax,%rdx), %rcx
+	movq	-24(%rbp), %rsi
+	movl	-60(%rbp), %eax
+	leal	1(%rax), %edx
+	movl	%edx, -60(%rbp)
+	cltq
+	salq	$3, %rax
+	addq	%rsi, %rax
+	movsd	(%rcx), %xmm0
+	movsd	%xmm0, (%rax)
+.L12:
+	addl	$1, -56(%rbp)
+.L6:
+	movl	-80(%rbp), %eax
+	cmpl	%eax, -56(%rbp)
+	jl	.L13
+	movl	$0, -44(%rbp)
+	jmp	.L14
+.L21:
+	movl	$0, -40(%rbp)
+	movl	$0, -36(%rbp)
+	jmp	.L15
+.L19:
+	movq	-24(%rbp), %rax
+	movl	-36(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$3, %rdx
+	addq	%rdx, %rax
+	movsd	(%rax), %xmm0
+	movq	-88(%rbp), %rax
+	movl	-44(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$3, %rdx
+	addq	%rdx, %rax
+	movsd	(%rax), %xmm1
+	ucomisd	%xmm1, %xmm0
+	jp	.L16
+	ucomisd	%xmm1, %xmm0
+	jne	.L16
+	movl	$1, -40(%rbp)
+	jmp	.L18
+.L16:
+	addl	$1, -36(%rbp)
+.L15:
+	movl	-36(%rbp), %eax
+	cmpl	-60(%rbp), %eax
+	jl	.L19
+.L18:
+	cmpl	$0, -40(%rbp)
+	jne	.L20
+	movq	-88(%rbp), %rax
+	movl	-44(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$3, %rdx
+	leaq	(%rax,%rdx), %rcx
+	movq	-24(%rbp), %rsi
+	movl	-60(%rbp), %eax
+	leal	1(%rax), %edx
+	movl	%edx, -60(%rbp)
+	cltq
+	salq	$3, %rax
+	addq	%rsi, %rax
+	movsd	(%rcx), %xmm0
+	movsd	%xmm0, (%rax)
+.L20:
+	addl	$1, -44(%rbp)
+.L14:
+	movl	-96(%rbp), %eax
+	cmpl	%eax, -44(%rbp)
+	jl	.L21
+	movl	-60(%rbp), %eax
+	movl	%eax, -32(%rbp)
+	movq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	movq	%rax, %rcx
+	movq	%rdx, %rbx
+	movl	%esi, %eax
+	movq	%rbx, %rdx
+	movq	-8(%rbp), %rbx
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE8:
+	.size	union_list_float, .-union_list_float
+	.type	contains_list_float, @function
+contains_list_float:
+.LFB9:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movl	%edi, %eax
+	movq	%rsi, %rcx
+	movq	%rcx, %rdx
+	movq	%rax, -32(%rbp)
+	movq	%rdx, -24(%rbp)
+	movsd	%xmm0, -40(%rbp)
+	movl	$0, -4(%rbp)
+	jmp	.L26
+.L30:
+	movq	-24(%rbp), %rax
+	movl	-4(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$3, %rdx
+	addq	%rdx, %rax
+	movsd	(%rax), %xmm0
+	ucomisd	-40(%rbp), %xmm0
+	jp	.L27
+	ucomisd	-40(%rbp), %xmm0
+	jne	.L27
+	movl	$1, %eax
+	jmp	.L29
+.L27:
+	addl	$1, -4(%rbp)
+.L26:
+	movl	-32(%rbp), %eax
+	cmpl	%eax, -4(%rbp)
+	jl	.L30
+	movl	$0, %eax
+.L29:
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE9:
+	.size	contains_list_float, .-contains_list_float
+	.section	.rodata
+.LC0:
+	.string	"%d"
+	.text
+	.type	_print_list_int, @function
+_print_list_int:
+.LFB10:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	movl	%edi, %eax
+	movq	%rsi, %rcx
+	movq	%rcx, %rdx
+	movq	%rax, -32(%rbp)
+	movq	%rdx, -24(%rbp)
+	movl	$91, %edi
+	call	putchar@PLT
+	movl	$0, -4(%rbp)
+	jmp	.L33
+.L35:
+	cmpl	$0, -4(%rbp)
+	jle	.L34
+	movl	$32, %edi
+	call	putchar@PLT
+.L34:
+	movq	-24(%rbp), %rax
+	movl	-4(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$2, %rdx
+	addq	%rdx, %rax
+	movl	(%rax), %eax
+	movl	%eax, %esi
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	addl	$1, -4(%rbp)
+.L33:
+	movl	-32(%rbp), %eax
+	cmpl	%eax, -4(%rbp)
+	jl	.L35
+	movl	$93, %edi
+	call	putchar@PLT
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE10:
+	.size	_print_list_int, .-_print_list_int
+	.section	.rodata
+.LC1:
+	.string	"%g"
+	.text
+	.type	_print_list_float, @function
+_print_list_float:
+.LFB11:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	movl	%edi, %eax
+	movq	%rsi, %rcx
+	movq	%rcx, %rdx
+	movq	%rax, -32(%rbp)
+	movq	%rdx, -24(%rbp)
+	movl	$91, %edi
+	call	putchar@PLT
+	movl	$0, -4(%rbp)
+	jmp	.L37
+.L39:
+	cmpl	$0, -4(%rbp)
+	jle	.L38
+	movl	$32, %edi
+	call	putchar@PLT
+.L38:
+	movq	-24(%rbp), %rax
+	movl	-4(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$3, %rdx
+	addq	%rdx, %rax
+	movq	(%rax), %rax
+	movq	%rax, %xmm0
+	leaq	.LC1(%rip), %rax
+	movq	%rax, %rdi
+	movl	$1, %eax
+	call	printf@PLT
+	addl	$1, -4(%rbp)
+.L37:
+	movl	-32(%rbp), %eax
+	cmpl	%eax, -4(%rbp)
+	jl	.L39
+	movl	$93, %edi
+	call	putchar@PLT
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE11:
+	.size	_print_list_float, .-_print_list_float
+	.section	.rodata
+.LC6:
+	.string	"%d\n"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB12:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$64, %rsp
+	movl	$2, %edi
+	call	list_float_create
+	movl	%eax, %ecx
+	movq	%rdx, %rax
+	movl	%ecx, -64(%rbp)
+	movq	%rax, -56(%rbp)
+	movq	-56(%rbp), %rax
+	movsd	.LC2(%rip), %xmm0
+	movsd	%xmm0, (%rax)
+	movq	-56(%rbp), %rax
+	addq	$8, %rax
+	movsd	.LC3(%rip), %xmm0
+	movsd	%xmm0, (%rax)
+	movl	$2, %edi
+	call	list_float_create
+	movl	%eax, %ecx
+	movq	%rdx, %rax
+	movl	%ecx, -48(%rbp)
+	movq	%rax, -40(%rbp)
+	movq	-40(%rbp), %rax
+	movsd	.LC3(%rip), %xmm0
+	movsd	%xmm0, (%rax)
+	movq	-40(%rbp), %rax
+	addq	$8, %rax
+	movsd	.LC4(%rip), %xmm0
+	movsd	%xmm0, (%rax)
+	movl	-48(%rbp), %edx
+	movq	-40(%rbp), %rcx
+	movl	-64(%rbp), %esi
+	movq	-56(%rbp), %rax
+	movl	%esi, %edi
+	movq	%rax, %rsi
+	call	union_list_float
+	movl	%eax, %ecx
+	movq	%rdx, %rax
+	movl	%ecx, -32(%rbp)
+	movq	%rax, -24(%rbp)
+	movl	-32(%rbp), %edx
+	movq	-24(%rbp), %rax
+	movl	%edx, %edi
+	movq	%rax, %rsi
+	call	_print_list_float
+	movl	$10, %edi
+	call	putchar@PLT
+	movl	$2, %edi
+	call	list_float_create
+	movl	%eax, %ecx
+	movq	%rdx, %rax
+	movl	%ecx, -16(%rbp)
+	movq	%rax, -8(%rbp)
+	movq	-8(%rbp), %rax
+	movsd	.LC5(%rip), %xmm0
+	movsd	%xmm0, (%rax)
+	movq	-8(%rbp), %rax
+	addq	$8, %rax
+	movsd	.LC2(%rip), %xmm0
+	movsd	%xmm0, (%rax)
+	movq	.LC2(%rip), %rcx
+	movl	-16(%rbp), %edx
+	movq	-8(%rbp), %rax
+	movq	%rcx, %xmm0
+	movl	%edx, %edi
+	movq	%rax, %rsi
+	call	contains_list_float
+	movl	%eax, %esi
+	leaq	.LC6(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE12:
+	.size	main, .-main
+	.section	.rodata
+	.align 8
+.LC2:
+	.long	0
+	.long	1073217536
+	.align 8
+.LC3:
+	.long	0
+	.long	1074003968
+	.align 8
+.LC4:
+	.long	0
+	.long	1074266112
+	.align 8
+.LC5:
+	.long	0
+	.long	1072693248
+	.ident	"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+	.section	.note.GNU-stack,"",@progbits
+	.section	.note.gnu.property,"a"
+	.align 8
+	.long	1f - 0f
+	.long	4f - 1f
+	.long	5
+0:
+	.string	"GNU"
+1:
+	.align 8
+	.long	0xc0000002
+	.long	3f - 2f
+2:
+	.long	0x3
+3:
+	.align 8
+4:

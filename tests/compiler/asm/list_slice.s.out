@@ -1,0 +1,346 @@
+	.file	"prog.c"
+	.text
+	.type	list_int_create, @function
+list_int_create:
+.LFB6:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	pushq	%rbx
+	subq	$40, %rsp
+	.cfi_offset 3, -24
+	movl	%edi, -36(%rbp)
+	movl	-36(%rbp), %eax
+	movl	%eax, -32(%rbp)
+	movl	-36(%rbp), %eax
+	cltq
+	salq	$2, %rax
+	movq	%rax, %rdi
+	call	malloc@PLT
+	movq	%rax, -24(%rbp)
+	movq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	movq	%rax, %rcx
+	movq	%rdx, %rbx
+	movl	%esi, %eax
+	movq	%rbx, %rdx
+	movq	-8(%rbp), %rbx
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE6:
+	.size	list_int_create, .-list_int_create
+	.type	list_list_int_create, @function
+list_list_int_create:
+.LFB7:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	pushq	%rbx
+	subq	$40, %rsp
+	.cfi_offset 3, -24
+	movl	%edi, -36(%rbp)
+	movl	-36(%rbp), %eax
+	movl	%eax, -32(%rbp)
+	movl	-36(%rbp), %eax
+	cltq
+	salq	$4, %rax
+	movq	%rax, %rdi
+	call	malloc@PLT
+	movq	%rax, -24(%rbp)
+	movq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	movq	%rax, %rcx
+	movq	%rdx, %rbx
+	movl	%esi, %eax
+	movq	%rbx, %rdx
+	movq	-8(%rbp), %rbx
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE7:
+	.size	list_list_int_create, .-list_list_int_create
+	.type	slice_list_int, @function
+slice_list_int:
+.LFB8:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	pushq	%rbx
+	subq	$72, %rsp
+	.cfi_offset 3, -24
+	movl	%edi, %eax
+	movq	%rsi, %r8
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	movq	%r8, %rdi
+	movq	%rsi, -64(%rbp)
+	movq	%rdi, -56(%rbp)
+	movl	%edx, -68(%rbp)
+	movl	%ecx, -72(%rbp)
+	cmpl	$0, -68(%rbp)
+	jns	.L6
+	movl	-64(%rbp), %eax
+	addl	%eax, -68(%rbp)
+.L6:
+	cmpl	$0, -72(%rbp)
+	jns	.L7
+	movl	-64(%rbp), %eax
+	addl	%eax, -72(%rbp)
+.L7:
+	cmpl	$0, -68(%rbp)
+	jns	.L8
+	movl	$0, -68(%rbp)
+.L8:
+	movl	-64(%rbp), %eax
+	cmpl	%eax, -72(%rbp)
+	jle	.L9
+	movl	-64(%rbp), %eax
+	movl	%eax, -72(%rbp)
+.L9:
+	movl	-68(%rbp), %eax
+	cmpl	-72(%rbp), %eax
+	jle	.L10
+	movl	-72(%rbp), %eax
+	movl	%eax, -68(%rbp)
+.L10:
+	movl	-72(%rbp), %eax
+	subl	-68(%rbp), %eax
+	movl	%eax, %edi
+	call	list_int_create
+	movl	%eax, %ecx
+	movq	%rdx, %rax
+	movl	%ecx, -32(%rbp)
+	movq	%rax, -24(%rbp)
+	movl	$0, -36(%rbp)
+	jmp	.L11
+.L12:
+	movq	-56(%rbp), %rax
+	movl	-68(%rbp), %ecx
+	movl	-36(%rbp), %edx
+	addl	%ecx, %edx
+	movslq	%edx, %rdx
+	salq	$2, %rdx
+	addq	%rdx, %rax
+	movq	-24(%rbp), %rdx
+	movl	-36(%rbp), %ecx
+	movslq	%ecx, %rcx
+	salq	$2, %rcx
+	addq	%rcx, %rdx
+	movl	(%rax), %eax
+	movl	%eax, (%rdx)
+	addl	$1, -36(%rbp)
+.L11:
+	movl	-32(%rbp), %eax
+	cmpl	%eax, -36(%rbp)
+	jl	.L12
+	movq	-32(%rbp), %rax
+	movq	-24(%rbp), %rdx
+	movq	%rax, %rsi
+	movq	%rdx, %rdi
+	movq	%rax, %rcx
+	movq	%rdx, %rbx
+	movl	%esi, %eax
+	movq	%rbx, %rdx
+	movq	-8(%rbp), %rbx
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE8:
+	.size	slice_list_int, .-slice_list_int
+	.section	.rodata
+.LC0:
+	.string	"%d"
+	.text
+	.type	_print_list_int, @function
+_print_list_int:
+.LFB9:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	movl	%edi, %eax
+	movq	%rsi, %rcx
+	movq	%rcx, %rdx
+	movq	%rax, -32(%rbp)
+	movq	%rdx, -24(%rbp)
+	movl	$91, %edi
+	call	putchar@PLT
+	movl	$0, -4(%rbp)
+	jmp	.L15
+.L17:
+	cmpl	$0, -4(%rbp)
+	jle	.L16
+	movl	$32, %edi
+	call	putchar@PLT
+.L16:
+	movq	-24(%rbp), %rax
+	movl	-4(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$2, %rdx
+	addq	%rdx, %rax
+	movl	(%rax), %eax
+	movl	%eax, %esi
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	addl	$1, -4(%rbp)
+.L15:
+	movl	-32(%rbp), %eax
+	cmpl	%eax, -4(%rbp)
+	jl	.L17
+	movl	$93, %edi
+	call	putchar@PLT
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE9:
+	.size	_print_list_int, .-_print_list_int
+	.type	_print_list_list_int, @function
+_print_list_list_int:
+.LFB10:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	movl	%edi, %eax
+	movq	%rsi, %rcx
+	movq	%rcx, %rdx
+	movq	%rax, -32(%rbp)
+	movq	%rdx, -24(%rbp)
+	movl	$91, %edi
+	call	putchar@PLT
+	movl	$0, -4(%rbp)
+	jmp	.L19
+.L21:
+	cmpl	$0, -4(%rbp)
+	jle	.L20
+	movl	$32, %edi
+	call	putchar@PLT
+.L20:
+	movq	-24(%rbp), %rax
+	movl	-4(%rbp), %edx
+	movslq	%edx, %rdx
+	salq	$4, %rdx
+	addq	%rdx, %rax
+	movl	(%rax), %edx
+	movq	8(%rax), %rax
+	movl	%edx, %edi
+	movq	%rax, %rsi
+	call	_print_list_int
+	addl	$1, -4(%rbp)
+.L19:
+	movl	-32(%rbp), %eax
+	cmpl	%eax, -4(%rbp)
+	jl	.L21
+	movl	$93, %edi
+	call	putchar@PLT
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE10:
+	.size	_print_list_list_int, .-_print_list_list_int
+	.globl	main
+	.type	main, @function
+main:
+.LFB11:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	movl	$4, %edi
+	call	list_int_create
+	movl	%eax, %ecx
+	movq	%rdx, %rax
+	movl	%ecx, -32(%rbp)
+	movq	%rax, -24(%rbp)
+	movq	-24(%rbp), %rax
+	movl	$1, (%rax)
+	movq	-24(%rbp), %rax
+	addq	$4, %rax
+	movl	$2, (%rax)
+	movq	-24(%rbp), %rax
+	addq	$8, %rax
+	movl	$3, (%rax)
+	movq	-24(%rbp), %rax
+	addq	$12, %rax
+	movl	$4, (%rax)
+	movl	-32(%rbp), %esi
+	movq	-24(%rbp), %rax
+	movl	$3, %ecx
+	movl	$1, %edx
+	movl	%esi, %edi
+	movq	%rax, %rsi
+	call	slice_list_int
+	movl	%eax, %ecx
+	movq	%rdx, %rax
+	movl	%ecx, -16(%rbp)
+	movq	%rax, -8(%rbp)
+	movl	-16(%rbp), %edx
+	movq	-8(%rbp), %rax
+	movl	%edx, %edi
+	movq	%rax, %rsi
+	call	_print_list_int
+	movl	$10, %edi
+	call	putchar@PLT
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE11:
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"
+	.section	.note.GNU-stack,"",@progbits
+	.section	.note.gnu.property,"a"
+	.align 8
+	.long	1f - 0f
+	.long	4f - 1f
+	.long	5
+0:
+	.string	"GNU"
+1:
+	.align 8
+	.long	0xc0000002
+	.long	3f - 2f
+2:
+	.long	0x3
+3:
+	.align 8
+4:
