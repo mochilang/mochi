@@ -471,7 +471,6 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			return nil
 		}
 	}
-	return nil
 }
 
 func (c *Compiler) compileIf(ifst *parser.IfStmt) error {
