@@ -34,6 +34,25 @@ func ensureDart() error {
 	osName := "linux"
 	if runtime.GOOS == "darwin" {
 		osName = "macos"
+	} else if runtime.GOOS == "windows" {
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "dart-sdk")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("dart"); err == nil {
+				return nil
+			}
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "dart-sdk")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("dart"); err == nil {
+				return nil
+			}
+		}
+		osName = "windows"
 	} else if runtime.GOOS != "linux" {
 		return fmt.Errorf("unsupported OS: %s", runtime.GOOS)
 	}

@@ -42,6 +42,24 @@ func EnsureFortran() (string, error) {
 				}
 			}
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "mingw")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if path, err := exec.LookPath("gfortran"); err == nil {
+				return path, nil
+			}
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "gcc")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if path, err := exec.LookPath("gfortran"); err == nil {
+				return path, nil
+			}
+		}
 	}
 	if path, err := exec.LookPath("gfortran"); err == nil {
 		return path, nil

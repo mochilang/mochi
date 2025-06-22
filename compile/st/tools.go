@@ -42,6 +42,16 @@ func EnsureSmalltalk() error {
 		} else {
 			return fmt.Errorf("brew not found")
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			fmt.Println("🔧 Installing GNU Smalltalk via Chocolatey...")
+			_ = run(exec.Command("choco", "install", "-y", "gnu-smalltalk"))
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			fmt.Println("🔧 Installing GNU Smalltalk via Scoop...")
+			_ = run(exec.Command("scoop", "install", "gnu-smalltalk"))
+		} else {
+			return fmt.Errorf("unsupported OS: %s", runtime.GOOS)
+		}
 	default:
 		return fmt.Errorf("unsupported OS: %s", runtime.GOOS)
 	}

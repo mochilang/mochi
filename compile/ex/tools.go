@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 )
 
 // EnsureElixir verifies that the Elixir binary is installed and attempts to
@@ -36,6 +37,23 @@ func EnsureElixir() error {
 			return err
 		}
 		return nil
+	}
+	if runtime.GOOS == "windows" {
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "elixir")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err == nil {
+				return nil
+			}
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "elixir")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err == nil {
+				return nil
+			}
+		}
 	}
 	if _, err := exec.LookPath("asdf"); err == nil {
 		exec.Command("asdf", "plugin-add", "--skip-existing", "erlang").Run()

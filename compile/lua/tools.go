@@ -42,6 +42,20 @@ func EnsureLua() error {
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			fmt.Println("🔧 Installing Lua via Chocolatey...")
+			cmd := exec.Command("choco", "install", "-y", "lua")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			fmt.Println("🔧 Installing Lua via Scoop...")
+			cmd := exec.Command("scoop", "install", "lua")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
 	}
 	if _, err := exec.LookPath("lua"); err == nil {
 		return nil

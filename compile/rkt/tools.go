@@ -38,6 +38,19 @@ func EnsureRacket() error {
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
 		}
+	case "windows":
+		fmt.Println("🔧 Installing Racket via Chocolatey/Scoop...")
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "racket")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "racket")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
 	}
 	if _, err := exec.LookPath("racket"); err == nil {
 		return nil

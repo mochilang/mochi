@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 )
 
 // EnsureDeno verifies that the Deno binary is installed and attempts to
@@ -18,6 +19,23 @@ func ensureDeno() error {
 		return nil
 	}
 	fmt.Println("\U0001F985 Installing Deno...")
+	if runtime.GOOS == "windows" {
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "deno")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err == nil {
+				return nil
+			}
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "deno")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err == nil {
+				return nil
+			}
+		}
+	}
 	home := os.Getenv("HOME")
 	if home == "" {
 		home = "/tmp"

@@ -43,6 +43,20 @@ func EnsureCPP() (string, error) {
 			fmt.Println("🍺 Installing LLVM via Homebrew...")
 			_ = exec.Command("brew", "install", "llvm").Run()
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			fmt.Println("🔧 Installing g++ via Chocolatey...")
+			cmd := exec.Command("choco", "install", "-y", "mingw")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			fmt.Println("🔧 Installing g++ via Scoop...")
+			cmd := exec.Command("scoop", "install", "mingw")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
 	}
 	if path, err := exec.LookPath("g++"); err == nil {
 		return path, nil
