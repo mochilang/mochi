@@ -48,6 +48,7 @@ import (
 	jvmcode "mochi/compile/jvm"
 	ktcode "mochi/compile/kt"
 	luacode "mochi/compile/lua"
+	mlir "mochi/compile/mlir"
 	ocamlcode "mochi/compile/ocaml"
 	pascode "mochi/compile/pas"
 	phpcode "mochi/compile/php"
@@ -110,7 +111,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (c|clj|cobol|cpp|cs|dart|erlang|ex|fortran|fs|go|hs|java|jvm|kt|lua|ocaml|pas|php|pl|py|python|rb|rkt|rust|scala|scheme|st|swift|ts|wasm|zig|all)"`
+	Target        string `arg:"--target" help:"Output language (c|clj|cobol|cpp|cs|dart|erlang|ex|fortran|fs|go|hs|java|jvm|kt|lua|ocaml|pas|php|pl|py|python|rb|rkt|rust|scala|scheme|st|swift|ts|wasm|zig|mlir|all)"`
 	All           bool   `arg:"--all" help:"Compile to all supported targets"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
@@ -142,7 +143,7 @@ var (
 		"c", "clj", "cobol", "cpp", "cs", "dart", "erlang", "ex",
 		"fortran", "fs", "go", "hs", "java", "jvm", "kt", "lua",
 		"ocaml", "pas", "php", "pl", "py", "rb", "rkt", "rust",
-		"scala", "scheme", "st", "swift", "ts", "wasm", "zig",
+		"scala", "scheme", "st", "swift", "ts", "wasm", "zig", "mlir",
 	}
 )
 
@@ -930,6 +931,22 @@ func build(cmd *BuildCmd) error {
 		code, err := zigcode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
+		}
+		if err != nil {
+			status = "error"
+			msg = err.Error()
+		}
+	case "mlir":
+		if out == "" {
+			out = base + ".mlir"
+		}
+		comp, err := mlir.New()
+		if err == nil {
+			var outData []byte
+			outData, err = comp.Compile(prog)
+			if err == nil {
+				err = os.WriteFile(out, outData, 0644)
+			}
 		}
 		if err != nil {
 			status = "error"
