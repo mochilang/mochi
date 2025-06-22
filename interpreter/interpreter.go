@@ -850,28 +850,44 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 		return nil, errors.New("nil binary expression")
 	}
 
-	// Step 1: Build a list of operands and operators
+	// Lazy operand evaluation to support short-circuit logic
+	type operand struct {
+		eval func() (any, error)
+		val  any
+		done bool
+	}
+	valueOf := func(o *operand) (any, error) {
+		if o.done {
+			return o.val, nil
+		}
+		v, err := o.eval()
+		if err != nil {
+			return nil, err
+		}
+		o.val = v
+		o.done = true
+		return v, nil
+	}
+
 	type token struct {
 		pos lexer.Position
 		op  string
 	}
-	var operands []any
+
+	var operands []operand
 	var operators []token
 
-	// Initial left expression
+	// Initial left expression (eager)
 	left, err := i.evalUnary(b.Left)
 	if err != nil {
 		return nil, err
 	}
-	operands = append(operands, left)
+	operands = append(operands, operand{val: left, done: true})
 
 	for _, part := range b.Right {
-		operators = append(operators, token{part.Pos, part.Op})
-		right, err := i.evalPostfixExpr(part.Right)
-		if err != nil {
-			return nil, err
-		}
-		operands = append(operands, right)
+		p := part
+		operators = append(operators, token{p.Pos, p.Op})
+		operands = append(operands, operand{eval: func() (any, error) { return i.evalPostfixExpr(p.Right) }})
 	}
 
 	// Step 2: Apply precedence rules (high to low)
@@ -887,16 +903,39 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 		for i := 0; i < len(operators); {
 			op := operators[i].op
 			if contains(level, op) {
-				left := operands[i]
-				right := operands[i+1]
-				result, err := applyBinary(operators[i].pos, left, op, right)
+				leftVal, err := valueOf(&operands[i])
 				if err != nil {
 					return nil, err
 				}
-				// Replace left and right with result
-				operands[i] = result
-				operands = append(operands[:i+1], operands[i+2:]...)  // remove i+1
-				operators = append(operators[:i], operators[i+1:]...) // remove i
+
+				// Short-circuit evaluation for logical operators
+				if op == "&&" {
+					if lb, ok := leftVal.(bool); ok && !lb {
+						operands[i] = operand{val: false, done: true}
+						operands = append(operands[:i+1], operands[i+2:]...)
+						operators = append(operators[:i], operators[i+1:]...)
+						continue
+					}
+				} else if op == "||" {
+					if lb, ok := leftVal.(bool); ok && lb {
+						operands[i] = operand{val: true, done: true}
+						operands = append(operands[:i+1], operands[i+2:]...)
+						operators = append(operators[:i], operators[i+1:]...)
+						continue
+					}
+				}
+
+				rightVal, err := valueOf(&operands[i+1])
+				if err != nil {
+					return nil, err
+				}
+				result, err := applyBinary(operators[i].pos, leftVal, op, rightVal)
+				if err != nil {
+					return nil, err
+				}
+				operands[i] = operand{val: result, done: true}
+				operands = append(operands[:i+1], operands[i+2:]...)
+				operators = append(operators[:i], operators[i+1:]...)
 			} else {
 				i++
 			}
@@ -906,7 +945,7 @@ func (i *Interpreter) evalBinaryExpr(b *parser.BinaryExpr) (any, error) {
 	if len(operands) != 1 {
 		return nil, fmt.Errorf("unexpected state after binary eval")
 	}
-	return operands[0], nil
+	return valueOf(&operands[0])
 }
 
 func contains(ops []string, op string) bool {
