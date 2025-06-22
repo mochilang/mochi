@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -299,6 +300,8 @@ func normalizeOutput(t *testing.T, b []byte) []byte {
 	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
 	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
 	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	tmpRE := regexp.MustCompile(`/tmp/mochi-mlir-[0-9]+`)
+	out = tmpRE.ReplaceAllString(out, "/tmp/mochi-mlir-X")
 	out = strings.TrimSpace(out)
 	return []byte(out)
 }
