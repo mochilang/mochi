@@ -33,6 +33,18 @@ func EnsureKotlin() error {
 					_ = cmd.Run()
 				}
 			}
+		case "windows":
+			if _, err := exec.LookPath("choco"); err == nil {
+				cmd := exec.Command("choco", "install", "-y", "openjdk")
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				_ = cmd.Run()
+			} else if _, err := exec.LookPath("scoop"); err == nil {
+				cmd := exec.Command("scoop", "install", "openjdk")
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				_ = cmd.Run()
+			}
 		}
 		if err := javacode.EnsureJavac(); err != nil {
 			return err
@@ -69,6 +81,18 @@ func EnsureKotlin() error {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		return cmd.Run()
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "kotlin")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			return cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "kotlin")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			return cmd.Run()
+		}
 	}
 	return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 }

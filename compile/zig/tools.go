@@ -39,16 +39,31 @@ func EnsureZig() (string, error) {
 		} else {
 			url = "https://ziglang.org/download/0.12.0/zig-macos-x86_64-0.12.0.tar.xz"
 		}
+	case "windows":
+		if runtime.GOARCH == "arm64" || runtime.GOARCH == "aarch64" {
+			url = "https://ziglang.org/download/0.12.0/zig-windows-aarch64-0.12.0.zip"
+		} else {
+			url = "https://ziglang.org/download/0.12.0/zig-windows-x86_64-0.12.0.zip"
+		}
 	default:
 		return "", fmt.Errorf("unsupported platform: %s/%s", runtime.GOOS, runtime.GOARCH)
 	}
 
 	tarPath := filepath.Join(dir, "zig.tar.xz")
+	if runtime.GOOS == "windows" {
+		tarPath = filepath.Join(dir, "zig.zip")
+	}
 	if out, err := exec.Command("curl", "-fsSL", "-o", tarPath, url).CombinedOutput(); err != nil {
 		return "", fmt.Errorf("download zig: %v\n%s", err, out)
 	}
-	if out, err := exec.Command("tar", "-C", dir, "--strip-components=1", "-xf", tarPath).CombinedOutput(); err != nil {
-		return "", fmt.Errorf("extract zig: %v\n%s", err, out)
+	if runtime.GOOS == "windows" {
+		if out, err := exec.Command("unzip", "-q", tarPath, "-d", dir).CombinedOutput(); err != nil {
+			return "", fmt.Errorf("extract zig: %v\n%s", err, out)
+		}
+	} else {
+		if out, err := exec.Command("tar", "-C", dir, "--strip-components=1", "-xf", tarPath).CombinedOutput(); err != nil {
+			return "", fmt.Errorf("extract zig: %v\n%s", err, out)
+		}
 	}
 	if _, err := os.Stat(bin); err != nil {
 		return "", fmt.Errorf("zig not installed")

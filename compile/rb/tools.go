@@ -39,6 +39,24 @@ func EnsureRuby() error {
 				return nil
 			}
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "ruby")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("ruby"); err == nil {
+				return nil
+			}
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "ruby")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("ruby"); err == nil {
+				return nil
+			}
+		}
 	}
 	if _, err := exec.LookPath("ruby"); err == nil {
 		return nil

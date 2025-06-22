@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 )
 
 // EnsureMochi builds the Mochi command and returns its path. It is used by
@@ -19,6 +20,9 @@ func EnsureMochi() (string, error) {
 		return "", fmt.Errorf("HOME not set")
 	}
 	out := filepath.Join(home, "bin", "mochi")
+	if runtime.GOOS == "windows" {
+		out += ".exe"
+	}
 	if err := os.MkdirAll(filepath.Dir(out), 0755); err != nil {
 		return "", err
 	}

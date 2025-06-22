@@ -34,6 +34,18 @@ func EnsureScheme() (string, error) {
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "chibi-scheme")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "chibi-scheme")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
 	}
 	if path, err := exec.LookPath("chibi-scheme"); err == nil {
 		return path, nil

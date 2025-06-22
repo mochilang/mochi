@@ -23,6 +23,24 @@ func EnsureCOBOL() error {
 				return nil
 			}
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "gnucobol")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("cobc"); err == nil {
+				return nil
+			}
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "gnucobol")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("cobc"); err == nil {
+				return nil
+			}
+		}
 	default:
 		if _, err := exec.LookPath("apt-get"); err == nil {
 			cmd := exec.Command("apt-get", "update")

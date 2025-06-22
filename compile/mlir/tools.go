@@ -39,6 +39,18 @@ func EnsureMLIR() error {
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "llvm")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "llvm")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
 	}
 	if _, err := exec.LookPath("mlir-translate-19"); err == nil {
 		return ensureClang()

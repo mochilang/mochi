@@ -44,6 +44,24 @@ func ensureErlang() error {
 				return nil
 			}
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "erlang")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("erl"); err == nil {
+				return nil
+			}
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "erlang")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("erl"); err == nil {
+				return nil
+			}
+		}
 	}
 	if _, err := exec.LookPath("escript"); err == nil {
 		return nil

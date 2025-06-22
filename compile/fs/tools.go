@@ -43,6 +43,24 @@ func ensureDotnet() error {
 				}
 			}
 		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "dotnet-sdk")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("dotnet"); err == nil {
+				return nil
+			}
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "dotnet-sdk")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath("dotnet"); err == nil {
+				return nil
+			}
+		}
 	}
 	fmt.Println("🔧 Installing dotnet...")
 	home := os.Getenv("HOME")
