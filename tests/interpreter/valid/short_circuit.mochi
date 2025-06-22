@@ -1,0 +1,6 @@
+fun boom() {
+  print("boom")
+}
+
+print(false && boom())
+print(true || boom())
