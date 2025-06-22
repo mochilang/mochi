@@ -1,0 +1,80 @@
+LOAD os.Args
+STORE args
+PUSH 1
+STORE i
+LOAD args
+CALL
+JZ
+PUSH 0
+STORE i
+PUSHS usage: go4 file.go
+PRINT
+PUSH 0
+STORE return
+PUSHS -s
+EQ
+LOAD args
+CALL
+LOAD i
+PUSH 1
+ADD
+GT
+AND
+JZ
+PUSH 0
+STORE bts
+CALL
+STORE _
+LOAD bts
+CALL
+CALL
+CALL
+STORE run
+PUSH 0
+STORE true
+PUSH 0
+STORE return
+LOAD args
+CALL
+CALL
+PUSHS go4.go
+EQ
+AND
+STORE i
+PUSH 0
+JZ
+LOAD i
+PUSH 1
+ADD
+STORE i
+JMP
+LOAD i
+JZ
+LOAD i
+PUSH 1
+ADD
+STORE i
+STORE f
+PUSH 0
+STORE bts
+LOAD f
+CALL
+STORE err
+LOAD err
+LOAD nil
+NEQ
+JZ
+LOAD err
+PRINT
+PUSH 0
+STORE else
+LOAD bts
+CALL
+CALL
+CALL
+STORE run
+PUSH 0
+STORE false
+LOAD args
+STORE len
+JMP
