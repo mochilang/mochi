@@ -1,0 +1,27 @@
+	.section .rodata
+fmt: .string "%d\n"
+	.text
+	.globl main
+main:
+	movl $3, %esi
+	movl $fmt, %edi
+	xorl %eax, %eax
+	call printf@PLT
+	movl $2, %esi
+	movl $fmt, %edi
+	xorl %eax, %eax
+	call printf@PLT
+	movl $8, %esi
+	movl $fmt, %edi
+	xorl %eax, %eax
+	call printf@PLT
+	movl $4, %esi
+	movl $fmt, %edi
+	xorl %eax, %eax
+	call printf@PLT
+	movl $1, %esi
+	movl $fmt, %edi
+	xorl %eax, %eax
+	call printf@PLT
+	movl $0, %eax
+	ret
