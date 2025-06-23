@@ -118,8 +118,13 @@ func (m teaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 			m.repl.interp.SetProgram(prog)
-			if err := m.repl.interp.Run(); err != nil {
+			result, err := m.repl.interp.RunResult()
+			if err != nil {
 				m.appendOutput(fmt.Sprintf("%s %v", cError("runtime error:"), err))
+				return m, nil
+			}
+			if result != nil {
+				m.appendOutput(fmt.Sprintf("%v", result))
 			}
 			return m, nil
 		}
@@ -168,7 +173,7 @@ func welcomeString(version string) string {
 func (r *REPL) RunTUI() {
 	m := newTeaModel(r)
 	m.appendOutput(welcomeString(r.version))
-        p := tea.NewProgram(m, tea.WithAltScreen())
+	p := tea.NewProgram(m, tea.WithAltScreen())
 	if err := p.Start(); err != nil {
 		printf(r.out, "%s failed to start TUI: %v\n", cError("error:"), err)
 	}
