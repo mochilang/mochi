@@ -151,3 +151,45 @@ func TestCompileLen(t *testing.T) {
 		t.Fatalf("expected len 3 got %d", fn())
 	}
 }
+
+func TestCompileLenString(t *testing.T) {
+	expr := LenExpr{Expr: StrLit{Val: "héllo"}}
+	fn, err := Compile(expr)
+	if err != nil {
+		t.Fatalf("compile failed: %v", err)
+	}
+	if fn() != 5 {
+		t.Fatalf("expected len 5 got %d", fn())
+	}
+}
+
+func TestCompileStringEquality(t *testing.T) {
+	expr := BinOp{Op: "==", Left: StrLit{Val: "foo"}, Right: StrLit{Val: "foo"}}
+	fn, err := Compile(expr)
+	if err != nil {
+		t.Fatalf("compile failed: %v", err)
+	}
+	if fn() != 1 {
+		t.Fatalf("expected equality to be true")
+	}
+}
+
+func TestCompileInString(t *testing.T) {
+	expr := BinOp{Op: "in", Left: StrLit{Val: "e"}, Right: StrLit{Val: "hello"}}
+	fn, err := Compile(expr)
+	if err != nil {
+		t.Fatalf("compile failed: %v", err)
+	}
+	if fn() != 1 {
+		t.Fatalf("expected membership true")
+	}
+
+	expr2 := BinOp{Op: "in", Left: StrLit{Val: "x"}, Right: StrLit{Val: "hello"}}
+	fn2, err := Compile(expr2)
+	if err != nil {
+		t.Fatalf("compile failed: %v", err)
+	}
+	if fn2() != 0 {
+		t.Fatalf("expected membership false")
+	}
+}
