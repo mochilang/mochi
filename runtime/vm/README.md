@@ -25,9 +25,20 @@ The VM supports a small but useful subset of Mochi:
 
 Many of Mochi's features are not yet implemented:
 
-* Short circuit boolean operators and `break`/`continue`
+* Short circuit boolean operators `&&` and `||`
+* `break` and `continue` within loops
 * Structs, pattern matching and user defined types
 * Closures or nested function values
 * External package imports or FFI calls
 
 This VM is intentionally simple and primarily used for experimentation and testing.
+
+## Running tests
+
+Golden tests ensure the VM stays in sync with the main interpreter. Execute:
+
+```
+go test ./tests/vm -run .
+```
+
+Use `-update` to refresh the expected output files when modifying the VM.
