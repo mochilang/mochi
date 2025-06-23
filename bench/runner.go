@@ -318,9 +318,9 @@ func report(results []Result) {
 			langName := r.Lang
 			switch langName {
 			case "mochi_interp":
-				langName = "Mochi (interp)"
+				langName = "Mochi (Interpreter)"
 			case "mochi_vm":
-				langName = "Mochi (vm)"
+				langName = "Mochi (VM)"
 			case "mochi_go":
 				langName = "Mochi"
 			case "mochi_c":
@@ -466,6 +466,27 @@ func compileToVM(mochiFile, goFile string) error {
 	return os.WriteFile(goFile, []byte(b.String()), 0644)
 }
 
+func compileToIR(mochiFile, irFile string) error {
+	prog, err := parser.Parse(mochiFile)
+	if err != nil {
+		return err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return fmt.Errorf("type error: %v", errs[0])
+	}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		return err
+	}
+	src, err := os.ReadFile(mochiFile)
+	if err != nil {
+		return err
+	}
+	ir := p.Disassemble(string(src))
+	return os.WriteFile(irFile, []byte(ir), 0644)
+}
+
 func timeNowUs() float64 {
 	return float64(time.Now().UnixNano()) / 1e3
 }
@@ -511,9 +532,9 @@ func exportMarkdown(results []Result) error {
 			langName := r.Lang
 			switch langName {
 			case "mochi_interp":
-				langName = "mochi (interp)"
+				langName = "Mochi (Interpreter)"
 			case "mochi_vm":
-				langName = "Mochi (vm)"
+				langName = "Mochi (VM)"
 			case "mochi_go":
 				langName = "Mochi"
 			case "mochi_c":
@@ -572,6 +593,11 @@ func GenerateOutputs(outDir string) error {
 
 			vmOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.vm.go.out", category, name, n))
 			if err := compileToVM(tmp, vmOut); err != nil {
+				return err
+			}
+
+			irOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.ir.out", category, name, n))
+			if err := compileToIR(tmp, irOut); err != nil {
 				return err
 			}
 

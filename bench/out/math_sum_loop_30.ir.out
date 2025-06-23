@@ -1,0 +1,65 @@
+func main (regs=22)
+  // let n = 30
+  Const        r0, 30
+  Move         r1, r0
+  // let repeat = 1000
+  Const        r2, 1000
+  Move         r3, r2
+  // var last = 0
+  Const        r4, 0
+  Move         r5, r4
+  // let start = now()
+  Now          r6
+  Move         r7, r6
+  // for i in 0..repeat {
+  Const        r8, 0
+  Move         r9, r8
+L1:
+  Less         r10, r9, r3
+  JumpIfFalse  r10, L0
+  // last = sum(n)
+  Move         r11, r1
+  Call         r12, 1, 1, r11
+  Move         r5, r12
+  // for i in 0..repeat {
+  Const        r13, 1
+  Add          r14, r9, r13
+  Move         r9, r14
+  Jump         L1
+L0:
+  // let duration = (now() - start) / 1000
+  Now          r15
+  Sub          r16, r15, r7
+  Const        r17, 1000
+  Div          r18, r16, r17
+  Move         r19, r18
+  // let output = {
+  Move         r21, r20
+  // json(output)
+  JSON         r21
+  Return       r0
+
+  // fun sum(n: int): int {
+func sum (regs=9)
+  // var total = 0
+  Const        r1, 0
+  Move         r2, r1
+  // for i in 1..n {
+  Const        r3, 1
+  Move         r4, r3
+L1:
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // total = total + i
+  Add          r6, r2, r4
+  Move         r2, r6
+  // for i in 1..n {
+  Const        r7, 1
+  Add          r8, r4, r7
+  Move         r4, r8
+  Jump         L1
+L0:
+  // return total
+  Return       r2
+  Return       r0
+
