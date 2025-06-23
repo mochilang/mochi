@@ -1,0 +1,44 @@
+func main (regs=14)
+  // let n = 10
+  Const        r0, 10
+  Move         r1, r0
+  // let start = now()
+  Now          r2
+  Move         r3, r2
+  // let result = fib(n)
+  Move         r4, r1
+  Call         r5, 1, 1, r4
+  Move         r6, r5
+  // let duration = (now() - start) / 1000
+  Now          r7
+  Sub          r8, r7, r3
+  Const        r9, 1000
+  Div          r10, r8, r9
+  Move         r11, r10
+  // let output = {
+  Move         r13, r12
+  // json(output)
+  JSON         r13
+  Return       r0
+
+  // fun fib(n: int): int {
+func fib (regs=12)
+  // if n <= 1 { return n }
+  Const        r1, 1
+  LessEq       r2, r0, r1
+  JumpIfFalse  r2, L0
+  Return       r0
+L0:
+  // return fib(n - 1) + fib(n - 2)
+  Const        r4, 1
+  Sub          r5, r0, r4
+  Move         r3, r5
+  Call         r6, 1, 1, r3
+  Const        r8, 2
+  Sub          r9, r0, r8
+  Move         r7, r9
+  Call         r10, 1, 1, r7
+  Add          r11, r6, r10
+  Return       r11
+  Return       r0
+

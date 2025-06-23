@@ -823,6 +823,10 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		return dst
 	}
 
+	if p.Group != nil {
+		return fc.compileExpr(p.Group)
+	}
+
 	if p.Map != nil {
 		if v, ok := constMap(p.Map); ok {
 			dst := fc.newReg()
