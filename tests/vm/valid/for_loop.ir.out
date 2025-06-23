@@ -1,7 +1,7 @@
 func main (regs=6)
   // for i in 1..4 {
-  Const        r0 1
-  Const        r1 4
+  Const        r0, 1
+  Const        r1, 4
   Move         r2, r0
 L1:
   Less         r3, r2, r1
@@ -9,7 +9,7 @@ L1:
   // print(i)
   Print        r2
   // for i in 1..4 {
-  Const        r4 1
+  Const        r4, 1
   Add          r5, r2, r4
   Move         r2, r5
   Jump         L1
