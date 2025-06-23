@@ -1,5 +1,28 @@
 # 📦 CHANGELOG.md
-## [0.9.0] – 2025-07-01
+## [0.9.1] – 2025-06-24
+
+### Added
+
+* Function expressions and generic calls in the VM
+* Function support in the pure Mochi interpreter
+* Simple function support for the JIT
+* Map indexing operations
+
+### Changed
+
+* REPL simplified without Bubble Tea UI and displays evaluation results
+* Human-readable call disassembly in the VM
+* Benchmarks updated with IR and C outputs
+* TypeScript runtime computes globals at runtime
+
+### Fixed
+
+* Corrected IR disassembly comment placement
+* Resolved VM `now` builtin bug
+* Refreshed REPL prompt and output handling
+* Fixed C benchmark outputs and runtime compilation
+
+## [0.9.0] – 2025-06-23
 
 ### Added
 
