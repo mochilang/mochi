@@ -170,7 +170,7 @@ func evalConstExpr(e *parser.Expr, env *types.Env) (*parser.Literal, bool) {
 	if call, ok := callPattern(e); ok {
 		return foldCall(call, env)
 	}
-	return nil, false
+	return EvalConstExpr(e, env)
 }
 
 func literalValue(l *parser.Literal) any {
