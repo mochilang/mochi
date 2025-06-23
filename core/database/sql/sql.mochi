@@ -1,0 +1,38 @@
+package sql
+
+import go "mochi/runtime/database/sql" as gosql
+
+extern type DB
+
+extern fun gosql.Open(driver: string, dsn: string): (DB, error)
+extern fun DB.Close(): error
+extern fun DB.Exec(query: string, args: []any): (int, error)
+extern fun DB.Query(query: string, args: []any): ([]map[string, any], error)
+
+/// open returns a new database connection using the specified driver and DSN.
+/// It panics if the connection cannot be opened.
+export fun open(driver: string, dsn: string): DB {
+  let (db, err) = gosql.Open(driver, dsn)
+  if err != null { panic(err) }
+  return db
+}
+
+/// close terminates the database connection, panicking on error.
+export fun DB.close(db: DB) {
+  let err = db.Close()
+  if err != null { panic(err) }
+}
+
+/// exec runs a statement and returns the number of rows affected.
+export fun DB.exec(db: DB, query: string, args: list<any> = []): int {
+  let (n, err) = db.Exec(query, args)
+  if err != null { panic(err) }
+  return n
+}
+
+/// query executes a statement and returns all rows as a list of maps.
+export fun DB.query(db: DB, query: string, args: list<any> = []): list<map<string, any>> {
+  let (rows, err) = db.Query(query, args)
+  if err != null { panic(err) }
+  return rows
+}
