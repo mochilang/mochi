@@ -17,9 +17,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alexflint/go-arg"
+	"github.com/charmbracelet/fang"
 	"github.com/fatih/color"
 	_ "github.com/lib/pq"
+	"github.com/spf13/cobra"
 
 	"mochi/runtime/llm"
 	_ "mochi/runtime/llm/provider/chutes"
@@ -148,61 +149,16 @@ var (
 )
 
 func main() {
-	var cli CLI
-	arg.MustParse(&cli)
 	color.NoColor = false
 
-	switch {
-	case cli.Version:
-		printVersion()
-	case cli.Cheatsheet != nil:
-		fmt.Print(mcp.Cheatsheet())
-	case cli.Repl != nil:
-		repl := repl.New(os.Stdout, version)
-		repl.Run()
-	case cli.LLM != nil:
-		if err := runLLM(cli.LLM); err != nil {
-			fmt.Fprintf(os.Stderr, "%s %v\n", cError("llm:"), err)
-			os.Exit(1)
-		}
-	case cli.Infer != nil:
-		if err := runInfer(cli.Infer); err != nil {
-			fmt.Fprintf(os.Stderr, "%s %v\n", cError("infer:"), err)
-			os.Exit(1)
-		}
-	case cli.Build != nil:
-		if err := build(cli.Build); err != nil {
-			fmt.Fprintf(os.Stderr, "%s %v\n", cError("build:"), err)
-			os.Exit(1)
-		}
-	case cli.Init != nil:
-		if err := initModule(cli.Init); err != nil {
-			fmt.Fprintf(os.Stderr, "%s %v\n", cError("init:"), err)
-			os.Exit(1)
-		}
-	case cli.Get != nil:
-		if err := modGet(cli.Get); err != nil {
-			fmt.Fprintf(os.Stderr, "%s %v\n", cError("get:"), err)
-			os.Exit(1)
-		}
-	case cli.Run != nil:
-		if err := runFile(cli.Run); err != nil {
-			fmt.Fprintf(os.Stderr, "%s %v\n", cError("error:"), err)
-			os.Exit(1)
-		}
-	case cli.Test != nil:
-		if err := runTests(cli.Test); err != nil {
-			fmt.Fprintf(os.Stderr, "%s %v\n", cError("test failed:"), err)
-			os.Exit(1)
-		}
-	case cli.Serve != nil:
-		if err := mcp.ServeStdio(); err != nil {
-			fmt.Fprintf(os.Stderr, "%s %v\n", cError("mcp:"), err)
-			os.Exit(1)
-		}
-	default:
-		arg.MustParse(&cli).WriteHelp(os.Stderr)
-		os.Exit(2)
+	rootCmd := newRootCmd()
+	if err := fang.Execute(
+		context.Background(),
+		rootCmd,
+		fang.WithVersion(version),
+		fang.WithCommit(gitCommit),
+	); err != nil {
+		os.Exit(1)
 	}
 }
 
@@ -1127,6 +1083,174 @@ func normalizeType(t string) string {
 		return strings.TrimPrefix(t, "untyped ")
 	}
 	return t
+}
+
+func newRootCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "mochi",
+		Short: "Mochi command-line interface",
+	}
+
+	cmd.AddCommand(
+		newRunCmd(),
+		newTestCmd(),
+		newBuildCmd(),
+		newInitCmd(),
+		newGetCmd(),
+		newReplCmd(),
+		newLLMCmd(),
+		newInferCmd(),
+		newServeCmd(),
+		newCheatsheetCmd(),
+	)
+	return cmd
+}
+
+func newRunCmd() *cobra.Command {
+	var rc RunCmd
+	c := &cobra.Command{
+		Use:   "run <file>",
+		Short: "Run a Mochi source file",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			rc.File = args[0]
+			return runFile(&rc)
+		},
+	}
+	c.Flags().BoolVar(&rc.PrintAST, "ast", false, "Print parsed AST in Lisp format")
+	c.Flags().BoolVar(&rc.Debug, "debug", false, "Enable debug output")
+	c.Flags().BoolVar(&rc.Memoize, "memo", false, "Enable memoization of pure functions")
+	c.Flags().BoolVar(&rc.Fold, "aot", false, "Fold pure calls before execution")
+	return c
+}
+
+func newTestCmd() *cobra.Command {
+	var tc TestCmd
+	c := &cobra.Command{
+		Use:   "test <path>",
+		Short: "Run test blocks inside a Mochi source file",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			tc.Path = args[0]
+			return runTests(&tc)
+		},
+	}
+	c.Flags().BoolVar(&tc.Debug, "debug", false, "Enable debug output")
+	c.Flags().BoolVar(&tc.Memoize, "memo", false, "Enable memoization of pure functions")
+	c.Flags().BoolVar(&tc.Fold, "aot", false, "Fold pure calls before execution")
+	return c
+}
+
+func newBuildCmd() *cobra.Command {
+	var bc BuildCmd
+	c := &cobra.Command{
+		Use:   "build <file>",
+		Short: "Compile a Mochi source file",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			bc.File = args[0]
+			return build(&bc)
+		},
+	}
+	c.Flags().StringVarP(&bc.Out, "output", "o", "", "Output file path")
+	c.Flags().StringVar(&bc.Target, "target", "", "Output language")
+	c.Flags().BoolVar(&bc.All, "all", false, "Compile to all supported targets")
+	c.Flags().StringVar(&bc.WasmToolchain, "wasm-toolchain", "", "WASM toolchain (go|tinygo)")
+	return c
+}
+
+func newInitCmd() *cobra.Command {
+	var ic InitCmd
+	c := &cobra.Command{
+		Use:   "init [path]",
+		Short: "Initialize a new Mochi module",
+		Args:  cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) > 0 {
+				ic.Path = args[0]
+			}
+			return initModule(&ic)
+		},
+	}
+	return c
+}
+
+func newGetCmd() *cobra.Command {
+	c := &cobra.Command{
+		Use:   "get",
+		Short: "Download module dependencies",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return modGet(&GetCmd{})
+		},
+	}
+	return c
+}
+
+func newReplCmd() *cobra.Command {
+	c := &cobra.Command{
+		Use:   "repl",
+		Short: "Start an interactive REPL session",
+		Run: func(cmd *cobra.Command, args []string) {
+			repl := repl.New(os.Stdout, version)
+			repl.Run()
+		},
+	}
+	return c
+}
+
+func newLLMCmd() *cobra.Command {
+	var lc LLMCmd
+	c := &cobra.Command{
+		Use:   "llm [prompt]",
+		Short: "Send a prompt to the default LLM",
+		Args:  cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) > 0 {
+				lc.Prompt = args[0]
+			}
+			return runLLM(&lc)
+		},
+	}
+	c.Flags().StringVarP(&lc.File, "file", "f", "", "Read prompt from file ('-' for stdin)")
+	return c
+}
+
+func newInferCmd() *cobra.Command {
+	var ic InferCmd
+	c := &cobra.Command{
+		Use:   "infer <language> <package>",
+		Short: "Infer externs from a package",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ic.Language = args[0]
+			ic.Package = args[1]
+			return runInfer(&ic)
+		},
+	}
+	c.Flags().StringVarP(&ic.Format, "format", "f", "mochi", "Output format (json|mochi)")
+	return c
+}
+
+func newServeCmd() *cobra.Command {
+	c := &cobra.Command{
+		Use:   "serve",
+		Short: "Start MCP server over stdio",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return mcp.ServeStdio()
+		},
+	}
+	return c
+}
+
+func newCheatsheetCmd() *cobra.Command {
+	c := &cobra.Command{
+		Use:   "cheatsheet",
+		Short: "Print language cheatsheet",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Print(mcp.Cheatsheet())
+		},
+	}
+	return c
 }
 
 func printTypeErrors(errs []error) {
