@@ -357,6 +357,21 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 		reg := fc.newReg()
 		fc.vars[s.Let.Name] = reg
 		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
+	case s.Var != nil:
+		r := fc.compileExpr(s.Var.Value)
+		reg := fc.newReg()
+		fc.vars[s.Var.Name] = reg
+		fc.emit(s.Var.Pos, Instr{Op: OpMove, A: reg, B: r})
+	case s.Assign != nil:
+		if len(s.Assign.Index) == 0 {
+			r := fc.compileExpr(s.Assign.Value)
+			reg, ok := fc.vars[s.Assign.Name]
+			if !ok {
+				reg = fc.newReg()
+				fc.vars[s.Assign.Name] = reg
+			}
+			fc.emit(s.Assign.Pos, Instr{Op: OpMove, A: reg, B: r})
+		}
 	case s.Return != nil:
 		r := fc.compileExpr(s.Return.Value)
 		fc.emit(s.Return.Pos, Instr{Op: OpReturn, A: r})
@@ -364,6 +379,8 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 		fc.compileExpr(s.Expr.Expr)
 	case s.If != nil:
 		fc.compileIf(s.If)
+	case s.While != nil:
+		fc.compileWhile(s.While)
 	case s.For != nil:
 		fc.compileFor(s.For)
 	}
@@ -532,6 +549,18 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) {
 	fc.emit(f.Pos, Instr{Op: OpAdd, A: tmp, B: idx, C: one})
 	fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: tmp})
 	fc.emit(f.Pos, Instr{Op: OpJump, A: loopStart})
+	fc.fn.Code[jmp].B = len(fc.fn.Code)
+}
+
+func (fc *funcCompiler) compileWhile(w *parser.WhileStmt) {
+	loopStart := len(fc.fn.Code)
+	cond := fc.compileExpr(w.Cond)
+	jmp := len(fc.fn.Code)
+	fc.emit(w.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+	for _, st := range w.Body {
+		fc.compileStmt(st)
+	}
+	fc.emit(w.Pos, Instr{Op: OpJump, A: loopStart})
 	fc.fn.Code[jmp].B = len(fc.fn.Code)
 }
 
