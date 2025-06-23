@@ -1,0 +1,6 @@
+(program
+  (var x (int 1))
+  (var y
+    (binary + (ident x) (int 2))
+  )
+)

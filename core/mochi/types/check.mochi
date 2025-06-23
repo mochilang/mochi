@@ -1,0 +1,62 @@
+package types
+
+import "core/mochi/parser/parser.mochi" as mp
+
+type Result {
+  typ: string
+  errs: list<string>
+}
+
+// Simple type checker for the toy AST used by parser.mochi.
+// It supports integers, addition and subtraction and variable declarations.
+
+fun exprType(node: any, env: map<string,string>): Result {
+  if node.kind == "int" {
+    return Result{ typ: "int", errs: [] }
+  }
+  if node.kind == "ident" {
+    let val = env[node.value]
+    if val {
+      return Result{ typ: val, errs: [] }
+    }
+    return Result{ typ: "any", errs: ["unknown variable: " + node.value] }
+  }
+  if node.kind == "binary" {
+    let op = node.value
+    let resL = exprType(node.children[0], env)
+    let resR = exprType(node.children[1], env)
+    var errs = resL.errs + resR.errs
+    if resL.typ == "int" && resR.typ == "int" {
+      return Result{ typ: "int", errs: errs }
+    }
+    errs = errs + ["type mismatch around operator " + op]
+    return Result{ typ: "any", errs: errs }
+  }
+  return Result{ typ: "any", errs: ["unsupported expr: " + node.kind] }
+}
+
+fun checkProg(node: any): list<string> {
+  var env: map<string,string> = {}
+  var errs: list<string> = []
+  for stmt in node.children {
+    if stmt.kind == "let" || stmt.kind == "var" {
+      let res = exprType(stmt.children[0], env)
+      if count(res.errs) > 0 { errs = errs + res.errs }
+      env[stmt.value] = res.typ
+    }
+  }
+  return errs
+}
+
+export fun checkString(src: string): string {
+  let ast = mp.parseNode(src)
+  let errs = checkProg(ast)
+  if count(errs) == 0 { return "✅ Type Check Passed" }
+  var out = "❌ Type Check Failed\n"
+  var i = 1
+  for e in errs {
+    out = out + "  " + str(i) + ". " + e + "\n"
+    i = i + 1
+  }
+  return out
+}

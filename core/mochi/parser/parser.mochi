@@ -1,8 +1,9 @@
 package parser
 
 // Simple Mochi parser implemented in pure Mochi.
-// Supports only `let` statements assigning an integer expression
-// composed of additions. Used for testing the language self-hosting.
+// Supports simple `let` statements assigning an integer expression
+// composed of additions.  The pure implementation is used for testing the
+// language self-hosting and is intentionally small.
 
 
 type Node {
@@ -79,7 +80,7 @@ fun tokenize(src: string): list<Token> {
       var j = i
       while j < len(src) && isAlphaNum(src[j]) { j = j + 1 }
       let ident = src[i:j]
-      if ident == "let" {
+      if ident == "let" || ident == "var" {
         toks = toks + [Token { kind: "kw", value: ident }]
       } else {
         toks = toks + [Token { kind: "ident", value: ident }]
@@ -142,20 +143,23 @@ fun parseTokens(toks: list<Token>): Node {
   }
 
   fun parseLet(): Node {
-    idx = idx + 1 // skip 'let'
+    let kw = toks[idx]
+    idx = idx + 1 // skip 'let' or 'var'
     let tk = toks[idx]
     let name = tk.value
     idx = idx + 1
     idx = idx + 1 // skip '='
     let expr = parseExpr()
-    return newNode("let", name, [expr])
+    var kind = "let"
+    if kw.value == "var" { kind = "var" }
+    return newNode(kind, name, [expr])
   }
 
   fun parseProgram(): Node {
     var stmts: list<Node> = []
     while idx < count(toks) {
       let tk = toks[idx]
-      if tk.kind == "kw" && tk.value == "let" {
+      if tk.kind == "kw" && (tk.value == "let" || tk.value == "var") {
         let stmt = parseLet()
         stmts = stmts + [stmt]
       } else {
@@ -173,6 +177,13 @@ export fun parseString(src: string): string {
   let toks = tokenize(src)
   let node = parseTokens(toks)
   return nodeString(node)
+}
+
+// parseNode is like parseString but returns the AST node instead of its
+// formatted representation.  Other pure modules can use this to inspect code.
+export fun parseNode(src: string): Node {
+  let toks = tokenize(src)
+  return parseTokens(toks)
 }
 
 export fun parse(path: string): string {
