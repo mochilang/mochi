@@ -36,13 +36,13 @@ func runMochiCheck(src string) ([]byte, error) {
 }
 
 func TestMochiTypeCheckerValid(t *testing.T) {
-	golden.Run(t, "tests/mochi_checker/valid", ".mochi", ".golden", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochi_in_mochi/types/valid", ".mochi", ".golden", func(src string) ([]byte, error) {
 		return runMochiCheck(src)
 	})
 }
 
 func TestMochiTypeCheckerErrors(t *testing.T) {
-	golden.Run(t, "tests/mochi_checker/errors", ".mochi", ".err", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochi_in_mochi/types/errors", ".mochi", ".err", func(src string) ([]byte, error) {
 		return runMochiCheck(src)
 	})
 }

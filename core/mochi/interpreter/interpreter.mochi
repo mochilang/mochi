@@ -7,12 +7,12 @@ import "core/mochi/parser/parser.mochi" as mp
 // % with variable declarations.
 
 type EvalResult {
-  val: int
+  val: any
   errs: list<string>
 }
 
 type ProgResult {
-  env: map<string,int>
+  env: map<string,any>
   errs: list<string>
 }
 
@@ -49,7 +49,7 @@ fun parseInt(str: string): int {
   return n
 }
 
-fun evalExpr(node: any, env: map<string,int>, funcs: map<string,FunDef>): EvalResult {
+fun evalExpr(node: any, env: map<string,any>, funcs: map<string,FunDef>): EvalResult {
   if node.kind == "int" {
     return EvalResult{ val: parseInt(node.value), errs: [] }
   }
@@ -64,6 +64,7 @@ fun evalExpr(node: any, env: map<string,int>, funcs: map<string,FunDef>): EvalRe
     let inner = evalExpr(node.children[0], env, funcs)
     var val = inner.val
     if op == "neg" { val = -val }
+    else if op == "not" { val = !inner.val }
     else { return EvalResult{ val: val, errs: inner.errs + ["unsupported unary: " + op] } }
     return EvalResult{ val: val, errs: inner.errs }
   }
@@ -72,19 +73,27 @@ fun evalExpr(node: any, env: map<string,int>, funcs: map<string,FunDef>): EvalRe
     let l = evalExpr(node.children[0], env, funcs)
     let r = evalExpr(node.children[1], env, funcs)
     var errs = l.errs + r.errs
-    var v = 0
+    var v: any = 0
     if op == "+" { v = l.val + r.val }
     else if op == "-" { v = l.val - r.val }
     else if op == "*" { v = l.val * r.val }
     else if op == "/" { v = l.val / r.val }
     else if op == "%" { v = l.val % r.val }
+    else if op == "==" { v = l.val == r.val }
+    else if op == "!=" { v = l.val != r.val }
+    else if op == "<" { v = l.val < r.val }
+    else if op == "<=" { v = l.val <= r.val }
+    else if op == ">" { v = l.val > r.val }
+    else if op == ">=" { v = l.val >= r.val }
+    else if op == "&&" { v = l.val && r.val }
+    else if op == "||" { v = l.val || r.val }
     else { errs = errs + ["unsupported operator: " + op] }
     return EvalResult{ val: v, errs: errs }
   }
   if node.kind == "call" {
     if node.value in funcs {
       let fn = funcs[node.value]
-      var local: map<string,int> = {}
+      var local: map<string,any> = {}
       var i = 0
       var errs: list<string> = []
       while i < count(fn.params) {
@@ -101,7 +110,7 @@ fun evalExpr(node: any, env: map<string,int>, funcs: map<string,FunDef>): EvalRe
   return EvalResult{ val: 0, errs: ["unsupported expr: " + node.kind] }
 }
 
-fun runBlock(stmts: list<any>, env: map<string,int>, funcs: map<string,FunDef>): EvalResult {
+fun runBlock(stmts: list<any>, env: map<string,any>, funcs: map<string,FunDef>): EvalResult {
   var local = env
   var errs: list<string> = []
   var ret = 0
@@ -123,7 +132,7 @@ fun runBlock(stmts: list<any>, env: map<string,int>, funcs: map<string,FunDef>):
 }
 
 fun runProg(node: any): ProgResult {
-  var env: map<string,int> = {}
+  var env: map<string,any> = {}
   var funcs: map<string,FunDef> = {}
   var errs: list<string> = []
   for stmt in node.children {
@@ -176,7 +185,7 @@ fun sortStrings(xs: list<string>): list<string> {
   return res
 }
 
-fun mapKeys(m: map<string,int>): list<string> {
+fun mapKeys(m: map<string,any>): list<string> {
   var ks: list<string> = []
   for k in m {
     ks = ks + [k]

@@ -89,7 +89,7 @@ fun tokenize(src: string): list<Token> {
       var j = i
       while j < len(src) && isAlphaNum(src[j]) { j = j + 1 }
       let ident = src[i:j]
-  if ident == "let" || ident == "var" || ident == "fun" || ident == "return" {
+      if ident == "let" || ident == "var" || ident == "fun" || ident == "return" {
         toks = toks + [Token { kind: "kw", value: ident }]
       } else {
         toks = toks + [Token { kind: "ident", value: ident }]
@@ -102,6 +102,26 @@ fun tokenize(src: string): list<Token> {
       var j = i + 2
       while j < len(src) && src[j] != "\n" { j = j + 1 }
       i = j
+      continue
+    }
+    if ch == "&" && i + 1 < len(src) && src[i+1] == "&" {
+      toks = toks + [Token { kind: "&&", value: "&&" }]
+      i = i + 2
+      continue
+    }
+    if ch == "|" && i + 1 < len(src) && src[i+1] == "|" {
+      toks = toks + [Token { kind: "||", value: "||" }]
+      i = i + 2
+      continue
+    }
+    if (ch == "=" || ch == "!" || ch == "<" || ch == ">") && i + 1 < len(src) && src[i+1] == "=" {
+      toks = toks + [Token { kind: str(ch) + "=", value: str(ch) + "=" }]
+      i = i + 2
+      continue
+    }
+    if ch == "!" || ch == "<" || ch == ">" {
+      toks = toks + [Token { kind: str(ch), value: str(ch) }]
+      i = i + 1
       continue
     }
     if ch == "+" || ch == "-" || ch == "*" || ch == "/" || ch == "%" || ch == "=" || ch == "(" || ch == ")" || ch == "," || ch == "{" || ch == "}" {
@@ -120,16 +140,10 @@ fun tokenize(src: string): list<Token> {
 fun parseTokens(toks: list<Token>): Node {
   var idx = 0
 
-  fun parseFactor(): Node {
+  fun parsePrimary(): Node {
     let tok = toks[idx]
     idx = idx + 1
-    if tok.kind == "-" {
-      let expr = parseFactor()
-      return newNode("unary", "neg", [expr])
-    }
-    if tok.kind == "int" {
-      return newNode("int", tok.value, [])
-    }
+    if tok.kind == "int" { return newNode("int", tok.value, []) }
     if tok.kind == "(" {
       let expr = parseExpr()
       idx = idx + 1 // skip ')'
@@ -159,25 +173,73 @@ fun parseTokens(toks: list<Token>): Node {
     return newNode("ident", tok.value, [])
   }
 
+  fun parseUnary(): Node {
+    let tok = toks[idx]
+    if tok.kind == "-" || tok.kind == "!" {
+      idx = idx + 1
+      let expr = parseUnary()
+      var op = "neg"
+      if tok.kind == "!" { op = "not" }
+      return newNode("unary", op, [expr])
+    }
+    return parsePrimary()
+  }
+
   fun parseTerm(): Node {
-    var left = parseFactor()
+    var left = parseUnary()
     while idx < count(toks) {
       let tk = toks[idx]
       if tk.kind != "*" && tk.kind != "/" && tk.kind != "%" { break }
       idx = idx + 1
-      let right = parseFactor()
+      let right = parseUnary()
       left = newNode("binary", tk.value, [left, right])
     }
     return left
   }
 
-  fun parseExpr(): Node {
+  fun parseAdd(): Node {
     var left = parseTerm()
     while idx < count(toks) {
       let tk = toks[idx]
       if tk.kind != "+" && tk.kind != "-" { break }
       idx = idx + 1
       let right = parseTerm()
+      left = newNode("binary", tk.value, [left, right])
+    }
+    return left
+  }
+
+  fun parseCompare(): Node {
+    var left = parseAdd()
+    while idx < count(toks) {
+      let tk = toks[idx]
+      if tk.kind != "==" && tk.kind != "!=" && tk.kind != "<" && tk.kind != "<=" && tk.kind != ">" && tk.kind != ">=" { break }
+      idx = idx + 1
+      let right = parseAdd()
+      left = newNode("binary", tk.value, [left, right])
+    }
+    return left
+  }
+
+  fun parseAnd(): Node {
+    var left = parseCompare()
+    while idx < count(toks) {
+      let tk = toks[idx]
+      if tk.kind != "&&" { break }
+      idx = idx + 1
+      let right = parseCompare()
+      left = newNode("binary", tk.value, [left, right])
+    }
+    return left
+  }
+
+  fun parseExpr(): Node {
+    var left = parseAnd()
+    while idx < count(toks) {
+      let tk = toks[idx]
+      if tk.kind != "||" { break }
+      idx = idx + 1
+      let right = parseAnd()
       left = newNode("binary", tk.value, [left, right])
     }
     return left

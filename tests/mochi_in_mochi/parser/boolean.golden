@@ -1,0 +1,11 @@
+(program
+  (let x
+    (binary ||
+      (binary &&
+        (binary < (int 1) (int 2))
+        (binary >= (int 3) (int 3))
+      )
+      (binary != (int 4) (int 5))
+    )
+  )
+)

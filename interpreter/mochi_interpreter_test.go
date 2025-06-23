@@ -36,13 +36,13 @@ func runPureInterpreter(src string) ([]byte, error) {
 }
 
 func TestPureInterpreterValid(t *testing.T) {
-	golden.Run(t, "tests/mochi_interpreter/valid", ".mochi", ".golden", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochi_in_mochi/interpreter/valid", ".mochi", ".golden", func(src string) ([]byte, error) {
 		return runPureInterpreter(src)
 	})
 }
 
 func TestPureInterpreterErrors(t *testing.T) {
-	golden.Run(t, "tests/mochi_interpreter/errors", ".mochi", ".err", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochi_in_mochi/interpreter/errors", ".mochi", ".err", func(src string) ([]byte, error) {
 		return runPureInterpreter(src)
 	})
 }
