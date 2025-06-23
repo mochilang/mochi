@@ -193,3 +193,23 @@ func TestCompileInString(t *testing.T) {
 		t.Fatalf("expected membership false")
 	}
 }
+
+func TestCompileListEquality(t *testing.T) {
+	expr := BinOp{Op: "==", Left: ListLit{Elems: []int64{1, 2}}, Right: ListLit{Elems: []int64{1, 2}}}
+	fn, err := Compile(expr)
+	if err != nil {
+		t.Fatalf("compile failed: %v", err)
+	}
+	if fn() != 1 {
+		t.Fatalf("expected list equality to be true")
+	}
+
+	expr2 := BinOp{Op: "!=", Left: ListLit{Elems: []int64{1}}, Right: ListLit{Elems: []int64{2}}}
+	fn2, err := Compile(expr2)
+	if err != nil {
+		t.Fatalf("compile failed: %v", err)
+	}
+	if fn2() != 1 {
+		t.Fatalf("expected list inequality to be true")
+	}
+}
