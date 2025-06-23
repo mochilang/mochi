@@ -35,6 +35,23 @@ Many of Mochi's features are not yet implemented:
 
 This VM is intentionally simple and primarily used for experimentation and testing.
 
+## Mochi Bytecode Format (MBF)
+
+Compiled programs can be written to disk or transmitted using **MBF**, a
+RESP3‑inspired binary representation of the byte code.  MBF uses the
+`runtime/bmon` encoding to represent the program as nested arrays:
+
+```
+program   = [function*]
+function  = [name, numRegs, line, instruction*]
+instruction = [op, A, B, C, D, value, line]
+```
+
+Values inside instructions are encoded using the BMON format, allowing
+integers, floats, strings, lists and maps to be represented compactly.
+The helper functions `MarshalMBF` and `UnmarshalMBF` convert between a
+`Program` and its MBF binary form.
+
 ## Running tests
 
 Golden tests ensure the VM stays in sync with the main interpreter. Execute:
