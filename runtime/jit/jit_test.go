@@ -1,0 +1,93 @@
+package jit
+
+import "testing"
+
+func TestCompileSimple(t *testing.T) {
+	expr := BinOp{
+		Op:    "&&",
+		Left:  BinOp{Op: "==", Left: IntLit{Val: 3}, Right: IntLit{Val: 3}},
+		Right: BinOp{Op: ">", Left: IntLit{Val: 5}, Right: IntLit{Val: 2}},
+	}
+	asm := New()
+	expr.compile(asm)
+	asm.Ret()
+	if len(asm.Code()) == 0 {
+		t.Fatalf("expected code to be generated")
+	}
+}
+
+func TestCompileFloat(t *testing.T) {
+	expr := FBinOp{Op: "+", Left: FloatLit{Val: 1.5}, Right: FloatLit{Val: 2.25}}
+	asm := New()
+	expr.compile(asm)
+	asm.Ret()
+	if len(asm.Code()) == 0 {
+		t.Fatalf("expected code to be generated")
+	}
+}
+
+func TestCompileMixedFloat(t *testing.T) {
+	expr := FBinOp{Op: "*", Left: IntLit{Val: 3}, Right: FloatLit{Val: 2.5}}
+	asm := New()
+	expr.compile(asm)
+	asm.Ret()
+	if len(asm.Code()) == 0 {
+		t.Fatalf("expected code to be generated")
+	}
+}
+
+func TestCompileFloatNeg(t *testing.T) {
+	expr := FUnOp{Op: "-", Expr: FloatLit{Val: 3.14}}
+	asm := New()
+	expr.compile(asm)
+	asm.Ret()
+	if len(asm.Code()) == 0 {
+		t.Fatalf("expected code to be generated")
+	}
+}
+
+func TestCompileCast(t *testing.T) {
+	expr := Cast{Expr: IntLit{Val: 5}, To: "float"}
+	asm := New()
+	expr.compile(asm)
+	asm.Ret()
+	if len(asm.Code()) == 0 {
+		t.Fatalf("expected code to be generated")
+	}
+
+	expr2 := Cast{Expr: FloatLit{Val: 2.5}, To: "int"}
+	asm2 := New()
+	expr2.compile(asm2)
+	asm2.Ret()
+	if len(asm2.Code()) == 0 {
+		t.Fatalf("expected code to be generated")
+	}
+}
+
+func TestCompileIfExpr(t *testing.T) {
+	expr := IfExpr{
+		Cond: BinOp{Op: "==", Left: IntLit{Val: 1}, Right: IntLit{Val: 1}},
+		Then: IntLit{Val: 42},
+		Else: IntLit{Val: 0},
+	}
+	asm := New()
+	expr.compile(asm)
+	asm.Ret()
+	if len(asm.Code()) == 0 {
+		t.Fatalf("expected code to be generated")
+	}
+}
+
+func TestCompileIfFloat(t *testing.T) {
+	expr := IfExpr{
+		Cond: BoolLit{Val: true},
+		Then: FloatLit{Val: 1.5},
+		Else: FloatLit{Val: 2.5},
+	}
+	asm := New()
+	expr.compile(asm)
+	asm.Ret()
+	if len(asm.Code()) == 0 {
+		t.Fatalf("expected code to be generated")
+	}
+}
