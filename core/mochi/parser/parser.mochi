@@ -1,0 +1,152 @@
+package parser
+
+// Simple Mochi parser implemented in pure Mochi.
+// Supports only `let` statements assigning an integer expression
+// composed of additions. Used for testing the language self-hosting.
+
+
+type Node {
+  kind: string
+  value: string
+  children: list<Node>
+}
+
+fun newNode(kind: string, value: string, children: list<Node>): Node {
+  return Node { kind: kind, value: value, children: children }
+}
+
+// Convert a Node to a compact string representation similar to ast.Node.String.
+fun nodeString(n: Node): string {
+  fun write(node: Node, indent: string): string {
+    var out = indent + "(" + node.kind
+    if node.value != "" {
+      out = out + " " + str(node.value)
+    }
+    if count(node.children) == 0 {
+      return out + ")"
+    }
+    var allLeaf = true
+    for c in node.children {
+      if count(c.children) > 0 {
+        allLeaf = false
+        break
+      }
+    }
+    if allLeaf {
+      for c in node.children {
+        out = out + " (" + c.kind
+        if c.value != "" { out = out + " " + str(c.value) }
+        out = out + ")"
+      }
+      return out + ")"
+    }
+    out = out + "\n"
+    for c in node.children {
+      out = out + write(c, indent + "  ") + "\n"
+    }
+    out = out + indent + ")"
+    return out
+  }
+  return write(n, "")
+}
+
+type Token {
+  kind: string
+  value: string
+}
+
+fun isDigit(ch: string): bool { return ch >= "0" && ch <= "9" }
+fun isAlpha(ch: string): bool { return (ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z") }
+fun isAlphaNum(ch: string): bool { return isAlpha(ch) || isDigit(ch) || ch == "_" }
+
+fun tokenize(src: string): list<Token> {
+  var toks: list<Token> = []
+  var i = 0
+  while i < len(src) {
+    let ch = src[i]
+    if ch == " " || ch == "\n" || ch == "\t" || ch == "\r" {
+      i = i + 1
+      continue
+    }
+    if isDigit(ch) {
+      var j = i
+      while j < len(src) && isDigit(src[j]) { j = j + 1 }
+      toks = toks + [Token { kind: "int", value: src[i:j] }]
+      i = j
+      continue
+    }
+    if isAlpha(ch) || ch == "_" {
+      var j = i
+      while j < len(src) && isAlphaNum(src[j]) { j = j + 1 }
+      let ident = src[i:j]
+      if ident == "let" {
+        toks = toks + [Token { kind: "kw", value: ident }]
+      } else {
+        toks = toks + [Token { kind: "ident", value: ident }]
+      }
+      i = j
+      continue
+    }
+    if ch == "+" || ch == "=" {
+      toks = toks + [Token { kind: str(ch), value: str(ch) }]
+      i = i + 1
+      continue
+    }
+    // skip unknown characters
+    i = i + 1
+  }
+  return toks
+}
+
+
+// parsing helpers operate on a shared token list and index
+fun parseTokens(toks: list<Token>): Node {
+  var idx = 0
+
+  fun parseTerm(): Node {
+    let tok = toks[idx]
+    idx = idx + 1
+    if tok.kind == "int" {
+      return newNode("int", tok.value, [])
+    }
+    return newNode("ident", tok.value, [])
+  }
+
+  fun parseExpr(): Node {
+    var left = parseTerm()
+    while idx < count(toks) {
+      let tk = toks[idx]
+      if tk.kind != "+" { break }
+      idx = idx + 1
+      let right = parseTerm()
+      left = newNode("binary", "+", [left, right])
+    }
+    return left
+  }
+
+  fun parseLet(): Node {
+    idx = idx + 1 // skip 'let'
+    let tk = toks[idx]
+    let name = tk.value
+    idx = idx + 1
+    idx = idx + 1 // skip '='
+    let expr = parseExpr()
+    return newNode("let", name, [expr])
+  }
+
+  let stmt = parseLet()
+  return newNode("program", "", [stmt])
+}
+
+export fun parseString(src: string): string {
+  let toks = tokenize(src)
+  let node = parseTokens(toks)
+  return nodeString(node)
+}
+
+export fun parse(path: string): string {
+  // For the pure implementation we treat the input as source text.
+  // This avoids any dependency on host file I/O.
+  return parseString(path)
+}
+
