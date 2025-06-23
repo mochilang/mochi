@@ -142,8 +142,13 @@ func (r *REPL) Run() {
 		}
 
 		r.interp.SetProgram(prog)
-		if err := r.interp.Run(); err != nil {
+		result, err := r.interp.RunResult()
+		if err != nil {
 			printf(r.out, "%s %v\n", cError("runtime error:"), err)
+			continue
+		}
+		if result != nil {
+			printf(r.out, "%v\n", result)
 		}
 	}
 }

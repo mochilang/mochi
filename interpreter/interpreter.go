@@ -171,6 +171,36 @@ func (i *Interpreter) Run() error {
 	return nil
 }
 
+// RunResult executes the program like Run but returns the value of the last
+// expression statement, if any. Declarations and other statements behave the
+// same as in Run.
+func (i *Interpreter) RunResult() (any, error) {
+	defer i.Close()
+	if err := i.checkExternObjects(); err != nil {
+		return nil, err
+	}
+
+	var result any
+	for idx, stmt := range i.prog.Statements {
+		if stmt.Test != nil {
+			continue
+		}
+		if stmt.Expr != nil && idx == len(i.prog.Statements)-1 {
+			v, err := i.evalExpr(stmt.Expr.Expr)
+			if err != nil {
+				return nil, err
+			}
+			result = v
+			continue
+		}
+		if err := i.evalStmt(stmt); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, nil
+}
+
 func (i *Interpreter) Test() error {
 	defer i.Close()
 	if err := i.checkExternObjects(); err != nil {
