@@ -28,7 +28,8 @@ The JIT currently understands a limited subset of Mochi:
 * Short‑circuit boolean operators `&&` and `||`
 * Unary `-` and `!`
 * Integer list membership `in`
-* Built-in `len` for integer lists
+* Built-in `len` for integer and string literals
+* Simple string literal comparisons and membership checks
 * Float operations using SSE instructions
 * Casting between `int` and `float`
 * Basic `if` expressions

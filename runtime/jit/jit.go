@@ -3,7 +3,9 @@ package jit
 import (
 	"encoding/binary"
 	"math"
+	"strings"
 	"syscall"
+	"unicode/utf8"
 	"unsafe"
 )
 
@@ -288,6 +290,13 @@ func (f FloatLit) compile(a *Assembler) {
 
 func (FloatLit) isFloat() bool { return true }
 
+// StrLit represents a literal string.
+type StrLit struct{ Val string }
+
+func (StrLit) compile(a *Assembler) {}
+
+func (StrLit) isFloat() bool { return false }
+
 // ListLit represents a literal list of integers.
 type ListLit struct {
 	Elems []int64
@@ -383,6 +392,22 @@ func (i IfExpr) isFloat() bool {
 }
 
 func (b BinOp) compile(a *Assembler) {
+	if b.Op == "==" || b.Op == "!=" {
+		l, lok := b.Left.(StrLit)
+		r, rok := b.Right.(StrLit)
+		if lok && rok {
+			res := l.Val == r.Val
+			if b.Op == "!=" {
+				res = !res
+			}
+			if res {
+				a.MovRaxImm(1)
+			} else {
+				a.MovRaxImm(0)
+			}
+			return
+		}
+	}
 	switch b.Op {
 	case "&&":
 		b.Left.compile(a)
@@ -397,26 +422,39 @@ func (b BinOp) compile(a *Assembler) {
 		b.Right.compile(a)
 		a.PatchRelative(skip, len(a.Code()))
 	case "in":
-		list, ok := b.Right.(ListLit)
-		if !ok {
+		if list, ok := b.Right.(ListLit); ok {
+			b.Left.compile(a)
+			patches := []int{}
+			for _, v := range list.Elems {
+				a.MovRbxImm(v)
+				a.CmpRaxRbx()
+				patches = append(patches, a.JzPlaceholder())
+			}
 			a.MovRaxImm(0)
+			end := a.JmpPlaceholder()
+			target := len(a.Code())
+			for _, p := range patches {
+				a.PatchRelative(p, target)
+			}
+			a.MovRaxImm(1)
+			a.PatchRelative(end, len(a.Code()))
 			return
 		}
-		b.Left.compile(a)
-		patches := []int{}
-		for _, v := range list.Elems {
-			a.MovRbxImm(v)
-			a.CmpRaxRbx()
-			patches = append(patches, a.JzPlaceholder())
+		if str, ok := b.Right.(StrLit); ok {
+			sub, ok := b.Left.(StrLit)
+			if !ok {
+				a.MovRaxImm(0)
+				return
+			}
+			if strings.Contains(str.Val, sub.Val) {
+				a.MovRaxImm(1)
+			} else {
+				a.MovRaxImm(0)
+			}
+			return
 		}
 		a.MovRaxImm(0)
-		end := a.JmpPlaceholder()
-		target := len(a.Code())
-		for _, p := range patches {
-			a.PatchRelative(p, target)
-		}
-		a.MovRaxImm(1)
-		a.PatchRelative(end, len(a.Code()))
+		return
 	default:
 		b.Right.compile(a)
 		a.PushRax()
@@ -494,8 +532,12 @@ func (c Cast) compile(a *Assembler) {
 }
 
 func (l LenExpr) compile(a *Assembler) {
-	if list, ok := l.Expr.(ListLit); ok {
-		a.MovRaxImm(int64(len(list.Elems)))
+	switch v := l.Expr.(type) {
+	case ListLit:
+		a.MovRaxImm(int64(len(v.Elems)))
+		return
+	case StrLit:
+		a.MovRaxImm(int64(utf8.RuneCountInString(v.Val)))
 		return
 	}
 	// unsupported operand, default to 0
