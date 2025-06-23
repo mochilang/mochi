@@ -13,8 +13,8 @@ type FunInfo {
 }
 
 // Simple type checker for the toy AST used by parser.mochi.
-// It supports integers, unary negation and the operators +, -, *, /, % with
-// variable declarations.
+// It supports integers, booleans, unary negation/! and the operators +, -, *, /, %,
+// comparison and logical operators with variable declarations.
 
 fun exprType(node: any, env: map<string,string>, funcs: map<string,FunInfo>): Result {
   if node.kind == "int" {
@@ -29,8 +29,10 @@ fun exprType(node: any, env: map<string,string>, funcs: map<string,FunInfo>): Re
   }
   if node.kind == "unary" {
     let res = exprType(node.children[0], env, funcs)
-    if res.typ == "int" {
-      return Result{ typ: "int", errs: res.errs }
+    if node.value == "neg" {
+      if res.typ == "int" { return Result{ typ: "int", errs: res.errs } }
+    } else if node.value == "not" {
+      if res.typ == "bool" { return Result{ typ: "bool", errs: res.errs } }
     }
     return Result{ typ: "any", errs: res.errs + ["type mismatch around unary " + node.value] }
   }
@@ -39,8 +41,14 @@ fun exprType(node: any, env: map<string,string>, funcs: map<string,FunInfo>): Re
     let resL = exprType(node.children[0], env, funcs)
     let resR = exprType(node.children[1], env, funcs)
     var errs = resL.errs + resR.errs
-    if resL.typ == "int" && resR.typ == "int" {
-      return Result{ typ: "int", errs: errs }
+    if op == "+" || op == "-" || op == "*" || op == "/" || op == "%" {
+      if resL.typ == "int" && resR.typ == "int" { return Result{ typ: "int", errs: errs } }
+    } else if op == "==" || op == "!=" {
+      if resL.typ == resR.typ { return Result{ typ: "bool", errs: errs } }
+    } else if op == "<" || op == "<=" || op == ">" || op == ">=" {
+      if resL.typ == "int" && resR.typ == "int" { return Result{ typ: "bool", errs: errs } }
+    } else if op == "&&" || op == "||" {
+      if resL.typ == "bool" && resR.typ == "bool" { return Result{ typ: "bool", errs: errs } }
     }
     errs = errs + ["type mismatch around operator " + op]
     return Result{ typ: "any", errs: errs }

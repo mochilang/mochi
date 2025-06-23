@@ -39,7 +39,7 @@ func runMochiParser(src string) ([]byte, error) {
 }
 
 func TestMochiParser(t *testing.T) {
-	golden.Run(t, "tests/mochi_parser", ".mochi", ".golden", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochi_in_mochi/parser", ".mochi", ".golden", func(src string) ([]byte, error) {
 		return runMochiParser(src)
 	})
 }
