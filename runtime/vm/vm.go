@@ -3,6 +3,7 @@ package vm
 import (
 	"fmt"
 	"io"
+	"math"
 	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
@@ -27,7 +28,9 @@ const (
 	OpDiv
 	OpMod
 	OpEqual
+	OpNotEqual
 	OpLess
+	OpLessEq
 	OpJump
 	OpJumpIfFalse
 	OpLen
@@ -57,8 +60,12 @@ func (op Op) String() string {
 		return "Mod"
 	case OpEqual:
 		return "Equal"
+	case OpNotEqual:
+		return "NotEqual"
 	case OpLess:
 		return "Less"
+	case OpLessEq:
+		return "LessEq"
 	case OpJump:
 		return "Jump"
 	case OpJumpIfFalse:
@@ -152,7 +159,7 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s %s", formatReg(ins.A), valueToString(ins.Val))
 			case OpMove:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
-			case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpEqual, OpLess:
+			case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpEqual, OpNotEqual, OpLess, OpLessEq:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpSetIndex:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
@@ -234,25 +241,59 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 		case OpMove:
 			fr.regs[ins.A] = fr.regs[ins.B]
 		case OpAdd:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int + fr.regs[ins.C].Int}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) + toFloat(c)}
+			} else {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int + c.Int}
+			}
 		case OpSub:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int - fr.regs[ins.C].Int}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) - toFloat(c)}
+			} else {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int - c.Int}
+			}
 		case OpMul:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int * fr.regs[ins.C].Int}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) * toFloat(c)}
+			} else {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int * c.Int}
+			}
 		case OpDiv:
-			if fr.regs[ins.C].Int == 0 {
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if (c.Tag == interpreter.TagInt && c.Int == 0) || (c.Tag == interpreter.TagFloat && c.Float == 0) {
 				return Value{}, fmt.Errorf("division by zero")
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int / fr.regs[ins.C].Int}
+			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) / toFloat(c)}
+			} else {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int / c.Int}
+			}
 		case OpMod:
-			if fr.regs[ins.C].Int == 0 {
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if (c.Tag == interpreter.TagInt && c.Int == 0) || (c.Tag == interpreter.TagFloat && c.Float == 0) {
 				return Value{}, fmt.Errorf("division by zero")
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int % fr.regs[ins.C].Int}
+			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: math.Mod(toFloat(b), toFloat(c))}
+			} else {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int % c.Int}
+			}
 		case OpEqual:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int == fr.regs[ins.C].Int}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
+		case OpNotEqual:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: !valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
 		case OpLess:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int < fr.regs[ins.C].Int}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) < toFloat(fr.regs[ins.C])}
+		case OpLessEq:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
 		case OpJump:
 			fr.ip = ins.A
 		case OpJumpIfFalse:
@@ -464,6 +505,10 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 			dst := fc.newReg()
 			fc.emit(op.Pos, Instr{Op: OpEqual, A: dst, B: left, C: right})
 			left = dst
+		case "!=":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpNotEqual, A: dst, B: left, C: right})
+			left = dst
 		case "<":
 			dst := fc.newReg()
 			fc.emit(op.Pos, Instr{Op: OpLess, A: dst, B: left, C: right})
@@ -472,6 +517,15 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 			dst := fc.newReg()
 			// a > b  ==>  b < a
 			fc.emit(op.Pos, Instr{Op: OpLess, A: dst, B: right, C: left})
+			left = dst
+		case "<=":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpLessEq, A: dst, B: left, C: right})
+			left = dst
+		case ">=":
+			dst := fc.newReg()
+			// a >= b  ==>  b <= a
+			fc.emit(op.Pos, Instr{Op: OpLessEq, A: dst, B: right, C: left})
 			left = dst
 		}
 	}
@@ -516,6 +570,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		case p.Lit.Int != nil:
 			dst := fc.newReg()
 			v := Value{Tag: interpreter.TagInt, Int: *p.Lit.Int}
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
+		case p.Lit.Float != nil:
+			dst := fc.newReg()
+			v := Value{Tag: interpreter.TagFloat, Float: *p.Lit.Float}
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
 		case p.Lit.Str != nil:
@@ -720,6 +779,9 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 		if p.Lit.Int != nil {
 			return Value{Tag: interpreter.TagInt, Int: *p.Lit.Int}, true
 		}
+		if p.Lit.Float != nil {
+			return Value{Tag: interpreter.TagFloat, Float: *p.Lit.Float}, true
+		}
 		if p.Lit.Bool != nil {
 			return Value{Tag: interpreter.TagBool, Bool: bool(*p.Lit.Bool)}, true
 		}
@@ -737,6 +799,8 @@ func valueToAny(v Value) any {
 	switch v.Tag {
 	case interpreter.TagInt:
 		return v.Int
+	case interpreter.TagFloat:
+		return v.Float
 	case interpreter.TagBool:
 		return v.Bool
 	case interpreter.TagStr:
@@ -756,6 +820,8 @@ func valueToString(v Value) string {
 	switch v.Tag {
 	case interpreter.TagInt:
 		return fmt.Sprintf("%d", v.Int)
+	case interpreter.TagFloat:
+		return fmt.Sprintf("%g", v.Float)
 	case interpreter.TagBool:
 		return fmt.Sprintf("%v", v.Bool)
 	case interpreter.TagStr:
@@ -773,4 +839,40 @@ func valueToString(v Value) string {
 
 func formatReg(n int) string {
 	return fmt.Sprintf("r%d", n)
+}
+
+func toFloat(v Value) float64 {
+	if v.Tag == interpreter.TagFloat {
+		return v.Float
+	}
+	return float64(v.Int)
+}
+
+func valuesEqual(a, b Value) bool {
+	if a.Tag == interpreter.TagFloat || b.Tag == interpreter.TagFloat {
+		return toFloat(a) == toFloat(b)
+	}
+	if a.Tag != b.Tag {
+		return false
+	}
+	switch a.Tag {
+	case interpreter.TagInt:
+		return a.Int == b.Int
+	case interpreter.TagBool:
+		return a.Bool == b.Bool
+	case interpreter.TagStr:
+		return a.Str == b.Str
+	case interpreter.TagList:
+		if len(a.List) != len(b.List) {
+			return false
+		}
+		for i := range a.List {
+			if !valuesEqual(a.List[i], b.List[i]) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
 }
