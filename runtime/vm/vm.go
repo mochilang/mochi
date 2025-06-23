@@ -31,6 +31,7 @@ const (
 	OpNotEqual
 	OpLess
 	OpLessEq
+	OpIn
 	OpJump
 	OpJumpIfFalse
 	OpLen
@@ -69,6 +70,8 @@ func (op Op) String() string {
 		return "Less"
 	case OpLessEq:
 		return "LessEq"
+	case OpIn:
+		return "In"
 	case OpJump:
 		return "Jump"
 	case OpJumpIfFalse:
@@ -168,7 +171,7 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s %s", formatReg(ins.A), valueToString(ins.Val))
 			case OpMove:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
-			case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpEqual, OpNotEqual, OpLess, OpLessEq:
+			case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpEqual, OpNotEqual, OpLess, OpLessEq, OpIn:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpSetIndex:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
@@ -307,6 +310,17 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) < toFloat(fr.regs[ins.C])}
 		case OpLessEq:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
+		case OpIn:
+			item := fr.regs[ins.B]
+			list := fr.regs[ins.C].List
+			found := false
+			for _, v := range list {
+				if valuesEqual(v, item) {
+					found = true
+					break
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: found}
 		case OpJump:
 			fr.ip = ins.A
 		case OpJumpIfFalse:
@@ -583,6 +597,10 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 		case "<=":
 			dst := fc.newReg()
 			fc.emit(op.Pos, Instr{Op: OpLessEq, A: dst, B: left, C: right})
+			left = dst
+		case "in":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpIn, A: dst, B: left, C: right})
 			left = dst
 		case ">=":
 			dst := fc.newReg()

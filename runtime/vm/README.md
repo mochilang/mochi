@@ -15,8 +15,10 @@ The VM supports a small but useful subset of Mochi:
 * Integer, float, boolean and string constants
 * Arithmetic operations `+`, `-`, `*`, `/`, `%`
 * Comparison operators `==`, `!=`, `<`, `>`, `<=`, `>=`
+* Membership tests using `in`
+* Short circuit boolean operators `&&` and `||`
 * Variable definitions and reassignment
-* `if`, `while` and `for` loops over ranges and lists
+* `if`, `while` and `for` loops with `break` and `continue`
 * Function definitions and calls with two arguments
 * Built‑ins `len` and `print` (up to two arguments)
 * List indexing and construction
@@ -25,8 +27,6 @@ The VM supports a small but useful subset of Mochi:
 
 Many of Mochi's features are not yet implemented:
 
-* Short circuit boolean operators `&&` and `||`
-* `break` and `continue` within loops
 * Structs, pattern matching and user defined types
 * Closures or nested function values
 * External package imports or FFI calls
