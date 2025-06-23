@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"sort"
 	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
@@ -349,19 +350,63 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			v := fr.regs[ins.B]
 			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.List)}
 		case OpIndex:
-			list := fr.regs[ins.B].List
-			idx := fr.regs[ins.C].Int
-			if idx < 0 || idx >= len(list) {
-				return Value{}, fmt.Errorf("index out of range")
+			src := fr.regs[ins.B]
+			idxVal := fr.regs[ins.C]
+			switch src.Tag {
+			case interpreter.TagList:
+				idx := idxVal.Int
+				if idx < 0 {
+					idx += len(src.List)
+				}
+				if idx < 0 || idx >= len(src.List) {
+					return Value{}, fmt.Errorf("index out of range")
+				}
+				fr.regs[ins.A] = src.List[idx]
+			case interpreter.TagMap:
+				var key string
+				switch idxVal.Tag {
+				case interpreter.TagStr:
+					key = idxVal.Str
+				case interpreter.TagInt:
+					key = fmt.Sprintf("%d", idxVal.Int)
+				default:
+					return Value{}, fmt.Errorf("invalid map key")
+				}
+				fr.regs[ins.A] = src.Map[key]
+			default:
+				return Value{}, fmt.Errorf("invalid index target")
 			}
-			fr.regs[ins.A] = list[idx]
 		case OpSetIndex:
-			list := fr.regs[ins.A].List
-			idx := fr.regs[ins.B].Int
-			if idx < 0 || idx >= len(list) {
-				return Value{}, fmt.Errorf("index out of range")
+			dst := &fr.regs[ins.A]
+			idxVal := fr.regs[ins.B]
+			val := fr.regs[ins.C]
+			switch dst.Tag {
+			case interpreter.TagList:
+				idx := idxVal.Int
+				if idx < 0 {
+					idx += len(dst.List)
+				}
+				if idx < 0 || idx >= len(dst.List) {
+					return Value{}, fmt.Errorf("index out of range")
+				}
+				dst.List[idx] = val
+			case interpreter.TagMap:
+				var key string
+				switch idxVal.Tag {
+				case interpreter.TagStr:
+					key = idxVal.Str
+				case interpreter.TagInt:
+					key = fmt.Sprintf("%d", idxVal.Int)
+				default:
+					return Value{}, fmt.Errorf("invalid map key")
+				}
+				if dst.Map == nil {
+					dst.Map = map[string]Value{}
+				}
+				dst.Map[key] = val
+			default:
+				return Value{}, fmt.Errorf("invalid index target")
 			}
-			list[idx] = fr.regs[ins.C]
 		case OpMakeList:
 			n := ins.B
 			start := ins.C
@@ -761,6 +806,14 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		return dst
 	}
 
+	if p.Map != nil {
+		if v, ok := constMap(p.Map); ok {
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
+		}
+	}
+
 	if p.FunExpr != nil {
 		idx := fc.comp.compileFunExpr(p.FunExpr)
 		dst := fc.newReg()
@@ -972,6 +1025,31 @@ func constList(l *parser.ListLiteral) (Value, bool) {
 	return Value{Tag: interpreter.TagList, List: vals}, true
 }
 
+func constMap(m *parser.MapLiteral) (Value, bool) {
+	vals := make(map[string]Value, len(m.Items))
+	for _, it := range m.Items {
+		k, ok := constExpr(it.Key)
+		if !ok {
+			return Value{}, false
+		}
+		var key string
+		switch k.Tag {
+		case interpreter.TagStr:
+			key = k.Str
+		case interpreter.TagInt:
+			key = fmt.Sprintf("%d", k.Int)
+		default:
+			return Value{}, false
+		}
+		v, ok := constExpr(it.Value)
+		if !ok {
+			return Value{}, false
+		}
+		vals[key] = v
+	}
+	return Value{Tag: interpreter.TagMap, Map: vals}, true
+}
+
 func constExpr(e *parser.Expr) (Value, bool) {
 	return constBinary(e.Binary)
 }
@@ -1023,6 +1101,9 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 	if p.List != nil {
 		return constList(p.List)
 	}
+	if p.Map != nil {
+		return constMap(p.Map)
+	}
 	return Value{}, false
 }
 
@@ -1042,6 +1123,12 @@ func valueToAny(v Value) any {
 			out[i] = valueToAny(x)
 		}
 		return out
+	case interpreter.TagMap:
+		m := make(map[string]any, len(v.Map))
+		for k, x := range v.Map {
+			m[k] = valueToAny(x)
+		}
+		return m
 	default:
 		return nil
 	}
@@ -1063,6 +1150,17 @@ func valueToString(v Value) string {
 			parts[i] = valueToString(x)
 		}
 		return "[" + strings.Join(parts, ", ") + "]"
+	case interpreter.TagMap:
+		keys := make([]string, 0, len(v.Map))
+		for k := range v.Map {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		parts := make([]string, len(keys))
+		for i, k := range keys {
+			parts[i] = fmt.Sprintf("%q: %s", k, valueToString(v.Map[k]))
+		}
+		return "{" + strings.Join(parts, ", ") + "}"
 	default:
 		return "nil"
 	}
@@ -1099,6 +1197,17 @@ func valuesEqual(a, b Value) bool {
 		}
 		for i := range a.List {
 			if !valuesEqual(a.List[i], b.List[i]) {
+				return false
+			}
+		}
+		return true
+	case interpreter.TagMap:
+		if len(a.Map) != len(b.Map) {
+			return false
+		}
+		for k, av := range a.Map {
+			bv, ok := b.Map[k]
+			if !ok || !valuesEqual(av, bv) {
 				return false
 			}
 		}
