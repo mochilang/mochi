@@ -322,7 +322,7 @@ func report(results []Result) {
 			case "mochi_vm":
 				langName = "Mochi (VM)"
 			case "mochi_go":
-				langName = "Mochi"
+				langName = "Mochi (Go)"
 			case "mochi_c":
 				langName = "C"
 			case "mochi_py":
@@ -536,7 +536,7 @@ func exportMarkdown(results []Result) error {
 			case "mochi_vm":
 				langName = "Mochi (VM)"
 			case "mochi_go":
-				langName = "Mochi"
+				langName = "Mochi (Go)"
 			case "mochi_c":
 				langName = "C"
 			case "mochi_py":

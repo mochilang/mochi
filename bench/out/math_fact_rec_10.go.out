@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-func fact(n int) int {
+func fact_rec(n int) int {
 	if (n == 0) {
 		return 1
 	}
-	return (n * fact((n - 1)))
+	return (n * fact_rec((n - 1)))
 }
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 	var last int = 0
 	var start int64 = time.Now().UnixNano()
 	for i := 0; i < repeat; i++ {
-		last = fact(n)
+		last = fact_rec(n)
 	}
 	var duration int64 = (int64(((int64(time.Now().UnixNano()) - int64(start)))) / int64(1000))
 	var output map[string]int64 = map[string]int64{"duration_us": duration, "output": int64(last)}
