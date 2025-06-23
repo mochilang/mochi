@@ -28,7 +28,7 @@ L3:
   JumpIfFalse  r15, L1
   // if is_prime(i) {
   Move         r16, r14
-  Call         r17, 1, 1, r16
+  Call         r17, is_prime, r16
   JumpIfFalse  r17, L2
   // count = count + 1
   Const        r18, 1

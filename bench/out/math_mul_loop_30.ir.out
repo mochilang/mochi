@@ -19,7 +19,7 @@ L1:
   JumpIfFalse  r10, L0
   // last = mul(n)
   Move         r11, r1
-  Call         r12, 1, 1, r11
+  Call         r12, mul, r11
   Move         r5, r12
   // for i in 0..repeat {
   Const        r13, 1

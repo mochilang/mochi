@@ -19,8 +19,6 @@ import (
 	pycode "mochi/compile/py"
 	tscode "mochi/compile/ts"
 	ccode "mochi/compile/x/c"
-	cscode "mochi/compile/x/cs"
-	rscode "mochi/compile/x/rust"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -209,13 +207,7 @@ func Run() {
 	if err := pycode.EnsureCython(); err != nil {
 		panic(err)
 	}
-	if err := rscode.EnsureRust(); err != nil {
-		panic(err)
-	}
 	if err := tscode.EnsureDeno(); err != nil {
-		panic(err)
-	}
-	if err := cscode.EnsureDotnet(); err != nil {
 		panic(err)
 	}
 	// Skip C compiler check in this environment
