@@ -51,6 +51,18 @@ fun checkProg(node: any): list<string> {
       let res = exprType(stmt.children[0], env)
       if count(res.errs) > 0 { errs = errs + res.errs }
       env[stmt.value] = res.typ
+    } else if stmt.kind == "assign" {
+      let res = exprType(stmt.children[0], env)
+      if count(res.errs) > 0 { errs = errs + res.errs }
+      if stmt.value in env {
+        let cur = env[stmt.value]
+        if cur != res.typ {
+          errs = errs + ["type mismatch assigning to " + stmt.value]
+        }
+        env[stmt.value] = res.typ
+      } else {
+        errs = errs + ["unknown variable: " + stmt.value]
+      }
     }
   }
   return errs
