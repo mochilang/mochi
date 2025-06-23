@@ -193,6 +193,7 @@ func printHelp(out io.Writer) {
 
 func (r *REPL) setPrompt(base string) {
 	r.rl.SetPrompt(cPrompt(base))
+	r.rl.Refresh()
 }
 
 func printf(w io.Writer, format string, args ...any) {
