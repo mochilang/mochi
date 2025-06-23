@@ -23,12 +23,16 @@ const (
 	OpMove
 	OpAdd
 	OpSub
+	OpMul
+	OpDiv
+	OpMod
 	OpEqual
 	OpLess
 	OpJump
 	OpJumpIfFalse
 	OpLen
 	OpIndex
+	OpSetIndex
 	OpMakeList
 	OpPrint
 	OpCall2
@@ -45,6 +49,12 @@ func (op Op) String() string {
 		return "Add"
 	case OpSub:
 		return "Sub"
+	case OpMul:
+		return "Mul"
+	case OpDiv:
+		return "Div"
+	case OpMod:
+		return "Mod"
 	case OpEqual:
 		return "Equal"
 	case OpLess:
@@ -57,6 +67,8 @@ func (op Op) String() string {
 		return "Len"
 	case OpIndex:
 		return "Index"
+	case OpSetIndex:
+		return "SetIndex"
 	case OpMakeList:
 		return "MakeList"
 	case OpPrint:
@@ -140,7 +152,9 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s %s", formatReg(ins.A), valueToString(ins.Val))
 			case OpMove:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
-			case OpAdd, OpSub, OpEqual, OpLess:
+			case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpEqual, OpLess:
+				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
+			case OpSetIndex:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpJump:
 				if lbl, ok := labels[ins.A]; ok {
@@ -223,6 +237,18 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int + fr.regs[ins.C].Int}
 		case OpSub:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int - fr.regs[ins.C].Int}
+		case OpMul:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int * fr.regs[ins.C].Int}
+		case OpDiv:
+			if fr.regs[ins.C].Int == 0 {
+				return Value{}, fmt.Errorf("division by zero")
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int / fr.regs[ins.C].Int}
+		case OpMod:
+			if fr.regs[ins.C].Int == 0 {
+				return Value{}, fmt.Errorf("division by zero")
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int % fr.regs[ins.C].Int}
 		case OpEqual:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int == fr.regs[ins.C].Int}
 		case OpLess:
@@ -243,6 +269,13 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 				return Value{}, fmt.Errorf("index out of range")
 			}
 			fr.regs[ins.A] = list[idx]
+		case OpSetIndex:
+			list := fr.regs[ins.A].List
+			idx := fr.regs[ins.B].Int
+			if idx < 0 || idx >= len(list) {
+				return Value{}, fmt.Errorf("index out of range")
+			}
+			list[idx] = fr.regs[ins.C]
 		case OpMakeList:
 			n := ins.B
 			start := ins.C
@@ -371,6 +404,15 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 				fc.vars[s.Assign.Name] = reg
 			}
 			fc.emit(s.Assign.Pos, Instr{Op: OpMove, A: reg, B: r})
+		} else if len(s.Assign.Index) == 1 {
+			listReg, ok := fc.vars[s.Assign.Name]
+			if !ok {
+				listReg = fc.newReg()
+				fc.vars[s.Assign.Name] = listReg
+			}
+			idx := fc.compileExpr(s.Assign.Index[0].Start)
+			val := fc.compileExpr(s.Assign.Value)
+			fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: listReg, B: idx, C: val})
 		}
 	case s.Return != nil:
 		r := fc.compileExpr(s.Return.Value)
@@ -405,6 +447,18 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 		case "-":
 			dst := fc.newReg()
 			fc.emit(op.Pos, Instr{Op: OpSub, A: dst, B: left, C: right})
+			left = dst
+		case "*":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpMul, A: dst, B: left, C: right})
+			left = dst
+		case "/":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpDiv, A: dst, B: left, C: right})
+			left = dst
+		case "%":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpMod, A: dst, B: left, C: right})
 			left = dst
 		case "==":
 			dst := fc.newReg()
@@ -527,29 +581,60 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 }
 
 func (fc *funcCompiler) compileFor(f *parser.ForStmt) {
-	start := fc.compileExpr(f.Source)
-	end := fc.compileExpr(f.RangeEnd)
-	idx, ok := fc.vars[f.Name]
-	if !ok {
-		idx = fc.newReg()
-		fc.vars[f.Name] = idx
+	if f.RangeEnd != nil {
+		start := fc.compileExpr(f.Source)
+		end := fc.compileExpr(f.RangeEnd)
+		idx, ok := fc.vars[f.Name]
+		if !ok {
+			idx = fc.newReg()
+			fc.vars[f.Name] = idx
+		}
+		fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: start})
+		loopStart := len(fc.fn.Code)
+		cond := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpLess, A: cond, B: idx, C: end})
+		jmp := len(fc.fn.Code)
+		fc.emit(f.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+		for _, st := range f.Body {
+			fc.compileStmt(st)
+		}
+		one := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		tmp := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpAdd, A: tmp, B: idx, C: one})
+		fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: tmp})
+		fc.emit(f.Pos, Instr{Op: OpJump, A: loopStart})
+		fc.fn.Code[jmp].B = len(fc.fn.Code)
+	} else {
+		list := fc.compileExpr(f.Source)
+		length := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpLen, A: length, B: list})
+		idx := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpConst, A: idx, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		loopStart := len(fc.fn.Code)
+		cond := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpLess, A: cond, B: idx, C: length})
+		jmp := len(fc.fn.Code)
+		fc.emit(f.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+		elem := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpIndex, A: elem, B: list, C: idx})
+		varReg, ok := fc.vars[f.Name]
+		if !ok {
+			varReg = fc.newReg()
+			fc.vars[f.Name] = varReg
+		}
+		fc.emit(f.Pos, Instr{Op: OpMove, A: varReg, B: elem})
+		for _, st := range f.Body {
+			fc.compileStmt(st)
+		}
+		one := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		tmp := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpAdd, A: tmp, B: idx, C: one})
+		fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: tmp})
+		fc.emit(f.Pos, Instr{Op: OpJump, A: loopStart})
+		fc.fn.Code[jmp].B = len(fc.fn.Code)
 	}
-	fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: start})
-	loopStart := len(fc.fn.Code)
-	cond := fc.newReg()
-	fc.emit(f.Pos, Instr{Op: OpLess, A: cond, B: idx, C: end})
-	jmp := len(fc.fn.Code)
-	fc.emit(f.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-	for _, st := range f.Body {
-		fc.compileStmt(st)
-	}
-	one := fc.newReg()
-	fc.emit(f.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(f.Pos, Instr{Op: OpAdd, A: tmp, B: idx, C: one})
-	fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: tmp})
-	fc.emit(f.Pos, Instr{Op: OpJump, A: loopStart})
-	fc.fn.Code[jmp].B = len(fc.fn.Code)
 }
 
 func (fc *funcCompiler) compileWhile(w *parser.WhileStmt) {
