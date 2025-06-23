@@ -358,6 +358,13 @@ type Cast struct {
 
 func (c Cast) isFloat() bool { return c.To == "float" }
 
+// LenExpr returns the length of a literal integer list.
+type LenExpr struct {
+	Expr Expr
+}
+
+func (LenExpr) isFloat() bool { return false }
+
 // IfExpr represents a simple if-else expression.
 type IfExpr struct {
 	Cond Expr
@@ -484,6 +491,15 @@ func (c Cast) compile(a *Assembler) {
 		a.MovqXmm0Rax()
 		a.Cvttsd2siRaxXmm0()
 	}
+}
+
+func (l LenExpr) compile(a *Assembler) {
+	if list, ok := l.Expr.(ListLit); ok {
+		a.MovRaxImm(int64(len(list.Elems)))
+		return
+	}
+	// unsupported operand, default to 0
+	a.MovRaxImm(0)
 }
 
 func (i IfExpr) compile(a *Assembler) {

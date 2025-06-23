@@ -134,3 +134,20 @@ func TestCompileInList(t *testing.T) {
 		t.Fatalf("expected 0 for missing element")
 	}
 }
+
+func TestCompileLen(t *testing.T) {
+	expr := LenExpr{Expr: ListLit{Elems: []int64{1, 2, 3}}}
+	asm := New()
+	expr.compile(asm)
+	asm.Ret()
+	if len(asm.Code()) == 0 {
+		t.Fatalf("expected code to be generated")
+	}
+	fn, err := Compile(expr)
+	if err != nil {
+		t.Fatalf("compile failed: %v", err)
+	}
+	if fn() != 3 {
+		t.Fatalf("expected len 3 got %d", fn())
+	}
+}
