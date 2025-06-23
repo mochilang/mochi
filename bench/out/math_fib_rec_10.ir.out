@@ -7,7 +7,7 @@ func main (regs=13)
   Move         r3, r2
   // let result = fib(n)
   Move         r4, r1
-  Call         r5, 1, 1, r4
+  Call         r5, fib, r4
   Move         r6, r5
   // let duration = (now() - start) / 1000
   Now          r7
@@ -31,11 +31,11 @@ L0:
   Const        r4, 1
   Sub          r5, r0, r4
   Move         r3, r5
-  Call         r6, 1, 1, r3
+  Call         r6, fib, r3
   Const        r8, 2
   Sub          r9, r0, r8
   Move         r7, r9
-  Call         r10, 1, 1, r7
+  Call         r10, fib, r7
   Add          r11, r6, r10
   Return       r11
   Return       r0

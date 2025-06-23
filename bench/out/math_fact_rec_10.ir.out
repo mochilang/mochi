@@ -19,7 +19,7 @@ L1:
   JumpIfFalse  r10, L0
   // last = fact_rec(n)
   Move         r11, r1
-  Call         r12, 1, 1, r11
+  Call         r12, fact_rec, r11
   Move         r5, r12
   // for i in 0..repeat {
   Const        r13, 1
@@ -51,7 +51,7 @@ L0:
   Const        r5, 1
   Sub          r6, r0, r5
   Move         r4, r6
-  Call         r7, 1, 1, r4
+  Call         r7, fact_rec, r4
   Mul          r8, r0, r7
   Return       r8
   Return       r0
