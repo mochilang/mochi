@@ -29,42 +29,46 @@ import (
 
 // Interpreter executes Mochi programs using a shared runtime and type environment.
 type Interpreter struct {
-	prog     *parser.Program
-	env      *types.Env
-	types    *types.Env
-	streams  map[string]stream.Stream
-	handlers map[string][]onHandler
-	subs     []stream.Subscriber
-	cancels  []context.CancelFunc
-	wg       *sync.WaitGroup
-	agents   []*agent.Agent
-	ffi      *ffi.Manager
-	root     string
-	memoize  bool
-	memo     map[string]map[string]any
-	dataPlan string
-	tx       *atomic.Int64
-	logic    *logic.Engine
+	prog             *parser.Program
+	env              *types.Env
+	types            *types.Env
+	streams          map[string]stream.Stream
+	handlers         map[string][]onHandler
+	subs             []stream.Subscriber
+	cancels          []context.CancelFunc
+	wg               *sync.WaitGroup
+	agents           []*agent.Agent
+	ffi              *ffi.Manager
+	root             string
+	memoize          bool
+	memo             map[string]map[string]any
+	dataPlan         string
+	tx               *atomic.Int64
+	logic            *logic.Engine
+	inlineCandidates map[string]*parser.FunStmt
+	callCounts       map[string]int
 }
 
 func New(prog *parser.Program, typesEnv *types.Env, root string) *Interpreter {
 	return &Interpreter{
-		prog:     prog,
-		env:      typesEnv,
-		types:    typesEnv,
-		streams:  map[string]stream.Stream{},
-		handlers: map[string][]onHandler{},
-		subs:     []stream.Subscriber{},
-		cancels:  []context.CancelFunc{},
-		wg:       &sync.WaitGroup{},
-		agents:   []*agent.Agent{},
-		ffi:      ffi.NewManager(),
-		root:     root,
-		memoize:  false,
-		memo:     map[string]map[string]any{},
-		dataPlan: "memory",
-		tx:       &atomic.Int64{},
-		logic:    logic.NewEngine(),
+		prog:             prog,
+		env:              typesEnv,
+		types:            typesEnv,
+		streams:          map[string]stream.Stream{},
+		handlers:         map[string][]onHandler{},
+		subs:             []stream.Subscriber{},
+		cancels:          []context.CancelFunc{},
+		wg:               &sync.WaitGroup{},
+		agents:           []*agent.Agent{},
+		ffi:              ffi.NewManager(),
+		root:             root,
+		memoize:          false,
+		memo:             map[string]map[string]any{},
+		dataPlan:         "memory",
+		tx:               &atomic.Int64{},
+		logic:            logic.NewEngine(),
+		inlineCandidates: map[string]*parser.FunStmt{},
+		callCounts:       map[string]int{},
 	}
 }
 
@@ -194,10 +198,12 @@ func (i *Interpreter) Test() error {
 
 		child := types.NewEnv(i.env)
 		interp := &Interpreter{
-			prog:  i.prog,
-			env:   child,
-			types: i.types,
-			tx:    i.tx,
+			prog:             i.prog,
+			env:              child,
+			types:            i.types,
+			tx:               i.tx,
+			inlineCandidates: map[string]*parser.FunStmt{},
+			callCounts:       map[string]int{},
 		}
 
 		start := time.Now()
@@ -371,7 +377,7 @@ func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, 
 			inst.agent.On(strm, func(ctx context.Context, ev *stream.Event) {
 				child := types.NewEnv(inst.env)
 				child.SetValue(alias, ev.Data, true)
-				interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, agents: i.agents, tx: i.tx}
+				interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, agents: i.agents, tx: i.tx, inlineCandidates: map[string]*parser.FunStmt{}, callCounts: map[string]int{}}
 				for _, stmt := range body {
 					_ = interp.evalStmt(stmt)
 				}
@@ -537,6 +543,9 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 
 	case s.Fun != nil:
 		i.env.SetFunc(s.Fun.Name, s.Fun)
+		if len(s.Fun.Body) == 1 {
+			i.inlineCandidates[s.Fun.Name] = s.Fun
+		}
 		return nil
 
 	case s.Return != nil:
@@ -629,7 +638,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 			}
 			child := types.NewEnv(i.env)
 			child.SetValue(h.alias, data, true)
-			interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, tx: i.tx}
+			interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, tx: i.tx, inlineCandidates: map[string]*parser.FunStmt{}, callCounts: map[string]int{}}
 			for _, stmt := range h.body {
 				if err := interp.evalStmt(stmt); err != nil {
 					return err
@@ -696,7 +705,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 	case s.Test != nil:
 		fmt.Printf("🔍 Test %s\n", s.Test.Name)
 		child := types.NewEnv(i.env)
-		interp := &Interpreter{prog: i.prog, env: child, types: i.types, tx: i.tx}
+		interp := &Interpreter{prog: i.prog, env: child, types: i.types, tx: i.tx, inlineCandidates: map[string]*parser.FunStmt{}, callCounts: map[string]int{}}
 		for _, stmt := range s.Test.Body {
 			if err := interp.evalStmt(stmt); err != nil {
 				return fmt.Errorf("❌ %s: %w", s.Test.Name, err)
@@ -1724,6 +1733,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 	}
 
 	if fn, ok := i.env.GetFunc(c.Func); ok {
+		i.callCounts[c.Func]++
 		argCount := len(c.Args)
 		paramCount := len(fn.Params)
 
@@ -1738,6 +1748,14 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 				return nil, err
 			}
 			argVals[idx] = v
+		}
+
+		if argCount == paramCount {
+			if cand, ok := i.inlineCandidates[c.Func]; ok {
+				if i.shouldInline(c.Func, cand) {
+					return i.inlineFunction(cand, argVals)
+				}
+			}
 		}
 
 		if argCount < paramCount {
@@ -1879,6 +1897,54 @@ func (i *Interpreter) invokeFunction(fn *parser.FunStmt, args []any) (any, error
 		}
 	}
 	return ret, nil
+}
+
+// shouldInline returns true if fn is a small pure function and call count
+// suggests potential performance gain from inlining.
+func (i *Interpreter) shouldInline(name string, fn *parser.FunStmt) bool {
+	if fn == nil {
+		return false
+	}
+	bodyLen := len(fn.Body)
+	if bodyLen != 1 {
+		return false
+	}
+	stmt := fn.Body[0]
+	if stmt.Return == nil && stmt.Expr == nil {
+		return false
+	}
+	if t, err := i.types.GetVar(name); err == nil {
+		if ft, ok := t.(types.FuncType); ok && ft.Pure {
+			if i.callCounts[name] > 10 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// inlineFunction executes a simple function body directly without full call
+// setup. Arguments must already be evaluated.
+func (i *Interpreter) inlineFunction(fn *parser.FunStmt, args []any) (any, error) {
+	child := types.NewEnv(i.env)
+	for idx, param := range fn.Params {
+		if idx < len(args) {
+			child.SetValue(param.Name, args[idx], true)
+		} else {
+			child.SetValue(param.Name, nil, true)
+		}
+	}
+	old := i.env
+	i.env = child
+	defer func() { i.env = old }()
+	stmt := fn.Body[0]
+	if stmt.Return != nil {
+		return i.evalExpr(stmt.Return.Value)
+	}
+	if stmt.Expr != nil {
+		return i.evalExpr(stmt.Expr.Expr)
+	}
+	return nil, nil
 }
 
 // --- Return ---
