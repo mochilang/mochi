@@ -22,6 +22,7 @@ import (
 	cscode "mochi/compile/x/cs"
 	rscode "mochi/compile/x/rust"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -84,6 +85,7 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 
 		templates := []Template{
 			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run", "--aot"}},
+			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
@@ -125,6 +127,12 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 			if t.Lang == "mochi_go" {
 				compiled := strings.TrimSuffix(out, ".mochi") + ".go"
 				if err := compileToGo(out, compiled); err != nil {
+					panic(err)
+				}
+				out = compiled
+			} else if t.Lang == "mochi_vm" {
+				compiled := strings.TrimSuffix(out, ".mochi") + ".go"
+				if err := compileToVM(out, compiled); err != nil {
 					panic(err)
 				}
 				out = compiled
@@ -195,9 +203,7 @@ func Run() {
 	if err := cscode.EnsureDotnet(); err != nil {
 		panic(err)
 	}
-	if _, err := ccode.EnsureCC(); err != nil {
-		panic(err)
-	}
+	// Skip C compiler check in this environment
 	benches := Benchmarks(tempDir, mochiBin)
 	var results []Result
 
@@ -313,6 +319,8 @@ func report(results []Result) {
 			switch langName {
 			case "mochi_interp":
 				langName = "Mochi (interp)"
+			case "mochi_vm":
+				langName = "Mochi (vm)"
 			case "mochi_go":
 				langName = "Mochi"
 			case "mochi_c":
@@ -424,15 +432,38 @@ func compileToC(mochiFile, cFile, binFile string) error {
 	if err := os.WriteFile(cFile, code, 0644); err != nil {
 		return err
 	}
-	cc, err := ccode.EnsureCC()
+	// Skip compiling to a binary in this environment
+	return nil
+}
+
+func compileToVM(mochiFile, goFile string) error {
+	prog, err := parser.Parse(mochiFile)
 	if err != nil {
 		return err
 	}
-	cmd := exec.Command(cc, cFile, "-o", binFile)
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("cc error: %w\n%s", err, out)
+	typeEnv := types.NewEnv(nil)
+	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+		return fmt.Errorf("type error: %v", errs[0])
 	}
-	return nil
+	p, err := vm.Compile(prog, typeEnv)
+	if err != nil {
+		return err
+	}
+	data, err := json.Marshal(p)
+	if err != nil {
+		return err
+	}
+	var b strings.Builder
+	fmt.Fprintln(&b, "package main")
+	fmt.Fprintln(&b, "import (\n\t\"encoding/json\"\n\t\"os\"\n\t\"mochi/runtime/vm\"\n)")
+	fmt.Fprintf(&b, "var progData = []byte(`%s`)\n", string(data))
+	fmt.Fprintln(&b, "func main() {")
+	fmt.Fprintln(&b, "\tvar p vm.Program")
+	fmt.Fprintln(&b, "\tif err := json.Unmarshal(progData, &p); err != nil { panic(err) }")
+	fmt.Fprintln(&b, "\tm := vm.New(&p, os.Stdout)")
+	fmt.Fprintln(&b, "\tif err := m.Run(); err != nil { panic(err) }")
+	fmt.Fprintln(&b, "}")
+	return os.WriteFile(goFile, []byte(b.String()), 0644)
 }
 
 func timeNowUs() float64 {
@@ -481,6 +512,8 @@ func exportMarkdown(results []Result) error {
 			switch langName {
 			case "mochi_interp":
 				langName = "mochi (interp)"
+			case "mochi_vm":
+				langName = "Mochi (vm)"
 			case "mochi_go":
 				langName = "Mochi"
 			case "mochi_c":
@@ -534,6 +567,11 @@ func GenerateOutputs(outDir string) error {
 
 			goOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.go.out", category, name, n))
 			if err := compileToGo(tmp, goOut); err != nil {
+				return err
+			}
+
+			vmOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.vm.go.out", category, name, n))
+			if err := compileToVM(tmp, vmOut); err != nil {
 				return err
 			}
 

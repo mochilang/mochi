@@ -1,11 +1,13 @@
 package vm
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"math"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/alecthomas/participle/v2/lexer"
 
@@ -47,6 +49,8 @@ const (
 	OpReturn
 	OpNot
 	OpJumpIfTrue
+	OpNow
+	OpJSON
 )
 
 func (op Op) String() string {
@@ -103,6 +107,10 @@ func (op Op) String() string {
 		return "Not"
 	case OpJumpIfTrue:
 		return "JumpIfTrue"
+	case OpNow:
+		return "Now"
+	case OpJSON:
+		return "JSON"
 	default:
 		return "?"
 	}
@@ -208,6 +216,10 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpPrint2:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpNow:
+				fmt.Fprintf(&b, "%s", formatReg(ins.A))
+			case OpJSON:
+				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpCall2:
 				fmt.Fprintf(&b, "%s, %d, %s, %s", formatReg(ins.A), ins.B, formatReg(ins.C), formatReg(ins.D))
 			case OpCall:
@@ -417,6 +429,11 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]))
 		case OpPrint2:
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]), valueToAny(fr.regs[ins.B]))
+		case OpNow:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(time.Now().UnixNano())}
+		case OpJSON:
+			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
+			fmt.Fprintln(m.writer, string(b))
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
@@ -834,6 +851,14 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpLen, A: dst, B: arg})
 			return dst
+		case "now":
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpNow, A: dst})
+			return dst
+		case "json":
+			arg := fc.compileExpr(p.Call.Args[0])
+			fc.emit(p.Pos, Instr{Op: OpJSON, A: arg})
+			return arg
 		case "print":
 			if len(p.Call.Args) == 1 {
 				arg := fc.compileExpr(p.Call.Args[0])
