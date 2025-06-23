@@ -86,6 +86,14 @@ fun runProg(node: any): ProgResult {
       let res = evalExpr(stmt.children[0], env)
       if count(res.errs) > 0 { errs = errs + res.errs }
       env[stmt.value] = res.val
+    } else if stmt.kind == "assign" {
+      let res = evalExpr(stmt.children[0], env)
+      if count(res.errs) > 0 { errs = errs + res.errs }
+      if stmt.value in env {
+        env[stmt.value] = res.val
+      } else {
+        errs = errs + ["unknown variable: " + stmt.value]
+      }
     }
   }
   return ProgResult{ env: env, errs: errs }
