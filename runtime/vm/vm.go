@@ -137,6 +137,20 @@ type Program struct {
 	Funcs []Function
 }
 
+func (p *Program) funcName(idx int) string {
+	if idx < 0 || idx >= len(p.Funcs) {
+		return fmt.Sprintf("%d", idx)
+	}
+	name := p.Funcs[idx].Name
+	if name == "" {
+		if idx == 0 {
+			return "main"
+		}
+		return fmt.Sprintf("fn%d", idx)
+	}
+	return name
+}
+
 // Disassemble returns a human-readable listing of the program instructions.
 // If src is provided, source lines are included as comments.
 func (p *Program) Disassemble(src string) string {
@@ -221,9 +235,9 @@ func (p *Program) Disassemble(src string) string {
 			case OpJSON:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpCall2:
-				fmt.Fprintf(&b, "%s, %d, %s, %s", formatReg(ins.A), ins.B, formatReg(ins.C), formatReg(ins.D))
+				fmt.Fprintf(&b, "%s, %s, %s, %s", formatReg(ins.A), p.funcName(ins.B), formatReg(ins.C), formatReg(ins.D))
 			case OpCall:
-				fmt.Fprintf(&b, "%s, %d, %d, %s", formatReg(ins.A), ins.B, ins.C, formatReg(ins.D))
+				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), p.funcName(ins.B), formatRegs(ins.D, ins.C))
 			case OpCallV:
 				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), formatReg(ins.B), ins.C, formatReg(ins.D))
 			case OpReturn:
@@ -1197,6 +1211,14 @@ func valueToString(v Value) string {
 
 func formatReg(n int) string {
 	return fmt.Sprintf("r%d", n)
+}
+
+func formatRegs(start, n int) string {
+	regs := make([]string, n)
+	for i := 0; i < n; i++ {
+		regs[i] = formatReg(start + i)
+	}
+	return strings.Join(regs, ", ")
 }
 
 func toFloat(v Value) float64 {

@@ -6,7 +6,7 @@ func main (regs=7)
   Move         r1, r4
   Const        r5, 3
   Move         r2, r5
-  Call         r6, 1, 3, r0
+  Call         r6, sum3, r0, r1, r2
   Print        r6
   Return       r0
 

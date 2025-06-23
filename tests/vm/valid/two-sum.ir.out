@@ -4,7 +4,7 @@ func main (regs=10)
   Move         r0, r2
   Const        r3, 9
   Move         r1, r3
-  Call2        r4, 1, r0, r1
+  Call2        r4, twoSum, r0, r1
   Move         r5, r4
   // print(result[0])
   Const        r6, 0

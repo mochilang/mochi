@@ -4,7 +4,7 @@ func main (regs=5)
   Move         r0, r2
   Const        r3, 3
   Move         r1, r3
-  Call2        r4, 1, r0, r1
+  Call2        r4, add, r0, r1
   Print        r4
   Return       r0
 
