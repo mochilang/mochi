@@ -1,0 +1,11 @@
+(program
+  (let x
+    (binary -
+      (binary +
+        (int 1)
+        (binary * (int 2) (int 3))
+      )
+      (int 4)
+    )
+  )
+)

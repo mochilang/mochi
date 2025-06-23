@@ -87,7 +87,7 @@ fun tokenize(src: string): list<Token> {
       i = j
       continue
     }
-    if ch == "+" || ch == "=" || ch == "(" || ch == ")" {
+    if ch == "+" || ch == "-" || ch == "*" || ch == "=" || ch == "(" || ch == ")" {
       toks = toks + [Token { kind: str(ch), value: str(ch) }]
       i = i + 1
       continue
@@ -103,7 +103,7 @@ fun tokenize(src: string): list<Token> {
 fun parseTokens(toks: list<Token>): Node {
   var idx = 0
 
-  fun parseTerm(): Node {
+  fun parseFactor(): Node {
     let tok = toks[idx]
     idx = idx + 1
     if tok.kind == "int" {
@@ -117,14 +117,26 @@ fun parseTokens(toks: list<Token>): Node {
     return newNode("ident", tok.value, [])
   }
 
+  fun parseTerm(): Node {
+    var left = parseFactor()
+    while idx < count(toks) {
+      let tk = toks[idx]
+      if tk.kind != "*" { break }
+      idx = idx + 1
+      let right = parseFactor()
+      left = newNode("binary", "*", [left, right])
+    }
+    return left
+  }
+
   fun parseExpr(): Node {
     var left = parseTerm()
     while idx < count(toks) {
       let tk = toks[idx]
-      if tk.kind != "+" { break }
+      if tk.kind != "+" && tk.kind != "-" { break }
       idx = idx + 1
       let right = parseTerm()
-      left = newNode("binary", "+", [left, right])
+      left = newNode("binary", tk.value, [left, right])
     }
     return left
   }
