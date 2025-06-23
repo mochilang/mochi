@@ -44,3 +44,30 @@ go test ./tests/vm -run .
 ```
 
 Use `-update` to refresh the expected output files when modifying the VM.
+
+## MBX bytecode format
+
+Compiled programs can be written to disk using the **MBX** (Mochi Bytecode eXchange) binary format. MBX is inspired by RESP3 and encodes values with a single byte type prefix followed by varints or raw bytes.
+
+A program is encoded as an array of functions:
+
+```
+*<funcs>
+  *4
+    $<name>          # function name
+    :<numRegs>
+    :<line>
+    *<instructions>
+      *7
+        :<op>
+        :<a>
+        :<b>
+        :<c>
+        :<d>
+        <value>
+        :<line>
+```
+
+Integers are prefixed with `:`, strings with `$`, floats with `,` (8 byte little endian), booleans with `#` and arrays with `*`. The `_` prefix denotes `null` and `%` introduces a map of key/value pairs.
+
+Use `MarshalMBX` and `UnmarshalMBX` to convert between a `Program` and its binary representation.
