@@ -20,7 +20,7 @@ These modules are intentionally tiny and support only a subset of Mochi.
 - `let` and `var` declarations
 - integer literals and identifiers
 - unary negation
-- binary operators `+`, `-`, `*`, `/`
+- binary operators `+`, `-`, `*`, `/`, `%`
 - parentheses in expressions
 - variable reassignment with `=`
 - error reporting for unknown variables

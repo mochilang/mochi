@@ -2,8 +2,9 @@ package parser
 
 // Simple Mochi parser implemented in pure Mochi.
 // Supports simple `let` and `var` statements assigning an integer expression
-// composed of additions, subtractions, multiplications and divisions with
-// parentheses and unary minus. The pure implementation is used for testing the
+// composed of additions, subtractions, multiplications, divisions and
+// remainders with parentheses and unary minus. The pure implementation is used
+// for testing the
 // language self-hosting and is intentionally small.
 
 
@@ -103,7 +104,7 @@ fun tokenize(src: string): list<Token> {
       i = j
       continue
     }
-    if ch == "+" || ch == "-" || ch == "*" || ch == "/" || ch == "=" || ch == "(" || ch == ")" {
+    if ch == "+" || ch == "-" || ch == "*" || ch == "/" || ch == "%" || ch == "=" || ch == "(" || ch == ")" {
       toks = toks + [Token { kind: str(ch), value: str(ch) }]
       i = i + 1
       continue
@@ -141,7 +142,7 @@ fun parseTokens(toks: list<Token>): Node {
     var left = parseFactor()
     while idx < count(toks) {
       let tk = toks[idx]
-      if tk.kind != "*" && tk.kind != "/" { break }
+      if tk.kind != "*" && tk.kind != "/" && tk.kind != "%" { break }
       idx = idx + 1
       let right = parseFactor()
       left = newNode("binary", tk.value, [left, right])
