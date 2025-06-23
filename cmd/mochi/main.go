@@ -1191,8 +1191,8 @@ func newReplCmd() *cobra.Command {
 		Use:   "repl",
 		Short: "Start an interactive REPL session",
 		Run: func(cmd *cobra.Command, args []string) {
-			repl := repl.New(os.Stdout, version)
-			repl.Run()
+			r := repl.New(os.Stdout, version)
+			r.RunTUI()
 		},
 	}
 	return c
