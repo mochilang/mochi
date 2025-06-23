@@ -1,0 +1,33 @@
+func main (regs=10)
+  // print(false && boom(1, 2))
+  Const        r0 false
+  Move         r1, r0
+  JumpIfFalse  r1, L0
+  Const        r2 1
+  Const        r3 2
+  Call2        r4, 1, r2, r3
+  Move         r1, r4
+L0:
+  Print        r1
+  // print(true || boom(1, 2))
+  Const        r5 true
+  Move         r6, r5
+  JumpIfTrue   r6, L1
+  Const        r7 1
+  Const        r8 2
+  Call2        r9, 1, r7, r8
+  Move         r6, r9
+L1:
+  Print        r6
+  // fun boom(a: int, b: int): bool {
+  Return       r0
+
+func boom (regs=4)
+  // print("boom")
+  Const        r2 "boom"
+  Print        r2
+  // return true
+  Const        r3 true
+  Return       r3
+  // fun boom(a: int, b: int): bool {
+  Return       r0
