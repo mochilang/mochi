@@ -41,6 +41,8 @@ const (
 	OpPrint
 	OpPrint2
 	OpCall2
+	OpCall
+	OpCallV
 	OpReturn
 	OpNot
 	OpJumpIfTrue
@@ -90,6 +92,10 @@ func (op Op) String() string {
 		return "Print2"
 	case OpCall2:
 		return "Call2"
+	case OpCall:
+		return "Call"
+	case OpCallV:
+		return "CallV"
 	case OpReturn:
 		return "Return"
 	case OpNot:
@@ -199,6 +205,10 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpCall2:
 				fmt.Fprintf(&b, "%s, %d, %s, %s", formatReg(ins.A), ins.B, formatReg(ins.C), formatReg(ins.D))
+			case OpCall:
+				fmt.Fprintf(&b, "%s, %d, %d, %s", formatReg(ins.A), ins.B, ins.C, formatReg(ins.D))
+			case OpCallV:
+				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), formatReg(ins.B), ins.C, formatReg(ins.D))
 			case OpReturn:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpNot:
@@ -366,6 +376,23 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 				return Value{}, err
 			}
 			fr.regs[ins.A] = res
+		case OpCall:
+			args := make([]Value, ins.C)
+			copy(args, fr.regs[ins.D:ins.D+ins.C])
+			res, err := m.call(ins.B, args)
+			if err != nil {
+				return Value{}, err
+			}
+			fr.regs[ins.A] = res
+		case OpCallV:
+			fnIdx := fr.regs[ins.B].Int
+			args := make([]Value, ins.C)
+			copy(args, fr.regs[ins.D:ins.D+ins.C])
+			res, err := m.call(fnIdx, args)
+			if err != nil {
+				return Value{}, err
+			}
+			fr.regs[ins.A] = res
 		case OpNot:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: !fr.regs[ins.B].Truthy()}
 		case OpReturn:
@@ -437,6 +464,29 @@ func (c *compiler) compileFun(fn *parser.FunStmt) Function {
 	}
 	fc.emit(fn.Pos, Instr{Op: OpReturn, A: 0})
 	return fc.fn
+}
+
+func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
+	fc := &funcCompiler{comp: c, vars: map[string]int{}}
+	for i, p := range fn.Params {
+		fc.vars[p.Name] = i
+		if i >= fc.fn.NumRegs {
+			fc.fn.NumRegs = i + 1
+		}
+	}
+	fc.idx = len(fn.Params)
+	if fn.ExprBody != nil {
+		r := fc.compileExpr(fn.ExprBody)
+		fc.emit(fn.Pos, Instr{Op: OpReturn, A: r})
+	} else {
+		for _, st := range fn.BlockBody {
+			fc.compileStmt(st)
+		}
+		fc.emit(fn.Pos, Instr{Op: OpReturn, A: 0})
+	}
+	idx := len(c.funcs)
+	c.funcs = append(c.funcs, fc.fn)
+	return idx
 }
 
 func (c *compiler) compileMain(p *parser.Program) Function {
@@ -640,7 +690,21 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 			fc.emit(op.Index.Pos, Instr{Op: OpIndex, A: dst, B: r, C: idx})
 			r = dst
 		} else if op.Call != nil {
-			// Calls as postfix (e.g. foo(args)) are not used in two-sum
+			regs := make([]int, len(op.Call.Args))
+			for i := range op.Call.Args {
+				regs[i] = fc.newReg()
+			}
+			for i, a := range op.Call.Args {
+				ar := fc.compileExpr(a)
+				fc.emit(a.Pos, Instr{Op: OpMove, A: regs[i], B: ar})
+			}
+			dst := fc.newReg()
+			start := 0
+			if len(regs) > 0 {
+				start = regs[0]
+			}
+			fc.emit(op.Call.Pos, Instr{Op: OpCallV, A: dst, B: r, C: len(regs), D: start})
+			r = dst
 		}
 	}
 	return r
@@ -690,6 +754,13 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		return dst
 	}
 
+	if p.FunExpr != nil {
+		idx := fc.comp.compileFunExpr(p.FunExpr)
+		dst := fc.newReg()
+		fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagInt, Int: idx}})
+		return dst
+	}
+
 	if p.Selector != nil && len(p.Selector.Tail) == 0 {
 		if r, ok := fc.vars[p.Selector.Root]; ok {
 			return r
@@ -717,10 +788,41 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			}
 		default:
 			if fnIdx, ok := fc.comp.fnIndex[p.Call.Func]; ok {
-				a0 := fc.compileExpr(p.Call.Args[0])
-				a1 := fc.compileExpr(p.Call.Args[1])
+				regs := make([]int, len(p.Call.Args))
+				for i := range p.Call.Args {
+					regs[i] = fc.newReg()
+				}
+				for i, a := range p.Call.Args {
+					ar := fc.compileExpr(a)
+					fc.emit(a.Pos, Instr{Op: OpMove, A: regs[i], B: ar})
+				}
 				dst := fc.newReg()
-				fc.emit(p.Pos, Instr{Op: OpCall2, A: dst, B: fnIdx, C: a0, D: a1})
+				if len(regs) == 2 {
+					fc.emit(p.Pos, Instr{Op: OpCall2, A: dst, B: fnIdx, C: regs[0], D: regs[1]})
+				} else {
+					start := 0
+					if len(regs) > 0 {
+						start = regs[0]
+					}
+					fc.emit(p.Pos, Instr{Op: OpCall, A: dst, B: fnIdx, C: len(regs), D: start})
+				}
+				return dst
+			}
+			if reg, ok := fc.vars[p.Call.Func]; ok {
+				regs := make([]int, len(p.Call.Args))
+				for i := range p.Call.Args {
+					regs[i] = fc.newReg()
+				}
+				for i, a := range p.Call.Args {
+					ar := fc.compileExpr(a)
+					fc.emit(a.Pos, Instr{Op: OpMove, A: regs[i], B: ar})
+				}
+				dst := fc.newReg()
+				start := 0
+				if len(regs) > 0 {
+					start = regs[0]
+				}
+				fc.emit(p.Pos, Instr{Op: OpCallV, A: dst, B: reg, C: len(regs), D: start})
 				return dst
 			}
 		}
