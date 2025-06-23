@@ -1,0 +1,10 @@
+func main (regs=4)
+  // let xs = [10, 20, 30]
+  Const        r0 [10, 20, 30]
+  Move         r1, r0
+  // print(xs[1])
+  Const        r2 1
+  Index        r3, r1, r2
+  Print        r3
+  // let xs = [10, 20, 30]
+  Return       r0

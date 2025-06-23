@@ -104,9 +104,32 @@ func (p *Program) Disassemble(src string) string {
 				name = fmt.Sprintf("fn%d", idx)
 			}
 		}
+
+		// build label map for jump targets
+		labels := map[int]string{}
+		nextLabel := 0
+		for i, ins := range fn.Code {
+			switch ins.Op {
+			case OpJump:
+				if _, ok := labels[ins.A]; !ok {
+					labels[ins.A] = fmt.Sprintf("L%d", nextLabel)
+					nextLabel++
+				}
+			case OpJumpIfFalse:
+				if _, ok := labels[ins.B]; !ok {
+					labels[ins.B] = fmt.Sprintf("L%d", nextLabel)
+					nextLabel++
+				}
+			}
+			_ = i
+		}
+
 		fmt.Fprintf(&b, "func %s (regs=%d)\n", name, fn.NumRegs)
 		lastLine := 0
-		for _, ins := range fn.Code {
+		for pc, ins := range fn.Code {
+			if lbl, ok := labels[pc]; ok {
+				fmt.Fprintf(&b, "%s:\n", lbl)
+			}
 			if ins.Line != lastLine && ins.Line > 0 && ins.Line <= len(lines) {
 				fmt.Fprintf(&b, "  // %s\n", strings.TrimSpace(lines[ins.Line-1]))
 				lastLine = ins.Line
@@ -120,9 +143,17 @@ func (p *Program) Disassemble(src string) string {
 			case OpAdd, OpSub, OpEqual, OpLess:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpJump:
-				fmt.Fprintf(&b, "%d", ins.A)
+				if lbl, ok := labels[ins.A]; ok {
+					fmt.Fprintf(&b, "%s", lbl)
+				} else {
+					fmt.Fprintf(&b, "%d", ins.A)
+				}
 			case OpJumpIfFalse:
-				fmt.Fprintf(&b, "%s, %d", formatReg(ins.A), ins.B)
+				if lbl, ok := labels[ins.B]; ok {
+					fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), lbl)
+				} else {
+					fmt.Fprintf(&b, "%s, %d", formatReg(ins.A), ins.B)
+				}
 			case OpLen:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpIndex:
@@ -362,6 +393,15 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 			dst := fc.newReg()
 			fc.emit(op.Pos, Instr{Op: OpEqual, A: dst, B: left, C: right})
 			left = dst
+		case "<":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpLess, A: dst, B: left, C: right})
+			left = dst
+		case ">":
+			dst := fc.newReg()
+			// a > b  ==>  b < a
+			fc.emit(op.Pos, Instr{Op: OpLess, A: dst, B: right, C: left})
+			left = dst
 		}
 	}
 	return left
@@ -400,11 +440,24 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 }
 
 func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
-	if p.Lit != nil && p.Lit.Int != nil {
-		dst := fc.newReg()
-		v := Value{Tag: interpreter.TagInt, Int: *p.Lit.Int}
-		fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-		return dst
+	if p.Lit != nil {
+		switch {
+		case p.Lit.Int != nil:
+			dst := fc.newReg()
+			v := Value{Tag: interpreter.TagInt, Int: *p.Lit.Int}
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
+		case p.Lit.Str != nil:
+			dst := fc.newReg()
+			v := Value{Tag: interpreter.TagStr, Str: *p.Lit.Str}
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
+		case p.Lit.Bool != nil:
+			dst := fc.newReg()
+			v := Value{Tag: interpreter.TagBool, Bool: bool(*p.Lit.Bool)}
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
+		}
 	}
 
 	if p.List != nil {

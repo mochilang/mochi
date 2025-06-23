@@ -1,0 +1,3 @@
+let a = 10
+let b: int = 20
+print(a + b)
