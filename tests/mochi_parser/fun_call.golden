@@ -1,0 +1,13 @@
+(program
+  (fun add
+    (params (param a) (param b))
+    (block
+      (return
+        (binary + (ident a) (ident b))
+      )
+    )
+  )
+  (let result
+    (call add (int 1) (int 2))
+  )
+)

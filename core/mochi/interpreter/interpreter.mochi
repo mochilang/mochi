@@ -16,6 +16,11 @@ type ProgResult {
   errs: list<string>
 }
 
+type FunDef {
+  params: list<string>
+  body: list<any>
+}
+
 fun parseInt(str: string): int {
   var i = 0
   var neg = false
@@ -44,7 +49,7 @@ fun parseInt(str: string): int {
   return n
 }
 
-fun evalExpr(node: any, env: map<string,int>): EvalResult {
+fun evalExpr(node: any, env: map<string,int>, funcs: map<string,FunDef>): EvalResult {
   if node.kind == "int" {
     return EvalResult{ val: parseInt(node.value), errs: [] }
   }
@@ -56,7 +61,7 @@ fun evalExpr(node: any, env: map<string,int>): EvalResult {
   }
   if node.kind == "unary" {
     let op = node.value
-    let inner = evalExpr(node.children[0], env)
+    let inner = evalExpr(node.children[0], env, funcs)
     var val = inner.val
     if op == "neg" { val = -val }
     else { return EvalResult{ val: val, errs: inner.errs + ["unsupported unary: " + op] } }
@@ -64,8 +69,8 @@ fun evalExpr(node: any, env: map<string,int>): EvalResult {
   }
   if node.kind == "binary" {
     let op = node.value
-    let l = evalExpr(node.children[0], env)
-    let r = evalExpr(node.children[1], env)
+    let l = evalExpr(node.children[0], env, funcs)
+    let r = evalExpr(node.children[1], env, funcs)
     var errs = l.errs + r.errs
     var v = 0
     if op == "+" { v = l.val + r.val }
@@ -76,19 +81,64 @@ fun evalExpr(node: any, env: map<string,int>): EvalResult {
     else { errs = errs + ["unsupported operator: " + op] }
     return EvalResult{ val: v, errs: errs }
   }
+  if node.kind == "call" {
+    if node.value in funcs {
+      let fn = funcs[node.value]
+      var local: map<string,int> = {}
+      var i = 0
+      var errs: list<string> = []
+      while i < count(fn.params) {
+        let argRes = evalExpr(node.children[i], env, funcs)
+        if count(argRes.errs) > 0 { errs = errs + argRes.errs }
+        local[fn.params[i]] = argRes.val
+        i = i + 1
+      }
+      let res = runBlock(fn.body, local, funcs)
+      return EvalResult{ val: res.val, errs: errs + res.errs }
+    }
+    return EvalResult{ val: 0, errs: ["unknown function: " + node.value] }
+  }
   return EvalResult{ val: 0, errs: ["unsupported expr: " + node.kind] }
+}
+
+fun runBlock(stmts: list<any>, env: map<string,int>, funcs: map<string,FunDef>): EvalResult {
+  var local = env
+  var errs: list<string> = []
+  var ret = 0
+  for stmt in stmts {
+    if stmt.kind == "let" || stmt.kind == "var" {
+      let res = evalExpr(stmt.children[0], local, funcs)
+      if count(res.errs) > 0 { errs = errs + res.errs }
+      local[stmt.value] = res.val
+    } else if stmt.kind == "assign" {
+      let res = evalExpr(stmt.children[0], local, funcs)
+      if count(res.errs) > 0 { errs = errs + res.errs }
+      if stmt.value in local { local[stmt.value] = res.val } else { errs = errs + ["unknown variable: " + stmt.value] }
+    } else if stmt.kind == "return" {
+      let res = evalExpr(stmt.children[0], local, funcs)
+      return EvalResult{ val: res.val, errs: errs + res.errs }
+    }
+  }
+  return EvalResult{ val: ret, errs: errs }
 }
 
 fun runProg(node: any): ProgResult {
   var env: map<string,int> = {}
+  var funcs: map<string,FunDef> = {}
   var errs: list<string> = []
   for stmt in node.children {
-    if stmt.kind == "let" || stmt.kind == "var" {
-      let res = evalExpr(stmt.children[0], env)
+      if stmt.kind == "fun" {
+        var params: list<string> = []
+        let paramNode = stmt.children[0]
+        for p in paramNode.children { params = params + [p.value] }
+        let bodyNode = stmt.children[1]
+        funcs[stmt.value] = FunDef{ params: params, body: bodyNode.children }
+    } else if stmt.kind == "let" || stmt.kind == "var" {
+      let res = evalExpr(stmt.children[0], env, funcs)
       if count(res.errs) > 0 { errs = errs + res.errs }
       env[stmt.value] = res.val
     } else if stmt.kind == "assign" {
-      let res = evalExpr(stmt.children[0], env)
+      let res = evalExpr(stmt.children[0], env, funcs)
       if count(res.errs) > 0 { errs = errs + res.errs }
       if stmt.value in env {
         env[stmt.value] = res.val
