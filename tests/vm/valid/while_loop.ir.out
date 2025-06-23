@@ -5,13 +5,13 @@ func main (regs=6)
 L1:
   // while i < 3 {
   Const        r2, 3
-  Less         r3, r1, r2
+  LessInt      r3, r1, r2
   JumpIfFalse  r3, L0
   // print(i)
   Print        r1
   // i = i + 1
   Const        r4, 1
-  Add          r5, r1, r4
+  AddInt       r5, r1, r4
   Move         r1, r5
   // while i < 3 {
   Jump         L1

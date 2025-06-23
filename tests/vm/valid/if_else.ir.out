@@ -4,7 +4,7 @@ func main (regs=6)
   Move         r1, r0
   // if x > 3 {
   Const        r2, 3
-  Less         r3, r2, r1
+  LessInt      r3, r2, r1
   JumpIfFalse  r3, L0
   // print("big")
   Const        r4, "big"

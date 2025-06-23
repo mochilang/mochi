@@ -29,7 +29,7 @@ L4:
   JumpIfFalse  r6, L0
   // for j in i+1..n {
   Const        r7, 1
-  Add          r8, r5, r7
+  AddInt       r8, r5, r7
   Move         r9, r8
 L3:
   Less         r10, r9, r3
