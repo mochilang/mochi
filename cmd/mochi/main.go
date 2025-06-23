@@ -1213,7 +1213,7 @@ func newReplCmd() *cobra.Command {
 		Short: "Start an interactive REPL session",
 		Run: func(cmd *cobra.Command, args []string) {
 			r := repl.New(os.Stdout, version)
-			r.RunTUI()
+			r.Run()
 		},
 	}
 	return c
