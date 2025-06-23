@@ -20,6 +20,7 @@ import (
 	"github.com/charmbracelet/fang"
 	"github.com/fatih/color"
 	_ "github.com/lib/pq"
+	isatty "github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 
 	"mochi/runtime/llm"
@@ -1213,7 +1214,11 @@ func newReplCmd() *cobra.Command {
 		Short: "Start an interactive REPL session",
 		Run: func(cmd *cobra.Command, args []string) {
 			r := repl.New(os.Stdout, version)
-			r.RunTUI()
+			if isatty.IsTerminal(os.Stdout.Fd()) && isatty.IsTerminal(os.Stdin.Fd()) {
+				r.RunTUI()
+			} else {
+				r.Run()
+			}
 		},
 	}
 	return c
