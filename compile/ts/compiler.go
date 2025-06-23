@@ -228,16 +228,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// Emit global variable declarations before functions/tests.
-	for _, s := range prog.Statements {
-		if s.Let != nil || s.Var != nil {
-			if err := c.compileStmt(s); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
-	}
-
 	// Emit function declarations first.
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -265,7 +255,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil || s.Let != nil || s.Var != nil || s.Type != nil {
+		if s.Fun != nil || s.Test != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
