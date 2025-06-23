@@ -1,0 +1,15 @@
+func main (regs=3)
+  // print(add(2, 3))  // 5
+  Const        r0 2
+  Const        r1 3
+  Call2        r2, 1, r0, r1
+  Print        r2
+  // fun add(a: int, b: int): int {
+  Return       r0
+
+func add (regs=3)
+  // return a + b
+  Add          r2, r0, r1
+  Return       r2
+  // fun add(a: int, b: int): int {
+  Return       r0
