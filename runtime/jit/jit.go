@@ -393,6 +393,28 @@ func (i IfExpr) isFloat() bool {
 
 func (b BinOp) compile(a *Assembler) {
 	if b.Op == "==" || b.Op == "!=" {
+		if l, lok := b.Left.(ListLit); lok {
+			if r, rok := b.Right.(ListLit); rok {
+				eq := len(l.Elems) == len(r.Elems)
+				if eq {
+					for i := range l.Elems {
+						if l.Elems[i] != r.Elems[i] {
+							eq = false
+							break
+						}
+					}
+				}
+				if b.Op == "!=" {
+					eq = !eq
+				}
+				if eq {
+					a.MovRaxImm(1)
+				} else {
+					a.MovRaxImm(0)
+				}
+				return
+			}
+		}
 		l, lok := b.Left.(StrLit)
 		r, rok := b.Right.(StrLit)
 		if lok && rok {
