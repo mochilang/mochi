@@ -33,38 +33,38 @@ import (
 	python "mochi/runtime/ffi/python"
 
 	"mochi/ast"
-	ccode "mochi/compile/c"
-	cljcode "mochi/compile/clj"
-	cobolcode "mochi/compile/cobol"
-	cppcode "mochi/compile/cpp"
-	cscode "mochi/compile/cs"
-	dartcode "mochi/compile/dart"
-	erlcode "mochi/compile/erlang"
-	excode "mochi/compile/ex"
-	fortrancode "mochi/compile/fortran"
-	fscode "mochi/compile/fs"
 	gocode "mochi/compile/go"
-	hscode "mochi/compile/hs"
-	javacode "mochi/compile/java"
-	jvmcode "mochi/compile/jvm"
-	ktcode "mochi/compile/kt"
-	luacode "mochi/compile/lua"
-	mlir "mochi/compile/mlir"
-	ocamlcode "mochi/compile/ocaml"
-	pascode "mochi/compile/pas"
-	phpcode "mochi/compile/php"
-	plcode "mochi/compile/pl"
 	pycode "mochi/compile/py"
-	rbcode "mochi/compile/rb"
-	rktcode "mochi/compile/rkt"
-	rscode "mochi/compile/rust"
-	scalacode "mochi/compile/scala"
-	schemecode "mochi/compile/scheme"
-	stcode "mochi/compile/st"
-	swiftcode "mochi/compile/swift"
 	tscode "mochi/compile/ts"
-	"mochi/compile/wasm"
-	zigcode "mochi/compile/zig"
+	ccode "mochi/compile/x/c"
+	cljcode "mochi/compile/x/clj"
+	cobolcode "mochi/compile/x/cobol"
+	cppcode "mochi/compile/x/cpp"
+	cscode "mochi/compile/x/cs"
+	dartcode "mochi/compile/x/dart"
+	erlcode "mochi/compile/x/erlang"
+	excode "mochi/compile/x/ex"
+	fortrancode "mochi/compile/x/fortran"
+	fscode "mochi/compile/x/fs"
+	hscode "mochi/compile/x/hs"
+	javacode "mochi/compile/x/java"
+	jvmcode "mochi/compile/x/jvm"
+	ktcode "mochi/compile/x/kt"
+	luacode "mochi/compile/x/lua"
+	mlir "mochi/compile/x/mlir"
+	ocamlcode "mochi/compile/x/ocaml"
+	pascode "mochi/compile/x/pas"
+	phpcode "mochi/compile/x/php"
+	plcode "mochi/compile/x/pl"
+	rbcode "mochi/compile/x/rb"
+	rktcode "mochi/compile/x/rkt"
+	rscode "mochi/compile/x/rust"
+	scalacode "mochi/compile/x/scala"
+	schemecode "mochi/compile/x/scheme"
+	stcode "mochi/compile/x/st"
+	swiftcode "mochi/compile/x/swift"
+	"mochi/compile/x/wasm"
+	zigcode "mochi/compile/x/zig"
 	"mochi/interpreter"
 	"mochi/mcp"
 	"mochi/parser"
@@ -84,6 +84,7 @@ type CLI struct {
 	Run        *RunCmd        `arg:"subcommand:run" help:"Run a Mochi source file"`
 	Test       *TestCmd       `arg:"subcommand:test" help:"Run test blocks inside a Mochi source file"`
 	Build      *BuildCmd      `arg:"subcommand:build" help:"Compile a Mochi source file"`
+	BuildX     *BuildCmd      `arg:"subcommand:buildx" help:"Compile using experimental backends"`
 	Init       *InitCmd       `arg:"subcommand:init" help:"Initialize a new Mochi module"`
 	Get        *GetCmd        `arg:"subcommand:get" help:"Download module dependencies"`
 	Repl       *ReplCmd       `arg:"subcommand:repl" help:"Start an interactive REPL session"`
@@ -112,7 +113,7 @@ type TestCmd struct {
 type BuildCmd struct {
 	File          string `arg:"positional,required" help:"Path to .mochi source file"`
 	Out           string `arg:"-o" help:"Output file path"`
-	Target        string `arg:"--target" help:"Output language (c|clj|cobol|cpp|cs|dart|erlang|ex|fortran|fs|go|hs|java|jvm|kt|lua|ocaml|pas|php|pl|py|python|rb|rkt|rust|scala|scheme|st|swift|ts|wasm|zig|mlir|all)"`
+	Target        string `arg:"--target" help:"Output language"`
 	All           bool   `arg:"--all" help:"Compile to all supported targets"`
 	WasmToolchain string `arg:"--wasm-toolchain" help:"WASM toolchain (go|tinygo)"`
 }
@@ -137,14 +138,15 @@ type ServeCmd struct{}
 type CheatsheetCmd struct{}
 
 var (
-	cError     = color.New(color.FgRed, color.Bold).SprintFunc()
-	cTitle     = color.New(color.FgCyan, color.Bold).SprintFunc()
-	cFile      = color.New(color.FgHiBlue, color.Bold).SprintFunc()
-	allTargets = []string{
+	cError              = color.New(color.FgRed, color.Bold).SprintFunc()
+	cTitle              = color.New(color.FgCyan, color.Bold).SprintFunc()
+	cFile               = color.New(color.FgHiBlue, color.Bold).SprintFunc()
+	stableTargets       = []string{"go", "py", "ts"}
+	experimentalTargets = []string{
 		"c", "clj", "cobol", "cpp", "cs", "dart", "erlang", "ex",
-		"fortran", "fs", "go", "hs", "java", "jvm", "kt", "lua",
-		"ocaml", "pas", "php", "pl", "py", "rb", "rkt", "rust",
-		"scala", "scheme", "st", "swift", "ts", "wasm", "zig", "mlir",
+		"fortran", "fs", "hs", "java", "jvm", "kt", "lua",
+		"mlir", "ocaml", "pas", "php", "pl", "rb", "rkt", "rust",
+		"scala", "scheme", "st", "swift", "wasm", "zig",
 	}
 )
 
@@ -401,15 +403,15 @@ func parseOrPrintError(path string) (*parser.Program, error) {
 	return prog, nil
 }
 
-func build(cmd *BuildCmd) error {
+func build(cmd *BuildCmd, targets []string) error {
 	if strings.ToLower(cmd.Target) == "all" || cmd.All {
 		var firstErr error
-		for _, t := range allTargets {
+		for _, t := range targets {
 			c := *cmd
 			c.Target = t
 			c.All = false
 			c.Out = ""
-			if err := build(&c); err != nil && firstErr == nil {
+			if err := build(&c, targets); err != nil && firstErr == nil {
 				firstErr = err
 			}
 		}
@@ -1095,6 +1097,7 @@ func newRootCmd() *cobra.Command {
 		newRunCmd(),
 		newTestCmd(),
 		newBuildCmd(),
+		newBuildXCmd(),
 		newInitCmd(),
 		newGetCmd(),
 		newReplCmd(),
@@ -1149,7 +1152,25 @@ func newBuildCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			bc.File = args[0]
-			return build(&bc)
+			return build(&bc, stableTargets)
+		},
+	}
+	c.Flags().StringVarP(&bc.Out, "output", "o", "", "Output file path")
+	c.Flags().StringVar(&bc.Target, "target", "", "Output language")
+	c.Flags().BoolVar(&bc.All, "all", false, "Compile to all supported targets")
+	c.Flags().StringVar(&bc.WasmToolchain, "wasm-toolchain", "", "WASM toolchain (go|tinygo)")
+	return c
+}
+
+func newBuildXCmd() *cobra.Command {
+	var bc BuildCmd
+	c := &cobra.Command{
+		Use:   "buildx <file>",
+		Short: "Compile a Mochi source file using experimental backends",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			bc.File = args[0]
+			return build(&bc, experimentalTargets)
 		},
 	}
 	c.Flags().StringVarP(&bc.Out, "output", "o", "", "Output file path")

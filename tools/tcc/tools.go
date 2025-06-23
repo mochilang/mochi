@@ -3,13 +3,13 @@
 package main
 
 import (
-    "log"
+	"log"
 
-    "mochi/tools/tcc"
+	"mochi/tools/tcc"
 )
 
 func main() {
-    if err := tcc.EnsureTCC(); err != nil {
-        log.Fatal(err)
-    }
+	if err := tcc.EnsureTCC(); err != nil {
+		log.Fatal(err)
+	}
 }
