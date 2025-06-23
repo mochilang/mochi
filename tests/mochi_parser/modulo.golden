@@ -1,0 +1,5 @@
+(program
+  (let x
+    (binary % (int 5) (int 2))
+  )
+)
