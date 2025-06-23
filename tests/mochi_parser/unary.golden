@@ -1,0 +1,6 @@
+(program
+  (let x (int 1))
+  (var y
+    (unary neg (ident x))
+  )
+)

@@ -3,7 +3,8 @@ package interpreter
 import "core/mochi/parser/parser.mochi" as mp
 
 // Simple interpreter for the toy AST emitted by parser.mochi.
-// It supports integer expressions and variable declarations.
+// It supports integer expressions, unary negation and the operators +, -, *, /
+// with variable declarations.
 
 type EvalResult {
   val: int
@@ -53,6 +54,14 @@ fun evalExpr(node: any, env: map<string,int>): EvalResult {
     }
     return EvalResult{ val: 0, errs: ["unknown variable: " + node.value] }
   }
+  if node.kind == "unary" {
+    let op = node.value
+    let inner = evalExpr(node.children[0], env)
+    var val = inner.val
+    if op == "neg" { val = -val }
+    else { return EvalResult{ val: val, errs: inner.errs + ["unsupported unary: " + op] } }
+    return EvalResult{ val: val, errs: inner.errs }
+  }
   if node.kind == "binary" {
     let op = node.value
     let l = evalExpr(node.children[0], env)
@@ -62,6 +71,7 @@ fun evalExpr(node: any, env: map<string,int>): EvalResult {
     if op == "+" { v = l.val + r.val }
     else if op == "-" { v = l.val - r.val }
     else if op == "*" { v = l.val * r.val }
+    else if op == "/" { v = l.val / r.val }
     else { errs = errs + ["unsupported operator: " + op] }
     return EvalResult{ val: v, errs: errs }
   }

@@ -8,7 +8,8 @@ type Result {
 }
 
 // Simple type checker for the toy AST used by parser.mochi.
-// It supports integers, addition, subtraction, multiplication and variable declarations.
+// It supports integers, unary negation and the operators +, -, *, / with
+// variable declarations.
 
 fun exprType(node: any, env: map<string,string>): Result {
   if node.kind == "int" {
@@ -20,6 +21,13 @@ fun exprType(node: any, env: map<string,string>): Result {
       return Result{ typ: val, errs: [] }
     }
     return Result{ typ: "any", errs: ["unknown variable: " + node.value] }
+  }
+  if node.kind == "unary" {
+    let res = exprType(node.children[0], env)
+    if res.typ == "int" {
+      return Result{ typ: "int", errs: res.errs }
+    }
+    return Result{ typ: "any", errs: res.errs + ["type mismatch around unary " + node.value] }
   }
   if node.kind == "binary" {
     let op = node.value
