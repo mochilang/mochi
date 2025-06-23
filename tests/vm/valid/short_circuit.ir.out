@@ -7,7 +7,7 @@ func main (regs=14)
   Move         r2, r4
   Const        r5, 2
   Move         r3, r5
-  Call2        r6, 1, r2, r3
+  Call2        r6, boom, r2, r3
   Move         r1, r6
 L0:
   Print        r1
@@ -19,7 +19,7 @@ L0:
   Move         r9, r11
   Const        r12, 2
   Move         r10, r12
-  Call2        r13, 1, r9, r10
+  Call2        r13, boom, r9, r10
   Move         r8, r13
 L1:
   Print        r8
