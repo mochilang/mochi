@@ -10,23 +10,22 @@ A lightweight bytecode virtual machine used for executing a small subset of Moch
 
 ## Supported features
 
-The VM currently handles enough language features to run basic numeric programs:
+The VM supports a small but useful subset of Mochi:
 
-* Integer constants and lists
-* Addition and subtraction
-* Comparison using `==`, `<` and `>`
-* `if` statements and `for` loops over numeric ranges
+* Integer, float, boolean and string constants
+* Arithmetic operations `+`, `-`, `*`, `/`, `%`
+* Comparison operators `==`, `!=`, `<`, `>`, `<=`, `>=`
+* Variable definitions and reassignment
+* `if`, `while` and `for` loops over ranges and lists
 * Function definitions and calls with two arguments
 * Built‑ins `len` and `print`
-* List indexing and list construction
+* List indexing and construction
 
 ## Unsupported features (partial list)
 
 Many of Mochi's features are not yet implemented:
 
-* Floating point numbers and string operations
-* Variable reassignment and mutable variables
-* While loops, break/continue statements
+* Short circuit boolean operators and `break`/`continue`
 * Structs, pattern matching and user defined types
 * Closures or nested function values
 * External package imports or FFI calls
