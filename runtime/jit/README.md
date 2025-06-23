@@ -34,6 +34,7 @@ The JIT currently understands a limited subset of Mochi:
 * Float operations using SSE instructions
 * Casting between `int` and `float`
 * Basic `if` expressions
+* Simple function definitions and calls with up to two integer arguments
 * Result returned as a single `int64`
 
 ## Unsupported features (partial list)
@@ -41,7 +42,6 @@ The JIT currently understands a limited subset of Mochi:
 Most of the Mochi language is not implemented:
 
 * Loops, variables or assignments
-* Function calls or arguments
 * Strings, maps and complex data structures
 * Structs, pattern matching and user types
 * Closures or nested functions
