@@ -19,7 +19,6 @@ last = 0
 start = time.time_ns()
 end = time.time_ns()
 duration = int(((end - start)) / 1000)
-output = {"duration_us": duration, "output": last}
 
 def main():
 	n = 20
@@ -34,8 +33,7 @@ def main():
 		last = count
 	end = time.time_ns()
 	duration = int(((end - start)) / 1000)
-	output = {"duration_us": duration, "output": last}
-	print(json.dumps(output))
+	print(json.dumps({"duration_us": duration, "output": last}))
 
 if __name__ == "__main__":
 	main()

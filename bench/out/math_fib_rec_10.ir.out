@@ -1,4 +1,4 @@
-func main (regs=14)
+func main (regs=13)
   // let n = 10
   Const        r0, 10
   Move         r1, r0
@@ -15,10 +15,8 @@ func main (regs=14)
   Const        r9, 1000
   Div          r10, r8, r9
   Move         r11, r10
-  // let output = {
-  Move         r13, r12
-  // json(output)
-  JSON         r13
+  // json({
+  JSON         r12
   Return       r0
 
   // fun fib(n: int): int {

@@ -451,7 +451,16 @@ func compileToC(mochiFile, cFile, binFile string) error {
 	if err := os.WriteFile(cFile, code, 0644); err != nil {
 		return err
 	}
-	// Skip compiling to a binary in this environment
+	cc, err := ccode.EnsureCC()
+	if err != nil {
+		return err
+	}
+	cmd := exec.Command(cc, "-x", "c", cFile, "-O2", "-std=c99", "-D_POSIX_C_SOURCE=199309L", "-lrt", "-o", binFile)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("cc error: %w", err)
+	}
 	return nil
 }
 

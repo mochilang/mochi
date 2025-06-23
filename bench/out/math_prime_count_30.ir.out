@@ -1,4 +1,4 @@
-func main (regs=32)
+func main (regs=31)
   // let n = 30
   Const        r0, 30
   Move         r1, r0
@@ -57,10 +57,8 @@ L0:
   Const        r27, 1000
   Div          r28, r26, r27
   Move         r29, r28
-  // let output = {
-  Move         r31, r30
-  // json(output)
-  JSON         r31
+  // json({
+  JSON         r30
   Return       r0
 
   // fun is_prime(n: int): bool {

@@ -454,6 +454,18 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		t = types.IntType{}
 	}
 	typ := cTypeFromType(t)
+	if stmt.Value != nil && isNowExpr(stmt.Value) {
+		typ = "long long"
+		if c.env != nil {
+			t = types.Int64Type{}
+		}
+	}
+	if stmt.Value != nil && isNowExpr(stmt.Value) {
+		typ = "long long"
+		if c.env != nil {
+			t = types.Int64Type{}
+		}
+	}
 	if stmt.Value != nil {
 		if isEmptyListLiteral(stmt.Value) {
 			if isListStringType(t) {
@@ -1123,6 +1135,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				argExpr := c.compileExpr(a)
 				if isListListExpr(a, c.env) {
 					c.need(needListListInt)
+					c.need(needPrintListInt)
+					c.need(needPrintListListInt)
 					c.writeln(fmt.Sprintf("_print_list_list_int(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
@@ -1131,6 +1145,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 				} else if isListIntExpr(a, c.env) {
 					c.need(needListListInt)
+					c.need(needPrintListInt)
 					c.writeln(fmt.Sprintf("_print_list_int(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
@@ -1139,6 +1154,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 				} else if isListFloatExpr(a, c.env) {
 					c.need(needListFloat)
+					c.need(needPrintListFloat)
 					c.writeln(fmt.Sprintf("_print_list_float(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
@@ -1147,6 +1163,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 				} else if isListStringExpr(a, c.env) {
 					c.need(needListString)
+					c.need(needPrintListString)
 					c.writeln(fmt.Sprintf("_print_list_string(%s);", argExpr))
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
@@ -1192,27 +1209,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			if len(p.Call.Args) != 1 {
 				return ""
 			}
-			argExpr := c.compileExpr(p.Call.Args[0])
-			c.need(needJSON)
-			// Ensure helper types used by the JSON runtime are emitted
-			c.need(needListFloat)
-			c.need(needListString)
-			c.need(needListListInt)
-			if isListListExpr(p.Call.Args[0], c.env) {
-				c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
-			} else if isListIntExpr(p.Call.Args[0], c.env) {
-				c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
-			} else if isListFloatExpr(p.Call.Args[0], c.env) {
-				c.writeln(fmt.Sprintf("_json_list_float(%s);", argExpr))
-			} else if isListStringExpr(p.Call.Args[0], c.env) {
-				c.writeln(fmt.Sprintf("_json_list_string(%s);", argExpr))
-			} else if isFloatArg(p.Call.Args[0], c.env) {
-				c.writeln(fmt.Sprintf("_json_float(%s);", argExpr))
-			} else if isStringArg(p.Call.Args[0], c.env) {
-				c.writeln(fmt.Sprintf("_json_string(%s);", argExpr))
-			} else {
-				c.writeln(fmt.Sprintf("_json_int(%s);", argExpr))
+			if ml := asMapLiteral(p.Call.Args[0]); ml != nil {
+				c.need(needJSON)
+				c.need(needListFloat)
+				c.need(needListString)
+				c.need(needListListInt)
+				c.writeln("printf(\"{\");")
+				for i, item := range ml.Items {
+					if i > 0 {
+						c.writeln("printf(\",\");")
+					}
+					if item.Key != nil && item.Key.Binary != nil && item.Key.Binary.Left != nil && item.Key.Binary.Left.Value != nil && item.Key.Binary.Left.Value.Target != nil && item.Key.Binary.Left.Value.Target.Lit != nil && item.Key.Binary.Left.Value.Target.Lit.Str != nil {
+						key := strings.ReplaceAll(*item.Key.Binary.Left.Value.Target.Lit.Str, "\"", "\\\"")
+						c.writeln(fmt.Sprintf("_json_string(\"%s\");", key))
+						c.writeln("printf(\":\");")
+					}
+					c.emitJSONExpr(item.Value)
+				}
+				c.writeln("printf(\"}\\n\");")
+				return ""
 			}
+			c.emitJSONExpr(p.Call.Args[0])
 			return ""
 		}
 		args := make([]string, len(p.Call.Args))
@@ -1390,6 +1407,31 @@ func isFloatPrimary(p *parser.Primary, env *types.Env) bool {
 		}
 	}
 	return false
+}
+
+func isNowExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isNowUnary(e.Binary.Left)
+}
+
+func isNowUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return isNowPostfix(u.Value)
+}
+
+func isNowPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return isNowPrimary(p.Target)
+}
+
+func isNowPrimary(p *parser.Primary) bool {
+	return p != nil && p.Call != nil && p.Call.Func == "now"
 }
 
 func isListLiteral(e *parser.Expr) bool {
@@ -1723,4 +1765,34 @@ func isListFloatPrimary(p *parser.Primary, env *types.Env) bool {
 		}
 	}
 	return false
+}
+
+func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.Map
+}
+
+func (c *Compiler) emitJSONExpr(e *parser.Expr) {
+	argExpr := c.compileExpr(e)
+	c.need(needJSON)
+	c.need(needListFloat)
+	c.need(needListString)
+	c.need(needListListInt)
+	if isListListExpr(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_list_list_int(%s);", argExpr))
+	} else if isListIntExpr(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_list_int(%s);", argExpr))
+	} else if isListFloatExpr(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_list_float(%s);", argExpr))
+	} else if isListStringExpr(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_list_string(%s);", argExpr))
+	} else if isFloatArg(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_float(%s);", argExpr))
+	} else if isStringArg(e, c.env) {
+		c.writeln(fmt.Sprintf("_json_string(%s);", argExpr))
+	} else {
+		c.writeln(fmt.Sprintf("_json_int(%s);", argExpr))
+	}
 }

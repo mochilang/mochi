@@ -17,8 +17,7 @@ function main(): void {
 		last = sum(n)
 	}
 	let duration: number = Math.trunc(((performance.now() * 1000000 - start)) / 1000)
-	let output: Record<string, number> = {"duration_us": duration, "output": last}
-	console.log(JSON.stringify(output))
+	console.log(JSON.stringify({"duration_us": duration, "output": last}))
 }
 main()
 

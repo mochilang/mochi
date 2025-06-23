@@ -404,6 +404,10 @@ var helperCode = map[string]string{
 	needSliceListInt:        helperSliceListInt,
 	needSliceListFloat:      helperSliceListFloat,
 	needSliceListString:     helperSliceListString,
+	needPrintListInt:        helperPrintListInt,
+	needPrintListFloat:      helperPrintListFloat,
+	needPrintListString:     helperPrintListString,
+	needPrintListListInt:    helperPrintListListInt,
 }
 
 var helperOrder = []string{
@@ -438,6 +442,10 @@ var helperOrder = []string{
 	needSliceListInt,
 	needSliceListFloat,
 	needSliceListString,
+	needPrintListInt,
+	needPrintListFloat,
+	needPrintListString,
+	needPrintListListInt,
 }
 
 func (c *Compiler) emitRuntime() {
@@ -449,14 +457,16 @@ func (c *Compiler) emitRuntime() {
 	}
 
 	// printing helpers
-	c.buf.WriteString(helperPrintListInt)
-	if c.has(needListListInt) {
+	if c.has(needPrintListInt) {
+		c.buf.WriteString(helperPrintListInt)
+	}
+	if c.has(needPrintListListInt) {
 		c.buf.WriteString(helperPrintListListInt)
 	}
-	if c.has(needListFloat) {
+	if c.has(needPrintListFloat) {
 		c.buf.WriteString(helperPrintListFloat)
 	}
-	if c.has(needListString) {
+	if c.has(needPrintListString) {
 		c.buf.WriteString(helperPrintListString)
 	}
 }

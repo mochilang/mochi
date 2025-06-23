@@ -27,8 +27,7 @@ let end = now()
 let duration = (end - start) / 1000
 // print(start, end, end - start, duration)
 
-let output = {
+json({
   "duration_us": duration,
   "output": last,
-}
-json(output)
+})
