@@ -51,6 +51,23 @@ const (
 	OpJumpIfTrue
 	OpNow
 	OpJSON
+	// Specialized numeric ops
+	OpAddInt
+	OpAddFloat
+	OpSubInt
+	OpSubFloat
+	OpMulInt
+	OpMulFloat
+	OpDivInt
+	OpDivFloat
+	OpModInt
+	OpModFloat
+	OpEqualInt
+	OpEqualFloat
+	OpLessInt
+	OpLessFloat
+	OpLessEqInt
+	OpLessEqFloat
 )
 
 func (op Op) String() string {
@@ -111,6 +128,38 @@ func (op Op) String() string {
 		return "Now"
 	case OpJSON:
 		return "JSON"
+	case OpAddInt:
+		return "AddInt"
+	case OpAddFloat:
+		return "AddFloat"
+	case OpSubInt:
+		return "SubInt"
+	case OpSubFloat:
+		return "SubFloat"
+	case OpMulInt:
+		return "MulInt"
+	case OpMulFloat:
+		return "MulFloat"
+	case OpDivInt:
+		return "DivInt"
+	case OpDivFloat:
+		return "DivFloat"
+	case OpModInt:
+		return "ModInt"
+	case OpModFloat:
+		return "ModFloat"
+	case OpEqualInt:
+		return "EqualInt"
+	case OpEqualFloat:
+		return "EqualFloat"
+	case OpLessInt:
+		return "LessInt"
+	case OpLessFloat:
+		return "LessFloat"
+	case OpLessEqInt:
+		return "LessEqInt"
+	case OpLessEqFloat:
+		return "LessEqFloat"
 	default:
 		return "?"
 	}
@@ -204,7 +253,12 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), valueToString(ins.Val))
 			case OpMove:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
-			case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpEqual, OpNotEqual, OpLess, OpLessEq, OpIn:
+			case OpAdd, OpSub, OpMul, OpDiv, OpMod,
+				OpAddInt, OpAddFloat, OpSubInt, OpSubFloat,
+				OpMulInt, OpMulFloat, OpDivInt, OpDivFloat,
+				OpModInt, OpModFloat,
+				OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
+				OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat, OpIn:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpSetIndex:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
@@ -305,6 +359,10 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			} else {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int + c.Int}
 			}
+		case OpAddInt:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int + fr.regs[ins.C].Int}
+		case OpAddFloat:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: fr.regs[ins.B].Float + fr.regs[ins.C].Float}
 		case OpSub:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
@@ -313,6 +371,10 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			} else {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int - c.Int}
 			}
+		case OpSubInt:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int - fr.regs[ins.C].Int}
+		case OpSubFloat:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: fr.regs[ins.B].Float - fr.regs[ins.C].Float}
 		case OpMul:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
@@ -321,6 +383,10 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			} else {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int * c.Int}
 			}
+		case OpMulInt:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int * fr.regs[ins.C].Int}
+		case OpMulFloat:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: fr.regs[ins.B].Float * fr.regs[ins.C].Float}
 		case OpDiv:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
@@ -332,6 +398,16 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			} else {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int / c.Int}
 			}
+		case OpDivInt:
+			if fr.regs[ins.C].Int == 0 {
+				return Value{}, fmt.Errorf("division by zero")
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int / fr.regs[ins.C].Int}
+		case OpDivFloat:
+			if fr.regs[ins.C].Float == 0 {
+				return Value{}, fmt.Errorf("division by zero")
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: fr.regs[ins.B].Float / fr.regs[ins.C].Float}
 		case OpMod:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
@@ -343,14 +419,36 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			} else {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int % c.Int}
 			}
+		case OpModInt:
+			if fr.regs[ins.C].Int == 0 {
+				return Value{}, fmt.Errorf("division by zero")
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: fr.regs[ins.B].Int % fr.regs[ins.C].Int}
+		case OpModFloat:
+			if fr.regs[ins.C].Float == 0 {
+				return Value{}, fmt.Errorf("division by zero")
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: math.Mod(fr.regs[ins.B].Float, fr.regs[ins.C].Float)}
 		case OpEqual:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
+		case OpEqualInt:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int == fr.regs[ins.C].Int}
+		case OpEqualFloat:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Float == fr.regs[ins.C].Float}
 		case OpNotEqual:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: !valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
 		case OpLess:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) < toFloat(fr.regs[ins.C])}
+		case OpLessInt:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int < fr.regs[ins.C].Int}
+		case OpLessFloat:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Float < fr.regs[ins.C].Float}
 		case OpLessEq:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
+		case OpLessEqInt:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int <= fr.regs[ins.C].Int}
+		case OpLessEqFloat:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Float <= fr.regs[ins.C].Float}
 		case OpIn:
 			item := fr.regs[ins.B]
 			list := fr.regs[ins.C].List
@@ -599,6 +697,45 @@ func (fc *funcCompiler) newReg() int {
 	return r
 }
 
+func tagFromType(t types.Type) (interpreter.ValueTag, bool) {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return interpreter.TagInt, true
+	case types.FloatType:
+		return interpreter.TagFloat, true
+	default:
+		return 0, false
+	}
+}
+
+func (fc *funcCompiler) tagPrimary(p *parser.Primary) (interpreter.ValueTag, bool) {
+	if p.Lit != nil {
+		switch {
+		case p.Lit.Int != nil:
+			return interpreter.TagInt, true
+		case p.Lit.Float != nil:
+			return interpreter.TagFloat, true
+		}
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if typ, err := fc.comp.env.GetVar(p.Selector.Root); err == nil {
+			return tagFromType(typ)
+		}
+	}
+	return 0, false
+}
+
+func (fc *funcCompiler) tagUnary(u *parser.Unary) (interpreter.ValueTag, bool) {
+	return fc.tagPrimary(u.Value.Target)
+}
+
+func (fc *funcCompiler) tagPostfix(p *parser.PostfixExpr) (interpreter.ValueTag, bool) {
+	if len(p.Ops) > 0 {
+		return 0, false
+	}
+	return fc.tagPrimary(p.Target)
+}
+
 func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 	switch {
 	case s.Let != nil:
@@ -665,7 +802,7 @@ func (fc *funcCompiler) compileExpr(e *parser.Expr) int {
 
 func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 	left := fc.compileUnary(b.Left)
-	for _, op := range b.Right {
+	for i, op := range b.Right {
 		switch op.Op {
 		case "&&":
 			dst := fc.newReg()
@@ -692,27 +829,99 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 		switch op.Op {
 		case "+":
 			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpAdd, A: dst, B: left, C: right})
+			opcode := OpAdd
+			if i == 0 && len(b.Right) == 1 {
+				if lt, ok := fc.tagUnary(b.Left); ok {
+					if rt, ok2 := fc.tagPostfix(op.Right); ok2 {
+						if lt == interpreter.TagInt && rt == interpreter.TagInt {
+							opcode = OpAddInt
+						} else if (lt == interpreter.TagFloat || rt == interpreter.TagFloat) && (lt != 0 && rt != 0) {
+							opcode = OpAddFloat
+						}
+					}
+				}
+			}
+			fc.emit(op.Pos, Instr{Op: opcode, A: dst, B: left, C: right})
 			left = dst
 		case "-":
 			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpSub, A: dst, B: left, C: right})
+			opcode := OpSub
+			if i == 0 && len(b.Right) == 1 {
+				if lt, ok := fc.tagUnary(b.Left); ok {
+					if rt, ok2 := fc.tagPostfix(op.Right); ok2 {
+						if lt == interpreter.TagInt && rt == interpreter.TagInt {
+							opcode = OpSubInt
+						} else if (lt == interpreter.TagFloat || rt == interpreter.TagFloat) && (lt != 0 && rt != 0) {
+							opcode = OpSubFloat
+						}
+					}
+				}
+			}
+			fc.emit(op.Pos, Instr{Op: opcode, A: dst, B: left, C: right})
 			left = dst
 		case "*":
 			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpMul, A: dst, B: left, C: right})
+			opcode := OpMul
+			if i == 0 && len(b.Right) == 1 {
+				if lt, ok := fc.tagUnary(b.Left); ok {
+					if rt, ok2 := fc.tagPostfix(op.Right); ok2 {
+						if lt == interpreter.TagInt && rt == interpreter.TagInt {
+							opcode = OpMulInt
+						} else if (lt == interpreter.TagFloat || rt == interpreter.TagFloat) && (lt != 0 && rt != 0) {
+							opcode = OpMulFloat
+						}
+					}
+				}
+			}
+			fc.emit(op.Pos, Instr{Op: opcode, A: dst, B: left, C: right})
 			left = dst
 		case "/":
 			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpDiv, A: dst, B: left, C: right})
+			opcode := OpDiv
+			if i == 0 && len(b.Right) == 1 {
+				if lt, ok := fc.tagUnary(b.Left); ok {
+					if rt, ok2 := fc.tagPostfix(op.Right); ok2 {
+						if lt == interpreter.TagInt && rt == interpreter.TagInt {
+							opcode = OpDivInt
+						} else if (lt == interpreter.TagFloat || rt == interpreter.TagFloat) && (lt != 0 && rt != 0) {
+							opcode = OpDivFloat
+						}
+					}
+				}
+			}
+			fc.emit(op.Pos, Instr{Op: opcode, A: dst, B: left, C: right})
 			left = dst
 		case "%":
 			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpMod, A: dst, B: left, C: right})
+			opcode := OpMod
+			if i == 0 && len(b.Right) == 1 {
+				if lt, ok := fc.tagUnary(b.Left); ok {
+					if rt, ok2 := fc.tagPostfix(op.Right); ok2 {
+						if lt == interpreter.TagInt && rt == interpreter.TagInt {
+							opcode = OpModInt
+						} else if (lt == interpreter.TagFloat || rt == interpreter.TagFloat) && (lt != 0 && rt != 0) {
+							opcode = OpModFloat
+						}
+					}
+				}
+			}
+			fc.emit(op.Pos, Instr{Op: opcode, A: dst, B: left, C: right})
 			left = dst
 		case "==":
 			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpEqual, A: dst, B: left, C: right})
+			opcode := OpEqual
+			if i == 0 && len(b.Right) == 1 {
+				if lt, ok := fc.tagUnary(b.Left); ok {
+					if rt, ok2 := fc.tagPostfix(op.Right); ok2 {
+						if lt == interpreter.TagInt && rt == interpreter.TagInt {
+							opcode = OpEqualInt
+						} else if lt == interpreter.TagFloat && rt == interpreter.TagFloat {
+							opcode = OpEqualFloat
+						}
+					}
+				}
+			}
+			fc.emit(op.Pos, Instr{Op: opcode, A: dst, B: left, C: right})
 			left = dst
 		case "!=":
 			dst := fc.newReg()

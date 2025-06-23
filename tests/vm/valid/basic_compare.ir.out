@@ -2,18 +2,18 @@ func main (regs=12)
   // let a = 10 - 3
   Const        r0, 10
   Const        r1, 3
-  Sub          r2, r0, r1
+  SubInt       r2, r0, r1
   Move         r3, r2
   // let b = 2 + 2
   Const        r4, 2
   Const        r5, 2
-  Add          r6, r4, r5
+  AddInt       r6, r4, r5
   Move         r7, r6
   // print(a)
   Print        r3
   // print(a == 7)
   Const        r8, 7
-  Equal        r9, r3, r8
+  EqualInt     r9, r3, r8
   Print        r9
   // print(b < 5)
   Const        r10, 5
