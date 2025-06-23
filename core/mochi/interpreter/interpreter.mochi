@@ -1,0 +1,136 @@
+package interpreter
+
+import "core/mochi/parser/parser.mochi" as mp
+
+// Simple interpreter for the toy AST emitted by parser.mochi.
+// It supports integer expressions and variable declarations.
+
+type EvalResult {
+  val: int
+  errs: list<string>
+}
+
+type ProgResult {
+  env: map<string,int>
+  errs: list<string>
+}
+
+fun parseInt(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun evalExpr(node: any, env: map<string,int>): EvalResult {
+  if node.kind == "int" {
+    return EvalResult{ val: parseInt(node.value), errs: [] }
+  }
+  if node.kind == "ident" {
+    if node.value in env {
+      return EvalResult{ val: env[node.value], errs: [] }
+    }
+    return EvalResult{ val: 0, errs: ["unknown variable: " + node.value] }
+  }
+  if node.kind == "binary" {
+    let op = node.value
+    let l = evalExpr(node.children[0], env)
+    let r = evalExpr(node.children[1], env)
+    var errs = l.errs + r.errs
+    var v = 0
+    if op == "+" { v = l.val + r.val }
+    else if op == "-" { v = l.val - r.val }
+    else if op == "*" { v = l.val * r.val }
+    else { errs = errs + ["unsupported operator: " + op] }
+    return EvalResult{ val: v, errs: errs }
+  }
+  return EvalResult{ val: 0, errs: ["unsupported expr: " + node.kind] }
+}
+
+fun runProg(node: any): ProgResult {
+  var env: map<string,int> = {}
+  var errs: list<string> = []
+  for stmt in node.children {
+    if stmt.kind == "let" || stmt.kind == "var" {
+      let res = evalExpr(stmt.children[0], env)
+      if count(res.errs) > 0 { errs = errs + res.errs }
+      env[stmt.value] = res.val
+    }
+  }
+  return ProgResult{ env: env, errs: errs }
+}
+
+fun sortStrings(xs: list<string>): list<string> {
+  var res: list<string> = []
+  var tmp = xs
+  while count(tmp) > 0 {
+    var min = tmp[0]
+    var idx = 0
+    var i = 1
+    while i < count(tmp) {
+      if tmp[i] < min {
+        min = tmp[i]
+        idx = i
+      }
+      i = i + 1
+    }
+    res = res + [min]
+    var out: list<string> = []
+    var j = 0
+    while j < count(tmp) {
+      if j != idx { out = out + [tmp[j]] }
+      j = j + 1
+    }
+    tmp = out
+  }
+  return res
+}
+
+fun mapKeys(m: map<string,int>): list<string> {
+  var ks: list<string> = []
+  for k in m {
+    ks = ks + [k]
+  }
+  return ks
+}
+
+export fun runString(src: string): string {
+  let ast = mp.parseNode(src)
+  let res = runProg(ast)
+  if count(res.errs) > 0 {
+    var out = "❌ Runtime Error\n"
+    var i = 1
+    for e in res.errs {
+      out = out + "  " + str(i) + ". " + e + "\n"
+      i = i + 1
+    }
+    return out
+  }
+  var ks = sortStrings(mapKeys(res.env))
+  var out = ""
+  for k in ks {
+    out = out + k + " = " + str(res.env[k]) + "\n"
+  }
+  return out
+}
