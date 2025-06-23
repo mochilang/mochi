@@ -89,7 +89,7 @@ fun tokenize(src: string): list<Token> {
       var j = i
       while j < len(src) && isAlphaNum(src[j]) { j = j + 1 }
       let ident = src[i:j]
-      if ident == "let" || ident == "var" {
+  if ident == "let" || ident == "var" || ident == "fun" || ident == "return" {
         toks = toks + [Token { kind: "kw", value: ident }]
       } else {
         toks = toks + [Token { kind: "ident", value: ident }]
@@ -104,7 +104,7 @@ fun tokenize(src: string): list<Token> {
       i = j
       continue
     }
-    if ch == "+" || ch == "-" || ch == "*" || ch == "/" || ch == "%" || ch == "=" || ch == "(" || ch == ")" {
+    if ch == "+" || ch == "-" || ch == "*" || ch == "/" || ch == "%" || ch == "=" || ch == "(" || ch == ")" || ch == "," || ch == "{" || ch == "}" {
       toks = toks + [Token { kind: str(ch), value: str(ch) }]
       i = i + 1
       continue
@@ -134,6 +134,27 @@ fun parseTokens(toks: list<Token>): Node {
       let expr = parseExpr()
       idx = idx + 1 // skip ')'
       return expr
+    }
+    if tok.kind == "ident" && idx < count(toks) {
+      let nt = toks[idx]
+      if nt.kind == "(" {
+        idx = idx + 1 // skip '('
+        var args: list<Node> = []
+        if idx < count(toks) {
+          let at = toks[idx]
+          if at.kind != ")" {
+            args = args + [parseExpr()]
+            while idx < count(toks) {
+              let sep = toks[idx]
+              if sep.kind != "," { break }
+              idx = idx + 1
+              args = args + [parseExpr()]
+            }
+          }
+        }
+        idx = idx + 1 // skip ')'
+        return newNode("call", tok.value, args)
+      }
     }
     return newNode("ident", tok.value, [])
   }
@@ -181,28 +202,77 @@ fun parseTokens(toks: list<Token>): Node {
     return newNode("assign", name, [expr])
   }
 
+  fun parseReturn(): Node {
+    idx = idx + 1 // skip 'return'
+    let expr = parseExpr()
+    return newNode("return", "", [expr])
+  }
+
+  fun parseFun(): Node {
+    idx = idx + 1 // skip 'fun'
+    let tk = toks[idx]
+    let name = tk.value
+    idx = idx + 1
+    idx = idx + 1 // skip '('
+    var params: list<Node> = []
+    if idx < count(toks) {
+      let pt = toks[idx]
+      if pt.kind != ")" {
+        params = params + [newNode("param", pt.value, [])]
+        idx = idx + 1
+        while idx < count(toks) {
+          let sep = toks[idx]
+          if sep.kind != "," { break }
+          idx = idx + 1
+          let pv = toks[idx]
+          params = params + [newNode("param", pv.value, [])]
+          idx = idx + 1
+        }
+      }
+    }
+    idx = idx + 1 // skip ')'
+    idx = idx + 1 // skip '{'
+    var body: list<Node> = []
+    while idx < count(toks) {
+      let tkb = toks[idx]
+      if tkb.kind == "}" { break }
+      let stmt = parseStmt()
+      if stmt.kind != "noop" { body = body + [stmt] }
+    }
+    idx = idx + 1 // skip '}'
+    return newNode("fun", name, [newNode("params", "", params), newNode("block", "", body)])
+  }
+
+  fun parseStmt(): Node {
+    if idx >= count(toks) { return newNode("noop", "", []) }
+    let tk = toks[idx]
+    if tk.kind == "kw" && (tk.value == "let" || tk.value == "var") {
+      return parseLet()
+    }
+    if tk.kind == "kw" && tk.value == "fun" {
+      return parseFun()
+    }
+    if tk.kind == "kw" && tk.value == "return" {
+      return parseReturn()
+    }
+    if tk.kind == "ident" && idx + 1 < count(toks) {
+      let next = toks[idx+1]
+      if next.kind == "=" {
+        let name = tk.value
+        idx = idx + 1 // skip ident
+        return parseAssign(name)
+      }
+    }
+    // skip unknown token
+    idx = idx + 1
+    return newNode("noop", "", [])
+  }
+
   fun parseProgram(): Node {
     var stmts: list<Node> = []
     while idx < count(toks) {
-      let tk = toks[idx]
-      if tk.kind == "kw" && (tk.value == "let" || tk.value == "var") {
-        let stmt = parseLet()
-        stmts = stmts + [stmt]
-      } else if tk.kind == "ident" && idx + 1 < count(toks) {
-        let next = toks[idx+1]
-        if next.kind == "=" {
-          let name = tk.value
-          idx = idx + 1 // skip ident
-          let stmt = parseAssign(name)
-          stmts = stmts + [stmt]
-        } else {
-          // skip unknown tokens starting with ident
-          idx = idx + 1
-        }
-      } else {
-        // skip unknown tokens to avoid infinite loop
-        idx = idx + 1
-      }
+      let stmt = parseStmt()
+      if stmt.kind != "noop" { stmts = stmts + [stmt] }
     }
     return newNode("program", "", stmts)
   }

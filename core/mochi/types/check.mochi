@@ -7,11 +7,16 @@ type Result {
   errs: list<string>
 }
 
+type FunInfo {
+  params: list<string>
+  body: list<any>
+}
+
 // Simple type checker for the toy AST used by parser.mochi.
 // It supports integers, unary negation and the operators +, -, *, /, % with
 // variable declarations.
 
-fun exprType(node: any, env: map<string,string>): Result {
+fun exprType(node: any, env: map<string,string>, funcs: map<string,FunInfo>): Result {
   if node.kind == "int" {
     return Result{ typ: "int", errs: [] }
   }
@@ -23,7 +28,7 @@ fun exprType(node: any, env: map<string,string>): Result {
     return Result{ typ: "any", errs: ["unknown variable: " + node.value] }
   }
   if node.kind == "unary" {
-    let res = exprType(node.children[0], env)
+    let res = exprType(node.children[0], env, funcs)
     if res.typ == "int" {
       return Result{ typ: "int", errs: res.errs }
     }
@@ -31,8 +36,8 @@ fun exprType(node: any, env: map<string,string>): Result {
   }
   if node.kind == "binary" {
     let op = node.value
-    let resL = exprType(node.children[0], env)
-    let resR = exprType(node.children[1], env)
+    let resL = exprType(node.children[0], env, funcs)
+    let resR = exprType(node.children[1], env, funcs)
     var errs = resL.errs + resR.errs
     if resL.typ == "int" && resR.typ == "int" {
       return Result{ typ: "int", errs: errs }
@@ -40,19 +45,43 @@ fun exprType(node: any, env: map<string,string>): Result {
     errs = errs + ["type mismatch around operator " + op]
     return Result{ typ: "any", errs: errs }
   }
+  if node.kind == "call" {
+    if node.value in funcs {
+      var errs: list<string> = []
+      for arg in node.children {
+        let r = exprType(arg, env, funcs)
+        if count(r.errs) > 0 { errs = errs + r.errs }
+        if r.typ != "int" { errs = errs + ["type mismatch in call to " + node.value] }
+      }
+      return Result{ typ: "int", errs: errs }
+    }
+    return Result{ typ: "any", errs: ["unknown function: " + node.value] }
+  }
   return Result{ typ: "any", errs: ["unsupported expr: " + node.kind] }
 }
 
 fun checkProg(node: any): list<string> {
   var env: map<string,string> = {}
+  var funcs: map<string,FunInfo> = {}
   var errs: list<string> = []
   for stmt in node.children {
-    if stmt.kind == "let" || stmt.kind == "var" {
-      let res = exprType(stmt.children[0], env)
+      if stmt.kind == "fun" {
+        var params: list<string> = []
+        let paramNode = stmt.children[0]
+        for p in paramNode.children { params = params + [p.value] }
+        let bodyNode = stmt.children[1]
+        funcs[stmt.value] = FunInfo{ params: params, body: bodyNode.children }
+      // check body
+      var local: map<string,string> = {}
+      for p in params { local[p] = "int" }
+      var bodyRes = checkProgInternal(bodyNode.children, local, funcs)
+      if count(bodyRes) > 0 { errs = errs + bodyRes }
+    } else if stmt.kind == "let" || stmt.kind == "var" {
+      let res = exprType(stmt.children[0], env, funcs)
       if count(res.errs) > 0 { errs = errs + res.errs }
       env[stmt.value] = res.typ
     } else if stmt.kind == "assign" {
-      let res = exprType(stmt.children[0], env)
+      let res = exprType(stmt.children[0], env, funcs)
       if count(res.errs) > 0 { errs = errs + res.errs }
       if stmt.value in env {
         let cur = env[stmt.value]
@@ -63,6 +92,33 @@ fun checkProg(node: any): list<string> {
       } else {
         errs = errs + ["unknown variable: " + stmt.value]
       }
+    }
+  }
+  return errs
+}
+
+fun checkProgInternal(stmts: list<any>, env: map<string,string>, funcs: map<string,FunInfo>): list<string> {
+  var errs: list<string> = []
+  for stmt in stmts {
+    if stmt.kind == "let" || stmt.kind == "var" {
+      let res = exprType(stmt.children[0], env, funcs)
+      if count(res.errs) > 0 { errs = errs + res.errs }
+      env[stmt.value] = res.typ
+    } else if stmt.kind == "assign" {
+      let res = exprType(stmt.children[0], env, funcs)
+      if count(res.errs) > 0 { errs = errs + res.errs }
+      if stmt.value in env {
+        let cur = env[stmt.value]
+        if cur != res.typ {
+          errs = errs + ["type mismatch assigning to " + stmt.value]
+        }
+        env[stmt.value] = res.typ
+      } else {
+        errs = errs + ["unknown variable: " + stmt.value]
+      }
+    } else if stmt.kind == "return" {
+      let res = exprType(stmt.children[0], env, funcs)
+      if count(res.errs) > 0 { errs = errs + res.errs }
     }
   }
   return errs
