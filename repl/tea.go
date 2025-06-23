@@ -27,7 +27,7 @@ func (k keyMap) ShortHelp() []key.Binding {
 func (k keyMap) FullHelp() [][]key.Binding { return [][]key.Binding{k.ShortHelp()} }
 
 var keys = keyMap{
-	Eval:  key.NewBinding(key.WithKeys("ctrl+e"), key.WithHelp("ctrl+e", "eval")),
+	Eval:  key.NewBinding(key.WithKeys("enter", "ctrl+e"), key.WithHelp("enter", "eval")),
 	Exit:  key.NewBinding(key.WithKeys("ctrl+c"), key.WithHelp("ctrl+c", "exit")),
 	Help:  key.NewBinding(key.WithKeys("ctrl+h"), key.WithHelp("ctrl+h", "help")),
 	Clear: key.NewBinding(key.WithKeys("ctrl+l"), key.WithHelp("ctrl+l", "clear")),
@@ -49,6 +49,7 @@ func newTeaModel(r *REPL) teaModel {
 	ta.Focus()
 	ta.Prompt = cPrompt(">>> ")
 	ta.CharLimit = 0
+	ta.ShowLineNumbers = false
 	ta.SetWidth(80)
 
 	h := help.New()
@@ -156,7 +157,7 @@ func helpString() string {
 		cCommand(":help"),
 		cCommand(":exit"),
 		cCommand("Ctrl+L"),
-		cCommand("Ctrl+E"),
+		cCommand("Enter/Ctrl+E"),
 	)
 }
 
