@@ -12,37 +12,37 @@ import (
 
 	"github.com/alexflint/go-arg"
 
-	ccode "mochi/compile/c"
-	cljcode "mochi/compile/clj"
-	cobolcode "mochi/compile/cobol"
-	cppcode "mochi/compile/cpp"
-	cscode "mochi/compile/cs"
-	dartcode "mochi/compile/dart"
-	erlcode "mochi/compile/erlang"
-	excode "mochi/compile/ex"
-	ftncode "mochi/compile/fortran"
-	fscode "mochi/compile/fs"
 	gocode "mochi/compile/go"
-	hscode "mochi/compile/hs"
-	javacode "mochi/compile/java"
-	jvmcode "mochi/compile/jvm"
-	ktcode "mochi/compile/kt"
-	luacode "mochi/compile/lua"
-	mlcode "mochi/compile/ocaml"
-	pascode "mochi/compile/pas"
-	phpcode "mochi/compile/php"
-	plcode "mochi/compile/pl"
 	pycode "mochi/compile/py"
-	rbcode "mochi/compile/rb"
-	rktcode "mochi/compile/rkt"
-	rscode "mochi/compile/rust"
-	scalacode "mochi/compile/scala"
-	schemecode "mochi/compile/scheme"
-	stcode "mochi/compile/st"
-	swiftcode "mochi/compile/swift"
 	tscode "mochi/compile/ts"
-	wasmcode "mochi/compile/wasm"
-	zigcode "mochi/compile/zig"
+	ccode "mochi/compile/x/c"
+	cljcode "mochi/compile/x/clj"
+	cobolcode "mochi/compile/x/cobol"
+	cppcode "mochi/compile/x/cpp"
+	cscode "mochi/compile/x/cs"
+	dartcode "mochi/compile/x/dart"
+	erlcode "mochi/compile/x/erlang"
+	excode "mochi/compile/x/ex"
+	ftncode "mochi/compile/x/fortran"
+	fscode "mochi/compile/x/fs"
+	hscode "mochi/compile/x/hs"
+	javacode "mochi/compile/x/java"
+	jvmcode "mochi/compile/x/jvm"
+	ktcode "mochi/compile/x/kt"
+	luacode "mochi/compile/x/lua"
+	mlcode "mochi/compile/x/ocaml"
+	pascode "mochi/compile/x/pas"
+	phpcode "mochi/compile/x/php"
+	plcode "mochi/compile/x/pl"
+	rbcode "mochi/compile/x/rb"
+	rktcode "mochi/compile/x/rkt"
+	rscode "mochi/compile/x/rust"
+	scalacode "mochi/compile/x/scala"
+	schemecode "mochi/compile/x/scheme"
+	stcode "mochi/compile/x/st"
+	swiftcode "mochi/compile/x/swift"
+	wasmcode "mochi/compile/x/wasm"
+	zigcode "mochi/compile/x/zig"
 	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
@@ -693,14 +693,21 @@ func testFile(file string) error {
 }
 
 func allCompileLanguages() []string {
+	langs := []string{}
 	entries, err := os.ReadDir("compile")
-	if err != nil {
-		return []string{"go"}
+	if err == nil {
+		for _, e := range entries {
+			if e.IsDir() && e.Name() != "x" {
+				langs = append(langs, e.Name())
+			}
+		}
 	}
-	langs := make([]string, 0, len(entries))
-	for _, e := range entries {
-		if e.IsDir() {
-			langs = append(langs, e.Name())
+	xentries, err := os.ReadDir(filepath.Join("compile", "x"))
+	if err == nil {
+		for _, e := range xentries {
+			if e.IsDir() {
+				langs = append(langs, e.Name())
+			}
 		}
 	}
 	sort.Strings(langs)

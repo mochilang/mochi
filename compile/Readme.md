@@ -1,28 +1,17 @@
 # Compiler Backends
 
-Mochi can translate programs to multiple targets. Each backend lives in `compile/<lang>` and exposes a `Compiler` type with a `Compile(*parser.Program)` method.
+Mochi can translate programs to multiple targets. Stable backends live under
+`compile/` while experimental ones reside in `compile/x/<lang>`. Each backend
+exposes a `Compiler` type with a `Compile(*parser.Program)` method.
 
-Current directories:
+Stable backends:
 
-- `c`       – ANSI C code generation
-- `cs`      – C# source emitter
-- `dart`    – Dart source emitter
-- `elixir`  – Elixir helpers
-- `erlang`  – Erlang source emitter
-- `ex`      – Elixir source emitter
-- `go`      – native Go code generation
-- `jvm`     – JVM bytecode output
-- `kt`      – Kotlin source emitter
-- `lua`     – Lua source emitter
-- `pl`      – Prolog source emitter
-- `py`      – Python source emitter
-- `rb`      – Ruby source emitter
-- `rust`    – Rust source emitter
-- `scala`   – Scala source emitter
-- `st`      – GNU Smalltalk output
-- `swift`   – minimal Swift output
-- `ts`      – TypeScript/Deno output
-- `wasm`    – WebAssembly using the Go backend
+- `go` – native Go code generation
+- `py` – Python source emitter
+- `ts` – TypeScript/Deno output
+
+Experimental backends (under `compile/x/`) cover many other languages including
+C, Java, Rust and more. Check the directories in `compile/x` for details.
 
 This guide shows how to implement another backend.
 
