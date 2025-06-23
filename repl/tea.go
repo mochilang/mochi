@@ -168,7 +168,7 @@ func welcomeString(version string) string {
 func (r *REPL) RunTUI() {
 	m := newTeaModel(r)
 	m.appendOutput(welcomeString(r.version))
-	p := tea.NewProgram(m)
+        p := tea.NewProgram(m, tea.WithAltScreen())
 	if err := p.Start(); err != nil {
 		printf(r.out, "%s failed to start TUI: %v\n", cError("error:"), err)
 	}
