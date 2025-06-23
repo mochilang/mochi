@@ -1,14 +1,13 @@
 func main (regs=6)
   // let nums = [1, 2, 3]
-  Const        r0 [1, 2, 3]
+  Const        r0, [1, 2, 3]
   Move         r1, r0
   // print(2 in nums)
-  Const        r2 2
+  Const        r2, 2
   In           r3, r2, r1
   Print        r3
   // print(4 in nums)
-  Const        r4 4
+  Const        r4, 4
   In           r5, r4, r1
   Print        r5
-  // let nums = [1, 2, 3]
   Return       r0

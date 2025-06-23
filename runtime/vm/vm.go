@@ -121,6 +121,7 @@ type Function struct {
 	Code    []Instr
 	NumRegs int
 	Name    string
+	Line    int // source line of function definition
 }
 
 type Program struct {
@@ -161,6 +162,9 @@ func (p *Program) Disassemble(src string) string {
 			_ = i
 		}
 
+		if fn.Line > 0 && fn.Line <= len(lines) {
+			fmt.Fprintf(&b, "  // %s\n", strings.TrimSpace(lines[fn.Line-1]))
+		}
 		fmt.Fprintf(&b, "func %s (regs=%d)\n", name, fn.NumRegs)
 		lastLine := 0
 		for pc, ins := range fn.Code {
@@ -174,7 +178,7 @@ func (p *Program) Disassemble(src string) string {
 			fmt.Fprintf(&b, "  %-12s ", ins.Op)
 			switch ins.Op {
 			case OpConst:
-				fmt.Fprintf(&b, "%s %s", formatReg(ins.A), valueToString(ins.Val))
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), valueToString(ins.Val))
 			case OpMove:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpEqual, OpNotEqual, OpLess, OpLessEq, OpIn:
@@ -452,6 +456,7 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 func (c *compiler) compileFun(fn *parser.FunStmt) Function {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}}
 	fc.fn.Name = fn.Name
+	fc.fn.Line = fn.Pos.Line
 	for i, p := range fn.Params {
 		fc.vars[p.Name] = i
 		if i >= fc.fn.NumRegs {
@@ -462,12 +467,13 @@ func (c *compiler) compileFun(fn *parser.FunStmt) Function {
 	for _, st := range fn.Body {
 		fc.compileStmt(st)
 	}
-	fc.emit(fn.Pos, Instr{Op: OpReturn, A: 0})
+	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	return fc.fn
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}}
+	fc.fn.Line = fn.Pos.Line
 	for i, p := range fn.Params {
 		fc.vars[p.Name] = i
 		if i >= fc.fn.NumRegs {
@@ -477,12 +483,12 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
 	fc.idx = len(fn.Params)
 	if fn.ExprBody != nil {
 		r := fc.compileExpr(fn.ExprBody)
-		fc.emit(fn.Pos, Instr{Op: OpReturn, A: r})
+		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: r})
 	} else {
 		for _, st := range fn.BlockBody {
 			fc.compileStmt(st)
 		}
-		fc.emit(fn.Pos, Instr{Op: OpReturn, A: 0})
+		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	}
 	idx := len(c.funcs)
 	c.funcs = append(c.funcs, fc.fn)
@@ -492,13 +498,14 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
 func (c *compiler) compileMain(p *parser.Program) Function {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}}
 	fc.fn.Name = "main"
+	fc.fn.Line = 0
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
 		}
 		fc.compileStmt(st)
 	}
-	fc.emit(p.Pos, Instr{Op: OpReturn, A: 0})
+	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	return fc.fn
 }
 

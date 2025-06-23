@@ -1,17 +1,16 @@
 func main (regs=5)
   // print(add(2, 3))  // 5
-  Const        r2 2
+  Const        r2, 2
   Move         r0, r2
-  Const        r3 3
+  Const        r3, 3
   Move         r1, r3
   Call2        r4, 1, r0, r1
   Print        r4
-  // fun add(a: int, b: int): int {
   Return       r0
 
+  // fun add(a: int, b: int): int {
 func add (regs=3)
   // return a + b
   Add          r2, r0, r1
   Return       r2
-  // fun add(a: int, b: int): int {
   Return       r0
