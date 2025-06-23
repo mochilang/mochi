@@ -19,7 +19,6 @@ repeat = 1000
 last = 0
 start = time.time_ns()
 duration = int(((time.time_ns() - start)) / 1000)
-output = {"duration_us": duration, "output": last}
 
 def main():
 	n = 10
@@ -29,8 +28,7 @@ def main():
 	for i in range(0, repeat):
 		last = fib(n)
 	duration = int(((time.time_ns() - start)) / 1000)
-	output = {"duration_us": duration, "output": last}
-	print(json.dumps(output))
+	print(json.dumps({"duration_us": duration, "output": last}))
 
 if __name__ == "__main__":
 	main()

@@ -12,8 +12,7 @@ function main(): void {
 	let start: number = performance.now() * 1000000
 	let result: number = fib(n)
 	let duration: number = Math.trunc(((performance.now() * 1000000 - start)) / 1000)
-	let output: Record<string, number> = {"duration_us": duration, "output": result}
-	console.log(JSON.stringify(output))
+	console.log(JSON.stringify({"duration_us": duration, "output": result}))
 }
 main()
 

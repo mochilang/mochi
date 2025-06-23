@@ -33,4 +33,8 @@ const (
 	needIntersectListString = "intersect_list_string"
 	needNow                 = "now"
 	needJSON                = "json"
+	needPrintListInt        = "print_list_int"
+	needPrintListFloat      = "print_list_float"
+	needPrintListString     = "print_list_string"
+	needPrintListListInt    = "print_list_list_int"
 )

@@ -14,15 +14,13 @@ n = 20
 start = time.time_ns()
 result = fib(n)
 duration = int(((time.time_ns() - start)) / 1000)
-output = {"duration_us": duration, "output": result}
 
 def main():
 	n = 20
 	start = time.time_ns()
 	result = fib(n)
 	duration = int(((time.time_ns() - start)) / 1000)
-	output = {"duration_us": duration, "output": result}
-	print(json.dumps(output))
+	print(json.dumps({"duration_us": duration, "output": result}))
 
 if __name__ == "__main__":
 	main()

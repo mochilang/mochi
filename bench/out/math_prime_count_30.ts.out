@@ -28,8 +28,7 @@ function main(): void {
 	}
 	let end: number = performance.now() * 1000000
 	let duration: number = Math.trunc(((end - start)) / 1000)
-	let output: Record<string, number> = {"duration_us": duration, "output": last}
-	console.log(JSON.stringify(output))
+	console.log(JSON.stringify({"duration_us": duration, "output": last}))
 }
 main()
 
