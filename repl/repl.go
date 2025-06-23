@@ -59,17 +59,17 @@ func (r *REPL) Run() {
 		Stdout:          r.out,
 	})
 	if err != nil {
-		printf(r.out, "%s failed to start REPL: %v\n", cError("error:"), err)
+		r.printf("%s failed to start REPL: %v\n", cError("error:"), err)
 		return
 	}
 	defer func() {
 		if err := rl.Close(); err != nil {
-			printf(r.out, "%s failed to close readline: %v\n", cError("error:"), err)
+			r.printf("%s failed to close readline: %v\n", cError("error:"), err)
 		}
 	}()
 	r.rl = rl
 
-	printWelcome(r.out, r.version)
+	r.printWelcome()
 
 	var (
 		lines      []string
@@ -83,14 +83,14 @@ func (r *REPL) Run() {
 		case readline.ErrInterrupt:
 			if len(lines) > 0 {
 				lines = nil
-				printf(r.out, "%s input cancelled\n", cNote("⏎"))
+				r.printf("%s input cancelled\n", cNote("⏎"))
 				ctrlCCount = 0
 			} else {
 				ctrlCCount++
 				if ctrlCCount == 1 {
-					printf(r.out, "%s press Ctrl+C again to exit\n", cNote("⏎"))
+					r.printf("%s press Ctrl+C again to exit\n", cNote("⏎"))
 				} else {
-					printf(r.out, "%s Exiting.\n", cNote("👋"))
+					r.printf("%s Exiting.\n", cNote("👋"))
 					return
 				}
 			}
@@ -98,7 +98,7 @@ func (r *REPL) Run() {
 			continue
 
 		case io.EOF:
-			printf(r.out, "%s Goodbye.\n", cNote("👋"))
+			r.printf("%s Goodbye.\n", cNote("👋"))
 			return
 
 		default:
@@ -111,10 +111,10 @@ func (r *REPL) Run() {
 		case "":
 			continue
 		case ":exit":
-			printf(r.out, "%s Exiting.\n", cNote("👋"))
+			r.printf("%s Exiting.\n", cNote("👋"))
 			return
 		case ":help":
-			printHelp(r.out)
+			r.printHelp()
 			continue
 		}
 
@@ -123,7 +123,7 @@ func (r *REPL) Run() {
 
 		prog, incomplete, err := tryParse(src)
 		if err != nil {
-			printf(r.out, "%s %v\n  %s\n", cError("syntax error:"), err, cHint("hint: press :help for commands"))
+			r.printf("%s %v\n  %s\n", cError("syntax error:"), err, cHint("hint: press :help for commands"))
 			lines = nil
 			r.setPrompt(">>> ")
 			continue
@@ -137,18 +137,18 @@ func (r *REPL) Run() {
 		r.setPrompt(">>> ")
 
 		if err := types.Check(prog, r.env); err != nil {
-			printf(r.out, "%s %v\n  %s\n", cError("type error:"), err, cHint("hint: check types and annotations"))
+			r.printf("%s %v\n  %s\n", cError("type error:"), err, cHint("hint: check types and annotations"))
 			continue
 		}
 
 		r.interp.SetProgram(prog)
 		result, err := r.interp.RunResult()
 		if err != nil {
-			printf(r.out, "%s %v\n", cError("runtime error:"), err)
+			r.printf("%s %v\n", cError("runtime error:"), err)
 			continue
 		}
 		if result != nil {
-			printf(r.out, "%v\n", result)
+			r.printf("%v\n", result)
 		}
 	}
 }
@@ -164,16 +164,17 @@ func tryParse(src string) (*parser.Program, bool, error) {
 	return nil, false, err
 }
 
-func printWelcome(out io.Writer, version string) {
-	printf(out, "%s %s\n", cSuccess("🌿 Mochi Programming Language"), version)
-	printf(out, "%s for help • %s to quit • %s to cancel input\n",
+func (r *REPL) printWelcome() {
+	r.printf("%s %s\n", cSuccess("🌿 Mochi Programming Language"), r.version)
+	r.printf("%s for help • %s to quit • %s to cancel input\n",
 		cCommand(":help"),
 		cCommand(":exit"),
 		color.YellowString("Ctrl+C"))
-	printf(out, "─────────────────────────────────────────────\n\n")
+	r.printf("─────────────────────────────────────────────\n\n")
 }
 
-func printHelp(out io.Writer) {
+func (r *REPL) printHelp() {
+	out := r.rl.Stdout()
 	if _, err := fmt.Fprintln(out); err != nil {
 		return
 	}
@@ -195,6 +196,16 @@ func (r *REPL) setPrompt(base string) {
 	r.rl.SetPrompt(cPrompt(base))
 }
 
+func (r *REPL) printf(format string, args ...any) {
+	if r != nil && r.rl != nil {
+		_, _ = fmt.Fprintf(r.rl.Stdout(), format, args...)
+		return
+	}
+	_, _ = fmt.Fprintf(r.out, format, args...)
+}
+
+// printf is kept for compatibility with existing functions that accept an
+// io.Writer. It simply writes to the provided writer.
 func printf(w io.Writer, format string, args ...any) {
 	_, _ = fmt.Fprintf(w, format, args...)
 }
