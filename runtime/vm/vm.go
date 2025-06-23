@@ -1,11 +1,13 @@
 package vm
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"math"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/alecthomas/participle/v2/lexer"
 
@@ -39,6 +41,7 @@ const (
 	OpIndex
 	OpSetIndex
 	OpMakeList
+	OpMakeMap
 	OpPrint
 	OpPrint2
 	OpCall2
@@ -47,6 +50,8 @@ const (
 	OpReturn
 	OpNot
 	OpJumpIfTrue
+	OpNow
+	OpJSON
 )
 
 func (op Op) String() string {
@@ -87,6 +92,8 @@ func (op Op) String() string {
 		return "SetIndex"
 	case OpMakeList:
 		return "MakeList"
+	case OpMakeMap:
+		return "MakeMap"
 	case OpPrint:
 		return "Print"
 	case OpPrint2:
@@ -103,6 +110,10 @@ func (op Op) String() string {
 		return "Not"
 	case OpJumpIfTrue:
 		return "JumpIfTrue"
+	case OpNow:
+		return "Now"
+	case OpJSON:
+		return "JSON"
 	default:
 		return "?"
 	}
@@ -204,6 +215,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpMakeList:
 				fmt.Fprintf(&b, "%s, %d, %s", formatReg(ins.A), ins.B, formatReg(ins.C))
+			case OpMakeMap:
+				fmt.Fprintf(&b, "%s, %d, %s", formatReg(ins.A), ins.B, formatReg(ins.C))
 			case OpPrint:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpPrint2:
@@ -218,6 +231,10 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpNot:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpNow:
+				fmt.Fprintf(&b, "%s", formatReg(ins.A))
+			case OpJSON:
+				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			default:
 				fmt.Fprintf(&b, "%d,%d,%d,%d", ins.A, ins.B, ins.C, ins.D)
 			}
@@ -413,6 +430,16 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			list := make([]Value, n)
 			copy(list, fr.regs[start:start+n])
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: list}
+		case OpMakeMap:
+			n := ins.B
+			start := ins.C
+			m := make(map[string]Value, n)
+			for i := 0; i < n; i++ {
+				key := fr.regs[start+i*2].Str
+				val := fr.regs[start+i*2+1]
+				m[key] = val
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagMap, Map: m}
 		case OpPrint:
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]))
 		case OpPrint2:
@@ -444,6 +471,14 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			fr.regs[ins.A] = res
 		case OpNot:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: !fr.regs[ins.B].Truthy()}
+		case OpNow:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(time.Now().UnixNano())}
+		case OpJSON:
+			data, err := json.Marshal(valueToAny(fr.regs[ins.A]))
+			if err != nil {
+				return Value{}, err
+			}
+			fmt.Fprintln(m.writer, string(data))
 		case OpReturn:
 			ret := fr.regs[ins.A]
 			stack = stack[:len(stack)-1]
@@ -812,6 +847,29 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
 		}
+		if len(p.Map.Items) == 0 {
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagMap, Map: map[string]Value{}}})
+			return dst
+		}
+		tmpK := make([]int, len(p.Map.Items))
+		tmpV := make([]int, len(p.Map.Items))
+		for i, e := range p.Map.Items {
+			tmpK[i] = fc.compileExpr(e.Key)
+			tmpV[i] = fc.compileExpr(e.Value)
+		}
+
+		regs := make([]int, 0, len(p.Map.Items)*2)
+		for i := range p.Map.Items {
+			kreg := fc.newReg()
+			vreg := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpMove, A: kreg, B: tmpK[i]})
+			fc.emit(p.Pos, Instr{Op: OpMove, A: vreg, B: tmpV[i]})
+			regs = append(regs, kreg, vreg)
+		}
+		dst := fc.newReg()
+		fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: len(p.Map.Items), C: regs[0]})
+		return dst
 	}
 
 	if p.FunExpr != nil {
@@ -834,6 +892,14 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpLen, A: dst, B: arg})
 			return dst
+		case "now":
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpNow, A: dst})
+			return dst
+		case "json":
+			arg := fc.compileExpr(p.Call.Args[0])
+			fc.emit(p.Pos, Instr{Op: OpJSON, A: arg})
+			return arg
 		case "print":
 			if len(p.Call.Args) == 1 {
 				arg := fc.compileExpr(p.Call.Args[0])

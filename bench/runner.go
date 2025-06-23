@@ -58,6 +58,7 @@ const keepTempFiles = false
 
 func Benchmarks(tempDir, mochiBin string) []Bench {
 	var benches []Bench
+	repoRoot, _ := os.Getwd()
 
 	_ = fs.WalkDir(templatesFS, "template", func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
@@ -84,6 +85,7 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 
 		templates := []Template{
 			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run", "--aot"}},
+			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run", filepath.Join(repoRoot, "cmd/mochi-vm", "main.go")}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
@@ -147,6 +149,8 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 					panic(err)
 				}
 				out = compiled
+			} else if t.Lang == "mochi_vm" {
+				// VM executes Mochi source directly
 			}
 
 			absOut, err := filepath.Abs(out)
@@ -169,6 +173,7 @@ func Run() {
 	if err != nil {
 		panic(err)
 	}
+	repoRoot, _ := os.Getwd()
 	if !keepTempFiles {
 		defer func() {
 			if err := os.RemoveAll(tempDir); err != nil {
@@ -210,10 +215,20 @@ func Run() {
 
 		var stdout, stderr bytes.Buffer
 		cmd := exec.Command(b.Command[0], b.Command[1:]...)
-		cmd.Env = append(os.Environ(), "GO111MODULE=off")
+		env := os.Environ()
+		if strings.Contains(b.Name, ".mochi_vm") {
+			env = append(env, "GO111MODULE=on")
+		} else {
+			env = append(env, "GO111MODULE=off")
+		}
+		cmd.Env = env
 		cmd.Stdout = &stdout
 		cmd.Stderr = &stderr
-		cmd.Dir = tempDir
+		if strings.Contains(b.Name, ".mochi_vm") {
+			cmd.Dir = repoRoot
+		} else {
+			cmd.Dir = tempDir
+		}
 
 		externalStart := timeNowUs()
 		err := cmd.Run()
@@ -313,6 +328,8 @@ func report(results []Result) {
 			switch langName {
 			case "mochi_interp":
 				langName = "Mochi (interp)"
+			case "mochi_vm":
+				langName = "Mochi (vm)"
 			case "mochi_go":
 				langName = "Mochi"
 			case "mochi_c":
@@ -428,7 +445,7 @@ func compileToC(mochiFile, cFile, binFile string) error {
 	if err != nil {
 		return err
 	}
-	cmd := exec.Command(cc, cFile, "-o", binFile)
+	cmd := exec.Command(cc, "-x", "c", cFile, "-o", binFile)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("cc error: %w\n%s", err, out)
 	}
@@ -481,6 +498,8 @@ func exportMarkdown(results []Result) error {
 			switch langName {
 			case "mochi_interp":
 				langName = "mochi (interp)"
+			case "mochi_vm":
+				langName = "mochi (vm)"
 			case "mochi_go":
 				langName = "Mochi"
 			case "mochi_c":
