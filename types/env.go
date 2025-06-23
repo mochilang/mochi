@@ -5,6 +5,7 @@ import (
 	"io"
 	"mochi/parser"
 	"os"
+	"sync"
 )
 
 // ModelSpec defines a named model configuration.
@@ -32,6 +33,10 @@ type Env struct {
 	input  io.Reader // default: os.Stdin
 }
 
+var envPool = sync.Pool{
+	New: func() any { return &Env{} },
+}
+
 // NewEnv creates a new lexical scope environment.
 func NewEnv(parent *Env) *Env {
 	var out io.Writer = os.Stdout
@@ -54,6 +59,121 @@ func NewEnv(parent *Env) *Env {
 		output:  out,
 		input:   in,
 	}
+}
+
+// AcquireEnv retrieves a reusable environment from a pool. The returned
+// environment has empty maps and inherits I/O handles from the parent.
+func AcquireEnv(parent *Env) *Env {
+	env := envPool.Get().(*Env)
+	env.parent = parent
+	if env.types == nil {
+		env.types = make(map[string]Type)
+	} else {
+		for k := range env.types {
+			delete(env.types, k)
+		}
+	}
+	if env.structs == nil {
+		env.structs = make(map[string]StructType)
+	} else {
+		for k := range env.structs {
+			delete(env.structs, k)
+		}
+	}
+	if env.unions == nil {
+		env.unions = make(map[string]UnionType)
+	} else {
+		for k := range env.unions {
+			delete(env.unions, k)
+		}
+	}
+	if env.streams == nil {
+		env.streams = make(map[string]StructType)
+	} else {
+		for k := range env.streams {
+			delete(env.streams, k)
+		}
+	}
+	if env.agents == nil {
+		env.agents = make(map[string]*parser.AgentDecl)
+	} else {
+		for k := range env.agents {
+			delete(env.agents, k)
+		}
+	}
+	if env.mut == nil {
+		env.mut = make(map[string]bool)
+	} else {
+		for k := range env.mut {
+			delete(env.mut, k)
+		}
+	}
+	if env.values == nil {
+		env.values = make(map[string]any)
+	} else {
+		for k := range env.values {
+			delete(env.values, k)
+		}
+	}
+	if env.funcs == nil {
+		env.funcs = make(map[string]*parser.FunStmt)
+	} else {
+		for k := range env.funcs {
+			delete(env.funcs, k)
+		}
+	}
+	if env.models == nil {
+		env.models = make(map[string]ModelSpec)
+	} else {
+		for k := range env.models {
+			delete(env.models, k)
+		}
+	}
+	env.output = os.Stdout
+	env.input = os.Stdin
+	if parent != nil {
+		env.output = parent.output
+		env.input = parent.input
+	}
+	return env
+}
+
+// ReleaseEnv returns an environment to the pool after clearing its fields.
+func ReleaseEnv(env *Env) {
+	if env == nil {
+		return
+	}
+	for k := range env.types {
+		delete(env.types, k)
+	}
+	for k := range env.structs {
+		delete(env.structs, k)
+	}
+	for k := range env.unions {
+		delete(env.unions, k)
+	}
+	for k := range env.streams {
+		delete(env.streams, k)
+	}
+	for k := range env.agents {
+		delete(env.agents, k)
+	}
+	for k := range env.mut {
+		delete(env.mut, k)
+	}
+	for k := range env.values {
+		delete(env.values, k)
+	}
+	for k := range env.funcs {
+		delete(env.funcs, k)
+	}
+	for k := range env.models {
+		delete(env.models, k)
+	}
+	env.parent = nil
+	env.output = nil
+	env.input = nil
+	envPool.Put(env)
 }
 
 // --- Type (Static) Binding ---

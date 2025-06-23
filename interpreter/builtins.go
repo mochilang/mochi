@@ -220,8 +220,10 @@ func builtinAvg(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return sum / float64(len(list)), nil
 }
 
-func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
-	return map[string]func(*Interpreter, *parser.CallExpr) (any, error){
+var builtinFuncMap map[string]func(*Interpreter, *parser.CallExpr) (any, error)
+
+func init() {
+	builtinFuncMap = map[string]func(*Interpreter, *parser.CallExpr) (any, error){
 		"print":  builtinPrint,
 		"len":    builtinLen,
 		"append": builtinAppend,
@@ -233,4 +235,8 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"avg":    builtinAvg,
 		"eval":   builtinEval,
 	}
+}
+
+func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
+	return builtinFuncMap
 }

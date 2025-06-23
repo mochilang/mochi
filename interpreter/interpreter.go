@@ -196,7 +196,7 @@ func (i *Interpreter) Test() error {
 		name := stmt.Test.Name
 		printTestStart(name)
 
-		child := types.NewEnv(i.env)
+		child := types.AcquireEnv(i.env)
 		interp := &Interpreter{
 			prog:             i.prog,
 			env:              child,
@@ -222,6 +222,7 @@ func (i *Interpreter) Test() error {
 		} else {
 			printTestPass(duration)
 		}
+		types.ReleaseEnv(child)
 	}
 
 	if len(failures) > 0 {
@@ -294,7 +295,7 @@ func (i *Interpreter) importPackage(alias, path, filename string) error {
 	} else {
 		files = []string{target}
 	}
-	pkgEnv := types.NewEnv(i.env)
+	pkgEnv := types.AcquireEnv(i.env)
 	var stmts []*parser.Statement
 	pkgName := alias
 	for _, f := range files {
@@ -329,6 +330,7 @@ func (i *Interpreter) importPackage(alias, path, filename string) error {
 		}
 	}
 	i.env.SetValue(alias, obj, false)
+	types.ReleaseEnv(pkgEnv)
 	return nil
 }
 
@@ -375,7 +377,8 @@ func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, 
 			alias := blk.On.Alias
 			body := blk.On.Body
 			inst.agent.On(strm, func(ctx context.Context, ev *stream.Event) {
-				child := types.NewEnv(inst.env)
+				child := types.AcquireEnv(inst.env)
+				defer types.ReleaseEnv(child)
 				child.SetValue(alias, ev.Data, true)
 				interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, agents: i.agents, tx: i.tx, inlineCandidates: map[string]*parser.FunStmt{}, callCounts: map[string]int{}}
 				for _, stmt := range body {
@@ -386,7 +389,8 @@ func (i *Interpreter) newAgentInstance(decl *parser.AgentDecl) (*agentInstance, 
 		case blk.Intent != nil:
 			intent := blk.Intent
 			inst.agent.RegisterIntent(intent.Name, func(ctx context.Context, args ...agent.Value) (agent.Value, error) {
-				child := types.NewEnv(inst.env)
+				child := types.AcquireEnv(inst.env)
+				defer types.ReleaseEnv(child)
 				for idx, p := range intent.Params {
 					if idx < len(args) {
 						child.SetValue(p.Name, args[idx], true)
@@ -636,7 +640,8 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 					}
 				}
 			}
-			child := types.NewEnv(i.env)
+			child := types.AcquireEnv(i.env)
+			defer types.ReleaseEnv(child)
 			child.SetValue(h.alias, data, true)
 			interp := &Interpreter{prog: i.prog, env: child, types: i.types, streams: i.streams, handlers: i.handlers, subs: i.subs, cancels: i.cancels, wg: i.wg, tx: i.tx, inlineCandidates: map[string]*parser.FunStmt{}, callCounts: map[string]int{}}
 			for _, stmt := range h.body {
@@ -704,7 +709,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 
 	case s.Test != nil:
 		fmt.Printf("🔍 Test %s\n", s.Test.Name)
-		child := types.NewEnv(i.env)
+		child := types.AcquireEnv(i.env)
 		interp := &Interpreter{prog: i.prog, env: child, types: i.types, tx: i.tx, inlineCandidates: map[string]*parser.FunStmt{}, callCounts: map[string]int{}}
 		for _, stmt := range s.Test.Body {
 			if err := interp.evalStmt(stmt); err != nil {
@@ -712,6 +717,7 @@ func (i *Interpreter) evalStmt(s *parser.Statement) error {
 			}
 		}
 		fmt.Printf("✅ %s passed\n", s.Test.Name)
+		types.ReleaseEnv(child)
 		return nil
 
 	case s.Expect != nil:
@@ -735,40 +741,47 @@ func (i *Interpreter) evalIf(stmt *parser.IfStmt) error {
 		return err
 	}
 	if truthy(condVal) {
-		child := types.NewEnv(i.env)
+		child := types.AcquireEnv(i.env)
 		old := i.env
 		i.env = child
 		for _, s := range stmt.Then {
 			if err := i.evalStmt(s); err != nil {
 				i.env = old
+				types.ReleaseEnv(child)
 				return err
 			}
 		}
 		i.env = old
+		types.ReleaseEnv(child)
 		return nil
 	}
 	if stmt.ElseIf != nil {
 		return i.evalIf(stmt.ElseIf)
 	}
-	child := types.NewEnv(i.env)
+	child := types.AcquireEnv(i.env)
 	old := i.env
 	i.env = child
 	for _, s := range stmt.Else {
 		if err := i.evalStmt(s); err != nil {
 			i.env = old
+			types.ReleaseEnv(child)
 			return err
 		}
 	}
 	i.env = old
+	types.ReleaseEnv(child)
 	return nil
 }
 
 func (i *Interpreter) evalWhile(stmt *parser.WhileStmt) error {
 	// Create loop scope
-	child := types.NewEnv(i.env)
+	child := types.AcquireEnv(i.env)
 	old := i.env
 	i.env = child
-	defer func() { i.env = old }()
+	defer func() {
+		i.env = old
+		types.ReleaseEnv(child)
+	}()
 
 	for {
 		condVal, err := i.evalExpr(stmt.Cond)
@@ -799,10 +812,13 @@ func (i *Interpreter) evalFor(stmt *parser.ForStmt) error {
 	}
 
 	// Create loop scope
-	child := types.NewEnv(i.env)
+	child := types.AcquireEnv(i.env)
 	oldEnv := i.env
 	i.env = child
-	defer func() { i.env = oldEnv }()
+	defer func() {
+		i.env = oldEnv
+		types.ReleaseEnv(child)
+	}()
 
 	// --- Range loop: `for x in a..b` ---
 	if stmt.RangeEnd != nil {
@@ -1840,14 +1856,17 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 				return nil, errInternalClosureArgMismatch(c.Pos)
 			}
 
-			child := types.NewEnv(cl.Env)
+			child := types.AcquireEnv(cl.Env)
 			for idx, param := range cl.FullParams {
 				child.SetValue(param.Name, valueToAny(allArgs[idx]), true)
 			}
 
 			old := i.env
 			i.env = child
-			defer func() { i.env = old }()
+			defer func() {
+				i.env = old
+				types.ReleaseEnv(child)
+			}()
 			if cl.Fn.ExprBody != nil {
 				return i.evalExpr(cl.Fn.ExprBody)
 			}
@@ -1878,13 +1897,16 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 }
 
 func (i *Interpreter) invokeFunction(fn *parser.FunStmt, args []any) (any, error) {
-	child := types.NewEnv(i.env)
+	child := types.AcquireEnv(i.env)
 	for idx, param := range fn.Params {
 		child.SetValue(param.Name, args[idx], true)
 	}
 	old := i.env
 	i.env = child
-	defer func() { i.env = old }()
+	defer func() {
+		i.env = old
+		types.ReleaseEnv(child)
+	}()
 	var ret any
 	for _, stmt := range fn.Body {
 		if err := i.evalStmt(stmt); err != nil {
@@ -1915,7 +1937,7 @@ func (i *Interpreter) shouldInline(name string, fn *parser.FunStmt) bool {
 	}
 	if t, err := i.types.GetVar(name); err == nil {
 		if ft, ok := t.(types.FuncType); ok && ft.Pure {
-			if i.callCounts[name] > 10 {
+			if i.callCounts[name] > 5 {
 				return true
 			}
 		}
@@ -1926,7 +1948,7 @@ func (i *Interpreter) shouldInline(name string, fn *parser.FunStmt) bool {
 // inlineFunction executes a simple function body directly without full call
 // setup. Arguments must already be evaluated.
 func (i *Interpreter) inlineFunction(fn *parser.FunStmt, args []any) (any, error) {
-	child := types.NewEnv(i.env)
+	child := types.AcquireEnv(i.env)
 	for idx, param := range fn.Params {
 		if idx < len(args) {
 			child.SetValue(param.Name, args[idx], true)
@@ -1936,7 +1958,10 @@ func (i *Interpreter) inlineFunction(fn *parser.FunStmt, args []any) (any, error
 	}
 	old := i.env
 	i.env = child
-	defer func() { i.env = old }()
+	defer func() {
+		i.env = old
+		types.ReleaseEnv(child)
+	}()
 	stmt := fn.Body[0]
 	if stmt.Return != nil {
 		return i.evalExpr(stmt.Return.Value)
