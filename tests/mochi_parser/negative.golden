@@ -1,0 +1,8 @@
+(program
+  (let x
+    (binary + (int -1) (int 2))
+  )
+  (var y
+    (binary * (int -3) (int 4))
+  )
+)

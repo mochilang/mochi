@@ -8,7 +8,7 @@ type Result {
 }
 
 // Simple type checker for the toy AST used by parser.mochi.
-// It supports integers, addition and subtraction and variable declarations.
+// It supports integers, addition, subtraction, multiplication and variable declarations.
 
 fun exprType(node: any, env: map<string,string>): Result {
   if node.kind == "int" {

@@ -76,6 +76,13 @@ fun tokenize(src: string): list<Token> {
       i = j
       continue
     }
+    if ch == "-" && i + 1 < len(src) && isDigit(src[i+1]) {
+      var j = i + 1
+      while j < len(src) && isDigit(src[j]) { j = j + 1 }
+      toks = toks + [Token { kind: "int", value: src[i:j] }]
+      i = j
+      continue
+    }
     if isAlpha(ch) || ch == "_" {
       var j = i
       while j < len(src) && isAlphaNum(src[j]) { j = j + 1 }
