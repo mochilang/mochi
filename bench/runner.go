@@ -89,6 +89,8 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
+			{Lang: "mochi_pypy", Path: path, Suffix: suffix, Command: []string{"pypy3"}},
+			{Lang: "mochi_cython", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}},
 		}
 
@@ -155,6 +157,22 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 					panic(err)
 				}
 				out = compiled
+			} else if t.Lang == "mochi_pypy" {
+				compiled := strings.TrimSuffix(out, ".mochi") + ".py"
+				if err := compileToPy(out, compiled); err != nil {
+					panic(err)
+				}
+				out = compiled
+			} else if t.Lang == "mochi_cython" {
+				compiled := strings.TrimSuffix(out, ".mochi") + ".py"
+				bin := strings.TrimSuffix(out, ".mochi")
+				if err := compileToPy(out, compiled); err != nil {
+					panic(err)
+				}
+				if err := compileToCython(compiled, bin); err != nil {
+					panic(err)
+				}
+				out = bin
 			}
 
 			absOut, err := filepath.Abs(out)
@@ -192,6 +210,12 @@ func Run() {
 		panic(err)
 	}
 	if err := pycode.EnsurePython(); err != nil {
+		panic(err)
+	}
+	if err := pycode.EnsurePyPy(); err != nil {
+		panic(err)
+	}
+	if err := pycode.EnsureCython(); err != nil {
 		panic(err)
 	}
 	if err := rscode.EnsureRust(); err != nil {
@@ -327,6 +351,10 @@ func report(results []Result) {
 				langName = "C"
 			case "mochi_py":
 				langName = "Python"
+			case "mochi_pypy":
+				langName = "Python (PyPy)"
+			case "mochi_cython":
+				langName = "Python (Cython)"
 			case "mochi_ts":
 				langName = "Typescript"
 			}
@@ -435,6 +463,36 @@ func compileToC(mochiFile, cFile, binFile string) error {
 	// Skip compiling to a binary in this environment
 	return nil
 }
+func compileToCython(pyFile, binFile string) error {
+	cFile := strings.TrimSuffix(pyFile, ".py") + ".cy.c"
+	cmd := exec.Command("cython", "--embed", "-3", "-o", cFile, pyFile)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	ccPath, err := ccode.EnsureCC()
+	if err != nil {
+		return err
+	}
+	inc, err := exec.Command("python3-config", "--includes").Output()
+	if err != nil {
+		return err
+	}
+	ld, err := exec.Command("python3-config", "--embed", "--ldflags").Output()
+	if err != nil {
+		return err
+	}
+	args := append(strings.Fields(string(inc)), "-O2", cFile, "-o", binFile)
+	args = append(args, strings.Fields(string(ld))...)
+	cmd = exec.Command(ccPath, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
 
 func compileToVM(mochiFile, goFile string) error {
 	prog, err := parser.Parse(mochiFile)
@@ -541,6 +599,10 @@ func exportMarkdown(results []Result) error {
 				langName = "C"
 			case "mochi_py":
 				langName = "Python"
+			case "mochi_pypy":
+				langName = "Python (PyPy)"
+			case "mochi_cython":
+				langName = "Python (Cython)"
 			case "mochi_ts":
 				langName = "Typescript"
 			}
