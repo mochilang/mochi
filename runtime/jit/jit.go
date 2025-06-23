@@ -9,6 +9,8 @@ import (
 	"unsafe"
 )
 
+var funcAddrs map[string]uintptr
+
 // Assembler accumulates machine code fragments using copy-and-patch.
 type Assembler struct {
 	code []byte
@@ -66,6 +68,13 @@ var (
 	jzRel32        = []byte{0x0F, 0x84, 0, 0, 0, 0}
 	jnzRel32       = []byte{0x0F, 0x85, 0, 0, 0, 0}
 	jmpRel32       = []byte{0xE9, 0, 0, 0, 0}
+	movRdiImm      = []byte{0x48, 0xBF, 0, 0, 0, 0, 0, 0, 0, 0}
+	movRsiImm      = []byte{0x48, 0xBE, 0, 0, 0, 0, 0, 0, 0, 0}
+	movRdiRax      = []byte{0x48, 0x89, 0xC7}
+	movRsiRax      = []byte{0x48, 0x89, 0xC6}
+	movRaxRdi      = []byte{0x48, 0x89, 0xF8}
+	movRaxRsi      = []byte{0x48, 0x89, 0xF0}
+	callRax        = []byte{0xFF, 0xD0}
 	retInsn        = []byte{0xC3}
 )
 
@@ -82,6 +91,35 @@ func (a *Assembler) MovRbxImm(v int64) {
 	a.EmitRaw(movRbxImm)
 	binary.LittleEndian.PutUint64(a.code[start+2:], uint64(v))
 }
+
+// MovRdiImm emits `mov rdi, imm64`.
+func (a *Assembler) MovRdiImm(v int64) {
+	start := len(a.code)
+	a.EmitRaw(movRdiImm)
+	binary.LittleEndian.PutUint64(a.code[start+2:], uint64(v))
+}
+
+// MovRsiImm emits `mov rsi, imm64`.
+func (a *Assembler) MovRsiImm(v int64) {
+	start := len(a.code)
+	a.EmitRaw(movRsiImm)
+	binary.LittleEndian.PutUint64(a.code[start+2:], uint64(v))
+}
+
+// MovRdiRax emits `mov rdi, rax`.
+func (a *Assembler) MovRdiRax() { a.EmitRaw(movRdiRax) }
+
+// MovRsiRax emits `mov rsi, rax`.
+func (a *Assembler) MovRsiRax() { a.EmitRaw(movRsiRax) }
+
+// MovRaxRdi emits `mov rax, rdi`.
+func (a *Assembler) MovRaxRdi() { a.EmitRaw(movRaxRdi) }
+
+// MovRaxRsi emits `mov rax, rsi`.
+func (a *Assembler) MovRaxRsi() { a.EmitRaw(movRaxRsi) }
+
+// CallRax emits `call rax`.
+func (a *Assembler) CallRax() { a.EmitRaw(callRax) }
 
 // PushRax emits `push rax`.
 func (a *Assembler) PushRax() { a.EmitRaw(pushRax) }
@@ -256,6 +294,18 @@ func (a *Assembler) Finalize() (func() int64, error) {
 	return func() int64 { return exec(unsafe.Pointer(&m[0])) }, nil
 }
 
+// FinalizePtr allocates executable memory and returns a pointer to it.
+func (a *Assembler) FinalizePtr() (uintptr, error) {
+	buf := make([]byte, len(a.code))
+	copy(buf, a.code)
+	mem, err := syscall.Mmap(-1, 0, len(buf), syscall.PROT_READ|syscall.PROT_WRITE|syscall.PROT_EXEC, syscall.MAP_ANON|syscall.MAP_PRIVATE)
+	if err != nil {
+		return 0, err
+	}
+	copy(mem, buf)
+	return uintptr(unsafe.Pointer(&mem[0])), nil
+}
+
 // --- Expression AST ---
 
 type Expr interface {
@@ -305,6 +355,48 @@ type ListLit struct {
 func (ListLit) compile(a *Assembler) {}
 
 func (ListLit) isFloat() bool { return false }
+
+// Var references a function parameter by index.
+type Var struct{ Index int }
+
+func (v Var) compile(a *Assembler) {
+	switch v.Index {
+	case 0:
+		a.MovRaxRdi()
+	case 1:
+		a.MovRaxRsi()
+	default:
+		a.MovRaxImm(0)
+	}
+}
+
+func (Var) isFloat() bool { return false }
+
+// Call represents a call to a named function.
+type Call struct {
+	Name string
+	Args []Expr
+}
+
+func (c Call) compile(a *Assembler) {
+	for i, arg := range c.Args {
+		arg.compile(a)
+		switch i {
+		case 0:
+			a.MovRdiRax()
+		case 1:
+			a.MovRsiRax()
+		}
+	}
+	if addr, ok := funcAddrs[c.Name]; ok {
+		a.MovRaxImm(int64(addr))
+		a.CallRax()
+	} else {
+		a.MovRaxImm(0)
+	}
+}
+
+func (Call) isFloat() bool { return false }
 
 type UnOp struct {
 	Op   string
@@ -581,11 +673,47 @@ func (i IfExpr) compile(a *Assembler) {
 	a.PatchRelative(endPatch, len(a.code))
 }
 
+// FunctionDef defines a simple function.
+type FunctionDef struct {
+	Name   string
+	Params int
+	Body   Expr
+}
+
+// Program contains a set of functions and a main expression.
+type Program struct {
+	Funcs []FunctionDef
+	Main  Expr
+}
+
 // Compile converts an expression to executable code using copy-and-patch.
 func Compile(e Expr) (func() int64, error) {
 	asm := New()
 	asm.PushRbx()
 	e.compile(asm)
+	asm.PopRbx()
+	asm.Ret()
+	return asm.Finalize()
+}
+
+// CompileProgram compiles a program with function definitions.
+func CompileProgram(p Program) (func() int64, error) {
+	funcAddrs = map[string]uintptr{}
+	for _, fn := range p.Funcs {
+		asm := New()
+		asm.PushRbx()
+		fn.Body.compile(asm)
+		asm.PopRbx()
+		asm.Ret()
+		addr, err := asm.FinalizePtr()
+		if err != nil {
+			return nil, err
+		}
+		funcAddrs[fn.Name] = addr
+	}
+	asm := New()
+	asm.PushRbx()
+	p.Main.compile(asm)
 	asm.PopRbx()
 	asm.Ret()
 	return asm.Finalize()

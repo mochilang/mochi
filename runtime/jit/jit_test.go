@@ -213,3 +213,22 @@ func TestCompileListEquality(t *testing.T) {
 		t.Fatalf("expected list inequality to be true")
 	}
 }
+
+func TestCompileProgramCall(t *testing.T) {
+	fnDef := FunctionDef{
+		Name:   "add",
+		Params: 2,
+		Body:   BinOp{Op: "+", Left: Var{Index: 0}, Right: Var{Index: 1}},
+	}
+	prog := Program{
+		Funcs: []FunctionDef{fnDef},
+		Main:  Call{Name: "add", Args: []Expr{IntLit{Val: 2}, IntLit{Val: 3}}},
+	}
+	fn, err := CompileProgram(prog)
+	if err != nil {
+		t.Fatalf("compile failed: %v", err)
+	}
+	if fn() != 5 {
+		t.Fatalf("expected 5 got %d", fn())
+	}
+}
