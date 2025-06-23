@@ -1,6 +1,6 @@
 {
   "name": "@mochilang/mochi",
-  "version": "0.8.10",
+  "version": "0.9.0",
   "description": "Run the Mochi programming language via npx",
   "bin": {
     "mochi": "./index.js"
