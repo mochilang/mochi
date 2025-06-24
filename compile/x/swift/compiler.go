@@ -555,10 +555,23 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	exprIsString := c.isStringUnary(b.Left)
 	for _, op := range b.Right {
 		rhs, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
+		}
+		rhsIsString := c.isStringPostfix(op.Right)
+		if op.Op == "+" && (exprIsString || rhsIsString) {
+			if !exprIsString {
+				expr = fmt.Sprintf("String(%s)", expr)
+			}
+			if !rhsIsString {
+				rhs = fmt.Sprintf("String(%s)", rhs)
+			}
+			expr = fmt.Sprintf("%s + %s", expr, rhs)
+			exprIsString = true
+			continue
 		}
 		if op.Op == "in" {
 			if c.isMapPostfix(op.Right) {
@@ -569,6 +582,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		} else {
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
 		}
+		exprIsString = false
 	}
 	return expr, nil
 }
