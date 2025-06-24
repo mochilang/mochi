@@ -18,7 +18,7 @@ statements are present.
 - Primitive types (`int`, `float`, `bool`, `string`)
 - Lists and maps
 - Basic expressions and assignments
-- Built-ins `print`, `len`, `str`, `input`, `count`, `avg`, `now`, `json` and `eval`
+- Built-ins `print`, `len`, `str`, `input`, `count`, `avg`, `now`, `json`, `keys`, `values` and `eval`
 - List operations `concat`, `union`, `union_all`, `except`, `intersect` and `slice`
 - HTTP requests via `fetch`
 - Dataset helpers `load` and `save`

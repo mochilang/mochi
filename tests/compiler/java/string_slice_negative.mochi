@@ -1,1 +1,1 @@
-print("hello"[-4:-1])
+print("hello"[-4 : -1])

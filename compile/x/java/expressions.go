@@ -96,8 +96,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
 				isList = true
 			case "in":
-				c.helpers["_in"] = true
-				expr = fmt.Sprintf("_in(%s, %s)", l, r)
+				if c.isMapExpr(b.Right[i].Right) {
+					expr = fmt.Sprintf("%s.containsKey(%s)", r, l)
+				} else {
+					c.helpers["_in"] = true
+					expr = fmt.Sprintf("_in(%s, %s)", l, r)
+				}
 			default:
 				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 			}
@@ -203,6 +207,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			if expr == "print" {
 				expr = fmt.Sprintf("System.out.println(%s)", joinArgs(args))
+			} else if strings.HasSuffix(expr, ".keys") && len(args) == 0 {
+				base := strings.TrimSuffix(expr, ".keys")
+				expr = fmt.Sprintf("new java.util.ArrayList<>(%s.keySet())", base)
+			} else if strings.HasSuffix(expr, ".values") && len(args) == 0 {
+				base := strings.TrimSuffix(expr, ".values")
+				expr = fmt.Sprintf("new java.util.ArrayList<>(%s.values())", base)
 			} else if expr == "len" {
 				if c.isMapExprByExpr(op.Call.Args[0]) {
 					expr = fmt.Sprintf("%s.size()", args[0])
@@ -430,6 +440,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "input" && len(args) == 0 {
 			c.helpers["_input"] = true
 			return "_input()", nil
+		}
+		if name == "keys" && len(args) == 1 {
+			if c.isMapExprByExpr(p.Call.Args[0]) {
+				return "new java.util.ArrayList<>(" + args[0] + ".keySet())", nil
+			}
+		}
+		if name == "values" && len(args) == 1 {
+			if c.isMapExprByExpr(p.Call.Args[0]) {
+				return "new java.util.ArrayList<>(" + args[0] + ".values())", nil
+			}
 		}
 		if name == "count" && len(args) == 1 {
 			if c.isMapExprByExpr(p.Call.Args[0]) {
