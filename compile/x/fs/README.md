@@ -120,6 +120,8 @@ Mochi features are not yet available.
 * `for` and `while` loops with `break` and `continue`
 * Pattern matching and conditional statements
 * Lists and maps with indexing and slicing
+* List concatenation using `+`
+* Membership tests with `in`
 * Query expressions with `where`, `sort`, `skip` and `take`
 * Built-in helpers: `len`, `count`, `avg`, `now`, `print`, `input`, `json`, `to_json`, `load`, `save`, `fetch`, `eval`, `_genText`, `_genEmbed`, `_genStruct`
 * Dataset helpers `_load` and `_save` support CSV, TSV, JSON and JSONL formats
