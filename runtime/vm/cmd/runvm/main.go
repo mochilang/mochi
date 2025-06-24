@@ -18,12 +18,11 @@ func main() {
 		os.Exit(1)
 	}
 	src := os.Args[1]
-	if dir := filepath.Dir(src); dir != "." {
-		if err := os.Chdir(dir); err != nil {
-			fmt.Fprintln(os.Stderr, "chdir error:", err)
-			os.Exit(1)
+	if !filepath.IsAbs(src) {
+		abs, err := filepath.Abs(src)
+		if err == nil {
+			src = abs
 		}
-		src = filepath.Base(src)
 	}
 	prog, err := parser.Parse(src)
 	if err != nil {
