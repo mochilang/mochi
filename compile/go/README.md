@@ -53,6 +53,21 @@ var helperMap = map[string]string{
 ```
 【F:compile/go/runtime.go†L417-L435】
 
+## Supported Features
+
+The Go backend covers nearly all Mochi constructs, including:
+
+- Package declarations and cross-language imports (Go, Python and TypeScript)
+- Variable and function definitions with type inference
+- Control flow using `if`, `for`, `while` and `match`
+- Lists and maps with indexing, slicing, membership tests and concatenation
+- Set operations: `union`, `union all`, `except` and `intersect`
+- Dataset queries with `from`, `join`, `where`, `group`, `sort`, `skip` and `take`
+- Built-ins such as `print`, `len`, `count`, `avg`, `fetch`, `load`, `save` and `input`
+- Stream declarations and event handling with `on`/`emit`
+- Agent declarations with `intent` blocks and extern object support
+- LLM helpers for text generation, embeddings and structured responses
+
 ## Building
 
 To compile a Mochi source file to Go (or directly to a binary) run:
