@@ -1,0 +1,8 @@
+fun fac(n: int, acc: int): int {
+  if n <= 1 {
+    return acc
+  }
+  return fac(n - 1, acc * n)
+}
+
+print(fac(5, 1))

@@ -1,0 +1,29 @@
+func main (regs=5)
+  // print(fac(5, 1))
+  Const        r2, 5
+  Move         r0, r2
+  Const        r3, 1
+  Move         r1, r3
+  Call2        r4, fac, r0, r1
+  Print        r4
+  Return       r0
+
+  // fun fac(n: int, acc: int): int {
+func fac (regs=10)
+  // if n <= 1 {
+  Const        r2, 1
+  LessEq       r3, r0, r2
+  JumpIfFalse  r3, L0
+  // return acc
+  Return       r1
+L0:
+  // return fac(n - 1, acc * n)
+  Const        r6, 1
+  Sub          r7, r0, r6
+  Move         r4, r7
+  Mul          r8, r1, r0
+  Move         r5, r8
+  Call2        r9, fac, r4, r5
+  Return       r9
+  Return       r0
+

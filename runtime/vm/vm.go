@@ -758,6 +758,22 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
+			// Tail call optimization if next instruction is return of the call result
+			if fr.ip < len(fr.fn.Code) && fr.fn.Code[fr.ip].Op == OpReturn && fr.fn.Code[fr.ip].A == ins.A {
+				fnIdx := ins.B
+				callee := &m.prog.Funcs[fnIdx]
+				fr.fn = callee
+				fr.regs = make([]Value, callee.NumRegs)
+				if len(fr.regs) > 0 {
+					fr.regs[0] = a
+				}
+				if len(fr.regs) > 1 {
+					fr.regs[1] = b
+				}
+				fr.ip = 0
+				trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}
+				continue
+			}
 			res, err := m.call(ins.B, []Value{a, b}, append(trace, StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}))
 			if err != nil {
 				if vmErr, ok := err.(*VMError); ok {
@@ -771,6 +787,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpCall:
 			args := make([]Value, ins.C)
 			copy(args, fr.regs[ins.D:ins.D+ins.C])
+			if fr.ip < len(fr.fn.Code) && fr.fn.Code[fr.ip].Op == OpReturn && fr.fn.Code[fr.ip].A == ins.A {
+				fnIdx := ins.B
+				callee := &m.prog.Funcs[fnIdx]
+				fr.fn = callee
+				fr.regs = make([]Value, callee.NumRegs)
+				for i := 0; i < len(args) && i < len(fr.regs); i++ {
+					fr.regs[i] = args[i]
+				}
+				fr.ip = 0
+				trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}
+				continue
+			}
 			res, err := m.call(ins.B, args, append(trace, StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}))
 			if err != nil {
 				if vmErr, ok := err.(*VMError); ok {
@@ -785,6 +813,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fnIdx := fr.regs[ins.B].Int
 			args := make([]Value, ins.C)
 			copy(args, fr.regs[ins.D:ins.D+ins.C])
+			if fr.ip < len(fr.fn.Code) && fr.fn.Code[fr.ip].Op == OpReturn && fr.fn.Code[fr.ip].A == ins.A {
+				callee := &m.prog.Funcs[fnIdx]
+				fr.fn = callee
+				fr.regs = make([]Value, callee.NumRegs)
+				for i := 0; i < len(args) && i < len(fr.regs); i++ {
+					fr.regs[i] = args[i]
+				}
+				fr.ip = 0
+				trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}
+				continue
+			}
 			res, err := m.call(fnIdx, args, append(trace, StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}))
 			if err != nil {
 				if vmErr, ok := err.(*VMError); ok {
