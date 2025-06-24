@@ -18,16 +18,18 @@ import (
 
 // Compiler generates COBOL source code for a restricted set of Mochi programs.
 type Compiler struct {
-	buf        bytes.Buffer
-	indent     int
-	env        *types.Env
-	decls      []string
-	tmpCounter int
-	funcs      map[string]int
-	funcDecls  []string
-	currentFun string
-	params     map[string]string
-	listLens   map[string]int
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	decls         []string
+	tmpCounter    int
+	funcs         map[string]int
+	funcDecls     []string
+	currentFun    string
+	params        map[string]string
+	listLens      map[string]int
+	varFuncs      map[string]string
+	lambdaCounter int
 }
 
 // New creates a new COBOL compiler instance.
@@ -37,6 +39,7 @@ func New(env *types.Env) *Compiler {
 		funcs:    map[string]int{},
 		params:   map[string]string{},
 		listLens: map[string]int{},
+		varFuncs: map[string]string{},
 	}
 }
 
@@ -225,8 +228,20 @@ func (c *Compiler) compileFun(n *ast.Node) {
 	c.funcDecls = append(c.funcDecls, fn)
 }
 
+func (c *Compiler) compileFunExpr(n *ast.Node) string {
+	name := fmt.Sprintf("LAMBDA%d", c.lambdaCounter)
+	c.lambdaCounter++
+	fn := &ast.Node{Kind: "fun", Value: name}
+	fn.Children = append(fn.Children, n.Children...)
+	c.compileFun(fn)
+	return name
+}
+
 func (c *Compiler) compileCallExpr(n *ast.Node) string {
 	name := cobolName(n.Value.(string))
+	if fn, ok := c.varFuncs[name]; ok {
+		name = fn
+	}
 	// Built-in helpers implemented directly
 	if name == "PRINT" && len(n.Children) == 1 {
 		arg := n.Children[0]
@@ -767,6 +782,8 @@ func (c *Compiler) expr(n *ast.Node) string {
 			return inner
 		}
 		return "(" + inner + ")"
+	case "funexpr":
+		return c.compileFunExpr(n)
 	case "if_expr":
 		return c.compileIfExpr(n)
 	case "match":
@@ -862,6 +879,11 @@ func (c *Compiler) compileMatchExpr(n *ast.Node) string {
 func (c *Compiler) compileLet(n *ast.Node) {
 	orig := n.Value.(string)
 	name := cobolName(orig)
+	if len(n.Children) == 1 && n.Children[0].Kind == "funexpr" {
+		fn := c.compileFunExpr(n.Children[0])
+		c.varFuncs[name] = fn
+		return
+	}
 	if len(n.Children) == 1 && n.Children[0].Kind == "call" {
 		switch n.Children[0].Value {
 		case "twoSum":
@@ -907,6 +929,11 @@ func (c *Compiler) compileLet(n *ast.Node) {
 func (c *Compiler) compileVar(n *ast.Node) {
 	orig := n.Value.(string)
 	name := cobolName(orig)
+	if len(n.Children) == 1 && n.Children[0].Kind == "funexpr" {
+		fn := c.compileFunExpr(n.Children[0])
+		c.varFuncs[name] = fn
+		return
+	}
 	if len(n.Children) == 1 && n.Children[0].Kind == "list" {
 		list := n.Children[0]
 		elemPic := "PIC 9."
@@ -930,6 +957,11 @@ func (c *Compiler) compileVar(n *ast.Node) {
 func (c *Compiler) compileAssign(n *ast.Node) {
 	name := cobolName(n.Value.(string))
 	if len(n.Children) == 1 {
+		if n.Children[0].Kind == "funexpr" {
+			fn := c.compileFunExpr(n.Children[0])
+			c.varFuncs[name] = fn
+			return
+		}
 		if c.isListExpr(n.Children[0]) {
 			src := c.expr(n.Children[0])
 			if l, ok := c.listLens[src]; ok {
