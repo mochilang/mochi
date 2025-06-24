@@ -10,6 +10,18 @@ const (
 		"  if (i < 0 || i >= runes.length) throw new Error('index out of range');\n" +
 		"  return runes[i];\n" +
 		"}\n"
+	helperSliceString = "function _sliceString(s: string, i: number, j: number): string {\n" +
+		"  let start = i;\n" +
+		"  let end = j;\n" +
+		"  const runes = Array.from(s);\n" +
+		"  const n = runes.length;\n" +
+		"  if (start < 0) start += n;\n" +
+		"  if (end < 0) end += n;\n" +
+		"  if (start < 0) start = 0;\n" +
+		"  if (end > n) end = n;\n" +
+		"  if (end < start) end = start;\n" +
+		"  return runes.slice(start, end).join('');\n" +
+		"}\n"
 	helperCount = "function _count(v: any): number {\n" +
 		"  if (Array.isArray(v)) return v.length;\n" +
 		"  if (v && typeof v === 'object') {\n" +
@@ -314,6 +326,7 @@ const (
 
 var helperMap = map[string]string{
 	"_indexString": helperIndexString,
+	"_sliceString": helperSliceString,
 	"_count":       helperCount,
 	"_avg":         helperAvg,
 	"_input":       helperInput,
