@@ -1,0 +1,4 @@
+open System
+
+ignore (printfn "%A" ("catch".Contains("cat")))
+ignore (printfn "%A" ("catch".Contains("dog")))
