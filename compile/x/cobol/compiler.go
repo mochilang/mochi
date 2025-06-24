@@ -705,6 +705,35 @@ func (c *Compiler) expr(n *ast.Node) string {
 			return "0"
 		}
 		idx := c.expr(n.Children[1])
+		if c.isStringExpr(n.Children[0]) {
+			idxVar := idx
+			if !isSimpleExpr(n.Children[1]) {
+				idxTmp := c.newTemp()
+				c.declare(fmt.Sprintf("01 %s PIC S9.", idxTmp))
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", idxTmp, idx))
+				idxVar = idxTmp
+			} else {
+				idxTmp := c.newTemp()
+				c.declare(fmt.Sprintf("01 %s PIC S9.", idxTmp))
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s", idx, idxTmp))
+				idxVar = idxTmp
+			}
+			c.writeln(fmt.Sprintf("    IF %s < 0", idxVar))
+			c.indent++
+			lenTmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC S9.", lenTmp))
+			c.writeln(fmt.Sprintf("    COMPUTE %s = FUNCTION LENGTH(%s)", lenTmp, arr))
+			c.writeln(fmt.Sprintf("    ADD %s TO %s", lenTmp, idxVar))
+			c.indent--
+			c.writeln("    END-IF")
+			startPlus := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC S9.", startPlus))
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s + 1", startPlus, idxVar))
+			resTmp := c.newTemp()
+			c.declare("01 " + resTmp + " PIC X.")
+			c.writeln(fmt.Sprintf("    MOVE %s(%s:1) TO %s", arr, startPlus, resTmp))
+			return resTmp
+		}
 		l, ok := c.listLens[arr]
 		if !ok {
 			l, ok = c.listLens[strings.ToLower(arr)]
