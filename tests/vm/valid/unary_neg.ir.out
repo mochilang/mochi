@@ -1,0 +1,13 @@
+func main (regs=6)
+  // print(-3)
+  Const        r0, 3
+  NegInt       r1, r0
+  Print        r1
+  // print(5 + (-2))
+  Const        r2, 5
+  Const        r3, 2
+  NegInt       r4, r3
+  AddInt       r5, r2, r4
+  Print        r5
+  Return       r0
+

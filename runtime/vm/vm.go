@@ -87,6 +87,11 @@ const (
 	OpLessFloat
 	OpLessEqInt
 	OpLessEqFloat
+
+	// Unary numeric ops
+	OpNeg
+	OpNegInt
+	OpNegFloat
 )
 
 func (op Op) String() string {
@@ -191,6 +196,12 @@ func (op Op) String() string {
 		return "LessEqInt"
 	case OpLessEqFloat:
 		return "LessEqFloat"
+	case OpNeg:
+		return "Neg"
+	case OpNegInt:
+		return "NegInt"
+	case OpNegFloat:
+		return "NegFloat"
 	default:
 		return "?"
 	}
@@ -346,7 +357,7 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), formatReg(ins.B), ins.C, formatReg(ins.D))
 			case OpReturn:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
-			case OpNot:
+			case OpNot, OpNeg, OpNegInt, OpNegFloat:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			default:
 				fmt.Fprintf(&b, "%d,%d,%d,%d", ins.A, ins.B, ins.C, ins.D)
@@ -507,6 +518,19 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) - toFloat(c)}
+		case OpNeg:
+			b := fr.regs[ins.B]
+			if b.Tag == interpreter.TagFloat {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: -toFloat(b)}
+			} else {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: -b.Int}
+			}
+		case OpNegInt:
+			b := fr.regs[ins.B]
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: -b.Int}
+		case OpNegFloat:
+			b := fr.regs[ins.B]
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: -toFloat(b)}
 		case OpMul:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
@@ -1004,11 +1028,13 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = valTag(i.Val)
 	case OpMove:
 		fc.tags[i.A] = fc.tags[i.B]
-	case OpAddInt, OpSubInt, OpMulInt, OpDivInt, OpModInt:
+	case OpAddInt, OpSubInt, OpMulInt, OpDivInt, OpModInt,
+		OpNegInt:
 		fc.tags[i.A] = tagInt
-	case OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat:
+	case OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
+		OpNegFloat:
 		fc.tags[i.A] = tagFloat
-	case OpAdd, OpSub, OpMul, OpDiv, OpMod:
+	case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpNeg:
 		fc.tags[i.A] = tagUnknown
 	case OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
@@ -1256,10 +1282,15 @@ func (fc *funcCompiler) compileUnary(u *parser.Unary) int {
 	for _, op := range u.Ops {
 		switch op {
 		case "-":
-			zr := fc.newReg()
-			fc.emit(u.Pos, Instr{Op: OpConst, A: zr, Val: Value{Tag: interpreter.TagInt, Int: 0}})
 			dst := fc.newReg()
-			fc.emit(u.Pos, Instr{Op: OpSub, A: dst, B: zr, C: r})
+			switch fc.tags[r] {
+			case tagInt:
+				fc.emit(u.Pos, Instr{Op: OpNegInt, A: dst, B: r})
+			case tagFloat:
+				fc.emit(u.Pos, Instr{Op: OpNegFloat, A: dst, B: r})
+			default:
+				fc.emit(u.Pos, Instr{Op: OpNeg, A: dst, B: r})
+			}
 			r = dst
 		case "!":
 			dst := fc.newReg()
@@ -1664,9 +1695,15 @@ func constBinary(b *parser.BinaryExpr) (Value, bool) {
 func constUnary(u *parser.Unary) (Value, bool) {
 	if len(u.Ops) == 1 && u.Ops[0] == "-" {
 		v, ok := constPostfix(u.Value)
-		if ok && v.Tag == interpreter.TagInt {
-			v.Int = -v.Int
-			return v, true
+		if ok {
+			switch v.Tag {
+			case interpreter.TagInt:
+				v.Int = -v.Int
+				return v, true
+			case interpreter.TagFloat:
+				v.Float = -v.Float
+				return v, true
+			}
 		}
 		return Value{}, false
 	}
