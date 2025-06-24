@@ -547,6 +547,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				if typ == "string" {
 					c.helpers["indexString"] = true
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else if strings.HasPrefix(typ, "vector<") {
+					c.helpers["indexVec"] = true
+					expr = fmt.Sprintf("_indexVec(%s, %s)", expr, idx)
 				} else {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
