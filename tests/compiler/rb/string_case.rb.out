@@ -1,0 +1,3 @@
+puts(["hello".upcase].join(" "))
+puts(["WORLD".downcase].join(" "))
+

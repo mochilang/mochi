@@ -1384,6 +1384,16 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 			return "", true, fmt.Errorf("str expects 1 arg")
 		}
 		return fmt.Sprintf("(%s).to_s", args[0]), true, nil
+	case "upper":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("upper expects 1 arg")
+		}
+		return fmt.Sprintf("(%s).to_s.upcase", args[0]), true, nil
+	case "lower":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("lower expects 1 arg")
+		}
+		return fmt.Sprintf("(%s).to_s.downcase", args[0]), true, nil
 	case "avg":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("avg expects 1 arg")
