@@ -132,7 +132,8 @@ func applyTags(tags []RegTag, ins Instr) {
 		tags[ins.A] = TagInt
 	case OpJSON, OpPrint, OpPrint2:
 		// no result
-	case OpInput, OpMakeList, OpIndex, OpSetIndex, OpCall, OpCall2, OpCallV:
+	case OpInput, OpMakeList, OpIndex, OpSetIndex, OpCall, OpCall2, OpCallV,
+		OpUnion, OpUnionAll, OpExcept, OpIntersect:
 		tags[ins.A] = TagUnknown
 	case OpIterPrep:
 		tags[ins.A] = TagUnknown

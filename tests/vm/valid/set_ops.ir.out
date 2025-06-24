@@ -1,0 +1,18 @@
+func main (regs=7)
+  // let a = [1, 2, 3]
+  Const        r0, [1, 2, 3]
+  Move         r1, r0
+  // let b = [3, 4]
+  Const        r2, [3, 4]
+  Move         r3, r2
+  // print(a union b)
+  Union        r4, r1, r3
+  Print        r4
+  // print(a except b)
+  Except       r5, r1, r3
+  Print        r5
+  // print(a intersect b)
+  Intersect    r6, r1, r3
+  Print        r6
+  Return       r0
+

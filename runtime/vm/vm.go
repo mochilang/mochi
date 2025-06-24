@@ -70,6 +70,10 @@ const (
 	OpCount
 	OpAvg
 	OpIterPrep
+	OpUnion
+	OpUnionAll
+	OpExcept
+	OpIntersect
 
 	// Specialized numeric ops
 	OpAddInt
@@ -167,6 +171,14 @@ func (op Op) String() string {
 		return "Avg"
 	case OpIterPrep:
 		return "IterPrep"
+	case OpUnion:
+		return "Union"
+	case OpUnionAll:
+		return "UnionAll"
+	case OpExcept:
+		return "Except"
+	case OpIntersect:
+		return "Intersect"
 	case OpAddInt:
 		return "AddInt"
 	case OpAddFloat:
@@ -343,6 +355,8 @@ func (p *Program) Disassemble(src string) string {
 			case OpJSON:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpAppend:
+				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
+			case OpUnion, OpUnionAll, OpExcept, OpIntersect:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpStr:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
@@ -823,6 +837,83 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
 			}
+		case OpUnionAll:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("union expects list"), trace, ins.Line)
+			}
+			out := append(append([]Value(nil), a.List...), b.List...)
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+		case OpUnion:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("union expects list"), trace, ins.Line)
+			}
+			merged := append([]Value{}, a.List...)
+			for _, rv := range b.List {
+				found := false
+				for _, lv := range merged {
+					if valuesEqual(lv, rv) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					merged = append(merged, rv)
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: merged}
+		case OpExcept:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("except expects list"), trace, ins.Line)
+			}
+			diff := []Value{}
+			for _, lv := range a.List {
+				found := false
+				for _, rv := range b.List {
+					if valuesEqual(lv, rv) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					diff = append(diff, lv)
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: diff}
+		case OpIntersect:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("intersect expects list"), trace, ins.Line)
+			}
+			inter := []Value{}
+			for _, lv := range a.List {
+				match := false
+				for _, rv := range b.List {
+					if valuesEqual(lv, rv) {
+						match = true
+						break
+					}
+				}
+				if match {
+					exists := false
+					for _, iv := range inter {
+						if valuesEqual(iv, lv) {
+							exists = true
+							break
+						}
+					}
+					if !exists {
+						inter = append(inter, lv)
+					}
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: inter}
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
@@ -1291,6 +1382,22 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 		case "in":
 			dst := fc.newReg()
 			fc.emit(op.Pos, Instr{Op: OpIn, A: dst, B: left, C: right})
+			left = dst
+		case "union":
+			dst := fc.newReg()
+			if op.All {
+				fc.emit(op.Pos, Instr{Op: OpUnionAll, A: dst, B: left, C: right})
+			} else {
+				fc.emit(op.Pos, Instr{Op: OpUnion, A: dst, B: left, C: right})
+			}
+			left = dst
+		case "except":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpExcept, A: dst, B: left, C: right})
+			left = dst
+		case "intersect":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpIntersect, A: dst, B: left, C: right})
 			left = dst
 		case ">=":
 			dst := fc.newReg()
