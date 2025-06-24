@@ -320,6 +320,27 @@ func parsePasType(s string) types.Type {
 		inner := strings.TrimSuffix(strings.TrimPrefix(s, "specialize TArray<"), ">")
 		return types.ListType{Elem: parsePasType(strings.TrimSpace(inner))}
 	}
+	if strings.HasPrefix(s, "function(") || strings.HasPrefix(s, "procedure(") {
+		proc := strings.HasPrefix(s, "procedure(")
+		endIdx := strings.Index(s, ")")
+		if endIdx > 0 {
+			paramsPart := s[strings.Index(s, "(")+1 : endIdx]
+			rest := strings.TrimSpace(s[endIdx+1:])
+			var ret types.Type = types.VoidType{}
+			if !proc {
+				if strings.HasPrefix(rest, ":") {
+					ret = parsePasType(strings.TrimSpace(rest[1:]))
+				}
+			}
+			parts := []types.Type{}
+			if strings.TrimSpace(paramsPart) != "" {
+				for _, p := range strings.Split(paramsPart, ";") {
+					parts = append(parts, parsePasType(strings.TrimSpace(p)))
+				}
+			}
+			return types.FuncType{Params: parts, Return: ret}
+		}
+	}
 	if strings.HasPrefix(s, "specialize TFPGMap<") && strings.HasSuffix(s, ">") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(s, "specialize TFPGMap<"), ">")
 		parts := strings.SplitN(inner, ",", 2)

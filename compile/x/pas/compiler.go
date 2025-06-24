@@ -23,6 +23,7 @@ type Compiler struct {
 	varTypes     map[string]string
 	packages     map[string]bool
 	helpers      map[string]bool
+	lambdas      []string
 }
 
 // New creates a new Pascal compiler instance.
@@ -32,6 +33,7 @@ func New(env *types.Env) *Compiler {
 		tempVars: make(map[string]string),
 		packages: make(map[string]bool),
 		helpers:  make(map[string]bool),
+		lambdas:  []string{},
 	}
 }
 
@@ -39,6 +41,7 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.tempVars = make(map[string]string)
+	c.lambdas = nil
 	name := "main"
 	if prog.Package != "" {
 		name = sanitizeName(prog.Package)
@@ -83,6 +86,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			c.writeln("")
 		}
+	}
+
+	// Emit generated lambda functions
+	for _, code := range c.lambdas {
+		c.buf.WriteString(code)
+		if !strings.HasSuffix(code, "\n") {
+			c.writeln("")
+		}
+		c.writeln("")
 	}
 
 	// Compile main body first to gather temporaries
@@ -661,6 +673,17 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 			return "boolean"
 		}
 	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.typeRef(p)
+		}
+		ret := c.typeRef(t.Fun.Return)
+		if ret == "" || ret == "void" {
+			return fmt.Sprintf("procedure(%s)", strings.Join(params, "; "))
+		}
+		return fmt.Sprintf("function(%s): %s", strings.Join(params, "; "), ret)
+	}
 	if t.Generic != nil {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			elem := c.typeRef(t.Generic.Args[0])
@@ -694,6 +717,15 @@ func typeString(t types.Type) string {
 		return fmt.Sprintf("specialize TFPGMap<%s, %s>", typeString(mt.Key), typeString(mt.Value))
 	case types.StructType:
 		return sanitizeName(tt.Name)
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = typeString(p)
+		}
+		if tt.Return == nil || tt.Return == (types.VoidType{}) {
+			return fmt.Sprintf("procedure(%s)", strings.Join(params, "; "))
+		}
+		return fmt.Sprintf("function(%s): %s", strings.Join(params, "; "), typeString(tt.Return))
 	default:
 		return "integer"
 	}
@@ -832,6 +864,13 @@ func inferTypeFromPrimary(p *parser.Primary, env *types.Env, vars map[string]str
 			elem = inferTypeFromExpr(p.List.Elems[0], env, vars)
 		}
 		return fmt.Sprintf("specialize TArray<%s>", elem)
+	case p.FunExpr != nil:
+		params := make([]types.Type, len(p.FunExpr.Params))
+		for i, pa := range p.FunExpr.Params {
+			params[i] = resolveSimpleTypeRef(pa.Type)
+		}
+		ret := resolveSimpleTypeRef(p.FunExpr.Return)
+		return typeString(types.FuncType{Params: params, Return: ret})
 	}
 	return "integer"
 }
@@ -1233,7 +1272,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
 	case p.FunExpr != nil:
-		return "", fmt.Errorf("anonymous functions not supported")
+		return c.compileFunExpr(p.FunExpr)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:
@@ -1271,6 +1310,34 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s)", src, path), nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	name := fmt.Sprintf("_lambda%d", len(c.lambdas))
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = 0
+	var body []*parser.Statement
+	if fn.ExprBody != nil {
+		body = []*parser.Statement{{Return: &parser.ReturnStmt{Value: fn.ExprBody}}}
+	} else {
+		body = fn.BlockBody
+	}
+	fs := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: body}
+	if err := c.compileFun(fs); err != nil {
+		c.buf = oldBuf
+		c.indent = oldIndent
+		return "", err
+	}
+	code := c.buf.String()
+	c.lambdas = append(c.lambdas, code)
+	c.buf = oldBuf
+	c.indent = oldIndent
+	if _, ok := c.expected.(types.FuncType); ok {
+		return "@" + name, nil
+	}
+	return name, nil
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
