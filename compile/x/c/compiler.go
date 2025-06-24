@@ -57,6 +57,7 @@ type Compiler struct {
 	externs       []string
 	externObjects []string
 	structs       map[string]bool
+	currentStruct string
 }
 
 func New(env *types.Env) *Compiler {
@@ -336,7 +337,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	var fields map[string]types.Type
 	var order []string
 	if c.env != nil {
-		fields = map[string]types.Type{}
+		if st, ok := c.env.GetStruct(t.Name); ok {
+			fields = st.Fields
+			order = st.Order
+		} else {
+			fields = map[string]types.Type{}
+		}
 	}
 	for _, m := range t.Members {
 		if m.Field == nil {
@@ -353,7 +359,18 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	c.writeln(fmt.Sprintf("}%s;", name))
 	if c.env != nil {
 		st := types.StructType{Name: t.Name, Fields: fields, Order: order}
+		if orig, ok := c.env.GetStruct(t.Name); ok {
+			st.Methods = orig.Methods
+		}
 		c.env.SetStruct(t.Name, st)
+	}
+	for _, m := range t.Members {
+		if m.Method != nil {
+			if err := c.compileTypeMethod(t.Name, m.Method); err != nil {
+				return err
+			}
+			c.writeln("")
+		}
 	}
 	return nil
 }
@@ -407,6 +424,53 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) error {
+	ret := c.cType(fun.Return)
+	c.buf.WriteString(ret + " ")
+	c.buf.WriteString(sanitizeName(structName) + "_" + sanitizeName(fun.Name))
+	c.buf.WriteByte('(')
+	c.buf.WriteString(sanitizeName(structName) + "* self")
+	for _, p := range fun.Params {
+		c.buf.WriteString(", ")
+		c.buf.WriteString(c.cType(p.Type))
+		c.buf.WriteByte(' ')
+		c.buf.WriteString(sanitizeName(p.Name))
+	}
+	c.buf.WriteString("){\n")
+	c.indent++
+	oldEnv := c.env
+	oldStruct := c.currentStruct
+	if c.env != nil {
+		c.env = types.NewEnv(c.env)
+		if st, ok := oldEnv.GetStruct(structName); ok {
+			for name, ft := range st.Fields {
+				c.env.SetVar(name, ft, true)
+			}
+			for name, m := range st.Methods {
+				c.env.SetVar(name, m.Type, true)
+			}
+		}
+		for _, p := range fun.Params {
+			if p.Type != nil {
+				c.env.SetVar(p.Name, resolveTypeRef(p.Type, oldEnv), true)
+			}
+		}
+	}
+	c.currentStruct = structName
+	for _, st := range fun.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.currentStruct = oldStruct
+	if c.env != nil {
+		c.env = oldEnv
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Fun != nil:
@@ -449,6 +513,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Assign != nil:
 		lhs := sanitizeName(s.Assign.Name)
 		target := lhs
+		if c.currentStruct != "" && c.env != nil && len(s.Assign.Index) == 0 {
+			if st, ok := c.env.GetStruct(c.currentStruct); ok {
+				if _, ok2 := st.Fields[s.Assign.Name]; ok2 {
+					target = "self->" + lhs
+				}
+			}
+		}
 		if len(s.Assign.Index) == 1 {
 			if c.env != nil {
 				if tv, err := c.env.GetVar(s.Assign.Name); err == nil && isMapIntBoolType(tv) {
@@ -1225,6 +1296,29 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				}
 			}
 		} else if op.Call != nil {
+			if p.Target != nil && p.Target.Selector != nil && c.env != nil {
+				sel := p.Target.Selector
+				if len(sel.Tail) > 0 {
+					baseSel := &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}
+					meth := sel.Tail[len(sel.Tail)-1]
+					stype, ok := c.selectorStructType(baseSel)
+					if ok {
+						if _, ok2 := stype.Methods[meth]; ok2 {
+							recv := c.compileSelector(baseSel)
+							args := make([]string, len(op.Call.Args)+1)
+							args[0] = "&" + recv
+							for i, a := range op.Call.Args {
+								args[i+1] = c.compileExpr(a)
+							}
+							expr = fmt.Sprintf("%s_%s(%s)", sanitizeName(stype.Name), sanitizeName(meth), strings.Join(args, ", "))
+							isStr = false
+							isFloatList = false
+							isStringList = false
+							continue
+						}
+					}
+				}
+			}
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
 				args[i] = c.compileExpr(a)
@@ -1450,17 +1544,58 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 	expr := sanitizeName(s.Root)
+	if c.currentStruct != "" && c.env != nil {
+		if st, ok := c.env.GetStruct(c.currentStruct); ok {
+			if _, ok2 := st.Fields[s.Root]; ok2 {
+				expr = "self->" + sanitizeName(s.Root)
+			}
+		}
+	}
 	for _, f := range s.Tail {
 		expr += "." + sanitizeName(f)
 	}
 	return expr
 }
 
+func (c *Compiler) selectorStructType(sel *parser.SelectorExpr) (types.StructType, bool) {
+	if c.env == nil {
+		return types.StructType{}, false
+	}
+	var t types.Type
+	var ok bool
+	v, err := c.env.GetVar(sel.Root)
+	if err == nil {
+		t = v
+		ok = true
+	} else if c.currentStruct != "" {
+		if st, ok2 := c.env.GetStruct(c.currentStruct); ok2 {
+			if ft, ok3 := st.Fields[sel.Root]; ok3 {
+				t = ft
+				ok = true
+			}
+		}
+	}
+	if !ok {
+		return types.StructType{}, false
+	}
+	for _, f := range sel.Tail {
+		st, ok := t.(types.StructType)
+		if !ok {
+			return types.StructType{}, false
+		}
+		t = st.Fields[f]
+	}
+	st, ok := t.(types.StructType)
+	return st, ok
+}
+
 func isStringArg(e *parser.Expr, env *types.Env) bool {
-	if e == nil || e.Binary == nil {
+	if e == nil {
 		return false
 	}
-	return isStringUnaryOrIndex(e.Binary.Left, env)
+	c := New(env)
+	_, ok := c.inferExprType(e).(types.StringType)
+	return ok
 }
 
 func isStringExpr(e *parser.Expr, env *types.Env) bool {
