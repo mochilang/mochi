@@ -3235,6 +3235,11 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 	}
 
 	join := q.Joins[idx]
+	joinType := "inner"
+	if join.Side != nil {
+		joinType = *join.Side
+	}
+
 	rightReg := fc.compileExpr(join.Src)
 	rlist := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpIterPrep, A: rlist, B: rightReg})
@@ -3256,24 +3261,59 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 	}
 	fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
 
-	if join.On != nil {
-		cond := fc.compileExpr(join.On)
-		skip := len(fc.fn.Code)
-		fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-		fc.compileGroupJoinAny(q, gmap, glist, idx+1)
-		fc.fn.Code[skip].B = len(fc.fn.Code)
-	} else {
-		fc.compileGroupJoinAny(q, gmap, glist, idx+1)
-	}
+	if joinType == "left" || joinType == "outer" {
+		matched := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: false}})
+		if join.On != nil {
+			cond := fc.compileExpr(join.On)
+			skip := len(fc.fn.Code)
+			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+			fc.fn.Code[skip].B = len(fc.fn.Code)
+		} else {
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+		}
 
-	one := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
-	fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
-	fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
-	end := len(fc.fn.Code)
-	fc.fn.Code[rjmp].B = end
+		one := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		tmp := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
+		end := len(fc.fn.Code)
+		fc.fn.Code[rjmp].B = end
+
+		check := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpMove, A: check, B: matched})
+		skipAdd := len(fc.fn.Code)
+		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
+		nilreg := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: interpreter.TagNull}})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
+		fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
+	} else {
+		if join.On != nil {
+			cond := fc.compileExpr(join.On)
+			skip := len(fc.fn.Code)
+			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+			fc.fn.Code[skip].B = len(fc.fn.Code)
+		} else {
+			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+		}
+
+		one := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		tmp := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
+		end := len(fc.fn.Code)
+		fc.fn.Code[rjmp].B = end
+	}
 }
 
 func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
