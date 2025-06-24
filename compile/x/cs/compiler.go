@@ -841,7 +841,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					c.use("_sliceString")
 					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
 				} else {
-					expr = fmt.Sprintf("((%s).GetRange((int)(%s), (int)(%s-%s)))", expr, start, end, start)
+					c.use("_sliceList")
+					expr = fmt.Sprintf("_sliceList(%s, %s, %s)", expr, start, end)
 				}
 			} else {
 				idx := start
@@ -849,7 +850,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					c.use("_indexString")
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 				} else {
-					expr = fmt.Sprintf("%s[%s]", expr, idx)
+					c.use("_indexList")
+					expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
 				}
 			}
 			isStr = false
