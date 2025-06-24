@@ -600,7 +600,7 @@ AgentField    = LetStmt | VarStmt | AssignStmt | OnHandler | IntentDecl .
 IntentDecl    = "intent" Identifier "(" [ ParamList ] ")" [ ":" TypeRef ] Block .
 ModelDecl     = "model" Identifier Block .
 TypeDecl      = "type" Identifier [ [ "=" ] "{" TypeMember* "}" ] [ "=" TypeVariant { "|" TypeVariant } ] .
-TypeMember    = TypeField | FunDecl | TypeDecl .
+TypeMember    = TypeField | FunDecl .
 TypeVariant   = Identifier [ "(" TypeField { "," TypeField } [ "," ]? ")" | "{" TypeField* "}" ] .
 TypeField     = Identifier ":" TypeRef .
 

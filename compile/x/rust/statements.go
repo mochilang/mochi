@@ -194,14 +194,6 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	c.structs[name] = true
-	for _, m := range t.Members {
-		if m.Type != nil {
-			if err := c.compileTypeDecl(m.Type); err != nil {
-				return err
-			}
-			c.writeln("")
-		}
-	}
 	if len(t.Variants) > 0 {
 		c.writeln("#[derive(Clone, Debug)]")
 		c.writeln(fmt.Sprintf("enum %s {", name))
