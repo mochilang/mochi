@@ -78,16 +78,18 @@ const llmHelpers = `(define (_genText prompt model params)
 
 // Compiler translates Mochi AST into Racket source code.
 type Compiler struct {
-	buf          bytes.Buffer
-	indent       int
-	env          *types.Env
-	loops        []loopCtx
-	needsDataset bool
-	needsSetOps  bool
-	needsMatch   bool
-	needsLLM     bool
-	imports      []string
-	exports      []string
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	loops         []loopCtx
+	needsDataset  bool
+	needsSetOps   bool
+	needsMatch    bool
+	needsLLM      bool
+	imports       []string
+	exports       []string
+	currentStruct string
+	methodFields  map[string]bool
 }
 
 type loopCtx struct {
@@ -257,18 +259,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	code := c.buf.Bytes()
-	header := "(require racket/list)"
+
+	libs := []string{"racket/list"}
 	if c.needsMatch {
-		header += " racket/match"
+		libs = append(libs, "racket/match")
 	}
 	if c.needsDataset {
-		header += " racket/string json"
+		libs = append(libs, "racket/string", "json")
 	} else if c.needsLLM {
-		header += " json"
+		libs = append(libs, "json")
 	}
-	for _, imp := range c.imports {
-		header += " " + imp
+	header := fmt.Sprintf("(require %s)", strings.Join(libs, " "))
+	if len(c.imports) > 0 {
+		header += "\n" + strings.Join(c.imports, "\n")
 	}
+
 	code = bytes.Replace(code, []byte(";require-placeholder"), []byte(header), 1)
 	if len(c.exports) > 0 {
 		prov := "(provide " + strings.Join(c.exports, " ") + ")"
@@ -318,6 +323,68 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.writeln(")")
 	c.indent--
 	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
+	name := sanitizeName(structName) + "-" + sanitizeName(fn.Name)
+	c.writeIndent()
+	c.buf.WriteString("(define (" + name + " self")
+	for _, p := range fn.Params {
+		c.buf.WriteString(" " + sanitizeName(p.Name))
+	}
+	c.buf.WriteString(")\n")
+
+	oldStruct := c.currentStruct
+	oldFields := c.methodFields
+	c.currentStruct = structName
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			c.methodFields = make(map[string]bool, len(st.Fields))
+			for f := range st.Fields {
+				c.methodFields[f] = true
+			}
+		}
+	}
+
+	origEnv := c.env
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		if st, ok := c.env.GetStruct(structName); ok {
+			for fname, t := range st.Fields {
+				child.SetVar(fname, t, true)
+			}
+		}
+		for _, p := range fn.Params {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+		c.env = child
+	}
+
+	c.indent++
+	c.writeln("(let/ec return")
+	c.indent++
+	for _, st := range fn.Body {
+		if err := c.compileStmt(st); err != nil {
+			if origEnv != nil {
+				c.env = origEnv
+			}
+			c.currentStruct = oldStruct
+			c.methodFields = oldFields
+			return err
+		}
+	}
+	c.writeln("(return (void))")
+	c.indent--
+	c.writeln(")")
+	c.indent--
+	c.writeln(")")
+
+	if origEnv != nil {
+		c.env = origEnv
+	}
+	c.currentStruct = oldStruct
+	c.methodFields = oldFields
 	return nil
 }
 
@@ -438,6 +505,14 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 	}
 	c.writeln(fmt.Sprintf("(struct %s (%s) #:transparent)", name, strings.Join(fields, " ")))
+	for _, m := range t.Members {
+		if m.Method != nil {
+			if err := c.compileMethod(t.Name, m.Method); err != nil {
+				return err
+			}
+			c.writeln("")
+		}
+	}
 	return nil
 }
 
@@ -864,6 +939,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = v
 			}
+			if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 && c.env != nil {
+				if t, err := c.env.GetVar(sel.Root); err == nil {
+					if st, ok := t.(types.StructType); ok {
+						if _, ok := st.Methods[sel.Tail[0]]; ok {
+							val = fmt.Sprintf("(%s-%s %s %s)", sanitizeName(st.Name), sanitizeName(sel.Tail[0]), sanitizeName(sel.Root), strings.Join(args, " "))
+							continue
+						}
+					}
+				}
+			}
 			val = fmt.Sprintf("(%s %s)", val, strings.Join(args, " "))
 		} else if op.Index != nil {
 			if op.Index.Colon == nil {
@@ -1156,6 +1241,13 @@ func (c *Compiler) compileStructExpr(s *parser.StructLiteral) (string, error) {
 
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (string, error) {
 	base := sanitizeName(sel.Root)
+	if len(sel.Tail) == 0 && c.methodFields != nil && c.methodFields[sel.Root] {
+		base = fmt.Sprintf("(%s-%s self)", sanitizeName(c.currentStruct), base)
+		return base, nil
+	}
+	if c.methodFields != nil && c.methodFields[sel.Root] {
+		base = fmt.Sprintf("(%s-%s self)", sanitizeName(c.currentStruct), base)
+	}
 	for _, field := range sel.Tail {
 		base = fmt.Sprintf("(hash-ref %s %q)", base, sanitizeName(field))
 	}
