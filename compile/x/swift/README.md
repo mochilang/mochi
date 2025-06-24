@@ -128,6 +128,12 @@ case "count":
 case "str":
         if len(args) != 1 { return "", fmt.Errorf("str expects 1 arg") }
         return fmt.Sprintf("String(%s)", args[0]), nil
+case "upper":
+        if len(args) != 1 { return "", fmt.Errorf("upper expects 1 arg") }
+        return fmt.Sprintf("%s.uppercased()", args[0]), nil
+case "lower":
+        if len(args) != 1 { return "", fmt.Errorf("lower expects 1 arg") }
+        return fmt.Sprintf("%s.lowercased()", args[0]), nil
 case "avg":
         if len(args) != 1 { return "", fmt.Errorf("avg expects 1 arg") }
         c.useAvg = true

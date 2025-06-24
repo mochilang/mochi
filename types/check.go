@@ -373,6 +373,16 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("upper", FuncType{
+		Params: []Type{StringType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("lower", FuncType{
+		Params: []Type{StringType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("input", FuncType{
 		Params: []Type{},
 		Return: StringType{},
@@ -1971,6 +1981,8 @@ var builtinArity = map[string]int{
 	"input":  0,
 	"json":   1,
 	"str":    1,
+	"upper":  1,
+	"lower":  1,
 	"eval":   1,
 	"len":    1,
 	"count":  1,
@@ -1988,7 +2000,7 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 0, len(args))
 		}
 		return nil
-	case "json", "str", "eval":
+	case "json", "str", "upper", "lower", "eval":
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))
 		}
