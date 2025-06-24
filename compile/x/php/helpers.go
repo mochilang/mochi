@@ -37,6 +37,82 @@ func sanitizeName(name string) string {
 	return s
 }
 
+func phpType(t types.Type) string {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "float"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "bool"
+	case types.ListType, types.MapType:
+		return "array"
+	case types.FuncType:
+		return "callable"
+	case types.VoidType:
+		return "void"
+	default:
+		return ""
+	}
+}
+
+func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.resolveTypeRef(p)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = c.resolveTypeRef(t.Fun.Return)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		args := t.Generic.Args
+		switch name {
+		case "list":
+			if len(args) == 1 {
+				return types.ListType{Elem: c.resolveTypeRef(args[0])}
+			}
+		case "map":
+			if len(args) == 2 {
+				return types.MapType{Key: c.resolveTypeRef(args[0]), Value: c.resolveTypeRef(args[1])}
+			}
+		}
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			if c != nil && c.env != nil {
+				if st, ok := c.env.GetStruct(*t.Simple); ok {
+					return st
+				}
+				if ut, ok := c.env.GetUnion(*t.Simple); ok {
+					return ut
+				}
+			}
+			return types.AnyType{}
+		}
+	}
+	return types.AnyType{}
+}
+
 func simpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil {
 		return "", false

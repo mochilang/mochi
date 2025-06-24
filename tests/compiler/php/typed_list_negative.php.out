@@ -1,2 +1,10 @@
 <?php
+function mochi_test_values() {
+	if (!(($xs[0] == (-1)))) { throw new Exception('expect failed'); }
+	if (!(($xs[1] == 0))) { throw new Exception('expect failed'); }
+	if (!(($xs[2] == 1))) { throw new Exception('expect failed'); }
+	echo "done", PHP_EOL;
+}
+
 $xs = [(-1), 0, 1];
+mochi_test_values();

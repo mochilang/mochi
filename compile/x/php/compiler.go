@@ -86,11 +86,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Fun != nil:
 		fn := s.Fun
 		params := make([]string, len(fn.Params))
+		paramNames := make([]string, len(fn.Params))
+		muts := mutatedVars(fn.Body)
 		for i, p := range fn.Params {
-			params[i] = "$" + sanitizeName(p.Name)
+			nameOnly := "$" + sanitizeName(p.Name)
+			part := nameOnly
+			if typ := phpType(c.resolveTypeRef(p.Type)); typ != "" {
+				part = fmt.Sprintf("%s %s", typ, part)
+			}
+			if muts[p.Name] && isCompositeParam(p) {
+				part = "&" + part
+			}
+			params[i] = part
+			paramNames[i] = nameOnly
 		}
 		fe := &parser.FunExpr{Params: fn.Params, BlockBody: fn.Body}
-		captured := freeVars(fe, params)
+		captured := freeVars(fe, paramNames)
 		captured = append(captured, "$"+sanitizeName(fn.Name))
 		oldLocals := c.locals
 		c.locals = map[string]bool{}
@@ -108,7 +119,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			}
 			use = " use (" + strings.Join(captured, ", ") + ")"
 		}
-		c.writeln(fmt.Sprintf("$%s = function (%s)%s {", name, strings.Join(params, ", "), use))
+		ret := ""
+		if fn.Return != nil {
+			if typ := phpType(c.resolveTypeRef(fn.Return)); typ != "" && typ != "void" {
+				ret = ": " + typ
+			}
+		}
+		c.writeln(fmt.Sprintf("$%s = function (%s)%s%s {", name, strings.Join(params, ", "), use, ret))
 		c.indent++
 		for _, st := range fn.Body {
 			if err := c.compileStmt(st); err != nil {
@@ -165,15 +182,22 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
 	muts := mutatedVars(fn.Body)
 	for i, p := range fn.Params {
-		name := "$" + sanitizeName(p.Name)
-		if muts[p.Name] {
-			if isCompositeParam(p) {
-				name = "&" + name
-			}
+		part := "$" + sanitizeName(p.Name)
+		if typ := phpType(c.resolveTypeRef(p.Type)); typ != "" {
+			part = fmt.Sprintf("%s %s", typ, part)
 		}
-		params[i] = name
+		if muts[p.Name] && isCompositeParam(p) {
+			part = "&" + part
+		}
+		params[i] = part
 	}
-	c.writeln(fmt.Sprintf("function %s%s(%s) {", funcPrefix, sanitizeName(fn.Name), strings.Join(params, ", ")))
+	ret := ""
+	if fn.Return != nil {
+		if typ := phpType(c.resolveTypeRef(fn.Return)); typ != "" && typ != "void" {
+			ret = ": " + typ
+		}
+	}
+	c.writeln(fmt.Sprintf("function %s%s(%s)%s {", funcPrefix, sanitizeName(fn.Name), strings.Join(params, ", "), ret))
 	oldLocals := c.locals
 	c.locals = map[string]bool{}
 	for _, p := range fn.Params {
@@ -754,8 +778,15 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	params := make([]string, len(fn.Params))
+	paramNames := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
-		params[i] = "$" + sanitizeName(p.Name)
+		nameOnly := "$" + sanitizeName(p.Name)
+		part := nameOnly
+		if typ := phpType(c.resolveTypeRef(p.Type)); typ != "" {
+			part = fmt.Sprintf("%s %s", typ, part)
+		}
+		params[i] = part
+		paramNames[i] = nameOnly
 	}
 	sub := &Compiler{env: types.NewEnv(c.env)}
 	var body bytes.Buffer
@@ -773,13 +804,19 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			}
 		}
 	}
-	captured := freeVars(fn, params)
+	captured := freeVars(fn, paramNames)
 	use := ""
 	if len(captured) > 0 {
 		use = " use (" + strings.Join(captured, ", ") + ")"
 	}
+	ret := ""
+	if fn.Return != nil {
+		if typ := phpType(c.resolveTypeRef(fn.Return)); typ != "" && typ != "void" {
+			ret = ": " + typ
+		}
+	}
 	bodyStr := indentBlock(sub.buf.String(), 1)
-	return fmt.Sprintf("function (%s)%s {\n%s}", strings.Join(params, ", "), use, bodyStr), nil
+	return fmt.Sprintf("function (%s)%s%s {\n%s}", strings.Join(params, ", "), use, ret, bodyStr), nil
 }
 
 func indentBlock(s string, indent int) string {
