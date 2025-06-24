@@ -4,6 +4,8 @@ func makeAdder(_ n: Int) -> (Int) -> Int {
 	let n = n
 	
 	return { (x: Int) -> Int in
+		let x = x
+		
 		return x + n
 }
 }

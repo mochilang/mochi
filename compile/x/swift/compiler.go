@@ -836,13 +836,45 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	oldBuf := c.buf
 	oldIndent := c.indent
+	oldEnv := c.env
+	oldRet := c.funcRet
+	oldLocals := c.locals
+
 	c.buf = bytes.Buffer{}
 	c.indent = 1
+	c.locals = map[string]types.Type{}
+	if c.env != nil {
+		c.env = types.NewEnv(c.env)
+		for _, p := range fn.Params {
+			if p.Type != nil {
+				t := resolveTypeRef(p.Type, oldEnv)
+				c.env.SetVar(p.Name, t, true)
+				c.locals[p.Name] = t
+			}
+		}
+	}
+	c.funcRet = resolveTypeRef(fn.Return, oldEnv)
+
+	for _, p := range fn.Params {
+		decl := "var"
+		if fn.ExprBody != nil || !paramAssigned(fn.BlockBody, p.Name) {
+			decl = "let"
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s", decl, p.Name, p.Name))
+	}
+	if len(fn.Params) > 0 {
+		c.writeln("")
+	}
 	if fn.ExprBody != nil {
 		expr, err := c.compileExpr(fn.ExprBody)
 		if err != nil {
 			c.buf = oldBuf
 			c.indent = oldIndent
+			if c.env != nil {
+				c.env = oldEnv
+			}
+			c.locals = oldLocals
+			c.funcRet = oldRet
 			return "", err
 		}
 		c.writeln("return " + expr)
@@ -851,6 +883,11 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			if err := c.compileStmt(st); err != nil {
 				c.buf = oldBuf
 				c.indent = oldIndent
+				if c.env != nil {
+					c.env = oldEnv
+				}
+				c.locals = oldLocals
+				c.funcRet = oldRet
 				return "", err
 			}
 		}
@@ -858,6 +895,11 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	bodyStr := c.buf.String()
 	c.buf = oldBuf
 	c.indent = oldIndent
+	if c.env != nil {
+		c.env = oldEnv
+	}
+	c.locals = oldLocals
+	c.funcRet = oldRet
 	result := fmt.Sprintf("{ (%s) -> %s in\n%s}", strings.Join(params, ", "), ret, indentBlock(bodyStr, 1))
 	return result, nil
 }
