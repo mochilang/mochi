@@ -46,8 +46,7 @@ experimental VM.  Unsupported areas include:
 * Asynchronous functions (`async`/`await`)
 * Agents, streams and intent blocks with persistent state
 * Agent initialization with field values
-* Dataset queries (`from`, `join`, `group`, `sort`, `take`, etc.)
-  and loading datasets from CSV or YAML files
+* Grouping (`group by`) within dataset queries
 * Right and outer joins or pagination when joins are used
 * Generative AI blocks, model declarations and other LLM helpers
 * HTTP `fetch` expressions
