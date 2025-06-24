@@ -25,6 +25,7 @@ The VM supports a small but useful subset of Mochi:
 * Anonymous function expressions
 * Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `json`, `now`, `input`, `count` and `avg`
 * List, map and struct construction
+* String indexing to access individual characters
 * Field access using the `.` operator
 * List and string slicing with `[start:end]` syntax (supports negative indices)
 
