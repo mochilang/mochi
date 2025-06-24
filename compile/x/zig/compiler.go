@@ -194,10 +194,78 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				st.Order = append(st.Order, m.Field.Name)
 				c.env.SetStruct(t.Name, st)
 			}
+		} else if m.Method != nil {
+			if c.env != nil {
+				st, ok := c.env.GetStruct(t.Name)
+				if !ok {
+					st = types.StructType{Name: t.Name, Fields: map[string]types.Type{}, Order: []string{}, Methods: map[string]types.Method{}}
+				}
+				params := make([]types.Type, len(m.Method.Params))
+				for i, p := range m.Method.Params {
+					params[i] = c.resolveTypeRef(p.Type)
+				}
+				var ret types.Type = types.VoidType{}
+				if m.Method.Return != nil {
+					ret = c.resolveTypeRef(m.Method.Return)
+				}
+				if st.Methods == nil {
+					st.Methods = map[string]types.Method{}
+				}
+				st.Methods[m.Method.Name] = types.Method{Decl: m.Method, Type: types.FuncType{Params: params, Return: ret}}
+				c.env.SetStruct(t.Name, st)
+			}
+			if err := c.compileMethod(t.Name, m.Method); err != nil {
+				return err
+			}
 		}
 	}
 	c.indent--
 	c.writeln("};")
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
+	name := sanitizeName(fn.Name)
+	c.writeIndent()
+	c.buf.WriteString("fn " + name + "(self: *" + sanitizeName(structName))
+	for _, p := range fn.Params {
+		typ := c.zigType(p.Type)
+		c.buf.WriteString(fmt.Sprintf(", %s: %s", sanitizeName(p.Name), typ))
+	}
+	ret := "void"
+	if fn.Return != nil {
+		ret = c.zigType(fn.Return)
+	}
+	c.buf.WriteString(") " + ret + " {\n")
+
+	origEnv := c.env
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		if st, ok := c.env.GetStruct(structName); ok {
+			for fname, t := range st.Fields {
+				child.SetVar(fname, t, true)
+			}
+		}
+		for _, p := range fn.Params {
+			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+		}
+		c.env = child
+	}
+
+	c.indent++
+	for _, st := range fn.Body {
+		if err := c.compileStmt(st, true); err != nil {
+			if c.env != nil {
+				c.env = origEnv
+			}
+			return err
+		}
+	}
+	c.indent--
+	if c.env != nil {
+		c.env = origEnv
+	}
+	c.writeln("}")
 	return nil
 }
 
