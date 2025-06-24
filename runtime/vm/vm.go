@@ -61,6 +61,8 @@ const (
 	OpJumpIfTrue
 	OpNow
 	OpJSON
+	OpAppend
+	OpStr
 
 	// Specialized numeric ops
 	OpAddInt
@@ -139,6 +141,10 @@ func (op Op) String() string {
 		return "Now"
 	case OpJSON:
 		return "JSON"
+	case OpAppend:
+		return "Append"
+	case OpStr:
+		return "Str"
 	case OpAddInt:
 		return "AddInt"
 	case OpAddFloat:
@@ -300,6 +306,10 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpJSON:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
+			case OpAppend:
+				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
+			case OpStr:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpCall2:
 				fmt.Fprintf(&b, "%s, %s, %s, %s", formatReg(ins.A), p.funcName(ins.B), formatReg(ins.C), formatReg(ins.D))
 			case OpCall:
@@ -504,7 +514,16 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			}
 		case OpLen:
 			v := fr.regs[ins.B]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.List)}
+			switch v.Tag {
+			case interpreter.TagList:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.List)}
+			case interpreter.TagStr:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len([]rune(v.Str))}
+			case interpreter.TagMap:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.Map)}
+			default:
+				return Value{}, fmt.Errorf("invalid len operand")
+			}
 		case OpIndex:
 			src := fr.regs[ins.B]
 			idxVal := fr.regs[ins.C]
@@ -578,6 +597,15 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 		case OpJSON:
 			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
 			fmt.Fprintln(m.writer, string(b))
+		case OpAppend:
+			lst := fr.regs[ins.B]
+			if lst.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("append expects list")
+			}
+			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: newList}
+		case OpStr:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
@@ -741,6 +769,8 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2:
 		// no result
+	case OpAppend, OpStr:
+		fc.tags[i.A] = tagUnknown
 	}
 }
 
@@ -1097,6 +1127,17 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			fc.emit(p.Pos, Instr{Op: OpJSON, A: arg})
 			return arg
+		case "append":
+			list := fc.compileExpr(p.Call.Args[0])
+			elem := fc.compileExpr(p.Call.Args[1])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpAppend, A: dst, B: list, C: elem})
+			return dst
+		case "str":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpStr, A: dst, B: arg})
+			return dst
 		case "print":
 			if len(p.Call.Args) == 1 {
 				arg := fc.compileExpr(p.Call.Args[0])

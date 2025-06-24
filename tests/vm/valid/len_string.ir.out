@@ -1,0 +1,6 @@
+func main (regs=2)
+  // print(len("mochi"))
+  Const        r0, "mochi"
+  Len          r1, r0
+  Print        r1
+  Return       r0
