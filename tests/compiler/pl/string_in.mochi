@@ -1,0 +1,2 @@
+print("cat" in "catch")
+print("dog" in "catch")
