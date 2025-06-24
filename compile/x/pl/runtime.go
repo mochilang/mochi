@@ -17,13 +17,13 @@ const helperToList = "to_list(Str, L) :-\n" +
 	"to_list(L, L).\n\n"
 
 const helperGetItem = "get_item(Container, Key, Val) :-\n" +
-	"    is_dict(Container), !, get_dict(Key, Container, Val).\n" +
+	"    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), get_dict(A, Container, Val).\n" +
 	"get_item(Container, Index, Val) :-\n" +
 	"    string(Container), !, string_chars(Container, Chars), nth0(Index, Chars, Val).\n" +
 	"get_item(List, Index, Val) :- nth0(Index, List, Val).\n\n"
 
 const helperSetItem = "set_item(Container, Key, Val, Out) :-\n" +
-	"    is_dict(Container), !, put_dict(Key, Container, Val, Out).\n" +
+	"    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), put_dict(A, Container, Val, Out).\n" +
 	"set_item(List, Index, Val, Out) :-\n" +
 	"    nth0(Index, List, _, Rest),\n" +
 	"    nth0(Index, Out, Val, Rest).\n\n"
@@ -66,3 +66,7 @@ const helperIntersect = "intersect(A, B, R) :- intersect(A, B, [], R).\n" +
 	"intersect([], _, Acc, R) :- reverse(Acc, R).\n" +
 	"intersect([H|T], B, Acc, R) :- memberchk(H, B), \\+ memberchk(H, Acc), !, intersect(T, B, [H|Acc], R).\n" +
 	"intersect([_|T], B, Acc, R) :- intersect(T, B, Acc, R).\n\n"
+
+const helperMapKeys = "map_keys(Dict, Keys) :-\n" +
+	"    dict_pairs(Dict, _, Pairs),\n" +
+	"    findall(K, member(K-_, Pairs), Keys).\n\n"
