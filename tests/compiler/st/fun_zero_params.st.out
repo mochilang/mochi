@@ -1,0 +1,9 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'mochi'!
+greet
+	^ 42
+!
+
+!!
+((Main greet)) displayOn: Transcript. Transcript cr.

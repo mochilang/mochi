@@ -1,0 +1,5 @@
+fun greet(): int {
+  return 42
+}
+
+print(greet())

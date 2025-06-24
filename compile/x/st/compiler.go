@@ -161,11 +161,15 @@ func (c *Compiler) compileMainStmts(prog *parser.Program, tests []string) ([]byt
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
-	header := fn.Name + ": " + fn.Params[0].Name
-	names := []string{fn.Params[0].Name}
-	for _, p := range fn.Params[1:] {
-		header += " " + p.Name + ": " + p.Name
-		names = append(names, p.Name)
+	header := fn.Name
+	names := make([]string, len(fn.Params))
+	if len(fn.Params) > 0 {
+		header += ": " + fn.Params[0].Name
+		names[0] = fn.Params[0].Name
+		for i, p := range fn.Params[1:] {
+			header += " " + p.Name + ": " + p.Name
+			names[i+1] = p.Name
+		}
 	}
 	c.funParams[fn.Name] = names
 	vars := collectVars(fn.Body)
@@ -174,13 +178,20 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 
 	if c.indent > 0 {
-		blockHeader := "[:" + fn.Params[0].Name
-		for _, p := range fn.Params[1:] {
-			blockHeader += " :" + p.Name
+		blockHeader := "["
+		if len(fn.Params) > 0 {
+			blockHeader += ":" + fn.Params[0].Name
+			for _, p := range fn.Params[1:] {
+				blockHeader += " :" + p.Name
+			}
+			blockHeader += " |"
 		}
-		blockHeader += " |"
 		if len(vars) > 0 {
-			blockHeader += " | " + strings.Join(vars, " ") + " |"
+			if len(fn.Params) == 0 {
+				blockHeader += "| " + strings.Join(vars, " ") + " |"
+			} else {
+				blockHeader += " | " + strings.Join(vars, " ") + " |"
+			}
 		}
 		c.writeln(fmt.Sprintf("%s := %s", fn.Name, blockHeader))
 		c.indent++
@@ -834,12 +845,20 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		params, ok := c.funParams[name]
 		if !ok {
 			call := name
+			if len(args) == 0 {
+				call += " value"
+			}
 			for _, a := range args {
 				call += " value: " + a
 			}
 			return call, nil
 		}
-		parts := []string{"Main", name + ":"}
+		parts := []string{"Main"}
+		if len(params) == 0 {
+			parts = append(parts, name)
+			return "(" + strings.Join(parts, " ") + ")", nil
+		}
+		parts = append(parts, name+":")
 		for i, p := range params {
 			arg := fmt.Sprintf("(%s)", args[i])
 			if i == 0 {
@@ -891,14 +910,18 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		b.WriteString(" |")
 	} else {
-		b.WriteString("[|")
+		b.WriteString("[")
 	}
 	vars := []string{}
 	if len(fn.BlockBody) > 0 {
 		vars = collectVars(fn.BlockBody)
 	}
 	if len(vars) > 0 {
-		b.WriteString(" | " + strings.Join(vars, " ") + " |")
+		if len(fn.Params) == 0 {
+			b.WriteString("| " + strings.Join(vars, " ") + " |")
+		} else {
+			b.WriteString(" | " + strings.Join(vars, " ") + " |")
+		}
 	}
 	if fn.ExprBody != nil {
 		expr, err := c.compileExpr(fn.ExprBody)
