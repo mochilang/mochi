@@ -11,6 +11,7 @@ The Python backend translates Mochi programs into standard Python source code. I
 - `infer.go` – local type inference used by the code generator
 - `runtime.go` – stringified runtime helpers injected into generated programs
 - `tools.go` – ensures `python3` is available for benchmarks and tests
+- Struct methods defined inside `type` blocks are emitted as Python class methods
 
 ## Runtime Helpers
 
