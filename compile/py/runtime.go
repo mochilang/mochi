@@ -190,6 +190,22 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"        if path is not None:\n" +
 	"            f.close()\n"
 
+var helperSlice = "def _slice(obj, i, j):\n" +
+	"    start = i\n" +
+	"    end = j\n" +
+	"    n = len(obj)\n" +
+	"    if start < 0:\n" +
+	"        start += n\n" +
+	"    if end < 0:\n" +
+	"        end += n\n" +
+	"    if start < 0:\n" +
+	"        start = 0\n" +
+	"    if end > n:\n" +
+	"        end = n\n" +
+	"    if end < start:\n" +
+	"        end = start\n" +
+	"    return obj[start:end]\n"
+
 var helperUnionAll = "def _union_all(a, b):\n" +
 	"    return list(a) + list(b)\n"
 
@@ -341,6 +357,7 @@ var helperMap = map[string]string{
 	"_fetch":      helperFetch,
 	"_load":       helperLoad,
 	"_save":       helperSave,
+	"_slice":      helperSlice,
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,
