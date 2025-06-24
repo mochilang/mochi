@@ -818,6 +818,7 @@ type compiler struct {
 	env     *types.Env
 	funcs   []Function
 	fnIndex map[string]int
+	memo    map[string]Value
 }
 
 type funcCompiler struct {
@@ -837,7 +838,7 @@ type loopContext struct {
 
 // Compile turns an AST into a Program supporting a limited subset of Mochi.
 func Compile(p *parser.Program, env *types.Env) (*Program, error) {
-	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}}
+	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}, memo: map[string]Value{}}
 	c.funcs = append(c.funcs, Function{})
 	for _, st := range p.Statements {
 		if st.Fun != nil {
@@ -962,6 +963,9 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 		fc.vars[s.Let.Name] = reg
 		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
 		fc.tags[reg] = fc.tags[r]
+		if v, ok := fc.evalConstExpr(s.Let.Value); ok {
+			fc.comp.env.SetValue(s.Let.Name, valueToAny(v), false)
+		}
 	case s.Var != nil:
 		r := fc.compileExpr(s.Var.Value)
 		reg := fc.newReg()
@@ -1302,6 +1306,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	}
 
 	if p.Call != nil {
+		if v, ok := fc.foldCall(p.Call); ok {
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
+		}
 		switch p.Call.Func {
 		case "len":
 			arg := fc.compileExpr(p.Call.Args[0])
@@ -1743,4 +1752,135 @@ func valuesEqual(a, b Value) bool {
 	default:
 		return false
 	}
+}
+
+func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {
+	if lit, ok := interpreter.EvalConstExpr(e, fc.comp.env); ok {
+		return literalToValue(lit), true
+	}
+	return constExpr(e)
+}
+
+func (fc *funcCompiler) callKey(call *parser.CallExpr) string {
+	parts := make([]string, len(call.Args)+1)
+	parts[0] = call.Func
+	for i, arg := range call.Args {
+		if lit := extractLiteral(arg); lit != nil {
+			parts[i+1] = literalKey(lit)
+		} else if name, ok := identName(arg); ok {
+			if val, err := fc.comp.env.GetValue(name); err == nil {
+				if l := types.AnyToLiteral(val); l != nil {
+					parts[i+1] = literalKey(l)
+				}
+			}
+		}
+	}
+	return strings.Join(parts, ":")
+}
+
+func (fc *funcCompiler) foldCall(call *parser.CallExpr) (Value, bool) {
+	key := fc.callKey(call)
+	if v, ok := fc.comp.memo[key]; ok {
+		return v, true
+	}
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Call: call}}}}}
+	if lit, ok := interpreter.EvalConstExpr(expr, fc.comp.env); ok {
+		v := literalToValue(lit)
+		fc.comp.memo[key] = v
+		return v, true
+	}
+	return Value{}, false
+}
+
+func literalToValue(l *parser.Literal) Value {
+	switch {
+	case l.Int != nil:
+		return Value{Tag: interpreter.TagInt, Int: *l.Int}
+	case l.Float != nil:
+		return Value{Tag: interpreter.TagFloat, Float: *l.Float}
+	case l.Bool != nil:
+		return Value{Tag: interpreter.TagBool, Bool: bool(*l.Bool)}
+	case l.Str != nil:
+		return Value{Tag: interpreter.TagStr, Str: *l.Str}
+	default:
+		return Value{}
+	}
+}
+
+func literalKey(l *parser.Literal) string {
+	switch {
+	case l.Int != nil:
+		return fmt.Sprintf("i%v", *l.Int)
+	case l.Float != nil:
+		return fmt.Sprintf("f%v", *l.Float)
+	case l.Str != nil:
+		return fmt.Sprintf("s%q", *l.Str)
+	case l.Bool != nil:
+		if *l.Bool {
+			return "btrue"
+		}
+		return "bfalse"
+	default:
+		return "nil"
+	}
+}
+
+func extractLiteral(e *parser.Expr) *parser.Literal {
+	if e == nil {
+		return nil
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	if p.Target != nil {
+		return p.Target.Lit
+	}
+	return nil
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }
