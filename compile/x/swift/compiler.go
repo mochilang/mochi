@@ -443,23 +443,25 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			c.writeln("}")
 			return nil
 		} else {
-			c.writeln(fmt.Sprintf("for %s in %s {", f.Name, src))
-			if lt, ok := srcType.(types.ListType); ok {
-				if c.env != nil {
-					c.env.SetVar(f.Name, lt.Elem, true)
-				}
-				c.locals[f.Name] = lt.Elem
-			} else if mt, ok := srcType.(types.MapType); ok {
+			loopSrc := src
+			if mt, ok := srcType.(types.MapType); ok {
+				loopSrc += ".keys"
 				if c.env != nil {
 					c.env.SetVar(f.Name, mt.Key, true)
 				}
 				c.locals[f.Name] = mt.Key
+			} else if lt, ok := srcType.(types.ListType); ok {
+				if c.env != nil {
+					c.env.SetVar(f.Name, lt.Elem, true)
+				}
+				c.locals[f.Name] = lt.Elem
 			} else {
 				if c.env != nil {
 					c.env.SetVar(f.Name, types.AnyType{}, true)
 				}
 				c.locals[f.Name] = types.AnyType{}
 			}
+			c.writeln(fmt.Sprintf("for %s in %s {", f.Name, loopSrc))
 			c.indent++
 			for _, st := range f.Body {
 				if err := c.compileStmt(st); err != nil {
