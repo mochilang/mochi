@@ -442,25 +442,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else {
 					end = fmt.Sprintf("%s.len()", expr)
 				}
-				simpleStart := idx.Start != nil
-				if simpleStart {
-					_, simpleStart = identName(idx.Start)
-				}
-				simpleEnd := idx.End != nil
-				if simpleEnd {
-					_, simpleEnd = identName(idx.End)
-				}
 				if c.isStringBase(p) {
-					if simpleStart && simpleEnd {
-						expr = fmt.Sprintf("%s[%s as usize..%s as usize].to_string()", expr, start, end)
-					} else if simpleStart {
-						expr = fmt.Sprintf("%s[%s as usize..(%s) as usize].to_string()", expr, start, end)
-					} else if simpleEnd {
-						expr = fmt.Sprintf("%s[(%s) as usize..%s as usize].to_string()", expr, start, end)
-					} else {
-						expr = fmt.Sprintf("%s[(%s) as usize..(%s) as usize].to_string()", expr, start, end)
-					}
+					c.use("_slice_string")
+					expr = fmt.Sprintf("_slice_string(%s, %s, %s)", expr, start, end)
 				} else {
+					simpleStart := idx.Start != nil
+					if simpleStart {
+						_, simpleStart = identName(idx.Start)
+					}
+					simpleEnd := idx.End != nil
+					if simpleEnd {
+						_, simpleEnd = identName(idx.End)
+					}
 					if simpleStart && simpleEnd {
 						expr = fmt.Sprintf("%s[%s as usize..%s as usize].to_vec()", expr, start, end)
 					} else if simpleStart {

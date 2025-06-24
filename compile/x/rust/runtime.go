@@ -11,6 +11,19 @@ const (
 		"    chars[idx as usize].to_string()\n" +
 		"}\n"
 
+	helperSliceString = "fn _slice_string(s: &str, start: i64, end: i64) -> String {\n" +
+		"    let mut sidx = start;\n" +
+		"    let mut eidx = end;\n" +
+		"    let chars: Vec<char> = s.chars().collect();\n" +
+		"    let n = chars.len() as i64;\n" +
+		"    if sidx < 0 { sidx += n; }\n" +
+		"    if eidx < 0 { eidx += n; }\n" +
+		"    if sidx < 0 { sidx = 0; }\n" +
+		"    if eidx > n { eidx = n; }\n" +
+		"    if eidx < sidx { eidx = sidx; }\n" +
+		"    chars[sidx as usize..eidx as usize].iter().collect()\n" +
+		"}\n"
+
 	helperMapGet = "fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {\n" +
 		"    m.get(k).unwrap().clone()\n" +
 		"}\n"
@@ -96,6 +109,7 @@ const (
 
 var helperMap = map[string]string{
 	"_index_string": helperIndexString,
+	"_slice_string": helperSliceString,
 	"_map_get":      helperMapGet,
 	"_count":        helperCount,
 	"_avg":          helperAvg,
