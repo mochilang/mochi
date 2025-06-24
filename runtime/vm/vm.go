@@ -1815,6 +1815,9 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 }
 
 func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
+	if p.Match != nil {
+		return fc.compileMatch(p.Match)
+	}
 	if p.Lit != nil {
 		switch {
 		case p.Lit.Int != nil:
@@ -1964,6 +1967,17 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	if p.Selector != nil {
 		r, ok := fc.vars[p.Selector.Root]
 		if !ok {
+			if len(p.Selector.Tail) == 0 {
+				if st, ok := fc.comp.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
+					key := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: interpreter.TagStr, Str: "__name"}})
+					val := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpConst, A: val, Val: Value{Tag: interpreter.TagStr, Str: st.Name}})
+					dst := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: 1, C: key})
+					return dst
+				}
+			}
 			r = fc.newReg()
 		}
 		if len(p.Selector.Tail) == 0 {
@@ -2249,6 +2263,71 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) error {
 	return nil
 }
 
+func (fc *funcCompiler) compileMatch(m *parser.MatchExpr) int {
+	target := fc.compileExpr(m.Target)
+	dst := fc.newReg()
+	var endJumps []int
+	for _, c := range m.Cases {
+		fc.pushScope()
+		var cond int
+		jmp := -1
+		if !isUnderscoreExpr(c.Pattern) {
+			cond = fc.newReg()
+			if call, ok := callPattern(c.Pattern); ok {
+				nameKey := fc.newReg()
+				fc.emit(c.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: interpreter.TagStr, Str: "__name"}})
+				nameVal := fc.newReg()
+				fc.emit(c.Pos, Instr{Op: OpIndex, A: nameVal, B: target, C: nameKey})
+				want := fc.newReg()
+				fc.emit(c.Pos, Instr{Op: OpConst, A: want, Val: Value{Tag: interpreter.TagStr, Str: call.Func}})
+				fc.emit(c.Pos, Instr{Op: OpEqual, A: cond, B: nameVal, C: want})
+			} else if ident, ok := identName(c.Pattern); ok {
+				nameKey := fc.newReg()
+				fc.emit(c.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: interpreter.TagStr, Str: "__name"}})
+				nameVal := fc.newReg()
+				fc.emit(c.Pos, Instr{Op: OpIndex, A: nameVal, B: target, C: nameKey})
+				want := fc.newReg()
+				fc.emit(c.Pos, Instr{Op: OpConst, A: want, Val: Value{Tag: interpreter.TagStr, Str: ident}})
+				fc.emit(c.Pos, Instr{Op: OpEqual, A: cond, B: nameVal, C: want})
+			} else {
+				pv := fc.compileExpr(c.Pattern)
+				fc.emit(c.Pos, Instr{Op: OpEqual, A: cond, B: target, C: pv})
+			}
+			jmp = len(fc.fn.Code)
+			fc.emit(c.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+		}
+
+		if call, ok := callPattern(c.Pattern); ok {
+			if st, ok := fc.comp.env.GetStruct(call.Func); ok {
+				for idx, arg := range call.Args {
+					if name, ok := identName(arg); ok {
+						key := fc.newReg()
+						fc.emit(c.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: interpreter.TagStr, Str: st.Order[idx]}})
+						val := fc.newReg()
+						fc.emit(c.Pos, Instr{Op: OpIndex, A: val, B: target, C: key})
+						fc.vars[name] = val
+					}
+				}
+			}
+		}
+
+		res := fc.compileExpr(c.Result)
+		fc.emit(c.Pos, Instr{Op: OpMove, A: dst, B: res})
+		fc.popScope()
+		endJumps = append(endJumps, len(fc.fn.Code))
+		fc.emit(c.Pos, Instr{Op: OpJump})
+		if jmp != -1 {
+			fc.fn.Code[jmp].B = len(fc.fn.Code)
+		}
+	}
+	fc.emit(lexer.Position{}, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagNull}})
+	end := len(fc.fn.Code)
+	for _, j := range endJumps {
+		fc.fn.Code[j].A = end
+	}
+	return dst
+}
+
 func constList(l *parser.ListLiteral) (Value, bool) {
 	vals := make([]Value, len(l.Elems))
 	for i, e := range l.Elems {
@@ -2413,6 +2492,21 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
 }
 
 func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
