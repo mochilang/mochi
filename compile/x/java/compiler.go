@@ -418,6 +418,37 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_in"] {
+		c.writeln("")
+		c.writeln("static boolean _in(Object item, Object col) {")
+		c.indent++
+		c.writeln("if (col instanceof String s && item instanceof String sub) return s.contains(sub);")
+		c.writeln("if (col instanceof java.util.Map<?,?> m) return m.containsKey(item);")
+		c.writeln("if (col != null && col.getClass().isArray()) {")
+		c.indent++
+		c.writeln("int n = java.lang.reflect.Array.getLength(col);")
+		c.writeln("for (int i = 0; i < n; i++) {")
+		c.indent++
+		c.writeln("if (java.util.Objects.equals(java.lang.reflect.Array.get(col, i), item)) return true;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (col instanceof Iterable<?> it) {")
+		c.indent++
+		c.writeln("for (Object v : it) {")
+		c.indent++
+		c.writeln("if (java.util.Objects.equals(v, item)) return true;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return false;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_slice"] {
 		c.writeln("")
 		c.writeln("static int[] _slice(int[] arr, int i, int j) {")
