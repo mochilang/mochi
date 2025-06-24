@@ -1,0 +1,23 @@
+:- style_check(-singleton).
+		wrapper(Res) :-
+			catch(
+				(
+		dict_create(_V0, p_pair, [a-1, b-2]),
+		P = _V0
+					,
+					true
+				)
+				, return(_V1),
+					Res = _V1
+				)
+			.
+			wrapper(Res) :-
+			get_dict(b, P, _V2),
+			Res = _V2.
+
+	main :-
+	wrapper(_V3),
+	write(_V3),
+	nl
+	.
+:- initialization(main, main).

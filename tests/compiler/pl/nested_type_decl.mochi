@@ -1,0 +1,10 @@
+fun wrapper(): int {
+  type Pair {
+    a: int
+    b: int
+  }
+  let p = Pair { a: 1, b: 2 }
+  return p.b
+}
+
+print(wrapper())

@@ -203,14 +203,16 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 	case s.Continue != nil:
 		c.writeln("throw(continue)")
 		return nil
-	case s.Expect != nil:
-		return c.compileExpect(s.Expect)
-	case s.If != nil:
-		return c.compileIf(s.If, ret, true)
-	default:
-		return fmt.Errorf("unsupported statement")
-	}
-	return nil
+        case s.Expect != nil:
+                return c.compileExpect(s.Expect)
+        case s.If != nil:
+                return c.compileIf(s.If, ret, true)
+       case s.Type != nil:
+               return c.compileTypeDecl(s.Type)
+        default:
+                return fmt.Errorf("unsupported statement")
+        }
+        return nil
 }
 
 func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
@@ -657,16 +659,25 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 }
 
 func pureFunExpr(e *parser.Expr) *parser.FunExpr {
-	if e == nil || len(e.Binary.Right) != 0 {
-		return nil
-	}
-	u := e.Binary.Left
+        if e == nil || len(e.Binary.Right) != 0 {
+                return nil
+        }
+        u := e.Binary.Left
 	if len(u.Ops) != 0 {
 		return nil
 	}
-	p := u.Value
-	if len(p.Ops) != 0 {
-		return nil
-	}
-	return p.Target.FunExpr
+        p := u.Value
+        if len(p.Ops) != 0 {
+                return nil
+        }
+        return p.Target.FunExpr
+}
+
+// compileTypeDecl currently emits no Prolog code as type information is
+// only used during type checking. Supporting the statement ensures that
+// type definitions inside functions do not cause compile errors.
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+        // Methods are ignored since the Prolog backend has no notion of
+        // attaching functions to structs.
+        return nil
 }
