@@ -534,6 +534,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operators := []string{}
 	posts := []*parser.PostfixExpr{}
 	floats := []bool{}
+	strings := []bool{}
 
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
@@ -541,6 +542,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 	operands = append(operands, left)
 	floats = append(floats, isFloatUnary(c, b.Left))
+	strings = append(strings, isStringUnary(c, b.Left))
 
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
@@ -551,6 +553,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operators = append(operators, op.Op)
 		posts = append(posts, op.Right)
 		floats = append(floats, isFloatPostfix(c, op.Right))
+		strings = append(strings, isStringPostfix(c, op.Right))
 	}
 
 	levels := [][]string{
@@ -595,6 +598,18 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					} else {
 						expr = fmt.Sprintf("(%s.contains(%s))", r, l)
 					}
+				} else if (op == "<" || op == "<=" || op == ">" || op == ">=") && (strings[i] || strings[i+1]) {
+					cmp := fmt.Sprintf("%s.compareTo(%s)", l, r)
+					switch op {
+					case "<":
+						expr = fmt.Sprintf("(%s < 0)", cmp)
+					case "<=":
+						expr = fmt.Sprintf("(%s <= 0)", cmp)
+					case ">":
+						expr = fmt.Sprintf("(%s > 0)", cmp)
+					case ">=":
+						expr = fmt.Sprintf("(%s >= 0)", cmp)
+					}
 				} else if op == "union" {
 					c.use("_union")
 					expr = fmt.Sprintf("_union(%s, %s)", l, r)
@@ -615,6 +630,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				operators = append(operators[:i], operators[i+1:]...)
 				posts = append(posts[:i], posts[i+1:]...)
 				floats = append(floats[:i+1], floats[i+2:]...)
+				strings = append(strings[:i+1], strings[i+2:]...)
 			} else {
 				i++
 			}
@@ -1935,6 +1951,13 @@ func isFloatUnary(c *Compiler, u *parser.Unary) bool {
 		return false
 	}
 	return isFloatPostfix(c, u.Value)
+}
+
+func isStringUnary(c *Compiler, u *parser.Unary) bool {
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	return isStringPostfix(c, u.Value)
 }
 
 func isFloatPostfix(c *Compiler, p *parser.PostfixExpr) bool {
