@@ -60,6 +60,9 @@ case "input":
 }
 ```
 
+Additional helpers `_index_string` and `_slice_string` provide safe string
+indexing and slicing with support for negative offsets.
+
 Helpers also implement `fetch` for HTTP requests and `generate` for text or embedding output using stub functions.
 
 【F:compile/ex/compiler.go†L516-L538】

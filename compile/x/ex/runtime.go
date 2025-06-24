@@ -29,6 +29,10 @@ const (
 
 	helperGenStruct = "defp _gen_struct(mod, prompt, _model, _params) do\n  data = Jason.decode!(prompt)\n  struct(mod, for {k,v} <- data, into: %{}, do: {String.to_atom(k), v})\nend\n"
 
+	helperIndexString = "defp _index_string(s, i) do\n  chars = String.graphemes(s)\n  idx = if i < 0, do: i + length(chars), else: i\n  if idx < 0 or idx >= length(chars), do: raise \"index out of range\"\n  Enum.at(chars, idx)\nend\n"
+
+	helperSliceString = "defp _slice_string(s, i, j) do\n  chars = String.graphemes(s)\n  n = length(chars)\n  start = if i < 0, do: i + n, else: i\n  stop = if j < 0, do: j + n, else: j\n  start = if start < 0, do: 0, else: start\n  stop = if stop > n, do: n, else: stop\n  if stop < start, do: \"\", else: Enum.slice(chars, start, stop - start) |> Enum.join()\nend\n"
+
 	helperUnionAll = "defp _union_all(a, b) do\n  a ++ b\nend\n"
 
 	helperUnion = "defp _union(a, b) do\n  Enum.uniq(a ++ b)\nend\n"
@@ -39,22 +43,24 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_input":       helperInput,
-	"_count":       helperCount,
-	"_avg":         helperAvg,
-	"_group":       helperGroup,
-	"_group_by":    helperGroupBy,
-	"_parse_csv":   helperParseCSV,
-	"_to_csv":      helperToCSV,
-	"_to_map_list": helperToMapList,
-	"_load":        helperLoad,
-	"_save":        helperSave,
-	"_fetch":       helperFetch,
-	"_gen_text":    helperGenText,
-	"_gen_embed":   helperGenEmbed,
-	"_gen_struct":  helperGenStruct,
-	"_union_all":   helperUnionAll,
-	"_union":       helperUnion,
-	"_except":      helperExcept,
-	"_intersect":   helperIntersect,
+	"_input":        helperInput,
+	"_count":        helperCount,
+	"_avg":          helperAvg,
+	"_group":        helperGroup,
+	"_group_by":     helperGroupBy,
+	"_parse_csv":    helperParseCSV,
+	"_to_csv":       helperToCSV,
+	"_to_map_list":  helperToMapList,
+	"_load":         helperLoad,
+	"_save":         helperSave,
+	"_fetch":        helperFetch,
+	"_gen_text":     helperGenText,
+	"_gen_embed":    helperGenEmbed,
+	"_gen_struct":   helperGenStruct,
+	"_index_string": helperIndexString,
+	"_slice_string": helperSliceString,
+	"_union_all":    helperUnionAll,
+	"_union":        helperUnion,
+	"_except":       helperExcept,
+	"_intersect":    helperIntersect,
 }
