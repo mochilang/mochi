@@ -1165,7 +1165,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if isStringPrimary(p.Target, c.env) {
-					expr = fmt.Sprintf("%s.substring(%s, %s + 1)", expr, idx, idx)
+					c.use("_indexString")
+					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 				} else {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
@@ -1188,7 +1189,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				end = e
 			}
 			if isStringPrimary(p.Target, c.env) {
-				expr = fmt.Sprintf("%s.substring(%s, %s)", expr, start, end)
+				c.use("_sliceString")
+				expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
 			} else {
 				expr = fmt.Sprintf("%s.subList(%s, %s)", expr, start, end)
 			}

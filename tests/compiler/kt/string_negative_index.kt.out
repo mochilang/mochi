@@ -1,0 +1,13 @@
+fun main() {
+        val text = "hello"
+        println(_indexString(text, -1))
+}
+
+fun _indexString(s: String, i: Int): String {
+    var idx = i
+    val arr = s.toCharArray()
+    if (idx < 0) idx += arr.size
+    if (idx < 0 || idx >= arr.size) throw RuntimeException("index out of range")
+    return arr[idx].toString()
+}
+
