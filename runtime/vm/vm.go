@@ -207,20 +207,20 @@ type Instr struct {
 }
 
 type Function struct {
-        Code    []Instr
-        NumRegs int
-        NumParams int
-        Name    string
-        Line    int // source line of function definition
+	Code      []Instr
+	NumRegs   int
+	NumParams int
+	Name      string
+	Line      int // source line of function definition
 }
 
 type Program struct {
-        Funcs []Function
+	Funcs []Function
 }
 
 type closure struct {
-        fn   int
-        args []Value
+	fn   int
+	args []Value
 }
 
 func (p *Program) funcName(idx int) string {
@@ -446,15 +446,15 @@ type frame struct {
 }
 
 func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) {
-        fn := &m.prog.Funcs[fnIndex]
-        if len(args) < fn.NumParams {
-                cl := &closure{fn: fnIndex, args: append([]Value(nil), args...)}
-                return Value{Tag: interpreter.TagFunc, Func: cl}, nil
-        }
-        if len(args) > fn.NumParams {
-                return Value{}, m.newError(fmt.Errorf("too many args"), trace, fn.Line)
-        }
-        f := &frame{fn: fn, regs: make([]Value, fn.NumRegs)}
+	fn := &m.prog.Funcs[fnIndex]
+	if len(args) < fn.NumParams {
+		cl := &closure{fn: fnIndex, args: append([]Value(nil), args...)}
+		return Value{Tag: interpreter.TagFunc, Func: cl}, nil
+	}
+	if len(args) > fn.NumParams {
+		return Value{}, m.newError(fmt.Errorf("too many args"), trace, fn.Line)
+	}
+	f := &frame{fn: fn, regs: make([]Value, fn.NumRegs)}
 	for i := 0; i < len(args) && i < len(f.regs); i++ {
 		f.regs[i] = args[i]
 	}
@@ -771,6 +771,21 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
+			if fr.ip < len(fr.fn.Code) {
+				next := fr.fn.Code[fr.ip]
+				if next.Op == OpReturn && next.A == ins.A {
+					fn := &m.prog.Funcs[ins.B]
+					if fn.NumParams == 2 {
+						fr.fn = fn
+						fr.regs = make([]Value, fn.NumRegs)
+						fr.regs[0] = a
+						fr.regs[1] = b
+						fr.ip = 0
+						trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}
+						continue
+					}
+				}
+			}
 			res, err := m.call(ins.B, []Value{a, b}, append(trace, StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}))
 			if err != nil {
 				if vmErr, ok := err.(*VMError); ok {
@@ -784,6 +799,20 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpCall:
 			args := make([]Value, ins.C)
 			copy(args, fr.regs[ins.D:ins.D+ins.C])
+			if fr.ip < len(fr.fn.Code) {
+				next := fr.fn.Code[fr.ip]
+				if next.Op == OpReturn && next.A == ins.A {
+					fn := &m.prog.Funcs[ins.B]
+					if fn.NumParams == len(args) {
+						fr.fn = fn
+						fr.regs = make([]Value, fn.NumRegs)
+						copy(fr.regs, args)
+						fr.ip = 0
+						trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}
+						continue
+					}
+				}
+			}
 			res, err := m.call(ins.B, args, append(trace, StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}))
 			if err != nil {
 				if vmErr, ok := err.(*VMError); ok {
@@ -794,36 +823,60 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, err
 			}
 			fr.regs[ins.A] = res
-                case OpCallV:
-                        fnVal := fr.regs[ins.B]
-                        args := make([]Value, ins.C)
-                        copy(args, fr.regs[ins.D:ins.D+ins.C])
-                        if fnVal.Tag == interpreter.TagFunc {
-                                cl := fnVal.Func.(*closure)
-                                all := append(append([]Value{}, cl.args...), args...)
-                                res, err := m.call(cl.fn, all, append(trace, StackFrame{Func: m.prog.funcName(cl.fn), Line: ins.Line}))
-                                if err != nil {
-                                        if vmErr, ok := err.(*VMError); ok {
-                                                if len(vmErr.Stack) >= 2 {
-                                                        vmErr.Stack[len(vmErr.Stack)-2].Line = ins.Line
-                                                }
-                                        }
-                                        return Value{}, err
-                                }
-                                fr.regs[ins.A] = res
-                                break
-                        }
-                        fnIdx := fnVal.Int
-                        res, err := m.call(fnIdx, args, append(trace, StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}))
-                        if err != nil {
-                                if vmErr, ok := err.(*VMError); ok {
-                                        if len(vmErr.Stack) >= 2 {
-                                                vmErr.Stack[len(vmErr.Stack)-2].Line = ins.Line
-                                        }
-                                }
-                                return Value{}, err
-                        }
-                        fr.regs[ins.A] = res
+		case OpCallV:
+			fnVal := fr.regs[ins.B]
+			args := make([]Value, ins.C)
+			copy(args, fr.regs[ins.D:ins.D+ins.C])
+			if fr.ip < len(fr.fn.Code) {
+				next := fr.fn.Code[fr.ip]
+				if next.Op == OpReturn && next.A == ins.A {
+					var fnIdx int
+					var all []Value
+					if fnVal.Tag == interpreter.TagFunc {
+						cl := fnVal.Func.(*closure)
+						fnIdx = cl.fn
+						all = append(append([]Value{}, cl.args...), args...)
+					} else {
+						fnIdx = fnVal.Int
+						all = args
+					}
+					fn := &m.prog.Funcs[fnIdx]
+					if len(all) == fn.NumParams {
+						fr.fn = fn
+						fr.regs = make([]Value, fn.NumRegs)
+						copy(fr.regs, all)
+						fr.ip = 0
+						trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}
+						continue
+					}
+				}
+			}
+			if fnVal.Tag == interpreter.TagFunc {
+				cl := fnVal.Func.(*closure)
+				all := append(append([]Value{}, cl.args...), args...)
+				res, err := m.call(cl.fn, all, append(trace, StackFrame{Func: m.prog.funcName(cl.fn), Line: ins.Line}))
+				if err != nil {
+					if vmErr, ok := err.(*VMError); ok {
+						if len(vmErr.Stack) >= 2 {
+							vmErr.Stack[len(vmErr.Stack)-2].Line = ins.Line
+						}
+					}
+					return Value{}, err
+				}
+				fr.regs[ins.A] = res
+				break
+			}
+			fnIdx := fnVal.Int
+			res, err := m.call(fnIdx, args, append(trace, StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}))
+			if err != nil {
+				if vmErr, ok := err.(*VMError); ok {
+					if len(vmErr.Stack) >= 2 {
+						vmErr.Stack[len(vmErr.Stack)-2].Line = ins.Line
+					}
+				}
+				return Value{}, err
+			}
+			fr.regs[ins.A] = res
 		case OpNot:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: !fr.regs[ins.B].Truthy()}
 		case OpReturn:
@@ -882,15 +935,15 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) Function {
-        fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
-        fc.fn.Name = fn.Name
-        fc.fn.Line = fn.Pos.Line
-        fc.fn.NumParams = len(fn.Params)
-        for i, p := range fn.Params {
-                fc.vars[p.Name] = i
-                if i >= fc.fn.NumRegs {
-                        fc.fn.NumRegs = i + 1
-                }
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
+	fc.fn.Name = fn.Name
+	fc.fn.Line = fn.Pos.Line
+	fc.fn.NumParams = len(fn.Params)
+	for i, p := range fn.Params {
+		fc.vars[p.Name] = i
+		if i >= fc.fn.NumRegs {
+			fc.fn.NumRegs = i + 1
+		}
 	}
 	fc.idx = len(fn.Params)
 	for _, st := range fn.Body {
@@ -901,14 +954,14 @@ func (c *compiler) compileFun(fn *parser.FunStmt) Function {
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
-        fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
-        fc.fn.Line = fn.Pos.Line
-        fc.fn.NumParams = len(fn.Params)
-        for i, p := range fn.Params {
-                fc.vars[p.Name] = i
-                if i >= fc.fn.NumRegs {
-                        fc.fn.NumRegs = i + 1
-                }
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
+	fc.fn.Line = fn.Pos.Line
+	fc.fn.NumParams = len(fn.Params)
+	for i, p := range fn.Params {
+		fc.vars[p.Name] = i
+		if i >= fc.fn.NumRegs {
+			fc.fn.NumRegs = i + 1
+		}
 	}
 	fc.idx = len(fn.Params)
 	if fn.ExprBody != nil {
@@ -926,14 +979,14 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
 }
 
 func (c *compiler) compileMain(p *parser.Program) Function {
-        fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
-        fc.fn.Name = "main"
-        fc.fn.Line = 0
-        fc.fn.NumParams = 0
-        for _, st := range p.Statements {
-                if st.Fun != nil {
-                        continue
-                }
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
+	fc.fn.Name = "main"
+	fc.fn.Line = 0
+	fc.fn.NumParams = 0
+	for _, st := range p.Statements {
+		if st.Fun != nil {
+			continue
+		}
 		fc.compileStmt(st)
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
