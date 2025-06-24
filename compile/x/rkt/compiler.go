@@ -1156,8 +1156,29 @@ func (c *Compiler) compileStructExpr(s *parser.StructLiteral) (string, error) {
 
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (string, error) {
 	base := sanitizeName(sel.Root)
+	var typ types.Type = types.AnyType{}
+	if c.env != nil {
+		if t, err := c.env.GetVar(sel.Root); err == nil {
+			typ = t
+		}
+	}
 	for _, field := range sel.Tail {
-		base = fmt.Sprintf("(hash-ref %s %q)", base, sanitizeName(field))
+		fname := sanitizeName(field)
+		if st, ok := typ.(types.StructType); ok {
+			base = fmt.Sprintf("(%s-%s %s)", sanitizeName(st.Name), fname, base)
+			if ft, ok := st.Fields[field]; ok {
+				typ = ft
+			} else {
+				typ = types.AnyType{}
+			}
+		} else {
+			base = fmt.Sprintf("(hash-ref %s %q)", base, fname)
+			if mt, ok := typ.(types.MapType); ok {
+				typ = mt.Value
+			} else {
+				typ = types.AnyType{}
+			}
+		}
 	}
 	return base, nil
 }

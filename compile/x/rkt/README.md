@@ -38,7 +38,7 @@ go test ./compile/rkt -tags slow
 - Slice assignments, including multi-dimensional slices like `xs[0:1][1:2] = sub`
 - Negative indexing and slicing for strings and lists
 - Dataset queries with `sort`, `skip` and `take`
-- Simple `struct` type declarations
+- Struct type declarations and field accessors
 - Iteration over map keys
 
 ## Unsupported Features

@@ -1,4 +1,10 @@
 # 📦 CHANGELOG.md
+## [0.9.6] – 2025-06-26
+
+### Added
+
+* Struct field accessors in the Racket backend
+
 ## [0.9.5] – 2025-06-25
 
 ### Added
