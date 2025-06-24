@@ -1,0 +1,17 @@
+func main (regs=10)
+  // var matrix = [[1,2],[3,4]]
+  Const        r0, [[1, 2], [3, 4]]
+  Move         r1, r0
+  // matrix[1][0] = 5
+  Const        r2, 1
+  Index        r3, r1, r2
+  Const        r4, 0
+  Const        r5, 5
+  SetIndex     r3, r4, r5
+  // print(matrix[1][0])
+  Const        r6, 1
+  Index        r7, r1, r6
+  Const        r8, 0
+  Index        r9, r7, r8
+  Print        r9
+  Return       r0
