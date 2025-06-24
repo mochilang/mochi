@@ -1095,7 +1095,7 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 				return Int64Type{}, nil
 			}
 			return IntType{}, nil
-		case op == "+" && unify(left, StringType{}, nil) && unify(right, StringType{}, nil):
+		case op == "+" && (unify(left, StringType{}, nil) || unify(right, StringType{}, nil)):
 			return StringType{}, nil
 		default:
 			return nil, errOperatorMismatch(pos, op, left, right)

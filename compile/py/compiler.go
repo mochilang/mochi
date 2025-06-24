@@ -354,12 +354,26 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				c.use("_" + op)
 				expr = fmt.Sprintf("_%s(%s, %s)", op, lExpr, rExpr)
 				t = types.ListType{Elem: types.AnyType{}}
+			case "+":
+				if isString(lType) || isString(rType) {
+					if !isString(lType) {
+						lExpr = fmt.Sprintf("str(%s)", lExpr)
+					}
+					if !isString(rType) {
+						rExpr = fmt.Sprintf("str(%s)", rExpr)
+					}
+					expr = fmt.Sprintf("(%s + %s)", lExpr, rExpr)
+					t = types.StringType{}
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", lExpr, rExpr)
+					t = lType
+				}
 			default:
 				expr = fmt.Sprintf("(%s %s %s)", lExpr, pyOp, rExpr)
 				switch op {
 				case "==", "!=", "<", "<=", ">", ">=", "in", "&&", "||":
 					t = types.BoolType{}
-				case "+", "-", "*", "%":
+				case "-", "*", "%":
 					t = lType
 				}
 			}
