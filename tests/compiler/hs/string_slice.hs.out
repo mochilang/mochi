@@ -1,6 +1,8 @@
-package hscode
+module Main where
 
-const runtime = `
+import Data.Maybe (fromMaybe)
+
+
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
 forLoop start end f = go start
   where
@@ -84,9 +86,7 @@ _save rows path _ =
       toLine m = intercalate "," [Map.findWithDefault "" h m | h <- headers]
       text = unlines (if null headers then [] else intercalate "," headers : map toLine rows)
   in _writeOutput path text
-`
 
-const sliceHelpers = `
 _slice :: [a] -> Int -> Int -> [a]
 _slice xs i j =
   let n = length xs
@@ -106,4 +106,8 @@ _sliceString s i j =
       end = min n end0
       end' = if end < start then start else end
   in take (end' - start) (drop start s)
-`
+
+
+main :: IO ()
+main = do
+    putStrLn (_sliceString "hello" 1 4)

@@ -12,15 +12,17 @@ import (
 
 // Compiler translates Mochi AST to Haskell source code for a limited subset.
 type Compiler struct {
-	buf      bytes.Buffer
-	indent   int
-	env      *types.Env
-	usesMap  bool
-	usesList bool
-	usesTime bool
-	usesJSON bool
-	usesLoad bool
-	usesSave bool
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	usesMap      bool
+	usesList     bool
+	usesTime     bool
+	usesJSON     bool
+	usesLoad     bool
+	usesSave     bool
+	usesSlice    bool
+	usesSliceStr bool
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -72,6 +74,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesJSON = false
 	c.usesLoad = false
 	c.usesSave = false
+	c.usesSlice = false
+	c.usesSliceStr = false
 
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -120,6 +124,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	header.WriteString("\n")
 	header.WriteString(runtime)
+	if c.usesSlice || c.usesSliceStr {
+		header.WriteString(sliceHelpers)
+	}
 	header.WriteString("\n\n")
 
 	code := append(header.Bytes(), c.buf.Bytes()...)
@@ -573,17 +580,43 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			expr = fmt.Sprintf("%s %s", expr, strings.Join(args, " "))
 		} else if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			if c.isMapExpr(p.Target) {
-				c.usesMap = true
-				expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", idx, expr)
-			} else if c.isStringExpr(p.Target) {
-				expr = fmt.Sprintf("_indexString %s %s", expr, idx)
+			if op.Index.Colon != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := fmt.Sprintf("length %s", expr)
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				if c.isStringExpr(p.Target) {
+					c.usesSliceStr = true
+					expr = fmt.Sprintf("_sliceString %s %s %s", expr, start, end)
+				} else {
+					c.usesSlice = true
+					expr = fmt.Sprintf("_slice %s %s %s", expr, start, end)
+				}
 			} else {
-				expr = fmt.Sprintf("(%s !! %s)", expr, idx)
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				if c.isMapExpr(p.Target) {
+					c.usesMap = true
+					expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", idx, expr)
+				} else if c.isStringExpr(p.Target) {
+					expr = fmt.Sprintf("_indexString %s %s", expr, idx)
+				} else {
+					expr = fmt.Sprintf("(%s !! %s)", expr, idx)
+				}
 			}
 		}
 	}
