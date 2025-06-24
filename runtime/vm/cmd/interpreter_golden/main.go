@@ -41,7 +41,7 @@ func run(src string) error {
         if len(lines) > 10 {
             msg = strings.Join(lines[:10], "\n") + "\n..."
         }
-        return fmt.Errorf(msg)
+        return fmt.Errorf("%s", msg)
     }
     want, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".out")
     if err != nil {
