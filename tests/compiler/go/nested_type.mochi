@@ -1,0 +1,9 @@
+ type Outer {
+   type Inner {
+     z: int
+   }
+   inner: Inner
+ }
+
+ let o = Outer { inner: Inner { z: 5 } }
+ print(o.inner.z)

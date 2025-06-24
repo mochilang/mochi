@@ -1,0 +1,18 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Outer struct {
+	Inner Inner `json:"inner"`
+}
+type Inner struct {
+	Z int `json:"z"`
+}
+
+func main() {
+	var o Outer = Outer{Inner: Inner{Z: 5}}
+	_ = o
+	fmt.Println(o.Inner.Z)
+}
