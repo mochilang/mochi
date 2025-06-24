@@ -142,6 +142,20 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 				t = types.AnyType{}
 			}
 		} else if op.Call != nil {
+			if sel := p.Target.Selector; sel != nil && len(op.Call.Args) == 0 && len(sel.Tail) > 0 {
+				last := sel.Tail[len(sel.Tail)-1]
+				base := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}}
+				baseType := c.inferPrimaryType(base)
+				if mt, ok := baseType.(types.MapType); ok {
+					if last == "keys" {
+						t = types.ListType{Elem: mt.Key}
+						continue
+					} else if last == "values" {
+						t = types.ListType{Elem: mt.Value}
+						continue
+					}
+				}
+			}
 			if ft, ok := t.(types.FuncType); ok {
 				t = ft.Return
 			} else {

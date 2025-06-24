@@ -359,6 +359,16 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	env.SetVar("keys", FuncType{
+		Params: []Type{MapType{Key: AnyType{}, Value: AnyType{}}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
+	env.SetVar("values", FuncType{
+		Params: []Type{MapType{Key: AnyType{}, Value: AnyType{}}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
 	env.SetVar("range", FuncType{
 		Params:   []Type{IntType{}},
 		Return:   ListType{Elem: IntType{}},
@@ -1244,6 +1254,23 @@ func checkPostfix(p *parser.PostfixExpr, env *Env, expected Type) (Type, error) 
 				return nil, errNotIndexable(p.Target.Pos, typ)
 			}
 		} else if call := op.Call; call != nil {
+			if sel := p.Target.Selector; sel != nil && len(call.Args) == 0 && len(sel.Tail) > 0 {
+				last := sel.Tail[len(sel.Tail)-1]
+				base := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}}
+				baseType, err := checkPrimary(base, env, AnyType{})
+				if err != nil {
+					return nil, err
+				}
+				if mt, ok := baseType.(MapType); ok {
+					if last == "keys" {
+						typ = ListType{Elem: mt.Key}
+						continue
+					} else if last == "values" {
+						typ = ListType{Elem: mt.Value}
+						continue
+					}
+				}
+			}
 			ft, ok := typ.(FuncType)
 			if !ok {
 				if _, isAny := typ.(AnyType); isAny {
@@ -1997,6 +2024,8 @@ var builtinArity = map[string]int{
 	"reduce": 3,
 	"append": 2,
 	"push":   2,
+	"keys":   1,
+	"values": 1,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
@@ -2026,6 +2055,17 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		default:
 			return errLenOperand(pos, args[0])
 		}
+	case "keys", "values":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		if _, ok := args[0].(MapType); ok {
+			return nil
+		}
+		if _, ok := args[0].(AnyType); ok {
+			return nil
+		}
+		return fmt.Errorf("%s() expects map", name)
 	case "count":
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))

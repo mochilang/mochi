@@ -1,0 +1,34 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func main() {
+	var m map[string]int = map[string]int{"a": 1, "b": 2}
+	_ = m
+	for _, k := range _mapKeys(m) {
+		fmt.Println(k)
+	}
+	for _, v := range _mapValues(m) {
+		fmt.Println(v)
+	}
+}
+
+func _mapKeys[K comparable, V any](m map[K]V) []K {
+	keys := make([]K, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool { return fmt.Sprint(keys[i]) < fmt.Sprint(keys[j]) })
+	return keys
+}
+
+func _mapValues[K comparable, V any](m map[K]V) []V {
+	values := make([]V, 0, len(m))
+	for _, v := range m {
+		values = append(values, v)
+	}
+	return values
+}

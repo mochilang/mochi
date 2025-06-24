@@ -209,6 +209,19 @@ const (
 		"    return out\n" +
 		"}\n"
 
+	helperMapKeys = "func _mapKeys[K comparable, V any](m map[K]V) []K {\n" +
+		"    keys := make([]K, 0, len(m))\n" +
+		"    for k := range m { keys = append(keys, k) }\n" +
+		"    sort.Slice(keys, func(i, j int) bool { return fmt.Sprint(keys[i]) < fmt.Sprint(keys[j]) })\n" +
+		"    return keys\n" +
+		"}\n"
+
+	helperMapValues = "func _mapValues[K comparable, V any](m map[K]V) []V {\n" +
+		"    values := make([]V, 0, len(m))\n" +
+		"    for _, v := range m { values = append(values, v) }\n" +
+		"    return values\n" +
+		"}\n"
+
 	helperCast = "func _cast[T any](v any) T {\n" +
 		"    if tv, ok := v.(T); ok { return tv }\n" +
 		"    var out T\n" +
@@ -441,6 +454,8 @@ var helperMap = map[string]string{
 	"_toAnyMap":      helperToAnyMap,
 	"_toAnySlice":    helperToAnySlice,
 	"_convSlice":     helperConvSlice,
+	"_mapKeys":       helperMapKeys,
+	"_mapValues":     helperMapValues,
 	"_cast":          helperCast,
 	"_convertMapAny": helperConvertMapAny,
 	"_equal":         helperEqual,
@@ -452,10 +467,14 @@ var helperMap = map[string]string{
 
 func (c *Compiler) use(name string) {
 	c.helpers[name] = true
-	if name == "_cast" {
+	switch name {
+	case "_cast":
 		c.imports["encoding/json"] = true
 		c.imports["fmt"] = true
 		c.helpers["_convertMapAny"] = true
+	case "_mapKeys", "_mapValues":
+		c.imports["sort"] = true
+		c.imports["fmt"] = true
 	}
 }
 

@@ -1512,6 +1512,30 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	for _, op := range p.Ops {
 		switch {
 		case op.Call != nil:
+			// map.keys() and map.values() helpers
+			if sel := p.Target.Selector; sel != nil && len(op.Call.Args) == 0 && len(sel.Tail) > 0 {
+				last := sel.Tail[len(sel.Tail)-1]
+				if last == "keys" || last == "values" {
+					baseSel := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}}
+					baseVal, err := c.compilePrimary(baseSel)
+					if err != nil {
+						return "", err
+					}
+					baseType := c.inferPrimaryType(baseSel)
+					if mt, ok := baseType.(types.MapType); ok {
+						if last == "keys" {
+							c.use("_mapKeys")
+							val = fmt.Sprintf("_mapKeys(%s)", baseVal)
+							typ = types.ListType{Elem: mt.Key}
+						} else {
+							c.use("_mapValues")
+							val = fmt.Sprintf("_mapValues(%s)", baseVal)
+							typ = types.ListType{Elem: mt.Value}
+						}
+						continue
+					}
+				}
+			}
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
 				v, err := c.compileExpr(a)
