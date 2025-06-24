@@ -1,0 +1,11 @@
+open System
+
+type Person =
+    {
+        name: string;
+        age: int
+    }
+
+let p = { name = "Alice"; age = 30 }
+ignore (printfn "%A" (p.name))
+ignore (printfn "%A" (p.age))

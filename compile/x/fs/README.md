@@ -127,7 +127,7 @@ Mochi features are not yet available.
 * Built-in helpers: `len`, `count`, `avg`, `now`, `print`, `input`, `json`, `to_json`, `load`, `save`, `fetch`, `eval`, `_genText`, `_genEmbed`, `_genStruct`
 * Dataset helpers `_load` and `_save` support CSV, TSV, JSON and JSONL formats
 * Record and union type declarations
-* Methods declared inside `type` blocks
+* Struct literals and simple `type` blocks with methods
 * Package imports using `import` and exported functions via `export fun`
 * Extern variable and function declarations
 * Extern type aliases
