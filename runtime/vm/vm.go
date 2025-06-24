@@ -69,6 +69,7 @@ const (
 	OpInput
 	OpCount
 	OpAvg
+	OpIterPrep
 
 	// Specialized numeric ops
 	OpAddInt
@@ -159,6 +160,8 @@ func (op Op) String() string {
 		return "Count"
 	case OpAvg:
 		return "Avg"
+	case OpIterPrep:
+		return "IterPrep"
 	case OpAddInt:
 		return "AddInt"
 	case OpAddFloat:
@@ -334,6 +337,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpInput:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
+			case OpIterPrep:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpCount:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpAvg:
@@ -748,6 +753,32 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			line = strings.TrimRight(line, "\r\n")
 			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: line}
+		case OpIterPrep:
+			src := fr.regs[ins.B]
+			switch src.Tag {
+			case interpreter.TagList:
+				fr.regs[ins.A] = src
+			case interpreter.TagMap:
+				ks := make([]string, 0, len(src.Map))
+				for k := range src.Map {
+					ks = append(ks, k)
+				}
+				sort.Strings(ks)
+				keys := make([]Value, len(ks))
+				for i, k := range ks {
+					keys[i] = Value{Tag: interpreter.TagStr, Str: k}
+				}
+				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: keys}
+			case interpreter.TagStr:
+				r := []rune(src.Str)
+				lst := make([]Value, len(r))
+				for i, ch := range r {
+					lst[i] = Value{Tag: interpreter.TagStr, Str: string(ch)}
+				}
+				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: lst}
+			default:
+				return Value{}, m.newError(fmt.Errorf("invalid iterator"), trace, ins.Line)
+			}
 		case OpCount:
 			lst := fr.regs[ins.B]
 			if lst.Tag != interpreter.TagList {
@@ -1520,7 +1551,9 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) {
 		}
 		fc.loops = fc.loops[:len(fc.loops)-1]
 	} else {
-		list := fc.compileExpr(f.Source)
+		src := fc.compileExpr(f.Source)
+		list := fc.newReg()
+		fc.emit(f.Pos, Instr{Op: OpIterPrep, A: list, B: src})
 		length := fc.newReg()
 		fc.emit(f.Pos, Instr{Op: OpLen, A: length, B: list})
 		idx := fc.newReg()

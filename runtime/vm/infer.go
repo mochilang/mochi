@@ -132,6 +132,8 @@ func applyTags(tags []RegTag, ins Instr) {
 		// no result
 	case OpInput, OpMakeList, OpIndex, OpSetIndex, OpCall, OpCall2, OpCallV:
 		tags[ins.A] = TagUnknown
+	case OpIterPrep:
+		tags[ins.A] = TagUnknown
 	case OpCount:
 		tags[ins.A] = TagInt
 	case OpAvg:
