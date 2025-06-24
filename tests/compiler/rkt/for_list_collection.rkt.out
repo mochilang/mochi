@@ -20,7 +20,7 @@
              [start (max 0 start)]
              [end (min n end)]
              [end (if (< end start) start end)])
-        (take (drop x start) (- end start))))
+        (take (drop x start) (- end start)))))
 (define (count x)
   (cond [(string? x) (string-length x)]
         [(hash? x) (hash-count x)]
@@ -34,3 +34,4 @@
 (for ([n (list 1 2 3)])
 	(displayln n)
 )
+

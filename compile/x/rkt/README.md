@@ -39,6 +39,7 @@ go test ./compile/rkt -tags slow
 - Negative indexing and slicing for strings and lists
 - Dataset queries with `sort`, `skip` and `take`
 - Simple `struct` type declarations
+- Iteration over map keys
 
 ## Unsupported Features
 
@@ -54,5 +55,4 @@ go test ./compile/rkt -tags slow
 - Methods defined inside `type` blocks
 - Extern declarations (`extern var`, `extern fun`, `extern type`, `extern object`)
 - Destructuring bindings in `let` and `var` statements
-- Iteration over map key/value pairs
 - Built-in functions `now` and `json`

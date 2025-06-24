@@ -199,7 +199,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("             [start (max 0 start)]")
 	c.writeln("             [end (min n end)]")
 	c.writeln("             [end (if (< end start) start end)])")
-	c.writeln("        (take (drop x start) (- end start))))")
+	// Close the slice helper with an extra paren to finish the define
+	c.writeln("        (take (drop x start) (- end start)))))")
 	c.writeln("(define (count x)")
 	c.writeln("  (cond [(string? x) (string-length x)]")
 	c.writeln("        [(hash? x) (hash-count x)]")
@@ -556,7 +557,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("(for ([%s %s])", name, src))
+			c.writeln(fmt.Sprintf("(for ([%s (if (hash? %s) (hash-keys %s) %s)])", name, src, src, src))
 		}
 		c.indent++
 		for _, st := range f.Body {
@@ -610,7 +611,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln("(let " + loop + " ([it " + src + "])")
+		c.writeln("(let " + loop + " ([it (if (hash? " + src + ") (hash-keys " + src + ") " + src + ")])")
 		c.indent++
 		c.writeln("(when (pair? it)")
 		c.indent++

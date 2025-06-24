@@ -20,7 +20,7 @@
              [start (max 0 start)]
              [end (min n end)]
              [end (if (< end start) start end)])
-        (take (drop x start) (- end start))))
+        (take (drop x start) (- end start)))))
 (define (count x)
   (cond [(string? x) (string-length x)]
         [(hash? x) (hash-count x)]
@@ -34,3 +34,4 @@
 (define xs (list (list 1 2 3) (list 4 5 6)))
 (set! xs (if (string? xs) (string-append (substring xs 0 0) (if (hash? (slice xs 0 1)) (hash-set (slice xs 0 1) 0 (if (string? (idx (slice xs 0 1) 0)) (string-append (substring (idx (slice xs 0 1) 0) 0 1) (list 8) (substring (idx (slice xs 0 1) 0) 2 (string-length (idx (slice xs 0 1) 0)))) (append (take (idx (slice xs 0 1) 0) 1) (list 8) (drop (idx (slice xs 0 1) 0) 2)))) (list-set (slice xs 0 1) 0 (if (string? (idx (slice xs 0 1) 0)) (string-append (substring (idx (slice xs 0 1) 0) 0 1) (list 8) (substring (idx (slice xs 0 1) 0) 2 (string-length (idx (slice xs 0 1) 0)))) (append (take (idx (slice xs 0 1) 0) 1) (list 8) (drop (idx (slice xs 0 1) 0) 2))))) (substring xs 1 (string-length xs))) (append (take xs 0) (if (hash? (slice xs 0 1)) (hash-set (slice xs 0 1) 0 (if (string? (idx (slice xs 0 1) 0)) (string-append (substring (idx (slice xs 0 1) 0) 0 1) (list 8) (substring (idx (slice xs 0 1) 0) 2 (string-length (idx (slice xs 0 1) 0)))) (append (take (idx (slice xs 0 1) 0) 1) (list 8) (drop (idx (slice xs 0 1) 0) 2)))) (list-set (slice xs 0 1) 0 (if (string? (idx (slice xs 0 1) 0)) (string-append (substring (idx (slice xs 0 1) 0) 0 1) (list 8) (substring (idx (slice xs 0 1) 0) 2 (string-length (idx (slice xs 0 1) 0)))) (append (take (idx (slice xs 0 1) 0) 1) (list 8) (drop (idx (slice xs 0 1) 0) 2))))) (drop xs 1))))
 (displayln (idx (idx xs 0) 1))
+
