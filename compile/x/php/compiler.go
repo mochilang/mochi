@@ -21,11 +21,13 @@ type Compiler struct {
 	locals       map[string]bool
 	funcs        map[string]bool
 	methodFields map[string]bool
+	structs      map[string]bool
+	typeNames    map[string]bool
 }
 
 // New creates a new PHP compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, locals: map[string]bool{}, funcs: map[string]bool{}, methodFields: nil}
+	return &Compiler{env: env, locals: map[string]bool{}, funcs: map[string]bool{}, methodFields: nil, structs: map[string]bool{}, typeNames: map[string]bool{}}
 }
 
 // Compile generates PHP code for prog.
@@ -34,9 +36,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("<?php")
 
 	c.funcs = map[string]bool{}
+	c.structs = map[string]bool{}
+	c.typeNames = map[string]bool{}
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			c.funcs[s.Fun.Name] = true
+		}
+		if s.Type != nil {
+			c.typeNames[s.Type.Name] = true
 		}
 	}
 
@@ -377,6 +384,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	name := sanitizeName(t.Name)
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
 	c.writeln(fmt.Sprintf("class %s {", name))
 	c.indent++
 	fields := []string{}
@@ -403,6 +414,13 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("}")
+	if st, ok := c.env.GetStruct(t.Name); ok {
+		for _, ft := range st.Fields {
+			if sub, ok := ft.(types.StructType); ok && !c.typeNames[sub.Name] {
+				c.compileStructType(sub)
+			}
+		}
+	}
 	return nil
 }
 
@@ -723,6 +741,11 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	if st, ok := c.env.GetStruct(s.Name); ok {
+		if !c.typeNames[st.Name] {
+			c.compileStructType(st)
+		}
+	}
 	items := make([]string, len(s.Fields))
 	for i, f := range s.Fields {
 		v, err := c.compileExpr(f.Value)
@@ -732,6 +755,39 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 		items[i] = fmt.Sprintf("'%s' => %s", f.Name, v)
 	}
 	return fmt.Sprintf("new %s([%s])", sanitizeName(s.Name), strings.Join(items, ", ")), nil
+}
+
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	if c.typeNames[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("class %s {", name))
+	c.indent++
+	fields := make([]string, len(st.Order))
+	for i, fn := range st.Order {
+		fields[i] = fn
+		c.writeln(fmt.Sprintf("public $%s;", sanitizeName(fn)))
+	}
+	c.writeln("public function __construct($fields = []) {")
+	c.indent++
+	for _, f := range fields {
+		c.writeln(fmt.Sprintf("$this->%s = $fields['%s'] ?? null;", sanitizeName(f), f))
+	}
+	c.indent--
+	c.writeln("}")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
