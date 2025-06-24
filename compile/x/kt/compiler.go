@@ -1082,7 +1082,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
+		ops = append(ops, op)
 		operands = append(operands, rhs)
 	}
 
