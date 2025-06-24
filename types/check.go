@@ -402,6 +402,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: FloatType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("keys", FuncType{
+		Params: []Type{MapType{Key: AnyType{}, Value: AnyType{}}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
 	env.SetVar("min", FuncType{
 		Params: []Type{AnyType{}},
 		Return: AnyType{},
@@ -1992,6 +1997,7 @@ var builtinArity = map[string]int{
 	"len":    1,
 	"count":  1,
 	"avg":    1,
+	"keys":   1,
 	"min":    1,
 	"max":    1,
 	"reduce": 3,
@@ -2055,6 +2061,16 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return nil
 		default:
 			return errAvgOperand(pos, a)
+		}
+	case "keys":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		switch args[0].(type) {
+		case MapType, AnyType:
+			return nil
+		default:
+			return fmt.Errorf("keys() expects map")
 		}
 	case "min", "max":
 		if len(args) != 1 {

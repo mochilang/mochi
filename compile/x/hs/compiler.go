@@ -187,7 +187,12 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			}
 			c.writeln(fmt.Sprintf("let _ = forLoop %s %s (\\%s -> Nothing <$ (%s)) in return ()", src, end, name, body))
 		} else {
-			c.writeln(fmt.Sprintf("mapM_ (\\%s -> %s) %s", name, body, src))
+			iter := src
+			if _, ok := c.inferExprType(s.For.Source).(types.MapType); ok {
+				c.usesMap = true
+				iter = fmt.Sprintf("(Map.keys %s)", src)
+			}
+			c.writeln(fmt.Sprintf("mapM_ (\\%s -> %s) %s", name, body, iter))
 		}
 	case s.While != nil:
 		body, err := c.simpleBodyExpr(s.While.Body)
@@ -382,7 +387,12 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 				loop := fmt.Sprintf("forLoop %s %s (\\%s -> %s)", src, end, name, bodyExpr)
 				expr = chainMaybe(loop, expr)
 			} else {
-				loop := fmt.Sprintf("foldr (\\%s acc -> case %s of Just v -> Just v; Nothing -> acc) Nothing %s", name, bodyExpr, src)
+				listExpr := src
+				if _, ok := c.inferExprType(s.For.Source).(types.MapType); ok {
+					c.usesMap = true
+					listExpr = fmt.Sprintf("Map.keys %s", src)
+				}
+				loop := fmt.Sprintf("foldr (\\%s acc -> case %s of Just v -> Just v; Nothing -> acc) Nothing %s", name, bodyExpr, listExpr)
 				expr = chainMaybe(loop, expr)
 			}
 		case s.Var != nil:
@@ -681,6 +691,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if p.Call.Func == "push" && len(args) == 2 {
 			return fmt.Sprintf("(%s ++ [%s])", args[0], args[1]), nil
+		}
+		if p.Call.Func == "keys" && len(args) == 1 {
+			c.usesMap = true
+			return fmt.Sprintf("Map.keys %s", args[0]), nil
 		}
 		if p.Call.Func == "now" {
 			c.usesTime = true
