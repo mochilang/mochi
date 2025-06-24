@@ -1,0 +1,8 @@
+fun inc(x: int): int {
+  x = x + 1
+  return x
+}
+
+let add1 = fun(y: int): int => y + 1
+print(inc(5))
+print(add1(6))
