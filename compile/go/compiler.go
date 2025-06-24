@@ -1581,7 +1581,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if idx.End == nil {
 						end = fmt.Sprintf("len([]rune(%s))", val)
 					}
-					val = fmt.Sprintf("string([]rune(%s)[%s:%s])", val, start, end)
+					c.use("_sliceString")
+					val = fmt.Sprintf("_sliceString(%s, %s, %s)", val, start, end)
 				default:
 					if idx.End == nil {
 						end = fmt.Sprintf("len(%s)", val)

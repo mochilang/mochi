@@ -15,6 +15,17 @@ const (
 		"    return string(runes[i])\n" +
 		"}\n"
 
+	helperSliceString = "func _sliceString(s string, i, j int) string {\n" +
+		"    start := i\n" +
+		"    end := j\n" +
+		"    n := len([]rune(s))\n" +
+		"    if start < 0 { start += n }\n" +
+		"    if end < 0 { end += n }\n" +
+		"    if start < 0 { start = 0 }\n" +
+		"    if end > n { end = n }\n" +
+		"    if end < start { end = start }\n" +
+		"    return string([]rune(s)[start:end])\n" +
+		"}\n"
 	helperCount = "func _count(v any) int {\n" +
 		"    if g, ok := v.(*data.Group); ok { return len(g.Items) }\n" +
 		"    switch s := v.(type) {\n" +
@@ -419,6 +430,7 @@ const (
 
 var helperMap = map[string]string{
 	"_indexString":   helperIndexString,
+	"_sliceString":   helperSliceString,
 	"_count":         helperCount,
 	"_avg":           helperAvg,
 	"_input":         helperInput,
