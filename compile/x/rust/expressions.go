@@ -43,8 +43,18 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				leftString = false
 			}
 		case "in":
-			expr = fmt.Sprintf("%s.contains_key(&%s)", r, expr)
+			if rightList {
+				expr = fmt.Sprintf("%s.contains(&%s)", r, expr)
+			} else if rightString {
+				c.use("_in_string")
+				expr = fmt.Sprintf("_in_string(%s, %s)", r, expr)
+			} else if c.isMapExpr(op.Right) {
+				expr = fmt.Sprintf("%s.contains_key(&%s)", r, expr)
+			} else {
+				expr = fmt.Sprintf("%s.contains(&%s)", r, expr)
+			}
 			leftList = false
+			leftString = false
 		case "union_all":
 			c.use("_union_all")
 			expr = fmt.Sprintf("_union_all(&%s, &%s)", expr, r)
