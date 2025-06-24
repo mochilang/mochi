@@ -1,0 +1,19 @@
+:- style_check(-singleton).
+slice(Str, I, J, Out) :-
+    string(Str), !,
+    Len is J - I,
+    sub_string(Str, I, Len, _, Out).
+slice(List, I, J, Out) :-
+    length(Prefix, I),
+    append(Prefix, Rest, List),
+    Len is J - I,
+    length(Out, Len),
+    append(Out, _, Rest).
+
+
+	main :-
+	slice("hello", 1, 4, _V0),
+	write(_V0),
+	nl
+	.
+:- initialization(main, main).

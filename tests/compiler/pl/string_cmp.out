@@ -1,0 +1,6 @@
+a@<b
+a@=<a
+cat@>car
+dog@>=dog
+abc==abc
+foo\==bar

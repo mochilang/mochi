@@ -37,6 +37,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (exprRes, error) {
 type operand struct {
 	expr   exprRes
 	isList bool
+	isStr  bool
 }
 
 func contains[T comparable](sl []T, t T) bool {
@@ -59,6 +60,12 @@ func (c *Compiler) binaryOp(left operand, op string, right operand) (operand, er
 			res.code = append(res.code, fmt.Sprintf("append(%s, %s, %s)", left.expr.val, right.expr.val, tmp)+",")
 			res.val = tmp
 			return operand{expr: res, isList: true}, nil
+		}
+		if left.isStr && right.isStr {
+			tmp := c.newVar()
+			res.code = append(res.code, fmt.Sprintf("string_concat(%s, %s, %s)", left.expr.val, right.expr.val, tmp)+",")
+			res.val = tmp
+			return operand{expr: res, isStr: true}, nil
 		}
 		tmp := c.newVar()
 		res.code = append(res.code, fmt.Sprintf("%s is %s + %s,", tmp, left.expr.val, right.expr.val))
@@ -108,22 +115,46 @@ func (c *Compiler) binaryOp(left operand, op string, right operand) (operand, er
 		res.val = tmp
 		return operand{expr: res, isList: true}, nil
 	case "==":
-		res.val = fmt.Sprintf("%s =:= %s", left.expr.val, right.expr.val)
+		if left.isStr && right.isStr {
+			res.val = fmt.Sprintf("%s == %s", left.expr.val, right.expr.val)
+		} else {
+			res.val = fmt.Sprintf("%s =:= %s", left.expr.val, right.expr.val)
+		}
 		return operand{expr: res}, nil
 	case "!=":
-		res.val = fmt.Sprintf("%s =\\= %s", left.expr.val, right.expr.val)
+		if left.isStr && right.isStr {
+			res.val = fmt.Sprintf("%s \\== %s", left.expr.val, right.expr.val)
+		} else {
+			res.val = fmt.Sprintf("%s \\= %s", left.expr.val, right.expr.val)
+		}
 		return operand{expr: res}, nil
 	case "<":
-		res.val = fmt.Sprintf("%s < %s", left.expr.val, right.expr.val)
+		if left.isStr && right.isStr {
+			res.val = fmt.Sprintf("%s @< %s", left.expr.val, right.expr.val)
+		} else {
+			res.val = fmt.Sprintf("%s < %s", left.expr.val, right.expr.val)
+		}
 		return operand{expr: res}, nil
 	case "<=":
-		res.val = fmt.Sprintf("%s =< %s", left.expr.val, right.expr.val)
+		if left.isStr && right.isStr {
+			res.val = fmt.Sprintf("%s @=< %s", left.expr.val, right.expr.val)
+		} else {
+			res.val = fmt.Sprintf("%s =< %s", left.expr.val, right.expr.val)
+		}
 		return operand{expr: res}, nil
 	case ">":
-		res.val = fmt.Sprintf("%s > %s", left.expr.val, right.expr.val)
+		if left.isStr && right.isStr {
+			res.val = fmt.Sprintf("%s @> %s", left.expr.val, right.expr.val)
+		} else {
+			res.val = fmt.Sprintf("%s > %s", left.expr.val, right.expr.val)
+		}
 		return operand{expr: res}, nil
 	case ">=":
-		res.val = fmt.Sprintf("%s >= %s", left.expr.val, right.expr.val)
+		if left.isStr && right.isStr {
+			res.val = fmt.Sprintf("%s @>= %s", left.expr.val, right.expr.val)
+		} else {
+			res.val = fmt.Sprintf("%s >= %s", left.expr.val, right.expr.val)
+		}
 		return operand{expr: res}, nil
 	case "&&":
 		res.val = fmt.Sprintf("(%s, %s)", left.expr.val, right.expr.val)
@@ -147,7 +178,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 	if err != nil {
 		return exprRes{}, err
 	}
-	operands := []operand{{expr: first, isList: isListExpr(b.Left)}}
+	operands := []operand{{expr: first, isList: isListExpr(b.Left), isStr: c.isStringUnary(b.Left)}}
 	ops := []string{}
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
@@ -158,7 +189,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 		if part.Op == "union" && part.All {
 			op = "union_all"
 		}
-		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right)})
+		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right), isStr: c.isStringPostfix(part.Right)})
 		ops = append(ops, op)
 	}
 

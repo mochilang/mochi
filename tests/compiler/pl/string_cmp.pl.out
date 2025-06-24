@@ -1,0 +1,16 @@
+:- style_check(-singleton).
+	main :-
+	write("a" @< "b"),
+	nl,
+	write("a" @=< "a"),
+	nl,
+	write("cat" @> "car"),
+	nl,
+	write("dog" @>= "dog"),
+	nl,
+	write("abc" == "abc"),
+	nl,
+	write("foo" \== "bar"),
+	nl
+	.
+:- initialization(main, main).
