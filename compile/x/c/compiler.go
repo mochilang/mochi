@@ -1051,6 +1051,29 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
+		if (op.Op == "==" || op.Op == "!=" || op.Op == "<" || op.Op == ">" || op.Op == "<=" || op.Op == ">=") && leftString && isStringPostfixOrIndex(op.Right, c.env) {
+			cmp := fmt.Sprintf("strcmp(%s, %s)", left, right)
+			switch op.Op {
+			case "==":
+				left = fmt.Sprintf("(%s == 0)", cmp)
+			case "!=":
+				left = fmt.Sprintf("(%s != 0)", cmp)
+			case "<":
+				left = fmt.Sprintf("(%s < 0)", cmp)
+			case ">":
+				left = fmt.Sprintf("(%s > 0)", cmp)
+			case "<=":
+				left = fmt.Sprintf("(%s <= 0)", cmp)
+			case ">=":
+				left = fmt.Sprintf("(%s >= 0)", cmp)
+			}
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
 		left = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
 		leftList = false
 		leftListInt = false
