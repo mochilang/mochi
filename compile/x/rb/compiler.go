@@ -936,6 +936,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	isStr := c.isStringPostfix(p)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			idx := op.Index
@@ -944,7 +945,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				expr = fmt.Sprintf("%s[%s]", expr, key)
+				if isStr {
+					c.use("_indexString")
+					expr = fmt.Sprintf("_indexString(%s, %s)", expr, key)
+				} else {
+					expr = fmt.Sprintf("%s[%s]", expr, key)
+				}
+				isStr = false
 			} else {
 				start := "0"
 				if idx.Start != nil {
@@ -954,15 +961,29 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					start = s
 				}
+				endExpr := ""
 				if idx.End != nil {
 					e, err := c.compileExpr(idx.End)
 					if err != nil {
 						return "", err
 					}
-					expr = fmt.Sprintf("%s[%s...%s]", expr, start, e)
+					endExpr = e
+				} else {
+					if isStr {
+						endExpr = fmt.Sprintf("%s.length", expr)
+					} else {
+						endExpr = "-1"
+					}
+				}
+				if isStr {
+					c.use("_sliceString")
+					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, endExpr)
+				} else if idx.End != nil {
+					expr = fmt.Sprintf("%s[%s...%s]", expr, start, endExpr)
 				} else {
 					expr = fmt.Sprintf("%s[%s..-1]", expr, start)
 				}
+				isStr = false
 			}
 		} else if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
@@ -973,7 +994,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = v
 			}
-			if builtin, ok, err := c.compileBuiltinCall(expr, args); ok {
+			if builtin, ok, err := c.compileBuiltinCall(expr, args, op.Call.Args); ok {
 				if err != nil {
 					return "", err
 				}
@@ -1113,7 +1134,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args[i] = v
 		}
 		name := sanitizeName(p.Call.Func)
-		if builtin, ok, err := c.compileBuiltinCall(name, args); ok {
+		if builtin, ok, err := c.compileBuiltinCall(name, args, p.Call.Args); ok {
 			if err != nil {
 				return "", err
 			}
@@ -1287,9 +1308,14 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
-func (c *Compiler) compileBuiltinCall(name string, args []string) (string, bool, error) {
+func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*parser.Expr) (string, bool, error) {
 	switch name {
 	case "print":
+		if len(args) == 1 && len(origArgs) == 1 {
+			if c.isListExpr(origArgs[0]) || c.isMapExpr(origArgs[0]) {
+				return fmt.Sprintf("puts(%s.inspect)", args[0]), true, nil
+			}
+		}
 		return fmt.Sprintf("puts([%s].join(\" \"))", strings.Join(args, ", ")), true, nil
 	case "len", "count":
 		if len(args) != 1 {

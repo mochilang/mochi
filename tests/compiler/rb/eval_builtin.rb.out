@@ -1,1 +1,5 @@
+def _eval(code)
+  eval(code)
+end
+
 puts([_eval("1 + 2")].join(" "))

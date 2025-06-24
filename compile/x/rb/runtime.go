@@ -153,6 +153,27 @@ end`
   eval(code)
 end`
 
+	helperIndexString = `def _indexString(s, i)
+  idx = i
+  chars = s.chars
+  idx += chars.length if idx < 0
+  raise 'index out of range' if idx < 0 || idx >= chars.length
+  chars[idx]
+end`
+
+	helperSliceString = `def _sliceString(s, i, j)
+  start = i
+  finish = j
+  chars = s.chars
+  n = chars.length
+  start += n if start < 0
+  finish += n if finish < 0
+  start = 0 if start < 0
+  finish = n if finish > n
+  finish = start if finish < start
+  chars[start...finish].join
+end`
+
 	helperGroup = `class _Group
   attr_accessor :key, :Items
   def initialize(k)
@@ -172,15 +193,17 @@ end`
 )
 
 var helperMap = map[string]string{
-	"_fetch":     helperFetch,
-	"_load":      helperLoad,
-	"_save":      helperSave,
-	"_genText":   helperGenText,
-	"_genEmbed":  helperGenEmbed,
-	"_genStruct": helperGenStruct,
-	"_eval":      helperEval,
-	"_group":     helperGroup,
-	"_group_by":  helperGroupBy,
+	"_fetch":       helperFetch,
+	"_load":        helperLoad,
+	"_save":        helperSave,
+	"_genText":     helperGenText,
+	"_genEmbed":    helperGenEmbed,
+	"_genStruct":   helperGenStruct,
+	"_eval":        helperEval,
+	"_group":       helperGroup,
+	"_group_by":    helperGroupBy,
+	"_indexString": helperIndexString,
+	"_sliceString": helperSliceString,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
