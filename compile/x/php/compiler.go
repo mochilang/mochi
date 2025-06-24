@@ -15,16 +15,17 @@ const funcPrefix = "mochi_"
 
 // Compiler translates a Mochi AST into PHP source code.
 type Compiler struct {
-	buf    bytes.Buffer
-	indent int
-	env    *types.Env
-	locals map[string]bool
-	funcs  map[string]bool
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	locals       map[string]bool
+	funcs        map[string]bool
+	methodFields map[string]bool
 }
 
 // New creates a new PHP compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, locals: map[string]bool{}, funcs: map[string]bool{}}
+	return &Compiler{env: env, locals: map[string]bool{}, funcs: map[string]bool{}, methodFields: nil}
 }
 
 // Compile generates PHP code for prog.
@@ -43,6 +44,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
+	// type declarations
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
 				return nil, err
 			}
 			c.writeln("")
@@ -127,6 +138,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Return != nil:
 		val, err := c.compileExpr(s.Return.Value)
 		if err != nil {
@@ -212,6 +225,9 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 
 func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	name := "$" + sanitizeName(l.Name)
+	if c.methodFields != nil && c.methodFields[l.Name] {
+		name = "$this->" + sanitizeName(l.Name)
+	}
 	val := "null"
 	if l.Value != nil {
 		v, err := c.compileExpr(l.Value)
@@ -236,6 +252,9 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	name := "$" + sanitizeName(v.Name)
+	if c.methodFields != nil && c.methodFields[v.Name] {
+		name = "$this->" + sanitizeName(v.Name)
+	}
 	val := "null"
 	if v.Value != nil {
 		valExpr, err := c.compileExpr(v.Value)
@@ -251,6 +270,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	lhs := "$" + sanitizeName(a.Name)
+	if c.methodFields != nil && c.methodFields[a.Name] {
+		lhs = "$this->" + sanitizeName(a.Name)
+	}
 	for _, idx := range a.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
@@ -347,6 +369,73 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 	} else {
 		c.writeln("}")
 	}
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return nil
+	}
+	name := sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("class %s {", name))
+	c.indent++
+	fields := []string{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fname := sanitizeName(m.Field.Name)
+			fields = append(fields, m.Field.Name)
+			c.writeln(fmt.Sprintf("public $%s;", fname))
+		}
+	}
+	c.writeln("public function __construct($fields = []) {")
+	c.indent++
+	for _, f := range fields {
+		c.writeln(fmt.Sprintf("$this->%s = $fields['%s'] ?? null;", sanitizeName(f), f))
+	}
+	c.indent--
+	c.writeln("}")
+	for _, m := range t.Members {
+		if m.Method != nil {
+			if err := c.compileMethod(name, m.Method); err != nil {
+				return err
+			}
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
+	name := sanitizeName(fun.Name)
+	params := make([]string, len(fun.Params))
+	for i, p := range fun.Params {
+		params[i] = "$" + sanitizeName(p.Name)
+	}
+	c.writeln(fmt.Sprintf("public function %s(%s) {", name, strings.Join(params, ", ")))
+	oldLocals := c.locals
+	c.locals = map[string]bool{}
+	for _, p := range fun.Params {
+		c.locals[p.Name] = true
+	}
+	if st, ok := c.env.GetStruct(structName); ok {
+		c.methodFields = make(map[string]bool, len(st.Fields))
+		for fn := range st.Fields {
+			c.methodFields[fn] = true
+		}
+	}
+	c.indent++
+	for _, st := range fun.Body {
+		if err := c.compileStmt(st); err != nil {
+			c.methodFields = nil
+			c.locals = oldLocals
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.methodFields = nil
+	c.locals = oldLocals
 	return nil
 }
 
@@ -520,10 +609,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLiteral(p.Lit)
 	case p.Selector != nil:
 		name := "$" + sanitizeName(p.Selector.Root)
+		if c.methodFields != nil && c.methodFields[p.Selector.Root] {
+			name = "$this->" + sanitizeName(p.Selector.Root)
+		}
 		if len(p.Selector.Tail) > 0 {
 			name += "->" + strings.Join(p.Selector.Tail, "->")
 		}
 		return name, nil
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -626,6 +720,18 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		items[i] = fmt.Sprintf("%s => %s", k, v)
 	}
 	return "[" + strings.Join(items, ", ") + "]", nil
+}
+
+func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	items := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		items[i] = fmt.Sprintf("'%s' => %s", f.Name, v)
+	}
+	return fmt.Sprintf("new %s([%s])", sanitizeName(s.Name), strings.Join(items, ", ")), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
