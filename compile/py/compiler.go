@@ -25,19 +25,21 @@ type Compiler struct {
 	agents       map[string]bool
 	handlerCount int
 	tmpCount     int
-	models       bool
+        models       bool
+        methodFields map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{
-		helpers:  make(map[string]bool),
-		imports:  make(map[string]string),
-		env:      env,
-		structs:  make(map[string]bool),
-		agents:   make(map[string]bool),
-		models:   false,
-		tmpCount: 0,
-	}
+        return &Compiler{
+                helpers:  make(map[string]bool),
+                imports:  make(map[string]string),
+                env:      env,
+                structs:  make(map[string]bool),
+                agents:   make(map[string]bool),
+                models:   false,
+                tmpCount: 0,
+                methodFields: nil,
+        }
 }
 
 func containsStreamCode(stmts []*parser.Statement) bool {
@@ -533,12 +535,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return "(" + expr + ")", nil
-	case p.Selector != nil:
-		expr := sanitizeName(p.Selector.Root)
-		for _, s := range p.Selector.Tail {
-			expr += "." + sanitizeName(s)
-		}
-		return expr, nil
+       case p.Selector != nil:
+               expr := sanitizeName(p.Selector.Root)
+               if c.methodFields != nil && c.methodFields[p.Selector.Root] {
+                       expr = "self." + expr
+               }
+               for _, s := range p.Selector.Tail {
+                       expr += "." + sanitizeName(s)
+               }
+               return expr, nil
 	case p.Struct != nil:
 		if c.env != nil {
 			if _, ok := c.env.GetAgent(p.Struct.Name); ok {
