@@ -1,0 +1,10 @@
+fun main() {
+        var m: MutableMap<Int, Boolean> = mutableMapOf()
+        var sum = 0
+        m[1] = true
+        m[2] = true
+        for (k in m.keys) {
+                sum = (sum + k)
+        }
+        println(sum)
+}

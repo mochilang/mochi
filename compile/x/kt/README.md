@@ -16,6 +16,7 @@ The Kotlin backend converts Mochi programs into Kotlin source files so they can 
 - YAML dataset loading and saving
 - Extern variables, functions and objects via `ExternRegistry`
 - True 64-bit integers using Kotlin `Long`
+- Map literals, indexing, membership checks with `in`, and iteration over keys in `for` loops
 
 ## Unsupported Features
 
@@ -39,7 +40,6 @@ The Kotlin backend still lacks several features available in other compilers:
 - Nested recursive functions inside other functions
 - Generic methods inside `type` blocks
 - Enum type declarations
-- Map membership checks and iterating over maps in `for` loops
 - Reflection or macro facilities
 - Full LLM integration for `_genText`, `_genEmbed` and `_genStruct`
 - Asynchronous functions (`async`/`await`)
