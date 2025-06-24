@@ -1230,12 +1230,17 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 			r := fc.compileExpr(s.Assign.Value)
 			fc.emit(s.Assign.Pos, Instr{Op: OpMove, A: reg, B: r})
 			fc.tags[reg] = fc.tags[r]
-		} else if len(s.Assign.Index) == 1 {
-			idx := fc.compileExpr(s.Assign.Index[0].Start)
-			val := fc.compileExpr(s.Assign.Value)
-			fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: reg, B: idx, C: val})
 		} else {
-			return fmt.Errorf("multiple index assignment not supported")
+			container := reg
+			for _, idxOp := range s.Assign.Index[:len(s.Assign.Index)-1] {
+				idx := fc.compileExpr(idxOp.Start)
+				dst := fc.newReg()
+				fc.emit(idxOp.Pos, Instr{Op: OpIndex, A: dst, B: container, C: idx})
+				container = dst
+			}
+			lastIdx := fc.compileExpr(s.Assign.Index[len(s.Assign.Index)-1].Start)
+			val := fc.compileExpr(s.Assign.Value)
+			fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: container, B: lastIdx, C: val})
 		}
 		return nil
 	case s.Return != nil:
