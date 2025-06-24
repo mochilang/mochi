@@ -262,12 +262,12 @@ func (i *Interpreter) Test() error {
 	return nil
 }
 
-type closure struct {
+type Closure struct {
 	Name       string
 	Fn         *parser.FunExpr
 	Env        *types.Env
-	Args       []Value
-	FullParams []*parser.Param
+        Args       []Value
+        FullParams []*parser.Param
 }
 
 type agentInstance struct {
@@ -354,7 +354,7 @@ func (i *Interpreter) importPackage(alias, path, filename string) error {
 	obj := map[string]any{"__name": pkgName}
 	for _, s := range stmts {
 		if s.Fun != nil && s.Fun.Export {
-			cl := closure{Name: s.Fun.Name, Fn: &parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}, Env: pkgEnv.Copy(), FullParams: s.Fun.Params}
+                cl := Closure{Name: s.Fun.Name, Fn: &parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}, Env: pkgEnv.Copy(), FullParams: s.Fun.Params}
 			obj[s.Fun.Name] = cl
 		}
 	}
@@ -457,7 +457,7 @@ type onHandler struct {
 	body  []*parser.Statement
 }
 
-func (c closure) String() string {
+func (c Closure) String() string {
 	return fmt.Sprintf("<closure %d/%d args>", len(c.Args), len(c.Fn.Params)+len(c.Args))
 }
 
@@ -1127,7 +1127,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 		return i.evalExpr(p.Group)
 
 	case p.FunExpr != nil:
-		return closure{Name: "", Fn: p.FunExpr, Env: i.env.Copy(), FullParams: p.FunExpr.Params}, nil
+                return Closure{Name: "", Fn: p.FunExpr, Env: i.env.Copy(), FullParams: p.FunExpr.Params}, nil
 
 	case p.If != nil:
 		return i.evalIfExpr(p.If)
@@ -1142,7 +1142,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			} else if i.ffi.IsExternObjectDeclared(p.Selector.Root) {
 				return nil, errExternObject(p.Pos, p.Selector.Root)
 			} else if fn, ok := i.env.GetFunc(p.Selector.Root); ok {
-				cl := closure{Name: p.Selector.Root, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
+                                cl := Closure{Name: p.Selector.Root, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
 				return cl, nil
 			} else if _, ok := i.types.FindUnionByVariant(p.Selector.Root); ok {
 				val = map[string]any{"__name": p.Selector.Root}
@@ -1205,7 +1205,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 						}
 						env.SetValue(k, v, true)
 					}
-					cl := closure{Name: field, Fn: &parser.FunExpr{Params: m.Decl.Params, Return: m.Decl.Return, BlockBody: m.Decl.Body}, Env: env, FullParams: m.Decl.Params}
+                                cl := Closure{Name: field, Fn: &parser.FunExpr{Params: m.Decl.Params, Return: m.Decl.Return, BlockBody: m.Decl.Body}, Env: env, FullParams: m.Decl.Params}
 					val = cl
 					continue
 				}
@@ -1537,7 +1537,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 			normalize  bool
 			haveNorm   bool
 			toolsList  []llm.Tool
-			toolFuncs  = map[string]closure{}
+                        toolFuncs  = map[string]Closure{}
 			toolChoice string
 		)
 		for _, f := range p.Generate.Fields {
@@ -1569,7 +1569,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 				if list, ok := v.([]any); ok {
 					for _, item := range list {
 						switch t := item.(type) {
-						case closure:
+                                                case Closure:
 							if t.Name == "" {
 								continue
 							}
@@ -1580,7 +1580,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 									toolsList = append(toolsList, funcToTool(t.Name, fn, ft))
 								}
 							}
-						case *closure:
+                                                case *Closure:
 							cl := *t
 							if cl.Name == "" {
 								continue
@@ -1607,7 +1607,7 @@ func (i *Interpreter) evalPrimary(p *parser.Primary) (any, error) {
 										tool.Description = desc
 									}
 									toolsList = append(toolsList, tool)
-									cl := closure{Name: name, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
+                                cl := Closure{Name: name, Fn: &parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body}, Env: i.env.Copy(), FullParams: fn.Params}
 									toolFuncs[name] = cl
 								}
 							}
@@ -1794,7 +1794,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 				applied[idx] = anyToValue(argVals[idx])
 			}
 			remainingParams := fn.Params[argCount:]
-			return closure{
+                        return Closure{
 				Name: c.Func,
 				Fn: &parser.FunExpr{
 					Params:    remainingParams,
@@ -1802,8 +1802,8 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 				},
 				Env:        i.env.Copy(),
 				Args:       applied,
-				FullParams: fn.Params,
-			}, nil
+                                FullParams: fn.Params,
+                        }, nil
 		}
 
 		if i.memoize {
@@ -1834,7 +1834,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 	val, err := i.env.GetValue(c.Func)
 	if err == nil {
 		switch fn := val.(type) {
-		case closure:
+                case Closure:
 			cl := fn
 			totalArgs := len(cl.Args) + len(c.Args)
 			fullParamCount := len(cl.FullParams)
@@ -1853,7 +1853,7 @@ func (i *Interpreter) evalCall(c *parser.CallExpr) (any, error) {
 			}
 
 			if totalArgs < fullParamCount {
-				return closure{
+                                return Closure{
 					Name: cl.Name,
 					Fn: &parser.FunExpr{
 						Params:    cl.Fn.Params[totalArgs-len(cl.Args):],

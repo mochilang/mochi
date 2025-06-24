@@ -13,7 +13,7 @@ import (
 )
 
 // invokeClosure executes a closure with the provided arguments.
-func (i *Interpreter) invokeClosure(pos lexer.Position, cl closure, args []*parser.Expr) (any, error) {
+func (i *Interpreter) invokeClosure(pos lexer.Position, cl Closure, args []*parser.Expr) (any, error) {
 	totalArgs := len(cl.Args) + len(args)
 	fullParamCount := len(cl.FullParams)
 	if totalArgs > fullParamCount {
@@ -30,7 +30,7 @@ func (i *Interpreter) invokeClosure(pos lexer.Position, cl closure, args []*pars
 	}
 
 	if totalArgs < fullParamCount {
-		return closure{
+                return Closure{
 			Name:       cl.Name,
 			Fn:         cl.Fn,
 			Env:        cl.Env,
@@ -110,7 +110,7 @@ func (i *Interpreter) applyCallOp(val any, call *parser.CallOp) (any, error) {
 		}
 	}
 
-	cl, ok := val.(closure)
+        cl, ok := val.(Closure)
 	if !ok {
 		return nil, errUndefinedFunctionOrClosure(call.Pos, "")
 	}
