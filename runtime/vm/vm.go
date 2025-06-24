@@ -434,22 +434,25 @@ func (m *VM) Run() error {
 }
 
 type frame struct {
-	fn   *Function
-	regs []Value
-	ip   int
+	fn     *Function
+	regs   []Value
+	ip     int
+	retReg int
 }
 
 func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) {
 	fn := &m.prog.Funcs[fnIndex]
-	f := &frame{fn: fn, regs: make([]Value, fn.NumRegs)}
+	f := &frame{fn: fn, regs: make([]Value, fn.NumRegs), retReg: -1}
 	for i := 0; i < len(args) && i < len(f.regs); i++ {
 		f.regs[i] = args[i]
 	}
 	stack := []*frame{f}
+	tr := append([]StackFrame(nil), trace...)
 	for len(stack) > 0 {
 		fr := stack[len(stack)-1]
 		if fr.ip >= len(fr.fn.Code) {
 			stack = stack[:len(stack)-1]
+			tr = tr[:len(tr)-1]
 			if len(stack) == 0 {
 				return Value{}, nil
 			}
@@ -514,7 +517,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			if (c.Tag == interpreter.TagInt && c.Int == 0) || (c.Tag == interpreter.TagFloat && c.Float == 0) {
-				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("division by zero"), tr, ins.Line)
 			}
 			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) / toFloat(c)}
@@ -525,21 +528,21 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			if c.Int == 0 {
-				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("division by zero"), tr, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int / c.Int}
 		case OpDivFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			if toFloat(c) == 0 {
-				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("division by zero"), tr, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) / toFloat(c)}
 		case OpMod:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			if (c.Tag == interpreter.TagInt && c.Int == 0) || (c.Tag == interpreter.TagFloat && c.Float == 0) {
-				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("division by zero"), tr, ins.Line)
 			}
 			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: math.Mod(toFloat(b), toFloat(c))}
@@ -550,14 +553,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			if c.Int == 0 {
-				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("division by zero"), tr, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int % c.Int}
 		case OpModFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			if toFloat(c) == 0 {
-				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("division by zero"), tr, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: math.Mod(toFloat(b), toFloat(c))}
 		case OpEqual:
@@ -599,10 +602,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				if item.Tag == interpreter.TagStr {
 					found = strings.Contains(container.Str, item.Str)
 				} else {
-					return Value{}, m.newError(fmt.Errorf("invalid substring type"), trace, ins.Line)
+					return Value{}, m.newError(fmt.Errorf("invalid substring type"), tr, ins.Line)
 				}
 			default:
-				return Value{}, m.newError(fmt.Errorf("invalid 'in' operand"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("invalid 'in' operand"), tr, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: found}
 		case OpJump:
@@ -625,7 +628,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			case interpreter.TagMap:
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.Map)}
 			default:
-				return Value{}, m.newError(fmt.Errorf("invalid len operand"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("invalid len operand"), tr, ins.Line)
 			}
 		case OpIndex:
 			src := fr.regs[ins.B]
@@ -637,7 +640,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					idx += len(src.List)
 				}
 				if idx < 0 || idx >= len(src.List) {
-					return Value{}, m.newError(fmt.Errorf("index out of range"), trace, ins.Line)
+					return Value{}, m.newError(fmt.Errorf("index out of range"), tr, ins.Line)
 				}
 				fr.regs[ins.A] = src.List[idx]
 			case interpreter.TagMap:
@@ -648,11 +651,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				case interpreter.TagInt:
 					key = fmt.Sprintf("%d", idxVal.Int)
 				default:
-					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
+					return Value{}, m.newError(fmt.Errorf("invalid map key"), tr, ins.Line)
 				}
 				fr.regs[ins.A] = src.Map[key]
 			default:
-				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("invalid index target"), tr, ins.Line)
 			}
 		case OpSetIndex:
 			dst := &fr.regs[ins.A]
@@ -665,7 +668,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					idx += len(dst.List)
 				}
 				if idx < 0 || idx >= len(dst.List) {
-					return Value{}, m.newError(fmt.Errorf("index out of range"), trace, ins.Line)
+					return Value{}, m.newError(fmt.Errorf("index out of range"), tr, ins.Line)
 				}
 				dst.List[idx] = val
 			case interpreter.TagMap:
@@ -676,14 +679,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				case interpreter.TagInt:
 					key = fmt.Sprintf("%d", idxVal.Int)
 				default:
-					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
+					return Value{}, m.newError(fmt.Errorf("invalid map key"), tr, ins.Line)
 				}
 				if dst.Map == nil {
 					dst.Map = map[string]Value{}
 				}
 				dst.Map[key] = val
 			default:
-				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("invalid index target"), tr, ins.Line)
 			}
 		case OpMakeList:
 			n := ins.B
@@ -705,7 +708,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				case interpreter.TagInt:
 					k = fmt.Sprintf("%d", key.Int)
 				default:
-					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
+					return Value{}, m.newError(fmt.Errorf("invalid map key"), tr, ins.Line)
 				}
 				mp[k] = val
 			}
@@ -722,7 +725,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpAppend:
 			lst := fr.regs[ins.B]
 			if lst.Tag != interpreter.TagList {
-				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
+				return Value{}, m.newError(fmt.Errorf("append expects list"), tr, ins.Line)
 			}
 			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: newList}
@@ -758,54 +761,97 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
-			res, err := m.call(ins.B, []Value{a, b}, append(trace, StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}))
-			if err != nil {
-				if vmErr, ok := err.(*VMError); ok {
-					if len(vmErr.Stack) >= 2 {
-						vmErr.Stack[len(vmErr.Stack)-2].Line = ins.Line
-					}
+			args := []Value{a, b}
+			fnIdx := ins.B
+			tail := false
+			if fr.ip < len(fr.fn.Code) {
+				next := fr.fn.Code[fr.ip]
+				if next.Op == OpReturn && next.A == ins.A {
+					tail = true
 				}
-				return Value{}, err
 			}
-			fr.regs[ins.A] = res
+			if tail {
+				fr.fn = &m.prog.Funcs[fnIdx]
+				fr.regs = make([]Value, fr.fn.NumRegs)
+				for i := 0; i < len(args) && i < len(fr.regs); i++ {
+					fr.regs[i] = args[i]
+				}
+				fr.ip = 0
+				tr[len(tr)-1] = StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}
+				continue
+			}
+			nf := &frame{fn: &m.prog.Funcs[fnIdx], regs: make([]Value, m.prog.Funcs[fnIdx].NumRegs), retReg: ins.A}
+			for i := 0; i < len(args) && i < len(nf.regs); i++ {
+				nf.regs[i] = args[i]
+			}
+			stack = append(stack, nf)
+			tr = append(tr, StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line})
 		case OpCall:
 			args := make([]Value, ins.C)
 			copy(args, fr.regs[ins.D:ins.D+ins.C])
-			res, err := m.call(ins.B, args, append(trace, StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}))
-			if err != nil {
-				if vmErr, ok := err.(*VMError); ok {
-					if len(vmErr.Stack) >= 2 {
-						vmErr.Stack[len(vmErr.Stack)-2].Line = ins.Line
-					}
+			fnIdx := ins.B
+			tail := false
+			if fr.ip < len(fr.fn.Code) {
+				next := fr.fn.Code[fr.ip]
+				if next.Op == OpReturn && next.A == ins.A {
+					tail = true
 				}
-				return Value{}, err
 			}
-			fr.regs[ins.A] = res
+			if tail {
+				fr.fn = &m.prog.Funcs[fnIdx]
+				fr.regs = make([]Value, fr.fn.NumRegs)
+				for i := 0; i < len(args) && i < len(fr.regs); i++ {
+					fr.regs[i] = args[i]
+				}
+				fr.ip = 0
+				tr[len(tr)-1] = StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}
+				continue
+			}
+			nf := &frame{fn: &m.prog.Funcs[fnIdx], regs: make([]Value, m.prog.Funcs[fnIdx].NumRegs), retReg: ins.A}
+			for i := 0; i < len(args) && i < len(nf.regs); i++ {
+				nf.regs[i] = args[i]
+			}
+			stack = append(stack, nf)
+			tr = append(tr, StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line})
 		case OpCallV:
 			fnIdx := fr.regs[ins.B].Int
 			args := make([]Value, ins.C)
 			copy(args, fr.regs[ins.D:ins.D+ins.C])
-			res, err := m.call(fnIdx, args, append(trace, StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}))
-			if err != nil {
-				if vmErr, ok := err.(*VMError); ok {
-					if len(vmErr.Stack) >= 2 {
-						vmErr.Stack[len(vmErr.Stack)-2].Line = ins.Line
-					}
+			tail := false
+			if fr.ip < len(fr.fn.Code) {
+				next := fr.fn.Code[fr.ip]
+				if next.Op == OpReturn && next.A == ins.A {
+					tail = true
 				}
-				return Value{}, err
 			}
-			fr.regs[ins.A] = res
+			if tail {
+				fr.fn = &m.prog.Funcs[fnIdx]
+				fr.regs = make([]Value, fr.fn.NumRegs)
+				for i := 0; i < len(args) && i < len(fr.regs); i++ {
+					fr.regs[i] = args[i]
+				}
+				fr.ip = 0
+				tr[len(tr)-1] = StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}
+				continue
+			}
+			nf := &frame{fn: &m.prog.Funcs[fnIdx], regs: make([]Value, m.prog.Funcs[fnIdx].NumRegs), retReg: ins.A}
+			for i := 0; i < len(args) && i < len(nf.regs); i++ {
+				nf.regs[i] = args[i]
+			}
+			stack = append(stack, nf)
+			tr = append(tr, StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line})
 		case OpNot:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: !fr.regs[ins.B].Truthy()}
 		case OpReturn:
 			ret := fr.regs[ins.A]
 			stack = stack[:len(stack)-1]
+			tr = tr[:len(tr)-1]
 			if len(stack) == 0 {
 				return ret, nil
 			}
-			stack[len(stack)-1].regs[0] = ret
+			stack[len(stack)-1].regs[fr.retReg] = ret
 		default:
-			return Value{}, m.newError(fmt.Errorf("unknown op"), trace, ins.Line)
+			return Value{}, m.newError(fmt.Errorf("unknown op"), tr, ins.Line)
 		}
 	}
 	return Value{}, nil
