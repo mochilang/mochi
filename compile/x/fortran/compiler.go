@@ -96,6 +96,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.resetVarScopes()
 	var funs []*parser.FunStmt
 	var tests []*parser.TestBlock
+	var types []*parser.TypeDecl
 	var mainStmts []*parser.Statement
 	for _, s := range prog.Statements {
 		switch {
@@ -103,6 +104,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			funs = append(funs, s.Fun)
 		case s.Test != nil:
 			tests = append(tests, s.Test)
+		case s.Type != nil:
+			types = append(types, s.Type)
 		case s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
 			// ignore extern declarations
 		default:
@@ -124,12 +127,43 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("program main")
 	c.indent++
 	c.writeln("implicit none")
+	for _, t := range types {
+		if err := c.compileTypeDecl(t); err != nil {
+			return nil, err
+		}
+	}
 	// crude variable declarations for lets/vars in main
 	declared := map[string]bool{}
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
 	collectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	structVars := map[string]string{}
+	for _, st := range mainStmts {
+		if st.Let != nil {
+			if name, ok := structLitName(st.Let.Value); ok {
+				structVars[sanitizeName(st.Let.Name)] = name
+				delete(declared, sanitizeName(st.Let.Name))
+			} else if st.Let.Type != nil && st.Let.Type.Simple != nil {
+				typ := *st.Let.Type.Simple
+				if typ != "int" && typ != "float" && typ != "string" && typ != "bool" {
+					structVars[sanitizeName(st.Let.Name)] = sanitizeName(typ)
+					delete(declared, sanitizeName(st.Let.Name))
+				}
+			}
+		} else if st.Var != nil {
+			if name, ok := structLitName(st.Var.Value); ok {
+				structVars[sanitizeName(st.Var.Name)] = name
+				delete(declared, sanitizeName(st.Var.Name))
+			} else if st.Var.Type != nil && st.Var.Type.Simple != nil {
+				typ := *st.Var.Type.Simple
+				if typ != "int" && typ != "float" && typ != "string" && typ != "bool" {
+					structVars[sanitizeName(st.Var.Name)] = sanitizeName(typ)
+					delete(declared, sanitizeName(st.Var.Name))
+				}
+			}
+		}
+	}
 	delete(listVars, "result")
 	c.listVars = listVars
 	c.stringVars = stringVars
@@ -146,6 +180,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		}
+	}
+	for name, typ := range structVars {
+		c.writeln(fmt.Sprintf("type(%s) :: %s", typ, name))
 	}
 	for name := range declared {
 		if name == "result" {
@@ -444,6 +481,67 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	name := sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("type :: %s", name))
+	c.indent++
+	for _, m := range t.Members {
+		if m.Field != nil {
+			typ := c.ftnType(m.Field.Type)
+			c.writeln(fmt.Sprintf("%s :: %s", typ, sanitizeName(m.Field.Name)))
+		}
+	}
+	c.indent--
+	c.writeln(fmt.Sprintf("end type %s", name))
+	return nil
+}
+
+func (c *Compiler) ftnType(t *parser.TypeRef) string {
+	if t == nil || t.Simple == nil {
+		return "integer(kind=8)"
+	}
+	switch *t.Simple {
+	case "int":
+		return "integer(kind=8)"
+	case "float":
+		return "real"
+	case "string":
+		return "character(:), allocatable"
+	case "bool":
+		return "logical"
+	default:
+		return sanitizeName(*t.Simple)
+	}
+}
+
+func structLitName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) == 0 && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+		v := e.Binary.Left.Value
+		if len(v.Ops) == 0 && v.Target != nil && v.Target.Struct != nil {
+			return sanitizeName(v.Target.Struct.Name), true
+		}
+	}
+	return "", false
+}
+
+func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s=%s", sanitizeName(f.Name), v)
+	}
+	return fmt.Sprintf("%s(%s)", sanitizeName(s.Name), strings.Join(fields, ", ")), nil
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 	switch {
 	case s.Test != nil:
@@ -451,7 +549,13 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	case s.Let != nil:
-		if !isEmptyListLiteral(s.Let.Value) {
+		if _, ok := structLitName(s.Let.Value); ok {
+			val, err := c.compileExpr(s.Let.Value)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
+		} else if !isEmptyListLiteral(s.Let.Value) {
 			val, err := c.compileExpr(s.Let.Value)
 			if err != nil {
 				return err
@@ -459,12 +563,20 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 			c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
 		}
 	case s.Var != nil:
-		if s.Var.Value != nil && !isEmptyListLiteral(s.Var.Value) {
-			val, err := c.compileExpr(s.Var.Value)
-			if err != nil {
-				return err
+		if s.Var.Value != nil {
+			if _, ok := structLitName(s.Var.Value); ok {
+				val, err := c.compileExpr(s.Var.Value)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Var.Name), val))
+			} else if !isEmptyListLiteral(s.Var.Value) {
+				val, err := c.compileExpr(s.Var.Value)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Var.Name), val))
 			}
-			c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Var.Name), val))
 		}
 	case s.Assign != nil:
 		name := sanitizeName(s.Assign.Name)
@@ -1135,8 +1247,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", fmt.Errorf("unsupported cast")
 			}
 		case op.Call != nil:
+			recv := expr
+			if strings.HasPrefix(recv, "(") && strings.HasSuffix(recv, ")") {
+				recv = recv[1 : len(recv)-1]
+			}
 			tmp := &parser.CallExpr{Func: "", Args: op.Call.Args}
-			val, err := c.compileCallExpr(tmp, expr)
+			val, err := c.compileCallExpr(tmp, recv)
 			if err != nil {
 				return "", err
 			}
@@ -1148,6 +1264,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			// Emit 64-bit integer literals to match the default
@@ -1182,7 +1300,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(/" + strings.Join(elems, ", ") + "/)", nil
 	case p.Selector != nil:
-		return sanitizeName(p.Selector.Root), nil
+		parts := make([]string, 0, 1+len(p.Selector.Tail))
+		parts = append(parts, sanitizeName(p.Selector.Root))
+		for _, f := range p.Selector.Tail {
+			parts = append(parts, sanitizeName(f))
+		}
+		return strings.Join(parts, "%"), nil
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call, "")
 	case p.FunExpr != nil:

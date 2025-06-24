@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	ftncode "mochi/compile/x/fortran"
@@ -65,8 +66,14 @@ func TestFortranCompiler_SubsetPrograms(t *testing.T) {
 		if err := os.WriteFile(ffile, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
+		if strings.Contains(string(code), "mylib.f90") {
+			data, err := os.ReadFile(filepath.Join(filepath.Dir(src), "mylib.f90"))
+			if err == nil {
+				_ = os.WriteFile(filepath.Join(dir, "mylib.f90"), data, 0644)
+			}
+		}
 		exe := filepath.Join(dir, "prog")
-		if out, err := exec.Command(gfortran, ffile, "-o", exe).CombinedOutput(); err != nil {
+		if out, err := exec.Command(gfortran, "-ffree-line-length-none", ffile, "-o", exe).CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("gfortran error: %w\n%s", err, out)
 		}
 		out, err := exec.Command(exe).CombinedOutput()
@@ -122,7 +129,7 @@ func runFortranLeetExample(t *testing.T, id string) {
 		t.Fatalf("write error: %v", err)
 	}
 	exe := filepath.Join(tmp, "prog")
-	if out, err := exec.Command(gfortran, ffile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command(gfortran, "-ffree-line-length-none", ffile, "-o", exe).CombinedOutput(); err != nil {
 		t.Fatalf("gfortran error: %v\n%s", err, out)
 	}
 	out, err := exec.Command(exe).CombinedOutput()

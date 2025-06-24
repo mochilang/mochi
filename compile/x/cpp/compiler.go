@@ -12,20 +12,22 @@ import (
 
 // Compiler translates a Mochi AST into minimal C++ source code.
 type Compiler struct {
-	buf      bytes.Buffer
-	indent   int
-	env      *types.Env
-	helpers  map[string]bool
-	vars     []map[string]string
-	tmpCount int
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	helpers      map[string]bool
+	vars         []map[string]string
+	tmpCount     int
+	methodFields map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:      env,
-		helpers:  map[string]bool{},
-		vars:     []map[string]string{{}},
-		tmpCount: 0,
+		env:          env,
+		helpers:      map[string]bool{},
+		vars:         []map[string]string{{}},
+		tmpCount:     0,
+		methodFields: nil,
 	}
 }
 
@@ -179,6 +181,45 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
+	ret := c.cppType(fn.Return)
+	c.writeIndent()
+	c.buf.WriteString(ret + " ")
+	c.buf.WriteString(structName + "_" + fn.Name)
+	c.buf.WriteByte('(')
+	c.buf.WriteString(structName + "& self")
+	c.pushScope()
+	if st, ok := c.env.GetStruct(structName); ok {
+		c.methodFields = make(map[string]bool, len(st.Fields))
+		for name, t := range st.Fields {
+			c.setVar(name, c.cppTypeRef(t))
+			c.methodFields[name] = true
+		}
+	}
+	for i, p := range fn.Params {
+		c.buf.WriteString(", ")
+		c.buf.WriteString(c.cppType(p.Type))
+		c.buf.WriteByte(' ')
+		c.buf.WriteString(p.Name)
+		c.setVar(p.Name, c.cppType(p.Type))
+		_ = i
+	}
+	c.buf.WriteString("){\n")
+	c.indent++
+	for _, st := range fn.Body {
+		if err := c.compileStmt(st); err != nil {
+			c.popScope()
+			c.methodFields = nil
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	c.popScope()
+	c.methodFields = nil
+	return nil
+}
+
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		names := make([]string, len(t.Variants))
@@ -199,14 +240,23 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.writeln(fmt.Sprintf("struct %s {", t.Name))
 	c.indent++
+	methods := []*parser.FunStmt{}
 	for _, m := range t.Members {
 		if m.Field != nil {
 			typ := c.cppType(m.Field.Type)
 			c.writeln(fmt.Sprintf("%s %s;", typ, m.Field.Name))
+		} else if m.Method != nil {
+			methods = append(methods, m.Method)
 		}
 	}
 	c.indent--
 	c.writeln("};")
+	for _, m := range methods {
+		if err := c.compileMethod(t.Name, m); err != nil {
+			return err
+		}
+		c.writeln("")
+	}
 	return nil
 }
 
@@ -573,6 +623,26 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					expr = fmt.Sprintf("%s.substr(%s, %s - %s)", expr, start, end, start)
 				}
 			}
+		} else if op.Call != nil {
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				args[i] = c.compileExpr(a)
+			}
+			// method call like obj.foo()
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+				root := p.Target.Selector.Root
+				method := p.Target.Selector.Tail[0]
+				if t, err := c.env.GetVar(root); err == nil {
+					if st, ok := t.(types.StructType); ok {
+						if _, ok := st.Methods[method]; ok {
+							callArgs := append([]string{root}, args...)
+							expr = fmt.Sprintf("%s_%s(%s)", st.Name, method, strings.Join(callArgs, ", "))
+							continue
+						}
+					}
+				}
+			}
+			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 		}
 	}
 	return expr
@@ -610,6 +680,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return fmt.Sprintf("%s{%s}", p.Struct.Name, strings.Join(fields, ", "))
 	case p.Selector != nil:
 		name := p.Selector.Root
+		if c.methodFields != nil && c.methodFields[name] && len(p.Selector.Tail) == 0 {
+			return "self." + name
+		}
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}
