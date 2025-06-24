@@ -6,6 +6,6 @@ func main (regs=5)
   Const        r2, 20
   Move         r3, r2
   // print(a + b)
-  Add          r4, r1, r3
+  AddInt       r4, r1, r3
   Print        r4
   Return       r0
