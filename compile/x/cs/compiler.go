@@ -642,6 +642,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 
 	operands := []string{}
 	lists := []bool{}
+	strs := []bool{}
 
 	first, err := c.compileUnary(b.Left)
 	if err != nil {
@@ -649,6 +650,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	}
 	operands = append(operands, first)
 	lists = append(lists, c.isListUnary(b.Left))
+	strs = append(strs, c.isStringUnary(b.Left))
 
 	ops := []string{}
 	for _, part := range b.Right {
@@ -658,6 +660,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		}
 		operands = append(operands, r)
 		lists = append(lists, c.isListPostfix(part.Right))
+		strs = append(strs, c.isStringPostfix(part.Right))
 		op := part.Op
 		if part.All {
 			op = op + "_all"
@@ -695,6 +698,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			right := operands[i+1]
 			leftList := lists[i]
 			rightList := lists[i+1]
+			leftStr := strs[i]
 
 			var expr string
 			switch op {
@@ -702,11 +706,21 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				if leftList && rightList {
 					c.useLinq = true
 					expr = fmt.Sprintf("%s.Concat(%s).ToArray()", left, right)
+					leftList = true
+					leftStr = false
+				} else if strs[i] && strs[i+1] {
+					expr = fmt.Sprintf("string.Concat(%s, %s)", left, right)
+					leftList = false
+					leftStr = true
 				} else {
 					expr = fmt.Sprintf("(%s + %s)", left, right)
+					leftList = false
+					leftStr = false
 				}
 				leftList = leftList && rightList
+				strs[i] = leftStr
 			case "==", "!=":
+				leftStr = false
 				if leftList && rightList {
 					c.use("_equal")
 					if op == "==" {
@@ -718,35 +732,43 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 					expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 				}
 			case "in":
+				leftStr = false
 				c.use("_in")
 				expr = fmt.Sprintf("_in(%s, %s)", left, right)
 			case "union_all":
+				leftStr = false
 				c.use("_union_all")
 				expr = fmt.Sprintf("_union_all(%s, %s)", left, right)
 				leftList = true
 			case "union":
+				leftStr = false
 				c.use("_union")
 				c.use("_in")
 				expr = fmt.Sprintf("_union(%s, %s)", left, right)
 				leftList = true
 			case "except":
+				leftStr = false
 				c.use("_except")
 				c.use("_in")
 				expr = fmt.Sprintf("_except(%s, %s)", left, right)
 				leftList = true
 			case "intersect":
+				leftStr = false
 				c.use("_intersect")
 				c.use("_in")
 				expr = fmt.Sprintf("_intersect(%s, %s)", left, right)
 				leftList = true
 			default:
+				leftStr = false
 				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 			}
 
 			operands[i] = expr
 			lists[i] = leftList
+			strs[i] = leftStr
 			operands = append(operands[:i+1], operands[i+2:]...)
 			lists = append(lists[:i+1], lists[i+2:]...)
+			strs = append(strs[:i+1], strs[i+2:]...)
 			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
