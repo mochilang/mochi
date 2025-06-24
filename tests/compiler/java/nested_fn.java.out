@@ -1,0 +1,12 @@
+public class Main {
+	static int outer() {
+		java.util.function.Function<Integer, Integer> inner = (x) -> {
+			return (x * x);
+		};
+		return inner.apply(5);
+	}
+
+	public static void main(String[] args) {
+		System.out.println(outer());
+	}
+}

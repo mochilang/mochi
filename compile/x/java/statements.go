@@ -36,6 +36,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileTestBlock(s.Test)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
+	case s.Fun != nil:
+		return c.compileFunStmt(s.Fun)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -314,4 +316,36 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
+	if c.indent > 1 {
+		params := make([]types.Type, len(fun.Params))
+		for i, p := range fun.Params {
+			if p.Type != nil {
+				params[i] = c.resolveTypeRef(p.Type)
+			} else {
+				params[i] = types.AnyType{}
+			}
+		}
+		var ret types.Type = types.VoidType{}
+		if fun.Return != nil {
+			ret = c.resolveTypeRef(fun.Return)
+		}
+		ft := types.FuncType{Params: params, Return: ret}
+		if c.env != nil {
+			c.env.SetVar(fun.Name, ft, false)
+		}
+		expr, err := c.compileFunExpr(&parser.FunExpr{Params: fun.Params, Return: fun.Return, BlockBody: fun.Body})
+		if err != nil {
+			return err
+		}
+		typ := c.javaType(ft)
+		if typ == "" {
+			typ = "var"
+		}
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, sanitizeName(fun.Name), expr))
+		return nil
+	}
+	return c.compileFun(fun)
 }

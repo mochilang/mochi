@@ -13,11 +13,12 @@ statements are present.
 
 ## Supported Features
 
-- Function declarations and top-level statements
+- Function declarations, calls and top-level statements
 - Control flow with `if`, `for` and `while`
 - Primitive types (`int`, `float`, `bool`, `string`)
 - Lists and maps
 - Basic expressions and assignments
+- Anonymous `fun` expressions
 - Built-ins `print`, `len`, `str`, `input`, `count`, `avg`, `now`, `json` and `eval`
 - List operations `concat`, `union`, `union_all`, `except`, `intersect` and `slice`
 - HTTP requests via `fetch`
