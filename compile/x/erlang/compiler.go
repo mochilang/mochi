@@ -563,6 +563,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	var list string
+	var elem types.Type = types.AnyType{}
 	if stmt.RangeEnd != nil {
 		start, err := c.compileExpr(stmt.Source)
 		if err != nil {
@@ -573,19 +574,32 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			return err
 		}
 		list = fmt.Sprintf("lists:seq(%s, (%s)-1)", start, end)
+		elem = types.IntType{}
 	} else {
 		src, err := c.compileExpr(stmt.Source)
 		if err != nil {
 			return err
 		}
 		list = src
+		t := c.inferExprType(stmt.Source)
+		switch tt := t.(type) {
+		case types.ListType:
+			elem = tt.Elem
+		case types.StringType:
+			elem = types.StringType{}
+		case types.MapType:
+			list = fmt.Sprintf("maps:keys(%s)", src)
+			elem = tt.Key
+		default:
+			elem = types.AnyType{}
+		}
 	}
 	prevName, hasPrev := c.vars[stmt.Name]
 	iter := c.newName(stmt.Name)
 	c.needForeach = true
 	c.buf.WriteString(fmt.Sprintf("mochi_foreach(fun(%s) ->\n", iter))
 	child := types.NewEnv(c.env)
-	child.SetVar(stmt.Name, types.AnyType{}, true)
+	child.SetVar(stmt.Name, elem, true)
 	orig := c.env
 	c.env = child
 	c.indent++
