@@ -1,0 +1,24 @@
+func main (regs=13)
+  // print([1,2] union [2,3])
+  Const        r0, [1, 2]
+  Const        r1, [2, 3]
+  Union        r2, r0, r1
+  Print        r2
+  // print([1,2,3] except [2])
+  Const        r3, [1, 2, 3]
+  Const        r4, [2]
+  Except       r5, r3, r4
+  Print        r5
+  // print([1,2,3] intersect [2,4])
+  Const        r6, [1, 2, 3]
+  Const        r7, [2, 4]
+  Intersect    r8, r6, r7
+  Print        r8
+  // print(len([1,2] union all [2,3]))
+  Const        r9, [1, 2]
+  Const        r10, [2, 3]
+  Union        r11, r9, r10
+  Len          r12, r11
+  Print        r12
+  Return       r0
+
