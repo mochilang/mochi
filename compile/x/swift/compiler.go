@@ -146,7 +146,24 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
 		params[i] = fmt.Sprintf("_ %s: %s", p.Name, c.compileType(p.Type))
 	}
 	ret := c.compileType(fn.Return)
-	c.writeln(fmt.Sprintf("func %s(%s) -> %s {", fn.Name, strings.Join(params, ", "), ret))
+
+	mutating := false
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			for field := range st.Fields {
+				if paramAssigned(fn.Body, field) {
+					mutating = true
+					break
+				}
+			}
+		}
+	}
+	keyword := "func"
+	if mutating {
+		keyword = "mutating func"
+	}
+
+	c.writeln(fmt.Sprintf("%s %s(%s) -> %s {", keyword, fn.Name, strings.Join(params, ", "), ret))
 	c.indent++
 
 	oldEnv := c.env
