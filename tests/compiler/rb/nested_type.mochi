@@ -1,0 +1,12 @@
+type Address {
+  city: string
+  zip: int
+}
+
+type Person {
+  name: string
+  home: Address
+}
+
+let p = Person { name: "Alice", home: Address { city: "SF", zip: 94107 } }
+print(p.home.city)

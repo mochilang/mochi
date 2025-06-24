@@ -19,11 +19,12 @@ type Compiler struct {
 	tmpCount      int
 	useOpenStruct bool
 	helpers       map[string]bool
+	structs       map[string]bool
 }
 
 // New creates a new Ruby compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), structs: make(map[string]bool)}
 }
 
 // Compile generates Ruby code for prog.
@@ -174,6 +175,10 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
 	if len(t.Variants) > 0 {
 		c.writeln(fmt.Sprintf("module %s; end", name))
 		for _, v := range t.Variants {
@@ -199,6 +204,13 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			c.writeln(fmt.Sprintf("include %s", name))
 			c.indent--
 			c.writeln("end")
+			for _, f := range v.Fields {
+				if st, ok := c.resolveTypeRef(f.Type).(types.StructType); ok {
+					if err := c.compileStructType(st); err != nil {
+						return err
+					}
+				}
+			}
 		}
 		return nil
 	}
@@ -217,18 +229,28 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	if len(methods) == 0 {
 		c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true)", name, fieldList))
-		return nil
-	}
-	c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true) do", name, fieldList))
-	c.indent++
-	for _, m := range methods {
-		if err := c.compileMethod(m); err != nil {
-			return err
+	} else {
+		c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true) do", name, fieldList))
+		c.indent++
+		for _, m := range methods {
+			if err := c.compileMethod(m); err != nil {
+				return err
+			}
+			c.writeln("")
 		}
-		c.writeln("")
+		c.indent--
+		c.writeln("end")
 	}
-	c.indent--
-	c.writeln("end")
+	c.writeln("")
+	for _, m := range t.Members {
+		if m.Field != nil {
+			if st, ok := c.resolveTypeRef(m.Field.Type).(types.StructType); ok {
+				if err := c.compileStructType(st); err != nil {
+					return err
+				}
+			}
+		}
+	}
 	return nil
 }
 
@@ -1472,6 +1494,53 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	}
 	c.indent--
 	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileStructType(st types.StructType) error {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
+	fields := make([]string, len(st.Order))
+	for i, fn := range st.Order {
+		fields[i] = ":" + sanitizeName(fn)
+	}
+	fieldList := strings.Join(fields, ", ")
+	if fieldList != "" {
+		fieldList += ", "
+	}
+	if len(st.Methods) == 0 {
+		c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true)", name, fieldList))
+	} else {
+		c.writeln(fmt.Sprintf("%s = Struct.new(%skeyword_init: true) do", name, fieldList))
+		c.indent++
+		base := types.NewEnv(c.env)
+		for _, fn := range st.Order {
+			base.SetVar(fn, st.Fields[fn], true)
+		}
+		orig := c.env
+		c.env = base
+		for _, m := range st.Methods {
+			if err := c.compileMethod(m.Decl); err != nil {
+				c.env = orig
+				return err
+			}
+			c.writeln("")
+		}
+		c.env = orig
+		c.indent--
+		c.writeln("end")
+	}
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			if err := c.compileStructType(sub); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
