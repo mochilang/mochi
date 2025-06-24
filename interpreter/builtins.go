@@ -106,6 +106,21 @@ func builtinStr(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return fmt.Sprint(val), nil
 }
 
+func builtinLower(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("lower(x) takes exactly one argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	s, ok := val.(string)
+	if !ok {
+		return nil, fmt.Errorf("lower() expects string, got %T", val)
+	}
+	return strings.ToLower(s), nil
+}
+
 // builtinInput reads a line from standard input.
 func builtinInput(i *Interpreter, c *parser.CallExpr) (any, error) {
 	if len(c.Args) != 0 {
@@ -228,6 +243,7 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"now":    builtinNow,
 		"json":   builtinJSON,
 		"str":    builtinStr,
+		"lower":  builtinLower,
 		"input":  builtinInput,
 		"count":  builtinCount,
 		"avg":    builtinAvg,

@@ -23,7 +23,7 @@ The VM supports a small but useful subset of Mochi:
 * Function definitions
 * Function calls with any number of arguments
 * Anonymous function expressions
-* Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `json`, `now`, `input`, `count` and `avg`
+* Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `lower`, `json`, `now`, `input`, `count` and `avg`
 * List, map and struct construction
 * Field access using the `.` operator
 * List and string slicing with `[start:end]` syntax (supports negative indices)

@@ -71,6 +71,7 @@ const (
 	OpJSON
 	OpAppend
 	OpStr
+	OpLower
 	OpInput
 	OpCount
 	OpAvg
@@ -180,6 +181,8 @@ func (op Op) String() string {
 		return "Append"
 	case OpStr:
 		return "Str"
+	case OpLower:
+		return "Lower"
 	case OpInput:
 		return "Input"
 	case OpCount:
@@ -389,6 +392,8 @@ func (p *Program) Disassemble(src string) string {
 			case OpUnionAll, OpUnion, OpExcept, OpIntersect:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpStr:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpLower:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpInput:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
@@ -984,6 +989,8 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: inter}
 		case OpStr:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
+		case OpLower:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: strings.ToLower(fmt.Sprint(valueToAny(fr.regs[ins.B])))}
 		case OpInput:
 			line, err := m.reader.ReadString('\n')
 			if err != nil && err != io.EOF {
@@ -1491,7 +1498,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpInput:
+	case OpAppend, OpStr, OpLower, OpInput:
 		fc.tags[i.A] = tagUnknown
 	case OpCount:
 		fc.tags[i.A] = tagInt
@@ -2131,6 +2138,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpStr, A: dst, B: arg})
+			return dst
+		case "lower":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpLower, A: dst, B: arg})
 			return dst
 		case "print":
 			if len(p.Call.Args) == 1 {
