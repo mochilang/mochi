@@ -66,18 +66,22 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "!=":
 					c.helpers["eq"] = true
 					expr = fmt.Sprintf("not __eq(%s, %s)", l, r)
-				case "union_all":
-					c.helpers["union_all"] = true
-					expr = fmt.Sprintf("__union_all(%s, %s)", l, r)
-				case "union":
-					c.helpers["union"] = true
-					expr = fmt.Sprintf("__union(%s, %s)", l, r)
-				case "except":
-					c.helpers["except"] = true
-					expr = fmt.Sprintf("__except(%s, %s)", l, r)
-				case "intersect":
-					c.helpers["intersect"] = true
-					expr = fmt.Sprintf("__intersect(%s, %s)", l, r)
+                               case "union_all":
+                                       c.helpers["union_all"] = true
+                                       c.helpers["eq"] = true
+                                       expr = fmt.Sprintf("__union_all(%s, %s)", l, r)
+                               case "union":
+                                       c.helpers["union"] = true
+                                       c.helpers["eq"] = true
+                                       expr = fmt.Sprintf("__union(%s, %s)", l, r)
+                               case "except":
+                                       c.helpers["except"] = true
+                                       c.helpers["eq"] = true
+                                       expr = fmt.Sprintf("__except(%s, %s)", l, r)
+                               case "intersect":
+                                       c.helpers["intersect"] = true
+                                       c.helpers["eq"] = true
+                                       expr = fmt.Sprintf("__intersect(%s, %s)", l, r)
 				default:
 					expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
 				}
