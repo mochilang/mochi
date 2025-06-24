@@ -281,8 +281,9 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
 
 - Function definitions with typed parameters and return values
 - `let` and `var` declarations with assignment
-- Arithmetic and comparison operators
-- Lists and maps with indexing and slicing
+- Arithmetic and comparison operators plus list concatenation with `+`
+- Lists and maps with indexing, slicing and element assignment
+- Membership checks using `in` on lists, strings and maps
 - Built-in functions `len`, `count`, `avg`, `str` and `input`
 - `print` statements
 - `if` statements and expressions
@@ -291,7 +292,7 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
 - `while` loops with `break` and `continue`
 - Expect assertions and `test` blocks
 - Logic programming facts, rules and `query` expressions
-- Anonymous function literals (`fun` expressions`)
+- Anonymous function literals (`fun` expressions)
 ## Unsupported Features
 
 The Prolog backend focuses on basic control flow and list operations. Several
