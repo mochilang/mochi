@@ -20,6 +20,7 @@ type Compiler struct {
 	funReturnStr         map[string]bool
 	funReturnList        map[string]bool
 	funReturnFloat       map[string]bool
+	lambdas              []string
 	needsUnionInt        bool
 	needsUnionFloat      bool
 	needsUnionString     bool
@@ -42,6 +43,7 @@ func New() *Compiler {
 		funReturnStr:   map[string]bool{},
 		funReturnList:  map[string]bool{},
 		funReturnFloat: map[string]bool{},
+		lambdas:        []string{},
 		needsNow:       false,
 	}
 }
@@ -86,6 +88,7 @@ func (c *Compiler) blank() {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.lambdas = nil
 	if prog.Package != "" {
 		c.writeln("! package " + prog.Package)
 	}
@@ -188,7 +191,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.needsExceptInt || c.needsExceptFloat || c.needsExceptString ||
 		c.needsIntersectInt || c.needsIntersectFloat || c.needsIntersectString ||
 		c.needsStrInt || c.needsStrFloat
-	if len(funs)+len(tests) > 0 || needHelpers {
+	if len(funs)+len(tests)+len(c.lambdas) > 0 || needHelpers {
 		c.writeln("contains")
 		c.indent++
 		for _, f := range funs {
@@ -200,6 +203,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		for _, t := range tests {
 			if err := c.compileTestBlock(t); err != nil {
 				return nil, err
+			}
+			c.writeln("")
+		}
+		for _, l := range c.lambdas {
+			c.buf.WriteString(l)
+			if !strings.HasSuffix(l, "\n") {
+				c.writeln("")
 			}
 			c.writeln("")
 		}
@@ -1124,6 +1134,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			} else {
 				return "", fmt.Errorf("unsupported cast")
 			}
+		case op.Call != nil:
+			tmp := &parser.CallExpr{Func: "", Args: op.Call.Args}
+			val, err := c.compileCallExpr(tmp, expr)
+			if err != nil {
+				return "", err
+			}
+			expr = val
 		}
 	}
 	return expr, nil
@@ -1168,6 +1185,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return sanitizeName(p.Selector.Root), nil
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call, "")
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Group != nil:
@@ -1273,6 +1292,39 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
+	name := fmt.Sprintf("lambda_%d", len(c.lambdas))
+	oldBuf := c.buf
+	oldIndent := c.indent
+	oldStrings := c.stringVars
+	oldLists := c.listVars
+	oldFloats := c.floatVars
+	c.buf = bytes.Buffer{}
+	c.indent = 1
+	var body []*parser.Statement
+	if fn.ExprBody != nil {
+		body = []*parser.Statement{{Return: &parser.ReturnStmt{Value: fn.ExprBody}}}
+	} else {
+		body = fn.BlockBody
+	}
+	if err := c.compileFun(&parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: body}); err != nil {
+		c.buf = oldBuf
+		c.indent = oldIndent
+		c.stringVars = oldStrings
+		c.listVars = oldLists
+		c.floatVars = oldFloats
+		return "", err
+	}
+	code := c.buf.String()
+	c.lambdas = append(c.lambdas, code)
+	c.buf = oldBuf
+	c.indent = oldIndent
+	c.stringVars = oldStrings
+	c.listVars = oldLists
+	c.floatVars = oldFloats
+	return name, nil
 }
 
 func (c *Compiler) lengthFunc(name string) string {
