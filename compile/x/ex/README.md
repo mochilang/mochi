@@ -217,7 +217,6 @@ The Elixir backend implements most core language features but still lacks suppor
 - Dataset queries with outer joins or complex aggregation.
 - Agent and stream constructs (`agent`, `on`, `emit`) and logic programming features (`fact`, `rule`, `query`).
 - Model declarations (`model` blocks).
-- Set operations using `union`, `except` or `intersect` operators.
 - `load` and `save` now handle CSV and JSON data, but YAML remains unsupported.
 - Foreign imports and `extern` declarations.
 - Concurrency primitives such as `spawn` and channels.

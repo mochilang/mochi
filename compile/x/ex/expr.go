@@ -53,6 +53,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	}
 
 	contains := func(sl []string, s string) bool {
@@ -98,6 +99,22 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
 			case "in":
 				expr = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", r.expr, r.expr, l.expr, r.expr, l.expr)
+			case "union_all":
+				c.use("_union_all")
+				expr = fmt.Sprintf("_union_all(%s, %s)", l.expr, r.expr)
+				isList = true
+			case "union":
+				c.use("_union")
+				expr = fmt.Sprintf("_union(%s, %s)", l.expr, r.expr)
+				isList = true
+			case "except":
+				c.use("_except")
+				expr = fmt.Sprintf("_except(%s, %s)", l.expr, r.expr)
+				isList = true
+			case "intersect":
+				c.use("_intersect")
+				expr = fmt.Sprintf("_intersect(%s, %s)", l.expr, r.expr)
+				isList = true
 			default:
 				return "", fmt.Errorf("unsupported operator %s", op)
 			}
