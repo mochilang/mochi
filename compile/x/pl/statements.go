@@ -80,27 +80,29 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		b = append(b, '\n')
 	}
 	c.buf = oldBuf
-	c.writeln(fmt.Sprintf("%s(%s, %s) :-", name, strings.Join(params, ", "), ret))
-	c.indent++
-	c.writeln("catch(")
-	c.indent++
-	c.writeln("(")
-	c.indent++
-	c.buf.Write(b)
-	if hasBody {
-		c.writeln(",")
+	if hasBody || fallback == nil {
+		c.writeln(fmt.Sprintf("%s(%s, %s) :-", name, strings.Join(params, ", "), ret))
+		c.indent++
+		c.writeln("catch(")
+		c.indent++
+		c.writeln("(")
+		c.indent++
+		c.buf.Write(b)
+		if hasBody {
+			c.writeln(",")
+		}
+		c.writeln("true")
+		c.indent--
+		c.writeln(")")
+		handler := c.newVar()
+		c.writeln(fmt.Sprintf(", return(%s),", handler))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s = %s", ret, handler))
+		c.indent--
+		c.writeln(")")
+		c.indent--
+		c.writeln(".")
 	}
-	c.writeln("true")
-	c.indent--
-	c.writeln(")")
-	handler := c.newVar()
-	c.writeln(fmt.Sprintf(", return(%s),", handler))
-	c.indent++
-	c.writeln(fmt.Sprintf("%s = %s", ret, handler))
-	c.indent--
-	c.writeln(")")
-	c.indent--
-	c.writeln(".")
 	if fallback != nil {
 		val, err := c.compileExpr(fallback.Return.Value)
 		if err != nil {
@@ -231,6 +233,8 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 		c.indent--
 		c.writeln("), continue, true),")
 		c.writeln("fail")
+		c.writeln(";")
+		c.writeln("true")
 		c.indent--
 		c.writeln(")")
 		c.writeln(", break, true),")
@@ -273,6 +277,8 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 	c.indent--
 	c.writeln("), continue, true),")
 	c.writeln("fail")
+	c.writeln(";")
+	c.writeln("true")
 	c.indent--
 	c.writeln(")")
 	c.writeln(", break, true),")

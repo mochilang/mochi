@@ -173,4 +173,28 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["union_all"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperUnionAll, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["union"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperUnion, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["except"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperExcept, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["intersect"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperIntersect, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 }

@@ -53,3 +53,16 @@ const helperAvg = "avg(V, R) :-\n" +
 	"avg_list(L, R) :- sum_list(L, S), length(L, N), N > 0, R is S / N.\n\n"
 
 const helperExpect = "expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).\n\n"
+
+const helperUnionAll = "union_all(A, B, R) :- append(A, B, R).\n\n"
+
+const helperUnion = "union(A, B, R) :- append(A, B, C), list_to_set(C, R).\n\n"
+
+const helperExcept = "except([], _, []).\n" +
+	"except([H|T], B, R) :- memberchk(H, B), !, except(T, B, R).\n" +
+	"except([H|T], B, [H|R]) :- except(T, B, R).\n\n"
+
+const helperIntersect = "intersect(A, B, R) :- intersect(A, B, [], R).\n" +
+	"intersect([], _, Acc, R) :- reverse(Acc, R).\n" +
+	"intersect([H|T], B, Acc, R) :- memberchk(H, B), \\+ memberchk(H, Acc), !, intersect(T, B, [H|Acc], R).\n" +
+	"intersect([_|T], B, Acc, R) :- intersect(T, B, Acc, R).\n\n"

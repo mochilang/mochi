@@ -1,0 +1,32 @@
+:- style_check(-singleton).
+union(A, B, R) :- append(A, B, C), list_to_set(C, R).
+
+
+except([], _, []).
+except([H|T], B, R) :- memberchk(H, B), !, except(T, B, R).
+except([H|T], B, [H|R]) :- except(T, B, R).
+
+
+intersect(A, B, R) :- intersect(A, B, [], R).
+intersect([], _, Acc, R) :- reverse(Acc, R).
+intersect([H|T], B, Acc, R) :- memberchk(H, B), \+ memberchk(H, Acc), !, intersect(T, B, [H|Acc], R).
+intersect([_|T], B, Acc, R) :- intersect(T, B, Acc, R).
+
+
+	main :-
+	A = [1, 2, 3],
+	B = [3, 4],
+	union(A, B, _V0),
+	write(_V0),
+	nl,
+	except(A, B, _V1),
+	write(_V1),
+	nl,
+	intersect(A, B, _V2),
+	write(_V2),
+	nl,
+	union([1, 2], [2, 3], _V3),
+	write(_V3),
+	nl
+	.
+:- initialization(main, main).

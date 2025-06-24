@@ -17,6 +17,8 @@ to_list(L, L).
 					true
 				), continue, true),
 				fail
+				;
+				true
 			)
 			, break, true),
 			true

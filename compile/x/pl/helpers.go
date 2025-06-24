@@ -44,5 +44,10 @@ func sanitizeVar(name string) string {
 
 func sanitizeAtom(name string) string {
 	name = strings.ReplaceAll(name, "-", "_")
+	if len(name) > 0 {
+		if name[0] < 'a' || name[0] > 'z' {
+			name = "p_" + name
+		}
+	}
 	return strings.ToLower(name)
 }

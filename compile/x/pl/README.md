@@ -287,6 +287,7 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
 - `print` statements
 - `if` statements and expressions
 - Range `for` loops and iteration over lists or strings
+- List set operations `union`, `union all`, `except` and `intersect`
 - `while` loops with `break` and `continue`
 - Expect assertions and `test` blocks
 - Logic programming facts, rules and `query` expressions
