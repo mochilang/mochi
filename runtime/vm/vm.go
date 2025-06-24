@@ -745,7 +745,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			case interpreter.TagStr:
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len([]rune(v.Str))}
 			case interpreter.TagMap:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.Map)}
+				if g, ok := v.Map["__group__"]; ok && g.Tag == interpreter.TagBool && g.Bool {
+					items := v.Map["items"]
+					if items.Tag != interpreter.TagList {
+						return Value{}, m.newError(fmt.Errorf("invalid group"), trace, ins.Line)
+					}
+					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(items.List)}
+				} else {
+					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.Map)}
+				}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid len operand"), trace, ins.Line)
 			}
@@ -1042,16 +1050,24 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			case interpreter.TagList:
 				fr.regs[ins.A] = src
 			case interpreter.TagMap:
-				ks := make([]string, 0, len(src.Map))
-				for k := range src.Map {
-					ks = append(ks, k)
+				if g, ok := src.Map["__group__"]; ok && g.Tag == interpreter.TagBool && g.Bool {
+					items := src.Map["items"]
+					if items.Tag != interpreter.TagList {
+						return Value{}, m.newError(fmt.Errorf("invalid group"), trace, ins.Line)
+					}
+					fr.regs[ins.A] = items
+				} else {
+					ks := make([]string, 0, len(src.Map))
+					for k := range src.Map {
+						ks = append(ks, k)
+					}
+					sort.Strings(ks)
+					keys := make([]Value, len(ks))
+					for i, k := range ks {
+						keys[i] = Value{Tag: interpreter.TagStr, Str: k}
+					}
+					fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: keys}
 				}
-				sort.Strings(ks)
-				keys := make([]Value, len(ks))
-				for i, k := range ks {
-					keys[i] = Value{Tag: interpreter.TagStr, Str: k}
-				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: keys}
 			case interpreter.TagStr:
 				r := []rune(src.Str)
 				lst := make([]Value, len(r))
@@ -1197,35 +1213,75 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = anyToValue(resAny)
 		case OpCount:
 			lst := fr.regs[ins.B]
-			if lst.Tag != interpreter.TagList {
+			switch lst.Tag {
+			case interpreter.TagList:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(lst.List)}
+			case interpreter.TagMap:
+				if g, ok := lst.Map["__group__"]; ok && g.Tag == interpreter.TagBool && g.Bool {
+					items := lst.Map["items"]
+					if items.Tag != interpreter.TagList {
+						return Value{}, fmt.Errorf("count expects list")
+					}
+					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(items.List)}
+				} else {
+					return Value{}, fmt.Errorf("count expects list")
+				}
+			default:
 				return Value{}, fmt.Errorf("count expects list")
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(lst.List)}
 		case OpAvg:
 			lst := fr.regs[ins.B]
-			if lst.Tag != interpreter.TagList {
+			var list []Value
+			switch lst.Tag {
+			case interpreter.TagList:
+				list = lst.List
+			case interpreter.TagMap:
+				if g, ok := lst.Map["__group__"]; ok && g.Tag == interpreter.TagBool && g.Bool {
+					items := lst.Map["items"]
+					if items.Tag != interpreter.TagList {
+						return Value{}, fmt.Errorf("avg expects list")
+					}
+					list = items.List
+				} else {
+					return Value{}, fmt.Errorf("avg expects list")
+				}
+			default:
 				return Value{}, fmt.Errorf("avg expects list")
 			}
-			if len(lst.List) == 0 {
+			if len(list) == 0 {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
 			} else {
 				var sum float64
-				for _, v := range lst.List {
+				for _, v := range list {
 					sum += toFloat(v)
 				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
+				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(list))}
 			}
 		case OpMin:
 			lst := fr.regs[ins.B]
-			if lst.Tag != interpreter.TagList {
+			var list []Value
+			switch lst.Tag {
+			case interpreter.TagList:
+				list = lst.List
+			case interpreter.TagMap:
+				if g, ok := lst.Map["__group__"]; ok && g.Tag == interpreter.TagBool && g.Bool {
+					items := lst.Map["items"]
+					if items.Tag != interpreter.TagList {
+						return Value{}, fmt.Errorf("min expects list")
+					}
+					list = items.List
+				} else {
+					return Value{}, fmt.Errorf("min expects list")
+				}
+			default:
 				return Value{}, fmt.Errorf("min expects list")
 			}
-			if len(lst.List) == 0 {
+			if len(list) == 0 {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
 			} else {
-				minVal := toFloat(lst.List[0])
-				isFloat := lst.List[0].Tag == interpreter.TagFloat
-				for _, v := range lst.List[1:] {
+				minVal := toFloat(list[0])
+				isFloat := list[0].Tag == interpreter.TagFloat
+				for _, v := range list[1:] {
 					if v.Tag == interpreter.TagFloat {
 						isFloat = true
 					}
@@ -1242,15 +1298,29 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 		case OpMax:
 			lst := fr.regs[ins.B]
-			if lst.Tag != interpreter.TagList {
+			var list []Value
+			switch lst.Tag {
+			case interpreter.TagList:
+				list = lst.List
+			case interpreter.TagMap:
+				if g, ok := lst.Map["__group__"]; ok && g.Tag == interpreter.TagBool && g.Bool {
+					items := lst.Map["items"]
+					if items.Tag != interpreter.TagList {
+						return Value{}, fmt.Errorf("max expects list")
+					}
+					list = items.List
+				} else {
+					return Value{}, fmt.Errorf("max expects list")
+				}
+			default:
 				return Value{}, fmt.Errorf("max expects list")
 			}
-			if len(lst.List) == 0 {
+			if len(list) == 0 {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
 			} else {
-				maxVal := toFloat(lst.List[0])
-				isFloat := lst.List[0].Tag == interpreter.TagFloat
-				for _, v := range lst.List[1:] {
+				maxVal := toFloat(list[0])
+				isFloat := list[0].Tag == interpreter.TagFloat
+				for _, v := range list[1:] {
 					if v.Tag == interpreter.TagFloat {
 						isFloat = true
 					}
