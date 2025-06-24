@@ -55,8 +55,28 @@ func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
     if end > n { end = n }
     if end < start { end = start }
     return String(chars[start..<end])
-}
+        }
 `
+	helperUnionAll = `func _union_all<T>(_ a: [T], _ b: [T]) -> [T] {
+    var res = a
+    res.append(contentsOf: b)
+    return res
+}`
+	helperUnion = `func _union<T: Equatable>(_ a: [T], _ b: [T]) -> [T] {
+    var res: [T] = a
+    for it in b { if !res.contains(it) { res.append(it) } }
+    return res
+}`
+	helperExcept = `func _except<T: Equatable>(_ a: [T], _ b: [T]) -> [T] {
+    var res: [T] = []
+    for it in a { if !b.contains(it) { res.append(it) } }
+    return res
+}`
+	helperIntersect = `func _intersect<T: Equatable>(_ a: [T], _ b: [T]) -> [T] {
+    var res: [T] = []
+    for it in a { if b.contains(it) && !res.contains(it) { res.append(it) } }
+    return res
+}`
 	helperLoad = `func _readInput(_ path: String?) -> String {
     if let p = path, !p.isEmpty && p != "-" {
         return (try? String(contentsOfFile: p)) ?? ""
@@ -171,6 +191,10 @@ var helperMap = map[string]string{
 	"_index":       helperIndex,
 	"_slice":       helperSlice,
 	"_sliceString": helperSliceString,
+	"_union_all":   helperUnionAll,
+	"_union":       helperUnion,
+	"_except":      helperExcept,
+	"_intersect":   helperIntersect,
 	"_load":        helperLoad,
 	"_save":        helperSave,
 	"_fetch":       helperFetch,

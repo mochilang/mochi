@@ -143,6 +143,7 @@ default:
 
 Negative string indexing is supported via the `_indexString` helper when a string is indexed with a potentially negative value.
 List indexing now handles negative values through the generic `_index` helper.
+List set operations `union`, `union all`, `except` and `intersect` use helper functions that deduplicate or combine arrays as needed.
 
 ## Swift Installation
 
