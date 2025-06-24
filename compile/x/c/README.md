@@ -35,6 +35,7 @@ Additional features include:
 - test blocks and `expect` statements compiled as helper functions
 - `if` expressions for conditional values
 - anonymous `fun` expressions (without captured variables) compiled to static functions
+- methods declared inside `type` blocks
 
 ## Building
 
@@ -88,7 +89,6 @@ features include:
 - package exports (extern objects are now supported)
 - nested list types other than `list<list<int>>`
 - set literals and set operations
-- methods declared inside `type` blocks
 - functions with multiple return values
 - map membership operations
 - iterating over maps with `for` loops

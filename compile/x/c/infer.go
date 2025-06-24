@@ -149,6 +149,11 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 					for idx, field := range p.Selector.Tail {
 						ft, ok := cur.Fields[field]
 						if !ok {
+							if idx == len(p.Selector.Tail)-1 {
+								if m, okm := cur.Methods[field]; okm {
+									return m.Type
+								}
+							}
 							return types.AnyType{}
 						}
 						if idx == len(p.Selector.Tail)-1 {
