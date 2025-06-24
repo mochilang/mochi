@@ -27,6 +27,7 @@ const (
 	tagInt
 	tagFloat
 	tagBool
+	tagStr
 )
 
 // Op defines a VM instruction opcode.
@@ -79,6 +80,12 @@ const (
 	OpLessFloat
 	OpLessEqInt
 	OpLessEqFloat
+
+	// Extra built-ins
+	OpAppend
+	OpStr
+	OpCount
+	OpAvg
 )
 
 func (op Op) String() string {
@@ -171,6 +178,14 @@ func (op Op) String() string {
 		return "LessEqInt"
 	case OpLessEqFloat:
 		return "LessEqFloat"
+	case OpAppend:
+		return "Append"
+	case OpStr:
+		return "Str"
+	case OpCount:
+		return "Count"
+	case OpAvg:
+		return "Avg"
 	default:
 		return "?"
 	}
@@ -300,6 +315,10 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpJSON:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
+			case OpStr, OpCount, OpAvg:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpAppend:
+				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpCall2:
 				fmt.Fprintf(&b, "%s, %s, %s, %s", formatReg(ins.A), p.funcName(ins.B), formatReg(ins.C), formatReg(ins.D))
 			case OpCall:
@@ -578,6 +597,36 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 		case OpJSON:
 			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
 			fmt.Fprintln(m.writer, string(b))
+		case OpAppend:
+			lst := fr.regs[ins.B]
+			if lst.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("append() expects list")
+			}
+			elem := fr.regs[ins.C]
+			newList := append(append([]Value{}, lst.List...), elem)
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: newList}
+		case OpStr:
+			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
+		case OpCount:
+			src := fr.regs[ins.B]
+			if src.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("count() expects list")
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(src.List)}
+		case OpAvg:
+			src := fr.regs[ins.B]
+			if src.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("avg() expects list")
+			}
+			total := 0.0
+			for _, v := range src.List {
+				total += toFloat(v)
+			}
+			avg := 0.0
+			if len(src.List) > 0 {
+				avg = total / float64(len(src.List))
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: avg}
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
@@ -741,6 +790,14 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2:
 		// no result
+	case OpAppend:
+		fc.tags[i.A] = tagUnknown
+	case OpStr:
+		fc.tags[i.A] = tagStr
+	case OpCount:
+		fc.tags[i.A] = tagInt
+	case OpAvg:
+		fc.tags[i.A] = tagFloat
 	}
 }
 
@@ -1097,6 +1154,27 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			fc.emit(p.Pos, Instr{Op: OpJSON, A: arg})
 			return arg
+		case "append":
+			list := fc.compileExpr(p.Call.Args[0])
+			val := fc.compileExpr(p.Call.Args[1])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpAppend, A: dst, B: list, C: val})
+			return dst
+		case "str":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpStr, A: dst, B: arg})
+			return dst
+		case "count":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpCount, A: dst, B: arg})
+			return dst
+		case "avg":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpAvg, A: dst, B: arg})
+			return dst
 		case "print":
 			if len(p.Call.Args) == 1 {
 				arg := fc.compileExpr(p.Call.Args[0])
@@ -1456,6 +1534,8 @@ func valTag(v Value) regTag {
 		return tagFloat
 	case interpreter.TagBool:
 		return tagBool
+	case interpreter.TagStr:
+		return tagStr
 	default:
 		return tagUnknown
 	}

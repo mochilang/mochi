@@ -8,6 +8,7 @@ const (
 	TagInt     RegTag = tagInt
 	TagFloat   RegTag = tagFloat
 	TagBool    RegTag = tagBool
+	TagStr     RegTag = tagStr
 )
 
 type Analysis struct {
@@ -130,6 +131,14 @@ func applyTags(tags []RegTag, ins Instr) {
 		tags[ins.A] = TagInt
 	case OpJSON, OpPrint, OpPrint2:
 		// no result
+	case OpAppend:
+		tags[ins.A] = TagUnknown
+	case OpStr:
+		tags[ins.A] = TagStr
+	case OpCount:
+		tags[ins.A] = TagInt
+	case OpAvg:
+		tags[ins.A] = TagFloat
 	case OpMakeList, OpIndex, OpSetIndex, OpCall, OpCall2, OpCallV:
 		tags[ins.A] = TagUnknown
 	}

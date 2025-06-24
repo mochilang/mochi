@@ -1,0 +1,7 @@
+func main (regs=3)
+  // print(append([1,2], 3))
+  Const        r0, [1, 2]
+  Const        r1, 3
+  Append       r2, r0, r1
+  Print        r2
+  Return       r0
