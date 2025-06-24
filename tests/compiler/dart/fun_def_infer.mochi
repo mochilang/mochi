@@ -1,0 +1,5 @@
+fun double(n: int) {
+  return n * 2
+}
+
+print(double(5))

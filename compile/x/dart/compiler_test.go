@@ -99,6 +99,7 @@ func TestDartCompiler_ValidGoldenOutput(t *testing.T) {
 		"for_string_collection",
 		"fun_expr_in_let",
 		"fun_call",
+		"fun_def_infer",
 		"grouped_expr",
 		"match_expr",
 		"if_else",
