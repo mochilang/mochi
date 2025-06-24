@@ -28,6 +28,14 @@ const (
 	helperGenEmbed = "defp _gen_embed(text, _model, _params) do\n  String.to_charlist(text) |> Enum.map(&(&1 + 0.0))\nend\n"
 
 	helperGenStruct = "defp _gen_struct(mod, prompt, _model, _params) do\n  data = Jason.decode!(prompt)\n  struct(mod, for {k,v} <- data, into: %{}, do: {String.to_atom(k), v})\nend\n"
+
+	helperUnionAll = "defp _union_all(a, b) do\n  a ++ b\nend\n"
+
+	helperUnion = "defp _union(a, b) do\n  Enum.uniq(a ++ b)\nend\n"
+
+	helperExcept = "defp _except(a, b) do\n  Enum.reject(a, fn x -> Enum.member?(b, x) end)\nend\n"
+
+	helperIntersect = "defp _intersect(a, b) do\n  Enum.filter(a, fn x -> Enum.member?(b, x) end) |> Enum.uniq()\nend\n"
 )
 
 var helperMap = map[string]string{
@@ -45,4 +53,8 @@ var helperMap = map[string]string{
 	"_gen_text":    helperGenText,
 	"_gen_embed":   helperGenEmbed,
 	"_gen_struct":  helperGenStruct,
+	"_union_all":   helperUnionAll,
+	"_union":       helperUnion,
+	"_except":      helperExcept,
+	"_intersect":   helperIntersect,
 }
