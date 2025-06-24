@@ -18,6 +18,8 @@ Generated code may embed a small set of helper functions depending on which buil
 - `_cast` – generic casting utility implemented via JSON serialisation
 - `_indexString` – safe string indexing with negative offsets
 - `_sliceString` – substring slicing with negative offsets
+- `_indexList` – safe list indexing with negative offsets
+- `_sliceList` – list slicing with negative offsets
 - `_equal` – deep equality check for lists
 - `_union_all` – concatenates two lists
 - `_union` – set union for lists

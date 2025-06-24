@@ -134,6 +134,34 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("return s.Substring((int)start, (int)(end - start));")
 				c.indent--
 				c.writeln("}")
+			case "_indexList":
+				c.writeln("static dynamic _indexList(dynamic l, long i) {")
+				c.indent++
+				c.writeln("var list = l as System.Collections.IList;")
+				c.writeln("if (list == null) throw new Exception(\"index() expects list\");")
+				c.writeln("if (i < 0) i += list.Count;")
+				c.writeln("if (i < 0 || i >= list.Count) throw new Exception(\"index out of range\");")
+				c.writeln("return list[(int)i];")
+				c.indent--
+				c.writeln("}")
+			case "_sliceList":
+				c.writeln("static List<dynamic> _sliceList(dynamic l, long i, long j) {")
+				c.indent++
+				c.writeln("var list = l as System.Collections.IList;")
+				c.writeln("if (list == null) return new List<dynamic>();")
+				c.writeln("var start = i;")
+				c.writeln("var end = j;")
+				c.writeln("var n = list.Count;")
+				c.writeln("if (start < 0) start += n;")
+				c.writeln("if (end < 0) end += n;")
+				c.writeln("if (start < 0) start = 0;")
+				c.writeln("if (end > n) end = n;")
+				c.writeln("if (end < start) end = start;")
+				c.writeln("var res = new List<dynamic>();")
+				c.writeln("for (int k = (int)start; k < (int)end; k++) res.Add(list[k]);")
+				c.writeln("return res;")
+				c.indent--
+				c.writeln("}")
 			case "_equal":
 				c.writeln("static bool _equal(dynamic a, dynamic b) {")
 				c.indent++
