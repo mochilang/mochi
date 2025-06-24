@@ -1,4 +1,23 @@
 # 📦 CHANGELOG.md
+## [0.9.4] – 2025-06-25T00:02:13+07:00
+
+### Added
+
+* Typed dataset loading in the VM
+* Group query left joins with group-by
+* String indexing, slicing, membership and concatenation across languages
+* `upper` and `lower` string builtins
+* `union_all` list operator support
+
+### Changed
+
+* TinyGo build stubs and playground updates
+
+### Fixed
+
+* Right join ordering bug in the VM
+* Prolog and C++ compiler tests
+
 ## [0.9.3] – 2025-06-24T22:34:20+07:00
 
 ### Added
