@@ -1,0 +1,22 @@
+func main (regs=12)
+  // print("a" < "b")
+  Const        r0, "a"
+  Const        r1, "b"
+  Less         r2, r0, r1
+  Print        r2
+  // print("a" <= "a")
+  Const        r3, "a"
+  Const        r4, "a"
+  LessEq       r5, r3, r4
+  Print        r5
+  // print("b" > "a")
+  Const        r6, "b"
+  Const        r7, "a"
+  Less         r8, r7, r6
+  Print        r8
+  // print("b" >= "b")
+  Const        r9, "b"
+  Const        r10, "b"
+  LessEq       r11, r10, r9
+  Print        r11
+  Return       r0

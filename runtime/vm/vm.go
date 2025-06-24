@@ -627,9 +627,25 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpEqualFloat:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) == toFloat(fr.regs[ins.C])}
 		case OpLess:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) < toFloat(fr.regs[ins.C])}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			var res bool
+			if b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr {
+				res = b.Str < c.Str
+			} else {
+				res = toFloat(b) < toFloat(c)
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: res}
 		case OpLessEq:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			var res bool
+			if b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr {
+				res = b.Str <= c.Str
+			} else {
+				res = toFloat(b) <= toFloat(c)
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: res}
 		case OpLessInt:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int < fr.regs[ins.C].Int}
 		case OpLessFloat:
