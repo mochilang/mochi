@@ -1,4 +1,4 @@
-func main (regs=21)
+func main (regs=27)
   // let n = 10
   Const        r0, 10
   Move         r1, r0
@@ -29,12 +29,23 @@ L1:
 L0:
   // let duration = (now() - start) / 1000
   Now          r15
-  Sub          r16, r15, r7
+  SubInt       r16, r15, r7
   Const        r17, 1000
-  Div          r18, r16, r17
+  DivInt       r18, r16, r17
   Move         r19, r18
+  // "duration_us": duration,
+  Const        r20, "duration_us"
+  // "output": last,
+  Const        r21, "output"
+  // "duration_us": duration,
+  Move         r22, r20
+  Move         r23, r19
+  // "output": last,
+  Move         r24, r21
+  Move         r25, r5
   // json({
-  JSON         r20
+  MakeMap      r26, 2, r22
+  JSON         r26
   Return       r0
 
   // fun fact_rec(n: int): int {

@@ -1,4 +1,4 @@
-func main (regs=13)
+func main (regs=19)
   // let n = 10
   Const        r0, 10
   Move         r1, r0
@@ -11,12 +11,23 @@ func main (regs=13)
   Move         r6, r5
   // let duration = (now() - start) / 1000
   Now          r7
-  Sub          r8, r7, r3
+  SubInt       r8, r7, r3
   Const        r9, 1000
-  Div          r10, r8, r9
+  DivInt       r10, r8, r9
   Move         r11, r10
+  // "duration_us": duration,
+  Const        r12, "duration_us"
+  // "output": result,
+  Const        r13, "output"
+  // "duration_us": duration,
+  Move         r14, r12
+  Move         r15, r11
+  // "output": result,
+  Move         r16, r13
+  Move         r17, r6
   // json({
-  JSON         r12
+  MakeMap      r18, 2, r14
+  JSON         r18
   Return       r0
 
   // fun fib(n: int): int {
