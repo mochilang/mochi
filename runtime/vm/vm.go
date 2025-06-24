@@ -544,7 +544,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpAdd:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
+			if b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: b.Str + c.Str}
+			} else if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) + toFloat(c)}
 			} else {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int + c.Int}
