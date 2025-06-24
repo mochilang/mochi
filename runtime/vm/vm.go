@@ -582,13 +582,27 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
 		case OpIn:
 			item := fr.regs[ins.B]
-			list := fr.regs[ins.C].List
+			container := fr.regs[ins.C]
 			found := false
-			for _, v := range list {
-				if valuesEqual(v, item) {
-					found = true
-					break
+			switch container.Tag {
+			case interpreter.TagList:
+				for _, v := range container.List {
+					if valuesEqual(v, item) {
+						found = true
+						break
+					}
 				}
+			case interpreter.TagMap:
+				key := fmt.Sprint(valueToAny(item))
+				_, found = container.Map[key]
+			case interpreter.TagStr:
+				if item.Tag == interpreter.TagStr {
+					found = strings.Contains(container.Str, item.Str)
+				} else {
+					return Value{}, m.newError(fmt.Errorf("invalid substring type"), trace, ins.Line)
+				}
+			default:
+				return Value{}, m.newError(fmt.Errorf("invalid 'in' operand"), trace, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: found}
 		case OpJump:

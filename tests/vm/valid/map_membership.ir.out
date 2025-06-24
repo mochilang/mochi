@@ -1,0 +1,14 @@
+func main (regs=6)
+  // let m = {"a": 1, "b": 2}
+  Const        r0, {"a": 1, "b": 2}
+  Move         r1, r0
+  // print("a" in m)
+  Const        r2, "a"
+  In           r3, r2, r1
+  Print        r3
+  // print("c" in m)
+  Const        r4, "c"
+  In           r5, r4, r1
+  Print        r5
+  Return       r0
+
