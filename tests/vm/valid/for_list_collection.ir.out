@@ -1,4 +1,4 @@
-func main (regs=8)
+func main (regs=4)
   // for n in [1,2,3] {
   Const        r0, [1, 2, 3]
   Len          r1, r0
@@ -6,14 +6,14 @@ func main (regs=8)
 L1:
   Less         r3, r2, r1
   JumpIfFalse  r3, L0
-  Index        r4, r0, r2
-  Move         r5, r4
+  Index        r3, r0, r2
+  Move         r1, r3
   // print(n)
-  Print        r5
+  Print        r1
   // for n in [1,2,3] {
-  Const        r6, 1
-  Add          r7, r2, r6
-  Move         r2, r7
+  Const        r1, 1
+  Add          r3, r2, r1
+  Move         r2, r3
   Jump         L1
 L0:
   Return       r0

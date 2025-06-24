@@ -1,19 +1,19 @@
-func main (regs=7)
+func main (regs=5)
   // print(sum3(1, 2, 3))  // 6
-  Const        r3, 1
-  Move         r0, r3
-  Const        r4, 2
-  Move         r1, r4
-  Const        r5, 3
-  Move         r2, r5
-  Call         r6, sum3, r0, r1, r2
-  Print        r6
-  Return       r0
+  Const        r0, 1
+  Move         r1, r0
+  Const        r0, 2
+  Move         r2, r0
+  Const        r0, 3
+  Move         r3, r0
+  Call         r0, sum3, r1, r2, r3
+  Print        r0
+  Return       r1
 
   // fun sum3(a: int, b: int, c: int): int {
-func sum3 (regs=5)
+func sum3 (regs=4)
   // return a + b + c
-  Add          r3, r0, r1
-  Add          r4, r3, r2
-  Return       r4
-  Return       r0
+  Add          r0, r1, r2
+  Add          r2, r0, r3
+  Return       r2
+  Return       r1

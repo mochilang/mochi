@@ -544,6 +544,7 @@ func (c *compiler) compileFun(fn *parser.FunStmt) Function {
 		fc.compileStmt(st)
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
+	allocateRegisters(&fc.fn)
 	return fc.fn
 }
 
@@ -566,6 +567,7 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
 		}
 		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	}
+	allocateRegisters(&fc.fn)
 	idx := len(c.funcs)
 	c.funcs = append(c.funcs, fc.fn)
 	return idx
@@ -582,6 +584,7 @@ func (c *compiler) compileMain(p *parser.Program) Function {
 		fc.compileStmt(st)
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
+	allocateRegisters(&fc.fn)
 	return fc.fn
 }
 
@@ -1266,4 +1269,210 @@ func valuesEqual(a, b Value) bool {
 	default:
 		return false
 	}
+}
+
+// allocateRegisters performs a simple liveness analysis and rewrites the
+// function's instructions to reuse registers whose values are no longer live.
+// This reduces the overall register count required at runtime.
+func allocateRegisters(fn *Function) {
+	num := fn.NumRegs
+	if num == 0 {
+		return
+	}
+
+	// Track first and last use of each register.
+	first := make([]int, num)
+	last := make([]int, num)
+	for i := range first {
+		first[i] = -1
+		last[i] = -1
+	}
+	for pc, ins := range fn.Code {
+		uses, defs := instrUsesDefs(ins)
+		for _, r := range append(defs, uses...) {
+			if r >= num {
+				continue
+			}
+			if first[r] == -1 {
+				first[r] = pc
+			}
+			if pc > last[r] {
+				last[r] = pc
+			}
+		}
+	}
+
+	mapReg := make([]int, num)
+	for i := range mapReg {
+		mapReg[i] = -1
+	}
+	free := []int{}
+	next := 0
+
+	rewrite := func(r int) int {
+		if r < 0 {
+			return -1
+		}
+		if mapReg[r] == -1 {
+			var phys int
+			if len(free) > 0 {
+				phys = free[len(free)-1]
+				free = free[:len(free)-1]
+			} else {
+				phys = next
+				next++
+			}
+			mapReg[r] = phys
+		}
+		return mapReg[r]
+	}
+
+	for pc := 0; pc < len(fn.Code); pc++ {
+		ins := fn.Code[pc]
+		uses, defs := instrUsesDefs(ins)
+
+		// Allocate registers for operands.
+		for _, r := range append(defs, uses...) {
+			_ = rewrite(r)
+		}
+
+		// Rewrite instruction.
+		fn.Code[pc] = renameInstr(ins, rewrite)
+
+		// Free registers whose lifetime ends here.
+		for _, r := range append(defs, uses...) {
+			if last[r] == pc {
+				free = append(free, mapReg[r])
+				mapReg[r] = -1
+			}
+		}
+	}
+
+	fn.NumRegs = next
+}
+
+// instrUsesDefs returns the registers defined and used by the instruction.
+func instrUsesDefs(i Instr) (uses, defs []int) {
+	switch i.Op {
+	case OpConst:
+		defs = []int{i.A}
+	case OpMove, OpNot:
+		uses = []int{i.B}
+		defs = []int{i.A}
+	case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpEqual, OpNotEqual, OpLess, OpLessEq, OpIn:
+		uses = []int{i.B, i.C}
+		defs = []int{i.A}
+	case OpLen:
+		uses = []int{i.B}
+		defs = []int{i.A}
+	case OpIndex:
+		uses = []int{i.B, i.C}
+		defs = []int{i.A}
+	case OpSetIndex:
+		uses = []int{i.A, i.B, i.C}
+	case OpMakeList:
+		for j := 0; j < i.B; j++ {
+			uses = append(uses, i.C+j)
+		}
+		defs = []int{i.A}
+	case OpPrint:
+		uses = []int{i.A}
+	case OpPrint2:
+		uses = []int{i.A, i.B}
+	case OpCall2:
+		uses = []int{i.C, i.D}
+		defs = []int{i.A}
+	case OpCall:
+		for j := 0; j < i.C; j++ {
+			uses = append(uses, i.D+j)
+		}
+		defs = []int{i.A}
+	case OpCallV:
+		uses = []int{i.B}
+		for j := 0; j < i.C; j++ {
+			uses = append(uses, i.D+j)
+		}
+		defs = []int{i.A}
+	case OpReturn:
+		uses = []int{i.A}
+	case OpJumpIfFalse, OpJumpIfTrue:
+		uses = []int{i.A}
+	case OpJSON:
+		uses = []int{i.A}
+	case OpNow:
+		defs = []int{i.A}
+	}
+	return
+}
+
+// renameInstr rewrites all register operands of i using the provided mapping
+// function and returns the updated instruction.
+func renameInstr(i Instr, f func(int) int) Instr {
+	switch i.Op {
+	case OpConst:
+		i.A = f(i.A)
+	case OpMove, OpNot:
+		i.A = f(i.A)
+		i.B = f(i.B)
+	case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpEqual, OpNotEqual, OpLess, OpLessEq, OpIn:
+		i.A = f(i.A)
+		i.B = f(i.B)
+		i.C = f(i.C)
+	case OpLen:
+		i.A = f(i.A)
+		i.B = f(i.B)
+	case OpIndex:
+		i.A = f(i.A)
+		i.B = f(i.B)
+		i.C = f(i.C)
+	case OpSetIndex:
+		i.A = f(i.A)
+		i.B = f(i.B)
+		i.C = f(i.C)
+	case OpMakeList:
+		i.A = f(i.A)
+		for j := 0; j < i.B; j++ {
+			r := f(i.C + j)
+			if j == 0 {
+				i.C = r
+			} else {
+				// registers are contiguous; nothing else to store
+			}
+		}
+	case OpPrint:
+		i.A = f(i.A)
+	case OpPrint2:
+		i.A = f(i.A)
+		i.B = f(i.B)
+	case OpCall2:
+		i.A = f(i.A)
+		i.C = f(i.C)
+		i.D = f(i.D)
+	case OpCall:
+		i.A = f(i.A)
+		for j := 0; j < i.C; j++ {
+			r := f(i.D + j)
+			if j == 0 {
+				i.D = r
+			}
+		}
+	case OpCallV:
+		i.A = f(i.A)
+		i.B = f(i.B)
+		for j := 0; j < i.C; j++ {
+			r := f(i.D + j)
+			if j == 0 {
+				i.D = r
+			}
+		}
+	case OpReturn:
+		i.A = f(i.A)
+	case OpJumpIfFalse, OpJumpIfTrue:
+		i.A = f(i.A)
+	case OpJSON:
+		i.A = f(i.A)
+	case OpNow:
+		i.A = f(i.A)
+	}
+	return i
 }
