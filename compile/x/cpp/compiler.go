@@ -447,7 +447,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	for _, op := range b.Right {
 		rhs := c.compilePostfix(op.Right)
 		rtyp := c.guessPostfixType(op.Right)
-		if op.Op == "+" && (strings.HasPrefix(typ, "vector<") || strings.HasPrefix(rtyp, "vector<")) {
+		opStr := op.Op
+		if op.Op == "union" && op.All {
+			opStr = "union_all"
+		}
+		if opStr == "+" && (strings.HasPrefix(typ, "vector<") || strings.HasPrefix(rtyp, "vector<")) {
 			elem := "int"
 			if strings.HasPrefix(typ, "vector<") {
 				elem = strings.TrimSuffix(strings.TrimPrefix(typ, "vector<"), ">")
@@ -458,7 +462,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			typ = "vector<" + elem + ">"
 			continue
 		}
-		if op.Op == "+" && (typ == "string" || rtyp == "string") {
+		if opStr == "+" && (typ == "string" || rtyp == "string") {
 			if typ != "string" {
 				if typ == "char" {
 					expr = fmt.Sprintf("string(1, %s)", expr)
@@ -477,7 +481,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			typ = "string"
 			continue
 		}
-		if op.Op == "in" {
+		if opStr == "in" {
 			if strings.HasPrefix(rtyp, "vector<") {
 				expr = fmt.Sprintf("(find(%s.begin(), %s.end(), %s) != %s.end())", rhs, rhs, expr, rhs)
 				typ = "bool"
@@ -494,7 +498,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 				continue
 			}
 		}
-		if op.Op == "union" {
+		if opStr == "union_all" {
+			c.helpers["unionAll"] = true
+			expr = fmt.Sprintf("_union_all(%s, %s)", expr, rhs)
+			if !strings.HasPrefix(typ, "vector<") && strings.HasPrefix(rtyp, "vector<") {
+				typ = rtyp
+			}
+			continue
+		}
+		if opStr == "union" {
 			c.helpers["union"] = true
 			expr = fmt.Sprintf("_union(%s, %s)", expr, rhs)
 			if !strings.HasPrefix(typ, "vector<") && strings.HasPrefix(rtyp, "vector<") {
@@ -502,7 +514,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			}
 			continue
 		}
-		if op.Op == "except" || op.Op == "intersect" {
+		if opStr == "except" || opStr == "intersect" {
 			c.helpers[op.Op] = true
 			expr = fmt.Sprintf("_%s(%s, %s)", op.Op, expr, rhs)
 			if !strings.HasPrefix(typ, "vector<") && strings.HasPrefix(rtyp, "vector<") {

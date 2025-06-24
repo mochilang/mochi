@@ -221,7 +221,7 @@ Dataset queries support `where`, `skip`, `take`, `sort by`, `join` and basic `gr
 * List and map literals with indexing and slicing
 * Built‑in functions `print`, `len`, `str`, `now` and `input`
 * Dataset queries with filtering, sorting, pagination and simple grouping
-* List operators `union`, `except` and `intersect`
+* List operators `union`, `union all`, `except` and `intersect`
 * Membership tests using `in`
 * Iterating over map keys with `for k in m`
 
