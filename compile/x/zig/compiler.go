@@ -113,7 +113,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	if fn.Return != nil {
 		ret = c.zigType(fn.Return)
 	}
-	c.writeln(fmt.Sprintf("fn %s(%s) %s {", name, strings.Join(params, ", "), ret))
+	prefix := ""
+	if fn.Export {
+		prefix = "pub "
+	}
+	c.writeln(fmt.Sprintf("%sfn %s(%s) %s {", prefix, name, strings.Join(params, ", "), ret))
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st, true); err != nil {
