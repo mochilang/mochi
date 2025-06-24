@@ -302,6 +302,19 @@ const (
 	helperJson = "void _json(dynamic v) {\n" +
 		"    print(jsonEncode(v));\n" +
 		"}\n"
+	helperEqual = "bool _equal(dynamic a, dynamic b) {\n" +
+		"    if (a is List && b is List) {\n" +
+		"        if (a.length != b.length) return false;\n" +
+		"        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }\n" +
+		"        return true;\n" +
+		"    }\n" +
+		"    if (a is Map && b is Map) {\n" +
+		"        if (a.length != b.length) return false;\n" +
+		"        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }\n" +
+		"        return true;\n" +
+		"    }\n" +
+		"    return a == b;\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -323,6 +336,7 @@ var helperMap = map[string]string{
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
 	"_json":        helperJson,
+	"_equal":       helperEqual,
 }
 
 func (c *Compiler) use(name string) {
