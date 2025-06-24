@@ -1,0 +1,9 @@
+fun outer(): string {
+  type Person {
+    name: string
+  }
+  let p = Person { name: "Bob" }
+  return p.name
+}
+
+print(outer())
