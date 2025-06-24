@@ -157,7 +157,7 @@ The Ruby backend covers a wide slice of Mochi. Implemented functionality include
 - Function definitions and calls
 - Control flow with `if`, `for` and `while`
 - Structs, unions and pattern matching with `match`
-- Lists and maps with indexing and slicing
+- Lists and maps with indexing, slicing, membership checks and concatenation
 - Dataset queries with `from`, `join`, `left join`, `right join`, `where`, `group by`, `sort`, `skip` and `take`
 - Set operations such as `union`, `union all`, `except` and `intersect`
 - Built‑in helpers including `fetch`, `load`, `save` and placeholder LLM generation
