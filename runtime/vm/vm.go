@@ -1036,32 +1036,37 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			line = strings.TrimRight(line, "\r\n")
 			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: line}
-		case OpIterPrep:
-			src := fr.regs[ins.B]
-			switch src.Tag {
-			case interpreter.TagList:
-				fr.regs[ins.A] = src
-			case interpreter.TagMap:
-				ks := make([]string, 0, len(src.Map))
-				for k := range src.Map {
-					ks = append(ks, k)
-				}
-				sort.Strings(ks)
-				keys := make([]Value, len(ks))
-				for i, k := range ks {
-					keys[i] = Value{Tag: interpreter.TagStr, Str: k}
-				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: keys}
-			case interpreter.TagStr:
-				r := []rune(src.Str)
-				lst := make([]Value, len(r))
-				for i, ch := range r {
-					lst[i] = Value{Tag: interpreter.TagStr, Str: string(ch)}
-				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: lst}
-			default:
-				return Value{}, m.newError(fmt.Errorf("invalid iterator"), trace, ins.Line)
-			}
+                case OpIterPrep:
+                        src := fr.regs[ins.B]
+                        switch src.Tag {
+                        case interpreter.TagList:
+                                fr.regs[ins.A] = src
+                        case interpreter.TagMap:
+                                if flag, ok := src.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+                                        items := src.Map["items"]
+                                        fr.regs[ins.A] = items
+                                        break
+                                }
+                                ks := make([]string, 0, len(src.Map))
+                                for k := range src.Map {
+                                        ks = append(ks, k)
+                                }
+                                sort.Strings(ks)
+                                keys := make([]Value, len(ks))
+                                for i, k := range ks {
+                                        keys[i] = Value{Tag: interpreter.TagStr, Str: k}
+                                }
+                                fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: keys}
+                        case interpreter.TagStr:
+                                r := []rune(src.Str)
+                                lst := make([]Value, len(r))
+                                for i, ch := range r {
+                                        lst[i] = Value{Tag: interpreter.TagStr, Str: string(ch)}
+                                }
+                                fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: lst}
+                        default:
+                                return Value{}, m.newError(fmt.Errorf("invalid iterator"), trace, ins.Line)
+                        }
 		case OpLoad:
 			path := fr.regs[ins.B].Str
 			opts := valueToAny(fr.regs[ins.C])
@@ -1195,76 +1200,99 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(err, trace, ins.Line)
 			}
 			fr.regs[ins.A] = anyToValue(resAny)
-		case OpCount:
-			lst := fr.regs[ins.B]
-			if lst.Tag != interpreter.TagList {
-				return Value{}, fmt.Errorf("count expects list")
-			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(lst.List)}
-		case OpAvg:
-			lst := fr.regs[ins.B]
-			if lst.Tag != interpreter.TagList {
-				return Value{}, fmt.Errorf("avg expects list")
-			}
-			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
-			} else {
-				var sum float64
-				for _, v := range lst.List {
-					sum += toFloat(v)
-				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
-			}
-		case OpMin:
-			lst := fr.regs[ins.B]
-			if lst.Tag != interpreter.TagList {
-				return Value{}, fmt.Errorf("min expects list")
-			}
-			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
-			} else {
-				minVal := toFloat(lst.List[0])
-				isFloat := lst.List[0].Tag == interpreter.TagFloat
-				for _, v := range lst.List[1:] {
-					if v.Tag == interpreter.TagFloat {
-						isFloat = true
-					}
-					f := toFloat(v)
-					if f < minVal {
-						minVal = f
-					}
-				}
-				if isFloat {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: minVal}
-				} else {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(minVal)}
-				}
-			}
-		case OpMax:
-			lst := fr.regs[ins.B]
-			if lst.Tag != interpreter.TagList {
-				return Value{}, fmt.Errorf("max expects list")
-			}
-			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
-			} else {
-				maxVal := toFloat(lst.List[0])
-				isFloat := lst.List[0].Tag == interpreter.TagFloat
-				for _, v := range lst.List[1:] {
-					if v.Tag == interpreter.TagFloat {
-						isFloat = true
-					}
-					f := toFloat(v)
-					if f > maxVal {
-						maxVal = f
-					}
-				}
-				if isFloat {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: maxVal}
-				} else {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(maxVal)}
-				}
-			}
+                case OpCount:
+                        lst := fr.regs[ins.B]
+                        if lst.Tag == interpreter.TagList {
+                                fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(lst.List)}
+                                break
+                        }
+                        if lst.Tag == interpreter.TagMap {
+                                if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+                                        items := lst.Map["items"]
+                                        fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(items.List)}
+                                        break
+                                }
+                        }
+                        return Value{}, fmt.Errorf("count expects list")
+                case OpAvg:
+                        lst := fr.regs[ins.B]
+                        if lst.Tag == interpreter.TagMap {
+                                if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+                                        lst = lst.Map["items"]
+                                }
+                        }
+                        if lst.Tag != interpreter.TagList {
+                                return Value{}, fmt.Errorf("avg expects list")
+                        }
+                        if len(lst.List) == 0 {
+                                fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
+                        } else {
+                                var sum float64
+                                for _, v := range lst.List {
+                                        sum += toFloat(v)
+                                }
+                                fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
+                        }
+                case OpMin:
+                        lst := fr.regs[ins.B]
+                        if lst.Tag == interpreter.TagMap {
+                                if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+                                        lst = lst.Map["items"]
+                                }
+                        }
+                        if lst.Tag != interpreter.TagList {
+                                return Value{}, fmt.Errorf("min expects list")
+                        }
+                        if len(lst.List) == 0 {
+                                fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
+                        } else {
+                                minVal := toFloat(lst.List[0])
+                                isFloat := lst.List[0].Tag == interpreter.TagFloat
+                                for _, v := range lst.List[1:] {
+                                        if v.Tag == interpreter.TagFloat {
+                                                isFloat = true
+                                        }
+                                        f := toFloat(v)
+                                        if f < minVal {
+                                                minVal = f
+                                        }
+                                }
+                                if isFloat {
+                                        fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: minVal}
+                                } else {
+                                        fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(minVal)}
+                                }
+                        }
+                case OpMax:
+                        lst := fr.regs[ins.B]
+                        if lst.Tag == interpreter.TagMap {
+                                if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+                                        lst = lst.Map["items"]
+                                }
+                        }
+                        if lst.Tag != interpreter.TagList {
+                                return Value{}, fmt.Errorf("max expects list")
+                        }
+                        if len(lst.List) == 0 {
+                                fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
+                        } else {
+                                maxVal := toFloat(lst.List[0])
+                                isFloat := lst.List[0].Tag == interpreter.TagFloat
+                                for _, v := range lst.List[1:] {
+                                        if v.Tag == interpreter.TagFloat {
+                                                isFloat = true
+                                        }
+                                        f := toFloat(v)
+                                        if f > maxVal {
+                                                maxVal = f
+                                        }
+                                }
+                                if isFloat {
+                                        fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: maxVal}
+                                } else {
+                                        fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(maxVal)}
+                                }
+                        }
 		case OpCast:
 			val := valueToAny(fr.regs[ins.B])
 			typ := m.prog.Types[ins.C]
@@ -2489,16 +2517,20 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 // optional WHERE filtering and SELECT projection. Only cross joins are
 // handled and results are accumulated into a list.
 func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
-	dst := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
-	switch {
-	case len(q.Joins) == 1 && len(q.Froms) == 0:
-		fc.compileJoinQuery(q, dst)
-	case len(q.Joins) == 0:
-		fc.compileQueryFrom(q, dst, 0)
-	default:
-		fc.compileQueryFull(q, dst, 0)
-	}
+        dst := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
+        if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
+                fc.compileGroupQuery(q, dst)
+        } else {
+                switch {
+                case len(q.Joins) == 1 && len(q.Froms) == 0:
+                        fc.compileJoinQuery(q, dst)
+                case len(q.Joins) == 0:
+                        fc.compileQueryFrom(q, dst, 0)
+                default:
+                        fc.compileQueryFull(q, dst, 0)
+                }
+        }
 	if q.Sort != nil {
 		sorted := fc.newReg()
 		fc.emit(q.Sort.Pos, Instr{Op: OpSort, A: sorted, B: dst})
@@ -2945,6 +2977,134 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		rend3 := len(fc.fn.Code)
 		fc.fn.Code[rjmp3].B = rend3
 	}
+}
+
+// compileGroupQuery handles simple queries with a single FROM clause and GROUP BY.
+func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
+        srcReg := fc.compileExpr(q.Source)
+        listReg := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpIterPrep, A: listReg, B: srcReg})
+        lenReg := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpLen, A: lenReg, B: listReg})
+        idxReg := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+
+        groupsMap := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpMakeMap, A: groupsMap, B: 0})
+        groupsList := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: groupsList, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
+
+        loopStart := len(fc.fn.Code)
+        condReg := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lenReg})
+        jmp := len(fc.fn.Code)
+        fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: condReg})
+
+        elemReg := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpIndex, A: elemReg, B: listReg, C: idxReg})
+        varReg, ok := fc.vars[q.Var]
+        if !ok {
+                varReg = fc.newReg()
+                fc.vars[q.Var] = varReg
+        }
+        fc.emit(q.Pos, Instr{Op: OpMove, A: varReg, B: elemReg})
+
+        if q.Where != nil {
+                cond := fc.compileExpr(q.Where)
+                skip := len(fc.fn.Code)
+                fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+                fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList)
+                fc.fn.Code[skip].B = len(fc.fn.Code)
+        } else {
+                fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList)
+        }
+
+        one := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+        tmp := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
+        fc.emit(q.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+        fc.emit(q.Pos, Instr{Op: OpJump, A: loopStart})
+        end := len(fc.fn.Code)
+        fc.fn.Code[jmp].B = end
+
+        // iterate groups and produce final results
+        gi := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: gi, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+        glen := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpLen, A: glen, B: groupsList})
+        loop2 := len(fc.fn.Code)
+        cond2 := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpLess, A: cond2, B: gi, C: glen})
+        jmp2 := len(fc.fn.Code)
+        fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: cond2})
+
+        grp := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpIndex, A: grp, B: groupsList, C: gi})
+        gvar, ok := fc.vars[q.Group.Name]
+        if !ok {
+                gvar = fc.newReg()
+                fc.vars[q.Group.Name] = gvar
+        }
+        fc.emit(q.Pos, Instr{Op: OpMove, A: gvar, B: grp})
+
+        val := fc.compileExpr(q.Select)
+        tmpOut := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpAppend, A: tmpOut, B: dst, C: val})
+        fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmpOut})
+
+        one2 := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: one2, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+        tmp2 := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp2, B: gi, C: one2})
+        fc.emit(q.Pos, Instr{Op: OpMove, A: gi, B: tmp2})
+        fc.emit(q.Pos, Instr{Op: OpJump, A: loop2})
+        end2 := len(fc.fn.Code)
+        fc.fn.Code[jmp2].B = end2
+}
+
+func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, gmap, glist int) {
+        key := fc.compileExpr(q.Group.Expr)
+        keyStr := fc.newReg()
+        fc.emit(q.Group.Pos, Instr{Op: OpStr, A: keyStr, B: key})
+        exists := fc.newReg()
+        fc.emit(q.Group.Pos, Instr{Op: OpIn, A: exists, B: keyStr, C: gmap})
+        jump := len(fc.fn.Code)
+        fc.emit(q.Group.Pos, Instr{Op: OpJumpIfTrue, A: exists})
+
+        items := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: items, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
+        k1 := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: k1, Val: Value{Tag: interpreter.TagStr, Str: "__group__"}})
+        v1 := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: v1, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+        k2 := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: k2, Val: Value{Tag: interpreter.TagStr, Str: "key"}})
+        v2 := fc.newReg()
+        fc.emit(q.Group.Pos, Instr{Op: OpMove, A: v2, B: key})
+        k3 := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: k3, Val: Value{Tag: interpreter.TagStr, Str: "items"}})
+        v3 := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
+        grp := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpMakeMap, A: grp, B: 3, C: k1})
+        fc.emit(q.Pos, Instr{Op: OpSetIndex, A: gmap, B: keyStr, C: grp})
+        tmp := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: glist, C: grp})
+        fc.emit(q.Pos, Instr{Op: OpMove, A: glist, B: tmp})
+
+        end := len(fc.fn.Code)
+        fc.fn.Code[jump].B = end
+
+        itemsKey := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: itemsKey, Val: Value{Tag: interpreter.TagStr, Str: "items"}})
+        grp2 := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpIndex, A: grp2, B: gmap, C: keyStr})
+        cur := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpIndex, A: cur, B: grp2, C: itemsKey})
+        newList := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpAppend, A: newList, B: cur, C: elemReg})
+        fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: itemsKey, C: newList})
 }
 
 // compileQueryFrom recursively emits nested loops for each FROM clause.
