@@ -1,4 +1,28 @@
 # 📦 CHANGELOG.md
+## [0.9.2] – 2025-06-25
+
+### Added
+
+* Specialized numeric bytecode with CFG-based register inference
+* Dynamic map literals, membership and iteration
+* Builtins `append`, `str`, `input`, `count`, `avg` with extended `len`
+* Partial application, tail call optimization, unary negation
+* Nested index assignment and list set operations
+* Error stack traces from the VM
+* `vmreport` command and VM test runner
+* Nested functions in C and exported functions in Zig
+* Functions and lambdas in the PL backend
+* Scala infers function expression types
+
+### Changed
+
+* VM enforces variable declaration on assignment
+* Benchmarks updated without PyPy or Cython
+
+### Fixed
+
+* Ruby lambda helpers propagate correctly
+
 ## [0.9.1] – 2025-06-24
 
 ### Added
