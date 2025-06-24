@@ -43,6 +43,10 @@ const (
 		"    m.contains_key(k)\n" +
 		"}\n"
 
+	helperInString = "fn _in_string(s: &str, sub: &str) -> bool {\n" +
+		"    s.contains(sub)\n" +
+		"}\n"
+
 	helperConcat = "fn _concat<T: Clone>(a: &[T], b: &[T]) -> Vec<T> {\n" +
 		"    let mut res = Vec::with_capacity(a.len() + b.len());\n" +
 		"    res.extend_from_slice(a);\n" +
@@ -114,6 +118,7 @@ var helperMap = map[string]string{
 	"_count":        helperCount,
 	"_avg":          helperAvg,
 	"_in_map":       helperInMap,
+	"_in_string":    helperInString,
 	"_input":        helperInput,
 	"_concat":       helperConcat,
 	"_union_all":    helperUnionAll,
