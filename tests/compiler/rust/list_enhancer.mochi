@@ -1,0 +1,6 @@
+let xs = [3,1,2]
+var tmp = ListEnhancer(xs)
+tmp = tmp.sort()
+tmp = tmp.reverse()
+let ys = tmp.into_vec()
+print(ys)

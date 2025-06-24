@@ -109,27 +109,38 @@ const (
 
 	helperSave = "fn _save<T>(_src: &[T], _path: &str) {\n" +
 		"}\n"
+
+	helperListEnhancer = "struct ListEnhancer<T: Clone + Ord> { items: Vec<T> }\n" +
+		"impl<T: Clone + Ord> ListEnhancer<T> {\n" +
+		"    fn new(items: Vec<T>) -> Self { ListEnhancer { items } }\n" +
+		"    fn append(mut self, item: T) -> Self { self.items.push(item); self }\n" +
+		"    fn prepend(mut self, item: T) -> Self { self.items.insert(0, item); self }\n" +
+		"    fn reverse(mut self) -> Self { self.items.reverse(); self }\n" +
+		"    fn sort(mut self) -> Self { self.items.sort(); self }\n" +
+		"    fn into_vec(self) -> Vec<T> { self.items }\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
-	"_index_string": helperIndexString,
-	"_slice_string": helperSliceString,
-	"_map_get":      helperMapGet,
-	"_count":        helperCount,
-	"_avg":          helperAvg,
-	"_in_map":       helperInMap,
-	"_in_string":    helperInString,
-	"_input":        helperInput,
-	"_concat":       helperConcat,
-	"_union_all":    helperUnionAll,
-	"_union":        helperUnion,
-	"_except":       helperExcept,
-	"_intersect":    helperIntersect,
-	"_gen_text":     helperGenText,
-	"_gen_embed":    helperGenEmbed,
-	"_fetch":        helperFetch,
-	"_load":         helperLoad,
-	"_save":         helperSave,
+	"_index_string":  helperIndexString,
+	"_slice_string":  helperSliceString,
+	"_map_get":       helperMapGet,
+	"_count":         helperCount,
+	"_avg":           helperAvg,
+	"_in_map":        helperInMap,
+	"_in_string":     helperInString,
+	"_input":         helperInput,
+	"_concat":        helperConcat,
+	"_union_all":     helperUnionAll,
+	"_union":         helperUnion,
+	"_except":        helperExcept,
+	"_intersect":     helperIntersect,
+	"_gen_text":      helperGenText,
+	"_gen_embed":     helperGenEmbed,
+	"_fetch":         helperFetch,
+	"_load":          helperLoad,
+	"_save":          helperSave,
+	"_list_enhancer": helperListEnhancer,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }

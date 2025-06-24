@@ -1,0 +1,18 @@
+fn main() {
+    let mut xs = vec![3, 1, 2];
+    let mut tmp = ListEnhancer::<i64>::new(xs.clone());
+    tmp = tmp.sort();
+    tmp = tmp.reverse();
+    let mut ys = tmp.into_vec();
+    println!("{}", ys);
+}
+
+struct ListEnhancer<T: Clone + Ord> { items: Vec<T> }
+impl<T: Clone + Ord> ListEnhancer<T> {
+    fn new(items: Vec<T>) -> Self { ListEnhancer { items } }
+    fn append(mut self, item: T) -> Self { self.items.push(item); self }
+    fn prepend(mut self, item: T) -> Self { self.items.insert(0, item); self }
+    fn reverse(mut self) -> Self { self.items.reverse(); self }
+    fn sort(mut self) -> Self { self.items.sort(); self }
+    fn into_vec(self) -> Vec<T> { self.items }
+}

@@ -673,6 +673,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 0 {
 			return "{ use std::io::Read; let mut s = String::new(); std::io::stdin().read_line(&mut s).unwrap(); s.trim().to_string() }", nil
 		}
+	case "ListEnhancer":
+		if len(args) == 1 {
+			c.use("_list_enhancer")
+			t := c.inferExprType(call.Args[0])
+			if lt, ok := t.(types.ListType); ok {
+				return fmt.Sprintf("ListEnhancer::<%s>::new(%s.clone())", rustTypeFrom(lt.Elem), args[0]), nil
+			}
+			return fmt.Sprintf("ListEnhancer::<%s>::new(%s.clone())", rustTypeFrom(types.AnyType{}), args[0]), nil
+		}
 	}
 	return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 }

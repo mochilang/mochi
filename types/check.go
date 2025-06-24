@@ -354,6 +354,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	env.SetVar("ListEnhancer", FuncType{
+		Params: []Type{ListType{Elem: AnyType{}}},
+		Return: AnyType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("range", FuncType{
 		Params:   []Type{IntType{}},
 		Return:   ListType{Elem: IntType{}},
