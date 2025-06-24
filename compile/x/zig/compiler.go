@@ -32,6 +32,8 @@ type Compiler struct {
 	needsSliceString  bool
 	needsReduce       bool
 	needsEqual        bool
+	needsMapKeys      bool
+	needsMapValues    bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -818,6 +820,30 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("%s.count()", arg), nil
 		}
 		return fmt.Sprintf("(%s).len", arg), nil
+	}
+	if name == "keys" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		if mt, ok := c.inferExprType(call.Args[0]).(types.MapType); ok {
+			c.needsMapKeys = true
+			kt := zigTypeOf(mt.Key)
+			vt := zigTypeOf(mt.Value)
+			return fmt.Sprintf("_map_keys(%s, %s, %s)", kt, vt, arg), nil
+		}
+	}
+	if name == "values" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		if mt, ok := c.inferExprType(call.Args[0]).(types.MapType); ok {
+			c.needsMapValues = true
+			kt := zigTypeOf(mt.Key)
+			vt := zigTypeOf(mt.Value)
+			return fmt.Sprintf("_map_values(%s, %s, %s)", kt, vt, arg), nil
+		}
 	}
 	if name == "avg" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)

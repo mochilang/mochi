@@ -200,6 +200,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 ```
 When applied to maps, `len` and `count` use the container's `count()` method.
+The helpers `_map_keys` and `_map_values` build slices of all keys or values
+respectively when the `keys` or `values` builtin is used.
 【F:compile/zig/compiler.go†L624-L698】
 
 ### Struct Types

@@ -220,6 +220,30 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsMapKeys {
+		c.writeln("fn _map_keys(comptime K: type, comptime V: type, m: std.AutoHashMap(K, V)) []K {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(K).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("var it = m.keyIterator();")
+		c.writeln("while (it.next()) |k_ptr| { res.append(k_ptr.*) catch unreachable; }")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsMapValues {
+		c.writeln("fn _map_values(comptime K: type, comptime V: type, m: std.AutoHashMap(K, V)) []V {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(V).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("var it = m.valueIterator();")
+		c.writeln("while (it.next()) |v_ptr| { res.append(v_ptr.*) catch unreachable; }")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsEqual {
 		c.writeln("fn _equal(a: anytype, b: anytype) bool {")
 		c.indent++
