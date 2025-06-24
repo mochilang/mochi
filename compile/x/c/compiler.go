@@ -896,6 +896,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
+		if op.Op == "union" && leftList && isListListPostfix(op.Right, c.env) {
+			c.need(needUnionListListInt)
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_list_int %s = union_list_list_int(%s, %s);", name, left, right))
+			left = name
+			leftList = true
+			leftListInt = false
+			leftListString = false
+			leftString = false
+			continue
+		}
 		if op.Op == "except" && leftListInt && isListIntPostfix(op.Right, c.env) {
 			c.need(needExceptListInt)
 			name := c.newTemp()
@@ -929,6 +940,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftListString = true
 			leftList = false
 			leftListInt = false
+			leftString = false
+			continue
+		}
+		if op.Op == "except" && leftList && isListListPostfix(op.Right, c.env) {
+			c.need(needExceptListListInt)
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_list_int %s = except_list_list_int(%s, %s);", name, left, right))
+			left = name
+			leftList = true
+			leftListInt = false
+			leftListString = false
 			leftString = false
 			continue
 		}
@@ -968,6 +990,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
+		if op.Op == "intersect" && leftList && isListListPostfix(op.Right, c.env) {
+			c.need(needIntersectListListInt)
+			name := c.newTemp()
+			c.writeln(fmt.Sprintf("list_list_int %s = intersect_list_list_int(%s, %s);", name, left, right))
+			left = name
+			leftList = true
+			leftListInt = false
+			leftListString = false
+			leftString = false
+			continue
+		}
 		if op.Op == "in" && isListIntPostfix(op.Right, c.env) {
 			c.need(needInListInt)
 			left = fmt.Sprintf("contains_list_int(%s, %s)", right, left)
@@ -991,6 +1024,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		if op.Op == "in" && isListFloatPostfix(op.Right, c.env) {
 			c.need(needInListFloat)
 			left = fmt.Sprintf("contains_list_float(%s, %s)", right, left)
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
+		if op.Op == "in" && isListListPostfix(op.Right, c.env) {
+			c.need(needInListListInt)
+			left = fmt.Sprintf("contains_list_list_int(%s, %s)", right, left)
 			leftList = false
 			leftListInt = false
 			leftListString = false
