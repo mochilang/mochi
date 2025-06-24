@@ -56,6 +56,14 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 			t = types.AnyType{}
 		case "==", "!=", "<", "<=", ">", ">=":
 			t = types.BoolType{}
+		case "union", "union_all", "except", "intersect":
+			if llist, ok := t.(types.ListType); ok {
+				if rlist, ok := rt.(types.ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
+					t = llist
+					continue
+				}
+			}
+			t = types.ListType{Elem: types.AnyType{}}
 		default:
 			t = types.AnyType{}
 		}
