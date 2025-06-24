@@ -2,6 +2,7 @@ package phpcode
 
 import (
 	"mochi/parser"
+	"mochi/types"
 	"strings"
 )
 
@@ -79,4 +80,32 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func (c *Compiler) isMapExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.Map != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && c.env != nil {
+		if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	return false
 }

@@ -1,0 +1,9 @@
+<?php
+$m = [];
+$m[1] = true;
+$m[2] = true;
+$sum = 0;
+foreach (array_keys($m) as $k) {
+	$sum = ((is_array($sum) && is_array($k)) ? array_merge($sum, $k) : ((is_string($sum) || is_string($k)) ? ($sum . $k) : ($sum + $k)));
+}
+echo $sum, PHP_EOL;
