@@ -40,7 +40,7 @@ The backend currently supports:
 - `for` and `while` loops with `break`/`continue`
 - pattern matching with `match` and `case`
 - query expressions over one or more sources with `where`, `sort`, `skip` and `take`
-- list set operations `union`, `except` and `intersect`
+- list set operations `union`, `union all`, `except` and `intersect`
 - simple cross joins using multiple `from` clauses
 - simple `group by` without joins or filters
 - struct and union type declarations generate Erlang records
