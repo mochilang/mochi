@@ -54,6 +54,7 @@ const (
 	OpJumpIfFalse
 	OpLen
 	OpIndex
+	OpSlice
 	OpSetIndex
 	OpMakeList
 	OpMakeMap
@@ -145,6 +146,8 @@ func (op Op) String() string {
 		return "Len"
 	case OpIndex:
 		return "Index"
+	case OpSlice:
+		return "Slice"
 	case OpSetIndex:
 		return "SetIndex"
 	case OpMakeList:
@@ -365,6 +368,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpIndex:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
+			case OpSlice:
+				fmt.Fprintf(&b, "%s, %s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C), formatReg(ins.D))
 			case OpMakeList:
 				fmt.Fprintf(&b, "%s, %d, %s", formatReg(ins.A), ins.B, formatReg(ins.C))
 			case OpMakeMap:
@@ -754,6 +759,69 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
 				}
 				fr.regs[ins.A] = src.Map[key]
+			default:
+				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
+			}
+		case OpSlice:
+			src := fr.regs[ins.B]
+			startVal := fr.regs[ins.C]
+			endVal := fr.regs[ins.D]
+			switch src.Tag {
+			case interpreter.TagList:
+				n := len(src.List)
+				start := 0
+				if startVal.Tag != interpreter.TagNull {
+					if startVal.Tag != interpreter.TagInt {
+						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
+					}
+					start = startVal.Int
+					if start < 0 {
+						start += n
+					}
+				}
+				end := n
+				if endVal.Tag != interpreter.TagNull {
+					if endVal.Tag != interpreter.TagInt {
+						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
+					}
+					end = endVal.Int
+					if end < 0 {
+						end += n
+					}
+				}
+				if start < 0 || end > n || start > end {
+					return Value{}, m.newError(fmt.Errorf("invalid slice range"), trace, ins.Line)
+				}
+				out := make([]Value, end-start)
+				copy(out, src.List[start:end])
+				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+			case interpreter.TagStr:
+				runes := []rune(src.Str)
+				n := len(runes)
+				start := 0
+				if startVal.Tag != interpreter.TagNull {
+					if startVal.Tag != interpreter.TagInt {
+						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
+					}
+					start = startVal.Int
+					if start < 0 {
+						start += n
+					}
+				}
+				end := n
+				if endVal.Tag != interpreter.TagNull {
+					if endVal.Tag != interpreter.TagInt {
+						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
+					}
+					end = endVal.Int
+					if end < 0 {
+						end += n
+					}
+				}
+				if start < 0 || end > n || start > end {
+					return Value{}, m.newError(fmt.Errorf("invalid slice range"), trace, ins.Line)
+				}
+				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: string(runes[start:end])}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
 			}
@@ -1783,10 +1851,30 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 	r := fc.compilePrimary(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx := fc.compileExpr(op.Index.Start)
-			dst := fc.newReg()
-			fc.emit(op.Index.Pos, Instr{Op: OpIndex, A: dst, B: r, C: idx})
-			r = dst
+			if op.Index.Colon != nil {
+				start := fc.newReg()
+				if op.Index.Start != nil {
+					s := fc.compileExpr(op.Index.Start)
+					fc.emit(op.Index.Start.Pos, Instr{Op: OpMove, A: start, B: s})
+				} else {
+					fc.emit(op.Index.Pos, Instr{Op: OpConst, A: start, Val: Value{Tag: interpreter.TagNull}})
+				}
+				end := fc.newReg()
+				if op.Index.End != nil {
+					e := fc.compileExpr(op.Index.End)
+					fc.emit(op.Index.End.Pos, Instr{Op: OpMove, A: end, B: e})
+				} else {
+					fc.emit(op.Index.Pos, Instr{Op: OpConst, A: end, Val: Value{Tag: interpreter.TagNull}})
+				}
+				dst := fc.newReg()
+				fc.emit(op.Index.Pos, Instr{Op: OpSlice, A: dst, B: r, C: start, D: end})
+				r = dst
+			} else {
+				idx := fc.compileExpr(op.Index.Start)
+				dst := fc.newReg()
+				fc.emit(op.Index.Pos, Instr{Op: OpIndex, A: dst, B: r, C: idx})
+				r = dst
+			}
 		} else if op.Call != nil {
 			regs := make([]int, len(op.Call.Args))
 			for i := range op.Call.Args {
