@@ -20,13 +20,14 @@ type Compiler struct {
 	mainStmts    []*parser.Statement
 	helpers      map[string]bool
 	packages     map[string]bool
+	structs      map[string]bool
 	models       bool
 	handlerCount int
 }
 
 // New creates a new Kotlin compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), models: false, handlerCount: 0}
+	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), structs: make(map[string]bool), models: false, handlerCount: 0}
 }
 
 // Compile generates Kotlin code for prog.
@@ -593,6 +594,7 @@ func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", s.Name)
 	}
+	c.compileStructType(st)
 	varName := "_" + sanitizeName(s.Name) + "Stream"
 	c.writeln(fmt.Sprintf("var %s = _Stream<%s>(%q)", varName, sanitizeName(st.Name), s.Name))
 	c.use("_Stream")
@@ -604,6 +606,7 @@ func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", h.Stream)
 	}
+	c.compileStructType(st)
 	streamVar := "_" + sanitizeName(h.Stream) + "Stream"
 	handlerName := fmt.Sprintf("_handler_%d", c.handlerCount)
 	c.handlerCount++
@@ -634,6 +637,7 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", e.Stream)
 	}
+	c.compileStructType(st)
 	parts := make([]string, len(e.Fields))
 	for i, f := range e.Fields {
 		v, err := c.compileExpr(f.Value)
@@ -647,6 +651,26 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	c.writeln(fmt.Sprintf("%s.append(%s)", streamVar, lit))
 	c.use("_Stream")
 	return nil
+}
+
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	fields := make([]string, len(st.Order))
+	for i, fn := range st.Order {
+		typ := ktType(st.Fields[fn])
+		fields[i] = fmt.Sprintf("val %s: %s", sanitizeName(fn), typ)
+	}
+	c.writeln(fmt.Sprintf("data class %s(%s)", name, joinArgs(fields)))
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
 }
 
 func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
@@ -921,7 +945,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		params[i] = param
 	}
-	sub := &Compiler{env: child, helpers: c.helpers, packages: c.packages}
+	sub := &Compiler{env: child, helpers: c.helpers, packages: c.packages, structs: c.structs}
 	sub.indent = 1
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody)
@@ -966,7 +990,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.buf.WriteString(") : " + ret + " {")
 	c.buf.WriteByte('\n')
-	sub := &Compiler{env: child, indent: c.indent + 1, helpers: c.helpers, packages: c.packages}
+	sub := &Compiler{env: child, indent: c.indent + 1, helpers: c.helpers, packages: c.packages, structs: c.structs}
 	for _, s := range fun.Body {
 		if err := sub.compileStmt(s); err != nil {
 			return err
@@ -1006,7 +1030,7 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 	}
 	c.buf.WriteString(") : " + ret + " {")
 	c.buf.WriteByte('\n')
-	sub := &Compiler{env: child, indent: c.indent + 1, helpers: c.helpers, packages: c.packages}
+	sub := &Compiler{env: child, indent: c.indent + 1, helpers: c.helpers, packages: c.packages, structs: c.structs}
 	for _, s := range fun.Body {
 		if err := sub.compileStmt(s); err != nil {
 			return err
