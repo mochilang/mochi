@@ -31,6 +31,5 @@
         (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
 
 (define (expect cond) (unless cond (error "expect failed")))
-(for ([ch "cat"])
-	(displayln ch)
-)
+(define text "hello")
+(displayln (idx text (- 1)))
