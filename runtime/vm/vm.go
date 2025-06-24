@@ -839,6 +839,14 @@ type loopContext struct {
 func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}}
 	c.funcs = append(c.funcs, Function{})
+	// register functions so constant folding can resolve them
+	if env != nil {
+		for _, st := range p.Statements {
+			if st.Fun != nil {
+				env.SetFunc(st.Fun.Name, st.Fun)
+			}
+		}
+	}
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			idx := len(c.funcs)
@@ -957,17 +965,32 @@ func (fc *funcCompiler) newReg() int {
 func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 	switch {
 	case s.Let != nil:
-		r := fc.compileExpr(s.Let.Value)
-		reg := fc.newReg()
-		fc.vars[s.Let.Name] = reg
-		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
-		fc.tags[reg] = fc.tags[r]
+		if v, ok := evalConstExpr(s.Let.Value, fc.comp.env); ok {
+			reg := fc.newReg()
+			fc.vars[s.Let.Name] = reg
+			fc.emit(s.Let.Pos, Instr{Op: OpConst, A: reg, Val: v})
+			if fc.comp.env != nil {
+				fc.comp.env.SetValue(s.Let.Name, valueToAny(v), false)
+			}
+		} else {
+			r := fc.compileExpr(s.Let.Value)
+			reg := fc.newReg()
+			fc.vars[s.Let.Name] = reg
+			fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
+			fc.tags[reg] = fc.tags[r]
+		}
 	case s.Var != nil:
-		r := fc.compileExpr(s.Var.Value)
-		reg := fc.newReg()
-		fc.vars[s.Var.Name] = reg
-		fc.emit(s.Var.Pos, Instr{Op: OpMove, A: reg, B: r})
-		fc.tags[reg] = fc.tags[r]
+		if v, ok := evalConstExpr(s.Var.Value, fc.comp.env); ok {
+			reg := fc.newReg()
+			fc.vars[s.Var.Name] = reg
+			fc.emit(s.Var.Pos, Instr{Op: OpConst, A: reg, Val: v})
+		} else {
+			r := fc.compileExpr(s.Var.Value)
+			reg := fc.newReg()
+			fc.vars[s.Var.Name] = reg
+			fc.emit(s.Var.Pos, Instr{Op: OpMove, A: reg, B: r})
+			fc.tags[reg] = fc.tags[r]
+		}
 	case s.Assign != nil:
 		if len(s.Assign.Index) == 0 {
 			r := fc.compileExpr(s.Assign.Value)
@@ -1017,6 +1040,11 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 func (fc *funcCompiler) compileExpr(e *parser.Expr) int {
 	if e == nil {
 		return fc.newReg()
+	}
+	if v, ok := evalConstExpr(e, fc.comp.env); ok {
+		dst := fc.newReg()
+		fc.emit(e.Pos, Instr{Op: OpConst, A: dst, Val: v})
+		return dst
 	}
 	return fc.compileBinary(e.Binary)
 }
@@ -1302,6 +1330,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	}
 
 	if p.Call != nil {
+		expr := &parser.Expr{Pos: p.Pos, Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Call: p.Call}}}}}
+		if v, ok := evalConstExpr(expr, fc.comp.env); ok {
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
+		}
 		switch p.Call.Func {
 		case "len":
 			arg := fc.compileExpr(p.Call.Args[0])
@@ -1612,6 +1646,33 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 		return constMap(p.Map)
 	}
 	return Value{}, false
+}
+
+func literalToValue(l *parser.Literal) (Value, bool) {
+	if l == nil {
+		return Value{}, false
+	}
+	if l.Int != nil {
+		return Value{Tag: interpreter.TagInt, Int: *l.Int}, true
+	}
+	if l.Float != nil {
+		return Value{Tag: interpreter.TagFloat, Float: *l.Float}, true
+	}
+	if l.Bool != nil {
+		return Value{Tag: interpreter.TagBool, Bool: bool(*l.Bool)}, true
+	}
+	if l.Str != nil {
+		return Value{Tag: interpreter.TagStr, Str: *l.Str}, true
+	}
+	return Value{}, false
+}
+
+func evalConstExpr(e *parser.Expr, env *types.Env) (Value, bool) {
+	lit, ok := interpreter.EvalConstExpr(e, env)
+	if !ok {
+		return Value{}, false
+	}
+	return literalToValue(lit)
 }
 
 func valueToAny(v Value) any {

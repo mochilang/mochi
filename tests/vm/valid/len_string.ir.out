@@ -1,6 +1,5 @@
-func main (regs=2)
+func main (regs=1)
   // print(len("mochi"))
-  Const        r0, "mochi"
-  Len          r1, r0
-  Print        r1
+  Const        r0, 5
+  Print        r0
   Return       r0

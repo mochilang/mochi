@@ -1,0 +1,13 @@
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+let x = add(2, 3)
+print(x)
+let two = 2
+let y = add(two, 3)
+print(y)
+let z = 1 + 2 * 3
+print(z)
+let l = len([1, 2, 3])
+print(l)

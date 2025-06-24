@@ -1,0 +1,31 @@
+func main (regs=9)
+  // let x = add(2, 3)
+  Const        r0, 5
+  // print(x)
+  Const        r1, 5
+  Print        r1
+  // let two = 2
+  Const        r2, 2
+  // let y = add(two, 3)
+  Const        r3, 5
+  // print(y)
+  Const        r4, 5
+  Print        r4
+  // let z = 1 + 2 * 3
+  Const        r5, 7
+  // print(z)
+  Const        r6, 7
+  Print        r6
+  // let l = len([1, 2, 3])
+  Const        r7, 3
+  // print(l)
+  Const        r8, 3
+  Print        r8
+  Return       r0
+
+  // fun add(a: int, b: int): int {
+func add (regs=3)
+  // return a + b
+  Add          r2, r0, r1
+  Return       r2
+  Return       r0

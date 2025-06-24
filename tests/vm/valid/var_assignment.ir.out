@@ -1,10 +1,9 @@
-func main (regs=3)
+func main (regs=2)
   // var x = 1
   Const        r0, 1
-  Move         r1, r0
   // x = 2
-  Const        r2, 2
-  Move         r1, r2
+  Const        r1, 2
+  Move         r0, r1
   // print(x)
-  Print        r1
+  Print        r0
   Return       r0
