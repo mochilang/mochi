@@ -535,6 +535,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	posts := []*parser.PostfixExpr{}
 	floats := []bool{}
 	strings := []bool{}
+	typesList := []types.Type{}
 
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
@@ -543,6 +544,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands = append(operands, left)
 	floats = append(floats, isFloatUnary(c, b.Left))
 	strings = append(strings, isStringUnary(c, b.Left))
+	typesList = append(typesList, c.inferUnaryType(b.Left))
 
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
@@ -554,6 +556,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		posts = append(posts, op.Right)
 		floats = append(floats, isFloatPostfix(c, op.Right))
 		strings = append(strings, isStringPostfix(c, op.Right))
+		typesList = append(typesList, c.inferPostfixType(op.Right))
 	}
 
 	levels := [][]string{
@@ -592,12 +595,26 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				} else {
 					floats[i] = false
 				}
+				lt := typesList[i]
+				rt := typesList[i+1]
 				if op == "in" {
 					if isMapPostfix(c, posts[i]) {
 						expr = fmt.Sprintf("(%s.containsKey(%s))", r, l)
 					} else {
 						expr = fmt.Sprintf("(%s.contains(%s))", r, l)
 					}
+				} else if op == "==" || op == "!=" {
+					if isList(lt) || isList(rt) || isMap(lt) || isMap(rt) || isStruct(lt) || isStruct(rt) || isAny(lt) || isAny(rt) {
+						c.use("_equal")
+						if op == "==" {
+							expr = fmt.Sprintf("_equal(%s, %s)", l, r)
+						} else {
+							expr = fmt.Sprintf("!_equal(%s, %s)", l, r)
+						}
+					} else {
+						expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+					}
+					typesList[i] = types.BoolType{}
 				} else if (op == "<" || op == "<=" || op == ">" || op == ">=") && (strings[i] || strings[i+1]) {
 					cmp := fmt.Sprintf("%s.compareTo(%s)", l, r)
 					switch op {
@@ -631,6 +648,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				posts = append(posts[:i], posts[i+1:]...)
 				floats = append(floats[:i+1], floats[i+2:]...)
 				strings = append(strings[:i+1], strings[i+2:]...)
+				typesList = append(typesList[:i+1], typesList[i+2:]...)
 			} else {
 				i++
 			}
