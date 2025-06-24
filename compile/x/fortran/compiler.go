@@ -1069,9 +1069,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 					if c.listVars[root] {
-						start = fmt.Sprintf("max(0_8, min(%s, size(%s)))", v, root)
+						start = fmt.Sprintf("modulo(%s, size(%s))", v, root)
 					} else if c.stringVars[root] {
-						start = fmt.Sprintf("max(0_8, min(%s, len(%s)))", v, root)
+						start = fmt.Sprintf("modulo(%s, len(%s))", v, root)
 					} else {
 						start = v
 					}
@@ -1083,9 +1083,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 					if c.listVars[root] {
-						end = fmt.Sprintf("max(0_8, min(%s, size(%s)))", v, root)
+						end = fmt.Sprintf("modulo(%s, size(%s))", v, root)
 					} else if c.stringVars[root] {
-						end = fmt.Sprintf("max(0_8, min(%s, len(%s)))", v, root)
+						end = fmt.Sprintf("modulo(%s, len(%s))", v, root)
 					} else {
 						end = v
 					}
@@ -1103,9 +1103,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if c.listVars[root] {
-					expr = fmt.Sprintf("%s(max(0_8, min(%s, size(%s) - 1)) + 1)", expr, v, root)
+					expr = fmt.Sprintf("%s(modulo(%s, size(%s)) + 1)", expr, v, root)
 				} else if c.stringVars[root] {
-					expr = fmt.Sprintf("%s(max(0_8, min(%s, len(%s) - 1)) + 1:max(0_8, min(%s, len(%s) - 1)) + 1)", expr, v, root, v, root)
+					expr = fmt.Sprintf("%s(modulo(%s, len(%s)) + 1:modulo(%s, len(%s)) + 1)", expr, v, root, v, root)
 				} else {
 					expr = fmt.Sprintf("%s(%s + 1)", expr, v)
 				}
