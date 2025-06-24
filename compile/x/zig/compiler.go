@@ -108,6 +108,30 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	name := sanitizeName(fn.Name)
+
+	if c.env != nil {
+		c.env.SetFunc(fn.Name, fn)
+		ft := types.FuncType{Params: make([]types.Type, len(fn.Params))}
+		for i, p := range fn.Params {
+			ft.Params[i] = c.resolveTypeRef(p.Type)
+		}
+		if fn.Return != nil {
+			ft.Return = c.resolveTypeRef(fn.Return)
+		} else {
+			ft.Return = types.VoidType{}
+		}
+		c.env.SetVar(fn.Name, ft, false)
+	}
+
+	if c.indent > 0 {
+		expr, err := c.compileFunExpr(&parser.FunExpr{Params: fn.Params, Return: fn.Return, BlockBody: fn.Body})
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("const %s = %s;", name, expr))
+		return nil
+	}
+
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := c.zigType(p.Type)
@@ -345,6 +369,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			return err
 		}
 		c.writeln(v + ";")
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Test != nil:
