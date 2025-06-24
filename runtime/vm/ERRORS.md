@@ -3,17 +3,8 @@
 ## tests/interpreter/valid/agent_full.mochi
 
 ```
-runtime: goroutine stack exceeds 1000000000-byte limit
-runtime: sp=0xc020590360 stack=[0xc020590000, 0xc040590000]
-fatal error: stack overflow
-
-runtime stack:
-runtime.throw({0x241d28b?, 0x6eb6dc?})
-	/usr/local/go/src/runtime/panic.go:1101 +0x48 fp=0x7fa0d35eb288 sp=0x7fa0d35eb258 pc=0x72eca8
-runtime.newstack()
-	/usr/local/go/src/runtime/stack.go:1107 +0x5bb fp=0x7fa0d35eb3c0 sp=0x7fa0d35eb288 pc=0x71517b
-runtime.morestack()
-...
+run error: too many args
+exit status 1
 ```
 
 ## tests/interpreter/valid/cross_join.mochi
@@ -118,20 +109,6 @@ run error: invalid map key
 exit status 1
 ```
 
-## tests/interpreter/valid/input_builtin.mochi
-
-```
-golden mismatch:
--- got --
-Enter first input:
-Enter second input:
-You entered:  ,
--- want --
-Enter first input:
-Enter second input:
-You entered: foo , bar
-```
-
 ## tests/interpreter/valid/left_join.mochi
 
 ```
@@ -202,22 +179,6 @@ zero
 many
 ```
 
-## tests/interpreter/valid/method.mochi
-
-```
-runtime: goroutine stack exceeds 1000000000-byte limit
-runtime: sp=0xc021080388 stack=[0xc021080000, 0xc041080000]
-fatal error: stack overflow
-
-runtime stack:
-runtime.throw({0x241d28b?, 0x6eb6dc?})
-	/usr/local/go/src/runtime/panic.go:1101 +0x48 fp=0x7fd464939288 sp=0x7fd464939258 pc=0x72eca8
-runtime.newstack()
-	/usr/local/go/src/runtime/stack.go:1107 +0x5bb fp=0x7fd4649393c0 sp=0x7fd464939288 pc=0x71517b
-runtime.morestack()
-...
-```
-
 ## tests/interpreter/valid/outer_join.mochi
 
 ```
@@ -267,24 +228,6 @@ run error: invalid map key
 exit status 1
 ```
 
-## tests/interpreter/valid/shadow_scope.mochi
-
-```
-golden mismatch:
--- got --
-20
-20
-1
-2
-2
--- want --
-20
-10
-1
-2
-10
-```
-
 ## tests/interpreter/valid/short_circuit.mochi
 
 ```
@@ -312,10 +255,10 @@ exit status 1
 panic: runtime error: index out of range [0] with length 0
 
 goroutine 1 [running]:
-mochi/runtime/vm.(*VM).call(0xc000235e38, 0x0?, {0x0, 0xc0000870e0?, 0x23da0c0?}, {0xc000235da8, 0x1, 0x1})
-	/workspace/mochi/runtime/vm/vm.go:1160 +0xbf34
-mochi/runtime/vm.(*VM).Run(0xc000235e38)
-	/workspace/mochi/runtime/vm/vm.go:483 +0xa5
+mochi/runtime/vm.(*VM).call(0xc0002cbe38, 0x0?, {0x0, 0xc0001b1020?, 0x23dd080?}, {0xc0002cbda8, 0x1, 0x1})
+	/workspace/mochi/runtime/vm/vm.go:1173 +0xc214
+mochi/runtime/vm.(*VM).Run(0xc0002cbe38)
+	/workspace/mochi/runtime/vm/vm.go:488 +0xa5
 main.main()
 	/workspace/mochi/runtime/vm/cmd/runvm/main.go:45 +0x648
 exit status 2
