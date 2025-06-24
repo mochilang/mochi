@@ -35,18 +35,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
-	case s.Expr != nil:
-		expr, err := c.compileExpr(s.Expr.Expr)
-		if err != nil {
-			return err
-		}
-		c.writeln(fmt.Sprintf("%s;", expr))
-		return nil
-	case s.Assign != nil:
-		return c.compileAssign(s.Assign)
-	case s.Type != nil:
-		return nil
-	case s.Test != nil:
+        case s.Expr != nil:
+                expr, err := c.compileExpr(s.Expr.Expr)
+                if err != nil {
+                        return err
+                }
+                c.writeln(fmt.Sprintf("%s;", expr))
+                return nil
+       case s.Fun != nil:
+               return c.compileFun(s.Fun)
+        case s.Assign != nil:
+                return c.compileAssign(s.Assign)
+        case s.Type != nil:
+                return nil
+        case s.Test != nil:
 		// Test blocks are compiled separately before main.
 		return nil
 	case s.Expect != nil:
