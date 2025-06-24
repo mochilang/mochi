@@ -79,6 +79,7 @@ const (
 	OpCast
 	OpIterPrep
 	OpLoad
+	OpSave
 	OpEval
 
 	// Closure creation
@@ -199,6 +200,8 @@ func (op Op) String() string {
 		return "IterPrep"
 	case OpLoad:
 		return "Load"
+	case OpSave:
+		return "Save"
 	case OpEval:
 		return "Eval"
 	case OpMakeClosure:
@@ -1116,6 +1119,63 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				out[i] = anyToValue(row)
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+		case OpSave:
+			srcVal := fr.regs[ins.B]
+			path := fr.regs[ins.C].Str
+			opts := valueToAny(fr.regs[ins.D])
+			optMap := toAnyMap(opts)
+			format := "csv"
+			header := false
+			delim := ','
+			if optMap != nil {
+				if f, ok := optMap["format"].(string); ok {
+					format = f
+				}
+				if h, ok := optMap["header"].(bool); ok {
+					header = h
+				}
+				if d, ok := optMap["delimiter"].(string); ok && len(d) > 0 {
+					delim = rune(d[0])
+				}
+			}
+			rows, ok := toMapSlice(valueToAny(srcVal))
+			if !ok {
+				return Value{}, m.newError(fmt.Errorf("save source must be list of maps"), trace, ins.Line)
+			}
+			var err error
+			switch format {
+			case "jsonl":
+				if path == "" || path == "-" {
+					err = data.SaveJSONLWriter(rows, m.writer)
+				} else {
+					err = data.SaveJSONL(rows, path)
+				}
+			case "json":
+				if path == "" || path == "-" {
+					err = data.SaveJSONWriter(rows, m.writer)
+				} else {
+					err = data.SaveJSON(rows, path)
+				}
+			case "yaml":
+				if path == "" || path == "-" {
+					err = data.SaveYAMLWriter(rows, m.writer)
+				} else {
+					err = data.SaveYAML(rows, path)
+				}
+			case "tsv":
+				delim = '\t'
+				fallthrough
+			default:
+				if path == "" || path == "-" {
+					err = data.SaveCSVWriter(rows, m.writer, header, delim)
+				} else {
+					err = data.SaveCSV(rows, path, header, delim)
+				}
+			}
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
 		case OpEval:
 			srcVal := fr.regs[ins.B]
 			if srcVal.Tag != interpreter.TagStr {
@@ -1584,6 +1644,8 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
 	case OpAppend, OpStr, OpInput:
+		fc.tags[i.A] = tagUnknown
+	case OpSave:
 		fc.tags[i.A] = tagUnknown
 	case OpCount:
 		fc.tags[i.A] = tagInt
@@ -2128,6 +2190,26 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		}
 		dst := fc.newReg()
 		fc.emit(p.Pos, Instr{Op: OpLoad, A: dst, B: pathReg, C: optsReg})
+		return dst
+	}
+
+	if p.Save != nil {
+		src := fc.compileExpr(p.Save.Src)
+		pathReg := fc.newReg()
+		path := ""
+		if p.Save.Path != nil {
+			path = *p.Save.Path
+		}
+		fc.emit(p.Pos, Instr{Op: OpConst, A: pathReg, Val: Value{Tag: interpreter.TagStr, Str: path}})
+		optsReg := fc.newReg()
+		if p.Save.With != nil {
+			r := fc.compileExpr(p.Save.With)
+			fc.emit(p.Pos, Instr{Op: OpMove, A: optsReg, B: r})
+		} else {
+			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: interpreter.TagNull}})
+		}
+		dst := fc.newReg()
+		fc.emit(p.Pos, Instr{Op: OpSave, A: dst, B: src, C: pathReg, D: optsReg})
 		return dst
 	}
 
@@ -3672,5 +3754,51 @@ func castValue(t types.Type, v any) (any, error) {
 		return out, nil
 	default:
 		return v, nil
+	}
+}
+
+func toAnyMap(m any) map[string]any {
+	switch v := m.(type) {
+	case map[string]any:
+		return v
+	case map[string]string:
+		out := make(map[string]any, len(v))
+		for k, vv := range v {
+			out[k] = vv
+		}
+		return out
+	case map[int]any:
+		out := make(map[string]any, len(v))
+		for k, vv := range v {
+			out[strconv.Itoa(k)] = vv
+		}
+		return out
+	case map[any]any:
+		out := make(map[string]any, len(v))
+		for kk, vv := range v {
+			out[fmt.Sprint(kk)] = vv
+		}
+		return out
+	default:
+		return nil
+	}
+}
+
+func toMapSlice(v any) ([]map[string]any, bool) {
+	switch rows := v.(type) {
+	case []map[string]any:
+		return rows, true
+	case []any:
+		out := make([]map[string]any, len(rows))
+		for i, item := range rows {
+			m, ok := item.(map[string]any)
+			if !ok {
+				return nil, false
+			}
+			out[i] = m
+		}
+		return out, true
+	default:
+		return nil, false
 	}
 }
