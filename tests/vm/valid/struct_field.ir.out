@@ -1,0 +1,13 @@
+func main (regs=6)
+  // let p = Point{ x: 1, y: 2 }
+  Const        r0, {"__name": "Point", "x": 1, "y": 2}
+  Move         r1, r0
+  // print(p.x)
+  Const        r2, "x"
+  Index        r3, r1, r2
+  Print        r3
+  // print(p.y)
+  Const        r4, "y"
+  Index        r5, r1, r4
+  Print        r5
+  Return       r0

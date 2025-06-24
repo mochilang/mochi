@@ -1067,6 +1067,9 @@ func (fc *funcCompiler) newReg() int {
 
 func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 	switch {
+	case s.Type != nil:
+		// type declarations have no runtime effect
+		return
 	case s.Let != nil:
 		r := fc.compileExpr(s.Let.Value)
 		reg := fc.newReg()
@@ -1407,6 +1410,40 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		return dst
 	}
 
+	if p.Struct != nil {
+		if v, ok := constStruct(p.Struct); ok {
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
+		}
+		tmp := make([]struct{ k, v int }, len(p.Struct.Fields)+1)
+		// first entry is __name -> struct name
+		nameKey := fc.newReg()
+		fc.emit(p.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: interpreter.TagStr, Str: "__name"}})
+		nameVal := fc.newReg()
+		fc.emit(p.Pos, Instr{Op: OpConst, A: nameVal, Val: Value{Tag: interpreter.TagStr, Str: p.Struct.Name}})
+		tmp[0].k = nameKey
+		tmp[0].v = nameVal
+		for i, f := range p.Struct.Fields {
+			vr := fc.compileExpr(f.Value)
+			kreg := fc.newReg()
+			fc.emit(f.Pos, Instr{Op: OpConst, A: kreg, Val: Value{Tag: interpreter.TagStr, Str: f.Name}})
+			vreg := fc.newReg()
+			fc.emit(f.Pos, Instr{Op: OpMove, A: vreg, B: vr})
+			tmp[i+1].k = kreg
+			tmp[i+1].v = vreg
+		}
+		regs := make([]int, len(tmp)*2)
+		for i, kv := range tmp {
+			regs[i*2] = kv.k
+			regs[i*2+1] = kv.v
+		}
+		dst := fc.newReg()
+		start := regs[0]
+		fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: len(tmp), C: start})
+		return dst
+	}
+
 	if p.FunExpr != nil {
 		idx := fc.comp.compileFunExpr(p.FunExpr)
 		dst := fc.newReg()
@@ -1414,10 +1451,29 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		return dst
 	}
 
-	if p.Selector != nil && len(p.Selector.Tail) == 0 {
-		if r, ok := fc.vars[p.Selector.Root]; ok {
-			return r
+	if p.Selector != nil {
+		var r int
+		if reg, ok := fc.vars[p.Selector.Root]; ok {
+			r = reg
+		} else if val, err := fc.comp.env.GetValue(p.Selector.Root); err == nil {
+			if lit := types.AnyToLiteral(val); lit != nil {
+				v, _ := literalToValue(lit)
+				r = fc.newReg()
+				fc.emit(p.Pos, Instr{Op: OpConst, A: r, Val: v})
+			} else {
+				r = fc.newReg()
+			}
+		} else {
+			r = fc.newReg()
 		}
+		for _, field := range p.Selector.Tail {
+			k := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: interpreter.TagStr, Str: field}})
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpIndex, A: dst, B: r, C: k})
+			r = dst
+		}
+		return r
 	}
 
 	if p.Call != nil {
@@ -1681,6 +1737,19 @@ func constMap(m *parser.MapLiteral) (Value, bool) {
 	return Value{Tag: interpreter.TagMap, Map: vals}, true
 }
 
+func constStruct(s *parser.StructLiteral) (Value, bool) {
+	vals := make(map[string]Value, len(s.Fields)+1)
+	vals["__name"] = Value{Tag: interpreter.TagStr, Str: s.Name}
+	for _, f := range s.Fields {
+		v, ok := constExpr(f.Value)
+		if !ok {
+			return Value{}, false
+		}
+		vals[f.Name] = v
+	}
+	return Value{Tag: interpreter.TagMap, Map: vals}, true
+}
+
 func constExpr(e *parser.Expr) (Value, bool) {
 	return constBinary(e.Binary)
 }
@@ -1740,6 +1809,9 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 	}
 	if p.Map != nil {
 		return constMap(p.Map)
+	}
+	if p.Struct != nil {
+		return constStruct(p.Struct)
 	}
 	return Value{}, false
 }
