@@ -84,7 +84,12 @@ func (c *Compiler) emitRuntime() {
 
 	if c.needGet {
 		c.writeln("")
-		c.writeln("mochi_get(M, K) when is_list(M), is_integer(K) -> lists:nth(K + 1, M);")
+		c.writeln("mochi_get(L, I) when is_list(L), is_integer(I) ->")
+		c.indent++
+		c.writeln("N = length(L),")
+		c.writeln("Idx = case I >= 0 of true -> I + 1; false -> N + I + 1 end,")
+		c.writeln("lists:nth(Idx, L);")
+		c.indent--
 		c.writeln("mochi_get(M, K) when is_map(M) -> maps:get(K, M);")
 		c.writeln("mochi_get(_, _) -> erlang:error(badarg).")
 	}

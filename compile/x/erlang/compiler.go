@@ -907,18 +907,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					res = fmt.Sprintf("maps:get(%s, %s)", idx, res)
 					typ = tt.Value
 				case types.ListType:
-					res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+					c.needGet = true
+					res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
 					typ = tt.Elem
 				case types.StringType:
-					res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+					c.needGet = true
+					res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
 					typ = types.StringType{}
 				default:
-					if isStringExpr(op.Index.Start, c.env) {
-						c.needGet = true
-						res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
-					} else {
-						res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
-					}
+					c.needGet = true
+					res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
 					typ = types.AnyType{}
 				}
 			}
