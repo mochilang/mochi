@@ -573,6 +573,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Import != nil:
 		// package imports are handled in Compile
 		return nil
+	case s.Type != nil:
+		return c.compileTypeDecl(s.Type)
 	case s.Fun != nil:
 		return c.compileFunStmt(s.Fun)
 	case s.Return != nil:

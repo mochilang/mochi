@@ -1,0 +1,15 @@
+open System
+
+exception Return_outer of string
+let rec outer  : string =
+    try
+        type Person =
+            {
+                name: string
+            }
+        let p = { name = "Bob" }
+        raise (Return_outer (p.name))
+        failwith "unreachable"
+    with Return_outer v -> v
+
+ignore (printfn "%A" (outer ))
