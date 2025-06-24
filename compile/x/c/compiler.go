@@ -392,6 +392,39 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Fun != nil:
+		// Nested function declarations are hoisted to the top level.
+		// Compile the body separately and append to the lambdas slice
+		// so it appears before `main` like other helpers.
+		oldBuf := c.buf
+		oldIndent := c.indent
+		c.buf = bytes.Buffer{}
+		c.indent = 0
+		if err := c.compileFun(s.Fun); err != nil {
+			c.buf = oldBuf
+			c.indent = oldIndent
+			return err
+		}
+		c.lambdas = append(c.lambdas, c.buf.String())
+		c.buf = oldBuf
+		c.indent = oldIndent
+		if c.env != nil {
+			var params []types.Type
+			for _, p := range s.Fun.Params {
+				if p.Type != nil {
+					params = append(params, resolveTypeRef(p.Type, c.env))
+				} else {
+					params = append(params, types.IntType{})
+				}
+			}
+			var ret types.Type = types.VoidType{}
+			if s.Fun.Return != nil {
+				ret = resolveTypeRef(s.Fun.Return, c.env)
+			}
+			ft := types.FuncType{Params: params, Return: ret}
+			c.env.SetVar(s.Fun.Name, ft, true)
+		}
+		return nil
 	case s.Let != nil:
 		return c.compileLet(s.Let)
 	case s.Var != nil:
@@ -1067,6 +1100,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isStringList = false
 				}
 			}
+		} else if op.Call != nil {
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				args[i] = c.compileExpr(a)
+			}
+			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+			isStr = false
+			isFloatList = false
+			isStringList = false
 		}
 	}
 	return expr
