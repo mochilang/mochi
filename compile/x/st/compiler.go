@@ -26,6 +26,8 @@ type Compiler struct {
 	needUnion     bool
 	needExcept    bool
 	needIntersect bool
+	needIndexStr  bool
+	needSliceStr  bool
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -54,6 +56,8 @@ func (c *Compiler) reset() {
 	c.needUnion = false
 	c.needExcept = false
 	c.needIntersect = false
+	c.needIndexStr = false
+	c.needSliceStr = false
 }
 
 // Compile generates Smalltalk code for prog.
@@ -656,23 +660,33 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			if op.Index.Colon != nil {
-				start := "1"
+				start0 := "0"
+				start1 := "1"
 				if op.Index.Start != nil {
 					s, err := c.compileExpr(op.Index.Start)
 					if err != nil {
 						return "", err
 					}
-					start = fmt.Sprintf("(%s + 1)", s)
+					start0 = s
+					start1 = fmt.Sprintf("(%s + 1)", s)
 				}
-				end := fmt.Sprintf("%s size", expr)
+				end0 := fmt.Sprintf("%s size", expr)
+				end1 := fmt.Sprintf("%s size", expr)
 				if op.Index.End != nil {
 					e, err := c.compileExpr(op.Index.End)
 					if err != nil {
 						return "", err
 					}
-					end = e
+					end0 = e
+					end1 = e
 				}
-				expr = fmt.Sprintf("(%s copyFrom: %s to: %s)", expr, start, end)
+				targetOnly := &parser.PostfixExpr{Target: p.Target}
+				if isStringPostfix(targetOnly, c.env) {
+					c.needSliceStr = true
+					expr = fmt.Sprintf("(Main __slice_string: %s start: %s end: %s)", expr, start0, end0)
+				} else {
+					expr = fmt.Sprintf("(%s copyFrom: %s to: %s)", expr, start1, end1)
+				}
 			} else {
 				idx, err := c.compileExpr(op.Index.Start)
 				if err != nil {
@@ -681,6 +695,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				targetOnly := &parser.PostfixExpr{Target: p.Target}
 				if isMapPostfix(targetOnly, c.env) {
 					expr = fmt.Sprintf("(%s at: %s)", expr, idx)
+				} else if isStringPostfix(targetOnly, c.env) {
+					c.needIndexStr = true
+					expr = fmt.Sprintf("(Main __index_string: %s idx: %s)", expr, idx)
 				} else {
 					expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
 				}
@@ -1157,6 +1174,34 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writeln("]")
 		c.writeln("^ out asArray")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needIndexStr {
+		c.writeln("__index_string: s idx: i")
+		c.indent++
+		c.writeln("| idx n |")
+		c.writeln("idx := i.")
+		c.writeln("n := s size.")
+		c.writeln("idx < 0 ifTrue: [ idx := idx + n ].")
+		c.writeln("(idx < 0 or: [ idx >= n ]) ifTrue: [ self error: 'index out of range' ].")
+		c.writeln("^ (s at: idx + 1) asString")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needSliceStr {
+		c.writeln("__slice_string: s start: i end: j")
+		c.indent++
+		c.writeln("| start end n |")
+		c.writeln("start := i.")
+		c.writeln("end := j.")
+		c.writeln("n := s size.")
+		c.writeln("start < 0 ifTrue: [ start := start + n ].")
+		c.writeln("end < 0 ifTrue: [ end := end + n ].")
+		c.writeln("start < 0 ifTrue: [ start := 0 ].")
+		c.writeln("end > n ifTrue: [ end := n ].")
+		c.writeln("end < start ifTrue: [ end := start ].")
+		c.writeln("^ (s copyFrom: start + 1 to: end)")
 		c.indent--
 		c.writelnNoIndent("!")
 	}

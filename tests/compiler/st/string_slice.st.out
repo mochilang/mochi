@@ -1,0 +1,4 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+((Main __slice_string: 'hello' start: 1 end: 4)) displayOn: Transcript. Transcript cr.
