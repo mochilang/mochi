@@ -923,11 +923,10 @@ func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 	case lit.Float != nil:
 		return strconv.FormatFloat(*lit.Float, 'f', -1, 64), nil
 	case lit.Str != nil:
-		s := *lit.Str
-		s = strings.ReplaceAll(s, "\\", "\\\\")
-		s = strings.ReplaceAll(s, "\"", "\\\"")
-		s = strings.ReplaceAll(s, "$", "\\$")
-		return "\"" + s + "\"", nil
+		// Use Go's quoting to handle escape sequences then protect
+		// `$` from Dart interpolation.
+		s := strings.ReplaceAll(*lit.Str, "$", "\\$")
+		return strconv.Quote(s), nil
 	case lit.Bool != nil:
 		if *lit.Bool {
 			return "true", nil
