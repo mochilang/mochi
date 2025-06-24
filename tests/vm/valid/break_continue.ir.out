@@ -6,7 +6,7 @@ func main (regs=16)
   Len          r2, r1
   Const        r3, 0
 L4:
-  Less         r4, r3, r2
+  LessInt      r4, r3, r2
   JumpIfFalse  r4, L0
   Index        r5, r1, r3
   Move         r6, r5
@@ -32,7 +32,7 @@ L3:
 L2:
   // for n in numbers {
   Const        r14, 1
-  Add          r15, r3, r14
+  AddInt       r15, r3, r14
   Move         r3, r15
   Jump         L4
 L0:

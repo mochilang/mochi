@@ -4,7 +4,7 @@ func main (regs=8)
   Len          r1, r0
   Const        r2, 0
 L1:
-  Less         r3, r2, r1
+  LessInt      r3, r2, r1
   JumpIfFalse  r3, L0
   Index        r4, r0, r2
   Move         r5, r4
@@ -12,7 +12,7 @@ L1:
   Print        r5
   // for n in [1,2,3] {
   Const        r6, 1
-  Add          r7, r2, r6
+  AddInt       r7, r2, r6
   Move         r2, r7
   Jump         L1
 L0:

@@ -657,7 +657,9 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 	}
 	main := c.compileMain(p)
 	c.funcs[0] = main
-	return &Program{Funcs: c.funcs}, nil
+	prog := &Program{Funcs: c.funcs}
+	optimizeProgram(prog)
+	return prog, nil
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) Function {

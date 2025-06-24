@@ -25,14 +25,14 @@ func twoSum (regs=23)
   Const        r4, 0
   Move         r5, r4
 L4:
-  Less         r6, r5, r3
+  LessInt      r6, r5, r3
   JumpIfFalse  r6, L0
   // for j in i+1..n {
   Const        r7, 1
   AddInt       r8, r5, r7
   Move         r9, r8
 L3:
-  Less         r10, r9, r3
+  LessInt      r10, r9, r3
   JumpIfFalse  r10, L1
   // if nums[i] + nums[j] == target {
   Index        r11, r0, r5
@@ -48,13 +48,13 @@ L3:
 L2:
   // for j in i+1..n {
   Const        r18, 1
-  Add          r19, r9, r18
+  AddInt       r19, r9, r18
   Move         r9, r19
   Jump         L3
 L1:
   // for i in 0..n {
   Const        r20, 1
-  Add          r21, r5, r20
+  AddInt       r21, r5, r20
   Move         r5, r21
   Jump         L4
 L0:
