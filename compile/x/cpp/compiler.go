@@ -683,6 +683,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				}
 			}
 			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+		} else if op.Field != nil {
+			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
 		}
 	}
 	return expr

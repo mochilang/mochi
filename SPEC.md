@@ -175,7 +175,7 @@ Comparison  = Term { ("<" | "<=" | ">" | ">=") Term }
 Term        = Factor { ("+" | "-") Factor }
 Factor      = Unary { ("*" | "/") Unary }
 Unary       = { "-" | "!" } PostfixExpr
-PostfixExpr = Primary { CallOp | IndexOp | CastOp }
+PostfixExpr = Primary { CallOp | IndexOp | CastOp | FieldOp }
 Primary     = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral |
               MapLiteral | MatchExpr | GenerateExpr | FetchExpr |
               Literal | Identifier | "(" Expression ")"
@@ -612,7 +612,7 @@ Comparison   = Term { ("<" | "<=" | ">" | ">=") Term } .
 Term         = Factor { ("+" | "-") Factor } .
 Factor       = Unary { ("*" | "/") Unary } .
 Unary        = { "-" | "!" } PostfixExpr .
-PostfixExpr  = Primary { CallOp | IndexOp | CastOp } .
+PostfixExpr  = Primary { CallOp | IndexOp | CastOp | FieldOp } .
 Primary      = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | FetchExpr | LoadExpr | QueryExpr | Literal | Identifier | "(" Expression ")" .
 FunExpr       = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] ("=>" Expression | Block) .
 CallExpr      = Identifier "(" [ Expression { "," Expression } ] ")" .
@@ -623,6 +623,7 @@ MapEntry      = Expression ":" Expression .
 IndexOp       = "[" [ Expression ] [ ":" Expression [ ":" Expression ] ] "]" .
 CallOp        = "(" [ Expression { "," Expression } ] ")" .
 CastOp        = "as" TypeRef .
+FieldOp       = "." Identifier .
 LoadExpr      = "load" StringLiteral "as" TypeRef [ "with" Expression ] .
 QueryExpr     = "from" Identifier "in" Expression
                 { "from" Identifier "in" Expression }
