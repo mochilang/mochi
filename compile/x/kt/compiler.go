@@ -1160,7 +1160,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				expr = fmt.Sprintf("%s[%s]", expr, idx)
+				if isStringPrimary(p.Target, c.env) {
+					expr = fmt.Sprintf("%s.substring(%s, %s + 1)", expr, idx, idx)
+				} else {
+					expr = fmt.Sprintf("%s[%s]", expr, idx)
+				}
 				continue
 			}
 			start := "0"
