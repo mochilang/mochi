@@ -3,6 +3,8 @@ package data
 import (
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 // openReader opens path for reading. A nil closer means no need to close.
@@ -11,10 +13,20 @@ func openReader(path string) (io.Reader, func() error, error) {
 		return os.Stdin, func() error { return nil }, nil
 	}
 	f, err := os.Open(path)
-	if err != nil {
-		return nil, nil, err
+	if err == nil {
+		return f, f.Close, nil
 	}
-	return f, f.Close, nil
+	if root := os.Getenv("MOCHI_ROOT"); root != "" && !filepath.IsAbs(path) {
+		clean := path
+		for strings.HasPrefix(clean, "../") {
+			clean = strings.TrimPrefix(clean, "../")
+		}
+		alt := filepath.Join(root, clean)
+		if af, err2 := os.Open(alt); err2 == nil {
+			return af, af.Close, nil
+		}
+	}
+	return nil, nil, err
 }
 
 type nopWriteCloser struct{ io.Writer }
@@ -28,10 +40,21 @@ func openWriter(path string) (io.Writer, func() error, error) {
 		return w, func() error { return nil }, nil
 	}
 	f, err := os.Create(path)
-	if err != nil {
-		return nil, nil, err
+	if err == nil {
+		return f, f.Close, nil
 	}
-	return f, f.Close, nil
+	if root := os.Getenv("MOCHI_ROOT"); root != "" && !filepath.IsAbs(path) {
+		clean := path
+		for strings.HasPrefix(clean, "../") {
+			clean = strings.TrimPrefix(clean, "../")
+		}
+		alt := filepath.Join(root, clean)
+		af, err2 := os.Create(alt)
+		if err2 == nil {
+			return af, af.Close, nil
+		}
+	}
+	return nil, nil, err
 }
 
 // truthy evaluates the truthiness of a value following Mochi semantics.

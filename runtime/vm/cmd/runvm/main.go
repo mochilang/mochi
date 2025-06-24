@@ -24,6 +24,22 @@ func main() {
 			src = abs
 		}
 	}
+	if err := os.Chdir(filepath.Dir(src)); err != nil {
+		fmt.Fprintln(os.Stderr, "chdir:", err)
+		os.Exit(1)
+	}
+	root := filepath.Dir(src)
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(root, "go.mod")); err == nil {
+			break
+		}
+		parent := filepath.Dir(root)
+		if parent == root {
+			break
+		}
+		root = parent
+	}
+	os.Setenv("MOCHI_ROOT", root)
 	prog, err := parser.Parse(src)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "parse error:", err)
