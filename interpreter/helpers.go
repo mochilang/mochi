@@ -5,7 +5,7 @@ import (
 	"mochi/types"
 )
 
-func (i *Interpreter) invokeTool(cl closure, args map[string]any) (any, error) {
+func (i *Interpreter) invokeTool(cl Closure, args map[string]any) (any, error) {
 	child := types.NewEnv(cl.Env)
 	for _, param := range cl.FullParams {
 		child.SetValue(param.Name, args[param.Name], true)
