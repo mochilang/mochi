@@ -1,4 +1,3 @@
-#!/usr/bin/env lua
 function __append(lst, v)
     local out = {}
     if lst then for i = 1, #lst do out[#out+1] = lst[i] end end

@@ -10,22 +10,6 @@ function __add(a, b)
         return a + b
     end
 end
-function __contains(container, item)
-    if type(container) == 'table' then
-        if container[1] ~= nil or #container > 0 then
-            for _, v in ipairs(container) do
-                if v == item then return true end
-            end
-            return false
-        else
-            return container[item] ~= nil
-        end
-    elseif type(container) == 'string' then
-        return string.find(container, item, 1, true) ~= nil
-    else
-        return false
-    end
-end
 function __print(...)
     local args = {...}
     for i, a in ipairs(args) do
@@ -41,7 +25,7 @@ for _, n in ipairs({1, 2, 3}) do
 end
 local i = 1
 local count = 0
-while __contains(set, i) do
+while (set[i] ~= nil) do
 	i = __add(i, 1)
 	count = __add(count, 1)
 	::__continue1::

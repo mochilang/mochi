@@ -26,6 +26,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands := []string{left}
 	ops := []string{}
 	strs := []bool{c.isStringUnary(b.Left)}
+	maps := []bool{c.isMapUnary(b.Left)}
 	for _, part := range b.Right {
 		right, err := c.compilePostfix(part.Right)
 		if err != nil {
@@ -38,6 +39,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		ops = append(ops, op)
 		operands = append(operands, right)
 		strs = append(strs, c.isStringPostfix(part.Right))
+		maps = append(maps, c.isMapPostfix(part.Right))
 	}
 
 	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
@@ -55,8 +57,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "||":
 					expr = fmt.Sprintf("(%s or %s)", l, r)
 				case "in":
-					c.helpers["contains"] = true
-					expr = fmt.Sprintf("__contains(%s, %s)", r, l)
+					if maps[i+1] {
+						expr = fmt.Sprintf("(%s[%s] ~= nil)", r, l)
+					} else {
+						c.helpers["contains"] = true
+						expr = fmt.Sprintf("__contains(%s, %s)", r, l)
+					}
 					resStr = false
 				case "/":
 					c.helpers["div"] = true
@@ -108,6 +114,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				ops = append(ops[:i], ops[i+1:]...)
 				strs[i] = resStr
 				strs = append(strs[:i+1], strs[i+2:]...)
+				maps[i] = false
+				maps = append(maps[:i+1], maps[i+2:]...)
 			} else {
 				i++
 			}
@@ -422,6 +430,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			indent = indent[:len(indent)-1]
 			b.WriteString(indent + "end\n")
 		}
+		b.WriteString("\tend\n")
 		b.WriteString("\treturn _res\n")
 		b.WriteString("end)()")
 		return b.String(), nil

@@ -23,7 +23,7 @@ func TestLuaCompiler_LeetCodeExample1(t *testing.T) {
 	if err := luacode.EnsureLua(); err != nil {
 		t.Skipf("lua not installed: %v", err)
 	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+	src := filepath.Join("..", "..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
