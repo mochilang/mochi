@@ -1071,13 +1071,13 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 	c.funcs = append(c.funcs, Function{})
 	for _, st := range p.Statements {
 		if st.Fun != nil {
-			idx := len(c.funcs)
-			c.fnIndex[st.Fun.Name] = idx
 			fn, err := c.compileFun(st.Fun)
 			if err != nil {
 				return nil, err
 			}
+			idx := len(c.funcs)
 			c.funcs = append(c.funcs, fn)
+			c.fnIndex[st.Fun.Name] = idx
 		}
 	}
 	main, err := c.compileMain(p)
@@ -1109,17 +1109,35 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 	return fc.fn, nil
 }
 
-func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
+func (c *compiler) compileFunExpr(fn *parser.FunExpr, parent *funcCompiler) (int, []int) {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(fn.Params)
+
+	// Captured variables from the parent are prepended to the parameter list.
+	captureRegs := []int{}
+	if parent != nil {
+		i := 0
+		for name, reg := range parent.vars {
+			fc.vars[name] = i
+			captureRegs = append(captureRegs, reg)
+			if i >= fc.fn.NumRegs {
+				fc.fn.NumRegs = i + 1
+			}
+			i++
+		}
+		fc.fn.NumParams = len(captureRegs) + len(fn.Params)
+	} else {
+		fc.fn.NumParams = len(fn.Params)
+	}
+
 	for i, p := range fn.Params {
-		fc.vars[p.Name] = i
-		if i >= fc.fn.NumRegs {
-			fc.fn.NumRegs = i + 1
+		idx := len(captureRegs) + i
+		fc.vars[p.Name] = idx
+		if idx >= fc.fn.NumRegs {
+			fc.fn.NumRegs = idx + 1
 		}
 	}
-	fc.idx = len(fn.Params)
+	fc.idx = fc.fn.NumParams
 	if fn.ExprBody != nil {
 		r := fc.compileExpr(fn.ExprBody)
 		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: r})
@@ -1134,7 +1152,7 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
 	}
 	idx := len(c.funcs)
 	c.funcs = append(c.funcs, fc.fn)
-	return idx
+	return idx, captureRegs
 }
 
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
@@ -1242,6 +1260,22 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 			val := fc.compileExpr(s.Assign.Value)
 			fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: container, B: lastIdx, C: val})
 		}
+		return nil
+	case s.Fun != nil:
+		idx, caps := fc.comp.compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body, Pos: s.Fun.Pos}, fc)
+		reg := fc.newReg()
+		if len(caps) == 0 {
+			fc.emit(s.Fun.Pos, Instr{Op: OpConst, A: reg, Val: Value{Tag: interpreter.TagInt, Int: idx}})
+		} else {
+			regs := make([]int, len(caps))
+			for i, r := range caps {
+				regs[i] = fc.newReg()
+				fc.emit(s.Fun.Pos, Instr{Op: OpMove, A: regs[i], B: r})
+			}
+			start := regs[0]
+			fc.emit(s.Fun.Pos, Instr{Op: OpCall, A: reg, B: idx, C: len(regs), D: start})
+		}
+		fc.vars[s.Fun.Name] = reg
 		return nil
 	case s.Return != nil:
 		r := fc.compileExpr(s.Return.Value)
@@ -1598,9 +1632,19 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	}
 
 	if p.FunExpr != nil {
-		idx := fc.comp.compileFunExpr(p.FunExpr)
+		idx, caps := fc.comp.compileFunExpr(p.FunExpr, fc)
 		dst := fc.newReg()
-		fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagInt, Int: idx}})
+		if len(caps) == 0 {
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagInt, Int: idx}})
+			return dst
+		}
+		regs := make([]int, len(caps))
+		for i, r := range caps {
+			regs[i] = fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpMove, A: regs[i], B: r})
+		}
+		start := regs[0]
+		fc.emit(p.Pos, Instr{Op: OpCall, A: dst, B: idx, C: len(regs), D: start})
 		return dst
 	}
 
