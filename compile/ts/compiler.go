@@ -672,6 +672,17 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
+
+	// Compile nested type declarations first
+	for _, m := range t.Members {
+		if m.Type != nil {
+			if err := c.compileTypeDecl(m.Type); err != nil {
+				return err
+			}
+			c.writeln("")
+		}
+	}
+
 	if len(t.Variants) > 0 {
 		var variants []string
 		for _, v := range t.Variants {
@@ -695,6 +706,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.writeln(fmt.Sprintf("type %s = %s", name, strings.Join(variants, " | ")))
 		return nil
 	}
+
 	c.writeln(fmt.Sprintf("type %s = {", name))
 	c.indent++
 	for _, m := range t.Members {
