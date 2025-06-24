@@ -2388,77 +2388,131 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
 	dst := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
-	fc.compileQueryFrom(q, dst, 0)
-	return dst
-}
 
-// compileQueryFrom recursively emits nested loops for each FROM clause.
-func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int) {
-	var name string
-	var src *parser.Expr
-	if level == 0 {
-		name = q.Var
-		src = q.Source
-	} else {
-		from := q.Froms[level-1]
-		name = from.Var
-		src = from.Src
+	type clause struct {
+		kind     string // "from" or "join"
+		name     string
+		src      *parser.Expr
+		joinType string
+		on       *parser.Expr
+		pos      lexer.Position
 	}
 
-	srcReg := fc.compileExpr(src)
-	listReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpIterPrep, A: listReg, B: srcReg})
-	lengthReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpLen, A: lengthReg, B: listReg})
-	idxReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: interpreter.TagInt, Int: 0}})
-	loopStart := len(fc.fn.Code)
-	condReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lengthReg})
-	jmp := len(fc.fn.Code)
-	fc.emit(src.Pos, Instr{Op: OpJumpIfFalse, A: condReg})
-
-	elemReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpIndex, A: elemReg, B: listReg, C: idxReg})
-	varReg, ok := fc.vars[name]
-	if !ok {
-		varReg = fc.newReg()
-		fc.vars[name] = varReg
+	clauses := []clause{{kind: "from", name: q.Var, src: q.Source, pos: q.Pos}}
+	for _, f := range q.Froms {
+		clauses = append(clauses, clause{kind: "from", name: f.Var, src: f.Src, pos: f.Pos})
 	}
-	fc.emit(src.Pos, Instr{Op: OpMove, A: varReg, B: elemReg})
+	for _, j := range q.Joins {
+		jt := "inner"
+		if j.Side != nil {
+			jt = *j.Side
+		}
+		clauses = append(clauses, clause{kind: "join", name: j.Var, src: j.Src, joinType: jt, on: j.On, pos: j.Pos})
+	}
 
-	if level < len(q.Froms) {
-		fc.pushScope()
-		fc.compileQueryFrom(q, dst, level+1)
-		fc.popScope()
-	} else {
-		fc.pushScope()
-		if q.Where != nil {
-			cond := fc.compileExpr(q.Where)
+	var compileClauses func(int)
+	compileClauses = func(idx int) {
+		if idx == len(clauses) {
+			fc.pushScope()
+			if q.Where != nil {
+				cond := fc.compileExpr(q.Where)
+				skip := len(fc.fn.Code)
+				fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+				val := fc.compileExpr(q.Select)
+				tmp := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+				fc.fn.Code[skip].B = len(fc.fn.Code)
+			} else {
+				val := fc.compileExpr(q.Select)
+				tmp := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			}
+			fc.popScope()
+			return
+		}
+
+		cl := clauses[idx]
+		srcReg := fc.compileExpr(cl.src)
+		listReg := fc.newReg()
+		fc.emit(cl.pos, Instr{Op: OpIterPrep, A: listReg, B: srcReg})
+		lengthReg := fc.newReg()
+		fc.emit(cl.pos, Instr{Op: OpLen, A: lengthReg, B: listReg})
+		idxReg := fc.newReg()
+		fc.emit(cl.pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+
+		matchedReg := -1
+		if cl.kind == "join" && cl.joinType == "left" {
+			matchedReg = fc.newReg()
+			fc.emit(cl.pos, Instr{Op: OpConst, A: matchedReg, Val: Value{Tag: interpreter.TagBool, Bool: false}})
+		}
+
+		loopStart := len(fc.fn.Code)
+		condReg := fc.newReg()
+		fc.emit(cl.pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lengthReg})
+		jmp := len(fc.fn.Code)
+		fc.emit(cl.pos, Instr{Op: OpJumpIfFalse, A: condReg})
+
+		elemReg := fc.newReg()
+		fc.emit(cl.pos, Instr{Op: OpIndex, A: elemReg, B: listReg, C: idxReg})
+		varReg, ok := fc.vars[cl.name]
+		if !ok {
+			varReg = fc.newReg()
+			fc.vars[cl.name] = varReg
+		}
+		fc.emit(cl.pos, Instr{Op: OpMove, A: varReg, B: elemReg})
+
+		doBody := func() {
+			fc.pushScope()
+			compileClauses(idx + 1)
+			fc.popScope()
+		}
+
+		if cl.kind == "join" && cl.joinType == "left" {
+			if cl.on != nil {
+				cond := fc.compileExpr(cl.on)
+				skip := len(fc.fn.Code)
+				fc.emit(cl.on.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+				fc.emit(cl.pos, Instr{Op: OpConst, A: matchedReg, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+				doBody()
+				fc.fn.Code[skip].B = len(fc.fn.Code)
+			} else {
+				fc.emit(cl.pos, Instr{Op: OpConst, A: matchedReg, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+				doBody()
+			}
+		} else if cl.kind == "join" && cl.joinType == "inner" && cl.on != nil {
+			cond := fc.compileExpr(cl.on)
 			skip := len(fc.fn.Code)
-			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			val := fc.compileExpr(q.Select)
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			fc.emit(cl.on.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+			doBody()
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			val := fc.compileExpr(q.Select)
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			doBody()
 		}
-		fc.popScope()
+
+		one := fc.newReg()
+		fc.emit(cl.pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		tmp := fc.newReg()
+		fc.emit(cl.pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
+		fc.emit(cl.pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+		fc.emit(cl.pos, Instr{Op: OpJump, A: loopStart})
+		end := len(fc.fn.Code)
+		fc.fn.Code[jmp].B = end
+
+		if matchedReg != -1 {
+			check := len(fc.fn.Code)
+			fc.emit(cl.pos, Instr{Op: OpJumpIfTrue, A: matchedReg})
+			nullReg := fc.newReg()
+			fc.emit(cl.pos, Instr{Op: OpConst, A: nullReg, Val: Value{Tag: interpreter.TagNull}})
+			fc.emit(cl.pos, Instr{Op: OpMove, A: varReg, B: nullReg})
+			doBody()
+			fc.fn.Code[check].B = len(fc.fn.Code)
+		}
 	}
 
-	one := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
-	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
-	fc.emit(src.Pos, Instr{Op: OpJump, A: loopStart})
-	end := len(fc.fn.Code)
-	fc.fn.Code[jmp].B = end
+	compileClauses(0)
+	return dst
 }
 
 func (fc *funcCompiler) compileWhile(w *parser.WhileStmt) error {

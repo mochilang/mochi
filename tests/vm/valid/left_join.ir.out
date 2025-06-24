@@ -1,0 +1,135 @@
+func main (regs=83)
+  // let customers = [
+  Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+  Move         r1, r0
+  // let orders = [
+  Const        r2, [{"customerId": 1, "id": 100, "total": 250}, {"customerId": 3, "id": 101, "total": 80}]
+  Move         r3, r2
+  // let result = from o in orders
+  Const        r4, []
+  IterPrep     r5, r3
+  Len          r6, r5
+  Const        r7, 0
+L5:
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r9, r5, r7
+  Move         r10, r9
+  // left join c in customers on o.customerId == c.id
+  IterPrep     r11, r1
+  Len          r12, r11
+  Const        r13, 0
+  Const        r14, false
+L3:
+  Less         r15, r13, r12
+  JumpIfFalse  r15, L1
+  Index        r16, r11, r13
+  Move         r17, r16
+  Const        r18, "customerId"
+  Index        r19, r10, r18
+  Const        r20, "id"
+  Index        r21, r17, r20
+  Equal        r22, r19, r21
+  JumpIfFalse  r22, L2
+  Const        r14, true
+  // orderId: o.id,
+  Const        r23, "orderId"
+  Const        r24, "id"
+  Index        r25, r10, r24
+  // customer: c,
+  Const        r26, "customer"
+  // total: o.total
+  Const        r27, "total"
+  Const        r28, "total"
+  Index        r29, r10, r28
+  // orderId: o.id,
+  Move         r30, r23
+  Move         r31, r25
+  // customer: c,
+  Move         r32, r26
+  Move         r33, r17
+  // total: o.total
+  Move         r34, r27
+  Move         r35, r29
+  // select {
+  MakeMap      r36, 3, r30
+  // let result = from o in orders
+  Append       r37, r4, r36
+  Move         r4, r37
+L2:
+  // left join c in customers on o.customerId == c.id
+  Const        r38, 1
+  Add          r39, r13, r38
+  Move         r13, r39
+  Jump         L3
+L1:
+  JumpIfTrue   r14, L4
+  Const        r40, nil
+  Move         r17, r40
+  // orderId: o.id,
+  Const        r41, "orderId"
+  Const        r42, "id"
+  Index        r43, r10, r42
+  // customer: c,
+  Const        r44, "customer"
+  // total: o.total
+  Const        r45, "total"
+  Const        r46, "total"
+  Index        r47, r10, r46
+  // orderId: o.id,
+  Move         r48, r41
+  Move         r49, r43
+  // customer: c,
+  Move         r50, r44
+  Move         r51, r17
+  // total: o.total
+  Move         r52, r45
+  Move         r53, r47
+  // select {
+  MakeMap      r54, 3, r48
+  // let result = from o in orders
+  Append       r55, r4, r54
+  Move         r4, r55
+L4:
+  Const        r56, 1
+  Add          r57, r7, r56
+  Move         r7, r57
+  Jump         L5
+L0:
+  Move         r58, r4
+  // print("--- Left Join ---")
+  Const        r59, "--- Left Join ---"
+  Print        r59
+  // for entry in result {
+  IterPrep     r60, r58
+  Len          r61, r60
+  Const        r62, 0
+L7:
+  Less         r63, r62, r61
+  JumpIfFalse  r63, L6
+  Index        r64, r60, r62
+  Move         r65, r64
+  // print("Order", entry.orderId, "customer", entry.customer, "total", entry.total)
+  Const        r72, "Order"
+  Move         r66, r72
+  Const        r73, "orderId"
+  Index        r74, r65, r73
+  Move         r67, r74
+  Const        r75, "customer"
+  Move         r68, r75
+  Const        r76, "customer"
+  Index        r77, r65, r76
+  Move         r69, r77
+  Const        r78, "total"
+  Move         r70, r78
+  Const        r79, "total"
+  Index        r80, r65, r79
+  Move         r71, r80
+  PrintN       r66, 6, r66
+  // for entry in result {
+  Const        r81, 1
+  Add          r82, r62, r81
+  Move         r62, r82
+  Jump         L7
+L6:
+  Return       r0
