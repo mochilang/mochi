@@ -8,6 +8,7 @@ import (
 	"math"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -70,6 +71,7 @@ const (
 	OpInput
 	OpCount
 	OpAvg
+	OpCast
 	OpIterPrep
 
 	// Closure creation
@@ -177,6 +179,8 @@ func (op Op) String() string {
 		return "Count"
 	case OpAvg:
 		return "Avg"
+	case OpCast:
+		return "Cast"
 	case OpIterPrep:
 		return "IterPrep"
 	case OpMakeClosure:
@@ -252,6 +256,7 @@ type Function struct {
 
 type Program struct {
 	Funcs []Function
+	Types []types.Type
 }
 
 type closure struct {
@@ -952,6 +957,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
 			}
+		case OpCast:
+			val := valueToAny(fr.regs[ins.B])
+			typ := m.prog.Types[ins.C]
+			cv, err := castValue(typ, val)
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			fr.regs[ins.A] = anyToValue(cv)
 		case OpMakeClosure:
 			caps := make([]Value, ins.C)
 			copy(caps, fr.regs[ins.D:ins.D+ins.C])
@@ -1089,6 +1102,7 @@ type compiler struct {
 	env     *types.Env
 	funcs   []Function
 	fnIndex map[string]int
+	types   []types.Type
 }
 
 type funcCompiler struct {
@@ -1104,6 +1118,12 @@ type loopContext struct {
 	breakJumps     []int
 	continueJumps  []int
 	continueTarget int
+}
+
+func (c *compiler) addType(t types.Type) int {
+	idx := len(c.types)
+	c.types = append(c.types, t)
+	return idx
 }
 
 // Compile turns an AST into a Program supporting a limited subset of Mochi.
@@ -1127,7 +1147,7 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 		return nil, err
 	}
 	c.funcs[0] = main
-	return &Program{Funcs: c.funcs}, nil
+	return &Program{Funcs: c.funcs, Types: c.types}, nil
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
@@ -1556,6 +1576,12 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 				start = regs[0]
 			}
 			fc.emit(op.Call.Pos, Instr{Op: OpCallV, A: dst, B: r, C: len(regs), D: start})
+			r = dst
+		} else if op.Cast != nil {
+			typ := resolveTypeRef(op.Cast.Type, fc.comp.env)
+			idx := fc.comp.addType(typ)
+			dst := fc.newReg()
+			fc.emit(op.Cast.Pos, Instr{Op: OpCast, A: dst, B: r, C: idx})
 			r = dst
 		}
 	}
@@ -2286,5 +2312,219 @@ func valuesEqual(a, b Value) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+// resolveTypeRef converts a parsed type reference into a concrete type using env.
+func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = resolveTypeRef(p, env)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = resolveTypeRef(t.Fun.Return, env)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) == 1 {
+				return types.ListType{Elem: resolveTypeRef(t.Generic.Args[0], env)}
+			}
+		case "map":
+			if len(t.Generic.Args) == 2 {
+				return types.MapType{Key: resolveTypeRef(t.Generic.Args[0], env), Value: resolveTypeRef(t.Generic.Args[1], env)}
+			}
+		}
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			if st, ok := env.GetStruct(*t.Simple); ok {
+				return st
+			}
+			if ut, ok := env.GetUnion(*t.Simple); ok {
+				return ut
+			}
+			if ut, ok := env.FindUnionByVariant(*t.Simple); ok {
+				return ut
+			}
+		}
+	}
+	return types.AnyType{}
+}
+
+// castValue attempts to convert v to type t, returning an error if not possible.
+func castValue(t types.Type, v any) (any, error) {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		switch x := v.(type) {
+		case int:
+			return x, nil
+		case float64:
+			return int(x), nil
+		default:
+			return nil, fmt.Errorf("cannot cast %T to %s", v, t)
+		}
+	case types.FloatType:
+		switch x := v.(type) {
+		case float64:
+			return x, nil
+		case int:
+			return float64(x), nil
+		default:
+			return nil, fmt.Errorf("cannot cast %T to %s", v, t)
+		}
+	case types.StringType:
+		if s, ok := v.(string); ok {
+			return s, nil
+		}
+		return nil, fmt.Errorf("cannot cast %T to %s", v, t)
+	case types.BoolType:
+		if b, ok := v.(bool); ok {
+			return b, nil
+		}
+		return nil, fmt.Errorf("cannot cast %T to %s", v, t)
+	case types.ListType:
+		list, ok := v.([]any)
+		if !ok {
+			return nil, fmt.Errorf("cannot cast %T to %s", v, t)
+		}
+		out := make([]any, len(list))
+		for i, item := range list {
+			cv, err := castValue(tt.Elem, item)
+			if err != nil {
+				return nil, err
+			}
+			out[i] = cv
+		}
+		return out, nil
+	case types.MapType:
+		switch m := v.(type) {
+		case map[string]any:
+			out := map[string]any{}
+			for k, val := range m {
+				cv, err := castValue(tt.Value, val)
+				if err != nil {
+					return nil, err
+				}
+				out[k] = cv
+			}
+			if _, ok := tt.Key.(types.StringType); ok {
+				return out, nil
+			}
+			if _, ok := tt.Key.(types.IntType); ok {
+				intMap := make(map[int]any, len(out))
+				for k, v := range out {
+					iv, err := strconv.Atoi(k)
+					if err != nil {
+						return nil, fmt.Errorf("cannot cast key %q to int", k)
+					}
+					intMap[iv] = v
+				}
+				return intMap, nil
+			}
+			return out, nil
+		case map[int]any:
+			out := make(map[int]any, len(m))
+			for k, val := range m {
+				cv, err := castValue(tt.Value, val)
+				if err != nil {
+					return nil, err
+				}
+				out[k] = cv
+			}
+			return out, nil
+		case map[any]any:
+			out := make(map[any]any, len(m))
+			for k, val := range m {
+				cv, err := castValue(tt.Value, val)
+				if err != nil {
+					return nil, err
+				}
+				out[k] = cv
+			}
+			return out, nil
+		default:
+			return nil, fmt.Errorf("cannot cast %T to %s", v, t)
+		}
+	case types.StructType:
+		m, ok := v.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("cannot cast %T to %s", v, tt.Name)
+		}
+		out := map[string]any{"__name": tt.Name}
+		for name, ft := range tt.Fields {
+			fv, ok := m[name]
+			if !ok {
+				return nil, fmt.Errorf("missing field %s for %s", name, tt.Name)
+			}
+			cv, err := castValue(ft, fv)
+			if err != nil {
+				return nil, err
+			}
+			out[name] = cv
+		}
+		return out, nil
+	default:
+		return v, nil
+	}
+}
+
+func anyToValue(v any) Value {
+	switch val := v.(type) {
+	case nil:
+		return Value{Tag: interpreter.TagNull}
+	case int:
+		return Value{Tag: interpreter.TagInt, Int: val}
+	case int64:
+		return Value{Tag: interpreter.TagInt, Int: int(val)}
+	case float64:
+		return Value{Tag: interpreter.TagFloat, Float: val}
+	case string:
+		return Value{Tag: interpreter.TagStr, Str: val}
+	case bool:
+		return Value{Tag: interpreter.TagBool, Bool: val}
+	case []any:
+		lst := make([]Value, len(val))
+		for i, x := range val {
+			lst[i] = anyToValue(x)
+		}
+		return Value{Tag: interpreter.TagList, List: lst}
+	case map[string]any:
+		m := make(map[string]Value, len(val))
+		for k, x := range val {
+			m[k] = anyToValue(x)
+		}
+		return Value{Tag: interpreter.TagMap, Map: m}
+	case map[int]any:
+		m := make(map[string]Value, len(val))
+		for k, x := range val {
+			m[strconv.Itoa(k)] = anyToValue(x)
+		}
+		return Value{Tag: interpreter.TagMap, Map: m}
+	case map[any]any:
+		m := make(map[string]Value, len(val))
+		for k, x := range val {
+			m[fmt.Sprint(k)] = anyToValue(x)
+		}
+		return Value{Tag: interpreter.TagMap, Map: m}
+	default:
+		return Value{Tag: interpreter.TagNull}
 	}
 }
