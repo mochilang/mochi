@@ -1,0 +1,1 @@
+print((fun(a: int, b: int): int => a + b)(2,3))
