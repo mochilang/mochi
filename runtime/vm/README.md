@@ -23,7 +23,7 @@ The VM supports a small but useful subset of Mochi:
 * Function definitions
 * Function calls with any number of arguments
 * Anonymous function expressions
-* Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `json`, `now`, `input`, `count` and `avg`
+* Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `json`, `now`, `input`, `count`, `avg`, `min` and `max`
 * List, map and struct construction
 * String indexing to access individual characters
 * Field access using the `.` operator
@@ -33,7 +33,6 @@ The VM supports a small but useful subset of Mochi:
 
 Many of Mochi's features are not yet implemented:
 
-* Pattern matching
 * External package imports or FFI calls
 
 This VM is intentionally simple and primarily used for experimentation and testing.

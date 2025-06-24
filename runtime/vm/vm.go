@@ -74,6 +74,8 @@ const (
 	OpInput
 	OpCount
 	OpAvg
+	OpMin
+	OpMax
 	OpCast
 	OpIterPrep
 	OpLoad
@@ -186,6 +188,10 @@ func (op Op) String() string {
 		return "Count"
 	case OpAvg:
 		return "Avg"
+	case OpMin:
+		return "Min"
+	case OpMax:
+		return "Max"
 	case OpCast:
 		return "Cast"
 	case OpIterPrep:
@@ -1125,6 +1131,56 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					sum += toFloat(v)
 				}
 				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
+			}
+		case OpMin:
+			lst := fr.regs[ins.B]
+			if lst.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("min expects list")
+			}
+			if len(lst.List) == 0 {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
+			} else {
+				minVal := toFloat(lst.List[0])
+				isFloat := lst.List[0].Tag == interpreter.TagFloat
+				for _, v := range lst.List[1:] {
+					if v.Tag == interpreter.TagFloat {
+						isFloat = true
+					}
+					f := toFloat(v)
+					if f < minVal {
+						minVal = f
+					}
+				}
+				if isFloat {
+					fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: minVal}
+				} else {
+					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(minVal)}
+				}
+			}
+		case OpMax:
+			lst := fr.regs[ins.B]
+			if lst.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("max expects list")
+			}
+			if len(lst.List) == 0 {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
+			} else {
+				maxVal := toFloat(lst.List[0])
+				isFloat := lst.List[0].Tag == interpreter.TagFloat
+				for _, v := range lst.List[1:] {
+					if v.Tag == interpreter.TagFloat {
+						isFloat = true
+					}
+					f := toFloat(v)
+					if f > maxVal {
+						maxVal = f
+					}
+				}
+				if isFloat {
+					fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: maxVal}
+				} else {
+					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(maxVal)}
+				}
 			}
 		case OpCast:
 			val := valueToAny(fr.regs[ins.B])
@@ -2134,6 +2190,16 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpAvg, A: dst, B: arg})
+			return dst
+		case "min":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpMin, A: dst, B: arg})
+			return dst
+		case "max":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpMax, A: dst, B: arg})
 			return dst
 		case "eval":
 			arg := fc.compileExpr(p.Call.Args[0])
