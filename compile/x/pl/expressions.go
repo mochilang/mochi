@@ -381,6 +381,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 		tmp := c.newVar()
 		code = append(code, fmt.Sprintf("dict_create(%s, _, [%s]),", tmp, strings.Join(pairs, ", ")))
 		return exprRes{code: code, val: tmp}, nil
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.Call != nil:
@@ -513,6 +515,23 @@ func (c *Compiler) compileLogicQuery(q *parser.LogicQueryExpr) (exprRes, error) 
 	tmp := c.newVar()
 	dict := "_{" + strings.Join(fields, ", ") + "}"
 	code := []string{fmt.Sprintf("findall(%s, %s, %s),", dict, pred, tmp)}
+	return exprRes{code: code, val: tmp}, nil
+}
+
+func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (exprRes, error) {
+	pairs := make([]string, len(s.Fields))
+	code := []string{}
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return exprRes{}, err
+		}
+		code = append(code, v.code...)
+		pairs[i] = fmt.Sprintf("%s-%s", sanitizeAtom(f.Name), v.val)
+	}
+	tmp := c.newVar()
+	tag := sanitizeAtom(s.Name)
+	code = append(code, fmt.Sprintf("dict_create(%s, %s, [%s]),", tmp, tag, strings.Join(pairs, ", ")))
 	return exprRes{code: code, val: tmp}, nil
 }
 

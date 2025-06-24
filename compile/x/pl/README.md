@@ -283,6 +283,7 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
 - `let` and `var` declarations with assignment
 - Arithmetic and comparison operators plus list concatenation with `+`
 - Lists and maps with indexing, slicing and element assignment
+- Struct literals using Prolog dicts with field selectors
 - Membership checks using `in` on lists, strings and maps
 - Built-in functions `len`, `count`, `avg`, `str` and `input`
 - `print` statements
@@ -301,8 +302,7 @@ Mochi language features are not yet implemented:
 
 - Pattern matching expressions and union types
 - Dataset queries (`from`/`select`, joins and grouping)
-- Structured type declarations like `struct` and enums (simple field selectors
-  `a.b` are supported)
+- Enum declarations and variant matching
 - Concurrency primitives and external helpers like `_fetch` or `_genText`
 - Import declarations (currently ignored)
 - Agent and stream features (`agent`, `on`, `emit`)
