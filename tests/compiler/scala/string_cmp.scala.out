@@ -1,0 +1,10 @@
+object Main {
+        def main(args: Array[String]): Unit = {
+                println(("a" < "b"))
+                println(("a" <= "a"))
+                println(("cat" > "car"))
+                println(("dog" >= "dog"))
+                println(("abc" == "abc"))
+                println(("foo" != "bar"))
+        }
+}

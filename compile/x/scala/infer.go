@@ -20,35 +20,42 @@ func (c *Compiler) inferBinaryType(b *parser.BinaryExpr) types.Type {
 	for _, op := range b.Right {
 		rt := c.inferPostfixType(op.Right)
 		switch op.Op {
-		case "+", "-", "*", "/", "%", "union", "union_all", "except", "intersect":
-			if isNumber(t) && isNumber(rt) {
-				if isFloat(t) || isFloat(rt) {
-					t = types.FloatType{}
-				} else {
-					t = types.IntType{}
-				}
-				continue
-			}
-			if op.Op == "+" || op.Op == "union" || op.Op == "union_all" || op.Op == "except" || op.Op == "intersect" {
-				if llist, ok := t.(types.ListType); ok {
-					if rlist, ok := rt.(types.ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
-						t = llist
-						continue
-					}
-				}
-				if isString(t) && isString(rt) {
-					t = types.StringType{}
-					continue
-				}
-			}
-			t = types.AnyType{}
-		case "==", "!=", "<", "<=", ">", ">=":
-			t = types.BoolType{}
-		default:
-			t = types.AnyType{}
-		}
-	}
-	return t
+               case "+", "-", "*", "/", "%", "union", "union_all", "except", "intersect":
+                       if isNumber(t) && isNumber(rt) {
+                               if isFloat(t) || isFloat(rt) {
+                                       t = types.FloatType{}
+                               } else {
+                                       t = types.IntType{}
+                               }
+                               continue
+                       }
+                       if op.Op == "+" || op.Op == "union" || op.Op == "union_all" || op.Op == "except" || op.Op == "intersect" {
+                               if llist, ok := t.(types.ListType); ok {
+                                       if rlist, ok := rt.(types.ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
+                                               t = llist
+                                               continue
+                                       }
+                               }
+                               if isString(t) && isString(rt) {
+                                       t = types.StringType{}
+                                       continue
+                               }
+                       }
+                       t = types.AnyType{}
+               case "==", "!=", "<", "<=", ">", ">=":
+                       t = types.BoolType{}
+               case "in":
+                       switch rt.(type) {
+                       case types.MapType, types.ListType, types.StringType:
+                               t = types.BoolType{}
+                       default:
+                               t = types.AnyType{}
+                       }
+               default:
+                       t = types.AnyType{}
+               }
+       }
+       return t
 }
 
 func (c *Compiler) inferUnaryType(u *parser.Unary) types.Type {
