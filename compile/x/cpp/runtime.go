@@ -3,7 +3,7 @@ package cppcode
 // Runtime helper data for the C++ backend.
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "union", "except", "intersect", "json", "input"}
+var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "unionAll", "union", "except", "intersect", "json", "input"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -91,6 +91,13 @@ var helperCode = map[string][]string{
 		"}",
 		"template<typename T> auto _avg(const T& v) -> decltype(v.Items, double{}) {",
 		"\treturn _avg(v.Items);",
+		"}",
+	},
+	"unionAll": {
+		"template<typename T> vector<T> _union_all(const vector<T>& a, const vector<T>& b) {",
+		"\tvector<T> res = a;",
+		"\tres.insert(res.end(), b.begin(), b.end());",
+		"\treturn res;",
 		"}",
 	},
 	"union": {
