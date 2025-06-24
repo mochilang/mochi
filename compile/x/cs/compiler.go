@@ -1779,6 +1779,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("str() expects 1 arg")
 		}
 		return fmt.Sprintf("Convert.ToString(%s)", args[0]), nil
+	case "upper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("upper() expects 1 arg")
+		}
+		return fmt.Sprintf("Convert.ToString(%s).ToUpper()", args[0]), nil
+	case "lower":
+		if len(args) != 1 {
+			return "", fmt.Errorf("lower() expects 1 arg")
+		}
+		return fmt.Sprintf("Convert.ToString(%s).ToLower()", args[0]), nil
 	case "input":
 		if len(args) != 0 {
 			return "", fmt.Errorf("input() expects no args")
