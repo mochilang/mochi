@@ -23,13 +23,14 @@ The VM supports a small but useful subset of Mochi:
 * Function calls with any number of arguments
 * Anonymous function expressions
 * Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `json`, `now`, `input`, `count` and `avg`
-* List and map indexing and construction
+* List, map and struct construction
+* Field access using the `.` operator
 
 ## Unsupported features (partial list)
 
 Many of Mochi's features are not yet implemented:
 
-* Structs, pattern matching and user defined types
+* Pattern matching
 * Closures or function values that capture surrounding variables
 * External package imports or FFI calls
 

@@ -1374,6 +1374,34 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		return dst
 	}
 
+	if p.Struct != nil {
+		vals := make([]int, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			vals[i] = fc.compileExpr(f.Value)
+		}
+
+		regs := make([]int, len(p.Struct.Fields)*2+2)
+
+		nameKey := fc.newReg()
+		fc.emit(p.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: interpreter.TagStr, Str: "__name"}})
+		nameVal := fc.newReg()
+		fc.emit(p.Pos, Instr{Op: OpConst, A: nameVal, Val: Value{Tag: interpreter.TagStr, Str: p.Struct.Name}})
+		regs[0] = nameKey
+		regs[1] = nameVal
+		for i, f := range p.Struct.Fields {
+			kreg := fc.newReg()
+			fc.emit(f.Pos, Instr{Op: OpConst, A: kreg, Val: Value{Tag: interpreter.TagStr, Str: f.Name}})
+			vreg := fc.newReg()
+			fc.emit(f.Pos, Instr{Op: OpMove, A: vreg, B: vals[i]})
+			regs[i*2+2] = kreg
+			regs[i*2+3] = vreg
+		}
+		dst := fc.newReg()
+		start := regs[0]
+		fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: len(p.Struct.Fields) + 1, C: start})
+		return dst
+	}
+
 	if p.Group != nil {
 		return fc.compileExpr(p.Group)
 	}
@@ -1414,10 +1442,23 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		return dst
 	}
 
-	if p.Selector != nil && len(p.Selector.Tail) == 0 {
-		if r, ok := fc.vars[p.Selector.Root]; ok {
+	if p.Selector != nil {
+		r, ok := fc.vars[p.Selector.Root]
+		if !ok {
+			r = fc.newReg()
+		}
+		if len(p.Selector.Tail) == 0 {
 			return r
 		}
+		cur := r
+		for _, field := range p.Selector.Tail {
+			key := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: interpreter.TagStr, Str: field}})
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpIndex, A: dst, B: cur, C: key})
+			cur = dst
+		}
+		return cur
 	}
 
 	if p.Call != nil {
