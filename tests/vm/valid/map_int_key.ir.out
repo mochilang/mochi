@@ -1,0 +1,9 @@
+func main (regs=4)
+  // let m = {1: "a", 2: "b"}
+  Const        r0, {"1": "a", "2": "b"}
+  Move         r1, r0
+  // print(m[1])
+  Const        r2, 1
+  Index        r3, r1, r2
+  Print        r3
+  Return       r0
