@@ -87,6 +87,25 @@ const listOpHelpers = `(define (_union_all a b)
               a)
     res))`
 
+const sliceHelper = `(define (_slice obj i j)
+  (let* ((n (if (string? obj) (string-length obj) (length obj)))
+         (start i)
+         (end j))
+    (when (< start 0) (set! start (+ n start)))
+    (when (< end 0) (set! end (+ n end)))
+    (when (< start 0) (set! start 0))
+    (when (> end n) (set! end n))
+    (when (< end start) (set! end start))
+    (if (string? obj)
+        (substring obj start end)
+        (let loop ((idx 0) (xs obj) (out '()))
+          (if (or (null? xs) (>= idx end))
+              (reverse out)
+              (loop (+ idx 1) (cdr xs)
+                    (if (>= idx start)
+                        (cons (car xs) out)
+                        out))))))`
+
 // Compiler translates a Mochi AST into Scheme source code (minimal subset).
 type Compiler struct {
 	buf            bytes.Buffer
@@ -99,6 +118,7 @@ type Compiler struct {
 	needMapHelpers bool
 	needDataset    bool
 	needListOps    bool
+	needSlice      bool
 	loops          []loopCtx
 	mainStmts      []*parser.Statement
 	tests          []string
@@ -154,7 +174,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, mainStmts: nil, tests: nil}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, mainStmts: nil, tests: nil}
 }
 
 func (c *Compiler) writeIndent() {
@@ -177,6 +197,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needMapHelpers = false
 	c.needDataset = false
 	c.needListOps = false
+	c.needSlice = false
 	c.mainStmts = nil
 	c.tests = nil
 	// Declarations and tests
@@ -208,7 +229,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("(" + name + ")")
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps {
+	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -243,6 +264,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if c.needListOps {
 			pre.WriteString(listOpHelpers)
+			pre.WriteByte('\n')
+		}
+		if c.needSlice {
+			pre.WriteString(sliceHelper)
 			pre.WriteByte('\n')
 		}
 		if pre.Len() > 0 {
@@ -576,21 +601,51 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-			targetName := ""
-			if p.Target != nil && p.Target.Selector != nil {
-				targetName = p.Target.Selector.Root
-			}
-			if c.varType(targetName) == "string" || c.isStringPrimary(p.Target) {
-				expr = fmt.Sprintf("(string-ref %s %s)", expr, idx)
-			} else if c.varType(targetName) == "map" || c.isMapPrimary(p.Target) {
-				c.needMapHelpers = true
-				expr = fmt.Sprintf("(map-get %s %s)", expr, idx)
+			if op.Index.Colon != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
+				}
+				end := ""
+				targetName := ""
+				if p.Target != nil && p.Target.Selector != nil {
+					targetName = p.Target.Selector.Root
+				}
+				if c.varType(targetName) == "string" || c.isStringPrimary(p.Target) {
+					end = fmt.Sprintf("(string-length %s)", expr)
+				} else {
+					end = fmt.Sprintf("(length %s)", expr)
+				}
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				c.needSlice = true
+				expr = fmt.Sprintf("(_slice %s %s %s)", expr, start, end)
 			} else {
-				expr = fmt.Sprintf("(list-ref %s %s)", expr, idx)
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				targetName := ""
+				if p.Target != nil && p.Target.Selector != nil {
+					targetName = p.Target.Selector.Root
+				}
+				if c.varType(targetName) == "string" || c.isStringPrimary(p.Target) {
+					expr = fmt.Sprintf("(string-ref %s %s)", expr, idx)
+				} else if c.varType(targetName) == "map" || c.isMapPrimary(p.Target) {
+					c.needMapHelpers = true
+					expr = fmt.Sprintf("(map-get %s %s)", expr, idx)
+				} else {
+					expr = fmt.Sprintf("(list-ref %s %s)", expr, idx)
+				}
 			}
 			continue
 		}
@@ -851,6 +906,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	if sub.needMapHelpers {
 		c.needMapHelpers = true
+	}
+	if sub.needSlice {
+		c.needSlice = true
 	}
 
 	var buf bytes.Buffer
