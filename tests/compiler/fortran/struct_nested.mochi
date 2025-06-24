@@ -1,0 +1,14 @@
+type Point {
+  x: int
+  y: int
+}
+
+type Line {
+  start: Point
+  end: Point
+}
+
+let p1 = Point { x: 0, y: 0 }
+let p2 = Point { x: 1, y: 1 }
+let line = Line { start: p1, end: p2 }
+print(line.start.x)

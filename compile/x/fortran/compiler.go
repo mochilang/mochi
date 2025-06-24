@@ -181,7 +181,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		}
 	}
-	for name, typ := range structVars {
+	names := make([]string, 0, len(structVars))
+	for n := range structVars {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		typ := structVars[name]
 		c.writeln(fmt.Sprintf("type(%s) :: %s", typ, name))
 	}
 	for name := range declared {
@@ -376,6 +382,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	} else if fn.Return != nil && fn.Return.Simple != nil && *fn.Return.Simple == "string" {
 		c.writeln(fmt.Sprintf("character(:), allocatable :: %s", resVar))
 		c.stringVars[resVar] = true
+	} else if fn.Return != nil && fn.Return.Simple != nil && !isBuiltin(*fn.Return.Simple) {
+		c.writeln(fmt.Sprintf("type(%s) :: %s", sanitizeName(*fn.Return.Simple), resVar))
 	} else {
 		c.writeln(fmt.Sprintf("integer(kind=8) :: %s", resVar))
 	}
@@ -404,6 +412,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			c.stringVars[name] = true
 		} else if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "float" {
 			c.writeln(fmt.Sprintf("real, intent(in) :: %s", name))
+		} else if p.Type != nil && p.Type.Simple != nil && !isBuiltin(*p.Type.Simple) {
+			c.writeln(fmt.Sprintf("type(%s), intent(in) :: %s", sanitizeName(*p.Type.Simple), name))
 		} else {
 			c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s", name))
 		}
@@ -513,7 +523,16 @@ func (c *Compiler) ftnType(t *parser.TypeRef) string {
 	case "bool":
 		return "logical"
 	default:
-		return sanitizeName(*t.Simple)
+		return fmt.Sprintf("type(%s)", sanitizeName(*t.Simple))
+	}
+}
+
+func isBuiltin(name string) bool {
+	switch name {
+	case "int", "float", "string", "bool":
+		return true
+	default:
+		return false
 	}
 }
 
@@ -1190,10 +1209,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					if c.listVars[root] {
-						start = fmt.Sprintf("modulo(%s, size(%s))", v, root)
-					} else if c.stringVars[root] {
+					if c.stringVars[root] {
 						start = fmt.Sprintf("modulo(%s, len(%s))", v, root)
+					} else if c.listVars[root] {
+						start = fmt.Sprintf("modulo(%s, size(%s))", v, root)
 					} else {
 						start = v
 					}
@@ -1204,18 +1223,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					if c.listVars[root] {
-						end = fmt.Sprintf("modulo(%s, size(%s))", v, root)
-					} else if c.stringVars[root] {
+					if c.stringVars[root] {
 						end = fmt.Sprintf("modulo(%s, len(%s))", v, root)
+					} else if c.listVars[root] {
+						end = fmt.Sprintf("modulo(%s, size(%s))", v, root)
 					} else {
 						end = v
 					}
 				} else {
-					if c.listVars[root] {
-						end = fmt.Sprintf("size(%s)", root)
-					} else {
+					if c.stringVars[root] {
 						end = fmt.Sprintf("len(%s)", root)
+					} else {
+						end = fmt.Sprintf("size(%s)", root)
 					}
 				}
 				expr = fmt.Sprintf("%s(%s + 1:%s)", expr, start, end)
@@ -1224,10 +1243,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if c.listVars[root] {
-					expr = fmt.Sprintf("%s(modulo(%s, size(%s)) + 1)", expr, v, root)
-				} else if c.stringVars[root] {
+				if c.stringVars[root] {
 					expr = fmt.Sprintf("%s(modulo(%s, len(%s)) + 1:modulo(%s, len(%s)) + 1)", expr, v, root, v, root)
+				} else if c.listVars[root] {
+					expr = fmt.Sprintf("%s(modulo(%s, size(%s)) + 1)", expr, v, root)
 				} else {
 					expr = fmt.Sprintf("%s(%s + 1)", expr, v)
 				}
@@ -1248,9 +1267,6 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Call != nil:
 			recv := expr
-			if strings.HasPrefix(recv, "(") && strings.HasSuffix(recv, ")") {
-				recv = recv[1 : len(recv)-1]
-			}
 			tmp := &parser.CallExpr{Func: "", Args: op.Call.Args}
 			val, err := c.compileCallExpr(tmp, recv)
 			if err != nil {
