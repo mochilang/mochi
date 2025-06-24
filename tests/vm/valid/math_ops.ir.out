@@ -1,17 +1,11 @@
-func main (regs=9)
+func main (regs=3)
   // print(6 * 7)
-  Const        r0, 6
-  Const        r1, 7
-  MulInt       r2, r0, r1
-  Print        r2
+  Const        r0, 42
+  Print        r0
   // print(7 / 2)
-  Const        r3, 7
-  Const        r4, 2
-  DivInt       r5, r3, r4
-  Print        r5
+  Const        r1, 3
+  Print        r1
   // print(7 % 2)
-  Const        r6, 7
-  Const        r7, 2
-  ModInt       r8, r6, r7
-  Print        r8
+  Const        r2, 1
+  Print        r2
   Return       r0

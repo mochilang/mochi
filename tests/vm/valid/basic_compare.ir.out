@@ -1,22 +1,19 @@
-func main (regs=12)
+func main (regs=9)
   // let a = 10 - 3
-  Const        r0, 10
-  Const        r1, 3
-  SubInt       r2, r0, r1
-  Move         r3, r2
+  Const        r0, 7
+  Move         r1, r0
   // let b = 2 + 2
-  Const        r4, 2
-  Const        r5, 2
-  AddInt       r6, r4, r5
-  Move         r7, r6
+  Const        r2, 4
+  Move         r3, r2
   // print(a)
-  Print        r3
+  Const        r4, 7
+  Print        r4
   // print(a == 7)
-  Const        r8, 7
-  EqualInt     r9, r3, r8
-  Print        r9
+  Const        r5, 7
+  EqualInt     r6, r1, r5
+  Print        r6
   // print(b < 5)
-  Const        r10, 5
-  LessInt      r11, r7, r10
-  Print        r11
+  Const        r7, 5
+  LessInt      r8, r3, r7
+  Print        r8
   Return       r0

@@ -853,6 +853,8 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) Function {
+	origEnv := c.env
+	c.env = types.NewEnv(c.env)
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
@@ -867,10 +869,13 @@ func (c *compiler) compileFun(fn *parser.FunStmt) Function {
 		fc.compileStmt(st)
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
+	c.env = origEnv
 	return fc.fn
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
+	origEnv := c.env
+	c.env = types.NewEnv(c.env)
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
 	fc.fn.Line = fn.Pos.Line
 	for i, p := range fn.Params {
@@ -891,10 +896,13 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
 	}
 	idx := len(c.funcs)
 	c.funcs = append(c.funcs, fc.fn)
+	c.env = origEnv
 	return idx
 }
 
 func (c *compiler) compileMain(p *parser.Program) Function {
+	origEnv := c.env
+	c.env = types.NewEnv(c.env)
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
@@ -905,6 +913,7 @@ func (c *compiler) compileMain(p *parser.Program) Function {
 		fc.compileStmt(st)
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
+	c.env = origEnv
 	return fc.fn
 }
 
@@ -962,6 +971,9 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 		fc.vars[s.Let.Name] = reg
 		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
 		fc.tags[reg] = fc.tags[r]
+		if v, ok := fc.evalConstExpr(s.Let.Value); ok {
+			fc.comp.env.SetValue(s.Let.Name, valueToAny(v), false)
+		}
 	case s.Var != nil:
 		r := fc.compileExpr(s.Var.Value)
 		reg := fc.newReg()
@@ -1017,6 +1029,11 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 func (fc *funcCompiler) compileExpr(e *parser.Expr) int {
 	if e == nil {
 		return fc.newReg()
+	}
+	if v, ok := fc.evalConstExpr(e); ok {
+		dst := fc.newReg()
+		fc.emit(e.Pos, Instr{Op: OpConst, A: dst, Val: v})
+		return dst
 	}
 	return fc.compileBinary(e.Binary)
 }
@@ -1518,6 +1535,31 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) {
 		}
 		fc.fn.Code[endJump].A = len(fc.fn.Code)
 	}
+}
+
+func literalToValue(l *parser.Literal) Value {
+	switch {
+	case l.Int != nil:
+		return Value{Tag: interpreter.TagInt, Int: *l.Int}
+	case l.Float != nil:
+		return Value{Tag: interpreter.TagFloat, Float: *l.Float}
+	case l.Bool != nil:
+		return Value{Tag: interpreter.TagBool, Bool: bool(*l.Bool)}
+	case l.Str != nil:
+		return Value{Tag: interpreter.TagStr, Str: *l.Str}
+	default:
+		return Value{Tag: interpreter.TagNull}
+	}
+}
+
+func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {
+	if l, ok := interpreter.EvalConstExpr(e, fc.comp.env); ok {
+		return literalToValue(l), true
+	}
+	if v, ok := constExpr(e); ok {
+		return v, true
+	}
+	return Value{}, false
 }
 
 func constList(l *parser.ListLiteral) (Value, bool) {
