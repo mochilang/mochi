@@ -15,4 +15,3 @@ test_addition_works :-
 	test_addition_works
 	.
 :- initialization(main, main).
-

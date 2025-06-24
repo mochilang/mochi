@@ -84,6 +84,29 @@ func (c *Compiler) binaryOp(left operand, op string, right operand) (operand, er
 		res.code = append(res.code, fmt.Sprintf("%s is %s mod %s,", tmp, left.expr.val, right.expr.val))
 		res.val = tmp
 		return operand{expr: res}, nil
+	case "union_all":
+		tmp := c.newVar()
+		res.code = append(res.code, fmt.Sprintf("append(%s, %s, %s)", left.expr.val, right.expr.val, tmp)+",")
+		res.val = tmp
+		return operand{expr: res, isList: true}, nil
+	case "union":
+		tmp := c.newVar()
+		c.use("union")
+		res.code = append(res.code, fmt.Sprintf("union(%s, %s, %s),", left.expr.val, right.expr.val, tmp))
+		res.val = tmp
+		return operand{expr: res, isList: true}, nil
+	case "except":
+		tmp := c.newVar()
+		c.use("except")
+		res.code = append(res.code, fmt.Sprintf("except(%s, %s, %s),", left.expr.val, right.expr.val, tmp))
+		res.val = tmp
+		return operand{expr: res, isList: true}, nil
+	case "intersect":
+		tmp := c.newVar()
+		c.use("intersect")
+		res.code = append(res.code, fmt.Sprintf("intersect(%s, %s, %s),", left.expr.val, right.expr.val, tmp))
+		res.val = tmp
+		return operand{expr: res, isList: true}, nil
 	case "==":
 		res.val = fmt.Sprintf("%s =:= %s", left.expr.val, right.expr.val)
 		return operand{expr: res}, nil
@@ -131,8 +154,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 		if err != nil {
 			return exprRes{}, err
 		}
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
 		operands = append(operands, operand{expr: r, isList: isListPostfix(part.Right)})
-		ops = append(ops, part.Op)
+		ops = append(ops, op)
 	}
 
 	levels := [][]string{
@@ -142,6 +169,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (exprRes, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
+		{"union", "union_all", "except", "intersect"},
 	}
 
 	for _, lvl := range levels {
