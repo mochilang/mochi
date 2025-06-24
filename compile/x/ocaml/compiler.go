@@ -614,11 +614,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			// use list concatenation or string concat if operand is list or string
 			if isListExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
 				oper = "@"
-			} else if isStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
+			} else if isStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || isStringExpr(&parser.Expr{Binary: b}, c.env) {
 				oper = "^"
 				// convert char from String.get to string for concatenation
 				if strings.HasPrefix(r, "(String.get ") {
 					r = fmt.Sprintf("(String.make 1 %s)", r)
+				}
+				if strings.HasPrefix(expr, "(String.get ") {
+					expr = fmt.Sprintf("(String.make 1 %s)", expr)
 				}
 			}
 		} else if oper == "/" {
@@ -850,7 +853,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "print":
 		if len(args) == 1 {
 			if isStringExpr(call.Args[0], c.env) {
-				return fmt.Sprintf("print_endline %s", args[0]), nil
+				return fmt.Sprintf("print_endline (%s)", args[0]), nil
 			}
 			if isBoolExpr(call.Args[0], c.env) {
 				return fmt.Sprintf("print_endline (string_of_bool (%s))", args[0]), nil
