@@ -270,6 +270,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 			}
 			c.mapVars[name] = true
 		}
+		if strings.HasPrefix(val, "fun ") || strings.HasPrefix(val, "fun(") {
+			val = "(" + val + ")"
+		}
 		if ex == "" {
 			c.writeln(fmt.Sprintf("let %s = ref %s;;", name, val))
 		} else {
@@ -820,14 +823,66 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		return fmt.Sprintf("fun %s -> %s", strings.Join(params, " "), body), nil
 	}
-	name := fmt.Sprintf("__anon%d", c.funTmp)
 	c.funTmp++
-	stmt := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: fn.BlockBody}
-	if err := c.compileFun(stmt); err != nil {
-		return "", err
+	origEnv := c.env
+	c.env = types.NewEnv(origEnv)
+	for _, p := range fn.Params {
+		if p.Type != nil && p.Type.Simple != nil {
+			var t types.Type
+			switch *p.Type.Simple {
+			case "int":
+				t = types.IntType{}
+			case "float":
+				t = types.FloatType{}
+			case "string":
+				t = types.StringType{}
+			case "bool":
+				t = types.BoolType{}
+			}
+			if t != nil {
+				c.env.SetVar(p.Name, t, false)
+			}
+		}
 	}
-	c.writeln("")
-	return name, nil
+	ex := fmt.Sprintf("Return_%d", c.tmp)
+	c.tmp++
+	sub := &Compiler{env: c.env, indent: 2, vars: map[string]bool{}, mapVars: map[string]bool{}}
+	for _, st := range fn.BlockBody {
+		if err := sub.compileStmt(st, ex); err != nil {
+			c.env = origEnv
+			return "", err
+		}
+	}
+	if sub.setNth {
+		c.ensureSetNth()
+	}
+	if sub.slice {
+		c.ensureSlice()
+	}
+	if sub.input {
+		c.ensureInput()
+	}
+	body := strings.TrimRight(sub.buf.String(), "\n")
+	c.env = origEnv
+	var out strings.Builder
+	out.WriteString("fun ")
+	out.WriteString(strings.Join(params, " "))
+	out.WriteString(" ->\n  let exception ")
+	retTyp := ocamlType(fn.Return)
+	if retTyp == "" {
+		out.WriteString(ex)
+	} else {
+		out.WriteString(ex + " of " + retTyp)
+	}
+	out.WriteString(" in\n  try\n")
+	out.WriteString(body)
+	if body != "" && !strings.HasSuffix(body, "\n") {
+		out.WriteByte('\n')
+	}
+	out.WriteString("  with ")
+	out.WriteString(ex)
+	out.WriteString(" v -> v")
+	return out.String(), nil
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
@@ -894,7 +949,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "_input ()", nil
 		}
 	}
-	return fmt.Sprintf("%s %s", sanitizeName(call.Func), strings.Join(args, " ")), nil
+	name := sanitizeName(call.Func)
+	if c.vars[name] {
+		name = "!" + name
+	}
+	return fmt.Sprintf("%s %s", name, strings.Join(args, " ")), nil
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
