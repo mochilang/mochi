@@ -223,7 +223,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					res = fmt.Sprintf("Map.get(%s, %s)", res, idx)
 					typ = tt.Value
 				case types.StringType:
-					res = fmt.Sprintf("Enum.at(String.graphemes(%s), %s)", res, idx)
+					c.use("_index_string")
+					res = fmt.Sprintf("_index_string(%s, %s)", res, idx)
 				default:
 					res = fmt.Sprintf("Enum.at(%s, %s)", res, idx)
 					if lt, ok := tt.(types.ListType); ok {
@@ -242,8 +243,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				switch typ.(type) {
 				case types.StringType:
-					slice := fmt.Sprintf("Enum.slice(String.graphemes(%s), %s, %s == nil and length(String.graphemes(%s)) - %s || (%s - %s))", res, start, end, res, start, end, start)
-					res = fmt.Sprintf("Enum.join(%s)", slice)
+					c.use("_slice_string")
+					endArg := end
+					if endArg == "nil" {
+						endArg = fmt.Sprintf("length(String.graphemes(%s))", res)
+					}
+					res = fmt.Sprintf("_slice_string(%s, %s, %s)", res, start, endArg)
 				default:
 					length := fmt.Sprintf("(%s) - %s", end, start)
 					if end == "nil" {
