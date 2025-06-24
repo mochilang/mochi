@@ -1,4 +1,4 @@
-func main (regs=31)
+func main (regs=37)
   // let n = 10
   Const        r0, 10
   Move         r1, r0
@@ -32,7 +32,7 @@ L3:
   JumpIfFalse  r17, L2
   // count = count + 1
   Const        r18, 1
-  Add          r19, r12, r18
+  AddInt       r19, r12, r18
   Move         r12, r19
 L2:
   // for i in 2..n {
@@ -53,12 +53,23 @@ L0:
   Now          r24
   Move         r25, r24
   // let duration = (end - start) / 1000
-  Sub          r26, r25, r7
+  SubInt       r26, r25, r7
   Const        r27, 1000
-  Div          r28, r26, r27
+  DivInt       r28, r26, r27
   Move         r29, r28
+  // "duration_us": duration,
+  Const        r30, "duration_us"
+  // "output": last,
+  Const        r31, "output"
+  // "duration_us": duration,
+  Move         r32, r30
+  Move         r33, r29
+  // "output": last,
+  Move         r34, r31
+  Move         r35, r5
   // json({
-  JSON         r30
+  MakeMap      r36, 2, r32
+  JSON         r36
   Return       r0
 
   // fun is_prime(n: int): bool {
