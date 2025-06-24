@@ -754,6 +754,19 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
 				}
 				fr.regs[ins.A] = src.Map[key]
+			case interpreter.TagStr:
+				if idxVal.Tag != interpreter.TagInt {
+					return Value{}, m.newError(fmt.Errorf("string index must be int"), trace, ins.Line)
+				}
+				runes := []rune(src.Str)
+				idx := idxVal.Int
+				if idx < 0 {
+					idx += len(runes)
+				}
+				if idx < 0 || idx >= len(runes) {
+					return Value{}, m.newError(fmt.Errorf("index out of range"), trace, ins.Line)
+				}
+				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: string(runes[idx])}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
 			}
