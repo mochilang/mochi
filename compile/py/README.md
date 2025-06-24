@@ -49,13 +49,14 @@ var helperMap = map[string]string{
     "_fetch":      helperFetch,
     "_load":       helperLoad,
     "_save":       helperSave,
+    "_slice":      helperSlice,
     "_stream":     helperStream,
     "_wait_all":   helperWaitAll,
     "_agent":      helperAgent,
     "_query":      helperQuery,
 }
 ```
-【F:compile/py/runtime.go†L329-L347】
+【F:compile/py/runtime.go†L345-L364】
 
 ## Building
 
