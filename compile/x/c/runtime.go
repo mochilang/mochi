@@ -279,6 +279,9 @@ static list_list_int list_list_int_create(int len) {
     return 0;
 }
 `
+	helperContainsString = `static int contains_string(char* s, char* sub) {
+    return strstr(s, sub) != NULL;
+}`
 	helperContainsListListInt = `static int contains_list_list_int(list_list_int v, list_int item) {
     for (int i = 0; i < v.len; i++) if (equal_list_int(v.data[i], item)) return 1;
     return 0;
@@ -449,6 +452,7 @@ var helperCode = map[string]string{
 	needInListInt:            helperContainsListInt,
 	needInListFloat:          helperContainsListFloat,
 	needInListString:         helperContainsListString,
+	needInString:             helperContainsString,
 	needInListListInt:        helperContainsListListInt,
 	needInput:                helperInput,
 	needStr:                  helperStr,
@@ -491,6 +495,7 @@ var helperOrder = []string{
 	needInListInt,
 	needInListFloat,
 	needInListString,
+	needInString,
 	needInListListInt,
 	needInput,
 	needStr,

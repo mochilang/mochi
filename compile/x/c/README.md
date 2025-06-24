@@ -31,6 +31,7 @@ Additional features include:
 
 - list slicing for strings, integer, float and string lists
 - membership checks and `union`, `except` and `intersect` operations on lists
+- `in` operator tests substring membership in strings
 - test blocks and `expect` statements compiled as helper functions
 - `if` expressions for conditional values
 - anonymous `fun` expressions (without captured variables) compiled to static functions
