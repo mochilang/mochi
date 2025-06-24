@@ -96,7 +96,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
 				isList = true
 			case "in":
-				expr = fmt.Sprintf("%s.containsKey(%s)", r, l)
+				c.helpers["_in"] = true
+				expr = fmt.Sprintf("_in(%s, %s)", l, r)
 			default:
 				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 			}
