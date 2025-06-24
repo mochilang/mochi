@@ -51,9 +51,10 @@ if len(c.helpers) > 0 {
 
 ## Built-in Functions
 
-Common built-ins such as `print`, `len`, `count` and `avg` expand to standard C#
-code.  Additional helpers implement `now()` which returns a Unix timestamp in
-nanoseconds and `json(v)` which prints a JSON representation of a value.
+Common built-ins such as `print`, `len`, `count`, `avg`, `upper` and `lower`
+expand to standard C# code.  Additional helpers implement `now()` which returns
+a Unix timestamp in nanoseconds and `json(v)` which prints a JSON
+representation of a value.
 
 If `_cast` is not required the generated file omits the `System.Text.Json` import:
 
