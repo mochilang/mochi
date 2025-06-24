@@ -1120,8 +1120,20 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(err, trace, ins.Line)
 			}
 			out := make([]Value, len(rows))
-			for i, row := range rows {
-				out[i] = anyToValue(row)
+			if ins.D >= 0 {
+				typ := m.prog.Types[ins.D]
+				for i, row := range rows {
+					val := any(row)
+					cv, err := castValue(typ, val)
+					if err != nil {
+						return Value{}, m.newError(err, trace, ins.Line)
+					}
+					out[i] = anyToValue(cv)
+				}
+			} else {
+				for i, row := range rows {
+					out[i] = anyToValue(row)
+				}
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
 		case OpSave:
@@ -1673,6 +1685,8 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		// no result
 	case OpAppend, OpStr, OpInput:
 		fc.tags[i.A] = tagUnknown
+	case OpLoad:
+		fc.tags[i.A] = tagUnknown
 	case OpSave:
 		fc.tags[i.A] = tagUnknown
 	case OpCount:
@@ -2217,7 +2231,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: interpreter.TagNull}})
 		}
 		dst := fc.newReg()
-		fc.emit(p.Pos, Instr{Op: OpLoad, A: dst, B: pathReg, C: optsReg})
+		typeIdx := -1
+		if p.Load.Type != nil {
+			typ := resolveTypeRef(p.Load.Type, fc.comp.env)
+			typeIdx = fc.comp.addType(typ)
+		}
+		fc.emit(p.Pos, Instr{Op: OpLoad, A: dst, B: pathReg, C: optsReg, D: typeIdx})
 		return dst
 	}
 
