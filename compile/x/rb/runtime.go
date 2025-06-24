@@ -174,18 +174,21 @@ end`
   chars[start...finish].join
 end`
 
-	helperGroup = `class _Group
+	helperGroup = `class MGroup
   attr_accessor :key, :Items
   def initialize(k)
     @key = k
     @Items = []
+  end
+  def length
+    @Items.length
   end
 end`
 
 	helperGroupBy = `def _group_by(src, keyfn)
 grouped = src.group_by { |it| keyfn.call(it) }
 grouped.map do |k, items|
-g = _Group.new(k)
+g = MGroup.new(k)
 g.Items.concat(items)
 g
 end

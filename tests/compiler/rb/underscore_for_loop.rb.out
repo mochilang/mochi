@@ -9,7 +9,7 @@ for _ in "ab".chars
 	c = (c + 1)
 end
 m = {"x" => 1, "y" => 2}
-for _ in m
+for _ in m.keys
 	c = (c + 1)
 end
 puts([c].join(" "))
