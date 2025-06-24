@@ -224,6 +224,7 @@ Dataset queries support `where`, `skip`, `take`, `sort by`, `join` and basic `gr
 * List operators `union`, `union all`, `except` and `intersect`
 * Membership tests using `in`
 * Iterating over map keys with `for k in m`
+* Map helper functions `keys()` and `values()`
 
 ### Unsupported features
 
@@ -252,4 +253,3 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Destructuring bindings in `let` and `var` statements
 * Automatic language imports (`import python "..." auto`)
 * Extern object declarations
-* Map helper functions like `keys()` and `values()`

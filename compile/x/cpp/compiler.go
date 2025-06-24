@@ -659,6 +659,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		case "json":
 			c.helpers["json"] = true
 			return fmt.Sprintf("_json(%s)", args[0])
+		case "keys":
+			c.helpers["keys"] = true
+			return fmt.Sprintf("_keys(%s)", args[0])
+		case "values":
+			c.helpers["values"] = true
+			return fmt.Sprintf("_values(%s)", args[0])
 		case "reduce":
 			if len(args) == 3 {
 				c.helpers["reduce"] = true
@@ -697,6 +703,13 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 	for i, a := range call.Args {
 		expr := c.compileExpr(a)
 		typ := c.guessExprType(a)
+		if typ == "" {
+			if call := getCallExpr(a); call != nil {
+				if call.Func == "keys" || call.Func == "values" {
+					typ = "vector<any>"
+				}
+			}
+		}
 		if strings.HasPrefix(typ, "vector<") {
 			c.helpers["fmtVec"] = true
 			expr = "_fmtVec(" + expr + ")"

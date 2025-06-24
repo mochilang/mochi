@@ -3,7 +3,7 @@ package cppcode
 // Runtime helper data for the C++ backend.
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "unionAll", "union", "except", "intersect", "json", "input"}
+var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "unionAll", "union", "except", "intersect", "json", "input", "keys", "values"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -178,6 +178,22 @@ var helperCode = map[string][]string{
 		"\tstring s;",
 		"\tgetline(cin, s);",
 		"\treturn s;",
+		"}",
+	},
+	"keys": {
+		"template<typename K, typename V> vector<K> _keys(const unordered_map<K, V>& m) {",
+		"\tvector<K> res; res.reserve(m.size());",
+		"\tfor (const auto& kv : m) res.push_back(kv.first);",
+		"\tsort(res.begin(), res.end());",
+		"\treturn res;",
+		"}",
+	},
+	"values": {
+		"template<typename K, typename V> vector<V> _values(const unordered_map<K, V>& m) {",
+		"\tvector<V> res; res.reserve(m.size());",
+		"\tvector<K> ks = _keys(m);",
+		"\tfor (const auto& k : ks) res.push_back(m.at(k));",
+		"\treturn res;",
 		"}",
 	},
 }

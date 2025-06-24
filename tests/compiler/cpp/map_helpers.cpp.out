@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+template<typename T> string _fmtVec(const vector<T>& v) {
+	stringstream ss;
+	ss << '[';
+	for (size_t i = 0; i < v.size(); i++) {
+		if (i > 0) ss << ' ';
+		ss << v[i];
+	}
+	ss << ']';
+	return ss.str();
+}
+
+template<typename K, typename V> vector<K> _keys(const unordered_map<K, V>& m) {
+	vector<K> res; res.reserve(m.size());
+	for (const auto& kv : m) res.push_back(kv.first);
+	sort(res.begin(), res.end());
+	return res;
+}
+
+template<typename K, typename V> vector<V> _values(const unordered_map<K, V>& m) {
+	vector<V> res; res.reserve(m.size());
+	vector<K> ks = _keys(m);
+	for (const auto& k : ks) res.push_back(m.at(k));
+	return res;
+}
+
+int main() {
+	unordered_map<string, int> m = unordered_map<string, int>{};
+	m[string("a")] = 1;
+	m[string("b")] = 2;
+	std::cout << (_fmtVec(_keys(m))) << std::endl;
+	std::cout << (_fmtVec(_values(m))) << std::endl;
+	return 0;
+}

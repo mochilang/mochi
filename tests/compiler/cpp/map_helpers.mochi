@@ -1,0 +1,5 @@
+var m: map<string, int> = {}
+m["a"] = 1
+m["b"] = 2
+print(keys(m))
+print(values(m))
