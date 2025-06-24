@@ -83,6 +83,7 @@ func TestRustCompiler_ValidPrograms(t *testing.T) {
 		"list_index",
 		"list_set",
 		"map_index",
+		"map_iterate",
 		"match_expr",
 		"print_hello",
 		"two_sum",
