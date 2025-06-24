@@ -917,13 +917,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpPrint2:
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]), valueToAny(fr.regs[ins.B]))
 		case OpPrintN:
+			var sb strings.Builder
 			for i := 0; i < ins.B; i++ {
-				if i > 0 {
-					fmt.Fprint(m.writer, " ")
-				}
-				fmt.Fprint(m.writer, valueToAny(fr.regs[ins.C+i]))
+				fmt.Fprintf(&sb, "%v ", valueToAny(fr.regs[ins.C+i]))
 			}
-			fmt.Fprintln(m.writer)
+			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(time.Now().UnixNano())}
 		case OpJSON:
@@ -2119,6 +2117,9 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	if p.Match != nil {
 		return fc.compileMatch(p.Match)
+	}
+	if p.If != nil {
+		return fc.compileIfExpr(p.If)
 	}
 	if p.Lit != nil {
 		switch {
@@ -3680,6 +3681,39 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) error {
 		fc.fn.Code[endJump].A = len(fc.fn.Code)
 	}
 	return nil
+}
+
+func (fc *funcCompiler) compileIfExpr(e *parser.IfExpr) int {
+	cond := fc.compileExpr(e.Cond)
+	jmpFalse := len(fc.fn.Code)
+	fc.emit(e.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+
+	thenReg := fc.compileExpr(e.Then)
+	dst := fc.newReg()
+	fc.emit(e.Pos, Instr{Op: OpMove, A: dst, B: thenReg})
+
+	endJump := -1
+	if e.ElseIf != nil || e.Else != nil {
+		endJump = len(fc.fn.Code)
+		fc.emit(e.Pos, Instr{Op: OpJump})
+	}
+
+	fc.fn.Code[jmpFalse].B = len(fc.fn.Code)
+
+	if e.ElseIf != nil {
+		elseReg := fc.compileIfExpr(e.ElseIf)
+		fc.emit(e.Pos, Instr{Op: OpMove, A: dst, B: elseReg})
+	} else if e.Else != nil {
+		elseReg := fc.compileExpr(e.Else)
+		fc.emit(e.Pos, Instr{Op: OpMove, A: dst, B: elseReg})
+	} else {
+		fc.emit(lexer.Position{}, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagNull}})
+	}
+
+	if endJump != -1 {
+		fc.fn.Code[endJump].A = len(fc.fn.Code)
+	}
+	return dst
 }
 
 func (fc *funcCompiler) compileMatch(m *parser.MatchExpr) int {
