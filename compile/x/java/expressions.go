@@ -176,7 +176,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				end = e
 			}
 			if c.isStringExpr(p) {
-				expr = fmt.Sprintf("%s.substring(%s, %s)", expr, start, end)
+				c.helpers["_sliceString"] = true
+				expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
 			} else {
 				c.helpers["_slice"] = true
 				expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
