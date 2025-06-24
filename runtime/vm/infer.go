@@ -126,11 +126,13 @@ func applyTags(tags []RegTag, ins Instr) {
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
 		OpIn, OpNot:
 		tags[ins.A] = TagBool
-	case OpLen, OpNow:
+	case OpLen, OpNow, OpCount:
 		tags[ins.A] = TagInt
+	case OpAvg:
+		tags[ins.A] = TagFloat
 	case OpJSON, OpPrint, OpPrint2:
 		// no result
-	case OpMakeList, OpIndex, OpSetIndex, OpCall, OpCall2, OpCallV:
+	case OpMakeList, OpIndex, OpSetIndex, OpCall, OpCall2, OpCallV, OpInput:
 		tags[ins.A] = TagUnknown
 	}
 }

@@ -1,10 +1,12 @@
 package vm
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
 	"math"
+	"os"
 	"sort"
 	"strings"
 	"time"
@@ -64,6 +66,10 @@ const (
 	OpJSON
 	OpAppend
 	OpStr
+
+	OpInput
+	OpCount
+	OpAvg
 
 	// Specialized numeric ops
 	OpAddInt
@@ -180,6 +186,12 @@ func (op Op) String() string {
 		return "LessEqInt"
 	case OpLessEqFloat:
 		return "LessEqFloat"
+	case OpInput:
+		return "Input"
+	case OpCount:
+		return "Count"
+	case OpAvg:
+		return "Avg"
 	default:
 		return "?"
 	}
@@ -338,10 +350,15 @@ func (p *Program) Disassemble(src string) string {
 type VM struct {
 	prog   *Program
 	writer io.Writer
+	reader *bufio.Reader
 }
 
 func New(prog *Program, w io.Writer) *VM {
-	return &VM{prog: prog, writer: w}
+	return NewWithIO(prog, w, os.Stdin)
+}
+
+func NewWithIO(prog *Program, w io.Writer, r io.Reader) *VM {
+	return &VM{prog: prog, writer: w, reader: bufio.NewReader(r)}
 }
 
 func (m *VM) Run() error {
@@ -630,6 +647,45 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: newList}
 		case OpStr:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
+		case OpInput:
+			line, err := m.reader.ReadString('\n')
+			if err != nil && err != io.EOF {
+				return Value{}, err
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: strings.TrimRight(line, "\r\n")}
+		case OpCount:
+			v := fr.regs[ins.B]
+			switch v.Tag {
+			case interpreter.TagList:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.List)}
+			case interpreter.TagStr:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len([]rune(v.Str))}
+			case interpreter.TagMap:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.Map)}
+			default:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
+			}
+		case OpAvg:
+			lst := fr.regs[ins.B]
+			if lst.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("avg expects list")
+			}
+			if len(lst.List) == 0 {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: 0}
+				break
+			}
+			var sum float64
+			for _, it := range lst.List {
+				switch it.Tag {
+				case interpreter.TagInt:
+					sum += float64(it.Int)
+				case interpreter.TagFloat:
+					sum += it.Float
+				default:
+					return Value{}, fmt.Errorf("avg expects numbers")
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
@@ -793,8 +849,12 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2:
 		// no result
-	case OpAppend, OpStr:
+	case OpAppend, OpStr, OpInput:
 		fc.tags[i.A] = tagUnknown
+	case OpCount:
+		fc.tags[i.A] = tagInt
+	case OpAvg:
+		fc.tags[i.A] = tagFloat
 	}
 }
 
@@ -1177,6 +1237,20 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			elem := fc.compileExpr(p.Call.Args[1])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpAppend, A: dst, B: list, C: elem})
+			return dst
+		case "input":
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpInput, A: dst})
+			return dst
+		case "count":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpCount, A: dst, B: arg})
+			return dst
+		case "avg":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpAvg, A: dst, B: arg})
 			return dst
 		case "str":
 			arg := fc.compileExpr(p.Call.Args[0])
