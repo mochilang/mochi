@@ -964,6 +964,31 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(s.Name); ok && len(st.Order) > 0 {
+			vals := map[string]string{}
+			for _, f := range s.Fields {
+				v, err := c.compileExpr(f.Value)
+				if err != nil {
+					return "", err
+				}
+				vals[f.Name] = v
+			}
+			parts := []string{"Main", "new" + st.Name + ":"}
+			for i, fn := range st.Order {
+				v := "nil"
+				if val, ok := vals[fn]; ok {
+					v = val
+				}
+				if i == 0 {
+					parts = append(parts, v)
+				} else {
+					parts = append(parts, fmt.Sprintf("%s: %s", fn, v))
+				}
+			}
+			return "(" + strings.Join(parts, " ") + ")", nil
+		}
+	}
 	if len(s.Fields) == 0 {
 		return "Dictionary new", nil
 	}
