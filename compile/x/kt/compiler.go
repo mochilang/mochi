@@ -1076,6 +1076,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 
 	operands := []string{left}
+	lists := []bool{isListUnary(b.Left, c.env)}
 	ops := []string{}
 	for _, part := range b.Right {
 		rhs, err := c.compilePostfix(part.Right)
@@ -1088,6 +1089,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		}
 		ops = append(ops, op)
 		operands = append(operands, rhs)
+		lists = append(lists, isListPostfix(part.Right, c.env))
 	}
 
 	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
@@ -1099,25 +1101,36 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				r := operands[i+1]
 				op := ops[i]
 				var expr string
+				var isList bool
 				if op == "in" {
 					expr = fmt.Sprintf("%s.contains(%s)", r, l)
 				} else if op == "union" {
 					c.use("_union")
 					expr = fmt.Sprintf("_union(%s, %s)", l, r)
+					isList = true
 				} else if op == "union_all" {
 					c.use("_unionAll")
 					expr = fmt.Sprintf("_unionAll(%s, %s)", l, r)
+					isList = true
 				} else if op == "except" {
 					c.use("_except")
 					expr = fmt.Sprintf("_except(%s, %s)", l, r)
+					isList = true
 				} else if op == "intersect" {
 					c.use("_intersect")
 					expr = fmt.Sprintf("_intersect(%s, %s)", l, r)
+					isList = true
+				} else if op == "+" && (lists[i] || lists[i+1]) {
+					c.use("_concat")
+					expr = fmt.Sprintf("_concat(%s, %s)", l, r)
+					isList = true
 				} else {
 					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 				}
 				operands[i] = expr
+				lists[i] = isList
 				operands = append(operands[:i+1], operands[i+2:]...)
+				lists = append(lists[:i+1], lists[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
 				i++
