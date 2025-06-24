@@ -1,0 +1,20 @@
+:- style_check(-singleton).
+		add(X, Y, Res) :-
+			catch(
+				(
+					true
+				)
+				, return(_V0),
+					Res = _V0
+				)
+			.
+			add(X, Y, Res) :-
+			_V1 is X + Y,
+			Res = _V1.
+
+	main :-
+	add(2, 3, _V2),
+	write(_V2),
+	nl
+	.
+:- initialization(main, main).

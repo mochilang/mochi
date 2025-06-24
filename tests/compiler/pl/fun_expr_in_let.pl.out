@@ -1,0 +1,21 @@
+:- style_check(-singleton).
+		_lambda0(X, Res) :-
+			catch(
+				(
+					true
+				)
+				, return(_V0),
+					Res = _V0
+				)
+			.
+			_lambda0(X, Res) :-
+			_V1 is X * X,
+			Res = _V1.
+
+	main :-
+	Square = _lambda0,
+	_lambda0(6, _V2),
+	write(_V2),
+	nl
+	.
+:- initialization(main, main).

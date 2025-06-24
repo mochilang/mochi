@@ -17,11 +17,13 @@ type Compiler struct {
 	vars    map[string]string
 	currFun string
 	helpers map[string]bool
+	lambdas []string
+	funVars map[string]string
 	tests   []string
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: make(map[string]string), helpers: make(map[string]bool), tests: []string{}}
+	return &Compiler{env: env, vars: make(map[string]string), helpers: make(map[string]bool), tests: []string{}, lambdas: []string{}, funVars: make(map[string]string)}
 }
 
 // Compile translates a Mochi AST into Prolog source code.
@@ -97,6 +99,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.writeln(":- style_check(-singleton).")
 	c.emitHelpers()
+	for _, l := range c.lambdas {
+		for _, line := range strings.Split(strings.TrimSuffix(l, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 	c.buf.Write(bodyBytes)
 
 	return c.buf.Bytes(), nil
