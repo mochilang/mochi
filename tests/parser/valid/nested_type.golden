@@ -1,7 +1,0 @@
-(program
-  (type Outer
-    (type Inner
-      (field z (type int))
-    )
-  )
-)

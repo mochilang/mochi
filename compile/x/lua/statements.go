@@ -478,14 +478,6 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		return nil
 	}
-	for _, m := range t.Members {
-		if m.Type != nil {
-			if err := c.compileTypeDecl(m.Type); err != nil {
-				return err
-			}
-			c.writeln("")
-		}
-	}
 	name := sanitizeName(t.Name)
 	methods := []*parser.FunStmt{}
 	for _, m := range t.Members {

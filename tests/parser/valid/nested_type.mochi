@@ -1,5 +1,0 @@
-type Outer {
-  type Inner {
-    z: int
-  }
-}

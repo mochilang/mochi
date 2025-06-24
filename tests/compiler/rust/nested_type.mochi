@@ -1,8 +1,0 @@
-type Outer {
-  type Inner {
-    val: int
-  }
-}
-
-let x = Inner { val: 7 }
-print(x.val)

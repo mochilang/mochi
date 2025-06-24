@@ -258,13 +258,6 @@ func (c *Compiler) compileType(t *parser.TypeRef) string {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		for _, m := range t.Members {
-			if m.Type != nil {
-				if err := c.compileTypeDecl(m.Type); err != nil {
-					return err
-				}
-			}
-		}
 		c.writeln(fmt.Sprintf("protocol %s {}", t.Name))
 		for _, v := range t.Variants {
 			c.writeln(fmt.Sprintf("struct %s: %s {", v.Name, t.Name))
@@ -286,10 +279,6 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			c.writeln(fmt.Sprintf("var %s: %s", m.Field.Name, typ))
 		} else if m.Method != nil {
 			if err := c.compileMethod(t.Name, m.Method); err != nil {
-				return err
-			}
-		} else if m.Type != nil {
-			if err := c.compileTypeDecl(m.Type); err != nil {
 				return err
 			}
 		}
