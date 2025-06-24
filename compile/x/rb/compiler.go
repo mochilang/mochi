@@ -345,6 +345,8 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 		if isStringLiteral(stmt.Source) {
 			c.writeln(fmt.Sprintf("for %s in %s.chars", name, src))
+		} else if isMap(c.inferExprType(stmt.Source)) {
+			c.writeln(fmt.Sprintf("for %s in %s.keys", name, src))
 		} else {
 			c.writeln(fmt.Sprintf("for %s in %s", name, src))
 		}
@@ -843,11 +845,13 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	}
 
 	operands := []string{}
+	opTypes := []types.Type{}
 	first, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
 	operands = append(operands, first)
+	opTypes = append(opTypes, c.inferPostfixType(b.Left))
 
 	ops := []string{}
 	for _, part := range b.Right {
@@ -856,6 +860,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		operands = append(operands, r)
+		opTypes = append(opTypes, c.inferPostfixType(&parser.Unary{Value: part.Right}))
 		op := part.Op
 		if part.All {
 			op = op + "_all"
@@ -891,11 +896,16 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			op := ops[i]
 			l := operands[i]
 			r := operands[i+1]
+			rt := opTypes[i+1]
 
 			var expr string
 			switch op {
 			case "in":
-				expr = fmt.Sprintf("(%s.include?(%s))", r, l)
+				if isMap(rt) {
+					expr = fmt.Sprintf("(%s.key?(%s))", r, l)
+				} else {
+					expr = fmt.Sprintf("(%s.include?(%s))", r, l)
+				}
 			case "union":
 				expr = fmt.Sprintf("(%s | %s)", l, r)
 			case "union_all":
@@ -909,7 +919,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			}
 
 			operands[i] = expr
+			opTypes[i] = types.AnyType{}
 			operands = append(operands[:i+1], operands[i+2:]...)
+			opTypes = append(opTypes[:i+1], opTypes[i+2:]...)
 			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}

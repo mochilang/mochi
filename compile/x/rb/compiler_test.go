@@ -48,7 +48,8 @@ func compileAndRun(t *testing.T, src string) (string, error) {
 
 // runLeetExample compiles and executes all Mochi files under examples/leetcode/<id>.
 func runLeetExample(t *testing.T, id int) {
-	dir := filepath.Join("..", "..", "examples", "leetcode", strconv.Itoa(id))
+	root := findRepoRoot(t)
+	dir := filepath.Join(root, "examples", "leetcode", strconv.Itoa(id))
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob error: %v", err)
@@ -68,7 +69,8 @@ func TestRBCompiler_TwoSum(t *testing.T) {
 	if err := rbcode.EnsureRuby(); err != nil {
 		t.Skipf("ruby not installed: %v", err)
 	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+	root := findRepoRoot(t)
+	src := filepath.Join(root, "examples", "leetcode", "1", "two-sum.mochi")
 	got, err := compileAndRun(t, src)
 	if err != nil {
 		t.Fatalf("ruby run error: %v\n%s", err, got)

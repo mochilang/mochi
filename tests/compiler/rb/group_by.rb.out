@@ -1,16 +1,19 @@
 require 'ostruct'
 
-class _Group
+class MGroup
   attr_accessor :key, :Items
   def initialize(k)
     @key = k
     @Items = []
   end
+  def length
+    @Items.length
+  end
 end
 def _group_by(src, keyfn)
 grouped = src.group_by { |it| keyfn.call(it) }
 grouped.map do |k, items|
-g = _Group.new(k)
+g = MGroup.new(k)
 g.Items.concat(items)
 g
 end

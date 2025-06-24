@@ -4,7 +4,7 @@ for n in [1, 2, 3]
 end
 i = 1
 count = 0
-while (set.include?(i))
+while (set.key?(i))
 	i = (i + 1)
 	count = (count + 1)
 end
