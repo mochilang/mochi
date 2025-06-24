@@ -93,6 +93,12 @@ const (
 	OpNeg
 	OpNegInt
 	OpNegFloat
+
+	// List operations
+	OpUnionAll
+	OpUnion
+	OpExcept
+	OpIntersect
 )
 
 func (op Op) String() string {
@@ -205,6 +211,14 @@ func (op Op) String() string {
 		return "NegInt"
 	case OpNegFloat:
 		return "NegFloat"
+	case OpUnionAll:
+		return "UnionAll"
+	case OpUnion:
+		return "Union"
+	case OpExcept:
+		return "Except"
+	case OpIntersect:
+		return "Intersect"
 	default:
 		return "?"
 	}
@@ -343,6 +357,8 @@ func (p *Program) Disassemble(src string) string {
 			case OpJSON:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpAppend:
+				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
+			case OpUnionAll, OpUnion, OpExcept, OpIntersect:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpStr:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
@@ -768,6 +784,83 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: newList}
+		case OpUnionAll:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
+			}
+			out := append(append([]Value(nil), a.List...), b.List...)
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+		case OpUnion:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
+			}
+			res := append([]Value{}, a.List...)
+			for _, rv := range b.List {
+				found := false
+				for _, lv := range res {
+					if valuesEqual(lv, rv) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					res = append(res, rv)
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: res}
+		case OpExcept:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("except expects lists"), trace, ins.Line)
+			}
+			diff := []Value{}
+			for _, lv := range a.List {
+				found := false
+				for _, rv := range b.List {
+					if valuesEqual(lv, rv) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					diff = append(diff, lv)
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: diff}
+		case OpIntersect:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("intersect expects lists"), trace, ins.Line)
+			}
+			inter := []Value{}
+			for _, lv := range a.List {
+				match := false
+				for _, rv := range b.List {
+					if valuesEqual(lv, rv) {
+						match = true
+						break
+					}
+				}
+				if match {
+					exists := false
+					for _, iv := range inter {
+						if valuesEqual(iv, lv) {
+							exists = true
+							break
+						}
+					}
+					if !exists {
+						inter = append(inter, lv)
+					}
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: inter}
 		case OpStr:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
 		case OpInput:
@@ -1302,6 +1395,22 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 			} else {
 				fc.emit(op.Pos, Instr{Op: OpLessEq, A: dst, B: right, C: left})
 			}
+			left = dst
+		case "union":
+			dst := fc.newReg()
+			opCode := OpUnion
+			if op.All {
+				opCode = OpUnionAll
+			}
+			fc.emit(op.Pos, Instr{Op: opCode, A: dst, B: left, C: right})
+			left = dst
+		case "except":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpExcept, A: dst, B: left, C: right})
+			left = dst
+		case "intersect":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpIntersect, A: dst, B: left, C: right})
 			left = dst
 		}
 	}
