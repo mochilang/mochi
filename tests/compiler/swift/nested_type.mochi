@@ -1,0 +1,9 @@
+type Outer {
+  type Inner {
+    z: int
+  }
+  v: int
+}
+
+let o = Outer { v: 1 }
+print(o.v)

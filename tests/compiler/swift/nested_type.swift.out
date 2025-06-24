@@ -1,0 +1,14 @@
+import Foundation
+
+struct Outer {
+	struct Inner {
+		var z: Int
+	}
+	var v: Int
+}
+
+func main() {
+	let o = Outer(v: 1)
+	print(o.v)
+}
+main()
