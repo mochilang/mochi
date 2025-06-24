@@ -93,7 +93,6 @@ func EnsureErlang() error { return ensureErlang() }
 - imports targeting languages other than Erlang
 - reflection or macro facilities
 - error handling with `try`/`catch`
-- iteration over maps or sets with `for` loops
 - match patterns for union variants accept only identifiers or `_`
 - `load` and `save` support only text and Erlang term files
 - advanced HTTP `fetch` options like headers or request bodies
