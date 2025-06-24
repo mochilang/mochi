@@ -71,7 +71,11 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	}
 	root := rootNameExpr(st.Source)
 	isStr := c.varType(root) == "string" || c.isStringExpr(st.Source)
+	isMap := c.varType(root) == "map" || c.isMapExpr(st.Source)
 	idx := sanitizeName(name + "_idx")
+	if isMap {
+		src = fmt.Sprintf("(map car %s)", src)
+	}
 	lenExpr := fmt.Sprintf("(length %s)", src)
 	elemExpr := fmt.Sprintf("(list-ref %s %s)", src, idx)
 	if isStr {
