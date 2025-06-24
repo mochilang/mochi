@@ -43,6 +43,7 @@ The backend currently supports:
 - list set operations `union`, `union all`, `except` and `intersect`
 - simple cross joins using multiple `from` clauses
 - simple `group by` without joins or filters
+- lists and maps with indexing, slicing and membership checks
 - struct and union type declarations generate Erlang records
 - AI `generate_text`, `generate_embed` and `generate_struct` helpers (placeholders)
 - test blocks and `expect` statements
