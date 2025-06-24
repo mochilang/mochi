@@ -23,6 +23,8 @@ type Compiler struct {
 	needsInListInt    bool
 	needsInListString bool
 	needsSetOps       bool
+	needsConcatList   bool
+	needsConcatString bool
 	needsJSON         bool
 	needsIndex        bool
 	needsIndexString  bool
@@ -578,6 +580,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 	}
 	expr := left
 	leftIsStr := c.isStringUnary(b.Left)
+	leftIsList := c.isListUnary(b.Left)
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right, asReturn)
 		if err != nil {
@@ -585,6 +588,24 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 		}
 		opStr := op.Op
 		rightIsStr := c.isStringPostfix(op.Right)
+		rightIsList := c.isListPostfix(op.Right)
+		if opStr == "+" {
+			if leftIsStr || rightIsStr {
+				c.needsConcatString = true
+				expr = fmt.Sprintf("_concat_string(%s, %s)", expr, right)
+				leftIsStr = true
+				leftIsList = false
+				continue
+			}
+			if leftIsList && rightIsList {
+				elem := c.listElemTypeUnary(b.Left)
+				c.needsConcatList = true
+				expr = fmt.Sprintf("_concat_list(%s, %s, %s)", elem, expr, right)
+				leftIsList = true
+				leftIsStr = false
+				continue
+			}
+		}
 		if (opStr == "==" || opStr == "!=") && (leftIsStr || rightIsStr) {
 			cmp := fmt.Sprintf("std.mem.eql(u8, %s, %s)", expr, right)
 			if opStr == "!=" {
@@ -615,6 +636,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 			c.needsSetOps = true
 			expr = fmt.Sprintf("_%s(%s, %s, %s)", opStr, elem, expr, right)
 			leftIsStr = false
+			leftIsList = true
 			continue
 		}
 		switch opStr {
@@ -629,6 +651,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 			expr = fmt.Sprintf("(%s %s %s)", expr, opStr, right)
 		}
 		leftIsStr = false
+		leftIsList = false
 	}
 	return expr, nil
 }

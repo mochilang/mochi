@@ -225,7 +225,8 @@ translate to `list.append(x)`, and `while` statements map directly to Zig's
 temporary counter and `while` loop for the step value. `break` and `continue`
 pass through unchanged. List membership
 checks using the `in` operator compile to helper functions for integer and
-string lists.
+string lists. String and list concatenation with `+` emit calls to
+`_concat_string` or `_concat_list`.
 
 List literals are emitted as fixed-size arrays or references when used in return
 expressions. Reserved words are prefixed with `_` by `sanitizeName`:

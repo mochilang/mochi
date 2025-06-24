@@ -160,6 +160,30 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsConcatList {
+		c.writeln("fn _concat_list(comptime T: type, a: []const T, b: []const T) []T {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("for (a) |it| { res.append(it) catch unreachable; }")
+		c.writeln("for (b) |it| { res.append(it) catch unreachable; }")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsConcatString {
+		c.writeln("fn _concat_string(a: []const u8, b: []const u8) []const u8 {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(u8).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("res.appendSlice(a) catch unreachable;")
+		c.writeln("res.appendSlice(b) catch unreachable;")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsReduce {
 		c.writeln("fn _reduce(comptime T: type, v: []const T, init: T, f: fn (T, T) T) T {")
 		c.indent++
