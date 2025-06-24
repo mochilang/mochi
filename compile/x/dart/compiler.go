@@ -227,6 +227,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Type != nil:
+		if err := c.compileTypeDecl(s.Type); err != nil {
+			return err
+		}
+		c.writeln("")
+		return nil
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
 	case s.Assign != nil:

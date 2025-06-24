@@ -1,0 +1,10 @@
+fun sumPoint(): int {
+  type Point {
+    x: int
+    y: int
+  }
+  let p = Point { x: 2, y: 3 }
+  return p.x + p.y
+}
+
+print(sumPoint())
