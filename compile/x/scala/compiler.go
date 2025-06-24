@@ -651,16 +651,20 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		if useVar && c.env != nil {
 			c.env.SetVar(st.Name, elemType, true)
 		}
-		it := c.newTemp("it")
-		c.writeln(fmt.Sprintf("val %s = %s.iterator", it, src))
-		c.writeln(fmt.Sprintf("while (%s.hasNext) {", it))
-		c.indent++
-		typ := scalaType(elemType)
-		if useVar && typ != "Any" {
-			c.writeln(fmt.Sprintf("val %s: %s = %s.next()", name, typ, it))
-		} else {
-			c.writeln(fmt.Sprintf("val %s = %s.next()", name, it))
-		}
+               it := c.newTemp("it")
+               c.writeln(fmt.Sprintf("val %s = %s.iterator", it, src))
+               c.writeln(fmt.Sprintf("while (%s.hasNext) {", it))
+               c.indent++
+               typ := scalaType(elemType)
+               next := fmt.Sprintf("%s.next()", it)
+               if typ == "String" {
+                       next += ".toString"
+               }
+               if useVar && typ != "Any" {
+                       c.writeln(fmt.Sprintf("val %s: %s = %s", name, typ, next))
+               } else {
+                       c.writeln(fmt.Sprintf("val %s = %s", name, next))
+               }
 	}
 
 	if needCont {

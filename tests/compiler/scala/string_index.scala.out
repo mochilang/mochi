@@ -1,0 +1,13 @@
+object Main {
+        def main(args: Array[String]): Unit = {
+                val text: String = "hello"
+                println(_indexString(text, 1))
+        }
+}
+def _indexString(s: String, i: Int): String = {
+        var idx = i
+        val chars = s.toVector
+        if (idx < 0) idx += chars.length
+        if (idx < 0 || idx >= chars.length) throw new RuntimeException("index out of range")
+        chars(idx).toString
+}
