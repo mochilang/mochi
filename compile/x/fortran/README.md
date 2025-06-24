@@ -21,7 +21,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - `break` and `continue`
 - `test` blocks and `expect` statements
 - function definitions returning integers, floats, strings or lists
-- list operations: `union`, `except` and `intersect` on integer, float and string lists
+- list operations: `union`, `union all`, `except` and `intersect` on integer, float and string lists
 - built-ins: `len`, `append`, `count`, `avg`, `str`, `now`
 - printing via `print()`
 - `package` and `export` declarations (ignored during code generation)
