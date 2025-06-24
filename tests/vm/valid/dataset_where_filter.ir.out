@@ -1,4 +1,4 @@
-func main (regs=53)
+func main (regs=63)
   // let people = [
   Const        r0, [{"age": 30, "name": "Alice"}, {"age": 15, "name": "Bob"}, {"age": 65, "name": "Charlie"}, {"age": 45, "name": "Diana"}]
   Move         r1, r0
@@ -60,28 +60,45 @@ L0:
   IterPrep     r36, r34
   Len          r37, r36
   Const        r38, 0
-L4:
+L6:
   Less         r39, r38, r37
   JumpIfFalse  r39, L3
   Index        r40, r36, r38
   Move         r8, r40
-  // print(person.name, "is", person.age,
-  Const        r45, "name"
-  Index        r46, r8, r45
-  Move         r41, r46
-  Const        r47, "is"
-  Move         r42, r47
-  Const        r48, "age"
-  Index        r49, r8, r48
-  Move         r43, r49
-  // if person.is_senior { " (senior)" } else { "" })
-  Move         r44, r50
-  // print(person.name, "is", person.age,
-  PrintN       r41, 4, r41
+  // if person.is_senior {
+  Const        r41, "is_senior"
+  Index        r42, r8, r41
+  JumpIfFalse  r42, L4
+  // print(person.name, "is", person.age, " (senior)")
+  Const        r47, "name"
+  Index        r48, r8, r47
+  Move         r43, r48
+  Const        r49, "is"
+  Move         r44, r49
+  Const        r50, "age"
+  Index        r51, r8, r50
+  Move         r45, r51
+  Const        r52, " (senior)"
+  Move         r46, r52
+  PrintN       r43, 4, r43
+  // if person.is_senior {
+  Jump         L5
+L4:
+  // print(person.name, "is", person.age)
+  Const        r56, "name"
+  Index        r57, r8, r56
+  Move         r53, r57
+  Const        r58, "is"
+  Move         r54, r58
+  Const        r59, "age"
+  Index        r60, r8, r59
+  Move         r55, r60
+  PrintN       r53, 3, r53
+L5:
   // for person in adults {
-  Const        r51, 1
-  Add          r52, r38, r51
-  Move         r38, r52
-  Jump         L4
+  Const        r61, 1
+  Add          r62, r38, r61
+  Move         r38, r62
+  Jump         L6
 L3:
   Return       r0
