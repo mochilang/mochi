@@ -1131,7 +1131,8 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}}
 	c.funcs = append(c.funcs, Function{})
 	for _, st := range p.Statements {
-		if st.Fun != nil {
+		switch {
+		case st.Fun != nil:
 			idx := len(c.funcs)
 			c.funcs = append(c.funcs, Function{})
 			c.fnIndex[st.Fun.Name] = idx
@@ -1140,6 +1141,10 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			c.funcs[idx] = fn
+		case st.Type != nil:
+			if err := c.compileTypeMethods(st.Type); err != nil {
+				return nil, err
+			}
 		}
 	}
 	main, err := c.compileMain(p)
@@ -1169,6 +1174,57 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	return fc.fn, nil
+}
+
+func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Function, error) {
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
+	fc.fn.Name = st.Name + "." + fn.Name
+	fc.fn.Line = fn.Pos.Line
+	fc.fn.NumParams = len(st.Order) + len(fn.Params)
+	// struct fields as parameters
+	for i, field := range st.Order {
+		fc.vars[field] = i
+		if i >= fc.fn.NumRegs {
+			fc.fn.NumRegs = i + 1
+		}
+	}
+	for i, p := range fn.Params {
+		idx := len(st.Order) + i
+		fc.vars[p.Name] = idx
+		if idx >= fc.fn.NumRegs {
+			fc.fn.NumRegs = idx + 1
+		}
+	}
+	fc.idx = fc.fn.NumParams
+	for _, stmnt := range fn.Body {
+		if err := fc.compileStmt(stmnt); err != nil {
+			return Function{}, err
+		}
+	}
+	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
+	return fc.fn, nil
+}
+
+func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
+	st, ok := c.env.GetStruct(td.Name)
+	if !ok {
+		return nil
+	}
+	for _, mem := range td.Members {
+		if mem.Method == nil {
+			continue
+		}
+		idx := len(c.funcs)
+		c.funcs = append(c.funcs, Function{})
+		name := td.Name + "." + mem.Method.Name
+		c.fnIndex[name] = idx
+		fn, err := c.compileMethod(st, mem.Method)
+		if err != nil {
+			return err
+		}
+		c.funcs[idx] = fn
+	}
+	return nil
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
@@ -1554,6 +1610,45 @@ func (fc *funcCompiler) compileUnary(u *parser.Unary) int {
 }
 
 func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
+	// Special case for struct method calls like obj.method()
+	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+		rootName := p.Target.Selector.Root
+		methodName := p.Target.Selector.Tail[0]
+		if typ, err := fc.comp.env.GetVar(rootName); err == nil {
+			if st, ok := typ.(types.StructType); ok {
+				if _, ok := st.Methods[methodName]; ok {
+					objReg, ok := fc.vars[rootName]
+					if !ok {
+						objReg = fc.newReg()
+					}
+					total := len(st.Order) + len(p.Ops[0].Call.Args)
+					regs := make([]int, total)
+					for i, field := range st.Order {
+						key := fc.newReg()
+						fc.emit(p.Target.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: interpreter.TagStr, Str: field}})
+						val := fc.newReg()
+						fc.emit(p.Target.Pos, Instr{Op: OpIndex, A: val, B: objReg, C: key})
+						regs[i] = val
+					}
+					for i, a := range p.Ops[0].Call.Args {
+						ar := fc.compileExpr(a)
+						reg := fc.newReg()
+						fc.emit(a.Pos, Instr{Op: OpMove, A: reg, B: ar})
+						regs[len(st.Order)+i] = reg
+					}
+					dst := fc.newReg()
+					start := 0
+					if len(regs) > 0 {
+						start = regs[0]
+					}
+					idx := fc.comp.fnIndex[st.Name+"."+methodName]
+					fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpCall, A: dst, B: idx, C: len(regs), D: start})
+					return dst
+				}
+			}
+		}
+	}
+
 	r := fc.compilePrimary(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
