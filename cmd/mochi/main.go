@@ -71,6 +71,7 @@ import (
 	"mochi/repl"
 	"mochi/runtime/mod"
 	"mochi/tools/db"
+	"mochi/tools/lint"
 	"mochi/types"
 )
 
@@ -123,6 +124,10 @@ type InitCmd struct {
 }
 
 type GetCmd struct{}
+
+type LintCmd struct {
+	Files []string `arg:"positional,required" help:"Mochi source files"`
+}
 
 type ReplCmd struct{}
 type LLMCmd struct {
@@ -387,6 +392,24 @@ func runInfer(cmd *InferCmd) error {
 		fmt.Print(externsForAlias(info, alias))
 	default:
 		return fmt.Errorf("unknown format: %s", cmd.Format)
+	}
+	return nil
+}
+
+func runLint(cmd *LintCmd) error {
+	exitCode := 0
+	for _, file := range cmd.Files {
+		errs := lint.File(file)
+		if len(errs) > 0 {
+			exitCode = 1
+			fmt.Printf("%s\n", file)
+			for _, e := range errs {
+				fmt.Println("  ", e)
+			}
+		}
+	}
+	if exitCode != 0 {
+		return fmt.Errorf("lint issues found")
 	}
 	return nil
 }
@@ -1100,6 +1123,7 @@ func newRootCmd() *cobra.Command {
 		newBuildXCmd(),
 		newInitCmd(),
 		newGetCmd(),
+		newLintCmd(),
 		newReplCmd(),
 		newLLMCmd(),
 		newInferCmd(),
@@ -1202,6 +1226,20 @@ func newGetCmd() *cobra.Command {
 		Short: "Download module dependencies",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return modGet(&GetCmd{})
+		},
+	}
+	return c
+}
+
+func newLintCmd() *cobra.Command {
+	var lc LintCmd
+	c := &cobra.Command{
+		Use:   "lint <file...>",
+		Short: "Lint Mochi source files",
+		Args:  cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			lc.Files = args
+			return runLint(&lc)
 		},
 	}
 	return c
