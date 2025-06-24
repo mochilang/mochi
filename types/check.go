@@ -432,6 +432,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: AnyType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("keys", FuncType{
+		Params: []Type{AnyType{}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
 	env.SetVar("eval", FuncType{
 		Params: []Type{StringType{}},
 		Return: AnyType{},
@@ -1350,6 +1355,10 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				}
 				return nil, errNotStruct(p.Pos, typ)
 			case MapType:
+				if field == "keys" {
+					typ = FuncType{Params: []Type{}, Return: ListType{Elem: AnyType{}}, Pure: true}
+					continue
+				}
 				if unify(t.Key, StringType{}, nil) {
 					typ = t.Value
 					continue
@@ -2015,6 +2024,7 @@ var builtinArity = map[string]int{
 	"reduce": 3,
 	"append": 2,
 	"push":   2,
+	"keys":   1,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
@@ -2043,6 +2053,16 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return nil
 		default:
 			return errLenOperand(pos, args[0])
+		}
+	case "keys":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		switch args[0].(type) {
+		case MapType, AnyType:
+			return nil
+		default:
+			return fmt.Errorf("keys() expects map, got %v", args[0])
 		}
 	case "count":
 		if len(args) != 1 {

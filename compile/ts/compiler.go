@@ -1083,6 +1083,27 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	for _, op := range p.Ops {
 		if op.Index == nil {
 			if op.Call != nil {
+				// check for method call on a selector expression
+				if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
+					method := sel.Tail[0]
+					rootExpr := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root}}
+					rootTyp := c.inferPrimaryType(rootExpr)
+					root := sanitizeName(sel.Root)
+					switch method {
+					case "keys":
+						if len(op.Call.Args) == 0 {
+							if mt, ok := rootTyp.(types.MapType); ok {
+								if isInt(mt.Key) || isInt64(mt.Key) || isFloat(mt.Key) {
+									expr = fmt.Sprintf("Object.keys(%s).map(k => Number(k))", root)
+								} else {
+									expr = fmt.Sprintf("Object.keys(%s)", root)
+								}
+								typ = types.ListType{Elem: types.AnyType{}}
+								continue
+							}
+						}
+					}
+				}
 				args := make([]string, len(op.Call.Args))
 				for i, a := range op.Call.Args {
 					v, err := c.compileExpr(a)
@@ -1251,6 +1272,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		return fmt.Sprintf("console.log(%s)", argStr), nil
+	case "keys":
+		if len(call.Args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			if mt, ok := t.(types.MapType); ok {
+				if isInt(mt.Key) || isInt64(mt.Key) || isFloat(mt.Key) {
+					return fmt.Sprintf("Object.keys(%s).map(k => Number(k))", args[0]), nil
+				}
+			}
+			return fmt.Sprintf("Object.keys(%s)", args[0]), nil
+		}
+		return "Object.keys()", nil
 	case "len":
 		if len(call.Args) == 1 {
 			t := c.inferExprType(call.Args[0])

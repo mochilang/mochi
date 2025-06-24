@@ -97,6 +97,13 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 				t = types.AnyType{}
 			}
 		} else if op.Call != nil {
+			if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
+				switch sel.Tail[0] {
+				case "keys":
+					t = types.ListType{Elem: types.AnyType{}}
+					continue
+				}
+			}
 			if ft, ok := t.(types.FuncType); ok {
 				t = ft.Return
 			} else {
@@ -170,6 +177,8 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			return types.FloatType{}
 		case "now":
 			return types.Int64Type{}
+		case "keys":
+			return types.ListType{Elem: types.AnyType{}}
 		default:
 			if c.env != nil {
 				if t, err := c.env.GetVar(p.Call.Func); err == nil {
