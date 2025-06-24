@@ -198,6 +198,9 @@ func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	lhs := sanitizeName(s.Name)
+	if c.methodFields != nil && c.methodFields[s.Name] {
+		lhs = "self." + lhs
+	}
 
 	var t types.Type = types.AnyType{}
 	if c.env != nil {
@@ -429,5 +432,73 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("if not (%s) then error('expect failed') end", expr))
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
+	name := sanitizeName(fun.Name)
+	c.writeIndent()
+	params := make([]string, len(fun.Params))
+	for i, p := range fun.Params {
+		params[i] = sanitizeName(p.Name)
+	}
+	c.buf.WriteString(fmt.Sprintf("function %s:%s(%s)", sanitizeName(structName), name, strings.Join(params, ", ")))
+	c.buf.WriteByte('\n')
+	origEnv := c.env
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		if st, ok := c.env.GetStruct(structName); ok {
+			c.methodFields = make(map[string]bool, len(st.Fields))
+			for fname, ft := range st.Fields {
+				child.SetVar(fname, ft, true)
+				c.methodFields[fname] = true
+			}
+		}
+		for _, p := range fun.Params {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+		c.env = child
+	}
+	c.indent++
+	for _, st := range fun.Body {
+		if err := c.compileStmt(st); err != nil {
+			c.env = origEnv
+			c.methodFields = nil
+			return err
+		}
+	}
+	c.indent--
+	c.env = origEnv
+	c.methodFields = nil
+	c.writeln("end")
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return nil
+	}
+	name := sanitizeName(t.Name)
+	methods := []*parser.FunStmt{}
+	for _, m := range t.Members {
+		if m.Method != nil {
+			methods = append(methods, m.Method)
+		}
+	}
+	c.writeln(fmt.Sprintf("%s = {}", name))
+	c.writeln(fmt.Sprintf("%s.__index = %s", name, name))
+	c.writeln(fmt.Sprintf("function %s.new(o)", name))
+	c.indent++
+	c.writeln("o = o or {}")
+	c.writeln(fmt.Sprintf("setmetatable(o, %s)", name))
+	c.writeln("return o")
+	c.indent--
+	c.writeln("end")
+	for _, m := range methods {
+		c.writeln("")
+		if err := c.compileMethod(t.Name, m); err != nil {
+			return err
+		}
+	}
 	return nil
 }

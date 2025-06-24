@@ -1,0 +1,22 @@
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+Person = {}
+Person.__index = Person
+function Person.new(o)
+	o = o or {}
+	setmetatable(o, Person)
+	return o
+end
+
+function Person:greet()
+	return ("hi " .. self.name)
+end
+
+local p = Person.new({name="Ada"})
+__print(p.greet())

@@ -21,12 +21,13 @@ type Compiler struct {
 
 	tmpCount int
 
-	helpers  map[string]bool
-	packages map[string]bool
+	helpers      map[string]bool
+	packages     map[string]bool
+	methodFields map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), tmpCount: 0}
+	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), tmpCount: 0, methodFields: nil}
 }
 
 // Compile returns Lua source implementing prog.
@@ -39,9 +40,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.tmpCount = 0
 	c.helpers = make(map[string]bool)
 	c.packages = make(map[string]bool)
+	c.methodFields = nil
 
-	// Emit function declarations first.
+	// Emit type and function declarations first.
 	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun, false); err != nil {
 				return nil, err
@@ -62,7 +70,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	// Emit main body.
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil || s.Test != nil {
+		if s.Fun != nil || s.Test != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {

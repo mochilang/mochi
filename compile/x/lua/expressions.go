@@ -233,6 +233,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + inner + ")", nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		if c.methodFields != nil && c.methodFields[p.Selector.Root] {
+			name = "self." + name
+		}
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}
@@ -259,6 +262,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			parts[i] = fmt.Sprintf("%s=%s", sanitizeName(f.Name), v)
+		}
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok && len(st.Methods) > 0 {
+				return fmt.Sprintf("%s.new({%s})", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+			}
 		}
 		return "{" + strings.Join(parts, ", ") + "}", nil
 	case p.Query != nil:
