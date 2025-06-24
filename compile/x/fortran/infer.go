@@ -51,12 +51,18 @@ func collectLoopVars(stmts []*parser.Statement, vars, str map[string]bool) {
 	}
 }
 
-func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, floatVars map[string]bool, funStr map[string]bool, funFloat map[string]bool, funList map[string]bool) {
+func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, floatVars map[string]bool, structVars map[string]string, funStr map[string]bool, funFloat map[string]bool, funList map[string]bool, funStruct map[string]string) {
 	for _, s := range stmts {
 		switch {
 		case s.Var != nil:
 			name := sanitizeName(s.Var.Name)
 			vars[name] = true
+			if s.Var.Type != nil && s.Var.Type.Simple != nil && !isBuiltinType(*s.Var.Type.Simple) {
+				structVars[name] = *s.Var.Type.Simple
+			}
+			if st := getStructLiteral(s.Var.Value); st != nil {
+				structVars[name] = st.Name
+			}
 			if isListLiteral(s.Var.Value) || isListExpr(s.Var.Value, listVars, funList) {
 				listVars[name] = true
 			}
@@ -80,6 +86,12 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 		case s.Let != nil:
 			name := sanitizeName(s.Let.Name)
 			vars[name] = true
+			if s.Let.Type != nil && s.Let.Type.Simple != nil && !isBuiltinType(*s.Let.Type.Simple) {
+				structVars[name] = *s.Let.Type.Simple
+			}
+			if st := getStructLiteral(s.Let.Value); st != nil {
+				structVars[name] = st.Name
+			}
 			if isListLiteral(s.Let.Value) || isListExpr(s.Let.Value, listVars, funList) {
 				listVars[name] = true
 			}
@@ -101,18 +113,18 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 				floatVars[name] = true
 			}
 		case s.For != nil:
-			collectVars(s.For.Body, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			collectVars(s.For.Body, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, funStruct)
 		case s.While != nil:
-			collectVars(s.While.Body, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			collectVars(s.While.Body, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, funStruct)
 		case s.If != nil:
-			collectVars(s.If.Then, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			collectVars(s.If.Then, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, funStruct)
 			cur := s.If
 			for cur.ElseIf != nil {
 				cur = cur.ElseIf
-				collectVars(cur.Then, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+				collectVars(cur.Then, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, funStruct)
 			}
 			if len(cur.Else) > 0 {
-				collectVars(cur.Else, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+				collectVars(cur.Else, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, funStruct)
 			}
 		}
 	}
@@ -142,6 +154,19 @@ func isEmptyListLiteral(e *parser.Expr) bool {
 		}
 	}
 	return false
+}
+
+func getStructLiteral(e *parser.Expr) *parser.StructLiteral {
+	if e == nil {
+		return nil
+	}
+	if len(e.Binary.Right) == 0 && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+		v := e.Binary.Left.Value
+		if len(v.Ops) == 0 && v.Target != nil && v.Target.Struct != nil {
+			return v.Target.Struct
+		}
+	}
+	return nil
 }
 
 func isListExpr(e *parser.Expr, listVars map[string]bool, funList map[string]bool) bool {

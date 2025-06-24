@@ -17,9 +17,11 @@ type Compiler struct {
 	stringVars           map[string]bool
 	listVars             map[string]bool
 	floatVars            map[string]bool
+	structVars           map[string]string
 	funReturnStr         map[string]bool
 	funReturnList        map[string]bool
 	funReturnFloat       map[string]bool
+	funReturnStruct      map[string]string
 	lambdas              []string
 	needsUnionInt        bool
 	needsUnionFloat      bool
@@ -37,14 +39,16 @@ type Compiler struct {
 
 func New() *Compiler {
 	return &Compiler{
-		stringVars:     map[string]bool{},
-		listVars:       map[string]bool{},
-		floatVars:      map[string]bool{},
-		funReturnStr:   map[string]bool{},
-		funReturnList:  map[string]bool{},
-		funReturnFloat: map[string]bool{},
-		lambdas:        []string{},
-		needsNow:       false,
+		stringVars:      map[string]bool{},
+		listVars:        map[string]bool{},
+		floatVars:       map[string]bool{},
+		structVars:      map[string]string{},
+		funReturnStr:    map[string]bool{},
+		funReturnList:   map[string]bool{},
+		funReturnFloat:  map[string]bool{},
+		funReturnStruct: map[string]string{},
+		lambdas:         []string{},
+		needsNow:        false,
 	}
 }
 
@@ -69,6 +73,7 @@ func (c *Compiler) resetVarScopes() {
 	c.stringVars = map[string]bool{}
 	c.listVars = map[string]bool{}
 	c.floatVars = map[string]bool{}
+	c.structVars = map[string]string{}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -96,9 +101,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.resetVarScopes()
 	var funs []*parser.FunStmt
 	var tests []*parser.TestBlock
+	var types []*parser.TypeDecl
 	var mainStmts []*parser.Statement
 	for _, s := range prog.Statements {
 		switch {
+		case s.Type != nil:
+			types = append(types, s.Type)
 		case s.Fun != nil:
 			funs = append(funs, s.Fun)
 		case s.Test != nil:
@@ -112,6 +120,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.funReturnStr = map[string]bool{}
 	c.funReturnList = map[string]bool{}
 	c.funReturnFloat = map[string]bool{}
+	c.funReturnStruct = map[string]string{}
 	for _, f := range funs {
 		if f.Return != nil && f.Return.Simple != nil && *f.Return.Simple == "string" {
 			c.funReturnStr[sanitizeName(f.Name)] = true
@@ -119,7 +128,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.funReturnList[sanitizeName(f.Name)] = true
 		} else if f.Return != nil && f.Return.Simple != nil && *f.Return.Simple == "float" {
 			c.funReturnFloat[sanitizeName(f.Name)] = true
+		} else if f.Return != nil && f.Return.Simple != nil && !isBuiltinType(*f.Return.Simple) {
+			c.funReturnStruct[sanitizeName(f.Name)] = *f.Return.Simple
 		}
+	}
+	for _, t := range types {
+		if err := c.compileTypeDecl(t); err != nil {
+			return nil, err
+		}
+		c.blank()
 	}
 	c.writeln("program main")
 	c.indent++
@@ -129,7 +146,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	structVars := map[string]string{}
+	collectVars(mainStmts, declared, listVars, stringVars, floatVars, structVars, c.funReturnStr, c.funReturnFloat, c.funReturnList, c.funReturnStruct)
 	delete(listVars, "result")
 	c.listVars = listVars
 	c.stringVars = stringVars
@@ -147,12 +165,27 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		}
 	}
+	if len(structVars) > 0 {
+		keys := make([]string, 0, len(structVars))
+		for k := range structVars {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			if declared[name] {
+				c.writeln(fmt.Sprintf("type(%s) :: %s", sanitizeName(structVars[name]), name))
+			}
+		}
+	}
 	for name := range declared {
 		if name == "result" {
 			c.writeln("integer(kind=8) :: result(2)")
 			continue
 		}
 		if listVars[name] {
+			continue
+		}
+		if _, ok := structVars[name]; ok {
 			continue
 		}
 		if stringVars[name] {
@@ -222,8 +255,27 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	return c.buf.Bytes(), nil
 }
 
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	name := sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("type :: %s", name))
+	c.indent++
+	for _, m := range t.Members {
+		if m.Field == nil {
+			continue
+		}
+		c.writeln(fmt.Sprintf("%s :: %s", ftnType(m.Field.Type), sanitizeName(m.Field.Name)))
+	}
+	c.indent--
+	c.writeln(fmt.Sprintf("end type %s", name))
+	return nil
+}
+
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.resetVarScopes()
+	structVars := map[string]string{}
 	for _, p := range fn.Params {
 		if p.Type != nil && p.Type.Simple != nil {
 			if *p.Type.Simple == "string" {
@@ -339,6 +391,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	} else if fn.Return != nil && fn.Return.Simple != nil && *fn.Return.Simple == "string" {
 		c.writeln(fmt.Sprintf("character(:), allocatable :: %s", resVar))
 		c.stringVars[resVar] = true
+	} else if fn.Return != nil && fn.Return.Simple != nil && !isBuiltinType(*fn.Return.Simple) {
+		c.writeln(fmt.Sprintf("type(%s) :: %s", sanitizeName(*fn.Return.Simple), resVar))
+		c.funReturnStruct[sanitizeName(fn.Name)] = *fn.Return.Simple
 	} else {
 		c.writeln(fmt.Sprintf("integer(kind=8) :: %s", resVar))
 	}
@@ -367,6 +422,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			c.stringVars[name] = true
 		} else if p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "float" {
 			c.writeln(fmt.Sprintf("real, intent(in) :: %s", name))
+		} else if p.Type != nil && p.Type.Simple != nil && !isBuiltinType(*p.Type.Simple) {
+			c.writeln(fmt.Sprintf("type(%s), intent(in) :: %s", sanitizeName(*p.Type.Simple), name))
+			structVars[name] = *p.Type.Simple
 		} else {
 			c.writeln(fmt.Sprintf("integer(kind=8), intent(in) :: %s", name))
 		}
@@ -375,7 +433,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(fn.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	collectVars(fn.Body, vars, listVars, stringVars, floatVars, structVars, c.funReturnStr, c.funReturnFloat, c.funReturnList, c.funReturnStruct)
 	for name := range c.listVars {
 		listVars[name] = true
 	}
@@ -385,6 +443,16 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	for name := range floatVars {
 		c.floatVars[name] = true
+	}
+	if len(structVars) > 0 {
+		keys := make([]string, 0, len(structVars))
+		for k := range structVars {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			c.structVars[name] = structVars[name]
+		}
 	}
 	loopVars := map[string]bool{}
 	loopStrVars := map[string]bool{}
@@ -421,6 +489,10 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	sort.Strings(names)
 	for _, name := range names {
 		if name == resVar || listVars[name] {
+			continue
+		}
+		if typ, ok := structVars[name]; ok {
+			c.writeln(fmt.Sprintf("type(%s) :: %s", sanitizeName(typ), name))
 			continue
 		}
 		if stringVars[name] {
@@ -692,7 +764,8 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(t.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	structVars := map[string]string{}
+	collectVars(t.Body, vars, listVars, stringVars, floatVars, structVars, c.funReturnStr, c.funReturnFloat, c.funReturnList, c.funReturnStruct)
 	c.listVars = listVars
 	c.stringVars = stringVars
 	c.floatVars = floatVars
@@ -727,6 +800,10 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	sort.Strings(names)
 	for _, name := range names {
 		if listVars[name] {
+			continue
+		}
+		if typ, ok := structVars[name]; ok {
+			c.writeln(fmt.Sprintf("type(%s) :: %s", sanitizeName(typ), name))
 			continue
 		}
 		if stringVars[name] {
@@ -1182,7 +1259,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "(/" + strings.Join(elems, ", ") + "/)", nil
 	case p.Selector != nil:
-		return sanitizeName(p.Selector.Root), nil
+		return c.compileSelector(p.Selector), nil
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call, "")
 	case p.FunExpr != nil:
@@ -1223,6 +1302,53 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 		return "", fmt.Errorf("if expression missing else branch")
 	}
 	return fmt.Sprintf("merge(%s, %s, %s)", thenVal, elseVal, cond), nil
+}
+
+func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
+	expr := sanitizeName(s.Root)
+	for _, f := range s.Tail {
+		expr += "%" + sanitizeName(f)
+	}
+	return expr
+}
+
+func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	fields := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		fields[i] = fmt.Sprintf("%s=%s", sanitizeName(f.Name), v)
+	}
+	return fmt.Sprintf("%s(%s)", sanitizeName(s.Name), strings.Join(fields, ", ")), nil
+}
+
+func ftnType(t *parser.TypeRef) string {
+	if t == nil {
+		return "integer(kind=8)"
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "integer(kind=8)"
+		case "float":
+			return "real"
+		case "string":
+			return "character(:), allocatable"
+		default:
+			return fmt.Sprintf("type(%s)", sanitizeName(*t.Simple))
+		}
+	}
+	return "integer(kind=8)"
+}
+
+func isBuiltinType(name string) bool {
+	switch name {
+	case "int", "float", "string", "bool":
+		return true
+	}
+	return false
 }
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, error) {

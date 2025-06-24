@@ -1,0 +1,11 @@
+type :: Person
+  character(:), allocatable :: name
+  integer(kind=8) :: age
+end type Person
+
+program main
+  implicit none
+  type(Person) :: p
+  p = Person(name='Ada', age=41_8)
+  print *, p%name
+end program main
