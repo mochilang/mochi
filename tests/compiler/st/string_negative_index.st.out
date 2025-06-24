@@ -1,0 +1,5 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+text := 'hello'.
+((Main __index_string: text idx: (1 negated))) displayOn: Transcript. Transcript cr.
