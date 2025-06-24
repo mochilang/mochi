@@ -1,7 +1,9 @@
 package ccode
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 
 	"mochi/parser"
 	"mochi/types"
@@ -74,6 +76,13 @@ func cTypeFromType(t types.Type) string {
 				return "map_int_bool"
 			}
 		}
+	case types.FuncType:
+		ret := cTypeFromType(tt.Return)
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = cTypeFromType(p)
+		}
+		return fmt.Sprintf("%s (*)(%s)", ret, strings.Join(params, ", "))
 	}
 	return "int"
 }
@@ -122,6 +131,17 @@ func isMapIntBoolType(t types.Type) bool {
 func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 	if t == nil {
 		return types.IntType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = resolveTypeRef(p, env)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = resolveTypeRef(t.Fun.Return, env)
+		}
+		return types.FuncType{Params: params, Return: ret}
 	}
 	if t.Simple != nil {
 		switch *t.Simple {
