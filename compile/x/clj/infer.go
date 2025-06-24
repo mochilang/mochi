@@ -140,6 +140,19 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 			default:
 				t = types.AnyType{}
 			}
+		} else if op.Field != nil {
+			switch tt := t.(type) {
+			case types.StructType:
+				if ft, ok := tt.Fields[op.Field.Name]; ok {
+					t = ft
+				} else {
+					t = types.AnyType{}
+				}
+			case types.MapType:
+				t = tt.Value
+			default:
+				t = types.AnyType{}
+			}
 		} else if op.Call != nil {
 			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
 				method := p.Target.Selector.Tail[0]
