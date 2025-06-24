@@ -137,6 +137,8 @@ func applyTags(tags []RegTag, ins Instr) {
 		tags[ins.A] = TagUnknown
 	case OpIterPrep:
 		tags[ins.A] = TagUnknown
+	case OpCast:
+		tags[ins.A] = TagUnknown
 	case OpCount:
 		tags[ins.A] = TagInt
 	case OpAvg:
