@@ -1,0 +1,2 @@
+let double = ref (fun x -> x * 2);;
+print_endline (string_of_int (!double 3));;
