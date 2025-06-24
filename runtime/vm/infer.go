@@ -116,11 +116,13 @@ func applyTags(tags []RegTag, ins Instr) {
 		tags[ins.A] = valTag(ins.Val)
 	case OpMove:
 		tags[ins.A] = tags[ins.B]
-	case OpAddInt, OpSubInt, OpMulInt, OpDivInt, OpModInt:
+	case OpAddInt, OpSubInt, OpMulInt, OpDivInt, OpModInt,
+		OpNegInt:
 		tags[ins.A] = TagInt
-	case OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat:
+	case OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
+		OpNegFloat:
 		tags[ins.A] = TagFloat
-	case OpAdd, OpSub, OpMul, OpDiv, OpMod:
+	case OpAdd, OpSub, OpMul, OpDiv, OpMod, OpNeg:
 		tags[ins.A] = TagUnknown
 	case OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
