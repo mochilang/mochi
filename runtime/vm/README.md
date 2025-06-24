@@ -26,6 +26,7 @@ The VM supports a small but useful subset of Mochi:
 * Anonymous function expressions
 * Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `json`, `now`, `input`, `count`, `avg`, `min` and `max`
 * Dataset loading with `load` (optionally casting rows to a type) and saving with `save`
+* Dataset queries using `from`, `join`, `group by`, `sort by`, `skip`, `take` and `select`
 * List, map and struct construction
 * String indexing to access individual characters
 * Field access using the `.` operator
