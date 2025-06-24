@@ -157,6 +157,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -919,7 +921,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 		params[i] = param
 	}
-	sub := &Compiler{env: child}
+	sub := &Compiler{env: child, helpers: c.helpers, packages: c.packages}
 	sub.indent = 1
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody)
@@ -964,7 +966,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 	c.buf.WriteString(") : " + ret + " {")
 	c.buf.WriteByte('\n')
-	sub := &Compiler{env: child, indent: c.indent + 1}
+	sub := &Compiler{env: child, indent: c.indent + 1, helpers: c.helpers, packages: c.packages}
 	for _, s := range fun.Body {
 		if err := sub.compileStmt(s); err != nil {
 			return err
@@ -1004,7 +1006,7 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 	}
 	c.buf.WriteString(") : " + ret + " {")
 	c.buf.WriteByte('\n')
-	sub := &Compiler{env: child, indent: c.indent + 1}
+	sub := &Compiler{env: child, indent: c.indent + 1, helpers: c.helpers, packages: c.packages}
 	for _, s := range fun.Body {
 		if err := sub.compileStmt(s); err != nil {
 			return err
