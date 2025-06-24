@@ -1173,20 +1173,34 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			if op.Index.Colon != nil {
 				start := "0"
+				startExpr := start
 				if op.Index.Start != nil {
 					start, err = c.compileExpr(op.Index.Start)
 					if err != nil {
 						return "", err
 					}
+					startExpr = start
+					if isStr {
+						if v, ok := intLiteral(op.Index.Start); !ok || v < 0 {
+							startExpr = fmt.Sprintf("(if %s < 0 then %s.Length + %s else %s)", start, expr, start, start)
+						}
+					}
 				}
 				end := fmt.Sprintf("%s.Length", expr)
+				endExpr := end
 				if op.Index.End != nil {
 					end, err = c.compileExpr(op.Index.End)
 					if err != nil {
 						return "", err
 					}
+					endExpr = end
+					if isStr {
+						if v, ok := intLiteral(op.Index.End); !ok || v < 0 {
+							endExpr = fmt.Sprintf("(if %s < 0 then %s.Length + %s else %s)", end, expr, end, end)
+						}
+					}
 				}
-				expr = fmt.Sprintf("%s.[%s .. (%s - 1)]", expr, start, end)
+				expr = fmt.Sprintf("%s.[%s .. (%s - 1)]", expr, startExpr, endExpr)
 			} else {
 				if isStr {
 					if v, ok := intLiteral(op.Index.Start); ok && v >= 0 {
