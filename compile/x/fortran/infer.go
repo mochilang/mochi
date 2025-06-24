@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 func sanitizeName(name string) string {
@@ -51,12 +52,21 @@ func collectLoopVars(stmts []*parser.Statement, vars, str map[string]bool) {
 	}
 }
 
-func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, floatVars map[string]bool, funStr map[string]bool, funFloat map[string]bool, funList map[string]bool) {
+func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, floatVars map[string]bool, structVars map[string]string, funStr map[string]bool, funFloat map[string]bool, funList map[string]bool, env *types.Env) {
 	for _, s := range stmts {
 		switch {
 		case s.Var != nil:
 			name := sanitizeName(s.Var.Name)
 			vars[name] = true
+			if env != nil && s.Var.Type != nil && s.Var.Type.Simple != nil {
+				if st, ok := env.GetStruct(*s.Var.Type.Simple); ok {
+					_ = st
+					structVars[name] = sanitizeName(*s.Var.Type.Simple)
+				}
+			}
+			if typ, ok := structLiteralName(s.Var.Value); ok {
+				structVars[name] = sanitizeName(typ)
+			}
 			if isListLiteral(s.Var.Value) || isListExpr(s.Var.Value, listVars, funList) {
 				listVars[name] = true
 			}
@@ -80,6 +90,15 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 		case s.Let != nil:
 			name := sanitizeName(s.Let.Name)
 			vars[name] = true
+			if env != nil && s.Let.Type != nil && s.Let.Type.Simple != nil {
+				if st, ok := env.GetStruct(*s.Let.Type.Simple); ok {
+					_ = st
+					structVars[name] = sanitizeName(*s.Let.Type.Simple)
+				}
+			}
+			if typ, ok := structLiteralName(s.Let.Value); ok {
+				structVars[name] = sanitizeName(typ)
+			}
 			if isListLiteral(s.Let.Value) || isListExpr(s.Let.Value, listVars, funList) {
 				listVars[name] = true
 			}
@@ -101,21 +120,34 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 				floatVars[name] = true
 			}
 		case s.For != nil:
-			collectVars(s.For.Body, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			collectVars(s.For.Body, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, env)
 		case s.While != nil:
-			collectVars(s.While.Body, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			collectVars(s.While.Body, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, env)
 		case s.If != nil:
-			collectVars(s.If.Then, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			collectVars(s.If.Then, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, env)
 			cur := s.If
 			for cur.ElseIf != nil {
 				cur = cur.ElseIf
-				collectVars(cur.Then, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+				collectVars(cur.Then, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, env)
 			}
 			if len(cur.Else) > 0 {
-				collectVars(cur.Else, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+				collectVars(cur.Else, vars, listVars, stringVars, floatVars, structVars, funStr, funFloat, funList, env)
 			}
 		}
 	}
+}
+
+func structLiteralName(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) == 0 && e.Binary.Left != nil && e.Binary.Left.Value != nil {
+		v := e.Binary.Left.Value
+		if len(v.Ops) == 0 && v.Target != nil && v.Target.Struct != nil {
+			return v.Target.Struct.Name, true
+		}
+	}
+	return "", false
 }
 
 func isListLiteral(e *parser.Expr) bool {

@@ -613,7 +613,7 @@ func build(cmd *BuildCmd, targets []string) error {
 		if out == "" {
 			out = base + ".f90"
 		}
-		code, err := fortrancode.New().Compile(prog)
+		code, err := fortrancode.New(env).Compile(prog)
 		if err == nil {
 			err = os.WriteFile(out, code, 0644)
 		}

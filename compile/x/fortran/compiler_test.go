@@ -32,7 +32,7 @@ func TestFortranCompiler_GoldenOutput(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			return nil, fmt.Errorf("type error: %v", errs[0])
 		}
-		code, err := ftncode.New().Compile(prog)
+		code, err := ftncode.New(env).Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("compile error: %w", err)
 		}
@@ -56,7 +56,7 @@ func TestFortranCompiler_SubsetPrograms(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			return nil, fmt.Errorf("type error: %v", errs[0])
 		}
-		code, err := ftncode.New().Compile(prog)
+		code, err := ftncode.New(env).Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("compile error: %w", err)
 		}
@@ -112,7 +112,7 @@ func runFortranLeetExample(t *testing.T, id string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	code, err := ftncode.New().Compile(prog)
+	code, err := ftncode.New(env).Compile(prog)
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}

@@ -24,6 +24,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - list operations: `union`, `union all`, `except` and `intersect` on integer, float and string lists
 - built-ins: `len`, `append`, `count`, `avg`, `str`, `now`
 - printing via `print()`
+- struct type declarations and literals
 - `package` and `export` declarations (ignored during code generation)
 - `import` statements emit Fortran `include` lines
 - slice assignments like `xs[0:1] = sub`
@@ -34,7 +35,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - map types and membership tests for maps
 - map indexing and assignment
 - query expressions (`from`/`sort by`/`select`)
-- nested functions and struct literals
+- nested functions
 - slice expressions with a step
 - pattern matching with `match`
 - agents, streams and logic programming constructs (`fact`, `rule`, `query`)

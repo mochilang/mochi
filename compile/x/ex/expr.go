@@ -381,6 +381,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.Struct != nil:
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+				parts := make([]string, len(p.Struct.Fields))
+				for i, f := range p.Struct.Fields {
+					v, err := c.compileExpr(f.Value)
+					if err != nil {
+						return "", err
+					}
+					parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
+				}
+				return fmt.Sprintf("%%%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
+			}
+		}
 		parts := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)

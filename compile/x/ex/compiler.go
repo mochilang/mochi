@@ -20,6 +20,7 @@ type Compiler struct {
 	tmp     int
 	helpers map[string]bool
 	funcs   map[string]bool
+	structs map[string]bool
 }
 
 var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
@@ -88,7 +89,7 @@ func assignedVars(stmts []*parser.Statement) []string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool), structs: make(map[string]bool)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -117,6 +118,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFunStmt(s.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
 				return nil, err
 			}
 			c.writeln("")
@@ -736,4 +745,45 @@ func (c *Compiler) emitRuntime() {
 	for _, n := range names {
 		c.writeln(helperMap[n])
 	}
+}
+
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("defmodule %s do", name))
+	c.indent++
+	fields := make([]string, len(st.Order))
+	for i, fn := range st.Order {
+		fields[i] = fmt.Sprintf("%s: nil", sanitizeName(fn))
+	}
+	c.writeln(fmt.Sprintf("defstruct [%s]", strings.Join(fields, ", ")))
+	c.indent--
+	c.writeln("end")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if c.env == nil {
+		return nil
+	}
+	if len(t.Variants) > 0 {
+		for _, v := range t.Variants {
+			if st, ok := c.env.GetStruct(v.Name); ok {
+				c.compileStructType(st)
+			}
+		}
+		return nil
+	}
+	if st, ok := c.env.GetStruct(t.Name); ok {
+		c.compileStructType(st)
+	}
+	return nil
 }
