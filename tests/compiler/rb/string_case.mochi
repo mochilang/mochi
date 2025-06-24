@@ -1,0 +1,2 @@
+print(upper("hello"))
+print(lower("WORLD"))

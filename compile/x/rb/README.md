@@ -21,6 +21,10 @@ case "len", "count":
     expr = fmt.Sprintf("(%s).length", args[0])
 case "str":
     expr = fmt.Sprintf("(%s).to_s", args[0])
+case "upper":
+    expr = fmt.Sprintf("(%s).to_s.upcase", args[0])
+case "lower":
+    expr = fmt.Sprintf("(%s).to_s.downcase", args[0])
 case "avg":
     expr = fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", args[0])
 case "input":
