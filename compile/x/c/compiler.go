@@ -160,6 +160,26 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 }
 
 func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
+	// forward declarations for user-defined types allow recursive structs
+	forwardSet := map[string]bool{}
+	var forward []string
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			name := sanitizeName(s.Type.Name)
+			if !forwardSet[name] {
+				forwardSet[name] = true
+				forward = append(forward, name)
+			}
+			for _, v := range s.Type.Variants {
+				vname := sanitizeName(v.Name)
+				if !forwardSet[vname] {
+					forwardSet[vname] = true
+					forward = append(forward, vname)
+				}
+			}
+		}
+	}
+
 	// compile body first to know which helpers are needed
 	oldBuf := c.buf
 	c.buf = bytes.Buffer{}
@@ -266,6 +286,12 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("")
 	c.emitRuntime()
 	if c.buf.Len() > 0 && c.buf.Bytes()[c.buf.Len()-1] != '\n' {
+		c.writeln("")
+	}
+	for _, name := range forward {
+		c.writeln(fmt.Sprintf("typedef struct %s %s;", name, name))
+	}
+	if len(forward) > 0 {
 		c.writeln("")
 	}
 	for _, ex := range c.externs {
