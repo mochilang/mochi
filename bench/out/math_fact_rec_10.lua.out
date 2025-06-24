@@ -1,0 +1,40 @@
+function __div(a, b)
+    if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+        return a // b
+    end
+    return a / b
+end
+function __eq(a, b)
+    if type(a) ~= type(b) then return false end
+    if type(a) ~= 'table' then return a == b end
+    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
+        if #a ~= #b then return false end
+        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
+        return true
+    end
+    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
+    for k, _ in pairs(b) do if a[k] == nil then return false end end
+    return true
+end
+function __json(v)
+    local ok, json = pcall(require, 'json')
+    if not ok then error('json library not found') end
+    print(json.encode(v))
+end
+function fact_rec(n)
+	if __eq(n, 0) then
+		return 1
+	end
+	return (n * fact_rec((n - 1)))
+end
+
+local n = 10
+local _repeat = 1000
+local last = 0
+local start = os.time()*1000000000
+for i = 0, (_repeat)-1 do
+	last = fact_rec(n)
+	::__continue0::
+end
+local duration = __div(((os.time()*1000000000 - start)), 1000)
+__json({["duration_us"]=duration, ["output"]=last})

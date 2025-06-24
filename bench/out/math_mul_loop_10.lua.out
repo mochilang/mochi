@@ -1,0 +1,30 @@
+function __div(a, b)
+    if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+        return a // b
+    end
+    return a / b
+end
+function __json(v)
+    local ok, json = pcall(require, 'json')
+    if not ok then error('json library not found') end
+    print(json.encode(v))
+end
+function mul(n)
+	local result = 1
+	for i = 1, (n)-1 do
+		result = (result * i)
+		::__continue0::
+	end
+	return result
+end
+
+local n = 10
+local _repeat = 1000
+local last = 0
+local start = os.time()*1000000000
+for i = 0, (_repeat)-1 do
+	last = mul(n)
+	::__continue1::
+end
+local duration = __div(((os.time()*1000000000 - start)), 1000)
+__json({["duration_us"]=duration, ["output"]=last})

@@ -19,6 +19,7 @@ import (
 	pycode "mochi/compile/py"
 	tscode "mochi/compile/ts"
 	ccode "mochi/compile/x/c"
+	luacode "mochi/compile/x/lua"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -87,6 +88,8 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
+			{Lang: "mochi_lua", Path: path, Suffix: suffix, Command: []string{"lua"}},
+			{Lang: "mochi_luajit", Path: path, Suffix: suffix, Command: []string{"luajit"}},
 			// Temporarily disable PyPy and Cython benchmarks
 			// {Lang: "mochi_pypy", Path: path, Suffix: suffix, Command: []string{"pypy3"}},
 			// {Lang: "mochi_cython", Path: path, Suffix: suffix, Command: nil},
@@ -156,6 +159,12 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 					panic(err)
 				}
 				out = compiled
+			} else if t.Lang == "mochi_lua" || t.Lang == "mochi_luajit" {
+				compiled := strings.TrimSuffix(out, ".mochi") + ".lua"
+				if err := compileToLua(out, compiled); err != nil {
+					panic(err)
+				}
+				out = compiled
 				// } else if t.Lang == "mochi_cython" {
 				//      compiled := strings.TrimSuffix(out, ".mochi") + ".cy.c"
 				//      bin := strings.TrimSuffix(out, ".mochi") + ".cy.bin"
@@ -200,6 +209,12 @@ func Run() {
 		panic(err)
 	}
 	if err := pycode.EnsurePython(); err != nil {
+		panic(err)
+	}
+	if err := luacode.EnsureLua(); err != nil {
+		panic(err)
+	}
+	if err := luacode.EnsureLuaJIT(); err != nil {
 		panic(err)
 	}
 	// Temporarily disable PyPy and Cython benchmarks
@@ -336,6 +351,10 @@ func report(results []Result) {
 				langName = "C"
 			case "mochi_py":
 				langName = "Python"
+			case "mochi_lua":
+				langName = "Mochi (Lua)"
+			case "mochi_luajit":
+				langName = "Mochi (LuaJIT)"
 				// case "mochi_pypy":
 				//      langName = "Python (PyPy)"
 				// case "mochi_cython":
@@ -409,6 +428,23 @@ func compileToPy(mochiFile, pyFile string) error {
 		return err
 	}
 	return os.WriteFile(pyFile, code, 0644)
+}
+
+func compileToLua(mochiFile, luaFile string) error {
+	prog, err := parser.Parse(mochiFile)
+	if err != nil {
+		return err
+	}
+	typeEnv := types.NewEnv(nil)
+	if errs := types.Check(prog, typeEnv); len(errs) > 0 {
+		return fmt.Errorf("type error: %v", errs[0])
+	}
+	c := luacode.New(typeEnv)
+	code, err := c.Compile(prog)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(luaFile, code, 0644)
 }
 
 func compileToTs(mochiFile, tsFile string) error {
@@ -582,6 +618,10 @@ func exportMarkdown(results []Result) error {
 				langName = "C"
 			case "mochi_py":
 				langName = "Python"
+			case "mochi_lua":
+				langName = "Mochi (Lua)"
+			case "mochi_luajit":
+				langName = "Mochi (LuaJIT)"
 				// case "mochi_pypy":
 				//      langName = "Python (PyPy)"
 				// case "mochi_cython":
@@ -655,6 +695,11 @@ func GenerateOutputs(outDir string) error {
 
 			pyOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.py.out", category, name, n))
 			if err := compileToPy(tmp, pyOut); err != nil {
+				return err
+			}
+
+			luaOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.lua.out", category, name, n))
+			if err := compileToLua(tmp, luaOut); err != nil {
 				return err
 			}
 

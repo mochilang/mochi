@@ -1,0 +1,45 @@
+function __add(a, b)
+    if type(a) == 'table' and type(b) == 'table' then
+        local out = {}
+        for i = 1, #a do out[#out+1] = a[i] end
+        for i = 1, #b do out[#out+1] = b[i] end
+        return out
+    elseif type(a) == 'string' or type(b) == 'string' then
+        return tostring(a) .. tostring(b)
+    else
+        return a + b
+    end
+end
+function __div(a, b)
+    if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+        return a // b
+    end
+    return a / b
+end
+function __json(v)
+    local ok, json = pcall(require, 'json')
+    if not ok then error('json library not found') end
+    print(json.encode(v))
+end
+function fib(n)
+	local a = 0
+	local b = 1
+	for i = 0, (n)-1 do
+		local tmp = __add(a, b)
+		a = b
+		b = tmp
+		::__continue0::
+	end
+	return a
+end
+
+local n = 10
+local _repeat = 1000
+local last = 0
+local start = os.time()*1000000000
+for i = 0, (_repeat)-1 do
+	last = fib(n)
+	::__continue1::
+end
+local duration = __div(((os.time()*1000000000 - start)), 1000)
+__json({["duration_us"]=duration, ["output"]=last})
