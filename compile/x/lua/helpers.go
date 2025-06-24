@@ -175,6 +175,16 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 		}
 		return types.AnyType{}
 	}
+	if t.Struct != nil {
+		fields := map[string]types.Type{}
+		order := []string{}
+		for _, f := range t.Struct.Fields {
+			fields[f.Name] = c.resolveTypeRef(f.Type)
+			order = append(order, f.Name)
+		}
+		return types.StructType{Name: "", Fields: fields, Order: order}
+	}
+
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":

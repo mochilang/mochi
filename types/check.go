@@ -215,7 +215,7 @@ func unify(a, b Type, subst Subst) bool {
 	case StructType:
 		switch bt := b.(type) {
 		case StructType:
-			if at.Name != bt.Name {
+			if at.Name != "" && bt.Name != "" && at.Name != bt.Name {
 				return false
 			}
 			if len(at.Fields) != len(bt.Fields) {
@@ -999,6 +999,16 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 		}
 		// Fallback: unknown generic type
 		return AnyType{}
+	}
+
+	if t.Struct != nil {
+		fields := map[string]Type{}
+		order := []string{}
+		for _, f := range t.Struct.Fields {
+			fields[f.Name] = resolveTypeRef(f.Type, env)
+			order = append(order, f.Name)
+		}
+		return StructType{Name: "", Fields: fields, Order: order}
 	}
 
 	if t.Simple != nil {

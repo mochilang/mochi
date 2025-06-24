@@ -1,0 +1,11 @@
+(program
+  (type Person
+    (field address
+      (type
+        (struct
+          (field city (type string))
+        )
+      )
+    )
+  )
+)

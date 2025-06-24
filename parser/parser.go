@@ -145,9 +145,14 @@ type TypeField struct {
 // --- Type System ---
 
 type TypeRef struct {
-	Fun     *FunType     `parser:"@@"`
-	Generic *GenericType `parser:"| @@"`
-	Simple  *string      `parser:"| @Ident"`
+	Fun     *FunType          `parser:"@@"`
+	Generic *GenericType      `parser:"| @@"`
+	Struct  *InlineStructType `parser:"| @@"`
+	Simple  *string           `parser:"| @Ident"`
+}
+
+type InlineStructType struct {
+	Fields []*TypeField `parser:"'{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
 }
 
 type GenericType struct {

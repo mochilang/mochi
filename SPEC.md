@@ -638,7 +638,8 @@ StructLiteral = Identifier "{" [ StructField { "," StructField } ] [ "," ] "}" .
 StructField   = Identifier ":" Expression .
 ParamList     = Param { "," Param } .
 Param         = Identifier [ ":" TypeRef ] .
-TypeRef       = FunType | GenericType | Identifier .
+TypeRef       = FunType | GenericType | StructType | Identifier .
+StructType    = "{" TypeField { "," TypeField } [ "," ] "}" .
 GenericType   = Identifier "<" TypeRef { "," TypeRef } ">" .
 FunType       = "fun" "(" [ TypeRef { "," TypeRef } ] ")" [ ":" TypeRef ] .
 ```
