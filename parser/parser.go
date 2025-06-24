@@ -127,6 +127,7 @@ type TypeDecl struct {
 type TypeMember struct {
 	Field  *TypeField `parser:"@@"`
 	Method *FunStmt   `parser:"| @@"`
+	Type   *TypeDecl  `parser:"| @@"`
 }
 
 type TypeVariant struct {
@@ -144,9 +145,14 @@ type TypeField struct {
 // --- Type System ---
 
 type TypeRef struct {
-	Fun     *FunType     `parser:"@@"`
-	Generic *GenericType `parser:"| @@"`
-	Simple  *string      `parser:"| @Ident"`
+	Fun     *FunType          `parser:"@@"`
+	Generic *GenericType      `parser:"| @@"`
+	Struct  *InlineStructType `parser:"| @@"`
+	Simple  *string           `parser:"| @Ident"`
+}
+
+type InlineStructType struct {
+	Fields []*TypeField `parser:"'{' [ @@ { ',' @@ } ] [ ',' ]? '}'"`
 }
 
 type GenericType struct {

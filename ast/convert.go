@@ -545,6 +545,15 @@ func FromTypeRef(t *parser.TypeRef) *Node {
 		}
 		return n
 	}
+	if t.Struct != nil {
+		n := &Node{Kind: "type"}
+		s := &Node{Kind: "struct"}
+		for _, f := range t.Struct.Fields {
+			s.Children = append(s.Children, &Node{Kind: "field", Value: f.Name, Children: []*Node{FromTypeRef(f.Type)}})
+		}
+		n.Children = append(n.Children, s)
+		return n
+	}
 	if t.Simple != nil {
 		return &Node{Kind: "type", Value: *t.Simple}
 	}
@@ -564,6 +573,13 @@ func typeRefString(t *parser.TypeRef) string {
 			parts[i] = typeRefString(a)
 		}
 		return fmt.Sprintf("%s<%s>", t.Generic.Name, strings.Join(parts, ","))
+	}
+	if t.Struct != nil {
+		parts := make([]string, len(t.Struct.Fields))
+		for i, f := range t.Struct.Fields {
+			parts[i] = fmt.Sprintf("%s:%s", f.Name, typeRefString(f.Type))
+		}
+		return fmt.Sprintf("{%s}", strings.Join(parts, ","))
 	}
 	if t.Fun != nil {
 		parts := make([]string, len(t.Fun.Params))
