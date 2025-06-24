@@ -33,9 +33,11 @@ type Compiler struct {
 
 	tempVarCount int
 
-	returnType types.Type
+        returnType types.Type
 
-	varUsage map[any]bool
+        varUsage map[any]bool
+
+        receiver string
 }
 
 // New creates a new Go compiler instance.
@@ -407,7 +409,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
-	lhs := sanitizeName(s.Name)
+        lhs := sanitizeName(s.Name)
+        if c.receiver != "" && len(s.Index) == 0 {
+                if st, ok := c.env.GetStruct(c.receiver); ok {
+                        if _, ok := st.Fields[s.Name]; ok {
+                                lhs = fmt.Sprintf("s.%s", exportName(lhs))
+                        }
+                }
+        }
 	var t types.Type
 	if c.env != nil {
 		if v, err := c.env.GetVar(s.Name); err == nil {
@@ -748,6 +757,59 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 	return fname, nil
 }
 
+func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
+        st, ok := c.env.GetStruct(structName)
+        if !ok {
+                return fmt.Errorf("unknown struct: %s", structName)
+        }
+        ft := st.Methods[fun.Name].Type
+        name := exportName(sanitizeName(fun.Name))
+        recv := sanitizeName(structName)
+        c.writeIndent()
+        c.buf.WriteString(fmt.Sprintf("func (s *%s) %s(", recv, name))
+        for i, p := range fun.Params {
+                if i > 0 {
+                        c.buf.WriteString(", ")
+                }
+                paramType := "any"
+                if i < len(ft.Params) {
+                        paramType = goType(ft.Params[i])
+                }
+                c.buf.WriteString(sanitizeName(p.Name) + " " + paramType)
+        }
+        retType := goType(ft.Return)
+        if retType == "" {
+                c.buf.WriteString(") {\n")
+        } else {
+                c.buf.WriteString(") " + retType + " {\n")
+        }
+        child := types.NewEnv(c.env)
+        for fname, t := range st.Fields {
+                child.SetVar(fname, t, true)
+        }
+        for i, p := range fun.Params {
+                if i < len(ft.Params) {
+                        child.SetVar(p.Name, ft.Params[i], true)
+                }
+        }
+        orig := c.env
+        origRecv := c.receiver
+        c.env = child
+        c.receiver = structName
+        c.indent++
+        if err := c.compileStmtList(fun.Body); err != nil {
+                c.env = orig
+                c.receiver = origRecv
+                return err
+        }
+        c.indent--
+        c.env = orig
+        c.receiver = origRecv
+        c.writeIndent()
+        c.buf.WriteString("}\n\n")
+        return nil
+}
+
 func (c *Compiler) compileStructType(st types.StructType) {
 	name := sanitizeName(st.Name)
 	if c.structs[name] {
@@ -832,8 +894,15 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 	}
 	c.indent--
-	c.writeln("}")
-	return nil
+        c.writeln("}")
+        for _, m := range t.Members {
+                if m.Method != nil {
+                        if err := c.compileMethod(t.Name, m.Method); err != nil {
+                                return err
+                        }
+                }
+        }
+        return nil
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
@@ -1615,14 +1684,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
-	case p.Selector != nil:
-		base := sanitizeName(p.Selector.Root)
-		var typ types.Type = types.AnyType{}
-		if c.env != nil {
-			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-				typ = t
-			}
-		}
+        case p.Selector != nil:
+                base := sanitizeName(p.Selector.Root)
+                var typ types.Type = types.AnyType{}
+                if c.env != nil {
+                        if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+                                typ = t
+                        }
+                }
+                if c.receiver != "" && len(p.Selector.Tail) == 0 {
+                        if st, ok := c.env.GetStruct(c.receiver); ok {
+                                if _, ok := st.Fields[p.Selector.Root]; ok {
+                                        base = fmt.Sprintf("s.%s", exportName(base))
+                                        return base, nil
+                                }
+                        }
+                }
 		if _, ok := typ.(types.MapType); ok && len(p.Selector.Tail) > 0 {
 			key := p.Selector.Tail[0]
 			base = fmt.Sprintf("%s[%q]", base, key)
