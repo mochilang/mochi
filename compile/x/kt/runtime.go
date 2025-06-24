@@ -11,6 +11,27 @@ const (
     }
 }`
 
+	helperIndexString = `fun _indexString(s: String, i: Int): String {
+    var idx = i
+    val arr = s.toCharArray()
+    if (idx < 0) idx += arr.size
+    if (idx < 0 || idx >= arr.size) throw RuntimeException("index out of range")
+    return arr[idx].toString()
+}`
+
+	helperSliceString = `fun _sliceString(s: String, i: Int, j: Int): String {
+    var start = i
+    var end = j
+    val arr = s.toCharArray()
+    val n = arr.size
+    if (start < 0) start += n
+    if (end < 0) end += n
+    if (start < 0) start = 0
+    if (end > n) end = n
+    if (end < start) end = start
+    return String(arr.sliceArray(start until end))
+}`
+
 	helperLoad = `fun _load(path: String?, opts: Map<String, Any>?): List<Map<String, Any>> {
     var format = opts?.get("format") as? String ?: "csv"
     var header = opts?.get("header") as? Boolean ?: true
@@ -221,20 +242,22 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_cast":      helperCast,
-	"_load":      helperLoad,
-	"_save":      helperSave,
-	"_eval":      helperEval,
-	"_genText":   helperGenText,
-	"_genEmbed":  helperGenEmbed,
-	"_genStruct": helperGenStruct,
-	"_fetch":     helperFetch,
-	"_json":      helperJson,
-	"_extern":    helperExtern,
-	"_unionAll":  helperUnionAll,
-	"_union":     helperUnion,
-	"_except":    helperExcept,
-	"_intersect": helperIntersect,
-	"_Stream":    helperStream,
-	"_waitAll":   helperWaitAll,
+	"_cast":        helperCast,
+	"_indexString": helperIndexString,
+	"_sliceString": helperSliceString,
+	"_load":        helperLoad,
+	"_save":        helperSave,
+	"_eval":        helperEval,
+	"_genText":     helperGenText,
+	"_genEmbed":    helperGenEmbed,
+	"_genStruct":   helperGenStruct,
+	"_fetch":       helperFetch,
+	"_json":        helperJson,
+	"_extern":      helperExtern,
+	"_unionAll":    helperUnionAll,
+	"_union":       helperUnion,
+	"_except":      helperExcept,
+	"_intersect":   helperIntersect,
+	"_Stream":      helperStream,
+	"_waitAll":     helperWaitAll,
 }
