@@ -681,10 +681,10 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			typ = types.IntType{}
 		} else if c.isStringExpr(f.Source) {
 			typ = types.StringType{}
-		} else {
-			if lt, ok := c.inferExprType(f.Source).(types.ListType); ok {
-				typ = lt.Elem
-			}
+		} else if mt, ok := c.inferExprType(f.Source).(types.MapType); ok {
+			typ = mt.Key
+		} else if lt, ok := c.inferExprType(f.Source).(types.ListType); ok {
+			typ = lt.Elem
 		}
 		c.env.SetVar(f.Name, typ, true)
 	}
@@ -743,7 +743,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if !useVar {
 		loopVar = c.newTmp()
 	}
-	c.writeln(fmt.Sprintf("for %s in %s do", loopVar, src))
+	srcExpr := src
+	if c.isMapExpr(f.Source) {
+		srcExpr = fmt.Sprintf("Map.keys %s", src)
+	}
+	c.writeln(fmt.Sprintf("for %s in %s do", loopVar, srcExpr))
 	c.indent++
 	if c.isStringExpr(f.Source) && useVar {
 		c.writeln(fmt.Sprintf("let %s = string %s", loopVar, loopVar))

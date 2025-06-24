@@ -120,6 +120,7 @@ Mochi features are not yet available.
 * `for` and `while` loops with `break` and `continue`
 * Pattern matching and conditional statements
 * Lists and maps with indexing and slicing
+* Iterating over maps with `for` loops
 * List concatenation using `+`
 * Membership tests with `in`
 * Query expressions with `where`, `sort`, `skip` and `take`
@@ -149,7 +150,6 @@ The F# generator still lacks support for several language constructs:
 * `model` declarations and agent initialization
 * Package declarations using `package`
 * Destructuring bindings in `let`/`var` statements
-* Iterating over maps with `for` loops
 * Functions with multiple return values
 * Set collections (`set<T>`) and related operations
 * Automatic language imports (`import python "..." auto`)
