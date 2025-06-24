@@ -62,6 +62,14 @@ func (c *Compiler) guessPostfixType(p *parser.PostfixExpr) string {
 					typ = "auto"
 				}
 			}
+		} else if op.Field != nil {
+			if st, ok := c.env.GetStruct(typ); ok {
+				if ft, ok := st.Fields[op.Field.Name]; ok {
+					typ = c.cppTypeRef(ft)
+				} else {
+					typ = "auto"
+				}
+			}
 		}
 	}
 	return typ

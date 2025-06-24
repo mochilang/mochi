@@ -330,6 +330,8 @@ func FromPostfixExpr(p *parser.PostfixExpr) *Node {
 			n = callNode
 		} else if cast := op.Cast; cast != nil {
 			n = &Node{Kind: "cast", Children: []*Node{n, FromTypeRef(cast.Type)}}
+		} else if field := op.Field; field != nil {
+			n = &Node{Kind: "selector", Value: field.Name, Children: []*Node{n}}
 		}
 	}
 	return n
