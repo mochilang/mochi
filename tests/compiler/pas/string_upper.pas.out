@@ -1,0 +1,10 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes;
+
+type
+        generic TArray<T> = array of T;
+
+begin
+        writeln(UpperCase('hello'));
+end.
