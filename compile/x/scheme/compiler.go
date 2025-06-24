@@ -502,7 +502,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		}
 		switch op.Op {
 		case "+":
-			if isListUnary(leftAst) || isListPostfix(rightAst) {
+			if c.isStringUnary(leftAst) || c.isStringPostfix(rightAst) {
+				expr = fmt.Sprintf("(string-append %s %s)", expr, right)
+			} else if isListUnary(leftAst) || isListPostfix(rightAst) {
 				expr = fmt.Sprintf("(append %s %s)", expr, right)
 			} else {
 				expr = fmt.Sprintf("(+ %s %s)", expr, right)
