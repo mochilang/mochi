@@ -1,0 +1,6 @@
+let a = [1, 2, 3]
+let b = [3, 4]
+print(len(a union b))
+print(len(a union all b))
+print(len(a except b))
+print(len(a intersect b))

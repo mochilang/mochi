@@ -974,7 +974,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		}
 		operands = append(operands, r)
 		typesList = append(typesList, c.inferPostfixType(part.Right))
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.All {
+			op = op + "_all"
+		}
+		ops = append(ops, op)
 	}
 
 	levels := [][]string{
@@ -1050,6 +1054,9 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		default:
 			return "false", types.BoolType{}, nil
 		}
+	case "union", "union_all", "except", "intersect":
+		c.use("_" + op)
+		return fmt.Sprintf("_%s(%s, %s)", op, left, right), types.ListType{Elem: types.AnyType{}}, nil
 	default:
 		return fmt.Sprintf("(%s %s %s)", left, op, right), types.AnyType{}, nil
 	}
