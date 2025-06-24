@@ -1120,6 +1120,38 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("IntToStr(%s)", args[0]), nil
 			}
 			return fmt.Sprintf("IntToStr(%s)", argStr), nil
+		case "upper":
+			if len(args) != 1 {
+				return "", fmt.Errorf("upper expects 1 argument")
+			}
+			return fmt.Sprintf("UpperCase(%s)", args[0]), nil
+		case "lower":
+			if len(args) != 1 {
+				return "", fmt.Errorf("lower expects 1 argument")
+			}
+			return fmt.Sprintf("LowerCase(%s)", args[0]), nil
+		case "trim":
+			if len(args) != 1 {
+				return "", fmt.Errorf("trim expects 1 argument")
+			}
+			return fmt.Sprintf("Trim(%s)", args[0]), nil
+		case "contains":
+			if len(args) != 2 {
+				return "", fmt.Errorf("contains expects 2 arguments")
+			}
+			return fmt.Sprintf("(Pos(%s, %s) > 0)", args[1], args[0]), nil
+		case "split":
+			if len(args) != 2 {
+				return "", fmt.Errorf("split expects 2 arguments")
+			}
+			c.use("_splitString")
+			return fmt.Sprintf("_splitString(%s, %s)", args[0], args[1]), nil
+		case "join":
+			if len(args) != 2 {
+				return "", fmt.Errorf("join expects 2 arguments")
+			}
+			c.use("_joinStrings")
+			return fmt.Sprintf("_joinStrings(%s, %s)", args[0], args[1]), nil
 		default:
 			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 		}
@@ -1335,6 +1367,47 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("finally")
 			c.indent++
 			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_splitString":
+			c.writeln("function _splitString(s, sep: string): specialize TArray<string>;")
+			c.writeln("var sl: TStringList; i: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("try")
+			c.indent++
+			c.writeln("sl.Delimiter := sep[1];")
+			c.writeln("sl.StrictDelimiter := True;")
+			c.writeln("sl.DelimitedText := s;")
+			c.writeln("SetLength(Result, sl.Count);")
+			c.writeln("for i := 0 to sl.Count - 1 do")
+			c.indent++
+			c.writeln("Result[i] := sl[i];")
+			c.indent--
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_joinStrings":
+			c.writeln("function _joinStrings(parts: specialize TArray<string>; sep: string): string;")
+			c.writeln("var i: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("Result := '';")
+			c.writeln("for i := 0 to High(parts) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("if i > 0 then Result := Result + sep;")
+			c.writeln("Result := Result + parts[i];")
 			c.indent--
 			c.writeln("end;")
 			c.indent--
