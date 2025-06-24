@@ -1,0 +1,22 @@
+#!/usr/bin/env escript
+-module(main).
+-export([main/1]).
+
+main(_) ->
+	mochi_print([mochi_except([1, 2, 3], [2])]).
+
+mochi_print(Args) ->
+	Strs = [ mochi_format(A) || A <- Args ],
+	io:format("~s~n", [lists:flatten(Strs)]).
+
+mochi_format(X) when is_integer(X) -> integer_to_list(X);
+mochi_format(X) when is_float(X) -> float_to_list(X);
+mochi_format(X) when is_list(X) -> X;
+mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
+
+
+mochi_union(A, B) -> sets:to_list(sets:union(sets:from_list(A), sets:from_list(B))).
+
+mochi_except(A, B) -> sets:to_list(sets:subtract(sets:from_list(A), sets:from_list(B))).
+
+mochi_intersect(A, B) -> sets:to_list(sets:intersection(sets:from_list(A), sets:from_list(B))).
