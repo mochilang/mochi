@@ -1,0 +1,87 @@
+func main (regs=53)
+  // let people = [
+  Const        r0, [{"age": 30, "name": "Alice"}, {"age": 15, "name": "Bob"}, {"age": 65, "name": "Charlie"}, {"age": 45, "name": "Diana"}]
+  Move         r1, r0
+  // let adults = from person in people
+  Const        r2, []
+  IterPrep     r3, r1
+  Len          r4, r3
+  Const        r5, 0
+L2:
+  Less         r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // where person.age >= 18
+  Const        r9, "age"
+  Index        r10, r8, r9
+  Const        r11, 18
+  LessEq       r12, r11, r10
+  JumpIfFalse  r12, L1
+  // name: person.name,
+  Const        r13, "name"
+  Const        r14, "name"
+  Index        r15, r8, r14
+  // age: person.age,
+  Const        r16, "age"
+  Const        r17, "age"
+  Index        r18, r8, r17
+  // is_senior: person.age >= 60
+  Const        r19, "is_senior"
+  Const        r20, "age"
+  Index        r21, r8, r20
+  Const        r22, 60
+  LessEq       r23, r22, r21
+  // name: person.name,
+  Move         r24, r13
+  Move         r25, r15
+  // age: person.age,
+  Move         r26, r16
+  Move         r27, r18
+  // is_senior: person.age >= 60
+  Move         r28, r19
+  Move         r29, r23
+  // select {
+  MakeMap      r30, 3, r24
+  // let adults = from person in people
+  Append       r31, r2, r30
+  Move         r2, r31
+L1:
+  Const        r32, 1
+  Add          r33, r5, r32
+  Move         r5, r33
+  Jump         L2
+L0:
+  Move         r34, r2
+  // print("--- Adults ---")
+  Const        r35, "--- Adults ---"
+  Print        r35
+  // for person in adults {
+  IterPrep     r36, r34
+  Len          r37, r36
+  Const        r38, 0
+L4:
+  Less         r39, r38, r37
+  JumpIfFalse  r39, L3
+  Index        r40, r36, r38
+  Move         r8, r40
+  // print(person.name, "is", person.age,
+  Const        r45, "name"
+  Index        r46, r8, r45
+  Move         r41, r46
+  Const        r47, "is"
+  Move         r42, r47
+  Const        r48, "age"
+  Index        r49, r8, r48
+  Move         r43, r49
+  // if person.is_senior { " (senior)" } else { "" })
+  Move         r44, r50
+  // print(person.name, "is", person.age,
+  PrintN       r41, 4, r41
+  // for person in adults {
+  Const        r51, 1
+  Add          r52, r38, r51
+  Move         r38, r52
+  Jump         L4
+L3:
+  Return       r0
