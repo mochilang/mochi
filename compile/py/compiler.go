@@ -640,9 +640,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 
 // compileExprHint compiles an expression using a type hint when dealing with
-// literals that would otherwise default to `any`, such as empty list literals.
-// The hint is currently only used for list literals and is applied recursively
-// for nested lists.
+// literals that would otherwise default to `any`, such as empty list or map
+// literals. Hints are applied recursively for nested literals.
 func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
 	if lt, ok := hint.(types.ListType); ok {
 		if ll := e.Binary.Left.Value.Target.List; ll != nil {
@@ -655,6 +654,27 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 				elems[i] = ev
 			}
 			return "[" + strings.Join(elems, ", ") + "]", nil
+		}
+	}
+	if mt, ok := hint.(types.MapType); ok {
+		if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+			if len(ml.Items) == 0 {
+				c.imports["typing"] = "typing"
+				return fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value)), nil
+			}
+			items := make([]string, len(ml.Items))
+			for i, it := range ml.Items {
+				k, err := c.compileExprHint(it.Key, mt.Key)
+				if err != nil {
+					return "", err
+				}
+				v, err := c.compileExprHint(it.Value, mt.Value)
+				if err != nil {
+					return "", err
+				}
+				items[i] = fmt.Sprintf("%s: %s", k, v)
+			}
+			return "{" + strings.Join(items, ", ") + "}", nil
 		}
 	}
 	return c.compileExpr(e)

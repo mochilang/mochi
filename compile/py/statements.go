@@ -79,18 +79,35 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
 	value := "None"
-	if s.Value != nil {
-		v, err := c.compileExpr(s.Value)
-		if err != nil {
-			return err
+	var typ types.Type
+	if c.env != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			typ = t
 		}
-		value = v
+	}
+	if typ == nil && s.Type != nil {
+		typ = c.resolveTypeRef(s.Type)
+	}
+	if s.Value != nil {
+		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
+			if mt, ok := typ.(types.MapType); ok {
+				c.imports["typing"] = "typing"
+				value = fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value))
+			}
+		}
+		if value == "None" {
+			v, err := c.compileExpr(s.Value)
+			if err != nil {
+				return err
+			}
+			value = v
+		}
 	}
 	if c.env != nil {
 		t, err := c.env.GetVar(s.Name)
 		if err != nil {
-			if s.Type != nil {
-				t = c.resolveTypeRef(s.Type)
+			if typ != nil {
+				t = typ
 			} else if s.Value != nil {
 				t = c.inferExprType(s.Value)
 			} else {
@@ -144,18 +161,39 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 	lhs := sanitizeName(s.Name)
+	var typ types.Type
+	if c.env != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			typ = t
+		}
+	}
 	for _, idx := range s.Index {
 		iexpr, err := c.compileExpr(idx.Start)
 		if err != nil {
 			return err
 		}
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
+		if mt, ok := typ.(types.MapType); ok {
+			typ = mt.Value
+		}
 	}
-	val, err := c.compileExpr(s.Value)
-	if err != nil {
-		return err
+	value := ""
+	if len(s.Index) == 0 {
+		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
+			if mt, ok := typ.(types.MapType); ok {
+				c.imports["typing"] = "typing"
+				value = fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(mt.Key), pyType(mt.Value))
+			}
+		}
 	}
-	c.writeln(fmt.Sprintf("%s = %s", lhs, val))
+	if value == "" {
+		v, err := c.compileExpr(s.Value)
+		if err != nil {
+			return err
+		}
+		value = v
+	}
+	c.writeln(fmt.Sprintf("%s = %s", lhs, value))
 	return nil
 }
 
