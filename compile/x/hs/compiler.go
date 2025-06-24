@@ -476,15 +476,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	leftType := c.inferUnaryType(b.Left)
 	for _, op := range b.Right {
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
+		rightType := c.inferPostfixType(op.Right)
 		if op.Op == "%" {
 			expr = fmt.Sprintf("(%s `mod` %s)", expr, r)
+			leftType = types.IntType{}
 		} else if op.Op == "/" && c.postfixIsInt(op.Right) {
 			expr = fmt.Sprintf("(div %s %s)", expr, r)
+			leftType = types.IntType{}
 		} else if op.Op == "in" {
 			if c.postfixIsMap(op.Right) {
 				c.usesMap = true
@@ -492,24 +496,44 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			} else {
 				expr = fmt.Sprintf("elem %s %s", expr, r)
 			}
+			leftType = types.BoolType{}
 		} else if op.Op == "union" && op.All {
 			c.usesList = true
 			expr = fmt.Sprintf("(%s ++ %s)", expr, r)
+			leftType = types.ListType{Elem: types.AnyType{}}
 		} else if op.Op == "union" {
 			c.usesList = true
 			expr = fmt.Sprintf("List.union %s %s", expr, r)
+			leftType = types.ListType{Elem: types.AnyType{}}
 		} else if op.Op == "except" {
 			c.usesList = true
 			expr = fmt.Sprintf("(%s List.\\ %s)", expr, r)
+			leftType = types.ListType{Elem: types.AnyType{}}
 		} else if op.Op == "intersect" {
 			c.usesList = true
 			expr = fmt.Sprintf("List.intersect %s %s", expr, r)
+			leftType = types.ListType{Elem: types.AnyType{}}
+		} else if op.Op == "+" && isString(leftType) && isString(rightType) {
+			expr = fmt.Sprintf("(%s ++ %s)", expr, r)
+			leftType = types.StringType{}
 		} else {
 			opSym := op.Op
 			if opSym == "!=" {
 				opSym = "/="
 			}
 			expr = fmt.Sprintf("(%s %s %s)", expr, opSym, r)
+			switch opSym {
+			case "+", "-", "*", "/":
+				if isInt(leftType) && isInt(rightType) {
+					leftType = types.IntType{}
+				} else if isFloat(leftType) && isFloat(rightType) {
+					leftType = types.FloatType{}
+				} else {
+					leftType = types.AnyType{}
+				}
+			case "==", "!=", "<", "<=", ">", ">=":
+				leftType = types.BoolType{}
+			}
 		}
 	}
 	return expr, nil
