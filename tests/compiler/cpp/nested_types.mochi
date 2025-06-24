@@ -1,0 +1,11 @@
+type Address {
+  street: string
+}
+
+type Person {
+  name: string
+  addr: Address
+}
+
+let p = Person { name: "Bob", addr: Address { street: "Main" } }
+print(p.addr.street)

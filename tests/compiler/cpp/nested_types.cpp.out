@@ -1,0 +1,16 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Address {
+        string street;
+};
+struct Person {
+        string name;
+        Address addr;
+};
+
+int main() {
+        auto p = Person{"Bob", Address{"Main"}};
+        std::cout << (p.addr.street) << std::endl;
+        return 0;
+}
