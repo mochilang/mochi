@@ -69,6 +69,11 @@ const (
 	OpInput
 	OpCount
 	OpAvg
+	OpUnionAll
+	OpUnion
+	OpExcept
+	OpIntersect
+	OpSlice
 
 	// Specialized numeric ops
 	OpAddInt
@@ -159,6 +164,16 @@ func (op Op) String() string {
 		return "Count"
 	case OpAvg:
 		return "Avg"
+	case OpUnionAll:
+		return "UnionAll"
+	case OpUnion:
+		return "Union"
+	case OpExcept:
+		return "Except"
+	case OpIntersect:
+		return "Intersect"
+	case OpSlice:
+		return "Slice"
 	case OpAddInt:
 		return "AddInt"
 	case OpAddFloat:
@@ -330,6 +345,10 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpAppend:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
+			case OpUnionAll, OpUnion, OpExcept, OpIntersect:
+				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
+			case OpSlice:
+				fmt.Fprintf(&b, "%s, %s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C), formatReg(ins.D))
 			case OpStr:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpInput:
@@ -478,10 +497,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpAdd:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
+			switch {
+			case b.Tag == interpreter.TagList && c.Tag == interpreter.TagList:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: append(append([]Value(nil), b.List...), c.List...)}
+			case b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: b.Str + c.Str}
+			case b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat:
 				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) + toFloat(c)}
-			} else {
+			case b.Tag == interpreter.TagInt && c.Tag == interpreter.TagInt:
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int + c.Int}
+			default:
+				return Value{}, m.newError(fmt.Errorf("invalid + operands"), trace, ins.Line)
 			}
 		case OpAddInt:
 			b := fr.regs[ins.B]
@@ -698,6 +724,53 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
 			}
+		case OpSlice:
+			src := fr.regs[ins.B]
+			startVal := fr.regs[ins.C]
+			endVal := fr.regs[ins.D]
+			switch src.Tag {
+			case interpreter.TagList:
+				start, end := 0, len(src.List)
+				if startVal.Tag != interpreter.TagNull {
+					start = startVal.Int
+					if start < 0 {
+						start += len(src.List)
+					}
+				}
+				if endVal.Tag != interpreter.TagNull {
+					end = endVal.Int
+					if end < 0 {
+						end += len(src.List)
+					}
+				}
+				if start < 0 || end > len(src.List) || start > end {
+					return Value{}, m.newError(fmt.Errorf("invalid slice range"), trace, ins.Line)
+				}
+				out := make([]Value, end-start)
+				copy(out, src.List[start:end])
+				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+			case interpreter.TagStr:
+				runes := []rune(src.Str)
+				start, end := 0, len(runes)
+				if startVal.Tag != interpreter.TagNull {
+					start = startVal.Int
+					if start < 0 {
+						start += len(runes)
+					}
+				}
+				if endVal.Tag != interpreter.TagNull {
+					end = endVal.Int
+					if end < 0 {
+						end += len(runes)
+					}
+				}
+				if start < 0 || end > len(runes) || start > end {
+					return Value{}, m.newError(fmt.Errorf("invalid slice range"), trace, ins.Line)
+				}
+				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: string(runes[start:end])}
+			default:
+				return Value{}, m.newError(fmt.Errorf("invalid slice target"), trace, ins.Line)
+			}
 		case OpMakeList:
 			n := ins.B
 			start := ins.C
@@ -739,6 +812,83 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: newList}
+		case OpUnionAll:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
+			}
+			out := append(append([]Value(nil), a.List...), b.List...)
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+		case OpUnion:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
+			}
+			res := append([]Value{}, a.List...)
+			for _, rv := range b.List {
+				found := false
+				for _, lv := range res {
+					if valuesEqual(lv, rv) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					res = append(res, rv)
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: res}
+		case OpExcept:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("except expects lists"), trace, ins.Line)
+			}
+			diff := []Value{}
+			for _, lv := range a.List {
+				found := false
+				for _, rv := range b.List {
+					if valuesEqual(lv, rv) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					diff = append(diff, lv)
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: diff}
+		case OpIntersect:
+			a := fr.regs[ins.B]
+			b := fr.regs[ins.C]
+			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("intersect expects lists"), trace, ins.Line)
+			}
+			inter := []Value{}
+			for _, lv := range a.List {
+				match := false
+				for _, rv := range b.List {
+					if valuesEqual(lv, rv) {
+						match = true
+						break
+					}
+				}
+				if match {
+					exists := false
+					for _, iv := range inter {
+						if valuesEqual(iv, lv) {
+							exists = true
+							break
+						}
+					}
+					if !exists {
+						inter = append(inter, lv)
+					}
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: inter}
 		case OpStr:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
 		case OpInput:
@@ -1018,7 +1168,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2:
 		// no result
-	case OpAppend, OpStr, OpInput:
+	case OpAppend, OpStr, OpInput, OpUnionAll, OpUnion, OpExcept, OpIntersect, OpSlice:
 		fc.tags[i.A] = tagUnknown
 	case OpCount:
 		fc.tags[i.A] = tagInt
@@ -1243,6 +1393,22 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 				fc.emit(op.Pos, Instr{Op: OpLessEq, A: dst, B: right, C: left})
 			}
 			left = dst
+		case "union":
+			dst := fc.newReg()
+			if op.All {
+				fc.emit(op.Pos, Instr{Op: OpUnionAll, A: dst, B: left, C: right})
+			} else {
+				fc.emit(op.Pos, Instr{Op: OpUnion, A: dst, B: left, C: right})
+			}
+			left = dst
+		case "except":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpExcept, A: dst, B: left, C: right})
+			left = dst
+		case "intersect":
+			dst := fc.newReg()
+			fc.emit(op.Pos, Instr{Op: OpIntersect, A: dst, B: left, C: right})
+			left = dst
 		}
 	}
 	return left
@@ -1271,10 +1437,30 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 	r := fc.compilePrimary(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx := fc.compileExpr(op.Index.Start)
-			dst := fc.newReg()
-			fc.emit(op.Index.Pos, Instr{Op: OpIndex, A: dst, B: r, C: idx})
-			r = dst
+			if op.Index.Colon != nil || op.Index.End != nil {
+				startReg := fc.newReg()
+				if op.Index.Start != nil {
+					sr := fc.compileExpr(op.Index.Start)
+					fc.emit(op.Index.Pos, Instr{Op: OpMove, A: startReg, B: sr})
+				} else {
+					fc.emit(op.Index.Pos, Instr{Op: OpConst, A: startReg, Val: Value{Tag: interpreter.TagNull}})
+				}
+				endReg := fc.newReg()
+				if op.Index.End != nil {
+					er := fc.compileExpr(op.Index.End)
+					fc.emit(op.Index.Pos, Instr{Op: OpMove, A: endReg, B: er})
+				} else {
+					fc.emit(op.Index.Pos, Instr{Op: OpConst, A: endReg, Val: Value{Tag: interpreter.TagNull}})
+				}
+				dst := fc.newReg()
+				fc.emit(op.Index.Pos, Instr{Op: OpSlice, A: dst, B: r, C: startReg, D: endReg})
+				r = dst
+			} else {
+				idx := fc.compileExpr(op.Index.Start)
+				dst := fc.newReg()
+				fc.emit(op.Index.Pos, Instr{Op: OpIndex, A: dst, B: r, C: idx})
+				r = dst
+			}
 		} else if op.Call != nil {
 			regs := make([]int, len(op.Call.Args))
 			for i := range op.Call.Args {

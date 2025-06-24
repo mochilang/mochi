@@ -1,0 +1,10 @@
+func main (regs=6)
+  // print([1,2,3,4][1:3])
+  Const        r0, [1, 2, 3, 4]
+  Const        r2, 1
+  Move         r1, r2
+  Const        r4, 3
+  Move         r3, r4
+  Slice        r5, r0, r1, r3
+  Print        r5
+  Return       r0
