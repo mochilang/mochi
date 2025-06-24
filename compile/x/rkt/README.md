@@ -36,6 +36,7 @@ go test ./compile/rkt -tags slow
 - Generate expressions via `_genText`, `_genEmbed` and `_genStruct`
 - `in` operator for lists and strings
 - Slice assignments, including multi-dimensional slices like `xs[0:1][1:2] = sub`
+- Negative indexing and slicing for strings and lists
 - Dataset queries with `sort`, `skip` and `take`
 - Simple `struct` type declarations
 
