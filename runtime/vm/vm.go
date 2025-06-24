@@ -1194,12 +1194,30 @@ type compiler struct {
 }
 
 type funcCompiler struct {
-	fn    Function
-	idx   int
-	comp  *compiler
-	vars  map[string]int
-	loops []*loopContext
-	tags  map[int]regTag
+	fn     Function
+	idx    int
+	comp   *compiler
+	vars   map[string]int
+	scopes []map[string]int
+	loops  []*loopContext
+	tags   map[int]regTag
+}
+
+func (fc *funcCompiler) pushScope() {
+	copyMap := make(map[string]int, len(fc.vars))
+	for k, v := range fc.vars {
+		copyMap[k] = v
+	}
+	fc.scopes = append(fc.scopes, fc.vars)
+	fc.vars = copyMap
+}
+
+func (fc *funcCompiler) popScope() {
+	if len(fc.scopes) == 0 {
+		return
+	}
+	fc.vars = fc.scopes[len(fc.scopes)-1]
+	fc.scopes = fc.scopes[:len(fc.scopes)-1]
 }
 
 type loopContext struct {
@@ -1244,7 +1262,7 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(fn.Params)
@@ -1265,7 +1283,7 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 }
 
 func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(st.Order) + len(fn.Params)
@@ -1316,7 +1334,7 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
 	for i, name := range captures {
@@ -1350,7 +1368,7 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
 }
 
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
 	fc.fn.NumParams = 0
@@ -2071,11 +2089,14 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 		fc.emit(f.Pos, Instr{Op: OpJumpIfFalse, A: cond})
 		loop := &loopContext{}
 		fc.loops = append(fc.loops, loop)
+		fc.pushScope()
 		for _, st := range f.Body {
 			if err := fc.compileStmt(st); err != nil {
+				fc.popScope()
 				return err
 			}
 		}
+		fc.popScope()
 		contTarget := len(fc.fn.Code)
 		for _, idx := range loop.continueJumps {
 			fc.fn.Code[idx].A = contTarget
@@ -2115,11 +2136,14 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 			fc.vars[f.Name] = varReg
 		}
 		fc.emit(f.Pos, Instr{Op: OpMove, A: varReg, B: elem})
+		fc.pushScope()
 		for _, st := range f.Body {
 			if err := fc.compileStmt(st); err != nil {
+				fc.popScope()
 				return err
 			}
 		}
+		fc.popScope()
 		contTarget := len(fc.fn.Code)
 		for _, idx := range loop.continueJumps {
 			fc.fn.Code[idx].A = contTarget
@@ -2147,11 +2171,14 @@ func (fc *funcCompiler) compileWhile(w *parser.WhileStmt) error {
 	fc.emit(w.Pos, Instr{Op: OpJumpIfFalse, A: cond})
 	loop := &loopContext{continueTarget: loopStart}
 	fc.loops = append(fc.loops, loop)
+	fc.pushScope()
 	for _, st := range w.Body {
 		if err := fc.compileStmt(st); err != nil {
+			fc.popScope()
 			return err
 		}
 	}
+	fc.popScope()
 	for _, idx := range loop.continueJumps {
 		fc.fn.Code[idx].A = loopStart
 	}
@@ -2169,11 +2196,14 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) error {
 	cond := fc.compileExpr(s.Cond)
 	jmpFalse := len(fc.fn.Code)
 	fc.emit(s.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+	fc.pushScope()
 	for _, st := range s.Then {
 		if err := fc.compileStmt(st); err != nil {
+			fc.popScope()
 			return err
 		}
 	}
+	fc.popScope()
 	endJump := -1
 	if len(s.Else) > 0 {
 		endJump = len(fc.fn.Code)
@@ -2181,11 +2211,14 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) error {
 	}
 	fc.fn.Code[jmpFalse].B = len(fc.fn.Code)
 	if len(s.Else) > 0 {
+		fc.pushScope()
 		for _, st := range s.Else {
 			if err := fc.compileStmt(st); err != nil {
+				fc.popScope()
 				return err
 			}
 		}
+		fc.popScope()
 		fc.fn.Code[endJump].A = len(fc.fn.Code)
 	}
 	return nil
@@ -2748,48 +2781,5 @@ func castValue(t types.Type, v any) (any, error) {
 		return out, nil
 	default:
 		return v, nil
-	}
-}
-
-func anyToValue(v any) Value {
-	switch val := v.(type) {
-	case nil:
-		return Value{Tag: interpreter.TagNull}
-	case int:
-		return Value{Tag: interpreter.TagInt, Int: val}
-	case int64:
-		return Value{Tag: interpreter.TagInt, Int: int(val)}
-	case float64:
-		return Value{Tag: interpreter.TagFloat, Float: val}
-	case string:
-		return Value{Tag: interpreter.TagStr, Str: val}
-	case bool:
-		return Value{Tag: interpreter.TagBool, Bool: val}
-	case []any:
-		lst := make([]Value, len(val))
-		for i, x := range val {
-			lst[i] = anyToValue(x)
-		}
-		return Value{Tag: interpreter.TagList, List: lst}
-	case map[string]any:
-		m := make(map[string]Value, len(val))
-		for k, x := range val {
-			m[k] = anyToValue(x)
-		}
-		return Value{Tag: interpreter.TagMap, Map: m}
-	case map[int]any:
-		m := make(map[string]Value, len(val))
-		for k, x := range val {
-			m[strconv.Itoa(k)] = anyToValue(x)
-		}
-		return Value{Tag: interpreter.TagMap, Map: m}
-	case map[any]any:
-		m := make(map[string]Value, len(val))
-		for k, x := range val {
-			m[fmt.Sprint(k)] = anyToValue(x)
-		}
-		return Value{Tag: interpreter.TagMap, Map: m}
-	default:
-		return Value{Tag: interpreter.TagNull}
 	}
 }
