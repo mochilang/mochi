@@ -51,6 +51,7 @@ const (
 	OpIndex
 	OpSetIndex
 	OpMakeList
+	OpMakeMap
 	OpPrint
 	OpPrint2
 	OpCall2
@@ -121,6 +122,8 @@ func (op Op) String() string {
 		return "SetIndex"
 	case OpMakeList:
 		return "MakeList"
+	case OpMakeMap:
+		return "MakeMap"
 	case OpPrint:
 		return "Print"
 	case OpPrint2:
@@ -297,6 +300,8 @@ func (p *Program) Disassemble(src string) string {
 			case OpIndex:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpMakeList:
+				fmt.Fprintf(&b, "%s, %d, %s", formatReg(ins.A), ins.B, formatReg(ins.C))
+			case OpMakeMap:
 				fmt.Fprintf(&b, "%s, %d, %s", formatReg(ins.A), ins.B, formatReg(ins.C))
 			case OpPrint:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
@@ -588,6 +593,25 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			list := make([]Value, n)
 			copy(list, fr.regs[start:start+n])
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: list}
+		case OpMakeMap:
+			n := ins.B
+			start := ins.C
+			m := make(map[string]Value, n)
+			for i := 0; i < n; i++ {
+				key := fr.regs[start+i*2]
+				val := fr.regs[start+i*2+1]
+				var k string
+				switch key.Tag {
+				case interpreter.TagStr:
+					k = key.Str
+				case interpreter.TagInt:
+					k = fmt.Sprintf("%d", key.Int)
+				default:
+					return Value{}, fmt.Errorf("invalid map key")
+				}
+				m[k] = val
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagMap, Map: m}
 		case OpPrint:
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]))
 		case OpPrint2:
@@ -1097,6 +1121,27 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
 		}
+		tmp := make([]struct{ k, v int }, len(p.Map.Items))
+		for i, it := range p.Map.Items {
+			tmp[i].k = fc.compileExpr(it.Key)
+			tmp[i].v = fc.compileExpr(it.Value)
+		}
+		regs := make([]int, len(p.Map.Items)*2)
+		for i, it := range p.Map.Items {
+			kreg := fc.newReg()
+			fc.emit(it.Pos, Instr{Op: OpMove, A: kreg, B: tmp[i].k})
+			vreg := fc.newReg()
+			fc.emit(it.Pos, Instr{Op: OpMove, A: vreg, B: tmp[i].v})
+			regs[i*2] = kreg
+			regs[i*2+1] = vreg
+		}
+		dst := fc.newReg()
+		start := 0
+		if len(regs) > 0 {
+			start = regs[0]
+		}
+		fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: len(p.Map.Items), C: start})
+		return dst
 	}
 
 	if p.FunExpr != nil {
