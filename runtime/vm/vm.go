@@ -818,6 +818,7 @@ type compiler struct {
 	env     *types.Env
 	funcs   []Function
 	fnIndex map[string]int
+	memo    map[string]Value
 }
 
 type funcCompiler struct {
@@ -837,7 +838,7 @@ type loopContext struct {
 
 // Compile turns an AST into a Program supporting a limited subset of Mochi.
 func Compile(p *parser.Program, env *types.Env) (*Program, error) {
-	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}}
+	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}, memo: map[string]Value{}}
 	c.funcs = append(c.funcs, Function{})
 	for _, st := range p.Statements {
 		if st.Fun != nil {
@@ -854,6 +855,9 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 
 func (c *compiler) compileFun(fn *parser.FunStmt) Function {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
+	if c.env != nil {
+		c.env.SetFunc(fn.Name, fn)
+	}
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
 	for i, p := range fn.Params {
@@ -962,6 +966,9 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 		fc.vars[s.Let.Name] = reg
 		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
 		fc.tags[reg] = fc.tags[r]
+		if v, ok := fc.comp.evalConstExpr(s.Let.Value); ok {
+			fc.comp.env.SetValue(s.Let.Name, valueToAny(v), false)
+		}
 	case s.Var != nil:
 		r := fc.compileExpr(s.Var.Value)
 		reg := fc.newReg()
@@ -1017,6 +1024,11 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 func (fc *funcCompiler) compileExpr(e *parser.Expr) int {
 	if e == nil {
 		return fc.newReg()
+	}
+	if v, ok := fc.comp.evalConstExpr(e); ok {
+		dst := fc.newReg()
+		fc.emit(e.Pos, Instr{Op: OpConst, A: dst, Val: v})
+		return dst
 	}
 	return fc.compileBinary(e.Binary)
 }
@@ -1614,6 +1626,60 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 	return Value{}, false
 }
 
+func literalToValue(l *parser.Literal) Value {
+	switch {
+	case l.Int != nil:
+		return Value{Tag: interpreter.TagInt, Int: *l.Int}
+	case l.Float != nil:
+		return Value{Tag: interpreter.TagFloat, Float: *l.Float}
+	case l.Str != nil:
+		return Value{Tag: interpreter.TagStr, Str: *l.Str}
+	case l.Bool != nil:
+		return Value{Tag: interpreter.TagBool, Bool: bool(*l.Bool)}
+	default:
+		return Value{}
+	}
+}
+
+func extractLiteral(e *parser.Expr) *parser.Literal {
+	if e == nil {
+		return nil
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	if p.Target != nil {
+		return p.Target.Lit
+	}
+	return nil
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
 func valueToAny(v Value) any {
 	switch v.Tag {
 	case interpreter.TagInt:
@@ -1671,6 +1737,20 @@ func valueToString(v Value) string {
 	default:
 		return "nil"
 	}
+}
+
+func (c *compiler) evalConstExpr(e *parser.Expr) (Value, bool) {
+	if lit := extractLiteral(e); lit != nil {
+		return literalToValue(lit), true
+	}
+	if call, ok := callPattern(e); ok {
+		if _, ok := c.fnIndex[call.Func]; ok {
+			if l, ok := interpreter.EvalPureCall(call, c.env); ok {
+				return literalToValue(l), true
+			}
+		}
+	}
+	return Value{}, false
 }
 
 func formatReg(n int) string {
