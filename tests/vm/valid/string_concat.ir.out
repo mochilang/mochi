@@ -1,0 +1,8 @@
+func main (regs=3)
+  // print("hello " + "world")
+  Const        r0, "hello "
+  Const        r1, "world"
+  Add          r2, r0, r1
+  Print        r2
+  Return       r0
+

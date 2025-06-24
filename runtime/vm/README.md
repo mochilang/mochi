@@ -14,6 +14,7 @@ The VM supports a small but useful subset of Mochi:
 
 * Integer, float, boolean and string constants
 * Arithmetic operations `+`, `-`, `*`, `/`, `%`
+* String concatenation using `+`
 * Comparison operators `==`, `!=`, `<`, `>`, `<=`, `>=`
 * Membership tests using `in`
 * Short circuit boolean operators `&&` and `||`
@@ -28,6 +29,7 @@ The VM supports a small but useful subset of Mochi:
 * String indexing to access individual characters
 * Field access using the `.` operator
 * List and string slicing with `[start:end]` syntax (supports negative indices)
+* Pattern matching
 
 ## Unsupported features (partial list)
 
