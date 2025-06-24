@@ -15,6 +15,7 @@ type Compiler struct {
 	buf          bytes.Buffer
 	indent       int
 	env          *types.Env
+	structs      map[string]bool
 	usesMap      bool
 	usesList     bool
 	usesTime     bool
@@ -63,12 +64,13 @@ func (c *Compiler) hsType(t types.Type) string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env}
+	return &Compiler{env: env, structs: make(map[string]bool)}
 }
 
 // Compile generates Haskell code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.structs = make(map[string]bool)
 	c.usesMap = false
 	c.usesList = false
 	c.usesJSON = false
@@ -76,6 +78,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesSave = false
 	c.usesSlice = false
 	c.usesSliceStr = false
+
+	for _, s := range prog.Statements {
+		if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -724,15 +735,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
 	case p.Selector != nil:
-		name := sanitizeName(p.Selector.Root)
-		if len(p.Selector.Tail) > 0 {
-			parts := []string{name}
-			for _, t := range p.Selector.Tail {
-				parts = append(parts, sanitizeName(t))
-			}
-			name = strings.Join(parts, ".")
+		expr := sanitizeName(p.Selector.Root)
+		for _, t := range p.Selector.Tail {
+			expr = fmt.Sprintf("%s (%s)", sanitizeName(t), expr)
 		}
-		return name, nil
+		return expr, nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s = %s", sanitizeName(f.Name), v)
+		}
+		return fmt.Sprintf("%s { %s }", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -850,6 +867,45 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	c.usesSave = true
 	c.usesMap = true
 	return fmt.Sprintf("_save %s %s %s", src, path, opts), nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if c.env == nil {
+		return nil
+	}
+	if len(t.Variants) > 0 {
+		return nil
+	}
+	if st, ok := c.env.GetStruct(t.Name); ok {
+		c.compileStructType(st)
+	}
+	return nil
+}
+
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("data %s = %s {", name, name))
+	c.indent++
+	for i, fn := range st.Order {
+		ft := st.Fields[fn]
+		line := fmt.Sprintf("%s :: %s", sanitizeName(fn), c.hsType(ft))
+		if i < len(st.Order)-1 {
+			line += ","
+		}
+		c.writeln(line)
+	}
+	c.indent--
+	c.writeln("} deriving (Show)")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
 }
 
 func isInputCall(e *parser.Expr) bool {
