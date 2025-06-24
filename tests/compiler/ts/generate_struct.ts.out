@@ -4,7 +4,7 @@ type Info = {
 	msg: string;
 }
 
-let info: any = _gen_struct<Info>("{\"msg\": \"hello\"}", null, null)
+let info: Info = _gen_struct<Info>("{\"msg\": \"hello\"}", null, null)
 
 function main(): void {
 	console.log(info.msg)

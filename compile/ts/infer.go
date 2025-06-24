@@ -165,6 +165,19 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 			}
 		}
 		return types.AnyType{}
+	case p.Generate != nil:
+		if p.Generate.Target == "text" {
+			return types.StringType{}
+		}
+		if p.Generate.Target == "embedding" {
+			return types.ListType{Elem: types.FloatType{}}
+		}
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Generate.Target); ok {
+				return st
+			}
+		}
+		return types.AnyType{}
 	case p.Call != nil:
 		switch p.Call.Func {
 		case "len":
