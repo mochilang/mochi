@@ -87,6 +87,13 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 		return types.ListType{Elem: types.AnyType{}}
 	case p.Map != nil:
 		return types.MapType{Key: types.AnyType{}, Value: types.AnyType{}}
+	case p.Struct != nil:
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+				return st
+			}
+		}
+		return types.AnyType{}
 	case p.Selector != nil:
 		if c.env != nil {
 			if len(p.Selector.Tail) > 0 {
