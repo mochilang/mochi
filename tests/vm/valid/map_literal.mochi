@@ -1,0 +1,4 @@
+let k = "b"
+let v = 3
+let m = {"a": 1, k: v}
+print(m["a"], m[k])

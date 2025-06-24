@@ -1,0 +1,22 @@
+func main (regs=15)
+  // let k = "b"
+  Const        r0, "b"
+  Move         r1, r0
+  // let v = 3
+  Const        r2, 3
+  Move         r3, r2
+  // let m = {"a": 1, k: v}
+  Const        r4, "a"
+  Move         r5, r4
+  Const        r6, 1
+  Move         r7, r6
+  Move         r8, r1
+  Move         r9, r3
+  MakeMap      r10, 2, r5
+  Move         r11, r10
+  // print(m["a"], m[k])
+  Const        r12, "a"
+  Index        r13, r11, r12
+  Index        r14, r11, r1
+  Print2       r13, r14
+  Return       r0

@@ -51,6 +51,7 @@ const (
 	OpIndex
 	OpSetIndex
 	OpMakeList
+	OpMakeMap
 	OpPrint
 	OpPrint2
 	OpCall2
@@ -119,6 +120,8 @@ func (op Op) String() string {
 		return "SetIndex"
 	case OpMakeList:
 		return "MakeList"
+	case OpMakeMap:
+		return "MakeMap"
 	case OpPrint:
 		return "Print"
 	case OpPrint2:
@@ -291,6 +294,8 @@ func (p *Program) Disassemble(src string) string {
 			case OpIndex:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpMakeList:
+				fmt.Fprintf(&b, "%s, %d, %s", formatReg(ins.A), ins.B, formatReg(ins.C))
+			case OpMakeMap:
 				fmt.Fprintf(&b, "%s, %d, %s", formatReg(ins.A), ins.B, formatReg(ins.C))
 			case OpPrint:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
@@ -504,7 +509,16 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			}
 		case OpLen:
 			v := fr.regs[ins.B]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.List)}
+			switch v.Tag {
+			case interpreter.TagList:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.List)}
+			case interpreter.TagStr:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len([]rune(v.Str))}
+			case interpreter.TagMap:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.Map)}
+			default:
+				return Value{}, fmt.Errorf("invalid len operand")
+			}
 		case OpIndex:
 			src := fr.regs[ins.B]
 			idxVal := fr.regs[ins.C]
@@ -569,6 +583,25 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			list := make([]Value, n)
 			copy(list, fr.regs[start:start+n])
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: list}
+		case OpMakeMap:
+			n := ins.B
+			start := ins.C
+			m := make(map[string]Value, n)
+			for i := 0; i < n; i++ {
+				k := fr.regs[start+i*2]
+				v := fr.regs[start+i*2+1]
+				var key string
+				switch k.Tag {
+				case interpreter.TagStr:
+					key = k.Str
+				case interpreter.TagInt:
+					key = fmt.Sprintf("%d", k.Int)
+				default:
+					return Value{}, fmt.Errorf("invalid map key")
+				}
+				m[key] = v
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagMap, Map: m}
 		case OpPrint:
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]))
 		case OpPrint2:
@@ -741,6 +774,8 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2:
 		// no result
+	case OpMakeMap, OpMakeList, OpIndex, OpSetIndex, OpCall, OpCall2, OpCallV:
+		fc.tags[i.A] = tagUnknown
 	}
 }
 
@@ -1067,6 +1102,24 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
 		}
+		regs := make([]int, len(p.Map.Items)*2)
+		for i, it := range p.Map.Items {
+			kr := fc.compileExpr(it.Key)
+			kreg := fc.newReg()
+			fc.emit(it.Pos, Instr{Op: OpMove, A: kreg, B: kr})
+			vr := fc.compileExpr(it.Value)
+			vreg := fc.newReg()
+			fc.emit(it.Pos, Instr{Op: OpMove, A: vreg, B: vr})
+			regs[i*2] = kreg
+			regs[i*2+1] = vreg
+		}
+		dst := fc.newReg()
+		start := 0
+		if len(regs) > 0 {
+			start = regs[0]
+		}
+		fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: len(p.Map.Items), C: start})
+		return dst
 	}
 
 	if p.FunExpr != nil {
