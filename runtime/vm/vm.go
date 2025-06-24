@@ -1650,6 +1650,53 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
 	return idx
 }
 
+func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures []string) int {
+	idx := len(c.funcs)
+	c.funcs = append(c.funcs, Function{})
+	prev, exists := c.fnIndex[name]
+	c.fnIndex[name] = idx
+
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc.fn.Name = name
+	fc.fn.Line = fn.Pos.Line
+	fc.fn.NumParams = len(captures) + len(fn.Params)
+	for i, name := range captures {
+		fc.vars[name] = i
+		if i >= fc.fn.NumRegs {
+			fc.fn.NumRegs = i + 1
+		}
+	}
+	for i, p := range fn.Params {
+		idxp := len(captures) + i
+		fc.vars[p.Name] = idxp
+		if idxp >= fc.fn.NumRegs {
+			fc.fn.NumRegs = idxp + 1
+		}
+	}
+	fc.idx = fc.fn.NumParams
+	if fn.ExprBody != nil {
+		r := fc.compileExpr(fn.ExprBody)
+		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: r})
+	} else {
+		for _, st := range fn.BlockBody {
+			if err := fc.compileStmt(st); err != nil {
+				panic(err)
+			}
+		}
+		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
+	}
+	if fc.fn.NumRegs == 0 {
+		fc.fn.NumRegs = 1
+	}
+	c.funcs[idx] = fc.fn
+	if !exists {
+		delete(c.fnIndex, name)
+	} else {
+		c.fnIndex[name] = prev
+	}
+	return idx
+}
+
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
 	fc.fn.Name = "main"
@@ -1778,7 +1825,9 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 			captureNames = append(captureNames, name)
 		}
 		sort.Strings(captureNames)
-		idx := fc.comp.compileFunExpr(&parser.FunExpr{Pos: s.Fun.Pos, Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}, captureNames)
+
+		idx := fc.comp.compileNamedFunExpr(s.Fun.Name, &parser.FunExpr{Pos: s.Fun.Pos, Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}, captureNames)
+
 		capRegs := make([]int, len(captureNames))
 		for i, name := range captureNames {
 			r := fc.vars[name]

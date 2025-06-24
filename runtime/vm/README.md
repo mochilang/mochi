@@ -54,7 +54,6 @@ experimental VM.  Unsupported areas include:
 * Test blocks
 * Generic methods inside `type` blocks
 * Pattern matching on union variants or enums
-* Nested recursive functions inside other functions
 * Advanced string or list slicing beyond `[start:end]`
 * Functions with multiple return values or variadic parameters
 * Methods declared inside `type` blocks
