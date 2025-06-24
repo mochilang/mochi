@@ -2386,14 +2386,129 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 // optional WHERE filtering and SELECT projection. Only cross joins are
 // handled and results are accumulated into a list.
 func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
-	dst := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
-	if len(q.Joins) == 1 && len(q.Froms) == 0 {
-		fc.compileJoinQuery(q, dst)
-	} else {
-		fc.compileQueryFrom(q, dst, 0)
-	}
-	return dst
+        dst := fc.newReg()
+        fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
+        switch {
+        case len(q.Joins) == 1 && len(q.Froms) == 0:
+                fc.compileJoinQuery(q, dst)
+        case len(q.Joins) == 0:
+                fc.compileQueryFrom(q, dst, 0)
+        default:
+                fc.compileQueryFull(q, dst, 0)
+        }
+        return dst
+}
+
+func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int) {
+        var name string
+        var src *parser.Expr
+        if level == 0 {
+                name = q.Var
+                src = q.Source
+        } else {
+                from := q.Froms[level-1]
+                name = from.Var
+                src = from.Src
+        }
+
+        srcReg := fc.compileExpr(src)
+        listReg := fc.newReg()
+        fc.emit(src.Pos, Instr{Op: OpIterPrep, A: listReg, B: srcReg})
+        lenReg := fc.newReg()
+        fc.emit(src.Pos, Instr{Op: OpLen, A: lenReg, B: listReg})
+        idxReg := fc.newReg()
+        fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+        loopStart := len(fc.fn.Code)
+        condReg := fc.newReg()
+        fc.emit(src.Pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lenReg})
+        jmp := len(fc.fn.Code)
+        fc.emit(src.Pos, Instr{Op: OpJumpIfFalse, A: condReg})
+
+        elemReg := fc.newReg()
+        fc.emit(src.Pos, Instr{Op: OpIndex, A: elemReg, B: listReg, C: idxReg})
+        varReg, ok := fc.vars[name]
+        if !ok {
+                varReg = fc.newReg()
+                fc.vars[name] = varReg
+        }
+        fc.emit(src.Pos, Instr{Op: OpMove, A: varReg, B: elemReg})
+
+        if level < len(q.Froms) {
+                fc.compileQueryFull(q, dst, level+1)
+        } else {
+                fc.compileJoins(q, dst, 0)
+        }
+
+        one := fc.newReg()
+        fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+        tmp := fc.newReg()
+        fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
+        fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+        fc.emit(src.Pos, Instr{Op: OpJump, A: loopStart})
+        end := len(fc.fn.Code)
+        fc.fn.Code[jmp].B = end
+}
+
+func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
+        if idx >= len(q.Joins) {
+                if q.Where != nil {
+                        cond := fc.compileExpr(q.Where)
+                        skip := len(fc.fn.Code)
+                        fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+                        val := fc.compileExpr(q.Select)
+                        tmp := fc.newReg()
+                        fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+                        fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+                        fc.fn.Code[skip].B = len(fc.fn.Code)
+                } else {
+                        val := fc.compileExpr(q.Select)
+                        tmp := fc.newReg()
+                        fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+                        fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+                }
+                return
+        }
+
+        join := q.Joins[idx]
+        rightReg := fc.compileExpr(join.Src)
+        rlist := fc.newReg()
+        fc.emit(join.Pos, Instr{Op: OpIterPrep, A: rlist, B: rightReg})
+        rlen := fc.newReg()
+        fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
+        ri := fc.newReg()
+        fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+        rstart := len(fc.fn.Code)
+        rcond := fc.newReg()
+        fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
+        rjmp := len(fc.fn.Code)
+        fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
+        relem := fc.newReg()
+        fc.emit(join.Pos, Instr{Op: OpIndex, A: relem, B: rlist, C: ri})
+        rvar, ok := fc.vars[join.Var]
+        if !ok {
+                rvar = fc.newReg()
+                fc.vars[join.Var] = rvar
+        }
+        fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
+
+        if join.On != nil {
+                cond := fc.compileExpr(join.On)
+                skip := len(fc.fn.Code)
+                fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+                fc.compileJoins(q, dst, idx+1)
+                fc.fn.Code[skip].B = len(fc.fn.Code)
+        } else {
+                fc.compileJoins(q, dst, idx+1)
+        }
+
+        one := fc.newReg()
+        fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+        tmp := fc.newReg()
+        fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
+        fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+        fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
+        end := len(fc.fn.Code)
+        fc.fn.Code[rjmp].B = end
 }
 
 func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
