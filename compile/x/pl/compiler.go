@@ -34,29 +34,34 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	origBuf := c.buf
 	c.buf = body
 
-	// function declarations, facts, rules and tests
-	for _, s := range prog.Statements {
-		if s.Fun != nil {
-			if err := c.compileFun(s.Fun); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		} else if s.Fact != nil {
-			if err := c.compileFact(s.Fact); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		} else if s.Rule != nil {
-			if err := c.compileRule(s.Rule); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		} else if s.Test != nil {
-			if err := c.compileTestBlock(s.Test); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
+       // function declarations, type declarations, facts, rules and tests
+       for _, s := range prog.Statements {
+               if s.Fun != nil {
+                       if err := c.compileFun(s.Fun); err != nil {
+                               return nil, err
+                       }
+                       c.writeln("")
+               } else if s.Fact != nil {
+                       if err := c.compileFact(s.Fact); err != nil {
+                               return nil, err
+                       }
+                       c.writeln("")
+               } else if s.Rule != nil {
+                       if err := c.compileRule(s.Rule); err != nil {
+                               return nil, err
+                       }
+                       c.writeln("")
+               } else if s.Type != nil {
+                       if err := c.compileTypeDecl(s.Type); err != nil {
+                               return nil, err
+                       }
+                       c.writeln("")
+               } else if s.Test != nil {
+                       if err := c.compileTestBlock(s.Test); err != nil {
+                               return nil, err
+                       }
+                       c.writeln("")
+               }
 	}
 
 	tmpBuf := c.buf
