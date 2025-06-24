@@ -1,0 +1,9 @@
+object Main {
+        def main(args: Array[String]): Unit = {
+                val it1 = scala.collection.mutable.Map("a" -> 1).keysIterator
+                while (it1.hasNext) {
+                        val k = it1.next()
+                        println(k)
+                }
+        }
+}
