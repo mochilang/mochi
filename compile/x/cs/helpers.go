@@ -2,11 +2,40 @@ package cscode
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 
 	"mochi/parser"
 	"mochi/types"
 )
+
+func delegateType(params []string, ret string) string {
+	if ret == "" || ret == "void" {
+		if len(params) == 0 {
+			return "Action"
+		}
+		return fmt.Sprintf("Action<%s>", strings.Join(params, ", "))
+	}
+	generics := append(params, ret)
+	return fmt.Sprintf("Func<%s>", strings.Join(generics, ", "))
+}
+
+func repoRoot() string {
+	dir, _ := os.Getwd()
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return ""
+}
 
 func csTypeOf(t types.Type) string {
 	switch tt := t.(type) {
@@ -27,7 +56,12 @@ func csTypeOf(t types.Type) string {
 	case types.UnionType:
 		return sanitizeName(tt.Name)
 	case types.FuncType:
-		return "dynamic"
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = csTypeOf(p)
+		}
+		ret := csTypeOf(tt.Return)
+		return delegateType(params, ret)
 	case types.VoidType:
 		return "void"
 	case types.AnyType:
