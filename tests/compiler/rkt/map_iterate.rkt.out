@@ -20,7 +20,7 @@
              [start (max 0 start)]
              [end (min n end)]
              [end (if (< end start) start end)])
-        (take (drop x start) (- end start)))))
+        (take (drop x start) (- end start))))))
 (define (count x)
   (cond [(string? x) (string-length x)]
         [(hash? x) (hash-count x)]
@@ -31,5 +31,12 @@
         (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
 
 (define (expect cond) (unless cond (error "expect failed")))
-(displayln (count (list 1 2 3)))
+(define m '#hash())
+(set! m (if (hash? m) (hash-set m 1 true) (list-set m 1 true)))
+(set! m (if (hash? m) (hash-set m 2 true) (list-set m 2 true)))
+(define sum 0)
+(for ([k (if (hash? m) (hash-keys m) m)])
+	(set! sum (+ sum k))
+)
+(displayln sum)
 
