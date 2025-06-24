@@ -1038,13 +1038,7 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 	elems := make([]string, len(list.Elems))
 	elemType := "i32"
 	if len(list.Elems) > 0 {
-		if c.isStringExpr(list.Elems[0]) {
-			elemType = "[]const u8"
-		} else if c.isFloatExpr(list.Elems[0]) {
-			elemType = "f64"
-		} else if c.isBoolExpr(list.Elems[0]) {
-			elemType = "bool"
-		}
+		elemType = zigTypeOf(c.inferExprType(list.Elems[0]))
 	}
 	for i, e := range list.Elems {
 		v, err := c.compileExpr(e, false)
@@ -1498,31 +1492,13 @@ func (c *Compiler) listElemTypePostfix(p *parser.PostfixExpr) string {
 	}
 	if p.Target != nil {
 		if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
-			first := p.Target.List.Elems[0]
-			switch {
-			case c.isStringExpr(first):
-				return "[]const u8"
-			case c.isFloatExpr(first):
-				return "f64"
-			case c.isBoolExpr(first):
-				return "bool"
-			default:
-				return "i32"
-			}
+			t := c.inferExprType(p.Target.List.Elems[0])
+			return zigTypeOf(t)
 		}
 		if p.Target.Selector != nil && c.env != nil {
 			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
 				if lt, ok := t.(types.ListType); ok {
-					switch lt.Elem.(type) {
-					case types.StringType:
-						return "[]const u8"
-					case types.FloatType:
-						return "f64"
-					case types.BoolType:
-						return "bool"
-					default:
-						return "i32"
-					}
+					return zigTypeOf(lt.Elem)
 				}
 			}
 		}

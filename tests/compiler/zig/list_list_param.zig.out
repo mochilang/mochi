@@ -1,0 +1,9 @@
+const std = @import("std");
+
+fn show(xs: []const []const i32) void {
+	std.debug.print("{any}\n", .{(xs).len});
+}
+
+pub fn main() void {
+	show(&[_]i32{&[_]i32{@as(i32,@intCast(1))}, &[_]i32{@as(i32,@intCast(2)), @as(i32,@intCast(3))}});
+}

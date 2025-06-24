@@ -1,0 +1,5 @@
+fun show(xs: list<list<int>>) {
+  print(len(xs))
+}
+
+show([[1], [2, 3]])
