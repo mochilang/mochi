@@ -7,6 +7,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -15,6 +16,7 @@ import (
 
 	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/runtime/data"
 	"mochi/types"
 )
 
@@ -71,6 +73,8 @@ const (
 	OpCount
 	OpAvg
 	OpIterPrep
+	OpLoad
+	OpEval
 
 	// Closure creation
 	OpMakeClosure
@@ -179,6 +183,10 @@ func (op Op) String() string {
 		return "Avg"
 	case OpIterPrep:
 		return "IterPrep"
+	case OpLoad:
+		return "Load"
+	case OpEval:
+		return "Eval"
 	case OpMakeClosure:
 		return "MakeClosure"
 	case OpAddInt:
@@ -481,6 +489,10 @@ func (m *VM) Run() error {
 		}
 	}
 	return err
+}
+
+func (m *VM) RunResult() (Value, error) {
+	return m.call(0, nil, []StackFrame{{Func: m.prog.funcName(0), Line: 0}})
 }
 
 type frame struct {
@@ -932,6 +944,82 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid iterator"), trace, ins.Line)
 			}
+		case OpLoad:
+			path := fr.regs[ins.B].Str
+			opts := valueToAny(fr.regs[ins.C])
+			optMap, _ := opts.(map[string]any)
+			format := "csv"
+			header := true
+			delim := ','
+			if optMap != nil {
+				if f, ok := optMap["format"].(string); ok {
+					format = f
+				}
+				if h, ok := optMap["header"].(bool); ok {
+					header = h
+				}
+				if d, ok := optMap["delimiter"].(string); ok && len(d) > 0 {
+					delim = rune(d[0])
+				}
+			}
+			var rows []map[string]any
+			var err error
+			switch format {
+			case "jsonl":
+				if path == "" || path == "-" {
+					rows, err = data.LoadJSONLReader(os.Stdin)
+				} else {
+					rows, err = data.LoadJSONL(path)
+				}
+			case "json":
+				if path == "" || path == "-" {
+					rows, err = data.LoadJSONReader(os.Stdin)
+				} else {
+					rows, err = data.LoadJSON(path)
+				}
+			case "yaml":
+				if path == "" || path == "-" {
+					rows, err = data.LoadYAMLReader(os.Stdin)
+				} else {
+					rows, err = data.LoadYAML(path)
+				}
+			case "tsv":
+				delim = '\t'
+				fallthrough
+			default:
+				if path == "" || path == "-" {
+					rows, err = data.LoadCSVReader(os.Stdin, header, delim)
+				} else {
+					rows, err = data.LoadCSV(path, header, delim)
+				}
+			}
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			out := make([]Value, len(rows))
+			for i, row := range rows {
+				out[i] = anyToValue(row)
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+		case OpEval:
+			srcVal := fr.regs[ins.B]
+			if srcVal.Tag != interpreter.TagStr {
+				return Value{}, m.newError(fmt.Errorf("eval expects string"), trace, ins.Line)
+			}
+			prog, err := parser.ParseString(srcVal.Str)
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				return Value{}, m.newError(errs[0], trace, ins.Line)
+			}
+			interp := interpreter.New(prog, env, "")
+			resAny, err := interp.RunResult()
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			fr.regs[ins.A] = anyToValue(resAny)
 		case OpCount:
 			lst := fr.regs[ins.B]
 			if lst.Tag != interpreter.TagList {
@@ -1667,6 +1755,25 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		return dst
 	}
 
+	if p.Load != nil {
+		pathReg := fc.newReg()
+		path := ""
+		if p.Load.Path != nil {
+			path = *p.Load.Path
+		}
+		fc.emit(p.Pos, Instr{Op: OpConst, A: pathReg, Val: Value{Tag: interpreter.TagStr, Str: path}})
+		optsReg := fc.newReg()
+		if p.Load.With != nil {
+			r := fc.compileExpr(p.Load.With)
+			fc.emit(p.Pos, Instr{Op: OpMove, A: optsReg, B: r})
+		} else {
+			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: interpreter.TagNull}})
+		}
+		dst := fc.newReg()
+		fc.emit(p.Pos, Instr{Op: OpLoad, A: dst, B: pathReg, C: optsReg})
+		return dst
+	}
+
 	if p.FunExpr != nil {
 		captureNames := make([]string, 0, len(fc.vars))
 		for name := range fc.vars {
@@ -1748,6 +1855,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpAvg, A: dst, B: arg})
+			return dst
+		case "eval":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpEval, A: dst, B: arg})
 			return dst
 		case "str":
 			arg := fc.compileExpr(p.Call.Args[0])
@@ -2182,6 +2294,64 @@ func valueToAny(v Value) any {
 		return m
 	default:
 		return nil
+	}
+}
+
+func anyToValue(v any) Value {
+	switch val := v.(type) {
+	case nil:
+		return Value{Tag: interpreter.TagNull}
+	case int:
+		return Value{Tag: interpreter.TagInt, Int: val}
+	case int64:
+		return Value{Tag: interpreter.TagInt, Int: int(val)}
+	case float64:
+		return Value{Tag: interpreter.TagFloat, Float: val}
+	case string:
+		return Value{Tag: interpreter.TagStr, Str: val}
+	case bool:
+		return Value{Tag: interpreter.TagBool, Bool: val}
+	case []any:
+		list := make([]Value, len(val))
+		for i, x := range val {
+			list[i] = anyToValue(x)
+		}
+		return Value{Tag: interpreter.TagList, List: list}
+	case map[string]any:
+		m := make(map[string]Value, len(val))
+		for k, x := range val {
+			m[k] = anyToValue(x)
+		}
+		return Value{Tag: interpreter.TagMap, Map: m}
+	case map[int]any:
+		m := make(map[string]Value, len(val))
+		for k, x := range val {
+			m[fmt.Sprintf("%d", k)] = anyToValue(x)
+		}
+		return Value{Tag: interpreter.TagMap, Map: m}
+	case map[any]any:
+		m := make(map[string]Value, len(val))
+		for k, x := range val {
+			m[fmt.Sprint(k)] = anyToValue(x)
+		}
+		return Value{Tag: interpreter.TagMap, Map: m}
+	default:
+		rv := reflect.ValueOf(v)
+		switch rv.Kind() {
+		case reflect.Slice, reflect.Array:
+			list := make([]Value, rv.Len())
+			for i := 0; i < rv.Len(); i++ {
+				list[i] = anyToValue(rv.Index(i).Interface())
+			}
+			return Value{Tag: interpreter.TagList, List: list}
+		case reflect.Map:
+			m := make(map[string]Value, rv.Len())
+			for _, key := range rv.MapKeys() {
+				m[fmt.Sprint(key.Interface())] = anyToValue(rv.MapIndex(key).Interface())
+			}
+			return Value{Tag: interpreter.TagMap, Map: m}
+		}
+		return Value{Tag: interpreter.TagNull}
 	}
 }
 
