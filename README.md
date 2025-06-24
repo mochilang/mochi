@@ -613,8 +613,6 @@ implemented across all backends:
 * Right and outer joins in dataset queries
 * Sorting or pagination when joins are used
 * Destructuring bindings in `let` and `var` statements
-* YAML dataset loading and saving
-* CSV dataset loading and saving
 * Agent and stream constructs (`agent`, `on`, `emit`)
 * Generative AI blocks and LLM helper functions
 * Model declarations (`model` blocks)
