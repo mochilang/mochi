@@ -1,0 +1,16 @@
+#[derive(Clone, Debug)]
+struct Person {
+    name: String,
+    age: i64,
+}
+
+#[derive(Clone, Debug)]
+struct Book {
+    title: String,
+    author: Person,
+}
+
+fn main() {
+    let mut book = Book { title: "Go".to_string(), author: Person { name: "Bob".to_string(), age: 42 } };
+    println!("{}", book.author.name);
+}
