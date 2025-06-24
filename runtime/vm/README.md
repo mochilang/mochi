@@ -30,6 +30,8 @@ The VM supports a small but useful subset of Mochi:
 * Field access using the `.` operator
 * List and string slicing with `[start:end]` syntax (supports negative indices)
 * Pattern matching
+* Dataset queries (`from`, `join`, `group`, `sort`, `take`, etc.) and
+  loading or saving datasets in CSV, JSON, JSONL or YAML formats
 
 ## Unsupported features
 
@@ -46,8 +48,6 @@ experimental VM.  Unsupported areas include:
 * Asynchronous functions (`async`/`await`)
 * Agents, streams and intent blocks with persistent state
 * Agent initialization with field values
-* Dataset queries (`from`, `join`, `group`, `sort`, `take`, etc.)
-  and loading datasets from CSV or YAML files
 * Right and outer joins or pagination when joins are used
 * Generative AI blocks, model declarations and other LLM helpers
 * HTTP `fetch` expressions

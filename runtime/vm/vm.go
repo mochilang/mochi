@@ -79,6 +79,7 @@ const (
 	OpCast
 	OpIterPrep
 	OpLoad
+	OpSave
 	OpEval
 
 	// Closure creation
@@ -198,6 +199,8 @@ func (op Op) String() string {
 		return "IterPrep"
 	case OpLoad:
 		return "Load"
+	case OpSave:
+		return "Save"
 	case OpEval:
 		return "Eval"
 	case OpMakeClosure:
@@ -404,6 +407,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpAvg:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpSave:
+				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpMakeClosure:
 				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), p.funcName(ins.B), ins.C, formatReg(ins.D))
 			case OpCall2:
@@ -1095,6 +1100,61 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				out[i] = anyToValue(row)
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+		case OpSave:
+			rows, ok := valueToMapSlice(fr.regs[ins.A])
+			if !ok {
+				return Value{}, m.newError(fmt.Errorf("save source must be list of maps"), trace, ins.Line)
+			}
+			path := fr.regs[ins.B].Str
+			opts := valueToAny(fr.regs[ins.C])
+			optMap, _ := opts.(map[string]any)
+			format := "csv"
+			header := false
+			delim := ','
+			if optMap != nil {
+				if f, ok := optMap["format"].(string); ok {
+					format = f
+				}
+				if h, ok := optMap["header"].(bool); ok {
+					header = h
+				}
+				if d, ok := optMap["delimiter"].(string); ok && len(d) > 0 {
+					delim = rune(d[0])
+				}
+			}
+			var err error
+			switch format {
+			case "jsonl":
+				if path == "" || path == "-" {
+					err = data.SaveJSONLWriter(rows, m.writer)
+				} else {
+					err = data.SaveJSONL(rows, path)
+				}
+			case "json":
+				if path == "" || path == "-" {
+					err = data.SaveJSONWriter(rows, m.writer)
+				} else {
+					err = data.SaveJSON(rows, path)
+				}
+			case "yaml":
+				if path == "" || path == "-" {
+					err = data.SaveYAMLWriter(rows, m.writer)
+				} else {
+					err = data.SaveYAML(rows, path)
+				}
+			case "tsv":
+				delim = '\t'
+				fallthrough
+			default:
+				if path == "" || path == "-" {
+					err = data.SaveCSVWriter(rows, m.writer, header, delim)
+				} else {
+					err = data.SaveCSV(rows, path, header, delim)
+				}
+			}
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
 		case OpEval:
 			srcVal := fr.regs[ins.B]
 			if srcVal.Tag != interpreter.TagStr {
@@ -1564,6 +1624,10 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		// no result
 	case OpAppend, OpStr, OpInput:
 		fc.tags[i.A] = tagUnknown
+	case OpLoad:
+		fc.tags[i.A] = tagUnknown
+	case OpSave:
+		// no result
 	case OpCount:
 		fc.tags[i.A] = tagInt
 	case OpAvg:
@@ -2108,6 +2172,25 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		dst := fc.newReg()
 		fc.emit(p.Pos, Instr{Op: OpLoad, A: dst, B: pathReg, C: optsReg})
 		return dst
+	}
+
+	if p.Save != nil {
+		src := fc.compileExpr(p.Save.Src)
+		pathReg := fc.newReg()
+		path := ""
+		if p.Save.Path != nil {
+			path = *p.Save.Path
+		}
+		fc.emit(p.Pos, Instr{Op: OpConst, A: pathReg, Val: Value{Tag: interpreter.TagStr, Str: path}})
+		optsReg := fc.newReg()
+		if p.Save.With != nil {
+			r := fc.compileExpr(p.Save.With)
+			fc.emit(p.Pos, Instr{Op: OpMove, A: optsReg, B: r})
+		} else {
+			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: interpreter.TagNull}})
+		}
+		fc.emit(p.Pos, Instr{Op: OpSave, A: src, B: pathReg, C: optsReg})
+		return src
 	}
 
 	if p.FunExpr != nil {
@@ -3293,6 +3376,24 @@ func anyToValue(v any) Value {
 		}
 		return Value{Tag: interpreter.TagNull}
 	}
+}
+
+func valueToMapSlice(v Value) ([]map[string]any, bool) {
+	if v.Tag != interpreter.TagList {
+		return nil, false
+	}
+	out := make([]map[string]any, len(v.List))
+	for i, item := range v.List {
+		if item.Tag != interpreter.TagMap {
+			return nil, false
+		}
+		m := make(map[string]any, len(item.Map))
+		for k, x := range item.Map {
+			m[k] = valueToAny(x)
+		}
+		out[i] = m
+	}
+	return out, true
 }
 
 func valueToString(v Value) string {

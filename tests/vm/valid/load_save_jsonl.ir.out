@@ -1,0 +1,46 @@
+func main (regs=29)
+  // let people = load "../interpreter/valid/people.jsonl" as Person with { format: "jsonl" }
+  Const        r0, "../interpreter/valid/people.jsonl"
+  Const        r2, {"format": "jsonl"}
+  Move         r1, r2
+  Load         3,0,1,0
+  Move         r4, r3
+  // let adults = from p in people
+  Const        r5, []
+  IterPrep     r6, r4
+  Len          r7, r6
+  Const        r8, 0
+L2:
+  Less         r9, r8, r7
+  JumpIfFalse  r9, L0
+  Index        r10, r6, r8
+  Move         r11, r10
+  // where p.age >= 18
+  Const        r12, "age"
+  Index        r13, r11, r12
+  Const        r14, 18
+  LessEq       r15, r14, r13
+  JumpIfFalse  r15, L1
+  // select { name: p.name }
+  Const        r16, "name"
+  Const        r17, "name"
+  Index        r18, r11, r17
+  Move         r19, r16
+  Move         r20, r18
+  MakeMap      r21, 1, r19
+  // let adults = from p in people
+  Append       r22, r5, r21
+  Move         r5, r22
+L1:
+  Const        r23, 1
+  Add          r24, r8, r23
+  Move         r8, r24
+  Jump         L2
+L0:
+  Move         r25, r5
+  // save adults with { format: "jsonl" }
+  Const        r26, ""
+  Const        r28, {"format": "jsonl"}
+  Move         r27, r28
+  Save         r25, r26, r27
+  Return       r0

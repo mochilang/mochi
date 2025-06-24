@@ -1559,6 +1559,17 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		}
 		return ListType{Elem: elem}, nil
 
+	case p.Save != nil:
+		if _, err := checkExpr(p.Save.Src, env); err != nil {
+			return nil, err
+		}
+		if p.Save.With != nil {
+			if _, err := checkExpr(p.Save.With, env); err != nil {
+				return nil, err
+			}
+		}
+		return VoidType{}, nil
+
 	case p.Match != nil:
 		return checkMatchExpr(p.Match, env, expected)
 
