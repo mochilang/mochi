@@ -54,7 +54,7 @@ func isList(t types.Type) bool {
 func cobolName(name string) string {
 	up := strings.ToUpper(name)
 	switch up {
-	case "END", "START":
+	case "END", "START", "CH":
 		return "V_" + up
 	}
 	return up

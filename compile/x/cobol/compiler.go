@@ -241,7 +241,7 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 			}
 			expr = tmp
 		}
-		c.writeln(fmt.Sprintf("DISPLAY %s", expr))
+		c.writeln(fmt.Sprintf("    DISPLAY %s", expr))
 		return "0"
 	}
 	if name == "LEN" && len(n.Children) == 1 {
@@ -579,6 +579,23 @@ func (c *Compiler) expr(n *ast.Node) string {
 		if op == "+" && c.isListExpr(n.Children[0]) && c.isListExpr(n.Children[1]) {
 			return c.concatLists(n.Children[0], n.Children[1])
 		}
+		if op == "in" {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+			c.writeln(fmt.Sprintf("    MOVE %s(%s + 1) TO %s", right, left, tmp))
+			res := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC 9.", res))
+			c.writeln(fmt.Sprintf("    IF %s <> 0", tmp))
+			c.indent++
+			c.writeln(fmt.Sprintf("MOVE 1 TO %s", res))
+			c.indent--
+			c.writeln("    ELSE")
+			c.indent++
+			c.writeln(fmt.Sprintf("MOVE 0 TO %s", res))
+			c.indent--
+			c.writeln("    END-IF")
+			return res
+		}
 		switch op {
 		case "&&":
 			return fmt.Sprintf("%s * %s", left, right)
@@ -640,7 +657,7 @@ func (c *Compiler) expr(n *ast.Node) string {
 				c.writeln(fmt.Sprintf("    COMPUTE %s = %s + 1", startPlus, startExpr))
 				resTmp := c.newTemp()
 				c.declare("01 " + resTmp + " PIC X(100).")
-				c.writeln(fmt.Sprintf("    MOVE %s(%s:%s) TO %s", arr, startPlus, lengthTmp, resTmp))
+				c.writeln(fmt.Sprintf("    MOVE FUNCTION SUBSTRING(%s FROM %s FOR %s) TO %s", arr, startPlus, lengthTmp, resTmp))
 				return resTmp
 			} else if c.isListExpr(n.Children[0]) {
 				var startNode, endNode *ast.Node
@@ -731,7 +748,7 @@ func (c *Compiler) expr(n *ast.Node) string {
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s + 1", startPlus, idxVar))
 			resTmp := c.newTemp()
 			c.declare("01 " + resTmp + " PIC X.")
-			c.writeln(fmt.Sprintf("    MOVE %s(%s:1) TO %s", arr, startPlus, resTmp))
+			c.writeln(fmt.Sprintf("    MOVE FUNCTION SUBSTRING(%s FROM %s FOR 1) TO %s", arr, startPlus, resTmp))
 			return resTmp
 		}
 		l, ok := c.listLens[arr]
@@ -872,6 +889,27 @@ func (c *Compiler) compileLet(n *ast.Node) {
 			return
 		}
 	}
+	if len(n.Children) >= 1 && n.Children[len(n.Children)-1].Kind == "map" {
+		length := 10
+		valPic := "PIC 9."
+		m := n.Children[len(n.Children)-1]
+		if len(m.Children) > 0 {
+			valPic = c.picForExpr(m.Children[0].Children[1])
+			for _, it := range m.Children {
+				if idx := extractInt(it.Children[0]); idx >= length {
+					length = idx + 1
+				}
+			}
+		}
+		c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, length, valPic))
+		c.listLens[orig] = length
+		for _, it := range m.Children {
+			idx := extractInt(it.Children[0])
+			val := c.expr(it.Children[1])
+			c.writeln(fmt.Sprintf("    COMPUTE %s(%d) = %s", name, idx+1, val))
+		}
+		return
+	}
 	if len(n.Children) == 1 && n.Children[0].Kind == "list" {
 		list := n.Children[0]
 		elemPic := "PIC 9."
@@ -907,6 +945,27 @@ func (c *Compiler) compileLet(n *ast.Node) {
 func (c *Compiler) compileVar(n *ast.Node) {
 	orig := n.Value.(string)
 	name := cobolName(orig)
+	if len(n.Children) >= 1 && n.Children[len(n.Children)-1].Kind == "map" {
+		length := 10
+		valPic := "PIC 9."
+		m := n.Children[len(n.Children)-1]
+		if len(m.Children) > 0 {
+			valPic = c.picForExpr(m.Children[0].Children[1])
+			for _, it := range m.Children {
+				if idx := extractInt(it.Children[0]); idx >= length {
+					length = idx + 1
+				}
+			}
+		}
+		c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", name, length, valPic))
+		c.listLens[orig] = length
+		for _, it := range m.Children {
+			idx := extractInt(it.Children[0])
+			val := c.expr(it.Children[1])
+			c.writeln(fmt.Sprintf("    COMPUTE %s(%d) = %s", name, idx+1, val))
+		}
+		return
+	}
 	if len(n.Children) == 1 && n.Children[0].Kind == "list" {
 		list := n.Children[0]
 		elemPic := "PIC 9."
@@ -928,6 +987,13 @@ func (c *Compiler) compileVar(n *ast.Node) {
 }
 
 func (c *Compiler) compileAssign(n *ast.Node) {
+	if len(n.Children) == 2 && n.Children[0].Kind == "index" {
+		base := c.expr(n.Children[0].Children[0])
+		idx := c.expr(n.Children[0].Children[1])
+		val := c.expr(n.Children[1])
+		c.writeln(fmt.Sprintf("    COMPUTE %s(%s + 1) = %s", base, idx, val))
+		return
+	}
 	name := cobolName(n.Value.(string))
 	if len(n.Children) == 1 {
 		if c.isListExpr(n.Children[0]) {

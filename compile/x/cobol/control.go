@@ -1,12 +1,19 @@
 package cobolcode
 
-import "fmt"
+import (
+	"fmt"
 
-import "mochi/ast"
+	"mochi/ast"
+	"mochi/types"
+)
 
 // compileIf emits a simple IF/ELSE chain.
 func (c *Compiler) compileIf(n *ast.Node) {
-	cond := c.expr(n.Children[0])
+	condExpr := c.expr(n.Children[0])
+	cond := condExpr
+	if _, ok := c.inferType(n.Children[0]).(types.BoolType); !ok {
+		cond = fmt.Sprintf("%s <> 0", condExpr)
+	}
 	c.writeln(fmt.Sprintf("    IF %s", cond))
 	c.indent++
 	for _, st := range n.Children[1].Children {

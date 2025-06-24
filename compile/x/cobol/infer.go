@@ -27,6 +27,14 @@ func (c *Compiler) inferType(n *ast.Node) types.Type {
 			elem = c.inferType(n.Children[0])
 		}
 		return types.ListType{Elem: elem}
+	case "map":
+		var key types.Type = types.AnyType{}
+		var val types.Type = types.AnyType{}
+		if len(n.Children) > 0 {
+			key = c.inferType(n.Children[0].Children[0])
+			val = c.inferType(n.Children[0].Children[1])
+		}
+		return types.MapType{Key: key, Value: val}
 	case "selector":
 		if c.env != nil {
 			if t, err := c.env.GetVar(n.Value.(string)); err == nil {
