@@ -123,6 +123,8 @@ execute correctly using the Clojure backend.
 The current implementation focuses on a minimal subset of Mochi. It supports:
 
 - Map literals
+- Function definitions via `fun` statements
+- Function calls to built-in and user-defined functions
 - Dataset helpers `load` and `save` for CSV, JSON, JSONL and YAML files
 - Simple `import` statements for Clojure namespaces
 - Basic `group by` queries
