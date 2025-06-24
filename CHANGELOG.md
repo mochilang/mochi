@@ -1,4 +1,25 @@
 # 📦 CHANGELOG.md
+## [0.9.3] – 2025-06-24T22:34:20+07:00
+
+### Added
+
+* String indexing and concatenation in the VM
+* `min` and `max` builtins
+* Join, multi join and left join dataset queries
+* `sort`, `skip`, `take`, `load`, `save` and `group by` operations
+* List set operators in C, Dart and Elixir
+* List operation inference in the C# compiler
+* Basic query expression compilation with identifier map keys
+* Erlang tests for list operators
+
+### Changed
+
+* Benchmarks refreshed
+
+### Fixed
+
+* Identifier map keys handled correctly in the VM
+
 ## [0.9.2] – 2025-06-25
 
 ### Added
