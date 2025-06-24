@@ -1,0 +1,13 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string _upper(const string& s) {
+	string r = s;
+	for (char& c : r) c = toupper(static_cast<unsigned char>(c));
+	return r;
+}
+
+int main() {
+	std::cout << (_upper(string("hi"))) << std::endl;
+	return 0;
+}

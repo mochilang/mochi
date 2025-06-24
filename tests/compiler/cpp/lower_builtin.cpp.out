@@ -1,0 +1,13 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string _lower(const string& s) {
+	string r = s;
+	for (char& c : r) c = tolower(static_cast<unsigned char>(c));
+	return r;
+}
+
+int main() {
+	std::cout << (_lower(string("Hi"))) << std::endl;
+	return 0;
+}

@@ -1,0 +1,11 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+bool _contains(const string& s, const string& sub) {
+	return s.find(sub) != string::npos;
+}
+
+int main() {
+	std::cout << (_contains(string("hello"), string("ell"))) << std::endl;
+	return 0;
+}

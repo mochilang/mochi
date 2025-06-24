@@ -104,19 +104,32 @@ func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
 			}
 		}
 		return "unordered_map<" + keyType + ", " + valType + ">"
-	case p.Selector != nil:
-		if t, ok := c.getVar(p.Selector.Root); ok {
-			return t
-		}
-		if typ, err := c.env.GetVar(p.Selector.Root); err == nil {
-			if st, ok := typ.(types.StructType); ok {
-				ft := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]
-				return c.cppTypeRef(ft)
-			}
-			return c.cppTypeRef(typ)
-		}
-	}
-	return ""
+       case p.Selector != nil:
+               if t, ok := c.getVar(p.Selector.Root); ok {
+                       return t
+               }
+               if typ, err := c.env.GetVar(p.Selector.Root); err == nil {
+                       if st, ok := typ.(types.StructType); ok {
+                               ft := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]
+                               return c.cppTypeRef(ft)
+                       }
+                       return c.cppTypeRef(typ)
+               }
+       case p.Call != nil:
+               switch p.Call.Func {
+               case "upper", "lower", "trim", "join", "str", "input", "now":
+                       return "string"
+               case "split":
+                       return "vector<string>"
+               case "contains":
+                       return "bool"
+               case "count", "len":
+                       return "int"
+               case "avg":
+                       return "double"
+               }
+       }
+       return ""
 }
 
 // cppTypeRef converts a static type to a C++ type reference.

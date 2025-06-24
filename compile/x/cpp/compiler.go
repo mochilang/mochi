@@ -650,17 +650,41 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		case "count":
 			c.helpers["count"] = true
 			return fmt.Sprintf("_count(%s)", args[0])
-		case "avg":
-			c.helpers["avg"] = true
-			return fmt.Sprintf("_avg(%s)", args[0])
-		case "json":
-			c.helpers["json"] = true
-			return fmt.Sprintf("_json(%s)", args[0])
-		case "reduce":
-			if len(args) == 3 {
-				c.helpers["reduce"] = true
-				return fmt.Sprintf("_reduce(%s, %s, %s)", args[0], args[1], args[2])
-			}
+               case "avg":
+                       c.helpers["avg"] = true
+                       return fmt.Sprintf("_avg(%s)", args[0])
+               case "json":
+                       c.helpers["json"] = true
+                       return fmt.Sprintf("_json(%s)", args[0])
+               case "upper":
+                       c.helpers["upper"] = true
+                       return fmt.Sprintf("_upper(%s)", args[0])
+               case "lower":
+                       c.helpers["lower"] = true
+                       return fmt.Sprintf("_lower(%s)", args[0])
+               case "trim":
+                       c.helpers["trim"] = true
+                       return fmt.Sprintf("_trim(%s)", args[0])
+               case "split":
+                       c.helpers["split"] = true
+                       if len(args) == 2 {
+                               return fmt.Sprintf("_split(%s, %s[0])", args[0], args[1])
+                       }
+                       return fmt.Sprintf("_split(%s, ' ')", args[0])
+               case "join":
+                       c.helpers["join"] = true
+                       if len(args) == 2 {
+                               return fmt.Sprintf("_join(%s, %s)", args[0], args[1])
+                       }
+                       return fmt.Sprintf("_join(%s, ' ')", args[0])
+               case "contains":
+                       c.helpers["contains"] = true
+                       return fmt.Sprintf("_contains(%s, %s)", args[0], args[1])
+               case "reduce":
+                       if len(args) == 3 {
+                               c.helpers["reduce"] = true
+                               return fmt.Sprintf("_reduce(%s, %s, %s)", args[0], args[1], args[2])
+                       }
 			return fmt.Sprintf("reduce(%s)", strings.Join(args, ", "))
 		default:
 			return fmt.Sprintf("%s(%s)", p.Call.Func, strings.Join(args, ", "))

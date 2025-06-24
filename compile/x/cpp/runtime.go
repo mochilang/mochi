@@ -3,7 +3,7 @@ package cppcode
 // Runtime helper data for the C++ backend.
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "unionAll", "union", "except", "intersect", "json", "input"}
+var helperOrder = []string{"indexString", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "upper", "lower", "trim", "split", "join", "contains", "unionAll", "union", "except", "intersect", "json", "input"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -82,21 +82,69 @@ var helperCode = map[string][]string{
 		"\treturn (int)v.Items.size();",
 		"}",
 	},
-	"avg": {
-		"template<typename T> auto _avg(const T& v) -> decltype(v.size(), double{}) {",
-		"\tif (v.size() == 0) return 0;",
-		"\tdouble sum = 0;",
-		"\tfor (const auto& it : v) sum += it;",
-		"\treturn sum / v.size();",
-		"}",
-		"template<typename T> auto _avg(const T& v) -> decltype(v.Items, double{}) {",
-		"\treturn _avg(v.Items);",
-		"}",
-	},
-	"unionAll": {
-		"template<typename T> vector<T> _union_all(const vector<T>& a, const vector<T>& b) {",
-		"\tvector<T> res = a;",
-		"\tres.insert(res.end(), b.begin(), b.end());",
+        "avg": {
+                "template<typename T> auto _avg(const T& v) -> decltype(v.size(), double{}) {",
+                "\tif (v.size() == 0) return 0;",
+                "\tdouble sum = 0;",
+                "\tfor (const auto& it : v) sum += it;",
+                "\treturn sum / v.size();",
+                "}",
+                "template<typename T> auto _avg(const T& v) -> decltype(v.Items, double{}) {",
+                "\treturn _avg(v.Items);",
+                "}",
+        },
+       "upper": {
+               "string _upper(const string& s) {",
+               "\tstring r = s;",
+               "\tfor (char& c : r) c = toupper(static_cast<unsigned char>(c));",
+               "\treturn r;",
+               "}",
+       },
+       "lower": {
+               "string _lower(const string& s) {",
+               "\tstring r = s;",
+               "\tfor (char& c : r) c = tolower(static_cast<unsigned char>(c));",
+               "\treturn r;",
+               "}",
+       },
+       "trim": {
+               "string _trim(const string& s) {",
+               "\tsize_t i = s.find_first_not_of(\" \\t\\n\\r\");",
+               "\tsize_t j = s.find_last_not_of(\" \\t\\n\\r\");",
+               "\tif (i == string::npos) return \"\";",
+               "\treturn s.substr(i, j - i + 1);",
+               "}",
+       },
+       "split": {
+               "vector<string> _split(const string& s, char d) {",
+               "\tvector<string> res;",
+               "\tstring cur;",
+               "\tfor (char c : s) {",
+               "\t\tif (c == d) { res.push_back(cur); cur.clear(); } else cur += c;",
+               "\t}",
+               "\tres.push_back(cur);",
+               "\treturn res;",
+               "}",
+       },
+       "join": {
+               "string _join(const vector<string>& parts, char d) {",
+               "\tstring out;",
+               "\tfor (size_t i = 0; i < parts.size(); i++) {",
+               "\t\tif (i > 0) out += d;",
+               "\t\tout += parts[i];",
+               "\t}",
+               "\treturn out;",
+               "}",
+       },
+       "contains": {
+               "bool _contains(const string& s, const string& sub) {",
+               "\treturn s.find(sub) != string::npos;",
+               "}",
+       },
+        "unionAll": {
+                "template<typename T> vector<T> _union_all(const vector<T>& a, const vector<T>& b) {",
+                "\tvector<T> res = a;",
+                "\tres.insert(res.end(), b.begin(), b.end());",
 		"\treturn res;",
 		"}",
 	},

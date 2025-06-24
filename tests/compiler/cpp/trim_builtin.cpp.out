@@ -1,0 +1,14 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+string _trim(const string& s) {
+	size_t i = s.find_first_not_of(" \t\n\r");
+	size_t j = s.find_last_not_of(" \t\n\r");
+	if (i == string::npos) return "";
+	return s.substr(i, j - i + 1);
+}
+
+int main() {
+	std::cout << (_trim(string("  hi \n"))) << std::endl;
+	return 0;
+}

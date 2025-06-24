@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+template<typename T> string _fmtVec(const vector<T>& v) {
+	stringstream ss;
+	ss << '[';
+	for (size_t i = 0; i < v.size(); i++) {
+		if (i > 0) ss << ' ';
+		ss << v[i];
+	}
+	ss << ']';
+	return ss.str();
+}
+
+vector<string> _split(const string& s, char d) {
+	vector<string> res;
+	string cur;
+	for (char c : s) {
+		if (c == d) { res.push_back(cur); cur.clear(); } else cur += c;
+	}
+	res.push_back(cur);
+	return res;
+}
+
+int main() {
+	std::cout << (_fmtVec(_split(string("a,b,c"), string(",")[0]))) << std::endl;
+	return 0;
+}

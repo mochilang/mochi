@@ -219,7 +219,7 @@ Dataset queries support `where`, `skip`, `take`, `sort by`, `join` and basic `gr
 * `if`, `for` and `while` statements
 * Structs, unions and pattern matching with `match`
 * List and map literals with indexing and slicing
-* Built‑in functions `print`, `len`, `str`, `now` and `input`
+* Built‑in functions `print`, `len`, `str`, `now`, `input`, `upper`, `lower`, `trim`, `split`, `join` and `contains`
 * Dataset queries with filtering, sorting, pagination and simple grouping
 * List operators `union`, `union all`, `except` and `intersect`
 * Membership tests using `in`

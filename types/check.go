@@ -382,12 +382,42 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: IntType{},
 		Pure:   true,
 	}, false)
-	env.SetVar("avg", FuncType{
-		Params: []Type{AnyType{}},
-		Return: FloatType{},
-		Pure:   true,
-	}, false)
-	env.SetVar("min", FuncType{
+       env.SetVar("avg", FuncType{
+               Params: []Type{AnyType{}},
+               Return: FloatType{},
+               Pure:   true,
+       }, false)
+       env.SetVar("upper", FuncType{
+               Params: []Type{StringType{}},
+               Return: StringType{},
+               Pure:   true,
+       }, false)
+       env.SetVar("lower", FuncType{
+               Params: []Type{StringType{}},
+               Return: StringType{},
+               Pure:   true,
+       }, false)
+       env.SetVar("trim", FuncType{
+               Params: []Type{StringType{}},
+               Return: StringType{},
+               Pure:   true,
+       }, false)
+       env.SetVar("split", FuncType{
+               Params: []Type{StringType{}, AnyType{}},
+               Return: ListType{Elem: StringType{}},
+               Pure:   true,
+       }, false)
+       env.SetVar("join", FuncType{
+               Params: []Type{ListType{Elem: StringType{}}, AnyType{}},
+               Return: StringType{},
+               Pure:   true,
+       }, false)
+       env.SetVar("contains", FuncType{
+               Params: []Type{StringType{}, StringType{}},
+               Return: BoolType{},
+               Pure:   true,
+       }, false)
+       env.SetVar("min", FuncType{
 		Params: []Type{AnyType{}},
 		Return: AnyType{},
 		Pure:   true,
@@ -1974,8 +2004,14 @@ var builtinArity = map[string]int{
 	"eval":   1,
 	"len":    1,
 	"count":  1,
-	"avg":    1,
-	"min":    1,
+       "avg":    1,
+       "upper":  1,
+       "lower":  1,
+       "trim":   1,
+       "split":  2,
+       "join":   2,
+       "contains": 2,
+       "min":    1,
 	"max":    1,
 	"reduce": 3,
 	"append": 2,
@@ -2018,11 +2054,11 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		default:
 			return errCountOperand(pos, args[0])
 		}
-	case "avg":
-		if len(args) != 1 {
-			return errArgCount(pos, name, 1, len(args))
-		}
-		switch a := args[0].(type) {
+       case "avg":
+               if len(args) != 1 {
+                       return errArgCount(pos, name, 1, len(args))
+               }
+               switch a := args[0].(type) {
 		case ListType:
 			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
 				return nil
@@ -2037,9 +2073,54 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return nil
 		default:
 			return errAvgOperand(pos, a)
-		}
-	case "min", "max":
-		if len(args) != 1 {
+               }
+       case "upper", "lower", "trim":
+               if len(args) != 1 {
+                       return errArgCount(pos, name, 1, len(args))
+               }
+               if _, ok := args[0].(StringType); !ok {
+                       if _, ok := args[0].(AnyType); !ok {
+                               return errArgTypeMismatch(pos, 0, StringType{}, args[0])
+                       }
+               }
+               return nil
+       case "split":
+               if len(args) != 2 {
+                       return errArgCount(pos, name, 2, len(args))
+               }
+               if _, ok := args[0].(StringType); !ok {
+                       if _, ok := args[0].(AnyType); !ok {
+                               return errArgTypeMismatch(pos, 0, StringType{}, args[0])
+                       }
+               }
+               return nil
+       case "join":
+               if len(args) != 2 {
+                       return errArgCount(pos, name, 2, len(args))
+               }
+               if _, ok := args[0].(ListType); !ok {
+                       if _, ok := args[0].(AnyType); !ok {
+                               return errArgTypeMismatch(pos, 0, ListType{Elem: StringType{}}, args[0])
+                       }
+               }
+               return nil
+       case "contains":
+               if len(args) != 2 {
+                       return errArgCount(pos, name, 2, len(args))
+               }
+               if _, ok := args[0].(StringType); !ok {
+                       if _, ok := args[0].(AnyType); !ok {
+                               return errArgTypeMismatch(pos, 0, StringType{}, args[0])
+                       }
+               }
+               if _, ok := args[1].(StringType); !ok {
+                       if _, ok := args[1].(AnyType); !ok {
+                               return errArgTypeMismatch(pos, 1, StringType{}, args[1])
+                       }
+               }
+               return nil
+       case "min", "max":
+               if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))
 		}
 		switch a := args[0].(type) {

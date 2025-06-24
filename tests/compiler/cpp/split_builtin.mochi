@@ -1,0 +1,1 @@
+print(split("a,b,c", ","))
