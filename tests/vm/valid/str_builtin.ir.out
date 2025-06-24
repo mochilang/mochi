@@ -1,0 +1,6 @@
+func main (regs=2)
+  // print(str(123))
+  Const        r0, 123
+  Str          r1, r0
+  Print        r1
+  Return       r0
