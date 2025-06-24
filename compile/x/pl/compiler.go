@@ -197,4 +197,10 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["map_keys"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperMapKeys, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 }

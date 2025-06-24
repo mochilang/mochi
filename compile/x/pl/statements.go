@@ -212,8 +212,13 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 		for _, line := range src.code {
 			c.writeln(line)
 		}
-		c.use("tolist")
-		c.writeln(fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
+		if isMap(c.inferExprType(f.Source)) {
+			c.use("map_keys")
+			c.writeln(fmt.Sprintf("map_keys(%s, %s),", src.val, listVar))
+		} else {
+			c.use("tolist")
+			c.writeln(fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
+		}
 		loopVar := sanitizeVar(f.Name)
 		c.writeln("catch(")
 		c.indent++

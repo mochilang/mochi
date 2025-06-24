@@ -366,7 +366,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 			}
 			code = append(code, kr.code...)
 			code = append(code, vr.code...)
-			pairs = append(pairs, fmt.Sprintf("%s-%s", kr.val, vr.val))
+			keyVal := kr.val
+			if isStringLiteral(it.Key) {
+				keyVal = "'" + strings.Trim(kr.val, "\"") + "'"
+			}
+			pairs = append(pairs, fmt.Sprintf("%s-%s", keyVal, vr.val))
 		}
 		tmp := c.newVar()
 		code = append(code, fmt.Sprintf("dict_create(%s, _, [%s]),", tmp, strings.Join(pairs, ", ")))
@@ -419,6 +423,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 		tmp := c.newVar()
 		c.use("avg")
 		code := append(arg.code, fmt.Sprintf("avg(%s, %s),", arg.val, tmp))
+		return exprRes{code: code, val: tmp}, nil
+	case "keys":
+		if len(call.Args) != 1 {
+			return exprRes{}, fmt.Errorf("keys expects 1 arg")
+		}
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return exprRes{}, err
+		}
+		tmp := c.newVar()
+		c.use("map_keys")
+		code := append(arg.code, fmt.Sprintf("map_keys(%s, %s),", arg.val, tmp))
 		return exprRes{code: code, val: tmp}, nil
 	case "str":
 		if len(call.Args) != 1 {
