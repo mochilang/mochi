@@ -350,7 +350,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("(%s) do: [:%s |", src, f.Name))
+		if isMapExpr(f.Source, c.env) {
+			c.writeln(fmt.Sprintf("(%s) keysDo: [:%s |", src, f.Name))
+		} else {
+			c.writeln(fmt.Sprintf("(%s) do: [:%s |", src, f.Name))
+		}
 	} else {
 		start, err := c.compileExpr(f.Source)
 		if err != nil {

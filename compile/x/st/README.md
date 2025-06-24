@@ -24,7 +24,7 @@ The backend implements a minimal subset of Mochi:
 - `if`/`else` conditionals
 - `for` and `while` loops with `break` and `continue`
 - Functions with a single return value
-- Lists and maps with indexing and concatenation
+- Lists and maps with indexing, concatenation, and iteration
 - Basic `type` declarations compiled to dictionaries
 - Built-ins `print`, `len`, `str`, `count`, `avg`, `input`, `now`, `json`,
   `append`, `eval`, and `reduce`
@@ -51,7 +51,6 @@ The following language constructs are not yet handled:
 - Functions with multiple return values
 - Variadic functions and destructuring bindings
 - List and string slicing
-- Iterating over maps with `for` loops
 - YAML dataset loading and saving
 - Right and outer joins in dataset queries
 - Agent initialization with field values
