@@ -354,6 +354,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	env.SetVar("push", FuncType{
+		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
 	env.SetVar("range", FuncType{
 		Params:   []Type{IntType{}},
 		Return:   ListType{Elem: IntType{}},
@@ -1991,6 +1996,7 @@ var builtinArity = map[string]int{
 	"max":    1,
 	"reduce": 3,
 	"append": 2,
+	"push":   2,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
@@ -2081,13 +2087,13 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			}
 		}
 		return nil
-	case "append":
+	case "append", "push":
 		if len(args) != 2 {
 			return errArgCount(pos, name, 2, len(args))
 		}
 		if _, ok := args[0].(ListType); !ok {
 			if _, ok := args[0].(AnyType); !ok {
-				return fmt.Errorf("append() expects list, got %v", args[0])
+				return fmt.Errorf("%s() expects list, got %v", name, args[0])
 			}
 		}
 		return nil

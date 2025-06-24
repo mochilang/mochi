@@ -28,7 +28,7 @@ The backend implements a small but practical subset of Mochi:
 - Basic expressions including `if`/`else` and arithmetic operators
 - `for` loops over ranges or lists and `while` loops
 - Lists and maps with literals and indexing
-- Builtin helpers: `len`, `count`, `avg`, `str`, `print`, `input`, `now`, `json`, `load` and `save`
+- Builtin helpers: `len`, `count`, `avg`, `str`, `push`, `print`, `input`, `now`, `json`, `load` and `save`
 
 ## Unsupported Features
 

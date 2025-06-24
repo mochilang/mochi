@@ -679,6 +679,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Call.Func == "str" {
 			return fmt.Sprintf("show %s", strings.Join(args, " ")), nil
 		}
+		if p.Call.Func == "push" && len(args) == 2 {
+			return fmt.Sprintf("(%s ++ [%s])", args[0], args[1]), nil
+		}
 		if p.Call.Func == "now" {
 			c.usesTime = true
 			return "_now", nil
