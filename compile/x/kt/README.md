@@ -11,6 +11,7 @@ The Kotlin backend converts Mochi programs into Kotlin source files so they can 
 - Built‑in helpers including `print`, `len`, `count`, `avg`, `str`, `input`, `json`, and `now`
 - LLM and runtime helpers such as `_genText`, `_genEmbed`, `_genStruct`, `_fetch` and `_eval`
 - List set operators `union`, `union_all`, `except` and `intersect`
+- List concatenation with `+`
 - Basic stream handling with `stream`, `on` and `emit`
 - YAML dataset loading and saving
 - Extern variables, functions and objects via `ExternRegistry`

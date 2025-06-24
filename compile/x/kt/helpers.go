@@ -161,6 +161,44 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	return false
 }
 
+func isListPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.List != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.ListType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isListPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return isListPrimary(p.Target, env)
+}
+
+func isListUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isListPostfix(u.Value, env)
+}
+
+func isListExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	return isListUnary(e.Binary.Left, env)
+}
+
 func indentBlock(s string, depth int) string {
 	if s == "" {
 		return s

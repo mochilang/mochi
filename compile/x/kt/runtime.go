@@ -188,8 +188,10 @@ const (
         }
         else -> \"""${x.toString().replace("\"", "\\\"")}\"""
     }
-    println(encode(v))
+        println(encode(v))
 }`
+
+	helperConcat = `fun <T> _concat(a: List<T>, b: List<T>): List<T> = a + b`
 
 	helperUnionAll = `fun <T> _unionAll(a: List<T>, b: List<T>): List<T> = a + b`
 
@@ -253,6 +255,7 @@ var helperMap = map[string]string{
 	"_genStruct":   helperGenStruct,
 	"_fetch":       helperFetch,
 	"_json":        helperJson,
+	"_concat":      helperConcat,
 	"_extern":      helperExtern,
 	"_unionAll":    helperUnionAll,
 	"_union":       helperUnion,
