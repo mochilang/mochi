@@ -56,6 +56,7 @@ const (
 	OpMakeMap
 	OpPrint
 	OpPrint2
+	OpPrintN
 	OpCall2
 	OpCall
 	OpCallV
@@ -148,6 +149,8 @@ func (op Op) String() string {
 		return "Print"
 	case OpPrint2:
 		return "Print2"
+	case OpPrintN:
+		return "PrintN"
 	case OpCall2:
 		return "Call2"
 	case OpCall:
@@ -357,6 +360,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpPrint2:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpPrintN:
+				fmt.Fprintf(&b, "%s, %d, %s", formatReg(ins.A), ins.B, formatReg(ins.C))
 			case OpNow:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpJSON:
@@ -795,6 +800,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]))
 		case OpPrint2:
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]), valueToAny(fr.regs[ins.B]))
+		case OpPrintN:
+			for i := 0; i < ins.B; i++ {
+				if i > 0 {
+					fmt.Fprint(m.writer, " ")
+				}
+				fmt.Fprint(m.writer, valueToAny(fr.regs[ins.C+i]))
+			}
+			fmt.Fprintln(m.writer)
 		case OpNow:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(time.Now().UnixNano())}
 		case OpJSON:
@@ -1214,7 +1227,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagBool
 	case OpLen, OpNow:
 		fc.tags[i.A] = tagInt
-	case OpJSON, OpPrint, OpPrint2:
+	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
 	case OpAppend, OpStr, OpInput:
 		fc.tags[i.A] = tagUnknown
@@ -1753,6 +1766,16 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 				fc.emit(p.Pos, Instr{Op: OpPrint2, A: a0, B: a1})
 				return a0
 			}
+			regs := make([]int, len(p.Call.Args))
+			for i := range p.Call.Args {
+				regs[i] = fc.newReg()
+			}
+			for i, a := range p.Call.Args {
+				ar := fc.compileExpr(a)
+				fc.emit(a.Pos, Instr{Op: OpMove, A: regs[i], B: ar})
+			}
+			fc.emit(p.Pos, Instr{Op: OpPrintN, A: regs[0], B: len(regs), C: regs[0]})
+			return regs[0]
 		default:
 			if fnIdx, ok := fc.comp.fnIndex[p.Call.Func]; ok {
 				regs := make([]int, len(p.Call.Args))

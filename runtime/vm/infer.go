@@ -130,7 +130,7 @@ func applyTags(tags []RegTag, ins Instr) {
 		tags[ins.A] = TagBool
 	case OpLen, OpNow:
 		tags[ins.A] = TagInt
-	case OpJSON, OpPrint, OpPrint2:
+	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
 	case OpInput, OpMakeList, OpIndex, OpSetIndex, OpCall, OpCall2, OpCallV,
 		OpUnionAll, OpUnion, OpExcept, OpIntersect, OpMakeClosure:
