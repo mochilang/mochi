@@ -1,0 +1,4 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!!
+((Main __contains_string: 'hello' sub: 'lo')) displayOn: Transcript. Transcript cr.

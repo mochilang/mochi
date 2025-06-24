@@ -12,22 +12,23 @@ import (
 
 // Compiler translates a Mochi AST into GNU Smalltalk source code.
 type Compiler struct {
-	buf           bytes.Buffer
-	indent        int
-	env           *types.Env
-	funParams     map[string][]string
-	needCount     bool
-	needAvg       bool
-	needInput     bool
-	needReduce    bool
-	needBreak     bool
-	needContinue  bool
-	needUnionAll  bool
-	needUnion     bool
-	needExcept    bool
-	needIntersect bool
-	needIndexStr  bool
-	needSliceStr  bool
+	buf             bytes.Buffer
+	indent          int
+	env             *types.Env
+	funParams       map[string][]string
+	needCount       bool
+	needAvg         bool
+	needInput       bool
+	needReduce      bool
+	needBreak       bool
+	needContinue    bool
+	needUnionAll    bool
+	needUnion       bool
+	needExcept      bool
+	needIntersect   bool
+	needIndexStr    bool
+	needSliceStr    bool
+	needContainsStr bool
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -58,6 +59,7 @@ func (c *Compiler) reset() {
 	c.needIntersect = false
 	c.needIndexStr = false
 	c.needSliceStr = false
+	c.needContainsStr = false
 }
 
 // Compile generates Smalltalk code for prog.
@@ -585,7 +587,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				leftStr = false
 			}
 		case "in":
-			if rlist || rstr {
+			if rstr && leftStr {
+				c.needContainsStr = true
+				expr = fmt.Sprintf("(Main __contains_string: %s sub: %s)", right, left)
+			} else if rlist || rstr {
 				expr = fmt.Sprintf("(%s includes: %s)", right, left)
 			} else if isMapPostfix(op.Right, c.env) {
 				expr = fmt.Sprintf("(%s includesKey: %s)", right, left)
@@ -1202,6 +1207,13 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("end > n ifTrue: [ end := n ].")
 		c.writeln("end < start ifTrue: [ end := start ].")
 		c.writeln("^ (s copyFrom: start + 1 to: end)")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needContainsStr {
+		c.writeln("__contains_string: s sub: t")
+		c.indent++
+		c.writeln("^ (s findString: t startingAt: 1) ~= 0")
 		c.indent--
 		c.writelnNoIndent("!")
 	}
