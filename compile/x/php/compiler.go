@@ -11,7 +11,7 @@ import (
 	"mochi/types"
 )
 
-const funcPrefix = "mochi_"
+const funcPrefix = ""
 
 // Compiler translates a Mochi AST into PHP source code.
 type Compiler struct {
@@ -360,11 +360,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", nil
 	}
 	operands := []string{}
+	exprs := []*parser.Expr{}
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
 	operands = append(operands, left)
+	exprs = append(exprs, &parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}})
 	ops := []string{}
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
@@ -372,6 +374,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		operands = append(operands, r)
+		exprs = append(exprs, &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: part.Right}}})
 		op := part.Op
 		if part.Op == "union" && part.All {
 			op = "union_all"
@@ -407,15 +410,59 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			op := ops[i]
 			l := operands[i]
 			r := operands[i+1]
+			le := exprs[i]
+			re := exprs[i+1]
 			var expr string
 			if op == "in" {
 				expr = fmt.Sprintf("(is_array(%[2]s) ? (array_key_exists(%[1]s, %[2]s) || in_array(%[1]s, %[2]s, true)) : (is_string(%[2]s) ? strpos(%[2]s, strval(%[1]s)) !== false : false))", l, r)
 			} else if op == "+" {
-				expr = fmt.Sprintf("((is_array(%[1]s) && is_array(%[2]s)) ? array_merge(%[1]s, %[2]s) : ((is_string(%[1]s) || is_string(%[2]s)) ? (%[1]s . %[2]s) : (%[1]s + %[2]s)))", l, r)
-			} else if op == "/" {
-				expr = fmt.Sprintf("((is_int(%[1]s) && is_int(%[2]s)) ? intdiv(%[1]s, %[2]s) : (%[1]s / %[2]s))", l, r)
-			} else if op == "%" {
-				expr = fmt.Sprintf("((is_int(%[1]s) && is_int(%[2]s)) ? (%[1]s %% %[2]s) : fmod(%[1]s, %[2]s))", l, r)
+				if c.isStringExpr(le) || c.isStringExpr(re) {
+					expr = fmt.Sprintf("%s . %s", l, r)
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", l, r)
+				}
+			} else if op == "-" || op == "*" || op == "/" || op == "%" {
+				if op == "%" {
+					expr = fmt.Sprintf("(%s %% %s)", l, r)
+				} else {
+					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+				}
+			} else if op == "==" {
+				if c.isStringExpr(le) || c.isStringExpr(re) {
+					expr = fmt.Sprintf("(%s === %s)", l, r)
+				} else {
+					expr = fmt.Sprintf("(%s == %s)", l, r)
+				}
+			} else if op == "!=" {
+				if c.isStringExpr(le) || c.isStringExpr(re) {
+					expr = fmt.Sprintf("(%s !== %s)", l, r)
+				} else {
+					expr = fmt.Sprintf("(%s != %s)", l, r)
+				}
+			} else if op == "<" {
+				if c.isStringExpr(le) || c.isStringExpr(re) {
+					expr = fmt.Sprintf("(strcmp(strval(%s), strval(%s)) < 0)", l, r)
+				} else {
+					expr = fmt.Sprintf("(%s < %s)", l, r)
+				}
+			} else if op == "<=" {
+				if c.isStringExpr(le) || c.isStringExpr(re) {
+					expr = fmt.Sprintf("(strcmp(strval(%s), strval(%s)) <= 0)", l, r)
+				} else {
+					expr = fmt.Sprintf("(%s <= %s)", l, r)
+				}
+			} else if op == ">" {
+				if c.isStringExpr(le) || c.isStringExpr(re) {
+					expr = fmt.Sprintf("(strcmp(strval(%s), strval(%s)) > 0)", l, r)
+				} else {
+					expr = fmt.Sprintf("(%s > %s)", l, r)
+				}
+			} else if op == ">=" {
+				if c.isStringExpr(le) || c.isStringExpr(re) {
+					expr = fmt.Sprintf("(strcmp(strval(%s), strval(%s)) >= 0)", l, r)
+				} else {
+					expr = fmt.Sprintf("(%s >= %s)", l, r)
+				}
 			} else if op == "union_all" {
 				expr = fmt.Sprintf("array_merge(%s, %s)", l, r)
 			} else if op == "union" {

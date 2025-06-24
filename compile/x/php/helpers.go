@@ -2,6 +2,7 @@ package phpcode
 
 import (
 	"mochi/parser"
+	"mochi/types"
 	"strings"
 )
 
@@ -79,4 +80,61 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isIntExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Int != nil {
+		return true
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+			switch t.(type) {
+			case types.IntType, types.Int64Type:
+				return true
+			}
+		}
+	}
+	return false
 }

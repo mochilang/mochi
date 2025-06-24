@@ -1,0 +1,5 @@
+<?php
+echo (strcmp(strval("a"), strval("b")) < 0), PHP_EOL;
+echo (strcmp(strval("a"), strval("a")) <= 0), PHP_EOL;
+echo (strcmp(strval("b"), strval("a")) > 0), PHP_EOL;
+echo (strcmp(strval("b"), strval("b")) >= 0), PHP_EOL;
