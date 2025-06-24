@@ -331,6 +331,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	t := c.inferExprType(stmt.Source)
 	if stmt.RangeEnd != nil {
 		end, err := c.compileExpr(stmt.RangeEnd)
 		if err != nil {
@@ -339,6 +340,13 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		srcExpr = fmt.Sprintf("%s..(%s - 1)", srcExpr, end)
 	} else if strings.HasPrefix(srcExpr, "\"") && strings.HasSuffix(srcExpr, "\"") {
 		srcExpr = fmt.Sprintf("String.graphemes(%s)", srcExpr)
+	} else {
+		if _, ok := t.(types.MapType); ok {
+			srcExpr = fmt.Sprintf("Map.keys(%s)", srcExpr)
+		} else if _, ok := t.(types.AnyType); ok {
+			c.use("_iter")
+			srcExpr = fmt.Sprintf("_iter(%s)", srcExpr)
+		}
 	}
 
 	if len(mutated) == 0 {

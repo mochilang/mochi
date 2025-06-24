@@ -20,7 +20,7 @@ defmodule Main do
 		_ = c
 		m = %{x: 1, y: 2}
 		_ = m
-		{c} = Enum.reduce(m, {c}, fn _, {c} ->
+		{c} = Enum.reduce(Map.keys(m), {c}, fn _, {c} ->
 			c = (c + 1)
 			{c}
 		end)

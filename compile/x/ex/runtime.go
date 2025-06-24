@@ -40,6 +40,8 @@ const (
 	helperIndexString = "defp _index_string(s, i) do\n  chars = String.graphemes(s)\n  idx = if i < 0, do: i + length(chars), else: i\n  if idx < 0 or idx >= length(chars), do: raise \"index out of range\"\n  Enum.at(chars, idx)\nend\n"
 
 	helperSliceString = "defp _slice_string(s, i, j) do\n  chars = String.graphemes(s)\n  n = length(chars)\n  start = if i < 0, do: i + n, else: i\n  finish = if j < 0, do: j + n, else: j\n  start = if start < 0, do: 0, else: start\n  finish = if finish > n, do: n, else: finish\n  finish = if finish < start, do: start, else: finish\n  Enum.slice(chars, start, finish - start) |> Enum.join()\nend\n"
+
+	helperIter = "defp _iter(v) do\n  if is_map(v) do\n    Map.keys(v)\n  else\n    v\n  end\nend\n"
 )
 
 var helperMap = map[string]string{
@@ -63,4 +65,5 @@ var helperMap = map[string]string{
 	"_intersect":    helperIntersect,
 	"_index_string": helperIndexString,
 	"_slice_string": helperSliceString,
+	"_iter":         helperIter,
 }

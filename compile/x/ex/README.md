@@ -80,6 +80,9 @@ if len(stmt.Index) > 0 {
 `compileFor` detects string literals and iterates over their graphemes so that
 `for ch in "cat"` becomes `for ch <- String.graphemes("cat") do`.
 
+Loops over maps iterate over their keys, so `for k in m` becomes
+`for k <- Map.keys(m) do`.
+
 
 【F:compile/ex/compiler.go†L231-L245】
 
