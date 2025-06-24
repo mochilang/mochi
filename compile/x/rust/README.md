@@ -10,6 +10,7 @@ The Rust backend compiles Mochi programs to plain Rust source code. It is a mini
 - Lists and maps including indexing, slicing, membership checks and iteration over map keys in `for` loops
 - List concatenation and set operations (`union_all`, `union`, `except`, `intersect`)
 - Builtins like `print`, `len`, `count`, `avg`, `input` and `str`
+- Struct type declarations, literals and basic method definitions
 
 
 ## Unsupported features
