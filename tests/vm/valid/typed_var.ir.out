@@ -1,0 +1,6 @@
+func main (regs=2)
+  // var x: int
+  Move         r1, r0
+  // print(x)
+  Print        r1
+  Return       r0
