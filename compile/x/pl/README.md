@@ -290,6 +290,7 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
 - `while` loops with `break` and `continue`
 - Expect assertions and `test` blocks
 - Logic programming facts, rules and `query` expressions
+- Anonymous function literals (`fun` expressions`)
 ## Unsupported Features
 
 The Prolog backend focuses on basic control flow and list operations. Several
@@ -309,4 +310,3 @@ Mochi language features are not yet implemented:
 - Embedding generation with `generate embedding`
 - Data loading and persistence helpers (`fetch`, `load`, `save`)
 - Package imports and exports
-- Anonymous function literals (`fun` expressions`)

@@ -1,6 +1,7 @@
 package plcode
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 
@@ -315,6 +316,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 		return c.compileExpr(p.Group)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
 	case p.LogicQuery != nil:
 		return c.compileLogicQuery(p.LogicQuery)
 	}
@@ -389,7 +392,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 			args[i] = ar.val
 		}
 		tmp := c.newVar()
-		callLine := fmt.Sprintf("%s(%s, %s)", sanitizeAtom(call.Func), strings.Join(args, ", "), tmp)
+		funName := sanitizeAtom(call.Func)
+		if fn, ok := c.funVars[call.Func]; ok {
+			funName = fn
+		}
+		callLine := fmt.Sprintf("%s(%s, %s)", funName, strings.Join(args, ", "), tmp)
 		code = append(code, callLine+",")
 		return exprRes{code: code, val: tmp}, nil
 	}
@@ -404,6 +411,31 @@ func (c *Compiler) compileLogicQuery(q *parser.LogicQueryExpr) (exprRes, error) 
 	dict := "_{" + strings.Join(fields, ", ") + "}"
 	code := []string{fmt.Sprintf("findall(%s, %s, %s),", dict, pred, tmp)}
 	return exprRes{code: code, val: tmp}, nil
+}
+
+func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (exprRes, error) {
+	name := fmt.Sprintf("_lambda%d", len(c.lambdas))
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = 0
+	var body []*parser.Statement
+	if fn.ExprBody != nil {
+		body = []*parser.Statement{{Return: &parser.ReturnStmt{Value: fn.ExprBody}}}
+	} else {
+		body = fn.BlockBody
+	}
+	fs := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: body}
+	if err := c.compileFun(fs); err != nil {
+		c.buf = oldBuf
+		c.indent = oldIndent
+		return exprRes{}, err
+	}
+	code := c.buf.String()
+	c.lambdas = append(c.lambdas, code)
+	c.buf = oldBuf
+	c.indent = oldIndent
+	return exprRes{val: sanitizeAtom(name)}, nil
 }
 
 func (c *Compiler) logicPredicate(p *parser.LogicPredicate) (string, []string, error) {

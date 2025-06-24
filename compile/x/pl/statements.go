@@ -128,6 +128,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, ret string) error {
 			c.writeln(line)
 		}
 		c.writeln(fmt.Sprintf("%s = %s,", name, val.val))
+		if fn := pureFunExpr(s.Let.Value); fn != nil {
+			c.funVars[s.Let.Name] = val.val
+		}
 	case s.Var != nil:
 		return c.compileVar(s.Var)
 	case s.Assign != nil:
@@ -331,6 +334,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 			c.writeln(line)
 		}
 		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, val.val))
+		if fn := pureFunExpr(v.Value); fn != nil {
+			c.funVars[v.Name] = val.val
+		}
 	} else {
 		c.writeln(fmt.Sprintf("nb_setval(%s, _),", name))
 	}
@@ -347,6 +353,9 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			c.writeln(line)
 		}
 		c.writeln(fmt.Sprintf("nb_setval(%s, %s),", name, val.val))
+		if fn := pureFunExpr(a.Value); fn != nil {
+			c.funVars[a.Name] = val.val
+		}
 		return nil
 	}
 	if name, ok := c.vars[a.Name]; ok && allSimple(a.Index) {
@@ -623,4 +632,19 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.writeln("true.")
 	c.indent--
 	return nil
+}
+
+func pureFunExpr(e *parser.Expr) *parser.FunExpr {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	return p.Target.FunExpr
 }
