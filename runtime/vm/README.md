@@ -17,7 +17,8 @@ The VM supports a small but useful subset of Mochi:
 * Comparison operators `==`, `!=`, `<`, `>`, `<=`, `>=`
 * Membership tests using `in`
 * Short circuit boolean operators `&&` and `||`
-* Variable definitions and reassignment
+* Variable definitions using `let` (immutable) and `var` (mutable)
+  with optional type annotations and reassignment
 * `if`, `while` and `for` loops with `break` and `continue`
 * Function definitions
 * Function calls with any number of arguments
