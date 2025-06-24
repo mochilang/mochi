@@ -295,9 +295,12 @@ const (
 	helperGenEmbed = "List<double> _genEmbed(String text, String model, Map<String,dynamic>? params) {\n" +
 		"    return text.codeUnits.map((c) => c.toDouble()).toList();\n" +
 		"}\n"
-	helperGenStruct = "T _genStruct<T>(String prompt, String model, Map<String,dynamic>? params) {\n" +
-		"    // TODO: parse model output into a struct\n" +
-		"    return null as T;\n" +
+	helperGenStruct = "Map<String, Function> _structParsers = {};\n" +
+		"T _genStruct<T>(String prompt, String model, Map<String,dynamic>? params) {\n" +
+		"    var data = jsonDecode(prompt) as Map<String, dynamic>;\n" +
+		"    var fn = _structParsers[T.toString()];\n" +
+		"    if (fn == null) throw Exception('unknown struct type $T');\n" +
+		"    return Function.apply(fn, [data]) as T;\n" +
 		"}\n"
 	helperJson = "void _json(dynamic v) {\n" +
 		"    print(jsonEncode(v));\n" +

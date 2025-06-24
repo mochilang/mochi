@@ -1118,8 +1118,23 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		ctor = fmt.Sprintf("%s({%s});", name, strings.Join(fields, ", "))
 	}
 	c.writeln(ctor)
+	// fromJson factory
+	c.writeln(fmt.Sprintf("factory %s.fromJson(Map<String,dynamic> m) {", name))
+	c.indent++
+	assigns := make([]string, len(st.Order))
+	for i, fn := range st.Order {
+		typ := dartType(st.Fields[fn])
+		if typ == "" {
+			typ = "dynamic"
+		}
+		assigns[i] = fmt.Sprintf("%s: m['%s'] as %s", sanitizeName(fn), sanitizeName(fn), typ)
+	}
+	c.writeln(fmt.Sprintf("return %s(%s);", name, strings.Join(assigns, ", ")))
 	c.indent--
 	c.writeln("}")
+	c.indent--
+	c.writeln("}")
+	c.writeln(fmt.Sprintf("_structParsers['%s'] = (m) => %s.fromJson(m);", name, name))
 	c.writeln("")
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
@@ -1385,6 +1400,8 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	c.writeln(fmt.Sprintf("class %s {", name))
 	c.indent++
 	fields := []string{}
+	names := []string{}
+	ftypes := []string{}
 	var methods []*parser.FunStmt
 	for _, m := range t.Members {
 		if m.Field != nil {
@@ -1399,6 +1416,8 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				param = "required " + param
 			}
 			fields = append(fields, param)
+			names = append(names, fname)
+			ftypes = append(ftypes, typ)
 		} else if m.Method != nil {
 			methods = append(methods, m.Method)
 		}
@@ -1410,6 +1429,16 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		ctor = fmt.Sprintf("%s({%s});", name, strings.Join(fields, ", "))
 	}
 	c.writeln(ctor)
+	c.writeln(fmt.Sprintf("factory %s.fromJson(Map<String,dynamic> m) {", name))
+	c.indent++
+	assigns := make([]string, len(names))
+	for i, fn := range names {
+		typ := ftypes[i]
+		assigns[i] = fmt.Sprintf("%s: m['%s'] as %s", fn, fn, typ)
+	}
+	c.writeln(fmt.Sprintf("return %s(%s);", name, strings.Join(assigns, ", ")))
+	c.indent--
+	c.writeln("}")
 	for _, m := range methods {
 		if err := c.compileMethod(name, m); err != nil {
 			return err
@@ -1418,6 +1447,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.writeln(fmt.Sprintf("_structParsers['%s'] = (m) => %s.fromJson(m);", name, name))
 	return nil
 }
 

@@ -1,0 +1,25 @@
+import 'dart:convert';
+
+class Info {
+	String msg;
+	Info({required this.msg});
+	factory Info.fromJson(Map<String,dynamic> m) {
+		return Info(msg: m['msg'] as String);
+	}
+}
+_structParsers['Info'] = (m) => Info.fromJson(m);
+
+void main() {
+	Info info = _genStruct<Info>("{\"msg\": \"hello\"}", "", null);
+	print(info.msg);
+}
+
+Map<String, Function> _structParsers = {};
+T _genStruct<T>(String prompt, String model, Map<String,dynamic>? params) {
+    var data = jsonDecode(prompt) as Map<String, dynamic>;
+    var fn = _structParsers[T.toString()];
+    if (fn == null) throw Exception('unknown struct type $T');
+    return Function.apply(fn, [data]) as T;
+}
+
+

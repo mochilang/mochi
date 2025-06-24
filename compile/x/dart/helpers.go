@@ -2,6 +2,7 @@ package dartcode
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	"mochi/parser"
@@ -249,7 +250,7 @@ func equalTypes(a, b types.Type) bool {
 	if isInt(a) && isInt(b) {
 		return true
 	}
-	return a == b
+	return reflect.DeepEqual(a, b)
 }
 
 func isInt64(t types.Type) bool {
