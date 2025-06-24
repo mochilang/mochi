@@ -103,6 +103,14 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 	if t == nil {
 		return "void"
 	}
+	if t.Fun != nil {
+		ret := c.cType(t.Fun.Return)
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.cType(p)
+		}
+		return fmt.Sprintf("%s (*)(%s)", ret, strings.Join(params, ", "))
+	}
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
