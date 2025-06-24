@@ -1,0 +1,13 @@
+#[derive(Clone, Debug)]
+struct Inner {
+    val: i64,
+}
+
+#[derive(Clone, Debug)]
+struct Outer {
+}
+
+fn main() {
+    let mut x = Inner { val: 7 };
+    println!("{}", x.val);
+}

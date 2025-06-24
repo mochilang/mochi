@@ -35,20 +35,20 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
-        case s.Expr != nil:
-                expr, err := c.compileExpr(s.Expr.Expr)
-                if err != nil {
-                        return err
-                }
-                c.writeln(fmt.Sprintf("%s;", expr))
-                return nil
-       case s.Fun != nil:
-               return c.compileFun(s.Fun)
-        case s.Assign != nil:
-                return c.compileAssign(s.Assign)
-        case s.Type != nil:
-                return nil
-        case s.Test != nil:
+	case s.Expr != nil:
+		expr, err := c.compileExpr(s.Expr.Expr)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s;", expr))
+		return nil
+	case s.Fun != nil:
+		return c.compileFun(s.Fun)
+	case s.Assign != nil:
+		return c.compileAssign(s.Assign)
+	case s.Type != nil:
+		return nil
+	case s.Test != nil:
 		// Test blocks are compiled separately before main.
 		return nil
 	case s.Expect != nil:
@@ -194,6 +194,14 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	c.structs[name] = true
+	for _, m := range t.Members {
+		if m.Type != nil {
+			if err := c.compileTypeDecl(m.Type); err != nil {
+				return err
+			}
+			c.writeln("")
+		}
+	}
 	if len(t.Variants) > 0 {
 		c.writeln("#[derive(Clone, Debug)]")
 		c.writeln(fmt.Sprintf("enum %s {", name))

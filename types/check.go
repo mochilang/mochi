@@ -856,6 +856,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			st.Methods = methods
 			env.SetStruct(s.Type.Name, st)
 			env.types[s.Type.Name] = st
+			for _, m := range s.Type.Members {
+				if m.Type != nil {
+					if err := checkStmt(&parser.Statement{Type: m.Type}, env, expectedReturn); err != nil {
+						return err
+					}
+				}
+			}
 			return nil
 		}
 		if len(s.Type.Variants) > 0 {
@@ -879,6 +886,13 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 			ut := UnionType{Name: s.Type.Name, Variants: variants}
 			env.SetUnion(s.Type.Name, ut)
 			env.types[s.Type.Name] = ut
+			for _, m := range s.Type.Members {
+				if m.Type != nil {
+					if err := checkStmt(&parser.Statement{Type: m.Type}, env, expectedReturn); err != nil {
+						return err
+					}
+				}
+			}
 			return nil
 		}
 		return nil
