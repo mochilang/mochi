@@ -169,6 +169,13 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 ```
 【F:compile/zig/compiler.go†L182-L213】
 
+### Functions
+
+Named functions are emitted as Zig `fn` declarations. When a function is marked
+`export` it becomes `pub fn` so it can be imported from other Zig files. Mochi
+also supports anonymous function expressions which compile to inline Zig
+functions and can be assigned to variables or passed as parameters.
+
 ### Built‑ins
 
 `compileCallExpr` implements simple built‑ins like `len` and `print`:
@@ -307,7 +314,6 @@ LeetCode solutions:
 * built-in helpers like `fetch`, `load`, `save` and `generate`
 * logic programming constructs (`fact`, `rule`, `query`)
 * concurrency features such as streams or `spawn`
-* anonymous function expressions (`fun` values)
 * arrow function syntax (`fun(x: int): int => x + 1`)
 * foreign imports and `extern` declarations
 * automatic language imports (`import python "..." auto`)
