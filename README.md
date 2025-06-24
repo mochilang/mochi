@@ -609,9 +609,6 @@ implemented across all backends:
 * Asynchronous functions (`async`/`await`)
 * Agent declarations and intent blocks with persistent state
 * Agent initialization with field values
-* Dataset query `group` clauses and join side options
-* Right and outer joins in dataset queries
-* Sorting or pagination when joins are used
 * Destructuring bindings in `let` and `var` statements
 * Agent and stream constructs (`agent`, `on`, `emit`)
 * Generative AI blocks and LLM helper functions
