@@ -30,8 +30,7 @@ static list_list_int list_list_int_create(int len) {
     l.len = len;
     l.data = (list_int*)malloc(sizeof(list_int)*len);
     return l;
-}
-static long long _now() {
+}static long long _now() {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
     return (long long)ts.tv_sec * 1000000000LL + ts.tv_nsec;
