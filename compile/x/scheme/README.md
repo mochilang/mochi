@@ -18,6 +18,7 @@ The Scheme backend converts a limited subset of Mochi programs into Scheme sourc
 - String and list slicing
 - Built‑ins: `len`, `count`, `avg`, `str`, `push`, `keys`, `print`, `input`, `_fetch`, `_load`, `_save`
 - List set operators `union`, `union_all`, `except` and `intersect`
+- Struct type declarations and methods
 
 ## Unsupported Features
 
@@ -30,7 +31,6 @@ The backend leaves many Mochi constructs unimplemented, including:
 - Foreign imports and the package system
 - Agents, streams, tests and concurrency primitives such as `spawn`
 - Set collections
-- Struct type declarations and methods
 - Export statements
 - Generic type parameters
 - Reflection or macro facilities

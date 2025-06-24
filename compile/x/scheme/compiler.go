@@ -203,6 +203,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Declarations and tests
 	for _, s := range prog.Statements {
 		switch {
+		case s.Type != nil:
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		case s.Fun != nil:
 			if err := c.compileFun(s.Fun); err != nil {
 				return nil, err
@@ -325,6 +330,98 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.writeln("))")
 	c.indent--
 	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
+	params := make([]string, len(fn.Params)+1)
+	params[0] = "Self"
+	for i, p := range fn.Params {
+		params[i+1] = sanitizeName(p.Name)
+	}
+	prevVars := c.vars
+	c.vars = map[string]string{}
+	c.writeln(fmt.Sprintf("(define (%s_%s %s)", sanitizeName(structName), sanitizeName(fn.Name), strings.Join(params, " ")))
+	c.indent++
+	c.writeln("(call/cc (lambda (return)")
+	c.indent++
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			names := make([]string, 0, len(st.Fields))
+			for fname := range st.Fields {
+				names = append(names, fname)
+			}
+			sort.Strings(names)
+			for _, fname := range names {
+				c.needMapHelpers = true
+				c.writeln(fmt.Sprintf("(define %s (map-get Self '%s))", sanitizeName(fname), sanitizeName(fname)))
+			}
+		}
+	}
+	vars := map[string]bool{}
+	collectVars(fn.Body, vars)
+	names := make([]string, 0, len(vars))
+	for v := range vars {
+		names = append(names, sanitizeName(v))
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.writeln(fmt.Sprintf("(define %s '())", n))
+	}
+	prev := c.inFun
+	c.inFun = true
+	for _, st := range fn.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.inFun = prev
+	c.vars = prevVars
+	c.indent--
+	c.writeln("))")
+	c.indent--
+	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return nil
+	}
+	fields := []string{}
+	methods := []*parser.FunStmt{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fields = append(fields, m.Field.Name)
+		}
+		if m.Method != nil {
+			methods = append(methods, m.Method)
+		}
+	}
+	name := sanitizeName(t.Name)
+	params := make([]string, len(fields))
+	for i, f := range fields {
+		params[i] = sanitizeName(f)
+	}
+	c.writeln(fmt.Sprintf("(define (new-%s %s)", name, strings.Join(params, " ")))
+	c.indent++
+	parts := make([]string, len(fields))
+	for i, f := range fields {
+		parts[i] = fmt.Sprintf("(cons '%s %s)", sanitizeName(f), sanitizeName(f))
+	}
+	if len(parts) > 0 {
+		c.writeln("(list " + strings.Join(parts, " ") + ")")
+	} else {
+		c.writeln("'()")
+	}
+	c.indent--
+	c.writeln(")")
+	for _, m := range methods {
+		if err := c.compileMethod(t.Name, m); err != nil {
+			return err
+		}
+		c.writeln("")
+	}
 	return nil
 }
 
@@ -657,6 +754,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				args[i] = v
+			}
+			if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 {
+				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
+				recvName := p.Target.Selector.Root
+				if c.env != nil {
+					if vt, err := c.env.GetVar(recvName); err == nil {
+						if st, ok := vt.(types.StructType); ok {
+							if _, ok := st.Methods[method]; ok {
+								recv := sanitizeName(recvName)
+								expr = fmt.Sprintf("(%s_%s %s", sanitizeName(st.Name), sanitizeName(method), recv)
+								if len(args) > 0 {
+									expr += " " + strings.Join(args, " ")
+								}
+								expr += ")"
+								continue
+							}
+						}
+					}
+				}
 			}
 			expr = fmt.Sprintf("(%s %s)", expr, strings.Join(args, " "))
 			continue
