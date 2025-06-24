@@ -33,11 +33,11 @@ type Compiler struct {
 
 	tempVarCount int
 
-        returnType types.Type
+	returnType types.Type
 
-        varUsage map[any]bool
+	varUsage map[any]bool
 
-        receiver string
+	receiver string
 }
 
 // New creates a new Go compiler instance.
@@ -224,7 +224,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		exprT := c.inferExprTypeHint(s.Return.Value, retT)
+		exprT := types.InferExprTypeHint(s.Return.Value, retT, c.env)
 		if retT != nil {
 			retGo := goType(retT)
 			exprGo := goType(exprT)
@@ -308,7 +308,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		if s.Type != nil {
 			t = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
-			t = c.inferExprType(s.Value)
+			t = types.InferExprType(s.Value, c.env)
 		} else if old, err := c.env.GetVar(s.Name); err == nil {
 			t = old
 		}
@@ -361,7 +361,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		if s.Type != nil {
 			typ = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
-			typ = c.inferExprTypeHint(s.Value, typ)
+			typ = types.InferExprTypeHint(s.Value, typ, c.env)
 		} else if t, err := c.env.GetVar(s.Name); err == nil {
 			typ = t
 		}
@@ -385,7 +385,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			if err != nil {
 				return err
 			}
-			exprT := c.inferExprTypeHint(s.Value, typ)
+			exprT := types.InferExprTypeHint(s.Value, typ, c.env)
 			if lt, ok := typ.(types.ListType); ok {
 				if et, ok := exprT.(types.ListType); ok && !containsAny(et.Elem) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
 					c.use("_convSlice")
@@ -409,14 +409,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
-        lhs := sanitizeName(s.Name)
-        if c.receiver != "" && len(s.Index) == 0 {
-                if st, ok := c.env.GetStruct(c.receiver); ok {
-                        if _, ok := st.Fields[s.Name]; ok {
-                                lhs = fmt.Sprintf("s.%s", exportName(lhs))
-                        }
-                }
-        }
+	lhs := sanitizeName(s.Name)
+	if c.receiver != "" && len(s.Index) == 0 {
+		if st, ok := c.env.GetStruct(c.receiver); ok {
+			if _, ok := st.Fields[s.Name]; ok {
+				lhs = fmt.Sprintf("s.%s", exportName(lhs))
+			}
+		}
+	}
 	var t types.Type
 	if c.env != nil {
 		if v, err := c.env.GetVar(s.Name); err == nil {
@@ -429,7 +429,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			return err
 		}
 		if mt, ok := t.(types.MapType); ok {
-			keyT := c.inferExprType(idx.Start)
+			keyT := types.InferExprType(idx.Start, c.env)
 			if !equalTypes(keyT, mt.Key) || isAny(keyT) {
 				c.use("_cast")
 				c.imports["encoding/json"] = true
@@ -469,7 +469,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			return err
 		}
 		if typ != nil {
-			exprT := c.inferExprTypeHint(s.Value, typ)
+			exprT := types.InferExprTypeHint(s.Value, typ, c.env)
 			if lt, ok := typ.(types.ListType); ok {
 				if et, ok := exprT.(types.ListType); ok && !containsAny(et.Elem) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
 					c.use("_convSlice")
@@ -487,7 +487,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		typ = targetType
 	}
 	finalTyp := targetType
-	exprT := c.inferExprTypeHint(s.Value, finalTyp)
+	exprT := types.InferExprTypeHint(s.Value, finalTyp, c.env)
 	if finalTyp != nil {
 		exprGo := goType(exprT)
 		typGo := goType(finalTyp)
@@ -758,56 +758,56 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 }
 
 func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
-        st, ok := c.env.GetStruct(structName)
-        if !ok {
-                return fmt.Errorf("unknown struct: %s", structName)
-        }
-        ft := st.Methods[fun.Name].Type
-        name := exportName(sanitizeName(fun.Name))
-        recv := sanitizeName(structName)
-        c.writeIndent()
-        c.buf.WriteString(fmt.Sprintf("func (s *%s) %s(", recv, name))
-        for i, p := range fun.Params {
-                if i > 0 {
-                        c.buf.WriteString(", ")
-                }
-                paramType := "any"
-                if i < len(ft.Params) {
-                        paramType = goType(ft.Params[i])
-                }
-                c.buf.WriteString(sanitizeName(p.Name) + " " + paramType)
-        }
-        retType := goType(ft.Return)
-        if retType == "" {
-                c.buf.WriteString(") {\n")
-        } else {
-                c.buf.WriteString(") " + retType + " {\n")
-        }
-        child := types.NewEnv(c.env)
-        for fname, t := range st.Fields {
-                child.SetVar(fname, t, true)
-        }
-        for i, p := range fun.Params {
-                if i < len(ft.Params) {
-                        child.SetVar(p.Name, ft.Params[i], true)
-                }
-        }
-        orig := c.env
-        origRecv := c.receiver
-        c.env = child
-        c.receiver = structName
-        c.indent++
-        if err := c.compileStmtList(fun.Body); err != nil {
-                c.env = orig
-                c.receiver = origRecv
-                return err
-        }
-        c.indent--
-        c.env = orig
-        c.receiver = origRecv
-        c.writeIndent()
-        c.buf.WriteString("}\n\n")
-        return nil
+	st, ok := c.env.GetStruct(structName)
+	if !ok {
+		return fmt.Errorf("unknown struct: %s", structName)
+	}
+	ft := st.Methods[fun.Name].Type
+	name := exportName(sanitizeName(fun.Name))
+	recv := sanitizeName(structName)
+	c.writeIndent()
+	c.buf.WriteString(fmt.Sprintf("func (s *%s) %s(", recv, name))
+	for i, p := range fun.Params {
+		if i > 0 {
+			c.buf.WriteString(", ")
+		}
+		paramType := "any"
+		if i < len(ft.Params) {
+			paramType = goType(ft.Params[i])
+		}
+		c.buf.WriteString(sanitizeName(p.Name) + " " + paramType)
+	}
+	retType := goType(ft.Return)
+	if retType == "" {
+		c.buf.WriteString(") {\n")
+	} else {
+		c.buf.WriteString(") " + retType + " {\n")
+	}
+	child := types.NewEnv(c.env)
+	for fname, t := range st.Fields {
+		child.SetVar(fname, t, true)
+	}
+	for i, p := range fun.Params {
+		if i < len(ft.Params) {
+			child.SetVar(p.Name, ft.Params[i], true)
+		}
+	}
+	orig := c.env
+	origRecv := c.receiver
+	c.env = child
+	c.receiver = structName
+	c.indent++
+	if err := c.compileStmtList(fun.Body); err != nil {
+		c.env = orig
+		c.receiver = origRecv
+		return err
+	}
+	c.indent--
+	c.env = orig
+	c.receiver = origRecv
+	c.writeIndent()
+	c.buf.WriteString("}\n\n")
+	return nil
 }
 
 func (c *Compiler) compileStructType(st types.StructType) {
@@ -894,15 +894,15 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 	}
 	c.indent--
-        c.writeln("}")
-        for _, m := range t.Members {
-                if m.Method != nil {
-                        if err := c.compileMethod(t.Name, m.Method); err != nil {
-                                return err
-                        }
-                }
-        }
-        return nil
+	c.writeln("}")
+	for _, m := range t.Members {
+		if m.Method != nil {
+			if err := c.compileMethod(t.Name, m.Method); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
@@ -1018,7 +1018,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	t := c.inferExprType(stmt.Source)
+	t := types.InferExprType(stmt.Source, c.env)
 	preBody := ""
 	switch tt := t.(type) {
 	case types.ListType:
@@ -1188,14 +1188,14 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	leftType := c.inferUnaryType(b.Left)
+	leftType := types.InferUnaryType(b.Left, c.env)
 
 	operands := []string{leftExpr}
 	typesList := []types.Type{leftType}
 	ops := []string{}
 
 	for _, part := range b.Right {
-		rightType := c.inferPostfixType(part.Right)
+		rightType := types.InferPostfixType(part.Right, c.env)
 		right := ""
 		var err error
 		if part.Op == "+" && isList(leftType) && len(part.Right.Ops) == 0 && part.Right.Target.List != nil {
@@ -1577,7 +1577,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	typ := c.inferPrimaryType(p.Target)
+	typ := types.InferPrimaryType(p.Target, c.env)
 	for _, op := range p.Ops {
 		switch {
 		case op.Call != nil:
@@ -1607,7 +1607,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("%s[%s]", val, key)
 					typ = tt.Elem
 				case types.MapType:
-					keyT := c.inferExprType(idx.Start)
+					keyT := types.InferExprType(idx.Start, c.env)
 					keyExpr := key
 					if !equalTypes(keyT, tt.Key) || isAny(keyT) {
 						c.use("_cast")
@@ -1684,22 +1684,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
-        case p.Selector != nil:
-                base := sanitizeName(p.Selector.Root)
-                var typ types.Type = types.AnyType{}
-                if c.env != nil {
-                        if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-                                typ = t
-                        }
-                }
-                if c.receiver != "" && len(p.Selector.Tail) == 0 {
-                        if st, ok := c.env.GetStruct(c.receiver); ok {
-                                if _, ok := st.Fields[p.Selector.Root]; ok {
-                                        base = fmt.Sprintf("s.%s", exportName(base))
-                                        return base, nil
-                                }
-                        }
-                }
+	case p.Selector != nil:
+		base := sanitizeName(p.Selector.Root)
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
+		if c.receiver != "" && len(p.Selector.Tail) == 0 {
+			if st, ok := c.env.GetStruct(c.receiver); ok {
+				if _, ok := st.Fields[p.Selector.Root]; ok {
+					base = fmt.Sprintf("s.%s", exportName(base))
+					return base, nil
+				}
+			}
+		}
 		if _, ok := typ.(types.MapType); ok && len(p.Selector.Tail) > 0 {
 			key := p.Selector.Tail[0]
 			base = fmt.Sprintf("%s[%q]", base, key)
@@ -1780,7 +1780,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("%s{%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
-		typ := c.inferPrimaryType(p)
+		typ := types.InferPrimaryType(p, c.env)
 		elemType := "any"
 		var elemT types.Type = types.AnyType{}
 		if lt, ok := typ.(types.ListType); ok {
@@ -1792,7 +1792,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			et := c.inferExprType(e)
+			et := types.InferExprType(e, c.env)
 			if _, ok := elemT.(types.AnyType); ok && isList(et) && !isAny(et.(types.ListType).Elem) {
 				c.use("_toAnySlice")
 				v = fmt.Sprintf("_toAnySlice(%s)", v)
@@ -1806,7 +1806,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[]" + elemType + "{" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
-		typ := c.inferPrimaryType(p)
+		typ := types.InferPrimaryType(p, c.env)
 		keyType := "string"
 		valType := "any"
 		if mt, ok := typ.(types.MapType); ok {
@@ -1835,7 +1835,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			// If the map value type is int64 but the expression is int,
 			// cast to int64 to satisfy the Go compiler.
-			if valType == "int64" && goType(c.inferExprType(item.Value)) == "int" {
+			if valType == "int64" && goType(types.InferExprType(item.Value, c.env)) == "int" {
 				v = fmt.Sprintf("int64(%s)", v)
 			}
 			parts[i] = fmt.Sprintf("%s: %s", k, v)
@@ -2037,7 +2037,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	// Prepare environment for the query variable
-	srcType := c.inferExprType(q.Source)
+	srcType := types.InferExprType(q.Source, c.env)
 	var elemType types.Type = types.AnyType{}
 	directRange := false
 	if lt, ok := srcType.(types.ListType); ok {
@@ -2049,7 +2049,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	child.SetVar(q.Var, elemType, true)
 	// Add cross join variables to environment
 	for _, f := range q.Froms {
-		ft := c.inferExprType(f.Src)
+		ft := types.InferExprType(f.Src, c.env)
 		var felem types.Type = types.AnyType{}
 		if lt, ok := ft.(types.ListType); ok {
 			felem = lt.Elem
@@ -2058,7 +2058,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	// Add join variables to environment
 	for _, j := range q.Joins {
-		jt := c.inferExprType(j.Src)
+		jt := types.InferExprType(j.Src, c.env)
 		var jelem types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {
 			jelem = lt.Elem
@@ -2091,7 +2091,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		fromSrcs[i] = fs
-		if _, ok := c.inferExprType(f.Src).(types.ListType); ok {
+		if _, ok := types.InferExprType(f.Src, c.env).(types.ListType); ok {
 			fromDirect[i] = true
 		}
 	}
@@ -2147,7 +2147,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinSrcs[i] = js
-		jt := c.inferExprType(j.Src)
+		jt := types.InferExprType(j.Src, c.env)
 		var je types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {
 			joinDirect[i] = true
@@ -2168,7 +2168,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		joinTypes[i] = t
 	}
-	retElem := goType(c.inferExprType(q.Select))
+	retElem := goType(types.InferExprType(q.Select, c.env))
 	if retElem == "" {
 		retElem = "any"
 	}
@@ -2485,7 +2485,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		return "", err
 	}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: m}}}}}
-	retT := c.inferExprType(expr)
+	retT := types.InferExprType(expr, c.env)
 	retType := goType(retT)
 	if retType == "" {
 		retType = "any"
@@ -2509,7 +2509,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		origEnv := c.env
 		c.env = caseEnv
 		res, err := c.compileExpr(cse.Result)
-		resType := c.inferExprType(cse.Result)
+		resType := types.InferExprType(cse.Result, c.env)
 		c.env = origEnv
 		if err != nil {
 			return "", err
@@ -2809,7 +2809,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					if err != nil {
 						return "", err
 					}
-					if valType == "int64" && goType(c.inferExprType(item.Value)) == "int" {
+					if valType == "int64" && goType(types.InferExprType(item.Value, c.env)) == "int" {
 						v = fmt.Sprintf("int64(%s)", v)
 					}
 					parts[i] = fmt.Sprintf("%s: %s", k, v)
@@ -2822,7 +2822,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 	if err != nil {
 		return "", err
 	}
-	exprT := c.inferExprType(e)
+	exprT := types.InferExprType(e, c.env)
 	hintGo := goType(hint)
 	exprGo := goType(exprT)
 	if hintGo != "" && hintGo != exprGo && (isAny(exprT) || !equalTypes(hint, exprT)) {
@@ -2861,7 +2861,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			at := c.inferExprTypeHint(a, paramTypes[i])
+			at := types.InferExprTypeHint(a, paramTypes[i], c.env)
 			if lt, ok := paramTypes[i].(types.ListType); ok {
 				if et, ok := at.(types.ListType); ok {
 					if isListOfAny(et) && !isListOfAny(lt) {
@@ -2899,7 +2899,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["reflect"] = true
 		c.use("_count")
 		if len(call.Args) == 1 {
-			at := c.inferExprType(call.Args[0])
+			at := types.InferExprType(call.Args[0], c.env)
 			if lt, ok := at.(types.ListType); ok && !isAny(lt.Elem) {
 				c.use("_toAnySlice")
 				argStr = fmt.Sprintf("_toAnySlice(%s)", args[0])
@@ -3147,16 +3147,16 @@ func (c *Compiler) scanBinaryImports(b *parser.BinaryExpr) {
 	if b == nil {
 		return
 	}
-	leftType := c.inferUnaryType(b.Left)
+	leftType := types.InferUnaryType(b.Left, c.env)
 	c.scanUnaryImports(b.Left)
 	for _, op := range b.Right {
 		c.scanPostfixImports(op.Right)
-		rightType := c.inferPostfixType(op.Right)
+		rightType := types.InferPostfixType(op.Right, c.env)
 		if (op.Op == "==" || op.Op == "!=") && (isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType)) {
 			c.imports["reflect"] = true
 			c.use("_equal")
 		}
-		leftType = resultType(op.Op, leftType, rightType)
+		leftType = types.ResultType(op.Op, leftType, rightType)
 	}
 }
 
