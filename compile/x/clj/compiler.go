@@ -838,6 +838,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				expr = "(System/nanoTime)"
 			case "str":
 				expr = fmt.Sprintf("(str %s)", strings.Join(args, " "))
+			case "upper":
+				if len(args) == 1 {
+					expr = fmt.Sprintf("(clojure.string/upper-case %s)", args[0])
+				}
+			case "lower":
+				if len(args) == 1 {
+					expr = fmt.Sprintf("(clojure.string/lower-case %s)", args[0])
+				}
 			default:
 				expr = fmt.Sprintf("(%s %s)", name, strings.Join(args, " "))
 			}
@@ -997,6 +1005,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "str":
 			return "(str " + strings.Join(args, " ") + ")", nil
+		case "upper":
+			if len(args) == 1 {
+				return "(clojure.string/upper-case " + args[0] + ")", nil
+			}
+		case "lower":
+			if len(args) == 1 {
+				return "(clojure.string/lower-case " + args[0] + ")", nil
+			}
 		}
 		return "(" + name + " " + strings.Join(args, " ") + ")", nil
 	case p.Load != nil:

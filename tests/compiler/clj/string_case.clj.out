@@ -1,0 +1,8 @@
+(ns main)
+
+(defn -main []
+  (println (clojure.string/upper-case "hello"))
+  (println (clojure.string/lower-case "WORLD"))
+)
+
+(-main)
