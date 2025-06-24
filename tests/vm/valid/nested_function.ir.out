@@ -10,7 +10,7 @@ func main (regs=3)
 func outer (regs=6)
   // fun inner(y: int): int {
   Move         r1, r0
-  MakeClosure  r2, fn2, 1, r1
+  MakeClosure  r2, inner, 1, r1
   // return inner(5)
   Const        r4, 5
   Move         r3, r4
@@ -19,7 +19,7 @@ func outer (regs=6)
   Return       r0
 
   // fun inner(y: int): int {
-func fn2 (regs=3)
+func inner (regs=3)
   // return x + y
   Add          r2, r0, r1
   Return       r2
