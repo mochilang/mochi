@@ -26,9 +26,9 @@ The backend implements a small but practical subset of Mochi:
 
 - Function definitions and variable bindings
 - Basic expressions including `if`/`else` and arithmetic operators
-- `for` loops over ranges or lists and `while` loops
-- Lists and maps with literals and indexing
-- Builtin helpers: `len`, `count`, `avg`, `str`, `push`, `print`, `input`, `now`, `json`, `load` and `save`
+ - `for` loops over ranges, lists or maps and `while` loops
+ - Lists and maps with literals, indexing and membership
+ - Builtin helpers: `len`, `count`, `avg`, `str`, `push`, `keys`, `print`, `input`, `now`, `json`, `load` and `save`
 
 ## Unsupported Features
 
@@ -46,7 +46,6 @@ Several language constructs remain unimplemented:
 - Reflection or macro facilities
 - Extern object declarations and package exports
 - Functions with multiple return values
-- Map membership operations
 - `test` blocks and expectations
 - Agent declarations, event emission and intent handlers
 - Model declarations and extern variables/types
