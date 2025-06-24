@@ -112,6 +112,7 @@ const (
 	OpUnion
 	OpExcept
 	OpIntersect
+	OpSort
 )
 
 func (op Op) String() string {
@@ -248,6 +249,8 @@ func (op Op) String() string {
 		return "Except"
 	case OpIntersect:
 		return "Intersect"
+	case OpSort:
+		return "Sort"
 	default:
 		return "?"
 	}
@@ -1003,6 +1006,24 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: inter}
+		case OpSort:
+			src := fr.regs[ins.B]
+			if src.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("sort expects list"), trace, ins.Line)
+			}
+			pairs := append([]Value(nil), src.List...)
+			sort.Slice(pairs, func(i, j int) bool {
+				return valueLess(pairs[i].List[0], pairs[j].List[0])
+			})
+			out := make([]Value, len(pairs))
+			for i, p := range pairs {
+				if len(p.List) > 1 {
+					out[i] = p.List[1]
+				} else {
+					out[i] = Value{Tag: interpreter.TagNull}
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
 		case OpStr:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
 		case OpInput:
@@ -2396,6 +2417,27 @@ func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
 	default:
 		fc.compileQueryFull(q, dst, 0)
 	}
+	if q.Sort != nil {
+		sorted := fc.newReg()
+		fc.emit(q.Sort.Pos, Instr{Op: OpSort, A: sorted, B: dst})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: sorted})
+	}
+	if q.Skip != nil {
+		start := fc.compileExpr(q.Skip)
+		nul := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpConst, A: nul, Val: Value{Tag: interpreter.TagNull}})
+		out := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpSlice, A: out, B: dst, C: start, D: nul})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: out})
+	}
+	if q.Take != nil {
+		zero := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		end := fc.compileExpr(q.Take)
+		out := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpSlice, A: out, B: dst, C: zero, D: end})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: out})
+	}
 	return dst
 }
 
@@ -2451,20 +2493,33 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 
 func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 	if idx >= len(q.Joins) {
+		appendVal := func() {
+			val := fc.compileExpr(q.Select)
+			if q.Sort != nil {
+				key := fc.compileExpr(q.Sort)
+				kreg := fc.newReg()
+				fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+				vreg := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+				pair := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
+				tmp := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			} else {
+				tmp := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			}
+		}
 		if q.Where != nil {
 			cond := fc.compileExpr(q.Where)
 			skip := len(fc.fn.Code)
 			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			val := fc.compileExpr(q.Select)
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			appendVal()
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			val := fc.compileExpr(q.Select)
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			appendVal()
 		}
 		return
 	}
@@ -2573,9 +2628,22 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	// helper to append selected value
 	appendSelect := func() {
 		val := fc.compileExpr(q.Select)
-		tmp := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		if q.Sort != nil {
+			key := fc.compileExpr(q.Sort)
+			kreg := fc.newReg()
+			fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+			vreg := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+			pair := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		} else {
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		}
 	}
 
 	// inner join results
@@ -2838,20 +2906,33 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 		fc.popScope()
 	} else {
 		fc.pushScope()
+		appendVal := func() {
+			val := fc.compileExpr(q.Select)
+			if q.Sort != nil {
+				key := fc.compileExpr(q.Sort)
+				kreg := fc.newReg()
+				fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+				vreg := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+				pair := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
+				tmp := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			} else {
+				tmp := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			}
+		}
 		if q.Where != nil {
 			cond := fc.compileExpr(q.Where)
 			skip := len(fc.fn.Code)
 			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			val := fc.compileExpr(q.Select)
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			appendVal()
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			val := fc.compileExpr(q.Select)
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			appendVal()
 		}
 		fc.popScope()
 	}
@@ -3397,6 +3478,30 @@ func valuesEqual(a, b Value) bool {
 	default:
 		return false
 	}
+}
+
+func valueLess(a, b Value) bool {
+	switch a.Tag {
+	case interpreter.TagInt:
+		switch b.Tag {
+		case interpreter.TagInt:
+			return a.Int < b.Int
+		case interpreter.TagFloat:
+			return float64(a.Int) < b.Float
+		}
+	case interpreter.TagFloat:
+		switch b.Tag {
+		case interpreter.TagInt:
+			return a.Float < float64(b.Int)
+		case interpreter.TagFloat:
+			return a.Float < b.Float
+		}
+	case interpreter.TagStr:
+		if b.Tag == interpreter.TagStr {
+			return a.Str < b.Str
+		}
+	}
+	return fmt.Sprint(valueToAny(a)) < fmt.Sprint(valueToAny(b))
 }
 
 // resolveTypeRef converts a parsed type reference into a concrete type using env.
