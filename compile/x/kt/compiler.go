@@ -375,7 +375,11 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("for (%s in %s) {", name, src))
+	loopSrc := src
+	if isMapExpr(stmt.Source, c.env) {
+		loopSrc += ".keys"
+	}
+	c.writeln(fmt.Sprintf("for (%s in %s) {", name, loopSrc))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {

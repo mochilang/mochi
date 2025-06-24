@@ -199,6 +199,44 @@ func isListExpr(e *parser.Expr, env *types.Env) bool {
 	return isListUnary(e.Binary.Left, env)
 }
 
+func isMapPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isMapPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return isMapPrimary(p.Target, env)
+}
+
+func isMapUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isMapPostfix(u.Value, env)
+}
+
+func isMapExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	return isMapUnary(e.Binary.Left, env)
+}
+
 func indentBlock(s string, depth int) string {
 	if s == "" {
 		return s
