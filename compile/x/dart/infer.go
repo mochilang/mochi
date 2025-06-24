@@ -117,6 +117,18 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 	return t
 }
 
+// inferFuncReturn tries to determine the return type of a function by looking
+// at the first return statement in its body. If no return statement is found
+// the function is assumed to return void.
+func (c *Compiler) inferFuncReturn(body []*parser.Statement) types.Type {
+	for _, s := range body {
+		if s.Return != nil {
+			return c.inferExprType(s.Return.Value)
+		}
+	}
+	return types.VoidType{}
+}
+
 func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 	if p == nil {
 		return types.AnyType{}

@@ -979,7 +979,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		if fun.Return != nil {
 			ft.Return = c.resolveTypeRef(fun.Return)
 		} else {
-			ft.Return = types.VoidType{}
+			ft.Return = c.inferFuncReturn(fun.Body)
 		}
 	}
 
@@ -1043,7 +1043,7 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 		if fun.Return != nil {
 			ft.Return = c.resolveTypeRef(fun.Return)
 		} else {
-			ft.Return = types.VoidType{}
+			ft.Return = c.inferFuncReturn(fun.Body)
 		}
 	}
 
