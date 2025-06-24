@@ -44,6 +44,7 @@ The backend currently supports:
 - simple cross joins using multiple `from` clauses
 - simple `group by` without joins or filters
 - struct and union type declarations generate Erlang records
+- struct literals now instantiate these records with `#name{field=val}` syntax
 - AI `generate_text`, `generate_embed` and `generate_struct` helpers (placeholders)
 - test blocks and `expect` statements
 - `load` and `save` for Erlang terms or plain text files

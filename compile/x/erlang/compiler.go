@@ -1053,8 +1053,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if c.env != nil {
 			if ut, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
 				st := ut.Variants[p.Struct.Name]
-				parts := make([]string, 0, len(p.Struct.Fields)+1)
-				parts = append(parts, fmt.Sprintf("'__name' => %s", atomName(p.Struct.Name)))
 				vals := map[string]string{}
 				for _, f := range p.Struct.Fields {
 					v, err := c.compileExpr(f.Value)
@@ -1063,12 +1061,34 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					}
 					vals[f.Name] = v
 				}
+				parts := make([]string, 0, len(st.Order))
 				for _, n := range st.Order {
-					if v, ok := vals[n]; ok {
-						parts = append(parts, fmt.Sprintf("%s => %s", n, v))
+					v := "undefined"
+					if val, ok := vals[n]; ok {
+						v = val
 					}
+					parts = append(parts, fmt.Sprintf("%s=%s", sanitizeName(n), v))
 				}
-				return "#{" + strings.Join(parts, ", ") + "}", nil
+				return fmt.Sprintf("#%s{%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+			}
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+				vals := map[string]string{}
+				for _, f := range p.Struct.Fields {
+					v, err := c.compileExpr(f.Value)
+					if err != nil {
+						return "", err
+					}
+					vals[f.Name] = v
+				}
+				parts := make([]string, 0, len(st.Order))
+				for _, n := range st.Order {
+					v := "undefined"
+					if val, ok := vals[n]; ok {
+						v = val
+					}
+					parts = append(parts, fmt.Sprintf("%s=%s", sanitizeName(n), v))
+				}
+				return fmt.Sprintf("#%s{%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 			}
 		}
 		fields := make([]string, len(p.Struct.Fields))
@@ -1085,6 +1105,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		name := c.current(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
+			if len(p.Selector.Tail) == 1 && c.env != nil {
+				if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+					if st, ok := t.(types.StructType); ok {
+						field := sanitizeName(p.Selector.Tail[0])
+						return fmt.Sprintf("%s#%s.%s", name, sanitizeName(st.Name), field), nil
+					}
+				}
+			}
 			for _, t := range p.Selector.Tail {
 				name = fmt.Sprintf("maps:get(%s, %s)", t, name)
 			}
@@ -1155,12 +1183,33 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	orig := c.env
 	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	var elem types.Type = types.AnyType{}
+	st := c.inferExprType(q.Source)
+	if lt, ok := st.(types.ListType); ok {
+		elem = lt.Elem
+	} else if gt, ok := st.(types.GroupType); ok {
+		elem = gt.Elem
+	}
+	child.SetVar(q.Var, elem, true)
 	for _, f := range q.Froms {
-		child.SetVar(f.Var, types.AnyType{}, true)
+		ft := c.inferExprType(f.Src)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		} else if gt, ok := ft.(types.GroupType); ok {
+			fe = gt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
 	}
 	for _, j := range q.Joins {
-		child.SetVar(j.Var, types.AnyType{}, true)
+		jt := c.inferExprType(j.Src)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		} else if gt, ok := jt.(types.GroupType); ok {
+			je = gt.Elem
+		}
+		child.SetVar(j.Var, je, true)
 	}
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		c.env = child
@@ -1425,24 +1474,28 @@ func (c *Compiler) compileMatchPattern(e *parser.Expr) (string, error) {
 	if call, ok := callPattern(e); ok {
 		if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 			st := ut.Variants[call.Func]
-			parts := []string{fmt.Sprintf("'__name' := %s", atomName(call.Func))}
-			for idx, arg := range call.Args {
-				if id, ok := identName(arg); ok {
-					if id == "_" {
-						parts = append(parts, fmt.Sprintf("%s := _", st.Order[idx]))
+			parts := make([]string, len(st.Order))
+			for idx, field := range st.Order {
+				if idx < len(call.Args) {
+					if id, ok := identName(call.Args[idx]); ok {
+						if id == "_" {
+							parts[idx] = fmt.Sprintf("%s=_", sanitizeName(field))
+						} else {
+							parts[idx] = fmt.Sprintf("%s=%s", sanitizeName(field), capitalize(id))
+						}
 					} else {
-						parts = append(parts, fmt.Sprintf("%s := %s", st.Order[idx], capitalize(id)))
+						return "", fmt.Errorf("unsupported pattern")
 					}
 				} else {
-					return "", fmt.Errorf("unsupported pattern")
+					parts[idx] = fmt.Sprintf("%s=_", sanitizeName(field))
 				}
 			}
-			return "#{" + strings.Join(parts, ", ") + "}", nil
+			return fmt.Sprintf("#%s{%s}", sanitizeName(call.Func), strings.Join(parts, ", ")), nil
 		}
 	}
 	if ident, ok := identName(e); ok {
 		if _, ok := c.env.FindUnionByVariant(ident); ok {
-			return fmt.Sprintf("#{'__name' := %s}", atomName(ident)), nil
+			return fmt.Sprintf("#%s{}", sanitizeName(ident)), nil
 		}
 		return capitalize(ident), nil
 	}

@@ -21,7 +21,7 @@ circle_describe(Self) ->
 
 
 main(_) ->
-	C = #{radius => 5},
+	C = #circle{radius=5},
 	circle_describe(C),
 	mochi_print(["Area is", circle_area(C)]).
 
@@ -33,3 +33,4 @@ mochi_format(X) when is_integer(X) -> integer_to_list(X);
 mochi_format(X) when is_float(X) -> float_to_list(X);
 mochi_format(X) when is_list(X) -> X;
 mochi_format(X) -> lists:flatten(io_lib:format("~p", [X])).
+
