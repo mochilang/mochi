@@ -475,6 +475,22 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_sliceString"] {
+		c.writeln("")
+		c.writeln("static String _sliceString(String s, int i, int j) {")
+		c.indent++
+		c.writeln("int start = i;")
+		c.writeln("int end = j;")
+		c.writeln("int n = s.length();")
+		c.writeln("if (start < 0) start += n;")
+		c.writeln("if (end < 0) end += n;")
+		c.writeln("if (start < 0) start = 0;")
+		c.writeln("if (end > n) end = n;")
+		c.writeln("if (end < start) end = start;")
+		c.writeln("return s.substring(start, end);")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_expect"] {
 		c.writeln("")
 		c.writeln("static void expect(boolean cond) {")
