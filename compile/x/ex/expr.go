@@ -267,32 +267,46 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			argStr := strings.Join(args, ", ")
-			switch res {
-			case "print":
-				if len(args) == 1 {
-					res = fmt.Sprintf("IO.puts(%s)", argStr)
-				} else {
-					res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr)
-				}
-			case "len":
-				res = fmt.Sprintf("length(%s)", argStr)
-			case "count":
-				c.use("_count")
-				res = fmt.Sprintf("_count(%s)", argStr)
-			case "avg":
-				c.use("_avg")
-				res = fmt.Sprintf("_avg(%s)", argStr)
-			case "str":
-				res = fmt.Sprintf("to_string(%s)", argStr)
-			case "input":
-				c.use("_input")
-				res = "_input()"
-			default:
-				if _, ok := typ.(types.FuncType); ok {
-					res = fmt.Sprintf("%s.(%s)", res, argStr)
-					typ = typ.(types.FuncType).Return
-				} else {
-					res = fmt.Sprintf("%s(%s)", res, argStr)
+			if strings.HasSuffix(res, ".keys") && len(args) == 0 {
+				target := strings.TrimSuffix(res, ".keys")
+				res = fmt.Sprintf("Map.keys(%s)", target)
+				typ = types.ListType{Elem: types.AnyType{}}
+			} else if strings.HasSuffix(res, ".values") && len(args) == 0 {
+				target := strings.TrimSuffix(res, ".values")
+				res = fmt.Sprintf("Map.values(%s)", target)
+				typ = types.ListType{Elem: types.AnyType{}}
+			} else {
+				switch res {
+				case "print":
+					if len(args) == 1 {
+						res = fmt.Sprintf("IO.puts(%s)", argStr)
+					} else {
+						res = fmt.Sprintf("IO.puts(Enum.join(Enum.map([%s], &to_string(&1)), \" \"))", argStr)
+					}
+				case "len":
+					res = fmt.Sprintf("length(%s)", argStr)
+				case "count":
+					c.use("_count")
+					res = fmt.Sprintf("_count(%s)", argStr)
+				case "avg":
+					c.use("_avg")
+					res = fmt.Sprintf("_avg(%s)", argStr)
+				case "str":
+					res = fmt.Sprintf("to_string(%s)", argStr)
+				case "input":
+					c.use("_input")
+					res = "_input()"
+				case "keys":
+					res = fmt.Sprintf("Map.keys(%s)", argStr)
+				case "values":
+					res = fmt.Sprintf("Map.values(%s)", argStr)
+				default:
+					if _, ok := typ.(types.FuncType); ok {
+						res = fmt.Sprintf("%s.(%s)", res, argStr)
+						typ = typ.(types.FuncType).Return
+					} else {
+						res = fmt.Sprintf("%s(%s)", res, argStr)
+					}
 				}
 			}
 		} else if op.Cast != nil {
@@ -407,6 +421,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "input":
 			c.use("_input")
 			return "_input()", nil
+		case "keys":
+			return fmt.Sprintf("Map.keys(%s)", argStr), nil
+		case "values":
+			return fmt.Sprintf("Map.values(%s)", argStr), nil
 		default:
 			if c.funcs[p.Call.Func] {
 				return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
