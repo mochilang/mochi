@@ -21,7 +21,8 @@ func TestRacketCompiler_TwoSum(t *testing.T) {
 	if err := rktcode.EnsureRacket(); err != nil {
 		t.Skipf("racket not installed: %v", err)
 	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+	root := findRoot(t)
+	src := filepath.Join(root, "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)

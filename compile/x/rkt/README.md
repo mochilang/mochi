@@ -40,6 +40,8 @@ go test ./compile/rkt -tags slow
 - Dataset queries with `sort`, `skip` and `take`
 - Simple `struct` type declarations
 - Iteration over map keys
+- Function definitions and calls
+- Anonymous function expressions
 
 ## Unsupported Features
 
@@ -55,4 +57,3 @@ go test ./compile/rkt -tags slow
 - Methods defined inside `type` blocks
 - Extern declarations (`extern var`, `extern fun`, `extern type`, `extern object`)
 - Destructuring bindings in `let` and `var` statements
-- Built-in functions `now` and `json`

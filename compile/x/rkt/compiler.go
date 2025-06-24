@@ -76,6 +76,12 @@ const llmHelpers = `(define (_genText prompt model params)
   (define data (string->jsexpr prompt))
   (apply ctor (map (lambda (f) (hash-ref data f)) fields)))`
 
+const jsonHelpers = `(define (to-jsexpr v)
+  (if (hash? v)
+      (for/hash ([(k val) (in-hash v)])
+        (values (if (string? k) (string->symbol k) k) val))
+      v))`
+
 // Compiler translates Mochi AST into Racket source code.
 type Compiler struct {
 	buf          bytes.Buffer
@@ -86,6 +92,7 @@ type Compiler struct {
 	needsSetOps  bool
 	needsMatch   bool
 	needsLLM     bool
+	needsJSON    bool
 	imports      []string
 	exports      []string
 }
@@ -214,6 +221,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln(";dataset-placeholder")
 	c.writeln(";setops-placeholder")
 	c.writeln(";llm-placeholder")
+	c.writeln(";json-placeholder")
 	// type declarations first
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -257,17 +265,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	code := c.buf.Bytes()
-	header := "(require racket/list)"
+	imports := []string{"racket/list"}
 	if c.needsMatch {
-		header += " racket/match"
+		imports = append(imports, "racket/match")
 	}
 	if c.needsDataset {
-		header += " racket/string json"
+		imports = append(imports, "racket/string", "json")
 	} else if c.needsLLM {
-		header += " json"
+		imports = append(imports, "json")
 	}
+	var extraModules []string
+	var extraRequires []string
 	for _, imp := range c.imports {
-		header += " " + imp
+		if strings.HasPrefix(imp, "(require ") {
+			extraRequires = append(extraRequires, imp)
+		} else {
+			extraModules = append(extraModules, imp)
+		}
+	}
+	imports = append(imports, extraModules...)
+	header := "(require " + strings.Join(imports, " ") + ")"
+	if len(extraRequires) > 0 {
+		header += "\n" + strings.Join(extraRequires, "\n")
 	}
 	code = bytes.Replace(code, []byte(";require-placeholder"), []byte(header), 1)
 	if len(c.exports) > 0 {
@@ -290,6 +309,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		code = bytes.Replace(code, []byte(";llm-placeholder\n"), []byte(llmHelpers), 1)
 	} else {
 		code = bytes.Replace(code, []byte(";llm-placeholder\n"), nil, 1)
+	}
+	if c.needsJSON {
+		code = bytes.Replace(code, []byte(";json-placeholder\n"), []byte(jsonHelpers), 1)
+	} else {
+		code = bytes.Replace(code, []byte(";json-placeholder\n"), nil, 1)
 	}
 	return code, nil
 }
@@ -923,9 +947,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			pairs[i] = fmt.Sprintf("(%s . %s)", k, v)
+			pairs[i] = fmt.Sprintf("%s %s", k, v)
 		}
-		return "'#hash(" + strings.Join(pairs, " ") + ")", nil
+		return "(hash " + strings.Join(pairs, " ") + ")", nil
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Match != nil:
@@ -974,6 +998,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		name = "avg"
 	case "input":
 		name = "read-line"
+	case "now":
+		return "(inexact->exact (floor (* (current-inexact-milliseconds) 1000000)))", nil
+	case "json":
+		c.imports = append(c.imports, "json")
+		c.needsJSON = true
+		if len(call.Args) == 1 {
+			arg, err := c.compileExpr(call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(displayln (jsexpr->string (to-jsexpr %s)))", arg), nil
+		}
 	}
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
