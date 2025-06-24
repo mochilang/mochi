@@ -15,6 +15,7 @@
     (if (= n 0) 0
         (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
 
+(define (expect cond) (unless cond (error "expect failed")))
 (define scores '#hash(("a" . 1)))
 (set! scores (if (hash? scores) (hash-set scores "b" 2) (list-set scores "b" 2)))
 (displayln (idx scores "b"))

@@ -15,6 +15,7 @@
     (if (= n 0) 0
         (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
 
+(define (expect cond) (unless cond (error "expect failed")))
 (define a 10)
 (define b 20)
 (displayln (+ a b))

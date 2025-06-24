@@ -15,6 +15,7 @@
     (if (= n 0) 0
         (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
 
+(define (expect cond) (unless cond (error "expect failed")))
 (define numbers (list 1 2 3 4 5 6 7 8 9))
 (let/ec brk0
 	(let loop0 ([it numbers])
