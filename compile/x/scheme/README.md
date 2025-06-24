@@ -199,6 +199,25 @@ Produces Scheme code like:
 )
 ```
 
+Compiling a map loop:
+```mochi
+for k in {"a": 1, "b": 2} {
+  print(k)
+}
+```
+
+Produces Scheme code like:
+```scheme
+(let loop ((k_idx 0))
+        (if (< k_idx (length (map car (list (cons "a" 1) (cons "b" 2)))))
+                (begin
+                        (begin (display (list-ref (map car (list (cons "a" 1) (cons "b" 2)) ) k_idx)) (newline))
+                        (loop (+ k_idx 1))
+                )
+        '())
+)
+```
+
 ## Building
 
 Run the Mochi CLI to generate Scheme and execute it with chibi-scheme:

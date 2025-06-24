@@ -1,0 +1,8 @@
+var m: map<int, bool> = {}
+m[1] = true
+m[2] = true
+var sum = 0
+for k in m {
+  sum = sum + k
+}
+print(sum)
