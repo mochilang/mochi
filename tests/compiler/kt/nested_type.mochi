@@ -1,0 +1,15 @@
+type Outer {
+  type Inner {
+    x: int
+  }
+
+  name: string
+
+  fun makeInner(x: int): Inner {
+    return Inner { x: x }
+  }
+}
+
+let o = Outer { name: "out" }
+let i = o.makeInner(42)
+print(i.x)

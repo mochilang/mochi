@@ -807,81 +807,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		return nil
 
 	case s.Type != nil:
-		if len(s.Type.Members) > 0 {
-			fields := map[string]Type{}
-			order := []string{}
-			methods := map[string]Method{}
-			st := StructType{Name: s.Type.Name, Fields: fields, Order: order, Methods: methods}
-			env.SetStruct(s.Type.Name, st)
-			env.types[s.Type.Name] = st
-			// First pass: collect fields
-			for _, m := range s.Type.Members {
-				if m.Field != nil {
-					fields[m.Field.Name] = resolveTypeRef(m.Field.Type, env)
-					order = append(order, m.Field.Name)
-				}
-			}
-			// Second pass: check methods
-			for _, m := range s.Type.Members {
-				if m.Method != nil {
-					params := []Type{}
-					for _, p := range m.Method.Params {
-						if p.Type == nil {
-							return errParamMissingType(m.Method.Pos, p.Name)
-						}
-						params = append(params, resolveTypeRef(p.Type, env))
-					}
-					var ret Type = VoidType{}
-					if m.Method.Return != nil {
-						ret = resolveTypeRef(m.Method.Return, env)
-					}
-					methodEnv := NewEnv(env)
-					for name, t := range fields {
-						methodEnv.SetVar(name, t, true)
-					}
-					for i, p := range m.Method.Params {
-						methodEnv.SetVar(p.Name, params[i], true)
-					}
-					for _, stmt := range m.Method.Body {
-						if err := checkStmt(stmt, methodEnv, ret); err != nil {
-							return err
-						}
-					}
-					pure := isPureFunction(&parser.FunStmt{Params: m.Method.Params, Return: m.Method.Return, Body: m.Method.Body}, methodEnv)
-					methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret, Pure: pure}}
-				}
-			}
-			st.Fields = fields
-			st.Order = order
-			st.Methods = methods
-			env.SetStruct(s.Type.Name, st)
-			env.types[s.Type.Name] = st
-			return nil
-		}
-		if len(s.Type.Variants) > 0 {
-			variants := map[string]StructType{}
-			for _, v := range s.Type.Variants {
-				vf := map[string]Type{}
-				order := []string{}
-				for _, f := range v.Fields {
-					vf[f.Name] = resolveTypeRef(f.Type, env)
-					order = append(order, f.Name)
-				}
-				st := StructType{Name: v.Name, Fields: vf, Order: order}
-				variants[v.Name] = st
-				env.SetStruct(v.Name, st)
-				params := make([]Type, 0, len(v.Fields))
-				for _, f := range v.Fields {
-					params = append(params, resolveTypeRef(f.Type, env))
-				}
-				env.SetFuncType(v.Name, FuncType{Params: params, Return: UnionType{Name: s.Type.Name, Variants: nil}})
-			}
-			ut := UnionType{Name: s.Type.Name, Variants: variants}
-			env.SetUnion(s.Type.Name, ut)
-			env.types[s.Type.Name] = ut
-			return nil
-		}
-		return nil
+		return checkTypeDecl(s.Type, env)
 
 	case s.Model != nil:
 		for _, f := range s.Model.Fields {
@@ -949,6 +875,86 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		if !unify(t, BoolType{}, nil) {
 			return errExpectBoolean(s.Expect.Pos)
 		}
+		return nil
+	}
+	return nil
+}
+
+func checkTypeDecl(t *parser.TypeDecl, env *Env) error {
+	if len(t.Members) > 0 {
+		fields := map[string]Type{}
+		order := []string{}
+		methods := map[string]Method{}
+		st := StructType{Name: t.Name, Fields: fields, Order: order, Methods: methods}
+		env.SetStruct(t.Name, st)
+		env.types[t.Name] = st
+		for _, m := range t.Members {
+			if m.Field != nil {
+				fields[m.Field.Name] = resolveTypeRef(m.Field.Type, env)
+				order = append(order, m.Field.Name)
+			} else if m.Type != nil {
+				if err := checkTypeDecl(m.Type, env); err != nil {
+					return err
+				}
+			}
+		}
+		for _, m := range t.Members {
+			if m.Method != nil {
+				params := []Type{}
+				for _, p := range m.Method.Params {
+					if p.Type == nil {
+						return errParamMissingType(m.Method.Pos, p.Name)
+					}
+					params = append(params, resolveTypeRef(p.Type, env))
+				}
+				var ret Type = VoidType{}
+				if m.Method.Return != nil {
+					ret = resolveTypeRef(m.Method.Return, env)
+				}
+				methodEnv := NewEnv(env)
+				for name, t := range fields {
+					methodEnv.SetVar(name, t, true)
+				}
+				for i, p := range m.Method.Params {
+					methodEnv.SetVar(p.Name, params[i], true)
+				}
+				for _, stmt := range m.Method.Body {
+					if err := checkStmt(stmt, methodEnv, ret); err != nil {
+						return err
+					}
+				}
+				pure := isPureFunction(&parser.FunStmt{Params: m.Method.Params, Return: m.Method.Return, Body: m.Method.Body}, methodEnv)
+				methods[m.Method.Name] = Method{Decl: m.Method, Type: FuncType{Params: params, Return: ret, Pure: pure}}
+			}
+		}
+		st.Fields = fields
+		st.Order = order
+		st.Methods = methods
+		env.SetStruct(t.Name, st)
+		env.types[t.Name] = st
+		return nil
+	}
+	if len(t.Variants) > 0 {
+		variants := map[string]StructType{}
+		for _, v := range t.Variants {
+			vf := map[string]Type{}
+			order := []string{}
+			for _, f := range v.Fields {
+				vf[f.Name] = resolveTypeRef(f.Type, env)
+				order = append(order, f.Name)
+			}
+			st := StructType{Name: v.Name, Fields: vf, Order: order}
+			variants[v.Name] = st
+			env.SetStruct(v.Name, st)
+			params := make([]Type, 0, len(v.Fields))
+			for _, f := range v.Fields {
+				params = append(params, resolveTypeRef(f.Type, env))
+			}
+			env.SetFuncType(v.Name, FuncType{Params: params, Return: UnionType{Name: t.Name, Variants: nil}})
+		}
+		ut := UnionType{Name: t.Name, Variants: variants}
+		env.SetUnion(t.Name, ut)
+		env.types[t.Name] = ut
 		return nil
 	}
 	return nil

@@ -323,6 +323,14 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				c.writeln(fmt.Sprintf("data class %s(%s) : %s", vname, joinArgs(fields), name))
 			}
 		}
+		for _, m := range t.Members {
+			if m.Type != nil {
+				if err := c.compileTypeDecl(m.Type); err != nil {
+					return err
+				}
+				c.writeln("")
+			}
+		}
 		return nil
 	}
 	fields := []string{}
@@ -333,10 +341,20 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			fields = append(fields, fmt.Sprintf("val %s: %s", sanitizeName(m.Field.Name), typ))
 		} else if m.Method != nil {
 			methods = append(methods, m.Method)
+		} else if m.Type != nil {
+			// nested type declaration handled after outer type
 		}
 	}
 	if len(methods) == 0 {
 		c.writeln(fmt.Sprintf("data class %s(%s)", name, joinArgs(fields)))
+		for _, m := range t.Members {
+			if m.Type != nil {
+				if err := c.compileTypeDecl(m.Type); err != nil {
+					return err
+				}
+				c.writeln("")
+			}
+		}
 		return nil
 	}
 	c.writeln(fmt.Sprintf("data class %s(%s) {", name, joinArgs(fields)))
@@ -349,6 +367,14 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("}")
+	for _, m := range t.Members {
+		if m.Type != nil {
+			c.writeln("")
+			if err := c.compileTypeDecl(m.Type); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 

@@ -1,0 +1,16 @@
+data class Outer(val name: String) {
+        fun makeInner(x: Int) : Inner {
+                return Inner(x = x)
+        }
+        
+}
+
+data class Inner(val x: Int)
+
+fun main() {
+        val o = Outer(name = "out")
+        val i = o.makeInner(42)
+        println(i.x)
+}
+
+
