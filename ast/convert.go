@@ -144,6 +144,10 @@ func FromStatement(s *parser.Statement) *Node {
 					Value:    m.Field.Name,
 					Children: []*Node{FromTypeRef(m.Field.Type)},
 				})
+			} else if m.Method != nil {
+				n.Children = append(n.Children, FromStatement(&parser.Statement{Fun: m.Method}))
+			} else if m.Type != nil {
+				n.Children = append(n.Children, FromStatement(&parser.Statement{Type: m.Type}))
 			}
 		}
 		return n
