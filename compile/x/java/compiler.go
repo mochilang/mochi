@@ -17,13 +17,20 @@ type Compiler struct {
 	mainStmts    []*parser.Statement
 	tests        []*parser.TestBlock
 	helpers      map[string]bool
+	structs      map[string]bool
 	returnType   types.Type
 	tempVarCount int
 }
 
 // New creates a new Java compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), tests: []*parser.TestBlock{}, tempVarCount: 0}
+	return &Compiler{
+		env:          env,
+		helpers:      make(map[string]bool),
+		structs:      make(map[string]bool),
+		tests:        []*parser.TestBlock{},
+		tempVarCount: 0,
+	}
 }
 
 // Compile generates Java code for prog.
@@ -96,6 +103,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 
 	name := sanitizeName(t.Name)
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
 	fields := []struct{ name, typ string }{}
 	if c.env != nil {
 		st := types.StructType{Name: t.Name, Fields: map[string]types.Type{}, Order: []string{}}
@@ -137,7 +148,54 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("}")
+
+	// compile nested struct field types
+	for _, m := range t.Members {
+		if m.Field != nil {
+			if st, ok := c.resolveTypeRef(m.Field.Type).(types.StructType); ok {
+				c.compileStructType(st)
+			}
+		}
+	}
 	return nil
+}
+
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("static class %s {", name))
+	c.indent++
+	for _, fn := range st.Order {
+		ft := st.Fields[fn]
+		c.writeln(fmt.Sprintf("%s %s;", c.javaType(ft), sanitizeName(fn)))
+	}
+	if len(st.Order) > 0 {
+		params := make([]string, len(st.Order))
+		for i, fn := range st.Order {
+			typ := c.javaType(st.Fields[fn])
+			params[i] = typ + " " + sanitizeName(fn)
+		}
+		c.writeln("")
+		c.writeln(fmt.Sprintf("%s(%s) {", name, strings.Join(params, ", ")))
+		c.indent++
+		for _, fn := range st.Order {
+			n := sanitizeName(fn)
+			c.writeln(fmt.Sprintf("this.%s = %s;", n, n))
+		}
+		c.indent--
+		c.writeln("}")
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
