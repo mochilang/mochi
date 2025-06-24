@@ -2060,7 +2060,13 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		}
 		tmp := make([]struct{ k, v int }, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			tmp[i].k = fc.compileExpr(it.Key)
+			if name, ok := identName(it.Key); ok {
+				reg := fc.newReg()
+				fc.emit(it.Pos, Instr{Op: OpConst, A: reg, Val: Value{Tag: interpreter.TagStr, Str: name}})
+				tmp[i].k = reg
+			} else {
+				tmp[i].k = fc.compileExpr(it.Key)
+			}
 			tmp[i].v = fc.compileExpr(it.Value)
 		}
 		regs := make([]int, len(p.Map.Items)*2)
@@ -2595,18 +2601,22 @@ func constList(l *parser.ListLiteral) (Value, bool) {
 func constMap(m *parser.MapLiteral) (Value, bool) {
 	vals := make(map[string]Value, len(m.Items))
 	for _, it := range m.Items {
-		k, ok := constExpr(it.Key)
-		if !ok {
-			return Value{}, false
-		}
 		var key string
-		switch k.Tag {
-		case interpreter.TagStr:
-			key = k.Str
-		case interpreter.TagInt:
-			key = fmt.Sprintf("%d", k.Int)
-		default:
-			return Value{}, false
+		if name, ok := identName(it.Key); ok {
+			key = name
+		} else {
+			k, ok := constExpr(it.Key)
+			if !ok {
+				return Value{}, false
+			}
+			switch k.Tag {
+			case interpreter.TagStr:
+				key = k.Str
+			case interpreter.TagInt:
+				key = fmt.Sprintf("%d", k.Int)
+			default:
+				return Value{}, false
+			}
 		}
 		v, ok := constExpr(it.Value)
 		if !ok {
