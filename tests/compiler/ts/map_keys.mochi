@@ -1,0 +1,4 @@
+var m: map<int, bool> = {}
+m[1] = true
+m[2] = false
+print(m.keys())
