@@ -127,6 +127,9 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 				if _, ok := c.env.GetStruct(*t.Simple); ok {
 					return sanitizeName(*t.Simple)
 				}
+				if _, ok := c.env.GetUnion(*t.Simple); ok {
+					return sanitizeName(*t.Simple)
+				}
 			}
 		}
 	}
@@ -1570,15 +1573,46 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 	expr := sanitizeName(s.Root)
+	var typ types.Type
 	if c.currentStruct != "" && c.env != nil {
 		if st, ok := c.env.GetStruct(c.currentStruct); ok {
-			if _, ok2 := st.Fields[s.Root]; ok2 {
+			if ft, ok2 := st.Fields[s.Root]; ok2 {
 				expr = "self->" + sanitizeName(s.Root)
+				typ = ft
 			}
 		}
 	}
+	if typ == nil && c.env != nil {
+		if t, err := c.env.GetVar(s.Root); err == nil {
+			typ = t
+		}
+	}
 	for _, f := range s.Tail {
+		if ut, ok := typ.(types.UnionType); ok {
+			var variant string
+			var ft types.Type
+			for name, st := range ut.Variants {
+				if t, ok2 := st.Fields[f]; ok2 {
+					if variant != "" {
+						variant = ""
+						break
+					}
+					variant = name
+					ft = t
+				}
+			}
+			if variant != "" {
+				expr += fmt.Sprintf(".value.%s.%s", sanitizeName(variant), sanitizeName(f))
+				typ = ft
+				continue
+			}
+		}
 		expr += "." + sanitizeName(f)
+		if st, ok := typ.(types.StructType); ok {
+			typ = st.Fields[f]
+		} else {
+			typ = nil
+		}
 	}
 	return expr
 }
