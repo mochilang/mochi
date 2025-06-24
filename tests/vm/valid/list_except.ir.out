@@ -1,0 +1,7 @@
+func main (regs=3)
+  // print([1,2,3] except [2])
+  Const        r0, [1, 2, 3]
+  Const        r1, [2]
+  Except       r2, r0, r1
+  Print        r2
+  Return       r0

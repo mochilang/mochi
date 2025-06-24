@@ -78,7 +78,11 @@ const (
 	OpLessInt
 	OpLessFloat
 	OpLessEqInt
-	OpLessEqFloat
+       OpLessEqFloat
+       OpUnion
+       OpUnionAll
+       OpExcept
+       OpIntersect
 )
 
 func (op Op) String() string {
@@ -169,11 +173,19 @@ func (op Op) String() string {
 		return "LessFloat"
 	case OpLessEqInt:
 		return "LessEqInt"
-	case OpLessEqFloat:
-		return "LessEqFloat"
-	default:
-		return "?"
-	}
+       case OpLessEqFloat:
+               return "LessEqFloat"
+       case OpUnion:
+               return "Union"
+       case OpUnionAll:
+               return "UnionAll"
+       case OpExcept:
+               return "Except"
+       case OpIntersect:
+               return "Intersect"
+       default:
+               return "?"
+       }
 }
 
 type Instr struct {
@@ -264,14 +276,15 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), valueToString(ins.Val))
 			case OpMove:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
-			case OpAdd, OpSub, OpMul, OpDiv, OpMod,
-				OpAddInt, OpAddFloat, OpSubInt, OpSubFloat,
-				OpMulInt, OpMulFloat, OpDivInt, OpDivFloat,
-				OpModInt, OpModFloat,
-				OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
-				OpLess, OpLessEq, OpLessInt, OpLessFloat,
-				OpLessEqInt, OpLessEqFloat, OpIn:
-				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
+                       case OpAdd, OpSub, OpMul, OpDiv, OpMod,
+                               OpAddInt, OpAddFloat, OpSubInt, OpSubFloat,
+                               OpMulInt, OpMulFloat, OpDivInt, OpDivFloat,
+                               OpModInt, OpModFloat,
+                               OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
+                               OpLess, OpLessEq, OpLessInt, OpLessFloat,
+                               OpLessEqInt, OpLessEqFloat, OpIn,
+                               OpUnion, OpUnionAll, OpExcept, OpIntersect:
+                               fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpSetIndex:
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
 			case OpJump:
@@ -575,10 +588,75 @@ func (m *VM) call(fnIndex int, args []Value) (Value, error) {
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]), valueToAny(fr.regs[ins.B]))
 		case OpNow:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(time.Now().UnixNano())}
-		case OpJSON:
-			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
-			fmt.Fprintln(m.writer, string(b))
-		case OpCall2:
+                case OpJSON:
+                        b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
+                        fmt.Fprintln(m.writer, string(b))
+               case OpUnionAll:
+                       left := fr.regs[ins.B]
+                       right := fr.regs[ins.C]
+                       res := append(append([]Value{}, left.List...), right.List...)
+                       fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: res}
+               case OpUnion:
+                       left := fr.regs[ins.B]
+                       right := fr.regs[ins.C]
+                       merged := append([]Value{}, left.List...)
+                       for _, rv := range right.List {
+                               found := false
+                               for _, lv := range merged {
+                                       if valuesEqual(lv, rv) {
+                                               found = true
+                                               break
+                                       }
+                               }
+                               if !found {
+                                       merged = append(merged, rv)
+                               }
+                       }
+                       fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: merged}
+               case OpExcept:
+                       left := fr.regs[ins.B]
+                       right := fr.regs[ins.C]
+                       diff := []Value{}
+                       for _, lv := range left.List {
+                               found := false
+                               for _, rv := range right.List {
+                                       if valuesEqual(lv, rv) {
+                                               found = true
+                                               break
+                                       }
+                               }
+                               if !found {
+                                       diff = append(diff, lv)
+                               }
+                       }
+                       fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: diff}
+               case OpIntersect:
+                       left := fr.regs[ins.B]
+                       right := fr.regs[ins.C]
+                       inter := []Value{}
+                       for _, lv := range left.List {
+                               match := false
+                               for _, rv := range right.List {
+                                       if valuesEqual(lv, rv) {
+                                               match = true
+                                               break
+                                       }
+                               }
+                               if match {
+                                       exists := false
+                                       for _, iv := range inter {
+                                               if valuesEqual(iv, lv) {
+                                                       exists = true
+                                                       break
+                                               }
+                                       }
+                                       if !exists {
+                                               inter = append(inter, lv)
+                                       }
+                               }
+                       }
+                       fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: inter}
+                case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
 			res, err := m.call(ins.B, []Value{a, b})
@@ -737,11 +815,13 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
 		OpIn, OpNot:
 		fc.tags[i.A] = tagBool
-	case OpLen, OpNow:
-		fc.tags[i.A] = tagInt
-	case OpJSON, OpPrint, OpPrint2:
-		// no result
-	}
+       case OpLen, OpNow:
+               fc.tags[i.A] = tagInt
+       case OpUnion, OpUnionAll, OpExcept, OpIntersect,
+               OpMakeList, OpIndex, OpSetIndex,
+               OpJSON, OpPrint, OpPrint2:
+               // no result
+       }
 }
 
 func (fc *funcCompiler) newReg() int {
@@ -949,20 +1029,36 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 			dst := fc.newReg()
 			fc.emit(op.Pos, Instr{Op: OpIn, A: dst, B: left, C: right})
 			left = dst
-		case ">=":
-			dst := fc.newReg()
-			// a >= b  ==>  b <= a
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpLessEqFloat, A: dst, B: right, C: left})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpLessEqInt, A: dst, B: right, C: left})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpLessEq, A: dst, B: right, C: left})
-			}
-			left = dst
-		}
-	}
-	return left
+               case ">=":
+                       dst := fc.newReg()
+                       // a >= b  ==>  b <= a
+                       if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+                               fc.emit(op.Pos, Instr{Op: OpLessEqFloat, A: dst, B: right, C: left})
+                       } else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+                               fc.emit(op.Pos, Instr{Op: OpLessEqInt, A: dst, B: right, C: left})
+                       } else {
+                               fc.emit(op.Pos, Instr{Op: OpLessEq, A: dst, B: right, C: left})
+                       }
+                       left = dst
+               case "union":
+                       dst := fc.newReg()
+                       if op.All {
+                               fc.emit(op.Pos, Instr{Op: OpUnionAll, A: dst, B: left, C: right})
+                       } else {
+                               fc.emit(op.Pos, Instr{Op: OpUnion, A: dst, B: left, C: right})
+                       }
+                       left = dst
+               case "except":
+                       dst := fc.newReg()
+                       fc.emit(op.Pos, Instr{Op: OpExcept, A: dst, B: left, C: right})
+                       left = dst
+               case "intersect":
+                       dst := fc.newReg()
+                       fc.emit(op.Pos, Instr{Op: OpIntersect, A: dst, B: left, C: right})
+                       left = dst
+               }
+       }
+       return left
 }
 
 func (fc *funcCompiler) compileUnary(u *parser.Unary) int {
