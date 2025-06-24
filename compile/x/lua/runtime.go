@@ -122,6 +122,20 @@ const (
 		"    return sum / #items\n" +
 		"end\n"
 
+	helperAppend = "function __append(lst, v)\n" +
+		"    local out = {}\n" +
+		"    if lst then for i = 1, #lst do out[#out+1] = lst[i] end end\n" +
+		"    out[#out+1] = v\n" +
+		"    return out\n" +
+		"end\n"
+
+	helperReduce = "function __reduce(src, fn, acc)\n" +
+		"    for _, it in ipairs(src) do\n" +
+		"        acc = fn(acc, it)\n" +
+		"    end\n" +
+		"    return acc\n" +
+		"end\n"
+
 	helperJson = "function __json(v)\n" +
 		"    local ok, json = pcall(require, 'json')\n" +
 		"    if not ok then error('json library not found') end\n" +
@@ -398,6 +412,8 @@ var helperMap = map[string]string{
 	"input":       helperInput,
 	"count":       helperCount,
 	"avg":         helperAvg,
+	"append":      helperAppend,
+	"reduce":      helperReduce,
 	"json":        helperJson,
 	"eval":        helperEval,
 	"index":       helperIndex,

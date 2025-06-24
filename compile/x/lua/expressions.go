@@ -310,6 +310,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "avg":
 		c.helpers["avg"] = true
 		return fmt.Sprintf("__avg(%s)", argStr), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		c.helpers["append"] = true
+		return fmt.Sprintf("__append(%s, %s)", args[0], args[1]), nil
+	case "reduce":
+		if len(args) != 3 {
+			return "", fmt.Errorf("reduce expects 3 args")
+		}
+		c.helpers["reduce"] = true
+		return fmt.Sprintf("__reduce(%s, %s, %s)", args[0], args[1], args[2]), nil
 	case "now":
 		return "os.time()*1000000000", nil
 	case "json":
