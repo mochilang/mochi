@@ -35,6 +35,9 @@ func (c *Compiler) compileBlock(stmts []*parser.Statement, ret string) ([]byte, 
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	name := sanitizeAtom(fn.Name)
+	if c.env != nil {
+		c.env.SetFunc(fn.Name, fn)
+	}
 	oldVars := c.vars
 	oldFun := c.currFun
 	newVars := make(map[string]string)
@@ -81,7 +84,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.buf = oldBuf
 	if hasBody || fallback == nil {
-		c.writeln(fmt.Sprintf("%s(%s, %s) :-", name, strings.Join(params, ", "), ret))
+		if len(params) == 0 {
+			c.writeln(fmt.Sprintf("%s(%s) :-", name, ret))
+		} else {
+			c.writeln(fmt.Sprintf("%s(%s, %s) :-", name, strings.Join(params, ", "), ret))
+		}
 		c.indent++
 		c.writeln("catch(")
 		c.indent++
@@ -108,7 +115,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s(%s, %s) :-", name, strings.Join(params, ", "), ret))
+		if len(params) == 0 {
+			c.writeln(fmt.Sprintf("%s(%s) :-", name, ret))
+		} else {
+			c.writeln(fmt.Sprintf("%s(%s, %s) :-", name, strings.Join(params, ", "), ret))
+		}
 		for _, line := range val.code {
 			c.writeln(line)
 		}

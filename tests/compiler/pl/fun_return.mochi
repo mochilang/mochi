@@ -1,0 +1,6 @@
+fun makeSquare(): fun(int): int {
+  return fun(x: int): int => x * x
+}
+
+let sq = makeSquare()
+print(sq(4))

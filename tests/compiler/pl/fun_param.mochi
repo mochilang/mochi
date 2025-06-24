@@ -1,0 +1,9 @@
+fun apply(f: fun(int): int, x: int): int {
+  return f(x)
+}
+
+fun square(x: int): int {
+  return x * x
+}
+
+print(apply(square, 6))
