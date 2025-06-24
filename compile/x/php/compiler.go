@@ -283,7 +283,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("foreach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as %s) {", src, name))
+		if c.isMapExpr(f.Source) {
+			c.writeln(fmt.Sprintf("foreach (array_keys(%s) as %s) {", src, name))
+		} else {
+			c.writeln(fmt.Sprintf("foreach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as %s) {", src, name))
+		}
 	}
 	c.indent++
 	for _, st := range f.Body {
