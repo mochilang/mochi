@@ -566,6 +566,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			} else {
 				expr = fmt.Sprintf("%s.contains(%s)", rhs, expr)
 			}
+		} else if op.Op == "union" && op.All {
+			expr = fmt.Sprintf("%s + %s", expr, rhs)
+		} else if op.Op == "union" {
+			c.use("_union")
+			expr = fmt.Sprintf("_union(%s, %s)", expr, rhs)
+		} else if op.Op == "except" {
+			c.use("_except")
+			expr = fmt.Sprintf("_except(%s, %s)", expr, rhs)
+		} else if op.Op == "intersect" {
+			c.use("_intersect")
+			expr = fmt.Sprintf("_intersect(%s, %s)", expr, rhs)
 		} else {
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
 		}
