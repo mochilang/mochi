@@ -22,6 +22,19 @@ const (
 		"  if (end < start) end = start;\n" +
 		"  return runes.slice(start, end).join('');\n" +
 		"}\n"
+	helperSlice = "function _slice(v: any, i: number, j: number): any[] {\n" +
+		"  if (typeof v === 'string') return _sliceString(v, i, j);\n" +
+		"  if (!Array.isArray(v)) return [];\n" +
+		"  let start = i;\n" +
+		"  let end = j;\n" +
+		"  const n = v.length;\n" +
+		"  if (start < 0) start += n;\n" +
+		"  if (end < 0) end += n;\n" +
+		"  if (start < 0) start = 0;\n" +
+		"  if (end > n) end = n;\n" +
+		"  if (end < start) end = start;\n" +
+		"  return v.slice(start, end);\n" +
+		"}\n"
 	helperCount = "function _count(v: any): number {\n" +
 		"  if (Array.isArray(v)) return v.length;\n" +
 		"  if (v && typeof v === 'object') {\n" +
@@ -116,6 +129,33 @@ const (
 
 	helperToAnyMap = "function _toAnyMap(m: any): Record<string, any> {\n" +
 		"  return m as Record<string, any>;\n" +
+		"}\n"
+
+	helperUnionAll = "function _union_all(a: any[], b: any[]): any[] {\n" +
+		"  return a.concat(b);\n" +
+		"}\n"
+
+	helperUnion = "function _union(a: any[], b: any[]): any[] {\n" +
+		"  const res: any[] = [];\n" +
+		"  const seen = new Set<any>();\n" +
+		"  for (const it of a) { if (!seen.has(it)) { seen.add(it); res.push(it); } }\n" +
+		"  for (const it of b) { if (!seen.has(it)) { seen.add(it); res.push(it); } }\n" +
+		"  return res;\n" +
+		"}\n"
+
+	helperExcept = "function _except(a: any[], b: any[]): any[] {\n" +
+		"  const remove = new Set<any>(b);\n" +
+		"  const res: any[] = [];\n" +
+		"  for (const it of a) { if (!remove.has(it)) res.push(it); }\n" +
+		"  return res;\n" +
+		"}\n"
+
+	helperIntersect = "function _intersect(a: any[], b: any[]): any[] {\n" +
+		"  const keep = new Set<any>(b);\n" +
+		"  const res: any[] = [];\n" +
+		"  const seen = new Set<any>();\n" +
+		"  for (const it of a) { if (keep.has(it) && !seen.has(it)) { seen.add(it); res.push(it); } }\n" +
+		"  return res;\n" +
 		"}\n"
 
 	helperStream = "class Stream {\n" +
@@ -327,6 +367,7 @@ const (
 var helperMap = map[string]string{
 	"_indexString": helperIndexString,
 	"_sliceString": helperSliceString,
+	"_slice":       helperSlice,
 	"_count":       helperCount,
 	"_avg":         helperAvg,
 	"_input":       helperInput,
@@ -337,6 +378,10 @@ var helperMap = map[string]string{
 	"_equal":       helperEqual,
 	"_fetch":       helperFetch,
 	"_toAnyMap":    helperToAnyMap,
+	"_union_all":   helperUnionAll,
+	"_union":       helperUnion,
+	"_except":      helperExcept,
+	"_intersect":   helperIntersect,
 	"_stream":      helperStream,
 	"_waitAll":     helperWaitAll,
 	"_agent":       helperAgent,

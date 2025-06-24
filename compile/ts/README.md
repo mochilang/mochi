@@ -25,7 +25,7 @@ var helperMap = map[string]string{
     "_gen_embed":  helperGenEmbed,
     "_gen_struct": helperGenStruct,
 ```
-【F:compile/ts/runtime.go†L304-L316】
+【F:compile/ts/runtime.go†L367-L389】
 ```
 
 ## Tests
