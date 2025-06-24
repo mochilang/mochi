@@ -2081,6 +2081,10 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		return dst
 	}
 
+	if p.Query != nil {
+		return fc.compileQuery(p.Query)
+	}
+
 	if p.Load != nil {
 		pathReg := fc.newReg()
 		path := ""
@@ -2370,6 +2374,85 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 		fc.loops = fc.loops[:len(fc.loops)-1]
 	}
 	return nil
+}
+
+// compileQuery compiles a simple query expression supporting FROM clauses,
+// optional WHERE filtering and SELECT projection. Only cross joins are
+// handled and results are accumulated into a list.
+func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
+	dst := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
+	fc.compileQueryFrom(q, dst, 0)
+	return dst
+}
+
+// compileQueryFrom recursively emits nested loops for each FROM clause.
+func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int) {
+	var name string
+	var src *parser.Expr
+	if level == 0 {
+		name = q.Var
+		src = q.Source
+	} else {
+		from := q.Froms[level-1]
+		name = from.Var
+		src = from.Src
+	}
+
+	srcReg := fc.compileExpr(src)
+	listReg := fc.newReg()
+	fc.emit(src.Pos, Instr{Op: OpIterPrep, A: listReg, B: srcReg})
+	lengthReg := fc.newReg()
+	fc.emit(src.Pos, Instr{Op: OpLen, A: lengthReg, B: listReg})
+	idxReg := fc.newReg()
+	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	loopStart := len(fc.fn.Code)
+	condReg := fc.newReg()
+	fc.emit(src.Pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lengthReg})
+	jmp := len(fc.fn.Code)
+	fc.emit(src.Pos, Instr{Op: OpJumpIfFalse, A: condReg})
+
+	elemReg := fc.newReg()
+	fc.emit(src.Pos, Instr{Op: OpIndex, A: elemReg, B: listReg, C: idxReg})
+	varReg, ok := fc.vars[name]
+	if !ok {
+		varReg = fc.newReg()
+		fc.vars[name] = varReg
+	}
+	fc.emit(src.Pos, Instr{Op: OpMove, A: varReg, B: elemReg})
+
+	if level < len(q.Froms) {
+		fc.pushScope()
+		fc.compileQueryFrom(q, dst, level+1)
+		fc.popScope()
+	} else {
+		fc.pushScope()
+		if q.Where != nil {
+			cond := fc.compileExpr(q.Where)
+			skip := len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+			val := fc.compileExpr(q.Select)
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			fc.fn.Code[skip].B = len(fc.fn.Code)
+		} else {
+			val := fc.compileExpr(q.Select)
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		}
+		fc.popScope()
+	}
+
+	one := fc.newReg()
+	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	tmp := fc.newReg()
+	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
+	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+	fc.emit(src.Pos, Instr{Op: OpJump, A: loopStart})
+	end := len(fc.fn.Code)
+	fc.fn.Code[jmp].B = end
 }
 
 func (fc *funcCompiler) compileWhile(w *parser.WhileStmt) error {
