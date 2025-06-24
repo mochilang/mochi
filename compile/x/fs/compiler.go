@@ -1060,6 +1060,8 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				} else if op == "in" {
 					if maps[i+1] {
 						operands[i] = fmt.Sprintf("Map.containsKey %s %s", left, right)
+					} else if strs[i+1] {
+						operands[i] = fmt.Sprintf("%s.Contains(%s)", right, left)
 					} else {
 						operands[i] = fmt.Sprintf("Array.contains %s %s", left, right)
 					}
