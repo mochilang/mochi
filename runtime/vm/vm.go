@@ -71,6 +71,9 @@ const (
 	OpAvg
 	OpIterPrep
 
+	// Closure creation
+	OpMakeClosure
+
 	// Specialized numeric ops
 	OpAddInt
 	OpAddFloat
@@ -173,6 +176,8 @@ func (op Op) String() string {
 		return "Avg"
 	case OpIterPrep:
 		return "IterPrep"
+	case OpMakeClosure:
+		return "MakeClosure"
 	case OpAddInt:
 		return "AddInt"
 	case OpAddFloat:
@@ -370,6 +375,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpAvg:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpMakeClosure:
+				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), p.funcName(ins.B), ins.C, formatReg(ins.D))
 			case OpCall2:
 				fmt.Fprintf(&b, "%s, %s, %s, %s", formatReg(ins.A), p.funcName(ins.B), formatReg(ins.C), formatReg(ins.D))
 			case OpCall:
@@ -916,6 +923,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
 			}
+		case OpMakeClosure:
+			caps := make([]Value, ins.C)
+			copy(caps, fr.regs[ins.D:ins.D+ins.C])
+			cl := &closure{fn: ins.B, args: caps}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFunc, Func: cl}
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
@@ -1072,12 +1084,13 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			idx := len(c.funcs)
+			c.funcs = append(c.funcs, Function{})
 			c.fnIndex[st.Fun.Name] = idx
 			fn, err := c.compileFun(st.Fun)
 			if err != nil {
 				return nil, err
 			}
-			c.funcs = append(c.funcs, fn)
+			c.funcs[idx] = fn
 		}
 	}
 	main, err := c.compileMain(p)
@@ -1109,24 +1122,30 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 	return fc.fn, nil
 }
 
-func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
+func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(fn.Params)
-	for i, p := range fn.Params {
-		fc.vars[p.Name] = i
+	fc.fn.NumParams = len(captures) + len(fn.Params)
+	for i, name := range captures {
+		fc.vars[name] = i
 		if i >= fc.fn.NumRegs {
 			fc.fn.NumRegs = i + 1
 		}
 	}
-	fc.idx = len(fn.Params)
+	for i, p := range fn.Params {
+		idx := len(captures) + i
+		fc.vars[p.Name] = idx
+		if idx >= fc.fn.NumRegs {
+			fc.fn.NumRegs = idx + 1
+		}
+	}
+	fc.idx = fc.fn.NumParams
 	if fn.ExprBody != nil {
 		r := fc.compileExpr(fn.ExprBody)
 		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: r})
 	} else {
 		for _, st := range fn.BlockBody {
 			if err := fc.compileStmt(st); err != nil {
-				// function literals are compiled at expression level; panic on error
 				panic(err)
 			}
 		}
@@ -1249,6 +1268,28 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Expr != nil:
 		fc.compileExpr(s.Expr.Expr)
+		return nil
+	case s.Fun != nil:
+		captureNames := make([]string, 0, len(fc.vars))
+		for name := range fc.vars {
+			captureNames = append(captureNames, name)
+		}
+		sort.Strings(captureNames)
+		idx := fc.comp.compileFunExpr(&parser.FunExpr{Pos: s.Fun.Pos, Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}, captureNames)
+		capRegs := make([]int, len(captureNames))
+		for i, name := range captureNames {
+			r := fc.vars[name]
+			reg := fc.newReg()
+			fc.emit(s.Fun.Pos, Instr{Op: OpMove, A: reg, B: r})
+			capRegs[i] = reg
+		}
+		dst := fc.newReg()
+		start := 0
+		if len(capRegs) > 0 {
+			start = capRegs[0]
+		}
+		fc.emit(s.Fun.Pos, Instr{Op: OpMakeClosure, A: dst, B: idx, C: len(capRegs), D: start})
+		fc.vars[s.Fun.Name] = dst
 		return nil
 	case s.If != nil:
 		return fc.compileIf(s.If)
@@ -1598,9 +1639,25 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	}
 
 	if p.FunExpr != nil {
-		idx := fc.comp.compileFunExpr(p.FunExpr)
+		captureNames := make([]string, 0, len(fc.vars))
+		for name := range fc.vars {
+			captureNames = append(captureNames, name)
+		}
+		sort.Strings(captureNames)
+		idx := fc.comp.compileFunExpr(p.FunExpr, captureNames)
+		capRegs := make([]int, len(captureNames))
+		for i, name := range captureNames {
+			r := fc.vars[name]
+			reg := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpMove, A: reg, B: r})
+			capRegs[i] = reg
+		}
 		dst := fc.newReg()
-		fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagInt, Int: idx}})
+		start := 0
+		if len(capRegs) > 0 {
+			start = capRegs[0]
+		}
+		fc.emit(p.Pos, Instr{Op: OpMakeClosure, A: dst, B: idx, C: len(capRegs), D: start})
 		return dst
 	}
 
