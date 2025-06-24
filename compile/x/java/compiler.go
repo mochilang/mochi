@@ -692,6 +692,70 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_cast"] {
+		c.writeln("")
+		c.writeln("static <T> T _cast(Class<T> cls, Object v) {")
+		c.indent++
+		c.writeln("if (cls.isInstance(v)) return cls.cast(v);")
+		c.writeln("if (cls == Integer.class) {")
+		c.indent++
+		c.writeln("if (v instanceof Number n) return cls.cast(n.intValue());")
+		c.writeln("if (v instanceof String s) return cls.cast(Integer.parseInt(s));")
+		c.writeln("return cls.cast(0);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (cls == Double.class) {")
+		c.indent++
+		c.writeln("if (v instanceof Number n) return cls.cast(n.doubleValue());")
+		c.writeln("if (v instanceof String s) return cls.cast(Double.parseDouble(s));")
+		c.writeln("return cls.cast(0.0);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (cls == Boolean.class) {")
+		c.indent++
+		c.writeln("if (v instanceof Boolean b) return cls.cast(b);")
+		c.writeln("if (v instanceof String s) return cls.cast(Boolean.parseBoolean(s));")
+		c.writeln("return cls.cast(false);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (v instanceof java.util.Map<?,?> m) {")
+		c.indent++
+		c.writeln("try {")
+		c.indent++
+		c.writeln("T out = cls.getDeclaredConstructor().newInstance();")
+		c.writeln("for (java.lang.reflect.Field f : cls.getDeclaredFields()) {")
+		c.indent++
+		c.writeln("Object val = m.get(f.getName());")
+		c.writeln("if (val != null) {")
+		c.indent++
+		c.writeln("f.setAccessible(true);")
+		c.writeln("Class<?> ft = f.getType();")
+		c.writeln("if (ft == int.class) {")
+		c.indent++
+		c.writeln("if (val instanceof Number n) f.setInt(out, n.intValue()); else if (val instanceof String s) f.setInt(out, Integer.parseInt(s));")
+		c.indent--
+		c.writeln("} else if (ft == double.class) {")
+		c.indent++
+		c.writeln("if (val instanceof Number n) f.setDouble(out, n.doubleValue()); else if (val instanceof String s) f.setDouble(out, Double.parseDouble(s));")
+		c.indent--
+		c.writeln("} else if (ft == boolean.class) {")
+		c.indent++
+		c.writeln("if (val instanceof Boolean b) f.setBoolean(out, b); else if (val instanceof String s) f.setBoolean(out, Boolean.parseBoolean(s));")
+		c.indent--
+		c.writeln("} else { f.set(out, val); }")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("} catch (Exception e) { throw new RuntimeException(e); }")
+		c.indent--
+		c.writeln("}")
+		c.writeln("try { return cls.getDeclaredConstructor().newInstance(); } catch (Exception e) { throw new RuntimeException(e); }")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_fetch"] {
 		c.writeln("")
 		c.writeln("static java.util.Map<String,Object> _fetch(String url, java.util.Map<String,Object> opts) {")

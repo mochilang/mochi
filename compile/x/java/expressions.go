@@ -189,7 +189,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 		if op.Cast != nil {
 			t := c.resolveTypeRef(op.Cast.Type)
-			expr = fmt.Sprintf("(%s)(%s)", c.javaType(t), expr)
+			typ := c.javaType(t)
+			box := boxedType(typ)
+			if _, ok := t.(types.StructType); ok || box != typ {
+				c.helpers["_cast"] = true
+				expr = fmt.Sprintf("_cast(%s.class, %s)", box, expr)
+				if box != typ {
+					expr = fmt.Sprintf("((%s)%s)", typ, expr)
+				}
+			} else {
+				expr = fmt.Sprintf("(%s)(%s)", typ, expr)
+			}
 			continue
 		}
 		if op.Call != nil {
@@ -527,6 +537,12 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 			return types.BoolType{}
 		case "string":
 			return types.StringType{}
+		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(*t.Simple); ok {
+					return st
+				}
+			}
 		}
 	}
 	if t.Generic != nil {
