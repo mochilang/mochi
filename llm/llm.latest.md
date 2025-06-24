@@ -445,10 +445,12 @@ type PostfixExpr struct {
 }
 
 type IndexOp struct {
-	Pos   lexer.Position
-	Start *Expr   `parser:"'[' [ @@ "`
-	Colon *string `parser:"[ @':'"`
-	End   *Expr   `parser:"  @@ ] ] ']'"`
+        Pos    lexer.Position
+        Start  *Expr   `parser:"'[' [ @@ ]"`
+        Colon  *string `parser:"[ @':'"`
+        End    *Expr   `parser:" [ @@ ] ]"`
+        Colon2 *string `parser:"[ @':'"`
+        Step   *Expr   `parser:" [ @@ ] ] ']'"`
 }
 
 type ListLiteral struct {

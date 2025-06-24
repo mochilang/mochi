@@ -129,33 +129,55 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("")
 	}
 	if c.needsSlice {
-		c.writeln("fn _slice_list(comptime T: type, v: []const T, start: i32, end: i32) []const T {")
+		c.writeln("fn _slice_list(comptime T: type, v: []const T, start: i32, end: i32, step: i32) []T {")
 		c.indent++
 		c.writeln("var s = start;")
 		c.writeln("var e = end;")
+		c.writeln("var st = step;")
 		c.writeln("const n: i32 = @as(i32, @intCast(v.len));")
 		c.writeln("if (s < 0) s += n;")
 		c.writeln("if (e < 0) e += n;")
+		c.writeln("if (st == 0) st = 1;")
 		c.writeln("if (s < 0) s = 0;")
 		c.writeln("if (e > n) e = n;")
-		c.writeln("if (e < s) e = s;")
-		c.writeln("return v[@as(usize, @intCast(s))..@as(usize, @intCast(e))];")
+		c.writeln("if (st > 0 and e < s) e = s;")
+		c.writeln("if (st < 0 and e > s) e = s;")
+		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("var i: i32 = s;")
+		c.writeln("while ((st > 0 and i < e) or (st < 0 and i > e)) : (i += st) {")
+		c.indent++
+		c.writeln("res.append(v[@as(usize, @intCast(i))]) catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
 	}
 	if c.needsSliceString {
-		c.writeln("fn _slice_string(s: []const u8, start: i32, end: i32) []const u8 {")
+		c.writeln("fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {")
 		c.indent++
 		c.writeln("var sidx = start;")
 		c.writeln("var eidx = end;")
+		c.writeln("var stp = step;")
 		c.writeln("const n: i32 = @as(i32, @intCast(s.len));")
 		c.writeln("if (sidx < 0) sidx += n;")
 		c.writeln("if (eidx < 0) eidx += n;")
+		c.writeln("if (stp == 0) stp = 1;")
 		c.writeln("if (sidx < 0) sidx = 0;")
 		c.writeln("if (eidx > n) eidx = n;")
-		c.writeln("if (eidx < sidx) eidx = sidx;")
-		c.writeln("return s[@as(usize, @intCast(sidx))..@as(usize, @intCast(eidx))];")
+		c.writeln("if (stp > 0 and eidx < sidx) eidx = sidx;")
+		c.writeln("if (stp < 0 and eidx > sidx) eidx = sidx;")
+		c.writeln("var res = std.ArrayList(u8).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("var i: i32 = sidx;")
+		c.writeln("while ((stp > 0 and i < eidx) or (stp < 0 and i > eidx)) : (i += stp) {")
+		c.indent++
+		c.writeln("res.append(s[@as(usize, @intCast(i))]) catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")

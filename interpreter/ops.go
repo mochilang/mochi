@@ -30,7 +30,7 @@ func (i *Interpreter) invokeClosure(pos lexer.Position, cl Closure, args []*pars
 	}
 
 	if totalArgs < fullParamCount {
-                return Closure{
+		return Closure{
 			Name:       cl.Name,
 			Fn:         cl.Fn,
 			Env:        cl.Env,
@@ -110,7 +110,7 @@ func (i *Interpreter) applyCallOp(val any, call *parser.CallOp) (any, error) {
 		}
 	}
 
-        cl, ok := val.(Closure)
+	cl, ok := val.(Closure)
 	if !ok {
 		return nil, errUndefinedFunctionOrClosure(call.Pos, "")
 	}
@@ -141,7 +141,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			}
 			return src[n], nil
 		}
-		start, end := 0, len(src)
+		start, end, step := 0, len(src), 1
 		if idx.Start != nil {
 			s, err := i.evalExpr(idx.Start)
 			if err != nil {
@@ -170,10 +170,40 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 				return nil, errInvalidIndex(idx.Pos, e)
 			}
 		}
-		if start < 0 || end > len(src) || start > end {
+		if idx.Step != nil {
+			st, err := i.evalExpr(idx.Step)
+			if err != nil {
+				return nil, err
+			}
+			if n, ok := st.(int); ok {
+				step = n
+			} else {
+				return nil, errInvalidIndex(idx.Pos, st)
+			}
+			if step == 0 {
+				return nil, fmt.Errorf("invalid slice step")
+			}
+		}
+		if start < 0 || end > len(src) {
 			return nil, errSliceOutOfBounds(idx.Pos, start, end, len(src))
 		}
-		return src[start:end], nil
+		var out []any
+		if step > 0 {
+			if end < start {
+				end = start
+			}
+			for j := start; j < end; j += step {
+				out = append(out, src[j])
+			}
+		} else {
+			if end > start {
+				end = start
+			}
+			for j := start; j > end; j += step {
+				out = append(out, src[j])
+			}
+		}
+		return out, nil
 
 	case string:
 		runes := []rune(src)
@@ -197,7 +227,7 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 			}
 			return string(runes[n]), nil
 		}
-		start, end := 0, len(runes)
+		start, end, step := 0, len(runes), 1
 		if idx.Start != nil {
 			s, err := i.evalExpr(idx.Start)
 			if err != nil {
@@ -226,10 +256,40 @@ func (i *Interpreter) applyIndex(val any, idx *parser.IndexOp) (any, error) {
 				return nil, errInvalidIndex(idx.Pos, e)
 			}
 		}
-		if start < 0 || end > len(runes) || start > end {
+		if idx.Step != nil {
+			st, err := i.evalExpr(idx.Step)
+			if err != nil {
+				return nil, err
+			}
+			if n, ok := st.(int); ok {
+				step = n
+			} else {
+				return nil, errInvalidIndex(idx.Pos, st)
+			}
+			if step == 0 {
+				return nil, fmt.Errorf("invalid slice step")
+			}
+		}
+		if start < 0 || end > len(runes) {
 			return nil, errSliceOutOfBounds(idx.Pos, start, end, len(runes))
 		}
-		return string(runes[start:end]), nil
+		var res []rune
+		if step > 0 {
+			if end < start {
+				end = start
+			}
+			for j := start; j < end; j += step {
+				res = append(res, runes[j])
+			}
+		} else {
+			if end > start {
+				end = start
+			}
+			for j := start; j > end; j += step {
+				res = append(res, runes[j])
+			}
+		}
+		return string(res), nil
 
 	case map[string]any:
 		if idx.Colon != nil {
