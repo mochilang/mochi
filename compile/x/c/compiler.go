@@ -1041,6 +1041,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
+		if op.Op == "in" && leftString && isStringPostfixOrIndex(op.Right, c.env) {
+			c.need(needInString)
+			left = fmt.Sprintf("contains_string(%s, %s)", right, left)
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
 		left = fmt.Sprintf("(%s %s %s)", left, op.Op, right)
 		leftList = false
 		leftListInt = false
