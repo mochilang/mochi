@@ -87,8 +87,9 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
-			{Lang: "mochi_pypy", Path: path, Suffix: suffix, Command: []string{"pypy3"}},
-			{Lang: "mochi_cython", Path: path, Suffix: suffix, Command: nil},
+			// Temporarily disable PyPy and Cython benchmarks
+			// {Lang: "mochi_pypy", Path: path, Suffix: suffix, Command: []string{"pypy3"}},
+			// {Lang: "mochi_cython", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}},
 		}
 
@@ -149,19 +150,19 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 					panic(err)
 				}
 				out = bin
-			} else if t.Lang == "mochi_py" || t.Lang == "mochi_pypy" {
+			} else if t.Lang == "mochi_py" {
 				compiled := strings.TrimSuffix(out, ".mochi") + ".py"
 				if err := compileToPy(out, compiled); err != nil {
 					panic(err)
 				}
 				out = compiled
-			} else if t.Lang == "mochi_cython" {
-				compiled := strings.TrimSuffix(out, ".mochi") + ".cy.c"
-				bin := strings.TrimSuffix(out, ".mochi") + ".cy.bin"
-				if err := compileToCython(out, compiled, bin); err != nil {
-					panic(err)
-				}
-				out = bin
+				// } else if t.Lang == "mochi_cython" {
+				//      compiled := strings.TrimSuffix(out, ".mochi") + ".cy.c"
+				//      bin := strings.TrimSuffix(out, ".mochi") + ".cy.bin"
+				//      if err := compileToCython(out, compiled, bin); err != nil {
+				//              panic(err)
+				//      }
+				//      out = bin
 			}
 
 			absOut, err := filepath.Abs(out)
@@ -201,12 +202,13 @@ func Run() {
 	if err := pycode.EnsurePython(); err != nil {
 		panic(err)
 	}
-	if err := pycode.EnsurePyPy(); err != nil {
-		panic(err)
-	}
-	if err := pycode.EnsureCython(); err != nil {
-		panic(err)
-	}
+	// Temporarily disable PyPy and Cython benchmarks
+	// if err := pycode.EnsurePyPy(); err != nil {
+	//      panic(err)
+	// }
+	// if err := pycode.EnsureCython(); err != nil {
+	//      panic(err)
+	// }
 	if err := tscode.EnsureDeno(); err != nil {
 		panic(err)
 	}
@@ -334,10 +336,10 @@ func report(results []Result) {
 				langName = "C"
 			case "mochi_py":
 				langName = "Python"
-			case "mochi_pypy":
-				langName = "Python (PyPy)"
-			case "mochi_cython":
-				langName = "Python (Cython)"
+				// case "mochi_pypy":
+				//      langName = "Python (PyPy)"
+				// case "mochi_cython":
+				//      langName = "Python (Cython)"
 			case "mochi_ts":
 				langName = "Typescript"
 			}
@@ -580,10 +582,10 @@ func exportMarkdown(results []Result) error {
 				langName = "C"
 			case "mochi_py":
 				langName = "Python"
-			case "mochi_pypy":
-				langName = "Python (PyPy)"
-			case "mochi_cython":
-				langName = "Python (Cython)"
+				// case "mochi_pypy":
+				//      langName = "Python (PyPy)"
+				// case "mochi_cython":
+				//      langName = "Python (Cython)"
 			case "mochi_ts":
 				langName = "Typescript"
 			}
