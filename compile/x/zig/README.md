@@ -206,16 +206,21 @@ respectively when the `keys` or `values` builtin is used.
 
 ### Struct Types
 
-`compileTypeDecl` emits simple Zig structs for `type` declarations and
-`compileStructLiteral` constructs values using field initializers:
+`compileTypeDecl` emits Zig structs for `type` declarations. Methods defined
+inside the type are translated to struct methods that take `self` as the first
+parameter. `compileStructLiteral` constructs values using field initializers:
 
 ```go
 const Person = struct {
         name: []const u8,
         age: i32,
+        fn greet(self: *Person) []const u8 {
+                return _concat_string("hi ", self.name);
+        },
 };
 
 let p = Person{ .name = "Ada", .age = 42 };
+print(p.greet());
 ```
 
 ### Helpers
