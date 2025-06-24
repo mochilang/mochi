@@ -1,0 +1,10 @@
+type Outer {
+  id: int
+  type Inner {
+    name: string
+  }
+  val: Inner
+}
+
+let o = Outer { id: 1, val: Inner { name: "x" } }
+print(o.val.name)

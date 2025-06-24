@@ -1,0 +1,18 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newInner: name | dict |
+        dict := Dictionary new.
+        dict at: 'name' put: name.
+        ^ dict
+!
+!Main class methodsFor: 'types'!
+newOuter: id val: val | dict |
+        dict := Dictionary new.
+        dict at: 'id' put: id.
+        dict at: 'val' put: val.
+        ^ dict
+!
+!!
+o := (Main newOuter: 1 val: (Main newInner: 'x')).
+((o at: 'val') at: 'name') displayOn: Transcript. Transcript cr.

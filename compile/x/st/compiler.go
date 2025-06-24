@@ -223,6 +223,14 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	for _, m := range t.Members {
+		if m.Type != nil {
+			if err := c.compileTypeDecl(m.Type); err != nil {
+				return err
+			}
+		}
+	}
+
 	if len(t.Variants) > 0 {
 		// union types not yet supported
 		return nil
