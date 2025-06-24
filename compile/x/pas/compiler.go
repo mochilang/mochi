@@ -318,6 +318,23 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	if c.isStringExpr(f.Source) {
+		idx := c.newVar()
+		c.writeln(fmt.Sprintf("for %s := 1 to Length(%s) do", idx, src))
+		c.writeln("begin")
+		c.indent++
+		if f.Name != "_" {
+			c.writeln(fmt.Sprintf("%s := %s[%s];", name, src, idx))
+		}
+		for _, st := range f.Body {
+			if err := c.compileStmt(st); err != nil {
+				return err
+			}
+		}
+		c.indent--
+		c.writeln("end;")
+		return nil
+	}
 	loopVar := name
 	if f.Name == "_" {
 		loopVar = c.newVar()
@@ -976,15 +993,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for i, op := range p.Ops {
+	for _, op := range p.Ops {
 		if op.Index != nil {
-			if i == 0 && p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Str != nil {
-				if op.Index.Start != nil && op.Index.Start.Binary != nil && op.Index.Start.Binary.Left != nil && op.Index.Start.Binary.Left.Value != nil && op.Index.Start.Binary.Left.Value.Target != nil && op.Index.Start.Binary.Left.Value.Target.Lit != nil && op.Index.Start.Binary.Left.Value.Target.Lit.Int != nil && *op.Index.Start.Binary.Left.Value.Target.Lit.Int == 0 {
-					s := strings.ReplaceAll(*p.Target.Lit.Str, "'", "''")
-					expr = fmt.Sprintf("'%s'", s)
-					continue
-				}
-			}
 			if op.Index.End != nil || op.Index.Colon != nil {
 				start := "0"
 				if op.Index.Start != nil {
@@ -994,38 +1004,27 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					start = sidx
 				}
+				end := fmt.Sprintf("Length(%s)", expr)
+				if op.Index.End != nil {
+					eidx, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = eidx
+				}
 				if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
+					c.use("_sliceString")
+					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+				} else {
+					// fallback: simple slice using Copy
 					begin := start
 					if begin != "0" {
 						begin = fmt.Sprintf("%s + 1", begin)
 					} else {
 						begin = "1"
 					}
-					length := fmt.Sprintf("Length(%s)", expr)
-					if op.Index.End != nil {
-						eidx, err := c.compileExpr(op.Index.End)
-						if err != nil {
-							return "", err
-						}
-						if op.Index.Start != nil {
-							length = fmt.Sprintf("(%s - %s)", eidx, start)
-						} else {
-							length = eidx
-						}
-					} else if op.Index.Start != nil {
-						length = fmt.Sprintf("Length(%s) - %s", expr, start)
-					}
+					length := fmt.Sprintf("%s - %s", end, start)
 					expr = fmt.Sprintf("Copy(%s, %s, %s)", expr, begin, length)
-				} else {
-					// fallback: simple index at start
-					idx, err := c.compileExpr(op.Index.Start)
-					if err != nil {
-						return "", err
-					}
-					if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
-						idx = fmt.Sprintf("%s + 1", idx)
-					}
-					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
 			} else {
 				idx, err := c.compileExpr(op.Index.Start)
@@ -1034,10 +1033,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				if c.isMapPostfix(&parser.PostfixExpr{Target: p.Target}) {
 					expr = fmt.Sprintf("%s.KeyData[%s]", expr, idx)
+				} else if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
+					c.use("_indexString")
+					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
 				} else {
-					if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
-						idx = fmt.Sprintf("%s + 1", idx)
-					}
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
 			}
@@ -1263,6 +1262,36 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("client.Free;")
 			c.indent--
 			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_indexString":
+			c.writeln("function _indexString(s: string; i: integer): string;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("if i < 0 then i := Length(s) + i;")
+			c.writeln("if (i < 0) or (i >= Length(s)) then")
+			c.indent++
+			c.writeln("raise Exception.Create('index out of range');")
+			c.indent--
+			c.writeln("Result := s[i + 1];")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_sliceString":
+			c.writeln("function _sliceString(s: string; i, j: integer): string;")
+			c.writeln("var start_, end_, n: integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("start_ := i;")
+			c.writeln("end_ := j;")
+			c.writeln("n := Length(s);")
+			c.writeln("if start_ < 0 then start_ := n + start_;")
+			c.writeln("if end_ < 0 then end_ := n + end_;")
+			c.writeln("if start_ < 0 then start_ := 0;")
+			c.writeln("if end_ > n then end_ := n;")
+			c.writeln("if end_ < start_ then end_ := start_;")
+			c.writeln("Result := Copy(s, start_ + 1, end_ - start_);")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")

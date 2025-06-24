@@ -165,6 +165,18 @@ func (c *Compiler) isMapExpr(e *parser.Expr) bool {
 	return c.isMapUnary(e.Binary.Left)
 }
 
+// isStringExpr reports whether e is a string literal or an identifier of string
+// type according to the current environment.
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
+	if isStringLiteral(e) {
+		return true
+	}
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	return c.isStringUnary(e.Binary.Left)
+}
+
 func (c *Compiler) isMapUnary(u *parser.Unary) bool {
 	if u == nil || len(u.Ops) > 0 {
 		return false

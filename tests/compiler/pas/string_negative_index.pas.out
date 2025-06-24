@@ -1,0 +1,22 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes;
+
+type
+	generic TArray<T> = array of T;
+
+var
+	text: string;
+
+function _indexString(s: string; i: integer): string;
+begin
+	if i < 0 then i := Length(s) + i;
+	if (i < 0) or (i >= Length(s)) then
+		raise Exception.Create('index out of range');
+	Result := s[i + 1];
+end;
+
+begin
+	text := 'hello';
+	writeln(_indexString(text, -1));
+end.

@@ -1,0 +1,18 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes;
+
+type
+	generic TArray<T> = array of T;
+
+var
+	ch: char;
+
+begin
+	var _tmp0: integer;
+	for _tmp0 := 1 to Length('cat') do
+	begin
+		ch := 'cat'[_tmp0];
+		writeln(ch);
+	end;
+end.
