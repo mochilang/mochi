@@ -1,7 +1,9 @@
 package ccode
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 
 	"mochi/parser"
 	"mochi/types"
@@ -74,8 +76,35 @@ func cTypeFromType(t types.Type) string {
 				return "map_int_bool"
 			}
 		}
+	case types.FuncType:
+		ret := cTypeFromType(tt.Return)
+		if ret == "" {
+			ret = "void"
+		}
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = cTypeFromType(p)
+		}
+		return fmt.Sprintf("%s(*)(%s)", ret, strings.Join(params, ", "))
 	}
 	return "int"
+}
+
+// cDeclFromType returns a C declaration for a variable of the given type.
+func cDeclFromType(t types.Type, name string) string {
+	if ft, ok := t.(types.FuncType); ok {
+		ret := cTypeFromType(ft.Return)
+		if ret == "" {
+			ret = "void"
+		}
+		params := make([]string, len(ft.Params))
+		for i, p := range ft.Params {
+			params[i] = cTypeFromType(p)
+		}
+		return fmt.Sprintf("%s (*%s)(%s)", ret, name, strings.Join(params, ", "))
+	}
+	typ := cTypeFromType(t)
+	return fmt.Sprintf("%s %s", typ, name)
 }
 
 func isListListIntType(t types.Type) bool {
@@ -146,6 +175,17 @@ func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
 			return types.MapType{Key: resolveTypeRef(t.Generic.Args[0], env), Value: resolveTypeRef(t.Generic.Args[1], env)}
 		}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = resolveTypeRef(p, env)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = resolveTypeRef(t.Fun.Return, env)
+		}
+		return types.FuncType{Params: params, Return: ret}
 	}
 	return types.AnyType{}
 }

@@ -103,6 +103,17 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 	if t == nil {
 		return "void"
 	}
+	if t.Fun != nil {
+		ret := c.cType(t.Fun.Return)
+		if ret == "" {
+			ret = "void"
+		}
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.cType(p)
+		}
+		return fmt.Sprintf("%s(*)(%s)", ret, strings.Join(params, ", "))
+	}
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
@@ -148,6 +159,21 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 		}
 	}
 	return "int"
+}
+
+func (c *Compiler) declType(t *parser.TypeRef, name string) string {
+	if t != nil && t.Fun != nil {
+		ret := c.cType(t.Fun.Return)
+		if ret == "" {
+			ret = "void"
+		}
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.cType(p)
+		}
+		return fmt.Sprintf("%s (*%s)(%s)", ret, name, strings.Join(params, ", "))
+	}
+	return fmt.Sprintf("%s %s", c.cType(t), name)
 }
 
 func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
@@ -359,9 +385,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		if i > 0 {
 			c.buf.WriteString(", ")
 		}
-		c.buf.WriteString(c.cType(p.Type))
-		c.buf.WriteByte(' ')
-		c.buf.WriteString(sanitizeName(p.Name))
+		c.buf.WriteString(c.declType(p.Type, sanitizeName(p.Name)))
 		if p.Type != nil {
 			t := resolveTypeRef(p.Type, c.env)
 			if isListStringType(t) {
@@ -506,15 +530,8 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	if t == nil {
 		t = types.IntType{}
 	}
-	typ := cTypeFromType(t)
+	decl := cDeclFromType(t, name)
 	if stmt.Value != nil && isNowExpr(stmt.Value) {
-		typ = "long long"
-		if c.env != nil {
-			t = types.Int64Type{}
-		}
-	}
-	if stmt.Value != nil && isNowExpr(stmt.Value) {
-		typ = "long long"
 		if c.env != nil {
 			t = types.Int64Type{}
 		}
@@ -525,32 +542,32 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				c.need(needListString)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			} else if isListFloatType(t) {
 				c.need(needListFloat)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			} else if isListListIntType(t) {
 				c.need(needListListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			} else {
 				val := c.compileExpr(stmt.Value)
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			}
 		} else {
 			val := c.compileExpr(stmt.Value)
-			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 		}
 	} else {
-		c.writeln(fmt.Sprintf("%s %s;", typ, name))
+		c.writeln(fmt.Sprintf("%s;", decl))
 	}
 	if c.env != nil {
 		c.env.SetVar(stmt.Name, t, false)
@@ -569,39 +586,39 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	if t == nil {
 		t = types.IntType{}
 	}
-	typ := cTypeFromType(t)
+	decl := cDeclFromType(t, name)
 	if stmt.Value != nil {
 		if isEmptyListLiteral(stmt.Value) {
 			if isListStringType(t) {
 				c.need(needListString)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			} else if isListFloatType(t) {
 				c.need(needListFloat)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			} else if isListListIntType(t) {
 				c.need(needListListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			} else {
 				val := c.compileExpr(stmt.Value)
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 			}
 		} else {
 			val := c.compileExpr(stmt.Value)
-			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			c.writeln(fmt.Sprintf("%s = %s;", decl, val))
 		}
 	} else {
-		c.writeln(fmt.Sprintf("%s %s;", typ, name))
+		c.writeln(fmt.Sprintf("%s;", decl))
 	}
 	if c.env != nil {
 		c.env.SetVar(stmt.Name, t, true)

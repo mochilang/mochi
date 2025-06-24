@@ -1,0 +1,6 @@
+fun add(a: int, b: int): int {
+    return a + b
+}
+let op: fun(int, int): int = add
+print(op(2, 3))
+
