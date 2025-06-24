@@ -22,6 +22,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - `test` blocks and `expect` statements
 - function definitions returning integers, floats, strings or lists
 - list operations: `union`, `union all`, `except` and `intersect` on integer, float and string lists
+- struct types declared with `type` blocks and simple struct literals
 - built-ins: `len`, `append`, `count`, `avg`, `str`, `now`
 - printing via `print()`
 - `package` and `export` declarations (ignored during code generation)
@@ -34,7 +35,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - map types and membership tests for maps
 - map indexing and assignment
 - query expressions (`from`/`sort by`/`select`)
-- nested functions and struct literals
+- nested functions
 - slice expressions with a step
 - pattern matching with `match`
 - agents, streams and logic programming constructs (`fact`, `rule`, `query`)
@@ -43,7 +44,6 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - extern declarations
 - range loops with step values other than `1`
 - event handlers (`on`) and `emit` statements
-- type declarations using `type` blocks
 - generative blocks and model declarations
 - asynchronous functions (`async`/`await`)
 - set collections (`set<T>`) and related operations

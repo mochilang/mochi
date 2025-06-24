@@ -240,7 +240,7 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * HTTP `fetch` requests for JSON data
 * Concurrency primitives like `spawn` and channels
 * Reflection or macro facilities
-* Generic type parameters and methods inside `type` blocks
+* Generic type parameters inside `type` blocks
 * Nested function declarations inside other functions
 * Iteration over map key/value pairs (e.g. `for k, v in m`)
 * Asynchronous `async`/`await` constructs

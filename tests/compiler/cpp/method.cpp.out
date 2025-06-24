@@ -1,0 +1,23 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Circle {
+	double radius;
+};
+double Circle_area(Circle& self){
+	auto a = 3.14 * self.radius * self.radius;
+	std::cout << (string("Calculating area:")) << " " << (a) << std::endl;
+	return a;
+}
+
+void Circle_describe(Circle& self){
+	std::cout << (string("Circle with radius")) << " " << (self.radius) << std::endl;
+}
+
+
+int main() {
+	auto c = Circle{5.0};
+	Circle_describe(c);
+	std::cout << (string("Area is")) << " " << (Circle_area(c)) << std::endl;
+	return 0;
+}
