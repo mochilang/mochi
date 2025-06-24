@@ -293,6 +293,5 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - set collections (`set<T>`) and related operations
 - agent initialization with field values
 - destructuring bindings in `let` and `var` statements
-- map membership checks and iterating over maps in `for` loops
 - extern type declarations
 
