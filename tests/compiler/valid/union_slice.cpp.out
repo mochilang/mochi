@@ -1,0 +1,18 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Empty {
+};
+struct Node {
+	Foo child;
+};
+using Foo = std::variant<Empty, Node>;
+
+vector<Foo> listit(){
+	return vector<Empty>{Empty{}};
+}
+
+int main() {
+	std::cout << (listit().size()) << std::endl;
+	return 0;
+}

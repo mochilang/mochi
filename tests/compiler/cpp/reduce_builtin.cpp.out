@@ -9,7 +9,7 @@ template<typename Src, typename Fn, typename Acc> Acc _reduce(const Src& src, Fn
 }
 
 int main() {
-	vector<int> nums = vector<int>{1, 2, 3, 4};
+	auto nums = vector<int>{1, 2, 3, 4};
 	auto sum = _reduce(nums, [=](int acc, int x) { return acc + x; }, 0);
 	std::cout << (sum) << std::endl;
 	return 0;
