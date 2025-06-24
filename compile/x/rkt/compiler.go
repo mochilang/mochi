@@ -379,6 +379,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Import != nil:
 		return c.compileImport(s.Import)
 	case s.Expr != nil:
+		if name, arg, ok := isListPushCall(s.Expr.Expr); ok {
+			val, err := c.compileExpr(arg)
+			if err != nil {
+				return err
+			}
+			n := sanitizeName(name)
+			c.writeln(fmt.Sprintf("(set! %s (append %s (list %s)))", n, n, val))
+			return nil
+		}
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
 			return err
@@ -981,6 +990,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = v
+	}
+	if call.Func == "push" {
+		if len(args) != 2 {
+			return "", fmt.Errorf("push expects 2 args")
+		}
+		return fmt.Sprintf("(append %s (list %s))", args[0], args[1]), nil
+	}
+	if call.Func == "keys" {
+		if len(args) != 1 {
+			return "", fmt.Errorf("keys expects 1 arg")
+		}
+		return fmt.Sprintf("(hash-keys %s)", args[0]), nil
 	}
 	if call.Func == "print" && len(args) > 1 {
 		fmtStr := strings.TrimSpace(strings.Repeat("~a ", len(args)))

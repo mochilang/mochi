@@ -54,3 +54,26 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	}
 	return p.Target.Selector != nil && p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
 }
+
+// isListPushCall returns the variable name and argument if the expression is a
+// simple list.push(x) call.
+func isListPushCall(e *parser.Expr) (string, *parser.Expr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", nil, false
+	}
+	p := u.Value
+	if p.Target.Selector == nil || len(p.Target.Selector.Tail) != 1 {
+		return "", nil, false
+	}
+	if p.Target.Selector.Tail[0] != "push" {
+		return "", nil, false
+	}
+	if len(p.Ops) != 1 || p.Ops[0].Call == nil || len(p.Ops[0].Call.Args) != 1 {
+		return "", nil, false
+	}
+	return p.Target.Selector.Root, p.Ops[0].Call.Args[0], true
+}

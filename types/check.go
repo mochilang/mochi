@@ -354,6 +354,16 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	env.SetVar("push", FuncType{
+		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
+	env.SetVar("keys", FuncType{
+		Params: []Type{MapType{Key: AnyType{}, Value: AnyType{}}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
 	env.SetVar("range", FuncType{
 		Params:   []Type{IntType{}},
 		Return:   ListType{Elem: IntType{}},
@@ -1991,6 +2001,8 @@ var builtinArity = map[string]int{
 	"max":    1,
 	"reduce": 3,
 	"append": 2,
+	"push":   2,
+	"keys":   1,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
