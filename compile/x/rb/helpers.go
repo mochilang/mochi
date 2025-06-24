@@ -130,6 +130,79 @@ func isStringLiteral(e *parser.Expr) bool {
 	return p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Str != nil
 }
 
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Call != nil && p.Call.Func == "str" {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 && c.env != nil {
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	return c.isStringPrimary(p.Target)
+}
+
+func (c *Compiler) isListExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if name, ok := identName(e); ok && c.env != nil {
+		if t, err := c.env.GetVar(name); err == nil {
+			if _, ok := t.(types.ListType); ok {
+				return true
+			}
+		}
+	}
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			p := u.Value
+			if len(p.Ops) == 0 && p.Target.List != nil {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isMapExpr(e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if name, ok := identName(e); ok && c.env != nil {
+		if t, err := c.env.GetVar(name); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			p := u.Value
+			if len(p.Ops) == 0 && p.Target.Map != nil {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	if t == nil {
 		return types.AnyType{}
