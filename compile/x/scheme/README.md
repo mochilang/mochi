@@ -1,334 +1,65 @@
 # Scheme Backend
 
-The Scheme backend translates a subset of Mochi programs to plain Scheme source code targeting the [chibi-scheme](https://github.com/ashinn/chibi-scheme) interpreter.
+The Scheme backend converts a limited subset of Mochi programs into Scheme source code that runs on the [chibi-scheme](https://github.com/ashinn/chibi-scheme) interpreter.  It is primarily intended for experimentation rather than full production use.
 
-## Files
+## Architecture
 
-- `compiler.go` – walks the AST and generates Scheme code
-- `compiler_test.go` – golden tests that execute the generated Scheme
-- `tools.go` – helper that locates or installs `chibi-scheme`
+- `compiler.go` walks the Mochi AST and emits Scheme code.  Small runtime helpers for datasets, list set operations and slicing are inserted only when the compiled program uses them.  Early returns and loop control are implemented using `call/cc` and recursive `let loop` forms.
+- `tools.go` locates `chibi-scheme` and attempts a best-effort installation when tests require it.
+- `compiler_test.go` contains golden tests that compile example programs and execute them with `chibi-scheme`.
 
-## Implementation details
+## Supported Features
 
-Functions use `call/cc` to implement early returns:
-```scheme
-func (c *Compiler) compileFun(fn *parser.FunStmt) error {
-	params := make([]string, len(fn.Params))
-	for i, p := range fn.Params {
-		params[i] = sanitizeName(p.Name)
-	}
-	c.writeln(fmt.Sprintf("(define (%s %s)", sanitizeName(fn.Name), strings.Join(params, " ")))
-	c.indent++
-	c.writeln("(call/cc (lambda (return)")
-	c.indent++
-	for _, st := range fn.Body {
-		if err := c.compileStmt(st); err != nil {
-			return err
-		}
-	}
-	c.indent--
-	c.writeln("))")
-	c.indent--
-	c.writeln(")")
-	return nil
-```
+- Function definitions, calls and anonymous functions
+- Variable declarations and assignments
+- Basic expressions with arithmetic, comparison and logical operators
+- `if`, `for` and `while` statements
+- Lists and maps with literals, indexing, membership checks and mutation
+- String and list slicing
+- Built‑ins: `len`, `count`, `avg`, `str`, `push`, `keys`, `print`, `input`, `_fetch`, `_load`, `_save`
+- List set operators `union`, `union_all`, `except` and `intersect`
 
-`for` loops translate to a recursive `let loop` form:
-```scheme
-func (c *Compiler) compileFor(st *parser.ForStmt) error {
-	name := sanitizeName(st.Name)
-	start, err := c.compileExpr(st.Source)
-	if err != nil {
-		return err
-	}
-	end, err := c.compileExpr(st.RangeEnd)
-	if err != nil {
-		return err
-	}
-	c.writeln(fmt.Sprintf("(let loop ((%s %s))", name, start))
-	c.indent++
-	c.writeln(fmt.Sprintf("(if (< %s %s)", name, end))
-	c.indent++
-	c.writeln("(begin")
-	c.indent++
-	for _, s := range st.Body {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
-	}
-	c.writeln(fmt.Sprintf("(loop (+ %s 1))", name))
-	c.indent--
-	c.writeln(")")
-	c.indent--
-        c.writeln("'())")
-        c.indent--
-        c.writeln(")")
-        return nil
-```
-When a loop body contains `break` or `continue`, the compiler wraps the loop in
-`call/cc` and jumps using named recursion to implement these controls.
+## Unsupported Features
 
-`if` statements emit normal Scheme `if` expressions with optional `else` and `else if` blocks:
-```scheme
-func (c *Compiler) compileIf(st *parser.IfStmt) error {
-	cond, err := c.compileExpr(st.Cond)
-	if err != nil {
-		return err
-	}
-	c.writeln(fmt.Sprintf("(if %s", cond))
-	c.indent++
-	c.writeln("(begin")
-	c.indent++
-	for _, s := range st.Then {
-		if err := c.compileStmt(s); err != nil {
-			return err
-		}
-	}
-	c.indent--
-	c.writeln(")")
-        if st.ElseIf != nil {
-                if err := c.compileIf(st.ElseIf); err != nil {
-                        return err
-                }
-        } else if len(st.Else) > 0 {
-                c.writeln("(begin")
-                c.indent++
-                for _, s := range st.Else {
-                        if err := c.compileStmt(s); err != nil {
-                                return err
-                        }
-                }
-                c.indent--
-                c.writeln(")")
-        } else {
-                c.writeln("'()")
-        }
-	c.indent--
-	c.writeln(")")
-```
+The backend leaves many Mochi constructs unimplemented, including:
 
-The compiler only recognises two builtin functions. `len` maps to `(length)` and `print` emits `(display ...)` with a newline:
-```scheme
-	case "len":
-		if len(args) != 1 {
-			return "", fmt.Errorf("len expects 1 arg")
-		}
-		return fmt.Sprintf("(length %s)", args[0]), nil
-        case "print":
-                if len(args) == 0 {
-                        return "", fmt.Errorf("print expects at least 1 arg")
-                }
-                parts := make([]string, 0, len(args)*2+1)
-                for i, a := range args {
-                        if i > 0 {
-                                parts = append(parts, "(display \" \" )")
-                        }
-                        parts = append(parts, fmt.Sprintf("(display %s)", a))
-                }
-                parts = append(parts, "(newline)")
-                return "(begin " + strings.Join(parts, " ") + ")", nil
-        }
-```
-
-Identifiers are sanitised to valid Scheme identifiers:
-```scheme
-
-func sanitizeName(name string) string {
-	if name == "" {
-		return ""
-	}
-	var b strings.Builder
-	for i, r := range name {
-		if r == '_' || ('a' <= r && r <= 'z') || ('A' <= r && r <= 'Z') || ('0' <= r && r <= '9' && i > 0) {
-			b.WriteRune(r)
-		} else {
-			b.WriteRune('_')
-		}
-	}
-	s := b.String()
-	if s == "" {
-		return "_"
-	}
-	if !(s[0] >= 'a' && s[0] <= 'z' || s[0] >= 'A' && s[0] <= 'Z' || s[0] == '_') {
-		s = "_" + s
-	}
-	return s
-```
-
-## Example
-
-Compiling a simple loop:
-```mochi
-for i in 1..4 {
-  print(i)
-}
-```
-
-Produces Scheme code like:
-```scheme
-(let loop ((i 1))
-        (if (< i 4)
-                (begin
-                        (begin (display i) (newline))
-                        (loop (+ i 1))
-                )
-        '())
-)
-```
-
-Compiling a while loop:
-```mochi
-var i = 0
-while i < 3 {
-  print(i)
-  i = i + 1
-}
-```
-
-Produces Scheme code like:
-```scheme
-(define i 0)
-(let loop ()
-        (if (< i 3)
-                (begin
-                        (begin (display i) (newline))
-                        (set! i (+ i 1))
-                        (loop)
-                )
-        '())
-)
-```
-
-Compiling a map loop:
-```mochi
-for k in {"a": 1, "b": 2} {
-  print(k)
-}
-```
-
-Produces Scheme code like:
-```scheme
-(let loop ((k_idx 0))
-        (if (< k_idx (length (map car (list (cons "a" 1) (cons "b" 2)))))
-                (begin
-                        (begin (display (list-ref (map car (list (cons "a" 1) (cons "b" 2)) ) k_idx)) (newline))
-                        (loop (+ k_idx 1))
-                )
-        '())
-)
-```
+- Dataset query syntax and joins
+- Generative AI blocks and LLM helpers
+- Error handling with `try`/`catch`
+- Union types and `match` expressions
+- Foreign imports and the package system
+- Agents, streams, tests and concurrency primitives such as `spawn`
+- Set collections
+- Struct type declarations and methods
+- Export statements
+- Generic type parameters
+- Reflection or macro facilities
+- Asynchronous functions (`async`/`await`)
+- Outer joins or complex aggregation
+- Pattern matching on union variants
+- Destructuring bindings
+- Nested recursive functions inside other functions
+- Advanced slicing and collection mutators
+- Logic programming predicates
+- `load` and `save` only support JSON and JSONL formats
 
 ## Building
 
-Run the Mochi CLI to generate Scheme and execute it with chibi-scheme:
+Generate Scheme from a Mochi program and execute it with chibi-scheme:
+
 ```bash
 mochi build --target scheme main.mochi -o main.scm
 chibi-scheme -m chibi main.scm
 ```
 
-`EnsureScheme()` attempts to install chibi-scheme when missing:
-```go
-// EnsureScheme verifies that chibi-scheme is installed. On Linux it attempts a
-// best-effort installation using apt-get, while on macOS it tries Homebrew.
-func EnsureScheme() (string, error) {
-	if path, err := exec.LookPath("chibi-scheme"); err == nil {
-		return path, nil
-	}
-	switch runtime.GOOS {
-	case "darwin":
-		if _, err := exec.LookPath("brew"); err == nil {
-			cmd := exec.Command("brew", "install", "chibi-scheme")
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			_ = cmd.Run()
-		}
-	case "linux":
-		if _, err := exec.LookPath("apt-get"); err == nil {
-			cmd := exec.Command("apt-get", "update")
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
-				return "", err
-			}
-			cmd = exec.Command("apt-get", "install", "-y", "chibi-scheme")
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			_ = cmd.Run()
-		}
-	}
-	if path, err := exec.LookPath("chibi-scheme"); err == nil {
-		return path, nil
-	}
-	return "", fmt.Errorf("chibi-scheme not found")
-```
+`EnsureScheme` tries to install chibi-scheme automatically when it is missing.
 
 ## Tests
 
-`compiler_test.go` executes the LeetCode examples using the generated Scheme code:
-```go
-// TestSchemeCompiler_LeetCode1 runs the two-sum example.
-func TestSchemeCompiler_LeetCode1(t *testing.T) {
-        runLeetExample(t, 1)
-}
+Golden tests under `compile/x/scheme` compile and run example programs. They are tagged `slow` because they invoke an external interpreter:
 
-// TestSchemeCompiler_LeetCode2 runs the add-two-numbers example.
-func TestSchemeCompiler_LeetCode2(t *testing.T) {
-        runLeetExample(t, 2)
-}
-
-// TestSchemeCompiler_LeetCode3 runs the longest-substring example.
-func TestSchemeCompiler_LeetCode3(t *testing.T) {
-        runLeetExample(t, 3)
-}
-
-// TestSchemeCompiler_LeetCode4 runs the median-of-two-sorted-arrays example.
-func TestSchemeCompiler_LeetCode4(t *testing.T) {
-        runLeetExample(t, 4)
-}
-
-// TestSchemeCompiler_LeetCode5 runs the longest-palindromic-substring example.
-func TestSchemeCompiler_LeetCode5(t *testing.T) {
-        runLeetExample(t, 5)
-}
-```
-
-Execute them with the `slow` tag as they invoke an external interpreter:
 ```bash
-go test ./compile/scheme -tags slow
+go test ./compile/x/scheme -tags slow
 ```
 
-## Unsupported Features
-
-The Scheme backend intentionally supports only a small subset of Mochi.  It does **not** handle:
-
-* dataset queries or joins
-* dataset query `group` clauses and join side options
-* generative AI blocks
-* error handling with `try`/`catch`
-* union types and methods
-* LLM helper functions like `_genText`
-* packages or the foreign function interface
-* `import` statements for foreign code
-* `model` declarations
-* streams, agents, or tests
-* sets
-* struct type declarations
-* methods inside `type` blocks
-* export statements via `export`
-* concurrency primitives like `spawn`
-* generic type parameters for functions and user-defined types
-* reflection or macro facilities
-* asynchronous functions (`async`/`await`)
-* agent initialization with field values
-* dataset queries with outer joins or complex aggregation
-* pattern matching on union variants
-* destructuring bindings in `let` and `var` statements
-* nested recursive functions inside other functions
-* foreign imports and `extern` declarations
-* advanced string slicing
-* list slicing and other collection mutators
-* logic programming predicates
-* `load` and `save` only support JSON or JSONL formats, not CSV or YAML
-
-These features are recognised by the main Mochi interpreter but are ignored by the Scheme compiler.
-
+The tests are skipped if `chibi-scheme` is unavailable.

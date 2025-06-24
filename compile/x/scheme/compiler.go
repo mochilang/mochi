@@ -910,6 +910,12 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	if sub.needSlice {
 		c.needSlice = true
 	}
+	if sub.needDataset {
+		c.needDataset = true
+	}
+	if sub.needListOps {
+		c.needListOps = true
+	}
 
 	var buf bytes.Buffer
 	buf.WriteString("(lambda (" + strings.Join(params, " ") + ")\n")
