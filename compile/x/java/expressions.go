@@ -24,6 +24,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 	operands := []string{left}
 	lists := []bool{c.isListExpr(b.Left.Value)}
+	strs := []bool{c.isStringExpr(b.Left.Value)}
 	ops := []string{}
 	alls := []bool{}
 	for _, part := range b.Right {
@@ -33,6 +34,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		}
 		operands = append(operands, r)
 		lists = append(lists, c.isListExpr(part.Right))
+		strs = append(strs, c.isStringExpr(part.Right))
 		ops = append(ops, part.Op)
 		alls = append(alls, part.All)
 	}
@@ -66,6 +68,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			r := operands[i+1]
 			llist := lists[i]
 			rlist := lists[i+1]
+			lstr := strs[i]
+			rstr := strs[i+1]
 
 			var expr string
 			var isList bool
@@ -97,14 +101,25 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				isList = true
 			case "in":
 				expr = fmt.Sprintf("%s.containsKey(%s)", r, l)
+			case "==", "!=":
+				if lstr || rstr {
+					expr = fmt.Sprintf("java.util.Objects.equals(%s, %s)", l, r)
+					if op == "!=" {
+						expr = "!" + expr
+					}
+				} else {
+					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+				}
 			default:
 				expr = fmt.Sprintf("(%s %s %s)", l, op, r)
 			}
 
 			operands[i] = expr
 			lists[i] = isList
+			strs[i] = false
 			operands = append(operands[:i+1], operands[i+2:]...)
 			lists = append(lists[:i+1], lists[i+2:]...)
+			strs = append(strs[:i+1], strs[i+2:]...)
 			alls = append(alls[:i], alls[i+1:]...)
 			ops = append(ops[:i], ops[i+1:]...)
 		}
