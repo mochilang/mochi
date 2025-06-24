@@ -1,0 +1,19 @@
+(ns main)
+
+(defn _indexList [xs i]
+  (let [idx (if (neg? i) (+ i (count xs)) i)]
+    (if (or (< idx 0) (>= idx (count xs)))
+      (throw (ex-info "index out of range" {}))
+      (nth xs idx))))
+
+(defn Person [name age]
+  {:__name "Person" :name name :age age}
+)
+
+
+(defn -main []
+  (def people [{:__name "Person" :name "Alice" :age 30} {:__name "Person" :name "Bob" :age 25}])
+  (println (:name (_indexList people 1)))
+)
+
+(-main)

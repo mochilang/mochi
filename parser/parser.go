@@ -325,8 +325,14 @@ type PostfixExpr struct {
 type PostfixOp struct {
 	Call  *CallOp  `parser:"@@"`
 	Index *IndexOp `parser:"| @@"`
+	Field *FieldOp `parser:"| @@"`
 	Cast  *CastOp  `parser:"| @@"`
 	Field *FieldOp `parser:"| @@"`
+}
+
+type FieldOp struct {
+	Pos  lexer.Position
+	Name string `parser:"'.' @Ident"`
 }
 
 type CastOp struct {

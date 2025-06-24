@@ -781,6 +781,21 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			continue
 		}
+		if op.Field != nil {
+			expr = fmt.Sprintf("(:%s %s)", sanitizeName(op.Field.Name), expr)
+			if st, ok := t.(types.StructType); ok {
+				if ft, ok := st.Fields[op.Field.Name]; ok {
+					t = ft
+				} else {
+					t = types.AnyType{}
+				}
+			} else if mt, ok := t.(types.MapType); ok {
+				t = mt.Value
+			} else {
+				t = types.AnyType{}
+			}
+			continue
+		}
 		if op.Call != nil {
 			args := []string{}
 			for _, a := range op.Call.Args {
