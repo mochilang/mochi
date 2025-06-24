@@ -144,7 +144,7 @@ constructs:
 - `if`, `for` and `while` control flow
 - Struct types and simple record literals
 - Function definitions and calls
-- List and map literals with indexing
+- List and map literals with indexing and slicing
 - Dataset helpers `fetch`, `load` and `save`
 - Package declarations and importing of local packages
 
@@ -162,5 +162,4 @@ supported include:
 - Anonymous function literals (`fun` expressions)
 - Methods on types
 - Function types and first-class functions
-- List slicing with `[start:end]` ranges
 - Set operations (`union`, `except`, `intersect`)

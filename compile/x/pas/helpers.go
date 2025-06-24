@@ -346,3 +346,12 @@ func (c *Compiler) varType(name string) types.Type {
 	}
 	return types.IntType{}
 }
+
+func (c *Compiler) listElemType(p *parser.Primary) string {
+	typStr := inferTypeFromPrimary(p, c.env, c.varTypes)
+	t := parsePasType(typStr)
+	if lt, ok := t.(types.ListType); ok {
+		return typeString(lt.Elem)
+	}
+	return "integer"
+}

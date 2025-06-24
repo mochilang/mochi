@@ -1015,8 +1015,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
 					c.use("_sliceString")
 					expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+				} else if c.isListPostfix(&parser.PostfixExpr{Target: p.Target}) {
+					elem := c.listElemType(p.Target)
+					c.use("_sliceList")
+					expr = fmt.Sprintf("specialize _sliceList<%s>(%s, %s, %s)", elem, expr, start, end)
 				} else {
-					// fallback: simple slice using Copy
 					begin := start
 					if begin != "0" {
 						begin = fmt.Sprintf("%s + 1", begin)
@@ -1036,6 +1039,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else if c.isStringPostfix(&parser.PostfixExpr{Target: p.Target}) {
 					c.use("_indexString")
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else if c.isListPostfix(&parser.PostfixExpr{Target: p.Target}) {
+					elem := c.listElemType(p.Target)
+					c.use("_indexList")
+					expr = fmt.Sprintf("specialize _indexList<%s>(%s, %s)", elem, expr, idx)
 				} else {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
@@ -1410,6 +1417,36 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("Result := Result + parts[i];")
 			c.indent--
 			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_indexList":
+			c.writeln("generic function _indexList<T>(arr: specialize TArray<T>; i: integer): T;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("if i < 0 then i := Length(arr) + i;")
+			c.writeln("if (i < 0) or (i >= Length(arr)) then")
+			c.indent++
+			c.writeln("raise Exception.Create('index out of range');")
+			c.indent--
+			c.writeln("Result := arr[i];")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_sliceList":
+			c.writeln("generic function _sliceList<T>(arr: specialize TArray<T>; i, j: integer): specialize TArray<T>;")
+			c.writeln("var start_, end_, n: integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("start_ := i;")
+			c.writeln("end_ := j;")
+			c.writeln("n := Length(arr);")
+			c.writeln("if start_ < 0 then start_ := n + start_;")
+			c.writeln("if end_ < 0 then end_ := n + end_;")
+			c.writeln("if start_ < 0 then start_ := 0;")
+			c.writeln("if end_ > n then end_ := n;")
+			c.writeln("if end_ < start_ then end_ := start_;")
+			c.writeln("Result := Copy(arr, start_ + 1, end_ - start_);")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
