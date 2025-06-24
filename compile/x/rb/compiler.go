@@ -241,13 +241,28 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 		params[i] = sanitizeName(p.Name)
 	}
 	c.writeln(fmt.Sprintf("def %s(%s)", sanitizeName(fn.Name), strings.Join(params, ", ")))
+	var orig *types.Env
+	if c.env != nil {
+		orig = c.env
+		child := types.NewEnv(c.env)
+		for _, p := range fn.Params {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+		c.env = child
+	}
 	c.indent++
 	for _, s := range fn.Body {
 		if err := c.compileStmt(s); err != nil {
+			if orig != nil {
+				c.env = orig
+			}
 			return err
 		}
 	}
 	c.indent--
+	if orig != nil {
+		c.env = orig
+	}
 	c.writeln("end")
 	return nil
 }
@@ -258,13 +273,28 @@ func (c *Compiler) compileLocalFunStmt(fn *parser.FunStmt) error {
 		params[i] = sanitizeName(p.Name)
 	}
 	c.writeln(fmt.Sprintf("%s = ->(%s){", sanitizeName(fn.Name), strings.Join(params, ", ")))
+	var orig *types.Env
+	if c.env != nil {
+		orig = c.env
+		child := types.NewEnv(c.env)
+		for _, p := range fn.Params {
+			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+		c.env = child
+	}
 	c.indent++
 	for _, s := range fn.Body {
 		if err := c.compileStmt(s); err != nil {
+			if orig != nil {
+				c.env = orig
+			}
 			return err
 		}
 	}
 	c.indent--
+	if orig != nil {
+		c.env = orig
+	}
 	c.writeln("}")
 	return nil
 }
@@ -409,7 +439,14 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("->(%s){ %s }", strings.Join(params, ", "), expr), nil
 	}
 	if len(fn.BlockBody) > 0 {
-		sub := &Compiler{env: c.env, indent: c.indent + 1, helpers: c.helpers, useOpenStruct: c.useOpenStruct, tmpCount: c.tmpCount}
+		var childEnv *types.Env
+		if c.env != nil {
+			childEnv = types.NewEnv(c.env)
+			for _, p := range fn.Params {
+				childEnv.SetVar(p.Name, types.AnyType{}, true)
+			}
+		}
+		sub := &Compiler{env: childEnv, indent: c.indent + 1, helpers: c.helpers, useOpenStruct: c.useOpenStruct, tmpCount: c.tmpCount}
 		for _, s := range fn.BlockBody {
 			if err := sub.compileStmt(s); err != nil {
 				return "", err
@@ -1131,6 +1168,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			name += "." + sanitizeName(t)
 		}
 		if c.env != nil && len(p.Selector.Tail) == 0 {
+			if _, err := c.env.GetVar(p.Selector.Root); err == nil {
+				return name, nil
+			}
 			if _, ok := c.env.GetFunc(p.Selector.Root); ok {
 				return fmt.Sprintf("method(:%s)", name), nil
 			}
@@ -1153,8 +1193,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return builtin, nil
 		}
 		argStr := strings.Join(args, ", ")
-		if _, ok := c.env.GetFunc(name); ok {
-			return fmt.Sprintf("%s(%s)", name, argStr), nil
+		if c.env != nil {
+			if _, ok := c.env.GetFunc(p.Call.Func); ok {
+				return fmt.Sprintf("%s(%s)", name, argStr), nil
+			}
+			if _, err := c.env.GetVar(p.Call.Func); err == nil {
+				return fmt.Sprintf("%s.call(%s)", name, argStr), nil
+			}
 		}
 		return fmt.Sprintf("%s.call(%s)", name, argStr), nil
 	case p.FunExpr != nil:
