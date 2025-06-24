@@ -1,0 +1,13 @@
+(ns main)
+
+(defn Todo [title]
+  {:__name "Todo" :title title}
+)
+
+
+(defn -main []
+  (def todo (Todo (get {"title" "hi"} :title)))
+  (println (:title todo))
+)
+
+(-main)

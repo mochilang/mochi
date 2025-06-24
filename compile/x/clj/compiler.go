@@ -852,14 +852,20 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			continue
 		}
 		if op.Cast != nil {
-			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && c.env != nil {
 				switch *op.Cast.Type.Simple {
 				case "float":
 					expr = fmt.Sprintf("(double %s)", expr)
 				case "int":
 					expr = fmt.Sprintf("(int %s)", expr)
 				default:
-					// ignore other casts as they have no runtime effect
+					if st, ok := c.env.GetStruct(*op.Cast.Type.Simple); ok {
+						parts := make([]string, len(st.Order))
+						for i, f := range st.Order {
+							parts[i] = fmt.Sprintf("(get %s :%s)", expr, sanitizeName(f))
+						}
+						expr = fmt.Sprintf("(%s %s)", sanitizeName(st.Name), strings.Join(parts, " "))
+					}
 				}
 			}
 			continue

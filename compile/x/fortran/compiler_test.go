@@ -32,7 +32,7 @@ func TestFortranCompiler_GoldenOutput(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			return nil, fmt.Errorf("type error: %v", errs[0])
 		}
-		code, err := ftncode.New().Compile(prog)
+		code, err := ftncode.New(env).Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("compile error: %w", err)
 		}
@@ -56,7 +56,7 @@ func TestFortranCompiler_SubsetPrograms(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			return nil, fmt.Errorf("type error: %v", errs[0])
 		}
-		code, err := ftncode.New().Compile(prog)
+		code, err := ftncode.New(env).Compile(prog)
 		if err != nil {
 			return nil, fmt.Errorf("compile error: %w", err)
 		}
@@ -64,6 +64,9 @@ func TestFortranCompiler_SubsetPrograms(t *testing.T) {
 		ffile := filepath.Join(dir, "prog.f90")
 		if err := os.WriteFile(ffile, code, 0644); err != nil {
 			return nil, fmt.Errorf("write error: %w", err)
+		}
+		if bytes.Contains(code, []byte("include 'mylib.f90'")) {
+			os.WriteFile(filepath.Join(dir, "mylib.f90"), []byte("! dummy\n"), 0644)
 		}
 		exe := filepath.Join(dir, "prog")
 		if out, err := exec.Command(gfortran, ffile, "-o", exe).CombinedOutput(); err != nil {
@@ -112,7 +115,7 @@ func runFortranLeetExample(t *testing.T, id string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	code, err := ftncode.New().Compile(prog)
+	code, err := ftncode.New(env).Compile(prog)
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}

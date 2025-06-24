@@ -56,7 +56,7 @@ func runLeet(t *testing.T, id int) {
 				t.Fatalf("run error: %v", err)
 			}
 
-			code, err := ftncode.New().Compile(prog)
+			code, err := ftncode.New(env).Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}

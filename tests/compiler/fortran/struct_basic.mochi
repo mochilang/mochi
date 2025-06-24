@@ -1,0 +1,6 @@
+type Todo {
+  title: string
+}
+
+let todo = Todo{title: "hello"}
+print(todo.title)

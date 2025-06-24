@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 // Compiler emits very small Fortran 90 code for a limited subset of Mochi.
@@ -17,6 +18,8 @@ type Compiler struct {
 	stringVars           map[string]bool
 	listVars             map[string]bool
 	floatVars            map[string]bool
+	structVars           map[string]string
+	env                  *types.Env
 	funReturnStr         map[string]bool
 	funReturnList        map[string]bool
 	funReturnFloat       map[string]bool
@@ -35,11 +38,13 @@ type Compiler struct {
 	needsNow             bool
 }
 
-func New() *Compiler {
+func New(env *types.Env) *Compiler {
 	return &Compiler{
+		env:            env,
 		stringVars:     map[string]bool{},
 		listVars:       map[string]bool{},
 		floatVars:      map[string]bool{},
+		structVars:     map[string]string{},
 		funReturnStr:   map[string]bool{},
 		funReturnList:  map[string]bool{},
 		funReturnFloat: map[string]bool{},
@@ -69,6 +74,7 @@ func (c *Compiler) resetVarScopes() {
 	c.stringVars = map[string]bool{}
 	c.listVars = map[string]bool{}
 	c.floatVars = map[string]bool{}
+	c.structVars = map[string]string{}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -96,6 +102,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.resetVarScopes()
 	var funs []*parser.FunStmt
 	var tests []*parser.TestBlock
+	var types []*parser.TypeDecl
 	var mainStmts []*parser.Statement
 	for _, s := range prog.Statements {
 		switch {
@@ -103,6 +110,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			funs = append(funs, s.Fun)
 		case s.Test != nil:
 			tests = append(tests, s.Test)
+		case s.Type != nil:
+			types = append(types, s.Type)
 		case s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
 			// ignore extern declarations
 		default:
@@ -124,16 +133,24 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("program main")
 	c.indent++
 	c.writeln("implicit none")
+	for _, tdecl := range types {
+		if err := c.compileTypeDecl(tdecl); err != nil {
+			return nil, err
+		}
+	}
 	// crude variable declarations for lets/vars in main
 	declared := map[string]bool{}
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
+	structVars := map[string]string{}
 	collectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	collectStructVars(mainStmts, structVars, c.env)
 	delete(listVars, "result")
 	c.listVars = listVars
 	c.stringVars = stringVars
 	c.floatVars = floatVars
+	c.structVars = structVars
 	allocs := []string{}
 	for name, isList := range listVars {
 		if isList {
@@ -147,12 +164,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		}
 	}
+	for name, typ := range structVars {
+		c.writeln(fmt.Sprintf("type(%s) :: %s", typ, name))
+	}
 	for name := range declared {
 		if name == "result" {
 			c.writeln("integer(kind=8) :: result(2)")
 			continue
 		}
 		if listVars[name] {
+			continue
+		}
+		if structVars[name] != "" {
 			continue
 		}
 		if stringVars[name] {
@@ -375,7 +398,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
+	structVars := map[string]string{}
 	collectVars(fn.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	collectStructVars(fn.Body, structVars, c.env)
 	for name := range c.listVars {
 		listVars[name] = true
 	}
@@ -412,6 +437,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
 			}
 			allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
+		}
+	}
+	for name, typ := range structVars {
+		if vars[name] {
+			c.writeln(fmt.Sprintf("type(%s) :: %s", typ, name))
 		}
 	}
 	names := make([]string, 0, len(vars))
@@ -692,7 +722,9 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
+	structVars := map[string]string{}
 	collectVars(t.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	collectStructVars(t.Body, structVars, c.env)
 	c.listVars = listVars
 	c.stringVars = stringVars
 	c.floatVars = floatVars
@@ -720,6 +752,10 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 		allocs = append(allocs, fmt.Sprintf("allocate(%s(0))", name))
 		vars[name] = true
 	}
+	for name, typ := range structVars {
+		c.writeln(fmt.Sprintf("type(%s) :: %s", typ, name))
+		vars[name] = true
+	}
 	names := make([]string, 0, len(vars))
 	for name := range vars {
 		names = append(names, name)
@@ -727,6 +763,9 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	sort.Strings(names)
 	for _, name := range names {
 		if listVars[name] {
+			continue
+		}
+		if structVars[name] != "" {
 			continue
 		}
 		if stringVars[name] {
@@ -1135,8 +1174,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", fmt.Errorf("unsupported cast")
 			}
 		case op.Call != nil:
+			target := expr
+			if strings.HasPrefix(target, "(") && strings.HasSuffix(target, ")") {
+				target = strings.TrimSuffix(strings.TrimPrefix(target, "("), ")")
+			}
 			tmp := &parser.CallExpr{Func: "", Args: op.Call.Args}
-			val, err := c.compileCallExpr(tmp, expr)
+			val, err := c.compileCallExpr(tmp, target)
 			if err != nil {
 				return "", err
 			}
@@ -1181,8 +1224,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems[i] = v
 		}
 		return "(/" + strings.Join(elems, ", ") + "/)", nil
+	case p.Struct != nil:
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = v
+		}
+		return fmt.Sprintf("%s(%s)", "t_"+sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.Selector != nil:
-		return sanitizeName(p.Selector.Root), nil
+		expr := sanitizeName(p.Selector.Root)
+		for _, t := range p.Selector.Tail {
+			expr += "%" + sanitizeName(t)
+		}
+		return expr, nil
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call, "")
 	case p.FunExpr != nil:
@@ -1332,6 +1389,62 @@ func (c *Compiler) lengthFunc(name string) string {
 		return fmt.Sprintf("len(%s)", name)
 	}
 	return fmt.Sprintf("size(%s)", name)
+}
+
+func (c *Compiler) ftnType(t *parser.TypeRef) string {
+	if t == nil {
+		return "integer(kind=8)"
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return "integer(kind=8)"
+		case "float":
+			return "real"
+		case "string":
+			return "character(:), allocatable"
+		case "bool":
+			return "logical"
+		default:
+			if c.env != nil {
+				if _, ok := c.env.GetStruct(*t.Simple); ok {
+					return fmt.Sprintf("type(%s)", sanitizeName(*t.Simple))
+				}
+			}
+		}
+	}
+	return "integer(kind=8)"
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Variants) > 0 {
+		return fmt.Errorf("union types not supported")
+	}
+	name := "t_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("type :: %s", name))
+	c.indent++
+	fields := map[string]types.Type{}
+	order := []string{}
+	for _, m := range t.Members {
+		if m.Field == nil {
+			continue
+		}
+		typ := c.ftnType(m.Field.Type)
+		fname := sanitizeName(m.Field.Name)
+		c.writeln(fmt.Sprintf("%s :: %s", typ, fname))
+		if c.env != nil {
+			fields[m.Field.Name] = resolveTypeRef(m.Field.Type, c.env)
+			order = append(order, m.Field.Name)
+		}
+	}
+	c.indent--
+	c.writeln(fmt.Sprintf("end type %s", name))
+	c.blank()
+	if c.env != nil {
+		st := types.StructType{Name: t.Name, Fields: fields, Order: order, Methods: map[string]types.Method{}}
+		c.env.SetStruct(t.Name, st)
+	}
+	return nil
 }
 
 func (c *Compiler) writeHelpers() {

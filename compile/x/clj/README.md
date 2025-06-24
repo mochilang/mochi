@@ -137,6 +137,7 @@ The current implementation focuses on a minimal subset of Mochi. It supports:
 - Simple `match` expressions on constants and struct literals with field access
 - `break` and `continue` statements
 - Struct constructors for user-defined types
+- Casting maps to struct types using the `as` operator
 
 ### Unsupported Features
 

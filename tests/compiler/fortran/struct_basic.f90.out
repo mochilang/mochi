@@ -1,0 +1,10 @@
+type :: Todo
+  character(:), allocatable :: title
+end type Todo
+
+program main
+  implicit none
+  type(Todo) :: todo
+  todo = Todo('hello')
+  print *, todo%title
+end program main

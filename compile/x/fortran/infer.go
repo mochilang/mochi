@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 func sanitizeName(name string) string {
@@ -113,6 +114,49 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 			}
 			if len(cur.Else) > 0 {
 				collectVars(cur.Else, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			}
+		}
+	}
+}
+
+func collectStructVars(stmts []*parser.Statement, structs map[string]string, env *types.Env) {
+	for _, s := range stmts {
+		switch {
+		case s.Var != nil:
+			name := sanitizeName(s.Var.Name)
+			if s.Var.Type != nil && s.Var.Type.Simple != nil {
+				if _, ok := env.GetStruct(*s.Var.Type.Simple); ok {
+					structs[name] = "t_" + sanitizeName(*s.Var.Type.Simple)
+				}
+			} else if lit := getStructLiteral(s.Var.Value); lit != nil {
+				if _, ok := env.GetStruct(lit.Name); ok {
+					structs[name] = "t_" + sanitizeName(lit.Name)
+				}
+			}
+		case s.Let != nil:
+			name := sanitizeName(s.Let.Name)
+			if s.Let.Type != nil && s.Let.Type.Simple != nil {
+				if _, ok := env.GetStruct(*s.Let.Type.Simple); ok {
+					structs[name] = "t_" + sanitizeName(*s.Let.Type.Simple)
+				}
+			} else if lit := getStructLiteral(s.Let.Value); lit != nil {
+				if _, ok := env.GetStruct(lit.Name); ok {
+					structs[name] = "t_" + sanitizeName(lit.Name)
+				}
+			}
+		case s.For != nil:
+			collectStructVars(s.For.Body, structs, env)
+		case s.While != nil:
+			collectStructVars(s.While.Body, structs, env)
+		case s.If != nil:
+			collectStructVars(s.If.Then, structs, env)
+			cur := s.If
+			for cur.ElseIf != nil {
+				cur = cur.ElseIf
+				collectStructVars(cur.Then, structs, env)
+			}
+			if len(cur.Else) > 0 {
+				collectStructVars(cur.Else, structs, env)
 			}
 		}
 	}
@@ -319,4 +363,19 @@ func isFloatPrimary(p *parser.Primary, floatVars map[string]bool, funFloat map[s
 		}
 	}
 	return false
+}
+
+func getStructLiteral(e *parser.Expr) *parser.StructLiteral {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	post := u.Value
+	if post == nil || post.Target == nil {
+		return nil
+	}
+	return post.Target.Struct
 }

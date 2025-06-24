@@ -214,7 +214,7 @@ func buildOne(src, lang string, run bool) error {
 	case "ex":
 		data, err = excode.New(env).Compile(prog)
 	case "fortran":
-		data, err = ftncode.New().Compile(prog)
+		data, err = ftncode.New(env).Compile(prog)
 	case "fs":
 		data, err = fscode.New(env).Compile(prog)
 	case "hs":
