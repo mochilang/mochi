@@ -68,6 +68,12 @@ func cTypeFromType(t types.Type) string {
 		if elem == "list_int" {
 			return "list_list_int"
 		}
+	case types.MapType:
+		if _, ok := tt.Key.(types.IntType); ok {
+			if _, ok2 := tt.Value.(types.BoolType); ok2 {
+				return "map_int_bool"
+			}
+		}
 	}
 	return "int"
 }
@@ -102,6 +108,17 @@ func isListFloatType(t types.Type) bool {
 	return false
 }
 
+func isMapIntBoolType(t types.Type) bool {
+	if mt, ok := t.(types.MapType); ok {
+		if _, ok := mt.Key.(types.IntType); ok {
+			if _, ok2 := mt.Value.(types.BoolType); ok2 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 	if t == nil {
 		return types.IntType{}
@@ -122,9 +139,12 @@ func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 			}
 		}
 	}
-	if t.Generic != nil && t.Generic.Name == "list" {
-		if len(t.Generic.Args) == 1 {
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			return types.ListType{Elem: resolveTypeRef(t.Generic.Args[0], env)}
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return types.MapType{Key: resolveTypeRef(t.Generic.Args[0], env), Value: resolveTypeRef(t.Generic.Args[1], env)}
 		}
 	}
 	return types.AnyType{}

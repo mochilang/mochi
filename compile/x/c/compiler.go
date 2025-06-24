@@ -121,20 +121,29 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 			}
 		}
 	}
-	if t.Generic != nil && t.Generic.Name == "list" {
-		if len(t.Generic.Args) == 1 {
-			elem := c.cType(t.Generic.Args[0])
-			if elem == "int" {
-				return "list_int"
+	if t.Generic != nil {
+		if t.Generic.Name == "list" {
+			if len(t.Generic.Args) == 1 {
+				elem := c.cType(t.Generic.Args[0])
+				if elem == "int" {
+					return "list_int"
+				}
+				if elem == "double" {
+					return "list_float"
+				}
+				if elem == "char*" {
+					return "list_string"
+				}
+				if elem == "list_int" {
+					return "list_list_int"
+				}
 			}
-			if elem == "double" {
-				return "list_float"
-			}
-			if elem == "char*" {
-				return "list_string"
-			}
-			if elem == "list_int" {
-				return "list_list_int"
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			key := c.cType(t.Generic.Args[0])
+			val := c.cType(t.Generic.Args[1])
+			if key == "int" && val == "int" {
+				return "map_int_bool"
 			}
 		}
 	}
@@ -432,6 +441,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Assign != nil:
 		lhs := sanitizeName(s.Assign.Name)
 		target := lhs
+		if len(s.Assign.Index) == 1 {
+			if c.env != nil {
+				if tv, err := c.env.GetVar(s.Assign.Name); err == nil && isMapIntBoolType(tv) {
+					key := c.compileExpr(s.Assign.Index[0].Start)
+					val := c.compileExpr(s.Assign.Value)
+					c.need(needMapIntBool)
+					c.writeln(fmt.Sprintf("map_int_bool_put(&%s, %s, %s);", lhs, key, val))
+					return nil
+				}
+			}
+		}
 		for _, idx := range s.Assign.Index {
 			ix := c.compileExpr(idx.Start)
 			target = fmt.Sprintf("%s.data[%s]", target, ix)
@@ -516,6 +536,11 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
 				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
+				c.need(needMapIntBool)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 			} else {
 				val := c.compileExpr(stmt.Value)
 				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
@@ -561,6 +586,11 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				c.need(needListListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
+				c.need(needMapIntBool)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(0);", val))
 				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 			} else {
 				val := c.compileExpr(stmt.Value)
@@ -1041,6 +1071,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftString = false
 			continue
 		}
+		if op.Op == "in" && isMapIntBoolPostfix(op.Right, c.env) {
+			c.need(needInMapIntBool)
+			left = fmt.Sprintf("map_int_bool_contains(%s, %s)", right, left)
+			leftList = false
+			leftListInt = false
+			leftListString = false
+			leftListFloat = false
+			leftString = false
+			continue
+		}
 		if op.Op == "in" && leftString && isStringPostfixOrIndex(op.Right, c.env) {
 			c.need(needInString)
 			left = fmt.Sprintf("contains_string(%s, %s)", right, left)
@@ -1238,6 +1278,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				v := c.compileExpr(el)
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
 			}
+		}
+		return name
+	case p.Map != nil:
+		name := c.newTemp()
+		c.need(needMapIntBool)
+		c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(%d);", name, len(p.Map.Items)))
+		for _, it := range p.Map.Items {
+			k := c.compileExpr(it.Key)
+			v := c.compileExpr(it.Value)
+			c.writeln(fmt.Sprintf("map_int_bool_put(&%s, %s, %s);", name, k, v))
 		}
 		return name
 	case p.Call != nil:
@@ -1587,6 +1637,11 @@ func isEmptyListLiteral(e *parser.Expr) bool {
 	return false
 }
 
+func isEmptyMapLiteral(e *parser.Expr) bool {
+	ml := asMapLiteral(e)
+	return ml != nil && len(ml.Items) == 0
+}
+
 func isListListExpr(e *parser.Expr, env *types.Env) bool {
 	if e == nil || e.Binary == nil {
 		return false
@@ -1879,6 +1934,47 @@ func isListFloatPrimary(p *parser.Primary, env *types.Env) bool {
 						return true
 					}
 				}
+			}
+		}
+	}
+	return false
+}
+
+func isMapIntBoolExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isMapIntBoolUnary(e.Binary.Left, env)
+}
+
+func isMapIntBoolUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isMapIntBoolPostfix(u.Value, env)
+}
+
+func isMapIntBoolPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) > 0 {
+		return false
+	}
+	return isMapIntBoolPrimary(p.Target, env)
+}
+
+func isMapIntBoolPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if isMapIntBoolType(t) {
+				return true
 			}
 		}
 	}
