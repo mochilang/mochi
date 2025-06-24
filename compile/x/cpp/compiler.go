@@ -16,6 +16,7 @@ type Compiler struct {
 	indent       int
 	env          *types.Env
 	helpers      map[string]bool
+	structs      map[string]bool
 	vars         []map[string]string
 	tmpCount     int
 	methodFields map[string]bool
@@ -25,6 +26,7 @@ func New(env *types.Env) *Compiler {
 	return &Compiler{
 		env:          env,
 		helpers:      map[string]bool{},
+		structs:      map[string]bool{},
 		vars:         []map[string]string{{}},
 		tmpCount:     0,
 		methodFields: nil,
@@ -220,6 +222,28 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := st.Name
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("struct %s {", name))
+	c.indent++
+	for _, fn := range st.Order {
+		ft := st.Fields[fn]
+		c.writeln(fmt.Sprintf("%s %s;", c.cppTypeRef(ft), fn))
+	}
+	c.indent--
+	c.writeln("};")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
+}
+
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		names := make([]string, len(t.Variants))
@@ -234,6 +258,13 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			}
 			c.indent--
 			c.writeln("};")
+			if c.env != nil {
+				for _, f := range v.Fields {
+					if st, ok := c.resolveTypeRef(f.Type).(types.StructType); ok {
+						c.compileStructType(st)
+					}
+				}
+			}
 		}
 		c.writeln(fmt.Sprintf("using %s = std::variant<%s>;", t.Name, strings.Join(names, ", ")))
 		return nil
@@ -251,6 +282,15 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("};")
+	if c.env != nil {
+		for _, m := range t.Members {
+			if m.Field != nil {
+				if st, ok := c.resolveTypeRef(m.Field.Type).(types.StructType); ok {
+					c.compileStructType(st)
+				}
+			}
+		}
+	}
 	for _, m := range methods {
 		if err := c.compileMethod(t.Name, m); err != nil {
 			return err
@@ -673,6 +713,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return fmt.Sprintf("string(%s)", strconv.Quote(*p.Lit.Str))
 		}
 	case p.Struct != nil:
+		if c.env != nil {
+			if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+				c.compileStructType(st)
+			}
+		}
 		fields := make([]string, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			fields[i] = c.compileExpr(f.Value)
