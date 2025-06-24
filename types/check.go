@@ -2016,7 +2016,6 @@ var builtinArity = map[string]int{
 	"len":    1,
 	"count":  1,
 	"avg":    1,
-	"keys":   1,
 	"min":    1,
 	"max":    1,
 	"keys":   1,
@@ -2024,7 +2023,6 @@ var builtinArity = map[string]int{
 	"reduce": 3,
 	"append": 2,
 	"push":   2,
-	"keys":   1,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
@@ -2053,16 +2051,6 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return nil
 		default:
 			return errLenOperand(pos, args[0])
-		}
-	case "keys":
-		if len(args) != 1 {
-			return errArgCount(pos, name, 1, len(args))
-		}
-		switch args[0].(type) {
-		case MapType, AnyType:
-			return nil
-		default:
-			return fmt.Errorf("keys() expects map, got %v", args[0])
 		}
 	case "count":
 		if len(args) != 1 {
@@ -2093,16 +2081,6 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return nil
 		default:
 			return errAvgOperand(pos, a)
-		}
-	case "keys":
-		if len(args) != 1 {
-			return errArgCount(pos, name, 1, len(args))
-		}
-		switch args[0].(type) {
-		case MapType, AnyType:
-			return nil
-		default:
-			return fmt.Errorf("keys() expects map")
 		}
 	case "min", "max":
 		if len(args) != 1 {
