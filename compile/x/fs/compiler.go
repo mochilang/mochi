@@ -1009,7 +1009,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		lists = append(lists, c.isListPostfix(part.Right))
 		maps = append(maps, c.isMapPostfix(part.Right))
 		strs = append(strs, c.isStringPostfix(part.Right))
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.All {
+			op += "_all"
+		}
+		ops = append(ops, op)
 	}
 
 	levels := [][]string{

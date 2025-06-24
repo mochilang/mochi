@@ -1,0 +1,6 @@
+open System
+
+let _union_all (a: 'T[]) (b: 'T[]) : 'T[] =
+  Array.append a b
+
+ignore (printfn "%A" (_union_all [|1; 2|] [|2; 3|]))
