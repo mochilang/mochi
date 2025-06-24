@@ -557,6 +557,27 @@ func (c *Compiler) compileReduceCall(list, fn, init *ast.Node) string {
 	return res
 }
 
+// compileStructExpr emits declarations and assignments for a struct literal
+// and returns the base variable name representing the struct value.
+func (c *Compiler) compileStructExpr(n *ast.Node) string {
+	name := c.newTemp()
+	for _, f := range n.Children {
+		if len(f.Children) == 0 {
+			continue
+		}
+		pic := c.picForExpr(f.Children[0])
+		varName := name + "_" + cobolName(f.Value.(string))
+		c.declare(fmt.Sprintf("01 %s %s", varName, pic))
+		val := c.expr(f.Children[0])
+		if c.isStringExpr(f.Children[0]) {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, varName))
+		} else {
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", varName, val))
+		}
+	}
+	return name
+}
+
 func (c *Compiler) expr(n *ast.Node) string {
 	switch n.Kind {
 	case "int":
@@ -579,11 +600,15 @@ func (c *Compiler) expr(n *ast.Node) string {
 		}
 		return "0"
 	case "selector":
-		name := cobolName(n.Value.(string))
-		if v, ok := c.params[name]; ok {
-			return v
+		full := selectorName(n)
+		if len(n.Children) == 0 {
+			if v, ok := c.params[full]; ok {
+				return v
+			}
 		}
-		return name
+		return full
+	case "struct":
+		return c.compileStructExpr(n)
 	case "binary":
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
@@ -907,6 +932,19 @@ func (c *Compiler) compileLet(n *ast.Node) {
 		}
 		return
 	}
+	if len(n.Children) == 1 && n.Children[0].Kind == "struct" {
+		for _, f := range n.Children[0].Children {
+			fieldName := fmt.Sprintf("%s_%s", name, cobolName(f.Value.(string)))
+			c.declare(fmt.Sprintf("01 %s %s", fieldName, c.picForExpr(f.Children[0])))
+			val := c.expr(f.Children[0])
+			if c.isStringExpr(f.Children[0]) {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, fieldName))
+			} else {
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", fieldName, val))
+			}
+		}
+		return
+	}
 	if len(n.Children) == 1 && c.isListExpr(n.Children[0]) {
 		src := c.expr(n.Children[0])
 		if l, ok := c.listLens[src]; ok {
@@ -947,6 +985,19 @@ func (c *Compiler) compileVar(n *ast.Node) {
 		}
 		return
 	}
+	if len(n.Children) == 1 && n.Children[0].Kind == "struct" {
+		for _, f := range n.Children[0].Children {
+			fieldName := fmt.Sprintf("%s_%s", name, cobolName(f.Value.(string)))
+			c.declare(fmt.Sprintf("01 %s %s", fieldName, c.picForExpr(f.Children[0])))
+			val := c.expr(f.Children[0])
+			if c.isStringExpr(f.Children[0]) {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, fieldName))
+			} else {
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", fieldName, val))
+			}
+		}
+		return
+	}
 	c.declare(fmt.Sprintf("01 %s %s", name, c.picForVar(orig)))
 	if len(n.Children) == 1 {
 		expr := c.expr(n.Children[0])
@@ -984,6 +1035,17 @@ func (c *Compiler) compileAssign(n *ast.Node) {
 				}
 			} else {
 				c.writeln("    *> unsupported list assignment")
+			}
+		} else if n.Children[0].Kind == "struct" {
+			for _, f := range n.Children[0].Children {
+				fieldName := fmt.Sprintf("%s_%s", name, cobolName(f.Value.(string)))
+				c.declare(fmt.Sprintf("01 %s %s", fieldName, c.picForExpr(f.Children[0])))
+				val := c.expr(f.Children[0])
+				if c.isStringExpr(f.Children[0]) {
+					c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, fieldName))
+				} else {
+					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", fieldName, val))
+				}
 			}
 		} else {
 			expr := c.expr(n.Children[0])

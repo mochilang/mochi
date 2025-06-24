@@ -167,6 +167,7 @@ constructs:
 - Calls to built-ins `print`, `len`, `add`, `abs`, `twoSum`, `addTwoNumbers` and a
   basic `reduce` over lists using `add`
 - List concatenation with `+` and indexing (including negative indices)
+- Struct literals and field access
 - String indexing (including negative indices)
 - Basic string slicing with constant start and end indices
 - List slicing with constant start and end indices

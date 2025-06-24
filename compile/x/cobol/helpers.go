@@ -138,3 +138,13 @@ func extractIntList(n *ast.Node) []int {
 	}
 	return res
 }
+
+// selectorName returns a COBOL-friendly variable name for a selector
+// expression. Nested fields are joined using an underscore.
+func selectorName(n *ast.Node) string {
+	name := cobolName(n.Value.(string))
+	if len(n.Children) > 0 && n.Children[0].Kind == "selector" {
+		return selectorName(n.Children[0]) + "_" + name
+	}
+	return name
+}
