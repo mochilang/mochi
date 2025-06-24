@@ -8,15 +8,11 @@ function __print(...)
 end
 local people = {{name="Alice", age=30}, {name="Bob", age=15}, {name="Charlie", age=65}}
 local names = (function()
-	local items = {}
-	for _, p in ipairs(people) do
-		if (p.age >= 18) then
-			table.insert(items, p)
-		end
-	end
 	local _res = {}
-	for _, p in ipairs(items) do
-		table.insert(_res, p.name)
+	for _, p in ipairs(people) do
+		local _row = {}
+		_row.v = p
+		_res[#_res+1] = _row
 	end
 	return _res
 end)()

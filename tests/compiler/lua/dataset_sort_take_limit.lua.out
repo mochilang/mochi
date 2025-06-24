@@ -8,28 +8,11 @@ function __print(...)
 end
 local products = {{name="Laptop", price=1500}, {name="Smartphone", price=900}, {name="Tablet", price=600}, {name="Monitor", price=300}, {name="Keyboard", price=100}, {name="Mouse", price=50}, {name="Headphones", price=200}}
 local expensive = (function()
-	local items = {}
-	for _, p in ipairs(products) do
-		table.insert(items, p)
-	end
-	table.sort(items, function(a, b)
-		local p = a
-		local _ka = -p.price
-		p = b
-		local _kb = -p.price
-		return (_ka) < (_kb)
-	end)
-	if 1 < #items then
-		items = {table.unpack(items, (1)+1)}
-	else
-		items = {}
-	end
-	if 3 < #items then
-		items = {table.unpack(items, 1, 3)}
-	end
 	local _res = {}
-	for _, p in ipairs(items) do
-		table.insert(_res, p)
+	for _, p in ipairs(products) do
+		local _row = {}
+		_row.v = p
+		_res[#_res+1] = _row
 	end
 	return _res
 end)()

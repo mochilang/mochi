@@ -1,3 +1,15 @@
+function __eq(a, b)
+    if type(a) ~= type(b) then return false end
+    if type(a) ~= 'table' then return a == b end
+    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
+        if #a ~= #b then return false end
+        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
+        return true
+    end
+    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
+    for k, _ in pairs(b) do if a[k] == nil then return false end end
+    return true
+end
 function __except(a, b)
     local res = {}
     if a then
@@ -56,7 +68,7 @@ end
 local a = {1, 2, 3}
 local b = {3, 4}
 __print(__union(a, b))
-__print(__union_all(a, b))
+__print(__union(a, b))
 __print(__except(a, b))
 __print(__intersect(a, b))
 __print(__union({1, 2}, {2, 3}))

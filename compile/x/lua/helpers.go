@@ -214,3 +214,18 @@ func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
 	_, ok := c.inferPostfixType(p).(types.StringType)
 	return ok
 }
+
+func (c *Compiler) isMapExpr(e *parser.Expr) bool {
+	_, ok := c.inferExprType(e).(types.MapType)
+	return ok
+}
+
+func (c *Compiler) isMapUnary(u *parser.Unary) bool {
+	_, ok := c.inferUnaryType(u).(types.MapType)
+	return ok
+}
+
+func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
+	_, ok := c.inferPostfixType(p).(types.MapType)
+	return ok
+}
