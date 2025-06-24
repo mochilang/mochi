@@ -3,22 +3,29 @@ defmodule Main do
 	def main do
 		c = 0
 		_ = c
-		for _ <- 0..(2 - 1) do
+		{c} = Enum.reduce(0..(2 - 1), {c}, fn _, {c} ->
 			c = (c + 1)
-		end
-		for _ <- [1, 2] do
+			{c}
+		end)
+		_ = c
+		{c} = Enum.reduce([1, 2], {c}, fn _, {c} ->
 			c = (c + 1)
-		end
-		for _ <- String.graphemes("ab") do
+			{c}
+		end)
+		_ = c
+		{c} = Enum.reduce(String.graphemes("ab"), {c}, fn _, {c} ->
 			c = (c + 1)
-		end
+			{c}
+		end)
+		_ = c
 		m = %{x: 1, y: 2}
 		_ = m
-		for _ <- m do
+		{c} = Enum.reduce(m, {c}, fn _, {c} ->
 			c = (c + 1)
-		end
+			{c}
+		end)
+		_ = c
 		IO.puts(c)
 	end
 	end
 Main.main()
-

@@ -2,11 +2,14 @@
 defmodule Main do
 	def main do
 		IO.puts("Enter first input:")
-		input1 = String.trim(IO.gets(""))
+		input1 = _input()
 		IO.puts("Enter second input:")
-		input2 = String.trim(IO.gets(""))
+		input2 = _input()
 		IO.puts(Enum.join(Enum.map(["You entered:", input1, ",", input2], &to_string(&1)), " "))
 	end
+	defp _input() do
+  String.trim(IO.gets(""))
+end
+
 	end
 Main.main()
-

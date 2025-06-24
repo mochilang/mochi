@@ -2,7 +2,7 @@
 defmodule Main do
 	def main do
 		text = "hello"
-		IO.puts(_index_string(text, 1))
+		IO.puts(_index_string(text, -1))
 	end
 	defp _index_string(s, i) do
   chars = String.graphemes(s)
