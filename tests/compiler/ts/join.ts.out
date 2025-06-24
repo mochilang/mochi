@@ -17,11 +17,10 @@ type PairInfo = {
 	total: number;
 }
 
-let customers: Array<Customer> = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}, {id: 3, name: "Charlie"}]
-
-let orders: Array<Order> = [{id: 100, customerId: 1, total: 250}, {id: 101, customerId: 2, total: 125}, {id: 102, customerId: 1, total: 300}, {id: 103, customerId: 4, total: 80}]
-
-let result: Array<PairInfo> = (() => {
+function main(): void {
+	let customers: Array<Customer> = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}, {id: 3, name: "Charlie"}]
+	let orders: Array<Order> = [{id: 100, customerId: 1, total: 250}, {id: 101, customerId: 2, total: 125}, {id: 102, customerId: 1, total: 300}, {id: 103, customerId: 4, total: 80}]
+	let result: Array<PairInfo> = (() => {
 	const _src = orders;
 	const _res = [];
 	for (const o of _src) {
@@ -32,8 +31,6 @@ let result: Array<PairInfo> = (() => {
 	}
 	return _res;
 })()
-
-function main(): void {
 	console.log("--- Orders with customer info ---")
 	for (const entry of result) {
 		console.log("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)

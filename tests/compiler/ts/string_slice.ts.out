@@ -17,4 +17,3 @@ function _sliceString(s: string, i: number, j: number): string {
 }
 
 main()
-

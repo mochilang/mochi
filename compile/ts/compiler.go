@@ -1112,7 +1112,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					args[i] = v
 				}
-				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+				callExpr := fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+				trimmed := strings.TrimSpace(expr)
+				if strings.HasPrefix(trimmed, "function") || strings.HasPrefix(trimmed, "(") {
+					callExpr = fmt.Sprintf("(%s)(%s)", expr, strings.Join(args, ", "))
+				}
+				expr = callExpr
 				typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
 			}
 			continue

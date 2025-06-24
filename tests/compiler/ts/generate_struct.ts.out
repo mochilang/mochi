@@ -4,9 +4,8 @@ type Info = {
 	msg: string;
 }
 
-let info: any = _gen_struct<Info>("{\"msg\": \"hello\"}", null, null)
-
 function main(): void {
+	let info: any = _gen_struct<Info>("{\"msg\": \"hello\"}", null, null)
 	console.log(info.msg)
 }
 function _gen_struct<T>(prompt: string, model: string | null, params: any | null): T {

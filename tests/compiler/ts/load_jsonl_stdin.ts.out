@@ -5,9 +5,8 @@ type Person = {
 	age: number;
 }
 
-let people: any = _load(null, _toAnyMap({"format": "jsonl"})) as Array<Person>
-
 function main(): void {
+	let people: any = _load(null, _toAnyMap({"format": "jsonl"})) as Array<Person>
 	console.log(_count(people))
 }
 function _count(v: any): number {
