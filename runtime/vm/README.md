@@ -26,6 +26,7 @@ The VM supports a small but useful subset of Mochi:
 * Anonymous function expressions
 * Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `json`, `now`, `input`, `count`, `avg`, `min` and `max`
 * Dataset loading with `load` (optionally casting rows to a type) and saving with `save`
+* HTTP requests using the `fetch` expression
 * List, map and struct construction
 * String indexing to access individual characters
 * Field access using the `.` operator
@@ -48,7 +49,6 @@ experimental VM.  Unsupported areas include:
 * Agents, streams and intent blocks with persistent state
 * Agent initialization with field values
 * Generative AI blocks, model declarations and other LLM helpers
-* HTTP `fetch` expressions
 * Foreign imports and FFI calls
 * The `eval` builtin function
 * Test blocks

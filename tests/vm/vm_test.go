@@ -3,7 +3,10 @@ package vm_test
 import (
 	"bytes"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"mochi/golden"
@@ -56,4 +59,34 @@ func TestVM_IR(t *testing.T) {
 		ir := p.Disassemble(string(data))
 		return []byte(ir), nil
 	})
+}
+
+func TestVM_Fetch(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"msg":"ok"}`)
+	}))
+	defer srv.Close()
+
+	src := fmt.Sprintf("let r = fetch \"%s\"\nprint(r.msg)", srv.URL)
+	prog, err := parser.ParseString(src)
+	if err != nil {
+		t.Fatal(err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	p, err := vm.Compile(prog, env)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var out bytes.Buffer
+	m := vm.New(p, &out)
+	if err := m.Run(); err != nil {
+		t.Fatal(err)
+	}
+	if strings.TrimSpace(out.String()) != "ok" {
+		t.Fatalf("unexpected output: %s", out.String())
+	}
 }

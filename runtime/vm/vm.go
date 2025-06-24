@@ -18,6 +18,7 @@ import (
 	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/data"
+	mhttp "mochi/runtime/http"
 	"mochi/types"
 )
 
@@ -81,6 +82,7 @@ const (
 	OpLoad
 	OpSave
 	OpEval
+	OpFetch
 
 	// Closure creation
 	OpMakeClosure
@@ -204,6 +206,8 @@ func (op Op) String() string {
 		return "Save"
 	case OpEval:
 		return "Eval"
+	case OpFetch:
+		return "Fetch"
 	case OpMakeClosure:
 		return "MakeClosure"
 	case OpAddInt:
@@ -1212,6 +1216,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(err, trace, ins.Line)
 			}
 			fr.regs[ins.A] = anyToValue(resAny)
+		case OpFetch:
+			urlVal := fr.regs[ins.B]
+			if urlVal.Tag != interpreter.TagStr {
+				return Value{}, m.newError(fmt.Errorf("fetch URL must be string"), trace, ins.Line)
+			}
+			opts := valueToAny(fr.regs[ins.C])
+			optMap := toAnyMap(opts)
+			res, err := mhttp.FetchWith(urlVal.Str, optMap)
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			fr.regs[ins.A] = anyToValue(res)
 		case OpCount:
 			lst := fr.regs[ins.B]
 			if lst.Tag == interpreter.TagList {
@@ -1688,6 +1704,8 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
 	case OpSave:
+		fc.tags[i.A] = tagUnknown
+	case OpFetch:
 		fc.tags[i.A] = tagUnknown
 	case OpCount:
 		fc.tags[i.A] = tagInt
@@ -2257,6 +2275,20 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		}
 		dst := fc.newReg()
 		fc.emit(p.Pos, Instr{Op: OpSave, A: dst, B: src, C: pathReg, D: optsReg})
+		return dst
+	}
+
+	if p.Fetch != nil {
+		url := fc.compileExpr(p.Fetch.URL)
+		optsReg := fc.newReg()
+		if p.Fetch.With != nil {
+			r := fc.compileExpr(p.Fetch.With)
+			fc.emit(p.Pos, Instr{Op: OpMove, A: optsReg, B: r})
+		} else {
+			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: interpreter.TagNull}})
+		}
+		dst := fc.newReg()
+		fc.emit(p.Pos, Instr{Op: OpFetch, A: dst, B: url, C: optsReg})
 		return dst
 	}
 
