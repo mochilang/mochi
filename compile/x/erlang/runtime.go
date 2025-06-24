@@ -89,6 +89,20 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("mochi_get(_, _) -> erlang:error(badarg).")
 	}
 
+	if c.needSlice {
+		c.writeln("")
+		c.writeln("mochi_slice(L, I, J) ->")
+		c.indent++
+		c.writeln("N = length(L),")
+		c.writeln("Start0 = case I < 0 of true -> I + N; false -> I end,")
+		c.writeln("End0 = case J < 0 of true -> J + N; false -> J end,")
+		c.writeln("Start1 = case Start0 < 0 of true -> 0; false -> case Start0 > N of true -> N; false -> Start0 end end,")
+		c.writeln("End1 = case End0 > N of true -> N; false -> case End0 < Start1 of true -> Start1; false -> End0 end end,")
+		c.writeln("Len = End1 - Start1,")
+		c.writeln("lists:sublist(lists:nthtail(Start1, L), Len).")
+		c.indent--
+	}
+
 	if c.needIO {
 		c.writeln("")
 		c.writeln("mochi_load(Path, _Opts) ->")

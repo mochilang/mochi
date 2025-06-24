@@ -28,6 +28,7 @@ type Compiler struct {
 	needExpect    bool
 	needTest      bool
 	needGet       bool
+	needSlice     bool
 	needIO        bool
 	needFetch     bool
 	needGenText   bool
@@ -868,29 +869,58 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 	for _, op := range p.Ops {
 		if op.Index != nil {
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
-			}
-
-			switch tt := typ.(type) {
-			case types.MapType:
-				res = fmt.Sprintf("maps:get(%s, %s)", idx, res)
-				typ = tt.Value
-			case types.ListType:
-				res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
-				typ = tt.Elem
-			case types.StringType:
-				res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
-				typ = types.StringType{}
-			default:
-				if isStringExpr(op.Index.Start, c.env) {
-					c.needGet = true
-					res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
-				} else {
-					res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+			if op.Index.Colon != nil {
+				start := "0"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = s
 				}
-				typ = types.AnyType{}
+				end := fmt.Sprintf("length(%s)", res)
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				c.needSlice = true
+				res = fmt.Sprintf("mochi_slice(%s, %s, %s)", res, start, end)
+				switch tt := typ.(type) {
+				case types.ListType:
+					typ = tt
+				case types.StringType:
+					typ = types.StringType{}
+				default:
+					typ = types.AnyType{}
+				}
+			} else {
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+
+				switch tt := typ.(type) {
+				case types.MapType:
+					res = fmt.Sprintf("maps:get(%s, %s)", idx, res)
+					typ = tt.Value
+				case types.ListType:
+					res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+					typ = tt.Elem
+				case types.StringType:
+					res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+					typ = types.StringType{}
+				default:
+					if isStringExpr(op.Index.Start, c.env) {
+						c.needGet = true
+						res = fmt.Sprintf("mochi_get(%s, %s)", res, idx)
+					} else {
+						res = fmt.Sprintf("lists:nth(%s + 1, %s)", idx, res)
+					}
+					typ = types.AnyType{}
+				}
 			}
 		} else if op.Call != nil {
 			args := []string{}
