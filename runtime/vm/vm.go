@@ -1073,16 +1073,22 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 		if st.Fun != nil {
 			idx := len(c.funcs)
 			c.fnIndex[st.Fun.Name] = idx
-			fn := c.compileFun(st.Fun)
+			fn, err := c.compileFun(st.Fun)
+			if err != nil {
+				return nil, err
+			}
 			c.funcs = append(c.funcs, fn)
 		}
 	}
-	main := c.compileMain(p)
+	main, err := c.compileMain(p)
+	if err != nil {
+		return nil, err
+	}
 	c.funcs[0] = main
 	return &Program{Funcs: c.funcs}, nil
 }
 
-func (c *compiler) compileFun(fn *parser.FunStmt) Function {
+func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
@@ -1095,10 +1101,12 @@ func (c *compiler) compileFun(fn *parser.FunStmt) Function {
 	}
 	fc.idx = len(fn.Params)
 	for _, st := range fn.Body {
-		fc.compileStmt(st)
+		if err := fc.compileStmt(st); err != nil {
+			return Function{}, err
+		}
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
-	return fc.fn
+	return fc.fn, nil
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
@@ -1117,7 +1125,10 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
 		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: r})
 	} else {
 		for _, st := range fn.BlockBody {
-			fc.compileStmt(st)
+			if err := fc.compileStmt(st); err != nil {
+				// function literals are compiled at expression level; panic on error
+				panic(err)
+			}
 		}
 		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	}
@@ -1126,7 +1137,7 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr) int {
 	return idx
 }
 
-func (c *compiler) compileMain(p *parser.Program) Function {
+func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}}
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
@@ -1135,10 +1146,12 @@ func (c *compiler) compileMain(p *parser.Program) Function {
 		if st.Fun != nil {
 			continue
 		}
-		fc.compileStmt(st)
+		if err := fc.compileStmt(st); err != nil {
+			return Function{}, err
+		}
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
-	return fc.fn
+	return fc.fn, nil
 }
 
 func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
@@ -1189,7 +1202,7 @@ func (fc *funcCompiler) newReg() int {
 	return r
 }
 
-func (fc *funcCompiler) compileStmt(s *parser.Statement) {
+func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		r := fc.compileExpr(s.Let.Value)
@@ -1200,56 +1213,60 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 		if v, ok := fc.evalConstExpr(s.Let.Value); ok {
 			fc.comp.env.SetValue(s.Let.Name, valueToAny(v), false)
 		}
+		return nil
 	case s.Var != nil:
 		r := fc.compileExpr(s.Var.Value)
 		reg := fc.newReg()
 		fc.vars[s.Var.Name] = reg
 		fc.emit(s.Var.Pos, Instr{Op: OpMove, A: reg, B: r})
 		fc.tags[reg] = fc.tags[r]
+		return nil
 	case s.Assign != nil:
+		reg, ok := fc.vars[s.Assign.Name]
+		if !ok {
+			return fmt.Errorf("assignment to undeclared variable: %s", s.Assign.Name)
+		}
 		if len(s.Assign.Index) == 0 {
 			r := fc.compileExpr(s.Assign.Value)
-			reg, ok := fc.vars[s.Assign.Name]
-			if !ok {
-				reg = fc.newReg()
-				fc.vars[s.Assign.Name] = reg
-			}
 			fc.emit(s.Assign.Pos, Instr{Op: OpMove, A: reg, B: r})
 			fc.tags[reg] = fc.tags[r]
 		} else if len(s.Assign.Index) == 1 {
-			listReg, ok := fc.vars[s.Assign.Name]
-			if !ok {
-				listReg = fc.newReg()
-				fc.vars[s.Assign.Name] = listReg
-			}
 			idx := fc.compileExpr(s.Assign.Index[0].Start)
 			val := fc.compileExpr(s.Assign.Value)
-			fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: listReg, B: idx, C: val})
+			fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: reg, B: idx, C: val})
+		} else {
+			return fmt.Errorf("multiple index assignment not supported")
 		}
+		return nil
 	case s.Return != nil:
 		r := fc.compileExpr(s.Return.Value)
 		fc.emit(s.Return.Pos, Instr{Op: OpReturn, A: r})
+		return nil
 	case s.Expr != nil:
 		fc.compileExpr(s.Expr.Expr)
+		return nil
 	case s.If != nil:
-		fc.compileIf(s.If)
+		return fc.compileIf(s.If)
 	case s.While != nil:
-		fc.compileWhile(s.While)
+		return fc.compileWhile(s.While)
 	case s.For != nil:
-		fc.compileFor(s.For)
+		return fc.compileFor(s.For)
 	case s.Break != nil:
 		if l := len(fc.loops); l > 0 {
 			idx := len(fc.fn.Code)
 			fc.emit(s.Break.Pos, Instr{Op: OpJump})
 			fc.loops[l-1].breakJumps = append(fc.loops[l-1].breakJumps, idx)
 		}
+		return nil
 	case s.Continue != nil:
 		if l := len(fc.loops); l > 0 {
 			idx := len(fc.fn.Code)
 			fc.emit(s.Continue.Pos, Instr{Op: OpJump})
 			fc.loops[l-1].continueJumps = append(fc.loops[l-1].continueJumps, idx)
 		}
+		return nil
 	}
+	return nil
 }
 
 func (fc *funcCompiler) compileExpr(e *parser.Expr) int {
@@ -1703,7 +1720,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	return fc.newReg()
 }
 
-func (fc *funcCompiler) compileFor(f *parser.ForStmt) {
+func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 	if f.RangeEnd != nil {
 		start := fc.compileExpr(f.Source)
 		end := fc.compileExpr(f.RangeEnd)
@@ -1721,7 +1738,9 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) {
 		loop := &loopContext{}
 		fc.loops = append(fc.loops, loop)
 		for _, st := range f.Body {
-			fc.compileStmt(st)
+			if err := fc.compileStmt(st); err != nil {
+				return err
+			}
 		}
 		contTarget := len(fc.fn.Code)
 		for _, idx := range loop.continueJumps {
@@ -1763,7 +1782,9 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) {
 		}
 		fc.emit(f.Pos, Instr{Op: OpMove, A: varReg, B: elem})
 		for _, st := range f.Body {
-			fc.compileStmt(st)
+			if err := fc.compileStmt(st); err != nil {
+				return err
+			}
 		}
 		contTarget := len(fc.fn.Code)
 		for _, idx := range loop.continueJumps {
@@ -1782,9 +1803,10 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) {
 		}
 		fc.loops = fc.loops[:len(fc.loops)-1]
 	}
+	return nil
 }
 
-func (fc *funcCompiler) compileWhile(w *parser.WhileStmt) {
+func (fc *funcCompiler) compileWhile(w *parser.WhileStmt) error {
 	loopStart := len(fc.fn.Code)
 	cond := fc.compileExpr(w.Cond)
 	jmp := len(fc.fn.Code)
@@ -1792,7 +1814,9 @@ func (fc *funcCompiler) compileWhile(w *parser.WhileStmt) {
 	loop := &loopContext{continueTarget: loopStart}
 	fc.loops = append(fc.loops, loop)
 	for _, st := range w.Body {
-		fc.compileStmt(st)
+		if err := fc.compileStmt(st); err != nil {
+			return err
+		}
 	}
 	for _, idx := range loop.continueJumps {
 		fc.fn.Code[idx].A = loopStart
@@ -1804,14 +1828,17 @@ func (fc *funcCompiler) compileWhile(w *parser.WhileStmt) {
 		fc.fn.Code[idx].A = endPC
 	}
 	fc.loops = fc.loops[:len(fc.loops)-1]
+	return nil
 }
 
-func (fc *funcCompiler) compileIf(s *parser.IfStmt) {
+func (fc *funcCompiler) compileIf(s *parser.IfStmt) error {
 	cond := fc.compileExpr(s.Cond)
 	jmpFalse := len(fc.fn.Code)
 	fc.emit(s.Pos, Instr{Op: OpJumpIfFalse, A: cond})
 	for _, st := range s.Then {
-		fc.compileStmt(st)
+		if err := fc.compileStmt(st); err != nil {
+			return err
+		}
 	}
 	endJump := -1
 	if len(s.Else) > 0 {
@@ -1821,10 +1848,13 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) {
 	fc.fn.Code[jmpFalse].B = len(fc.fn.Code)
 	if len(s.Else) > 0 {
 		for _, st := range s.Else {
-			fc.compileStmt(st)
+			if err := fc.compileStmt(st); err != nil {
+				return err
+			}
 		}
 		fc.fn.Code[endJump].A = len(fc.fn.Code)
 	}
+	return nil
 }
 
 func constList(l *parser.ListLiteral) (Value, bool) {
