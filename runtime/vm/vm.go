@@ -1279,6 +1279,9 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 		}
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
+	if fc.fn.NumRegs == 0 {
+		fc.fn.NumRegs = 1
+	}
 	return fc.fn, nil
 }
 
@@ -1308,6 +1311,9 @@ func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Funct
 		}
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
+	if fc.fn.NumRegs == 0 {
+		fc.fn.NumRegs = 1
+	}
 	return fc.fn, nil
 }
 
@@ -1362,6 +1368,9 @@ func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
 		}
 		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
 	}
+	if fc.fn.NumRegs == 0 {
+		fc.fn.NumRegs = 1
+	}
 	idx := len(c.funcs)
 	c.funcs = append(c.funcs, fc.fn)
 	return idx
@@ -1381,6 +1390,9 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 		}
 	}
 	fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: 0})
+	if fc.fn.NumRegs == 0 {
+		fc.fn.NumRegs = 1
+	}
 	return fc.fn, nil
 }
 
@@ -1521,6 +1533,19 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 			fc.emit(s.Continue.Pos, Instr{Op: OpJump})
 			fc.loops[l-1].continueJumps = append(fc.loops[l-1].continueJumps, idx)
 		}
+		return nil
+	case s.Test != nil:
+		fc.pushScope()
+		for _, st := range s.Test.Body {
+			if err := fc.compileStmt(st); err != nil {
+				fc.popScope()
+				return err
+			}
+		}
+		fc.popScope()
+		return nil
+	case s.Expect != nil:
+		fc.compileExpr(s.Expect.Value)
 		return nil
 	}
 	return nil

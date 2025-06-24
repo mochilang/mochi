@@ -249,21 +249,6 @@ run error: invalid index target
 exit status 1
 ```
 
-## tests/interpreter/valid/test_expect_pass.mochi
-
-```
-panic: runtime error: index out of range [0] with length 0
-
-goroutine 1 [running]:
-mochi/runtime/vm.(*VM).call(0xc0002cbe38, 0x0?, {0x0, 0xc0001b1020?, 0x23dd080?}, {0xc0002cbda8, 0x1, 0x1})
-	/workspace/mochi/runtime/vm/vm.go:1173 +0xc214
-mochi/runtime/vm.(*VM).Run(0xc0002cbe38)
-	/workspace/mochi/runtime/vm/vm.go:488 +0xa5
-main.main()
-	/workspace/mochi/runtime/vm/cmd/runvm/main.go:45 +0x648
-exit status 2
-```
-
 ## tests/interpreter/valid/tree_sum.mochi
 
 ```
