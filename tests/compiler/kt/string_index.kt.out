@@ -1,0 +1,6 @@
+fun main() {
+        val text = "hello"
+        println(text.substring(1, 1 + 1))
+}
+
+
