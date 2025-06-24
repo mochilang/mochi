@@ -1,0 +1,15 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+template<typename T> T _indexVec(const vector<T>& v, int i) {
+	int n = v.size();
+	if (i < 0) i += n;
+	if (i < 0 || i >= n) throw std::out_of_range("index out of range");
+	return v[i];
+}
+
+int main() {
+	auto xs = vector<int>{10, 20, 30};
+	std::cout << (_indexVec(xs, -1)) << std::endl;
+	return 0;
+}
