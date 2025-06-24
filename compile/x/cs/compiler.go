@@ -544,7 +544,12 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if !useVar {
 		loopVar = c.newVar()
 	}
-	c.writeln(fmt.Sprintf("foreach (var %s in %s) {", loopVar, src))
+	t := c.inferExprType(f.Source)
+	if _, ok := t.(types.MapType); ok {
+		c.writeln(fmt.Sprintf("foreach (var %s in %s.Keys) {", loopVar, src))
+	} else {
+		c.writeln(fmt.Sprintf("foreach (var %s in %s) {", loopVar, src))
+	}
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -1799,6 +1804,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len() expects 1 arg")
+		}
+		t := c.inferExprType(call.Args[0])
+		if _, ok := t.(types.MapType); ok {
+			return fmt.Sprintf("%s.Count", args[0]), nil
 		}
 		return fmt.Sprintf("%s.Length", args[0]), nil
 	case "now":
