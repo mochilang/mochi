@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Web;
 
-public class Sensor {
+public struct Sensor {
 	public string id;
 	public double temperature;
 }

@@ -69,7 +69,7 @@ if _, ok := c.helpers["_cast"]; !ok {
 
 ## Type Declarations
 
-Struct and union types are emitted as public C# classes. Unions generate an interface with a marker method and one class per variant:
+Struct and union types are emitted as public C# structs. Unions generate an interface with a marker method and one struct per variant:
 
 ```go
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -79,7 +79,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
         c.writeln(iface)
         for _, v := range t.Variants {
             vname := sanitizeName(v.Name)
-            c.writeln(fmt.Sprintf("public class %s : %s {", vname, name))
+            c.writeln(fmt.Sprintf("public struct %s : %s {", vname, name))
             ...
         }
     }

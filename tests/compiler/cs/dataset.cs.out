@@ -7,7 +7,7 @@ using System.Text;
 using System.Web;
 using System.Linq;
 
-public class Person {
+public struct Person {
 	public string name;
 	public long age;
 }
