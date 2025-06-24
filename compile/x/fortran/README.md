@@ -27,6 +27,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - `package` and `export` declarations (ignored during code generation)
 - `import` statements emit Fortran `include` lines
 - slice assignments like `xs[0:1] = sub`
+- negative list and string indices wrap around using modulo
 
 ## Unsupported features
 
