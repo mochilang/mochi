@@ -679,7 +679,22 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), leftType
 	case "%":
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), leftType
-	case "==", "!=", "<", "<=", ">", ">=":
+	case "==", "!=":
+		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.BoolType{}
+	case "<", "<=", ">", ">=":
+		if isString(leftType) && isString(rightType) {
+			cmp := fmt.Sprintf("(compare %s %s)", left, right)
+			switch op {
+			case "<":
+				return fmt.Sprintf("(< %s 0)", cmp), types.BoolType{}
+			case "<=":
+				return fmt.Sprintf("(<= %s 0)", cmp), types.BoolType{}
+			case ">":
+				return fmt.Sprintf("(> %s 0)", cmp), types.BoolType{}
+			case ">=":
+				return fmt.Sprintf("(>= %s 0)", cmp), types.BoolType{}
+			}
+		}
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.BoolType{}
 	case "&&", "||":
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.BoolType{}

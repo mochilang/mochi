@@ -26,7 +26,7 @@ func EnsureClojure() error {
 			if err := cmd.Run(); err != nil {
 				return err
 			}
-			cmd = exec.Command("apt-get", "install", "-y", "clojure")
+			cmd = exec.Command("apt-get", "install", "-y", "clojure", "libdata-json-clojure", "libsnakeyaml-engine-java")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err == nil {
