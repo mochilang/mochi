@@ -1140,17 +1140,29 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		savedIndent := c.indent
 		c.buf = buf
 		c.indent = 0
+		origAlias := c.paramAlias
+		c.paramAlias = make(map[string]string)
+		for _, p := range fn.Params {
+			if paramMutated(fn.BlockBody, p.Name) {
+				alias := sanitizeName(p.Name) + "_var"
+				c.paramAlias[p.Name] = alias
+				typ := scalaType(c.resolveTypeRef(p.Type))
+				c.writeln(fmt.Sprintf("var %s: %s = %s", alias, typ, sanitizeName(p.Name)))
+			}
+		}
 		for _, st := range fn.BlockBody {
 			if err := c.compileStmt(st); err != nil {
 				c.env = origEnv
 				c.buf = savedBuf
 				c.indent = savedIndent
+				c.paramAlias = origAlias
 				return "", err
 			}
 		}
 		body = "{\n" + indentBlock(c.buf.String(), 1) + "}"
 		c.buf = savedBuf
 		c.indent = savedIndent
+		c.paramAlias = origAlias
 	}
 	c.env = origEnv
 
