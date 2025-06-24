@@ -316,6 +316,19 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			}
 			c.indent++
 			c.writeln(fmt.Sprintf("let %s = %s.to_string();", name, tmp))
+		} else if c.isMapExpr(stmt.Source.Binary.Left.Value) {
+			keyTmp := name + "_key"
+			c.writeln(fmt.Sprintf("for %s in %s.keys() {", keyTmp, start))
+			if c.env != nil {
+				srcType := c.inferExprType(stmt.Source)
+				if mt, ok := srcType.(types.MapType); ok {
+					c.env.SetVar(stmt.Name, mt.Key, true)
+				} else {
+					c.env.SetVar(stmt.Name, types.AnyType{}, true)
+				}
+			}
+			c.indent++
+			c.writeln(fmt.Sprintf("let %s = %s.clone();", name, keyTmp))
 		} else {
 			c.writeln(fmt.Sprintf("for %s in %s {", name, start))
 			if c.env != nil {
