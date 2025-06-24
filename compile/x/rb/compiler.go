@@ -407,13 +407,17 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		return fmt.Sprintf("->(%s){ %s }", strings.Join(params, ", "), expr), nil
 	}
 	if len(fn.BlockBody) > 0 {
-		sub := &Compiler{env: c.env, indent: c.indent + 1}
+		sub := &Compiler{env: c.env, indent: c.indent + 1, helpers: c.helpers, useOpenStruct: c.useOpenStruct, tmpCount: c.tmpCount}
 		for _, s := range fn.BlockBody {
 			if err := sub.compileStmt(s); err != nil {
 				return "", err
 			}
 		}
 		body := sub.buf.String()
+		c.tmpCount = sub.tmpCount
+		if sub.useOpenStruct {
+			c.useOpenStruct = true
+		}
 		var b strings.Builder
 		b.WriteString("->(" + strings.Join(params, ", ") + "){\n")
 		b.WriteString(body)
