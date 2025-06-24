@@ -25,6 +25,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 
 	operands := []string{left}
 	ops := []string{}
+	strs := []bool{c.isStringUnary(b.Left)}
 	for _, part := range b.Right {
 		right, err := c.compilePostfix(part.Right)
 		if err != nil {
@@ -36,6 +37,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		}
 		ops = append(ops, op)
 		operands = append(operands, right)
+		strs = append(strs, c.isStringPostfix(part.Right))
 	}
 
 	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
@@ -46,6 +48,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				r := operands[i+1]
 				opstr := ops[i]
 				var expr string
+				resStr := false
 				switch opstr {
 				case "&&":
 					expr = fmt.Sprintf("(%s and %s)", l, r)
@@ -54,40 +57,57 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case "in":
 					c.helpers["contains"] = true
 					expr = fmt.Sprintf("__contains(%s, %s)", r, l)
+					resStr = false
 				case "/":
 					c.helpers["div"] = true
 					expr = fmt.Sprintf("__div(%s, %s)", l, r)
+					resStr = false
 				case "+":
-					c.helpers["add"] = true
-					expr = fmt.Sprintf("__add(%s, %s)", l, r)
+					if strs[i] && strs[i+1] {
+						expr = fmt.Sprintf("(%s .. %s)", l, r)
+						resStr = true
+					} else {
+						c.helpers["add"] = true
+						expr = fmt.Sprintf("__add(%s, %s)", l, r)
+						resStr = strs[i] || strs[i+1]
+					}
 				case "==":
 					c.helpers["eq"] = true
 					expr = fmt.Sprintf("__eq(%s, %s)", l, r)
+					resStr = false
 				case "!=":
 					c.helpers["eq"] = true
 					expr = fmt.Sprintf("not __eq(%s, %s)", l, r)
-                               case "union_all":
-                                       c.helpers["union_all"] = true
-                                       c.helpers["eq"] = true
-                                       expr = fmt.Sprintf("__union_all(%s, %s)", l, r)
-                               case "union":
-                                       c.helpers["union"] = true
-                                       c.helpers["eq"] = true
-                                       expr = fmt.Sprintf("__union(%s, %s)", l, r)
-                               case "except":
-                                       c.helpers["except"] = true
-                                       c.helpers["eq"] = true
-                                       expr = fmt.Sprintf("__except(%s, %s)", l, r)
-                               case "intersect":
-                                       c.helpers["intersect"] = true
-                                       c.helpers["eq"] = true
-                                       expr = fmt.Sprintf("__intersect(%s, %s)", l, r)
+					resStr = false
+				case "union_all":
+					c.helpers["union_all"] = true
+					c.helpers["eq"] = true
+					expr = fmt.Sprintf("__union_all(%s, %s)", l, r)
+					resStr = false
+				case "union":
+					c.helpers["union"] = true
+					c.helpers["eq"] = true
+					expr = fmt.Sprintf("__union(%s, %s)", l, r)
+					resStr = false
+				case "except":
+					c.helpers["except"] = true
+					c.helpers["eq"] = true
+					expr = fmt.Sprintf("__except(%s, %s)", l, r)
+					resStr = false
+				case "intersect":
+					c.helpers["intersect"] = true
+					c.helpers["eq"] = true
+					expr = fmt.Sprintf("__intersect(%s, %s)", l, r)
+					resStr = false
 				default:
 					expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
+					resStr = false
 				}
 				operands[i] = expr
 				operands = append(operands[:i+1], operands[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
+				strs[i] = resStr
+				strs = append(strs[:i+1], strs[i+2:]...)
 			} else {
 				i++
 			}

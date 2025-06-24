@@ -199,3 +199,18 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	}
 	return types.AnyType{}
 }
+
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
+	_, ok := c.inferExprType(e).(types.StringType)
+	return ok
+}
+
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
+	_, ok := c.inferUnaryType(u).(types.StringType)
+	return ok
+}
+
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	_, ok := c.inferPostfixType(p).(types.StringType)
+	return ok
+}
