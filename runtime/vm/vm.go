@@ -70,6 +70,7 @@ const (
 	OpCount
 	OpAvg
 	OpIterPrep
+	OpCast
 
 	// Specialized numeric ops
 	OpAddInt
@@ -173,6 +174,8 @@ func (op Op) String() string {
 		return "Avg"
 	case OpIterPrep:
 		return "IterPrep"
+	case OpCast:
+		return "Cast"
 	case OpAddInt:
 		return "AddInt"
 	case OpAddFloat:
@@ -366,6 +369,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpIterPrep:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpCast:
+				fmt.Fprintf(&b, "%s, %s, %q", formatReg(ins.A), formatReg(ins.B), ins.Val.Str)
 			case OpCount:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpAvg:
@@ -896,6 +901,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid iterator"), trace, ins.Line)
 			}
+		case OpCast:
+			src := fr.regs[ins.B]
+			if src.Tag == interpreter.TagMap {
+				m := make(map[string]Value, len(src.Map)+1)
+				for k, v := range src.Map {
+					m[k] = v
+				}
+				m["__name"] = Value{Tag: interpreter.TagStr, Str: ins.Val.Str}
+				fr.regs[ins.A] = Value{Tag: interpreter.TagMap, Map: m}
+			} else {
+				fr.regs[ins.A] = src
+			}
 		case OpCount:
 			lst := fr.regs[ins.B]
 			if lst.Tag != interpreter.TagList {
@@ -1182,6 +1199,8 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 	case OpJSON, OpPrint, OpPrint2:
 		// no result
 	case OpAppend, OpStr, OpInput:
+		fc.tags[i.A] = tagUnknown
+	case OpCast:
 		fc.tags[i.A] = tagUnknown
 	case OpCount:
 		fc.tags[i.A] = tagInt
@@ -1486,6 +1505,11 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 				start = regs[0]
 			}
 			fc.emit(op.Call.Pos, Instr{Op: OpCallV, A: dst, B: r, C: len(regs), D: start})
+			r = dst
+		} else if op.Cast != nil {
+			dst := fc.newReg()
+			name := simpleTypeName(op.Cast.Type)
+			fc.emit(op.Cast.Pos, Instr{Op: OpCast, A: dst, B: r, Val: Value{Tag: interpreter.TagStr, Str: name}})
 			r = dst
 		}
 	}
@@ -2026,6 +2050,16 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func simpleTypeName(t *parser.TypeRef) string {
+	if t == nil {
+		return ""
+	}
+	if t.Simple != nil {
+		return *t.Simple
+	}
+	return ""
 }
 
 func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
