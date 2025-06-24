@@ -293,11 +293,11 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
 	if len(t.Variants) > 0 {
-        iface := fmt.Sprintf("public interface %s { void is%s(); }", name, name)
-        c.writeln(iface)
-        for _, v := range t.Variants {
-                vname := sanitizeName(v.Name)
-                c.writeln(fmt.Sprintf("public struct %s : %s {", vname, name))
+		iface := fmt.Sprintf("public interface %s { void is%s(); }", name, name)
+		c.writeln(iface)
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			c.writeln(fmt.Sprintf("public struct %s : %s {", vname, name))
 			c.indent++
 			for _, f := range v.Fields {
 				typ := csType(f.Type)
@@ -309,7 +309,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 		return nil
 	}
-        c.writeln(fmt.Sprintf("public struct %s {", name))
+	c.writeln(fmt.Sprintf("public struct %s {", name))
 	c.indent++
 	for _, m := range t.Members {
 		if m.Field != nil {
@@ -335,7 +335,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		return
 	}
 	c.structs[name] = true
-        c.writeln(fmt.Sprintf("public struct %s {", name))
+	c.writeln(fmt.Sprintf("public struct %s {", name))
 	c.indent++
 	for _, fn := range st.Order {
 		ft := st.Fields[fn]
@@ -1718,6 +1718,62 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("new Dictionary<%s, %s> { %s }", keyType, valType, strings.Join(items, ", ")), nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
+		if mt, ok := typ.(types.MapType); ok && len(p.Selector.Tail) > 0 {
+			key := p.Selector.Tail[0]
+			expr = fmt.Sprintf("%s[%q]", expr, key)
+			typ = mt.Value
+			for _, f := range p.Selector.Tail[1:] {
+				expr += "." + sanitizeName(f)
+				if st, ok := typ.(types.StructType); ok {
+					if ft, ok := st.Fields[f]; ok {
+						typ = ft
+					} else {
+						typ = types.AnyType{}
+					}
+				} else {
+					typ = types.AnyType{}
+				}
+			}
+			return expr, nil
+		}
+		if ut, ok := typ.(types.UnionType); ok && len(p.Selector.Tail) > 0 {
+			field := p.Selector.Tail[0]
+			var variant string
+			var ftyp types.Type
+			for name, st := range ut.Variants {
+				if ft, ok := st.Fields[field]; ok {
+					if variant != "" {
+						variant = ""
+						break
+					}
+					variant = name
+					ftyp = ft
+				}
+			}
+			if variant != "" {
+				expr = fmt.Sprintf("((%s)%s).%s", sanitizeName(variant), expr, sanitizeName(field))
+				typ = ftyp
+				for _, f := range p.Selector.Tail[1:] {
+					expr += "." + sanitizeName(f)
+					if st, ok := typ.(types.StructType); ok {
+						if ft, ok := st.Fields[f]; ok {
+							typ = ft
+						} else {
+							typ = types.AnyType{}
+						}
+					} else {
+						typ = types.AnyType{}
+					}
+				}
+				return expr, nil
+			}
+		}
 		for _, s := range p.Selector.Tail {
 			expr += "." + sanitizeName(s)
 		}

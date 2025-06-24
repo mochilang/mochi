@@ -207,6 +207,34 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 						}
 					}
 				}
+				if ut, ok := t.(types.UnionType); ok {
+					if ft, ok := unionFieldPathType(ut, p.Selector.Tail); ok {
+						return ft
+					}
+				}
+				if mt, ok := t.(types.MapType); ok && len(p.Selector.Tail) > 0 {
+					if isString(mt.Key) {
+						cur := mt.Value
+						for idx, field := range p.Selector.Tail {
+							if st, ok := cur.(types.StructType); ok {
+								ft, ok := st.Fields[field]
+								if !ok {
+									return types.AnyType{}
+								}
+								cur = ft
+								if idx == len(p.Selector.Tail)-1 {
+									return cur
+								}
+							} else {
+								if idx == 0 {
+									return cur
+								}
+								return types.AnyType{}
+							}
+						}
+						return cur
+					}
+				}
 			}
 		}
 		return types.AnyType{}
@@ -393,4 +421,33 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+// unionFieldPathType attempts to resolve a field path across all variants of a union.
+// It returns the type if every variant has the field path with the same type.
+func unionFieldPathType(ut types.UnionType, tail []string) (types.Type, bool) {
+	var result types.Type
+	for _, variant := range ut.Variants {
+		cur := types.Type(variant)
+		for _, field := range tail {
+			st, ok := cur.(types.StructType)
+			if !ok {
+				return nil, false
+			}
+			ft, ok := st.Fields[field]
+			if !ok {
+				return nil, false
+			}
+			cur = ft
+		}
+		if result == nil {
+			result = cur
+		} else if !equalTypes(result, cur) {
+			return nil, false
+		}
+	}
+	if result == nil {
+		return nil, false
+	}
+	return result, true
 }
