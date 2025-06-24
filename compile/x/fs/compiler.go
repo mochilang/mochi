@@ -682,7 +682,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		} else if c.isStringExpr(f.Source) {
 			typ = types.StringType{}
 		} else {
-			if lt, ok := c.inferExprType(f.Source).(types.ListType); ok {
+			if mt, ok := c.inferExprType(f.Source).(types.MapType); ok {
+				typ = mt.Key
+			} else if lt, ok := c.inferExprType(f.Source).(types.ListType); ok {
 				typ = lt.Elem
 			}
 		}
@@ -738,6 +740,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	src, err := c.compileExpr(f.Source)
 	if err != nil {
 		return err
+	}
+	if c.isMapExpr(f.Source) {
+		src = fmt.Sprintf("Map.keys %s", src)
 	}
 	loopVar := name
 	if !useVar {
