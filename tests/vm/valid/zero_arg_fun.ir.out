@@ -1,0 +1,12 @@
+func main (regs=1)
+  // print(answer())
+  Call         r0, answer, 
+  Print        r0
+  Return       r0
+
+  // fun answer(): int {
+func answer (regs=1)
+  // return 42
+  Const        r0, 42
+  Return       r0
+  Return       r0

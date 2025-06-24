@@ -1,0 +1,18 @@
+func main (regs=7)
+  // let sum = fun(a: int, b: int): int => a + b
+  Const        r0, 1
+  Move         r1, r0
+  // print(sum(4, 5))
+  Const        r4, 4
+  Move         r2, r4
+  Const        r5, 5
+  Move         r3, r5
+  CallV        r6, r1, 2, r2
+  Print        r6
+  Return       r0
+
+  // let sum = fun(a: int, b: int): int => a + b
+func fn1 (regs=3)
+  // let sum = fun(a: int, b: int): int => a + b
+  Add          r2, r0, r1
+  Return       r2

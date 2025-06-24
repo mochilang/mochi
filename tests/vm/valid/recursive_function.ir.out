@@ -1,0 +1,26 @@
+func main (regs=3)
+  // print(factorial(5))
+  Const        r1, 5
+  Move         r0, r1
+  Call         r2, factorial, r0
+  Print        r2
+  Return       r0
+
+  // fun factorial(n: int): int {
+func factorial (regs=9)
+  // if n <= 1 {
+  Const        r1, 1
+  LessEq       r2, r0, r1
+  JumpIfFalse  r2, L0
+  // return 1
+  Const        r3, 1
+  Return       r3
+L0:
+  // return n * factorial(n - 1)
+  Const        r5, 1
+  Sub          r6, r0, r5
+  Move         r4, r6
+  Call         r7, factorial, r4
+  Mul          r8, r0, r7
+  Return       r8
+  Return       r0

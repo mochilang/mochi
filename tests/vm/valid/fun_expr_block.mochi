@@ -1,0 +1,2 @@
+let sum = fun(a: int, b: int): int => a + b
+print(sum(4, 5))

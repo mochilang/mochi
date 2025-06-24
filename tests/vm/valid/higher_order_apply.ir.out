@@ -1,0 +1,26 @@
+func main (regs=6)
+  // let inc = fun(y: int): int => y + 1
+  Const        r0, 2
+  Move         r1, r0
+  // print(apply(inc, 3))
+  Move         r2, r1
+  Const        r4, 3
+  Move         r3, r4
+  Call2        r5, apply, r2, r3
+  Print        r5
+  Return       r0
+
+  // fun apply(f: fun(int): int, x: int): int {
+func apply (regs=4)
+  // return f(x)
+  Move         r2, r1
+  CallV        r3, r0, 1, r2
+  Return       r3
+  Return       r0
+
+  // let inc = fun(y: int): int => y + 1
+func fn2 (regs=3)
+  // let inc = fun(y: int): int => y + 1
+  Const        r1, 1
+  Add          r2, r0, r1
+  Return       r2

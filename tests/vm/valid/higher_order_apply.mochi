@@ -1,0 +1,6 @@
+fun apply(f: fun(int): int, x: int): int {
+  return f(x)
+}
+
+let inc = fun(y: int): int => y + 1
+print(apply(inc, 3))
