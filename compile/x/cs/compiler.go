@@ -293,11 +293,11 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
 	if len(t.Variants) > 0 {
-        iface := fmt.Sprintf("public interface %s { void is%s(); }", name, name)
-        c.writeln(iface)
-        for _, v := range t.Variants {
-                vname := sanitizeName(v.Name)
-                c.writeln(fmt.Sprintf("public struct %s : %s {", vname, name))
+		iface := fmt.Sprintf("public interface %s { void is%s(); }", name, name)
+		c.writeln(iface)
+		for _, v := range t.Variants {
+			vname := sanitizeName(v.Name)
+			c.writeln(fmt.Sprintf("public struct %s : %s {", vname, name))
 			c.indent++
 			for _, f := range v.Fields {
 				typ := csType(f.Type)
@@ -309,12 +309,20 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 		return nil
 	}
-        c.writeln(fmt.Sprintf("public struct %s {", name))
+	c.writeln(fmt.Sprintf("public struct %s {", name))
 	c.indent++
 	for _, m := range t.Members {
 		if m.Field != nil {
 			typ := csType(m.Field.Type)
 			c.writeln(fmt.Sprintf("public %s %s;", typ, sanitizeName(m.Field.Name)))
+		}
+	}
+	for _, m := range t.Members {
+		if m.Type != nil {
+			if err := c.compileTypeDecl(m.Type); err != nil {
+				return err
+			}
+			c.writeln("")
 		}
 	}
 	for _, m := range t.Members {
@@ -335,7 +343,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		return
 	}
 	c.structs[name] = true
-        c.writeln(fmt.Sprintf("public struct %s {", name))
+	c.writeln(fmt.Sprintf("public struct %s {", name))
 	c.indent++
 	for _, fn := range st.Order {
 		ft := st.Fields[fn]

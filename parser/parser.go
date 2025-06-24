@@ -127,6 +127,7 @@ type TypeDecl struct {
 type TypeMember struct {
 	Field  *TypeField `parser:"@@"`
 	Method *FunStmt   `parser:"| @@"`
+	Type   *TypeDecl  `parser:"| @@"`
 }
 
 type TypeVariant struct {

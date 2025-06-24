@@ -154,6 +154,7 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Variable and function declarations
 - Control flow with `if`, `for`, `while`, `break` and `continue`
 - Struct and union types with pattern matching using `match`
+- Nested type declarations inside structs
 - Lists and maps with indexing, slicing and membership checks
 - Dataset queries with `from`, `where`, `select`, `sort by`, `skip` and `take`
 - Cross joins via multiple `from` clauses
