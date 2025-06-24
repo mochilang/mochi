@@ -154,6 +154,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				} else if c.isStringExpr(p) {
 					c.helpers["_indexString"] = true
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else if c.isListExpr(p) {
+					c.helpers["_indexList"] = true
+					expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
 				} else {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
@@ -292,10 +295,8 @@ func (c *Compiler) isListExpr(p *parser.PostfixExpr) bool {
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 		if c.env != nil {
 			if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
-				if lt, ok := t.(types.ListType); ok {
-					if _, ok := lt.Elem.(types.IntType); ok {
-						return true
-					}
+				if _, ok := t.(types.ListType); ok {
+					return true
 				}
 			}
 		}
