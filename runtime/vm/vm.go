@@ -1047,6 +1047,9 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) {
 		fc.vars[s.Let.Name] = reg
 		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
 		fc.tags[reg] = fc.tags[r]
+		if v, ok := fc.evalConstExpr(s.Let.Value); ok {
+			fc.comp.env.SetValue(s.Let.Name, valueToAny(v), false)
+		}
 	case s.Var != nil:
 		r := fc.compileExpr(s.Var.Value)
 		reg := fc.newReg()
@@ -1387,6 +1390,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	}
 
 	if p.Call != nil {
+		if v, ok := fc.foldCallValue(p.Call); ok {
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
+		}
 		switch p.Call.Func {
 		case "len":
 			arg := fc.compileExpr(p.Call.Args[0])
@@ -1695,6 +1703,106 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 	}
 	if p.Map != nil {
 		return constMap(p.Map)
+	}
+	return Value{}, false
+}
+
+func literalToValue(l *parser.Literal) (Value, bool) {
+	switch {
+	case l.Int != nil:
+		return Value{Tag: interpreter.TagInt, Int: *l.Int}, true
+	case l.Float != nil:
+		return Value{Tag: interpreter.TagFloat, Float: *l.Float}, true
+	case l.Str != nil:
+		return Value{Tag: interpreter.TagStr, Str: *l.Str}, true
+	case l.Bool != nil:
+		return Value{Tag: interpreter.TagBool, Bool: bool(*l.Bool)}, true
+	default:
+		return Value{}, false
+	}
+}
+
+func extractLiteral(e *parser.Expr) *parser.Literal {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	if p.Target != nil {
+		return p.Target.Lit
+	}
+	return nil
+}
+
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
+	args := make([]*parser.Expr, len(call.Args))
+	for i, a := range call.Args {
+		if lit := extractLiteral(a); lit != nil {
+			args[i] = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: lit}}}}}
+			continue
+		}
+		if name, ok := identName(a); ok {
+			if val, err := fc.comp.env.GetValue(name); err == nil {
+				if l := types.AnyToLiteral(val); l != nil {
+					args[i] = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: l}}}}}
+					continue
+				}
+			}
+		}
+		return Value{}, false
+	}
+	lit, ok := interpreter.EvalPureCall(&parser.CallExpr{Func: call.Func, Args: args}, fc.comp.env)
+	if !ok {
+		return Value{}, false
+	}
+	return literalToValue(lit)
+}
+
+func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {
+	if lit := extractLiteral(e); lit != nil {
+		return literalToValue(lit)
+	}
+	if call, ok := callPattern(e); ok {
+		return fc.foldCallValue(call)
 	}
 	return Value{}, false
 }
