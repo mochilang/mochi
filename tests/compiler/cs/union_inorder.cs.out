@@ -2,6 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Web;
 using System.Text.Json;
 
 public interface Tree { void isTree(); }
@@ -17,16 +21,16 @@ public class Node : Tree {
 
 public class Program {
 	static long[] inorder(Tree t) {
-		return new Func<dynamic>(() => {
+		return new Func<long[]>(() => {
 		var _t = t;
 		if (_t is Leaf) return _cast<long[]>(new dynamic[] { });
 		if (_t is Node _tmp0) {
 			var l = _tmp0.left;
 			var v = _tmp0.value;
 			var r = _tmp0.right;
-			return inorder(l).Concat(new [] { v }).ToArray().Concat(inorder(r)).ToArray();
+			return inorder(l).Concat(new dynamic[] { v }).ToArray().Concat(inorder(r)).ToArray();
 		}
-		return null;
+		return default;
 	})();
 	}
 	
@@ -49,6 +53,17 @@ public class Program {
 			if (v is int) return (T)(object)(float)(int)v;
 			if (v is double) return (T)(object)(float)(double)v;
 			if (v is float) return (T)v;
+		}
+		if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Dictionary<,>) && v is System.Collections.IDictionary d) {
+			var args = typeof(T).GetGenericArguments();
+			var res = (System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(args));
+			var mCast = typeof(Program).GetMethod("_cast");
+			foreach (System.Collections.DictionaryEntry kv in d) {
+				var k = mCast.MakeGenericMethod(args[0]).Invoke(null, new object[]{kv.Key});
+				var val = mCast.MakeGenericMethod(args[1]).Invoke(null, new object[]{kv.Value});
+				res.Add(k, val);
+			}
+			return (T)res;
 		}
 		if (v is System.Collections.Generic.IDictionary<object, object> dm) {
 			var m = new Dictionary<string, object>();

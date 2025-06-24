@@ -8,12 +8,12 @@ using System.Web;
 
 public class Program {
 	public static void Main() {
-		long[] a = new [] { 1L, 2L, 3L };
-		long[] b = new [] { 3L, 4L };
+		long[] a = new long[] { 1L, 2L, 3L };
+		long[] b = new long[] { 3L, 4L };
 		Console.WriteLine(_union(a, b));
 		Console.WriteLine(_except(a, b));
 		Console.WriteLine(_intersect(a, b));
-		Console.WriteLine(_union(new [] { 1L, 2L }, new [] { 2L, 3L }));
+		Console.WriteLine(_union(new long[] { 1L, 2L }, new long[] { 2L, 3L }));
 	}
 	static List<dynamic> _union(IEnumerable<dynamic> a, IEnumerable<dynamic> b) {
 		var res = new List<dynamic>();

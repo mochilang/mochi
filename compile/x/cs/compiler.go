@@ -502,7 +502,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			alias = sanitizeName(alias)
 			return c.compilePackageImport(alias, s.Import.Path, s.Pos.Filename)
 		}
-		return fmt.Errorf("foreign imports not supported")
+		// Ignore foreign language imports for now
+		return nil
 	default:
 		// ignore other statements in minimal compiler
 	}
@@ -1853,6 +1854,14 @@ func csType(t *parser.TypeRef) string {
 	if t == nil {
 		return "dynamic"
 	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = csType(p)
+		}
+		ret := csType(t.Fun.Return)
+		return delegateType(params, ret)
+	}
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
@@ -2110,18 +2119,29 @@ func (c *Compiler) compilePackageImport(alias, path, filename string) error {
 		base = filepath.Dir(filename)
 	}
 	target := filepath.Join(base, p)
-
 	info, err := os.Stat(target)
 	if err != nil {
-		if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
-			if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
-				info = fi
-				target += ".mochi"
+		if os.IsNotExist(err) {
+			root := repoRoot()
+			if root != "" {
+				if fi, err2 := os.Stat(filepath.Join(root, p)); err2 == nil {
+					info = fi
+					target = filepath.Join(root, p)
+					err = nil
+				}
+			}
+		}
+		if err != nil {
+			if os.IsNotExist(err) && !strings.HasSuffix(target, ".mochi") {
+				if fi, err2 := os.Stat(target + ".mochi"); err2 == nil {
+					info = fi
+					target += ".mochi"
+				} else {
+					return fmt.Errorf("import package: %w", err)
+				}
 			} else {
 				return fmt.Errorf("import package: %w", err)
 			}
-		} else {
-			return fmt.Errorf("import package: %w", err)
 		}
 	}
 
