@@ -40,8 +40,13 @@ static list_list_int list_list_int_create(int len) {
     for (int i = 0; i < a.len; i++) r.data[i] = a.data[i];
     for (int i = 0; i < b.len; i++) r.data[a.len + i] = b.data[i];
     return r;
-}
-`
+}`
+	helperEqualListInt = `static int equal_list_int(list_int a, list_int b) {
+    if (a.len != b.len) return 0;
+    for (int i = 0; i < a.len; i++) if (a.data[i] != b.data[i]) return 0;
+    return 1;
+}`
+
 	helperConcatListFloat = `static list_float concat_list_float(list_float a, list_float b) {
     list_float r = list_float_create(a.len + b.len);
     for (int i = 0; i < a.len; i++) r.data[i] = a.data[i];
@@ -124,6 +129,22 @@ static list_list_int list_list_int_create(int len) {
     return r;
 }
 `
+	helperUnionListListInt = `static list_list_int union_list_list_int(list_list_int a, list_list_int b) {
+    list_list_int r = list_list_int_create(a.len + b.len);
+    int idx = 0;
+    for (int i = 0; i < a.len; i++) {
+        int found = 0;
+        for (int j = 0; j < idx; j++) if (equal_list_int(r.data[j], a.data[i])) { found = 1; break; }
+        if (!found) r.data[idx++] = a.data[i];
+    }
+    for (int i = 0; i < b.len; i++) {
+        int found = 0;
+        for (int j = 0; j < idx; j++) if (equal_list_int(r.data[j], b.data[i])) { found = 1; break; }
+        if (!found) r.data[idx++] = b.data[i];
+    }
+    r.len = idx;
+    return r;
+}`
 	helperExceptListInt = `static list_int except_list_int(list_int a, list_int b) {
     list_int r = list_int_create(a.len);
     int idx = 0;
@@ -160,6 +181,17 @@ static list_list_int list_list_int_create(int len) {
     return r;
 }
 `
+	helperExceptListListInt = `static list_list_int except_list_list_int(list_list_int a, list_list_int b) {
+    list_list_int r = list_list_int_create(a.len);
+    int idx = 0;
+    for (int i = 0; i < a.len; i++) {
+        int found = 0;
+        for (int j = 0; j < b.len; j++) if (equal_list_int(a.data[i], b.data[j])) { found = 1; break; }
+        if (!found) r.data[idx++] = a.data[i];
+    }
+    r.len = idx;
+    return r;
+}`
 	helperIntersectListInt = `static list_int intersect_list_int(list_int a, list_int b) {
     list_int r = list_int_create(a.len);
     int idx = 0;
@@ -208,6 +240,21 @@ static list_list_int list_list_int_create(int len) {
     return r;
 }
 `
+	helperIntersectListListInt = `static list_list_int intersect_list_list_int(list_list_int a, list_list_int b) {
+    list_list_int r = list_list_int_create(a.len);
+    int idx = 0;
+    for (int i = 0; i < a.len; i++) {
+        int found = 0;
+        for (int j = 0; j < b.len; j++) if (equal_list_int(a.data[i], b.data[j])) { found = 1; break; }
+        if (found) {
+            int dup = 0;
+            for (int j = 0; j < idx; j++) if (equal_list_int(r.data[j], a.data[i])) { dup = 1; break; }
+            if (!dup) r.data[idx++] = a.data[i];
+        }
+    }
+    r.len = idx;
+    return r;
+}`
 	helperCount = `static int _count(list_int v) { return v.len; }
 `
 	helperAvg = `static double _avg(list_int v) {
@@ -232,6 +279,10 @@ static list_list_int list_list_int_create(int len) {
     return 0;
 }
 `
+	helperContainsListListInt = `static int contains_list_list_int(list_list_int v, list_int item) {
+    for (int i = 0; i < v.len; i++) if (equal_list_int(v.data[i], item)) return 1;
+    return 0;
+}`
 	helperInput = `static char* _input() {
     char buf[1024];
     if (!fgets(buf, sizeof(buf), stdin)) return strdup("");
@@ -373,41 +424,45 @@ static void _json_list_list_int(list_list_int v) {
 // Mapping of helper requirement keys to their C implementations and the order
 // they should be emitted in.
 var helperCode = map[string]string{
-	needListFloat:           helperListFloat,
-	needListString:          helperListString,
-	needListListInt:         helperListListInt,
-	needConcatListInt:       helperConcatListInt,
-	needConcatListFloat:     helperConcatListFloat,
-	needConcatListString:    helperConcatListString,
-	needConcatListListInt:   helperConcatListListInt,
-	needConcatString:        helperConcatString,
-	needUnionListInt:        helperUnionListInt,
-	needUnionListFloat:      helperUnionListFloat,
-	needUnionListString:     helperUnionListString,
-	needExceptListInt:       helperExceptListInt,
-	needExceptListFloat:     helperExceptListFloat,
-	needExceptListString:    helperExceptListString,
-	needIntersectListInt:    helperIntersectListInt,
-	needIntersectListFloat:  helperIntersectListFloat,
-	needIntersectListString: helperIntersectListString,
-	needCount:               helperCount,
-	needAvg:                 helperAvg,
-	needInListInt:           helperContainsListInt,
-	needInListFloat:         helperContainsListFloat,
-	needInListString:        helperContainsListString,
-	needInput:               helperInput,
-	needStr:                 helperStr,
-	needNow:                 helperNow,
-	needJSON:                helperJSON,
-	needIndexString:         helperIndexString,
-	needSliceString:         helperSliceString,
-	needSliceListInt:        helperSliceListInt,
-	needSliceListFloat:      helperSliceListFloat,
-	needSliceListString:     helperSliceListString,
-	needPrintListInt:        helperPrintListInt,
-	needPrintListFloat:      helperPrintListFloat,
-	needPrintListString:     helperPrintListString,
-	needPrintListListInt:    helperPrintListListInt,
+	needListFloat:            helperListFloat,
+	needListString:           helperListString,
+	needListListInt:          helperListListInt,
+	needConcatListInt:        helperConcatListInt,
+	needConcatListFloat:      helperConcatListFloat,
+	needConcatListString:     helperConcatListString,
+	needConcatListListInt:    helperConcatListListInt,
+	needConcatString:         helperConcatString,
+	needUnionListInt:         helperUnionListInt,
+	needUnionListListInt:     helperUnionListListInt,
+	needUnionListFloat:       helperUnionListFloat,
+	needUnionListString:      helperUnionListString,
+	needExceptListInt:        helperExceptListInt,
+	needExceptListListInt:    helperExceptListListInt,
+	needExceptListFloat:      helperExceptListFloat,
+	needExceptListString:     helperExceptListString,
+	needIntersectListInt:     helperIntersectListInt,
+	needIntersectListListInt: helperIntersectListListInt,
+	needIntersectListFloat:   helperIntersectListFloat,
+	needIntersectListString:  helperIntersectListString,
+	needCount:                helperCount,
+	needAvg:                  helperAvg,
+	needInListInt:            helperContainsListInt,
+	needInListFloat:          helperContainsListFloat,
+	needInListString:         helperContainsListString,
+	needInListListInt:        helperContainsListListInt,
+	needInput:                helperInput,
+	needStr:                  helperStr,
+	needNow:                  helperNow,
+	needJSON:                 helperJSON,
+	needIndexString:          helperIndexString,
+	needSliceString:          helperSliceString,
+	needSliceListInt:         helperSliceListInt,
+	needSliceListFloat:       helperSliceListFloat,
+	needSliceListString:      helperSliceListString,
+	needPrintListInt:         helperPrintListInt,
+	needPrintListFloat:       helperPrintListFloat,
+	needPrintListString:      helperPrintListString,
+	needPrintListListInt:     helperPrintListListInt,
 }
 
 var helperOrder = []string{
@@ -420,12 +475,15 @@ var helperOrder = []string{
 	needConcatListListInt,
 	needConcatString,
 	needUnionListInt,
+	needUnionListListInt,
 	needUnionListFloat,
 	needUnionListString,
 	needExceptListInt,
+	needExceptListListInt,
 	needExceptListFloat,
 	needExceptListString,
 	needIntersectListInt,
+	needIntersectListListInt,
 	needIntersectListFloat,
 	needIntersectListString,
 	needCount,
@@ -433,6 +491,7 @@ var helperOrder = []string{
 	needInListInt,
 	needInListFloat,
 	needInListString,
+	needInListListInt,
 	needInput,
 	needStr,
 	needNow,
