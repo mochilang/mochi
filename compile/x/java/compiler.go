@@ -279,6 +279,16 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("}")
 
 		c.writeln("")
+		c.writeln("static double[] _concat(double[] a, double[] b) {")
+		c.indent++
+		c.writeln("double[] res = new double[a.length + b.length];")
+		c.writeln("System.arraycopy(a, 0, res, 0, a.length);")
+		c.writeln("System.arraycopy(b, 0, res, a.length, b.length);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
 		c.writeln("static boolean[] _concat(boolean[] a, boolean[] b) {")
 		c.indent++
 		c.writeln("boolean[] res = new boolean[a.length + b.length];")
@@ -307,6 +317,19 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("int[] res = new int[set.size()];")
 		c.writeln("int i = 0;")
 		c.writeln("for (int v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static double[] _union(double[] a, double[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<Double> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (double v : a) set.add(v);")
+		c.writeln("for (double v : b) set.add(v);")
+		c.writeln("double[] res = new double[set.size()];")
+		c.writeln("int i = 0;")
+		c.writeln("for (double v : set) res[i++] = v;")
 		c.writeln("return res;")
 		c.indent--
 		c.writeln("}")
@@ -352,6 +375,19 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("}")
 
 		c.writeln("")
+		c.writeln("static double[] _except(double[] a, double[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<Double> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (double v : a) set.add(v);")
+		c.writeln("for (double v : b) set.remove(v);")
+		c.writeln("double[] res = new double[set.size()];")
+		c.writeln("int i = 0;")
+		c.writeln("for (double v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
 		c.writeln("static boolean[] _except(boolean[] a, boolean[] b) {")
 		c.indent++
 		c.writeln("java.util.LinkedHashSet<Boolean> set = new java.util.LinkedHashSet<>();")
@@ -386,6 +422,18 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("int[] res = new int[set.size()];")
 		c.writeln("int i = 0;")
 		c.writeln("for (int v : set) res[i++] = v;")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static double[] _intersect(double[] a, double[] b) {")
+		c.indent++
+		c.writeln("java.util.LinkedHashSet<Double> set = new java.util.LinkedHashSet<>();")
+		c.writeln("for (double v : a) if (java.util.Arrays.binarySearch(b, v) >= 0) set.add(v);")
+		c.writeln("double[] res = new double[set.size()];")
+		c.writeln("int i = 0;")
+		c.writeln("for (double v : set) res[i++] = v;")
 		c.writeln("return res;")
 		c.indent--
 		c.writeln("}")
@@ -464,6 +512,49 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_slice"] {
+		c.writeln("")
+		c.writeln("static double[] _slice(double[] arr, int i, int j) {")
+		c.indent++
+		c.writeln("if (i < 0) i += arr.length;")
+		c.writeln("if (j < 0) j += arr.length;")
+		c.writeln("if (i < 0) i = 0;")
+		c.writeln("if (j > arr.length) j = arr.length;")
+		c.writeln("if (j < i) j = i;")
+		c.writeln("double[] res = new double[j - i];")
+		c.writeln("System.arraycopy(arr, i, res, 0, j - i);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_slice"] {
+		c.writeln("")
+		c.writeln("static boolean[] _slice(boolean[] arr, int i, int j) {")
+		c.indent++
+		c.writeln("if (i < 0) i += arr.length;")
+		c.writeln("if (j < 0) j += arr.length;")
+		c.writeln("if (i < 0) i = 0;")
+		c.writeln("if (j > arr.length) j = arr.length;")
+		c.writeln("if (j < i) j = i;")
+		c.writeln("boolean[] res = new boolean[j - i];")
+		c.writeln("System.arraycopy(arr, i, res, 0, j - i);")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_slice"] {
+		c.writeln("")
+		c.writeln("static <T> T[] _slice(T[] arr, int i, int j) {")
+		c.indent++
+		c.writeln("if (i < 0) i += arr.length;")
+		c.writeln("if (j < 0) j += arr.length;")
+		c.writeln("if (i < 0) i = 0;")
+		c.writeln("if (j > arr.length) j = arr.length;")
+		c.writeln("if (j < i) j = i;")
+		c.writeln("return java.util.Arrays.copyOfRange(arr, i, j);")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_indexString"] {
 		c.writeln("")
 		c.writeln("static String _indexString(String s, int i) {")
@@ -472,6 +563,51 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("if (i < 0) i += runes.length;")
 		c.writeln("if (i < 0 || i >= runes.length) throw new RuntimeException(\"index out of range\");")
 		c.writeln("return String.valueOf(runes[i]);")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_indexList"] {
+		c.writeln("")
+		c.writeln("static int _indexList(int[] arr, int i) {")
+		c.indent++
+		c.writeln("int idx = i;")
+		c.writeln("int n = arr.length;")
+		c.writeln("if (idx < 0) idx += n;")
+		c.writeln("if (idx < 0 || idx >= n) throw new RuntimeException(\"index out of range\");")
+		c.writeln("return arr[idx];")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static double _indexList(double[] arr, int i) {")
+		c.indent++
+		c.writeln("int idx = i;")
+		c.writeln("int n = arr.length;")
+		c.writeln("if (idx < 0) idx += n;")
+		c.writeln("if (idx < 0 || idx >= n) throw new RuntimeException(\"index out of range\");")
+		c.writeln("return arr[idx];")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static boolean _indexList(boolean[] arr, int i) {")
+		c.indent++
+		c.writeln("int idx = i;")
+		c.writeln("int n = arr.length;")
+		c.writeln("if (idx < 0) idx += n;")
+		c.writeln("if (idx < 0 || idx >= n) throw new RuntimeException(\"index out of range\");")
+		c.writeln("return arr[idx];")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static <T> T _indexList(T[] arr, int i) {")
+		c.indent++
+		c.writeln("int idx = i;")
+		c.writeln("int n = arr.length;")
+		c.writeln("if (idx < 0) idx += n;")
+		c.writeln("if (idx < 0 || idx >= n) throw new RuntimeException(\"index out of range\");")
+		c.writeln("return arr[idx];")
 		c.indent--
 		c.writeln("}")
 	}
