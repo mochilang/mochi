@@ -37,8 +37,8 @@ template<typename T> vector<T> _intersect(const vector<T>& a, const vector<T>& b
 }
 
 int main() {
-	vector<int> a = vector<int>{1, 2, 3};
-	vector<int> b = vector<int>{3, 4};
+	auto a = vector<int>{1, 2, 3};
+	auto b = vector<int>{3, 4};
 	std::cout << (_fmtVec(_union(a, b))) << std::endl;
 	std::cout << (_fmtVec(_except(a, b))) << std::endl;
 	std::cout << (_fmtVec(_intersect(a, b))) << std::endl;

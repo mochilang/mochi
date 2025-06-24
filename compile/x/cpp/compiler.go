@@ -244,8 +244,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Let.Type != nil {
 			typ = c.cppType(s.Let.Type)
-		} else if t := c.guessExprType(s.Let.Value); t != "" {
-			typ = t
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Let.Name))
@@ -285,8 +283,6 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Var.Type != nil {
 			typ = c.cppType(s.Var.Type)
-		} else if t := c.guessExprType(s.Var.Value); t != "" {
-			typ = t
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Var.Name))
@@ -462,15 +458,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			if typ != "string" {
 				if typ == "char" {
 					expr = fmt.Sprintf("string(1, %s)", expr)
+				} else if typ == "bool" {
+					expr = fmt.Sprintf("to_string((int)%s)", expr)
 				} else {
-					expr = fmt.Sprintf("string(%s)", expr)
+					expr = fmt.Sprintf("to_string(%s)", expr)
 				}
 			}
 			if rtyp != "string" {
 				if rtyp == "char" {
 					rhs = fmt.Sprintf("string(1, %s)", rhs)
+				} else if rtyp == "bool" {
+					rhs = fmt.Sprintf("to_string((int)%s)", rhs)
 				} else {
-					rhs = fmt.Sprintf("string(%s)", rhs)
+					rhs = fmt.Sprintf("to_string(%s)", rhs)
 				}
 			}
 			expr = fmt.Sprintf("%s + %s", expr, rhs)
