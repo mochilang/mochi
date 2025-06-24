@@ -21,7 +21,7 @@ func TestClojureCompiler_TwoSum(t *testing.T) {
 	if err := cljcode.EnsureClojure(); err != nil {
 		t.Skipf("clojure not installed: %v", err)
 	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+	src := filepath.Join("..", "..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
@@ -41,6 +41,7 @@ func TestClojureCompiler_TwoSum(t *testing.T) {
 		t.Fatalf("write error: %v", err)
 	}
 	cmd := exec.Command("clojure", file)
+	cmd.Env = append(os.Environ(), "CLASSPATH=/usr/share/java/data.json.jar:/usr/share/java/snakeyaml-engine.jar")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("clojure run error: %v\n%s", err, out)
@@ -76,6 +77,7 @@ func TestClojureCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("clojure", file)
+		cmd.Env = append(os.Environ(), "CLASSPATH=/usr/share/java/data.json.jar:/usr/share/java/snakeyaml-engine.jar")
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
@@ -114,7 +116,7 @@ func TestClojureCompiler_GoldenOutput(t *testing.T) {
 // the generated Clojure code. Any output is ignored; the test only checks that
 // the program executes without error.
 func runLeetExample(t *testing.T, id int) {
-	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	dir := filepath.Join("..", "..", "..", "examples", "leetcode", fmt.Sprint(id))
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob error: %v", err)
@@ -141,6 +143,7 @@ func runLeetExample(t *testing.T, id int) {
 				t.Fatalf("write error: %v", err)
 			}
 			cmd := exec.Command("clojure", file)
+			cmd.Env = append(os.Environ(), "CLASSPATH=/usr/share/java/data.json.jar:/usr/share/java/snakeyaml-engine.jar")
 			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
