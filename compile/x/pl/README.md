@@ -293,6 +293,7 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
 - Expect assertions and `test` blocks
 - Logic programming facts, rules and `query` expressions
 - Anonymous function literals (`fun` expressions)
+- Passing functions as parameters and return values
 ## Unsupported Features
 
 The Prolog backend focuses on basic control flow and list operations. Several

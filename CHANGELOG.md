@@ -1,4 +1,10 @@
 # 📦 CHANGELOG.md
+## [0.9.5] – 2025-06-25
+
+### Added
+
+* Prolog backend supports functions as parameters and return values
+
 ## [0.9.4] – 2025-06-25T00:02:13+07:00
 
 ### Added

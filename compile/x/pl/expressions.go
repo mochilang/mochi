@@ -308,6 +308,12 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (exprRes, error) {
 	if name, ok := c.vars[sel.Root]; ok {
 		cur = c.newVar()
 		res.code = append(res.code, fmt.Sprintf("nb_getval(%s, %s)", name, cur)+",")
+	} else if c.env != nil {
+		if _, ok := c.env.GetFunc(sel.Root); ok {
+			cur = sanitizeAtom(sel.Root)
+		} else {
+			cur = sanitizeVar(sel.Root)
+		}
 	} else {
 		cur = sanitizeVar(sel.Root)
 	}
@@ -467,11 +473,33 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 			args[i] = ar.val
 		}
 		tmp := c.newVar()
-		funName := sanitizeAtom(call.Func)
 		if fn, ok := c.funVars[call.Func]; ok {
-			funName = fn
+			argStr := strings.Join(args, ", ")
+			var callLine string
+			if len(args) == 0 {
+				callLine = fmt.Sprintf("%s(%s)", fn, tmp)
+			} else {
+				callLine = fmt.Sprintf("%s(%s, %s)", fn, argStr, tmp)
+			}
+			code = append(code, callLine+",")
+			return exprRes{code: code, val: tmp}, nil
 		}
-		callLine := fmt.Sprintf("%s(%s, %s)", funName, strings.Join(args, ", "), tmp)
+		if c.env != nil {
+			if _, ok := c.env.GetFunc(call.Func); ok {
+				argStr := strings.Join(args, ", ")
+				var callLine string
+				if len(args) == 0 {
+					callLine = fmt.Sprintf("%s(%s)", sanitizeAtom(call.Func), tmp)
+				} else {
+					callLine = fmt.Sprintf("%s(%s, %s)", sanitizeAtom(call.Func), argStr, tmp)
+				}
+				code = append(code, callLine+",")
+				return exprRes{code: code, val: tmp}, nil
+			}
+		}
+		allArgs := append([]string{sanitizeVar(call.Func)}, args...)
+		allArgs = append(allArgs, tmp)
+		callLine := fmt.Sprintf("call(%s)", strings.Join(allArgs, ", "))
 		code = append(code, callLine+",")
 		return exprRes{code: code, val: tmp}, nil
 	}
