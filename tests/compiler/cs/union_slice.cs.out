@@ -7,10 +7,10 @@ using System.Text;
 using System.Web;
 
 public interface Foo { void isFoo(); }
-public class Empty : Foo {
+public struct Empty : Foo {
 	public void isFoo() {}
 }
-public class Node : Foo {
+public struct Node : Foo {
 	public Foo child;
 	public void isFoo() {}
 }

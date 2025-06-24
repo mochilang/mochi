@@ -7,10 +7,10 @@ using System.Text;
 using System.Web;
 
 public interface Tree { void isTree(); }
-public class Leaf : Tree {
+public struct Leaf : Tree {
 	public void isTree() {}
 }
-public class Node : Tree {
+public struct Node : Tree {
 	public Tree left;
 	public long value;
 	public Tree right;
