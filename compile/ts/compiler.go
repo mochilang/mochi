@@ -1105,8 +1105,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 			}
-			switch typ.(type) {
-			case types.ListType, types.StringType:
+			switch tt := typ.(type) {
+			case types.ListType:
 				if idx.Start == nil {
 					start = "0"
 				}
@@ -1114,9 +1114,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					end = fmt.Sprintf("%s.length", expr)
 				}
 				expr = fmt.Sprintf("%s.slice(%s, %s)", expr, start, end)
-				if _, ok := typ.(types.StringType); ok {
-					typ = types.StringType{}
+				typ = tt
+			case types.StringType:
+				if idx.Start == nil {
+					start = "0"
 				}
+				if idx.End == nil {
+					end = fmt.Sprintf("%s.length", expr)
+				}
+				c.use("_sliceString")
+				expr = fmt.Sprintf("_sliceString(%s, %s, %s)", expr, start, end)
+				typ = types.StringType{}
 			default:
 				c.use("_slice")
 				expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
