@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	typ "mochi/types"
 )
 
 // Compiler emits very small Fortran 90 code for a limited subset of Mochi.
@@ -137,7 +138,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	typ.CollectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList, sanitizeName)
 	structVars := map[string]string{}
 	for _, st := range mainStmts {
 		if st.Let != nil {
@@ -208,7 +209,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	loopVars := map[string]bool{}
 	loopStrVars := map[string]bool{}
-	collectLoopVars(mainStmts, loopVars, loopStrVars)
+	typ.CollectLoopVars(mainStmts, loopVars, loopStrVars, sanitizeName)
 	for name := range loopVars {
 		if !declared[name] {
 			if loopStrVars[name] {
@@ -422,7 +423,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(fn.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	typ.CollectVars(fn.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList, sanitizeName)
 	for name := range c.listVars {
 		listVars[name] = true
 	}
@@ -435,7 +436,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	loopVars := map[string]bool{}
 	loopStrVars := map[string]bool{}
-	collectLoopVars(fn.Body, loopVars, loopStrVars)
+	typ.CollectLoopVars(fn.Body, loopVars, loopStrVars, sanitizeName)
 	for name := range loopVars {
 		vars[name] = true
 		if loopStrVars[name] {
@@ -574,7 +575,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 				return err
 			}
 			c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
-		} else if !isEmptyListLiteral(s.Let.Value) {
+		} else if !typ.IsEmptyListLiteral(s.Let.Value) {
 			val, err := c.compileExpr(s.Let.Value)
 			if err != nil {
 				return err
@@ -589,7 +590,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 					return err
 				}
 				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Var.Name), val))
-			} else if !isEmptyListLiteral(s.Var.Value) {
+			} else if !typ.IsEmptyListLiteral(s.Var.Value) {
 				val, err := c.compileExpr(s.Var.Value)
 				if err != nil {
 					return err
@@ -700,7 +701,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 			c.writeln("end do")
 		} else {
 			idx := "i_" + name
-			isStr := c.stringVars[src] || isStringExpr(s.For.Source, c.stringVars, c.funReturnStr)
+			isStr := c.stringVars[src] || typ.IsStringExpr(s.For.Source, c.stringVars, c.funReturnStr, sanitizeName)
 			if isStr {
 				c.writeln(fmt.Sprintf("do %s = 0, len(%s) - 1", idx, src))
 				c.indent++
@@ -823,13 +824,13 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(t.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	typ.CollectVars(t.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList, sanitizeName)
 	c.listVars = listVars
 	c.stringVars = stringVars
 	c.floatVars = floatVars
 	loopVars := map[string]bool{}
 	loopStrVars := map[string]bool{}
-	collectLoopVars(t.Body, loopVars, loopStrVars)
+	typ.CollectLoopVars(t.Body, loopVars, loopStrVars, sanitizeName)
 	for name := range loopVars {
 		if !vars[name] {
 			vars[name] = true
@@ -996,9 +997,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 	vals = append(vals, first)
 	exprLeft := &parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}
-	vStr = append(vStr, isStringExpr(exprLeft, c.stringVars, c.funReturnStr))
-	vList = append(vList, isListExpr(exprLeft, c.listVars, c.funReturnList))
-	vFloat = append(vFloat, isFloatExpr(exprLeft, c.floatVars, c.funReturnFloat))
+	vStr = append(vStr, typ.IsStringExpr(exprLeft, c.stringVars, c.funReturnStr, sanitizeName))
+	vList = append(vList, typ.IsListExpr(exprLeft, c.listVars, c.funReturnList, sanitizeName))
+	vFloat = append(vFloat, typ.IsFloatExpr(exprLeft, c.floatVars, c.funReturnFloat, sanitizeName))
 	emit := func() error {
 		if len(ops) == 0 {
 			return nil
@@ -1149,9 +1150,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		exprRight := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}
-		vStr = append(vStr, isStringExpr(exprRight, c.stringVars, c.funReturnStr))
-		vList = append(vList, isListExpr(exprRight, c.listVars, c.funReturnList))
-		vFloat = append(vFloat, isFloatExpr(exprRight, c.floatVars, c.funReturnFloat))
+		vStr = append(vStr, typ.IsStringExpr(exprRight, c.stringVars, c.funReturnStr, sanitizeName))
+		vList = append(vList, typ.IsListExpr(exprRight, c.listVars, c.funReturnList, sanitizeName))
+		vFloat = append(vFloat, typ.IsFloatExpr(exprRight, c.floatVars, c.funReturnFloat, sanitizeName))
 		for len(ops) > 0 && prec(ops[len(ops)-1].Op) >= prec(op.Op) {
 			if err := emit(); err != nil {
 				return "", err
@@ -1391,10 +1392,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
 		}
-		if isStringExpr(call.Args[0], c.stringVars, c.funReturnStr) {
+		if typ.IsStringExpr(call.Args[0], c.stringVars, c.funReturnStr, sanitizeName) {
 			return args[0], nil
 		}
-		if isFloatExpr(call.Args[0], c.floatVars, c.funReturnFloat) {
+		if typ.IsFloatExpr(call.Args[0], c.floatVars, c.funReturnFloat, sanitizeName) {
 			c.needsStrFloat = true
 			return fmt.Sprintf("str_float(%s)", args[0]), nil
 		}
@@ -1404,11 +1405,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		if isFloatExpr(call.Args[0], c.floatVars, c.funReturnFloat) {
+		if typ.IsFloatExpr(call.Args[0], c.floatVars, c.funReturnFloat, sanitizeName) {
 			v := args[0]
 			return fmt.Sprintf("merge(0.0, sum(%[1]s) / size(%[1]s), size(%[1]s) == 0)", v), nil
 		}
-		if isListExpr(call.Args[0], c.listVars, c.funReturnList) {
+		if typ.IsListExpr(call.Args[0], c.listVars, c.funReturnList, sanitizeName) {
 			v := args[0]
 			return fmt.Sprintf("merge(0.0, sum(real(%[1]s)) / size(%[1]s), size(%[1]s) == 0)", v), nil
 		}
