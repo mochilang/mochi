@@ -48,7 +48,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
-	c.writeln("uses SysUtils, fgl, fphttpclient, Classes;")
+	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants;")
 	c.writeln("")
 	c.writeln("type")
 	c.indent++
@@ -1311,7 +1311,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -1349,9 +1349,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	var condStr, skipStr, takeStr string
+	var condStr, sortStr, skipStr, takeStr string
 	if q.Where != nil {
 		condStr, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortStr, err = c.compileExpr(q.Sort)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1379,6 +1386,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	tmp := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
 	c.writeln(fmt.Sprintf("SetLength(%s, 0);", tmp))
+	var keyVar string
+	if sortStr != "" {
+		keyVar = c.newTypedVar("specialize TArray<Variant>")
+		c.writeln(fmt.Sprintf("SetLength(%s, 0);", keyVar))
+	}
 	c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Var), src))
 	c.writeln("begin")
 	c.indent++
@@ -1393,6 +1405,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.indent++
 	}
 	c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmp, tmp, sel))
+	if sortStr != "" {
+		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", keyVar, keyVar, sortStr))
+	}
 	if condStr != "" {
 		c.indent--
 		c.writeln("end;")
@@ -1405,6 +1420,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.writeln("end;")
 
 	result := tmp
+	if sortStr != "" {
+		c.use("_sortBy")
+		c.writeln(fmt.Sprintf("specialize _sortBy<%s>(%s, %s);", elemType, result, keyVar))
+	}
 	if skipStr != "" {
 		c.use("_sliceList")
 		out := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
@@ -1653,6 +1672,25 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("if end_ > n then end_ := n;")
 			c.writeln("if end_ < start_ then end_ := start_;")
 			c.writeln("Result := Copy(arr, start_ + 1, end_ - start_);")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_sortBy":
+			c.writeln("generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);")
+			c.writeln("var i,j: integer; tmp: T; k: Variant;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("for i := 0 to High(arr) - 1 do")
+			c.writeln("for j := i + 1 to High(arr) do")
+			c.indent++
+			c.writeln("if keys[i] > keys[j] then")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;")
+			c.writeln("k := keys[i]; keys[i] := keys[j]; keys[j] := k;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
