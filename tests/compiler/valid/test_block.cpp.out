@@ -1,7 +1,13 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+static void test_addition_works() {
+        int x = (1 + 2);
+        if (!((x == 3))) { std::cerr << "expect failed\n"; exit(1); }
+}
+
 int main() {
-	std::cout << (string("ok")) << std::endl;
-	return 0;
+        std::cout << (string("ok")) << std::endl;
+        test_addition_works();
+        return 0;
 }
