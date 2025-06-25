@@ -68,6 +68,16 @@ const datasetHelpers = `(define (_fetch url opts)
                   ((and (string? ka) (string? kb)) (string<? ka kb))
                   (else (string<? (format "~a" ka) (format "~a" kb))))))))`
 
+const datasetFilterHelper = `(define (_dataset_filter xs pred)
+  (let loop ((xs xs) (out '()))
+    (if (null? xs)
+        (reverse out)
+        (let ((x (car xs)))
+          (if (pred x)
+              (loop (cdr xs) (cons x out))
+              (loop (cdr xs) out)))))
+  )`
+
 const listOpHelpers = `(define (_union_all a b)
   (append a b))
 
@@ -116,20 +126,21 @@ const sliceHelper = `(define (_slice obj i j)
 
 // Compiler translates a Mochi AST into Scheme source code (minimal subset).
 type Compiler struct {
-	buf            bytes.Buffer
-	indent         int
-	env            *types.Env
-	inFun          bool
-	vars           map[string]string // local variable types within a function
-	needListSet    bool
-	needStringSet  bool
-	needMapHelpers bool
-	needDataset    bool
-	needListOps    bool
-	needSlice      bool
-	loops          []loopCtx
-	mainStmts      []*parser.Statement
-	tests          []string
+	buf               bytes.Buffer
+	indent            int
+	env               *types.Env
+	inFun             bool
+	vars              map[string]string // local variable types within a function
+	needListSet       bool
+	needStringSet     bool
+	needMapHelpers    bool
+	needDataset       bool
+	needDatasetFilter bool
+	needListOps       bool
+	needSlice         bool
+	loops             []loopCtx
+	mainStmts         []*parser.Statement
+	tests             []string
 }
 
 type loopCtx struct {
@@ -182,7 +193,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, mainStmts: nil, tests: nil}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needDatasetFilter: false, needListOps: false, needSlice: false, mainStmts: nil, tests: nil}
 }
 
 func (c *Compiler) writeIndent() {
@@ -204,6 +215,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needStringSet = false
 	c.needMapHelpers = false
 	c.needDataset = false
+	c.needDatasetFilter = false
 	c.needListOps = false
 	c.needSlice = false
 	c.mainStmts = nil
@@ -242,7 +254,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("(" + name + ")")
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice {
+	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needDatasetFilter || c.needListOps || c.needSlice {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -273,6 +285,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if c.needDataset {
 			pre.WriteString(datasetHelpers)
+			pre.WriteByte('\n')
+		}
+		if c.needDatasetFilter {
+			pre.WriteString(datasetFilterHelper)
 			pre.WriteByte('\n')
 		}
 		if c.needListOps {
@@ -1198,6 +1214,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+	}
+	if cond != "" && len(q.Froms) == 0 && len(q.Joins) == 0 {
+		c.needDatasetFilter = true
+		src = fmt.Sprintf("(_dataset_filter (if (string? %s) (string->list %s) %s) (lambda (%s) %s))",
+			src, src, src, sanitizeName(q.Var), cond)
+		cond = ""
 	}
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)

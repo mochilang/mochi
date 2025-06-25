@@ -57,5 +57,17 @@
     (when (not (eq? out (current-output-port)))
       (close-output-port out)))
 
+(define (_sort pairs)
+  (sort pairs
+        (lambda (a b)
+          (let ((ka (cdr a)) (kb (cdr b)))
+            (cond ((and (number? ka) (number? kb)) (< ka kb))
+                  ((and (string? ka) (string? kb)) (string<? ka kb))
+                  (else (string<? (format "~a" ka) (format "~a" kb))))))))
+
+(define (new-Msg message)
+	(list (cons 'message message))
+)
+
 (define data (_fetch "file://tests/compiler/scheme/fetch_builtin.json" '()))
 (begin (display (map-get data 'message)) (newline))
