@@ -1025,7 +1025,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(fmt.Errorf("sort expects list"), trace, ins.Line)
 			}
 			pairs := append([]Value(nil), src.List...)
-			sort.Slice(pairs, func(i, j int) bool {
+			sort.SliceStable(pairs, func(i, j int) bool {
 				return valueLess(pairs[i].List[0], pairs[j].List[0])
 			})
 			out := make([]Value, len(pairs))
