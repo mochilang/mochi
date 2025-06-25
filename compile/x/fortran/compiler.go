@@ -191,7 +191,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		typ := structVars[name]
 		c.writeln(fmt.Sprintf("type(%s) :: %s", typ, name))
 	}
+	names = names[:0]
 	for name := range declared {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
 		if name == "result" {
 			c.writeln("integer(kind=8) :: result(2)")
 			continue
@@ -210,13 +215,27 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	loopVars := map[string]bool{}
 	loopStrVars := map[string]bool{}
 	collectLoopVars(mainStmts, loopVars, loopStrVars)
+	names = names[:0]
 	for name := range loopVars {
 		if !declared[name] {
-			if loopStrVars[name] {
-				c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
-			} else {
-				c.writeln("integer(kind=8) :: " + name)
-			}
+			names = append(names, name)
+		}
+	}
+	sort.Slice(names, func(i, j int) bool {
+		a, b := names[i], names[j]
+		if strings.HasPrefix(a, "i_") && strings.TrimPrefix(a, "i_") == b {
+			return false
+		}
+		if strings.HasPrefix(b, "i_") && strings.TrimPrefix(b, "i_") == a {
+			return true
+		}
+		return a < b
+	})
+	for _, name := range names {
+		if loopStrVars[name] {
+			c.writeln(fmt.Sprintf("character(:), allocatable :: %s", name))
+		} else {
+			c.writeln("integer(kind=8) :: " + name)
 		}
 	}
 	for _, a := range allocs {
