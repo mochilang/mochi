@@ -1144,17 +1144,52 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	v := sanitizeName(q.Var)
+	varParts := []string{fmt.Sprintf("%s %s", v, src)}
+	varNames := []string{q.Var}
+	idxMap := []int{1}
+	pos := 1
+	for i, f := range q.Froms {
+		varParts = append(varParts, fmt.Sprintf("%s %s", sanitizeName(f.Var), fromSrcs[i]))
+		pos++
+		varNames = append(varNames, f.Var)
+		idxMap = append(idxMap, pos)
+	}
+	for i, j := range q.Joins {
+		varParts = append(varParts, fmt.Sprintf("%s %s", sanitizeName(j.Var), joinSrcs[i]))
+		pos++
+		varParts = append(varParts, ":when "+joinOns[i])
+		pos++
+		varNames = append(varNames, j.Var)
+		idxMap = append(idxMap, pos)
+	}
+
+	wherePos := len(varParts)
+	if whereExpr != "" {
+		used := varsInExpr(q.Where)
+		maxIdx := -1
+		for i, n := range varNames {
+			if used[n] && i > maxIdx {
+				maxIdx = i
+			}
+		}
+		if maxIdx >= 0 && maxIdx < len(idxMap) {
+			wherePos = idxMap[maxIdx]
+		}
+	}
+
 	var b strings.Builder
 	b.WriteString("(vec (->>")
-	b.WriteString(" (for [" + v + " " + src)
-	for i, f := range q.Froms {
-		b.WriteString(" " + sanitizeName(f.Var) + " " + fromSrcs[i])
+	b.WriteString(" (for [")
+	for i, part := range varParts {
+		if i > 0 {
+			b.WriteString(" ")
+		}
+		if i == wherePos && whereExpr != "" {
+			b.WriteString(":when " + whereExpr + " ")
+		}
+		b.WriteString(part)
 	}
-	for i := range q.Joins {
-		b.WriteString(" " + sanitizeName(q.Joins[i].Var) + " " + joinSrcs[i])
-		b.WriteString(" :when " + joinOns[i])
-	}
-	if whereExpr != "" {
+	if whereExpr != "" && wherePos == len(varParts) {
 		b.WriteString(" :when " + whereExpr)
 	}
 	b.WriteString("] " + selExpr + ")")
