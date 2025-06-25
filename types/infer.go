@@ -144,6 +144,13 @@ func inferPostfixType(env *Env, p *parser.PostfixExpr) Type {
 				t = AnyType{}
 			}
 		} else if op.Call != nil {
+			if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
+				switch sel.Tail[0] {
+				case "keys":
+					t = ListType{Elem: AnyType{}}
+					continue
+				}
+			}
 			if ft, ok := t.(FuncType); ok {
 				t = ft.Return
 			} else {
@@ -260,6 +267,8 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			return FloatType{}
 		case "now":
 			return Int64Type{}
+		case "keys":
+			return ListType{Elem: AnyType{}}
 		default:
 			if env != nil {
 				if t, err := env.GetVar(p.Call.Func); err == nil {
