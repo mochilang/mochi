@@ -410,17 +410,18 @@ type SaveExpr struct {
 }
 
 type QueryExpr struct {
-	Pos    lexer.Position
-	Var    string         `parser:"'from' @Ident 'in'"`
-	Source *Expr          `parser:"@@"`
-	Froms  []*FromClause  `parser:"{ @@ }"`
-	Joins  []*JoinClause  `parser:"{ @@ }"`
-	Where  *Expr          `parser:"[ 'where' @@ ]"`
-	Group  *GroupByClause `parser:"[ @@ ]"`
-	Sort   *Expr          `parser:"[ 'sort' 'by' @@ ]"`
-	Skip   *Expr          `parser:"[ 'skip' @@ ]"`
-	Take   *Expr          `parser:"[ 'take' @@ ]"`
-	Select *Expr          `parser:"'select' @@"`
+	Pos      lexer.Position
+	Var      string         `parser:"'from' @Ident 'in'"`
+	Source   *Expr          `parser:"@@"`
+	Froms    []*FromClause  `parser:"{ @@ }"`
+	Joins    []*JoinClause  `parser:"{ @@ }"`
+	Where    *Expr          `parser:"[ 'where' @@ ]"`
+	Group    *GroupByClause `parser:"[ @@ ]"`
+	Sort     *Expr          `parser:"[ 'sort' 'by' @@ ]"`
+	Skip     *Expr          `parser:"[ 'skip' @@ ]"`
+	Take     *Expr          `parser:"[ 'take' @@ ]"`
+	Distinct bool           `parser:"'select' @'distinct'?"`
+	Select   *Expr          `parser:"@@"`
 }
 
 type LogicQueryExpr struct {

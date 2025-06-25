@@ -1517,6 +1517,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	distinct := q.Distinct
 	if q.Take != nil {
 		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
@@ -1537,6 +1538,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.use("_Group")
 		c.use("_group_by")
 		expr := fmt.Sprintf("_group_by(%s, (%s) => %s).map((%s) => %s).toList()", src, v, keyExpr, sanitizeName(q.Group.Name), valExpr)
+		if distinct {
+			c.use("_distinct")
+			expr = fmt.Sprintf("(() { var _t = %s; return _distinct(_t); })()", expr)
+		}
 		return expr, nil
 	}
 
@@ -1596,6 +1601,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if whereFn != "" {
 			buf.WriteString(", 'where': " + whereFn)
 		}
+		if distinct {
+			buf.WriteString(", 'distinct': true")
+			c.use("_distinct")
+		}
 		buf.WriteString(" });\n")
 		buf.WriteString("\tvar groups = <String,_Group>{};\n")
 		buf.WriteString("\tvar order = <String>[];\n")
@@ -1642,6 +1651,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("\tfor (var %s in itemsG) {\n", sanitizeName(q.Group.Name)))
 		buf.WriteString(fmt.Sprintf("\t\t_res.add(%s);\n", valExpr))
 		buf.WriteString("\t}\n")
+		if distinct {
+			c.use("_distinct")
+			buf.WriteString("\t_res = _distinct(_res);\n")
+		}
 		buf.WriteString("\treturn _res;\n")
 		buf.WriteString("})()")
 		return buf.String(), nil
@@ -1731,6 +1744,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("\tfor (var %s in items) {\n", sanitizeName(q.Group.Name)))
 		buf.WriteString(fmt.Sprintf("\t\t_res.add(%s);\n", valExpr))
 		buf.WriteString("\t}\n")
+		if distinct {
+			c.use("_distinct")
+			buf.WriteString("\t_res = _distinct(_res);\n")
+		}
 		buf.WriteString("\treturn _res;\n")
 		buf.WriteString("})()")
 		return buf.String(), nil
@@ -1789,6 +1806,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if takeExpr != "" {
 			buf.WriteString(", 'take': " + takeExpr)
+		}
+		if distinct {
+			buf.WriteString(", 'distinct': true")
+			c.use("_distinct")
 		}
 		buf.WriteString(" });\n")
 		buf.WriteString("\treturn res;\n")
@@ -1854,6 +1875,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString("\t}\n")
 		}
 		b.WriteString("\t_res = items;\n")
+	}
+	if distinct {
+		c.use("_distinct")
+		b.WriteString("\t_res = _distinct(_res);\n")
 	}
 	b.WriteString("\treturn _res;\n")
 	b.WriteString("})()")
