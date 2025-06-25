@@ -197,6 +197,9 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
         case other => "\"" + other.toString.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 }`
 	helperJSON   = `def _json(v: Any): Unit = println(_to_json(v))`
+	helperExpect = `def expect(cond: Boolean): Unit = {
+        if (!cond) throw new RuntimeException("expect failed")
+}`
 	helperPyAttr = `def _pyAttr(module: String, name: String, args: Seq[Any]): Any = {
         import scala.sys.process._
         import scala.util.parsing.json.{JSON, JSONArray}
@@ -246,6 +249,7 @@ var helperMap = map[string]string{
 	"_eval":        helperEval,
 	"_to_json":     helperToJSON,
 	"_json":        helperJSON,
+	"_expect":      helperExpect,
 }
 
 func (c *Compiler) use(name string) {
