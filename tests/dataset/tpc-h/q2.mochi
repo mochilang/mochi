@@ -48,7 +48,7 @@ let europe_nations =
 let europe_suppliers =
   from s in supplier
   join n in europe_nations on s.s_nationkey == n.n_nationkey
-  select { s, n }
+  select { s: s, n: n }
 
 let target_parts =
   from p in part
