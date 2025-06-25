@@ -30,6 +30,7 @@ type Compiler struct {
 	needSliceStr    bool
 	needContainsStr bool
 	needDataset     bool
+	needPaginate    bool
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -62,6 +63,7 @@ func (c *Compiler) reset() {
 	c.needSliceStr = false
 	c.needContainsStr = false
 	c.needDataset = false
+	c.needPaginate = false
 }
 
 // Compile generates Smalltalk code for prog.
@@ -1101,11 +1103,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.\n")
 		b.WriteString("res := res collect: [:p | p second].\n")
 	}
-	if skipExpr != "" {
-		b.WriteString(fmt.Sprintf("res := res copyFrom: (%s + 1) to: res size.\n", skipExpr))
-	}
-	if takeExpr != "" {
-		b.WriteString(fmt.Sprintf("res := res copyFrom: 1 to: (%s min: res size).\n", takeExpr))
+	if skipExpr != "" || takeExpr != "" {
+		sk := "0"
+		tk := "nil"
+		if skipExpr != "" {
+			sk = skipExpr
+		}
+		if takeExpr != "" {
+			tk = takeExpr
+		}
+		c.needPaginate = true
+		b.WriteString(fmt.Sprintf("res := (Main _paginate: res skip: %s take: %s).\n", sk, tk))
 	}
 	b.WriteString("res))")
 	return b.String(), nil
@@ -1324,6 +1332,18 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("_save: rows path: p opts: o")
 		c.indent++
 		c.writeln("^ self")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needPaginate {
+		c.writeln("_paginate: items skip: s take: t")
+		c.indent++
+		c.writeln("| out start |")
+		c.writeln("out := items asArray.")
+		c.writeln("start := s ifNil: [ 0 ] ifNotNil: [ s ].")
+		c.writeln("start > 0 ifTrue: [ out := out copyFrom: start + 1 to: out size ].")
+		c.writeln("t notNil ifTrue: [ out := out copyFrom: 1 to: (t min: out size) ].")
+		c.writeln("^ out")
 		c.indent--
 		c.writelnNoIndent("!")
 	}

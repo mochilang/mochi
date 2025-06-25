@@ -1,0 +1,26 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newProduct: name price: price | dict |
+	dict := Dictionary new.
+	dict at: 'name' put: name.
+	dict at: 'price' put: price.
+	^ dict
+!
+!!
+products := Array with: (Main newProduct: 'Laptop' price: 1500) with: (Main newProduct: 'Smartphone' price: 900) with: (Main newProduct: 'Tablet' price: 600) with: (Main newProduct: 'Monitor' price: 300) with: (Main newProduct: 'Keyboard' price: 100) with: (Main newProduct: 'Mouse' price: 50) with: (Main newProduct: 'Headphones' price: 200).
+expensive := ((| res |
+res := OrderedCollection new.
+(products) do: [:p |
+	res add: { (p at: 'price' negated) . p }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res := (Main _paginate: res skip: 1 take: 3).
+res)).
+('--- Top products (excluding most expensive) ---') displayOn: Transcript. Transcript cr.
+(expensive) do: [:item |
+	(((((item at: 'name') , (' costs $ '))) , ((item at: 'price' printString)))) displayOn: Transcript. Transcript cr.
+]
+.
