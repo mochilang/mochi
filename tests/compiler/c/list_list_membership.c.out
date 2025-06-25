@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 typedef struct { int len; int *data; } list_int;
 static list_int list_int_create(int len) {
@@ -15,19 +14,10 @@ static list_list_int list_list_int_create(int len) {
     l.len = len;
     l.data = (list_int*)malloc(sizeof(list_int)*len);
     return l;
-}
-static int contains_list_list_int(list_list_int v, list_int item) {
+}static int contains_list_list_int(list_list_int v, list_int item) {
     for (int i = 0; i < v.len; i++) if (equal_list_int(v.data[i], item)) return 1;
     return 0;
 }static void _print_list_int(list_int v) {
-    printf("[");
-    for (int i = 0; i < v.len; i++) {
-        if (i > 0) printf(" ");
-        printf("%d", v.data[i]);
-    }
-    printf("]");
-}
-static void _print_list_int(list_int v) {
     printf("[");
     for (int i = 0; i < v.len; i++) {
         if (i > 0) printf(" ");

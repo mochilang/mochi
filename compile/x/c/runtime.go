@@ -548,18 +548,4 @@ func (c *Compiler) emitRuntime() {
 			c.buf.WriteString(helperCode[h])
 		}
 	}
-
-	// printing helpers
-	if c.has(needPrintListInt) {
-		c.buf.WriteString(helperPrintListInt)
-	}
-	if c.has(needPrintListListInt) {
-		c.buf.WriteString(helperPrintListListInt)
-	}
-	if c.has(needPrintListFloat) {
-		c.buf.WriteString(helperPrintListFloat)
-	}
-	if c.has(needPrintListString) {
-		c.buf.WriteString(helperPrintListString)
-	}
 }

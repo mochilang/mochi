@@ -13,6 +13,6 @@ static int contains_string(char* s, char* sub) {
     return strstr(s, sub) != NULL;
 }
 int main() {
-	printf("%s\n", contains_string("hello", "lo"));
+	printf("%d\n", contains_string("hello", "lo"));
 	return 0;
 }

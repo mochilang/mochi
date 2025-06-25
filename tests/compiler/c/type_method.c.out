@@ -18,6 +18,8 @@ static char* concat_string(char* a, char* b) {
     buf[len1 + len2] = '\0';
     return buf;
 }
+typedef struct Person Person;
+
 typedef struct {
 	char* name;
 }Person;
@@ -29,6 +31,6 @@ char* Person_greet(Person* self){
 
 int main() {
 	Person p = (Person){.name = "Ada"};
-	printf("%s\n", Person_greet(&p));
+	printf("%d\n", Person_greet(&p));
 	return 0;
 }

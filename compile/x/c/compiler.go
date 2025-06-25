@@ -282,7 +282,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	c.writeln("#include <string.h>")
+	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) || c.has(needIndexString) || c.has(needSliceString) {
+		c.writeln("#include <string.h>")
+	}
 	if c.has(needNow) {
 		c.writeln("#include <time.h>")
 	}
@@ -1264,6 +1266,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if (op.Op == "==" || op.Op == "!=" || op.Op == "<" || op.Op == ">" || op.Op == "<=" || op.Op == ">=") && leftString && isStringPostfixOrIndex(op.Right, c.env) {
+			c.need(needStringHeader)
 			cmp := fmt.Sprintf("strcmp(%s, %s)", left, right)
 			switch op.Op {
 			case "==":
@@ -1490,6 +1493,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			isStr := isStringArg(p.Call.Args[0], c.env)
 			arg := c.compileExpr(p.Call.Args[0])
 			if isStr {
+				c.need(needStringHeader)
 				return fmt.Sprintf("strlen(%s)", arg)
 			}
 			return fmt.Sprintf("%s.len", arg)
