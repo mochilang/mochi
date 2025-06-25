@@ -74,6 +74,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(name + "()")
+		}
+	}
 	c.indent--
 	c.writeln("}")
 	c.writeln("main()")

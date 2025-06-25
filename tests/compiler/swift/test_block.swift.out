@@ -1,0 +1,16 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+	if !cond { fatalError("expect failed") }
+}
+
+func test_addition_works() {
+	let x = 1 + 2
+	expect(x == 3)
+}
+
+func main() {
+	print("ok")
+	test_addition_works()
+}
+main()
