@@ -1003,4 +1003,170 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_query"] {
+		c.writeln("")
+		c.writeln("static class _JoinSpec {")
+		c.indent++
+		c.writeln("java.util.List<Object> items;")
+		c.writeln("java.util.function.Function<Object[],Boolean> on;")
+		c.writeln("boolean left;")
+		c.writeln("boolean right;")
+		c.writeln("_JoinSpec(java.util.List<Object> items, java.util.function.Function<Object[],Boolean> on, boolean left, boolean right) {")
+		c.indent++
+		c.writeln("this.items=items; this.on=on; this.left=left; this.right=right;")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static class _QueryOpts {")
+		c.indent++
+		c.writeln("java.util.function.Function<Object[],Object> selectFn;")
+		c.writeln("java.util.function.Function<Object[],Boolean> where;")
+		c.writeln("java.util.function.Function<Object[],Object> sortKey;")
+		c.writeln("int skip; int take;")
+		c.writeln("_QueryOpts(java.util.function.Function<Object[],Object> s, java.util.function.Function<Object[],Boolean> w, java.util.function.Function<Object[],Object> k, int skip, int take) {")
+		c.indent++
+		c.writeln("this.selectFn=s; this.where=w; this.sortKey=k; this.skip=skip; this.take=take;")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static java.util.List<Object> _toList(Object v) {")
+		c.indent++
+		c.writeln("if (v instanceof java.util.List<?>) return new java.util.ArrayList<>((java.util.List<?>)v);")
+		c.writeln("int n = java.lang.reflect.Array.getLength(v);")
+		c.writeln("java.util.List<Object> out = new java.util.ArrayList<>(n);")
+		c.writeln("for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static java.util.List<Object> _query(java.util.List<Object> src, java.util.List<_JoinSpec> joins, _QueryOpts opts) {")
+		c.indent++
+		c.writeln("java.util.List<java.util.List<Object>> items = new java.util.ArrayList<>();")
+		c.writeln("for (Object v : src) { java.util.List<Object> r = new java.util.ArrayList<>(); r.add(v); items.add(r); }")
+		c.writeln("for (_JoinSpec j : joins) {")
+		c.indent++
+		c.writeln("java.util.List<java.util.List<Object>> joined = new java.util.ArrayList<>();")
+		c.writeln("java.util.List<Object> jitems = j.items;")
+		c.writeln("if (j.right && j.left) {")
+		c.indent++
+		c.writeln("boolean[] matched = new boolean[jitems.size()];")
+		c.writeln("for (java.util.List<Object> left : items) {")
+		c.indent++
+		c.writeln("boolean m = false;")
+		c.writeln("for (int ri=0; ri<jitems.size(); ri++) {")
+		c.indent++
+		c.writeln("Object right = jitems.get(ri);")
+		c.writeln("boolean keep = true;")
+		c.writeln("if (j.on != null) {")
+		c.indent++
+		c.writeln("Object[] args = new Object[left.size()+1];")
+		c.writeln("for (int i=0;i<left.size();i++) args[i]=left.get(i);")
+		c.writeln("args[left.size()] = right;")
+		c.writeln("keep = j.on.apply(args);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (!keep) continue;")
+		c.writeln("m = true; matched[ri] = true;")
+		c.writeln("java.util.List<Object> row = new java.util.ArrayList<>(left);")
+		c.writeln("row.add(right); joined.add(row);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (!m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }")
+		c.indent--
+		c.writeln("}")
+		c.writeln("for (int ri=0; ri<jitems.size(); ri++) {")
+		c.indent++
+		c.writeln("if (!matched[ri]) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(jitems.get(ri)); joined.add(undef); }")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("} else if (j.right) {")
+		c.indent++
+		c.writeln("for (Object right : jitems) {")
+		c.indent++
+		c.writeln("boolean m = false;")
+		c.writeln("for (java.util.List<Object> left : items) {")
+		c.indent++
+		c.writeln("boolean keep = true;")
+		c.writeln("if (j.on != null) {")
+		c.indent++
+		c.writeln("Object[] args = new Object[left.size()+1];")
+		c.writeln("for (int i=0;i<left.size();i++) args[i]=left.get(i);")
+		c.writeln("args[left.size()] = right;")
+		c.writeln("keep = j.on.apply(args);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (!keep) continue;")
+		c.writeln("m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (!m) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(right); joined.add(undef); }")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("for (java.util.List<Object> left : items) {")
+		c.indent++
+		c.writeln("boolean m = false;")
+		c.writeln("for (Object right : jitems) {")
+		c.indent++
+		c.writeln("boolean keep = true;")
+		c.writeln("if (j.on != null) {")
+		c.indent++
+		c.writeln("Object[] args = new Object[left.size()+1];")
+		c.writeln("for (int i=0;i<left.size();i++) args[i]=left.get(i);")
+		c.writeln("args[left.size()] = right;")
+		c.writeln("keep = j.on.apply(args);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (!keep) continue;")
+		c.writeln("m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (j.left && !m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("items = joined;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts.where != null) {")
+		c.indent++
+		c.writeln("java.util.List<java.util.List<Object>> filtered = new java.util.ArrayList<>();")
+		c.writeln("for (java.util.List<Object> r : items) if (opts.where.apply(r.toArray(new Object[0]))) filtered.add(r);")
+		c.writeln("items = filtered;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts.sortKey != null) {")
+		c.indent++
+		c.writeln("class Pair { java.util.List<Object> item; Object key; Pair(java.util.List<Object> i,Object k){item=i;key=k;} }")
+		c.writeln("java.util.List<Pair> pairs = new java.util.ArrayList<>();")
+		c.writeln("for (java.util.List<Object> it : items) pairs.add(new Pair(it, opts.sortKey.apply(it.toArray(new Object[0]))));")
+		c.writeln("pairs.sort((a,b) -> {")
+		c.indent++
+		c.writeln("Object ak=a.key, bk=b.key;")
+		c.writeln("if (ak instanceof Number && bk instanceof Number) return Double.compare(((Number)ak).doubleValue(), ((Number)bk).doubleValue());")
+		c.writeln("if (ak instanceof String && bk instanceof String) return ((String)ak).compareTo((String)bk);")
+		c.writeln("return ak.toString().compareTo(bk.toString());")
+		c.indent--
+		c.writeln(");")
+		c.writeln("for (int i=0;i<pairs.size();i++) items.set(i, pairs.get(i).item);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts.skip >= 0) { if (opts.skip < items.size()) items = new java.util.ArrayList<>(items.subList(opts.skip, items.size())); else items = new java.util.ArrayList<>(); }")
+		c.writeln("if (opts.take >= 0) { if (opts.take < items.size()) items = new java.util.ArrayList<>(items.subList(0, opts.take)); }")
+		c.writeln("java.util.List<Object> res = new java.util.ArrayList<>();")
+		c.writeln("for (java.util.List<Object> r : items) res.add(opts.selectFn.apply(r.toArray(new Object[0])));")
+		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
 }

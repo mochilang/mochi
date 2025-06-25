@@ -483,6 +483,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
 	case p.Match != nil:
@@ -675,6 +677,147 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.helpers["_dataset"] = true
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	varNames := []string{sanitizeName(q.Var)}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+		child.SetVar(f.Var, types.AnyType{}, true)
+		varNames = append(varNames, sanitizeName(f.Var))
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	joinLeft := make([]bool, len(q.Joins))
+	joinRight := make([]bool, len(q.Joins))
+	paramCopy := append([]string(nil), varNames...)
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		child.SetVar(j.Var, types.AnyType{}, true)
+		c.env = child
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinOns[i] = on
+		if j.Side != nil {
+			switch *j.Side {
+			case "left":
+				joinLeft[i] = true
+			case "right":
+				joinRight[i] = true
+			case "outer":
+				joinLeft[i] = true
+				joinRight[i] = true
+			}
+		}
+		paramCopy = append(paramCopy, sanitizeName(j.Var))
+	}
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var whereExpr, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+	}
+	c.env = orig
+
+	lambda := func(params []string, body string) string {
+		var b bytes.Buffer
+		b.WriteString("(Object[] a) -> { ")
+		for i, p := range params {
+			b.WriteString(fmt.Sprintf("Object %s = a[%d]; ", sanitizeName(p), i))
+		}
+		b.WriteString("return " + body + "; }")
+		return b.String()
+	}
+
+	allParams := append([]string(nil), paramCopy...)
+	selectFn := lambda(allParams, sel)
+	whereFn := "null"
+	if whereExpr != "" {
+		whereFn = lambda(allParams, whereExpr)
+	}
+	sortFn := "null"
+	if sortExpr != "" {
+		sortFn = lambda(allParams, sortExpr)
+	}
+	if skipExpr == "" {
+		skipExpr = "-1"
+	}
+	if takeExpr == "" {
+		takeExpr = "-1"
+	}
+
+	joins := make([]string, 0, len(fromSrcs)+len(joinSrcs))
+	for _, fs := range fromSrcs {
+		joins = append(joins, fmt.Sprintf("new _JoinSpec(_toList(%s), null, false, false)", fs))
+	}
+	paramCopy = append([]string(nil), varNames...)
+	for i, js := range joinSrcs {
+		onFn := lambda(append(paramCopy, sanitizeName(q.Joins[i].Var)), joinOns[i])
+		spec := fmt.Sprintf("new _JoinSpec(_toList(%s), %s, %t, %t)", js, onFn, joinLeft[i], joinRight[i])
+		joins = append(joins, spec)
+		paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+	}
+
+	var b bytes.Buffer
+	b.WriteString("(new java.util.function.Supplier<java.util.List<Object>>() {\n")
+	b.WriteString("\tpublic java.util.List<Object> get() {\n")
+	b.WriteString("\t\tjava.util.List<Object> _src = _toList(" + src + ");\n")
+	b.WriteString("\t\tjava.util.List<_JoinSpec> _joins = java.util.List.of(\n")
+	for i, j := range joins {
+		b.WriteString("\t\t\t" + j)
+		if i != len(joins)-1 {
+			b.WriteString(",")
+		}
+		b.WriteString("\n")
+	}
+	b.WriteString("\t\t);\n")
+	b.WriteString("\t\treturn _query(_src, _joins, new _QueryOpts(" + selectFn + ", " + whereFn + ", " + sortFn + ", " + skipExpr + ", " + takeExpr + "));\n")
+	b.WriteString("\t}\n")
+	b.WriteString("}).get()")
+	c.helpers["_query"] = true
+	return b.String(), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
