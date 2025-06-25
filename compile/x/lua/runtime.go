@@ -400,6 +400,132 @@ const (
 		"    f:write(data)\n" +
 		"    if f ~= io.stdout then f:close() end\n" +
 		"end\n"
+
+	helperQuery = "function __query(src, joins, opts)\n" +
+		"    local items = {}\n" +
+		"    for _, v in ipairs(src) do items[#items+1] = {v} end\n" +
+		"    for _, j in ipairs(joins) do\n" +
+		"        local joined = {}\n" +
+		"        local jitems = j.items or {}\n" +
+		"        if j.right and j.left then\n" +
+		"            local matched = {}\n" +
+		"            for _, left in ipairs(items) do\n" +
+		"                local m = false\n" +
+		"                for ri, right in ipairs(jitems) do\n" +
+		"                    local keep = true\n" +
+		"                    if j.on then\n" +
+		"                        local args = {table.unpack(left)}\n" +
+		"                        args[#args+1] = right\n" +
+		"                        keep = j.on(table.unpack(args))\n" +
+		"                    end\n" +
+		"                    if keep then\n" +
+		"                        m = true; matched[ri] = true\n" +
+		"                        local row = {table.unpack(left)}\n" +
+		"                        row[#row+1] = right\n" +
+		"                        joined[#joined+1] = row\n" +
+		"                    end\n" +
+		"                end\n" +
+		"                if not m then\n" +
+		"                    local row = {table.unpack(left)}\n" +
+		"                    row[#row+1] = nil\n" +
+		"                    joined[#joined+1] = row\n" +
+		"                end\n" +
+		"            end\n" +
+		"            for ri, right in ipairs(jitems) do\n" +
+		"                if not matched[ri] then\n" +
+		"                    local undef = {}\n" +
+		"                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end\n" +
+		"                    local row = {table.unpack(undef)}\n" +
+		"                    row[#row+1] = right\n" +
+		"                    joined[#joined+1] = row\n" +
+		"                end\n" +
+		"            end\n" +
+		"        elseif j.right then\n" +
+		"            for _, right in ipairs(jitems) do\n" +
+		"                local m = false\n" +
+		"                for _, left in ipairs(items) do\n" +
+		"                    local keep = true\n" +
+		"                    if j.on then\n" +
+		"                        local args = {table.unpack(left)}\n" +
+		"                        args[#args+1] = right\n" +
+		"                        keep = j.on(table.unpack(args))\n" +
+		"                    end\n" +
+		"                    if keep then\n" +
+		"                        m = true\n" +
+		"                        local row = {table.unpack(left)}\n" +
+		"                        row[#row+1] = right\n" +
+		"                        joined[#joined+1] = row\n" +
+		"                    end\n" +
+		"                end\n" +
+		"                if not m then\n" +
+		"                    local undef = {}\n" +
+		"                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end\n" +
+		"                    local row = {table.unpack(undef)}\n" +
+		"                    row[#row+1] = right\n" +
+		"                    joined[#joined+1] = row\n" +
+		"                end\n" +
+		"            end\n" +
+		"        else\n" +
+		"            for _, left in ipairs(items) do\n" +
+		"                local m = false\n" +
+		"                for _, right in ipairs(jitems) do\n" +
+		"                    local keep = true\n" +
+		"                    if j.on then\n" +
+		"                        local args = {table.unpack(left)}\n" +
+		"                        args[#args+1] = right\n" +
+		"                        keep = j.on(table.unpack(args))\n" +
+		"                    end\n" +
+		"                    if keep then\n" +
+		"                        m = true\n" +
+		"                        local row = {table.unpack(left)}\n" +
+		"                        row[#row+1] = right\n" +
+		"                        joined[#joined+1] = row\n" +
+		"                    end\n" +
+		"                end\n" +
+		"                if j.left and not m then\n" +
+		"                    local row = {table.unpack(left)}\n" +
+		"                    row[#row+1] = nil\n" +
+		"                    joined[#joined+1] = row\n" +
+		"                end\n" +
+		"            end\n" +
+		"        end\n" +
+		"        items = joined\n" +
+		"    end\n" +
+		"    if opts.where then\n" +
+		"        local filtered = {}\n" +
+		"        for _, r in ipairs(items) do if opts.where(table.unpack(r)) then filtered[#filtered+1] = r end end\n" +
+		"        items = filtered\n" +
+		"    end\n" +
+		"    if opts.sortKey then\n" +
+		"        local pairs = {}\n" +
+		"        for _, it in ipairs(items) do pairs[#pairs+1] = {item=it, key=opts.sortKey(table.unpack(it))} end\n" +
+		"        table.sort(pairs, function(a,b)\n" +
+		"            local ak, bk = a.key, b.key\n" +
+		"            if type(ak)=='number' and type(bk)=='number' then return ak < bk end\n" +
+		"            if type(ak)=='string' and type(bk)=='string' then return ak < bk end\n" +
+		"            return tostring(ak) < tostring(bk)\n" +
+		"        end)\n" +
+		"        items = {}\n" +
+		"        for i,p in ipairs(pairs) do items[i] = p.item end\n" +
+		"    end\n" +
+		"    if opts.skip ~= nil then\n" +
+		"        local n = opts.skip\n" +
+		"        if n < #items then\n" +
+		"            for i=1,n do table.remove(items,1) end\n" +
+		"        else\n" +
+		"            items = {}\n" +
+		"        end\n" +
+		"    end\n" +
+		"    if opts.take ~= nil then\n" +
+		"        local n = opts.take\n" +
+		"        if n < #items then\n" +
+		"            for i=#items, n+1, -1 do table.remove(items) end\n" +
+		"        end\n" +
+		"    end\n" +
+		"    local res = {}\n" +
+		"    for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r)) end\n" +
+		"    return res\n" +
+		"end\n"
 )
 
 var helperMap = map[string]string{
@@ -429,6 +555,7 @@ var helperMap = map[string]string{
 	"fetch":       helperFetch,
 	"load":        helperLoad,
 	"save":        helperSave,
+	"query":       helperQuery,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
