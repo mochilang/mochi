@@ -687,6 +687,38 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	orig := c.env
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, types.AnyType{}, true)
+
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		child.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		var b bytes.Buffer
+		b.WriteString("(new java.util.function.Supplier<java.util.List<Object>>() {\n")
+		b.WriteString("\tpublic java.util.List<Object> get() {\n")
+		b.WriteString("\t\tjava.util.List<_Group> _grps = _group_by(_toList(" + src + "), " + sanitizeName(q.Var) + " -> " + keyExpr + ");\n")
+		b.WriteString("\t\tjava.util.List<Object> _res = new java.util.ArrayList<>();\n")
+		b.WriteString("\t\tfor (_Group " + sanitizeName(q.Group.Name) + " : _grps) {\n")
+		b.WriteString("\t\t\t_res.add(" + valExpr + ");\n")
+		b.WriteString("\t\t}\n")
+		b.WriteString("\t\treturn _res;\n")
+		b.WriteString("\t}\n")
+		b.WriteString("}).get()")
+		c.helpers["_group_by"] = true
+		c.helpers["_group"] = true
+		c.helpers["_toList"] = true
+		return b.String(), nil
+	}
+
 	varNames := []string{sanitizeName(q.Var)}
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
