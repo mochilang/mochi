@@ -1,0 +1,22 @@
+// dataset-sort-where.mochi
+
+type Item {
+  name: string
+  price: int
+}
+
+let items = [
+  Item { name: "A", price: 100 },
+  Item { name: "B", price: 50 },
+  Item { name: "C", price: 200 },
+  Item { name: "D", price: 80 }
+]
+
+let cheap = from it in items
+            where it.price < 150
+            sort by it.price
+            select it
+
+for c in cheap {
+  print(c.name, c.price)
+}
