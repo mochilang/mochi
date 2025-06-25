@@ -1470,7 +1470,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -1509,6 +1509,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var cond string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	var skipStr, takeStr string
+	if q.Skip != nil {
+		skipStr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeStr, err = c.compileExpr(q.Take)
 		if err != nil {
 			return "", err
 		}
@@ -1593,7 +1606,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.stringVars = oldStrings
 	c.listVars = oldLists
 	c.floatVars = oldFloats
-	return fmt.Sprintf("%s(%s)", name, src), nil
+	expr := fmt.Sprintf("%s(%s)", name, src)
+	if skipStr != "" && takeStr != "" {
+		expr = fmt.Sprintf("%s(%s + 1:%s + %s)", expr, skipStr, skipStr, takeStr)
+	} else if skipStr != "" {
+		expr = fmt.Sprintf("%s(%s + 1:)", expr, skipStr)
+	} else if takeStr != "" {
+		expr = fmt.Sprintf("%s(1:%s)", expr, takeStr)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) lengthFunc(name string) string {
