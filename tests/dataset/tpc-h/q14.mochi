@@ -29,16 +29,15 @@ let end_date = "1995-10-01"
 
 let filtered =
   from l in lineitem
-  where l.l_shipdate >= start_date and l.l_shipdate < end_date
   join p in part on p.p_partkey == l.l_partkey
-  let revenue = l.l_extendedprice * (1 - l.l_discount)
+  where l.l_shipdate >= start_date && l.l_shipdate < end_date
   select {
-    is_promo: p.p_type has "PROMO",
-    revenue
+    is_promo: "PROMO" in p.p_type,
+    revenue: l.l_extendedprice * (1 - l.l_discount)
   }
 
-let promo_sum = sum(x.revenue for x in filtered where x.is_promo)
-let total_sum = sum(x.revenue for x in filtered)
+let promo_sum = sum(from x in filtered where x.is_promo select x.revenue)
+let total_sum = sum(from x in filtered select x.revenue)
 
 let result = 100.0 * promo_sum / total_sum
 
