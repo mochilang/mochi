@@ -50,23 +50,23 @@ let grouped =
     c_phone: c.c_phone,
     c_comment: c.c_comment,
     n_name: n.n_name
-  }
+  } into g
   select {
-    c_name,
-    c_custkey,
-    c_acctbal,
-    c_address,
-    c_phone,
-    c_comment,
-    n_name,
-    quantity: sum(l.l_quantity),
-    revenue: sum(l.l_extendedprice * (1 - l.l_discount))
+    c_name: g.key.c_name,
+    c_custkey: g.key.c_custkey,
+    c_acctbal: g.key.c_acctbal,
+    c_address: g.key.c_address,
+    c_phone: g.key.c_phone,
+    c_comment: g.key.c_comment,
+    n_name: g.key.n_name,
+    quantity: sum(from x in g select x.l.l_quantity),
+    revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
   }
 
 let result =
   from g in grouped
   where g.quantity > threshold
-  order by g.revenue desc
+  sort by -g.revenue
   select {
     c_name: g.c_name,
     c_custkey: g.c_custkey,
@@ -78,7 +78,7 @@ let result =
     c_comment: g.c_comment
   }
 
-print result
+json(result)
 
 test "Q18 returns large-volume customers with total quantity > 200" {
   // Alice: 150 + 100 = 250 > 200 → included
