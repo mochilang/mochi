@@ -297,7 +297,7 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		if st.Type != nil {
 			typ = c.resolveTypeRef(st.Type)
 		} else {
-			typ = c.inferExprType(st.Value)
+			typ = c.exprType(st.Value)
 		}
 		c.env.SetVar(st.Name, typ, true)
 	}
@@ -319,7 +319,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		if st.Type != nil {
 			typ = c.resolveTypeRef(st.Type)
 		} else if st.Value != nil {
-			typ = c.inferExprType(st.Value)
+			typ = c.exprType(st.Value)
 		}
 		c.env.SetVar(st.Name, typ, true)
 	}
@@ -349,7 +349,7 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	if len(st.Index) == 0 {
 		c.writeln(fmt.Sprintf("(def %s %s)", name, rhs))
 		if c.env != nil {
-			typ := c.inferExprType(st.Value)
+			typ := c.exprType(st.Value)
 			c.env.SetVar(st.Name, typ, true)
 		}
 		return nil
@@ -598,7 +598,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	operands := []string{left}
-	typesList := []types.Type{c.inferUnaryType(b.Left)}
+	typesList := []types.Type{c.unaryType(b.Left)}
 	ops := []string{}
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
@@ -610,7 +610,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			op = "union_all"
 		}
 		operands = append(operands, r)
-		typesList = append(typesList, c.inferPostfixType(part.Right))
+		typesList = append(typesList, c.postfixType(part.Right))
 		ops = append(ops, op)
 	}
 
@@ -739,7 +739,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	t := c.inferPrimaryType(p.Target)
+	t := c.primaryType(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			start, err := c.compileExpr(op.Index.Start)
