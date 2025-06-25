@@ -75,7 +75,8 @@ constructs required by later LeetCode problems are not yet supported. Missing
 features include:
 
 - `map` types
-- basic `from`/`where`/`select` queries are supported, but joins, grouping and sorting remain unimplemented
+- basic `from`/`where`/`select` queries are supported. Sorting is implemented,
+  but joins and grouping remain unimplemented
 - enum definitions
 - agent-related constructs (`agent`, `stream`, `intent`)
 - generative `generate` blocks and model definitions

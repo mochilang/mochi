@@ -910,12 +910,12 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 	return name
 }
 
-// compileQueryExpr generates C code for a basic dataset query supporting
-// `from` with an optional `where` and `select` clause. Advanced features like
-// joins, grouping and sorting are not yet implemented.
+// compileQueryExpr generates C code for simple dataset queries. It now
+// supports optional `sort by`, `skip` and `take` clauses in addition to basic
+// `from`/`where`/`select`. Joins and grouping remain unimplemented.
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	// only handle simple queries without joins or grouping
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
 		return "0"
 	}
 
@@ -937,6 +937,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	if q.Where != nil {
 		cond = c.compileExpr(q.Where)
 	}
+
+	var sortExpr string
+	var sortT types.Type
+	if q.Sort != nil {
+		sortExpr = c.compileExpr(q.Sort)
+		sortT = c.exprType(q.Sort)
+	}
+
+	var skipExpr string
+	if q.Skip != nil {
+		skipExpr = c.compileExpr(q.Skip)
+	} else {
+		skipExpr = "0"
+	}
+
+	var takeExpr string
+	if q.Take != nil {
+		takeExpr = c.compileExpr(q.Take)
+	} else {
+		takeExpr = "-1"
+	}
+
 	val := c.compileExpr(q.Select)
 	retT := c.exprType(q.Select)
 	retList := types.ListType{Elem: retT}
@@ -955,21 +977,73 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	res := c.newTemp()
 	idx := c.newTemp()
 	iter := c.newTemp()
+	var keyArr string
+	keyType := ""
+	if sortExpr != "" {
+		keyType = cTypeFromType(sortT)
+		if keyType == "" {
+			keyType = "int"
+		}
+	}
 	c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, res, listC, src))
+	if keyType != "" {
+		keyArr = c.newTemp()
+		c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, src))
+	}
+	skipVar := c.newTemp()
+	takeVar := c.newTemp()
+	seenVar := c.newTemp()
+	c.writeln(fmt.Sprintf("int %s = %s;", skipVar, skipExpr))
+	c.writeln(fmt.Sprintf("int %s = %s;", takeVar, takeExpr))
 	c.writeln(fmt.Sprintf("int %s = 0;", idx))
+	c.writeln(fmt.Sprintf("int %s = 0;", seenVar))
 	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src, iter))
 	c.indent++
 	c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, sanitizeName(q.Var), src, iter))
 	if cond != "" {
 		c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 	}
+	c.writeln(fmt.Sprintf("if (%s < %s) { %s++; continue; }", seenVar, skipVar, seenVar))
+	c.writeln(fmt.Sprintf("if (%s >= 0 && %s >= %s) { break; }", takeVar, idx, takeVar))
+	c.writeln(fmt.Sprintf("%s++;", seenVar))
 	c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+	if keyType != "" {
+		c.writeln(fmt.Sprintf("%s[%s] = %s;", keyArr, idx, sortExpr))
+	}
 	c.writeln(fmt.Sprintf("%s++;", idx))
 	c.indent--
 	c.writeln("}")
 	c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
 	if c.env != nil {
 		c.env = oldEnv
+	}
+	if keyType != "" {
+		tmpK := c.newTemp()
+		tmpV := c.newTemp()
+		elemOut := cTypeFromType(retT)
+		if elemOut == "" {
+			elemOut = "int"
+		}
+		c.writeln(fmt.Sprintf("for (int i = 0; i < %s-1; i++) {", idx))
+		c.indent++
+		c.writeln(fmt.Sprintf("for (int j = i+1; j < %s; j++) {", idx))
+		c.indent++
+		if keyType == "char*" {
+			c.writeln(fmt.Sprintf("if (strcmp(%s[i], %s[j]) > 0) {", keyArr, keyArr))
+		} else {
+			c.writeln(fmt.Sprintf("if (%s[i] > %s[j]) {", keyArr, keyArr))
+		}
+		c.indent++
+		c.writeln(fmt.Sprintf("%s %s = %s[i];", keyType, tmpK, keyArr))
+		c.writeln(fmt.Sprintf("%s[i] = %s[j];", keyArr, keyArr))
+		c.writeln(fmt.Sprintf("%s[j] = %s;", keyArr, tmpK))
+		c.writeln(fmt.Sprintf("%s %s = %s.data[i];", elemOut, tmpV, res))
+		c.writeln(fmt.Sprintf("%s.data[i] = %s.data[j];", res, res))
+		c.writeln(fmt.Sprintf("%s.data[j] = %s;", res, tmpV))
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
 	}
 	return res
 }
