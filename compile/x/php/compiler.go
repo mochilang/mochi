@@ -234,6 +234,14 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	oldLocals := c.locals
 	c.locals = map[string]bool{}
 	c.indent++
+
+	// capture globals referenced within the test block
+	fn := &parser.FunExpr{BlockBody: t.Body}
+	captured := freeVars(fn, nil)
+	if len(captured) > 0 {
+		c.writeln("global " + strings.Join(captured, ", ") + ";")
+	}
+
 	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
 			c.locals = oldLocals
@@ -1217,6 +1225,12 @@ func scanStmt(s *parser.Statement, vars map[string]struct{}) {
 		scanExpr(s.Let.Value, vars)
 	case s.Var != nil:
 		scanExpr(s.Var.Value, vars)
+	case s.Expect != nil:
+		scanExpr(s.Expect.Value, vars)
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			scanStmt(st, vars)
+		}
 	case s.Assign != nil:
 		scanExpr(s.Assign.Value, vars)
 	case s.Return != nil:
