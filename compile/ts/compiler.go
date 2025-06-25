@@ -1552,6 +1552,55 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
+	origWhere, origSkip, origTake := q.Where, q.Skip, q.Take
+	defer func() { q.Where, q.Skip, q.Take = origWhere, origSkip, origTake }()
+
+	if l, ok := loadExpr(q.Source); ok && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil {
+		opts := []string{}
+		if l.With != nil {
+			w, err := c.compileExpr(l.With)
+			if err != nil {
+				return "", err
+			}
+			c.use("_toAnyMap")
+			opts = append(opts, "..._toAnyMap("+w+")")
+		}
+		pushed := false
+		if q.Where != nil {
+			if f, v, ok := c.eqFilter(q.Where, q.Var); ok {
+				opts = append(opts, fmt.Sprintf("filter: { %s: %s }", f, v))
+				q.Where = nil
+				pushed = true
+			}
+		}
+		if q.Skip != nil {
+			sk, err := c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			opts = append(opts, "skip: "+sk)
+			q.Skip = nil
+			pushed = true
+		}
+		if q.Take != nil {
+			tk, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			opts = append(opts, "take: "+tk)
+			q.Take = nil
+			pushed = true
+		}
+		if pushed {
+			c.use("_toAnyMap")
+			path := "null"
+			if l.Path != nil {
+				path = fmt.Sprintf("%q", *l.Path)
+			}
+			src = fmt.Sprintf("_load(%s, _toAnyMap({%s}))", path, strings.Join(opts, ", "))
+		}
+	}
+
 	needsHelper := false
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -2122,6 +2171,77 @@ func identName(e *parser.Expr) (string, bool) {
 	}
 	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
 		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+func loadExpr(e *parser.Expr) (*parser.LoadExpr, bool) {
+	if e == nil {
+		return nil, false
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Load == nil {
+		return nil, false
+	}
+	return p.Target.Load, true
+}
+
+func (c *Compiler) eqFilter(e *parser.Expr, varName string) (string, string, bool) {
+	if e == nil || len(e.Binary.Right) != 1 {
+		return "", "", false
+	}
+	b := e.Binary.Right[0]
+	if b.Op != "==" {
+		return "", "", false
+	}
+	if f, ok := fieldFromUnary(e.Binary.Left, varName); ok {
+		v, err := c.compilePostfix(b.Right)
+		if err == nil {
+			return f, v, true
+		}
+	}
+	if f, ok := fieldFromPostfix(b.Right, varName); ok {
+		v, err := c.compileUnary(e.Binary.Left)
+		if err == nil {
+			return f, v, true
+		}
+	}
+	return "", "", false
+}
+
+func fieldFromUnary(u *parser.Unary, varName string) (string, bool) {
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if p.Target.Selector == nil || p.Target.Selector.Root != varName {
+		return "", false
+	}
+	if len(p.Ops) == 1 && p.Ops[0].Field != nil {
+		return p.Ops[0].Field.Name, true
+	}
+	if len(p.Ops) == 0 && len(p.Target.Selector.Tail) == 1 {
+		return p.Target.Selector.Tail[0], true
+	}
+	return "", false
+}
+
+func fieldFromPostfix(p *parser.PostfixExpr, varName string) (string, bool) {
+	if p.Target.Selector == nil || p.Target.Selector.Root != varName {
+		return "", false
+	}
+	if len(p.Ops) == 1 && p.Ops[0].Field != nil {
+		return p.Ops[0].Field.Name, true
+	}
+	if len(p.Ops) == 0 && len(p.Target.Selector.Tail) == 1 {
+		return p.Target.Selector.Tail[0], true
 	}
 	return "", false
 }
