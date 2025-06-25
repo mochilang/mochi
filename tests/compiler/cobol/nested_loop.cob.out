@@ -6,11 +6,37 @@ WORKING-STORAGE SECTION.
 01 I PIC S9.
 01 J PIC S9.
 01 TMP0 PIC 9.
+01 TMP1 PIC 9.
+01 TMP2 PIC 9.
+01 TMP3 PIC 9.
 PROCEDURE DIVISION.
-    PERFORM VARYING I FROM 1 BY 1 UNTIL I >= 3
-        PERFORM VARYING J FROM 1 BY 1 UNTIL J >= 2
-            COMPUTE TMP0 = I + J
-            DISPLAY TMP0
+    IF 1 < 3
+        PERFORM VARYING I FROM 1 BY 1 UNTIL I >= 3
+            IF 1 < 2
+                PERFORM VARYING J FROM 1 BY 1 UNTIL J >= 2
+                    COMPUTE TMP0 = I + J
+                    DISPLAY TMP0
+                END-PERFORM
+            ELSE
+                PERFORM VARYING J FROM 1 BY -1 UNTIL J <= 2
+                    COMPUTE TMP1 = I + J
+                    DISPLAY TMP1
+                END-PERFORM
+            END-IF
         END-PERFORM
-    END-PERFORM
+    ELSE
+        PERFORM VARYING I FROM 1 BY -1 UNTIL I <= 3
+            IF 1 < 2
+                PERFORM VARYING J FROM 1 BY 1 UNTIL J >= 2
+                    COMPUTE TMP2 = I + J
+                    DISPLAY TMP2
+                END-PERFORM
+            ELSE
+                PERFORM VARYING J FROM 1 BY -1 UNTIL J <= 2
+                    COMPUTE TMP3 = I + J
+                    DISPLAY TMP3
+                END-PERFORM
+            END-IF
+        END-PERFORM
+    END-IF
     STOP RUN.
