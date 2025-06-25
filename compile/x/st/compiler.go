@@ -361,7 +361,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		if isMapExpr(f.Source, c.env) {
+		if types.IsMapExpr(f.Source, c.env) {
 			c.writeln(fmt.Sprintf("(%s) keysDo: [:%s |", src, f.Name))
 		} else {
 			c.writeln(fmt.Sprintf("(%s) do: [:%s |", src, f.Name))
@@ -577,15 +577,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	expr := left
-	leftList := isListUnary(b.Left, c.env)
-	leftStr := isStringUnary(b.Left, c.env)
+	leftList := types.IsListUnary(b.Left, c.env)
+	leftStr := types.IsStringUnary(b.Left, c.env)
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		rlist := isListPostfix(op.Right, c.env)
-		rstr := isStringPostfix(op.Right, c.env)
+		rlist := types.IsListPostfix(op.Right, c.env)
+		rstr := types.IsStringPostfix(op.Right, c.env)
 		switch op.Op {
 		case "+":
 			if leftList || rlist {
@@ -607,7 +607,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("(Main __contains_string: %s sub: %s)", right, left)
 			} else if rlist || rstr {
 				expr = fmt.Sprintf("(%s includes: %s)", right, left)
-			} else if isMapPostfix(op.Right, c.env) {
+			} else if types.IsMapPostfix(op.Right, c.env) {
 				expr = fmt.Sprintf("(%s includesKey: %s)", right, left)
 			} else {
 				expr = fmt.Sprintf("(%s includes: %s)", right, left)
@@ -701,7 +701,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					end1 = e
 				}
 				targetOnly := &parser.PostfixExpr{Target: p.Target}
-				if isStringPostfix(targetOnly, c.env) {
+				if types.IsStringPostfix(targetOnly, c.env) {
 					c.needSliceStr = true
 					expr = fmt.Sprintf("(Main __slice_string: %s start: %s end: %s)", expr, start0, end0)
 				} else {
@@ -713,9 +713,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				targetOnly := &parser.PostfixExpr{Target: p.Target}
-				if isMapPostfix(targetOnly, c.env) {
+				if types.IsMapPostfix(targetOnly, c.env) {
 					expr = fmt.Sprintf("(%s at: %s)", expr, idx)
-				} else if isStringPostfix(targetOnly, c.env) {
+				} else if types.IsStringPostfix(targetOnly, c.env) {
 					c.needIndexStr = true
 					expr = fmt.Sprintf("(Main __index_string: %s idx: %s)", expr, idx)
 				} else {
@@ -1002,78 +1002,6 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 		pairs[i] = fmt.Sprintf("%s -> %s", key, v)
 	}
 	return "Dictionary from: {" + strings.Join(pairs, ". ") + "}", nil
-}
-
-func isListUnary(u *parser.Unary, env *types.Env) bool {
-	if u == nil || len(u.Ops) != 0 {
-		return false
-	}
-	return isListPostfix(u.Value, env)
-}
-
-func isListPostfix(p *parser.PostfixExpr, env *types.Env) bool {
-	if p == nil || len(p.Ops) != 0 {
-		return false
-	}
-	if p.Target.List != nil {
-		return true
-	}
-	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
-		if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
-			if _, ok := t.(types.ListType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func isStringUnary(u *parser.Unary, env *types.Env) bool {
-	if u == nil || len(u.Ops) != 0 {
-		return false
-	}
-	return isStringPostfix(u.Value, env)
-}
-
-func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
-	if p == nil || len(p.Ops) != 0 {
-		return false
-	}
-	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
-		return true
-	}
-	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
-		if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
-			if _, ok := t.(types.StringType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func isMapUnary(u *parser.Unary, env *types.Env) bool {
-	if u == nil || len(u.Ops) != 0 {
-		return false
-	}
-	return isMapPostfix(u.Value, env)
-}
-
-func isMapPostfix(p *parser.PostfixExpr, env *types.Env) bool {
-	if p == nil || len(p.Ops) != 0 {
-		return false
-	}
-	if p.Target.Map != nil {
-		return true
-	}
-	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
-		if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
-			if _, ok := t.(types.MapType); ok {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 func hasBreak(stmts []*parser.Statement) bool {
