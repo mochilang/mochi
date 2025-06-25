@@ -38,8 +38,7 @@ let start_date = "1996-01-01"
 let end_date = "1996-04-01"
 
 // revenue0 view equivalent
-let revenue0 =
-  from l in lineitem
+let revenue0 = from l in lineitem
   where l.l_shipdate >= start_date and l.l_shipdate < end_date
   group by l.l_suppkey
   select {
@@ -48,14 +47,13 @@ let revenue0 =
   }
 
 // find max revenue
-let max_revenue = max(x.total_revenue for x in revenue0)
+let max_revenue = max(from x in revenue0 select x.total_revenue)
 
 // join with supplier and filter by max revenue
-let result =
-  from s in supplier
+let result = from s in supplier
   join r in revenue0 on s.s_suppkey == r.supplier_no
   where r.total_revenue == max_revenue
-  order by s.s_suppkey
+  sort by s.s_suppkey
   select {
     s_suppkey: s.s_suppkey,
     s_name: s.s_name,
