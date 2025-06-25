@@ -102,6 +102,132 @@ func contains(sl []string, s string) bool {
 	return false
 }
 
+// varsInExpr returns the set of root variable names referenced in e.
+func varsInExpr(e *parser.Expr) map[string]bool {
+	vars := map[string]bool{}
+	var walkExpr func(*parser.Expr)
+	var walkUnary func(*parser.Unary)
+	var walkPostfix func(*parser.PostfixExpr)
+	var walkPrimary func(*parser.Primary)
+
+	walkExpr = func(e *parser.Expr) {
+		if e == nil {
+			return
+		}
+		walkUnary(e.Binary.Left)
+		for _, op := range e.Binary.Right {
+			walkPostfix(op.Right)
+		}
+	}
+
+	walkUnary = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		walkPostfix(u.Value)
+	}
+
+	walkPostfix = func(pf *parser.PostfixExpr) {
+		if pf == nil {
+			return
+		}
+		walkPrimary(pf.Target)
+		for _, op := range pf.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					walkExpr(a)
+				}
+			}
+			if op.Index != nil {
+				if op.Index.Start != nil {
+					walkExpr(op.Index.Start)
+				}
+				if op.Index.End != nil {
+					walkExpr(op.Index.End)
+				}
+				if op.Index.Step != nil {
+					walkExpr(op.Index.Step)
+				}
+			}
+			if op.Cast != nil {
+				// ignore type casts
+			}
+		}
+	}
+
+	walkPrimary = func(pr *parser.Primary) {
+		if pr == nil {
+			return
+		}
+		switch {
+		case pr.Selector != nil:
+			vars[pr.Selector.Root] = true
+		case pr.Struct != nil:
+			for _, f := range pr.Struct.Fields {
+				walkExpr(f.Value)
+			}
+		case pr.Call != nil:
+			for _, a := range pr.Call.Args {
+				walkExpr(a)
+			}
+		case pr.List != nil:
+			for _, el := range pr.List.Elems {
+				walkExpr(el)
+			}
+		case pr.Map != nil:
+			for _, it := range pr.Map.Items {
+				walkExpr(it.Key)
+				walkExpr(it.Value)
+			}
+		case pr.Match != nil:
+			walkExpr(pr.Match.Target)
+			for _, cs := range pr.Match.Cases {
+				walkExpr(cs.Pattern)
+				walkExpr(cs.Result)
+			}
+		case pr.If != nil:
+			walkExpr(pr.If.Cond)
+			walkExpr(pr.If.Then)
+			if pr.If.ElseIf != nil {
+				walkExpr(pr.If.ElseIf.Cond)
+				walkExpr(pr.If.ElseIf.Then)
+				if pr.If.ElseIf.Else != nil {
+					walkExpr(pr.If.ElseIf.Else)
+				}
+			}
+			if pr.If.Else != nil {
+				walkExpr(pr.If.Else)
+			}
+		case pr.Generate != nil:
+			for _, f := range pr.Generate.Fields {
+				walkExpr(f.Value)
+			}
+		case pr.Fetch != nil:
+			walkExpr(pr.Fetch.URL)
+			if pr.Fetch.With != nil {
+				walkExpr(pr.Fetch.With)
+			}
+		case pr.Load != nil:
+			if pr.Load.With != nil {
+				walkExpr(pr.Load.With)
+			}
+		case pr.Save != nil:
+			walkExpr(pr.Save.Src)
+			if pr.Save.With != nil {
+				walkExpr(pr.Save.With)
+			}
+		case pr.Query != nil:
+			// ignore nested queries
+		}
+		if pr.Group != nil {
+			walkExpr(pr.Group)
+		}
+	}
+
+	walkExpr(e)
+	return vars
+}
+
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	if t == nil {
 		return types.AnyType{}

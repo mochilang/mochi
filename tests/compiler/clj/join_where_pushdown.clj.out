@@ -1,0 +1,30 @@
+(ns main)
+
+(defn -main []
+  (def left [0 1 2 3])
+  (def right [0 1 2 3])
+  (def res (vec (->> (for [l left :when (> l 1) r right :when (= l r)] (+ l r)))))
+  (loop [_tmp0 (seq res)]
+    (when _tmp0
+      (let [v (clojure.core/first _tmp0)]
+        (let [r (try
+          (println v)
+          :next
+        (catch clojure.lang.ExceptionInfo e
+          (cond
+            (= (.getMessage e) "continue") :next
+            (= (.getMessage e) "break") :break
+            :else (throw e))
+          )
+        )]
+      (cond
+        (= r :break) nil
+        :else (recur (next _tmp0))
+      )
+    )
+  )
+)
+)
+)
+
+(-main)
