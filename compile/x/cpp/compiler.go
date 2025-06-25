@@ -1034,8 +1034,26 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			takeExpr = c.compileExpr(q.Take)
 		}
 		var cond string
+		var pushIdx int
 		if q.Where != nil {
 			cond = c.compileExpr(q.Where)
+			used := map[string]struct{}{}
+			collectExprVars(q.Where, used)
+			all := []string{q.Var}
+			for _, f := range q.Froms {
+				all = append(all, f.Var)
+			}
+			for _, j := range q.Joins {
+				all = append(all, j.Var)
+			}
+			pushIdx = len(all) - 1
+			for i, n := range all {
+				if _, ok := used[n]; ok && i > pushIdx {
+					pushIdx = i
+				}
+			}
+		} else {
+			pushIdx = -1
 		}
 		vars := []string{q.Var}
 		srcs := []string{src}
@@ -1059,23 +1077,35 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("\tunordered_map<KeyT, Group> groups;\n")
 		buf.WriteString("\tvector<KeyT> order;\n")
 		indent := "\t"
+		idx := 0
+		total := len(vars) + len(joinVars)
 		for i, v := range vars {
 			buf.WriteString(indent + "for (auto& " + v + " : " + srcs[i] + ") {\n")
 			indent += "\t"
+			if cond != "" && idx == pushIdx && pushIdx < total-1 {
+				buf.WriteString(indent + "if (!(" + cond + ")) continue;\n")
+			}
+			idx++
 		}
 		for i, v := range joinVars {
 			buf.WriteString(indent + "for (auto& " + v + " : " + joinSrcs[i] + ") {\n")
 			indent += "\t"
 			buf.WriteString(indent + "if (!(" + joinConds[i] + ")) continue;\n")
+			if cond != "" && idx == pushIdx && pushIdx < total-1 {
+				buf.WriteString(indent + "if (!(" + cond + ")) continue;\n")
+			}
+			idx++
 		}
-		if cond != "" {
+		condBlock := false
+		if cond != "" && pushIdx == total-1 {
 			buf.WriteString(indent + "if (" + cond + ") {\n")
 			indent += "\t"
+			condBlock = true
 		}
 		buf.WriteString(indent + "KeyT _k = " + key + ";\n")
 		buf.WriteString(indent + "if (!groups.count(_k)) { groups[_k] = Group{_k, {}}; order.push_back(_k); }\n")
 		buf.WriteString(indent + "groups[_k].Items.push_back(" + q.Var + ");\n")
-		if cond != "" {
+		if condBlock {
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
 		}
@@ -1128,6 +1158,28 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		joinSrcs[i] = c.compileExpr(j.Src)
 		joinConds[i] = c.compileExpr(j.On)
 	}
+	var cond string
+	var pushIdx int
+	if q.Where != nil {
+		cond = c.compileExpr(q.Where)
+		used := map[string]struct{}{}
+		collectExprVars(q.Where, used)
+		all := []string{q.Var}
+		for _, f := range q.Froms {
+			all = append(all, f.Var)
+		}
+		for _, j := range q.Joins {
+			all = append(all, j.Var)
+		}
+		pushIdx = len(all) - 1
+		for i, n := range all {
+			if _, ok := used[n]; ok && i > pushIdx {
+				pushIdx = i
+			}
+		}
+	} else {
+		pushIdx = -1
+	}
 	sel := c.compileExpr(q.Select)
 	resType := InferCppExprType(q.Select, c.env, c.getVar)
 	if resType == "" {
@@ -1152,26 +1204,37 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("\tvector<" + resType + "> _res;\n")
 	}
 	indent := "\t"
+	idx := 0
+	total := len(vars) + len(joinVars)
 	for i, v := range vars {
 		buf.WriteString(indent + "for (auto& " + v + " : " + srcs[i] + ") {\n")
 		indent += "\t"
+		if q.Where != nil && idx == pushIdx && pushIdx < total-1 {
+			buf.WriteString(indent + "if (!(" + cond + ")) continue;\n")
+		}
+		idx++
 	}
 	for i, v := range joinVars {
 		buf.WriteString(indent + "for (auto& " + v + " : " + joinSrcs[i] + ") {\n")
 		indent += "\t"
 		buf.WriteString(indent + "if (!(" + joinConds[i] + ")) continue;\n")
+		if q.Where != nil && idx == pushIdx && pushIdx < total-1 {
+			buf.WriteString(indent + "if (!(" + cond + ")) continue;\n")
+		}
+		idx++
 	}
-	if q.Where != nil {
-		cond := c.compileExpr(q.Where)
+	condBlock := false
+	if q.Where != nil && pushIdx == total-1 {
 		buf.WriteString(indent + "if (" + cond + ") {\n")
 		indent += "\t"
+		condBlock = true
 	}
 	if q.Sort != nil {
 		buf.WriteString(indent + "_tmp.push_back({" + sortExpr + ", " + sel + "});\n")
 	} else {
 		buf.WriteString(indent + "_res.push_back(" + sel + ");\n")
 	}
-	if q.Where != nil {
+	if condBlock {
 		indent = indent[:len(indent)-1]
 		buf.WriteString(indent + "}\n")
 	}
