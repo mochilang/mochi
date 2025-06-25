@@ -85,6 +85,7 @@ func TestRustCompiler_ValidPrograms(t *testing.T) {
 		"map_index",
 		"map_iterate",
 		"match_expr",
+		"rust/dataset_filter_paginate",
 		"print_hello",
 		"two_sum",
 		"var_assignment",
