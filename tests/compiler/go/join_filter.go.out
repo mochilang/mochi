@@ -1,0 +1,37 @@
+package main
+
+import (
+	"fmt"
+)
+
+type Person struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+}
+
+type Purchase struct {
+	Id int `json:"id"`
+	PersonId int `json:"personId"`
+	Total int `json:"total"`
+}
+
+func main() {
+	var people []Person = []Person{Person{Id: 1, Name: "Alice"}, Person{Id: 2, Name: "Bob"}}
+	var purchases []Purchase = []Purchase{Purchase{Id: 10, PersonId: 1, Total: 100}, Purchase{Id: 11, PersonId: 2, Total: 200}}
+	_ = purchases
+	var result []map[string]int = func() []map[string]int {
+	_res := []map[string]int{}
+	for _, p := range people {
+		if (p.Id > 1) {
+			for _, o := range purchases {
+				if !((p.Id == o.PersonId)) { continue }
+				_res = append(_res, map[string]int{"pid": p.Id, "amount": o.Total})
+			}
+		}
+	}
+	return _res
+}()
+	for _, r := range result {
+		fmt.Println(r["pid"], r["amount"])
+	}
+}
