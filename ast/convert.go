@@ -438,7 +438,7 @@ func FromPrimary(p *parser.Primary) *Node {
 			n.Children = append(n.Children, &Node{
 				Kind: "group_by",
 				Children: []*Node{
-					FromExpr(p.Query.Group.Expr),
+					FromExpr(p.Query.Group.Exprs[0]),
 					&Node{Kind: "into", Value: p.Query.Group.Name},
 				},
 			})

@@ -1019,7 +1019,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		c.helpers["groupBy"] = true
 		src := c.compileExpr(q.Source)
-		key := c.compileExpr(q.Group.Expr)
+		key := c.compileExpr(q.Group.Exprs[0])
 		sel := c.compileExpr(q.Select)
 		resType := InferCppExprType(q.Select, c.env, c.getVar)
 		if resType == "" {
@@ -1039,7 +1039,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	if q.Group != nil {
 		src := c.compileExpr(q.Source)
-		key := c.compileExpr(q.Group.Expr)
+		key := c.compileExpr(q.Group.Exprs[0])
 		sel := c.compileExpr(q.Select)
 		resType := InferCppExprType(q.Select, c.env, c.getVar)
 		if resType == "" {
@@ -1049,7 +1049,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if t := InferCppExprType(q.Source, c.env, c.getVar); strings.HasPrefix(t, "vector<") {
 			elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
 		}
-		keyType := InferCppExprType(q.Group.Expr, c.env, c.getVar)
+		keyType := InferCppExprType(q.Group.Exprs[0], c.env, c.getVar)
 		if keyType == "" {
 			keyType = "auto"
 		}

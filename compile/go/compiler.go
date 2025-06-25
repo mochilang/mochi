@@ -2072,7 +2072,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		keyEnv := child
 		c.env = keyEnv
 		var err error
-		groupKey, err = c.compileExpr(q.Group.Expr)
+		groupKey, err = c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = original
 			return "", err

@@ -1678,7 +1678,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var keyExpr string
 		var val string
 		if group {
-			keyExpr, err = c.compileExpr(q.Group.Expr)
+			keyExpr, err = c.compileExpr(q.Group.Exprs[0])
 			if err != nil {
 				c.env = orig
 				return "", err
@@ -1879,7 +1879,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var keyExpr string
 	var val string
 	if q.Group != nil {
-		keyExpr, err = c.compileExpr(q.Group.Expr)
+		keyExpr, err = c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
 			return "", err

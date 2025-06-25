@@ -3347,7 +3347,33 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 }
 
 func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, gmap, glist int) {
-	key := fc.compileExpr(q.Group.Expr)
+	exprs := q.Group.Exprs
+	regs := make([]int, len(exprs))
+	for i, e := range exprs {
+		regs[i] = fc.compileExpr(e)
+	}
+	key := regs[0]
+	var fieldNames []string
+	if len(exprs) > 1 {
+		fieldNames = make([]string, len(exprs))
+		for i, e := range exprs {
+			if name := extractFieldName(e); name != "" {
+				fieldNames[i] = name
+			} else {
+				fieldNames[i] = fmt.Sprintf("k%d", i+1)
+			}
+		}
+		pairs := make([]int, len(exprs)*2)
+		for i, name := range fieldNames {
+			k := fc.newReg()
+			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: interpreter.TagStr, Str: name}})
+			pairs[i*2] = k
+			pairs[i*2+1] = regs[i]
+		}
+		key = fc.newReg()
+		start := pairs[0]
+		fc.emit(q.Pos, Instr{Op: OpMakeMap, A: key, B: len(exprs), C: start})
+	}
 	keyStr := fc.newReg()
 	fc.emit(q.Group.Pos, Instr{Op: OpStr, A: keyStr, B: key})
 	exists := fc.newReg()
@@ -3369,8 +3395,17 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	fc.emit(q.Pos, Instr{Op: OpConst, A: k3, Val: Value{Tag: interpreter.TagStr, Str: "items"}})
 	v3 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
+	pairsGrp := []int{k1, v1, k2, v2, k3, v3}
+	if len(fieldNames) > 0 {
+		for i, name := range fieldNames {
+			k := fc.newReg()
+			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: interpreter.TagStr, Str: name}})
+			pairsGrp = append(pairsGrp, k, regs[i])
+		}
+	}
 	grp := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: grp, B: 3, C: k1})
+	startGrp := pairsGrp[0]
+	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: grp, B: len(pairsGrp) / 2, C: startGrp})
 	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: gmap, B: keyStr, C: grp})
 	tmp := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: glist, C: grp})
@@ -4060,6 +4095,25 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return false
 	}
 	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
+func extractFieldName(e *parser.Expr) string {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil {
+		return ""
+	}
+	sel := p.Target.Selector
+	if len(sel.Tail) > 0 {
+		return sel.Tail[len(sel.Tail)-1]
+	}
+	return sel.Root
 }
 
 func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {

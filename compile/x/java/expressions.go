@@ -690,7 +690,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		c.env = child
-		keyExpr, err := c.compileExpr(q.Group.Expr)
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1103,7 +1103,7 @@ func exprVars(e *parser.Expr) map[string]bool {
 				walkExpr(j.On)
 			}
 			walkExpr(p.Query.Where)
-			walkExpr(p.Query.Group.Expr)
+			walkExpr(p.Query.Group.Exprs[0])
 			walkExpr(p.Query.Sort)
 			walkExpr(p.Query.Skip)
 			walkExpr(p.Query.Take)

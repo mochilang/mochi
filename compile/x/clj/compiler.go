@@ -1071,7 +1071,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	c.env = child
 
 	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-		keyExpr, err := c.compileExpr(q.Group.Expr)
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = origEnv
 			return "", err
@@ -1469,7 +1469,7 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Group != nil {
-		groupKey, err = c.compileExpr(q.Group.Expr)
+		groupKey, err = c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			return "", err
 		}
