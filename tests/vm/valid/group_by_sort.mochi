@@ -1,0 +1,15 @@
+let items = [
+  {city: "A", val: 3},
+  {city: "B", val: 2},
+  {city: "A", val: 1}
+]
+let grouped = from r in items
+              group by r.city into g
+              sort by -sum(from x in g select x.val)
+              select {
+                city: g.key,
+                total: sum(from x in g select x.val)
+              }
+for x in grouped {
+  print(x.city, x.total)
+}
