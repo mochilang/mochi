@@ -116,6 +116,7 @@ const (
 	OpExcept
 	OpIntersect
 	OpSort
+	OpExpect
 )
 
 func (op Op) String() string {
@@ -258,6 +259,8 @@ func (op Op) String() string {
 		return "Intersect"
 	case OpSort:
 		return "Sort"
+	case OpExpect:
+		return "Expect"
 	default:
 		return "?"
 	}
@@ -414,6 +417,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpAvg:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpExpect:
+				fmt.Fprintf(&b, "%s", formatReg(ins.A))
 			case OpMakeClosure:
 				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), p.funcName(ins.B), ins.C, formatReg(ins.D))
 			case OpCall2:
@@ -1029,6 +1034,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+		case OpExpect:
+			val := fr.regs[ins.A]
+			if val.Tag != interpreter.TagBool || !val.Bool {
+				return Value{}, m.newError(fmt.Errorf("expect condition failed"), trace, ins.Line)
+			}
 		case OpStr:
 			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
 		case OpInput:
@@ -1874,7 +1884,8 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		fc.popScope()
 		return nil
 	case s.Expect != nil:
-		fc.compileExpr(s.Expect.Value)
+		r := fc.compileExpr(s.Expect.Value)
+		fc.emit(s.Expect.Pos, Instr{Op: OpExpect, A: r})
 		return nil
 	}
 	return nil
