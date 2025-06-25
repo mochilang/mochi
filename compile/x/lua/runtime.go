@@ -13,6 +13,31 @@ const (
 		"    io.write('\\n')\n" +
 		"end\n"
 
+	helperRunTests = "function __run_tests(tests)\n" +
+		"    local function format_duration(d)\n" +
+		"        if d < 1e-6 then return string.format('%dns', math.floor(d*1e9)) end\n" +
+		"        if d < 1e-3 then return string.format('%.1fµs', d*1e6) end\n" +
+		"        if d < 1 then return string.format('%.1fms', d*1e3) end\n" +
+		"        return string.format('%.2fs', d)\n" +
+		"    end\n" +
+		"    local failures = 0\n" +
+		"    for _, t in ipairs(tests) do\n" +
+		"        io.write('   test ' .. t.name .. ' ...')\n" +
+		"        local start = os.clock()\n" +
+		"        local ok, err = pcall(t.fn)\n" +
+		"        local dur = os.clock() - start\n" +
+		"        if ok then\n" +
+		"            io.write(' ok (' .. format_duration(dur) .. ')\\n')\n" +
+		"        else\n" +
+		"            io.write(' fail ' .. tostring(err) .. ' (' .. format_duration(dur) .. ')\\n')\n" +
+		"            failures = failures + 1\n" +
+		"        end\n" +
+		"    end\n" +
+		"    if failures > 0 then\n" +
+		"        io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\\n')\n" +
+		"    end\n" +
+		"end\n"
+
 	helperIter = "function __iter(obj)\n" +
 		"    if type(obj) == 'table' then\n" +
 		"        if obj[1] ~= nil or #obj > 0 then\n" +
@@ -577,6 +602,7 @@ const (
 
 var helperMap = map[string]string{
 	"print":       helperPrint,
+	"run_tests":   helperRunTests,
 	"iter":        helperIter,
 	"div":         helperDiv,
 	"add":         helperAdd,
