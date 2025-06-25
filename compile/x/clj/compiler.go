@@ -944,7 +944,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "{" + strings.Join(parts, " ") + "}", nil
 	case p.Query != nil:
-		expr, err := c.compileQuery(p.Query)
+		expr, err := c.compileQueryExpr(p.Query)
 		if err != nil {
 			return "", err
 		}
@@ -1167,6 +1167,12 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	b.WriteString("))")
 	c.env = origEnv
 	return b.String(), nil
+}
+
+// compileQueryExpr exposes dataset query compilation used by primary expressions.
+// It currently delegates to compileQuery which implements full query translation.
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	return c.compileQuery(q)
 }
 
 func (c *Compiler) compileMatch(m *parser.MatchExpr) (string, error) {
