@@ -1,0 +1,15 @@
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+let orders = [
+  { id: 100, customerId: 1 },
+  { id: 101, customerId: 2 }
+]
+let result = from o in orders
+             join c in customers on o.customerId == c.id
+             where c.name == "Bob"
+             select o.id
+for r in result {
+  print(r)
+}
