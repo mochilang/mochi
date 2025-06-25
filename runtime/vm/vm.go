@@ -3332,9 +3332,22 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gvar, B: grp})
 
 	val := fc.compileExpr(q.Select)
-	tmpOut := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAppend, A: tmpOut, B: dst, C: val})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmpOut})
+	if q.Sort != nil {
+		key := fc.compileExpr(q.Sort)
+		kreg := fc.newReg()
+		fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+		vreg := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+		pair := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
+		tmpOut := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmpOut, B: dst, C: pair})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmpOut})
+	} else {
+		tmpOut := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmpOut, B: dst, C: val})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmpOut})
+	}
 
 	one2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpConst, A: one2, Val: Value{Tag: interpreter.TagInt, Int: 1}})
@@ -3422,9 +3435,22 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gvar, B: grp})
 
 	val := fc.compileExpr(q.Select)
-	tmp := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+	if q.Sort != nil {
+		key := fc.compileExpr(q.Sort)
+		kreg := fc.newReg()
+		fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+		vreg := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+		pair := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
+		tmp := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+	} else {
+		tmp := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+	}
 
 	one := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
@@ -4304,6 +4330,22 @@ func valueLess(a, b Value) bool {
 	case interpreter.TagStr:
 		if b.Tag == interpreter.TagStr {
 			return a.Str < b.Str
+		}
+	case interpreter.TagList:
+		if b.Tag == interpreter.TagList {
+			n := len(a.List)
+			if len(b.List) < n {
+				n = len(b.List)
+			}
+			for i := 0; i < n; i++ {
+				if valueLess(a.List[i], b.List[i]) {
+					return true
+				}
+				if valueLess(b.List[i], a.List[i]) {
+					return false
+				}
+			}
+			return len(a.List) < len(b.List)
 		}
 	}
 	return fmt.Sprint(valueToAny(a)) < fmt.Sprint(valueToAny(b))
