@@ -106,6 +106,84 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
         }
         acc
 }`
+	helperGroup = `class _Group(var key: Any) {
+        val Items = scala.collection.mutable.ArrayBuffer[Any]()
+}`
+	helperGroupBy = `def _group_by(src: Seq[Any], keyfn: Any => Any): Seq[_Group] = {
+        val groups = scala.collection.mutable.LinkedHashMap[String,_Group]()
+        for (it <- src) {
+                val key = keyfn(it)
+                val ks = key.toString
+                val g = groups.getOrElseUpdate(ks, new _Group(key))
+                g.Items.append(it)
+        }
+        groups.values.toSeq
+}`
+	helperQuery = `def _query(src: Seq[Any], joins: Seq[Map[String,Any]], opts: Map[String,Any]): Seq[Any] = {
+        var items = src.map(v => Seq[Any](v))
+        for (j <- joins) {
+                val joined = scala.collection.mutable.ArrayBuffer[Seq[Any]]()
+                val jitems = j("items").asInstanceOf[Seq[Any]]
+                val on = j.get("on").map(_.asInstanceOf[Seq[Any] => Boolean])
+                val left = j.get("left").exists(_.asInstanceOf[Boolean])
+                val right = j.get("right").exists(_.asInstanceOf[Boolean])
+                if (left && right) {
+                        val matched = Array.fill(jitems.length)(false)
+                        for (leftRow <- items) {
+                                var m = false
+                                for ((rightRow, ri) <- jitems.zipWithIndex) {
+                                        var keep = true
+                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
+                                        if (keep) { m = true; matched(ri) = true; joined.append(leftRow :+ rightRow) }
+                                }
+                                if (!m) joined.append(leftRow :+ null)
+                        }
+                        for ((rightRow, ri) <- jitems.zipWithIndex) {
+                                if (!matched(ri)) {
+                                        val undef = if (items.nonEmpty) Seq.fill(items.head.length)(null) else Seq[Any]()
+                                        joined.append(undef :+ rightRow)
+                                }
+                        }
+                } else if (right) {
+                        for (rightRow <- jitems) {
+                                var m = false
+                                for (leftRow <- items) {
+                                        var keep = true
+                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
+                                        if (keep) { m = true; joined.append(leftRow :+ rightRow) }
+                                }
+                                if (!m) {
+                                        val undef = if (items.nonEmpty) Seq.fill(items.head.length)(null) else Seq[Any]()
+                                        joined.append(undef :+ rightRow)
+                                }
+                        }
+                } else {
+                        for (leftRow <- items) {
+                                var m = false
+                                for (rightRow <- jitems) {
+                                        var keep = true
+                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
+                                        if (keep) { m = true; joined.append(leftRow :+ rightRow) }
+                                }
+                                if (left && !m) joined.append(leftRow :+ null)
+                        }
+                }
+                items = joined.toSeq
+        }
+        var it = items
+        opts.get("where").foreach { f =>
+                val fn = f.asInstanceOf[Seq[Any] => Boolean]
+                it = it.filter(r => fn(r))
+        }
+        opts.get("sortKey").foreach { f =>
+                val fn = f.asInstanceOf[Seq[Any] => Any]
+                it = it.sortBy(r => fn(r))(_anyOrdering)
+        }
+        opts.get("skip").foreach { n => it = it.drop(n.asInstanceOf[Int]) }
+        opts.get("take").foreach { n => it = it.take(n.asInstanceOf[Int]) }
+        val sel = opts("select").asInstanceOf[Seq[Any] => Any]
+        it.map(r => sel(r))
+}`
 	helperToJSON = `def _to_json(v: Any): String = v match {
         case null => "null"
         case s: String => "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
@@ -159,6 +237,9 @@ var helperMap = map[string]string{
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
+	"_Group":       helperGroup,
+	"_group_by":    helperGroupBy,
+	"_query":       helperQuery,
 	"_reduce":      helperReduce,
 	"_pyAttr":      helperPyAttr,
 	"_extern":      helperExtern,
