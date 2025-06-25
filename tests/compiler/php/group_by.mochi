@@ -1,0 +1,7 @@
+let xs = [1, 1, 2]
+let groups = from x in xs
+            group by x into g
+            select { k: g.key, c: count(g) }
+for g in groups {
+  print(g.k, g.c)
+}
