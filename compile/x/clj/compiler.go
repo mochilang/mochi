@@ -224,7 +224,7 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("(assert %s)", expr))
+	c.writeln(fmt.Sprintf("(assert %s \"expect failed\")", expr))
 	return nil
 }
 

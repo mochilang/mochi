@@ -1,0 +1,19 @@
+(ns main)
+
+(defn _indexList [xs i]
+  (let [idx (if (neg? i) (+ i (count xs)) i)]
+    (if (or (< idx 0) (>= idx (count xs)))
+      (throw (ex-info "index out of range" {}))
+      (nth xs idx))))
+
+(defn test_values []
+  (assert (= (_indexList xs 0) 1) "expect failed")
+  (println "done")
+)
+
+(defn -main []
+  (def xs [1 2 3])
+  (test_values)
+)
+
+(-main)
