@@ -536,7 +536,8 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("assert(%s)", expr))
+	c.use("_expect")
+	c.writeln(fmt.Sprintf("expect(%s)", expr))
 	return nil
 }
 
