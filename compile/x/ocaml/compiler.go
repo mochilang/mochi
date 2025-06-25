@@ -800,6 +800,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCall(p.Call)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -978,6 +980,99 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("(match %s with %s)", target, strings.Join(parts, " | ")), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	c.env = child
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	val, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	cond := ""
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	skipExpr := ""
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	takeExpr := ""
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.env = orig
+
+	var b strings.Builder
+	b.WriteString("(begin\n")
+	b.WriteString("  let _res = ref [] in\n")
+	b.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", sanitizeName(q.Var)))
+	indent := "    "
+	for i := range fromSrcs {
+		b.WriteString(fmt.Sprintf("%sList.iter (fun %s ->\n", indent, sanitizeName(q.Froms[i].Var)))
+		indent += "  "
+	}
+	if cond != "" {
+		b.WriteString(fmt.Sprintf("%sif %s then (\n", indent, cond))
+		indent += "  "
+	}
+	b.WriteString(fmt.Sprintf("%s_res := %s :: !_res;\n", indent, val))
+	if cond != "" {
+		indent = indent[:len(indent)-2]
+		b.WriteString(indent + ")\n")
+	}
+	for i := len(fromSrcs) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-2]
+		b.WriteString(fmt.Sprintf("%s) %s;\n", indent, fromSrcs[i]))
+	}
+	b.WriteString(fmt.Sprintf("  ) %s;\n", src))
+	b.WriteString("  let _items = List.rev !_res in\n")
+	if skipExpr != "" {
+		c.ensureSlice()
+		b.WriteString("  let _items = _slice _items " + skipExpr + " (List.length _items - " + skipExpr + ") in\n")
+	}
+	if takeExpr != "" {
+		c.ensureSlice()
+		b.WriteString("  let _items = if " + takeExpr + " < List.length _items then _slice _items 0 " + takeExpr + " else _items in\n")
+	}
+	b.WriteString("  _items\n")
+	b.WriteString("end)")
+	return b.String(), nil
 }
 
 func ocamlType(t *parser.TypeRef) string {

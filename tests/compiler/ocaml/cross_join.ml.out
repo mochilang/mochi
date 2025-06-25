@@ -1,0 +1,16 @@
+let nums = [1; 2];;
+let letters = ["A"; "B"];;
+let bools = [true; false];;
+let combos = (begin
+  let _res = ref [] in
+  List.iter (fun n ->
+    List.iter (fun _l ->
+      List.iter (fun _b ->
+        _res := n :: !_res;
+      ) bools;
+    ) letters;
+  ) nums;
+  let _items = List.rev !_res in
+  _items
+end);;
+print_endline (string_of_int (List.length combos));;

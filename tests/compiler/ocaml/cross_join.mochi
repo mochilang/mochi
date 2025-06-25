@@ -1,0 +1,8 @@
+let nums = [1, 2]
+let letters = ["A", "B"]
+let bools = [true, false]
+let combos = from n in nums
+             from _l in letters
+             from _b in bools
+             select n
+print(len(combos))

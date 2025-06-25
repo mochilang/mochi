@@ -38,6 +38,7 @@ mochi build --target ocaml main.mochi -o main.ml
 - function expressions (`fun`)
 - built-ins `len`, `print`, `str`, `input`
 - simple `match` expressions with constant patterns
+- basic dataset queries using `from`, optional cross joins, `where`, `skip`, `take` and `select`
 
 
 The output can be compiled with `ocamlc`:
@@ -64,9 +65,9 @@ These tests verify both the generated program output and the emitted `.ml` code.
 
 ## Unsupported features
 
-- The OCaml backend covers only a small slice of Mochi. Missing pieces include:
+The OCaml backend covers only a small slice of Mochi. Missing pieces include:
 
-- Query expressions such as `from` / `sort by` / `select`
+- Advanced dataset queries such as joins, grouping or sorting
 - Comprehensive pattern matching and union types
 - Modules and `import` declarations
 - Struct and enum type declarations
