@@ -118,6 +118,7 @@ const (
 	OpIntersect
 	OpSort
 	OpExpect
+	OpExists
 )
 
 func (op Op) String() string {
@@ -264,6 +265,8 @@ func (op Op) String() string {
 		return "Sort"
 	case OpExpect:
 		return "Expect"
+	case OpExists:
+		return "Exists"
 	default:
 		return "?"
 	}
@@ -419,6 +422,8 @@ func (p *Program) Disassemble(src string) string {
 			case OpCount:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpAvg:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpExists:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpExpect:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
@@ -1347,6 +1352,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(maxVal)}
 				}
 			}
+		case OpExists:
+			lst := fr.regs[ins.B]
+			if lst.Tag == interpreter.TagMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+					lst = lst.Map["items"]
+				}
+			}
+			if lst.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("exists expects list")
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: len(lst.List) > 0}
 		case OpCast:
 			val := valueToAny(fr.regs[ins.B])
 			typ := m.prog.Types[ins.C]
@@ -2478,6 +2494,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpMax, A: dst, B: arg})
+			return dst
+		case "exists":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpExists, A: dst, B: arg})
 			return dst
 		case "substring":
 			str := fc.compileExpr(p.Call.Args[0])

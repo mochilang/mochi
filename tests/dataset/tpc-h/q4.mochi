@@ -22,9 +22,10 @@ let date_filtered_orders =
 
 let late_orders =
   from o in date_filtered_orders
-  where exists (
-    l in lineitem
+  where exists(
+    from l in lineitem
     where l.l_orderkey == o.o_orderkey and l.l_commitdate < l.l_receiptdate
+    select l
   )
   select o
 

@@ -437,6 +437,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: AnyType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("exists", FuncType{
+		Params: []Type{AnyType{}},
+		Return: BoolType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("reduce", FuncType{
 		Params: []Type{AnyType{}, AnyType{}, AnyType{}},
 		Return: AnyType{},
@@ -2036,6 +2041,7 @@ var builtinArity = map[string]int{
 	"sum":       1,
 	"min":       1,
 	"max":       1,
+	"exists":    1,
 	"keys":      1,
 	"values":    1,
 	"reduce":    3,
@@ -2140,6 +2146,16 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return nil
 		default:
 			return fmt.Errorf("%s() expects list", name)
+		}
+	case "exists":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		switch args[0].(type) {
+		case ListType, GroupType, AnyType:
+			return nil
+		default:
+			return fmt.Errorf("exists() expects list")
 		}
 	case "keys", "values":
 		if len(args) != 1 {

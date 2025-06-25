@@ -1,0 +1,50 @@
+func main (regs=27)
+  // print(exists(from x in [1,2,3] where x > 2 select x))
+  Const        r0, []
+  Const        r1, [1, 2, 3]
+  IterPrep     r2, r1
+  Len          r3, r2
+  Const        r4, 0
+L2:
+  Less         r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  Const        r8, 2
+  Less         r9, r8, r7
+  JumpIfFalse  r9, L1
+  Append       r10, r0, r7
+  Move         r0, r10
+L1:
+  Const        r11, 1
+  Add          r12, r4, r11
+  Move         r4, r12
+  Jump         L2
+L0:
+  Exists       r13, r0
+  Print        r13
+  // print(exists(from x in [1,2,3] where x > 4 select x))
+  Const        r14, []
+  Const        r15, [1, 2, 3]
+  IterPrep     r16, r15
+  Len          r17, r16
+  Const        r18, 0
+L5:
+  Less         r19, r18, r17
+  JumpIfFalse  r19, L3
+  Index        r20, r16, r18
+  Move         r7, r20
+  Const        r21, 4
+  Less         r22, r21, r7
+  JumpIfFalse  r22, L4
+  Append       r23, r14, r7
+  Move         r14, r23
+L4:
+  Const        r24, 1
+  Add          r25, r18, r24
+  Move         r18, r25
+  Jump         L5
+L3:
+  Exists       r26, r14
+  Print        r26
+  Return       r0
