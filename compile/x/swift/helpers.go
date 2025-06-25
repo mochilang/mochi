@@ -99,3 +99,120 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	}
 	return false
 }
+func exprVars(e *parser.Expr, vars map[string]bool) {
+	if e == nil {
+		return
+	}
+	var scanPostfix func(p *parser.PostfixExpr)
+	var scanPrimary func(p *parser.Primary)
+	var scanUnaryRec func(u *parser.Unary)
+	scanUnaryRec = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		scanPostfix(u.Value)
+	}
+	scanPostfix = func(p *parser.PostfixExpr) {
+		if p == nil {
+			return
+		}
+		scanPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Index != nil {
+				exprVars(op.Index.Start, vars)
+				exprVars(op.Index.End, vars)
+			}
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					exprVars(a, vars)
+				}
+			}
+		}
+	}
+	scanPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		switch {
+		case p.Selector != nil:
+			vars[p.Selector.Root] = true
+		case p.Group != nil:
+			exprVars(p.Group, vars)
+		case p.FunExpr != nil:
+			exprVars(p.FunExpr.ExprBody, vars)
+			for _, st := range p.FunExpr.BlockBody {
+				_ = st
+			}
+		case p.Struct != nil:
+			for _, f := range p.Struct.Fields {
+				exprVars(f.Value, vars)
+			}
+		case p.Call != nil:
+			for _, a := range p.Call.Args {
+				exprVars(a, vars)
+			}
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				exprVars(el, vars)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				exprVars(it.Key, vars)
+				exprVars(it.Value, vars)
+			}
+		case p.Match != nil:
+			exprVars(p.Match.Target, vars)
+			for _, cs := range p.Match.Cases {
+				exprVars(cs.Pattern, vars)
+				exprVars(cs.Result, vars)
+			}
+		case p.Query != nil:
+			vars[p.Query.Var] = true
+			exprVars(p.Query.Source, vars)
+			for _, f := range p.Query.Froms {
+				vars[f.Var] = true
+				exprVars(f.Src, vars)
+			}
+			for _, j := range p.Query.Joins {
+				vars[j.Var] = true
+				exprVars(j.Src, vars)
+				exprVars(j.On, vars)
+			}
+			exprVars(p.Query.Where, vars)
+			if p.Query.Group != nil {
+				exprVars(p.Query.Group.Expr, vars)
+			}
+			exprVars(p.Query.Sort, vars)
+			exprVars(p.Query.Skip, vars)
+			exprVars(p.Query.Take, vars)
+			exprVars(p.Query.Select, vars)
+		case p.Load != nil:
+			if p.Load.Path == nil {
+			} else {
+			}
+		case p.Save != nil:
+			exprVars(p.Save.Src, vars)
+		case p.Fetch != nil:
+			exprVars(p.Fetch.URL, vars)
+			exprVars(p.Fetch.With, vars)
+		case p.Generate != nil:
+			for _, f := range p.Generate.Fields {
+				exprVars(f.Value, vars)
+			}
+		}
+	}
+
+	scanUnaryRec(e.Binary.Left)
+	for _, part := range e.Binary.Right {
+		scanPostfix(part.Right)
+	}
+}
+
+func subsetVars(have map[string]bool, want map[string]bool) bool {
+	for k := range want {
+		if !have[k] {
+			return false
+		}
+	}
+	return true
+}
