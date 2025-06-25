@@ -93,15 +93,22 @@ func TestVM_Fetch(t *testing.T) {
 }
 
 func TestVM_TPCH(t *testing.T) {
-	files, err := filepath.Glob("../dataset/tpc-h/*.out")
+	files, err := filepath.Glob("../dataset/tpc-h/*.mochi")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(files) == 0 {
-		t.Fatal("no tpch test files")
+		t.Fatal("no tpch source files")
 	}
-	for _, want := range files {
-		src := strings.TrimSuffix(want, ".out") + ".mochi"
+	found := false
+	for _, src := range files {
+		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		want := filepath.Join("../dataset/tpc-h/out", base+".out")
+		irWant := filepath.Join("../dataset/tpc-h/out", base+".ir.out")
+		if _, err := os.Stat(want); err != nil {
+			continue
+		}
+		found = true
 		name := filepath.Base(src)
 		t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)
@@ -130,6 +137,23 @@ func TestVM_TPCH(t *testing.T) {
 			if got != wantStr {
 				t.Errorf("%s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, wantStr)
 			}
+
+			srcData, err := os.ReadFile(src)
+			if err != nil {
+				t.Fatalf("read src: %v", err)
+			}
+			irGot := strings.TrimSpace(p.Disassemble(string(srcData)))
+			irData, err := os.ReadFile(irWant)
+			if err != nil {
+				t.Fatalf("read ir golden: %v", err)
+			}
+			irWantStr := strings.TrimSpace(string(irData))
+			if irGot != irWantStr {
+				t.Errorf("%s IR\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, irGot, irWantStr)
+			}
 		})
+	}
+	if !found {
+		t.Fatal("no tpch test files")
 	}
 }
