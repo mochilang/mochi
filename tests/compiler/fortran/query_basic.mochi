@@ -1,0 +1,5 @@
+let xs = [1, 10, 20, 5]
+let ys = from x in xs where x > 9 select x + 1
+for v in ys {
+  print(v)
+}

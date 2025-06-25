@@ -1327,6 +1327,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call, "")
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Group != nil:
@@ -1465,6 +1467,133 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	c.listVars = oldLists
 	c.floatVars = oldFloats
 	return name, nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	var elemType types.Type = types.IntType{}
+	if name, ok := identName(q.Source); ok {
+		n := sanitizeName(name)
+		if c.listVars[n] {
+			if c.stringVars[n] {
+				elemType = types.StringType{}
+			} else if c.floatVars[n] {
+				elemType = types.FloatType{}
+			}
+		}
+	}
+	selIsStr := types.IsStringExprVars(q.Select, sanitizeName, c.stringVars, c.funReturnStr)
+	selIsFloat := types.IsFloatExprVars(q.Select, sanitizeName, c.floatVars, c.funReturnFloat)
+	var resType types.Type = types.IntType{}
+	if selIsStr {
+		resType = types.StringType{}
+	} else if selIsFloat {
+		resType = types.FloatType{}
+	}
+	selVar := sanitizeName(q.Var)
+	if _, ok := elemType.(types.StringType); ok {
+		c.stringVars[selVar] = true
+	} else if _, ok := elemType.(types.FloatType); ok {
+		c.floatVars[selVar] = true
+	}
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	name := fmt.Sprintf("lambda_%d", len(c.lambdas))
+	oldBuf := c.buf
+	oldIndent := c.indent
+	oldStrings := c.stringVars
+	oldLists := c.listVars
+	oldFloats := c.floatVars
+	c.buf = bytes.Buffer{}
+	c.indent = 1
+	c.writeln(fmt.Sprintf("function %s(vsrc) result(res)", name))
+	c.indent++
+	c.writeln("implicit none")
+	varDecl := func(t types.Type, name string, intent bool) {
+		in := ""
+		if intent {
+			in = ", intent(in)"
+		}
+		switch t.(type) {
+		case types.FloatType:
+			if intent {
+				c.writeln(fmt.Sprintf("real%s :: %s(:)", in, name))
+			} else {
+				c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
+			}
+		case types.StringType:
+			if intent {
+				c.writeln(fmt.Sprintf("character(len=* )%s :: %s(:)", in, name))
+			} else {
+				c.writeln(fmt.Sprintf("character(len=:), allocatable :: %s(:)", name))
+			}
+		default:
+			if intent {
+				c.writeln(fmt.Sprintf("integer(kind=8)%s :: %s(:)", in, name))
+			} else {
+				c.writeln(fmt.Sprintf("integer(kind=8), allocatable :: %s(:)", name))
+			}
+		}
+	}
+	varDecl(elemType, "vsrc", true)
+	varDecl(resType, "res", false)
+	varDecl(resType, "tmp", false)
+	// declare loop var
+	switch elemType.(type) {
+	case types.FloatType:
+		c.writeln("real :: " + sanitizeName(q.Var))
+	case types.StringType:
+		c.writeln("character(len=len(vsrc)) :: " + sanitizeName(q.Var))
+	default:
+		c.writeln("integer(kind=8) :: " + sanitizeName(q.Var))
+	}
+	c.writeln("integer(kind=8) :: n")
+	c.writeln("integer(kind=8) :: i")
+	c.writeln("allocate(tmp(size(vsrc)))")
+	c.writeln("n = 0")
+	c.writeln("do i = 1, size(vsrc)")
+	c.indent++
+	c.writeln(fmt.Sprintf("%s = vsrc(i)", sanitizeName(q.Var)))
+	if cond != "" {
+		c.writeln(fmt.Sprintf("if (%s) then", cond))
+		c.indent++
+	}
+	c.writeln("n = n + 1")
+	c.writeln(fmt.Sprintf("tmp(n) = %s", sel))
+	if cond != "" {
+		c.indent--
+		c.writeln("end if")
+	}
+	c.indent--
+	c.writeln("end do")
+	c.writeln("allocate(res(n))")
+	c.writeln("res = tmp(:n)")
+	c.indent--
+	c.writeln("end function " + name)
+	code := c.buf.String()
+	c.lambdas = append(c.lambdas, code)
+	c.buf = oldBuf
+	c.indent = oldIndent
+	c.stringVars = oldStrings
+	c.listVars = oldLists
+	c.floatVars = oldFloats
+	return fmt.Sprintf("%s(%s)", name, src), nil
 }
 
 func (c *Compiler) lengthFunc(name string) string {
