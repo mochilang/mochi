@@ -43,6 +43,7 @@ The backend currently supports:
 - list set operations `union`, `union all`, `except` and `intersect`
 - simple cross joins using multiple `from` clauses
 - simple `group by` without joins or filters
+- single `left join` clauses
 - struct and union type declarations generate Erlang records
 - struct literals now instantiate these records with `#name{field=val}` syntax
 - AI `generate_text`, `generate_embed` and `generate_struct` helpers (placeholders)
@@ -83,7 +84,7 @@ func EnsureErlang() error { return ensureErlang() }
 ## Unsupported Features
 
 - The Erlang backend still implements only part of Mochi. Missing features include:
-- left/right/outer joins inside queries
+- right/outer joins inside queries
 - logic programming constructs and streams
 - agents and event streams
 - intent declarations
