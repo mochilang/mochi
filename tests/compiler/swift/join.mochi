@@ -1,0 +1,15 @@
+// join.mochi
+
+type A { id: int }
+type B { id: int }
+
+let left = [A { id: 1 }, A { id: 2 }]
+let right = [B { id: 1 }, B { id: 3 }]
+
+let result = from a in left
+             join b in right on a.id == b.id
+             select a.id
+
+for r in result {
+  print(r)
+}

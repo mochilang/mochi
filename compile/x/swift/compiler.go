@@ -1007,9 +1007,6 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 {
-		return "", fmt.Errorf("join clauses not supported")
-	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -1091,6 +1088,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child.SetVar(f.Var, fe, true)
 		fromSrcs[i] = fs
 	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		jt := c.inferExprType(j.Src)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+		joinSrcs[i] = js
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		joinOns[i] = on
+	}
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -1149,6 +1166,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, f.Var, fromSrcs[i]))
 		indent += "\t"
 	}
+	for i := range q.Joins {
+		b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, q.Joins[i].Var, joinSrcs[i]))
+		indent += "\t"
+		b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, joinOns[i]))
+	}
 	if cond != "" {
 		b.WriteString(fmt.Sprintf("%sif %s {\n", indent, cond))
 		indent += "\t"
@@ -1159,6 +1181,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("%s_res.append(%s)\n", indent, sel))
 	}
 	if cond != "" {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "}\n")
+	}
+	for range q.Joins {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
 	}
