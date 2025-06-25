@@ -397,7 +397,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 		if isStringLiteral(stmt.Source) {
 			c.writeln(fmt.Sprintf("for %s in %s.chars", name, src))
-		} else if isMap(c.inferExprType(stmt.Source)) {
+		} else if types.IsMapType(c.inferExprType(stmt.Source)) {
 			c.writeln(fmt.Sprintf("for %s in %s.keys", name, src))
 		} else {
 			c.writeln(fmt.Sprintf("for %s in %s", name, src))
@@ -960,7 +960,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			var expr string
 			switch op {
 			case "in":
-				if isMap(rt) {
+				if types.IsMapType(rt) {
 					expr = fmt.Sprintf("(%s.key?(%s))", r, l)
 				} else {
 					expr = fmt.Sprintf("(%s.include?(%s))", r, l)
