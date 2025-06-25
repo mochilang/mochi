@@ -81,10 +81,9 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		suffix := "." + lang
 		cfg := Range{Start: 10, Step: "+10", Count: 3}
 
-		templates := []Template{
-			{Lang: "mochi_interp", Path: path, Suffix: suffix, Command: []string{mochiBin, "run", "--aot"}},
-			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
-			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+               templates := []Template{
+                       {Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+                       {Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
 			// Temporarily disable PyPy and Cython benchmarks
@@ -325,11 +324,9 @@ func report(results []Result) {
 
 			// Friendly label
 			langName := r.Lang
-			switch langName {
-			case "mochi_interp":
-				langName = "Mochi (Interpreter)"
-			case "mochi_vm":
-				langName = "Mochi (VM)"
+                       switch langName {
+                       case "mochi_vm":
+                               langName = "Mochi (VM)"
 			case "mochi_go":
 				langName = "Mochi (Go)"
 			case "mochi_c":
@@ -570,12 +567,10 @@ func exportMarkdown(results []Result) error {
 				plus = fmt.Sprintf("+%.1f%%", (float64(delta)/float64(best))*100)
 			}
 
-			langName := r.Lang
-			switch langName {
-			case "mochi_interp":
-				langName = "Mochi (Interpreter)"
-			case "mochi_vm":
-				langName = "Mochi (VM)"
+                       langName := r.Lang
+                       switch langName {
+                       case "mochi_vm":
+                               langName = "Mochi (VM)"
 			case "mochi_go":
 				langName = "Mochi (Go)"
 			case "mochi_c":

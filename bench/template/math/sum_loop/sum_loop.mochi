@@ -1,4 +1,4 @@
-fun sum(n: int): int {
+fun sum_loop(n: int): int {
   var total = 0
   for i in 1..n {
     total = total + i
@@ -12,7 +12,7 @@ var last = 0
 
 let start = now()
 for i in 0..repeat {
-  last = sum(n)
+  last = sum_loop(n)
 }
 let duration = (now() - start) / 1000
 
