@@ -29,6 +29,7 @@ type Compiler struct {
 	needIndexStr    bool
 	needSliceStr    bool
 	needContainsStr bool
+	needDataset     bool
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -60,6 +61,7 @@ func (c *Compiler) reset() {
 	c.needIndexStr = false
 	c.needSliceStr = false
 	c.needContainsStr = false
+	c.needDataset = false
 }
 
 // Compile generates Smalltalk code for prog.
@@ -750,6 +752,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMapLiteral(p.Map)
 	case p.Struct != nil:
 		return c.compileStructLiteral(p.Struct)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.If != nil:
@@ -1004,6 +1012,115 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 	return "Dictionary from: {" + strings.Join(pairs, ". ") + "}", nil
 }
 
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil {
+		return "", fmt.Errorf("advanced query clauses not supported")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.env = orig
+
+	var b strings.Builder
+	b.WriteString("((| res |\n")
+	b.WriteString("res := OrderedCollection new.\n")
+	b.WriteString(fmt.Sprintf("(%s) do: [:%s |\n", src, sanitizeName(q.Var)))
+	indent := "\t"
+	for i, fs := range fromSrcs {
+		b.WriteString(indent + fmt.Sprintf("(%s) do: [:%s |\n", fs, sanitizeName(q.Froms[i].Var)))
+		indent += "\t"
+	}
+	if cond != "" {
+		b.WriteString(indent + fmt.Sprintf("(%s) ifTrue: [\n", cond))
+		indent += "\t"
+	}
+	if sortExpr != "" {
+		b.WriteString(indent + fmt.Sprintf("res add: { %s . %s }.\n", sortExpr, sel))
+	} else {
+		b.WriteString(indent + fmt.Sprintf("res add: %s.\n", sel))
+	}
+	if cond != "" {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "]\n")
+	}
+	for range fromSrcs {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "]\n")
+	}
+	b.WriteString("]\n")
+	b.WriteString("res := res asArray.\n")
+	if sortExpr != "" {
+		b.WriteString("res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.\n")
+		b.WriteString("res := res collect: [:p | p second].\n")
+	}
+	if skipExpr != "" {
+		b.WriteString(fmt.Sprintf("res := res copyFrom: (%s + 1) to: res size.\n", skipExpr))
+	}
+	if takeExpr != "" {
+		b.WriteString(fmt.Sprintf("res := res copyFrom: 1 to: (%s min: res size).\n", takeExpr))
+	}
+	b.WriteString("res))")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	c.needDataset = true
+	return "(Main _load: nil opts: nil)", nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	c.needDataset = true
+	return "(Main _save: nil path: nil opts: nil)", nil
+}
+
 func hasBreak(stmts []*parser.Statement) bool {
 	for _, s := range stmts {
 		switch {
@@ -1194,6 +1311,19 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("__contains_string: s sub: t")
 		c.indent++
 		c.writeln("^ (s findString: t startingAt: 1) ~= 0")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needDataset {
+		c.writeln("_load: path opts: o")
+		c.indent++
+		c.writeln("^ #()")
+		c.indent--
+		c.writelnNoIndent("!")
+
+		c.writeln("_save: rows path: p opts: o")
+		c.indent++
+		c.writeln("^ self")
 		c.indent--
 		c.writelnNoIndent("!")
 	}
