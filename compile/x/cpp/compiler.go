@@ -51,7 +51,7 @@ func (c *Compiler) getVar(name string) (string, bool) {
 		}
 	}
 	if typ, err := c.env.GetVar(name); err == nil {
-		return c.cppTypeRef(typ), true
+		return CppTypeRef(typ), true
 	}
 	return "", false
 }
@@ -194,7 +194,7 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
 	if st, ok := c.env.GetStruct(structName); ok {
 		c.methodFields = make(map[string]bool, len(st.Fields))
 		for name, t := range st.Fields {
-			c.setVar(name, c.cppTypeRef(t))
+			c.setVar(name, CppTypeRef(t))
 			c.methodFields[name] = true
 		}
 	}
@@ -232,7 +232,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	c.indent++
 	for _, fn := range st.Order {
 		ft := st.Fields[fn]
-		c.writeln(fmt.Sprintf("%s %s;", c.cppTypeRef(ft), fn))
+		c.writeln(fmt.Sprintf("%s %s;", CppTypeRef(ft), fn))
 	}
 	c.indent--
 	c.writeln("};")
@@ -310,7 +310,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				elem = c.cppType(s.Let.Type.Generic.Args[0])
 			} else if typ, err := c.env.GetVar(s.Let.Name); err == nil {
 				if lt, ok := typ.(types.ListType); ok {
-					elem = c.cppTypeRef(lt.Elem)
+					elem = CppTypeRef(lt.Elem)
 				}
 			}
 			if elem != "" {
@@ -323,8 +323,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				valT = c.cppType(s.Let.Type.Generic.Args[1])
 			} else if typ, err := c.env.GetVar(s.Let.Name); err == nil {
 				if mt, ok := typ.(types.MapType); ok {
-					keyT = c.cppTypeRef(mt.Key)
-					valT = c.cppTypeRef(mt.Value)
+					keyT = CppTypeRef(mt.Key)
+					valT = CppTypeRef(mt.Value)
 				}
 			}
 			if keyT != "" && valT != "" {
@@ -349,7 +349,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				elem = c.cppType(s.Var.Type.Generic.Args[0])
 			} else if typ, err := c.env.GetVar(s.Var.Name); err == nil {
 				if lt, ok := typ.(types.ListType); ok {
-					elem = c.cppTypeRef(lt.Elem)
+					elem = CppTypeRef(lt.Elem)
 				}
 			}
 			if elem != "" {
@@ -362,8 +362,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				valT = c.cppType(s.Var.Type.Generic.Args[1])
 			} else if typ, err := c.env.GetVar(s.Var.Name); err == nil {
 				if mt, ok := typ.(types.MapType); ok {
-					keyT = c.cppTypeRef(mt.Key)
-					valT = c.cppTypeRef(mt.Value)
+					keyT = CppTypeRef(mt.Key)
+					valT = CppTypeRef(mt.Value)
 				}
 			}
 			if keyT != "" && valT != "" {
@@ -430,7 +430,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		return nil
 	}
 	src := c.compileExpr(f.Source)
-	srcType := c.guessExprType(f.Source)
+	srcType := InferCppExprType(f.Source, c.env, c.getVar)
 	if strings.HasPrefix(srcType, "unordered_map<") {
 		inside := strings.TrimSuffix(strings.TrimPrefix(srcType, "unordered_map<"), ">")
 		parts := strings.SplitN(inside, ",", 2)
@@ -448,7 +448,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	} else {
 		elemType := "auto"
 		if isListLiteral(f.Source) {
-			if t := c.guessExprType(f.Source); strings.HasPrefix(t, "vector<") {
+			if t := InferCppExprType(f.Source, c.env, c.getVar); strings.HasPrefix(t, "vector<") {
 				elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
 				if !isPrimitive(elemType) {
 					elemType = "const " + elemType + "&"
@@ -529,10 +529,13 @@ func (c *Compiler) compileExpr(e *parser.Expr) string {
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 	expr := c.compileUnary(b.Left)
-	typ := c.guessUnaryType(b.Left)
+	unaryExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}
+	typ := InferCppExprType(unaryExpr, c.env, c.getVar)
 	for _, op := range b.Right {
 		rhs := c.compilePostfix(op.Right)
-		rtyp := c.guessPostfixType(op.Right)
+		unary := &parser.Unary{Value: op.Right}
+		exprTmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
+		rtyp := InferCppExprType(exprTmp, c.env, c.getVar)
 		opStr := op.Op
 		if op.Op == "union" && op.All {
 			opStr = "union_all"
@@ -613,7 +616,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
-		typ = guessBinaryResultType(typ, op.Op, rtyp)
+		typ = CppBinaryResultType(typ, op.Op, rtyp)
 	}
 	return expr
 }
@@ -633,7 +636,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 			// Handle simple index or slice
 			if op.Index.Colon == nil {
 				idx := c.compileExpr(op.Index.Start)
-				typ := c.guessPrimaryType(p.Target)
+				tmpExpr := &parser.PostfixExpr{Target: p.Target}
+				unary := &parser.Unary{Value: tmpExpr}
+				exprType := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
+				typ := InferCppExprType(exprType, c.env, c.getVar)
 				if typ == "string" {
 					c.helpers["indexString"] = true
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
@@ -652,7 +658,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				if op.Index.End != nil {
 					end = c.compileExpr(op.Index.End)
 				}
-				typ := c.guessPrimaryType(p.Target)
+				tmpExpr2 := &parser.PostfixExpr{Target: p.Target}
+				unary2 := &parser.Unary{Value: tmpExpr2}
+				exprType2 := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary2}}
+				typ := InferCppExprType(exprType2, c.env, c.getVar)
 				if strings.HasPrefix(typ, "vector<") {
 					c.helpers["sliceVec"] = true
 					expr = fmt.Sprintf("_slice(%s, %s, %s)", expr, start, end)
@@ -741,7 +750,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		}
 		elemType := "int"
 		if len(p.List.Elems) > 0 {
-			if t := c.guessExprType(p.List.Elems[0]); t != "" {
+			if t := InferCppExprType(p.List.Elems[0], c.env, c.getVar); t != "" {
 				elemType = t
 			}
 		}
@@ -816,7 +825,7 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 	args := make([]string, len(call.Args))
 	for i, a := range call.Args {
 		expr := c.compileExpr(a)
-		typ := c.guessExprType(a)
+		typ := InferCppExprType(a, c.env, c.getVar)
 		if strings.HasPrefix(typ, "vector<") {
 			c.helpers["fmtVec"] = true
 			expr = "_fmtVec(" + expr + ")"
@@ -842,10 +851,10 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 	keyType := "string"
 	valType := "int"
 	if len(m.Items) > 0 {
-		if t := c.guessExprType(m.Items[0].Key); t != "" {
+		if t := InferCppExprType(m.Items[0].Key, c.env, c.getVar); t != "" {
 			keyType = t
 		}
-		if t := c.guessExprType(m.Items[0].Value); t != "" {
+		if t := InferCppExprType(m.Items[0].Value, c.env, c.getVar); t != "" {
 			valType = t
 		}
 	}
@@ -937,7 +946,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		src := c.compileExpr(q.Source)
 		key := c.compileExpr(q.Group.Expr)
 		sel := c.compileExpr(q.Select)
-		resType := c.guessExprType(q.Select)
+		resType := InferCppExprType(q.Select, c.env, c.getVar)
 		if resType == "" {
 			resType = "auto"
 		}
@@ -972,7 +981,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		joinConds[i] = c.compileExpr(j.On)
 	}
 	sel := c.compileExpr(q.Select)
-	resType := c.guessExprType(q.Select)
+	resType := InferCppExprType(q.Select, c.env, c.getVar)
 	if resType == "" {
 		resType = "auto"
 	}

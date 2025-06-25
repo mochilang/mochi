@@ -7,19 +7,42 @@ import (
 	"mochi/types"
 )
 
-// guessExprType returns the result type of an expression.
-func (c *Compiler) guessExprType(e *parser.Expr) string {
+// CppVarLookup resolves variable names to their C++ type string.
+type CppVarLookup func(name string) (string, bool)
+
+// CppTypeRef converts a static Type to a C++ type representation.
+func CppTypeRef(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type:
+		return "int"
+	case types.FloatType:
+		return "double"
+	case types.BoolType:
+		return "bool"
+	case types.StringType:
+		return "string"
+	case types.ListType:
+		return "vector<" + CppTypeRef(tt.Elem) + ">"
+	case types.MapType:
+		return "unordered_map<" + CppTypeRef(tt.Key) + ", " + CppTypeRef(tt.Value) + ">"
+	case types.StructType:
+		return tt.Name
+	}
+	return "auto"
+}
+
+// InferCppExprType returns the inferred C++ type string for e.
+func InferCppExprType(e *parser.Expr, env *types.Env, lookup CppVarLookup) string {
 	if e == nil || e.Binary == nil {
 		return ""
 	}
-	return c.guessBinaryExprType(e.Binary)
+	return inferCppBinaryExprType(env, lookup, e.Binary)
 }
 
-// guessBinaryExprType infers the type of a binary expression chain.
-func (c *Compiler) guessBinaryExprType(b *parser.BinaryExpr) string {
-	typ := c.guessUnaryType(b.Left)
+func inferCppBinaryExprType(env *types.Env, lookup CppVarLookup, b *parser.BinaryExpr) string {
+	typ := inferCppUnaryType(env, lookup, b.Left)
 	for _, op := range b.Right {
-		rtyp := c.guessPostfixType(op.Right)
+		rtyp := inferCppPostfixType(env, lookup, op.Right)
 		switch op.Op {
 		case "+":
 			if strings.HasPrefix(typ, "vector<") || strings.HasPrefix(rtyp, "vector<") {
@@ -31,23 +54,21 @@ func (c *Compiler) guessBinaryExprType(b *parser.BinaryExpr) string {
 			} else if typ == "string" || rtyp == "string" {
 				typ = "string"
 			} else {
-				typ = guessBinaryResultType(typ, op.Op, rtyp)
+				typ = CppBinaryResultType(typ, op.Op, rtyp)
 			}
 		default:
-			typ = guessBinaryResultType(typ, op.Op, rtyp)
+			typ = CppBinaryResultType(typ, op.Op, rtyp)
 		}
 	}
 	return typ
 }
 
-// guessUnaryType infers the type of a unary expression.
-func (c *Compiler) guessUnaryType(u *parser.Unary) string {
-	return c.guessPostfixType(u.Value)
+func inferCppUnaryType(env *types.Env, lookup CppVarLookup, u *parser.Unary) string {
+	return inferCppPostfixType(env, lookup, u.Value)
 }
 
-// guessPostfixType infers the type of a postfix expression.
-func (c *Compiler) guessPostfixType(p *parser.PostfixExpr) string {
-	typ := c.guessPrimaryType(p.Target)
+func inferCppPostfixType(env *types.Env, lookup CppVarLookup, p *parser.PostfixExpr) string {
+	typ := inferCppPrimaryType(env, lookup, p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil && op.Index.Colon == nil {
 			if strings.HasPrefix(typ, "vector<") {
@@ -63,11 +84,13 @@ func (c *Compiler) guessPostfixType(p *parser.PostfixExpr) string {
 				}
 			}
 		} else if op.Field != nil {
-			if st, ok := c.env.GetStruct(typ); ok {
-				if ft, ok := st.Fields[op.Field.Name]; ok {
-					typ = c.cppTypeRef(ft)
-				} else {
-					typ = "auto"
+			if env != nil {
+				if st, ok := env.GetStruct(typ); ok {
+					if ft, ok := st.Fields[op.Field.Name]; ok {
+						typ = CppTypeRef(ft)
+					} else {
+						typ = "auto"
+					}
 				}
 			}
 		}
@@ -75,8 +98,7 @@ func (c *Compiler) guessPostfixType(p *parser.PostfixExpr) string {
 	return typ
 }
 
-// guessPrimaryType infers the type of a primary expression.
-func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
+func inferCppPrimaryType(env *types.Env, lookup CppVarLookup, p *parser.Primary) string {
 	switch {
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
@@ -95,7 +117,7 @@ func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
 		return p.Struct.Name
 	case p.List != nil:
 		if len(p.List.Elems) > 0 {
-			if t := c.guessExprType(p.List.Elems[0]); t != "" {
+			if t := InferCppExprType(p.List.Elems[0], env, lookup); t != "" {
 				return "vector<" + t + ">"
 			}
 		}
@@ -104,48 +126,48 @@ func (c *Compiler) guessPrimaryType(p *parser.Primary) string {
 		keyType := "string"
 		valType := "int"
 		if len(p.Map.Items) > 0 {
-			if t := c.guessExprType(p.Map.Items[0].Key); t != "" {
+			if t := InferCppExprType(p.Map.Items[0].Key, env, lookup); t != "" {
 				keyType = t
 			}
-			if t := c.guessExprType(p.Map.Items[0].Value); t != "" {
+			if t := InferCppExprType(p.Map.Items[0].Value, env, lookup); t != "" {
 				valType = t
 			}
 		}
 		return "unordered_map<" + keyType + ", " + valType + ">"
 	case p.Selector != nil:
-		if t, ok := c.getVar(p.Selector.Root); ok {
-			return t
-		}
-		if typ, err := c.env.GetVar(p.Selector.Root); err == nil {
-			if st, ok := typ.(types.StructType); ok {
-				ft := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]
-				return c.cppTypeRef(ft)
+		if lookup != nil {
+			if t, ok := lookup(p.Selector.Root); ok {
+				return t
 			}
-			return c.cppTypeRef(typ)
+		}
+		if env != nil {
+			if typ, err := env.GetVar(p.Selector.Root); err == nil {
+				if st, ok := typ.(types.StructType); ok {
+					ft := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]
+					return CppTypeRef(ft)
+				}
+				return CppTypeRef(typ)
+			}
 		}
 	}
 	return ""
 }
 
-// cppTypeRef converts a static type to a C++ type reference.
-func (c *Compiler) cppTypeRef(t types.Type) string {
-	switch tt := t.(type) {
-	case types.IntType, types.Int64Type:
-		return "int"
-	case types.FloatType:
-		return "double"
-	case types.BoolType:
+// CppBinaryResultType returns the resulting C++ type of applying op between ltyp and rtyp.
+func CppBinaryResultType(ltyp, op, rtyp string) string {
+	switch op {
+	case "+", "-", "*", "/", "%":
+		if ltyp == "double" || rtyp == "double" {
+			return "double"
+		}
+		if ltyp == "int" && rtyp == "int" {
+			return "int"
+		}
+		return ltyp
+	case "==", "!=", "<", ">", "<=", ">=", "&&", "||", "in":
 		return "bool"
-	case types.StringType:
-		return "string"
-	case types.ListType:
-		return "vector<" + c.cppTypeRef(tt.Elem) + ">"
-	case types.MapType:
-		return "unordered_map<" + c.cppTypeRef(tt.Key) + ", " + c.cppTypeRef(tt.Value) + ">"
-	case types.StructType:
-		return tt.Name
 	}
-	return "auto"
+	return ltyp
 }
 
 func isPrimitive(t string) bool {
@@ -262,21 +284,4 @@ func selectorName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return post.Target.Selector.Root, true
-}
-
-// guessBinaryResultType returns the resulting type of applying op between l and r.
-func guessBinaryResultType(ltyp, op, rtyp string) string {
-	switch op {
-	case "+", "-", "*", "/", "%":
-		if ltyp == "double" || rtyp == "double" {
-			return "double"
-		}
-		if ltyp == "int" && rtyp == "int" {
-			return "int"
-		}
-		return ltyp
-	case "==", "!=", "<", ">", "<=", ">=", "&&", "||", "in":
-		return "bool"
-	}
-	return ltyp
 }
