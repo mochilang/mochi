@@ -175,7 +175,7 @@ constructs:
 - Generating fixed integer sequences with `range` when all arguments are integer literals
 - Simple `match` expressions with literal patterns
 - `expect` and `test` blocks
-- Basic dataset queries using `from`, an optional `where` clause and `select`
+- Dataset queries using `from` clauses, optional `where`, `skip`, `take` and `select`
 
 ## Unsupported features
 
@@ -196,7 +196,7 @@ The COBOL backend implements only a tiny portion of Mochi. Features that remain
 unsupported include:
 
 - Map literals and indexing operations
-- Dataset queries with sorting, joins or pagination
+- Dataset queries with sorting or join clauses
 - Agents, stream handling, and concurrency primitives
 - Logic programming with facts and rules
 - HTTP helpers such as `fetch`, `load` and `save`
