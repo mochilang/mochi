@@ -893,11 +893,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	var cond, sortExpr, skipExpr, takeExpr string
+	aliasFilters := map[string][]string{}
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
-		if err != nil {
-			c.env = orig
-			return "", err
+		parts := splitAnd(q.Where)
+		other := []string{}
+		for _, pexpr := range parts {
+			aliases := exprAliases(pexpr)
+			exprStr, err := c.compileExpr(pexpr)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			if len(aliases) == 1 {
+				for a := range aliases {
+					aliasFilters[sanitizeName(a)] = append(aliasFilters[sanitizeName(a)], exprStr)
+				}
+			} else {
+				other = append(other, exprStr)
+			}
+		}
+		if len(other) > 0 {
+			cond = strings.Join(other, " && ")
 		}
 	}
 	if q.Sort != nil {
@@ -978,13 +994,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			joinOns[i] = onExpr
 		}
 		c.env = child
-		if q.Where != nil {
-			cond, err = c.compileExpr(q.Where)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-		}
 		sel, err = c.compileExpr(q.Select)
 		if err != nil {
 			c.env = orig
@@ -997,9 +1006,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("\tvar _res = new List<%s>();\n", resultType))
 		buf.WriteString(fmt.Sprintf("\tforeach (var %s in %s) {\n", v, src))
 		indent := "\t\t"
+		if flt, ok := aliasFilters[v]; ok {
+			for _, fcond := range flt {
+				buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", fcond))
+			}
+		}
 		for i, f := range q.Froms {
 			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
 			indent += "\t"
+			if flt, ok := aliasFilters[sanitizeName(f.Var)]; ok {
+				for _, fcond := range flt {
+					buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", fcond))
+				}
+			}
 		}
 		specialLeft := len(q.Joins) == 1 && joinSides[0] == "left"
 		specialRight := len(q.Joins) == 1 && joinSides[0] == "right" && len(q.Froms) == 0
@@ -1137,6 +1156,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(j.Var), joinSrcs[i]))
 				indent += "\t"
 				buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[i]))
+				if flt, ok := aliasFilters[sanitizeName(j.Var)]; ok {
+					for _, fcond := range flt {
+						buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", fcond))
+					}
+				}
 			}
 			if cond != "" {
 				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))

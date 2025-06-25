@@ -84,3 +84,89 @@ func contains(sl []string, s string) bool {
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	return types.ResolveTypeRef(t, c.env)
 }
+
+// exprAliases returns the set of root identifiers referenced in e.
+func exprAliases(e *parser.Expr) map[string]struct{} {
+	set := map[string]struct{}{}
+	collectAliases(e, set)
+	return set
+}
+
+func collectAliases(e *parser.Expr, out map[string]struct{}) {
+	if e == nil {
+		return
+	}
+	if e.Binary == nil {
+		return
+	}
+	collectUnaryAliases(e.Binary.Left, out)
+	for _, op := range e.Binary.Right {
+		collectPostfixAliases(op.Right, out)
+	}
+}
+
+func collectUnaryAliases(u *parser.Unary, out map[string]struct{}) {
+	if u == nil {
+		return
+	}
+	collectPostfixAliases(u.Value, out)
+}
+
+func collectPostfixAliases(p *parser.PostfixExpr, out map[string]struct{}) {
+	if p == nil {
+		return
+	}
+	collectPrimaryAliases(p.Target, out)
+	for _, op := range p.Ops {
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				collectAliases(a, out)
+			}
+		}
+		if op.Index != nil {
+			if op.Index.Start != nil {
+				collectAliases(op.Index.Start, out)
+			}
+			if op.Index.End != nil {
+				collectAliases(op.Index.End, out)
+			}
+			if op.Index.Step != nil {
+				collectAliases(op.Index.Step, out)
+			}
+		}
+	}
+}
+
+func collectPrimaryAliases(p *parser.Primary, out map[string]struct{}) {
+	if p == nil {
+		return
+	}
+	if p.Selector != nil {
+		out[p.Selector.Root] = struct{}{}
+	}
+	if p.Group != nil {
+		collectAliases(p.Group, out)
+	}
+}
+
+// splitAnd returns a slice of expressions separated by logical AND operators.
+func splitAnd(e *parser.Expr) []*parser.Expr {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	parts := []*parser.Expr{}
+	left := e.Binary.Left
+	ops := []*parser.BinaryOp{}
+	for _, op := range e.Binary.Right {
+		if op.Op == "&&" {
+			exp := &parser.Expr{Binary: &parser.BinaryExpr{Left: left, Right: ops}}
+			parts = append(parts, exp)
+			left = &parser.Unary{Value: op.Right}
+			ops = nil
+			continue
+		}
+		ops = append(ops, op)
+	}
+	parts = append(parts, &parser.Expr{Binary: &parser.BinaryExpr{Left: left, Right: ops}})
+	return parts
+}
