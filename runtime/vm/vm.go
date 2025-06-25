@@ -2138,6 +2138,17 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 		}
 	}
 
+	// string.contains(sub)
+	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil &&
+		len(p.Target.Selector.Tail) > 0 && p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" {
+		recvSel := &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Target.Selector.Root, Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1]}}
+		recv := fc.compilePrimary(recvSel)
+		arg := fc.compileExpr(p.Ops[0].Call.Args[0])
+		dst := fc.newReg()
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpIn, A: dst, B: arg, C: recv})
+		return dst
+	}
+
 	r := fc.compilePrimary(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {
