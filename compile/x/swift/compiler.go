@@ -698,11 +698,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Selector != nil:
-		name := p.Selector.Root
-		if len(p.Selector.Tail) > 0 {
-			name += "." + strings.Join(p.Selector.Tail, ".")
+		expr := p.Selector.Root
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
 		}
-		return name, nil
+		isMap := false
+		if _, ok := typ.(types.MapType); ok {
+			isMap = true
+		}
+		for _, f := range p.Selector.Tail {
+			if isMap {
+				expr = fmt.Sprintf("%s[%q]!", expr, f)
+			} else {
+				expr += "." + f
+			}
+		}
+		return expr, nil
 	case p.Lit != nil:
 		if p.Lit.Int != nil {
 			return strconv.Itoa(*p.Lit.Int), nil
@@ -735,6 +749,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			k, err := c.compileExpr(item.Key)
 			if err != nil {
 				return "", err
+			}
+			// Treat bare identifiers without a bound variable as string keys.
+			if id, ok := identName(item.Key); ok {
+				_, defined := c.locals[id]
+				if !defined && c.env != nil {
+					if _, err := c.env.GetVar(id); err == nil {
+						defined = true
+					}
+				}
+				if !defined {
+					k = strconv.Quote(id)
+				} else if !c.isStringExpr(item.Key) {
+					k = fmt.Sprintf("String(describing: %s)", k)
+				}
+			} else if !c.isStringExpr(item.Key) {
+				k = fmt.Sprintf("String(describing: %s)", k)
 			}
 			v, err := c.compileExpr(item.Value)
 			if err != nil {
@@ -1143,7 +1173,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\t\tif let af = a.key as? Double, let bf = b.key as? Double { return af < bf }\n")
 		b.WriteString("\t\tif let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }\n")
 		b.WriteString("\t\tif let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }\n")
-		b.WriteString("\t\tif let as = a.key as? String, let bs = b.key as? String { return as < bs }\n")
+		b.WriteString("\t\tif let sa = a.key as? String, let sb = b.key as? String { return sa < sb }\n")
 		b.WriteString("\t\treturn String(describing: a.key) < String(describing: b.key)\n")
 		b.WriteString("\t}\n")
 		b.WriteString("\tvar _items = _pairs.map { $0.item }\n")
