@@ -11,13 +11,14 @@ The Rust backend compiles Mochi programs to plain Rust source code. It is a mini
 - List concatenation and set operations (`union_all`, `union`, `except`, `intersect`)
 - Builtins like `print`, `len`, `count`, `avg`, `input` and `str`
 - Struct type declarations, literals and basic method definitions
+- Dataset queries with grouping, sorting, pagination and inner/left joins
 
 
 ## Unsupported features
 
 The current implementation lacks support for:
 
-- Advanced dataset queries such as grouping and left/right joins. Outer joins are also not implemented.
+- Outer and right joins in dataset queries.
  - Agent and stream declarations (`agent`, `on`, `emit`).
  - Intent handlers within agents (`intent` blocks).
 - Logic programming constructs (`fact`, `rule`, `query`).

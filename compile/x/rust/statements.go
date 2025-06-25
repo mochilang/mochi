@@ -236,7 +236,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.writeln("}")
 		return nil
 	}
-	c.writeln("#[derive(Clone, Debug)]")
+	c.writeln("#[derive(Clone, Debug, Default)]")
 	c.writeln(fmt.Sprintf("struct %s {", name))
 	c.indent++
 	for _, m := range t.Members {
