@@ -58,9 +58,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	hasTests := false
 	// Emit test block declarations.
 	for _, s := range prog.Statements {
 		if s.Test != nil {
+			hasTests = true
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
@@ -78,12 +80,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// Invoke test blocks.
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(name + "()")
+	if hasTests {
+		c.use("run_tests")
+		c.writeln("local __tests = {")
+		c.indent++
+		for _, s := range prog.Statements {
+			if s.Test != nil {
+				name := "test_" + sanitizeName(s.Test.Name)
+				c.writeln(fmt.Sprintf("{name=%q, fn=%s},", s.Test.Name, name))
+			}
 		}
+		c.indent--
+		c.writeln("}")
+		c.writeln("__run_tests(__tests)")
 	}
 
 	bodyBytes := append([]byte(nil), c.buf.Bytes()...)
