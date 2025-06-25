@@ -26,17 +26,17 @@ The backend implements a small but practical subset of Mochi:
 
 - Function definitions and variable bindings
 - Basic expressions including `if`/`else` and arithmetic operators
- - `for` loops over ranges, lists or maps and `while` loops
+- `for` loops over ranges, lists or maps and `while` loops
 - Lists and maps with literals, indexing and membership
 - Builtin helpers: `len`, `count`, `avg`, `str`, `push`, `keys`, `print`, `input`, `now`, `json`, `load` and `save`
 - User-defined struct types and literals
+- Dataset queries with `from`/`where`, sorting, skipping and taking
 
 ## Unsupported Features
 
 Several language constructs remain unimplemented:
 
 - `match` expressions and union types
-- Dataset query syntax like `from ... sort by ...`
 - Set literals and related operations
 - Generative AI, HTTP fetch and FFI bindings
 - Streams and long-lived agents
