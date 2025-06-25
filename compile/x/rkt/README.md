@@ -42,6 +42,7 @@ go test ./compile/rkt -tags slow
 - Simple `struct` type declarations
 - Iteration over map keys
 - Function definitions and calls
+- Test blocks with `expect` assertions
 - Anonymous function expressions
 
 ## Unsupported Features
