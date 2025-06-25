@@ -40,27 +40,27 @@ let nation2 = "GERMANY"
 
 let result =
   from l in lineitem
-  where l.l_shipdate >= start_date and l.l_shipdate <= end_date
-  join o in orders on o.o_orderkey == l.l_orderkey
-  join c in customer on c.c_custkey == o.o_custkey
-  join s in supplier on s.s_suppkey == l.l_suppkey
-  join n1 in nation on n1.n_nationkey == s.s_nationkey
-  join n2 in nation on n2.n_nationkey == c.c_nationkey
-  where
-    (n1.n_name == nation1 and n2.n_name == nation2) or
-    (n1.n_name == nation2 and n2.n_name == nation1)
+  join from o in orders on o.o_orderkey == l.l_orderkey
+  join from c in customer on c.c_custkey == o.o_custkey
+  join from s in supplier on s.s_suppkey == l.l_suppkey
+  join from n1 in nation on n1.n_nationkey == s.s_nationkey
+  join from n2 in nation on n2.n_nationkey == c.c_nationkey
+  where l.l_shipdate >= start_date && l.l_shipdate <= end_date && ((
+    n1.n_name == nation1 && n2.n_name == nation2
+  ) || (
+    n1.n_name == nation2 && n2.n_name == nation1
+  ))
   group by {
     supp_nation: n1.n_name,
     cust_nation: n2.n_name,
     l_year: substring(l.l_shipdate, 0, 4)
-  }
+  } into g
   select {
-    supp_nation,
-    cust_nation,
-    l_year,
-    revenue: sum(l.l_extendedprice * (1 - l.l_discount))
+    supp_nation: g.key.supp_nation,
+    cust_nation: g.key.cust_nation,
+    l_year: g.key.l_year,
+    revenue: sum(from x in g select x.l_extendedprice * (1 - x.l_discount))
   }
-  order by { supp_nation, cust_nation, l_year }
 
 print result
 
