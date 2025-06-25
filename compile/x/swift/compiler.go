@@ -1115,12 +1115,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	cond := ""
+	condVars := map[string]bool{}
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
+		exprVars(q.Where, condVars)
 	}
 	sortExpr := ""
 	if q.Sort != nil {
@@ -1162,16 +1164,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString(fmt.Sprintf("\tfor %s in %s {\n", q.Var, src))
 	indent := "\t\t"
+	seen := map[string]bool{q.Var: true}
+	pushed := false
+	if cond != "" && subsetVars(seen, condVars) {
+		b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, cond))
+		pushed = true
+	}
 	for i, f := range q.Froms {
 		b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, f.Var, fromSrcs[i]))
 		indent += "\t"
+		seen[f.Var] = true
+		if cond != "" && !pushed && subsetVars(seen, condVars) {
+			b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, cond))
+			pushed = true
+		}
 	}
 	for i := range q.Joins {
 		b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, q.Joins[i].Var, joinSrcs[i]))
 		indent += "\t"
 		b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, joinOns[i]))
+		seen[q.Joins[i].Var] = true
+		if cond != "" && !pushed && subsetVars(seen, condVars) {
+			b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, cond))
+			pushed = true
+		}
 	}
-	if cond != "" {
+	if cond != "" && !pushed {
 		b.WriteString(fmt.Sprintf("%sif %s {\n", indent, cond))
 		indent += "\t"
 	}
@@ -1180,7 +1198,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	} else {
 		b.WriteString(fmt.Sprintf("%s_res.append(%s)\n", indent, sel))
 	}
-	if cond != "" {
+	if cond != "" && !pushed {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
 	}
