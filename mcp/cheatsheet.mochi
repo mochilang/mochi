@@ -128,7 +128,7 @@ print("Email: ", p.email)
 
 // Request an embedding vector
 let vec = generate embedding {
-  text: "hello world"
+  text: "hello world",
   normalize: true
 }
 print(len(vec))
@@ -145,7 +145,7 @@ print(mood)
 // 8. Logical operators
 let a = true
 let b = false
-if a && b || !b {
+if a && b || (!b) {
   print("logic works")
 }
 
@@ -231,13 +231,16 @@ print(right)
 
 let outer = from o in orders
             outer join c in customers on o.customerId == c.id
-            select { order: o?.id, customer: c?.name }
+            select { order: o.id, customer: c.name }
 print(outer)
 
 // Group by with aggregation
 let grouped = from p in people
-              group by p.age >= 60 ? "senior" : "adult" into g
-              select { type: g.key, count: count(g) }
+              group by if p.age >= 60 { "senior" } else { "adult" } into g
+              select {
+                kind: g.key,
+                count: count(g)
+              }
 print(grouped)
 
 // Set operations
