@@ -1,0 +1,63 @@
+:- style_check(-singleton).
+slice(Str, I, J, Out) :-
+    string(Str), !,
+    Len is J - I,
+    sub_string(Str, I, Len, _, Out).
+slice(List, I, J, Out) :-
+    length(Prefix, I),
+    append(Prefix, Rest, List),
+    Len is J - I,
+    length(Out, Len),
+    append(Out, _, Rest).
+
+
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+
+
+		main :-
+	dict_create(_V0, p_person, [id-1, name-"Alice"]),
+	dict_create(_V1, p_person, [id-2, name-"Bob"]),
+	dict_create(_V2, p_person, [id-3, name-"Charlie"]),
+	People = [_V0, _V1, _V2],
+	dict_create(_V3, p_purchase, [id-1, personid-1, total-200]),
+	dict_create(_V4, p_purchase, [id-2, personid-1, total-50]),
+	dict_create(_V5, p_purchase, [id-3, personid-2, total-150]),
+	dict_create(_V6, p_purchase, [id-4, personid-3, total-100]),
+	dict_create(_V7, p_purchase, [id-5, personid-2, total-250]),
+	Purchases = [_V3, _V4, _V5, _V6, _V7],
+	to_list(People, _V14),
+	to_list(Purchases, _V17),
+	findall(_V19-_V18, (member(P, _V14), member(O, _V17), get_dict(id, P, _V15), get_dict(personid, O, _V16), _V15 =:= _V16, get_dict(total, O, _V11), _V11 > 100, get_dict(name, P, _V8), get_dict(total, O, _V9), dict_create(_V10, map, [person-_V8, spent-_V9]), get_dict(total, O, _V12), _V13 is -(_V12), _V19 = _V13, _V18 = _V10), _V20),
+	keysort(_V20, _V21),
+	findall(V, member(_-V, _V21), _V22),
+	length(_V22, _V23),
+	_V24 is 1 + 2,
+	slice(_V22, 1, _V24, _V25),
+	Result = _V25,
+	to_list(Result, _V26),
+	catch(
+		(
+			member(R, _V26),
+			catch(
+				(
+					get_dict(person, R, _V27),
+					write(_V27),
+					write(' '),
+					get_dict(spent, R, _V28),
+					write(_V28),
+					nl,
+					true
+				), continue, true),
+				fail
+				;
+				true
+			)
+			, break, true),
+			true
+		.
+:- initialization(main, main).

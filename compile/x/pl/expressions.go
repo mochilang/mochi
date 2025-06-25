@@ -374,13 +374,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 			code = append(code, kr.code...)
 			code = append(code, vr.code...)
 			keyVal := kr.val
-			if isStringLiteral(it.Key) {
+			if id, ok := identName(it.Key); ok {
+				keyVal = sanitizeAtom(id)
+			} else if isStringLiteral(it.Key) {
 				keyVal = "'" + strings.Trim(kr.val, "\"") + "'"
 			}
 			pairs = append(pairs, fmt.Sprintf("%s-%s", keyVal, vr.val))
 		}
 		tmp := c.newVar()
-		code = append(code, fmt.Sprintf("dict_create(%s, _, [%s]),", tmp, strings.Join(pairs, ", ")))
+		code = append(code, fmt.Sprintf("dict_create(%s, map, [%s]),", tmp, strings.Join(pairs, ", ")))
 		return exprRes{code: code, val: tmp}, nil
 	case p.Struct != nil:
 		return c.compileStructLiteral(p.Struct)
@@ -550,8 +552,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+	if q.Group != nil {
 		return exprRes{}, fmt.Errorf("unsupported query expression")
+	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return exprRes{}, fmt.Errorf("unsupported join side")
+		}
 	}
 
 	src, err := c.compileExpr(q.Source)
@@ -565,6 +572,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 		elem = lt.Elem
 	}
 	child.SetVar(q.Var, elem, true)
+	for _, f := range q.Froms {
+		var ft types.Type = types.AnyType{}
+		if lt, ok := types.TypeOfExprBasic(f.Src, c.env).(types.ListType); ok {
+			ft = lt.Elem
+		}
+		child.SetVar(f.Var, ft, true)
+	}
+	for _, j := range q.Joins {
+		var jt types.Type = types.AnyType{}
+		if lt, ok := types.TypeOfExprBasic(j.Src, c.env).(types.ListType); ok {
+			jt = lt.Elem
+		}
+		child.SetVar(j.Var, jt, true)
+	}
 	orig := c.env
 	c.env = child
 
@@ -611,8 +632,55 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 	c.use("tolist")
 	code = append(code, fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
 
+	fromLists := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fr, err := c.compileExpr(f.Src)
+		if err != nil {
+			return exprRes{}, err
+		}
+		code = append(code, fr.code...)
+		lv := c.newVar()
+		c.use("tolist")
+		code = append(code, fmt.Sprintf("to_list(%s, %s),", fr.val, lv))
+		fromLists[i] = lv
+	}
+
+	joinLists := make([]string, len(q.Joins))
+	joinConds := make([][]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return exprRes{}, err
+		}
+		onRes, err := c.compileExpr(j.On)
+		if err != nil {
+			return exprRes{}, err
+		}
+		code = append(code, js.code...)
+		lv := c.newVar()
+		c.use("tolist")
+		code = append(code, fmt.Sprintf("to_list(%s, %s),", js.val, lv))
+		joinLists[i] = lv
+		tmp := []string{}
+		for _, line := range onRes.code {
+			tmp = append(tmp, strings.TrimSuffix(line, ","))
+		}
+		tmp = append(tmp, onRes.val)
+		joinConds[i] = tmp
+	}
+
 	resultVar := c.newVar()
 	innerParts := []string{fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Var), listVar)}
+	for i, lv := range fromLists {
+		innerParts = append(innerParts, fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Froms[i].Var), lv))
+	}
+	for i, lv := range joinLists {
+		innerParts = append(innerParts, fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Joins[i].Var), lv))
+		for _, l := range joinConds[i] {
+			innerParts = append(innerParts, l)
+		}
+	}
+
 	for _, line := range cond.code {
 		innerParts = append(innerParts, strings.TrimSuffix(line, ","))
 	}
