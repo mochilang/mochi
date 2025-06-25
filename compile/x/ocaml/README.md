@@ -66,7 +66,7 @@ These tests verify both the generated program output and the emitted `.ml` code.
 
 - The OCaml backend covers only a small slice of Mochi. Missing pieces include:
 
-- Query expressions such as `from` / `sort by` / `select`
+ - Limited dataset queries (`from`/`where`/`select` with optional `skip`/`take`)
 - Comprehensive pattern matching and union types
 - Modules and `import` declarations
 - Struct and enum type declarations
