@@ -9,9 +9,9 @@ using System.Text.Json;
 
 public class Program {
 	static void test_values() {
-		if (!((_indexList(xs, 0L) == ((-1L))))) throw new Exception("expect failed");
-		if (!((_indexList(xs, 1L) == 0L))) throw new Exception("expect failed");
-		if (!((_indexList(xs, 2L) == 1L))) throw new Exception("expect failed");
+		expect((_indexList(xs, 0L) == ((-1L))));
+		expect((_indexList(xs, 1L) == 0L));
+		expect((_indexList(xs, 2L) == 1L));
 		Console.WriteLine("done");
 	}
 	
@@ -25,6 +25,10 @@ public class Program {
 		if (i < 0) i += list.Count;
 		if (i < 0 || i >= list.Count) throw new Exception("index out of range");
 		return list[(int)i];
+	}
+	
+	static void expect(bool cond) {
+		if (!cond) throw new Exception("expect failed");
 	}
 	
 	static T _cast<T>(dynamic v) {

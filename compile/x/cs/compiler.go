@@ -286,7 +286,8 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("if (!(%s)) throw new Exception(\"expect failed\");", expr))
+	c.helpers["_expect"] = true
+	c.writeln(fmt.Sprintf("expect(%s);", expr))
 	return nil
 }
 

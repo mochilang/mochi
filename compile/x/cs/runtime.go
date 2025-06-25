@@ -417,6 +417,12 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("return JsonSerializer.Deserialize<T>(prompt);")
 				c.indent--
 				c.writeln("}")
+			case "_expect":
+				c.writeln("static void expect(bool cond) {")
+				c.indent++
+				c.writeln("if (!cond) throw new Exception(\"expect failed\");")
+				c.indent--
+				c.writeln("}")
 			case "_agent":
 				c.writeln("class _Agent {")
 				c.indent++
