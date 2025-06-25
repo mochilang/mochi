@@ -19,13 +19,14 @@ The Scheme backend converts a limited subset of Mochi programs into Scheme sourc
 - Built‑ins: `len`, `count`, `avg`, `str`, `push`, `keys`, `print`, `input`, `_fetch`, `_load`, `_save`
 - List set operators `union`, `union_all`, `except` and `intersect`
 - Struct type declarations and methods
-- Basic dataset queries with filtering, cross joins, pagination and selection
+- Basic dataset queries with filtering, cross joins, simple joins, sorting,
+  pagination and selection
 
 ## Unsupported Features
 
 The backend leaves many Mochi constructs unimplemented, including:
 
-- Advanced joins or grouping in dataset queries
+- Grouping or outer joins in dataset queries
 - Generative AI blocks and LLM helpers
 - Error handling with `try`/`catch`
 - Union types and `match` expressions
