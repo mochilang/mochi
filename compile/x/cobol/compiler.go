@@ -138,26 +138,13 @@ func (c *Compiler) compileNode(n *ast.Node) {
 }
 
 func (c *Compiler) compileExpect(n *ast.Node) {
-	expr := c.expr(n.Children[0])
-	if !isSimpleExpr(n.Children[0]) {
-		tmp := c.newTemp()
-		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[0])))
-		if c.isString(n.Children[0]) {
-			c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
-		} else {
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
-		}
-		expr = tmp
-	}
-	c.writeln(fmt.Sprintf("    IF %s = 0", expr))
-	c.indent++
-	c.writeln("DISPLAY \"[FAIL]\"")
-	c.indent--
-	c.writeln("    ELSE")
-	c.indent++
-	c.writeln("DISPLAY \"[PASS]\"")
-	c.indent--
-	c.writeln("    END-IF")
+        cond := c.expr(n.Children[0])
+        c.writeln(fmt.Sprintf("IF NOT (%s)", cond))
+        c.indent++
+        c.writeln("DISPLAY \"expect failed\"")
+        c.writeln("STOP RUN")
+        c.indent--
+        c.writeln("END-IF")
 }
 
 func (c *Compiler) compileTest(n *ast.Node) {
