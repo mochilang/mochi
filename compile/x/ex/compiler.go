@@ -493,6 +493,134 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = orig
 
+	if q.Group != nil {
+		fromSrcs := make([]string, len(q.Froms))
+		varNames := []string{sanitizeName(q.Var)}
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				return "", err
+			}
+			fromSrcs[i] = fs
+			varNames = append(varNames, sanitizeName(f.Var))
+		}
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		joinLeft := make([]bool, len(q.Joins))
+		joinRight := make([]bool, len(q.Joins))
+		paramCopy := append([]string(nil), varNames...)
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				return "", err
+			}
+			joinSrcs[i] = js
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				return "", err
+			}
+			joinOns[i] = on
+			if j.Side != nil {
+				switch *j.Side {
+				case "left":
+					joinLeft[i] = true
+				case "right":
+					joinRight[i] = true
+				case "outer":
+					joinLeft[i] = true
+					joinRight[i] = true
+				}
+			}
+			paramCopy = append(paramCopy, sanitizeName(j.Var))
+		}
+		allParams := strings.Join(paramCopy, ", ")
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		val, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		selectFn := fmt.Sprintf("fn %s -> [%s] end", allParams, allParams)
+		whereFn := ""
+		if cond != "" {
+			whereFn = fmt.Sprintf("fn %s -> %s end", allParams, cond)
+		}
+		sortFn := ""
+		if sortExpr != "" {
+			sortFn = fmt.Sprintf("fn %s -> %s end", sanitizeName(q.Group.Name), sortExpr)
+		}
+		var b strings.Builder
+		b.WriteString("(fn ->\n")
+		b.WriteString("\t_src = " + src + "\n")
+		b.WriteString("\t_rows = _query(_src, [\n")
+		specs := make([]string, 0, len(fromSrcs)+len(joinSrcs))
+		params := []string{sanitizeName(q.Var)}
+		for i, fs := range fromSrcs {
+			specs = append(specs, fmt.Sprintf("%%{items: %s}", fs))
+			params = append(params, sanitizeName(q.Froms[i].Var))
+		}
+		paramCopy = append([]string(nil), params...)
+		for i, js := range joinSrcs {
+			onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+			spec := fmt.Sprintf("%%{items: %s, on: fn %s -> %s end", js, strings.Join(onParams, ", "), joinOns[i])
+			if joinLeft[i] {
+				spec += ", left: true"
+			}
+			if joinRight[i] {
+				spec += ", right: true"
+			}
+			spec += "}"
+			specs = append(specs, spec)
+			paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+		}
+		for i, j := range specs {
+			b.WriteString("\t\t" + j)
+			if i != len(specs)-1 {
+				b.WriteString(",")
+			}
+			b.WriteString("\n")
+		}
+		b.WriteString("\t], %{select: " + selectFn)
+		if whereFn != "" {
+			b.WriteString(", where: " + whereFn)
+		}
+		if sortFn != "" {
+			b.WriteString(", sortKey: " + sortFn)
+		}
+		if skipExpr != "" {
+			b.WriteString(", skip: " + skipExpr)
+		}
+		if takeExpr != "" {
+			b.WriteString(", take: " + takeExpr)
+		}
+		b.WriteString(" })\n")
+		b.WriteString(fmt.Sprintf("\t_groups = _group_by(_rows, fn %s -> %s end)\n", allParams, keyExpr))
+		b.WriteString(fmt.Sprintf("\t_groups = Enum.map(_groups, fn g -> %%{g | Items: Enum.map(g.Items, fn [%s] -> %s end)} end)\n", allParams, sanitizeName(q.Var)))
+		b.WriteString("\titems = _groups\n")
+		if sortExpr != "" {
+			b.WriteString(fmt.Sprintf("\titems = Enum.sort_by(items, fn %s -> %s end)\n", sanitizeName(q.Group.Name), sortExpr))
+		}
+		if skipExpr != "" {
+			b.WriteString("\titems = Enum.drop(items, " + skipExpr + ")\n")
+		}
+		if takeExpr != "" {
+			b.WriteString("\titems = Enum.take(items, " + takeExpr + ")\n")
+		}
+		b.WriteString(fmt.Sprintf("\tEnum.map(items, fn %s -> %s end)\n", sanitizeName(q.Group.Name), val))
+		b.WriteString("end)()")
+		c.use("_query")
+		c.use("_group_by")
+		c.use("_group")
+		return b.String(), nil
+	}
+
 	if hasSide {
 		fromSrcs := make([]string, len(q.Froms))
 		varNames := []string{sanitizeName(q.Var)}
