@@ -337,9 +337,15 @@ var helperQuery = "def _query(src, joins, opts):\n" +
 	"    if opts.get('sortKey'):\n" +
 	"        items.sort(key=lambda it: opts['sortKey'](*it))\n" +
 	"    if 'skip' in opts:\n" +
-	"        n = opts['skip']; items = items[n:] if n < len(items) else []\n" +
+	"        n = opts['skip']\n" +
+	"        if n < 0:\n" +
+	"            n = 0\n" +
+	"        items = items[n:] if n < len(items) else []\n" +
 	"    if 'take' in opts:\n" +
-	"        n = opts['take']; items = items[:n] if n < len(items) else items\n" +
+	"        n = opts['take']\n" +
+	"        if n < 0:\n" +
+	"            n = 0\n" +
+	"        items = items[:n] if n < len(items) else items\n" +
 	"    res = []\n" +
 	"    for r in items:\n" +
 	"        res.append(opts['select'](*r))\n" +
