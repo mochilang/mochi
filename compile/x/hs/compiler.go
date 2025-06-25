@@ -946,6 +946,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		conds = append(conds, w)
 	}
 
+	condStr := ""
+	if len(conds) > 0 {
+		condStr = ", " + strings.Join(conds, ", ")
+	}
+
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		keyExpr, err := c.compileExpr(q.Group.Expr)
 		if err != nil {
@@ -967,17 +972,73 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
+	if q.Group != nil {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		tuple := fmt.Sprintf("(%s)", strings.Join(func() []string {
+			names := []string{sanitizeName(q.Var)}
+			for _, f := range q.Froms {
+				names = append(names, sanitizeName(f.Var))
+			}
+			for _, j := range q.Joins {
+				names = append(names, sanitizeName(j.Var))
+			}
+			return names
+		}(), ", "))
+		rows := fmt.Sprintf("[%s | %s%s]", tuple, strings.Join(loops, ", "), condStr)
+		groups := fmt.Sprintf("_group_by %s (\\%s -> %s)", rows, tuple, keyExpr)
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		sortExpr := ""
+		if q.Sort != nil {
+			sortExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		c.env = orig
+		res := fmt.Sprintf("[ %s | g <- %s, let %s = g ]", valExpr, groups, sanitizeName(q.Group.Name))
+		if q.Sort != nil {
+			res = fmt.Sprintf("map snd (List.sortOn fst [ ( %s, %s ) | g <- %s ])", sortExpr, valExpr, groups)
+			c.usesList = true
+		}
+		if q.Skip != nil {
+			sk, err := c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			res = fmt.Sprintf("drop %s %s", sk, res)
+			c.usesList = true
+		}
+		if q.Take != nil {
+			tk, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			res = fmt.Sprintf("take %s %s", tk, res)
+			c.usesList = true
+		}
+		c.usesMap = true
+		c.usesList = true
+		return res, nil
+	}
+
 	val, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
 		return "", err
 	}
 	c.env = orig
-
-	condStr := ""
-	if len(conds) > 0 {
-		condStr = ", " + strings.Join(conds, ", ")
-	}
 	comp := fmt.Sprintf("[%s | %s%s]", val, strings.Join(loops, ", "), condStr)
 	res := comp
 

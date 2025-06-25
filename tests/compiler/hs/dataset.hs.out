@@ -1,6 +1,12 @@
 module Main where
 
 import Data.Maybe (fromMaybe)
+import Data.Time.Clock.POSIX (getPOSIXTime)
+import qualified Data.Map as Map
+import Data.List (intercalate)
+import qualified Data.List as List
+import qualified Data.Aeson as Aeson
+import qualified Data.ByteString.Lazy.Char8 as BSL
 
 
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
@@ -111,4 +117,4 @@ main :: IO ()
 main = do
     let people = [Person { name = "Alice", age = 30 }, Person { name = "Bob", age = 15 }, Person { name = "Charlie", age = 65 }]
     let names = [name (p) | p <- people, (age (p) >= 18)]
-    mapM_ (\n -> print (n)) names
+    mapM_ (\n -> putStrLn (n)) names
