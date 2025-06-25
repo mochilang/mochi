@@ -766,6 +766,31 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		c.use("_Group")
+		c.use("_group_by")
+		expr := fmt.Sprintf("_group_by(%s) { %s -> %s }.map { %s -> %s }", src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name), valExpr)
+		return expr, nil
+	}
+
 	// simple cross join without sort/skip/take/group/join
 	if len(q.Froms) > 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil && len(q.Joins) == 0 {
 		orig := c.env

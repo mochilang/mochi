@@ -225,6 +225,29 @@ const (
     return res
 }`
 
+	helperGroup = `class _Group(var key: Any?) {
+    val Items = mutableListOf<Any?>()
+    val size: Int
+        get() = Items.size
+}`
+
+	helperGroupBy = `fun _group_by(src: List<Any?>, keyfn: (Any?) -> Any?): List<_Group> {
+    val groups = mutableMapOf<String, _Group>()
+    val order = mutableListOf<String>()
+    for (it in src) {
+        val key = keyfn(it)
+        val ks = key.toString()
+        var g = groups[ks]
+        if (g == null) {
+            g = _Group(key)
+            groups[ks] = g
+            order.add(ks)
+        }
+        g.Items.add(it)
+    }
+    return order.map { groups[it]!! }
+}`
+
 	helperStream = `class _Stream<T>(val name: String) {
     private val handlers = mutableListOf<(T) -> Unit>()
     fun append(data: T) {
@@ -261,6 +284,8 @@ var helperMap = map[string]string{
 	"_union":       helperUnion,
 	"_except":      helperExcept,
 	"_intersect":   helperIntersect,
+	"_Group":       helperGroup,
+	"_group_by":    helperGroupBy,
 	"_Stream":      helperStream,
 	"_waitAll":     helperWaitAll,
 }

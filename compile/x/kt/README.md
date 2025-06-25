@@ -6,7 +6,7 @@ The Kotlin backend converts Mochi programs into Kotlin source files so they can 
 
 - Struct and union declarations map to Kotlin `data class` and `sealed interface` types
 - `match` expressions compile to Kotlin `when` blocks
-- Dataset queries use collection operations like `filter`, `sortedBy`, `drop`, `take` and `map`
+- Dataset queries use collection operations like `filter`, `sortedBy`, `drop`, `take`, `map` and `_group_by`
 - Basic loops (`for`, `while`), conditionals and arithmetic expressions
 - Built‑in helpers including `print`, `len`, `count`, `avg`, `str`, `input`, `json`, and `now`
 - LLM and runtime helpers such as `_genText`, `_genEmbed`, `_genStruct`, `_fetch` and `_eval`
@@ -22,7 +22,7 @@ The Kotlin backend converts Mochi programs into Kotlin source files so they can 
 
 The Kotlin backend still lacks several features available in other compilers:
 
-- Advanced dataset queries (joins, grouping and additional set operations)
+- Advanced dataset queries (joins and additional set operations)
 - Agents and intent handlers
 - Logic programming (`fact`, `rule`, `query`)
 - Foreign function interface and cross-language imports
