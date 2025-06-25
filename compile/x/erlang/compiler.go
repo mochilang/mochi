@@ -430,7 +430,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if s.Let.Type != nil {
 				t = c.resolveTypeRef(s.Let.Type)
 			} else if s.Let.Value != nil {
-				t = c.inferExprType(s.Let.Value)
+				t = c.exprType(s.Let.Value)
 			}
 			c.env.SetVar(s.Let.Name, t, false)
 		}
@@ -450,7 +450,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if s.Var.Type != nil {
 				t = c.resolveTypeRef(s.Var.Type)
 			} else if s.Var.Value != nil {
-				t = c.inferExprType(s.Var.Value)
+				t = c.exprType(s.Var.Value)
 			}
 			c.env.SetVar(s.Var.Name, t, true)
 		}
@@ -581,7 +581,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			return err
 		}
 		list = src
-		t := c.inferExprType(stmt.Source)
+		t := c.exprType(stmt.Source)
 		switch tt := t.(type) {
 		case types.ListType:
 			elem = tt.Elem
@@ -712,7 +712,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	name := c.newName(a.Name)
 	c.buf.WriteString(fmt.Sprintf("%s = %s", name, val))
 	if c.env != nil {
-		t := c.inferExprType(a.Value)
+		t := c.exprType(a.Value)
 		mutable, _ := c.env.IsMutable(a.Name)
 		c.env.SetVar(a.Name, t, mutable)
 	}
@@ -743,7 +743,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	operands = append(operands, operand{expr: first, typ: c.inferUnaryType(b.Left)})
+	operands = append(operands, operand{expr: first, typ: c.unaryType(b.Left)})
 
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
@@ -754,7 +754,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if part.All {
 			op = op + "_all"
 		}
-		operands = append(operands, operand{expr: r, typ: c.inferPostfixType(part.Right)})
+		operands = append(operands, operand{expr: r, typ: c.postfixType(part.Right)})
 		ops = append(ops, op)
 	}
 
@@ -879,7 +879,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 
-	typ := c.inferPrimaryType(p.Target)
+	typ := c.primaryType(p.Target)
 
 	for _, op := range p.Ops {
 		if op.Index != nil {
@@ -1184,7 +1184,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	orig := c.env
 	child := types.NewEnv(c.env)
 	var elem types.Type = types.AnyType{}
-	st := c.inferExprType(q.Source)
+	st := c.exprType(q.Source)
 	if lt, ok := st.(types.ListType); ok {
 		elem = lt.Elem
 	} else if gt, ok := st.(types.GroupType); ok {
@@ -1192,7 +1192,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	child.SetVar(q.Var, elem, true)
 	for _, f := range q.Froms {
-		ft := c.inferExprType(f.Src)
+		ft := c.exprType(f.Src)
 		var fe types.Type = types.AnyType{}
 		if lt, ok := ft.(types.ListType); ok {
 			fe = lt.Elem
@@ -1202,7 +1202,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child.SetVar(f.Var, fe, true)
 	}
 	for _, j := range q.Joins {
-		jt := c.inferExprType(j.Src)
+		jt := c.exprType(j.Src)
 		var je types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {
 			je = lt.Elem
