@@ -24,7 +24,7 @@ The VM supports a small but useful subset of Mochi:
 * Function definitions
 * Function calls with any number of arguments
 * Anonymous function expressions
-* Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `json`, `now`, `input`, `count`, `avg`, `min` and `max`
+* Built‑ins `len`, `print` (up to two arguments), `append`, `str`, `json`, `now`, `input`, `count`, `exists`, `avg`, `min` and `max`
 * Dataset loading with `load` (optionally casting rows to a type) and saving with `save`
 * HTTP requests using the `fetch` expression
 * List, map and struct construction
@@ -118,6 +118,7 @@ from the disassembler:
 | `Str` | Convert value B to string | `Str r0, r1` |
 | `Input` | Read line from input | `Input r0` |
 | `Count` | Count elements in list/map B | `Count r0, r1` |
+| `Exists` | True if list/map/string B is non-empty | `Exists r0, r1` |
 | `Avg` | Average of numeric list B | `Avg r0, r1` |
 | `Min` | Minimum value of numeric list B | `Min r0, r1` |
 | `Max` | Maximum value of numeric list B | `Max r0, r1` |

@@ -412,6 +412,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: IntType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("exists", FuncType{
+		Params: []Type{AnyType{}},
+		Return: BoolType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("avg", FuncType{
 		Params: []Type{AnyType{}},
 		Return: FloatType{},
@@ -2032,6 +2037,7 @@ var builtinArity = map[string]int{
 	"eval":      1,
 	"len":       1,
 	"count":     1,
+	"exists":    1,
 	"avg":       1,
 	"sum":       1,
 	"min":       1,
@@ -2080,6 +2086,16 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return nil
 		default:
 			return errCountOperand(pos, args[0])
+		}
+	case "exists":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		switch args[0].(type) {
+		case ListType, MapType, StringType, AnyType, GroupType:
+			return nil
+		default:
+			return fmt.Errorf("exists expects list, map or string")
 		}
 	case "avg":
 		if len(args) != 1 {

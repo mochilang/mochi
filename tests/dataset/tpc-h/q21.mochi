@@ -40,20 +40,19 @@ let result =
   join o in orders on o.o_orderkey == l1.l_orderkey
   join n in nation on n.n_nationkey == s.s_nationkey
   where
-    o.o_orderstatus == "F" and
-    l1.l_receiptdate > l1.l_commitdate and
-    n.n_name == "SAUDI ARABIA" and
-    not exists x in lineitem
-      where
-        x.l_orderkey == l1.l_orderkey and
-        x.l_suppkey != l1.l_suppkey and
-        x.l_receiptdate > x.l_commitdate
-  group by s.s_name
+    o.o_orderstatus == "F" &&
+    l1.l_receiptdate > l1.l_commitdate &&
+    n.n_name == "SAUDI ARABIA" && (!exists(
+      from x in lineitem
+      where x.l_orderkey == l1.l_orderkey && x.l_suppkey != l1.l_suppkey && x.l_receiptdate > x.l_commitdate
+      select x
+    ))
+  group by s.s_name into g
+  sort by [ -count(g), s.s_name ]
   select {
     s_name: s.s_name,
-    numwait: count()
+    numwait: count(g)
   }
-  order by { numwait desc, s.s_name }
 
 print result
 
