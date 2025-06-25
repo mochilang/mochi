@@ -138,27 +138,13 @@ func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
 			}
 		}
 	}
-	prog := &parser.Program{Statements: []*parser.Statement{{Let: &parser.LetStmt{Name: "_tmp", Value: e}}}}
 	env := types.NewEnv(c.env)
 	for name, t := range c.locals {
 		env.SetVar(name, t, true)
 	}
-	if errs := types.Check(prog, env); len(errs) == 0 {
-		if t, err := env.GetVar("_tmp"); err == nil {
-			return t
-		}
-	}
-	return types.AnyType{}
+	return types.CheckExprType(e, env)
 }
 
 func containsAny(t types.Type) bool {
-	switch tt := t.(type) {
-	case types.AnyType:
-		return true
-	case types.ListType:
-		return containsAny(tt.Elem)
-	case types.MapType:
-		return containsAny(tt.Key) || containsAny(tt.Value)
-	}
-	return false
+	return types.ContainsAny(t)
 }
