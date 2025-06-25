@@ -401,6 +401,32 @@ const (
 		"    if f ~= io.stdout then f:close() end\n" +
 		"end\n"
 
+	helperGroup = "_Group = {}\n" +
+		"function _Group.new(k)\n" +
+		"    return {key = k, items = {}}\n" +
+		"end\n"
+
+	helperGroupBy = "function __group_by(src, keyfn)\n" +
+		"    local groups = {}\n" +
+		"    local order = {}\n" +
+		"    for _, it in ipairs(src) do\n" +
+		"        local key = keyfn(it)\n" +
+		"        local ks = tostring(key)\n" +
+		"        local g = groups[ks]\n" +
+		"        if not g then\n" +
+		"            g = _Group.new(key)\n" +
+		"            groups[ks] = g\n" +
+		"            order[#order+1] = ks\n" +
+		"        end\n" +
+		"        table.insert(g.items, it)\n" +
+		"    end\n" +
+		"    local res = {}\n" +
+		"    for _, ks in ipairs(order) do\n" +
+		"        res[#res+1] = groups[ks]\n" +
+		"    end\n" +
+		"    return res\n" +
+		"end\n"
+
 	helperQuery = "function __query(src, joins, opts)\n" +
 		"    local items = {}\n" +
 		"    for _, v in ipairs(src) do items[#items+1] = {v} end\n" +
@@ -555,6 +581,8 @@ var helperMap = map[string]string{
 	"fetch":       helperFetch,
 	"load":        helperLoad,
 	"save":        helperSave,
+	"_Group":      helperGroup,
+	"_group_by":   helperGroupBy,
 	"query":       helperQuery,
 }
 
