@@ -485,6 +485,7 @@ func isInt(t Type) bool    { _, ok := t.(IntType); return ok }
 func isFloat(t Type) bool  { _, ok := t.(FloatType); return ok }
 func isBool(t Type) bool   { _, ok := t.(BoolType); return ok }
 func isString(t Type) bool { _, ok := t.(StringType); return ok }
+func isList(t Type) bool   { _, ok := t.(ListType); return ok }
 
 func simpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil {
