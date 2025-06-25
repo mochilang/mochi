@@ -803,6 +803,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return b.String()
 	}
 
+	lambda1 := func(param, body string) string {
+		var b bytes.Buffer
+		b.WriteString("(Object " + sanitizeName(param) + ") -> { ")
+		b.WriteString("return " + body + "; }")
+		return b.String()
+	}
+
+	pushdown := false
+	if q.Where != nil {
+		vars := exprVars(q.Where)
+		if len(vars) == 1 && vars[q.Var] {
+			pushdown = true
+		}
+	}
+
 	allParams := append([]string(nil), paramCopy...)
 	selectFn := lambda(allParams, sel)
 	whereFn := "null"
@@ -836,6 +851,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("(new java.util.function.Supplier<java.util.List<Object>>() {\n")
 	b.WriteString("\tpublic java.util.List<Object> get() {\n")
 	b.WriteString("\t\tjava.util.List<Object> _src = _toList(" + src + ");\n")
+	if pushdown {
+		filterFn := lambda1(q.Var, whereExpr)
+		b.WriteString("\t\t_src = _filter(_src, " + filterFn + ");\n")
+		c.helpers["_filter"] = true
+		whereFn = "null"
+	}
 	b.WriteString("\t\tjava.util.List<_JoinSpec> _joins = java.util.List.of(\n")
 	for i, j := range joins {
 		b.WriteString("\t\t\t" + j)
@@ -973,4 +994,123 @@ func joinArgs(args []string) string {
 		res += ", " + args[i]
 	}
 	return res
+}
+
+func exprVars(e *parser.Expr) map[string]bool {
+	vars := map[string]bool{}
+	var walkExpr func(*parser.Expr)
+	var walkUnary func(*parser.Unary)
+	var walkPostfix func(*parser.PostfixExpr)
+	var walkPrimary func(*parser.Primary)
+
+	walkExpr = func(e *parser.Expr) {
+		if e == nil {
+			return
+		}
+		walkUnary(e.Binary.Left)
+		for _, op := range e.Binary.Right {
+			walkPostfix(op.Right)
+		}
+	}
+
+	walkUnary = func(u *parser.Unary) {
+		if u != nil {
+			walkPostfix(u.Value)
+		}
+	}
+
+	walkPostfix = func(p *parser.PostfixExpr) {
+		if p == nil {
+			return
+		}
+		walkPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					walkExpr(a)
+				}
+			}
+			if op.Index != nil {
+				walkExpr(op.Index.Start)
+				walkExpr(op.Index.End)
+				walkExpr(op.Index.Step)
+			}
+		}
+	}
+
+	walkPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		switch {
+		case p.Selector != nil:
+			vars[p.Selector.Root] = true
+		case p.List != nil:
+			for _, e := range p.List.Elems {
+				walkExpr(e)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				walkExpr(it.Key)
+				walkExpr(it.Value)
+			}
+		case p.Struct != nil:
+			for _, f := range p.Struct.Fields {
+				walkExpr(f.Value)
+			}
+		case p.Call != nil:
+			for _, a := range p.Call.Args {
+				walkExpr(a)
+			}
+		case p.If != nil:
+			walkExpr(p.If.Cond)
+			walkExpr(p.If.Then)
+			if p.If.Else != nil {
+				walkExpr(p.If.Else)
+			}
+			if p.If.ElseIf != nil {
+				walkExpr(p.If.ElseIf.Cond)
+				walkExpr(p.If.ElseIf.Then)
+				if p.If.ElseIf.Else != nil {
+					walkExpr(p.If.ElseIf.Else)
+				}
+			}
+		case p.Match != nil:
+			walkExpr(p.Match.Target)
+			for _, c := range p.Match.Cases {
+				walkExpr(c.Pattern)
+				walkExpr(c.Result)
+			}
+		case p.Generate != nil:
+			for _, f := range p.Generate.Fields {
+				walkExpr(f.Value)
+			}
+		case p.Fetch != nil:
+			walkExpr(p.Fetch.URL)
+			walkExpr(p.Fetch.With)
+		case p.Load != nil:
+			walkExpr(p.Load.With)
+		case p.Save != nil:
+			walkExpr(p.Save.Src)
+			walkExpr(p.Save.With)
+		case p.Query != nil:
+			walkExpr(p.Query.Source)
+			for _, f := range p.Query.Froms {
+				walkExpr(f.Src)
+			}
+			for _, j := range p.Query.Joins {
+				walkExpr(j.Src)
+				walkExpr(j.On)
+			}
+			walkExpr(p.Query.Where)
+			walkExpr(p.Query.Group.Expr)
+			walkExpr(p.Query.Sort)
+			walkExpr(p.Query.Skip)
+			walkExpr(p.Query.Take)
+			walkExpr(p.Query.Select)
+		}
+	}
+
+	walkExpr(e)
+	return vars
 }

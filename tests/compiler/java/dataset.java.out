@@ -4,9 +4,10 @@ public class Main {
 		java.util.Map<String, Object>[] adults = (new java.util.function.Supplier<java.util.List<Object>>() {
 	public java.util.List<Object> get() {
 		java.util.List<Object> _src = _toList(people);
+		_src = _filter(_src, (Object person) -> { return (person.age >= 18); });
 		java.util.List<_JoinSpec> _joins = java.util.List.of(
 		);
-		return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object person = a[0]; return new java.util.HashMap<>(java.util.Map.of(name, person.name, age, person.age, is_senior, (person.age >= 60))); }, (Object[] a) -> { Object person = a[0]; return (person.age >= 18); }, null, -1, -1));
+		return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object person = a[0]; return new java.util.HashMap<>(java.util.Map.of(name, person.name, age, person.age, is_senior, (person.age >= 60))); }, null, null, -1, -1));
 	}
 }).get();
 		for (var person : adults) {
@@ -22,6 +23,12 @@ public class Main {
 		int n = java.lang.reflect.Array.getLength(v);
 		java.util.List<Object> out = new java.util.ArrayList<>(n);
 		for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));
+		return out;
+	}
+	
+	static java.util.List<Object> _filter(java.util.List<Object> src, java.util.function.Function<Object,Boolean> pred) {
+		java.util.List<Object> out = new java.util.ArrayList<>();
+		for (Object it : src) { if (pred.apply(it)) out.add(it); }
 		return out;
 	}
 	
