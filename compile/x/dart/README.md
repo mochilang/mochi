@@ -241,6 +241,7 @@ The Dart backend currently covers most core Mochi constructs, including union ty
 - Function definitions, calls and lambda expressions with inferred return types
 - Pattern matching with `match`
 - Dataset queries with `from`, `join`, `where`, `group`, `sort`, `skip` and `take`
+- `distinct` results in dataset queries
 - Left/right/outer joins in dataset queries
 - Set operations with `union`, `union all`, `except` and `intersect`
 - Built‑ins like `fetch`, `load`, `save` (CSV/JSON/YAML) and placeholder `generate`

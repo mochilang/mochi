@@ -39,6 +39,14 @@ const (
 		"    }\n" +
 		"    return res;\n" +
 		"}\n"
+	helperDistinct = "List<dynamic> _distinct(List<dynamic> items) {\n" +
+		"    var res = <dynamic>[];\n" +
+		"    outer: for (var it in items) {\n" +
+		"        for (var r in res) { if (_equal(r, it)) continue outer; }\n" +
+		"        res.add(it);\n" +
+		"    }\n" +
+		"    return res;\n" +
+		"}\n"
 	helperStream = "class _Stream<T> {\n" +
 		"    String name;\n" +
 		"    List<void Function(T)> handlers = [];\n" +
@@ -286,6 +294,7 @@ const (
 		"    }\n" +
 		"    var res = <dynamic>[];\n" +
 		"    for (var r in items) { res.add(Function.apply(opts['select'], r)); }\n" +
+		"    if (opts['distinct'] == true) res = _distinct(res);\n" +
 		"    return res;\n" +
 		"}\n"
 	helperGenText = "String _genText(String prompt, String model, Map<String,dynamic>? params) {\n" +
@@ -340,6 +349,7 @@ var helperMap = map[string]string{
 	"_genStruct":   helperGenStruct,
 	"_json":        helperJson,
 	"_equal":       helperEqual,
+	"_distinct":    helperDistinct,
 }
 
 func (c *Compiler) use(name string) {
