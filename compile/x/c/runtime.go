@@ -282,13 +282,28 @@ static int map_int_bool_contains(map_int_bool m, int key) {
 }`
 	helperCount = `static int _count(list_int v) { return v.len; }
 `
+	helperSumInt = `static int _sum_int(list_int v) {
+    int sum = 0;
+    for (int i = 0; i < v.len; i++) sum += v.data[i];
+    return sum;
+}`
+	helperSumFloat = `static double _sum_float(list_float v) {
+    double sum = 0;
+    for (int i = 0; i < v.len; i++) sum += v.data[i];
+    return sum;
+}`
 	helperAvg = `static double _avg(list_int v) {
     if (v.len == 0) return 0;
     double sum = 0;
     for (int i = 0; i < v.len; i++) sum += v.data[i];
     return sum / v.len;
-}
-`
+}`
+	helperAvgFloat = `static double _avg_float(list_float v) {
+    if (v.len == 0) return 0;
+    double sum = 0;
+    for (int i = 0; i < v.len; i++) sum += v.data[i];
+    return sum / v.len;
+}`
 	helperContainsListInt = `static int contains_list_int(list_int v, int item) {
     for (int i = 0; i < v.len; i++) if (v.data[i] == item) return 1;
     return 0;
@@ -473,7 +488,10 @@ var helperCode = map[string]string{
 	needIntersectListFloat:   helperIntersectListFloat,
 	needIntersectListString:  helperIntersectListString,
 	needCount:                helperCount,
+	needSumInt:               helperSumInt,
+	needSumFloat:             helperSumFloat,
 	needAvg:                  helperAvg,
+	needAvgFloat:             helperAvgFloat,
 	needInListInt:            helperContainsListInt,
 	needInListFloat:          helperContainsListFloat,
 	needInListString:         helperContainsListString,
@@ -519,7 +537,10 @@ var helperOrder = []string{
 	needIntersectListFloat,
 	needIntersectListString,
 	needCount,
+	needSumInt,
+	needSumFloat,
 	needAvg,
+	needAvgFloat,
 	needInListInt,
 	needInListFloat,
 	needInListString,
