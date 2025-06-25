@@ -27,16 +27,16 @@ let excluded_suppliers =
   from ps in partsupp
   join p in part on p.p_partkey == ps.ps_partkey
   where
-    p.p_brand == "Brand#12" and
-    p.p_type has "SMALL" and
+    p.p_brand == "Brand#12" &&
+    p.p_type.contains("SMALL") &&
     p.p_size == 5
   select ps.ps_suppkey
 
 let result =
   from s in supplier
   where
-    s.s_suppkey not in (x for x in excluded_suppliers) and
-    s.s_comment not has "Customer" and s.s_comment not has "Complaints"
+    s.s_suppkey not in excluded_suppliers &&
+    s.s_comment not has "Customer" && s.s_comment not has "Complaints"
   order by s.s_name
   select {
     s_name: s.s_name,
