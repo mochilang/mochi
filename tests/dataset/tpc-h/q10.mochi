@@ -40,7 +40,7 @@ let end_date = "1994-01-01"
 let result =
   from c in customer
   join o in orders on o.o_custkey == c.c_custkey
-  where o.o_orderdate >= start_date and o.o_orderdate < end_date
+  where o.o_orderdate >= start_date && o.o_orderdate < end_date
   join l in lineitem on l.l_orderkey == o.o_orderkey
   where l.l_returnflag == "R"
   join n in nation on n.n_nationkey == c.c_nationkey
