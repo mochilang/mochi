@@ -48,7 +48,7 @@ The backend currently supports:
 - struct literals now instantiate these records with `#name{field=val}` syntax
 - AI `generate_text`, `generate_embed` and `generate_struct` helpers (placeholders)
 - test blocks and `expect` statements
-- `load` and `save` for Erlang terms or plain text files
+- `load` and `save` for Erlang terms or plain text files with optional `filter`, `skip` and `take` options
 - HTTP `fetch` using `httpc` with an optional `method` field
 
 ## Building
