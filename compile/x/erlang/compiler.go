@@ -37,6 +37,9 @@ type Compiler struct {
 	needSetOps    bool
 	needGroup     bool
 	needGroupBy   bool
+	needLeftJoin  bool
+	needRightJoin bool
+	needOuterJoin bool
 	vars          map[string]string
 	counts        map[string]int
 	tmpCount      int
@@ -1171,9 +1174,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	for _, j := range q.Joins {
-		if j.Side != nil {
-			return "", fmt.Errorf("unsupported join side")
+	if len(q.Joins) > 1 {
+		for _, j := range q.Joins {
+			if j.Side != nil {
+				return "", fmt.Errorf("unsupported join side")
+			}
 		}
 	}
 	src, err := c.compileExpr(q.Source)
@@ -1249,13 +1254,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		condParts = append(condParts, w)
 	}
-	for _, j := range q.Joins {
-		on, err := c.compileExpr(j.On)
-		if err != nil {
-			c.env = orig
-			return "", err
+	joinOns := []string{}
+	if len(q.Joins) > 0 {
+		joinOns = make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinOns[i] = on
+			if j.Side == nil {
+				condParts = append(condParts, on)
+			}
 		}
-		condParts = append(condParts, on)
 	}
 	if len(condParts) > 0 {
 		cond = strings.Join(condParts, ", ")
@@ -1301,15 +1313,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(" <- ")
 			b.WriteString(fs)
 		}
-		for _, j := range q.Joins {
+		for i, j := range q.Joins {
 			js, err := c.compileExpr(j.Src)
 			if err != nil {
 				return "", err
 			}
 			b.WriteString(", ")
-			b.WriteString(capitalize(j.Var))
-			b.WriteString(" <- ")
-			b.WriteString(js)
+			if j.Side != nil && *j.Side == "left" {
+				on := joinOns[i]
+				b.WriteString("{" + capitalize(q.Var) + ", " + capitalize(j.Var) + "} <- mochi_left_join_item(" + capitalize(q.Var) + ", " + js + ", fun(" + capitalize(q.Var) + ", " + capitalize(j.Var) + ") -> " + on + " end)")
+				c.needLeftJoin = true
+			} else {
+				b.WriteString(capitalize(j.Var))
+				b.WriteString(" <- ")
+				b.WriteString(js)
+			}
 		}
 		if cond != "" {
 			b.WriteString(", ")
@@ -1335,12 +1353,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(", " + capitalize(f.Var) + " <- " + fs)
 	}
-	for _, j := range q.Joins {
+	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
 			return "", err
 		}
-		b.WriteString(", " + capitalize(j.Var) + " <- " + js)
+		b.WriteString(", ")
+		if j.Side != nil && *j.Side == "left" {
+			on := joinOns[i]
+			b.WriteString("{" + capitalize(q.Var) + ", " + capitalize(j.Var) + "} <- mochi_left_join_item(" + capitalize(q.Var) + ", " + js + ", fun(" + capitalize(q.Var) + ", " + capitalize(j.Var) + ") -> " + on + " end)")
+			c.needLeftJoin = true
+		} else {
+			b.WriteString(capitalize(j.Var) + " <- " + js)
+		}
 	}
 	if cond != "" {
 		b.WriteString(", " + cond)
