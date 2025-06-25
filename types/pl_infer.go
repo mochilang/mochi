@@ -111,15 +111,6 @@ func PlPrimaryType(p *parser.Primary, env *Env) Type {
 	return AnyType{}
 }
 
-// IsListType reports whether t is a list.
-func IsListType(t Type) bool { _, ok := t.(ListType); return ok }
-
-// IsMapType reports whether t is a map.
-func IsMapType(t Type) bool { _, ok := t.(MapType); return ok }
-
-// IsStringType reports whether t is a string.
-func IsStringType(t Type) bool { _, ok := t.(StringType); return ok }
-
 // identNameSimple returns the identifier name for simple selector expressions.
 func identNameSimple(e *parser.Expr) (string, bool) {
 	if e == nil || len(e.Binary.Right) != 0 {
