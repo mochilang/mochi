@@ -2631,7 +2631,8 @@ func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
 		case len(q.Joins) == 1 && len(q.Froms) == 0:
 			fc.compileJoinQuery(q, dst)
 		case len(q.Joins) == 0:
-			fc.compileQueryFrom(q, dst, 0)
+			lvl := whereEvalLevel(q)
+			fc.compileQueryFrom(q, dst, 0, lvl)
 		default:
 			fc.compileQueryFull(q, dst, 0)
 		}
@@ -3591,7 +3592,7 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 }
 
 // compileQueryFrom recursively emits nested loops for each FROM clause.
-func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int) {
+func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int, whereLevel int) {
 	var name string
 	var src *parser.Expr
 	if level == 0 {
@@ -3625,9 +3626,17 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 	}
 	fc.emit(src.Pos, Instr{Op: OpMove, A: varReg, B: elemReg})
 
+	skip := -1
+	outerCheck := level == whereLevel && level < len(q.Froms) && q.Where != nil
+	if outerCheck {
+		cond := fc.compileExpr(q.Where)
+		skip = len(fc.fn.Code)
+		fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+	}
+
 	if level < len(q.Froms) {
 		fc.pushScope()
-		fc.compileQueryFrom(q, dst, level+1)
+		fc.compileQueryFrom(q, dst, level+1, whereLevel)
 		fc.popScope()
 	} else {
 		fc.pushScope()
@@ -3650,16 +3659,20 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
 			}
 		}
-		if q.Where != nil {
+		if q.Where != nil && level == whereLevel {
 			cond := fc.compileExpr(q.Where)
-			skip := len(fc.fn.Code)
+			innerSkip := len(fc.fn.Code)
 			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
 			appendVal()
-			fc.fn.Code[skip].B = len(fc.fn.Code)
+			fc.fn.Code[innerSkip].B = len(fc.fn.Code)
 		} else {
 			appendVal()
 		}
 		fc.popScope()
+	}
+
+	if skip != -1 {
+		fc.fn.Code[skip].B = len(fc.fn.Code)
 	}
 
 	one := fc.newReg()

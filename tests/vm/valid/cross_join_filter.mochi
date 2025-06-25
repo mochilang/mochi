@@ -1,0 +1,10 @@
+let nums = [1, 2, 3]
+let letters = ["A", "B"]
+let pairs = from n in nums
+            from l in letters
+            where n % 2 == 0
+            select { n: n, l: l }
+print("--- Even pairs ---")
+for p in pairs {
+  print(p.n, p.l)
+}
