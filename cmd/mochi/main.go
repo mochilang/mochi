@@ -70,6 +70,7 @@ import (
 	"mochi/parser"
 	"mochi/repl"
 	"mochi/runtime/mod"
+	vm "mochi/runtime/vm"
 	"mochi/tools/db"
 	"mochi/tools/lint"
 	"mochi/types"
@@ -102,6 +103,8 @@ type RunCmd struct {
 	Debug    bool   `arg:"--debug" help:"Enable debug output"`
 	Memoize  bool   `arg:"--memo" help:"Enable memoization of pure functions"`
 	Fold     bool   `arg:"--aot" help:"Fold pure calls before execution"`
+	PrintIR  bool   `arg:"--ir" help:"Print VM assembly and exit"`
+	Interp   bool   `arg:"--interp" help:"Run using interpreter"`
 }
 
 type TestCmd struct {
@@ -212,10 +215,25 @@ func runFile(cmd *RunCmd) error {
 	if cmd.Fold {
 		interpreter.FoldPureCalls(prog, env)
 	}
-	memo := cmd.Memoize || os.Getenv("MOCHI_MEMO") == "1" || strings.ToLower(os.Getenv("MOCHI_MEMO")) == "true"
-	interp := interpreter.New(prog, env, modRoot)
-	interp.SetMemoization(memo)
-	err = interp.Run()
+
+	if cmd.Interp {
+		memo := cmd.Memoize || os.Getenv("MOCHI_MEMO") == "1" || strings.ToLower(os.Getenv("MOCHI_MEMO")) == "true"
+		interp := interpreter.New(prog, env, modRoot)
+		interp.SetMemoization(memo)
+		err = interp.Run()
+	} else {
+		os.Setenv("MOCHI_ROOT", modRoot)
+		p, errc := vm.Compile(prog, env)
+		if errc != nil {
+			return errc
+		}
+		if cmd.PrintIR {
+			fmt.Print(p.Disassemble(string(source)))
+			return nil
+		}
+		m := vm.New(p, os.Stdout)
+		err = m.Run()
+	}
 	status := "ok"
 	msg := ""
 	if err != nil {
@@ -1148,6 +1166,8 @@ func newRunCmd() *cobra.Command {
 	c.Flags().BoolVar(&rc.Debug, "debug", false, "Enable debug output")
 	c.Flags().BoolVar(&rc.Memoize, "memo", false, "Enable memoization of pure functions")
 	c.Flags().BoolVar(&rc.Fold, "aot", false, "Fold pure calls before execution")
+	c.Flags().BoolVar(&rc.PrintIR, "ir", false, "Print VM assembly and exit")
+	c.Flags().BoolVar(&rc.Interp, "interp", false, "Run using interpreter")
 	return c
 }
 
