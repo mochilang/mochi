@@ -1015,6 +1015,16 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_filter"] {
+		c.writeln("")
+		c.writeln("static java.util.List<Object> _filter(java.util.List<Object> src, java.util.function.Function<Object,Boolean> pred) {")
+		c.indent++
+		c.writeln("java.util.List<Object> out = new java.util.ArrayList<>();")
+		c.writeln("for (Object it : src) { if (pred.apply(it)) out.add(it); }")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_query"] {
 		c.writeln("")
 		c.writeln("static class _JoinSpec {")
