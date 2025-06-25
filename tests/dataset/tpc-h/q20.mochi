@@ -33,10 +33,12 @@ let lineitem = [
   }
 ]
 
+let prefix = "forest"
+
 let target_partkeys =
   from ps in partsupp
   join p in part on ps.ps_partkey == p.p_partkey
-  where p.p_name has "forest"
+  where p.p_name has prefix
   let shipped =
     sum(l.l_quantity for l in lineitem
         where l.l_partkey == ps.ps_partkey
