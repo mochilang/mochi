@@ -186,7 +186,13 @@ end`
 end`
 
 	helperGroupBy = `def _group_by(src, keyfn)
-grouped = src.group_by { |it| keyfn.call(it) }
+grouped = src.group_by do |it|
+  if it.is_a?(Array)
+    keyfn.call(*it)
+  else
+    keyfn.call(it)
+  end
+end
 grouped.map do |k, items|
 g = MGroup.new(k)
 g.Items.concat(items)

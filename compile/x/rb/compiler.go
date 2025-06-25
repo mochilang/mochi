@@ -534,9 +534,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				sides[i] = *j.Side
 			}
 		}
-		sel, err := c.compileExpr(q.Select)
-		if err != nil {
-			return "", err
+		var sel string
+		var keyExpr string
+		if q.Group != nil {
+			keyExpr, err = c.compileExpr(q.Group.Expr)
+			if err != nil {
+				return "", err
+			}
+		} else {
+			sel, err = c.compileExpr(q.Select)
+			if err != nil {
+				return "", err
+			}
 		}
 		var whereStr, sortStr, skipStr, takeStr string
 		if q.Where != nil {
@@ -587,7 +596,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			tmp = append(tmp, sanitizeName(q.Joins[i].Var))
 		}
 		allParams := strings.Join(tmp, ", ")
-		selectFn := fmt.Sprintf("->(%s){ %s }", allParams, sel)
+		var selectFn string
+		if q.Group != nil {
+			tupleExpr := "[" + allParams + "]"
+			selectFn = fmt.Sprintf("->(%s){ %s }", allParams, tupleExpr)
+		} else {
+			selectFn = fmt.Sprintf("->(%s){ %s }", allParams, sel)
+		}
 		var whereFn, sortFn string
 		if whereStr != "" {
 			whereFn = fmt.Sprintf("->(%s){ %s }", allParams, whereStr)
@@ -598,7 +613,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var b strings.Builder
 		b.WriteString("(begin\n")
 		b.WriteString("\tsrc = " + src + "\n")
-		b.WriteString("\t_query(src, [\n")
+		b.WriteString("\t_rows = _query(src, [\n")
 		for i, j := range joins {
 			b.WriteString("\t\t" + j)
 			if i != len(joins)-1 {
@@ -620,6 +635,37 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(", 'take' => " + takeStr)
 		}
 		b.WriteString(" })\n")
+		if q.Group != nil {
+			b.WriteString("\t_groups = _group_by(_rows, ->(" + allParams + "){ " + keyExpr + " })\n")
+			b.WriteString("\t_res = []\n")
+			b.WriteString("\tfor " + sanitizeName(q.Group.Name) + " in _groups\n")
+			var valExpr string
+			if c.env != nil {
+				origEnv := c.env
+				genv := types.NewEnv(c.env)
+				genv.SetVar(q.Group.Name, types.AnyType{}, true)
+				c.env = genv
+				valExpr, err = c.compileExpr(q.Select)
+				c.env = origEnv
+				if err != nil {
+					return "", err
+				}
+			} else {
+				valExpr, err = c.compileExpr(q.Select)
+				if err != nil {
+					return "", err
+				}
+			}
+			b.WriteString("\t\t_res << " + valExpr + "\n")
+			b.WriteString("\tend\n")
+			b.WriteString("\t_res\n")
+			b.WriteString("end)")
+			c.use("_group_by")
+			c.use("_group")
+			c.use("_query")
+			return b.String(), nil
+		}
+		b.WriteString("\t_rows\n")
 		b.WriteString("end)")
 		c.use("_query")
 		return b.String(), nil
