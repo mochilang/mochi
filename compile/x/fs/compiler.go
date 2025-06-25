@@ -901,7 +901,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			child.SetVar(f.Var, types.AnyType{}, true)
 		}
 	}
+	joinSrc := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrc[i] = js
+		if lt, ok := types.TypeOfExpr(j.Src, c.env).(types.ListType); ok {
+			child.SetVar(j.Var, lt.Elem, true)
+		} else {
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
+	}
 	c.env = child
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinOns[i] = on
+	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
@@ -938,14 +960,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = orig
 
+	condParts := []string{}
+	for i := range joinOns {
+		if joinOns[i] != "" {
+			condParts = append(condParts, joinOns[i])
+		}
+	}
+	if whereExpr != "" {
+		condParts = append(condParts, whereExpr)
+	}
+	condStr := strings.Join(condParts, " && ")
+
 	var buf strings.Builder
 	buf.WriteString("[|")
 	buf.WriteString(fmt.Sprintf(" for %s in %s do ", sanitizeName(q.Var), src))
 	for i, f := range q.Froms {
 		buf.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(f.Var), fromSrc[i]))
 	}
-	if whereExpr != "" {
-		buf.WriteString(fmt.Sprintf("if %s then ", whereExpr))
+	for i := range joinSrc {
+		buf.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(q.Joins[i].Var), joinSrc[i]))
+	}
+	if condStr != "" {
+		buf.WriteString(fmt.Sprintf("if %s then ", condStr))
 	}
 	if q.Sort != nil {
 		buf.WriteString(fmt.Sprintf("yield (%s, %s) |]", sortExpr, sel))
