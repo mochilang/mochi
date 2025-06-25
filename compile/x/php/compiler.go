@@ -722,7 +722,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
 		var k string
-		if s, ok := simpleStringKey(it.Key); ok {
+		if s, ok := types.SimpleStringKey(it.Key); ok {
 			k = fmt.Sprintf("%q", s)
 		} else {
 			var err error
