@@ -136,6 +136,103 @@ func identName(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func exprUsesOnlyVar(e *parser.Expr, name string) bool {
+	used := map[string]bool{}
+
+	var visitExpr func(*parser.Expr)
+	var visitPrimary func(*parser.Primary)
+	var visitPostfix func(*parser.PostfixExpr)
+	var visitUnary func(*parser.Unary)
+	var visitIf func(*parser.IfExpr)
+
+	visitExpr = func(e *parser.Expr) {
+		if e == nil {
+			return
+		}
+		visitUnary(e.Binary.Left)
+		for _, op := range e.Binary.Right {
+			visitPostfix(op.Right)
+		}
+	}
+
+	visitUnary = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		visitPostfix(u.Value)
+	}
+
+	visitPostfix = func(p *parser.PostfixExpr) {
+		if p == nil {
+			return
+		}
+		visitPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					visitExpr(a)
+				}
+			}
+			if op.Index != nil {
+				visitExpr(op.Index.Start)
+				visitExpr(op.Index.End)
+				visitExpr(op.Index.Step)
+			}
+		}
+	}
+
+	visitIf = func(ie *parser.IfExpr) {
+		if ie == nil {
+			return
+		}
+		visitExpr(ie.Cond)
+		visitExpr(ie.Then)
+		visitIf(ie.ElseIf)
+		visitExpr(ie.Else)
+	}
+
+	visitPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		switch {
+		case p.Selector != nil:
+			used[p.Selector.Root] = true
+		case p.Call != nil:
+			for _, a := range p.Call.Args {
+				visitExpr(a)
+			}
+		case p.Struct != nil:
+			for _, f := range p.Struct.Fields {
+				visitExpr(f.Value)
+			}
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				visitExpr(el)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				visitExpr(it.Key)
+				visitExpr(it.Value)
+			}
+		case p.Group != nil:
+			visitExpr(p.Group)
+		case p.If != nil:
+			visitIf(p.If)
+		case p.Query != nil:
+			visitExpr(p.Query.Select)
+		}
+	}
+
+	visitExpr(e)
+	for n := range used {
+		if n != name && n != "_" {
+			return false
+		}
+	}
+	return true
+}
+
 func dartType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type:
