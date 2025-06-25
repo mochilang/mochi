@@ -57,6 +57,19 @@ const (
 		"  return sum / list.length;\n" +
 		"}\n"
 
+	helperSum = "function _sum(v: any): number {\n" +
+		"  let list: any[] | null = null;\n" +
+		"  if (Array.isArray(v)) list = v;\n" +
+		"  else if (v && typeof v === 'object') {\n" +
+		"    if (Array.isArray((v as any).items)) list = (v as any).items;\n" +
+		"    else if (Array.isArray((v as any).Items)) list = (v as any).Items;\n" +
+		"  }\n" +
+		"  if (!list || list.length === 0) return 0;\n" +
+		"  let sum = 0;\n" +
+		"  for (const n of list) sum += Number(n);\n" +
+		"  return sum;\n" +
+		"}\n"
+
 	helperInput = "function _input(): string {\n" +
 		"  const v = prompt('');\n" +
 		"  return v === null ? '' : v;\n" +
@@ -392,6 +405,7 @@ var helperMap = map[string]string{
 	"_slice":       helperSlice,
 	"_count":       helperCount,
 	"_avg":         helperAvg,
+	"_sum":         helperSum,
 	"_input":       helperInput,
 	"_iter":        helperIter,
 	"_gen_text":    helperGenText,
