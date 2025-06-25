@@ -70,7 +70,7 @@ func isStringUnary(u *parser.Unary, env *types.Env) bool {
 	return isStringPostfix(u.Value, env)
 }
 
-func isStringExpr(e *parser.Expr, env *types.Env) bool {
+func isString(e *parser.Expr, env *types.Env) bool {
 	if e == nil || e.Binary == nil {
 		return false
 	}
@@ -192,7 +192,7 @@ func isListUnary(u *parser.Unary, env *types.Env) bool {
 	return isListPostfix(u.Value, env)
 }
 
-func isListExpr(e *parser.Expr, env *types.Env) bool {
+func isList(e *parser.Expr, env *types.Env) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return false
 	}
@@ -230,7 +230,7 @@ func isMapUnary(u *parser.Unary, env *types.Env) bool {
 	return isMapPostfix(u.Value, env)
 }
 
-func isMapExpr(e *parser.Expr, env *types.Env) bool {
+func isMap(e *parser.Expr, env *types.Env) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return false
 	}
