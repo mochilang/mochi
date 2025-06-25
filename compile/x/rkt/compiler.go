@@ -1225,7 +1225,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, types.AnyType{}, true)
 		c.env = child
-		keyExpr, err := c.compileExpr(q.Group.Expr)
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
 			return "", err

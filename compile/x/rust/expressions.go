@@ -91,7 +91,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	// Handle simple grouping without joins or filters
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-		keyExpr, err := c.compileExpr(q.Group.Expr)
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			return "", err
 		}
@@ -104,7 +104,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if lt, ok := srcType.(types.ListType); ok {
 			elemType = lt.Elem
 		}
-		keyType := c.inferExprType(q.Group.Expr)
+		keyType := c.inferExprType(q.Group.Exprs[0])
 		retType := c.inferExprType(q.Select)
 		alias := sanitizeName(q.Group.Name)
 		var b strings.Builder

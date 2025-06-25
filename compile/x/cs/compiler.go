@@ -941,7 +941,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	v := sanitizeName(q.Var)
 
 	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-		keyExpr, err := c.compileExpr(q.Group.Expr)
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
 			return "", err

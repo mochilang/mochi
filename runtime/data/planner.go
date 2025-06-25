@@ -59,7 +59,7 @@ func BuildPlan(q *parser.QueryExpr) (Plan, error) {
 	}
 
 	if q.Group != nil {
-		root = &groupPlan{By: q.Group.Expr, Name: q.Group.Name, Input: root}
+		root = &groupPlan{By: q.Group.Exprs, Name: q.Group.Name, Input: root}
 	}
 
 	if q.Sort != nil {

@@ -1358,11 +1358,8 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				}
 				return nil, errUnknownField(p.Pos, field, t)
 			case GroupType:
-				if field == "key" {
-					typ = AnyType{}
-					continue
-				}
-				return nil, errUnknownField(p.Pos, field, t)
+				typ = AnyType{}
+				continue
 			case StringType:
 				if field == "contains" {
 					typ = FuncType{Params: []Type{StringType{}}, Return: BoolType{}}
@@ -1925,7 +1922,7 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 
 	var selT Type
 	if q.Group != nil {
-		if _, err := checkExpr(q.Group.Expr, child); err != nil {
+		if _, err := checkExpr(q.Group.Exprs[0], child); err != nil {
 			return nil, err
 		}
 		genv := NewEnv(child)

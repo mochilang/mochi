@@ -211,7 +211,20 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 			order := []string{}
 			for _, it := range items {
 				setEnv(it, alias)
-				key, err := eval(p.By)
+				var key any
+				if len(p.By) == 1 {
+					key, err = eval(p.By[0])
+				} else {
+					m := map[string]any{}
+					for idx, e := range p.By {
+						v, err2 := eval(e)
+						if err2 != nil {
+							return nil, "", err2
+						}
+						m[fmt.Sprintf("k%d", idx+1)] = v
+					}
+					key = m
+				}
 				if err != nil {
 					return nil, "", err
 				}

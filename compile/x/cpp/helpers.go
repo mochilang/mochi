@@ -166,7 +166,7 @@ func collectExprVars(e *parser.Expr, vars map[string]struct{}) {
 				collectExprVars(j.On, vars)
 			}
 			if p.Query.Group != nil {
-				collectExprVars(p.Query.Group.Expr, vars)
+				collectExprVars(p.Query.Group.Exprs[0], vars)
 			}
 			collectExprVars(p.Query.Select, vars)
 			collectExprVars(p.Query.Where, vars)

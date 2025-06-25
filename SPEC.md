@@ -634,7 +634,7 @@ QueryExpr     = "from" Identifier "in" Expression
                 [ "skip" Expression ]
                 [ "take" Expression ]
                 "select" Expression .
-GroupByClause = "group" "by" Expression "into" Identifier .
+GroupByClause = "group" "by" Expression { "," Expression } "into" Identifier .
 StructLiteral = Identifier "{" [ StructField { "," StructField } ] [ "," ] "}" .
 StructField   = Identifier ":" Expression .
 ParamList     = Param { "," Param } .

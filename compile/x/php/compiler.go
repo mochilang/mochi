@@ -831,7 +831,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, types.AnyType{}, true)
 		c.env = child
-		keyExpr, err := c.compileExpr(q.Group.Expr)
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1308,7 +1308,7 @@ func queryFreeVars(q *parser.QueryExpr, env *types.Env) []string {
 		scanExpr(j.On, vars)
 	}
 	if q.Group != nil {
-		scanExpr(q.Group.Expr, vars)
+		scanExpr(q.Group.Exprs[0], vars)
 	}
 	scanExpr(q.Select, vars)
 	scanExpr(q.Where, vars)

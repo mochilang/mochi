@@ -180,7 +180,7 @@ func exprVars(e *parser.Expr, vars map[string]bool) {
 			}
 			exprVars(p.Query.Where, vars)
 			if p.Query.Group != nil {
-				exprVars(p.Query.Group.Expr, vars)
+				exprVars(p.Query.Group.Exprs[0], vars)
 			}
 			exprVars(p.Query.Sort, vars)
 			exprVars(p.Query.Skip, vars)

@@ -86,7 +86,7 @@ func scanPrimaryVars(p *parser.Primary, vars map[string]struct{}) {
 			scanExprVars(j.On, vars)
 		}
 		if p.Query.Group != nil {
-			scanExprVars(p.Query.Group.Expr, vars)
+			scanExprVars(p.Query.Group.Exprs[0], vars)
 		}
 		scanExprVars(p.Query.Select, vars)
 		scanExprVars(p.Query.Where, vars)
