@@ -1540,6 +1540,95 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
+	if q.Group != nil {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			return "", err
+		}
+		oldEnv := c.env
+		genv := types.NewEnv(c.env)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		c.env = oldEnv
+		if err != nil {
+			return "", err
+		}
+		c.use("_Group")
+		var buf strings.Builder
+		buf.WriteString("(() {\n")
+		buf.WriteString("\tvar groups = <String,_Group>{};\n")
+		buf.WriteString("\tvar order = <String>[];\n")
+		buf.WriteString(fmt.Sprintf("\tfor (var %s in %s) {\n", v, src))
+		indent := "\t\t"
+		for i, fs := range fromSrcs {
+			buf.WriteString(fmt.Sprintf(indent+"for (var %s in %s) {\n", sanitizeName(q.Froms[i].Var), fs))
+			indent += "\t"
+		}
+		for i, js := range joinSrcs {
+			buf.WriteString(fmt.Sprintf(indent+"for (var %s in %s) {\n", sanitizeName(q.Joins[i].Var), js))
+			indent += "\t"
+			buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) {\n", joinOns[i]))
+			buf.WriteString(indent + "\tcontinue;\n")
+			buf.WriteString(indent + "}\n")
+		}
+		if where != "" {
+			buf.WriteString(indent + "if (!(" + where + ")) {\n")
+			buf.WriteString(indent + "\tcontinue;\n")
+			buf.WriteString(indent + "}\n")
+		}
+		buf.WriteString(fmt.Sprintf(indent+"var key = %s;\n", keyExpr))
+		buf.WriteString(indent + "var ks = key.toString();\n")
+		buf.WriteString(indent + "var g = groups[ks];\n")
+		buf.WriteString(indent + "if (g == null) {\n")
+		buf.WriteString(indent + "\tg = _Group(key);\n")
+		buf.WriteString(indent + "\tgroups[ks] = g;\n")
+		buf.WriteString(indent + "\torder.add(ks);\n")
+		buf.WriteString(indent + "}\n")
+		buf.WriteString(fmt.Sprintf(indent+"g.Items.add(%s);\n", v))
+		for i := len(joinSrcs) - 1; i >= 0; i-- {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		for i := len(fromSrcs) - 1; i >= 0; i-- {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		buf.WriteString("\t}\n")
+		buf.WriteString("\tvar items = [for (var k in order) groups[k]!];\n")
+		if sortExpr != "" {
+			name := sanitizeName(q.Group.Name)
+			buf.WriteString(fmt.Sprintf("\titems.sort((%sA, %sB) {\n", name, name))
+			buf.WriteString(fmt.Sprintf("\t\tvar %s = %sA;\n", name, name))
+			buf.WriteString(fmt.Sprintf("\t\tvar keyA = %s;\n", sortExpr))
+			buf.WriteString(fmt.Sprintf("\t\t%s = %sB;\n", name, name))
+			buf.WriteString(fmt.Sprintf("\t\tvar keyB = %s;\n", sortExpr))
+			buf.WriteString("\t\treturn Comparable.compare(keyA, keyB);\n")
+			buf.WriteString("\t});\n")
+		}
+		if skipExpr != "" {
+			buf.WriteString(fmt.Sprintf("\tvar skip = %s;\n", skipExpr))
+			buf.WriteString("\tif (skip < items.length) {\n")
+			buf.WriteString("\t\titems = items.sublist(skip);\n")
+			buf.WriteString("\t} else {\n")
+			buf.WriteString("\t\titems = [];\n")
+			buf.WriteString("\t}\n")
+		}
+		if takeExpr != "" {
+			buf.WriteString(fmt.Sprintf("\tvar take = %s;\n", takeExpr))
+			buf.WriteString("\tif (take < items.length) {\n")
+			buf.WriteString("\t\titems = items.sublist(0, take);\n")
+			buf.WriteString("\t}\n")
+		}
+		buf.WriteString("\tvar _res = [];\n")
+		buf.WriteString(fmt.Sprintf("\tfor (var %s in items) {\n", sanitizeName(q.Group.Name)))
+		buf.WriteString(fmt.Sprintf("\t\t_res.add(%s);\n", valExpr))
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn _res;\n")
+		buf.WriteString("})()")
+		return buf.String(), nil
+	}
+
 	if needsHelper {
 		varNames := []string{sanitizeName(q.Var)}
 		for _, f := range q.Froms {
