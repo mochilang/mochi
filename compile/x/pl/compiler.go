@@ -77,11 +77,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			name := "test_" + sanitizeAtom(strings.ReplaceAll(s.Test.Name, " ", "_"))
-			c.writeln(fmt.Sprintf("%s,", name))
-		}
+	for _, name := range c.tests {
+		c.writeln(fmt.Sprintf("%s,", name))
 	}
 	b := c.buf.Bytes()
 	if bytes.HasSuffix(b, []byte(",\n")) {

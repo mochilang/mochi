@@ -275,6 +275,15 @@ the Prolog interpreter is invoked:
 go test ./compile/pl -tags slow
 ```
 
+## Test Blocks and `expect`
+
+The Prolog backend supports `expect` statements for assertions and `test` blocks
+to group them. Each test block is compiled into a predicate named
+`test_<name>` which runs the block body. Compiled programs call all generated
+test predicates from `main/0`, so running the produced Prolog file executes the
+tests automatically. Failed expectations raise an exception with the message
+`expect failed`.
+
 ## Supported Features
 
 The Prolog backend can compile a subset of Mochi focused on core control flow and list processing. Currently implemented features include:
