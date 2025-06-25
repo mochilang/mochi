@@ -17,9 +17,9 @@ func main (regs=27)
 L1:
   Less         r10, r9, r3
   JumpIfFalse  r10, L0
-  // last = sum(n)
+  // last = sum_loop(n)
   Move         r11, r1
-  Call         r12, sum, r11
+  Call         r12, sum_loop, r11
   Move         r5, r12
   // for i in 0..repeat {
   Const        r13, 1
@@ -48,8 +48,8 @@ L0:
   JSON         r26
   Return       r0
 
-  // fun sum(n: int): int {
-func sum (regs=9)
+  // fun sum_loop(n: int): int {
+func sum_loop (regs=9)
   // var total = 0
   Const        r1, 0
   Move         r2, r1

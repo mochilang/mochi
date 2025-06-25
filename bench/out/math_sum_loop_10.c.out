@@ -58,7 +58,7 @@ static void _json_list_list_int(list_list_int v) {
     for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_list_int(v.data[i]); }
     printf("]");
 }
-int sum(int n){
+int sum_loop(int n){
 	int total = 0;
 	for (int i = 1; i < n; i++) {
 		total = (total + i);
@@ -72,7 +72,7 @@ int main() {
 	int last = 0;
 	long long start = _now();
 	for (int i = 0; i < repeat; i++) {
-		last = sum(n);
+		last = sum_loop(n);
 	}
 	int duration = (((_now() - start)) / 1000);
 	printf("{");
