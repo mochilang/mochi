@@ -11,8 +11,11 @@ let orders = [
 let valid_codes = ["13", "31", "23", "29", "30", "18", "17"]
 
 let avg_balance =
-  avg(c.c_acctbal for c in customer
-      where c.c_acctbal > 0.0 and substring(c.c_phone, 0, 2) in valid_codes)
+  avg(
+    from c in customer
+    where c.c_acctbal > 0.0 and substring(c.c_phone, 0, 2) in valid_codes
+    select c.c_acctbal
+  )
 
 let eligible_customers =
   from c in customer
