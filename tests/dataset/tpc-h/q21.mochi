@@ -1,0 +1,66 @@
+let nation = [
+  { n_nationkey: 1, n_name: "SAUDI ARABIA" },
+  { n_nationkey: 2, n_name: "FRANCE" }
+]
+
+let supplier = [
+  { s_suppkey: 100, s_name: "Desert Trade", s_nationkey: 1 },
+  { s_suppkey: 200, s_name: "Euro Goods", s_nationkey: 2 }
+]
+
+let orders = [
+  { o_orderkey: 500, o_orderstatus: "F" },
+  { o_orderkey: 600, o_orderstatus: "O" } // not finalized
+]
+
+let lineitem = [
+  {
+    l_orderkey: 500,
+    l_suppkey: 100,
+    l_receiptdate: "1995-04-15",
+    l_commitdate: "1995-04-10"
+  },
+  {
+    l_orderkey: 500,
+    l_suppkey: 200,
+    l_receiptdate: "1995-04-12",
+    l_commitdate: "1995-04-12"
+  },
+  {
+    l_orderkey: 600,
+    l_suppkey: 100,
+    l_receiptdate: "1995-05-01",
+    l_commitdate: "1995-04-25"
+  }
+]
+
+let result =
+  from s in supplier
+  join l1 in lineitem on s.s_suppkey == l1.l_suppkey
+  join o in orders on o.o_orderkey == l1.l_orderkey
+  join n in nation on n.n_nationkey == s.s_nationkey
+  where
+    o.o_orderstatus == "F" and
+    l1.l_receiptdate > l1.l_commitdate and
+    n.n_name == "SAUDI ARABIA" and
+    not exists (
+      x in lineitem
+      where
+        x.l_orderkey == l1.l_orderkey and
+        x.l_suppkey != l1.l_suppkey and
+        x.l_receiptdate > x.l_commitdate
+    )
+  group by s.s_name
+  select {
+    s_name: s.s_name,
+    numwait: count()
+  }
+  order by { numwait desc, s.s_name }
+
+print result
+
+test "Q21 returns Saudi suppliers who caused unique delivery delays" {
+  expect result == [
+    { s_name: "Desert Trade", numwait: 1 }
+  ]
+}

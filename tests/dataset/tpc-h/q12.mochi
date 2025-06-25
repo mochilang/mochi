@@ -1,0 +1,50 @@
+let orders = [
+  { o_orderkey: 1, o_orderpriority: "1-URGENT" },
+  { o_orderkey: 2, o_orderpriority: "3-MEDIUM" }
+]
+
+let lineitem = [
+  {
+    l_orderkey: 1,
+    l_shipmode: "MAIL",
+    l_commitdate: "1994-02-10",
+    l_receiptdate: "1994-02-15",
+    l_shipdate: "1994-02-05"
+  },
+  {
+    l_orderkey: 2,
+    l_shipmode: "SHIP",
+    l_commitdate: "1994-03-01",
+    l_receiptdate: "1994-02-28", // commitdate > receiptdate → excluded
+    l_shipdate: "1994-02-27"
+  }
+]
+
+let result =
+  from l in lineitem
+  where
+    l.l_shipmode in ["MAIL", "SHIP"] and
+    l.l_commitdate < l.l_receiptdate and
+    l.l_shipdate < l.l_commitdate and
+    l.l_receiptdate >= "1994-01-01" and
+    l.l_receiptdate < "1995-01-01"
+  join o in orders on o.o_orderkey == l.l_orderkey
+  group by l.l_shipmode
+  select {
+    l_shipmode: l.l_shipmode,
+    high_line_count: count(if o.o_orderpriority in ["1-URGENT", "2-HIGH"] then 1 else null),
+    low_line_count: count(if o.o_orderpriority not in ["1-URGENT", "2-HIGH"] then 1 else null)
+  }
+  order by l_shipmode
+
+print result
+
+test "Q12 counts lineitems by ship mode and priority" {
+  expect result == [
+    {
+      l_shipmode: "MAIL",
+      high_line_count: 1,
+      low_line_count: 0
+    }
+  ]
+}
