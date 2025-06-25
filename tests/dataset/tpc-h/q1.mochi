@@ -31,7 +31,10 @@ let lineitem = [
 let result =
   from row in lineitem
   where row.l_shipdate <= "1998-09-02"
-  group by { row.l_returnflag, row.l_linestatus }
+  group by {
+    returnflag: row.l_returnflag,
+    linestatus: row.l_linestatus
+  }
   select {
     returnflag: row.l_returnflag,
     linestatus: row.l_linestatus,
@@ -44,7 +47,10 @@ let result =
     avg_disc: avg(row.l_discount),
     count_order: count()
   }
-  order by { returnflag, linestatus }
+  order by {
+    returnflag: returnflag,
+    linestatus: linestatus
+  }
 
 print result
 
