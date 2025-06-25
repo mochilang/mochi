@@ -109,6 +109,10 @@ const (
 
 	helperSave = "fn _save<T>(_src: &[T], _path: &str) {\n" +
 		"}\n"
+
+	helperExpect = "fn expect(cond: bool) {\n" +
+		"    if !cond { panic!(\"expect failed\"); }\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -130,6 +134,7 @@ var helperMap = map[string]string{
 	"_fetch":        helperFetch,
 	"_load":         helperLoad,
 	"_save":         helperSave,
+	"expect":        helperExpect,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
