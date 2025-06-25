@@ -146,7 +146,8 @@ constructs:
 - Function definitions and calls
  - List and map literals with indexing and slicing
  - Dataset helpers `fetch`, `load` and `save`
- - Basic dataset queries with `from`/`where`/`select`, `sort by`, `skip` and `take`
+ - Dataset queries with `from`/`where`/`select`, joins, sorting and pagination
+ - Simple `group by` queries without filters or joins
 - Package declarations and importing of local packages
 
 ## Unsupported features

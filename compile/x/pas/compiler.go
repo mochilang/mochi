@@ -1311,9 +1311,55 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil {
-		return "", fmt.Errorf("unsupported query expression")
+	// simple grouping without joins or filters
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		orig := c.env
+		child := types.NewEnv(c.env)
+		srcType := types.TypeOfExpr(q.Source, c.env)
+		var elem types.Type = types.AnyType{}
+		if lt, ok := srcType.(types.ListType); ok {
+			elem = lt.Elem
+		}
+		child.SetVar(q.Var, elem, true)
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		elemType := typeString(types.TypeOfExpr(q.Select, genv))
+		if elemType == "" {
+			elemType = "integer"
+		}
+		groupType := typeString(elem)
+		tmpGrp := c.newTypedVar(fmt.Sprintf("specialize TArray<specialize _Group<%s>>", groupType))
+		c.use("_group_by")
+		c.use("_Group")
+		c.writeln(fmt.Sprintf("%s := specialize _group_by<%s>(%s, function(%s: %s): Variant begin Result := %s end);", tmpGrp, groupType, src, sanitizeName(q.Var), groupType, keyExpr))
+		tmpRes := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
+		c.writeln(fmt.Sprintf("SetLength(%s, 0);", tmpRes))
+		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Group.Name), tmpGrp))
+		c.writeln("begin")
+		c.indent++
+		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmpRes, tmpRes, valExpr))
+		c.indent--
+		c.writeln("end;")
+		return tmpRes, nil
 	}
+
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -1325,6 +1371,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		fromSrcs[i] = fs
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
 	}
 
 	orig := c.env
@@ -1343,18 +1397,44 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		child.SetVar(f.Var, fe, true)
 	}
+	for _, j := range q.Joins {
+		jt := types.TypeOfExpr(j.Src, child)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+	}
 	c.env = child
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinOns[i] = on
+	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
 		return "", err
 	}
-	var condStr, sortStr, skipStr, takeStr string
+	var condParts []string
+	var sortStr, skipStr, takeStr string
+	for i := range joinOns {
+		if joinOns[i] != "" {
+			condParts = append(condParts, joinOns[i])
+		}
+	}
 	if q.Where != nil {
-		condStr, err = c.compileExpr(q.Where)
+		cs, err := c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
+		}
+		if cs != "" {
+			condParts = append(condParts, cs)
 		}
 	}
 	if q.Sort != nil {
@@ -1378,6 +1458,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	condStr := strings.Join(condParts, " and ")
 	elemType := typeString(types.TypeOfExpr(q.Select, child))
 	if elemType == "" {
 		elemType = "integer"
@@ -1399,6 +1480,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.writeln("begin")
 		c.indent++
 	}
+	for i, js := range joinSrcs {
+		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Joins[i].Var), js))
+		c.writeln("begin")
+		c.indent++
+	}
 	if condStr != "" {
 		c.writeln("if " + condStr + " then")
 		c.writeln("begin")
@@ -1409,6 +1495,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", keyVar, keyVar, sortStr))
 	}
 	if condStr != "" {
+		c.indent--
+		c.writeln("end;")
+	}
+	for range joinSrcs {
 		c.indent--
 		c.writeln("end;")
 	}
@@ -1640,6 +1730,46 @@ func (c *Compiler) emitHelpers() {
 			c.indent++
 			c.writeln("if i > 0 then Result := Result + sep;")
 			c.writeln("Result := Result + parts[i];")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_Group":
+			c.writeln("generic _Group<T> = record")
+			c.indent++
+			c.writeln("Key: Variant;")
+			c.writeln("Items: specialize TArray<T>;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_group_by":
+			c.writeln("generic function _group_by<T>(src: specialize TArray<T>; keyfn: function(it: T): Variant): specialize TArray<specialize _Group<T>>;")
+			c.writeln("var i,j,idx: Integer; key: Variant; ks: string;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, 0);")
+			c.writeln("for i := 0 to High(src) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("key := keyfn(src[i]);")
+			c.writeln("ks := VarToStr(key);")
+			c.writeln("idx := -1;")
+			c.writeln("for j := 0 to High(Result) do")
+			c.indent++
+			c.writeln("if VarToStr(Result[j].Key) = ks then begin idx := j; Break; end;")
+			c.indent--
+			c.writeln("if idx = -1 then")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("idx := Length(Result);")
+			c.writeln("SetLength(Result, idx + 1);")
+			c.writeln("Result[idx].Key := key;")
+			c.writeln("SetLength(Result[idx].Items, 0);")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("SetLength(Result[idx].Items, Length(Result[idx].Items)+1);")
+			c.writeln("Result[idx].Items[High(Result[idx].Items)] := src[i];")
 			c.indent--
 			c.writeln("end;")
 			c.indent--
