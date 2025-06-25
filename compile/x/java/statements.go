@@ -54,7 +54,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	if stmt.Type != nil {
 		t = c.resolveTypeRef(stmt.Type)
 	} else if stmt.Value != nil {
-		t = c.inferExprType(stmt.Value)
+		t = c.exprType(stmt.Value)
 	} else if c.env != nil {
 		if tv, err := c.env.GetVar(stmt.Name); err == nil {
 			t = tv
@@ -85,7 +85,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	if stmt.Type != nil {
 		t = c.resolveTypeRef(stmt.Type)
 	} else if stmt.Value != nil {
-		t = c.inferExprTypeHint(stmt.Value, t)
+		t = c.exprTypeHint(stmt.Value, t)
 	} else if c.env != nil {
 		if tv, err := c.env.GetVar(stmt.Name); err == nil {
 			t = tv
@@ -217,7 +217,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		src += ".keySet()"
 	}
 	if c.env != nil {
-		t := c.inferExprType(stmt.Source)
+		t := c.exprType(stmt.Source)
 		switch tt := t.(type) {
 		case types.ListType:
 			c.env.SetVar(stmt.Name, tt.Elem, true)
