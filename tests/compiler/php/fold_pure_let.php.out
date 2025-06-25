@@ -1,8 +1,8 @@
 <?php
-function sum($n) {
-	return (($n * (($n + 1))) / 2);
+function mochi_sum($n) {
+	return ((is_int(($n * (((is_array($n) && is_array(1)) ? array_merge($n, 1) : ((is_string($n) || is_string(1)) ? ($n . 1) : ($n + 1)))))) && is_int(2)) ? intdiv(($n * (((is_array($n) && is_array(1)) ? array_merge($n, 1) : ((is_string($n) || is_string(1)) ? ($n . 1) : ($n + 1))))), 2) : (($n * (((is_array($n) && is_array(1)) ? array_merge($n, 1) : ((is_string($n) || is_string(1)) ? ($n . 1) : ($n + 1))))) / 2));
 }
 
 $n = 10;
-echo sum($n), PHP_EOL;
+echo mochi_sum($n), PHP_EOL;
 echo $n, PHP_EOL;

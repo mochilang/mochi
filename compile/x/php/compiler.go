@@ -916,16 +916,43 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\t$res = [];\n")
 		b.WriteString(fmt.Sprintf("\tforeach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", src, sanitizeName(q.Var)))
 		indent := "\t\t"
+
+		// determine earliest loop to apply predicate
+		condIdx := len(fromSrcs)
+		if q.Where != nil {
+			vars := exprVars(q.Where)
+			names := []string{q.Var}
+			for _, f := range q.Froms {
+				names = append(names, f.Var)
+			}
+			bound := map[string]struct{}{}
+			for i, n := range names {
+				bound[n] = struct{}{}
+				if subset(vars, bound) {
+					condIdx = i
+					break
+				}
+			}
+		}
+
+		if cond != "" && condIdx == 0 && len(fromSrcs) > 0 {
+			b.WriteString(indent + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+		}
 		for i, fs := range fromSrcs {
 			b.WriteString(fmt.Sprintf(indent+"foreach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", fs, sanitizeName(q.Froms[i].Var)))
 			indent += "\t"
+			if cond != "" && condIdx == i+1 && len(fromSrcs) > i+1 {
+				b.WriteString(indent + fmt.Sprintf("if (!(%s)) continue;\n", cond))
+			}
 		}
-		if cond != "" {
+
+		finalCond := cond != "" && condIdx >= len(fromSrcs)
+		if finalCond {
 			b.WriteString(indent + "if (" + cond + ") {\n")
 			indent += "\t"
 		}
 		b.WriteString(indent + "$res[] = " + sel + ";\n")
-		if cond != "" {
+		if finalCond {
 			indent = indent[:len(indent)-1]
 			b.WriteString(indent + "}\n")
 		}
@@ -1356,6 +1383,22 @@ func mutatedVars(stmts []*parser.Statement) map[string]bool {
 		walk(st)
 	}
 	return vars
+}
+
+// exprVars collects variable names referenced within e.
+func exprVars(e *parser.Expr) map[string]struct{} {
+	vars := map[string]struct{}{}
+	scanExpr(e, vars)
+	return vars
+}
+
+func subset(a, b map[string]struct{}) bool {
+	for k := range a {
+		if _, ok := b[k]; !ok {
+			return false
+		}
+	}
+	return true
 }
 
 func isComposite(t types.Type) bool {

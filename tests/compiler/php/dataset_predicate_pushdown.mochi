@@ -1,0 +1,9 @@
+let xs = [1, 2, 3]
+let ys = [10, 20]
+let res = from x in xs
+          from y in ys
+          where x > 1
+          select x * y
+for r in res {
+  print(r)
+}
