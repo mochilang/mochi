@@ -2172,6 +2172,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if retElem == "" {
 		retElem = "any"
 	}
+	varNames := []string{q.Var}
+	for _, f := range q.Froms {
+		varNames = append(varNames, f.Var)
+	}
+	for _, j := range q.Joins {
+		varNames = append(varNames, j.Var)
+	}
+	condStep := len(varNames) - 1
+	if q.Where != nil {
+		deps := map[string]struct{}{}
+		collectIdents(q.Where, deps)
+		idx := -1
+		for i, n := range varNames {
+			if _, ok := deps[n]; ok && i > idx {
+				idx = i
+			}
+		}
+		if idx >= 0 {
+			condStep = idx
+		} else {
+			condStep = 0
+		}
+	}
 
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		c.env = original
@@ -2420,8 +2443,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("\titems := []%s{}\n", elemGo))
 	}
 	indent := "\t"
+	step := 0
+	condOpened := false
 	buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", sanitizeName(q.Var), src))
 	indent += "\t"
+	if cond != "" && condStep == step {
+		buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+		indent += "\t"
+		condOpened = true
+	}
+	step++
 
 	for i := range q.Froms {
 		fvar := sanitizeName(q.Froms[i].Var)
@@ -2432,9 +2463,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", fmt.Errorf("query from source must be list")
 		}
 		indent += "\t"
+		if cond != "" && condStep == step {
+			buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+			indent += "\t"
+			condOpened = true
+		}
+		step++
 	}
 
 	specialJoin := len(q.Joins) == 1 && (joinSides[0] == "left")
+	if specialJoin {
+		condStep = len(varNames) - 1
+	}
 	if specialJoin {
 		jvar := sanitizeName(q.Joins[0].Var)
 		jsrc := joinSrcs[0]
@@ -2458,6 +2498,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			indent += "\t"
 			buf.WriteString(fmt.Sprintf(indent+"if !(%s) { continue }\n", joinOns[i]))
+			if cond != "" && condStep == step {
+				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+				indent += "\t"
+				condOpened = true
+			}
+			step++
 		}
 	}
 
@@ -2504,7 +2550,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		indent = indent[:len(indent)-1]
 		buf.WriteString(indent + "}\n")
 	} else {
-		if cond != "" {
+		if cond != "" && condStep > len(q.Froms)+len(q.Joins)-1 {
+			// condition after all loops
 			if simple {
 				buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
 				buf.WriteString(fmt.Sprintf(indent+"\t_res = append(_res, %s)\n", sel))
@@ -2522,6 +2569,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 
+		if condOpened {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
 		for i := len(q.Joins) - 1; i >= 0; i-- {
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
