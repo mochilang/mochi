@@ -1,0 +1,17 @@
+let people = [(let tbl = Hashtbl.create 2 in Hashtbl.add tbl "name" "Alice";Hashtbl.add tbl "age" 30; tbl); (let tbl = Hashtbl.create 2 in Hashtbl.add tbl "name" "Bob";Hashtbl.add tbl "age" 15; tbl); (let tbl = Hashtbl.create 2 in Hashtbl.add tbl "name" "Charlie";Hashtbl.add tbl "age" 65; tbl)];;
+let depts = [(let tbl = Hashtbl.create 1 in Hashtbl.add tbl "name" "HR"; tbl); (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "name" "IT"; tbl)];;
+let pairs = (let _res = ref [] in
+  List.iter (fun p ->
+    List.iter (fun d ->
+      if p.age >= 18 && d.name = "HR" then (
+        if p.age >= 18 && d.name = "HR" then (
+          _res := p.name ^ "-" + d.name :: !_res;
+        ) else ();
+      ) else ();
+    ) depts;
+  ) people;
+  let res = List.rev !_res in
+  res);;
+List.iter (fun it ->
+  print_endline (string_of_int (it));
+) pairs;;

@@ -1014,14 +1014,42 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	var condStr, sortStr, skipStr, takeStr string
+	var condStages [][]string
+	condStages = make([][]string, len(fromSrcs)+1)
 	if q.Where != nil {
-		condStr, err = c.compileExpr(q.Where)
-		if err != nil {
-			c.env = orig
-			return "", err
+		clauses := SplitAndClauses(q.Where)
+		for _, cl := range clauses {
+			vars := exprVars(cl)
+			stage := 0
+			for v := range vars {
+				idx := -1
+				if v == q.Var {
+					idx = 0
+				} else {
+					for i, f := range q.Froms {
+						if v == f.Var {
+							idx = i + 1
+							break
+						}
+					}
+				}
+				if idx == -1 {
+					stage = len(fromSrcs)
+					break
+				}
+				if idx > stage {
+					stage = idx
+				}
+			}
+			cs, err := c.compileExpr(cl)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			condStages[stage] = append(condStages[stage], cs)
 		}
 	}
+	var sortStr, skipStr, takeStr string
 	if q.Sort != nil {
 		sortStr, err = c.compileExpr(q.Sort)
 		if err != nil {
@@ -1050,12 +1078,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	indent := "  "
 	b.WriteString(fmt.Sprintf("%sList.iter (fun %s ->\n", indent, sanitizeName(q.Var)))
 	indent += "  "
+	cond0 := joinConds(condStages[0])
+	if cond0 != "" {
+		b.WriteString(fmt.Sprintf("%sif %s then (\n", indent, cond0))
+		indent += "  "
+	}
 	for i := range fromSrcs {
 		b.WriteString(fmt.Sprintf("%sList.iter (fun %s ->\n", indent, sanitizeName(q.Froms[i].Var)))
 		indent += "  "
+		cstr := joinConds(condStages[i+1])
+		if cstr != "" {
+			b.WriteString(fmt.Sprintf("%sif %s then (\n", indent, cstr))
+			indent += "  "
+		}
 	}
-	if condStr != "" {
-		b.WriteString(fmt.Sprintf("%sif %s then (\n", indent, condStr))
+	cfinal := joinConds(condStages[len(fromSrcs)])
+	if cfinal != "" {
+		b.WriteString(fmt.Sprintf("%sif %s then (\n", indent, cfinal))
 		indent += "  "
 	}
 	if sortStr != "" {
@@ -1063,13 +1102,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	} else {
 		b.WriteString(fmt.Sprintf("%s_res := %s :: !_res;\n", indent, sel))
 	}
-	if condStr != "" {
+	if cfinal != "" {
 		indent = indent[:len(indent)-2]
 		b.WriteString(fmt.Sprintf("%s) else ();\n", indent))
 	}
 	for i := len(fromSrcs) - 1; i >= 0; i-- {
+		if joinConds(condStages[i+1]) != "" {
+			indent = indent[:len(indent)-2]
+			b.WriteString(fmt.Sprintf("%s) else ();\n", indent))
+		}
 		indent = indent[:len(indent)-2]
 		b.WriteString(fmt.Sprintf("%s) %s;\n", indent, fromSrcs[i]))
+	}
+	if cond0 != "" {
+		indent = indent[:len(indent)-2]
+		b.WriteString(fmt.Sprintf("%s) else ();\n", indent))
 	}
 	indent = indent[:len(indent)-2]
 	b.WriteString(fmt.Sprintf("%s) %s;\n", indent, src))
@@ -1167,4 +1214,141 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func joinConds(conds []string) string {
+	if len(conds) == 0 {
+		return ""
+	}
+	if len(conds) == 1 {
+		return conds[0]
+	}
+	return strings.Join(conds, " && ")
+}
+
+func SplitAndClauses(e *parser.Expr) []*parser.Expr {
+	if e == nil {
+		return nil
+	}
+	if len(e.Binary.Right) == 0 {
+		return []*parser.Expr{e}
+	}
+	allAnd := true
+	for _, op := range e.Binary.Right {
+		if op.Op != "&&" {
+			allAnd = false
+			break
+		}
+	}
+	if !allAnd {
+		return []*parser.Expr{e}
+	}
+	clauses := []*parser.Expr{}
+	cur := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left, Right: nil}}
+	for _, op := range e.Binary.Right {
+		if op.Op == "&&" {
+			clauses = append(clauses, cur)
+			cur = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}, Right: nil}}
+		} else {
+			cur.Binary.Right = append(cur.Binary.Right, op)
+		}
+	}
+	clauses = append(clauses, cur)
+	return clauses
+}
+
+func exprVars(e *parser.Expr) map[string]bool {
+	vars := map[string]bool{}
+	var walkExpr func(*parser.Expr)
+	var walkUnary func(*parser.Unary)
+	var walkPost func(*parser.PostfixExpr)
+	var walkPrimary func(*parser.Primary)
+	walkExpr = func(ex *parser.Expr) {
+		if ex == nil {
+			return
+		}
+		if ex.Binary != nil {
+			walkUnary(ex.Binary.Left)
+			for _, op := range ex.Binary.Right {
+				walkPost(op.Right)
+			}
+		}
+	}
+	walkUnary = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		walkPost(u.Value)
+	}
+	walkPost = func(pf *parser.PostfixExpr) {
+		if pf == nil {
+			return
+		}
+		walkPrimary(pf.Target)
+		for _, op := range pf.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					walkExpr(a)
+				}
+			}
+			if op.Index != nil {
+				walkExpr(op.Index.Start)
+				walkExpr(op.Index.End)
+				walkExpr(op.Index.Step)
+			}
+		}
+	}
+	walkPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		if p.Selector != nil {
+			vars[p.Selector.Root] = true
+		}
+		if p.Group != nil {
+			walkExpr(p.Group)
+		}
+		if p.List != nil {
+			for _, e := range p.List.Elems {
+				walkExpr(e)
+			}
+		}
+		if p.Map != nil {
+			for _, it := range p.Map.Items {
+				walkExpr(it.Key)
+				walkExpr(it.Value)
+			}
+		}
+		if p.Struct != nil {
+			for _, f := range p.Struct.Fields {
+				walkExpr(f.Value)
+			}
+		}
+		if p.Call != nil {
+			for _, a := range p.Call.Args {
+				walkExpr(a)
+			}
+		}
+		if p.Query != nil {
+			walkExpr(p.Query.Source)
+			for _, f := range p.Query.Froms {
+				walkExpr(f.Src)
+			}
+			if p.Query.Where != nil {
+				walkExpr(p.Query.Where)
+			}
+		}
+		if p.If != nil {
+			walkExpr(p.If.Cond)
+		}
+		if p.Match != nil {
+			walkExpr(p.Match.Target)
+			for _, cs := range p.Match.Cases {
+				walkExpr(cs.Pattern)
+				walkExpr(cs.Result)
+			}
+		}
+	}
+	walkExpr(e)
+	return vars
 }
