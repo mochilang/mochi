@@ -95,27 +95,27 @@ func isSimpleIdent(s string) bool {
 // --- helpers ---
 
 func (c *Compiler) isListExpr(e *parser.Expr) bool {
-	_, ok := c.inferExprType(e).(types.ListType)
+	_, ok := types.TypeOfExpr(e, c.env).(types.ListType)
 	return ok
 }
 
 func (c *Compiler) isListBinary(b *parser.BinaryExpr) bool {
-	_, ok := c.inferBinaryType(b).(types.ListType)
+	_, ok := types.TypeOfBinary(b, c.env).(types.ListType)
 	return ok
 }
 
 func (c *Compiler) isListUnary(u *parser.Unary) bool {
-	_, ok := c.inferUnaryType(u).(types.ListType)
+	_, ok := types.TypeOfUnary(u, c.env).(types.ListType)
 	return ok
 }
 
 func (c *Compiler) isListPostfix(p *parser.PostfixExpr) bool {
-	_, ok := c.inferPostfixType(p).(types.ListType)
+	_, ok := types.TypeOfPostfix(p, c.env).(types.ListType)
 	return ok
 }
 
 func (c *Compiler) isListPrimary(p *parser.Primary) bool {
-	_, ok := c.inferPrimaryType(p).(types.ListType)
+	_, ok := types.TypeOfPrimary(p, c.env).(types.ListType)
 	return ok
 }
 
@@ -168,52 +168,52 @@ func identName(e *parser.Expr) (string, bool) {
 }
 
 func (c *Compiler) isStringExpr(e *parser.Expr) bool {
-	_, ok := c.inferExprType(e).(types.StringType)
+	_, ok := types.TypeOfExpr(e, c.env).(types.StringType)
 	return ok
 }
 
 func (c *Compiler) isStringBinary(b *parser.BinaryExpr) bool {
-	_, ok := c.inferBinaryType(b).(types.StringType)
+	_, ok := types.TypeOfBinary(b, c.env).(types.StringType)
 	return ok
 }
 
 func (c *Compiler) isStringUnary(u *parser.Unary) bool {
-	_, ok := c.inferUnaryType(u).(types.StringType)
+	_, ok := types.TypeOfUnary(u, c.env).(types.StringType)
 	return ok
 }
 
 func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
-	_, ok := c.inferPostfixType(p).(types.StringType)
+	_, ok := types.TypeOfPostfix(p, c.env).(types.StringType)
 	return ok
 }
 
 func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
-	_, ok := c.inferPrimaryType(p).(types.StringType)
+	_, ok := types.TypeOfPrimary(p, c.env).(types.StringType)
 	return ok
 }
 
 func (c *Compiler) isMapExpr(e *parser.Expr) bool {
-	_, ok := c.inferExprType(e).(types.MapType)
+	_, ok := types.TypeOfExpr(e, c.env).(types.MapType)
 	return ok
 }
 
 func (c *Compiler) isMapBinary(b *parser.BinaryExpr) bool {
-	_, ok := c.inferBinaryType(b).(types.MapType)
+	_, ok := types.TypeOfBinary(b, c.env).(types.MapType)
 	return ok
 }
 
 func (c *Compiler) isMapUnary(u *parser.Unary) bool {
-	_, ok := c.inferUnaryType(u).(types.MapType)
+	_, ok := types.TypeOfUnary(u, c.env).(types.MapType)
 	return ok
 }
 
 func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
-	_, ok := c.inferPostfixType(p).(types.MapType)
+	_, ok := types.TypeOfPostfix(p, c.env).(types.MapType)
 	return ok
 }
 
 func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
-	_, ok := c.inferPrimaryType(p).(types.MapType)
+	_, ok := types.TypeOfPrimary(p, c.env).(types.MapType)
 	return ok
 }
 
