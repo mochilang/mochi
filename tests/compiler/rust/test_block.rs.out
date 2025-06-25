@@ -1,6 +1,6 @@
 fn test_addition_works() {
     let mut x = 1 + 2;
-    assert!(x == 3);
+    expect(x == 3);
 }
 
 fn main() {
