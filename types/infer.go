@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"strings"
 
+	"mochi/ast"
 	"mochi/parser"
 )
 
@@ -615,3 +616,426 @@ func SimpleStringKey(e *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+// NodeType returns the static type of the given AST node using env when
+// available. It handles only a subset of node kinds sufficient for the COBOL
+// backend.
+func NodeType(n *ast.Node, env *Env) Type {
+	if n == nil {
+		return AnyType{}
+	}
+	switch n.Kind {
+	case "int":
+		return IntType{}
+	case "float":
+		return FloatType{}
+	case "string":
+		return StringType{}
+	case "bool":
+		return BoolType{}
+	case "list":
+		var elem Type = AnyType{}
+		if len(n.Children) > 0 {
+			elem = NodeType(n.Children[0], env)
+		}
+		return ListType{Elem: elem}
+	case "selector":
+		if env != nil {
+			if t, err := env.GetVar(n.Value.(string)); err == nil {
+				return t
+			}
+		}
+		return AnyType{}
+	case "call":
+		if env != nil {
+			if t, err := env.GetVar(n.Value.(string)); err == nil {
+				if ft, ok := t.(FuncType); ok {
+					return ft.Return
+				}
+			}
+		}
+		return AnyType{}
+	case "binary":
+		lt := NodeType(n.Children[0], env)
+		rt := NodeType(n.Children[1], env)
+		op := n.Value.(string)
+		switch op {
+		case "+", "-", "*", "/", "%":
+			if isFloat(lt) || isFloat(rt) {
+				return FloatType{}
+			}
+			if isInt(lt) && isInt(rt) {
+				return IntType{}
+			}
+			if op == "+" && isString(lt) && isString(rt) {
+				return StringType{}
+			}
+			if op == "+" && isList(lt) && isList(rt) {
+				llt := lt.(ListType)
+				rlt := rt.(ListType)
+				if equalTypes(llt.Elem, rlt.Elem) {
+					return llt
+				}
+			}
+			return AnyType{}
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||":
+			return BoolType{}
+		}
+	case "group":
+		return NodeType(n.Children[0], env)
+	case "unary":
+		return NodeType(n.Children[0], env)
+	case "index":
+		base := NodeType(n.Children[0], env)
+		if lt, ok := base.(ListType); ok {
+			if len(n.Children) > 1 && (n.Children[1].Kind == "start" || n.Children[1].Kind == "end" || len(n.Children) > 2) {
+				return lt
+			}
+			return lt.Elem
+		}
+		if isString(base) {
+			return StringType{}
+		}
+	case "if_expr":
+		thenT := NodeType(n.Children[1], env)
+		if len(n.Children) > 2 {
+			elseT := NodeType(n.Children[2], env)
+			if equalTypes(thenT, elseT) {
+				return thenT
+			}
+			return AnyType{}
+		}
+		return thenT
+	case "match":
+		var t Type
+		for _, cs := range n.Children[1:] {
+			r := NodeType(cs.Children[1], env)
+			if t == nil {
+				t = r
+				continue
+			}
+			if !equalTypes(t, r) {
+				t = AnyType{}
+			}
+		}
+		if t == nil {
+			return AnyType{}
+		}
+		return t
+	}
+	return AnyType{}
+}
+
+// IsString reports whether n has static type string.
+func IsString(n *ast.Node, env *Env) bool {
+	_, ok := NodeType(n, env).(StringType)
+	return ok
+}
+
+// IsFloat reports whether n has static type float.
+func IsFloat(n *ast.Node, env *Env) bool {
+	_, ok := NodeType(n, env).(FloatType)
+	return ok
+}
+
+// IsList reports whether n has static list type.
+func IsList(n *ast.Node, env *Env) bool {
+	_, ok := NodeType(n, env).(ListType)
+	return ok
+}
+
+// PlExprType performs minimal type inference used by the Prolog compiler.
+// It distinguishes literals, lists, maps and known variable references.
+func PlExprType(e *parser.Expr, env *Env) Type {
+	if e == nil {
+		return AnyType{}
+	}
+	if id, ok := identName(e); ok && env != nil {
+		if t, err := env.GetVar(id); err == nil {
+			return t
+		}
+	}
+	return PlUnaryType(e.Binary.Left, env)
+}
+
+// PlPostfixType returns the static type of p using env.
+func PlPostfixType(p *parser.PostfixExpr, env *Env) Type {
+	if p == nil {
+		return AnyType{}
+	}
+	t := PlPrimaryType(p.Target, env)
+	for _, op := range p.Ops {
+		if op.Cast != nil {
+			t = ResolveTypeRef(op.Cast.Type, env)
+		} else if op.Index != nil && op.Index.Colon == nil {
+			switch tt := t.(type) {
+			case ListType:
+				t = tt.Elem
+			case MapType:
+				t = tt.Value
+			case StringType:
+				t = StringType{}
+			default:
+				t = AnyType{}
+			}
+		} else if op.Index != nil {
+			switch tt := t.(type) {
+			case ListType:
+				t = tt
+			case StringType:
+				t = StringType{}
+			default:
+				t = AnyType{}
+			}
+		} else if op.Call != nil {
+			if ft, ok := t.(FuncType); ok {
+				t = ft.Return
+			} else {
+				t = AnyType{}
+			}
+		}
+	}
+	return t
+}
+
+// PlUnaryType returns the static type of u using env.
+func PlUnaryType(u *parser.Unary, env *Env) Type {
+	if u == nil {
+		return AnyType{}
+	}
+	return PlPostfixType(u.Value, env)
+}
+
+// PlPrimaryType returns the static type of p using env.
+func PlPrimaryType(p *parser.Primary, env *Env) Type {
+	if p == nil {
+		return AnyType{}
+	}
+	switch {
+	case p.Lit != nil:
+		switch {
+		case p.Lit.Str != nil:
+			return StringType{}
+		case p.Lit.Int != nil:
+			return IntType{}
+		case p.Lit.Float != nil:
+			return FloatType{}
+		case p.Lit.Bool != nil:
+			return BoolType{}
+		}
+	case p.List != nil:
+		return ListType{Elem: AnyType{}}
+	case p.Map != nil:
+		return MapType{Key: AnyType{}, Value: AnyType{}}
+	case p.Struct != nil:
+		if env != nil {
+			if st, ok := env.GetStruct(p.Struct.Name); ok {
+				return st
+			}
+		}
+		return AnyType{}
+	case p.Selector != nil:
+		if env != nil {
+			if len(p.Selector.Tail) > 0 {
+				full := p.Selector.Root + "." + strings.Join(p.Selector.Tail, ".")
+				if t, err := env.GetVar(full); err == nil {
+					return t
+				}
+			}
+			if t, err := env.GetVar(p.Selector.Root); err == nil {
+				return t
+			}
+		}
+	}
+	return AnyType{}
+}
+
+// PasExprType infers the Mochi type of expression e using env and optional
+// variable type hints.
+func PasExprType(e *parser.Expr, env *Env, vars map[string]string) Type {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return IntType{}
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return IntType{}
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) > 0 {
+		return IntType{}
+	}
+	return PasPrimaryType(p.Target, env, vars)
+}
+
+// PasPrimaryType infers the Mochi type of primary expression p using env and
+// optional variable type hints.
+func PasPrimaryType(p *parser.Primary, env *Env, vars map[string]string) Type {
+	switch {
+	case p == nil:
+		return IntType{}
+	case p.Lit != nil:
+		switch {
+		case p.Lit.Str != nil:
+			return StringType{}
+		case p.Lit.Bool != nil:
+			return BoolType{}
+		case p.Lit.Float != nil:
+			return FloatType{}
+		default:
+			return IntType{}
+		}
+	case p.Selector != nil:
+		if env != nil {
+			if t, err := env.GetVar(p.Selector.Root); err == nil {
+				return t
+			}
+		}
+		if vars != nil {
+			if v, ok := vars[p.Selector.Root]; ok {
+				return parsePasType(v)
+			}
+		}
+	case p.Struct != nil:
+		return StructType{Name: p.Struct.Name}
+	case p.List != nil:
+		var elem Type = IntType{}
+		if len(p.List.Elems) > 0 {
+			elem = PasExprType(p.List.Elems[0], env, vars)
+		}
+		return ListType{Elem: elem}
+	case p.FunExpr != nil:
+		params := make([]Type, len(p.FunExpr.Params))
+		for i, pa := range p.FunExpr.Params {
+			params[i] = ResolveTypeRef(pa.Type, env)
+		}
+		ret := ResolveTypeRef(p.FunExpr.Return, env)
+		return FuncType{Params: params, Return: ret}
+	}
+	return IntType{}
+}
+
+// parsePasType converts a Pascal type string used by the compiler into a Type.
+func parsePasType(s string) Type {
+	switch s {
+	case "integer":
+		return IntType{}
+	case "double":
+		return FloatType{}
+	case "string":
+		return StringType{}
+	case "boolean":
+		return BoolType{}
+	case "char":
+		return StringType{}
+	}
+	if strings.HasPrefix(s, "specialize TArray<") && strings.HasSuffix(s, ">") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(s, "specialize TArray<"), ">")
+		return ListType{Elem: parsePasType(strings.TrimSpace(inner))}
+	}
+	if strings.HasPrefix(s, "specialize TFPGMap<") && strings.HasSuffix(s, ">") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(s, "specialize TFPGMap<"), ">")
+		parts := strings.SplitN(inner, ",", 2)
+		if len(parts) == 2 {
+			return MapType{Key: parsePasType(strings.TrimSpace(parts[0])), Value: parsePasType(strings.TrimSpace(parts[1]))}
+		}
+	}
+	if strings.HasPrefix(s, "function(") || strings.HasPrefix(s, "procedure(") {
+		proc := strings.HasPrefix(s, "procedure(")
+		endIdx := strings.Index(s, ")")
+		if endIdx > 0 {
+			paramsPart := s[strings.Index(s, "(")+1 : endIdx]
+			rest := strings.TrimSpace(s[endIdx+1:])
+			var ret Type = VoidType{}
+			if !proc {
+				if strings.HasPrefix(rest, ":") {
+					ret = parsePasType(strings.TrimSpace(rest[1:]))
+				}
+			}
+			parts := []Type{}
+			if strings.TrimSpace(paramsPart) != "" {
+				for _, p := range strings.Split(paramsPart, ";") {
+					parts = append(parts, parsePasType(strings.TrimSpace(p)))
+				}
+			}
+			return FuncType{Params: parts, Return: ret}
+		}
+	}
+	if s != "" {
+		return StructType{Name: s}
+	}
+	return IntType{}
+}
+
+// TypeOfExprBasic performs lightweight type inference for dynamic backends.
+// It distinguishes literals, lists, maps and known variable references.
+func TypeOfExprBasic(e *parser.Expr, env *Env) Type {
+	if e == nil {
+		return AnyType{}
+	}
+	if id, ok := identName(e); ok && env != nil {
+		if t, err := env.GetVar(id); err == nil {
+			return t
+		}
+	}
+	return TypeOfPostfixBasic(e.Binary.Left, env)
+}
+
+// TypeOfPostfixBasic infers the type of a unary expression using simple rules.
+func TypeOfPostfixBasic(u *parser.Unary, env *Env) Type {
+	if u == nil {
+		return AnyType{}
+	}
+	t := TypeOfPrimaryBasic(u.Value.Target, env)
+	for _, op := range u.Value.Ops {
+		if op.Cast != nil {
+			t = ResolveTypeRef(op.Cast.Type, env)
+		}
+	}
+	return t
+}
+
+// TypeOfPrimaryBasic infers the type of a primary expression using simple rules.
+func TypeOfPrimaryBasic(p *parser.Primary, env *Env) Type {
+	if p == nil {
+		return AnyType{}
+	}
+	switch {
+	case p.Lit != nil:
+		switch {
+		case p.Lit.Str != nil:
+			return StringType{}
+		case p.Lit.Int != nil:
+			return IntType{}
+		case p.Lit.Float != nil:
+			return FloatType{}
+		case p.Lit.Bool != nil:
+			return BoolType{}
+		}
+	case p.List != nil:
+		return ListType{Elem: AnyType{}}
+	case p.Map != nil:
+		return MapType{Key: AnyType{}, Value: AnyType{}}
+	case p.Selector != nil:
+		if env != nil {
+			if len(p.Selector.Tail) > 0 {
+				full := p.Selector.Root + "." + strings.Join(p.Selector.Tail, ".")
+				if t, err := env.GetVar(full); err == nil {
+					return t
+				}
+			}
+			if t, err := env.GetVar(p.Selector.Root); err == nil {
+				return t
+			}
+		}
+	}
+	return AnyType{}
+}
+
+// IsListType reports whether t is a list type.
+func IsListType(t Type) bool { return isList(t) }
+
+// IsMapType reports whether t is a map type.
+func IsMapType(t Type) bool { _, ok := t.(MapType); return ok }
+
+// IsStringType reports whether t is a string type.
+func IsStringType(t Type) bool { return isString(t) }
