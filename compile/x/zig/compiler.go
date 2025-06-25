@@ -560,7 +560,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil {
 		return "", fmt.Errorf("unsupported query features")
 	}
 
@@ -591,6 +591,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	var skipExpr, takeExpr string
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip, false)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take, false)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
 	resType := zigTypeOf(c.inferExprType(q.Select))
 	c.env = orig
 
@@ -602,7 +617,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(" if (!(" + cond + ")) continue;")
 	}
 	b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
-	b.WriteString(" break :blk " + tmp + ".toOwnedSlice() catch unreachable; }")
+	resVar := c.newTmp()
+	b.WriteString(" var " + resVar + " = " + tmp + ".toOwnedSlice() catch unreachable;")
+	if skipExpr != "" || takeExpr != "" {
+		c.needsSlice = true
+		start := "0"
+		if skipExpr != "" {
+			start = skipExpr
+		}
+		end := fmt.Sprintf("@as(i32, @intCast(%s.len))", resVar)
+		if takeExpr != "" {
+			if skipExpr != "" {
+				end = fmt.Sprintf("(%s + %s)", skipExpr, takeExpr)
+			} else {
+				end = takeExpr
+			}
+		}
+		elem := strings.TrimPrefix(resType, "[]const ")
+		b.WriteString(" " + resVar + " = _slice_list(" + elem + ", " + resVar + ", " + start + ", " + end + ", 1);")
+	}
+	b.WriteString(" break :blk " + resVar + "; }")
 	return b.String(), nil
 }
 
