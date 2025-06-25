@@ -242,8 +242,8 @@ This backend implements only a subset of Mochi. It handles basic statements, loo
 
 The Swift backend still lacks support for a number of language capabilities:
 
-- Advanced dataset queries with grouping, joins, sorting or pagination. Simple
-  ``from ... where ... select`` loops (with optional cross joins) are handled.
+- Dataset queries with left, right or outer joins. Inner joins along with
+  grouping, sorting and pagination are supported.
 - Type inference for empty collections
 - Streams, agents and intent handlers
  - The ``generate`` expression for LLM integration
