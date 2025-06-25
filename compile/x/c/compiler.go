@@ -908,6 +908,70 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 	return name
 }
 
+// compileQueryExpr generates C code for a basic dataset query supporting
+// `from` with an optional `where` and `select` clause. Advanced features like
+// joins, grouping and sorting are not yet implemented.
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
+	// only handle simple queries without joins or grouping
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "0"
+	}
+
+	src := c.compileExpr(q.Source)
+	srcT := c.exprType(q.Source)
+	lt, ok := srcT.(types.ListType)
+	if !ok {
+		return "0"
+	}
+
+	elemType := lt.Elem
+	elemC := cTypeFromType(elemType)
+	oldEnv := c.env
+	if c.env != nil {
+		c.env = types.NewEnv(c.env)
+		c.env.SetVar(q.Var, elemType, true)
+	}
+	var cond string
+	if q.Where != nil {
+		cond = c.compileExpr(q.Where)
+	}
+	val := c.compileExpr(q.Select)
+	retT := c.exprType(q.Select)
+	retList := types.ListType{Elem: retT}
+	listC := cTypeFromType(retList)
+	if listC == "" {
+		listC = "list_int"
+	}
+	if listC == "list_string" {
+		c.need(needListString)
+	} else if listC == "list_float" {
+		c.need(needListFloat)
+	} else if listC == "list_list_int" {
+		c.need(needListListInt)
+	}
+
+	res := c.newTemp()
+	idx := c.newTemp()
+	iter := c.newTemp()
+	c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, res, listC, src))
+	c.writeln(fmt.Sprintf("int %s = 0;", idx))
+	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src, iter))
+	c.indent++
+	c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, sanitizeName(q.Var), src, iter))
+	if cond != "" {
+		c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+	}
+	c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+	c.writeln(fmt.Sprintf("%s++;", idx))
+	c.indent--
+	c.writeln("}")
+	c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+	if c.env != nil {
+		c.env = oldEnv
+	}
+	return res
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeln("static void " + name + "() {")
@@ -1540,6 +1604,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Group != nil:
