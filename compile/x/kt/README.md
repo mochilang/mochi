@@ -15,6 +15,7 @@ The Kotlin backend converts Mochi programs into Kotlin source files so they can 
 - List set operators `union`, `union_all`, `except` and `intersect`
 - List concatenation with `+`
 - Basic stream handling with `stream`, `on` and `emit`
+- Basic testing with `test` blocks and `expect` assertions
 - YAML dataset loading and saving
 - Extern variables, functions and objects via `ExternRegistry`
 - True 64-bit integers using Kotlin `Long`
