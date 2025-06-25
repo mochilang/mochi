@@ -104,7 +104,7 @@ const sliceHelper = `(define (_slice obj i j)
     (when (< start 0) (set! start 0))
     (when (> end n) (set! end n))
     (when (< end start) (set! end start))
-    (if (string? obj)
+        (if (string? obj)
         (substring obj start end)
         (let loop ((idx 0) (xs obj) (out '()))
           (if (or (null? xs) (>= idx end))
@@ -113,6 +113,22 @@ const sliceHelper = `(define (_slice obj i j)
                     (if (>= idx start)
                         (cons (car xs) out)
                         out))))))`
+
+const testHelpers = `(define failures 0)
+(define (print-test-start name)
+  (display "   test ") (display name) (display " ..."))
+(define (print-test-pass) (display " ok") (newline))
+(define (print-test-fail err) (display " fail ") (display err) (newline))
+(define (run-test name thunk)
+  (print-test-start name)
+  (let ((ok #t))
+    (with-exception-handler
+      (lambda (e)
+        (set! ok #f)
+        (set! failures (+ failures 1))
+        (print-test-fail e))
+      (lambda () (thunk)))
+    (when ok (print-test-pass))))`
 
 // Compiler translates a Mochi AST into Scheme source code (minimal subset).
 type Compiler struct {
@@ -129,7 +145,12 @@ type Compiler struct {
 	needSlice      bool
 	loops          []loopCtx
 	mainStmts      []*parser.Statement
-	tests          []string
+	tests          []testInfo
+}
+
+type testInfo struct {
+	name  string
+	label string
 }
 
 type loopCtx struct {
@@ -182,7 +203,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, mainStmts: nil, tests: nil}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, mainStmts: nil, tests: []testInfo{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -238,11 +259,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	for _, name := range c.tests {
-		c.writeln("(" + name + ")")
+	if len(c.tests) > 0 {
+		for _, t := range c.tests {
+			c.writeln(fmt.Sprintf("(run-test %q %s)", t.label, t.name))
+		}
+		c.writeln("(when (> failures 0) (display \"\\n[FAIL] \") (display failures) (display \" test(s) failed.\\n\"))")
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice {
+	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || len(c.tests) > 0 {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -281,6 +305,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if c.needSlice {
 			pre.WriteString(sliceHelper)
+			pre.WriteByte('\n')
+		}
+		if len(c.tests) > 0 {
+			pre.WriteString(testHelpers)
 			pre.WriteByte('\n')
 		}
 		if pre.Len() > 0 {
@@ -456,7 +484,7 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool) {
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
-	c.tests = append(c.tests, name)
+	c.tests = append(c.tests, testInfo{name: name, label: t.Name})
 	c.writeln(fmt.Sprintf("(define (%s)", name))
 	c.indent++
 	for _, st := range t.Body {
