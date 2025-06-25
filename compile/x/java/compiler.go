@@ -15,6 +15,7 @@ type Compiler struct {
 	indent       int
 	env          *types.Env
 	mainStmts    []*parser.Statement
+	earlyStmts   []*parser.Statement
 	tests        []*parser.TestBlock
 	helpers      map[string]bool
 	structs      map[string]bool
@@ -29,6 +30,7 @@ func New(env *types.Env) *Compiler {
 		helpers:      make(map[string]bool),
 		structs:      make(map[string]bool),
 		tests:        []*parser.TestBlock{},
+		earlyStmts:   []*parser.Statement{},
 		tempVarCount: 0,
 	}
 }
@@ -53,23 +55,31 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	// collect function and test declarations, and main statements
-	for _, s := range prog.Statements {
-		if s.Fun != nil {
+	for i, s := range prog.Statements {
+		switch {
+		case s.Fun != nil:
 			if err := c.compileFun(s.Fun); err != nil {
 				return nil, err
 			}
 			c.writeln("")
-			continue
-		}
-		if s.Test != nil {
+		case s.Test != nil:
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
 			c.tests = append(c.tests, s.Test)
 			c.writeln("")
-			continue
+		case (s.Let != nil || s.Var != nil) && hasLaterTest(prog, i):
+			c.earlyStmts = append(c.earlyStmts, s)
+		default:
+			c.mainStmts = append(c.mainStmts, s)
 		}
-		c.mainStmts = append(c.mainStmts, s)
+	}
+
+	for _, s := range c.earlyStmts {
+		if err := c.compileStmt(s); err != nil {
+			return nil, err
+		}
+		c.writeln("")
 	}
 
 	if len(c.mainStmts) > 0 || len(c.tests) > 0 {
@@ -196,6 +206,15 @@ func (c *Compiler) compileStructType(st types.StructType) {
 			c.compileStructType(sub)
 		}
 	}
+}
+
+func hasLaterTest(prog *parser.Program, idx int) bool {
+	for _, s := range prog.Statements[idx+1:] {
+		if s.Test != nil {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
