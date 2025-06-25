@@ -259,3 +259,15 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("")
 	}
 }
+
+func (c *Compiler) writeExpectFunc() {
+	if !c.needsExpect {
+		return
+	}
+	c.writeln("fn expect(cond: bool) void {")
+	c.indent++
+	c.writeln("if (!cond) @panic(\"expect failed\");")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+}

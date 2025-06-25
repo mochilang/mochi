@@ -34,10 +34,12 @@ type Compiler struct {
 	needsEqual        bool
 	needsMapKeys      bool
 	needsMapValues    bool
+	needsExpect       bool
+	tests             []string
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, imports: map[string]string{}, structs: map[string]bool{}}
+	return &Compiler{env: env, imports: map[string]string{}, structs: map[string]bool{}, tests: []string{}}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -90,6 +92,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
+	for _, name := range c.tests {
+		c.writeln(name + "();")
+	}
 	c.indent--
 	c.writeln("}")
 
@@ -101,6 +106,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(fmt.Sprintf("const %s = @import(\"%s\");", alias, path))
 	}
 	c.writeln("")
+	c.writeExpectFunc()
 	c.writeBuiltins()
 	c.buf.WriteString(body)
 	return c.buf.Bytes(), nil
@@ -158,7 +164,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTest(tb *parser.TestBlock) error {
-	c.writeln(fmt.Sprintf("test \"%s\" {", tb.Name))
+	name := "test_" + sanitizeName(tb.Name)
+	c.tests = append(c.tests, name)
+	c.writeln(fmt.Sprintf("fn %s() void {", name))
 	c.indent++
 	for _, st := range tb.Body {
 		if err := c.compileStmt(st, true); err != nil {
@@ -448,7 +456,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("try std.testing.expect(%s);", expr))
+		c.needsExpect = true
+		c.writeln(fmt.Sprintf("expect(%s);", expr))
 		return nil
 	default:
 		return fmt.Errorf("unsupported statement")

@@ -253,6 +253,18 @@ var zigReserved = map[string]bool{
 
 【F:compile/zig/compiler.go†L1119-L1121】
 
+### Test Blocks
+
+`test` blocks are emitted as regular functions named `test_<name>` and invoked
+from `main`. Expectations use a simple helper:
+
+```zig
+fn expect(cond: bool) void {
+if (!cond) @panic("expect failed");
+}
+```
+
+
 ### Dataset Queries
 
 `compileQueryExpr` lowers `from`/`where`/`select` expressions into loops that
