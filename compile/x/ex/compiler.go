@@ -426,6 +426,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	for _, j := range q.Joins {
 		child.SetVar(j.Var, types.AnyType{}, true)
 	}
+	hasSide := false
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			hasSide = true
+			break
+		}
+	}
 	c.env = child
 
 	// simple group-by without joins or filters
@@ -486,7 +493,106 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = orig
 
-	if len(q.Froms) > 0 || len(q.Joins) > 0 {
+	if hasSide {
+		fromSrcs := make([]string, len(q.Froms))
+		varNames := []string{sanitizeName(q.Var)}
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				return "", err
+			}
+			fromSrcs[i] = fs
+			varNames = append(varNames, sanitizeName(f.Var))
+		}
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		joinLeft := make([]bool, len(q.Joins))
+		joinRight := make([]bool, len(q.Joins))
+		paramCopy := append([]string(nil), varNames...)
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				return "", err
+			}
+			joinSrcs[i] = js
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				return "", err
+			}
+			joinOns[i] = on
+			if j.Side != nil {
+				switch *j.Side {
+				case "left":
+					joinLeft[i] = true
+				case "right":
+					joinRight[i] = true
+				case "outer":
+					joinLeft[i] = true
+					joinRight[i] = true
+				}
+			}
+			paramCopy = append(paramCopy, sanitizeName(j.Var))
+		}
+
+		joins := make([]string, 0, len(fromSrcs)+len(joinSrcs))
+		params := []string{sanitizeName(q.Var)}
+		for i, fs := range fromSrcs {
+			joins = append(joins, fmt.Sprintf("%%{items: %s}", fs))
+			params = append(params, sanitizeName(q.Froms[i].Var))
+		}
+		paramCopy = append([]string(nil), params...)
+		for i, js := range joinSrcs {
+			onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+			spec := fmt.Sprintf("%%{items: %s, on: fn %s -> %s end", js, strings.Join(onParams, ", "), joinOns[i])
+			if joinLeft[i] {
+				spec += ", left: true"
+			}
+			if joinRight[i] {
+				spec += ", right: true"
+			}
+			spec += "}"
+			joins = append(joins, spec)
+			paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+		}
+		allParams := strings.Join(paramCopy, ", ")
+		selectFn := fmt.Sprintf("fn %s -> %s end", allParams, sel)
+		whereFn := ""
+		if cond != "" {
+			whereFn = fmt.Sprintf("fn %s -> %s end", allParams, cond)
+		}
+		sortFn := ""
+		if sortExpr != "" {
+			sortFn = fmt.Sprintf("fn %s -> %s end", allParams, sortExpr)
+		}
+		var b strings.Builder
+		b.WriteString("(fn ->\n")
+		b.WriteString("\t_src = " + src + "\n")
+		b.WriteString("\t_query(_src, [\n")
+		for i, j := range joins {
+			b.WriteString("\t\t" + j)
+			if i != len(joins)-1 {
+				b.WriteString(",")
+			}
+			b.WriteString("\n")
+		}
+		b.WriteString("\t], %{select: " + selectFn)
+		if whereFn != "" {
+			b.WriteString(", where: " + whereFn)
+		}
+		if sortFn != "" {
+			b.WriteString(", sortKey: " + sortFn)
+		}
+		if skipExpr != "" {
+			b.WriteString(", skip: " + skipExpr)
+		}
+		if takeExpr != "" {
+			b.WriteString(", take: " + takeExpr)
+		}
+		b.WriteString(" })\n")
+		b.WriteString("end)()")
+		c.use("_query")
+		return b.String(), nil
+	} else if len(q.Froms) > 0 || len(q.Joins) > 0 {
 		parts := make([]string, 0, len(q.Froms)+len(q.Joins))
 		for _, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
