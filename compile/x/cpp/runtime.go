@@ -3,7 +3,7 @@ package cppcode
 // Runtime helper data for the C++ backend.
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "unionAll", "union", "except", "intersect", "json", "input"}
+var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "avg", "unionAll", "union", "except", "intersect", "json", "input", "load", "save"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -178,6 +178,37 @@ var helperCode = map[string][]string{
 		"\tstring s;",
 		"\tgetline(cin, s);",
 		"\treturn s;",
+		"}",
+	},
+	"load": {
+		"static string _readInput(const string& path) {",
+		"\tif (path.empty() || path == \"-\") { stringstream ss; ss << cin.rdbuf(); return ss.str(); }",
+		"\tifstream f(path); stringstream ss; ss << f.rdbuf(); return ss.str();",
+		"}",
+		"static vector<unordered_map<string,string>> _parseCSV(const string& text, bool header, char delim) {",
+		"\tvector<unordered_map<string,string>> out; vector<string> lines; stringstream ss(text); string l;",
+		"\twhile (getline(ss,l)) { if(!l.empty() && l.back()=='\\r') l.pop_back(); if(!l.empty()) lines.push_back(l); }",
+		"\tif (lines.empty()) return out;",
+		"\tauto split=[&](const string& s){ vector<string> parts; string tmp; stringstream s2(s); while(getline(s2,tmp,delim)) parts.push_back(tmp); return parts; };",
+		"\tvector<string> headers; size_t start=0;",
+		"\tif(header){ headers=split(lines[0]); start=1; } else { auto first=split(lines[0]); for(size_t i=0;i<first.size();i++) headers.push_back(\"c\"+to_string(i)); }",
+		"\tfor(size_t i=start;i<lines.size();i++){ auto parts=split(lines[i]); unordered_map<string,string> row; for(size_t j=0;j<headers.size();j++){ row[headers[j]] = j<parts.size()?parts[j]:\"\"; } out.push_back(row); }",
+		"\treturn out;",
+		"}",
+		"vector<unordered_map<string,string>> _load(const string& path) {",
+		"\tstring txt = _readInput(path);",
+		"\treturn _parseCSV(txt, true, ',');",
+		"}",
+	},
+	"save": {
+		"static void _writeOutput(const string& path, const string& text) {",
+		"\tif (path.empty() || path == \"-\") { cout << text; } else { ofstream f(path); f << text; }",
+		"}",
+		"void _save(const vector<unordered_map<string,string>>& rows, const string& path) {",
+		"\tvector<string> headers; if(!rows.empty()) for(const auto& kv : rows[0]) headers.push_back(kv.first); sort(headers.begin(), headers.end());",
+		"\tstringstream ss; if(!headers.empty()){ for(size_t i=0;i<headers.size();i++){ if(i>0) ss << ','; ss << headers[i]; } ss << '\\n'; }",
+		"\tfor(const auto& row: rows){ for(size_t i=0;i<headers.size();i++){ if(i>0) ss << ','; auto it=row.find(headers[i]); if(it!=row.end()) ss << it->second; } ss << '\\n'; }",
+		"\t_writeOutput(path, ss.str());",
 		"}",
 	},
 }

@@ -774,6 +774,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Query != nil:
 		q, _ := c.compileQuery(p.Query)
 		return q
@@ -951,6 +955,25 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 		c.buf = oldBuf
 	}
 	return "[=](" + strings.Join(params, ", ") + ") { " + body.String() + " }"
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
+	path := "\"\""
+	if l.Path != nil {
+		path = strconv.Quote(*l.Path)
+	}
+	c.helpers["load"] = true
+	return fmt.Sprintf("_load(%s)", path)
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) string {
+	src := c.compileExpr(s.Src)
+	path := "\"\""
+	if s.Path != nil {
+		path = strconv.Quote(*s.Path)
+	}
+	c.helpers["save"] = true
+	return fmt.Sprintf("_save(%s, %s)", src, path)
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {

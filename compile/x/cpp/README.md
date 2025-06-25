@@ -220,6 +220,7 @@ Dataset queries support `where`, `skip`, `take`, `sort by`, `join` and basic `gr
 * Structs, unions and pattern matching with `match`
 * List and map literals with indexing and slicing
 * Built‑in functions `print`, `len`, `str`, `now` and `input`
+* Dataset helpers `load` and `save` for CSV files
 * Dataset queries with filtering, sorting, pagination and simple grouping
 * List operators `union`, `union all`, `except` and `intersect`
 * Membership tests using `in`
@@ -232,7 +233,7 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Dataset queries with advanced grouping
 * Agents, streams and intents
 * `generate` blocks and model definitions
-* Dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
+* Dataset helpers such as `fetch` and SQL-style `from ...` queries
 * `logic` queries for Prolog-style reasoning
 * Foreign imports and `extern` declarations
 * Package management, tests and `expect` blocks
