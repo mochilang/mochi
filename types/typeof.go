@@ -3,14 +3,14 @@ package types
 import "mochi/parser"
 
 // TypeOfExpr returns the static type of expression e using env.
-// It mirrors InferExprType but follows Go naming conventions.
+// It mirrors ExprType but follows Go naming conventions.
 func TypeOfExpr(e *parser.Expr, env *Env) Type {
-	return InferExprType(e, env)
+	return ExprType(e, env)
 }
 
 // TypeOfExprHint infers the type of e using a hint for list literals.
 func TypeOfExprHint(e *parser.Expr, hint Type, env *Env) Type {
-	return InferExprTypeHint(e, hint, env)
+	return ExprTypeHint(e, hint, env)
 }
 
 // TypeOfBinary exposes inferBinaryType.

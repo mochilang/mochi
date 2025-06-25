@@ -5,9 +5,9 @@ import (
 	"mochi/types"
 )
 
-// inferExprType delegates to types.InferExprType.
+// inferExprType delegates to types.ExprType.
 func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
-	return types.InferExprType(e, c.env)
+	return types.ExprType(e, c.env)
 }
 
 func (c *Compiler) inferUnaryType(u *parser.Unary) types.Type {
@@ -15,7 +15,7 @@ func (c *Compiler) inferUnaryType(u *parser.Unary) types.Type {
 		return types.AnyType{}
 	}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
-	return types.InferExprType(expr, c.env)
+	return types.ExprType(expr, c.env)
 }
 
 func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
@@ -24,7 +24,7 @@ func (c *Compiler) inferPostfixType(p *parser.PostfixExpr) types.Type {
 	}
 	unary := &parser.Unary{Value: p}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
-	return types.InferExprType(expr, c.env)
+	return types.ExprType(expr, c.env)
 }
 
 func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
@@ -34,7 +34,7 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 	postfix := &parser.PostfixExpr{Target: p}
 	unary := &parser.Unary{Value: postfix}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
-	return types.InferExprType(expr, c.env)
+	return types.ExprType(expr, c.env)
 }
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
@@ -43,12 +43,12 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 
 // helper predicates following Go naming conventions
 func (c *Compiler) isStringExpr(e *parser.Expr) bool {
-	_, ok := types.InferExprType(e, c.env).(types.StringType)
+	_, ok := types.ExprType(e, c.env).(types.StringType)
 	return ok
 }
 
 func (c *Compiler) isIntExpr(e *parser.Expr) bool {
-	return isInt(types.InferExprType(e, c.env))
+	return isInt(types.ExprType(e, c.env))
 }
 
 func (c *Compiler) isIntUnary(u *parser.Unary) bool {
@@ -74,7 +74,7 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 }
 
 func (c *Compiler) isListExpr(e *parser.Expr) bool {
-	_, ok := types.InferExprType(e, c.env).(types.ListType)
+	_, ok := types.ExprType(e, c.env).(types.ListType)
 	return ok
 }
 
