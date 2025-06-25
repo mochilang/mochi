@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"mochi/ast"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -170,4 +171,29 @@ func indentBlock(s string, depth int) string {
 		lines[i] = prefix + line
 	}
 	return strings.Join(lines, "\n") + "\n"
+}
+
+func usedAliases(e *parser.Expr) map[string]struct{} {
+	aliases := map[string]struct{}{}
+	if e == nil {
+		return aliases
+	}
+	node := ast.FromExpr(e)
+	var walk func(n *ast.Node)
+	walk = func(n *ast.Node) {
+		if n.Kind == "selector" {
+			base := n
+			for len(base.Children) == 1 && base.Children[0].Kind == "selector" {
+				base = base.Children[0]
+			}
+			if s, ok := base.Value.(string); ok {
+				aliases[s] = struct{}{}
+			}
+		}
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+	walk(node)
+	return aliases
 }

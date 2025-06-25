@@ -171,16 +171,45 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	var whereExpr string
+	pushAlias := ""
+	if q.Where != nil {
+		if aliases := usedAliases(q.Where); len(aliases) == 1 {
+			for a := range aliases {
+				pushAlias = a
+			}
+		}
+		var err error
+		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	pushDown := false
+	if pushAlias != "" {
+		if pushAlias == q.Var {
+			pushDown = true
+		}
+		for _, f := range q.Froms {
+			if pushAlias == f.Var {
+				pushDown = true
+			}
+		}
+		for i, j := range q.Joins {
+			if pushAlias == j.Var && joinSides[i] == "" {
+				pushDown = true
+			}
+		}
+	}
+
 	condParts := make([]string, 0, len(joinOns)+1)
 	for _, on := range joinOns {
 		condParts = append(condParts, on)
 	}
-	if q.Where != nil {
-		w, err := c.compileExpr(q.Where)
-		if err != nil {
-			return "", err
-		}
-		condParts = append(condParts, w)
+	if q.Where != nil && !pushDown {
+		condParts = append(condParts, whereExpr)
 	}
 	cond := strings.Join(condParts, " && ")
 	var b strings.Builder
@@ -196,6 +225,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString(fmt.Sprintf("    for %s in %s {\n", sanitizeName(q.Var), loopSrc))
 	indent := "        "
+	if pushDown && pushAlias == q.Var {
+		b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", whereExpr))
+	}
 	specialJoin := len(q.Joins) == 1 && joinSides[0] == "left"
 
 	for i, fs := range fromSrcs {
@@ -203,6 +235,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		srcPart := fs + ".clone()"
 		b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", fvar, srcPart))
 		indent += "    "
+		if pushDown && pushAlias == q.Froms[i].Var {
+			b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", whereExpr))
+		}
 	}
 	if specialJoin {
 		jvar := sanitizeName(q.Joins[0].Var)
@@ -211,6 +246,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + fmt.Sprintf("for %s in %s.clone() {\n", jvar, jsrc))
 		indent += "    "
 		b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", joinOns[0]))
+		if pushDown && pushAlias == q.Joins[0].Var {
+			b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", whereExpr))
+		}
 		b.WriteString(indent + "matched = true;\n")
 	} else {
 		for i, js := range joinSrcs {
@@ -219,6 +257,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", jvar, srcPart))
 			indent += "    "
 			b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", joinOns[i]))
+			if pushDown && pushAlias == q.Joins[i].Var {
+				b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", whereExpr))
+			}
 		}
 	}
 	if cond != "" {
