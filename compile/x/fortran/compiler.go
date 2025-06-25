@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 // Compiler emits very small Fortran 90 code for a limited subset of Mochi.
@@ -574,7 +575,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 				return err
 			}
 			c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
-		} else if !isEmptyListLiteral(s.Let.Value) {
+		} else if !types.IsEmptyListLiteral(s.Let.Value) {
 			val, err := c.compileExpr(s.Let.Value)
 			if err != nil {
 				return err
@@ -589,7 +590,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 					return err
 				}
 				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Var.Name), val))
-			} else if !isEmptyListLiteral(s.Var.Value) {
+			} else if !types.IsEmptyListLiteral(s.Var.Value) {
 				val, err := c.compileExpr(s.Var.Value)
 				if err != nil {
 					return err
@@ -700,7 +701,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 			c.writeln("end do")
 		} else {
 			idx := "i_" + name
-			isStr := c.stringVars[src] || isStringExpr(s.For.Source, c.stringVars, c.funReturnStr)
+			isStr := c.stringVars[src] || types.IsStringExprVars(s.For.Source, sanitizeName, c.stringVars, c.funReturnStr)
 			if isStr {
 				c.writeln(fmt.Sprintf("do %s = 0, len(%s) - 1", idx, src))
 				c.indent++
@@ -996,9 +997,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	}
 	vals = append(vals, first)
 	exprLeft := &parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}
-	vStr = append(vStr, isStringExpr(exprLeft, c.stringVars, c.funReturnStr))
-	vList = append(vList, isListExpr(exprLeft, c.listVars, c.funReturnList))
-	vFloat = append(vFloat, isFloatExpr(exprLeft, c.floatVars, c.funReturnFloat))
+	vStr = append(vStr, types.IsStringExprVars(exprLeft, sanitizeName, c.stringVars, c.funReturnStr))
+	vList = append(vList, types.IsListExprVars(exprLeft, sanitizeName, c.listVars, c.funReturnList))
+	vFloat = append(vFloat, types.IsFloatExprVars(exprLeft, sanitizeName, c.floatVars, c.funReturnFloat))
 	emit := func() error {
 		if len(ops) == 0 {
 			return nil
@@ -1149,9 +1150,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		exprRight := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}
-		vStr = append(vStr, isStringExpr(exprRight, c.stringVars, c.funReturnStr))
-		vList = append(vList, isListExpr(exprRight, c.listVars, c.funReturnList))
-		vFloat = append(vFloat, isFloatExpr(exprRight, c.floatVars, c.funReturnFloat))
+		vStr = append(vStr, types.IsStringExprVars(exprRight, sanitizeName, c.stringVars, c.funReturnStr))
+		vList = append(vList, types.IsListExprVars(exprRight, sanitizeName, c.listVars, c.funReturnList))
+		vFloat = append(vFloat, types.IsFloatExprVars(exprRight, sanitizeName, c.floatVars, c.funReturnFloat))
 		for len(ops) > 0 && prec(ops[len(ops)-1].Op) >= prec(op.Op) {
 			if err := emit(); err != nil {
 				return "", err
@@ -1391,10 +1392,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")
 		}
-		if isStringExpr(call.Args[0], c.stringVars, c.funReturnStr) {
+		if types.IsStringExprVars(call.Args[0], sanitizeName, c.stringVars, c.funReturnStr) {
 			return args[0], nil
 		}
-		if isFloatExpr(call.Args[0], c.floatVars, c.funReturnFloat) {
+		if types.IsFloatExprVars(call.Args[0], sanitizeName, c.floatVars, c.funReturnFloat) {
 			c.needsStrFloat = true
 			return fmt.Sprintf("str_float(%s)", args[0]), nil
 		}
@@ -1404,11 +1405,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		if isFloatExpr(call.Args[0], c.floatVars, c.funReturnFloat) {
+		if types.IsFloatExprVars(call.Args[0], sanitizeName, c.floatVars, c.funReturnFloat) {
 			v := args[0]
 			return fmt.Sprintf("merge(0.0, sum(%[1]s) / size(%[1]s), size(%[1]s) == 0)", v), nil
 		}
-		if isListExpr(call.Args[0], c.listVars, c.funReturnList) {
+		if types.IsListExprVars(call.Args[0], sanitizeName, c.listVars, c.funReturnList) {
 			v := args[0]
 			return fmt.Sprintf("merge(0.0, sum(real(%[1]s)) / size(%[1]s), size(%[1]s) == 0)", v), nil
 		}
