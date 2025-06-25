@@ -11,10 +11,8 @@ newPerson: name age: age | dict |
 people := Array with: (Main newPerson: 'Alice' age: 30) with: (Main newPerson: 'Bob' age: 15) with: (Main newPerson: 'Charlie' age: 65).
 names := ((| res |
 res := OrderedCollection new.
-(people) do: [:p |
-	((p at: 'age' >= 18)) ifTrue: [
-		res add: p at: 'name'.
-	]
+((people) select: [:p | (p at: 'age' >= 18)]) do: [:p |
+	res add: p at: 'name'.
 ]
 res := res asArray.
 res)).
