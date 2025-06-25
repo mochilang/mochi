@@ -1074,7 +1074,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("((| res |\n")
 	b.WriteString("res := OrderedCollection new.\n")
-	b.WriteString(fmt.Sprintf("(%s) do: [:%s |\n", src, sanitizeName(q.Var)))
+
+	loopSrc := src
+	if cond != "" && len(fromSrcs) == 0 {
+		push := true
+		for _, f := range q.Froms {
+			if strings.Contains(cond, sanitizeName(f.Var)) {
+				push = false
+				break
+			}
+		}
+		if push {
+			loopSrc = fmt.Sprintf("(%s) select: [:%s | %s]", src, sanitizeName(q.Var), cond)
+			cond = ""
+		}
+	}
+
+	b.WriteString(fmt.Sprintf("(%s) do: [:%s |\n", loopSrc, sanitizeName(q.Var)))
 	indent := "\t"
 	for i, fs := range fromSrcs {
 		b.WriteString(indent + fmt.Sprintf("(%s) do: [:%s |\n", fs, sanitizeName(q.Froms[i].Var)))
