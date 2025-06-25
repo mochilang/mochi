@@ -1504,6 +1504,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	pushdown := q.Where != nil && exprUsesOnlyVar(q.Where, q.Var)
 	var sortExpr, skipExpr, takeExpr string
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
@@ -1585,14 +1586,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		allParams := strings.Join(params, ", ")
 		selectFn := fmt.Sprintf("(%s) => [%s]", allParams, allParams)
 		var whereFn string
-		if where != "" {
+		if where != "" && !pushdown {
 			whereFn = fmt.Sprintf("(%s) => %s", allParams, where)
 		}
 		c.use("_query")
 		c.use("_Group")
 		var buf strings.Builder
 		buf.WriteString("(() {\n")
-		buf.WriteString(fmt.Sprintf("\tvar src = %s;\n", src))
+		if pushdown {
+			buf.WriteString(fmt.Sprintf("\tvar src = (%s).where((%s) => %s).toList();\n", src, v, where))
+			whereFn = ""
+		} else {
+			buf.WriteString(fmt.Sprintf("\tvar src = %s;\n", src))
+		}
 		buf.WriteString("\tvar items = _query(src, [\n")
 		for _, j := range joins {
 			buf.WriteString("\t\t" + j + ",\n")
@@ -1692,7 +1698,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(indent + "\tcontinue;\n")
 			buf.WriteString(indent + "}\n")
 		}
-		if where != "" {
+		if where != "" && !pushdown {
 			buf.WriteString(indent + "if (!(" + where + ")) {\n")
 			buf.WriteString(indent + "\tcontinue;\n")
 			buf.WriteString(indent + "}\n")
@@ -1780,7 +1786,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		allParams := strings.Join(params, ", ")
 		selectFn := fmt.Sprintf("(%s) => %s", allParams, sel)
 		var whereFn, sortFn string
-		if where != "" {
+		if where != "" && !pushdown {
 			whereFn = fmt.Sprintf("(%s) => %s", allParams, where)
 		}
 		if sortExpr != "" {
@@ -1789,7 +1795,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.use("_query")
 		var buf strings.Builder
 		buf.WriteString("(() {\n")
-		buf.WriteString(fmt.Sprintf("\tvar src = %s;\n", src))
+		if pushdown {
+			buf.WriteString(fmt.Sprintf("\tvar src = (%s).where((%s) => %s).toList();\n", src, v, where))
+			whereFn = ""
+		} else {
+			buf.WriteString(fmt.Sprintf("\tvar src = %s;\n", src))
+		}
 		buf.WriteString("\tvar res = _query(src, [\n")
 		for _, j := range joins {
 			buf.WriteString("\t\t" + j + ",\n")
@@ -1820,7 +1831,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("(() {\n")
 	b.WriteString("\tvar _res = [];\n")
-	b.WriteString(fmt.Sprintf("\tfor (var %s in %s) {\n", sanitizeName(q.Var), src))
+	if pushdown {
+		b.WriteString(fmt.Sprintf("\tvar _src = (%s).where((%s) => %s).toList();\n", src, sanitizeName(q.Var), where))
+		b.WriteString(fmt.Sprintf("\tfor (var %s in _src) {\n", sanitizeName(q.Var)))
+	} else {
+		b.WriteString(fmt.Sprintf("\tfor (var %s in %s) {\n", sanitizeName(q.Var), src))
+	}
 	indent := "\t\t"
 	for i, fs := range fromSrcs {
 		b.WriteString(fmt.Sprintf(indent+"for (var %s in %s) {\n", sanitizeName(q.Froms[i].Var), fs))
@@ -1833,7 +1849,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "\tcontinue;\n")
 		b.WriteString(indent + "}\n")
 	}
-	if where != "" {
+	if where != "" && !pushdown {
 		b.WriteString(indent + "if (!(" + where + ")) {\n")
 		b.WriteString(indent + "\tcontinue;\n")
 		b.WriteString(indent + "}\n")
