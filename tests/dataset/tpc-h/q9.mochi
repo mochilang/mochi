@@ -49,19 +49,19 @@ let end_date = "1996-12-31"
 let result =
   from l in lineitem
   join p in part on p.p_partkey == l.l_partkey
-  where p.p_name has prefix
   join s in supplier on s.s_suppkey == l.l_suppkey
-  join ps in partsupp on ps.ps_partkey == l.l_partkey and ps.ps_suppkey == l.l_suppkey
+  join ps in partsupp on ps.ps_partkey == l.l_partkey && ps.ps_suppkey == l.l_suppkey
   join o in orders on o.o_orderkey == l.l_orderkey
-  where o.o_orderdate >= start_date and o.o_orderdate <= end_date
   join n in nation on n.n_nationkey == s.s_nationkey
+  where substring(p.p_name, 0, len(prefix)) == prefix &&
+        o.o_orderdate >= start_date && o.o_orderdate <= end_date
   let o_year = substring(o.o_orderdate, 0, 4)
   let revenue = l.l_extendedprice * (1 - l.l_discount)
   let cost = ps.ps_supplycost * l.l_quantity
   let profit = revenue - cost
   group by { nation: n.n_name, o_year }
   select { nation, o_year, profit: sum(profit) }
-  order by { nation, o_year desc }
+  sort by { nation, o_year desc }
 
 print result
 
