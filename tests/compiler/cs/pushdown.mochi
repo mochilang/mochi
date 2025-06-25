@@ -1,0 +1,16 @@
+let customers = [
+  { id: 1, city: "NY" },
+  { id: 2, city: "LA" }
+]
+let orders = [
+  { id: 100, customerId: 1, total: 50 },
+  { id: 101, customerId: 2, total: 200 },
+  { id: 102, customerId: 1, total: 300 }
+]
+let result = from c in customers
+             from o in orders
+             where c.city == "NY" && o.total > 100
+             select { city: c.city, id: o.id }
+for r in result {
+  print(r.city, r.id)
+}
