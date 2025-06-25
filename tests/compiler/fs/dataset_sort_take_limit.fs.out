@@ -1,0 +1,18 @@
+open System
+
+type Product =
+    {
+        name: string;
+        price: int
+    }
+
+type Product =
+    {
+        name: string;
+        price: int
+    }
+let products = [|{ name = "Laptop"; price = 1500 }; { name = "Smartphone"; price = 900 }; { name = "Tablet"; price = 600 }; { name = "Monitor"; price = 300 }; { name = "Keyboard"; price = 100 }; { name = "Mouse"; price = 50 }; { name = "Headphones"; price = 200 }|]
+let expensive = [| for p in products do yield ((-p.price), p) |] |> Array.sortBy fst |> Array.map snd |> Array.skip 1 |> Array.take 3
+ignore (printfn "%A" ("--- Top products (excluding most expensive) ---"))
+for item in expensive do
+    ignore (printfn "%A" (item.name, "costs $", item.price))

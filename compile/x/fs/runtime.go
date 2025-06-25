@@ -140,6 +140,26 @@ const (
   let setB = Set.ofArray b
   Array.filter (fun x -> Set.contains x setB) a |> Array.distinct`
 
+	helperGroup = `type _Group<'T>(key: obj) =
+  member val key = key with get, set
+  member val Items = System.Collections.Generic.List<'T>() with get
+  member this.size = this.Items.Count`
+
+	helperGroupBy = `let _group_by (src: 'T list) (keyfn: 'T -> obj) : _Group<'T> list =
+  let groups = System.Collections.Generic.Dictionary<string,_Group<'T>>()
+  let order = System.Collections.Generic.List<string>()
+  for it in src do
+    let key = keyfn it
+    let ks = string key
+    let mutable g = Unchecked.defaultof<_Group<'T>>
+    if groups.TryGetValue(ks, &g) then ()
+    else
+      g <- _Group<'T>(key)
+      groups[ks] <- g
+      order.Add(ks)
+    g.Items.Add(it)
+  [ for ks in order -> groups[ks] ]`
+
 	helperToJson = `let rec _to_json (v: obj) : string =
   match v with
   | null -> "null"
@@ -190,4 +210,6 @@ var helperMap = map[string]string{
 	"_union":        helperUnion,
 	"_except":       helperExcept,
 	"_intersect":    helperIntersect,
+	"_Group":        helperGroup,
+	"_group_by":     helperGroupBy,
 }

@@ -141,7 +141,7 @@ The F# generator still lacks support for several language constructs:
 * Foreign function interface (FFI) calls
 * YAML dataset support in `_load`/`_save`
 * Logic programming constructs (`fact`, `rule`, `query`)
-* Grouping in dataset queries
+* Complex grouping in dataset queries (basic `group by` supported)
 * Streams, agents and LLM `generate` blocks
 * Concurrency primitives like `spawn` and channels
 * Error handling with `try`/`catch`

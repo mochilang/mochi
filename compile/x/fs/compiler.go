@@ -542,8 +542,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.locals[name] = true
 		}
 		if c.env != nil {
-			typ := types.ResolveTypeRef(s.Let.Type, c.env)
-			if s.Let.Type == nil {
+			var typ types.Type
+			if s.Let.Type != nil {
+				typ = types.ResolveTypeRef(s.Let.Type, c.env)
+			} else {
 				typ = types.TypeOfExpr(s.Let.Value, c.env)
 			}
 			c.env.SetVar(s.Let.Name, typ, false)
@@ -880,6 +882,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
+	}
+
+	// simple grouping without joins or filters
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		orig := c.env
+		child := types.NewEnv(c.env)
+		if lt, ok := types.TypeOfExpr(q.Source, c.env).(types.ListType); ok {
+			child.SetVar(q.Var, lt.Elem, true)
+		} else {
+			child.SetVar(q.Var, types.AnyType{}, true)
+		}
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		c.use("_group_by")
+		c.use("_Group")
+		expr := fmt.Sprintf("_group_by %s (fun %s -> %s) |> List.map (fun %s -> %s)", src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name), valExpr)
+		return expr, nil
 	}
 	orig := c.env
 	child := types.NewEnv(c.env)
