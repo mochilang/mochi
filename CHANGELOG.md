@@ -1,9 +1,24 @@
 # 📦 CHANGELOG.md
-## [0.9.5] – 2025-06-25
+## [0.9.5] – 2025-06-25T09:23:00+07:00
 
 ### Added
 
-* Prolog backend supports functions as parameters and return values
+* Relative data paths and `fetch` expression in the VM
+* Map iteration with `keys` builtin across languages
+* Nested struct and type declarations
+* Functions as parameters and return values across backends
+* Prolog backend supports passing and returning functions
+* Linter library integration with the CLI
+
+### Changed
+
+* Consolidated type inference across backends
+
+### Fixed
+
+* Parser type duplication and duplicate builtin cases
+* Map membership bug in the Lua compiler
+* If expression handling in the VM
 
 ## [0.9.4] – 2025-06-25T00:02:13+07:00
 
