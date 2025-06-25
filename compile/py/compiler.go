@@ -996,14 +996,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return b.String(), nil
 		}
 
-		loops := []string{fmt.Sprintf("%s in %s", sanitizeName(q.Var), src)}
-		for _, f := range q.Froms {
+		whereExpr := ""
+		whereLevel := 0
+		if q.Where != nil {
+			whereLevel = whereEvalLevel(q)
+			w, err := c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			whereExpr = w
+		}
+
+		loop0 := fmt.Sprintf("%s in %s", sanitizeName(q.Var), src)
+		if whereExpr != "" && whereLevel == 0 {
+			loop0 += " if " + whereExpr
+		}
+		loops := []string{loop0}
+		for i, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
 			if err != nil {
 				c.env = orig
 				return "", err
 			}
-			loops = append(loops, fmt.Sprintf("%s in %s", sanitizeName(f.Var), fs))
+			loop := fmt.Sprintf("%s in %s", sanitizeName(f.Var), fs)
+			if whereExpr != "" && whereLevel == i+1 {
+				loop += " if " + whereExpr
+			}
+			loops = append(loops, loop)
 		}
 		condParts := []string{}
 		joinSrcs := make([]string, len(q.Joins))
@@ -1021,14 +1041,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			condParts = append(condParts, on)
-		}
-		if q.Where != nil {
-			w, err := c.compileExpr(q.Where)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-			condParts = append(condParts, w)
 		}
 		c.env = orig
 		cond := ""
