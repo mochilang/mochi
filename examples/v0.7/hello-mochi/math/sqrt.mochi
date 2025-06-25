@@ -1,7 +1,7 @@
 // math/sqrt.mochi
 // Implements a square root function using approximation
 
-fun sqrt(x: float): float {
+export fun sqrt(x: float): float {
   let guess = x / 2.0
   var result = guess
 
@@ -11,5 +11,3 @@ fun sqrt(x: float): float {
 
   return result
 }
-
-export fun sqrt

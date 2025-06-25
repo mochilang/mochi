@@ -26,7 +26,7 @@ for o in orders {
       seenIds = seenIds + [c.id]
     }
   }
-  print("Order", o.id, "by", customerName, "- $", o.total)
+  print("Order " + str(o.id) + " by " + customerName + " - $" + str(o.total))
 }
 for c in customers {
   var found = false
@@ -34,6 +34,6 @@ for c in customers {
     if id == c.id { found = true }
   }
   if !found {
-    print("Customer", c.name, "has no orders")
+    print("Customer " + c.name + " has no orders")
   }
 }

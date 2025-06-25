@@ -18,5 +18,5 @@ let result = (from x in listA select x)
 
 print("--- UNION ALL (with duplicates) ---")
 for x in result {
-  print("Customer", x.id, "-", x.name)
+  print("Customer " + str(x.id) + " - " + x.name)
 }

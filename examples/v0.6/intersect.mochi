@@ -17,5 +17,5 @@ let result = (from x in listA select x)
 
 print("--- INTERSECT ---")
 for x in result {
-  print("Customer", x.id, "-", x.name)
+  print("Customer " + str(x.id) + " - " + x.name)
 }
