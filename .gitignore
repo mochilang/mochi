@@ -230,6 +230,9 @@ out
 # Keep generated benchmark output files
 !bench/out
 !bench/out/*
+# Keep tpch golden files
+!tests/dataset/tpc-h/out
+!tests/dataset/tpc-h/out/*
 
 # Nuxt.js build / generate output
 .nuxt
