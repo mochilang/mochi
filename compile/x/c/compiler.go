@@ -990,22 +990,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		keyArr = c.newTemp()
 		c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, src))
 	}
-	skipVar := c.newTemp()
-	takeVar := c.newTemp()
-	seenVar := c.newTemp()
-	c.writeln(fmt.Sprintf("int %s = %s;", skipVar, skipExpr))
-	c.writeln(fmt.Sprintf("int %s = %s;", takeVar, takeExpr))
+	hasLimit := q.Skip != nil || q.Take != nil
+	skipVar := ""
+	takeVar := ""
+	seenVar := ""
 	c.writeln(fmt.Sprintf("int %s = 0;", idx))
-	c.writeln(fmt.Sprintf("int %s = 0;", seenVar))
+	if hasLimit {
+		skipVar = c.newTemp()
+		takeVar = c.newTemp()
+		seenVar = c.newTemp()
+		c.writeln(fmt.Sprintf("int %s = %s;", skipVar, skipExpr))
+		c.writeln(fmt.Sprintf("int %s = %s;", takeVar, takeExpr))
+		c.writeln(fmt.Sprintf("int %s = 0;", seenVar))
+	}
 	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src, iter))
 	c.indent++
 	c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, sanitizeName(q.Var), src, iter))
 	if cond != "" {
 		c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 	}
-	c.writeln(fmt.Sprintf("if (%s < %s) { %s++; continue; }", seenVar, skipVar, seenVar))
-	c.writeln(fmt.Sprintf("if (%s >= 0 && %s >= %s) { break; }", takeVar, idx, takeVar))
-	c.writeln(fmt.Sprintf("%s++;", seenVar))
+	if hasLimit {
+		c.writeln(fmt.Sprintf("if (%s < %s) { %s++; continue; }", seenVar, skipVar, seenVar))
+		c.writeln(fmt.Sprintf("if (%s >= 0 && %s >= %s) { break; }", takeVar, idx, takeVar))
+		c.writeln(fmt.Sprintf("%s++;", seenVar))
+	}
 	c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
 	if keyType != "" {
 		c.writeln(fmt.Sprintf("%s[%s] = %s;", keyArr, idx, sortExpr))
