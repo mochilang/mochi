@@ -296,6 +296,8 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
 - Anonymous function literals (`fun` expressions)
 - Passing functions as parameters and return values
 - Dataset queries with optional filtering, sorting and limits
+- Helper predicates `dataset_filter/3` and `dataset_paginate/4` for filtering
+  and paginating row lists
 ## Unsupported Features
 
 The Prolog backend focuses on basic control flow and list operations. Several

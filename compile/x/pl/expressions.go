@@ -466,6 +466,45 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 		c.use("input")
 		code := []string{fmt.Sprintf("input(%s),", tmp)}
 		return exprRes{code: code, val: tmp}, nil
+	case "dataset_filter":
+		if len(call.Args) != 2 {
+			return exprRes{}, fmt.Errorf("dataset_filter expects 2 args")
+		}
+		listArg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return exprRes{}, err
+		}
+		predArg, err := c.compileExpr(call.Args[1])
+		if err != nil {
+			return exprRes{}, err
+		}
+		tmp := c.newVar()
+		c.use("dataset_filter")
+		code := append(listArg.code, predArg.code...)
+		code = append(code, fmt.Sprintf("dataset_filter(%s, %s, %s),", listArg.val, predArg.val, tmp))
+		return exprRes{code: code, val: tmp}, nil
+	case "dataset_paginate":
+		if len(call.Args) != 3 {
+			return exprRes{}, fmt.Errorf("dataset_paginate expects 3 args")
+		}
+		listArg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return exprRes{}, err
+		}
+		skipArg, err := c.compileExpr(call.Args[1])
+		if err != nil {
+			return exprRes{}, err
+		}
+		takeArg, err := c.compileExpr(call.Args[2])
+		if err != nil {
+			return exprRes{}, err
+		}
+		tmp := c.newVar()
+		c.use("dataset_paginate")
+		code := append(listArg.code, skipArg.code...)
+		code = append(code, takeArg.code...)
+		code = append(code, fmt.Sprintf("dataset_paginate(%s, %s, %s, %s),", listArg.val, skipArg.val, takeArg.val, tmp))
+		return exprRes{code: code, val: tmp}, nil
 	default:
 		args := make([]string, len(call.Args))
 		code := []string{}

@@ -70,3 +70,14 @@ const helperIntersect = "intersect(A, B, R) :- intersect(A, B, [], R).\n" +
 const helperMapKeys = "map_keys(Dict, Keys) :-\n" +
 	"    dict_pairs(Dict, _, Pairs),\n" +
 	"    findall(K, member(K-_, Pairs), Keys).\n\n"
+
+const helperDatasetFilter = "dataset_filter([], _, []).\n" +
+	"dataset_filter([H|T], Pred, [H|R]) :- call(Pred, H), !, dataset_filter(T, Pred, R).\n" +
+	"dataset_filter([_|T], Pred, R) :- dataset_filter(T, Pred, R).\n\n"
+
+const helperDatasetPaginate = "dataset_paginate(List, Skip, Take, Out) :-\n" +
+	"    length(List, Len),\n" +
+	"    (Skip >= Len -> Out = [] ;\n" +
+	"    Start is max(Skip, 0),\n" +
+	"    (Take < 0 -> End = Len ; Temp is Start + Take, (Temp > Len -> End = Len ; End = Temp)),\n" +
+	"    slice(List, Start, End, Out)).\n\n"
