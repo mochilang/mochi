@@ -43,7 +43,9 @@ var helperAvg = "def _avg(v):\n" +
 var helperGroupClass = "class _Group:\n" +
 	"    def __init__(self, key):\n" +
 	"        self.key = key\n" +
-	"        self.Items = []\n"
+	"        self.Items = []\n" +
+	"    def __iter__(self):\n" +
+	"        return iter(self.Items)\n"
 
 var helperGroupBy = "def _group_by(src, keyfn):\n" +
 	"    groups = {}\n" +
@@ -53,6 +55,9 @@ var helperGroupBy = "def _group_by(src, keyfn):\n" +
 	"            key = keyfn(*it)\n" +
 	"        else:\n" +
 	"            key = keyfn(it)\n" +
+	"        if isinstance(key, dict):\n" +
+	"            import types\n" +
+	"            key = types.SimpleNamespace(**key)\n" +
 	"        ks = str(key)\n" +
 	"        g = groups.get(ks)\n" +
 	"        if not g:\n" +

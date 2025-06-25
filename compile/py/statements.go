@@ -115,16 +115,19 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			}
 			c.env.SetVar(s.Name, t, false)
 		}
+		if c.globals[name] && c.indent > 0 {
+			c.writeln("global " + name)
+		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	return nil
 }
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
-        name := sanitizeName(s.Name)
-        if c.methodFields != nil && c.methodFields[s.Name] {
-                name = fmt.Sprintf("self.%s", name)
-        }
+	name := sanitizeName(s.Name)
+	if c.methodFields != nil && c.methodFields[s.Name] {
+		name = fmt.Sprintf("self.%s", name)
+	}
 	value := "None"
 	if s.Value != nil {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
@@ -157,16 +160,19 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			}
 			c.env.SetVar(s.Name, t, true)
 		}
+		if c.globals[name] && c.indent > 0 {
+			c.writeln("global " + name)
+		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	return nil
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
-        lhs := sanitizeName(s.Name)
-        if c.methodFields != nil && c.methodFields[s.Name] {
-                lhs = fmt.Sprintf("self.%s", lhs)
-        }
+	lhs := sanitizeName(s.Name)
+	if c.methodFields != nil && c.methodFields[s.Name] {
+		lhs = fmt.Sprintf("self.%s", lhs)
+	}
 	var typ types.Type
 	if c.env != nil {
 		if t, err := c.env.GetVar(s.Name); err == nil {
@@ -208,9 +214,9 @@ func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", s.Name)
 	}
-        if err := c.compileStructType(st); err != nil {
-                return err
-        }
+	if err := c.compileStructType(st); err != nil {
+		return err
+	}
 	varName := unexportName(sanitizeName(s.Name)) + "Stream"
 	c.use("_stream")
 	c.writeln(fmt.Sprintf("%s = Stream(%q)", varName, s.Name))
@@ -236,9 +242,9 @@ func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", h.Stream)
 	}
-        if err := c.compileStructType(st); err != nil {
-                return err
-        }
+	if err := c.compileStructType(st); err != nil {
+		return err
+	}
 	streamVar := unexportName(sanitizeName(h.Stream)) + "Stream"
 	handlerName := fmt.Sprintf("_handler_%d", c.handlerCount)
 	c.handlerCount++
@@ -263,9 +269,9 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", e.Stream)
 	}
-        if err := c.compileStructType(st); err != nil {
-                return err
-        }
+	if err := c.compileStructType(st); err != nil {
+		return err
+	}
 	parts := make([]string, len(e.Fields))
 	for i, f := range e.Fields {
 		v, err := c.compileExpr(f.Value)
@@ -377,46 +383,46 @@ func (c *Compiler) compileAgentDecl(a *parser.AgentDecl) error {
 
 func (c *Compiler) compileStructType(st types.StructType) error {
 	name := sanitizeName(st.Name)
-        if c.structs[name] {
-                return nil
-        }
-        c.structs[name] = true
+	if c.structs[name] {
+		return nil
+	}
+	c.structs[name] = true
 	c.imports["dataclasses"] = "dataclasses"
 	c.imports["typing"] = "typing"
-        c.writeln("@dataclasses.dataclass")
-        c.writeln(fmt.Sprintf("class %s:", name))
-        c.indent++
-        hasField := len(st.Order) > 0
-        if !hasField && len(st.Methods) == 0 {
-                c.writeln("pass")
-        } else {
-                for _, fn := range st.Order {
-                        typStr := pyType(st.Fields[fn])
-                        c.writeln(fmt.Sprintf("%s: %s", sanitizeName(fn), typStr))
-                }
-                if len(st.Methods) > 0 {
-                        base := types.NewEnv(c.env)
-                        for _, fn := range st.Order {
-                                base.SetVar(fn, st.Fields[fn], true)
-                        }
-                        for _, m := range st.Methods {
-                                c.writeln("")
-                                if err := c.compileMethod(name, base, m.Decl); err != nil {
-                                        return err
-                                }
-                        }
-                }
-        }
-        c.indent--
-        c.writeln("")
-        for _, ft := range st.Fields {
-                if sub, ok := ft.(types.StructType); ok {
-                        if err := c.compileStructType(sub); err != nil {
-                                return err
-                        }
-                }
-        }
-        return nil
+	c.writeln("@dataclasses.dataclass")
+	c.writeln(fmt.Sprintf("class %s:", name))
+	c.indent++
+	hasField := len(st.Order) > 0
+	if !hasField && len(st.Methods) == 0 {
+		c.writeln("pass")
+	} else {
+		for _, fn := range st.Order {
+			typStr := pyType(st.Fields[fn])
+			c.writeln(fmt.Sprintf("%s: %s", sanitizeName(fn), typStr))
+		}
+		if len(st.Methods) > 0 {
+			base := types.NewEnv(c.env)
+			for _, fn := range st.Order {
+				base.SetVar(fn, st.Fields[fn], true)
+			}
+			for _, m := range st.Methods {
+				c.writeln("")
+				if err := c.compileMethod(name, base, m.Decl); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	c.indent--
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			if err := c.compileStructType(sub); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -444,44 +450,44 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			c.indent--
 		}
 	} else {
-                c.writeln("@dataclasses.dataclass")
-                c.writeln(fmt.Sprintf("class %s:", name))
-                c.indent++
-                hasField := false
-                for _, m := range t.Members {
-                        if m.Field != nil {
-                                hasField = true
-                                break
-                        }
-                }
-                base := types.NewEnv(c.env)
-                for _, m := range t.Members {
-                        if m.Field != nil {
-                                ft := c.resolveTypeRef(m.Field.Type)
-                                base.SetVar(m.Field.Name, ft, true)
-                        }
-                }
-                if !hasField && len(t.Members) == 0 {
-                        c.writeln("pass")
-                } else {
-                        for _, m := range t.Members {
-                                if m.Field != nil {
-                                        typStr := pyType(c.resolveTypeRef(m.Field.Type))
-                                        c.writeln(fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typStr))
-                                }
-                        }
-                        for _, m := range t.Members {
-                                if m.Method != nil {
-                                        c.writeln("")
-                                        if err := c.compileMethod(name, base, m.Method); err != nil {
-                                                return err
-                                        }
-                                }
-                        }
-                }
-                c.indent--
-        }
-        return nil
+		c.writeln("@dataclasses.dataclass")
+		c.writeln(fmt.Sprintf("class %s:", name))
+		c.indent++
+		hasField := false
+		for _, m := range t.Members {
+			if m.Field != nil {
+				hasField = true
+				break
+			}
+		}
+		base := types.NewEnv(c.env)
+		for _, m := range t.Members {
+			if m.Field != nil {
+				ft := c.resolveTypeRef(m.Field.Type)
+				base.SetVar(m.Field.Name, ft, true)
+			}
+		}
+		if !hasField && len(t.Members) == 0 {
+			c.writeln("pass")
+		} else {
+			for _, m := range t.Members {
+				if m.Field != nil {
+					typStr := pyType(c.resolveTypeRef(m.Field.Type))
+					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typStr))
+				}
+			}
+			for _, m := range t.Members {
+				if m.Method != nil {
+					c.writeln("")
+					if err := c.compileMethod(name, base, m.Method); err != nil {
+						return err
+					}
+				}
+			}
+		}
+		c.indent--
+	}
+	return nil
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt, kw string) error {
@@ -744,69 +750,69 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 }
 
 func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.FunStmt) error {
-        name := sanitizeName(fun.Name)
-        c.imports["typing"] = "typing"
-        c.writeIndent()
-        c.buf.WriteString("def " + name + "(self")
-        var ft types.FuncType
-        if c.env != nil {
-                if st, ok := c.env.GetStruct(structName); ok {
-                        if m, ok := st.Methods[fun.Name]; ok {
-                                ft = m.Type
-                        }
-                }
-        }
-        paramTypes := make([]types.Type, len(fun.Params))
-        for i, p := range fun.Params {
-                c.buf.WriteString(", " + sanitizeName(p.Name))
-                var typ types.Type
-                if i < len(ft.Params) {
-                        typ = ft.Params[i]
-                } else if p.Type != nil {
-                        typ = c.resolveTypeRef(p.Type)
-                }
-                if typ != nil {
-                        c.buf.WriteString(": " + pyType(typ))
-                } else {
-                        typ = types.AnyType{}
-                }
-                paramTypes[i] = typ
-        }
-        retType := "None"
-        if ft.Return != nil {
-                retType = pyType(ft.Return)
-        } else if fun.Return != nil {
-                retType = pyType(c.resolveTypeRef(fun.Return))
-        }
-        c.buf.WriteString(") -> " + retType + ":\n")
-        child := types.NewEnv(env)
-        if c.env != nil {
-                if st, ok := c.env.GetStruct(structName); ok {
-                        c.methodFields = make(map[string]bool, len(st.Fields))
-                        for fname := range st.Fields {
-                                c.methodFields[fname] = true
-                        }
-                }
-        }
-        for i, p := range fun.Params {
-                if i < len(paramTypes) {
-                        child.SetVar(p.Name, paramTypes[i], true)
-                }
-        }
-        orig := c.env
-        c.env = child
-        c.indent++
-        for _, s := range fun.Body {
-                if err := c.compileStmt(s); err != nil {
-                        c.env = orig
-                        c.methodFields = nil
-                        return err
-                }
-        }
-        c.indent--
-        c.env = orig
-        c.methodFields = nil
-        return nil
+	name := sanitizeName(fun.Name)
+	c.imports["typing"] = "typing"
+	c.writeIndent()
+	c.buf.WriteString("def " + name + "(self")
+	var ft types.FuncType
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			if m, ok := st.Methods[fun.Name]; ok {
+				ft = m.Type
+			}
+		}
+	}
+	paramTypes := make([]types.Type, len(fun.Params))
+	for i, p := range fun.Params {
+		c.buf.WriteString(", " + sanitizeName(p.Name))
+		var typ types.Type
+		if i < len(ft.Params) {
+			typ = ft.Params[i]
+		} else if p.Type != nil {
+			typ = c.resolveTypeRef(p.Type)
+		}
+		if typ != nil {
+			c.buf.WriteString(": " + pyType(typ))
+		} else {
+			typ = types.AnyType{}
+		}
+		paramTypes[i] = typ
+	}
+	retType := "None"
+	if ft.Return != nil {
+		retType = pyType(ft.Return)
+	} else if fun.Return != nil {
+		retType = pyType(c.resolveTypeRef(fun.Return))
+	}
+	c.buf.WriteString(") -> " + retType + ":\n")
+	child := types.NewEnv(env)
+	if c.env != nil {
+		if st, ok := c.env.GetStruct(structName); ok {
+			c.methodFields = make(map[string]bool, len(st.Fields))
+			for fname := range st.Fields {
+				c.methodFields[fname] = true
+			}
+		}
+	}
+	for i, p := range fun.Params {
+		if i < len(paramTypes) {
+			child.SetVar(p.Name, paramTypes[i], true)
+		}
+	}
+	orig := c.env
+	c.env = child
+	c.indent++
+	for _, s := range fun.Body {
+		if err := c.compileStmt(s); err != nil {
+			c.env = orig
+			c.methodFields = nil
+			return err
+		}
+	}
+	c.indent--
+	c.env = orig
+	c.methodFields = nil
+	return nil
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {

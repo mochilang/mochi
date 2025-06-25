@@ -27,6 +27,7 @@ type Compiler struct {
 	tmpCount     int
 	models       bool
 	methodFields map[string]bool
+	globals      map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -39,6 +40,7 @@ func New(env *types.Env) *Compiler {
 		models:       false,
 		tmpCount:     0,
 		methodFields: nil,
+		globals:      make(map[string]bool),
 	}
 }
 
@@ -135,6 +137,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				continue
 			}
 			seen[name] = true
+			c.globals[name] = true
 			if isLiteralExpr(s.Let.Value) || isPureExpr(s.Let.Value) {
 				expr, err := c.compileExpr(s.Let.Value)
 				if err != nil {
@@ -151,6 +154,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				continue
 			}
 			seen[name] = true
+			c.globals[name] = true
 			if isLiteralExpr(s.Var.Value) || isPureExpr(s.Var.Value) {
 				expr, err := c.compileExpr(s.Var.Value)
 				if err != nil {
@@ -537,11 +541,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + expr + ")", nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
 		if c.methodFields != nil && c.methodFields[p.Selector.Root] {
 			expr = "self." + expr
 		}
 		for _, s := range p.Selector.Tail {
-			expr += "." + sanitizeName(s)
+			switch t := typ.(type) {
+			case types.MapType:
+				expr += fmt.Sprintf("[%q]", sanitizeName(s))
+				typ = t.Value
+			default:
+				expr += "." + sanitizeName(s)
+				typ = types.AnyType{}
+			}
 		}
 		return expr, nil
 	case p.Struct != nil:
@@ -553,17 +570,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				tmp := fmt.Sprintf("_t%d", c.tmpCount)
 				c.tmpCount++
 				var b strings.Builder
-				b.WriteString("(lambda:\n")
-				b.WriteString(fmt.Sprintf("\t%s = New%s()\n", tmp, sanitizeName(p.Struct.Name)))
+				b.WriteString("(lambda " + tmp + "=New" + sanitizeName(p.Struct.Name) + "(): (")
+				calls := []string{}
 				for _, f := range p.Struct.Fields {
 					v, err := c.compileExpr(f.Value)
 					if err != nil {
 						return "", err
 					}
-					b.WriteString(fmt.Sprintf("\t%s.%s = %s\n", tmp, sanitizeName(f.Name), v))
+					calls = append(calls, fmt.Sprintf("setattr(%s, %q, %s)", tmp, sanitizeName(f.Name), v))
 				}
-				b.WriteString(fmt.Sprintf("\treturn %s\n", tmp))
-				b.WriteString(")()")
+				calls = append(calls, tmp)
+				b.WriteString("(" + strings.Join(calls, ", ") + ")[-1])()")
 				return b.String(), nil
 			}
 		}
@@ -634,7 +651,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return "time.time_ns()", nil
 	case "json":
 		c.imports["json"] = "json"
-		return fmt.Sprintf("print(json.dumps(%s))", argStr), nil
+		return fmt.Sprintf("print(json.dumps(%s, default=lambda o: vars(o)))", argStr), nil
 	case "str":
 		return fmt.Sprintf("str(%s)", argStr), nil
 	case "input":
@@ -832,22 +849,31 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	child := types.NewEnv(c.env)
 	var elemType types.Type = types.AnyType{}
-	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
-		elemType = lt.Elem
+	switch t := c.inferExprType(q.Source).(type) {
+	case types.ListType:
+		elemType = t.Elem
+	case types.GroupType:
+		elemType = t.Elem
 	}
 	child.SetVar(q.Var, elemType, true)
 	for _, f := range q.Froms {
 		ft := c.inferExprType(f.Src)
 		var fe types.Type = types.AnyType{}
-		if lt, ok := ft.(types.ListType); ok {
-			fe = lt.Elem
+		switch tt := ft.(type) {
+		case types.ListType:
+			fe = tt.Elem
+		case types.GroupType:
+			fe = tt.Elem
 		}
 		child.SetVar(f.Var, fe, true)
 	}
 	for _, j := range q.Joins {
 		jt := c.inferExprType(j.Src)
 		var je types.Type = types.AnyType{}
-		if lt, ok := jt.(types.ListType); ok {
+		switch lt := jt.(type) {
+		case types.ListType:
+			je = lt.Elem
+		case types.GroupType:
 			je = lt.Elem
 		}
 		child.SetVar(j.Var, je, true)
@@ -876,8 +902,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			c.env = orig
-			c.imports["types"] = "types"
-			expr := fmt.Sprintf("[ types.SimpleNamespace(**%s) for %s in _group_by(%s, lambda %s: %s) ]", val, sanitizeName(q.Group.Name), src, sanitizeName(q.Var), keyExpr)
+			expr := fmt.Sprintf("[ %s for %s in _group_by(%s, lambda %s: %s) ]", val, sanitizeName(q.Group.Name), src, sanitizeName(q.Var), keyExpr)
 			c.use("_group_by")
 			c.use("_group")
 			return expr, nil
@@ -960,26 +985,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				whereFn = fmt.Sprintf("lambda %s: (%s)", allParams, whereExpr)
 			}
 
-			var b strings.Builder
-			b.WriteString("(lambda:\n")
-			b.WriteString("\t_src = " + src + "\n")
-			b.WriteString("\t_rows = _query(_src, [\n")
-			for i, j := range joins {
-				b.WriteString("\t\t" + j)
-				if i != len(joins)-1 {
-					b.WriteString(",")
-				}
-				b.WriteString("\n")
-			}
-			b.WriteString("\t], { 'select': " + selectFn)
+			joinStr := strings.Join(joins, ", ")
+			opts := "{ 'select': " + selectFn
 			if whereFn != "" {
-				b.WriteString(", 'where': " + whereFn)
+				opts += ", 'where': " + whereFn
 			}
-			b.WriteString(" })\n")
-			b.WriteString("\t_groups = _group_by(_rows, lambda " + allParams + ": (" + keyExpr + "))\n")
-			c.imports["types"] = "types"
+			opts += " }"
 			genv := types.NewEnv(child)
-			genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+			genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
 			c.env = genv
 			val, err := c.compileExpr(q.Select)
 			if err != nil {
@@ -987,13 +1000,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			c.env = orig
-			b.WriteString("\t_res = [ types.SimpleNamespace(**" + val + ") for " + sanitizeName(q.Group.Name) + " in _groups ]\n")
-			b.WriteString("\treturn _res\n")
-			b.WriteString(")()")
+			expr := fmt.Sprintf("(lambda _src=%s: (lambda _rows=_query(_src, [%s], %s): (lambda _groups=_group_by(_rows, lambda %s: (%s)): [ %s for %s in _groups ])())())()", src, joinStr, opts, allParams, keyExpr, val, sanitizeName(q.Group.Name))
 			c.use("_query")
 			c.use("_group_by")
 			c.use("_group")
-			return b.String(), nil
+			return expr, nil
 		}
 
 		whereExpr := ""
@@ -1173,34 +1184,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if sortExpr != "" {
 		sortFn = fmt.Sprintf("lambda %s: (%s)", allParams, sortExpr)
 	}
-	var b strings.Builder
-	b.WriteString("(lambda:\n")
-	b.WriteString("\t_src = " + src + "\n")
-	b.WriteString("\treturn _query(_src, [\n")
-	for i, j := range joins {
-		b.WriteString("\t\t" + j)
-		if i != len(joins)-1 {
-			b.WriteString(",")
-		}
-		b.WriteString("\n")
-	}
-	b.WriteString("\t], { 'select': " + selectFn)
+	joinStr := strings.Join(joins, ", ")
+	opts := "{ 'select': " + selectFn
 	if whereFn != "" {
-		b.WriteString(", 'where': " + whereFn)
+		opts += ", 'where': " + whereFn
 	}
 	if sortFn != "" {
-		b.WriteString(", 'sortKey': " + sortFn)
+		opts += ", 'sortKey': " + sortFn
 	}
 	if skipExpr != "" {
-		b.WriteString(", 'skip': " + skipExpr)
+		opts += ", 'skip': " + skipExpr
 	}
 	if takeExpr != "" {
-		b.WriteString(", 'take': " + takeExpr)
+		opts += ", 'take': " + takeExpr
 	}
-	b.WriteString(" })\n")
-	b.WriteString(")()")
+	opts += " }"
+	expr := fmt.Sprintf("_query(%s, [%s], %s)", src, joinStr, opts)
 	c.use("_query")
-	return b.String(), nil
+	return expr, nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
