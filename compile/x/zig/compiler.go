@@ -559,6 +559,53 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	return fmt.Sprintf("if (%s) (%s) else (%s)", cond, thenVal, elseVal), nil
 }
 
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "", fmt.Errorf("unsupported query features")
+	}
+
+	src, err := c.compileExpr(q.Source, false)
+	if err != nil {
+		return "", err
+	}
+
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+		elemType = lt.Elem
+	}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, elemType, true)
+	orig := c.env
+	c.env = child
+
+	sel, err := c.compileExpr(q.Select, false)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where, false)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	resType := zigTypeOf(c.inferExprType(q.Select))
+	c.env = orig
+
+	tmp := c.newTmp()
+	var b strings.Builder
+	b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + strings.TrimPrefix(resType, "[]const ") + ").init(std.heap.page_allocator); ")
+	b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
+	if cond != "" {
+		b.WriteString(" if (!(" + cond + ")) continue;")
+	}
+	b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
+	b.WriteString(" break :blk " + tmp + ".toOwnedSlice() catch unreachable; }")
+	return b.String(), nil
+}
+
 func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	name := sanitizeName(st.Name)
 	var typ types.Type = types.AnyType{}
@@ -882,6 +929,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		return c.compileCallExpr(p.Call)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group, asReturn)
 		if err != nil {
