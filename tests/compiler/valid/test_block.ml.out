@@ -1,0 +1,6 @@
+let test_addition_works () =
+  let x = 1 + 2 in
+  if not (x = 3) then failwith "expect failed";
+
+print_endline "ok";;
+test_addition_works ();;
