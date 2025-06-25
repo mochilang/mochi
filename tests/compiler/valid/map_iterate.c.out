@@ -35,12 +35,14 @@ static int map_int_bool_contains(map_int_bool m, int key) {
 }
 int main() {
 	map_int_bool _t1 = map_int_bool_create(0);
-	int m = _t1;
-	m.data[1] = 10;
-	m.data[2] = 20;
-	if ((1 in m)) {
-		printf("%d\n", m.data[1]);
+	map_int_bool m = _t1;
+	map_int_bool_put(&m, 1, 1);
+	map_int_bool_put(&m, 2, 1);
+	int sum = 0;
+	for (int _t2 = 0; _t2 < m.len; _t2++) {
+		int k = m.data[_t2];
+		sum = (sum + k);
 	}
-	printf("%d\n", m.data[2]);
+	printf("%d\n", sum);
 	return 0;
 }

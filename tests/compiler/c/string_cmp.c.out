@@ -10,11 +10,11 @@ static list_int list_int_create(int len) {
     return l;
 }
 int main() {
-	printf("%s\n", (strcmp("a", "b") < 0));
-	printf("%s\n", (strcmp("a", "a") <= 0));
-	printf("%s\n", (strcmp("cat", "car") > 0));
-	printf("%s\n", (strcmp("dog", "dog") >= 0));
-	printf("%s\n", (strcmp("abc", "abc") == 0));
-	printf("%s\n", (strcmp("foo", "bar") != 0));
+	printf("%d\n", (strcmp("a", "b") < 0));
+	printf("%d\n", (strcmp("a", "a") <= 0));
+	printf("%d\n", (strcmp("cat", "car") > 0));
+	printf("%d\n", (strcmp("dog", "dog") >= 0));
+	printf("%d\n", (strcmp("abc", "abc") == 0));
+	printf("%d\n", (strcmp("foo", "bar") != 0));
 	return 0;
 }
