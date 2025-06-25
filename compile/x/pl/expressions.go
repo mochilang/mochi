@@ -632,6 +632,37 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 	c.use("tolist")
 	code = append(code, fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
 
+	// Predicate pushdown: filter the source list before joins if the WHERE
+	// clause only references the main query variable.
+	filtered := false
+	if q.Where != nil {
+		varsUsed := exprVars(q.Where)
+		if len(varsUsed) == 1 {
+			if _, ok := varsUsed[q.Var]; ok {
+				fenv := types.NewEnv(nil)
+				fenv.SetVar(q.Var, elem, true)
+				old := c.env
+				c.env = fenv
+				fcond, err := c.compileExpr(q.Where)
+				c.env = old
+				if err != nil {
+					return exprRes{}, err
+				}
+				item := sanitizeVar(q.Var)
+				parts := []string{fmt.Sprintf("member(%s, %s)", item, listVar)}
+				for _, line := range fcond.code {
+					parts = append(parts, strings.TrimSuffix(line, ","))
+				}
+				parts = append(parts, fcond.val)
+				goal := strings.Join(parts, ", ")
+				outVar := c.newVar()
+				code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", item, goal, outVar))
+				listVar = outVar
+				filtered = true
+			}
+		}
+	}
+
 	fromLists := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
 		fr, err := c.compileExpr(f.Src)
@@ -681,11 +712,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 		}
 	}
 
-	for _, line := range cond.code {
-		innerParts = append(innerParts, strings.TrimSuffix(line, ","))
-	}
-	if q.Where != nil {
-		innerParts = append(innerParts, cond.val)
+	if !filtered {
+		for _, line := range cond.code {
+			innerParts = append(innerParts, strings.TrimSuffix(line, ","))
+		}
+		if q.Where != nil {
+			innerParts = append(innerParts, cond.val)
+		}
 	}
 	for _, line := range sel.code {
 		innerParts = append(innerParts, strings.TrimSuffix(line, ","))
