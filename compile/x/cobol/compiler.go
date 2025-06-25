@@ -30,16 +30,18 @@ type Compiler struct {
 	listLens      map[string]int
 	varFuncs      map[string]string
 	lambdaCounter int
+	dynamicLens   map[string]string
 }
 
 // New creates a new COBOL compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:      env,
-		funcs:    map[string]int{},
-		params:   map[string]string{},
-		listLens: map[string]int{},
-		varFuncs: map[string]string{},
+		env:         env,
+		funcs:       map[string]int{},
+		params:      map[string]string{},
+		listLens:    map[string]int{},
+		varFuncs:    map[string]string{},
+		dynamicLens: map[string]string{},
 	}
 }
 
@@ -578,6 +580,100 @@ func (c *Compiler) compileStructExpr(n *ast.Node) string {
 	return name
 }
 
+// compileQueryExpr handles very simple dataset queries of the form:
+//
+//	from x in src [where cond] select expr
+//
+// Only a single source list and an optional where clause are supported.
+// The result is stored in a new list variable with a runtime length.
+func (c *Compiler) compileQueryExpr(n *ast.Node) string { return c.compileQueryExprInto(n, "") }
+
+func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
+	// Extract components from the AST node.
+	var srcNode, whereNode, selNode *ast.Node
+	for _, ch := range n.Children {
+		switch ch.Kind {
+		case "source":
+			if len(ch.Children) > 0 {
+				srcNode = ch.Children[0]
+			}
+		case "where":
+			if len(ch.Children) > 0 {
+				whereNode = ch.Children[0]
+			}
+		case "select":
+			if len(ch.Children) > 0 {
+				selNode = ch.Children[0]
+			}
+		}
+	}
+	if srcNode == nil || selNode == nil {
+		c.writeln("    *> unsupported query")
+		return "0"
+	}
+
+	// Only simple list sources are handled.
+	name, length, pic, elems, ok := c.listInfo(srcNode)
+	if !ok {
+		c.writeln("    *> query source must be list")
+		return "0"
+	}
+	srcArr := name
+	if srcArr == "" {
+		srcArr = c.newTemp()
+		if pic == "" {
+			pic = "PIC 9."
+		}
+		c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", srcArr, length, pic))
+		for i, ch := range elems {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), srcArr, i+1))
+		}
+	}
+
+	varName := cobolName(n.Value.(string))
+	if pic == "" {
+		pic = "PIC 9."
+	}
+	c.declare(fmt.Sprintf("01 %s %s", varName, pic))
+
+	resPic := c.picForExpr(selNode)
+	res := outName
+	if res == "" {
+		res = c.newTemp()
+	}
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", res, length, resPic))
+	lenVar := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s PIC 9.", lenVar))
+	c.writeln(fmt.Sprintf("    MOVE 0 TO %s", lenVar))
+	c.listLens[res] = length
+	c.dynamicLens[res] = lenVar
+
+	c.declare("01 IDX PIC 9.")
+	c.writeln("    MOVE 0 TO IDX")
+	c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", length))
+	c.indent++
+	c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", srcArr, varName))
+	if whereNode != nil {
+		cond := c.expr(whereNode)
+		c.writeln(fmt.Sprintf("IF %s", cond))
+		c.indent++
+	}
+	val := c.expr(selNode)
+	c.writeln(fmt.Sprintf("ADD 1 TO %s", lenVar))
+	if c.isString(selNode) {
+		c.writeln(fmt.Sprintf("MOVE %s TO %s(%s)", val, res, lenVar))
+	} else {
+		c.writeln(fmt.Sprintf("COMPUTE %s(%s) = %s", res, lenVar, val))
+	}
+	if whereNode != nil {
+		c.indent--
+		c.writeln("END-IF")
+	}
+	c.indent--
+	c.writeln("    END-PERFORM")
+	return res
+}
+
 func (c *Compiler) expr(n *ast.Node) string {
 	switch n.Kind {
 	case "int":
@@ -813,6 +909,8 @@ func (c *Compiler) expr(n *ast.Node) string {
 		return c.compileIfExpr(n)
 	case "match":
 		return c.compileMatchExpr(n)
+	case "query":
+		return c.compileQueryExpr(n)
 	}
 	return "0"
 }
@@ -919,6 +1017,10 @@ func (c *Compiler) compileLet(n *ast.Node) {
 			return
 		}
 	}
+	if len(n.Children) == 1 && n.Children[0].Kind == "query" {
+		c.compileQueryExprInto(n.Children[0], name)
+		return
+	}
 	if len(n.Children) == 1 && n.Children[0].Kind == "list" {
 		list := n.Children[0]
 		elemPic := "PIC 9."
@@ -1013,7 +1115,9 @@ func (c *Compiler) compileAssign(n *ast.Node) {
 			c.varFuncs[name] = fn
 			return
 		}
-		if c.isList(n.Children[0]) {
+		if n.Children[0].Kind == "query" {
+			c.compileQueryExprInto(n.Children[0], name)
+		} else if c.isList(n.Children[0]) {
 			src := c.expr(n.Children[0])
 			if l, ok := c.listLens[src]; ok {
 				pic := c.picForExpr(n.Children[0])
