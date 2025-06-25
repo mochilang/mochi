@@ -343,9 +343,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		var elemType types.Type = types.AnyType{}
 		if len(p.List.Elems) > 0 {
-			elemType = c.inferExprType(p.List.Elems[0])
+			elemType = c.exprType(p.List.Elems[0])
 			for _, el := range p.List.Elems[1:] {
-				t := c.inferExprType(el)
+				t := c.exprType(el)
 				if !equalTypes(elemType, t) {
 					elemType = types.AnyType{}
 					break
@@ -731,7 +731,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		return "", err
 	}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Match: m}}}}}
-	retT := c.inferExprType(expr)
+	retT := c.exprType(expr)
 	retType := c.javaType(retT)
 	if retType == "" {
 		retType = "Object"
