@@ -2,15 +2,16 @@
 using namespace std;
 
 struct Address {
-        string street;
+	string street;
 };
+
 struct Person {
-        string name;
-        Address addr;
+	string name;
+	Address addr;
 };
 
 int main() {
-        auto p = Person{"Bob", Address{"Main"}};
-        std::cout << (p.addr.street) << std::endl;
-        return 0;
+	auto p = Person{string("Bob"), Address{string("Main")}};
+	std::cout << (p.addr.street) << std::endl;
+	return 0;
 }

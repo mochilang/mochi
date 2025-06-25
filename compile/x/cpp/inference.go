@@ -268,6 +268,21 @@ func getCallExpr(e *parser.Expr) *parser.CallExpr {
 	return post.Target.Call
 }
 
+func getIntLiteral(e *parser.Expr) *int {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	post := u.Value
+	if post == nil || post.Target == nil || post.Target.Lit == nil || post.Target.Lit.Int == nil {
+		return nil
+	}
+	return post.Target.Lit.Int
+}
+
 func selectorName(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil {
 		return "", false
