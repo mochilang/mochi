@@ -602,7 +602,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var sortExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort, false)
+		sortExpr, err = c.compileExpr(q.Sort.Expr, false)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -630,7 +630,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var b strings.Builder
 	elem := strings.TrimPrefix(resType, "[]const ")
 	if sortExpr != "" {
-		keyType := zigTypeOf(c.inferExprType(q.Sort))
+		keyType := zigTypeOf(c.inferExprType(q.Sort.Expr))
 		pairType := "struct { item: " + elem + "; key: " + keyType + " }"
 		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + pairType + ").init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")

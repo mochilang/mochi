@@ -1364,7 +1364,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		cond = strings.Join(condParts, ", ")
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = orig
 			return "", err

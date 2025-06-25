@@ -1767,7 +1767,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				genv.SetVar(q.Group.Name, types.AnyType{}, true)
 				c.env = genv
 			}
-			sortExpr, err = c.compileExpr(q.Sort)
+			sortExpr, err = c.compileExpr(q.Sort.Expr)
 			if err != nil {
 				c.env = orig
 				return "", err
@@ -1914,7 +1914,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			genv.SetVar(q.Group.Name, types.AnyType{}, true)
 			c.env = genv
 		}
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = orig
 			return "", err

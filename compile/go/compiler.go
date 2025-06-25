@@ -2111,7 +2111,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var sortExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = original
 			return "", err
@@ -3410,8 +3410,8 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 		if p.Query.Where != nil {
 			c.scanExprImports(p.Query.Where)
 		}
-		if p.Query.Sort != nil {
-			c.scanExprImports(p.Query.Sort)
+		if p.Query.Sort.Expr != nil {
+			c.scanExprImports(p.Query.Sort.Expr)
 			c.imports["sort"] = true
 			c.imports["fmt"] = true
 		}

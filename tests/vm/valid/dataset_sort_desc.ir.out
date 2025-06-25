@@ -1,0 +1,36 @@
+func main (regs=18)
+  // let nums = [1, 3, 2]
+  Const        r0, [1, 3, 2]
+  Move         r1, r0
+  // let res = from n in nums
+  Const        r2, []
+  IterPrep     r3, r1
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  Less         r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // sort by n desc
+  Move         r9, r8
+  // let res = from n in nums
+  Move         r10, r8
+  MakeList     r11, 2, r9
+  Append       r12, r2, r11
+  Move         r2, r12
+  Const        r13, 1
+  Add          r14, r5, r13
+  Move         r5, r14
+  Jump         L1
+L0:
+  // sort by n desc
+  Const        r16, true
+  Sort         15,2,16,0
+  // let res = from n in nums
+  Move         r2, r15
+  Move         r17, r2
+  // print(res)
+  Print        r17
+  Return       r0
+

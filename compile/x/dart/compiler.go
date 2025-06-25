@@ -1527,7 +1527,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	pushdown := q.Where != nil && exprUsesOnlyVar(q.Where, q.Var)
 	var sortExpr, skipExpr, takeExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			return "", err
 		}

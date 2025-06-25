@@ -941,8 +941,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	var sortExpr string
 	var sortT types.Type
 	if q.Sort != nil {
-		sortExpr = c.compileExpr(q.Sort)
-		sortT = c.exprType(q.Sort)
+		sortExpr = c.compileExpr(q.Sort.Expr)
+		sortT = c.exprType(q.Sort.Expr)
 	}
 
 	var skipExpr string

@@ -774,7 +774,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			return "", err
 		}
@@ -1104,7 +1104,7 @@ func exprVars(e *parser.Expr) map[string]bool {
 			}
 			walkExpr(p.Query.Where)
 			walkExpr(p.Query.Group.Exprs[0])
-			walkExpr(p.Query.Sort)
+			walkExpr(p.Query.Sort.Expr)
 			walkExpr(p.Query.Skip)
 			walkExpr(p.Query.Take)
 			walkExpr(p.Query.Select)

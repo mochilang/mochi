@@ -1,4 +1,4 @@
-func main (regs=43)
+func main (regs=44)
   // let products = [
   Const        r0, [{"name": "Laptop", "price": 1500}, {"name": "Smartphone", "price": 900}, {"name": "Tablet", "price": 600}, {"name": "Monitor", "price": 300}, {"name": "Keyboard", "price": 100}, {"name": "Mouse", "price": 50}, {"name": "Headphones", "price": 200}]
   Move         r1, r0
@@ -28,48 +28,50 @@ L1:
   Jump         L1
 L0:
   // sort by -p.price
-  Sort         18,2,0,0
+  Const        r19, false
+  Sort         18,2,19,0
   // let expensive = from p in products
   Move         r2, r18
   // skip 1
-  Const        r19, 1
+  Const        r20, 1
   // let expensive = from p in products
-  Const        r20, nil
-  Slice        r21, r2, r19, r20
-  Move         r2, r21
-  Const        r22, 0
+  Const        r21, nil
+  Slice        r22, r2, r20, r21
+  Move         r2, r22
+  Const        r23, 0
   // take 3
-  Const        r23, 3
+  Const        r24, 3
   // let expensive = from p in products
-  Slice        r24, r2, r22, r23
-  Move         r2, r24
-  Move         r25, r2
+  Slice        r25, r2, r23, r24
+  Move         r2, r25
+  Move         r26, r2
   // print("--- Top products (excluding most expensive) ---")
-  Const        r26, "--- Top products (excluding most expensive) ---"
-  Print        r26
+  Const        r27, "--- Top products (excluding most expensive) ---"
+  Print        r27
   // for item in expensive {
-  IterPrep     r27, r25
-  Len          r28, r27
-  Const        r29, 0
+  IterPrep     r28, r26
+  Len          r29, r28
+  Const        r30, 0
 L3:
-  Less         r30, r29, r28
-  JumpIfFalse  r30, L2
-  Index        r31, r27, r29
-  Move         r32, r31
+  Less         r31, r30, r29
+  JumpIfFalse  r31, L2
+  Index        r32, r28, r30
+  Move         r33, r32
   // print(item.name, "costs $", item.price)
-  Const        r36, "name"
-  Index        r37, r32, r36
-  Move         r33, r37
-  Const        r38, "costs $"
+  Const        r37, "name"
+  Index        r38, r33, r37
   Move         r34, r38
-  Const        r39, "price"
-  Index        r40, r32, r39
-  Move         r35, r40
-  PrintN       r33, 3, r33
+  Const        r39, "costs $"
+  Move         r35, r39
+  Const        r40, "price"
+  Index        r41, r33, r40
+  Move         r36, r41
+  PrintN       r34, 3, r34
   // for item in expensive {
-  Const        r41, 1
-  Add          r42, r29, r41
-  Move         r29, r42
+  Const        r42, 1
+  Add          r43, r30, r42
+  Move         r30, r43
   Jump         L3
 L2:
   Return       r0
+

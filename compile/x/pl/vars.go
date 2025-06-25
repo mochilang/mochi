@@ -90,7 +90,7 @@ func scanPrimaryVars(p *parser.Primary, vars map[string]struct{}) {
 		}
 		scanExprVars(p.Query.Select, vars)
 		scanExprVars(p.Query.Where, vars)
-		scanExprVars(p.Query.Sort, vars)
+		scanExprVars(p.Query.Sort.Expr, vars)
 		scanExprVars(p.Query.Skip, vars)
 		scanExprVars(p.Query.Take, vars)
 		vars[p.Query.Var] = struct{}{}

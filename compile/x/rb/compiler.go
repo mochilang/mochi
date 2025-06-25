@@ -555,7 +555,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 		if q.Sort != nil {
-			sortStr, err = c.compileExpr(q.Sort)
+			sortStr, err = c.compileExpr(q.Sort.Expr)
 			if err != nil {
 				return "", err
 			}
@@ -713,7 +713,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		var sortVal, skipVal, takeVal string
 		if q.Sort != nil {
-			v, err := c.compileExpr(q.Sort)
+			v, err := c.compileExpr(q.Sort.Expr)
 			if err != nil {
 				return "", err
 			}
@@ -960,7 +960,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			expr = fmt.Sprintf("(%s).select { |%s| %s }", expr, iter, cond)
 		}
 		if q.Sort != nil {
-			val, err := c.compileExpr(q.Sort)
+			val, err := c.compileExpr(q.Sort.Expr)
 			if err != nil {
 				return "", err
 			}
@@ -990,7 +990,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var sortVal string
 	if q.Sort != nil {
-		v, err := c.compileExpr(q.Sort)
+		v, err := c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			return "", err
 		}

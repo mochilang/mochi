@@ -417,11 +417,16 @@ type QueryExpr struct {
 	Joins    []*JoinClause  `parser:"{ @@ }"`
 	Where    *Expr          `parser:"[ 'where' @@ ]"`
 	Group    *GroupByClause `parser:"[ @@ ]"`
-	Sort     *Expr          `parser:"[ 'sort' 'by' @@ ]"`
+	Sort     *SortField     `parser:"[ 'sort' 'by' @@ ]"`
 	Skip     *Expr          `parser:"[ 'skip' @@ ]"`
 	Take     *Expr          `parser:"[ 'take' @@ ]"`
 	Distinct bool           `parser:"'select' @'distinct'?"`
 	Select   *Expr          `parser:"@@"`
+}
+
+type SortField struct {
+	Expr *Expr   `parser:"@@"`
+	Dir  *string `parser:"[ @('asc' | 'desc') ]"`
 }
 
 type LogicQueryExpr struct {

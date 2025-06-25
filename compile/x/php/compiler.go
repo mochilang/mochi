@@ -1030,7 +1030,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1312,7 +1312,9 @@ func queryFreeVars(q *parser.QueryExpr, env *types.Env) []string {
 	}
 	scanExpr(q.Select, vars)
 	scanExpr(q.Where, vars)
-	scanExpr(q.Sort, vars)
+	if q.Sort != nil {
+		scanExpr(q.Sort.Expr, vars)
+	}
 	scanExpr(q.Skip, vars)
 	scanExpr(q.Take, vars)
 	delete(vars, q.Var)

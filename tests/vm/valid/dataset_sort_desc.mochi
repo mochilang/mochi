@@ -1,0 +1,5 @@
+let nums = [1, 3, 2]
+let res = from n in nums
+          sort by n desc
+          select n
+print(res)

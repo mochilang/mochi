@@ -970,7 +970,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1036,7 +1036,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		sortExpr2 := ""
 		if q.Sort != nil {
-			sortExpr2, err = c.compileExpr(q.Sort)
+			sortExpr2, err = c.compileExpr(q.Sort.Expr)
 			if err != nil {
 				c.env = orig
 				return "", err

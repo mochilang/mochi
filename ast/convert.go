@@ -443,8 +443,12 @@ func FromPrimary(p *parser.Primary) *Node {
 				},
 			})
 		}
-		if p.Query.Sort != nil {
-			n.Children = append(n.Children, &Node{Kind: "sort", Children: []*Node{FromExpr(p.Query.Sort)}})
+		if p.Query.Sort != nil && p.Query.Sort.Expr != nil {
+			child := FromExpr(p.Query.Sort.Expr)
+			if p.Query.Sort.Dir != nil && *p.Query.Sort.Dir == "desc" {
+				child = &Node{Kind: "desc", Children: []*Node{child}}
+			}
+			n.Children = append(n.Children, &Node{Kind: "sort", Children: []*Node{child}})
 		}
 		if p.Query.Skip != nil {
 			n.Children = append(n.Children, &Node{Kind: "skip", Children: []*Node{FromExpr(p.Query.Skip)}})

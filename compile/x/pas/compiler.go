@@ -1450,7 +1450,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Sort != nil {
-		sortStr, err = c.compileExpr(q.Sort)
+		sortStr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = orig
 			return "", err

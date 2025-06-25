@@ -465,7 +465,7 @@ func primaryUsesVar(p *parser.Primary, name string) bool {
 		if p.Query.Where != nil && exprUsesVar(p.Query.Where, name) {
 			return true
 		}
-		if p.Query.Sort != nil && exprUsesVar(p.Query.Sort, name) {
+		if p.Query.Sort.Expr != nil && exprUsesVar(p.Query.Sort.Expr, name) {
 			return true
 		}
 		if p.Query.Skip != nil && exprUsesVar(p.Query.Skip, name) {

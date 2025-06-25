@@ -871,7 +871,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Sort != nil {
-		sortKey, err = c.compileExpr(q.Sort)
+		sortKey, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			return "", err
 		}
@@ -961,7 +961,7 @@ func (c *Compiler) compileAdvancedQueryExpr(q *parser.QueryExpr, src string) (st
 		whereExpr = w
 	}
 	if q.Sort != nil {
-		s, err := c.compileExpr(q.Sort)
+		s, err := c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = orig
 			return "", err

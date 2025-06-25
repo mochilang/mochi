@@ -170,7 +170,7 @@ func collectExprVars(e *parser.Expr, vars map[string]struct{}) {
 			}
 			collectExprVars(p.Query.Select, vars)
 			collectExprVars(p.Query.Where, vars)
-			collectExprVars(p.Query.Sort, vars)
+			collectExprVars(p.Query.Sort.Expr, vars)
 			collectExprVars(p.Query.Skip, vars)
 			collectExprVars(p.Query.Take, vars)
 		}

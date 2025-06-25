@@ -1055,8 +1055,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		var sortExpr, sortType string
 		if q.Sort != nil {
-			sortExpr = c.compileExpr(q.Sort)
-			sortType = InferCppExprType(q.Sort, c.env, c.getVar)
+			sortExpr = c.compileExpr(q.Sort.Expr)
+			sortType = InferCppExprType(q.Sort.Expr, c.env, c.getVar)
 			if sortType == "" {
 				sortType = "auto"
 			}
@@ -1222,7 +1222,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	var sortExpr string
 	if q.Sort != nil {
-		sortExpr = c.compileExpr(q.Sort)
+		sortExpr = c.compileExpr(q.Sort.Expr)
 	}
 	var skipExpr, takeExpr string
 	if q.Skip != nil {

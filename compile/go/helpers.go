@@ -340,7 +340,7 @@ func collectIdents(e *parser.Expr, out map[string]struct{}) {
 			if p.Query.Group != nil {
 				collectIdents(p.Query.Group.Exprs[0], out)
 			}
-			collectIdents(p.Query.Sort, out)
+			collectIdents(p.Query.Sort.Expr, out)
 			collectIdents(p.Query.Skip, out)
 			collectIdents(p.Query.Take, out)
 			collectIdents(p.Query.Select, out)

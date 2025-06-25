@@ -1122,7 +1122,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	var sortExpr, skipExpr, takeExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			return "", err
 		}
@@ -1475,7 +1475,7 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			return "", err
 		}

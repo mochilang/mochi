@@ -63,7 +63,7 @@ func BuildPlan(q *parser.QueryExpr) (Plan, error) {
 	}
 
 	if q.Sort != nil {
-		root = &sortPlan{Key: q.Sort, Input: root}
+		root = &sortPlan{Key: q.Sort.Expr, Input: root}
 	}
 
 	if q.Skip != nil || q.Take != nil {

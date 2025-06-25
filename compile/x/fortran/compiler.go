@@ -1548,10 +1548,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var sortStr string
 	var sortType types.Type = types.IntType{}
 	if q.Sort != nil {
-		if types.IsFloatExprVars(q.Sort, sanitizeName, c.floatVars, c.funReturnFloat) {
+		if types.IsFloatExprVars(q.Sort.Expr, sanitizeName, c.floatVars, c.funReturnFloat) {
 			sortType = types.FloatType{}
 		}
-		sortStr, err = c.compileExpr(q.Sort)
+		sortStr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			return "", err
 		}

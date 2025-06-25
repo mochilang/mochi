@@ -200,7 +200,7 @@ g
 end
 end`
 
-        helperQuery = `def _query(src, joins, opts)
+	helperQuery = `def _query(src, joins, opts)
   where_fn = opts['where']
   items = []
   if joins.empty?

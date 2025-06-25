@@ -1,4 +1,4 @@
-func main (regs=220)
+func main (regs=221)
   // let region = [
   Const        r0, [{"r_name": "EUROPE", "r_regionkey": 1}, {"r_name": "ASIA", "r_regionkey": 2}]
   Move         r1, r0
@@ -351,16 +351,17 @@ L24:
   Jump         L25
 L23:
   // sort by -x.s_acctbal
-  Sort         216,198,0,0
+  Const        r217, false
+  Sort         216,198,217,0
   // from x in target_partsupp
   Move         r198, r216
   // let result =
-  Move         r217, r198
+  Move         r218, r198
   // json(result)
-  JSON         r217
+  JSON         r218
   // expect result == [
-  Const        r218, [{"n_name": "FRANCE", "p_mfgr": "M1", "p_partkey": 1000, "ps_supplycost": 10, "s_acctbal": 1000, "s_address": "123 Rue", "s_comment": "Fast and reliable", "s_name": "BestSupplier", "s_phone": "123"}]
-  Equal        r219, r217, r218
-  Expect       r219
+  Const        r219, [{"n_name": "FRANCE", "p_mfgr": "M1", "p_partkey": 1000, "ps_supplycost": 10, "s_acctbal": 1000, "s_address": "123 Rue", "s_comment": "Fast and reliable", "s_name": "BestSupplier", "s_phone": "123"}]
+  Equal        r220, r218, r219
+  Expect       r220
   Return       r0
 

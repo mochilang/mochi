@@ -266,7 +266,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + fmt.Sprintf("if %s {\n", cond))
 		indent += "    "
 		if q.Sort != nil {
-			sortKey, err := c.compileExpr(q.Sort)
+			sortKey, err := c.compileExpr(q.Sort.Expr)
 			if err != nil {
 				return "", err
 			}
@@ -278,7 +278,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	} else {
 		if q.Sort != nil {
-			sortKey, err := c.compileExpr(q.Sort)
+			sortKey, err := c.compileExpr(q.Sort.Expr)
 			if err != nil {
 				return "", err
 			}
@@ -298,13 +298,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			indent += "    "
 		}
 		if cond != "" && q.Sort != nil {
-			sortKey, err := c.compileExpr(q.Sort)
+			sortKey, err := c.compileExpr(q.Sort.Expr)
 			if err != nil {
 				return "", err
 			}
 			b.WriteString(indent + fmt.Sprintf("_pairs.push((%s, %s));\n", sortKey, sel))
 		} else if q.Sort != nil {
-			sortKey, err := c.compileExpr(q.Sort)
+			sortKey, err := c.compileExpr(q.Sort.Expr)
 			if err != nil {
 				return "", err
 			}

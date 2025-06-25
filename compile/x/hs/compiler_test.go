@@ -22,7 +22,7 @@ func TestHSCompiler_LeetCodeExample1(t *testing.T) {
 	if err := hscode.EnsureHaskell(); err != nil {
 		t.Skipf("haskell not installed: %v", err)
 	}
-    src := filepath.Join("..", "..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+	src := filepath.Join("..", "..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
@@ -116,7 +116,7 @@ func TestHSCompiler_GoldenOutput(t *testing.T) {
 // It ensures the generated Haskell code executes without error.
 func runExample(t *testing.T, id int) error {
 	t.Helper()
-    dir := filepath.Join("..", "..", "..", "examples", "leetcode", strconv.Itoa(id))
+	dir := filepath.Join("..", "..", "..", "examples", "leetcode", strconv.Itoa(id))
 	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
 		return err

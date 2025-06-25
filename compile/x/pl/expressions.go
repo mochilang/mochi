@@ -604,7 +604,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 	}
 	var sortRes exprRes
 	if q.Sort != nil {
-		sortRes, err = c.compileExpr(q.Sort)
+		sortRes, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = orig
 			return exprRes{}, err

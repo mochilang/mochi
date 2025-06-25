@@ -244,7 +244,7 @@ func (l *linter) visitPrimary(p *parser.Primary) {
 		if p.Query.Group != nil {
 			l.visitExpr(p.Query.Group.Exprs[0])
 		}
-		l.visitExpr(p.Query.Sort)
+		l.visitExpr(p.Query.Sort.Expr)
 		l.visitExpr(p.Query.Skip)
 		l.visitExpr(p.Query.Take)
 		l.visitExpr(p.Query.Select)

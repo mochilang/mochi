@@ -1028,7 +1028,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		child.SetVar(q.Var, elem, true)
 		c.env = child
-		sortExpr, err := c.compileExpr(q.Sort)
+		sortExpr, err := c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1132,7 +1132,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	sortExpr := ""
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExpr(q.Sort.Expr)
 		if err != nil {
 			c.env = orig
 			return "", err

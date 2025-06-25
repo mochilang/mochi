@@ -138,13 +138,13 @@ func (c *Compiler) compileNode(n *ast.Node) {
 }
 
 func (c *Compiler) compileExpect(n *ast.Node) {
-        cond := c.expr(n.Children[0])
-        c.writeln(fmt.Sprintf("IF NOT (%s)", cond))
-        c.indent++
-        c.writeln("DISPLAY \"expect failed\"")
-        c.writeln("STOP RUN")
-        c.indent--
-        c.writeln("END-IF")
+	cond := c.expr(n.Children[0])
+	c.writeln(fmt.Sprintf("IF NOT (%s)", cond))
+	c.indent++
+	c.writeln("DISPLAY \"expect failed\"")
+	c.writeln("STOP RUN")
+	c.indent--
+	c.writeln("END-IF")
 }
 
 func (c *Compiler) compileTest(n *ast.Node) {
