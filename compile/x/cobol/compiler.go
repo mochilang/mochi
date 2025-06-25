@@ -584,22 +584,36 @@ func (c *Compiler) compileStructExpr(n *ast.Node) string {
 //
 //	from x in src [where cond] select expr
 //
-// Only a single source list and an optional where clause are supported.
-// The result is stored in a new list variable with a runtime length.
+// Only list sources are recognised. Multiple `from` clauses are allowed and
+// simple pagination via `skip` and `take` is supported. The result is stored in
+// a new list variable with a runtime length.
 func (c *Compiler) compileQueryExpr(n *ast.Node) string { return c.compileQueryExprInto(n, "") }
 
 func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 	// Extract components from the AST node.
-	var srcNode, whereNode, selNode *ast.Node
+	var srcNode, whereNode, selNode, skipNode, takeNode *ast.Node
+	var fromNodes []*ast.Node
 	for _, ch := range n.Children {
 		switch ch.Kind {
 		case "source":
 			if len(ch.Children) > 0 {
 				srcNode = ch.Children[0]
 			}
+		case "from":
+			if len(ch.Children) > 0 {
+				fromNodes = append(fromNodes, ch)
+			}
 		case "where":
 			if len(ch.Children) > 0 {
 				whereNode = ch.Children[0]
+			}
+		case "skip":
+			if len(ch.Children) > 0 {
+				skipNode = ch.Children[0]
+			}
+		case "take":
+			if len(ch.Children) > 0 {
+				takeNode = ch.Children[0]
 			}
 		case "select":
 			if len(ch.Children) > 0 {
@@ -641,33 +655,114 @@ func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 	if res == "" {
 		res = c.newTemp()
 	}
-	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", res, length, resPic))
+	type fromInfo struct {
+		arr     string
+		length  int
+		varName string
+		pic     string
+	}
+	infos := []fromInfo{}
+	maxLen := length
+	for _, fn := range fromNodes {
+		vname := cobolName(fn.Value.(string))
+		src := fn.Children[0].Children[0]
+		an, ln, apic, elems, ok := c.listInfo(src)
+		if !ok {
+			c.writeln("    *> query source must be list")
+			return "0"
+		}
+		arr := an
+		if arr == "" {
+			arr = c.newTemp()
+			if apic == "" {
+				apic = "PIC 9."
+			}
+			c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", arr, ln, apic))
+			for i, ch := range elems {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), arr, i+1))
+			}
+		}
+		c.declare(fmt.Sprintf("01 %s %s", vname, apic))
+		infos = append(infos, fromInfo{arr: arr, length: ln, varName: vname, pic: apic})
+		if ln > 0 {
+			maxLen *= ln
+		}
+	}
+
+	c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", res, maxLen, resPic))
 	lenVar := c.newTemp()
 	c.declare(fmt.Sprintf("01 %s PIC 9.", lenVar))
 	c.writeln(fmt.Sprintf("    MOVE 0 TO %s", lenVar))
-	c.listLens[res] = length
+	c.listLens[res] = maxLen
 	c.dynamicLens[res] = lenVar
+
+	matchVar := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s PIC 9.", matchVar))
+	c.writeln(fmt.Sprintf("    MOVE 0 TO %s", matchVar))
+
+	skipExpr := "0"
+	if skipNode != nil {
+		skipExpr = c.expr(skipNode)
+		if !isSimpleExpr(skipNode) {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, skipExpr))
+			skipExpr = tmp
+		}
+	}
+
+	takeExpr := "0"
+	if takeNode != nil {
+		takeExpr = c.expr(takeNode)
+		if !isSimpleExpr(takeNode) {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, takeExpr))
+			takeExpr = tmp
+		}
+	}
 
 	c.declare("01 IDX PIC 9.")
 	c.writeln("    MOVE 0 TO IDX")
 	c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", length))
 	c.indent++
 	c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", srcArr, varName))
+	for i, inf := range infos {
+		idxName := fmt.Sprintf("IDX%d", i+2)
+		c.declare(fmt.Sprintf("01 %s PIC 9.", idxName))
+		c.writeln(fmt.Sprintf("    MOVE 0 TO %s", idxName))
+		c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM 0 BY 1 UNTIL %s >= %d", idxName, idxName, inf.length))
+		c.indent++
+		c.writeln(fmt.Sprintf("MOVE %s(%s + 1) TO %s", inf.arr, idxName, inf.varName))
+	}
 	if whereNode != nil {
 		cond := c.expr(whereNode)
 		c.writeln(fmt.Sprintf("IF %s", cond))
 		c.indent++
 	}
 	val := c.expr(selNode)
+	c.writeln(fmt.Sprintf("ADD 1 TO %s", matchVar))
+	c.writeln(fmt.Sprintf("IF %s > %s", matchVar, skipExpr))
+	c.indent++
+	c.writeln(fmt.Sprintf("IF %s = 0 OR %s < %s", takeExpr, lenVar, takeExpr))
+	c.indent++
 	c.writeln(fmt.Sprintf("ADD 1 TO %s", lenVar))
 	if c.isString(selNode) {
 		c.writeln(fmt.Sprintf("MOVE %s TO %s(%s)", val, res, lenVar))
 	} else {
 		c.writeln(fmt.Sprintf("COMPUTE %s(%s) = %s", res, lenVar, val))
 	}
+	c.indent--
+	c.writeln("END-IF")
+	c.indent--
+	c.writeln("END-IF")
 	if whereNode != nil {
 		c.indent--
 		c.writeln("END-IF")
+	}
+	for range infos {
+		c.indent--
+		c.writeln("    END-PERFORM")
 	}
 	c.indent--
 	c.writeln("    END-PERFORM")
