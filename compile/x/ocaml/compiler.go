@@ -116,6 +116,15 @@ func (c *Compiler) popLoop() {
 	}
 }
 
+func hasTest(p *parser.Program) bool {
+	for _, s := range p.Statements {
+		if s.Test != nil {
+			return true
+		}
+	}
+	return false
+}
+
 // Compile returns OCaml source code implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if programHasLoopCtrl(prog.Statements) {
@@ -128,12 +137,26 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		} else if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		}
 	}
 	for _, s := range prog.Statements {
-		if s.Fun == nil {
-			if err := c.compileStmt(s, ""); err != nil {
-				return nil, err
+		if s.Fun != nil || s.Test != nil {
+			continue
+		}
+		if err := c.compileStmt(s, ""); err != nil {
+			return nil, err
+		}
+	}
+	if hasTest(prog) {
+		for _, s := range prog.Statements {
+			if s.Test != nil {
+				name := "test_" + sanitizeName(s.Test.Name)
+				c.writeln(name + " ();;")
 			}
 		}
 	}
@@ -349,6 +372,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 			return fmt.Errorf("continue not in loop")
 		}
 		c.writeln(fmt.Sprintf("raise (%s)", c.loops[len(c.loops)-1].cont))
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect, ex)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -586,6 +611,32 @@ func (c *Compiler) compileIf(ifst *parser.IfStmt, ex string) error {
 			c.writeln("end;")
 		}
 	}
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt, ex string) error {
+	cond, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	if ex == "" {
+		c.writeln(fmt.Sprintf("if not (%s) then failwith \"expect failed\";;", cond))
+	} else {
+		c.writeln(fmt.Sprintf("if not (%s) then failwith \"expect failed\";", cond))
+	}
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("let %s () =", name))
+	c.indent++
+	for _, st := range t.Body {
+		if err := c.compileStmt(st, "test"); err != nil {
+			return err
+		}
+	}
+	c.indent--
 	return nil
 }
 
@@ -913,6 +964,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "print":
 		if len(args) == 1 {
 			if types.IsStringExpr(call.Args[0], c.env) {
+				if _, ok := simpleIdent(call.Args[0]); ok || isStringLiteral(call.Args[0]) {
+					return fmt.Sprintf("print_endline %s", args[0]), nil
+				}
 				return fmt.Sprintf("print_endline (%s)", args[0]), nil
 			}
 			if types.IsBoolExpr(call.Args[0], c.env) {
@@ -1214,6 +1268,21 @@ func simpleIdent(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func isStringLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil {
+		return false
+	}
+	return true
 }
 
 func joinConds(conds []string) string {

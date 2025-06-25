@@ -39,6 +39,7 @@ mochi build --target ocaml main.mochi -o main.ml
 - built-ins `len`, `print`, `str`, `input`
 - simple `match` expressions with constant patterns
 - dataset queries with `from`/`where`/`select` and optional `skip`, `take` and `sort by`
+- test blocks and `expect` statements
 
 
 The output can be compiled with `ocamlc`:
@@ -74,8 +75,7 @@ These tests verify both the generated program output and the emitted `.ml` code.
 - `fetch`, `load` and `generate` expressions
 - Agent and model blocks
 - Concurrency primitives like `spawn` and channels
-- Streams, LLM helpers and the foreign function interface
-- Test blocks and `expect` statements
+ - Streams, LLM helpers and the foreign function interface
 - Set literals and set operations
 - Functions with multiple return values
 - List membership operations and list unions
