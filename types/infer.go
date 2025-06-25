@@ -64,7 +64,7 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 	for _, op := range b.Right {
 		rt := inferPostfixType(env, op.Right)
 		switch op.Op {
-		case "+", "-", "*", "/", "%", "union", "union_all", "except", "intersect":
+		case "+", "-", "*", "/", "%":
 			if isInt64(t) {
 				if isInt64(rt) || isInt(rt) {
 					t = Int64Type{}
@@ -83,7 +83,7 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 					continue
 				}
 			}
-			if op.Op == "+" || op.Op == "union" || op.Op == "union_all" || op.Op == "except" || op.Op == "intersect" {
+			if op.Op == "+" {
 				if llist, ok := t.(ListType); ok {
 					if rlist, ok := rt.(ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
 						t = llist
@@ -465,7 +465,7 @@ func inferIfExprType(ie *parser.IfExpr, env *Env) Type {
 // ResultType returns the resulting type of applying op to left and right.
 func ResultType(op string, left, right Type) Type {
 	switch op {
-	case "+", "-", "*", "/", "%", "union", "union_all", "except", "intersect":
+	case "+", "-", "*", "/", "%":
 		if _, ok := left.(IntType); ok {
 			if _, ok := right.(IntType); ok {
 				return IntType{}
@@ -476,7 +476,7 @@ func ResultType(op string, left, right Type) Type {
 				return FloatType{}
 			}
 		}
-		if op == "+" || op == "union" || op == "union_all" || op == "except" || op == "intersect" {
+		if op == "+" {
 			if _, ok := left.(StringType); ok {
 				if _, ok := right.(StringType); ok {
 					return StringType{}
