@@ -609,7 +609,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	if stmt.Type != nil {
 		t = resolveTypeRef(stmt.Type, c.env)
 	} else if stmt.Value != nil {
-		t = c.inferExprType(stmt.Value)
+		t = c.exprType(stmt.Value)
 	}
 	if t == nil {
 		t = types.IntType{}
@@ -672,7 +672,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	if stmt.Type != nil {
 		t = resolveTypeRef(stmt.Type, c.env)
 	} else if stmt.Value != nil {
-		t = c.inferExprType(stmt.Value)
+		t = c.exprType(stmt.Value)
 	}
 	if t == nil {
 		t = types.IntType{}
@@ -1654,7 +1654,7 @@ func isStringArg(e *parser.Expr, env *types.Env) bool {
 		return false
 	}
 	c := New(env)
-	_, ok := c.inferExprType(e).(types.StringType)
+	_, ok := c.exprType(e).(types.StringType)
 	return ok
 }
 
@@ -1731,7 +1731,7 @@ func isFloatArg(e *parser.Expr, env *types.Env) bool {
 		return false
 	}
 	c := New(env)
-	_, ok := c.inferExprType(e).(types.FloatType)
+	_, ok := c.exprType(e).(types.FloatType)
 	return ok
 }
 

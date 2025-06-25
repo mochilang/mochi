@@ -279,6 +279,8 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			}
 			return AnyType{}
 		}
+	case p.If != nil:
+		return inferIfExprType(p.If, env)
 	case p.Group != nil:
 		return InferExprType(p.Group, env)
 	case p.List != nil:
@@ -375,6 +377,51 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			rType = AnyType{}
 		}
 		return rType
+	}
+	return AnyType{}
+}
+
+// InferIfExprType returns the static type of an if-expression.
+func InferIfExprType(ie *parser.IfExpr, env *Env) Type {
+	return inferIfExprType(ie, env)
+}
+
+func inferIfExprType(ie *parser.IfExpr, env *Env) Type {
+	if ie == nil {
+		return AnyType{}
+	}
+	thenT := InferExprType(ie.Then, env)
+	var elseT Type = AnyType{}
+	if ie.ElseIf != nil {
+		elseT = inferIfExprType(ie.ElseIf, env)
+	} else if ie.Else != nil {
+		elseT = InferExprType(ie.Else, env)
+	}
+	if equalTypes(thenT, elseT) {
+		return thenT
+	}
+	if isInt64(thenT) && (isInt64(elseT) || isInt(elseT)) {
+		return Int64Type{}
+	}
+	if isInt64(elseT) && (isInt64(thenT) || isInt(thenT)) {
+		return Int64Type{}
+	}
+	if isInt(thenT) && isInt(elseT) {
+		return IntType{}
+	}
+	if isFloat(thenT) && isFloat(elseT) {
+		return FloatType{}
+	}
+	if isString(thenT) && isString(elseT) {
+		return StringType{}
+	}
+	if lt1, ok1 := thenT.(ListType); ok1 {
+		if lt2, ok2 := elseT.(ListType); ok2 && equalTypes(lt1.Elem, lt2.Elem) {
+			return lt1
+		}
+	}
+	if isBool(thenT) && isBool(elseT) {
+		return BoolType{}
 	}
 	return AnyType{}
 }
