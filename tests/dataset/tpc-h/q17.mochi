@@ -17,8 +17,8 @@ let result =
   from l in lineitem
   join p in part on p.p_partkey == l.l_partkey
   where
-    p.p_brand == brand and
-    p.p_container == container and
+    p.p_brand == brand &&
+    p.p_container == container &&
     l.l_quantity < (
       let avg_qty = avg(x.l_quantity for x in lineitem where x.l_partkey == p.p_partkey)
       in 0.2 * avg_qty
