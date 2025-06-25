@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 // --- Expressions ---
@@ -355,6 +356,35 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		c.helpers["_Group"] = true
+		c.helpers["_group_by"] = true
+		res := fmt.Sprintf("(function()\n\tlocal _groups = __group_by(%s, function(%s) return %s end)\n\tlocal _res = {}\n\tfor _, %s in ipairs(_groups) do\n\t\t_res[#_res+1] = %s\n\tend\n\treturn _res\nend)()", src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name), valExpr)
+		return res, nil
+	}
+
 	if q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
