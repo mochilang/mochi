@@ -1170,16 +1170,15 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil {
-		return "", fmt.Errorf("unsupported query expression")
-	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
 	}
+
 	orig := c.env
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, types.AnyType{}, true)
+
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
@@ -1189,13 +1188,39 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		fromSrcs[i] = fs
 		child.SetVar(f.Var, types.AnyType{}, true)
 	}
+
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+
 	c.env = child
+
+	for i, j := range q.Joins {
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinOns[i] = on
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+	}
+
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
 		return "", err
 	}
-	selType := c.exprType(q.Select)
+
 	var cond, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
@@ -1225,66 +1250,90 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		c.use("_Group")
+		c.use("_group_by")
+		expr := fmt.Sprintf("_group_by(%s, (%s: Any) => %s).map(%s => %s).toSeq", src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name), valExpr)
+		return expr, nil
+	}
+
 	c.env = orig
-	res := c.newTemp("res")
+
+	varNames := []string{sanitizeName(q.Var)}
+	for _, f := range q.Froms {
+		varNames = append(varNames, sanitizeName(f.Var))
+	}
+	params := append([]string(nil), varNames...)
+	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+	for _, fs := range fromSrcs {
+		joins = append(joins, fmt.Sprintf("Map(\"items\" -> %s)", fs))
+	}
+	for i, js := range joinSrcs {
+		onParams := append(params, sanitizeName(q.Joins[i].Var))
+		onFn := seqLambda(onParams, joinOns[i])
+		spec := fmt.Sprintf("Map(\"items\" -> %s, \"on\" -> %s", js, onFn)
+		if joinSides[i] == "left" || joinSides[i] == "outer" {
+			spec += ", \"left\" -> true"
+		}
+		if joinSides[i] == "right" || joinSides[i] == "outer" {
+			spec += ", \"right\" -> true"
+		}
+		spec += ")"
+		joins = append(joins, spec)
+		params = append(params, sanitizeName(q.Joins[i].Var))
+	}
+
+	selectFn := seqLambda(params, sel)
+	var whereFn, sortFn string
+	if cond != "" {
+		whereFn = seqLambda(params, cond)
+	}
+	if sortExpr != "" {
+		sortFn = seqLambda(params, sortExpr)
+	}
+
+	c.use("_query")
 	var b strings.Builder
 	b.WriteString("(() => {\n")
-	bufType := scalaType(selType)
-	if sortExpr != "" {
-		if bufType == "Any" {
-			bufType = "(Any, Any)"
-		} else {
-			bufType = fmt.Sprintf("(%s, Any)", bufType)
+	b.WriteString(fmt.Sprintf("\tval src = %s\n", src))
+	b.WriteString("\tval res = _query(src, Seq(\n")
+	for i, j := range joins {
+		b.WriteString("\t\t" + j)
+		if i != len(joins)-1 {
+			b.WriteString(",")
 		}
-		b.WriteString(fmt.Sprintf("\tval %s = scala.collection.mutable.ArrayBuffer[%s]()\n", res, bufType))
-	} else {
-		if bufType == "Any" {
-			b.WriteString(fmt.Sprintf("\tval %s = scala.collection.mutable.ArrayBuffer[Any]()\n", res))
-		} else {
-			b.WriteString(fmt.Sprintf("\tval %s = scala.collection.mutable.ArrayBuffer[%s]()\n", res, bufType))
-		}
+		b.WriteString("\n")
 	}
-	indent := "\t"
-	b.WriteString(fmt.Sprintf(indent+"for (%s <- %s) {\n", sanitizeName(q.Var), src))
-	indent += "\t"
-	for i, f := range q.Froms {
-		b.WriteString(fmt.Sprintf(indent+"for (%s <- %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
-		indent += "\t"
+	b.WriteString("\t), Map(\"select\" -> " + selectFn)
+	if whereFn != "" {
+		b.WriteString(", \"where\" -> " + whereFn)
 	}
-	if cond != "" {
-		b.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
-		indent += "\t"
-	}
-	if sortExpr != "" {
-		b.WriteString(fmt.Sprintf(indent+"%s.append((%s, %s))\n", res, sel, sortExpr))
-	} else {
-		b.WriteString(fmt.Sprintf(indent+"%s.append(%s)\n", res, sel))
-	}
-	if cond != "" {
-		indent = indent[:len(indent)-1]
-		b.WriteString(indent + "}\n")
-	}
-	for i := len(q.Froms) - 1; i >= 0; i-- {
-		indent = indent[:len(indent)-1]
-		b.WriteString(indent + "}\n")
-	}
-	indent = indent[:len(indent)-1]
-	b.WriteString(indent + "}\n")
-	var result string
-	if sortExpr != "" {
-		c.use("_compare")
-		b.WriteString(fmt.Sprintf("\tval _sorted = %s.sortBy(_._2)(_anyOrdering)\n", res))
-		result = "_sorted.map(_._1).toSeq"
-	} else {
-		result = fmt.Sprintf("%s.toSeq", res)
+	if sortFn != "" {
+		b.WriteString(", \"sortKey\" -> " + sortFn)
 	}
 	if skipExpr != "" {
-		result += ".drop(" + skipExpr + ")"
+		b.WriteString(", \"skip\" -> " + skipExpr)
 	}
 	if takeExpr != "" {
-		result += ".take(" + takeExpr + ")"
+		b.WriteString(", \"take\" -> " + takeExpr)
 	}
-	b.WriteString("\t" + result + "\n")
+	b.WriteString("))\n")
+	b.WriteString("\tres\n")
 	b.WriteString("})()")
 	return b.String(), nil
 }

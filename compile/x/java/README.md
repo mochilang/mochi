@@ -26,6 +26,7 @@ statements are present.
 - Generative `generate` blocks for text, embeddings and structs
 - Test blocks with `expect`
 - Pattern matching expressions with `match`
+- Dataset queries with joins, sorting, pagination and basic grouping
 
 ## Building
 
@@ -48,7 +49,6 @@ a selection of LeetCode solutions.
 - The Java backend currently lacks many Mochi features supported by other
 compilers:
 - Union types and tagged unions
-- Dataset queries (`from`/`select`, joins, grouping)
 - Concurrency primitives like streams, agents, `spawn` and channels
 - Foreign imports and extern functions
 - Logic programming constructs (`fact`, `rule`, `query`)
@@ -64,5 +64,3 @@ compilers:
 - YAML dataset loading/saving
 - Destructuring bindings in `let` and `var` statements
 - Conditional expressions using `if`/`else`
-
-Simple `from` queries used by the LeetCode examples are now supported.

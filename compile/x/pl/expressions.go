@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 type exprRes struct {
@@ -387,6 +388,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 		return c.compileExpr(p.Group)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.LogicQuery != nil:
@@ -505,6 +508,130 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 		code = append(code, callLine+",")
 		return exprRes{code: code, val: tmp}, nil
 	}
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+		return exprRes{}, fmt.Errorf("unsupported query expression")
+	}
+
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return exprRes{}, err
+	}
+
+	child := types.NewEnv(c.env)
+	var elem types.Type = types.AnyType{}
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		elem = lt.Elem
+	}
+	child.SetVar(q.Var, elem, true)
+	orig := c.env
+	c.env = child
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return exprRes{}, err
+	}
+	var cond exprRes
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return exprRes{}, err
+		}
+	}
+	var sortRes exprRes
+	if q.Sort != nil {
+		sortRes, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return exprRes{}, err
+		}
+	}
+	var skipRes, takeRes exprRes
+	if q.Skip != nil {
+		skipRes, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return exprRes{}, err
+		}
+	}
+	if q.Take != nil {
+		takeRes, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return exprRes{}, err
+		}
+	}
+	c.env = orig
+
+	listVar := c.newVar()
+	code := append([]string{}, src.code...)
+	c.use("tolist")
+	code = append(code, fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
+
+	resultVar := c.newVar()
+	innerParts := []string{fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Var), listVar)}
+	for _, line := range cond.code {
+		innerParts = append(innerParts, strings.TrimSuffix(line, ","))
+	}
+	if q.Where != nil {
+		innerParts = append(innerParts, cond.val)
+	}
+	for _, line := range sel.code {
+		innerParts = append(innerParts, strings.TrimSuffix(line, ","))
+	}
+
+	if q.Sort == nil {
+		innerParts = append(innerParts, fmt.Sprintf("%s = %s", resultVar, sel.val))
+		goal := strings.Join(innerParts, ", ")
+		itemsVar := c.newVar()
+		code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", resultVar, goal, itemsVar))
+		resultVar = itemsVar
+	} else {
+		keyVar := c.newVar()
+		for _, line := range sortRes.code {
+			innerParts = append(innerParts, strings.TrimSuffix(line, ","))
+		}
+		innerParts = append(innerParts, fmt.Sprintf("%s = %s", keyVar, sortRes.val))
+		innerParts = append(innerParts, fmt.Sprintf("%s = %s", resultVar, sel.val))
+		goal := strings.Join(innerParts, ", ")
+		pairsVar := c.newVar()
+		sortedVar := c.newVar()
+		itemsVar := c.newVar()
+		code = append(code, fmt.Sprintf("findall(%s-%s, (%s), %s),", keyVar, resultVar, goal, pairsVar))
+		code = append(code, fmt.Sprintf("keysort(%s, %s),", pairsVar, sortedVar))
+		code = append(code, fmt.Sprintf("findall(V, member(_-V, %s), %s),", sortedVar, itemsVar))
+		resultVar = itemsVar
+	}
+
+	if q.Skip != nil || q.Take != nil {
+		for _, line := range skipRes.code {
+			code = append(code, line)
+		}
+		for _, line := range takeRes.code {
+			code = append(code, line)
+		}
+		lenVar := c.newVar()
+		code = append(code, fmt.Sprintf("length(%s, %s),", resultVar, lenVar))
+		startVar := "0"
+		if q.Skip != nil {
+			startVar = skipRes.val
+		}
+		endVar := lenVar
+		if q.Take != nil {
+			endVar = c.newVar()
+			code = append(code, fmt.Sprintf("%s is %s + %s,", endVar, startVar, takeRes.val))
+		}
+		finalVar := c.newVar()
+		c.use("slice")
+		code = append(code, fmt.Sprintf("slice(%s, %s, %s, %s),", resultVar, startVar, endVar, finalVar))
+		resultVar = finalVar
+	}
+
+	return exprRes{code: code, val: resultVar}, nil
 }
 
 func (c *Compiler) compileLogicQuery(q *parser.LogicQueryExpr) (exprRes, error) {

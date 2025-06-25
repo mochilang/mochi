@@ -492,7 +492,140 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 {
+	needsHelper := false
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			needsHelper = true
+			break
+		}
+	}
+	if q.Group != nil && (len(q.Froms) > 0 || len(q.Joins) > 0 || q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil) {
+		needsHelper = true
+	}
+
+	if needsHelper {
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				return "", err
+			}
+			fromSrcs[i] = fs
+		}
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		sides := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				return "", err
+			}
+			joinSrcs[i] = js
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				return "", err
+			}
+			joinOns[i] = on
+			if j.Side != nil {
+				sides[i] = *j.Side
+			}
+		}
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		var whereStr, sortStr, skipStr, takeStr string
+		if q.Where != nil {
+			whereStr, err = c.compileExpr(q.Where)
+			if err != nil {
+				return "", err
+			}
+		}
+		if q.Sort != nil {
+			sortStr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+		}
+		if q.Skip != nil {
+			skipStr, err = c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+		}
+		if q.Take != nil {
+			takeStr, err = c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+		}
+		names := []string{sanitizeName(q.Var)}
+		for _, f := range q.Froms {
+			names = append(names, sanitizeName(f.Var))
+		}
+		params := append([]string(nil), names...)
+		joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+		for _, fs := range fromSrcs {
+			joins = append(joins, fmt.Sprintf("{ 'items' => %s }", fs))
+		}
+		tmp := append([]string(nil), params...)
+		for i, js := range joinSrcs {
+			onParams := append(tmp, sanitizeName(q.Joins[i].Var))
+			spec := fmt.Sprintf("{ 'items' => %s, 'on' => ->(%s){ %s }", js, strings.Join(onParams, ", "), joinOns[i])
+			if sides[i] == "left" || sides[i] == "outer" {
+				spec += ", 'left' => true"
+			}
+			if sides[i] == "right" || sides[i] == "outer" {
+				spec += ", 'right' => true"
+			}
+			spec += " }"
+			joins = append(joins, spec)
+			tmp = append(tmp, sanitizeName(q.Joins[i].Var))
+		}
+		allParams := strings.Join(tmp, ", ")
+		selectFn := fmt.Sprintf("->(%s){ %s }", allParams, sel)
+		var whereFn, sortFn string
+		if whereStr != "" {
+			whereFn = fmt.Sprintf("->(%s){ %s }", allParams, whereStr)
+		}
+		if sortStr != "" {
+			sortFn = fmt.Sprintf("->(%s){ %s }", allParams, sortStr)
+		}
+		var b strings.Builder
+		b.WriteString("(begin\n")
+		b.WriteString("\tsrc = " + src + "\n")
+		b.WriteString("\t_query(src, [\n")
+		for i, j := range joins {
+			b.WriteString("\t\t" + j)
+			if i != len(joins)-1 {
+				b.WriteString(",")
+			}
+			b.WriteString("\n")
+		}
+		b.WriteString("\t], { 'select' => " + selectFn)
+		if whereFn != "" {
+			b.WriteString(", 'where' => " + whereFn)
+		}
+		if sortFn != "" {
+			b.WriteString(", 'sortKey' => " + sortFn)
+		}
+		if skipStr != "" {
+			b.WriteString(", 'skip' => " + skipStr)
+		}
+		if takeStr != "" {
+			b.WriteString(", 'take' => " + takeStr)
+		}
+		b.WriteString(" })\n")
+		b.WriteString("end)")
+		c.use("_query")
+		return b.String(), nil
+	}
+
+	if len(q.Joins) > 0 && !needsHelper {
 		src, err := c.compileExpr(q.Source)
 		if err != nil {
 			return "", err

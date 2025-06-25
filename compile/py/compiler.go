@@ -25,21 +25,21 @@ type Compiler struct {
 	agents       map[string]bool
 	handlerCount int
 	tmpCount     int
-        models       bool
-        methodFields map[string]bool
+	models       bool
+	methodFields map[string]bool
 }
 
 func New(env *types.Env) *Compiler {
-        return &Compiler{
-                helpers:  make(map[string]bool),
-                imports:  make(map[string]string),
-                env:      env,
-                structs:  make(map[string]bool),
-                agents:   make(map[string]bool),
-                models:   false,
-                tmpCount: 0,
-                methodFields: nil,
-        }
+	return &Compiler{
+		helpers:      make(map[string]bool),
+		imports:      make(map[string]string),
+		env:          env,
+		structs:      make(map[string]bool),
+		agents:       make(map[string]bool),
+		models:       false,
+		tmpCount:     0,
+		methodFields: nil,
+	}
 }
 
 func containsStreamCode(stmts []*parser.Statement) bool {
@@ -535,15 +535,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return "(" + expr + ")", nil
-       case p.Selector != nil:
-               expr := sanitizeName(p.Selector.Root)
-               if c.methodFields != nil && c.methodFields[p.Selector.Root] {
-                       expr = "self." + expr
-               }
-               for _, s := range p.Selector.Tail {
-                       expr += "." + sanitizeName(s)
-               }
-               return expr, nil
+	case p.Selector != nil:
+		expr := sanitizeName(p.Selector.Root)
+		if c.methodFields != nil && c.methodFields[p.Selector.Root] {
+			expr = "self." + expr
+		}
+		for _, s := range p.Selector.Tail {
+			expr += "." + sanitizeName(s)
+		}
+		return expr, nil
 	case p.Struct != nil:
 		if c.env != nil {
 			if _, ok := c.env.GetAgent(p.Struct.Name); ok {
@@ -617,7 +617,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				args[i] = fmt.Sprintf("str(%s).lower()", args[i])
 			}
 		}
-		argStr = strings.Join(args, ", ")
+		if len(call.Args) == 1 {
+			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+				argStr = "*" + args[0]
+			} else {
+				argStr = args[0]
+			}
+		} else {
+			argStr = strings.Join(args, ", ")
+		}
 		return fmt.Sprintf("print(%s)", argStr), nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
@@ -873,6 +881,119 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.use("_group_by")
 			c.use("_group")
 			return expr, nil
+		}
+
+		if q.Group != nil {
+			keyExpr, err := c.compileExpr(q.Group.Expr)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+
+			fromSrcs := make([]string, len(q.Froms))
+			varNames := []string{sanitizeName(q.Var)}
+			for i, f := range q.Froms {
+				fs, err := c.compileExpr(f.Src)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				fromSrcs[i] = fs
+				varNames = append(varNames, sanitizeName(f.Var))
+			}
+			joinSrcs := make([]string, len(q.Joins))
+			joinOns := make([]string, len(q.Joins))
+			paramCopy := append([]string(nil), varNames...)
+			for i, j := range q.Joins {
+				js, err := c.compileExpr(j.Src)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				joinSrcs[i] = js
+				on, err := c.compileExpr(j.On)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				joinOns[i] = on
+				varNames = append(varNames, sanitizeName(j.Var))
+			}
+			var whereExpr string
+			if q.Where != nil {
+				whereExpr, err = c.compileExpr(q.Where)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			c.env = orig
+
+			joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+			params := []string{sanitizeName(q.Var)}
+			for i, fs := range fromSrcs {
+				joins = append(joins, fmt.Sprintf("{ 'items': %s }", fs))
+				params = append(params, sanitizeName(q.Froms[i].Var))
+			}
+			paramCopy = append([]string(nil), params...)
+			for i, js := range joinSrcs {
+				onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+				spec := fmt.Sprintf("{ 'items': %s, 'on': lambda %s: (%s)", js, strings.Join(onParams, ", "), joinOns[i])
+				if q.Joins[i].Side != nil {
+					side := *q.Joins[i].Side
+					if side == "left" || side == "outer" {
+						spec += ", 'left': True"
+					}
+					if side == "right" || side == "outer" {
+						spec += ", 'right': True"
+					}
+				}
+				spec += " }"
+				joins = append(joins, spec)
+				paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+			}
+			allParams := strings.Join(paramCopy, ", ")
+			tupleExpr := "(" + allParams + ")"
+			selectFn := fmt.Sprintf("lambda %s: %s", allParams, tupleExpr)
+			var whereFn string
+			if whereExpr != "" {
+				whereFn = fmt.Sprintf("lambda %s: (%s)", allParams, whereExpr)
+			}
+
+			var b strings.Builder
+			b.WriteString("(lambda:\n")
+			b.WriteString("\t_src = " + src + "\n")
+			b.WriteString("\t_rows = _query(_src, [\n")
+			for i, j := range joins {
+				b.WriteString("\t\t" + j)
+				if i != len(joins)-1 {
+					b.WriteString(",")
+				}
+				b.WriteString("\n")
+			}
+			b.WriteString("\t], { 'select': " + selectFn)
+			if whereFn != "" {
+				b.WriteString(", 'where': " + whereFn)
+			}
+			b.WriteString(" })\n")
+			b.WriteString("\t_groups = _group_by(_rows, lambda " + allParams + ": (" + keyExpr + "))\n")
+			c.imports["types"] = "types"
+			genv := types.NewEnv(child)
+			genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+			c.env = genv
+			val, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			c.env = orig
+			b.WriteString("\t_res = [ types.SimpleNamespace(**" + val + ") for " + sanitizeName(q.Group.Name) + " in _groups ]\n")
+			b.WriteString("\treturn _res\n")
+			b.WriteString(")()")
+			c.use("_query")
+			c.use("_group_by")
+			c.use("_group")
+			return b.String(), nil
 		}
 
 		loops := []string{fmt.Sprintf("%s in %s", sanitizeName(q.Var), src)}

@@ -212,6 +212,56 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 	}
 
+	if c.needLeftJoin {
+		c.writeln("")
+		c.writeln("mochi_left_join_item(A, B, Fun) ->")
+		c.indent++
+		c.writeln("Matches = [ {A, J} || J <- B, Fun(A, J) ],")
+		c.writeln("case Matches of")
+		c.indent++
+		c.writeln("[] -> [{A, undefined}];")
+		c.writeln("_ -> Matches")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_left_join(L, R, Fun) ->")
+		c.indent++
+		c.writeln("lists:flatmap(fun(X) -> mochi_left_join_item(X, R, Fun) end, L).")
+		c.indent--
+	}
+
+	if c.needRightJoin {
+		c.writeln("")
+		c.writeln("mochi_right_join_item(B, A, Fun) ->")
+		c.indent++
+		c.writeln("Matches = [ {I, B} || I <- A, Fun(I, B) ],")
+		c.writeln("case Matches of")
+		c.indent++
+		c.writeln("[] -> [{undefined, B}];")
+		c.writeln("_ -> Matches")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_right_join(L, R, Fun) ->")
+		c.indent++
+		c.writeln("lists:flatmap(fun(Y) -> mochi_right_join_item(Y, L, Fun) end, R).")
+		c.indent--
+	}
+
+	if c.needOuterJoin {
+		c.writeln("")
+		c.writeln("mochi_outer_join(L, R, Fun) ->")
+		c.indent++
+		c.writeln("Left = mochi_left_join(L, R, Fun),")
+		c.writeln("Right = [ P || P = {undefined, _} <- mochi_right_join(L, R, Fun) ],")
+		c.writeln("Left ++ Right.")
+		c.indent--
+	}
+
 	if c.needSetOps {
 		c.writeln("")
 		c.writeln("mochi_union(A, B) -> sets:to_list(sets:union(sets:from_list(A), sets:from_list(B))).")

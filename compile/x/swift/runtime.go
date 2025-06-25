@@ -177,6 +177,27 @@ func _save(_ rows: [[String: Any]], _ path: String?, _ opts: [String: Any]?) {
     return [:]
 }
 `
+	helperGroup = `class _Group {
+    var key: Any
+    var Items: [Any] = []
+    init(_ k: Any) { self.key = k }
+}
+`
+	helperGroupBy = `func _group_by(_ src: [Any], _ keyfn: (Any) -> Any) -> [_Group] {
+    var groups: [String: _Group] = [:]
+    var order: [String] = []
+    for it in src {
+        let key = keyfn(it)
+        let ks = String(describing: key)
+        if groups[ks] == nil {
+            groups[ks] = _Group(key)
+            order.append(ks)
+        }
+        groups[ks]!.Items.append(it)
+    }
+    return order.compactMap { groups[$0] }
+}
+`
 	helperJSON = `func _json(_ v: Any) {
     if let d = try? JSONSerialization.data(withJSONObject: v, options: []), let s = String(data: d, encoding: .utf8) {
         print(s)
@@ -198,6 +219,8 @@ var helperMap = map[string]string{
 	"_load":        helperLoad,
 	"_save":        helperSave,
 	"_fetch":       helperFetch,
+	"_Group":       helperGroup,
+	"_group_by":    helperGroupBy,
 	"_json":        helperJSON,
 }
 

@@ -295,13 +295,14 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
 - Logic programming facts, rules and `query` expressions
 - Anonymous function literals (`fun` expressions)
 - Passing functions as parameters and return values
+- Dataset queries with optional filtering, sorting and limits
 ## Unsupported Features
 
 The Prolog backend focuses on basic control flow and list operations. Several
 Mochi language features are not yet implemented:
 
 - Pattern matching expressions and union types
-- Dataset queries (`from`/`select`, joins and grouping)
+- Dataset query joins and grouping
 - Enum declarations and variant matching
 - Concurrency primitives and external helpers like `_fetch` or `_genText`
 - Import declarations (currently ignored)

@@ -45,7 +45,24 @@ const datasetHelpers = `(define (_fetch url opts)
   (define out (if path (open-output-file path #:exists 'replace) (current-output-port)))
   (cond [(string=? fmt "jsonl") (for ([r rows]) (fprintf out "~a\n" (jsexpr->string r)))]
         [(string=? fmt "json") (fprintf out "~a" (jsexpr->string rows))])
-  (when path (close-output-port out)))`
+  (when path (close-output-port out)))
+
+;; grouping helpers
+(struct _Group (key Items) #:mutable)
+
+(define (_group_by src keyfn)
+  (define groups (make-hash))
+  (define order '())
+  (for ([it src])
+    (define k (keyfn it))
+    (define ks (format "~a" k))
+    (define g (hash-ref groups ks #f))
+    (unless g
+      (set! g (make-_Group k '()))
+      (hash-set! groups ks g)
+      (set! order (append order (list ks))))
+    (set-_Group-Items! g (append (_Group-Items g) (list it))))
+  (for/list ([ks order]) (hash-ref groups ks)))`
 
 const setOpsHelpers = `(define (union-all a b) (append (list->list a) (list->list b)))
 (define (union a b)
@@ -1199,6 +1216,33 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		c.needsDataset = true
+		return fmt.Sprintf("(map (lambda (%s) %s) (_group_by %s (lambda (%s) %s)))",
+			sanitizeName(q.Group.Name), valExpr, src, sanitizeName(q.Var), keyExpr), nil
+	}
 	if q.Group != nil {
 		return "", fmt.Errorf("group clause not supported")
 	}

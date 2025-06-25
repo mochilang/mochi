@@ -37,6 +37,9 @@ type Compiler struct {
 	needSetOps    bool
 	needGroup     bool
 	needGroupBy   bool
+	needLeftJoin  bool
+	needRightJoin bool
+	needOuterJoin bool
 	vars          map[string]string
 	counts        map[string]int
 	tmpCount      int
@@ -1171,9 +1174,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	for _, j := range q.Joins {
-		if j.Side != nil {
-			return "", fmt.Errorf("unsupported join side")
+	if len(q.Joins) > 1 {
+		for _, j := range q.Joins {
+			if j.Side != nil {
+				return "", fmt.Errorf("unsupported join side")
+			}
 		}
 	}
 	src, err := c.compileExpr(q.Source)
@@ -1249,13 +1254,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		condParts = append(condParts, w)
 	}
-	for _, j := range q.Joins {
-		on, err := c.compileExpr(j.On)
-		if err != nil {
-			c.env = orig
-			return "", err
+	joinOns := []string{}
+	joinSrc := []string{}
+	if len(q.Joins) > 0 {
+		joinOns = make([]string, len(q.Joins))
+		joinSrc = make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinSrc[i] = js
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinOns[i] = on
+			if j.Side == nil {
+				condParts = append(condParts, on)
+			}
 		}
-		condParts = append(condParts, on)
 	}
 	if len(condParts) > 0 {
 		cond = strings.Join(condParts, ", ")
@@ -1283,14 +1303,35 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = orig
 
+	specialJoin := len(q.Joins) == 1 && q.Joins[0].Side != nil &&
+		(*q.Joins[0].Side == "right" || *q.Joins[0].Side == "outer")
+
 	if sortExpr == "" && skipExpr == "" && takeExpr == "" {
 		var b strings.Builder
 		b.WriteString("[")
 		b.WriteString(sel)
 		b.WriteString(" || ")
-		b.WriteString(capitalize(q.Var))
-		b.WriteString(" <- ")
-		b.WriteString(src)
+		if specialJoin {
+			side := *q.Joins[0].Side
+			joinExpr := ""
+			if side == "right" {
+				joinExpr = fmt.Sprintf("mochi_right_join(%s, %s, fun(%s, %s) -> %s end)",
+					src, joinSrc[0], capitalize(q.Var), capitalize(q.Joins[0].Var), joinOns[0])
+				c.needRightJoin = true
+			} else {
+				joinExpr = fmt.Sprintf("mochi_outer_join(%s, %s, fun(%s, %s) -> %s end)",
+					src, joinSrc[0], capitalize(q.Var), capitalize(q.Joins[0].Var), joinOns[0])
+				c.needLeftJoin = true
+				c.needRightJoin = true
+				c.needOuterJoin = true
+			}
+			b.WriteString(fmt.Sprintf("{%s, %s} <- %s",
+				capitalize(q.Var), capitalize(q.Joins[0].Var), joinExpr))
+		} else {
+			b.WriteString(capitalize(q.Var))
+			b.WriteString(" <- ")
+			b.WriteString(src)
+		}
 		for _, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
 			if err != nil {
@@ -1301,15 +1342,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(" <- ")
 			b.WriteString(fs)
 		}
-		for _, j := range q.Joins {
-			js, err := c.compileExpr(j.Src)
-			if err != nil {
-				return "", err
+		for i, j := range q.Joins {
+			if specialJoin && i == 0 {
+				continue
 			}
+			js := joinSrc[i]
 			b.WriteString(", ")
-			b.WriteString(capitalize(j.Var))
-			b.WriteString(" <- ")
-			b.WriteString(js)
+			if j.Side != nil && *j.Side == "left" {
+				on := joinOns[i]
+				b.WriteString("{" + capitalize(q.Var) + ", " + capitalize(j.Var) + "} <- mochi_left_join_item(" + capitalize(q.Var) + ", " + js + ", fun(" + capitalize(q.Var) + ", " + capitalize(j.Var) + ") -> " + on + " end)")
+				c.needLeftJoin = true
+			} else {
+				b.WriteString(capitalize(j.Var))
+				b.WriteString(" <- ")
+				b.WriteString(js)
+			}
 		}
 		if cond != "" {
 			b.WriteString(", ")
@@ -1327,7 +1374,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	} else {
 		b.WriteString(sel)
 	}
-	b.WriteString(" || " + capitalize(q.Var) + " <- " + src)
+	if specialJoin {
+		side := *q.Joins[0].Side
+		joinExpr := ""
+		if side == "right" {
+			joinExpr = fmt.Sprintf("mochi_right_join(%s, %s, fun(%s, %s) -> %s end)",
+				src, joinSrc[0], capitalize(q.Var), capitalize(q.Joins[0].Var), joinOns[0])
+			c.needRightJoin = true
+		} else {
+			joinExpr = fmt.Sprintf("mochi_outer_join(%s, %s, fun(%s, %s) -> %s end)",
+				src, joinSrc[0], capitalize(q.Var), capitalize(q.Joins[0].Var), joinOns[0])
+			c.needLeftJoin = true
+			c.needRightJoin = true
+			c.needOuterJoin = true
+		}
+		b.WriteString(" || {" + capitalize(q.Var) + ", " + capitalize(q.Joins[0].Var) + "} <- " + joinExpr)
+	} else {
+		b.WriteString(" || " + capitalize(q.Var) + " <- " + src)
+	}
 	for _, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
 		if err != nil {
@@ -1335,12 +1399,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(", " + capitalize(f.Var) + " <- " + fs)
 	}
-	for _, j := range q.Joins {
-		js, err := c.compileExpr(j.Src)
-		if err != nil {
-			return "", err
+	for i, j := range q.Joins {
+		if specialJoin && i == 0 {
+			continue
 		}
-		b.WriteString(", " + capitalize(j.Var) + " <- " + js)
+		js := joinSrc[i]
+		b.WriteString(", ")
+		if j.Side != nil && *j.Side == "left" {
+			on := joinOns[i]
+			b.WriteString("{" + capitalize(q.Var) + ", " + capitalize(j.Var) + "} <- mochi_left_join_item(" + capitalize(q.Var) + ", " + js + ", fun(" + capitalize(q.Var) + ", " + capitalize(j.Var) + ") -> " + on + " end)")
+			c.needLeftJoin = true
+		} else {
+			b.WriteString(capitalize(j.Var) + " <- " + js)
+		}
 	}
 	if cond != "" {
 		b.WriteString(", " + cond)

@@ -23,6 +23,19 @@ avg :: Real a => [a] -> Double
 avg xs | null xs = 0
       | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
 
+data MGroup k a = MGroup { key :: k, items :: [a] } deriving (Show)
+
+_group_by :: Ord k => [a] -> (a -> k) -> [MGroup k a]
+_group_by src keyfn =
+  let go [] m order = (m, order)
+      go (x:xs) m order =
+        let k = keyfn x
+        in case Map.lookup k m of
+             Just is -> go xs (Map.insert k (is ++ [x]) m) order
+             Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+      (m, order) = go src Map.empty []
+  in [ MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order ]
+
 _indexString :: String -> Int -> String
 _indexString s i =
   let idx = if i < 0 then i + length s else i

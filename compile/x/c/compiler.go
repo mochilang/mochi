@@ -915,6 +915,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
+// compileQueryExpr generates C code for a basic dataset query supporting
+// `from` with an optional `where` and `select` clause. Advanced features like
+// joins, grouping and sorting are not yet implemented.
 	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
 		return "0"
 	}
@@ -930,6 +933,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, lt.Elem, true)
 	c.env = child
+
 
 	var cond string
 	if q.Where != nil {
@@ -956,6 +960,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		c.need(needListString)
 	default:
 		return "0"
+	val := c.compileExpr(q.Select)
+	retT := c.exprType(q.Select)
+	retList := types.ListType{Elem: retT}
+	listC := cTypeFromType(retList)
+	if listC == "" {
+		listC = "list_int"
+	}
+	if listC == "list_string" {
+		c.need(needListString)
+	} else if listC == "list_float" {
+		c.need(needListFloat)
+	} else if listC == "list_list_int" {
+		c.need(needListListInt)
 	}
 
 	res := c.newTemp()
@@ -1611,6 +1628,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Query != nil:

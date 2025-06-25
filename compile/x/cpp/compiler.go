@@ -250,6 +250,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		for i, v := range t.Variants {
 			cname := v.Name
 			names[i] = cname
+			c.structs[cname] = true
 			c.writeln(fmt.Sprintf("struct %s {", cname))
 			c.indent++
 			for _, f := range v.Fields {
@@ -269,6 +270,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.writeln(fmt.Sprintf("using %s = std::variant<%s>;", t.Name, strings.Join(names, ", ")))
 		return nil
 	}
+	c.structs[t.Name] = true
 	c.writeln(fmt.Sprintf("struct %s {", t.Name))
 	c.indent++
 	methods := []*parser.FunStmt{}
@@ -635,18 +637,29 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 		if op.Index != nil {
 			// Handle simple index or slice
 			if op.Index.Colon == nil {
-				idx := c.compileExpr(op.Index.Start)
+				idxExpr := op.Index.Start
 				tmpExpr := &parser.PostfixExpr{Target: p.Target}
 				unary := &parser.Unary{Value: tmpExpr}
 				exprType := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
 				typ := InferCppExprType(exprType, c.env, c.getVar)
-				if typ == "string" {
+				if strings.HasPrefix(typ, "vector<") {
+					if lit := getIntLiteral(idxExpr); lit != nil {
+						if *lit < 0 {
+							c.helpers["indexVec"] = true
+							expr = fmt.Sprintf("_indexVec(%s, %d)", expr, *lit)
+						} else {
+							expr = fmt.Sprintf("%s[%d]", expr, *lit)
+						}
+					} else {
+						idx := c.compileExpr(idxExpr)
+						expr = fmt.Sprintf("%s[%s]", expr, idx)
+					}
+				} else if typ == "string" {
+					idx := c.compileExpr(idxExpr)
 					c.helpers["indexString"] = true
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
-				} else if strings.HasPrefix(typ, "vector<") {
-					c.helpers["indexVec"] = true
-					expr = fmt.Sprintf("_indexVec(%s, %s)", expr, idx)
 				} else {
+					idx := c.compileExpr(idxExpr)
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
 			} else {
@@ -963,7 +976,115 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		return buf.String(), nil
 	}
 	if q.Group != nil {
-		return "", fmt.Errorf("query not supported")
+		src := c.compileExpr(q.Source)
+		key := c.compileExpr(q.Group.Expr)
+		sel := c.compileExpr(q.Select)
+		resType := InferCppExprType(q.Select, c.env, c.getVar)
+		if resType == "" {
+			resType = "auto"
+		}
+		elemType := "auto"
+		if t := InferCppExprType(q.Source, c.env, c.getVar); strings.HasPrefix(t, "vector<") {
+			elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
+		}
+		keyType := InferCppExprType(q.Group.Expr, c.env, c.getVar)
+		if keyType == "" {
+			keyType = "auto"
+		}
+		var sortExpr, sortType string
+		if q.Sort != nil {
+			sortExpr = c.compileExpr(q.Sort)
+			sortType = InferCppExprType(q.Sort, c.env, c.getVar)
+			if sortType == "" {
+				sortType = "auto"
+			}
+		}
+		var skipExpr, takeExpr string
+		if q.Skip != nil {
+			skipExpr = c.compileExpr(q.Skip)
+		}
+		if q.Take != nil {
+			takeExpr = c.compileExpr(q.Take)
+		}
+		var cond string
+		if q.Where != nil {
+			cond = c.compileExpr(q.Where)
+		}
+		vars := []string{q.Var}
+		srcs := []string{src}
+		for _, f := range q.Froms {
+			vars = append(vars, f.Var)
+			srcs = append(srcs, c.compileExpr(f.Src))
+		}
+		joinVars := make([]string, len(q.Joins))
+		joinSrcs := make([]string, len(q.Joins))
+		joinConds := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			joinVars[i] = j.Var
+			joinSrcs[i] = c.compileExpr(j.Src)
+			joinConds[i] = c.compileExpr(j.On)
+		}
+		var buf bytes.Buffer
+		buf.WriteString("([&]() -> vector<" + resType + "> {\n")
+		buf.WriteString("\tusing ElemT = " + elemType + ";\n")
+		buf.WriteString("\tusing KeyT = " + keyType + ";\n")
+		buf.WriteString("\tstruct Group { KeyT Key; vector<ElemT> Items; };\n")
+		buf.WriteString("\tunordered_map<KeyT, Group> groups;\n")
+		buf.WriteString("\tvector<KeyT> order;\n")
+		indent := "\t"
+		for i, v := range vars {
+			buf.WriteString(indent + "for (auto& " + v + " : " + srcs[i] + ") {\n")
+			indent += "\t"
+		}
+		for i, v := range joinVars {
+			buf.WriteString(indent + "for (auto& " + v + " : " + joinSrcs[i] + ") {\n")
+			indent += "\t"
+			buf.WriteString(indent + "if (!(" + joinConds[i] + ")) continue;\n")
+		}
+		if cond != "" {
+			buf.WriteString(indent + "if (" + cond + ") {\n")
+			indent += "\t"
+		}
+		buf.WriteString(indent + "KeyT _k = " + key + ";\n")
+		buf.WriteString(indent + "if (!groups.count(_k)) { groups[_k] = Group{_k, {}}; order.push_back(_k); }\n")
+		buf.WriteString(indent + "groups[_k].Items.push_back(" + q.Var + ");\n")
+		if cond != "" {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		for range joinVars {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		for range vars {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		buf.WriteString("\tvector<Group*> items;\n")
+		buf.WriteString("\tfor (auto& _k : order) items.push_back(&groups[_k]);\n")
+		if q.Sort != nil {
+			buf.WriteString("\tvector<pair<" + sortType + ", Group*>> _tmp;\n")
+			buf.WriteString("\tfor (auto* " + q.Group.Name + " : items) {\n")
+			buf.WriteString("\t\t_tmp.push_back({" + sortExpr + ", " + q.Group.Name + "});\n")
+			buf.WriteString("\t}\n")
+			buf.WriteString("\tstd::sort(_tmp.begin(), _tmp.end(), [](const auto& a, const auto& b){ return a.first < b.first; });\n")
+			buf.WriteString("\tfor (size_t i=0;i<_tmp.size();i++) items[i] = _tmp[i].second;\n")
+		}
+		if skipExpr != "" {
+			buf.WriteString("\tint _skip = " + skipExpr + ";\n")
+			buf.WriteString("\tif (_skip < (int)items.size()) items.erase(items.begin(), items.begin() + _skip); else items.clear();\n")
+		}
+		if takeExpr != "" {
+			buf.WriteString("\tint _take = " + takeExpr + ";\n")
+			buf.WriteString("\tif (_take < (int)items.size()) items.resize(_take);\n")
+		}
+		buf.WriteString("\tvector<" + resType + "> _res;\n")
+		buf.WriteString("\tfor (auto* " + q.Group.Name + " : items) {\n")
+		buf.WriteString("\t\t_res.push_back(" + sel + ");\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn _res;\n")
+		buf.WriteString("})()")
+		return buf.String(), nil
 	}
 	src := c.compileExpr(q.Source)
 	vars := []string{q.Var}

@@ -76,6 +76,7 @@ features include:
 
 - `map` types
 - limited dataset queries (`from`/`where`/`select`) for int, float and string lists
+- basic `from`/`where`/`select` queries are supported, but joins, grouping and sorting remain unimplemented
 - enum definitions
 - agent-related constructs (`agent`, `stream`, `intent`)
 - generative `generate` blocks and model definitions

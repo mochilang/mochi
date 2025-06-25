@@ -42,6 +42,68 @@ const (
 	helperSliceString = "defp _slice_string(s, i, j) do\n  chars = String.graphemes(s)\n  n = length(chars)\n  start = if i < 0, do: i + n, else: i\n  finish = if j < 0, do: j + n, else: j\n  start = if start < 0, do: 0, else: start\n  finish = if finish > n, do: n, else: finish\n  finish = if finish < start, do: start, else: finish\n  Enum.slice(chars, start, finish - start) |> Enum.join()\nend\n"
 
 	helperIter = "defp _iter(v) do\n  if is_map(v) do\n    Map.keys(v)\n  else\n    v\n  end\nend\n"
+
+	helperQuery = "defp _query(src, joins, opts \\ %{}) do\n" +
+		"  items = Enum.map(src, fn v -> [v] end)\n" +
+		"  items = Enum.reduce(joins, items, fn j, items ->\n" +
+		"    joined = cond do\n" +
+		"      Map.get(j, :right) && Map.get(j, :left) ->\n" +
+		"        matched = for _ <- j[:items], do: false\n" +
+		"        {res, matched} = Enum.reduce(items, {[], matched}, fn left, {acc, matched} ->\n" +
+		"          {acc, matched, m} = Enum.reduce(Enum.with_index(j[:items]), {acc, matched, false}, fn {right, ri}, {acc, matched, m} ->\n" +
+		"            keep = if Map.has_key?(j, :on) and j[:on], do: apply(j[:on], left ++ [right]), else: true\n" +
+		"            if keep do\n" +
+		"              matched = List.replace_at(matched, ri, true)\n" +
+		"              {acc ++ [left ++ [right]], matched, true}\n" +
+		"            else\n" +
+		"              {acc, matched, m}\n" +
+		"            end\n" +
+		"          end)\n" +
+		"          acc = if !m, do: acc ++ [left ++ [nil]], else: acc\n" +
+		"          {acc, matched}\n" +
+		"        end)\n" +
+		"        Enum.reduce(Enum.with_index(j[:items]), res, fn {right, ri}, acc ->\n" +
+		"          if Enum.at(matched, ri) do\n" +
+		"            acc\n" +
+		"          else\n" +
+		"            undef = List.duplicate(nil, if items == [], do: 0, else: length(hd(items)))\n" +
+		"            acc ++ [undef ++ [right]]\n" +
+		"          end\n" +
+		"        end)\n" +
+		"      Map.get(j, :right) ->\n" +
+		"        Enum.reduce(j[:items], [], fn right, acc ->\n" +
+		"          {acc2, m} = Enum.reduce(items, {acc, false}, fn left, {acc, m} ->\n" +
+		"            keep = if Map.has_key?(j, :on) and j[:on], do: apply(j[:on], left ++ [right]), else: true\n" +
+		"            if keep, do: {acc ++ [left ++ [right]], true}, else: {acc, m}\n" +
+		"          end)\n" +
+		"          if !m do\n" +
+		"            undef = List.duplicate(nil, if items == [], do: 0, else: length(hd(items)))\n" +
+		"            acc2 ++ [undef ++ [right]]\n" +
+		"          else\n" +
+		"            acc2\n" +
+		"          end\n" +
+		"        end)\n" +
+		"      true ->\n" +
+		"        Enum.reduce(items, [], fn left, acc ->\n" +
+		"          {acc2, m} = Enum.reduce(j[:items], {acc, false}, fn right, {acc, m} ->\n" +
+		"            keep = if Map.has_key?(j, :on) and j[:on], do: apply(j[:on], left ++ [right]), else: true\n" +
+		"            if keep, do: {acc ++ [left ++ [right]], true}, else: {acc, m}\n" +
+		"          end)\n" +
+		"          if Map.get(j, :left) && !m do\n" +
+		"            acc2 ++ [left ++ [nil]]\n" +
+		"          else\n" +
+		"            acc2\n" +
+		"          end\n" +
+		"        end)\n" +
+		"    end\n" +
+		"    joined\n" +
+		"  end)\n" +
+		"  items = if Map.has_key?(opts, :where), do: Enum.filter(items, fn r -> apply(opts[:where], r) end), else: items\n" +
+		"  items = if Map.has_key?(opts, :sortKey), do: Enum.sort_by(items, fn r -> apply(opts[:sortKey], r) end), else: items\n" +
+		"  items = if Map.has_key?(opts, :skip), do: (n = opts[:skip]; if n < length(items), do: Enum.drop(items, n), else: []), else: items\n" +
+		"  items = if Map.has_key?(opts, :take), do: (n = opts[:take]; if n < length(items), do: Enum.take(items, n), else: items), else: items\n" +
+		"  Enum.map(items, fn r -> apply(opts[:select], r) end)\n" +
+		"end\n"
 )
 
 var helperMap = map[string]string{
@@ -66,4 +128,5 @@ var helperMap = map[string]string{
 	"_index_string": helperIndexString,
 	"_slice_string": helperSliceString,
 	"_iter":         helperIter,
+	"_query":        helperQuery,
 }

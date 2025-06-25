@@ -246,6 +246,22 @@ var zigReserved = map[string]bool{
 ```
 【F:compile/zig/compiler.go†L1119-L1121】
 
+### Dataset Queries
+
+`compileQueryExpr` lowers simple `from`/`where`/`select` expressions into loops
+that build an in-memory slice using `std.ArrayList`. More advanced features like
+joins or grouping remain unsupported.
+
+```go
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+        if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+                return "", fmt.Errorf("unsupported query features")
+        }
+        ...
+}
+```
+【F:compile/x/zig/compiler.go†L562-L601】
+
 ## Building
 
 Generate Zig code and build it with the Zig compiler:
@@ -306,8 +322,6 @@ a different runtime using Zig.
 The Zig generator currently omits several language constructs needed for later
 LeetCode solutions:
 
-* dataset query expressions (`from ... sort ... select`) used by problems that
-  operate over CSV-style input
 * advanced string slicing (step values) and indexing on assignment
 * iteration over map key/value pairs (only key iteration is implemented)
 * functions with multiple return values

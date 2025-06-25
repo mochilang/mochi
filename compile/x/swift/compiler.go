@@ -977,8 +977,8 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Skip != nil || q.Take != nil {
-		return "", fmt.Errorf("advanced query clauses not supported")
+	if len(q.Joins) > 0 {
+		return "", fmt.Errorf("join clauses not supported")
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -986,7 +986,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	// special case: simple sort and select by query variable
-	if len(q.Froms) == 0 && q.Sort != nil {
+	if len(q.Froms) == 0 && q.Sort != nil && q.Skip == nil && q.Take == nil {
 		orig := c.env
 		child := types.NewEnv(c.env)
 		elem := c.inferExprType(q.Source)
@@ -1008,7 +1008,35 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if sortExpr == q.Var && selExpr == q.Var {
 			return fmt.Sprintf("%s.sorted()", src), nil
 		}
-		return "", fmt.Errorf("advanced query clauses not supported")
+	}
+
+	// grouping without additional clauses
+	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		orig := c.env
+		child := types.NewEnv(c.env)
+		elem := c.inferExprType(q.Source)
+		if lt, ok := elem.(types.ListType); ok {
+			elem = lt.Elem
+		}
+		child.SetVar(q.Var, elem, true)
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		c.env = orig
+		if err != nil {
+			return "", err
+		}
+		c.use("_group_by")
+		c.use("_Group")
+		expr := fmt.Sprintf("_group_by(%s.map { $0 as Any }, { %s in %s }).map { %s in %s }", src, q.Var, keyExpr, q.Group.Name, valExpr)
+		return expr, nil
 	}
 
 	// simple map with optional cross joins
@@ -1047,6 +1075,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	sortExpr := ""
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	skipExpr := ""
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	takeExpr := ""
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
 	elemType := c.inferExprType(q.Select)
 	c.env = orig
 	resType := swiftType(elemType)
@@ -1056,7 +1108,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var b strings.Builder
 	b.WriteString("({\n")
-	b.WriteString(fmt.Sprintf("\tvar _res: [%s] = []\n", resType))
+	if sortExpr != "" {
+		b.WriteString(fmt.Sprintf("\tvar _pairs: [(item: %s, key: Any)] = []\n", resType))
+	} else {
+		b.WriteString(fmt.Sprintf("\tvar _res: [%s] = []\n", resType))
+	}
 	b.WriteString(fmt.Sprintf("\tfor %s in %s {\n", q.Var, src))
 	indent := "\t\t"
 	for i, f := range q.Froms {
@@ -1067,7 +1123,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("%sif %s {\n", indent, cond))
 		indent += "\t"
 	}
-	b.WriteString(fmt.Sprintf("%s_res.append(%s)\n", indent, sel))
+	if sortExpr != "" {
+		b.WriteString(fmt.Sprintf("%s_pairs.append((item: %s, key: %s))\n", indent, sel, sortExpr))
+	} else {
+		b.WriteString(fmt.Sprintf("%s_res.append(%s)\n", indent, sel))
+	}
 	if cond != "" {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
@@ -1077,7 +1137,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("\t}\n")
-	b.WriteString("\treturn _res\n")
+	if sortExpr != "" {
+		b.WriteString("\t_pairs.sort { a, b in\n")
+		b.WriteString("\t\tif let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }\n")
+		b.WriteString("\t\tif let af = a.key as? Double, let bf = b.key as? Double { return af < bf }\n")
+		b.WriteString("\t\tif let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }\n")
+		b.WriteString("\t\tif let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }\n")
+		b.WriteString("\t\tif let as = a.key as? String, let bs = b.key as? String { return as < bs }\n")
+		b.WriteString("\t\treturn String(describing: a.key) < String(describing: b.key)\n")
+		b.WriteString("\t}\n")
+		b.WriteString("\tvar _items = _pairs.map { $0.item }\n")
+	} else {
+		b.WriteString("\tvar _items = _res\n")
+	}
+	if skipExpr != "" {
+		b.WriteString("\t{ let _n = " + skipExpr + "; _items = _n < _items.count ? Array(_items[_n...]) : [] }\n")
+	}
+	if takeExpr != "" {
+		b.WriteString("\t{ let _n = " + takeExpr + "; if _n < _items.count { _items = Array(_items[0..<_n]) } }\n")
+	}
+	b.WriteString("\treturn _items\n")
 	b.WriteString("}())")
 	return b.String(), nil
 }

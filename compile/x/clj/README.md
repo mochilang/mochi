@@ -126,13 +126,14 @@ The current implementation focuses on a minimal subset of Mochi. It supports:
 - Function definitions via `fun` statements
 - Function calls to built-in and user-defined functions
 - Dataset helpers `load` and `save` for CSV, JSON, JSONL and YAML files
+- Dataset queries using `from`/`where`/`select` with joins and basic `group by`
 - Simple `import` statements for Clojure namespaces
 - Basic `group by` queries
 - Built‑in helpers such as `count`, `avg`, `now`, `input`, `json` and `keys`
 - HTTP `fetch` for retrieving JSON
 - `generate` expressions for text, embeddings and structs
 - Anonymous `fun` expressions
-- Query filtering, cross, inner, left, right and outer joins, and pagination via `skip`/`take`
+- Dataset queries with `from`/`where`/`select`, sorting via `sort by`, cross, inner, left, right and outer joins, and pagination using `skip`/`take`
 - Indexing and slicing for lists, strings and maps
 - Simple `match` expressions on constants and struct literals with field access
 - `break` and `continue` statements

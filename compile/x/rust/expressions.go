@@ -144,6 +144,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	joinTypes := make([]string, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -155,6 +157,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinOns[i] = on
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+		jt := c.inferExprType(j.Src)
+		if lt, ok := jt.(types.ListType); ok {
+			joinTypes[i] = rustTypeFrom(lt.Elem)
+		} else {
+			joinTypes[i] = "()"
+		}
 	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -185,17 +196,30 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	b.WriteString(fmt.Sprintf("    for %s in %s {\n", sanitizeName(q.Var), loopSrc))
 	indent := "        "
+	specialJoin := len(q.Joins) == 1 && joinSides[0] == "left"
+
 	for i, fs := range fromSrcs {
 		fvar := sanitizeName(q.Froms[i].Var)
 		srcPart := fs + ".clone()"
 		b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", fvar, srcPart))
 		indent += "    "
 	}
-	for i, js := range joinSrcs {
-		jvar := sanitizeName(q.Joins[i].Var)
-		srcPart := js + ".clone()"
-		b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", jvar, srcPart))
+	if specialJoin {
+		jvar := sanitizeName(q.Joins[0].Var)
+		jsrc := joinSrcs[0]
+		b.WriteString(indent + "let mut matched = false;\n")
+		b.WriteString(indent + fmt.Sprintf("for %s in %s.clone() {\n", jvar, jsrc))
 		indent += "    "
+		b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", joinOns[0]))
+		b.WriteString(indent + "matched = true;\n")
+	} else {
+		for i, js := range joinSrcs {
+			jvar := sanitizeName(q.Joins[i].Var)
+			srcPart := js + ".clone()"
+			b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", jvar, srcPart))
+			indent += "    "
+			b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", joinOns[i]))
+		}
 	}
 	if cond != "" {
 		b.WriteString(indent + fmt.Sprintf("if %s {\n", cond))
@@ -222,9 +246,42 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
 		}
 	}
-	for range joinSrcs {
+	if specialJoin {
 		indent = indent[:len(indent)-4]
 		b.WriteString(indent + "}\n")
+		b.WriteString(indent + "if !matched {\n")
+		indent += "    "
+		b.WriteString(indent + fmt.Sprintf("let %s: %s = Default::default();\n", sanitizeName(q.Joins[0].Var), joinTypes[0]))
+		if cond != "" {
+			b.WriteString(indent + fmt.Sprintf("if %s {\n", cond))
+			indent += "    "
+		}
+		if cond != "" && q.Sort != nil {
+			sortKey, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(indent + fmt.Sprintf("_pairs.push((%s, %s));\n", sortKey, sel))
+		} else if q.Sort != nil {
+			sortKey, err := c.compileExpr(q.Sort)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(indent + fmt.Sprintf("_pairs.push((%s, %s));\n", sortKey, sel))
+		} else {
+			b.WriteString(indent + fmt.Sprintf("_res.push(%s);\n", sel))
+		}
+		if cond != "" {
+			indent = indent[:len(indent)-4]
+			b.WriteString(indent + "}\n")
+		}
+		indent = indent[:len(indent)-4]
+		b.WriteString(indent + "}\n")
+	} else {
+		for range joinSrcs {
+			indent = indent[:len(indent)-4]
+			b.WriteString(indent + "}\n")
+		}
 	}
 	for range fromSrcs {
 		indent = indent[:len(indent)-4]

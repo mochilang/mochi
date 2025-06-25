@@ -193,6 +193,84 @@ g.Items.concat(items)
 g
 end
 end`
+
+	helperQuery = `def _query(src, joins, opts)
+  items = src.map { |v| [v] }
+  joins.each do |j|
+    joined = []
+    jitems = j['items']
+    on = j['on']
+    left = j['left']
+    right = j['right']
+    if right && left
+      matched = Array.new(jitems.length, false)
+      items.each do |l|
+        m = false
+        jitems.each_with_index do |r, ri|
+          keep = true
+          keep = on.call(*l, r) if on
+          next unless keep
+          m = true
+          matched[ri] = true
+          joined << (l + [r])
+        end
+        joined << (l + [nil]) unless m
+      end
+      jitems.each_with_index do |r, ri|
+        next if matched[ri]
+        undef = Array.new(items[0]&.length || 0, nil)
+        joined << (undef + [r])
+      end
+    elsif right
+      jitems.each do |r|
+        m = false
+        items.each do |l|
+          keep = true
+          keep = on.call(*l, r) if on
+          next unless keep
+          m = true
+          joined << (l + [r])
+        end
+        unless m
+          undef = Array.new(items[0]&.length || 0, nil)
+          joined << (undef + [r])
+        end
+      end
+    else
+      items.each do |l|
+        m = false
+        jitems.each do |r|
+          keep = true
+          keep = on.call(*l, r) if on
+          next unless keep
+          m = true
+          joined << (l + [r])
+        end
+        joined << (l + [nil]) if left && !m
+      end
+    end
+    items = joined
+  end
+  if opts['where']
+    items = items.select { |r| opts['where'].call(*r) }
+  end
+  if opts['sortKey']
+    items = items.map { |it| [it, opts['sortKey'].call(*it)] }
+    items.sort_by! { |p| p[1] }
+    items.map!(&:first)
+  end
+  if opts.key?('skip')
+    n = opts['skip']
+    items = n < items.length ? items[n..-1] : []
+  end
+  if opts.key?('take')
+    n = opts['take']
+    items = n < items.length ? items[0...n] : items
+  end
+  res = []
+  items.each { |r| res << opts['select'].call(*r) }
+  res
+end`
 )
 
 var helperMap = map[string]string{
@@ -205,6 +283,7 @@ var helperMap = map[string]string{
 	"_eval":        helperEval,
 	"_group":       helperGroup,
 	"_group_by":    helperGroupBy,
+	"_query":       helperQuery,
 	"_indexString": helperIndexString,
 	"_sliceString": helperSliceString,
 }

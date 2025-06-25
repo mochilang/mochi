@@ -144,8 +144,9 @@ constructs:
 - `if`, `for` and `while` control flow
 - Struct types and simple record literals
 - Function definitions and calls
-- List and map literals with indexing and slicing
-- Dataset helpers `fetch`, `load` and `save`
+ - List and map literals with indexing and slicing
+ - Dataset helpers `fetch`, `load` and `save`
+ - Basic dataset queries with `from`/`where`/`select`, `sort by`, `skip` and `take`
 - Package declarations and importing of local packages
 
 ## Unsupported features
@@ -154,7 +155,6 @@ The Pascal backend only implements a minimal subset of Mochi. Features not yet
 supported include:
 
 - Union types and `match` expressions
-- Dataset queries (`from`/`where`/`select`)
 - Agents, streams and the `emit` keyword
 - Generative model blocks (`generate` and `model`)
 - The foreign function interface (`import`/`extern`)
