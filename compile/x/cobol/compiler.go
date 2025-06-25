@@ -140,7 +140,7 @@ func (c *Compiler) compileExpect(n *ast.Node) {
 	if !isSimpleExpr(n.Children[0]) {
 		tmp := c.newTemp()
 		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[0])))
-		if c.isStringExpr(n.Children[0]) {
+		if c.isString(n.Children[0]) {
 			c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
 		} else {
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
@@ -249,7 +249,7 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		if !isSimpleExpr(arg) {
 			tmp := c.newTemp()
 			c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(arg)))
-			if c.isStringExpr(arg) {
+			if c.isString(arg) {
 				c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
 			} else {
 				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
@@ -280,7 +280,7 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 	if name == "ABS" && len(n.Children) == 1 {
 		expr := c.expr(n.Children[0])
 		tmp := c.newTemp()
-		if c.isFloatExpr(n.Children[0]) {
+		if c.isFloat(n.Children[0]) {
 			c.declare(fmt.Sprintf("01 %s PIC 9(4)V9(4).", tmp))
 		} else {
 			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
@@ -343,7 +343,7 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
 		tmp := c.newTemp()
-		if c.isFloatExpr(n.Children[0]) || c.isFloatExpr(n.Children[1]) {
+		if c.isFloat(n.Children[0]) || c.isFloat(n.Children[1]) {
 			c.declare(fmt.Sprintf("01 %s PIC 9(4)V9(4).", tmp))
 		} else {
 			c.declare(fmt.Sprintf("01 %s PIC 9.", tmp))
@@ -361,7 +361,7 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		}
 		tmp := c.newTemp()
 		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[0])))
-		if c.isStringExpr(n.Children[0]) {
+		if c.isString(n.Children[0]) {
 			c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
 		} else {
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
@@ -376,7 +376,7 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		if !isSimpleExpr(arg) {
 			tmp := c.newTemp()
 			c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(arg)))
-			if c.isStringExpr(arg) {
+			if c.isString(arg) {
 				c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
 			} else {
 				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
@@ -509,7 +509,7 @@ func (c *Compiler) compileReduceCall(list, fn, init *ast.Node) string {
 		c.writeln("    *> unsupported reduce")
 		tmp := c.newTemp()
 		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(init)))
-		if c.isStringExpr(init) {
+		if c.isString(init) {
 			c.writeln(fmt.Sprintf("    MOVE %s TO %s", c.expr(init), tmp))
 		} else {
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, c.expr(init)))
@@ -522,7 +522,7 @@ func (c *Compiler) compileReduceCall(list, fn, init *ast.Node) string {
 		c.writeln("    *> unsupported reduce")
 		tmp := c.newTemp()
 		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(init)))
-		if c.isStringExpr(init) {
+		if c.isString(init) {
 			c.writeln(fmt.Sprintf("    MOVE %s TO %s", c.expr(init), tmp))
 		} else {
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, c.expr(init)))
@@ -541,7 +541,7 @@ func (c *Compiler) compileReduceCall(list, fn, init *ast.Node) string {
 
 	res := c.newTemp()
 	c.declare(fmt.Sprintf("01 %s %s", res, c.picForExpr(init)))
-	if c.isStringExpr(init) {
+	if c.isString(init) {
 		c.writeln(fmt.Sprintf("    MOVE %s TO %s", c.expr(init), res))
 	} else {
 		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", res, c.expr(init)))
@@ -569,7 +569,7 @@ func (c *Compiler) compileStructExpr(n *ast.Node) string {
 		varName := name + "_" + cobolName(f.Value.(string))
 		c.declare(fmt.Sprintf("01 %s %s", varName, pic))
 		val := c.expr(f.Children[0])
-		if c.isStringExpr(f.Children[0]) {
+		if c.isString(f.Children[0]) {
 			c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, varName))
 		} else {
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", varName, val))
@@ -613,10 +613,10 @@ func (c *Compiler) expr(n *ast.Node) string {
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
 		op := n.Value.(string)
-		if op == "+" && (c.isStringExpr(n.Children[0]) || c.isStringExpr(n.Children[1])) {
+		if op == "+" && (c.isString(n.Children[0]) || c.isString(n.Children[1])) {
 			return fmt.Sprintf("%s & %s", left, right)
 		}
-		if op == "+" && c.isListExpr(n.Children[0]) && c.isListExpr(n.Children[1]) {
+		if op == "+" && c.isList(n.Children[0]) && c.isList(n.Children[1]) {
 			return c.concatLists(n.Children[0], n.Children[1])
 		}
 		switch op {
@@ -637,7 +637,7 @@ func (c *Compiler) expr(n *ast.Node) string {
 	case "index":
 		arr := c.expr(n.Children[0])
 		if len(n.Children) > 1 && (n.Children[1].Kind == "start" || n.Children[1].Kind == "end" || len(n.Children) > 2) {
-			if c.isStringExpr(n.Children[0]) {
+			if c.isString(n.Children[0]) {
 				var startNode, endNode *ast.Node
 				for _, ch := range n.Children[1:] {
 					switch ch.Kind {
@@ -682,7 +682,7 @@ func (c *Compiler) expr(n *ast.Node) string {
 				c.declare("01 " + resTmp + " PIC X(100).")
 				c.writeln(fmt.Sprintf("    MOVE %s(%s:%s) TO %s", arr, startPlus, lengthTmp, resTmp))
 				return resTmp
-			} else if c.isListExpr(n.Children[0]) {
+			} else if c.isList(n.Children[0]) {
 				var startNode, endNode *ast.Node
 				for _, ch := range n.Children[1:] {
 					switch ch.Kind {
@@ -745,7 +745,7 @@ func (c *Compiler) expr(n *ast.Node) string {
 			return "0"
 		}
 		idx := c.expr(n.Children[1])
-		if c.isStringExpr(n.Children[0]) {
+		if c.isString(n.Children[0]) {
 			idxVar := idx
 			if !isSimpleExpr(n.Children[1]) {
 				idxTmp := c.newTemp()
@@ -832,7 +832,7 @@ func (c *Compiler) compileIfExpr(n *ast.Node) string {
 	}
 	c.writeln(fmt.Sprintf("    IF %s", cond))
 	c.indent++
-	if c.isStringExpr(n.Children[1]) {
+	if c.isString(n.Children[1]) {
 		c.writeln(fmt.Sprintf("    MOVE %s TO %s", thenExpr, tmp))
 	} else {
 		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, thenExpr))
@@ -841,7 +841,7 @@ func (c *Compiler) compileIfExpr(n *ast.Node) string {
 	if elseExpr != "" {
 		c.writeln("    ELSE")
 		c.indent++
-		if c.isStringExpr(n.Children[2]) || (n.Children[2].Kind == "if_expr" && c.isStringExpr(n.Children[2])) {
+		if c.isString(n.Children[2]) || (n.Children[2].Kind == "if_expr" && c.isString(n.Children[2])) {
 			c.writeln(fmt.Sprintf("    MOVE %s TO %s", elseExpr, tmp))
 		} else {
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, elseExpr))
@@ -858,7 +858,7 @@ func (c *Compiler) compileMatchExpr(n *ast.Node) string {
 	targetExpr := c.expr(n.Children[0])
 	targetTmp := c.newTemp()
 	c.declare(fmt.Sprintf("01 %s %s", targetTmp, c.picForExpr(n.Children[0])))
-	if c.isStringExpr(n.Children[0]) {
+	if c.isString(n.Children[0]) {
 		c.writeln(fmt.Sprintf("    MOVE %s TO %s", targetExpr, targetTmp))
 	} else {
 		c.writeln(fmt.Sprintf("    COMPUTE %s = %s", targetTmp, targetExpr))
@@ -888,7 +888,7 @@ func (c *Compiler) compileMatchExpr(n *ast.Node) string {
 			}
 		}
 		c.indent++
-		if c.isStringExpr(result) {
+		if c.isString(result) {
 			c.writeln(fmt.Sprintf("    MOVE %s TO %s", c.expr(result), resTmp))
 		} else {
 			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", resTmp, c.expr(result)))
@@ -937,7 +937,7 @@ func (c *Compiler) compileLet(n *ast.Node) {
 			fieldName := fmt.Sprintf("%s_%s", name, cobolName(f.Value.(string)))
 			c.declare(fmt.Sprintf("01 %s %s", fieldName, c.picForExpr(f.Children[0])))
 			val := c.expr(f.Children[0])
-			if c.isStringExpr(f.Children[0]) {
+			if c.isString(f.Children[0]) {
 				c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, fieldName))
 			} else {
 				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", fieldName, val))
@@ -945,7 +945,7 @@ func (c *Compiler) compileLet(n *ast.Node) {
 		}
 		return
 	}
-	if len(n.Children) == 1 && c.isListExpr(n.Children[0]) {
+	if len(n.Children) == 1 && c.isList(n.Children[0]) {
 		src := c.expr(n.Children[0])
 		if l, ok := c.listLens[src]; ok {
 			pic := c.picForExpr(n.Children[0])
@@ -990,7 +990,7 @@ func (c *Compiler) compileVar(n *ast.Node) {
 			fieldName := fmt.Sprintf("%s_%s", name, cobolName(f.Value.(string)))
 			c.declare(fmt.Sprintf("01 %s %s", fieldName, c.picForExpr(f.Children[0])))
 			val := c.expr(f.Children[0])
-			if c.isStringExpr(f.Children[0]) {
+			if c.isString(f.Children[0]) {
 				c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, fieldName))
 			} else {
 				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", fieldName, val))
@@ -1013,7 +1013,7 @@ func (c *Compiler) compileAssign(n *ast.Node) {
 			c.varFuncs[name] = fn
 			return
 		}
-		if c.isListExpr(n.Children[0]) {
+		if c.isList(n.Children[0]) {
 			src := c.expr(n.Children[0])
 			if l, ok := c.listLens[src]; ok {
 				pic := c.picForExpr(n.Children[0])
@@ -1041,7 +1041,7 @@ func (c *Compiler) compileAssign(n *ast.Node) {
 				fieldName := fmt.Sprintf("%s_%s", name, cobolName(f.Value.(string)))
 				c.declare(fmt.Sprintf("01 %s %s", fieldName, c.picForExpr(f.Children[0])))
 				val := c.expr(f.Children[0])
-				if c.isStringExpr(f.Children[0]) {
+				if c.isString(f.Children[0]) {
 					c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, fieldName))
 				} else {
 					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", fieldName, val))
