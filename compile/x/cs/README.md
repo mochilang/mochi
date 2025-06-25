@@ -155,7 +155,7 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Control flow with `if`, `for`, `while`, `break` and `continue`
 - Struct and union types with pattern matching using `match`
 - Lists and maps with indexing, slicing and membership checks
-- Dataset queries with `from`, `where`, `select`, `sort by`, `skip` and `take`
+- Dataset queries with `from`, `where`, `select`, `sort by`, `skip`, `take` and `outer join`
 - Cross joins via multiple `from` clauses
 - Sorting and pagination with joins
 - Set operations on lists: `union`, `union all`, `except`, `intersect`
@@ -171,7 +171,6 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 ### Unsupported features
 
 - The backend is still incomplete. Notable gaps include:
-- Outer joins in dataset queries
 - Logic programming constructs (`fact`, `rule`, `query`)
 - Foreign language imports (e.g. `import "foo" from go`)
 - Foreign function interface and extern objects
