@@ -1,6 +1,14 @@
-package hscode
+module Main where
 
-const runtime = `
+import Data.Maybe (fromMaybe)
+import Data.Time.Clock.POSIX (getPOSIXTime)
+import qualified Data.Map as Map
+import Data.List (intercalate)
+import qualified Data.List as List
+import qualified Data.Aeson as Aeson
+import qualified Data.ByteString.Lazy.Char8 as BSL
+
+
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
 forLoop start end f = go start
   where
@@ -97,32 +105,18 @@ _save rows path _ =
       toLine m = intercalate "," [Map.findWithDefault "" h m | h <- headers]
       text = unlines (if null headers then [] else intercalate "," headers : map toLine rows)
   in _writeOutput path text
-`
 
-const expectHelper = `
 expect :: Bool -> IO ()
 expect True = pure ()
 expect False = error "expect failed"
-`
 
-const sliceHelpers = `
-_slice :: [a] -> Int -> Int -> [a]
-_slice xs i j =
-  let n = length xs
-      start0 = if i < 0 then i + n else i
-      end0 = if j < 0 then j + n else j
-      start = max 0 start0
-      end = min n end0
-      end' = if end < start then start else end
-  in take (end' - start) (drop start xs)
 
-_sliceString :: String -> Int -> Int -> String
-_sliceString s i j =
-  let n = length s
-      start0 = if i < 0 then i + n else i
-      end0 = if j < 0 then j + n else j
-      start = max 0 start0
-      end = min n end0
-      end' = if end < start then start else end
-  in take (end' - start) (drop start s)
-`
+test_addition_works :: IO ()
+test_addition_works = do
+    let x = (1 + 2)
+    expect ((x == 3))
+
+main :: IO ()
+main = do
+    putStrLn ("ok")
+    test_addition_works

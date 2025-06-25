@@ -24,6 +24,7 @@ type Compiler struct {
 	usesSave     bool
 	usesSlice    bool
 	usesSliceStr bool
+	usesExpect   bool
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -78,6 +79,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesSave = false
 	c.usesSlice = false
 	c.usesSliceStr = false
+	c.usesExpect = false
 
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -97,10 +99,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	c.writeln("main :: IO ()")
 	c.writeln("main = do")
 	c.indent++
 	mainStmts := 0
+	testCount := 0
 	for _, s := range prog.Statements {
 		if s.Fun == nil && s.Type == nil && s.Test == nil {
 			if err := c.compileMainStmt(s); err != nil {
@@ -109,7 +121,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			mainStmts++
 		}
 	}
-	if mainStmts == 0 {
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(name)
+			testCount++
+		}
+	}
+	if mainStmts == 0 && testCount == 0 {
 		c.writeln("return ()")
 	}
 	c.indent--
@@ -125,6 +144,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	header.WriteString("\n")
 	header.WriteString(runtime)
+	if c.usesExpect {
+		header.WriteString(expectHelper)
+	}
 	if c.usesSlice || c.usesSliceStr {
 		header.WriteString(sliceHelpers)
 	}
@@ -231,6 +253,13 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			return err
 		}
 		c.writeln(fmt.Sprintf("let _ = whileLoop (\\() -> %s) (\\() -> Nothing <$ (%s)) in return ()", cond, body))
+	case s.Expect != nil:
+		expr, err := c.compileExpr(s.Expect.Value)
+		if err != nil {
+			return err
+		}
+		c.usesExpect = true
+		c.writeln(fmt.Sprintf("expect (%s)", expr))
 	default:
 		return fmt.Errorf("unsupported statement in main")
 	}
@@ -361,6 +390,33 @@ func (c *Compiler) collectLets(stmts []*parser.Statement) []string {
 		}
 	}
 	return res
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln(fmt.Sprintf("%s :: IO ()", name))
+	c.writeln(name + " = do")
+	c.indent++
+	orig := c.env
+	for _, st := range t.Body {
+		if err := c.compileMainStmt(st); err != nil {
+			c.env = orig
+			return err
+		}
+	}
+	c.env = orig
+	c.indent--
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	v, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.usesExpect = true
+	c.writeln(fmt.Sprintf("expect (%s)", v))
+	return nil
 }
 
 func (c *Compiler) inferFuncReturn(body []*parser.Statement) types.Type {
