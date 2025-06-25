@@ -38,12 +38,13 @@ let start_date = "1996-01-01"
 let end_date = "1996-04-01"
 
 // revenue0 view equivalent
-let revenue0 = from l in lineitem
-  where l.l_shipdate >= start_date and l.l_shipdate < end_date
-  group by l.l_suppkey
+let revenue0 =
+  from l in lineitem
+  where l.l_shipdate >= start_date && l.l_shipdate < end_date
+  group by l.l_suppkey into g
   select {
-    supplier_no: l.l_suppkey,
-    total_revenue: sum(l.l_extendedprice * (1 - l.l_discount))
+    supplier_no: g.key,
+    total_revenue: sum(from x in g select x.l_extendedprice * (1 - x.l_discount))
   }
 
 // find max revenue
@@ -62,7 +63,7 @@ let result = from s in supplier
     total_revenue: r.total_revenue
   }
 
-print result
+json(result)
 
 test "Q15 returns top revenue supplier(s) for Q1 1996" {
   let rev = 1000.0 * 0.9 + 500.0
