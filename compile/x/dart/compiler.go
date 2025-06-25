@@ -173,12 +173,19 @@ func (c *Compiler) compileTestBlocks(stmts []*parser.Statement) error {
 }
 
 func (c *Compiler) compileMain(stmts []*parser.Statement, needsAsync bool) error {
+	hasTests := hasTest(stmts)
+	if hasTests {
+		c.imports["dart:io"] = true
+	}
 	if needsAsync {
 		c.writeln("Future<void> main() async {")
 	} else {
 		c.writeln("void main() {")
 	}
 	c.indent++
+	if hasTests {
+		c.writeln("int failures = 0;")
+	}
 	for _, s := range stmts {
 		if s.Fun != nil || s.Type != nil || s.Test != nil {
 			continue
@@ -190,12 +197,25 @@ func (c *Compiler) compileMain(stmts []*parser.Statement, needsAsync bool) error
 	for _, s := range stmts {
 		if s.Test != nil {
 			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(fmt.Sprintf("%s();", name))
+			if hasTests {
+				c.use("_runTest")
+				c.use("_formatDuration")
+				c.writeln(fmt.Sprintf("if (!_runTest(%q, %s)) failures++;", s.Test.Name, name))
+			} else {
+				c.writeln(fmt.Sprintf("%s();", name))
+			}
 		}
 	}
 	if needsAsync {
 		c.use("_waitAll")
 		c.writeln("await _waitAll();")
+	}
+	if hasTests {
+		c.writeln("if (failures > 0) {")
+		c.indent++
+		c.writeln("print(\"\\n[FAIL] $failures test(s) failed.\");")
+		c.indent--
+		c.writeln("}")
 	}
 	c.indent--
 	c.writeln("}")
@@ -2341,6 +2361,72 @@ func isStringPrimary(c *Compiler, p *parser.Primary) bool {
 	}
 	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p}}}}
 	return isStringExpr(c, e)
+}
+
+func hasTest(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		if s.Test != nil {
+			return true
+		}
+	}
+	return false
+}
+
+func hasExpect(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		if containsExpect(s) {
+			return true
+		}
+	}
+	return false
+}
+
+func containsExpect(s *parser.Statement) bool {
+	switch {
+	case s.Expect != nil:
+		return true
+	case s.If != nil:
+		for _, t := range s.If.Then {
+			if containsExpect(t) {
+				return true
+			}
+		}
+		if s.If.ElseIf != nil {
+			if containsExpect(&parser.Statement{If: s.If.ElseIf}) {
+				return true
+			}
+		}
+		for _, t := range s.If.Else {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.For != nil:
+		for _, t := range s.For.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.While != nil:
+		for _, t := range s.While.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.Test != nil:
+		for _, t := range s.Test.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	case s.Fun != nil:
+		for _, t := range s.Fun.Body {
+			if containsExpect(t) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) emitRuntime() {
