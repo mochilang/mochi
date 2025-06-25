@@ -1,0 +1,24 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newPerson: name age: age | dict |
+	dict := Dictionary new.
+	dict at: 'name' put: name.
+	dict at: 'age' put: age.
+	^ dict
+!
+!!
+people := Array with: (Main newPerson: 'Alice' age: 30) with: (Main newPerson: 'Bob' age: 15) with: (Main newPerson: 'Charlie' age: 65).
+names := ((| res |
+res := OrderedCollection new.
+(people) do: [:p |
+	((p at: 'age' >= 18)) ifTrue: [
+		res add: p at: 'name'.
+	]
+]
+res := res asArray.
+res)).
+(names) do: [:n |
+	(n) displayOn: Transcript. Transcript cr.
+]
+.
