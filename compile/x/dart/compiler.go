@@ -1540,6 +1540,113 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
+	if q.Group != nil && needsHelper {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			return "", err
+		}
+		oldEnv := c.env
+		genv := types.NewEnv(c.env)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		c.env = oldEnv
+		if err != nil {
+			return "", err
+		}
+		varNames := []string{sanitizeName(q.Var)}
+		for _, f := range q.Froms {
+			varNames = append(varNames, sanitizeName(f.Var))
+		}
+		params := append([]string(nil), varNames...)
+		joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+		for _, fs := range fromSrcs {
+			joins = append(joins, fmt.Sprintf("{'items': %s}", fs))
+		}
+		for i, js := range joinSrcs {
+			onParams := append(params, sanitizeName(q.Joins[i].Var))
+			onFn := fmt.Sprintf("(%s) => %s", strings.Join(onParams, ", "), joinOns[i])
+			spec := fmt.Sprintf("{'items': %s, 'on': %s", js, onFn)
+			if joinSides[i] == "left" || joinSides[i] == "outer" {
+				spec += ", 'left': true"
+			}
+			if joinSides[i] == "right" || joinSides[i] == "outer" {
+				spec += ", 'right': true"
+			}
+			spec += "}"
+			joins = append(joins, spec)
+			params = append(params, sanitizeName(q.Joins[i].Var))
+		}
+		allParams := strings.Join(params, ", ")
+		selectFn := fmt.Sprintf("(%s) => [%s]", allParams, allParams)
+		var whereFn string
+		if where != "" {
+			whereFn = fmt.Sprintf("(%s) => %s", allParams, where)
+		}
+		c.use("_query")
+		c.use("_Group")
+		var buf strings.Builder
+		buf.WriteString("(() {\n")
+		buf.WriteString(fmt.Sprintf("\tvar src = %s;\n", src))
+		buf.WriteString("\tvar items = _query(src, [\n")
+		for _, j := range joins {
+			buf.WriteString("\t\t" + j + ",\n")
+		}
+		buf.WriteString("\t], { 'select': " + selectFn)
+		if whereFn != "" {
+			buf.WriteString(", 'where': " + whereFn)
+		}
+		buf.WriteString(" });\n")
+		buf.WriteString("\tvar groups = <String,_Group>{};\n")
+		buf.WriteString("\tvar order = <String>[];\n")
+		buf.WriteString("\tfor (var _r in items) {\n")
+		for i, p := range params {
+			buf.WriteString(fmt.Sprintf("\t\tvar %s = _r[%d];\n", p, i))
+		}
+		buf.WriteString(fmt.Sprintf("\t\tvar key = %s;\n", keyExpr))
+		buf.WriteString("\t\tvar ks = key.toString();\n")
+		buf.WriteString("\t\tvar g = groups[ks];\n")
+		buf.WriteString("\t\tif (g == null) {\n")
+		buf.WriteString("\t\t\tg = _Group(key);\n")
+		buf.WriteString("\t\t\tgroups[ks] = g;\n")
+		buf.WriteString("\t\t\torder.add(ks);\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString(fmt.Sprintf("\t\tg.Items.add(%s);\n", v))
+		buf.WriteString("\t}\n")
+		buf.WriteString("\tvar itemsG = [for (var k in order) groups[k]!];\n")
+		if sortExpr != "" {
+			name := sanitizeName(q.Group.Name)
+			buf.WriteString(fmt.Sprintf("\titemsG.sort((%sA, %sB) {\n", name, name))
+			buf.WriteString(fmt.Sprintf("\t\tvar %s = %sA;\n", name, name))
+			buf.WriteString(fmt.Sprintf("\t\tvar keyA = %s;\n", sortExpr))
+			buf.WriteString(fmt.Sprintf("\t\t%s = %sB;\n", name, name))
+			buf.WriteString(fmt.Sprintf("\t\tvar keyB = %s;\n", sortExpr))
+			buf.WriteString("\t\treturn Comparable.compare(keyA, keyB);\n")
+			buf.WriteString("\t});\n")
+		}
+		if skipExpr != "" {
+			buf.WriteString(fmt.Sprintf("\tvar skip = %s;\n", skipExpr))
+			buf.WriteString("\tif (skip < itemsG.length) {\n")
+			buf.WriteString("\t\titemsG = itemsG.sublist(skip);\n")
+			buf.WriteString("\t} else {\n")
+			buf.WriteString("\t\titemsG = [];\n")
+			buf.WriteString("\t}\n")
+		}
+		if takeExpr != "" {
+			buf.WriteString(fmt.Sprintf("\tvar take = %s;\n", takeExpr))
+			buf.WriteString("\tif (take < itemsG.length) {\n")
+			buf.WriteString("\t\titemsG = itemsG.sublist(0, take);\n")
+			buf.WriteString("\t}\n")
+		}
+		buf.WriteString("\tvar _res = [];\n")
+		buf.WriteString(fmt.Sprintf("\tfor (var %s in itemsG) {\n", sanitizeName(q.Group.Name)))
+		buf.WriteString(fmt.Sprintf("\t\t_res.add(%s);\n", valExpr))
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn _res;\n")
+		buf.WriteString("})()")
+		return buf.String(), nil
+	}
+
 	if q.Group != nil {
 		keyExpr, err := c.compileExpr(q.Group.Expr)
 		if err != nil {
