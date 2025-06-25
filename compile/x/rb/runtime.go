@@ -200,65 +200,106 @@ g
 end
 end`
 
-	helperQuery = `def _query(src, joins, opts)
-  items = src.map { |v| [v] }
-  joins.each do |j|
-    joined = []
-    jitems = j['items']
-    on = j['on']
-    left = j['left']
-    right = j['right']
-    if right && left
-      matched = Array.new(jitems.length, false)
-      items.each do |l|
-        m = false
-        jitems.each_with_index do |r, ri|
-          keep = true
-          keep = on.call(*l, r) if on
-          next unless keep
-          m = true
-          matched[ri] = true
-          joined << (l + [r])
-        end
-        joined << (l + [nil]) unless m
-      end
-      jitems.each_with_index do |r, ri|
-        next if matched[ri]
-        undef = Array.new(items[0]&.length || 0, nil)
-        joined << (undef + [r])
-      end
-    elsif right
-      jitems.each do |r|
-        m = false
-        items.each do |l|
-          keep = true
-          keep = on.call(*l, r) if on
-          next unless keep
-          m = true
-          joined << (l + [r])
-        end
-        unless m
-          undef = Array.new(items[0]&.length || 0, nil)
-          joined << (undef + [r])
-        end
-      end
-    else
-      items.each do |l|
-        m = false
-        jitems.each do |r|
-          keep = true
-          keep = on.call(*l, r) if on
-          next unless keep
-          m = true
-          joined << (l + [r])
-        end
-        joined << (l + [nil]) if left && !m
-      end
+        helperQuery = `def _query(src, joins, opts)
+  where_fn = opts['where']
+  items = []
+  if joins.empty?
+    src.each do |v|
+      row = [v]
+      next if where_fn && !where_fn.call(*row)
+      items << row
     end
-    items = joined
-  end
-  if opts['where']
-    items = items.select { |r| opts['where'].call(*r) }
+  else
+    items = src.map { |v| [v] }
+    joins.each_with_index do |j, idx|
+      joined = []
+      jitems = j['items']
+      on = j['on']
+      left = j['left']
+      right = j['right']
+      last = idx == joins.length - 1
+      if right && left
+        matched = Array.new(jitems.length, false)
+        items.each do |l|
+          m = false
+          jitems.each_with_index do |r, ri|
+            keep = true
+            keep = on.call(*l, r) if on
+            next unless keep
+            m = true
+            matched[ri] = true
+            row = l + [r]
+            if last && where_fn && !where_fn.call(*row)
+              next
+            end
+            joined << row
+          end
+          row = l + [nil]
+          if left && !m
+            if last && where_fn && !where_fn.call(*row)
+              # skip
+            else
+              joined << row
+            end
+          end
+        end
+        jitems.each_with_index do |r, ri|
+          next if matched[ri]
+          _undef = Array.new(items[0]&.length || 0, nil)
+          row = _undef + [r]
+          if last && where_fn && !where_fn.call(*row)
+            next
+          end
+          joined << row
+        end
+      elsif right
+        jitems.each do |r|
+          m = false
+          items.each do |l|
+            keep = true
+            keep = on.call(*l, r) if on
+            next unless keep
+            m = true
+            row = l + [r]
+            if last && where_fn && !where_fn.call(*row)
+              next
+            end
+            joined << row
+          end
+          unless m
+            _undef = Array.new(items[0]&.length || 0, nil)
+            row = _undef + [r]
+            if last && where_fn && !where_fn.call(*row)
+              next
+            end
+            joined << row
+          end
+        end
+      else
+        items.each do |l|
+          m = false
+          jitems.each do |r|
+            keep = true
+            keep = on.call(*l, r) if on
+            next unless keep
+            m = true
+            row = l + [r]
+            if last && where_fn && !where_fn.call(*row)
+              next
+            end
+            joined << row
+          end
+          if left && !m
+            row = l + [nil]
+            if last && where_fn && !where_fn.call(*row)
+              next
+            end
+            joined << row
+          end
+        end
+      end
+      items = joined
+    end
   end
   if opts['sortKey']
     items = items.map { |it| [it, opts['sortKey'].call(*it)] }
