@@ -1,0 +1,26 @@
+let customers = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+]
+
+let orders = [
+  { id: 100, customerId: 1, total: 250 },
+  { id: 101, customerId: 1, total: 300 },
+  { id: 102, customerId: 2, total: 125 }
+]
+
+let result = from o in orders
+             join c in customers on o.customerId == c.id
+             sort by -o.total
+             skip 1
+             take 2
+             select {
+               id: o.id,
+               customer: c.name,
+               total: o.total
+             }
+
+for r in result {
+  print(r.id, r.customer, r.total)
+}
+

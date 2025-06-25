@@ -875,7 +875,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.useLinq = true
-	if len(q.Joins) > 0 && (q.Sort != nil || q.Skip != nil || q.Take != nil || q.Group != nil) {
+	if len(q.Joins) > 0 && q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
