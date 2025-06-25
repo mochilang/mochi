@@ -226,7 +226,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ret string) error {
 		for _, line := range src.code {
 			c.writeln(line)
 		}
-		if types.IsMapType(types.PlExprType(f.Source, c.env)) {
+		if types.IsMapType(types.TypeOfExprBasic(f.Source, c.env)) {
 			c.use("map_keys")
 			c.writeln(fmt.Sprintf("map_keys(%s, %s),", src.val, listVar))
 		} else {

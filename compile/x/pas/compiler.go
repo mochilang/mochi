@@ -745,7 +745,7 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = typeString(resolveSimpleTypeRef(s.Let.Type))
 			}
 			if typ == "integer" && s.Let.Value != nil {
-				typT := types.PasExprType(s.Let.Value, env, vars)
+				typT := types.TypeOfExpr(s.Let.Value, env)
 				typ = typeString(typT)
 				if typ == "integer" && isStringSliceExpr(s.Let.Value, env, vars) {
 					typ = "string"
@@ -769,7 +769,7 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = typeString(resolveSimpleTypeRef(s.Var.Type))
 			}
 			if typ == "integer" && s.Var.Value != nil {
-				typT := types.PasExprType(s.Var.Value, env, vars)
+				typT := types.TypeOfExpr(s.Var.Value, env)
 				typ = typeString(typT)
 				if typ == "integer" && isStringSliceExpr(s.Var.Value, env, vars) {
 					typ = "string"
@@ -792,7 +792,7 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 					}
 				}
 				if typ == "integer" {
-					typT := types.PasExprType(s.For.Source, env, vars)
+					typT := types.TypeOfExpr(s.For.Source, env)
 					typ = typeString(typT)
 				}
 				if strings.HasPrefix(typ, "specialize TArray<") {
@@ -1102,7 +1102,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("writeln(%s)", argStr), nil
 		case "str":
 			if len(args) == 1 {
-				t := typeString(types.PasExprType(p.Call.Args[0], c.env, c.varTypes))
+				t := typeString(types.TypeOfExpr(p.Call.Args[0], c.env))
 				if t == "double" {
 					return fmt.Sprintf("FloatToStr(%s)", args[0]), nil
 				}
@@ -1164,7 +1164,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elemType = typeString(lt.Elem)
 			elemT = lt.Elem
 		} else if len(p.List.Elems) > 0 {
-			elemType = typeString(types.PasExprType(p.List.Elems[0], c.env, c.varTypes))
+			elemType = typeString(types.TypeOfExpr(p.List.Elems[0], c.env))
 		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
