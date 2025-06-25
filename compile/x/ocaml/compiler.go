@@ -373,11 +373,11 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 		if f.RangeEnd != nil {
 			// numeric range loops yield ints
 			child.SetVar(f.Name, types.IntType{}, true)
-		} else if isStringExpr(f.Source, origEnv) {
+		} else if types.IsStringExpr(f.Source, origEnv) {
 			child.SetVar(f.Name, types.StringType{}, true)
-		} else if isListExpr(f.Source, origEnv) {
+		} else if types.IsListExpr(f.Source, origEnv) {
 			child.SetVar(f.Name, types.AnyType{}, true)
-		} else if isMapExpr(f.Source, origEnv) {
+		} else if types.IsMapExpr(f.Source, origEnv) {
 			child.SetVar(f.Name, types.AnyType{}, true)
 		} else {
 			child.SetVar(f.Name, types.AnyType{}, true)
@@ -401,7 +401,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt, ex string) error {
 			return err
 		}
 		iter := "List.iter"
-		if isStringExpr(f.Source, c.env) {
+		if types.IsStringExpr(f.Source, c.env) {
 			iter = "String.iter"
 		}
 		c.writeln(fmt.Sprintf("%s (fun %s ->", iter, sanitizeName(f.Name)))
@@ -615,9 +615,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			oper = "mod"
 		} else if oper == "+" {
 			// use list concatenation or string concat if operand is list or string
-			if isListExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
+			if types.IsListExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) {
 				oper = "@"
-			} else if isStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || isStringExpr(&parser.Expr{Binary: b}, c.env) {
+			} else if types.IsStringExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || types.IsStringExpr(&parser.Expr{Binary: b}, c.env) {
 				oper = "^"
 				// convert char from String.get to string for concatenation
 				if strings.HasPrefix(r, "(String.get ") {
@@ -628,7 +628,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				}
 			}
 		} else if oper == "/" {
-			if isFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || isFloatExpr(&parser.Expr{Binary: b}, c.env) {
+			if types.IsFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || types.IsFloatExpr(&parser.Expr{Binary: b}, c.env) {
 				oper = "/."
 			}
 		} else if oper == "in" {
@@ -687,7 +687,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 				}
-				if isStringPrimary(p.Target, c.env) {
+				if types.IsStringPrimary(p.Target, c.env) {
 					if end == "" {
 						expr = fmt.Sprintf("(String.sub %s %s (String.length %s - %s))", expr, start, expr, start)
 					} else {
@@ -705,9 +705,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("(_slice %s %s %s)", base, start, length)
 				}
 			} else {
-				if isStringPrimary(p.Target, c.env) {
+				if types.IsStringPrimary(p.Target, c.env) {
 					expr = fmt.Sprintf("(String.get %s %s)", expr, start)
-				} else if isMapPrimary(p.Target, c.env) {
+				} else if types.IsMapPrimary(p.Target, c.env) {
 					expr = fmt.Sprintf("(Hashtbl.find %s %s)", expr, start)
 				} else {
 					expr = fmt.Sprintf("(List.nth %s %s)", expr, start)
@@ -897,23 +897,23 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "len":
 		if len(args) == 1 {
-			if isStringExpr(call.Args[0], c.env) {
+			if types.IsStringExpr(call.Args[0], c.env) {
 				return fmt.Sprintf("String.length %s", args[0]), nil
 			}
-			if isMapExpr(call.Args[0], c.env) {
+			if types.IsMapExpr(call.Args[0], c.env) {
 				return fmt.Sprintf("Hashtbl.length %s", args[0]), nil
 			}
 			return fmt.Sprintf("List.length %s", args[0]), nil
 		}
 	case "print":
 		if len(args) == 1 {
-			if isStringExpr(call.Args[0], c.env) {
+			if types.IsStringExpr(call.Args[0], c.env) {
 				return fmt.Sprintf("print_endline (%s)", args[0]), nil
 			}
-			if isBoolExpr(call.Args[0], c.env) {
+			if types.IsBoolExpr(call.Args[0], c.env) {
 				return fmt.Sprintf("print_endline (string_of_bool (%s))", args[0]), nil
 			}
-			if isFloatExpr(call.Args[0], c.env) {
+			if types.IsFloatExpr(call.Args[0], c.env) {
 				return fmt.Sprintf("print_endline (string_of_float (%s))", args[0]), nil
 			}
 			return fmt.Sprintf("print_endline (string_of_int (%s))", args[0]), nil
@@ -921,11 +921,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) > 0 {
 			parts := make([]string, len(args))
 			for i, a := range call.Args {
-				if isStringExpr(a, c.env) {
+				if types.IsStringExpr(a, c.env) {
 					parts[i] = args[i]
-				} else if isBoolExpr(a, c.env) {
+				} else if types.IsBoolExpr(a, c.env) {
 					parts[i] = fmt.Sprintf("string_of_bool (%s)", args[i])
-				} else if isFloatExpr(a, c.env) {
+				} else if types.IsFloatExpr(a, c.env) {
 					parts[i] = fmt.Sprintf("string_of_float (%s)", args[i])
 				} else {
 					parts[i] = fmt.Sprintf("string_of_int (%s)", args[i])
@@ -935,10 +935,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "str":
 		if len(args) == 1 {
-			if isStringExpr(call.Args[0], c.env) {
+			if types.IsStringExpr(call.Args[0], c.env) {
 				return args[0], nil
 			}
-			if isFloatExpr(call.Args[0], c.env) {
+			if types.IsFloatExpr(call.Args[0], c.env) {
 				return fmt.Sprintf("string_of_float (%s)", args[0]), nil
 			}
 			return fmt.Sprintf("string_of_int (%s)", args[0]), nil
@@ -1017,145 +1017,6 @@ func ocamlType(t *parser.TypeRef) string {
 		}
 	}
 	return ""
-}
-
-func isStringExpr(e *parser.Expr, env *types.Env) bool {
-	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
-		return false
-	}
-	p := e.Binary.Left.Value.Target
-	if p == nil {
-		return false
-	}
-	if p.Lit != nil && p.Lit.Str != nil {
-		return true
-	}
-	if p.Selector != nil {
-		if typ, err := env.GetVar(p.Selector.Root); err == nil {
-			if _, ok := typ.(types.StringType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func isListExpr(e *parser.Expr, env *types.Env) bool {
-	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
-		return false
-	}
-	p := e.Binary.Left.Value.Target
-	if p == nil {
-		return false
-	}
-	if p.List != nil {
-		return true
-	}
-	if p.Selector != nil {
-		if typ, err := env.GetVar(p.Selector.Root); err == nil {
-			if _, ok := typ.(types.ListType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func isFloatExpr(e *parser.Expr, env *types.Env) bool {
-	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
-		return false
-	}
-	p := e.Binary.Left.Value.Target
-	if p == nil {
-		return false
-	}
-	if p.Lit != nil && p.Lit.Float != nil {
-		return true
-	}
-	if p.Selector != nil {
-		if typ, err := env.GetVar(p.Selector.Root); err == nil {
-			if _, ok := typ.(types.FloatType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func isBoolExpr(e *parser.Expr, env *types.Env) bool {
-	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
-		return false
-	}
-	p := e.Binary.Left.Value.Target
-	if p == nil {
-		return false
-	}
-	if p.Lit != nil && p.Lit.Bool != nil {
-		return true
-	}
-	if p.Selector != nil {
-		if typ, err := env.GetVar(p.Selector.Root); err == nil {
-			if _, ok := typ.(types.BoolType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func isMapExpr(e *parser.Expr, env *types.Env) bool {
-	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil {
-		return false
-	}
-	p := e.Binary.Left.Value.Target
-	if p == nil {
-		return false
-	}
-	if p.Map != nil {
-		return true
-	}
-	if p.Selector != nil {
-		if typ, err := env.GetVar(p.Selector.Root); err == nil {
-			if _, ok := typ.(types.MapType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func isMapPrimary(p *parser.Primary, env *types.Env) bool {
-	if p == nil {
-		return false
-	}
-	if p.Map != nil {
-		return true
-	}
-	if p.Selector != nil {
-		if typ, err := env.GetVar(p.Selector.Root); err == nil {
-			if _, ok := typ.(types.MapType); ok {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func isStringPrimary(p *parser.Primary, env *types.Env) bool {
-	if p == nil {
-		return false
-	}
-	if p.Lit != nil && p.Lit.Str != nil {
-		return true
-	}
-	if p.Selector != nil {
-		if typ, err := env.GetVar(p.Selector.Root); err == nil {
-			if _, ok := typ.(types.StringType); ok {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 func sanitizeName(name string) string {
