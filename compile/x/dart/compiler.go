@@ -288,7 +288,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 	}
 	if (typ == nil || isAny(typ)) && s.Value != nil {
-		typ = c.inferExprType(s.Value)
+		typ = c.exprType(s.Value)
 	}
 	var val string
 	if s.Value != nil {
@@ -403,7 +403,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 	}
 	if (typ == nil || isAny(typ)) && s.Value != nil {
-		typ = c.inferExprType(s.Value)
+		typ = c.exprType(s.Value)
 	}
 	var val string
 	if s.Value != nil {
@@ -550,7 +550,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	operands = append(operands, left)
 	floats = append(floats, isFloatUnary(c, b.Left))
 	strings = append(strings, isStringUnary(c, b.Left))
-	typesList = append(typesList, c.inferUnaryType(b.Left))
+	typesList = append(typesList, c.unaryType(b.Left))
 
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
@@ -562,7 +562,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		posts = append(posts, op.Right)
 		floats = append(floats, isFloatPostfix(c, op.Right))
 		strings = append(strings, isStringPostfix(c, op.Right))
-		typesList = append(typesList, c.inferPostfixType(op.Right))
+		typesList = append(typesList, c.postfixType(op.Right))
 	}
 
 	levels := [][]string{
@@ -985,7 +985,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		if fun.Return != nil {
 			ft.Return = c.resolveTypeRef(fun.Return)
 		} else {
-			ft.Return = c.inferFuncReturn(fun.Body)
+			ft.Return = c.funcReturnType(fun.Body)
 		}
 	}
 
@@ -1049,7 +1049,7 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 		if fun.Return != nil {
 			ft.Return = c.resolveTypeRef(fun.Return)
 		} else {
-			ft.Return = c.inferFuncReturn(fun.Body)
+			ft.Return = c.funcReturnType(fun.Body)
 		}
 	}
 
