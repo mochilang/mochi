@@ -526,11 +526,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if op.Op == "%" {
 			expr = fmt.Sprintf("(%s `mod` %s)", expr, r)
 			leftType = types.IntType{}
-		} else if op.Op == "/" && c.postfixIsInt(op.Right) {
+		} else if op.Op == "/" && c.isIntPostfix(op.Right) {
 			expr = fmt.Sprintf("(div %s %s)", expr, r)
 			leftType = types.IntType{}
 		} else if op.Op == "in" {
-			if c.postfixIsMap(op.Right) {
+			if c.isMapPostfix(op.Right) {
 				c.usesMap = true
 				expr = fmt.Sprintf("Map.member %s %s", expr, r)
 			} else {
@@ -630,7 +630,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					end = e
 				}
-				if c.isStringExpr(p.Target) {
+				if c.isStringPrimary(p.Target) {
 					c.usesSliceStr = true
 					expr = fmt.Sprintf("_sliceString %s %s %s", expr, start, end)
 				} else {
@@ -642,10 +642,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				if c.isMapExpr(p.Target) {
+				if c.isMapPrimary(p.Target) {
 					c.usesMap = true
 					expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %s %s)", idx, expr)
-				} else if c.isStringExpr(p.Target) {
+				} else if c.isStringPrimary(p.Target) {
 					expr = fmt.Sprintf("_indexString %s %s", expr, idx)
 				} else {
 					expr = fmt.Sprintf("(%s !! %s)", expr, idx)
@@ -790,14 +790,14 @@ type callArgs struct {
 func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 	if len(ca.args) == 1 {
 		arg := ca.args[0]
-		if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "_indexString") || c.exprIsString(ca.exprs[0]) {
+		if strings.HasPrefix(arg, "\"") || strings.HasPrefix(arg, "show ") || strings.HasPrefix(arg, "show(") || strings.HasPrefix(arg, "_indexString") || c.isStringExpr(ca.exprs[0]) {
 			return fmt.Sprintf("putStrLn (%s)", arg), nil
 		}
 		return fmt.Sprintf("print (%s)", arg), nil
 	}
 	parts := make([]string, len(ca.args))
 	for i, a := range ca.args {
-		if strings.HasPrefix(a, "\"") || strings.HasPrefix(a, "_indexString") || c.exprIsString(ca.exprs[i]) {
+		if strings.HasPrefix(a, "\"") || strings.HasPrefix(a, "_indexString") || c.isStringExpr(ca.exprs[i]) {
 			parts[i] = a
 		} else {
 			parts[i] = fmt.Sprintf("show %s", a)
