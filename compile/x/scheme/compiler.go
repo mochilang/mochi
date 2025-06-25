@@ -58,7 +58,15 @@ const datasetHelpers = `(define (_fetch url opts)
           (else
            (write-string (json->string rows) out)))
     (when (not (eq? out (current-output-port)))
-      (close-output-port out)))`
+      (close-output-port out)))
+
+(define (_sort pairs)
+  (sort pairs
+        (lambda (a b)
+          (let ((ka (cdr a)) (kb (cdr b)))
+            (cond ((and (number? ka) (number? kb)) (< ka kb))
+                  ((and (string? ka) (string? kb)) (string<? ka kb))
+                  (else (string<? (format "~a" ka) (format "~a" kb))))))))`
 
 const listOpHelpers = `(define (_union_all a b)
   (append a b))
@@ -1157,8 +1165,13 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil {
+	if q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
+	}
+	for _, j := range q.Joins {
+		if j.Side != nil {
+			return "", fmt.Errorf("unsupported join type")
+		}
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -1178,13 +1191,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	var cond, skipExpr, takeExpr string
+	var cond, skipExpr, takeExpr, sortExpr string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.needDataset = true
 	}
 	if q.Skip != nil {
 		skipExpr, err = c.compileExpr(q.Skip)
@@ -1209,23 +1230,70 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		fromSrcs[i] = fs
 	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinSrcs[i] = js
+		if j.On != nil {
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinOns[i] = on
+		}
+	}
 	c.env = orig
 
 	var b strings.Builder
-	b.WriteString("(let ((_res '()))\n")
+	b.WriteString("(let ((_res '())")
+	if sortExpr != "" {
+		b.WriteString(" (_tmp '())")
+	}
+	b.WriteString(")\n")
 	b.WriteString(fmt.Sprintf("  (for-each (lambda (%s)\n", sanitizeName(q.Var)))
-	var writeLoops func(int, string)
-	writeLoops = func(i int, indent string) {
-		if i == len(fromSrcs) {
+
+	var writeJoins func(int, string)
+	writeJoins = func(j int, indent string) {
+		if j == len(joinSrcs) {
 			if cond != "" {
 				b.WriteString(indent + "(when " + cond + "\n")
 				indent += "  "
 			}
-			b.WriteString(indent + fmt.Sprintf("(set! _res (append _res (list %s)))\n", sel))
+			if sortExpr != "" {
+				b.WriteString(indent + fmt.Sprintf("(set! _tmp (append _tmp (list (cons %s %s))))\n", sel, sortExpr))
+			} else {
+				b.WriteString(indent + fmt.Sprintf("(set! _res (append _res (list %s)))\n", sel))
+			}
 			if cond != "" {
 				indent = indent[:len(indent)-2]
 				b.WriteString(indent + ")\n")
 			}
+			return
+		}
+		jv := sanitizeName(q.Joins[j].Var)
+		js := joinSrcs[j]
+		on := joinOns[j]
+		b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", jv))
+		if on != "" {
+			b.WriteString(indent + "  (when " + on + "\n")
+			writeJoins(j+1, indent+"    ")
+			b.WriteString(indent + "  )")
+		} else {
+			writeJoins(j+1, indent+"  ")
+		}
+		b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
+	}
+
+	var writeLoops func(int, string)
+	writeLoops = func(i int, indent string) {
+		if i == len(fromSrcs) {
+			writeJoins(0, indent)
 			return
 		}
 		fv := sanitizeName(q.Froms[i].Var)
@@ -1234,8 +1302,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		writeLoops(i+1, indent+"  ")
 		b.WriteString(indent + fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", fs, fs, fs))
 	}
+
 	writeLoops(0, "    ")
 	b.WriteString(fmt.Sprintf("  ) (if (string? %s) (string->list %s) %s))\n", src, src, src))
+	if sortExpr != "" {
+		b.WriteString("  (set! _res (_sort _tmp))\n")
+		b.WriteString("  (set! _res (map car _res))\n")
+	}
 	if skipExpr != "" {
 		c.needSlice = true
 		b.WriteString(fmt.Sprintf("  (set! _res (_slice _res %s (length _res)))\n", skipExpr))
