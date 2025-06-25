@@ -1638,8 +1638,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			arg := c.compileExpr(p.Call.Args[0])
 			c.need(needCount)
 			return fmt.Sprintf("_count(%s)", arg)
+		} else if p.Call.Func == "sum" {
+			arg := c.compileExpr(p.Call.Args[0])
+			if isListFloatExpr(p.Call.Args[0], c.env) {
+				c.need(needSumFloat)
+				return fmt.Sprintf("_sum_float(%s)", arg)
+			}
+			c.need(needSumInt)
+			return fmt.Sprintf("_sum_int(%s)", arg)
 		} else if p.Call.Func == "avg" {
 			arg := c.compileExpr(p.Call.Args[0])
+			if isListFloatExpr(p.Call.Args[0], c.env) {
+				c.need(needAvgFloat)
+				return fmt.Sprintf("_avg_float(%s)", arg)
+			}
 			c.need(needAvg)
 			return fmt.Sprintf("_avg(%s)", arg)
 		} else if p.Call.Func == "str" {
