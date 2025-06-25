@@ -528,6 +528,19 @@ func (c *Compiler) ftnType(t *parser.TypeRef) string {
 	}
 }
 
+func (c *Compiler) ftnScalarType(t types.Type) string {
+	switch v := t.(type) {
+	case types.FloatType:
+		return "real"
+	case types.StringType:
+		return "character(len=len(vsrc))"
+	case types.StructType:
+		return fmt.Sprintf("type(%s)", sanitizeName(v.Name))
+	default:
+		return "integer(kind=8)"
+	}
+}
+
 func isBuiltin(name string) bool {
 	switch name {
 	case "int", "float", "string", "bool":
@@ -1470,7 +1483,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -1509,6 +1522,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var cond string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	var sortStr string
+	var sortType types.Type = types.IntType{}
+	if q.Sort != nil {
+		if types.IsFloatExprVars(q.Sort, sanitizeName, c.floatVars, c.funReturnFloat) {
+			sortType = types.FloatType{}
+		}
+		sortStr, err = c.compileExpr(q.Sort)
 		if err != nil {
 			return "", err
 		}
@@ -1567,6 +1591,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	varDecl(elemType, "vsrc", true)
 	varDecl(resType, "res", false)
 	varDecl(resType, "tmp", false)
+	if q.Sort != nil {
+		varDecl(sortType, "tmpKey", false)
+	}
 	// declare loop var
 	switch elemType.(type) {
 	case types.FloatType:
@@ -1578,23 +1605,80 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.writeln("integer(kind=8) :: n")
 	c.writeln("integer(kind=8) :: i")
+	if q.Sort != nil {
+		c.writeln("integer(kind=8) :: j")
+		c.writeln("integer(kind=8) :: min_idx")
+		switch sortType.(type) {
+		case types.FloatType:
+			c.writeln("real :: sort_key")
+			c.writeln("real :: swap_key")
+		default:
+			c.writeln("integer(kind=8) :: sort_key")
+			c.writeln("integer(kind=8) :: swap_key")
+		}
+		switch rt := resType.(type) {
+		case types.FloatType:
+			c.writeln("real :: swap_item")
+		case types.StringType:
+			c.writeln("character(len=len(vsrc)) :: swap_item")
+		case types.StructType:
+			c.writeln(fmt.Sprintf("type(%s) :: swap_item", sanitizeName(rt.Name)))
+		default:
+			c.writeln("integer(kind=8) :: swap_item")
+		}
+	}
 	c.writeln("allocate(tmp(size(vsrc)))")
+	if q.Sort != nil {
+		c.writeln("allocate(tmpKey(size(vsrc)))")
+	}
 	c.writeln("n = 0")
 	c.writeln("do i = 1, size(vsrc)")
 	c.indent++
 	c.writeln(fmt.Sprintf("%s = vsrc(i)", sanitizeName(q.Var)))
+	if q.Sort != nil {
+		c.writeln(fmt.Sprintf("sort_key = %s", sortStr))
+	}
 	if cond != "" {
 		c.writeln(fmt.Sprintf("if (%s) then", cond))
 		c.indent++
 	}
 	c.writeln("n = n + 1")
 	c.writeln(fmt.Sprintf("tmp(n) = %s", sel))
+	if q.Sort != nil {
+		c.writeln("tmpKey(n) = sort_key")
+	}
 	if cond != "" {
 		c.indent--
 		c.writeln("end if")
 	}
 	c.indent--
 	c.writeln("end do")
+	if q.Sort != nil {
+		c.writeln("do i = 1, n - 1")
+		c.indent++
+		c.writeln("min_idx = i")
+		c.writeln("do j = i + 1, n")
+		c.indent++
+		c.writeln("if (tmpKey(j) < tmpKey(min_idx)) then")
+		c.indent++
+		c.writeln("min_idx = j")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.writeln("if (min_idx /= i) then")
+		c.indent++
+		c.writeln("swap_key = tmpKey(i)")
+		c.writeln("tmpKey(i) = tmpKey(min_idx)")
+		c.writeln("tmpKey(min_idx) = swap_key")
+		c.writeln("swap_item = tmp(i)")
+		c.writeln("tmp(i) = tmp(min_idx)")
+		c.writeln("tmp(min_idx) = swap_item")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+	}
 	c.writeln("allocate(res(n))")
 	c.writeln("res = tmp(:n)")
 	c.indent--
