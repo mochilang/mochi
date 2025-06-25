@@ -123,7 +123,7 @@ Mochi features are not yet available.
 * Iterating over maps with `for` loops
 * List concatenation using `+`
 * Membership tests with `in`
-* Query expressions with `where`, `sort`, `skip` and `take`
+* Query expressions with `where`, `sort`, `skip`, `take` and complex `group by`
 * Built-in helpers: `len`, `count`, `avg`, `now`, `print`, `input`, `json`, `to_json`, `load`, `save`, `fetch`, `eval`, `_genText`, `_genEmbed`, `_genStruct`
 * Dataset helpers `_load` and `_save` support CSV, TSV, JSON and JSONL formats
 * Record and union type declarations
@@ -141,7 +141,6 @@ The F# generator still lacks support for several language constructs:
 * Foreign function interface (FFI) calls
 * YAML dataset support in `_load`/`_save`
 * Logic programming constructs (`fact`, `rule`, `query`)
-* Complex grouping in dataset queries (basic `group by` supported)
 * Streams, agents and LLM `generate` blocks
 * Concurrency primitives like `spawn` and channels
 * Error handling with `try`/`catch`
