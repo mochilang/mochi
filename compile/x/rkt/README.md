@@ -37,7 +37,8 @@ go test ./compile/rkt -tags slow
 - `in` operator for lists and strings
 - Slice assignments, including multi-dimensional slices like `xs[0:1][1:2] = sub`
 - Negative indexing and slicing for strings and lists
-- Dataset queries with `sort`, `skip`, `take` and simple `group by` clauses
+- Dataset queries with filtering via `where`, sorting, pagination with
+  `skip`/`take`, and simple `group by` clauses
 - Simple `struct` type declarations
 - Iteration over map keys
 - Function definitions and calls

@@ -1,0 +1,53 @@
+#lang racket
+(require racket/list)
+
+(define (idx x i)
+  (cond [(string? x) (let* ([n (string-length x)] [idx (if (< i 0) (+ i n) i)]) (string-ref x idx))]
+        [(hash? x) (hash-ref x i)]
+        [else (let* ([n (length x)] [idx (if (< i 0) (+ i n) i)]) (list-ref x idx))]))
+(define (slice x s e)
+  (if (string? x)
+      (let* ([n (string-length x)]
+             [start (if (< s 0) (+ s n) s)]
+             [end (if (< e 0) (+ e n) e)]
+             [start (max 0 start)]
+             [end (min n end)]
+             [end (if (< end start) start end)])
+        (substring x start end))
+      (let* ([n (length x)]
+             [start (if (< s 0) (+ s n) s)]
+             [end (if (< e 0) (+ e n) e)]
+             [start (max 0 start)]
+             [end (min n end)]
+             [end (if (< end start) start end)])
+        (take (drop x start) (- end start)))))
+(define (count x)
+  (cond [(string? x) (string-length x)]
+        [(hash? x) (hash-count x)]
+        [else (length x)]))
+(define (avg x)
+  (let ([n (count x)])
+    (if (= n 0) 0
+        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
+
+(define (expect cond) (unless cond (error "expect failed")))
+(struct Product (name price) #:transparent)
+
+(define products (list (Product "Laptop" 1500) (Product "Smartphone" 900) (Product "Tablet" 600) (Product "Monitor" 300) (Product "Keyboard" 100) (Product "Mouse" 50) (Product "Headphones" 200)))
+(define expensive (let ([_res '()])
+  (for ([p products])
+    (set! _res (append _res (list (cons (- (hash-ref p "price")) p))))
+  )
+  (set! _res (map cdr (sort _res (lambda (a b)
+    (let ([ak (car a)] [bk (car b)])
+      (cond [(and (number? ak) (number? bk)) (< ak bk)]
+            [(and (string? ak) (string? bk)) (string<? ak bk)]
+            [else (string<? (format "~a" ak) (format "~a" bk))])))
+    #:key car)))
+  (set! _res (drop _res 1))
+  (set! _res (take _res 3))
+  _res)))
+(displayln "--- Top products (excluding most expensive) ---")
+(for ([item (if (hash? expensive) (hash-keys expensive) expensive)])
+	(displayln (format "~a ~a ~a" (hash-ref item "name") "costs $" (hash-ref item "price")))
+)
