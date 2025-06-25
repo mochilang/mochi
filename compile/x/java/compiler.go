@@ -1003,6 +1003,18 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_query"] || c.helpers["_group_by"] {
+		c.writeln("")
+		c.writeln("static java.util.List<Object> _toList(Object v) {")
+		c.indent++
+		c.writeln("if (v instanceof java.util.List<?>) return new java.util.ArrayList<>((java.util.List<?>)v);")
+		c.writeln("int n = java.lang.reflect.Array.getLength(v);")
+		c.writeln("java.util.List<Object> out = new java.util.ArrayList<>(n);")
+		c.writeln("for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_query"] {
 		c.writeln("")
 		c.writeln("static class _JoinSpec {")
@@ -1034,18 +1046,6 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 
-		c.writeln("")
-		c.writeln("static java.util.List<Object> _toList(Object v) {")
-		c.indent++
-		c.writeln("if (v instanceof java.util.List<?>) return new java.util.ArrayList<>((java.util.List<?>)v);")
-		c.writeln("int n = java.lang.reflect.Array.getLength(v);")
-		c.writeln("java.util.List<Object> out = new java.util.ArrayList<>(n);")
-		c.writeln("for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));")
-		c.writeln("return out;")
-		c.indent--
-		c.writeln("}")
-
-		c.writeln("")
 		c.writeln("static java.util.List<Object> _query(java.util.List<Object> src, java.util.List<_JoinSpec> joins, _QueryOpts opts) {")
 		c.indent++
 		c.writeln("java.util.List<java.util.List<Object>> items = new java.util.ArrayList<>();")
@@ -1166,6 +1166,34 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("java.util.List<Object> res = new java.util.ArrayList<>();")
 		c.writeln("for (java.util.List<Object> r : items) res.add(opts.selectFn.apply(r.toArray(new Object[0])));")
 		c.writeln("return res;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_group_by"] {
+		c.writeln("")
+		c.writeln("static class _Group {")
+		c.indent++
+		c.writeln("Object key;")
+		c.writeln("java.util.List<Object> Items = new java.util.ArrayList<>();")
+		c.writeln("_Group(Object k) { key = k; }")
+		c.writeln("int length() { return Items.size(); }")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static java.util.List<_Group> _group_by(java.util.List<Object> src, java.util.function.Function<Object,Object> keyfn) {")
+		c.indent++
+		c.writeln("java.util.Map<String,_Group> groups = new java.util.LinkedHashMap<>();")
+		c.writeln("for (Object it : src) {")
+		c.indent++
+		c.writeln("Object key = keyfn.apply(it);")
+		c.writeln("String ks = String.valueOf(key);")
+		c.writeln("_Group g = groups.get(ks);")
+		c.writeln("if (g == null) { g = new _Group(key); groups.put(ks, g); }")
+		c.writeln("g.Items.add(it);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return new java.util.ArrayList<>(groups.values());")
 		c.indent--
 		c.writeln("}")
 	}
