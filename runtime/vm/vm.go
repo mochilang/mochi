@@ -2139,8 +2139,23 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 	}
 
 	r := fc.compilePrimary(p.Target)
-	for _, op := range p.Ops {
-		if op.Index != nil {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
+		if op.Field != nil {
+			if op.Field.Name == "contains" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && len(p.Ops[i+1].Call.Args) == 1 {
+				arg := fc.compileExpr(p.Ops[i+1].Call.Args[0])
+				dst := fc.newReg()
+				fc.emit(p.Ops[i+1].Call.Pos, Instr{Op: OpIn, A: dst, B: arg, C: r})
+				r = dst
+				i++
+				continue
+			}
+			key := fc.newReg()
+			fc.emit(op.Field.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: interpreter.TagStr, Str: op.Field.Name}})
+			dst := fc.newReg()
+			fc.emit(op.Field.Pos, Instr{Op: OpIndex, A: dst, B: r, C: key})
+			r = dst
+		} else if op.Index != nil {
 			if op.Index.Colon != nil {
 				start := fc.newReg()
 				if op.Index.Start != nil {
