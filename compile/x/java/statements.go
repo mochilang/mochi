@@ -76,7 +76,11 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		}
 		expr = " = " + v
 	}
-	c.writeln(fmt.Sprintf("%s %s%s;", typStr, sanitizeName(stmt.Name), expr))
+	prefix := ""
+	if c.indent == 1 {
+		prefix = "static "
+	}
+	c.writeln(fmt.Sprintf("%s%s %s%s;", prefix, typStr, sanitizeName(stmt.Name), expr))
 	return nil
 }
 
@@ -107,7 +111,11 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		}
 		expr = " = " + v
 	}
-	c.writeln(fmt.Sprintf("%s %s%s;", typStr, sanitizeName(stmt.Name), expr))
+	prefix := ""
+	if c.indent == 1 {
+		prefix = "static "
+	}
+	c.writeln(fmt.Sprintf("%s%s %s%s;", prefix, typStr, sanitizeName(stmt.Name), expr))
 	return nil
 }
 
