@@ -95,17 +95,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		} else if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		}
 	}
 
 	c.writeln("int main() {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil {
+		if s.Fun != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(name + "();")
 		}
 	}
 	c.writeln("return 0;")
@@ -403,6 +414,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Expect != nil:
+		if err := c.compileExpect(s.Expect); err != nil {
+			return err
+		}
 	case s.Expr != nil:
 		if call := getPrintCall(s.Expr.Expr); call != nil {
 			return c.compilePrint(call)
@@ -482,6 +497,26 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	c.writeln(fmt.Sprintf("while (%s) {", cond))
 	c.indent++
 	for _, st := range w.Body {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	cond := c.compileExpr(e.Value)
+	c.writeln(fmt.Sprintf("if (!(%s)) { std::cerr << \"expect failed\\n\"; exit(1); }", cond))
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	name := "test_" + sanitizeName(t.Name)
+	c.writeln("static void " + name + "() {")
+	c.indent++
+	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
