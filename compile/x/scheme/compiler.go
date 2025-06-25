@@ -66,7 +66,108 @@ const datasetHelpers = `(define (_fetch url opts)
           (let ((ka (cdr a)) (kb (cdr b)))
             (cond ((and (number? ka) (number? kb)) (< ka kb))
                   ((and (string? ka) (string? kb)) (string<? ka kb))
-                  (else (string<? (format "~a" ka) (format "~a" kb))))))))`
+                  (else (string<? (format "~a" ka) (format "~a" kb))))))))
+
+(define (_query src joins opts)
+  (let ((items (map (lambda (v) (list v)) src)))
+    (for-each
+      (lambda (j)
+        (let* ((joined '())
+               (jitems (cdr (assq 'items j)))
+               (on (and (assq 'on j) (cdr (assq 'on j))))
+               (left (and (assq 'left j)))
+               (right (and (assq 'right j))))
+          (cond
+            ((and left right)
+             (let ((matched (make-vector (length jitems) #f)))
+               (for-each
+                 (lambda (leftrow)
+                   (let ((m #f))
+                     (let loop ((ri 0))
+                       (when (< ri (length jitems))
+                         (let* ((rightrow (list-ref jitems ri))
+                                (keep (if on (apply on (append leftrow (list rightrow))) #t)))
+                           (when keep
+                             (set! m #t)
+                             (vector-set! matched ri #t)
+                             (set! joined (append joined (list (append leftrow (list rightrow)))))))
+                         (loop (+ ri 1))))
+                     (when (not m)
+                       (set! joined (append joined (list (append leftrow (list #f)))))))
+                 items)
+               (let loop ((ri 0))
+                 (when (< ri (length jitems))
+                   (when (not (vector-ref matched ri))
+                     (let ((undef (if (null? items) '() (make-list (length (car items)) #f))))
+                       (set! joined (append joined (list (append undef (list (list-ref jitems ri))))))))
+                   (loop (+ ri 1)))))
+            (right
+             (for-each
+               (lambda (rightrow)
+                 (let ((m #f))
+                   (for-each
+                     (lambda (leftrow)
+                       (let ((keep (if on (apply on (append leftrow (list rightrow))) #t)))
+                         (when keep
+                           (set! m #t)
+                           (set! joined (append joined (list (append leftrow (list rightrow))))))))
+                     items)
+                   (when (not m)
+                     (let ((undef (if (null? items) '() (make-list (length (car items)) #f))))
+                       (set! joined (append joined (list (append undef (list rightrow))))))))
+               jitems))
+            (left
+             (for-each
+               (lambda (leftrow)
+                 (let ((m #f))
+                   (for-each
+                     (lambda (rightrow)
+                       (let ((keep (if on (apply on (append leftrow (list rightrow))) #t)))
+                         (when keep
+                           (set! m #t)
+                           (set! joined (append joined (list (append leftrow (list rightrow)))))))
+                     jitems)
+                   (when (not m)
+                     (set! joined (append joined (list (append leftrow (list #f)))))))
+               items))
+            (else
+             (for-each
+               (lambda (leftrow)
+                 (for-each
+                   (lambda (rightrow)
+                     (let ((keep (if on (apply on (append leftrow (list rightrow))) #t)))
+                       (when keep
+                         (set! joined (append joined (list (append leftrow (list rightrow)))))))
+                   jitems))
+               items)))
+          (set! items joined)))
+      joins)
+    (when (and opts (assq 'where opts))
+      (let ((w (cdr (assq 'where opts))))
+        (set! items (filter (lambda (r) (apply w r)) items))))
+    (when (and opts (assq 'sortKey opts))
+      (let* ((k (cdr (assq 'sortKey opts)))
+             (pairs (map (lambda (it) (cons it (apply k it))) items)))
+        (set! pairs (_sort pairs))
+        (set! items (map car pairs))))
+    (when (and opts (assq 'skip opts))
+      (let* ((n (cdr (assq 'skip opts))))
+        (when (< n 0) (set! n 0))
+        (let loop ((i 0) (xs items))
+          (if (or (>= i n) (null? xs))
+              (set! items xs)
+              (loop (+ i 1) (cdr xs))))))
+    (when (and opts (assq 'take opts))
+      (let* ((n (cdr (assq 'take opts))))
+        (when (< n 0) (set! n 0))
+        (let loop ((i 0) (xs items) (acc '()))
+          (if (or (>= i n) (null? xs))
+              (set! items (reverse acc))
+              (loop (+ i 1) (cdr xs) (cons (car xs) acc))))))
+    (let ((res '())
+          (sel (cdr (assq 'select opts))))
+      (for-each (lambda (r) (set! res (append res (list (apply sel r))))) items)
+      res)))`
 
 const listOpHelpers = `(define (_union_all a b)
   (append a b))
@@ -1178,22 +1279,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
-	orig := c.env
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	for _, f := range q.Froms {
 		child.SetVar(f.Var, types.AnyType{}, true)
 	}
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+	orig := c.env
 	c.env = child
 
-	sel, err := c.compileExpr(q.Select)
+	val, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
 		return "", err
 	}
-	var cond, skipExpr, takeExpr, sortExpr string
+
+	var whereExpr, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		whereExpr, err = c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1205,7 +1310,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
-		c.needDataset = true
 	}
 	if q.Skip != nil {
 		skipExpr, err = c.compileExpr(q.Skip)
@@ -1221,6 +1325,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
@@ -1250,74 +1355,58 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = orig
 
+	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+	params := []string{sanitizeName(q.Var)}
+	for i, fs := range fromSrcs {
+		joins = append(joins, fmt.Sprintf("(list (cons 'items %s))", fs))
+		params = append(params, sanitizeName(q.Froms[i].Var))
+	}
+	paramCopy := append([]string(nil), params...)
+	for i, js := range joinSrcs {
+		onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+		spec := fmt.Sprintf("(list (cons 'items %s)", js)
+		if joinOns[i] != "" {
+			spec += fmt.Sprintf(" (cons 'on (lambda (%s) %s))", strings.Join(onParams, " "), joinOns[i])
+		}
+		spec += ")"
+		joins = append(joins, spec)
+		paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+	}
+
+	allParams := strings.Join(paramCopy, " ")
+	selectFn := fmt.Sprintf("(lambda (%s) %s)", allParams, val)
+	var whereFn, sortFn string
+	if whereExpr != "" {
+		whereFn = fmt.Sprintf("(lambda (%s) %s)", allParams, whereExpr)
+	}
+	if sortExpr != "" {
+		sortFn = fmt.Sprintf("(lambda (%s) %s)", allParams, sortExpr)
+	}
+
 	var b strings.Builder
-	b.WriteString("(let ((_res '())")
-	if sortExpr != "" {
-		b.WriteString(" (_tmp '())")
-	}
-	b.WriteString(")\n")
-	b.WriteString(fmt.Sprintf("  (for-each (lambda (%s)\n", sanitizeName(q.Var)))
-
-	var writeJoins func(int, string)
-	writeJoins = func(j int, indent string) {
-		if j == len(joinSrcs) {
-			if cond != "" {
-				b.WriteString(indent + "(when " + cond + "\n")
-				indent += "  "
-			}
-			if sortExpr != "" {
-				b.WriteString(indent + fmt.Sprintf("(set! _tmp (append _tmp (list (cons %s %s))))\n", sel, sortExpr))
-			} else {
-				b.WriteString(indent + fmt.Sprintf("(set! _res (append _res (list %s)))\n", sel))
-			}
-			if cond != "" {
-				indent = indent[:len(indent)-2]
-				b.WriteString(indent + ")\n")
-			}
-			return
+	b.WriteString("(let ((_src " + src + "))\n")
+	b.WriteString("  (_query _src (list\n")
+	for i, j := range joins {
+		b.WriteString("    " + j)
+		if i != len(joins)-1 {
+			b.WriteString("\n")
 		}
-		jv := sanitizeName(q.Joins[j].Var)
-		js := joinSrcs[j]
-		on := joinOns[j]
-		b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", jv))
-		if on != "" {
-			b.WriteString(indent + "  (when " + on + "\n")
-			writeJoins(j+1, indent+"    ")
-			b.WriteString(indent + "  )")
-		} else {
-			writeJoins(j+1, indent+"  ")
-		}
-		b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
 	}
-
-	var writeLoops func(int, string)
-	writeLoops = func(i int, indent string) {
-		if i == len(fromSrcs) {
-			writeJoins(0, indent)
-			return
-		}
-		fv := sanitizeName(q.Froms[i].Var)
-		fs := fromSrcs[i]
-		b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", fv))
-		writeLoops(i+1, indent+"  ")
-		b.WriteString(indent + fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", fs, fs, fs))
+	b.WriteString("  ) (list (cons 'select " + selectFn + ")")
+	if whereFn != "" {
+		b.WriteString(" (cons 'where " + whereFn + ")")
 	}
-
-	writeLoops(0, "    ")
-	b.WriteString(fmt.Sprintf("  ) (if (string? %s) (string->list %s) %s))\n", src, src, src))
-	if sortExpr != "" {
-		b.WriteString("  (set! _res (_sort _tmp))\n")
-		b.WriteString("  (set! _res (map car _res))\n")
+	if sortFn != "" {
+		b.WriteString(" (cons 'sortKey " + sortFn + ")")
 	}
 	if skipExpr != "" {
-		c.needSlice = true
-		b.WriteString(fmt.Sprintf("  (set! _res (_slice _res %s (length _res)))\n", skipExpr))
+		b.WriteString(" (cons 'skip " + skipExpr + ")")
 	}
 	if takeExpr != "" {
-		c.needSlice = true
-		b.WriteString(fmt.Sprintf("  (set! _res (_slice _res 0 %s))\n", takeExpr))
+		b.WriteString(" (cons 'take " + takeExpr + ")")
 	}
-	b.WriteString("  _res)")
+	b.WriteString(")))")
+	c.needDataset = true
 	return b.String(), nil
 }
 
