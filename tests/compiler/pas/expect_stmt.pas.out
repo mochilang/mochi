@@ -1,0 +1,11 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants;
+
+type
+	generic TArray<T> = array of T;
+
+begin
+	if not ((2 + 2 = 4)) then raise Exception.Create('expect failed');
+	writeln('ok');
+end.

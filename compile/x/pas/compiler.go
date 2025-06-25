@@ -88,6 +88,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Emit test blocks as procedures.
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+
 	// Emit generated lambda functions
 	for _, code := range c.lambdas {
 		c.buf.WriteString(code)
@@ -104,7 +114,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = bytes.Buffer{}
 	c.indent = 1
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil {
+		if s.Fun != nil || s.Type != nil || s.Test != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -146,6 +156,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("begin")
 	c.indent++
 	c.buf.Write(body.Bytes())
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			name := "test_" + sanitizeName(s.Test.Name)
+			c.writeln(fmt.Sprintf("%s;", name))
+		}
+	}
 	c.indent--
 	c.writeln("end.")
 	return c.buf.Bytes(), nil
@@ -153,9 +169,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
-	case s.Test != nil, s.Expect != nil:
-		// test blocks are ignored when compiling to Pascal
-		return nil
+	case s.Test != nil:
+		return c.compileTestBlock(s.Test)
+	case s.Expect != nil:
+		return c.compileExpect(s.Expect)
 	case s.Let != nil:
 		var t types.Type
 		if c.env != nil {
@@ -1551,6 +1568,71 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s)", src, path), nil
+}
+
+func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	expr, err := c.compileExpr(e.Value)
+	if err != nil {
+		return err
+	}
+	c.writeln(fmt.Sprintf("if not (%s) then raise Exception.Create('expect failed');", expr))
+	return nil
+}
+
+func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	prevTemps := c.tempVars
+	c.tempVars = make(map[string]string)
+
+	name := "test_" + sanitizeName(t.Name)
+
+	var body bytes.Buffer
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = oldIndent + 1
+	for _, st := range t.Body {
+		if err := c.compileStmt(st); err != nil {
+			c.buf = oldBuf
+			c.indent = oldIndent
+			c.tempVars = prevTemps
+			return err
+		}
+	}
+	body = c.buf
+	c.buf = oldBuf
+	c.indent = oldIndent
+
+	vars := map[string]string{}
+	collectVars(t.Body, c.env, vars)
+	for n, typ := range c.tempVars {
+		if typ == "" {
+			typ = "integer"
+		}
+		vars[n] = typ
+	}
+
+	c.writeln(fmt.Sprintf("procedure %s;", name))
+	if len(vars) > 0 {
+		c.writeln("var")
+		c.indent++
+		names := make([]string, 0, len(vars))
+		for n := range vars {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		for _, n := range names {
+			c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(n), vars[n]))
+		}
+		c.indent--
+	}
+	c.writeln("begin")
+	c.indent++
+	c.buf.Write(body.Bytes())
+	c.indent--
+	c.writeln("end;")
+
+	c.tempVars = prevTemps
+	return nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
