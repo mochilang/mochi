@@ -417,7 +417,7 @@ type QueryExpr struct {
 	Joins    []*JoinClause  `parser:"{ @@ }"`
 	Where    *Expr          `parser:"[ 'where' @@ ]"`
 	Group    *GroupByClause `parser:"[ @@ ]"`
-	Sort     *Expr          `parser:"[ 'sort' 'by' @@ ]"`
+	Sort     *Expr          `parser:"[ ( 'sort' | 'order' ) 'by' @@ ]"`
 	Skip     *Expr          `parser:"[ 'skip' @@ ]"`
 	Take     *Expr          `parser:"[ 'take' @@ ]"`
 	Distinct bool           `parser:"'select' @'distinct'?"`
