@@ -1,0 +1,19 @@
+let people = [
+  { name: "Alice", age: 30 },
+  { name: "Bob", age: 15 },
+  { name: "Charlie", age: 65 }
+]
+
+let depts = [
+  { name: "HR" },
+  { name: "IT" }
+]
+
+let pairs = from p in people
+            from d in depts
+            where p.age >= 18 && d.name == "HR"
+            select p.name + "-" + d.name
+
+for it in pairs {
+  print(it)
+}
