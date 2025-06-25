@@ -1,6 +1,6 @@
 object Main {
 	def main(args: Array[String]): Unit = {
-		var c = 0
+		var c: Int = 0
 		var i1 = 0
 		while (i1 < 2) {
 			val _ = i1
@@ -14,7 +14,7 @@ object Main {
 		}
 		val it3 = "ab".iterator
 		while (it3.hasNext) {
-			val _ = it3.next()
+			val _ = it3.next().toString
 			c = (c + 1)
 		}
 		println(c)

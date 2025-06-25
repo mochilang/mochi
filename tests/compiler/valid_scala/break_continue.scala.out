@@ -1,11 +1,11 @@
 object Main {
 	def main(args: Array[String]): Unit = {
-		val numbers = scala.collection.mutable.ArrayBuffer(1, 2, 3, 4, 5, 6, 7, 8, 9)
+		val numbers: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(1, 2, 3, 4, 5, 6, 7, 8, 9)
 		val brk1 = new scala.util.control.Breaks
 		brk1.breakable {
 			val it2 = numbers.iterator
 			while (it2.hasNext) {
-				val n = it2.next()
+				val n: Int = it2.next()
 				val cont3 = new scala.util.control.Breaks
 				cont3.breakable {
 					if (((n % 2) == 0)) {

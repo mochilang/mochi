@@ -1,6 +1,6 @@
 object Main {
 	def main(args: Array[String]): Unit = {
-		var m: scala.collection.mutable.Map[Int, Int] = scala.collection.mutable.Map()
+		var m = scala.collection.mutable.Map()
 		m.update(1, 10)
 		m.update(2, 20)
 		if (m.contains(1)) {

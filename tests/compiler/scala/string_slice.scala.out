@@ -1,5 +1,17 @@
 object Main {
 	def main(args: Array[String]): Unit = {
-		println("hello".slice(1, 4))
+		println(_sliceString("hello", 1, 4))
 	}
+}
+def _sliceString(s: String, i: Int, j: Int): String = {
+        var start = i
+        var end = j
+        val chars = s.toVector
+        val n = chars.length
+        if (start < 0) start += n
+        if (end < 0) end += n
+        if (start < 0) start = 0
+        if (end > n) end = n
+        if (end < start) end = start
+        chars.slice(start, end).mkString
 }

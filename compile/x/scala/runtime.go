@@ -121,6 +121,10 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
 }`
 	helperQuery = `def _query(src: Seq[Any], joins: Seq[Map[String,Any]], opts: Map[String,Any]): Seq[Any] = {
         var items = src.map(v => Seq[Any](v))
+        val preWhere = opts.get("preWhere").map(_.asInstanceOf[Seq[Any] => Boolean])
+        if (preWhere.isDefined && joins.isEmpty) {
+                items = items.filter(r => preWhere.get(r))
+        }
         for (j <- joins) {
                 val joined = scala.collection.mutable.ArrayBuffer[Seq[Any]]()
                 val jitems = j("items").asInstanceOf[Seq[Any]]
@@ -133,8 +137,10 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
                                 var m = false
                                 for ((rightRow, ri) <- jitems.zipWithIndex) {
                                         var keep = true
-                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
-                                        if (keep) { m = true; matched(ri) = true; joined.append(leftRow :+ rightRow) }
+                                        val row = leftRow :+ rightRow
+                                        if (on.isDefined) keep = on.get(row)
+                                        if (keep && preWhere.isDefined) keep = preWhere.get(row)
+                                        if (keep) { m = true; matched(ri) = true; joined.append(row) }
                                 }
                                 if (!m) joined.append(leftRow :+ null)
                         }
@@ -149,8 +155,10 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
                                 var m = false
                                 for (leftRow <- items) {
                                         var keep = true
-                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
-                                        if (keep) { m = true; joined.append(leftRow :+ rightRow) }
+                                        val row = leftRow :+ rightRow
+                                        if (on.isDefined) keep = on.get(row)
+                                        if (keep && preWhere.isDefined) keep = preWhere.get(row)
+                                        if (keep) { m = true; joined.append(row) }
                                 }
                                 if (!m) {
                                         val undef = if (items.nonEmpty) Seq.fill(items.head.length)(null) else Seq[Any]()
@@ -162,8 +170,10 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
                                 var m = false
                                 for (rightRow <- jitems) {
                                         var keep = true
-                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
-                                        if (keep) { m = true; joined.append(leftRow :+ rightRow) }
+                                        val row = leftRow :+ rightRow
+                                        if (on.isDefined) keep = on.get(row)
+                                        if (keep && preWhere.isDefined) keep = preWhere.get(row)
+                                        if (keep) { m = true; joined.append(row) }
                                 }
                                 if (left && !m) joined.append(leftRow :+ null)
                         }

@@ -4,7 +4,7 @@ object Main {
 	}
 	
 	def main(args: Array[String]): Unit = {
-		val n = 10
+		val n: Int = 10
 		println(sum(n))
 		println(n)
 	}

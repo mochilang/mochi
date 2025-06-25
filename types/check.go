@@ -383,6 +383,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Params: []Type{AnyType{}},
 		Return: VoidType{},
 	}, false)
+	env.SetVar("to_json", FuncType{
+		Params: []Type{AnyType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("str", FuncType{
 		Params: []Type{AnyType{}},
 		Return: StringType{},
@@ -2016,23 +2021,24 @@ func isNumeric(t Type) bool {
 }
 
 var builtinArity = map[string]int{
-	"now":    0,
-	"input":  0,
-	"json":   1,
-	"str":    1,
-	"upper":  1,
-	"lower":  1,
-	"eval":   1,
-	"len":    1,
-	"count":  1,
-	"avg":    1,
-	"min":    1,
-	"max":    1,
-	"keys":   1,
-	"values": 1,
-	"reduce": 3,
-	"append": 2,
-	"push":   2,
+	"now":     0,
+	"input":   0,
+	"json":    1,
+	"to_json": 1,
+	"str":     1,
+	"upper":   1,
+	"lower":   1,
+	"eval":    1,
+	"len":     1,
+	"count":   1,
+	"avg":     1,
+	"min":     1,
+	"max":     1,
+	"keys":    1,
+	"values":  1,
+	"reduce":  3,
+	"append":  2,
+	"push":    2,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {

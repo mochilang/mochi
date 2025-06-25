@@ -1192,6 +1192,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	joinSrcs := make([]string, len(q.Joins))
 	joinOns := make([]string, len(q.Joins))
 	joinSides := make([]string, len(q.Joins))
+	hasSide := false
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -1212,6 +1213,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		joinOns[i] = on
 		if j.Side != nil {
 			joinSides[i] = *j.Side
+			hasSide = true
 		}
 	}
 
@@ -1299,9 +1301,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	selectFn := seqLambda(params, sel)
-	var whereFn, sortFn string
+	var whereFn, preWhereFn, sortFn string
 	if cond != "" {
 		whereFn = seqLambda(params, cond)
+		if !hasSide {
+			preWhereFn = whereFn
+		}
 	}
 	if sortExpr != "" {
 		sortFn = seqLambda(params, sortExpr)
@@ -1320,6 +1325,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\n")
 	}
 	b.WriteString("\t), Map(\"select\" -> " + selectFn)
+	if preWhereFn != "" {
+		b.WriteString(", \"preWhere\" -> " + preWhereFn)
+	}
 	if whereFn != "" {
 		b.WriteString(", \"where\" -> " + whereFn)
 	}
