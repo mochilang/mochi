@@ -1,0 +1,66 @@
+let lineitem = [
+  {
+    l_quantity: 17,
+    l_extendedprice: 1000.0,
+    l_discount: 0.05,
+    l_tax: 0.07,
+    l_returnflag: "N",
+    l_linestatus: "O",
+    l_shipdate: "1998-08-01"
+  },
+  {
+    l_quantity: 36,
+    l_extendedprice: 2000.0,
+    l_discount: 0.10,
+    l_tax: 0.05,
+    l_returnflag: "N",
+    l_linestatus: "O",
+    l_shipdate: "1998-09-01"
+  },
+  {
+    l_quantity: 25,
+    l_extendedprice: 1500.0,
+    l_discount: 0.00,
+    l_tax: 0.08,
+    l_returnflag: "R",
+    l_linestatus: "F",
+    l_shipdate: "1998-09-03"  // excluded
+  }
+]
+
+let result =
+  from row in lineitem
+  where row.l_shipdate <= "1998-09-02"
+  group by { row.l_returnflag, row.l_linestatus }
+  select {
+    returnflag: row.l_returnflag,
+    linestatus: row.l_linestatus,
+    sum_qty: sum(row.l_quantity),
+    sum_base_price: sum(row.l_extendedprice),
+    sum_disc_price: sum(row.l_extendedprice * (1 - row.l_discount)),
+    sum_charge: sum(row.l_extendedprice * (1 - row.l_discount) * (1 + row.l_tax)),
+    avg_qty: avg(row.l_quantity),
+    avg_price: avg(row.l_extendedprice),
+    avg_disc: avg(row.l_discount),
+    count_order: count()
+  }
+  order by { returnflag, linestatus }
+
+print result
+
+test "Q1 aggregates revenue and quantity by returnflag + linestatus" {
+  expect result == [
+    {
+      returnflag: "N",
+      linestatus: "O",
+      sum_qty: 53,
+      sum_base_price: 3000.0,
+      sum_disc_price: 1000.0 * 0.95 + 2000.0 * 0.90,               // 950 + 1800 = 2750.0
+      sum_charge: 1000.0 * 0.95 * 1.07 + 2000.0 * 0.90 * 1.05,     // 950 * 1.07 + 1800 * 1.05 = 1016.5 + 1890 = 2906.5
+      avg_qty: 53 / 2,
+      avg_price: 3000.0 / 2,
+      avg_disc: (0.05 + 0.10) / 2,
+      count_order: 2
+    }
+  ]
+}

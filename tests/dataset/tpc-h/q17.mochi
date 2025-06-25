@@ -1,0 +1,33 @@
+let part = [
+  { p_partkey: 1, p_brand: "Brand#23", p_container: "MED BOX" },
+  { p_partkey: 2, p_brand: "Brand#77", p_container: "LG JAR" }
+]
+
+let lineitem = [
+  { l_partkey: 1, l_quantity: 1, l_extendedprice: 100.0 },   // qualifies
+  { l_partkey: 1, l_quantity: 10, l_extendedprice: 1000.0 },
+  { l_partkey: 1, l_quantity: 20, l_extendedprice: 2000.0 },
+  { l_partkey: 2, l_quantity: 5, l_extendedprice: 500.0 }     // wrong brand/container
+]
+
+let brand = "Brand#23"
+let container = "MED BOX"
+
+let result =
+  from l in lineitem
+  join p in part on p.p_partkey == l.l_partkey
+  where
+    p.p_brand == brand and
+    p.p_container == container and
+    l.l_quantity < (
+      let avg_qty = avg(x.l_quantity for x in lineitem where x.l_partkey == p.p_partkey)
+      in 0.2 * avg_qty
+    )
+  select sum(l.l_extendedprice) / 7.0
+
+print result
+
+test "Q17 returns average yearly revenue for small-quantity orders" {
+  let expected = 100.0 / 7.0
+  expect result == expected
+}

@@ -1,0 +1,35 @@
+let customer = [
+  { c_custkey: 1 },
+  { c_custkey: 2 },
+  { c_custkey: 3 }
+]
+
+let orders = [
+  { o_orderkey: 100, o_custkey: 1, o_comment: "fast delivery" },
+  { o_orderkey: 101, o_custkey: 1, o_comment: "no comment" },
+  { o_orderkey: 102, o_custkey: 2, o_comment: "special requests only" } // excluded
+]
+
+let per_customer =
+  from c in customer
+  let order_count =
+    count(
+      o for o in orders
+      where o.o_custkey == c.c_custkey and not o.o_comment has "special" and not o.o_comment has "requests"
+    )
+  select { c_count: order_count }
+
+let grouped =
+  from x in per_customer
+  group by x.c_count
+  select { c_count: x.c_count, custdist: count() }
+  order by { custdist desc, c_count desc }
+
+print grouped
+
+test "Q13 groups customers by non-special order count" {
+  expect grouped == [
+    { c_count: 2, custdist: 1 },  // customer 1
+    { c_count: 0, custdist: 2 }   // customer 2 & 3
+  ]
+}
