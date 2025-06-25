@@ -282,7 +282,13 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	c.writeln("#include <string.h>")
+	if c.has(needInput) || c.has(needListString) || c.has(needConcatListString) ||
+		c.has(needConcatString) || c.has(needIndexString) || c.has(needSliceString) ||
+		c.has(needSliceListString) || c.has(needUnionListString) ||
+		c.has(needExceptListString) || c.has(needIntersectListString) ||
+		c.has(needInListString) || c.has(needInString) || c.has(needPrintListString) {
+		c.writeln("#include <string.h>")
+	}
 	if c.has(needNow) {
 		c.writeln("#include <time.h>")
 	}
@@ -906,6 +912,71 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 	c.buf = oldBuf
 	c.indent = oldIndent
 	return name
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "0"
+	}
+
+	src := c.compileExpr(q.Source)
+	srcType := c.exprType(q.Source)
+	lt, ok := srcType.(types.ListType)
+	if !ok {
+		return "0"
+	}
+
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, lt.Elem, true)
+	c.env = child
+
+	var cond string
+	if q.Where != nil {
+		cond = c.compileExpr(q.Where)
+	}
+	sel := c.compileExpr(q.Select)
+	selType := c.exprType(q.Select)
+	c.env = orig
+
+	elemC := cTypeFromType(selType)
+	listType := "list_int"
+	create := "list_int_create"
+	switch elemC {
+	case "int":
+		listType = "list_int"
+		create = "list_int_create"
+	case "double":
+		listType = "list_float"
+		create = "list_float_create"
+		c.need(needListFloat)
+	case "char*":
+		listType = "list_string"
+		create = "list_string_create"
+		c.need(needListString)
+	default:
+		return "0"
+	}
+
+	res := c.newTemp()
+	idx := c.newTemp()
+	iter := c.newTemp()
+	elem := sanitizeName(q.Var)
+	elemType := cTypeFromType(lt.Elem)
+
+	c.writeln(fmt.Sprintf("%s %s = %s(%s.len);", listType, res, create, src))
+	c.writeln(fmt.Sprintf("int %s = 0;", idx))
+	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src, iter))
+	c.indent++
+	c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemType, elem, src, iter))
+	if cond != "" {
+		c.writeln(fmt.Sprintf("if (!(%s)) continue;", cond))
+	}
+	c.writeln(fmt.Sprintf("%s.data[%s++] = %s;", res, idx, sel))
+	c.indent--
+	c.writeln("}")
+	c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+	return res
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
@@ -1542,6 +1613,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Group != nil:
 		return fmt.Sprintf("(%s)", c.compileExpr(p.Group))
 	default:

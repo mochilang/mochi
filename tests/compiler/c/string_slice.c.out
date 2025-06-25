@@ -3,15 +3,12 @@
 #include <string.h>
 
 typedef struct { int len; int *data; } list_int;
-
 static list_int list_int_create(int len) {
 	list_int l;
 	l.len = len;
 	l.data = (int*)malloc(sizeof(int)*len);
 	return l;
 }
-
-
 static char* slice_string(char* s, int start, int end) {
 	int len = strlen(s);
 	if (start < 0) start += len;
@@ -24,7 +21,6 @@ static char* slice_string(char* s, int start, int end) {
 	buf[end - start] = '\0';
 	return buf;
 }
-
 int main() {
 	char* _t1 = slice_string("hello", 1, 4);
 	printf("%s\n", _t1);

@@ -27,8 +27,12 @@ typedef struct {
 	} value;
 }Tree;
 
+int isLeaf(Tree t){
+	return (t == Leaf ? 1 : 0);
+}
+
 int main() {
-	Node t = (Node){.left = (Leaf){}, .value = 42, .right = (Leaf){}};
-	printf("%d\n", t.value);
+	printf("%d\n", isLeaf((Leaf){}));
+	printf("%d\n", isLeaf((Node){.left = (Leaf){}, .value = 1, .right = (Leaf){}}));
 	return 0;
 }

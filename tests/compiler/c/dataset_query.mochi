@@ -1,0 +1,3 @@
+let nums = [1,2,3,4,5]
+let out = from n in nums where n % 2 == 1 select n * 2
+print(out)

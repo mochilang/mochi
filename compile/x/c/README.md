@@ -75,11 +75,11 @@ constructs required by later LeetCode problems are not yet supported. Missing
 features include:
 
 - `map` types
-- query expressions such as `from`/`sort by`/`select`
+- limited dataset queries (`from`/`where`/`select`) for int, float and string lists
 - enum definitions
 - agent-related constructs (`agent`, `stream`, `intent`)
 - generative `generate` blocks and model definitions
-- dataset helpers such as `fetch`, `load`, `save` and SQL-style `from ...` queries
+- dataset helpers such as `fetch`, `load` and `save`
 - full pattern matching with `match` (simple constant matches are supported)
 - foreign function interface via `import` and package declarations
 - concurrency primitives like `spawn` and channels

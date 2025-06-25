@@ -3,15 +3,12 @@
 #include <string.h>
 
 typedef struct { int len; int *data; } list_int;
-
 static list_int list_int_create(int len) {
 	list_int l;
 	l.len = len;
 	l.data = (int*)malloc(sizeof(int)*len);
 	return l;
 }
-
-
 static char* _index_string(char* s, int i) {
 	int len = strlen(s);
 	if (i < 0) i += len;
@@ -21,7 +18,6 @@ static char* _index_string(char* s, int i) {
 	buf[1] = '\0';
 	return buf;
 }
-
 int main() {
 	char* text = "hello";
 	char* _t1 = _index_string(text, 1);

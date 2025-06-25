@@ -1,29 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 typedef struct { int len; int *data; } list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+	list_int l;
+	l.len = len;
+	l.data = (int*)malloc(sizeof(int)*len);
+	return l;
+}
+int _lambda0(int y){
+	return (y * 2);
 }
 
 int inc(int x){
-        return (x + 1);
+	return (x + 1);
 }
 
-int apply(int (*f)(int), int x){
-        return f(x);
-}
-
-int _lambda0(int y){
-        return (y * 2);
+int apply(int (*)(int) f, int x){
+	return f(x);
 }
 
 int main() {
-        printf("%d\n", apply(inc, 5));
-        printf("%d\n", apply(_lambda0, 7));
-        return 0;
+	printf("%d\n", apply(inc, 5));
+	printf("%d\n", apply(_lambda0, 7));
+	return 0;
 }
