@@ -285,6 +285,9 @@ data class _QueryOpts(
 
 fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?> {
     var items = src.map { arrayOf(it) }.toMutableList()
+    if (opts.where != null) {
+        items = items.filter { opts.where.invoke(it) }.toMutableList()
+    }
     for (j in joins) {
         val joined = mutableListOf<Array<Any?>>()
         if (j.right && j.left) {
@@ -342,6 +345,9 @@ fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?
             }
         }
         items = joined
+        if (opts.where != null) {
+            items = items.filter { opts.where.invoke(it) }.toMutableList()
+        }
     }
     if (opts.where != null) {
         items = items.filter { opts.where.invoke(it) }.toMutableList()
