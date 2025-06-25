@@ -1,0 +1,7 @@
+fun main() {
+  for i in 0..2 {
+    if i%2==0 {
+      print(i)
+    }
+  }
+}
