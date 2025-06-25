@@ -43,7 +43,7 @@ let local_customer_supplier_orders =
   join o in orders on o.o_custkey == c.c_custkey
   join l in lineitem on l.l_orderkey == o.o_orderkey
   join s in supplier on s.s_suppkey == l.l_suppkey
-  where o.o_orderdate >= "1994-01-01" and o.o_orderdate < "1995-01-01" and s.s_nationkey == c.c_nationkey
+  where o.o_orderdate >= "1994-01-01" && o.o_orderdate < "1995-01-01" && s.s_nationkey == c.c_nationkey
   select {
     nation: n.n_name,
     revenue: l.l_extendedprice * (1 - l.l_discount)
@@ -51,12 +51,12 @@ let local_customer_supplier_orders =
 
 let result =
   from r in local_customer_supplier_orders
-  group by r.nation
+  group by r.nation into g
   select {
-    n_name: r.nation,
-    revenue: sum(r.revenue)
+    n_name: g.key,
+    revenue: sum(from x in g select x.revenue)
   }
-  order by revenue desc
+  sort by -revenue
 
 print result
 
