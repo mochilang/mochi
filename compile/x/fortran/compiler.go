@@ -1635,12 +1635,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.writeln("do i = 1, size(vsrc)")
 	c.indent++
 	c.writeln(fmt.Sprintf("%s = vsrc(i)", sanitizeName(q.Var)))
-	if q.Sort != nil {
-		c.writeln(fmt.Sprintf("sort_key = %s", sortStr))
-	}
 	if cond != "" {
 		c.writeln(fmt.Sprintf("if (%s) then", cond))
 		c.indent++
+	}
+	if q.Sort != nil {
+		c.writeln(fmt.Sprintf("sort_key = %s", sortStr))
 	}
 	c.writeln("n = n + 1")
 	c.writeln(fmt.Sprintf("tmp(n) = %s", sel))
