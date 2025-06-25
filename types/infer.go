@@ -21,11 +21,6 @@ func ExprType(e *parser.Expr, env *Env) Type {
 	return inferBinaryType(env, e.Binary)
 }
 
-// InferExprType is deprecated. Use ExprType instead.
-func InferExprType(e *parser.Expr, env *Env) Type {
-	return ExprType(e, env)
-}
-
 // ExprTypeHint infers the type of e using a hint for list literals.
 func ExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
 	if e == nil {
@@ -50,11 +45,6 @@ func ExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
 		}
 	}
 	return ExprType(e, env)
-}
-
-// InferExprTypeHint is deprecated. Use ExprTypeHint instead.
-func InferExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
-	return ExprTypeHint(e, hint, env)
 }
 
 func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
@@ -292,7 +282,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			return FloatType{}
 		case "reduce":
 			if len(p.Call.Args) == 3 {
-				return InferExprType(p.Call.Args[2], env)
+				return ExprType(p.Call.Args[2], env)
 			}
 			return AnyType{}
 		case "now":
@@ -416,11 +406,6 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 // IfExprType returns the static type of an if-expression.
 func IfExprType(ie *parser.IfExpr, env *Env) Type {
 	return inferIfExprType(ie, env)
-}
-
-// InferIfExprType is deprecated. Use IfExprType instead.
-func InferIfExprType(ie *parser.IfExpr, env *Env) Type {
-	return IfExprType(ie, env)
 }
 
 func inferIfExprType(ie *parser.IfExpr, env *Env) Type {

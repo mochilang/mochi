@@ -7,7 +7,7 @@ import (
 
 // exprType returns the static type of expression e using the compiler's env.
 func (c *Compiler) exprType(e *parser.Expr) types.Type {
-	return types.InferExprType(e, c.env)
+	return types.ExprType(e, c.env)
 }
 
 // unaryType infers the type of a unary expression.
@@ -16,7 +16,7 @@ func (c *Compiler) unaryType(u *parser.Unary) types.Type {
 		return types.AnyType{}
 	}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
-	return types.InferExprType(expr, c.env)
+	return types.ExprType(expr, c.env)
 }
 
 // postfixType infers the type of a postfix expression.
@@ -26,7 +26,7 @@ func (c *Compiler) postfixType(p *parser.PostfixExpr) types.Type {
 	}
 	unary := &parser.Unary{Value: p}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
-	return types.InferExprType(expr, c.env)
+	return types.ExprType(expr, c.env)
 }
 
 // primaryType infers the type of a primary expression.
@@ -37,5 +37,5 @@ func (c *Compiler) primaryType(p *parser.Primary) types.Type {
 	postfix := &parser.PostfixExpr{Target: p}
 	unary := &parser.Unary{Value: postfix}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
-	return types.InferExprType(expr, c.env)
+	return types.ExprType(expr, c.env)
 }
