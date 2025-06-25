@@ -29,13 +29,13 @@ The backend implements a minimal subset of Mochi:
 - Built-ins `print`, `len`, `str`, `count`, `avg`, `input`, `now`, `json`,
   `append`, `eval`, and `reduce`
 - List set operations using `union`, `union_all`, `except` and `intersect`
+- Basic dataset queries with `from`, `where`, `sort`, `skip`, `take` and `select`
 
 ### Unsupported features
 
 The following language constructs are not yet handled:
 
 - Agents and stream handlers
-- Dataset queries and data operations (`fetch`, `load`, `save`)
 - Generative AI helpers such as `generate`
 - Logic programming (`fact`, `rule`, `query`)
 - Foreign function interface declarations (`extern`)
