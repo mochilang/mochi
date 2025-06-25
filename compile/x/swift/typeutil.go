@@ -120,6 +120,17 @@ func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
 					var val types.Type = types.AnyType{}
 					for i, it := range p.Target.Map.Items {
 						kt := c.inferExprType(it.Key)
+						if id, ok := identName(it.Key); ok {
+							_, defined := c.locals[id]
+							if !defined && c.env != nil {
+								if _, err := c.env.GetVar(id); err == nil {
+									defined = true
+								}
+							}
+							if !defined {
+								kt = types.StringType{}
+							}
+						}
 						vt := c.inferExprType(it.Value)
 						if i == 0 {
 							key = kt
