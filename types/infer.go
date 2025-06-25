@@ -64,7 +64,7 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 	for _, op := range b.Right {
 		rt := inferPostfixType(env, op.Right)
 		switch op.Op {
-		case "+", "-", "*", "/", "%":
+		case "+", "-", "*", "/", "%", "union", "union_all", "except", "intersect":
 			if isInt64(t) {
 				if isInt64(rt) || isInt(rt) {
 					t = Int64Type{}
@@ -83,7 +83,7 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 					continue
 				}
 			}
-			if op.Op == "+" {
+			if op.Op == "+" || op.Op == "union" || op.Op == "union_all" || op.Op == "except" || op.Op == "intersect" {
 				if llist, ok := t.(ListType); ok {
 					if rlist, ok := rt.(ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
 						t = llist
@@ -269,7 +269,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		switch p.Call.Func {
 		case "len":
 			return IntType{}
-		case "str":
+		case "str", "input":
 			return StringType{}
 		case "count":
 			return IntType{}
@@ -277,6 +277,8 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			return FloatType{}
 		case "now":
 			return Int64Type{}
+		case "to_json":
+			return StringType{}
 		case "keys":
 			return ListType{Elem: AnyType{}}
 		default:
@@ -444,7 +446,7 @@ func inferIfExprType(ie *parser.IfExpr, env *Env) Type {
 // ResultType returns the resulting type of applying op to left and right.
 func ResultType(op string, left, right Type) Type {
 	switch op {
-	case "+", "-", "*", "/", "%":
+	case "+", "-", "*", "/", "%", "union", "union_all", "except", "intersect":
 		if _, ok := left.(IntType); ok {
 			if _, ok := right.(IntType); ok {
 				return IntType{}
@@ -455,11 +457,20 @@ func ResultType(op string, left, right Type) Type {
 				return FloatType{}
 			}
 		}
-		if op == "+" {
+		if op == "+" || op == "union" || op == "union_all" || op == "except" || op == "intersect" {
 			if _, ok := left.(StringType); ok {
 				if _, ok := right.(StringType); ok {
 					return StringType{}
 				}
+			}
+			if ll, ok := left.(ListType); ok {
+				if rl, ok := right.(ListType); ok {
+					if equalTypes(ll.Elem, rl.Elem) {
+						return ll
+					}
+					return ListType{Elem: AnyType{}}
+				}
+				return ListType{Elem: AnyType{}}
 			}
 		}
 		return AnyType{}

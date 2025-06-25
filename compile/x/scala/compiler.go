@@ -367,7 +367,7 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	if st.Type != nil {
 		t = c.resolveTypeRef(st.Type)
 	} else if st.Value != nil {
-		t = c.inferExprType(st.Value)
+		t = c.exprType(st.Value)
 	}
 
 	typ := scalaType(t)
@@ -405,7 +405,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	if st.Type != nil {
 		t = c.resolveTypeRef(st.Type)
 	} else if st.Value != nil {
-		t = c.inferExprType(st.Value)
+		t = c.exprType(st.Value)
 	}
 
 	typ := scalaType(t)
@@ -614,7 +614,7 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 			c.loopStack = c.loopStack[:len(c.loopStack)-1]
 			return err
 		}
-		if _, ok := c.inferExprType(st.Source).(types.Int64Type); ok {
+		if _, ok := c.exprType(st.Source).(types.Int64Type); ok {
 			elemType = types.Int64Type{}
 		} else {
 			elemType = types.IntType{}
@@ -639,7 +639,7 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 			c.loopStack = c.loopStack[:len(c.loopStack)-1]
 			return err
 		}
-		srcType := c.inferExprType(st.Source)
+		srcType := c.exprType(st.Source)
 		switch tt := srcType.(type) {
 		case types.ListType:
 			elemType = tt.Elem
@@ -1195,7 +1195,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	selType := c.inferExprType(q.Select)
+	selType := c.exprType(q.Select)
 	var cond, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
