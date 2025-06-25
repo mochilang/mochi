@@ -992,17 +992,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = orig
 
-	condParts := []string{}
-	for i := range joinOns {
-		if joinOns[i] != "" {
-			condParts = append(condParts, joinOns[i])
-		}
-	}
-	if whereExpr != "" {
-		condParts = append(condParts, whereExpr)
-	}
-	condStr := strings.Join(condParts, " && ")
-
 	if q.Group != nil {
 		keyExpr, err := c.compileExpr(q.Group.Expr)
 		if err != nil {
@@ -1027,9 +1016,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		for i := range joinSrc {
 			rows.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(q.Joins[i].Var), joinSrc[i]))
+			if joinOns[i] != "" {
+				rows.WriteString(fmt.Sprintf("if %s then ", joinOns[i]))
+			}
 		}
-		if condStr != "" {
-			rows.WriteString(fmt.Sprintf("if %s then ", condStr))
+		if whereExpr != "" {
+			rows.WriteString(fmt.Sprintf("if %s then ", whereExpr))
 		}
 		rows.WriteString(fmt.Sprintf("yield %s |]", tuple))
 		groupRows := rows.String()
@@ -1075,9 +1067,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	for i := range joinSrc {
 		buf.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(q.Joins[i].Var), joinSrc[i]))
+		if joinOns[i] != "" {
+			buf.WriteString(fmt.Sprintf("if %s then ", joinOns[i]))
+		}
 	}
-	if condStr != "" {
-		buf.WriteString(fmt.Sprintf("if %s then ", condStr))
+	if whereExpr != "" {
+		buf.WriteString(fmt.Sprintf("if %s then ", whereExpr))
 	}
 	if q.Sort != nil {
 		buf.WriteString(fmt.Sprintf("yield (%s, %s) |]", sortExpr, sel))
