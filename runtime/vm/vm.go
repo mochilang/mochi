@@ -2479,6 +2479,13 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpMax, A: dst, B: arg})
 			return dst
+		case "substring":
+			str := fc.compileExpr(p.Call.Args[0])
+			start := fc.compileExpr(p.Call.Args[1])
+			end := fc.compileExpr(p.Call.Args[2])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpSlice, A: dst, B: str, C: start, D: end})
+			return dst
 		case "eval":
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()

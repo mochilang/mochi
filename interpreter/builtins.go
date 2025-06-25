@@ -220,17 +220,72 @@ func builtinAvg(i *Interpreter, c *parser.CallExpr) (any, error) {
 	return sum / float64(len(list)), nil
 }
 
+func toInt(v any) (int, bool) {
+	switch n := v.(type) {
+	case int:
+		return n, true
+	case int64:
+		return int(n), true
+	case float64:
+		return int(n), true
+	default:
+		return 0, false
+	}
+}
+
+func builtinSubstring(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 3 {
+		return nil, fmt.Errorf("substring(s, start, end) takes exactly three arguments")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	str, ok := val.(string)
+	if !ok {
+		return nil, fmt.Errorf("substring() expects string, got %T", val)
+	}
+	startAny, err := i.evalExpr(c.Args[1])
+	if err != nil {
+		return nil, err
+	}
+	endAny, err := i.evalExpr(c.Args[2])
+	if err != nil {
+		return nil, err
+	}
+	start, ok := toInt(startAny)
+	if !ok {
+		return nil, fmt.Errorf("substring() expects int, got %T", startAny)
+	}
+	end, ok := toInt(endAny)
+	if !ok {
+		return nil, fmt.Errorf("substring() expects int, got %T", endAny)
+	}
+	runes := []rune(str)
+	if start < 0 {
+		start += len(runes)
+	}
+	if end < 0 {
+		end += len(runes)
+	}
+	if start < 0 || end > len(runes) || start > end {
+		return nil, fmt.Errorf("invalid substring range")
+	}
+	return string(runes[start:end]), nil
+}
+
 func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
 	return map[string]func(*Interpreter, *parser.CallExpr) (any, error){
-		"print":  builtinPrint,
-		"len":    builtinLen,
-		"append": builtinAppend,
-		"now":    builtinNow,
-		"json":   builtinJSON,
-		"str":    builtinStr,
-		"input":  builtinInput,
-		"count":  builtinCount,
-		"avg":    builtinAvg,
-		"eval":   builtinEval,
+		"print":     builtinPrint,
+		"len":       builtinLen,
+		"append":    builtinAppend,
+		"now":       builtinNow,
+		"json":      builtinJSON,
+		"str":       builtinStr,
+		"input":     builtinInput,
+		"count":     builtinCount,
+		"avg":       builtinAvg,
+		"substring": builtinSubstring,
+		"eval":      builtinEval,
 	}
 }

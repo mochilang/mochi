@@ -398,6 +398,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("substring", FuncType{
+		Params: []Type{StringType{}, IntType{}, IntType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("input", FuncType{
 		Params: []Type{},
 		Return: StringType{},
@@ -2018,24 +2023,25 @@ func isNumeric(t Type) bool {
 }
 
 var builtinArity = map[string]int{
-	"now":    0,
-	"input":  0,
-	"json":   1,
-	"str":    1,
-	"upper":  1,
-	"lower":  1,
-	"eval":   1,
-	"len":    1,
-	"count":  1,
-	"avg":    1,
-	"sum":    1,
-	"min":    1,
-	"max":    1,
-	"keys":   1,
-	"values": 1,
-	"reduce": 3,
-	"append": 2,
-	"push":   2,
+	"now":       0,
+	"input":     0,
+	"json":      1,
+	"str":       1,
+	"upper":     1,
+	"lower":     1,
+	"eval":      1,
+	"len":       1,
+	"count":     1,
+	"avg":       1,
+	"sum":       1,
+	"min":       1,
+	"max":       1,
+	"keys":      1,
+	"values":    1,
+	"reduce":    3,
+	"append":    2,
+	"push":      2,
+	"substring": 3,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
@@ -2174,6 +2180,23 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			if _, ok := a.(IntType); !ok {
 				if _, ok := a.(AnyType); !ok {
 					return errArgTypeMismatch(pos, i, IntType{}, a)
+				}
+			}
+		}
+		return nil
+	case "substring":
+		if len(args) != 3 {
+			return errArgCount(pos, name, 3, len(args))
+		}
+		if _, ok := args[0].(StringType); !ok {
+			if _, ok := args[0].(AnyType); !ok {
+				return fmt.Errorf("substring() expects string, got %v", args[0])
+			}
+		}
+		for i := 1; i < 3; i++ {
+			if _, ok := args[i].(IntType); !ok {
+				if _, ok := args[i].(AnyType); !ok {
+					return errArgTypeMismatch(pos, i, IntType{}, args[i])
 				}
 			}
 		}
