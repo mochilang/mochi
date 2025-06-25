@@ -322,19 +322,41 @@ const (
 		"  const header = opts?.header ?? true;\n" +
 		"  let delim = (opts?.delimiter ?? ',')[0];\n" +
 		"  const text = _readInput(path);\n" +
+		"  let items: any[];\n" +
 		"  switch (format) {\n" +
 		"    case 'jsonl':\n" +
-		"      return text.trim().split(/\\r?\\n/).filter(l=>l).map(l=>JSON.parse(l));\n" +
+		"      items = text.trim().split(/\\r?\\n/).filter(l=>l).map(l=>JSON.parse(l));\n" +
+		"      break;\n" +
 		"    case 'json':\n" +
-		"      const d = JSON.parse(text); return Array.isArray(d)?d:[d];\n" +
+		"      const d = JSON.parse(text); items = Array.isArray(d)?d:[d];\n" +
+		"      break;\n" +
 		"    case 'yaml':\n" +
-		"      const y = _yamlParse(text); return Array.isArray(y)?y:[y];\n" +
+		"      const y = _yamlParse(text); items = Array.isArray(y)?y:[y];\n" +
+		"      break;\n" +
 		"    case 'tsv':\n" +
 		"      delim = '\t';\n" +
-		"      return _parseCSV(text, header, delim);\n" +
+		"      items = _parseCSV(text, header, delim);\n" +
+		"      break;\n" +
 		"    default:\n" +
-		"      return _parseCSV(text, header, delim);\n" +
+		"      items = _parseCSV(text, header, delim);\n" +
 		"  }\n" +
+		"  if (opts?.filter) {\n" +
+		"    const f = _toAnyMap(opts.filter);\n" +
+		"    items = items.filter(r => {\n" +
+		"      for (const [k, v] of Object.entries(f)) {\n" +
+		"        if (r[k] !== v) return false;\n" +
+		"      }\n" +
+		"      return true;\n" +
+		"    });\n" +
+		"  }\n" +
+		"  if (opts?.page !== undefined && opts?.pageSize !== undefined) {\n" +
+		"    const start = opts.page * opts.pageSize;\n" +
+		"    items = start < items.length ? items.slice(start, start + opts.pageSize) : [];\n" +
+		"  } else {\n" +
+		"    if (opts?.skip !== undefined) { const n = opts.skip; items = n < items.length ? items.slice(n) : []; }\n" +
+		"    if (opts?.take !== undefined) { const n = opts.take; if (n < items.length) items = items.slice(0, n); }\n" +
+		"  }\n" +
+		"  return items;\n" +
 		"}\n" +
 		"function _save(rows: any[], path: string | null, opts: any): void {\n" +
 		"  const format = opts?.format ?? 'csv';\n" +
