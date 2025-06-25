@@ -1,4 +1,23 @@
 # 📦 CHANGELOG.md
+## [0.10.0] – 2025-06-25T20:05:45+07:00
+
+### Added
+
+* Dataset query sorting, joining, grouping and pagination across backends
+* Distinct queries in Dart with dataset load/save for C++
+* Predicate pushdown in the VM and data planner
+* Compilers push down where filters with skip/take optimization
+
+### Changed
+
+* Improved dataset casting in Kotlin
+
+### Fixed
+
+* PHP query environment capture
+* COBOL print indentation
+
+
 ## [0.9.5] – 2025-06-25T09:23:00+07:00
 
 ### Added
