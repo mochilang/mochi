@@ -1,0 +1,12 @@
+// dataset-pushdown.mochi
+
+type Person {
+  name: string
+  age: int
+}
+
+let names = from p in load as Person with { format: "jsonl" }
+            where p.age == 40
+            select p.name
+
+print(count(names))
