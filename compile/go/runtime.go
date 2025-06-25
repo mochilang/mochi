@@ -426,6 +426,14 @@ const (
 		"    for i, r := range items { res[i] = opts.selectFn(r...) }\n" +
 		"    return res\n" +
 		"}\n"
+
+	helperPaginate = "func _paginate[T any](src []T, skip, take int) []T {\n" +
+		"    if skip > 0 {\n" +
+		"        if skip < len(src) { src = src[skip:] } else { return []T{} }\n" +
+		"    }\n" +
+		"    if take >= 0 && take < len(src) { src = src[:take] }\n" +
+		"    return src\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -445,6 +453,7 @@ var helperMap = map[string]string{
 	"_convertMapAny": helperConvertMapAny,
 	"_equal":         helperEqual,
 	"_query":         helperQuery,
+	"_paginate":      helperPaginate,
 	"_load":          helperLoad,
 	"_save":          helperSave,
 	"_toMapSlice":    helperToMapSlice,

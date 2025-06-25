@@ -2305,20 +2305,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString("\t}\n")
 		}
 
-		if skipExpr != "" {
-			buf.WriteString(fmt.Sprintf("\tskip := %s\n", skipExpr))
-			buf.WriteString("\tif skip < len(items) {\n")
-			buf.WriteString("\t\titems = items[skip:]\n")
-			buf.WriteString("\t} else {\n")
-			buf.WriteString("\t\titems = []*data.Group{}\n")
-			buf.WriteString("\t}\n")
-		}
-
-		if takeExpr != "" {
-			buf.WriteString(fmt.Sprintf("\ttake := %s\n", takeExpr))
-			buf.WriteString("\tif take < len(items) {\n")
-			buf.WriteString("\t\titems = items[:take]\n")
-			buf.WriteString("\t}\n")
+		if skipExpr != "" || takeExpr != "" {
+			c.use("_paginate")
+			sk := skipExpr
+			if sk == "" {
+				sk = "-1"
+			}
+			tk := takeExpr
+			if tk == "" {
+				tk = "-1"
+			}
+			buf.WriteString(fmt.Sprintf("\titems = _paginate[*data.Group](items, %s, %s)\n", sk, tk))
 		}
 
 		buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
@@ -2578,20 +2575,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("\t}\n")
 	}
 
-	if skipExpr != "" {
-		buf.WriteString(fmt.Sprintf("\tskip := %s\n", skipExpr))
-		buf.WriteString("\tif skip < len(items) {\n")
-		buf.WriteString("\t\titems = items[skip:]\n")
-		buf.WriteString("\t} else {\n")
-		buf.WriteString(fmt.Sprintf("\t\titems = []%s{}\n", elemGo))
-		buf.WriteString("\t}\n")
-	}
-
-	if takeExpr != "" {
-		buf.WriteString(fmt.Sprintf("\ttake := %s\n", takeExpr))
-		buf.WriteString("\tif take < len(items) {\n")
-		buf.WriteString("\t\titems = items[:take]\n")
-		buf.WriteString("\t}\n")
+	if skipExpr != "" || takeExpr != "" {
+		c.use("_paginate")
+		sk := skipExpr
+		if sk == "" {
+			sk = "-1"
+		}
+		tk := takeExpr
+		if tk == "" {
+			tk = "-1"
+		}
+		buf.WriteString(fmt.Sprintf("\titems = _paginate[%s](items, %s, %s)\n", elemGo, sk, tk))
 	}
 
 	buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
