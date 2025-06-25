@@ -900,8 +900,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	child.SetVar(q.Var, elemType, true)
 
-	loops := []string{fmt.Sprintf("%s <- %s", sanitizeName(q.Var), src)}
+	loops := []string{}
 	conds := []string{}
+
+	pushDown := q.Where != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil
+	var whereExpr string
+	if pushDown {
+		c.env = child
+		w, err := c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		whereExpr = w
+		c.env = orig
+	}
+
+	if pushDown {
+		loops = append(loops, fmt.Sprintf("%s <- filter (\\%s -> %s) %s", sanitizeName(q.Var), sanitizeName(q.Var), whereExpr, src))
+	} else {
+		loops = append(loops, fmt.Sprintf("%s <- %s", sanitizeName(q.Var), src))
+	}
 
 	for _, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
@@ -937,7 +956,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	c.env = child
-	if q.Where != nil {
+	if q.Where != nil && !pushDown {
 		w, err := c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
