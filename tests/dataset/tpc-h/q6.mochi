@@ -24,9 +24,7 @@ let lineitem = [
     l_quantity: 5
   }
 ]
-
-let result =
-  from l in lineitem
+let result = from l in lineitem
   where
     l.l_shipdate >= "1994-01-01" and
     l.l_shipdate < "1995-01-01" and
