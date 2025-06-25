@@ -132,7 +132,7 @@ The current implementation focuses on a minimal subset of Mochi. It supports:
 - HTTP `fetch` for retrieving JSON
 - `generate` expressions for text, embeddings and structs
 - Anonymous `fun` expressions
-- Query filtering, cross, inner, left, right and outer joins, and pagination via `skip`/`take`
+- Dataset queries with `from`/`where`/`select`, sorting via `sort by`, cross, inner, left, right and outer joins, and pagination using `skip`/`take`
 - Indexing and slicing for lists, strings and maps
 - Simple `match` expressions on constants and struct literals with field access
 - `break` and `continue` statements

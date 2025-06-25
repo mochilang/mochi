@@ -1,0 +1,34 @@
+(ns main)
+
+(defn Person [name age]
+  {:__name "Person" :name name :age age}
+)
+
+
+(defn -main []
+  (def people [{:__name "Person" :name "Alice" :age 30} {:__name "Person" :name "Bob" :age 15} {:__name "Person" :name "Charlie" :age 65}])
+  (def names (vec (->> (for [p people :when (>= (:age p) 18)] (:name p)))))
+  (loop [_tmp0 (seq names)]
+    (when _tmp0
+      (let [n (clojure.core/first _tmp0)]
+        (let [r (try
+          (println n)
+          :next
+        (catch clojure.lang.ExceptionInfo e
+          (cond
+            (= (.getMessage e) "continue") :next
+            (= (.getMessage e) "break") :break
+            :else (throw e))
+          )
+        )]
+      (cond
+        (= r :break) nil
+        :else (recur (next _tmp0))
+      )
+    )
+  )
+)
+)
+)
+
+(-main)
