@@ -6,7 +6,7 @@
 
 main(_) ->
 	People = [#person{name="Alice", age=30}, #person{name="Bob", age=15}, #person{name="Charlie", age=65}],
-	Names = [P#person.name || P <- People, (P#person.age >= 18)],
+	Names = [P#person.name || P <- [P || P <- People, (P#person.age >= 18)]],
 	mochi_foreach(fun(N) ->
 		mochi_print([N])
 	end, Names).

@@ -178,6 +178,73 @@ func (c *Compiler) newName(name string) string {
 	return varName
 }
 
+func gatherIdentsExpr(e *parser.Expr, out map[string]bool) {
+	if e == nil {
+		return
+	}
+	gatherIdentsUnary(e.Binary.Left, out)
+	for _, op := range e.Binary.Right {
+		gatherIdentsPostfix(op.Right, out)
+	}
+}
+
+func gatherIdentsUnary(u *parser.Unary, out map[string]bool) {
+	if u == nil {
+		return
+	}
+	gatherIdentsPostfix(u.Value, out)
+}
+
+func gatherIdentsPostfix(p *parser.PostfixExpr, out map[string]bool) {
+	if p == nil {
+		return
+	}
+	gatherIdentsPrimary(p.Target, out)
+	for _, op := range p.Ops {
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				gatherIdentsExpr(a, out)
+			}
+		}
+		if op.Index != nil {
+			gatherIdentsExpr(op.Index.Start, out)
+			gatherIdentsExpr(op.Index.End, out)
+			gatherIdentsExpr(op.Index.Step, out)
+		}
+	}
+}
+
+func gatherIdentsPrimary(p *parser.Primary, out map[string]bool) {
+	if p == nil {
+		return
+	}
+	switch {
+	case p.Selector != nil:
+		out[p.Selector.Root] = true
+	case p.Call != nil:
+		for _, a := range p.Call.Args {
+			gatherIdentsExpr(a, out)
+		}
+	case p.Struct != nil:
+		for _, f := range p.Struct.Fields {
+			gatherIdentsExpr(f.Value, out)
+		}
+	case p.List != nil:
+		for _, e := range p.List.Elems {
+			gatherIdentsExpr(e, out)
+		}
+	case p.Map != nil:
+		for _, it := range p.Map.Items {
+			gatherIdentsExpr(it.Key, out)
+			gatherIdentsExpr(it.Value, out)
+		}
+	case p.Group != nil:
+		gatherIdentsExpr(p.Group, out)
+	case p.Query != nil:
+		// ignore nested query vars for simple check
+	}
+}
+
 // New returns a new Compiler.
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}, packages: map[string]bool{}, tmpCount: 0, tests: []testInfo{}}
@@ -1245,15 +1312,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	var cond, sortExpr, skipExpr, takeExpr string
-	condParts := []string{}
+	var whereExpr string
+	pushdown := false
 	if q.Where != nil {
 		w, err := c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		condParts = append(condParts, w)
+		whereExpr = w
+		ids := map[string]bool{}
+		gatherIdentsExpr(q.Where, ids)
+		pushdown = true
+		for id := range ids {
+			if id != q.Var {
+				pushdown = false
+				break
+			}
+		}
 	}
+	condParts := []string{}
 	joinOns := []string{}
 	joinSrc := []string{}
 	if len(q.Joins) > 0 {
@@ -1276,6 +1354,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				condParts = append(condParts, on)
 			}
 		}
+	}
+	if pushdown && whereExpr != "" {
+		src = fmt.Sprintf("[%s || %s <- %s, %s]", capitalize(q.Var), capitalize(q.Var), src, whereExpr)
+	} else if whereExpr != "" {
+		condParts = append(condParts, whereExpr)
 	}
 	if len(condParts) > 0 {
 		cond = strings.Join(condParts, ", ")
