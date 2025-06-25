@@ -874,11 +874,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var cond string
 		var skipExpr string
 		var takeExpr string
+		var outerCond string
+		fromConds := make([]string, len(q.Froms))
 		if q.Where != nil {
 			cond, err = c.compileExpr(q.Where)
 			if err != nil {
 				c.env = orig
 				return "", err
+			}
+			vars := exprVarSet(q.Where)
+			if len(vars) == 1 {
+				if vars[q.Var] {
+					outerCond = cond
+					cond = ""
+				} else {
+					for i, f := range q.Froms {
+						if vars[f.Var] {
+							fromConds[i] = cond
+							cond = ""
+							break
+						}
+					}
+				}
 			}
 		}
 		if q.Skip != nil {
@@ -915,10 +932,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("(function()" + use + " {\n")
 		b.WriteString("\t$res = [];\n")
 		b.WriteString(fmt.Sprintf("\tforeach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", src, sanitizeName(q.Var)))
+		if outerCond != "" {
+			b.WriteString("\t\tif (!(" + outerCond + ")) { continue; }\n")
+		}
 		indent := "\t\t"
 		for i, fs := range fromSrcs {
 			b.WriteString(fmt.Sprintf(indent+"foreach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", fs, sanitizeName(q.Froms[i].Var)))
 			indent += "\t"
+			if fromConds[i] != "" {
+				b.WriteString(indent + "if (!(" + fromConds[i] + ")) { continue; }\n")
+			}
 		}
 		if cond != "" {
 			b.WriteString(indent + "if (" + cond + ") {\n")
@@ -1062,7 +1085,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var b strings.Builder
 	b.WriteString("(function()" + use + " {\n")
-	b.WriteString("\t$_src = " + src + ";\n")
+	if whereExpr != "" {
+		vars := exprVarSet(q.Where)
+		if len(vars) == 1 && vars[q.Var] {
+			filterFn := fmt.Sprintf("function($%s)%s { return (%s); }", sanitizeName(q.Var), use, whereExpr)
+			b.WriteString(fmt.Sprintf("\t$_src = array_values(array_filter((is_string(%[1]s) ? str_split(%[1]s) : %[1]s), %s));\n", src, filterFn))
+			whereExpr = ""
+		} else {
+			b.WriteString("\t$_src = " + src + ";\n")
+		}
+	} else {
+		b.WriteString("\t$_src = " + src + ";\n")
+	}
 	b.WriteString("\treturn _query($_src, [\n")
 	for i, j := range joins {
 		b.WriteString("\t\t" + j)
@@ -1378,4 +1412,17 @@ func isCompositeParam(p *parser.Param) bool {
 		}
 	}
 	return false
+}
+
+func exprVarSet(e *parser.Expr) map[string]bool {
+	if e == nil {
+		return map[string]bool{}
+	}
+	vars := map[string]struct{}{}
+	scanExpr(e, vars)
+	res := make(map[string]bool, len(vars))
+	for v := range vars {
+		res[v] = true
+	}
+	return res
 }
