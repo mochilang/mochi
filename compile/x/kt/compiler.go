@@ -791,6 +791,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+		return c.compileAdvancedQueryExpr(q, src)
+	}
+
 	// simple cross join without sort/skip/take/group/join
 	if len(q.Froms) > 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil && len(q.Joins) == 0 {
 		orig := c.env
@@ -902,6 +906,192 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	buf.WriteString(fmt.Sprintf("                res = res.map { %s -> %s }\n", varName, sel))
 	buf.WriteString("                res\n")
 	buf.WriteString("        }")
+	return buf.String(), nil
+}
+
+func (c *Compiler) compileAdvancedQueryExpr(q *parser.QueryExpr, src string) (string, error) {
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+	c.env = child
+
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinSrcs[i] = js
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinOns[i] = on
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+	}
+
+	var whereExpr, sortExpr, skipExpr, takeExpr string
+	if q.Where != nil {
+		w, err := c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		whereExpr = w
+	}
+	if q.Sort != nil {
+		s, err := c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		sortExpr = s
+	}
+	if q.Skip != nil {
+		sk, err := c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		skipExpr = sk
+	}
+	if q.Take != nil {
+		tk, err := c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		takeExpr = tk
+	}
+
+	var keyExpr, groupSel string
+	if q.Group != nil {
+		k, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		keyExpr = k
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		gs, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		groupSel = gs
+	}
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	c.env = orig
+
+	paramNames := []string{sanitizeName(q.Var)}
+	specs := make([]string, 0, len(q.Froms)+len(q.Joins))
+	for i, fs := range fromSrcs {
+		specs = append(specs, fmt.Sprintf("_JoinSpec(items = %s)", fs))
+		paramNames = append(paramNames, sanitizeName(q.Froms[i].Var))
+	}
+	for i, js := range joinSrcs {
+		onParams := append(append([]string(nil), paramNames...), sanitizeName(q.Joins[i].Var))
+		unpack := ktUnpackArgs(onParams, "                        ")
+		onBody := unpack + joinOns[i]
+		spec := fmt.Sprintf("_JoinSpec(items = %s, on = { args ->\n%s\n                        })", js, onBody)
+		if joinSides[i] == "left" || joinSides[i] == "outer" {
+			spec += ", left = true"
+		}
+		if joinSides[i] == "right" || joinSides[i] == "outer" {
+			spec += ", right = true"
+		}
+		spec += ")"
+		specs = append(specs, spec)
+		paramNames = append(paramNames, sanitizeName(q.Joins[i].Var))
+	}
+
+	unpackAll := ktUnpackArgs(paramNames, "                        ")
+	selectBody := unpackAll + sel
+	selectFn := fmt.Sprintf("{ args ->\n%s\n                        }", selectBody)
+
+	var whereFn, sortFn string
+	if whereExpr != "" {
+		whereBody := ktUnpackArgs(paramNames, "                        ") + whereExpr
+		whereFn = fmt.Sprintf("{ args ->\n%s\n                        }", whereBody)
+	}
+	if sortExpr != "" {
+		sortBody := ktUnpackArgs(paramNames, "                        ") + sortExpr
+		sortFn = fmt.Sprintf("{ args ->\n%s\n                        }", sortBody)
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString("run {\n")
+	buf.WriteString("                val _src = " + src + "\n")
+	buf.WriteString("                val _rows = _query(_src, listOf(\n")
+	for i, sp := range specs {
+		buf.WriteString("                        " + sp)
+		if i != len(specs)-1 {
+			buf.WriteString(",")
+		}
+		buf.WriteString("\n")
+	}
+	buf.WriteString("                ), _QueryOpts(selectFn = " + selectFn)
+	if whereFn != "" {
+		buf.WriteString(", where = " + whereFn)
+	}
+	if sortFn != "" {
+		buf.WriteString(", sortKey = " + sortFn)
+	}
+	if skipExpr != "" {
+		buf.WriteString(", skip = " + skipExpr)
+	}
+	if takeExpr != "" {
+		buf.WriteString(", take = " + takeExpr)
+	}
+	buf.WriteString(") )\n")
+
+	if q.Group != nil {
+		buf.WriteString("                val _groups = _group_by(_rows) { args ->\n")
+		buf.WriteString(ktUnpackArgs(paramNames, "                        "))
+		buf.WriteString("                        " + keyExpr + "\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("                val _res = mutableListOf<Any?>()\n")
+		buf.WriteString(fmt.Sprintf("                for (%s in _groups) {\n", sanitizeName(q.Group.Name)))
+		buf.WriteString("                        _res.add(" + groupSel + ")\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("                _res\n")
+	} else {
+		buf.WriteString("                _rows\n")
+	}
+	buf.WriteString("        }")
+	c.use("_query")
+	if q.Group != nil {
+		c.use("_group_by")
+		c.use("_Group")
+	}
 	return buf.String(), nil
 }
 
@@ -1502,6 +1692,22 @@ func joinArgs(args []string) string {
 		res += ", " + args[i]
 	}
 	return res
+}
+
+func ktUnpackArgs(names []string, indent string) string {
+	if len(names) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	for i, n := range names {
+		b.WriteString(indent)
+		b.WriteString("val ")
+		b.WriteString(n)
+		b.WriteString(" = args[")
+		b.WriteString(fmt.Sprint(i))
+		b.WriteString("]\n")
+	}
+	return b.String()
 }
 
 func (c *Compiler) use(name string) {
