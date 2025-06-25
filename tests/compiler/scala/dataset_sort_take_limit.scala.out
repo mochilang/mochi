@@ -3,7 +3,7 @@ object Main {
 		val products: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map(name -> "Laptop", price -> 1500), scala.collection.mutable.Map(name -> "Smartphone", price -> 900), scala.collection.mutable.Map(name -> "Tablet", price -> 600), scala.collection.mutable.Map(name -> "Monitor", price -> 300), scala.collection.mutable.Map(name -> "Keyboard", price -> 100), scala.collection.mutable.Map(name -> "Mouse", price -> 50), scala.collection.mutable.Map(name -> "Headphones", price -> 200))
 		val expensive: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = (() => {
 	val src = products
-	val res = _query(src, Seq(
+	val plan = _QueryPlan(src, Seq(
 	), Map("select" -> (args: Seq[Any]) => {
 	val p = args(0)
 	p
@@ -11,7 +11,7 @@ object Main {
 	val p = args(0)
 	(-p.price)
 }, "skip" -> 1, "take" -> 3))
-	res
+	_evalPlan(plan)
 })()
 		println("--- Top products (excluding most expensive) ---")
 		val it1 = expensive.iterator
@@ -21,69 +21,16 @@ object Main {
 		}
 	}
 }
-def _query(src: Seq[Any], joins: Seq[Map[String,Any]], opts: Map[String,Any]): Seq[Any] = {
-        var items = src.map(v => Seq[Any](v))
-        for (j <- joins) {
-                val joined = scala.collection.mutable.ArrayBuffer[Seq[Any]]()
-                val jitems = j("items").asInstanceOf[Seq[Any]]
-                val on = j.get("on").map(_.asInstanceOf[Seq[Any] => Boolean])
-                val left = j.get("left").exists(_.asInstanceOf[Boolean])
-                val right = j.get("right").exists(_.asInstanceOf[Boolean])
-                if (left && right) {
-                        val matched = Array.fill(jitems.length)(false)
-                        for (leftRow <- items) {
-                                var m = false
-                                for ((rightRow, ri) <- jitems.zipWithIndex) {
-                                        var keep = true
-                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
-                                        if (keep) { m = true; matched(ri) = true; joined.append(leftRow :+ rightRow) }
-                                }
-                                if (!m) joined.append(leftRow :+ null)
-                        }
-                        for ((rightRow, ri) <- jitems.zipWithIndex) {
-                                if (!matched(ri)) {
-                                        val undef = if (items.nonEmpty) Seq.fill(items.head.length)(null) else Seq[Any]()
-                                        joined.append(undef :+ rightRow)
-                                }
-                        }
-                } else if (right) {
-                        for (rightRow <- jitems) {
-                                var m = false
-                                for (leftRow <- items) {
-                                        var keep = true
-                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
-                                        if (keep) { m = true; joined.append(leftRow :+ rightRow) }
-                                }
-                                if (!m) {
-                                        val undef = if (items.nonEmpty) Seq.fill(items.head.length)(null) else Seq[Any]()
-                                        joined.append(undef :+ rightRow)
-                                }
-                        }
-                } else {
-                        for (leftRow <- items) {
-                                var m = false
-                                for (rightRow <- jitems) {
-                                        var keep = true
-                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
-                                        if (keep) { m = true; joined.append(leftRow :+ rightRow) }
-                                }
-                                if (left && !m) joined.append(leftRow :+ null)
-                        }
-                }
-                items = joined.toSeq
+case class _JoinSpec(items: Seq[Any], on: Option[Seq[Any] => Boolean] = None, left: Boolean = false, right: Boolean = false)
+case class _QueryPlan(src: Seq[Any], joins: Seq[_JoinSpec], opts: Map[String,Any])
+def _evalPlan(plan: _QueryPlan): Seq[Any] = {
+        val jmaps = plan.joins.map { j =>
+                var m = Map[String,Any]("items" -> j.items)
+                j.on.foreach(fn => m += ("on" -> fn))
+                if (j.left) m += ("left" -> true)
+                if (j.right) m += ("right" -> true)
+                m
         }
-        var it = items
-        opts.get("where").foreach { f =>
-                val fn = f.asInstanceOf[Seq[Any] => Boolean]
-                it = it.filter(r => fn(r))
-        }
-        opts.get("sortKey").foreach { f =>
-                val fn = f.asInstanceOf[Seq[Any] => Any]
-                it = it.sortBy(r => fn(r))(_anyOrdering)
-        }
-        opts.get("skip").foreach { n => it = it.drop(n.asInstanceOf[Int]) }
-        opts.get("take").foreach { n => it = it.take(n.asInstanceOf[Int]) }
-        val sel = opts("select").asInstanceOf[Seq[Any] => Any]
-        it.map(r => sel(r))
+        _query(plan.src, jmaps, plan.opts)
 }
 

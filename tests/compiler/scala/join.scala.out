@@ -10,18 +10,18 @@ object Main {
 		val orders: scala.collection.mutable.ArrayBuffer[Any] = scala.collection.mutable.ArrayBuffer(Order(id = 100, customerId = 1, total = 250), Order(id = 101, customerId = 2, total = 125), Order(id = 102, customerId = 1, total = 300), Order(id = 103, customerId = 4, total = 80))
 		val result: scala.collection.mutable.ArrayBuffer[Any] = (() => {
 	val src = orders
-	val res = _query(src, Seq(
-		Map("items" -> customers, "on" -> (args: Seq[Any]) => {
+	val plan = _QueryPlan(src, Seq(
+		_JoinSpec(customers, Some((args: Seq[Any]) => {
 	val o = args(0)
 	val c = args(1)
 	(o.customerId == c.id)
-})
+}), false, false)
 	), Map("select" -> (args: Seq[Any]) => {
 	val o = args(0)
 	val c = args(1)
 	PairInfo(orderId = o.id, customerName = c.name, total = o.total)
 }))
-	res
+	_evalPlan(plan)
 })()
 		println("--- Orders with customer info ---")
 		val it1 = result.iterator
@@ -31,69 +31,16 @@ object Main {
 		}
 	}
 }
-def _query(src: Seq[Any], joins: Seq[Map[String,Any]], opts: Map[String,Any]): Seq[Any] = {
-        var items = src.map(v => Seq[Any](v))
-        for (j <- joins) {
-                val joined = scala.collection.mutable.ArrayBuffer[Seq[Any]]()
-                val jitems = j("items").asInstanceOf[Seq[Any]]
-                val on = j.get("on").map(_.asInstanceOf[Seq[Any] => Boolean])
-                val left = j.get("left").exists(_.asInstanceOf[Boolean])
-                val right = j.get("right").exists(_.asInstanceOf[Boolean])
-                if (left && right) {
-                        val matched = Array.fill(jitems.length)(false)
-                        for (leftRow <- items) {
-                                var m = false
-                                for ((rightRow, ri) <- jitems.zipWithIndex) {
-                                        var keep = true
-                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
-                                        if (keep) { m = true; matched(ri) = true; joined.append(leftRow :+ rightRow) }
-                                }
-                                if (!m) joined.append(leftRow :+ null)
-                        }
-                        for ((rightRow, ri) <- jitems.zipWithIndex) {
-                                if (!matched(ri)) {
-                                        val undef = if (items.nonEmpty) Seq.fill(items.head.length)(null) else Seq[Any]()
-                                        joined.append(undef :+ rightRow)
-                                }
-                        }
-                } else if (right) {
-                        for (rightRow <- jitems) {
-                                var m = false
-                                for (leftRow <- items) {
-                                        var keep = true
-                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
-                                        if (keep) { m = true; joined.append(leftRow :+ rightRow) }
-                                }
-                                if (!m) {
-                                        val undef = if (items.nonEmpty) Seq.fill(items.head.length)(null) else Seq[Any]()
-                                        joined.append(undef :+ rightRow)
-                                }
-                        }
-                } else {
-                        for (leftRow <- items) {
-                                var m = false
-                                for (rightRow <- jitems) {
-                                        var keep = true
-                                        if (on.isDefined) keep = on.get(leftRow :+ rightRow)
-                                        if (keep) { m = true; joined.append(leftRow :+ rightRow) }
-                                }
-                                if (left && !m) joined.append(leftRow :+ null)
-                        }
-                }
-                items = joined.toSeq
+case class _JoinSpec(items: Seq[Any], on: Option[Seq[Any] => Boolean] = None, left: Boolean = false, right: Boolean = false)
+case class _QueryPlan(src: Seq[Any], joins: Seq[_JoinSpec], opts: Map[String,Any])
+def _evalPlan(plan: _QueryPlan): Seq[Any] = {
+        val jmaps = plan.joins.map { j =>
+                var m = Map[String,Any]("items" -> j.items)
+                j.on.foreach(fn => m += ("on" -> fn))
+                if (j.left) m += ("left" -> true)
+                if (j.right) m += ("right" -> true)
+                m
         }
-        var it = items
-        opts.get("where").foreach { f =>
-                val fn = f.asInstanceOf[Seq[Any] => Boolean]
-                it = it.filter(r => fn(r))
-        }
-        opts.get("sortKey").foreach { f =>
-                val fn = f.asInstanceOf[Seq[Any] => Any]
-                it = it.sortBy(r => fn(r))(_anyOrdering)
-        }
-        opts.get("skip").foreach { n => it = it.drop(n.asInstanceOf[Int]) }
-        opts.get("take").foreach { n => it = it.take(n.asInstanceOf[Int]) }
-        val sel = opts("select").asInstanceOf[Seq[Any] => Any]
-        it.map(r => sel(r))
+        _query(plan.src, jmaps, plan.opts)
 }
 

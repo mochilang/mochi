@@ -1281,19 +1281,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	params := append([]string(nil), varNames...)
 	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
 	for _, fs := range fromSrcs {
-		joins = append(joins, fmt.Sprintf("Map(\"items\" -> %s)", fs))
+		joins = append(joins, fmt.Sprintf("_JoinSpec(%s, None, false, false)", fs))
 	}
 	for i, js := range joinSrcs {
 		onParams := append(params, sanitizeName(q.Joins[i].Var))
 		onFn := seqLambda(onParams, joinOns[i])
-		spec := fmt.Sprintf("Map(\"items\" -> %s, \"on\" -> %s", js, onFn)
+		l := "false"
+		r := "false"
 		if joinSides[i] == "left" || joinSides[i] == "outer" {
-			spec += ", \"left\" -> true"
+			l = "true"
 		}
 		if joinSides[i] == "right" || joinSides[i] == "outer" {
-			spec += ", \"right\" -> true"
+			r = "true"
 		}
-		spec += ")"
+		spec := fmt.Sprintf("_JoinSpec(%s, Some(%s), %s, %s)", js, onFn, l, r)
 		joins = append(joins, spec)
 		params = append(params, sanitizeName(q.Joins[i].Var))
 	}
@@ -1307,11 +1308,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		sortFn = seqLambda(params, sortExpr)
 	}
 
-	c.use("_query")
+	c.use("_query_plan")
 	var b strings.Builder
 	b.WriteString("(() => {\n")
 	b.WriteString(fmt.Sprintf("\tval src = %s\n", src))
-	b.WriteString("\tval res = _query(src, Seq(\n")
+	b.WriteString("\tval plan = _QueryPlan(src, Seq(\n")
 	for i, j := range joins {
 		b.WriteString("\t\t" + j)
 		if i != len(joins)-1 {
@@ -1333,7 +1334,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(", \"take\" -> " + takeExpr)
 	}
 	b.WriteString("))\n")
-	b.WriteString("\tres\n")
+	b.WriteString("\t_evalPlan(plan)\n")
 	b.WriteString("})()")
 	return b.String(), nil
 }

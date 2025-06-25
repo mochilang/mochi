@@ -184,6 +184,18 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
         val sel = opts("select").asInstanceOf[Seq[Any] => Any]
         it.map(r => sel(r))
 }`
+	helperQueryPlan = `case class _JoinSpec(items: Seq[Any], on: Option[Seq[Any] => Boolean] = None, left: Boolean = false, right: Boolean = false)
+case class _QueryPlan(src: Seq[Any], joins: Seq[_JoinSpec], opts: Map[String,Any])
+def _evalPlan(plan: _QueryPlan): Seq[Any] = {
+        val jmaps = plan.joins.map { j =>
+                var m = Map[String,Any]("items" -> j.items)
+                j.on.foreach(fn => m += ("on" -> fn))
+                if (j.left) m += ("left" -> true)
+                if (j.right) m += ("right" -> true)
+                m
+        }
+        _query(plan.src, jmaps, plan.opts)
+}`
 	helperToJSON = `def _to_json(v: Any): String = v match {
         case null => "null"
         case s: String => "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
@@ -240,6 +252,7 @@ var helperMap = map[string]string{
 	"_Group":       helperGroup,
 	"_group_by":    helperGroupBy,
 	"_query":       helperQuery,
+	"_query_plan":  helperQueryPlan,
 	"_reduce":      helperReduce,
 	"_pyAttr":      helperPyAttr,
 	"_extern":      helperExtern,
