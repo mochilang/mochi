@@ -82,7 +82,7 @@ if name == "print" {
 ```
 【F:compile/clj/compiler.go†L286-L291】
 
-Test blocks are compiled to functions named `test_<name>` and executed after the main program. Inside these functions `expect` statements become simple assertions via Clojure's `assert` form.
+Test blocks are compiled to functions named `test_<name>` and executed after the main program. Inside these functions `expect` statements become simple assertions using `(assert expr "expect failed")`.
 
 ## Tooling
 
