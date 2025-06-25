@@ -117,9 +117,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = prevBuf
 	c.indent = prevIndent
 
-	// Collect global vars.
+	// Collect global vars and compiler-generated temporaries.
 	vars := map[string]string{}
 	collectVars(prog.Statements, c.env, vars)
+	for n, t := range c.tempVars {
+		if t == "" {
+			t = "integer"
+		}
+		vars[n] = t
+	}
 	if len(vars) > 0 {
 		c.writeln("var")
 		c.indent++
@@ -139,20 +145,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("begin")
 	c.indent++
-	if len(c.tempVars) > 0 {
-		names := make([]string, 0, len(c.tempVars))
-		for n := range c.tempVars {
-			names = append(names, n)
-		}
-		sort.Strings(names)
-		for _, n := range names {
-			t := c.tempVars[n]
-			if t == "" {
-				t = "integer"
-			}
-			c.writeln(fmt.Sprintf("var %s: %s;", sanitizeName(n), t))
-		}
-	}
 	c.buf.Write(body.Bytes())
 	c.indent--
 	c.writeln("end.")
@@ -560,18 +552,21 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	}
 
 	c.writeln(fmt.Sprintf("function %s(%s): %s;", name, strings.Join(params, "; "), retType))
-	c.writeln("begin")
-	c.indent++
 	if len(vars) > 0 {
+		c.writeln("var")
+		c.indent++
 		names := make([]string, 0, len(vars))
 		for n := range vars {
 			names = append(names, n)
 		}
 		sort.Strings(names)
 		for _, n := range names {
-			c.writeln(fmt.Sprintf("var %s: %s;", sanitizeName(n), vars[n]))
+			c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(n), vars[n]))
 		}
+		c.indent--
 	}
+	c.writeln("begin")
+	c.indent++
 	c.buf.Write(body.Bytes())
 	c.indent--
 	c.writeln("end;")
@@ -758,6 +753,7 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				}
 			}
 			vars[s.Let.Name] = typ
+			collectQueryVars(s.Let.Value, env, vars)
 		case s.Var != nil:
 			typ := "integer"
 			if env != nil {
@@ -783,6 +779,7 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = "boolean"
 			}
 			vars[s.Var.Name] = typ
+			collectQueryVars(s.Var.Value, env, vars)
 		case s.For != nil:
 			if s.For.Name != "_" {
 				typ := "integer"
@@ -815,6 +812,95 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 		case s.Fun != nil:
 			// ignore nested functions
 		}
+	}
+}
+
+func collectQueryVars(e *parser.Expr, env *types.Env, vars map[string]string) {
+	if e == nil || e.Binary == nil {
+		return
+	}
+	var scanUnary func(u *parser.Unary)
+	var scanPrimary func(p *parser.Primary)
+	var scanPostfix func(p *parser.PostfixExpr)
+
+	scanUnary = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		scanPostfix(u.Value)
+	}
+	scanPostfix = func(p *parser.PostfixExpr) {
+		if p == nil {
+			return
+		}
+		scanPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Index != nil {
+				collectQueryVars(op.Index.Start, env, vars)
+				collectQueryVars(op.Index.End, env, vars)
+			} else if op.Call != nil {
+				for _, a := range op.Call.Args {
+					collectQueryVars(a, env, vars)
+				}
+			}
+		}
+	}
+	scanPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		switch {
+		case p.Query != nil:
+			qt := types.TypeOfExpr(p.Query.Source, env)
+			elem := "integer"
+			if lt, ok := qt.(types.ListType); ok {
+				elem = typeString(lt.Elem)
+			}
+			vars[p.Query.Var] = elem
+			for _, f := range p.Query.Froms {
+				ft := types.TypeOfExpr(f.Src, env)
+				fe := "integer"
+				if lt, ok := ft.(types.ListType); ok {
+					fe = typeString(lt.Elem)
+				}
+				vars[f.Var] = fe
+			}
+			collectQueryVars(p.Query.Source, env, vars)
+			for _, f := range p.Query.Froms {
+				collectQueryVars(f.Src, env, vars)
+			}
+			collectQueryVars(p.Query.Select, env, vars)
+			collectQueryVars(p.Query.Where, env, vars)
+			collectQueryVars(p.Query.Skip, env, vars)
+			collectQueryVars(p.Query.Take, env, vars)
+		case p.FunExpr != nil:
+			for _, st := range p.FunExpr.BlockBody {
+				collectVars([]*parser.Statement{st}, env, vars)
+			}
+			collectQueryVars(p.FunExpr.ExprBody, env, vars)
+		case p.Group != nil:
+			collectQueryVars(p.Group, env, vars)
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				collectQueryVars(el, env, vars)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				collectQueryVars(it.Key, env, vars)
+				collectQueryVars(it.Value, env, vars)
+			}
+		case p.Selector != nil:
+			// no-op
+		case p.Call != nil:
+			for _, a := range p.Call.Args {
+				collectQueryVars(a, env, vars)
+			}
+		}
+	}
+
+	scanUnary(e.Binary.Left)
+	for _, part := range e.Binary.Right {
+		scanPostfix(part.Right)
 	}
 }
 
@@ -1203,7 +1289,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return tmp, nil
 	case p.Query != nil:
-		return "", fmt.Errorf("dataset queries not supported")
+		return c.compileQueryExpr(p.Query)
 	case p.LogicQuery != nil:
 		return "", fmt.Errorf("logic queries not supported")
 	case p.Generate != nil:
@@ -1222,6 +1308,116 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "", fmt.Errorf("match expressions not supported")
 	}
 	return "", fmt.Errorf("unsupported expression")
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+
+	orig := c.env
+	child := types.NewEnv(c.env)
+	srcType := types.TypeOfExpr(q.Source, c.env)
+	var elem types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elem = lt.Elem
+	}
+	child.SetVar(q.Var, elem, true)
+	for _, f := range q.Froms {
+		ft := types.TypeOfExpr(f.Src, child)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
+	}
+	c.env = child
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var condStr, skipStr, takeStr string
+	if q.Where != nil {
+		condStr, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipStr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeStr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	elemType := typeString(types.TypeOfExpr(q.Select, child))
+	if elemType == "" {
+		elemType = "integer"
+	}
+	c.env = orig
+
+	tmp := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
+	c.writeln(fmt.Sprintf("SetLength(%s, 0);", tmp))
+	c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Var), src))
+	c.writeln("begin")
+	c.indent++
+	for i, fs := range fromSrcs {
+		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Froms[i].Var), fs))
+		c.writeln("begin")
+		c.indent++
+	}
+	if condStr != "" {
+		c.writeln("if " + condStr + " then")
+		c.writeln("begin")
+		c.indent++
+	}
+	c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmp, tmp, sel))
+	if condStr != "" {
+		c.indent--
+		c.writeln("end;")
+	}
+	for range fromSrcs {
+		c.indent--
+		c.writeln("end;")
+	}
+	c.indent--
+	c.writeln("end;")
+
+	result := tmp
+	if skipStr != "" {
+		c.use("_sliceList")
+		out := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
+		c.writeln(fmt.Sprintf("%s := specialize _sliceList<%s>(%s, %s, Length(%s));", out, elemType, result, skipStr, result))
+		result = out
+	}
+	if takeStr != "" {
+		c.use("_sliceList")
+		out := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
+		c.writeln(fmt.Sprintf("%s := specialize _sliceList<%s>(%s, 0, %s);", out, elemType, result, takeStr))
+		result = out
+	}
+	return result, nil
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
