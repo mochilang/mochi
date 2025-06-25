@@ -49,7 +49,10 @@ var helperGroupBy = "def _group_by(src, keyfn):\n" +
 	"    groups = {}\n" +
 	"    order = []\n" +
 	"    for it in src:\n" +
-	"        key = keyfn(it)\n" +
+	"        if isinstance(it, (list, tuple)):\n" +
+	"            key = keyfn(*it)\n" +
+	"        else:\n" +
+	"            key = keyfn(it)\n" +
 	"        ks = str(key)\n" +
 	"        g = groups.get(ks)\n" +
 	"        if not g:\n" +
