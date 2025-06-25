@@ -379,7 +379,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		return err
 	}
 	loopSrc := src
-	if isMapExpr(stmt.Source, c.env) {
+	if isMap(stmt.Source, c.env) {
 		loopSrc += ".keys"
 	}
 	c.writeln(fmt.Sprintf("for (%s in %s) {", name, loopSrc))
@@ -1265,7 +1265,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if expr == "print" {
 				expr = fmt.Sprintf("println(%s)", joinArgs(args))
 			} else if expr == "len" {
-				if len(op.Call.Args) == 1 && isStringExpr(op.Call.Args[0], c.env) {
+				if len(op.Call.Args) == 1 && isString(op.Call.Args[0], c.env) {
 					expr = fmt.Sprintf("%s.length", args[0])
 				} else {
 					expr = fmt.Sprintf("%s.size", args[0])
@@ -1386,7 +1386,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "println(" + joinArgs(args) + ")", nil
 		}
 		if name == "len" && len(args) == 1 {
-			if isStringExpr(p.Call.Args[0], c.env) {
+			if isString(p.Call.Args[0], c.env) {
 				return args[0] + ".length", nil
 			}
 			return args[0] + ".size", nil
@@ -1428,39 +1428,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
-	if t == nil {
-		return types.AnyType{}
-	}
-	if t.Simple != nil {
-		switch *t.Simple {
-		case "int":
-			return types.IntType{}
-		case "float":
-			return types.FloatType{}
-		case "bool":
-			return types.BoolType{}
-		case "string":
-			return types.StringType{}
-		default:
-			if c.env != nil {
-				if st, ok := c.env.GetStruct(*t.Simple); ok {
-					return st
-				}
-				if ut, ok := c.env.GetUnion(*t.Simple); ok {
-					return ut
-				}
-			}
-		}
-	}
-	if t.Generic != nil {
-		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
-			return types.ListType{Elem: c.resolveTypeRef(t.Generic.Args[0])}
-		}
-		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
-			return types.MapType{Key: c.resolveTypeRef(t.Generic.Args[0]), Value: c.resolveTypeRef(t.Generic.Args[1])}
-		}
-	}
-	return types.AnyType{}
+	return types.ResolveTypeRef(t, c.env)
 }
 
 func ktType(t types.Type) string {
