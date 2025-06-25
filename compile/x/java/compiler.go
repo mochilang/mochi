@@ -1157,7 +1157,7 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("if (ak instanceof String && bk instanceof String) return ((String)ak).compareTo((String)bk);")
 		c.writeln("return ak.toString().compareTo(bk.toString());")
 		c.indent--
-		c.writeln(");")
+		c.writeln("});")
 		c.writeln("for (int i=0;i<pairs.size();i++) items.set(i, pairs.get(i).item);")
 		c.indent--
 		c.writeln("}")
