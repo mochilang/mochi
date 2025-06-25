@@ -428,9 +428,14 @@ const (
 		"end\n"
 
 	helperQuery = "function __query(src, joins, opts)\n" +
+		"    local whereFn = opts.where\n" +
 		"    local items = {}\n" +
-		"    for _, v in ipairs(src) do items[#items+1] = {v} end\n" +
-		"    for _, j in ipairs(joins) do\n" +
+		"    if #joins == 0 and whereFn then\n" +
+		"        for _, v in ipairs(src) do if whereFn(v) then items[#items+1] = {v} end end\n" +
+		"    else\n" +
+		"        for _, v in ipairs(src) do items[#items+1] = {v} end\n" +
+		"    end\n" +
+		"    for ji, j in ipairs(joins) do\n" +
 		"        local joined = {}\n" +
 		"        local jitems = j.items or {}\n" +
 		"        if j.right and j.left then\n" +
@@ -448,13 +453,19 @@ const (
 		"                        m = true; matched[ri] = true\n" +
 		"                        local row = {table.unpack(left)}\n" +
 		"                        row[#row+1] = right\n" +
-		"                        joined[#joined+1] = row\n" +
+		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                        else\n" +
+		"                            joined[#joined+1] = row\n" +
+		"                        end\n" +
 		"                    end\n" +
 		"                end\n" +
 		"                if not m then\n" +
 		"                    local row = {table.unpack(left)}\n" +
 		"                    row[#row+1] = nil\n" +
-		"                    joined[#joined+1] = row\n" +
+		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                    else\n" +
+		"                        joined[#joined+1] = row\n" +
+		"                    end\n" +
 		"                end\n" +
 		"            end\n" +
 		"            for ri, right in ipairs(jitems) do\n" +
@@ -463,7 +474,10 @@ const (
 		"                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end\n" +
 		"                    local row = {table.unpack(undef)}\n" +
 		"                    row[#row+1] = right\n" +
-		"                    joined[#joined+1] = row\n" +
+		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                    else\n" +
+		"                        joined[#joined+1] = row\n" +
+		"                    end\n" +
 		"                end\n" +
 		"            end\n" +
 		"        elseif j.right then\n" +
@@ -480,7 +494,10 @@ const (
 		"                        m = true\n" +
 		"                        local row = {table.unpack(left)}\n" +
 		"                        row[#row+1] = right\n" +
-		"                        joined[#joined+1] = row\n" +
+		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                        else\n" +
+		"                            joined[#joined+1] = row\n" +
+		"                        end\n" +
 		"                    end\n" +
 		"                end\n" +
 		"                if not m then\n" +
@@ -488,7 +505,10 @@ const (
 		"                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end\n" +
 		"                    local row = {table.unpack(undef)}\n" +
 		"                    row[#row+1] = right\n" +
-		"                    joined[#joined+1] = row\n" +
+		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                    else\n" +
+		"                        joined[#joined+1] = row\n" +
+		"                    end\n" +
 		"                end\n" +
 		"            end\n" +
 		"        else\n" +
@@ -505,22 +525,23 @@ const (
 		"                        m = true\n" +
 		"                        local row = {table.unpack(left)}\n" +
 		"                        row[#row+1] = right\n" +
-		"                        joined[#joined+1] = row\n" +
+		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                        else\n" +
+		"                            joined[#joined+1] = row\n" +
+		"                        end\n" +
 		"                    end\n" +
 		"                end\n" +
 		"                if j.left and not m then\n" +
 		"                    local row = {table.unpack(left)}\n" +
 		"                    row[#row+1] = nil\n" +
-		"                    joined[#joined+1] = row\n" +
+		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                    else\n" +
+		"                        joined[#joined+1] = row\n" +
+		"                    end\n" +
 		"                end\n" +
 		"            end\n" +
 		"        end\n" +
 		"        items = joined\n" +
-		"    end\n" +
-		"    if opts.where then\n" +
-		"        local filtered = {}\n" +
-		"        for _, r in ipairs(items) do if opts.where(table.unpack(r)) then filtered[#filtered+1] = r end end\n" +
-		"        items = filtered\n" +
 		"    end\n" +
 		"    if opts.sortKey then\n" +
 		"        local pairs = {}\n" +
