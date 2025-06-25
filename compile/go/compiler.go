@@ -33,11 +33,11 @@ type Compiler struct {
 
 	tempVarCount int
 
-        returnType types.Type
+	returnType types.Type
 
-        varUsage map[any]bool
+	varUsage map[any]bool
 
-        receiver string
+	receiver string
 }
 
 // New creates a new Go compiler instance.
@@ -409,14 +409,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
-        lhs := sanitizeName(s.Name)
-        if c.receiver != "" && len(s.Index) == 0 {
-                if st, ok := c.env.GetStruct(c.receiver); ok {
-                        if _, ok := st.Fields[s.Name]; ok {
-                                lhs = fmt.Sprintf("s.%s", exportName(lhs))
-                        }
-                }
-        }
+	lhs := sanitizeName(s.Name)
+	if c.receiver != "" && len(s.Index) == 0 {
+		if st, ok := c.env.GetStruct(c.receiver); ok {
+			if _, ok := st.Fields[s.Name]; ok {
+				lhs = fmt.Sprintf("s.%s", exportName(lhs))
+			}
+		}
+	}
 	var t types.Type
 	if c.env != nil {
 		if v, err := c.env.GetVar(s.Name); err == nil {
@@ -758,56 +758,56 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 }
 
 func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
-        st, ok := c.env.GetStruct(structName)
-        if !ok {
-                return fmt.Errorf("unknown struct: %s", structName)
-        }
-        ft := st.Methods[fun.Name].Type
-        name := exportName(sanitizeName(fun.Name))
-        recv := sanitizeName(structName)
-        c.writeIndent()
-        c.buf.WriteString(fmt.Sprintf("func (s *%s) %s(", recv, name))
-        for i, p := range fun.Params {
-                if i > 0 {
-                        c.buf.WriteString(", ")
-                }
-                paramType := "any"
-                if i < len(ft.Params) {
-                        paramType = goType(ft.Params[i])
-                }
-                c.buf.WriteString(sanitizeName(p.Name) + " " + paramType)
-        }
-        retType := goType(ft.Return)
-        if retType == "" {
-                c.buf.WriteString(") {\n")
-        } else {
-                c.buf.WriteString(") " + retType + " {\n")
-        }
-        child := types.NewEnv(c.env)
-        for fname, t := range st.Fields {
-                child.SetVar(fname, t, true)
-        }
-        for i, p := range fun.Params {
-                if i < len(ft.Params) {
-                        child.SetVar(p.Name, ft.Params[i], true)
-                }
-        }
-        orig := c.env
-        origRecv := c.receiver
-        c.env = child
-        c.receiver = structName
-        c.indent++
-        if err := c.compileStmtList(fun.Body); err != nil {
-                c.env = orig
-                c.receiver = origRecv
-                return err
-        }
-        c.indent--
-        c.env = orig
-        c.receiver = origRecv
-        c.writeIndent()
-        c.buf.WriteString("}\n\n")
-        return nil
+	st, ok := c.env.GetStruct(structName)
+	if !ok {
+		return fmt.Errorf("unknown struct: %s", structName)
+	}
+	ft := st.Methods[fun.Name].Type
+	name := exportName(sanitizeName(fun.Name))
+	recv := sanitizeName(structName)
+	c.writeIndent()
+	c.buf.WriteString(fmt.Sprintf("func (s *%s) %s(", recv, name))
+	for i, p := range fun.Params {
+		if i > 0 {
+			c.buf.WriteString(", ")
+		}
+		paramType := "any"
+		if i < len(ft.Params) {
+			paramType = goType(ft.Params[i])
+		}
+		c.buf.WriteString(sanitizeName(p.Name) + " " + paramType)
+	}
+	retType := goType(ft.Return)
+	if retType == "" {
+		c.buf.WriteString(") {\n")
+	} else {
+		c.buf.WriteString(") " + retType + " {\n")
+	}
+	child := types.NewEnv(c.env)
+	for fname, t := range st.Fields {
+		child.SetVar(fname, t, true)
+	}
+	for i, p := range fun.Params {
+		if i < len(ft.Params) {
+			child.SetVar(p.Name, ft.Params[i], true)
+		}
+	}
+	orig := c.env
+	origRecv := c.receiver
+	c.env = child
+	c.receiver = structName
+	c.indent++
+	if err := c.compileStmtList(fun.Body); err != nil {
+		c.env = orig
+		c.receiver = origRecv
+		return err
+	}
+	c.indent--
+	c.env = orig
+	c.receiver = origRecv
+	c.writeIndent()
+	c.buf.WriteString("}\n\n")
+	return nil
 }
 
 func (c *Compiler) compileStructType(st types.StructType) {
@@ -894,15 +894,15 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 	}
 	c.indent--
-        c.writeln("}")
-        for _, m := range t.Members {
-                if m.Method != nil {
-                        if err := c.compileMethod(t.Name, m.Method); err != nil {
-                                return err
-                        }
-                }
-        }
-        return nil
+	c.writeln("}")
+	for _, m := range t.Members {
+		if m.Method != nil {
+			if err := c.compileMethod(t.Name, m.Method); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
@@ -1684,22 +1684,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
-        case p.Selector != nil:
-                base := sanitizeName(p.Selector.Root)
-                var typ types.Type = types.AnyType{}
-                if c.env != nil {
-                        if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-                                typ = t
-                        }
-                }
-                if c.receiver != "" && len(p.Selector.Tail) == 0 {
-                        if st, ok := c.env.GetStruct(c.receiver); ok {
-                                if _, ok := st.Fields[p.Selector.Root]; ok {
-                                        base = fmt.Sprintf("s.%s", exportName(base))
-                                        return base, nil
-                                }
-                        }
-                }
+	case p.Selector != nil:
+		base := sanitizeName(p.Selector.Root)
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
+		if c.receiver != "" && len(p.Selector.Tail) == 0 {
+			if st, ok := c.env.GetStruct(c.receiver); ok {
+				if _, ok := st.Fields[p.Selector.Root]; ok {
+					base = fmt.Sprintf("s.%s", exportName(base))
+					return base, nil
+				}
+			}
+		}
 		if _, ok := typ.(types.MapType); ok && len(p.Selector.Tail) > 0 {
 			key := p.Selector.Tail[0]
 			base = fmt.Sprintf("%s[%q]", base, key)
@@ -2199,6 +2199,130 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if alias != "g" {
 			buf.WriteString(fmt.Sprintf("\t\t%s := g\n", alias))
 		}
+		buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", sel))
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn _res\n")
+		buf.WriteString("}()")
+		return buf.String(), nil
+	}
+
+	if q.Group != nil {
+		c.env = original
+		c.imports["fmt"] = true
+		c.imports["mochi/runtime/data"] = true
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
+		buf.WriteString("\tgroups := map[string]*data.Group{}\n")
+		buf.WriteString("\torder := []string{}\n")
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", sanitizeName(q.Var), src))
+		indent := "\t\t"
+		for i := range q.Froms {
+			fvar := sanitizeName(q.Froms[i].Var)
+			fsrc := fromSrcs[i]
+			if fromDirect[i] {
+				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", fvar, fsrc))
+			} else {
+				return "", fmt.Errorf("query from source must be list")
+			}
+			indent += "\t"
+		}
+		for i := range q.Joins {
+			jvar := sanitizeName(q.Joins[i].Var)
+			jsrc := joinSrcs[i]
+			if joinDirect[i] {
+				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", jvar, jsrc))
+			} else {
+				return "", fmt.Errorf("join source must be list")
+			}
+			indent += "\t"
+			buf.WriteString(fmt.Sprintf(indent+"if !(%s) { continue }\n", joinOns[i]))
+		}
+		if cond != "" {
+			buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
+			indent += "\t"
+		}
+		buf.WriteString(fmt.Sprintf(indent+"key := %s\n", groupKey))
+		buf.WriteString(indent + "ks := fmt.Sprint(key)\n")
+		buf.WriteString(indent + "g, ok := groups[ks]\n")
+		buf.WriteString(indent + "if !ok {\n")
+		buf.WriteString(indent + "\tg = &data.Group{Key: key}\n")
+		buf.WriteString(indent + "\tgroups[ks] = g\n")
+		buf.WriteString(indent + "\torder = append(order, ks)\n")
+		buf.WriteString(indent + "}\n")
+		buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", sanitizeName(q.Var)))
+		if cond != "" {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		for i := len(q.Joins) - 1; i >= 0; i-- {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		for i := len(q.Froms) - 1; i >= 0; i-- {
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+		}
+		indent = indent[:len(indent)-1]
+		buf.WriteString(indent + "}\n")
+
+		buf.WriteString("\titems := []*data.Group{}\n")
+		buf.WriteString("\tfor _, ks := range order {\n")
+		buf.WriteString("\t\titems = append(items, groups[ks])\n")
+		buf.WriteString("\t}\n")
+
+		if sortExpr != "" {
+			buf.WriteString("\ttype pair struct { item *data.Group; key any }\n")
+			buf.WriteString("\tpairs := make([]pair, len(items))\n")
+			buf.WriteString("\tfor idx, it := range items {\n")
+			buf.WriteString(fmt.Sprintf("\t\t%s := it\n", sanitizeName(q.Group.Name)))
+			buf.WriteString(fmt.Sprintf("\t\tpairs[idx] = pair{item: it, key: %s}\n", sortExpr))
+			buf.WriteString("\t}\n")
+			buf.WriteString("\tsort.Slice(pairs, func(i, j int) bool {\n")
+			buf.WriteString("\t\ta, b := pairs[i].key, pairs[j].key\n")
+			buf.WriteString("\t\tswitch av := a.(type) {\n")
+			buf.WriteString("\t\tcase int:\n")
+			buf.WriteString("\t\t\tswitch bv := b.(type) {\n")
+			buf.WriteString("\t\t\tcase int:\n")
+			buf.WriteString("\t\t\t\treturn av < bv\n")
+			buf.WriteString("\t\t\tcase float64:\n")
+			buf.WriteString("\t\t\t\treturn float64(av) < bv\n")
+			buf.WriteString("\t\t\t}\n")
+			buf.WriteString("\t\tcase float64:\n")
+			buf.WriteString("\t\t\tswitch bv := b.(type) {\n")
+			buf.WriteString("\t\t\tcase int:\n")
+			buf.WriteString("\t\t\t\treturn av < float64(bv)\n")
+			buf.WriteString("\t\t\tcase float64:\n")
+			buf.WriteString("\t\t\t\treturn av < bv\n")
+			buf.WriteString("\t\t\t}\n")
+			buf.WriteString("\t\tcase string:\n")
+			buf.WriteString("\t\t\tbs, _ := b.(string)\n")
+			buf.WriteString("\t\t\treturn av < bs\n")
+			buf.WriteString("\t\t}\n")
+			buf.WriteString("\t\treturn fmt.Sprint(a) < fmt.Sprint(b)\n")
+			buf.WriteString("\t})\n")
+			buf.WriteString("\tfor idx, p := range pairs {\n")
+			buf.WriteString("\t\titems[idx] = p.item\n")
+			buf.WriteString("\t}\n")
+		}
+
+		if skipExpr != "" {
+			buf.WriteString(fmt.Sprintf("\tskip := %s\n", skipExpr))
+			buf.WriteString("\tif skip < len(items) {\n")
+			buf.WriteString("\t\titems = items[skip:]\n")
+			buf.WriteString("\t} else {\n")
+			buf.WriteString("\t\titems = []*data.Group{}\n")
+			buf.WriteString("\t}\n")
+		}
+
+		if takeExpr != "" {
+			buf.WriteString(fmt.Sprintf("\ttake := %s\n", takeExpr))
+			buf.WriteString("\tif take < len(items) {\n")
+			buf.WriteString("\t\titems = items[:take]\n")
+			buf.WriteString("\t}\n")
+		}
+
+		buf.WriteString(fmt.Sprintf("\t_res := []%s{}\n", retElem))
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range items {\n", sanitizeName(q.Group.Name)))
 		buf.WriteString(fmt.Sprintf("\t\t_res = append(_res, %s)\n", sel))
 		buf.WriteString("\t}\n")
 		buf.WriteString("\treturn _res\n")
