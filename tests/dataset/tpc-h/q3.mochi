@@ -36,14 +36,19 @@ let valid_lineitems =
 let order_line_join =
   from o in valid_orders
   join l in valid_lineitems on l.l_orderkey == o.o_orderkey
-  group by { o.o_orderkey, o.o_orderdate, o.o_shippriority }
-  select {
-    l_orderkey: o.o_orderkey,
-    revenue: sum(l.l_extendedprice * (1 - l.l_discount)),
+  group by {
+    o_orderkey: o.o_orderkey,
     o_orderdate: o.o_orderdate,
     o_shippriority: o.o_shippriority
+  } into g
+  select {
+    l_orderkey: g.key.o_orderkey,
+    revenue: sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
+    o_orderdate: g.key.o_orderdate,
+    o_shippriority: g.key.o_shippriority
   }
-  order by { revenue desc, o_orderdate }
+  sort by o_orderdate
+  sort by -revenue
 
 print order_line_join
 
