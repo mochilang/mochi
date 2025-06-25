@@ -1,6 +1,6 @@
 # Zig Backend
 
-The Zig backend translates Mochi programs into [Zig](https://ziglang.org/) source code.  It currently
+The Zig backend translates Mochi programs into [Zig](https://ziglang.org/) source code. It currently
 covers a small subset of the language and is mainly used for experimentation.
 
 ## Files
@@ -13,7 +13,7 @@ covers a small subset of the language and is mainly used for experimentation.
 ## Compilation Flow
 
 `Compiler.Compile` walks the AST, emits function declarations first and then the
-`main` function for the remaining statements.  The standard library import is
+`main` function for the remaining statements. The standard library import is
 prepended at the end:
 
 ```go
@@ -50,6 +50,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
         return c.buf.Bytes(), nil
 }
 ```
+
 【F:compile/zig/compiler.go†L36-L68】
 
 Functions are emitted with typed parameters and the return type resolved using `zigType`:
@@ -70,6 +71,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
         ...
 }
 ```
+
 【F:compile/zig/compiler.go†L70-L78】
 
 ## Features
@@ -106,6 +108,7 @@ func (c *Compiler) zigType(t *parser.TypeRef) string {
         return "i32"
 }
 ```
+
 【F:compile/zig/compiler.go†L204-L228】
 
 ### Type Inference
@@ -146,6 +149,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
         return nil
 }
 ```
+
 【F:compile/zig/compiler.go†L115-L176】
 
 Conditionals are expanded recursively to handle `else if` chains:
@@ -167,6 +171,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
         return nil
 }
 ```
+
 【F:compile/zig/compiler.go†L182-L213】
 
 ### Functions
@@ -199,6 +204,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
         ...
 }
 ```
+
 When applied to maps, `len` and `count` use the container's `count()` method.
 The helpers `_map_keys` and `_map_values` build slices of all keys or values
 respectively when the `keys` or `values` builtin is used.
@@ -244,23 +250,26 @@ var zigReserved = map[string]bool{
         "for": true, "while": true, "if": true, "else": true,
 }
 ```
+
 【F:compile/zig/compiler.go†L1119-L1121】
 
 ### Dataset Queries
 
-`compileQueryExpr` lowers simple `from`/`where`/`select` expressions into loops
-that build an in-memory slice using `std.ArrayList`. More advanced features like
-joins or grouping remain unsupported.
+`compileQueryExpr` lowers `from`/`where`/`select` expressions into loops that
+build an in-memory slice using `std.ArrayList`. Basic pagination with `skip` and
+`take` is handled by slicing the result. More advanced features like joins or
+grouping remain unsupported.
 
 ```go
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-        if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+        if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil {
                 return "", fmt.Errorf("unsupported query features")
         }
         ...
 }
 ```
-【F:compile/x/zig/compiler.go†L562-L601】
+
+【F:compile/x/zig/compiler.go†L562-L640】
 
 ## Building
 
@@ -290,6 +299,7 @@ func TestZigCompiler_LeetCode1to10(t *testing.T) {
         ...
 }
 ```
+
 【F:compile/zig/compiler_test.go†L17-L53】
 
 `EnsureZig` locates the Zig binary and allows the tests to skip gracefully if it
@@ -309,6 +319,7 @@ func EnsureZig() (string, error) {
         // (see tools.go for full implementation)
 }
 ```
+
 【F:compile/zig/tools.go†L1-L17】
 
 ## Notes
@@ -322,40 +333,40 @@ a different runtime using Zig.
 The Zig generator currently omits several language constructs needed for later
 LeetCode solutions:
 
-* advanced string slicing (step values) and indexing on assignment
-* iteration over map key/value pairs (only key iteration is implemented)
-* functions with multiple return values
-* generic type parameters
-* nested list types beyond one dimension
-* union type declarations
-* built-in error handling with `try`/`catch`
-* set collections (`set<T>`) and reflection features
-* asynchronous functions (`async`/`await`)
-* the `eval` builtin function
-* YAML dataset loading and saving
-* built-in helpers like `fetch`, `load`, `save` and `generate`
-* logic programming constructs (`fact`, `rule`, `query`)
-* concurrency features such as streams or `spawn`
-* arrow function syntax (`fun(x: int): int => x + 1`)
-* foreign imports and `extern` declarations
-* automatic language imports (`import python "..." auto`)
-* agent declarations and `on` handlers
-* intent functions within agents
-* extern object declarations
-* stream declarations and `emit` statements
-* model declarations
-* package declarations and `export` statements
-* destructuring bindings in `let` and `var` statements
-* nested function declarations inside other functions
-* methods declared inside `type` blocks
-* enum type declarations
-* variadic functions
-* closures that capture surrounding variables
-* dataset joins with outer or right side options
-* agent initialization with field values
+- advanced string slicing (step values) and indexing on assignment
+- iteration over map key/value pairs (only key iteration is implemented)
+- functions with multiple return values
+- generic type parameters
+- nested list types beyond one dimension
+- union type declarations
+- built-in error handling with `try`/`catch`
+- set collections (`set<T>`) and reflection features
+- asynchronous functions (`async`/`await`)
+- the `eval` builtin function
+- YAML dataset loading and saving
+- built-in helpers like `fetch`, `load`, `save` and `generate`
+- logic programming constructs (`fact`, `rule`, `query`)
+- concurrency features such as streams or `spawn`
+- arrow function syntax (`fun(x: int): int => x + 1`)
+- foreign imports and `extern` declarations
+- automatic language imports (`import python "..." auto`)
+- agent declarations and `on` handlers
+- intent functions within agents
+- extern object declarations
+- stream declarations and `emit` statements
+- model declarations
+- package declarations and `export` statements
+- destructuring bindings in `let` and `var` statements
+- nested function declarations inside other functions
+- methods declared inside `type` blocks
+- enum type declarations
+- variadic functions
+- closures that capture surrounding variables
+- dataset joins with outer or right side options
+- agent initialization with field values
 
 These features are not yet implemented, so programs relying on them will fail to
-compile or run correctly.  Most LeetCode tasks after problem 10 depend on at
+compile or run correctly. Most LeetCode tasks after problem 10 depend on at
 least one of these constructs.
 
 Until these are implemented the compiler can only compile the first few
