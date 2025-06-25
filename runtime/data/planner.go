@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"mochi/ast"
 	"mochi/parser"
 )
 
@@ -11,11 +12,30 @@ func BuildPlan(q *parser.QueryExpr) (Plan, error) {
 		return nil, fmt.Errorf("nil query expression")
 	}
 
+	cond := q.Where
+	pushAlias := ""
+	if cond != nil {
+		if aliases := usedAliases(cond); len(aliases) == 1 {
+			for a := range aliases {
+				pushAlias = a
+			}
+		}
+	}
+
 	var root Plan = &scanPlan{Src: q.Source, Alias: q.Var}
+	if pushAlias == q.Var {
+		root = &wherePlan{Cond: cond, Input: root}
+		cond = nil
+	}
 
 	// additional FROM clauses become cross joins
 	for _, f := range q.Froms {
-		rhs := &scanPlan{Src: f.Src, Alias: f.Var}
+		var rhs Plan = &scanPlan{Src: f.Src, Alias: f.Var}
+		if pushAlias == f.Var {
+			rhs = &wherePlan{Cond: cond, Input: rhs}
+			cond = nil
+			pushAlias = ""
+		}
 		root = &joinPlan{Left: root, Right: rhs, JoinType: "inner"}
 	}
 
@@ -25,12 +45,17 @@ func BuildPlan(q *parser.QueryExpr) (Plan, error) {
 		if j.Side != nil {
 			joinType = *j.Side
 		}
-		rhs := &scanPlan{Src: j.Src, Alias: j.Var}
+		var rhs Plan = &scanPlan{Src: j.Src, Alias: j.Var}
+		if joinType == "inner" && pushAlias == j.Var {
+			rhs = &wherePlan{Cond: cond, Input: rhs}
+			cond = nil
+			pushAlias = ""
+		}
 		root = &joinPlan{Left: root, Right: rhs, On: j.On, JoinType: joinType}
 	}
 
-	if q.Where != nil {
-		root = &wherePlan{Cond: q.Where, Input: root}
+	if cond != nil {
+		root = &wherePlan{Cond: cond, Input: root}
 	}
 
 	if q.Group != nil {
@@ -51,4 +76,30 @@ func BuildPlan(q *parser.QueryExpr) (Plan, error) {
 	}
 
 	return root, nil
+}
+
+// usedAliases returns the set of selector roots referenced in e.
+func usedAliases(e *parser.Expr) map[string]struct{} {
+	aliases := map[string]struct{}{}
+	if e == nil {
+		return aliases
+	}
+	node := ast.FromExpr(e)
+	var walk func(n *ast.Node)
+	walk = func(n *ast.Node) {
+		if n.Kind == "selector" {
+			base := n
+			for len(base.Children) == 1 && base.Children[0].Kind == "selector" {
+				base = base.Children[0]
+			}
+			if s, ok := base.Value.(string); ok {
+				aliases[s] = struct{}{}
+			}
+		}
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+	walk(node)
+	return aliases
 }
