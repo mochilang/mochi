@@ -188,22 +188,35 @@ func (c *Compiler) compileForIn(varName string, src *ast.Node, body *ast.Node) {
 				}
 				if lt, ok := t.(types.ListType); ok {
 					name := cobolName(src.Value.(string))
-					length, ok := c.listLens[src.Value.(string)]
-					if !ok {
-						c.writeln("    *> unsupported for-in loop")
+					if length, ok := c.listLens[src.Value.(string)]; ok {
+						c.declare("01 IDX PIC 9.")
+						c.declare(fmt.Sprintf("01 %s %s", varName, c.picForType(lt.Elem)))
+						c.writeln("    MOVE 0 TO IDX")
+						c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", length))
+						c.indent++
+						c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", name, varName))
+						for _, st := range body.Children {
+							c.compileNode(st)
+						}
+						c.indent--
+						c.writeln("    END-PERFORM")
 						return
 					}
-					c.declare("01 IDX PIC 9.")
-					c.declare(fmt.Sprintf("01 %s %s", varName, c.picForType(lt.Elem)))
-					c.writeln("    MOVE 0 TO IDX")
-					c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", length))
-					c.indent++
-					c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", name, varName))
-					for _, st := range body.Children {
-						c.compileNode(st)
+					if dyn, ok := c.dynamicLens[src.Value.(string)]; ok {
+						c.declare("01 IDX PIC 9.")
+						c.declare(fmt.Sprintf("01 %s %s", varName, c.picForType(lt.Elem)))
+						c.writeln("    MOVE 0 TO IDX")
+						c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %s", dyn))
+						c.indent++
+						c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", name, varName))
+						for _, st := range body.Children {
+							c.compileNode(st)
+						}
+						c.indent--
+						c.writeln("    END-PERFORM")
+						return
 					}
-					c.indent--
-					c.writeln("    END-PERFORM")
+					c.writeln("    *> unsupported for-in loop")
 					return
 				}
 			}
