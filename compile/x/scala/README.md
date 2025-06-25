@@ -269,7 +269,7 @@ go test ./compile/scala -tags slow
 
 ## Status
 
-The Scala backend currently covers only basic Mochi features. It supports functions, loops, `match` expressions and simple built‑ins but lacks full runtime support. It is best suited for examples and for exercising the compiler architecture rather than production use.
+The Scala backend currently covers only basic Mochi features. It supports functions, loops, `match` expressions and simple built‑ins but lacks full runtime support. Dataset queries with joins and grouping are implemented. It is best suited for examples and for exercising the compiler architecture rather than production use.
 
 ## Unsupported features
 
@@ -278,7 +278,6 @@ The following pieces of Mochi are not yet handled by the Scala backend:
 - concurrent primitives such as `spawn` and channels
 - module system and imports (except for Python FFI)
 - generic types and higher‑order functions
-- advanced dataset queries (joins and grouping)
 - logic queries
 - reflection and macro facilities
 - streams and agents
