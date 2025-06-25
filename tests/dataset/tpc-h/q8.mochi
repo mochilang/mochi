@@ -1,0 +1,72 @@
+let region = [
+  { r_regionkey: 0, r_name: "AMERICA" }
+]
+
+let nation = [
+  { n_nationkey: 10, n_regionkey: 0, n_name: "BRAZIL" },
+  { n_nationkey: 20, n_regionkey: 0, n_name: "CANADA" }
+]
+
+let customer = [
+  { c_custkey: 1, c_nationkey: 10 },
+  { c_custkey: 2, c_nationkey: 20 }
+]
+
+let orders = [
+  { o_orderkey: 100, o_custkey: 1, o_orderdate: "1995-04-10" },
+  { o_orderkey: 200, o_custkey: 2, o_orderdate: "1995-07-15" }
+]
+
+let lineitem = [
+  { l_orderkey: 100, l_suppkey: 1000, l_partkey: 5000, l_extendedprice: 1000.0, l_discount: 0.1 },
+  { l_orderkey: 200, l_suppkey: 2000, l_partkey: 5000, l_extendedprice: 500.0, l_discount: 0.05 }
+]
+
+let supplier = [
+  { s_suppkey: 1000 },
+  { s_suppkey: 2000 }
+]
+
+let part = [
+  { p_partkey: 5000, p_type: "ECONOMY ANODIZED STEEL" },
+  { p_partkey: 6000, p_type: "SMALL BRASS" }
+]
+
+let start_date = "1995-01-01"
+let end_date = "1996-12-31"
+let target_type = "ECONOMY ANODIZED STEEL"
+let target_nation = "BRAZIL"
+
+let result =
+  from l in lineitem
+  join p in part on p.p_partkey == l.l_partkey
+  where p.p_type == target_type
+  join s in supplier on s.s_suppkey == l.l_suppkey
+  join o in orders on o.o_orderkey == l.l_orderkey
+  where o.o_orderdate >= start_date and o.o_orderdate <= end_date
+  join c in customer on c.c_custkey == o.o_custkey
+  join n in nation on n.n_nationkey == c.c_nationkey
+  join r in region on r.r_regionkey == n.n_regionkey
+  where r.r_name == "AMERICA"
+  let revenue = l.l_extendedprice * (1 - l.l_discount)
+  let year = substring(o.o_orderdate, 0, 4)
+  group by year
+  select {
+    o_year: year,
+    mkt_share:
+      sum(if n.n_name == target_nation then revenue else 0) /
+      sum(revenue)
+  }
+  order by o_year
+
+print result
+
+test "Q8 returns correct market share for BRAZIL in 1995" {
+  let numerator = 1000.0 * 0.9      // 900
+  let denominator = numerator + 500.0 * 0.95 // 900 + 475 = 1375
+  let share = numerator / denominator         // ≈ 0.6545
+
+  expect result == [
+    { o_year: "1995", mkt_share: share }
+  ]
+}
