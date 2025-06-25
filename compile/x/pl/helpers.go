@@ -146,16 +146,16 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 }
 
 func (c *Compiler) isStringExpr(e *parser.Expr) bool {
-	_, ok := c.inferExprType(e).(types.StringType)
+	_, ok := c.exprType(e).(types.StringType)
 	return ok
 }
 
 func (c *Compiler) isStringUnary(u *parser.Unary) bool {
-	_, ok := c.inferUnaryType(u).(types.StringType)
+	_, ok := c.unaryType(u).(types.StringType)
 	return ok
 }
 
 func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
-	_, ok := c.inferPostfixType(p).(types.StringType)
+	_, ok := c.postfixType(p).(types.StringType)
 	return ok
 }
