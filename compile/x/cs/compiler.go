@@ -893,11 +893,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	var cond, sortExpr, skipExpr, takeExpr string
+	var earlyCond string
+	earlyFrom := make([]string, len(q.Froms))
+	earlyJoin := make([]string, len(q.Joins))
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
 		if err != nil {
 			c.env = orig
 			return "", err
+		}
+		vars := varsForExpr(q.Where)
+		if len(vars) == 1 {
+			if _, ok := vars[q.Var]; ok {
+				earlyCond = cond
+				cond = ""
+			} else {
+				for i, f := range q.Froms {
+					if _, ok := vars[f.Var]; ok {
+						earlyFrom[i] = cond
+						cond = ""
+					}
+				}
+				for i, j := range q.Joins {
+					if _, ok := vars[j.Var]; ok {
+						earlyJoin[i] = cond
+						cond = ""
+					}
+				}
+			}
 		}
 	}
 	if q.Sort != nil {
@@ -978,13 +1001,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			joinOns[i] = onExpr
 		}
 		c.env = child
-		if q.Where != nil {
-			cond, err = c.compileExpr(q.Where)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-		}
 		sel, err = c.compileExpr(q.Select)
 		if err != nil {
 			c.env = orig
@@ -996,10 +1012,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("new Func<List<%s>>(() => {\n", resultType))
 		buf.WriteString(fmt.Sprintf("\tvar _res = new List<%s>();\n", resultType))
 		buf.WriteString(fmt.Sprintf("\tforeach (var %s in %s) {\n", v, src))
+		if earlyCond != "" {
+			buf.WriteString(fmt.Sprintf("\t\tif (!(%s)) continue;\n", earlyCond))
+		}
 		indent := "\t\t"
 		for i, f := range q.Froms {
 			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
 			indent += "\t"
+			if earlyFrom[i] != "" {
+				buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", earlyFrom[i]))
+			}
 		}
 		specialLeft := len(q.Joins) == 1 && joinSides[0] == "left"
 		specialRight := len(q.Joins) == 1 && joinSides[0] == "right" && len(q.Froms) == 0
@@ -1136,6 +1158,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			for i, j := range q.Joins {
 				buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(j.Var), joinSrcs[i]))
 				indent += "\t"
+				if earlyJoin[i] != "" {
+					buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", earlyJoin[i]))
+				}
 				buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[i]))
 			}
 			if cond != "" {
