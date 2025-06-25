@@ -165,3 +165,55 @@ func IsListPrimary(p *parser.Primary, env *Env) bool {
 	}
 	return false
 }
+
+// IsStringUnary reports whether u resolves to a string expression.
+func IsStringUnary(u *parser.Unary, env *Env) bool {
+	if u == nil {
+		return false
+	}
+	return IsStringPostfix(u.Value, env)
+}
+
+// IsStringPostfix reports whether p resolves to a string expression.
+func IsStringPostfix(p *parser.PostfixExpr, env *Env) bool {
+	if p == nil {
+		return false
+	}
+	if IsStringPrimary(p.Target, env) {
+		return true
+	}
+	if p.Target != nil && p.Target.Selector != nil && env != nil {
+		if typ, err := env.GetVar(p.Target.Selector.Root); err == nil {
+			if _, ok := typ.(StringType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// IsMapUnary reports whether u resolves to a map expression.
+func IsMapUnary(u *parser.Unary, env *Env) bool {
+	if u == nil {
+		return false
+	}
+	return IsMapPostfix(u.Value, env)
+}
+
+// IsMapPostfix reports whether p resolves to a map expression.
+func IsMapPostfix(p *parser.PostfixExpr, env *Env) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if IsMapPrimary(p.Target, env) {
+		return true
+	}
+	if p.Target != nil && p.Target.Selector != nil && env != nil {
+		if typ, err := env.GetVar(p.Target.Selector.Root); err == nil {
+			if _, ok := typ.(MapType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
