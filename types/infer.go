@@ -12,16 +12,21 @@ func ResolveTypeRef(t *parser.TypeRef, env *Env) Type {
 	return resolveTypeRef(t, env)
 }
 
-// InferExprType returns the static type of expression e using env.
-func InferExprType(e *parser.Expr, env *Env) Type {
+// ExprType returns the static type of expression e using env.
+func ExprType(e *parser.Expr, env *Env) Type {
 	if e == nil {
 		return AnyType{}
 	}
 	return inferBinaryType(env, e.Binary)
 }
 
-// InferExprTypeHint infers the type of e using a hint for list literals.
-func InferExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
+// InferExprType is deprecated. Use ExprType instead.
+func InferExprType(e *parser.Expr, env *Env) Type {
+	return ExprType(e, env)
+}
+
+// ExprTypeHint infers the type of e using a hint for list literals.
+func ExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
 	if e == nil {
 		return AnyType{}
 	}
@@ -31,9 +36,9 @@ func InferExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
 				if len(ll.Elems) == 0 {
 					return ListType{Elem: lt.Elem}
 				}
-				elem := InferExprTypeHint(ll.Elems[0], lt.Elem, env)
+				elem := ExprTypeHint(ll.Elems[0], lt.Elem, env)
 				for _, el := range ll.Elems[1:] {
-					t := InferExprTypeHint(el, lt.Elem, env)
+					t := ExprTypeHint(el, lt.Elem, env)
 					if !equalTypes(elem, t) {
 						elem = AnyType{}
 						break
@@ -43,7 +48,12 @@ func InferExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
 			}
 		}
 	}
-	return InferExprType(e, env)
+	return ExprType(e, env)
+}
+
+// InferExprTypeHint is deprecated. Use ExprTypeHint instead.
+func InferExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
+	return ExprTypeHint(e, hint, env)
 }
 
 func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
@@ -236,7 +246,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		if p.FunExpr.Return != nil {
 			ret = ResolveTypeRef(p.FunExpr.Return, env)
 		} else if p.FunExpr.ExprBody != nil {
-			ret = InferExprType(p.FunExpr.ExprBody, env)
+			ret = ExprType(p.FunExpr.ExprBody, env)
 		} else {
 			ret = AnyType{}
 		}
@@ -282,13 +292,13 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 	case p.If != nil:
 		return inferIfExprType(p.If, env)
 	case p.Group != nil:
-		return InferExprType(p.Group, env)
+		return ExprType(p.Group, env)
 	case p.List != nil:
 		var elemType Type = AnyType{}
 		if len(p.List.Elems) > 0 {
-			elemType = InferExprType(p.List.Elems[0], env)
+			elemType = ExprType(p.List.Elems[0], env)
 			for _, e := range p.List.Elems[1:] {
-				t := InferExprType(e, env)
+				t := ExprType(e, env)
 				if !equalTypes(elemType, t) {
 					elemType = AnyType{}
 					break
@@ -308,7 +318,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 	case p.Save != nil:
 		return VoidType{}
 	case p.Query != nil:
-		srcType := InferExprType(p.Query.Source, env)
+		srcType := ExprType(p.Query.Source, env)
 		var elemType Type = AnyType{}
 		if lt, ok := srcType.(ListType); ok {
 			elemType = lt.Elem
@@ -316,7 +326,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		child := NewEnv(env)
 		child.SetVar(p.Query.Var, elemType, true)
 		for _, f := range p.Query.Froms {
-			ft := InferExprType(f.Src, env)
+			ft := ExprType(f.Src, env)
 			var fe Type = AnyType{}
 			if lt, ok := ft.(ListType); ok {
 				fe = lt.Elem
@@ -324,7 +334,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			child.SetVar(f.Var, fe, true)
 		}
 		for _, j := range p.Query.Joins {
-			jt := InferExprType(j.Src, env)
+			jt := ExprType(j.Src, env)
 			var je Type = AnyType{}
 			if lt, ok := jt.(ListType); ok {
 				je = lt.Elem
@@ -333,7 +343,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		}
 		orig := env
 		env = child
-		elem := InferExprType(p.Query.Select, env)
+		elem := ExprType(p.Query.Select, env)
 		env = orig
 		return ListType{Elem: elem}
 	case p.Map != nil:
@@ -343,17 +353,17 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			if _, ok := simpleStringKey(p.Map.Items[0].Key); ok {
 				keyType = StringType{}
 			} else {
-				keyType = InferExprType(p.Map.Items[0].Key, env)
+				keyType = ExprType(p.Map.Items[0].Key, env)
 			}
-			valType = InferExprType(p.Map.Items[0].Value, env)
+			valType = ExprType(p.Map.Items[0].Value, env)
 			for _, it := range p.Map.Items[1:] {
 				var kt Type
 				if _, ok := simpleStringKey(it.Key); ok {
 					kt = StringType{}
 				} else {
-					kt = InferExprType(it.Key, env)
+					kt = ExprType(it.Key, env)
 				}
-				vt := InferExprType(it.Value, env)
+				vt := ExprType(it.Value, env)
 				if !equalTypes(keyType, kt) {
 					keyType = AnyType{}
 				}
@@ -366,7 +376,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 	case p.Match != nil:
 		var rType Type
 		for _, cs := range p.Match.Cases {
-			t := InferExprType(cs.Result, env)
+			t := ExprType(cs.Result, env)
 			if rType == nil {
 				rType = t
 			} else if !equalTypes(rType, t) {
@@ -381,21 +391,26 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 	return AnyType{}
 }
 
-// InferIfExprType returns the static type of an if-expression.
-func InferIfExprType(ie *parser.IfExpr, env *Env) Type {
+// IfExprType returns the static type of an if-expression.
+func IfExprType(ie *parser.IfExpr, env *Env) Type {
 	return inferIfExprType(ie, env)
+}
+
+// InferIfExprType is deprecated. Use IfExprType instead.
+func InferIfExprType(ie *parser.IfExpr, env *Env) Type {
+	return IfExprType(ie, env)
 }
 
 func inferIfExprType(ie *parser.IfExpr, env *Env) Type {
 	if ie == nil {
 		return AnyType{}
 	}
-	thenT := InferExprType(ie.Then, env)
+	thenT := ExprType(ie.Then, env)
 	var elseT Type = AnyType{}
 	if ie.ElseIf != nil {
 		elseT = inferIfExprType(ie.ElseIf, env)
 	} else if ie.Else != nil {
-		elseT = InferExprType(ie.Else, env)
+		elseT = ExprType(ie.Else, env)
 	}
 	if equalTypes(thenT, elseT) {
 		return thenT
