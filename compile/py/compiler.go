@@ -1052,14 +1052,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			items = fmt.Sprintf("(%s)[%s:]", items, sk)
+			items = fmt.Sprintf("(%s)[max(%s, 0):]", items, sk)
 		}
 		if q.Take != nil {
 			tk, err := c.compileExpr(q.Take)
 			if err != nil {
 				return "", err
 			}
-			items = fmt.Sprintf("(%s)[:%s]", items, tk)
+			items = fmt.Sprintf("(%s)[:max(%s, 0)]", items, tk)
 		}
 		return fmt.Sprintf("[ %s for %s in %s ]", sel, sanitizeName(q.Var), items), nil
 	}
