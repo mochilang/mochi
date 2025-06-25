@@ -24,24 +24,23 @@ let result =
   join p in part on p.p_partkey == l.l_partkey
   where (
     (
-      p.p_brand == "Brand#12" and
-      p.p_container in ["SM CASE", "SM BOX", "SM PACK", "SM PKG"] and
-      l.l_quantity >= 1 and l.l_quantity <= 11 and
-      p.p_size >= 1 and p.p_size <= 5
-    ) or (
-      p.p_brand == "Brand#23" and
-      p.p_container in ["MED BAG", "MED BOX", "MED PKG", "MED PACK"] and
-      l.l_quantity >= 10 and l.l_quantity <= 20 and
-      p.p_size >= 1 and p.p_size <= 10
-    ) or (
-      p.p_brand == "Brand#34" and
-      p.p_container in ["LG CASE", "LG BOX", "LG PACK", "LG PKG"] and
-      l.l_quantity >= 20 and l.l_quantity <= 30 and
-      p.p_size >= 1 and p.p_size <= 15
+      p.p_brand == "Brand#12" &&
+      p.p_container in ["SM CASE", "SM BOX", "SM PACK", "SM PKG"] &&
+      l.l_quantity >= 1 && l.l_quantity <= 11 &&
+      p.p_size >= 1 && p.p_size <= 5
+    ) || (
+      p.p_brand == "Brand#23" &&
+      p.p_container in ["MED BAG", "MED BOX", "MED PKG", "MED PACK"] &&
+      l.l_quantity >= 10 && l.l_quantity <= 20 &&
+      p.p_size >= 1 && p.p_size <= 10
+    ) || (
+      p.p_brand == "Brand#34" &&
+      p.p_container in ["LG CASE", "LG BOX", "LG PACK", "LG PKG"] &&
+      l.l_quantity >= 20 && l.l_quantity <= 30 &&
+      p.p_size >= 1 && p.p_size <= 15
     )
-  )
-  and l.l_shipmode in ["AIR", "AIR REG"]
-  and l.l_shipinstruct == "DELIVER IN PERSON"
+  ) && l.l_shipmode in ["AIR", "AIR REG"]
+  && l.l_shipinstruct == "DELIVER IN PERSON"
   select sum(l.l_extendedprice * (1 - l.l_discount))
 
 print result
