@@ -85,6 +85,35 @@ const (
 		"    return sum / float64(len(items))\n" +
 		"}\n"
 
+	helperSum = "func _sum(v any) float64 {\n" +
+		"    var items []any\n" +
+		"    if g, ok := v.(*data.Group); ok { items = g.Items } else {\n" +
+		"        switch s := v.(type) {\n" +
+		"        case []any:\n" +
+		"            items = s\n" +
+		"        case []int:\n" +
+		"            items = make([]any, len(s))\n" +
+		"            for i, v := range s { items[i] = v }\n" +
+		"        case []float64:\n" +
+		"            items = make([]any, len(s))\n" +
+		"            for i, v := range s { items[i] = v }\n" +
+		"        case []string, []bool:\n" +
+		"            panic(\"sum() expects numbers\")\n" +
+		"        default:\n" +
+		"            panic(\"sum() expects list or group\")\n" +
+		"        }\n" +
+		"    }\n" +
+		"    var sum float64\n" +
+		"    for _, it := range items {\n" +
+		"        switch n := it.(type) {\n" +
+		"        case int: sum += float64(n)\n" +
+		"        case int64: sum += float64(n)\n" +
+		"        case float64: sum += n\n" +
+		"        default: panic(\"sum() expects numbers\") }\n" +
+		"    }\n" +
+		"    return sum\n" +
+		"}\n"
+
 	helperInput = "func _input() string {\n" +
 		"    var s string\n" +
 		"    fmt.Scanln(&s)\n" +
@@ -441,6 +470,7 @@ var helperMap = map[string]string{
 	"_sliceString":   helperSliceString,
 	"_count":         helperCount,
 	"_avg":           helperAvg,
+	"_sum":           helperSum,
 	"_input":         helperInput,
 	"_genText":       helperGenText,
 	"_genEmbed":      helperGenEmbed,

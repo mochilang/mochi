@@ -6,10 +6,10 @@ type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree)
 
-fun sum(t: Tree): int {
+fun sum_tree(t: Tree): int {
   return match t {
     Leaf => 0
-    Node(left, value, right) => sum(left) + value + sum(right)
+    Node(left, value, right) => sum_tree(left) + value + sum_tree(right)
   }
 }
 
@@ -23,4 +23,4 @@ let t = Node {
   }
 }
 
-print(sum(t))
+print(sum_tree(t))

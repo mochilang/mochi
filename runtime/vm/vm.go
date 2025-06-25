@@ -75,6 +75,7 @@ const (
 	OpInput
 	OpCount
 	OpAvg
+	OpSum
 	OpMin
 	OpMax
 	OpCast
@@ -193,6 +194,8 @@ func (op Op) String() string {
 		return "Count"
 	case OpAvg:
 		return "Avg"
+	case OpSum:
+		return "Sum"
 	case OpMin:
 		return "Min"
 	case OpMax:
@@ -1269,6 +1272,21 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
 			}
+		case OpSum:
+			lst := fr.regs[ins.B]
+			if lst.Tag == interpreter.TagMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+					lst = lst.Map["items"]
+				}
+			}
+			if lst.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("sum expects list")
+			}
+			var sum float64
+			for _, v := range lst.List {
+				sum += toFloat(v)
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum}
 		case OpMin:
 			lst := fr.regs[ins.B]
 			if lst.Tag == interpreter.TagMap {
@@ -2445,6 +2463,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpAvg, A: dst, B: arg})
+			return dst
+		case "sum":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpSum, A: dst, B: arg})
 			return dst
 		case "min":
 			arg := fc.compileExpr(p.Call.Args[0])

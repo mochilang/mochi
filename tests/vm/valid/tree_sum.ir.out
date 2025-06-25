@@ -44,14 +44,14 @@ func main (regs=32)
   // let t = Node {
   MakeMap      r28, 4, r20
   Move         r29, r28
-  // print(sum(t))
+  // print(sum_tree(t))
   Move         r30, r29
-  Call         r31, sum, r30
+  Call         r31, sum_tree, r30
   Print        r31
   Return       r0
 
-  // fun sum(t: Tree): int {
-func sum (regs=23)
+  // fun sum_tree(t: Tree): int {
+func sum_tree (regs=23)
   // Leaf => 0
   Const        r3, "__name"
   Index        r4, r0, r3
@@ -62,7 +62,7 @@ func sum (regs=23)
   Move         r1, r6
   Jump         L1
 L0:
-  // Node(left, value, right) => sum(left) + value + sum(right)
+  // Node(left, value, right) => sum_tree(left) + value + sum_tree(right)
   Const        r8, "__name"
   Index        r9, r0, r8
   Const        r10, "Node"
@@ -75,10 +75,10 @@ L0:
   Const        r15, "right"
   Index        r16, r0, r15
   Move         r17, r12
-  Call         r18, sum, r17
+  Call         r18, sum_tree, r17
   Add          r19, r18, r14
   Move         r20, r16
-  Call         r21, sum, r20
+  Call         r21, sum_tree, r20
   Add          r22, r19, r21
   Move         r1, r22
   Jump         L1

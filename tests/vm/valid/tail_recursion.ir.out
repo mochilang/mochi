@@ -1,15 +1,15 @@
 func main (regs=5)
-  // print(sum(10, 0))
+  // print(sum_rec(10, 0))
   Const        r2, 10
   Move         r0, r2
   Const        r3, 0
   Move         r1, r3
-  Call2        r4, sum, r0, r1
+  Call2        r4, sum_rec, r0, r1
   Print        r4
   Return       r0
 
-  // fun sum(n: int, acc: int): int {
-func sum (regs=10)
+  // fun sum_rec(n: int, acc: int): int {
+func sum_rec (regs=10)
   // if n == 0 {
   Const        r2, 0
   Equal        r3, r0, r2
@@ -17,13 +17,13 @@ func sum (regs=10)
   // return acc
   Return       r1
 L0:
-  // return sum(n - 1, acc + n)
+  // return sum_rec(n - 1, acc + n)
   Const        r6, 1
   Sub          r7, r0, r6
   Move         r4, r7
   Add          r8, r1, r0
   Move         r5, r8
-  Call2        r9, sum, r4, r5
+  Call2        r9, sum_rec, r4, r5
   Return       r9
   Return       r0
 
