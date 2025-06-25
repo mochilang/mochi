@@ -1422,11 +1422,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var condParts []string
 	var sortStr, skipStr, takeStr string
-	for i := range joinOns {
-		if joinOns[i] != "" {
-			condParts = append(condParts, joinOns[i])
-		}
-	}
 	if q.Where != nil {
 		cs, err := c.compileExpr(q.Where)
 		if err != nil {
@@ -1484,20 +1479,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Joins[i].Var), js))
 		c.writeln("begin")
 		c.indent++
+		if joinOns[i] != "" {
+			c.writeln(fmt.Sprintf("if not (%s) then continue;", joinOns[i]))
+		}
 	}
 	if condStr != "" {
-		c.writeln("if " + condStr + " then")
-		c.writeln("begin")
-		c.indent++
+		c.writeln(fmt.Sprintf("if not (%s) then continue;", condStr))
 	}
 	c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmp, tmp, sel))
 	if sortStr != "" {
 		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", keyVar, keyVar, sortStr))
 	}
-	if condStr != "" {
-		c.indent--
-		c.writeln("end;")
-	}
+	// condStr does not open a begin/end block anymore
 	for range joinSrcs {
 		c.indent--
 		c.writeln("end;")
