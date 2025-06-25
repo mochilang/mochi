@@ -103,6 +103,20 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 			default:
 				t = AnyType{}
 			}
+		case "union", "union_all", "except", "intersect":
+			if llist, ok := t.(ListType); ok {
+				if rlist, ok := rt.(ListType); ok {
+					if equalTypes(llist.Elem, rlist.Elem) {
+						t = llist
+					} else {
+						t = ListType{Elem: AnyType{}}
+					}
+				} else {
+					t = ListType{Elem: AnyType{}}
+				}
+			} else {
+				t = AnyType{}
+			}
 		default:
 			t = AnyType{}
 		}
@@ -265,6 +279,11 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			return IntType{}
 		case "avg":
 			return FloatType{}
+		case "reduce":
+			if len(p.Call.Args) == 3 {
+				return InferExprType(p.Call.Args[2], env)
+			}
+			return AnyType{}
 		case "now":
 			return Int64Type{}
 		case "keys":
@@ -450,6 +469,17 @@ func ResultType(op string, left, right Type) Type {
 		return AnyType{}
 	case "==", "!=", "<", "<=", ">", ">=":
 		return BoolType{}
+	case "union", "union_all", "except", "intersect":
+		if llist, ok := left.(ListType); ok {
+			if rlist, ok := right.(ListType); ok {
+				if equalTypes(llist.Elem, rlist.Elem) {
+					return llist
+				}
+				return ListType{Elem: AnyType{}}
+			}
+			return ListType{Elem: AnyType{}}
+		}
+		return AnyType{}
 	default:
 		return AnyType{}
 	}
