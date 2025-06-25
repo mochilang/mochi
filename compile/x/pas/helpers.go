@@ -369,8 +369,7 @@ func (c *Compiler) varType(name string) types.Type {
 }
 
 func (c *Compiler) listElemType(p *parser.Primary) string {
-	typStr := inferTypeFromPrimary(p, c.env, c.varTypes)
-	t := parsePasType(typStr)
+	t := types.PasPrimaryType(p, c.env, c.varTypes)
 	if lt, ok := t.(types.ListType); ok {
 		return typeString(lt.Elem)
 	}

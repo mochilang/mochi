@@ -745,7 +745,8 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = typeString(resolveSimpleTypeRef(s.Let.Type))
 			}
 			if typ == "integer" && s.Let.Value != nil {
-				typ = inferTypeFromExpr(s.Let.Value, env, vars)
+				typT := types.PasExprType(s.Let.Value, env, vars)
+				typ = typeString(typT)
 				if typ == "integer" && isStringSliceExpr(s.Let.Value, env, vars) {
 					typ = "string"
 				} else if typ == "integer" && isStringLiteral(s.Let.Value) {
@@ -768,7 +769,8 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 				typ = typeString(resolveSimpleTypeRef(s.Var.Type))
 			}
 			if typ == "integer" && s.Var.Value != nil {
-				typ = inferTypeFromExpr(s.Var.Value, env, vars)
+				typT := types.PasExprType(s.Var.Value, env, vars)
+				typ = typeString(typT)
 				if typ == "integer" && isStringSliceExpr(s.Var.Value, env, vars) {
 					typ = "string"
 				}
@@ -790,7 +792,8 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 					}
 				}
 				if typ == "integer" {
-					typ = inferTypeFromExpr(s.For.Source, env, vars)
+					typT := types.PasExprType(s.For.Source, env, vars)
+					typ = typeString(typT)
 				}
 				if strings.HasPrefix(typ, "specialize TArray<") {
 					inner := strings.TrimSuffix(strings.TrimPrefix(typ, "specialize TArray<"), ">")
@@ -813,66 +816,6 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 			// ignore nested functions
 		}
 	}
-}
-
-func inferTypeFromExpr(e *parser.Expr, env *types.Env, vars map[string]string) string {
-	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
-		return "integer"
-	}
-	u := e.Binary.Left
-	if u == nil || len(u.Ops) > 0 {
-		return "integer"
-	}
-	p := u.Value
-	if p == nil || len(p.Ops) > 0 {
-		return "integer"
-	}
-	return inferTypeFromPrimary(p.Target, env, vars)
-}
-
-func inferTypeFromPrimary(p *parser.Primary, env *types.Env, vars map[string]string) string {
-	switch {
-	case p == nil:
-		return "integer"
-	case p.Lit != nil:
-		switch {
-		case p.Lit.Str != nil:
-			return "string"
-		case p.Lit.Bool != nil:
-			return "boolean"
-		case p.Lit.Float != nil:
-			return "double"
-		default:
-			return "integer"
-		}
-	case p.Selector != nil:
-		if env != nil {
-			if t, err := env.GetVar(p.Selector.Root); err == nil {
-				return typeString(t)
-			}
-		}
-		if vars != nil {
-			if v, ok := vars[p.Selector.Root]; ok {
-				return v
-			}
-		}
-	case p.Struct != nil:
-		return p.Struct.Name
-	case p.List != nil:
-		elem := "integer"
-		if len(p.List.Elems) > 0 {
-			elem = inferTypeFromExpr(p.List.Elems[0], env, vars)
-		}
-		return fmt.Sprintf("specialize TArray<%s>", elem)
-	case p.FunExpr != nil:
-		params := make([]types.Type, len(p.FunExpr.Params))
-		for i, pa := range p.FunExpr.Params {
-			params[i] = resolveSimpleTypeRef(pa.Type)
-		}
-		ret := resolveSimpleTypeRef(p.FunExpr.Return)
-		return typeString(types.FuncType{Params: params, Return: ret})
-	}
-	return "integer"
 }
 
 func (c *Compiler) compileExprWith(expected types.Type, e *parser.Expr) (string, error) {
@@ -1159,7 +1102,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("writeln(%s)", argStr), nil
 		case "str":
 			if len(args) == 1 {
-				t := inferTypeFromExpr(p.Call.Args[0], c.env, c.varTypes)
+				t := typeString(types.PasExprType(p.Call.Args[0], c.env, c.varTypes))
 				if t == "double" {
 					return fmt.Sprintf("FloatToStr(%s)", args[0]), nil
 				}
@@ -1221,7 +1164,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elemType = typeString(lt.Elem)
 			elemT = lt.Elem
 		} else if len(p.List.Elems) > 0 {
-			elemType = inferTypeFromExpr(p.List.Elems[0], c.env, c.varTypes)
+			elemType = typeString(types.PasExprType(p.List.Elems[0], c.env, c.varTypes))
 		}
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
