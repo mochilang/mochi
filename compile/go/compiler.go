@@ -3079,6 +3079,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["mochi/runtime/data"] = true
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "sum":
+		c.imports["mochi/runtime/data"] = true
+		c.use("_sum")
+		return fmt.Sprintf("_sum(%s)", argStr), nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
@@ -3370,7 +3374,7 @@ func (c *Compiler) scanPrimaryImports(p *parser.Primary) {
 		if p.Call.Func == "str" {
 			c.imports["fmt"] = true
 		}
-		if p.Call.Func == "count" || p.Call.Func == "avg" {
+		if p.Call.Func == "count" || p.Call.Func == "avg" || p.Call.Func == "sum" {
 			c.imports["mochi/runtime/data"] = true
 		}
 		if p.Call.Func == "now" {
