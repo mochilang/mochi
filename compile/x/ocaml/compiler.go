@@ -986,7 +986,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil || q.Sort != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -1014,9 +1014,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	var condStr, skipStr, takeStr string
+	var condStr, sortStr, skipStr, takeStr string
 	if q.Where != nil {
 		condStr, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortStr, err = c.compileExpr(q.Sort)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1051,7 +1058,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("%sif %s then (\n", indent, condStr))
 		indent += "  "
 	}
-	b.WriteString(fmt.Sprintf("%s_res := %s :: !_res;\n", indent, sel))
+	if sortStr != "" {
+		b.WriteString(fmt.Sprintf("%s_res := (%s, %s) :: !_res;\n", indent, sortStr, sel))
+	} else {
+		b.WriteString(fmt.Sprintf("%s_res := %s :: !_res;\n", indent, sel))
+	}
 	if condStr != "" {
 		indent = indent[:len(indent)-2]
 		b.WriteString(fmt.Sprintf("%s) else ();\n", indent))
@@ -1062,7 +1073,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	indent = indent[:len(indent)-2]
 	b.WriteString(fmt.Sprintf("%s) %s;\n", indent, src))
-	b.WriteString("  let res = List.rev !_res in\n")
+	if sortStr != "" {
+		b.WriteString("  let pairs = List.rev !_res in\n")
+		b.WriteString("  let pairs = List.sort (fun (k1, _) (k2, _) -> compare k1 k2) pairs in\n")
+		b.WriteString("  let res = List.map snd pairs in\n")
+	} else {
+		b.WriteString("  let res = List.rev !_res in\n")
+	}
 	if skipStr != "" {
 		c.ensureSlice()
 		b.WriteString(fmt.Sprintf("  let res = _slice res %s (List.length res) in\n", skipStr))
