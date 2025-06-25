@@ -1,13 +1,33 @@
 package ktcode
 
 const (
-	helperCast = `inline fun <reified T> _cast(v: Any?): T {
+	helperCast = `import kotlin.reflect.full.primaryConstructor
+
+inline fun <reified T> _cast(v: Any?): T {
     return when (T::class) {
         Int::class -> when (v) { is Number -> v.toInt(); is String -> v.toInt(); else -> 0 } as T
         Double::class -> when (v) { is Number -> v.toDouble(); is String -> v.toDouble(); else -> 0.0 } as T
         Boolean::class -> when (v) { is Boolean -> v; is String -> v == "true"; else -> false } as T
         String::class -> v.toString() as T
-        else -> v as T
+        else -> {
+            if (v is Map<*, *>) {
+                val ctor = T::class.primaryConstructor
+                if (ctor != null) {
+                    val args = ctor.parameters.associateWith { p ->
+                        val value = v[p.name]
+                        when (p.type.classifier) {
+                            Int::class -> when (value) { is Number -> value.toInt(); is String -> value.toInt(); else -> 0 }
+                            Double::class -> when (value) { is Number -> value.toDouble(); is String -> value.toDouble(); else -> 0.0 }
+                            Boolean::class -> when (value) { is Boolean -> value; is String -> value == "true"; else -> false }
+                            String::class -> value?.toString()
+                            else -> value
+                        }
+                    }
+                    return ctor.callBy(args)
+                }
+            }
+            v as T
+        }
     }
 }`
 
