@@ -1,6 +1,6 @@
 # `runtime/vm`
 
-A lightweight bytecode virtual machine used for executing a small subset of Mochi programs.  It includes a compiler that converts parsed Mochi ASTs into a sequence of instructions which are then executed by the VM.
+A lightweight bytecode virtual machine used for executing a small subset of Mochi programs.  It includes a compiler that converts parsed Mochi ASTs into a sequence of instructions which are then executed by the VM. The VM is included in the main `mochi` CLI and can be invoked with `mochi run`.
 
 ## Architecture
 

@@ -40,7 +40,7 @@ func main() {
 }
 
 func run(src string) error {
-	cmd := exec.Command("go", "run", "./runtime/vm/cmd/runvm", src)
+	cmd := exec.Command("go", "run", "./cmd/mochi", "run", src)
 	if inPath := strings.TrimSuffix(src, ".mochi") + ".in"; fileExists(inPath) {
 		f, err := os.Open(inPath)
 		if err != nil {
