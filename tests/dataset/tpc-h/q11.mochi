@@ -23,26 +23,31 @@ let filtered =
   join s in supplier on s.s_suppkey == ps.ps_suppkey
   join n in nation on n.n_nationkey == s.s_nationkey
   where n.n_name == target_nation
-  let value = ps.ps_supplycost * ps.ps_availqty
-  select { ps_partkey: ps.ps_partkey, value }
+  select {
+    ps_partkey: ps.ps_partkey,
+    value: ps.ps_supplycost * ps.ps_availqty
+  }
 
 let grouped =
   from x in filtered
-  group by x.ps_partkey
-  select { ps_partkey: x.ps_partkey, value: sum(x.value) }
+  group by x.ps_partkey into g
+  select {
+    ps_partkey: g.key,
+    value: sum(from r in g select r.value)
+  }
 
 let total =
-  sum(x.value for x in filtered)
+  sum(from x in filtered select x.value)
 
 let threshold = total * 0.0001
 
 let result =
   from x in grouped
   where x.value > threshold
-  order by x.value desc
+  sort by -x.value
   select x
 
-print result
+print(result)
 
 test "Q11 returns high-value partkeys from GERMANY" {
   expect result == [
