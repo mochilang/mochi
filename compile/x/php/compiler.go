@@ -23,11 +23,20 @@ type Compiler struct {
 	methodFields map[string]bool
 	structs      map[string]bool
 	typeNames    map[string]bool
+	helpers      map[string]bool
 }
 
 // New creates a new PHP compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, locals: map[string]bool{}, funcs: map[string]bool{}, methodFields: nil, structs: map[string]bool{}, typeNames: map[string]bool{}}
+	return &Compiler{
+		env:          env,
+		locals:       map[string]bool{},
+		funcs:        map[string]bool{},
+		methodFields: nil,
+		structs:      map[string]bool{},
+		typeNames:    map[string]bool{},
+		helpers:      map[string]bool{},
+	}
 }
 
 // Compile generates PHP code for prog.
@@ -93,6 +102,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			name := funcPrefix + "test_" + sanitizeName(s.Test.Name)
 			c.writeln(name + "();")
 		}
+	}
+	if len(c.helpers) > 0 {
+		c.writeln("")
+		c.emitRuntime()
 	}
 	return c.buf.Bytes(), nil
 }
@@ -791,39 +804,157 @@ func (c *Compiler) compileStructType(st types.StructType) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil {
+	if q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
 	}
-	// Special-case simple sort by variable with no from/where and select same variable
-	if len(q.Froms) == 0 && q.Where == nil && q.Sort != nil {
-		if sname, ok := identName(q.Sort); ok && sname == q.Var {
-			if selname, ok2 := identName(q.Select); ok2 && selname == q.Var {
-				return fmt.Sprintf("(function($tmp){ sort($tmp); return $tmp; })(%s)", src), nil
+
+	// Fast path for simple queries without joins or sorting
+	if len(q.Joins) == 0 && q.Sort == nil {
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		for _, f := range q.Froms {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+		c.env = child
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		var cond string
+		var skipExpr string
+		var takeExpr string
+		if q.Where != nil {
+			cond, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
 			}
 		}
+		if q.Skip != nil {
+			skipExpr, err = c.compileExpr(q.Skip)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Take != nil {
+			takeExpr, err = c.compileExpr(q.Take)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			fromSrcs[i] = fs
+		}
+		capture := queryFreeVars(q)
+		c.env = orig
+
+		var b strings.Builder
+		use := ""
+		if len(capture) > 0 {
+			use = " use (" + strings.Join(capture, ", ") + ")"
+		}
+		b.WriteString("(function()" + use + " {\n")
+		b.WriteString("\t$res = [];\n")
+		b.WriteString(fmt.Sprintf("\tforeach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", src, sanitizeName(q.Var)))
+		indent := "\t\t"
+		for i, fs := range fromSrcs {
+			b.WriteString(fmt.Sprintf(indent+"foreach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", fs, sanitizeName(q.Froms[i].Var)))
+			indent += "\t"
+		}
+		if cond != "" {
+			b.WriteString(indent + "if (" + cond + ") {\n")
+			indent += "\t"
+		}
+		b.WriteString(indent + "$res[] = " + sel + ";\n")
+		if cond != "" {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "}\n")
+		}
+		for range fromSrcs {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "}\n")
+		}
+		b.WriteString("\t}\n")
+		if skipExpr != "" {
+			b.WriteString(fmt.Sprintf("\t$res = array_slice($res, %s);\n", skipExpr))
+		}
+		if takeExpr != "" {
+			b.WriteString(fmt.Sprintf("\t$res = array_slice($res, 0, %s);\n", takeExpr))
+		}
+		b.WriteString("\treturn $res;\n")
+		b.WriteString("})()")
+		return b.String(), nil
 	}
 
-	orig := c.env
+	// General path using _query helper
 	child := types.NewEnv(c.env)
+	varNames := []string{sanitizeName(q.Var)}
 	child.SetVar(q.Var, types.AnyType{}, true)
 	for _, f := range q.Froms {
 		child.SetVar(f.Var, types.AnyType{}, true)
 	}
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
+	orig := c.env
 	c.env = child
-	sel, err := c.compileExpr(q.Select)
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		fromSrcs[i] = fs
+		varNames = append(varNames, sanitizeName(f.Var))
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	paramCopy := append([]string(nil), varNames...)
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinSrcs[i] = js
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinOns[i] = on
+		varNames = append(varNames, sanitizeName(j.Var))
+	}
+	val, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
 		return "", err
 	}
-	var cond string
-	var skipExpr string
-	var takeExpr string
+	var whereExpr, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
-		cond, err = c.compileExpr(q.Where)
+		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -843,53 +974,74 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
-	fromSrcs := make([]string, len(q.Froms))
-	for i, f := range q.Froms {
-		fs, err := c.compileExpr(f.Src)
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
-		fromSrcs[i] = fs
-	}
 	capture := queryFreeVars(q)
 	c.env = orig
 
-	var b strings.Builder
+	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+	params := []string{sanitizeName(q.Var)}
+	for i, fs := range fromSrcs {
+		joins = append(joins, fmt.Sprintf("[ 'items' => %s ]", fs))
+		params = append(params, sanitizeName(q.Froms[i].Var))
+	}
+	paramCopy = append([]string(nil), params...)
+	for i, js := range joinSrcs {
+		onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+		spec := fmt.Sprintf("[ 'items' => %s, 'on' => function(%s)%s { return %s; }", js, "$"+strings.Join(onParams, ", $"), " use ("+strings.Join(capture, ", ")+")", joinOns[i])
+		if q.Joins[i].Side != nil {
+			side := *q.Joins[i].Side
+			if side == "left" || side == "outer" {
+				spec += ", 'left' => true"
+			}
+			if side == "right" || side == "outer" {
+				spec += ", 'right' => true"
+			}
+		}
+		spec += " ]"
+		joins = append(joins, spec)
+		paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+	}
+
+	allParams := "$" + strings.Join(paramCopy, ", $")
 	use := ""
 	if len(capture) > 0 {
 		use = " use (" + strings.Join(capture, ", ") + ")"
 	}
+	selectFn := fmt.Sprintf("function(%s)%s { return %s; }", allParams, use, val)
+	var whereFn, sortFn string
+	if whereExpr != "" {
+		whereFn = fmt.Sprintf("function(%s)%s { return (%s); }", allParams, use, whereExpr)
+	}
+	if sortExpr != "" {
+		sortFn = fmt.Sprintf("function(%s)%s { return (%s); }", allParams, use, sortExpr)
+	}
+
+	var b strings.Builder
 	b.WriteString("(function()" + use + " {\n")
-	b.WriteString("\t$res = [];\n")
-	b.WriteString(fmt.Sprintf("\tforeach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", src, sanitizeName(q.Var)))
-	indent := "\t\t"
-	for i, fs := range fromSrcs {
-		b.WriteString(fmt.Sprintf(indent+"foreach ((is_string(%[1]s) ? str_split(%[1]s) : %[1]s) as $%s) {\n", fs, sanitizeName(q.Froms[i].Var)))
-		indent += "\t"
+	b.WriteString("\t$_src = " + src + ";\n")
+	b.WriteString("\treturn _query($_src, [\n")
+	for i, j := range joins {
+		b.WriteString("\t\t" + j)
+		if i != len(joins)-1 {
+			b.WriteString(",")
+		}
+		b.WriteString("\n")
 	}
-	if cond != "" {
-		b.WriteString(indent + "if (" + cond + ") {\n")
-		indent += "\t"
+	b.WriteString("\t], [ 'select' => " + selectFn)
+	if whereFn != "" {
+		b.WriteString(", 'where' => " + whereFn)
 	}
-	b.WriteString(indent + "$res[] = " + sel + ";\n")
-	if cond != "" {
-		indent = indent[:len(indent)-1]
-		b.WriteString(indent + "}\n")
+	if sortFn != "" {
+		b.WriteString(", 'sortKey' => " + sortFn)
 	}
-	for range fromSrcs {
-		indent = indent[:len(indent)-1]
-		b.WriteString(indent + "}\n")
-	}
-	b.WriteString("\t}\n")
 	if skipExpr != "" {
-		b.WriteString(fmt.Sprintf("\t$res = array_slice($res, %s);\n", skipExpr))
+		b.WriteString(", 'skip' => " + skipExpr)
 	}
 	if takeExpr != "" {
-		b.WriteString(fmt.Sprintf("\t$res = array_slice($res, 0, %s);\n", takeExpr))
+		b.WriteString(", 'take' => " + takeExpr)
 	}
-	b.WriteString("\treturn $res;\n")
+	b.WriteString(" ]);\n")
 	b.WriteString("})()")
+	c.use("_query")
 	return b.String(), nil
 }
 

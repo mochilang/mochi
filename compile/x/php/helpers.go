@@ -3,6 +3,7 @@ package phpcode
 import (
 	"mochi/parser"
 	"mochi/types"
+	"sort"
 	"strings"
 )
 
@@ -84,4 +85,24 @@ func (c *Compiler) isMapExpr(e *parser.Expr) bool {
 		}
 	}
 	return false
+}
+
+func (c *Compiler) use(name string) {
+	if c.helpers == nil {
+		c.helpers = map[string]bool{}
+	}
+	c.helpers[name] = true
+}
+
+func (c *Compiler) emitRuntime() {
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		if code, ok := helperMap[n]; ok {
+			c.buf.WriteString(code)
+		}
+	}
 }
