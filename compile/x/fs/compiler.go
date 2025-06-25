@@ -210,7 +210,7 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 	paramTypes := make([]types.Type, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), fsType(p.Type))
-		paramTypes[i] = c.resolveTypeRef(p.Type)
+		paramTypes[i] = types.ResolveTypeRef(p.Type, c.env)
 	}
 	kw := "let rec"
 	c.writeln(fmt.Sprintf("%s %s %s : %s =", kw, sanitizeName(fn.Name), strings.Join(params, " "), ret))
@@ -308,17 +308,17 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	if c.env != nil {
 		st := types.StructType{Name: td.Name, Fields: map[string]types.Type{}, Order: []string{}, Methods: map[string]types.Method{}}
 		for _, f := range fields {
-			st.Fields[f.Name] = c.resolveTypeRef(f.Type)
+			st.Fields[f.Name] = types.ResolveTypeRef(f.Type, c.env)
 			st.Order = append(st.Order, f.Name)
 		}
 		for _, m := range methods {
 			params := make([]types.Type, len(m.Params))
 			for i, p := range m.Params {
-				params[i] = c.resolveTypeRef(p.Type)
+				params[i] = types.ResolveTypeRef(p.Type, c.env)
 			}
 			var ret types.Type = types.VoidType{}
 			if m.Return != nil {
-				ret = c.resolveTypeRef(m.Return)
+				ret = types.ResolveTypeRef(m.Return, c.env)
 			}
 			st.Methods[m.Name] = types.Method{Decl: m, Type: types.FuncType{Params: params, Return: ret}}
 		}
@@ -348,13 +348,13 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt, fields [
 	paramTypes := make([]types.Type, len(fn.Params))
 	for i, p := range fn.Params {
 		params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), fsType(p.Type))
-		paramTypes[i] = c.resolveTypeRef(p.Type)
+		paramTypes[i] = types.ResolveTypeRef(p.Type, c.env)
 	}
 	c.writeln(fmt.Sprintf("member this.%s %s : %s =", name, strings.Join(params, " "), ret))
 
 	child := types.NewEnv(c.env)
 	for _, f := range fields {
-		child.SetVar(f.Name, c.resolveTypeRef(f.Type), true)
+		child.SetVar(f.Name, types.ResolveTypeRef(f.Type, c.env), true)
 	}
 	for i, p := range fn.Params {
 		child.SetVar(p.Name, paramTypes[i], true)
@@ -478,7 +478,7 @@ func (c *Compiler) compileExternVar(ev *parser.ExternVarDecl) error {
 	typ := fsType(ev.Type)
 	c.writeln(fmt.Sprintf("let mutable %s: %s = Unchecked.defaultof<%s>", name, typ, typ))
 	if c.env != nil {
-		c.env.SetVar(ev.Name(), c.resolveTypeRef(ev.Type), true)
+		c.env.SetVar(ev.Name(), types.ResolveTypeRef(ev.Type, c.env), true)
 	}
 	return nil
 }
@@ -489,13 +489,13 @@ func (c *Compiler) compileExternFun(ef *parser.ExternFunDecl) error {
 	for i, p := range ef.Params {
 		params[i] = fmt.Sprintf("(%s: %s)", sanitizeName(p.Name), fsType(p.Type))
 		if c.env != nil {
-			paramTypes[i] = c.resolveTypeRef(p.Type)
+			paramTypes[i] = types.ResolveTypeRef(p.Type, c.env)
 		}
 	}
 	ret := fsType(ef.Return)
 	c.writeln(fmt.Sprintf("let %s %s : %s = failwith \"extern\"", sanitizeName(ef.Name()), strings.Join(params, " "), ret))
 	if c.env != nil {
-		ft := types.FuncType{Params: paramTypes, Return: c.resolveTypeRef(ef.Return)}
+		ft := types.FuncType{Params: paramTypes, Return: types.ResolveTypeRef(ef.Return, c.env)}
 		c.env.SetVar(ef.Name(), ft, false)
 	}
 	return nil
@@ -542,9 +542,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.locals[name] = true
 		}
 		if c.env != nil {
-			typ := c.resolveTypeRef(s.Let.Type)
+			typ := types.ResolveTypeRef(s.Let.Type, c.env)
 			if s.Let.Type == nil {
-				typ = c.inferExprType(s.Let.Value)
+				typ = types.TypeOfExpr(s.Let.Value, c.env)
 			}
 			c.env.SetVar(s.Let.Name, typ, false)
 		}
@@ -564,9 +564,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.locals[name] = true
 		}
 		if c.env != nil {
-			typ := c.resolveTypeRef(s.Var.Type)
+			typ := types.ResolveTypeRef(s.Var.Type, c.env)
 			if s.Var.Type == nil {
-				typ = c.inferExprType(s.Var.Value)
+				typ = types.TypeOfExpr(s.Var.Value, c.env)
 			}
 			c.env.SetVar(s.Var.Name, typ, true)
 		}
@@ -683,9 +683,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			typ = types.IntType{}
 		} else if c.isStringExpr(f.Source) {
 			typ = types.StringType{}
-		} else if mt, ok := c.inferExprType(f.Source).(types.MapType); ok {
+		} else if mt, ok := types.TypeOfExpr(f.Source, c.env).(types.MapType); ok {
 			typ = mt.Key
-		} else if lt, ok := c.inferExprType(f.Source).(types.ListType); ok {
+		} else if lt, ok := types.TypeOfExpr(f.Source, c.env).(types.ListType); ok {
 			typ = lt.Elem
 		}
 		c.env.SetVar(f.Name, typ, true)
@@ -883,7 +883,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	orig := c.env
 	child := types.NewEnv(c.env)
-	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+	if lt, ok := types.TypeOfExpr(q.Source, c.env).(types.ListType); ok {
 		child.SetVar(q.Var, lt.Elem, true)
 	} else {
 		child.SetVar(q.Var, types.AnyType{}, true)
@@ -895,7 +895,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		fromSrc[i] = fs
-		if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+		if lt, ok := types.TypeOfExpr(f.Src, c.env).(types.ListType); ok {
 			child.SetVar(f.Var, lt.Elem, true)
 		} else {
 			child.SetVar(f.Var, types.AnyType{}, true)
