@@ -31,6 +31,7 @@ The backend implements a small but practical subset of Mochi:
 - Builtin helpers: `len`, `count`, `avg`, `str`, `push`, `keys`, `print`, `input`, `now`, `json`, `load` and `save`
 - User-defined struct types and literals
 - Dataset queries with `from`/`where`, sorting, skipping and taking
+- Test blocks with `expect` statements
 
 ## Unsupported Features
 
@@ -46,7 +47,6 @@ Several language constructs remain unimplemented:
 - Reflection or macro facilities
 - Extern object declarations and package exports
 - Functions with multiple return values
-- `test` blocks and expectations
 - Agent declarations, event emission and intent handlers
 - Model declarations and extern variables/types
 
