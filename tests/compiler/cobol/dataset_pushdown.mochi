@@ -1,0 +1,9 @@
+let a = [0,1,2,3]
+let b = [10,20]
+let res = from x in a
+          from y in b
+          where x > 1
+          select x + y
+for v in res {
+  print(v)
+}

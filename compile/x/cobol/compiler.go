@@ -258,7 +258,7 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 			}
 			expr = tmp
 		}
-		c.writeln(fmt.Sprintf("DISPLAY %s", expr))
+		c.writeln(fmt.Sprintf("    DISPLAY %s", expr))
 		return "0"
 	}
 	if name == "LEN" && len(n.Children) == 1 {
@@ -727,6 +727,29 @@ func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 	c.writeln(fmt.Sprintf("    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= %d", length))
 	c.indent++
 	c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", srcArr, varName))
+
+	whereInserted := false
+	pushIdx := len(fromNodes)
+	if whereNode != nil {
+		if exprUsesOnly(whereNode, map[string]bool{n.Value.(string): true}) {
+			pushIdx = -1
+		} else {
+			for i, fn := range fromNodes {
+				if exprUsesOnly(whereNode, map[string]bool{fn.Value.(string): true}) {
+					pushIdx = i
+					break
+				}
+			}
+		}
+	}
+
+	if whereNode != nil && pushIdx == -1 {
+		cond := c.expr(whereNode)
+		c.writeln(fmt.Sprintf("IF %s", cond))
+		c.indent++
+		whereInserted = true
+	}
+
 	for i, inf := range infos {
 		idxName := fmt.Sprintf("IDX%d", i+2)
 		c.declare(fmt.Sprintf("01 %s PIC 9.", idxName))
@@ -734,11 +757,18 @@ func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 		c.writeln(fmt.Sprintf("    PERFORM VARYING %s FROM 0 BY 1 UNTIL %s >= %d", idxName, idxName, inf.length))
 		c.indent++
 		c.writeln(fmt.Sprintf("MOVE %s(%s + 1) TO %s", inf.arr, idxName, inf.varName))
+		if whereNode != nil && pushIdx == i {
+			cond := c.expr(whereNode)
+			c.writeln(fmt.Sprintf("IF %s", cond))
+			c.indent++
+			whereInserted = true
+		}
 	}
-	if whereNode != nil {
+	if whereNode != nil && pushIdx == len(fromNodes) {
 		cond := c.expr(whereNode)
 		c.writeln(fmt.Sprintf("IF %s", cond))
 		c.indent++
+		whereInserted = true
 	}
 	val := c.expr(selNode)
 	c.writeln(fmt.Sprintf("ADD 1 TO %s", matchVar))
@@ -756,11 +786,11 @@ func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 	c.writeln("END-IF")
 	c.indent--
 	c.writeln("END-IF")
-	if whereNode != nil {
+	if whereInserted {
 		c.indent--
 		c.writeln("END-IF")
 	}
-	for range infos {
+	for i := len(infos) - 1; i >= 0; i-- {
 		c.indent--
 		c.writeln("    END-PERFORM")
 	}

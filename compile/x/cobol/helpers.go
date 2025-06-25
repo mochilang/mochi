@@ -83,7 +83,7 @@ func (c *Compiler) newTemp() string {
 
 func isSimpleExpr(n *ast.Node) bool {
 	switch n.Kind {
-	case "int", "float", "selector", "string", "bool":
+	case "int", "float", "selector", "string", "bool", "call":
 		return true
 	case "unary":
 		if n.Value == "-" {
@@ -147,4 +147,37 @@ func selectorName(n *ast.Node) string {
 		return selectorName(n.Children[0]) + "_" + name
 	}
 	return name
+}
+
+// rootSelector returns the base identifier for a selector expression.
+func rootSelector(n *ast.Node) string {
+	if n.Kind != "selector" {
+		return ""
+	}
+	if len(n.Children) > 0 && n.Children[0].Kind == "selector" {
+		return rootSelector(n.Children[0])
+	}
+	if s, ok := n.Value.(string); ok {
+		return s
+	}
+	return ""
+}
+
+// exprUsesOnly reports whether expression n references only the identifiers in allowed.
+func exprUsesOnly(n *ast.Node, allowed map[string]bool) bool {
+	if n == nil {
+		return true
+	}
+	if n.Kind == "selector" {
+		root := rootSelector(n)
+		if root != "" && !allowed[root] {
+			return false
+		}
+	}
+	for _, ch := range n.Children {
+		if !exprUsesOnly(ch, allowed) {
+			return false
+		}
+	}
+	return true
 }
