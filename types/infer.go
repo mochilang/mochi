@@ -340,7 +340,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		var keyType Type = AnyType{}
 		var valType Type = AnyType{}
 		if len(p.Map.Items) > 0 {
-			if _, ok := simpleStringKey(p.Map.Items[0].Key); ok {
+			if _, ok := SimpleStringKey(p.Map.Items[0].Key); ok {
 				keyType = StringType{}
 			} else {
 				keyType = InferExprType(p.Map.Items[0].Key, env)
@@ -348,7 +348,7 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			valType = InferExprType(p.Map.Items[0].Value, env)
 			for _, it := range p.Map.Items[1:] {
 				var kt Type
-				if _, ok := simpleStringKey(it.Key); ok {
+				if _, ok := SimpleStringKey(it.Key); ok {
 					kt = StringType{}
 				} else {
 					kt = InferExprType(it.Key, env)
@@ -534,7 +534,9 @@ func isBool(t Type) bool   { _, ok := t.(BoolType); return ok }
 func isString(t Type) bool { _, ok := t.(StringType); return ok }
 func isList(t Type) bool   { _, ok := t.(ListType); return ok }
 
-func simpleStringKey(e *parser.Expr) (string, bool) {
+// SimpleStringKey returns the string value of e if it is a simple
+// string key expression like a bare identifier or string literal.
+func SimpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil {
 		return "", false
 	}
