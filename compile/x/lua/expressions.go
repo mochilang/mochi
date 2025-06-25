@@ -355,23 +355,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	group := q.Group != nil
-	for _, j := range q.Joins {
-		if j.Side != nil {
-			return "", fmt.Errorf("join sides not supported")
-		}
+	if q.Group != nil || len(q.Joins) > 0 {
+		return "", fmt.Errorf("unsupported query expression")
 	}
+
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
 	}
 	iter := sanitizeName(q.Var)
+
 	var whereCond, sortExpr, skipExpr, takeExpr string
-	if group {
-		if _, err = c.compileExpr(q.Group.Expr); err != nil {
-			return "", err
-		}
-	}
 	if q.Where != nil {
 		whereCond, err = c.compileExpr(q.Where)
 		if err != nil {
@@ -396,6 +390,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		return "", err
@@ -403,53 +398,61 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var b strings.Builder
 	b.WriteString("(function()\n")
-
-	// handle simple joins/cross joins without sort/skip/take
-	if !group && (len(q.Froms) > 0 || len(q.Joins) > 0) && sortExpr == "" && skipExpr == "" && takeExpr == "" {
-		b.WriteString("\tlocal _res = {}\n")
-		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
-		indent := "\t\t"
-		for _, f := range q.Froms {
-			fs, err := c.compileExpr(f.Src)
-			if err != nil {
-				return "", err
-			}
-			b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(f.Var), fs))
-			indent += "\t"
-		}
-		for _, j := range q.Joins {
-			js, err := c.compileExpr(j.Src)
-			if err != nil {
-				return "", err
-			}
-			b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(j.Var), js))
-			indent += "\t"
-		}
-		if whereCond != "" {
-			b.WriteString(fmt.Sprintf(indent+"if %s then\n", whereCond))
-			indent += "\t"
-		}
-		b.WriteString(indent + "table.insert(_res, " + sel + ")\n")
-		for i := 0; i < len(q.Froms)+len(q.Joins); i++ {
-			indent = indent[:len(indent)-1]
-			b.WriteString(indent + "end\n")
-		}
-		if whereCond != "" {
-			indent = indent[:len(indent)-1]
-			b.WriteString(indent + "end\n")
-		}
-		b.WriteString("\tend\n")
-		b.WriteString("\treturn _res\n")
-		b.WriteString("end)()")
-		return b.String(), nil
-	}
-
 	b.WriteString("\tlocal _res = {}\n")
 	b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
-	b.WriteString("\t\tlocal _row = {}\n")
-	b.WriteString(fmt.Sprintf("\t\t_row.v = %s\n", iter))
-	b.WriteString("\t\t_res[#_res+1] = _row\n")
+	indent := "\t\t"
+	for _, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(fmt.Sprintf(indent+"for _, %s in ipairs(%s) do\n", sanitizeName(f.Var), fs))
+		indent += "\t"
+	}
+	if whereCond != "" {
+		b.WriteString(fmt.Sprintf(indent+"if %s then\n", whereCond))
+		indent += "\t"
+	}
+	if sortExpr != "" {
+		b.WriteString(fmt.Sprintf(indent+"_res[#_res+1] = {__key = %s, __val = %s}\n", sortExpr, sel))
+	} else {
+		b.WriteString(fmt.Sprintf(indent+"_res[#_res+1] = %s\n", sel))
+	}
+	if whereCond != "" {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+	}
+	for _ = range q.Froms {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "end\n")
+	}
 	b.WriteString("\tend\n")
+
+	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
+		b.WriteString("\tlocal items = _res\n")
+		if sortExpr != "" {
+			b.WriteString("\ttable.sort(items, function(a,b) return a.__key < b.__key end)\n")
+			b.WriteString("\tlocal tmp = {}\n")
+			b.WriteString("\tfor _, it in ipairs(items) do tmp[#tmp+1] = it.__val end\n")
+			b.WriteString("\titems = tmp\n")
+		}
+		if skipExpr != "" {
+			b.WriteString(fmt.Sprintf("\tlocal skip = %s\n", skipExpr))
+			b.WriteString("\tif skip < #items then\n")
+			b.WriteString("\t\tfor i=1,skip do table.remove(items,1) end\n")
+			b.WriteString("\telse\n")
+			b.WriteString("\t\titems = {}\n")
+			b.WriteString("\tend\n")
+		}
+		if takeExpr != "" {
+			b.WriteString(fmt.Sprintf("\tlocal take = %s\n", takeExpr))
+			b.WriteString("\tif take < #items then\n")
+			b.WriteString("\t\tfor i=#items, take+1, -1 do table.remove(items) end\n")
+			b.WriteString("\tend\n")
+		}
+		b.WriteString("\t_res = items\n")
+	}
+
 	b.WriteString("\treturn _res\n")
 	b.WriteString("end)()")
 	return b.String(), nil

@@ -16,7 +16,7 @@ This backend compiles Mochi programs to plain Lua source so that examples can ru
 - Conditionals (`if`/`else`) and loops (`for`/`while`)
 - Local and global function definitions plus anonymous closures
 - Lists and maps with indexing and slicing
-- Query expressions without joins and basic clauses (`where`, `sort`, `skip`, `take`)
+- Query expressions with cross joins and basic clauses (`where`, `sort`, `skip`, `take`)
 - Common built-in functions like `print`, `input`, `count`, `avg` and `str`
 - Dataset `load` and `save` for JSON, JSONL, YAML and CSV
 - Test blocks compiled and executed automatically
