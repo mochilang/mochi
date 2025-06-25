@@ -47,6 +47,25 @@ const (
 		"    }\n" +
 		"    return res;\n" +
 		"}\n"
+	helperFormatDuration = "String _formatDuration(Duration d) {\n" +
+		"    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';\n" +
+		"    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';\n" +
+		"    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';\n" +
+		"}\n"
+	helperRunTest = "bool _runTest(String name, void Function() f) {\n" +
+		"    stdout.write('   test $name ...');\n" +
+		"    var start = DateTime.now();\n" +
+		"    try {\n" +
+		"        f();\n" +
+		"        var d = DateTime.now().difference(start);\n" +
+		"        stdout.writeln(' ok (${_formatDuration(d)})');\n" +
+		"        return true;\n" +
+		"    } catch (e) {\n" +
+		"        var d = DateTime.now().difference(start);\n" +
+		"        stdout.writeln(' fail $e (${_formatDuration(d)})');\n" +
+		"        return false;\n" +
+		"    }\n" +
+		"}\n"
 	helperStream = "class _Stream<T> {\n" +
 		"    String name;\n" +
 		"    List<void Function(T)> handlers = [];\n" +
@@ -330,26 +349,28 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_indexString": helperIndexString,
-	"_unionAll":    helperUnionAll,
-	"_union":       helperUnion,
-	"_except":      helperExcept,
-	"_intersect":   helperIntersect,
-	"_Stream":      helperStream,
-	"_Agent":       helperAgent,
-	"_waitAll":     helperWaitAll,
-	"_Group":       helperGroup,
-	"_group_by":    helperGroupBy,
-	"_fetch":       helperFetch,
-	"_load":        helperLoad,
-	"_save":        helperSave,
-	"_query":       helperQuery,
-	"_genText":     helperGenText,
-	"_genEmbed":    helperGenEmbed,
-	"_genStruct":   helperGenStruct,
-	"_json":        helperJson,
-	"_equal":       helperEqual,
-	"_distinct":    helperDistinct,
+	"_indexString":    helperIndexString,
+	"_unionAll":       helperUnionAll,
+	"_union":          helperUnion,
+	"_except":         helperExcept,
+	"_intersect":      helperIntersect,
+	"_Stream":         helperStream,
+	"_Agent":          helperAgent,
+	"_waitAll":        helperWaitAll,
+	"_Group":          helperGroup,
+	"_group_by":       helperGroupBy,
+	"_fetch":          helperFetch,
+	"_load":           helperLoad,
+	"_save":           helperSave,
+	"_query":          helperQuery,
+	"_genText":        helperGenText,
+	"_genEmbed":       helperGenEmbed,
+	"_genStruct":      helperGenStruct,
+	"_json":           helperJson,
+	"_equal":          helperEqual,
+	"_distinct":       helperDistinct,
+	"_formatDuration": helperFormatDuration,
+	"_runTest":        helperRunTest,
 }
 
 func (c *Compiler) use(name string) {
