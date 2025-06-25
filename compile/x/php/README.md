@@ -21,6 +21,7 @@ The PHP compiler implements a subset of Mochi including:
 - lists and maps with indexing and updates
 - built-in helpers: `print`, `len`, `str`, `input`, `count`, `avg`
 - dataset queries with `from`/`where`/`select`, sorting, pagination and joins
+- grouping operations in dataset queries
 - set operations: `union`, `union all`, `except`, and `intersect`
 - simple test blocks (`test`)
 
@@ -31,7 +32,6 @@ Several advanced language features are not yet available:
 - modules or imports
 - concurrency primitives
 - generics and complex type inference
-- grouping operations in dataset queries
 - dataset helpers like `fetch`, `load`, `save` and `generate`
 - pattern matching with `match`
 - agent/stream declarations (`agent`, `on`, `emit`)

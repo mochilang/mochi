@@ -211,6 +211,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	c.locals = map[string]bool{}
 	for _, p := range fn.Params {
 		c.locals[p.Name] = true
+		if c.env != nil {
+			c.env.SetVar(p.Name, types.AnyType{}, true)
+		}
 	}
 	c.indent++
 	for _, st := range fn.Body {
@@ -258,6 +261,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
 	c.locals[l.Name] = true
+	if c.env != nil {
+		c.env.SetVar(l.Name, types.AnyType{}, true)
+	}
 	return nil
 }
 
@@ -285,6 +291,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", name, val))
 	c.locals[v.Name] = true
+	if c.env != nil {
+		c.env.SetVar(v.Name, types.AnyType{}, true)
+	}
 	return nil
 }
 
@@ -804,12 +813,48 @@ func (c *Compiler) compileStructType(st types.StructType) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil {
-		return "", fmt.Errorf("unsupported query expression")
-	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
+	}
+
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		capture := queryFreeVars(q, orig)
+		c.env = orig
+
+		use := ""
+		if len(capture) > 0 {
+			use = " use (" + strings.Join(capture, ", ") + ")"
+		}
+		var b strings.Builder
+		b.WriteString("(function()" + use + " {\n")
+		b.WriteString(fmt.Sprintf("\t$_groups = _group_by(%s, function($%s)%s { return %s; });\n", src, sanitizeName(q.Var), use, keyExpr))
+		b.WriteString("\t$res = [];\n")
+		b.WriteString(fmt.Sprintf("\tforeach ($_groups as $%s) {\n", sanitizeName(q.Group.Name)))
+		b.WriteString(fmt.Sprintf("\t\t$res[] = %s;\n", valExpr))
+		b.WriteString("\t}\n")
+		b.WriteString("\treturn $res;\n")
+		b.WriteString("})()")
+		c.use("_Group")
+		c.use("_group_by")
+		return b.String(), nil
 	}
 
 	// Fast path for simple queries without joins or sorting
@@ -859,7 +904,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			fromSrcs[i] = fs
 		}
-		capture := queryFreeVars(q)
+		capture := queryFreeVars(q, orig)
 		c.env = orig
 
 		var b strings.Builder
@@ -974,7 +1019,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
-	capture := queryFreeVars(q)
+	capture := queryFreeVars(q, orig)
 	c.env = orig
 
 	joins := make([]string, 0, len(q.Froms)+len(q.Joins))
@@ -1204,7 +1249,7 @@ func scanPostfix(p *parser.PostfixExpr, vars map[string]struct{}) {
 	}
 }
 
-func queryFreeVars(q *parser.QueryExpr) []string {
+func queryFreeVars(q *parser.QueryExpr, env *types.Env) []string {
 	vars := map[string]struct{}{}
 	scanExpr(q.Source, vars)
 	for _, f := range q.Froms {
@@ -1213,6 +1258,9 @@ func queryFreeVars(q *parser.QueryExpr) []string {
 	for _, j := range q.Joins {
 		scanExpr(j.Src, vars)
 		scanExpr(j.On, vars)
+	}
+	if q.Group != nil {
+		scanExpr(q.Group.Expr, vars)
 	}
 	scanExpr(q.Select, vars)
 	scanExpr(q.Where, vars)
@@ -1223,8 +1271,16 @@ func queryFreeVars(q *parser.QueryExpr) []string {
 	for _, f := range q.Froms {
 		delete(vars, f.Var)
 	}
+	if q.Group != nil {
+		delete(vars, q.Group.Name)
+	}
 	outMap := map[string]struct{}{}
 	for k := range vars {
+		if env != nil {
+			if _, err := env.GetVar(k); err != nil {
+				continue
+			}
+		}
 		outMap["$"+sanitizeName(k)] = struct{}{}
 	}
 	out := make([]string, 0, len(outMap))
