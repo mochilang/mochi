@@ -39,25 +39,24 @@ let target_nation = "BRAZIL"
 
 let result =
   from l in lineitem
-  join p in part on p.p_partkey == l.l_partkey
-  where p.p_type == target_type
-  join s in supplier on s.s_suppkey == l.l_suppkey
-  join o in orders on o.o_orderkey == l.l_orderkey
-  where o.o_orderdate >= start_date and o.o_orderdate <= end_date
-  join c in customer on c.c_custkey == o.o_custkey
-  join n in nation on n.n_nationkey == c.c_nationkey
-  join r in region on r.r_regionkey == n.n_regionkey
-  where r.r_name == "AMERICA"
-  let revenue = l.l_extendedprice * (1 - l.l_discount)
-  let year = substring(o.o_orderdate, 0, 4)
-  group by year
+  join from p in part on p.p_partkey == l.l_partkey
+  join from s in supplier on s.s_suppkey == l.l_suppkey
+  join from o in orders on o.o_orderkey == l.l_orderkey
+  join from c in customer on c.c_custkey == o.o_custkey
+  join from n in nation on n.n_nationkey == c.c_nationkey
+  join from r in region on r.r_regionkey == n.n_regionkey
+  where (p.p_type == target_type && o.o_orderdate >= start_date && o.o_orderdate <= end_date && r.r_name == "AMERICA")
+  group by substring(o.o_orderdate, 0, 4) into year
   select {
     o_year: year,
     mkt_share:
-      sum(if n.n_name == target_nation then revenue else 0) /
-      sum(revenue)
+      sum(match n.n_name == target_nation {
+        true => l.l_extendedprice * (1 - l.l_discount)
+        _ => 0
+      }) /
+      sum(l.l_extendedprice * (1 - l.l_discount))
   }
-  order by o_year
+  sort by o_year
 
 print result
 
