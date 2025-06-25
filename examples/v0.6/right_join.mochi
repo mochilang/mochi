@@ -24,8 +24,8 @@ let result = from c in customers
 print("--- Right Join using syntax ---")
 for entry in result {
   if entry.order {
-    print("Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total)
+    print("Customer " + entry.customerName + " has order " + str(entry.order.id) + " - $" + str(entry.order.total))
   } else {
-    print("Customer", entry.customerName, "has no orders")
+    print("Customer " + entry.customerName + " has no orders")
   }
 }

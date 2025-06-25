@@ -46,18 +46,18 @@ fun postTweet(t: Twitter, userId: int, tweetId: int): Twitter {
 
 // Return up to 10 most recent tweet ids in the user's news feed.
 fun getNewsFeed(t: Twitter, userId: int): list<int> {
-  var all: list<Tweet> = []
+  var allTweets: list<Tweet> = []
   if userId in t.tweets {
-    all = all + t.tweets[userId]
+    allTweets = allTweets + t.tweets[userId]
   }
   if userId in t.follows {
     for f in t.follows[userId] {
       if f in t.tweets {
-        all = all + t.tweets[f]
+        allTweets = allTweets + t.tweets[f]
       }
     }
   }
-  let sorted = from tw in all sort by -tw.time select tw
+  let sorted = from tw in allTweets sort by -tw.time select tw
   var feed: list<int> = []
   var i = 0
   while i < len(sorted) && i < 10 {
