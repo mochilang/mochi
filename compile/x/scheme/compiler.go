@@ -890,6 +890,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -1152,6 +1154,98 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		opts = o
 	}
 	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if len(q.Joins) > 0 || q.Group != nil {
+		return "", fmt.Errorf("unsupported query expression")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	c.env = child
+
+	sel, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	var cond, skipExpr, takeExpr string
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Skip != nil {
+		skipExpr, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	if q.Take != nil {
+		takeExpr, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	c.env = orig
+
+	var b strings.Builder
+	b.WriteString("(let ((_res '()))\n")
+	b.WriteString(fmt.Sprintf("  (for-each (lambda (%s)\n", sanitizeName(q.Var)))
+	var writeLoops func(int, string)
+	writeLoops = func(i int, indent string) {
+		if i == len(fromSrcs) {
+			if cond != "" {
+				b.WriteString(indent + "(when " + cond + "\n")
+				indent += "  "
+			}
+			b.WriteString(indent + fmt.Sprintf("(set! _res (append _res (list %s)))\n", sel))
+			if cond != "" {
+				indent = indent[:len(indent)-2]
+				b.WriteString(indent + ")\n")
+			}
+			return
+		}
+		fv := sanitizeName(q.Froms[i].Var)
+		fs := fromSrcs[i]
+		b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", fv))
+		writeLoops(i+1, indent+"  ")
+		b.WriteString(indent + fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", fs, fs, fs))
+	}
+	writeLoops(0, "    ")
+	b.WriteString(fmt.Sprintf("  ) (if (string? %s) (string->list %s) %s))\n", src, src, src))
+	if skipExpr != "" {
+		c.needSlice = true
+		b.WriteString(fmt.Sprintf("  (set! _res (_slice _res %s (length _res)))\n", skipExpr))
+	}
+	if takeExpr != "" {
+		c.needSlice = true
+		b.WriteString(fmt.Sprintf("  (set! _res (_slice _res 0 %s))\n", takeExpr))
+	}
+	b.WriteString("  _res)")
+	return b.String(), nil
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
