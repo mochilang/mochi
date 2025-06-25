@@ -1044,6 +1044,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	useHelper := false
+	if q.Group != nil {
+		useHelper = true
+	}
 	for _, j := range q.Joins {
 		if j.Side != nil {
 			useHelper = true
@@ -1423,8 +1426,15 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		joinOns[i] = on
 	}
 	var whereExpr, sortExpr, skipExpr, takeExpr string
+	var groupKey string
 	if q.Where != nil {
 		whereExpr, err = c.compileExpr(q.Where)
+		if err != nil {
+			return "", err
+		}
+	}
+	if q.Group != nil {
+		groupKey, err = c.compileExpr(q.Group.Expr)
 		if err != nil {
 			return "", err
 		}
@@ -1475,7 +1485,13 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
 	}
 	allParams := strings.Join(paramCopy, " ")
-	selectFn := fmt.Sprintf("(fn [%s] %s)", allParams, selExpr)
+	var selectFn string
+	if q.Group != nil {
+		tuple := "[" + strings.Join(strings.Split(allParams, " "), " ") + "]"
+		selectFn = fmt.Sprintf("(fn [%s] %s)", allParams, tuple)
+	} else {
+		selectFn = fmt.Sprintf("(fn [%s] %s)", allParams, selExpr)
+	}
 	var whereFn, sortFn string
 	if whereExpr != "" {
 		whereFn = fmt.Sprintf("(fn [%s] %s)", allParams, whereExpr)
@@ -1498,6 +1514,36 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 	}
 	opts := "{ " + strings.Join(optsParts, " ") + " }"
 	var b strings.Builder
+	if q.Group != nil {
+		b.WriteString("(let [_src " + src + "\n")
+		b.WriteString("      _rows (_query _src [\n")
+		for i, j := range joins {
+			b.WriteString("        " + j)
+			if i != len(joins)-1 {
+				b.WriteString("\n")
+			}
+		}
+		b.WriteString("\n      ] { :select " + selectFn)
+		if whereFn != "" {
+			b.WriteString(" :where " + whereFn)
+		}
+		b.WriteString(" })\n")
+		b.WriteString("      _groups (_group_by _rows (fn [" + allParams + "] " + groupKey + "))\n")
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
+		c.env = origEnv
+		b.WriteString("  (vec (map (fn [" + sanitizeName(q.Group.Name) + "] " + valExpr + ") _groups)))")
+		c.use("_query")
+		c.use("_group_by")
+		c.use("_Group")
+		return b.String(), nil
+	}
 	b.WriteString("(let [_src " + src + "]\n  (_query _src [\n")
 	for i, j := range joins {
 		b.WriteString("    " + j)

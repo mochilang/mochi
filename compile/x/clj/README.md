@@ -126,7 +126,8 @@ The current implementation focuses on a minimal subset of Mochi. It supports:
 - Function definitions via `fun` statements
 - Function calls to built-in and user-defined functions
 - Dataset helpers `load` and `save` for CSV, JSON, JSONL and YAML files
-- Dataset queries using `from`/`where`/`select` with joins and basic `group by`
+- Dataset queries using `from`/`where`/`select` with joins and basic `group by`,
+  including grouping across joined sources
 - Simple `import` statements for Clojure namespaces
 - Basic `group by` queries
 - Built‑in helpers such as `count`, `avg`, `now`, `input`, `json` and `keys`
