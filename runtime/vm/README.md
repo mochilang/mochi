@@ -32,6 +32,7 @@ The VM supports a small but useful subset of Mochi:
 * Field access using the `.` operator
 * List and string slicing with `[start:end]` syntax (supports negative indices)
 * Pattern matching
+* Test blocks with `expect` statements
 
 ## Unsupported features
 
@@ -51,7 +52,6 @@ experimental VM.  Unsupported areas include:
 * Generative AI blocks, model declarations and other LLM helpers
 * Foreign imports and FFI calls
 * The `eval` builtin function
-* Test blocks
 * Generic methods inside `type` blocks
 * Pattern matching on union variants or enums
 * Advanced string or list slicing beyond `[start:end]`
