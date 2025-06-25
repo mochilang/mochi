@@ -560,7 +560,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil || q.Sort != nil {
+	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query features")
 	}
 
@@ -591,6 +591,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	var sortExpr string
+	if q.Sort != nil {
+		sortExpr, err = c.compileExpr(q.Sort, false)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
 	var skipExpr, takeExpr string
 	if q.Skip != nil {
 		skipExpr, err = c.compileExpr(q.Skip, false)
@@ -611,12 +619,35 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	tmp := c.newTmp()
 	var b strings.Builder
-	b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + strings.TrimPrefix(resType, "[]const ") + ").init(std.heap.page_allocator); ")
-	b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
-	if cond != "" {
-		b.WriteString(" if (!(" + cond + ")) continue;")
+	elem := strings.TrimPrefix(resType, "[]const ")
+	if sortExpr != "" {
+		keyType := zigTypeOf(c.inferExprType(q.Sort))
+		pairType := "struct { item: " + elem + "; key: " + keyType + " }"
+		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + pairType + ").init(std.heap.page_allocator); ")
+		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
+		if cond != "" {
+			b.WriteString(" if (!(" + cond + ")) continue;")
+		}
+		b.WriteString(" " + tmp + ".append(.{ .item = " + sel + ", .key = " + sortExpr + " }) catch unreachable; }")
+		b.WriteString(" for (0.." + tmp + ".items.len) |i| { for (i+1.." + tmp + ".items.len) |j| {")
+		cmp := tmp + ".items[j].key < " + tmp + ".items[i].key"
+		if keyType == "[]const u8" {
+			cmp = "std.mem.lessThan(u8, " + tmp + ".items[j].key, " + tmp + ".items[i].key)"
+		}
+		b.WriteString(" if (" + cmp + ") { const t = " + tmp + ".items[i]; " + tmp + ".items[i] = " + tmp + ".items[j]; " + tmp + ".items[j] = t; }")
+		b.WriteString(" } }")
+		listTmp := c.newTmp()
+		b.WriteString(" var " + listTmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator);")
+		b.WriteString("for (" + tmp + ".items) |p| { " + listTmp + ".append(p.item) catch unreachable; }")
+		tmp = listTmp
+	} else {
+		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
+		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
+		if cond != "" {
+			b.WriteString(" if (!(" + cond + ")) continue;")
+		}
+		b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
 	}
-	b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
 	resVar := c.newTmp()
 	b.WriteString(" var " + resVar + " = " + tmp + ".toOwnedSlice() catch unreachable;")
 	if skipExpr != "" || takeExpr != "" {
@@ -633,7 +664,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				end = takeExpr
 			}
 		}
-		elem := strings.TrimPrefix(resType, "[]const ")
 		b.WriteString(" " + resVar + " = _slice_list(" + elem + ", " + resVar + ", " + start + ", " + end + ", 1);")
 	}
 	b.WriteString(" break :blk " + resVar + "; }")
