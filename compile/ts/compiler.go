@@ -1827,10 +1827,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		joinOns[i] = on
 		varNames = append(varNames, sanitizeName(j.Var))
 	}
-	val, err := c.compileExpr(q.Select)
-	if err != nil {
-		c.env = orig
-		return "", err
+	var keyExpr string
+	var val string
+	if q.Group != nil {
+		keyExpr, err = c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		val, err = c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = child
+	} else {
+		val, err = c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
 	}
 	var whereExpr, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
@@ -1841,6 +1860,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 	if q.Sort != nil {
+		if q.Group != nil {
+			genv := types.NewEnv(child)
+			genv.SetVar(q.Group.Name, types.AnyType{}, true)
+			c.env = genv
+		}
 		sortExpr, err = c.compileExpr(q.Sort)
 		if err != nil {
 			c.env = orig
@@ -1888,6 +1912,65 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	allParams := strings.Join(paramCopy, ", ")
+	if q.Group != nil {
+		selectFn := fmt.Sprintf("(%s) => [%s]", allParams, allParams)
+		var whereFn string
+		if whereExpr != "" {
+			whereFn = fmt.Sprintf("(%s) => (%s)", allParams, whereExpr)
+		}
+		var b strings.Builder
+		b.WriteString("(() => {\n")
+		b.WriteString("\tconst _src = " + src + ";\n")
+		b.WriteString("\tlet _items = _query(_src, [\n")
+		for i, j := range joins {
+			b.WriteString("\t\t" + j)
+			if i != len(joins)-1 {
+				b.WriteString(",")
+			}
+			b.WriteString("\n")
+		}
+		b.WriteString("\t], { select: " + selectFn)
+		if whereFn != "" {
+			b.WriteString(", where: " + whereFn)
+		}
+		b.WriteString(" });\n")
+		b.WriteString("\tconst _map = new Map<string, any>();\n")
+		b.WriteString("\tconst _order: string[] = [];\n")
+		b.WriteString("\tfor (const _r of _items) {\n")
+		b.WriteString("\t\tconst [" + allParams + "] = _r;\n")
+		b.WriteString("\t\tconst _key = " + keyExpr + ";\n")
+		b.WriteString("\t\tconst _ks = String(_key);\n")
+		b.WriteString("\t\tlet _g = _map.get(_ks);\n")
+		b.WriteString("\t\tif (!_g) { _g = { key: _key, items: [] }; _map.set(_ks, _g); _order.push(_ks); }\n")
+		b.WriteString("\t\t_g.items.push(" + sanitizeName(q.Var) + ");\n")
+		b.WriteString("\t}\n")
+		b.WriteString("\tlet _itemsG = _order.map(k => _map.get(k)!);\n")
+		if sortExpr != "" {
+			b.WriteString("\tlet _pairs = _itemsG.map(it => { const " + sanitizeName(q.Group.Name) + " = it; return {item: it, key: " + sortExpr + "}; });\n")
+			b.WriteString("\t_pairs.sort((a, b) => {\n")
+			b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
+			b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
+			b.WriteString("\t\tif (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n")
+			b.WriteString("\t\treturn String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n")
+			b.WriteString("\t});\n")
+			b.WriteString("\t_itemsG = _pairs.map(p => p.item);\n")
+		}
+		if skipExpr != "" {
+			b.WriteString("\t{ const _n = " + skipExpr + "; _itemsG = _n < _itemsG.length ? _itemsG.slice(_n) : []; }\n")
+		}
+		if takeExpr != "" {
+			b.WriteString("\t{ const _n = " + takeExpr + "; if (_n < _itemsG.length) _itemsG = _itemsG.slice(0, _n); }\n")
+		}
+		b.WriteString("\tconst _res = [];\n")
+		b.WriteString("\tfor (const " + sanitizeName(q.Group.Name) + " of _itemsG) {\n")
+		b.WriteString("\t\t_res.push(" + val + ")\n")
+		b.WriteString("\t}\n")
+		b.WriteString("\treturn _res;\n")
+		b.WriteString("})()")
+		c.use("_query")
+		return b.String(), nil
+	}
+
 	selectFn := fmt.Sprintf("(%s) => %s", allParams, val)
 	var whereFn, sortFn string
 	if whereExpr != "" {
