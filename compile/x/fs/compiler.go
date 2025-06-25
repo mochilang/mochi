@@ -1003,6 +1003,70 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	condStr := strings.Join(condParts, " && ")
 
+	if q.Group != nil {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			return "", err
+		}
+		tupleParts := []string{sanitizeName(q.Var)}
+		for _, f := range q.Froms {
+			tupleParts = append(tupleParts, sanitizeName(f.Var))
+		}
+		for _, j := range q.Joins {
+			tupleParts = append(tupleParts, sanitizeName(j.Var))
+		}
+		tuple := strings.Join(tupleParts, ", ")
+		if len(tupleParts) > 1 {
+			tuple = "(" + tuple + ")"
+		}
+		var rows strings.Builder
+		rows.WriteString("[|")
+		rows.WriteString(fmt.Sprintf(" for %s in %s do ", sanitizeName(q.Var), src))
+		for i, f := range q.Froms {
+			rows.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(f.Var), fromSrc[i]))
+		}
+		for i := range joinSrc {
+			rows.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(q.Joins[i].Var), joinSrc[i]))
+		}
+		if condStr != "" {
+			rows.WriteString(fmt.Sprintf("if %s then ", condStr))
+		}
+		rows.WriteString(fmt.Sprintf("yield %s |]", tuple))
+		groupRows := rows.String()
+
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		sortExpr2 := ""
+		if q.Sort != nil {
+			sortExpr2, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		c.env = orig
+		c.use("_group_by")
+		c.use("_Group")
+		groups := fmt.Sprintf("_group_by %s (fun %s -> %s)", groupRows, tuple, keyExpr)
+		expr := fmt.Sprintf("[| for g in %s do let %s = g yield %s |]", groups, sanitizeName(q.Group.Name), valExpr)
+		if q.Sort != nil {
+			expr = fmt.Sprintf("[| for g in %s do let %s = g yield (%s, %s) |] |> Array.sortBy fst |> Array.map snd", groups, sanitizeName(q.Group.Name), sortExpr2, valExpr)
+		}
+		if skipExpr != "" {
+			expr += fmt.Sprintf(" |> Array.skip %s", skipExpr)
+		}
+		if takeExpr != "" {
+			expr += fmt.Sprintf(" |> Array.take %s", takeExpr)
+		}
+		return expr, nil
+	}
+
 	var buf strings.Builder
 	buf.WriteString("[|")
 	buf.WriteString(fmt.Sprintf(" for %s in %s do ", sanitizeName(q.Var), src))
