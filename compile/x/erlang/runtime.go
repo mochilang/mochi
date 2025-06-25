@@ -110,19 +110,22 @@ func (c *Compiler) emitRuntime() {
 
 	if c.needIO {
 		c.writeln("")
-		c.writeln("mochi_load(Path, _Opts) ->")
+		c.writeln("mochi_load(Path, Opts) ->")
 		c.indent++
 		c.writeln("case file:read_file(Path) of")
 		c.indent++
 		c.writeln("{ok, Bin} ->")
 		c.indent++
 		c.writeln("Ext = filename:extension(Path),")
-		c.writeln("case Ext of")
+		c.writeln("Data0 = case Ext of")
 		c.indent++
 		c.writeln("\".txt\" -> binary_to_list(Bin);")
 		c.writeln("_ -> binary_to_term(Bin)")
 		c.indent--
-		c.writeln("end;")
+		c.writeln("end,")
+		c.writeln("Data1 = mochi_filter(Data0, Opts),")
+		c.writeln("mochi_paginate(Data1, Opts);")
+		c.indent--
 		c.writeln("_ -> []")
 		c.indent--
 		c.writeln("end.")
@@ -140,6 +143,41 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("end,")
 		c.writeln("ok = file:write_file(Path, Bin).")
 		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_filter(Data, Opts) when Opts =:= undefined -> Data;")
+		c.writeln("mochi_filter(Data, Opts) when is_list(Data) ->")
+		c.indent++
+		c.writeln("case maps:get(filter, Opts, undefined) of")
+		c.indent++
+		c.writeln("undefined -> Data;")
+		c.writeln("Fun when is_function(Fun,1) -> [ X || X <- Data, Fun(X) ];")
+		c.writeln("_ -> Data")
+		c.indent--
+		c.writeln("end;")
+		c.indent--
+		c.writeln("mochi_filter(Data, _) -> Data.")
+
+		c.writeln("")
+		c.writeln("mochi_paginate(Data, Opts) when Opts =:= undefined -> Data;")
+		c.writeln("mochi_paginate(Data, Opts) when is_list(Data) ->")
+		c.indent++
+		c.writeln("Skip = maps:get(skip, Opts, 0),")
+		c.writeln("Take = maps:get(take, Opts, -1),")
+		c.writeln("Skipped = case Skip of")
+		c.indent++
+		c.writeln("N when is_integer(N), N > 0 -> lists:nthtail(N, Data);")
+		c.writeln("_ -> Data")
+		c.indent--
+		c.writeln("end,")
+		c.writeln("case Take of")
+		c.indent++
+		c.writeln("N when is_integer(N), N >= 0 -> lists:sublist(Skipped, N);")
+		c.writeln("_ -> Skipped")
+		c.indent--
+		c.writeln("end;")
+		c.indent--
+		c.writeln("mochi_paginate(Data, _) -> Data.")
 	}
 
 	if c.needFetch {
