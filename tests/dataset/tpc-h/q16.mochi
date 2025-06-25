@@ -36,7 +36,7 @@ let result =
   from s in supplier
   where
     s.s_suppkey not in excluded_suppliers &&
-    s.s_comment not has "Customer" && s.s_comment not has "Complaints"
+    !s.s_comment.contains("Customer") && !s.s_comment.contains("Complaints")
   order by s.s_name
   select {
     s_name: s.s_name,
