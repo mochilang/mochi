@@ -43,13 +43,11 @@ let result =
     o.o_orderstatus == "F" and
     l1.l_receiptdate > l1.l_commitdate and
     n.n_name == "SAUDI ARABIA" and
-    not exists (
-      x in lineitem
+    not exists x in lineitem
       where
         x.l_orderkey == l1.l_orderkey and
         x.l_suppkey != l1.l_suppkey and
         x.l_receiptdate > x.l_commitdate
-    )
   group by s.s_name
   select {
     s_name: s.s_name,
