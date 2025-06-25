@@ -59,7 +59,12 @@ func BuildPlan(q *parser.QueryExpr) (Plan, error) {
 	}
 
 	if q.Group != nil {
-		root = &groupPlan{By: q.Group.Expr, Name: q.Group.Name, Input: root}
+		exprs := q.Group.ExprsList()
+		names := make([]string, len(exprs))
+		for i, e := range exprs {
+			names[i] = deriveName(e)
+		}
+		root = &groupPlan{By: exprs, Names: names, Name: q.Group.Name, Input: root}
 	}
 
 	if q.Sort != nil {
@@ -102,4 +107,18 @@ func usedAliases(e *parser.Expr) map[string]struct{} {
 	}
 	walk(node)
 	return aliases
+}
+
+// deriveName attempts to infer a field name from expr for multi-key grouping.
+func deriveName(e *parser.Expr) string {
+	if e == nil {
+		return "key"
+	}
+	n := ast.FromExpr(e)
+	if n.Kind == "selector" {
+		if s, ok := n.Value.(string); ok {
+			return s
+		}
+	}
+	return "key"
 }

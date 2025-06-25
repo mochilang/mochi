@@ -435,13 +435,12 @@ func FromPrimary(p *parser.Primary) *Node {
 			n.Children = append(n.Children, &Node{Kind: "where", Children: []*Node{FromExpr(p.Query.Where)}})
 		}
 		if p.Query.Group != nil {
-			n.Children = append(n.Children, &Node{
-				Kind: "group_by",
-				Children: []*Node{
-					FromExpr(p.Query.Group.Expr),
-					&Node{Kind: "into", Value: p.Query.Group.Name},
-				},
-			})
+			gn := &Node{Kind: "group_by"}
+			for _, e := range p.Query.Group.ExprsList() {
+				gn.Children = append(gn.Children, FromExpr(e))
+			}
+			gn.Children = append(gn.Children, &Node{Kind: "into", Value: p.Query.Group.Name})
+			n.Children = append(n.Children, gn)
 		}
 		if p.Query.Sort != nil {
 			n.Children = append(n.Children, &Node{Kind: "sort", Children: []*Node{FromExpr(p.Query.Sort)}})

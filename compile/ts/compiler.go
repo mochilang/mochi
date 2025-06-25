@@ -956,6 +956,21 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	return c.compileBinaryExpr(e.Binary)
 }
 
+func (c *Compiler) compileExprList(exprs []*parser.Expr) (string, error) {
+	if len(exprs) == 1 {
+		return c.compileExpr(exprs[0])
+	}
+	parts := make([]string, len(exprs))
+	for i, e := range exprs {
+		s, err := c.compileExpr(e)
+		if err != nil {
+			return "", err
+		}
+		parts[i] = s
+	}
+	return strings.Join(parts, ", "), nil
+}
+
 func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if b == nil {
 		return "", fmt.Errorf("nil binary expression")
@@ -1678,7 +1693,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var keyExpr string
 		var val string
 		if group {
-			keyExpr, err = c.compileExpr(q.Group.Expr)
+			keyExpr, err = c.compileExprList(q.Group.ExprsList())
 			if err != nil {
 				c.env = orig
 				return "", err
@@ -1879,7 +1894,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var keyExpr string
 	var val string
 	if q.Group != nil {
-		keyExpr, err = c.compileExpr(q.Group.Expr)
+		keyExpr, err = c.compileExprList(q.Group.ExprsList())
 		if err != nil {
 			c.env = orig
 			return "", err

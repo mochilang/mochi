@@ -211,14 +211,28 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 			order := []string{}
 			for _, it := range items {
 				setEnv(it, alias)
-				key, err := eval(p.By)
-				if err != nil {
-					return nil, "", err
+				keyVals := make([]any, len(p.By))
+				fields := map[string]any{}
+				for i, expr := range p.By {
+					val, err := eval(expr)
+					if err != nil {
+						return nil, "", err
+					}
+					keyVals[i] = val
+					if i < len(p.Names) {
+						fields[p.Names[i]] = val
+					}
+				}
+				var key any
+				if len(keyVals) == 1 {
+					key = keyVals[0]
+				} else {
+					key = keyVals
 				}
 				ks := fmt.Sprint(key)
 				g, ok := groups[ks]
 				if !ok {
-					g = &Group{Key: key}
+					g = &Group{Key: key, Fields: fields}
 					groups[ks] = g
 					order = append(order, ks)
 				}

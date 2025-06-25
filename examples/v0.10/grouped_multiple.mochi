@@ -1,0 +1,22 @@
+// grouped_multiple.mochi
+// Group people by city and age
+
+let people = [
+  { name: "Alice", age: 30, city: "Paris" },
+  { name: "Bob", age: 30, city: "Paris" },
+  { name: "Charlie", age: 25, city: "Hanoi" },
+  { name: "Diana", age: 25, city: "Hanoi" },
+  { name: "Eve", age: 30, city: "Paris" },
+  { name: "Frank", age: 22, city: "Hanoi" }
+]
+
+let stats = from p in people
+  group by p.city, p.age into g
+  select {
+    city: g.city,
+    age: g.age,
+    count: count(g)
+  }
+
+json(stats)
+

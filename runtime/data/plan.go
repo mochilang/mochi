@@ -41,7 +41,8 @@ func (*joinPlan) isPlan() {}
 
 // groupPlan groups rows by an expression and exposes the group via Name.
 type groupPlan struct {
-	By    *parser.Expr
+	By    []*parser.Expr
+	Names []string
 	Name  string
 	Input Plan
 }

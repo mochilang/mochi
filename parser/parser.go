@@ -445,8 +445,17 @@ type JoinClause struct {
 
 type GroupByClause struct {
 	Pos  lexer.Position
-	Expr *Expr  `parser:"'group' 'by' @@ 'into'"`
-	Name string `parser:"@Ident"`
+	Expr *Expr   `parser:"'group' 'by' @@"`
+	More []*Expr `parser:"{ ',' @@ }"`
+	Name string  `parser:"'into' @Ident"`
+}
+
+func (g *GroupByClause) ExprsList() []*Expr {
+	if g == nil {
+		return nil
+	}
+	exprs := append([]*Expr{g.Expr}, g.More...)
+	return exprs
 }
 
 type MatchExpr struct {
