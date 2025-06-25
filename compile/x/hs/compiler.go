@@ -71,7 +71,7 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.structs = make(map[string]bool)
-	c.usesMap = false
+	c.usesMap = true
 	c.usesList = false
 	c.usesJSON = false
 	c.usesLoad = false
@@ -117,22 +117,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	var header bytes.Buffer
 	header.WriteString("module Main where\n\n")
 	header.WriteString("import Data.Maybe (fromMaybe)\n")
-	if c.usesTime {
-		header.WriteString("import Data.Time.Clock.POSIX (getPOSIXTime)\n")
-	}
-	if c.usesMap {
-		header.WriteString("import qualified Data.Map as Map\n")
-	}
-	if c.usesLoad || c.usesSave {
-		header.WriteString("import Data.List (intercalate)\n")
-	}
-	if c.usesList {
-		header.WriteString("import qualified Data.List as List\n")
-	}
-	if c.usesJSON {
-		header.WriteString("import qualified Data.Aeson as Aeson\n")
-		header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
-	}
+	header.WriteString("import Data.Time.Clock.POSIX (getPOSIXTime)\n")
+	header.WriteString("import qualified Data.Map as Map\n")
+	header.WriteString("import Data.List (intercalate)\n")
+	header.WriteString("import qualified Data.List as List\n")
+	header.WriteString("import qualified Data.Aeson as Aeson\n")
+	header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	header.WriteString("\n")
 	header.WriteString(runtime)
 	if c.usesSlice || c.usesSliceStr {
@@ -188,21 +178,40 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 		}
 		c.writeln(expr)
 	case s.For != nil:
+		orig := c.env
+		var vType types.Type = types.AnyType{}
+		if s.For.RangeEnd != nil {
+			vType = types.IntType{}
+		} else {
+			t := c.inferExprType(s.For.Source)
+			switch tt := t.(type) {
+			case types.ListType:
+				vType = tt.Elem
+			case types.MapType:
+				vType = tt.Key
+			}
+		}
+		child := types.NewEnv(c.env)
+		child.SetVar(s.For.Name, vType, true)
+		c.env = child
 		body, err := c.simpleBodyExpr(s.For.Body)
 		if err != nil {
+			c.env = orig
 			return err
 		}
 		name := sanitizeName(s.For.Name)
 		src, err := c.compileExpr(s.For.Source)
 		if err != nil {
+			c.env = orig
 			return err
 		}
 		if s.For.RangeEnd != nil {
 			end, err := c.compileExpr(s.For.RangeEnd)
 			if err != nil {
+				c.env = orig
 				return err
 			}
-			c.writeln(fmt.Sprintf("let _ = forLoop %s %s (\\%s -> Nothing <$ (%s)) in return ()", src, end, name, body))
+			c.writeln(fmt.Sprintf("mapM_ (\\%s -> %s) [%s..%s - 1]", name, body, src, end))
 		} else {
 			iter := src
 			if _, ok := c.inferExprType(s.For.Source).(types.MapType); ok {
@@ -211,6 +220,7 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			}
 			c.writeln(fmt.Sprintf("mapM_ (\\%s -> %s) %s", name, body, iter))
 		}
+		c.env = orig
 	case s.While != nil:
 		body, err := c.simpleBodyExpr(s.While.Body)
 		if err != nil {
@@ -691,6 +701,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -704,6 +716,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
 		}
 		if p.Call.Func == "count" {
+			if len(args) == 1 {
+				if _, ok := c.inferExprType(p.Call.Args[0]).(types.GroupType); ok {
+					return fmt.Sprintf("length (items %s)", args[0]), nil
+				}
+			}
 			return fmt.Sprintf("length %s", strings.Join(args, " ")), nil
 		}
 		if p.Call.Func == "avg" {
@@ -717,7 +734,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if p.Call.Func == "keys" && len(args) == 1 {
 			c.usesMap = true
-			return fmt.Sprintf("Map.keys %s", args[0]), nil
+			return fmt.Sprintf("(Map.keys %s)", args[0]), nil
 		}
 		if p.Call.Func == "now" {
 			c.usesTime = true
@@ -867,6 +884,128 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	c.usesSave = true
 	c.usesMap = true
 	return fmt.Sprintf("_save %s %s %s", src, path, opts), nil
+}
+
+func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+
+	orig := c.env
+	child := types.NewEnv(c.env)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+		elemType = lt.Elem
+	}
+	child.SetVar(q.Var, elemType, true)
+
+	loops := []string{fmt.Sprintf("%s <- %s", sanitizeName(q.Var), src)}
+	conds := []string{}
+
+	for _, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("%s <- %s", sanitizeName(f.Var), fs))
+		ft := c.inferExprType(f.Src)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
+	}
+
+	for _, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		loops = append(loops, fmt.Sprintf("%s <- %s", sanitizeName(j.Var), js))
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			return "", err
+		}
+		conds = append(conds, on)
+		jt := c.inferExprType(j.Src)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+	}
+
+	c.env = child
+	if q.Where != nil {
+		w, err := c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		conds = append(conds, w)
+	}
+
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		keyExpr, err := c.compileExpr(q.Group.Expr)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		c.usesMap = true
+		c.usesList = true
+		expr := fmt.Sprintf("[ %s | g <- _group_by %s (\\%s -> %s), let %s = g ]", valExpr, src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name))
+		return expr, nil
+	}
+
+	val, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	c.env = orig
+
+	condStr := ""
+	if len(conds) > 0 {
+		condStr = ", " + strings.Join(conds, ", ")
+	}
+	comp := fmt.Sprintf("[%s | %s%s]", val, strings.Join(loops, ", "), condStr)
+	res := comp
+
+	if q.Sort != nil {
+		sortExpr, err := c.compileExpr(q.Sort)
+		if err != nil {
+			return "", err
+		}
+		res = fmt.Sprintf("map snd (List.sortOn fst [ ( %s, %s ) | %s%s ])", sortExpr, val, strings.Join(loops, ", "), condStr)
+		c.usesList = true
+	}
+	if q.Skip != nil {
+		sk, err := c.compileExpr(q.Skip)
+		if err != nil {
+			return "", err
+		}
+		res = fmt.Sprintf("drop %s %s", sk, res)
+		c.usesList = true
+	}
+	if q.Take != nil {
+		tk, err := c.compileExpr(q.Take)
+		if err != nil {
+			return "", err
+		}
+		res = fmt.Sprintf("take %s %s", tk, res)
+		c.usesList = true
+	}
+	return res, nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
