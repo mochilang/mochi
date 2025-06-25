@@ -774,6 +774,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Query != nil:
 		q, _ := c.compileQuery(p.Query)
 		return q
@@ -877,6 +881,29 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 		items[i] = fmt.Sprintf("{%s, %s}", k, v)
 	}
 	return fmt.Sprintf("unordered_map<%s, %s>{%s}", keyType, valType, strings.Join(items, ", "))
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
+	path := "\"\""
+	if l.Path != nil {
+		path = strconv.Quote(*l.Path)
+	}
+	typ := "unordered_map<string,string>"
+	if l.Type != nil {
+		typ = c.cppType(l.Type)
+	}
+	c.helpers["load"] = true
+	return fmt.Sprintf("_load<%s>(%s)", typ, path)
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) string {
+	src := c.compileExpr(s.Src)
+	path := "\"\""
+	if s.Path != nil {
+		path = strconv.Quote(*s.Path)
+	}
+	c.helpers["save"] = true
+	return fmt.Sprintf("_save(%s, %s)", src, path)
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
