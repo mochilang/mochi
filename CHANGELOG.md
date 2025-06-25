@@ -1,12 +1,4 @@
 # 📦 CHANGELOG.md
-## [0.10.1] – 2025-06-26
-
-### Changed
-
-* `mochi run` now executes programs with the VM by default
-* `--interp` flag runs the old interpreter
-* `--ir` prints VM assembly and exits
-
 ## [0.10.0] – 2025-06-25T20:05:45+07:00
 
 ### Added
