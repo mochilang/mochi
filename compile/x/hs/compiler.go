@@ -160,13 +160,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 
 	var header bytes.Buffer
+	header.WriteString("{-# LANGUAGE DeriveGeneric #-}\n")
 	header.WriteString("module Main where\n\n")
 	header.WriteString("import Data.Maybe (fromMaybe)\n")
 	header.WriteString("import Data.Time.Clock.POSIX (getPOSIXTime)\n")
 	header.WriteString("import qualified Data.Map as Map\n")
-	header.WriteString("import Data.List (intercalate)\n")
+	header.WriteString("import Data.List (intercalate, isPrefixOf)\n")
 	header.WriteString("import qualified Data.List as List\n")
 	header.WriteString("import qualified Data.Aeson as Aeson\n")
+	if len(c.structs) > 0 {
+		header.WriteString("import GHC.Generics (Generic)\n")
+	}
 	if c.usesLoad || c.usesSave || c.usesFetch {
 		header.WriteString("import qualified Data.Aeson.KeyMap as KeyMap\n")
 		header.WriteString("import qualified Data.Aeson.Key as Key\n")
@@ -210,6 +214,16 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 			val, err := c.compileExpr(s.Let.Value)
 			if err != nil {
 				return err
+			}
+			c.writeln(fmt.Sprintf("%s <- %s", sanitizeName(s.Let.Name), val))
+		} else if isFetchCall(s.Let.Value) {
+			val, err := c.compileExpr(s.Let.Value)
+			if err != nil {
+				return err
+			}
+			if s.Let.Type != nil {
+				typ := c.hsType(c.resolveTypeRef(s.Let.Type))
+				val = fmt.Sprintf("(%s :: IO %s)", val, typ)
 			}
 			c.writeln(fmt.Sprintf("%s <- %s", sanitizeName(s.Let.Name), val))
 		} else {
@@ -1310,7 +1324,8 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		c.writeln(line)
 	}
 	c.indent--
-	c.writeln("} deriving (Show)")
+	c.writeln("} deriving (Show, Generic)")
+	c.writeln(fmt.Sprintf("instance Aeson.FromJSON %s", name))
 	c.writeln("")
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
@@ -1332,4 +1347,19 @@ func isInputCall(e *parser.Expr) bool {
 		return false
 	}
 	return p.Call.Func == "input" && len(p.Call.Args) == 0
+}
+
+func isFetchCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value.Target
+	if p == nil || p.Fetch == nil {
+		return false
+	}
+	return true
 }

@@ -128,13 +128,19 @@ _sliceString s i j =
 `
 
 const fetchHelper = `
-_fetch :: String -> Maybe (Map.Map String String) -> IO (Map.Map String String)
-_fetch url _ = do
-  out <- readProcess "curl" ["-s", url] ""
-  pure $ case Aeson.decode (BSL.pack out) of
-    Just (Aeson.Object o) ->
-      Map.fromList [ (T.unpack (Key.toText k), _valueToString v) | (k,v) <- KeyMap.toList o ]
-    _ -> Map.empty
+_fetch :: Aeson.FromJSON a => String -> Maybe (Map.Map String String) -> IO a
+_fetch url _
+  | isPrefixOf "file://" url = do
+      let path = drop 7 url
+      txt <- readFile path
+      case Aeson.decode (BSL.pack txt) of
+        Just v -> pure v
+        Nothing -> error "failed to decode JSON"
+  | otherwise = do
+      out <- readProcess "curl" ["-s", url] ""
+      case Aeson.decode (BSL.pack out) of
+        Just v -> pure v
+        Nothing -> error "failed to decode JSON"
 `
 
 const loadRuntime = `
