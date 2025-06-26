@@ -215,9 +215,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		pairs := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
+			var k string
+			if s, ok := simpleStringKey(it.Key); ok {
+				k = fmt.Sprintf("\"%s\"", s)
+			} else {
+				var err error
+				k, err = c.compileExpr(it.Key)
+				if err != nil {
+					return "", err
+				}
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
@@ -460,7 +466,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var b strings.Builder
 	b.WriteString("(function()\n")
 	b.WriteString("\tlocal _res = {}\n")
-	b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
+	if _, ok := c.inferExprType(q.Source).(types.GroupType); ok {
+		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s.items) do\n", iter, src))
+	} else {
+		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", iter, src))
+	}
 	indent := "\t\t"
 	for _, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)

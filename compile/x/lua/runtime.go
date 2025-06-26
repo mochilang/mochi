@@ -34,7 +34,7 @@ const (
 		"        end\n" +
 		"    end\n" +
 		"    if failures > 0 then\n" +
-		"        io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\\n')\n" +
+		"        io.write('\\n[FAIL] ' .. failures .. ' test(s) failed.\\n')\n" +
 		"    end\n" +
 		"end\n"
 
@@ -84,6 +84,7 @@ const (
 
 	helperEq = "function __eq(a, b)\n" +
 		"    if type(a) ~= type(b) then return false end\n" +
+		"    if type(a) == 'number' then return math.abs(a-b) < 1e-9 end\n" +
 		"    if type(a) ~= 'table' then return a == b end\n" +
 		"    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then\n" +
 		"        if #a ~= #b then return false end\n" +
@@ -176,9 +177,24 @@ const (
 		"end\n"
 
 	helperJson = "function __json(v)\n" +
+		"    local function sort(x)\n" +
+		"        if type(x) ~= 'table' then return x end\n" +
+		"        if x[1] ~= nil or #x > 0 then\n" +
+		"            local out = {}\n" +
+		"            for i=1,#x do out[i] = sort(x[i]) end\n" +
+		"            return out\n" +
+		"        end\n" +
+		"        local keys = {}\n" +
+		"        for k in pairs(x) do keys[#keys+1] = k end\n" +
+		"        table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
+		"        local out = {}\n" +
+		"        for _,k in ipairs(keys) do out[k] = sort(x[k]) end\n" +
+		"        return out\n" +
+		"    end\n" +
 		"    local ok, json = pcall(require, 'json')\n" +
+		"    if not ok then ok, json = pcall(require, 'cjson') end\n" +
 		"    if not ok then error('json library not found') end\n" +
-		"    print(json.encode(v))\n" +
+		"    print(json.encode(sort(v)))\n" +
 		"end\n"
 
 	helperEval = "function __eval(code)\n" +
@@ -450,7 +466,17 @@ const (
 		"    local order = {}\n" +
 		"    for _, it in ipairs(src) do\n" +
 		"        local key = keyfn(it)\n" +
-		"        local ks = tostring(key)\n" +
+		"        local ks\n" +
+		"        if type(key) == 'table' then\n" +
+		"            local fields = {}\n" +
+		"            for k,_ in pairs(key) do fields[#fields+1] = k end\n" +
+		"            table.sort(fields)\n" +
+		"            local parts = {}\n" +
+		"            for _,k in ipairs(fields) do parts[#parts+1] = tostring(k)..'='..tostring(key[k]) end\n" +
+		"            ks = table.concat(parts, ',')\n" +
+		"        else\n" +
+		"            ks = tostring(key)\n" +
+		"        end\n" +
 		"        local g = groups[ks]\n" +
 		"        if not g then\n" +
 		"            g = _Group.new(key)\n" +
