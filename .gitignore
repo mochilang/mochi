@@ -230,7 +230,7 @@ out
 # Keep generated benchmark output files
 !bench/out
 !bench/out/*
-# Keep tpch golden files
+# Keep tpc-h golden files
 !tests/dataset/tpc-h/out
 !tests/dataset/tpc-h/out/*
 
