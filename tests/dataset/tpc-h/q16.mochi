@@ -34,16 +34,14 @@ let excluded_suppliers =
 
 let result =
   from s in supplier
-  where
-    s.s_suppkey not in excluded_suppliers &&
-    !s.s_comment.contains("Customer") && !s.s_comment.contains("Complaints")
+  where !(s.s_suppkey in excluded_suppliers) && (!s.s_comment.contains("Customer")) && (!s.s_comment.contains("Complaints"))
   order by s.s_name
   select {
     s_name: s.s_name,
     s_address: s.s_address
   }
 
-print result
+print(result)
 
 test "Q16 returns suppliers not linked to certain parts or complaints" {
   expect result == []

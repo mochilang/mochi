@@ -1,0 +1,15 @@
+func main (regs=7)
+  // let xs = [1, 2, 3]
+  Const        r0, [1, 2, 3]
+  Move         r1, r0
+  // print(2 in xs)
+  Const        r2, 2
+  In           r3, r2, r1
+  Print        r3
+  // print(!(5 in xs))
+  Const        r4, 5
+  In           r5, r4, r1
+  Not          r6, r5
+  Print        r6
+  Return       r0
+

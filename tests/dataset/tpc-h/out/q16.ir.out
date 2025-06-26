@@ -1,0 +1,166 @@
+func main (regs=92)
+  // let supplier = [
+  Const        r0, [{"s_address": "123 Hilltop", "s_comment": "Reliable and efficient", "s_name": "AlphaSupply", "s_suppkey": 100}, {"s_address": "456 Riverside", "s_comment": "Known for Customer Complaints", "s_name": "BetaSupply", "s_suppkey": 200}]
+  Move         r1, r0
+  // let part = [
+  Const        r2, [{"p_brand": "Brand#12", "p_partkey": 1, "p_size": 5, "p_type": "SMALL ANODIZED"}, {"p_brand": "Brand#23", "p_partkey": 2, "p_size": 10, "p_type": "MEDIUM POLISHED"}]
+  Move         r3, r2
+  // let partsupp = [
+  Const        r4, [{"ps_partkey": 1, "ps_suppkey": 100}, {"ps_partkey": 2, "ps_suppkey": 200}]
+  Move         r5, r4
+  // from ps in partsupp
+  Const        r6, []
+  IterPrep     r7, r5
+  Len          r8, r7
+  // join p in part on p.p_partkey == ps.ps_partkey
+  IterPrep     r9, r3
+  Len          r10, r9
+  // from ps in partsupp
+  Const        r11, 0
+L6:
+  Less         r12, r11, r8
+  JumpIfFalse  r12, L0
+  Index        r13, r7, r11
+  Move         r14, r13
+  // join p in part on p.p_partkey == ps.ps_partkey
+  Const        r15, 0
+L5:
+  Less         r16, r15, r10
+  JumpIfFalse  r16, L1
+  Index        r17, r9, r15
+  Move         r18, r17
+  Const        r19, "p_partkey"
+  Index        r20, r18, r19
+  Const        r21, "ps_partkey"
+  Index        r22, r14, r21
+  Equal        r23, r20, r22
+  JumpIfFalse  r23, L2
+  // p.p_brand == "Brand#12" &&
+  Const        r24, "p_brand"
+  Index        r25, r18, r24
+  Const        r26, "Brand#12"
+  Equal        r27, r25, r26
+  Move         r28, r27
+  JumpIfFalse  r28, L3
+  Const        r29, "p_type"
+  Index        r30, r18, r29
+  // p.p_type.contains("SMALL") &&
+  Const        r31, "SMALL"
+  In           r32, r31, r30
+  // p.p_brand == "Brand#12" &&
+  Move         r28, r32
+L3:
+  // p.p_type.contains("SMALL") &&
+  Move         r33, r28
+  JumpIfFalse  r33, L4
+  // p.p_size == 5
+  Const        r34, "p_size"
+  Index        r35, r18, r34
+  // p.p_type.contains("SMALL") &&
+  Move         r33, r35
+L4:
+  // p.p_size == 5
+  Const        r36, 5
+  Equal        r37, r33, r36
+  // p.p_brand == "Brand#12" &&
+  JumpIfFalse  r37, L2
+  // select ps.ps_suppkey
+  Const        r38, "ps_suppkey"
+  Index        r39, r14, r38
+  // from ps in partsupp
+  Append       r40, r6, r39
+  Move         r6, r40
+L2:
+  // join p in part on p.p_partkey == ps.ps_partkey
+  Const        r41, 1
+  Add          r42, r15, r41
+  Move         r15, r42
+  Jump         L5
+L1:
+  // from ps in partsupp
+  Const        r43, 1
+  Add          r44, r11, r43
+  Move         r11, r44
+  Jump         L6
+L0:
+  // let excluded_suppliers =
+  Move         r45, r6
+  // from s in supplier
+  Const        r46, []
+  IterPrep     r47, r1
+  Len          r48, r47
+  Const        r49, 0
+L11:
+  Less         r50, r49, r48
+  JumpIfFalse  r50, L7
+  Index        r51, r47, r49
+  Move         r52, r51
+  // where !(s.s_suppkey in excluded_suppliers) && (!s.s_comment.contains("Customer")) && (!s.s_comment.contains("Complaints"))
+  Const        r53, "s_suppkey"
+  Index        r54, r52, r53
+  In           r55, r54, r45
+  Not          r56, r55
+  Move         r57, r56
+  JumpIfFalse  r57, L8
+  Const        r58, "s_comment"
+  Index        r59, r52, r58
+  Const        r60, "Customer"
+  In           r61, r60, r59
+  Not          r62, r61
+  Move         r57, r62
+L8:
+  Move         r63, r57
+  JumpIfFalse  r63, L9
+  Const        r64, "s_comment"
+  Index        r65, r52, r64
+  Const        r66, "Complaints"
+  In           r67, r66, r65
+  Not          r68, r67
+  Move         r63, r68
+L9:
+  JumpIfFalse  r63, L10
+  // s_name: s.s_name,
+  Const        r69, "s_name"
+  Const        r70, "s_name"
+  Index        r71, r52, r70
+  // s_address: s.s_address
+  Const        r72, "s_address"
+  Const        r73, "s_address"
+  Index        r74, r52, r73
+  // s_name: s.s_name,
+  Move         r75, r69
+  Move         r76, r71
+  // s_address: s.s_address
+  Move         r77, r72
+  Move         r78, r74
+  // select {
+  MakeMap      r79, 2, r75
+  // order by s.s_name
+  Const        r80, "s_name"
+  Index        r81, r52, r80
+  Move         r82, r81
+  // from s in supplier
+  Move         r83, r79
+  MakeList     r84, 2, r82
+  Append       r85, r46, r84
+  Move         r46, r85
+L10:
+  Const        r86, 1
+  Add          r87, r49, r86
+  Move         r49, r87
+  Jump         L11
+L7:
+  // order by s.s_name
+  Sort         88,46,0,0
+  // from s in supplier
+  Move         r46, r88
+  // let result =
+  Move         r89, r46
+  // print(result)
+  Print        r89
+  // expect result == []
+  Const        r90, []
+  Equal        r91, r89, r90
+  Expect       r91
+  Return       r0
+

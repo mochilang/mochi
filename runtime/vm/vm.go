@@ -2153,7 +2153,7 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 		}
 	}
 
-	// string.contains(sub)
+	// "contains" method on strings or lists
 	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil &&
 		len(p.Target.Selector.Tail) > 0 && p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" {
 		recvSel := &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Target.Selector.Root, Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1]}}
