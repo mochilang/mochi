@@ -467,7 +467,11 @@ static void _save_json(list_map_string rows,const char* path){ FILE* f=(!path||p
     list_map_string rows = _parse_json(data);
     free(data);
     if (rows.len > 0) return rows.data[0];
-    return map_string_create(0);
+        return map_string_create(0);
+}`
+	helperMapStringGet = `static char* map_string_get(map_string m, const char* key){
+    for(int i=0;i<m.len;i++) if(strcmp(m.data[i].key,key)==0) return m.data[i].value;
+    return "";
 }`
 	helperIndexString = `static char* _index_string(char* s, int i) {
     int len = strlen(s);
@@ -604,6 +608,7 @@ var helperCode = map[string]string{
 	needLoadJSON:             helperLoadJSON,
 	needSaveJSON:             helperSaveJSON,
 	needFetch:                helperFetch,
+	needMapStringGet:         helperMapStringGet,
 	needMapIntBool:           helperMapIntBool,
 	needIndexString:          helperIndexString,
 	needSliceString:          helperSliceString,
@@ -659,6 +664,7 @@ var helperOrder = []string{
 	needLoadJSON,
 	needSaveJSON,
 	needFetch,
+	needMapStringGet,
 	needIndexString,
 	needSliceString,
 	needSliceListInt,

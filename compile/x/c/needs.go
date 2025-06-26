@@ -45,6 +45,7 @@ const (
 	needLoadJSON             = "load_json"
 	needSaveJSON             = "save_json"
 	needFetch                = "fetch"
+	needMapStringGet         = "map_string_get"
 	needMapIntBool           = "map_int_bool"
 	needPrintListInt         = "print_list_int"
 	needPrintListFloat       = "print_list_float"

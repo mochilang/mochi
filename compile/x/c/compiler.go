@@ -59,6 +59,7 @@ type Compiler struct {
 	externObjects []string
 	structs       map[string]bool
 	listStructs   map[string]bool
+	fetchStructs  map[string]bool
 	currentStruct string
 }
 
@@ -70,6 +71,7 @@ func New(env *types.Env) *Compiler {
 		needs:         map[string]bool{},
 		structs:       map[string]bool{},
 		listStructs:   map[string]bool{},
+		fetchStructs:  map[string]bool{},
 		externObjects: []string{},
 	}
 }
@@ -545,6 +547,43 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 	c.writeln("}")
 }
 
+func (c *Compiler) emitFetchStructFunc(st types.StructType) string {
+	name := "_fetch_" + sanitizeName(st.Name)
+	if c.fetchStructs[name] {
+		return name
+	}
+	c.fetchStructs[name] = true
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = 0
+	c.writeln(fmt.Sprintf("static %s %s(const char* url, void* opts){", sanitizeName(st.Name), name))
+	c.indent++
+	c.writeln("map_string row = _fetch(url, opts);")
+	c.writeln(fmt.Sprintf("%s out;", sanitizeName(st.Name)))
+	for _, fn := range st.Order {
+		ft := st.Fields[fn]
+		field := sanitizeName(fn)
+		switch ft.(type) {
+		case types.IntType, types.BoolType:
+			c.writeln(fmt.Sprintf("out.%s = atoi(map_string_get(row, \"%s\"));", field, fn))
+		case types.FloatType:
+			c.writeln(fmt.Sprintf("out.%s = atof(map_string_get(row, \"%s\"));", field, fn))
+		case types.StringType:
+			c.writeln(fmt.Sprintf("out.%s = strdup(map_string_get(row, \"%s\"));", field, fn))
+		default:
+			c.writeln(fmt.Sprintf("/* unsupported field %s */", fn))
+		}
+	}
+	c.writeln("return out;")
+	c.indent--
+	c.writeln("}")
+	c.lambdas = append(c.lambdas, c.buf.String())
+	c.buf = oldBuf
+	c.indent = oldIndent
+	return name
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Fun != nil:
@@ -688,7 +727,23 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		}
 	}
 	if stmt.Value != nil {
-		if isEmptyListLiteral(stmt.Value) {
+		if f := asFetchExpr(stmt.Value); f != nil {
+			if st, ok := t.(types.StructType); ok {
+				c.need(needFetch)
+				c.need(needStringHeader)
+				c.need(needMapStringGet)
+				fname := c.emitFetchStructFunc(st)
+				url := c.compileExpr(f.URL)
+				opts := "NULL"
+				if f.With != nil {
+					opts = c.compileExpr(f.With)
+				}
+				c.writeln(fmt.Sprintf("%s %s = %s(%s, %s);", typ, name, fname, url, opts))
+			} else {
+				val := c.compileFetchExpr(f)
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			}
+		} else if isEmptyListLiteral(stmt.Value) {
 			if isListStringType(t) {
 				c.need(needListString)
 				val := c.newTemp()
@@ -754,7 +809,23 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	}
 	typ := cTypeFromType(t)
 	if stmt.Value != nil {
-		if isEmptyListLiteral(stmt.Value) {
+		if f := asFetchExpr(stmt.Value); f != nil {
+			if st, ok := t.(types.StructType); ok {
+				c.need(needFetch)
+				c.need(needStringHeader)
+				c.need(needMapStringGet)
+				fname := c.emitFetchStructFunc(st)
+				url := c.compileExpr(f.URL)
+				opts := "NULL"
+				if f.With != nil {
+					opts = c.compileExpr(f.With)
+				}
+				c.writeln(fmt.Sprintf("%s %s = %s(%s, %s);", typ, name, fname, url, opts))
+			} else {
+				val := c.compileFetchExpr(f)
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			}
+		} else if isEmptyListLiteral(stmt.Value) {
 			if isListStringType(t) {
 				c.need(needListString)
 				val := c.newTemp()
@@ -2548,6 +2619,16 @@ func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return nil
 	}
 	return e.Binary.Left.Value.Target.Map
+}
+
+func asFetchExpr(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	if e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.Fetch
 }
 
 func (c *Compiler) emitJSONExpr(e *parser.Expr) {
