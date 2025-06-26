@@ -934,6 +934,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		pairs := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
+			if s, ok := simpleStringKey(it.Key); ok {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				pairs[i] = fmt.Sprintf("(cons \"%s\" %s)", s, v)
+				continue
+			}
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
