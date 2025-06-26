@@ -1,7 +1,15 @@
 import Foundation
 
+func _index<T>(_ arr: [T], _ i: Int) -> T {
+    var idx = i
+    let n = arr.count
+    if idx < 0 { idx += n }
+    if idx < 0 || idx >= n { fatalError("index out of range") }
+    return arr[idx]
+}
+
 func main() {
-	let xs = [10, 20, 30]
-	print(xs[1])
+	let xs: [Int] = [10, 20, 30]
+	print(_index(xs, 1))
 }
 main()

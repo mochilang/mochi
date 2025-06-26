@@ -195,11 +195,18 @@ func _save(_ rows: [[String: Any]], _ path: String?, _ opts: [String: Any]?) {
 }
 `
 	helperGroupBy = `func _group_by(_ src: [Any], _ keyfn: (Any) -> Any) -> [_Group] {
+    func keyStr(_ v: Any) -> String {
+        if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
+           let s = String(data: data, encoding: .utf8) {
+            return s
+        }
+        return String(describing: v)
+    }
     var groups: [String: _Group] = [:]
     var order: [String] = []
     for it in src {
         let key = keyfn(it)
-        let ks = String(describing: key)
+        let ks = keyStr(key)
         if groups[ks] == nil {
             groups[ks] = _Group(key)
             order.append(ks)
