@@ -1,0 +1,58 @@
+func main (regs=32)
+  // let products = [
+  Const        r0, [{"name": "Laptop", "price": 1500}, {"name": "Smartphone", "price": 900}, {"name": "Tablet", "price": 600}, {"name": "Monitor", "price": 300}]
+  Move         r1, r0
+  // let sorted = from p in products
+  Const        r2, []
+  IterPrep     r3, r1
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  Less         r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // order by p.price desc
+  Const        r9, "price"
+  Index        r10, r8, r9
+  Move         r11, r10
+  // let sorted = from p in products
+  Move         r12, r8
+  MakeList     r13, 2, r11
+  Append       r14, r2, r13
+  Move         r2, r14
+  Const        r15, 1
+  Add          r16, r5, r15
+  Move         r5, r16
+  Jump         L1
+L0:
+  // order by p.price desc
+  SortDesc     17,2,0,0
+  // let sorted = from p in products
+  Move         r2, r17
+  Move         r18, r2
+  // print("--- Products by price descending ---")
+  Const        r19, "--- Products by price descending ---"
+  Print        r19
+  // for item in sorted {
+  IterPrep     r20, r18
+  Len          r21, r20
+  Const        r22, 0
+L3:
+  Less         r23, r22, r21
+  JumpIfFalse  r23, L2
+  Index        r24, r20, r22
+  Move         r25, r24
+  // print(item.name, item.price)
+  Const        r26, "name"
+  Index        r27, r25, r26
+  Const        r28, "price"
+  Index        r29, r25, r28
+  Print2       r27, r29
+  // for item in sorted {
+  Const        r30, 1
+  Add          r31, r22, r30
+  Move         r22, r31
+  Jump         L3
+L2:
+  Return       r0

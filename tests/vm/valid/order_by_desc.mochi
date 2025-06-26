@@ -1,0 +1,14 @@
+// order_by_desc.mochi
+let products = [
+  { name: "Laptop", price: 1500 },
+  { name: "Smartphone", price: 900 },
+  { name: "Tablet", price: 600 },
+  { name: "Monitor", price: 300 }
+]
+let sorted = from p in products
+             order by p.price desc
+             select p
+print("--- Products by price descending ---")
+for item in sorted {
+  print(item.name, item.price)
+}

@@ -117,6 +117,7 @@ const (
 	OpExcept
 	OpIntersect
 	OpSort
+	OpSortDesc
 	OpExpect
 )
 
@@ -262,6 +263,8 @@ func (op Op) String() string {
 		return "Intersect"
 	case OpSort:
 		return "Sort"
+	case OpSortDesc:
+		return "SortDesc"
 	case OpExpect:
 		return "Expect"
 	default:
@@ -1027,6 +1030,24 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			pairs := append([]Value(nil), src.List...)
 			sort.Slice(pairs, func(i, j int) bool {
 				return valueLess(pairs[i].List[0], pairs[j].List[0])
+			})
+			out := make([]Value, len(pairs))
+			for i, p := range pairs {
+				if len(p.List) > 1 {
+					out[i] = p.List[1]
+				} else {
+					out[i] = Value{Tag: interpreter.TagNull}
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+		case OpSortDesc:
+			src := fr.regs[ins.B]
+			if src.Tag != interpreter.TagList {
+				return Value{}, m.newError(fmt.Errorf("sort expects list"), trace, ins.Line)
+			}
+			pairs := append([]Value(nil), src.List...)
+			sort.Slice(pairs, func(i, j int) bool {
+				return valueLess(pairs[j].List[0], pairs[i].List[0])
 			})
 			out := make([]Value, len(pairs))
 			for i, p := range pairs {
@@ -2678,9 +2699,13 @@ func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
 			fc.compileQueryFull(q, dst, 0)
 		}
 	}
-	if q.Sort != nil {
+	if expr := sortExpr(q); expr != nil {
 		sorted := fc.newReg()
-		fc.emit(q.Sort.Pos, Instr{Op: OpSort, A: sorted, B: dst})
+		if sortDesc(q) {
+			fc.emit(expr.Pos, Instr{Op: OpSortDesc, A: sorted, B: dst})
+		} else {
+			fc.emit(expr.Pos, Instr{Op: OpSort, A: sorted, B: dst})
+		}
 		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: sorted})
 	}
 	if q.Skip != nil {
@@ -2756,10 +2781,10 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 	if idx >= len(q.Joins) {
 		appendVal := func() {
 			val := fc.compileExpr(q.Select)
-			if q.Sort != nil {
-				key := fc.compileExpr(q.Sort)
+			if expr := sortExpr(q); expr != nil {
+				key := fc.compileExpr(expr)
 				kreg := fc.newReg()
-				fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+				fc.emit(expr.Pos, Instr{Op: OpMove, A: kreg, B: key})
 				vreg := fc.newReg()
 				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 				pair := fc.newReg()
@@ -2894,10 +2919,10 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	// helper to append selected value
 	appendSelect := func() {
 		val := fc.compileExpr(q.Select)
-		if q.Sort != nil {
-			key := fc.compileExpr(q.Sort)
+		if expr := sortExpr(q); expr != nil {
+			key := fc.compileExpr(expr)
 			kreg := fc.newReg()
-			fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+			fc.emit(expr.Pos, Instr{Op: OpMove, A: kreg, B: key})
 			vreg := fc.newReg()
 			fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 			pair := fc.newReg()
@@ -3148,10 +3173,10 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 
 	appendSelect := func() {
 		val := fc.compileExpr(q.Select)
-		if q.Sort != nil {
-			key := fc.compileExpr(q.Sort)
+		if expr := sortExpr(q); expr != nil {
+			key := fc.compileExpr(expr)
 			kreg := fc.newReg()
-			fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+			fc.emit(expr.Pos, Instr{Op: OpMove, A: kreg, B: key})
 			vreg := fc.newReg()
 			fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 			pair := fc.newReg()
@@ -3339,10 +3364,10 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gvar, B: grp})
 
 	val := fc.compileExpr(q.Select)
-	if q.Sort != nil {
-		key := fc.compileExpr(q.Sort)
+	if expr := sortExpr(q); expr != nil {
+		key := fc.compileExpr(expr)
 		kreg := fc.newReg()
-		fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+		fc.emit(expr.Pos, Instr{Op: OpMove, A: kreg, B: key})
 		vreg := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 		pair := fc.newReg()
@@ -3477,10 +3502,10 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gvar, B: grp})
 
 	val := fc.compileExpr(q.Select)
-	if q.Sort != nil {
-		key := fc.compileExpr(q.Sort)
+	if expr := sortExpr(q); expr != nil {
+		key := fc.compileExpr(expr)
 		kreg := fc.newReg()
-		fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+		fc.emit(expr.Pos, Instr{Op: OpMove, A: kreg, B: key})
 		vreg := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 		pair := fc.newReg()
@@ -3744,10 +3769,10 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 		fc.pushScope()
 		appendVal := func() {
 			val := fc.compileExpr(q.Select)
-			if q.Sort != nil {
-				key := fc.compileExpr(q.Sort)
+			if expr := sortExpr(q); expr != nil {
+				key := fc.compileExpr(expr)
 				kreg := fc.newReg()
-				fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+				fc.emit(expr.Pos, Instr{Op: OpMove, A: kreg, B: key})
 				vreg := fc.newReg()
 				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 				pair := fc.newReg()

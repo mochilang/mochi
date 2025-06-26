@@ -137,3 +137,14 @@ func whereEvalLevel(q *parser.QueryExpr) int {
 	}
 	return level
 }
+
+func sortExpr(q *parser.QueryExpr) *parser.Expr {
+	if q.Order != nil {
+		return q.Order.Expr
+	}
+	return q.Sort
+}
+
+func sortDesc(q *parser.QueryExpr) bool {
+	return q.Order != nil && q.Order.Dir != nil && *q.Order.Dir == "desc"
+}

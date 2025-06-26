@@ -417,6 +417,7 @@ type QueryExpr struct {
 	Joins    []*JoinClause  `parser:"{ @@ }"`
 	Where    *Expr          `parser:"[ 'where' @@ ]"`
 	Group    *GroupByClause `parser:"[ @@ ]"`
+	Order    *OrderClause   `parser:"[ @@ ]"`
 	Sort     *Expr          `parser:"[ 'sort' 'by' @@ ]"`
 	Skip     *Expr          `parser:"[ 'skip' @@ ]"`
 	Take     *Expr          `parser:"[ 'take' @@ ]"`
@@ -447,6 +448,12 @@ type GroupByClause struct {
 	Pos   lexer.Position
 	Exprs []*Expr `parser:"'group' 'by' @@ { ',' @@ } 'into'"`
 	Name  string  `parser:"@Ident"`
+}
+
+type OrderClause struct {
+	Pos  lexer.Position
+	Expr *Expr   `parser:"'order' 'by' @@"`
+	Dir  *string `parser:"[ @('asc' | 'desc') ]"`
 }
 
 type MatchExpr struct {
