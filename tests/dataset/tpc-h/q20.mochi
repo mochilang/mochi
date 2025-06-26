@@ -49,22 +49,21 @@ let target_partkeys =
   from ps in partsupp
   join p in part on ps.ps_partkey == p.p_partkey
   join s in shipped_94 on ps.ps_partkey == s.partkey && ps.ps_suppkey == s.suppkey
-  // check prefix using slicing since startsWith isn't available
-  where p.p_name[0:len(prefix)] == prefix && ps.ps_availqty > 0.5 * s.qty
+  // check prefix using substring to match prefix
+  where substring(p.p_name, 0, len(prefix)) == prefix && ps.ps_availqty > (0.5 * s.qty)
   select ps.ps_suppkey
 
 let result =
   from s in supplier
-  where s.s_suppkey in target_partkeys
   join n in nation on n.n_nationkey == s.s_nationkey
-  where n.n_name == "CANADA"
+  where s.s_suppkey in target_partkeys && n.n_name == "CANADA"
   order by s.s_name
   select {
     s_name: s.s_name,
     s_address: s.s_address
   }
 
-print result
+json(result)
 
 test "Q20 returns suppliers from CANADA with forest part stock > 50% of 1994 shipments" {
   expect result == [
