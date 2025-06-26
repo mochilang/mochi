@@ -1,0 +1,13 @@
+// fetch.mochi
+
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+
+let todo: Todo = fetch "https://jsonplaceholder.typicode.com/todos/1"
+
+print("Title:", todo.title)
+print("Completed:", todo.completed)
