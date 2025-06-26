@@ -11,30 +11,33 @@ let orders = [
 let valid_codes = ["13", "31", "23", "29", "30", "18", "17"]
 
 let avg_balance =
-  avg(
-    from c in customer
-    where c.c_acctbal > 0.0 and substring(c.c_phone, 0, 2) in valid_codes
-    select c.c_acctbal
-  )
+  avg(from c in customer
+      where c.c_acctbal > 0.0 && substring(c.c_phone, 0, 2) in valid_codes
+      select c.c_acctbal)
 
-let eligible_customers =
+let eligible_customers = (
   from c in customer
-  let cc = substring(c.c_phone, 0, 2)
   where
-    cc in valid_codes and
-    c.c_acctbal > avg_balance and
-    not exists o in orders where o.o_custkey == c.c_custkey
-  select { cntrycode: cc, c_acctbal: c.c_acctbal }
+    substring(c.c_phone, 0, 2) in valid_codes &&
+    c.c_acctbal > avg_balance &&
+    (!exists(
+      from o in orders
+      where o.o_custkey == c.c_custkey
+      select o
+    ))
+  select { cntrycode: substring(c.c_phone, 0, 2), c_acctbal: c.c_acctbal }
+)
 
-let result =
+let result = (
   from c in eligible_customers
-  group by c.cntrycode
+  group by c.cntrycode into g
   select {
-    cntrycode: c.cntrycode,
-    numcust: count(),
-    totacctbal: sum(c.c_acctbal)
+    cntrycode: g.key,
+    numcust: count(g),
+    totacctbal: sum(from x in g select x.c_acctbal)
   }
-  order by c.cntrycode
+  order by g.key
+)
 
 print result
 

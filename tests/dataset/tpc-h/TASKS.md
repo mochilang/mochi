@@ -1,7 +1,9 @@
 # TPCH Example Issues
 
-The TPCH example programs were re-executed and several files failed to run correctly.
-The following tasks outline the work required to restore passing results.
+Running `go test -tags slow ./tests/vm -run TestVM_TPCH` shows that several
+queries still fail under the runtime VM.  The items below capture the issues
+that need to be addressed in the VM or query logic so that all TPCH programs
+can execute successfully.
 
 ## q8.mochi
 - Execution fails with `Expect condition failed` after computing the result.
@@ -9,9 +11,8 @@ The following tasks outline the work required to restore passing results.
 - Update the test expectations or query so `print result` matches the expected value.
 
 ## q13.mochi
-- Type checker reports `undefined variable: from` around the `count` query.
-- The query inside `count` is split across lines. Wrap the subquery in parentheses
-  (`count(from ... select ...)`) or update the parser to handle the newline.
+- Query now compiles but the runtime VM fails the final expectation.
+- Investigate the grouping logic to ensure counts match the expected output.
 
 ## q21.mochi
 - Running the program prints the result but the final expectation fails.
@@ -19,9 +20,8 @@ The following tasks outline the work required to restore passing results.
   computed as expected.
 
 ## q22.mochi
-- Parsing fails near the `avg` expression in the `avg_balance` definition.
-- Ensure the query is written as `avg(from ... select ...)` or modify the parser
-  to allow a newline after the opening parenthesis.
+- Parsing still fails around the aggregate and `exists` expression.
+- Review the syntax for aggregate queries and nested `exists` to resolve the error.
 
 Addressing these issues will allow all TPCH examples to run without errors and
 regenerate stable `.out` and `.ir.out` files.

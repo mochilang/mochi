@@ -10,10 +10,10 @@ let orders = [
   { o_orderkey: 102, o_custkey: 2, o_comment: "special requests only" } // excluded
 ]
 
-let per_customer =
+let per_customer = (
   from c in customer
-  let order_count =
-    count(
+  select {
+    c_count: count(
       from o in orders
       where (
         o.o_custkey == c.c_custkey &&
@@ -22,13 +22,15 @@ let per_customer =
       )
       select o
     )
-  select { c_count: order_count }
+  }
+)
 
-let grouped =
+let grouped = (
   from x in per_customer
-  group by x.c_count
-  sort by [-count(), -x.c_count]
-  select { c_count: x.c_count, custdist: count() }
+  group by x.c_count into g
+  sort by [-count(g), -g.key]
+  select { c_count: g.key, custdist: count(g) }
+)
 
 print grouped
 
