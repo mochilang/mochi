@@ -367,6 +367,8 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 
 		c.writeln("")
+		c.writeln(`mochi_to_json(true) -> "true";`)
+		c.writeln(`mochi_to_json(false) -> "false";`)
 		c.writeln(`mochi_to_json(V) when is_integer(V); is_float(V) -> lists:flatten(io_lib:format("~p", [V]));`)
 		c.writeln(`mochi_to_json(V) when is_binary(V) -> "\"" ++ mochi_escape_json(binary_to_list(V)) ++ "\"";`)
 		c.writeln(`mochi_to_json(V) when is_list(V), (V =:= [] orelse is_integer(hd(V))) -> "\"" ++ mochi_escape_json(V) ++ "\"";`)
