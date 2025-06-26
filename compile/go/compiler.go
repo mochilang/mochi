@@ -1981,12 +1981,15 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	} else {
 		withStr = "nil"
 	}
+	// _fetch uses _toAnyMap internally for headers and query handling, so
+	// ensure it is always included to avoid undefined symbol errors.
+	c.use("_toAnyMap")
 
 	c.imports["net/http"] = true
 	c.imports["io"] = true
 	c.imports["encoding/json"] = true
 	c.imports["bytes"] = true
-	c.imports["net/url"] = true
+	c.imports["neturl \"net/url\""] = true
 	c.imports["os"] = true
 	c.imports["time"] = true
 	c.imports["fmt"] = true

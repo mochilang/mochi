@@ -11,14 +11,17 @@ import (
 	"time"
 )
 
-type Msg struct {
-	Message string `json:"message"`
+type Todo struct {
+	UserId int `json:"userId"`
+	Id int `json:"id"`
+	Title string `json:"title"`
+	Completed bool `json:"completed"`
 }
 
 func main() {
-	var data Msg = _cast[Msg](_fetch("file://tests/compiler/go/fetch_builtin.json", nil))
-	_ = data
-	fmt.Println(data.Message)
+	var todo Todo = _cast[Todo](_fetch("https://jsonplaceholder.typicode.com/todos/1", nil))
+	_ = todo
+	fmt.Println(todo.Id)
 }
 
 func _cast[T any](v any) T {
