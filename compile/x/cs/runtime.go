@@ -35,6 +35,19 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("return _n == 0 ? 0.0 : _sum / _n;")
 				c.indent--
 				c.writeln("}")
+			case "_sum":
+				c.writeln("static double _sum(dynamic v) {")
+				c.indent++
+				c.writeln("if (v == null) return 0.0;")
+				c.writeln("double _sum = 0;")
+				c.writeln("foreach (var it in v) {")
+				c.indent++
+				c.writeln("_sum += Convert.ToDouble(it);")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return _sum;")
+				c.indent--
+				c.writeln("}")
 			case "_in":
 				c.writeln("static bool _in(dynamic item, dynamic col) {")
 				c.indent++
