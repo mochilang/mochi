@@ -52,6 +52,30 @@ _now = fmap round getPOSIXTime
 _json :: Aeson.ToJSON a => a -> IO ()
 _json v = BSL.putStrLn (Aeson.encode v)
 
+data AnyValue = VInt Int | VDouble Double | VString String | VBool Bool deriving (Show)
+
+instance Aeson.ToJSON AnyValue where
+  toJSON (VInt n) = Aeson.toJSON n
+  toJSON (VDouble d) = Aeson.toJSON d
+  toJSON (VString s) = Aeson.toJSON s
+  toJSON (VBool b) = Aeson.toJSON b
+
+_asInt :: AnyValue -> Int
+_asInt (VInt n) = n
+_asInt v = error ("expected int, got " ++ show v)
+
+_asDouble :: AnyValue -> Double
+_asDouble (VDouble d) = d
+_asDouble v = error ("expected double, got " ++ show v)
+
+_asString :: AnyValue -> String
+_asString (VString s) = s
+_asString v = error ("expected string, got " ++ show v)
+
+_asBool :: AnyValue -> Bool
+_asBool (VBool b) = b
+_asBool v = error ("expected bool, got " ++ show v)
+
 _readInput :: Maybe String -> IO String
 _readInput Nothing = getContents
 _readInput (Just p)

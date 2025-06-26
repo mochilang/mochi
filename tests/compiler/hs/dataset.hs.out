@@ -113,8 +113,10 @@ data Person = Person {
 } deriving (Show)
 
 
+people = [Person { name = "Alice", age = 30 }, Person { name = "Bob", age = 15 }, Person { name = "Charlie", age = 65 }]
+
+names = [name (p) | p <- filter (\p -> (age (p) >= 18)) people]
+
 main :: IO ()
 main = do
-    let people = [Person { name = "Alice", age = 30 }, Person { name = "Bob", age = 15 }, Person { name = "Charlie", age = 65 }]
-    let names = [name (p) | p <- filter (\p -> age (p) >= 18) people]
     mapM_ (\n -> putStrLn (n)) names
