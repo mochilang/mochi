@@ -154,6 +154,10 @@ const groupHelpers = `(define (_count v)
               src)
     (map (lambda (k) (cdr (assoc k groups))) order)))`
 
+const jsonHelper = `(define (_json v)
+  (write v)
+  (newline))`
+
 const testHelpers = `(define failures 0)
 (define (print-test-start name)
   (display "   test ") (display name) (display " ..."))
@@ -184,6 +188,7 @@ type Compiler struct {
 	needListOps    bool
 	needSlice      bool
 	needGroup      bool
+	needJSON       bool
 	loops          []loopCtx
 	mainStmts      []*parser.Statement
 	tests          []testInfo
@@ -244,7 +249,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, mainStmts: nil, tests: []testInfo{}}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, mainStmts: nil, tests: []testInfo{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -268,6 +273,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needDataset = false
 	c.needListOps = false
 	c.needSlice = false
+	c.needJSON = false
 	c.mainStmts = nil
 	c.tests = nil
 	// Declarations and tests
@@ -307,7 +313,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("(when (> failures 0) (display \"\\n[FAIL] \") (display failures) (display \" test(s) failed.\\n\"))")
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || c.needGroup || len(c.tests) > 0 {
+	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || c.needGroup || c.needJSON || len(c.tests) > 0 {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -327,13 +333,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if c.needMapHelpers {
 			pre.WriteString("(define (map-get m k)\n")
 			pre.WriteString("    (let ((p (assoc k m)))\n")
-			pre.WriteString("        (if p (cdr p) '())))\n")
+			pre.WriteString("        (if p (cdr p) '()))\n")
 			pre.WriteString(")\n")
 			pre.WriteString("(define (map-set m k v)\n")
 			pre.WriteString("    (let ((p (assoc k m)))\n")
 			pre.WriteString("        (if p\n")
 			pre.WriteString("            (begin (set-cdr! p v) m)\n")
-			pre.WriteString("            (cons (cons k v) m))))\n")
+			pre.WriteString("            (cons (cons k v) m)))\n")
 			pre.WriteString(")\n")
 		}
 		if c.needDataset {
@@ -350,6 +356,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if c.needGroup {
 			pre.WriteString(groupHelpers)
+			pre.WriteByte('\n')
+		}
+		if c.needJSON {
+			pre.WriteString(jsonHelper)
 			pre.WriteByte('\n')
 		}
 		if len(c.tests) > 0 {
@@ -1051,6 +1061,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("input expects no args")
 		}
 		return "(read-line)", nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		c.needJSON = true
+		return fmt.Sprintf("(_json %s)", args[0]), nil
 	}
 	if recv != "" {
 		return fmt.Sprintf("(%s %s %s)", recv, call.Func, strings.Join(args, " ")), nil
@@ -1118,6 +1134,9 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	}
 	if sub.needListOps {
 		c.needListOps = true
+	}
+	if sub.needJSON {
+		c.needJSON = true
 	}
 
 	var buf bytes.Buffer
