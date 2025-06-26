@@ -1,0 +1,11 @@
+type Person {
+  name: string
+  age: int
+  email: string
+}
+
+let people = load "tests/interpreter/valid/people.jsonl" as Person with {
+  format: "jsonl",
+}
+
+save people to "-" with { format: "json" }

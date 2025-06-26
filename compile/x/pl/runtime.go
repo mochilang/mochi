@@ -97,3 +97,27 @@ const helperGroupBy = "group_insert(Key, Item, [], [_{key:Key, Items:[Item]}]).\
 	"group_pairs([], Acc, Res) :- reverse(Acc, Res).\n" +
 	"group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).\n" +
 	"group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).\n\n"
+
+const helperLoad = ":- use_module(library(http/json)).\n" +
+	"load_data(Path, Opts, Rows) :-\n" +
+	"    (is_dict(Opts), get_dict(format, Opts, Fmt) -> true ; Fmt = 'json'),\n" +
+	"    (Path == '' ; Path == '-' -> read_string(user_input, _, Text) ; read_file_to_string(Path, Text, [])),\n" +
+	"    (Fmt == 'jsonl' ->\n" +
+	"        split_string(Text, '\\n', ' \\t\\r', Lines0),\n" +
+	"        exclude(=(\"\"), Lines0, Lines),\n" +
+	"        findall(D, (member(L, Lines), open_string(L, S), json_read_dict(S, D), close(S)), Rows)\n" +
+	"    ;\n" +
+	"        open_string(Text, S), json_read_dict(S, Data), close(S),\n" +
+	"        (is_list(Data) -> Rows = Data ; Rows = [Data])\n" +
+	"    ).\n\n"
+
+const helperSave = ":- use_module(library(http/json)).\n" +
+	"save_data(Rows, Path, Opts) :-\n" +
+	"    (is_dict(Opts), get_dict(format, Opts, Fmt) -> true ; Fmt = 'json'),\n" +
+	"    (Path == '' ; Path == '-' -> Out = current_output ; open(Path, write, Out)),\n" +
+	"    (Fmt == 'jsonl' ->\n" +
+	"        forall(member(R, Rows), (json_write_dict(Out, R), nl(Out)))\n" +
+	"    ;\n" +
+	"        json_write_dict(Out, Rows)\n" +
+	"    ),\n" +
+	"    (Out == current_output -> flush_output(Out) ; close(Out)).\n\n"

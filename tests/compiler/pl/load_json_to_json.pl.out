@@ -1,0 +1,36 @@
+:- style_check(-singleton).
+:- use_module(library(http/json)).
+load_data(Path, Opts, Rows) :-
+    (is_dict(Opts), get_dict(format, Opts, Fmt) -> true ; Fmt = 'json'),
+    (Path == '' ; Path == '-' -> read_string(user_input, _, Text) ; read_file_to_string(Path, Text, [])),
+    (Fmt == 'jsonl' ->
+        split_string(Text, '\n', ' \t\r', Lines0),
+        exclude(=(""), Lines0, Lines),
+        findall(D, (member(L, Lines), open_string(L, S), json_read_dict(S, D), close(S)), Rows)
+    ;
+        open_string(Text, S), json_read_dict(S, Data), close(S),
+        (is_list(Data) -> Rows = Data ; Rows = [Data])
+    ).
+
+
+:- use_module(library(http/json)).
+save_data(Rows, Path, Opts) :-
+    (is_dict(Opts), get_dict(format, Opts, Fmt) -> true ; Fmt = 'json'),
+    (Path == '' ; Path == '-' -> Out = current_output ; open(Path, write, Out)),
+    (Fmt == 'jsonl' ->
+        forall(member(R, Rows), (json_write_dict(Out, R), nl(Out)))
+    ;
+        json_write_dict(Out, Rows)
+    ),
+    (Out == current_output -> flush_output(Out) ; close(Out)).
+
+
+
+	main :-
+	dict_create(_V0, map, [format-"jsonl"]),
+	load_data("tests/interpreter/valid/people.jsonl", _V0, _V1),
+	People = _V1,
+	dict_create(_V2, map, [format-"json"]),
+	save_data(People, "-", _V2)
+	.
+:- initialization(main, main).

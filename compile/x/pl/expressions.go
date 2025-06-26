@@ -396,6 +396,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.LogicQuery != nil:
 		return c.compileLogicQuery(p.LogicQuery)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	}
 	return exprRes{}, fmt.Errorf("unsupported expression")
 }
@@ -921,6 +925,51 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (exprRes, error) {
 	c.buf = oldBuf
 	c.indent = oldIndent
 	return exprRes{val: sanitizeAtom(name)}, nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (exprRes, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	opts := "_{}"
+	var code []string
+	if l.With != nil {
+		o, err := c.compileExpr(l.With)
+		if err != nil {
+			return exprRes{}, err
+		}
+		code = append(code, o.code...)
+		opts = o.val
+	}
+	tmp := c.newVar()
+	c.use("load_data")
+	code = append(code, fmt.Sprintf("load_data(%s, %s, %s),", path, opts, tmp))
+	return exprRes{code: code, val: tmp}, nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (exprRes, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return exprRes{}, err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	opts := "_{}"
+	code := append([]string{}, src.code...)
+	if s.With != nil {
+		o, err := c.compileExpr(s.With)
+		if err != nil {
+			return exprRes{}, err
+		}
+		code = append(code, o.code...)
+		opts = o.val
+	}
+	c.use("save_data")
+	code = append(code, fmt.Sprintf("save_data(%s, %s, %s),", src.val, path, opts))
+	return exprRes{code: code, val: ""}, nil
 }
 
 func (c *Compiler) logicPredicate(p *parser.LogicPredicate) (string, []string, error) {
