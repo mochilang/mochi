@@ -1,0 +1,7 @@
+let resp = fetch "https://httpbin.org/anything" with {
+  method: "POST",
+  headers: {"Content-Type": "application/json"},
+  query: {x: "1"},
+  body: {"foo": 123}
+}
+print(resp.json.foo)
