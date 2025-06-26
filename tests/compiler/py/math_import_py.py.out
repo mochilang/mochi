@@ -3,15 +3,18 @@ from __future__ import annotations
 
 import math
 
-r = 3
-area = None
-
 def main():
-	global r
-	r = 3
-	global area
-	area = (math.pi * math.pow(r, 2))
-	print("Area:", area)
+    # import python "math" as math
+    # extern fun math.pow(x: float, y: float): float
+    # extern let math.pi: float
+    # let r = 3.0
+    global r
+    r: float = 3
+    # let area = math.pi * math.pow(r, 2.0)
+    global area
+    area: float = (math.pi * math.pow(r, 2))
+    # print("Area:", area)
+    print("Area:", area)
 
 if __name__ == "__main__":
-	main()
+    main()

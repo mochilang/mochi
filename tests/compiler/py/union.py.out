@@ -4,23 +4,25 @@ from __future__ import annotations
 import dataclasses
 import typing
 
+# type Tree =
+# type Tree =
 class Tree:
-	pass
+    pass
 @dataclasses.dataclass
 class Leaf(Tree):
-	pass
+    pass
 @dataclasses.dataclass
 class Node(Tree):
-	left: Tree
-	value: int
-	right: Tree
-
-t = Node(left=Leaf(), value=42, right=Leaf())
+    left: Tree
+    value: int
+    right: Tree
 
 def main():
-	global t
-	t = Node(left=Leaf(), value=42, right=Leaf())
-	print(t.value)
+    # let t = Node { left: Leaf {}, value: 42, right: Leaf {} }
+    global t
+    t: Node = Node(left=Leaf(), value=42, right=Leaf())
+    # print(t.value)
+    print(t.value)
 
 if __name__ == "__main__":
-	main()
+    main()

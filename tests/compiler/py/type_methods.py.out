@@ -4,21 +4,27 @@ from __future__ import annotations
 import dataclasses
 import typing
 
+# type Counter {
+# type Counter {
 @dataclasses.dataclass
 class Counter:
-	value: int
-	
-	def inc(self) -> int:
-		self.value = (self.value + 1)
-		return self.value
-
-c = Counter(value=0)
+    value: int
+    
+    # fun inc(): int {
+    def inc(self) -> int:
+        # value = value + 1
+        self.value = (self.value + 1)
+        # return value
+        return self.value
 
 def main():
-	global c
-	c = Counter(value=0)
-	print(c.inc())
-	print(c.inc())
+    # let c = Counter { value: 0 }
+    global c
+    c: Counter = Counter(value=0)
+    # print(c.inc())
+    print(c.inc())
+    # print(c.inc())
+    print(c.inc())
 
 if __name__ == "__main__":
-	main()
+    main()

@@ -11,6 +11,7 @@ import (
 // --- Statements ---
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
+	c.writeSourceComment(s.Pos)
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
@@ -121,7 +122,14 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			c.writeln("global " + name)
 		}
 	}
-	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	if typ == nil {
+		typ = types.AnyType{}
+	}
+	typStr := pyType(typ)
+	if strings.HasPrefix(typStr, "typing.") {
+		c.imports["typing"] = "typing"
+	}
+	c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
 	return nil
 }
 
@@ -166,7 +174,20 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			c.writeln("global " + name)
 		}
 	}
-	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	var typ types.Type
+	if s.Type != nil {
+		typ = c.resolveTypeRef(s.Type)
+	} else if s.Value != nil {
+		typ = c.inferExprType(s.Value)
+	}
+	if typ == nil {
+		typ = types.AnyType{}
+	}
+	typStr := pyType(typ)
+	if strings.HasPrefix(typStr, "typing.") {
+		c.imports["typing"] = "typing"
+	}
+	c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
 	return nil
 }
 
@@ -444,6 +465,7 @@ func (c *Compiler) compileStructType(st types.StructType) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	c.writeSourceComment(t.Pos)
 	c.imports["dataclasses"] = "dataclasses"
 	c.imports["typing"] = "typing"
 	name := sanitizeName(t.Name)
@@ -627,6 +649,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
+	c.writeSourceComment(fun.Pos)
 	name := sanitizeName(fun.Name)
 	c.imports["typing"] = "typing"
 	c.writeIndent()
@@ -705,6 +728,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	c.writeSourceComment(t.Pos)
 	name := "test_" + sanitizeName(t.Name)
 	c.writeIndent()
 	c.buf.WriteString("def " + name + "():\n")
@@ -768,6 +792,7 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 }
 
 func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.FunStmt) error {
+	c.writeSourceComment(fun.Pos)
 	name := sanitizeName(fun.Name)
 	c.imports["typing"] = "typing"
 	c.writeIndent()

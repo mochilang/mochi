@@ -4,17 +4,19 @@ from __future__ import annotations
 import dataclasses
 import typing
 
+# type Person {
+# type Person {
 @dataclasses.dataclass
 class Person:
-	name: str
-	age: int
-
-people = None
+    name: str
+    age: int
 
 def main():
-	global people
-	people = [ Person(**_it) for _it in _load(None, dict({"format": "json"})) ]
-	_save(people, None, dict({"format": "json"}))
+    # let people = load as Person with { format: "json" }
+    global people
+    people: list[Person] = [ Person(**_it) for _it in _load(None, dict({"format": "json"})) ]
+    # save people with { format: "json" }
+    _save(people, None, dict({"format": "json"}))
 
 def _load(path, opts):
     import csv, json, sys
@@ -124,4 +126,4 @@ def _save(rows, path, opts):
         if path is not None:
             f.close()
 if __name__ == "__main__":
-	main()
+    main()

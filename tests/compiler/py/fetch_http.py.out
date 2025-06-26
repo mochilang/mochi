@@ -6,19 +6,21 @@ import json
 import typing
 import urllib.request
 
+# type Todo {
+# type Todo {
 @dataclasses.dataclass
 class Todo:
-	userId: int
-	id: int
-	title: str
-	completed: bool
-
-todo = None
+    userId: int
+    id: int
+    title: str
+    completed: bool
 
 def main():
-	global todo
-	todo = Todo(**(_fetch("https://jsonplaceholder.typicode.com/todos/1", None)))
-	print(todo.title)
+    # let todo: Todo = (fetch "https://jsonplaceholder.typicode.com/todos/1") as Todo
+    global todo
+    todo: Todo = Todo(**(_fetch("https://jsonplaceholder.typicode.com/todos/1", None)))
+    # print(todo.title)
+    print(todo.title)
 
 def _fetch(url, opts):
     import urllib.request, urllib.parse, json
@@ -43,4 +45,4 @@ def _fetch(url, opts):
         text = resp.read()
     return json.loads(text)
 if __name__ == "__main__":
-	main()
+    main()

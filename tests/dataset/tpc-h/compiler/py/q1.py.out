@@ -3,26 +3,29 @@ from __future__ import annotations
 
 import json
 
-lineitem = None
-result = None
-
+# test "Q1 aggregates revenue and quantity by returnflag + linestatus" {
+# test "Q1 aggregates revenue and quantity by returnflag + linestatus" {
 def test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus():
-	assert (result == [{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": (950 + 1800), "sum_charge": (((950 * 1.07)) + ((1800 * 1.05))), "avg_qty": 26.5, "avg_price": 1500, "avg_disc": 0.07500000000000001, "count_order": 2}])
+    # expect result == [
+    assert (result == [{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": (950 + 1800), "sum_charge": (((950 * 1.07)) + ((1800 * 1.05))), "avg_qty": 26.5, "avg_price": 1500, "avg_disc": 0.07500000000000001, "count_order": 2}])
 
 def main():
-	global lineitem
-	lineitem = [{"l_quantity": 17, "l_extendedprice": 1000, "l_discount": 0.05, "l_tax": 0.07, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-08-01"}, {"l_quantity": 36, "l_extendedprice": 2000, "l_discount": 0.1, "l_tax": 0.05, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-09-01"}, {"l_quantity": 25, "l_extendedprice": 1500, "l_discount": 0, "l_tax": 0.08, "l_returnflag": "R", "l_linestatus": "F", "l_shipdate": "1998-09-03"}]
-	def _q0():
-		_src = lineitem
-		_rows = _query(_src, [], { 'select': lambda row: (row), 'where': lambda row: ((row["l_shipdate"] <= "1998-09-02")) })
-		_groups = _group_by(_rows, lambda row: ({"returnflag": row["l_returnflag"], "linestatus": row["l_linestatus"]}))
-		items = _groups
-		return [ {"returnflag": g.key.returnflag, "linestatus": g.key.linestatus, "sum_qty": sum([ x["l_quantity"] for x in g ]), "sum_base_price": sum([ x["l_extendedprice"] for x in g ]), "sum_disc_price": sum([ (x["l_extendedprice"] * ((1 - x["l_discount"]))) for x in g ]), "sum_charge": sum([ ((x["l_extendedprice"] * ((1 - x["l_discount"]))) * ((1 + x["l_tax"]))) for x in g ]), "avg_qty": _avg([ x["l_quantity"] for x in g ]), "avg_price": _avg([ x["l_extendedprice"] for x in g ]), "avg_disc": _avg([ x["l_discount"] for x in g ]), "count_order": _count(g)} for g in items ]
-	
-	global result
-	result = _q0()
-	print(json.dumps(result, default=lambda o: vars(o)))
-	test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
+    # let lineitem = [
+    global lineitem
+    lineitem: list[dict[str, typing.Any]] = [{"l_quantity": 17, "l_extendedprice": 1000, "l_discount": 0.05, "l_tax": 0.07, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-08-01"}, {"l_quantity": 36, "l_extendedprice": 2000, "l_discount": 0.1, "l_tax": 0.05, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-09-01"}, {"l_quantity": 25, "l_extendedprice": 1500, "l_discount": 0, "l_tax": 0.08, "l_returnflag": "R", "l_linestatus": "F", "l_shipdate": "1998-09-03"}]
+    # let result =
+    def _q0():
+        _src = lineitem
+        _rows = _query(_src, [], { 'select': lambda row: (row), 'where': lambda row: ((row["l_shipdate"] <= "1998-09-02")) })
+        _groups = _group_by(_rows, lambda row: ({"returnflag": row["l_returnflag"], "linestatus": row["l_linestatus"]}))
+        items = _groups
+        return [ {"returnflag": g.key.returnflag, "linestatus": g.key.linestatus, "sum_qty": sum([ x["l_quantity"] for x in g ]), "sum_base_price": sum([ x["l_extendedprice"] for x in g ]), "sum_disc_price": sum([ (x["l_extendedprice"] * ((1 - x["l_discount"]))) for x in g ]), "sum_charge": sum([ ((x["l_extendedprice"] * ((1 - x["l_discount"]))) * ((1 + x["l_tax"]))) for x in g ]), "avg_qty": _avg([ x["l_quantity"] for x in g ]), "avg_price": _avg([ x["l_extendedprice"] for x in g ]), "avg_disc": _avg([ x["l_discount"] for x in g ]), "count_order": _count(g)} for g in items ]
+    
+    global result
+    result: list[dict[str, typing.Any]] = _q0()
+    # json(result)
+    print(json.dumps(result, default=lambda o: vars(o)))
+    test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
 
 def _avg(v):
     if hasattr(v, 'Items'):
@@ -136,4 +139,4 @@ def _query(src, joins, opts):
         res.append(opts['select'](*r))
     return res
 if __name__ == "__main__":
-	main()
+    main()

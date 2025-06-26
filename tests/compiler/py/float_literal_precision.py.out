@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 def main():
-	print(9.261000000000001)
+    # print(9.261000000000001)
+    print(9.261000000000001)
 
 if __name__ == "__main__":
-	main()
+    main()

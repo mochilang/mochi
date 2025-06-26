@@ -4,12 +4,12 @@ from __future__ import annotations
 import json
 import urllib.request
 
-data = None
-
 def main():
-	global data
-	data = (_fetch("file:../../tests/compiler/py/fetch_builtin.json", None))
-	print(data["message"])
+    # let data: map<string,string> = (fetch "file:../../tests/compiler/py/fetch_builtin.json") as map<string,string>
+    global data
+    data: dict[str, str] = (_fetch("file:../../tests/compiler/py/fetch_builtin.json", None))
+    # print(data["message"])
+    print(data["message"])
 
 def _fetch(url, opts):
     import urllib.request, urllib.parse, json
@@ -34,4 +34,4 @@ def _fetch(url, opts):
         text = resp.read()
     return json.loads(text)
 if __name__ == "__main__":
-	main()
+    main()

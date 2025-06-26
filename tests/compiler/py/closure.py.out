@@ -3,15 +3,18 @@ from __future__ import annotations
 
 import typing
 
+# fun makeAdder(n: int): fun(int): int {
+# fun makeAdder(n: int): fun(int): int {
 def makeAdder(n: int) -> typing.Callable:
-	return (lambda x: (x + n))
-
-add10 = makeAdder(10)
+    # return fun(x: int): int => x + n
+    return (lambda x: (x + n))
 
 def main():
-	global add10
-	add10 = makeAdder(10)
-	print(add10(7))
+    # let add10 = makeAdder(10)
+    global add10
+    add10: typing.Callable = makeAdder(10)
+    # print(add10(7))  // 17
+    print(add10(7))
 
 if __name__ == "__main__":
-	main()
+    main()

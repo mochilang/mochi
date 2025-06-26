@@ -4,8 +4,11 @@ package pycode
 // keeps compiler.go focused on the high level logic.
 
 import (
+	"os"
 	"reflect"
 	"strings"
+
+	"github.com/alecthomas/participle/v2/lexer"
 
 	"mochi/parser"
 	"mochi/types"
@@ -15,7 +18,25 @@ func (c *Compiler) writeln(s string) { c.writeIndent(); c.buf.WriteString(s); c.
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
-		c.buf.WriteByte('\t')
+		c.buf.WriteString("    ")
+	}
+}
+
+func (c *Compiler) writeSourceComment(pos lexer.Position) {
+	lines, ok := c.sourceLines[pos.Filename]
+	if !ok {
+		data, err := os.ReadFile(pos.Filename)
+		if err == nil {
+			lines = strings.Split(string(data), "\n")
+		} else {
+			lines = []string{}
+		}
+		c.sourceLines[pos.Filename] = lines
+	}
+	if pos.Line-1 < len(lines) {
+		c.writeln("# " + strings.TrimSpace(lines[pos.Line-1]))
+	} else {
+		c.writeln("#")
 	}
 }
 

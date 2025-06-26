@@ -29,6 +29,7 @@ type Compiler struct {
 	methodFields map[string]bool
 	globals      map[string]bool
 	tupleFields  map[string]map[string]int
+	sourceLines  map[string][]string
 }
 
 func New(env *types.Env) *Compiler {
@@ -43,6 +44,7 @@ func New(env *types.Env) *Compiler {
 		methodFields: nil,
 		globals:      make(map[string]bool),
 		tupleFields:  make(map[string]map[string]int),
+		sourceLines:  make(map[string][]string),
 	}
 }
 
@@ -108,6 +110,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
+			c.writeSourceComment(s.Pos)
 			if err := c.compileFunStmt(s.Fun); err != nil {
 				return nil, err
 			}
@@ -118,6 +121,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Type declarations
 	for _, s := range prog.Statements {
 		if s.Type != nil {
+			c.writeSourceComment(s.Pos)
 			if err := c.compileTypeDecl(s.Type); err != nil {
 				return nil, err
 			}
@@ -125,8 +129,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// Placeholder globals for variables used in tests
-	wrotePlaceholder := false
+	// Track global variables for declarations used across functions
 	seen := map[string]bool{}
 	for _, s := range prog.Statements {
 		if s.Test != nil {
@@ -135,63 +138,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		switch {
 		case s.Let != nil:
 			name := sanitizeName(s.Let.Name)
-			if seen[name] {
-				continue
+			if !seen[name] {
+				seen[name] = true
+				c.globals[name] = true
 			}
-			seen[name] = true
-			c.globals[name] = true
-			useExpr := false
-			if isLiteralExpr(s.Let.Value) || isPureExpr(s.Let.Value) {
-				vars := map[string]struct{}{}
-				exprVars(s.Let.Value, vars)
-				if len(vars) == 0 {
-					useExpr = true
-				}
-			}
-			if useExpr {
-				expr, err := c.compileExpr(s.Let.Value)
-				if err != nil {
-					return nil, err
-				}
-				c.writeln(fmt.Sprintf("%s = %s", name, expr))
-			} else {
-				c.writeln(fmt.Sprintf("%s = None", name))
-			}
-			wrotePlaceholder = true
 		case s.Var != nil:
 			name := sanitizeName(s.Var.Name)
-			if seen[name] {
-				continue
+			if !seen[name] {
+				seen[name] = true
+				c.globals[name] = true
 			}
-			seen[name] = true
-			c.globals[name] = true
-			useExpr := false
-			if isLiteralExpr(s.Var.Value) || isPureExpr(s.Var.Value) {
-				vars := map[string]struct{}{}
-				exprVars(s.Var.Value, vars)
-				if len(vars) == 0 {
-					useExpr = true
-				}
-			}
-			if useExpr {
-				expr, err := c.compileExpr(s.Var.Value)
-				if err != nil {
-					return nil, err
-				}
-				c.writeln(fmt.Sprintf("%s = %s", name, expr))
-			} else {
-				c.writeln(fmt.Sprintf("%s = None", name))
-			}
-			wrotePlaceholder = true
 		}
-	}
-	if wrotePlaceholder {
-		c.writeln("")
 	}
 
 	// Test blocks
 	for _, s := range prog.Statements {
 		if s.Test != nil {
+			c.writeSourceComment(s.Pos)
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}

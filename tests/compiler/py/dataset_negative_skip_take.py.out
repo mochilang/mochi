@@ -4,26 +4,32 @@ from __future__ import annotations
 import dataclasses
 import typing
 
+# type Num { val: int }
+# type Num { val: int }
 @dataclasses.dataclass
 class Num:
-	val: int
-
-items = [Num(val=1), Num(val=2), Num(val=3)]
-a = None
-b = None
+    val: int
 
 def main():
-	global items
-	items = [Num(val=1), Num(val=2), Num(val=3)]
-	global a
-	a = [ x.val for x in (([ x for x in items ])[max((-1), 0):])[:max(2, 0)] ]
-	global b
-	b = [ x.val for x in (([ x for x in items ])[max(1, 0):])[:max((-1), 0)] ]
-	print("---a---")
-	for v in a:
-		print(v)
-	print("---b---")
-	print(len(b))
+    # let items = [ Num { val: 1 }, Num { val: 2 }, Num { val: 3 } ]
+    global items
+    items: list[Num] = [Num(val=1), Num(val=2), Num(val=3)]
+    # let a = from x in items skip -1 take 2 select x.val
+    global a
+    a: list[int] = [ x.val for x in (([ x for x in items ])[max((-1), 0):])[:max(2, 0)] ]
+    # let b = from x in items skip 1 take -1 select x.val
+    global b
+    b: list[int] = [ x.val for x in (([ x for x in items ])[max(1, 0):])[:max((-1), 0)] ]
+    # print("---a---")
+    print("---a---")
+    # for v in a { print(v) }
+    for v in a:
+        # for v in a { print(v) }
+        print(v)
+    # print("---b---")
+    print("---b---")
+    # print(len(b))
+    print(len(b))
 
 if __name__ == "__main__":
-	main()
+    main()
