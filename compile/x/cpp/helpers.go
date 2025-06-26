@@ -181,3 +181,18 @@ func collectExprVars(e *parser.Expr, vars map[string]struct{}) {
 		scanPostfix(op.Right)
 	}
 }
+
+func convertFromString(typ, expr string) string {
+	switch typ {
+	case "int":
+		return "stoi(" + expr + ")"
+	case "double":
+		return "stod(" + expr + ")"
+	case "bool":
+		return "(" + expr + " == \"true\")"
+	case "string":
+		return expr
+	default:
+		return expr
+	}
+}

@@ -247,6 +247,24 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	c.indent--
 	c.writeln("};")
 	c.writeln("")
+	// _cast specialization for this struct
+	c.helpers["cast"] = true
+	c.writeln(fmt.Sprintf("template<> inline %s _cast<%s>(any v) {", name, name))
+	c.indent++
+	c.writeln(fmt.Sprintf("%s out{};", name))
+	c.writeln("if(auto m = any_cast<unordered_map<string,string>>(&v)) {")
+	c.indent++
+	for _, fn := range st.Order {
+		ft := st.Fields[fn]
+		expr := fmt.Sprintf("m->find(\"%s\")", fn)
+		c.writeln(fmt.Sprintf("if(auto it_%s = %s; it_%s != m->end()) out.%s = %s;", fn, expr, fn, fn, convertFromString(CppTypeRef(ft), fmt.Sprintf("it_%s->second", fn))))
+	}
+	c.indent--
+	c.writeln("}")
+	c.writeln("return out;")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
 			c.compileStructType(sub)
@@ -346,6 +364,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Let.Type != nil {
 			typ = c.cppType(s.Let.Type)
+			if st, ok := c.resolveTypeRef(s.Let.Type).(types.StructType); ok {
+				c.compileStructType(st)
+				c.helpers["cast"] = true
+				expr = fmt.Sprintf("_cast<%s>(%s)", st.Name, expr)
+			}
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Let.Name))
@@ -385,6 +408,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		typ := "auto"
 		if s.Var.Type != nil {
 			typ = c.cppType(s.Var.Type)
+			if st, ok := c.resolveTypeRef(s.Var.Type).(types.StructType); ok {
+				c.compileStructType(st)
+				c.helpers["cast"] = true
+				expr = fmt.Sprintf("_cast<%s>(%s)", st.Name, expr)
+			}
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Var.Name))
@@ -746,6 +774,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 		} else if op.Field != nil {
 			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
+		} else if op.Cast != nil {
+			typ := c.cppType(op.Cast.Type)
+			if st, ok := c.resolveTypeRef(op.Cast.Type).(types.StructType); ok {
+				c.compileStructType(st)
+			}
+			c.helpers["cast"] = true
+			expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
 		}
 	}
 	return expr
