@@ -590,15 +590,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
+			kexpr, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
 			}
-			v, err := c.compileExpr(it.Value)
+			if s, ok := simpleStringKey(it.Key); ok {
+				kexpr = fmt.Sprintf("%q.to_string()", s)
+			} else if isStringLiteral(it.Key) {
+				kexpr = fmt.Sprintf("%s.to_string()", kexpr)
+			} else {
+				kexpr = fmt.Sprintf("%s.to_string()", kexpr)
+			}
+			vexpr, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
 			}
-			items[i] = fmt.Sprintf("(%s.to_string(), %s)", k, v)
+			items[i] = fmt.Sprintf("(%s, %s)", kexpr, vexpr)
 		}
 		return fmt.Sprintf("std::collections::HashMap::from([%s])", strings.Join(items, ", ")), nil
 	case p.FunExpr != nil:
@@ -715,6 +722,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "avg":
 		if len(args) == 1 {
 			return fmt.Sprintf("{ let v = &%s; if v.is_empty() { 0.0 } else { let mut sum = 0.0; for &it in v { sum += Into::<f64>::into(it); } sum / v.len() as f64 } }", args[0]), nil
+		}
+	case "sum":
+		if len(args) == 1 {
+			return fmt.Sprintf("{ let v = &%s; if v.is_empty() { 0.0 } else { let mut sum = 0.0; for &it in v { sum += Into::<f64>::into(it); } sum } }", args[0]), nil
 		}
 	case "input":
 		if len(args) == 0 {
