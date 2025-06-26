@@ -3,7 +3,7 @@ package cppcode
 // Runtime helper data for the C++ backend.
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "unionAll", "union", "except", "intersect", "json", "input", "load", "save"}
+var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "unionAll", "union", "except", "intersect", "json", "fetch", "input", "load", "save"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -189,6 +189,32 @@ var helperCode = map[string][]string{
 		"}",
 		"template<typename T> string _to_json(const T& v) { stringstream ss; ss << v; return _to_json(ss.str()); }",
 		"template<typename T> void _json(const T& v) { cout << _to_json(v) << endl; }",
+	},
+	"fetch": {
+		"static unordered_map<string,string> _fetch_parse(const string& s) {",
+		"\tunordered_map<string,string> row; size_t i=0;",
+		"\twhile (i<s.size()) {",
+		"\t\tif (s[i]=='\"') {",
+		"\t\t\tsize_t j=s.find('\"', i+1); if (j==string::npos) break; string key=s.substr(i+1,j-i-1);",
+		"\t\t\ti=s.find(':', j); if (i==string::npos) break; i++; while(i<s.size() && isspace(s[i])) i++;",
+		"\t\t\tstring val;",
+		"\t\t\tif (i<s.size() && s[i]=='\"') { size_t k=s.find('\"', i+1); val=s.substr(i+1,k-i-1); i=k+1; } else { size_t k=i; while (k<s.size() && (isalnum(s[k])||s[k]=='-'||s[k]=='+'||s[k]=='.')) k++; val=s.substr(i,k-i); i=k; }",
+		"\t\t\trow[key]=val;",
+		"\t\t} else { i++; }",
+		"\t}",
+		"\treturn row;",
+		"}",
+		"unordered_map<string,string> _fetch(const string& url, const unordered_map<string,any>& opts) {",
+		"\t(void)opts;",
+		"\tstring data;",
+		"\tif (url.rfind(\"file://\",0)==0) {",
+		"\t\tifstream f(url.substr(7)); stringstream ss; ss<<f.rdbuf(); data=ss.str();",
+		"\t} else {",
+		"\t\tstring cmd=\"curl -s \"+url;",
+		"\t\tFILE* p=popen(cmd.c_str(), \"r\"); char buf[4096]; while(p && !feof(p)){ size_t n=fread(buf,1,sizeof(buf),p); data.append(buf,n);} if(p) pclose(p);",
+		"\t}",
+		"\treturn _fetch_parse(data);",
+		"}",
 	},
 	"input": {
 		"string _input() {",
