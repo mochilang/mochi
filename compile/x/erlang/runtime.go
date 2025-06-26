@@ -62,6 +62,26 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("")
 	}
 
+	if c.needSum {
+		c.writeln("mochi_sum([]) -> 0;")
+		c.writeln("mochi_sum(M) when is_map(M), maps:is_key('Items', M) -> mochi_sum(maps:get('Items', M));")
+		c.writeln("mochi_sum(L) when is_list(L) ->")
+		c.indent++
+		c.writeln("lists:foldl(fun(X, Acc) ->")
+		c.indent++
+		c.writeln("case X of")
+		c.indent++
+		c.writeln("I when is_integer(I) -> Acc + I;")
+		c.writeln("F when is_float(F) -> Acc + F;")
+		c.writeln("_ -> erlang:error(badarg) end")
+		c.indent--
+		c.writeln("end, 0, L);")
+		c.indent--
+		c.writeln("mochi_sum(_) -> erlang:error(badarg).")
+		c.indent--
+		c.writeln("")
+	}
+
 	if c.needForeach {
 		c.writeln("mochi_foreach(F, L) ->")
 		c.indent++
