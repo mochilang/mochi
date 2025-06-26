@@ -17,7 +17,7 @@ int main() {
 	}
 	return _res;
 })();
-	for (auto n : names) {
+	for (const string& n : names) {
 		std::cout << (n) << std::endl;
 	}
 	return 0;

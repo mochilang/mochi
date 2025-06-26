@@ -32,7 +32,7 @@ int main() {
 	return _res;
 })();
 	std::cout << (string("--- Cross Join: All order-customer pairs ---")) << std::endl;
-	for (auto entry : result) {
+	for (const PairInfo& entry : result) {
 		std::cout << (string("Order")) << " " << (entry.orderId) << " " << (string("(customerId:")) << " " << (entry.orderCustomerId) << " " << (string(", total: $")) << " " << (entry.orderTotal) << " " << (string(") paired with")) << " " << (entry.pairedCustomerName) << std::endl;
 	}
 	return 0;

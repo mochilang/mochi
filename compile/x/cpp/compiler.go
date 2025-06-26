@@ -463,7 +463,12 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 	} else {
 		elemType := "auto"
-		if isListLiteral(f.Source) {
+		if t := InferCppExprType(f.Source, c.env, c.getVar); strings.HasPrefix(t, "vector<") {
+			elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
+			if !isPrimitive(elemType) {
+				elemType = "const " + elemType + "&"
+			}
+		} else if isListLiteral(f.Source) {
 			if t := InferCppExprType(f.Source, c.env, c.getVar); strings.HasPrefix(t, "vector<") {
 				elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
 				if !isPrimitive(elemType) {
@@ -786,6 +791,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		if c.methodFields != nil && c.methodFields[name] && len(p.Selector.Tail) == 0 {
 			return "self." + name
 		}
+		if len(p.Selector.Tail) == 1 {
+			if typ, ok := c.getVar(name); ok {
+				if strings.HasPrefix(typ, "unordered_map<") {
+					key := p.Selector.Tail[0]
+					return fmt.Sprintf("%s[\"%s\"]", name, key)
+				}
+			} else if c.env != nil {
+				if t, err := c.env.GetVar(name); err == nil {
+					if _, ok := t.(types.MapType); ok {
+						key := p.Selector.Tail[0]
+						return fmt.Sprintf("%s[\"%s\"]", name, key)
+					}
+				}
+			}
+		}
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
 		}
@@ -900,22 +920,45 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 	items := make([]string, len(m.Items))
 	keyType := "string"
-	valType := "int"
-	if len(m.Items) > 0 {
-		if t := InferCppExprType(m.Items[0].Key, c.env, c.getVar); t != "" {
-			keyType = t
-		}
-		if t := InferCppExprType(m.Items[0].Value, c.env, c.getVar); t != "" {
-			valType = t
-		}
-	}
+	valType := ""
+	valTypes := map[string]struct{}{}
 	for i, it := range m.Items {
+		kt := InferCppExprType(it.Key, c.env, c.getVar)
+		if kt == "" {
+			kt = "string"
+		}
+		if i == 0 {
+			keyType = kt
+		}
+		vt := InferCppExprType(it.Value, c.env, c.getVar)
+		if vt == "" {
+			vt = "auto"
+		}
+		valTypes[vt] = struct{}{}
 		k := c.compileExpr(it.Key)
 		if name, ok := selectorName(it.Key); ok {
 			k = fmt.Sprintf("string(\"%s\")", name)
 		}
 		v := c.compileExpr(it.Value)
 		items[i] = fmt.Sprintf("{%s, %s}", k, v)
+	}
+	if len(valTypes) == 1 {
+		for t := range valTypes {
+			valType = t
+		}
+	} else {
+		valType = "any"
+		for i, it := range m.Items {
+			k := c.compileExpr(it.Key)
+			if name, ok := selectorName(it.Key); ok {
+				k = fmt.Sprintf("string(\"%s\")", name)
+			}
+			v := c.compileExpr(it.Value)
+			items[i] = fmt.Sprintf("{%s, any(%s)}", k, v)
+		}
+	}
+	if valType == "" {
+		valType = "any"
 	}
 	return fmt.Sprintf("unordered_map<%s, %s>{%s}", keyType, valType, strings.Join(items, ", "))
 }

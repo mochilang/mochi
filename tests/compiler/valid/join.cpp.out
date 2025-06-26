@@ -32,7 +32,7 @@ int main() {
 	return _res;
 })();
 	std::cout << (string("--- Orders with customer info ---")) << std::endl;
-	for (auto entry : result) {
+	for (const PairInfo& entry : result) {
 		std::cout << (string("Order")) << " " << (entry.orderId) << " " << (string("by")) << " " << (entry.customerName) << " " << (string("- $")) << " " << (entry.total) << std::endl;
 	}
 	return 0;

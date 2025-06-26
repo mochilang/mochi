@@ -31,12 +31,12 @@ int main() {
 	auto _groups = _group_by(_src, [&](auto& x){ return x; });
 	vector<unordered_map<string, int>> _res;
 	for (auto& g : _groups) {
-		_res.push_back(unordered_map<string, int>{{k, g.key}, {c, _count(g)}});
+		_res.push_back(unordered_map<string, auto>{{string("k"), g.key}, {string("c"), _count(g)}});
 	}
 	return _res;
 })();
-	for (auto g : groups) {
-		std::cout << (g.k) << " " << (g.c) << std::endl;
+	for (const unordered_map<string, any>& g : groups) {
+		std::cout << (g["k"]) << " " << (g["c"]) << std::endl;
 	}
 	return 0;
 }

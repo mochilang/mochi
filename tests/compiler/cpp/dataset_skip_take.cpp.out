@@ -14,7 +14,7 @@ int main() {
 	if (_take < (int)_res.size()) _res.resize(_take);
 	return _res;
 })();
-	for (auto n : sub) {
+	for (int n : sub) {
 		std::cout << (n) << std::endl;
 	}
 	return 0;

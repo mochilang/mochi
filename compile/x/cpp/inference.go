@@ -27,6 +27,8 @@ func CppTypeRef(t types.Type) string {
 		return "unordered_map<" + CppTypeRef(tt.Key) + ", " + CppTypeRef(tt.Value) + ">"
 	case types.StructType:
 		return tt.Name
+	case types.AnyType:
+		return "any"
 	}
 	return "auto"
 }
