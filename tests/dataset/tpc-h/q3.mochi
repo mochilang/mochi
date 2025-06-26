@@ -41,16 +41,15 @@ let order_line_join =
     o_orderdate: o.o_orderdate,
     o_shippriority: o.o_shippriority
   } into g
+  sort by [-sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)), g.key.o_orderdate]
   select {
     l_orderkey: g.key.o_orderkey,
     revenue: sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
     o_orderdate: g.key.o_orderdate,
     o_shippriority: g.key.o_shippriority
-  }
-  sort by o_orderdate
-  sort by -revenue
+}
 
-print order_line_join
+json(order_line_join)
 
 test "Q3 returns revenue per order with correct priority" {
   expect order_line_join == [
