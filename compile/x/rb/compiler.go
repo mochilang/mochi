@@ -49,10 +49,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			c.writeln("")
 		} else if s.Test != nil {
-			if err := c.compileTestBlock(s.Test); err != nil {
-				return nil, err
-			}
-			c.writeln("")
 			tests = append(tests, s.Test)
 		}
 	}
@@ -65,7 +61,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	for _, t := range tests {
-		c.writeln("test_" + sanitizeName(t.Name) + "()")
+		if err := c.compileTestBlock(t); err != nil {
+			return nil, err
+		}
 	}
 	body := append([]byte(nil), c.buf.Bytes()...)
 	c.buf.Reset()
@@ -1368,11 +1366,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		for _, t := range p.Selector.Tail {
 			name += "." + sanitizeName(t)
 		}
-		if c.env != nil && len(p.Selector.Tail) == 0 {
-			if _, err := c.env.GetVar(p.Selector.Root); err == nil {
-				return name, nil
-			}
-			if _, ok := c.env.GetFunc(p.Selector.Root); ok {
+		if len(p.Selector.Tail) == 0 {
+			if c.env != nil {
+				if vt, err := c.env.GetVar(p.Selector.Root); err == nil {
+					if _, ok := vt.(types.FuncType); ok {
+						return fmt.Sprintf("method(:%s)", name), nil
+					}
+					return name, nil
+				}
+				if _, ok := c.env.GetFunc(p.Selector.Root); ok {
+					return fmt.Sprintf("method(:%s)", name), nil
+				}
+			} else {
 				return fmt.Sprintf("method(:%s)", name), nil
 			}
 		}
@@ -1600,6 +1605,18 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 			return "", true, fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", args[0]), true, nil
+	case "sum":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("sum expects 1 arg")
+		}
+		c.use("_sum")
+		return fmt.Sprintf("_sum(%s)", args[0]), true, nil
+	case "json":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("json expects 1 arg")
+		}
+		c.use("_json")
+		return fmt.Sprintf("_json(%s)", args[0]), true, nil
 	case "input":
 		if len(args) != 0 {
 			return "", true, fmt.Errorf("input expects no args")
@@ -1663,16 +1680,11 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
-	name := "test_" + sanitizeName(t.Name)
-	c.writeln(fmt.Sprintf("def %s()", name))
-	c.indent++
 	for _, s := range t.Body {
 		if err := c.compileStmt(s); err != nil {
 			return err
 		}
 	}
-	c.indent--
-	c.writeln("end")
 	return nil
 }
 

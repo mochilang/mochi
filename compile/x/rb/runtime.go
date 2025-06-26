@@ -149,6 +149,32 @@ end`
   cls.new(**data.transform_keys(&:to_sym))
 end`
 
+	helperJSON = `def _json(v)
+  require 'json'
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end`
+
+	helperSum = `def _sum(v)
+  list = nil
+  if v.is_a?(MGroup)
+    list = v.Items
+  elsif v.is_a?(Array)
+    list = v
+  elsif v.respond_to?(:to_a)
+    list = v.to_a
+  end
+  return 0 if !list || list.empty?
+  s = 0.0
+  list.each { |n| s += n.to_f }
+  s
+end`
+
 	helperEval = `def _eval(code)
   eval(code)
 end`
@@ -175,6 +201,7 @@ end`
 end`
 
 	helperGroup = `class MGroup
+  include Enumerable
   attr_accessor :key, :Items
   def initialize(k)
     @key = k
@@ -182,6 +209,9 @@ end`
   end
   def length
     @Items.length
+  end
+  def each(&block)
+    @Items.each(&block)
   end
 end`
 
@@ -195,12 +225,18 @@ grouped = src.group_by do |it|
 end
 grouped.map do |k, items|
 g = MGroup.new(k)
-g.Items.concat(items)
+items.each do |it|
+  if it.is_a?(Array) && it.length == 1
+    g.Items << it[0]
+  else
+    g.Items << it
+  end
+end
 g
 end
 end`
 
-        helperQuery = `def _query(src, joins, opts)
+	helperQuery = `def _query(src, joins, opts)
   where_fn = opts['where']
   items = []
   if joins.empty?
@@ -327,6 +363,8 @@ var helperMap = map[string]string{
 	"_genText":     helperGenText,
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
+	"_json":        helperJSON,
+	"_sum":         helperSum,
 	"_eval":        helperEval,
 	"_group":       helperGroup,
 	"_group_by":    helperGroupBy,
