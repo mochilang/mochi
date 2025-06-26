@@ -4,20 +4,9 @@ Each query in this directory has a `.mochi` implementation with inline data and 
 
 ## Current failing queries
 
-Running `TestVM_TPCH` across `q1.mochi` to `q22.mochi` highlighted a number of programs that still fail when executed using the runtime/vm. The following queries either produce incorrect output or encounter errors and should be investigated:
+Running `TestVM_TPCH` across `q1.mochi` to `q22.mochi` now succeeds for all queries except for the following:
 
-* `q2`
-* `q4`
-* `q5`
-* `q7`
-* `q9`
-* `q10`
-* `q14`
-* `q15`
-* `q16`
-* `q19`
-* `q20`
 * `q21` – fails an `expect` condition
 * `q22` – parse error
 
-Resolving these issues will ensure full TPCH coverage under the VM runtime.
+Addressing these two failures will provide full TPCH coverage under the VM runtime.
