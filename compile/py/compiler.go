@@ -28,6 +28,7 @@ type Compiler struct {
 	models       bool
 	methodFields map[string]bool
 	globals      map[string]bool
+	tupleFields  map[string]map[string]int
 }
 
 func New(env *types.Env) *Compiler {
@@ -41,6 +42,7 @@ func New(env *types.Env) *Compiler {
 		tmpCount:     0,
 		methodFields: nil,
 		globals:      make(map[string]bool),
+		tupleFields:  make(map[string]map[string]int),
 	}
 }
 
@@ -566,7 +568,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if c.methodFields != nil && c.methodFields[p.Selector.Root] {
 			expr = "self." + expr
 		}
-		for _, s := range p.Selector.Tail {
+		tail := p.Selector.Tail
+		if fm, ok := c.tupleFields[expr]; ok && len(tail) > 0 {
+			if idx, ok := fm[sanitizeName(tail[0])]; ok {
+				expr += fmt.Sprintf("[%d]", idx)
+				tail = tail[1:]
+			}
+		}
+		for _, s := range tail {
 			switch t := typ.(type) {
 			case types.MapType:
 				expr += fmt.Sprintf("[%q]", sanitizeName(s))
@@ -867,6 +876,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if name, ok := identName(q.Source); ok {
+		if fm, ok := c.tupleFields[sanitizeName(name)]; ok {
+			c.tupleFields[sanitizeName(q.Var)] = fm
+			defer delete(c.tupleFields, sanitizeName(q.Var))
+		}
+	}
 	hasSide := false
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -1006,8 +1021,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
 			}
 			allParams := strings.Join(paramCopy, ", ")
-			tupleExpr := "(" + allParams + ")"
-			selectFn := fmt.Sprintf("lambda %s: %s", allParams, tupleExpr)
+			fieldMap := map[string]int{}
+			for i, n := range paramCopy {
+				fieldMap[sanitizeName(n)] = i
+			}
+			c.tupleFields[sanitizeName(q.Group.Name)] = fieldMap
+			rowExpr := "(" + allParams + ")"
+			selectFn := fmt.Sprintf("lambda %s: %s", allParams, rowExpr)
 			var whereFn string
 			if whereExpr != "" {
 				whereFn = fmt.Sprintf("lambda %s: (%s)", allParams, whereExpr)
@@ -1019,8 +1039,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				opts += ", 'where': " + whereFn
 			}
 			opts += " }"
+
 			genv := types.NewEnv(child)
 			genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+
+			var sortExpr, skipExpr, takeExpr string
+			if q.Sort != nil {
+				c.env = genv
+				sortExpr, err = c.compileExpr(q.Sort)
+				c.env = orig
+				if err != nil {
+					return "", err
+				}
+			}
+			if q.Skip != nil {
+				c.env = genv
+				skipExpr, err = c.compileExpr(q.Skip)
+				c.env = orig
+				if err != nil {
+					return "", err
+				}
+			}
+			if q.Take != nil {
+				c.env = genv
+				takeExpr, err = c.compileExpr(q.Take)
+				c.env = orig
+				if err != nil {
+					return "", err
+				}
+			}
+
 			c.env = genv
 			val, err := c.compileExpr(q.Select)
 			if err != nil {
@@ -1028,7 +1076,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			c.env = orig
-			expr := fmt.Sprintf("(lambda _src=%s: (lambda _rows=_query(_src, [%s], %s): (lambda _groups=_group_by(_rows, lambda %s: (%s)): [ %s for %s in _groups ])())())()", src, joinStr, opts, allParams, keyExpr, val, sanitizeName(q.Group.Name))
+
+			items := "_groups"
+			if sortExpr != "" {
+				items = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", items, sanitizeName(q.Group.Name), sortExpr)
+			}
+			if skipExpr != "" {
+				items = fmt.Sprintf("(%s)[max(%s, 0):]", items, skipExpr)
+			}
+			if takeExpr != "" {
+				items = fmt.Sprintf("(%s)[:max(%s, 0)]", items, takeExpr)
+			}
+
+			expr := fmt.Sprintf("(lambda _src=%s: (lambda _rows=_query(_src, [%s], %s): (lambda _groups=_group_by(_rows, lambda %s: (%s)): [ %s for %s in %s ])())())()", src, joinStr, opts, allParams, keyExpr, val, sanitizeName(q.Group.Name), items)
+			delete(c.tupleFields, sanitizeName(q.Group.Name))
 			c.use("_query")
 			c.use("_group_by")
 			c.use("_group")
