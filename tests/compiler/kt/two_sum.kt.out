@@ -15,4 +15,3 @@ fun main() {
         println(result[0])
         println(result[1])
 }
-

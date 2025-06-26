@@ -5,4 +5,3 @@ fun add(a: Int, b: Int) : Int {
 fun main() {
         println(add(2, 3))
 }
-

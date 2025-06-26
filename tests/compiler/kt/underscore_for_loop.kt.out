@@ -10,9 +10,8 @@ fun main() {
                 c = (c + 1)
         }
         var m = mutableMapOf("x" to 1, "y" to 2)
-        for (_ in m) {
+        for (_ in m.keys) {
                 c = (c + 1)
         }
         println(c)
 }
-

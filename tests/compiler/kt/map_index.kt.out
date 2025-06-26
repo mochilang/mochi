@@ -2,4 +2,3 @@ fun main() {
         val scores = mutableMapOf("Alice" to 10, "Bob" to 15)
         println(scores["Bob"])
 }
-

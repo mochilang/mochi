@@ -1,0 +1,9 @@
+fun main() {
+        val vec = _genEmbed("hi", null, null)
+        println(vec.size)
+}
+
+fun _genEmbed(text: String, model: String?, params: Map<String, Any>?): List<Double> {
+    return text.map { it.code.toDouble() }
+}
+

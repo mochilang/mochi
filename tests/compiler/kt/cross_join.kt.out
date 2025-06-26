@@ -1,5 +1,7 @@
 data class Customer(val id: Int, val name: String)
+
 data class Order(val id: Int, val customerId: Int, val total: Int)
+
 data class PairInfo(val orderId: Int, val orderCustomerId: Int, val pairedCustomerName: String, val orderTotal: Int)
 
 fun main() {

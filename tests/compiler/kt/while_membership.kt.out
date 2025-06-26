@@ -1,11 +1,15 @@
 fun main() {
-        var set: MutableMap<Int, Boolean> = mutableMapOf()
+        var set: MutableMap<Int, Boolean> = mutableMapOf<Any, Any>()
         for (n in listOf(1, 2, 3)) {
-                set[n] = true
+                run {
+                        val _tmp = set.toMutableMap()
+                        _tmp[n] = true
+                        set = _tmp
+                }
         }
         var i = 1
         var count = 0
-        while ((i in set)) {
+        while (set.contains(i)) {
                 i = (i + 1)
                 count = (count + 1)
         }

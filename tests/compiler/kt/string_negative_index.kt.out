@@ -10,4 +10,3 @@ fun _indexString(s: String, i: Int): String {
     if (idx < 0 || idx >= arr.size) throw RuntimeException("index out of range")
     return arr[idx].toString()
 }
-

@@ -1,10 +1,11 @@
-fun sum(n: Int) : Int {
+fun sumN(n: Int) : Int {
         return ((n * ((n + 1))) / 2)
 }
 
 fun main() {
         val n = 10
-        println(sum(n))
+        println(sumN(n))
         println(n)
 }
+
 

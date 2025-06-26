@@ -9,3 +9,5 @@ fun listit() : List<Foo> {
 fun main() {
         println(listit().size)
 }
+
+
