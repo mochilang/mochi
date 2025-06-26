@@ -1,0 +1,55 @@
+func main (regs=29)
+  // let xs = [1, 2, 3]
+  Const        r0, [1, 2, 3]
+  Move         r1, r0
+  // let res1 = exists(from x in xs where x > 2 select x)
+  Const        r2, []
+  IterPrep     r3, r1
+  Len          r4, r3
+  Const        r5, 0
+L2:
+  Less         r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  Const        r9, 2
+  Less         r10, r9, r8
+  JumpIfFalse  r10, L1
+  Append       r11, r2, r8
+  Move         r2, r11
+L1:
+  Const        r12, 1
+  Add          r13, r5, r12
+  Move         r5, r13
+  Jump         L2
+L0:
+  Exists       r14, r2
+  Move         r15, r14
+  // let res2 = exists(from x in xs where x > 3 select x)
+  Const        r16, []
+  IterPrep     r17, r1
+  Len          r18, r17
+  Const        r19, 0
+L5:
+  Less         r20, r19, r18
+  JumpIfFalse  r20, L3
+  Index        r21, r17, r19
+  Move         r8, r21
+  Const        r22, 3
+  Less         r23, r22, r8
+  JumpIfFalse  r23, L4
+  Append       r24, r16, r8
+  Move         r16, r24
+L4:
+  Const        r25, 1
+  Add          r26, r19, r25
+  Move         r19, r26
+  Jump         L5
+L3:
+  Exists       r27, r16
+  Move         r28, r27
+  // print(res1)
+  Print        r15
+  // print(res2)
+  Print        r28
+  Return       r0

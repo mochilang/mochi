@@ -74,6 +74,7 @@ const (
 	OpStr
 	OpInput
 	OpCount
+	OpExists
 	OpAvg
 	OpSum
 	OpMin
@@ -192,6 +193,8 @@ func (op Op) String() string {
 		return "Input"
 	case OpCount:
 		return "Count"
+	case OpExists:
+		return "Exists"
 	case OpAvg:
 		return "Avg"
 	case OpSum:
@@ -417,6 +420,8 @@ func (p *Program) Disassemble(src string) string {
 			case OpIterPrep:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpCount:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpExists:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpAvg:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
@@ -1253,6 +1258,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 			}
 			return Value{}, fmt.Errorf("count expects list")
+		case OpExists:
+			lst := fr.regs[ins.B]
+			if lst.Tag == interpreter.TagMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+					lst = lst.Map["items"]
+				}
+			}
+			if lst.Tag != interpreter.TagList {
+				return Value{}, fmt.Errorf("exists expects list")
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: len(lst.List) > 0}
 		case OpAvg:
 			lst := fr.regs[ins.B]
 			if lst.Tag == interpreter.TagMap {
@@ -2469,6 +2485,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpCount, A: dst, B: arg})
+			return dst
+		case "exists":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpExists, A: dst, B: arg})
 			return dst
 		case "avg":
 			arg := fc.compileExpr(p.Call.Args[0])
