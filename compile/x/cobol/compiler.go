@@ -585,23 +585,31 @@ func (c *Compiler) compileReduceCall(list, fn, init *ast.Node) string {
 
 // compileStructExpr emits declarations and assignments for a struct literal
 // and returns the base variable name representing the struct value.
+func (c *Compiler) assignStructFields(base string, n *ast.Node) {
+        for _, f := range n.Children {
+                if len(f.Children) == 0 {
+                        continue
+                }
+                field := base + "_" + cobolName(f.Value.(string))
+                if f.Children[0].Kind == "struct" {
+                        c.assignStructFields(field, f.Children[0])
+                        continue
+                }
+                pic := c.picForExpr(f.Children[0])
+                c.declare(fmt.Sprintf("01 %s %s", field, pic))
+                val := c.expr(f.Children[0])
+                if c.isString(f.Children[0]) {
+                        c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, field))
+                } else {
+                        c.writeln(fmt.Sprintf("    COMPUTE %s = %s", field, val))
+                }
+        }
+}
+
 func (c *Compiler) compileStructExpr(n *ast.Node) string {
-	name := c.newTemp()
-	for _, f := range n.Children {
-		if len(f.Children) == 0 {
-			continue
-		}
-		pic := c.picForExpr(f.Children[0])
-		varName := name + "_" + cobolName(f.Value.(string))
-		c.declare(fmt.Sprintf("01 %s %s", varName, pic))
-		val := c.expr(f.Children[0])
-		if c.isString(f.Children[0]) {
-			c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, varName))
-		} else {
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", varName, val))
-		}
-	}
-	return name
+        name := c.newTemp()
+        c.assignStructFields(name, n)
+        return name
 }
 
 // compileQueryExpr handles very simple dataset queries of the form:
@@ -1183,19 +1191,10 @@ func (c *Compiler) compileLet(n *ast.Node) {
 		}
 		return
 	}
-	if len(n.Children) == 1 && n.Children[0].Kind == "struct" {
-		for _, f := range n.Children[0].Children {
-			fieldName := fmt.Sprintf("%s_%s", name, cobolName(f.Value.(string)))
-			c.declare(fmt.Sprintf("01 %s %s", fieldName, c.picForExpr(f.Children[0])))
-			val := c.expr(f.Children[0])
-			if c.isString(f.Children[0]) {
-				c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, fieldName))
-			} else {
-				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", fieldName, val))
-			}
-		}
-		return
-	}
+        if len(n.Children) == 1 && n.Children[0].Kind == "struct" {
+                c.assignStructFields(name, n.Children[0])
+                return
+        }
 	if len(n.Children) == 1 && c.isList(n.Children[0]) {
 		src := c.expr(n.Children[0])
 		if l, ok := c.listLens[src]; ok {
@@ -1289,20 +1288,11 @@ func (c *Compiler) compileAssign(n *ast.Node) {
 			} else {
 				c.writeln("    *> unsupported list assignment")
 			}
-		} else if n.Children[0].Kind == "struct" {
-			for _, f := range n.Children[0].Children {
-				fieldName := fmt.Sprintf("%s_%s", name, cobolName(f.Value.(string)))
-				c.declare(fmt.Sprintf("01 %s %s", fieldName, c.picForExpr(f.Children[0])))
-				val := c.expr(f.Children[0])
-				if c.isString(f.Children[0]) {
-					c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, fieldName))
-				} else {
-					c.writeln(fmt.Sprintf("    COMPUTE %s = %s", fieldName, val))
-				}
-			}
-		} else {
-			expr := c.expr(n.Children[0])
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
-		}
-	}
+                } else if n.Children[0].Kind == "struct" {
+                        c.assignStructFields(name, n.Children[0])
+                } else {
+                        expr := c.expr(n.Children[0])
+                        c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+                }
+        }
 }
