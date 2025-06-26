@@ -309,6 +309,13 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			t = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
 			t = c.inferExprType(s.Value)
+			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
+				if st, ok := c.inferStructFromList(ll, s.Name); ok {
+					t = types.ListType{Elem: st}
+					c.env.SetStruct(st.Name, st)
+					c.compileStructType(st)
+				}
+			}
 		} else if old, err := c.env.GetVar(s.Name); err == nil {
 			t = old
 		}
@@ -362,6 +369,13 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 			typ = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
 			typ = c.inferExprTypeHint(s.Value, typ)
+			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
+				if st, ok := c.inferStructFromList(ll, s.Name); ok {
+					typ = types.ListType{Elem: st}
+					c.env.SetStruct(st.Name, st)
+					c.compileStructType(st)
+				}
+			}
 		} else if t, err := c.env.GetVar(s.Name); err == nil {
 			typ = t
 		}
@@ -830,6 +844,62 @@ func (c *Compiler) compileStructType(st types.StructType) {
 			c.compileStructType(sub)
 		}
 	}
+}
+
+func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (types.StructType, bool) {
+	if ll == nil || len(ll.Elems) == 0 {
+		return types.StructType{}, false
+	}
+	first := ll.Elems[0]
+	if first.Binary == nil || len(first.Binary.Right) != 0 {
+		return types.StructType{}, false
+	}
+	fm := first.Binary.Left.Value.Target.Map
+	if fm == nil {
+		return types.StructType{}, false
+	}
+	fields := map[string]types.Type{}
+	order := make([]string, len(fm.Items))
+	for i, it := range fm.Items {
+		key, ok := simpleStringKey(it.Key)
+		if !ok {
+			return types.StructType{}, false
+		}
+		order[i] = key
+		fields[key] = types.ExprType(it.Value, c.env)
+	}
+	for _, el := range ll.Elems[1:] {
+		if el.Binary == nil || len(el.Binary.Right) != 0 {
+			return types.StructType{}, false
+		}
+		ml := el.Binary.Left.Value.Target.Map
+		if ml == nil || len(ml.Items) != len(order) {
+			return types.StructType{}, false
+		}
+		for i, it := range ml.Items {
+			key, ok := simpleStringKey(it.Key)
+			if !ok || key != order[i] {
+				return types.StructType{}, false
+			}
+			t := types.ExprType(it.Value, c.env)
+			if !equalTypes(fields[key], t) {
+				return types.StructType{}, false
+			}
+		}
+	}
+	stName := exportName(sanitizeName(name)) + "Item"
+	idx := 1
+	base := stName
+	for {
+		if _, ok := c.env.GetStruct(stName); ok || c.structs[stName] {
+			stName = fmt.Sprintf("%s%d", base, idx)
+			idx++
+		} else {
+			break
+		}
+	}
+	st := types.StructType{Name: stName, Fields: fields, Order: order}
+	return st, true
 }
 
 func unexportName(name string) string {
@@ -1823,6 +1893,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "[]" + elemType + "{" + strings.Join(elems, ", ") + "}", nil
 	case p.Map != nil:
 		typ := c.inferPrimaryType(p)
+		if st, ok := typ.(types.StructType); ok {
+			parts := make([]string, len(p.Map.Items))
+			for i, item := range p.Map.Items {
+				key, ok2 := simpleStringKey(item.Key)
+				if !ok2 {
+					return "", fmt.Errorf("struct field must be identifier")
+				}
+				ft := st.Fields[key]
+				v, err := c.compileExprHint(item.Value, ft)
+				if err != nil {
+					return "", err
+				}
+				parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(key)), v)
+			}
+			c.compileStructType(st)
+			return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
+		}
 		keyType := "string"
 		valType := "any"
 		if mt, ok := typ.(types.MapType); ok {
@@ -1849,8 +1936,6 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			// If the map value type is int64 but the expression is int,
-			// cast to int64 to satisfy the Go compiler.
 			if valType == "int64" && goType(c.inferExprType(item.Value)) == "int" {
 				v = fmt.Sprintf("int64(%s)", v)
 			}
@@ -3007,6 +3092,27 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					parts[i] = fmt.Sprintf("%s: %s", k, v)
 				}
 				return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
+			}
+		}
+	}
+	if st, ok := hint.(types.StructType); ok {
+		if e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+				parts := make([]string, len(ml.Items))
+				for i, item := range ml.Items {
+					key, ok2 := simpleStringKey(item.Key)
+					if !ok2 {
+						return "", fmt.Errorf("struct field must be identifier")
+					}
+					ft := st.Fields[key]
+					v, err := c.compileExprHint(item.Value, ft)
+					if err != nil {
+						return "", err
+					}
+					parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(key)), v)
+				}
+				c.compileStructType(st)
+				return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
 			}
 		}
 	}

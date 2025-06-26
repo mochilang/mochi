@@ -43,13 +43,23 @@ func test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
 	expect(_equal(result, []map[string]any{map[string]any{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": (950.0 + 1800.0), "sum_charge": ((950.0 * 1.07) + (1800.0 * 1.05)), "avg_qty": 26.5, "avg_price": 1500, "avg_disc": 0.07500000000000001, "count_order": 2}}))
 }
 
-var lineitem []map[string]any = []map[string]any{map[string]any{"l_quantity": 17, "l_extendedprice": 1000.0, "l_discount": 0.05, "l_tax": 0.07, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-08-01"}, map[string]any{"l_quantity": 36, "l_extendedprice": 2000.0, "l_discount": 0.1, "l_tax": 0.05, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-09-01"}, map[string]any{"l_quantity": 25, "l_extendedprice": 1500.0, "l_discount": 0.0, "l_tax": 0.08, "l_returnflag": "R", "l_linestatus": "F", "l_shipdate": "1998-09-03"}}
+type LineitemItem struct {
+	L_quantity      int     `json:"l_quantity"`
+	L_extendedprice float64 `json:"l_extendedprice"`
+	L_discount      float64 `json:"l_discount"`
+	L_tax           float64 `json:"l_tax"`
+	L_returnflag    string  `json:"l_returnflag"`
+	L_linestatus    string  `json:"l_linestatus"`
+	L_shipdate      string  `json:"l_shipdate"`
+}
+
+var lineitem []LineitemItem = []LineitemItem{LineitemItem{L_quantity: 17, L_extendedprice: 1000.0, L_discount: 0.05, L_tax: 0.07, L_returnflag: "N", L_linestatus: "O", L_shipdate: "1998-08-01"}, LineitemItem{L_quantity: 36, L_extendedprice: 2000.0, L_discount: 0.1, L_tax: 0.05, L_returnflag: "N", L_linestatus: "O", L_shipdate: "1998-09-01"}, LineitemItem{L_quantity: 25, L_extendedprice: 1500.0, L_discount: 0.0, L_tax: 0.08, L_returnflag: "R", L_linestatus: "F", L_shipdate: "1998-09-03"}}
 var result []map[string]any = func() []map[string]any {
 	groups := map[string]*data.Group{}
 	order := []string{}
 	for _, row := range lineitem {
-		if _cast[string](row["l_shipdate"]) <= "1998-09-02" {
-			key := map[string]any{"returnflag": row["l_returnflag"], "linestatus": row["l_linestatus"]}
+		if row.L_shipdate <= "1998-09-02" {
+			key := map[string]string{"returnflag": row.L_returnflag, "linestatus": row.L_linestatus}
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -289,6 +299,21 @@ func _equal(a, b any) bool {
 		}
 		for i := 0; i < av.Len(); i++ {
 			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
 				return false
 			}
 		}
