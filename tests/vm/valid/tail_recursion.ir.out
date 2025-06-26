@@ -26,4 +26,3 @@ L0:
   Call2        r9, sum_rec, r4, r5
   Return       r9
   Return       r0
-

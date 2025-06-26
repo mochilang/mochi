@@ -1,4 +1,4 @@
-func main (regs=235)
+func main (regs=231)
   // let customer = [
   Const        r0, [{"c_custkey": 1, "c_mktsegment": "BUILDING"}, {"c_custkey": 2, "c_mktsegment": "AUTOMOBILE"}]
   Move         r1, r0
@@ -310,64 +310,60 @@ L20:
   Move         r196, r195
   // g.key.o_orderdate
   Const        r197, "key"
-  Index        r198, r126, r197
-  Const        r199, "o_orderdate"
-  Index        r200, r198, r199
-  Move         r201, r200
   // sort by [
-  MakeList     r202, 2, r196
-  Move         r203, r202
+  MakeList     r198, 2, r196
+  Move         r199, r198
   // from o in valid_orders
-  Move         r204, r173
-  MakeList     r205, 2, r203
-  Append       r206, r64, r205
-  Move         r64, r206
-  Const        r207, 1
-  Add          r208, r122, r207
-  Move         r122, r208
+  Move         r200, r173
+  MakeList     r201, 2, r199
+  Append       r202, r64, r201
+  Move         r64, r202
+  Const        r203, 1
+  Add          r204, r122, r203
+  Move         r122, r204
   Jump         L22
 L17:
   // sort by [
-  Sort         209,64,0,0
+  Sort         205,64,0,0
   // from o in valid_orders
-  Move         r64, r209
+  Move         r64, r205
   // let order_line_join =
-  Move         r210, r64
+  Move         r206, r64
   // json(order_line_join)
-  JSON         r210
+  JSON         r206
   // l_orderkey: 100,
-  Const        r211, "l_orderkey"
-  Const        r212, 100
+  Const        r207, "l_orderkey"
+  Const        r208, 100
   // revenue: 1000.0 * 0.95 + 500.0,
-  Const        r213, "revenue"
-  Const        r214, 1000
-  Const        r215, 0.95
-  MulFloat     r216, r214, r215
-  Const        r217, 500
-  AddFloat     r218, r216, r217
+  Const        r209, "revenue"
+  Const        r210, 1000
+  Const        r211, 0.95
+  MulFloat     r212, r210, r211
+  Const        r213, 500
+  AddFloat     r214, r212, r213
   // o_orderdate: "1995-03-14",
-  Const        r219, "o_orderdate"
-  Const        r220, "1995-03-14"
+  Const        r215, "o_orderdate"
+  Const        r216, "1995-03-14"
   // o_shippriority: 1
-  Const        r221, "o_shippriority"
-  Const        r222, 1
+  Const        r217, "o_shippriority"
+  Const        r218, 1
   // l_orderkey: 100,
-  Move         r223, r211
-  Move         r224, r212
+  Move         r219, r207
+  Move         r220, r208
   // revenue: 1000.0 * 0.95 + 500.0,
-  Move         r225, r213
+  Move         r221, r209
+  Move         r222, r214
+  // o_orderdate: "1995-03-14",
+  Move         r223, r215
+  Move         r224, r216
+  // o_shippriority: 1
+  Move         r225, r217
   Move         r226, r218
-  // o_orderdate: "1995-03-14",
-  Move         r227, r219
-  Move         r228, r220
-  // o_shippriority: 1
-  Move         r229, r221
-  Move         r230, r222
   // {
-  MakeMap      r231, 4, r223
-  Move         r232, r231
+  MakeMap      r227, 4, r219
+  Move         r228, r227
   // expect order_line_join == [
-  MakeList     r233, 1, r232
-  Equal        r234, r210, r233
-  Expect       r234
+  MakeList     r229, 1, r228
+  Equal        r230, r206, r229
+  Expect       r230
   Return       r0

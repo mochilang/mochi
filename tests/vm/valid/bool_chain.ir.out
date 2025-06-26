@@ -70,4 +70,3 @@ func boom (regs=2)
   Const        r1, true
   Return       r1
   Return       r0
-

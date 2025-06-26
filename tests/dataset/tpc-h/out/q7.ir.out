@@ -1,4 +1,4 @@
-func main (regs=233)
+func main (regs=231)
   // let nation = [
   Const        r0, [{"n_name": "FRANCE", "n_nationkey": 1}, {"n_name": "GERMANY", "n_nationkey": 2}]
   Move         r1, r0
@@ -331,29 +331,28 @@ L20:
   // sort by [supp_nation, cust_nation, l_year]
   Move         r217, r216
   Move         r219, r218
+  MakeList     r220, 3, r217
   Move         r221, r220
-  MakeList     r222, 3, r217
-  Move         r223, r222
   // from l in lineitem
-  Move         r224, r215
-  MakeList     r225, 2, r223
-  Append       r226, r18, r225
-  Move         r18, r226
-  Const        r227, 1
-  Add          r228, r164, r227
-  Move         r164, r228
+  Move         r222, r215
+  MakeList     r223, 2, r221
+  Append       r224, r18, r223
+  Move         r18, r224
+  Const        r225, 1
+  Add          r226, r164, r225
+  Move         r164, r226
   Jump         L22
 L19:
   // sort by [supp_nation, cust_nation, l_year]
-  Sort         229,18,0,0
+  Sort         227,18,0,0
   // from l in lineitem
-  Move         r18, r229
+  Move         r18, r227
   // let result =
-  Move         r230, r18
+  Move         r228, r18
   // json(result)
-  JSON         r230
+  JSON         r228
   // expect result == [
-  Const        r231, [{"cust_nation": "GERMANY", "l_year": "1995", "revenue": 900, "supp_nation": "FRANCE"}]
-  Equal        r232, r230, r231
-  Expect       r232
+  Const        r229, [{"cust_nation": "GERMANY", "l_year": "1995", "revenue": 900, "supp_nation": "FRANCE"}]
+  Equal        r230, r228, r229
+  Expect       r230
   Return       r0

@@ -57,5 +57,3 @@ L0:
   In           r32, r31, r28
   Print        r32
   Return       r0
-
-

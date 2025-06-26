@@ -31,5 +31,3 @@ L0:
   // print(flag)
   Print        r15
   Return       r0
-
-

@@ -12,4 +12,3 @@ func main (regs=7)
   Not          r6, r5
   Print        r6
   Return       r0
-
