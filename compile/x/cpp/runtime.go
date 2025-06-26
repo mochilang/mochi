@@ -139,7 +139,7 @@ var helperCode = map[string][]string{
 		"static string _escape_json(const string& s) {",
 		"\tstring out;",
 		"\tfor (char c : s) {",
-		"\t\tif (c == '\"' || c == '\\') out += '\\';",
+		"\t\tif (c == '\"' || c == '\\\\') out += '\\\\';",
 		"\t\tout += c;",
 		"\t}",
 		"\treturn out;",
