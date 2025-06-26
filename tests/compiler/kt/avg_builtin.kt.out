@@ -1,3 +1,4 @@
 fun main() {
+        // print(avg([1,2,3]))
         println(listOf(1, 2, 3).average())
 }

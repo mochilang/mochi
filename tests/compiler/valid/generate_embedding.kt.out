@@ -1,9 +1,11 @@
 fun main() {
+        // let vec = generate embedding {
+        // let vec = generate embedding {
         val vec = _genEmbed("hi", null, null)
+        // print(len(vec))
         println(vec.size)
 }
 
 fun _genEmbed(text: String, model: String?, params: Map<String, Any>?): List<Double> {
     return text.map { it.code.toDouble() }
 }
-

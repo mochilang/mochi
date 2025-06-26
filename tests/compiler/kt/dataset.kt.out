@@ -1,14 +1,22 @@
+// type Person {
 data class Person(val name: String, val age: Int)
 
 fun main() {
+        // let people = [
+        // let people = [
         val people = listOf(Person(name = "Alice", age = 30), Person(name = "Bob", age = 15), Person(name = "Charlie", age = 65))
+        // let names = from p in people
+        // let names = from p in people
         val names = run {
                 var res = people
-                res = res.filter { p -> (p.age >= 18) }
+                res = res.filter { p -> p.age >= 18 }
                 res = res.map { p -> p.name }
                 res
         }
+        // for n in names {
+        // for n in names {
         for (n in names) {
+                // print(n)
                 println(n)
         }
 }

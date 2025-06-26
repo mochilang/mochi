@@ -1,12 +1,21 @@
+// type Customer {
 data class Customer(val id: Int, val name: String)
 
+// type Order {
 data class Order(val id: Int, val customerId: Int, val total: Int)
 
+// type PairInfo {
 data class PairInfo(val orderId: Int, val orderCustomerId: Int, val pairedCustomerName: String, val orderTotal: Int)
 
 fun main() {
+        // let customers = [
+        // let customers = [
         val customers = listOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"))
+        // let orders = [
+        // let orders = [
         val orders = listOf(Order(id = 100, customerId = 1, total = 250), Order(id = 101, customerId = 2, total = 125), Order(id = 102, customerId = 1, total = 300))
+        // let result = from o in orders
+        // let result = from o in orders
         val result = run {
                 val _src = orders
                 val _res = mutableListOf<PairInfo>()
@@ -17,10 +26,12 @@ fun main() {
                 }
                 _res
         }
+        // print("--- Cross Join: All order-customer pairs ---")
         println("--- Cross Join: All order-customer pairs ---")
+        // for entry in result {
+        // for entry in result {
         for (entry in result) {
+                // print("Order", entry.orderId,
                 println("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName)
         }
 }
-
-

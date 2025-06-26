@@ -1,5 +1,8 @@
 fun main() {
+        // let text = "hello"
+        // let text = "hello"
         val text = "hello"
+        // print(text[1])
         println(_indexString(text, 1))
 }
 
@@ -10,4 +13,3 @@ fun _indexString(s: String, i: Int): String {
     if (idx < 0 || idx >= arr.size) throw RuntimeException("index out of range")
     return arr[idx].toString()
 }
-

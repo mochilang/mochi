@@ -8,30 +8,39 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/alecthomas/participle/v2/lexer"
+
 	"mochi/parser"
 	"mochi/types"
 )
 
 // Compiler translates a Mochi AST into Kotlin source code.
 type Compiler struct {
-	buf          bytes.Buffer
-	indent       int
-	env          *types.Env
-	mainStmts    []*parser.Statement
-	helpers      map[string]bool
-	packages     map[string]bool
-	structs      map[string]bool
-	models       bool
-	handlerCount int
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	mainStmts     []*parser.Statement
+	helpers       map[string]bool
+	packages      map[string]bool
+	structs       map[string]bool
+	models        bool
+	handlerCount  int
+	lines         []string
+	includeSource bool
 }
 
 // New creates a new Kotlin compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), structs: make(map[string]bool), models: false, handlerCount: 0}
+	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), structs: make(map[string]bool), models: false, handlerCount: 0, includeSource: true}
 }
 
 // Compile generates Kotlin code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if c.includeSource && prog.Pos.Filename != "" {
+		if data, err := os.ReadFile(prog.Pos.Filename); err == nil {
+			c.lines = strings.Split(string(data), "\n")
+		}
+	}
 	if prog.Package != "" {
 		c.writeln("package " + sanitizeName(prog.Package))
 		c.writeln("")
@@ -130,6 +139,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
+	c.comment(s.Pos)
 	switch {
 	case s.Type != nil:
 		return c.compileTypeDecl(s.Type)
@@ -193,6 +203,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
+	c.comment(stmt.Pos)
 	expr, err := c.compileExpr(stmt.Value)
 	if err != nil {
 		return err
@@ -213,6 +224,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
+	c.comment(stmt.Pos)
 	value := "null"
 	if stmt.Value != nil {
 		v, err := c.compileExpr(stmt.Value)
@@ -238,6 +250,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
+	c.comment(stmt.Pos)
 	lhs := sanitizeName(stmt.Name)
 	idxStrs := make([]string, 0, len(stmt.Index))
 	for _, idx := range stmt.Index {
@@ -292,6 +305,7 @@ func (c *Compiler) compileReturn(stmt *parser.ReturnStmt) error {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	c.comment(t.Pos)
 	name := "test_" + sanitizeName(t.Name)
 	c.writeIndent()
 	c.buf.WriteString("fun " + name + "() {\n")
@@ -316,6 +330,7 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	c.comment(t.Pos)
 	name := sanitizeName(t.Name)
 	if len(t.Variants) > 0 {
 		c.writeln(fmt.Sprintf("sealed interface %s", name))
@@ -362,6 +377,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
+	c.comment(stmt.Pos)
 	name := sanitizeName(stmt.Name)
 	if stmt.RangeEnd != nil {
 		start, err := c.compileExpr(stmt.Source)
@@ -404,6 +420,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
+	c.comment(stmt.Pos)
 	cond, err := c.compileExpr(stmt.Cond)
 	if err != nil {
 		return err
@@ -421,6 +438,7 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
+	c.comment(stmt.Pos)
 	cond, err := c.compileExpr(stmt.Cond)
 	if err != nil {
 		return err
@@ -585,6 +603,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 }
 
 func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
+	c.comment(m.Pos)
 	c.models = true
 	parts := make([]string, len(m.Fields))
 	for i, f := range m.Fields {
@@ -599,6 +618,7 @@ func (c *Compiler) compileModelDecl(m *parser.ModelDecl) error {
 }
 
 func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
+	c.comment(s.Pos)
 	st, ok := c.env.GetStream(s.Name)
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", s.Name)
@@ -611,6 +631,7 @@ func (c *Compiler) compileStreamDecl(s *parser.StreamDecl) error {
 }
 
 func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
+	c.comment(h.Pos)
 	st, ok := c.env.GetStream(h.Stream)
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", h.Stream)
@@ -642,6 +663,7 @@ func (c *Compiler) compileOnHandler(h *parser.OnHandler) error {
 }
 
 func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
+	c.comment(e.Pos)
 	st, ok := c.env.GetStream(e.Stream)
 	if !ok {
 		return fmt.Errorf("unknown stream: %s", e.Stream)
@@ -683,6 +705,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 }
 
 func (c *Compiler) compilePackageImport(im *parser.ImportStmt) error {
+	c.comment(im.Pos)
 	alias := im.As
 	if alias == "" {
 		alias = parser.AliasFromPath(im.Path)
@@ -1208,6 +1231,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
+	c.comment(fun.Pos)
 	name := sanitizeName(fun.Name)
 	c.writeIndent()
 	c.buf.WriteString("fun " + name + "(")
@@ -1288,6 +1312,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileExternVar(ev *parser.ExternVarDecl) error {
+	c.comment(ev.Pos)
 	name := sanitizeName(ev.Name())
 	typ := ktType(c.resolveTypeRef(ev.Type))
 	c.writeln(fmt.Sprintf("var %s: %s = TODO(\"extern\")", name, typ))
@@ -1298,6 +1323,7 @@ func (c *Compiler) compileExternVar(ev *parser.ExternVarDecl) error {
 }
 
 func (c *Compiler) compileExternFun(ef *parser.ExternFunDecl) error {
+	c.comment(ef.Pos)
 	params := make([]string, len(ef.Params))
 	var ptypes []types.Type
 	for i, p := range ef.Params {
@@ -1324,11 +1350,13 @@ func (c *Compiler) compileExternFun(ef *parser.ExternFunDecl) error {
 }
 
 func (c *Compiler) compileExternType(et *parser.ExternTypeDecl) error {
+	c.comment(et.Pos)
 	c.writeln(fmt.Sprintf("typealias %s = Any", sanitizeName(et.Name)))
 	return nil
 }
 
 func (c *Compiler) compileExternObject(eo *parser.ExternObjectDecl) error {
+	c.comment(eo.Pos)
 	name := sanitizeName(eo.Name)
 	c.use("_extern")
 	c.writeln(fmt.Sprintf("val %s = ExternRegistry._externGet(\"%s\")", name, eo.Name))
@@ -1394,7 +1422,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					expr = fmt.Sprintf("_concat(%s, %s)", l, r)
 					isList = true
 				} else {
-					expr = fmt.Sprintf("(%s %s %s)", l, op, r)
+					expr = fmt.Sprintf("%s %s %s", l, op, r)
 				}
 				operands[i] = expr
 				lists[i] = isList
@@ -1713,6 +1741,21 @@ func (c *Compiler) writeln(s string) {
 	c.writeIndent()
 	c.buf.WriteString(s)
 	c.buf.WriteByte('\n')
+}
+
+func (c *Compiler) comment(pos lexer.Position) {
+	if !c.includeSource || len(c.lines) == 0 {
+		return
+	}
+	if pos.Line <= 0 || pos.Line > len(c.lines) {
+		return
+	}
+	line := strings.TrimSpace(c.lines[pos.Line-1])
+	if line == "" {
+		return
+	}
+	c.writeIndent()
+	c.buf.WriteString("// " + line + "\n")
 }
 
 func (c *Compiler) writeIndent() {

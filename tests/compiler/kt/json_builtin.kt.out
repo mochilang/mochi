@@ -1,4 +1,5 @@
 fun main() {
+        // json({"a": 1})
         _json(mutableMapOf("a" to 1))
 }
 

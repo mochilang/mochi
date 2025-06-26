@@ -1,11 +1,14 @@
+// fun sumN(n: int): int {
 fun sumN(n: Int) : Int {
-        return ((n * ((n + 1))) / 2)
+        return n * (n + 1) / 2
 }
 
 fun main() {
+        // let n = 10
+        // let n = 10
         val n = 10
+        // print(sumN(n))
         println(sumN(n))
+        // print(n)
         println(n)
 }
-
-

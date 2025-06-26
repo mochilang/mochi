@@ -1,5 +1,10 @@
 fun main() {
+        // var x = 1
+        // var x = 1
         var x = 1
+        // x = 2
+        // x = 2
         x = 2
+        // print(x)
         println(x)
 }

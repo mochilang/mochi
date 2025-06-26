@@ -1,5 +1,9 @@
 fun main() {
+        // let x = 2
+        // let x = 2
         val x = 2
+        // let label = match x {
+        // let label = match x {
         val label = run {
                 val _t = x
                 when {
@@ -9,6 +13,6 @@ fun main() {
                         else -> "unknown"
                 }
         }
+        // print(label)
         println(label)
 }
-

@@ -1,5 +1,8 @@
 fun main() {
-        println((true && false))
-        println((true || false))
+        // print(true && false)
+        println(true && false)
+        // print(true || false)
+        println(true || false)
+        // print(!false)
         println(!false)
 }

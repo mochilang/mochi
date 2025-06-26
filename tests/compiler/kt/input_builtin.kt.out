@@ -1,7 +1,14 @@
 fun main() {
+        // print("Enter first input:")
         println("Enter first input:")
+        // let input1 = input()
+        // let input1 = input()
         val input1 = readln()
+        // print("Enter second input:")
         println("Enter second input:")
+        // let input2 = input()
+        // let input2 = input()
         val input2 = readln()
+        // print("You entered:", input1, ",", input2)
         println("You entered:", input1, ",", input2)
 }

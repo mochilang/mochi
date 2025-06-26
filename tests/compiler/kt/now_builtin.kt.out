@@ -1,3 +1,4 @@
 fun main() {
-        println(((System.currentTimeMillis() * 1000000) > 0))
+        // print(now() > 0)
+        println((System.currentTimeMillis() * 1000000) > 0)
 }

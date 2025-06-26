@@ -1,12 +1,19 @@
 fun main() {
+        // stream Sensor {
+        // stream Sensor {
         data class Sensor(val id: String, val temperature: Double)
         
         var _SensorStream = _Stream<Sensor>("Sensor")
+        // on Sensor as s {
+        // on Sensor as s {
         fun _handler_0(ev: Sensor) {
                 val s = ev
+                // print(s.id, s.temperature)
                 println(s.id, s.temperature)
         }
         _SensorStream.register(::_handler_0)
+        // emit Sensor { id: "sensor-1", temperature: 22.5 }
+        // emit Sensor { id: "sensor-1", temperature: 22.5 }
         _SensorStream.append(Sensor(id = "sensor-1", temperature = 22.5))
 }
 
@@ -17,4 +24,3 @@ class _Stream<T>(val name: String) {
     }
     fun register(handler: (T) -> Unit) { handlers.add(handler) }
 }
-

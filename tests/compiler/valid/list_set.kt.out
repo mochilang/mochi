@@ -1,11 +1,14 @@
 fun main() {
+        // var nums = [1, 2]
+        // var nums = [1, 2]
         var nums = listOf(1, 2)
+        // nums[1] = 3
+        // nums[1] = 3
         run {
                 val _tmp = nums.toMutableList()
                 _tmp[1] = 3
                 nums = _tmp
         }
+        // print(nums[1])
         println(nums[1])
 }
-
-

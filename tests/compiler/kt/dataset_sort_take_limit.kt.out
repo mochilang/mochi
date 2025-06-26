@@ -1,7 +1,12 @@
+// type Product {
 data class Product(val name: String, val price: Int)
 
 fun main() {
+        // let products = [
+        // let products = [
         val products = listOf(Product(name = "Laptop", price = 1500), Product(name = "Smartphone", price = 900), Product(name = "Tablet", price = 600), Product(name = "Monitor", price = 300), Product(name = "Keyboard", price = 100), Product(name = "Mouse", price = 50), Product(name = "Headphones", price = 200))
+        // let expensive = from p in products
+        // let expensive = from p in products
         val expensive = run {
                 var res = products
                 res = res.sortedBy { p -> -p.price }
@@ -10,8 +15,12 @@ fun main() {
                 res = res.map { p -> p }
                 res
         }
+        // print("--- Top products (excluding most expensive) ---")
         println("--- Top products (excluding most expensive) ---")
+        // for item in expensive {
+        // for item in expensive {
         for (item in expensive) {
+                // print(item.name, "costs $", item.price)
                 println(item.name, "costs $", item.price)
         }
 }

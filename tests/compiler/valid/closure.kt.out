@@ -1,11 +1,14 @@
+// fun makeAdder(n: int): fun(int): int {
 fun makeAdder(n: Int) : Any {
         return fun(x: Int) : Int {
-                return (x + n)
+                return x + n
 }
 }
 
 fun main() {
+        // let add10 = makeAdder(10)
+        // let add10 = makeAdder(10)
         val add10 = makeAdder(10)
+        // print(add10(7))  // 17
         println(add10(7))
 }
-

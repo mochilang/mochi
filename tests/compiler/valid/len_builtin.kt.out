@@ -1,4 +1,4 @@
 fun main() {
+        // print(len([1,2,3]))
         println(listOf(1, 2, 3).size)
 }
-

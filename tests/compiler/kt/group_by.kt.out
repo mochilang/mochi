@@ -1,7 +1,14 @@
 fun main() {
+        // let xs = [1, 1, 2]
+        // let xs = [1, 1, 2]
         val xs = listOf(1, 1, 2)
+        // let groups = from x in xs
+        // let groups = from x in xs
         val groups = _group_by(xs) { x -> x }.map { g -> mutableMapOf("k" to g.key, "c" to g.size) }
+        // for g in groups {
+        // for g in groups {
         for (g in groups) {
+                // print(g.k, g.c)
                 println(g.k, g.c)
         }
 }
@@ -31,4 +38,3 @@ fun _group_by(src: List<Any?>, keyfn: (Any?) -> Any?): List<_Group> {
     }
         return order.map { groups[it]!! }
 }
-

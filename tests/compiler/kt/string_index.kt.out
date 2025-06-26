@@ -1,5 +1,8 @@
 fun main() {
+        // let text = "hello"
+        // let text = "hello"
         val text = "hello"
+        // print(text[1])
         println(_indexString(text, 1))
 }
 

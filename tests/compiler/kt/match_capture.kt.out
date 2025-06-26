@@ -1,7 +1,9 @@
+// type Tree =
 sealed interface Tree
 data class Leaf() : Tree
 data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
 
+// fun depth(t: Tree): int {
 fun depth(t: Tree) : Int {
         return run {
                 val _t = t
@@ -10,12 +12,13 @@ fun depth(t: Tree) : Int {
                         _t is Node -> {
                                 val l = _t.left
                                 val r = _t.right
-                                ((depth(l) + depth(r)) + 1)
+                                depth(l) + depth(r) + 1
                         }
                 }
         }
 }
 
 fun main() {
+        // print(depth(Node { left: Leaf {}, value: 0, right: Leaf {} }))
         println(depth(Node(left = Leaf(), value = 0, right = Leaf())))
 }

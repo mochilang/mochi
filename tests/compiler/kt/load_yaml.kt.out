@@ -1,6 +1,9 @@
+// type Person {
 data class Person(val name: String, val age: Int, val email: String)
 
 fun main() {
+        // let people = load "../tests/interpreter/valid/people.yaml" as Person with { format: "yaml" }
+        // let people = load "../tests/interpreter/valid/people.yaml" as Person with { format: "yaml" }
         val people = run {
         val _rows = _load("../tests/interpreter/valid/people.yaml", mutableMapOf("format" to "yaml"))
         val _out = mutableListOf<Person>()
@@ -9,13 +12,18 @@ fun main() {
         }
         _out
 }
+        // let adults = from p in people
+        // let adults = from p in people
         val adults = run {
                 var res = people
-                res = res.filter { p -> (p.age >= 18) }
+                res = res.filter { p -> p.age >= 18 }
                 res = res.map { p -> mutableMapOf("name" to p.name, "email" to p.email) }
                 res
         }
+        // for a in adults {
+        // for a in adults {
         for (a in adults) {
+                // print(a.name, a.email)
                 println(a.name, a.email)
         }
 }

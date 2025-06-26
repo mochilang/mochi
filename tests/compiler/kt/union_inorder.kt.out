@@ -1,7 +1,9 @@
+// type Tree =
 sealed interface Tree
 data class Leaf() : Tree
 data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
 
+// fun inorder(t: Tree): list<int> {
 fun inorder(t: Tree) : List<Int> {
         return run {
                 val _t = t
@@ -18,6 +20,7 @@ fun inorder(t: Tree) : List<Int> {
 }
 
 fun main() {
+        // print(inorder(Node { left: Leaf {}, value: 1, right: Node { left: Leaf {}, value: 2, right: Leaf {} } }))
         println(inorder(Node(left = Leaf(), value = 1, right = Node(left = Leaf(), value = 2, right = Leaf()))))
 }
 

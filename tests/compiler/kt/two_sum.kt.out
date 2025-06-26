@@ -1,8 +1,9 @@
+// fun twoSum(nums: list<int>, target: int): list<int> {
 fun twoSum(nums: List<Int>, target: Int) : List<Int> {
         val n = nums.size
         for (i in 0 until n) {
-                for (j in (i + 1) until n) {
-                        if (((nums[i] + nums[j]) == target)) {
+                for (j in i + 1 until n) {
+                        if (nums[i] + nums[j] == target) {
                                 return listOf(i, j)
                         }
                 }
@@ -11,7 +12,11 @@ fun twoSum(nums: List<Int>, target: Int) : List<Int> {
 }
 
 fun main() {
+        // let result = twoSum([2,7,11,15], 9)
+        // let result = twoSum([2,7,11,15], 9)
         val result = twoSum(listOf(2, 7, 11, 15), 9)
+        // print(result[0])
         println(result[0])
+        // print(result[1])
         println(result[1])
 }

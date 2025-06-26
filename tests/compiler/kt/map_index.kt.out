@@ -1,4 +1,7 @@
 fun main() {
+        // let scores = {"Alice": 10, "Bob": 15}
+        // let scores = {"Alice": 10, "Bob": 15}
         val scores = mutableMapOf("Alice" to 10, "Bob" to 15)
+        // print(scores["Bob"])
         println(scores["Bob"])
 }

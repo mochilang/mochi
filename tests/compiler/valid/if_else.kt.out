@@ -1,9 +1,14 @@
 fun main() {
+        // let x = 5
+        // let x = 5
         val x = 5
-        if ((x > 3)) {
+        // if x > 3 {
+        // if x > 3 {
+        if (x > 3) {
+                // print("big")
                 println("big")
         } else {
+                // print("small")
                 println("small")
         }
 }
-

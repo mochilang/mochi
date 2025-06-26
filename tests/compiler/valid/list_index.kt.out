@@ -1,5 +1,7 @@
 fun main() {
+        // let xs = [10, 20, 30]
+        // let xs = [10, 20, 30]
         val xs = listOf(10, 20, 30)
+        // print(xs[1])
         println(xs[1])
 }
-

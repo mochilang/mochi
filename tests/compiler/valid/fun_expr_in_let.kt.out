@@ -1,7 +1,9 @@
 fun main() {
+        // let square = fun(x: int): int => x * x
+        // let square = fun(x: int): int => x * x
         val square = fun(x: Int) : Int {
-                return (x * x)
+                return x * x
 }
+        // print(square(6))  // 36
         println(square(6))
 }
-

@@ -1,11 +1,15 @@
+// type Person {
 data class Person(val name: String) {
         fun greet() : String {
-                return ("hi " + name)
+                return "hi " + name
         }
         
 }
 
 fun main() {
+        // let p = Person { name: "Ada" }
+        // let p = Person { name: "Ada" }
         val p = Person(name = "Ada")
+        // print(p.greet())
         println(p.greet())
 }

@@ -1,7 +1,15 @@
 fun main() {
+        // let nums = [1, 2]
+        // let nums = [1, 2]
         val nums = listOf(1, 2)
+        // let letters = ["A", "B"]
+        // let letters = ["A", "B"]
         val letters = listOf("A", "B")
+        // let bools = [true, false]
+        // let bools = [true, false]
         val bools = listOf(true, false)
+        // let combos = from n in nums
+        // let combos = from n in nums
         val combos = run {
                 val _src = nums
                 val _res = mutableListOf<MutableMap<String, Any>>()
@@ -14,8 +22,12 @@ fun main() {
                 }
                 _res
         }
+        // print("--- Cross Join of three lists ---")
         println("--- Cross Join of three lists ---")
+        // for c in combos {
+        // for c in combos {
         for (c in combos) {
+                // print(c.n, c.l, c.b)
                 println(c.n, c.l, c.b)
         }
 }

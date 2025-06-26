@@ -1,11 +1,14 @@
+// test "addition works" {
 fun test_addition_works() {
-        val x = (1 + 2)
-        check((x == 3))
+        // let x = 1 + 2
+        // let x = 1 + 2
+        val x = 1 + 2
+        // expect x == 3
+        check(x == 3)
 }
 
 fun main() {
+        // print("ok")
         println("ok")
         test_addition_works()
 }
-
-

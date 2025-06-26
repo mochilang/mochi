@@ -1,7 +1,12 @@
 fun main() {
-        println((1 + 2))
-        println((5 - 3))
-        println((4 * 2))
-        println((8 / 2))
-        println((7 % 3))
+        // print(1 + 2)
+        println(1 + 2)
+        // print(5 - 3)
+        println(5 - 3)
+        // print(4 * 2)
+        println(4 * 2)
+        // print(8 / 2)
+        println(8 / 2)
+        // print(7 % 3)
+        println(7 % 3)
 }

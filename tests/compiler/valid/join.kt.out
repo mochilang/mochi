@@ -1,19 +1,28 @@
+// type Customer {
 data class Customer(val id: Int, val name: String)
 
+// type Order {
 data class Order(val id: Int, val customerId: Int, val total: Int)
 
+// type PairInfo {
 data class PairInfo(val orderId: Int, val customerName: String, val total: Int)
 
 fun main() {
+        // let customers = [
+        // let customers = [
         val customers = listOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"))
+        // let orders = [
+        // let orders = [
         val orders = listOf(Order(id = 100, customerId = 1, total = 250), Order(id = 101, customerId = 2, total = 125), Order(id = 102, customerId = 1, total = 300), Order(id = 103, customerId = 4, total = 80))
+        // let result = from o in orders
+        // let result = from o in orders
         val result = run {
                 val _src = orders
                 val _rows = _query(_src, listOf(
                         _JoinSpec(items = customers, on = { args ->
                         val o = args[0]
                         val c = args[1]
-(o.customerId == c.id)
+o.customerId == c.id
                         }))
                 ), _QueryOpts(selectFn = { args ->
                         val o = args[0]
@@ -22,8 +31,12 @@ PairInfo(orderId = o.id, customerName = c.name, total = o.total)
                         }) )
                 _rows
         }
+        // print("--- Orders with customer info ---")
         println("--- Orders with customer info ---")
+        // for entry in result {
+        // for entry in result {
         for (entry in result) {
+                // print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
                 println("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
         }
 }
@@ -146,4 +159,3 @@ fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?
     }
     return res
 }
-

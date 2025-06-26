@@ -1,9 +1,11 @@
 fun main() {
+        // let poem = generate text {
+        // let poem = generate text {
         val poem = _genText("echo hello", null, null)
+        // print(poem)
         println(poem)
 }
 
 fun _genText(prompt: String, model: String?, params: Map<String, Any>?): String {
     return prompt
 }
-

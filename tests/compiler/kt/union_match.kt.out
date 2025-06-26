@@ -1,7 +1,9 @@
+// type Tree =
 sealed interface Tree
 data class Leaf() : Tree
 data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
 
+// fun isLeaf(t: Tree): bool {
 fun isLeaf(t: Tree) : Boolean {
         return run {
                 val _t = t
@@ -13,6 +15,8 @@ fun isLeaf(t: Tree) : Boolean {
 }
 
 fun main() {
+        // print(isLeaf(Leaf {}))
         println(isLeaf(Leaf()))
+        // print(isLeaf(Node { left: Leaf {}, value: 1, right: Leaf {} }))
         println(isLeaf(Node(left = Leaf(), value = 1, right = Leaf())))
 }

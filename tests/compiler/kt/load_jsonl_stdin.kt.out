@@ -1,6 +1,9 @@
+// type Person {
 data class Person(val name: String, val age: Int)
 
 fun main() {
+        // let people = load as Person with {
+        // let people = load as Person with {
         val people = run {
         val _rows = _load(null, mutableMapOf("format" to "jsonl"))
         val _out = mutableListOf<Person>()
@@ -9,6 +12,7 @@ fun main() {
         }
         _out
 }
+        // print(count(people))
         println(people.size)
 }
 

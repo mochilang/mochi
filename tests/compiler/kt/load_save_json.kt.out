@@ -1,6 +1,9 @@
+// type Person {
 data class Person(val name: String, val age: Int, val email: String)
 
 fun main() {
+        // let people = load as Person with {
+        // let people = load as Person with {
         val people = run {
         val _rows = _load(null, mutableMapOf("format" to "json"))
         val _out = mutableListOf<Person>()
@@ -9,12 +12,15 @@ fun main() {
         }
         _out
 }
+        // let adults = from p in people
+        // let adults = from p in people
         val adults = run {
                 var res = people
-                res = res.filter { p -> (p.age >= 18) }
+                res = res.filter { p -> p.age >= 18 }
                 res = res.map { p -> p }
                 res
         }
+        // save adults with { format: "json" }
         _save(adults, null, mutableMapOf("format" to "json"))
 }
 
@@ -161,4 +167,3 @@ fun _save(src: Any?, path: String?, opts: Map<String, Any>?): Unit {
     }
     if (path == null || path == "-" || path == "") print(text) else java.io.File(path).writeText(text)
 }
-

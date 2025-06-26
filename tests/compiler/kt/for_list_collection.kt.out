@@ -1,5 +1,8 @@
 fun main() {
+        // for n in [1,2,3] {
+        // for n in [1,2,3] {
         for (n in listOf(1, 2, 3)) {
+                // print(n)
                 println(n)
         }
 }

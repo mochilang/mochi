@@ -1,6 +1,10 @@
 fun main() {
+        // let a = 10
+        // let a = 10
         val a = 10
+        // let b: int = 20
+        // let b: int = 20
         val b: Int = 20
-        println((a + b))
+        // print(a + b)
+        println(a + b)
 }
-

@@ -1,18 +1,31 @@
 fun main() {
+        // var m: map<int, bool> = {}
+        // var m: map<int, bool> = {}
         var m: MutableMap<Int, Boolean> = mutableMapOf<Any, Any>()
+        // m[1] = true
+        // m[1] = true
         run {
                 val _tmp = m.toMutableMap()
                 _tmp[1] = true
                 m = _tmp
         }
+        // m[2] = true
+        // m[2] = true
         run {
                 val _tmp = m.toMutableMap()
                 _tmp[2] = true
                 m = _tmp
         }
+        // var sum = 0
+        // var sum = 0
         var sum = 0
+        // for k in m {
+        // for k in m {
         for (k in m.keys) {
-                sum = (sum + k)
+                // sum = sum + k
+                // sum = sum + k
+                sum = sum + k
         }
+        // print(sum)
         println(sum)
 }

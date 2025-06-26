@@ -1,4 +1,7 @@
 fun main() {
+        // let map = {"a": 1}
+        // let map = {"a": 1}
         val map = mutableMapOf("a" to 1)
+        // print(map["a"])
         println(map["a"])
 }
