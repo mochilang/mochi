@@ -57,7 +57,7 @@ struct Todo {
 }
 
 func main() {
-	let todo: Todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", nil)
-	print(todo.title)
+        let todo: Todo = _cast(Todo.self, _fetch("https://jsonplaceholder.typicode.com/todos/1", nil))
+        print(todo.title)
 }
 main()

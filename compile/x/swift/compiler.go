@@ -695,7 +695,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		} else if op.Cast != nil {
-			expr = fmt.Sprintf("%s as! %s", expr, c.compileType(op.Cast.Type))
+			c.use("_cast")
+			expr = fmt.Sprintf("_cast(%s.self, %s)", c.compileType(op.Cast.Type), expr)
 		}
 	}
 	return expr, nil
