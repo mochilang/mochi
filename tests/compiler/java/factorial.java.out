@@ -1,14 +1,32 @@
+// fun factorial(n: int): int {
+//   if n <= 1 {
+//     return 1
+//   }
+//   return n * factorial(n - 1)
+// }
+// 
+// print(factorial(0))
+// print(factorial(1))
+// print(factorial(5))
+
 public class Main {
-	static int factorial(int n) {
-		if ((n <= 1)) {
-			return 1;
-		}
-		return (n * factorial((n - 1)));
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(factorial(0));
-		System.out.println(factorial(1));
-		System.out.println(factorial(5));
-	}
+    // fun factorial(n: int): int {
+    static int factorial(int n) {
+        //   if n <= 1 {
+        if ((n <= 1)) {
+            //     return 1
+            return 1;
+        }
+        //   return n * factorial(n - 1)
+        return (n * factorial((n - 1)));
+    }
+    
+    public static void main(String[] args) {
+        // print(factorial(0))
+        System.out.println(factorial(0));
+        // print(factorial(1))
+        System.out.println(factorial(1));
+        // print(factorial(5))
+        System.out.println(factorial(5));
+    }
 }

@@ -1,19 +1,45 @@
+// fun twoSum(nums: list<int>, target: int): list<int> {
+//   let n = len(nums)
+//   for i in 0..n {
+//     for j in i+1..n {
+//       if nums[i] + nums[j] == target {
+//         return [i, j]
+//       }
+//     }
+//   }
+//   return [-1, -1]
+// }
+// 
+// let result = twoSum([2,7,11,15], 9)
+// print(result[0])
+// print(result[1])
+
 public class Main {
-	static int[] twoSum(int[] nums, int target) {
-		int n = nums.length;
-		for (int i = 0; i < n; i++) {
-			for (int j = (i + 1); j < n; j++) {
-				if (((nums[i] + nums[j]) == target)) {
-					return new int[]{i, j};
-				}
-			}
-		}
-		return new int[]{(-1), (-1)};
-	}
-	
-	public static void main(String[] args) {
-		int[] result = twoSum(new int[]{2, 7, 11, 15}, 9);
-		System.out.println(result[0]);
-		System.out.println(result[1]);
-	}
+    // fun twoSum(nums: list<int>, target: int): list<int> {
+    static Object[] twoSum(Object[] nums, int target) {
+        //   let n = len(nums)
+        int n = nums.length;
+        //   for i in 0..n {
+        for (int i = 0; i < n; i++) {
+            //     for j in i+1..n {
+            for (int j = (i + 1); j < n; j++) {
+                //       if nums[i] + nums[j] == target {
+                if (((nums[i] + nums[j]) == target)) {
+                    //         return [i, j]
+                    return new int[]{i, j};
+                }
+            }
+        }
+        //   return [-1, -1]
+        return new int[]{(-1), (-1)};
+    }
+    
+    public static void main(String[] args) {
+        // let result = twoSum([2,7,11,15], 9)
+        Object[] result = twoSum(new int[]{2, 7, 11, 15}, 9);
+        // print(result[0])
+        System.out.println(result[0]);
+        // print(result[1])
+        System.out.println(result[1]);
+    }
 }

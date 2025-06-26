@@ -1,7 +1,13 @@
+// for n in [1,2,3] {
+//   print(n)
+// }
+
 public class Main {
-	public static void main(String[] args) {
-		for (var n : new int[]{1, 2, 3}) {
-			System.out.println(n);
-		}
-	}
+    public static void main(String[] args) {
+        // for n in [1,2,3] {
+        for (var n : new int[]{1, 2, 3}) {
+            //   print(n)
+            System.out.println(n);
+        }
+    }
 }

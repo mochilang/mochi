@@ -1,11 +1,14 @@
+// print(count([1,2,3]))
+
 public class Main {
-	public static void main(String[] args) {
-		System.out.println(_count(new int[]{1, 2, 3}));
-	}
-	
-	static int _count(Object v) {
-		if (v instanceof _Group) return ((_Group)v).length();
-		java.util.List<Object> items = _toList(v);
-		return items.size();
-	}
+    public static void main(String[] args) {
+        // print(count([1,2,3]))
+        System.out.println(_count(new int[]{1, 2, 3}));
+    }
+    
+    static int _count(Object v) {
+        if (v instanceof _Group) return ((_Group)v).length();
+        java.util.List<Object> items = _toList(v);
+        return items.size();
+    }
 }

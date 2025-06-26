@@ -1,16 +1,30 @@
+// type Person {
+//   name: string
+//   age: int
+// }
+// 
+// let p = Person { name: "Alice", age: 30 }
+// print(p.name)
+
 public class Main {
-	static class Person {
-		String name;
-		int age;
-		
-		Person(String name, int age) {
-			this.name = name;
-			this.age = age;
-		}
-	}
-	
-	public static void main(String[] args) {
-		Person p = new Person("Alice", 30);
-		System.out.println(p.name);
-	}
+    // type Person {
+    static class Person {
+        String name;
+        int age;
+        
+        Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+        
+        Person() {}
+    }
+    
+    public static void main(String[] args) {
+        // type Person {
+        // let p = Person { name: "Alice", age: 30 }
+        Person p = new Person("Alice", 30);
+        // print(p.name)
+        System.out.println(p.name);
+    }
 }

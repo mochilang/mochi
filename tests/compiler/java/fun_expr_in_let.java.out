@@ -1,8 +1,13 @@
+// let square = fun(x: int): int => x * x
+// print(square(6))  // 36
+
 public class Main {
-	public static void main(String[] args) {
-		java.util.function.Function<Integer, Integer> square = (x) -> {
-		return (x * x);
+    public static void main(String[] args) {
+        // let square = fun(x: int): int => x * x
+        java.util.function.Function<Integer, Integer> square = (x) -> {
+        return (x * x);
 };
-		System.out.println(square.apply(6));
-	}
+        // print(square(6))  // 36
+        System.out.println(square.apply(6));
+    }
 }

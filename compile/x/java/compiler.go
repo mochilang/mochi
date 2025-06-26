@@ -3,6 +3,7 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strings"
 
 	"mochi/parser"
@@ -11,32 +12,52 @@ import (
 
 // Compiler translates a Mochi AST into Java source code.
 type Compiler struct {
-	buf          bytes.Buffer
-	indent       int
-	env          *types.Env
-	mainStmts    []*parser.Statement
-	earlyStmts   []*parser.Statement
-	tests        []*parser.TestBlock
-	helpers      map[string]bool
-	structs      map[string]bool
-	returnType   types.Type
-	tempVarCount int
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	mainStmts     []*parser.Statement
+	earlyStmts    []*parser.Statement
+	tests         []*parser.TestBlock
+	helpers       map[string]bool
+	structs       map[string]bool
+	returnType    types.Type
+	tempVarCount  int
+	includeSource bool
+	sourceLines   []string
+}
+
+func (c *Compiler) commentLine(line int) {
+	if !c.includeSource || line <= 0 || line > len(c.sourceLines) {
+		return
+	}
+	c.writeln("// " + c.sourceLines[line-1])
 }
 
 // New creates a new Java compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:          env,
-		helpers:      make(map[string]bool),
-		structs:      make(map[string]bool),
-		tests:        []*parser.TestBlock{},
-		earlyStmts:   []*parser.Statement{},
-		tempVarCount: 0,
+		env:           env,
+		helpers:       make(map[string]bool),
+		structs:       make(map[string]bool),
+		tests:         []*parser.TestBlock{},
+		earlyStmts:    []*parser.Statement{},
+		tempVarCount:  0,
+		includeSource: true,
 	}
 }
 
 // Compile generates Java code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if c.includeSource && prog.Pos.Filename != "" {
+		if src, err := os.ReadFile(prog.Pos.Filename); err == nil {
+			c.sourceLines = strings.Split(strings.TrimRight(string(src), "\n"), "\n")
+			for _, line := range c.sourceLines {
+				c.writeln("// " + line)
+			}
+			c.writeln("")
+		}
+	}
+
 	if prog.Package != "" {
 		c.writeln("package " + sanitizeName(prog.Package) + ";")
 		c.writeln("")
@@ -47,6 +68,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// type declarations
 	for _, s := range prog.Statements {
 		if s.Type != nil {
+			c.commentLine(s.Type.Pos.Line)
 			if err := c.compileTypeDecl(s.Type); err != nil {
 				return nil, err
 			}
@@ -58,11 +80,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for i, s := range prog.Statements {
 		switch {
 		case s.Fun != nil:
+			c.commentLine(s.Fun.Pos.Line)
 			if err := c.compileFun(s.Fun); err != nil {
 				return nil, err
 			}
 			c.writeln("")
 		case s.Test != nil:
+			c.commentLine(s.Test.Pos.Line)
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}

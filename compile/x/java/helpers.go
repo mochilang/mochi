@@ -9,6 +9,8 @@ import (
 	"mochi/types"
 )
 
+const indent = "    "
+
 func sanitizeName(name string) string {
 	if name == "" {
 		return ""
@@ -86,7 +88,7 @@ func indentBlock(s string, depth int) string {
 	if s == "" {
 		return s
 	}
-	prefix := strings.Repeat("\t", depth)
+	prefix := strings.Repeat(indent, depth)
 	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
 	for i, line := range lines {
 		lines[i] = prefix + line
@@ -116,7 +118,7 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 }
 
 func (c *Compiler) newVar() string {
-	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
+	name := fmt.Sprintf("tmp%d", c.tempVarCount)
 	c.tempVarCount++
 	return name
 }

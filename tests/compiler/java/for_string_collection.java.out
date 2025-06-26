@@ -1,7 +1,13 @@
+// for ch in "hi" {
+//   print(ch)
+// }
+
 public class Main {
-	public static void main(String[] args) {
-		for (var ch : "hi".toCharArray()) {
-			System.out.println(ch);
-		}
-	}
+    public static void main(String[] args) {
+        // for ch in "hi" {
+        for (var ch : "hi".toCharArray()) {
+            //   print(ch)
+            System.out.println(ch);
+        }
+    }
 }

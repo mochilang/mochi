@@ -1,9 +1,18 @@
+// fun id(x: int): int {
+//   return x
+// }
+// 
+// print(id(123))
+
 public class Main {
-	static int id(int x) {
-		return x;
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(id(123));
-	}
+    // fun id(x: int): int {
+    static int id(int x) {
+        //   return x
+        return x;
+    }
+    
+    public static void main(String[] args) {
+        // print(id(123))
+        System.out.println(id(123));
+    }
 }

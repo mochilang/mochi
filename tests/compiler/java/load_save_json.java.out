@@ -1,21 +1,41 @@
+// type Person {
+//   name: string
+//   age: int
+//   email: string
+// }
+// 
+// let people = load as Person with {
+//   format: "json",
+// }
+// 
+// let adults = from p in people
+//              where p.age >= 18
+//              select p
+// 
+// save adults with { format: "json" }
+
 public class Main {
-	static class Person {
-		String name;
-		int age;
-		String email;
-		
-		Person(String name, int age, String email) {
-			this.name = name;
-			this.age = age;
-			this.email = email;
-		}
-		
-		Person() {}
-	}
-	
-	public static void main(String[] args) {
-		Object[] people = _load(null, new java.util.HashMap<>(java.util.Map.of("format", "json")));
-		Object[] adults = (new java.util.function.Supplier<java.util.List<Object>>() {
+    // type Person {
+    static class Person {
+        String name;
+        int age;
+        String email;
+        
+        Person(String name, int age, String email) {
+            this.name = name;
+            this.age = age;
+            this.email = email;
+        }
+        
+        Person() {}
+    }
+    
+    public static void main(String[] args) {
+        // type Person {
+        // let people = load as Person with {
+        Object[] people = _load(null, new java.util.HashMap<>(java.util.Map.of("format", "json")));
+        // let adults = from p in people
+        Object[] adults = (new java.util.function.Supplier<java.util.List<Object>>() {
 	public java.util.List<Object> get() {
 		java.util.List<Object> _src = _toList(people);
 		_src = _filter(_src, (Object p) -> { return (p.age >= 18); });
@@ -24,342 +44,345 @@ public class Main {
 		return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object p = a[0]; return p; }, null, null, -1, -1));
 	}
 }).get();
-		_save(adults, null, new java.util.HashMap<>(java.util.Map.of("format", "json")));
-	}
-	
-	static java.util.List<java.util.Map<String,Object>> _load(String path, java.util.Map<String,Object> opts) {
-		try {
-			String format = opts != null && opts.get("format") != null ? opts.get("format").toString() : "csv";
-			boolean header = opts == null || !opts.containsKey("header") ? true : Boolean.parseBoolean(opts.get("header").toString());
-			char delim = ',';
-			if (opts != null && opts.get("delimiter") != null) { String d = opts.get("delimiter").toString(); if (!d.isEmpty()) delim = d.charAt(0); }
-			if ("tsv".equals(format)) { delim='	'; format="csv"; }
-			java.io.BufferedReader r;
-			if (path == null || path.isEmpty() || path.equals("-")) {
-				r = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
-			} else {
-				r = java.nio.file.Files.newBufferedReader(java.nio.file.Path.of(path));
-			}
-			java.util.List<java.util.Map<String,Object>> out = new java.util.ArrayList<>();
-			if ("json".equals(format)) {
-				StringBuilder sb = new StringBuilder();
-				for (String line; (line = r.readLine()) != null;) { sb.append(line); }
-				r.close();
-				Object data = _parseJson(sb.toString());
-				if (data instanceof java.util.Map<?,?> m) {
-					out.add(new java.util.HashMap<>( (java.util.Map<String,Object>) m));
-				} else if (data instanceof java.util.List<?> l) {
-					for (Object it : l) { if (it instanceof java.util.Map<?,?>) out.add(new java.util.HashMap<>( (java.util.Map<String,Object>) it)); }
-				}
-				return out;
-			}
-			java.util.List<String> lines = new java.util.ArrayList<>();
-			for (String line; (line = r.readLine()) != null;) { if (!line.isEmpty()) lines.add(line); }
-			r.close();
-			if (lines.isEmpty()) return out;
-			String[] headers = lines.get(0).split(Character.toString(delim));
-			int start = 0;
-			if (header) { start = 1; } else { for (int i=0;i<headers.length;i++) headers[i]="c"+i; }
-			for (int i=start;i<lines.size();i++) {
-				String[] parts = lines.get(i).split(Character.toString(delim));
-				java.util.Map<String,Object> row = new java.util.HashMap<>();
-				for (int j=0;j<headers.length;j++) {
-					String val = j < parts.length ? parts[j] : "";
-					try { row.put(headers[j], Integer.parseInt(val)); } catch(NumberFormatException _e1) {
-						try { row.put(headers[j], Double.parseDouble(val)); } catch(NumberFormatException _e2) { row.put(headers[j], val); }
-					}
-				}
-				out.add(row);
-			}
-			return out;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	static void _save(java.util.List<java.util.Map<String,Object>> rows, String path, java.util.Map<String,Object> opts) {
-		try {
-			boolean header = opts != null && opts.get("header") != null ? Boolean.parseBoolean(opts.get("header").toString()) : false;
-			char delim = ',';
-			if (opts != null && opts.get("delimiter") != null) { String d = opts.get("delimiter").toString(); if (!d.isEmpty()) delim = d.charAt(0); }
-			String format = opts != null && opts.get("format") != null ? opts.get("format").toString() : "csv";
-			if ("tsv".equals(format)) { delim='	'; format="csv"; }
-			java.io.BufferedWriter w;
-			if (path == null || path.isEmpty() || path.equals("-")) {
-				w = new java.io.BufferedWriter(new java.io.OutputStreamWriter(System.out));
-			} else {
-				w = java.nio.file.Files.newBufferedWriter(java.nio.file.Path.of(path));
-			}
-			if ("json".equals(format)) {
-				w.write(_toJson(rows.size() == 1 ? rows.get(0) : rows));
-				w.newLine();
-			} else {
-				java.util.List<String> headers = rows.isEmpty() ? java.util.List.of() : new java.util.ArrayList<>(rows.get(0).keySet());
-				java.util.Collections.sort(headers);
-				if (header && !headers.isEmpty()) { w.write(String.join(Character.toString(delim), headers)); w.newLine(); }
-				for (java.util.Map<String,Object> row : rows) {
-					java.util.List<String> rec = new java.util.ArrayList<>();
-					for (String h : headers) { Object v = row.get(h); rec.add(v==null?"":v.toString()); }
-					w.write(String.join(Character.toString(delim), rec));
-					w.newLine();
-				}
-			}
-			w.flush(); if (path != null && !path.isEmpty() && !path.equals("-")) w.close();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	static String _toJson(Object v) {
-		if (v == null) return "null";
-		if (v instanceof String) {
-			String s = (String) v;
-			return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
-		}
-		if (v instanceof Number || v instanceof Boolean) return v.toString();
-		if (v.getClass().isArray()) {
-			int n = java.lang.reflect.Array.getLength(v);
-			StringBuilder sb = new StringBuilder();
-			sb.append('[');
-			for (int i=0;i<n;i++) {
-				if (i>0) sb.append(',');
-				sb.append(_toJson(java.lang.reflect.Array.get(v,i)));
-			}
-			sb.append(']');
-			return sb.toString();
-		}
-		if (v instanceof java.util.List<?>) {
-			java.util.List<?> l=(java.util.List<?>)v;
-			StringBuilder sb=new StringBuilder();
-			sb.append('[');
-			for (int i=0;i<l.size();i++) {
-				if(i>0) sb.append(',');
-				sb.append(_toJson(l.get(i)));
-			}
-			sb.append(']');
-			return sb.toString();
-		}
-		if (v instanceof java.util.Map<?,?>) {
-			java.util.Map<?,?> m=(java.util.Map<?,?>)v;
-			StringBuilder sb=new StringBuilder();
-			sb.append('{');
-			boolean first=true;
-			for (var e : m.entrySet()) {
-				if(!first) sb.append(',');
-				first=false;
-				sb.append(_toJson(String.valueOf(e.getKey())));
-				sb.append(':');
-				sb.append(_toJson(e.getValue()));
-			}
-			sb.append('}');
-			return sb.toString();
-		}
-		return _toJson(v.toString());
-	}
-	
-	static Object _parseJson(String s) {
-		int[] i = new int[]{0};
-		return _parseJsonValue(s, i);
-	}
-	
-	static Object _parseJsonValue(String s, int[] i) {
-		_skip(s, i);
-		char c = s.charAt(i[0]);
-		if (c == '{') return _parseJsonObject(s, i);
-		if (c == '[') return _parseJsonArray(s, i);
-		if (c == '"') return _parseJsonString(s, i);
-		if (c == '-' || Character.isDigit(c)) return _parseJsonNumber(s, i);
-		if (s.startsWith("true", i[0])) { i[0]+=4; return true; }
-		if (s.startsWith("false", i[0])) { i[0]+=5; return false; }
-		if (s.startsWith("null", i[0])) { i[0]+=4; return null; }
-		throw new RuntimeException("invalid json");
-	}
-	
-	static void _skip(String s, int[] i) { while (i[0] < s.length() && Character.isWhitespace(s.charAt(i[0]))) i[0]++; }
-	
-	static String _parseJsonString(String s, int[] i) {
-		StringBuilder sb = new StringBuilder();
-		i[0]++;
-		while (i[0] < s.length()) {
-			char ch = s.charAt(i[0]++);
-			if (ch == '"') break;
-			if (ch == '\') {
-				char e = s.charAt(i[0]++);
-				switch (e) {
-					case '"': sb.append('"'); break;
-					case '\': sb.append('\'); break;
-					case '/': sb.append('/'); break;
-					case 'b': sb.append(''); break;
-					case 'f': sb.append(''); break;
-					case 'n': sb.append('
-'); break;
-					case 'r': sb.append(''); break;
-					case 't': sb.append('	'); break;
-					case 'u': sb.append((char)Integer.parseInt(s.substring(i[0], i[0]+4), 16)); i[0]+=4; break;
-					default: sb.append(e); break;
-				}
-			} else {
-				sb.append(ch);
-			}
-		}
-		return sb.toString();
-	}
-	
-	static Object _parseJsonNumber(String s, int[] i) {
-		int start = i[0];
-		if (s.charAt(i[0])=='-') i[0]++;
-		while (i[0] < s.length() && Character.isDigit(s.charAt(i[0]))) i[0]++;
-		boolean f = false;
-		if (i[0] < s.length() && s.charAt(i[0])=='.') { f = true; i[0]++; while (i[0] < s.length() && Character.isDigit(s.charAt(i[0]))) i[0]++; }
-		String num = s.substring(start, i[0]);
-		return f ? Double.parseDouble(num) : Integer.parseInt(num);
-	}
-	
-	static java.util.List<Object> _parseJsonArray(String s, int[] i) {
-		java.util.List<Object> a = new java.util.ArrayList<>();
-		i[0]++; _skip(s,i); if (i[0] < s.length() && s.charAt(i[0])==']') { i[0]++; return a; }
-		while (true) {
-			a.add(_parseJsonValue(s,i));
-			_skip(s,i);
-			if (i[0] < s.length() && s.charAt(i[0])==']') { i[0]++; break; }
-			if (i[0] < s.length() && s.charAt(i[0])==',') { i[0]++; continue; }
-			throw new RuntimeException("invalid json array");
-		}
-		return a;
-	}
-	
-	static java.util.Map<String,Object> _parseJsonObject(String s, int[] i) {
-		java.util.Map<String,Object> m = new java.util.HashMap<>();
-		i[0]++; _skip(s,i); if (i[0] < s.length() && s.charAt(i[0])=='}') { i[0]++; return m; }
-		while (true) {
-			String k = _parseJsonString(s,i);
-			_skip(s,i);
-			if (i[0] >= s.length() || s.charAt(i[0]) != ':') throw new RuntimeException("expected :");
-			i[0]++; Object v = _parseJsonValue(s,i); m.put(k,v); _skip(s,i);
-			if (i[0] < s.length() && s.charAt(i[0])=='}') { i[0]++; break; }
-			if (i[0] < s.length() && s.charAt(i[0])==',') { i[0]++; continue; }
-			throw new RuntimeException("invalid json object");
-		}
-		return m;
-	}
-	
-	static java.util.List<Object> _toList(Object v) {
-		if (v instanceof java.util.List<?>) return new java.util.ArrayList<>((java.util.List<?>)v);
-		int n = java.lang.reflect.Array.getLength(v);
-		java.util.List<Object> out = new java.util.ArrayList<>(n);
-		for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));
-		return out;
-	}
-	
-	static java.util.List<Object> _filter(java.util.List<Object> src, java.util.function.Function<Object,Boolean> pred) {
-		java.util.List<Object> out = new java.util.ArrayList<>();
-		for (Object it : src) { if (pred.apply(it)) out.add(it); }
-		return out;
-	}
-	
-	static class _JoinSpec {
-		java.util.List<Object> items;
-		java.util.function.Function<Object[],Boolean> on;
-		boolean left;
-		boolean right;
-		_JoinSpec(java.util.List<Object> items, java.util.function.Function<Object[],Boolean> on, boolean left, boolean right) {
-			this.items=items; this.on=on; this.left=left; this.right=right;
-		}
-	}
-	
-	static class _QueryOpts {
-		java.util.function.Function<Object[],Object> selectFn;
-		java.util.function.Function<Object[],Boolean> where;
-		java.util.function.Function<Object[],Object> sortKey;
-		int skip; int take;
-		_QueryOpts(java.util.function.Function<Object[],Object> s, java.util.function.Function<Object[],Boolean> w, java.util.function.Function<Object[],Object> k, int skip, int take) {
-			this.selectFn=s; this.where=w; this.sortKey=k; this.skip=skip; this.take=take;
-		}
-	}
-	static java.util.List<Object> _query(java.util.List<Object> src, java.util.List<_JoinSpec> joins, _QueryOpts opts) {
-		java.util.List<java.util.List<Object>> items = new java.util.ArrayList<>();
-		for (Object v : src) { java.util.List<Object> r = new java.util.ArrayList<>(); r.add(v); items.add(r); }
-		for (_JoinSpec j : joins) {
-			java.util.List<java.util.List<Object>> joined = new java.util.ArrayList<>();
-			java.util.List<Object> jitems = j.items;
-			if (j.right && j.left) {
-				boolean[] matched = new boolean[jitems.size()];
-				for (java.util.List<Object> left : items) {
-					boolean m = false;
-					for (int ri=0; ri<jitems.size(); ri++) {
-						Object right = jitems.get(ri);
-						boolean keep = true;
-						if (j.on != null) {
-							Object[] args = new Object[left.size()+1];
-							for (int i=0;i<left.size();i++) args[i]=left.get(i);
-							args[left.size()] = right;
-							keep = j.on.apply(args);
-						}
-						if (!keep) continue;
-						m = true; matched[ri] = true;
-						java.util.List<Object> row = new java.util.ArrayList<>(left);
-						row.add(right); joined.add(row);
-					}
-					if (!m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
-				}
-				for (int ri=0; ri<jitems.size(); ri++) {
-					if (!matched[ri]) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(jitems.get(ri)); joined.add(undef); }
-				}
-			} else if (j.right) {
-				for (Object right : jitems) {
-					boolean m = false;
-					for (java.util.List<Object> left : items) {
-						boolean keep = true;
-						if (j.on != null) {
-							Object[] args = new Object[left.size()+1];
-							for (int i=0;i<left.size();i++) args[i]=left.get(i);
-							args[left.size()] = right;
-							keep = j.on.apply(args);
-						}
-						if (!keep) continue;
-						m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
-					}
-					if (!m) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(right); joined.add(undef); }
-				}
-			} else {
-				for (java.util.List<Object> left : items) {
-					boolean m = false;
-					for (Object right : jitems) {
-						boolean keep = true;
-						if (j.on != null) {
-							Object[] args = new Object[left.size()+1];
-							for (int i=0;i<left.size();i++) args[i]=left.get(i);
-							args[left.size()] = right;
-							keep = j.on.apply(args);
-						}
-						if (!keep) continue;
-						m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
-					}
-					if (j.left && !m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
-				}
-			items = joined;
-		}
-		if (opts.where != null) {
-			java.util.List<java.util.List<Object>> filtered = new java.util.ArrayList<>();
-			for (java.util.List<Object> r : items) if (opts.where.apply(r.toArray(new Object[0]))) filtered.add(r);
-			items = filtered;
-		}
-		if (opts.sortKey != null) {
-			class Pair { java.util.List<Object> item; Object key; Pair(java.util.List<Object> i,Object k){item=i;key=k;} }
-			java.util.List<Pair> pairs = new java.util.ArrayList<>();
-			for (java.util.List<Object> it : items) pairs.add(new Pair(it, opts.sortKey.apply(it.toArray(new Object[0]))));
-			pairs.sort((a,b) -> {
-				Object ak=a.key, bk=b.key;
-				if (ak instanceof Number && bk instanceof Number) return Double.compare(((Number)ak).doubleValue(), ((Number)bk).doubleValue());
-				if (ak instanceof String && bk instanceof String) return ((String)ak).compareTo((String)bk);
-				return ak.toString().compareTo(bk.toString());
-			});
-			for (int i=0;i<pairs.size();i++) items.set(i, pairs.get(i).item);
-		}
-		if (opts.skip >= 0) { if (opts.skip < items.size()) items = new java.util.ArrayList<>(items.subList(opts.skip, items.size())); else items = new java.util.ArrayList<>(); }
-		if (opts.take >= 0) { if (opts.take < items.size()) items = new java.util.ArrayList<>(items.subList(0, opts.take)); }
-		java.util.List<Object> res = new java.util.ArrayList<>();
-		for (java.util.List<Object> r : items) res.add(opts.selectFn.apply(r.toArray(new Object[0])));
+        // save adults with { format: "json" }
+        _save(adults, null, new java.util.HashMap<>(java.util.Map.of("format", "json")));
+    }
+    
+    static java.util.List<java.util.Map<String,Object>> _load(String path, java.util.Map<String,Object> opts) {
+        try {
+            String format = opts != null && opts.get("format") != null ? opts.get("format").toString() : "csv";
+            boolean header = opts == null || !opts.containsKey("header") ? true : Boolean.parseBoolean(opts.get("header").toString());
+            char delim = ',';
+            if (opts != null && opts.get("delimiter") != null) { String d = opts.get("delimiter").toString(); if (!d.isEmpty()) delim = d.charAt(0); }
+            if ("tsv".equals(format)) { delim='	'; format="csv"; }
+            java.io.BufferedReader r;
+            if (path == null || path.isEmpty() || path.equals("-")) {
+                r = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+            } else {
+                r = java.nio.file.Files.newBufferedReader(java.nio.file.Path.of(path));
+            }
+            java.util.List<java.util.Map<String,Object>> out = new java.util.ArrayList<>();
+            if ("json".equals(format)) {
+                StringBuilder sb = new StringBuilder();
+                for (String line; (line = r.readLine()) != null;) { sb.append(line); }
+                r.close();
+                Object data = _parseJson(sb.toString());
+                if (data instanceof java.util.Map<?,?> m) {
+                    out.add(new java.util.HashMap<>( (java.util.Map<String,Object>) m));
+                } else if (data instanceof java.util.List<?> l) {
+                    for (Object it : l) { if (it instanceof java.util.Map<?,?>) out.add(new java.util.HashMap<>( (java.util.Map<String,Object>) it)); }
+                }
+                return out;
+            }
+            java.util.List<String> lines = new java.util.ArrayList<>();
+            for (String line; (line = r.readLine()) != null;) { if (!line.isEmpty()) lines.add(line); }
+            r.close();
+            if (lines.isEmpty()) return out;
+            String[] headers = lines.get(0).split(Character.toString(delim));
+            int start = 0;
+            if (header) { start = 1; } else { for (int i=0;i<headers.length;i++) headers[i]="c"+i; }
+            for (int i=start;i<lines.size();i++) {
+                String[] parts = lines.get(i).split(Character.toString(delim));
+                java.util.Map<String,Object> row = new java.util.HashMap<>();
+                for (int j=0;j<headers.length;j++) {
+                    String val = j < parts.length ? parts[j] : "";
+                    try { row.put(headers[j], Integer.parseInt(val)); } catch(NumberFormatException _e1) {
+                        try { row.put(headers[j], Double.parseDouble(val)); } catch(NumberFormatException _e2) { row.put(headers[j], val); }
+                    }
+                }
+                out.add(row);
+            }
+            return out;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    static void _save(java.util.List<java.util.Map<String,Object>> rows, String path, java.util.Map<String,Object> opts) {
+        try {
+            boolean header = opts != null && opts.get("header") != null ? Boolean.parseBoolean(opts.get("header").toString()) : false;
+            char delim = ',';
+            if (opts != null && opts.get("delimiter") != null) { String d = opts.get("delimiter").toString(); if (!d.isEmpty()) delim = d.charAt(0); }
+            String format = opts != null && opts.get("format") != null ? opts.get("format").toString() : "csv";
+            if ("tsv".equals(format)) { delim='	'; format="csv"; }
+            java.io.BufferedWriter w;
+            if (path == null || path.isEmpty() || path.equals("-")) {
+                w = new java.io.BufferedWriter(new java.io.OutputStreamWriter(System.out));
+            } else {
+                w = java.nio.file.Files.newBufferedWriter(java.nio.file.Path.of(path));
+            }
+            if ("json".equals(format)) {
+                w.write(_toJson(rows.size() == 1 ? rows.get(0) : rows));
+                w.newLine();
+            } else {
+                java.util.List<String> headers = rows.isEmpty() ? java.util.List.of() : new java.util.ArrayList<>(rows.get(0).keySet());
+                java.util.Collections.sort(headers);
+                if (header && !headers.isEmpty()) { w.write(String.join(Character.toString(delim), headers)); w.newLine(); }
+                for (java.util.Map<String,Object> row : rows) {
+                    java.util.List<String> rec = new java.util.ArrayList<>();
+                    for (String h : headers) { Object v = row.get(h); rec.add(v==null?"":v.toString()); }
+                    w.write(String.join(Character.toString(delim), rec));
+                    w.newLine();
+                }
+            }
+            w.flush(); if (path != null && !path.isEmpty() && !path.equals("-")) w.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    static String _toJson(Object v) {
+        if (v == null) return "null";
+        if (v instanceof String) {
+            String s = (String) v;
+            return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+        }
+        if (v instanceof Number || v instanceof Boolean) return v.toString();
+        if (v.getClass().isArray()) {
+            int n = java.lang.reflect.Array.getLength(v);
+            StringBuilder sb = new StringBuilder();
+            sb.append('[');
+            for (int i=0;i<n;i++) {
+                if (i>0) sb.append(',');
+                sb.append(_toJson(java.lang.reflect.Array.get(v,i)));
+            }
+            sb.append(']');
+            return sb.toString();
+        }
+        if (v instanceof java.util.List<?>) {
+            java.util.List<?> l=(java.util.List<?>)v;
+            StringBuilder sb=new StringBuilder();
+            sb.append('[');
+            for (int i=0;i<l.size();i++) {
+                if(i>0) sb.append(',');
+                sb.append(_toJson(l.get(i)));
+            }
+            sb.append(']');
+            return sb.toString();
+        }
+        if (v instanceof java.util.Map<?,?>) {
+            java.util.Map<?,?> m=(java.util.Map<?,?>)v;
+            StringBuilder sb=new StringBuilder();
+            sb.append('{');
+            boolean first=true;
+            for (var e : m.entrySet()) {
+                if(!first) sb.append(',');
+                first=false;
+                sb.append(_toJson(String.valueOf(e.getKey())));
+                sb.append(':');
+                sb.append(_toJson(e.getValue()));
+            }
+            sb.append('}');
+            return sb.toString();
+        }
+        return _toJson(v.toString());
+    }
+    
+    static Object _parseJson(String s) {
+        int[] i = new int[]{0};
+        return _parseJsonValue(s, i);
+    }
+    
+    static Object _parseJsonValue(String s, int[] i) {
+        _skip(s, i);
+        char c = s.charAt(i[0]);
+        if (c == '{') return _parseJsonObject(s, i);
+        if (c == '[') return _parseJsonArray(s, i);
+        if (c == '"') return _parseJsonString(s, i);
+        if (c == '-' || Character.isDigit(c)) return _parseJsonNumber(s, i);
+        if (s.startsWith("true", i[0])) { i[0]+=4; return true; }
+        if (s.startsWith("false", i[0])) { i[0]+=5; return false; }
+        if (s.startsWith("null", i[0])) { i[0]+=4; return null; }
+        throw new RuntimeException("invalid json");
+    }
+    
+    static void _skip(String s, int[] i) { while (i[0] < s.length() && Character.isWhitespace(s.charAt(i[0]))) i[0]++; }
+    
+    static String _parseJsonString(String s, int[] i) {
+        StringBuilder sb = new StringBuilder();
+        i[0]++;
+        while (i[0] < s.length()) {
+            char ch = s.charAt(i[0]++);
+            if (ch == '"') break;
+            if (ch == '\') {
+                char e = s.charAt(i[0]++);
+                switch (e) {
+                    case '"': sb.append('"'); break;
+                    case '\': sb.append('\'); break;
+                    case '/': sb.append('/'); break;
+                    case 'b': sb.append(''); break;
+                    case 'f': sb.append(''); break;
+                    case 'n': sb.append('
+                    case 'r': sb.append(''); break;
+                    case 't': sb.append('	'); break;
+                    case 'u': sb.append((char)Integer.parseInt(s.substring(i[0], i[0]+4), 16)); i[0]+=4; break;
+                    default: sb.append(e); break;
+                }
+            } else {
+                sb.append(ch);
+            }
+        }
+        return sb.toString();
+    }
+    
+    static Object _parseJsonNumber(String s, int[] i) {
+        int start = i[0];
+        if (s.charAt(i[0])=='-') i[0]++;
+        while (i[0] < s.length() && Character.isDigit(s.charAt(i[0]))) i[0]++;
+        boolean f = false;
+        if (i[0] < s.length() && s.charAt(i[0])=='.') { f = true; i[0]++; while (i[0] < s.length() && Character.isDigit(s.charAt(i[0]))) i[0]++; }
+        String num = s.substring(start, i[0]);
+        return f ? Double.parseDouble(num) : Integer.parseInt(num);
+    }
+    
+    static java.util.List<Object> _parseJsonArray(String s, int[] i) {
+        java.util.List<Object> a = new java.util.ArrayList<>();
+        i[0]++; _skip(s,i); if (i[0] < s.length() && s.charAt(i[0])==']') { i[0]++; return a; }
+        while (true) {
+            a.add(_parseJsonValue(s,i));
+            _skip(s,i);
+            if (i[0] < s.length() && s.charAt(i[0])==']') { i[0]++; break; }
+            if (i[0] < s.length() && s.charAt(i[0])==',') { i[0]++; continue; }
+            throw new RuntimeException("invalid json array");
+        }
+        return a;
+    }
+    
+    static java.util.Map<String,Object> _parseJsonObject(String s, int[] i) {
+        java.util.Map<String,Object> m = new java.util.HashMap<>();
+        i[0]++; _skip(s,i); if (i[0] < s.length() && s.charAt(i[0])=='}') { i[0]++; return m; }
+        while (true) {
+            String k = _parseJsonString(s,i);
+            _skip(s,i);
+            if (i[0] >= s.length() || s.charAt(i[0]) != ':') throw new RuntimeException("expected :");
+            i[0]++; Object v = _parseJsonValue(s,i); m.put(k,v); _skip(s,i);
+            if (i[0] < s.length() && s.charAt(i[0])=='}') { i[0]++; break; }
+            if (i[0] < s.length() && s.charAt(i[0])==',') { i[0]++; continue; }
+            throw new RuntimeException("invalid json object");
+        }
+        return m;
+    }
+    
+    static java.util.List<Object> _toList(Object v) {
+        if (v instanceof java.util.List<?>) return new java.util.ArrayList<>((java.util.List<?>)v);
+        int n = java.lang.reflect.Array.getLength(v);
+        java.util.List<Object> out = new java.util.ArrayList<>(n);
+        for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));
+        return out;
+    }
+    
+    static java.util.List<Object> _filter(java.util.List<Object> src, java.util.function.Function<Object,Boolean> pred) {
+        java.util.List<Object> out = new java.util.ArrayList<>();
+        for (Object it : src) { if (pred.apply(it)) out.add(it); }
+        return out;
+    }
+    
+    static class _JoinSpec {
+        java.util.List<Object> items;
+        java.util.function.Function<Object[],Boolean> on;
+        boolean left;
+        boolean right;
+        _JoinSpec(java.util.List<Object> items, java.util.function.Function<Object[],Boolean> on, boolean left, boolean right) {
+            this.items=items; this.on=on; this.left=left; this.right=right;
+        }
+    }
+    
+    static class _QueryOpts {
+        java.util.function.Function<Object[],Object> selectFn;
+        java.util.function.Function<Object[],Boolean> where;
+        java.util.function.Function<Object[],Object> sortKey;
+        int skip; int take;
+        _QueryOpts(java.util.function.Function<Object[],Object> s, java.util.function.Function<Object[],Boolean> w, java.util.function.Function<Object[],Object> k, int skip, int take) {
+            this.selectFn=s; this.where=w; this.sortKey=k; this.skip=skip; this.take=take;
+        }
+    }
+    static java.util.List<Object> _query(java.util.List<Object> src, java.util.List<_JoinSpec> joins, _QueryOpts opts) {
+        java.util.List<java.util.List<Object>> items = new java.util.ArrayList<>();
+        for (Object v : src) { java.util.List<Object> r = new java.util.ArrayList<>(); r.add(v); items.add(r); }
+        for (_JoinSpec j : joins) {
+            java.util.List<java.util.List<Object>> joined = new java.util.ArrayList<>();
+            java.util.List<Object> jitems = j.items;
+            if (j.right && j.left) {
+                boolean[] matched = new boolean[jitems.size()];
+                for (java.util.List<Object> left : items) {
+                    boolean m = false;
+                    for (int ri=0; ri<jitems.size(); ri++) {
+                        Object right = jitems.get(ri);
+                        boolean keep = true;
+                        if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
+                            args[left.size()] = right;
+                            keep = j.on.apply(args);
+                        }
+                        if (!keep) continue;
+                        m = true; matched[ri] = true;
+                        java.util.List<Object> row = new java.util.ArrayList<>(left);
+                        row.add(right); joined.add(row);
+                    }
+                    if (!m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
+                }
+                for (int ri=0; ri<jitems.size(); ri++) {
+                    if (!matched[ri]) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(jitems.get(ri)); joined.add(undef); }
+                }
+            } else if (j.right) {
+                for (Object right : jitems) {
+                    boolean m = false;
+                    for (java.util.List<Object> left : items) {
+                        boolean keep = true;
+                        if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
+                            args[left.size()] = right;
+                            keep = j.on.apply(args);
+                        }
+                        if (!keep) continue;
+                        m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
+                    }
+                    if (!m) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(right); joined.add(undef); }
+                }
+            } else {
+                for (java.util.List<Object> left : items) {
+                    boolean m = false;
+                    for (Object right : jitems) {
+                        boolean keep = true;
+                        if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
+                            args[left.size()] = right;
+                            keep = j.on.apply(args);
+                        }
+                        if (!keep) continue;
+                        m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
+                    }
+                    if (j.left && !m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
+                }
+            items = joined;
+        }
+        if (opts.where != null) {
+            java.util.List<java.util.List<Object>> filtered = new java.util.ArrayList<>();
+            for (java.util.List<Object> r : items) if (opts.where.apply(r.toArray(new Object[0]))) filtered.add(r);
+            items = filtered;
+        }
+        if (opts.sortKey != null) {
+            class Pair { java.util.List<Object> item; Object key; Pair(java.util.List<Object> i,Object k){item=i;key=k;} }
+            java.util.List<Pair> pairs = new java.util.ArrayList<>();
+            for (java.util.List<Object> it : items) pairs.add(new Pair(it, opts.sortKey.apply(it.toArray(new Object[0]))));
+            pairs.sort((a,b) -> {
+                Object ak=a.key, bk=b.key;
+                if (ak instanceof Number && bk instanceof Number) return Double.compare(((Number)ak).doubleValue(), ((Number)bk).doubleValue());
+                if (ak instanceof String && bk instanceof String) return ((String)ak).compareTo((String)bk);
+                return ak.toString().compareTo(bk.toString());
+            });
+            for (int i=0;i<pairs.size();i++) items.set(i, pairs.get(i).item);
+        }
+        if (opts.skip >= 0) { if (opts.skip < items.size()) items = new java.util.ArrayList<>(items.subList(opts.skip, items.size())); else items = new java.util.ArrayList<>(); }
+        if (opts.take >= 0) { if (opts.take < items.size()) items = new java.util.ArrayList<>(items.subList(0, opts.take)); }
+        java.util.List<Object> res = new java.util.ArrayList<>();
+        for (java.util.List<Object> r : items) res.add(opts.selectFn.apply(r.toArray(new Object[0])));
+        return res;
+    }
+}
 		return res;
 	}
 }

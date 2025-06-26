@@ -8,6 +8,7 @@ import (
 )
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
+	c.commentLine(s.Pos.Line)
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)

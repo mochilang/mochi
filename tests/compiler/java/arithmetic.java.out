@@ -1,9 +1,20 @@
+// print(1 + 2)
+// print(5 - 3)
+// print(4 * 2)
+// print(8 / 2)
+// print(7 % 3)
+
 public class Main {
-	public static void main(String[] args) {
-		System.out.println((1 + 2));
-		System.out.println((5 - 3));
-		System.out.println((4 * 2));
-		System.out.println((8 / 2));
-		System.out.println((7 % 3));
-	}
+    public static void main(String[] args) {
+        // print(1 + 2)
+        System.out.println((1 + 2));
+        // print(5 - 3)
+        System.out.println((5 - 3));
+        // print(4 * 2)
+        System.out.println((4 * 2));
+        // print(8 / 2)
+        System.out.println((8 / 2));
+        // print(7 % 3)
+        System.out.println((7 % 3));
+    }
 }
