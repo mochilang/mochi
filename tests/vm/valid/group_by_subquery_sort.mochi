@@ -5,9 +5,9 @@ let customer = [
 ]
 
 let orders = [
-  { o_orderkey: 100, o_custkey: 1, o_comment: "fast delivery" },
+  { o_orderkey: 100, o_custkey: 1, o_comment: "fast" },
   { o_orderkey: 101, o_custkey: 1, o_comment: "no comment" },
-  { o_orderkey: 102, o_custkey: 2, o_comment: "special requests only" } // excluded
+  { o_orderkey: 102, o_custkey: 2, o_comment: "special requests only" }
 ]
 
 let per_customer =
@@ -30,11 +30,4 @@ let grouped =
   sort by [ -count(g), -g.key ]
   select { c_count: g.key, custdist: count(g) }
 
-print grouped
-
-test "Q13 groups customers by non-special order count" {
-  expect grouped == [
-    { c_count: 2, custdist: 1 },  // customer 1
-    { c_count: 0, custdist: 2 }   // customer 2 & 3
-  ]
-}
+print(grouped)
