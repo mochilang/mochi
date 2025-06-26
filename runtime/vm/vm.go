@@ -1954,159 +1954,235 @@ func (fc *funcCompiler) compileExpr(e *parser.Expr) int {
 }
 
 func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
-	left := fc.compileUnary(b.Left)
-	for _, op := range b.Right {
-		switch op.Op {
-		case "&&":
-			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpMove, A: dst, B: left})
-			jmp := len(fc.fn.Code)
-			fc.emit(op.Pos, Instr{Op: OpJumpIfFalse, A: dst})
-			right := fc.compilePostfix(op.Right)
-			fc.emit(op.Pos, Instr{Op: OpMove, A: dst, B: right})
-			fc.fn.Code[jmp].B = len(fc.fn.Code)
-			left = dst
-			continue
-		case "||":
-			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpMove, A: dst, B: left})
-			jmp := len(fc.fn.Code)
-			fc.emit(op.Pos, Instr{Op: OpJumpIfTrue, A: dst})
-			right := fc.compilePostfix(op.Right)
-			fc.emit(op.Pos, Instr{Op: OpMove, A: dst, B: right})
-			fc.fn.Code[jmp].B = len(fc.fn.Code)
-			left = dst
-			continue
+	if len(b.Right) == 0 {
+		return fc.compileUnary(b.Left)
+	}
+
+	type operand struct {
+		reg     int
+		done    bool
+		compile func() int
+	}
+
+	valueOf := func(o *operand) int {
+		if o.done {
+			return o.reg
 		}
-		right := fc.compilePostfix(op.Right)
-		switch op.Op {
-		case "+":
-			dst := fc.newReg()
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpAddFloat, A: dst, B: left, C: right})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpAddInt, A: dst, B: left, C: right})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpAdd, A: dst, B: left, C: right})
+		o.reg = o.compile()
+		o.done = true
+		return o.reg
+	}
+
+	operands := []operand{{reg: fc.compileUnary(b.Left), done: true}}
+	ops := make([]*parser.BinaryOp, len(b.Right))
+	for i, op := range b.Right {
+		expr := op.Right
+		ops[i] = op
+		operands = append(operands, operand{compile: func() int { return fc.compilePostfix(expr) }})
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
 			}
-			left = dst
-		case "-":
-			dst := fc.newReg()
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpSubFloat, A: dst, B: left, C: right})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpSubInt, A: dst, B: left, C: right})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpSub, A: dst, B: left, C: right})
-			}
-			left = dst
-		case "*":
-			dst := fc.newReg()
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpMulFloat, A: dst, B: left, C: right})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpMulInt, A: dst, B: left, C: right})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpMul, A: dst, B: left, C: right})
-			}
-			left = dst
-		case "/":
-			dst := fc.newReg()
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpDivInt, A: dst, B: left, C: right})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpDiv, A: dst, B: left, C: right})
-			}
-			left = dst
-		case "%":
-			dst := fc.newReg()
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpModFloat, A: dst, B: left, C: right})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpModInt, A: dst, B: left, C: right})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpMod, A: dst, B: left, C: right})
-			}
-			left = dst
-		case "==":
-			dst := fc.newReg()
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpEqualFloat, A: dst, B: left, C: right})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpEqualInt, A: dst, B: left, C: right})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpEqual, A: dst, B: left, C: right})
-			}
-			left = dst
-		case "!=":
-			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpNotEqual, A: dst, B: left, C: right})
-			left = dst
-		case "<":
-			dst := fc.newReg()
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpLessFloat, A: dst, B: left, C: right})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpLessInt, A: dst, B: left, C: right})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpLess, A: dst, B: left, C: right})
-			}
-			left = dst
-		case ">":
-			dst := fc.newReg()
-			// a > b  ==>  b < a
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpLessFloat, A: dst, B: right, C: left})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpLessInt, A: dst, B: right, C: left})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpLess, A: dst, B: right, C: left})
-			}
-			left = dst
-		case "<=":
-			dst := fc.newReg()
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpLessEqFloat, A: dst, B: left, C: right})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpLessEqInt, A: dst, B: left, C: right})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpLessEq, A: dst, B: left, C: right})
-			}
-			left = dst
-		case "in":
-			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpIn, A: dst, B: left, C: right})
-			left = dst
-		case ">=":
-			dst := fc.newReg()
-			// a >= b  ==>  b <= a
-			if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-				fc.emit(op.Pos, Instr{Op: OpLessEqFloat, A: dst, B: right, C: left})
-			} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-				fc.emit(op.Pos, Instr{Op: OpLessEqInt, A: dst, B: right, C: left})
-			} else {
-				fc.emit(op.Pos, Instr{Op: OpLessEq, A: dst, B: right, C: left})
-			}
-			left = dst
-		case "union":
-			dst := fc.newReg()
-			opCode := OpUnion
-			if op.All {
-				opCode = OpUnionAll
-			}
-			fc.emit(op.Pos, Instr{Op: opCode, A: dst, B: left, C: right})
-			left = dst
-		case "except":
-			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpExcept, A: dst, B: left, C: right})
-			left = dst
-		case "intersect":
-			dst := fc.newReg()
-			fc.emit(op.Pos, Instr{Op: OpIntersect, A: dst, B: left, C: right})
-			left = dst
 		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			opName := ops[i].Op
+			if opName == "union" && ops[i].All {
+				opName = "union_all"
+			}
+			if contains(level, opName) {
+				left := valueOf(&operands[i])
+				var dst int
+				if opName == "&&" {
+					dst = fc.newReg()
+					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: left})
+					jmp := len(fc.fn.Code)
+					fc.emit(ops[i].Pos, Instr{Op: OpJumpIfFalse, A: dst})
+					right := valueOf(&operands[i+1])
+					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: right})
+					fc.fn.Code[jmp].B = len(fc.fn.Code)
+				} else if opName == "||" {
+					dst = fc.newReg()
+					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: left})
+					jmp := len(fc.fn.Code)
+					fc.emit(ops[i].Pos, Instr{Op: OpJumpIfTrue, A: dst})
+					right := valueOf(&operands[i+1])
+					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: right})
+					fc.fn.Code[jmp].B = len(fc.fn.Code)
+				} else {
+					right := valueOf(&operands[i+1])
+					dst = fc.emitBinaryOp(ops[i].Pos, opName, ops[i].All, left, right)
+				}
+				operands[i] = operand{reg: dst, done: true}
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+
+	return valueOf(&operands[0])
+}
+
+func (fc *funcCompiler) emitBinaryOp(pos lexer.Position, op string, all bool, left, right int) int {
+	switch op {
+	case "&&":
+		dst := fc.newReg()
+		fc.emit(pos, Instr{Op: OpMove, A: dst, B: left})
+		jmp := len(fc.fn.Code)
+		fc.emit(pos, Instr{Op: OpJumpIfFalse, A: dst})
+		fc.emit(pos, Instr{Op: OpMove, A: dst, B: right})
+		fc.fn.Code[jmp].B = len(fc.fn.Code)
+		return dst
+	case "||":
+		dst := fc.newReg()
+		fc.emit(pos, Instr{Op: OpMove, A: dst, B: left})
+		jmp := len(fc.fn.Code)
+		fc.emit(pos, Instr{Op: OpJumpIfTrue, A: dst})
+		fc.emit(pos, Instr{Op: OpMove, A: dst, B: right})
+		fc.fn.Code[jmp].B = len(fc.fn.Code)
+		return dst
+	case "+":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpAddFloat, A: dst, B: left, C: right})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpAddInt, A: dst, B: left, C: right})
+		} else {
+			fc.emit(pos, Instr{Op: OpAdd, A: dst, B: left, C: right})
+		}
+		return dst
+	case "-":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpSubFloat, A: dst, B: left, C: right})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpSubInt, A: dst, B: left, C: right})
+		} else {
+			fc.emit(pos, Instr{Op: OpSub, A: dst, B: left, C: right})
+		}
+		return dst
+	case "*":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpMulFloat, A: dst, B: left, C: right})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpMulInt, A: dst, B: left, C: right})
+		} else {
+			fc.emit(pos, Instr{Op: OpMul, A: dst, B: left, C: right})
+		}
+		return dst
+	case "/":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpDivInt, A: dst, B: left, C: right})
+		} else {
+			fc.emit(pos, Instr{Op: OpDiv, A: dst, B: left, C: right})
+		}
+		return dst
+	case "%":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpModFloat, A: dst, B: left, C: right})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpModInt, A: dst, B: left, C: right})
+		} else {
+			fc.emit(pos, Instr{Op: OpMod, A: dst, B: left, C: right})
+		}
+		return dst
+	case "==":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpEqualFloat, A: dst, B: left, C: right})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpEqualInt, A: dst, B: left, C: right})
+		} else {
+			fc.emit(pos, Instr{Op: OpEqual, A: dst, B: left, C: right})
+		}
+		return dst
+	case "!=":
+		dst := fc.newReg()
+		fc.emit(pos, Instr{Op: OpNotEqual, A: dst, B: left, C: right})
+		return dst
+	case "<":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpLessFloat, A: dst, B: left, C: right})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpLessInt, A: dst, B: left, C: right})
+		} else {
+			fc.emit(pos, Instr{Op: OpLess, A: dst, B: left, C: right})
+		}
+		return dst
+	case ">":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpLessFloat, A: dst, B: right, C: left})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpLessInt, A: dst, B: right, C: left})
+		} else {
+			fc.emit(pos, Instr{Op: OpLess, A: dst, B: right, C: left})
+		}
+		return dst
+	case "<=":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpLessEqFloat, A: dst, B: left, C: right})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpLessEqInt, A: dst, B: left, C: right})
+		} else {
+			fc.emit(pos, Instr{Op: OpLessEq, A: dst, B: left, C: right})
+		}
+		return dst
+	case ">=":
+		dst := fc.newReg()
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			fc.emit(pos, Instr{Op: OpLessEqFloat, A: dst, B: right, C: left})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpLessEqInt, A: dst, B: right, C: left})
+		} else {
+			fc.emit(pos, Instr{Op: OpLessEq, A: dst, B: right, C: left})
+		}
+		return dst
+	case "in":
+		dst := fc.newReg()
+		fc.emit(pos, Instr{Op: OpIn, A: dst, B: left, C: right})
+		return dst
+	case "union", "union_all":
+		dst := fc.newReg()
+		opCode := OpUnion
+		if op == "union_all" || all {
+			opCode = OpUnionAll
+		}
+		fc.emit(pos, Instr{Op: opCode, A: dst, B: left, C: right})
+		return dst
+	case "except":
+		dst := fc.newReg()
+		fc.emit(pos, Instr{Op: OpExcept, A: dst, B: left, C: right})
+		return dst
+	case "intersect":
+		dst := fc.newReg()
+		fc.emit(pos, Instr{Op: OpIntersect, A: dst, B: left, C: right})
+		return dst
 	}
 	return left
 }
