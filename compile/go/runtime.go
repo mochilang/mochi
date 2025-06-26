@@ -260,6 +260,13 @@ const (
 		"    }\n" +
 		"    u, err := url.Parse(url)\n" +
 		"    if err != nil { panic(err) }\n" +
+		"    if u.Scheme == \"file\" || u.Scheme == \"\" {\n" +
+		"        data, err := os.ReadFile(u.Path)\n" +
+		"        if err != nil { panic(err) }\n" +
+		"        var out any\n" +
+		"        if err := json.Unmarshal(data, &out); err != nil { panic(err) }\n" +
+		"        return out\n" +
+		"    }\n" +
 		"    if opts != nil {\n" +
 		"        if q, ok := opts[\"query\"]; ok {\n" +
 		"            vals := u.Query()\n" +

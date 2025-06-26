@@ -7,6 +7,7 @@ import (
 	"io"
 	nethttp "net/http"
 	neturl "net/url"
+	"os"
 	"time"
 )
 
@@ -39,6 +40,17 @@ func FetchWith(url string, opts map[string]any) (any, error) {
 	u, err := neturl.Parse(url)
 	if err != nil {
 		return nil, err
+	}
+	if u.Scheme == "file" || u.Scheme == "" {
+		data, err := os.ReadFile(u.Path)
+		if err != nil {
+			return nil, err
+		}
+		var out any
+		if err := json.Unmarshal(data, &out); err != nil {
+			return nil, err
+		}
+		return out, nil
 	}
 	if opts != nil {
 		if q, ok := opts["query"]; ok {

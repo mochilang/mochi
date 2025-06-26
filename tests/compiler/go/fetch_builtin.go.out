@@ -1,0 +1,145 @@
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"os"
+	"time"
+)
+
+type Msg struct {
+	Message string `json:"message"`
+}
+
+func main() {
+	var data Msg = _cast[Msg](_fetch("file://tests/compiler/go/fetch_builtin.json", nil))
+	_ = data
+	fmt.Println(data.Message)
+}
+
+func _cast[T any](v any) T {
+    if tv, ok := v.(T); ok { return tv }
+    var out T
+    switch any(out).(type) {
+    case int:
+        switch vv := v.(type) {
+        case int:
+            return any(vv).(T)
+        case float64:
+            return any(int(vv)).(T)
+        case float32:
+            return any(int(vv)).(T)
+        }
+    case float64:
+        switch vv := v.(type) {
+        case int:
+            return any(float64(vv)).(T)
+        case float64:
+            return any(vv).(T)
+        case float32:
+            return any(float64(vv)).(T)
+        }
+    case float32:
+        switch vv := v.(type) {
+        case int:
+            return any(float32(vv)).(T)
+        case float64:
+            return any(float32(vv)).(T)
+        case float32:
+            return any(vv).(T)
+        }
+    }
+    if m, ok := v.(map[any]any); ok {
+        v = _convertMapAny(m)
+    }
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+    out := make(map[string]any, len(m))
+    for k, v := range m {
+        key := fmt.Sprint(k)
+        if sub, ok := v.(map[any]any); ok {
+            out[key] = _convertMapAny(sub)
+        } else {
+            out[key] = v
+        }
+    }
+    return out
+}
+
+func _fetch(url string, opts map[string]any) any {
+    method := "GET"
+    if opts != nil {
+        if m, ok := opts["method"].(string); ok {
+            method = m
+        }
+    }
+    var body io.Reader
+    if opts != nil {
+        if b, ok := opts["body"]; ok {
+            data, err := json.Marshal(b)
+            if err != nil { panic(err) }
+            body = bytes.NewReader(data)
+        }
+    }
+    u, err := url.Parse(url)
+    if err != nil { panic(err) }
+    if u.Scheme == "file" || u.Scheme == "" {
+        data, err := os.ReadFile(u.Path)
+        if err != nil { panic(err) }
+        var out any
+        if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+        return out
+    }
+    if opts != nil {
+        if q, ok := opts["query"]; ok {
+            vals := u.Query()
+            for k, v := range _toAnyMap(q) {
+                vals.Set(k, fmt.Sprint(v))
+            }
+            u.RawQuery = vals.Encode()
+        }
+    }
+    req, err := http.NewRequest(method, u.String(), body)
+    if err != nil { panic(err) }
+    if opts != nil {
+        if hs, ok := opts["headers"]; ok {
+            for k, v := range _toAnyMap(hs) {
+                if s, ok := v.(string); ok {
+                    req.Header.Set(k, s)
+                }
+            }
+        }
+    }
+    client := http.DefaultClient
+    if opts != nil {
+        if t, ok := opts["timeout"]; ok {
+            switch v := t.(type) {
+            case int:
+                client = &http.Client{Timeout: time.Duration(v) * time.Second}
+            case int64:
+                client = &http.Client{Timeout: time.Duration(v) * time.Second}
+            case float64:
+                client = &http.Client{Timeout: time.Duration(v * float64(time.Second))}
+            case float32:
+                client = &http.Client{Timeout: time.Duration(float64(v) * float64(time.Second))}
+            }
+        }
+    }
+    resp, err := client.Do(req)
+    if err != nil { panic(err) }
+    defer resp.Body.Close()
+    data, err := io.ReadAll(resp.Body)
+    if err != nil { panic(err) }
+    var out any
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
