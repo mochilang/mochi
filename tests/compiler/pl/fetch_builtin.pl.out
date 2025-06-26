@@ -1,0 +1,23 @@
+:- style_check(-singleton).
+:- use_module(library(http/json)).
+:- use_module(library(http/http_client)).
+fetch_data(URL, _Opts, Data) :-
+    atom_string(U, URL),
+    ( sub_atom(U, 0, 7, _, 'file://') ->
+        sub_atom(U, 7, _, 0, Path),
+        read_file_to_string(Path, Text, [])
+    ;   setup_call_cleanup(http_open(U, S, []), read_string(S, _, Text), close(S))
+    ),
+    atom_json_dict(Text, Data, []).
+
+
+
+	main :-
+	dict_create(_V0, map, [method-"GET"]),
+	fetch_data("file://../../../tests/compiler/pl/fetch_builtin.json", _V0, _V1),
+	Data = _V1,
+	get_dict(message, Data, _V2),
+	write(_V2),
+	nl
+	.
+:- initialization(main, main).

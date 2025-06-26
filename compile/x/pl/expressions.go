@@ -398,9 +398,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 		return c.compileLogicQuery(p.LogicQuery)
 	case p.Load != nil:
 		return c.compileLoadExpr(p.Load)
-	case p.Save != nil:
-		return c.compileSaveExpr(p.Save)
-	}
+        case p.Save != nil:
+                return c.compileSaveExpr(p.Save)
+       case p.Fetch != nil:
+               return c.compileFetchExpr(p.Fetch)
+        }
 	return exprRes{}, fmt.Errorf("unsupported expression")
 }
 
@@ -967,9 +969,30 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (exprRes, error) {
 		code = append(code, o.code...)
 		opts = o.val
 	}
-	c.use("save_data")
-	code = append(code, fmt.Sprintf("save_data(%s, %s, %s),", src.val, path, opts))
-	return exprRes{code: code, val: ""}, nil
+       c.use("save_data")
+       code = append(code, fmt.Sprintf("save_data(%s, %s, %s),", src.val, path, opts))
+       return exprRes{code: code, val: ""}, nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (exprRes, error) {
+       url, err := c.compileExpr(f.URL)
+       if err != nil {
+               return exprRes{}, err
+       }
+       opts := "_{}"
+       code := append([]string{}, url.code...)
+       if f.With != nil {
+               o, err := c.compileExpr(f.With)
+               if err != nil {
+                       return exprRes{}, err
+               }
+               code = append(code, o.code...)
+               opts = o.val
+       }
+       tmp := c.newVar()
+       c.use("fetch_data")
+       code = append(code, fmt.Sprintf("fetch_data(%s, %s, %s),", url.val, opts, tmp))
+       return exprRes{code: code, val: tmp}, nil
 }
 
 func (c *Compiler) logicPredicate(p *parser.LogicPredicate) (string, []string, error) {
