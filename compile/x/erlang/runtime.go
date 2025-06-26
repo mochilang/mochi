@@ -1,5 +1,10 @@
 package erlcode
 
+import (
+	"fmt"
+	"strings"
+)
+
 // Runtime helper functions injected into generated programs.
 func (c *Compiler) emitRuntime() {
 	if c.needPrint {
@@ -346,12 +351,24 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("_ -> []")
 		c.indent--
 		c.writeln("end,")
+		c.writeln("case string:prefix(Url1, \"file://\") of")
+		c.indent++
+		c.writeln("true ->")
+		c.indent++
+		c.writeln("{ok, Bin} = file:read_file(string:substr(Url1, 8)),")
+		c.writeln("mochi_decode_json(binary_to_list(Bin));")
+		c.indent--
+		c.writeln("_ ->")
+		c.indent++
 		c.writeln("case httpc:request(Method, Req, HTTPOpts, []) of")
 		c.indent++
-		c.writeln("{ok, {{_, 200, _}, _H, Body}} -> Body;")
-		c.writeln("_ -> []")
+		c.writeln("{ok, {{_, 200, _}, _H, Body}} -> mochi_decode_json(binary_to_list(Body));")
+		c.writeln("_ -> #{}")
+		c.indent--
+		c.writeln("end")
 		c.indent--
 		c.writeln("end.")
+		c.indent--
 		c.indent--
 	}
 
@@ -501,10 +518,31 @@ func (c *Compiler) emitRuntime() {
 		c.writeln(`mochi_to_json(V) when is_binary(V) -> "\"" ++ mochi_escape_json(binary_to_list(V)) ++ "\"";`)
 		c.writeln(`mochi_to_json(V) when is_list(V), (V =:= [] orelse is_integer(hd(V))) -> "\"" ++ mochi_escape_json(V) ++ "\"";`)
 		c.writeln(`mochi_to_json(V) when is_list(V) -> "[" ++ lists:join(",", [mochi_to_json(X) || X <- V]) ++ "]";`)
-               c.writeln(`mochi_to_json(V) when is_map(V) -> "{" ++ lists:join(",", ["\"" ++ atom_to_list(K) ++ "\":" ++ mochi_to_json(Val) || {K,Val} <- maps:to_list(V)]) ++ "}".`)
+		c.writeln(`mochi_to_json(V) when is_map(V) -> "{" ++ lists:join(",", ["\"" ++ atom_to_list(K) ++ "\":" ++ mochi_to_json(Val) || {K,Val} <- maps:to_list(V)]) ++ "}".`)
 
 		c.writeln("")
 		c.writeln("mochi_json(V) -> io:format(\"~s~n\", [mochi_to_json(V)]).")
+	}
+
+	if len(c.castStructs) > 0 {
+		c.writeln("")
+		c.writeln("mochi_to_map(V) when is_map(V) -> V;")
+		c.writeln("mochi_to_map(V) when is_binary(V) -> mochi_decode_json(binary_to_list(V));")
+		c.writeln("mochi_to_map(V) when is_list(V) -> mochi_decode_json(V);")
+		c.writeln("mochi_to_map(_) -> #{}.")
+		for _, st := range c.castStructs {
+			c.writeln("")
+			c.writeln(fmt.Sprintf("mochi_cast_%s(V) ->", sanitizeName(st.Name)))
+			c.indent++
+			c.writeln("M = mochi_to_map(V),")
+			fields := []string{}
+			for _, f := range st.Order {
+				atom := sanitizeName(f)
+				fields = append(fields, fmt.Sprintf("%s=maps:get(\"%s\", M, maps:get('%s', M, undefined))", atom, f, atom))
+			}
+			c.writeln(fmt.Sprintf("#%s{%s}.", sanitizeName(st.Name), strings.Join(fields, ", ")))
+			c.indent--
+		}
 	}
 
 	if c.needExpect {
