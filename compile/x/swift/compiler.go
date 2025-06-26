@@ -1043,8 +1043,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
-	// grouping without additional clauses
-	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	// grouping without joins/sorting/pagination. Optional where clause
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		orig := c.env
 		child := types.NewEnv(c.env)
 		elem := c.inferExprType(q.Source)
@@ -1053,6 +1053,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		child.SetVar(q.Var, elem, true)
 		c.env = child
+		cond := ""
+		if q.Where != nil {
+			var err error
+			cond, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
@@ -1068,7 +1077,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		c.use("_group_by")
 		c.use("_Group")
-		expr := fmt.Sprintf("_group_by(%s.map { $0 as Any }, { %s in %s }).map { %s in %s }", src, q.Var, keyExpr, q.Group.Name, valExpr)
+		filtered := src
+		if cond != "" {
+			filtered = fmt.Sprintf("%s.filter { %s in %s }", src, q.Var, cond)
+		}
+		expr := fmt.Sprintf("_group_by(%s.map { $0 as Any }, { %s in %s }).map { %s in %s }", filtered, q.Var, keyExpr, q.Group.Name, valExpr)
 		return expr, nil
 	}
 
