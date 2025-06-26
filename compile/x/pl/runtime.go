@@ -52,6 +52,15 @@ const helperAvg = "avg(V, R) :-\n" +
 	"avg_list([], 0).\n" +
 	"avg_list(L, R) :- sum_list(L, S), length(L, N), N > 0, R is S / N.\n\n"
 
+const helperSum = "sum(V, R) :-\n" +
+	"    is_dict(V), !, get_dict('Items', V, Items), sum_list(Items, R).\n" +
+	"sum(V, R) :-\n" +
+	"    is_list(V), !, sum_list(V, R).\n" +
+	"sum(_, _) :- throw(error('sum expects list or group')).\n\n"
+
+const helperJSON = ":- use_module(library(http/json)).\n" +
+	"json(V) :- json_write_dict(current_output, V), nl.\n\n"
+
 const helperExpect = "expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).\n\n"
 
 const helperUnionAll = "union_all(A, B, R) :- append(A, B, R).\n\n"

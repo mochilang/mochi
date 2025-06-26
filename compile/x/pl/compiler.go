@@ -169,6 +169,12 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["sum"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperSum, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 	if c.helpers["expect"] {
 		for _, line := range strings.Split(strings.TrimSuffix(helperExpect, "\n"), "\n") {
 			c.writeln(line)
@@ -219,6 +225,12 @@ func (c *Compiler) emitHelpers() {
 	}
 	if c.helpers["group_by"] {
 		for _, line := range strings.Split(strings.TrimSuffix(helperGroupBy, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["json"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperJSON, "\n"), "\n") {
 			c.writeln(line)
 		}
 		c.writeln("")
