@@ -186,7 +186,7 @@ var helperLoad = "def _load(path, opts):\n" +
 	"            f.close()\n"
 
 var helperSave = "def _save(rows, path, opts):\n" +
-	"    import csv, json, sys\n" +
+	"    import csv, json, sys, dataclasses\n" +
 	"    fmt = 'csv'\n" +
 	"    header = False\n" +
 	"    delim = ','\n" +
@@ -196,6 +196,7 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"        delim = opts.get('delimiter', delim)\n" +
 	"        if isinstance(delim, str) and delim:\n" +
 	"            delim = delim[0]\n" +
+	"    rows = [ dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows ]\n" +
 	"    f = sys.stdout if path is None else open(path, 'w')\n" +
 	"    try:\n" +
 	"        if fmt == 'tsv':\n" +
