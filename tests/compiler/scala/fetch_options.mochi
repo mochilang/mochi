@@ -1,0 +1,8 @@
+let resp = fetch "https://example.com" with {
+  method: "POST",
+  headers: {"Content-Type": "application/json"},
+  query: {"q": "test"},
+  body: {"x": 1},
+  timeout: 5.0
+}
+print(resp)
