@@ -135,4 +135,3 @@ L0:
   EqualFloat   r73, r68, r72
   Expect       r73
   Return       r0
-

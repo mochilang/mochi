@@ -396,4 +396,3 @@ L19:
   Equal        r259, r236, r258
   Expect       r259
   Return       r0
-

@@ -163,4 +163,3 @@ L7:
   Equal        r91, r89, r90
   Expect       r91
   Return       r0
-
