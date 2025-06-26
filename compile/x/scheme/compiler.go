@@ -114,6 +114,46 @@ const sliceHelper = `(define (_slice obj i j)
                         (cons (car xs) out)
                         out))))))`
 
+const groupHelpers = `(define (_count v)
+  (cond
+    ((string? v) (string-length v))
+    ((and (pair? v) (assq 'Items v)) (length (cdr (assq 'Items v))))
+    ((list? v) (length v))
+    (else 0)))
+
+(define (_sum v)
+  (let* ((lst (cond
+               ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))
+               ((list? v) v)
+               (else '())))
+         (s (if (null? lst) 0 (apply + lst))))
+    s))
+
+(define (_avg v)
+  (let ((lst (cond
+               ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))
+               ((list? v) v)
+               (else '())))
+        (n 0))
+    (set! n (length lst))
+    (if (= n 0) 0 (/ (_sum lst) n))))
+
+(define (_group_by src keyfn)
+  (let ((groups '()) (order '()))
+    (for-each (lambda (it)
+                (let* ((key (keyfn it))
+                       (ks (format "~a" key))
+                       (pair (assoc ks groups)))
+                  (if pair
+                      (let* ((grp (cdr pair))
+                             (items (cdr (assq 'Items grp))))
+                        (set-cdr! (assq 'Items grp) (append items (list it))))
+                      (begin
+                        (set! groups (append groups (list (cons ks (list (cons 'key key) (cons 'Items (list it)))))))
+                        (set! order (append order (list ks))))))
+              src)
+    (map (lambda (k) (cdr (assoc k groups))) order)))`
+
 const testHelpers = `(define failures 0)
 (define (print-test-start name)
   (display "   test ") (display name) (display " ..."))
@@ -143,6 +183,7 @@ type Compiler struct {
 	needDataset    bool
 	needListOps    bool
 	needSlice      bool
+	needGroup      bool
 	loops          []loopCtx
 	mainStmts      []*parser.Statement
 	tests          []testInfo
@@ -203,7 +244,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, mainStmts: nil, tests: []testInfo{}}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, mainStmts: nil, tests: []testInfo{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -266,7 +307,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("(when (> failures 0) (display \"\\n[FAIL] \") (display failures) (display \" test(s) failed.\\n\"))")
 	}
 	code := c.buf.Bytes()
-	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || len(c.tests) > 0 {
+	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || c.needGroup || len(c.tests) > 0 {
 		var pre bytes.Buffer
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
@@ -305,6 +346,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		if c.needSlice {
 			pre.WriteString(sliceHelper)
+			pre.WriteByte('\n')
+		}
+		if c.needGroup {
+			pre.WriteString(groupHelpers)
 			pre.WriteByte('\n')
 		}
 		if len(c.tests) > 0 {
@@ -977,16 +1022,20 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
 		}
-		root := rootNameExpr(call.Args[0])
-		if c.varType(root) == "string" || c.isStringExpr(call.Args[0]) {
-			return fmt.Sprintf("(string-length %s)", args[0]), nil
-		}
-		return fmt.Sprintf("(length %s)", args[0]), nil
+		c.needGroup = true
+		return fmt.Sprintf("(_count %s)", args[0]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		return fmt.Sprintf("(let ((lst %s)) (if (null? lst) 0 (/ (apply + lst) (length lst))))", args[0]), nil
+		c.needGroup = true
+		return fmt.Sprintf("(_avg %s)", args[0]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		c.needGroup = true
+		return fmt.Sprintf("(_sum %s)", args[0]), nil
 	case "push":
 		if len(args) != 2 {
 			return "", fmt.Errorf("push expects 2 args")
@@ -1193,6 +1242,53 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		c.env = child
+		var cond string
+		if q.Where != nil {
+			cond, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		c.env = orig
+		if err != nil {
+			return "", err
+		}
+		c.needGroup = true
+		var b strings.Builder
+		b.WriteString("(let ((_tmp '()))\n")
+		b.WriteString(fmt.Sprintf("  (for-each (lambda (%s)\n", sanitizeName(q.Var)))
+		if cond != "" {
+			b.WriteString(fmt.Sprintf("    (when %s (set! _tmp (append _tmp (list %s))))\n", cond, sanitizeName(q.Var)))
+		} else {
+			b.WriteString(fmt.Sprintf("    (set! _tmp (append _tmp (list %s)))\n", sanitizeName(q.Var)))
+		}
+		b.WriteString(fmt.Sprintf("  ) (if (string? %s) (string->list %s) %s))\n", src, src, src))
+		b.WriteString("  (let ((_res '()))\n")
+		b.WriteString(fmt.Sprintf("    (for-each (lambda (%s)\n", sanitizeName(q.Group.Name)))
+		b.WriteString(fmt.Sprintf("      (set! _res (append _res (list %s)))\n", valExpr))
+		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
+		b.WriteString("    _res))")
+		return b.String(), nil
+	}
 	if q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
