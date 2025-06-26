@@ -1,22 +1,22 @@
 <?php
-function searchMatrix($matrix, $target) {
-	$m = count($matrix);
+function mochi_searchMatrix($matrix, $target) {
+	$m = (is_array($matrix) ? count($matrix) : strlen($matrix));
 	if (($m == 0)) {
 		return false;
 	}
-	$n = count($matrix[0]);
+	$n = (is_array($matrix[0]) ? count($matrix[0]) : strlen($matrix[0]));
 	$left = 0;
 	$right = (($m * $n) - 1);
 	while (($left <= $right)) {
-		$mid = (($left + (($right - $left))) / 2);
-		$row = ($mid / $n);
-		$col = ($mid % $n);
+		$mid = ((is_array($left) && is_array(((is_int((($right - $left))) && is_int(2)) ? intdiv((($right - $left)), 2) : ((($right - $left)) / 2)))) ? array_merge($left, ((is_int((($right - $left))) && is_int(2)) ? intdiv((($right - $left)), 2) : ((($right - $left)) / 2))) : ((is_string($left) || is_string(((is_int((($right - $left))) && is_int(2)) ? intdiv((($right - $left)), 2) : ((($right - $left)) / 2)))) ? ($left . ((is_int((($right - $left))) && is_int(2)) ? intdiv((($right - $left)), 2) : ((($right - $left)) / 2))) : ($left + ((is_int((($right - $left))) && is_int(2)) ? intdiv((($right - $left)), 2) : ((($right - $left)) / 2)))));
+		$row = ((is_int($mid) && is_int($n)) ? intdiv($mid, $n) : ($mid / $n));
+		$col = ((is_int($mid) && is_int($n)) ? ($mid % $n) : fmod($mid, $n));
 		$value = $matrix[$row][$col];
 		if (($value == $target)) {
 			return true;
 		} else 
 		if (($value < $target)) {
-			$left = ($mid + 1);
+			$left = ((is_array($mid) && is_array(1)) ? array_merge($mid, 1) : ((is_string($mid) || is_string(1)) ? ($mid . 1) : ($mid + 1)));
 		} else {
 			$right = ($mid - 1);
 		}
@@ -24,5 +24,5 @@ function searchMatrix($matrix, $target) {
 	return false;
 }
 
-echo searchMatrix([[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 3), PHP_EOL;
-echo searchMatrix([[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 13), PHP_EOL;
+echo mochi_searchMatrix([[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 3), PHP_EOL;
+echo mochi_searchMatrix([[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 13), PHP_EOL;

@@ -705,6 +705,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = v
 	}
+	if c.locals[name] {
+		return fmt.Sprintf("$%s(%s)", sanitizeName(name), strings.Join(args, ", ")), nil
+	}
+	if c.funcs[name] {
+		return fmt.Sprintf("%s%s(%s)", funcPrefix, sanitizeName(name), strings.Join(args, ", ")), nil
+	}
 	switch name {
 	case "print":
 		if len(args) == 0 {
@@ -727,6 +733,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("input expects no args")
 		}
 		return "trim(fgets(STDIN))", nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		return fmt.Sprintf("array_sum(%s)", args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
@@ -738,12 +749,6 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("(count(%[1]s) ? array_sum(%[1]s) / count(%[1]s) : 0)", args[0]), nil
 	default:
-		if c.locals[name] {
-			return fmt.Sprintf("$%s(%s)", sanitizeName(name), strings.Join(args, ", ")), nil
-		}
-		if c.funcs[name] {
-			return fmt.Sprintf("%s%s(%s)", funcPrefix, sanitizeName(name), strings.Join(args, ", ")), nil
-		}
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
 }
@@ -826,11 +831,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		orig := c.env
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, types.AnyType{}, true)
 		c.env = child
+		var cond string
+		if q.Where != nil {
+			var err error
+			cond, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
@@ -853,7 +867,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		var b strings.Builder
 		b.WriteString("(function()" + use + " {\n")
-		b.WriteString(fmt.Sprintf("\t$_groups = _group_by(%s, function($%s)%s { return %s; });\n", src, sanitizeName(q.Var), use, keyExpr))
+		b.WriteString(fmt.Sprintf("\t$_src = (is_string(%[1]s) ? str_split(%[1]s) : %[1]s);\n", src))
+		if cond != "" {
+			b.WriteString(fmt.Sprintf("\t$_src = array_values(array_filter($_src, function($%s)%s { return (%s); }));\n", sanitizeName(q.Var), use, cond))
+		}
+		b.WriteString(fmt.Sprintf("\t$_groups = _group_by($_src, function($%s)%s { return %s; });\n", sanitizeName(q.Var), use, keyExpr))
 		b.WriteString("\t$res = [];\n")
 		b.WriteString(fmt.Sprintf("\tforeach ($_groups as $%s) {\n", sanitizeName(q.Group.Name)))
 		b.WriteString(fmt.Sprintf("\t\t$res[] = %s;\n", valExpr))

@@ -9,4 +9,3 @@ function mochi_test_values() {
 
 $xs = [(-1), 0, 1];
 mochi_test_values();
-
