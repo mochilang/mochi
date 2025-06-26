@@ -11,7 +11,7 @@ import (
 // it attempts a best-effort installation on Linux or macOS.
 func EnsureLua() error {
 	if _, err := exec.LookPath("lua"); err == nil {
-		return nil
+		return ensureLuaJSON()
 	}
 	switch runtime.GOOS {
 	case "linux":
@@ -58,7 +58,53 @@ func EnsureLua() error {
 		}
 	}
 	if _, err := exec.LookPath("lua"); err == nil {
-		return nil
+		return ensureLuaJSON()
 	}
 	return fmt.Errorf("lua not found")
+}
+
+func ensureLuaJSON() error {
+	script := "require('json')"
+	cmd := exec.Command("lua", "-e", script)
+	if err := cmd.Run(); err == nil {
+		return nil
+	}
+	script = "require('cjson')"
+	cmd = exec.Command("lua", "-e", script)
+	if err := cmd.Run(); err == nil {
+		return nil
+	}
+	switch runtime.GOOS {
+	case "linux":
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			fmt.Println("🔧 Installing Lua JSON library...")
+			cmd := exec.Command("apt-get", "install", "-y", "lua-cjson")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				cmd = exec.Command("apt-get", "install", "-y", "lua-json")
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				_ = cmd.Run()
+			}
+		}
+	case "darwin":
+		if _, err := exec.LookPath("brew"); err == nil {
+			fmt.Println("🍺 Installing Lua JSON library via Homebrew...")
+			cmd := exec.Command("brew", "install", "lua-cjson")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	}
+	// check again
+	cmd = exec.Command("lua", "-e", "require('json')")
+	if err := cmd.Run(); err == nil {
+		return nil
+	}
+	cmd = exec.Command("lua", "-e", "require('cjson')")
+	if err := cmd.Run(); err == nil {
+		return nil
+	}
+	return fmt.Errorf("lua json library not found")
 }
