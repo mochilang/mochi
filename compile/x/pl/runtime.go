@@ -120,15 +120,17 @@ const helperSave = ":- use_module(library(http/json)).\n" +
 	"    ;\n" +
 	"        json_write_dict(Out, Rows)\n" +
 	"    ),\n" +
-        "    (Out == current_output -> flush_output(Out) ; close(Out)).\n\n"
+	"    (Out == current_output -> flush_output(Out) ; close(Out)).\n\n"
 
 const helperFetch = ":- use_module(library(http/json)).\n" +
-        ":- use_module(library(http/http_client)).\n" +
-        "fetch_data(URL, _Opts, Data) :-\n" +
-        "    atom_string(U, URL),\n" +
-        "    ( sub_atom(U, 0, 7, _, 'file://') ->\n" +
-        "        sub_atom(U, 7, _, 0, Path),\n" +
-        "        read_file_to_string(Path, Text, [])\n" +
-        "    ;   setup_call_cleanup(http_open(U, S, []), read_string(S, _, Text), close(S))\n" +
-        "    ),\n" +
-        "    atom_json_dict(Text, Data, []).\n\n"
+	":- use_module(library(process)).\n" +
+	"fetch_data(URL, _Opts, Data) :-\n" +
+	"    atom_string(U, URL),\n" +
+	"    ( sub_atom(U, 0, 7, _, 'file://') ->\n" +
+	"        sub_atom(U, 7, _, 0, Path),\n" +
+	"        read_file_to_string(Path, Text, [])\n" +
+	"    ;   process_create(path(curl), ['-s', U], [stdout(pipe(S))]),\n" +
+	"        read_string(S, _, Text),\n" +
+	"        close(S)\n" +
+	"    ),\n" +
+	"    atom_json_dict(Text, Data, []).\n\n"
