@@ -294,8 +294,10 @@ type Function struct {
 }
 
 type Program struct {
-	Funcs []Function
-	Types []types.Type
+	Funcs  []Function
+	Types  []types.Type
+	File   string   `json:"file,omitempty"`
+	Source []string `json:"source,omitempty"`
 }
 
 type closure struct {
@@ -320,6 +322,9 @@ func (p *Program) funcName(idx int) string {
 // Disassemble returns a human-readable listing of the program instructions.
 // If src is provided, source lines are included as comments.
 func (p *Program) Disassemble(src string) string {
+	if src == "" && len(p.Source) > 0 {
+		src = strings.Join(p.Source, "\n")
+	}
 	lines := strings.Split(src, "\n")
 	var b strings.Builder
 	for idx, fn := range p.Funcs {
@@ -480,11 +485,19 @@ func (e *VMError) callGraph() string {
 	return strings.Join(names, " -> ")
 }
 
-func (e *VMError) stackTrace() string {
+func (e *VMError) stackTrace(prog *Program) string {
 	var b strings.Builder
 	for i := len(e.Stack) - 1; i >= 0; i-- {
 		f := e.Stack[i]
-		fmt.Fprintf(&b, "  %s:%d\n", f.Func, f.Line)
+		lineInfo := ""
+		if prog != nil && f.Line > 0 && f.Line <= len(prog.Source) {
+			lineInfo = strings.TrimSpace(prog.Source[f.Line-1])
+		}
+		if lineInfo != "" {
+			fmt.Fprintf(&b, "  %s at %s:%d\n    %s\n", f.Func, prog.File, f.Line, lineInfo)
+		} else {
+			fmt.Fprintf(&b, "  %s:%d\n", f.Func, f.Line)
+		}
 	}
 	return b.String()
 }
@@ -525,7 +538,7 @@ func (m *VM) Run() error {
 		if vmErr, ok := err.(*VMError); ok {
 			fmt.Fprintln(m.writer, "call graph:", vmErr.callGraph())
 			fmt.Fprintln(m.writer, "stack trace:")
-			fmt.Fprint(m.writer, vmErr.stackTrace())
+			fmt.Fprint(m.writer, vmErr.stackTrace(m.prog))
 		}
 	}
 	return err
@@ -1573,6 +1586,29 @@ func (c *compiler) addType(t types.Type) int {
 
 // Compile turns an AST into a Program supporting a limited subset of Mochi.
 func Compile(p *parser.Program, env *types.Env) (*Program, error) {
+	var src string
+	if p.Pos.Filename != "" {
+		if data, err := os.ReadFile(p.Pos.Filename); err == nil {
+			src = string(data)
+		}
+	}
+	return CompileWithSource(p, env, src)
+}
+
+// CompileWithSource compiles an AST along with its source code for richer errors.
+func CompileWithSource(p *parser.Program, env *types.Env, src string) (*Program, error) {
+	prog, err := compileProgram(p, env)
+	if err != nil {
+		return nil, err
+	}
+	prog.File = p.Pos.Filename
+	if src != "" {
+		prog.Source = strings.Split(src, "\n")
+	}
+	return prog, nil
+}
+
+func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 	c := &compiler{prog: p, env: env, fnIndex: map[string]int{}}
 	c.funcs = append(c.funcs, Function{})
 	for _, st := range p.Statements {
