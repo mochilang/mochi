@@ -4,5 +4,5 @@
    title: string
    completed: bool
  }
- let todo: Todo = fetch "https://jsonplaceholder.typicode.com/todos/1"
- print(todo.title)
+let todo: Todo = (fetch "https://jsonplaceholder.typicode.com/todos/1") as Todo
+print(todo.title)
