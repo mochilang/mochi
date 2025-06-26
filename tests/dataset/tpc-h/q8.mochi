@@ -49,7 +49,7 @@ let result =
   group by substring(o.o_orderdate, 0, 4) into year
   sort by year.key
   select {
-    o_year: year,
+    o_year: year.key,
     mkt_share:
       sum(from x in year select match x.n.n_name == target_nation {
         true => x.l.l_extendedprice * (1 - x.l.l_discount)
@@ -58,11 +58,11 @@ let result =
       sum(from x in year select x.l.l_extendedprice * (1 - x.l.l_discount))
   }
 
-print result
+json(result)
 
 test "Q8 returns correct market share for BRAZIL in 1995" {
   let numerator = 1000.0 * 0.9      // 900
-  let denominator = numerator + 500.0 * 0.95 // 900 + 475 = 1375
+  let denominator = numerator + (500.0 * 0.95) // 900 + 475 = 1375
   let share = numerator / denominator         // ≈ 0.6545
 
   expect result == [
