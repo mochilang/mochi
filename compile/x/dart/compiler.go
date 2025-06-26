@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -33,6 +34,46 @@ func containsStreamCode(stmts []*parser.Statement) bool {
 	for _, s := range stmts {
 		if stmtHasStream(s) {
 			return true
+		}
+	}
+	return false
+}
+
+var fetchExprType = reflect.TypeOf(&parser.FetchExpr{})
+
+func containsFetchExpr(stmts []*parser.Statement) bool {
+	for _, s := range stmts {
+		if hasFetchExpr(reflect.ValueOf(s)) {
+			return true
+		}
+	}
+	return false
+}
+
+func hasFetchExpr(v reflect.Value) bool {
+	if !v.IsValid() {
+		return false
+	}
+	if v.Type() == fetchExprType {
+		return !v.IsNil()
+	}
+	switch v.Kind() {
+	case reflect.Ptr, reflect.Interface:
+		if v.IsNil() {
+			return false
+		}
+		return hasFetchExpr(v.Elem())
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < v.Len(); i++ {
+			if hasFetchExpr(v.Index(i)) {
+				return true
+			}
+		}
+	case reflect.Struct:
+		for i := 0; i < v.NumField(); i++ {
+			if hasFetchExpr(v.Field(i)) {
+				return true
+			}
 		}
 	}
 	return false
@@ -87,7 +128,7 @@ func (c *Compiler) initState() {
 
 // Compile returns Dart source implementing prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	needsAsync := containsStreamCode(prog.Statements)
+	needsAsync := containsStreamCode(prog.Statements) || containsFetchExpr(prog.Statements)
 	c.initState()
 
 	var body bytes.Buffer
@@ -898,33 +939,33 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("%s.toString()", arg), nil
 	}
-        // handle count()
-        if name == "count" && len(call.Args) == 1 {
-                arg, err := c.compileExpr(call.Args[0])
-                if err != nil {
-                        return "", err
-                }
-                c.use("_count")
-                return fmt.Sprintf("_count(%s)", arg), nil
-        }
-        // handle avg()
-        if name == "avg" && len(call.Args) == 1 {
-                arg, err := c.compileExpr(call.Args[0])
-                if err != nil {
-                        return "", err
-                }
-                c.use("_avg")
-                return fmt.Sprintf("_avg(%s)", arg), nil
-        }
-        // handle sum()
-        if name == "sum" && len(call.Args) == 1 {
-                arg, err := c.compileExpr(call.Args[0])
-                if err != nil {
-                        return "", err
-                }
-                c.use("_sum")
-                return fmt.Sprintf("_sum(%s)", arg), nil
-        }
+	// handle count()
+	if name == "count" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		c.use("_count")
+		return fmt.Sprintf("_count(%s)", arg), nil
+	}
+	// handle avg()
+	if name == "avg" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		c.use("_avg")
+		return fmt.Sprintf("_avg(%s)", arg), nil
+	}
+	// handle sum()
+	if name == "sum" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		c.use("_sum")
+		return fmt.Sprintf("_sum(%s)", arg), nil
+	}
 	// handle input()
 	if name == "input" && len(call.Args) == 0 {
 		c.imports["dart:io"] = true
@@ -2048,7 +2089,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	c.imports["dart:io"] = true
 	c.imports["dart:convert"] = true
 	c.use("_fetch")
-	return fmt.Sprintf("_fetch(%s, %s)", urlStr, opts), nil
+	return fmt.Sprintf("await _fetch(%s, %s)", urlStr, opts), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
