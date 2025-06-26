@@ -12,8 +12,37 @@ const (
         case (x: String, y: String) => x.compareTo(y)
         case _ => a.toString.compareTo(b.toString)
 }
-implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: Any, y: Any): Int = _compare(x, y) }
+        implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: Any, y: Any): Int = _compare(x, y) }
 `
+	helperCast = `def _cast[T](v: Any)(implicit ct: scala.reflect.ClassTag[T]): T = {
+        val cls = ct.runtimeClass
+        if (cls == classOf[Int]) v match {
+                case i: Int => i
+                case d: Double => d.toInt
+                case s: String => s.toInt
+                case _ => 0
+        } else if (cls == classOf[Double]) v match {
+                case d: Double => d
+                case i: Int => i.toDouble
+                case s: String => s.toDouble
+                case _ => 0.0
+        } else if (cls == classOf[Boolean]) v match {
+                case b: Boolean => b
+                case s: String => s == "true"
+                case _ => false
+        } else if (cls == classOf[String]) v.toString.asInstanceOf[T]
+        else if (cls.isInstance(v)) v.asInstanceOf[T]
+        else if (v.isInstanceOf[scala.collection.Map[_, _]]) {
+                val m = v.asInstanceOf[scala.collection.Map[String, Any]]
+                val ctor = cls.getConstructors.head
+                val params = ctor.getParameters.map { p =>
+                        m.getOrElse(p.getName, null).asInstanceOf[AnyRef]
+                }
+                ctor.newInstance(params: _*).asInstanceOf[T]
+        } else {
+                v.asInstanceOf[T]
+        }
+}`
 	helperFetch = `def _fetch(url: String, opts: Map[String, Any]): Any = {
         import java.net.{HttpURLConnection, URL, URLEncoder}
         import java.io.{BufferedWriter, OutputStreamWriter}
@@ -291,6 +320,7 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
 
 var helperMap = map[string]string{
 	"_compare":     helperCompare,
+	"_cast":        helperCast,
 	"_fetch":       helperFetch,
 	"_load":        helperLoad,
 	"_save":        helperSave,
