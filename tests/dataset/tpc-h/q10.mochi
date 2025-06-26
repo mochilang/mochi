@@ -40,11 +40,10 @@ let end_date = "1994-01-01"
 let result =
   from c in customer
   join o in orders on o.o_custkey == c.c_custkey
-  where o.o_orderdate >= start_date && o.o_orderdate < end_date
   join l in lineitem on l.l_orderkey == o.o_orderkey
-  where l.l_returnflag == "R"
   join n in nation on n.n_nationkey == c.c_nationkey
-  let revenue = l.l_extendedprice * (1 - l.l_discount)
+  where o.o_orderdate >= start_date && o.o_orderdate < end_date &&
+        l.l_returnflag == "R"
   group by {
     c_custkey: c.c_custkey,
     c_name: c.c_name,
@@ -57,14 +56,14 @@ let result =
   select {
     c_custkey,
     c_name,
-    revenue: sum(revenue),
+    revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount)),
     c_acctbal,
     n_name,
     c_address,
     c_phone,
     c_comment
   }
-  order by revenue desc
+  sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
 
 print result
 
