@@ -793,6 +793,19 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		}
 		return nil
 
+	case s.Fetch != nil:
+		// type of the fetched value is unknown (any)
+		if _, err := checkExprWithExpected(s.Fetch.URL, env, StringType{}); err != nil {
+			return err
+		}
+		if s.Fetch.With != nil {
+			if _, err := checkExpr(s.Fetch.With, env); err != nil {
+				return err
+			}
+		}
+		env.SetVar(s.Fetch.Target, AnyType{}, false)
+		return nil
+
 	case s.For != nil:
 		// Check the loop expression (either a collection or a range start)
 		sourceType, err := checkExprWithExpected(s.For.Source, env, nil)
