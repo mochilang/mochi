@@ -52,7 +52,7 @@ let order_line_join =
     o_shippriority: g.key.o_shippriority
   }
 
-print order_line_join
+json(order_line_join)
 
 test "Q3 returns revenue per order with correct priority" {
   expect order_line_join == [
