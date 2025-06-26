@@ -52,20 +52,52 @@ const (
 		"    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';\n" +
 		"    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';\n" +
 		"}\n"
-	helperRunTest = "bool _runTest(String name, void Function() f) {\n" +
-		"    stdout.write('   test $name ...');\n" +
-		"    var start = DateTime.now();\n" +
-		"    try {\n" +
-		"        f();\n" +
-		"        var d = DateTime.now().difference(start);\n" +
-		"        stdout.writeln(' ok (${_formatDuration(d)})');\n" +
-		"        return true;\n" +
-		"    } catch (e) {\n" +
-		"        var d = DateTime.now().difference(start);\n" +
-		"        stdout.writeln(' fail $e (${_formatDuration(d)})');\n" +
-		"        return false;\n" +
-		"    }\n" +
-		"}\n"
+        helperRunTest = "bool _runTest(String name, void Function() f) {\n" +
+                "    stdout.write('   test $name ...');\n" +
+                "    var start = DateTime.now();\n" +
+                "    try {\n" +
+                "        f();\n" +
+                "        var d = DateTime.now().difference(start);\n" +
+                "        stdout.writeln(' ok (${_formatDuration(d)})');\n" +
+                "        return true;\n" +
+                "    } catch (e) {\n" +
+                "        var d = DateTime.now().difference(start);\n" +
+                "        stdout.writeln(' fail $e (${_formatDuration(d)})');\n" +
+                "        return false;\n" +
+                "    }\n" +
+                "}\n"
+        helperCount = "int _count(dynamic v) {\n" +
+                "    if (v is String) return v.runes.length;\n" +
+                "    if (v is List) return v.length;\n" +
+                "    if (v is Map) return v.length;\n" +
+                "    try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}\n" +
+                "    try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}\n" +
+                "    return 0;\n" +
+                "}\n"
+        helperAvg = "double _avg(dynamic v) {\n" +
+                "    List<dynamic>? list;\n" +
+                "    if (v is List) list = v;\n" +
+                "    else if (v is Map && v['items'] is List) list = (v['items'] as List);\n" +
+                "    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);\n" +
+                "    else if (v is _Group) list = v.Items;\n" +
+                "    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }\n" +
+                "    if (list == null || list.isEmpty) return 0;\n" +
+                "    var s = 0.0;\n" +
+                "    for (var n in list) s += (n as num).toDouble();\n" +
+                "    return s / list.length;\n" +
+                "}\n"
+        helperSum = "double _sum(dynamic v) {\n" +
+                "    List<dynamic>? list;\n" +
+                "    if (v is List) list = v;\n" +
+                "    else if (v is Map && v['items'] is List) list = (v['items'] as List);\n" +
+                "    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);\n" +
+                "    else if (v is _Group) list = v.Items;\n" +
+                "    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }\n" +
+                "    if (list == null || list.isEmpty) return 0;\n" +
+                "    var s = 0.0;\n" +
+                "    for (var n in list) s += (n as num).toDouble();\n" +
+                "    return s;\n" +
+                "}\n"
 	helperStream = "class _Stream<T> {\n" +
 		"    String name;\n" +
 		"    List<void Function(T)> handlers = [];\n" +
@@ -358,16 +390,19 @@ var helperMap = map[string]string{
 	"_Agent":          helperAgent,
 	"_waitAll":        helperWaitAll,
 	"_Group":          helperGroup,
-	"_group_by":       helperGroupBy,
-	"_fetch":          helperFetch,
-	"_load":           helperLoad,
-	"_save":           helperSave,
-	"_query":          helperQuery,
-	"_genText":        helperGenText,
-	"_genEmbed":       helperGenEmbed,
-	"_genStruct":      helperGenStruct,
-	"_json":           helperJson,
-	"_equal":          helperEqual,
+        "_group_by":       helperGroupBy,
+        "_fetch":          helperFetch,
+        "_load":           helperLoad,
+        "_save":           helperSave,
+        "_query":          helperQuery,
+        "_count":         helperCount,
+        "_avg":           helperAvg,
+        "_sum":           helperSum,
+        "_genText":        helperGenText,
+        "_genEmbed":       helperGenEmbed,
+        "_genStruct":      helperGenStruct,
+        "_json":           helperJson,
+        "_equal":          helperEqual,
 	"_distinct":       helperDistinct,
 	"_formatDuration": helperFormatDuration,
 	"_runTest":        helperRunTest,
