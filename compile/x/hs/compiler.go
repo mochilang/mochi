@@ -100,6 +100,30 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	for _, s := range prog.Statements {
+		if s.Fun == nil && s.Type == nil && s.Test == nil {
+			if s.Let != nil {
+				val, err := c.compileExpr(s.Let.Value)
+				if err != nil {
+					return nil, err
+				}
+				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
+				c.writeln("")
+			} else if s.Var != nil {
+				val := "()"
+				if s.Var.Value != nil {
+					v, err := c.compileExpr(s.Var.Value)
+					if err != nil {
+						return nil, err
+					}
+					val = v
+				}
+				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Var.Name), val))
+				c.writeln("")
+			}
+		}
+	}
+
+	for _, s := range prog.Statements {
 		if s.Test != nil {
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
@@ -114,7 +138,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	mainStmts := 0
 	testCount := 0
 	for _, s := range prog.Statements {
-		if s.Fun == nil && s.Type == nil && s.Test == nil {
+		if s.Fun == nil && s.Type == nil && s.Test == nil && s.Let == nil && s.Var == nil {
 			if err := c.compileMainStmt(s); err != nil {
 				return nil, err
 			}
@@ -740,8 +764,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("[%s]", strings.Join(elems, ", ")), nil
 	case p.Map != nil:
 		c.usesMap = true
+		mt, _ := c.inferPrimaryType(p).(types.MapType)
+		anyVal := false
+		if _, ok := mt.Value.(types.AnyType); ok {
+			anyVal = true
+		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
+			if s, ok := simpleStringKey(it.Key); ok {
+				k := fmt.Sprintf("%q", s)
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				if anyVal {
+					v = wrapAnyValue(c.inferExprType(it.Value), v)
+				}
+				items[i] = fmt.Sprintf("(%s, %s)", k, v)
+				continue
+			}
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
@@ -749,6 +790,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
+			}
+			if anyVal {
+				v = wrapAnyValue(c.inferExprType(it.Value), v)
 			}
 			items[i] = fmt.Sprintf("(%s, %s)", k, v)
 		}
@@ -809,8 +853,62 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("%s %s", sanitizeName(p.Call.Func), strings.Join(args, " ")), nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
-		for _, t := range p.Selector.Tail {
-			expr = fmt.Sprintf("%s (%s)", sanitizeName(t), expr)
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
+		for i, field := range p.Selector.Tail {
+			switch tt := typ.(type) {
+			case types.GroupType:
+				if field == "key" {
+					expr = fmt.Sprintf("key (%s)", expr)
+					typ = types.AnyType{}
+					continue
+				} else if field == "items" {
+					expr = fmt.Sprintf("items (%s)", expr)
+					typ = types.ListType{Elem: tt.Elem}
+					continue
+				}
+				c.usesMap = true
+				expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %q (key %s))", field, expr)
+				typ = types.AnyType{}
+			case types.MapType:
+				c.usesMap = true
+				expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %q %s)", field, expr)
+				typ = tt.Value
+				if i == len(p.Selector.Tail)-1 {
+					if _, ok := tt.Value.(types.AnyType); ok {
+						ft := c.inferPrimaryType(&parser.Primary{Selector: &parser.SelectorExpr{Root: p.Selector.Root, Tail: p.Selector.Tail}})
+						switch ft.(type) {
+						case types.IntType, types.Int64Type:
+							expr = fmt.Sprintf("_asInt (%s)", expr)
+						case types.FloatType:
+							expr = fmt.Sprintf("_asDouble (%s)", expr)
+						case types.StringType:
+							expr = fmt.Sprintf("_asString (%s)", expr)
+						case types.BoolType:
+							expr = fmt.Sprintf("_asBool (%s)", expr)
+						}
+						typ = ft
+					}
+				}
+			case types.StructType:
+				expr = fmt.Sprintf("%s (%s)", sanitizeName(field), expr)
+				if ft, ok := tt.Fields[field]; ok {
+					typ = ft
+				} else {
+					typ = types.AnyType{}
+				}
+			default:
+				c.usesMap = true
+				expr = fmt.Sprintf("fromMaybe (error \"missing\") (Map.lookup %q (%s))", field, expr)
+				typ = types.AnyType{}
+			}
+			if i == len(p.Selector.Tail)-1 {
+				return expr, nil
+			}
 		}
 		return expr, nil
 	case p.Struct != nil:
