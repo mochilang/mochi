@@ -57,3 +57,12 @@ The experimental Fortran backend lacks support for map-based records and
 use those features and therefore cannot currently be compiled to Fortran.
 
 While limited, this backend shows how Mochi's AST can target another language and may serve as a basis for more comprehensive Fortran support.
+
+### Enhancement tasks for TPC-H support
+
+To compile queries like `tpc-h/q1.mochi` the following additions are needed:
+
+- Add map-based record types so dataset rows can be represented as Fortran `type` values.
+- Implement `group by` dataset queries with aggregation functions such as `sum`, `avg` and `count`.
+- Provide a small runtime library for iterating over records and accumulating aggregates.
+- Extend the golden tests to cover grouped dataset queries once these features are implemented.
