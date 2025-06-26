@@ -170,3 +170,22 @@ func splitAnd(e *parser.Expr) []*parser.Expr {
 	parts = append(parts, &parser.Expr{Binary: &parser.BinaryExpr{Left: left, Right: ops}})
 	return parts
 }
+
+// isFetchExpr reports whether e is a plain fetch expression with no postfix operations.
+func isFetchExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil {
+		return false
+	}
+	p := u.Value.Target
+	if p == nil {
+		return false
+	}
+	return p.Fetch != nil
+}

@@ -421,6 +421,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
 		}
+		if s.Let.Type != nil && isFetchExpr(s.Let.Value) && typ != "" {
+			c.use("_cast")
+			expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+		}
 		c.varTypes[name] = typ
 		decl := "var"
 		if typ != "" && !strings.Contains(typ, "dynamic") {
@@ -445,6 +449,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
+		}
+		if s.Var.Type != nil && isFetchExpr(s.Var.Value) && typ != "" {
+			c.use("_cast")
+			expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
 		}
 		c.varTypes[name] = typ
 		decl := "var"
@@ -582,6 +590,10 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 	cur, ok := c.varTypes[sanitizeName(a.Name)]
 	if !ok || cur == "dynamic" || cur == "dynamic[]" {
 		c.varTypes[sanitizeName(a.Name)] = inferred
+	}
+	if ok && cur != "" && cur != "dynamic" && isFetchExpr(a.Value) {
+		c.use("_cast")
+		val = fmt.Sprintf("_cast<%s>(%s)", cur, val)
 	}
 	c.writeln(fmt.Sprintf("%s = %s;", lhs, val))
 	return nil
