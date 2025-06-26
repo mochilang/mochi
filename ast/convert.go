@@ -483,6 +483,14 @@ func FromPrimary(p *parser.Primary) *Node {
 		}
 		return n
 
+	case p.Fetch != nil:
+		n := &Node{Kind: "fetch"}
+		n.Children = append(n.Children, FromExpr(p.Fetch.URL))
+		if p.Fetch.With != nil {
+			n.Children = append(n.Children, FromExpr(p.Fetch.With))
+		}
+		return n
+
 	case p.Load != nil:
 		n := &Node{Kind: "load"}
 		if p.Load.Path != nil {

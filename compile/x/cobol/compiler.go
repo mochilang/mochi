@@ -106,6 +106,9 @@ func (c *Compiler) compileNode(n *ast.Node) {
 		// Allow standalone function calls like print("hi")
 		c.expr(n)
 
+	case "fetch":
+		c.compileFetchExpr(n)
+
 	case "return":
 		if len(n.Children) == 1 {
 			expr := c.expr(n.Children[0])
@@ -158,6 +161,13 @@ func (c *Compiler) compileLoadExpr(n *ast.Node) string {
 	return tmp
 }
 
+func (c *Compiler) compileFetchExpr(n *ast.Node) string {
+	tmp := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s PIC X(100).", tmp))
+	c.writeln("    *> " + c.fetchMessage(n))
+	return tmp
+}
+
 func containsJSON(n *ast.Node) bool {
 	if n == nil {
 		return false
@@ -187,6 +197,10 @@ func (c *Compiler) saveMessage(n *ast.Node) string {
 		return "save json not implemented"
 	}
 	return "save not implemented"
+}
+
+func (c *Compiler) fetchMessage(n *ast.Node) string {
+	return "fetch not implemented"
 }
 
 func (c *Compiler) compileSave(n *ast.Node) {
@@ -910,6 +924,8 @@ func (c *Compiler) expr(n *ast.Node) string {
 		return c.compileStructExpr(n)
 	case "load":
 		return c.compileLoadExpr(n)
+	case "fetch":
+		return c.compileFetchExpr(n)
 	case "save":
 		c.writeln("    *> " + c.saveMessage(n))
 		return "0"
