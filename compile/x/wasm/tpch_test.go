@@ -3,6 +3,7 @@
 package wasm_test
 
 import (
+	"path/filepath"
 	"testing"
 
 	"mochi/compile/x/testutil"
