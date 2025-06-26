@@ -248,3 +248,18 @@ func indentBlock(s string, depth int) string {
 	}
 	return strings.Join(lines, "\n") + "\n"
 }
+
+func isFetchExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target.Fetch != nil
+}

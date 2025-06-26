@@ -9,6 +9,7 @@ The Kotlin backend converts Mochi programs into Kotlin source files so they can 
 - Dataset queries use collection operations like `filter`, `sortedBy`, `drop`, `take`, `map` and `_group_by`,
   supporting joins, filtering and pagination.
 - Typed dataset loading converts rows to data classes via `_cast` reflection
+- Typed fetch converts JSON responses to data classes via `_cast`
 - Basic loops (`for`, `while`), conditionals and arithmetic expressions
 - Built‑in helpers including `print`, `len`, `count`, `avg`, `str`, `input`, `json`, and `now`
 - LLM and runtime helpers such as `_genText`, `_genEmbed`, `_genStruct`, `_fetch` and `_eval`

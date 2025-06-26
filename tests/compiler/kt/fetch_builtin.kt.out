@@ -1,7 +1,7 @@
 data class Msg(val message: String)
 
 fun main() {
-        val data: Msg = _fetch("file://tests/compiler/kt/fetch_builtin.json", null)
+        val data: Msg = _cast<Msg>(_fetch("file://tests/compiler/kt/fetch_builtin.json", null))
         println(data.message)
 }
 
