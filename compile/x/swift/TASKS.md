@@ -1,8 +1,12 @@
 # Swift Backend Tasks for TPCH Q1
 
-The Swift compiler handles loops and list operations but not grouping yet.
+The Swift backend can now compile and run the `tpc-h/q1.mochi` benchmark.
 
-- Use `Dictionary` with array values to implement `group by`.
-- Provide extensions for arrays to compute `sum`, `avg` and `count`.
-- Map Mochi structs to Swift `struct` types conforming to `Codable` for JSON.
-- Add a golden test under `tests/compiler/swift` when Q1 compiles.
+Completed work:
+
+- `group by` implemented using a helper `_group_by` backed by a dictionary.
+- Added numeric helpers `_sum` and `_avg` for arrays.
+- Struct values map to `Codable` Swift `struct` types for JSON output.
+- Added golden test `tpch_q1.mochi` under `tests/compiler/swift`.
+
+Further improvements will expand coverage of dataset queries.
