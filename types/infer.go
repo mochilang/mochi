@@ -626,6 +626,8 @@ func NodeType(n *ast.Node, env *Env) Type {
 			elem = NodeType(n.Children[0], env)
 		}
 		return ListType{Elem: elem}
+	case "fetch":
+		return StringType{}
 	case "selector":
 		if env != nil {
 			if t, err := env.GetVar(n.Value.(string)); err == nil {
