@@ -3,6 +3,7 @@
 package mlir_test
 
 import (
+	"path/filepath"
 	"testing"
 
 	"mochi/compile/x/mlir"
@@ -25,7 +26,11 @@ func TestMLIRCompiler_TPCH(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	if _, err := mlir.New(env).Compile(prog); err != nil {
+	c, err := mlir.New()
+	if err != nil {
+		t.Skipf("mlir not available: %v", err)
+	}
+	if _, err := c.Compile(prog); err != nil {
 		t.Skipf("TPCH Q1 unsupported: %v", err)
 	}
 }

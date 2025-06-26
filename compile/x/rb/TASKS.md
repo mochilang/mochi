@@ -1,8 +1,10 @@
 # Ruby Backend Tasks for TPCH Q1
 
-The Ruby backend can compile control flow but not complex dataset operations.
+The Ruby backend now supports running the TPCH Q1 example.
 
-- Implement grouping using `Enumerable#group_by` followed by `map` for aggregation.
-- Map Mochi structs to Ruby `Struct` or classes with attribute accessors.
-- Provide helper methods `sum`, `avg` and `count` over arrays.
-- Serialize results with `JSON.generate` and add tests under `tests/compiler/rb`.
+Implemented features:
+- Grouping and query helpers via `_group_by` and `_query`.
+- Struct values mapped to `OpenStruct` for convenient field access.
+- Helper methods `sum`, `avg`, `count` and `json` for datasets.
+- Golden tests under `tests/dataset/tpc-h/compiler/rb` verify generated code
+  and runtime output.
