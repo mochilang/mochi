@@ -40,7 +40,7 @@ Several language constructs remain unimplemented:
 
 - `match` expressions and union types
 - Set literals and related operations
-- Generative AI, HTTP fetch and FFI bindings
+- Generative AI and FFI bindings
 - Streams and long-lived agents
 - Logic programming with `fact`, `rule` and `query` expressions
 - Package imports and module system

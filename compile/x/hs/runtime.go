@@ -127,6 +127,16 @@ _sliceString s i j =
   in take (end' - start) (drop start s)
 `
 
+const fetchHelper = `
+_fetch :: String -> Maybe (Map.Map String String) -> IO (Map.Map String String)
+_fetch url _ = do
+  out <- readProcess "curl" ["-s", url] ""
+  pure $ case Aeson.decode (BSL.pack out) of
+    Just (Aeson.Object o) ->
+      Map.fromList [ (T.unpack (Key.toText k), _valueToString v) | (k,v) <- KeyMap.toList o ]
+    _ -> Map.empty
+`
+
 const loadRuntime = `
 data AnyValue = VInt Int | VDouble Double | VString String | VBool Bool deriving (Show)
 
