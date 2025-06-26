@@ -39,6 +39,7 @@ mochi build --target ocaml main.mochi -o main.ml
 - built-ins `len`, `print`, `str`, `input`
 - simple `match` expressions with constant patterns
 - dataset queries with `from`/`where`/`select` and optional `skip`, `take` and `sort by`
+- `fetch`, `load` and `save` expressions
 - test blocks and `expect` statements
 
 
@@ -72,7 +73,7 @@ These tests verify both the generated program output and the emitted `.ml` code.
 - Comprehensive pattern matching and union types
 - Modules and `import` declarations
 - Struct and enum type declarations
-- `fetch`, `load` and `generate` expressions
+- `generate` expressions
 - Agent and model blocks
 - Concurrency primitives like `spawn` and channels
  - Streams, LLM helpers and the foreign function interface
