@@ -27,8 +27,8 @@ let per_customer =
 let grouped =
   from x in per_customer
   group by x.c_count
+  sort by [-count(), -x.c_count]
   select { c_count: x.c_count, custdist: count() }
-  order by { custdist desc, c_count desc }
 
 print grouped
 
