@@ -74,7 +74,11 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		val = expr
 	}
-	c.writeln(fmt.Sprintf("local %s = %s", name, val))
+	prefix := "local "
+	if c.indent == 0 {
+		prefix = ""
+	}
+	c.writeln(fmt.Sprintf("%s%s = %s", prefix, name, val))
 	return nil
 }
 
