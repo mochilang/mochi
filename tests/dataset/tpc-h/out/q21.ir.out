@@ -1,4 +1,4 @@
-func main (regs=162)
+func main (regs=161)
   // let nation = [
   Const        r0, [{"n_name": "SAUDI ARABIA", "n_nationkey": 1}, {"n_name": "FRANCE", "n_nationkey": 2}]
   Move         r1, r0
@@ -257,9 +257,11 @@ L18:
   Move         r8, r157
   // let result =
   Move         r158, r8
+  // json(result)
+  JSON         r158
   // expect result == [
-  Const        r160, [{"numwait": 1, "s_name": "Desert Trade"}]
-  Equal        r161, r158, r160
-  Expect       r161
+  Const        r159, [{"numwait": 1, "s_name": "Desert Trade"}]
+  Equal        r160, r158, r159
+  Expect       r160
   Return       r0
 

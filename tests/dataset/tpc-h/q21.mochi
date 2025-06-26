@@ -54,7 +54,7 @@ let result =
     numwait: count(g)
   }
 
-print result
+json(result)
 
 test "Q21 returns Saudi suppliers who caused unique delivery delays" {
   expect result == [

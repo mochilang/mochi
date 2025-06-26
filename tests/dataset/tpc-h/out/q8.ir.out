@@ -1,4 +1,4 @@
-func main (regs=260)
+func main (regs=259)
   // let region = [
   Const        r0, [{"r_name": "AMERICA", "r_regionkey": 0}]
   Move         r1, r0
@@ -367,33 +367,35 @@ L19:
   Move         r22, r235
   // let result =
   Move         r236, r22
+  // json(result)
+  JSON         r236
   // let numerator = 1000.0 * 0.9      // 900
-  Const        r238, 1000
-  Const        r239, 0.9
-  MulFloat     r240, r238, r239
-  Move         r241, r240
+  Const        r237, 1000
+  Const        r238, 0.9
+  MulFloat     r239, r237, r238
+  Move         r240, r239
   // let denominator = numerator + 500.0 * 0.95 // 900 + 475 = 1375
-  Const        r242, 500
-  AddFloat     r243, r241, r242
-  Const        r244, 0.95
-  MulFloat     r245, r243, r244
-  Move         r246, r245
+  Const        r241, 500
+  AddFloat     r242, r240, r241
+  Const        r243, 0.95
+  MulFloat     r244, r242, r243
+  Move         r245, r244
   // let share = numerator / denominator         // ≈ 0.6545
-  DivFloat     r247, r241, r246
-  Move         r248, r247
+  DivFloat     r246, r240, r245
+  Move         r247, r246
   // { o_year: "1995", mkt_share: share }
-  Const        r249, "o_year"
-  Const        r250, "1995"
-  Const        r251, "mkt_share"
+  Const        r248, "o_year"
+  Const        r249, "1995"
+  Const        r250, "mkt_share"
+  Move         r251, r248
   Move         r252, r249
   Move         r253, r250
-  Move         r254, r251
-  Move         r255, r248
-  MakeMap      r256, 2, r252
-  Move         r257, r256
+  Move         r254, r247
+  MakeMap      r255, 2, r251
+  Move         r256, r255
   // expect result == [
-  MakeList     r258, 1, r257
-  Equal        r259, r236, r258
-  Expect       r259
+  MakeList     r257, 1, r256
+  Equal        r258, r236, r257
+  Expect       r258
   Return       r0
 
