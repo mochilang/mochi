@@ -31,8 +31,16 @@ def main():
 	valid_orders = _query(orders, [{ 'items': building_customers, 'on': lambda o, c: ((o["o_custkey"] == c["c_custkey"])) }], { 'select': lambda o, c: o, 'where': lambda o, c: ((o["o_orderdate"] < cutoff)) })
 	global valid_lineitems
 	valid_lineitems = [ l for l in lineitem if (l["l_shipdate"] > cutoff) ]
+	def _q0():
+		_src = valid_orders
+		_rows = _query(_src, [{ 'items': valid_lineitems, 'on': lambda o, l: ((l["l_orderkey"] == o["o_orderkey"])) }], { 'select': lambda o, l: (o, l) })
+		_groups = _group_by(_rows, lambda o, l: ({"o_orderkey": o["o_orderkey"], "o_orderdate": o["o_orderdate"], "o_shippriority": o["o_shippriority"]}))
+		items = _groups
+		items = sorted(items, key=lambda g: [(-sum([ (r[1]["l_extendedprice"] * ((1 - r[1]["l_discount"]))) for r in g ])), g.key.o_orderdate])
+		return [ {"l_orderkey": g.key.o_orderkey, "revenue": sum([ (r[1]["l_extendedprice"] * ((1 - r[1]["l_discount"]))) for r in g ]), "o_orderdate": g.key.o_orderdate, "o_shippriority": g.key.o_shippriority} for g in items ]
+	
 	global order_line_join
-	order_line_join = (lambda _src=valid_orders: (lambda _rows=_query(_src, [{ 'items': valid_lineitems, 'on': lambda o, l: ((l["l_orderkey"] == o["o_orderkey"])) }], { 'select': lambda o, l: (o, l) }): (lambda _groups=_group_by(_rows, lambda o, l: ({"o_orderkey": o["o_orderkey"], "o_orderdate": o["o_orderdate"], "o_shippriority": o["o_shippriority"]})): [ {"l_orderkey": g.key.o_orderkey, "revenue": sum([ (r[1]["l_extendedprice"] * ((1 - r[1]["l_discount"]))) for r in g ]), "o_orderdate": g.key.o_orderdate, "o_shippriority": g.key.o_shippriority} for g in sorted(_groups, key=lambda g: [(-sum([ (r[1]["l_extendedprice"] * ((1 - r[1]["l_discount"]))) for r in g ])), g.key.o_orderdate]) ])())())()
+	order_line_join = _q0()
 	print(*order_line_join)
 	test_Q3_returns_revenue_per_order_with_correct_priority()
 

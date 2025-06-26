@@ -41,12 +41,28 @@ def main():
 	global costs
 	costs = [ x["ps_supplycost"] for x in target_partsupp ]
 	global min_cost
-        min_cost = _min(costs)
+	min_cost = _min(costs)
 	global result
 	result = [ x for x in sorted([ x for x in target_partsupp if (x["ps_supplycost"] == min_cost) ], key=lambda x: (-x["s_acctbal"])) ]
 	print(json.dumps(result, default=lambda o: vars(o)))
 	test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part()
 
+def _min(v):
+    if hasattr(v, 'Items'):
+        v = v.Items
+    if not isinstance(v, list):
+        raise Exception('min() expects list or group')
+    if not v:
+        return 0
+    m = float(v[0])
+    is_float = isinstance(v[0], float)
+    for it in v[1:]:
+        if isinstance(it, float):
+            is_float = True
+        f = float(it)
+        if f < m:
+            m = f
+    return m if is_float else int(m)
 def _query(src, joins, opts):
     items = [[v] for v in src]
     for j in joins:
