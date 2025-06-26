@@ -67,6 +67,8 @@ mochi_group_by(Src, KeyFun) ->
 		end,
 		E ++ mochi_escape_json(T).
 	
+	mochi_to_json(true) -> "true";
+	mochi_to_json(false) -> "false";
 	mochi_to_json(V) when is_integer(V); is_float(V) -> lists:flatten(io_lib:format("~p", [V]));
 	mochi_to_json(V) when is_binary(V) -> "\"" ++ mochi_escape_json(binary_to_list(V)) ++ "\"";
 	mochi_to_json(V) when is_list(V), (V =:= [] orelse is_integer(hd(V))) -> "\"" ++ mochi_escape_json(V) ++ "\"";
