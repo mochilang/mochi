@@ -841,6 +841,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "avg":
 				c.use("_avg")
 				expr = fmt.Sprintf("(_avg %s)", args[0])
+			case "sum":
+				c.use("_sum")
+				expr = fmt.Sprintf("(_sum %s)", args[0])
 			case "input":
 				c.use("_input")
 				expr = "(_input)"
@@ -999,6 +1002,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 1 {
 				c.use("_avg")
 				return "(_avg " + args[0] + ")", nil
+			}
+		case "sum":
+			if len(args) == 1 {
+				c.use("_sum")
+				return "(_sum " + args[0] + ")", nil
 			}
 		case "input":
 			if len(args) == 0 {
