@@ -1735,9 +1735,10 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 			return "", err
 		}
 		opts = o
-	}
-	c.needFetch = true
-	return fmt.Sprintf("mochi_fetch(%s, %s)", url, opts), nil
+       }
+       c.needFetch = true
+       c.needJSON = true
+       return fmt.Sprintf("mochi_fetch(%s, %s)", url, opts), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
