@@ -998,7 +998,8 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		opts = v
 	}
 	c.use("_save")
-	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+	c.use("_toMapSlice")
+	return fmt.Sprintf("_save(_toMapSlice(%s), %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {

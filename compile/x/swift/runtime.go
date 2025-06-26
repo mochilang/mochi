@@ -88,6 +88,32 @@ func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
     for it in a { if b.contains(it) && !res.contains(it) { res.append(it) } }
     return res
 }`
+	helperCast = `func _cast<T: Decodable>(_ type: T.Type, _ v: Any) -> T {
+    if let tv = v as? T { return tv }
+    if let data = try? JSONSerialization.data(withJSONObject: v),
+       let obj = try? JSONDecoder().decode(T.self, from: data) {
+        return obj
+    }
+    fatalError("cast failed")
+}`
+	helperToMapSlice = `func _toMapSlice(_ v: Any) -> [[String: Any]] {
+    if let rows = v as? [[String: Any]] { return rows }
+    var arr: [Any] = []
+    if let a = v as? [Any] { arr = a } else { arr = [v] }
+    var out: [[String: Any]] = []
+    for item in arr {
+        if let m = item as? [String: Any] { out.append(m); continue }
+        let mirror = Mirror(reflecting: item)
+        if mirror.displayStyle == .struct || mirror.displayStyle == .class {
+            var m: [String: Any] = [:]
+            for child in mirror.children {
+                if let k = child.label { m[k] = child.value }
+            }
+            out.append(m)
+        }
+    }
+    return out
+}`
 	helperLoad = `func _readInput(_ path: String?) -> String {
     if let p = path, !p.isEmpty && p != "-" {
         return (try? String(contentsOfFile: p)) ?? ""
@@ -235,6 +261,8 @@ var helperMap = map[string]string{
 	"_union":       helperUnion,
 	"_except":      helperExcept,
 	"_intersect":   helperIntersect,
+	"_cast":        helperCast,
+	"_toMapSlice":  helperToMapSlice,
 	"_load":        helperLoad,
 	"_save":        helperSave,
 	"_fetch":       helperFetch,
