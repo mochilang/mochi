@@ -30,6 +30,7 @@ type Compiler struct {
 	needSliceStr    bool
 	needContainsStr bool
 	needDataset     bool
+	needFetch       bool
 	needPaginate    bool
 	needSum         bool
 	needGroupBy     bool
@@ -66,6 +67,7 @@ func (c *Compiler) reset() {
 	c.needSliceStr = false
 	c.needContainsStr = false
 	c.needDataset = false
+	c.needFetch = false
 	c.needPaginate = false
 	c.needSum = false
 	c.needGroupBy = false
@@ -766,6 +768,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.If != nil:
@@ -1235,6 +1239,23 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	return fmt.Sprintf("(Main _save: %s path: %s opts: %s)", src, path, opts), nil
 }
 
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "nil"
+	if f.With != nil {
+		v, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.needFetch = true
+	return fmt.Sprintf("(Main _fetch: %s opts: %s)", url, opts), nil
+}
+
 func hasBreak(stmts []*parser.Statement) bool {
 	for _, s := range stmts {
 		switch {
@@ -1530,6 +1551,36 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("] .")
 		c.writeln("stream ~= stdout ifTrue: [ stream close ].")
 		c.writeln("^ self")
+		c.indent--
+		c.writelnNoIndent("!")
+
+	}
+	if c.needFetch {
+		c.writeln("_fetch: url opts: o")
+		c.indent++
+		c.writeln("| args cmd stream text |")
+		c.writeln("args := OrderedCollection new.")
+		c.writeln("args add: '-s'.")
+		c.writeln("| method |")
+		c.writeln("method := (o notNil and: [ o includesKey: 'method' ]) ifTrue: [ o at: 'method' ] ifFalse: [ 'GET' ].")
+		c.writeln("args add: '-X'; add: method.")
+		c.writeln("(o notNil and: [ o includesKey: 'headers' ]) ifTrue: [ (o at: 'headers') keysAndValuesDo: [:k :v | args add: '-H'; add: (k , ': ' , v printString) ] ].")
+		c.writeln("(o notNil and: [ o includesKey: 'query' ]) ifTrue: [ | qs sep |")
+		c.indent++
+		c.writeln("qs := String streamContents: [:s | (o at: 'query') keysAndValuesDo: [:k :v | s nextPutAll: k; nextPut: '='; nextPutAll: v printString; nextPut: '&' ] ].")
+		c.writeln("qs := qs copyFrom: 1 to: qs size - 1.")
+		c.writeln("sep := (url includes: '?') ifTrue: [ '&' ] ifFalse: [ '?' ].")
+		c.writeln("url := url , sep , qs.")
+		c.indent--
+		c.writeln("] .")
+		c.writeln("(o notNil and: [ o includesKey: 'body' ]) ifTrue: [ args add: '-d'; add: (JSONReader toJSON: (o at: 'body')) ].")
+		c.writeln("(o notNil and: [ o includesKey: 'timeout' ]) ifTrue: [ args add: '--max-time'; add: (o at: 'timeout') printString ].")
+		c.writeln("args add: url.")
+		c.writeln("cmd := 'curl ' , (String streamContents: [:s | args doWithIndex: [:a :i | s nextPutAll: a. i < args size ifTrue: [ s nextPut: Character space ] ] ]).")
+		c.writeln("stream := PipeStream open: cmd.")
+		c.writeln("text := stream contents.")
+		c.writeln("stream close.")
+		c.writeln("^ JSONReader fromJSON: text")
 		c.indent--
 		c.writelnNoIndent("!")
 	}

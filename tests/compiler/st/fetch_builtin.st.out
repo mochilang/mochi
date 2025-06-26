@@ -1,0 +1,11 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newMsg: message | dict |
+	dict := Dictionary new.
+	dict at: 'message' put: message.
+	^ dict
+!
+!!
+data := (Main _fetch: 'file://tests/compiler/st/fetch_builtin.json' opts: nil).
+(data at: 'message') displayOn: Transcript. Transcript cr.
