@@ -1,7 +1,7 @@
-fun sum(n: int): int {
+fun tri_sum(n: int): int {
   return n * (n + 1) / 2
 }
 
 let n = 10
-print(sum(n))
+print(tri_sum(n))
 print(n)

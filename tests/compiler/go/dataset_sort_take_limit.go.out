@@ -49,16 +49,7 @@ func main() {
 	for idx, p := range pairs {
 		items[idx] = p.item
 	}
-	skip := 1
-	if skip < len(items) {
-		items = items[skip:]
-	} else {
-		items = []Product{}
-	}
-	take := 3
-	if take < len(items) {
-		items = items[:take]
-	}
+	items = _paginate[Product](items, 1, 3)
 	_res := []Product{}
 	for _, p := range items {
 		_res = append(_res, p)
@@ -69,4 +60,12 @@ func main() {
 	for _, item := range expensive {
 		fmt.Println(item.Name, "costs $", item.Price)
 	}
+}
+
+func _paginate[T any](src []T, skip, take int) []T {
+    if skip > 0 {
+        if skip < len(src) { src = src[skip:] } else { return []T{} }
+    }
+    if take >= 0 && take < len(src) { src = src[:take] }
+    return src
 }

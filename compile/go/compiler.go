@@ -1273,18 +1273,26 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	switch op {
 	case "+", "-", "*", "/", "%":
 		if op != "+" && (isAny(leftType) || isAny(rightType)) {
+			if isAny(leftType) && isAny(rightType) {
+				c.use("_cast")
+				left = fmt.Sprintf("_cast[float64](%s)", left)
+				right = fmt.Sprintf("_cast[float64](%s)", right)
+				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+				next = types.FloatType{}
+				return expr, next, nil
+			}
 			switch {
 			case isInt(leftType) && isAny(rightType):
 				c.use("_cast")
-				right = fmt.Sprintf("_cast[int](%s)", right)
-				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
-				next = types.IntType{}
+				right = fmt.Sprintf("_cast[float64](%s)", right)
+				expr = fmt.Sprintf("(float64(%s) %s %s)", left, op, right)
+				next = types.FloatType{}
 				return expr, next, nil
 			case isAny(leftType) && isInt(rightType):
 				c.use("_cast")
-				left = fmt.Sprintf("_cast[int](%s)", left)
-				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
-				next = types.IntType{}
+				left = fmt.Sprintf("_cast[float64](%s)", left)
+				expr = fmt.Sprintf("(%s %s float64(%s))", left, op, right)
+				next = types.FloatType{}
 				return expr, next, nil
 			case isFloat(leftType) && isAny(rightType):
 				c.use("_cast")
@@ -1417,7 +1425,28 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			}
 		} else {
 			if isAny(leftType) || isAny(rightType) {
-				return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
+				switch {
+				case isAny(leftType) && isString(rightType):
+					c.use("_cast")
+					left = fmt.Sprintf("_cast[string](%s)", left)
+				case isString(leftType) && isAny(rightType):
+					c.use("_cast")
+					right = fmt.Sprintf("_cast[string](%s)", right)
+				case isAny(leftType) && isFloat(rightType):
+					c.use("_cast")
+					left = fmt.Sprintf("_cast[float64](%s)", left)
+				case isFloat(leftType) && isAny(rightType):
+					c.use("_cast")
+					right = fmt.Sprintf("_cast[float64](%s)", right)
+				case isAny(leftType) && isInt(rightType):
+					c.use("_cast")
+					left = fmt.Sprintf("_cast[int](%s)", left)
+				case isInt(leftType) && isAny(rightType):
+					c.use("_cast")
+					right = fmt.Sprintf("_cast[int](%s)", right)
+				default:
+					return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
+				}
 			}
 			if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
 				return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
@@ -1691,6 +1720,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 				typ = t
 			}
+		}
+		if _, ok := typ.(types.GroupType); ok && len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "key" {
+			c.use("_cast")
+			base = fmt.Sprintf("_cast[map[string]any](%s.Key)", base)
+			typ = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+			for _, field := range p.Selector.Tail[1:] {
+				base += fmt.Sprintf("[%q]", field)
+				typ = types.AnyType{}
+			}
+			return base, nil
 		}
 		if c.receiver != "" && len(p.Selector.Tail) == 0 {
 			if st, ok := c.env.GetStruct(c.receiver); ok {
@@ -2043,6 +2082,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if lt, ok := srcType.(types.ListType); ok {
 		elemType = lt.Elem
 		directRange = true
+	} else if gt, ok := srcType.(types.GroupType); ok {
+		elemType = gt.Elem
+		elemGo := goType(elemType)
+		if elemGo == "" {
+			elemGo = "any"
+		}
+		c.use("_cast")
+		src = fmt.Sprintf("_cast[[]%s](%s.Items)", elemGo, src)
+		directRange = true
 	}
 	original := c.env
 	child := types.NewEnv(c.env)
@@ -2053,6 +2101,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var felem types.Type = types.AnyType{}
 		if lt, ok := ft.(types.ListType); ok {
 			felem = lt.Elem
+		} else if gt, ok := ft.(types.GroupType); ok {
+			felem = gt.Elem
 		}
 		child.SetVar(f.Var, felem, true)
 	}
@@ -2062,6 +2112,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var jelem types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {
 			jelem = lt.Elem
+		} else if gt, ok := jt.(types.GroupType); ok {
+			jelem = gt.Elem
 		}
 		child.SetVar(j.Var, jelem, true)
 	}
@@ -2090,10 +2142,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = original
 			return "", err
 		}
-		fromSrcs[i] = fs
-		if _, ok := c.inferExprType(f.Src).(types.ListType); ok {
+		ft := c.inferExprType(f.Src)
+		if _, ok := ft.(types.ListType); ok {
 			fromDirect[i] = true
+		} else if gt, ok := ft.(types.GroupType); ok {
+			fromDirect[i] = true
+			elemGo := goType(gt.Elem)
+			if elemGo == "" {
+				elemGo = "any"
+			}
+			c.use("_cast")
+			fs = fmt.Sprintf("_cast[[]%s](%s.Items)", elemGo, fs)
 		}
+		fromSrcs[i] = fs
 	}
 
 	sel, err := c.compileExpr(q.Select)
@@ -2146,13 +2207,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = original
 			return "", err
 		}
-		joinSrcs[i] = js
 		jt := c.inferExprType(j.Src)
 		var je types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {
 			joinDirect[i] = true
 			je = lt.Elem
+		} else if gt, ok := jt.(types.GroupType); ok {
+			joinDirect[i] = true
+			je = gt.Elem
+			elemGo := goType(gt.Elem)
+			if elemGo == "" {
+				elemGo = "any"
+			}
+			c.use("_cast")
+			js = fmt.Sprintf("_cast[[]%s](%s.Items)", elemGo, js)
 		}
+		joinSrcs[i] = js
 		on, err := c.compileExpr(j.On)
 		if err != nil {
 			c.env = original
