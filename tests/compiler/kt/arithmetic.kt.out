@@ -5,4 +5,3 @@ fun main() {
         println((8 / 2))
         println((7 % 3))
 }
-

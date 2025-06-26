@@ -14,4 +14,3 @@ fun _sliceString(s: String, i: Int, j: Int): String {
     if (end < start) end = start
     return String(arr.sliceArray(start until end))
 }
-

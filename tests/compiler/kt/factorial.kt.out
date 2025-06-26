@@ -10,4 +10,3 @@ fun main() {
         println(factorial(1))
         println(factorial(5))
 }
-

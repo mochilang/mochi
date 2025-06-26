@@ -765,6 +765,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	cast := ""
+	if name, ok := identName(q.Source); ok {
+		if t, err := c.env.GetVar(name); err == nil {
+			if _, ok := t.(types.GroupType); ok {
+				src += ".Items"
+				cast = " as List<Any?>"
+			}
+		}
+	}
 
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		orig := c.env
@@ -791,7 +800,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+	if len(q.Joins) > 0 || q.Group != nil {
 		return c.compileAdvancedQueryExpr(q, src)
 	}
 
@@ -831,7 +840,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var buf bytes.Buffer
 		buf.WriteString("run {\n")
 		buf.WriteString("                val _src = " + src + "\n")
-		buf.WriteString("                val _res = mutableListOf<Any>()\n")
+		selType := c.inferExprType(q.Select)
+		typ := ktType(selType)
+		if typ == "Any" {
+			buf.WriteString("                val _res = mutableListOf<Any>()\n")
+		} else {
+			buf.WriteString("                val _res = mutableListOf<" + typ + ">()\n")
+		}
 		buf.WriteString(fmt.Sprintf("                for (%s in _src) {\n", sanitizeName(q.Var)))
 		indent := "                        "
 		for i, fs := range fromSrcs {
@@ -890,7 +905,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var buf bytes.Buffer
 	buf.WriteString("run {\n")
-	buf.WriteString("                var res = " + src + "\n")
+	buf.WriteString("                var res = " + src + cast + "\n")
 	if where != "" {
 		buf.WriteString(fmt.Sprintf("                res = res.filter { %s -> %s }\n", varName, where))
 	}
@@ -1610,7 +1625,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return args[0] + ".size", nil
 		}
 		if name == "avg" && len(args) == 1 {
-			return args[0] + ".average()", nil
+			t := c.inferExprType(p.Call.Args[0])
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.IntType); ok {
+					return args[0] + ".average()", nil
+				}
+				if _, ok := lt.Elem.(types.FloatType); ok {
+					return args[0] + ".average()", nil
+				}
+			}
+			c.use("_avg")
+			return fmt.Sprintf("_avg(%s)", args[0]), nil
+		}
+		if name == "sum" && len(args) == 1 {
+			c.use("_sum")
+			return fmt.Sprintf("_sum(%s)", args[0]), nil
 		}
 		if name == "reduce" && len(args) == 3 {
 			var buf bytes.Buffer

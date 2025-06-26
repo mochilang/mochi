@@ -1,11 +1,11 @@
 data class Person(val name: String) {
-        fun greet(): String {
-                return "hi " + name
+        fun greet() : String {
+                return ("hi " + name)
         }
+        
 }
 
 fun main() {
         val p = Person(name = "Ada")
         println(p.greet())
 }
-

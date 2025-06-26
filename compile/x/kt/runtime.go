@@ -245,6 +245,50 @@ inline fun <reified T> _cast(v: Any?): T {
     return res
 }`
 
+	helperAvg = `fun _avg(v: Any?): Double {
+    var list: List<Any?>? = null
+    when (v) {
+        is List<*> -> list = v as List<Any?>
+        is Map<*, *> -> {
+            val items = when {
+                v["items"] is List<*> -> v["items"] as List<*>
+                v["Items"] is List<*> -> v["Items"] as List<*>
+                else -> null
+            }
+            if (items != null) list = items as List<Any?>
+        }
+        is _Group -> list = v.Items
+    }
+    if (list == null || list.isEmpty()) return 0.0
+    var sum = 0.0
+    for (n in list!!) {
+        sum += (n as Number).toDouble()
+    }
+    return sum / list!!.size
+}`
+
+	helperSum = `fun _sum(v: Any?): Double {
+    var list: List<Any?>? = null
+    when (v) {
+        is List<*> -> list = v as List<Any?>
+        is Map<*, *> -> {
+            val items = when {
+                v["items"] is List<*> -> v["items"] as List<*>
+                v["Items"] is List<*> -> v["Items"] as List<*>
+                else -> null
+            }
+            if (items != null) list = items as List<Any?>
+        }
+        is _Group -> list = v.Items
+    }
+    if (list == null || list.isEmpty()) return 0.0
+    var sum = 0.0
+    for (n in list!!) {
+        sum += (n as Number).toDouble()
+    }
+    return sum
+}`
+
 	helperGroup = `class _Group(var key: Any?) {
     val Items = mutableListOf<Any?>()
     val size: Int
@@ -423,6 +467,8 @@ var helperMap = map[string]string{
 	"_union":       helperUnion,
 	"_except":      helperExcept,
 	"_intersect":   helperIntersect,
+	"_avg":         helperAvg,
+	"_sum":         helperSum,
 	"_Group":       helperGroup,
 	"_group_by":    helperGroupBy,
 	"_query":       helperQuery,

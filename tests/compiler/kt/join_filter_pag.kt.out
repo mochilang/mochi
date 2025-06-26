@@ -151,4 +151,3 @@ fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?
     }
     return res
 }
-

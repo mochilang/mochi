@@ -15,4 +15,3 @@ fun main() {
                 println(item.name, "costs $", item.price)
         }
 }
-

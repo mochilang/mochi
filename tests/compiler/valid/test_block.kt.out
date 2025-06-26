@@ -1,4 +1,11 @@
+fun test_addition_works() {
+        val x = (1 + 2)
+        check((x == 3))
+}
+
 fun main() {
         println("ok")
+        test_addition_works()
 }
+
 
