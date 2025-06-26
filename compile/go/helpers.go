@@ -33,6 +33,21 @@ func indentBlock(s string, depth int) string {
 	return strings.Join(lines, "\n") + "\n"
 }
 
+// joinItems formats a list of items either on a single line or
+// across multiple indented lines depending on the length. The
+// `indent` value is the current indentation depth and `threshold`
+// controls the maximum number of items allowed on one line.
+func joinItems(items []string, indent, threshold int) string {
+	if len(items) == 0 {
+		return ""
+	}
+	if len(items) <= threshold {
+		return strings.Join(items, ", ")
+	}
+	inner := strings.Join(items, ",\n")
+	return "\n" + indentBlock(inner, indent+1) + strings.Repeat("\t", indent)
+}
+
 var goReserved = map[string]bool{
 	"break": true, "default": true, "func": true, "interface": true, "select": true,
 	"case": true, "defer": true, "go": true, "map": true, "struct": true,
