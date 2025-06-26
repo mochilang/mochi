@@ -322,8 +322,10 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		var elem Type = MapType{Key: StringType{}, Value: AnyType{}}
 		if p.Load.Type != nil {
 			elem = ResolveTypeRef(p.Load.Type, env)
-			if st, ok := env.GetStruct(*p.Load.Type.Simple); elem == (AnyType{}) && ok {
-				elem = st
+			if p.Load.Type.Simple != nil {
+				if st, ok := env.GetStruct(*p.Load.Type.Simple); elem == (AnyType{}) && ok {
+					elem = st
+				}
 			}
 		}
 		return ListType{Elem: elem}
