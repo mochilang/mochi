@@ -193,7 +193,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if _, ok := c.helpers["_cast"]; !ok {
 		if _, ok := c.helpers["_genStruct"]; !ok {
-			code = bytes.Replace(code, []byte("using System.Text.Json;\n"), nil, 1)
+			if _, ok := c.helpers["_fetch"]; !ok {
+				code = bytes.Replace(code, []byte("using System.Text.Json;\n"), nil, 1)
+			}
 		}
 	}
 	return code, nil
