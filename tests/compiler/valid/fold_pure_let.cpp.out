@@ -1,13 +1,28 @@
+// Original Mochi source:
+// fun sumN(n: int): int {
+//   return n * (n + 1) / 2
+// }
+// 
+// let n = 10
+// print(sumN(n))
+// print(n)
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// fun sumN(n: int): int {
 int sumN(int n){
-	return n * (n + 1) / 2;
+    //   return n * (n + 1) / 2
+    return n * (n + 1) / 2;
 }
 
 int main() {
-	auto n = 10;
-	std::cout << (sumN(n)) << std::endl;
-	std::cout << (n) << std::endl;
-	return 0;
+    // let n = 10
+    auto n = 10;
+    // print(sumN(n))
+    std::cout << (sumN(n)) << std::endl;
+    // print(n)
+    std::cout << (n) << std::endl;
+    return 0;
 }

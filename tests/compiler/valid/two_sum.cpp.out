@@ -1,21 +1,49 @@
+// Original Mochi source:
+// fun twoSum(nums: list<int>, target: int): list<int> {
+//   let n = len(nums)
+//   for i in 0..n {
+//     for j in i+1..n {
+//       if nums[i] + nums[j] == target {
+//         return [i, j]
+//       }
+//     }
+//   }
+//   return [-1, -1]
+// }
+// 
+// let result = twoSum([2,7,11,15], 9)
+// print(result[0])
+// print(result[1])
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// fun twoSum(nums: list<int>, target: int): list<int> {
 vector<int> twoSum(vector<int> nums, int target){
-	auto n = nums.size();
-	for (int i = 0; i < n; i++) {
-		for (int j = i + 1; j < n; j++) {
-			if (nums[i] + nums[j] == target) {
-				return vector<int>{i, j};
-			}
-		}
-	}
-	return vector<int>{-1, -1};
+    //   let n = len(nums)
+    auto n = nums.size();
+    //   for i in 0..n {
+    for (int i = 0; i < n; i++) {
+        //     for j in i+1..n {
+        for (int j = i + 1; j < n; j++) {
+            //       if nums[i] + nums[j] == target {
+            if (nums[i] + nums[j] == target) {
+                //         return [i, j]
+                return vector<int>{i, j};
+            }
+        }
+    }
+    //   return [-1, -1]
+    return vector<int>{-1, -1};
 }
 
 int main() {
-	auto result = twoSum(vector<int>{2, 7, 11, 15}, 9);
-	std::cout << (result[0]) << std::endl;
-	std::cout << (result[1]) << std::endl;
-	return 0;
+    // let result = twoSum([2,7,11,15], 9)
+    auto result = twoSum(vector<int>{2, 7, 11, 15}, 9);
+    // print(result[0])
+    std::cout << (result[0]) << std::endl;
+    // print(result[1])
+    std::cout << (result[1]) << std::endl;
+    return 0;
 }

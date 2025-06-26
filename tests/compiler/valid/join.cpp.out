@@ -1,39 +1,96 @@
+// Original Mochi source:
+// type Customer {
+//   id: int
+//   name: string
+// }
+// 
+// type Order {
+//   id: int
+//   customerId: int
+//   total: int
+// }
+// 
+// type PairInfo {
+//   orderId: int
+//   customerName: string
+//   total: int
+// }
+// 
+// let customers = [
+//   Customer { id: 1, name: "Alice" },
+//   Customer { id: 2, name: "Bob" },
+//   Customer { id: 3, name: "Charlie" }
+// ]
+// 
+// let orders = [
+//   Order { id: 100, customerId: 1, total: 250 },
+//   Order { id: 101, customerId: 2, total: 125 },
+//   Order { id: 102, customerId: 1, total: 300 },
+//   Order { id: 103, customerId: 4, total: 80 }
+// ]
+// 
+// let result = from o in orders
+//              join from c in customers on o.customerId == c.id
+//              select PairInfo {
+//                orderId: o.id,
+//                customerName: c.name,
+//                total: o.total
+//              }
+// 
+// print("--- Orders with customer info ---")
+// for entry in result {
+//   print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
+// }
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// type Customer {
 struct Customer {
-	int id;
-	string name;
+    int id;
+    string name;
 };
 
+// type Order {
 struct Order {
-	int id;
-	int customerId;
-	int total;
+    int id;
+    int customerId;
+    int total;
 };
 
+// type PairInfo {
 struct PairInfo {
-	int orderId;
-	string customerName;
-	int total;
+    int orderId;
+    string customerName;
+    int total;
 };
 
 int main() {
-	auto customers = vector<Customer>{Customer{1, string("Alice")}, Customer{2, string("Bob")}, Customer{3, string("Charlie")}};
-	auto orders = vector<Order>{Order{100, 1, 250}, Order{101, 2, 125}, Order{102, 1, 300}, Order{103, 4, 80}};
-	auto result = ([&]() -> vector<PairInfo> {
-	vector<PairInfo> _res;
-	for (auto& o : orders) {
-		for (auto& c : customers) {
-			if (!(o.customerId == c.id)) continue;
-			_res.push_back(PairInfo{o.id, c.name, o.total});
-		}
-	}
-	return _res;
+    // type Customer {
+    // type Order {
+    // type PairInfo {
+    // let customers = [
+    auto customers = vector<Customer>{Customer{1, string("Alice")}, Customer{2, string("Bob")}, Customer{3, string("Charlie")}};
+    // let orders = [
+    auto orders = vector<Order>{Order{100, 1, 250}, Order{101, 2, 125}, Order{102, 1, 300}, Order{103, 4, 80}};
+    // let result = from o in orders
+    auto result = ([&]() -> vector<PairInfo> {
+    vector<PairInfo> _res;
+    for (auto& o : orders) {
+        for (auto& c : customers) {
+            if (!(o.customerId == c.id)) continue;
+            _res.push_back(PairInfo{o.id, c.name, o.total});
+        }
+    }
+    return _res;
 })();
-	std::cout << (string("--- Orders with customer info ---")) << std::endl;
-	for (const PairInfo& entry : result) {
-		std::cout << (string("Order")) << " " << (entry.orderId) << " " << (string("by")) << " " << (entry.customerName) << " " << (string("- $")) << " " << (entry.total) << std::endl;
-	}
-	return 0;
+    // print("--- Orders with customer info ---")
+    std::cout << (string("--- Orders with customer info ---")) << std::endl;
+    // for entry in result {
+    for (const PairInfo& entry : result) {
+        //   print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
+        std::cout << (string("Order")) << " " << (entry.orderId) << " " << (string("by")) << " " << (entry.customerName) << " " << (string("- $")) << " " << (entry.total) << std::endl;
+    }
+    return 0;
 }

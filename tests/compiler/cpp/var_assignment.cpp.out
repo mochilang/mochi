@@ -1,9 +1,18 @@
+// Original Mochi source:
+// var x = 1
+// x = 2
+// print(x)
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto x = 1;
-	x = 2;
-	std::cout << (x) << std::endl;
-	return 0;
+    // var x = 1
+    auto x = 1;
+    // x = 2
+    x = 2;
+    // print(x)
+    std::cout << (x) << std::endl;
+    return 0;
 }

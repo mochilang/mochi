@@ -1,23 +1,54 @@
+// Original Mochi source:
+// type Circle {
+//   radius: float
+// 
+//   fun area(): float {
+//     let a = 3.14 * radius * radius
+//     print("Calculating area:", a)
+//     return a
+//   }
+// 
+//   fun describe() {
+//     print("Circle with radius", radius)
+//   }
+// }
+// 
+// let c = Circle { radius: 5.0 }
+// c.describe()
+// print("Area is", c.area())
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// type Circle {
 struct Circle {
-	double radius;
+    double radius;
 };
+//   fun area(): float {
 double Circle_area(Circle& self){
-	auto a = 3.14 * self.radius * self.radius;
-	std::cout << (string("Calculating area:")) << " " << (a) << std::endl;
-	return a;
+    //     let a = 3.14 * radius * radius
+    auto a = 3.14 * self.radius * self.radius;
+    //     print("Calculating area:", a)
+    std::cout << (string("Calculating area:")) << " " << (a) << std::endl;
+    //     return a
+    return a;
 }
 
+//   fun describe() {
 void Circle_describe(Circle& self){
-	std::cout << (string("Circle with radius")) << " " << (self.radius) << std::endl;
+    //     print("Circle with radius", radius)
+    std::cout << (string("Circle with radius")) << " " << (self.radius) << std::endl;
 }
 
 
 int main() {
-	auto c = Circle{5.0};
-	Circle_describe(c);
-	std::cout << (string("Area is")) << " " << (Circle_area(c)) << std::endl;
-	return 0;
+    // type Circle {
+    // let c = Circle { radius: 5.0 }
+    auto c = Circle{5.0};
+    // c.describe()
+    Circle_describe(c);
+    // print("Area is", c.area())
+    std::cout << (string("Area is")) << " " << (Circle_area(c)) << std::endl;
+    return 0;
 }

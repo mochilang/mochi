@@ -1,8 +1,15 @@
+// Original Mochi source:
+// let square = fun(x: int): int => x * x
+// print(square(6))  // 36
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto square = [=](int x) { return x * x; };
-	std::cout << (square(6)) << std::endl;
-	return 0;
+    // let square = fun(x: int): int => x * x
+    auto square = [=](int x) { return x * x; };
+    // print(square(6))  // 36
+    std::cout << (square(6)) << std::endl;
+    return 0;
 }

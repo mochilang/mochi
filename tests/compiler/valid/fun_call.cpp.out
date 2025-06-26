@@ -1,11 +1,22 @@
+// Original Mochi source:
+// fun add(a: int, b: int): int {
+//   return a + b
+// }
+// 
+// print(add(2, 3))  // 5
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// fun add(a: int, b: int): int {
 int add(int a, int b){
-	return a + b;
+    //   return a + b
+    return a + b;
 }
 
 int main() {
-	std::cout << (add(2, 3)) << std::endl;
-	return 0;
+    // print(add(2, 3))  // 5
+    std::cout << (add(2, 3)) << std::endl;
+    return 0;
 }

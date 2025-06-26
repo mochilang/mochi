@@ -1,11 +1,24 @@
+// Original Mochi source:
+// print(1 + 2)
+// print(5 - 3)
+// print(4 * 2)
+// print(8 / 2)
+// print(7 % 3)
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	std::cout << (1 + 2) << std::endl;
-	std::cout << (5 - 3) << std::endl;
-	std::cout << (4 * 2) << std::endl;
-	std::cout << (8 / 2) << std::endl;
-	std::cout << (7 % 3) << std::endl;
-	return 0;
+    // print(1 + 2)
+    std::cout << (1 + 2) << std::endl;
+    // print(5 - 3)
+    std::cout << (5 - 3) << std::endl;
+    // print(4 * 2)
+    std::cout << (4 * 2) << std::endl;
+    // print(8 / 2)
+    std::cout << (8 / 2) << std::endl;
+    // print(7 % 3)
+    std::cout << (7 % 3) << std::endl;
+    return 0;
 }
