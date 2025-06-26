@@ -1,0 +1,16 @@
+let items = [
+  { qty: 1, flag: "A" },
+  { qty: 3, flag: "B" },
+  { qty: 2, flag: "A" },
+  { qty: 5, flag: "B" }
+]
+
+let groups =
+  from it in items
+  where it.qty > 1
+  group by it.flag into g
+  select { flag: g.key, total: sum(from x in g select x.qty) }
+
+for g in groups {
+  print(g.flag, g.total)
+}
