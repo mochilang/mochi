@@ -200,6 +200,10 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	if stmt.Type != nil {
 		t := c.resolveTypeRef(stmt.Type)
 		typ := ktType(t)
+		if isFetchExpr(stmt.Value) {
+			c.use("_cast")
+			expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+		}
 		c.writeln(fmt.Sprintf("val %s: %s = %s", sanitizeName(stmt.Name), typ, expr))
 		c.env.SetVar(stmt.Name, t, false)
 	} else {
@@ -214,6 +218,11 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		v, err := c.compileExpr(stmt.Value)
 		if err != nil {
 			return err
+		}
+		if stmt.Type != nil && isFetchExpr(stmt.Value) {
+			typ := ktType(c.resolveTypeRef(stmt.Type))
+			c.use("_cast")
+			v = fmt.Sprintf("_cast<%s>(%s)", typ, v)
 		}
 		value = v
 	}
