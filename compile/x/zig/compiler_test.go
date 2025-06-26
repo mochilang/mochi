@@ -103,7 +103,11 @@ func TestZigCompiler_SubsetPrograms(t *testing.T) {
 		if out, err := exec.Command(zigc, "build-exe", file, "-O", "ReleaseSafe", "-femit-bin="+exe).CombinedOutput(); err != nil {
 			return nil, fmt.Errorf("\u274c zig build error: %w\n%s", err, out)
 		}
-		out, err := exec.Command(exe).CombinedOutput()
+		cmd := exec.Command(exe)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
 		if err != nil {
 			return nil, fmt.Errorf("\u274c run error: %w\n%s", err, out)
 		}

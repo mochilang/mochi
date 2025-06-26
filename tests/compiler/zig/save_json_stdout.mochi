@@ -1,0 +1,9 @@
+type Person {
+  name: string
+  age: int
+  email: string
+}
+let people = load "tests/compiler/zig/people.json" as Person with {
+  format: "json",
+}
+save people with { format: "json" }

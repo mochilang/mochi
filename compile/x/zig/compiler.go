@@ -36,6 +36,8 @@ type Compiler struct {
 	needsEqual        bool
 	needsMapKeys      bool
 	needsMapValues    bool
+	needsLoadJSON     bool
+	needsSaveJSON     bool
 	needsExpect       bool
 	tests             []string
 }
@@ -1071,6 +1073,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		return c.compileIfExpr(p.If)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Query != nil:
@@ -1357,6 +1363,32 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("fn (%s) %s {\n%s}", strings.Join(params, ", "), ret, body), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "null"
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	c.needsLoadJSON = true
+	if l.Type != nil && l.Type.Simple != nil {
+		typ := sanitizeName(*l.Type.Simple)
+		return fmt.Sprintf("_load_json([]%s, %s)", typ, path), nil
+	}
+	return fmt.Sprintf("_load_json([]std.json.Value, %s)", path), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src, false)
+	if err != nil {
+		return "", err
+	}
+	path := "null"
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	c.needsSaveJSON = true
+	return fmt.Sprintf("_save_json(%s, %s)", src, path), nil
 }
 
 func isListLiteralExpr(e *parser.Expr) bool {

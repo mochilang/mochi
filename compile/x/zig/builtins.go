@@ -123,6 +123,65 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsLoadJSON || c.needsSaveJSON {
+		c.writeln("fn _read_input(path: ?[]const u8) []const u8 {")
+		c.indent++
+		c.writeln("const alloc = std.heap.page_allocator;")
+		c.writeln("if (path == null or std.mem.eql(u8, path.?, \"-\")) {")
+		c.indent++
+		c.writeln("return std.io.getStdIn().readAllAlloc(alloc, 1 << 20) catch unreachable;")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("return std.fs.cwd().readFileAlloc(alloc, path.?, 1 << 20) catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+		c.writeln("fn _write_output(path: ?[]const u8, data: []const u8) void {")
+		c.indent++
+		c.writeln("if (path == null or std.mem.eql(u8, path.?, \"-\")) {")
+		c.indent++
+		c.writeln("std.io.getStdOut().writeAll(data) catch unreachable;")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("std.fs.cwd().writeFile(path.?, data) catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsLoadJSON {
+		c.writeln("fn _load_json(comptime T: type, path: ?[]const u8) []T {")
+		c.indent++
+		c.writeln("const text = _read_input(path);")
+		c.writeln("return std.json.parseFromSlice(T, std.heap.page_allocator, text, .{}).value;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsSaveJSON {
+		c.writeln("fn _save_json(rows: anytype, path: ?[]const u8) void {")
+		c.indent++
+		c.writeln("var buf = std.ArrayList(u8).init(std.heap.page_allocator);")
+		c.writeln("defer buf.deinit();")
+		c.writeln("if (rows.len == 1) {")
+		c.indent++
+		c.writeln("std.json.stringify(rows[0], .{}, buf.writer()) catch unreachable;")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("std.json.stringify(rows, .{}, buf.writer()) catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("_write_output(path, buf.items);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsIndex {
 		c.writeln("fn _index_list(comptime T: type, v: []const T, i: i32) T {")
 		c.indent++
