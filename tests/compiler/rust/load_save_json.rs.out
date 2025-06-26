@@ -9,8 +9,24 @@ fn main() {
     _save(people, "out.json", std::collections::HashMap::from([("format".to_string(), "json")]));
 }
 
-fn _load<T>(_path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {
+fn _load<T: serde::de::DeserializeOwned>(_path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {
+    use std::io::Read;
+    let mut data = String::new();
+    if _path.is_empty() || _path == "-" {
+        std::io::stdin().read_to_string(&mut data).unwrap();
+    } else if let Ok(mut f) = std::fs::File::open(_path) {
+        f.read_to_string(&mut data).unwrap();
+    }
+    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }
+    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }
     Vec::new()
 }
-fn _save<T>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) {
+fn _save<T: serde::Serialize>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) {
+    if let Ok(text) = serde_json::to_string(_src) {
+        if _path.is_empty() || _path == "-" {
+            println!("{}", text);
+        } else {
+            std::fs::write(_path, text).unwrap();
+        }
+    }
 }
