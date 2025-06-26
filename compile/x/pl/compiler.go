@@ -217,4 +217,10 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["group_by"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperGroupBy, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 }

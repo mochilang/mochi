@@ -81,3 +81,10 @@ const helperDatasetPaginate = "dataset_paginate(List, Skip, Take, Out) :-\n" +
 	"    Start is max(Skip, 0),\n" +
 	"    (Take < 0 -> End = Len ; Temp is Start + Take, (Temp > Len -> End = Len ; End = Temp)),\n" +
 	"    slice(List, Start, End, Out)).\n\n"
+
+const helperGroupBy = "group_insert(Key, Item, [], [_{key:Key, Items:[Item]}]).\n" +
+	"group_insert(Key, Item, [G|Gs], [NG|Gs]) :- get_dict(key, G, Key), !, get_dict('Items', G, Items), append(Items, [Item], NItems), put_dict('Items', G, NItems, NG).\n" +
+	"group_insert(Key, Item, [G|Gs], [G|Rs]) :- group_insert(Key, Item, Gs, Rs).\n" +
+	"group_pairs([], Acc, Res) :- reverse(Acc, Res).\n" +
+	"group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).\n" +
+	"group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).\n\n"

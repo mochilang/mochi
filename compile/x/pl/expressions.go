@@ -552,8 +552,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
-	if q.Group != nil {
+	if q.Group != nil && (len(q.Froms) != 0 || len(q.Joins) != 0 || q.Sort != nil || q.Skip != nil || q.Take != nil) {
 		return exprRes{}, fmt.Errorf("unsupported query expression")
+	}
+	if q.Group != nil {
+		return c.compileGroupedQueryExpr(q)
 	}
 	for _, j := range q.Joins {
 		if j.Side != nil {
@@ -772,6 +775,76 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 	}
 
 	return exprRes{code: code, val: resultVar}, nil
+}
+
+func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (exprRes, error) {
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return exprRes{}, err
+	}
+
+	child := types.NewEnv(c.env)
+	var elem types.Type = types.AnyType{}
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		elem = lt.Elem
+	}
+	child.SetVar(q.Var, elem, true)
+	origEnv := c.env
+	c.env = child
+	var condRes exprRes
+	if q.Where != nil {
+		lambda := &parser.FunExpr{Params: []*parser.Param{{Name: q.Var}}, ExprBody: q.Where}
+		condRes, err = c.compileFunExpr(lambda)
+		if err != nil {
+			c.env = origEnv
+			return exprRes{}, err
+		}
+	}
+	keyLambdaExpr := &parser.FunExpr{Params: []*parser.Param{{Name: q.Var}}, ExprBody: q.Group.Exprs[0]}
+	keyRes, err := c.compileFunExpr(keyLambdaExpr)
+	if err != nil {
+		c.env = origEnv
+		return exprRes{}, err
+	}
+	c.env = origEnv
+
+	genv := types.NewEnv(c.env)
+	genv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+	c.env = genv
+	selRes, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = origEnv
+		return exprRes{}, err
+	}
+	c.env = origEnv
+
+	listVar := c.newVar()
+	code := append([]string{}, src.code...)
+	c.use("tolist")
+	code = append(code, fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
+
+	if q.Where != nil {
+		filtered := c.newVar()
+		c.use("dataset_filter")
+		code = append(code, fmt.Sprintf("dataset_filter(%s, %s, %s),", listVar, condRes.val, filtered))
+		listVar = filtered
+	}
+
+	groupsVar := c.newVar()
+	c.use("group_by")
+	code = append(code, fmt.Sprintf("group_by(%s, %s, %s),", listVar, keyRes.val, groupsVar))
+
+	resultVar := c.newVar()
+	parts := []string{fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Group.Name), groupsVar)}
+	for _, line := range selRes.code {
+		parts = append(parts, strings.TrimSuffix(line, ","))
+	}
+	parts = append(parts, fmt.Sprintf("%s = %s", resultVar, selRes.val))
+	goal := strings.Join(parts, ", ")
+	outVar := c.newVar()
+	code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", resultVar, goal, outVar))
+
+	return exprRes{code: code, val: outVar}, nil
 }
 
 func (c *Compiler) compileLogicQuery(q *parser.LogicQueryExpr) (exprRes, error) {
