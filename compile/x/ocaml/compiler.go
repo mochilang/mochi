@@ -22,6 +22,7 @@ type Compiler struct {
 	setNth  bool
 	slice   bool
 	input   bool
+	dataset bool
 	loopTmp int
 	loops   []loopCtx
 	funTmp  int
@@ -204,6 +205,42 @@ func (c *Compiler) ensureInput() {
 	c.input = true
 	b := &c.pre
 	b.WriteString("let _input () = read_line ();;\n\n")
+}
+
+func (c *Compiler) ensureDataset() {
+	if c.dataset {
+		return
+	}
+	c.dataset = true
+	b := &c.pre
+	b.WriteString("let rec _read_all ic =\n")
+	b.WriteString("  try let line = input_line ic in\n")
+	b.WriteString("      line ^ \"\\n\" ^ _read_all ic\n")
+	b.WriteString("  with End_of_file -> \"\";;\n")
+	b.WriteString("\n")
+	b.WriteString("let _read_input path =\n")
+	b.WriteString("  let ic = match path with\n")
+	b.WriteString("    | None -> stdin\n")
+	b.WriteString("    | Some p when p = \"\" || p = \"-\" -> stdin\n")
+	b.WriteString("    | Some p -> open_in p in\n")
+	b.WriteString("  let txt = _read_all ic in\n")
+	b.WriteString("  if ic != stdin then close_in ic;\n")
+	b.WriteString("  txt;;\n")
+	b.WriteString("\n")
+	b.WriteString("let _load path _ =\n")
+	b.WriteString("  let text = _read_input path in\n")
+	b.WriteString("  match Yojson.Basic.from_string text with\n")
+	b.WriteString("  | `List items -> items\n")
+	b.WriteString("  | json -> [json];;\n")
+	b.WriteString("\n")
+	b.WriteString("let _save rows path _ =\n")
+	b.WriteString("  let oc = match path with\n")
+	b.WriteString("    | None -> stdout\n")
+	b.WriteString("    | Some p when p = \"\" || p = \"-\" -> stdout\n")
+	b.WriteString("    | Some p -> open_out p in\n")
+	b.WriteString("  Yojson.Basic.to_channel oc (`List rows);\n")
+	b.WriteString("  output_char oc '\\n';\n")
+	b.WriteString("  if oc != stdout then close_out oc;;\n\n")
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -854,6 +891,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCall(p.Call)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Group != nil:
@@ -1037,6 +1078,44 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		}
 	}
 	return fmt.Sprintf("(match %s with %s)", target, strings.Join(parts, " | ")), nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "None"
+	if l.Path != nil {
+		path = fmt.Sprintf("Some %q", *l.Path)
+	}
+	opts := "None"
+	if l.With != nil {
+		o, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.ensureDataset()
+	return fmt.Sprintf("_load %s %s", path, opts), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "None"
+	if s.Path != nil {
+		path = fmt.Sprintf("Some %q", *s.Path)
+	}
+	opts := "None"
+	if s.With != nil {
+		o, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.ensureDataset()
+	return fmt.Sprintf("_save %s %s %s", src, path, opts), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
