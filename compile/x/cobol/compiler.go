@@ -163,13 +163,20 @@ func (c *Compiler) compileLoadExpr(n *ast.Node) string {
 
 func (c *Compiler) compileFetchExpr(n *ast.Node) string {
 	urlExpr := c.expr(n.Children[0])
+	tmpFile := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s PIC X(64).", tmpFile))
+	c.writeln(fmt.Sprintf("    MOVE \"fetch.tmp\" TO %s", tmpFile))
+
 	cmd := c.newTemp()
 	c.declare(fmt.Sprintf("01 %s PIC X(256).", cmd))
-	c.writeln("    STRING \"curl -s \" DELIMITED BY SIZE " + urlExpr + " DELIMITED BY SIZE INTO " + cmd)
+	c.writeln("    STRING \"curl -s \" DELIMITED BY SIZE " + urlExpr + " DELIMITED BY SIZE \" > \" DELIMITED BY SIZE " + tmpFile + " DELIMITED BY SIZE INTO " + cmd)
 	c.writeln("    CALL 'SYSTEM' USING " + cmd)
+
 	res := c.newTemp()
-	c.declare(fmt.Sprintf("01 %s PIC X(100).", res))
-	c.writeln("    *> fetch output stored in " + res)
+	c.declare(fmt.Sprintf("01 %s PIC X(1000).", res))
+	c.writeln("    OPEN INPUT " + tmpFile)
+	c.writeln("    READ " + tmpFile + " INTO " + res)
+	c.writeln("    CLOSE " + tmpFile)
 	return res
 }
 
