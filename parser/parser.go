@@ -416,6 +416,7 @@ type QueryExpr struct {
 	Froms    []*FromClause  `parser:"{ @@ }"`
 	Joins    []*JoinClause  `parser:"{ @@ }"`
 	Where    *Expr          `parser:"[ 'where' @@ ]"`
+	Lets     []*QueryLet    `parser:"{ @@ }"`
 	Group    *GroupByClause `parser:"[ @@ ]"`
 	Sort     *Expr          `parser:"[ ( 'sort' | 'order' ) 'by' @@ ]"`
 	Skip     *Expr          `parser:"[ 'skip' @@ ]"`
@@ -441,6 +442,12 @@ type JoinClause struct {
 	Var  string  `parser:"'join' [ 'from' ] @Ident 'in'"`
 	Src  *Expr   `parser:"@@"`
 	On   *Expr   `parser:"'on' @@"`
+}
+
+type QueryLet struct {
+	Pos   lexer.Position
+	Name  string `parser:"'let' @Ident '='"`
+	Value *Expr  `parser:"@@"`
 }
 
 type GroupByClause struct {
