@@ -128,6 +128,9 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	case "continue":
 		c.writeln("CONTINUE")
 
+	case "save":
+		c.compileSave(n)
+
 	case "expect":
 		c.compileExpect(n)
 
@@ -138,13 +141,17 @@ func (c *Compiler) compileNode(n *ast.Node) {
 }
 
 func (c *Compiler) compileExpect(n *ast.Node) {
-        cond := c.expr(n.Children[0])
-        c.writeln(fmt.Sprintf("IF NOT (%s)", cond))
-        c.indent++
-        c.writeln("DISPLAY \"expect failed\"")
-        c.writeln("STOP RUN")
-        c.indent--
-        c.writeln("END-IF")
+	cond := c.expr(n.Children[0])
+	c.writeln(fmt.Sprintf("IF NOT (%s)", cond))
+	c.indent++
+	c.writeln("DISPLAY \"expect failed\"")
+	c.writeln("STOP RUN")
+	c.indent--
+	c.writeln("END-IF")
+}
+
+func (c *Compiler) compileSave(n *ast.Node) {
+	c.writeln("*> save not implemented")
 }
 
 func (c *Compiler) compileTest(n *ast.Node) {
@@ -343,57 +350,57 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 	if name == "REDUCE" && len(n.Children) == 3 {
 		return c.compileReduceCall(n.Children[0], n.Children[1], n.Children[2])
 	}
-        if name == "ID" && len(n.Children) == 1 {
-                expr := c.expr(n.Children[0])
-                if isSimpleExpr(n.Children[0]) {
-                        return expr
-                }
-                tmp := c.newTemp()
-                c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[0])))
-                if c.isString(n.Children[0]) {
-                        c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
-                } else {
-                        c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
-                }
-                return tmp
-        }
-        if name == "COUNT" && len(n.Children) == 1 {
-                call := &ast.Node{Kind: "call", Value: "len"}
-                call.Children = append(call.Children, n.Children[0])
-                return c.compileCallExpr(call)
-        }
-        if name == "SUM" && len(n.Children) == 1 {
-                zero := &ast.Node{Kind: "int", Value: 0}
-                if c.isFloat(n.Children[0]) {
-                        zero = &ast.Node{Kind: "float", Value: 0.0}
-                }
-                addSel := &ast.Node{Kind: "selector", Value: "add"}
-                call := &ast.Node{Kind: "call", Value: "reduce"}
-                call.Children = append(call.Children, n.Children[0])
-                call.Children = append(call.Children, addSel)
-                call.Children = append(call.Children, zero)
-                return c.compileCallExpr(call)
-        }
-        if name == "AVG" && len(n.Children) == 1 {
-                sumCall := &ast.Node{Kind: "call", Value: "sum"}
-                sumCall.Children = append(sumCall.Children, n.Children[0])
-                sumRes := c.compileCallExpr(sumCall)
-                lenCall := &ast.Node{Kind: "call", Value: "len"}
-                lenCall.Children = append(lenCall.Children, n.Children[0])
-                lenRes := c.compileCallExpr(lenCall)
-                res := c.newTemp()
-                c.declare("01 " + res + " PIC 9(4)V9(4).")
-                c.writeln(fmt.Sprintf("    IF %s = 0", lenRes))
-                c.indent++
-                c.writeln("MOVE 0 TO " + res)
-                c.indent--
-                c.writeln("    ELSE")
-                c.indent++
-                c.writeln(fmt.Sprintf("COMPUTE %s = %s / %s", res, sumRes, lenRes))
-                c.indent--
-                c.writeln("    END-IF")
-                return res
-        }
+	if name == "ID" && len(n.Children) == 1 {
+		expr := c.expr(n.Children[0])
+		if isSimpleExpr(n.Children[0]) {
+			return expr
+		}
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[0])))
+		if c.isString(n.Children[0]) {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
+		} else {
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+		}
+		return tmp
+	}
+	if name == "COUNT" && len(n.Children) == 1 {
+		call := &ast.Node{Kind: "call", Value: "len"}
+		call.Children = append(call.Children, n.Children[0])
+		return c.compileCallExpr(call)
+	}
+	if name == "SUM" && len(n.Children) == 1 {
+		zero := &ast.Node{Kind: "int", Value: 0}
+		if c.isFloat(n.Children[0]) {
+			zero = &ast.Node{Kind: "float", Value: 0.0}
+		}
+		addSel := &ast.Node{Kind: "selector", Value: "add"}
+		call := &ast.Node{Kind: "call", Value: "reduce"}
+		call.Children = append(call.Children, n.Children[0])
+		call.Children = append(call.Children, addSel)
+		call.Children = append(call.Children, zero)
+		return c.compileCallExpr(call)
+	}
+	if name == "AVG" && len(n.Children) == 1 {
+		sumCall := &ast.Node{Kind: "call", Value: "sum"}
+		sumCall.Children = append(sumCall.Children, n.Children[0])
+		sumRes := c.compileCallExpr(sumCall)
+		lenCall := &ast.Node{Kind: "call", Value: "len"}
+		lenCall.Children = append(lenCall.Children, n.Children[0])
+		lenRes := c.compileCallExpr(lenCall)
+		res := c.newTemp()
+		c.declare("01 " + res + " PIC 9(4)V9(4).")
+		c.writeln(fmt.Sprintf("    IF %s = 0", lenRes))
+		c.indent++
+		c.writeln("MOVE 0 TO " + res)
+		c.indent--
+		c.writeln("    ELSE")
+		c.indent++
+		c.writeln(fmt.Sprintf("COMPUTE %s = %s / %s", res, sumRes, lenRes))
+		c.indent--
+		c.writeln("    END-IF")
+		return res
+	}
 	if !ok {
 		return "0"
 	}
@@ -586,30 +593,30 @@ func (c *Compiler) compileReduceCall(list, fn, init *ast.Node) string {
 // compileStructExpr emits declarations and assignments for a struct literal
 // and returns the base variable name representing the struct value.
 func (c *Compiler) assignStructFields(base string, n *ast.Node) {
-        for _, f := range n.Children {
-                if len(f.Children) == 0 {
-                        continue
-                }
-                field := base + "_" + cobolName(f.Value.(string))
-                if f.Children[0].Kind == "struct" {
-                        c.assignStructFields(field, f.Children[0])
-                        continue
-                }
-                pic := c.picForExpr(f.Children[0])
-                c.declare(fmt.Sprintf("01 %s %s", field, pic))
-                val := c.expr(f.Children[0])
-                if c.isString(f.Children[0]) {
-                        c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, field))
-                } else {
-                        c.writeln(fmt.Sprintf("    COMPUTE %s = %s", field, val))
-                }
-        }
+	for _, f := range n.Children {
+		if len(f.Children) == 0 {
+			continue
+		}
+		field := base + "_" + cobolName(f.Value.(string))
+		if f.Children[0].Kind == "struct" {
+			c.assignStructFields(field, f.Children[0])
+			continue
+		}
+		pic := c.picForExpr(f.Children[0])
+		c.declare(fmt.Sprintf("01 %s %s", field, pic))
+		val := c.expr(f.Children[0])
+		if c.isString(f.Children[0]) {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s", val, field))
+		} else {
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", field, val))
+		}
+	}
 }
 
 func (c *Compiler) compileStructExpr(n *ast.Node) string {
-        name := c.newTemp()
-        c.assignStructFields(name, n)
-        return name
+	name := c.newTemp()
+	c.assignStructFields(name, n)
+	return name
 }
 
 // compileQueryExpr handles very simple dataset queries of the form:
@@ -862,6 +869,15 @@ func (c *Compiler) expr(n *ast.Node) string {
 		return full
 	case "struct":
 		return c.compileStructExpr(n)
+	case "load":
+		tmp := c.newTemp()
+		c.declare(fmt.Sprintf("01 %s OCCURS 0 TIMES PIC 9.", tmp))
+		c.listLens[tmp] = 0
+		c.writeln("    *> load not implemented")
+		return tmp
+	case "save":
+		c.writeln("    *> save not implemented")
+		return "0"
 	case "binary":
 		left := c.expr(n.Children[0])
 		right := c.expr(n.Children[1])
@@ -1159,6 +1175,12 @@ func (c *Compiler) compileMatchExpr(n *ast.Node) string {
 func (c *Compiler) compileLet(n *ast.Node) {
 	orig := n.Value.(string)
 	name := cobolName(orig)
+	if len(n.Children) == 1 && n.Children[0].Kind == "load" {
+		c.declare(fmt.Sprintf("01 %s OCCURS 0 TIMES PIC 9.", name))
+		c.listLens[orig] = 0
+		c.writeln("    *> load not implemented")
+		return
+	}
 	if len(n.Children) == 1 && n.Children[0].Kind == "funexpr" {
 		fn := c.compileFunExpr(n.Children[0])
 		c.varFuncs[name] = fn
@@ -1191,10 +1213,10 @@ func (c *Compiler) compileLet(n *ast.Node) {
 		}
 		return
 	}
-        if len(n.Children) == 1 && n.Children[0].Kind == "struct" {
-                c.assignStructFields(name, n.Children[0])
-                return
-        }
+	if len(n.Children) == 1 && n.Children[0].Kind == "struct" {
+		c.assignStructFields(name, n.Children[0])
+		return
+	}
 	if len(n.Children) == 1 && c.isList(n.Children[0]) {
 		src := c.expr(n.Children[0])
 		if l, ok := c.listLens[src]; ok {
@@ -1217,6 +1239,12 @@ func (c *Compiler) compileLet(n *ast.Node) {
 func (c *Compiler) compileVar(n *ast.Node) {
 	orig := n.Value.(string)
 	name := cobolName(orig)
+	if len(n.Children) == 1 && n.Children[0].Kind == "load" {
+		c.declare(fmt.Sprintf("01 %s OCCURS 0 TIMES PIC 9.", name))
+		c.listLens[orig] = 0
+		c.writeln("    *> load not implemented")
+		return
+	}
 	if len(n.Children) == 1 && n.Children[0].Kind == "funexpr" {
 		fn := c.compileFunExpr(n.Children[0])
 		c.varFuncs[name] = fn
@@ -1258,6 +1286,12 @@ func (c *Compiler) compileVar(n *ast.Node) {
 func (c *Compiler) compileAssign(n *ast.Node) {
 	name := cobolName(n.Value.(string))
 	if len(n.Children) == 1 {
+		if n.Children[0].Kind == "load" {
+			c.declare(fmt.Sprintf("01 %s OCCURS 0 TIMES PIC 9.", name))
+			c.listLens[n.Value.(string)] = 0
+			c.writeln("    *> load not implemented")
+			return
+		}
 		if n.Children[0].Kind == "funexpr" {
 			fn := c.compileFunExpr(n.Children[0])
 			c.varFuncs[name] = fn
@@ -1288,11 +1322,11 @@ func (c *Compiler) compileAssign(n *ast.Node) {
 			} else {
 				c.writeln("    *> unsupported list assignment")
 			}
-                } else if n.Children[0].Kind == "struct" {
-                        c.assignStructFields(name, n.Children[0])
-                } else {
-                        expr := c.expr(n.Children[0])
-                        c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
-                }
-        }
+		} else if n.Children[0].Kind == "struct" {
+			c.assignStructFields(name, n.Children[0])
+		} else {
+			expr := c.expr(n.Children[0])
+			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", name, expr))
+		}
+	}
 }
