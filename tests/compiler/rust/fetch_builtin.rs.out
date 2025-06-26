@@ -1,0 +1,13 @@
+#[derive(Clone, Debug, Default)]
+struct Msg {
+    message: String,
+}
+
+fn main() {
+    let mut data: Msg = _fetch("file://tests/compiler/rust/fetch_builtin.json", std::collections::HashMap::new());
+    println!("{}", data.message);
+}
+
+fn _fetch(_url: &str, _opts: std::collections::HashMap<String, String>) -> String {
+    String::new()
+}
