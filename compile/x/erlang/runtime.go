@@ -136,10 +136,19 @@ func (c *Compiler) emitRuntime() {
 		c.indent++
 		c.writeln("{ok, Bin} ->")
 		c.indent++
-		c.writeln("Ext = filename:extension(Path),")
-		c.writeln("Data0 = case Ext of")
+		c.writeln("Format = case Opts of")
 		c.indent++
-		c.writeln("\".txt\" -> binary_to_list(Bin);")
+		c.writeln("undefined -> undefined;")
+		c.writeln("O -> maps:get(format, O, undefined)")
+		c.indent--
+		c.writeln("end,")
+		c.writeln("Ext = filename:extension(Path),")
+		c.writeln("Text = binary_to_list(Bin),")
+		c.writeln("Data0 = case {Format, Ext} of")
+		c.indent++
+		c.writeln("{\"json\", _} -> mochi_decode_json(Text);")
+		c.writeln("{_, \".json\"} -> mochi_decode_json(Text);")
+		c.writeln("{_, \".txt\"} -> Text;")
 		c.writeln("_ -> binary_to_term(Bin)")
 		c.indent--
 		c.writeln("end,")
@@ -152,12 +161,20 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 
 		c.writeln("")
-		c.writeln("mochi_save(Data, Path, _Opts) ->")
+		c.writeln("mochi_save(Data, Path, Opts) ->")
 		c.indent++
+		c.writeln("Format = case Opts of")
+		c.indent++
+		c.writeln("undefined -> undefined;")
+		c.writeln("O -> maps:get(format, O, undefined)")
+		c.indent--
+		c.writeln("end,")
 		c.writeln("Ext = filename:extension(Path),")
-		c.writeln("Bin = case Ext of")
+		c.writeln("Bin = case {Format, Ext} of")
 		c.indent++
-		c.writeln("\".txt\" -> Data;")
+		c.writeln("{\"json\", _} -> list_to_binary(mochi_to_json(Data));")
+		c.writeln("{_, \".json\"} -> list_to_binary(mochi_to_json(Data));")
+		c.writeln("{_, \".txt\"} -> Data;")
 		c.writeln("_ -> term_to_binary(Data)")
 		c.indent--
 		c.writeln("end,")
@@ -198,6 +215,87 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("end;")
 		c.indent--
 		c.writeln("mochi_paginate(Data, _) -> Data.")
+
+		c.writeln("")
+		c.writeln("mochi_decode_json(Text) ->")
+		c.indent++
+		c.writeln("{Val, _} = mochi_json_value(string:trim(Text)),")
+		c.writeln("Val.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_json_value([] = S) -> {[], S};")
+		c.writeln("mochi_json_value([${}|S]) -> mochi_json_object(S, #{});")
+		c.writeln("mochi_json_value([$[|S]) -> mochi_json_array(S, []);")
+		c.writeln("mochi_json_value([$\"|S]) ->")
+		c.indent++
+		c.writeln("{Str, R} = mochi_json_string(S, []),")
+		c.writeln("{Str, mochi_skip_ws(R)}.")
+		c.indent--
+		c.writeln("mochi_json_value(S) ->")
+		c.indent++
+		c.writeln("{Num, R} = mochi_json_number(S),")
+		c.writeln("{Num, mochi_skip_ws(R)}.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_json_array([$]|S], Acc) -> {lists:reverse(Acc), mochi_skip_ws(S)};")
+		c.writeln("mochi_json_array(S, Acc) ->")
+		c.indent++
+		c.writeln("{Val, R0} = mochi_json_value(mochi_skip_ws(S)),")
+		c.writeln("R1 = mochi_skip_ws(R0),")
+		c.writeln("case R1 of")
+		c.indent++
+		c.writeln("[$,|T] -> mochi_json_array(T, [Val|Acc]);")
+		c.writeln("[$]|T] -> {lists:reverse([Val|Acc]), mochi_skip_ws(T)};")
+		c.writeln("_ -> {lists:reverse([Val|Acc]), R1}")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_json_object([$}|S], Acc) -> {Acc, mochi_skip_ws(S)};")
+		c.writeln("mochi_json_object(S, Acc) ->")
+		c.indent++
+		c.writeln("{Key, R0} = mochi_json_string(mochi_skip_ws(S), []),")
+		c.writeln("R1 = mochi_skip_ws(R0),")
+		c.writeln("[$:|R2] = R1,")
+		c.writeln("{Val, R3} = mochi_json_value(mochi_skip_ws(R2)),")
+		c.writeln("R4 = mochi_skip_ws(R3),")
+		c.writeln("Acc1 = maps:put(Key, Val, Acc),")
+		c.writeln("case R4 of")
+		c.indent++
+		c.writeln("[$,|T] -> mochi_json_object(T, Acc1);")
+		c.writeln("[$}|T] -> {Acc1, mochi_skip_ws(T)};")
+		c.writeln("_ -> {Acc1, R4}")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_json_string([$\\,C|S], Acc) -> mochi_json_string(S, [C|Acc]);")
+		c.writeln("mochi_json_string([$\"|S], Acc) -> {lists:reverse(Acc), S};")
+		c.writeln("mochi_json_string([C|S], Acc) -> mochi_json_string(S, [C|Acc]).")
+
+		c.writeln("")
+		c.writeln("mochi_json_number(S) ->")
+		c.indent++
+		c.writeln("{NumStr, Rest} = mochi_take_number(S, []),")
+		c.writeln("case string:to_float(NumStr) of")
+		c.indent++
+		c.writeln("{error, _} -> {list_to_integer(NumStr), Rest};")
+		c.writeln("{F, _} -> {F, Rest}")
+		c.indent--
+		c.writeln("end.")
+		c.indent--
+
+		c.writeln("")
+		c.writeln("mochi_take_number([C|S], Acc) when C >= $0, C =< $9; C == $.; C == $-; C == $+ -> mochi_take_number(S, [C|Acc]);")
+		c.writeln("mochi_take_number(S, Acc) -> {lists:reverse(Acc), S}.")
+
+		c.writeln("")
+		c.writeln("mochi_skip_ws([C|S]) when C =< $\\s -> mochi_skip_ws(S);")
+		c.writeln("mochi_skip_ws(S) -> S.")
 	}
 
 	if c.needFetch {

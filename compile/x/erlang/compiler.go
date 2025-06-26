@@ -1703,6 +1703,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	c.needIO = true
+	c.needJSON = true
 	src, err := c.compileExpr(s.Src)
 	if err != nil {
 		return "", err
