@@ -1,7 +1,13 @@
 # Zig Backend Tasks for TPCH Q1
 
-The Zig backend mirrors the C compiler but does not yet emit grouping code.
+Grouping support for simple queries has been implemented so that
+`tests/dataset/tpc-h/q1.mochi` compiles successfully. Aggregation helpers
+(`sum`, `avg`, `count`) are available and JSON output is handled via
+`std.json`.
 
-- Implement grouping using `std.AutoHashMap` with dynamic arrays for row lists.
-- Generate `struct` definitions matching TPCH rows and provide aggregate helpers with iterators.
-- Output JSON via `std.json` and add a test under `tests/compiler/zig`.
+Remaining work
+---------------
+
+- Replace the current linear search grouping with an optimized
+  `std.AutoHashMap` implementation.
+- Add join and sorting support for query expressions.

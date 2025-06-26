@@ -23,6 +23,26 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsSumInt {
+		c.writeln("fn _sum_int(v: []const i32) i32 {")
+		c.indent++
+		c.writeln("var sum: i32 = 0;")
+		c.writeln("for (v) |it| { sum += it; }")
+		c.writeln("return sum;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsSumFloat {
+		c.writeln("fn _sum_float(v: []const f64) f64 {")
+		c.indent++
+		c.writeln("var sum: f64 = 0;")
+		c.writeln("for (v) |it| { sum += it; }")
+		c.writeln("return sum;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsInListInt {
 		c.writeln("fn _contains_list_int(v: []const i32, item: i32) bool {")
 		c.indent++
