@@ -1,4 +1,21 @@
 # 📦 CHANGELOG.md
+## [0.10.2] – 2025-06-26T12:39:20+07:00
+
+### Added
+
+* `values` builtin with source context stack traces in the VM
+* `sum` helpers and group-by filters across backends
+* Query `let` clause and new TPC-H examples
+
+### Changed
+
+* CLI no longer executes code via the interpreter
+
+### Fixed
+
+* Binary operator precedence bug in the VM
+* TPC-H query corrections and compiler updates
+
 ## [0.10.1] – 2025-06-26T08:03:05+07:00
 
 ### Added
