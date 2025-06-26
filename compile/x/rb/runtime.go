@@ -8,6 +8,11 @@ const (
   require 'json'
   require 'uri'
   uri = URI(url)
+  if uri.scheme.nil? || uri.scheme == '' || uri.scheme == 'file'
+    path = uri.scheme == 'file' ? uri.path : url
+    data = File.read(path)
+    return JSON.parse(data)
+  end
   method = 'GET'
   headers = {}
   body = nil
