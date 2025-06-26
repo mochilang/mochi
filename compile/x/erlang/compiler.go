@@ -36,6 +36,7 @@ type Compiler struct {
 	needGenText   bool
 	needGenEmbed  bool
 	needGenStruct bool
+	castStructs   map[string]types.StructType
 	needSetOps    bool
 	needGroup     bool
 	needGroupBy   bool
@@ -249,7 +250,7 @@ func gatherIdentsPrimary(p *parser.Primary, out map[string]bool) {
 
 // New returns a new Compiler.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}, packages: map[string]bool{}, tmpCount: 0, tests: []testInfo{}}
+	return &Compiler{env: env, vars: map[string]string{}, counts: map[string]int{}, packages: map[string]bool{}, tmpCount: 0, tests: []testInfo{}, castStructs: map[string]types.StructType{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -1066,8 +1067,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				typ = types.AnyType{}
 			}
 		} else if op.Cast != nil {
-			// ignore type casts
 			typ = c.resolveTypeRef(op.Cast.Type)
+			switch t := typ.(type) {
+			case types.StructType:
+				fn := "mochi_cast_" + sanitizeName(t.Name)
+				if c.castStructs != nil {
+					c.castStructs[t.Name] = t
+				}
+				res = fmt.Sprintf("%s(%s)", fn, res)
+			case types.ListType:
+				if st, ok := t.Elem.(types.StructType); ok {
+					fn := "mochi_cast_" + sanitizeName(st.Name)
+					if c.castStructs != nil {
+						c.castStructs[st.Name] = st
+					}
+					res = fmt.Sprintf("[ %s(X) || X <- %s ]", fn, res)
+				}
+			default:
+				// other casts ignored
+			}
 		}
 	}
 	return res, nil
@@ -1735,10 +1753,10 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 			return "", err
 		}
 		opts = o
-       }
-       c.needFetch = true
-       c.needJSON = true
-       return fmt.Sprintf("mochi_fetch(%s, %s)", url, opts), nil
+	}
+	c.needFetch = true
+	c.needJSON = true
+	return fmt.Sprintf("mochi_fetch(%s, %s)", url, opts), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
