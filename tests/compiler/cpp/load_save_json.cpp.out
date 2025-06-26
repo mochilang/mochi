@@ -1,0 +1,103 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+static string _read_input(const string& path) {
+	if (!path.empty() && path != "-") {
+		ifstream f(path);
+		stringstream ss; ss << f.rdbuf(); return ss.str();
+	}
+	stringstream ss; ss << cin.rdbuf(); return ss.str();
+}
+static vector<string> _split(const string& s, char d) {
+	vector<string> out; string item; stringstream ss(s);
+	while (getline(ss, item, d)) out.push_back(item);
+	return out;
+}
+static vector<unordered_map<string,string>> _parse_csv(const string& text, bool header, char delim) {
+	vector<unordered_map<string,string>> rows;
+	stringstream ss(text); string line; vector<string> lines;
+	while (getline(ss, line)) { if (!line.empty() && line.back()=='\r') line.pop_back(); lines.push_back(line); }
+	if (lines.empty()) return rows;
+	vector<string> headers; size_t start = 0;
+	if (header) { headers = _split(lines[0], delim); start = 1; } else {
+	headers = _split(lines[0], delim);
+	for (size_t i=0;i<headers.size();i++) headers[i] = string("c")+to_string(i);
+	}
+	for (size_t i=start;i<lines.size();i++) {
+		auto parts = _split(lines[i], delim);
+		unordered_map<string,string> row;
+		for (size_t j=0;j<headers.size();j++) {
+			string val = j<parts.size()?parts[j]:"";
+			row[headers[j]] = val;
+		}
+		rows.push_back(row);
+	}
+	return rows;
+}
+static unordered_map<string,string> _parse_json_obj(const string& s) {
+	unordered_map<string,string> row; size_t i=0;
+	while (i<s.size()) {
+		if (s[i]=='"') {
+			size_t j=s.find('"', i+1); if (j==string::npos) break; string key=s.substr(i+1,j-i-1);
+			i=s.find(':', j); if (i==string::npos) break; i++; while (i<s.size() && isspace(s[i])) i++;
+			string val;
+			if (i<s.size() && s[i]=='"') { size_t k=s.find('"', i+1); val=s.substr(i+1,k-i-1); i=k+1; } else { size_t k=i; while (k<s.size() && (isalnum(s[k])||s[k]=='-'||s[k]=='+'||s[k]=='.')) k++; val=s.substr(i,k-i); i=k; }
+			row[key]=val;
+		} else { i++; }
+	}
+	return row;
+}
+static vector<unordered_map<string,string>> _parse_jsonl(const string& text) {
+	vector<unordered_map<string,string>> rows; string line; stringstream ss(text);
+	while (getline(ss, line)) { if (!line.empty()) rows.push_back(_parse_json_obj(line)); }
+	return rows;
+}
+static vector<unordered_map<string,string>> _parse_json(const string& text) {
+	string t=text; while(!t.empty() && isspace(t.front())) t.erase(t.begin()); while(!t.empty() && isspace(t.back())) t.pop_back();
+	vector<unordered_map<string,string>> rows;
+	if (t.empty()) return rows;
+	if (t[0]=='[') { size_t pos=t.find('{'); while(pos!=string::npos){ size_t end=t.find('}',pos); rows.push_back(_parse_json_obj(t.substr(pos,end-pos+1))); pos=t.find('{',end); } }
+	else if (t[0]=='{') { rows.push_back(_parse_json_obj(t)); }
+	return rows;
+}
+vector<unordered_map<string,string>> _load(const string& path, const unordered_map<string,string>& opts) {
+	string format="csv"; bool header=true; char delim=',';
+	auto it=opts.find("format"); if(it!=opts.end()) format=it->second;
+	it=opts.find("header"); if(it!=opts.end()) header=(it->second=="true");
+	it=opts.find("delimiter"); if(it!=opts.end() && !it->second.empty()) delim=it->second[0];
+	string text=_read_input(path);
+	if (format=="jsonl") return _parse_jsonl(text);
+	if (format=="json") return _parse_json(text);
+	if (format=="tsv") delim='	';
+	return _parse_csv(text, header, delim);
+}
+
+static void _write_output(const string& path, const string& text) {
+	if (!path.empty() && path != "-") { ofstream f(path); f << text; } else { cout << text; }
+}
+static string _json_sorted(const unordered_map<string,string>& m) {
+	vector<string> keys; for (const auto& kv : m) keys.push_back(kv.first); sort(keys.begin(), keys.end());
+	string out="{"; bool first=true;
+	for(const auto& k:keys){ if(!first) out+=','; first=false; out+=_to_json(k); out+=':'; out+=_to_json(m.at(k)); }
+	out+='}'; return out;
+}
+void _save(const vector<unordered_map<string,string>>& src, const string& path, const unordered_map<string,string>& opts) {
+	string format="csv"; bool header=false; char delim=',';
+	auto it=opts.find("format"); if(it!=opts.end()) format=it->second;
+	it=opts.find("header"); if(it!=opts.end()) header=(it->second=="true");
+	it=opts.find("delimiter"); if(it!=opts.end() && !it->second.empty()) delim=it->second[0];
+	string text;
+	if (format=="jsonl") { for(const auto& r:src){ text+=_json_sorted(r)+"
+"; } }
+	else if (format=="json") { if(src.size()==1) text=_json_sorted(src[0]); else text=_to_json(src); }
+	else { if(format=="tsv") delim='	'; vector<string> headers; if(!src.empty()) for(const auto& kv:src[0]) headers.push_back(kv.first); sort(headers.begin(), headers.end()); if(header && !headers.empty()){ for(size_t i=0;i<headers.size();i++){ if(i>0) text+=delim; text+=headers[i]; } text+='
+'; } for(const auto& r:src){ for(size_t i=0;i<headers.size();i++){ if(i>0) text+=delim; auto it2=r.find(headers[i]); if(it2!=r.end()) text+=it2->second; } text+='
+'; } }
+	_write_output(path, text);
+}
+
+int main() {
+	auto rows = _load("", unordered_map<string, string>{{string("format"), string("json")}});
+	_save(rows, "-", unordered_map<string, string>{{string("format"), string("json")}});
+	return 0;
+}

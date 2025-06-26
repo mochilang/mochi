@@ -1,0 +1,2 @@
+let rows = load as map<string,string> with { format: "json" }
+save rows to "-" with { format: "json" }
