@@ -110,11 +110,11 @@ const (
 		"    String::new()\n" +
 		"}\n"
 
-	helperLoad = "fn _load<T>(_path: &str) -> Vec<T> {\n" +
+	helperLoad = "fn _load<T>(_path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {\n" +
 		"    Vec::new()\n" +
 		"}\n"
 
-	helperSave = "fn _save<T>(_src: &[T], _path: &str) {\n" +
+	helperSave = "fn _save<T>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) {\n" +
 		"}\n"
 
 	helperExpect = "fn expect(cond: bool) {\n" +
