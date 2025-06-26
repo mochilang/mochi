@@ -1987,6 +1987,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	c.imports["encoding/json"] = true
 	c.imports["bytes"] = true
 	c.imports["net/url"] = true
+	c.imports["os"] = true
 	c.imports["time"] = true
 	c.imports["fmt"] = true
 	c.use("_fetch")
