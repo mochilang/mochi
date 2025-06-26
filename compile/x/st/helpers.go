@@ -1,6 +1,9 @@
 package stcode
 
-import "strings"
+import (
+	"mochi/parser"
+	"strings"
+)
 
 func sanitizeName(name string) string {
 	var b strings.Builder
@@ -15,4 +18,14 @@ func sanitizeName(name string) string {
 		return "_" + b.String()
 	}
 	return b.String()
+}
+
+func typeName(t *parser.TypeRef) string {
+	if t == nil {
+		return ""
+	}
+	if t.Simple != nil {
+		return *t.Simple
+	}
+	return ""
 }

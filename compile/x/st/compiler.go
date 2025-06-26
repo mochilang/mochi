@@ -35,6 +35,7 @@ type Compiler struct {
 	needSum         bool
 	needGroupBy     bool
 	needGroup       bool
+	needCast        bool
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -738,6 +739,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("(%s at: %s + 1)", expr, idx)
 				}
 			}
+		} else if op.Cast != nil {
+			t := typeName(op.Cast.Type)
+			c.needCast = true
+			expr = fmt.Sprintf("(Main _cast: '%s' value: %s)", t, expr)
 		}
 	}
 	return expr, nil
@@ -1585,6 +1590,13 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("text := stream contents.")
 		c.writeln("stream close.")
 		c.writeln("^ JSONReader fromJSON: text")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needCast {
+		c.writeln("_cast: type value: v")
+		c.indent++
+		c.writeln("^ v")
 		c.indent--
 		c.writelnNoIndent("!")
 	}
