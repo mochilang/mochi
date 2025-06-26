@@ -1,0 +1,38 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+	generic TArray<T> = array of T;
+
+var
+	body: string;
+
+function _fetch(url: string; opts: specialize TFPGMap<string, Variant>): string;
+var client: TFPHTTPClient; sl: TStringList;
+begin
+	if Pos('file://', url) = 1 then
+		begin
+			sl := TStringList.Create;
+			try
+				sl.LoadFromFile(Copy(url, 8, Length(url)));
+				Result := sl.Text;
+			finally
+				sl.Free;
+			end;
+		end
+	else
+		begin
+			client := TFPHTTPClient.Create(nil);
+			try
+				Result := client.Get(url);
+			finally
+				client.Free;
+			end;
+		end;
+	end;
+	
+	begin
+	body := _fetch('file://tests/compiler/pas/fetch_builtin.json', nil);
+	writeln((Length(body) > 0));
+	end.

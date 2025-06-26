@@ -1,0 +1,2 @@
+let body: string = fetch "file://tests/compiler/pas/fetch_builtin.json"
+print(len(body) > 0)
