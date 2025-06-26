@@ -1,0 +1,125 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+template<typename T> auto _count(const T& v) -> decltype(v.size(), int{}) {
+	return (int)v.size();
+}
+template<typename T> auto _count(const T& v) -> decltype(v.Items, int{}) {
+	return (int)v.Items.size();
+}
+
+template<typename T> auto _avg(const T& v) -> decltype(v.size(), double{}) {
+	if (v.size() == 0) return 0;
+	double sum = 0;
+	for (const auto& it : v) sum += it;
+	return sum / v.size();
+}
+template<typename T> auto _avg(const T& v) -> decltype(v.Items, double{}) {
+	return _avg(v.Items);
+}
+
+static string _escape_json(const string& s) {
+	string out;
+	for (char c : s) {
+		if (c == '"' || c == '\\') out += '\\';
+		out += c;
+	}
+	return out;
+}
+template<typename T> string _to_json(const T& v);
+inline string _to_json(const string& s) {
+	string out = "\"";
+	out += _escape_json(s);
+	out += "\"";
+	return out;
+}
+inline string _to_json(const char* s) { return _to_json(string(s)); }
+inline string _to_json(int v) { return to_string(v); }
+inline string _to_json(double v) { stringstream ss; ss << v; return ss.str(); }
+inline string _to_json(bool v) { return v ? "true" : "false"; }
+template<typename T> string _to_json(const vector<T>& v) {
+	string out = "[";
+	for (size_t i=0;i<v.size();i++) { if (i>0) out += ','; out += _to_json(v[i]); }
+	out += ']';
+	return out;
+}
+template<typename K, typename V> string _to_json(const unordered_map<K,V>& m) {
+	string out = "{"; bool first = true;
+	for (const auto& kv : m) {
+		if (!first) out += ','; first = false;
+		out += _to_json(kv.first); out += ':'; out += _to_json(kv.second);
+	}
+	out += '}';
+	return out;
+}
+template<typename T> string _to_json(const T& v) { stringstream ss; ss << v; return _to_json(ss.str()); }
+template<typename T> void _json(const T& v) { cout << _to_json(v) << endl; }
+
+int main() {
+	auto lineitem = vector<unordered_map<string, int>>{unordered_map<string, int>{{string("l_quantity"), 17}, {string("l_extendedprice"), 1000.0}, {string("l_discount"), 0.05}, {string("l_tax"), 0.07}, {string("l_returnflag"), string("N")}, {string("l_linestatus"), string("O")}, {string("l_shipdate"), string("1998-08-01")}}, unordered_map<string, int>{{string("l_quantity"), 36}, {string("l_extendedprice"), 2000.0}, {string("l_discount"), 0.1}, {string("l_tax"), 0.05}, {string("l_returnflag"), string("N")}, {string("l_linestatus"), string("O")}, {string("l_shipdate"), string("1998-09-01")}}, unordered_map<string, int>{{string("l_quantity"), 25}, {string("l_extendedprice"), 1500.0}, {string("l_discount"), 0.0}, {string("l_tax"), 0.08}, {string("l_returnflag"), string("R")}, {string("l_linestatus"), string("F")}, {string("l_shipdate"), string("1998-09-03")}}};
+	auto result = ([&]() -> vector<unordered_map<string, int>> {
+	using ElemT = unordered_map<string, auto>;
+	using KeyT = unordered_map<string, int>;
+	struct Group { KeyT Key; vector<ElemT> Items; };
+	unordered_map<KeyT, Group> groups;
+	vector<KeyT> order;
+	for (auto& row : lineitem) {
+		if (row.l_shipdate <= string("1998-09-02")) {
+			KeyT _k = unordered_map<string, int>{{string("returnflag"), row.l_returnflag}, {string("linestatus"), row.l_linestatus}};
+			if (!groups.count(_k)) { groups[_k] = Group{_k, {}}; order.push_back(_k); }
+			groups[_k].Items.push_back(row);
+		}
+	}
+	vector<Group*> items;
+	for (auto& _k : order) items.push_back(&groups[_k]);
+	vector<unordered_map<string, int>> _res;
+	for (auto* g : items) {
+		_res.push_back(unordered_map<string, int>{{string("returnflag"), g.key.returnflag}, {string("linestatus"), g.key.linestatus}, {string("sum_qty"), sum(([&]() -> vector<auto> {
+	vector<auto> _res;
+	for (auto& x : g) {
+		_res.push_back(x.l_quantity);
+	}
+	return _res;
+})())}, {string("sum_base_price"), sum(([&]() -> vector<auto> {
+	vector<auto> _res;
+	for (auto& x : g) {
+		_res.push_back(x.l_extendedprice);
+	}
+	return _res;
+})())}, {string("sum_disc_price"), sum(([&]() -> vector<auto> {
+	vector<auto> _res;
+	for (auto& x : g) {
+		_res.push_back(x.l_extendedprice * (1 - x.l_discount));
+	}
+	return _res;
+})())}, {string("sum_charge"), sum(([&]() -> vector<auto> {
+	vector<auto> _res;
+	for (auto& x : g) {
+		_res.push_back(x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax));
+	}
+	return _res;
+})())}, {string("avg_qty"), _avg(([&]() -> vector<auto> {
+	vector<auto> _res;
+	for (auto& x : g) {
+		_res.push_back(x.l_quantity);
+	}
+	return _res;
+})())}, {string("avg_price"), _avg(([&]() -> vector<auto> {
+	vector<auto> _res;
+	for (auto& x : g) {
+		_res.push_back(x.l_extendedprice);
+	}
+	return _res;
+})())}, {string("avg_disc"), _avg(([&]() -> vector<auto> {
+	vector<auto> _res;
+	for (auto& x : g) {
+		_res.push_back(x.l_discount);
+	}
+	return _res;
+})())}, {string("count_order"), _count(g)}});
+	}
+	return _res;
+})();
+	_json(result);
+	return 0;
+}

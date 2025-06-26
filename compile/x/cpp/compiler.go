@@ -912,6 +912,9 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 	}
 	for i, it := range m.Items {
 		k := c.compileExpr(it.Key)
+		if name, ok := selectorName(it.Key); ok {
+			k = fmt.Sprintf("string(\"%s\")", name)
+		}
 		v := c.compileExpr(it.Value)
 		items[i] = fmt.Sprintf("{%s, %s}", k, v)
 	}
