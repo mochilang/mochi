@@ -1,15 +1,19 @@
-# Tasks to Enable TPCH Q1 on Racket backend
+# TPC-H Q1 Support Status
 
-Compilation of `tests/dataset/tpc-h/q1.mochi` with the Racket backend fails with `group clause not supported`. The compiler currently only supports `group by` queries without additional clauses. To run the full query we need:
+The original Racket backend lacked support for grouping with additional clauses
+which prevented `tests/dataset/tpc-h/q1.mochi` from compiling. The missing
+features have now been implemented.
 
-1. **Group with filters and aggregation**
-   - Allow `group by` queries that also include `where`, `skip`, `take`, or `sort` clauses.
-   - Emit `_group_by` calls followed by filtering and aggregation logic.
-2. **Grouping with structured keys**
-   - Support grouping by arbitrary expressions (e.g. records `{ returnflag: ... }`).
-3. **Aggregate functions**
-   - Ensure `sum`, `avg`, and `count` operate over groups in generated Racket code.
-4. **Golden tests**
-   - After extending the compiler, add `tpc-h_q1.mochi` to `tests/compiler/rkt` with matching `.out` and `.rkt.out` files.
+## Implemented Work
 
-Once these features are implemented, the Racket compiler should successfully build and execute TPC-H Q1.
+1. **Group with filters and aggregation** – `group by` queries may now include
+   `where`, `skip`, `take` and `sort` clauses. The compiler emits a `_group_by`
+   call and then performs the requested filtering and aggregation.
+2. **Grouping with structured keys** – grouping by arbitrary expressions such as
+   records is supported.
+3. **Aggregate functions** – `sum`, `avg` and `count` operate over groups in the
+   generated Racket code.
+4. **Golden tests** – `tpc-h_q1.mochi` with expected `.out` and `.rkt.out`
+   outputs lives in `tests/compiler/rkt`.
+
+The Racket compiler can now build and execute TPC-H query 1.
