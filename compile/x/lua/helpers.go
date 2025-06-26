@@ -178,3 +178,27 @@ func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
 	_, ok := c.inferPostfixType(p).(types.MapType)
 	return ok
 }
+
+func simpleStringKey(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
+}
