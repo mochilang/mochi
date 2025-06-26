@@ -241,10 +241,16 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
-	if c.helpers["save_data"] {
-		for _, line := range strings.Split(strings.TrimSuffix(helperSave, "\n"), "\n") {
-			c.writeln(line)
-		}
-		c.writeln("")
-	}
+       if c.helpers["save_data"] {
+               for _, line := range strings.Split(strings.TrimSuffix(helperSave, "\n"), "\n") {
+                       c.writeln(line)
+               }
+               c.writeln("")
+       }
+       if c.helpers["fetch_data"] {
+               for _, line := range strings.Split(strings.TrimSuffix(helperFetch, "\n"), "\n") {
+                       c.writeln(line)
+               }
+               c.writeln("")
+       }
 }
