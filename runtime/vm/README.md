@@ -123,6 +123,7 @@ from the disassembler:
 | `Sum` | Sum of numeric list B | `Sum r0, r1` |
 | `Min` | Minimum value of numeric list B | `Min r0, r1` |
 | `Max` | Maximum value of numeric list B | `Max r0, r1` |
+| `Values` | List of values in map B | `Values r0, r1` |
 | `Cast` | Cast value B to type index C | `Cast r0, r1, 0` |
 | `IterPrep` | Prepare iterable from B | `IterPrep r0, r1` |
 | `Load` | Load dataset from path B with options C | `Load r0, r1, r2` |

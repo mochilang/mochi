@@ -79,6 +79,7 @@ const (
 	OpSum
 	OpMin
 	OpMax
+	OpValues
 	OpCast
 	OpIterPrep
 	OpLoad
@@ -203,6 +204,8 @@ func (op Op) String() string {
 		return "Min"
 	case OpMax:
 		return "Max"
+	case OpValues:
+		return "Values"
 	case OpCast:
 		return "Cast"
 	case OpIterPrep:
@@ -1362,6 +1365,21 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(maxVal)}
 				}
 			}
+		case OpValues:
+			m := fr.regs[ins.B]
+			if m.Tag != interpreter.TagMap {
+				return Value{}, fmt.Errorf("values expects map")
+			}
+			keys := make([]string, 0, len(m.Map))
+			for k := range m.Map {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			vals := make([]Value, len(keys))
+			for i, k := range keys {
+				vals[i] = m.Map[k]
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: vals}
 		case OpCast:
 			val := valueToAny(fr.regs[ins.B])
 			typ := m.prog.Types[ins.C]
@@ -2509,6 +2527,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpMax, A: dst, B: arg})
+			return dst
+		case "values":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpValues, A: dst, B: arg})
 			return dst
 		case "substring":
 			str := fc.compileExpr(p.Call.Args[0])
