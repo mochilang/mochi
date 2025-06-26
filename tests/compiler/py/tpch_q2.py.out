@@ -41,7 +41,7 @@ def main():
 	global costs
 	costs = [ x["ps_supplycost"] for x in target_partsupp ]
 	global min_cost
-	min_cost = min(costs)
+        min_cost = _min(costs)
 	global result
 	result = [ x for x in sorted([ x for x in target_partsupp if (x["ps_supplycost"] == min_cost) ], key=lambda x: (-x["s_acctbal"])) ]
 	print(json.dumps(result, default=lambda o: vars(o)))

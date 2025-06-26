@@ -40,6 +40,40 @@ var helperAvg = "def _avg(v):\n" +
 	"            raise Exception('avg() expects numbers')\n" +
 	"    return s / len(v)\n"
 
+var helperMin = "def _min(v):\n" +
+	"    if hasattr(v, 'Items'):\n" +
+	"        v = v.Items\n" +
+	"    if not isinstance(v, list):\n" +
+	"        raise Exception('min() expects list or group')\n" +
+	"    if not v:\n" +
+	"        return 0\n" +
+	"    m = float(v[0])\n" +
+	"    is_float = isinstance(v[0], float)\n" +
+	"    for it in v[1:]:\n" +
+	"        if isinstance(it, float):\n" +
+	"            is_float = True\n" +
+	"        f = float(it)\n" +
+	"        if f < m:\n" +
+	"            m = f\n" +
+	"    return m if is_float else int(m)\n"
+
+var helperMax = "def _max(v):\n" +
+	"    if hasattr(v, 'Items'):\n" +
+	"        v = v.Items\n" +
+	"    if not isinstance(v, list):\n" +
+	"        raise Exception('max() expects list or group')\n" +
+	"    if not v:\n" +
+	"        return 0\n" +
+	"    m = float(v[0])\n" +
+	"    is_float = isinstance(v[0], float)\n" +
+	"    for it in v[1:]:\n" +
+	"        if isinstance(it, float):\n" +
+	"            is_float = True\n" +
+	"        f = float(it)\n" +
+	"        if f > m:\n" +
+	"            m = f\n" +
+	"    return m if is_float else int(m)\n"
+
 var helperGroupClass = "class _Group:\n" +
 	"    def __init__(self, key):\n" +
 	"        self.key = key\n" +
@@ -364,6 +398,8 @@ var helperMap = map[string]string{
 	"_group_by":   helperGroupBy,
 	"_count":      helperCount,
 	"_avg":        helperAvg,
+	"_min":        helperMin,
+	"_max":        helperMax,
 	"_union_all":  helperUnionAll,
 	"_union":      helperUnion,
 	"_except":     helperExcept,
