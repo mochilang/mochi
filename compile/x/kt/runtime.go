@@ -307,7 +307,11 @@ inline fun <reified T> _cast(v: Any?): T {
             groups[ks] = g
             order.add(ks)
         }
-        g.Items.add(it)
+        if (it is Array<*> && it.size == 1) {
+            g.Items.add(it[0])
+        } else {
+            g.Items.add(it)
+        }
     }
         return order.map { groups[it]!! }
 }`
