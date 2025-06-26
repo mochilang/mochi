@@ -302,7 +302,16 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("var format = opts != null && opts.ContainsKey(\"format\") ? Convert.ToString(opts[\"format\"]) : \"csv\";")
 				c.writeln("var header = opts != null && opts.ContainsKey(\"header\") ? Convert.ToBoolean(opts[\"header\"]) : true;")
 				c.writeln("var delim = opts != null && opts.ContainsKey(\"delimiter\") ? Convert.ToString(opts[\"delimiter\"])[0] : ',';")
-				c.writeln("var text = File.ReadAllText(path);")
+				c.writeln("string text;")
+				c.writeln("if (string.IsNullOrEmpty(path) || path == \"-\") {")
+				c.indent++
+				c.writeln("text = Console.In.ReadToEnd();")
+				c.indent--
+				c.writeln("} else {")
+				c.indent++
+				c.writeln("text = File.ReadAllText(path);")
+				c.indent--
+				c.writeln("}")
 				c.writeln("switch (format) {")
 				c.writeln("case \"jsonl\":")
 				c.indent++
@@ -366,12 +375,14 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("switch (format) {")
 				c.writeln("case \"jsonl\":")
 				c.indent++
-				c.writeln("File.WriteAllLines(path, rows.Select(r => JsonSerializer.Serialize(r)));")
+				c.writeln("var lines = rows.Select(r => JsonSerializer.Serialize(r));")
+				c.writeln("if (string.IsNullOrEmpty(path) || path == \"-\") Console.WriteLine(string.Join(\"\\n\", lines)); else File.WriteAllLines(path, lines);")
 				c.writeln("break;")
 				c.indent--
 				c.writeln("case \"json\":")
 				c.indent++
-				c.writeln("File.WriteAllText(path, JsonSerializer.Serialize(rows));")
+				c.writeln("var data = JsonSerializer.Serialize(rows);")
+				c.writeln("if (string.IsNullOrEmpty(path) || path == \"-\") Console.Write(data); else File.WriteAllText(path, data);")
 				c.writeln("break;")
 				c.indent--
 				c.writeln("case \"yaml\":")
@@ -379,7 +390,8 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("var ser = new SerializerBuilder().Build();")
 				c.writeln("var list = rows.ToList();")
 				c.writeln("var data = list.Count == 1 ? list[0] : (object)list;")
-				c.writeln("File.WriteAllText(path, ser.Serialize(data));")
+				c.writeln("var ydata = ser.Serialize(data);")
+				c.writeln("if (string.IsNullOrEmpty(path) || path == \"-\") Console.Write(ydata); else File.WriteAllText(path, ydata);")
 				c.writeln("break;")
 				c.indent--
 				c.writeln("case \"tsv\":")
@@ -393,7 +405,7 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("var lines = new List<string>();")
 				c.writeln("if (header) lines.Add(string.Join(delim.ToString(), headers));")
 				c.writeln("foreach (var row in list) lines.Add(string.Join(delim.ToString(), headers.Select(h => row.ContainsKey(h) ? Convert.ToString(row[h]) : \"\")));")
-				c.writeln("File.WriteAllLines(path, lines);")
+				c.writeln("if (string.IsNullOrEmpty(path) || path == \"-\") Console.WriteLine(string.Join(\"\\n\", lines)); else File.WriteAllLines(path, lines);")
 				c.writeln("break;")
 				c.indent--
 				c.writeln("}")
