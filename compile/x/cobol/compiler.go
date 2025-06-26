@@ -150,8 +150,47 @@ func (c *Compiler) compileExpect(n *ast.Node) {
 	c.writeln("END-IF")
 }
 
+func (c *Compiler) compileLoadExpr(n *ast.Node) string {
+	tmp := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s OCCURS 0 TIMES PIC 9.", tmp))
+	c.listLens[tmp] = 0
+	c.writeln("    *> " + c.loadMessage(n))
+	return tmp
+}
+
+func containsJSON(n *ast.Node) bool {
+	if n == nil {
+		return false
+	}
+	if n.Kind == "string" {
+		if s, ok := n.Value.(string); ok && strings.ToLower(s) == "json" {
+			return true
+		}
+	}
+	for _, ch := range n.Children {
+		if containsJSON(ch) {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Compiler) loadMessage(n *ast.Node) string {
+	if containsJSON(n) {
+		return "load json not implemented"
+	}
+	return "load not implemented"
+}
+
+func (c *Compiler) saveMessage(n *ast.Node) string {
+	if len(n.Children) > 0 && containsJSON(n.Children[len(n.Children)-1]) {
+		return "save json not implemented"
+	}
+	return "save not implemented"
+}
+
 func (c *Compiler) compileSave(n *ast.Node) {
-	c.writeln("*> save not implemented")
+	c.writeln("*> " + c.saveMessage(n))
 }
 
 func (c *Compiler) compileTest(n *ast.Node) {
@@ -870,13 +909,9 @@ func (c *Compiler) expr(n *ast.Node) string {
 	case "struct":
 		return c.compileStructExpr(n)
 	case "load":
-		tmp := c.newTemp()
-		c.declare(fmt.Sprintf("01 %s OCCURS 0 TIMES PIC 9.", tmp))
-		c.listLens[tmp] = 0
-		c.writeln("    *> load not implemented")
-		return tmp
+		return c.compileLoadExpr(n)
 	case "save":
-		c.writeln("    *> save not implemented")
+		c.writeln("    *> " + c.saveMessage(n))
 		return "0"
 	case "binary":
 		left := c.expr(n.Children[0])
@@ -1178,7 +1213,7 @@ func (c *Compiler) compileLet(n *ast.Node) {
 	if len(n.Children) == 1 && n.Children[0].Kind == "load" {
 		c.declare(fmt.Sprintf("01 %s OCCURS 0 TIMES PIC 9.", name))
 		c.listLens[orig] = 0
-		c.writeln("    *> load not implemented")
+		c.writeln("    *> " + c.loadMessage(n.Children[0]))
 		return
 	}
 	if len(n.Children) == 1 && n.Children[0].Kind == "funexpr" {
@@ -1242,7 +1277,7 @@ func (c *Compiler) compileVar(n *ast.Node) {
 	if len(n.Children) == 1 && n.Children[0].Kind == "load" {
 		c.declare(fmt.Sprintf("01 %s OCCURS 0 TIMES PIC 9.", name))
 		c.listLens[orig] = 0
-		c.writeln("    *> load not implemented")
+		c.writeln("    *> " + c.loadMessage(n.Children[0]))
 		return
 	}
 	if len(n.Children) == 1 && n.Children[0].Kind == "funexpr" {
@@ -1289,7 +1324,7 @@ func (c *Compiler) compileAssign(n *ast.Node) {
 		if n.Children[0].Kind == "load" {
 			c.declare(fmt.Sprintf("01 %s OCCURS 0 TIMES PIC 9.", name))
 			c.listLens[n.Value.(string)] = 0
-			c.writeln("    *> load not implemented")
+			c.writeln("    *> " + c.loadMessage(n.Children[0]))
 			return
 		}
 		if n.Children[0].Kind == "funexpr" {
