@@ -48,13 +48,13 @@ let result =
       select x
     ))
   group by s.s_name into g
-  sort by [ -count(g), s.s_name ]
+  sort by [ -count(g), g.key ]
   select {
-    s_name: s.s_name,
+    s_name: g.key,
     numwait: count(g)
   }
 
-print result
+json(result)
 
 test "Q21 returns Saudi suppliers who caused unique delivery delays" {
   expect result == [
