@@ -186,12 +186,66 @@ inline fun <reified T> _cast(v: Any?): T {
     return T::class.java.getDeclaredConstructor().newInstance()
 }`
 
-	helperFetch = `fun _fetch(url: String, opts: Map<String, Any>?): Map<String, Any> {
+	helperFetch = `fun _fetch(url: String, opts: Map<String, Any>?): Any? {
+    fun encode(x: Any?): String = when (x) {
+        null -> "null"
+        is String -> "\"" + x.replace("\"", "\\\"") + "\""
+        is Int, is Double, is Boolean -> x.toString()
+        is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
+        is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e ->
+            "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
+        }
+        else -> "\"" + x.toString().replace("\"", "\\\"") + "\""
+    }
+
+    var full = url
+    val method = opts?.get("method")?.toString() ?: "GET"
+    if (opts?.get("query") is Map<*, *>) {
+        val q = opts["query"] as Map<*, *>
+        val qs = q.entries.joinToString("&") { e ->
+            java.net.URLEncoder.encode(e.key.toString(), java.nio.charset.StandardCharsets.UTF_8) +
+            "=" +
+            java.net.URLEncoder.encode(e.value.toString(), java.nio.charset.StandardCharsets.UTF_8)
+        }
+        val sep = if (full.contains("?")) "&" else "?"
+        full += sep + qs
+    }
+
+    val builder = java.net.http.HttpRequest.newBuilder(java.net.URI.create(full))
+    val body = opts?.get("body")
+    if (body != null) {
+        builder.method(method, java.net.http.HttpRequest.BodyPublishers.ofString(encode(body)))
+    } else {
+        builder.method(method, java.net.http.HttpRequest.BodyPublishers.noBody())
+    }
+    if (opts?.get("headers") is Map<*, *>) {
+        val hs = opts["headers"] as Map<*, *>
+        for ((k, v) in hs) {
+            builder.header(k.toString(), v.toString())
+        }
+    }
+
+    val clientBuilder = java.net.http.HttpClient.newBuilder()
+    if (opts?.get("timeout") != null) {
+        val t = opts["timeout"]
+        val secs = when (t) {
+            is Int -> t.toLong()
+            is Long -> t
+            is Double -> t.toLong()
+            is Float -> t.toLong()
+            else -> null
+        }
+        if (secs != null) {
+            clientBuilder.connectTimeout(java.time.Duration.ofMillis((secs * 1000).toLong()))
+        }
+    }
+    val client = clientBuilder.build()
+
     return try {
-        val client = java.net.http.HttpClient.newHttpClient()
-        val req = java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).build()
-        val resp = client.send(req, java.net.http.HttpResponse.BodyHandlers.ofString())
-        mutableMapOf<String, Any>("status" to resp.statusCode(), "body" to resp.body())
+        val resp = client.send(builder.build(), java.net.http.HttpResponse.BodyHandlers.ofString())
+        val text = resp.body()
+        val eng = javax.script.ScriptEngineManager().getEngineByName("javascript")
+        eng.eval("Java.asJSONCompatible($text)")
     } catch (e: Exception) {
         throw RuntimeException(e)
     }
