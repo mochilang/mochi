@@ -1,4 +1,4 @@
-func main (regs=178)
+func main (regs=177)
   // let customer = [
   Const        r0, [{"c_acctbal": 600, "c_custkey": 1, "c_phone": "13-123-4567"}, {"c_acctbal": 100, "c_custkey": 2, "c_phone": "31-456-7890"}, {"c_acctbal": 700, "c_custkey": 3, "c_phone": "30-000-0000"}]
   Move         r1, r0
@@ -292,9 +292,11 @@ L21:
   Move         r158, r173
   // let result =
   Move         r174, r158
+  // print(result)
+  Print        r174
   // expect result == [
-  Const        r176, [{"cntrycode": "13", "numcust": 1, "totacctbal": 600}, {"cntrycode": "30", "numcust": 1, "totacctbal": 700}]
-  Equal        r177, r174, r176
-  Expect       r177
+  Const        r175, [{"cntrycode": "13", "numcust": 1, "totacctbal": 600}, {"cntrycode": "30", "numcust": 1, "totacctbal": 700}]
+  Equal        r176, r174, r175
+  Expect       r176
   Return       r0
 
