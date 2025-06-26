@@ -1199,6 +1199,59 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		argStr := strings.Join(args, ", ")
 		switch p.Call.Func {
+		case "count":
+			if len(args) != 1 {
+				return "", fmt.Errorf("count expects 1 argument")
+			}
+			t := types.TypeOfExpr(p.Call.Args[0], c.env)
+			switch tt := t.(type) {
+			case types.GroupType:
+				elem := typeString(tt.Elem)
+				c.use("_countGroup")
+				return fmt.Sprintf("specialize _countGroup<%s>(%s)", elem, args[0]), nil
+			case types.ListType:
+				elem := typeString(tt.Elem)
+				c.use("_countList")
+				return fmt.Sprintf("specialize _countList<%s>(%s)", elem, args[0]), nil
+			case types.StringType:
+				return fmt.Sprintf("Length(%s)", args[0]), nil
+			default:
+				return fmt.Sprintf("Length(%s)", args[0]), nil
+			}
+		case "sum":
+			if len(args) != 1 {
+				return "", fmt.Errorf("sum expects 1 argument")
+			}
+			t := types.TypeOfExpr(p.Call.Args[0], c.env)
+			switch tt := t.(type) {
+			case types.GroupType:
+				elem := typeString(tt.Elem)
+				c.use("_sumList")
+				return fmt.Sprintf("specialize _sumList<%s>(%s.Items)", elem, args[0]), nil
+			case types.ListType:
+				elem := typeString(tt.Elem)
+				c.use("_sumList")
+				return fmt.Sprintf("specialize _sumList<%s>(%s)", elem, args[0]), nil
+			default:
+				return "0", nil
+			}
+		case "avg":
+			if len(args) != 1 {
+				return "", fmt.Errorf("avg expects 1 argument")
+			}
+			t := types.TypeOfExpr(p.Call.Args[0], c.env)
+			switch tt := t.(type) {
+			case types.GroupType:
+				elem := typeString(tt.Elem)
+				c.use("_avgList")
+				return fmt.Sprintf("specialize _avgList<%s>(%s.Items)", elem, args[0]), nil
+			case types.ListType:
+				elem := typeString(tt.Elem)
+				c.use("_avgList")
+				return fmt.Sprintf("specialize _avgList<%s>(%s)", elem, args[0]), nil
+			default:
+				return "0", nil
+			}
 		case "len":
 			return fmt.Sprintf("Length(%s)", argStr), nil
 		case "print":
@@ -1292,6 +1345,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
+			}
+			if name, ok := selectorName(it.Key); ok {
+				k = fmt.Sprintf("'%s'", name)
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
@@ -1828,6 +1884,45 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("Result := Result + parts[i];")
 			c.indent--
 			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_countList":
+			c.writeln("generic function _countList<T>(arr: specialize TArray<T>): integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("Result := Length(arr);")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_countGroup":
+			c.writeln("generic function _countGroup<T>(g: specialize _Group<T>): integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("Result := Length(g.Items);")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_sumList":
+			c.writeln("generic function _sumList<T>(arr: specialize TArray<T>): double;")
+			c.writeln("var i: integer; s: double;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("s := 0;")
+			c.writeln("for i := 0 to High(arr) do")
+			c.indent++
+			c.writeln("s := s + arr[i];")
+			c.indent--
+			c.writeln("Result := s;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_avgList":
+			c.writeln("generic function _avgList<T>(arr: specialize TArray<T>): double;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("if Length(arr) = 0 then exit(0);")
+			c.writeln("Result := _sumList<T>(arr) / Length(arr);")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
