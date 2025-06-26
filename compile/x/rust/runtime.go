@@ -39,6 +39,13 @@ const (
 		"    sum / v.len() as f64\n" +
 		"}\n"
 
+	helperSum = "fn _sum<T: Into<f64> + Copy>(v: &[T]) -> f64 {\n" +
+		"    if v.is_empty() { return 0.0 }\n" +
+		"    let mut sum = 0.0;\n" +
+		"    for &it in v { sum += Into::<f64>::into(it); }\n" +
+		"    sum\n" +
+		"}\n"
+
 	helperInMap = "fn _in_map<K: std::cmp::Eq + std::hash::Hash, V>(m: &std::collections::HashMap<K, V>, k: &K) -> bool {\n" +
 		"    m.contains_key(k)\n" +
 		"}\n"
@@ -121,6 +128,7 @@ var helperMap = map[string]string{
 	"_map_get":      helperMapGet,
 	"_count":        helperCount,
 	"_avg":          helperAvg,
+	"_sum":          helperSum,
 	"_in_map":       helperInMap,
 	"_in_string":    helperInString,
 	"_input":        helperInput,

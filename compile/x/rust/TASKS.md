@@ -10,3 +10,5 @@ Completed tasks:
 - [x] Generate `struct` definitions for TPCH rows with `serde` `Serialize` implementations.
 - [x] Provide iterator-based helpers for `sum`, `avg` and `count`.
 - [x] Add a golden test in `tests/compiler/rust` once the query compiles successfully.
+- [x] Support iterating over group values and updated builtins to use `_count`, `_avg` and `_sum` helpers.
+- [x] Added TPCH q1 generated code under `tests/dataset/tpc-h/compiler/rust`.

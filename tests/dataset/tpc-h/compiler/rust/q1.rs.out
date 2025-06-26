@@ -1,19 +1,12 @@
-#[derive(Clone, Debug, Default)]
-struct LineItem {
-    l_quantity: i64,
-    l_extendedprice: f64,
-    l_discount: f64,
-    l_tax: f64,
-    l_returnflag: String,
-    l_linestatus: String,
-    l_shipdate: String,
+fn test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
+    expect(result == vec![std::collections::HashMap::from([("returnflag".to_string(), "N"), ("linestatus".to_string(), "O"), ("sum_qty".to_string(), 53), ("sum_base_price".to_string(), 3000), ("sum_disc_price".to_string(), 950.0 + 1800.0), ("sum_charge".to_string(), (950.0 * 1.07) + (1800.0 * 1.05)), ("avg_qty".to_string(), 26.5), ("avg_price".to_string(), 1500), ("avg_disc".to_string(), 0.07500000000000001), ("count_order".to_string(), 2)])]);
 }
 
 fn main() {
-    let mut lineitem = vec![LineItem { l_quantity: 17, l_extendedprice: 1000.0, l_discount: 0.05, l_tax: 0.07, l_returnflag: "N".to_string(), l_linestatus: "O".to_string(), l_shipdate: "1998-08-01".to_string() }, LineItem { l_quantity: 36, l_extendedprice: 2000.0, l_discount: 0.1, l_tax: 0.05, l_returnflag: "N".to_string(), l_linestatus: "O".to_string(), l_shipdate: "1998-09-01".to_string() }, LineItem { l_quantity: 25, l_extendedprice: 1500.0, l_discount: 0.0, l_tax: 0.08, l_returnflag: "R".to_string(), l_linestatus: "F".to_string(), l_shipdate: "1998-09-03".to_string() }];
+    let mut lineitem = vec![std::collections::HashMap::from([("l_quantity".to_string(), 17), ("l_extendedprice".to_string(), 1000.0), ("l_discount".to_string(), 0.05), ("l_tax".to_string(), 0.07), ("l_returnflag".to_string(), "N"), ("l_linestatus".to_string(), "O"), ("l_shipdate".to_string(), "1998-08-01")]), std::collections::HashMap::from([("l_quantity".to_string(), 36), ("l_extendedprice".to_string(), 2000.0), ("l_discount".to_string(), 0.1), ("l_tax".to_string(), 0.05), ("l_returnflag".to_string(), "N"), ("l_linestatus".to_string(), "O"), ("l_shipdate".to_string(), "1998-09-01")]), std::collections::HashMap::from([("l_quantity".to_string(), 25), ("l_extendedprice".to_string(), 1500.0), ("l_discount".to_string(), 0.0), ("l_tax".to_string(), 0.08), ("l_returnflag".to_string(), "R"), ("l_linestatus".to_string(), "F"), ("l_shipdate".to_string(), "1998-09-03")])];
     let mut result = {
     #[derive(Clone, Debug)]
-    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<LineItem> }
+    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> }
     let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
     let mut order: Vec<String> = Vec::new();
     for row in lineitem.clone() {
@@ -77,6 +70,7 @@ fn main() {
 }
 ;
     json(result);
+    test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus();
 }
 
 fn _avg<T: Into<f64> + Copy>(v: &[T]) -> f64 {
@@ -93,4 +87,7 @@ fn _sum<T: Into<f64> + Copy>(v: &[T]) -> f64 {
     let mut sum = 0.0;
     for &it in v { sum += Into::<f64>::into(it); }
     sum
+}
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
 }
