@@ -1,0 +1,11 @@
+ type Msg {
+   message: string
+ }
+
+ let _ = fetch "file://tests/compiler/fortran/fetch_builtin.json" with {
+   method: "GET",
+  query: { q: "1" },
+   headers: { Accept: "text/plain" },
+   body: { foo: 1 },
+  timeout: 5.0,
+ }
