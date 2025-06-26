@@ -1,4 +1,22 @@
 # 📦 CHANGELOG.md
+## [0.10.1] – 2025-06-26T08:03:05+07:00
+
+### Added
+
+* Map sorting and HAVING clause support in the VM
+* Aggregate queries with `exists`, `contains` and `substring` builtins
+* Test blocks and `expect` statements across compilers
+* `sum`, `min` and `max` helpers in many backends
+* CLI `run` now defaults to the VM
+
+### Changed
+
+* Improved VM disassembly and C++ JSON escaping
+
+### Fixed
+
+* TPC-H query syntax corrections and Java map key handling
+
 ## [0.10.0] – 2025-06-25T20:05:45+07:00
 
 ### Added
