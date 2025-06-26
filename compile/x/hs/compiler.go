@@ -25,6 +25,7 @@ type Compiler struct {
 	usesSlice    bool
 	usesSliceStr bool
 	usesExpect   bool
+	usesFetch    bool
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -80,6 +81,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesSlice = false
 	c.usesSliceStr = false
 	c.usesExpect = false
+	c.usesFetch = false
 
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -165,15 +167,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("import Data.List (intercalate)\n")
 	header.WriteString("import qualified Data.List as List\n")
 	header.WriteString("import qualified Data.Aeson as Aeson\n")
-	if c.usesLoad || c.usesSave {
+	if c.usesLoad || c.usesSave || c.usesFetch {
 		header.WriteString("import qualified Data.Aeson.KeyMap as KeyMap\n")
 		header.WriteString("import qualified Data.Aeson.Key as Key\n")
 		header.WriteString("import qualified Data.Vector as V\n")
 		header.WriteString("import qualified Data.Text as T\n")
 	}
+	if c.usesFetch {
+		header.WriteString("import System.Process (readProcess)\n")
+	}
 	header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	header.WriteString("\n")
-	if c.usesLoad || c.usesSave {
+	if c.usesLoad || c.usesSave || c.usesFetch {
 		header.WriteString(loadRuntime)
 	} else {
 		header.WriteString(runtime)
@@ -183,6 +188,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.usesSlice || c.usesSliceStr {
 		header.WriteString(sliceHelpers)
+	}
+	if c.usesFetch {
+		header.WriteString(fetchHelper)
 	}
 	header.WriteString("\n\n")
 
@@ -811,6 +819,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Call != nil:
@@ -1048,6 +1058,24 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	c.usesSave = true
 	c.usesMap = true
 	return fmt.Sprintf("_save %s %s %s", src, path, opts), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "Nothing"
+	if f.With != nil {
+		v, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = fmt.Sprintf("Just (%s)", v)
+	}
+	c.usesFetch = true
+	c.usesMap = true
+	return fmt.Sprintf("_fetch %s %s", url, opts), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
