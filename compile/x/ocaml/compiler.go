@@ -23,6 +23,7 @@ type Compiler struct {
 	slice   bool
 	input   bool
 	dataset bool
+	fetch   bool
 	loopTmp int
 	loops   []loopCtx
 	funTmp  int
@@ -895,6 +896,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Group != nil:
@@ -1116,6 +1119,23 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.ensureDataset()
 	return fmt.Sprintf("_save %s %s %s", src, path, opts), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "None"
+	if f.With != nil {
+		o, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	c.ensureFetch()
+	return fmt.Sprintf("_fetch %s %s", url, opts), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -1499,4 +1519,46 @@ func exprVars(e *parser.Expr) map[string]bool {
 	}
 	walkExpr(e)
 	return vars
+}
+func (c *Compiler) ensureFetch() {
+	if c.fetch {
+		return
+	}
+	c.fetch = true
+	c.ensureDataset()
+	b := &c.pre
+	b.WriteString("let _fetch url opts =\n")
+	b.WriteString("  let method_ =\n")
+	b.WriteString("    match opts with\n")
+	b.WriteString("    | None -> \"GET\"\n")
+	b.WriteString("    | Some tbl ->\n")
+	b.WriteString("        (try Yojson.Basic.Util.to_string (Hashtbl.find tbl \"method\") with Not_found -> \"GET\") in\n")
+	b.WriteString("  let url_ref = ref url in\n")
+	b.WriteString("  let args = ref [\"curl\"; \"-s\"; \"-X\"; method_] in\n")
+	b.WriteString("  (match opts with\n")
+	b.WriteString("  | Some tbl ->\n")
+	b.WriteString("      (try\n")
+	b.WriteString("        let headers = Yojson.Basic.Util.to_assoc (Hashtbl.find tbl \"headers\") in\n")
+	b.WriteString("        List.iter (fun (k,v) -> args := !args @ [\"-H\"; k ^ \": \" ^ Yojson.Basic.to_string v]) headers\n")
+	b.WriteString("      with Not_found -> ());\n")
+	b.WriteString("      (try\n")
+	b.WriteString("        let q = Yojson.Basic.Util.to_assoc (Hashtbl.find tbl \"query\") in\n")
+	b.WriteString("        let qs = String.concat \"&\" (List.map (fun (k,v) -> k ^ \"=\" ^ Yojson.Basic.to_string v) q) in\n")
+	b.WriteString("        let sep = if String.contains !url_ref '?' then '&' else '?' in\n")
+	b.WriteString("        url_ref := !url_ref ^ (String.make 1 sep) ^ qs\n")
+	b.WriteString("      with Not_found -> ());\n")
+	b.WriteString("      (try\n")
+	b.WriteString("        let body = Hashtbl.find tbl \"body\" in\n")
+	b.WriteString("        args := !args @ [\"-d\"; Yojson.Basic.to_string body]\n")
+	b.WriteString("      with Not_found -> ());\n")
+	b.WriteString("      (try\n")
+	b.WriteString("        let t = Hashtbl.find tbl \"timeout\" in\n")
+	b.WriteString("        args := !args @ [\"--max-time\"; Yojson.Basic.to_string t]\n")
+	b.WriteString("      with Not_found -> ());\n")
+	b.WriteString("  | None -> ());\n")
+	b.WriteString("  args := !args @ [!url_ref];\n")
+	b.WriteString("  let ic = Unix.open_process_in (String.concat \" \" !args) in\n")
+	b.WriteString("  let txt = _read_all ic in\n")
+	b.WriteString("  close_in ic;\n")
+	b.WriteString("  Yojson.Basic.from_string txt;;\n\n")
 }

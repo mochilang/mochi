@@ -1,0 +1,2 @@
+let data = fetch "file://tests/compiler/ocaml/fetch_builtin.json"
+save [data] with { format: "json" }
