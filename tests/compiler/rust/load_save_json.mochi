@@ -1,0 +1,8 @@
+type Person {
+  name: string
+  age: int
+}
+
+let people = load "people.json" as Person with { format: "json" }
+
+save people to "out.json" with { format: "json" }

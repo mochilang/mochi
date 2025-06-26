@@ -805,8 +805,16 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	if l.Type != nil {
 		typ = rustType(l.Type)
 	}
+	opts := "std::collections::HashMap::new()"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
 	c.use("_load")
-	return fmt.Sprintf("_load::<%s>(%s)", typ, path), nil
+	return fmt.Sprintf("_load::<%s>(%s, %s)", typ, path, opts), nil
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
@@ -818,8 +826,16 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	if s.Path != nil {
 		path = fmt.Sprintf("%q", *s.Path)
 	}
+	opts := "std::collections::HashMap::new()"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
 	c.use("_save")
-	return fmt.Sprintf("_save(%s, %s)", src, path), nil
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {

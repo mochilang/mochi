@@ -1,0 +1,16 @@
+#[derive(Clone, Debug, Default)]
+struct Person {
+    name: String,
+    age: i64,
+}
+
+fn main() {
+    let mut people = _load::<Person>("people.json", std::collections::HashMap::from([("format".to_string(), "json")]));
+    _save(people, "out.json", std::collections::HashMap::from([("format".to_string(), "json")]));
+}
+
+fn _load<T>(_path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {
+    Vec::new()
+}
+fn _save<T>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) {
+}
