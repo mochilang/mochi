@@ -1,0 +1,27 @@
+func main (regs=18)
+  // let prefix = "fore"
+  Const        r0, "fore"
+  Move         r1, r0
+  // let s1 = "forest"
+  Const        r2, "forest"
+  Move         r3, r2
+  // print(s1[0:len(prefix)] == prefix)
+  Const        r5, 0
+  Move         r4, r5
+  Const        r7, 4
+  Move         r6, r7
+  Slice        r8, r3, r4, r6
+  Equal        r9, r8, r1
+  Print        r9
+  // let s2 = "desert"
+  Const        r10, "desert"
+  Move         r11, r10
+  // print(s2[0:len(prefix)] == prefix)
+  Const        r13, 0
+  Move         r12, r13
+  Const        r15, 4
+  Move         r14, r15
+  Slice        r16, r11, r12, r14
+  Equal        r17, r16, r1
+  Print        r17
+  Return       r0

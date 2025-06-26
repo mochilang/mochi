@@ -35,17 +35,22 @@ let lineitem = [
 
 let prefix = "forest"
 
+let shipped_94 =
+  from l in lineitem
+  where l.l_shipdate >= "1994-01-01" && l.l_shipdate < "1995-01-01"
+  group by { partkey: l.l_partkey, suppkey: l.l_suppkey } into g
+  select {
+    partkey: g.key.partkey,
+    suppkey: g.key.suppkey,
+    qty: sum(from x in g select x.l_quantity)
+  }
+
 let target_partkeys =
   from ps in partsupp
   join p in part on ps.ps_partkey == p.p_partkey
-  where p.p_name has prefix
-  let shipped =
-    sum(l.l_quantity for l in lineitem
-        where l.l_partkey == ps.ps_partkey
-        and l.l_suppkey == ps.ps_suppkey
-        and l.l_shipdate >= "1994-01-01"
-        and l.l_shipdate < "1995-01-01")
-  where ps.ps_availqty > 0.5 * shipped
+  join s in shipped_94 on ps.ps_partkey == s.partkey && ps.ps_suppkey == s.suppkey
+  // check prefix using slicing since startsWith isn't available
+  where p.p_name[0:len(prefix)] == prefix && ps.ps_availqty > 0.5 * s.qty
   select ps.ps_suppkey
 
 let result =
