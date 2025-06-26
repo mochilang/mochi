@@ -152,15 +152,23 @@ const (
 		"  return a === b;\n" +
 		"}\n"
 
-	helperFetch = "function _fetch(url: string, opts: any): any {\n" +
-		"  const args: string[] = ['-s'];\n" +
-		"  const method = opts?.method ?? 'GET';\n" +
-		"  args.push('-X', method);\n" +
-		"  if (opts?.headers) {\n" +
-		"    for (const [k, v] of Object.entries(_toAnyMap(opts.headers))) {\n" +
-		"      args.push('-H', `${k}: ${String(v)}`);\n" +
+	helperFetch = "async function _fetch(url: string, opts: any): Promise<any> {\n" +
+		"  if (url.startsWith('file://')) {\n" +
+		"    let path = url.slice(7);\n" +
+		"    if (!path.startsWith('/')) {\n" +
+		"      try {\n" +
+		"        const t = Deno.readTextFileSync(path);\n" +
+		"        try { return JSON.parse(t); } catch { return t; }\n" +
+		"      } catch {\n" +
+		"        path = Deno.cwd() + '/../..' + '/' + path;\n" +
+		"      }\n" +
 		"    }\n" +
+		"    const text = Deno.readTextFileSync(path);\n" +
+		"    try { return JSON.parse(text); } catch { return text; }\n" +
 		"  }\n" +
+		"  const init: RequestInit = { method: opts?.method ?? 'GET' };\n" +
+		"  if (opts?.headers) { init.headers = _toAnyMap(opts.headers); }\n" +
+		"  if (opts && 'body' in opts) { init.body = JSON.stringify(opts.body); }\n" +
 		"  if (opts?.query) {\n" +
 		"    const qs = new URLSearchParams();\n" +
 		"    for (const [k, v] of Object.entries(_toAnyMap(opts.query))) {\n" +
@@ -169,15 +177,17 @@ const (
 		"    const sep = url.includes('?') ? '&' : '?';\n" +
 		"    url = url + sep + qs.toString();\n" +
 		"  }\n" +
-		"  if (opts && 'body' in opts) {\n" +
-		"    args.push('-d', JSON.stringify(opts.body));\n" +
-		"  }\n" +
+		"  let ctrl: AbortController | undefined;\n" +
+		"  let id: any;\n" +
 		"  if (opts?.timeout) {\n" +
-		"    args.push('--max-time', String(opts.timeout));\n" +
+		"    ctrl = new AbortController();\n" +
+		"    id = setTimeout(() => ctrl!.abort(), Number(opts.timeout) * 1000);\n" +
+		"    init.signal = ctrl.signal;\n" +
 		"  }\n" +
-		"  args.push(url);\n" +
-		"  const { stdout } = new Deno.Command('curl', { args }).outputSync();\n" +
-		"  return JSON.parse(new TextDecoder().decode(stdout));\n" +
+		"  const resp = await fetch(url, init);\n" +
+		"  if (id) clearTimeout(id);\n" +
+		"  const text = await resp.text();\n" +
+		"  try { return JSON.parse(text); } catch { return text; }\n" +
 		"}\n"
 
 	helperToAnyMap = "function _toAnyMap(m: any): Record<string, any> {\n" +
