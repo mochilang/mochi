@@ -853,6 +853,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		case "count":
 			c.helpers["count"] = true
 			return fmt.Sprintf("_count(%s)", args[0])
+		case "sum":
+			c.helpers["sum"] = true
+			return fmt.Sprintf("_sum(%s)", args[0])
 		case "avg":
 			c.helpers["avg"] = true
 			return fmt.Sprintf("_avg(%s)", args[0])

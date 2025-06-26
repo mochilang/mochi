@@ -1,10 +1,10 @@
 # C++ Backend Tasks for TPCH Q1
 
-The C++ backend mirrors the C compiler but currently stops when encountering
-`group by` clauses.
+The backend now supports compiling `tests/dataset/tpc-h/q1.mochi`. Grouping is
+implemented using `std::unordered_map` and helper functions provide `sum`,
+`avg` and `count` over `std::vector` values. Generated structs allow field
+access and results are serialised to JSON.
 
-- Use `std::unordered_map` to accumulate groups of rows keyed by expressions.
-- Emit template helpers for `sum`, `avg` and `count` working on `std::vector` values.
-- Define `struct` types for TPCH rows and ensure field access compiles correctly.
-- Provide JSON output via a small library such as `nlohmann/json`.
-- Add tests under `tests/compiler/cpp` running the generated program on `q1.mochi`.
+Golden tests under `tests/compiler/cpp` exercise `tpch_q1.mochi`.
+
+Further work will broaden coverage of the remaining TPCH queries.
