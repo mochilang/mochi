@@ -61,14 +61,22 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	val := "Default::default()"
 	if stmt.Value != nil {
-		v, err := c.compileExpr(stmt.Value)
-		if err != nil {
-			return err
+		if f, ok := fetchExpr(stmt.Value); ok && stmt.Type != nil {
+			v, err := c.compileFetchExprWithType(f, rustType(stmt.Type))
+			if err != nil {
+				return err
+			}
+			val = v
+		} else {
+			v, err := c.compileExpr(stmt.Value)
+			if err != nil {
+				return err
+			}
+			if isStringLiteral(stmt.Value) {
+				v = fmt.Sprintf("%s.to_string()", v)
+			}
+			val = v
 		}
-		if isStringLiteral(stmt.Value) {
-			v = fmt.Sprintf("%s.to_string()", v)
-		}
-		val = v
 	}
 	name := sanitizeName(stmt.Name)
 	if stmt.Type != nil {
@@ -91,14 +99,22 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	val := "Default::default()"
 	if stmt.Value != nil {
-		v, err := c.compileExpr(stmt.Value)
-		if err != nil {
-			return err
+		if f, ok := fetchExpr(stmt.Value); ok && stmt.Type != nil {
+			v, err := c.compileFetchExprWithType(f, rustType(stmt.Type))
+			if err != nil {
+				return err
+			}
+			val = v
+		} else {
+			v, err := c.compileExpr(stmt.Value)
+			if err != nil {
+				return err
+			}
+			if isStringLiteral(stmt.Value) {
+				v = fmt.Sprintf("%s.to_string()", v)
+			}
+			val = v
 		}
-		if isStringLiteral(stmt.Value) {
-			v = fmt.Sprintf("%s.to_string()", v)
-		}
-		val = v
 	}
 	name := sanitizeName(stmt.Name)
 	if stmt.Type != nil {
@@ -152,7 +168,17 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 			lhs = fmt.Sprintf("%s[(%s) as usize]", lhs, iexpr)
 		}
 	}
-	val, err := c.compileExpr(stmt.Value)
+	var val string
+	var err error
+	if f, ok := fetchExpr(stmt.Value); ok {
+		if t, errVar := c.env.GetVar(stmt.Name); errVar == nil {
+			val, err = c.compileFetchExprWithType(f, rustTypeFrom(t))
+		} else {
+			val, err = c.compileExpr(stmt.Value)
+		}
+	} else {
+		val, err = c.compileExpr(stmt.Value)
+	}
 	if err != nil {
 		return err
 	}

@@ -43,6 +43,22 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 	return p.Target.Call, true
 }
 
+// fetchExpr returns the fetch expression if e is a simple fetch expression.
+func fetchExpr(e *parser.Expr) (*parser.FetchExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Fetch == nil {
+		return nil, false
+	}
+	return p.Target.Fetch, true
+}
+
 func identName(e *parser.Expr) (string, bool) {
 	if e == nil {
 		return "", false

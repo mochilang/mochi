@@ -788,6 +788,10 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	return c.compileFetchExprWithType(f, "std::boxed::Box<dyn std::any::Any>")
+}
+
+func (c *Compiler) compileFetchExprWithType(f *parser.FetchExpr, typ string) (string, error) {
 	url, err := c.compileExpr(f.URL)
 	if err != nil {
 		return "", err
@@ -801,7 +805,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		opts = v
 	}
 	c.use("_fetch")
-	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
+	return fmt.Sprintf("_fetch::<%s>(%s, %s)", typ, url, opts), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
