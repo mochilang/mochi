@@ -1,0 +1,10 @@
+program main
+  implicit none
+  type :: Person
+    character(:), allocatable :: name
+    integer(kind=8) :: age
+  end type Person
+  integer(kind=8) :: people
+  people = load_json_Person('')
+  call save_json_int(people, '')
+end program main
