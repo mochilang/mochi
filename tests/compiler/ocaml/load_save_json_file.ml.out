@@ -27,5 +27,5 @@ let _save rows path _ =
   output_char oc '\n';
   if oc != stdout then close_out oc;;
 
-let rows = _load Some "tests/compiler/ocaml/people.json" (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "format" "json"; tbl);;
+let rows = _load (Some "tests/compiler/ocaml/people.json") (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "format" "json"; tbl);;
 _save rows None (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "format" "json"; tbl);;

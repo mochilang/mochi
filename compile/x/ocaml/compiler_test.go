@@ -42,10 +42,18 @@ func TestOCamlCompiler_TwoSum(t *testing.T) {
 		t.Fatalf("write error: %v", err)
 	}
 	exe := filepath.Join(dir, "prog")
-	if out, err := exec.Command("ocamlc", mlfile, "-o", exe).CombinedOutput(); err != nil {
+	cmdName := "ocamlc"
+	args := []string{mlfile, "-o", exe}
+	if _, err := exec.LookPath("ocamlfind"); err == nil {
+		cmdName = "ocamlfind"
+		args = []string{"ocamlc", "-package", "yojson,unix", "-linkpkg", mlfile, "-o", exe}
+	}
+	if out, err := exec.Command(cmdName, args...).CombinedOutput(); err != nil {
 		t.Fatalf("ocamlc error: %v\n%s", err, out)
 	}
-	out, err := exec.Command(exe).CombinedOutput()
+	cmd := exec.Command(exe)
+	cmd.Dir = findRepoRoot(t)
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("run error: %v\n%s", err, out)
 	}
@@ -88,10 +96,17 @@ func TestOCamlCompiler_SubsetPrograms(t *testing.T) {
 				return nil, fmt.Errorf("write error: %w", err)
 			}
 			exe := filepath.Join(dirTmp, "prog")
-			if out, err := exec.Command("ocamlc", file, "-o", exe).CombinedOutput(); err != nil {
+			cmdName := "ocamlc"
+			args := []string{file, "-o", exe}
+			if _, err := exec.LookPath("ocamlfind"); err == nil {
+				cmdName = "ocamlfind"
+				args = []string{"ocamlc", "-package", "yojson,unix", "-linkpkg", file, "-o", exe}
+			}
+			if out, err := exec.Command(cmdName, args...).CombinedOutput(); err != nil {
 				return nil, fmt.Errorf("\u274c ocamlc error: %w\n%s", err, out)
 			}
 			cmd := exec.Command(exe)
+			cmd.Dir = findRepoRoot(t)
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -171,10 +186,17 @@ func runExample(t *testing.T, i int) {
 				t.Fatalf("write error: %v", err)
 			}
 			exe := filepath.Join(tmp, "prog")
-			if out, err := exec.Command("ocamlc", mlfile, "-o", exe).CombinedOutput(); err != nil {
+			cmdName := "ocamlc"
+			args := []string{mlfile, "-o", exe}
+			if _, err := exec.LookPath("ocamlfind"); err == nil {
+				cmdName = "ocamlfind"
+				args = []string{"ocamlc", "-package", "yojson,unix", "-linkpkg", mlfile, "-o", exe}
+			}
+			if out, err := exec.Command(cmdName, args...).CombinedOutput(); err != nil {
 				t.Fatalf("ocamlc error: %v\n%s", err, out)
 			}
 			cmd := exec.Command(exe)
+			cmd.Dir = findRepoRoot(t)
 			if data, err := os.ReadFile(strings.TrimSuffix(f, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -185,4 +207,23 @@ func runExample(t *testing.T, i int) {
 			_ = out
 		})
 	}
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found (not in Go module)")
+	return ""
 }

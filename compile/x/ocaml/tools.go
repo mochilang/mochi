@@ -12,7 +12,9 @@ import (
 // on macOS.
 func EnsureOCaml() error {
 	if _, err := exec.LookPath("ocamlc"); err == nil {
-		return nil
+		if checkYojson() == nil {
+			return nil
+		}
 	}
 	switch runtime.GOOS {
 	case "linux":
@@ -23,43 +25,56 @@ func EnsureOCaml() error {
 			if err := cmd.Run(); err != nil {
 				return err
 			}
-			cmd = exec.Command("apt-get", "install", "-y", "ocaml")
+			cmd = exec.Command("apt-get", "install", "-y", "ocaml", "ocaml-findlib", "libyojson-ocaml-dev")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err == nil {
+			_ = cmd.Run()
+			if err := checkYojson(); err == nil {
 				return nil
 			}
 		}
 	case "darwin":
 		if _, err := exec.LookPath("brew"); err == nil {
-			cmd := exec.Command("brew", "install", "ocaml")
+			cmd := exec.Command("brew", "install", "ocaml", "yojson", "ocaml-findlib")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err == nil {
+			_ = cmd.Run()
+			if err := checkYojson(); err == nil {
 				return nil
 			}
 		}
 	case "windows":
 		if _, err := exec.LookPath("choco"); err == nil {
-			cmd := exec.Command("choco", "install", "-y", "ocaml")
+			cmd := exec.Command("choco", "install", "-y", "ocaml", "opam")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
-			if _, err := exec.LookPath("ocamlc"); err == nil {
+			_ = exec.Command("opam", "install", "-y", "yojson").Run()
+			if checkYojson() == nil {
 				return nil
 			}
 		} else if _, err := exec.LookPath("scoop"); err == nil {
-			cmd := exec.Command("scoop", "install", "ocaml")
+			cmd := exec.Command("scoop", "install", "ocaml", "opam")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
-			if _, err := exec.LookPath("ocamlc"); err == nil {
+			_ = exec.Command("opam", "install", "-y", "yojson").Run()
+			if checkYojson() == nil {
 				return nil
 			}
 		}
 	}
-	if _, err := exec.LookPath("ocamlc"); err == nil {
+	if err := checkYojson(); err == nil {
 		return nil
 	}
-	return fmt.Errorf("ocamlc not found")
+	return fmt.Errorf("yojson not found")
+}
+
+func checkYojson() error {
+	if _, err := exec.LookPath("ocamlfind"); err == nil {
+		if err := exec.Command("ocamlfind", "query", "yojson").Run(); err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("yojson missing")
 }

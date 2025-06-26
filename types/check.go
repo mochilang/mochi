@@ -959,6 +959,7 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		}
 		pure := isPureFunction(s.Fun, env)
 		env.SetVar(name, FuncType{Params: params, Return: ret, Pure: pure}, false)
+		env.SetFunc(name, s.Fun)
 
 		child := NewEnv(env)
 		for i, p := range s.Fun.Params {
@@ -1447,8 +1448,10 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		paramCount := len(ft.Params)
 
 		if exp, ok := builtinArity[p.Call.Func]; ok && !ft.Variadic {
-			if argCount != exp {
-				return nil, errArgCount(p.Pos, p.Call.Func, exp, argCount)
+			if _, defined := env.GetFunc(p.Call.Func); !defined {
+				if argCount != exp {
+					return nil, errArgCount(p.Pos, p.Call.Func, exp, argCount)
+				}
 			}
 		}
 
@@ -1491,13 +1494,17 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					return nil, errArgTypeMismatch(p.Pos, i, variadicType, at)
 				}
 			}
-			if err := checkBuiltinCall(p.Call.Func, argTypes, p.Pos); err != nil {
-				return nil, err
+			if _, defined := env.GetFunc(p.Call.Func); !defined {
+				if err := checkBuiltinCall(p.Call.Func, argTypes, p.Pos); err != nil {
+					return nil, err
+				}
 			}
 			return ft.Return, nil
 		}
-		if err := checkBuiltinCall(p.Call.Func, argTypes, p.Pos); err != nil {
-			return nil, err
+		if _, defined := env.GetFunc(p.Call.Func); !defined {
+			if err := checkBuiltinCall(p.Call.Func, argTypes, p.Pos); err != nil {
+				return nil, err
+			}
 		}
 		if argCount == paramCount {
 			return ft.Return, nil
