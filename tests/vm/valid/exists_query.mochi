@@ -1,0 +1,10 @@
+let items = [
+  { id: 1, val: 10 },
+  { id: 2, val: 5 },
+  { id: 3, val: 15 }
+]
+let result =
+  from i in items
+  where !exists(from j in items where j.val > i.val select j)
+  select i.id
+json(result)

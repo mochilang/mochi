@@ -1,0 +1,58 @@
+func main (regs=32)
+  // let items = [
+  Const        r0, [{"id": 1, "val": 10}, {"id": 2, "val": 5}, {"id": 3, "val": 15}]
+  Move         r1, r0
+  // from i in items
+  Const        r2, []
+  IterPrep     r3, r1
+  Len          r4, r3
+  Const        r5, 0
+L5:
+  Less         r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // where !exists(from j in items where j.val > i.val select j)
+  Const        r9, []
+  IterPrep     r10, r1
+  Len          r11, r10
+  Const        r12, 0
+L3:
+  Less         r13, r12, r11
+  JumpIfFalse  r13, L1
+  Index        r14, r10, r12
+  Move         r15, r14
+  Const        r16, "val"
+  Index        r17, r15, r16
+  Const        r18, "val"
+  Index        r19, r8, r18
+  Less         r20, r19, r17
+  JumpIfFalse  r20, L2
+  Append       r21, r9, r15
+  Move         r9, r21
+L2:
+  Const        r22, 1
+  Add          r23, r12, r22
+  Move         r12, r23
+  Jump         L3
+L1:
+  Exists       24,9,0,0
+  Not          r25, r24
+  JumpIfFalse  r25, L4
+  // select i.id
+  Const        r26, "id"
+  Index        r27, r8, r26
+  // from i in items
+  Append       r28, r2, r27
+  Move         r2, r28
+L4:
+  Const        r29, 1
+  Add          r30, r5, r29
+  Move         r5, r30
+  Jump         L5
+L0:
+  // let result =
+  Move         r31, r2
+  // json(result)
+  JSON         r31
+  Return       r0

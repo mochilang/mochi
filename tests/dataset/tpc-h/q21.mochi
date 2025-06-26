@@ -44,17 +44,17 @@ let result =
     l1.l_receiptdate > l1.l_commitdate &&
     n.n_name == "SAUDI ARABIA" && (!exists(
       from x in lineitem
-      where x.l_orderkey == l1.l_orderkey && x.l_suppkey != l1.l_suppkey && x.l_receiptdate > x.l_commitdate
+      where x.l_orderkey == l1.l_orderkey && (x.l_suppkey != l1.l_suppkey) && x.l_receiptdate > x.l_commitdate
       select x
     ))
   group by s.s_name into g
-  sort by [ -count(g), s.s_name ]
+  sort by [ -count(g), g.key ]
   select {
-    s_name: s.s_name,
+    s_name: g.key,
     numwait: count(g)
   }
 
-print result
+json(result)
 
 test "Q21 returns Saudi suppliers who caused unique delivery delays" {
   expect result == [
