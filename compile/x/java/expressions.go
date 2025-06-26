@@ -647,6 +647,9 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		opts = o
 	}
 	c.helpers["_fetch"] = true
+	c.helpers["_dataset"] = true
+	c.helpers["_parseJson"] = true
+	c.helpers["_toJson"] = true
 	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
 }
 
