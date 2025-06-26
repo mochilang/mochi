@@ -34,14 +34,14 @@ L4:
   Index        r22, r20, r21
   Const        r23, "1994-01-01"
   LessEq       r24, r23, r22
-  Move         r25, r24
-  JumpIfFalse  r25, L1
-  Const        r26, "l_shipdate"
-  Index        r27, r20, r26
-  Move         r25, r27
+  Const        r25, "l_shipdate"
+  Index        r26, r20, r25
+  Const        r27, "1995-01-01"
+  Less         r28, r26, r27
+  Move         r29, r24
+  JumpIfFalse  r29, L1
+  Move         r29, r28
 L1:
-  Const        r28, "1995-01-01"
-  Less         r29, r25, r28
   JumpIfFalse  r29, L2
   // group by { partkey: l.l_partkey, suppkey: l.l_suppkey } into g
   Const        r30, "partkey"
@@ -184,15 +184,15 @@ L15:
   Const        r124, "partkey"
   Index        r125, r121, r124
   Equal        r126, r123, r125
-  Move         r127, r126
-  JumpIfFalse  r127, L12
-  Const        r128, "ps_suppkey"
-  Index        r129, r104, r128
-  Move         r127, r129
+  Const        r127, "ps_suppkey"
+  Index        r128, r104, r127
+  Const        r129, "suppkey"
+  Index        r130, r121, r129
+  Equal        r131, r128, r130
+  Move         r132, r126
+  JumpIfFalse  r132, L12
+  Move         r132, r131
 L12:
-  Const        r130, "suppkey"
-  Index        r131, r121, r130
-  Equal        r132, r127, r131
   JumpIfFalse  r132, L13
   // where substring(p.p_name, 0, len(prefix)) == prefix && ps.ps_availqty > (0.5 * s.qty)
   Const        r133, "p_name"
@@ -200,18 +200,18 @@ L12:
   Const        r135, 0
   Const        r136, 6
   Slice        r137, r134, r135, r136
-  Equal        r138, r137, r11
-  Move         r139, r138
-  JumpIfFalse  r139, L14
-  Const        r140, "ps_availqty"
-  Index        r141, r104, r140
-  Move         r139, r141
+  Const        r138, "ps_availqty"
+  Index        r139, r104, r138
+  Const        r140, 0.5
+  Const        r141, "qty"
+  Index        r142, r121, r141
+  MulFloat     r143, r140, r142
+  LessFloat    r144, r143, r139
+  Equal        r145, r137, r11
+  Move         r146, r145
+  JumpIfFalse  r146, L14
+  Move         r146, r144
 L14:
-  Const        r142, 0.5
-  Const        r143, "qty"
-  Index        r144, r121, r143
-  MulFloat     r145, r142, r144
-  LessFloat    r146, r145, r139
   JumpIfFalse  r146, L13
   // select ps.ps_suppkey
   Const        r147, "ps_suppkey"
@@ -271,14 +271,14 @@ L22:
   Const        r174, "s_suppkey"
   Index        r175, r121, r174
   In           r176, r175, r156
-  Move         r177, r176
-  JumpIfFalse  r177, L21
-  Const        r178, "n_name"
-  Index        r179, r168, r178
-  Move         r177, r179
+  Const        r177, "n_name"
+  Index        r178, r168, r177
+  Const        r179, "CANADA"
+  Equal        r180, r178, r179
+  Move         r181, r176
+  JumpIfFalse  r181, L21
+  Move         r181, r180
 L21:
-  Const        r180, "CANADA"
-  Equal        r181, r177, r180
   JumpIfFalse  r181, L20
   // s_name: s.s_name,
   Const        r182, "s_name"

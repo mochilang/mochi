@@ -71,31 +71,31 @@ L14:
   // o.o_orderstatus == "F" &&
   Const        r50, "o_orderstatus"
   Index        r51, r33, r50
-  Const        r52, "F"
-  Equal        r53, r51, r52
-  Move         r54, r53
-  JumpIfFalse  r54, L5
   // l1.l_receiptdate > l1.l_commitdate &&
-  Const        r55, "l_receiptdate"
-  Index        r56, r22, r55
+  Const        r52, "l_receiptdate"
+  Index        r53, r22, r52
+  Const        r54, "l_commitdate"
+  Index        r55, r22, r54
+  Less         r56, r55, r53
   // o.o_orderstatus == "F" &&
-  Move         r54, r56
+  Const        r57, "F"
+  Equal        r58, r51, r57
+  // n.n_name == "SAUDI ARABIA" && (!exists(
+  Const        r59, "n_name"
+  Index        r60, r44, r59
+  Const        r61, "SAUDI ARABIA"
+  Equal        r62, r60, r61
+  // o.o_orderstatus == "F" &&
+  Move         r63, r58
+  JumpIfFalse  r63, L5
+  Move         r63, r56
 L5:
   // l1.l_receiptdate > l1.l_commitdate &&
-  Const        r57, "l_commitdate"
-  Index        r58, r22, r57
-  Less         r59, r58, r54
-  Move         r60, r59
-  JumpIfFalse  r60, L6
-  // n.n_name == "SAUDI ARABIA" && (!exists(
-  Const        r61, "n_name"
-  Index        r62, r44, r61
-  // l1.l_receiptdate > l1.l_commitdate &&
-  Move         r60, r62
+  Move         r64, r63
+  JumpIfFalse  r64, L6
+  Move         r64, r62
 L6:
   // n.n_name == "SAUDI ARABIA" && (!exists(
-  Const        r63, "SAUDI ARABIA"
-  Equal        r64, r60, r63
   Move         r65, r64
   JumpIfFalse  r65, L7
   // from x in lineitem
@@ -111,27 +111,27 @@ L12:
   // where x.l_orderkey == l1.l_orderkey && x.l_suppkey != l1.l_suppkey && x.l_receiptdate > x.l_commitdate
   Const        r73, "l_orderkey"
   Index        r74, r72, r73
-  Const        r75, "l_orderkey"
-  Index        r76, r22, r75
-  Equal        r77, r74, r76
-  Move         r78, r77
-  JumpIfFalse  r78, L9
-  Const        r79, "l_suppkey"
-  Index        r80, r72, r79
-  Move         r78, r80
+  Const        r75, "l_receiptdate"
+  Index        r76, r72, r75
+  Const        r77, "l_commitdate"
+  Index        r78, r72, r77
+  Less         r79, r78, r76
+  Const        r80, "l_orderkey"
+  Index        r81, r22, r80
+  Equal        r82, r74, r81
+  Const        r83, "l_suppkey"
+  Index        r84, r72, r83
+  Const        r85, "l_suppkey"
+  Index        r86, r22, r85
+  NotEqual     r87, r84, r86
+  Move         r88, r82
+  JumpIfFalse  r88, L9
+  Move         r88, r87
 L9:
-  Const        r81, "l_suppkey"
-  Index        r82, r22, r81
-  NotEqual     r83, r78, r82
-  Move         r84, r83
-  JumpIfFalse  r84, L10
-  Const        r85, "l_receiptdate"
-  Index        r86, r72, r85
-  Move         r84, r86
+  Move         r89, r88
+  JumpIfFalse  r89, L10
+  Move         r89, r79
 L10:
-  Const        r87, "l_commitdate"
-  Index        r88, r72, r87
-  Less         r89, r88, r84
   JumpIfFalse  r89, L11
   // from x in lineitem
   Append       r90, r66, r72

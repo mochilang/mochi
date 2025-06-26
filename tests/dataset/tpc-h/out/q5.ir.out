@@ -143,23 +143,23 @@ L13:
   Index        r91, r62, r90
   Const        r92, "1994-01-01"
   LessEq       r93, r92, r91
-  Move         r94, r93
-  JumpIfFalse  r94, L11
-  Const        r95, "o_orderdate"
-  Index        r96, r62, r95
-  Move         r94, r96
+  Const        r94, "o_orderdate"
+  Index        r95, r62, r94
+  Const        r96, "1995-01-01"
+  Less         r97, r95, r96
+  Const        r98, "s_nationkey"
+  Index        r99, r84, r98
+  Const        r100, "c_nationkey"
+  Index        r101, r46, r100
+  Equal        r102, r99, r101
+  Move         r103, r93
+  JumpIfFalse  r103, L11
+  Move         r103, r97
 L11:
-  Const        r97, "1995-01-01"
-  Less         r98, r94, r97
-  Move         r99, r98
-  JumpIfFalse  r99, L12
-  Const        r100, "s_nationkey"
-  Index        r101, r84, r100
-  Move         r99, r101
+  Move         r104, r103
+  JumpIfFalse  r104, L12
+  Move         r104, r102
 L12:
-  Const        r102, "c_nationkey"
-  Index        r103, r46, r102
-  Equal        r104, r99, r103
   JumpIfFalse  r104, L10
   // nation: n.n_name,
   Const        r105, "nation"
