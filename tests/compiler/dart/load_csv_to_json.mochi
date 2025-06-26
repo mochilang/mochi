@@ -1,0 +1,7 @@
+type Person {
+  name: string
+  age: int
+}
+
+let people = load "../tests/interpreter/valid/people.csv" as Person
+save people to "-" with { format: "json" }
