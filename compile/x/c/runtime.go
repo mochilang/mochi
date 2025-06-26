@@ -100,6 +100,31 @@ static list_group_int _group_by_int(list_int src) {
     return r;
 }
 `
+	helperPairString     = `typedef struct { char* a; char* b; } pair_string;`
+	helperListPairString = `typedef struct { int len; pair_string* data; } list_pair_string;
+static list_pair_string list_pair_string_create(int len) {
+    list_pair_string l; l.len = len; l.data = (pair_string*)malloc(sizeof(pair_string)*len); return l;
+}`
+	helperGroupByPairString = `typedef struct { pair_string key; list_int items; } _GroupPairString;
+typedef struct { int len; int cap; _GroupPairString* data; } list_group_pair_string;
+static list_group_pair_string _group_by_pair_string(list_pair_string src) {
+    list_group_pair_string res; res.len = 0; res.cap = 0; res.data = NULL;
+    for (int i=0; i<src.len; i++) {
+        pair_string key = src.data[i];
+        int idx = -1;
+        for (int j=0; j<res.len; j++) if (strcmp(res.data[j].key.a, key.a)==0 && strcmp(res.data[j].key.b, key.b)==0) { idx = j; break; }
+        if (idx == -1) {
+            if (res.len >= res.cap) { res.cap = res.cap ? res.cap*2 : 4; res.data = (_GroupPairString*)realloc(res.data, sizeof(_GroupPairString)*res.cap); }
+            res.data[res.len].key = key;
+            res.data[res.len].items = list_int_create(0);
+            idx = res.len++;
+        }
+        _GroupPairString* g = &res.data[idx];
+        g->items.data = (int*)realloc(g->items.data, sizeof(int)*(g->items.len+1));
+        g->items.data[g->items.len++] = i;
+    }
+    return res;
+}`
 	helperConcatListString = `static list_string concat_list_string(list_string a, list_string b) {
     list_string r = list_string_create(a.len + b.len);
     for (int i = 0; i < a.len; i++) r.data[i] = a.data[i];
@@ -534,6 +559,8 @@ var helperCode = map[string]string{
 	needPrintListString:      helperPrintListString,
 	needPrintListListInt:     helperPrintListListInt,
 	needGroupByInt:           helperGroupByInt,
+	needListPairString:       helperListPairString,
+	needGroupByPairString:    helperGroupByPairString,
 }
 
 var helperOrder = []string{
@@ -583,6 +610,8 @@ var helperOrder = []string{
 	needPrintListString,
 	needPrintListListInt,
 	needGroupByInt,
+	needListPairString,
+	needGroupByPairString,
 }
 
 func (c *Compiler) emitRuntime() {

@@ -58,6 +58,7 @@ type Compiler struct {
 	externs       []string
 	externObjects []string
 	structs       map[string]bool
+	listStructs   map[string]bool
 	currentStruct string
 }
 
@@ -68,6 +69,7 @@ func New(env *types.Env) *Compiler {
 		lambdas:       []string{},
 		needs:         map[string]bool{},
 		structs:       map[string]bool{},
+		listStructs:   map[string]bool{},
 		externObjects: []string{},
 	}
 }
@@ -518,11 +520,29 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	}
 	c.indent--
 	c.writeln(fmt.Sprintf("}%s;", name))
+	c.compileStructListType(st)
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
 			c.compileStructType(sub)
 		}
 	}
+}
+
+func (c *Compiler) compileStructListType(st types.StructType) {
+	listName := "list_" + sanitizeName(st.Name)
+	if c.listStructs[listName] {
+		return
+	}
+	c.listStructs[listName] = true
+	c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeName(st.Name), listName))
+	c.writeln(fmt.Sprintf("static %s %s_create(int len) {", listName, listName))
+	c.indent++
+	c.writeln(fmt.Sprintf("%s l;", listName))
+	c.writeln("l.len = len;")
+	c.writeln(fmt.Sprintf("l.data = (%s*)malloc(sizeof(%s)*len);", sanitizeName(st.Name), sanitizeName(st.Name)))
+	c.writeln("return l;")
+	c.indent--
+	c.writeln("}")
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -642,6 +662,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 					c.env.SetStruct(st.Name, st)
 				}
 				c.compileStructType(st)
+				c.compileStructListType(st)
 				for _, el := range ll.Elems {
 					if ml := el.Binary.Left.Value.Target.Map; ml != nil {
 						c.structLits[ml] = st
@@ -719,6 +740,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 					c.env.SetStruct(st.Name, st)
 				}
 				c.compileStructType(st)
+				c.compileStructListType(st)
 				for _, el := range ll.Elems {
 					if ml := el.Binary.Left.Value.Target.Map; ml != nil {
 						c.structLits[ml] = st
@@ -1649,7 +1671,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				v := c.compileExpr(el)
 				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
 			}
-		} else {
+		} else if len(p.List.Elems) > 0 {
+			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
+				if st, ok := c.structLits[ml]; ok {
+					listName := "list_" + sanitizeName(st.Name)
+					c.compileStructListType(st)
+					c.writeln(fmt.Sprintf("%s %s = %s_create(%d);", listName, name, listName, len(p.List.Elems)))
+					for i, el := range p.List.Elems {
+						v := c.compileExpr(el)
+						c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+					}
+					return name
+				}
+			}
 			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
 			for i, el := range p.List.Elems {
 				v := c.compileExpr(el)
