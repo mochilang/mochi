@@ -255,8 +255,8 @@ L16:
   Move         r137, r155
   // let result =
   Move         r156, r137
-  // print(result)
-  Print        r156
+  // json(result)
+  JSON         r156
   // expect result == [
   Const        r157, [{"ps_partkey": 1000, "value": 2000}, {"ps_partkey": 2000, "value": 50}]
   Equal        r158, r156, r157
