@@ -971,12 +971,12 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
 	if l.Path != nil {
 		path = strconv.Quote(*l.Path)
 	}
-	typ := "unordered_map<string,string>"
-	if l.Type != nil {
-		typ = c.cppType(l.Type)
+	opts := "unordered_map<string,string>{}"
+	if l.With != nil {
+		opts = c.compileExpr(l.With)
 	}
 	c.helpers["load"] = true
-	return fmt.Sprintf("_load<%s>(%s)", typ, path)
+	return fmt.Sprintf("_load(%s, %s)", path, opts)
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) string {
@@ -985,8 +985,12 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) string {
 	if s.Path != nil {
 		path = strconv.Quote(*s.Path)
 	}
+	opts := "unordered_map<string,string>{}"
+	if s.With != nil {
+		opts = c.compileExpr(s.With)
+	}
 	c.helpers["save"] = true
-	return fmt.Sprintf("_save(%s, %s)", src, path)
+	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts)
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
