@@ -194,11 +194,18 @@ const (
 	helperGenEmbed = `(defn _gen_embed [text model params]
   (mapv double (map int text)))`
 
-	helperGenStruct = `(defn _gen_struct [ctor prompt model params]
+        helperGenStruct = `(defn _gen_struct [ctor prompt model params]
   (let [m (clojure.data.json/read-str prompt :key-fn keyword)
         fields (first (:arglists (meta ctor)))
         args (map #(get m %) fields)]
     (apply ctor args)))`
+
+        helperCastStruct = `(defn _cast_struct [ctor m]
+  (let [fields (first (:arglists (meta ctor)))]
+    (apply ctor (map #(get m %) fields))))`
+
+        helperCastStructList = `(defn _cast_struct_list [ctor xs]
+  (mapv #(_cast_struct ctor %) xs))`
 
         helperFetch = `(defn _fetch [url opts]
   (let [method (get opts :method "GET")
@@ -310,9 +317,11 @@ var helperMap = map[string]string{
 	"_intersect":   helperIntersect,
 	"_gen_text":    helperGenText,
 	"_gen_embed":   helperGenEmbed,
-	"_gen_struct":  helperGenStruct,
-	"_fetch":       helperFetch,
-	"_query":       helperQuery,
+        "_gen_struct":  helperGenStruct,
+        "_cast_struct": helperCastStruct,
+        "_cast_struct_list": helperCastStructList,
+        "_fetch":       helperFetch,
+        "_query":       helperQuery,
 }
 
 var helperOrder = []string{
@@ -336,10 +345,12 @@ var helperOrder = []string{
 	"_except",
 	"_intersect",
 	"_gen_text",
-	"_gen_embed",
-	"_gen_struct",
-	"_fetch",
-	"_query",
+        "_gen_embed",
+        "_gen_struct",
+        "_cast_struct",
+        "_cast_struct_list",
+        "_fetch",
+        "_query",
 }
 
 // helperDeps lists transitive helper dependencies.
