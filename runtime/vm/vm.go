@@ -3386,6 +3386,24 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 		fc.vars[q.Group.Name] = gvar
 	}
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gvar, B: grp})
+	if names := groupFieldNames(q.Group.Exprs); len(names) > 0 {
+		for _, name := range names {
+			k := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: interpreter.TagStr, Str: name}})
+			v := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpIndex, A: v, B: grp, C: k})
+			fc.vars[name] = v
+		}
+	}
+	if names := groupFieldNames(q.Group.Exprs); len(names) > 0 {
+		for _, name := range names {
+			k := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: interpreter.TagStr, Str: name}})
+			v := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpIndex, A: v, B: grp, C: k})
+			fc.vars[name] = v
+		}
+	}
 
 	var skip int
 	if q.Group.Having != nil {
@@ -3452,6 +3470,8 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 		key = fc.newReg()
 		start := pairs[0]
 		fc.emit(q.Pos, Instr{Op: OpMakeMap, A: key, B: len(exprs), C: start})
+	} else if name := extractFieldName(exprs[0]); name != "" {
+		fieldNames = []string{name}
 	}
 	keyStr := fc.newReg()
 	fc.emit(q.Group.Pos, Instr{Op: OpStr, A: keyStr, B: key})
@@ -3479,7 +3499,9 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 		for i, name := range fieldNames {
 			k := fc.newReg()
 			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: interpreter.TagStr, Str: name}})
-			pairsGrp = append(pairsGrp, k, regs[i])
+			v := fc.newReg()
+			fc.emit(exprs[i].Pos, Instr{Op: OpMove, A: v, B: regs[i]})
+			pairsGrp = append(pairsGrp, k, v)
 		}
 	}
 	grp := fc.newReg()
@@ -4216,6 +4238,16 @@ func extractFieldName(e *parser.Expr) string {
 		return sel.Tail[len(sel.Tail)-1]
 	}
 	return sel.Root
+}
+
+func groupFieldNames(exprs []*parser.Expr) []string {
+	names := make([]string, 0, len(exprs))
+	for _, e := range exprs {
+		if name := extractFieldName(e); name != "" {
+			names = append(names, name)
+		}
+	}
+	return names
 }
 
 func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {

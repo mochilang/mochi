@@ -1,0 +1,14 @@
+let people = [
+  { name: "Alice", city: "Paris" },
+  { name: "Bob", city: "Paris" },
+  { name: "Charlie", city: "Hanoi" }
+]
+let stats = from p in people
+            group by p.city into g
+            select {
+              city_from_var: city,
+              city_from_field: g.city,
+              city_from_key: g.key,
+              count: count(g)
+            }
+print(stats)

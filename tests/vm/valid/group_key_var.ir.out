@@ -1,8 +1,8 @@
-func main (regs=58)
+func main (regs=63)
   // let people = [
-  Const        r0, [{"city": "Paris", "name": "Alice"}, {"city": "Hanoi", "name": "Bob"}, {"city": "Paris", "name": "Charlie"}, {"city": "Hanoi", "name": "Diana"}, {"city": "Paris", "name": "Eve"}, {"city": "Hanoi", "name": "Frank"}, {"city": "Paris", "name": "George"}]
+  Const        r0, [{"city": "Paris", "name": "Alice"}, {"city": "Paris", "name": "Bob"}, {"city": "Hanoi", "name": "Charlie"}]
   Move         r1, r0
-  // from p in people
+  // let stats = from p in people
   Const        r2, []
   IterPrep     r3, r1
   Len          r4, r3
@@ -20,20 +20,20 @@ L2:
   Str          r13, r12
   In           r14, r13, r6
   JumpIfTrue   r14, L1
-  // from p in people
+  // let stats = from p in people
   Const        r15, []
   Const        r16, "__group__"
   Const        r17, true
   Const        r18, "key"
   // group by p.city into g
   Move         r19, r12
-  // from p in people
+  // let stats = from p in people
   Const        r20, "items"
   Move         r21, r15
   // group by p.city into g
   Const        r22, "city"
   Move         r23, r12
-  // from p in people
+  // let stats = from p in people
   MakeMap      r24, 4, r16
   SetIndex     r6, r13, r24
   Append       r25, r7, r24
@@ -60,33 +60,43 @@ L4:
   Index        r38, r35, r37
   Const        r39, "city"
   Index        r40, r35, r39
-  // having count(g) >= 4
-  Count        r41, r36
-  Const        r42, 4
-  LessEqInt    r43, r42, r41
-  JumpIfFalse  r43, L3
-  // select { city: g.key, num: count(g) }
-  Const        r44, "city"
-  Const        r45, "key"
-  Index        r46, r36, r45
-  Const        r47, "num"
-  Count        r48, r36
-  Move         r49, r44
-  Move         r50, r46
-  Move         r51, r47
-  Move         r52, r48
-  MakeMap      r53, 2, r49
-  // from p in people
-  Append       r54, r2, r53
-  Move         r2, r54
-  Const        r55, 1
-  Add          r56, r32, r55
-  Move         r32, r56
+  // city_from_var: city,
+  Const        r41, "city_from_var"
+  // city_from_field: g.city,
+  Const        r42, "city_from_field"
+  Const        r43, "city"
+  Index        r44, r36, r43
+  // city_from_key: g.key,
+  Const        r45, "city_from_key"
+  Const        r46, "key"
+  Index        r47, r36, r46
+  // count: count(g)
+  Const        r48, "count"
+  Count        r49, r36
+  // city_from_var: city,
+  Move         r50, r41
+  Move         r51, r40
+  // city_from_field: g.city,
+  Move         r52, r42
+  Move         r53, r44
+  // city_from_key: g.key,
+  Move         r54, r45
+  Move         r55, r47
+  // count: count(g)
+  Move         r56, r48
+  Move         r57, r49
+  // select {
+  MakeMap      r58, 4, r50
+  // let stats = from p in people
+  Append       r59, r2, r58
+  Move         r2, r59
+  Const        r60, 1
+  Add          r61, r32, r60
+  Move         r32, r61
   Jump         L4
 L3:
-  // let big =
-  Move         r57, r2
-  // json(big)
-  JSON         r57
+  Move         r62, r2
+  // print(stats)
+  Print        r62
   Return       r0
 

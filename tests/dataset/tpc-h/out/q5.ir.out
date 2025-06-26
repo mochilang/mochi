@@ -1,4 +1,4 @@
-func main (regs=210)
+func main (regs=216)
   // let region = [
   Const        r0, [{"r_name": "ASIA", "r_regionkey": 0}, {"r_name": "EUROPE", "r_regionkey": 1}]
   Move         r1, r0
@@ -246,104 +246,112 @@ L20:
   // from r in local_customer_supplier_orders
   Const        r150, "items"
   Move         r151, r145
-  MakeMap      r152, 3, r146
-  SetIndex     r137, r143, r152
-  Append       r153, r138, r152
-  Move         r138, r153
+  // group by r.nation into g
+  Const        r152, "nation"
+  Move         r153, r142
+  // from r in local_customer_supplier_orders
+  MakeMap      r154, 4, r146
+  SetIndex     r137, r143, r154
+  Append       r155, r138, r154
+  Move         r138, r155
 L19:
-  Const        r154, "items"
-  Index        r155, r137, r143
-  Index        r156, r155, r154
-  Append       r157, r156, r140
-  SetIndex     r155, r154, r157
-  Const        r158, 1
-  Add          r159, r136, r158
-  Move         r136, r159
+  Const        r156, "items"
+  Index        r157, r137, r143
+  Index        r158, r157, r156
+  Append       r159, r158, r140
+  SetIndex     r157, r156, r159
+  Const        r160, 1
+  Add          r161, r136, r160
+  Move         r136, r161
   Jump         L20
 L18:
-  Const        r160, 0
-  Len          r161, r138
+  Const        r162, 0
+  Len          r163, r138
 L26:
-  Less         r162, r160, r161
-  JumpIfFalse  r162, L21
-  Index        r163, r138, r160
-  Move         r164, r163
+  Less         r164, r162, r163
+  JumpIfFalse  r164, L21
+  Index        r165, r138, r162
+  Move         r166, r165
+  Const        r167, "nation"
+  Index        r168, r165, r167
+  Const        r169, "nation"
+  Index        r170, r165, r169
   // n_name: g.key,
-  Const        r165, "n_name"
-  Const        r166, "key"
-  Index        r167, r164, r166
+  Const        r171, "n_name"
+  Const        r172, "key"
+  Index        r173, r166, r172
   // revenue: sum(from x in g select x.revenue)
-  Const        r168, "revenue"
-  Const        r169, []
-  IterPrep     r170, r164
-  Len          r171, r170
-  Const        r172, 0
+  Const        r174, "revenue"
+  Const        r175, []
+  IterPrep     r176, r166
+  Len          r177, r176
+  Const        r178, 0
 L23:
-  Less         r173, r172, r171
-  JumpIfFalse  r173, L22
-  Index        r174, r170, r172
-  Move         r175, r174
-  Const        r176, "revenue"
-  Index        r177, r175, r176
-  Append       r178, r169, r177
-  Move         r169, r178
-  Const        r179, 1
-  Add          r180, r172, r179
-  Move         r172, r180
+  Less         r179, r178, r177
+  JumpIfFalse  r179, L22
+  Index        r180, r176, r178
+  Move         r181, r180
+  Const        r182, "revenue"
+  Index        r183, r181, r182
+  Append       r184, r175, r183
+  Move         r175, r184
+  Const        r185, 1
+  Add          r186, r178, r185
+  Move         r178, r186
   Jump         L23
 L22:
-  Sum          181,169,0,0
+  Sum          187,175,0,0
   // n_name: g.key,
-  Move         r182, r165
-  Move         r183, r167
+  Move         r188, r171
+  Move         r189, r173
   // revenue: sum(from x in g select x.revenue)
-  Move         r184, r168
-  Move         r185, r181
+  Move         r190, r174
+  Move         r191, r187
   // select {
-  MakeMap      r186, 2, r182
+  MakeMap      r192, 2, r188
   // sort by -sum(from x in g select x.revenue)
-  Const        r187, []
-  IterPrep     r188, r164
-  Len          r189, r188
-  Const        r190, 0
+  Const        r193, []
+  IterPrep     r194, r166
+  Len          r195, r194
+  Const        r196, 0
 L25:
-  Less         r191, r190, r189
-  JumpIfFalse  r191, L24
-  Index        r192, r188, r190
-  Move         r175, r192
-  Const        r193, "revenue"
-  Index        r194, r175, r193
-  Append       r195, r187, r194
-  Move         r187, r195
-  Const        r196, 1
-  Add          r197, r190, r196
-  Move         r190, r197
+  Less         r197, r196, r195
+  JumpIfFalse  r197, L24
+  Index        r198, r194, r196
+  Move         r181, r198
+  Const        r199, "revenue"
+  Index        r200, r181, r199
+  Append       r201, r193, r200
+  Move         r193, r201
+  Const        r202, 1
+  Add          r203, r196, r202
+  Move         r196, r203
   Jump         L25
 L24:
-  Sum          198,187,0,0
-  Neg          r199, r198
-  Move         r200, r199
+  Sum          204,193,0,0
+  Neg          r205, r204
+  Move         r206, r205
   // from r in local_customer_supplier_orders
-  Move         r201, r186
-  MakeList     r202, 2, r200
-  Append       r203, r133, r202
-  Move         r133, r203
-  Const        r204, 1
-  Add          r205, r160, r204
-  Move         r160, r205
+  Move         r207, r192
+  MakeList     r208, 2, r206
+  Append       r209, r133, r208
+  Move         r133, r209
+  Const        r210, 1
+  Add          r211, r162, r210
+  Move         r162, r211
   Jump         L26
 L21:
   // sort by -sum(from x in g select x.revenue)
-  Sort         206,133,0,0
+  Sort         212,133,0,0
   // from r in local_customer_supplier_orders
-  Move         r133, r206
+  Move         r133, r212
   // let result =
-  Move         r207, r133
+  Move         r213, r133
   // json(result)
-  JSON         r207
+  JSON         r213
   // expect result == [
-  Const        r208, [{"n_name": "JAPAN", "revenue": 950}, {"n_name": "INDIA", "revenue": 720}]
-  Equal        r209, r207, r208
-  Expect       r209
+  Const        r214, [{"n_name": "JAPAN", "revenue": 950}, {"n_name": "INDIA", "revenue": 720}]
+  Equal        r215, r213, r214
+  Expect       r215
   Return       r0
 

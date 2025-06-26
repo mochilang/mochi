@@ -1938,6 +1938,15 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		genv := NewEnv(child)
 		gStruct := GroupType{Elem: elemT}
 		genv.SetVar(q.Group.Name, gStruct, true)
+		for _, e := range q.Group.Exprs {
+			if name := extractFieldName(e); name != "" {
+				t, err := checkExpr(e, child)
+				if err != nil {
+					return nil, err
+				}
+				genv.SetVar(name, t, true)
+			}
+		}
 		selT, err = checkExpr(q.Select, genv)
 	} else {
 		if name, arg, ok := aggregateCallName(q.Select); ok {
@@ -2027,6 +2036,25 @@ func identName(e *parser.Expr) (string, bool) {
 		return p.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+func extractFieldName(e *parser.Expr) string {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Selector == nil {
+		return ""
+	}
+	sel := p.Target.Selector
+	if len(sel.Tail) > 0 {
+		return sel.Tail[len(sel.Tail)-1]
+	}
+	return sel.Root
 }
 
 func stringKey(e *parser.Expr) (string, bool) {
