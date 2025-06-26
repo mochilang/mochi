@@ -193,6 +193,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args[i] = v
 			}
 			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+		} else if op.Cast != nil {
+			if op.Cast.Type.Simple != nil && c.env != nil {
+				if st, ok := c.resolveTypeRef(op.Cast.Type).(types.StructType); ok {
+					expr = fmt.Sprintf("%s.new(%s)", sanitizeName(st.Name), expr)
+				}
+			}
 		}
 	}
 	return expr, nil
