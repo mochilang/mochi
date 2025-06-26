@@ -1,0 +1,60 @@
+open System
+
+let _fetch (url: string) (opts: Map<string,obj> option) : Map<string,obj> =
+  if url.StartsWith("file://") then
+    let path = url.Substring(7)
+    let text = System.IO.File.ReadAllText(path)
+    Map.ofList [("status", box 200); ("body", box text)]
+  else
+    let mutable urlStr = url
+    let meth = opts |> Option.bind (Map.tryFind "method") |> Option.map string |> Option.defaultValue "GET"
+    if opts.IsSome then
+      match Map.tryFind "query" opts.Value with
+      | Some q ->
+          let qs =
+            (q :?> Map<string,obj>)
+            |> Seq.map (fun (KeyValue(k,v)) -> System.Uri.EscapeDataString(k) + "=" + System.Uri.EscapeDataString(string v))
+            |> String.concat "&"
+          let sep = if urlStr.Contains("?") then "&" else "?"
+          urlStr <- urlStr + sep + qs
+      | None -> ()
+    use msg = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod(meth), urlStr)
+    if opts.IsSome then
+      match Map.tryFind "body" opts.Value with
+      | Some b ->
+          let json = System.Text.Json.JsonSerializer.Serialize(b)
+          msg.Content <- new System.Net.Http.StringContent(json, System.Text.Encoding.UTF8, "application/json")
+      | None -> ()
+    if opts.IsSome then
+      match Map.tryFind "headers" opts.Value with
+      | Some hs ->
+          for KeyValue(k,v) in (hs :?> Map<string,obj>) do
+            msg.Headers.TryAddWithoutValidation(k, string v) |> ignore
+      | None -> ()
+    use client = new System.Net.Http.HttpClient()
+    if opts.IsSome then
+      match Map.tryFind "timeout" opts.Value with
+      | Some t ->
+          match t with
+          | :? int as i -> client.Timeout <- System.TimeSpan.FromSeconds(float i)
+          | :? int64 as i -> client.Timeout <- System.TimeSpan.FromSeconds(float i)
+          | :? float as f -> client.Timeout <- System.TimeSpan.FromSeconds(f)
+          | :? float32 as f -> client.Timeout <- System.TimeSpan.FromSeconds(float f)
+          | _ -> ()
+      | None -> ()
+    let resp = client.Send(msg).Result
+    let status = resp.StatusCode |> int |> box
+    let body = resp.Content.ReadAsStringAsync().Result |> box
+    Map.ofList [("status", status); ("body", body)]
+
+type Msg =
+    {
+        message: string
+    }
+
+type Msg =
+    {
+        message: string
+    }
+let data: Msg = _fetch "file://tests/compiler/fs/fetch_builtin.json" None
+ignore (printfn "%A" (data.message))
