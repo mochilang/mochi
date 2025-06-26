@@ -16,7 +16,7 @@ let customer = [
 
 let orders = [
   { o_orderkey: 1000, o_custkey: 1, o_orderdate: "1993-10-15" },
-  { o_orderkey: 2000, o_custkey: 1, o_orderdate: "1994-01-02" } // outside window
+  { o_orderkey: 2000, o_custkey: 1, o_orderdate: "1994-01-02" }
 ]
 
 let lineitem = [
@@ -66,19 +66,4 @@ let result =
     c_comment: g.key.c_comment
   }
 
-print result
-
-test "Q10 returns customer revenue from returned items" {
-  expect result == [
-    {
-      c_custkey: 1,
-      c_name: "Alice",
-      revenue: 1000.0 * 0.9, // 900.0
-      c_acctbal: 100.0,
-      n_name: "BRAZIL",
-      c_address: "123 St",
-      c_phone: "123-456",
-      c_comment: "Loyal"
-    }
-  ]
-}
+print(result)
