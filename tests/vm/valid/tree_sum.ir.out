@@ -53,20 +53,11 @@ func main (regs=32)
   // fun sum_tree(t: Tree): int {
 func sum_tree (regs=23)
   // Leaf => 0
-  Const        r3, "__name"
-  Index        r4, r0, r3
-  Const        r5, "Leaf"
-  Equal        r2, r4, r5
   JumpIfFalse  r2, L0
   Const        r6, 0
   Move         r1, r6
   Jump         L1
-L0:
   // Node(left, value, right) => sum_tree(left) + value + sum_tree(right)
-  Const        r8, "__name"
-  Index        r9, r0, r8
-  Const        r10, "Node"
-  Equal        r7, r9, r10
   JumpIfFalse  r7, L2
   Const        r11, "left"
   Index        r12, r0, r11

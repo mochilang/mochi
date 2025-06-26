@@ -1,40 +1,21 @@
-func main (regs=17)
+func main (regs=15)
   // let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   Const        r0, [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  Move         r1, r0
   // for n in numbers {
-  IterPrep     r2, r1
-  Len          r3, r2
-  Const        r4, 0
-L4:
-  Less         r5, r4, r3
   JumpIfFalse  r5, L0
-  Index        r6, r2, r4
-  Move         r7, r6
   // if n % 2 == 0 {
-  Const        r8, 2
-  Mod          r9, r7, r8
-  Const        r10, 0
-  Equal        r11, r9, r10
   JumpIfFalse  r11, L1
   // continue
-  Jump         L2
-L1:
+  Jump         L1
   // if n > 7 {
-  Const        r12, 7
-  Less         r13, r12, r7
-  JumpIfFalse  r13, L3
+  JumpIfFalse  r13, L2
   // break
   Jump         L0
-L3:
+L2:
   // print("odd number:", n)
   Const        r14, "odd number:"
   Print2       r14, r7
-L2:
   // for n in numbers {
-  Const        r15, 1
-  Add          r16, r4, r15
-  Move         r4, r16
-  Jump         L4
+  Jump         L1
 L0:
   Return       r0

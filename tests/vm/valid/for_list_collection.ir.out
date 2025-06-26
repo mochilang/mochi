@@ -1,20 +1,14 @@
-func main (regs=9)
+func main (regs=7)
   // for n in [1,2,3] {
   Const        r0, [1, 2, 3]
   IterPrep     r1, r0
-  Len          r2, r1
   Const        r3, 0
-L1:
-  Less         r4, r3, r2
   JumpIfFalse  r4, L0
   Index        r5, r1, r3
   Move         r6, r5
   // print(n)
   Print        r6
   // for n in [1,2,3] {
-  Const        r7, 1
-  Add          r8, r3, r7
-  Move         r3, r8
   Jump         L1
 L0:
   Return       r0

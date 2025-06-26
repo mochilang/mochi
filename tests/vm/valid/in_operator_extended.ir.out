@@ -1,29 +1,11 @@
 func main (regs=33)
   // let xs = [1, 2, 3]
   Const        r0, [1, 2, 3]
-  Move         r1, r0
   // let ys = from x in xs where x % 2 == 1 select x
   Const        r2, []
-  IterPrep     r3, r1
-  Len          r4, r3
-  Const        r5, 0
-L2:
-  Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
-  Const        r9, 2
-  Mod          r10, r8, r9
-  Const        r11, 1
-  Equal        r12, r10, r11
   JumpIfFalse  r12, L1
-  Append       r13, r2, r8
-  Move         r2, r13
-L1:
-  Const        r14, 1
-  Add          r15, r5, r14
-  Move         r5, r15
-  Jump         L2
+  Jump         L1
 L0:
   Move         r16, r2
   // print(1 in ys)
@@ -57,5 +39,3 @@ L0:
   In           r32, r31, r28
   Print        r32
   Return       r0
-
-

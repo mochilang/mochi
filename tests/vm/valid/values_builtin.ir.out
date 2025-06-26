@@ -6,4 +6,3 @@ func main (regs=3)
   Values       2,1,0,0
   Print        r2
   Return       r0
-

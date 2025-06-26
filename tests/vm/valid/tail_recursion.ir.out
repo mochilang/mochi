@@ -11,8 +11,6 @@ func main (regs=5)
   // fun sum_rec(n: int, acc: int): int {
 func sum_rec (regs=10)
   // if n == 0 {
-  Const        r2, 0
-  Equal        r3, r0, r2
   JumpIfFalse  r3, L0
   // return acc
   Return       r1
@@ -26,4 +24,3 @@ L0:
   Call2        r9, sum_rec, r4, r5
   Return       r9
   Return       r0
-

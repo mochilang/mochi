@@ -1,29 +1,8 @@
 func main (regs=21)
   // let items = [
   Const        r0, [{"n": 1, "v": "a"}, {"n": 1, "v": "b"}, {"n": 2, "v": "c"}]
-  Move         r1, r0
   // let result = from i in items sort by i.n select i.v
-  Const        r2, []
-  IterPrep     r3, r1
-  Len          r4, r3
-  Const        r5, 0
-L1:
-  Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
-  Const        r9, "v"
-  Index        r10, r8, r9
-  Const        r11, "n"
-  Index        r12, r8, r11
-  Move         r13, r12
-  Move         r14, r10
-  MakeList     r15, 2, r13
-  Append       r16, r2, r15
-  Move         r2, r16
-  Const        r17, 1
-  Add          r18, r5, r17
-  Move         r5, r18
   Jump         L1
 L0:
   Sort         19,2,0,0
@@ -32,4 +11,3 @@ L0:
   // print(result)
   Print        r20
   Return       r0
-
