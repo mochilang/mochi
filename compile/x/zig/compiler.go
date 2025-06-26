@@ -618,21 +618,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		resElem := strings.TrimPrefix(resType, "[]const ")
 		groupType := "struct { key: " + keyType + "; Items: std.ArrayList(" + groupElem + ") }"
 		tmp := c.newTmp()
+		idxMap := c.newTmp()
 		var b strings.Builder
 		c.needsEqual = true
 		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator); ")
+		b.WriteString("var " + idxMap + " = std.AutoHashMap(" + keyType + ", usize).init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
 		if cond != "" {
 			b.WriteString(" if (!(" + cond + ")) continue;")
 		}
 		keyVar := c.newTmp()
 		b.WriteString(" const " + keyVar + " = " + keyExpr + ";")
-		idxVar := c.newTmp()
-		foundVar := c.newTmp()
-		b.WriteString(" var " + idxVar + ": usize = 0; var " + foundVar + " = false;")
-		b.WriteString(" for (0.." + tmp + ".items.len) |i| { if (_equal(" + tmp + ".items[i].key, " + keyVar + ")) { " + idxVar + " = i; " + foundVar + " = true; break; } }")
-		b.WriteString(" if (!" + foundVar + ") { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; " + tmp + ".append(g) catch unreachable; " + idxVar + " = " + tmp + ".items.len - 1; }")
-		b.WriteString(" " + tmp + ".items[" + idxVar + "].Items.append(" + sanitizeName(q.Var) + ") catch unreachable; }")
+		b.WriteString(" if (" + idxMap + ".get(" + keyVar + ")) |idx| {")
+		b.WriteString(" " + tmp + ".items[idx].Items.append(" + sanitizeName(q.Var) + ") catch unreachable;")
+		b.WriteString(" } else { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; g.Items.append(" + sanitizeName(q.Var) + ") catch unreachable; " + tmp + ".append(g) catch unreachable; " + idxMap + ".put(" + keyVar + ", " + tmp + ".items.len - 1) catch unreachable; }")
+		b.WriteString(" }")
 		resVar := c.newTmp()
 		b.WriteString(" var " + resVar + " = std.ArrayList(" + resElem + ").init(std.heap.page_allocator);")
 		b.WriteString("for (" + tmp + ".items) |" + sanitizeName(q.Group.Name) + "| { " + resVar + ".append(" + sel + ") catch unreachable; }")
