@@ -1,0 +1,11 @@
+type Msg {
+  message: string
+}
+
+fetch "file://tests/compiler/cobol/fetch_builtin.json" with {
+  method: "POST",
+  body: {foo: 1},
+  headers: {"X-Test": "yes"},
+  query: {q: "ok"},
+  timeout: 5.0
+}
