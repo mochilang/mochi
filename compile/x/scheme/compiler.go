@@ -438,11 +438,13 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
 	c.indent++
 	if c.env != nil {
 		if st, ok := c.env.GetStruct(structName); ok {
-			names := make([]string, 0, len(st.Fields))
-			for fname := range st.Fields {
-				names = append(names, fname)
+			names := st.Order
+			if len(names) == 0 {
+				for fname := range st.Fields {
+					names = append(names, fname)
+				}
+				sort.Strings(names)
 			}
-			sort.Strings(names)
 			for _, fname := range names {
 				c.needMapHelpers = true
 				c.writeln(fmt.Sprintf("(define %s (map-get Self '%s))", sanitizeName(fname), sanitizeName(fname)))
@@ -869,14 +871,56 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			continue
 		}
 		if op.Cast != nil {
-			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				switch *op.Cast.Type.Simple {
-				case "float":
-					expr = fmt.Sprintf("(exact->inexact %s)", expr)
-				case "int":
-					expr = fmt.Sprintf("(inexact->exact %s)", expr)
-				case "string":
-					expr = fmt.Sprintf("(number->string %s)", expr)
+			if op.Cast.Type != nil {
+				if op.Cast.Type.Simple != nil {
+					switch *op.Cast.Type.Simple {
+					case "float":
+						expr = fmt.Sprintf("(exact->inexact %s)", expr)
+					case "int":
+						expr = fmt.Sprintf("(inexact->exact %s)", expr)
+					case "string":
+						expr = fmt.Sprintf("(number->string %s)", expr)
+					default:
+						if c.env != nil {
+							if st, ok := c.env.GetStruct(*op.Cast.Type.Simple); ok {
+								names := st.Order
+								if len(names) == 0 {
+									for fname := range st.Fields {
+										names = append(names, fname)
+									}
+									sort.Strings(names)
+								}
+								vals := make([]string, len(names))
+								c.needMapHelpers = true
+								for i, f := range names {
+									vals[i] = fmt.Sprintf("(map-get _tmp '%s)", sanitizeName(f))
+								}
+								expr = fmt.Sprintf("(let ((_tmp %s)) (new-%s %s))", expr, sanitizeName(st.Name), strings.Join(vals, " "))
+							}
+						}
+					}
+				} else if op.Cast.Type.Generic != nil {
+					if op.Cast.Type.Generic.Name == "list" && len(op.Cast.Type.Generic.Args) == 1 {
+						arg := op.Cast.Type.Generic.Args[0]
+						if arg != nil && arg.Simple != nil && c.env != nil {
+							if st, ok := c.env.GetStruct(*arg.Simple); ok {
+								names := st.Order
+								if len(names) == 0 {
+									for fname := range st.Fields {
+										names = append(names, fname)
+									}
+									sort.Strings(names)
+								}
+								vals := make([]string, len(names))
+								for i, f := range names {
+									vals[i] = fmt.Sprintf("(map-get _it '%s)", sanitizeName(f))
+								}
+								body := fmt.Sprintf("(new-%s %s)", sanitizeName(st.Name), strings.Join(vals, " "))
+								c.needMapHelpers = true
+								expr = fmt.Sprintf("(map (lambda (_it) %s) %s)", body, expr)
+							}
+						}
+					}
 				}
 			}
 			continue

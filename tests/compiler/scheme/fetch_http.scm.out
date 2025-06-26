@@ -69,5 +69,5 @@
 	(list (cons 'userId userId) (cons 'id id) (cons 'title title) (cons 'completed completed))
 )
 
-(define todo (_fetch "https://jsonplaceholder.typicode.com/todos/1" '()))
+(define todo (let ((_tmp (_fetch "https://jsonplaceholder.typicode.com/todos/1" '()))) (new-Todo (map-get _tmp 'userId) (map-get _tmp 'id) (map-get _tmp 'title) (map-get _tmp 'completed))))
 (begin (display (map-get todo 'title)) (newline))
