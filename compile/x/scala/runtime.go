@@ -23,27 +23,47 @@ implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: An
 }
 `
 	helperLoad = `def _load(path: String, opts: Map[String, Any]): Seq[Any] = {
+        val fmt = opts.getOrElse("format", "json").asInstanceOf[String]
         val src = if (path == "" || path == "-") scala.io.Source.stdin else scala.io.Source.fromFile(path)
         try {
                 val data = src.mkString
-                scala.util.parsing.json.JSON.parseFull(data) match {
-                        case Some(xs: List[_]) => xs
-                        case Some(m) => Seq(m)
-                        case _ => data.split('\n').toSeq
+                fmt match {
+                        case "jsonl" =>
+                                data.split("\n").toSeq.filter(_.nonEmpty).map { line =>
+                                        scala.util.parsing.json.JSON.parseFull(line).getOrElse(line)
+                                }
+                        case "json" =>
+                                scala.util.parsing.json.JSON.parseFull(data) match {
+                                        case Some(xs: List[_]) => xs
+                                        case Some(m) => Seq(m)
+                                        case _ => Seq.empty
+                                }
+                        case _ =>
+                                scala.util.parsing.json.JSON.parseFull(data) match {
+                                        case Some(xs: List[_]) => xs
+                                        case Some(m) => Seq(m)
+                                        case _ => data.split("\n").toSeq
+                                }
                 }
         } finally src.close()
-}
-`
+        }`
 	helperSave = `def _save(src: Any, path: String, opts: Map[String, Any]): Unit = {
+        val fmt = opts.getOrElse("format", "json").asInstanceOf[String]
         val out = if (path == "" || path == "-") new java.io.PrintWriter(System.out) else new java.io.PrintWriter(new java.io.File(path))
         try {
-                src match {
-                        case seq: Seq[_] => seq.foreach(v => out.println(v.toString))
-                        case other => out.println(other.toString)
+                fmt match {
+                        case "jsonl" =>
+                                src.asInstanceOf[Seq[Any]].foreach(v => out.println(_to_json(v)))
+                        case "json" =>
+                                out.println(_to_json(src))
+                        case _ =>
+                                src match {
+                                        case seq: Seq[_] => seq.foreach(v => out.println(v.toString))
+                                        case other => out.println(other.toString)
+                                }
                 }
         } finally if (path != "" && path != "-") out.close()
-}
-`
+        }`
 	helperIndexString = `def _indexString(s: String, i: Int): String = {
         var idx = i
         val chars = s.toVector

@@ -96,4 +96,3 @@ def _query(src: Seq[Any], joins: Seq[Map[String,Any]], opts: Map[String,Any]): S
         val sel = opts("select").asInstanceOf[Seq[Any] => Any]
         it.map(r => sel(r))
 }
-

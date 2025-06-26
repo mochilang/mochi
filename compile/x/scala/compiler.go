@@ -983,7 +983,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			// keep keys as regular strings
+			if s, ok := simpleStringKey(it.Key); ok {
+				k = fmt.Sprintf("%q", s)
+			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err

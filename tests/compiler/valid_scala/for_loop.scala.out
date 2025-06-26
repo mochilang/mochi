@@ -2,7 +2,7 @@ object Main {
 	def main(args: Array[String]): Unit = {
 		var i1 = 1
 		while (i1 < 4) {
-			val i = i1
+			val i: Int = i1
 			i1 = i1 + 1
 			println(i)
 		}

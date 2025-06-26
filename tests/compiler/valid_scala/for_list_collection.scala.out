@@ -2,7 +2,7 @@ object Main {
 	def main(args: Array[String]): Unit = {
 		val it1 = scala.collection.mutable.ArrayBuffer(1, 2, 3).iterator
 		while (it1.hasNext) {
-			val n = it1.next()
+			val n: Int = it1.next()
 			println(n)
 		}
 	}

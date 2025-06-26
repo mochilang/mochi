@@ -1,8 +1,8 @@
 object Main {
-        def main(args: Array[String]): Unit = {
-                val text: String = "hello"
-                println(_indexString(text, (-1)))
-        }
+	def main(args: Array[String]): Unit = {
+		val text: String = "hello"
+		println(_indexString(text, (-1)))
+	}
 }
 def _indexString(s: String, i: Int): String = {
         var idx = i

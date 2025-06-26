@@ -2,7 +2,7 @@ object Main {
 	def main(args: Array[String]): Unit = {
 		val it1 = "hi".iterator
 		while (it1.hasNext) {
-			val ch = it1.next()
+			val ch: String = it1.next().toString
 			println(ch)
 		}
 	}
