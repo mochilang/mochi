@@ -678,6 +678,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "avg":
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "min":
+		if len(args) == 1 {
+			c.use("_min")
+			return fmt.Sprintf("_min(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("min(%s)", argStr), nil
+	case "max":
+		if len(args) == 1 {
+			c.use("_max")
+			return fmt.Sprintf("_max(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("max(%s)", argStr), nil
 	case "eval":
 		return fmt.Sprintf("eval(%s)", argStr), nil
 	default:
