@@ -89,7 +89,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("pub fn main() void {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil {
+		if s.Fun != nil || s.Test != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s, false); err != nil {
