@@ -120,15 +120,15 @@ func TestPyCompiler_LeetCodeExamples(t *testing.T) {
 
 func runLeetExample(t *testing.T, id int) {
 	t.Helper()
-       dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
-       files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
-       if err != nil {
-               t.Fatalf("glob error: %v", err)
-       }
-       if len(files) == 0 {
-               t.Fatalf("no examples found in %s", dir)
-       }
-       for _, src := range files {
+	dir := filepath.Join("..", "..", "examples", "leetcode", fmt.Sprint(id))
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no examples found in %s", dir)
+	}
+	for _, src := range files {
 		name := fmt.Sprintf("%d/%s", id, filepath.Base(src))
 		t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)
@@ -153,11 +153,77 @@ func runLeetExample(t *testing.T, id int) {
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
-                       if out, err := cmd.CombinedOutput(); err != nil {
-                               t.Fatalf("python run error: %v\n%s", err, out)
-                       } else {
-                               _ = out
-                       }
-               })
-       }
+			if out, err := cmd.CombinedOutput(); err != nil {
+				t.Fatalf("python run error: %v\n%s", err, out)
+			} else {
+				_ = out
+			}
+		})
+	}
+}
+
+func TestPyCompiler_TPCHQ1(t *testing.T) {
+	if _, err := exec.LookPath("python3"); err != nil {
+		t.Skip("python3 not installed")
+	}
+	root := findRepoRoot(t)
+	src := filepath.Join(root, "tests", "dataset", "tpc-h", "q1.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	code, err := pycode.New(env).Compile(prog)
+	if err != nil {
+		t.Fatalf("compile error: %v", err)
+	}
+	codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "py", "q1.py.out")
+	wantCode, err := os.ReadFile(codeWantPath)
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
+	}
+	if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+		t.Errorf("generated code mismatch for q1.py.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, bytes.TrimSpace(wantCode))
+	}
+	dir := t.TempDir()
+	file := filepath.Join(dir, "main.py")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	cmd := exec.Command("python3", file)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("python run error: %v\n%s", err, out)
+	}
+	gotOut := bytes.TrimSpace(out)
+	outWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "py", "q1.out")
+	wantOut, err := os.ReadFile(outWantPath)
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
+	}
+	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+		t.Errorf("output mismatch for q1.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotOut, bytes.TrimSpace(wantOut))
+	}
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found (not in Go module)")
+	return ""
 }
