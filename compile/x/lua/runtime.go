@@ -176,54 +176,54 @@ const (
 		"    return acc\n" +
 		"end\n"
 
-        helperJson = "function __json(v)\n" +
-                "    local function sort(x)\n" +
-                "        if type(x) ~= 'table' then return x end\n" +
-                "        if x[1] ~= nil or #x > 0 then\n" +
-                "            local out = {}\n" +
-                "            for i=1,#x do out[i] = sort(x[i]) end\n" +
-                "            return out\n" +
-                "        end\n" +
-                "        local keys = {}\n" +
-                "        for k in pairs(x) do keys[#keys+1] = k end\n" +
-                "        table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
-                "        local out = {}\n" +
-                "        for _,k in ipairs(keys) do out[k] = sort(x[k]) end\n" +
-                "        return out\n" +
-                "    end\n" +
-                "    local ok, json = pcall(require, 'json')\n" +
-                "    if not ok then ok, json = pcall(require, 'cjson') end\n" +
-                "    if ok then\n" +
-                "        print(json.encode(sort(v)))\n" +
-                "        return\n" +
-                "    end\n" +
-                "    local function enc(x)\n" +
-                "        local t = type(x)\n" +
-                "        if t == 'nil' then\n" +
-                "            return 'null'\n" +
-                "        elseif t == 'boolean' or t == 'number' then\n" +
-                "            return tostring(x)\n" +
-                "        elseif t == 'string' then\n" +
-                "            return string.format('%q', x)\n" +
-                "        elseif t == 'table' then\n" +
-                "            if x[1] ~= nil or #x > 0 then\n" +
-                "                local parts = {}\n" +
-                "                for i=1,#x do parts[#parts+1] = enc(x[i]) end\n" +
-                "                return '['..table.concat(parts, ',')..']'\n" +
-                "            else\n" +
-                "                local keys = {}\n" +
-                "                for k in pairs(x) do keys[#keys+1] = k end\n" +
-                "                table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
-                "                local parts = {}\n" +
-                "                for _,k in ipairs(keys) do parts[#parts+1] = enc(k)..':'..enc(x[k]) end\n" +
-                "                return '{'..table.concat(parts, ',')..'}'\n" +
-                "            end\n" +
-                "        else\n" +
-                "            return 'null'\n" +
-                "        end\n" +
-                "    end\n" +
-                "    print(enc(sort(v)))\n" +
-                "end\n"
+	helperJson = "function __json(v)\n" +
+		"    local function sort(x)\n" +
+		"        if type(x) ~= 'table' then return x end\n" +
+		"        if x[1] ~= nil or #x > 0 then\n" +
+		"            local out = {}\n" +
+		"            for i=1,#x do out[i] = sort(x[i]) end\n" +
+		"            return out\n" +
+		"        end\n" +
+		"        local keys = {}\n" +
+		"        for k in pairs(x) do keys[#keys+1] = k end\n" +
+		"        table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
+		"        local out = {}\n" +
+		"        for _,k in ipairs(keys) do out[k] = sort(x[k]) end\n" +
+		"        return out\n" +
+		"    end\n" +
+		"    local ok, json = pcall(require, 'json')\n" +
+		"    if not ok then ok, json = pcall(require, 'cjson') end\n" +
+		"    if ok then\n" +
+		"        print(json.encode(sort(v)))\n" +
+		"        return\n" +
+		"    end\n" +
+		"    local function enc(x)\n" +
+		"        local t = type(x)\n" +
+		"        if t == 'nil' then\n" +
+		"            return 'null'\n" +
+		"        elseif t == 'boolean' or t == 'number' then\n" +
+		"            return tostring(x)\n" +
+		"        elseif t == 'string' then\n" +
+		"            return string.format('%q', x)\n" +
+		"        elseif t == 'table' then\n" +
+		"            if x[1] ~= nil or #x > 0 then\n" +
+		"                local parts = {}\n" +
+		"                for i=1,#x do parts[#parts+1] = enc(x[i]) end\n" +
+		"                return '['..table.concat(parts, ',')..']'\n" +
+		"            else\n" +
+		"                local keys = {}\n" +
+		"                for k in pairs(x) do keys[#keys+1] = k end\n" +
+		"                table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
+		"                local parts = {}\n" +
+		"                for _,k in ipairs(keys) do parts[#parts+1] = enc(k)..':'..enc(x[k]) end\n" +
+		"                return '{'..table.concat(parts, ',')..'}'\n" +
+		"            end\n" +
+		"        else\n" +
+		"            return 'null'\n" +
+		"        end\n" +
+		"    end\n" +
+		"    print(enc(sort(v)))\n" +
+		"end\n"
 
 	helperEval = "function __eval(code)\n" +
 		"    local f, err = load(code)\n" +
@@ -464,13 +464,13 @@ const (
 		"        for _, row in ipairs(rows) do\n" +
 		"            table.insert(lines, json.encode(row))\n" +
 		"        end\n" +
-		"        data = table.concat(lines, '\n')\n" +
+		"        data = table.concat(lines, '\\n')\n" +
 		"    elseif fmt == 'csv' then\n" +
 		"        local lines = {}\n" +
 		"        for _, row in ipairs(rows) do\n" +
 		"            table.insert(lines, table.concat(row, ','))\n" +
 		"        end\n" +
-		"        data = table.concat(lines, '\n')\n" +
+		"        data = table.concat(lines, '\\n')\n" +
 		"    else\n" +
 		"        error('unsupported format: '..fmt)\n" +
 		"    end\n" +
