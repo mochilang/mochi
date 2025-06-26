@@ -110,11 +110,27 @@ const (
 		"    String::new()\n" +
 		"}\n"
 
-	helperLoad = "fn _load<T>(_path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {\n" +
+	helperLoad = "fn _load<T: serde::de::DeserializeOwned>(_path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {\n" +
+		"    use std::io::Read;\n" +
+		"    let mut data = String::new();\n" +
+		"    if _path.is_empty() || _path == \"-\" {\n" +
+		"        std::io::stdin().read_to_string(&mut data).unwrap();\n" +
+		"    } else if let Ok(mut f) = std::fs::File::open(_path) {\n" +
+		"        f.read_to_string(&mut data).unwrap();\n" +
+		"    }\n" +
+		"    if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) { return v; }\n" +
+		"    if let Ok(v) = serde_json::from_str::<T>(&data) { return vec![v]; }\n" +
 		"    Vec::new()\n" +
 		"}\n"
 
-	helperSave = "fn _save<T>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) {\n" +
+	helperSave = "fn _save<T: serde::Serialize>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) {\n" +
+		"    if let Ok(text) = serde_json::to_string(_src) {\n" +
+		"        if _path.is_empty() || _path == \"-\" {\n" +
+		"            println!(\"{}\", text);\n" +
+		"        } else {\n" +
+		"            std::fs::write(_path, text).unwrap();\n" +
+		"        }\n" +
+		"    }\n" +
 		"}\n"
 
 	helperExpect = "fn expect(cond: bool) {\n" +
