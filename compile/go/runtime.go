@@ -258,7 +258,7 @@ const (
 		"            body = bytes.NewReader(data)\n" +
 		"        }\n" +
 		"    }\n" +
-		"    u, err := url.Parse(url)\n" +
+		"    u, err := neturl.Parse(url)\n" +
 		"    if err != nil { panic(err) }\n" +
 		"    if u.Scheme == \"file\" || u.Scheme == \"\" {\n" +
 		"        data, err := os.ReadFile(u.Path)\n" +
