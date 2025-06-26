@@ -1,7 +1,11 @@
 # Scheme Backend Tasks for TPCH Q1
 
-The Scheme backend targets chibi-scheme and currently handles only small datasets.
+The Scheme backend now targets chibi-scheme and is capable of running the
+`tpc-h/q1.mochi` benchmark.
 
-- Represent rows as association lists and group them using hash tables.
-- Implement `sum`, `avg` and `count` as SRFI-compatible folds over lists.
-- Provide a simple JSON printer and add tests in `tests/compiler/scheme`.
+- Rows are represented as association lists and grouped using helper
+  procedures.
+- Aggregations `sum`, `avg` and `count` are implemented as simple folds.
+- A minimal `json` builtin prints values for test output.
+- Golden tests under `tests/compiler/scheme` verify the generated code and
+  execution result for `tpch_q1.mochi`.
