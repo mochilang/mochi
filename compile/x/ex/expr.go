@@ -312,8 +312,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		} else if op.Cast != nil {
 			if op.Cast.Type != nil {
 				t := c.resolveTypeRef(op.Cast.Type)
-				if _, ok := t.(types.StructType); ok {
-					res = fmt.Sprintf("Map.new(%s, fn {k, v} -> {String.to_atom(to_string(k)), v} end)", res)
+				if st, ok := t.(types.StructType); ok {
+					c.ensureStruct(st)
+					c.use("_structify")
+					res = fmt.Sprintf("_structify(%s, %s)", sanitizeName(st.Name), res)
 				}
 				typ = t
 			}
