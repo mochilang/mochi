@@ -23,56 +23,7 @@ function main(): void {
 	let _groups = _order.map(k => _map.get(k)!);
 	const _res = [];
 	for (const g of _groups) {
-		_res.push({"returnflag": g.key.returnflag, "linestatus": g.key.linestatus, "sum_qty": _sum((() => {
-	const _src = g.items;
-	const _res = [];
-	for (const x of _src) {
-		_res.push(x.l_quantity)
-	}
-	return _res;
-})()), "sum_base_price": _sum((() => {
-	const _src = g.items;
-	const _res = [];
-	for (const x of _src) {
-		_res.push(x.l_extendedprice)
-	}
-	return _res;
-})()), "sum_disc_price": _sum((() => {
-	const _src = g.items;
-	const _res = [];
-	for (const x of _src) {
-		_res.push((x.l_extendedprice * ((1 - x.l_discount))))
-	}
-	return _res;
-})()), "sum_charge": _sum((() => {
-	const _src = g.items;
-	const _res = [];
-	for (const x of _src) {
-		_res.push(((x.l_extendedprice * ((1 - x.l_discount))) * ((1 + x.l_tax))))
-	}
-	return _res;
-})()), "avg_qty": _avg((() => {
-	const _src = g.items;
-	const _res = [];
-	for (const x of _src) {
-		_res.push(x.l_quantity)
-	}
-	return _res;
-})()), "avg_price": _avg((() => {
-	const _src = g.items;
-	const _res = [];
-	for (const x of _src) {
-		_res.push(x.l_extendedprice)
-	}
-	return _res;
-})()), "avg_disc": _avg((() => {
-	const _src = g.items;
-	const _res = [];
-	for (const x of _src) {
-		_res.push(x.l_discount)
-	}
-	return _res;
-})()), "count_order": _count(g)})
+		_res.push({"returnflag": g.key.returnflag, "linestatus": g.key.linestatus, "sum_qty": _sum(g.items.map(x => x.l_quantity)), "sum_base_price": _sum(g.items.map(x => x.l_extendedprice)), "sum_disc_price": _sum(g.items.map(x => (x.l_extendedprice * ((1 - x.l_discount))))), "sum_charge": _sum(g.items.map(x => ((x.l_extendedprice * ((1 - x.l_discount))) * ((1 + x.l_tax))))), "avg_qty": _avg(g.items.map(x => x.l_quantity)), "avg_price": _avg(g.items.map(x => x.l_extendedprice)), "avg_disc": _avg(g.items.map(x => x.l_discount)), "count_order": _count(g)})
 	}
 	return _res;
 })()
@@ -145,5 +96,4 @@ function _sum(v: any): number {
 }
 
 main()
-
 

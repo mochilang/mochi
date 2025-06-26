@@ -1637,6 +1637,38 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		simple := q.Sort == nil && q.Skip == nil && q.Take == nil
 		group := q.Group != nil
 
+		if simple && !group && len(q.Froms) == 0 && len(q.Joins) == 0 {
+			child := types.NewEnv(c.env)
+			var elemType types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+				elemType = lt.Elem
+			}
+			child.SetVar(q.Var, elemType, true)
+			orig := c.env
+			c.env = child
+			val, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			var cond string
+			if q.Where != nil {
+				cond, err = c.compileExpr(q.Where)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			c.env = orig
+			var b strings.Builder
+			b.WriteString(src)
+			if cond != "" {
+				b.WriteString(fmt.Sprintf(".filter(%s => (%s))", sanitizeName(q.Var), cond))
+			}
+			b.WriteString(fmt.Sprintf(".map(%s => %s)", sanitizeName(q.Var), val))
+			return b.String(), nil
+		}
+
 		var b strings.Builder
 		b.WriteString("(() => {\n")
 		b.WriteString("\tconst _src = " + src + ";\n")
