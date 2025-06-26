@@ -151,6 +151,18 @@ const (
     let body = resp.Content.ReadAsStringAsync().Result |> box
     Map.ofList [("status", status); ("body", body)]`
 
+	helperFetchTyped = `let _fetch_json<'T> (url: string) (opts: Map<string,obj> option) : 'T =
+  let res = _fetch url opts
+  let body = Map.find "body" res :?> string
+  System.Text.Json.JsonSerializer.Deserialize<'T>(body)`
+
+	helperCast = `let _cast<'T> (v: obj) : 'T =
+  match v with
+  | :? 'T as t -> t
+  | _ ->
+      let json = System.Text.Json.JsonSerializer.Serialize(v)
+      System.Text.Json.JsonSerializer.Deserialize<'T>(json)`
+
 	helperGenText = `let _genText (prompt: string) (model: string) (params: Map<string,obj> option) : string =
   // TODO: integrate with an LLM
   prompt`
@@ -247,6 +259,8 @@ var helperMap = map[string]string{
 	"_run_test":     helperRunTest,
 	"_input":        helperInput,
 	"_fetch":        helperFetch,
+	"_fetch_json":   helperFetchTyped,
+	"_cast":         helperCast,
 	"_eval":         helperEval,
 	"_genText":      helperGenText,
 	"_genEmbed":     helperGenEmbed,
