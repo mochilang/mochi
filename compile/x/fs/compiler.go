@@ -1283,6 +1283,10 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	if len(p.Ops) == 1 && p.Ops[0].Cast != nil && p.Target.Fetch != nil {
+		return c.compileFetchCast(p.Target.Fetch, p.Ops[0].Cast.Type)
+	}
+
 	expr, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -1382,10 +1386,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case "string":
 					expr = fmt.Sprintf("(string %s)", expr)
 				default:
-					expr = fmt.Sprintf("(%s : %s)", expr, fsType(typ))
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast<%s>(%s)", fsType(typ), expr)
 				}
 			} else {
-				expr = fmt.Sprintf("(%s : %s)", expr, fsType(typ))
+				c.use("_cast")
+				expr = fmt.Sprintf("_cast<%s>(%s)", fsType(typ), expr)
 			}
 			isStr = typ.Simple != nil && *typ.Simple == "string"
 			continue
@@ -1657,6 +1663,24 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	}
 	c.use("_fetch")
 	return fmt.Sprintf("_fetch %s %s", url, opts), nil
+}
+
+func (c *Compiler) compileFetchCast(f *parser.FetchExpr, t *parser.TypeRef) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "None"
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = fmt.Sprintf("Some (%s)", w)
+	}
+	typ := fsType(t)
+	c.use("_fetch_json")
+	return fmt.Sprintf("_fetch_json<%s> %s %s", typ, url, opts), nil
 }
 
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
