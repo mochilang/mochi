@@ -1,0 +1,10 @@
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+
+let todo: Todo = fetch "https://jsonplaceholder.typicode.com/todos/1"
+print(todo.title)
+print(todo.completed)
