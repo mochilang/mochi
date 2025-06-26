@@ -375,3 +375,23 @@ func (c *Compiler) listElemType(p *parser.Primary) string {
 	}
 	return "integer"
 }
+
+// selectorName returns the identifier name if e is a bare selector
+// expression like `foo` with no postfix operations.
+func selectorName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	post := u.Value
+	if post == nil || post.Target == nil || post.Target.Selector == nil {
+		return "", false
+	}
+	if len(post.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return post.Target.Selector.Root, true
+}
