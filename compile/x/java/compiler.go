@@ -855,17 +855,63 @@ func (c *Compiler) emitRuntime() {
 	}
 	if c.helpers["_fetch"] {
 		c.writeln("")
-		c.writeln("static java.util.Map<String,Object> _fetch(String url, java.util.Map<String,Object> opts) {")
+		c.writeln("static Object _fetch(String url, java.util.Map<String,Object> opts) {")
 		c.indent++
 		c.writeln("try {")
 		c.indent++
+		c.writeln("java.net.URI uri = java.net.URI.create(url);")
+		c.writeln("if (\"file\".equals(uri.getScheme())) {")
+		c.indent++
+		c.writeln("String text = java.nio.file.Files.readString(java.nio.file.Paths.get(uri));")
+		c.writeln("return _parseJson(text);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("String method = \"GET\";")
+		c.writeln("if (opts != null && opts.get(\"method\") != null) method = opts.get(\"method\").toString();")
+		c.writeln("if (opts != null && opts.get(\"query\") != null) {")
+		c.indent++
+		c.writeln("@SuppressWarnings(\"unchecked\") java.util.Map<String,Object> q = (java.util.Map<String,Object>) opts.get(\"query\");")
+		c.writeln("java.lang.StringBuilder qs = new java.lang.StringBuilder();")
+		c.writeln("for (var e : q.entrySet()) { if (qs.length() > 0) qs.append('&'); qs.append(java.net.URLEncoder.encode(e.getKey(), java.nio.charset.StandardCharsets.UTF_8)); qs.append('='); qs.append(java.net.URLEncoder.encode(String.valueOf(e.getValue()), java.nio.charset.StandardCharsets.UTF_8)); }")
+		c.writeln("String sep = url.contains(\"?\") ? \"&\" : \"?\";")
+		c.writeln("url = url + sep + qs.toString();")
+		c.writeln("uri = java.net.URI.create(url);")
+		c.indent--
+		c.writeln("}")
+		c.writeln("java.net.http.HttpRequest.Builder builder = java.net.http.HttpRequest.newBuilder(uri);")
+		c.writeln("if (opts != null && opts.get(\"headers\") != null) {")
+		c.indent++
+		c.writeln("@SuppressWarnings(\"unchecked\") java.util.Map<String,Object> hs = (java.util.Map<String,Object>) opts.get(\"headers\");")
+		c.writeln("for (var e : hs.entrySet()) builder.header(e.getKey(), String.valueOf(e.getValue()));")
+		c.indent--
+		c.writeln("}")
+		c.writeln("boolean hasBody = opts != null && opts.containsKey(\"body\");")
+		c.writeln("if (hasBody) {")
+		c.indent++
+		c.writeln("String data = _toJson(opts.get(\"body\"));")
+		c.writeln("builder.method(method, java.net.http.HttpRequest.BodyPublishers.ofString(data));")
+		c.writeln("boolean hasCT = false;")
+		c.writeln("if (opts != null && opts.get(\"headers\") != null) {")
+		c.indent++
+		c.writeln("for (var e : ((java.util.Map<String,Object>)opts.get(\"headers\")).entrySet()) if (e.getKey().equalsIgnoreCase(\"Content-Type\")) { hasCT = true; break; }")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (!hasCT) builder.header(\"Content-Type\", \"application/json\");")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("builder.method(method, java.net.http.HttpRequest.BodyPublishers.noBody());")
+		c.indent--
+		c.writeln("}")
+		c.writeln("if (opts != null && opts.get(\"timeout\") != null) {")
+		c.indent++
+		c.writeln("double secs = Double.parseDouble(opts.get(\"timeout\").toString());")
+		c.writeln("builder.timeout(java.time.Duration.ofMillis((long)(secs*1000)));")
+		c.indent--
+		c.writeln("}")
 		c.writeln("java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();")
-		c.writeln("java.net.http.HttpRequest req = java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).build();")
-		c.writeln("java.net.http.HttpResponse<String> resp = client.send(req, java.net.http.HttpResponse.BodyHandlers.ofString());")
-		c.writeln("java.util.Map<String,Object> out = new java.util.HashMap<>();")
-		c.writeln("out.put(\"status\", resp.statusCode());")
-		c.writeln("out.put(\"body\", resp.body());")
-		c.writeln("return out;")
+		c.writeln("java.net.http.HttpResponse<String> resp = client.send(builder.build(), java.net.http.HttpResponse.BodyHandlers.ofString());")
+		c.writeln("return _parseJson(resp.body());")
 		c.indent--
 		c.writeln("} catch (Exception e) {")
 		c.indent++
