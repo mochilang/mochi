@@ -807,13 +807,31 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		} else if op.Cast != nil {
 			t := c.resolveTypeRef(op.Cast.Type)
 			dt := dartType(t)
-			switch dt {
-			case "double":
-				expr = fmt.Sprintf("(%s).toDouble()", expr)
-			case "int":
-				expr = fmt.Sprintf("(%s).toInt()", expr)
+			switch tt := t.(type) {
+			case types.StructType:
+				expr = fmt.Sprintf("%s.fromJson(%s as Map<String,dynamic>)", sanitizeName(tt.Name), expr)
+			case types.ListType:
+				if st, ok := tt.Elem.(types.StructType); ok {
+					tmp := c.newVar()
+					expr = fmt.Sprintf("(%s as List).map((%s) => %s.fromJson(%s as Map<String,dynamic>)).toList()", expr, tmp, sanitizeName(st.Name), tmp)
+				} else {
+					if dt == "double" {
+						expr = fmt.Sprintf("(%s).toDouble()", expr)
+					} else if dt == "int" {
+						expr = fmt.Sprintf("(%s).toInt()", expr)
+					} else {
+						expr = fmt.Sprintf("(%s as %s)", expr, dt)
+					}
+				}
 			default:
-				expr = fmt.Sprintf("(%s as %s)", expr, dt)
+				switch dt {
+				case "double":
+					expr = fmt.Sprintf("(%s).toDouble()", expr)
+				case "int":
+					expr = fmt.Sprintf("(%s).toInt()", expr)
+				default:
+					expr = fmt.Sprintf("(%s as %s)", expr, dt)
+				}
 			}
 		}
 	}
