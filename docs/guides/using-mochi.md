@@ -97,7 +97,7 @@ The source tree is organized as follows:
 
 - `cmd/` – command-line entry points
 - `compile/` – compilers and code generation
-- `interpreter/` – reference interpreter implementation
+- `runtime/vm/` – bytecode virtual machine
 - `parser/` – language parser
 - `runtime/` – runtime packages including LLM clients
 - `examples/` – sample programs demonstrating language features

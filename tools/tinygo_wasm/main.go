@@ -3,12 +3,13 @@
 package main
 
 import (
+	"os"
 	"strings"
 	"syscall/js"
 
-	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
+	vm "mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -34,8 +35,13 @@ func runMochi(this js.Value, args []js.Value) any {
 		}
 		return js.ValueOf(sb.String())
 	}
-	interp := interpreter.New(prog, env, modRoot)
-	if err := interp.Run(); err != nil {
+	os.Setenv("MOCHI_ROOT", modRoot)
+	p, errc := vm.Compile(prog, env)
+	if errc != nil {
+		return js.ValueOf(errc.Error())
+	}
+	m := vm.New(p, nil)
+	if err := m.Run(); err != nil {
 		return js.ValueOf(err.Error())
 	}
 	return js.ValueOf("ok")

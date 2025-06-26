@@ -1,6 +1,6 @@
 # Mochi WASM
 
-This directory contains a small wrapper to run the Mochi interpreter in WebAssembly.
+This directory contains a small wrapper to run Mochi in WebAssembly.
 
 ## Building
 

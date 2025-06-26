@@ -1,6 +1,6 @@
 # TinyGo WebAssembly Build
 
-This folder provides a minimal wrapper around the Mochi interpreter that can be
+This folder provides a minimal wrapper around the Mochi runtime that can be
 compiled to WebAssembly using [TinyGo](https://tinygo.org/).
 
 ## Requirements

@@ -1,9 +1,9 @@
 # `mochi/runtime/ffi/python`
 
 This package provides a minimal Foreign Function Interface (FFI) for
-invoking Python code from Go.  It is intended for Mochi's interpreter and
-runtime to execute small Python snippets or call functions in existing
-modules without embedding CPython directly.
+invoking Python code from Go. It allows the Mochi runtime to execute small
+Python snippets or call functions in existing modules without embedding
+CPython directly.
 
 The implementation shells out to `python3` and exchanges values using
 JSON.  Arguments are marshalled into a JSON array which is made

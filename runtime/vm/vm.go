@@ -1227,12 +1227,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				return Value{}, m.newError(errs[0], trace, ins.Line)
 			}
-			interp := interpreter.New(prog, env, "")
-			resAny, err := interp.RunResult()
+			p, errc := Compile(prog, env)
+			if errc != nil {
+				return Value{}, m.newError(errc, trace, ins.Line)
+			}
+			vm := New(p, io.Discard)
+			resVal, err := vm.RunResult()
 			if err != nil {
 				return Value{}, m.newError(err, trace, ins.Line)
 			}
-			fr.regs[ins.A] = anyToValue(resAny)
+			fr.regs[ins.A] = resVal
 		case OpFetch:
 			urlVal := fr.regs[ins.B]
 			if urlVal.Tag != interpreter.TagStr {

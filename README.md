@@ -11,8 +11,7 @@ Mochi is:
 
 Simple enough to explore in minutes. Powerful enough to build something real.
 
-The bytecode VM is now built directly into the `mochi` CLI, so there's no
-separate `runvm` command. Use `mochi run` to execute programs.
+The bytecode VM is built directly into the `mochi` CLI. Use `mochi run` to execute programs.
 
 ## Prerequisites
 To run Mochi in a container, you’ll need to have Docker installed.

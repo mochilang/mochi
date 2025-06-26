@@ -4,7 +4,7 @@
 
 > Version: `0.2.6`
 
-This document includes all core source files used by the Mochi interpreter and runtime toolchain.
+This document includes core source files used by the Mochi VM and runtime toolchain.
 
 ## Overview
 
@@ -17,8 +17,7 @@ This document includes all core source files used by the Mochi interpreter and r
 - **types/env.go**: Type environment and symbol resolution.
 - **types/check.go**: Static type checker implementation.
 - **types/errors.go**: Type checker error definitions.
-- **interpreter/interpreter.go**: Interpreter that executes AST.
-- **interpreter/errors.go**: Runtime error types.
+- **runtime/vm/vm.go**: Bytecode virtual machine.
 - **golden/golden.go**: Shared golden file test framework.
 
 ---
