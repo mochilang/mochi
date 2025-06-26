@@ -1571,7 +1571,7 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 			b.WriteString(" :where " + whereFn)
 		}
 		b.WriteString(" })\n")
-		b.WriteString("      _groups (_group_by _rows (fn [" + allParams + "] " + groupKey + "))\n")
+		b.WriteString("      _groups (_group_by _rows (fn [" + allParams + "] " + groupKey + "))]\n")
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
 		c.env = genv
