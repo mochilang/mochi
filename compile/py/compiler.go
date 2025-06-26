@@ -509,7 +509,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 		if op.Cast != nil {
 			typ = c.resolveTypeRef(op.Cast.Type)
-			switch typ.(type) {
+			switch t := typ.(type) {
 			case types.IntType, types.Int64Type:
 				expr = fmt.Sprintf("int(%s)", expr)
 			case types.FloatType:
@@ -518,8 +518,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				expr = fmt.Sprintf("str(%s)", expr)
 			case types.BoolType:
 				expr = fmt.Sprintf("bool(%s)", expr)
+			case types.StructType:
+				expr = fmt.Sprintf("%s(**%s)", sanitizeName(t.Name), expr)
+			case types.ListType:
+				if st, ok := t.Elem.(types.StructType); ok {
+					expr = fmt.Sprintf("[ %s(**_it) for _it in %s ]", sanitizeName(st.Name), expr)
+				}
 			default:
-				// For complex types just ignore the cast at runtime
+				// For other complex types just ignore the cast at runtime
 			}
 			continue
 		}
