@@ -1,2 +1,2 @@
-[{"avg_disc":0.075,"returnflag":"N","sum_charge":2906.5,"sum_disc_price":2750,"sum_base_price":3000,"avg_price":1500,"sum_qty":53,"avg_qty":26.5,"linestatus":"O","count_order":2}]
-   test Q1 aggregates revenue and quantity by returnflag + linestatus ... ok (8.0µs)
+[{"avg_disc":0.075,"avg_price":1500.0,"avg_qty":26.5,"count_order":2,"linestatus":"O","returnflag":"N","sum_base_price":3000.0,"sum_charge":2906.5,"sum_disc_price":2750.0,"sum_qty":53}]
+   test Q1 aggregates revenue and quantity by returnflag + linestatus ... ok (50.0µs)
