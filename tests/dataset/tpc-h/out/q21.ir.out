@@ -1,4 +1,4 @@
-func main (regs=162)
+func main (regs=161)
   // let nation = [
   Const        r0, [{"n_name": "SAUDI ARABIA", "n_nationkey": 1}, {"n_name": "FRANCE", "n_nationkey": 2}]
   Move         r1, r0
@@ -217,14 +217,14 @@ L19:
   JumpIfFalse  r131, L18
   Index        r132, r10, r129
   Move         r133, r132
-  // s_name: s.s_name,
+  // s_name: g.key,
   Const        r134, "s_name"
-  Const        r135, "s_name"
-  Index        r136, r16, r135
+  Const        r135, "key"
+  Index        r136, r133, r135
   // numwait: count(g)
   Const        r137, "numwait"
   Count        r138, r133
-  // s_name: s.s_name,
+  // s_name: g.key,
   Move         r139, r134
   Move         r140, r136
   // numwait: count(g)
@@ -232,12 +232,12 @@ L19:
   Move         r142, r138
   // select {
   MakeMap      r143, 2, r139
-  // sort by [ -count(g), s.s_name ]
+  // sort by [ -count(g), g.key ]
   Count        r144, r133
   NegInt       r145, r144
   Move         r146, r145
-  Const        r147, "s_name"
-  Index        r148, r16, r147
+  Const        r147, "key"
+  Index        r148, r133, r147
   Move         r149, r148
   MakeList     r150, 2, r146
   Move         r151, r150
@@ -251,14 +251,17 @@ L19:
   Move         r129, r156
   Jump         L19
 L18:
-  // sort by [ -count(g), s.s_name ]
+  // sort by [ -count(g), g.key ]
   Sort         157,8,0,0
   // from s in supplier
   Move         r8, r157
   // let result =
   Move         r158, r8
+  // json(result)
+  JSON         r158
   // expect result == [
-  Const        r160, [{"numwait": 1, "s_name": "Desert Trade"}]
-  Equal        r161, r158, r160
-  Expect       r161
+  Const        r159, [{"numwait": 1, "s_name": "Desert Trade"}]
+  Equal        r160, r158, r159
+  Expect       r160
   Return       r0
+
