@@ -1,4 +1,4 @@
-func main (regs=138)
+func main (regs=137)
   // let part = [
   Const        r0, [{"p_brand": "Brand#12", "p_container": "SM BOX", "p_partkey": 1, "p_size": 3}, {"p_brand": "Brand#23", "p_container": "MED BOX", "p_partkey": 2, "p_size": 5}, {"p_brand": "Brand#34", "p_container": "LG BOX", "p_partkey": 3, "p_size": 15}]
   Move         r1, r0
@@ -223,7 +223,7 @@ L21:
   Equal        r120, r116, r119
   // where (
   JumpIfFalse  r120, L2
-  // select l.l_extendedprice * (1 - l.l_discount)
+  // select sum(l.l_extendedprice * (1 - l.l_discount))
   Const        r121, "l_extendedprice"
   Index        r122, r12, r121
   Const        r123, 1
@@ -247,16 +247,15 @@ L1:
   Move         r9, r132
   Jump         L23
 L0:
-  // let items =
-  Move         r133, r4
-  // let result = sum(items)
-  Sum          134,133,0,0
-  Move         r135, r134
+  // select sum(l.l_extendedprice * (1 - l.l_discount))
+  Sum          133,4,0,0
+  // let result =
+  Move         r134, r133
   // print(result)
-  Print        r135
+  Print        r134
   // expect result == 2800.0
-  Const        r136, 2800
-  EqualFloat   r137, r135, r136
-  Expect       r137
+  Const        r135, 2800
+  EqualFloat   r136, r134, r135
+  Expect       r136
   Return       r0
 

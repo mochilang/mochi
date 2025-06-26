@@ -1940,10 +1940,45 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		genv.SetVar(q.Group.Name, gStruct, true)
 		selT, err = checkExpr(q.Select, genv)
 	} else {
-		selT, err = checkExpr(q.Select, child)
+		if name, arg, ok := aggregateCallName(q.Select); ok {
+			at, err := checkExpr(arg, child)
+			if err != nil {
+				return nil, err
+			}
+			switch name {
+			case "sum", "avg":
+				if _, ok := at.(AnyType); !ok && !isNumeric(at) {
+					return nil, errSumOperand(q.Select.Pos, at)
+				}
+				selT = FloatType{}
+			case "min", "max":
+				if _, ok := at.(AnyType); !ok && !isNumeric(at) {
+					return nil, fmt.Errorf("min/max() expects numeric expression")
+				}
+				selT = at
+			case "count":
+				selT = IntType{}
+			}
+		} else {
+			selT, err = checkExpr(q.Select, child)
+			if err != nil {
+				return nil, err
+			}
+			result := ListType{Elem: selT}
+			if expected != nil && !unify(result, expected, nil) {
+				return nil, errTypeMismatch(q.Pos, expected, result)
+			}
+			return result, nil
+		}
 	}
 	if err != nil {
 		return nil, err
+	}
+	if _, _, ok := aggregateCallName(q.Select); ok {
+		if expected != nil && !unify(selT, expected, nil) {
+			return nil, errTypeMismatch(q.Pos, expected, selT)
+		}
+		return selT, nil
 	}
 	result := ListType{Elem: selT}
 	if expected != nil && !unify(result, expected, nil) {
@@ -2016,6 +2051,30 @@ func stringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+func aggregateCallName(e *parser.Expr) (string, *parser.Expr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", nil, false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return "", nil, false
+	}
+	call := p.Target.Call
+	if len(call.Args) != 1 {
+		return "", nil, false
+	}
+	switch call.Func {
+	case "sum", "avg", "min", "max", "count":
+		return call.Func, call.Args[0], true
+	default:
+		return "", nil, false
+	}
 }
 
 func isNumeric(t Type) bool {
