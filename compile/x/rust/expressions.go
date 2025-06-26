@@ -792,8 +792,16 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	opts := "std::collections::HashMap::new()"
+	if f.With != nil {
+		v, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
 	c.use("_fetch")
-	return fmt.Sprintf("_fetch(%s)", url), nil
+	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {

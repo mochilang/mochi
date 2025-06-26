@@ -106,7 +106,7 @@ const (
 		"    Vec::new()\n" +
 		"}\n"
 
-	helperFetch = "fn _fetch(_url: &str) -> String {\n" +
+	helperFetch = "fn _fetch(_url: &str, _opts: std::collections::HashMap<String, String>) -> String {\n" +
 		"    String::new()\n" +
 		"}\n"
 
