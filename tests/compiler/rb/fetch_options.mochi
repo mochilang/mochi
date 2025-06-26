@@ -1,0 +1,11 @@
+type Msg {
+  message: string
+}
+
+let data: Msg = (fetch "tests/compiler/rb/fetch_options.json" with {
+  method: "GET",
+  headers: {"X-Test": "1"},
+  query: {"q": "1"},
+  timeout: 1.0
+}) as Msg
+print(data.message)

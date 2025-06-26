@@ -1519,7 +1519,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		withStr = w
+		withStr = fmt.Sprintf("(%s).to_h.transform_keys(&:to_s)", w)
 	} else {
 		withStr = "nil"
 	}

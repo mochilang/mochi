@@ -39,6 +39,7 @@ func compileAndRun(t *testing.T, src string) (string, error) {
 		return "", err
 	}
 	cmd := exec.Command("ruby", file)
+	cmd.Dir = findRepoRoot(t)
 	if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 		cmd.Stdin = bytes.NewReader(data)
 	}
@@ -112,6 +113,7 @@ func TestRBCompiler_SubsetPrograms(t *testing.T) {
 			return nil, err
 		}
 		cmd := exec.Command("ruby", file)
+		cmd.Dir = findRepoRoot(t)
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
@@ -164,6 +166,7 @@ func TestRBCompiler_ValidPrograms(t *testing.T) {
 				t.Fatalf("write error: %v", err)
 			}
 			cmd := exec.Command("ruby", file)
+			cmd.Dir = findRepoRoot(t)
 			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 				cmd.Stdin = bytes.NewReader(data)
 			}
@@ -235,6 +238,7 @@ func TestRBCompiler_TPCHQ1(t *testing.T) {
 		t.Fatalf("write error: %v", err)
 	}
 	cmd := exec.Command("ruby", file)
+	cmd.Dir = findRepoRoot(t)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("ruby run error: %v\n%s", err, out)
