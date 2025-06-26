@@ -452,16 +452,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "_input()", nil
 		}
 		if name == "count" && len(args) == 1 {
-			if c.isMapExprByExpr(p.Call.Args[0]) {
-				return args[0] + ".size()", nil
-			}
-			if c.isStringExprByExpr(p.Call.Args[0]) {
-				return args[0] + ".length()", nil
-			}
-			return args[0] + ".length", nil
+			c.helpers["_count"] = true
+			return "_count(" + args[0] + ")", nil
+		}
+		if name == "sum" && len(args) == 1 {
+			c.helpers["_sum"] = true
+			return "_sum(" + args[0] + ")", nil
 		}
 		if name == "avg" && len(args) == 1 {
-			return fmt.Sprintf("(int) java.util.Arrays.stream(%s).average().orElse(0)", args[0]), nil
+			c.helpers["_avg"] = true
+			return "_avg(" + args[0] + ")", nil
 		}
 		if name == "now" && len(args) == 0 {
 			return "System.nanoTime()", nil
@@ -579,11 +579,7 @@ func (c *Compiler) javaType(t types.Type) string {
 	case types.StringType:
 		return "String"
 	case types.ListType:
-		elem := c.javaType(tt.Elem)
-		if strings.Contains(elem, "<") {
-			return "Object[]"
-		}
-		return elem + "[]"
+		return "Object[]"
 	case types.MapType:
 		key := c.javaType(tt.Key)
 		val := c.javaType(tt.Value)
@@ -701,14 +697,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
 		c.env = child
+		var whereExpr string
+		if q.Where != nil {
+			w, err := c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			whereExpr = w
+		}
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		child.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
 			c.env = orig
@@ -718,7 +725,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var b bytes.Buffer
 		b.WriteString("(new java.util.function.Supplier<java.util.List<Object>>() {\n")
 		b.WriteString("\tpublic java.util.List<Object> get() {\n")
-		b.WriteString("\t\tjava.util.List<_Group> _grps = _group_by(_toList(" + src + "), " + sanitizeName(q.Var) + " -> " + keyExpr + ");\n")
+		b.WriteString("\t\tjava.util.List<Object> _src = _toList(" + src + ");\n")
+		if whereExpr != "" {
+			b.WriteString("\t\t_src = _filter(_src, (Object " + sanitizeName(q.Var) + ") -> { return " + whereExpr + "; });\n")
+			c.helpers["_filter"] = true
+		}
+		b.WriteString("\t\tjava.util.List<_Group> _grps = _group_by(_src, " + sanitizeName(q.Var) + " -> " + keyExpr + ");\n")
 		b.WriteString("\t\tjava.util.List<Object> _res = new java.util.ArrayList<>();\n")
 		b.WriteString("\t\tfor (_Group " + sanitizeName(q.Group.Name) + " : _grps) {\n")
 		b.WriteString("\t\t\t_res.add(" + valExpr + ");\n")

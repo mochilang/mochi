@@ -155,6 +155,8 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 		c.indent--
 		c.writeln("}")
+		c.writeln("")
+		c.writeln(fmt.Sprintf("%s() {}", name))
 	}
 	c.indent--
 	c.writeln("}")
@@ -323,24 +325,42 @@ func (c *Compiler) emitRuntime() {
 	}
 	if c.helpers["_count"] {
 		c.writeln("")
-		c.writeln("static int _count(int[] arr) {")
+		c.writeln("static int _count(Object v) {")
 		c.indent++
-		c.writeln("return arr.length;")
+		c.writeln("if (v instanceof _Group) return ((_Group)v).length();")
+		c.writeln("java.util.List<Object> items = _toList(v);")
+		c.writeln("return items.size();")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_sum"] {
+		c.writeln("")
+		c.writeln("static double _sum(Object v) {")
+		c.indent++
+		c.writeln("java.util.List<Object> items = (v instanceof _Group) ? ((_Group)v).Items : _toList(v);")
+		c.writeln("double sum = 0;")
+		c.writeln("for (Object it : items) {")
+		c.indent++
+		c.writeln("if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException(\"sum() expects numbers\");")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return sum;")
 		c.indent--
 		c.writeln("}")
 	}
 	if c.helpers["_avg"] {
 		c.writeln("")
-		c.writeln("static int _avg(int[] arr) {")
+		c.writeln("static double _avg(Object v) {")
 		c.indent++
-		c.writeln("if (arr.length == 0) return 0;")
-		c.writeln("int sum = 0;")
-		c.writeln("for (int v : arr) {")
+		c.writeln("java.util.List<Object> items = (v instanceof _Group) ? ((_Group)v).Items : _toList(v);")
+		c.writeln("if (items.isEmpty()) return 0;")
+		c.writeln("double sum = 0;")
+		c.writeln("for (Object it : items) {")
 		c.indent++
-		c.writeln("sum += v;")
+		c.writeln("if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException(\"avg() expects numbers\");")
 		c.indent--
 		c.writeln("}")
-		c.writeln("return sum / arr.length;")
+		c.writeln("return sum / items.size();")
 		c.indent--
 		c.writeln("}")
 	}

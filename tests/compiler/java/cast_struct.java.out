@@ -5,6 +5,8 @@ public class Main {
 		Todo(String title) {
 			this.title = title;
 		}
+		
+		Todo() {}
 	}
 	
 	public static void main(String[] args) {

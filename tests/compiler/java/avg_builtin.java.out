@@ -1,5 +1,15 @@
 public class Main {
 	public static void main(String[] args) {
-		System.out.println((int) java.util.Arrays.stream(new int[]{1, 2, 3}).average().orElse(0));
+		System.out.println(_avg(new int[]{1, 2, 3}));
+	}
+	
+	static double _avg(Object v) {
+		java.util.List<Object> items = (v instanceof _Group) ? ((_Group)v).Items : _toList(v);
+		if (items.isEmpty()) return 0;
+		double sum = 0;
+		for (Object it : items) {
+			if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException("avg() expects numbers");
+		}
+		return sum / items.size();
 	}
 }

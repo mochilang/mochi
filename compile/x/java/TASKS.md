@@ -1,19 +1,13 @@
-# Java Backend TODOs for TPC-H Q1
+# Java Backend TODOs
 
-The current Java compiler backend cannot successfully compile `tests/dataset/tpc-h/q1.mochi`.
-Below is a list of tasks identified while attempting to add support:
+The Java backend now compiles `tests/dataset/tpc-h/q1.mochi`. Remaining items are
+listed below for future improvements.
 
-1. **Implement numeric aggregate built-ins**
-   - Add generic implementations of `sum`, `avg` and `count` that operate on
-     `java.util.List` or Java arrays.
-   - Update expression lowering to emit calls to these helpers.
-2. **Fix dataset query code generation**
-   - Generated Java for dataset queries ends with incomplete class definitions.
-     Investigate `_query` helper emission for missing closing braces.
-3. **Support group-by aggregates**
-   - Ensure `_group_by` and related helpers work with aggregate functions inside
-     the `select` clause.
-4. **Add golden tests**
-   - Once compilation succeeds, add `tpc-h_q1.mochi` to `tests/compiler/java` with
-     expected Java output and runtime results.
+1. **Expand numeric helpers** – current implementations of `sum`, `avg` and
+   `count` work for lists, arrays and groups. Support for additional numeric
+   types could be added.
+2. **Query optimisations** – dataset queries are functional but not optimised
+   for performance. Pushing filters down and reducing allocations would help.
+3. **Additional test coverage** – more complex TPC-H queries should be added
+   as golden tests to ensure ongoing compatibility.
 
