@@ -1328,8 +1328,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	// simple grouping without joins or filters
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	// simple grouping without joins
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		src, err := c.compileExpr(q.Source)
 		if err != nil {
 			return "", err
@@ -1343,6 +1343,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		child.SetVar(q.Var, elem, true)
 		c.env = child
+		var condStr string
+		if q.Where != nil {
+			cs, err := c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			condStr = cs
+		}
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
@@ -1362,10 +1371,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			elemType = "integer"
 		}
 		groupType := typeString(elem)
+		filtered := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", groupType))
+		c.writeln(fmt.Sprintf("SetLength(%s, 0);", filtered))
+		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Var), src))
+		c.writeln("begin")
+		c.indent++
+		if condStr != "" {
+			c.writeln(fmt.Sprintf("if not (%s) then continue;", condStr))
+		}
+		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", filtered, filtered, sanitizeName(q.Var)))
+		c.indent--
+		c.writeln("end;")
+
 		tmpGrp := c.newTypedVar(fmt.Sprintf("specialize TArray<specialize _Group<%s>>", groupType))
 		c.use("_group_by")
 		c.use("_Group")
-		c.writeln(fmt.Sprintf("%s := specialize _group_by<%s>(%s, function(%s: %s): Variant begin Result := %s end);", tmpGrp, groupType, src, sanitizeName(q.Var), groupType, keyExpr))
+		c.writeln(fmt.Sprintf("%s := specialize _group_by<%s>(%s, function(%s: %s): Variant begin Result := %s end);", tmpGrp, groupType, filtered, sanitizeName(q.Var), groupType, keyExpr))
 		tmpRes := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
 		c.writeln(fmt.Sprintf("SetLength(%s, 0);", tmpRes))
 		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Group.Name), tmpGrp))
