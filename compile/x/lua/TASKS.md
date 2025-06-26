@@ -1,8 +1,9 @@
 # Lua Backend Tasks for TPCH Q1
 
-The Lua backend generates basic source but fails when `group by` is used.
+Support for TPCH Q1 is implemented in the Lua backend.
 
-- Implement grouping in the runtime using tables keyed by concatenated values.
-- Provide helper functions `sum`, `avg` and `count` operating on Lua tables.
-- Represent records as tables with string keys for TPCH data.
-- Use a small JSON encoder (e.g., `cjson`) for output and add a golden test under `tests/compiler/lua`.
+- Grouping is handled by `_group_by` which indexes tables by concatenated keys.
+- Helper functions `sum`, `avg` and `count` operate on lists or groups.
+- Records are emitted as tables with string keys for TPCH datasets.
+- A minimal JSON encoder is bundled so tests run without external modules. The
+  golden tests live under `tests/dataset/tpc-h/compiler/lua`.
