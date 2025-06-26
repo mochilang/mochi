@@ -1832,6 +1832,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if name, ok := selectorName(it.Key); ok {
+				k = fmt.Sprintf("%q", name)
+			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
@@ -2232,6 +2235,25 @@ func isStringExpr(e *parser.Expr) bool {
 		return true
 	}
 	return false
+}
+
+// selectorName returns the root identifier if the expression is a simple selector.
+func selectorName(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if p == nil || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	if len(p.Target.Selector.Tail) != 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
 }
 
 // listElemType attempts to infer the element type of a list literal.
