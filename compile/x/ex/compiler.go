@@ -20,6 +20,7 @@ type Compiler struct {
 	tmp     int
 	helpers map[string]bool
 	funcs   map[string]bool
+	structs map[string]types.StructType
 }
 
 var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
@@ -88,7 +89,7 @@ func assignedVars(stmts []*parser.Statement) []string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool)}
+	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool), structs: make(map[string]types.StructType)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -389,6 +390,15 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		}
 		value = v
 	}
+	if c.env != nil {
+		if t, err := c.env.GetVar(stmt.Name); err == nil {
+			if st, ok := t.(types.StructType); ok {
+				c.ensureStruct(st)
+				c.use("_structify")
+				value = fmt.Sprintf("_structify(%s, %s)", sanitizeName(st.Name), value)
+			}
+		}
+	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
 	c.writeln(fmt.Sprintf("_ = %s", name))
 	return nil
@@ -399,6 +409,15 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 	value, err := c.compileExpr(stmt.Value)
 	if err != nil {
 		return err
+	}
+	if c.env != nil {
+		if t, err2 := c.env.GetVar(stmt.Name); err2 == nil {
+			if st, ok := t.(types.StructType); ok {
+				c.ensureStruct(st)
+				c.use("_structify")
+				value = fmt.Sprintf("_structify(%s, %s)", sanitizeName(st.Name), value)
+			}
+		}
 	}
 	if len(stmt.Index) > 0 {
 		idx, err := c.compileExpr(stmt.Index[0].Start)
@@ -957,6 +976,30 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
+
+func (c *Compiler) ensureStruct(st types.StructType) {
+	if _, ok := c.structs[st.Name]; ok {
+		return
+	}
+	c.structs[st.Name] = st
+	ind := c.indent
+	c.indent = 1
+	c.writeln(fmt.Sprintf("defmodule %s do", sanitizeName(st.Name)))
+	c.indent++
+	if len(st.Order) == 0 {
+		c.writeln("defstruct []")
+	} else {
+		fields := make([]string, len(st.Order))
+		for i, f := range st.Order {
+			fields[i] = fmt.Sprintf("%s: nil", sanitizeName(f))
+		}
+		c.writeln("defstruct " + strings.Join(fields, ", "))
+	}
+	c.indent--
+	c.writeln("end")
+	c.writeln("")
+	c.indent = ind
+}
 
 func (c *Compiler) emitRuntime() {
 	if len(c.helpers) == 0 {
