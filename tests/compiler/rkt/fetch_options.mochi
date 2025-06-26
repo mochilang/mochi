@@ -1,0 +1,14 @@
+ type Msg {
+   message: string
+ }
+
+ let opts = {
+   "method": "POST",
+   "headers": {"X-Test": "1"},
+   "query": {"q": "1"},
+   "body": {"x": 1},
+   "timeout": 1
+ }
+
+ let data: Msg = fetch "file://tests/compiler/rkt/fetch_builtin.json" with opts
+ print(data.message)
