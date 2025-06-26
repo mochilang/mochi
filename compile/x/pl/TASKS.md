@@ -1,8 +1,11 @@
 # Prolog Backend Tasks for TPCH Q1
 
-The Prolog backend emits facts and simple predicates. TPCH Q1 needs more advanced list processing.
+Support for TPCH Q1 has been implemented using helper predicates for grouping
+and aggregation. The backend now provides:
 
-- Represent each row as a fact and group rows using `findall/3` and dynamic predicates.
-- Implement `sum_list/2`, `avg_list/2` and `count_list/2` for aggregations.
-- Output JSON by constructing terms and using `json_write/2`.
-- Add a golden test in `tests/compiler/pl` once supported.
+- `sum/2`, `avg/2` and `count/2` predicates working on lists and groups.
+- `json/1` which prints values using `json_write_dict/2` from the HTTP library.
+- Golden tests covering the query under `tests/compiler/pl` and
+  `tests/dataset/tpc-h/compiler/pl`.
+
+Additional optimisations may be explored but the example now compiles and runs.

@@ -425,6 +425,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 		c.use("count")
 		code := append(arg.code, fmt.Sprintf("count(%s, %s),", arg.val, tmp))
 		return exprRes{code: code, val: tmp}, nil
+	case "sum":
+		if len(call.Args) != 1 {
+			return exprRes{}, fmt.Errorf("sum expects 1 arg")
+		}
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return exprRes{}, err
+		}
+		tmp := c.newVar()
+		c.use("sum")
+		code := append(arg.code, fmt.Sprintf("sum(%s, %s),", arg.val, tmp))
+		return exprRes{code: code, val: tmp}, nil
 	case "avg":
 		if len(call.Args) != 1 {
 			return exprRes{}, fmt.Errorf("avg expects 1 arg")
@@ -468,6 +480,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 		c.use("input")
 		code := []string{fmt.Sprintf("input(%s),", tmp)}
 		return exprRes{code: code, val: tmp}, nil
+	case "json":
+		if len(call.Args) != 1 {
+			return exprRes{}, fmt.Errorf("json expects 1 arg")
+		}
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return exprRes{}, err
+		}
+		c.use("json")
+		code := append(arg.code, fmt.Sprintf("json(%s),", arg.val))
+		return exprRes{code: code, val: ""}, nil
 	case "dataset_filter":
 		if len(call.Args) != 2 {
 			return exprRes{}, fmt.Errorf("dataset_filter expects 2 args")
