@@ -34,6 +34,10 @@ type Compiler struct {
 	needsStrInt          bool
 	needsStrFloat        bool
 	needsNow             bool
+	needsLoadJSON        bool
+	needsSaveJSON        bool
+	loadJSONTypes        map[string]bool
+	saveJSONTypes        map[string]bool
 }
 
 func New() *Compiler {
@@ -46,6 +50,8 @@ func New() *Compiler {
 		funReturnFloat: map[string]bool{},
 		lambdas:        []string{},
 		needsNow:       false,
+		loadJSONTypes:  map[string]bool{},
+		saveJSONTypes:  map[string]bool{},
 	}
 }
 
@@ -63,6 +69,10 @@ func (c *Compiler) resetFeatures() {
 	c.needsStrInt = false
 	c.needsStrFloat = false
 	c.needsNow = false
+	c.needsLoadJSON = false
+	c.needsSaveJSON = false
+	c.loadJSONTypes = map[string]bool{}
+	c.saveJSONTypes = map[string]bool{}
 }
 
 // resetVarScopes initializes variable tracking maps for a new scope.
@@ -1359,6 +1369,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileCallExpr(p.Call, "")
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.If != nil:
@@ -1499,6 +1513,43 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	c.listVars = oldLists
 	c.floatVars = oldFloats
 	return name, nil
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	if l.Type == nil || l.Type.Simple == nil {
+		return "", fmt.Errorf("unsupported load type")
+	}
+	typ := sanitizeName(*l.Type.Simple)
+	fname := "load_json_" + typ
+	c.needsLoadJSON = true
+	if c.loadJSONTypes == nil {
+		c.loadJSONTypes = map[string]bool{}
+	}
+	c.loadJSONTypes[typ] = true
+	path := "''"
+	if l.Path != nil {
+		path = fmt.Sprintf("'%s'", *l.Path)
+	}
+	return fmt.Sprintf("%s(%s)", fname, path), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "''"
+	if s.Path != nil {
+		path = fmt.Sprintf("'%s'", *s.Path)
+	}
+	typName := "int"
+	fname := "save_json_" + typName
+	c.needsSaveJSON = true
+	if c.saveJSONTypes == nil {
+		c.saveJSONTypes = map[string]bool{}
+	}
+	c.saveJSONTypes[typName] = true
+	return fmt.Sprintf("call %s(%s, %s)", fname, src, path), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -2050,5 +2101,50 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = cnt * 1000000000_8 / rate")
 		c.indent--
 		c.writeln("end function mochi_now")
+	}
+
+	if c.needsLoadJSON {
+		for typ := range c.loadJSONTypes {
+			c.blank()
+			c.writeln(fmt.Sprintf("function load_json_%s(path) result(res)", typ))
+			c.indent++
+			c.writeln("implicit none")
+			c.writeln("character(len=*), intent(in) :: path")
+			switch typ {
+			case "string":
+				c.writeln("character(:), allocatable :: res(:)")
+			case "float":
+				c.writeln("real, allocatable :: res(:)")
+			case "int":
+				c.writeln("integer(kind=8), allocatable :: res(:)")
+			default:
+				c.writeln(fmt.Sprintf("type(%s), allocatable :: res(:)", typ))
+			}
+			c.writeln("allocate(res(0))")
+			c.indent--
+			c.writeln(fmt.Sprintf("end function load_json_%s", typ))
+		}
+	}
+
+	if c.needsSaveJSON {
+		for typ := range c.saveJSONTypes {
+			c.blank()
+			c.writeln(fmt.Sprintf("subroutine save_json_%s(rows, path)", typ))
+			c.indent++
+			c.writeln("implicit none")
+			switch typ {
+			case "string":
+				c.writeln("character(len=*), intent(in) :: rows(:)")
+			case "float":
+				c.writeln("real, intent(in) :: rows(:)")
+			case "int":
+				c.writeln("integer(kind=8), intent(in) :: rows(:)")
+			default:
+				c.writeln(fmt.Sprintf("type(%s), intent(in) :: rows(:)", typ))
+			}
+			c.writeln("character(len=*), intent(in) :: path")
+			c.indent--
+			c.writeln(fmt.Sprintf("end subroutine save_json_%s", typ))
+		}
 	}
 }
