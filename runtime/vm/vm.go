@@ -4605,6 +4605,12 @@ func castValue(t types.Type, v any) (any, error) {
 			return x, nil
 		case float64:
 			return int(x), nil
+		case string:
+			n, err := strconv.Atoi(x)
+			if err != nil {
+				return nil, fmt.Errorf("cannot cast %q to %s", x, t)
+			}
+			return n, nil
 		default:
 			return nil, fmt.Errorf("cannot cast %T to %s", v, t)
 		}

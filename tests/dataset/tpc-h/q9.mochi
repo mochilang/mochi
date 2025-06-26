@@ -55,15 +55,23 @@ let result =
   join n in nation on n.n_nationkey == s.s_nationkey
   where substring(p.p_name, 0, len(prefix)) == prefix &&
         o.o_orderdate >= start_date && o.o_orderdate <= end_date
-  let o_year = substring(o.o_orderdate, 0, 4)
-  let revenue = l.l_extendedprice * (1 - l.l_discount)
-  let cost = ps.ps_supplycost * l.l_quantity
-  let profit = revenue - cost
-  group by { nation: n.n_name, o_year }
-  select { nation, o_year, profit: sum(profit) }
-  sort by { nation, o_year desc }
+  group by {
+    nation: n.n_name,
+    o_year: substring(o.o_orderdate, 0, 4) as int
+  } into g
+  sort by [ g.key.nation, -g.key.o_year ]
+  select {
+    nation: g.key.nation,
+    o_year: str(g.key.o_year),
+    profit:
+      sum(
+        from x in g
+        select (x.l.l_extendedprice * (1 - x.l.l_discount)) -
+               (x.ps.ps_supplycost * x.l.l_quantity)
+      )
+  }
 
-print result
+print json(result)
 
 test "Q9 computes profit for green parts by nation and year" {
   let revenue = 1000.0 * 0.9   // 900
