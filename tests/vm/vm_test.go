@@ -93,18 +93,20 @@ func TestVM_Fetch(t *testing.T) {
 }
 
 func TestVM_TPCH(t *testing.T) {
-	files, err := filepath.Glob("../dataset/tpc-h/*.mochi")
+	root := findRepoRoot(t)
+	pattern := filepath.Join(root, "tests/dataset/tpc-h", "*.mochi")
+	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(files) == 0 {
-		t.Fatal("no tpch source files")
+		t.Fatalf("no tpch source files: %s", pattern)
 	}
 	found := false
 	for _, src := range files {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		want := filepath.Join("../dataset/tpc-h/out", base+".out")
-		irWant := filepath.Join("../dataset/tpc-h/out", base+".ir.out")
+		want := filepath.Join(root, "tests/dataset/tpc-h/out", base+".out")
+		irWant := filepath.Join(root, "tests/dataset/tpc-h/out", base+".ir.out")
 		if _, err := os.Stat(want); err != nil {
 			continue
 		}
@@ -156,4 +158,23 @@ func TestVM_TPCH(t *testing.T) {
 	if !found {
 		t.Fatal("no tpch test files")
 	}
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found (not in Go module)")
+	return ""
 }
