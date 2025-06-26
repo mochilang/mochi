@@ -48,7 +48,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
-	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants;")
+	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;")
 	c.writeln("")
 	c.writeln("type")
 	c.indent++
@@ -1621,6 +1621,10 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if st, ok := c.expected.(types.StructType); ok {
+		c.use("_fetchJSON")
+		return fmt.Sprintf("specialize _fetchJSON<%s>(%s)", sanitizeName(st.Name), urlStr), nil
+	}
 	c.use("_fetch")
 	return fmt.Sprintf("_fetch(%s)", urlStr), nil
 }
@@ -1818,6 +1822,35 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("finally")
 			c.indent++
 			c.writeln("client.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_fetchJSON":
+			c.writeln("generic function _fetchJSON<T>(url: string): T;")
+			c.writeln("var client: TFPHTTPClient; ds: TJSONDeStreamer;")
+			c.writeln("txt: string;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("client := TFPHTTPClient.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("txt := client.Get(url);")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("client.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("ds := TJSONDeStreamer.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("ds.JSONToObject(GetJSON(txt), @Result, TypeInfo(T));")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("ds.Free;")
 			c.indent--
 			c.writeln("end;")
 			c.indent--
