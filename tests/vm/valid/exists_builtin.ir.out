@@ -1,0 +1,35 @@
+func main (regs=16)
+  // let data = [1,2]
+  Const        r0, [1, 2]
+  Move         r1, r0
+  // from x in data
+  Const        r2, []
+  IterPrep     r3, r1
+  Len          r4, r3
+  Const        r5, 0
+L2:
+  Less         r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // where x == 1
+  Const        r9, 1
+  Equal        r10, r8, r9
+  JumpIfFalse  r10, L1
+  // from x in data
+  Append       r11, r2, r8
+  Move         r2, r11
+L1:
+  Const        r12, 1
+  Add          r13, r5, r12
+  Move         r5, r13
+  Jump         L2
+L0:
+  // let flag = exists(
+  Exists       14,2,0,0
+  Move         r15, r14
+  // print(flag)
+  Print        r15
+  Return       r0
+
+
