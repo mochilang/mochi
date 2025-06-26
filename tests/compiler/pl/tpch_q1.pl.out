@@ -1,0 +1,75 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+count(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), length(Items, R).
+count(V, R) :-
+    string(V), !, string_chars(V, C), length(C, R).
+count(V, R) :-
+    is_list(V), !, length(V, R).
+count(_, _) :- throw(error('count expects list or group')).
+
+
+avg(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), avg_list(Items, R).
+avg(V, R) :-
+    is_list(V), !, avg_list(V, R).
+avg(_, _) :- throw(error('avg expects list or group')).
+avg_list([], 0).
+avg_list(L, R) :- sum_list(L, S), length(L, N), N > 0, R is S / N.
+
+
+expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
+
+
+dataset_filter([], _, []).
+dataset_filter([H|T], Pred, [H|R]) :- call(Pred, H), !, dataset_filter(T, Pred, R).
+dataset_filter([_|T], Pred, R) :- dataset_filter(T, Pred, R).
+
+
+group_insert(Key, Item, [], [_{key:Key, Items:[Item]}]).
+group_insert(Key, Item, [G|Gs], [NG|Gs]) :- get_dict(key, G, Key), !, get_dict('Items', G, Items), append(Items, [Item], NItems), put_dict('Items', G, NItems, NG).
+group_insert(Key, Item, [G|Gs], [G|Rs]) :- group_insert(Key, Item, Gs, Rs).
+group_pairs([], Acc, Res) :- reverse(Acc, Res).
+group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).
+group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).
+
+
+		p__lambda0(Row, Res) :-
+		get_dict(l_shipdate, Row, _V8),
+		Res = _V8 =< "1998-09-02".
+
+		p__lambda1(Row, Res) :-
+		get_dict(l_returnflag, Row, _V9),
+		get_dict(l_linestatus, Row, _V10),
+		dict_create(_V11, map, [returnflag-_V9, linestatus-_V10]),
+		Res = _V11.
+
+test_p_q1_aggregates_revenue_and_quantity_by_returnflag_+_linestatus :-
+	_V0 is 950 + 1800,
+	_V1 is 950 * 1.07,
+	_V2 is 1800 * 1.05,
+	_V3 is _V1 + _V2,
+	dict_create(_V4, map, [returnflag-"N", linestatus-"O", sum_qty-53, sum_base_price-3000, sum_disc_price-_V0, sum_charge-_V3, avg_qty-26.5, avg_price-1500, avg_disc-0.07500000000000001, count_order-2]),
+	expect(Result =:= [_V4])
+	,
+	true.
+
+	main :-
+	dict_create(_V5, map, [l_quantity-17, l_extendedprice-1000, l_discount-0.05, l_tax-0.07, l_returnflag-"N", l_linestatus-"O", l_shipdate-"1998-08-01"]),
+	dict_create(_V6, map, [l_quantity-36, l_extendedprice-2000, l_discount-0.1, l_tax-0.05, l_returnflag-"N", l_linestatus-"O", l_shipdate-"1998-09-01"]),
+	dict_create(_V7, map, [l_quantity-25, l_extendedprice-1500, l_discount-0, l_tax-0.08, l_returnflag-"R", l_linestatus-"F", l_shipdate-"1998-09-03"]),
+	Lineitem = [_V5, _V6, _V7],
+	to_list(Lineitem, _V62),
+	dataset_filter(_V62, p__lambda0, _V63),
+	group_by(_V63, p__lambda1, _V64),
+	findall(_V65, (member(G, _V64), get_dict(key, G, _V12), get_dict(returnflag, _V12, _V13), get_dict(key, G, _V14), get_dict(linestatus, _V14, _V15), to_list(G, _V17), findall(_V18, (member(X, _V17), get_dict(l_quantity, X, _V16), _V18 = _V16), _V19), call(Sum, _V19, _V20), to_list(G, _V22), findall(_V23, (member(X, _V22), get_dict(l_extendedprice, X, _V21), _V23 = _V21), _V24), call(Sum, _V24, _V25), to_list(G, _V30), findall(_V31, (member(X, _V30), get_dict(l_extendedprice, X, _V26), get_dict(l_discount, X, _V27), _V28 is 1 - _V27, _V29 is _V26 * _V28, _V31 = _V29), _V32), call(Sum, _V32, _V33), to_list(G, _V41), findall(_V42, (member(X, _V41), get_dict(l_extendedprice, X, _V34), get_dict(l_discount, X, _V35), _V36 is 1 - _V35, _V39 is _V34 * _V36, get_dict(l_tax, X, _V37), _V38 is 1 + _V37, _V40 is _V39 * _V38, _V42 = _V40), _V43), call(Sum, _V43, _V44), to_list(G, _V46), findall(_V47, (member(X, _V46), get_dict(l_quantity, X, _V45), _V47 = _V45), _V48), avg(_V48, _V49), to_list(G, _V51), findall(_V52, (member(X, _V51), get_dict(l_extendedprice, X, _V50), _V52 = _V50), _V53), avg(_V53, _V54), to_list(G, _V56), findall(_V57, (member(X, _V56), get_dict(l_discount, X, _V55), _V57 = _V55), _V58), avg(_V58, _V59), count(G, _V60), dict_create(_V61, map, [returnflag-_V13, linestatus-_V15, sum_qty-_V20, sum_base_price-_V25, sum_disc_price-_V33, sum_charge-_V44, avg_qty-_V49, avg_price-_V54, avg_disc-_V59, count_order-_V60]), _V65 = _V61), _V66),
+	Result = _V66,
+	call(Json, Result, _V67),
+	test_p_q1_aggregates_revenue_and_quantity_by_returnflag_+_linestatus
+	.
+:- initialization(main, main).
