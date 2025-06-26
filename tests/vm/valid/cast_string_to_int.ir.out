@@ -1,0 +1,6 @@
+func main (regs=2)
+  // print("1995" as int)
+  Const        r0, "1995"
+  Cast         1,0,0,0
+  Print        r1
+  Return       r0
