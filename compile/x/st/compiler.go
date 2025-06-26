@@ -1197,12 +1197,42 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	c.needDataset = true
-	return "(Main _load: nil opts: nil)", nil
+	path := "nil"
+	if l.Path != nil {
+		s := strings.ReplaceAll(*l.Path, "'", "''")
+		path = "'" + s + "'"
+	}
+	opts := "nil"
+	if l.With != nil {
+		v, err := c.compileExpr(l.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	return fmt.Sprintf("(Main _load: %s opts: %s)", path, opts), nil
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	c.needDataset = true
-	return "(Main _save: nil path: nil opts: nil)", nil
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "nil"
+	if s.Path != nil {
+		p := strings.ReplaceAll(*s.Path, "'", "''")
+		path = "'" + p + "'"
+	}
+	opts := "nil"
+	if s.With != nil {
+		v, err := c.compileExpr(s.With)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	return fmt.Sprintf("(Main _save: %s path: %s opts: %s)", src, path, opts), nil
 }
 
 func hasBreak(stmts []*parser.Statement) bool {
@@ -1458,12 +1488,47 @@ func (c *Compiler) emitHelpers() {
 	if c.needDataset {
 		c.writeln("_load: path opts: o")
 		c.indent++
-		c.writeln("^ #()")
+		c.writeln("| fmt stream text data |")
+		c.writeln("fmt := (o notNil and: [ o includesKey: 'format' ]) ifTrue: [ o at: 'format' ] ifFalse: [ 'json' ].")
+		c.writeln("stream := (path isNil or: [ path = '' or: [ path = '-' ] ])")
+		c.indent++
+		c.writeln("ifTrue: [ stdin ]")
+		c.writeln("ifFalse: [ FileStream open: path mode: FileStream read ].")
+		c.indent--
+		c.writeln("text := stream contents.")
+		c.writeln("stream ~= stdin ifTrue: [ stream close ].")
+		c.writeln("fmt = 'jsonl' ifTrue: [")
+		c.indent++
+		c.writeln("| out |")
+		c.writeln("out := OrderedCollection new.")
+		c.writeln("text linesDo: [:l | l isEmpty ifFalse: [ out add: (JSONReader fromJSON: l) ] ].")
+		c.writeln("^ out asArray")
+		c.indent--
+		c.writeln("] .")
+		c.writeln("data := JSONReader fromJSON: text.")
+		c.writeln("(data isKindOf: OrderedCollection) ifTrue: [ ^ data asArray ].")
+		c.writeln("^ Array with: data")
 		c.indent--
 		c.writelnNoIndent("!")
 
 		c.writeln("_save: rows path: p opts: o")
 		c.indent++
+		c.writeln("| fmt stream |")
+		c.writeln("fmt := (o notNil and: [ o includesKey: 'format' ]) ifTrue: [ o at: 'format' ] ifFalse: [ 'json' ].")
+		c.writeln("stream := (p isNil or: [ p = '' or: [ p = '-' ] ])")
+		c.indent++
+		c.writeln("ifTrue: [ stdout ]")
+		c.writeln("ifFalse: [ FileStream open: p mode: FileStream write ].")
+		c.indent--
+		c.writeln("fmt = 'jsonl' ifTrue: [")
+		c.indent++
+		c.writeln("rows do: [:r | stream nextPutAll: (JSONReader toJSON: r); nextPut: Character nl ].")
+		c.writeln("] ifFalse: [")
+		c.indent++
+		c.writeln("stream nextPutAll: (JSONReader toJSON: rows)")
+		c.indent--
+		c.writeln("] .")
+		c.writeln("stream ~= stdout ifTrue: [ stream close ].")
 		c.writeln("^ self")
 		c.indent--
 		c.writelnNoIndent("!")
