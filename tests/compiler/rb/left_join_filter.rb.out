@@ -119,12 +119,9 @@ end
 
 Customer = Struct.new(:id, :name, keyword_init: true)
 
-
 Order = Struct.new(:id, :customerId, :total, keyword_init: true)
 
-
 Info = Struct.new(:orderId, :customerName, :total, keyword_init: true)
-
 
 customers = [Customer.new(id: 1, name: "Alice"), Customer.new(id: 2, name: "Bob"), Customer.new(id: 3, name: "Charlie")]
 orders = [Order.new(id: 100, customerId: 1, total: 250), Order.new(id: 101, customerId: 2, total: 125), Order.new(id: 102, customerId: 1, total: 300), Order.new(id: 103, customerId: 4, total: 80)]

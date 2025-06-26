@@ -239,7 +239,6 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.indent--
 		c.writeln("end")
 	}
-	c.writeln("")
 	for _, m := range t.Members {
 		if m.Field != nil {
 			if st, ok := c.resolveTypeRef(m.Field.Type).(types.StructType); ok {
@@ -1539,7 +1538,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		opts = v
+		opts = fmt.Sprintf("(%s).to_h.transform_keys(&:to_s)", v)
 	}
 	c.use("_load")
 	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
@@ -1565,7 +1564,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		opts = v
+		opts = fmt.Sprintf("(%s).to_h.transform_keys(&:to_s)", v)
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
