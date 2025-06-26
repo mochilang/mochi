@@ -2804,6 +2804,7 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 	if idx >= len(q.Joins) {
 		appendVal := func() {
+			fc.compileQueryLets(q)
 			val := fc.compileExpr(q.Select)
 			if q.Sort != nil {
 				key := fc.compileExpr(q.Sort)
@@ -2942,6 +2943,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 
 	// helper to append selected value
 	appendSelect := func() {
+		fc.compileQueryLets(q)
 		val := fc.compileExpr(q.Select)
 		if q.Sort != nil {
 			key := fc.compileExpr(q.Sort)
@@ -3196,6 +3198,7 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 
 	appendSelect := func() {
+		fc.compileQueryLets(q)
 		val := fc.compileExpr(q.Select)
 		if q.Sort != nil {
 			key := fc.compileExpr(q.Sort)
@@ -3732,6 +3735,18 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 	}
 }
 
+func (fc *funcCompiler) compileQueryLets(q *parser.QueryExpr) {
+	for _, l := range q.Lets {
+		val := fc.compileExpr(l.Value)
+		reg, ok := fc.vars[l.Name]
+		if !ok {
+			reg = fc.newReg()
+			fc.vars[l.Name] = reg
+		}
+		fc.emit(l.Pos, Instr{Op: OpMove, A: reg, B: val})
+	}
+}
+
 func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 	names := []string{q.Var}
 	regs := []int{fc.vars[q.Var]}
@@ -3812,6 +3827,7 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 	} else {
 		fc.pushScope()
 		appendVal := func() {
+			fc.compileQueryLets(q)
 			val := fc.compileExpr(q.Select)
 			if q.Sort != nil {
 				key := fc.compileExpr(q.Sort)

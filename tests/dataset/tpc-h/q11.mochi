@@ -23,9 +23,10 @@ let filtered =
   join s in supplier on s.s_suppkey == ps.ps_suppkey
   join n in nation on n.n_nationkey == s.s_nationkey
   where n.n_name == target_nation
+  let value = ps.ps_supplycost * ps.ps_availqty
   select {
     ps_partkey: ps.ps_partkey,
-    value: ps.ps_supplycost * ps.ps_availqty
+    value: value
   }
 
 let grouped =

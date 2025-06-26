@@ -1930,6 +1930,14 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		}
 	}
 
+	for _, l := range q.Lets {
+		lt, err := checkExpr(l.Value, child)
+		if err != nil {
+			return nil, err
+		}
+		child.SetVar(l.Name, lt, true)
+	}
+
 	var selT Type
 	if q.Group != nil {
 		if _, err := checkExpr(q.Group.Exprs[0], child); err != nil {
