@@ -2,9 +2,11 @@
 -module(main).
 -export([main/1]).
 
+-record(msg, {message}).
+
 main(_) ->
-	Body = mochi_fetch("https://example.com", #{method => "GET"}),
-	mochi_print([(length(Body) > 0)]).
+	Data = mochi_fetch("file://tests/compiler/erl_simple/fetch_builtin.json", undefined),
+	mochi_print([Data#msg.message]).
 
 mochi_print(Args) ->
 	Strs = [ mochi_format(A) || A <- Args ],
