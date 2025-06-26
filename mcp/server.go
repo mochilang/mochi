@@ -13,9 +13,9 @@ import (
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
-	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -123,10 +123,15 @@ func runProgram(ctx context.Context, source string, filename string) (string, er
 		return "", logFailure("type_error")
 	}
 
-	// Step 3: Run
-	interp := interpreter.New(prog, env, modRoot)
-	interp.Env().SetWriter(output)
-	if err := interp.Run(); err != nil {
+	// Step 3: Compile and Run using the VM
+	os.Setenv("MOCHI_ROOT", modRoot)
+	p, errc := vm.Compile(prog, env)
+	if errc != nil {
+		fmt.Fprintf(output, "❌ Compile Error\n\n  → %v\n", errc)
+		return "", logFailure("compile_error")
+	}
+	m := vm.New(p, output)
+	if err := m.Run(); err != nil {
 		fmt.Fprintf(output, "❌ Runtime Error\n\n  → %v\n", err)
 		return "", logFailure("runtime_error")
 	}
