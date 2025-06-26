@@ -52,13 +52,13 @@ let local_customer_supplier_orders =
 let result =
   from r in local_customer_supplier_orders
   group by r.nation into g
+  sort by -sum(from x in g select x.revenue)
   select {
     n_name: g.key,
     revenue: sum(from x in g select x.revenue)
   }
-  sort by -revenue
 
-print result
+json(result)
 
 test "Q5 returns revenue per nation in ASIA with local suppliers" {
   expect result == [
