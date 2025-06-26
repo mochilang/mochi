@@ -1,0 +1,24 @@
+:- style_check(-singleton).
+:- use_module(library(http/json)).
+:- use_module(library(process)).
+fetch_data(URL, _Opts, Data) :-
+    atom_string(U, URL),
+    ( sub_atom(U, 0, 7, _, 'file://') ->
+        sub_atom(U, 7, _, 0, Path),
+        read_file_to_string(Path, Text, [])
+    ;   process_create(path(curl), ['-s', U], [stdout(pipe(S))]),
+        read_string(S, _, Text),
+        close(S)
+    ),
+    atom_json_dict(Text, Data, []).
+
+
+
+	main :-
+	fetch_data("https://jsonplaceholder.typicode.com/todos/1", _{}, _V0),
+	Todo = _V0,
+	get_dict(title, Todo, _V1),
+	write(_V1),
+	nl
+	.
+:- initialization(main, main).
