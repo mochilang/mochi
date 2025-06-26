@@ -1,6 +1,7 @@
 package ccode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -73,4 +74,20 @@ func EnsureCC() (string, error) {
 		return path, nil
 	}
 	return "", fmt.Errorf("C compiler not found")
+}
+
+// Format runs clang-format on code if available.
+func Format(code []byte) []byte {
+	path, err := exec.LookPath("clang-format")
+	if err != nil {
+		return code
+	}
+	cmd := exec.Command(path, "-style=LLVM")
+	cmd.Stdin = bytes.NewReader(code)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return code
+	}
+	return out.Bytes()
 }

@@ -1,23 +1,36 @@
+/*
+fun makeAdder(n: int): fun(int): int {
+  return fun(x: int): int => x + n
+}
+
+let add10 = makeAdder(10)
+print(add10(7))  // 17
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
-int _lambda0(int x){
-	return (x + n);
-}
+int _lambda0(int x) { return (x + n); }
 
-int (*)(int) makeAdder(int n){
-	return _lambda0;
+/* fun makeAdder(n: int): fun(int): int { */
+int (*)(int) makeAdder(int n) {
+  /* return fun(x: int): int => x + n */
+  return _lambda0;
 }
 
 int main() {
-	int (*)(int) add10 = makeAdder(10);
-	printf("%d\n", add10(7));
-	return 0;
+  /* let add10 = makeAdder(10) */
+  int (*)(int) add10 = makeAdder(10);
+  /* print(add10(7))  // 17 */
+  printf("%d\n", add10(7));
+  return 0;
 }

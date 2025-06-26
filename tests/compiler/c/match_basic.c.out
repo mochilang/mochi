@@ -1,19 +1,38 @@
+/*
+fun label(x: int): string {
+  return match x {
+    1 => "one"
+    2 => "two"
+    _ => "other"
+  }
+}
+
+print(label(1))
+print(label(3))
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
-char* label(int x){
-	return (x == 1 ? "one" : (x == 2 ? "two" : "other"));
+/* fun label(x: int): string { */
+char *label(int x) {
+  /* return match x { */
+  return (x == 1 ? "one" : (x == 2 ? "two" : "other"));
 }
 
 int main() {
-	printf("%s\n", label(1));
-	printf("%s\n", label(3));
-	return 0;
+  /* print(label(1)) */
+  printf("%s\n", label(1));
+  /* print(label(3)) */
+  printf("%s\n", label(3));
+  return 0;
 }

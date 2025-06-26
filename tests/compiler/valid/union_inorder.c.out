@@ -1,55 +1,88 @@
+/*
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+
+fun inorder(t: Tree): list<int> {
+  return match t {
+    Leaf => [] as list<int>
+    Node(l, v, r) => inorder(l) + [v] + inorder(r)
+  }
+}
+
+print(inorder(Node { left: Leaf {}, value: 1, right: Node { left: Leaf {},
+value: 2, right: Leaf {} } }))
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
-typedef struct { int len; list_int *data; } list_list_int;
+typedef struct {
+  int len;
+  list_int *data;
+} list_list_int;
 static list_list_int list_list_int_create(int len) {
-    list_list_int l;
-    l.len = len;
-    l.data = (list_int*)malloc(sizeof(list_int)*len);
-    return l;
-}static void _print_list_int(list_int v) {
-    printf("[");
-    for (int i = 0; i < v.len; i++) {
-        if (i > 0) printf(" ");
-        printf("%d", v.data[i]);
-    }
-    printf("]");
+  list_list_int l;
+  l.len = len;
+  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  return l;
+}
+static void _print_list_int(list_int v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(" ");
+    printf("%d", v.data[i]);
+  }
+  printf("]");
 }
 typedef struct Tree Tree;
 typedef struct Leaf Leaf;
 typedef struct Node Node;
 
+/* type Tree = */
 typedef struct {
-}Leaf;
+} Leaf;
 typedef struct {
-	Tree left;
-	int value;
-	Tree right;
-}Node;
+  Tree left;
+  int value;
+  Tree right;
+} Node;
 typedef struct {
-	int tag;
-	union {
-		Leaf Leaf;
-		Node Node;
-	} value;
-}Tree;
+  int tag;
+  union {
+    Leaf Leaf;
+    Node Node;
+  } value;
+} Tree;
 
-list_int inorder(Tree t){
-	list_int _t1 = list_int_create(1);
-	_t1.data[0] = v;
-	list_int _t2 = list_int_create(0);
-	return (t == Leaf ? _t2 : (t == Node(l, v, r) ? ((inorder(l) + _t1) + inorder(r)) : 0));
+/* fun inorder(t: Tree): list<int> { */
+list_int inorder(Tree t) {
+  /* return match t { */
+  list_int _t1 = list_int_create(1);
+  _t1.data[0] = v;
+  return (t == Leaf
+              ? _t2
+              : (t == Node(l, v, r) ? ((inorder(l) + _t1) + inorder(r)) : 0));
 }
 
 int main() {
-	_print_list_int(inorder((Node){.left = (Leaf){}, .value = 1, .right = (Node){.left = (Leaf){}, .value = 2, .right = (Leaf){}}}));
-	printf("\n");
-	return 0;
+  /* type Tree = */
+  /* print(inorder(Node { left: Leaf {}, value: 1, right: Node { left: Leaf {},
+   * value: 2, right: Leaf {} } })) */
+  _print_list_int(inorder((Node){
+      .left = (Leaf){},
+      .value = 1,
+      .right = (Node){.left = (Leaf){}, .value = 2, .right = (Leaf){}}}));
+  printf("\n");
+  return 0;
 }

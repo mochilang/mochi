@@ -1,34 +1,49 @@
+/*
+type Tree =
+  Leaf {}
+  | Node(left: Tree, value: int, right: Tree)
+
+let t = Node { left: Leaf {}, value: 42, right: Leaf {} }
+print(t.value)
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
 typedef struct Tree Tree;
 typedef struct Leaf Leaf;
 typedef struct Node Node;
 
+/* type Tree = */
 typedef struct {
-}Leaf;
+} Leaf;
 typedef struct {
-	Tree left;
-	int value;
-	Tree right;
-}Node;
+  Tree left;
+  int value;
+  Tree right;
+} Node;
 typedef struct {
-	int tag;
-	union {
-		Leaf Leaf;
-		Node Node;
-	} value;
-}Tree;
+  int tag;
+  union {
+    Leaf Leaf;
+    Node Node;
+  } value;
+} Tree;
 
 int main() {
-	Node t = (Node){.left = (Leaf){}, .value = 42, .right = (Leaf){}};
-	printf("%d\n", t.value);
-	return 0;
+  /* type Tree = */
+  /* let t = Node { left: Leaf {}, value: 42, right: Leaf {} } */
+  Node t = (Node){.left = (Leaf){}, .value = 42, .right = (Leaf){}};
+  /* print(t.value) */
+  printf("%d\n", t.value);
+  return 0;
 }

@@ -1,26 +1,51 @@
+/*
+fun foo(n: int): int {
+  if n < 0 {
+    return -1
+  } else if n == 0 {
+    return 0
+  } else {
+    return 1
+  }
+}
+print(foo(-2))
+print(foo(0))
+print(foo(3))
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
-int foo(int n){
-	if ((n < 0)) {
-		return (-1);
-	} else 	if ((n == 0)) {
-		return 0;
-	} else {
-		return 1;
-	}
+/* fun foo(n: int): int { */
+int foo(int n) {
+  /* if n < 0 { */
+  if ((n < 0)) {
+    /* return -1 */
+    return (-1);
+  } else if ((n == 0)) {
+    /* return 0 */
+    return 0;
+  } else {
+    /* return 1 */
+    return 1;
+  }
 }
 
 int main() {
-	printf("%d\n", foo((-2)));
-	printf("%d\n", foo(0));
-	printf("%d\n", foo(3));
-	return 0;
+  /* print(foo(-2)) */
+  printf("%d\n", foo((-2)));
+  /* print(foo(0)) */
+  printf("%d\n", foo(0));
+  /* print(foo(3)) */
+  printf("%d\n", foo(3));
+  return 0;
 }

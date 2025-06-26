@@ -1,27 +1,41 @@
+/*
+fun inc(x: int): int { return x + 1 }
+fun apply(f: fun(int): int, x: int): int { return f(x) }
+
+print(apply(inc, 5))
+print(apply(fun(y: int): int => y * 2, 7))
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
-int _lambda0(int y){
-	return (y * 2);
+int _lambda0(int y) { return (y * 2); }
+
+/* fun inc(x: int): int { return x + 1 } */
+int inc(int x) {
+  /* fun inc(x: int): int { return x + 1 } */
+  return (x + 1);
 }
 
-int inc(int x){
-	return (x + 1);
-}
-
-int apply(int (*)(int) f, int x){
-	return f(x);
+/* fun apply(f: fun(int): int, x: int): int { return f(x) } */
+int apply(int (*)(int) f, int x) {
+  /* fun apply(f: fun(int): int, x: int): int { return f(x) } */
+  return f(x);
 }
 
 int main() {
-	printf("%d\n", apply(inc, 5));
-	printf("%d\n", apply(_lambda0, 7));
-	return 0;
+  /* print(apply(inc, 5)) */
+  printf("%d\n", apply(inc, 5));
+  /* print(apply(fun(y: int): int => y * 2, 7)) */
+  printf("%d\n", apply(_lambda0, 7));
+  return 0;
 }

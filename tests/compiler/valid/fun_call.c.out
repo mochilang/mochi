@@ -1,18 +1,31 @@
+/*
+fun add(a: int, b: int): int {
+  return a + b
+}
+
+print(add(2, 3))  // 5
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
-int add(int a, int b){
-	return (a + b);
+/* fun add(a: int, b: int): int { */
+int add(int a, int b) {
+  /* return a + b */
+  return (a + b);
 }
 
 int main() {
-	printf("%d\n", add(2, 3));
-	return 0;
+  /* print(add(2, 3))  // 5 */
+  printf("%d\n", add(2, 3));
+  return 0;
 }

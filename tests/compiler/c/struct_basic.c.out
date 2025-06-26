@@ -1,23 +1,37 @@
+/*
+ type Pair { x: int, y: int }
+ let p = Pair{ x: 1, y: 2 }
+ print(p.x)
+ print(p.y)
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
 typedef struct Pair Pair;
 
+/* type Pair { x: int, y: int } */
 typedef struct {
-	int x;
-	int y;
-}Pair;
+  int x;
+  int y;
+} Pair;
 
 int main() {
-	Pair p = (Pair){.x = 1, .y = 2};
-	printf("%d\n", p.x);
-	printf("%d\n", p.y);
-	return 0;
+  /* type Pair { x: int, y: int } */
+  /* let p = Pair{ x: 1, y: 2 } */
+  Pair p = (Pair){.x = 1, .y = 2};
+  /* print(p.x) */
+  printf("%d\n", p.x);
+  /* print(p.y) */
+  printf("%d\n", p.y);
+  return 0;
 }

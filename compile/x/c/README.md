@@ -53,6 +53,7 @@ cc main.c -o main
 ```
 
 `tools.go` provides `EnsureCC` to locate `cc`, `gcc` or `clang` and attempt installation on Linux or macOS if missing. Set the `CC` environment variable to override the compiler used.【F:compile/c/tools.go†L10-L56】
+The generated C source is also passed through `clang-format` when available for improved readability. In addition, the original Mochi source is embedded as a comment at the top of the file by default. Each statement is preceded by the corresponding Mochi source line for easier inspection.【F:compile/c/tools.go†L79-L97】【F:compile/c/compiler.go†L314-L335】
 
 ## Tests
 

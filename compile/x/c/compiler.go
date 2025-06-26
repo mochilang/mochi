@@ -3,8 +3,11 @@ package ccode
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
+
+	"github.com/alecthomas/participle/v2/lexer"
 
 	"mochi/parser"
 	"mochi/types"
@@ -61,6 +64,10 @@ type Compiler struct {
 	listStructs   map[string]bool
 	fetchStructs  map[string]bool
 	currentStruct string
+	// IncludeSource controls whether the original Mochi source is embedded
+	// as a comment at the top of the generated C code. Enabled by default.
+	IncludeSource bool
+	srcLines      []string
 }
 
 func New(env *types.Env) *Compiler {
@@ -73,6 +80,8 @@ func New(env *types.Env) *Compiler {
 		listStructs:   map[string]bool{},
 		fetchStructs:  map[string]bool{},
 		externObjects: []string{},
+		IncludeSource: true,
+		srcLines:      nil,
 	}
 }
 
@@ -93,6 +102,20 @@ func (c *Compiler) writeIndent() {
 func (c *Compiler) newTemp() string {
 	c.tmp++
 	return fmt.Sprintf("_t%d", c.tmp)
+}
+
+func (c *Compiler) sourceLine(pos lexer.Position) string {
+	if pos.Line <= 0 || pos.Line > len(c.srcLines) {
+		return ""
+	}
+	return strings.TrimSpace(c.srcLines[pos.Line-1])
+}
+
+func (c *Compiler) emitSourceComment(pos lexer.Position) {
+	line := c.sourceLine(pos)
+	if line != "" {
+		c.writeln("/* " + line + " */")
+	}
 }
 
 func (c *Compiler) need(key string) {
@@ -196,6 +219,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.lambdas = nil
 	for _, s := range prog.Statements {
 		if s.Type != nil {
+			c.emitSourceComment(s.Type.Pos)
 			if err := c.compileTypeDecl(s.Type); err != nil {
 				return nil, err
 			}
@@ -222,6 +246,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			}
 			c.writeln("")
 		} else if s.Test != nil {
+			c.emitSourceComment(s.Test.Pos)
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
@@ -316,7 +341,31 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	return c.compileProgram(prog)
+	if c.IncludeSource && prog.Pos.Filename != "" {
+		if src, err := os.ReadFile(prog.Pos.Filename); err == nil {
+			c.srcLines = strings.Split(string(src), "\n")
+		}
+	}
+
+	code, err := c.compileProgram(prog)
+	if err != nil {
+		return nil, err
+	}
+	if c.IncludeSource && prog.Pos.Filename != "" {
+		if src, err := os.ReadFile(prog.Pos.Filename); err == nil {
+			var buf bytes.Buffer
+			buf.WriteString("/*\n")
+			buf.Write(src)
+			if len(src) > 0 && src[len(src)-1] != '\n' {
+				buf.WriteByte('\n')
+			}
+			buf.WriteString("*/\n")
+			buf.Write(code)
+			code = buf.Bytes()
+		}
+	}
+	formatted := Format(code)
+	return formatted, nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -413,6 +462,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
+	c.emitSourceComment(fun.Pos)
 	ret := c.cType(fun.Return)
 	c.buf.WriteString(ret + " ")
 	c.buf.WriteString(sanitizeName(fun.Name))
@@ -462,6 +512,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) error {
+	c.emitSourceComment(fun.Pos)
 	ret := c.cType(fun.Return)
 	c.buf.WriteString(ret + " ")
 	c.buf.WriteString(sanitizeName(structName) + "_" + sanitizeName(fun.Name))
@@ -585,6 +636,7 @@ func (c *Compiler) emitFetchStructFunc(st types.StructType) string {
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
+	c.emitSourceComment(s.Pos)
 	switch {
 	case s.Fun != nil:
 		// Nested function declarations are hoisted to the top level.

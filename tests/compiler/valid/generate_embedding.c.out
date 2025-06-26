@@ -1,15 +1,26 @@
+/*
+let vec = generate embedding {
+  text: "hi"
+}
+print(len(vec))
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
 int main() {
-	list_float vec = 0;
-	printf("%d\n", vec.len);
-	return 0;
+  /* let vec = generate embedding { */
+  list_float vec = 0;
+  /* print(len(vec)) */
+  printf("%d\n", vec.len);
+  return 0;
 }

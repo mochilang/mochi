@@ -1,20 +1,37 @@
+/*
+print("a" < "b")
+print("a" <= "a")
+print("cat" > "car")
+print("dog" >= "dog")
+print("abc" == "abc")
+print("foo" != "bar")
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
 int main() {
-	printf("%d\n", (strcmp("a", "b") < 0));
-	printf("%d\n", (strcmp("a", "a") <= 0));
-	printf("%d\n", (strcmp("cat", "car") > 0));
-	printf("%d\n", (strcmp("dog", "dog") >= 0));
-	printf("%d\n", (strcmp("abc", "abc") == 0));
-	printf("%d\n", (strcmp("foo", "bar") != 0));
-	return 0;
+  /* print("a" < "b") */
+  printf("%d\n", (strcmp("a", "b") < 0));
+  /* print("a" <= "a") */
+  printf("%d\n", (strcmp("a", "a") <= 0));
+  /* print("cat" > "car") */
+  printf("%d\n", (strcmp("cat", "car") > 0));
+  /* print("dog" >= "dog") */
+  printf("%d\n", (strcmp("dog", "dog") >= 0));
+  /* print("abc" == "abc") */
+  printf("%d\n", (strcmp("abc", "abc") == 0));
+  /* print("foo" != "bar") */
+  printf("%d\n", (strcmp("foo", "bar") != 0));
+  return 0;
 }

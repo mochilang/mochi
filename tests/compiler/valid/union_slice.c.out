@@ -1,37 +1,56 @@
+/*
+type Foo =
+  Empty
+  | Node(child: Foo)
+
+fun listit(): list<Foo> {
+  return [Empty {}]
+}
+
+print(len(listit()))
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
 typedef struct Foo Foo;
 typedef struct Empty Empty;
 typedef struct Node Node;
 
+/* type Foo = */
 typedef struct {
-}Empty;
+} Empty;
 typedef struct {
-	Foo child;
-}Node;
+  Foo child;
+} Node;
 typedef struct {
-	int tag;
-	union {
-		Empty Empty;
-		Node Node;
-	} value;
-}Foo;
+  int tag;
+  union {
+    Empty Empty;
+    Node Node;
+  } value;
+} Foo;
 
-int listit(){
-	list_int _t1 = list_int_create(1);
-	_t1.data[0] = (Empty){};
-	return _t1;
+/* fun listit(): list<Foo> { */
+int listit() {
+  /* return [Empty {}] */
+  list_int _t1 = list_int_create(1);
+  _t1.data[0] = (Empty){};
+  return _t1;
 }
 
 int main() {
-	printf("%d\n", listit().len);
-	return 0;
+  /* type Foo = */
+  /* print(len(listit())) */
+  printf("%d\n", listit().len);
+  return 0;
 }

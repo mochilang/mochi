@@ -1,20 +1,27 @@
+/*
+print(now() > 0)
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
 static long long _now() {
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    return (long long)ts.tv_sec * 1000000000LL + ts.tv_nsec;
+  struct timespec ts;
+  clock_gettime(CLOCK_REALTIME, &ts);
+  return (long long)ts.tv_sec * 1000000000LL + ts.tv_nsec;
 }
 int main() {
-	printf("%d\n", (_now() > 0));
-	return 0;
+  /* print(now() > 0) */
+  printf("%d\n", (_now() > 0));
+  return 0;
 }
