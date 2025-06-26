@@ -147,6 +147,20 @@ const (
 		"    return sum / #items\n" +
 		"end\n"
 
+	helperSum = "function __sum(v)\n" +
+		"    local items\n" +
+		"    if type(v) == 'table' and v.items ~= nil then\n" +
+		"        items = v.items\n" +
+		"    elseif type(v) == 'table' then\n" +
+		"        items = v\n" +
+		"    else\n" +
+		"        error('sum() expects list or group')\n" +
+		"    end\n" +
+		"    local sum = 0\n" +
+		"    for _, it in ipairs(items) do sum = sum + it end\n" +
+		"    return sum\n" +
+		"end\n"
+
 	helperAppend = "function __append(lst, v)\n" +
 		"    local out = {}\n" +
 		"    if lst then for i = 1, #lst do out[#out+1] = lst[i] end end\n" +
@@ -611,6 +625,7 @@ var helperMap = map[string]string{
 	"input":       helperInput,
 	"count":       helperCount,
 	"avg":         helperAvg,
+	"sum":         helperSum,
 	"append":      helperAppend,
 	"reduce":      helperReduce,
 	"json":        helperJson,

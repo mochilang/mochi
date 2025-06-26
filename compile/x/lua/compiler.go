@@ -48,7 +48,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			if err := c.compileTypeDecl(s.Type); err != nil {
 				return nil, err
 			}
-			c.writeln("")
+			if len(s.Type.Variants) == 0 {
+				c.writeln("")
+			}
 		}
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun, false); err != nil {

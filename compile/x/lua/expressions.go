@@ -327,6 +327,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "avg":
 		c.helpers["avg"] = true
 		return fmt.Sprintf("__avg(%s)", argStr), nil
+	case "sum":
+		c.helpers["sum"] = true
+		return fmt.Sprintf("__sum(%s)", argStr), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
@@ -356,7 +359,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		src, err := c.compileExpr(q.Source)
 		if err != nil {
 			return "", err
@@ -365,6 +368,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, types.AnyType{}, true)
 		c.env = child
+		var whereExpr string
+		if q.Where != nil {
+			whereExpr, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
@@ -381,8 +392,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		c.helpers["_Group"] = true
 		c.helpers["_group_by"] = true
-		res := fmt.Sprintf("(function()\n\tlocal _groups = __group_by(%s, function(%s) return %s end)\n\tlocal _res = {}\n\tfor _, %s in ipairs(_groups) do\n\t\t_res[#_res+1] = %s\n\tend\n\treturn _res\nend)()", src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name), valExpr)
-		return res, nil
+		var b strings.Builder
+		b.WriteString("(function()\n")
+		if whereExpr != "" {
+			b.WriteString("\tlocal _items = {}\n")
+			b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(%s) do\n", sanitizeName(q.Var), src))
+			b.WriteString(fmt.Sprintf("\t\tif %s then _items[#_items+1] = %s end\n", whereExpr, sanitizeName(q.Var)))
+			b.WriteString("\tend\n")
+			b.WriteString(fmt.Sprintf("\tlocal _groups = __group_by(_items, function(%s) return %s end)\n", sanitizeName(q.Var), keyExpr))
+		} else {
+			b.WriteString(fmt.Sprintf("\tlocal _groups = __group_by(%s, function(%s) return %s end)\n", src, sanitizeName(q.Var), keyExpr))
+		}
+		b.WriteString("\tlocal _res = {}\n")
+		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(_groups) do\n", sanitizeName(q.Group.Name)))
+		b.WriteString(fmt.Sprintf("\t\t_res[#_res+1] = %s\n", valExpr))
+		b.WriteString("\tend\n")
+		b.WriteString("\treturn _res\n")
+		b.WriteString("end)()")
+		return b.String(), nil
 	}
 
 	if q.Group != nil {
