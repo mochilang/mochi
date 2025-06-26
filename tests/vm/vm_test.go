@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -93,7 +94,12 @@ func TestVM_Fetch(t *testing.T) {
 }
 
 func TestVM_TPCH(t *testing.T) {
-	files, err := filepath.Glob("../dataset/tpc-h/*.mochi")
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("unable to locate test file")
+	}
+	dir := filepath.Join(filepath.Dir(filename), "..", "dataset", "tpc-h")
+	files, err := filepath.Glob(filepath.Join(dir, "*.mochi"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -103,8 +109,8 @@ func TestVM_TPCH(t *testing.T) {
 	found := false
 	for _, src := range files {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		want := filepath.Join("../dataset/tpc-h/out", base+".out")
-		irWant := filepath.Join("../dataset/tpc-h/out", base+".ir.out")
+		want := filepath.Join(dir, "out", base+".out")
+		irWant := filepath.Join(dir, "out", base+".ir.out")
 		if _, err := os.Stat(want); err != nil {
 			continue
 		}
