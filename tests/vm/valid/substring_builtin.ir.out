@@ -1,0 +1,6 @@
+func main (regs=1)
+  // print(substring("mochi", 1, 4))
+  Const        r0, "och"
+  Print        r0
+  Return       r0
+
