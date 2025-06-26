@@ -1,0 +1,191 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"os"
+	"reflect"
+)
+
+type Person struct {
+	Name string `json:"name"`
+	Age int `json:"age"`
+	Email string `json:"email"`
+}
+
+func main() {
+	var people []Person = func() []Person {
+	rows := _load("", _toAnyMap(map[string]string{"format": "json"}))
+	out := make([]Person, len(rows))
+	for i, r := range rows {
+		out[i] = _cast[Person](r)
+	}
+	return out
+}()
+	var adults []Person = func() []Person {
+	_res := []Person{}
+	for _, p := range people {
+		if (p.Age >= 18) {
+			if (p.Age >= 18) {
+				_res = append(_res, p)
+			}
+		}
+	}
+	return _res
+}()
+	_save(adults, "", _toAnyMap(map[string]string{"format": "json"}))
+}
+
+func _cast[T any](v any) T {
+    if tv, ok := v.(T); ok { return tv }
+    var out T
+    switch any(out).(type) {
+    case int:
+        switch vv := v.(type) {
+        case int:
+            return any(vv).(T)
+        case float64:
+            return any(int(vv)).(T)
+        case float32:
+            return any(int(vv)).(T)
+        }
+    case float64:
+        switch vv := v.(type) {
+        case int:
+            return any(float64(vv)).(T)
+        case float64:
+            return any(vv).(T)
+        case float32:
+            return any(float64(vv)).(T)
+        }
+    case float32:
+        switch vv := v.(type) {
+        case int:
+            return any(float32(vv)).(T)
+        case float64:
+            return any(float32(vv)).(T)
+        case float32:
+            return any(vv).(T)
+        }
+    }
+    if m, ok := v.(map[any]any); ok {
+        v = _convertMapAny(m)
+    }
+    data, err := json.Marshal(v)
+    if err != nil { panic(err) }
+    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
+    return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+    out := make(map[string]any, len(m))
+    for k, v := range m {
+        key := fmt.Sprint(k)
+        if sub, ok := v.(map[any]any); ok {
+            out[key] = _convertMapAny(sub)
+        } else {
+            out[key] = v
+        }
+    }
+    return out
+}
+
+func _load(path string, opts map[string]any) []map[string]any {
+    format := "csv"
+    header := false
+    delim := ','
+    if opts != nil {
+        if f, ok := opts["format"].(string); ok { format = f }
+        if h, ok := opts["header"].(bool); ok { header = h }
+        if d, ok := opts["delimiter"].(string); ok && len(d) > 0 { delim = rune(d[0]) }
+    }
+    var rows []map[string]any
+    var err error
+    switch format {
+    case "jsonl":
+        if path == "" || path == "-" { rows, err = data.LoadJSONLReader(os.Stdin) } else { rows, err = data.LoadJSONL(path) }
+    case "json":
+        if path == "" || path == "-" { rows, err = data.LoadJSONReader(os.Stdin) } else { rows, err = data.LoadJSON(path) }
+    case "yaml":
+        if path == "" || path == "-" { rows, err = data.LoadYAMLReader(os.Stdin) } else { rows, err = data.LoadYAML(path) }
+    case "tsv":
+        delim = '	'
+        fallthrough
+    default:
+        if path == "" || path == "-" { rows, err = data.LoadCSVReader(os.Stdin, header, delim) } else { rows, err = data.LoadCSV(path, header, delim) }
+    }
+    if err != nil { panic(err) }
+    return rows
+}
+
+func _save(src any, path string, opts map[string]any) {
+    rows, ok := _toMapSlice(src)
+    if !ok { panic("save source must be list of maps") }
+    format := "csv"
+    header := false
+    delim := ','
+    if opts != nil {
+        if f, ok := opts["format"].(string); ok { format = f }
+        if h, ok := opts["header"].(bool); ok { header = h }
+        if d, ok := opts["delimiter"].(string); ok && len(d) > 0 { delim = rune(d[0]) }
+    }
+    var err error
+    switch format {
+    case "jsonl":
+        if path == "" || path == "-" { err = data.SaveJSONLWriter(rows, os.Stdout) } else { err = data.SaveJSONL(rows, path) }
+    case "json":
+        if path == "" || path == "-" { err = data.SaveJSONWriter(rows, os.Stdout) } else { err = data.SaveJSON(rows, path) }
+    case "yaml":
+        if path == "" || path == "-" { err = data.SaveYAMLWriter(rows, os.Stdout) } else { err = data.SaveYAML(rows, path) }
+    case "tsv":
+        delim = '	'
+        fallthrough
+    default:
+        if path == "" || path == "-" { err = data.SaveCSVWriter(rows, os.Stdout, header, delim) } else { err = data.SaveCSV(rows, path, header, delim) }
+    }
+    if err != nil { panic(err) }
+}
+
+func _toAnyMap(m any) map[string]any {
+    switch v := m.(type) {
+    case map[string]any:
+        return v
+    case map[string]string:
+        out := make(map[string]any, len(v))
+        for k, vv := range v {
+            out[k] = vv
+        }
+        return out
+    default:
+        return nil
+    }
+}
+
+func _toMapSlice(v any) ([]map[string]any, bool) {
+    switch rows := v.(type) {
+    case []map[string]any:
+        return rows, true
+    case []any:
+        out := make([]map[string]any, len(rows))
+        for i, item := range rows {
+            m, ok := item.(map[string]any)
+            if !ok { return nil, false }
+            out[i] = m
+        }
+        return out, true
+    }
+    rv := reflect.ValueOf(v)
+    if rv.Kind() == reflect.Slice {
+        out := make([]map[string]any, rv.Len())
+        for i := 0; i < rv.Len(); i++ {
+            b, err := json.Marshal(rv.Index(i).Interface())
+            if err != nil { return nil, false }
+            var m map[string]any
+            if err := json.Unmarshal(b, &m); err != nil { return nil, false }
+            out[i] = m
+        }
+        return out, true
+    }
+    return nil, false
+}

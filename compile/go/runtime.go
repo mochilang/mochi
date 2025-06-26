@@ -424,9 +424,20 @@ const (
 		"            out[i] = m\n" +
 		"        }\n" +
 		"        return out, true\n" +
-		"    default:\n" +
-		"        return nil, false\n" +
 		"    }\n" +
+		"    rv := reflect.ValueOf(v)\n" +
+		"    if rv.Kind() == reflect.Slice {\n" +
+		"        out := make([]map[string]any, rv.Len())\n" +
+		"        for i := 0; i < rv.Len(); i++ {\n" +
+		"            b, err := json.Marshal(rv.Index(i).Interface())\n" +
+		"            if err != nil { return nil, false }\n" +
+		"            var m map[string]any\n" +
+		"            if err := json.Unmarshal(b, &m); err != nil { return nil, false }\n" +
+		"            out[i] = m\n" +
+		"        }\n" +
+		"        return out, true\n" +
+		"    }\n" +
+		"    return nil, false\n" +
 		"}\n"
 
 	helperLoad = "func _load(path string, opts map[string]any) []map[string]any {\n" +
@@ -604,6 +615,10 @@ func (c *Compiler) use(name string) {
 		c.imports["encoding/json"] = true
 		c.imports["fmt"] = true
 		c.helpers["_convertMapAny"] = true
+	}
+	if name == "_toMapSlice" {
+		c.imports["encoding/json"] = true
+		c.imports["reflect"] = true
 	}
 }
 

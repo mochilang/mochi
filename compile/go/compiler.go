@@ -2120,6 +2120,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	c.imports["mochi/runtime/data"] = true
 	c.imports["os"] = true
 	c.use("_save")
+	c.use("_toMapSlice")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
