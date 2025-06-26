@@ -14,23 +14,23 @@ let brand = "Brand#23"
 let container = "MED BOX"
 
 
-let result =
-  sum(
-    from l in lineitem
-    join p in part on p.p_partkey == l.l_partkey
-    where (
-      (p.p_brand == brand) &&
-      (p.p_container == container) &&
-      (l.l_quantity < (
-        0.2 * avg(
-          from x in lineitem
-          where x.l_partkey == p.p_partkey
-          select x.l_quantity
-        )
-      ))
-    )
-    select l.l_extendedprice
-  ) / 7.0
+let filtered =
+  from l in lineitem
+  join p in part on p.p_partkey == l.l_partkey
+  where (
+    (p.p_brand == brand) &&
+    (p.p_container == container) &&
+    (l.l_quantity < (
+      0.2 * avg(
+        from x in lineitem
+        where x.l_partkey == p.p_partkey
+        select x.l_quantity
+      )
+    ))
+  )
+  select l.l_extendedprice
+
+let result = sum(filtered) / 7.0
 
 print(result)
 
