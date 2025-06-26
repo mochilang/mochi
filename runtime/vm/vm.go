@@ -3387,6 +3387,13 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	}
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gvar, B: grp})
 
+	var skip int
+	if q.Group.Having != nil {
+		cond := fc.compileExpr(q.Group.Having)
+		skip = len(fc.fn.Code)
+		fc.emit(q.Group.Having.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+	}
+
 	val := fc.compileExpr(q.Select)
 	if q.Sort != nil {
 		key := fc.compileExpr(q.Sort)
@@ -3413,6 +3420,9 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	fc.emit(q.Pos, Instr{Op: OpJump, A: loop2})
 	end2 := len(fc.fn.Code)
 	fc.fn.Code[jmp2].B = end2
+	if q.Group.Having != nil {
+		fc.fn.Code[skip].B = end2
+	}
 }
 
 func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, gmap, glist int) {
@@ -3525,6 +3535,13 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	}
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gvar, B: grp})
 
+	var skip int
+	if q.Group.Having != nil {
+		cond := fc.compileExpr(q.Group.Having)
+		skip = len(fc.fn.Code)
+		fc.emit(q.Group.Having.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+	}
+
 	val := fc.compileExpr(q.Select)
 	if q.Sort != nil {
 		key := fc.compileExpr(q.Sort)
@@ -3551,6 +3568,9 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	fc.emit(q.Pos, Instr{Op: OpJump, A: loop})
 	end := len(fc.fn.Code)
 	fc.fn.Code[jmp].B = end
+	if q.Group.Having != nil {
+		fc.fn.Code[skip].B = end
+	}
 }
 
 func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist int, level int) {

@@ -37,7 +37,7 @@ let lineitem = [
 
 let threshold = 200
 
-let grouped =
+let result =
   from c in customer
   join o in orders on o.o_custkey == c.c_custkey
   join l in lineitem on l.l_orderkey == o.o_orderkey
@@ -51,31 +51,17 @@ let grouped =
     c_comment: c.c_comment,
     n_name: n.n_name
   } into g
+  having sum(from x in g select x.l.l_quantity) > threshold
+  order by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
   select {
     c_name: g.key.c_name,
     c_custkey: g.key.c_custkey,
+    revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount)),
     c_acctbal: g.key.c_acctbal,
+    n_name: g.key.n_name,
     c_address: g.key.c_address,
     c_phone: g.key.c_phone,
-    c_comment: g.key.c_comment,
-    n_name: g.key.n_name,
-    quantity: sum(from x in g select x.l.l_quantity),
-    revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
-  }
-
-let result =
-  from g in grouped
-  where g.quantity > threshold
-  sort by -g.revenue
-  select {
-    c_name: g.c_name,
-    c_custkey: g.c_custkey,
-    revenue: g.revenue,
-    c_acctbal: g.c_acctbal,
-    n_name: g.n_name,
-    c_address: g.c_address,
-    c_phone: g.c_phone,
-    c_comment: g.c_comment
+    c_comment: g.key.c_comment
   }
 
 json(result)
