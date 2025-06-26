@@ -23,7 +23,7 @@ L1:
   Move         r5, r13
   Jump         L2
 L0:
-  Sum          14,2,0,0
+  Sum          r14, r2
   Move         r15, r14
   // print(result)
   Print        r15

@@ -104,7 +104,7 @@ L6:
   Move         r62, r70
   Jump         L6
 L5:
-  Sum          71,59,0,0
+  Sum          r71, r59
   // sum_base_price: sum(from x in g select x.l_extendedprice),
   Const        r72, "sum_base_price"
   Const        r73, []
@@ -125,7 +125,7 @@ L8:
   Move         r76, r83
   Jump         L8
 L7:
-  Sum          84,73,0,0
+  Sum          r84, r73
   // sum_disc_price: sum(from x in g select x.l_extendedprice * (1 - x.l_discount)),
   Const        r85, "sum_disc_price"
   Const        r86, []
@@ -151,7 +151,7 @@ L10:
   Move         r89, r101
   Jump         L10
 L9:
-  Sum          102,86,0,0
+  Sum          r102, r86
   // sum_charge: sum(from x in g select x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax)),
   Const        r103, "sum_charge"
   Const        r104, []
@@ -182,7 +182,7 @@ L12:
   Move         r107, r124
   Jump         L12
 L11:
-  Sum          125,104,0,0
+  Sum          r125, r104
   // avg_qty: avg(from x in g select x.l_quantity),
   Const        r126, "avg_qty"
   Const        r127, []

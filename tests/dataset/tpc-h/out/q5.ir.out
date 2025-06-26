@@ -292,7 +292,7 @@ L23:
   Move         r172, r180
   Jump         L23
 L22:
-  Sum          181,169,0,0
+  Sum          r181, r169
   // n_name: g.key,
   Move         r182, r165
   Move         r183, r167
@@ -320,7 +320,7 @@ L25:
   Move         r190, r197
   Jump         L25
 L24:
-  Sum          198,187,0,0
+  Sum          r198, r187
   Neg          r199, r198
   Move         r200, r199
   // from r in local_customer_supplier_orders

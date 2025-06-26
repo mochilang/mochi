@@ -173,7 +173,7 @@ L12:
   Move         r102, r110
   Jump         L12
 L11:
-  Sum          111,99,0,0
+  Sum          r111, r99
   // ps_partkey: g.key,
   Move         r112, r95
   Move         r113, r97
@@ -211,7 +211,7 @@ L15:
   Move         r124, r131
   Jump         L15
 L14:
-  Sum          132,121,0,0
+  Sum          r132, r121
   // let total =
   Move         r133, r132
   // let threshold = total * 0.0001
