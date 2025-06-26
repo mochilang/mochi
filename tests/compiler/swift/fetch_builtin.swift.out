@@ -54,7 +54,7 @@ struct Msg {
 }
 
 func main() {
-	let data: Msg = _fetch("file://tests/compiler/swift/fetch_builtin.json", nil)
-	print(data.message)
+        let data: Msg = _cast(Msg.self, _fetch("file://tests/compiler/swift/fetch_builtin.json", nil))
+        print(data.message)
 }
 main()
