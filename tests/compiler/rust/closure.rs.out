@@ -6,4 +6,3 @@ fn main() {
     let mut add10 = makeAdder(10);
     println!("{}", add10(7));
 }
-

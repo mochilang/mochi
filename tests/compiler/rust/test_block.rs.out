@@ -8,3 +8,6 @@ fn main() {
     test_addition_works();
 }
 
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}

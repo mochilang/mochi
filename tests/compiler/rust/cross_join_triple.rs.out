@@ -1,4 +1,4 @@
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 struct Combo {
     n: i64,
     l: String,
@@ -25,4 +25,3 @@ fn main() {
         println!("{} {} {}", c.n, c.l, c.b);
     }
 }
-

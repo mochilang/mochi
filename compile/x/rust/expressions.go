@@ -89,8 +89,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
-	// Handle simple grouping without joins or filters
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	// Handle simple grouping without joins. Allow optional filtering
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			return "", err
@@ -98,6 +98,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		selExpr, err := c.compileExpr(q.Select)
 		if err != nil {
 			return "", err
+		}
+		var whereExpr string
+		if q.Where != nil {
+			if w, err := c.compileExpr(q.Where); err == nil {
+				whereExpr = w
+			} else {
+				return "", err
+			}
 		}
 		var elemType types.Type = types.AnyType{}
 		srcType := c.inferExprType(q.Source)
@@ -114,6 +122,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();\n")
 		b.WriteString("    let mut order: Vec<String> = Vec::new();\n")
 		b.WriteString(fmt.Sprintf("    for %s in %s.clone() {\n", sanitizeName(q.Var), src))
+		if whereExpr != "" {
+			b.WriteString(fmt.Sprintf("        if !(%s) { continue; }\n", whereExpr))
+		}
 		b.WriteString(fmt.Sprintf("        let key: %s = %s;\n", rustTypeFrom(keyType), keyExpr))
 		b.WriteString("        let ks = format!(\"{:?}\", key.clone());\n")
 		b.WriteString("        if !groups.contains_key(&ks) {\n")

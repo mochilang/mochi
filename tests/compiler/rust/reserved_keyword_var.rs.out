@@ -2,4 +2,3 @@ fn main() {
     let mut map = std::collections::HashMap::from([("a".to_string(), 1)]);
     println!("{}", map["a"]);
 }
-

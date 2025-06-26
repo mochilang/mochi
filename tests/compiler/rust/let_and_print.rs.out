@@ -3,4 +3,3 @@ fn main() {
     let mut b: i64 = 20;
     println!("{}", a + b);
 }
-
