@@ -1,0 +1,2 @@
+let data = fetch "https://jsonplaceholder.typicode.com/todos/1"
+save [data] with { format: "json" }
