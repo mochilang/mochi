@@ -47,7 +47,7 @@ let result =
   sort by -x.value
   select x
 
-print(result)
+json(result)
 
 test "Q11 returns high-value partkeys from GERMANY" {
   expect result == [
