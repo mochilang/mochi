@@ -1,3 +1,23 @@
+;; Original Source
+; type Person {
+;   name: string
+;   age: int
+; }
+;
+; let people = [
+;   Person { name: "Alice", age: 30 },
+;   Person { name: "Bob", age: 15 },
+;   Person { name: "Charlie", age: 65 }
+; ]
+;
+; let names = from p in people
+;             where p.age >= 18
+;             select p.name
+;
+; for n in names {
+;   print(n)
+; }
+
 (ns main)
 
 (defn Person [name age]
@@ -12,21 +32,21 @@
     (when _tmp0
       (let [n (clojure.core/first _tmp0)]
         (let [r (try
-          (println n)
-          :next
-        (catch clojure.lang.ExceptionInfo e
-          (cond
-            (= (.getMessage e) "continue") :next
-            (= (.getMessage e) "break") :break
-            :else (throw e))
-          )
-        )]
+              (println n)
+              :next
+              (catch clojure.lang.ExceptionInfo e
+                (cond
+                  (= (.getMessage e) "continue") :next
+                  (= (.getMessage e) "break") :break
+                  :else (throw e))
+              )
+          )]
       (cond
         (= r :break) nil
         :else (recur (next _tmp0))
       )
-    )
   )
+)
 )
 )
 )

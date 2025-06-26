@@ -1,3 +1,16 @@
+;; Original Source
+; type Person {
+;   name: string
+;   age: int
+; }
+;
+; let people = [
+;   Person { name: "Alice", age: 30 },
+;   Person { name: "Bob", age: 25 }
+; ]
+;
+; print(people[1].name)
+
 (ns main)
 
 (defn _indexList [xs i]

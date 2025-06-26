@@ -1,3 +1,7 @@
+;; Original Source
+; print(upper("hello"))
+; print(lower("WORLD"))
+
 (ns main)
 
 (defn -main []

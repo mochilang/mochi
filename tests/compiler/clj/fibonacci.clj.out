@@ -1,3 +1,15 @@
+;; Original Source
+; fun fib(n: int): int {
+;   if n <= 1 {
+;     return n
+;   }
+;   return fib(n - 1) + fib(n - 2)
+; }
+;
+; print(fib(0))
+; print(fib(1))
+; print(fib(6))
+
 (ns main)
 
 (defn fib [n]
@@ -5,12 +17,12 @@
     (when (<= n 1)
       (throw (ex-info "return" {:value n}))
     )
-    (throw (ex-info "return" {:value (+ (fib (- n 1)) (fib (- n 2)))}))
+  (throw (ex-info "return" {:value (+ (fib (- n 1)) (fib (- n 2)))}))
   (catch clojure.lang.ExceptionInfo e
     (if (= (.getMessage e) "return")
       (:value (ex-data e))
-    (throw e)))
-  )
+      (throw e)))
+)
 )
 
 (defn -main []

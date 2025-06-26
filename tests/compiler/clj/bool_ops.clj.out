@@ -1,3 +1,8 @@
+;; Original Source
+; print(true && false)
+; print(true || false)
+; print(!false)
+
 (ns main)
 
 (defn -main []

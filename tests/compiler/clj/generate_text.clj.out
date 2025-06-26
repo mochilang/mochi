@@ -1,3 +1,9 @@
+;; Original Source
+; let poem = generate text {
+;   prompt: "echo hello"
+; }
+; print(poem)
+
 (ns main)
 
 (defn _gen_text [prompt model params]

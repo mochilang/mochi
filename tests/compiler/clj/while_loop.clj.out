@@ -1,3 +1,10 @@
+;; Original Source
+; var i = 0
+; while i < 3 {
+;   print(i)
+;   i = i + 1
+; }
+
 (ns main)
 
 (defn -main []
@@ -5,21 +12,21 @@
   (loop []
     (when (< i 3)
       (let [r (try
-        (println i)
-        (def i (+ i 1))
-        :next
-      (catch clojure.lang.ExceptionInfo e
-        (cond
-          (= (.getMessage e) "continue") :next
-          (= (.getMessage e) "break") :break
-          :else (throw e))
-        )
-      )]
+            (println i)
+            (def i (+ i 1))
+            :next
+            (catch clojure.lang.ExceptionInfo e
+              (cond
+                (= (.getMessage e) "continue") :next
+                (= (.getMessage e) "break") :break
+                :else (throw e))
+            )
+        )]
     (cond
       (= r :break) nil
       (= r :next) (recur)
     )
-  )
+)
 )
 )
 )

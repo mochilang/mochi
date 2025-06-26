@@ -1,3 +1,6 @@
+;; Original Source
+; print([1,2] union all [2,3])
+
 (ns main)
 
 (defn _union [a b]

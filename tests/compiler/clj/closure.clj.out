@@ -1,21 +1,29 @@
+;; Original Source
+; fun makeAdder(n: int): fun(int): int {
+;   return fun(x: int): int => x + n
+; }
+;
+; let add10 = makeAdder(10)
+; print(add10(7))  // 17
+
 (ns main)
 
 (defn makeAdder [n]
   (try
     (throw (ex-info "return" {:value (fn [x]
-  (try
-    (throw (ex-info "return" {:value (+ x n)}))
-  (catch clojure.lang.ExceptionInfo e
-    (if (= (.getMessage e) "return")
-      (:value (ex-data e))
+            (try
+              (throw (ex-info "return" {:value (+ x n)}))
+              (catch clojure.lang.ExceptionInfo e
+                (if (= (.getMessage e) "return")
+                  (:value (ex-data e))
+                  (throw e)))
+            )
+        )}))
+(catch clojure.lang.ExceptionInfo e
+  (if (= (.getMessage e) "return")
+    (:value (ex-data e))
     (throw e)))
-  )
-)}))
-  (catch clojure.lang.ExceptionInfo e
-    (if (= (.getMessage e) "return")
-      (:value (ex-data e))
-    (throw e)))
-  )
+)
 )
 
 (defn -main []

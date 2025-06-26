@@ -1,3 +1,73 @@
+;; Original Source
+; let lineitem = [
+;   {
+;     l_quantity: 17,
+;     l_extendedprice: 1000.0,
+;     l_discount: 0.05,
+;     l_tax: 0.07,
+;     l_returnflag: "N",
+;     l_linestatus: "O",
+;     l_shipdate: "1998-08-01"
+;   },
+;   {
+;     l_quantity: 36,
+;     l_extendedprice: 2000.0,
+;     l_discount: 0.10,
+;     l_tax: 0.05,
+;     l_returnflag: "N",
+;     l_linestatus: "O",
+;     l_shipdate: "1998-09-01"
+;   },
+;   {
+;     l_quantity: 25,
+;     l_extendedprice: 1500.0,
+;     l_discount: 0.00,
+;     l_tax: 0.08,
+;     l_returnflag: "R",
+;     l_linestatus: "F",
+;     l_shipdate: "1998-09-03"  // excluded
+;   }
+; ]
+;
+; let result =
+;   from row in lineitem
+;   where row.l_shipdate <= "1998-09-02"
+;   group by {
+;     returnflag: row.l_returnflag,
+;     linestatus: row.l_linestatus
+;   } into g
+;   select {
+;     returnflag: g.key.returnflag,
+;     linestatus: g.key.linestatus,
+;     sum_qty: sum(from x in g select x.l_quantity),
+;     sum_base_price: sum(from x in g select x.l_extendedprice),
+;     sum_disc_price: sum(from x in g select x.l_extendedprice * (1 - x.l_discount)),
+;     sum_charge: sum(from x in g select x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax)),
+;     avg_qty: avg(from x in g select x.l_quantity),
+;     avg_price: avg(from x in g select x.l_extendedprice),
+;     avg_disc: avg(from x in g select x.l_discount),
+;     count_order: count(g)
+;   }
+;
+; json(result)
+;
+; test "Q1 aggregates revenue and quantity by returnflag + linestatus" {
+;   expect result == [
+;     {
+;       returnflag: "N",
+;       linestatus: "O",
+;       sum_qty: 53,
+;       sum_base_price: 3000,
+;       sum_disc_price: 950.0 + 1800.0,               // 2750.0
+;       sum_charge: (950.0 * 1.07) + (1800.0 * 1.05), // 1016.5 + 1890 = 2906.5
+;       avg_qty: 26.5,
+;       avg_price: 1500,
+;       avg_disc: 0.07500000000000001,
+;       count_order: 2
+;     }
+;   ]
+; }
+
 (ns main)
 
 (defn _count [v]
@@ -8,125 +78,125 @@
 
 (defn _avg [v]
   (let [lst (cond
-              (and (map? v) (contains? v :Items)) (:Items v)
-              (sequential? v) v
-              :else (throw (ex-info "avg() expects list or group" {})))]
+        (and (map? v) (contains? v :Items)) (:Items v)
+        (sequential? v) v
+        :else (throw (ex-info "avg() expects list or group" {})))]
     (if (empty? lst)
       0
       (/ (reduce + lst) (double (count lst)))))
-
-(defn _sum [v]
-  (let [lst (cond
-              (and (map? v) (contains? v :Items)) (:Items v)
-              (sequential? v) v
-              :else (throw (ex-info "sum() expects list or group" {})))]
-    (reduce + 0 lst))
-
-(defrecord _Group [key Items])
-
-(defn _group_by [src keyfn]
-  (let [groups (atom {})
-        order (atom [])]
-    (doseq [it src]
-      (let [k (keyfn it)
-            ks (str k)]
-        (when-not (contains? @groups ks)
-          (swap! groups assoc ks (_Group. k []))
-          (swap! order conj ks))
-        (swap! groups update ks (fn [g] (assoc g :Items (conj (:Items g) it)))))
-    )
-    (map (fn [k] (@groups k)) @order)))
-
-(defn _escape_json [s]
-  (-> s
+  
+  (defn _sum [v]
+    (let [lst (cond
+          (and (map? v) (contains? v :Items)) (:Items v)
+          (sequential? v) v
+          :else (throw (ex-info "sum() expects list or group" {})))]
+      (reduce + 0 lst))
+    
+    (defrecord _Group [key Items])
+    
+    (defn _group_by [src keyfn]
+      (let [groups (atom {})
+          order (atom [])]
+        (doseq [it src]
+          (let [k (keyfn it)
+              ks (str k)]
+            (when-not (contains? @groups ks)
+              (swap! groups assoc ks (_Group. k []))
+              (swap! order conj ks))
+            (swap! groups update ks (fn [g] (assoc g :Items (conj (:Items g) it)))))
+        )
+      (map (fn [k] (@groups k)) @order)))
+  
+  (defn _escape_json [s]
+    (-> s
       (clojure.string/replace "\\" "\\\\")
       (clojure.string/replace "\"" "\\\"")))
-
-(defn _to_json [v]
-  (cond
-    (nil? v) "null"
-    (string? v) (str "\"" (_escape_json v) "\"")
-    (number? v) (str v)
-    (boolean? v) (str v)
-    (sequential? v) (str "[" (clojure.string/join "," (map _to_json v)) "]")
-    (map? v) (str "{" (clojure.string/join "," (map (fn [[k val]]
-                                        (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
-    :else (str "\"" (_escape_json (str v)) "\"")))
-
-(defn _json [v]
-  (println (_to_json v)))
-
-(defn _query [src joins opts]
-  (let [items (atom (mapv vector src))]
-    (doseq [j joins]
-      (let [joined (atom [])]
-        (cond
-          (and (:right j) (:left j))
+  
+  (defn _to_json [v]
+    (cond
+      (nil? v) "null"
+      (string? v) (str "\"" (_escape_json v) "\"")
+      (number? v) (str v)
+      (boolean? v) (str v)
+      (sequential? v) (str "[" (clojure.string/join "," (map _to_json v)) "]")
+      (map? v) (str "{" (clojure.string/join "," (map (fn [[k val]]
+                (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
+      :else (str "\"" (_escape_json (str v)) "\"")))
+  
+  (defn _json [v]
+    (println (_to_json v)))
+  
+  (defn _query [src joins opts]
+    (let [items (atom (mapv vector src))]
+      (doseq [j joins]
+        (let [joined (atom [])]
+          (cond
+            (and (:right j) (:left j))
             (let [matched (boolean-array (count (:items j)))]
               (doseq [left @items]
                 (let [m (atom false)]
                   (doseq [[ri right] (map-indexed vector (:items j))]
                     (let [keep (if-let [f (:on j)]
-                                 (apply f (conj left right))
-                                 true)]
+                          (apply f (conj left right))
+                          true)]
                       (when keep
                         (reset! m true)
                         (aset matched ri true)
                         (swap! joined conj (conj left right))))
-                  (when-not @m
-                    (swap! joined conj (conj left nil))))
-              (doseq [[ri right] (map-indexed vector (:items j))]
-                (when-not (aget matched ri)
-                  (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
-            (reset! items @joined)
-          (:right j)
-            (do
-              (doseq [right (:items j)]
-                (let [m (atom false)]
-                  (doseq [left @items]
-                    (let [keep (if-let [f (:on j)]
-                                 (apply f (conj left right))
-                                 true)]
-                      (when keep
-                        (reset! m true)
-                        (swap! joined conj (conj left right))))
-                  (when-not @m
-                    (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
-              (reset! items @joined))
-          :else
-            (do
-              (doseq [left @items]
-                (let [m (atom false)]
-                  (doseq [right (:items j)]
-                    (let [keep (if-let [f (:on j)]
-                                 (apply f (conj left right))
-                                 true)]
-                      (when keep
-                        (reset! m true)
-                        (swap! joined conj (conj left right))))
-                  (when (and (:left j) (not @m))
-                    (swap! joined conj (conj left nil))))
-              (reset! items @joined))))
-    (let [it @items
-          it (if-let [w (:where opts)] (vec (filter #(apply w %) it)) it)
-          it (if-let [sk (:sortKey opts)] (vec (sort-by #(apply sk %) it)) it)
-          it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
-          it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) %) it)))
-(defn test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus []
-  (assert (= result [{:returnflag "N" :linestatus "O" :sum_qty 53 :sum_base_price 3000 :sum_disc_price (+ 950.0 1800.0) :sum_charge (+ (* 950.0 1.07) (* 1800.0 1.05)) :avg_qty 26.5 :avg_price 1500 :avg_disc 0.07500000000000001 :count_order 2}]) "expect failed")
-)
-
-(defn -main []
-  (def lineitem [{:l_quantity 17 :l_extendedprice 1000.0 :l_discount 0.05 :l_tax 0.07 :l_returnflag "N" :l_linestatus "O" :l_shipdate "1998-08-01"} {:l_quantity 36 :l_extendedprice 2000.0 :l_discount 0.1 :l_tax 0.05 :l_returnflag "N" :l_linestatus "O" :l_shipdate "1998-09-01"} {:l_quantity 25 :l_extendedprice 1500.0 :l_discount 0.0 :l_tax 0.08 :l_returnflag "R" :l_linestatus "F" :l_shipdate "1998-09-03"}])
-  (def result (let [_src lineitem
-      _rows (_query _src [
-
-      ] { :select (fn [row] [row]) :where (fn [row] (<= (:l_shipdate row) "1998-09-02")) })
-      _groups (_group_by _rows (fn [row] {:returnflag (:l_returnflag row) :linestatus (:l_linestatus row)}))
-  (vec (map (fn [g] {:returnflag (:returnflag (:key g)) :linestatus (:linestatus (:key g)) :sum_qty (_sum (vec (->> (for [x g] (:l_quantity x))))) :sum_base_price (_sum (vec (->> (for [x g] (:l_extendedprice x))))) :sum_disc_price (_sum (vec (->> (for [x g] (* (:l_extendedprice x) (- 1 (:l_discount x))))))) :sum_charge (_sum (vec (->> (for [x g] (* (* (:l_extendedprice x) (- 1 (:l_discount x))) (+ 1 (:l_tax x))))))) :avg_qty (_avg (vec (->> (for [x g] (:l_quantity x))))) :avg_price (_avg (vec (->> (for [x g] (:l_extendedprice x))))) :avg_disc (_avg (vec (->> (for [x g] (:l_discount x))))) :count_order (_count g)}) _groups))))
-  (_json result)
-  (test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus)
-)
-
-(-main)
+                    (when-not @m
+                      (swap! joined conj (conj left nil))))
+                  (doseq [[ri right] (map-indexed vector (:items j))]
+                    (when-not (aget matched ri)
+                      (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
+                  (reset! items @joined)
+                  (:right j)
+                  (do
+                    (doseq [right (:items j)]
+                      (let [m (atom false)]
+                        (doseq [left @items]
+                          (let [keep (if-let [f (:on j)]
+                                (apply f (conj left right))
+                                true)]
+                            (when keep
+                              (reset! m true)
+                              (swap! joined conj (conj left right))))
+                          (when-not @m
+                            (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right])))))
+                        (reset! items @joined))
+                      :else
+                      (do
+                        (doseq [left @items]
+                          (let [m (atom false)]
+                            (doseq [right (:items j)]
+                              (let [keep (if-let [f (:on j)]
+                                    (apply f (conj left right))
+                                    true)]
+                                (when keep
+                                  (reset! m true)
+                                  (swap! joined conj (conj left right))))
+                              (when (and (:left j) (not @m))
+                                (swap! joined conj (conj left nil))))
+                            (reset! items @joined))))
+                      (let [it @items
+                          it (if-let [w (:where opts)] (vec (filter #(apply w %) it)) it)
+                          it (if-let [sk (:sortKey opts)] (vec (sort-by #(apply sk %) it)) it)
+                          it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
+                          it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
+                        (mapv #(apply (:select opts) %) it)))
+                    (defn test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus []
+                      (assert (= result [{:returnflag "N" :linestatus "O" :sum_qty 53 :sum_base_price 3000 :sum_disc_price (+ 950.0 1800.0) :sum_charge (+ (* 950.0 1.07) (* 1800.0 1.05)) :avg_qty 26.5 :avg_price 1500 :avg_disc 0.07500000000000001 :count_order 2}]) "expect failed")
+                    )
+                  
+                  (defn -main []
+                    (def lineitem [{:l_quantity 17 :l_extendedprice 1000.0 :l_discount 0.05 :l_tax 0.07 :l_returnflag "N" :l_linestatus "O" :l_shipdate "1998-08-01"} {:l_quantity 36 :l_extendedprice 2000.0 :l_discount 0.1 :l_tax 0.05 :l_returnflag "N" :l_linestatus "O" :l_shipdate "1998-09-01"} {:l_quantity 25 :l_extendedprice 1500.0 :l_discount 0.0 :l_tax 0.08 :l_returnflag "R" :l_linestatus "F" :l_shipdate "1998-09-03"}])
+                    (def result (let [_src lineitem
+                          _rows (_query _src [
+                              
+                            ] { :select (fn [row] [row]) :where (fn [row] (<= (:l_shipdate row) "1998-09-02")) })
+                        _groups (_group_by _rows (fn [row] {:returnflag (:l_returnflag row) :linestatus (:l_linestatus row)}))
+                        (vec (map (fn [g] {:returnflag (:returnflag (:key g)) :linestatus (:linestatus (:key g)) :sum_qty (_sum (vec (->> (for [x g] (:l_quantity x))))) :sum_base_price (_sum (vec (->> (for [x g] (:l_extendedprice x))))) :sum_disc_price (_sum (vec (->> (for [x g] (* (:l_extendedprice x) (- 1 (:l_discount x))))))) :sum_charge (_sum (vec (->> (for [x g] (* (* (:l_extendedprice x) (- 1 (:l_discount x))) (+ 1 (:l_tax x))))))) :avg_qty (_avg (vec (->> (for [x g] (:l_quantity x))))) :avg_price (_avg (vec (->> (for [x g] (:l_extendedprice x))))) :avg_disc (_avg (vec (->> (for [x g] (:l_discount x))))) :count_order (_count g)}) _groups))))
+                    (_json result)
+                    (test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus)
+                  )
+                
+                (-main)

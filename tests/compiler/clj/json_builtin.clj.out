@@ -1,9 +1,12 @@
+;; Original Source
+; json({"a": 1})
+
 (ns main)
 
 (defn _escape_json [s]
   (-> s
-      (clojure.string/replace "\\" "\\\\")
-      (clojure.string/replace "\"" "\\\"")))
+    (clojure.string/replace "\\" "\\\\")
+    (clojure.string/replace "\"" "\\\"")))
 
 (defn _to_json [v]
   (cond
@@ -13,7 +16,7 @@
     (boolean? v) (str v)
     (sequential? v) (str "[" (clojure.string/join "," (map _to_json v)) "]")
     (map? v) (str "{" (clojure.string/join "," (map (fn [[k val]]
-                                        (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
+              (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
     :else (str "\"" (_escape_json (str v)) "\"")))
 
 (defn _json [v]

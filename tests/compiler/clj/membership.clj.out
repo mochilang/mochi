@@ -1,3 +1,7 @@
+;; Original Source
+; print(2 in [1,2,3])
+; print("b" in ["a","b"])
+
 (ns main)
 
 (defn _in [item col]

@@ -1,3 +1,7 @@
+;; Original Source
+; print("cat" in "catch")
+; print("dog" in "catch")
+
 (ns main)
 
 (defn _in [item col]

@@ -1,3 +1,6 @@
+;; Original Source
+; print("hello"[1:4])
+
 (ns main)
 
 (defn -main []
