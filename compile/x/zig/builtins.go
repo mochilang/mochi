@@ -182,6 +182,25 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsFetch {
+		c.writeln("fn _fetch(url: []const u8, opts: anytype) []const u8 {")
+		c.indent++
+		c.writeln("_ = opts;")
+		c.writeln("const alloc = std.heap.page_allocator;")
+		c.writeln("if (std.mem.startsWith(u8, url, \"file://\")) {")
+		c.indent++
+		c.writeln("return std.fs.cwd().readFileAlloc(alloc, url[7..], 1 << 20) catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("var child = std.ChildProcess.init(&.{\"curl\", \"-s\", url}, alloc);")
+		c.writeln("child.stdout_behavior = .Pipe;")
+		c.writeln("child.spawn() catch unreachable;")
+		c.writeln("defer { if (child.stdout) |s| { s.close(); } child.wait() catch unreachable; }")
+		c.writeln("return child.stdout.?.readToEndAlloc(alloc, 1 << 20) catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsIndex {
 		c.writeln("fn _index_list(comptime T: type, v: []const T, i: i32) T {")
 		c.indent++

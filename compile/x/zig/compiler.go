@@ -38,6 +38,7 @@ type Compiler struct {
 	needsMapValues    bool
 	needsLoadJSON     bool
 	needsSaveJSON     bool
+	needsFetch        bool
 	needsExpect       bool
 	tests             []string
 }
@@ -1077,6 +1078,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Query != nil:
@@ -1389,6 +1392,23 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.needsSaveJSON = true
 	return fmt.Sprintf("_save_json(%s, %s)", src, path), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	url, err := c.compileExpr(f.URL, false)
+	if err != nil {
+		return "", err
+	}
+	opts := "null"
+	if f.With != nil {
+		v, err := c.compileExpr(f.With, false)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.needsFetch = true
+	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
 }
 
 func isListLiteralExpr(e *parser.Expr) bool {
