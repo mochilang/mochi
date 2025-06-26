@@ -1,0 +1,2 @@
+let rows = load "tests/compiler/ocaml/people.json" as map<string, any> with { format: "json" }
+save rows with { format: "json" }
