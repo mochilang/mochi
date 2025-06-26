@@ -1,0 +1,19 @@
+open System
+
+type Tree =
+    | Leaf
+    | Node of left: Tree * value: int * right: Tree
+
+exception Return_isLeaf of bool
+let rec isLeaf (t: Tree) : bool =
+    try
+        let mutable t = t
+        raise (Return_isLeaf ((match t with | Leaf -> true | _ -> false)))
+        failwith "unreachable"
+    with Return_isLeaf v -> v
+
+type Tree =
+    | Leaf
+    | Node of left: Tree * value: int * right: Tree
+ignore (printfn "%A" (isLeaf Leaf))
+ignore (printfn "%A" (isLeaf (Node(Leaf, 1, Leaf))))

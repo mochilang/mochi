@@ -18,8 +18,14 @@ let _group_by (src: 'T list) (keyfn: 'T -> obj) : _Group<'T> list =
       order.Add(ks)
     g.Items.Add(it)
   [ for ks in order -> groups[ks] ]
+let inline sum (xs: seq< ^T >) : ^T =
+  Seq.sum xs
+let inline avg (xs: seq< ^T >) : ^T =
+  Seq.average xs
+let count (xs: seq<'T>) : int =
+  Seq.length xs
 
 let xs = [|1; 1; 2|]
-let groups = _group_by xs (fun x -> x) |> List.map (fun g -> Map.ofList [(k, g.key); (c, g.Length)])
+let groups = _group_by xs (fun x -> x) |> List.map (fun g -> Map.ofList [(k, g.key); (c, count g)])
 for g in groups do
     ignore (printfn "%A" (g.k, g.c))

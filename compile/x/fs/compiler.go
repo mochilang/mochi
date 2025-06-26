@@ -566,8 +566,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			c.locals[name] = true
 		}
 		if c.env != nil {
-			typ := types.ResolveTypeRef(s.Var.Type, c.env)
-			if s.Var.Type == nil {
+			var typ types.Type
+			if s.Var.Type != nil {
+				typ = types.ResolveTypeRef(s.Var.Type, c.env)
+			} else {
 				typ = types.TypeOfExpr(s.Var.Value, c.env)
 			}
 			c.env.SetVar(s.Var.Name, typ, true)
@@ -750,6 +752,8 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	srcExpr := src
 	if c.isMapExpr(f.Source) {
 		srcExpr = fmt.Sprintf("Map.keys %s", src)
+	} else if c.isGroupExpr(f.Source) {
+		srcExpr = fmt.Sprintf("%s.Items", src)
 	}
 	c.writeln(fmt.Sprintf("for %s in %s do", loopVar, srcExpr))
 	c.indent++
@@ -883,6 +887,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if c.isGroupExpr(q.Source) {
+		src += ".Items"
+	}
 
 	// simple grouping without joins or filters
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
@@ -926,9 +933,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if c.isGroupExpr(f.Src) {
+			fs += ".Items"
+		}
 		fromSrc[i] = fs
 		if lt, ok := types.TypeOfExpr(f.Src, c.env).(types.ListType); ok {
 			child.SetVar(f.Var, lt.Elem, true)
+		} else if gt, ok := types.TypeOfExpr(f.Src, c.env).(types.GroupType); ok {
+			child.SetVar(f.Var, gt.Elem, true)
 		} else {
 			child.SetVar(f.Var, types.AnyType{}, true)
 		}
@@ -939,9 +951,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if c.isGroupExpr(j.Src) {
+			js += ".Items"
+		}
 		joinSrc[i] = js
 		if lt, ok := types.TypeOfExpr(j.Src, c.env).(types.ListType); ok {
 			child.SetVar(j.Var, lt.Elem, true)
+		} else if gt, ok := types.TypeOfExpr(j.Src, c.env).(types.GroupType); ok {
+			child.SetVar(j.Var, gt.Elem, true)
 		} else {
 			child.SetVar(j.Var, types.AnyType{}, true)
 		}
@@ -1464,6 +1481,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		args[i] = v
 	}
+	if _, ok := c.env.GetFunc(call.Func); ok {
+		for i, a := range args {
+			if !isSimpleIdent(a) {
+				args[i] = "(" + a + ")"
+			}
+		}
+		return fmt.Sprintf("%s %s", sanitizeName(call.Func), strings.Join(args, " ")), nil
+	}
+
 	switch call.Func {
 	case "str":
 		if len(args) != 1 {
@@ -1482,12 +1508,23 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
 		}
-		return fmt.Sprintf("%s.Length", args[0]), nil
+		if c.isGroupExpr(call.Args[0]) {
+			return fmt.Sprintf("%s.size", args[0]), nil
+		}
+		c.use("_seq_helpers")
+		return fmt.Sprintf("count %s", args[0]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		c.use("_seq_helpers")
+		return fmt.Sprintf("sum %s", args[0]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		return fmt.Sprintf("((Array.sum %s) / %s.Length)", args[0], args[0]), nil
+		c.use("_seq_helpers")
+		return fmt.Sprintf("avg %s", args[0]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")
