@@ -1241,18 +1241,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					}
 					parts = append(parts, fmt.Sprintf("%s: %s", sanitizeName(f.Name), v))
 				}
-				return "{" + strings.Join(parts, ", ") + "}", nil
+				inner := strings.Join(parts, ", ")
+				return "{" + inner + "}", nil
 			}
 		}
 		parts := make([]string, len(p.Struct.Fields))
+		multiline := len(p.Struct.Fields) > 1
 		for i, f := range p.Struct.Fields {
 			v, err := c.compileExpr(f.Value)
 			if err != nil {
 				return "", err
 			}
+			if strings.Contains(v, "\n") {
+				multiline = true
+			}
 			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f.Name), v)
 		}
-		return "{" + strings.Join(parts, ", ") + "}", nil
+		if !multiline {
+			return "{" + strings.Join(parts, ", ") + "}", nil
+		}
+		inner := indentBlock(strings.Join(parts, ",\n"), c.indent+1)
+		return "{\n" + inner + strings.Repeat("\t", c.indent) + "}", nil
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	default:
@@ -1402,18 +1411,27 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 
 func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 	elems := make([]string, len(l.Elems))
+	multiline := len(l.Elems) > 1
 	for i, e := range l.Elems {
 		v, err := c.compileExpr(e)
 		if err != nil {
 			return "", err
 		}
+		if strings.Contains(v, "\n") {
+			multiline = true
+		}
 		elems[i] = v
 	}
-	return "[" + strings.Join(elems, ", ") + "]", nil
+	if !multiline {
+		return "[" + strings.Join(elems, ", ") + "]", nil
+	}
+	inner := indentBlock(strings.Join(elems, ",\n"), c.indent+1)
+	return "[\n" + inner + strings.Repeat("\t", c.indent) + "]", nil
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
+	multiline := len(m.Items) > 1
 	for i, it := range m.Items {
 		var k string
 		if s, ok := simpleStringKey(it.Key); ok {
@@ -1430,9 +1448,16 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if strings.Contains(v, "\n") {
+			multiline = true
+		}
 		items[i] = fmt.Sprintf("%s: %s", k, v)
 	}
-	return "{" + strings.Join(items, ", ") + "}", nil
+	if !multiline {
+		return "{" + strings.Join(items, ", ") + "}", nil
+	}
+	inner := indentBlock(strings.Join(items, ",\n"), c.indent+1)
+	return "{\n" + inner + strings.Repeat("\t", c.indent) + "}", nil
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
