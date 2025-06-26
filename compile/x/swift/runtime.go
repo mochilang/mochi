@@ -57,6 +57,17 @@ func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
     return String(chars[start..<end])
         }
 `
+	helperSum = `func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum
+}
+`
 	helperUnionAll = `func _union_all<T>(_ a: [T], _ b: [T]) -> [T] {
     var res = a
     res.append(contentsOf: b)
@@ -208,6 +219,7 @@ func _save(_ rows: [[String: Any]], _ path: String?, _ opts: [String: Any]?) {
 
 var helperMap = map[string]string{
 	"_avg":         helperAvg,
+	"_sum":         helperSum,
 	"_indexString": helperIndexString,
 	"_index":       helperIndex,
 	"_slice":       helperSlice,

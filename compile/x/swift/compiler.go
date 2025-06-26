@@ -851,6 +851,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			c.use("_avg")
 			return fmt.Sprintf("_avg(%s.map { Double($0) })", args[0]), nil
+		case "sum":
+			if len(args) != 1 {
+				return "", fmt.Errorf("sum expects 1 arg")
+			}
+			c.use("_sum")
+			return fmt.Sprintf("_sum(%s.map { Double($0) })", args[0]), nil
 		case "now":
 			if len(args) != 0 {
 				return "", fmt.Errorf("now expects 0 args")
