@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -215,12 +216,14 @@ func TestGoCompiler_TPCHQ1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("go run error: %v\n%s", err, out)
 	}
-	gotOut := bytes.TrimSpace(out)
+	gotOut := normalizeOutput(root, bytes.TrimSpace(out))
+
 	outWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", "q1.out")
 	wantOut, err := os.ReadFile(outWantPath)
 	if err != nil {
 		t.Fatalf("read golden: %v", err)
 	}
+	wantOut = normalizeOutput(root, wantOut)
 	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
 		t.Errorf("output mismatch for q1.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotOut, bytes.TrimSpace(wantOut))
 	}
@@ -243,4 +246,15 @@ func findRepoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found (not in Go module)")
 	return ""
+}
+
+func normalizeOutput(root string, b []byte) []byte {
+	out := string(b)
+	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+	out = durRE.ReplaceAllString(out, "(X)")
+	return []byte(strings.TrimSpace(out))
 }

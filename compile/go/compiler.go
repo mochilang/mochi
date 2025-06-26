@@ -3,6 +3,7 @@ package gocode
 import (
 	"bytes"
 	"fmt"
+	"go/format"
 	"sort"
 	"strconv"
 	"strings"
@@ -100,7 +101,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeImports()
 	c.buf.Write(bodyBytes)
 
-	return c.buf.Bytes(), nil
+	formatted, err := format.Source(c.buf.Bytes())
+	if err == nil {
+		return formatted, nil
+	}
+	return c.buf.Bytes(), err
 }
 
 func (c *Compiler) writeImports() {

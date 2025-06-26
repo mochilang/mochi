@@ -4,25 +4,28 @@ import (
 	"fmt"
 )
 
-type Tree interface { isTree() }
+type Tree interface{ isTree() }
 type Leaf struct {
 }
+
 func (Leaf) isTree() {}
+
 type Node struct {
-	Left Tree `json:"left"`
-	Value int `json:"value"`
+	Left  Tree `json:"left"`
+	Value int  `json:"value"`
 	Right Tree `json:"right"`
 }
+
 func (Node) isTree() {}
 
 func isLeaf(t Tree) bool {
 	return func() bool {
-	_t := t
-	if _, ok := _t.(Leaf); ok {
-		return true
-	}
-	return false
-}()
+		_t := t
+		if _, ok := _t.(Leaf); ok {
+			return true
+		}
+		return false
+	}()
 }
 
 func main() {

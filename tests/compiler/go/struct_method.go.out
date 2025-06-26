@@ -7,6 +7,7 @@ import (
 type Counter struct {
 	Value int `json:"value"`
 }
+
 func (s *Counter) Inc(x int) {
 	s.Value = (s.Value + x)
 }
@@ -15,11 +16,9 @@ func (s *Counter) Get() int {
 	return s.Value
 }
 
-
 func main() {
 	var c Counter = Counter{Value: 1}
 	_ = c
 	c.Inc(5)
 	fmt.Println(c.Get())
 }
-

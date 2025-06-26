@@ -7,7 +7,7 @@ import (
 func outer(a int) int {
 	var inner = func(b int) int {
 		return (a + b)
-}
+	}
 	return inner(10)
 }
 

@@ -4,17 +4,20 @@ import (
 	"fmt"
 )
 
-type Foo interface { isFoo() }
+type Foo interface{ isFoo() }
 type Empty struct {
 }
+
 func (Empty) isFoo() {}
+
 type Node struct {
 	Child Foo `json:"child"`
 }
+
 func (Node) isFoo() {}
 
 func listit() []Foo {
-	return _convSlice[Empty,Foo]([]Empty{Empty{}})
+	return _convSlice[Empty, Foo]([]Empty{Empty{}})
 }
 
 func main() {
@@ -22,7 +25,9 @@ func main() {
 }
 
 func _convSlice[T any, U any](s []T) []U {
-    out := make([]U, len(s))
-    for i, v := range s { out[i] = any(v).(U) }
-    return out
+	out := make([]U, len(s))
+	for i, v := range s {
+		out[i] = any(v).(U)
+	}
+	return out
 }
