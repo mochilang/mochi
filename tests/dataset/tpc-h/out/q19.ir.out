@@ -248,7 +248,7 @@ L1:
   Jump         L23
 L0:
   // select sum(l.l_extendedprice * (1 - l.l_discount))
-  Sum          133,4,0,0
+  Sum          r133, r4
   // let result =
   Move         r134, r133
   // print(result)

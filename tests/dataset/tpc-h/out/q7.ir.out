@@ -312,7 +312,7 @@ L21:
   Move         r188, r205
   Jump         L21
 L20:
-  Sum          206,185,0,0
+  Sum          r206, r185
   // supp_nation: g.key.supp_nation,
   Move         r207, r169
   Move         r208, r173

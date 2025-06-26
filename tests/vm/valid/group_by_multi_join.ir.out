@@ -171,7 +171,7 @@ L12:
   Move         r101, r109
   Jump         L12
 L11:
-  Sum          110,98,0,0
+  Sum          r110, r98
   // part: g.key,
   Move         r111, r94
   Move         r112, r96

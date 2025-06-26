@@ -208,7 +208,7 @@ L12:
   Move         r128, r138
   Jump         L12
 L11:
-  Sum          139,125,0,0
+  Sum          r139, r125
   Less         r140, r9, r139
   JumpIfFalse  r140, L10
   // c_name: g.key.c_name,
@@ -252,7 +252,7 @@ L14:
   Move         r155, r171
   Jump         L14
 L13:
-  Sum          172,152,0,0
+  Sum          r172, r152
   // c_acctbal: g.key.c_acctbal,
   Const        r173, "c_acctbal"
   Const        r174, "key"
@@ -337,7 +337,7 @@ L16:
   Move         r218, r234
   Jump         L16
 L15:
-  Sum          235,215,0,0
+  Sum          r235, r215
   Neg          r236, r235
   Move         r237, r236
   // from c in customer

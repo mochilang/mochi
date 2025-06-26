@@ -103,7 +103,7 @@ L7:
   Move         r55, r68
   Jump         L7
 L6:
-  Sum          69,52,0,0
+  Sum          r69, r52
   // supplier_no: g.key,
   Move         r70, r48
   Move         r71, r50
@@ -141,7 +141,7 @@ L10:
   Move         r82, r89
   Jump         L10
 L9:
-  Max          90,79,0,0
+  Max          r90, r79
   Move         r91, r90
   // let result = from s in supplier
   Const        r92, []

@@ -120,7 +120,7 @@ L0:
   // let filtered =
   Move         r64, r8
   // let result = sum(filtered) / 7.0
-  Sum          65,64,0,0
+  Sum          r65, r64
   Const        r66, 7
   DivFloat     r67, r65, r66
   Move         r68, r67
@@ -135,5 +135,4 @@ L0:
   EqualFloat   r73, r68, r72
   Expect       r73
   Return       r0
-
 

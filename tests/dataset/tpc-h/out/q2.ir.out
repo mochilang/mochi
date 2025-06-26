@@ -317,7 +317,7 @@ L22:
 L21:
   Move         r195, r183
   // let min_cost = min(costs)
-  Min          196,195,0,0
+  Min          r196, r195
   Move         r197, r196
   // from x in target_partsupp
   Const        r198, []

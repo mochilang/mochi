@@ -76,7 +76,7 @@ L5:
   Move         r42, r50
   Jump         L5
 L4:
-  Sum          51,39,0,0
+  Sum          r51, r39
   // cat: g.key,
   Move         r52, r35
   Move         r53, r37
@@ -104,7 +104,7 @@ L7:
   Move         r60, r67
   Jump         L7
 L6:
-  Sum          68,57,0,0
+  Sum          r68, r57
   Neg          r69, r68
   Move         r70, r69
   // from i in items

@@ -62,7 +62,7 @@ json(result)
 
 test "Q5 returns revenue per nation in ASIA with local suppliers" {
   expect result == [
-    { n_name: "JAPAN", revenue: 950.0 },
-    { n_name: "INDIA", revenue: 720.0 }
+    { n_name: "JAPAN", revenue: 950 },
+    { n_name: "INDIA", revenue: 720 }
   ]
 }
