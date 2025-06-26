@@ -50,4 +50,10 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - concurrency primitives like `spawn` and channels
 - any other built-ins not listed above
 
+### Limitations for TPC-H queries
+
+The experimental Fortran backend lacks support for map-based records and
+`group by` dataset queries with aggregates. Queries such as `tpc-h/q1.mochi`
+use those features and therefore cannot currently be compiled to Fortran.
+
 While limited, this backend shows how Mochi's AST can target another language and may serve as a basis for more comprehensive Fortran support.
