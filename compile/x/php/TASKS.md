@@ -4,5 +4,7 @@ The PHP backend now supports dataset queries used by `tpc-h/q1.mochi`.
 
 - Implemented `sum` helper alongside `avg` and `count` using PHP arrays.
 - Added support for `group by` with an optional `where` clause.
+- Added `json` helper which prints `json_encode` output.
+- Fixed runtime emission for `_Group` when grouping.
 - Records are represented as associative arrays and output uses `json_encode`.
 - Golden tests live under `tests/compiler/php`.

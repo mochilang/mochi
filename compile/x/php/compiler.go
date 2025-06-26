@@ -733,6 +733,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("input expects no args")
 		}
 		return "trim(fgets(STDIN))", nil
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		return fmt.Sprintf("echo json_encode(%s), PHP_EOL", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
@@ -878,7 +883,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\t}\n")
 		b.WriteString("\treturn $res;\n")
 		b.WriteString("})()")
-		c.use("_Group")
+		c.use("_group")
 		c.use("_group_by")
 		return b.String(), nil
 	}
