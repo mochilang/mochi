@@ -165,9 +165,19 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	header.WriteString("import Data.List (intercalate)\n")
 	header.WriteString("import qualified Data.List as List\n")
 	header.WriteString("import qualified Data.Aeson as Aeson\n")
+	if c.usesLoad || c.usesSave {
+		header.WriteString("import qualified Data.Aeson.KeyMap as KeyMap\n")
+		header.WriteString("import qualified Data.Aeson.Key as Key\n")
+		header.WriteString("import qualified Data.Vector as V\n")
+		header.WriteString("import qualified Data.Text as T\n")
+	}
 	header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	header.WriteString("\n")
-	header.WriteString(runtime)
+	if c.usesLoad || c.usesSave {
+		header.WriteString(loadRuntime)
+	} else {
+		header.WriteString(runtime)
+	}
 	if c.usesExpect {
 		header.WriteString(expectHelper)
 	}
