@@ -1,0 +1,14 @@
+let items = [
+  { qty: 3, flag: "A" },
+  { qty: 5, flag: "A" },
+  { qty: 1, flag: "B" }
+]
+let res =
+  from it in items
+  where it.qty > 2
+  group by it.flag into g
+  select {
+    flag: g.key,
+    total: sum(from x in g select x.qty)
+  }
+json(res)

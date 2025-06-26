@@ -1,5 +1,5 @@
 <?php
-function foo($n) {
+function mochi_foo($n) {
 	if (($n < 0)) {
 		return -1;
 	} else 
@@ -10,6 +10,6 @@ function foo($n) {
 	}
 }
 
-echo foo(-2), PHP_EOL;
-echo foo(0), PHP_EOL;
-echo foo(3), PHP_EOL;
+echo mochi_foo(-2), PHP_EOL;
+echo mochi_foo(0), PHP_EOL;
+echo mochi_foo(3), PHP_EOL;

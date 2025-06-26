@@ -1,7 +1,8 @@
 <?php
 $xs = [1, 1, 2];
 $groups = (function() use ($xs) {
-	$_groups = _group_by($xs, function($x) use ($xs) { return $x; });
+	$_src = (is_string($xs) ? str_split($xs) : $xs);
+	$_groups = _group_by($_src, function($x) use ($xs) { return $x; });
 	$res = [];
 	foreach ($_groups as $g) {
 		$res[] = ["k" => $g->key, "c" => (is_array($g) ? count($g) : strlen($g))];
