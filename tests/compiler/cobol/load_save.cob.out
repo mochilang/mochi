@@ -6,5 +6,5 @@ WORKING-STORAGE SECTION.
 01 PEOPLE OCCURS 0 TIMES PIC 9.
 PROCEDURE DIVISION.
     *> load not implemented
-*> save not implemented
+*> save json not implemented
     STOP RUN.
