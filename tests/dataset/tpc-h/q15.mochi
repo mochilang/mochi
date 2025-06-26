@@ -47,8 +47,9 @@ let revenue0 =
     total_revenue: sum(from x in g select x.l_extendedprice * (1 - x.l_discount))
   }
 
-// find max revenue
-let max_revenue = max(from x in revenue0 select x.total_revenue)
+// collect all supplier revenues then find the max
+let revenues = from x in revenue0 select x.total_revenue
+let max_revenue = max(revenues)
 
 // join with supplier and filter by max revenue
 let result = from s in supplier
