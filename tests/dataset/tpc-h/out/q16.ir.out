@@ -40,28 +40,27 @@ L5:
   Index        r25, r18, r24
   Const        r26, "Brand#12"
   Equal        r27, r25, r26
-  Move         r28, r27
-  JumpIfFalse  r28, L3
-  Const        r29, "p_type"
-  Index        r30, r18, r29
-  // p.p_type.contains("SMALL") &&
-  Const        r31, "SMALL"
-  In           r32, r31, r30
+  // p.p_size == 5
+  Const        r28, "p_size"
+  Index        r29, r18, r28
+  Const        r30, 5
+  Equal        r31, r29, r30
   // p.p_brand == "Brand#12" &&
-  Move         r28, r32
+  Move         r32, r27
+  JumpIfFalse  r32, L3
+  Const        r33, "p_type"
+  Index        r34, r18, r33
+  // p.p_type.contains("SMALL") &&
+  Const        r35, "SMALL"
+  In           r36, r35, r34
+  // p.p_brand == "Brand#12" &&
+  Move         r32, r36
 L3:
   // p.p_type.contains("SMALL") &&
-  Move         r33, r28
-  JumpIfFalse  r33, L4
-  // p.p_size == 5
-  Const        r34, "p_size"
-  Index        r35, r18, r34
-  // p.p_type.contains("SMALL") &&
-  Move         r33, r35
+  Move         r37, r32
+  JumpIfFalse  r37, L4
+  Move         r37, r31
 L4:
-  // p.p_size == 5
-  Const        r36, 5
-  Equal        r37, r33, r36
   // p.p_brand == "Brand#12" &&
   JumpIfFalse  r37, L2
   // select ps.ps_suppkey

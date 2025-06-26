@@ -82,15 +82,15 @@ L13:
   Const        r57, "l_partkey"
   Index        r58, r26, r57
   Equal        r59, r56, r58
-  Move         r60, r59
-  JumpIfFalse  r60, L4
-  Const        r61, "ps_suppkey"
-  Index        r62, r54, r61
-  Move         r60, r62
+  Const        r60, "ps_suppkey"
+  Index        r61, r54, r60
+  Const        r62, "l_suppkey"
+  Index        r63, r26, r62
+  Equal        r64, r61, r63
+  Move         r65, r59
+  JumpIfFalse  r65, L4
+  Move         r65, r64
 L4:
-  Const        r63, "l_suppkey"
-  Index        r64, r26, r63
-  Equal        r65, r60, r64
   JumpIfFalse  r65, L5
   // join o in orders on o.o_orderkey == l.l_orderkey
   IterPrep     r66, r9
@@ -128,24 +128,24 @@ L11:
   Const        r90, 0
   Const        r91, 5
   Slice        r92, r89, r90, r91
-  Equal        r93, r92, r13
-  Move         r94, r93
-  JumpIfFalse  r94, L8
   // o.o_orderdate >= start_date && o.o_orderdate <= end_date
-  Const        r95, "o_orderdate"
-  Index        r96, r71, r95
+  Const        r93, "o_orderdate"
+  Index        r94, r71, r93
+  LessEq       r95, r15, r94
+  Const        r96, "o_orderdate"
+  Index        r97, r71, r96
+  LessEq       r98, r97, r17
   // where substring(p.p_name, 0, len(prefix)) == prefix &&
-  Move         r94, r96
+  Equal        r99, r92, r13
+  Move         r100, r99
+  JumpIfFalse  r100, L8
+  Move         r100, r95
 L8:
   // o.o_orderdate >= start_date && o.o_orderdate <= end_date
-  LessEq       r97, r15, r94
-  Move         r98, r97
-  JumpIfFalse  r98, L9
-  Const        r99, "o_orderdate"
-  Index        r100, r71, r99
-  Move         r98, r100
+  Move         r101, r100
+  JumpIfFalse  r101, L9
+  Move         r101, r98
 L9:
-  LessEq       r101, r98, r17
   // where substring(p.p_name, 0, len(prefix)) == prefix &&
   JumpIfFalse  r101, L7
   // from l in lineitem

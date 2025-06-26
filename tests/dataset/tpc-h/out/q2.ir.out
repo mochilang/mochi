@@ -133,14 +133,14 @@ L13:
   Index        r76, r74, r75
   Const        r77, 15
   Equal        r78, r76, r77
-  Move         r79, r78
-  JumpIfFalse  r79, L11
-  Const        r80, "p_type"
-  Index        r81, r74, r80
-  Move         r79, r81
+  Const        r79, "p_type"
+  Index        r80, r74, r79
+  Const        r81, "LARGE BRASS"
+  Equal        r82, r80, r81
+  Move         r83, r78
+  JumpIfFalse  r83, L11
+  Move         r83, r82
 L11:
-  Const        r82, "LARGE BRASS"
-  Equal        r83, r79, r82
   JumpIfFalse  r83, L12
   // from p in part
   Append       r84, r68, r74

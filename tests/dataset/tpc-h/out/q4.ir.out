@@ -25,13 +25,13 @@ L3:
   Const        r15, "o_orderdate"
   Index        r16, r14, r15
   LessEq       r17, r5, r16
-  Move         r18, r17
-  JumpIfFalse  r18, L1
-  Const        r19, "o_orderdate"
-  Index        r20, r14, r19
-  Move         r18, r20
+  Const        r18, "o_orderdate"
+  Index        r19, r14, r18
+  Less         r20, r19, r7
+  Move         r21, r17
+  JumpIfFalse  r21, L1
+  Move         r21, r20
 L1:
-  Less         r21, r18, r7
   JumpIfFalse  r21, L2
   // from o in orders
   Append       r22, r8, r14
@@ -67,18 +67,18 @@ L8:
   // where l.l_orderkey == o.o_orderkey && l.l_commitdate < l.l_receiptdate
   Const        r39, "l_orderkey"
   Index        r40, r38, r39
-  Const        r41, "o_orderkey"
-  Index        r42, r14, r41
-  Equal        r43, r40, r42
-  Move         r44, r43
-  JumpIfFalse  r44, L6
-  Const        r45, "l_commitdate"
-  Index        r46, r38, r45
-  Move         r44, r46
+  Const        r41, "l_commitdate"
+  Index        r42, r38, r41
+  Const        r43, "l_receiptdate"
+  Index        r44, r38, r43
+  Less         r45, r42, r44
+  Const        r46, "o_orderkey"
+  Index        r47, r14, r46
+  Equal        r48, r40, r47
+  Move         r49, r48
+  JumpIfFalse  r49, L6
+  Move         r49, r45
 L6:
-  Const        r47, "l_receiptdate"
-  Index        r48, r38, r47
-  Less         r49, r44, r48
   JumpIfFalse  r49, L7
   // from l in lineitem
   Append       r50, r32, r38
