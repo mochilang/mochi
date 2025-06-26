@@ -39,6 +39,7 @@ type Compiler struct {
 	needsLoadJSON     bool
 	needsSaveJSON     bool
 	needsFetch        bool
+	needsFetchJSON    bool
 	needsExpect       bool
 	tests             []string
 }
@@ -335,11 +336,19 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		}
 		val := "0"
 		if s.Let.Value != nil {
-			v, err := c.compileExpr(s.Let.Value, false)
-			if err != nil {
-				return err
+			if f := fetchExprOnly(s.Let.Value); f != nil && typ != (types.AnyType{}) {
+				v, err := c.compileFetchExprTyped(f, typ)
+				if err != nil {
+					return err
+				}
+				val = v
+			} else {
+				v, err := c.compileExpr(s.Let.Value, false)
+				if err != nil {
+					return err
+				}
+				val = v
 			}
-			val = v
 		}
 		c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), val))
 		return nil
@@ -958,6 +967,12 @@ func (c *Compiler) compileUnary(u *parser.Unary, asReturn bool) (string, error) 
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string, error) {
+	// typed fetch expression like `fetch url as T`
+	if p.Target.Fetch != nil && len(p.Ops) == 1 && p.Ops[0].Cast != nil {
+		typ := c.resolveTypeRef(p.Ops[0].Cast.Type)
+		return c.compileFetchExprTyped(p.Target.Fetch, typ)
+	}
+
 	expr, err := c.compilePrimary(p.Target, asReturn)
 	if err != nil {
 		return "", err
@@ -1411,6 +1426,24 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	return fmt.Sprintf("_fetch(%s, %s)", url, opts), nil
 }
 
+func (c *Compiler) compileFetchExprTyped(f *parser.FetchExpr, typ types.Type) (string, error) {
+	url, err := c.compileExpr(f.URL, false)
+	if err != nil {
+		return "", err
+	}
+	opts := "null"
+	if f.With != nil {
+		v, err := c.compileExpr(f.With, false)
+		if err != nil {
+			return "", err
+		}
+		opts = v
+	}
+	c.needsFetch = true
+	c.needsFetchJSON = true
+	return fmt.Sprintf("_fetch_json(%s, %s, %s)", zigTypeOf(typ), url, opts), nil
+}
+
 func isListLiteralExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return false
@@ -1475,6 +1508,20 @@ func isEmptyMapExpr(e *parser.Expr) bool {
 	}
 	ml := e.Binary.Left.Value.Target.Map
 	return len(ml.Items) == 0
+}
+
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Fetch
 }
 
 func isSelfAppend(st *parser.AssignStmt) (*parser.Expr, bool) {

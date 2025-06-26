@@ -201,6 +201,15 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsFetchJSON {
+		c.writeln("fn _fetch_json(comptime T: type, url: []const u8, opts: anytype) T {")
+		c.indent++
+		c.writeln("const data = _fetch(url, opts);")
+		c.writeln("return std.json.parseFromSlice(T, std.heap.page_allocator, data, .{}).value;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsIndex {
 		c.writeln("fn _index_list(comptime T: type, v: []const T, i: i32) T {")
 		c.indent++
