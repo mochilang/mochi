@@ -1,0 +1,8 @@
+type Person {
+  name: string
+  age: int
+  email: string
+}
+
+let people = load "../tests/interpreter/valid/people.json" as Person with { format: "json" }
+print(count(people))
