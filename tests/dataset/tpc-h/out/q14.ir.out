@@ -1,4 +1,4 @@
-func main (regs=104)
+func main (regs=103)
   // let part = [
   Const        r0, [{"p_partkey": 1, "p_type": "PROMO LUXURY"}, {"p_partkey": 2, "p_type": "STANDARD BRASS"}]
   Move         r1, r0
@@ -142,23 +142,25 @@ L9:
   MulFloat     r87, r86, r72
   DivFloat     r88, r87, r85
   Move         r89, r88
+  // json(result)
+  JSON         r89
   // let promo = 1000.0 * 0.9       // = 900
-  Const        r91, 1000
-  Const        r92, 0.9
-  MulFloat     r93, r91, r92
-  Move         r94, r93
+  Const        r90, 1000
+  Const        r91, 0.9
+  MulFloat     r92, r90, r91
+  Move         r93, r92
   // let total = 900 + 800.0        // = 1700
-  Const        r95, 900
-  Const        r96, 800
-  AddFloat     r97, r95, r96
-  Move         r98, r97
+  Const        r94, 900
+  Const        r95, 800
+  AddFloat     r96, r94, r95
+  Move         r97, r96
   // let expected = 100.0 * promo / total  // ≈ 52.94
-  Const        r99, 100
-  MulFloat     r100, r99, r94
-  DivFloat     r101, r100, r98
-  Move         r102, r101
+  Const        r98, 100
+  MulFloat     r99, r98, r93
+  DivFloat     r100, r99, r97
+  Move         r101, r100
   // expect result == expected
-  EqualFloat   r103, r89, r102
-  Expect       r103
+  EqualFloat   r102, r89, r101
+  Expect       r102
   Return       r0
 

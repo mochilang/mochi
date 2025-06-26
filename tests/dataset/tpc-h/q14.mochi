@@ -41,7 +41,7 @@ let total_sum = sum(from x in filtered select x.revenue)
 
 let result = 100.0 * promo_sum / total_sum
 
-print result
+json(result)
 
 test "Q14 calculates promo revenue percent in 1995-09" {
   let promo = 1000.0 * 0.9       // = 900
