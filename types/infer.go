@@ -278,6 +278,8 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			return StringType{}
 		case "count":
 			return IntType{}
+		case "exists":
+			return BoolType{}
 		case "avg":
 			return FloatType{}
 		case "reduce":

@@ -1,0 +1,11 @@
+func main (regs=4)
+  // print(exists([1,2]))
+  Const        r0, [1, 2]
+  Exists       r1, r0
+  Print        r1
+  // print(exists([]))
+  Const        r2, []
+  Exists       r3, r2
+  Print        r3
+  Return       r0
+
