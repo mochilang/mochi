@@ -59,10 +59,10 @@ let result =
     supp_nation: g.key.supp_nation,
     cust_nation: g.key.cust_nation,
     l_year: g.key.l_year,
-    revenue: sum(from x in g select x.l_extendedprice * (1 - x.l_discount))
+    revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
   }
 
-print result
+print(result)
 
 test "Q7 computes revenue between FRANCE and GERMANY by year" {
   expect result == [

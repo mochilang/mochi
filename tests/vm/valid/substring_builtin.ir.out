@@ -1,0 +1,9 @@
+func main (regs=2)
+  // print(substring("hello", 1, 4))
+  Const        r0, "ell"
+  Print        r0
+  // print(substring("hello", 0, 2))
+  Const        r1, "he"
+  Print        r1
+  Return       r0
+

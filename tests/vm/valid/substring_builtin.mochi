@@ -1,0 +1,2 @@
+print(substring("hello", 1, 4))
+print(substring("hello", 0, 2))
