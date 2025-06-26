@@ -940,7 +940,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	v := sanitizeName(q.Var)
 
-	if q.Group != nil && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
@@ -954,10 +954,49 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		var sortGroup string
+		if q.Sort != nil {
+			sortGroup, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Skip != nil {
+			skipExpr, err = c.compileExpr(q.Skip)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Take != nil {
+			takeExpr, err = c.compileExpr(q.Take)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		c.env = orig
+
+		srcParts := []string{src}
+		if cond != "" {
+			srcParts = append(srcParts, fmt.Sprintf("Where(%s => %s)", v, cond))
+		}
+		filtered := strings.Join(srcParts, ".")
+		expr := fmt.Sprintf("_group_by(%s, %s => %s)", filtered, v, keyExpr)
+		expr = fmt.Sprintf("%s.Select(%s => %s)", expr, sanitizeName(q.Group.Name), valExpr)
+		if sortGroup != "" {
+			expr = fmt.Sprintf("%s.OrderBy(%s => %s)", expr, sanitizeName(q.Group.Name), sortGroup)
+		}
+		if skipExpr != "" {
+			expr = fmt.Sprintf("%s.Skip(%s)", expr, skipExpr)
+		}
+		if takeExpr != "" {
+			expr = fmt.Sprintf("%s.Take(%s)", expr, takeExpr)
+		}
 		c.use("_group_by")
 		c.use("_group")
-		return fmt.Sprintf("_group_by(%s, %s => %s).Select(%s => %s).ToList()", src, v, keyExpr, sanitizeName(q.Group.Name), valExpr), nil
+		return fmt.Sprintf("%s.ToList()", expr), nil
 	}
 
 	// handle cross/join using nested loops when q.Froms or q.Joins are present
