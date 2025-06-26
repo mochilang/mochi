@@ -5,6 +5,8 @@ const (
 
 	helperCount = "defp _count(v) do\n  cond do\n    is_list(v) -> length(v)\n    is_map(v) and Map.has_key?(v, :Items) -> length(v[:Items])\n    true -> raise \"count() expects list or group\"\n  end\nend\n"
 
+	helperSum = "defp _sum(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]\n    is_list(v) -> v\n    true -> raise \"sum() expects list or group\"\n  end\n  Enum.sum(list)\nend\n"
+
 	helperAvg = "defp _avg(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]\n    is_list(v) -> v\n    true -> raise \"avg() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    Enum.sum(list) / Enum.count(list)\n  end\nend\n"
 
 	helperGroup = "defmodule _Group do\n  defstruct key: nil, Items: []\nend\n"
@@ -111,6 +113,7 @@ const (
 var helperMap = map[string]string{
 	"_input":        helperInput,
 	"_count":        helperCount,
+	"_sum":          helperSum,
 	"_avg":          helperAvg,
 	"_group":        helperGroup,
 	"_group_by":     helperGroupBy,

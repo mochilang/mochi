@@ -413,6 +413,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "count":
 			c.use("_count")
 			return fmt.Sprintf("_count(%s)", argStr), nil
+		case "sum":
+			c.use("_sum")
+			return fmt.Sprintf("_sum(%s)", argStr), nil
 		case "avg":
 			c.use("_avg")
 			return fmt.Sprintf("_avg(%s)", argStr), nil
