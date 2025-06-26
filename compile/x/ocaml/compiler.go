@@ -19,6 +19,7 @@ type Compiler struct {
 	tmp     int
 	vars    map[string]bool
 	mapVars map[string]bool
+	structs map[string]bool
 	setNth  bool
 	slice   bool
 	input   bool
@@ -86,6 +87,7 @@ func New(env *types.Env) *Compiler {
 		env:     env,
 		vars:    map[string]bool{},
 		mapVars: map[string]bool{},
+		structs: map[string]bool{},
 		loops:   []loopCtx{},
 	}
 }
@@ -139,6 +141,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		} else if s.Type != nil {
+			if err := c.compileTypeDecl(s.Type); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		} else if s.Test != nil {
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
@@ -147,7 +154,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil {
+		if s.Fun != nil || s.Test != nil || s.Type != nil {
 			continue
 		}
 		if err := c.compileStmt(s, ""); err != nil {
@@ -247,7 +254,7 @@ func (c *Compiler) ensureDataset() {
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	ex := fmt.Sprintf("Return_%d", c.tmp)
 	c.tmp++
-	retTyp := ocamlType(fn.Return)
+	retTyp := c.ocamlType(fn.Return)
 	if retTyp == "" {
 		c.writeln(fmt.Sprintf("exception %s", ex))
 	} else {
@@ -296,6 +303,14 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 	switch {
+	case s.Type != nil:
+		if err := c.compileTypeDecl(s.Type); err != nil {
+			return err
+		}
+		if ex == "" {
+			c.writeln("")
+		}
+		return nil
 	case s.Let != nil:
 		val, err := c.compileExpr(s.Let.Value)
 		if err != nil {
@@ -748,6 +763,10 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	if f := fetchFromPrimary(p.Target); f != nil && len(p.Ops) == 1 && p.Ops[0].Cast != nil {
+		typ := c.resolveTypeRef(p.Ops[0].Cast.Type)
+		return c.compileFetchExprTyped(f, typ)
+	}
 	expr, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -803,7 +822,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		} else if op.Cast != nil {
-			typ := ocamlType(op.Cast.Type)
+			typ := c.ocamlType(op.Cast.Type)
 			if typ == "float" {
 				expr = fmt.Sprintf("(float_of_int %s)", expr)
 			} else if typ != "" {
@@ -968,7 +987,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	out.WriteString("fun ")
 	out.WriteString(strings.Join(params, " "))
 	out.WriteString(" ->\n  let exception ")
-	retTyp := ocamlType(fn.Return)
+	retTyp := c.ocamlType(fn.Return)
 	if retTyp == "" {
 		out.WriteString(ex)
 	} else {
@@ -1138,6 +1157,28 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	return fmt.Sprintf("_fetch %s %s", url, opts), nil
 }
 
+func (c *Compiler) compileFetchExprTyped(f *parser.FetchExpr, typ types.Type) (string, error) {
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	opts := "None"
+	if f.With != nil {
+		o, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		opts = o
+	}
+	st, ok := typ.(types.StructType)
+	if !ok {
+		return "", fmt.Errorf("unsupported fetch type")
+	}
+	c.compileStructType(st)
+	c.ensureFetch()
+	return fmt.Sprintf("decode_%s (_fetch %s %s)", sanitizeName(st.Name), url, opts), nil
+}
+
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
@@ -1292,7 +1333,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
-func ocamlType(t *parser.TypeRef) string {
+func (c *Compiler) ocamlType(t *parser.TypeRef) string {
 	if t == nil {
 		return ""
 	}
@@ -1306,22 +1347,31 @@ func ocamlType(t *parser.TypeRef) string {
 			return "string"
 		case "bool":
 			return "bool"
+		default:
+			if c.env != nil {
+				if _, ok := c.env.GetStruct(*t.Simple); ok {
+					return sanitizeName(*t.Simple)
+				}
+				if _, ok := c.env.GetUnion(*t.Simple); ok {
+					return sanitizeName(*t.Simple)
+				}
+			}
 		}
 	}
 	if t.Generic != nil {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
-			elem := ocamlType(t.Generic.Args[0])
+			elem := c.ocamlType(t.Generic.Args[0])
 			if elem == "" {
 				elem = "unit"
 			}
 			return fmt.Sprintf("%s list", elem)
 		}
 		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
-			key := ocamlType(t.Generic.Args[0])
+			key := c.ocamlType(t.Generic.Args[0])
 			if key == "" {
 				key = "unit"
 			}
-			val := ocamlType(t.Generic.Args[1])
+			val := c.ocamlType(t.Generic.Args[1])
 			if val == "" {
 				val = "unit"
 			}
@@ -1329,6 +1379,174 @@ func ocamlType(t *parser.TypeRef) string {
 		}
 	}
 	return ""
+}
+
+func (c *Compiler) ocamlTypeOf(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType:
+		return "int"
+	case types.FloatType:
+		return "float"
+	case types.StringType:
+		return "string"
+	case types.BoolType:
+		return "bool"
+	case types.ListType:
+		elem := c.ocamlTypeOf(tt.Elem)
+		if elem == "" {
+			elem = "unit"
+		}
+		return fmt.Sprintf("%s list", elem)
+	case types.MapType:
+		key := c.ocamlTypeOf(tt.Key)
+		if key == "" {
+			key = "unit"
+		}
+		val := c.ocamlTypeOf(tt.Value)
+		if val == "" {
+			val = "unit"
+		}
+		return fmt.Sprintf("(%s, %s) Hashtbl.t", key, val)
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	default:
+		return ""
+	}
+}
+
+func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Fun != nil {
+		params := make([]types.Type, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = c.resolveTypeRef(p)
+		}
+		var ret types.Type = types.VoidType{}
+		if t.Fun.Return != nil {
+			ret = c.resolveTypeRef(t.Fun.Return)
+		}
+		return types.FuncType{Params: params, Return: ret}
+	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		args := t.Generic.Args
+		switch name {
+		case "list":
+			if len(args) == 1 {
+				return types.ListType{Elem: c.resolveTypeRef(args[0])}
+			}
+		case "map":
+			if len(args) == 2 {
+				return types.MapType{Key: c.resolveTypeRef(args[0]), Value: c.resolveTypeRef(args[1])}
+			}
+		}
+		return types.AnyType{}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(*t.Simple); ok {
+					return st
+				}
+				if ut, ok := c.env.GetUnion(*t.Simple); ok {
+					return ut
+				}
+			}
+			return types.AnyType{}
+		}
+	}
+	return types.AnyType{}
+}
+
+func (c *Compiler) ocamlDecodeType(t types.Type, expr string) string {
+	switch tt := t.(type) {
+	case types.IntType:
+		return fmt.Sprintf("Yojson.Basic.Util.to_int (%s)", expr)
+	case types.FloatType:
+		return fmt.Sprintf("Yojson.Basic.Util.to_float (%s)", expr)
+	case types.StringType:
+		return fmt.Sprintf("Yojson.Basic.Util.to_string (%s)", expr)
+	case types.BoolType:
+		return fmt.Sprintf("Yojson.Basic.Util.to_bool (%s)", expr)
+	case types.StructType:
+		name := sanitizeName(tt.Name)
+		c.compileStructType(tt)
+		return fmt.Sprintf("decode_%s (%s)", name, expr)
+	default:
+		return expr
+	}
+}
+
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	if c.structs == nil {
+		c.structs = map[string]bool{}
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("type %s = {", name))
+	c.indent++
+	for i, fn := range st.Order {
+		ft := st.Fields[fn]
+		typStr := c.ocamlTypeOf(ft)
+		if typStr == "" {
+			typStr = "Yojson.Basic.t"
+		}
+		sep := ";"
+		if i == len(st.Order)-1 {
+			sep = ";"
+		}
+		c.writeln(fmt.Sprintf("%s: %s%s", sanitizeName(fn), typStr, sep))
+	}
+	c.indent--
+	c.writeln("};;")
+	c.writeln("")
+	c.writeln(fmt.Sprintf("let decode_%s json = {", name))
+	c.indent++
+	for _, fn := range st.Order {
+		ft := st.Fields[fn]
+		member := fmt.Sprintf("Yojson.Basic.Util.member \"%s\" json", fn)
+		c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(fn), c.ocamlDecodeType(ft, member)))
+	}
+	c.indent--
+	c.writeln("};;")
+	c.writeln("")
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
+}
+
+func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	if len(t.Members) == 0 {
+		return nil
+	}
+	fields := map[string]types.Type{}
+	order := []string{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			ft := c.resolveTypeRef(m.Field.Type)
+			fields[m.Field.Name] = ft
+			order = append(order, m.Field.Name)
+		}
+	}
+	st := types.StructType{Name: t.Name, Fields: fields, Order: order}
+	c.compileStructType(st)
+	return nil
 }
 
 func sanitizeName(name string) string {
@@ -1382,6 +1600,22 @@ func isStringLiteral(e *parser.Expr) bool {
 		return false
 	}
 	return true
+}
+
+func fetchFromPrimary(p *parser.Primary) *parser.FetchExpr {
+	if p == nil {
+		return nil
+	}
+	if p.Fetch != nil {
+		return p.Fetch
+	}
+	if p.Group != nil && p.Group.Binary != nil && len(p.Group.Binary.Right) == 0 {
+		u := p.Group.Binary.Left
+		if len(u.Ops) == 0 && u.Value != nil {
+			return fetchFromPrimary(u.Value.Target)
+		}
+	}
+	return nil
 }
 
 func joinConds(conds []string) string {
