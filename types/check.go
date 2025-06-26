@@ -398,6 +398,26 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("trim", FuncType{
+		Params: []Type{StringType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("contains", FuncType{
+		Params: []Type{StringType{}, StringType{}},
+		Return: BoolType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("split", FuncType{
+		Params: []Type{StringType{}, StringType{}},
+		Return: ListType{Elem: StringType{}},
+		Pure:   true,
+	}, false)
+	env.SetVar("join", FuncType{
+		Params: []Type{ListType{Elem: StringType{}}, StringType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("substring", FuncType{
 		Params: []Type{StringType{}, IntType{}, IntType{}},
 		Return: StringType{},
@@ -2093,6 +2113,10 @@ var builtinArity = map[string]int{
 	"str":       1,
 	"upper":     1,
 	"lower":     1,
+	"trim":      1,
+	"contains":  2,
+	"split":     2,
+	"join":      2,
 	"eval":      1,
 	"len":       1,
 	"count":     1,
