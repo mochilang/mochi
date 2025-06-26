@@ -1,4 +1,4 @@
-func main (regs=258)
+func main (regs=252)
   // let nation = [
   Const        r0, [{"n_name": "BRAZIL", "n_nationkey": 1}, {"n_name": "CANADA", "n_nationkey": 2}]
   Move         r1, r0
@@ -326,64 +326,59 @@ L18:
   Index        r216, r214, r215
   Move         r217, r216
   Const        r218, "key"
-  Index        r219, r161, r218
-  Const        r220, "o_year"
-  Index        r221, r219, r220
-  Neg          r222, r221
-  Move         r223, r222
-  MakeList     r224, 2, r217
-  Move         r225, r224
+  MakeList     r219, 2, r217
+  Move         r220, r219
   // from l in lineitem
-  Move         r226, r212
-  MakeList     r227, 2, r225
-  Append       r228, r18, r227
-  Move         r18, r228
-  Const        r229, 1
-  Add          r230, r157, r229
-  Move         r157, r230
+  Move         r221, r212
+  MakeList     r222, 2, r220
+  Append       r223, r18, r222
+  Move         r18, r223
+  Const        r224, 1
+  Add          r225, r157, r224
+  Move         r157, r225
   Jump         L20
 L17:
   // sort by [ g.key.nation, -g.key.o_year ]
-  Sort         231,18,0,0
+  Sort         226,18,0,0
   // from l in lineitem
-  Move         r18, r231
+  Move         r18, r226
   // let result =
-  Move         r232, r18
+  Move         r227, r18
   // print json(result)
-  JSON         r232
+  JSON         r227
   // let revenue = 1000.0 * 0.9   // 900
-  Const        r234, 1000
-  Const        r235, 0.9
-  MulFloat     r236, r234, r235
-  Move         r237, r236
+  Const        r228, 1000
+  Const        r229, 0.9
+  MulFloat     r230, r228, r229
+  Move         r231, r230
   // let cost = 5 * 10.0          // 50
-  Const        r238, 5
-  Const        r239, 10
-  MulFloat     r240, r238, r239
-  Move         r241, r240
+  Const        r232, 5
+  Const        r233, 10
+  MulFloat     r234, r232, r233
+  Move         r235, r234
   // nation: "BRAZIL",
-  Const        r242, "nation"
-  Const        r243, "BRAZIL"
+  Const        r236, "nation"
+  Const        r237, "BRAZIL"
   // o_year: "1995",
-  Const        r244, "o_year"
-  Const        r245, "1995"
+  Const        r238, "o_year"
+  Const        r239, "1995"
   // profit: revenue - cost   // 850
-  Const        r246, "profit"
-  SubFloat     r247, r237, r241
+  Const        r240, "profit"
+  SubFloat     r241, r231, r235
   // nation: "BRAZIL",
-  Move         r248, r242
-  Move         r249, r243
+  Move         r242, r236
+  Move         r243, r237
   // o_year: "1995",
-  Move         r250, r244
-  Move         r251, r245
+  Move         r244, r238
+  Move         r245, r239
   // profit: revenue - cost   // 850
-  Move         r252, r246
-  Move         r253, r247
+  Move         r246, r240
+  Move         r247, r241
   // {
-  MakeMap      r254, 3, r248
-  Move         r255, r254
+  MakeMap      r248, 3, r242
+  Move         r249, r248
   // expect result == [
-  MakeList     r256, 1, r255
-  Equal        r257, r232, r256
-  Expect       r257
+  MakeList     r250, 1, r249
+  Equal        r251, r227, r250
+  Expect       r251
   Return       r0

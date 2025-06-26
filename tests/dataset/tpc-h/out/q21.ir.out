@@ -1,4 +1,4 @@
-func main (regs=161)
+func main (regs=159)
   // let nation = [
   Const        r0, [{"n_name": "SAUDI ARABIA", "n_nationkey": 1}, {"n_name": "FRANCE", "n_nationkey": 2}]
   Move         r1, r0
@@ -237,31 +237,28 @@ L19:
   NegInt       r145, r144
   Move         r146, r145
   Const        r147, "key"
-  Index        r148, r133, r147
+  MakeList     r148, 2, r146
   Move         r149, r148
-  MakeList     r150, 2, r146
-  Move         r151, r150
   // from s in supplier
-  Move         r152, r143
-  MakeList     r153, 2, r151
-  Append       r154, r8, r153
-  Move         r8, r154
-  Const        r155, 1
-  Add          r156, r129, r155
-  Move         r129, r156
+  Move         r150, r143
+  MakeList     r151, 2, r149
+  Append       r152, r8, r151
+  Move         r8, r152
+  Const        r153, 1
+  Add          r154, r129, r153
+  Move         r129, r154
   Jump         L19
 L18:
   // sort by [ -count(g), g.key ]
-  Sort         157,8,0,0
+  Sort         155,8,0,0
   // from s in supplier
-  Move         r8, r157
+  Move         r8, r155
   // let result =
-  Move         r158, r8
+  Move         r156, r8
   // json(result)
-  JSON         r158
+  JSON         r156
   // expect result == [
-  Const        r159, [{"numwait": 1, "s_name": "Desert Trade"}]
-  Equal        r160, r158, r159
-  Expect       r160
+  Const        r157, [{"numwait": 1, "s_name": "Desert Trade"}]
+  Equal        r158, r156, r157
+  Expect       r158
   Return       r0
-
