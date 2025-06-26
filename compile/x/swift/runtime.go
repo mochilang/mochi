@@ -206,12 +206,52 @@ func _save(_ rows: [[String: Any]], _ path: String?, _ opts: [String: Any]?) {
 }
 `
 	helperFetch = `func _fetch(_ urlStr: String, _ opts: [String: Any]?) -> Any {
-    guard let url = URL(string: urlStr) else { return [:] }
-    if let data = try? Data(contentsOf: url) {
-        if let obj = try? JSONSerialization.jsonObject(with: data) { return obj }
-        return String(data: data, encoding: .utf8) ?? ""
+    var comps = URLComponents(string: urlStr)
+    if let q = opts?["query"] as? [String: Any] {
+        var items = comps?.queryItems ?? []
+        for (k, v) in q {
+            items.append(URLQueryItem(name: k, value: String(describing: v)))
+        }
+        comps?.queryItems = items
     }
-    return [:]
+    guard let url = comps?.url else { return [:] }
+    var req = URLRequest(url: url)
+    req.httpMethod = (opts?["method"] as? String) ?? "GET"
+    if let b = opts?["body"], let d = try? JSONSerialization.data(withJSONObject: b) {
+        req.httpBody = d
+    }
+    if let hs = opts?["headers"] as? [String: Any] {
+        for (k, v) in hs {
+            if let s = v as? String { req.setValue(s, forHTTPHeaderField: k) }
+        }
+    }
+    let timeout: TimeInterval
+    if let t = opts?["timeout"] {
+        if let v = t as? Double { timeout = v }
+        else if let v = t as? Float { timeout = TimeInterval(v) }
+        else if let v = t as? Int { timeout = TimeInterval(v) }
+        else { timeout = 60 }
+    } else {
+        timeout = 60
+    }
+    let config = URLSessionConfiguration.default
+    config.timeoutIntervalForRequest = timeout
+    let session = URLSession(configuration: config)
+    var out: Any = [:]
+    let sem = DispatchSemaphore(value: 0)
+    let task = session.dataTask(with: req) { data, _, _ in
+        if let data = data {
+            if let obj = try? JSONSerialization.jsonObject(with: data) {
+                out = obj
+            } else {
+                out = String(data: data, encoding: .utf8) ?? ""
+            }
+        }
+        sem.signal()
+    }
+    task.resume()
+    sem.wait()
+    return out
 }
 `
 	helperGroup = `class _Group {

@@ -1,0 +1,11 @@
+type Msg {
+  message: string
+}
+
+let data: Msg = fetch "file://tests/compiler/swift/fetch_builtin.json" with {
+  method: "GET",
+  headers: {"X-Test": "1"},
+  body: {"x": 1},
+  timeout: 1.0
+}
+print(data.message)
