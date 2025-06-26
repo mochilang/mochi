@@ -1,0 +1,68 @@
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+	g := self new.
+	g key: k.
+	g initialize.
+	^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+	items := OrderedCollection new.
+	^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+	^ key
+!
+key: k
+	key := k
+!
+add: it
+	items add: it
+!
+do: blk
+	items do: blk
+!
+size
+	^ items size
+!
+!Main class methodsFor: 'runtime'!
+__count: v
+	(v respondsTo: #size) ifTrue: [ ^ v size ]
+	^ self error: 'count() expects collection'
+!
+_group_by: src keyFn: blk
+	| groups order |
+	groups := Dictionary new.
+	order := OrderedCollection new.
+	src do: [:it |
+		| key ks g |
+		key := blk value: it.
+		ks := key printString.
+		g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+		g add: it.
+	]
+	^ order collect: [:k | groups at: k ]
+!
+!!
+xs := Array with: 1 with: 1 with: 2.
+groups := ((| rows groups |
+rows := OrderedCollection new.
+(xs) do: [:x |
+	rows add: x.
+]
+groups := (Main _group_by: rows keyFn: [:x | x]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {k -> g at: 'key'. c -> (Main __count: g)}.
+]
+rows := rows asArray.
+rows)).
+(groups) do: [:g |
+	((((((g at: 'k' printString)) , (' '))) , ((g at: 'c' printString)))) displayOn: Transcript. Transcript cr.
+]
+.
