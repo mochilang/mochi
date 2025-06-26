@@ -4,5 +4,16 @@ program main
     character(:), allocatable :: message
   end type Msg
   integer(kind=8) :: v__
-  v__ = 0
+  v__ = mochi_fetch('file://tests/compiler/fortran/fetch_builtin.json')
+contains
+
+  function mochi_fetch(url) result(r)
+    implicit none
+    character(len=*), intent(in) :: url
+    integer(kind=8) :: r
+    character(len=1024) :: cmd
+    cmd = 'curl -s ' // trim(url)
+    call execute_command_line(cmd)
+    r = 0
+  end function mochi_fetch
 end program main

@@ -30,12 +30,13 @@ type Compiler struct {
 	needsExceptString    bool
 	needsIntersectInt    bool
 	needsIntersectFloat  bool
-	needsIntersectString bool
-	needsStrInt          bool
-	needsStrFloat        bool
-	needsNow             bool
-	needsLoadJSON        bool
-	needsSaveJSON        bool
+        needsIntersectString bool
+        needsStrInt          bool
+        needsStrFloat        bool
+        needsNow             bool
+        needsFetch           bool
+        needsLoadJSON        bool
+        needsSaveJSON        bool
 	loadJSONTypes        map[string]bool
 	saveJSONTypes        map[string]bool
 	listStructTypes      map[string]string
@@ -50,11 +51,12 @@ func New() *Compiler {
 		funReturnList:   map[string]bool{},
 		funReturnFloat:  map[string]bool{},
 		lambdas:         []string{},
-		needsNow:        false,
-		loadJSONTypes:   map[string]bool{},
-		saveJSONTypes:   map[string]bool{},
-		listStructTypes: map[string]string{},
-	}
+               needsNow:        false,
+               needsFetch:      false,
+               loadJSONTypes:   map[string]bool{},
+               saveJSONTypes:   map[string]bool{},
+               listStructTypes: map[string]string{},
+        }
 }
 
 // resetFeatures clears all feature flags for a new compilation unit.
@@ -69,10 +71,11 @@ func (c *Compiler) resetFeatures() {
 	c.needsIntersectFloat = false
 	c.needsIntersectString = false
 	c.needsStrInt = false
-	c.needsStrFloat = false
-	c.needsNow = false
-	c.needsLoadJSON = false
-	c.needsSaveJSON = false
+        c.needsStrFloat = false
+        c.needsNow = false
+        c.needsFetch = false
+        c.needsLoadJSON = false
+        c.needsSaveJSON = false
 	c.loadJSONTypes = map[string]bool{}
 	c.saveJSONTypes = map[string]bool{}
 	c.listStructTypes = map[string]string{}
@@ -269,10 +272,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(fmt.Sprintf("call test_%s()", sanitizeName(t.Name)))
 	}
 	c.indent--
-	needHelpers := c.needsUnionInt || c.needsUnionFloat || c.needsUnionString ||
-		c.needsExceptInt || c.needsExceptFloat || c.needsExceptString ||
-		c.needsIntersectInt || c.needsIntersectFloat || c.needsIntersectString ||
-		c.needsStrInt || c.needsStrFloat
+       needHelpers := c.needsUnionInt || c.needsUnionFloat || c.needsUnionString ||
+               c.needsExceptInt || c.needsExceptFloat || c.needsExceptString ||
+               c.needsIntersectInt || c.needsIntersectFloat || c.needsIntersectString ||
+               c.needsStrInt || c.needsStrFloat || c.needsFetch
 	if len(funs)+len(tests)+len(c.lambdas) > 0 || needHelpers {
 		c.writeln("contains")
 		c.indent++
@@ -1572,12 +1575,12 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
-	_, err := c.compileExpr(f.URL)
-	if err != nil {
-		return "", err
-	}
-	// fetch not implemented; return placeholder value
-	return "0", nil
+        urlStr, err := c.compileExpr(f.URL)
+        if err != nil {
+                return "", err
+        }
+        c.needsFetch = true
+        return fmt.Sprintf("mochi_fetch(%s)", urlStr), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -2117,19 +2120,34 @@ func (c *Compiler) writeHelpers() {
 		c.indent--
 		c.writeln("end function str_float")
 	}
-	if c.needsNow {
-		c.blank()
-		c.writeln("function mochi_now() result(r)")
-		c.indent++
-		c.writeln("implicit none")
-		c.writeln("integer(kind=8) :: r")
-		c.writeln("integer(kind=8) :: cnt")
-		c.writeln("integer(kind=8) :: rate")
-		c.writeln("call system_clock(cnt, rate)")
-		c.writeln("r = cnt * 1000000000_8 / rate")
-		c.indent--
-		c.writeln("end function mochi_now")
-	}
+        if c.needsNow {
+                c.blank()
+                c.writeln("function mochi_now() result(r)")
+                c.indent++
+                c.writeln("implicit none")
+                c.writeln("integer(kind=8) :: r")
+                c.writeln("integer(kind=8) :: cnt")
+                c.writeln("integer(kind=8) :: rate")
+                c.writeln("call system_clock(cnt, rate)")
+                c.writeln("r = cnt * 1000000000_8 / rate")
+                c.indent--
+                c.writeln("end function mochi_now")
+        }
+
+        if c.needsFetch {
+                c.blank()
+                c.writeln("function mochi_fetch(url) result(r)")
+                c.indent++
+                c.writeln("implicit none")
+                c.writeln("character(len=*), intent(in) :: url")
+                c.writeln("integer(kind=8) :: r")
+                c.writeln("character(len=1024) :: cmd")
+                c.writeln("cmd = 'curl -s ' // trim(url)")
+                c.writeln("call execute_command_line(cmd)")
+                c.writeln("r = 0")
+                c.indent--
+                c.writeln("end function mochi_fetch")
+        }
 
 	if c.needsLoadJSON {
 		for typ := range c.loadJSONTypes {
