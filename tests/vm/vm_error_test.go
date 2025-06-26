@@ -1,3 +1,5 @@
+//go:build slow
+
 package vm_test
 
 import (
