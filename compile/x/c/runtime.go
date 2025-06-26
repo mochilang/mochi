@@ -442,6 +442,33 @@ static int _is_number(const char* s){ if(!*s) return 0; for(const char* p=s;*p;p
 static void _write_obj(FILE* f,map_string m){ fputc('{',f); for(int i=0;i<m.len;i++){ if(i>0) fputc(',',f); _write_string(f,m.data[i].key); fputc(':',f); if(_is_number(m.data[i].value)) fputs(m.data[i].value,f); else _write_string(f,m.data[i].value); } fputc('}',f); }
 static void _save_json(list_map_string rows,const char* path){ FILE* f=(!path||path[0]=='\0'||strcmp(path,"-")==0)?stdout:fopen(path,"w"); if(!f){fprintf(stderr,"cannot open %s\n",path); exit(1);} if(rows.len==1){ _write_obj(f,rows.data[0]); } else { fputc('[',f); for(int i=0;i<rows.len;i++){ if(i>0) fputc(',',f); _write_obj(f,rows.data[i]); } fputc(']',f); } if(f!=stdout) fclose(f); }
 `
+	helperFetch = `static map_string _fetch(const char* url, void* opts){
+    (void)opts;
+    char* data = NULL;
+    if (strncmp(url, "file://", 7) == 0) {
+        data = _read_all(url + 7);
+    } else if (strncmp(url, "file:", 5) == 0) {
+        data = _read_all(url + 5);
+    } else {
+        char cmd[512];
+        snprintf(cmd, sizeof(cmd), "curl -s %s", url);
+        FILE* p = popen(cmd, "r");
+        if (!p) { fprintf(stderr, "fetch failed\n"); exit(1); }
+        size_t cap = 0, len = 0;
+        while (!feof(p)) {
+            if (len + 4096 + 1 > cap) { cap = cap ? cap*2 : 4096; data = (char*)realloc(data, cap); }
+            size_t n = fread(data + len, 1, 4096, p);
+            len += n;
+        }
+        if (pclose(p) < 0) {}
+        if (data) data[len] = '\0';
+    }
+    if (!data) data = strdup("");
+    list_map_string rows = _parse_json(data);
+    free(data);
+    if (rows.len > 0) return rows.data[0];
+    return map_string_create(0);
+}`
 	helperIndexString = `static char* _index_string(char* s, int i) {
     int len = strlen(s);
     if (i < 0) i += len;
@@ -576,6 +603,7 @@ var helperCode = map[string]string{
 	needJSON:                 helperJSON,
 	needLoadJSON:             helperLoadJSON,
 	needSaveJSON:             helperSaveJSON,
+	needFetch:                helperFetch,
 	needMapIntBool:           helperMapIntBool,
 	needIndexString:          helperIndexString,
 	needSliceString:          helperSliceString,
@@ -630,6 +658,7 @@ var helperOrder = []string{
 	needJSON,
 	needLoadJSON,
 	needSaveJSON,
+	needFetch,
 	needIndexString,
 	needSliceString,
 	needSliceListInt,

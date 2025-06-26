@@ -959,24 +959,35 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
-       path := "\"\""
-       if l.Path != nil {
-               path = fmt.Sprintf("%q", *l.Path)
-       }
-       c.need(needLoadJSON)
-       c.need(needStringHeader)
-       return fmt.Sprintf("_load_json(%s)", path)
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	c.need(needLoadJSON)
+	c.need(needStringHeader)
+	return fmt.Sprintf("_load_json(%s)", path)
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) string {
-       src := c.compileExpr(s.Src)
-       path := "\"\""
-       if s.Path != nil {
-               path = fmt.Sprintf("%q", *s.Path)
-       }
-       c.need(needSaveJSON)
-       c.need(needStringHeader)
-       return fmt.Sprintf("_save_json(%s, %s)", src, path)
+	src := c.compileExpr(s.Src)
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	c.need(needSaveJSON)
+	c.need(needStringHeader)
+	return fmt.Sprintf("_save_json(%s, %s)", src, path)
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) string {
+	url := c.compileExpr(f.URL)
+	opts := "NULL"
+	if f.With != nil {
+		opts = c.compileExpr(f.With)
+	}
+	c.need(needFetch)
+	c.need(needStringHeader)
+	return fmt.Sprintf("_fetch(%s, %s)", url, opts)
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
@@ -1868,16 +1879,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
-       case p.Query != nil:
-               return c.compileQueryExpr(p.Query)
-       case p.Load != nil:
-               return c.compileLoadExpr(p.Load)
-       case p.Save != nil:
-               return c.compileSaveExpr(p.Save)
-       case p.FunExpr != nil:
-               return c.compileFunExpr(p.FunExpr)
-       case p.Group != nil:
-               return fmt.Sprintf("(%s)", c.compileExpr(p.Group))
+	case p.Query != nil:
+		return c.compileQueryExpr(p.Query)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	case p.FunExpr != nil:
+		return c.compileFunExpr(p.FunExpr)
+	case p.Group != nil:
+		return fmt.Sprintf("(%s)", c.compileExpr(p.Group))
 	default:
 		return "0"
 	}
