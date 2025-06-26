@@ -3,13 +3,14 @@ package leetcode
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
-	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/llm"
 	"mochi/runtime/mod"
+	vm "mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -87,8 +88,12 @@ func runTests(src string) (string, error) {
 	}
 	modRoot, _ := mod.FindRoot(".")
 	out := &strings.Builder{}
-	interp := interpreter.New(prog, env, modRoot)
-	interp.Env().SetWriter(out)
-	err = interp.Test()
+	os.Setenv("MOCHI_ROOT", modRoot)
+	p, errc := vm.Compile(prog, env)
+	if errc != nil {
+		return "", errc
+	}
+	m := vm.New(p, out)
+	err = m.Run()
 	return out.String(), err
 }

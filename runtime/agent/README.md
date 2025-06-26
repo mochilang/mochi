@@ -7,7 +7,7 @@ The `agent` package defines the runtime model for agents in Mochi. An **agent** 
 * Exposes `intent` functions for querying or triggering behavior
 * Persists `var` variables across events and intent calls
 
-This package is designed to integrate cleanly with the `mochi` interpreter, stream engine, and generative agent system.
+This package integrates cleanly with the Mochi runtime, stream engine, and generative agent system.
 
 ## Features
 
@@ -109,11 +109,11 @@ Aliased as `any`, used for flexible state and intent arguments.
 
 ## Integration Notes
 
-This package is designed to be used by the **Mochi interpreter**, which will:
+This package is designed to be used by the **Mochi VM**, which will:
 
 * Parse and compile `agent { ... }` blocks
 * Call `agent.On(...)` and `RegisterIntent(...)` dynamically
-* Use `Set` / `Get` to reflect interpreter variables into agent state
+* Use `Set` / `Get` to reflect runtime variables into agent state
 * Persist variables declared with `var` across events and intents
 * Optionally inject LLM tooling or sandboxed control APIs in future
 

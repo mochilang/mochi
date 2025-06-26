@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"mochi/interpreter"
 	"mochi/parser"
+	vm "mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -52,8 +52,15 @@ func main() {
 		return
 	}
 
-	interp := interpreter.New(prog, env, modRoot)
-	if err := interp.Run(); err != nil {
+	os.Setenv("MOCHI_ROOT", modRoot)
+	p, errc := vm.Compile(prog, env)
+	if errc != nil {
+		res.Error = errc.Error()
+		json.NewEncoder(os.Stdout).Encode(res)
+		return
+	}
+	m := vm.New(p, &out)
+	if err := m.Run(); err != nil {
 		res.Error = err.Error()
 		json.NewEncoder(os.Stdout).Encode(res)
 		return

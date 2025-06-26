@@ -9,15 +9,15 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
 
-	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/mod"
+	vm "mochi/runtime/vm"
 	"mochi/types"
 )
 
 type REPL struct {
 	env     *types.Env
-	interp  *interpreter.Interpreter
+	root    string
 	rl      *readline.Instance
 	out     io.Writer
 	version string
@@ -34,7 +34,7 @@ func New(out io.Writer, version string) *REPL {
 
 	return &REPL{
 		env:     env,
-		interp:  interpreter.New(nil, env, root),
+		root:    root,
 		out:     out,
 		version: version,
 	}
@@ -141,14 +141,20 @@ func (r *REPL) Run() {
 			continue
 		}
 
-		r.interp.SetProgram(prog)
-		result, err := r.interp.RunResult()
+		os.Setenv("MOCHI_ROOT", r.root)
+		p, errc := vm.Compile(prog, r.env)
+		if errc != nil {
+			printf(r.out, "%s %v\n", cError("compile error:"), errc)
+			continue
+		}
+		m := vm.New(p, r.out)
+		result, err := m.RunResult()
 		if err != nil {
 			printf(r.out, "%s %v\n", cError("runtime error:"), err)
 			continue
 		}
-		if result != nil {
-			printf(r.out, "%v\n", result)
+		if result.Tag != 0 {
+			fmt.Fprintf(r.out, "%v\n", result)
 		}
 	}
 }

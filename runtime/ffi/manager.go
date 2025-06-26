@@ -13,7 +13,7 @@ import (
 )
 
 // Manager tracks imported modules for different language runtimes and
-// resolves values accessed through the interpreter.
+// resolves values accessed through the runtime.
 type Manager struct {
 	pyModules     map[string]string
 	goModules     map[string]string

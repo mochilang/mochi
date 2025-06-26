@@ -10,7 +10,7 @@ type Engine interface {
 	ExecPlan(Plan, *types.Env, func(*parser.Expr) (any, error)) ([]any, error)
 }
 
-// MemoryEngine runs plans using the in-memory interpreter.
+// MemoryEngine runs plans using in-memory evaluation.
 type MemoryEngine struct{}
 
 func (MemoryEngine) ExecPlan(pl Plan, env *types.Env, eval func(*parser.Expr) (any, error)) ([]any, error) {
