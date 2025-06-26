@@ -52,6 +52,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		label := c.loopLabels[len(c.loopLabels)-1]
 		c.writeln("goto " + label)
 		return nil
+	case s.Fetch != nil:
+		return c.compileFetchStmt(s.Fetch)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -436,6 +438,20 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("if not (%s) then error('expect failed') end", expr))
+	return nil
+}
+
+func (c *Compiler) compileFetchStmt(f *parser.FetchStmt) error {
+	expr, err := c.compileFetchExpr(&parser.FetchExpr{Pos: f.Pos, URL: f.URL, With: f.With})
+	if err != nil {
+		return err
+	}
+	name := sanitizeName(f.Target)
+	prefix := "local "
+	if c.indent == 0 {
+		prefix = ""
+	}
+	c.writeln(fmt.Sprintf("%s%s = %s", prefix, name, expr))
 	return nil
 }
 
