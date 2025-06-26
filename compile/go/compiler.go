@@ -1273,34 +1273,12 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	switch op {
 	case "+", "-", "*", "/", "%":
 		if op != "+" && (isAny(leftType) || isAny(rightType)) {
-			switch {
-			case isInt(leftType) && isAny(rightType):
-				c.use("_cast")
-				right = fmt.Sprintf("_cast[int](%s)", right)
-				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
-				next = types.IntType{}
-				return expr, next, nil
-			case isAny(leftType) && isInt(rightType):
-				c.use("_cast")
-				left = fmt.Sprintf("_cast[int](%s)", left)
-				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
-				next = types.IntType{}
-				return expr, next, nil
-			case isFloat(leftType) && isAny(rightType):
-				c.use("_cast")
-				right = fmt.Sprintf("_cast[float64](%s)", right)
-				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
-				next = types.FloatType{}
-				return expr, next, nil
-			case isAny(leftType) && isFloat(rightType):
-				c.use("_cast")
-				left = fmt.Sprintf("_cast[float64](%s)", left)
-				expr = fmt.Sprintf("(%s %s %s)", left, op, right)
-				next = types.FloatType{}
-				return expr, next, nil
-			default:
-				return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
-			}
+			c.use("_cast")
+			left = fmt.Sprintf("_cast[float64](%s)", left)
+			right = fmt.Sprintf("_cast[float64](%s)", right)
+			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			next = types.FloatType{}
+			return expr, next, nil
 		}
 		switch {
 		case (isInt64(leftType) && (isInt64(rightType) || isInt(rightType))) ||
@@ -1375,14 +1353,16 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			next = types.StringType{}
 		case op == "+" && isInt(leftType) && isAny(rightType):
 			c.use("_cast")
-			right = fmt.Sprintf("_cast[int](%s)", right)
+			left = fmt.Sprintf("float64(%s)", left)
+			right = fmt.Sprintf("_cast[float64](%s)", right)
 			expr = fmt.Sprintf("(%s + %s)", left, right)
-			next = types.IntType{}
+			next = types.FloatType{}
 		case op == "+" && isAny(leftType) && isInt(rightType):
 			c.use("_cast")
-			left = fmt.Sprintf("_cast[int](%s)", left)
+			left = fmt.Sprintf("_cast[float64](%s)", left)
+			right = fmt.Sprintf("float64(%s)", right)
 			expr = fmt.Sprintf("(%s + %s)", left, right)
-			next = types.IntType{}
+			next = types.FloatType{}
 		case op == "+" && isFloat(leftType) && isAny(rightType):
 			c.use("_cast")
 			right = fmt.Sprintf("_cast[float64](%s)", right)
@@ -1395,10 +1375,10 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			next = types.FloatType{}
 		case op == "+" && isAny(leftType) && isAny(rightType):
 			c.use("_cast")
-			left = fmt.Sprintf("_cast[[]any](%s)", left)
-			right = fmt.Sprintf("_cast[[]any](%s)", right)
-			expr = fmt.Sprintf("append(append([]any{}, %s...), %s...)", left, right)
-			next = types.ListType{Elem: types.AnyType{}}
+			left = fmt.Sprintf("_cast[float64](%s)", left)
+			right = fmt.Sprintf("_cast[float64](%s)", right)
+			expr = fmt.Sprintf("(%s + %s)", left, right)
+			next = types.FloatType{}
 		default:
 			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
 		}
@@ -1417,7 +1397,16 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			}
 		} else {
 			if isAny(leftType) || isAny(rightType) {
-				return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
+				switch {
+				case isAny(leftType) && isString(rightType):
+					c.use("_cast")
+					left = fmt.Sprintf("_cast[string](%s)", left)
+				case isString(leftType) && isAny(rightType):
+					c.use("_cast")
+					right = fmt.Sprintf("_cast[string](%s)", right)
+				default:
+					return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
+				}
 			}
 			if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
 				return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
@@ -1700,13 +1689,40 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 			}
 		}
-		if _, ok := typ.(types.MapType); ok && len(p.Selector.Tail) > 0 {
-			key := p.Selector.Tail[0]
-			base = fmt.Sprintf("%s[%q]", base, key)
-			for _, field := range p.Selector.Tail[1:] {
-				base += ".[" + fmt.Sprintf("%q", field) + "]"
+		if len(p.Selector.Tail) > 0 {
+			for i, field := range p.Selector.Tail {
+				switch tt := typ.(type) {
+				case types.GroupType:
+					if field == "key" {
+						base = fmt.Sprintf("%s.Key", base)
+						typ = types.AnyType{}
+					} else if field == "items" {
+						base = fmt.Sprintf("%s.Items", base)
+						typ = types.ListType{Elem: tt.Elem}
+					} else {
+						base = fmt.Sprintf("%s[%q]", base, field)
+						typ = types.AnyType{}
+					}
+				case types.MapType:
+					base = fmt.Sprintf("%s[%q]", base, field)
+					typ = tt.Value
+				case types.StructType:
+					base = fmt.Sprintf("%s.%s", base, exportName(sanitizeName(field)))
+					if ft, ok := tt.Fields[field]; ok {
+						typ = ft
+					} else {
+						typ = types.AnyType{}
+					}
+				default:
+					// treat as dynamic map
+					c.use("_cast")
+					base = fmt.Sprintf("_cast[map[string]any](%s)[%q]", base, field)
+					typ = types.AnyType{}
+				}
+				if i == len(p.Selector.Tail)-1 {
+					return base, nil
+				}
 			}
-			return base, nil
 		}
 		if ut, ok := typ.(types.UnionType); ok && len(p.Selector.Tail) > 0 {
 			field := p.Selector.Tail[0]
@@ -2425,7 +2441,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return buf.String(), nil
 	}
 	if !directRange {
-		return "", fmt.Errorf("query source must be list")
+		switch srcType.(type) {
+		case types.GroupType:
+			src = fmt.Sprintf("%s.Items", src)
+		default:
+			c.use("_toAnySlice")
+			src = fmt.Sprintf("_toAnySlice(%s)", src)
+		}
+		directRange = true
 	}
 
 	simple := q.Sort == nil && q.Skip == nil && q.Take == nil
