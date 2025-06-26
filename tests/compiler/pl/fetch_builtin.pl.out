@@ -1,0 +1,23 @@
+:- style_check(-singleton).
+:- use_module(library(http/http_open)).
+:- use_module(library(http/json)).
+fetch_json(URL, _Opts, Data) :-
+    ( sub_string(URL, 0, 7, _, 'file://') ->
+        sub_string(URL, 7, _, 0, Path),
+        read_file_to_string(Path, Text, []),
+        open_string(Text, S), json_read_dict(S, Data), close(S)
+    ;
+        http_open(URL, Stream, []),
+        json_read_dict(Stream, Data), close(Stream)
+    ).
+
+
+
+	main :-
+	fetch_json("file://tests/compiler/pl/fetch_builtin.json", _{}, _V0),
+	Data = _V0,
+	get_dict(message, Data, _V1),
+	write(_V1),
+	nl
+	.
+:- initialization(main, main).

@@ -247,4 +247,10 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["fetch_json"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperFetch, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 }

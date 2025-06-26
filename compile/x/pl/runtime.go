@@ -121,3 +121,15 @@ const helperSave = ":- use_module(library(http/json)).\n" +
 	"        json_write_dict(Out, Rows)\n" +
 	"    ),\n" +
 	"    (Out == current_output -> flush_output(Out) ; close(Out)).\n\n"
+
+const helperFetch = ":- use_module(library(http/http_open)).\n" +
+	":- use_module(library(http/json)).\n" +
+	"fetch_json(URL, _Opts, Data) :-\n" +
+	"    ( sub_string(URL, 0, 7, _, 'file://') ->\n" +
+	"        sub_string(URL, 7, _, 0, Path),\n" +
+	"        read_file_to_string(Path, Text, []),\n" +
+	"        open_string(Text, S), json_read_dict(S, Data), close(S)\n" +
+	"    ;\n" +
+	"        http_open(URL, Stream, []),\n" +
+	"        json_read_dict(Stream, Data), close(Stream)\n" +
+	"    ).\n\n"

@@ -307,6 +307,7 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
  - Dataset queries with optional filtering, sorting, joins and limits
 - Helper predicates `dataset_filter/3` and `dataset_paginate/4` for filtering
   and paginating row lists
+- HTTP requests using `fetch_json/3`
 - Data loading and persistence helpers `load_data/3` and `save_data/3` for JSON files
 ## Unsupported Features
 
@@ -316,7 +317,7 @@ Mochi language features are not yet implemented:
 - Pattern matching expressions and union types
  - Dataset query grouping
 - Enum declarations and variant matching
-- Concurrency primitives and external helpers like `_fetch` or `_genText`
+- Concurrency primitives and generative helpers like `_genText`
 - Import declarations (currently ignored)
 - Agent and stream features (`agent`, `on`, `emit`)
 - Intent handlers within agents (`intent` blocks)
