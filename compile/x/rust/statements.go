@@ -292,7 +292,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
-	start, err := c.compileExpr(stmt.Source)
+	start, err := c.compileIterExpr(stmt.Source)
 	if err != nil {
 		return err
 	}
@@ -338,6 +338,8 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 				srcType := c.inferExprType(stmt.Source)
 				if lt, ok := srcType.(types.ListType); ok {
 					c.env.SetVar(stmt.Name, lt.Elem, true)
+				} else if gt, ok := srcType.(types.GroupType); ok {
+					c.env.SetVar(stmt.Name, gt.Elem, true)
 				} else {
 					c.env.SetVar(stmt.Name, types.AnyType{}, true)
 				}

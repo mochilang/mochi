@@ -84,7 +84,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	src, err := c.compileExpr(q.Source)
+	src, err := c.compileIterExpr(q.Source)
 	if err != nil {
 		return "", err
 	}
@@ -147,7 +147,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
-		fs, err := c.compileExpr(f.Src)
+		fs, err := c.compileIterExpr(f.Src)
 		if err != nil {
 			return "", err
 		}
@@ -158,7 +158,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	joinSides := make([]string, len(q.Joins))
 	joinTypes := make([]string, len(q.Joins))
 	for i, j := range q.Joins {
-		js, err := c.compileExpr(j.Src)
+		js, err := c.compileIterExpr(j.Src)
 		if err != nil {
 			return "", err
 		}
@@ -728,15 +728,30 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "count":
 		if len(args) == 1 {
-			return fmt.Sprintf("%s.len() as i32", args[0]), nil
+			c.use("_count")
+			src := fmt.Sprintf("&%s", args[0])
+			if _, ok := c.inferExprType(call.Args[0]).(types.GroupType); ok {
+				src = fmt.Sprintf("&%s.items", args[0])
+			}
+			return fmt.Sprintf("_count(%s)", src), nil
 		}
 	case "avg":
 		if len(args) == 1 {
-			return fmt.Sprintf("{ let v = &%s; if v.is_empty() { 0.0 } else { let mut sum = 0.0; for &it in v { sum += Into::<f64>::into(it); } sum / v.len() as f64 } }", args[0]), nil
+			c.use("_avg")
+			src := fmt.Sprintf("&%s", args[0])
+			if _, ok := c.inferExprType(call.Args[0]).(types.GroupType); ok {
+				src = fmt.Sprintf("&%s.items", args[0])
+			}
+			return fmt.Sprintf("_avg(%s)", src), nil
 		}
 	case "sum":
 		if len(args) == 1 {
-			return fmt.Sprintf("{ let v = &%s; if v.is_empty() { 0.0 } else { let mut sum = 0.0; for &it in v { sum += Into::<f64>::into(it); } sum } }", args[0]), nil
+			c.use("_sum")
+			src := fmt.Sprintf("&%s", args[0])
+			if _, ok := c.inferExprType(call.Args[0]).(types.GroupType); ok {
+				src = fmt.Sprintf("&%s.items", args[0])
+			}
+			return fmt.Sprintf("_sum(%s)", src), nil
 		}
 	case "input":
 		if len(args) == 0 {
