@@ -11,7 +11,9 @@ def test_second():
 	assert (b == 2)
 
 def main():
+	global a
 	a = 1
+	global b
 	b = 2
 	print("done")
 	test_first()

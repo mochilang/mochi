@@ -4,10 +4,12 @@ from __future__ import annotations
 import math
 
 r = 3
-area = (math.pi * math.pow(r, 2))
+area = None
 
 def main():
+	global r
 	r = 3
+	global area
 	area = (math.pi * math.pow(r, 2))
 	print("Area:", area)
 

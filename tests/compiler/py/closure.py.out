@@ -9,6 +9,7 @@ def makeAdder(n: int) -> typing.Callable:
 add10 = makeAdder(10)
 
 def main():
+	global add10
 	add10 = makeAdder(10)
 	print(add10(7))
 
