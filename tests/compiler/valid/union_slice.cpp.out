@@ -1,18 +1,35 @@
+// Original Mochi source:
+// 1: type Foo =
+// 2:   Empty
+// 3:   | Node(child: Foo)
+// 4: 
+// 5: fun listit(): list<Foo> {
+// 6:   return [Empty {}]
+// 7: }
+// 8: 
+// 9: print(len(listit()))
+// 10: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// 1: type Foo =
 struct Empty {
 };
 struct Node {
-	Foo child;
+    Foo child;
 };
 using Foo = std::variant<Empty, Node>;
 
+// 5: fun listit(): list<Foo> {
 vector<Foo> listit(){
-	return vector<Empty>{Empty{}};
+    // 6:   return [Empty {}]
+    return vector<Empty>{Empty{}};
 }
 
 int main() {
-	std::cout << (listit().size()) << std::endl;
-	return 0;
+    // 1: type Foo =
+    // 9: print(len(listit()))
+    std::cout << (listit().size()) << std::endl;
+    return 0;
 }

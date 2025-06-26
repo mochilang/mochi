@@ -1,17 +1,37 @@
+// Original Mochi source:
+// 1: type Address {
+// 2:   street: string
+// 3: }
+// 4: 
+// 5: type Person {
+// 6:   name: string
+// 7:   addr: Address
+// 8: }
+// 9: 
+// 10: let p = Person { name: "Bob", addr: Address { street: "Main" } }
+// 11: print(p.addr.street)
+// 12: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// 1: type Address {
 struct Address {
-	string street;
+    string street;
 };
 
+// 5: type Person {
 struct Person {
-	string name;
-	Address addr;
+    string name;
+    Address addr;
 };
 
 int main() {
-	auto p = Person{string("Bob"), Address{string("Main")}};
-	std::cout << (p.addr.street) << std::endl;
-	return 0;
+    // 1: type Address {
+    // 5: type Person {
+    // 10: let p = Person { name: "Bob", addr: Address { street: "Main" } }
+    auto p = Person{string("Bob"), Address{string("Main")}};
+    // 11: print(p.addr.street)
+    std::cout << (p.addr.street) << std::endl;
+    return 0;
 }

@@ -27,6 +27,13 @@ c.writeln("")
 ```
 【F:compile/cpp/compiler.go†L114-L116】
 
+The compiler now emits spaces for indentation instead of tabs. This makes the
+generated C++ source easier to read and consistent with common style guides.
+Additionally, when compiling from a file, the original Mochi source is
+included as numbered `//` comments at the top of the generated C++ output. Each
+generated statement is also preceded by the corresponding numbered Mochi source
+line to make the mapping clear.
+
 Type translation is straightforward. Integers become `int`, floats `double`,
 booleans `bool`, strings `string`, and lists map to `std::vector` as shown in
 `cppType`:

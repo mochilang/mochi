@@ -1,38 +1,86 @@
+// Original Mochi source:
+// 1: type Msg {
+// 2:   message: string
+// 3: }
+// 4: 
+// 5: let opts = {
+// 6:   method: "GET",
+// 7:   headers: {"X-Test": "1"},
+// 8:   query: {"q": "ok"},
+// 9:   body: {"x": 1},
+// 10:   timeout: 1
+// 11: }
+// 12: let data: Msg = fetch "file://tests/compiler/cpp/fetch_builtin.json" with opts
+// 13: print(data.message)
+// 14: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
-static unordered_map<string,string> _fetch_parse(const string& s) {
-	unordered_map<string,string> row; size_t i=0;
-	while (i<s.size()) {
-		if (s[i]=='"') {
-			size_t j=s.find('"', i+1); if (j==string::npos) break; string key=s.substr(i+1,j-i-1);
-			i=s.find(':', j); if (i==string::npos) break; i++; while(i<s.size() && isspace(s[i])) i++;
-			string val;
-			if (i<s.size() && s[i]=='"') { size_t k=s.find('"', i+1); val=s.substr(i+1,k-i-1); i=k+1; } else { size_t k=i; while (k<s.size() && (isalnum(s[k])||s[k]=='-'||s[k]=='+'||s[k]=='.')) k++; val=s.substr(i,k-i); i=k; }
-			row[key]=val;
-		} else { i++; }
-	}
-	return row;
+template<typename T> T _cast(any v);
+template<> inline int _cast<int>(any v) {
+    if (v.type() == typeid(int)) return any_cast<int>(v);
+    if (v.type() == typeid(double)) return int(any_cast<double>(v));
+    if (v.type() == typeid(string)) return stoi(any_cast<string>(v));
+    return 0;
 }
-unordered_map<string,string> _fetch(const string& url, const unordered_map<string,any>& opts) {
-	(void)opts;
-	string data;
-	if (url.rfind("file://",0)==0) {
-		ifstream f(url.substr(7)); stringstream ss; ss<<f.rdbuf(); data=ss.str();
-	} else {
-		string cmd="curl -s "+url;
-		FILE* p=popen(cmd.c_str(), "r"); char buf[4096]; while(p && !feof(p)){ size_t n=fread(buf,1,sizeof(buf),p); data.append(buf,n);} if(p) pclose(p);
-	}
-	return _fetch_parse(data);
+template<> inline double _cast<double>(any v) {
+    if (v.type() == typeid(double)) return any_cast<double>(v);
+    if (v.type() == typeid(int)) return double(any_cast<int>(v));
+    if (v.type() == typeid(string)) return stod(any_cast<string>(v));
+    return 0.0;
+}
+template<> inline bool _cast<bool>(any v) {
+    if (v.type() == typeid(bool)) return any_cast<bool>(v);
+    if (v.type() == typeid(string)) return any_cast<string>(v)=="true";
+    if (v.type() == typeid(int)) return any_cast<int>(v)!=0;
+    return false;
+}
+template<> inline string _cast<string>(any v) {
+    if (v.type() == typeid(string)) return any_cast<string>(v);
+    if (v.type() == typeid(int)) return to_string(any_cast<int>(v));
+    if (v.type() == typeid(double)) { stringstream ss; ss<<any_cast<double>(v); return ss.str(); }
+    if (v.type() == typeid(bool)) return any_cast<bool>(v)?"true":"false";
+    return "";
 }
 
+static unordered_map<string,string> _fetch_parse(const string& s) {
+    unordered_map<string,string> row; size_t i=0;
+    while (i<s.size()) {
+        if (s[i]=='"') {
+            size_t j=s.find('"', i+1); if (j==string::npos) break; string key=s.substr(i+1,j-i-1);
+            i=s.find(':', j); if (i==string::npos) break; i++; while(i<s.size() && isspace(s[i])) i++;
+            string val;
+            if (i<s.size() && s[i]=='"') { size_t k=s.find('"', i+1); val=s.substr(i+1,k-i-1); i=k+1; } else { size_t k=i; while (k<s.size() && (isalnum(s[k])||s[k]=='-'||s[k]=='+'||s[k]=='.')) k++; val=s.substr(i,k-i); i=k; }
+            row[key]=val;
+        } else { i++; }
+    }
+    return row;
+}
+unordered_map<string,string> _fetch(const string& url, const unordered_map<string,any>& opts) {
+    (void)opts;
+    string data;
+    if (url.rfind("file://",0)==0) {
+        ifstream f(url.substr(7)); stringstream ss; ss<<f.rdbuf(); data=ss.str();
+    } else {
+        string cmd="curl -s "+url;
+        FILE* p=popen(cmd.c_str(), "r"); char buf[4096]; while(p && !feof(p)){ size_t n=fread(buf,1,sizeof(buf),p); data.append(buf,n);} if(p) pclose(p);
+    }
+    return _fetch_parse(data);
+}
+
+// 1: type Msg {
 struct Msg {
-	string message;
+    string message;
 };
 
 int main() {
-	auto opts = unordered_map<string, any>{{string("method"), any(string("GET"))}, {string("headers"), any(unordered_map<string, string>{{string("X-Test"), string("1")}})}, {string("query"), any(unordered_map<string, string>{{string("q"), string("ok")}})}, {string("body"), any(unordered_map<string, int>{{string("x"), 1}})}, {string("timeout"), any(1)}};
-	Msg data = _fetch(string("file://tests/compiler/cpp/fetch_builtin.json"), opts);
-	std::cout << (data.message) << std::endl;
-	return 0;
+    // 1: type Msg {
+    // 5: let opts = {
+    auto opts = unordered_map<string, any>{{string("method"), any(string("GET"))}, {string("headers"), any(unordered_map<string, string>{{string("X-Test"), string("1")}})}, {string("query"), any(unordered_map<string, string>{{string("q"), string("ok")}})}, {string("body"), any(unordered_map<string, int>{{string("x"), 1}})}, {string("timeout"), any(1)}};
+    // 12: let data: Msg = fetch "file://tests/compiler/cpp/fetch_builtin.json" with opts
+    Msg data = _cast<Msg>(_fetch(string("file://tests/compiler/cpp/fetch_builtin.json"), opts));
+    // 13: print(data.message)
+    std::cout << (data.message) << std::endl;
+    return 0;
 }

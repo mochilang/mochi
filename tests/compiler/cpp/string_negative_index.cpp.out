@@ -1,15 +1,22 @@
+// Original Mochi source:
+// 1: let text = "hello"
+// 2: print(text[-1])
+// 3: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 string _indexString(const string& s, int i) {
-	int n = s.size();
-	if (i < 0) i += n;
-	if (i < 0 || i >= n) throw std::out_of_range("index out of range");
-	return string(1, s[i]);
+    int n = s.size();
+    if (i < 0) i += n;
+    if (i < 0 || i >= n) throw std::out_of_range("index out of range");
+    return string(1, s[i]);
 }
 
 int main() {
-	auto text = string("hello");
-	std::cout << (_indexString(text, -1)) << std::endl;
-	return 0;
+    // 1: let text = "hello"
+    auto text = string("hello");
+    // 2: print(text[-1])
+    std::cout << (_indexString(text, -1)) << std::endl;
+    return 0;
 }

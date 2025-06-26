@@ -6,6 +6,13 @@
 * Typed `fetch` builtin with HTTP options and struct casting
 * Dataset load and save support for JSON across languages
 
+### Changed
+
+* C++ backend now outputs spaces for indentation to improve readability
+* C++ backend embeds original Mochi source as comments atop generated code
+* C++ backend now comments each generated statement with its Mochi source line,
+  including line numbers for easier reference
+
 ### Fixed
 
 * Type inference bug for dataset load generics

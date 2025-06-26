@@ -1,7 +1,12 @@
+// Original Mochi source:
+// 1: print("hello")
+// 2: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	std::cout << (string("hello")) << std::endl;
-	return 0;
+    // 1: print("hello")
+    std::cout << (string("hello")) << std::endl;
+    return 0;
 }

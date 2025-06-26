@@ -1,16 +1,36 @@
+// Original Mochi source:
+// 1: fun factorial(n: int): int {
+// 2:   if n <= 1 {
+// 3:     return 1
+// 4:   }
+// 5:   return n * factorial(n - 1)
+// 6: }
+// 7: 
+// 8: print(factorial(0))
+// 9: print(factorial(1))
+// 10: print(factorial(5))
+// 11: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// 1: fun factorial(n: int): int {
 int factorial(int n){
-	if (n <= 1) {
-		return 1;
-	}
-	return n * factorial(n - 1);
+    // 2:   if n <= 1 {
+    if (n <= 1) {
+        // 3:     return 1
+        return 1;
+    }
+    // 5:   return n * factorial(n - 1)
+    return n * factorial(n - 1);
 }
 
 int main() {
-	std::cout << (factorial(0)) << std::endl;
-	std::cout << (factorial(1)) << std::endl;
-	std::cout << (factorial(5)) << std::endl;
-	return 0;
+    // 8: print(factorial(0))
+    std::cout << (factorial(0)) << std::endl;
+    // 9: print(factorial(1))
+    std::cout << (factorial(1)) << std::endl;
+    // 10: print(factorial(5))
+    std::cout << (factorial(5)) << std::endl;
+    return 0;
 }

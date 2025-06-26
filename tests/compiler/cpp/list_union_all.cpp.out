@@ -1,26 +1,31 @@
+// Original Mochi source:
+// 1: print([1,2] union all [2,3])
+// 2: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 template<typename T> string _fmtVec(const vector<T>& v) {
-	stringstream ss;
-	ss << '[';
-	for (size_t i = 0; i < v.size(); i++) {
-		if (i > 0) ss << ' ';
-		ss << v[i];
-	}
-	ss << ']';
-	return ss.str();
+    stringstream ss;
+    ss << '[';
+    for (size_t i = 0; i < v.size(); i++) {
+        if (i > 0) ss << ' ';
+        ss << v[i];
+    }
+    ss << ']';
+    return ss.str();
 }
 
 template<typename T> vector<T> _union(const vector<T>& a, const vector<T>& b) {
-	vector<T> res = a;
-	for (const auto& it : b) {
-		if (find(res.begin(), res.end(), it) == res.end()) res.push_back(it);
-	}
-	return res;
+    vector<T> res = a;
+    for (const auto& it : b) {
+        if (find(res.begin(), res.end(), it) == res.end()) res.push_back(it);
+    }
+    return res;
 }
 
 int main() {
-	std::cout << (_fmtVec(_union(vector<int>{1, 2}, vector<int>{2, 3}))) << std::endl;
-	return 0;
+    // 1: print([1,2] union all [2,3])
+    std::cout << (_fmtVec(_union(vector<int>{1, 2}, vector<int>{2, 3}))) << std::endl;
+    return 0;
 }

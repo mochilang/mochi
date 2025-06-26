@@ -1,15 +1,33 @@
+// Original Mochi source:
+// 1: var m: map<int, bool> = {}
+// 2: m[1] = true
+// 3: m[2] = true
+// 4: var sum = 0
+// 5: for k in m {
+// 6:   sum = sum + k
+// 7: }
+// 8: print(sum)
+// 9: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	unordered_map<int, bool> m = unordered_map<int, bool>{};
-	m[1] = true;
-	m[2] = true;
-	auto sum = 0;
-	for (const auto& _kv : m) {
-		int k = _kv.first;
-		sum = sum + k;
-	}
-	std::cout << (sum) << std::endl;
-	return 0;
+    // 1: var m: map<int, bool> = {}
+    unordered_map<int, bool> m = unordered_map<int, bool>{};
+    // 2: m[1] = true
+    m[1] = true;
+    // 3: m[2] = true
+    m[2] = true;
+    // 4: var sum = 0
+    auto sum = 0;
+    // 5: for k in m {
+    for (const auto& _kv : m) {
+        int k = _kv.first;
+        // 6:   sum = sum + k
+        sum = sum + k;
+    }
+    // 8: print(sum)
+    std::cout << (sum) << std::endl;
+    return 0;
 }

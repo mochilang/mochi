@@ -1,16 +1,25 @@
+// Original Mochi source:
+// 1: let nums = [1, 2, 3, 4]
+// 2: let sum = reduce(nums, fun(acc: int, x: int): int => acc + x, 0)
+// 3: print(sum)
+// 4: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 template<typename Src, typename Fn, typename Acc> Acc _reduce(const Src& src, Fn fn, Acc acc) {
-	for (const auto& it : src) {
-		acc = fn(acc, it);
-	}
-	return acc;
+    for (const auto& it : src) {
+        acc = fn(acc, it);
+    }
+    return acc;
 }
 
 int main() {
-	auto nums = vector<int>{1, 2, 3, 4};
-	auto sum = _reduce(nums, [=](int acc, int x) { return acc + x; }, 0);
-	std::cout << (sum) << std::endl;
-	return 0;
+    // 1: let nums = [1, 2, 3, 4]
+    auto nums = vector<int>{1, 2, 3, 4};
+    // 2: let sum = reduce(nums, fun(acc: int, x: int): int => acc + x, 0)
+    auto sum = _reduce(nums, [=](int acc, int x) { return acc + x; }, 0);
+    // 3: print(sum)
+    std::cout << (sum) << std::endl;
+    return 0;
 }

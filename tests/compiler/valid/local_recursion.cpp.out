@@ -1,24 +1,62 @@
+// Original Mochi source:
+// 1: // Build BST from sorted list using nested recursive function
+// 2: 
+// 3:  type Tree =
+// 4:    Leaf
+// 5:    | Node(left: Tree, value: int, right: Tree)
+// 6: 
+// 7:  fun fromList(nums: list<int>): Tree {
+// 8:    fun helper(lo: int, hi: int): Tree {
+// 9:      if lo >= hi { return Leaf {} }
+// 10:      let mid = (lo + hi) / 2
+// 11:      return Node {
+// 12:        left: helper(lo, mid),
+// 13:        value: nums[mid],
+// 14:        right: helper(mid + 1, hi)
+// 15:      }
+// 16:    }
+// 17:    return helper(0, len(nums))
+// 18:  }
+// 19: 
+// 20:  fun inorder(t: Tree): list<int> {
+// 21:    return match t {
+// 22:      Leaf => []
+// 23:      Node(l, v, r) => inorder(l) + [v] + inorder(r)
+// 24:    }
+// 25:  }
+// 26: 
+// 27:  print(inorder(fromList([-10, -3, 0, 5, 9])))
+// 28: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// 3:  type Tree =
 struct Leaf {
 };
 struct Node {
-	Tree left;
-	int value;
-	Tree right;
+    Tree left;
+    int value;
+    Tree right;
 };
 using Tree = std::variant<Leaf, Node>;
 
+// 7:  fun fromList(nums: list<int>): Tree {
 Tree fromList(vector<int> nums){
-	return helper(0, nums.size());
+    // 8:    fun helper(lo: int, hi: int): Tree {
+    // 17:    return helper(0, len(nums))
+    return helper(0, nums.size());
 }
 
+// 20:  fun inorder(t: Tree): list<int> {
 vector<int> inorder(Tree t){
-	return ([&]() { auto _t0 = t; if (std::holds_alternative<Leaf>(_t0)) return vector<int>{}; if (std::holds_alternative<Node>(_t0)) { auto _v = std::get<Node>(_t0); auto l = _v.left; auto v = _v.value; auto r = _v.right; return ([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(inorder(l), vector<int>{v}), inorder(r)); }return {}; })();
+    // 21:    return match t {
+    return ([&]() { auto _t0 = t; if (std::holds_alternative<Leaf>(_t0)) return vector<int>{}; if (std::holds_alternative<Node>(_t0)) { auto _v = std::get<Node>(_t0); auto l = _v.left; auto v = _v.value; auto r = _v.right; return ([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(inorder(l), vector<int>{v}), inorder(r)); }return {}; })();
 }
 
 int main() {
-	std::cout << (inorder(fromList(vector<int>{-10, -3, 0, 5, 9}))) << std::endl;
-	return 0;
+    // 3:  type Tree =
+    // 27:  print(inorder(fromList([-10, -3, 0, 5, 9])))
+    std::cout << (inorder(fromList(vector<int>{-10, -3, 0, 5, 9}))) << std::endl;
+    return 0;
 }

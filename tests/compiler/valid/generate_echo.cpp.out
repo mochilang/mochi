@@ -1,8 +1,17 @@
+// Original Mochi source:
+// 1: let poem = generate text {
+// 2:   prompt: "echo hello"
+// 3: }
+// 4: print(poem)
+// 5: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto poem;
-	std::cout << (poem) << std::endl;
-	return 0;
+    // 1: let poem = generate text {
+    auto poem;
+    // 4: print(poem)
+    std::cout << (poem) << std::endl;
+    return 0;
 }

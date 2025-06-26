@@ -1,9 +1,18 @@
+// Original Mochi source:
+// 1: print(true && false)
+// 2: print(true || false)
+// 3: print(!false)
+// 4: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	std::cout << (true && false) << std::endl;
-	std::cout << (true || false) << std::endl;
-	std::cout << (!false) << std::endl;
-	return 0;
+    // 1: print(true && false)
+    std::cout << (true && false) << std::endl;
+    // 2: print(true || false)
+    std::cout << (true || false) << std::endl;
+    // 3: print(!false)
+    std::cout << (!false) << std::endl;
+    return 0;
 }

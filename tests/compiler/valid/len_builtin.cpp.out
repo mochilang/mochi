@@ -1,7 +1,12 @@
+// Original Mochi source:
+// 1: print(len([1,2,3]))
+// 2: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	std::cout << (vector<int>{1, 2, 3}.size()) << std::endl;
-	return 0;
+    // 1: print(len([1,2,3]))
+    std::cout << (vector<int>{1, 2, 3}.size()) << std::endl;
+    return 0;
 }

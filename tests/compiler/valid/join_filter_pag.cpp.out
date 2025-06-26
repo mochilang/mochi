@@ -1,42 +1,78 @@
+// Original Mochi source:
+// 1: type Person { id: int, name: string }
+// 2: type Purchase { id: int, personId: int, total: int }
+// 3: let people = [
+// 4:   Person { id: 1, name: "Alice" },
+// 5:   Person { id: 2, name: "Bob" },
+// 6:   Person { id: 3, name: "Charlie" }
+// 7: ]
+// 8: let purchases = [
+// 9:   Purchase { id: 1, personId: 1, total: 200 },
+// 10:   Purchase { id: 2, personId: 1, total: 50 },
+// 11:   Purchase { id: 3, personId: 2, total: 150 },
+// 12:   Purchase { id: 4, personId: 3, total: 100 },
+// 13:   Purchase { id: 5, personId: 2, total: 250 }
+// 14: ]
+// 15: let result = from p in people
+// 16:              join o in purchases on p.id == o.personId
+// 17:              where o.total > 100
+// 18:              sort by -o.total
+// 19:              skip 1
+// 20:              take 2
+// 21:              select { person: p.name, spent: o.total }
+// 22: for r in result {
+// 23:   print(r.person, r.spent)
+// 24: }
+// 25: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// 1: type Person { id: int, name: string }
 struct Person {
-	int id;
-	string name;
+    int id;
+    string name;
 };
 
+// 2: type Purchase { id: int, personId: int, total: int }
 struct Purchase {
-	int id;
-	int personId;
-	int total;
+    int id;
+    int personId;
+    int total;
 };
 
 int main() {
-	auto people = vector<Person>{Person{1, string("Alice")}, Person{2, string("Bob")}, Person{3, string("Charlie")}};
-	auto purchases = vector<Purchase>{Purchase{1, 1, 200}, Purchase{2, 1, 50}, Purchase{3, 2, 150}, Purchase{4, 3, 100}, Purchase{5, 2, 250}};
-	auto result = ([&]() -> vector<unordered_map<string, int>> {
-	vector<pair<unordered_map<string, int>, unordered_map<string, int>>> _tmp;
-	for (auto& p : people) {
-		for (auto& o : purchases) {
-			if (!(p.id == o.personId)) continue;
-			if (o.total > 100) {
-				_tmp.push_back({-o.total, unordered_map<string, auto>{{string("person"), p.name}, {string("spent"), o.total}}});
-			}
-		}
-	}
-	std::sort(_tmp.begin(), _tmp.end(), [](const auto& a, const auto& b){ return a.first < b.first; });
-	vector<unordered_map<string, int>> _res;
-	_res.reserve(_tmp.size());
-	for (auto& _it : _tmp) _res.push_back(_it.second);
-	int _skip = 1;
-	if (_skip < (int)_res.size()) _res.erase(_res.begin(), _res.begin() + _skip); else _res.clear();
-	int _take = 2;
-	if (_take < (int)_res.size()) _res.resize(_take);
-	return _res;
+    // 1: type Person { id: int, name: string }
+    // 2: type Purchase { id: int, personId: int, total: int }
+    // 3: let people = [
+    auto people = vector<Person>{Person{1, string("Alice")}, Person{2, string("Bob")}, Person{3, string("Charlie")}};
+    // 8: let purchases = [
+    auto purchases = vector<Purchase>{Purchase{1, 1, 200}, Purchase{2, 1, 50}, Purchase{3, 2, 150}, Purchase{4, 3, 100}, Purchase{5, 2, 250}};
+    // 15: let result = from p in people
+    auto result = ([&]() -> vector<unordered_map<string, int>> {
+    vector<pair<unordered_map<string, int>, unordered_map<string, int>>> _tmp;
+    for (auto& p : people) {
+        for (auto& o : purchases) {
+            if (!(p.id == o.personId)) continue;
+            if (o.total > 100) {
+                _tmp.push_back({-o.total, unordered_map<string, auto>{{string("person"), p.name}, {string("spent"), o.total}}});
+            }
+        }
+    }
+    std::sort(_tmp.begin(), _tmp.end(), [](const auto& a, const auto& b){ return a.first < b.first; });
+    vector<unordered_map<string, int>> _res;
+    _res.reserve(_tmp.size());
+    for (auto& _it : _tmp) _res.push_back(_it.second);
+    int _skip = 1;
+    if (_skip < (int)_res.size()) _res.erase(_res.begin(), _res.begin() + _skip); else _res.clear();
+    int _take = 2;
+    if (_take < (int)_res.size()) _res.resize(_take);
+    return _res;
 })();
-	for (const unordered_map<string, any>& r : result) {
-		std::cout << (r["person"]) << " " << (r["spent"]) << std::endl;
-	}
-	return 0;
+    // 22: for r in result {
+    for (const unordered_map<string, any>& r : result) {
+        // 23:   print(r.person, r.spent)
+        std::cout << (r["person"]) << " " << (r["spent"]) << std::endl;
+    }
+    return 0;
 }

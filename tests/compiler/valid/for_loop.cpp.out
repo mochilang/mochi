@@ -1,9 +1,17 @@
+// Original Mochi source:
+// 1: for i in 1..4 {
+// 2:   print(i)
+// 3: }
+// 4: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	for (int i = 1; i < 4; i++) {
-		std::cout << (i) << std::endl;
-	}
-	return 0;
+    // 1: for i in 1..4 {
+    for (int i = 1; i < 4; i++) {
+        // 2:   print(i)
+        std::cout << (i) << std::endl;
+    }
+    return 0;
 }

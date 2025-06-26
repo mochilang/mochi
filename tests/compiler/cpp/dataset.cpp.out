@@ -1,24 +1,51 @@
+// Original Mochi source:
+// 1: type Person {
+// 2:   name: string
+// 3:   age: int
+// 4: }
+// 5: 
+// 6: let people = [
+// 7:   Person { name: "Alice", age: 30 },
+// 8:   Person { name: "Bob", age: 15 },
+// 9:   Person { name: "Charlie", age: 65 }
+// 10: ]
+// 11: 
+// 12: let names = from p in people
+// 13:             where p.age >= 18
+// 14:             select p.name
+// 15: 
+// 16: for n in names {
+// 17:   print(n)
+// 18: }
+// 19: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// 1: type Person {
 struct Person {
-	string name;
-	int age;
+    string name;
+    int age;
 };
 
 int main() {
-	auto people = vector<Person>{Person{string("Alice"), 30}, Person{string("Bob"), 15}, Person{string("Charlie"), 65}};
-	auto names = ([&]() -> vector<auto> {
-	vector<auto> _res;
-	for (auto& p : people) {
-		if (p.age >= 18) {
-			_res.push_back(p.name);
-		}
-	}
-	return _res;
+    // 1: type Person {
+    // 6: let people = [
+    auto people = vector<Person>{Person{string("Alice"), 30}, Person{string("Bob"), 15}, Person{string("Charlie"), 65}};
+    // 12: let names = from p in people
+    auto names = ([&]() -> vector<auto> {
+    vector<auto> _res;
+    for (auto& p : people) {
+        if (p.age >= 18) {
+            _res.push_back(p.name);
+        }
+    }
+    return _res;
 })();
-	for (const string& n : names) {
-		std::cout << (n) << std::endl;
-	}
-	return 0;
+    // 16: for n in names {
+    for (const string& n : names) {
+        // 17:   print(n)
+        std::cout << (n) << std::endl;
+    }
+    return 0;
 }

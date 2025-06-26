@@ -1,21 +1,35 @@
+// Original Mochi source:
+// 1: let nums = [5, 1, 4, 3, 2]
+// 2: let sorted = from n in nums
+// 3:             sort by n
+// 4:             select n
+// 5: for n in sorted {
+// 6:   print(n)
+// 7: }
+// 8: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto nums = vector<int>{5, 1, 4, 3, 2};
-	auto sorted = ([&]() -> vector<auto> {
-	vector<pair<auto, auto>> _tmp;
-	for (auto& n : nums) {
-		_tmp.push_back({n, n});
-	}
-	std::sort(_tmp.begin(), _tmp.end(), [](const auto& a, const auto& b){ return a.first < b.first; });
-	vector<auto> _res;
-	_res.reserve(_tmp.size());
-	for (auto& _it : _tmp) _res.push_back(_it.second);
-	return _res;
+    // 1: let nums = [5, 1, 4, 3, 2]
+    auto nums = vector<int>{5, 1, 4, 3, 2};
+    // 2: let sorted = from n in nums
+    auto sorted = ([&]() -> vector<auto> {
+    vector<pair<auto, auto>> _tmp;
+    for (auto& n : nums) {
+        _tmp.push_back({n, n});
+    }
+    std::sort(_tmp.begin(), _tmp.end(), [](const auto& a, const auto& b){ return a.first < b.first; });
+    vector<auto> _res;
+    _res.reserve(_tmp.size());
+    for (auto& _it : _tmp) _res.push_back(_it.second);
+    return _res;
 })();
-	for (int n : sorted) {
-		std::cout << (n) << std::endl;
-	}
-	return 0;
+    // 5: for n in sorted {
+    for (int n : sorted) {
+        // 6:   print(n)
+        std::cout << (n) << std::endl;
+    }
+    return 0;
 }

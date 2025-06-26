@@ -1,9 +1,18 @@
+// Original Mochi source:
+// 1: let a = 10
+// 2: let b: int = 20
+// 3: print(a + b)
+// 4: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto a = 10;
-	int b = 20;
-	std::cout << (a + b) << std::endl;
-	return 0;
+    // 1: let a = 10
+    auto a = 10;
+    // 2: let b: int = 20
+    int b = 20;
+    // 3: print(a + b)
+    std::cout << (a + b) << std::endl;
+    return 0;
 }

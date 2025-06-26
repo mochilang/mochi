@@ -1,12 +1,25 @@
+// Original Mochi source:
+// 1: fun makeAdder(n: int): fun(int): int {
+// 2:   return fun(x: int): int => x + n
+// 3: }
+// 4: 
+// 5: let add10 = makeAdder(10)
+// 6: print(add10(7))  // 17
+// 7: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// 1: fun makeAdder(n: int): fun(int): int {
 auto makeAdder(int n){
-	return [=](int x) { return x + n; };
+    // 2:   return fun(x: int): int => x + n
+    return [=](int x) { return x + n; };
 }
 
 int main() {
-	auto add10 = makeAdder(10);
-	std::cout << (add10(7)) << std::endl;
-	return 0;
+    // 5: let add10 = makeAdder(10)
+    auto add10 = makeAdder(10);
+    // 6: print(add10(7))  // 17
+    std::cout << (add10(7)) << std::endl;
+    return 0;
 }

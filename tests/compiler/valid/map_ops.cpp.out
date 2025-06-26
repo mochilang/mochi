@@ -1,14 +1,30 @@
+// Original Mochi source:
+// 1: // Map operations test
+// 2: var m: map<int, int> = {}
+// 3: m[1] = 10
+// 4: m[2] = 20
+// 5: if 1 in m {
+// 6:   print(m[1])
+// 7: }
+// 8: print(m[2])
+// 9: 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	unordered_map<int, int> m = unordered_map<int, int>{};
-	m[1] = 10;
-	m[2] = 20;
-	if ((m.count(1) != 0)) {
-		std::cout << (m[1]) << std::endl;
-	}
-	std::cout << (m[2]) << std::endl;
-	return 0;
+    // 2: var m: map<int, int> = {}
+    unordered_map<int, int> m = unordered_map<int, int>{};
+    // 3: m[1] = 10
+    m[1] = 10;
+    // 4: m[2] = 20
+    m[2] = 20;
+    // 5: if 1 in m {
+    if ((m.count(1) != 0)) {
+        // 6:   print(m[1])
+        std::cout << (m[1]) << std::endl;
+    }
+    // 8: print(m[2])
+    std::cout << (m[2]) << std::endl;
+    return 0;
 }
-
