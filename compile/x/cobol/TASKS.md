@@ -9,4 +9,4 @@ The current COBOL backend cannot compile the TPC-H Q1 example. The following wor
 5. **Golden tests** – once the above features compile Q1, add `tpch_q1.mochi`, `tpch_q1.cob.out` and `tpch_q1.out` to `tests/compiler/cobol`.
 6. **Runtime helpers** – create small COBOL routines for JSON printing and numeric conversions if needed.
 
-These tasks will bring the COBOL backend closer to running `examples/tpc-h/q1.mochi` and similar benchmarks.
+These tasks will bring the COBOL backend closer to running `tests/dataset/tpc-h/q1.mochi` and similar benchmarks.
