@@ -162,10 +162,15 @@ func (c *Compiler) compileLoadExpr(n *ast.Node) string {
 }
 
 func (c *Compiler) compileFetchExpr(n *ast.Node) string {
-	tmp := c.newTemp()
-	c.declare(fmt.Sprintf("01 %s PIC X(100).", tmp))
-	c.writeln("    *> " + c.fetchMessage(n))
-	return tmp
+	urlExpr := c.expr(n.Children[0])
+	cmd := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s PIC X(256).", cmd))
+	c.writeln("    STRING \"curl -s \" DELIMITED BY SIZE " + urlExpr + " DELIMITED BY SIZE INTO " + cmd)
+	c.writeln("    CALL 'SYSTEM' USING " + cmd)
+	res := c.newTemp()
+	c.declare(fmt.Sprintf("01 %s PIC X(100).", res))
+	c.writeln("    *> fetch output stored in " + res)
+	return res
 }
 
 func containsJSON(n *ast.Node) bool {
@@ -200,7 +205,14 @@ func (c *Compiler) saveMessage(n *ast.Node) string {
 }
 
 func (c *Compiler) fetchMessage(n *ast.Node) string {
-	return "fetch not implemented"
+	if len(n.Children) > 0 {
+		if n.Children[0].Kind == "string" {
+			if s, ok := n.Children[0].Value.(string); ok {
+				return "fetch " + s
+			}
+		}
+	}
+	return "fetch"
 }
 
 func (c *Compiler) compileSave(n *ast.Node) {
