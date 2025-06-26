@@ -1,0 +1,12 @@
+type Msg {
+  message: string
+}
+
+let data: Msg = fetch "file://tests/compiler/dart/fetch_options.json" with {
+  method: "GET",
+  headers: {"User-Agent": "Mochi"},
+  query: {q: "foo"},
+  body: {foo: true},
+  timeout: 5.0
+}
+print(data.message)
