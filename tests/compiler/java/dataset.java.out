@@ -1,13 +1,13 @@
 public class Main {
 	public static void main(String[] args) {
-		java.util.Map<String, Object>[] people = new java.util.Map<String, Object>[]{new java.util.HashMap<>(java.util.Map.of(name, "Alice", age, 30)), new java.util.HashMap<>(java.util.Map.of(name, "Bob", age, 15)), new java.util.HashMap<>(java.util.Map.of(name, "Charlie", age, 65)), new java.util.HashMap<>(java.util.Map.of(name, "Diana", age, 45))};
-		java.util.Map<String, Object>[] adults = (new java.util.function.Supplier<java.util.List<Object>>() {
+		Object[] people = new Object[]{new java.util.HashMap<>(java.util.Map.of("name", "Alice", "age", 30)), new java.util.HashMap<>(java.util.Map.of("name", "Bob", "age", 15)), new java.util.HashMap<>(java.util.Map.of("name", "Charlie", "age", 65)), new java.util.HashMap<>(java.util.Map.of("name", "Diana", "age", 45))};
+		Object[] adults = (new java.util.function.Supplier<java.util.List<Object>>() {
 	public java.util.List<Object> get() {
 		java.util.List<Object> _src = _toList(people);
 		_src = _filter(_src, (Object person) -> { return (person.age >= 18); });
 		java.util.List<_JoinSpec> _joins = java.util.List.of(
 		);
-		return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object person = a[0]; return new java.util.HashMap<>(java.util.Map.of(name, person.name, age, person.age, is_senior, (person.age >= 60))); }, null, null, -1, -1));
+		return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object person = a[0]; return new java.util.HashMap<>(java.util.Map.of("name", person.name, "age", person.age, "is_senior", (person.age >= 60))); }, null, null, -1, -1));
 	}
 }).get();
 		for (var person : adults) {

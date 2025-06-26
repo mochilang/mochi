@@ -7,11 +7,13 @@ public class Main {
 			this.name = name;
 			this.price = price;
 		}
+		
+		Product() {}
 	}
 	
 	public static void main(String[] args) {
-		Product[] products = new Product[]{new Product("Laptop", 1500), new Product("Smartphone", 900), new Product("Tablet", 600), new Product("Monitor", 300), new Product("Keyboard", 100), new Product("Mouse", 50), new Product("Headphones", 200)};
-		Product[] expensive = (new java.util.function.Supplier<java.util.List<Object>>() {
+		Object[] products = new Product[]{new Product("Laptop", 1500), new Product("Smartphone", 900), new Product("Tablet", 600), new Product("Monitor", 300), new Product("Keyboard", 100), new Product("Mouse", 50), new Product("Headphones", 200)};
+		Object[] expensive = (new java.util.function.Supplier<java.util.List<Object>>() {
 	public java.util.List<Object> get() {
 		java.util.List<Object> _src = _toList(products);
 		java.util.List<_JoinSpec> _joins = java.util.List.of(
