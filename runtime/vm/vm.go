@@ -1633,7 +1633,9 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 		return nil, err
 	}
 	c.funcs[0] = main
-	return &Program{Funcs: c.funcs, Types: c.types}, nil
+	prog := &Program{Funcs: c.funcs, Types: c.types}
+	optimizeProgram(prog)
+	return prog, nil
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
