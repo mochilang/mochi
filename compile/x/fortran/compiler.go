@@ -38,20 +38,22 @@ type Compiler struct {
 	needsSaveJSON        bool
 	loadJSONTypes        map[string]bool
 	saveJSONTypes        map[string]bool
+	listStructTypes      map[string]string
 }
 
 func New() *Compiler {
 	return &Compiler{
-		stringVars:     map[string]bool{},
-		listVars:       map[string]bool{},
-		floatVars:      map[string]bool{},
-		funReturnStr:   map[string]bool{},
-		funReturnList:  map[string]bool{},
-		funReturnFloat: map[string]bool{},
-		lambdas:        []string{},
-		needsNow:       false,
-		loadJSONTypes:  map[string]bool{},
-		saveJSONTypes:  map[string]bool{},
+		stringVars:      map[string]bool{},
+		listVars:        map[string]bool{},
+		floatVars:       map[string]bool{},
+		funReturnStr:    map[string]bool{},
+		funReturnList:   map[string]bool{},
+		funReturnFloat:  map[string]bool{},
+		lambdas:         []string{},
+		needsNow:        false,
+		loadJSONTypes:   map[string]bool{},
+		saveJSONTypes:   map[string]bool{},
+		listStructTypes: map[string]string{},
 	}
 }
 
@@ -73,6 +75,7 @@ func (c *Compiler) resetFeatures() {
 	c.needsSaveJSON = false
 	c.loadJSONTypes = map[string]bool{}
 	c.saveJSONTypes = map[string]bool{}
+	c.listStructTypes = map[string]string{}
 }
 
 // resetVarScopes initializes variable tracking maps for a new scope.
@@ -80,6 +83,7 @@ func (c *Compiler) resetVarScopes() {
 	c.stringVars = map[string]bool{}
 	c.listVars = map[string]bool{}
 	c.floatVars = map[string]bool{}
+	c.listStructTypes = map[string]string{}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -148,7 +152,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(mainStmts, declared, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	listStructs := map[string]string{}
+	collectVars(mainStmts, declared, listVars, stringVars, floatVars, listStructs, c.funReturnStr, c.funReturnFloat, c.funReturnList)
 	structVars := map[string]string{}
 	for _, st := range mainStmts {
 		if st.Let != nil {
@@ -177,12 +182,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	delete(listVars, "result")
 	c.listVars = listVars
+	c.listStructTypes = listStructs
 	c.stringVars = stringVars
 	c.floatVars = floatVars
+	c.listStructTypes = listStructs
 	allocs := []string{}
 	for name, isList := range listVars {
 		if isList {
-			if stringVars[name] {
+			if t, ok := listStructs[name]; ok {
+				c.writeln(fmt.Sprintf("type(%s), allocatable :: %s(:)", t, name))
+			} else if stringVars[name] {
 				c.writeln(fmt.Sprintf("character(:), allocatable :: %s(:)", name))
 			} else if floatVars[name] {
 				c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
@@ -452,7 +461,8 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(fn.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	listStructs := map[string]string{}
+	collectVars(fn.Body, vars, listVars, stringVars, floatVars, listStructs, c.funReturnStr, c.funReturnFloat, c.funReturnList)
 	for name := range c.listVars {
 		listVars[name] = true
 	}
@@ -481,7 +491,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			continue
 		}
 		if isList {
-			if stringVars[name] {
+			if t, ok := listStructs[name]; ok {
+				c.writeln(fmt.Sprintf("type(%s), allocatable :: %s(:)", t, name))
+			} else if stringVars[name] {
 				c.writeln(fmt.Sprintf("character(:), allocatable :: %s(:)", name))
 			} else if floatVars[name] {
 				c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
@@ -567,15 +579,6 @@ func (c *Compiler) ftnScalarType(t types.Type) string {
 		return fmt.Sprintf("type(%s)", sanitizeName(v.Name))
 	default:
 		return "integer(kind=8)"
-	}
-}
-
-func isBuiltin(name string) bool {
-	switch name {
-	case "int", "float", "string", "bool":
-		return true
-	default:
-		return false
 	}
 }
 
@@ -866,10 +869,12 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	listVars := map[string]bool{}
 	stringVars := map[string]bool{}
 	floatVars := map[string]bool{}
-	collectVars(t.Body, vars, listVars, stringVars, floatVars, c.funReturnStr, c.funReturnFloat, c.funReturnList)
+	listStructs := map[string]string{}
+	collectVars(t.Body, vars, listVars, stringVars, floatVars, listStructs, c.funReturnStr, c.funReturnFloat, c.funReturnList)
 	c.listVars = listVars
 	c.stringVars = stringVars
 	c.floatVars = floatVars
+	c.listStructTypes = listStructs
 	loopVars := map[string]bool{}
 	loopStrVars := map[string]bool{}
 	collectLoopVars(t.Body, loopVars, loopStrVars)
@@ -884,7 +889,9 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.stringVars = stringVars
 	allocs := []string{}
 	for name := range listVars {
-		if stringVars[name] {
+		if t, ok := listStructs[name]; ok {
+			c.writeln(fmt.Sprintf("type(%s), allocatable :: %s(:)", t, name))
+		} else if stringVars[name] {
 			c.writeln(fmt.Sprintf("character(:), allocatable :: %s(:)", name))
 		} else if floatVars[name] {
 			c.writeln(fmt.Sprintf("real, allocatable :: %s(:)", name))
@@ -1543,6 +1550,16 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		path = fmt.Sprintf("'%s'", *s.Path)
 	}
 	typName := "int"
+	if name, ok := identName(s.Src); ok {
+		n := sanitizeName(name)
+		if t, ok := c.listStructTypes[n]; ok {
+			typName = t
+		} else if c.stringVars[n] {
+			typName = "string"
+		} else if c.floatVars[n] {
+			typName = "float"
+		}
+	}
 	fname := "save_json_" + typName
 	c.needsSaveJSON = true
 	if c.saveJSONTypes == nil {

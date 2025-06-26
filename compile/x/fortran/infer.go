@@ -52,12 +52,25 @@ func collectLoopVars(stmts []*parser.Statement, vars, str map[string]bool) {
 	}
 }
 
-func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, floatVars map[string]bool, funStr map[string]bool, funFloat map[string]bool, funList map[string]bool) {
+func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[string]bool, stringVars map[string]bool, floatVars map[string]bool, listStructs map[string]string, funStr map[string]bool, funFloat map[string]bool, funList map[string]bool) {
 	for _, s := range stmts {
 		switch {
 		case s.Var != nil:
 			name := sanitizeName(s.Var.Name)
 			vars[name] = true
+			if typ, ok := loadTypeName(s.Var.Value); ok {
+				listVars[name] = true
+				switch typ {
+				case "string":
+					stringVars[name] = true
+				case "float":
+					floatVars[name] = true
+				default:
+					if !isBuiltin(typ) {
+						listStructs[name] = typ
+					}
+				}
+			}
 			if types.IsListLiteral(s.Var.Value) || types.IsListExprVars(s.Var.Value, sanitizeName, listVars, funList) {
 				listVars[name] = true
 			}
@@ -69,6 +82,10 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 						stringVars[name] = true
 					case "float":
 						floatVars[name] = true
+					default:
+						if !isBuiltin(*s.Var.Type.Generic.Args[0].Simple) {
+							listStructs[name] = sanitizeName(*s.Var.Type.Generic.Args[0].Simple)
+						}
 					}
 				}
 			}
@@ -81,6 +98,19 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 		case s.Let != nil:
 			name := sanitizeName(s.Let.Name)
 			vars[name] = true
+			if typ, ok := loadTypeName(s.Let.Value); ok {
+				listVars[name] = true
+				switch typ {
+				case "string":
+					stringVars[name] = true
+				case "float":
+					floatVars[name] = true
+				default:
+					if !isBuiltin(typ) {
+						listStructs[name] = typ
+					}
+				}
+			}
 			if types.IsListLiteral(s.Let.Value) || types.IsListExprVars(s.Let.Value, sanitizeName, listVars, funList) {
 				listVars[name] = true
 			}
@@ -92,6 +122,10 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 						stringVars[name] = true
 					case "float":
 						floatVars[name] = true
+					default:
+						if !isBuiltin(*s.Let.Type.Generic.Args[0].Simple) {
+							listStructs[name] = sanitizeName(*s.Let.Type.Generic.Args[0].Simple)
+						}
 					}
 				}
 			}
@@ -102,18 +136,18 @@ func collectVars(stmts []*parser.Statement, vars map[string]bool, listVars map[s
 				floatVars[name] = true
 			}
 		case s.For != nil:
-			collectVars(s.For.Body, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			collectVars(s.For.Body, vars, listVars, stringVars, floatVars, listStructs, funStr, funFloat, funList)
 		case s.While != nil:
-			collectVars(s.While.Body, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			collectVars(s.While.Body, vars, listVars, stringVars, floatVars, listStructs, funStr, funFloat, funList)
 		case s.If != nil:
-			collectVars(s.If.Then, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+			collectVars(s.If.Then, vars, listVars, stringVars, floatVars, listStructs, funStr, funFloat, funList)
 			cur := s.If
 			for cur.ElseIf != nil {
 				cur = cur.ElseIf
-				collectVars(cur.Then, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+				collectVars(cur.Then, vars, listVars, stringVars, floatVars, listStructs, funStr, funFloat, funList)
 			}
 			if len(cur.Else) > 0 {
-				collectVars(cur.Else, vars, listVars, stringVars, floatVars, funStr, funFloat, funList)
+				collectVars(cur.Else, vars, listVars, stringVars, floatVars, listStructs, funStr, funFloat, funList)
 			}
 		}
 	}
