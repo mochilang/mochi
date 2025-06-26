@@ -1,20 +1,67 @@
+// Original Mochi source:
+// type Tree =
+//   Leaf
+//   | Node(left: Tree, value: int, right: Tree)
+// 
+// fun inorder(t: Tree): list<int> {
+//   return match t {
+//     Leaf => [] as list<int>
+//     Node(l, v, r) => inorder(l) + [v] + inorder(r)
+//   }
+// }
+// 
+// print(inorder(Node { left: Leaf {}, value: 1, right: Node { left: Leaf {}, value: 2, right: Leaf {} } }))
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+template<typename T> T _cast(any v);
+template<> inline int _cast<int>(any v) {
+    if (v.type() == typeid(int)) return any_cast<int>(v);
+    if (v.type() == typeid(double)) return int(any_cast<double>(v));
+    if (v.type() == typeid(string)) return stoi(any_cast<string>(v));
+    return 0;
+}
+template<> inline double _cast<double>(any v) {
+    if (v.type() == typeid(double)) return any_cast<double>(v);
+    if (v.type() == typeid(int)) return double(any_cast<int>(v));
+    if (v.type() == typeid(string)) return stod(any_cast<string>(v));
+    return 0.0;
+}
+template<> inline bool _cast<bool>(any v) {
+    if (v.type() == typeid(bool)) return any_cast<bool>(v);
+    if (v.type() == typeid(string)) return any_cast<string>(v)=="true";
+    if (v.type() == typeid(int)) return any_cast<int>(v)!=0;
+    return false;
+}
+template<> inline string _cast<string>(any v) {
+    if (v.type() == typeid(string)) return any_cast<string>(v);
+    if (v.type() == typeid(int)) return to_string(any_cast<int>(v));
+    if (v.type() == typeid(double)) { stringstream ss; ss<<any_cast<double>(v); return ss.str(); }
+    if (v.type() == typeid(bool)) return any_cast<bool>(v)?"true":"false";
+    return "";
+}
+
+// type Tree =
 struct Leaf {
 };
 struct Node {
-	Tree left;
-	int value;
-	Tree right;
+    Tree left;
+    int value;
+    Tree right;
 };
 using Tree = std::variant<Leaf, Node>;
 
+// fun inorder(t: Tree): list<int> {
 vector<int> inorder(Tree t){
-	return ([&]() { auto _t0 = t; if (std::holds_alternative<Leaf>(_t0)) return vector<int>{}; if (std::holds_alternative<Node>(_t0)) { auto _v = std::get<Node>(_t0); auto l = _v.left; auto v = _v.value; auto r = _v.right; return ([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(inorder(l), vector<int>{v}), inorder(r)); }return {}; })();
+    //   return match t {
+    return ([&]() { auto _t0 = t; if (std::holds_alternative<Leaf>(_t0)) return _cast<vector<int>>(vector<int>{}); if (std::holds_alternative<Node>(_t0)) { auto _v = std::get<Node>(_t0); auto l = _v.left; auto v = _v.value; auto r = _v.right; return ([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(([&](vector<int> a, vector<int> b){ a.insert(a.end(), b.begin(), b.end()); return a; })(inorder(l), vector<int>{v}), inorder(r)); }return {}; })();
 }
 
 int main() {
-	std::cout << (inorder(Node{Leaf{}, 1, Node{Leaf{}, 2, Leaf{}}})) << std::endl;
-	return 0;
+    // type Tree =
+    // print(inorder(Node { left: Leaf {}, value: 1, right: Node { left: Leaf {}, value: 2, right: Leaf {} } }))
+    std::cout << (inorder(Node{Leaf{}, 1, Node{Leaf{}, 2, Leaf{}}})) << std::endl;
+    return 0;
 }

@@ -1,33 +1,40 @@
+// Original Mochi source:
+// let todo: map<string, string> = fetch "https://jsonplaceholder.typicode.com/todos/1"
+// print(todo["title"])
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 static unordered_map<string,string> _fetch_parse(const string& s) {
-	unordered_map<string,string> row; size_t i=0;
-	while (i<s.size()) {
-		if (s[i]=='"') {
-			size_t j=s.find('"', i+1); if (j==string::npos) break; string key=s.substr(i+1,j-i-1);
-			i=s.find(':', j); if (i==string::npos) break; i++; while(i<s.size() && isspace(s[i])) i++;
-			string val;
-			if (i<s.size() && s[i]=='"') { size_t k=s.find('"', i+1); val=s.substr(i+1,k-i-1); i=k+1; } else { size_t k=i; while (k<s.size() && (isalnum(s[k])||s[k]=='-'||s[k]=='+'||s[k]=='.')) k++; val=s.substr(i,k-i); i=k; }
-			row[key]=val;
-		} else { i++; }
-	}
-	return row;
+    unordered_map<string,string> row; size_t i=0;
+    while (i<s.size()) {
+        if (s[i]=='"') {
+            size_t j=s.find('"', i+1); if (j==string::npos) break; string key=s.substr(i+1,j-i-1);
+            i=s.find(':', j); if (i==string::npos) break; i++; while(i<s.size() && isspace(s[i])) i++;
+            string val;
+            if (i<s.size() && s[i]=='"') { size_t k=s.find('"', i+1); val=s.substr(i+1,k-i-1); i=k+1; } else { size_t k=i; while (k<s.size() && (isalnum(s[k])||s[k]=='-'||s[k]=='+'||s[k]=='.')) k++; val=s.substr(i,k-i); i=k; }
+            row[key]=val;
+        } else { i++; }
+    }
+    return row;
 }
 unordered_map<string,string> _fetch(const string& url, const unordered_map<string,any>& opts) {
-	(void)opts;
-	string data;
-	if (url.rfind("file://",0)==0) {
-		ifstream f(url.substr(7)); stringstream ss; ss<<f.rdbuf(); data=ss.str();
-	} else {
-		string cmd="curl -s "+url;
-		FILE* p=popen(cmd.c_str(), "r"); char buf[4096]; while(p && !feof(p)){ size_t n=fread(buf,1,sizeof(buf),p); data.append(buf,n);} if(p) pclose(p);
-	}
-	return _fetch_parse(data);
+    (void)opts;
+    string data;
+    if (url.rfind("file://",0)==0) {
+        ifstream f(url.substr(7)); stringstream ss; ss<<f.rdbuf(); data=ss.str();
+    } else {
+        string cmd="curl -s "+url;
+        FILE* p=popen(cmd.c_str(), "r"); char buf[4096]; while(p && !feof(p)){ size_t n=fread(buf,1,sizeof(buf),p); data.append(buf,n);} if(p) pclose(p);
+    }
+    return _fetch_parse(data);
 }
 
 int main() {
-	unordered_map<string, string> todo = _fetch(string("https://jsonplaceholder.typicode.com/todos/1"), unordered_map<string,any>{});
-	std::cout << (todo[string("title")]) << std::endl;
-	return 0;
+    // let todo: map<string, string> = fetch "https://jsonplaceholder.typicode.com/todos/1"
+    unordered_map<string, string> todo = _fetch(string("https://jsonplaceholder.typicode.com/todos/1"), unordered_map<string,any>{});
+    // print(todo["title"])
+    std::cout << (todo[string("title")]) << std::endl;
+    return 0;
 }

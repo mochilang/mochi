@@ -1,8 +1,17 @@
+// Original Mochi source:
+// let vec = generate embedding {
+//   text: "hi"
+// }
+// print(len(vec))
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto vec;
-	std::cout << (vec.size()) << std::endl;
-	return 0;
+    // let vec = generate embedding {
+    auto vec;
+    // print(len(vec))
+    std::cout << (vec.size()) << std::endl;
+    return 0;
 }

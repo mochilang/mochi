@@ -1,8 +1,15 @@
+// Original Mochi source:
+// let scores = {"Alice": 10, "Bob": 15}
+// print(scores["Bob"])
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto scores = unordered_map<string, int>{{string("Alice"), 10}, {string("Bob"), 15}};
-	std::cout << (scores[string("Bob")]) << std::endl;
-	return 0;
+    // let scores = {"Alice": 10, "Bob": 15}
+    auto scores = unordered_map<string, int>{{string("Alice"), 10}, {string("Bob"), 15}};
+    // print(scores["Bob"])
+    std::cout << (scores[string("Bob")]) << std::endl;
+    return 0;
 }

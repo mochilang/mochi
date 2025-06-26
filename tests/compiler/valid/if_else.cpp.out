@@ -1,12 +1,26 @@
+// Original Mochi source:
+// let x = 5
+// 
+// if x > 3 {
+//   print("big")
+// } else {
+//   print("small")
+// }
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto x = 5;
-	if (x > 3) {
-		std::cout << (string("big")) << std::endl;
-	} else {
-		std::cout << (string("small")) << std::endl;
-	}
-	return 0;
+    // let x = 5
+    auto x = 5;
+    // if x > 3 {
+    if (x > 3) {
+        //   print("big")
+        std::cout << (string("big")) << std::endl;
+    } else {
+        //   print("small")
+        std::cout << (string("small")) << std::endl;
+    }
+    return 0;
 }

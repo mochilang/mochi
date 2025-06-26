@@ -1,12 +1,23 @@
+// Original Mochi source:
+// test "addition works" {
+//   let x = 1 + 2
+//   expect x == 3
+// }
+// print("ok")
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	std::cout << (string("ok")) << std::endl;
-	auto test_addition_works = [&]() {
-		auto x = 1 + 2;
-		if (!(x == 3)) { std::cerr << "expect failed\n"; exit(1); }
-	};
-	test_addition_works();
-	return 0;
+    // print("ok")
+    std::cout << (string("ok")) << std::endl;
+    auto test_addition_works = [&]() {
+        //   let x = 1 + 2
+        auto x = 1 + 2;
+        //   expect x == 3
+        if (!(x == 3)) { std::cerr << "expect failed\n"; exit(1); }
+    };
+    test_addition_works();
+    return 0;
 }

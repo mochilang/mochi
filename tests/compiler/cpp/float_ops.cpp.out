@@ -1,8 +1,15 @@
+// Original Mochi source:
+// print(1.2 + 3.4)
+// print(5.0 / 2.0)
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	std::cout << (1.2 + 3.4) << std::endl;
-	std::cout << (5.0 / 2.0) << std::endl;
-	return 0;
+    // print(1.2 + 3.4)
+    std::cout << (1.2 + 3.4) << std::endl;
+    // print(5.0 / 2.0)
+    std::cout << (5.0 / 2.0) << std::endl;
+    return 0;
 }

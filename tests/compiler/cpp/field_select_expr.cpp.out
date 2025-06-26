@@ -1,16 +1,34 @@
+// Original Mochi source:
+// type Point {
+//   x: int
+//   y: int
+// }
+// 
+// fun make(): Point {
+//   return Point { x: 1, y: 2 }
+// }
+// 
+// print(make().x)
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// type Point {
 struct Point {
-	int x;
-	int y;
+    int x;
+    int y;
 };
 
+// fun make(): Point {
 Point make(){
-	return Point{1, 2};
+    //   return Point { x: 1, y: 2 }
+    return Point{1, 2};
 }
 
 int main() {
-	std::cout << (make().x) << std::endl;
-	return 0;
+    // type Point {
+    // print(make().x)
+    std::cout << (make().x) << std::endl;
+    return 0;
 }

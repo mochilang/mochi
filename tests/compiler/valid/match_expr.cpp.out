@@ -1,9 +1,25 @@
+// Original Mochi source:
+// let x = 2
+// 
+// let label = match x {
+//   1 => "one"
+//   2 => "two"
+//   3 => "three"
+//   _ => "unknown"
+// }
+// 
+// print(label)
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto x = 2;
-	auto label = ([&]() { auto _t0 = x; if (_t0 == 1) return string("one"); if (_t0 == 2) return string("two"); if (_t0 == 3) return string("three"); return string("unknown"); })();
-	std::cout << (label) << std::endl;
-	return 0;
+    // let x = 2
+    auto x = 2;
+    // let label = match x {
+    auto label = ([&]() { auto _t0 = x; if (_t0 == 1) return string("one"); if (_t0 == 2) return string("two"); if (_t0 == 3) return string("three"); return string("unknown"); })();
+    // print(label)
+    std::cout << (label) << std::endl;
+    return 0;
 }

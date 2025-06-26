@@ -3,8 +3,11 @@ package cppcode
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
+
+	"github.com/alecthomas/participle/v2/lexer"
 
 	"mochi/parser"
 	"mochi/types"
@@ -20,7 +23,10 @@ type Compiler struct {
 	vars         []map[string]string
 	tmpCount     int
 	methodFields map[string]bool
+	srcLines     []string
 }
+
+type positioner interface{ Position() lexer.Position }
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
@@ -30,6 +36,7 @@ func New(env *types.Env) *Compiler {
 		vars:         []map[string]string{{}},
 		tmpCount:     0,
 		methodFields: nil,
+		srcLines:     nil,
 	}
 }
 
@@ -58,21 +65,40 @@ func (c *Compiler) getVar(name string) (string, bool) {
 
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
-		c.buf.WriteByte('\t')
+		c.buf.WriteString("    ")
 	}
-	c.buf.WriteString(s)
+	c.buf.WriteString(strings.ReplaceAll(s, "\t", "    "))
 	c.buf.WriteByte('\n')
 }
 
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
-		c.buf.WriteByte('\t')
+		c.buf.WriteString("    ")
 	}
+}
+
+func (c *Compiler) writeSourceLine(pos lexer.Position) {
+	if len(c.srcLines) == 0 {
+		return
+	}
+	if pos.Line <= 0 || pos.Line > len(c.srcLines) {
+		return
+	}
+	line := strings.ReplaceAll(c.srcLines[pos.Line-1], "\t", "    ")
+	c.writeIndent()
+	c.buf.WriteString("// " + line + "\n")
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// reset state to avoid leaking helpers between compilations
 	c.helpers = map[string]bool{}
+
+	c.srcLines = nil
+	if prog.Pos.Filename != "" {
+		if data, err := os.ReadFile(prog.Pos.Filename); err == nil {
+			c.srcLines = strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
+		}
+	}
 
 	var body bytes.Buffer
 	oldBuf := c.buf
@@ -125,6 +151,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	bodyBytes := c.buf.Bytes()
 	c.buf = oldBuf
 	c.indent = 0
+
+	if len(c.srcLines) > 0 {
+		c.writeln("// Original Mochi source:")
+		for _, line := range c.srcLines {
+			c.writeln("// " + line)
+		}
+		c.writeln("")
+	}
+
 	c.writeln("#include <bits/stdc++.h>")
 	c.writeln("using namespace std;")
 	c.writeln("")
@@ -165,6 +200,7 @@ func (c *Compiler) cppType(t *parser.TypeRef) string {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	c.writeSourceLine(fn.Pos)
 	ret := c.cppType(fn.Return)
 	c.writeIndent()
 	c.buf.WriteString(ret + " ")
@@ -194,6 +230,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
+	c.writeSourceLine(fn.Pos)
 	ret := c.cppType(fn.Return)
 	c.writeIndent()
 	c.buf.WriteString(ret + " ")
@@ -273,6 +310,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	c.writeSourceLine(t.Pos)
 	if len(t.Variants) > 0 {
 		names := make([]string, len(t.Variants))
 		for i, v := range t.Variants {
@@ -331,6 +369,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
+	c.writeSourceLine(s.Pos)
 	switch {
 	case s.Let != nil:
 		expr := c.compileExpr(s.Let.Value)

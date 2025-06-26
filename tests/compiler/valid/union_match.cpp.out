@@ -1,21 +1,43 @@
+// Original Mochi source:
+// type Tree =
+//   Leaf
+//   | Node(left: Tree, value: int, right: Tree)
+// 
+// fun isLeaf(t: Tree): bool {
+//   return match t {
+//     Leaf => true
+//     _ => false
+//   }
+// }
+// 
+// print(isLeaf(Leaf {}))
+// print(isLeaf(Node { left: Leaf {}, value: 1, right: Leaf {} }))
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
+// type Tree =
 struct Leaf {
 };
 struct Node {
-	Tree left;
-	int value;
-	Tree right;
+    Tree left;
+    int value;
+    Tree right;
 };
 using Tree = std::variant<Leaf, Node>;
 
+// fun isLeaf(t: Tree): bool {
 bool isLeaf(Tree t){
-	return ([&]() { auto _t0 = t; if (std::holds_alternative<Leaf>(_t0)) return true; return false; })();
+    //   return match t {
+    return ([&]() { auto _t0 = t; if (std::holds_alternative<Leaf>(_t0)) return true; return false; })();
 }
 
 int main() {
-	std::cout << (isLeaf(Leaf{})) << std::endl;
-	std::cout << (isLeaf(Node{Leaf{}, 1, Leaf{}})) << std::endl;
-	return 0;
+    // type Tree =
+    // print(isLeaf(Leaf {}))
+    std::cout << (isLeaf(Leaf{})) << std::endl;
+    // print(isLeaf(Node { left: Leaf {}, value: 1, right: Leaf {} }))
+    std::cout << (isLeaf(Node{Leaf{}, 1, Leaf{}})) << std::endl;
+    return 0;
 }

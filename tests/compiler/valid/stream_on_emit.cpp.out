@@ -1,6 +1,22 @@
+// Original Mochi source:
+// stream Sensor {
+//   id: string
+//   temperature: float
+// }
+// 
+// on Sensor as s {
+//   print(s.id, s.temperature)
+// }
+// 
+// emit Sensor { id: "sensor-1", temperature: 22.5 }
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	return 0;
+    // stream Sensor {
+    // on Sensor as s {
+    // emit Sensor { id: "sensor-1", temperature: 22.5 }
+    return 0;
 }

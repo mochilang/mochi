@@ -1,8 +1,15 @@
+// Original Mochi source:
+// let value = (1 + 2) * 3
+// print(value)  // 9
+// 
+
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-	auto value = (1 + 2) * 3;
-	std::cout << (value) << std::endl;
-	return 0;
+    // let value = (1 + 2) * 3
+    auto value = (1 + 2) * 3;
+    // print(value)  // 9
+    std::cout << (value) << std::endl;
+    return 0;
 }
