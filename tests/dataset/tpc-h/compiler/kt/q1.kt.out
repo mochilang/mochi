@@ -122,7 +122,11 @@ fun _group_by(src: List<Any?>, keyfn: (Any?) -> Any?): List<_Group> {
             groups[ks] = g
             order.add(ks)
         }
-        g.Items.add(it)
+        if (it is Array<*> && it.size == 1) {
+            g.Items.add(it[0])
+        } else {
+            g.Items.add(it)
+        }
     }
         return order.map { groups[it]!! }
 }
@@ -278,3 +282,4 @@ fun _sum(v: Any?): Double {
     }
     return sum
 }
+
