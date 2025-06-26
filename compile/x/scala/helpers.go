@@ -261,6 +261,11 @@ func isString(t types.Type) bool {
 	return ok
 }
 
+func isAny(t types.Type) bool {
+	_, ok := t.(types.AnyType)
+	return ok
+}
+
 func seqLambda(params []string, body string) string {
 	var b strings.Builder
 	b.WriteString("(args: Seq[Any]) => {\n")

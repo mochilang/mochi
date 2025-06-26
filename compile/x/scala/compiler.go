@@ -372,6 +372,13 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 
 	typ := scalaType(t)
 	name := sanitizeName(st.Name)
+	if expr != "" && typ != "Any" {
+		et := c.exprType(st.Value)
+		if !equalTypes(t, et) || isAny(et) {
+			c.use("_cast")
+			expr = fmt.Sprintf("_cast[%s](%s)", typ, expr)
+		}
+	}
 	if expr == "" {
 		if typ != "Any" {
 			c.writeln(fmt.Sprintf("val %s: %s", name, typ))
@@ -392,15 +399,6 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(st *parser.VarStmt) error {
-	value := ""
-	if st.Value != nil {
-		v, err := c.compileExpr(st.Value)
-		if err != nil {
-			return err
-		}
-		value = " = " + v
-	}
-
 	var t types.Type = types.AnyType{}
 	if st.Type != nil {
 		t = c.resolveTypeRef(st.Type)
@@ -409,6 +407,20 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	}
 
 	typ := scalaType(t)
+
+	value := ""
+	if st.Value != nil {
+		v, err := c.compileExpr(st.Value)
+		if err != nil {
+			return err
+		}
+		et := c.exprType(st.Value)
+		if typ != "Any" && (!equalTypes(t, et) || isAny(et)) {
+			c.use("_cast")
+			v = fmt.Sprintf("_cast[%s](%s)", typ, v)
+		}
+		value = " = " + v
+	}
 
 	if st.Value != nil && emptyListExpr(st.Value) {
 		if typ == "Any" {
@@ -511,6 +523,14 @@ func (c *Compiler) compileReturn(st *parser.ReturnStmt) error {
 	expr, err := c.compileExpr(st.Value)
 	if err != nil {
 		return err
+	}
+	if c.retType != nil {
+		et := c.exprType(st.Value)
+		if !equalTypes(c.retType, et) || isAny(et) {
+			typ := scalaType(c.retType)
+			c.use("_cast")
+			expr = fmt.Sprintf("_cast[%s](%s)", typ, expr)
+		}
 	}
 	c.writeln("return " + expr)
 	return nil
@@ -931,7 +951,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 		if op.Cast != nil {
 			typ := scalaType(c.resolveTypeRef(op.Cast.Type))
-			expr = fmt.Sprintf("%s.asInstanceOf[%s]", expr, typ)
+			c.use("_cast")
+			expr = fmt.Sprintf("_cast[%s](%s)", typ, expr)
 			continue
 		}
 	}
